@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} fica sem número.",
     "jerseyPickerSwapConfirm": "Trocar",
     "jerseyPickerClear": "Remover número",
+    "contractYears": "Contrato (anos)",
     "teamKit": "Uniforme do Time",
     "kitPattern": "Padrão do Uniforme",
     "kitLockedInSeason": "O design do uniforme só pode ser alterado durante a pré-temporada.",
@@ -707,9 +708,9 @@
     "makeStarter": "Colocar como titular",
     "sendToBench": "Mandar para o banco",
     "styleFitValues": {
-      "strong": "Encaixe com o estilo: Forte",
-      "good": "Encaixe com o estilo: Bom",
-      "risky": "Encaixe com o estilo: Arriscado"
+      "strong": "Forte",
+      "good": "Bom",
+      "risky": "Arriscado"
     }
   },
   "tactics": {

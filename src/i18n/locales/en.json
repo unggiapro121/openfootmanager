@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} will be left without a number.",
     "jerseyPickerSwapConfirm": "Swap",
     "jerseyPickerClear": "Remove number",
+    "contractYears": "Contract (years)",
     "teamKit": "Team Kit",
     "kitPattern": "Kit Pattern",
     "kitLockedInSeason": "Kit design can only be changed during the pre-season.",
@@ -682,9 +683,9 @@
     "makeStarter": "Make starter",
     "sendToBench": "Send to bench",
     "styleFitValues": {
-      "strong": "Style fit: Strong",
-      "good": "Style fit: Good",
-      "risky": "Style fit: Risky"
+      "strong": "Strong",
+      "good": "Good",
+      "risky": "Risky"
     },
     "noBench": "No bench players.",
     "viewProfile": "View profile",

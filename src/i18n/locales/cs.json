@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} zůstane bez čísla.",
     "jerseyPickerSwapConfirm": "Vyměnit",
     "jerseyPickerClear": "Odebrat číslo",
+    "contractYears": "Smlouva (roky)",
     "teamKit": "Týmový dres",
     "kitPattern": "Vzor dresu",
     "kitLockedInSeason": "Design dresů lze měnit pouze během přípravného období.",
@@ -682,9 +683,9 @@
     "makeStarter": "Dát do základu",
     "sendToBench": "Posadit na lavičku",
     "styleFitValues": {
-      "strong": "Vhodnost stylu: Silná",
-      "good": "Vhodnost stylu: Dobrá",
-      "risky": "Vhodnost stylu: Riziková"
+      "strong": "Silná",
+      "good": "Dobrá",
+      "risky": "Riziková"
     },
     "noBench": "Žádní hráči na lavičce.",
     "viewProfile": "Zobrazit profil",

@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} hat danach keine Nummer mehr.",
     "jerseyPickerSwapConfirm": "Tauschen",
     "jerseyPickerClear": "Nummer entfernen",
+    "contractYears": "Vertrag (Jahre)",
     "teamKit": "Teamtrikot",
     "kitPattern": "Trikotvariante",
     "kitLockedInSeason": "Das Trikotdesign kann nur in der Vorsaison geändert werden.",
@@ -707,9 +708,9 @@
     "makeStarter": "In die Startelf",
     "sendToBench": "Auf die Bank",
     "styleFitValues": {
-      "strong": "Stileignung: Stark",
-      "good": "Stileignung: Gut",
-      "risky": "Stileignung: Riskant"
+      "strong": "Stark",
+      "good": "Gut",
+      "risky": "Riskant"
     }
   },
   "tactics": {

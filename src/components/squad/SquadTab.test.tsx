@@ -477,6 +477,31 @@ describe("SquadTab", () => {
     expect(screen.getByRole("combobox", { name: "common.status" })).toBeInTheDocument();
   });
 
+  /**
+   * Given a player whose contract is about to run out, when the roster renders,
+   * then the risk badge sits in its own column instead of inside the contract cell.
+   */
+  it("shows contract risk in its own column", () => {
+    const gameState = makeGameState();
+    gameState.clock.current_date = "2026-08-01";
+    gameState.players[0].contract_end = "2026-10-15";
+
+    renderSquadTab(gameState);
+
+    const headers = screen.getAllByRole("columnheader");
+    const contractColumn = headers.findIndex(
+      (header) => header.textContent === "squad.contractYears",
+    );
+    const riskColumn = headers.findIndex((header) => header.textContent === "Contract Risk");
+    expect(riskColumn).toBe(contractColumn + 1);
+
+    const cells = (screen.getByText("GK1").closest("tr") as HTMLTableRowElement).cells;
+    expect(cells[riskColumn]).toHaveTextContent("Critical");
+    expect(cells[contractColumn]).not.toHaveTextContent("Critical");
+    // The expiry date is profile detail, not a roster column.
+    expect(cells[contractColumn]).not.toHaveTextContent("Expires 2026-10-15");
+  });
+
   it("keeps the same column-header node when a filter changes", async () => {
     // A header that remounts throws away focus and any in-flight transition. A component declared
     // inside the render body does it — Biome's noNestedComponentDefinitions catches that case —

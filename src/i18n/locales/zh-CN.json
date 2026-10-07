@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} 将没有球衣号码。",
     "jerseyPickerSwapConfirm": "互换",
     "jerseyPickerClear": "移除号码",
+    "contractYears": "合同（年）",
     "teamKit": "球队球衣",
     "kitPattern": "球衣图案",
     "kitLockedInSeason": "球衣设计只能在赛季前修改。",
@@ -707,9 +708,9 @@
     "makeStarter": "设为首发",
     "sendToBench": "放到替补席",
     "styleFitValues": {
-      "strong": "风格适配：强",
-      "good": "风格适配：良好",
-      "risky": "风格适配：有风险"
+      "strong": "强",
+      "good": "良好",
+      "risky": "有风险"
     }
   },
   "tactics": {

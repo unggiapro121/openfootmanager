@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} tidak akan punya nomor.",
     "jerseyPickerSwapConfirm": "Tukar",
     "jerseyPickerClear": "Hapus nomor",
+    "contractYears": "Kontrak (tahun)",
     "teamKit": "Seragam Tim",
     "kitPattern": "Motif Seragam",
     "kitLockedInSeason": "Desain seragam hanya dapat diubah selama pramusim.",
@@ -682,9 +683,9 @@
     "makeStarter": "Jadikan pemain utama",
     "sendToBench": "Kirim ke bangku cadangan",
     "styleFitValues": {
-      "strong": "Kecocokan gaya: Kuat",
-      "good": "Kecocokan gaya: Baik",
-      "risky": "Kecocokan gaya: Berisiko"
+      "strong": "Kuat",
+      "good": "Baik",
+      "risky": "Berisiko"
     },
     "noBench": "Tidak ada pemain cadangan.",
     "viewProfile": "Lihat profil",

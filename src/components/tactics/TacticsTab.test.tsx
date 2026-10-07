@@ -510,7 +510,10 @@ describe("TacticsTab", () => {
     fireEvent.click(screen.getByTestId("pitch-player-f1"));
     fireEvent.click(screen.getByTestId("pitch-player-m1"));
 
-    expect(screen.getByText("common.positions.Forward")).toBeInTheDocument();
+    // Abbreviated badge, full name on hover — both through the translator.
+    expect(screen.getByTitle("common.positions.Forward")).toHaveTextContent(
+      "common.posAbbr.Forward",
+    );
     expect(screen.queryByText("Forward")).not.toBeInTheDocument();
   });
 

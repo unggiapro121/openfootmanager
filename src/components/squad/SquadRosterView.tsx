@@ -587,6 +587,8 @@ export default function SquadRosterView({
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
+                {/* No fixed width: trait pills never wrap (TraitBadge), so the column's
+                    minimum is the widest pill on show, in whatever language. */}
                 <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {t("squad.traits")}
                 </th>
@@ -620,11 +622,14 @@ export default function SquadRosterView({
                 />
                 <SquadSortHeader
                   col="contract"
-                  label={t("common.contract")}
+                  label={t("squad.contractYears")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
+                <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {t("finances.contractRisk")}
+                </th>
                 <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-right">
                   <span className="sr-only">{t("common.actions")}</span>
                 </th>
@@ -874,6 +879,7 @@ export default function SquadRosterView({
                                 : "danger"
                           }
                           size="sm"
+                          className="whitespace-nowrap"
                         >
                           {t(`squad.styleFitValues.${styleFit}`)}
                         </Badge>
@@ -905,24 +911,12 @@ export default function SquadRosterView({
                           {ovr}
                         </span>
                       </td>
-                      {/* Contract: years + risk + expires_on + market pills */}
+                      {/* Contract: years remaining + market pills. The expiry date lives on
+                          the player profile; here it only pushed the row taller. */}
                       <td className="py-2.5 px-4 text-xs text-gray-600 dark:text-gray-400">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                              {getContractYearsRemaining(player.contract_end, clockDate)}
-                            </span>
-                            <Badge
-                              variant={getContractRiskBadgeVariant(contractRiskLevel)}
-                              size="sm"
-                            >
-                              {contractRiskLabel}
-                            </Badge>
-                          </div>
-                          <div className="text-gray-500 dark:text-gray-400">
-                            {player.contract_end
-                              ? t("finances.contractExpiresOn", { date: player.contract_end })
-                              : "—"}
+                          <div className="text-sm font-medium tabular-nums text-gray-700 dark:text-gray-300">
+                            {getContractYearsRemaining(player.contract_end, clockDate)}
                           </div>
                           {player.transfer_listed || player.loan_listed || player.injury ? (
                             <div className="flex flex-wrap gap-1">
@@ -940,6 +934,16 @@ export default function SquadRosterView({
                             </div>
                           ) : null}
                         </div>
+                      </td>
+                      {/* Contract risk: its own column so the badge never wraps under the dates */}
+                      <td className="py-2.5 px-4">
+                        <Badge
+                          variant={getContractRiskBadgeVariant(contractRiskLevel)}
+                          size="sm"
+                          className="whitespace-nowrap"
+                        >
+                          {contractRiskLabel}
+                        </Badge>
                       </td>
                       {/* Actions (last column) */}
                       <td className="py-2.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>

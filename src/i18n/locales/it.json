@@ -665,6 +665,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} resterà senza numero.",
     "jerseyPickerSwapConfirm": "Scambia",
     "jerseyPickerClear": "Rimuovi numero",
+    "contractYears": "Contratto (anni)",
     "teamKit": "Divisa della Squadra",
     "kitPattern": "Design della Divisa",
     "kitLockedInSeason": "Il design della divisa può essere modificato solo durante la pre-stagione.",
@@ -726,9 +727,9 @@
     "makeStarter": "Metti titolare",
     "sendToBench": "Manda in panchina",
     "styleFitValues": {
-      "strong": "Adattamento allo stile: Forte",
-      "good": "Adattamento allo stile: Buono",
-      "risky": "Adattamento allo stile: Rischioso"
+      "strong": "Forte",
+      "good": "Buono",
+      "risky": "Rischioso"
     }
   },
   "tactics": {

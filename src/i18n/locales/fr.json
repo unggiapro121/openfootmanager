@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} n'aura plus de numéro.",
     "jerseyPickerSwapConfirm": "Échanger",
     "jerseyPickerClear": "Retirer le numéro",
+    "contractYears": "Contrat (ans)",
     "teamKit": "Tenue de l'Équipe",
     "kitPattern": "Motif de Tenue",
     "kitLockedInSeason": "Le design de la tenue ne peut être modifié qu'en pré-saison.",
@@ -707,9 +708,9 @@
     "makeStarter": "Mettre titulaire",
     "sendToBench": "Envoyer sur le banc",
     "styleFitValues": {
-      "strong": "Compatibilité de style : Forte",
-      "good": "Compatibilité de style : Bonne",
-      "risky": "Compatibilité de style : Risquée"
+      "strong": "Forte",
+      "good": "Bonne",
+      "risky": "Risquée"
     }
   },
   "tactics": {

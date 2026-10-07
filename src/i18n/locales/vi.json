@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} sẽ không còn số áo.",
     "jerseyPickerSwapConfirm": "Đổi số",
     "jerseyPickerClear": "Bỏ số áo",
+    "contractYears": "Hợp đồng (năm)",
     "teamKit": "Áo đấu",
     "kitPattern": "Họa tiết áo",
     "kitLockedInSeason": "Chỉ có thể đổi thiết kế áo đấu trong giai đoạn tiền mùa giải.",
@@ -682,9 +683,9 @@
     "makeStarter": "Cho đá chính",
     "sendToBench": "Đưa lên ghế dự bị",
     "styleFitValues": {
-      "strong": "Hợp lối chơi: Rất hợp",
-      "good": "Hợp lối chơi: Hợp",
-      "risky": "Hợp lối chơi: Rủi ro"
+      "strong": "Rất hợp",
+      "good": "Hợp",
+      "risky": "Rủi ro"
     },
     "noBench": "Không có cầu thủ dự bị.",
     "viewProfile": "Xem hồ sơ",

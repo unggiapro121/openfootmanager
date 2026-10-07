@@ -251,7 +251,7 @@ export function TraitBadge({
 
   return (
     <span
-      className={`inline-flex items-center font-heading font-bold uppercase tracking-wider rounded-full ring-1 ${meta.color} ${sizeClasses}`}
+      className={`inline-flex items-center whitespace-nowrap font-heading font-bold uppercase tracking-wider rounded-full ring-1 ${meta.color} ${sizeClasses}`}
       role="img"
       title={tooltip}
       aria-label={tooltip}

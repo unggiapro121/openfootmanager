@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} se quedará sin número.",
     "jerseyPickerSwapConfirm": "Intercambiar",
     "jerseyPickerClear": "Quitar dorsal",
+    "contractYears": "Contrato (años)",
     "teamKit": "Equipación del Equipo",
     "kitPattern": "Diseño de Equipación",
     "kitLockedInSeason": "El diseño de equipación solo se puede cambiar durante la pretemporada.",
@@ -707,9 +708,9 @@
     "makeStarter": "Poner de titular",
     "sendToBench": "Enviar al banquillo",
     "styleFitValues": {
-      "strong": "Encaje de estilo: Fuerte",
-      "good": "Encaje de estilo: Bueno",
-      "risky": "Encaje de estilo: Arriesgado"
+      "strong": "Fuerte",
+      "good": "Bueno",
+      "risky": "Arriesgado"
     }
   },
   "tactics": {

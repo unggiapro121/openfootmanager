@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} останется без номера.",
     "jerseyPickerSwapConfirm": "Поменять",
     "jerseyPickerClear": "Убрать номер",
+    "contractYears": "Контракт (лет)",
     "teamKit": "Форма команды",
     "kitPattern": "Узор формы",
     "kitLockedInSeason": "Дизайн формы можно менять только в межсезонье.",
@@ -707,9 +708,9 @@
     "makeStarter": "Сделать игроком основы",
     "sendToBench": "Отправить в запас",
     "styleFitValues": {
-      "strong": "Соответствие стилю: Сильное",
-      "good": "Соответствие стилю: Хорошее",
-      "risky": "Соответствие стилю: Рискованное"
+      "strong": "Сильное",
+      "good": "Хорошее",
+      "risky": "Рискованное"
     }
   },
   "tactics": {

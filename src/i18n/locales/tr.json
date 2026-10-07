@@ -646,6 +646,7 @@
     "jerseyPickerSwapGetsNone": "{{holder}} numarasız kalacak.",
     "jerseyPickerSwapConfirm": "Değiştir",
     "jerseyPickerClear": "Numarayı kaldır",
+    "contractYears": "Sözleşme (yıl)",
     "teamKit": "Takım Forması",
     "kitPattern": "Forma Deseni",
     "kitLockedInSeason": "Forma tasarımı yalnızca sezon öncesinde değiştirilebilir.",
@@ -682,9 +683,9 @@
     "makeStarter": "İlk 11'e al",
     "sendToBench": "Yedeğe çek",
     "styleFitValues": {
-      "strong": "Stil uyumu: Güçlü",
-      "good": "Stil uyumu: İyi",
-      "risky": "Stil uyumu: Riskli"
+      "strong": "Güçlü",
+      "good": "İyi",
+      "risky": "Riskli"
     },
     "noBench": "Yedek oyuncu yok.",
     "viewProfile": "Profili görüntüle",
