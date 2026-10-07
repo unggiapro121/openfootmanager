@@ -317,12 +317,15 @@ pub fn process_vacant_ai_clubs(game: &mut Game) {
         // appoints someone new. Never a coach or a physio moved sideways into the
         // dugout, and never left vacant either — nothing else fills an AI club's
         // post today (issue #477), so returning early here would strand it.
-        let appointment = match manager_seed_staff(&game.staff, &team_id) {
+        let (appointment, is_new_manager) = match manager_seed_staff(&game.staff, &team_id) {
             Some(source_staff) => {
                 let manager_id = next_seeded_manager_id(game, &team_id, source_staff);
-                create_seeded_manager(game, &team_id, source_staff, manager_id)
+                (
+                    create_seeded_manager(game, &team_id, source_staff, manager_id),
+                    false,
+                )
             }
-            None => create_generated_manager(game, &team_id, None),
+            None => (create_generated_manager(game, &team_id, None), true),
         };
         let Some(manager) = appointment else {
             continue;
@@ -337,6 +340,14 @@ pub fn process_vacant_ai_clubs(game: &mut Game) {
 
         if let Some(team) = game.teams.iter_mut().find(|team| team.id == team_id) {
             team.manager_id = Some(manager.id.clone());
+            // A new manager brings their own way of playing; a stand-in covers
+            // the post on the club's. The weekly tactical review shades the
+            // blueprint from here, as it does for every AI club.
+            if is_new_manager {
+                let preferred = manager.play_style_mastery.best_style();
+                team.tactics_phase = crate::ai_tactics::blueprint_for(&preferred);
+                team.play_style = preferred;
+            }
         }
         crate::job_offers::expire_outstanding_job_offers_for_team(game, &team_id);
         game.news.push(crate::news::managerial_appointment_article(
@@ -723,6 +734,69 @@ mod tests {
             manager_of(&game, "team2").play_style_mastery,
             PlayStyleMastery::default()
         );
+    }
+
+    /// Dials no blueprint uses, so a test can tell a club's own tactics from one
+    /// it was handed.
+    fn custom_tactics() -> domain::team::TacticsPhaseSettings {
+        domain::team::TacticsPhaseSettings {
+            tempo: domain::team::Tempo::Patient,
+            break_speed: domain::team::BreakSpeed::Fast,
+            ..Default::default()
+        }
+    }
+
+    fn team_of<'a>(game: &'a Game, team_id: &str) -> &'a Team {
+        game.teams
+            .iter()
+            .find(|team| team.id == team_id)
+            .expect("team")
+    }
+
+    /// Given an AI club with no assistant, playing Defensive on dials of its own,
+    /// When it falls vacant and appoints a new manager,
+    /// Then it switches to the new manager's best style, on that style's blueprint.
+    #[test]
+    fn a_club_adopts_its_new_managers_preferred_style() {
+        let mut game = make_game();
+        game.staff
+            .retain(|member| member.team_id.as_deref() != Some("team2"));
+        set_play_style(&mut game, "team2", PlayStyle::Defensive);
+        seed_ai_managers(&mut game);
+        if let Some(team) = game.teams.iter_mut().find(|team| team.id == "team2") {
+            team.tactics_phase = custom_tactics();
+        }
+        vacate_club(&mut game, "team2");
+
+        process_vacant_ai_clubs(&mut game);
+
+        let preferred = manager_of(&game, "team2").play_style_mastery.best_style();
+        let team = team_of(&game, "team2");
+        assert_eq!(team.play_style, preferred);
+        assert_eq!(
+            team.tactics_phase,
+            crate::ai_tactics::blueprint_for(&preferred)
+        );
+    }
+
+    /// Given an AI club playing Defensive on dials of its own,
+    /// When it falls vacant and its assistant steps up,
+    /// Then it keeps its style and its dials: a stand-in covers, they do not rebuild.
+    #[test]
+    fn a_stand_in_keeps_the_clubs_style_and_tactics() {
+        let mut game = make_game();
+        set_play_style(&mut game, "team2", PlayStyle::Defensive);
+        seed_ai_managers(&mut game);
+        if let Some(team) = game.teams.iter_mut().find(|team| team.id == "team2") {
+            team.tactics_phase = custom_tactics();
+        }
+        vacate_club(&mut game, "team2");
+
+        process_vacant_ai_clubs(&mut game);
+
+        let team = team_of(&game, "team2");
+        assert_eq!(team.play_style, PlayStyle::Defensive);
+        assert_eq!(team.tactics_phase, custom_tactics());
     }
 
     /// Two spells at one club must be two people, not the same one twice.
