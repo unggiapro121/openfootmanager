@@ -137,6 +137,7 @@
     "packageBuild.patches"
   ],
   "fr": [
+    "finances.payrollStaff",
     "settings.autoSaveIntervals.5",
     "settings.autoSaveIntervals.30",
     "nations.pt",

@@ -1078,6 +1078,32 @@
       "Attacking": "Angriff",
       "GoalKeeping": "Torwart",
       "Youth": "Jugend"
+    },
+    "renewContract": "Vertrag verlängern",
+    "askingWage": "Fordert {{wage}}",
+    "contractUntil": "Vertrag bis {{date}}",
+    "contract": {
+      "hireTitle": "{{name}} einstellen",
+      "hireBody": "Mitarbeiter kommen ablösefrei. Ihr Gehalt wird während der gesamten Vertragslaufzeit wöchentlich gezahlt.",
+      "renewTitle": "Vertrag von {{name}} verlängern",
+      "renewBody": "Der neue Vertrag beginnt heute, zum aktuell geforderten Gehalt.",
+      "releaseTitle": "{{name}} entlassen",
+      "releaseBody": "Wer vorzeitig entlässt, muss den Rest des Vertrags auszahlen.",
+      "currentWage": "Aktuelles Gehalt",
+      "askingWage": "Gehaltsforderung",
+      "wageBillAfter": "Wöchentliche Gehaltskosten nach Unterschrift",
+      "wageBudget": "Wöchentliches Gehaltsbudget",
+      "contractEnds": "Vertragsende",
+      "noContract": "Kein Vertrag",
+      "severance": "Abfindung",
+      "length": "Vertragslaufzeit",
+      "years1": "1 Jahr",
+      "years2": "2 Jahre",
+      "years3": "3 Jahre",
+      "overBudget": "Dieses Gehalt würde das Gehaltsbudget sprengen. Der Vorstand wird es nicht genehmigen.",
+      "hireConfirm": "Einstellen",
+      "renewConfirm": "Verlängern",
+      "releaseConfirm": "Entlassen und zahlen"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Läuft aus: {{date}}",
     "atRiskWages": "{{amount}}/Woche gefährdet",
     "noContractRisks": "Keine kurzfristigen Vertragsrisiken",
-    "selectRiskPlayer": "{{player}} auswählen"
+    "selectRiskPlayer": "{{player}} auswählen",
+    "payrollPlayers": "Spieler ({{count}})",
+    "payrollStaff": "Mitarbeiter ({{count}})",
+    "payrollNoStaff": "Der Verein beschäftigt keine Mitarbeiter.",
+    "staffName": "Mitarbeiter",
+    "staffRole": "Funktion"
   },
   "inbox": {
     "title": "Posteingang",
@@ -2855,7 +2886,9 @@
       "notice": {
         "fallbackLeagueGenerated": "Es wurden keine Wettbewerbe definiert. Eine standardmäßige eingleisige Liga wurde automatisch für alle Teams generiert.",
         "fallbackTeamsFilled": "Es wurde nur ein Team definiert. Prozedurale Gegner wurden automatisch generiert, um das Spiel spielbar zu machen."
-      }
+      },
+      "staffWageBudget": "Der Vorstand lässt die wöchentlichen Gehaltskosten nicht über das Budget von {{budget}} steigen.",
+      "staffContractYearsInvalid": "Verträge für Mitarbeiter laufen ein bis drei Jahre."
     },
     "sender": {
       "boardOfDirectors": "Vorstand",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Kaufoption gezogen: {{player}}",
         "body": "Die Kaufoption für {{player}} wurde für {{fee}} gezogen. Aus der Leihe wird nun ein fester Transfer."
+      },
+      "staffContractExpiring": {
+        "subject": "Der Vertrag von {{name}} läuft aus",
+        "body": "Chef, der Vertrag von {{name}} als {{role}} endet am {{contractEnd}}. Wenn wir {{name}} halten wollen, müssen wir vorher im Bereich Mitarbeiter einen neuen Vertrag anbieten. Sonst ist {{name}} nach Vertragsende weg."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} hat den Verein verlassen",
+        "body": "Der Vertrag von {{name}} als {{role}} ist ausgelaufen, und {{name}} hat den Verein verlassen. Auf dem Mitarbeitermarkt findest du Ersatz."
       }
     },
     "news": {

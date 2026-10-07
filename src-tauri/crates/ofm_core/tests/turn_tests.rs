@@ -30,6 +30,8 @@ mod match_form;
 mod playing_time;
 #[path = "turn_tests/squad_floor.rs"]
 mod squad_floor;
+#[path = "turn_tests/staff_contracts.rs"]
+mod staff_contracts;
 #[path = "turn_tests/training_ground.rs"]
 mod training_ground;
 #[path = "turn_tests/unwatched.rs"]

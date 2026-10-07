@@ -1078,6 +1078,32 @@
       "Attacking": "Menyerang",
       "GoalKeeping": "Penjaga Gawang",
       "Youth": "Pembinaan Muda"
+    },
+    "renewContract": "Perpanjang kontrak",
+    "askingWage": "Meminta {{wage}}",
+    "contractUntil": "Kontrak sampai {{date}}",
+    "contract": {
+      "hireTitle": "Rekrut {{name}}",
+      "hireBody": "Staf bergabung tanpa biaya transfer. Gajinya dibayar setiap minggu selama masa kontrak.",
+      "renewTitle": "Perpanjang kontrak {{name}}",
+      "renewBody": "Kontrak baru dimulai hari ini, dengan gaji yang diminta saat ini.",
+      "releaseTitle": "Lepas {{name}}",
+      "releaseBody": "Melepas staf lebih awal berarti membayar sisa kontraknya.",
+      "currentWage": "Gaji saat ini",
+      "askingWage": "Gaji yang diminta",
+      "wageBillAfter": "Total gaji mingguan setelah tanda tangan",
+      "wageBudget": "Anggaran gaji mingguan",
+      "contractEnds": "Kontrak berakhir",
+      "noContract": "Tanpa kontrak",
+      "severance": "Pesangon yang dibayar",
+      "length": "Durasi kontrak",
+      "years1": "1 tahun",
+      "years2": "2 tahun",
+      "years3": "3 tahun",
+      "overBudget": "Gaji ini akan membuat total gaji melebihi anggaran. Dewan tidak akan menyetujuinya.",
+      "hireConfirm": "Rekrut",
+      "renewConfirm": "Perpanjang",
+      "releaseConfirm": "Lepas dan bayar"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Berakhir {{date}}",
     "atRiskWages": "{{amount}}/mg berisiko",
     "noContractRisks": "Tidak ada risiko kontrak yang dekat",
-    "selectRiskPlayer": "Pilih {{player}}"
+    "selectRiskPlayer": "Pilih {{player}}",
+    "payrollPlayers": "Pemain ({{count}})",
+    "payrollStaff": "Staf ({{count}})",
+    "payrollNoStaff": "Klub tidak memiliki staf.",
+    "staffName": "Anggota staf",
+    "staffRole": "Peran"
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -2855,7 +2886,9 @@
         "youthAssignmentNotFound": "Penugasan rekrutmen pemuda tidak ditemukan",
         "scoutAlreadyAssignedToSearch": "Scout sudah ditugaskan ke pencarian ini"
       },
-      "invalidPath": "Jalur tidak valid."
+      "invalidPath": "Jalur tidak valid.",
+      "staffWageBudget": "Dewan tidak mengizinkan total gaji mingguan melebihi anggaran {{budget}}.",
+      "staffContractYearsInvalid": "Kontrak staf berlaku satu sampai tiga tahun."
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Opsi Pembelian Pinjaman Dilakukan: {{player}}",
         "body": "Opsi pembelian untuk {{player}} telah dilakukan sebesar {{fee}}. Pinjaman ini kini menjadi transfer permanen."
+      },
+      "staffContractExpiring": {
+        "subject": "Kontrak {{name}} akan berakhir",
+        "body": "Bos, kontrak {{name}} sebagai {{role}} berakhir pada {{contractEnd}}. Jika ingin mempertahankannya, kita harus menawarkan kontrak baru dari layar Staf sebelum tanggal itu. Jika tidak, {{name}} akan pergi saat kontraknya habis."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} telah meninggalkan klub",
+        "body": "Kontrak {{name}} sebagai {{role}} telah habis dan {{name}} meninggalkan klub. Anda bisa mencari pengganti di bursa staf."
       }
     },
     "news": {

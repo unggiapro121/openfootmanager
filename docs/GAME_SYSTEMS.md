@@ -283,8 +283,15 @@ Computed per team before each training session:
 
 ### Hiring & Releasing
 
-- **Hire**: Assigns an unattached staff member to the user's team. The staff's wage is recorded as an expense.
-- **Release**: Removes the staff member from the team (becomes unattached again).
+Staff are paid weekly like players (`ofm_core::staff_contracts`):
+
+- **Asking wage**: set by ability in the role alone, not by the club — `role ceiling × (rating/100)³`, rounded to the nearest 100, never below the minimum wage. Ceilings (rating 100): Assistant Manager 60,000, Coach 25,000, Physio 8,000, Scout 6,000 a week. The market lists everyone at their asking wage.
+- **Hire**: free transfer — no fee — on a 1–3 year contract (default 2) at the asking wage. Refused if it would take the weekly wage bill over the wage budget.
+- **Renew**: a fresh 1–3 year contract from today at the current asking wage, under the same budget rule. The manager is warned 60 days before a staff contract ends.
+- **Release**: pays off the rest of the contract (weeks left × weekly wage, booked as a contract termination); the staff member returns to the market.
+- **Expiry**: the user's staff leave when their contract ends; AI clubs renew theirs for two years at what they can pay.
+
+At a career's opening, club staff are priced at their asking wage scaled by the club's pay level (the same means-test players get), with contracts spread over 12–47 months. The pay level counts staff, so players and staff together fit what the club's income can carry.
 
 The world generates 12 unattached free-agent staff at game start, plus 4 staff per team (AssistantManager, Coach, Scout, Physio).
 
@@ -568,7 +575,7 @@ Each team tracks financial state:
 - Sponsorship (future)
 
 ### Expenses
-- Staff wages (recorded on hire)
+- Staff wages (weekly)
 - Player wages (weekly)
 - Transfer fees (future)
 

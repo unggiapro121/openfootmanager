@@ -45,6 +45,7 @@ pub fn open_world_economy(game: &mut Game) {
     let today = game.clock.current_date.date_naive();
     reprice_players(game, today, Repricing::Exact);
     crate::generator::fit_opening_wages_to_means(game);
+    crate::staff_contracts::open_staff_contracts(game);
     settle_club_finances(game);
 }
 
@@ -117,6 +118,15 @@ pub(crate) fn set_pay_levels(game: &mut Game, on_the_books: impl Fn(&Player) -> 
         let reputation = reputations.get(club_id).copied();
         *market_bills.entry(club_id.to_string()).or_default() +=
             f64::from(valuation::market_wage(player, reputation));
+    }
+    // Staff are on the same wage bill, so the pay level has to leave room for
+    // them; otherwise a club paying its squad all it can afford would sink by
+    // exactly its staff's wages every week.
+    for staff in &game.staff {
+        if let Some(club_id) = staff.team_id.as_deref() {
+            *market_bills.entry(club_id.to_string()).or_default() +=
+                f64::from(crate::staff_contracts::staff_asking_wage(staff));
+        }
     }
     for team in &mut game.teams {
         let market_bill = market_bills.get(team.id.as_str()).copied().unwrap_or(0.0);

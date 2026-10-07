@@ -3,45 +3,35 @@ use std::sync::Arc;
 use tauri::State;
 
 use ofm_core::game::Game;
+use ofm_core::staff_contracts::{self, StaffContractPreview, DEFAULT_STAFF_CONTRACT_YEARS};
 use ofm_core::state::StateManager;
 
-use crate::commands::util::{mutate_active_game, user_team_id, user_team_mut};
+use crate::commands::util::{mutate_active_game, user_team_id};
 
+/// `contract_years` is optional so a caller that does not choose a term gets
+/// the default one.
 #[tauri::command]
-pub fn hire_staff(state: State<'_, Arc<StateManager>>, staff_id: String) -> Result<Game, String> {
-    hire_staff_internal(&state, &staff_id)
+pub fn hire_staff(
+    state: State<'_, Arc<StateManager>>,
+    staff_id: String,
+    contract_years: Option<u8>,
+) -> Result<Game, String> {
+    hire_staff_internal(
+        &state,
+        &staff_id,
+        contract_years.unwrap_or(DEFAULT_STAFF_CONTRACT_YEARS),
+    )
 }
 
-pub fn hire_staff_internal(state: &StateManager, staff_id: &str) -> Result<Game, String> {
-    info!("[cmd] hire_staff: staff_id={}", staff_id);
+pub fn hire_staff_internal(
+    state: &StateManager,
+    staff_id: &str,
+    contract_years: u8,
+) -> Result<Game, String> {
+    info!("[cmd] hire_staff: staff_id={staff_id} years={contract_years}");
     mutate_active_game(state, |game| {
         let team_id = user_team_id(game)?;
-
-        // Read and validate before writing anything: mutate_active_game mutates
-        // the live game, so a write made before an error is returned would stick.
-        let staff_wage = {
-            let staff = game
-                .staff
-                .iter()
-                .find(|s| s.id == staff_id)
-                .ok_or("be.error.staffMemberNotFound".to_string())?;
-
-            if staff.team_id.is_some() {
-                return Err("be.error.staffMemberAlreadyEmployed".to_string());
-            }
-
-            staff.wage
-        };
-
-        // Deduct wage from team budget
-        let team = user_team_mut(game)?;
-        team.season_expenses += staff_wage as i64;
-
-        game.staff
-            .iter_mut()
-            .find(|s| s.id == staff_id)
-            .ok_or("be.error.staffMemberNotFound".to_string())?
-            .team_id = Some(team_id);
+        staff_contracts::hire_staff(game, &team_id, staff_id, contract_years)?;
 
         game.available_staff_market_last_activity_date =
             Some(game.clock.current_date.format("%Y-%m-%d").to_string());
@@ -51,15 +41,82 @@ pub fn hire_staff_internal(state: &StateManager, staff_id: &str) -> Result<Game,
     })
 }
 
+#[tauri::command]
+pub fn release_staff(
+    state: State<'_, Arc<StateManager>>,
+    staff_id: String,
+) -> Result<Game, String> {
+    release_staff_internal(&state, &staff_id)
+}
+
+/// Releases the staff member and pays off the rest of their contract.
+pub fn release_staff_internal(state: &StateManager, staff_id: &str) -> Result<Game, String> {
+    info!("[cmd] release_staff: staff_id={staff_id}");
+    mutate_active_game(state, |game| {
+        let team_id = user_team_id(game)?;
+        staff_contracts::release_staff(game, &team_id, staff_id).map(|_| ())
+    })
+}
+
+#[tauri::command]
+pub fn renew_staff_contract(
+    state: State<'_, Arc<StateManager>>,
+    staff_id: String,
+    contract_years: Option<u8>,
+) -> Result<Game, String> {
+    renew_staff_contract_internal(
+        &state,
+        &staff_id,
+        contract_years.unwrap_or(DEFAULT_STAFF_CONTRACT_YEARS),
+    )
+}
+
+pub fn renew_staff_contract_internal(
+    state: &StateManager,
+    staff_id: &str,
+    contract_years: u8,
+) -> Result<Game, String> {
+    info!("[cmd] renew_staff_contract: staff_id={staff_id} years={contract_years}");
+    mutate_active_game(state, |game| {
+        let team_id = user_team_id(game)?;
+        staff_contracts::renew_staff_contract(game, &team_id, staff_id, contract_years)
+    })
+}
+
+#[tauri::command]
+pub fn preview_staff_contract(
+    state: State<'_, Arc<StateManager>>,
+    staff_id: String,
+) -> Result<StaffContractPreview, String> {
+    preview_staff_contract_internal(&state, &staff_id)
+}
+
+/// What hiring, renewing or releasing the staff member would cost the user's club.
+pub fn preview_staff_contract_internal(
+    state: &StateManager,
+    staff_id: &str,
+) -> Result<StaffContractPreview, String> {
+    state
+        .get_game(|game| {
+            let team_id = user_team_id(game)?;
+            staff_contracts::preview_staff_contract(game, &team_id, staff_id)
+        })
+        .unwrap_or_else(|| Err("be.error.noActiveGameSession".to_string()))
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{hire_staff_internal, release_staff_internal};
+    use super::{
+        hire_staff_internal, preview_staff_contract_internal, release_staff_internal,
+        renew_staff_contract_internal,
+    };
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
     use domain::staff::{Staff, StaffAttributes, StaffRole};
     use domain::team::Team;
     use ofm_core::clock::GameClock;
     use ofm_core::game::Game;
+    use ofm_core::staff_contracts::staff_asking_wage;
     use ofm_core::state::StateManager;
 
     fn make_team() -> Team {
@@ -143,8 +200,8 @@ mod tests {
     }
 
     /// The manager holds a team id that no club in the world has. Both commands
-    /// used to swallow that: the wage adjustment sat behind `if let Some(team)`
-    /// with no else, so the staff record changed and the club's books did not.
+    /// used to swallow that: the club lookup sat behind `if let Some(team)` with
+    /// no else, so the staff record changed and the club's books did not.
     fn with_dangling_team_id(mut game: Game) -> Game {
         game.teams[0].id = "team-elsewhere".to_string();
         game
@@ -155,12 +212,12 @@ mod tests {
         let state = StateManager::new();
         state.set_game(with_dangling_team_id(make_game()));
 
-        let result = hire_staff_internal(&state, "staff-1");
+        let result = hire_staff_internal(&state, "staff-1", 2);
 
         assert_eq!(result.err(), Some("be.error.teamNotFound".into()));
 
-        // The wage adjustment is the fallible step and now runs first, so the
-        // staff member must not have been hired either.
+        // The club is looked up before anything is written, so the staff
+        // member must not have been hired either.
         let stored = state.get_game(|game| game.clone()).expect("stored game");
         let staff = stored
             .staff
@@ -191,30 +248,21 @@ mod tests {
         assert_eq!(staff.team_id.as_deref(), Some("team-1"));
     }
 
+    /// Given a coach on the market,
+    /// When the manager hires them through the command,
+    /// Then the stored game has them at the club on their asking wage for two
+    /// years, no fee was charged, and the market was refilled.
     #[test]
     fn hire_staff_internal_updates_state() {
         let state = StateManager::new();
         state.set_game(make_game());
 
-        let response = hire_staff_internal(&state, "staff-1").expect("response");
-        let staff = response
-            .staff
-            .iter()
-            .find(|staff| staff.id == "staff-1")
-            .unwrap();
-        let team = response
-            .teams
-            .iter()
-            .find(|team| team.id == "team-1")
-            .unwrap();
+        let response = hire_staff_internal(&state, "staff-1", 2).expect("response");
         let available_staff = response
             .staff
             .iter()
             .filter(|staff| staff.team_id.is_none())
             .count();
-
-        assert_eq!(staff.team_id.as_deref(), Some("team-1"));
-        assert_eq!(team.season_expenses, 12_000);
         assert_eq!(available_staff, 12);
         assert_eq!(
             response
@@ -235,7 +283,9 @@ mod tests {
             .find(|team| team.id == "team-1")
             .expect("stored team should exist");
         assert_eq!(stored_staff.team_id.as_deref(), Some("team-1"));
-        assert_eq!(stored_team.season_expenses, 12_000);
+        assert_eq!(stored_staff.wage, staff_asking_wage(stored_staff));
+        assert_eq!(stored_staff.contract_end.as_deref(), Some("2028-08-01"));
+        assert_eq!(stored_team.season_expenses, 0);
         assert_eq!(
             stored_game
                 .available_staff_market_last_activity_date
@@ -266,46 +316,53 @@ mod tests {
             .expect("stored staff should exist");
         assert!(stored_staff.team_id.is_none());
     }
-}
 
-#[tauri::command]
-pub fn release_staff(
-    state: State<'_, Arc<StateManager>>,
-    staff_id: String,
-) -> Result<Game, String> {
-    release_staff_internal(&state, &staff_id)
-}
+    /// Given one of the user's coaches on a cheap contract,
+    /// When the manager renews it for three years through the command,
+    /// Then the stored game has the new term at the asking wage.
+    #[test]
+    fn renew_staff_contract_internal_updates_state() {
+        let state = StateManager::new();
+        let mut game = make_game_with_employed_staff();
+        game.staff[0].wage = 1_000;
+        game.staff[0].contract_end = Some("2026-09-01".to_string());
+        state.set_game(game);
 
-pub fn release_staff_internal(state: &StateManager, staff_id: &str) -> Result<Game, String> {
-    info!("[cmd] release_staff: staff_id={}", staff_id);
-    mutate_active_game(state, |game| {
-        let team_id = user_team_id(game)?;
+        renew_staff_contract_internal(&state, "staff-1", 3).expect("renew");
 
-        // Read and validate before writing anything: mutate_active_game mutates
-        // the live game, so a write made before an error is returned would stick.
-        let staff_wage = {
-            let staff = game
-                .staff
-                .iter()
-                .find(|s| s.id == staff_id)
-                .ok_or("be.error.staffMemberNotFound".to_string())?;
+        let stored = state
+            .get_game(|game| game.staff[0].clone())
+            .expect("stored");
+        assert_eq!(stored.contract_end.as_deref(), Some("2029-08-01"));
+        assert_eq!(stored.wage, staff_asking_wage(&stored));
+    }
 
-            if staff.team_id.as_deref() != Some(&team_id) {
-                return Err("be.error.staffMemberNotInTeam".to_string());
-            }
+    /// Given a coach on the market,
+    /// When the manager previews hiring them through the command,
+    /// Then the preview quotes their asking wage and changes nothing.
+    #[test]
+    fn preview_staff_contract_internal_quotes_the_asking_wage() {
+        let state = StateManager::new();
+        state.set_game(make_game());
 
-            staff.wage
-        };
+        let preview = preview_staff_contract_internal(&state, "staff-1").expect("preview");
 
-        let team = user_team_mut(game)?;
-        team.season_expenses = team.season_expenses.saturating_sub(staff_wage as i64);
+        let stored = state
+            .get_game(|game| game.staff[0].clone())
+            .expect("stored");
+        assert_eq!(preview.asking_wage, staff_asking_wage(&stored));
+        assert!(stored.team_id.is_none());
+    }
 
-        game.staff
-            .iter_mut()
-            .find(|s| s.id == staff_id)
-            .ok_or("be.error.staffMemberNotFound".to_string())?
-            .team_id = None;
+    /// Given no game loaded,
+    /// When a staff contract is previewed,
+    /// Then the command reports there is no active game.
+    #[test]
+    fn preview_staff_contract_internal_without_a_game_reports_it() {
+        let state = StateManager::new();
 
-        Ok(())
-    })
+        let result = preview_staff_contract_internal(&state, "staff-1");
+
+        assert_eq!(result, Err("be.error.noActiveGameSession".to_string()));
+    }
 }

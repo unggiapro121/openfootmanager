@@ -171,6 +171,7 @@ fn process_day_common(game: &mut Game, today: &str) {
     let weekday_num = game.clock.current_date.weekday().num_days_from_monday();
     crate::ai_contracts::apply_ai_contract_decisions(game, weekday_num);
     crate::contracts::process_contract_expiries(game);
+    crate::staff_contracts::process_staff_contracts(game);
 
     // Prices first, so the books, the market and the AI all read this week's values.
     crate::economy::refresh_weekly_player_values(game);

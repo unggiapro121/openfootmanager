@@ -1078,6 +1078,32 @@
       "Attacking": "Tấn công",
       "GoalKeeping": "Thủ môn",
       "Youth": "Đào tạo trẻ"
+    },
+    "renewContract": "Gia hạn hợp đồng",
+    "askingWage": "Đòi {{wage}}",
+    "contractUntil": "Hợp đồng đến {{date}}",
+    "contract": {
+      "hireTitle": "Thuê {{name}}",
+      "hireBody": "Nhân sự gia nhập theo dạng tự do, không mất phí chuyển nhượng. Lương được trả hằng tuần trong suốt thời hạn hợp đồng.",
+      "renewTitle": "Gia hạn hợp đồng với {{name}}",
+      "renewBody": "Hợp đồng mới bắt đầu từ hôm nay, với mức lương người này đang đòi hỏi.",
+      "releaseTitle": "Chấm dứt hợp đồng với {{name}}",
+      "releaseBody": "Chấm dứt hợp đồng trước hạn nghĩa là phải trả hết phần lương còn lại của hợp đồng.",
+      "currentWage": "Lương hiện tại",
+      "askingWage": "Lương đòi hỏi",
+      "wageBillAfter": "Quỹ lương tuần sau khi ký",
+      "wageBudget": "Ngân sách lương tuần",
+      "contractEnds": "Hết hạn hợp đồng",
+      "noContract": "Chưa có hợp đồng",
+      "severance": "Tiền bồi thường phải trả",
+      "length": "Thời hạn hợp đồng",
+      "years1": "1 năm",
+      "years2": "2 năm",
+      "years3": "3 năm",
+      "overBudget": "Mức lương này sẽ đẩy quỹ lương vượt ngân sách. Ban lãnh đạo sẽ không duyệt.",
+      "hireConfirm": "Thuê",
+      "renewConfirm": "Gia hạn",
+      "releaseConfirm": "Chấm dứt và bồi thường"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Hết hạn {{date}}",
     "atRiskWages": "{{amount}}/tuần có rủi ro",
     "noContractRisks": "Không có rủi ro hợp đồng sắp tới",
-    "selectRiskPlayer": "Chọn {{player}}"
+    "selectRiskPlayer": "Chọn {{player}}",
+    "payrollPlayers": "Cầu thủ ({{count}})",
+    "payrollStaff": "Nhân viên ({{count}})",
+    "payrollNoStaff": "CLB chưa có nhân viên nào.",
+    "staffName": "Nhân viên",
+    "staffRole": "Vai trò"
   },
   "inbox": {
     "title": "Hộp thư",
@@ -2855,7 +2886,9 @@
         "youthAssignmentNotFound": "Không tìm thấy nhiệm vụ tuyển cầu thủ trẻ",
         "scoutAlreadyAssignedToSearch": "Tuyển trạch viên đã được giao cho đợt tìm kiếm này"
       },
-      "invalidPath": "Đường dẫn không hợp lệ."
+      "invalidPath": "Đường dẫn không hợp lệ.",
+      "staffWageBudget": "Ban lãnh đạo không cho phép quỹ lương tuần vượt ngân sách {{budget}}.",
+      "staffContractYearsInvalid": "Hợp đồng nhân sự có thời hạn từ 1 đến 3 năm."
     },
     "sender": {
       "boardOfDirectors": "Hội đồng quản trị",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Đã kích hoạt điều khoản mua đứt: {{player}}",
         "body": "Điều khoản mua đứt {{player}} đã được kích hoạt với giá {{fee}}. Hợp đồng mượn giờ đã trở thành chuyển nhượng vĩnh viễn."
+      },
+      "staffContractExpiring": {
+        "subject": "Hợp đồng của {{name}} sắp hết hạn",
+        "body": "Sếp, hợp đồng {{role}} của {{name}} sẽ hết hạn vào {{contractEnd}}. Nếu muốn giữ người này, chúng ta cần đề nghị gia hạn ở mục Nhân sự trước ngày đó. Nếu không, {{name}} sẽ rời CLB khi hợp đồng kết thúc."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} đã rời CLB",
+        "body": "Hợp đồng {{role}} của {{name}} đã hết hạn và người này đã rời CLB. Sếp có thể tìm người thay thế trên thị trường nhân sự."
       }
     },
     "news": {

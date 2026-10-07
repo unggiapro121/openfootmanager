@@ -1078,6 +1078,32 @@
       "Attacking": "Útočení",
       "GoalKeeping": "Brankáři",
       "Youth": "Rozvoj mládeže"
+    },
+    "renewContract": "Prodloužit smlouvu",
+    "askingWage": "Požaduje {{wage}}",
+    "contractUntil": "Smlouva do {{date}}",
+    "contract": {
+      "hireTitle": "Najmout: {{name}}",
+      "hireBody": "Členové týmu přicházejí zdarma, bez přestupní částky. Plat se vyplácí každý týden po celou dobu smlouvy.",
+      "renewTitle": "Prodloužit smlouvu: {{name}}",
+      "renewBody": "Nová smlouva začíná dnes, s platem, který požaduje nyní.",
+      "releaseTitle": "Propustit: {{name}}",
+      "releaseBody": "Předčasné propuštění znamená vyplatit zbytek smlouvy.",
+      "currentWage": "Současný plat",
+      "askingWage": "Požadovaný plat",
+      "wageBillAfter": "Týdenní mzdové náklady po podpisu",
+      "wageBudget": "Týdenní mzdový rozpočet",
+      "contractEnds": "Konec smlouvy",
+      "noContract": "Bez smlouvy",
+      "severance": "Odstupné k výplatě",
+      "length": "Délka smlouvy",
+      "years1": "1 rok",
+      "years2": "2 roky",
+      "years3": "3 roky",
+      "overBudget": "Tento plat by překročil mzdový rozpočet. Vedení ho neschválí.",
+      "hireConfirm": "Najmout",
+      "renewConfirm": "Prodloužit",
+      "releaseConfirm": "Propustit a zaplatit"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Smlouva vyprší {{date}}",
     "atRiskWages": "Ohrožené platy: {{amount}}/týd",
     "noContractRisks": "Žádná bezprostřední rizika vypršení smluv",
-    "selectRiskPlayer": "Vybrat {{player}}"
+    "selectRiskPlayer": "Vybrat {{player}}",
+    "payrollPlayers": "Hráči ({{count}})",
+    "payrollStaff": "Realizační tým ({{count}})",
+    "payrollNoStaff": "Klub nemá žádné členy realizačního týmu.",
+    "staffName": "Člen týmu",
+    "staffRole": "Funkce"
   },
   "inbox": {
     "title": "Doručená pošta",
@@ -2855,7 +2886,9 @@
         "youthAssignmentNotFound": "Úkol pro nábor mládeže nebyl nalezen",
         "scoutAlreadyAssignedToSearch": "Skaut je již k tomuto vyhledávání přiřazen"
       },
-      "invalidPath": "Neplatná cesta."
+      "invalidPath": "Neplatná cesta.",
+      "staffWageBudget": "Vedení nedovolí, aby týdenní mzdové náklady překročily rozpočet {{budget}}.",
+      "staffContractYearsInvalid": "Smlouvy členů týmu se uzavírají na jeden až tři roky."
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Uplatněna opce na odkup z hostování: {{player}}",
         "body": "Opce na odkup hráče {{player}} byla uplatněna za částku {{fee}}. Hostování se nyní mění v trvalý přestup."
+      },
+      "staffContractExpiring": {
+        "subject": "Smlouva: {{name}} brzy končí",
+        "body": "Šéfe, smlouva {{name}} na pozici {{role}} končí {{contractEnd}}. Pokud chceme tohoto člena týmu udržet, musíme do té doby nabídnout novou smlouvu v sekci Realizační tým. Jinak po skončení smlouvy odejde."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} opustil(a) klub",
+        "body": "Smlouva {{name}} na pozici {{role}} vypršela a tento člen týmu klub opustil. Náhradu můžete hledat na trhu realizačního týmu."
       }
     },
     "news": {

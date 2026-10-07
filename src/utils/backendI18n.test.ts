@@ -1179,3 +1179,25 @@ describe("resolveBackendError", () => {
     ).toBe("Insufficient funds for this facility upgrade. Need $270,000.");
   });
 });
+
+describe("staff contract messages", () => {
+  // The backend sends the role as a key and the end date as an ISO day, so
+  // neither is baked in English.
+  it("names the role and formats the contract end in the player's locale", () => {
+    const result = resolveMessage(
+      makeMessage({
+        id: "staff_contract_expiring_c1_2026-09-01",
+        subject_key: "be.msg.staffContractExpiring.subject",
+        body_key: "be.msg.staffContractExpiring.body",
+        i18n_params: {
+          name: "Ana Lopez",
+          role: "staff.roles.Coach",
+          contractEnd: "2026-09-01",
+        },
+      }),
+    );
+
+    expect(result.subject).toBe("Ana Lopez's contract is running out");
+    expect(result.body).toContain("as our Coach ends on September 1, 2026");
+  });
+});

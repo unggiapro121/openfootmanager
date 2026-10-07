@@ -12,13 +12,23 @@ import {
   Stethoscope,
   GraduationCap,
   Star,
+  FileSignature,
 } from "lucide-react";
-import { getTeamName, calcAge, formatVal, formatWeeklyAmount } from "../../lib/helpers";
+import { getTeamName, calcAge, formatDate, formatVal, formatWeeklyAmount } from "../../lib/helpers";
 import { countryName } from "../../lib/countries";
 import { useTranslation } from "react-i18next";
-import { hireStaff, releaseStaff } from "../../services/staffService";
+import {
+  hireStaff,
+  previewStaffContract,
+  releaseStaff,
+  renewStaffContract,
+  type StaffContractPreviewData,
+} from "../../services/staffService";
+import { resolveBackendError } from "../../utils/backendI18n";
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
 import type { DashboardNavigateContext } from "../dashboard/dashboardProfileNavigation";
+import StaffContractModal, { type StaffContractAction } from "./StaffContractModal";
+import { staffOvr } from "./staffRating";
 
 interface StaffTabProps {
   gameState: GameStateData | null;
@@ -49,51 +59,6 @@ function bestAttr(s: StaffData): { key: string; value: number } {
   return attrs.reduce((a, b) => (b.value > a.value ? b : a));
 }
 
-/**
- * Per-role attribute weights, mirroring what the engine actually consumes.
- * A flat average over all four attributes rated a specialist on work their
- * role never does — an elite physio read as mediocre because coaching and
- * scouting dragged the number down.
- *
- * Sources, so these stay honest if the engine changes:
- * - Coach: `coaching` alone drives the training multiplier (`training.rs`).
- * - Physio: `physiotherapy` alone drives recovery (`training.rs`).
- * - Scout: `judgingAbility` sets assignment speed, `judgingPotential` sets
- *   potential accuracy (`scouting.rs`).
- * - AssistantManager: `(coaching*4 + judgingAbility*3 + judgingPotential*3)/10`
- *   is the engine's own `assistant_quality` (`delegated_renewals.rs`).
- */
-const ROLE_ATTR_WEIGHTS: Record<string, Partial<Record<keyof StaffData["attributes"], number>>> = {
-  Coach: { coaching: 10 },
-  Physio: { physiotherapy: 10 },
-  Scout: { judgingAbility: 5, judgingPotential: 5 },
-  AssistantManager: { coaching: 4, judgingAbility: 3, judgingPotential: 3 },
-};
-
-/**
- * Weighting for a role we do not recognise. An even split says "no opinion",
- * which is the honest answer; borrowing another role's weighting would rate
- * someone confidently on work their role may never do.
- */
-const UNKNOWN_ROLE_WEIGHTS = {
-  coaching: 1,
-  judgingAbility: 1,
-  judgingPotential: 1,
-  physiotherapy: 1,
-} as const;
-
-function ovrRating(s: StaffData): number {
-  const weights = ROLE_ATTR_WEIGHTS[s.role] ?? UNKNOWN_ROLE_WEIGHTS;
-  const total = Object.values(weights).reduce((sum, w) => sum + (w ?? 0), 0);
-  if (total === 0) return 0;
-  const weighted = Object.entries(weights).reduce(
-    (sum, [key, weight]) =>
-      sum + s.attributes[key as keyof StaffData["attributes"]] * (weight ?? 0),
-    0,
-  );
-  return Math.round(weighted / total);
-}
-
 export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffTabProps) {
   const { t, i18n } = useTranslation();
   const { sessionState } = useGameStore();
@@ -102,6 +67,12 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [contractDialog, setContractDialog] = useState<{
+    action: StaffContractAction;
+    staff: StaffData;
+  } | null>(null);
+  const [contractPreview, setContractPreview] = useState<StaffContractPreviewData | null>(null);
+  const [contractError, setContractError] = useState<string | null>(null);
 
   const teamId = sessionState?.manager?.team_id ?? gameState?.manager?.team_id ?? null;
 
@@ -133,23 +104,36 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
     });
   };
 
-  const handleHire = async (staffId: string) => {
-    setActionLoading(staffId);
-    try {
-      applyStaffUpdate(await hireStaff(staffId));
-    } catch (err) {
-      console.error("Failed to hire staff:", err);
-    } finally {
-      setActionLoading(null);
-    }
+  const openContractDialog = (action: StaffContractAction, staff: StaffData) => {
+    setContractDialog({ action, staff });
+    setContractPreview(null);
+    setContractError(null);
+    previewStaffContract(staff.id)
+      .then(setContractPreview)
+      .catch((err: unknown) => setContractError(resolveBackendError(err)));
   };
 
-  const handleRelease = async (staffId: string) => {
-    setActionLoading(staffId);
+  const closeContractDialog = () => {
+    setContractDialog(null);
+    setContractPreview(null);
+    setContractError(null);
+  };
+
+  const confirmContractDialog = async (contractYears: number) => {
+    if (!contractDialog) return;
+    const { action, staff } = contractDialog;
+    setActionLoading(staff.id);
     try {
-      applyStaffUpdate(await releaseStaff(staffId));
+      const updated =
+        action === "hire"
+          ? await hireStaff(staff.id, contractYears)
+          : action === "renew"
+            ? await renewStaffContract(staff.id, contractYears)
+            : await releaseStaff(staff.id);
+      applyStaffUpdate(updated);
+      closeContractDialog();
     } catch (err) {
-      console.error("Failed to release staff:", err);
+      setContractError(resolveBackendError(err));
     } finally {
       setActionLoading(null);
     }
@@ -253,7 +237,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
             const roleIcon = ROLE_ICONS[staff.role] || ROLE_ICONS.Coach;
             const roleColor = ROLE_COLORS[staff.role] || ROLE_COLORS.Coach;
             const age = calcAge(staff.date_of_birth);
-            const ovr = ovrRating(staff);
+            const ovr = staffOvr(staff);
             const best = bestAttr(staff);
             const isLoading = actionLoading === staff.id;
             const scoutingLoad =
@@ -280,9 +264,15 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                         ]
                       : []),
                     {
+                      label: t("staff.renewContract"),
+                      icon: <FileSignature className="w-4 h-4" />,
+                      onClick: () => openContractDialog("renew", staff),
+                      disabled: isLoading,
+                    },
+                    {
                       label: t("staff.releaseStaff"),
                       icon: <UserMinus className="w-4 h-4" />,
-                      onClick: () => handleRelease(staff.id),
+                      onClick: () => openContractDialog("release", staff),
                       danger: true,
                       disabled: isLoading,
                     },
@@ -291,7 +281,7 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                     {
                       label: t("staff.hireStaff"),
                       icon: <UserPlus className="w-4 h-4" />,
-                      onClick: () => handleHire(staff.id),
+                      onClick: () => openContractDialog("hire", staff),
                       disabled: isLoading,
                     },
                   ];
@@ -343,9 +333,20 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                               {t(`staff.specializations.${staff.specialization}`)}
                             </span>
                           )}
-                          {staff.wage > 0 && (
+                          <span className="text-[10px] bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded font-heading uppercase tracking-wider">
+                            {view === "available"
+                              ? t("staff.askingWage", {
+                                  wage: formatWeeklyAmount(formatVal(staff.wage), weeklySuffix),
+                                })
+                              : formatWeeklyAmount(formatVal(staff.wage), weeklySuffix)}
+                          </span>
+                          {view === "mystaff" && (
                             <span className="text-[10px] bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 px-1.5 py-0.5 rounded font-heading uppercase tracking-wider">
-                              {formatWeeklyAmount(formatVal(staff.wage), weeklySuffix)}
+                              {staff.contract_end
+                                ? t("staff.contractUntil", {
+                                    date: formatDate(staff.contract_end, i18n.language),
+                                  })
+                                : t("staff.contract.noContract")}
                             </span>
                           )}
                           {staff.role === "Scout" ? (
@@ -403,9 +404,22 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                         <button
                           type="button"
                           disabled={isLoading}
-                          onClick={() => handleRelease(staff.id)}
+                          onClick={() => openContractDialog("renew", staff)}
+                          className={`p-2 rounded-lg bg-primary-50 dark:bg-primary-500/10 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-500/20 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 disabled:opacity-50 ${isLoading ? "pointer-events-none" : ""}`}
+                          title={t("staff.renewContract")}
+                          aria-label={t("staff.renewContract")}
+                        >
+                          <FileSignature className="w-4 h-4" />
+                        </button>
+                      )}
+                      {view === "mystaff" && (
+                        <button
+                          type="button"
+                          disabled={isLoading}
+                          onClick={() => openContractDialog("release", staff)}
                           className={`p-2 rounded-lg bg-red-50 dark:bg-red-500/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
                           title={t("staff.releaseStaff")}
+                          aria-label={t("staff.releaseStaff")}
                         >
                           <UserMinus className="w-4 h-4" />
                         </button>
@@ -414,9 +428,10 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
                         <button
                           type="button"
                           disabled={isLoading}
-                          onClick={() => handleHire(staff.id)}
+                          onClick={() => openContractDialog("hire", staff)}
                           className={`p-2 rounded-lg bg-primary-50 dark:bg-primary-500/10 text-primary-500 hover:bg-primary-100 dark:hover:bg-primary-500/20 transition-colors ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
                           title={t("staff.hireStaff")}
+                          aria-label={t("staff.hireStaff")}
                         >
                           <UserPlus className="w-4 h-4" />
                         </button>
@@ -435,6 +450,19 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
           })}
         </div>
       )}
+
+      {contractDialog ? (
+        <StaffContractModal
+          key={`${contractDialog.action}-${contractDialog.staff.id}`}
+          action={contractDialog.action}
+          staffName={`${contractDialog.staff.first_name} ${contractDialog.staff.last_name}`}
+          preview={contractPreview}
+          errorMessage={contractError}
+          submitting={actionLoading === contractDialog.staff.id}
+          onCancel={closeContractDialog}
+          onConfirm={(years) => void confirmContractDialog(years)}
+        />
+      ) : null}
     </div>
   );
 }

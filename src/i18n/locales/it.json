@@ -1097,6 +1097,32 @@
       "Attacking": "Attacco",
       "GoalKeeping": "Portieri",
       "Youth": "Settore giovanile"
+    },
+    "renewContract": "Rinnova contratto",
+    "askingWage": "Chiede {{wage}}",
+    "contractUntil": "Contratto fino al {{date}}",
+    "contract": {
+      "hireTitle": "Ingaggia {{name}}",
+      "hireBody": "Lo staff arriva a parametro zero. Lo stipendio viene pagato ogni settimana per tutta la durata del contratto.",
+      "renewTitle": "Rinnova il contratto di {{name}}",
+      "renewBody": "Il nuovo contratto parte da oggi, allo stipendio richiesto ora.",
+      "releaseTitle": "Licenzia {{name}}",
+      "releaseBody": "Licenziare in anticipo significa pagare il resto del contratto.",
+      "currentWage": "Stipendio attuale",
+      "askingWage": "Stipendio richiesto",
+      "wageBillAfter": "Monte ingaggi settimanale dopo la firma",
+      "wageBudget": "Budget ingaggi settimanale",
+      "contractEnds": "Scadenza contratto",
+      "noContract": "Nessun contratto",
+      "severance": "Buonuscita da pagare",
+      "length": "Durata del contratto",
+      "years1": "1 anno",
+      "years2": "2 anni",
+      "years3": "3 anni",
+      "overBudget": "Questo stipendio porterebbe il monte ingaggi oltre il budget. La dirigenza non lo approverà.",
+      "hireConfirm": "Ingaggia",
+      "renewConfirm": "Rinnova",
+      "releaseConfirm": "Licenzia e paga"
     }
   },
   "finances": {
@@ -1176,7 +1202,12 @@
     "contractExpiresOn": "Scade il {{date}}",
     "atRiskWages": "{{amount}}/settimana a rischio",
     "noContractRisks": "Nessun rischio contrattuale imminente",
-    "selectRiskPlayer": "Seleziona {{player}}"
+    "selectRiskPlayer": "Seleziona {{player}}",
+    "payrollPlayers": "Giocatori ({{count}})",
+    "payrollStaff": "Staff tecnico ({{count}})",
+    "payrollNoStaff": "Il club non ha staff sotto contratto.",
+    "staffName": "Membro dello staff",
+    "staffRole": "Ruolo"
   },
   "inbox": {
     "title": "Posta",
@@ -2855,7 +2886,9 @@
       "notice": {
         "fallbackLeagueGenerated": "Nessuna competizione è stata definita. È stato generato automaticamente un campionato a girone unico predefinito per tutte le squadre.",
         "fallbackTeamsFilled": "È stata definita una sola squadra. Sono stati generati automaticamente avversari procedurali per rendere il gioco giocabile."
-      }
+      },
+      "staffWageBudget": "La dirigenza non permette che il monte ingaggi settimanale superi il budget di {{budget}}.",
+      "staffContractYearsInvalid": "I contratti dello staff durano da uno a tre anni."
     },
     "sender": {
       "boardOfDirectors": "Consiglio di amministrazione",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Opzione di riscatto esercitata: {{player}}",
         "body": "L'opzione di riscatto per {{player}} è stata esercitata per {{fee}}. Il prestito diventa ora un trasferimento definitivo."
+      },
+      "staffContractExpiring": {
+        "subject": "Il contratto di {{name}} sta per scadere",
+        "body": "Mister, il contratto di {{name}} come {{role}} scade il {{contractEnd}}. Se vogliamo tenerlo nello staff, dobbiamo proporre un nuovo accordo dalla schermata Staff prima di allora. Altrimenti se ne andrà alla scadenza."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} ha lasciato il club",
+        "body": "Il contratto di {{name}} come {{role}} è scaduto e ha lasciato il club. Puoi cercare un sostituto nel mercato dello staff."
       }
     },
     "news": {

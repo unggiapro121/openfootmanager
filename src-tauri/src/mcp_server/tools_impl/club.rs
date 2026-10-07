@@ -51,7 +51,11 @@ pub fn staff_get(ctx: Arc<McpContext>) -> Result<String, String> {
 // ─── staff_hire ──────────────────────────────────────────────────────────────
 
 pub fn staff_hire(ctx: Arc<McpContext>, staff_id: String) -> Result<String, String> {
-    crate::commands::staff::hire_staff_internal(&ctx.state_manager, &staff_id)?;
+    crate::commands::staff::hire_staff_internal(
+        &ctx.state_manager,
+        &staff_id,
+        ofm_core::staff_contracts::DEFAULT_STAFF_CONTRACT_YEARS,
+    )?;
 
     {
         use tauri::Emitter;

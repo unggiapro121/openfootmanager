@@ -1078,6 +1078,32 @@
       "Attacking": "进攻",
       "GoalKeeping": "门将",
       "Youth": "青训"
+    },
+    "renewContract": "续约",
+    "askingWage": "要价 {{wage}}",
+    "contractUntil": "合同至 {{date}}",
+    "contract": {
+      "hireTitle": "聘用 {{name}}",
+      "hireBody": "职员以自由身加盟，无需转会费。合同期内每周支付工资。",
+      "renewTitle": "与 {{name}} 续约",
+      "renewBody": "新合同从今天开始，按其当前要价支付工资。",
+      "releaseTitle": "解雇 {{name}}",
+      "releaseBody": "提前解雇需要支付合同剩余部分的工资。",
+      "currentWage": "当前工资",
+      "askingWage": "要价工资",
+      "wageBillAfter": "签约后每周工资总额",
+      "wageBudget": "每周工资预算",
+      "contractEnds": "合同到期",
+      "noContract": "无合同",
+      "severance": "需支付的赔偿金",
+      "length": "合同期限",
+      "years1": "1 年",
+      "years2": "2 年",
+      "years3": "3 年",
+      "overBudget": "该工资将使工资总额超出预算，董事会不会批准。",
+      "hireConfirm": "聘用",
+      "renewConfirm": "续约",
+      "releaseConfirm": "解雇并支付"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "到期日 {{date}}",
     "atRiskWages": "风险周薪 {{amount}}",
     "noContractRisks": "暂无紧迫合同风险",
-    "selectRiskPlayer": "选择{{player}}"
+    "selectRiskPlayer": "选择{{player}}",
+    "payrollPlayers": "球员（{{count}}）",
+    "payrollStaff": "职员（{{count}}）",
+    "payrollNoStaff": "俱乐部目前没有雇佣职员。",
+    "staffName": "职员",
+    "staffRole": "职位"
   },
   "inbox": {
     "title": "收件箱",
@@ -2855,7 +2886,9 @@
       "notice": {
         "fallbackLeagueGenerated": "未定义任何赛事。已自动为所有球队生成默认的单级别联赛。",
         "fallbackTeamsFilled": "仅定义了一支球队。已自动生成程序化对手以使游戏可玩。"
-      }
+      },
+      "staffWageBudget": "董事会不允许每周工资总额超过 {{budget}} 的预算。",
+      "staffContractYearsInvalid": "职员合同期限为一到三年。"
     },
     "sender": {
       "boardOfDirectors": "董事会",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "已执行买断选项:{{player}}",
         "body": "{{player}}的买断选项已按{{fee}}执行。这笔租借现已转为永久转会。"
+      },
+      "staffContractExpiring": {
+        "subject": "{{name}} 的合同即将到期",
+        "body": "老板，{{name}} 担任{{role}}的合同将于 {{contractEnd}} 到期。如果想留下此人，需要在此之前在职员页面提出新合同，否则合同到期后其将离开。"
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} 已离开俱乐部",
+        "body": "{{name}} 担任{{role}}的合同已到期，已离开俱乐部。您可以在职员市场寻找替代人选。"
       }
     },
     "news": {

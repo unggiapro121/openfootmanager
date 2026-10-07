@@ -982,7 +982,7 @@ function FinancesTabContent({
         onUpgrade={(facility) => void handleUpgradeFacility(facility)}
       />
 
-      <FinancesPayrollTable roster={roster} onSelectPlayer={onSelectPlayer} />
+      <FinancesPayrollTable roster={roster} staff={teamStaff} onSelectPlayer={onSelectPlayer} />
     </div>
   );
 }

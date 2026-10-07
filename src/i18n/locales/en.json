@@ -1078,6 +1078,32 @@
       "Attacking": "Attacking",
       "GoalKeeping": "Goalkeeping",
       "Youth": "Youth Dev"
+    },
+    "renewContract": "Renew contract",
+    "askingWage": "Asks {{wage}}",
+    "contractUntil": "Contract until {{date}}",
+    "contract": {
+      "hireTitle": "Hire {{name}}",
+      "hireBody": "Staff join on a free transfer. Their wage is paid every week for the length of the contract.",
+      "renewTitle": "Renew {{name}}'s contract",
+      "renewBody": "The new contract starts today, at the wage they ask for now.",
+      "releaseTitle": "Release {{name}}",
+      "releaseBody": "Releasing staff early means paying off the rest of their contract.",
+      "currentWage": "Current wage",
+      "askingWage": "Asking wage",
+      "wageBillAfter": "Weekly wage bill after signing",
+      "wageBudget": "Weekly wage budget",
+      "contractEnds": "Contract ends",
+      "noContract": "No contract",
+      "severance": "Severance to pay",
+      "length": "Contract length",
+      "years1": "1 year",
+      "years2": "2 years",
+      "years3": "3 years",
+      "overBudget": "This wage would take the wage bill over budget. The board will not approve it.",
+      "hireConfirm": "Hire",
+      "renewConfirm": "Renew",
+      "releaseConfirm": "Release and pay"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Expires {{date}}",
     "atRiskWages": "{{amount}}/wk at risk",
     "noContractRisks": "No imminent contract risks",
-    "selectRiskPlayer": "Select {{player}}"
+    "selectRiskPlayer": "Select {{player}}",
+    "payrollPlayers": "Players ({{count}})",
+    "payrollStaff": "Staff ({{count}})",
+    "payrollNoStaff": "The club employs no staff.",
+    "staffName": "Staff member",
+    "staffRole": "Role"
   },
   "inbox": {
     "title": "Inbox",
@@ -2855,7 +2886,9 @@
         "youthAssignmentNotFound": "Youth recruitment assignment not found",
         "scoutAlreadyAssignedToSearch": "Scout is already assigned to this search"
       },
-      "invalidPath": "Invalid path."
+      "invalidPath": "Invalid path.",
+      "staffWageBudget": "The board will not let the weekly wage bill go over its {{budget}} budget.",
+      "staffContractYearsInvalid": "Staff contracts run for one to three years."
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Loan Buy Option Exercised: {{player}}",
         "body": "The purchase option for {{player}} has been exercised for {{fee}}. The loan is now a permanent transfer."
+      },
+      "staffContractExpiring": {
+        "subject": "{{name}}'s contract is running out",
+        "body": "Boss, {{name}}'s contract as our {{role}} ends on {{contractEnd}}. If we want to keep them, we need to offer a new deal from the Staff screen before then. Otherwise they will leave when it runs out."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} has left the club",
+        "body": "{{name}}'s contract as our {{role}} has run out and they have left the club. You can look for a replacement on the staff market."
       }
     },
     "news": {

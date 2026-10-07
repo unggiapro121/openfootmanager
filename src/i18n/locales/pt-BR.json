@@ -1078,6 +1078,32 @@
       "Attacking": "Ataque",
       "GoalKeeping": "Goleiros",
       "Youth": "Base"
+    },
+    "renewContract": "Renovar contrato",
+    "askingWage": "Pede {{wage}}",
+    "contractUntil": "Contrato até {{date}}",
+    "contract": {
+      "hireTitle": "Contratar {{name}}",
+      "hireBody": "A comissão técnica chega sem custo de transferência. O salário é pago toda semana durante o contrato.",
+      "renewTitle": "Renovar o contrato de {{name}}",
+      "renewBody": "O novo contrato começa hoje, com o salário que pede agora.",
+      "releaseTitle": "Demitir {{name}}",
+      "releaseBody": "Demitir antes do fim obriga a pagar o restante do contrato.",
+      "currentWage": "Salário atual",
+      "askingWage": "Salário pedido",
+      "wageBillAfter": "Folha salarial semanal após assinar",
+      "wageBudget": "Orçamento salarial semanal",
+      "contractEnds": "Fim do contrato",
+      "noContract": "Sem contrato",
+      "severance": "Multa rescisória a pagar",
+      "length": "Duração do contrato",
+      "years1": "1 ano",
+      "years2": "2 anos",
+      "years3": "3 anos",
+      "overBudget": "Esse salário faria a folha passar do orçamento. A diretoria não vai aprovar.",
+      "hireConfirm": "Contratar",
+      "renewConfirm": "Renovar",
+      "releaseConfirm": "Demitir e pagar"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Expira em {{date}}",
     "atRiskWages": "{{amount}}/semana em risco",
     "noContractRisks": "Sem riscos contratuais iminentes",
-    "selectRiskPlayer": "Selecionar {{player}}"
+    "selectRiskPlayer": "Selecionar {{player}}",
+    "payrollPlayers": "Jogadores ({{count}})",
+    "payrollStaff": "Comissão técnica ({{count}})",
+    "payrollNoStaff": "O clube não tem comissão técnica contratada.",
+    "staffName": "Membro da comissão",
+    "staffRole": "Função"
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -2855,7 +2886,9 @@
       "notice": {
         "fallbackLeagueGenerated": "Nenhuma competição foi definida. Uma liga de divisão única padrão foi gerada automaticamente para todos os times.",
         "fallbackTeamsFilled": "Apenas um time foi definido. Adversários procedurais foram gerados automaticamente para tornar o jogo jogável."
-      }
+      },
+      "staffWageBudget": "A diretoria não deixa a folha salarial semanal passar do orçamento de {{budget}}.",
+      "staffContractYearsInvalid": "Os contratos da comissão técnica duram de um a três anos."
     },
     "sender": {
       "boardOfDirectors": "Diretoria",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Opção de compra exercida: {{player}}",
         "body": "A opção de compra de {{player}} foi exercida por {{fee}}. O empréstimo agora virou transferência definitiva."
+      },
+      "staffContractExpiring": {
+        "subject": "O contrato de {{name}} está acabando",
+        "body": "Chefe, o contrato de {{name}} como {{role}} termina em {{contractEnd}}. Se quisermos manter essa pessoa, precisamos oferecer um novo acordo na tela da Comissão Técnica antes disso. Caso contrário, vai sair quando acabar."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} deixou o clube",
+        "body": "O contrato de {{name}} como {{role}} terminou e deixou o clube. Você pode procurar um substituto no mercado da comissão técnica."
       }
     },
     "news": {

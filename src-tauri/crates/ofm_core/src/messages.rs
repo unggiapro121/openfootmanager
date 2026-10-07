@@ -54,6 +54,72 @@ pub fn staff_advice_message(team_name: &str, team_id: &str, date: &str) -> Inbox
     .with_sender_i18n("be.sender.assistantManager", "be.role.assistantManager")
 }
 
+/// One of the club's staff has two months or less left on their contract.
+pub fn staff_contract_expiring_message(
+    id: &str,
+    team_id: &str,
+    staff_name: &str,
+    role_key: &str,
+    contract_end: &str,
+    date: &str,
+) -> InboxMessage {
+    staff_contract_message(id, team_id, date)
+        .with_priority(MessagePriority::High)
+        .with_i18n(
+            "be.msg.staffContractExpiring.subject",
+            "be.msg.staffContractExpiring.body",
+            params(&[
+                ("name", staff_name),
+                ("role", role_key),
+                ("contractEnd", contract_end),
+            ]),
+        )
+}
+
+/// One of the club's staff left because their contract ran out.
+pub fn staff_contract_expired_message(
+    id: &str,
+    team_id: &str,
+    staff_name: &str,
+    role_key: &str,
+    date: &str,
+) -> InboxMessage {
+    staff_contract_message(id, team_id, date)
+        .with_priority(MessagePriority::Normal)
+        .with_i18n(
+            "be.msg.staffContractExpired.subject",
+            "be.msg.staffContractExpired.body",
+            params(&[("name", staff_name), ("role", role_key)]),
+        )
+}
+
+/// What both staff contract messages share: the assistant writes, and the
+/// action opens the staff screen, where renewing and hiring happen.
+fn staff_contract_message(id: &str, team_id: &str, date: &str) -> InboxMessage {
+    InboxMessage::new(
+        id.to_string(),
+        String::new(),
+        String::new(),
+        String::new(),
+        date.to_string(),
+    )
+    .with_category(MessageCategory::Contract)
+    .with_sender_role("")
+    .with_action(action(
+        "view_staff",
+        "",
+        "be.msg.staffAdvice.actionView",
+        ActionType::NavigateTo {
+            route: "/dashboard?tab=Staff".to_string(),
+        },
+    ))
+    .with_context(MessageContext {
+        team_id: Some(team_id.to_string()),
+        ..Default::default()
+    })
+    .with_sender_i18n("be.sender.assistantManager", "be.role.assistantManager")
+}
+
 pub fn board_expectations_message(team_name: &str, team_id: &str, date: &str) -> InboxMessage {
     InboxMessage::new(
         "board_expect_1".to_string(),

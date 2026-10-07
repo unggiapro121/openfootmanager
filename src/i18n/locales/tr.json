@@ -1078,6 +1078,32 @@
       "Attacking": "Hücum",
       "GoalKeeping": "Kalecilik",
       "Youth": "Genç Gelişimi"
+    },
+    "renewContract": "Sözleşmeyi uzat",
+    "askingWage": "İstediği {{wage}}",
+    "contractUntil": "Sözleşme {{date}} tarihine kadar",
+    "contract": {
+      "hireTitle": "{{name}} adlı kişiyi işe al",
+      "hireBody": "Personel bonservis bedeli olmadan katılır. Maaşı sözleşme boyunca her hafta ödenir.",
+      "renewTitle": "{{name}} ile sözleşmeyi uzat",
+      "renewBody": "Yeni sözleşme bugün, şu an istediği maaşla başlar.",
+      "releaseTitle": "{{name}} ile yollarını ayır",
+      "releaseBody": "Erken ayrılık, sözleşmenin kalanının ödenmesi anlamına gelir.",
+      "currentWage": "Mevcut maaş",
+      "askingWage": "İstenen maaş",
+      "wageBillAfter": "İmzadan sonra haftalık maaş gideri",
+      "wageBudget": "Haftalık maaş bütçesi",
+      "contractEnds": "Sözleşme bitişi",
+      "noContract": "Sözleşme yok",
+      "severance": "Ödenecek tazminat",
+      "length": "Sözleşme süresi",
+      "years1": "1 yıl",
+      "years2": "2 yıl",
+      "years3": "3 yıl",
+      "overBudget": "Bu maaş, maaş giderini bütçenin üzerine çıkarır. Yönetim onaylamaz.",
+      "hireConfirm": "İşe al",
+      "renewConfirm": "Uzat",
+      "releaseConfirm": "Ayrıl ve öde"
     }
   },
   "finances": {
@@ -1157,7 +1183,12 @@
     "contractExpiresOn": "Bitiş: {{date}}",
     "atRiskWages": "Risk altında {{amount}}/hafta",
     "noContractRisks": "Yakın sözleşme riski yok",
-    "selectRiskPlayer": "{{player}} oyuncusunu seç"
+    "selectRiskPlayer": "{{player}} oyuncusunu seç",
+    "payrollPlayers": "Oyuncular ({{count}})",
+    "payrollStaff": "Personel ({{count}})",
+    "payrollNoStaff": "Kulübün hiç personeli yok.",
+    "staffName": "Personel",
+    "staffRole": "Görev"
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -2855,7 +2886,9 @@
         "youthAssignmentNotFound": "Genç oyuncu kazanım görevi bulunamadı",
         "scoutAlreadyAssignedToSearch": "Gözlemci bu aramaya zaten atanmış"
       },
-      "invalidPath": "Geçersiz yol."
+      "invalidPath": "Geçersiz yol.",
+      "staffWageBudget": "Yönetim, haftalık maaş giderinin {{budget}} bütçesini aşmasına izin vermez.",
+      "staffContractYearsInvalid": "Personel sözleşmeleri bir ila üç yıl sürer."
     },
     "sender": {
       "boardOfDirectors": "Yönetim Kurulu",
@@ -3427,6 +3460,14 @@
       "loanBuyOptionExercised": {
         "subject": "Kiralamada Satın Alma Opsiyonu Kullanıldı: {{player}}",
         "body": "{{player}} için satın alma opsiyonu {{fee}} bedelle kullanıldı. Kiralama artık kalıcı bir transfere dönüştü."
+      },
+      "staffContractExpiring": {
+        "subject": "{{name}} adlı personelin sözleşmesi bitiyor",
+        "body": "Hocam, {{name}} adlı {{role}} personelinin sözleşmesi {{contractEnd}} tarihinde bitiyor. Bu kişiyi tutmak istiyorsak o tarihten önce Personel ekranından yeni bir teklif yapmalıyız. Yoksa sözleşme bitince ayrılacak."
+      },
+      "staffContractExpired": {
+        "subject": "{{name}} kulüpten ayrıldı",
+        "body": "{{name}} adlı {{role}} personelinin sözleşmesi sona erdi ve kulüpten ayrıldı. Personel pazarında yerine birini arayabilirsiniz."
       }
     },
     "news": {

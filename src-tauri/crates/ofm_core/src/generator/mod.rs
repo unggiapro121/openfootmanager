@@ -570,6 +570,13 @@ fn floor_imported_world_opening_cash(world: &mut WorldData) {
 }
 
 pub fn process_available_staff_market(game: &mut crate::game::Game) -> bool {
+    let changed = rotate_available_staff_market(game);
+    // After the rotation, so newly generated faces are priced the day they appear.
+    crate::staff_contracts::price_unattached_staff(game);
+    changed
+}
+
+fn rotate_available_staff_market(game: &mut crate::game::Game) -> bool {
     use chrono::NaiveDate;
 
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
@@ -3136,6 +3143,27 @@ mod tests {
             game.available_staff_market_last_activity_date.as_deref(),
             Some("2026-08-01")
         );
+    }
+
+    /// Given a market due to rotate,
+    /// When the market is processed,
+    /// Then the new faces are listed at their asking wage the same day, not at zero.
+    #[test]
+    fn a_rotated_market_is_priced_the_day_it_appears() {
+        let mut game =
+            make_staff_market_game(vec![make_import_staff("free-1", None, StaffRole::Coach)]);
+        game.available_staff_market_last_activity_date = Some("2026-07-02".to_string());
+
+        process_available_staff_market(&mut game);
+
+        for staff_member in game.staff.iter().filter(|staff| staff.team_id.is_none()) {
+            assert_eq!(
+                staff_member.wage,
+                crate::staff_contracts::staff_asking_wage(staff_member),
+                "{}",
+                staff_member.id
+            );
+        }
     }
 
     #[test]

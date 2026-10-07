@@ -230,3 +230,57 @@ fn an_old_save_carries_a_small_clubs_inherited_wages_for_a_season() {
     );
     assert!(crate::finances::journal_matches_cash(&game));
 }
+
+fn club_staff(team_id: &str, rating: u8) -> Vec<domain::staff::Staff> {
+    use domain::staff::{Staff, StaffAttributes, StaffRole};
+    [
+        StaffRole::AssistantManager,
+        StaffRole::Coach,
+        StaffRole::Scout,
+        StaffRole::Physio,
+    ]
+    .into_iter()
+    .enumerate()
+    .map(|(index, role)| {
+        let mut staff = Staff::new(
+            format!("{team_id}-staff-{index}"),
+            "Sam".to_string(),
+            "Staff".to_string(),
+            "1975-01-01".to_string(),
+            role,
+            StaffAttributes {
+                coaching: rating,
+                judging_ability: rating,
+                judging_potential: rating,
+                physiotherapy: rating,
+            },
+        );
+        staff.team_id = Some(team_id.to_string());
+        staff
+    })
+    .collect()
+}
+
+/// Given a poor club whose generated staff happen to be elite,
+/// When the world's economy opens,
+/// Then its staff are paid and under contract, and players and staff together
+/// still fit what the club's income can carry.
+#[test]
+fn opening_wages_leave_room_for_each_clubs_staff() {
+    let mut game = game_on_monday(vec![club("poor", 120)], squad("poor", 23, 72));
+    game.staff = club_staff("poor", 90);
+
+    open_world_economy(&mut game);
+
+    assert!(game.staff.iter().all(|staff| staff.wage > 0));
+    assert!(game.staff.iter().all(|staff| staff.contract_end.is_some()));
+    let team = &game.teams[0];
+    let bill = crate::finances::calc_wages(&game, &team.id);
+    let capacity = revenue::weekly_wage_capacity(team);
+    // The minimum wage lifts the cheapest contracts above their scaled price, so
+    // the bill may land a fraction over; leaving staff out put it ~19% over.
+    assert!(
+        bill <= capacity * 101 / 100,
+        "bill {bill} capacity {capacity}"
+    );
+}

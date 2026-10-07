@@ -151,12 +151,22 @@ pub fn has_let_expire_intent(player: &Player) -> bool {
 }
 
 pub(crate) fn termination_severance_cost(player: &Player, current_date: NaiveDate) -> i64 {
-    let remaining_days = contract_days_remaining(player.contract_end(), current_date)
+    severance_for_remaining_term(player.contract_end(), player.wage(), current_date)
+}
+
+/// Paying someone off: every week left on the contract at their weekly wage,
+/// a part week counted whole. Players and staff are paid off alike.
+pub(crate) fn severance_for_remaining_term(
+    contract_end: Option<&str>,
+    weekly_wage: u32,
+    current_date: NaiveDate,
+) -> i64 {
+    let remaining_days = contract_days_remaining(contract_end, current_date)
         .unwrap_or(0)
         .max(0);
     let remaining_weeks = (remaining_days + 6) / 7;
 
-    remaining_weeks * i64::from(player.wage())
+    remaining_weeks * i64::from(weekly_wage)
 }
 
 pub(crate) fn contract_terminated_message(
