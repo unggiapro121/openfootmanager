@@ -42,6 +42,7 @@ pub fn build_team_with_tactics(
             formation.to_string()
         },
         play_style,
+        coach: engine::CoachMastery::default(),
         tactics,
         players: build_group(id, "", avg_ovr, (n_def, n_mid, n_fwd), rng),
     }
@@ -82,6 +83,7 @@ pub fn build_squad_with_bench(
             formation.to_string()
         },
         play_style,
+        coach: engine::CoachMastery::default(),
         tactics: TacticsConfig::default(),
         players: starters,
     };

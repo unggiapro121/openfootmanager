@@ -44,6 +44,7 @@ fn make_team(id: &str, name: &str, skill: u8, play_style: PlayStyle) -> TeamData
         name: name.to_string(),
         formation: "4-4-2".to_string(),
         play_style,
+        coach: CoachMastery::default(),
         tactics: TacticsConfig::default(),
         players: vec![
             make_player(&format!("{id}_gk1"), "GK1", Position::Goalkeeper, skill),
@@ -545,6 +546,40 @@ fn a_defensive_side_concedes_fewer_than_a_balanced_one() {
     );
 }
 
+/// Goals a Counter home side scores against the same Balanced visitors over
+/// `trials` seeds, when its coach's Counter mastery is `mastery`.
+fn counter_goals_with_coach(mastery: u8, trials: u64) -> u32 {
+    let mut home = make_team("home", "Home FC", 65, PlayStyle::Counter);
+    home.coach.counter = mastery;
+    let away = make_team("away", "Away FC", 65, PlayStyle::Balanced);
+    let config = MatchConfig {
+        home_advantage: 1.0,
+        ..MatchConfig::default()
+    };
+    (0..trials)
+        .map(|seed| {
+            simulate_with_rng(&home, &away, &config, &mut seeded_rng(seed)).home_goals as u32
+        })
+        .sum()
+}
+
+/// Given the same Counter side and the same seeds,
+/// When it is coached by a Counter specialist (90) and by a novice (20),
+/// Then the specialist's side scores clearly more: the coach amplifies the style.
+#[test]
+fn a_counter_specialist_gets_more_goals_out_of_counter() {
+    let trials = 4000;
+    let specialist = counter_goals_with_coach(90, trials);
+    let novice = counter_goals_with_coach(20, trials);
+
+    // Measured on these seeds: 6.2% more goals for the specialist, and exactly
+    // the same count while the coach was ignored.
+    assert!(
+        specialist * 100 >= novice * 103,
+        "specialist scored {specialist}, novice scored {novice}"
+    );
+}
+
 // ---------------------------------------------------------------------------
 // Team/player stats aggregation tests
 // ---------------------------------------------------------------------------
@@ -957,6 +992,7 @@ fn minimal_team_doesnt_crash() {
         name: "Minimal FC".to_string(),
         formation: "1-1-1-1".to_string(),
         play_style: PlayStyle::Balanced,
+        coach: CoachMastery::default(),
         tactics: TacticsConfig::default(),
         players: vec![
             make_player("gk", "GK", Position::Goalkeeper, 50),

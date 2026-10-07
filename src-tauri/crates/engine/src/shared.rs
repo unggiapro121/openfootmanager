@@ -3,7 +3,7 @@ use rand::{Rng, RngExt};
 use crate::types::{
     BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle, MatchConfig,
     PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side, TacticsBuildUpStyle,
-    TacticsConfig, TacticsPitchWidth, Tempo,
+    TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
 };
 
 // ---------------------------------------------------------------------------
@@ -250,13 +250,37 @@ pub(crate) enum PlayStylePhase {
     Press,
 }
 
-/// The multiplier a side's play style puts on its rating in `phase`.
+/// The multiplier a side's play style puts on its rating in `phase`, as its
+/// head coach gets the style across.
 ///
-/// Applied to whichever side the phase belongs to, attacking or defending. The
-/// defending side used to be passed a flag that returned a neutral 1.0, so the
-/// Defense column was never read: Defensive paid its attacking penalty for no
-/// defensive return, and Attacking and HighPress paid nothing for theirs.
-pub(crate) fn play_style_modifier(style: PlayStyle, phase: PlayStylePhase) -> f64 {
+/// Applied to whichever side the phase belongs to, attacking or defending.
+pub(crate) fn play_style_modifier(team: &TeamData, phase: PlayStylePhase) -> f64 {
+    coached_modifier(
+        style_table(team.play_style, phase),
+        team.coach.for_style(team.play_style),
+    )
+}
+
+/// Scale a style by how well the coach gets it across, `k = 0.5 + mastery/100`:
+/// the style's edge (a value above 1.0) by `k`, its cost (below 1.0) by `2 − k`.
+/// A neutral coach (50) plays the table as it is; the best widens the edge by
+/// half and halves the cost, the weakest the reverse.
+///
+/// Edge and cost move in opposite directions on purpose. Scaling both by `k`
+/// was measured to make a better Counter, Defensive or HighPress coach *lose*
+/// more: their cost lands on every possession, their edge on a single phase.
+fn coached_modifier(table_value: f64, mastery: u8) -> f64 {
+    let k = 0.5 + f64::from(mastery.min(100)) / 100.0;
+    let scale = if table_value >= 1.0 { k } else { 2.0 - k };
+    1.0 + (table_value - 1.0) * scale
+}
+
+/// What each play style is worth in each phase, with a neutral coach.
+///
+/// The defending side used to be passed a flag that returned a neutral 1.0, so
+/// the Defense column was never read: Defensive paid its attacking penalty for
+/// no defensive return, and Attacking and HighPress paid nothing for theirs.
+fn style_table(style: PlayStyle, phase: PlayStylePhase) -> f64 {
     match (style, phase) {
         (PlayStyle::Attacking, PlayStylePhase::Attack) => 1.12,
         (PlayStyle::Attacking, PlayStylePhase::Defense) => 0.93,
@@ -564,21 +588,59 @@ mod play_style_modifier_tests {
     #[test]
     fn the_defending_side_gets_its_own_style() {
         assert_eq!(
-            play_style_modifier(PlayStyle::Defensive, PlayStylePhase::Defense),
+            style_table(PlayStyle::Defensive, PlayStylePhase::Defense),
             1.12
         );
         assert_eq!(
-            play_style_modifier(PlayStyle::Attacking, PlayStylePhase::Defense),
+            style_table(PlayStyle::Attacking, PlayStylePhase::Defense),
             0.93
         );
         assert_eq!(
-            play_style_modifier(PlayStyle::HighPress, PlayStylePhase::Defense),
+            style_table(PlayStyle::HighPress, PlayStylePhase::Defense),
             0.95
         );
         assert_eq!(
-            play_style_modifier(PlayStyle::Counter, PlayStylePhase::Midfield),
+            style_table(PlayStyle::Counter, PlayStylePhase::Midfield),
             0.92
         );
+    }
+
+    fn close(actual: f64, expected: f64) -> bool {
+        (actual - expected).abs() < 0.0005
+    }
+
+    /// Given a coach of neutral mastery (50),
+    /// When any style's value is coached,
+    /// Then it is the table's value unchanged.
+    #[test]
+    fn a_neutral_coach_plays_the_style_as_the_table_prices_it() {
+        for value in [1.18, 0.92, 1.12, 0.93, 1.0] {
+            assert!(close(coached_modifier(value, 50), value), "{value}");
+        }
+    }
+
+    /// Given Counter's attacking edge (1.18) and midfield cost (0.92),
+    /// When coached by a coach of 90 and of 20,
+    /// Then the better coach widens the edge and softens the cost, and the weaker
+    /// one the reverse: a better coach makes every style better.
+    #[test]
+    fn a_better_coach_widens_the_edge_and_softens_the_cost() {
+        assert!(close(coached_modifier(1.18, 90), 1.252));
+        assert!(close(coached_modifier(1.18, 20), 1.126));
+        assert!(close(coached_modifier(0.92, 90), 0.952));
+        assert!(close(coached_modifier(0.92, 20), 0.896));
+    }
+
+    /// Given the extremes of the mastery scale,
+    /// When Counter's edge and cost are coached,
+    /// Then the weakest coach keeps about half of the edge and half again of the
+    /// cost, and the best the reverse.
+    #[test]
+    fn the_coach_scales_a_style_between_half_and_one_and_a_half() {
+        assert!(close(coached_modifier(1.18, 1), 1.0918));
+        assert!(close(coached_modifier(1.18, 100), 1.27));
+        assert!(close(coached_modifier(0.92, 1), 0.8808));
+        assert!(close(coached_modifier(0.92, 100), 0.96));
     }
 }
 

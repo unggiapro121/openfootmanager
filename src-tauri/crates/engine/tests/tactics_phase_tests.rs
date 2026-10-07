@@ -69,6 +69,7 @@ fn team(id: &str, tactics: TacticsConfig) -> TeamData {
         name: id.to_string(),
         formation: "4-4-2".to_string(),
         play_style: PlayStyle::Balanced,
+        coach: engine::CoachMastery::default(),
         tactics,
         players: vec![
             mk(&format!("{id}_gk"), Position::Goalkeeper),

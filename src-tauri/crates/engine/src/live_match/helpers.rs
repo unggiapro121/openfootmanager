@@ -133,8 +133,7 @@ impl LiveMatchState {
 
     pub(super) fn effective_midfield(&self, side: Side) -> f64 {
         let base = self.team_ref(side).midfield_rating();
-        let modifier =
-            play_style_modifier(self.team_ref(side).play_style, PlayStylePhase::Midfield);
+        let modifier = play_style_modifier(self.team_ref(side), PlayStylePhase::Midfield);
         base * modifier * home_mod(side, &self.config)
     }
 
@@ -143,7 +142,7 @@ impl LiveMatchState {
         let base = team.position_attr_avg(Position::Midfielder, |p| {
             ((p.stamina as u16 + p.tackling as u16 + p.pace as u16) / 3) as u8
         });
-        let modifier = play_style_modifier(team.play_style, PlayStylePhase::Press);
+        let modifier = play_style_modifier(team, PlayStylePhase::Press);
         base * modifier
             * tactics_pressing_press(&team.tactics)
             * home_mod(pressing_side, &self.config)
@@ -332,6 +331,7 @@ mod commentary_detail_tests {
             name: id.to_string(),
             formation: "4-4-2".to_string(),
             play_style: PlayStyle::Balanced,
+            coach: crate::types::CoachMastery::default(),
             players: vec![
                 make_test_player(&format!("{}_gk", id), Position::Goalkeeper),
                 make_test_player(&format!("{}_d1", id), Position::Defender),
@@ -415,6 +415,7 @@ mod empty_squad_tests {
             name: id.to_string(),
             formation: "4-4-2".to_string(),
             play_style: PlayStyle::Balanced,
+            coach: crate::types::CoachMastery::default(),
             tactics: TacticsConfig::default(),
             players: vec![],
         }

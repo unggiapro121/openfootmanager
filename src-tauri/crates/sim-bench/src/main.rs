@@ -46,6 +46,14 @@ struct Cli {
     #[arg(long, default_value = "4-4-2")]
     away_formation: String,
 
+    /// Home head coach's mastery of the home style (1–100; 50 = neutral)
+    #[arg(long, default_value_t = 50, value_parser = clap::value_parser!(u8).range(1..=100))]
+    home_coach: u8,
+
+    /// Away head coach's mastery of the away style (1–100; 50 = neutral)
+    #[arg(long, default_value_t = 50, value_parser = clap::value_parser!(u8).range(1..=100))]
+    away_coach: u8,
+
     /// Home team average overall rating (10–99)
     #[arg(long, default_value_t = 70, value_parser = clap::value_parser!(u8).range(10..=99))]
     home_rating: u8,
@@ -208,7 +216,7 @@ fn main() {
 
     // Build teams with a fixed team-builder seed (separate from per-game seeds)
     let mut team_rng = StdRng::seed_from_u64(base_seed.wrapping_add(0xDEAD_BEEF));
-    let home = build_team(
+    let mut home = build_team(
         "home",
         "Home FC",
         cli.home_rating,
@@ -216,7 +224,7 @@ fn main() {
         &cli.home_formation,
         &mut team_rng,
     );
-    let away = build_team(
+    let mut away = build_team(
         "away",
         "Away FC",
         cli.away_rating,
@@ -224,6 +232,8 @@ fn main() {
         &cli.away_formation,
         &mut team_rng,
     );
+    home.coach = coach_at(cli.home_coach);
+    away.coach = coach_at(cli.away_coach);
 
     eprintln!("Simulating {} games (seed: {})…", cli.games, base_seed);
 
@@ -568,4 +578,17 @@ fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
         );
     }
     println!("{sep}");
+}
+
+/// A coach at `mastery` in every style: only the side's own style is read, so
+/// one value is all a run needs.
+fn coach_at(mastery: u8) -> engine::CoachMastery {
+    engine::CoachMastery {
+        balanced: mastery,
+        attacking: mastery,
+        defensive: mastery,
+        possession: mastery,
+        counter: mastery,
+        high_press: mastery,
+    }
 }

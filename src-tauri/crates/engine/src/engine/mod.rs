@@ -289,6 +289,7 @@ mod empty_squad_tests {
             name: id.to_string(),
             formation: "4-4-2".to_string(),
             play_style: PlayStyle::Balanced,
+            coach: crate::types::CoachMastery::default(),
             tactics: TacticsConfig::default(),
             players: vec![],
         }

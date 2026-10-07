@@ -89,6 +89,7 @@ fn team(id: &str, players: Vec<PlayerData>) -> TeamData {
         name: id.to_string(),
         formation: "4-4-2".to_string(),
         play_style: PlayStyle::Balanced,
+        coach: CoachMastery::default(),
         tactics: TacticsConfig::default(),
         players,
     }

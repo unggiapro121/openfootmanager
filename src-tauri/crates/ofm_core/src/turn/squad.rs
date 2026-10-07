@@ -119,11 +119,43 @@ pub(crate) fn build_team_with_bench(game: &Game, team_id: &str) -> (TeamData, Ve
         name,
         formation,
         play_style,
+        coach: head_coach_of(game, team),
         players: starting_xi,
         tactics,
     };
 
     (team_data, bench)
+}
+
+/// The club's head coach, as the engine sees them.
+///
+/// The user's club reads the user (`game.manager`), never the copy of them in
+/// `game.managers`, which is only re-synced at career events and can be stale.
+/// A club with nobody in the dugout plays its style as the table prices it.
+fn head_coach_of(game: &Game, team: Option<&domain::team::Team>) -> engine::CoachMastery {
+    let Some(team) = team else {
+        return engine::CoachMastery::default();
+    };
+    let manager = if game.manager.team_id.as_deref() == Some(team.id.as_str()) {
+        Some(&game.manager)
+    } else {
+        team.manager_id
+            .as_deref()
+            .and_then(|id| game.managers.iter().find(|manager| manager.id == id))
+    };
+    manager
+        .map(|manager| {
+            let mastery = &manager.play_style_mastery;
+            engine::CoachMastery {
+                balanced: mastery.balanced,
+                attacking: mastery.attacking,
+                defensive: mastery.defensive,
+                possession: mastery.possession,
+                counter: mastery.counter,
+                high_press: mastery.high_press,
+            }
+        })
+        .unwrap_or_default()
 }
 
 /// Make a short XI up to the number of slots the formation asks for, drawing on

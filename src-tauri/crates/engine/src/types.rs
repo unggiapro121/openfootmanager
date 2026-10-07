@@ -306,6 +306,53 @@ pub struct TeamData {
     pub players: Vec<PlayerData>,
     #[serde(default)]
     pub tactics: TacticsConfig,
+    /// The head coach's command of each play style. Neutral by default, so a
+    /// side built without a coach plays every style exactly as the table prices it.
+    #[serde(default)]
+    pub coach: CoachMastery,
+}
+
+/// How well a side's head coach gets each play style across, 1–100.
+///
+/// The engine's own mirror of `domain::manager::PlayStyleMastery`, filled in by
+/// `ofm_core::turn`; 50 is neutral.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct CoachMastery {
+    pub balanced: u8,
+    pub attacking: u8,
+    pub defensive: u8,
+    pub possession: u8,
+    pub counter: u8,
+    pub high_press: u8,
+}
+
+impl CoachMastery {
+    pub const NEUTRAL: u8 = 50;
+
+    pub fn for_style(&self, style: PlayStyle) -> u8 {
+        match style {
+            PlayStyle::Balanced => self.balanced,
+            PlayStyle::Attacking => self.attacking,
+            PlayStyle::Defensive => self.defensive,
+            PlayStyle::Possession => self.possession,
+            PlayStyle::Counter => self.counter,
+            PlayStyle::HighPress => self.high_press,
+        }
+    }
+}
+
+impl Default for CoachMastery {
+    fn default() -> Self {
+        Self {
+            balanced: Self::NEUTRAL,
+            attacking: Self::NEUTRAL,
+            defensive: Self::NEUTRAL,
+            possession: Self::NEUTRAL,
+            counter: Self::NEUTRAL,
+            high_press: Self::NEUTRAL,
+        }
+    }
 }
 
 impl TeamData {

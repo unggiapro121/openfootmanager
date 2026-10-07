@@ -716,3 +716,104 @@ fn a_role_the_deployed_slot_does_not_admit_is_not_played() {
         "a role the striker's slot admits must still reach the engine"
     );
 }
+
+/// Which coach a side carries into the engine.
+mod coach_mastery {
+    use super::*;
+    use crate::clock::GameClock;
+    use chrono::{TimeZone, Utc};
+    use domain::manager::Manager;
+    use domain::team::Team;
+
+    fn club(id: &str) -> Team {
+        let mut team = Team::new(
+            id.to_string(),
+            format!("{id} FC"),
+            "CLB".to_string(),
+            "England".to_string(),
+            "London".to_string(),
+            "Ground".to_string(),
+            25_000,
+        );
+        team.play_style = domain::team::PlayStyle::Counter;
+        team
+    }
+
+    /// The user at "user" (Counter mastery 80), an AI manager at "ai" (30), and a
+    /// club, "orphan", with nobody in the dugout.
+    fn coached_world() -> Game {
+        let mut user_manager = Manager::new(
+            "mgr_user".to_string(),
+            "Test".to_string(),
+            "Manager".to_string(),
+            "1980-01-01".to_string(),
+            "England".to_string(),
+        );
+        user_manager.hire("user".to_string());
+        user_manager.play_style_mastery.counter = 80;
+        let mut user_club = club("user");
+        user_club.manager_id = Some("mgr_user".to_string());
+
+        let mut ai_manager = Manager::new(
+            "mgr_ai".to_string(),
+            "Ai".to_string(),
+            "Boss".to_string(),
+            "1975-01-01".to_string(),
+            "England".to_string(),
+        );
+        ai_manager.hire("ai".to_string());
+        ai_manager.play_style_mastery.counter = 30;
+        let mut ai_club = club("ai");
+        ai_club.manager_id = Some("mgr_ai".to_string());
+
+        let clock = GameClock::new(Utc.with_ymd_and_hms(2026, 8, 1, 12, 0, 0).unwrap());
+        let mut game = Game::new(
+            clock,
+            user_manager,
+            vec![user_club, ai_club, club("orphan")],
+            vec![],
+            vec![],
+            vec![],
+        );
+        game.managers.push(ai_manager);
+        game
+    }
+
+    /// Given the user's own club, and the copy of the user in `game.managers` gone
+    /// stale since their mastery changed,
+    /// When the club's side is built for a match,
+    /// Then its coach is read from the user themselves, not the stale copy.
+    #[test]
+    fn the_users_club_is_coached_by_the_user() {
+        let mut game = coached_world();
+        game.manager.play_style_mastery.counter = 85;
+
+        let (team_data, _bench) = build_team_with_bench(&game, "user");
+
+        assert_eq!(team_data.coach.counter, 85);
+    }
+
+    /// Given an AI club with a manager strong in nothing much at Counter (30),
+    /// When its side is built for a match,
+    /// Then its coach carries that manager's mastery.
+    #[test]
+    fn an_ai_club_is_coached_by_its_own_manager() {
+        let game = coached_world();
+
+        let (team_data, _bench) = build_team_with_bench(&game, "ai");
+
+        assert_eq!(team_data.coach.counter, 30);
+    }
+
+    /// Given a club with nobody in the dugout,
+    /// When its side is built for a match,
+    /// Then it plays its style as the table prices it: a neutral coach.
+    #[test]
+    fn a_club_without_a_manager_is_coached_neutrally() {
+        let game = coached_world();
+
+        let (team_data, _bench) = build_team_with_bench(&game, "orphan");
+
+        assert_eq!(team_data.coach, engine::CoachMastery::default());
+    }
+}

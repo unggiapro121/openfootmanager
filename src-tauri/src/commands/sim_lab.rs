@@ -544,6 +544,7 @@ fn build_team(
         name: format!("{} FC", id),
         formation: formation.to_string(),
         play_style,
+        coach: engine::CoachMastery::default(),
         players,
         tactics: engine::TacticsConfig::default(),
     }

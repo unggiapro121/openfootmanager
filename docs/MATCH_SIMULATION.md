@@ -148,6 +148,16 @@ Each team has a play style that applies multiplicative modifiers to different ph
 
 These modifiers are applied to the relevant team rating during action resolution, for whichever side the phase belongs to: Midfield to both sides contesting the middle, Attack to the side going forward, Defense to the side defending its third, Press to the side pressing. For example, a Counter team gets an 18% boost to attack rating but an 8% penalty to midfield control, whether it has the ball or not.
 
+### The head coach
+
+Each side carries its head coach's mastery of every play style (`TeamData::coach`, a
+`CoachMastery`, 1–100; `ofm_core::turn::squad` fills it from the club's manager). The
+mastery `m` of the style in use scales the table: with `k = 0.5 + m/100`, a value above
+1.0 moves `k` times as far from 1.0 and a value below 1.0 moves `2 − k` times as far. A
+neutral coach (50) plays the table as printed; a coach of 90 turns Counter's 1.18 / 0.92
+into 1.252 / 0.952, a coach of 20 into 1.126 / 0.896. A mid-match style change reads the
+coach's mastery of the new style at once.
+
 ---
 
 ## Phase Blueprint (TacticsConfig)
@@ -439,7 +449,7 @@ The simulation has **69 dedicated tests**:
 - Events: builder pattern, goal detection, chronological ordering
 - Simulation: deterministic seeds, varied results, goals match scores, scorer IDs
 - Balance: strong team dominance, equal teams evenness, home advantage
-- Play styles: possession team has more possession; a defensive side concedes fewer than a balanced one
+- Play styles: possession team has more possession; a defensive side concedes fewer than a balanced one; a Counter specialist coach gets more goals out of Counter than a novice
 - Stats: player stats populated, shots consistent, pass accuracy in range
 - Edge cases: zero stoppage time, high foul probability, JSON serialization
 - Realism: average goals per game in 0.5–8.0 range

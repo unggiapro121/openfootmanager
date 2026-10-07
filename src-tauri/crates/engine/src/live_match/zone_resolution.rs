@@ -103,12 +103,10 @@ impl LiveMatchState {
         let def_rating = self.condition_adjusted_skill(&defender.id, def_raw)
             * trait_bonus(&defender, TraitContext::Tackling);
 
-        let att_mod =
-            play_style_modifier(self.team_ref(att_side).play_style, PlayStylePhase::Midfield)
-                * role_attribute_modifier(attacker.role, PlayStylePhase::Midfield);
-        let def_mod =
-            play_style_modifier(self.team_ref(def_side).play_style, PlayStylePhase::Midfield)
-                * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
+        let att_mod = play_style_modifier(self.team_ref(att_side), PlayStylePhase::Midfield)
+            * role_attribute_modifier(attacker.role, PlayStylePhase::Midfield);
+        let def_mod = play_style_modifier(self.team_ref(def_side), PlayStylePhase::Midfield)
+            * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
         let att_eff = att_rating
             * att_mod
             * crate::shared::home_mod(att_side, &self.config)
@@ -185,12 +183,10 @@ impl LiveMatchState {
         let def_rating = self.condition_adjusted_skill(&defender.id, def_raw)
             * trait_bonus(&defender, TraitContext::Tackling);
 
-        let att_mod =
-            play_style_modifier(self.team_ref(att_side).play_style, PlayStylePhase::Attack)
-                * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
-        let def_mod =
-            play_style_modifier(self.team_ref(def_side).play_style, PlayStylePhase::Defense)
-                * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
+        let att_mod = play_style_modifier(self.team_ref(att_side), PlayStylePhase::Attack)
+            * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
+        let def_mod = play_style_modifier(self.team_ref(def_side), PlayStylePhase::Defense)
+            * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
         let att_eff = att_rating * att_mod * crate::shared::home_mod(att_side, &self.config);
         let def_eff = def_rating
             * def_mod
@@ -568,6 +564,7 @@ mod event_detail_tests {
             name: id.to_string(),
             formation: "4-4-2".to_string(),
             play_style: PlayStyle::Balanced,
+            coach: crate::types::CoachMastery::default(),
             tactics: crate::types::TacticsConfig::default(),
             players: vec![
                 make_player(&format!("{id}_gk"), Position::Goalkeeper),
