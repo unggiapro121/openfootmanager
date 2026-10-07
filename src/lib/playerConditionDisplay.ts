@@ -7,9 +7,11 @@
  * the bar/fill class. Both use identical thresholds and color families.
  */
 export function condColor(condition: number): string {
-  if (condition >= 75) return "text-primary-400";
-  if (condition >= 50) return "text-amber-400";
-  return "text-red-400";
+  // The -400 shades are the dark-theme ones; light surfaces (squad roster,
+  // training groups) need the deeper -600 to stay readable on white.
+  if (condition >= 75) return "text-primary-600 dark:text-primary-400";
+  if (condition >= 50) return "text-amber-600 dark:text-amber-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 export function condBgColor(condition: number): string {

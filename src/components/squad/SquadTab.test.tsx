@@ -502,6 +502,19 @@ describe("SquadTab", () => {
     expect(cells[contractColumn]).not.toHaveTextContent("Expires 2026-10-15");
   });
 
+  /** Given a tired player, then condition reads as a coloured figure, with no bar beside it. */
+  it("shows condition as text without a progress bar", () => {
+    const gameState = makeGameState();
+    gameState.players[0].condition = 42;
+
+    renderSquadTab(gameState);
+
+    const row = screen.getByText("GK1").closest("tr") as HTMLTableRowElement;
+    expect(row).toHaveTextContent("42%");
+    // ProgressBar has no role; its fill is the element sized to the value.
+    expect(row.querySelector('[style*="width: 42%"]')).toBeNull();
+  });
+
   it("keeps the same column-header node when a filter changes", async () => {
     // A header that remounts throws away focus and any in-flight transition. A component declared
     // inside the render body does it — Biome's noNestedComponentDefinitions catches that case —
