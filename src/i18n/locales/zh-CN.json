@@ -783,6 +783,8 @@
     "updateTactic": "更新战术",
     "tacticSaved": "已保存",
     "tacticName": "战术名称",
+    "renameTactic": "重命名战术",
+    "renameTacticNamed": "重命名 {{name}}",
     "identitySummary": "风格摘要",
     "synced": "已同步",
     "unsavedChanges": "未保存的更改",

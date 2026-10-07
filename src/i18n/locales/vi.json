@@ -735,6 +735,8 @@
     "updateTactic": "Cập nhật chiến thuật",
     "tacticSaved": "Đã lưu",
     "tacticName": "Tên chiến thuật",
+    "renameTactic": "Đổi tên chiến thuật",
+    "renameTacticNamed": "Đổi tên {{name}}",
     "identitySummary": "Tóm tắt bản sắc",
     "synced": "Đã đồng bộ",
     "unsavedChanges": "Thay đổi chưa lưu",

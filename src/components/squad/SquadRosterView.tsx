@@ -588,8 +588,8 @@ export default function SquadRosterView({
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                {/* No fixed width: trait pills never wrap (TraitBadge), so the column's
-                    minimum is the widest pill on show, in whatever language. */}
+                {/* Traits are icons, named in their tooltips: as labelled pills they
+                    made this the widest column and stacked rows several pills tall. */}
                 <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {t("squad.traits")}
                 </th>
@@ -885,9 +885,9 @@ export default function SquadRosterView({
                           {t(`squad.styleFitValues.${styleFit}`)}
                         </Badge>
                       </td>
-                      {/* Traits — all of them, wraps as needed */}
+                      {/* Traits — all of them, as icons that wrap as needed */}
                       <td className="py-2.5 px-4">
-                        <TraitList traits={player.traits || []} size="xs" />
+                        <TraitList traits={player.traits || []} size="xs" iconOnly />
                       </td>
                       <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
                         {age}

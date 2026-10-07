@@ -234,9 +234,12 @@ function buildTraitTooltip(traitName: string, translate: (key: string) => string
 export function TraitBadge({
   trait: traitName,
   size = "sm",
+  iconOnly = false,
 }: {
   trait: string;
   size?: "sm" | "xs";
+  /** Show the icon alone, for tight spaces; the trait's name moves into the tooltip. */
+  iconOnly?: boolean;
 }) {
   const { t } = useTranslation();
   const meta = TRAIT_META[traitName];
@@ -245,9 +248,14 @@ export function TraitBadge({
     return null;
   }
 
-  const sizeClasses =
-    size === "xs" ? "text-[9px] px-1.5 py-0.5 gap-0.5" : "text-[10px] px-2 py-0.5 gap-1";
-  const tooltip = buildTraitTooltip(traitName, t);
+  const label = t(`traits.${traitName}.label`);
+  const description = buildTraitTooltip(traitName, t);
+  const tooltip = iconOnly ? `${label}: ${description}` : description;
+  const sizeClasses = iconOnly
+    ? "p-1"
+    : size === "xs"
+      ? "text-[9px] px-1.5 py-0.5 gap-0.5"
+      : "text-[10px] px-2 py-0.5 gap-1";
 
   return (
     <span
@@ -257,7 +265,7 @@ export function TraitBadge({
       aria-label={tooltip}
     >
       {meta.icon}
-      {t(`traits.${traitName}.label`)}
+      {iconOnly ? null : label}
     </span>
   );
 }
@@ -266,10 +274,12 @@ export function TraitList({
   traits,
   size = "sm",
   max,
+  iconOnly = false,
 }: {
   traits: string[];
   size?: "sm" | "xs";
   max?: number;
+  iconOnly?: boolean;
 }) {
   if (!traits || traits.length === 0) {
     return null;
@@ -281,7 +291,7 @@ export function TraitList({
   return (
     <div className="flex flex-wrap gap-1">
       {displayed.map((trait) => (
-        <TraitBadge key={trait} trait={trait} size={size} />
+        <TraitBadge key={trait} trait={trait} size={size} iconOnly={iconOnly} />
       ))}
       {remaining > 0 ? (
         <span className="text-[10px] text-gray-500 font-heading self-center">+{remaining}</span>

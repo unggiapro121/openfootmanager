@@ -5,6 +5,7 @@ import { Eye, GitCompareArrows, X } from "lucide-react";
 import { calcAge, getPlayerOvr } from "../../lib/helpers";
 import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
 import { normalisePosition } from "../squad/SquadTab.helpers";
+import { TraitList } from "../TraitBadge";
 
 const ATTRIBUTE_GROUPS: {
   labelKey: string;
@@ -85,6 +86,12 @@ function PlayerSummary({ label, player }: { label: string; player: PlayerData })
               alternatePositions={player.alternate_positions}
             />
           </div>
+          {/* Traits as icons only, named on hover: the card has no room for their labels. */}
+          {player.traits.length > 0 ? (
+            <div className="mt-2">
+              <TraitList traits={player.traits} iconOnly />
+            </div>
+          ) : null}
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
             <CountryFlag code={player.nationality} className="text-xs leading-none mr-1" />
             {t("common.age")} {calcAge(player.date_of_birth)}
@@ -147,6 +154,64 @@ function SinglePlayerAttributes({ player }: { player: PlayerData }) {
   );
 }
 
+/**
+ * One player's value in a comparison row: the figure and its bar on one line.
+ * The two sides mirror each other, figure beside the attribute's name in the
+ * middle and bar running outward, so the two numbers sit side by side.
+ */
+function CompareValueCell({
+  label,
+  side,
+  value,
+  wins,
+}: {
+  label: string;
+  side: "left" | "right";
+  value: number;
+  wins: boolean;
+}) {
+  const figure = (
+    <span
+      className={`w-6 shrink-0 text-xs font-heading font-bold tabular-nums ${valueTone(value)} ${side === "left" ? "text-right" : "text-left"}`}
+    >
+      {value}
+    </span>
+  );
+  const bar = (
+    <div
+      className={`flex h-2 flex-1 overflow-hidden rounded-full bg-white dark:bg-navy-700 ${side === "left" ? "justify-end" : "justify-start"}`}
+    >
+      <div
+        className={`h-full rounded-full ${valueBarTone(value)}`}
+        style={{ width: `${value}%` }}
+      />
+    </div>
+  );
+
+  return (
+    <div
+      role="meter"
+      aria-label={`${label}: ${value}`}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={value}
+      className={`flex items-center gap-2 rounded-lg px-2 py-1.5 ${wins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-gray-50 dark:bg-navy-800/70"}`}
+    >
+      {side === "left" ? (
+        <>
+          {bar}
+          {figure}
+        </>
+      ) : (
+        <>
+          {figure}
+          {bar}
+        </>
+      )}
+    </div>
+  );
+}
+
 function CompareAttributes({
   canConfirmSwap,
   comparePlayer,
@@ -195,35 +260,21 @@ function CompareAttributes({
                   key={attr}
                   className="grid grid-cols-[minmax(0,1fr)_90px_minmax(0,1fr)] gap-2 items-center"
                 >
-                  <div
-                    className={`rounded-lg px-2 py-2 ${leftWins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-gray-50 dark:bg-navy-800/70"}`}
-                  >
-                    <div className="flex items-center justify-between gap-2 text-xs mb-1">
-                      <span className={`font-heading font-bold ${valueTone(left)}`}>{left}</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-white dark:bg-navy-700 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${valueBarTone(left)}`}
-                        style={{ width: `${left}%` }}
-                      />
-                    </div>
-                  </div>
+                  <CompareValueCell
+                    label={t(`common.attributes.${attr}`)}
+                    side="left"
+                    value={left}
+                    wins={leftWins}
+                  />
                   <div className="text-center text-[10px] font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     {t(`common.attributes.${attr}`)}
                   </div>
-                  <div
-                    className={`rounded-lg px-2 py-2 ${rightWins ? "bg-primary-500/10 ring-1 ring-primary-500/20" : "bg-gray-50 dark:bg-navy-800/70"}`}
-                  >
-                    <div className="flex items-center justify-between gap-2 text-xs mb-1">
-                      <span className={`font-heading font-bold ${valueTone(right)}`}>{right}</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-white dark:bg-navy-700 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${valueBarTone(right)}`}
-                        style={{ width: `${right}%` }}
-                      />
-                    </div>
-                  </div>
+                  <CompareValueCell
+                    label={t(`common.attributes.${attr}`)}
+                    side="right"
+                    value={right}
+                    wins={rightWins}
+                  />
                 </div>
               );
             })}

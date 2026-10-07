@@ -76,6 +76,8 @@ export default function TacticsTab({
     activeTactic,
     tacticLibrary,
     isCommandBarDirty,
+    draftTacticName,
+    setDraftTacticName,
     applyTacticSelection,
     handleCreateCustomTactic,
     handleDuplicateTactic,
@@ -88,6 +90,8 @@ export default function TacticsTab({
     initialPreset,
     onFormationChange: handleFormationChange,
     onPlayStyleChange: handlePlayStyleChange,
+    tacticsPhase: team?.tactics_phase,
+    onTacticsPhaseChange: handleTacticsPhaseChange,
   });
 
   if (!team) {
@@ -116,6 +120,8 @@ export default function TacticsTab({
           void handlePlayStyleChange(playStyle);
         }}
         onSave={handleSaveTactic}
+        onTacticNameChange={setDraftTacticName}
+        tacticName={draftTacticName}
         onSelectTactic={(id) => {
           const nextTactic = tacticLibrary.find((entry) => entry.id === id);
           if (!nextTactic) {

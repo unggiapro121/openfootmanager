@@ -46,6 +46,8 @@ function buildProps(
     onCreateNew: vi.fn(),
     onDuplicate: vi.fn(),
     onDelete: vi.fn(),
+    onTacticNameChange: vi.fn(),
+    tacticName: customTactic.name,
     onFormationChange: vi.fn(),
     onPlayStyleChange: vi.fn(),
     onSave: vi.fn(),
@@ -66,6 +68,72 @@ function lastButton(name: string): HTMLElement {
 }
 
 describe("TacticsCommandBar", () => {
+  /**
+   * Given a saved custom tactic, when the command bar is shown, then the name
+   * field stays out of the way until the manager renames it from its row in the
+   * list, next to its delete button.
+   */
+  it("opens the name field from the rename button on a tactic's row", () => {
+    renderCommandBar({ activeTactic: customTactic });
+
+    expect(screen.queryByRole("textbox", { name: "tactics.tacticName" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.chooseTactic" }));
+    fireEvent.click(screen.getByRole("button", { name: "tactics.renameTacticNamed" }));
+
+    const nameInput = screen.getByRole("textbox", { name: "tactics.tacticName" });
+    expect(nameInput).toHaveFocus();
+    expect(nameInput).toHaveValue("My Tactic");
+  });
+
+  /**
+   * Given a custom tactic that is not the one in use, when its rename button is
+   * pressed, then it is selected first so the rename applies to it.
+   */
+  it("selects another tactic before renaming it", () => {
+    const onSelectTactic = vi.fn();
+    renderCommandBar({
+      activeTactic: presetTactic,
+      onSelectTactic,
+      tacticName: "Balanced Control",
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.chooseTactic" }));
+    fireEvent.click(screen.getByRole("button", { name: "tactics.renameTacticNamed" }));
+
+    expect(onSelectTactic).toHaveBeenCalledWith("custom:1");
+  });
+
+  /**
+   * Given the name field open on a renamed draft, when Escape is pressed, then
+   * the field closes and the draft goes back to the saved name.
+   */
+  it("cancels a rename with Escape", () => {
+    const onTacticNameChange = vi.fn();
+    renderCommandBar({ activeTactic: customTactic, onTacticNameChange, tacticName: "Draft" });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.chooseTactic" }));
+    fireEvent.click(screen.getByRole("button", { name: "tactics.renameTacticNamed" }));
+    fireEvent.keyDown(screen.getByRole("textbox", { name: "tactics.tacticName" }), {
+      key: "Escape",
+    });
+
+    expect(onTacticNameChange).toHaveBeenCalledWith("My Tactic");
+    expect(screen.queryByRole("textbox", { name: "tactics.tacticName" })).toBeNull();
+  });
+
+  /**
+   * Given the tactic list, when it is open, then only the manager's own tactics
+   * can be renamed: a preset's name is not his to change.
+   */
+  it("offers rename only on the manager's own tactics", () => {
+    renderCommandBar({ activeTactic: presetTactic, tacticName: presetTactic.name });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.chooseTactic" }));
+
+    expect(screen.getAllByRole("button", { name: "tactics.renameTacticNamed" })).toHaveLength(1);
+  });
+
   it("disables the save button when the active custom tactic is already synced", () => {
     renderCommandBar({ activeTactic: customTactic, isDirty: false });
 

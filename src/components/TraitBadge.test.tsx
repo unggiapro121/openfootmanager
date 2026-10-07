@@ -27,6 +27,18 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("TraitBadge", () => {
+  // Given a trait shown as its icon alone, then its name is not printed, and it
+  // moves into the tooltip ahead of the description.
+  it("names the trait in the tooltip when only its icon is shown", () => {
+    render(<TraitBadge trait="Speedster" iconOnly />);
+
+    expect(screen.queryByText("Velocista")).toBeNull();
+    expect(screen.getByRole("img", { name: "Velocista: Explosivo | Ritmo 85+" })).toHaveAttribute(
+      "title",
+      "Velocista: Explosivo | Ritmo 85+",
+    );
+  });
+
   it("uses translated labels for minimum-threshold requirements in the tooltip", () => {
     render(<TraitBadge trait="Speedster" />);
 

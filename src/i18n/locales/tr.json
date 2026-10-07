@@ -735,6 +735,8 @@
     "updateTactic": "Taktiği güncelle",
     "tacticSaved": "Kaydedildi",
     "tacticName": "Taktik adı",
+    "renameTactic": "Taktiği yeniden adlandır",
+    "renameTacticNamed": "{{name}} adını değiştir",
     "identitySummary": "Kimlik özeti",
     "synced": "Senkronize",
     "unsavedChanges": "Kaydedilmemiş değişiklikler",

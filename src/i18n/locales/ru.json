@@ -783,6 +783,8 @@
     "updateTactic": "Обновить тактику",
     "tacticSaved": "Сохранено",
     "tacticName": "Название тактики",
+    "renameTactic": "Переименовать тактику",
+    "renameTacticNamed": "Переименовать {{name}}",
     "identitySummary": "Сводка идентичности",
     "synced": "Синхронизировано",
     "unsavedChanges": "Несохранённые изменения",
