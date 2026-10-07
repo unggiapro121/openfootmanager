@@ -28,6 +28,8 @@ import {
 
 interface PostMatchScreenProps {
   snapshot: MatchSnapshot;
+  /** The engine's ratings, by player id; empty when the match was not finished here. */
+  playerRatings: Record<string, number>;
   gameState: GameStateData;
   userSide: "Home" | "Away" | null;
   isSpectator: boolean;
@@ -86,6 +88,7 @@ export function computeGoalSources(
 
 export default function PostMatchScreen({
   snapshot,
+  playerRatings,
   gameState,
   userSide,
   isSpectator,
@@ -669,6 +672,7 @@ export default function PostMatchScreen({
               <PlayerRatingsPanel
                 key={side}
                 snapshot={snapshot}
+                playerRatings={playerRatings}
                 side={side}
                 teamColor={side === "Home" ? homeTeamColor : awayTeamColor}
                 userSide={userSide}

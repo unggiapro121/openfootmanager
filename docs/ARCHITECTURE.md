@@ -200,7 +200,7 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `step_live_match` | minutes | `Vec<MinuteResult>` | Advance simulation by N minutes |
 | `apply_match_command` | command | `MatchSnapshot` | Send a tactical command |
 | `get_match_snapshot` | — | `MatchSnapshot` | Get current match state |
-| `finish_live_match` | — | `Game` | Apply results and clean up |
+| `finish_live_match` | — | `FinishLiveMatchResponse` (`game`, `round_summary`, `player_ratings`) | Apply results and clean up; `player_ratings` holds the engine's rating for each player who was rated |
 
 ### Team Management Commands
 

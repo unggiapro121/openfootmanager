@@ -378,14 +378,21 @@ fn populate_minutes_played(
         .map(|player_id| (player_id, total_minutes))
         .collect();
 
+    // When each substitute came on. A player who leaves the pitch played from
+    // here, not from kick-off — without it a substitute who was himself taken
+    // off was credited with every minute up to his exit.
+    let mut came_on_at: HashMap<String, u8> = HashMap::new();
     for event in events {
         match event.event_type {
             EventType::Substitution => {
                 if let Some(ref player_off_id) = event.secondary_player_id {
+                    let left_at = event.minute.min(total_minutes);
+                    let joined_at = came_on_at.get(player_off_id).copied().unwrap_or(0);
                     minutes_by_player
-                        .insert(player_off_id.clone(), event.minute.min(total_minutes));
+                        .insert(player_off_id.clone(), left_at.saturating_sub(joined_at));
                 }
                 if let Some(ref player_on_id) = event.player_id {
+                    came_on_at.insert(player_on_id.clone(), event.minute.min(total_minutes));
                     minutes_by_player.insert(
                         player_on_id.clone(),
                         total_minutes.saturating_sub(event.minute),
@@ -395,10 +402,12 @@ fn populate_minutes_played(
             EventType::RedCard | EventType::SecondYellow => {
                 if let Some(ref player_id) = event.player_id {
                     let dismissed_at = event.minute.min(total_minutes);
+                    let joined_at = came_on_at.get(player_id).copied().unwrap_or(0);
+                    let played = dismissed_at.saturating_sub(joined_at);
                     minutes_by_player
                         .entry(player_id.clone())
-                        .and_modify(|minutes| *minutes = (*minutes).min(dismissed_at))
-                        .or_insert(dismissed_at);
+                        .and_modify(|minutes| *minutes = (*minutes).min(played))
+                        .or_insert(played);
                 }
             }
             _ => {}
@@ -416,6 +425,28 @@ mod tests {
 
     fn event(minute: u8, event_type: EventType, side: Side, player: &str) -> MatchEvent {
         MatchEvent::new(minute, event_type, side, Zone::attacking_box(side)).with_player(player)
+    }
+
+    /// Given a substitute who came on at 60 and was himself taken off at 80,
+    /// When minutes are counted,
+    /// Then he played twenty minutes, not eighty.
+    #[test]
+    fn a_substitute_who_is_substituted_played_only_his_time_on_the_pitch() {
+        let events = vec![
+            MatchEvent::new(60, EventType::Substitution, Side::Home, Zone::Midfield)
+                .with_player("sub")
+                .with_secondary("starter"),
+            MatchEvent::new(80, EventType::Substitution, Side::Home, Zone::Midfield)
+                .with_player("late_sub")
+                .with_secondary("sub"),
+        ];
+
+        let report =
+            MatchReport::from_events_with_players(events, 50, 50, 90, vec!["starter".to_string()]);
+
+        assert_eq!(report.player_stats["starter"].minutes_played, 60);
+        assert_eq!(report.player_stats["sub"].minutes_played, 20);
+        assert_eq!(report.player_stats["late_sub"].minutes_played, 10);
     }
 
     // Regression: shootout kicks used to be counted as match goals, inflating

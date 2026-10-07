@@ -1913,3 +1913,94 @@ fn every_period_lasts_its_full_length_whatever_stoppage_came_before() {
         "200 seeds should include first-half stoppage and a drawn match, or this test proves nothing"
     );
 }
+
+// ===========================================================================
+// Tests: Match ratings
+// ===========================================================================
+
+fn ratings_of_finished_match(seed: u64) -> Vec<f32> {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(seed);
+    run_to_finish(&mut state, &mut rng);
+    state
+        .into_report()
+        .player_stats
+        .values()
+        .map(|stats| stats.rating)
+        .filter(|rating| *rating > 0.0)
+        .collect()
+}
+
+/// Given a full ninety minutes between two sides,
+/// When the report is built,
+/// Then every one of the twenty-two starters has a rating on the 3–10 scale.
+#[test]
+fn every_starter_in_a_finished_match_is_rated() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(7);
+    run_to_finish(&mut state, &mut rng);
+    let starters: Vec<String> = state
+        .snapshot()
+        .home_team
+        .players
+        .iter()
+        .chain(state.snapshot().away_team.players.iter())
+        .map(|player| player.id.clone())
+        .collect();
+
+    let report = state.into_report();
+
+    for id in starters {
+        let stats = report.player_stats.get(&id).expect("a starter has stats");
+        if stats.minutes_played >= 10 {
+            assert!(
+                (3.0..=10.0).contains(&stats.rating),
+                "{id} played {} minutes and was rated {}",
+                stats.minutes_played,
+                stats.rating
+            );
+        }
+    }
+}
+
+/// Given a midfielder substituted off on the hour,
+/// When the report is built,
+/// Then he is still rated for the hour he played, though he ended on the bench.
+#[test]
+fn a_player_substituted_off_is_still_rated() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(11);
+    for _ in 0..62 {
+        state.step_minute(&mut rng);
+    }
+    let player_off_id = state.snapshot().home_team.players[5].id.clone();
+    let player_on_id = state.bench(Side::Home)[2].id.clone();
+    state
+        .apply_command(MatchCommand::Substitute {
+            side: Side::Home,
+            player_off_id: player_off_id.clone(),
+            player_on_id,
+        })
+        .expect("the substitution is allowed");
+    run_to_finish(&mut state, &mut rng);
+
+    let report = state.into_report();
+
+    let rating = report.player_stats[&player_off_id].rating;
+    assert!((3.0..=10.0).contains(&rating), "rated {rating}");
+}
+
+/// Given forty matches between evenly matched sides,
+/// When every player who played is rated,
+/// Then the ratings centre on 6.0, the mark of an ordinary game, with a
+/// spread that separates a good afternoon from a bad one.
+#[test]
+fn ratings_centre_on_six_across_many_matches() {
+    let ratings: Vec<f32> = (0..40).flat_map(ratings_of_finished_match).collect();
+    let count = ratings.len() as f32;
+    let mean = ratings.iter().sum::<f32>() / count;
+    let spread = (ratings.iter().map(|r| (r - mean).powi(2)).sum::<f32>() / count).sqrt();
+
+    assert!((5.85..=6.15).contains(&mean), "mean rating {mean:.2}");
+    assert!((0.4..=1.2).contains(&spread), "rating spread {spread:.2}");
+}

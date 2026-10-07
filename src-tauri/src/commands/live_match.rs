@@ -953,6 +953,33 @@ mod tests {
         );
     }
 
+    /// Given a live match played out to full time,
+    /// When it is finished,
+    /// Then the response carries the engine's rating for every player who played
+    /// long enough to be judged, and no unrated zeros.
+    #[test]
+    fn finishing_a_match_returns_the_player_ratings() {
+        let state = StateManager::new();
+        let game = make_game_with_round();
+        let mut session =
+            live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
+        session.user_side = None;
+        state.set_game(game);
+        state.set_live_match(session);
+
+        let response = finish_live_match_internal(&state).expect("finish live match");
+
+        assert!(
+            response.player_ratings.len() >= 22,
+            "both starting elevens are rated, got {}",
+            response.player_ratings.len()
+        );
+        assert!(response
+            .player_ratings
+            .values()
+            .all(|rating| (3.0..=10.0).contains(rating)));
+    }
+
     /// Given a league fixture tied at regulation time, when a caller requests extra time,
     /// then the fixture ends as a draw without extra time or a shootout.
     #[test]

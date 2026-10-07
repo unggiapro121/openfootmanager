@@ -6,11 +6,15 @@ use ofm_core::game::Game;
 use ofm_core::live_match_manager::{self, MatchMode};
 use ofm_core::state::StateManager;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FinishLiveMatchResponse {
     pub game: Game,
     pub round_summary: Option<RoundSummaryDto>,
+    /// The engine's rating for each player who played long enough to be judged,
+    /// keyed by player id. Unrated players are left out rather than sent as 0.
+    pub player_ratings: BTreeMap<String, f32>,
 }
 
 pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse, String> {
@@ -36,6 +40,12 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
     let away_team_id = session.away_team_id.clone();
 
     let report = session.match_state.into_report();
+    let player_ratings: BTreeMap<String, f32> = report
+        .player_stats
+        .iter()
+        .filter(|(_, stats)| stats.rating > 0.0)
+        .map(|(player_id, stats)| (player_id.clone(), stats.rating))
+        .collect();
     info!(
         "[cmd] finish_live_match: fixture_index={}, competition_id={}, home_team_id={}, away_team_id={}, events= {}",
         fixture_index,
@@ -148,6 +158,7 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
     Ok(FinishLiveMatchResponse {
         game,
         round_summary,
+        player_ratings,
     })
 }
 
