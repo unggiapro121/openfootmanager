@@ -172,6 +172,8 @@ fn process_day_common(game: &mut Game, today: &str) {
     crate::ai_contracts::apply_ai_contract_decisions(game, weekday_num);
     crate::contracts::process_contract_expiries(game);
 
+    // Prices first, so the books, the market and the AI all read this week's values.
+    crate::economy::refresh_weekly_player_values(game);
     // Weekly financial processing (wages, matchday income, warnings)
     crate::finances::process_weekly_finances(game);
 
@@ -380,6 +382,10 @@ mod tests {
         staff
     }
 
+    /// Given a club with one player on 1,000 and one coach on 200 a week, on a Monday,
+    /// When the live match day finishes,
+    /// Then the week's books are kept: wages go out and broadcast and commercial
+    /// income come in, exactly once.
     #[test]
     fn finish_live_match_day_runs_weekly_finances_on_monday() {
         let clock = GameClock::new(Utc.with_ymd_and_hms(2025, 6, 16, 12, 0, 0).unwrap());
@@ -401,10 +407,16 @@ mod tests {
             vec![],
         );
         let initial_finance = game.teams[0].finance;
+        let reputation = game.teams[0].reputation;
+        let central_income = crate::economy::revenue::weekly_broadcast_income(reputation)
+            + crate::economy::revenue::weekly_commercial_income(reputation);
 
         finish_live_match_day(&mut game);
 
-        assert_eq!(game.teams[0].finance, initial_finance - 1_200);
+        assert_eq!(
+            game.teams[0].finance,
+            initial_finance - 1_200 + central_income
+        );
     }
 
     /// Given a fixture that cannot be played live and no competition in the

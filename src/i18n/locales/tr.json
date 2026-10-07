@@ -1116,6 +1116,8 @@
     "cashFlow": "Nakit Akışı",
     "weeklyWageSpend": "Haftalık Maaş Gideri",
     "weeklySponsorIncome": "Haftalık Sponsor Geliri",
+    "weeklyBroadcastIncome": "Haftalık TV Geliri",
+    "weeklyCommercialIncome": "Haftalık Ticari Gelir",
     "projectedWeeklyNet": "Öngörülen Haftalık Net",
     "cashRunway": "Nakit Yeterliliği",
     "runwayWeeks": "Mevcut hızla {{count}} hafta",

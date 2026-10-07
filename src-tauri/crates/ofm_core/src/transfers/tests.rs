@@ -69,7 +69,9 @@ fn make_game() -> Game {
         sample_attributes(),
     );
     player.team_id = Some("team1".to_string());
-    player.market_value = 600_000;
+    // A first-team regular (+10 interest), not a notable name: on his own he
+    // falls short of the shortlist, so only the award leaderboard puts him on it.
+    player.market_value = crate::economy::valuation::REGULAR_VALUE;
     player.stage_wage(18_000);
     player.morale = 58;
     player.stage_contract_end(Some("2027-06-30".to_string()));
@@ -91,6 +93,10 @@ fn make_game() -> Game {
     game
 }
 
+/// Given a user's first-team regular whose interest score alone is too low to
+/// draw bids, but who tops the scoring leaderboard,
+/// When the transfer market is evaluated,
+/// Then an AI club bids for him and the bid reaches the inbox.
 #[test]
 fn evaluate_transfer_market_targets_award_leaderboard_user_player() {
     let mut game = make_game();
@@ -117,6 +123,10 @@ fn evaluate_transfer_market_targets_award_leaderboard_user_player() {
     );
 }
 
+/// Given the same leaderboard player, one buying club in the active competition
+/// and one in a dormant competition,
+/// When the transfer market is evaluated,
+/// Then only the active club bids.
 #[test]
 fn dormant_clubs_outside_the_active_scope_skip_the_market() {
     use domain::league::{League, StandingEntry};

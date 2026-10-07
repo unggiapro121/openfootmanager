@@ -1,6 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+/// A club that has not had its pay level set pays the market rate.
+fn default_pay_level() -> f64 {
+    1.0
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Team {
     pub id: String,
@@ -23,6 +28,11 @@ pub struct Team {
     // Financial breakdown
     pub wage_budget: i64,
     pub transfer_budget: i64,
+    /// How the club pays against the market rate for a player's ability: above
+    /// 1.0 a premium, below it what a player accepts to play there. Set from the
+    /// club's income and squad as a career opens and at each season's start.
+    #[serde(default = "default_pay_level")]
+    pub pay_level: f64,
     pub season_income: i64,
     pub season_expenses: i64,
     #[serde(default)]
@@ -478,6 +488,7 @@ impl Team {
             reputation: 500,
             wage_budget: 200_000,
             transfer_budget: 500_000,
+            pay_level: default_pay_level(),
             season_income: 0,
             season_expenses: 0,
             financial_ledger: Vec::new(),

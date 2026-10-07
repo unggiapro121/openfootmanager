@@ -159,8 +159,11 @@ pub fn is_season_complete(game: &Game) -> bool {
     !leagues.is_empty() && leagues.into_iter().all(is_league_complete)
 }
 
+/// Top-flight merit payments on the real-world scale of `crate::economy`: the
+/// television money is shared out weekly, this is what finishing high adds.
 const PRIZE_MONEY_BY_POSITION: [i64; 10] = [
-    5_000_000, 3_000_000, 1_500_000, 750_000, 400_000, 300_000, 250_000, 200_000, 175_000, 150_000,
+    40_000_000, 24_000_000, 12_000_000, 6_000_000, 3_200_000, 2_400_000, 2_000_000, 1_600_000,
+    1_400_000, 1_200_000,
 ];
 
 const SEASON_PAYOUT_LEDGER_DESCRIPTION_KEY: &str = "be.msg.seasonPayout.ledgerDescription";
@@ -206,7 +209,7 @@ fn prize_money_for_position(position: u32) -> i64 {
     PRIZE_MONEY_BY_POSITION
         .get(position.saturating_sub(1) as usize)
         .copied()
-        .unwrap_or(150_000)
+        .unwrap_or(1_200_000)
 }
 
 /// Prize money for a finishing position, halved for each tier below the top
@@ -962,20 +965,6 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
                         kind: FinancialTransactionKind::PrizeMoney,
                     });
                 }
-
-                // Refresh the transfer envelope for the new season. Formula
-                // matches worldgen (generator/mod.rs:543): 15% of finance.
-                // Since `execute_transfer` debits the budget on every buy and
-                // no other path adds to it, without this refill the market
-                // would freeze after 2-3 seasons as every club drained to
-                // zero.
-                // Clamp at zero — unlike worldgen (which only ever sees fresh
-                // positive finance), end-of-season runs on live state where a
-                // heavily indebted club can have negative `finance`. A
-                // negative envelope would still be rejected by
-                // `make_transfer_bid`, but showing "€-1.2M transfer budget"
-                // in the UI reads worse than a hard zero.
-                team.transfer_budget = ((team.finance as f64 * 0.15) as i64).max(0);
             }
         }
 
@@ -1005,6 +994,10 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     }
 
     apply_season_end_squad_turnover(game, game.clock.current_date.date_naive(), season);
+    // After the prize money is in, reputations have moved and the squads have
+    // turned over: the new season's budgets come from the club as it now stands.
+    // The transfer budget is refilled here because a buy draws it down all season.
+    crate::economy::set_season_budgets(game);
 
     for player in game.players.iter_mut() {
         // Reset stats for next season

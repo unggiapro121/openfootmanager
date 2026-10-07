@@ -182,6 +182,8 @@ function createBackendFinanceSnapshot() {
     weekly_wage_budget: 50000,
     weekly_recurring_income: 12000,
     weekly_sponsor_income: 12000,
+    weekly_broadcast_income: 0,
+    weekly_commercial_income: 0,
     projected_weekly_net: 0,
     cash_runway_weeks: null as number | null,
     wage_budget_usage_percent: 24,

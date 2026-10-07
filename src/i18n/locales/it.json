@@ -1135,6 +1135,8 @@
     "cashFlow": "Flusso di cassa",
     "weeklyWageSpend": "Spesa salariale settimanale",
     "weeklySponsorIncome": "Entrate settimanali da sponsor",
+    "weeklyBroadcastIncome": "Entrate settimanali dai diritti TV",
+    "weeklyCommercialIncome": "Entrate commerciali settimanali",
     "projectedWeeklyNet": "Netto settimanale previsto",
     "cashRunway": "Autonomia finanziaria",
     "runwayWeeks": "{{count}} settimane al ritmo attuale",

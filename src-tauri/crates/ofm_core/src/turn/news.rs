@@ -274,7 +274,7 @@ fn rumour_candidates(game: &Game) -> Vec<(String, String, String, String)> {
             if p.injury.is_some() {
                 return false;
             }
-            let high_value = p.market_value >= 800_000;
+            let high_value = p.market_value >= crate::economy::valuation::NOTABLE_VALUE;
             let short_contract = p
                 .contract_end()
                 .and_then(|end| chrono::NaiveDate::parse_from_str(end, "%Y-%m-%d").ok())
@@ -423,7 +423,9 @@ fn world_news_priority(game: &Game, article: &domain::news::NewsArticle) -> i64 
         .player_ids
         .iter()
         .filter_map(|player_id| game.players.iter().find(|player| player.id == *player_id))
-        .map(|player| (player.market_value / 10_000) as i64)
+        // Scaled so even a record-fee star stays well below the gap between two
+        // news categories: heat orders stories within a category, never across.
+        .map(|player| (player.market_value / 50_000) as i64)
         .max()
         .unwrap_or(0);
     let user_team_id = game.manager.team_id.as_deref();
@@ -1696,6 +1698,10 @@ mod tests {
         );
     }
 
+    /// Given a busy week with two notable AI players, a marquee name at a big
+    /// club and a lesser one at a small club, and more stories than the cap,
+    /// When the weekly digest is generated,
+    /// Then the cap holds, the marquee rumour survives and the lesser one is dropped.
     #[test]
     fn weekly_digest_caps_world_news_and_keeps_higher_priority_rumours() {
         let mut game = make_game("2025-08-11", FixtureStatus::Completed);
@@ -1740,11 +1746,11 @@ mod tests {
         );
 
         let mut marquee_player = make_player("ai-marquee", "Marquee", "team2");
-        marquee_player.market_value = 1_500_000;
+        marquee_player.market_value = 18_000_000;
         game.players.push(marquee_player);
 
         let mut fringe_player = make_player("ai-fringe", "Fringe", "team3");
-        fringe_player.market_value = 900_000;
+        fringe_player.market_value = 12_000_000;
         game.players.push(fringe_player);
 
         generate_weekly_digest_news(&mut game, "2025-08-11");
@@ -1768,6 +1774,9 @@ mod tests {
         );
     }
 
+    /// Given a week with a notable AI player and a completed transfer,
+    /// When the weekly digest is generated twice for the same Monday,
+    /// Then the digest, the transfer roundup and the rumour each appear once.
     #[test]
     fn generate_weekly_digest_news_does_not_duplicate_same_week() {
         let mut game = make_game("2025-08-11", FixtureStatus::Completed);
@@ -1783,7 +1792,7 @@ mod tests {
             default_attrs(),
         );
         notable_player.team_id = Some("team2".to_string());
-        notable_player.market_value = 1_300_000;
+        notable_player.market_value = 16_000_000;
         game.players.push(notable_player);
 
         add_completed_transfer(
@@ -1825,6 +1834,9 @@ mod tests {
         );
     }
 
+    /// Given a stored rumour from weeks ago and a notable AI player,
+    /// When the weekly digest is generated,
+    /// Then the stale rumour is pruned and a fresh one is stored for the player.
     #[test]
     fn weekly_digest_prunes_stale_transfer_rumours_when_creating_new_ones() {
         let mut game = make_game("2025-09-08", FixtureStatus::Completed);
@@ -1840,7 +1852,7 @@ mod tests {
             default_attrs(),
         );
         notable_player.team_id = Some("team2".to_string());
-        notable_player.market_value = 1_450_000;
+        notable_player.market_value = 17_500_000;
         game.players.push(notable_player);
 
         game.league
@@ -1961,6 +1973,9 @@ mod tests {
         );
     }
 
+    /// Given a notable AI player during the season,
+    /// When the weekly digest is generated,
+    /// Then a rumour article about him is published and stored.
     #[test]
     fn weekly_digest_includes_transfer_rumours_for_notable_ai_players() {
         let mut game = make_game("2025-08-11", FixtureStatus::Completed);
@@ -1978,7 +1993,7 @@ mod tests {
             default_attrs(),
         );
         notable_player.team_id = Some("team2".to_string());
-        notable_player.market_value = 1_500_000;
+        notable_player.market_value = 18_000_000;
         game.players.push(notable_player);
 
         // Mark fixtures as completed so season is started
@@ -2011,6 +2026,9 @@ mod tests {
         assert_eq!(stored_rumours[0].team_id, "team2");
     }
 
+    /// Given a notable player at the user's own club,
+    /// When the weekly digest is generated,
+    /// Then no rumour is written about him.
     #[test]
     fn weekly_digest_does_not_generate_rumours_for_user_team_players() {
         let mut game = make_game("2025-08-11", FixtureStatus::Completed);
@@ -2027,7 +2045,7 @@ mod tests {
             default_attrs(),
         );
         user_player.team_id = Some("team1".to_string()); // team1 is the user's team
-        user_player.market_value = 2_000_000;
+        user_player.market_value = 25_000_000;
         game.players.push(user_player);
 
         if let Some(league) = &mut game.league {
@@ -2053,6 +2071,9 @@ mod tests {
         );
     }
 
+    /// Given a notable AI player in preseason,
+    /// When the weekly digest is generated,
+    /// Then a rumour article about him is published.
     #[test]
     fn preseason_digest_includes_transfer_rumours_for_notable_ai_players() {
         let mut game = make_game("2025-08-11", FixtureStatus::Scheduled);
@@ -2069,7 +2090,7 @@ mod tests {
             default_attrs(),
         );
         notable_player.team_id = Some("team2".to_string());
-        notable_player.market_value = 1_500_000;
+        notable_player.market_value = 18_000_000;
         game.players.push(notable_player);
 
         generate_weekly_digest_news(&mut game, "2025-08-11");

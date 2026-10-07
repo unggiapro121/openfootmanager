@@ -52,8 +52,41 @@ pub(crate) fn backend_text_with_param(key: &str, param_name: &str, param_value: 
     message
 }
 
+/// What the player asks `team` to pay him a week.
+///
+/// The target is the club's rate for a player of his ability, raised or lowered
+/// by his circumstances: his age, his mood, his standing and how little time is
+/// left on his deal. A free agent asks the target. A player under contract moves
+/// half the way from his current wage toward it, the way terms are won at the
+/// table, in either direction: a player who has outgrown his deal asks for a
+/// raise, one paid above what his club can now afford accepts a cut, but never
+/// below the least he would take. A raise is won a contract at a time, at most
+/// [`MAX_RAISE_PERCENT`] on one deal: an academy graduate on a youth wage does
+/// not ask a star's wage the first time he signs again, which no club's budget
+/// could absorb in one go.
 pub(crate) fn expected_wage(player: &Player, team: &Team, current_date: NaiveDate) -> u32 {
-    let mut wage = reference_player_wage(player) as f32;
+    const MAX_RAISE_PERCENT: i64 = 30;
+    let target = target_wage_at(player, team, current_date);
+    let current = player.wage();
+    let asked = if current == 0 {
+        target
+    } else {
+        let current = i64::from(current);
+        let moved = (current + (i64::from(target) - current) / 2)
+            .min(current * (100 + MAX_RAISE_PERCENT) / 100)
+            .max(i64::from(minimum_acceptable_wage(player.wage())));
+        u32::try_from(moved).unwrap_or(u32::MAX)
+    };
+    round_up_to_nearest_thousand(asked.max(MINIMUM_DEFAULT_WAGE as u32))
+}
+
+/// The club's rate for the player's ability, with his circumstances weighed in.
+fn target_wage_at(player: &Player, team: &Team, current_date: NaiveDate) -> u32 {
+    let club_rate = crate::economy::scaled_wage(
+        crate::economy::valuation::market_wage(player, Some(team.reputation)),
+        team.pay_level,
+    );
+    let mut wage = club_rate as f32;
     let age = player_age_on(current_date, &player.date_of_birth);
     let remaining_days = remaining_contract_days(player, current_date);
 
@@ -79,30 +112,31 @@ pub(crate) fn expected_wage(player: &Player, team: &Team, current_date: NaiveDat
         wage *= 1.05;
     }
 
-    let rounded = round_up_to_nearest_thousand(wage.ceil() as u32);
-    rounded.max(reference_player_wage(player))
+    wage.ceil() as u32
 }
 
+/// The wage the player is on now. A free agent is on nothing, so the club's own
+/// rate is all he measures an offer against: a small club can sign him on a small
+/// club's wage, which is how unattached players find work.
 pub(crate) fn reference_player_wage(player: &Player) -> u32 {
     if player.wage() > 0 {
         return player.wage();
     }
 
-    let derived_wage = (player.market_value / MARKET_VALUE_TO_WAGE_RATIO).max(MINIMUM_DEFAULT_WAGE);
-
-    round_up_to_nearest_thousand(derived_wage.min(u32::MAX as u64) as u32)
+    MINIMUM_DEFAULT_WAGE as u32
 }
 
 pub(crate) fn importance_wage_multiplier(player: &Player) -> f32 {
-    if player.market_value >= 2_000_000 {
+    use crate::economy::valuation::{LOW_VALUE, NOTABLE_VALUE, STAR_VALUE};
+    if player.market_value >= STAR_VALUE {
         return 1.18;
     }
 
-    if player.market_value >= 750_000 {
+    if player.market_value >= NOTABLE_VALUE {
         return 1.10;
     }
 
-    if player.market_value <= 150_000 {
+    if player.market_value <= LOW_VALUE {
         return 0.95;
     }
 

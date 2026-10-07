@@ -8,6 +8,8 @@ interface BackendTeamFinanceSnapshotData {
   weekly_wage_budget: number;
   weekly_recurring_income: number;
   weekly_sponsor_income: number;
+  weekly_broadcast_income: number;
+  weekly_commercial_income: number;
   projected_weekly_net: number;
   cash_runway_weeks: number | null;
   wage_budget_usage_percent: number;
@@ -55,6 +57,8 @@ export interface TeamFinanceSnapshotData {
   weeklyWageBudget: number;
   weeklyRecurringIncome: number;
   weeklySponsorIncome: number;
+  weeklyBroadcastIncome: number;
+  weeklyCommercialIncome: number;
   projectedWeeklyNet: number;
   cashRunwayWeeks: number | null;
   wageBudgetUsagePercent: number;
@@ -103,6 +107,8 @@ function mapSnapshot(snapshot: BackendTeamFinanceSnapshotData): TeamFinanceSnaps
     weeklyWageBudget: snapshot.weekly_wage_budget,
     weeklyRecurringIncome: snapshot.weekly_recurring_income,
     weeklySponsorIncome: snapshot.weekly_sponsor_income,
+    weeklyBroadcastIncome: snapshot.weekly_broadcast_income,
+    weeklyCommercialIncome: snapshot.weekly_commercial_income,
     projectedWeeklyNet: snapshot.projected_weekly_net,
     cashRunwayWeeks: snapshot.cash_runway_weeks,
     wageBudgetUsagePercent: snapshot.wage_budget_usage_percent,

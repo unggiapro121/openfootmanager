@@ -511,6 +511,10 @@ describe("getContractRiskLevel", () => {
 });
 
 describe("formatVal", () => {
+  it("formats billions", () => {
+    expect(formatVal(1_250_000_000)).toBe("€1.25B");
+  });
+
   it("formats millions", () => {
     expect(formatVal(5000000)).toBe("€5.0M");
     expect(formatVal(1500000)).toBe("€1.5M");

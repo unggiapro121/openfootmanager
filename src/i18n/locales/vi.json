@@ -1116,6 +1116,8 @@
     "cashFlow": "Dòng tiền",
     "weeklyWageSpend": "Chi lương mỗi tuần",
     "weeklySponsorIncome": "Thu tài trợ mỗi tuần",
+    "weeklyBroadcastIncome": "Thu bản quyền TV mỗi tuần",
+    "weeklyCommercialIncome": "Thu thương mại mỗi tuần",
     "projectedWeeklyNet": "Dự kiến thu ròng mỗi tuần",
     "cashRunway": "Thời gian trụ được",
     "runwayWeeks": "{{count}} tuần với tốc độ hiện tại",

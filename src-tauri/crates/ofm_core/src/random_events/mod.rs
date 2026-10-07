@@ -102,7 +102,7 @@ pub fn check_random_events(game: &mut Game) {
                 .find(|t| t.id == user_team_id)
                 .map(|t| t.name.as_str())
                 .unwrap_or(fallback_club_name());
-            let amount = rng.random_range(5..=30) * 10_000; // 50k - 300k
+            let amount = rng.random_range(5..=30) * 50_000; // 250k - 1.5M a week
             let sponsor = sponsor_offer_name(rng.random_range(0..8));
 
             new_messages.push(message_builders::sponsor_offer_message(
@@ -157,13 +157,13 @@ pub fn check_random_events(game: &mut Game) {
                         let pid = player.id.clone();
                         let player_name = player.match_name.clone();
                         let player_team_id = player.team_id.clone();
-                        let is_notable = player.market_value >= 500_000
-                            || player_team_id.as_deref().is_some_and(|tid| {
-                                game.teams
-                                    .iter()
-                                    .find(|t| t.id == tid)
-                                    .is_some_and(|t| t.starting_xi_ids.iter().any(|id| id == &pid))
-                            });
+                        let is_notable =
+                            player.market_value >= crate::economy::valuation::REGULAR_VALUE
+                                || player_team_id.as_deref().is_some_and(|tid| {
+                                    game.teams.iter().find(|t| t.id == tid).is_some_and(|t| {
+                                        t.starting_xi_ids.iter().any(|id| id == &pid)
+                                    })
+                                });
 
                         if let Some(p) = game.players.iter_mut().find(|p| p.id == pid) {
                             p.injury = Some(domain::player::Injury {
@@ -434,9 +434,9 @@ pub fn rival_interest_weight(
         None => 1,
     };
 
-    let value_weight = if player.market_value >= 2_000_000 {
+    let value_weight = if player.market_value >= crate::economy::valuation::STAR_VALUE {
         3
-    } else if player.market_value >= 750_000 {
+    } else if player.market_value >= crate::economy::valuation::NOTABLE_VALUE {
         2
     } else {
         1

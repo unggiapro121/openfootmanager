@@ -1116,6 +1116,8 @@
     "cashFlow": "Finanční tok (Cash Flow)",
     "weeklyWageSpend": "Týdenní výdaje na platy",
     "weeklySponsorIncome": "Týdenní příjmy od sponzorů",
+    "weeklyBroadcastIncome": "Týdenní příjmy z TV práv",
+    "weeklyCommercialIncome": "Týdenní komerční příjmy",
     "projectedWeeklyNet": "Předpokládaný týdenní zisk",
     "cashRunway": "Finanční rezerva",
     "runwayWeeks": "Při současném tempu zbývá týdnů: {{count}}",

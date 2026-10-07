@@ -1116,6 +1116,8 @@
     "cashFlow": "Arus Kas",
     "weeklyWageSpend": "Pengeluaran Gaji Mingguan",
     "weeklySponsorIncome": "Pendapatan Sponsor Mingguan",
+    "weeklyBroadcastIncome": "Pendapatan TV Mingguan",
+    "weeklyCommercialIncome": "Pendapatan Komersial Mingguan",
     "projectedWeeklyNet": "Perkiraan Bersih Mingguan",
     "cashRunway": "Jarak Kas",
     "runwayWeeks": "{{count}} minggu dengan laju saat ini",

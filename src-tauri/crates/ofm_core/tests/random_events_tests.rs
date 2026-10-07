@@ -614,11 +614,15 @@ fn check_random_events_community_event_structure() {
 // InjuryNews article tests
 // ---------------------------------------------------------------------------
 
+/// Given a user-team regular worth €5M, above the €3M line at which an injury
+/// makes the news, who is the only player training,
+/// When many days of random events run,
+/// Then his training injuries produce InjuryNews articles.
 #[test]
 fn injury_news_article_created_for_notable_player() {
     let mut game = make_game();
     // Make one user-team player notable and the only eligible training target.
-    game.players[0].market_value = 1_000_000;
+    game.players[0].market_value = 5_000_000;
     game.players[0].fitness = 1;
     for player in game.players.iter_mut().skip(1) {
         player.team_id = Some("other-team".to_string());
@@ -643,7 +647,7 @@ fn injury_news_article_created_for_notable_player() {
         .collect();
     assert!(
         !injury_news.is_empty(),
-        "A notable player (market_value = 1_000_000, above the 500K threshold) should generate InjuryNews articles"
+        "A notable player (market_value = 5_000_000, above the 3M threshold) should generate InjuryNews articles"
     );
 }
 

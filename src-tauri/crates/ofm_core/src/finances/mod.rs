@@ -18,20 +18,22 @@ use domain::team::{
 use rand::RngExt;
 use serde::Serialize;
 
-const BOARD_SUPPORT_MIN_AMOUNT: i64 = 150_000;
-const BOARD_SUPPORT_MAX_AMOUNT: i64 = 1_000_000;
+// Money amounts below are on the real-world scale of `crate::economy`, where a
+// top club takes in a couple of million a week.
+const BOARD_SUPPORT_MIN_AMOUNT: i64 = 1_500_000;
+const BOARD_SUPPORT_MAX_AMOUNT: i64 = 20_000_000;
 const BOARD_SUPPORT_TARGET_RUNWAY_WEEKS: i64 = 8;
 const BOARD_SUPPORT_SATISFACTION_PENALTY: u8 = 12;
 const FINANCE_WARNING_SATISFACTION_PENALTY: u8 = 2;
 const FINANCE_CRITICAL_SATISFACTION_PENALTY: u8 = 4;
 const MARKETING_CAMPAIGN_COOLDOWN_DAYS: i64 = 28;
-const MARKETING_CAMPAIGN_MIN_GROSS_REVENUE: i64 = 60_000;
-const MARKETING_CAMPAIGN_MAX_GROSS_REVENUE: i64 = 250_000;
-const MARKETING_CAMPAIGN_MIN_COST: i64 = 15_000;
+const MARKETING_CAMPAIGN_MIN_GROSS_REVENUE: i64 = 600_000;
+const MARKETING_CAMPAIGN_MAX_GROSS_REVENUE: i64 = 2_500_000;
+const MARKETING_CAMPAIGN_MIN_COST: i64 = 150_000;
 const SPONSOR_PITCH_DURATION_WEEKS: u32 = 12;
-const SPONSOR_PITCH_MIN_WEEKLY_AMOUNT: i64 = 40_000;
-const SPONSOR_PITCH_MAX_WEEKLY_AMOUNT: i64 = 180_000;
-const SPONSOR_PITCH_REPUTATION_MULTIPLIER: i64 = 120;
+const SPONSOR_PITCH_MIN_WEEKLY_AMOUNT: i64 = 200_000;
+const SPONSOR_PITCH_MAX_WEEKLY_AMOUNT: i64 = 900_000;
+const SPONSOR_PITCH_REPUTATION_MULTIPLIER: i64 = 600;
 
 fn marketing_campaign_activation_description() -> String {
     ["Marketing", "campaign", "activation", "spend"].join(" ")
@@ -65,6 +67,13 @@ pub struct TeamFinanceSnapshot {
     pub weekly_wage_budget: i64,
     pub weekly_recurring_income: i64,
     pub weekly_sponsor_income: i64,
+    /// The club's share of its league's television deal.
+    #[serde(default)]
+    pub weekly_broadcast_income: i64,
+    /// Kit, shirt and partner deals every club has, apart from a sponsorship the
+    /// manager lands.
+    #[serde(default)]
+    pub weekly_commercial_income: i64,
     pub projected_weekly_net: i64,
     pub cash_runway_weeks: Option<i64>,
     pub wage_budget_usage_percent: u32,
@@ -287,15 +296,11 @@ pub fn calc_cash_runway_weeks(balance: i64, projected_weekly_net: i64) -> Option
     Some(std::cmp::max(0, balance / projected_weekly_net.abs()))
 }
 
-pub fn calc_matchday(
-    stadium_capacity: u32,
-    home_match_count: i64,
-    attendance_pct: f64,
-    avg_ticket: f64,
-) -> i64 {
-    let revenue_per_match = (stadium_capacity as f64 * attendance_pct * avg_ticket) as i64;
-
-    revenue_per_match * home_match_count
+/// Gate receipts for `home_match_count` home games. `turnout` is the share of
+/// the club's usual following that came (1.0 is an ordinary game).
+pub fn calc_matchday(team: &Team, home_match_count: i64, turnout: f64) -> i64 {
+    crate::economy::revenue::matchday_gate(team.reputation, team.stadium_capacity, turnout)
+        * home_match_count
 }
 
 pub fn calc_upkeep(_team: &Team) -> i64 {
@@ -308,7 +313,7 @@ fn estimated_weekly_matchday_income(game: &Game, team: &Team) -> i64 {
         return 0;
     }
 
-    calc_matchday(team.stadium_capacity, recent_home_match_count, 0.76, 20.0)
+    calc_matchday(team, recent_home_match_count, 1.0)
 }
 
 pub fn team_finance_snapshot(game: &Game, team_id: &str) -> Option<TeamFinanceSnapshot> {
@@ -326,7 +331,13 @@ pub fn team_finance_snapshot(game: &Game, team_id: &str) -> Option<TeamFinanceSn
         })
         .unwrap_or(0);
     let weekly_matchday_income = estimated_weekly_matchday_income(game, team);
-    let weekly_recurring_income = weekly_sponsor_income + weekly_matchday_income;
+    let weekly_broadcast_income = crate::economy::revenue::weekly_broadcast_income(team.reputation);
+    let weekly_commercial_income =
+        crate::economy::revenue::weekly_commercial_income(team.reputation);
+    let weekly_recurring_income = weekly_sponsor_income
+        + weekly_matchday_income
+        + weekly_broadcast_income
+        + weekly_commercial_income;
     let projected_weekly_net = weekly_recurring_income - weekly_wage_spend;
     let cash_runway_weeks = calc_cash_runway_weeks(team.finance, projected_weekly_net);
     let wage_budget_usage_percent = ((annual_wage_bill * 100) / std::cmp::max(1, team.wage_budget))
@@ -340,6 +351,8 @@ pub fn team_finance_snapshot(game: &Game, team_id: &str) -> Option<TeamFinanceSn
         weekly_wage_budget,
         weekly_recurring_income,
         weekly_sponsor_income,
+        weekly_broadcast_income,
+        weekly_commercial_income,
         projected_weekly_net,
         cash_runway_weeks,
         wage_budget_usage_percent,
@@ -524,21 +537,21 @@ fn marketing_campaign_cooldown_days_remaining(team: &Team, today: NaiveDate) -> 
 }
 
 fn marketing_campaign_gross_revenue(team: &Team, snapshot: &TeamFinanceSnapshot) -> i64 {
-    let reputation_component = (team.reputation as i64) * 250;
-    let stadium_component = (team.stadium_capacity as i64) * 3;
+    let reputation_component = (team.reputation as i64) * 2_500;
+    let stadium_component = (team.stadium_capacity as i64) * 30;
     let pressure_component = match snapshot.overall_status {
         FinanceHealthLevel::Stable => 0,
-        FinanceHealthLevel::Watch => 10_000,
-        FinanceHealthLevel::Warning => 25_000,
-        FinanceHealthLevel::Critical => 40_000,
+        FinanceHealthLevel::Watch => 100_000,
+        FinanceHealthLevel::Warning => 250_000,
+        FinanceHealthLevel::Critical => 400_000,
     };
     let debt_bonus = if snapshot.currently_in_debt {
-        20_000
+        200_000
     } else {
         0
     };
     let wage_pressure_bonus = if snapshot.currently_over_budget {
-        15_000
+        150_000
     } else {
         0
     };
@@ -599,24 +612,24 @@ fn sponsor_pitch_weekly_amount(
 ) -> i64 {
     let reputation_component = team.reputation as i64 * SPONSOR_PITCH_REPUTATION_MULTIPLIER;
     let league_position_component = match current_position {
-        Some(1) => 18_000,
-        Some(2..=4) => 12_000,
-        Some(5..=8) => 6_000,
+        Some(1) => 90_000,
+        Some(2..=4) => 60_000,
+        Some(5..=8) => 30_000,
         _ => 0,
     };
     let pressure_component = match snapshot.overall_status {
         FinanceHealthLevel::Stable => 0,
-        FinanceHealthLevel::Watch => 5_000,
-        FinanceHealthLevel::Warning => 15_000,
-        FinanceHealthLevel::Critical => 25_000,
+        FinanceHealthLevel::Watch => 25_000,
+        FinanceHealthLevel::Warning => 75_000,
+        FinanceHealthLevel::Critical => 125_000,
     };
     let wage_pressure_bonus = if snapshot.currently_over_budget {
-        15_000
+        75_000
     } else {
         0
     };
     let debt_bonus = if snapshot.currently_in_debt {
-        20_000
+        100_000
     } else {
         0
     };
@@ -1050,6 +1063,20 @@ pub fn process_weekly_finances(game: &mut Game) {
                 post_date,
             ));
         }
+        // Every club, every week: television money and the commercial deals that
+        // are part of being a professional club, both sized by its standing.
+        reqs.push(PostRequest::new(
+            &team.id,
+            crate::economy::revenue::weekly_broadcast_income(team.reputation),
+            CashKind::Broadcast,
+            post_date,
+        ));
+        reqs.push(PostRequest::new(
+            &team.id,
+            crate::economy::revenue::weekly_commercial_income(team.reputation),
+            CashKind::Commercial,
+            post_date,
+        ));
         let current_position = position_by_team.get(&team.id).copied();
         let sponsorship_income = team
             .sponsorship
@@ -1100,18 +1127,14 @@ pub fn process_weekly_finances(game: &mut Game) {
             if home_count == 0 {
                 continue;
             }
-            let stadium_capacity = game
-                .teams
-                .iter()
-                .find(|team| team.id == team_id)
-                .map(|team| team.stadium_capacity)
-                .unwrap_or(0);
-            // One gate per club per week, drawn from that club's own stream.
+            // One gate per club per week, drawn from that club's own stream: a
+            // big game or a wet Tuesday moves the crowd a little either way.
             let mut rng = game.rng_today(&format!("finances/matchday/{team_id}"));
-            let attendance_pct = rng.random_range(60..=92) as f64 / 100.0;
-            let avg_ticket = rng.random_range(15..=25) as f64;
-            let total_revenue =
-                calc_matchday(stadium_capacity, home_count, attendance_pct, avg_ticket);
+            let turnout = rng.random_range(90..=105) as f64 / 100.0;
+            let Some(team) = game.teams.iter().find(|team| team.id == team_id) else {
+                continue;
+            };
+            let total_revenue = calc_matchday(team, home_count, turnout);
             let req = PostRequest::new(&team_id, total_revenue, CashKind::Matchday, post_date);
             let _ = commit_weekly_posts(game, std::slice::from_ref(&req));
         }

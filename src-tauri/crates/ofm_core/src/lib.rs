@@ -16,6 +16,7 @@ pub mod contracts;
 pub mod currency;
 pub mod delegated_renewals;
 pub mod development_speed;
+pub mod economy;
 pub mod end_of_season;
 pub mod finances;
 pub mod firing;

@@ -1116,6 +1116,8 @@
     "cashFlow": "现金流",
     "weeklyWageSpend": "每周工资支出",
     "weeklySponsorIncome": "每周赞助收入",
+    "weeklyBroadcastIncome": "每周电视转播收入",
+    "weeklyCommercialIncome": "每周商业收入",
     "projectedWeeklyNet": "预计每周净收益",
     "cashRunway": "现金续航",
     "runwayWeeks": "按当前节奏可维持 {{count}} 周",

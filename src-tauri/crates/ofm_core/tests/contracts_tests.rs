@@ -57,6 +57,9 @@ fn make_player() -> Player {
     player.stage_wage(12_000);
     player.morale = 75;
     player.market_value = 350_000;
+    // Rated so that his ability at this small club is worth a little more than
+    // the 12k he is on: renewing, he asks 14k on his current deal.
+    player.ovr = 70;
     player
 }
 
@@ -185,6 +188,8 @@ fn make_free_agent() -> Player {
     player.stage_contract_end(None);
     player.stage_wage(0);
     player.market_value = 600_000;
+    // Rated so that he asks this club for 4k a week.
+    player.ovr = 62;
     player
 }
 
@@ -510,6 +515,9 @@ fn insulting_offer_blocks_further_renewal_talks_temporarily() {
     );
 }
 
+/// Given a player on 12k whose ability is worth a raise at this club,
+/// When the manager offers 13k for two years,
+/// Then he counters at 14k for three years, with round-one feedback.
 #[test]
 fn counter_offer_returns_understandable_feedback() {
     let mut game = make_game();
@@ -552,6 +560,10 @@ fn renewal_offer_rejects_contracts_longer_than_five_years() {
     assert_eq!(game.players[0].contract_end(), Some("2026-10-15"));
 }
 
+/// Given a star valued in the tens of millions and a low-rated fringe player,
+/// both on 12k with two years left,
+/// When each is offered 14k for three years,
+/// Then the fringe player accepts and the star counters for more.
 #[test]
 fn high_value_star_expects_more_than_fringe_player() {
     let current_date = Utc
@@ -562,17 +574,13 @@ fn high_value_star_expects_more_than_fringe_player() {
 
     let mut star = make_player();
     star.stage_contract_end(Some("2028-08-01".to_string()));
-    star.market_value = 2_500_000;
-    star.attributes.pace = 88;
-    star.attributes.shooting = 90;
-    star.attributes.dribbling = 87;
+    star.market_value = 40_000_000;
+    star.ovr = 80;
 
     let mut fringe = make_player();
     fringe.stage_contract_end(Some("2028-08-01".to_string()));
     fringe.market_value = 80_000;
-    fringe.attributes.pace = 50;
-    fringe.attributes.shooting = 48;
-    fringe.attributes.dribbling = 49;
+    fringe.ovr = 55;
 
     let offer = RenewalOffer {
         weekly_wage: 14_000,
@@ -649,6 +657,9 @@ fn free_agent_offer_accepts_and_assigns_player_to_manager_team() {
     assert_eq!(message.i18n_params.get("years"), Some(&"3".to_string()));
 }
 
+/// Given a free agent who asks this club for 4k a week,
+/// When the manager offers 3k for two years,
+/// Then he counters at 4k for three years and stays unattached.
 #[test]
 fn free_agent_offer_returns_counter_when_terms_are_close_but_short() {
     let mut game = make_free_agent_game();
@@ -769,6 +780,9 @@ fn free_agent_projection_uses_manager_team_wage_context() {
     assert!(projection.policy_allows);
 }
 
+/// Given two identical players on 12k, one content and one unhappy,
+/// When each is offered 13k for three years,
+/// Then the content player accepts and the unhappy one counters.
 #[test]
 fn low_morale_player_becomes_harder_to_renew_than_content_player() {
     let current_date = Utc
@@ -803,6 +817,9 @@ fn low_morale_player_becomes_harder_to_renew_than_content_player() {
     ));
 }
 
+/// Given two identical players on 12k, one with two years left and one with two months,
+/// When each is offered 13k for three years,
+/// Then the secure player accepts and the expiring one counters.
 #[test]
 fn shorter_remaining_term_increases_renewal_demands() {
     let current_date = Utc
@@ -832,6 +849,9 @@ fn shorter_remaining_term_increases_renewal_demands() {
     ));
 }
 
+/// Given a player who asks 14k but barely trusts the manager,
+/// When the manager offers 15k for three years,
+/// Then he refuses: the offer is fair but not generous enough to win him over.
 #[test]
 fn low_manager_trust_player_can_refuse_manual_renewal_even_at_fair_terms() {
     let mut game = make_game();
@@ -918,6 +938,10 @@ fn stale_manual_renewal_talks_cool_off_and_restart_from_round_one() {
     );
 }
 
+/// Given a player who asks 14k, distrusts the manager, and an assistant
+/// allowed a 35% raise,
+/// When renewals are delegated to the assistant,
+/// Then the assistant signs him for at least 14k and reports it.
 #[test]
 fn assistant_can_complete_routine_delegate_renewal_even_when_manager_trust_is_low() {
     let mut game = make_game();

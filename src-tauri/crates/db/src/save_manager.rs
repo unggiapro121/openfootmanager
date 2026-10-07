@@ -566,6 +566,14 @@ impl SaveManager {
             needs_resave = true;
         }
 
+        // After the cash journal exists, so the lift is booked against it rather than
+        // pre-empting the backfill above. Values were set once at world generation and
+        // clubs earned too little to pay their squads: reprice everyone and lift each
+        // club to the reserve its income now supports. Signed contracts stand.
+        if save_format_version < 9 {
+            ofm_core::economy::adopt_real_world_scale(&mut game);
+        }
+
         // Backfill OVR/potential for players from older saves that don't have them yet.
         // We use the game clock year so age is accurate.
         let current_year = game
@@ -2421,14 +2429,27 @@ mod tests {
         assert_eq!(loaded.seed, 0xC0FF_EE00_1234_5678);
     }
 
+    /// Given a format-5 save of a small club whose sixteen weeks of wages come to
+    /// more than the cash reserve its income supports on the real-world scale,
+    /// When it is loaded, and loaded again after the upgrade resave,
+    /// Then its cash is floored to exactly sixteen weeks of wages, once.
     #[test]
     fn loading_a_pre_v6_save_floors_cash_to_sixteen_weeks_of_wages() {
+        // Given a pre-v6 save, when it loads, then the club holds at least sixteen
+        // weeks of its wages, and loading again changes nothing.
+        //
+        // The format-9 upgrade runs too, and lifts a club to its reserve plus a
+        // season of any wage bill its income cannot carry. That lift is always at
+        // least the sixteen-week floor, so the floor is asserted as a lower bound
+        // the load must honour, not as the exact balance.
+        const WEEKLY_WAGES: u32 = 100_000;
         let dir = tempfile::tempdir().unwrap();
         let saves_dir = dir.path().join("saves");
         let mut sm = SaveManager::init(&saves_dir).unwrap();
         let mut game = sample_game();
         game.players[0].team_id = Some("team-001".to_string());
-        game.players[0].stage_wage(5_000);
+        game.players[0].stage_wage(WEEKLY_WAGES);
+        game.teams[0].reputation = 100;
         game.teams[0].finance = 1_000;
         let save_id = sm.create_save(&game, "Pre Weekly Lock").unwrap();
         let db_path = saves_dir.join(format!("{save_id}.db"));
@@ -2440,10 +2461,12 @@ mod tests {
             meta_repo::upsert_meta(db.conn(), &meta).unwrap();
         }
 
+        let floor = i64::from(WEEKLY_WAGES) * ofm_core::finances::MIN_OPENING_RUNWAY_WEEKS;
         let loaded = sm.load_game(&save_id).unwrap();
-        assert_eq!(
-            loaded.teams[0].finance,
-            5_000 * ofm_core::finances::MIN_OPENING_RUNWAY_WEEKS
+        assert!(
+            loaded.teams[0].finance >= floor,
+            "{} is below the sixteen-week floor of {floor}",
+            loaded.teams[0].finance
         );
 
         let db = GameDatabase::open(&db_path).unwrap();
@@ -2455,8 +2478,8 @@ mod tests {
 
         let loaded_again = sm.load_game(&save_id).unwrap();
         assert_eq!(
-            loaded_again.teams[0].finance,
-            5_000 * ofm_core::finances::MIN_OPENING_RUNWAY_WEEKS
+            loaded_again.teams[0].finance, loaded.teams[0].finance,
+            "a resaved save is not lifted twice"
         );
     }
 

@@ -666,7 +666,9 @@ mod tests {
             default_attrs(),
         );
         player.team_id = Some("team-2".to_string());
-        player.stage_contract_end(Some("2028-06-30".to_string()));
+        // Over two years left, so his club asks his full value with no discount
+        // for a contract running down.
+        player.stage_contract_end(Some("2029-06-30".to_string()));
         player.market_value = 1_000_000;
         player.stage_wage(1_000);
         player.morale = 35;
@@ -840,6 +842,9 @@ mod tests {
         );
     }
 
+    /// Given an unhappy, rarely picked €1M player on a long contract at a smaller club,
+    /// When the user bids 900k,
+    /// Then the club counters at 950k and keeps the player.
     #[test]
     fn make_transfer_bid_internal_can_return_counter_offer_feedback() {
         let state = StateManager::new();
@@ -864,6 +869,9 @@ mod tests {
         );
     }
 
+    /// Given the same player and a first bid countered at 950k,
+    /// When the user comes back at 950k,
+    /// Then the bid is accepted in round two and the player joins.
     #[test]
     fn make_transfer_bid_internal_uses_existing_negotiation_round_on_follow_up_bid() {
         let state = StateManager::new();

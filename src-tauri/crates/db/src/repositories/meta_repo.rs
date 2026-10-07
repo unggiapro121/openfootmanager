@@ -81,7 +81,9 @@ fn default_emitted_events_json() -> String {
 /// from its save id on load, which must not happen to a v7 save.
 /// v8 = World Cups are drawn from the game's seed; a pre-v8 save keeps drawing them from the
 /// cup year alone (`Game::legacy_world_cup_draw`), which a v8 save must not be marked as.
-pub const CURRENT_SAVE_FORMAT_VERSION: u32 = 8;
+/// v9 = the real-world money scale: values repriced and club cash lifted to the reserve its
+/// income supports (`ofm_core::economy::adopt_real_world_scale`), once.
+pub const CURRENT_SAVE_FORMAT_VERSION: u32 = 9;
 
 /// Baseline for a save that predates the version field entirely (reads as the
 /// pre-gate format, so it gets migrated and restamped to current on load).

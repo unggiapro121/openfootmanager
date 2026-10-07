@@ -2,7 +2,7 @@ use crate::finances::{CashKind, post};
 use crate::game::Game;
 use domain::team::{Facilities, FacilityType, Team};
 
-pub const BASE_FACILITY_UPGRADE_COST: i64 = 250_000;
+pub const BASE_FACILITY_UPGRADE_COST: i64 = 2_500_000;
 
 fn facility_upgrade_insufficient_funds_error(amount: i64) -> String {
     let amount = amount.to_string();

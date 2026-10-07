@@ -26,9 +26,9 @@ pub(crate) fn incoming_interest_score(
         }
     }
 
-    if player.market_value >= 1_000_000 {
+    if player.market_value >= crate::economy::valuation::NOTABLE_VALUE {
         score += 20;
-    } else if player.market_value >= 500_000 {
+    } else if player.market_value >= crate::economy::valuation::REGULAR_VALUE {
         score += 10;
     }
 
@@ -38,25 +38,24 @@ pub(crate) fn incoming_interest_score(
 
     score
 }
+/// The smallest move in a negotiation that counts as a move: 1% of the fee,
+/// and never under 50k, so a small deal still haggles in sensible steps and a
+/// large one is not held up by a rounding error.
+pub(crate) fn negotiation_step(fee: u64) -> u64 {
+    (fee / 100).max(50_000)
+}
+
 pub(crate) fn suggested_incoming_fee(
     current_date: NaiveDate,
     player: &domain::player::Player,
 ) -> u64 {
     let mut multiplier: f64 = if player.transfer_listed { 0.9 } else { 1.0 };
 
-    if let Some(days_remaining) = contract_days_remaining(current_date, player.contract_end()) {
-        if days_remaining <= 60 {
-            multiplier -= 0.15;
-        } else if days_remaining <= 180 {
-            multiplier -= 0.1;
-        }
-    }
-
     if player.morale <= 45 {
         multiplier -= 0.05;
     }
 
-    let multiplier = multiplier.clamp(0.7, 1.05);
+    let multiplier = multiplier.clamp(0.7, 1.05) * contract_fee_factor(current_date, player);
     ((player.market_value as f64) * multiplier).round() as u64
 }
 pub(crate) fn find_open_offer_from_club<'a>(
@@ -387,7 +386,7 @@ pub fn make_transfer_bid(
         .map(|counter| fee >= counter.saturating_mul(95) / 100)
         .unwrap_or(false);
     let stalled = previous_fee
-        .map(|previous| fee <= previous.saturating_add(50_000))
+        .map(|previous| fee <= previous.saturating_add(negotiation_step(previous)))
         .unwrap_or(false);
     let concession = if respected_signal {
         ((threshold as f64) * 0.04).round() as u64
@@ -715,14 +714,21 @@ pub fn counter_offer(
     let round = offer.negotiation_round.max(1).saturating_add(1);
     let respected_signal = offer
         .suggested_counter_fee
-        .map(|suggested| requested_fee <= suggested.saturating_add(50_000))
+        .map(|suggested| requested_fee <= suggested.saturating_add(negotiation_step(suggested)))
         .unwrap_or(false);
-    let stalled = requested_fee > offer.fee.saturating_add(175_000);
+    let stalled = requested_fee
+        > offer
+            .fee
+            .saturating_add(negotiation_step(offer.fee) * 7 / 2);
     let (tension, patience) = transfer_negotiation_metrics(round, stalled, respected_signal);
     let counter_ceiling = buyer_counter_offer_ceiling(current_date, player, offer.fee, buyer_team);
     let budget_cap =
         (buyer_team.transfer_budget.max(0) as u64).min(buyer_team.finance.max(0) as u64);
-    let goodwill_margin = if respected_signal { 50_000 } else { 0 };
+    let goodwill_margin = if respected_signal {
+        negotiation_step(counter_ceiling)
+    } else {
+        0
+    };
     let accepted = requested_fee
         <= counter_ceiling
             .saturating_add(goodwill_margin)

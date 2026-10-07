@@ -1116,6 +1116,8 @@
     "cashFlow": "Движение средств",
     "weeklyWageSpend": "Еженедельные расходы на зарплаты",
     "weeklySponsorIncome": "Еженедельный доход от спонсоров",
+    "weeklyBroadcastIncome": "Еженедельный доход от ТВ-прав",
+    "weeklyCommercialIncome": "Еженедельный коммерческий доход",
     "projectedWeeklyNet": "Прогнозируемый чистый баланс в неделю",
     "cashRunway": "Финансовый запас",
     "runwayWeeks": "{{count}} нед. текущего запаса",

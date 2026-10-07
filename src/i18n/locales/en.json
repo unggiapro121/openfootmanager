@@ -1116,6 +1116,8 @@
     "cashFlow": "Cash Flow",
     "weeklyWageSpend": "Weekly Wage Spend",
     "weeklySponsorIncome": "Weekly Sponsor Income",
+    "weeklyBroadcastIncome": "Weekly TV Income",
+    "weeklyCommercialIncome": "Weekly Commercial Income",
     "projectedWeeklyNet": "Projected Weekly Net",
     "cashRunway": "Cash Runway",
     "runwayWeeks": "{{count}} weeks at current pace",

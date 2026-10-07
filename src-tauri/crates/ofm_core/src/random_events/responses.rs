@@ -72,7 +72,7 @@ pub fn apply_event_response(
                     .find(|m| m.id == message_id)
                     .and_then(|m| m.i18n_params.get("amount"))
                     .and_then(|amount| parse_amount_param(amount))
-                    .unwrap_or(100_000);
+                    .unwrap_or(500_000);
                 let sponsor_name = game
                     .messages
                     .iter()

@@ -250,7 +250,7 @@ fn forward_line(count: usize) -> Vec<Position> {
     }
 }
 
-fn primary_position(player: &Player) -> Position {
+pub(crate) fn primary_position(player: &Player) -> Position {
     let preferred = if player.natural_position.is_legacy_bucket() {
         player.position.clone()
     } else {

@@ -45,7 +45,7 @@ pub(crate) fn infer_player_importance(
         return PlayerImportance::Key;
     }
 
-    if player.market_value >= 1_500_000 {
+    if player.market_value >= crate::economy::valuation::REGULAR_VALUE {
         return PlayerImportance::Regular;
     }
 
@@ -58,16 +58,6 @@ pub(crate) fn minimum_acceptable_fee(
     buyer_team: &domain::team::Team,
 ) -> u64 {
     let mut multiplier: f64 = if player.transfer_listed { 0.8 } else { 1.2 };
-
-    if let Some(days_remaining) = contract_days_remaining(current_date, player.contract_end()) {
-        if days_remaining <= 60 {
-            multiplier -= 0.25;
-        } else if days_remaining <= 180 {
-            multiplier -= 0.15;
-        } else if days_remaining <= 365 {
-            multiplier -= 0.05;
-        }
-    }
 
     match infer_player_importance(player, owner_team) {
         PlayerImportance::Key => multiplier += 0.2,
@@ -86,8 +76,21 @@ pub(crate) fn minimum_acceptable_fee(
         multiplier -= 0.10;
     }
 
-    let multiplier = multiplier.clamp(0.55, 1.6);
+    let multiplier = multiplier.clamp(0.55, 1.6) * contract_fee_factor(current_date, player);
     ((player.market_value as f64) * multiplier).round() as u64
+}
+
+/// How much of a player's value his club can still ask for, given the time left
+/// on his contract. A club whose player can walk away for nothing next summer
+/// has little to sell, so a deal in its last months fetches a third of the price.
+pub(crate) fn contract_fee_factor(current_date: NaiveDate, player: &domain::player::Player) -> f64 {
+    match contract_days_remaining(current_date, player.contract_end()) {
+        Some(..=60) => 0.35,
+        Some(61..=180) => 0.5,
+        Some(181..=365) => 0.7,
+        Some(366..=730) => 0.9,
+        _ => 1.0,
+    }
 }
 pub(crate) fn player_move_openness_score(
     current_date: NaiveDate,

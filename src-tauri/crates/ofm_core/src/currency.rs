@@ -61,7 +61,9 @@ fn convert_unsigned_amount(amount: u64, code: &str) -> Option<u64> {
 pub fn format_compact_number(amount: u64, code: &str) -> Option<String> {
     let converted = convert_unsigned_amount(amount, code)?;
 
-    if converted >= 1_000_000 {
+    if converted >= 1_000_000_000 {
+        Some(format!("{:.2}B", converted as f64 / 1_000_000_000.0))
+    } else if converted >= 1_000_000 {
         Some(format!("{:.1}M", converted as f64 / 1_000_000.0))
     } else if converted >= 1_000 {
         Some(format!("{}K", converted / 1_000))
@@ -138,6 +140,17 @@ mod tests {
         assert_eq!(
             format_compact_money(1_250_000, "USD"),
             Some("$1.4M".to_string())
+        );
+    }
+
+    /// Given a big club's cash on the real-world money scale,
+    /// When it is shown compactly,
+    /// Then it reads in billions rather than thousands of millions.
+    #[test]
+    fn formats_billions_compactly() {
+        assert_eq!(
+            format_compact_money(1_250_000_000, "EUR"),
+            Some("€1.25B".to_string())
         );
     }
 

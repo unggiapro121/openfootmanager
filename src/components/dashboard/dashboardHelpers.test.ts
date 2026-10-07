@@ -179,6 +179,8 @@ function financeVerdict(overrides: Partial<TeamFinanceSnapshotData> = {}): TeamF
     weeklyWageBudget: 10000,
     weeklyRecurringIncome: 0,
     weeklySponsorIncome: 0,
+    weeklyBroadcastIncome: 0,
+    weeklyCommercialIncome: 0,
     projectedWeeklyNet: 0,
     cashRunwayWeeks: null,
     wageBudgetUsagePercent: 0,

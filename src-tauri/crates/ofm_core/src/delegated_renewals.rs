@@ -273,9 +273,9 @@ fn assistant_delegation_score(
         Some(ContractWarningStage::TwelveMonths) => 6,
         None => 2,
     };
-    let importance_penalty = if player.market_value >= 2_000_000 {
+    let importance_penalty = if player.market_value >= crate::economy::valuation::STAR_VALUE {
         22
-    } else if player.market_value >= 750_000 {
+    } else if player.market_value >= crate::economy::valuation::NOTABLE_VALUE {
         10
     } else {
         0

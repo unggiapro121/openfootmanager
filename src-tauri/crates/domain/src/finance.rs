@@ -35,6 +35,11 @@ pub enum CashKind {
     Facilities,
     Upkeep,
     Other,
+    /// The club's share of its league's television deal, paid weekly.
+    Broadcast,
+    /// Shirt, kit and partner deals every club has, paid weekly. A one-off
+    /// sponsorship the manager lands is `Sponsorship`.
+    Commercial,
 }
 
 impl CashKind {
