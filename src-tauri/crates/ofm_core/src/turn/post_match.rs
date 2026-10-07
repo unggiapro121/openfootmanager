@@ -425,11 +425,11 @@ fn apply_player_stats(
             player.stats.interceptions += ps.interceptions as u32;
             player.stats.fouls_committed += ps.fouls_committed as u32;
 
-            // Update average rating (running average)
-            if player.stats.appearances == 1 {
-                player.stats.avg_rating = ps.rating;
-            } else {
-                let n = player.stats.appearances as f32;
+            // A rating of 0.0 means the engine did not rate him: too few minutes
+            // to judge. Averaging it in would read a five-minute cameo as a 0/10 game.
+            if ps.rating > 0.0 {
+                player.stats.rated_appearances += 1;
+                let n = player.stats.rated_appearances as f32;
                 player.stats.avg_rating = (player.stats.avg_rating * (n - 1.0) + ps.rating) / n;
             }
 
@@ -596,8 +596,8 @@ fn update_post_match_morale(
             if ps.red_cards > 0 {
                 individual_delta -= 8;
             }
-            // Poor rating lowers morale
-            if ps.rating < 5.5 {
+            // Poor rating lowers morale. An unrated cameo (0.0) is not a poor game.
+            if ps.rating > 0.0 && ps.rating < 5.5 {
                 individual_delta -= 3;
             } else if ps.rating > 7.5 {
                 individual_delta += 2;

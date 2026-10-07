@@ -764,6 +764,79 @@ fn apply_match_report_running_avg_rating() {
     );
 }
 
+/// Given a midfielder rated 8.0 in his first match,
+/// When he then comes on for the last five minutes and is too briefly on to be rated,
+/// Then the cameo counts as an appearance but leaves his average rating at 8.0.
+#[test]
+fn an_unrated_cameo_does_not_drag_down_the_average_rating() {
+    let mut game = make_game_with_match();
+    let rated_match = MatchReport {
+        player_stats: HashMap::from([(
+            "t1_mid0".to_string(),
+            PlayerMatchStats {
+                minutes_played: 90,
+                rating: 8.0,
+                ..Default::default()
+            },
+        )]),
+        ..empty_report(1, 0)
+    };
+    turn::apply_match_report(&mut game, 0, "team1", "team2", &rated_match);
+    game.league.as_mut().unwrap().fixtures[0].status = FixtureStatus::Scheduled;
+    game.league.as_mut().unwrap().fixtures[0].result = None;
+    let cameo = MatchReport {
+        player_stats: HashMap::from([(
+            "t1_mid0".to_string(),
+            PlayerMatchStats {
+                minutes_played: 5,
+                rating: 0.0,
+                ..Default::default()
+            },
+        )]),
+        ..empty_report(0, 0)
+    };
+
+    turn::apply_match_report(&mut game, 0, "team1", "team2", &cameo);
+
+    let player = game.players.iter().find(|p| p.id == "t1_mid0").unwrap();
+    assert_eq!(player.stats.appearances, 2);
+    assert!(
+        (player.stats.avg_rating - 8.0).abs() < 0.01,
+        "average after an unrated cameo: {}",
+        player.stats.avg_rating
+    );
+}
+
+/// Given the same match applied twice, once with a midfielder's cameo unrated
+/// and once with it rated a neutral 6.0,
+/// When morale is updated,
+/// Then he ends with the same morale both times: an unrated cameo is not a poor game.
+#[test]
+fn an_unrated_cameo_is_not_punished_as_a_poor_performance() {
+    let morale_after = |rating: f32| {
+        let mut game = make_game_with_match();
+        let report = MatchReport {
+            player_stats: HashMap::from([(
+                "t1_mid0".to_string(),
+                PlayerMatchStats {
+                    minutes_played: 5,
+                    rating,
+                    ..Default::default()
+                },
+            )]),
+            ..empty_report(0, 0)
+        };
+        turn::apply_match_report(&mut game, 0, "team1", "team2", &report);
+        game.players
+            .iter()
+            .find(|p| p.id == "t1_mid0")
+            .map(|p| p.morale)
+            .unwrap()
+    };
+
+    assert_eq!(morale_after(0.0), morale_after(6.0));
+}
+
 #[test]
 fn apply_match_report_yellow_and_red_cards() {
     let mut game = make_game_with_match();

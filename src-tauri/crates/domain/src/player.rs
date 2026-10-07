@@ -516,7 +516,11 @@ pub struct PlayerSeasonStats {
     pub clean_sheets: u32,
     pub yellow_cards: u32,
     pub red_cards: u32,
+    /// Mean of the match ratings this season, over `rated_appearances` only: a
+    /// cameo too short to be rated is an appearance but not a rating.
     pub avg_rating: f32,
+    /// Appearances long enough to be rated — what `avg_rating` is averaged over.
+    pub rated_appearances: u32,
     pub minutes_played: u32,
     pub shots: u32,
     pub shots_on_target: u32,

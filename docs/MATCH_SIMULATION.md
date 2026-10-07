@@ -245,6 +245,43 @@ After simulation, a `MatchReport` is generated from the raw event list:
 - **GoalDetails** — minute, scorer, assister, whether it was a penalty
 - **Possession %** — computed from possession ticks: `home_ticks / (home_ticks + away_ticks)`
 
+Minutes are counted from when a player came on: a substitute who is himself taken off is credited
+with the time between the two substitutions, not with every minute up to his exit.
+
+### Match Ratings
+
+`engine/src/rating.rs` rates every player on either side's books — starters and the bench, so a
+player taken off is rated for the time he played. Both report builders call it (`LiveMatchState::
+into_report`, and `simulate_with_rng` for the instant engine).
+
+```
+rating = 6.0 − 0.5 (an ordinary game's work)
+       + what he did:  goal +1.2 · penalty goal +0.7 · assist +0.7 · penalty miss −0.6
+                       shot saved +0.1 · shot off target −0.05 · shot blocked −0.03
+                       pass completed +0.01 (at most +0.5) · pass intercepted −0.03
+                       dribble +0.06 · dribble tackled −0.04 · cross +0.02
+                       tackle +0.07 · interception +0.08 · clearance +0.04
+                       foul −0.05 · yellow −0.3 · red / second yellow −1.5
+       + the result:   win +0.3 · loss −0.3
+       + keepers:      clean sheet (≥ 60 min) +0.6, else −0.25 per goal conceded × share of match;
+                       +0.15 per save (credited to the side's longest-serving keeper — the
+                       engine records the shooter on `ShotSaved`, not the keeper)
+       + defenders:    clean sheet (≥ 60 min) +0.4, else −0.15 per goal conceded × share of match
+
+under 30 minutes: pulled toward 6.0 in proportion to the minutes played
+under 10 minutes: not rated (0.0)
+clamped to 3.0–10.0, rounded to 0.1
+```
+
+The scale centres on 6.0, an ordinary game: `ratings_centre_on_six_across_many_matches` pins the
+mean of forty evenly matched games to 5.85–6.15. Ninety anonymous minutes land at 5.5. The 0.5
+baseline is the average contribution the engine produces per player; if the engine starts producing
+more or fewer actions, that test fails and the baseline moves with it.
+
+A rating of 0.0 means "not rated" everywhere it is read: season averages
+(`PlayerSeasonStats::avg_rating` is averaged over `rated_appearances`), post-match morale, awards,
+and the player profile, which shows a dash.
+
 ---
 
 ## Live Match System

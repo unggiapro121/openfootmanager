@@ -413,6 +413,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={makeSnapshot()}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
@@ -433,6 +434,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={makeSnapshot()}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
@@ -454,6 +456,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={makeSnapshot()}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide={null}
           isSpectator={true}
@@ -474,6 +477,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={makeSnapshot()}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
@@ -496,6 +500,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={makeSnapshot()}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide={null}
           isSpectator={true}
@@ -531,6 +536,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={snapshot}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
@@ -556,6 +562,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={snapshot}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
@@ -588,6 +595,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={snapshot}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
@@ -608,6 +616,7 @@ describe("PostMatchScreen", (): void => {
       <ThemeProvider>
         <PostMatchScreen
           snapshot={makeSnapshot()}
+          playerRatings={{}}
           gameState={makeGameState()}
           userSide="Home"
           isSpectator={false}
