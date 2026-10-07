@@ -917,7 +917,8 @@
       "strong": "Encaje fuerte",
       "good": "Buen encaje",
       "risky": "Encaje arriesgado"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Calendario Semanal",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Los aficionados están con el equipo.",
     "fanMixed": "El sentimiento de los aficionados es mixto.",
     "fanRestless": "Los aficionados están inquietos.",
-    "fanUnrest": "Malestar entre los aficionados — probables protestas."
+    "fanUnrest": "Malestar entre los aficionados — probables protestas.",
+    "playStyleMastery": "Dominio de estilos de juego",
+    "playStyleMasteryHint": "Lo bien que trasladas cada estilo de juego al partido. Con 50, el estilo funciona tal como está diseñado; por encima, sus virtudes se acentúan y sus debilidades se suavizan; por debajo, ocurre lo contrario."
   },
   "managersWorld": {
     "title": "Entrenadores",
@@ -1282,7 +1285,8 @@
     "currentClub": "Club actual",
     "openRole": "Vacante abierta en {{team}}",
     "vacancyBadge": "La directiva busca",
-    "noManagers": "No hay entrenadores disponibles."
+    "noManagers": "No hay entrenadores disponibles.",
+    "bestStyle": "Mejor estilo"
   },
   "hallOfFameWorld": {
     "title": "Salón de la Fama",

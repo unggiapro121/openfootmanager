@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { GameStateData, TeamData } from "../../store/gameStore";
@@ -38,6 +38,9 @@ vi.mock("react-i18next", () => ({
       if (key === "common.drawn") return "Drawn";
       if (key === "common.lost") return "Lost";
       if (key === "common.present") return "Present";
+      if (key === "manager.playStyleMastery") return "Play Style Mastery";
+      if (key === "manager.playStyleMasteryHint") return "Mastery hint";
+      if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
       return key;
     },
     i18n: { language: "en" },
@@ -150,5 +153,40 @@ describe("ManagerTab", () => {
     fireEvent.click(screen.getByRole("menuitem", { name: "View team" }));
 
     expect(onSelectTeam).toHaveBeenCalledWith("team-0");
+  });
+
+  it("shows the manager's mastery of every play style", () => {
+    const gameState = createGameState(false);
+    gameState.manager.play_style_mastery = {
+      Balanced: 52,
+      Attacking: 61,
+      Defensive: 38,
+      Possession: 47,
+      Counter: 74,
+      HighPress: 29,
+    };
+
+    render(<ManagerTab gameState={gameState} />);
+
+    const card = screen.getByRole("region", { name: "Play Style Mastery" });
+    expect(within(card).getByTestId("mastery-Counter")).toHaveTextContent("Counter74");
+    expect(within(card).getByTestId("mastery-HighPress")).toHaveTextContent("HighPress29");
+    expect(within(card).getAllByTestId(/^mastery-/)).toHaveLength(6);
+  });
+
+  it("shows a manager without mastery data as neutral in every style", () => {
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    const card = screen.getByRole("region", { name: "Play Style Mastery" });
+    for (const style of [
+      "Balanced",
+      "Attacking",
+      "Defensive",
+      "Possession",
+      "Counter",
+      "HighPress",
+    ]) {
+      expect(within(card).getByTestId(`mastery-${style}`)).toHaveTextContent(`${style}50`);
+    }
   });
 });

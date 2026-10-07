@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type JSX } from "react";
 import type { TFunction } from "i18next";
+import { getPlayStyleMastery } from "../../lib/managerMastery";
+import type { ManagerData } from "../../store/types";
 import { useTranslation } from "react-i18next";
 
 import type { TacticsPhaseSettings } from "../../store/types";
@@ -54,6 +56,8 @@ interface TacticsCommandBarProps {
   onTacticNameChange: (name: string) => void;
   tacticLibrary: TacticsLibraryEntry[];
   tacticName: string;
+  /** The head coach, whose mastery of each style is shown beside its name. */
+  coach?: ManagerData | null;
 }
 
 const MAX_TACTIC_NAME_LENGTH = 40;
@@ -88,6 +92,7 @@ export default function TacticsCommandBar({
   onTacticNameChange,
   tacticLibrary,
   tacticName,
+  coach = null,
 }: TacticsCommandBarProps): JSX.Element {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -513,13 +518,21 @@ export default function TacticsCommandBar({
                 fullWidth
                 aria-label={t("tactics.playStyle")}
               >
-                {PLAY_STYLES.map((style) => (
-                  // Native <option> renders text only — an icon/span child is
-                  // stripped by the browser and warns in React, so use plain text.
-                  <option key={style.id} value={style.id}>
-                    {t(`common.playStyles.${style.id}`, style.id)}
-                  </option>
-                ))}
+                {PLAY_STYLES.map((style) => {
+                  const styleName = t(`common.playStyles.${style.id}`, style.id);
+                  return (
+                    // Native <option> renders text only — an icon/span child is
+                    // stripped by the browser and warns in React, so use plain text.
+                    <option key={style.id} value={style.id}>
+                      {coach
+                        ? t("tactics.playStyleWithMastery", {
+                            style: styleName,
+                            value: getPlayStyleMastery(coach, style.id),
+                          })
+                        : styleName}
+                    </option>
+                  );
+                })}
               </Select>
             </div>
           </div>

@@ -5,8 +5,12 @@ import TacticsCommandBar, { type TacticsLibraryEntry } from "./TacticsCommandBar
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, fallback?: string | Record<string, unknown>) =>
-      typeof fallback === "string" ? fallback : key,
+    t: (key: string, fallback?: string | Record<string, unknown>) => {
+      if (key === "tactics.playStyleWithMastery" && typeof fallback === "object") {
+        return `${fallback.style} · ${fallback.value}`;
+      }
+      return typeof fallback === "string" ? fallback : key;
+    },
     i18n: { language: "en" },
   }),
 }));
@@ -262,5 +266,49 @@ describe("TacticsCommandBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "tactics.deleteTactic" }));
 
     expect(onDelete).toHaveBeenCalledWith("custom:2");
+  });
+
+  /**
+   * Given a head coach strong at Counter, when the play style picker shows the
+   * active style, then it carries the coach's mastery of it.
+   */
+  it("shows the head coach's mastery beside the play style", () => {
+    renderCommandBar({
+      activePlayStyle: "Counter",
+      coach: {
+        id: "mgr_user",
+        first_name: "Jane",
+        last_name: "Doe",
+        date_of_birth: "1980-01-01",
+        nationality: "GB",
+        reputation: 500,
+        satisfaction: 50,
+        fan_approval: 50,
+        team_id: "team-1",
+        career_stats: {
+          matches_managed: 0,
+          wins: 0,
+          draws: 0,
+          losses: 0,
+          trophies: 0,
+          best_finish: null,
+        },
+        career_history: [],
+        play_style_mastery: { Counter: 72 },
+      },
+    });
+
+    expect(screen.getByRole("combobox", { name: "tactics.playStyle" })).toHaveTextContent(
+      "Counter · 72",
+    );
+  });
+
+  /** Without a coach, the picker names the styles alone. */
+  it("names the play style alone when there is no coach", () => {
+    renderCommandBar({ activePlayStyle: "Counter" });
+
+    expect(screen.getByRole("combobox", { name: "tactics.playStyle" })).toHaveTextContent(
+      /^Counter$/,
+    );
   });
 });

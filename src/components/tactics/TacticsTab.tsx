@@ -131,6 +131,7 @@ export default function TacticsTab({
           void applyTacticSelection(nextTactic);
         }}
         tacticLibrary={tacticLibrary}
+        coach={gameState?.manager ?? null}
       />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[260px_1fr_270px] xl:items-start">

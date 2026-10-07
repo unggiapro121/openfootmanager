@@ -6,6 +6,8 @@ import { useTranslation } from "react-i18next";
 import { countryName } from "../../lib/countries";
 import ContextMenu from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
+import { getPlayStyleMastery, PLAY_STYLE_IDS } from "../../lib/managerMastery";
+import { getAttributeColors } from "../../lib/playerAttributeDisplay";
 
 interface ManagerTabProps {
   gameState: GameStateData;
@@ -139,6 +141,41 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
             </div>
           </div>
         </CardBody>
+      </Card>
+
+      {/* Play style mastery */}
+      <Card className="md:col-span-3">
+        <section aria-label={t("manager.playStyleMastery")}>
+          <CardHeader>{t("manager.playStyleMastery")}</CardHeader>
+          <CardBody>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+              {t("manager.playStyleMasteryHint")}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
+              {PLAY_STYLE_IDS.map((style) => {
+                const value = getPlayStyleMastery(mgr, style);
+                const colors = getAttributeColors(value);
+                return (
+                  <div
+                    key={style}
+                    data-testid={`mastery-${style}`}
+                    className="grid grid-cols-[minmax(0,7rem)_1fr_2rem] items-center gap-3"
+                  >
+                    <span className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                      {t(`common.playStyles.${style}`, style)}
+                    </span>
+                    <ProgressBar value={value} variant={colors.barVariant} size="sm" />
+                    <span
+                      className={`text-sm font-heading font-bold tabular-nums text-right ${colors.textClass}`}
+                    >
+                      {value}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardBody>
+        </section>
       </Card>
 
       {/* Career history */}

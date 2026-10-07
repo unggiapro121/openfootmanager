@@ -917,7 +917,8 @@
       "ready": "Ready",
       "adjusted": "Adjusted",
       "risk": "Risk"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Weekly Schedule",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Fans are behind the team.",
     "fanMixed": "Fan sentiment is mixed.",
     "fanRestless": "Fans are growing restless.",
-    "fanUnrest": "Fan unrest — protests likely."
+    "fanUnrest": "Fan unrest — protests likely.",
+    "playStyleMastery": "Play Style Mastery",
+    "playStyleMasteryHint": "How well you get each play style across in a match. At 50 a style plays as designed; higher sharpens its strengths and softens its weaknesses, lower does the reverse."
   },
   "managersWorld": {
     "title": "Managers",
@@ -1282,7 +1285,8 @@
     "currentClub": "Current club",
     "openRole": "Open role at {{team}}",
     "vacancyBadge": "Board searching",
-    "noManagers": "No managers available."
+    "noManagers": "No managers available.",
+    "bestStyle": "Best style"
   },
   "hallOfFameWorld": {
     "title": "Hall of Fame",

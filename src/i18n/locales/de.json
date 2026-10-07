@@ -917,7 +917,8 @@
       "strong": "Starke Übereinstimmung",
       "good": "Gute Übereinstimmung",
       "risky": "Riskante Passung"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Wochenplan",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Die Fans stehen hinter dem Team.",
     "fanMixed": "Die Stimmung der Fans ist gemischt.",
     "fanRestless": "Die Fans werden unruhig.",
-    "fanUnrest": "Unruhe unter den Fans — Proteste sind wahrscheinlich."
+    "fanUnrest": "Unruhe unter den Fans — Proteste sind wahrscheinlich.",
+    "playStyleMastery": "Spielstil-Beherrschung",
+    "playStyleMasteryHint": "Wie gut du jeden Spielstil auf den Platz bringst. Bei 50 wirkt ein Stil genau wie vorgesehen; darüber werden seine Stärken schärfer und seine Schwächen milder, darunter umgekehrt."
   },
   "managersWorld": {
     "title": "Trainer",
@@ -1282,7 +1285,8 @@
     "currentClub": "Aktueller Klub",
     "openRole": "Offene Stelle bei {{team}}",
     "vacancyBadge": "Vorstand sucht",
-    "noManagers": "Keine Trainer verfügbar."
+    "noManagers": "Keine Trainer verfügbar.",
+    "bestStyle": "Bester Stil"
   },
   "hallOfFameWorld": {
     "title": "Ruhmeshalle",

@@ -917,7 +917,8 @@
       "ready": "Sẵn sàng",
       "adjusted": "Đã điều chỉnh",
       "risk": "Rủi ro"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Lịch tập hằng tuần",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Người hâm mộ đang ủng hộ đội bóng.",
     "fanMixed": "Người hâm mộ có ý kiến trái chiều.",
     "fanRestless": "Người hâm mộ đang mất kiên nhẫn.",
-    "fanUnrest": "Người hâm mộ bất bình — có thể xảy ra biểu tình."
+    "fanUnrest": "Người hâm mộ bất bình — có thể xảy ra biểu tình.",
+    "playStyleMastery": "Sở trường chiến thuật",
+    "playStyleMasteryHint": "Mức độ bạn truyền tải từng lối chơi vào trận đấu. Ở mức 50, lối chơi vận hành đúng như thiết kế; cao hơn thì điểm mạnh rõ hơn và điểm yếu nhẹ hơn, thấp hơn thì ngược lại."
   },
   "managersWorld": {
     "title": "HLV",
@@ -1282,7 +1285,8 @@
     "currentClub": "CLB hiện tại",
     "openRole": "Vị trí trống tại {{team}}",
     "vacancyBadge": "Ban lãnh đạo đang tìm người",
-    "noManagers": "Không có HLV nào."
+    "noManagers": "Không có HLV nào.",
+    "bestStyle": "Sở trường"
   },
   "hallOfFameWorld": {
     "title": "Đại sảnh danh vọng",

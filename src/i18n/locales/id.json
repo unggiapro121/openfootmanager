@@ -917,7 +917,8 @@
       "ready": "Siap",
       "adjusted": "Disesuaikan",
       "risk": "Berisiko"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Jadwal Mingguan",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Suporter mendukung tim.",
     "fanMixed": "Sentimen suporter campur aduk.",
     "fanRestless": "Suporter mulai gelisah.",
-    "fanUnrest": "Kerusuhan suporter — protes mungkin terjadi."
+    "fanUnrest": "Kerusuhan suporter — protes mungkin terjadi.",
+    "playStyleMastery": "Penguasaan gaya bermain",
+    "playStyleMasteryHint": "Seberapa baik Anda menerapkan setiap gaya bermain di pertandingan. Pada nilai 50, gaya bekerja sesuai rancangan; lebih tinggi menajamkan kekuatannya dan meredam kelemahannya, lebih rendah sebaliknya."
   },
   "managersWorld": {
     "title": "Para Manajer",
@@ -1282,7 +1285,8 @@
     "currentClub": "Klub Saat Ini",
     "openRole": "Peran terbuka di {{team}}",
     "vacancyBadge": "Manajemen mencari",
-    "noManagers": "Tidak ada manajer yang tersedia."
+    "noManagers": "Tidak ada manajer yang tersedia.",
+    "bestStyle": "Gaya terbaik"
   },
   "hallOfFameWorld": {
     "title": "Hall of Fame",

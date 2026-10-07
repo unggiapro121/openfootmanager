@@ -19,6 +19,9 @@ vi.mock("react-i18next", () => ({
       if (key === "managersWorld.openRole") return `Open role at ${params?.team}`;
       if (key === "managersWorld.vacancyBadge") return "Board searching";
       if (key === "managersWorld.noManagers") return "No managers available";
+      if (key === "managersWorld.bestStyle") return "Best style";
+      if (key === "tactics.playStyleWithMastery") return `${params?.style} · ${params?.value}`;
+      if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
       return key;
     },
     i18n: { language: "en" },
@@ -174,5 +177,26 @@ describe("ManagersWorldTab", () => {
     render(<ManagersWorldTab gameState={createGameState()} />);
 
     expect(screen.getByText("46")).toBeInTheDocument();
+  });
+
+  it("shows each manager's strongest play style with its mastery", () => {
+    const gameState = createGameState();
+    gameState.managers = [
+      createManager({
+        play_style_mastery: {
+          Balanced: 44,
+          Attacking: 52,
+          Defensive: 39,
+          Possession: 48,
+          Counter: 71,
+          HighPress: 40,
+        },
+      }),
+    ];
+
+    render(<ManagersWorldTab gameState={gameState} />);
+
+    expect(screen.getByText("Best style")).toBeInTheDocument();
+    expect(screen.getByText("Counter · 71")).toBeInTheDocument();
   });
 });

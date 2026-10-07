@@ -917,7 +917,8 @@
       "strong": "高度适配",
       "good": "适配良好",
       "risky": "适配风险高"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "每周日程",
@@ -1268,7 +1269,9 @@
     "fanBehind": "球迷支持着球队。",
     "fanMixed": "球迷情绪喜忧参半。",
     "fanRestless": "球迷日渐不满。",
-    "fanUnrest": "球迷骚动——可能出现抗议。"
+    "fanUnrest": "球迷骚动——可能出现抗议。",
+    "playStyleMastery": "战术风格掌握度",
+    "playStyleMasteryHint": "你在比赛中贯彻每种战术风格的能力。数值为 50 时，风格按设计发挥；更高时优势更明显、劣势更轻；更低则相反。"
   },
   "managersWorld": {
     "title": "主教练",
@@ -1282,7 +1285,8 @@
     "currentClub": "当前俱乐部",
     "openRole": "{{team}} 帅位空缺",
     "vacancyBadge": "董事会招募中",
-    "noManagers": "暂无主教练信息。"
+    "noManagers": "暂无主教练信息。",
+    "bestStyle": "最擅长风格"
   },
   "hallOfFameWorld": {
     "title": "名人堂",

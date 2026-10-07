@@ -917,7 +917,8 @@
       "strong": "Très bon match",
       "good": "Bon match",
       "risky": "Adaptation risquée"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Calendrier Hebdomadaire",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Les supporters soutiennent l'équipe.",
     "fanMixed": "Le sentiment des supporters est mitigé.",
     "fanRestless": "Les supporters s'impatientent.",
-    "fanUnrest": "Agitation parmi les supporters — des protestations sont probables."
+    "fanUnrest": "Agitation parmi les supporters — des protestations sont probables.",
+    "playStyleMastery": "Maîtrise des styles de jeu",
+    "playStyleMasteryHint": "Votre capacité à faire passer chaque style de jeu sur le terrain. À 50, le style fonctionne tel qu'il est conçu ; au-dessus, ses forces s'accentuent et ses faiblesses s'atténuent ; en dessous, c'est l'inverse."
   },
   "managersWorld": {
     "title": "Entraîneurs",
@@ -1282,7 +1285,8 @@
     "currentClub": "Club actuel",
     "openRole": "Poste ouvert à {{team}}",
     "vacancyBadge": "Direction en recherche",
-    "noManagers": "Aucun entraîneur disponible."
+    "noManagers": "Aucun entraîneur disponible.",
+    "bestStyle": "Style de prédilection"
   },
   "hallOfFameWorld": {
     "title": "Temple de la renommée",

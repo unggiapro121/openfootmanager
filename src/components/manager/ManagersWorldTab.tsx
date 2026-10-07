@@ -1,9 +1,11 @@
-import { Briefcase, Building2, TrendingUp, UserRound, UsersRound } from "lucide-react";
+import { Briefcase, Building2, Crosshair, TrendingUp, UserRound, UsersRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
+import type { TFunction } from "i18next";
 
 import type { GameStateData, ManagerData, TeamData } from "../../store/gameStore";
 import { countryName } from "../../lib/countries";
+import { getBestPlayStyle } from "../../lib/managerMastery";
 import { Badge, Card, CardBody, CardHeader, CountryFlag } from "../ui";
 
 interface ManagersWorldTabProps {
@@ -31,6 +33,14 @@ function winRateLabel(manager: ManagerData): string {
   }
 
   return `${Math.round((manager.career_stats.wins / matches) * 100)}%`;
+}
+
+function bestStyleLabel(manager: ManagerData, t: TFunction): string {
+  const { style, value } = getBestPlayStyle(manager);
+  return t("tactics.playStyleWithMastery", {
+    style: t(`common.playStyles.${style}`, style),
+    value,
+  });
 }
 
 function managerEntries(gameState: GameStateData): ManagerEntry[] {
@@ -209,7 +219,7 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-3 text-sm">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
                     <StatTile
                       icon={<TrendingUp className="h-4 w-4" />}
                       label={t("managersWorld.reputation")}
@@ -224,6 +234,11 @@ export default function ManagersWorldTab({ gameState, onSelectTeam }: ManagersWo
                       icon={<Briefcase className="h-4 w-4" />}
                       label={t("managersWorld.winRate")}
                       value={winRateLabel(manager)}
+                    />
+                    <StatTile
+                      icon={<Crosshair className="h-4 w-4" />}
+                      label={t("managersWorld.bestStyle")}
+                      value={bestStyleLabel(manager, t)}
                     />
                   </div>
                 </CardBody>

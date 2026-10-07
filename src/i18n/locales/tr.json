@@ -917,7 +917,8 @@
       "ready": "Hazır",
       "adjusted": "Uyarlanmış",
       "risk": "Riskli"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Haftalık Program",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Taraftarlar takımın arkasında.",
     "fanMixed": "Taraftar görüşleri karışık.",
     "fanRestless": "Taraftarlar giderek huzursuzlanıyor.",
-    "fanUnrest": "Taraftar huzursuzluğu — protestolar olası."
+    "fanUnrest": "Taraftar huzursuzluğu — protestolar olası.",
+    "playStyleMastery": "Oyun tarzı ustalığı",
+    "playStyleMasteryHint": "Her oyun tarzını maça ne kadar iyi yansıttığın. 50'de tarz tasarlandığı gibi işler; daha yüksekte güçlü yanları belirginleşir ve zayıf yanları hafifler, daha düşükte tersi olur."
   },
   "managersWorld": {
     "title": "Menajerler",
@@ -1282,7 +1285,8 @@
     "currentClub": "Mevcut kulüp",
     "openRole": "{{team}} kulübünde açık pozisyon",
     "vacancyBadge": "Yönetim arayışta",
-    "noManagers": "Menajer bulunmuyor."
+    "noManagers": "Menajer bulunmuyor.",
+    "bestStyle": "En iyi tarz"
   },
   "hallOfFameWorld": {
     "title": "Şöhretler Müzesi",

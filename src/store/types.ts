@@ -507,6 +507,15 @@ export interface MessageData {
   i18n_params?: Record<string, string>;
 }
 
+/** The six play styles, as the backend serializes them. */
+export type PlayStyleId =
+  | "Balanced"
+  | "Attacking"
+  | "Defensive"
+  | "Possession"
+  | "Counter"
+  | "HighPress";
+
 export interface ManagerCareerStats {
   matches_managed: number;
   wins: number;
@@ -543,6 +552,8 @@ export interface ManagerData {
   warning_stage?: number;
   career_stats: ManagerCareerStats;
   career_history: ManagerCareerEntry[];
+  /** 1–100 per play style; absent in older payloads and test fixtures, read as 50. */
+  play_style_mastery?: Partial<Record<PlayStyleId, number>>;
 }
 
 /** Mirrors the backend's `FixtureCompetition` enum. */

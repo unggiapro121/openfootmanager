@@ -917,7 +917,8 @@
       "ready": "Připraven",
       "adjusted": "Upraveno",
       "risk": "Riziko"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Týdenní plán",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Fanoušci stojí za týmem.",
     "fanMixed": "Nálada mezi fanoušky je smíšená.",
     "fanRestless": "Fanoušci začínají být nespokojení.",
-    "fanUnrest": "Nepokoje mezi fanoušky — hrozí protesty."
+    "fanUnrest": "Nepokoje mezi fanoušky — hrozí protesty.",
+    "playStyleMastery": "Zvládnutí herních stylů",
+    "playStyleMasteryHint": "Jak dobře dokážete každý herní styl přenést do zápasu. Při hodnotě 50 funguje styl přesně podle návrhu; vyšší hodnota zvýrazní jeho silné stránky a zmírní slabiny, nižší naopak."
   },
   "managersWorld": {
     "title": "Manažeři",
@@ -1282,7 +1285,8 @@
     "currentClub": "Aktuální klub",
     "openRole": "Volná pozice v týmu {{team}}",
     "vacancyBadge": "Vedení hledá kandidáty",
-    "noManagers": "Nejsou k dispozici žádní manažeři."
+    "noManagers": "Nejsou k dispozici žádní manažeři.",
+    "bestStyle": "Nejlepší styl"
   },
   "hallOfFameWorld": {
     "title": "Síň slávy",

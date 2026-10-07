@@ -1,6 +1,7 @@
 {
   "global": [
     "app.name",
+    "tactics.playStyleWithMastery",
     "app.publisher",
     "date.day",
     "match.pen",

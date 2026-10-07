@@ -917,7 +917,8 @@
       "strong": "Grande encaixe",
       "good": "Bom encaixe",
       "risky": "Encaixe arriscado"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",
@@ -1268,7 +1269,9 @@
     "fanBehind": "Os adeptos estão com a equipa.",
     "fanMixed": "O sentimento dos adeptos está dividido.",
     "fanRestless": "Os adeptos estão a ficar impacientes.",
-    "fanUnrest": "Agitação entre os adeptos — protestos prováveis."
+    "fanUnrest": "Agitação entre os adeptos — protestos prováveis.",
+    "playStyleMastery": "Domínio dos estilos de jogo",
+    "playStyleMasteryHint": "Até que ponto consegues transmitir cada estilo de jogo em campo. Com 50, o estilo funciona como foi concebido; acima disso, os pontos fortes acentuam-se e os fracos atenuam-se; abaixo, acontece o contrário."
   },
   "managersWorld": {
     "title": "Treinadores",
@@ -1282,7 +1285,8 @@
     "currentClub": "Clube atual",
     "openRole": "Vaga aberta no {{team}}",
     "vacancyBadge": "Direção à procura",
-    "noManagers": "Sem treinadores disponíveis."
+    "noManagers": "Sem treinadores disponíveis.",
+    "bestStyle": "Melhor estilo"
   },
   "hallOfFameWorld": {
     "title": "Galeria da Fama",

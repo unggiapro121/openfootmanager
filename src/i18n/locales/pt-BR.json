@@ -917,7 +917,8 @@
       "strong": "Ótimo encaixe",
       "good": "Bom encaixe",
       "risky": "Encaixe arriscado"
-    }
+    },
+    "playStyleWithMastery": "{{style}} · {{value}}"
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",
@@ -1268,7 +1269,9 @@
     "fanBehind": "A torcida está com o time.",
     "fanMixed": "O sentimento da torcida está dividido.",
     "fanRestless": "A torcida está ficando impaciente.",
-    "fanUnrest": "Agitação entre os torcedores — protestos prováveis."
+    "fanUnrest": "Agitação entre os torcedores — protestos prováveis.",
+    "playStyleMastery": "Domínio dos estilos de jogo",
+    "playStyleMasteryHint": "O quanto você consegue passar cada estilo de jogo para o time em campo. Com 50, o estilo funciona como foi pensado; acima disso, os pontos fortes ficam mais marcados e os fracos mais leves; abaixo, o contrário."
   },
   "managersWorld": {
     "title": "Técnicos",
@@ -1282,7 +1285,8 @@
     "currentClub": "Clube atual",
     "openRole": "Vaga aberta no {{team}}",
     "vacancyBadge": "Diretoria procurando",
-    "noManagers": "Nenhum técnico disponível."
+    "noManagers": "Nenhum técnico disponível.",
+    "bestStyle": "Melhor estilo"
   },
   "hallOfFameWorld": {
     "title": "Hall da Fama",
