@@ -142,6 +142,10 @@ pub struct Game {
     /// already made is not contradicted by the next. Never set on a new game.
     #[serde(default)]
     pub legacy_world_cup_draw: bool,
+    /// How fast players develop in this career, chosen by the player in Settings.
+    /// A save from before it existed plays at the realistic 1×.
+    #[serde(default)]
+    pub development_speed: crate::development_speed::DevelopmentSpeed,
 
     /// Append-only cash journal. `Clone` is a pointer bump; `post` copy-on-writes.
     /// Skipped on IPC serde. Persistence is incremental SQL, not Game JSON.
@@ -200,6 +204,7 @@ impl Game {
             package_lockfile: vec![],
             seed: 0,
             legacy_world_cup_draw: false,
+            development_speed: Default::default(),
             cash_journal: CashJournal::default(),
             cash_journal_dirty_ids: Vec::new(),
             squad_floor_top_ups: Vec::new(),

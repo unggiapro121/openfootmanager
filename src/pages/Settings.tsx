@@ -8,6 +8,7 @@ import { ThemeToggle, Select } from "../components/ui";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
 import { formatAppVersion } from "../lib/appVersion";
 import { SegmentedControl, Section, SettingRow, Toggle } from "./Settings.components";
+import DevelopmentSpeedSetting from "./Settings.developmentSpeed";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
 import {
   ArrowLeft,
@@ -15,6 +16,7 @@ import {
   Moon,
   Sun,
   Gamepad2,
+  Gauge,
   Save,
   Zap,
   Trash2,
@@ -306,6 +308,11 @@ export default function Settings() {
               onChange={(v) => handleUpdate({ continue_to_next_event: v })}
             />
           </SettingRow>
+        </Section>
+
+        {/* ─── Game Engine ─── */}
+        <Section title={t("settings.gameEngine")} icon={<Gauge className="w-5 h-5" />}>
+          <DevelopmentSpeedSetting />
         </Section>
 
         {/* ─── Saves & Data ─── */}

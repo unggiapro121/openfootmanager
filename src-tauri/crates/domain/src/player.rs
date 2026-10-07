@@ -40,6 +40,11 @@ pub struct Player {
     /// recovers, and modulates injury risk. Changes slowly over weeks.
     #[serde(default = "default_fitness")]
     pub fitness: u8,
+    /// Recent share of his club's minutes (0–100): 100 for a player who starts and
+    /// finishes every game, 0 for one who has not been on the pitch for weeks. A
+    /// moving average over the club's last matches, so it survives the close season.
+    #[serde(default = "default_playing_time")]
+    pub playing_time: u8,
 
     pub injury: Option<Injury>,
     pub team_id: Option<String>,
@@ -339,6 +344,15 @@ fn default_weak_foot() -> u8 {
 
 fn default_fitness() -> u8 {
     75
+}
+
+/// Neutral, not zero: a player with no minutes on record yet — a new world, a
+/// save from before this was tracked — is unknown, not frozen out. The `db`
+/// column default must match.
+pub const DEFAULT_PLAYING_TIME: u8 = 50;
+
+fn default_playing_time() -> u8 {
+    DEFAULT_PLAYING_TIME
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -819,6 +833,7 @@ impl Player {
             condition: 100,
             morale: 100,
             fitness: 75,
+            playing_time: default_playing_time(),
             injury: None,
             team_id: None,
             retired: false,
@@ -932,5 +947,49 @@ mod tests {
         assert_eq!(player.natural_position, Position::Midfielder);
         assert!(!player.retired);
         assert!(player.movement_history.is_empty());
+    }
+
+    /// Given a player who has just been created,
+    /// When nothing about his minutes is known yet,
+    /// Then his playing time sits at the neutral midpoint rather than at zero.
+    #[test]
+    fn a_new_player_starts_at_neutral_playing_time() {
+        let player = Player::new(
+            "p-002".to_string(),
+            "A. New".to_string(),
+            "Alex New".to_string(),
+            "2007-02-01".to_string(),
+            "GB".to_string(),
+            Position::Forward,
+            sample_attributes(),
+        );
+
+        assert_eq!(player.playing_time, 50);
+    }
+
+    /// Given a save written before playing time was tracked,
+    /// When a player from it is loaded,
+    /// Then he reads as neutral playing time, the same as a new player.
+    #[test]
+    fn a_player_from_an_older_save_loads_with_neutral_playing_time() {
+        let player: Player = serde_json::from_value(serde_json::json!({
+            "id": "p-legacy",
+            "match_name": "J. Legacy",
+            "full_name": "John Legacy",
+            "date_of_birth": "2000-01-15",
+            "nationality": "GB",
+            "position": "Midfielder",
+            "attributes": sample_attributes(),
+            "condition": 100,
+            "morale": 100,
+            "injury": null,
+            "team_id": null,
+            "market_value": 0,
+            "stats": {},
+            "career": [],
+        }))
+        .expect("a player saved before playing time existed should deserialize");
+
+        assert_eq!(player.playing_time, 50);
     }
 }

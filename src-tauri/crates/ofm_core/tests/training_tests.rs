@@ -10,8 +10,12 @@ use ofm_core::training;
 
 #[path = "training_tests/determinism.rs"]
 mod determinism;
+#[path = "training_tests/development_speed.rs"]
+mod development_speed;
 #[path = "training_tests/fixtures.rs"]
 mod fixtures;
+#[path = "training_tests/playing_time.rs"]
+mod playing_time;
 #[path = "training_tests/recovery.rs"]
 mod recovery;
 

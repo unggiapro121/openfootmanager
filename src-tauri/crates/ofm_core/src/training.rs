@@ -88,7 +88,17 @@ fn compute_coaching_bonus(game: &Game, team_id: &str, focus: &TrainingFocus) -> 
 struct TrainingDay {
     weekday_num: u32,
     year: u32,
+    /// The career's development speed (1× to 5×), the same for every club.
+    development_multiplier: f64,
 }
+
+/// Chance per session that one attribute in focus rises by a point, before any
+/// multiplier: the realistic 1× pace. At 0.04 a regular starter of 18 at a
+/// Balanced, Medium-intensity club gains about +3.5 overall a season, so a
+/// prospect reaches his ceiling in his mid-twenties. It was 0.15 — +13 a season,
+/// a ceiling reached at 19 — before the pace became a per-career setting
+/// (`Game::development_speed`); 3.5× to 4× is roughly that old pace.
+const BASE_TRAINING_GAIN: f64 = 0.04;
 
 /// Below this individual condition a player is automatically rested in training
 /// (treated as Recovery focus) regardless of the team's plan. Team intensity is
@@ -284,6 +294,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
     let day = TrainingDay {
         weekday_num,
         year: current_year,
+        development_multiplier: game.development_speed.multiplier(),
     };
     // One stream for the day's session: players are visited in the order of `game.players`,
     // which is stable, and `process_training` runs once a day.
@@ -418,12 +429,15 @@ fn train_player(
         0.3
     };
 
-    // Base gain per attribute per session, boosted by coaching staff
-    let gain = 0.15
+    // Base gain per attribute per session, boosted by coaching staff and held
+    // back for a player who is not getting games.
+    let gain = BASE_TRAINING_GAIN
+        * day.development_multiplier
         * intensity_mult
         * age_factor
         * plan.bonus.coaching_mult
-        * plan.bonus.specialization_mult;
+        * plan.bonus.specialization_mult
+        * crate::playing_time::development_factor(player.playing_time);
 
     // Peaked players (ovr == potential) get no attribute gains. Without this
     // gate, attribute drift lifts ovr, and `refresh_player_derived`'s

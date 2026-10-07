@@ -817,4 +817,6 @@ export interface GameStateData {
   available_staff_market_last_activity_date?: string | null;
   extra_translations?: Record<string, Record<string, unknown>>;
   package_lockfile?: Array<{ id: string; version: string; hash: string }>;
+  /** How fast players develop in this career, as a percentage of the realistic pace (100 = 1×). */
+  development_speed?: number;
 }

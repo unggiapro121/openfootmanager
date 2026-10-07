@@ -24,6 +24,8 @@ mod determinism;
 mod fixtures;
 #[path = "turn_tests/live_match_day.rs"]
 mod live_match_day;
+#[path = "turn_tests/playing_time.rs"]
+mod playing_time;
 #[path = "turn_tests/squad_floor.rs"]
 mod squad_floor;
 #[path = "turn_tests/training_ground.rs"]
