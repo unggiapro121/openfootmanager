@@ -4,7 +4,7 @@ import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
 import type { DragState, SquadSection } from "../squad/SquadTab.helpers";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { getPlayerOvr } from "../../lib/helpers";
-import { Badge, InjuryBadge } from "../ui";
+import { Badge, InjuryBadge, ProgressBar } from "../ui";
 import ContextMenu from "../ContextMenu";
 import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers";
 import TacticsFilters from "./TacticsFilters";
@@ -34,6 +34,26 @@ interface TacticsPlayerListProps {
   selectedPlayerId: string | null;
   starters: PlayerData[];
   xiActivePosition: Map<string, string>;
+}
+
+// The player's condition as a short bar, coloured by how fresh he is, so a
+// tired starter stands out before kick-off without opening his profile.
+function ConditionBar({ condition }: { condition: number }): JSX.Element {
+  const { t } = useTranslation();
+  const label = `${t("common.condition")}: ${condition}%`;
+  return (
+    <span
+      role="progressbar"
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={condition}
+      title={label}
+      className="w-16 shrink-0"
+    >
+      <ProgressBar value={condition} variant="auto" size="sm" />
+    </span>
+  );
 }
 
 function PlayerRow({
@@ -125,6 +145,7 @@ function PlayerRow({
           <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-gray-100">
             {player.match_name || player.full_name}
           </span>
+          <ConditionBar condition={player.condition} />
           <span
             className={`shrink-0 rounded-full px-1.5 py-0.5 text-xs font-heading font-bold ${
               ovr >= 80
@@ -166,6 +187,7 @@ function PlayerRow({
           <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-900 dark:text-gray-100">
             {player.match_name || player.full_name}
           </span>
+          <ConditionBar condition={player.condition} />
           {player.injury ? (
             <InjuryBadge injury={player.injury} />
           ) : (
