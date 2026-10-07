@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { User } from "lucide-react";
 import { Card, CardHeader, CardBody, Badge } from "../ui";
-import { formatExactMoney, formatVal, positionBadgeVariant } from "../../lib/helpers";
+import { calcAge, formatExactMoney, formatVal, positionBadgeVariant } from "../../lib/helpers";
+import { getPlayerOvr } from "../../lib/playerOvr";
 import { weeklyWageAmount } from "../../lib/finance";
 import type { PlayerData, PlayerSelectionOptions } from "../../store/gameStore";
 import ContextMenu from "../ContextMenu";
@@ -31,6 +32,12 @@ export default function FinancesPayrollTable({
                 </th>
                 <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {t("common.position")}
+                </th>
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {t("common.age")}
+                </th>
+                <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {t("common.ovr")}
                 </th>
                 <th className="py-3 px-5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {t("finances.wagePerWeek")}
@@ -85,6 +92,12 @@ export default function FinancesPayrollTable({
                         <Badge variant={positionBadgeVariant(p.position)}>
                           {translatePositionAbbreviation(t, p.position)}
                         </Badge>
+                      </td>
+                      <td className="py-3 px-5 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
+                        {calcAge(p.date_of_birth)}
+                      </td>
+                      <td className="py-3 px-5 font-heading font-bold text-sm text-gray-800 dark:text-gray-200 tabular-nums">
+                        {getPlayerOvr(p)}
                       </td>
                       <td className="py-3 px-5 text-sm font-medium text-gray-700 dark:text-gray-300">
                         {formatExactMoney(weeklyWageAmount(p.wage))}

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { calcAge } from "../../lib/helpers";
 import { createPlayer } from "../../test-utils/factories";
 import FinancesPayrollTable from "./FinancesPayrollTable";
 
@@ -41,6 +42,23 @@ describe("FinancesPayrollTable", () => {
     expect(onSelectPlayer).toHaveBeenCalledTimes(2);
     expect(onSelectPlayer).toHaveBeenNthCalledWith(1, "player-2");
     expect(onSelectPlayer).toHaveBeenNthCalledWith(2, "player-2");
+  });
+
+  it("shows each player's age and OVR beside his wage", () => {
+    const veteran = createPlayer({
+      id: "player-3",
+      full_name: "Leo Varga",
+      wage: 900_000,
+      date_of_birth: "1994-03-10",
+      ovr: 81,
+    });
+    render(<FinancesPayrollTable roster={[veteran]} />);
+
+    expect(screen.getByRole("columnheader", { name: "common.age" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "common.ovr" })).toBeInTheDocument();
+    const cells = screen.getAllByRole("cell").map((cell) => cell.textContent);
+    expect(cells).toContain(String(calcAge("1994-03-10")));
+    expect(cells).toContain("81");
   });
 
   it("leaves rows out of the tab order when selection is unavailable", () => {
