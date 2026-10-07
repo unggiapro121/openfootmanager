@@ -250,6 +250,18 @@ export function useTacticsLibrary({
     setDraftTacticName(nextTactic.name);
   }
 
+  /**
+   * Remove a saved custom tactic. The team keeps the formation and play style
+   * it is using: a tactic is a saved shape to pick from, not the live setup.
+   * Deleting the selected one falls back to the preset matching that setup.
+   */
+  function handleDeleteTactic(id: string): void {
+    setCustomTactics((current) => current.filter((entry) => entry.id !== id));
+    if (activeTacticId === id) {
+      setActiveTacticId(matchedPreset ? `preset:${matchedPreset.id}` : null);
+    }
+  }
+
   return {
     activeTactic,
     tacticLibrary,
@@ -258,5 +270,6 @@ export function useTacticsLibrary({
     handleCreateCustomTactic,
     handleDuplicateTactic,
     handleSaveTactic,
+    handleDeleteTactic,
   };
 }

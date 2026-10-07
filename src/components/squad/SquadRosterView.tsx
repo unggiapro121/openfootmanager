@@ -5,7 +5,8 @@ import type {
   PlayerSelectionOptions,
   TeamData,
 } from "../../store/gameStore";
-import { Badge, Card, ProgressBar, Select, CountryFlag, PlayerAvatar, InjuryBadge } from "../ui";
+import { Badge, Card, Select, CountryFlag, PlayerAvatar, InjuryBadge } from "../ui";
+import { condColor } from "../../lib/playerConditionDisplay";
 import {
   AlertTriangle,
   MoreVertical,
@@ -891,8 +892,12 @@ export default function SquadRosterView({
                       <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
                         {age}
                       </td>
-                      <td className="py-2.5 px-4 w-28">
-                        <ProgressBar value={player.condition} variant="auto" size="sm" showLabel />
+                      {/* Condition as a coloured figure: the bar beside it was too short
+                          to read and only repeated the number. */}
+                      <td
+                        className={`py-2.5 px-4 text-sm font-medium tabular-nums ${condColor(player.condition)}`}
+                      >
+                        {player.condition}%
                       </td>
                       <td className="py-2.5 px-4 text-sm text-gray-500 dark:text-gray-400 tabular-nums">
                         {player.morale}
