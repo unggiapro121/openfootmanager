@@ -101,16 +101,10 @@ fn resolve_midfield<R: Rng>(
         / 4.0
         * trait_bonus(&defender, TraitContext::Tackling);
 
-    let att_mod = play_style_modifier(
-        ctx.team(att_side).play_style,
-        PlayStylePhase::Midfield,
-        true,
-    ) * role_attribute_modifier(attacker.role, PlayStylePhase::Midfield);
-    let def_mod = play_style_modifier(
-        ctx.team(def_side).play_style,
-        PlayStylePhase::Midfield,
-        false,
-    ) * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
+    let att_mod = play_style_modifier(ctx.team(att_side).play_style, PlayStylePhase::Midfield)
+        * role_attribute_modifier(attacker.role, PlayStylePhase::Midfield);
+    let def_mod = play_style_modifier(ctx.team(def_side).play_style, PlayStylePhase::Midfield)
+        * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
     let att_eff = att_rating
         * att_mod
         * home_mod(att_side, ctx.config)
@@ -181,13 +175,10 @@ fn resolve_attacking_third<R: Rng>(
         / 4.0
         * trait_bonus(&defender, TraitContext::Tackling);
 
-    let att_mod = play_style_modifier(ctx.team(att_side).play_style, PlayStylePhase::Attack, true)
+    let att_mod = play_style_modifier(ctx.team(att_side).play_style, PlayStylePhase::Attack)
         * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
-    let def_mod = play_style_modifier(
-        ctx.team(def_side).play_style,
-        PlayStylePhase::Defense,
-        false,
-    ) * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
+    let def_mod = play_style_modifier(ctx.team(def_side).play_style, PlayStylePhase::Defense)
+        * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
     let att_eff = att_rating * att_mod * home_mod(att_side, ctx.config);
     let def_eff = def_rating
         * def_mod
@@ -388,7 +379,7 @@ fn resolve_shot<R: Rng>(ctx: &mut MatchContext, minute: u8, att_side: Side, rng:
 
 pub(super) fn effective_midfield(ctx: &MatchContext, side: Side) -> f64 {
     let base = ctx.team(side).midfield_rating();
-    let modifier = play_style_modifier(ctx.team(side).play_style, PlayStylePhase::Midfield, true);
+    let modifier = play_style_modifier(ctx.team(side).play_style, PlayStylePhase::Midfield);
     base * modifier * home_mod(side, ctx.config)
 }
 
@@ -397,6 +388,6 @@ fn effective_press(ctx: &MatchContext, pressing_side: Side) -> f64 {
     let base = team.position_attr_avg(Position::Midfielder, |p| {
         ((p.stamina as u16 + p.tackling as u16 + p.pace as u16) / 3) as u8
     });
-    let modifier = play_style_modifier(team.play_style, PlayStylePhase::Press, true);
+    let modifier = play_style_modifier(team.play_style, PlayStylePhase::Press);
     base * modifier * tactics_pressing_press(&team.tactics) * home_mod(pressing_side, ctx.config)
 }

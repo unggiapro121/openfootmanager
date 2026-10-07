@@ -250,14 +250,13 @@ pub(crate) enum PlayStylePhase {
     Press,
 }
 
-pub(crate) fn play_style_modifier(
-    style: PlayStyle,
-    phase: PlayStylePhase,
-    is_own_phase: bool,
-) -> f64 {
-    if !is_own_phase {
-        return 1.0;
-    }
+/// The multiplier a side's play style puts on its rating in `phase`.
+///
+/// Applied to whichever side the phase belongs to, attacking or defending. The
+/// defending side used to be passed a flag that returned a neutral 1.0, so the
+/// Defense column was never read: Defensive paid its attacking penalty for no
+/// defensive return, and Attacking and HighPress paid nothing for theirs.
+pub(crate) fn play_style_modifier(style: PlayStyle, phase: PlayStylePhase) -> f64 {
     match (style, phase) {
         (PlayStyle::Attacking, PlayStylePhase::Attack) => 1.12,
         (PlayStyle::Attacking, PlayStylePhase::Defense) => 0.93,
@@ -552,6 +551,34 @@ pub(crate) fn home_mod(side: Side, config: &MatchConfig) -> f64 {
     match side {
         Side::Home => config.home_advantage,
         Side::Away => 1.0,
+    }
+}
+
+#[cfg(test)]
+mod play_style_modifier_tests {
+    use super::*;
+
+    /// Given each style's defensive trade-off in the table,
+    /// When the defending side's modifier is read,
+    /// Then it is the table's value, not a neutral 1.0: a style counts when its side defends.
+    #[test]
+    fn the_defending_side_gets_its_own_style() {
+        assert_eq!(
+            play_style_modifier(PlayStyle::Defensive, PlayStylePhase::Defense),
+            1.12
+        );
+        assert_eq!(
+            play_style_modifier(PlayStyle::Attacking, PlayStylePhase::Defense),
+            0.93
+        );
+        assert_eq!(
+            play_style_modifier(PlayStyle::HighPress, PlayStylePhase::Defense),
+            0.95
+        );
+        assert_eq!(
+            play_style_modifier(PlayStyle::Counter, PlayStylePhase::Midfield),
+            0.92
+        );
     }
 }
 

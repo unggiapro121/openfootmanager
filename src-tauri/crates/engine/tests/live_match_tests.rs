@@ -130,6 +130,29 @@ fn run_to_finish(state: &mut LiveMatchState, rng: &mut StdRng) -> Vec<MinuteResu
     results
 }
 
+/// Goals the away side concedes to the same Balanced home side over `trials`
+/// watched matches, when the away side plays `away_style`.
+fn live_goals_conceded_away(away_style: PlayStyle, trials: u64) -> u32 {
+    let config = MatchConfig {
+        home_advantage: 1.0,
+        ..MatchConfig::default()
+    };
+    (0..trials)
+        .map(|seed| {
+            let mut state = LiveMatchState::new(
+                make_team("home", "Home FC", 65, PlayStyle::Balanced),
+                make_team("away", "Away FC", 65, away_style),
+                config.clone(),
+                make_bench("home", 60),
+                make_bench("away", 60),
+                false,
+            );
+            run_to_finish(&mut state, &mut seeded_rng(seed));
+            state.into_report().home_goals as u32
+        })
+        .sum()
+}
+
 // ===========================================================================
 // Tests: Basic lifecycle
 // ===========================================================================
@@ -1343,6 +1366,24 @@ fn set_corner_taker_stored() {
 // ===========================================================================
 // Tests: Play styles affect outcomes
 // ===========================================================================
+
+/// Given the same attacking side and the same seeds in watched matches,
+/// When it plays a side set up to defend and then a balanced side,
+/// Then the defensive side concedes clearly fewer goals: its style counts when it defends.
+#[test]
+fn a_defensive_side_concedes_fewer_in_a_watched_match() {
+    let trials = 4000;
+    let against_defensive = live_goals_conceded_away(PlayStyle::Defensive, trials);
+    let against_balanced = live_goals_conceded_away(PlayStyle::Balanced, trials);
+
+    // The 12% bonus lands on one duel, so over a match it is worth a few
+    // percent. Measured on these seeds: 2.0% more while the defending side's
+    // style was ignored, 2.4% fewer once it counted. 1% fewer splits the two.
+    assert!(
+        against_defensive * 100 <= against_balanced * 99,
+        "Defensive conceded {against_defensive}, Balanced conceded {against_balanced}"
+    );
+}
 
 #[test]
 fn play_style_variations_produce_results() {

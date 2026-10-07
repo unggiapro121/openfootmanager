@@ -133,11 +133,8 @@ impl LiveMatchState {
 
     pub(super) fn effective_midfield(&self, side: Side) -> f64 {
         let base = self.team_ref(side).midfield_rating();
-        let modifier = play_style_modifier(
-            self.team_ref(side).play_style,
-            PlayStylePhase::Midfield,
-            true,
-        );
+        let modifier =
+            play_style_modifier(self.team_ref(side).play_style, PlayStylePhase::Midfield);
         base * modifier * home_mod(side, &self.config)
     }
 
@@ -146,7 +143,7 @@ impl LiveMatchState {
         let base = team.position_attr_avg(Position::Midfielder, |p| {
             ((p.stamina as u16 + p.tackling as u16 + p.pace as u16) / 3) as u8
         });
-        let modifier = play_style_modifier(team.play_style, PlayStylePhase::Press, true);
+        let modifier = play_style_modifier(team.play_style, PlayStylePhase::Press);
         base * modifier
             * tactics_pressing_press(&team.tactics)
             * home_mod(pressing_side, &self.config)

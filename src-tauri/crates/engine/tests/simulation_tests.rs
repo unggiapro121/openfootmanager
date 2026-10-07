@@ -433,7 +433,7 @@ fn equal_teams_roughly_even() {
 
     let mut a_wins = 0u32;
     let mut b_wins = 0u32;
-    let trials = 200;
+    let trials = 4000;
     for seed in 0..trials {
         let report = simulate_with_rng(&team_a, &team_b, &config, &mut seeded_rng(seed));
         if report.home_goals > report.away_goals {
@@ -465,7 +465,7 @@ fn home_advantage_helps() {
         ..MatchConfig::default()
     };
 
-    let trials = 200;
+    let trials = 4000;
     let mut home_wins_with = 0u32;
     let mut home_wins_without = 0u32;
 
@@ -508,6 +508,40 @@ fn possession_style_has_more_possession() {
     assert!(
         avg_poss > 48.0,
         "Possession team avg possession should be >48%: {avg_poss:.1}%"
+    );
+}
+
+/// Goals the away side concedes to the same Balanced home side over `trials`
+/// seeds, when the away side plays `away_style`.
+fn goals_conceded_away(away_style: PlayStyle, trials: u64) -> u32 {
+    let home = make_team("home", "Home FC", 65, PlayStyle::Balanced);
+    let away = make_team("away", "Away FC", 65, away_style);
+    let config = MatchConfig {
+        home_advantage: 1.0,
+        ..MatchConfig::default()
+    };
+    (0..trials)
+        .map(|seed| {
+            simulate_with_rng(&home, &away, &config, &mut seeded_rng(seed)).home_goals as u32
+        })
+        .sum()
+}
+
+/// Given the same attacking side and the same seeds,
+/// When it plays a side set up to defend and then a balanced side,
+/// Then the defensive side concedes clearly fewer goals: its style counts when it defends.
+#[test]
+fn a_defensive_side_concedes_fewer_than_a_balanced_one() {
+    let trials = 4000;
+    let against_defensive = goals_conceded_away(PlayStyle::Defensive, trials);
+    let against_balanced = goals_conceded_away(PlayStyle::Balanced, trials);
+
+    // The 12% bonus lands on one duel, so over a match it is worth a few
+    // percent. Measured on these seeds: 0.8% more while the defending side's
+    // style was ignored, 3.0% fewer once it counted. 1% fewer splits the two.
+    assert!(
+        against_defensive * 100 <= against_balanced * 99,
+        "Defensive conceded {against_defensive}, Balanced conceded {against_balanced}"
     );
 }
 
