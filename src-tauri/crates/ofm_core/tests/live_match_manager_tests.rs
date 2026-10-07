@@ -3,7 +3,7 @@ use domain::league::{Fixture, FixtureCompetition, FixtureStatus, League, Standin
 use domain::manager::Manager;
 use domain::player::{Player, PlayerAttributes, Position};
 use domain::team::Team;
-use engine::MatchPhase;
+use engine::{MatchCommand, MatchPhase, PlayerRole, Side};
 use ofm_core::clock::GameClock;
 use ofm_core::game::Game;
 use ofm_core::live_match_manager::{self, MatchMode};
@@ -375,6 +375,79 @@ fn create_live_match_filters_unavailable_players_from_saved_xi() {
     assert!(!starter_ids.contains(&"missing-player".to_string()));
     assert!(!bench_ids.contains(&"team1_fwd2".to_string()));
     assert!(!bench_ids.contains(&"missing-player".to_string()));
+}
+
+#[test]
+fn pre_match_position_swap_gives_each_player_the_role_his_new_slot_suits() {
+    let mut game = make_game_with_fixture();
+    // A defender built like a poacher: nothing to say at left-back, plenty up top.
+    let poacher = game
+        .players
+        .iter_mut()
+        .find(|p| p.id == "team1_def2")
+        .unwrap();
+    poacher.attributes.shooting = 92;
+    poacher.attributes.positioning = 92;
+    poacher.attributes.composure = 92;
+    game.teams[0].formation = "4-4-2".to_string();
+    game.teams[0].starting_xi_ids = vec![
+        "team1_gk1".to_string(),
+        "team1_def2".to_string(),
+        "team1_def3".to_string(),
+        "team1_def4".to_string(),
+        "team1_def5".to_string(),
+        "team1_mid2".to_string(),
+        "team1_mid3".to_string(),
+        "team1_mid4".to_string(),
+        "team1_mid5".to_string(),
+        "team1_fwd2".to_string(),
+        "team1_fwd3".to_string(),
+    ];
+
+    let mut session =
+        live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
+    session
+        .apply_command(MatchCommand::PreMatchSwapPositions {
+            side: Side::Home,
+            player_a_id: "team1_def2".to_string(),
+            player_b_id: "team1_fwd3".to_string(),
+        })
+        .unwrap();
+    let snap = session.snapshot();
+    assert_eq!(snap.home_team.players[10].id, "team1_def2");
+
+    let commands = live_match_manager::pre_match_position_swap_roles(
+        &game,
+        &snap,
+        Side::Home,
+        ["team1_def2", "team1_fwd3"],
+    );
+    let role_of = |player_id: &str| {
+        commands.iter().find_map(|command| match command {
+            MatchCommand::ChangePlayerRole {
+                player_id: id,
+                role,
+                ..
+            } if id == player_id => Some(*role),
+            _ => None,
+        })
+    };
+    assert_eq!(role_of("team1_def2"), Some(PlayerRole::Poacher));
+    let full_back_role = role_of("team1_fwd3").expect("a role for the left-back slot");
+    assert!(
+        matches!(
+            full_back_role,
+            PlayerRole::Standard
+                | PlayerRole::AttackingFB
+                | PlayerRole::DefensiveFB
+                | PlayerRole::InvertedFB
+                | PlayerRole::WingBack
+        ),
+        "{full_back_role:?} is not a full-back's job"
+    );
+    // The club's saved lineup and roles are untouched.
+    assert_eq!(game.teams[0].starting_xi_ids[1], "team1_def2");
+    assert!(!game.teams[0].player_roles.contains_key("team1_def2"));
 }
 
 #[test]

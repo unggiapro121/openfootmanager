@@ -1,7 +1,7 @@
 use crate::event::{EventType, MatchEvent};
-use crate::types::{Position, Side, Zone};
+use crate::types::{PlayerRole, Position, Side, Zone};
 
-use super::{LiveMatchState, SubstitutionRecord};
+use super::{LiveMatchState, SubstitutionRecord, is_role_valid_for_position};
 
 // ---------------------------------------------------------------------------
 // Substitution mechanics
@@ -161,6 +161,50 @@ impl LiveMatchState {
         match side {
             Side::Home => self.home_bench.push(player_off),
             Side::Away => self.away_bench.push(player_off),
+        }
+
+        Ok(())
+    }
+
+    /// Pre-match position swap: two starters trade formation slots. Only valid
+    /// during PreKickOff phase.
+    ///
+    /// The XI is slot-aligned, so trading slots is trading indices. The slot
+    /// keeps its position, as in [`Self::do_pre_match_swap`], and a role the
+    /// new position does not admit falls back to `Standard` — the caller picks
+    /// a better one if it can.
+    pub(super) fn do_pre_match_position_swap(
+        &mut self,
+        side: Side,
+        player_a_id: &str,
+        player_b_id: &str,
+    ) -> Result<(), String> {
+        let team = self.team_mut(side);
+        let a_idx = team
+            .players
+            .iter()
+            .position(|p| p.id == player_a_id)
+            .ok_or("be.error.liveMatch.playerNotInStartingXi")?;
+        let b_idx = team
+            .players
+            .iter()
+            .position(|p| p.id == player_b_id)
+            .ok_or("be.error.liveMatch.playerNotInStartingXi")?;
+        if a_idx == b_idx {
+            return Ok(());
+        }
+
+        let a_slot_position = team.players[a_idx].position;
+        let b_slot_position = team.players[b_idx].position;
+        team.players.swap(a_idx, b_idx);
+        team.players[a_idx].position = a_slot_position;
+        team.players[b_idx].position = b_slot_position;
+
+        for idx in [a_idx, b_idx] {
+            let player = &mut team.players[idx];
+            if !is_role_valid_for_position(player.role, player.position) {
+                player.role = PlayerRole::Standard;
+            }
         }
 
         Ok(())
