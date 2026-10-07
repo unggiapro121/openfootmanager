@@ -326,6 +326,8 @@ export interface PlayerData {
   ovr?: number;
   /** Player's potential ceiling (1–99). Set at generation; higher than ovr for young players. */
   potential?: number;
+  /** Recent match form, in tenths of a rating point (60 = 6.0, an ordinary game). */
+  match_form?: number;
   /** Jersey/squad number (1–99). Null if unassigned. */
   jersey_number?: number | null;
 }

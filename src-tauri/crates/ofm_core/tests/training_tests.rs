@@ -14,6 +14,8 @@ mod determinism;
 mod development_speed;
 #[path = "training_tests/fixtures.rs"]
 mod fixtures;
+#[path = "training_tests/match_form.rs"]
+mod match_form;
 #[path = "training_tests/playing_time.rs"]
 mod playing_time;
 #[path = "training_tests/recovery.rs"]

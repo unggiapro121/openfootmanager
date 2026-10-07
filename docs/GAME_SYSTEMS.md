@@ -108,7 +108,7 @@ Rest days provide generous condition recovery (10 base, boosted by physio) with 
 Each training session, for each relevant attribute:
 
 ```
-gain = 0.04 × development_speed × intensity_mult × age_factor × coaching_mult × specialization_mult × playing_time_factor
+gain = 0.04 × development_speed × intensity_mult × age_factor × coaching_mult × specialization_mult × playing_time_factor × form_factor
 ```
 
 `0.04` (`BASE_TRAINING_GAIN`) is the realistic pace: a regular starter of 18 at a Balanced,
@@ -123,6 +123,32 @@ end-of-season technical growth in `aging.rs` are not multiplied.
 
 The gain is **probabilistic**: a gain of 0.3 means a 30% chance of +1 to that attribute. Attributes are capped at 99.
 A player whose `ovr` has reached his `potential` gains nothing.
+
+### Form Factor
+
+`playing_time` says whether a player is getting games; `match_form` says what he is doing with
+them. Each player carries `match_form`, a moving average of his match ratings in tenths of a point
+(60 = 6.0, an ordinary game — ratings centre on 6.0, see `docs/MATCH_SIMULATION.md`), kept by
+`ofm_core/src/match_form.rs`:
+
+```
+after each match in which the engine rated him (unrated cameos leave it alone):
+    match_form = match_form × 0.8 + rating × 10 × 0.2
+
+form_factor = clamp(1 + 0.15 × (match_form − 60) / 10, 0.9, 1.3)
+```
+
+| Recent form | Factor |
+|-------------|--------|
+| 8.0 and above | 1.3× |
+| 7.0 | 1.15× |
+| 6.0 (ordinary) | 1.0× |
+| 5.5 | 0.925× |
+| 5.3 and below | 0.9× |
+
+A poor run slows development by at most 10%; excellent form speeds it up by at most 30%. It applies
+at every age. New players and older saves start at 60 (`v050_player_match_form.sql`). The player
+profile shows it as "Recent Form".
 
 ### Playing Time Factor
 

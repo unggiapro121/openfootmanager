@@ -429,15 +429,16 @@ fn train_player(
         0.3
     };
 
-    // Base gain per attribute per session, boosted by coaching staff and held
-    // back for a player who is not getting games.
+    // Base gain per attribute per session, boosted by coaching staff, held back
+    // for a player who is not getting games, and nudged by how well he is playing.
     let gain = BASE_TRAINING_GAIN
         * day.development_multiplier
         * intensity_mult
         * age_factor
         * plan.bonus.coaching_mult
         * plan.bonus.specialization_mult
-        * crate::playing_time::development_factor(player.playing_time);
+        * crate::playing_time::development_factor(player.playing_time)
+        * crate::match_form::development_factor(player.match_form);
 
     // Peaked players (ovr == potential) get no attribute gains. Without this
     // gate, attribute drift lifts ovr, and `refresh_player_derived`'s
