@@ -231,6 +231,7 @@ mod tests {
             start_year: 2032,
             start_phase: StartPhase::MidSeason,
             history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+            development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
         };
         let mut world = make_historical_snapshot_world();
         world.metadata.base_year = Some(i32::MAX);

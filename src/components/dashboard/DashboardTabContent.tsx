@@ -42,8 +42,16 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
     managerId,
     seasonComplete,
     squadListSortState,
+    transferMarketFilters,
     visitedOnboardingTabs,
-    handlers: { onGameUpdate, onNavigate, onSelectPlayer, onSelectTeam, onSquadListSortChange },
+    handlers: {
+      onGameUpdate,
+      onNavigate,
+      onSelectPlayer,
+      onSelectTeam,
+      onSquadListSortChange,
+      onTransferMarketFiltersChange,
+    },
   } = viewModel;
 
   const renderHomeContent = () => {
@@ -105,6 +113,8 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
         onSelectPlayer={onSelectPlayer}
         onSelectTeam={onSelectTeam}
         onGameUpdate={onGameUpdate}
+        marketFilters={transferMarketFilters}
+        onMarketFiltersChange={onTransferMarketFiltersChange}
       />
     );
   } else if (activeTab === "TransferCentre") {

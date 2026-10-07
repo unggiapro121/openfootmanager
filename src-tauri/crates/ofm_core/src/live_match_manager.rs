@@ -3,8 +3,10 @@
 // of `domain`, and `ofm_core/turn/` is the single bridge between the two. The
 // live path and the instant path both build their sides from there, so there is
 // one answer to "who is playing" rather than one per code path.
+use crate::ai_roles::role_for_position;
+use crate::player_rating::formation_slots;
 pub use crate::turn::squad::auto_select_set_pieces;
-use crate::turn::squad::build_team_with_bench;
+use crate::turn::squad::{build_team_with_bench, domain_to_engine_role};
 
 use rand_chacha::ChaCha12Rng;
 use serde::{Deserialize, Serialize};
@@ -276,6 +278,51 @@ pub fn kick_off_live_match(
 ) -> Result<LiveMatchSession, String> {
     prepare_kick_off(game, fixture_index);
     create_live_match(game, fixture_index, mode, allows_extra_time)
+}
+
+/// The roles two starters take after trading slots before kick-off
+/// ([`MatchCommand::PreMatchSwapPositions`]), as commands to apply on top of it.
+///
+/// Each player gets the job his attributes argue for in the slot he moved
+/// into, by the same rule AI squads are given roles. The commands touch this
+/// match only: the club's saved roles, like its saved XI, are left alone.
+pub fn pre_match_position_swap_roles(
+    game: &Game,
+    snapshot: &MatchSnapshot,
+    side: Side,
+    player_ids: [&str; 2],
+) -> Vec<MatchCommand> {
+    let team = match side {
+        Side::Home => &snapshot.home_team,
+        Side::Away => &snapshot.away_team,
+    };
+    // The XI is slot-aligned only when every slot is filled.
+    let slots = formation_slots(&team.formation);
+    if slots.len() != team.players.len() {
+        return Vec::new();
+    }
+    let play_style = match team.play_style {
+        engine::PlayStyle::Balanced => domain::team::PlayStyle::Balanced,
+        engine::PlayStyle::Attacking => domain::team::PlayStyle::Attacking,
+        engine::PlayStyle::Defensive => domain::team::PlayStyle::Defensive,
+        engine::PlayStyle::Possession => domain::team::PlayStyle::Possession,
+        engine::PlayStyle::Counter => domain::team::PlayStyle::Counter,
+        engine::PlayStyle::HighPress => domain::team::PlayStyle::HighPress,
+    };
+
+    player_ids
+        .into_iter()
+        .filter_map(|player_id| {
+            let slot_index = team.players.iter().position(|p| p.id == player_id)?;
+            let player = game.players.iter().find(|p| p.id == player_id)?;
+            let role = role_for_position(player, &slots[slot_index], &play_style);
+            Some(MatchCommand::ChangePlayerRole {
+                side,
+                player_id: player_id.to_string(),
+                role: domain_to_engine_role(&role),
+            })
+        })
+        .collect()
 }
 
 /// Create a live match session for a specific fixture.

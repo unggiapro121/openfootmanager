@@ -1069,6 +1069,109 @@ fn pre_match_swap_invalid_bench_player_fails() {
     assert_eq!(result.unwrap_err(), "be.error.liveMatch.playerNotOnBench");
 }
 
+#[test]
+fn pre_match_position_swap_trades_slots_between_starters() {
+    let mut state = make_live_match(false);
+    let result = state.apply_command(MatchCommand::PreMatchSwapPositions {
+        side: Side::Home,
+        player_a_id: "home_def1".to_string(),
+        player_b_id: "home_fwd2".to_string(),
+    });
+    assert!(result.is_ok());
+
+    let snap = state.snapshot();
+    let players = &snap.home_team.players;
+    assert_eq!(players.len(), 11);
+    // The slot keeps its position; the player takes the slot.
+    assert_eq!(players[1].id, "home_fwd2");
+    assert_eq!(players[1].position, Position::Defender);
+    assert_eq!(players[10].id, "home_def1");
+    assert_eq!(players[10].position, Position::Forward);
+    assert!(state.bench(Side::Home).iter().all(|p| p.id != "home_def1"));
+    // Does not count as a substitution
+    assert_eq!(snap.home_subs_made, 0);
+}
+
+#[test]
+fn pre_match_position_swap_drops_a_role_the_new_position_does_not_admit() {
+    let mut state = make_live_match(false);
+    for (player_id, role) in [
+        ("home_mid1", PlayerRole::AnchorMan),
+        ("home_mid2", PlayerRole::BoxToBox),
+        ("home_mid3", PlayerRole::Mezzala),
+    ] {
+        state
+            .apply_command(MatchCommand::ChangePlayerRole {
+                side: Side::Home,
+                player_id: player_id.to_string(),
+                role,
+            })
+            .unwrap();
+    }
+
+    state
+        .apply_command(MatchCommand::PreMatchSwapPositions {
+            side: Side::Home,
+            player_a_id: "home_mid1".to_string(),
+            player_b_id: "home_fwd1".to_string(),
+        })
+        .unwrap();
+    state
+        .apply_command(MatchCommand::PreMatchSwapPositions {
+            side: Side::Home,
+            player_a_id: "home_mid2".to_string(),
+            player_b_id: "home_mid3".to_string(),
+        })
+        .unwrap();
+
+    let snap = state.snapshot();
+    let role_of = |id: &str| {
+        snap.home_team
+            .players
+            .iter()
+            .find(|p| p.id == id)
+            .unwrap()
+            .role
+    };
+    assert_eq!(role_of("home_mid1"), PlayerRole::Standard);
+    // Same position group: the role still fits and is kept.
+    assert_eq!(role_of("home_mid2"), PlayerRole::BoxToBox);
+    assert_eq!(role_of("home_mid3"), PlayerRole::Mezzala);
+}
+
+#[test]
+fn pre_match_position_swap_fails_after_kickoff() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(42);
+    state.step_minute(&mut rng);
+
+    let result = state.apply_command(MatchCommand::PreMatchSwapPositions {
+        side: Side::Home,
+        player_a_id: "home_def1".to_string(),
+        player_b_id: "home_fwd1".to_string(),
+    });
+    assert_eq!(
+        result.unwrap_err(),
+        "be.error.liveMatch.preMatchSwapTooLate"
+    );
+}
+
+#[test]
+fn pre_match_position_swap_rejects_a_player_outside_the_xi() {
+    let mut state = make_live_match(false);
+    let bench_id = state.bench(Side::Home)[0].id.clone();
+
+    let result = state.apply_command(MatchCommand::PreMatchSwapPositions {
+        side: Side::Home,
+        player_a_id: "home_def1".to_string(),
+        player_b_id: bench_id,
+    });
+    assert_eq!(
+        result.unwrap_err(),
+        "be.error.liveMatch.playerNotInStartingXi"
+    );
+}
+
 // ===========================================================================
 // Tests: Formation changes
 // ===========================================================================

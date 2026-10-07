@@ -333,6 +333,8 @@ export default function PlayerProfile({
           isOwnClub={isManagerSquadProfile}
           isGk={isGoalkeeper(player)}
           title={t("playerProfile.attributes")}
+          ovr={ovr}
+          ovrLabel={t("common.ovr")}
           averageLabel={t("common.average")}
           hiddenTitle={t("playerProfile.attributesHidden")}
           hiddenBody={t("playerProfile.scoutToView")}

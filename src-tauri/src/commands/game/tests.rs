@@ -38,6 +38,7 @@ fn perf_baseline() {
         start_year: 2026,
         start_phase: StartPhase::SeasonStart,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let clock = game_clock_for_world(&startup_options, &world.metadata).unwrap();
 
@@ -66,6 +67,32 @@ fn perf_baseline() {
     );
 }
 
+/// Given a career started at ×2.5, when the world is built, then the new game
+/// develops players at ×2.5.
+#[test]
+fn a_new_career_takes_the_development_speed_chosen_at_creation() {
+    let manager = domain::manager::Manager::new(
+        "mgr-user".to_string(),
+        "Alex".to_string(),
+        "Manager".to_string(),
+        "1980-01-01".to_string(),
+        "England".to_string(),
+    );
+    let startup_options = StartupOptions {
+        start_year: 2032,
+        start_phase: StartPhase::MidSeason,
+        history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::from_percent(250)
+            .expect("×2.5 is on the scale"),
+    };
+    let world = make_historical_snapshot_world();
+    let clock = game_clock_for_world(&startup_options, &world.metadata).unwrap();
+
+    let (game, _stats) = build_game_from_world_data(clock, manager, &startup_options, world);
+
+    assert_eq!(game.development_speed.percent(), 250);
+}
+
 #[test]
 fn historical_snapshot_startup_preserves_league_news_history_and_stats() {
     let manager = domain::manager::Manager::new(
@@ -79,6 +106,7 @@ fn historical_snapshot_startup_preserves_league_news_history_and_stats() {
         start_year: 2032,
         start_phase: StartPhase::MidSeason,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let world = make_historical_snapshot_world();
     let clock = game_clock_for_world(&startup_options, &world.metadata).unwrap();
@@ -117,6 +145,7 @@ fn imported_roster_baseline_bootstrap_backfills_staff_market_and_opening_youth()
         start_year: 2032,
         start_phase: StartPhase::SeasonStart,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let mut world = make_imported_baseline_world_without_staff();
     ofm_core::generator::normalize_imported_world_for_career_start(
@@ -180,6 +209,7 @@ fn imported_roster_baseline_bootstrap_allows_ai_manager_seeding_without_imported
         start_year: 2032,
         start_phase: StartPhase::SeasonStart,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let mut world = make_imported_baseline_world_without_staff();
     ofm_core::generator::normalize_imported_world_for_career_start(
@@ -239,6 +269,7 @@ fn game_from(world: ofm_core::generator::WorldData) -> ofm_core::game::Game {
         start_year: 2032,
         start_phase: StartPhase::SeasonStart,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let clock = game_clock_for_world(&startup_options, &world.metadata).unwrap();
     let manager = domain::manager::Manager::new(
@@ -346,6 +377,7 @@ fn imported_historical_snapshot_preserves_state_while_backfilling_staff() {
         start_year: 2032,
         start_phase: StartPhase::MidSeason,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let mut world = make_historical_snapshot_world();
     world.staff.clear();
@@ -400,6 +432,7 @@ fn embedded_competition_definitions_replace_the_auto_built_competitions() {
         start_year: 2032,
         start_phase: StartPhase::MidSeason,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let mut world = make_historical_snapshot_world();
     let team_ids: Vec<String> = world.teams.iter().map(|t| t.id.clone()).collect();
@@ -463,6 +496,7 @@ fn beginning_a_career_preserves_an_imported_snapshot() {
         start_year: 2032,
         start_phase: StartPhase::MidSeason,
         history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
     };
     let world = make_historical_snapshot_world();
     let clock = game_clock_for_world(&startup_options, &world.metadata).unwrap();
@@ -523,6 +557,7 @@ fn authored_group_size_reaches_the_game_built_from_a_loaded_world() {
             start_year: 2031,
             start_phase: StartPhase::SeasonStart,
             history_depth_years: 0,
+            development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
         };
         let clock = game_clock_for_world(&options, &loaded.metadata).unwrap();
         let (game, _) = build_game_from_world_data(clock, manager, &options, loaded);

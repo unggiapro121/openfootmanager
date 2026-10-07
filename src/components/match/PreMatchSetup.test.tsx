@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { invoke } from "@tauri-apps/api/core";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import PreMatchSetup from "./PreMatchSetup";
 import type { FixtureData, GameStateData, LeagueData } from "../../store/gameStore";
@@ -118,7 +119,11 @@ function gameState(): Record<string, unknown> {
   };
 }
 
-function renderSetup(currentFixture?: FixtureData, competitions?: LeagueData[]) {
+function renderSetup(
+  currentFixture?: FixtureData,
+  competitions?: LeagueData[],
+  onUpdateSnapshot = vi.fn(),
+) {
   const state = gameState();
   if (competitions) state.competitions = competitions;
   return render(
@@ -132,7 +137,7 @@ function renderSetup(currentFixture?: FixtureData, competitions?: LeagueData[]) 
       currentFixture={currentFixture}
       userSide="Home"
       onStart={vi.fn()}
-      onUpdateSnapshot={vi.fn()}
+      onUpdateSnapshot={onUpdateSnapshot}
     />,
   );
 }
@@ -175,5 +180,72 @@ describe("PreMatchSetup opponent scout panel", () => {
     ]);
 
     expect(screen.getByText("Copa Nacional")).toBeInTheDocument();
+  });
+});
+
+describe("PreMatchSetup lineup", () => {
+  beforeEach(() => {
+    vi.mocked(invoke).mockReset();
+  });
+
+  function dataTransfer(): DataTransfer {
+    const data = new Map<string, string>();
+    return {
+      effectAllowed: "all",
+      dropEffect: "none",
+      setData: (format: string, value: string) => data.set(format, value),
+      getData: (format: string) => data.get(format) ?? "",
+    } as unknown as DataTransfer;
+  }
+
+  it("trades slots between two starters dropped on each other", async () => {
+    const swapped = snapshot();
+    vi.mocked(invoke).mockResolvedValue(swapped);
+    const onUpdateSnapshot = vi.fn();
+    renderSetup(undefined, undefined, onUpdateSnapshot);
+
+    const transfer = dataTransfer();
+    const defender = screen.getByRole("button", { name: "Home Def" });
+    const forward = screen.getByRole("button", { name: "Home Fwd" });
+    fireEvent.dragStart(defender, { dataTransfer: transfer });
+    fireEvent.dragOver(forward, { dataTransfer: transfer });
+    fireEvent.drop(forward, { dataTransfer: transfer });
+
+    await waitFor(() => expect(onUpdateSnapshot).toHaveBeenCalledWith(swapped));
+    expect(invoke).toHaveBeenCalledWith("apply_match_command", {
+      command: {
+        PreMatchSwapPositions: { side: "Home", player_a_id: "h-df", player_b_id: "h-fw" },
+      },
+    });
+  });
+
+  it("does nothing when a starter is dropped back on himself", () => {
+    renderSetup();
+
+    const transfer = dataTransfer();
+    const defender = screen.getByRole("button", { name: "Home Def" });
+    fireEvent.dragStart(defender, { dataTransfer: transfer });
+    fireEvent.drop(defender, { dataTransfer: transfer });
+
+    expect(invoke).not.toHaveBeenCalled();
+  });
+
+  it("applies a role picked on the pitch to this match and saves it", async () => {
+    vi.mocked(invoke).mockResolvedValue(snapshot());
+    renderSetup();
+
+    const defender = screen.getByRole("button", { name: "Home Def" });
+    fireEvent.click(within(defender).getByRole("combobox"));
+    fireEvent.click(screen.getByRole("option", { name: "Stopper" }));
+
+    await waitFor(() =>
+      expect(invoke).toHaveBeenCalledWith("set_player_role", {
+        playerId: "h-df",
+        role: "Stopper",
+      }),
+    );
+    expect(invoke).toHaveBeenCalledWith("apply_match_command", {
+      command: { ChangePlayerRole: { side: "Home", player_id: "h-df", role: "Stopper" } },
+    });
   });
 });

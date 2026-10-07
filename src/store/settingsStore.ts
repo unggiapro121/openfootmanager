@@ -7,6 +7,8 @@ export interface AppSettings {
   currency: "EUR" | "GBP" | "USD";
   default_match_mode: "live" | "spectator" | "delegate";
   auto_save: boolean;
+  /** Real-time minutes of unsaved play before an auto-save. */
+  auto_save_interval_minutes: number;
   match_speed: "slow" | "normal" | "fast";
   show_match_commentary: boolean;
   confirm_advance: boolean;
@@ -33,6 +35,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   currency: "EUR",
   default_match_mode: "live",
   auto_save: true,
+  auto_save_interval_minutes: 30,
   match_speed: "normal",
   show_match_commentary: true,
   confirm_advance: false,

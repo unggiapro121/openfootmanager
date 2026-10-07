@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../ui";
+import { Button, Select } from "../ui";
+import { DEVELOPMENT_SPEED_PERCENTS, formatDevelopmentSpeed } from "../../lib/developmentSpeed";
 import { X, ChevronRight, Globe, Users, ArrowLeft, Loader2, Trophy, Package } from "lucide-react";
 import type { CareerStartPhase } from "./CreateManagerForm";
 
@@ -90,6 +91,9 @@ interface GenerationStepProps {
   startPhase: CareerStartPhase;
   historyDepthYears: number;
   onChangeHistoryDepthYears: (value: number) => void;
+  /** Percent of the realistic pace; fixed with the world once the career starts. */
+  developmentSpeedPercent: number;
+  onChangeDevelopmentSpeedPercent: (percent: number) => void;
   onStart: () => void;
   onBack: () => void;
   onClose: () => void;
@@ -107,13 +111,16 @@ export default function GenerationStep({
   startPhase,
   historyDepthYears,
   onChangeHistoryDepthYears,
+  developmentSpeedPercent,
+  onChangeDevelopmentSpeedPercent,
   onStart,
   onBack,
   onClose,
   activePackages,
 }: GenerationStepProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const historyDepthLabelId = useId();
+  const developmentSpeedLabelId = useId();
 
   const hasActiveDatabases = activePackages.some((p) => p.packageType === "database");
 
@@ -266,6 +273,37 @@ export default function GenerationStep({
           </div>
         </div>
       )}
+
+      {/* Development speed — for every world, generated or packaged. Fixed once the
+          world exists, so this is the only place it is chosen. */}
+      <div className="rounded-xl border border-gray-200 bg-white p-3 text-sm dark:border-navy-600 dark:bg-navy-700/60">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p
+              id={developmentSpeedLabelId}
+              className="font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400"
+            >
+              {t("settings.developmentSpeed")}
+            </p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {t("worldSelect.developmentSpeedHint")}
+            </p>
+          </div>
+          <Select
+            aria-labelledby={developmentSpeedLabelId}
+            value={String(developmentSpeedPercent)}
+            onChange={(event) => onChangeDevelopmentSpeedPercent(Number(event.target.value))}
+            selectSize="sm"
+            className="min-w-40 flex-shrink-0"
+          >
+            {DEVELOPMENT_SPEED_PERCENTS.map((percent) => (
+              <option key={percent} value={String(percent)}>
+                {formatDevelopmentSpeed(percent, t, i18n.language)}
+              </option>
+            ))}
+          </Select>
+        </div>
+      </div>
 
       <Button
         variant="primary"

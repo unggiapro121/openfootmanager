@@ -8,6 +8,7 @@
 use chrono::{Datelike, Duration, Utc};
 
 use ofm_core::career::StartPhase;
+use ofm_core::development_speed::DevelopmentSpeed;
 use ofm_core::game::Game;
 use ofm_core::world::{start_date_for_year, MIN_START_YEAR};
 
@@ -23,6 +24,10 @@ pub struct RawStartupOptions {
     start_phase: Option<String>,
     #[serde(default)]
     history_depth_years: Option<u32>,
+    /// Percent of the realistic pace (100 = ×1 … 500 = ×5, steps of 50). Chosen
+    /// here and nowhere else: it is fixed once the world exists.
+    #[serde(default)]
+    development_speed_percent: Option<u16>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,6 +35,7 @@ pub(super) struct StartupOptions {
     pub(super) start_year: i32,
     pub(super) start_phase: StartPhase,
     pub(super) history_depth_years: u32,
+    pub(super) development_speed: DevelopmentSpeed,
 }
 
 fn default_start_year() -> i32 {
@@ -81,11 +87,17 @@ pub(super) fn normalize_startup_options(
     if history_depth_years > MAX_GENERATED_HISTORY_DEPTH_YEARS {
         return Err("be.error.createManager.historyDepthMax".to_string());
     }
+    let development_speed = match raw.development_speed_percent {
+        None => DevelopmentSpeed::REALISTIC,
+        Some(percent) => DevelopmentSpeed::from_percent(percent)
+            .ok_or_else(|| "be.error.invalidDevelopmentSpeed".to_string())?,
+    };
 
     Ok(StartupOptions {
         start_year,
         start_phase,
         history_depth_years,
+        development_speed,
     })
 }
 
@@ -235,6 +247,7 @@ mod tests {
             start_year: Some(1962),
             start_phase: Some("midSeason".to_owned()),
             history_depth_years: Some(8),
+            development_speed_percent: None,
         };
         let described = summary_for("A", "B", "1990-05-02", Some(&options)).describe();
 
@@ -290,6 +303,7 @@ mod tests {
             start_year: Some(MIN_START_YEAR - 1),
             start_phase: Some("seasonStart".to_string()),
             history_depth_years: None,
+            development_speed_percent: None,
         }));
 
         assert_eq!(result.unwrap_err(), "be.error.createManager.startYearMin");
@@ -303,6 +317,7 @@ mod tests {
             start_year: Some(1962),
             start_phase: Some("seasonStart".to_string()),
             history_depth_years: None,
+            development_speed_percent: None,
         }))
         .expect("1962 is above the floor and must be accepted");
 
@@ -325,6 +340,7 @@ mod tests {
             start_year: Some(2026),
             start_phase: Some("playoffs".to_string()),
             history_depth_years: None,
+            development_speed_percent: None,
         }));
 
         assert_eq!(
@@ -339,6 +355,7 @@ mod tests {
             start_year: Some(2026),
             start_phase: Some("seasonStart".to_string()),
             history_depth_years: Some(MAX_GENERATED_HISTORY_DEPTH_YEARS + 1),
+            development_speed_percent: None,
         }));
 
         assert_eq!(
@@ -347,12 +364,48 @@ mod tests {
         );
     }
 
+    /// Given a career started at ×3, then the validated options carry ×3.
+    #[test]
+    fn normalize_startup_options_accepts_a_development_speed_on_the_scale() {
+        let options = normalize_startup_options(Some(RawStartupOptions {
+            start_year: Some(2026),
+            start_phase: Some("seasonStart".to_string()),
+            history_depth_years: None,
+            development_speed_percent: Some(300),
+        }))
+        .expect("×3 is offered");
+
+        assert_eq!(options.development_speed.percent(), 300);
+    }
+
+    /// Given no speed chosen (an older frontend), then the career starts at ×1.
+    #[test]
+    fn normalize_startup_options_defaults_to_the_realistic_development_speed() {
+        let options = normalize_startup_options(None).expect("defaults are valid");
+
+        assert_eq!(options.development_speed, DevelopmentSpeed::REALISTIC);
+    }
+
+    /// Given a speed off the half-step scale, then the career is refused before it is built.
+    #[test]
+    fn normalize_startup_options_rejects_a_development_speed_off_the_scale() {
+        let result = normalize_startup_options(Some(RawStartupOptions {
+            start_year: Some(2026),
+            start_phase: Some("seasonStart".to_string()),
+            history_depth_years: None,
+            development_speed_percent: Some(125),
+        }));
+
+        assert_eq!(result.unwrap_err(), "be.error.invalidDevelopmentSpeed");
+    }
+
     #[test]
     fn normalize_startup_options_accepts_custom_history_depth() {
         let options = normalize_startup_options(Some(RawStartupOptions {
             start_year: Some(2026),
             start_phase: Some("seasonStart".to_string()),
             history_depth_years: Some(24),
+            development_speed_percent: None,
         }))
         .unwrap();
 
@@ -413,6 +466,7 @@ mod tests {
             start_year: 2032,
             start_phase: StartPhase::MidSeason,
             history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+            development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
         };
         let world = make_historical_snapshot_world();
         let reference_date = game_clock_for_world(&startup_options, &world.metadata)
@@ -701,6 +755,7 @@ mod tests {
                 start_year: 2032,
                 start_phase: StartPhase::SeasonStart,
                 history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+                development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
             },
         );
 

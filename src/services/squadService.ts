@@ -31,6 +31,23 @@ export async function setPlayerRole(
   });
 }
 
+/**
+ * Give a player a shirt number, or take it away with `null`. A number someone
+ * else in the squad wears is refused unless `swapWithHolder` is set, in which
+ * case the holder takes the player's old number (or none).
+ */
+export async function assignJerseyNumber(
+  playerId: string,
+  jerseyNumber: number | null,
+  swapWithHolder = false,
+): Promise<GameStateData> {
+  return invoke<GameStateData>("assign_jersey_number", {
+    playerId,
+    jerseyNumber,
+    swapWithHolder,
+  });
+}
+
 export async function setTacticsPhase(
   patch: Partial<TacticsPhaseSettings>,
 ): Promise<GameStateData> {

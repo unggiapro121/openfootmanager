@@ -105,6 +105,7 @@
       "option": "{{count}} épocas",
       "recommended": "Recomendado"
     },
+    "developmentSpeedHint": "Rapidez com que os jogadores evoluem nesta carreira. ×1 é realista. Não pode ser alterado depois de o mundo ser criado.",
     "installedPackages": "Pacotes instalados",
     "installPackage": "Instalar pacote (.ofm)",
     "noInstalledPackages": "Nenhum pacote instalado",
@@ -637,6 +638,16 @@
     "jerseyNumberFull": "Número da Camisola",
     "jerseyNumberClickToChange": "#{{number}} — clique para alterar",
     "jerseyNumberClickToAssign": "Clique para atribuir o número da camisola",
+    "jerseyPickerAction": "Mudar número da camisola",
+    "jerseyPickerTitle": "Número da camisola — {{name}}",
+    "jerseyPickerHint": "Escolhe um número livre, ou um ocupado para trocar de camisola.",
+    "jerseyPickerTakenBy": "#{{number}} — usado por {{name}}",
+    "jerseyPickerSwapPrompt": "{{holder}} usa o #{{number}}. Trocar de camisola?",
+    "jerseyPickerSwapGetsOld": "{{holder}} passa a usar o #{{number}}.",
+    "jerseyPickerSwapGetsNone": "{{holder}} fica sem número.",
+    "jerseyPickerSwapConfirm": "Trocar",
+    "jerseyPickerClear": "Remover número",
+    "contractYears": "Contrato (anos)",
     "teamKit": "Equipamento da Equipa",
     "kitPattern": "Padrão do Equipamento",
     "kitLockedInSeason": "O design do equipamento só pode ser alterado durante a pré-época.",
@@ -698,9 +709,9 @@
     "makeStarter": "Colocar como titular",
     "sendToBench": "Mandar para o banco",
     "styleFitValues": {
-      "strong": "Encaixe com o estilo: Forte",
-      "good": "Encaixe com o estilo: Bom",
-      "risky": "Encaixe com o estilo: Arriscado"
+      "strong": "Forte",
+      "good": "Bom",
+      "risky": "Arriscado"
     }
   },
   "tactics": {
@@ -1766,7 +1777,7 @@
     "matchSpeedDesc": "Velocidade padrão de simulação para jogos ao vivo",
     "gameEngine": "Motor de jogo",
     "developmentSpeed": "Velocidade de evolução dos jogadores",
-    "developmentSpeedDesc": "Rapidez com que os jogadores evoluem nesta carreira. 1× é realista; aplica-se a todos os clubes.",
+    "developmentSpeedDesc": "Escolhido ao criar esta carreira e fixo com o seu mundo. ×1 é realista; aplica-se a todos os clubes.",
     "developmentSpeedNoCareer": "Disponível apenas com uma carreira carregada",
     "developmentSpeedRealistic": "Realista",
     "matchCommentary": "Comentário do Jogo",
@@ -1777,7 +1788,16 @@
     "continueToNextEventDesc": "Continuar avança até ao próximo jogo, um bloqueio, um prazo de transferências ou uma notícia importante",
     "savesData": "Saves e Dados",
     "autoSave": "Guardar Automaticamente",
-    "autoSaveDesc": "Guardar automaticamente após cada dia",
+    "autoSaveDesc": "Guarda a tua carreira automaticamente enquanto jogas, sempre que houver alterações por guardar",
+    "autoSaveInterval": "Guardar automaticamente a cada",
+    "autoSaveIntervalDesc": "Tempo real de jogo com alterações por guardar antes de o jogo se guardar sozinho",
+    "autoSaveIntervals": {
+      "5": "5 minutos",
+      "30": "30 minutos",
+      "60": "1 hora",
+      "720": "12 horas",
+      "1440": "1 dia"
+    },
     "exportWorld": "Exportar Base de Dados do Mundo",
     "exportWorldDesc": "Guardar os dados do mundo como ficheiro JSON partilhável",
     "export": "Exportar",

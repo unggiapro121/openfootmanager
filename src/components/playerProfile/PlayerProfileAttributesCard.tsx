@@ -24,6 +24,9 @@ interface PlayerProfileAttributesCardProps {
   isOwnClub: boolean;
   isGk?: boolean;
   title: string;
+  /** The player's overall, shown beside the title wherever his attributes are. */
+  ovr: number;
+  ovrLabel: string;
   averageLabel: string;
   hiddenTitle: string;
   hiddenBody: string;
@@ -37,6 +40,8 @@ export default function PlayerProfileAttributesCard({
   isOwnClub,
   isGk = false,
   title,
+  ovr,
+  ovrLabel,
   averageLabel,
   hiddenTitle,
   hiddenBody,
@@ -71,7 +76,20 @@ export default function PlayerProfileAttributesCard({
           ) : null
         }
       >
-        {title}
+        <span className="flex items-center gap-3">
+          {title}
+          {isOwnClub ? (
+            // The bare number reads on sight; the label is kept for screen readers
+            // and as a hover hint.
+            <span
+              title={ovrLabel}
+              className={`text-3xl leading-none tabular-nums ${getAttributeColorClass(ovr)}`}
+            >
+              <span className="sr-only">{ovrLabel} </span>
+              {ovr}
+            </span>
+          ) : null}
+        </span>
       </CardHeader>
       <CardBody>
         {isOwnClub && view === "radar" ? (

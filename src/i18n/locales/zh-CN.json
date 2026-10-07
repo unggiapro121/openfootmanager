@@ -105,6 +105,7 @@
       "option": "{{count}} 个赛季",
       "recommended": "推荐"
     },
+    "developmentSpeedHint": "本次生涯中球员提升的快慢。×1 为真实节奏。世界创建后无法更改。",
     "installedPackages": "已安装的包",
     "installPackage": "安装包 (.ofm)",
     "noInstalledPackages": "未安装任何包",
@@ -637,6 +638,16 @@
     "jerseyNumberFull": "球衣号码",
     "jerseyNumberClickToChange": "#{{number}} — 点击更改",
     "jerseyNumberClickToAssign": "点击分配球衣号码",
+    "jerseyPickerAction": "更改球衣号码",
+    "jerseyPickerTitle": "球衣号码 — {{name}}",
+    "jerseyPickerHint": "选择一个空闲号码，或选择已被占用的号码进行互换。",
+    "jerseyPickerTakenBy": "#{{number}} — {{name}} 使用中",
+    "jerseyPickerSwapPrompt": "#{{number}} 号属于 {{holder}}。是否互换号码？",
+    "jerseyPickerSwapGetsOld": "{{holder}} 将改穿 #{{number}} 号。",
+    "jerseyPickerSwapGetsNone": "{{holder}} 将没有球衣号码。",
+    "jerseyPickerSwapConfirm": "互换",
+    "jerseyPickerClear": "移除号码",
+    "contractYears": "合同（年）",
     "teamKit": "球队球衣",
     "kitPattern": "球衣图案",
     "kitLockedInSeason": "球衣设计只能在赛季前修改。",
@@ -698,9 +709,9 @@
     "makeStarter": "设为首发",
     "sendToBench": "放到替补席",
     "styleFitValues": {
-      "strong": "风格适配：强",
-      "good": "风格适配：良好",
-      "risky": "风格适配：有风险"
+      "strong": "强",
+      "good": "良好",
+      "risky": "有风险"
     }
   },
   "tactics": {
@@ -1766,7 +1777,7 @@
     "matchSpeedDesc": "实时比赛的默认模拟速度",
     "gameEngine": "游戏引擎",
     "developmentSpeed": "球员成长速度",
-    "developmentSpeedDesc": "本次生涯中球员提升的快慢。1× 为真实节奏，适用于所有俱乐部。",
+    "developmentSpeedDesc": "在创建本次生涯时选定，并随世界固定。×1 为真实节奏，适用于所有俱乐部。",
     "developmentSpeedNoCareer": "仅在载入生涯后可用",
     "developmentSpeedRealistic": "真实",
     "matchCommentary": "比赛解说",
@@ -1777,7 +1788,16 @@
     "continueToNextEventDesc": "继续会推进到你的下一场比赛、需要处理的事项、转会截止日或重要新闻",
     "savesData": "存档与数据",
     "autoSave": "自动存档",
-    "autoSaveDesc": "每天结束后自动保存游戏",
+    "autoSaveDesc": "游戏过程中有未保存的更改时自动保存生涯",
+    "autoSaveInterval": "自动存档间隔",
+    "autoSaveIntervalDesc": "有未保存更改时，经过多少真实游戏时间后自动保存",
+    "autoSaveIntervals": {
+      "5": "5 分钟",
+      "30": "30 分钟",
+      "60": "1 小时",
+      "720": "12 小时",
+      "1440": "1 天"
+    },
     "exportWorld": "导出世界数据库",
     "exportWorldDesc": "将当前世界数据保存为可分享的 JSON 文件",
     "export": "导出",

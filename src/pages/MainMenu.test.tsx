@@ -177,14 +177,21 @@ vi.mock("../components/menu/WorldSelect", () => ({
     onStart,
     onChangeHistoryDepthYears,
     historyDepthYears,
+    onChangeDevelopmentSpeedPercent,
+    developmentSpeedPercent,
   }: {
     onStart: () => void;
     onChangeHistoryDepthYears: (value: number) => void;
     historyDepthYears: number;
+    onChangeDevelopmentSpeedPercent: (percent: number) => void;
+    developmentSpeedPercent: number;
   }) => (
     <div data-testid="world-select">
       <button type="button" onClick={() => onChangeHistoryDepthYears(24)}>
         {`set-history-depth-24:${historyDepthYears}`}
+      </button>
+      <button type="button" onClick={() => onChangeDevelopmentSpeedPercent(300)}>
+        {`set-development-speed-300:${developmentSpeedPercent}`}
       </button>
       <button type="button" onClick={onStart}>
         start-world
@@ -799,6 +806,36 @@ describe("MainMenu", () => {
         expect.objectContaining({
           startupOptions: expect.objectContaining({
             historyDepthYears: 24,
+          }),
+        }),
+      );
+    });
+  });
+
+  /**
+   * Given a new career, when ×3 is chosen at the world step, then the career is
+   * created at ×3 — the only point at which the speed can be set.
+   */
+  it("passes the chosen development speed when starting a new career", async () => {
+    render(<MainMenu />);
+
+    await openCreateManagerForm();
+    fillManagerDetails();
+    await selectNationality("en", "ES");
+
+    fireEvent.click(screen.getByText("createManager.chooseWorld"));
+
+    await advanceThroughPackages();
+
+    fireEvent.click(screen.getByText("set-development-speed-300:100"));
+    fireEvent.click(screen.getByText("start-world"));
+
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith(
+        "start_new_game",
+        expect.objectContaining({
+          startupOptions: expect.objectContaining({
+            developmentSpeedPercent: 300,
           }),
         }),
       );

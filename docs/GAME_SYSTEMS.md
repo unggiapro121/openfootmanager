@@ -114,11 +114,12 @@ gain = 0.04 × development_speed × intensity_mult × age_factor × coaching_mul
 `0.04` (`BASE_TRAINING_GAIN`) is the realistic pace: a regular starter of 18 at a Balanced,
 Medium-intensity club gains about +3.5 overall a season and reaches his ceiling in his mid-twenties.
 
-`development_speed` is a per-career setting (`Game::development_speed`, Settings › Game Engine):
-1× to 5× in half steps, stored as a percentage (100–500) in the save's `game_meta` row
-(`v049_development_speed.sql`) and set with `set_development_speed`. It applies to every club in the
-world. 1× is the default, including for saves made before the setting existed; the old fixed rate of
-0.15 was roughly 3.5×–4×. It scales training only — the monthly loan development bonus and the
+`development_speed` is a per-career setting (`Game::development_speed`): ×1 to ×5 in half steps,
+stored as a percentage (100–500) in the save's `game_meta` row (`v049_development_speed.sql`). It is
+chosen on the last step of career creation (`startupOptions.developmentSpeedPercent` on
+`start_new_game`) and fixed with the world — no command changes it afterwards; Settings › Game Engine
+only shows it. It applies to every club in the world. ×1 is the default, including for saves made
+before the setting existed; the old fixed rate of 0.15 was roughly ×3.5–×4. It scales training only — the monthly loan development bonus and the
 end-of-season technical growth in `aging.rs` are not multiplied.
 
 The gain is **probabilistic**: a gain of 0.3 means a 30% chance of +1 to that attribute. Attributes are capped at 99.

@@ -105,6 +105,7 @@
       "option": "{{count}} temporadas",
       "recommended": "Recomendado"
     },
+    "developmentSpeedHint": "Rapidez con la que mejoran los jugadores en esta partida. ×1 es realista. No se puede cambiar una vez creado el mundo.",
     "installedPackages": "Paquetes instalados",
     "installPackage": "Instalar paquete (.ofm)",
     "noInstalledPackages": "No hay paquetes instalados",
@@ -637,6 +638,16 @@
     "jerseyNumberFull": "Número de Camiseta",
     "jerseyNumberClickToChange": "#{{number}} — clic para cambiar",
     "jerseyNumberClickToAssign": "Clic para asignar número de camiseta",
+    "jerseyPickerAction": "Cambiar dorsal",
+    "jerseyPickerTitle": "Dorsal — {{name}}",
+    "jerseyPickerHint": "Elige un número libre, o uno ocupado para intercambiar camisetas.",
+    "jerseyPickerTakenBy": "#{{number}} — lo lleva {{name}}",
+    "jerseyPickerSwapPrompt": "{{holder}} lleva el #{{number}}. ¿Intercambiar camisetas?",
+    "jerseyPickerSwapGetsOld": "{{holder}} pasará a llevar el #{{number}}.",
+    "jerseyPickerSwapGetsNone": "{{holder}} se quedará sin número.",
+    "jerseyPickerSwapConfirm": "Intercambiar",
+    "jerseyPickerClear": "Quitar dorsal",
+    "contractYears": "Contrato (años)",
     "teamKit": "Equipación del Equipo",
     "kitPattern": "Diseño de Equipación",
     "kitLockedInSeason": "El diseño de equipación solo se puede cambiar durante la pretemporada.",
@@ -698,9 +709,9 @@
     "makeStarter": "Poner de titular",
     "sendToBench": "Enviar al banquillo",
     "styleFitValues": {
-      "strong": "Encaje de estilo: Fuerte",
-      "good": "Encaje de estilo: Bueno",
-      "risky": "Encaje de estilo: Arriesgado"
+      "strong": "Fuerte",
+      "good": "Bueno",
+      "risky": "Arriesgado"
     }
   },
   "tactics": {
@@ -1766,7 +1777,7 @@
     "matchSpeedDesc": "Velocidad de simulación por defecto para partidos en vivo",
     "gameEngine": "Motor de juego",
     "developmentSpeed": "Velocidad de desarrollo de los jugadores",
-    "developmentSpeedDesc": "Rapidez con la que mejoran los jugadores en esta partida. 1× es realista; se aplica a todos los clubes.",
+    "developmentSpeedDesc": "Elegido al crear esta partida y fijado con su mundo. ×1 es realista; se aplica a todos los clubes.",
     "developmentSpeedNoCareer": "Solo disponible con una partida cargada",
     "developmentSpeedRealistic": "Realista",
     "matchCommentary": "Comentarios del Partido",
@@ -1777,7 +1788,16 @@
     "continueToNextEventDesc": "Continuar avanza hasta tu próximo partido, un bloqueo, una fecha límite de fichajes o una noticia importante",
     "savesData": "Guardados y Datos",
     "autoSave": "Autoguardado",
-    "autoSaveDesc": "Guardar automáticamente después de cada día",
+    "autoSaveDesc": "Guarda tu partida automáticamente mientras juegas, siempre que haya cambios sin guardar",
+    "autoSaveInterval": "Autoguardar cada",
+    "autoSaveIntervalDesc": "Tiempo real de juego con cambios sin guardar antes de que la partida se guarde sola",
+    "autoSaveIntervals": {
+      "5": "5 minutos",
+      "30": "30 minutos",
+      "60": "1 hora",
+      "720": "12 horas",
+      "1440": "1 día"
+    },
     "exportWorld": "Exportar Base de Datos del Mundo",
     "exportWorldDesc": "Guardar los datos del mundo como archivo JSON compartible",
     "export": "Exportar",

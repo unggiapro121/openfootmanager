@@ -350,35 +350,46 @@ pub fn auto_select_set_pieces_internal(
         .ok_or_else(|| "be.error.noActiveGameSession".to_string())
 }
 
+/// Give `player_id` the shirt `jersey_number`, or take his shirt away with `None`.
+///
+/// A number another squad member wears is refused unless `swap_with_holder`
+/// is set, in which case the two trade: the holder takes the shirt the player
+/// gives up, or none if he had none. Both changes land in one mutation, so a
+/// refused request leaves every shirt where it was.
 pub fn assign_jersey_number_internal(
     state: &StateManager,
     player_id: &str,
     jersey_number: Option<u8>,
+    swap_with_holder: bool,
 ) -> Result<Game, String> {
     mutate_active_game(state, |game| {
         let team_id = user_team_id(game)?;
+        let on_team = |p: &domain::player::Player| p.team_id.as_deref() == Some(team_id.as_str());
+
+        let player_index = game
+            .players
+            .iter()
+            .position(|p| p.id == player_id && on_team(p))
+            .ok_or("be.error.playerNotFound".to_string())?;
+        let given_up = game.players[player_index].jersey_number;
 
         if let Some(n) = jersey_number {
             if !(1..=99).contains(&n) {
                 return Err("be.error.jerseyNumberOutOfRange".to_string());
             }
-            let conflict = game.players.iter().any(|p| {
-                p.id != player_id
-                    && p.team_id.as_deref() == Some(team_id.as_str())
-                    && p.jersey_number == Some(n)
-            });
-            if conflict {
-                return Err("be.error.jerseyNumberTaken".to_string());
+            let holder_index = game
+                .players
+                .iter()
+                .position(|p| p.id != player_id && on_team(p) && p.jersey_number == Some(n));
+            if let Some(holder_index) = holder_index {
+                if !swap_with_holder {
+                    return Err("be.error.jerseyNumberTaken".to_string());
+                }
+                game.players[holder_index].jersey_number = given_up;
             }
         }
 
-        let player = game
-            .players
-            .iter_mut()
-            .find(|p| p.id == player_id && p.team_id.as_deref() == Some(team_id.as_str()))
-            .ok_or("be.error.playerNotFound".to_string())?;
-
-        player.jersey_number = jersey_number;
+        game.players[player_index].jersey_number = jersey_number;
         Ok(())
     })
 }
@@ -388,12 +399,18 @@ pub fn assign_jersey_number(
     state: State<'_, Arc<StateManager>>,
     player_id: String,
     jersey_number: Option<u8>,
+    swap_with_holder: Option<bool>,
 ) -> Result<Game, String> {
     info!(
-        "[cmd] assign_jersey_number: player={}, number={:?}",
-        player_id, jersey_number
+        "[cmd] assign_jersey_number: player={}, number={:?}, swap={:?}",
+        player_id, jersey_number, swap_with_holder
     );
-    assign_jersey_number_internal(&state, &player_id, jersey_number)
+    assign_jersey_number_internal(
+        &state,
+        &player_id,
+        jersey_number,
+        swap_with_holder.unwrap_or(false),
+    )
 }
 
 pub fn set_team_kit_pattern_internal(
@@ -640,8 +657,8 @@ pub fn set_tactics_phase(
 #[cfg(test)]
 mod tests {
     use super::{
-        set_formation_internal, set_player_role_internal, set_player_squad_role_internal,
-        set_player_training_focus_internal,
+        assign_jersey_number_internal, set_formation_internal, set_player_role_internal,
+        set_player_squad_role_internal, set_player_training_focus_internal,
     };
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
@@ -1154,5 +1171,112 @@ mod tests {
             .find(|player| player.id == "player-1")
             .expect("user player");
         assert_ne!(user_player.training_focus, Some(TrainingFocus::Technical));
+    }
+
+    fn make_game_with_shirts(shirts: &[(&str, &str, Option<u8>)]) -> Game {
+        let mut game = make_game(make_player("2000-01-01"));
+        game.teams.push(make_team("team-2", "Rivals FC", "RIV"));
+        game.players = shirts
+            .iter()
+            .map(|(id, team_id, jersey)| {
+                let mut player = make_player_for_team(id, team_id, "2000-01-01");
+                player.jersey_number = *jersey;
+                player
+            })
+            .collect();
+        game
+    }
+
+    fn shirt_of(state: &StateManager, player_id: &str) -> Option<u8> {
+        state
+            .get_game(|game| {
+                game.players
+                    .iter()
+                    .find(|player| player.id == player_id)
+                    .and_then(|player| player.jersey_number)
+            })
+            .expect("stored game")
+    }
+
+    #[test]
+    fn assign_jersey_number_internal_gives_a_free_number() {
+        let state = StateManager::new();
+        state.set_game(make_game_with_shirts(&[("player-1", "team-1", Some(7))]));
+
+        assign_jersey_number_internal(&state, "player-1", Some(10), false).expect("assigned");
+
+        assert_eq!(shirt_of(&state, "player-1"), Some(10));
+    }
+
+    #[test]
+    fn assign_jersey_number_internal_refuses_a_taken_number_without_swap() {
+        let state = StateManager::new();
+        state.set_game(make_game_with_shirts(&[
+            ("player-1", "team-1", Some(7)),
+            ("player-2", "team-1", Some(10)),
+        ]));
+
+        let error = assign_jersey_number_internal(&state, "player-1", Some(10), false)
+            .expect_err("taken number");
+
+        assert_eq!(error, "be.error.jerseyNumberTaken");
+        assert_eq!(shirt_of(&state, "player-1"), Some(7));
+        assert_eq!(shirt_of(&state, "player-2"), Some(10));
+    }
+
+    #[test]
+    fn assign_jersey_number_internal_swaps_with_the_holder() {
+        let state = StateManager::new();
+        state.set_game(make_game_with_shirts(&[
+            ("player-1", "team-1", Some(7)),
+            ("player-2", "team-1", Some(10)),
+        ]));
+
+        assign_jersey_number_internal(&state, "player-1", Some(10), true).expect("swapped");
+
+        assert_eq!(shirt_of(&state, "player-1"), Some(10));
+        assert_eq!(shirt_of(&state, "player-2"), Some(7));
+    }
+
+    #[test]
+    fn assign_jersey_number_internal_swap_leaves_the_holder_unnumbered_when_nothing_was_given_up() {
+        let state = StateManager::new();
+        state.set_game(make_game_with_shirts(&[
+            ("player-1", "team-1", None),
+            ("player-2", "team-1", Some(10)),
+        ]));
+
+        assign_jersey_number_internal(&state, "player-1", Some(10), true).expect("swapped");
+
+        assert_eq!(shirt_of(&state, "player-1"), Some(10));
+        assert_eq!(shirt_of(&state, "player-2"), None);
+    }
+
+    #[test]
+    fn assign_jersey_number_internal_ignores_other_clubs_shirts() {
+        let state = StateManager::new();
+        state.set_game(make_game_with_shirts(&[
+            ("player-1", "team-1", Some(7)),
+            ("rival", "team-2", Some(10)),
+        ]));
+
+        assign_jersey_number_internal(&state, "player-1", Some(10), true).expect("assigned");
+
+        assert_eq!(shirt_of(&state, "player-1"), Some(10));
+        assert_eq!(shirt_of(&state, "rival"), Some(10));
+    }
+
+    #[test]
+    fn assign_jersey_number_internal_clears_and_validates_range() {
+        let state = StateManager::new();
+        state.set_game(make_game_with_shirts(&[("player-1", "team-1", Some(7))]));
+
+        let error = assign_jersey_number_internal(&state, "player-1", Some(100), true)
+            .expect_err("out of range");
+        assert_eq!(error, "be.error.jerseyNumberOutOfRange");
+        assert_eq!(shirt_of(&state, "player-1"), Some(7));
+
+        assign_jersey_number_internal(&state, "player-1", None, false).expect("cleared");
+        assert_eq!(shirt_of(&state, "player-1"), None);
     }
 }

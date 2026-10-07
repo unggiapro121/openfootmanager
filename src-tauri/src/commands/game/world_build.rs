@@ -84,6 +84,8 @@ pub(super) fn build_game_from_world_data(
     let mut game = Game::new(clock, manager, teams, players, staff, vec![]);
     // Stored on the game, which is the one place the day's dice come from.
     game.seed = seed;
+    // Chosen with the world and fixed with it: there is no command to change it later.
+    game.development_speed = startup_options.development_speed;
     if game
         .staff
         .iter()
