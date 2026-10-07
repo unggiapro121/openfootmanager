@@ -2,6 +2,8 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 import type { GameStateData, PlayerData, TeamData } from "../../store/gameStore";
+import type { TacticsPhaseSettings } from "../../store/types";
+import { buildCustomTacticsStorageKey } from "./TacticsCustomTactics.helpers";
 import TacticsTab from "./TacticsTab";
 
 vi.mock("react-i18next", () => {
@@ -310,6 +312,79 @@ describe("TacticsTab", () => {
           ),
         );
       expect(names).toEqual(["Pressing 4-3-3"]);
+    });
+  });
+
+  const counterPressingPhase: TacticsPhaseSettings = {
+    build_up_style: "Long",
+    width: "Wide",
+    tempo: "Direct",
+    defensive_line: "High",
+    pressing_intensity: "Aggressive",
+    defensive_shape: "Compact",
+    marking_style: "ManToMan",
+    counter_press_duration: "Long",
+    break_speed: "Fast",
+  };
+
+  /**
+   * Given a team playing a phase blueprint of its own, when the manager creates a
+   * new tactic, then the tactic is stored with that blueprint, not just the
+   * formation and play style.
+   */
+  it("saves the phase blueprint with a new tactic", async () => {
+    const gameState = makeGameState();
+    gameState.teams = gameState.teams.map((team) => ({
+      ...team,
+      tactics_phase: counterPressingPhase,
+    }));
+    render(<TacticsTab gameState={gameState} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.newTactic" }));
+
+    await waitFor(() => {
+      const stored = JSON.parse(
+        localStorage.getItem(buildCustomTacticsStorageKey(gameState)) ?? "[]",
+      ) as { phase?: TacticsPhaseSettings }[];
+      expect(stored.map((entry) => entry.phase)).toEqual([counterPressingPhase]);
+    });
+  });
+
+  /**
+   * Given a saved tactic whose blueprint differs from the one the team is
+   * playing, when the manager picks it, then its blueprint is put back in force.
+   */
+  it("restores a saved tactic's phase blueprint when it is chosen", async () => {
+    const gameState = makeGameState();
+    localStorage.setItem(
+      buildCustomTacticsStorageKey(gameState),
+      JSON.stringify([
+        {
+          description: "Mine",
+          formation: "4-4-2",
+          id: "custom:press",
+          name: "Gegenpress",
+          phase: counterPressingPhase,
+          playStyle: "Balanced",
+          sourcePresetName: null,
+          type: "custom",
+        },
+      ]),
+    );
+    render(<TacticsTab gameState={gameState} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.chooseTactic" }));
+    fireEvent.click(screen.getByRole("option", { name: /Gegenpress/ }));
+
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith(
+        "set_tactics_phase",
+        expect.objectContaining({
+          buildUpStyle: "Long",
+          pressingIntensity: "Aggressive",
+          breakSpeed: "Fast",
+        }),
+      );
     });
   });
 

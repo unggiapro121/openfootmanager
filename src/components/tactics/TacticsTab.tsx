@@ -90,6 +90,8 @@ export default function TacticsTab({
     initialPreset,
     onFormationChange: handleFormationChange,
     onPlayStyleChange: handlePlayStyleChange,
+    tacticsPhase: team?.tactics_phase,
+    onTacticsPhaseChange: handleTacticsPhaseChange,
   });
 
   if (!team) {

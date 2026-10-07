@@ -1,4 +1,5 @@
 import type { GameStateData } from "../../store/gameStore";
+import type { TacticsPhaseSettings } from "../../store/types";
 import type { TacticsLibraryEntry } from "./TacticsCommandBar";
 
 const TACTICS_STORAGE_KEY_PREFIX = "ofm:tactics:custom";
@@ -15,6 +16,26 @@ function getDefaultStorage(): StorageLike | null {
   } catch {
     return null;
   }
+}
+
+const PHASE_FIELDS: readonly (keyof TacticsPhaseSettings)[] = [
+  "build_up_style",
+  "width",
+  "tempo",
+  "defensive_line",
+  "pressing_intensity",
+  "defensive_shape",
+  "marking_style",
+  "counter_press_duration",
+  "break_speed",
+];
+
+/** Whether two phase blueprints set every phase the same way. */
+export function isSamePhaseBlueprint(
+  left: TacticsPhaseSettings,
+  right: TacticsPhaseSettings,
+): boolean {
+  return PHASE_FIELDS.every((field) => left[field] === right[field]);
 }
 
 export function buildCustomTacticsStorageKey(gameState: GameStateData): string {

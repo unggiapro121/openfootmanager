@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { GameStateData } from "../../store/gameStore";
+import type { TacticsPhaseSettings } from "../../store/types";
 import {
   TACTICS_PRESETS,
   findTacticsPresetBySetup,
@@ -9,6 +10,7 @@ import {
 } from "./TacticsTab.helpers";
 import {
   buildCustomTacticsStorageKey,
+  isSamePhaseBlueprint,
   loadCustomTactics,
   saveCustomTactics,
 } from "./TacticsCustomTactics.helpers";
@@ -21,6 +23,9 @@ interface UseTacticsLibraryArgs {
   initialPreset: TacticsPresetDefinition | null;
   onFormationChange: (nextFormation: string) => Promise<boolean>;
   onPlayStyleChange: (playStyle: string) => Promise<boolean>;
+  /** The phase blueprint the team plays now; saved with every custom tactic. */
+  tacticsPhase?: TacticsPhaseSettings;
+  onTacticsPhaseChange: (phase: TacticsPhaseSettings) => Promise<void>;
 }
 
 export function useTacticsLibrary({
@@ -30,6 +35,8 @@ export function useTacticsLibrary({
   initialPreset,
   onFormationChange,
   onPlayStyleChange,
+  tacticsPhase,
+  onTacticsPhaseChange,
 }: UseTacticsLibraryArgs) {
   const { t } = useTranslation();
   const [customTactics, setCustomTactics] = useState<TacticsLibraryEntry[]>(() =>
@@ -106,10 +113,17 @@ export function useTacticsLibrary({
     translatedPresetLibrary.find((entry) => entry.id === `preset:${matchedPreset?.id}`) ??
     currentSetupFallbackTactic;
   const isActiveCustomTactic = activeTactic?.type === "custom";
+  const isPhaseDirty = Boolean(
+    isActiveCustomTactic &&
+      activeTactic?.phase &&
+      tacticsPhase &&
+      !isSamePhaseBlueprint(activeTactic.phase, tacticsPhase),
+  );
   const isActiveTacticDirty = Boolean(
     activeTactic &&
       (formation !== activeTactic.formation ||
         activePlayStyle !== activeTactic.playStyle ||
+        isPhaseDirty ||
         (isActiveCustomTactic &&
           draftTacticName.trim().length > 0 &&
           draftTacticName.trim() !== activeTactic.name)),
@@ -160,6 +174,7 @@ export function useTacticsLibrary({
       formation: overrides.formation ?? formation,
       id: overrides.id ?? `custom:${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       name: overrides.name ?? t("tactics.customTacticNumber", { count: customCount }),
+      phase: overrides.phase ?? tacticsPhase,
       playStyle: overrides.playStyle ?? activePlayStyle,
       sourcePresetName:
         overrides.sourcePresetName === undefined ? sourcePresetName : overrides.sourcePresetName,
@@ -180,6 +195,13 @@ export function useTacticsLibrary({
       if (!didUpdatePlayStyle) {
         return;
       }
+    }
+
+    if (
+      nextTactic.phase &&
+      !(tacticsPhase && isSamePhaseBlueprint(tacticsPhase, nextTactic.phase))
+    ) {
+      await onTacticsPhaseChange(nextTactic.phase);
     }
 
     setActiveTacticId(nextTactic.id);
@@ -229,6 +251,7 @@ export function useTacticsLibrary({
                 description: activeTactic.description,
                 formation,
                 name: nextName,
+                phase: tacticsPhase,
                 playStyle: activePlayStyle,
               }
             : entry,

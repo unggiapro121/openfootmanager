@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState, type JSX } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
+import type { TacticsPhaseSettings } from "../../store/types";
 import DashboardModalFrame from "../dashboard/DashboardModalFrame";
 import { Badge, Button, Card, Select } from "../ui";
 import { FORMATIONS } from "./TacticsTab.helpers";
@@ -26,6 +27,11 @@ export interface TacticsLibraryEntry {
   formation: string;
   id: string;
   name: string;
+  /**
+   * The phase blueprint a saved tactic puts back in force. Absent on presets, and
+   * on tactics saved before blueprints were kept, which leave the team's alone.
+   */
+  phase?: TacticsPhaseSettings;
   playStyle: string;
   sourcePresetName?: string | null;
   type: "preset" | "custom";
