@@ -295,6 +295,15 @@ At a career's opening, club staff are priced at their asking wage scaled by the 
 
 The world generates 12 unattached free-agent staff at game start, plus 4 staff per team (AssistantManager, Coach, Scout, Physio).
 
+### Head Coach (the manager)
+
+The head coach is the club's `Manager` — the player's own character, or an AI club's manager — and is not a staff role. Training stays with the coaching staff above; the head coach acts on the match.
+
+- **Play style mastery** (`Manager::play_style_mastery`): 1–100 for each of the six play styles. The player starts at 50 in every style, which plays each style exactly as the engine's table prices it.
+- **AI managers** (`ofm_core::manager_mastery`): rolled once around `Manager::rating` from a stream seeded by their id — their preferred style 10–20 above the rating, every other −10 to +9. A club's manager at career start and an assistant stepping in prefer the club's own style; a mid-career appointment, the unemployed pool and retired players turned managers bring one of their own.
+- **In the match**: the mastery of the style in use scales that style's edge up and its cost down (see [MATCH_SIMULATION.md](MATCH_SIMULATION.md#the-head-coach)).
+- **A new manager's style**: when an AI club appoints a newly generated manager mid-career, it switches to that manager's best style and takes the style's blueprint (`ai_tactics::blueprint_for`). A caretaker keeps the club's style and dials.
+
 ---
 
 ## Player Traits
