@@ -25,7 +25,9 @@ export default function DevelopmentSpeedSetting() {
         careerOpen ? t("settings.developmentSpeedDesc") : t("settings.developmentSpeedNoCareer")
       }
     >
-      <span className="font-heading font-bold text-lg tabular-nums text-gray-900 dark:text-gray-100">
+      {/* Same face and size as the publisher credit in About: a read-only fact,
+          not a control, so it should not shout like one. */}
+      <span className="text-[10px] font-heading uppercase tracking-widest tabular-nums text-gray-500 dark:text-gray-400">
         {careerOpen ? formatDevelopmentSpeed(currentPercent, t, i18n.language) : "—"}
       </span>
     </SettingRow>
