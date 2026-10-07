@@ -72,4 +72,31 @@ describe("TacticsPlayerFocusPanel", () => {
     expect(traits).toHaveLength(2);
     expect(screen.queryByText("traits.Tireless.label")).toBeNull();
   });
+
+  /**
+   * Given two players compared on pace, then each side shows his value as one
+   * labelled meter, the figure on the same line as its bar.
+   */
+  it("labels each compared value so it reads with its attribute", () => {
+    const selected = createPlayer({ id: "a", full_name: "A" });
+    const compared = createPlayer({ id: "b", full_name: "B" });
+    selected.attributes.pace = 79;
+    compared.attributes.pace = 73;
+
+    render(
+      <TacticsPlayerFocusPanel
+        canConfirmSwap
+        selectedPlayer={selected}
+        comparePlayer={compared}
+        onConfirmSwap={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("meter", { name: "common.attributes.pace: 79" })).toHaveTextContent(
+      "79",
+    );
+    expect(screen.getByRole("meter", { name: "common.attributes.pace: 73" })).toHaveTextContent(
+      "73",
+    );
+  });
 });
