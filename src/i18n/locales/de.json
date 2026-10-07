@@ -1785,7 +1785,16 @@
     "continueToNextEventDesc": "Fortfahren spult bis zum nächsten Spiel, einer nötigen Aktion, einer Transferfrist oder wichtigen Neuigkeiten vor",
     "savesData": "Speicherstände & Daten",
     "autoSave": "Automatisch speichern",
-    "autoSaveDesc": "Automatisch nach jedem Tag speichern",
+    "autoSaveDesc": "Speichert deine Karriere automatisch während des Spielens, sobald es ungespeicherte Änderungen gibt",
+    "autoSaveInterval": "Automatisch speichern alle",
+    "autoSaveIntervalDesc": "Wie viel echte Spielzeit mit ungespeicherten Änderungen vergeht, bevor das Spiel selbst speichert",
+    "autoSaveIntervals": {
+      "5": "5 Minuten",
+      "30": "30 Minuten",
+      "60": "1 Stunde",
+      "720": "12 Stunden",
+      "1440": "1 Tag"
+    },
     "exportWorld": "Weltdatenbank exportieren",
     "exportWorldDesc": "Aktuelle Weltdaten als teilbare JSON-Datei speichern",
     "export": "Exportieren",

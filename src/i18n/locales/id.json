@@ -1785,7 +1785,16 @@
     "continueToNextEventDesc": "Lanjut berjalan maju hingga pertandingan berikutnya, hambatan, batas tenggat transfer, atau berita penting",
     "savesData": "Simpanan & Data",
     "autoSave": "Simpan Otomatis",
-    "autoSaveDesc": "Simpan permainan secara otomatis setelah setiap hari",
+    "autoSaveDesc": "Simpan karier secara otomatis saat bermain, setiap kali ada perubahan yang belum disimpan",
+    "autoSaveInterval": "Simpan otomatis setiap",
+    "autoSaveIntervalDesc": "Waktu bermain nyata dengan perubahan belum disimpan sebelum game menyimpan sendiri",
+    "autoSaveIntervals": {
+      "5": "5 menit",
+      "30": "30 menit",
+      "60": "1 jam",
+      "720": "12 jam",
+      "1440": "1 hari"
+    },
     "exportWorld": "Ekspor Database Dunia",
     "exportWorldDesc": "Simpan data dunia saat ini sebagai file JSON yang dapat dibagikan",
     "export": "Ekspor",

@@ -1785,7 +1785,16 @@
     "continueToNextEventDesc": "Devam Et; bir sonraki maçınıza, bir engele, transfer son gününe veya önemli bir habere kadar ilerler",
     "savesData": "Kayıtlar ve Veriler",
     "autoSave": "Otomatik Kayıt",
-    "autoSaveDesc": "Her günün ardından oyunu otomatik kaydet",
+    "autoSaveDesc": "Kaydedilmemiş değişiklik olduğunda oynarken kariyerini otomatik kaydet",
+    "autoSaveInterval": "Otomatik kayıt sıklığı",
+    "autoSaveIntervalDesc": "Oyun kendini kaydetmeden önce kaydedilmemiş değişikliklerle geçen gerçek oyun süresi",
+    "autoSaveIntervals": {
+      "5": "5 dakika",
+      "30": "30 dakika",
+      "60": "1 saat",
+      "720": "12 saat",
+      "1440": "1 gün"
+    },
     "exportWorld": "Dünya Veritabanını Dışa Aktar",
     "exportWorldDesc": "Mevcut dünya verisini paylaşılabilir JSON dosyası olarak kaydet",
     "export": "Dışa Aktar",

@@ -48,6 +48,7 @@ import {
   getUnreadMessagesCount,
 } from "../components/dashboard/dashboardHelpers";
 import { useAdvanceTime } from "../hooks/useAdvanceTime";
+import { useAutoSave } from "../hooks/useAutoSave";
 import { Cpu, Eye, Gamepad2 } from "lucide-react";
 import {
   formatDateFull,
@@ -361,6 +362,13 @@ export default function Dashboard(): JSX.Element {
       setIsSaving(false);
     }
   }, [markClean]);
+
+  useAutoSave({
+    enabled: settingsLoaded && settings.auto_save,
+    intervalMinutes: settings.auto_save_interval_minutes,
+    isBusy: isAdvancing || isSaving,
+    save: handleSave,
+  });
 
   // Intercept window close to warn about unsaved changes
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);

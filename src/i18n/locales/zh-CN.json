@@ -1785,7 +1785,16 @@
     "continueToNextEventDesc": "继续会推进到你的下一场比赛、需要处理的事项、转会截止日或重要新闻",
     "savesData": "存档与数据",
     "autoSave": "自动存档",
-    "autoSaveDesc": "每天结束后自动保存游戏",
+    "autoSaveDesc": "游戏过程中有未保存的更改时自动保存生涯",
+    "autoSaveInterval": "自动存档间隔",
+    "autoSaveIntervalDesc": "有未保存更改时，经过多少真实游戏时间后自动保存",
+    "autoSaveIntervals": {
+      "5": "5 分钟",
+      "30": "30 分钟",
+      "60": "1 小时",
+      "720": "12 小时",
+      "1440": "1 天"
+    },
     "exportWorld": "导出世界数据库",
     "exportWorldDesc": "将当前世界数据保存为可分享的 JSON 文件",
     "export": "导出",

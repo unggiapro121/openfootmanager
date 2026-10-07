@@ -1785,7 +1785,16 @@
     "continueToNextEventDesc": "Continuar avança até ao próximo jogo, um bloqueio, um prazo de transferências ou uma notícia importante",
     "savesData": "Saves e Dados",
     "autoSave": "Guardar Automaticamente",
-    "autoSaveDesc": "Guardar automaticamente após cada dia",
+    "autoSaveDesc": "Guarda a tua carreira automaticamente enquanto jogas, sempre que houver alterações por guardar",
+    "autoSaveInterval": "Guardar automaticamente a cada",
+    "autoSaveIntervalDesc": "Tempo real de jogo com alterações por guardar antes de o jogo se guardar sozinho",
+    "autoSaveIntervals": {
+      "5": "5 minutos",
+      "30": "30 minutos",
+      "60": "1 hora",
+      "720": "12 horas",
+      "1440": "1 dia"
+    },
     "exportWorld": "Exportar Base de Dados do Mundo",
     "exportWorldDesc": "Guardar os dados do mundo como ficheiro JSON partilhável",
     "export": "Exportar",

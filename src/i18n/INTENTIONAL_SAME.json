@@ -137,6 +137,8 @@
     "packageBuild.patches"
   ],
   "fr": [
+    "settings.autoSaveIntervals.5",
+    "settings.autoSaveIntervals.30",
     "nations.pt",
     "nations.ua",
     "nations.gh",

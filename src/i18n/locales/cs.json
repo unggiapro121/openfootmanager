@@ -1785,7 +1785,16 @@
     "continueToNextEventDesc": "Pokračovat posouvá čas dopředu až do vašeho dalšího zápasu, blokační události, uzávěrky přestupů nebo důležitých zpráv",
     "savesData": "Uložené pozice a data",
     "autoSave": "Automatické ukládání",
-    "autoSaveDesc": "Automaticky uložit hru po skončení každého dne",
+    "autoSaveDesc": "Automaticky ukládat kariéru během hraní, kdykoli jsou neuložené změny",
+    "autoSaveInterval": "Automaticky ukládat každých",
+    "autoSaveIntervalDesc": "Kolik skutečného herního času s neuloženými změnami uplyne, než se hra sama uloží",
+    "autoSaveIntervals": {
+      "5": "5 minut",
+      "30": "30 minut",
+      "60": "1 hodina",
+      "720": "12 hodin",
+      "1440": "1 den"
+    },
     "exportWorld": "Exportovat databázi světa",
     "exportWorldDesc": "Uložit aktuální data světa jako sdílený soubor JSON",
     "export": "Exportovat",

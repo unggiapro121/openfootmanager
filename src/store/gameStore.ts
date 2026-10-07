@@ -175,6 +175,12 @@ interface GameStore {
   gameState: GameStateData | null;
   sessionState: SessionState | null;
   isDirty: boolean;
+  /**
+   * When the game first changed after its last save (epoch ms), or null when
+   * clean. Lives here rather than in the dashboard because a match unmounts the
+   * dashboard, and an auto-save clock restarted after every match never fires.
+   */
+  dirtySince: number | null;
   showFiredModal: boolean;
   setGameActive: (active: boolean, managerName?: string) => void;
   setGameState: (state: GameStateData) => void;
@@ -191,6 +197,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   gameState: null,
   sessionState: null,
   isDirty: false,
+  dirtySince: null,
   showFiredModal: false,
   setGameActive: (active, managerName) =>
     set({
@@ -199,7 +206,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }),
   setGameState: (state) => {
     const normalized = normalizeGameStateNationalities(state);
-    set({ gameState: normalized, sessionState: deriveSessionState(normalized), isDirty: true });
+    set({
+      gameState: normalized,
+      sessionState: deriveSessionState(normalized),
+      isDirty: true,
+      dirtySince: get().dirtySince ?? Date.now(),
+    });
   },
   // Lightweight patch for inbox-only mutations that return just the message
   // slice (not the whole game). Patching messages here re-derives sessionState
@@ -209,10 +221,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const { gameState } = get();
     if (!gameState) return;
     const next = { ...gameState, messages };
-    set({ gameState: next, sessionState: deriveSessionState(next), isDirty: true });
+    set({
+      gameState: next,
+      sessionState: deriveSessionState(next),
+      isDirty: true,
+      dirtySince: get().dirtySince ?? Date.now(),
+    });
   },
   setSessionState: (state) => set({ sessionState: state }),
-  markClean: () => set({ isDirty: false }),
+  markClean: () => set({ isDirty: false, dirtySince: null }),
   setShowFiredModal: (show) => set({ showFiredModal: show }),
   clearGame: () =>
     set({
@@ -221,6 +238,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       gameState: null,
       sessionState: null,
       isDirty: false,
+      dirtySince: null,
       showFiredModal: false,
     }),
 }));

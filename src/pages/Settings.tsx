@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSettingsStore, type AppSettings } from "../store/settingsStore";
 import { useTheme } from "../context/ThemeContext";
 import { ThemeToggle, Select } from "../components/ui";
+import { AUTO_SAVE_INTERVAL_OPTIONS } from "../hooks/useAutoSave.helpers";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
 import { formatAppVersion } from "../lib/appVersion";
 import { SegmentedControl, Section, SettingRow, Toggle } from "./Settings.components";
@@ -319,6 +320,25 @@ export default function Settings() {
         <Section title={t("settings.savesData")} icon={<Save className="w-5 h-5" />}>
           <SettingRow label={t("settings.autoSave")} description={t("settings.autoSaveDesc")}>
             <Toggle checked={settings.auto_save} onChange={(v) => handleUpdate({ auto_save: v })} />
+          </SettingRow>
+
+          <SettingRow
+            label={t("settings.autoSaveInterval")}
+            description={t("settings.autoSaveIntervalDesc")}
+          >
+            <Select
+              value={String(settings.auto_save_interval_minutes)}
+              onChange={(e) => handleUpdate({ auto_save_interval_minutes: Number(e.target.value) })}
+              disabled={!settings.auto_save}
+              aria-label={t("settings.autoSaveInterval")}
+              className="min-w-48"
+            >
+              {AUTO_SAVE_INTERVAL_OPTIONS.map((minutes) => (
+                <option key={minutes} value={String(minutes)}>
+                  {t(`settings.autoSaveIntervals.${minutes}`)}
+                </option>
+              ))}
+            </Select>
           </SettingRow>
 
           <SettingRow label={t("settings.exportWorld")} description={t("settings.exportWorldDesc")}>

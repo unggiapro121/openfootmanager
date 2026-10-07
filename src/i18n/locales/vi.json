@@ -1779,7 +1779,16 @@
     "continueToNextEventDesc": "Nút Tiếp tục sẽ chạy đến trận tiếp theo của bạn, một việc cần xử lý, hạn chót chuyển nhượng hoặc tin tức quan trọng",
     "savesData": "Bản lưu và dữ liệu",
     "autoSave": "Tự động lưu",
-    "autoSaveDesc": "Tự động lưu game sau mỗi ngày",
+    "autoSaveDesc": "Tự động lưu sự nghiệp trong lúc bạn chơi, khi có thay đổi chưa lưu",
+    "autoSaveInterval": "Tự động lưu sau mỗi",
+    "autoSaveIntervalDesc": "Thời gian chơi thực có thay đổi chưa lưu trước khi game tự lưu",
+    "autoSaveIntervals": {
+      "5": "5 phút",
+      "30": "30 phút",
+      "60": "1 giờ",
+      "720": "12 giờ",
+      "1440": "1 ngày"
+    },
     "exportWorld": "Xuất cơ sở dữ liệu thế giới",
     "exportWorldDesc": "Lưu dữ liệu thế giới hiện tại thành file JSON để chia sẻ",
     "export": "Xuất",

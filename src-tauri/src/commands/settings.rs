@@ -16,6 +16,10 @@ pub struct AppSettings {
     pub currency: String, // "EUR" | "GBP" | "USD"
     pub default_match_mode: String, // "live" | "spectator" | "delegate"
     pub auto_save: bool,
+    /// Real-time minutes of unsaved play before an auto-save. Settings files
+    /// written before the choice existed load as the default.
+    #[serde(default = "default_auto_save_interval_minutes")]
+    pub auto_save_interval_minutes: u32,
     pub match_speed: String, // "slow" | "normal" | "fast"
     pub show_match_commentary: bool,
     pub confirm_advance: bool,
@@ -42,6 +46,9 @@ fn default_language() -> String {
 fn default_ui_scale() -> String {
     "normal".to_string()
 }
+fn default_auto_save_interval_minutes() -> u32 {
+    30
+}
 
 impl Default for AppSettings {
     fn default() -> Self {
@@ -51,6 +58,7 @@ impl Default for AppSettings {
             currency: "EUR".to_string(),
             default_match_mode: "live".to_string(),
             auto_save: true,
+            auto_save_interval_minutes: default_auto_save_interval_minutes(),
             match_speed: "normal".to_string(),
             show_match_commentary: true,
             confirm_advance: false,
@@ -150,6 +158,27 @@ mod tests {
             currency: currency.to_string(),
             ..AppSettings::default()
         }
+    }
+
+    /// Given a settings file saved before the auto-save interval existed, when it
+    /// loads, then the interval is the default and the rest is kept.
+    #[test]
+    fn loads_settings_saved_before_the_auto_save_interval_existed() {
+        let legacy = r#"{
+            "theme": "light",
+            "currency": "EUR",
+            "default_match_mode": "live",
+            "auto_save": false,
+            "match_speed": "normal",
+            "show_match_commentary": true,
+            "confirm_advance": false
+        }"#;
+
+        let settings: AppSettings = serde_json::from_str(legacy).expect("legacy settings load");
+
+        assert_eq!(settings.auto_save_interval_minutes, 30);
+        assert!(!settings.auto_save);
+        assert_eq!(settings.theme, "light");
     }
 
     #[test]
