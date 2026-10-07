@@ -255,6 +255,26 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
     metric("  Crosses/game     ", cr, 1, "15–30", check(cr, 15.0, 30.0));
     println!();
 
+    // ── Duels ────────────────────────────────────────────────────────────────
+    section("DUELS (attacker's win share)");
+    let duels = &stats.duels;
+    metric("  Midfield %       ", duels.midfield_win_pct(), 1, "", true);
+    metric(
+        "  One-on-one %     ",
+        duels.one_v_one_win_pct(),
+        1,
+        "",
+        true,
+    );
+    metric("  Aerial %         ", duels.aerial_win_pct(), 1, "", true);
+    let cross_goals = if stats.games == 0 {
+        0.0
+    } else {
+        duels.cross_goals as f64 / f64::from(stats.games)
+    };
+    metric("  Cross goals/game ", cross_goals, 2, "", true);
+    println!();
+
     // ── Goal sources ─────────────────────────────────────────────────────────
     section("GOAL SOURCES");
     let op = stats.open_play_goal_pct();
