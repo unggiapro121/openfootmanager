@@ -10,6 +10,8 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet, VecDeque};
 
+use crate::rating::{RosterEntry, rate_players};
+
 pub(crate) use observation::AiObservation;
 
 use crate::event::MatchEvent;
@@ -407,6 +409,23 @@ impl LiveMatchState {
             self.current_minute,
             tracked_player_ids,
         );
+        // The bench is part of the roster: a player substituted off ends the
+        // match there, and is rated for the time he played all the same.
+        let roster: Vec<RosterEntry<'_>> = self
+            .home
+            .players
+            .iter()
+            .chain(self.home_bench.iter())
+            .map(|player| RosterEntry::new(player, Side::Home))
+            .chain(
+                self.away
+                    .players
+                    .iter()
+                    .chain(self.away_bench.iter())
+                    .map(|player| RosterEntry::new(player, Side::Away)),
+            )
+            .collect();
+        rate_players(&mut report, &roster);
         if self.penalty_state.home_taken > 0 || self.penalty_state.away_taken > 0 {
             report.home_penalties = Some(self.penalty_state.home_scored);
             report.away_penalties = Some(self.penalty_state.away_scored);

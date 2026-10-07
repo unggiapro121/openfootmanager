@@ -29,11 +29,13 @@ function getRatingColor(rating: number, primary: string): string {
 export function PlayerRatingTrendChart({ matches, ratingLabel }: PlayerRatingTrendChartProps) {
   const theme = useChartTheme();
 
-  if (matches.length < 2) {
+  // A cameo too short to be rated is stored as 0; plotted, it would read as a 0/10 game.
+  const rated = matches.filter((m) => m.rating > 0);
+  if (rated.length < 2) {
     return <ChartContainer isEmpty height={140} />;
   }
 
-  const data = [...matches].reverse().map((m, i) => ({
+  const data = [...rated].reverse().map((m, i) => ({
     matchday: m.matchday > 0 ? `MD${m.matchday}` : `M${i + 1}`,
     rating: Number(m.rating.toFixed(1)),
     opponent: m.opponent_name,

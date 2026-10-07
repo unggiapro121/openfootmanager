@@ -34,6 +34,7 @@ interface MatchRouteState {
 interface FinishLiveMatchResponse {
   game: GameStateData;
   round_summary?: RoundSummary | null;
+  player_ratings: Record<string, number>;
 }
 
 export default function MatchSimulation() {
@@ -50,6 +51,7 @@ export default function MatchSimulation() {
   const [userSide, setUserSide] = useState<"Home" | "Away" | null>(null);
   const [isSpectator, setIsSpectator] = useState(matchMode === "spectator");
   const [roundSummary, setRoundSummary] = useState<RoundSummary | null>(null);
+  const [playerRatings, setPlayerRatings] = useState<Record<string, number>>({});
   const [hasFinalizedMatch, setHasFinalizedMatch] = useState(false);
   const [preferredSpeed, setPreferredSpeed] = useState<"slow" | "normal" | "fast">("normal");
   const [hasUserOverriddenSpeed, setHasUserOverriddenSpeed] = useState(false);
@@ -241,6 +243,7 @@ export default function MatchSimulation() {
       });
       setGameState(response.game);
       setRoundSummary(response.round_summary ?? null);
+      setPlayerRatings(response.player_ratings);
       setHasFinalizedMatch(true);
       return true;
     } catch (err) {
@@ -388,6 +391,7 @@ export default function MatchSimulation() {
       return (
         <PostMatchScreen
           snapshot={snapshot}
+          playerRatings={playerRatings}
           gameState={gameState}
           userSide={userSide}
           isSpectator={isSpectator}

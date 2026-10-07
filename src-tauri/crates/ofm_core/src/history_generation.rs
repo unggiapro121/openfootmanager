@@ -367,6 +367,8 @@ fn synthesize_player_season(
         yellow_cards: deterministic_u32((&player.id, season, "yellow"), 5),
         red_cards: deterministic_u32((&player.id, season, "red"), 2),
         avg_rating: rating,
+        // Every synthesized appearance is a full ninety, so every one is rated.
+        rated_appearances: appearances,
         minutes_played,
         shots,
         shots_on_target,

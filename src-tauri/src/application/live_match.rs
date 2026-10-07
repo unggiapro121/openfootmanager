@@ -6,11 +6,15 @@ use ofm_core::game::Game;
 use ofm_core::live_match_manager::{self, MatchMode};
 use ofm_core::state::StateManager;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FinishLiveMatchResponse {
     pub game: Game,
     pub round_summary: Option<RoundSummaryDto>,
+    /// The engine's rating for each player who played long enough to be judged,
+    /// keyed by player id. Unrated players are left out rather than sent as 0.
+    pub player_ratings: BTreeMap<String, f32>,
 }
 
 pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse, String> {
@@ -36,6 +40,12 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
     let away_team_id = session.away_team_id.clone();
 
     let report = session.match_state.into_report();
+    let player_ratings: BTreeMap<String, f32> = report
+        .player_stats
+        .iter()
+        .filter(|(_, stats)| stats.rating > 0.0)
+        .map(|(player_id, stats)| (player_id.clone(), stats.rating))
+        .collect();
     info!(
         "[cmd] finish_live_match: fixture_index={}, competition_id={}, home_team_id={}, away_team_id={}, events= {}",
         fixture_index,
@@ -148,37 +158,21 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
     Ok(FinishLiveMatchResponse {
         game,
         round_summary,
+        player_ratings,
     })
-}
-
-#[cfg(any(feature = "mcp", test))]
-pub fn start_live_match(
-    state: &StateManager,
-    fixture_index: usize,
-    mode: &str,
-    allows_extra_time: bool,
-    home_team_id: Option<&str>,
-    away_team_id: Option<&str>,
-) -> Result<engine::MatchSnapshot, String> {
-    if home_team_id.is_some() || away_team_id.is_some() {
-        // Team IDs cannot identify a fixture when two competitions pair the
-        // same clubs. Session restoration must supply stable identity.
-        return Err("be.error.liveMatch.fixtureNotFound".to_string());
-    }
-    start_live_match_with_identity(state, fixture_index, mode, allows_extra_time, None, None)
 }
 
 pub fn start_live_match_with_identity(
     state: &StateManager,
     fixture_index: usize,
     mode: &str,
-    allows_extra_time: bool,
+    _allows_extra_time: bool,
     competition_id: Option<&str>,
     fixture_id: Option<&str>,
 ) -> Result<engine::MatchSnapshot, String> {
     info!(
-        "[cmd] start_live_match: fixture={}, mode={}, extra_time={}, competition={:?}, fixture_id={:?}",
-        fixture_index, mode, allows_extra_time, competition_id, fixture_id
+        "[cmd] start_live_match: fixture={}, mode={}, competition={:?}, fixture_id={:?}",
+        fixture_index, mode, competition_id, fixture_id
     );
     let match_mode = match mode {
         "spectator" => MatchMode::Spectator,
@@ -256,6 +250,10 @@ pub fn start_live_match_with_identity(
                 return Err("be.error.liveMatch.fixtureNotFound".to_string());
             }
 
+            // A caller's flag cannot turn a league draw into a knockout result or suppress
+            // a cup decider. Resolve identity first so the shared rule reads this fixture's
+            // competition, including cup restores while the domestic league is mirrored.
+            let allows_extra_time = ofm_core::matchday::fixture_allows_extra_time(game, fixture_index);
             let session = live_match_manager::kick_off_live_match(
                 game,
                 fixture_index,

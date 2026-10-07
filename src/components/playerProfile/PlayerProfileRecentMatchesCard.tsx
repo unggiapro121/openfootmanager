@@ -89,7 +89,8 @@ export default function PlayerProfileRecentMatchesCard({
                   {t("playerProfile.recentMatchesRating")}
                 </p>
                 <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
-                  {match.rating.toFixed(1)}
+                  {/* 0 means the engine did not rate him: too few minutes to judge. */}
+                  {match.rating > 0 ? match.rating.toFixed(1) : "–"}
                 </p>
               </div>
             </div>

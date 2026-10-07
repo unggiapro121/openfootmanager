@@ -4,6 +4,7 @@ mod resolution;
 use rand::{Rng, RngExt};
 
 use crate::event::{EventType, MatchEvent};
+use crate::rating::{RosterEntry, rate_players};
 use crate::report::MatchReport;
 use crate::shared::{self, PlayerSnap};
 use crate::types::{MatchConfig, Position, Side, TeamData, Zone};
@@ -88,13 +89,25 @@ pub fn simulate_with_rng<R: Rng>(
         .map(|player| player.id.clone())
         .collect();
 
-    MatchReport::from_events_with_players(
+    let mut report = MatchReport::from_events_with_players(
         ctx.events,
         ctx.home_possession_ticks,
         ctx.away_possession_ticks,
         total_minutes,
         tracked_player_ids,
-    )
+    );
+    let roster: Vec<RosterEntry<'_>> = home
+        .players
+        .iter()
+        .map(|player| RosterEntry::new(player, Side::Home))
+        .chain(
+            away.players
+                .iter()
+                .map(|player| RosterEntry::new(player, Side::Away)),
+        )
+        .collect();
+    rate_players(&mut report, &roster);
+    report
 }
 
 // ---------------------------------------------------------------------------
