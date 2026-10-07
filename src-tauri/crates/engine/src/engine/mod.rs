@@ -192,6 +192,19 @@ fn snap_player<R: Rng>(
         .unwrap_or_else(PlayerSnap::nobody)
 }
 
+/// The attacker who meets a cross, never the man who crossed it. Falls back to
+/// an ordinary forward only if the crosser is all the side has left.
+fn snap_header_target<R: Rng>(
+    ctx: &MatchContext,
+    side: Side,
+    crosser_id: &str,
+    rng: &mut R,
+) -> PlayerSnap {
+    let team = ctx.team(side);
+    crate::shared::snap_header_target(&team.players, &ctx.sent_off, crosser_id, rng)
+        .unwrap_or_else(|| snap_player(ctx, side, Position::Forward, rng))
+}
+
 // ---------------------------------------------------------------------------
 // Minute simulation
 // ---------------------------------------------------------------------------
@@ -275,6 +288,7 @@ mod empty_squad_tests {
             handling: 20,
             reflexes: 30,
             aerial: 60,
+            height_cm: 0,
             condition: 100,
             fitness: 100,
             ovr: 60,

@@ -38,6 +38,7 @@ fn make_player(id: &str, name: &str, pos: Position, skill: u8) -> PlayerData {
         handling: skill,
         reflexes: skill,
         aerial: skill,
+        height_cm: 0,
         traits: vec![],
         role: PlayerRole::Standard,
     }
@@ -1412,6 +1413,7 @@ fn make_player_with_traits(
         handling: skill,
         reflexes: skill,
         aerial: skill,
+        height_cm: 0,
         traits: traits.iter().map(|t| t.to_string()).collect(),
         role: PlayerRole::Standard,
     }
@@ -2106,4 +2108,50 @@ fn ratings_centre_on_six_across_many_matches() {
 
     assert!((5.85..=6.15).contains(&mean), "mean rating {mean:.2}");
     assert!((0.4..=1.2).contains(&spread), "rating spread {spread:.2}");
+}
+
+/// Given many matches, when a cross is won in the air, then the shot that
+/// follows is taken by the man who won the header — never the crosser — and a
+/// goal from it credits the crosser with the assist.
+#[test]
+fn the_header_winner_shoots_and_the_crosser_assists() {
+    let mut cross_goals = 0;
+    for seed in 0..60 {
+        let mut state = make_live_match(false);
+        let mut rng = seeded_rng(seed);
+        run_to_finish(&mut state, &mut rng);
+        let events = state.snapshot().events;
+        for (index, event) in events.iter().enumerate() {
+            if event.event_type != EventType::Cross {
+                continue;
+            }
+            let after = &events[index + 1..];
+            if after.first().map(|e| &e.event_type) == Some(&EventType::Clearance) {
+                continue;
+            }
+            let ending = after.iter().find(|e| {
+                matches!(
+                    e.event_type,
+                    EventType::Goal
+                        | EventType::ShotSaved
+                        | EventType::ShotOffTarget
+                        | EventType::ShotBlocked
+                        | EventType::PenaltyAwarded
+                )
+            });
+            let Some(ending) = ending else { continue };
+            if ending.event_type == EventType::PenaltyAwarded {
+                continue;
+            }
+            assert_ne!(
+                ending.player_id, event.player_id,
+                "seed {seed}: he crossed to himself"
+            );
+            if ending.event_type == EventType::Goal {
+                assert_eq!(ending.secondary_player_id, event.player_id, "seed {seed}");
+                cross_goals += 1;
+            }
+        }
+    }
+    assert!(cross_goals > 0, "no goal came from a cross in 60 matches");
 }

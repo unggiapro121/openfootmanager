@@ -240,6 +240,19 @@ fn parse_formation(formation: &str) -> (u8, u8, u8, bool) {
     (result.0, result.1, result.2, false)
 }
 
+/// A height (cm) around the real average for the position group, with roughly
+/// its real spread (a sum of three uniforms stands in for a normal draw).
+fn synthetic_height(position: Position, rng: &mut impl Rng) -> u16 {
+    let (mean, sd) = match position {
+        Position::Goalkeeper => (188.9, 4.7),
+        Position::Defender => (183.0, 6.3),
+        Position::Midfielder => (178.4, 5.9),
+        Position::Forward => (181.6, 7.0),
+    };
+    let spread: f64 = (0..3).map(|_| rng.random_range(0.0f64..1.0)).sum::<f64>() - 1.5;
+    (mean + 2.0 * sd * spread).clamp(160.0, 205.0).round() as u16
+}
+
 /// `label` is the player's position label, already carrying any group tag —
 /// `"GK"` for a starter, `"subGK"` for his deputy.
 fn make_player(
@@ -295,6 +308,7 @@ fn make_player(
         handling: biased(base, gk_off, rng),
         reflexes: biased(base, gk_off, rng),
         aerial: noise(base, rng),
+        height_cm: synthetic_height(position, rng),
         traits: vec![],
         role,
     }

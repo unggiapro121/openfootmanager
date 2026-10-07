@@ -1,17 +1,18 @@
 use rand::{Rng, RngExt};
 
+use crate::duel;
 use crate::event::{EventType, MatchEvent};
 use crate::shared::{
-    PlayStylePhase, TraitContext, home_mod, play_style_modifier, role_attribute_modifier,
-    tactics_buildup_mod, tactics_cross_probability, tactics_defensive_conversion_mod,
-    tactics_foul_modifier, tactics_pressing_press, tactics_shape_modifier,
-    tactics_tempo_progression, tactics_width_versus_shape, trait_bonus,
+    PlayStylePhase, ShotSetup, TraitContext, home_mod, play_style_modifier,
+    role_attribute_modifier, tactics_buildup_mod, tactics_cross_probability,
+    tactics_defensive_conversion_mod, tactics_foul_modifier, tactics_pressing_press,
+    tactics_shape_modifier, tactics_tempo_progression, tactics_width_versus_shape, trait_bonus,
 };
 use crate::types::{Position, Side, Zone};
 
 use super::MatchContext;
 use super::fouls::{self, maybe_foul};
-use super::snap_player;
+use super::{snap_header_target, snap_player};
 
 // ---------------------------------------------------------------------------
 // Action resolution per zone
@@ -23,7 +24,7 @@ pub(super) fn resolve_action<R: Rng>(ctx: &mut MatchContext, minute: u8, rng: &m
     let zone = ctx.ball_zone;
 
     if zone.is_box_for(att_side) {
-        resolve_shot(ctx, minute, att_side, rng);
+        resolve_shot(ctx, minute, att_side, ShotSetup::default(), rng);
         // resolve_shot manages ball_zone and possession for all outcomes
     } else if zone == Zone::attacking_third(att_side) {
         resolve_attacking_third(ctx, minute, att_side, def_side, rng);
@@ -88,18 +89,10 @@ fn resolve_midfield<R: Rng>(
     let attacker = snap_player(ctx, att_side, Position::Midfielder, rng);
     let defender = snap_player(ctx, def_side, Position::Midfielder, rng);
 
-    let att_rating = (attacker.dribbling as f64
-        + attacker.passing as f64
-        + attacker.vision as f64
-        + attacker.teamwork as f64)
-        / 4.0
-        * trait_bonus(&attacker, TraitContext::Midfield);
-    let def_rating = (defender.tackling as f64
-        + defender.positioning as f64
-        + defender.decisions as f64
-        + defender.teamwork as f64)
-        / 4.0
-        * trait_bonus(&defender, TraitContext::Tackling);
+    // The players' ratings live in `duel`; what is left here is every modifier
+    // the duel always had, applied exactly as strongly.
+    let att_rating = trait_bonus(&attacker, TraitContext::Midfield);
+    let def_rating = trait_bonus(&defender, TraitContext::Tackling);
 
     let att_mod = play_style_modifier(
         ctx.team(att_side).play_style,
@@ -116,7 +109,7 @@ fn resolve_midfield<R: Rng>(
         * home_mod(att_side, ctx.config)
         * tactics_tempo_progression(&ctx.team(att_side).tactics);
     let def_eff = def_rating * def_mod * home_mod(def_side, ctx.config);
-    let success = att_eff / (att_eff + def_eff);
+    let success = duel::midfield_win_probability(&attacker, &defender, att_eff / def_eff);
 
     if rng.random_range(0.0..1.0f64) < success {
         ctx.emit(
@@ -168,18 +161,9 @@ fn resolve_attacking_third<R: Rng>(
     let attacker = snap_player(ctx, att_side, Position::Forward, rng);
     let defender = snap_player(ctx, def_side, Position::Defender, rng);
 
-    let att_rating = (attacker.dribbling as f64
-        + attacker.pace as f64
-        + attacker.agility as f64
-        + attacker.composure as f64)
-        / 4.0
-        * trait_bonus(&attacker, TraitContext::Dribbling);
-    let def_rating = (defender.defending as f64
-        + defender.tackling as f64
-        + defender.positioning as f64
-        + defender.aerial as f64)
-        / 4.0
-        * trait_bonus(&defender, TraitContext::Tackling);
+    // As in midfield: ratings in `duel`, every existing modifier here.
+    let att_rating = trait_bonus(&attacker, TraitContext::Dribbling);
+    let def_rating = trait_bonus(&defender, TraitContext::Tackling);
 
     let att_mod = play_style_modifier(ctx.team(att_side).play_style, PlayStylePhase::Attack, true)
         * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
@@ -194,7 +178,7 @@ fn resolve_attacking_third<R: Rng>(
         * home_mod(def_side, ctx.config)
         * tactics_shape_modifier(&ctx.team(def_side).tactics)
         * tactics_width_versus_shape(&ctx.team(att_side).tactics, &ctx.team(def_side).tactics);
-    let success = att_eff / (att_eff + def_eff);
+    let success = duel::one_v_one_win_probability(&attacker, &defender, att_eff / def_eff);
     let zone = Zone::attacking_third(att_side);
     let cross_prob = tactics_cross_probability(&ctx.team(att_side).tactics);
 
@@ -206,14 +190,17 @@ fn resolve_attacking_third<R: Rng>(
             ctx.emit(
                 MatchEvent::new(minute, EventType::Cross, att_side, zone).with_player(&attacker.id),
             );
-            let header = snap_player(ctx, att_side, Position::Forward, rng);
+            let header = snap_header_target(ctx, att_side, &attacker.id, rng);
             let def_header = snap_player(ctx, def_side, Position::Defender, rng);
-            let aerial_att = header.aerial as f64;
-            let aerial_def = def_header.aerial as f64;
-            let aerial_win = aerial_att / (aerial_att + aerial_def);
+            let aerial_win = duel::aerial_win_probability(&header, &def_header);
             if rng.random_range(0.0..1.0f64) < aerial_win {
                 ctx.ball_zone = Zone::attacking_box(att_side);
-                resolve_shot(ctx, minute, att_side, rng);
+                // He won the header, so the chance is his; the cross is the assist.
+                let setup = ShotSetup {
+                    shooter: Some(header),
+                    assister: Some(attacker.id.clone()),
+                };
+                resolve_shot(ctx, minute, att_side, setup, rng);
             } else {
                 ctx.emit(
                     MatchEvent::new(minute, EventType::Clearance, def_side, zone)
@@ -272,14 +259,23 @@ fn resolve_attacking_third<R: Rng>(
     }
 }
 
-fn resolve_shot<R: Rng>(ctx: &mut MatchContext, minute: u8, att_side: Side, rng: &mut R) {
+fn resolve_shot<R: Rng>(
+    ctx: &mut MatchContext,
+    minute: u8,
+    att_side: Side,
+    setup: ShotSetup,
+    rng: &mut R,
+) {
     let def_side = att_side.opposite();
     let zone = Zone::attacking_box(att_side);
 
     // Box foul rate fixed at 3.6% per shot — independent of foul_probability (which tunes outfield fouls)
     if rng.random_range(0.0..1.0f64) < 0.036 {
         let fouler = snap_player(ctx, def_side, Position::Defender, rng);
-        let fouled = snap_player(ctx, att_side, Position::Forward, rng);
+        let fouled = match &setup.shooter {
+            Some(shooter) => shooter.clone(),
+            None => snap_player(ctx, att_side, Position::Forward, rng),
+        };
         ctx.emit(
             MatchEvent::new(minute, EventType::Foul, def_side, zone)
                 .with_player(&fouler.id)
@@ -302,8 +298,14 @@ fn resolve_shot<R: Rng>(ctx: &mut MatchContext, minute: u8, att_side: Side, rng:
         // Foul but no penalty: advantage played, shot continues
     }
 
-    let shooter = snap_player(ctx, att_side, Position::Forward, rng);
-    let assister = snap_player(ctx, att_side, Position::Midfielder, rng);
+    let shooter = match setup.shooter {
+        Some(shooter) => shooter,
+        None => snap_player(ctx, att_side, Position::Forward, rng),
+    };
+    let assister_id = match setup.assister {
+        Some(id) => id,
+        None => snap_player(ctx, att_side, Position::Midfielder, rng).id,
+    };
     let goalkeeper = snap_player(ctx, def_side, Position::Goalkeeper, rng);
 
     let att_cond = if att_side == Side::Home {
@@ -360,7 +362,7 @@ fn resolve_shot<R: Rng>(ctx: &mut MatchContext, minute: u8, att_side: Side, rng:
         ctx.emit(
             MatchEvent::new(minute, EventType::Goal, att_side, zone)
                 .with_player(&shooter.id)
-                .with_secondary(&assister.id),
+                .with_secondary(&assister_id),
         );
         ctx.add_goal(att_side);
         ctx.possession = def_side;

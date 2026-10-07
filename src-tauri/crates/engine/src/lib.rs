@@ -1,4 +1,5 @@
 pub mod ai;
+pub(crate) mod duel;
 pub mod engine;
 pub mod event;
 pub mod live_match;

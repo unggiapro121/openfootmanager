@@ -722,6 +722,7 @@ fn to_engine_player(
         handling: p.attributes.handling,
         reflexes: p.attributes.reflexes,
         aerial: p.attributes.aerial,
+        height_cm: p.height_cm,
         traits: p.traits.iter().map(|t| format!("{:?}", t)).collect(),
         role,
     }
