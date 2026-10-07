@@ -527,6 +527,8 @@
     },
     "footednessLabel": "Ayak",
     "weakFoot": "Zayıf ayak",
+    "height": "Boy",
+    "weight": "Kilo",
     "playStyles": {
       "Balanced": "Dengeli",
       "Attacking": "Hücum",

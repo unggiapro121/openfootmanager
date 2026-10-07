@@ -6,6 +6,7 @@ use uuid::Uuid;
 
 use super::authored_player::resolve_authored_contract;
 use super::definitions::{NamePool, NamesDefinition};
+use super::physique::{BodyLinks, Physique, correlated_jitter, correlated_range, sample_physique};
 use crate::nations;
 use crate::player_rating::{generate_potential, refresh_player_derived};
 
@@ -484,11 +485,14 @@ pub(super) fn generate_random_player_from_def(
     let is_def = matches!(group, Position::Defender);
     let is_fwd = matches!(group, Position::Forward);
 
+    // The body comes first: the attributes it shapes are drawn to follow it.
+    let body = sample_physique(&position, None, None, rng);
+    let links = BodyLinks::for_position(&position);
     let attributes = PlayerAttributes {
-        pace: rng.random_range(40..95),
+        pace: correlated_range(40, 95, body.z_height, links.pace, rng),
         stamina: rng.random_range(40..95),
-        strength: rng.random_range(40..95),
-        agility: rng.random_range(40..95),
+        strength: correlated_range(40, 95, body.z_weight, links.strength, rng),
+        agility: correlated_range(40, 95, body.z_height, links.agility, rng),
         passing: rng.random_range(40..95),
         shooting: if is_gk {
             rng.random_range(20..50)
@@ -529,12 +533,15 @@ pub(super) fn generate_random_player_from_def(
         } else {
             rng.random_range(20..50)
         },
-        aerial: if is_gk {
-            rng.random_range(50..95)
-        } else if is_def {
-            rng.random_range(45..90)
-        } else {
-            rng.random_range(30..75)
+        aerial: {
+            let (lo, hi) = if is_gk {
+                (50, 95)
+            } else if is_def {
+                (45, 90)
+            } else {
+                (30, 75)
+            };
+            correlated_range(lo, hi, body.z_height, links.aerial, rng)
         },
     };
 
@@ -562,6 +569,8 @@ pub(super) fn generate_random_player_from_def(
         attributes,
     );
     player.team_id = Some(team_id.to_string());
+    player.height_cm = body.height_cm;
+    player.weight_kg = body.weight_kg;
     player.stage_contract_end(Some(contract_end));
     player.condition = rng.random_range(75..100);
     player.morale = rng.random_range(40..76);
@@ -799,9 +808,11 @@ fn jitter(base: i32, spread: i32, lo: u8, hi: u8, rng: &mut impl Rng) -> u8 {
 /// position so a goalkeeper's keeping attributes and a defender's defending sit
 /// high. Used when a hand-authored player gives an `overall` rather than a full
 /// `attributes` block; the resulting position-weighted OVR lands near `overall`.
+/// The attributes a body shapes follow `body`, as they do for a random player.
 pub(super) fn attributes_for_overall(
     overall: u8,
     position: &Position,
+    body: &Physique,
     rng: &mut impl Rng,
 ) -> PlayerAttributes {
     let base = overall as i32;
@@ -809,12 +820,14 @@ pub(super) fn attributes_for_overall(
     let is_gk = matches!(group, Position::Goalkeeper);
     let is_def = matches!(group, Position::Defender);
     let is_fwd = matches!(group, Position::Forward);
+    let links = BodyLinks::for_position(position);
+    let (z_height, z_weight) = (body.z_height, body.z_weight);
 
     PlayerAttributes {
-        pace: jitter(base, 8, 30, 97, rng),
+        pace: correlated_jitter(base, 8, (30, 97), z_height, links.pace, rng),
         stamina: jitter(base, 8, 30, 97, rng),
-        strength: jitter(base, 8, 30, 97, rng),
-        agility: jitter(base, 8, 30, 97, rng),
+        strength: correlated_jitter(base, 8, (30, 97), z_weight, links.strength, rng),
+        agility: correlated_jitter(base, 8, (30, 97), z_height, links.agility, rng),
         passing: jitter(base, 8, 30, 97, rng),
         shooting: if is_gk {
             rng.random_range(20..50)
@@ -856,11 +869,11 @@ pub(super) fn attributes_for_overall(
             rng.random_range(20..50)
         },
         aerial: if is_gk {
-            jitter(base, 8, 40, 97, rng)
+            correlated_jitter(base, 8, (40, 97), z_height, links.aerial, rng)
         } else if is_def {
-            jitter(base, 8, 40, 95, rng)
+            correlated_jitter(base, 8, (40, 95), z_height, links.aerial, rng)
         } else {
-            jitter(base - 10, 10, 30, 80, rng)
+            correlated_jitter(base - 10, 10, (30, 80), z_height, links.aerial, rng)
         },
     }
 }
@@ -992,10 +1005,14 @@ pub(super) fn generate_player_from_def(
         .unwrap_or_else(|| format!("{birth_year:04}-01-01"));
     let age = current_year.saturating_sub(birth_year);
 
+    // Drawn whether or not the author fixed a height or weight, so authoring one
+    // does not shift the random numbers every later draw sees.
+    let body = sample_physique(&def.position, def.height_cm, def.weight_kg, rng);
     let mut attributes = def.attributes.clone().unwrap_or_else(|| {
         attributes_for_overall(
             def.overall.unwrap_or(DEFAULT_AUTHORED_OVERALL),
             &def.position,
+            &body,
             rng,
         )
     });
@@ -1063,6 +1080,8 @@ pub(super) fn generate_player_from_def(
     if let Some(weak_foot) = def.weak_foot {
         player.weak_foot = weak_foot;
     }
+    player.height_cm = body.height_cm;
+    player.weight_kg = body.weight_kg;
     if !def.alternate_positions.is_empty() {
         player.alternate_positions = def.alternate_positions.clone();
     }

@@ -523,6 +523,8 @@
     },
     "footednessLabel": "Fuß",
     "weakFoot": "Schwacher Fuß",
+    "height": "Größe",
+    "weight": "Gewicht",
     "playStyles": {
       "Balanced": "Ausgeglichen",
       "Attacking": "Offensiv",

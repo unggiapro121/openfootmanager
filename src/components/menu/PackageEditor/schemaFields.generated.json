@@ -43,6 +43,7 @@
     "dateOfBirth",
     "firstName",
     "footedness",
+    "heightCm",
     "id",
     "lastName",
     "morale",
@@ -55,6 +56,7 @@
     "value",
     "wage",
     "weakFoot",
+    "weightKg",
     "youth"
   ],
   "staff": [

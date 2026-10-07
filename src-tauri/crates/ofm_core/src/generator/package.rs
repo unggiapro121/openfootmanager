@@ -116,6 +116,12 @@ pub struct PlayerDef {
     /// a general group (`Midfielder`, `Forward`, …) has it re-inferred when a career opens.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub weak_foot: Option<u8>,
+    /// Height in cm, 150 to 210. Drawn from the position when omitted.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub height_cm: Option<u16>,
+    /// Weight in kg, 50 to 110. Drawn from the height when omitted.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub weight_kg: Option<u8>,
     /// Other positions the player can cover. Same restriction as `weakFoot`.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub alternate_positions: Vec<Position>,

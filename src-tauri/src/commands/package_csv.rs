@@ -95,6 +95,8 @@ const PLAYER_IDENTITY_HEADERS: &[&str] = &[
     "wage",
     "value",
     "weakFoot",
+    "heightCm",
+    "weightKg",
     "alternatePositions",
     "condition",
     "morale",
@@ -102,8 +104,8 @@ const PLAYER_IDENTITY_HEADERS: &[&str] = &[
 ];
 
 /// Player columns holding free text. The numbers (`age`, `overall`, `potential`,
-/// `contractLength`, `wage`, `value`, `weakFoot`, `condition`, `morale`, and every
-/// attribute column) cannot begin with a formula character, and neither can the two
+/// `contractLength`, `wage`, `value`, `weakFoot`, `heightCm`, `weightKg`, `condition`,
+/// `morale`, and every attribute column) cannot begin with a formula character, and neither can the two
 /// JSON cells (`alternatePositions`, `careerHistory`), which always begin with `[`,
 /// so none of them appear here.
 const PLAYER_TEXT_HEADERS: &[&str] = &[
@@ -287,6 +289,8 @@ fn player_row(player: &PlayerDef) -> Vec<String> {
         optional(&player.wage),
         optional(&player.value),
         optional(&player.weak_foot),
+        optional(&player.height_cm),
+        optional(&player.weight_kg),
         json_cell(&player.alternate_positions),
         optional(&player.condition),
         optional(&player.morale),

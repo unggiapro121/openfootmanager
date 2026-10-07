@@ -198,6 +198,8 @@ Defines a specific player. Reference teams and countries by their `id`.
 | `wage` | integer or null | no | `null` | **Weekly** wage in the game's money. Omit it and it is sized from the player's value. |
 | `value` | integer (0–9007199254740991) or null | no | `null` | Market value in the game's money. Omit it and it is sized from ability and age. |
 | `weakFoot` | integer (1–5) or null | no | `null` | Weak-foot skill. Only kept for a specific `position`; see [Identity fields](#identity-fields). |
+| `heightCm` | integer (150–210) or null | no | `null` | Height in cm. Drawn from the position when omitted; the attributes a body shapes (`aerial`, `strength`, `agility`, `pace`) follow it unless an `attributes` block is authored. |
+| `weightKg` | integer (50–110) or null | no | `null` | Weight in kg. Drawn from the height when omitted. |
 | `alternatePositions` | array of positions | no | `[]` | Other positions the player can cover. Same restriction as `weakFoot`. |
 | `condition` | integer (0–100) or null | no | `null` | Match sharpness. Omit it and it is rolled in a realistic band. |
 | `morale` | integer (0–100) or null | no | `null` | Morale. Omit it and it is rolled in a realistic band. |

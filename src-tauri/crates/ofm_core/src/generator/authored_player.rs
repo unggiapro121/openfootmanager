@@ -14,6 +14,11 @@ use chrono::{Months, NaiveDate};
 use domain::player::{WEAK_FOOT_MAX, WEAK_FOOT_MIN};
 use std::collections::HashSet;
 
+/// What an author may give a player for height (cm) and weight (kg): a little
+/// wider than the generator draws, so a real outlier can still be entered.
+const HEIGHT_CM_RANGE: (u16, u16) = (150, 210);
+const WEIGHT_KG_RANGE: (u8, u8) = (50, 110);
+
 /// The interval an author wrote, resolved against the year the career opens in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(super) struct AuthoredContract {
@@ -227,6 +232,26 @@ pub(super) fn authored_player_errors(
             "weakFoot",
             WEAK_FOOT_MIN.into(),
             WEAK_FOOT_MAX.into(),
+        ));
+    }
+    if player
+        .height_cm
+        .is_some_and(|value| !(HEIGHT_CM_RANGE.0..=HEIGHT_CM_RANGE.1).contains(&value))
+    {
+        errors.push(out_of_range(
+            "heightCm",
+            HEIGHT_CM_RANGE.0.into(),
+            HEIGHT_CM_RANGE.1.into(),
+        ));
+    }
+    if player
+        .weight_kg
+        .is_some_and(|value| !(WEIGHT_KG_RANGE.0..=WEIGHT_KG_RANGE.1).contains(&value))
+    {
+        errors.push(out_of_range(
+            "weightKg",
+            WEIGHT_KG_RANGE.0.into(),
+            WEIGHT_KG_RANGE.1.into(),
         ));
     }
     if player.condition.is_some_and(|value| value > 100) {
@@ -529,6 +554,10 @@ mod tests {
         let cases = [
             ("weakFoot", 0_u64, "1", "5"),
             ("weakFoot", 6, "1", "5"),
+            ("heightCm", 149, "150", "210"),
+            ("heightCm", 211, "150", "210"),
+            ("weightKg", 49, "50", "110"),
+            ("weightKg", 111, "50", "110"),
             ("condition", 101, "0", "100"),
             ("morale", 101, "0", "100"),
             // One past what a JavaScript number holds exactly: the editor would
@@ -553,6 +582,10 @@ mod tests {
         for extra in [
             serde_json::json!({ "weakFoot": 1 }),
             serde_json::json!({ "weakFoot": 5 }),
+            serde_json::json!({ "heightCm": 150 }),
+            serde_json::json!({ "heightCm": 210 }),
+            serde_json::json!({ "weightKg": 50 }),
+            serde_json::json!({ "weightKg": 110 }),
             serde_json::json!({ "condition": 0 }),
             serde_json::json!({ "condition": 100 }),
             serde_json::json!({ "morale": 0 }),

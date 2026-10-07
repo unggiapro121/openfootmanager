@@ -527,6 +527,8 @@
     },
     "footednessLabel": "Kaki",
     "weakFoot": "Kaki Lemah",
+    "height": "Tinggi",
+    "weight": "Berat",
     "playStyles": {
       "Balanced": "Seimbang",
       "Attacking": "Menyerang",

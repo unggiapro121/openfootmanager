@@ -172,6 +172,10 @@ export interface PlayerDef {
   wage?: number | null;
   value?: number | null;
   weakFoot?: number | null;
+  /** Height in cm. Left out, the world draws one from the position. */
+  heightCm?: number | null;
+  /** Weight in kg. Left out, the world draws one from the height. */
+  weightKg?: number | null;
   alternatePositions?: Position[];
   condition?: number | null;
   morale?: number | null;

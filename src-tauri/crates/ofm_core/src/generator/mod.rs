@@ -5,6 +5,7 @@ pub mod definitions;
 pub mod file_format;
 mod generation;
 pub mod package;
+mod physique;
 pub mod scaffold;
 pub mod world_io;
 mod youth;
@@ -1802,7 +1803,9 @@ mod tests {
                 let mut sum = 0f64;
                 for seed in 0..runs {
                     let mut rng = StdRng::seed_from_u64(seed);
-                    let attrs = generation::attributes_for_overall(target, position, &mut rng);
+                    let body = physique::sample_physique(position, None, None, &mut rng);
+                    let attrs =
+                        generation::attributes_for_overall(target, position, &body, &mut rng);
                     sum += crate::player_rating::ovr_from_attributes(&attrs, position);
                 }
                 let mean = sum / runs as f64;

@@ -16,7 +16,7 @@ const chipOffClass =
   "bg-white dark:bg-navy-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-navy-600 hover:bg-gray-50 dark:hover:bg-navy-600";
 
 /**
- * Condition, morale, weak foot and alternate positions.
+ * Condition, morale, weak foot, height, weight and alternate positions.
  *
  * As with the contract, the ranges belong to the backend validator. The one rule
  * the backend applies to alternates that matters here is that a general group
@@ -60,6 +60,18 @@ export function PlayerStatusFields({ editing, updateField }: PlayerStatusFieldsP
           value={editing.weakFoot?.toString() ?? ""}
           type="number"
           onChange={(v) => updateField("weakFoot", parseOptionalWhole(v, WIRE_MAX.u8))}
+        />
+        <LabeledInput
+          label={t("common.height")}
+          value={editing.heightCm?.toString() ?? ""}
+          type="number"
+          onChange={(v) => updateField("heightCm", parseOptionalWhole(v, WIRE_MAX.u16))}
+        />
+        <LabeledInput
+          label={t("common.weight")}
+          value={editing.weightKg?.toString() ?? ""}
+          type="number"
+          onChange={(v) => updateField("weightKg", parseOptionalWhole(v, WIRE_MAX.u8))}
         />
       </div>
       <div role="group" aria-labelledby={alternatesLabelId} className="flex flex-col gap-1.5">

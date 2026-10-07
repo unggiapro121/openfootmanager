@@ -527,6 +527,8 @@
     },
     "footednessLabel": "Foot",
     "weakFoot": "Weak foot",
+    "height": "Height",
+    "weight": "Weight",
     "playStyles": {
       "Balanced": "Balanced",
       "Attacking": "Attacking",
