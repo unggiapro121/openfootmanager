@@ -15,7 +15,7 @@ pub const MIGRATION_COUNT: usize = MIGRATIONS.len();
 /// **Lowering this is almost always wrong.** A save written by a release with N migrations
 /// reports `user_version = N` and expects every column those migrations added; a build with
 /// fewer can neither open it nor recreate it.
-const EXPECTED_MIGRATION_COUNT: usize = 51;
+const EXPECTED_MIGRATION_COUNT: usize = 52;
 
 // Compile-time rather than a test: adding or removing a migration should fail the build, not
 // merely turn a suite red.
@@ -149,6 +149,8 @@ const MIGRATIONS: &[(&str, &str)] = &[
     ("v050_player_match_form.sql", include_str!("sql/v050_player_match_form.sql")),
     // V51: How a club pays against the market rate (the real-world money scale)
     ("v051_team_pay_level.sql", include_str!("sql/v051_team_pay_level.sql")),
+    // V52: A player's height and weight
+    ("v052_player_physique.sql", include_str!("sql/v052_player_physique.sql")),
 ];
 
 /// All migrations for a per-save game database.

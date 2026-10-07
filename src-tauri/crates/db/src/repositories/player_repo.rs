@@ -50,8 +50,8 @@ pub fn upsert_player(conn: &Connection, p: &Player) -> Result<(), String> {
           transfer_listed, loan_listed, transfer_offers, alternate_positions,
           natural_position, training_focus, morale_core, footedness, weak_foot, fitness, squad_role,
           ovr, potential, media_json, jersey_number, loan_offers, active_loan, movement_history,
-          contract_start, playing_time, match_form)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30, ?31, ?32, ?33, ?34, ?35, ?36, ?37, ?38, ?39, ?40, ?41)
+          contract_start, playing_time, match_form, height_cm, weight_kg)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30, ?31, ?32, ?33, ?34, ?35, ?36, ?37, ?38, ?39, ?40, ?41, ?42, ?43)
          ON CONFLICT(id) DO UPDATE SET
            match_name = excluded.match_name,
            full_name = excluded.full_name,
@@ -92,7 +92,9 @@ pub fn upsert_player(conn: &Connection, p: &Player) -> Result<(), String> {
            active_loan = excluded.active_loan,
            movement_history = excluded.movement_history,
            playing_time = excluded.playing_time,
-           match_form = excluded.match_form",
+           match_form = excluded.match_form,
+           height_cm = excluded.height_cm,
+           weight_kg = excluded.weight_kg",
         params![
             p.id,
             p.match_name,
@@ -135,6 +137,8 @@ pub fn upsert_player(conn: &Connection, p: &Player) -> Result<(), String> {
             p.contract_start(),
             p.playing_time,
             p.match_form,
+            p.height_cm,
+            p.weight_kg,
         ],
     )
     .map_err(|error| {
@@ -267,7 +271,7 @@ pub fn load_all_players(conn: &Connection) -> Result<Vec<Player>, String> {
                     ovr, potential, COALESCE(media_json, '{}'), jersey_number,
                     COALESCE(loan_offers, '[]'), active_loan,
                     COALESCE(movement_history, '[]'),
-                    contract_start, playing_time, match_form
+                    contract_start, playing_time, match_form, height_cm, weight_kg
              FROM players",
         )
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -295,7 +299,7 @@ pub fn load_players_by_team(conn: &Connection, team_id: &str) -> Result<Vec<Play
                     ovr, potential, COALESCE(media_json, '{}'), jersey_number,
                     COALESCE(loan_offers, '[]'), active_loan,
                     COALESCE(movement_history, '[]'),
-                    contract_start, playing_time, match_form
+                    contract_start, playing_time, match_form, height_cm, weight_kg
              FROM players WHERE team_id = ?1",
         )
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -350,6 +354,8 @@ fn row_to_player(row: &rusqlite::Row) -> rusqlite::Result<Player> {
     let movement_history_json: String = row.get(37).unwrap_or_else(|_| "[]".to_string());
     let playing_time: u8 = row.get(39)?;
     let match_form: u8 = row.get(40)?;
+    let height_cm: u16 = row.get(41)?;
+    let weight_kg: u8 = row.get(42)?;
     let transfer_listed_int: i32 = row.get(20)?;
     let loan_listed_int: i32 = row.get(21)?;
     let market_value_i64: i64 = row.get(17)?;
@@ -427,6 +433,8 @@ fn row_to_player(row: &rusqlite::Row) -> rusqlite::Result<Player> {
         active_loan: active_loan_json.and_then(|json| serde_json::from_str(&json).ok()),
         morale_core: serde_json::from_str(&morale_core_json).unwrap_or_default(),
         jersey_number,
+        height_cm,
+        weight_kg,
     };
     // The flat contract fields are derived from the ledger, so a save from before
     // the ledger needs its one entry made before anything reads them.
@@ -615,6 +623,8 @@ mod tests {
         player.ovr = 88;
         player.potential = 95;
         player.stage_contract_end(Some("2030-06-30".to_string()));
+        player.height_cm = 191;
+        player.weight_kg = 86;
         upsert_player(db.conn(), &player).unwrap();
 
         let all = load_all_players(db.conn()).unwrap();
@@ -633,6 +643,7 @@ mod tests {
         assert_eq!(stored.ovr, 88);
         assert_eq!(stored.potential, 95);
         assert_eq!(stored.contract_end(), Some("2030-06-30"));
+        assert_eq!((stored.height_cm, stored.weight_kg), (191, 86));
     }
 
     /// A contract has a start as well as an end, and the start must survive a save.
@@ -1535,6 +1546,48 @@ mod tests {
         let loaded = load_all_players(db.conn()).unwrap();
 
         assert_eq!(loaded[0].match_form, 73);
+    }
+
+    /// Given a player 188 cm tall and 82 kg,
+    /// When he is saved and read back,
+    /// Then both measurements are what was saved, not the default.
+    #[test]
+    fn test_player_height_and_weight_roundtrip() {
+        let db = test_db();
+        let mut player = sample_player("p-001", None);
+        player.height_cm = 188;
+        player.weight_kg = 82;
+
+        upsert_player(db.conn(), &player).unwrap();
+        let loaded = load_all_players(db.conn()).unwrap();
+
+        assert_eq!((loaded[0].height_cm, loaded[0].weight_kg), (188, 82));
+    }
+
+    /// Given a save database migrated from before players carried a body,
+    /// When the players table is inspected,
+    /// Then height and weight default to 0 — not known, as an old JSON save reads.
+    #[test]
+    fn test_height_and_weight_columns_default_to_unknown() {
+        let db = test_db();
+        let column_default = |name: &str| -> String {
+            db.conn()
+                .query_row(
+                    "SELECT dflt_value FROM pragma_table_info('players') WHERE name = ?1",
+                    [name],
+                    |row| row.get(0),
+                )
+                .expect("players has the column")
+        };
+
+        assert_eq!(
+            column_default("height_cm"),
+            domain::player::DEFAULT_HEIGHT_CM.to_string()
+        );
+        assert_eq!(
+            column_default("weight_kg"),
+            domain::player::DEFAULT_WEIGHT_KG.to_string()
+        );
     }
 
     /// Given a save database migrated from before match form existed,

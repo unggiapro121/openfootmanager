@@ -111,6 +111,15 @@ pub struct Player {
     /// Jersey/squad number (1–99). None means unassigned.
     #[serde(default)]
     pub jersey_number: Option<u8>,
+
+    /// Height in cm, drawn when the player is generated and fixed for his
+    /// career. `DEFAULT_HEIGHT_CM` (0) means not known.
+    #[serde(default)]
+    pub height_cm: u16,
+    /// Weight in kg, drawn with the height and fixed for his career.
+    /// `DEFAULT_WEIGHT_KG` (0) means not known.
+    #[serde(default)]
+    pub weight_kg: u8,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -367,6 +376,14 @@ pub const DEFAULT_MATCH_FORM: u8 = 60;
 fn default_match_form() -> u8 {
     DEFAULT_MATCH_FORM
 }
+
+/// Not known: a player built outside the generator, or saved before players
+/// carried a body. Everything that reads a height treats 0 as average. The
+/// `db` column default must match.
+pub const DEFAULT_HEIGHT_CM: u16 = 0;
+
+/// Not known, as for the height. The `db` column default must match.
+pub const DEFAULT_WEIGHT_KG: u8 = 0;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Injury {
@@ -871,6 +888,8 @@ impl Player {
             active_loan: None,
             morale_core: PlayerMoraleCore::default(),
             jersey_number: None,
+            height_cm: DEFAULT_HEIGHT_CM,
+            weight_kg: DEFAULT_WEIGHT_KG,
         }
     }
 }
@@ -1027,6 +1046,33 @@ mod tests {
         .expect("a player saved before match form existed should deserialize");
 
         assert_eq!(player.match_form, 60);
+    }
+
+    /// Given a save written before players carried a body,
+    /// When a player from it is loaded,
+    /// Then his height and weight read as not known.
+    #[test]
+    fn a_player_from_an_older_save_has_no_known_height_or_weight() {
+        let player: Player = serde_json::from_value(serde_json::json!({
+            "id": "p-legacy",
+            "match_name": "J. Legacy",
+            "full_name": "John Legacy",
+            "date_of_birth": "2000-01-15",
+            "nationality": "GB",
+            "position": "Midfielder",
+            "attributes": sample_attributes(),
+            "condition": 100,
+            "morale": 100,
+            "injury": null,
+            "team_id": null,
+            "market_value": 0,
+            "stats": {},
+            "career": [],
+        }))
+        .expect("a player saved before height and weight existed should deserialize");
+
+        assert_eq!(player.height_cm, DEFAULT_HEIGHT_CM);
+        assert_eq!(player.weight_kg, DEFAULT_WEIGHT_KG);
     }
 
     /// Given a save written before playing time was tracked,
