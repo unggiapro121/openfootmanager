@@ -44,6 +44,8 @@ vi.mock("react-i18next", () => ({
       if (key === "common.value") return "Value";
       if (key === "common.wage") return "Wage";
       if (key === "common.age") return "Age";
+      if (key === "common.height") return "Height";
+      if (key === "common.weight") return "Weight";
       if (key === "common.viewTeam") return "View team";
       if (key === "common.freeAgent") return "Free Agent";
       if (key === "common.unknown") return "Unknown";
@@ -499,6 +501,34 @@ describe("PlayerProfile contract surfaces", () => {
 
     expect(screen.getByTitle("Forward")).toHaveTextContent("FW");
     expect(screen.getByTitle("Attacking Midfielder")).toHaveTextContent("AM");
+  });
+
+  /**
+   * Given a player with a recorded height and weight, when his profile opens,
+   * then the hero header shows both with their units.
+   */
+  it("shows the player's height and weight in the hero header", () => {
+    const player = createPlayer({ height_cm: 188, weight_kg: 82 });
+    const gameState = createGameState(player);
+
+    render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
+
+    expect(screen.getByText("Height: 188 cm")).toBeInTheDocument();
+    expect(screen.getByText("Weight: 82 kg")).toBeInTheDocument();
+  });
+
+  /**
+   * Given a player from a world made before physique was recorded, when his
+   * profile opens, then height and weight read as unknown instead of zero.
+   */
+  it("shows a dash when the player's height and weight are unknown", () => {
+    const player = createPlayer();
+    const gameState = createGameState(player);
+
+    render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
+
+    expect(screen.getByText("Height: —")).toBeInTheDocument();
+    expect(screen.getByText("Weight: —")).toBeInTheDocument();
   });
 
   /** Given an own-club player, when his attributes are shown, then the header carries his OVR. */

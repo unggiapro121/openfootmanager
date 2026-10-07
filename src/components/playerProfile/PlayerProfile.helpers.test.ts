@@ -6,6 +6,7 @@ import {
   buildPlayerAdvancedStats,
   formatPlayerAnnualWage,
   formatPlayerMarketValue,
+  formatPlayerPhysique,
   formatPlayerWage,
   getAttributeColorClass,
   getPlayerAge,
@@ -287,5 +288,19 @@ describe("PlayerProfile.helpers", (): void => {
     expect(underThresholdSummary.metrics.passes.percentile).toBeNull();
     expect(smallCohortSummary.metrics.shots.percentile).toBeNull();
     expect(smallCohortSummary.metrics.passes.percentile).toBeNull();
+  });
+
+  describe("formatPlayerPhysique", (): void => {
+    it("shows height and weight with the unit in the reader's language", (): void => {
+      expect(formatPlayerPhysique(188, "centimeter", "en")).toBe("188 cm");
+      expect(formatPlayerPhysique(82, "kilogram", "en")).toBe("82 kg");
+      expect(formatPlayerPhysique(188, "centimeter", "ru")).toContain("188");
+      expect(formatPlayerPhysique(188, "centimeter", "ru")).not.toContain("cm");
+    });
+
+    it("reads a missing or zero measurement as unknown, not as zero", (): void => {
+      expect(formatPlayerPhysique(undefined, "centimeter", "en")).toBe("—");
+      expect(formatPlayerPhysique(0, "kilogram", "en")).toBe("—");
+    });
   });
 });

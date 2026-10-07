@@ -276,6 +276,10 @@ export interface PlayerData {
   alternate_positions: string[];
   footedness?: string;
   weak_foot?: number;
+  /** Height in cm, fixed for a career. 0 or absent when unknown. */
+  height_cm?: number;
+  /** Weight in kg, fixed for a career. 0 or absent when unknown. */
+  weight_kg?: number;
   training_focus: string | null;
   attributes: {
     pace: number;

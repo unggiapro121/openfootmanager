@@ -4,7 +4,11 @@ import type { PlayerData } from "../../store/gameStore";
 import ContextMenu from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
 import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
-import { formatPlayerAnnualWage, formatPlayerMarketValue } from "./PlayerProfile.helpers";
+import {
+  formatPlayerAnnualWage,
+  formatPlayerMarketValue,
+  formatPlayerPhysique,
+} from "./PlayerProfile.helpers";
 import type { PlayerProfileScoutStatus, ScoutAvailability } from "./PlayerProfile.scouting";
 import PlayerProfileScoutAction from "./PlayerProfileScoutAction";
 import { TraitList } from "../TraitBadge";
@@ -110,6 +114,14 @@ export default function PlayerProfileHeroCard({
               <span className="text-gray-500">•</span>
               <span className="text-gray-400 text-sm">
                 {t("common.weakFoot")}: {weakFootValue}/5
+              </span>
+              <span className="text-gray-500">•</span>
+              <span className="text-gray-400 text-sm">
+                {t("common.height")}: {formatPlayerPhysique(player.height_cm, "centimeter", language)}
+              </span>
+              <span className="text-gray-500">•</span>
+              <span className="text-gray-400 text-sm">
+                {t("common.weight")}: {formatPlayerPhysique(player.weight_kg, "kilogram", language)}
               </span>
             </div>
             <p className="text-gray-400 text-sm mt-2 flex items-center gap-1.5">
