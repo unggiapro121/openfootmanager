@@ -105,6 +105,7 @@
       "option": "{{count}} stagioni",
       "recommended": "Consigliato"
     },
+    "developmentSpeedHint": "Quanto rapidamente migliorano i giocatori in questa carriera. ×1 è realistico. Non si può cambiare dopo la creazione del mondo.",
     "installedPackages": "Pacchetti installati",
     "installPackage": "Installa pacchetto (.ofm)",
     "noInstalledPackages": "Nessun pacchetto installato",
@@ -1793,7 +1794,7 @@
     "matchSpeedDesc": "Velocità di simulazione predefinita per le partite live",
     "gameEngine": "Motore di gioco",
     "developmentSpeed": "Velocità di crescita dei giocatori",
-    "developmentSpeedDesc": "Quanto rapidamente migliorano i giocatori in questa carriera. 1× è realistico; vale per tutti i club.",
+    "developmentSpeedDesc": "Scelto alla creazione di questa carriera e fissato con il suo mondo. ×1 è realistico; vale per tutti i club.",
     "developmentSpeedNoCareer": "Disponibile solo con una carriera caricata",
     "developmentSpeedRealistic": "Realistico",
     "matchCommentary": "Cronaca partita",

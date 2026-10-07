@@ -105,6 +105,7 @@
       "option": "{{count}} sezón",
       "recommended": "Doporučeno"
     },
+    "developmentSpeedHint": "Jak rychle se hráči v této kariéře zlepšují. ×1 je realistické. Po vytvoření světa už nejde změnit.",
     "installedPackages": "Nainstalované balíčky",
     "installPackage": "Nainstalovat balíček (.ofm)",
     "noInstalledPackages": "Nejsou nainstalovány žádné balíčky",
@@ -1774,7 +1775,7 @@
     "matchSpeedDesc": "Výchozí rychlost simulace pro živé zápasy",
     "gameEngine": "Herní engine",
     "developmentSpeed": "Rychlost vývoje hráčů",
-    "developmentSpeedDesc": "Jak rychle se hráči v této kariéře zlepšují. 1× je realistické; platí pro všechny kluby.",
+    "developmentSpeedDesc": "Zvoleno při vytvoření této kariéry a pevně dané s jejím světem. ×1 je realistické; platí pro všechny kluby.",
     "developmentSpeedNoCareer": "Dostupné jen s načtenou kariérou",
     "developmentSpeedRealistic": "Realistické",
     "matchCommentary": "Zápasový komentář",

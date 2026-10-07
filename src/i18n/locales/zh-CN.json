@@ -105,6 +105,7 @@
       "option": "{{count}} 个赛季",
       "recommended": "推荐"
     },
+    "developmentSpeedHint": "本次生涯中球员提升的快慢。×1 为真实节奏。世界创建后无法更改。",
     "installedPackages": "已安装的包",
     "installPackage": "安装包 (.ofm)",
     "noInstalledPackages": "未安装任何包",
@@ -1774,7 +1775,7 @@
     "matchSpeedDesc": "实时比赛的默认模拟速度",
     "gameEngine": "游戏引擎",
     "developmentSpeed": "球员成长速度",
-    "developmentSpeedDesc": "本次生涯中球员提升的快慢。1× 为真实节奏，适用于所有俱乐部。",
+    "developmentSpeedDesc": "在创建本次生涯时选定，并随世界固定。×1 为真实节奏，适用于所有俱乐部。",
     "developmentSpeedNoCareer": "仅在载入生涯后可用",
     "developmentSpeedRealistic": "真实",
     "matchCommentary": "比赛解说",

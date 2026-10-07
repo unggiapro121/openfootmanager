@@ -105,6 +105,7 @@
       "option": "{{count}} temporadas",
       "recommended": "Recomendado"
     },
+    "developmentSpeedHint": "Rapidez con la que mejoran los jugadores en esta partida. ×1 es realista. No se puede cambiar una vez creado el mundo.",
     "installedPackages": "Paquetes instalados",
     "installPackage": "Instalar paquete (.ofm)",
     "noInstalledPackages": "No hay paquetes instalados",
@@ -1774,7 +1775,7 @@
     "matchSpeedDesc": "Velocidad de simulación por defecto para partidos en vivo",
     "gameEngine": "Motor de juego",
     "developmentSpeed": "Velocidad de desarrollo de los jugadores",
-    "developmentSpeedDesc": "Rapidez con la que mejoran los jugadores en esta partida. 1× es realista; se aplica a todos los clubes.",
+    "developmentSpeedDesc": "Elegido al crear esta partida y fijado con su mundo. ×1 es realista; se aplica a todos los clubes.",
     "developmentSpeedNoCareer": "Solo disponible con una partida cargada",
     "developmentSpeedRealistic": "Realista",
     "matchCommentary": "Comentarios del Partido",

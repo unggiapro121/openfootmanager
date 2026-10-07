@@ -22,6 +22,7 @@ vi.mock("react-i18next", () => ({
 
       return key;
     },
+    i18n: { language: "en" },
   }),
 }));
 
@@ -32,6 +33,13 @@ vi.mock("../ui", () => ({
     ...props
   }: ComponentPropsWithoutRef<"button"> & { iconRight?: unknown }) => (
     <button {...props}>{children}</button>
+  ),
+  Select: ({
+    children,
+    selectSize: _selectSize,
+    ...props
+  }: ComponentPropsWithoutRef<"select"> & { selectSize?: unknown }) => (
+    <select {...props}>{children}</select>
   ),
 }));
 
@@ -45,6 +53,8 @@ const baseProps = {
   startPhase: "midSeason" as const,
   historyDepthYears: 24,
   onChangeHistoryDepthYears: vi.fn(),
+  developmentSpeedPercent: 100,
+  onChangeDevelopmentSpeedPercent: vi.fn(),
   onStart: vi.fn(),
   onBack: vi.fn(),
   onClose: vi.fn(),
@@ -94,5 +104,37 @@ describe("GenerationStep (WorldSelect)", () => {
 
     expect(screen.getByText("generation.coverage")).toBeInTheDocument();
     expect(screen.queryByText("worldSelect.historyDepth.label")).not.toBeInTheDocument();
+  });
+
+  /**
+   * Given a career about to be created, when a faster development speed is
+   * picked, then the choice is reported as a percentage of the realistic pace.
+   */
+  it("lets the development speed be chosen before the world exists", () => {
+    const onChangeDevelopmentSpeedPercent = vi.fn();
+    render(
+      <GenerationStep
+        {...baseProps}
+        onChangeDevelopmentSpeedPercent={onChangeDevelopmentSpeedPercent}
+        activePackages={[]}
+      />,
+    );
+
+    const speed = screen.getByRole("combobox", { name: "settings.developmentSpeed" });
+    expect(speed).toHaveValue("100");
+    expect(
+      screen.getByRole("option", { name: "×1 (settings.developmentSpeedRealistic)" }),
+    ).toBeInTheDocument();
+
+    fireEvent.change(speed, { target: { value: "250" } });
+
+    expect(onChangeDevelopmentSpeedPercent).toHaveBeenCalledWith(250);
+  });
+
+  /** Given a packaged world, then the speed is still offered: it applies to every world. */
+  it("offers the development speed for packaged worlds too", () => {
+    render(<GenerationStep {...baseProps} activePackages={[dbPackage]} />);
+
+    expect(screen.getByRole("combobox", { name: "settings.developmentSpeed" })).toBeInTheDocument();
   });
 });

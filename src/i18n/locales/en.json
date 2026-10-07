@@ -105,6 +105,7 @@
       "option": "{{count}} seasons",
       "recommended": "Recommended"
     },
+    "developmentSpeedHint": "How fast players improve in this career. ×1 is realistic. It cannot be changed once the world is created.",
     "installedPackages": "Installed Packages",
     "installPackage": "Install Package (.ofm)",
     "noInstalledPackages": "No packages installed",
@@ -1774,7 +1775,7 @@
     "matchSpeedDesc": "Default simulation speed for live matches",
     "gameEngine": "Game Engine",
     "developmentSpeed": "Player development speed",
-    "developmentSpeedDesc": "How fast players improve in this career. 1× is realistic; applies to every club.",
+    "developmentSpeedDesc": "Chosen when this career was created and fixed with its world. ×1 is realistic; applies to every club.",
     "developmentSpeedNoCareer": "Only available with a career loaded",
     "developmentSpeedRealistic": "Realistic",
     "matchCommentary": "Match Commentary",

@@ -12,6 +12,7 @@ import type { CareerStartPhase, CreateManagerFormData } from "../components/menu
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
 import type { ManagerProfile } from "../components/menu/types";
 import { applyExtraTranslations } from "../lib/extraTranslations";
+import { REALISTIC_DEVELOPMENT_SPEED_PERCENT } from "../lib/developmentSpeed";
 import { formatAppVersion } from "../lib/appVersion";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
@@ -71,6 +72,7 @@ type StartupOptionsPayload = {
   startYear: number;
   startPhase: CareerStartPhase;
   historyDepthYears: number;
+  developmentSpeedPercent: number;
 };
 
 function defaultCareerStartYear(): string {
@@ -113,6 +115,7 @@ function initialHistoryDepthYears(): number {
 function buildStartupOptions(
   formData: CreateManagerFormData,
   historyDepthYears: number,
+  developmentSpeedPercent: number = REALISTIC_DEVELOPMENT_SPEED_PERCENT,
 ): StartupOptionsPayload | null {
   const startYear = parseCareerStartYear(formData.startYear);
   if (startYear === null || startYear < MIN_CAREER_START_YEAR) {
@@ -130,6 +133,7 @@ function buildStartupOptions(
     startYear,
     startPhase: formData.startPhase,
     historyDepthYears: normalizedHistoryDepthYears,
+    developmentSpeedPercent,
   };
 }
 
@@ -293,6 +297,9 @@ export default function MainMenu() {
   const [isInstallingPackage, setIsInstallingPackage] = useState(false);
   const [packageStackErrors, setPackageStackErrors] = useState<PackageIssue[]>([]);
   const [historyDepthYears, setHistoryDepthYears] = useState(initialHistoryDepthYears);
+  const [developmentSpeedPercent, setDevelopmentSpeedPercent] = useState<number>(
+    REALISTIC_DEVELOPMENT_SPEED_PERCENT,
+  );
 
   useEffect(() => {
     window.localStorage.setItem(GENERATED_HISTORY_DEPTH_STORAGE_KEY, String(historyDepthYears));
@@ -490,7 +497,11 @@ export default function MainMenu() {
   };
 
   const handleStartGame = async () => {
-    const startupOptions = buildStartupOptions(formData, historyDepthYears);
+    const startupOptions = buildStartupOptions(
+      formData,
+      historyDepthYears,
+      developmentSpeedPercent,
+    );
     if (!startupOptions) {
       const validation = validateForm();
       if (validation.ok) {
@@ -840,6 +851,8 @@ export default function MainMenu() {
                 startPhase={formData.startPhase}
                 historyDepthYears={historyDepthYears}
                 onChangeHistoryDepthYears={setHistoryDepthYears}
+                developmentSpeedPercent={developmentSpeedPercent}
+                onChangeDevelopmentSpeedPercent={setDevelopmentSpeedPercent}
                 onStart={handleStartGame}
                 onBack={() => setMenuState("packages")}
                 onClose={() => setMenuState("main")}

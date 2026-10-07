@@ -105,6 +105,7 @@
       "option": "{{count}} sezon",
       "recommended": "Önerilen"
     },
+    "developmentSpeedHint": "Bu kariyerde oyuncuların ne kadar hızlı geliştiği. ×1 gerçekçidir. Dünya oluşturulduktan sonra değiştirilemez.",
     "installedPackages": "Yüklü Paketler",
     "installPackage": "Paket Yükle (.ofm)",
     "noInstalledPackages": "Yüklü paket yok",
@@ -1774,7 +1775,7 @@
     "matchSpeedDesc": "Canlı maçlar için varsayılan simülasyon hızı",
     "gameEngine": "Oyun Motoru",
     "developmentSpeed": "Oyuncu gelişim hızı",
-    "developmentSpeedDesc": "Bu kariyerde oyuncuların ne kadar hızlı geliştiği. 1× gerçekçidir; tüm kulüplere uygulanır.",
+    "developmentSpeedDesc": "Bu kariyer oluşturulurken seçildi ve dünyasıyla birlikte sabitlendi. ×1 gerçekçidir; tüm kulüplere uygulanır.",
     "developmentSpeedNoCareer": "Yalnızca bir kariyer yüklüyken kullanılabilir",
     "developmentSpeedRealistic": "Gerçekçi",
     "matchCommentary": "Maç Anlatımı",

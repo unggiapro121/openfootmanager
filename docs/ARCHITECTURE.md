@@ -219,7 +219,6 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 |---------|-----------|---------|-------------|
 | `get_settings` | — | `AppSettings` | Load settings from disk |
 | `save_settings` | settings | — | Persist settings |
-| `set_development_speed` | percent | `Game` | Set the active career's player development speed (100 = 1× … 500 = 5×, steps of 50). Stored in the save, not in `settings.json` |
 | `clear_all_saves` | — | — | Delete all save files |
 | `export_world_database` | export_path | `String` | Export world to JSON |
 | `collect_diagnostics` | — | `DiagnosticsReport` | App version, platform and webview, for a bug report |

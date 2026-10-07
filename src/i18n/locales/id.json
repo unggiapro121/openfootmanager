@@ -105,6 +105,7 @@
       "option": "{{count}} musim",
       "recommended": "Direkomendasikan"
     },
+    "developmentSpeedHint": "Seberapa cepat pemain berkembang dalam karier ini. ×1 realistis. Tidak bisa diubah setelah dunia dibuat.",
     "installedPackages": "Paket Terpasang",
     "installPackage": "Pasang Paket (.ofm)",
     "noInstalledPackages": "Belum ada paket yang terpasang",
@@ -1774,7 +1775,7 @@
     "matchSpeedDesc": "Kecepatan simulasi bawaan untuk pertandingan langsung",
     "gameEngine": "Mesin Permainan",
     "developmentSpeed": "Kecepatan perkembangan pemain",
-    "developmentSpeedDesc": "Seberapa cepat pemain berkembang dalam karier ini. 1× realistis; berlaku untuk semua klub.",
+    "developmentSpeedDesc": "Dipilih saat karier ini dibuat dan tetap bersama dunianya. ×1 realistis; berlaku untuk semua klub.",
     "developmentSpeedNoCareer": "Hanya tersedia saat karier dimuat",
     "developmentSpeedRealistic": "Realistis",
     "matchCommentary": "Komentar Pertandingan",
