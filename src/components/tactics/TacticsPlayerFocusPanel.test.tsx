@@ -47,4 +47,29 @@ describe("TacticsPlayerFocusPanel", () => {
     expect(screen.getByTitle("Left Midfielder")).toHaveTextContent("LM");
     expect(screen.getByTitle("Defensive Midfielder")).toHaveTextContent("DM");
   });
+
+  /**
+   * Given a selected player with traits, then they sit between his positions and
+   * his age as icons, each named in its tooltip.
+   */
+  it("shows a player's traits as icons between positions and age", () => {
+    const selected = createPlayer({
+      id: "gil",
+      full_name: "David Gil",
+      traits: ["Tireless", "Wonderkid"],
+    });
+
+    render(
+      <TacticsPlayerFocusPanel
+        canConfirmSwap={false}
+        selectedPlayer={selected}
+        comparePlayer={null}
+        onConfirmSwap={vi.fn()}
+      />,
+    );
+
+    const traits = screen.getAllByRole("img", { name: /^traits\.(Tireless|Wonderkid)\.label: / });
+    expect(traits).toHaveLength(2);
+    expect(screen.queryByText("traits.Tireless.label")).toBeNull();
+  });
 });

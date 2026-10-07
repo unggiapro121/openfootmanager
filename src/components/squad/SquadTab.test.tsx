@@ -200,6 +200,21 @@ describe("SquadTab", () => {
     expect(screen.getAllByText(/squad.styleFitValues./).length).toBeGreaterThan(0);
   });
 
+  /**
+   * Given a player with traits, when the roster is shown, then each trait is an
+   * icon alone, named in its tooltip, so the column stays narrow.
+   */
+  it("shows traits in the roster as icons named in their tooltips", () => {
+    const gameState = makeGameState();
+    gameState.players[0] = { ...gameState.players[0], traits: ["Tireless", "Wonderkid"] };
+    renderSquadTab(gameState);
+
+    expect(
+      screen.getAllByRole("img", { name: /^traits\.(Tireless|Wonderkid)\.label: / }),
+    ).toHaveLength(2);
+    expect(screen.queryByText("traits.Tireless.label")).toBeNull();
+  });
+
   it("shows progressive injury details in the roster", () => {
     const gameState = makeGameState();
     gameState.players[0] = makePlayer("gk1", "Goalkeeper", {

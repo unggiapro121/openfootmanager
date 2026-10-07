@@ -5,6 +5,7 @@ import { Eye, GitCompareArrows, X } from "lucide-react";
 import { calcAge, getPlayerOvr } from "../../lib/helpers";
 import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
 import { normalisePosition } from "../squad/SquadTab.helpers";
+import { TraitList } from "../TraitBadge";
 
 const ATTRIBUTE_GROUPS: {
   labelKey: string;
@@ -85,6 +86,12 @@ function PlayerSummary({ label, player }: { label: string; player: PlayerData })
               alternatePositions={player.alternate_positions}
             />
           </div>
+          {/* Traits as icons only, named on hover: the card has no room for their labels. */}
+          {player.traits.length > 0 ? (
+            <div className="mt-2">
+              <TraitList traits={player.traits} iconOnly />
+            </div>
+          ) : null}
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
             <CountryFlag code={player.nationality} className="text-xs leading-none mr-1" />
             {t("common.age")} {calcAge(player.date_of_birth)}
