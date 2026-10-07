@@ -1,3 +1,4 @@
+pub mod career_settings;
 pub mod club;
 pub mod contracts;
 pub mod finances;
@@ -23,6 +24,7 @@ pub mod transfers;
 pub mod util;
 pub mod world;
 
+pub use career_settings::*;
 pub use club::*;
 pub use contracts::*;
 pub use finances::*;

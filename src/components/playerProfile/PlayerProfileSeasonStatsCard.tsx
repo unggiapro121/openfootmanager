@@ -5,18 +5,21 @@ type TranslateFn = (key: string) => string;
 
 interface PlayerProfileSeasonStatsCardProps {
   stats: PlayerSeasonStats;
+  /** Recent form in tenths of a rating point (73 = 7.3), as the backend keeps it. */
+  matchForm: number | undefined;
   t: TranslateFn;
 }
 
 export default function PlayerProfileSeasonStatsCard({
   stats,
+  matchForm,
   t,
 }: PlayerProfileSeasonStatsCardProps) {
   return (
     <Card>
       <CardHeader>{t("playerProfile.seasonStats")}</CardHeader>
       <CardBody>
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+        <div className="grid grid-cols-3 md:grid-cols-9 gap-3">
           <StatBox label={t("playerProfile.apps")} value={stats.appearances} />
           <StatBox label={t("playerProfile.goals")} value={stats.goals} />
           <StatBox label={t("playerProfile.assists")} value={stats.assists} />
@@ -27,6 +30,10 @@ export default function PlayerProfileSeasonStatsCard({
           <StatBox
             label={t("playerProfile.avgRating")}
             value={stats.avg_rating > 0 ? stats.avg_rating.toFixed(1) : "-"}
+          />
+          <StatBox
+            label={t("playerProfile.recentForm")}
+            value={matchForm === undefined ? "-" : (matchForm / 10).toFixed(1)}
           />
         </div>
       </CardBody>

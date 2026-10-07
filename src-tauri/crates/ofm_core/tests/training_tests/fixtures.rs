@@ -175,3 +175,35 @@ pub(crate) fn condition_after(
     training::process_training(&mut game, weekday);
     game.players[0].condition
 }
+
+/// A 19-year-old with low physical attributes and a 99 ceiling: room to grow
+/// for a whole season without touching the 99 cap.
+pub(crate) fn trainee(id: &str, playing_time: u8) -> Player {
+    let mut player = make_player(id, id, "team1", "2006-03-15");
+    player.attributes.pace = 40;
+    player.attributes.stamina = 40;
+    player.attributes.strength = 40;
+    player.attributes.agility = 40;
+    player.potential = 99;
+    player.playing_time = playing_time;
+    player
+}
+
+/// Sum of the four attributes Physical training works on.
+pub(crate) fn physical_total(game: &Game, player_id: &str) -> u32 {
+    let attributes = &game
+        .players
+        .iter()
+        .find(|player| player.id == player_id)
+        .expect("player exists")
+        .attributes;
+    [
+        attributes.pace,
+        attributes.stamina,
+        attributes.strength,
+        attributes.agility,
+    ]
+    .iter()
+    .map(|value| u32::from(*value))
+    .sum()
+}

@@ -326,6 +326,8 @@ export interface PlayerData {
   ovr?: number;
   /** Player's potential ceiling (1–99). Set at generation; higher than ovr for young players. */
   potential?: number;
+  /** Recent match form, in tenths of a rating point (60 = 6.0, an ordinary game). */
+  match_form?: number;
   /** Jersey/squad number (1–99). Null if unassigned. */
   jersey_number?: number | null;
 }
@@ -817,4 +819,6 @@ export interface GameStateData {
   available_staff_market_last_activity_date?: string | null;
   extra_translations?: Record<string, Record<string, unknown>>;
   package_lockfile?: Array<{ id: string; version: string; hash: string }>;
+  /** How fast players develop in this career, as a percentage of the realistic pace (100 = 1×). */
+  development_speed?: number;
 }

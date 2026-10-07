@@ -108,10 +108,76 @@ Rest days provide generous condition recovery (10 base, boosted by physio) with 
 Each training session, for each relevant attribute:
 
 ```
-gain = 0.15 × intensity_mult × age_factor × coaching_mult × specialization_mult
+gain = 0.04 × development_speed × intensity_mult × age_factor × coaching_mult × specialization_mult × playing_time_factor × form_factor
 ```
 
+`0.04` (`BASE_TRAINING_GAIN`) is the realistic pace: a regular starter of 18 at a Balanced,
+Medium-intensity club gains about +3.5 overall a season and reaches his ceiling in his mid-twenties.
+
+`development_speed` is a per-career setting (`Game::development_speed`, Settings › Game Engine):
+1× to 5× in half steps, stored as a percentage (100–500) in the save's `game_meta` row
+(`v049_development_speed.sql`) and set with `set_development_speed`. It applies to every club in the
+world. 1× is the default, including for saves made before the setting existed; the old fixed rate of
+0.15 was roughly 3.5×–4×. It scales training only — the monthly loan development bonus and the
+end-of-season technical growth in `aging.rs` are not multiplied.
+
 The gain is **probabilistic**: a gain of 0.3 means a 30% chance of +1 to that attribute. Attributes are capped at 99.
+A player whose `ovr` has reached his `potential` gains nothing.
+
+### Form Factor
+
+`playing_time` says whether a player is getting games; `match_form` says what he is doing with
+them. Each player carries `match_form`, a moving average of his match ratings in tenths of a point
+(60 = 6.0, an ordinary game — ratings centre on 6.0, see `docs/MATCH_SIMULATION.md`), kept by
+`ofm_core/src/match_form.rs`:
+
+```
+after each match in which the engine rated him (unrated cameos leave it alone):
+    match_form = match_form × 0.8 + rating × 10 × 0.2
+
+form_factor = clamp(1 + 0.15 × (match_form − 60) / 10, 0.9, 1.3)
+```
+
+| Recent form | Factor |
+|-------------|--------|
+| 8.0 and above | 1.3× |
+| 7.0 | 1.15× |
+| 6.0 (ordinary) | 1.0× |
+| 5.5 | 0.925× |
+| 5.3 and below | 0.9× |
+
+A poor run slows development by at most 10%; excellent form speeds it up by at most 30%. It applies
+at every age. New players and older saves start at 60 (`v050_player_match_form.sql`). The player
+profile shows it as "Recent Form".
+
+### Playing Time Factor
+
+Training builds a player; matches finish the job. Each player carries `playing_time` (0–100), his
+recent share of his club's minutes, kept by `ofm_core/src/playing_time.rs`:
+
+```
+after each of his club's matches (every player on the club's books, used or not):
+    playing_time = playing_time × 0.85 + min(minutes / 90, 1) × 100 × 0.15
+
+playing_time_factor = 0.4 + 0.6 × min(playing_time, 80) / 80
+```
+
+| Player | `playing_time` (steady state) | Factor |
+|--------|-------------------------------|--------|
+| Starts and finishes every match | ~100 | 1.0× |
+| Starts, substituted on the hour | ~67 | ~0.9× |
+| Rotated: plays every other match | ~50 | ~0.78× |
+| Comes on for the last 20 minutes | ~22 | ~0.57× |
+| Never plays (bench, academy, injured) | → 0 | 0.4× |
+
+- It is a moving average, so the last seven or so club matches carry about two thirds of it, and it
+  holds its value through the close season.
+- Only matches that run through the engine count — the active competitions, where `apply_match_report`
+  is called. A club in a dormant competition records nothing, so its players keep their value.
+  National-team matches do not count.
+- Extra time counts as a full match, not more.
+- A new player, and a player from a save written before this existed, starts at the neutral 50
+  (factor 0.775). The SQLite column default (`v048_player_playing_time.sql`) matches.
 
 ### Age Factor
 

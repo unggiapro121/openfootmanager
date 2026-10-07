@@ -50,8 +50,8 @@ pub fn upsert_player(conn: &Connection, p: &Player) -> Result<(), String> {
           transfer_listed, loan_listed, transfer_offers, alternate_positions,
           natural_position, training_focus, morale_core, footedness, weak_foot, fitness, squad_role,
           ovr, potential, media_json, jersey_number, loan_offers, active_loan, movement_history,
-          contract_start)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30, ?31, ?32, ?33, ?34, ?35, ?36, ?37, ?38, ?39)
+          contract_start, playing_time, match_form)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29, ?30, ?31, ?32, ?33, ?34, ?35, ?36, ?37, ?38, ?39, ?40, ?41)
          ON CONFLICT(id) DO UPDATE SET
            match_name = excluded.match_name,
            full_name = excluded.full_name,
@@ -90,7 +90,9 @@ pub fn upsert_player(conn: &Connection, p: &Player) -> Result<(), String> {
            jersey_number = excluded.jersey_number,
            loan_offers = excluded.loan_offers,
            active_loan = excluded.active_loan,
-           movement_history = excluded.movement_history",
+           movement_history = excluded.movement_history,
+           playing_time = excluded.playing_time,
+           match_form = excluded.match_form",
         params![
             p.id,
             p.match_name,
@@ -131,6 +133,8 @@ pub fn upsert_player(conn: &Connection, p: &Player) -> Result<(), String> {
             active_loan_json,
             movement_history_json,
             p.contract_start(),
+            p.playing_time,
+            p.match_form,
         ],
     )
     .map_err(|error| {
@@ -263,7 +267,7 @@ pub fn load_all_players(conn: &Connection) -> Result<Vec<Player>, String> {
                     ovr, potential, COALESCE(media_json, '{}'), jersey_number,
                     COALESCE(loan_offers, '[]'), active_loan,
                     COALESCE(movement_history, '[]'),
-                    contract_start
+                    contract_start, playing_time, match_form
              FROM players",
         )
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -291,7 +295,7 @@ pub fn load_players_by_team(conn: &Connection, team_id: &str) -> Result<Vec<Play
                     ovr, potential, COALESCE(media_json, '{}'), jersey_number,
                     COALESCE(loan_offers, '[]'), active_loan,
                     COALESCE(movement_history, '[]'),
-                    contract_start
+                    contract_start, playing_time, match_form
              FROM players WHERE team_id = ?1",
         )
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -344,6 +348,8 @@ fn row_to_player(row: &rusqlite::Row) -> rusqlite::Result<Player> {
     let loan_offers_json: String = row.get(35).unwrap_or_else(|_| "[]".to_string());
     let active_loan_json: Option<String> = row.get(36).unwrap_or(None);
     let movement_history_json: String = row.get(37).unwrap_or_else(|_| "[]".to_string());
+    let playing_time: u8 = row.get(39)?;
+    let match_form: u8 = row.get(40)?;
     let transfer_listed_int: i32 = row.get(20)?;
     let loan_listed_int: i32 = row.get(21)?;
     let market_value_i64: i64 = row.get(17)?;
@@ -393,6 +399,8 @@ fn row_to_player(row: &rusqlite::Row) -> rusqlite::Result<Player> {
         condition: row.get(9)?,
         morale: row.get(10)?,
         fitness,
+        playing_time,
+        match_form,
         injury: injury_json.and_then(|j| serde_json::from_str(&j).ok()),
         team_id: row.get(12)?,
         retired: retired != 0,
@@ -1497,6 +1505,90 @@ mod tests {
         upsert_player(db.conn(), &player).unwrap();
         let loaded = load_all_players(db.conn()).unwrap();
         assert_eq!(loaded[0].fitness, 75);
+    }
+
+    /// Given a player whose playing time is far from the neutral default,
+    /// When he is saved and read back,
+    /// Then his playing time is what was saved, not the default.
+    #[test]
+    fn test_player_playing_time_roundtrip() {
+        let db = test_db();
+        let mut player = sample_player("p-001", None);
+        player.playing_time = 87;
+
+        upsert_player(db.conn(), &player).unwrap();
+        let loaded = load_all_players(db.conn()).unwrap();
+
+        assert_eq!(loaded[0].playing_time, 87);
+    }
+
+    /// Given a player in good form (7.3),
+    /// When he is saved and read back,
+    /// Then his form is what was saved, not the default.
+    #[test]
+    fn test_player_match_form_roundtrip() {
+        let db = test_db();
+        let mut player = sample_player("p-001", None);
+        player.match_form = 73;
+
+        upsert_player(db.conn(), &player).unwrap();
+        let loaded = load_all_players(db.conn()).unwrap();
+
+        assert_eq!(loaded[0].match_form, 73);
+    }
+
+    /// Given a save database migrated from before match form existed,
+    /// When the players table is inspected,
+    /// Then the column defaults to 60 — an ordinary 6.0, as an old JSON save reads.
+    #[test]
+    fn test_match_form_column_defaults_to_ordinary_form() {
+        let db = test_db();
+
+        let default: String = db
+            .conn()
+            .query_row(
+                "SELECT dflt_value FROM pragma_table_info('players') WHERE name = 'match_form'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("players has a match_form column");
+
+        assert_eq!(default, domain::player::DEFAULT_MATCH_FORM.to_string());
+    }
+
+    /// Given a player row written without a playing time, as every row was before
+    /// it was tracked,
+    /// When it is loaded,
+    /// Then it reads as the neutral default, the same as an old JSON save.
+    #[test]
+    fn test_player_row_without_playing_time_loads_as_neutral() {
+        let db = test_db();
+        let player = sample_player("p-old", None);
+        upsert_player(db.conn(), &player).unwrap();
+        db.conn()
+            .execute(
+                "INSERT INTO players (id, match_name, full_name, date_of_birth, nationality,
+                     position, attributes, condition, morale, team_id, traits, contract_end,
+                     wage, market_value, stats, career, transfer_listed, loan_listed,
+                     transfer_offers, alternate_positions, natural_position, morale_core,
+                     footedness, weak_foot)
+                 SELECT 'p-older', match_name, full_name, date_of_birth, nationality,
+                     position, attributes, condition, morale, team_id, traits, contract_end,
+                     wage, market_value, stats, career, transfer_listed, loan_listed,
+                     transfer_offers, alternate_positions, natural_position, morale_core,
+                     footedness, weak_foot
+                 FROM players WHERE id = 'p-old'",
+                [],
+            )
+            .unwrap();
+
+        let loaded = load_all_players(db.conn()).unwrap();
+        let older = loaded
+            .iter()
+            .find(|player| player.id == "p-older")
+            .expect("the row without a playing time loads");
+
+        assert_eq!(older.playing_time, domain::player::DEFAULT_PLAYING_TIME);
     }
 
     #[test]

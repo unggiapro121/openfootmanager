@@ -159,6 +159,7 @@ pub fn apply_match_report_with_capture<F>(
 
     // Update player season stats from the engine report
     apply_player_stats(game, report, home_team_id, away_team_id);
+    record_playing_time_and_form(game, report, home_team_id, away_team_id);
     resolve_post_match_promises(game, report, home_team_id, away_team_id);
 
     // Deplete stamina for players who played, scaled by minutes on pitch
@@ -447,6 +448,31 @@ fn apply_player_stats(
                 }
             }
         }
+    }
+}
+
+/// Every player on either club's books takes this match into his playing time —
+/// the ones who never got on included, since being left out is what it records.
+/// Those the engine rated also take it into their form.
+fn record_playing_time_and_form(
+    game: &mut Game,
+    report: &engine::MatchReport,
+    home_team_id: &str,
+    away_team_id: &str,
+) {
+    for player in game.players.iter_mut() {
+        let Some(team_id) = player.team_id.as_deref() else {
+            continue;
+        };
+        if team_id != home_team_id && team_id != away_team_id {
+            continue;
+        }
+        let (minutes, rating) = report
+            .player_stats
+            .get(&player.id)
+            .map_or((0, 0.0), |stats| (stats.minutes_played, stats.rating));
+        crate::playing_time::record_club_match(player, minutes);
+        crate::match_form::record_rated_match(player, rating);
     }
 }
 

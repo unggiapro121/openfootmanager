@@ -4,6 +4,7 @@ use domain::world_history::WorldHistoryArchive;
 use rusqlite::Connection;
 
 use ofm_core::clock::GameClock;
+use ofm_core::development_speed::DevelopmentSpeed;
 use ofm_core::game::{
     BoardObjective, Game, ObjectiveType, ScoutingAssignment, YouthScoutingAssignment,
     YouthScoutingObjective, YouthScoutingRegion,
@@ -117,6 +118,7 @@ fn write_game_to_connection(
             // Same bits, read back the same way in `read_game`.
             seed: game.seed as i64,
             legacy_world_cup_draw: game.legacy_world_cup_draw,
+            development_speed_percent: game.development_speed.percent(),
             available_staff_market_last_activity_date: game
                 .available_staff_market_last_activity_date
                 .clone(),
@@ -318,6 +320,7 @@ impl GamePersistenceReader {
         let mut game = Game {
             seed: meta.seed as u64,
             legacy_world_cup_draw: meta.legacy_world_cup_draw,
+            development_speed: read_development_speed(meta.development_speed_percent),
             clock,
             manager_id: meta.manager_id.clone(),
             managers,
@@ -386,6 +389,16 @@ impl GamePersistenceReader {
     pub fn read_stats_state(db: &GameDatabase) -> Result<StatsState, String> {
         stats_repo::load_stats_state(db.conn())
     }
+}
+
+/// A stored speed off the scale can only come from a damaged or hand-edited
+/// save. It is a preference, not world state, so it is not worth refusing the
+/// whole career over: the career plays at 1× and the player can pick again.
+fn read_development_speed(percent: u16) -> DevelopmentSpeed {
+    DevelopmentSpeed::from_percent(percent).unwrap_or_else(|| {
+        log::warn!("[load] development speed {percent}% is off the scale; playing at 1x");
+        DevelopmentSpeed::default()
+    })
 }
 
 #[cfg(test)]
@@ -486,6 +499,7 @@ mod tests {
             emitted_events_json: "[]".to_string(),
             seed: 0,
             legacy_world_cup_draw: false,
+            development_speed_percent: 100,
         }
     }
 
@@ -580,6 +594,60 @@ mod tests {
 
             assert_eq!(loaded.legacy_world_cup_draw, legacy);
         }
+    }
+
+    /// Given a career set to develop players at 2.5×,
+    /// When it is saved and loaded,
+    /// Then it still develops them at 2.5×.
+    #[test]
+    fn a_games_development_speed_survives_a_save_and_load() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let mut game = sample_game_with_clock(2026, 1);
+        game.development_speed =
+            ofm_core::development_speed::DevelopmentSpeed::from_percent(250).unwrap();
+        GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+
+        let loaded = GamePersistenceReader::read_game(&db).unwrap();
+
+        assert_eq!(loaded.development_speed.percent(), 250);
+    }
+
+    /// Given a save whose stored development speed is off the scale (hand-edited
+    /// or damaged),
+    /// When it is loaded,
+    /// Then the career still opens, at the realistic 1×.
+    #[test]
+    fn a_stored_development_speed_off_the_scale_loads_at_the_realistic_pace() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let game = sample_game_with_clock(2026, 1);
+        GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+        db.conn()
+            .execute("UPDATE game_meta SET development_speed_percent = 125", [])
+            .unwrap();
+
+        let loaded = GamePersistenceReader::read_game(&db).expect("the career still loads");
+
+        assert_eq!(loaded.development_speed, DevelopmentSpeed::default());
+    }
+
+    /// Given a save database migrated from before development speed existed,
+    /// When its meta row is read without the column ever having been written,
+    /// Then the column holds 100 — the realistic 1×, as an old JSON save reads.
+    #[test]
+    fn a_save_from_before_development_speed_reads_as_the_realistic_pace() {
+        let db = GameDatabase::open_in_memory().unwrap();
+
+        let default: String = db
+            .conn()
+            .query_row(
+                "SELECT dflt_value FROM pragma_table_info('game_meta')
+                 WHERE name = 'development_speed_percent'",
+                [],
+                |row| row.get(0),
+            )
+            .expect("game_meta has a development_speed_percent column");
+
+        assert_eq!(default, "100");
     }
 
     #[test]
