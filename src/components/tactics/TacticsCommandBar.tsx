@@ -3,6 +3,7 @@ import {
   Copy,
   Crosshair,
   Flag,
+  Pencil,
   Plus,
   RefreshCw,
   Save,
@@ -43,8 +44,13 @@ interface TacticsCommandBarProps {
   onPlayStyleChange: (playStyle: string) => void;
   onSave: () => void;
   onSelectTactic: (id: string) => void;
+  /** The name being edited: saved with the tactic when the manager saves. */
+  onTacticNameChange: (name: string) => void;
   tacticLibrary: TacticsLibraryEntry[];
+  tacticName: string;
 }
+
+const MAX_TACTIC_NAME_LENGTH = 40;
 
 const SAVE_CUE_DURATION_MS = 2000;
 
@@ -73,7 +79,9 @@ export default function TacticsCommandBar({
   onPlayStyleChange,
   onSave,
   onSelectTactic,
+  onTacticNameChange,
   tacticLibrary,
+  tacticName,
 }: TacticsCommandBarProps): JSX.Element {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -81,6 +89,17 @@ export default function TacticsCommandBar({
   const [search, setSearch] = useState("");
   const [showSavedCue, setShowSavedCue] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  // The name field takes room the command bar rarely needs, so it only opens to
+  // rename: from a tactic's row in the list, or when a new tactic or a copy is
+  // made, whose generated name is then selected so typing replaces it.
+  const [isEditingName, setIsEditingName] = useState(false);
+  // A rename waiting for its tactic to become the active one: the next custom
+  // tactic after `after` (a new tactic or a copy), or the tactic `on`.
+  const [pendingRename, setPendingRename] = useState<{ after: string } | { on: string } | null>(
+    null,
+  );
+  const renameTarget = useRef<string | null>(null);
   const savedCueTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const filteredLibrary = useMemo(() => {
@@ -139,6 +158,41 @@ export default function TacticsCommandBar({
     };
   }, []);
 
+  useEffect(() => {
+    if (!pendingRename || activeTactic.type !== "custom") {
+      return;
+    }
+    const isTargetActive =
+      "on" in pendingRename
+        ? pendingRename.on === activeTactic.id
+        : pendingRename.after !== activeTactic.id;
+    if (isTargetActive) {
+      setPendingRename(null);
+      setIsEditingName(true);
+    }
+  }, [activeTactic.id, activeTactic.type, pendingRename]);
+
+  useEffect(() => {
+    if (isEditingName) {
+      renameTarget.current = activeTactic.id;
+      nameInputRef.current?.focus();
+      nameInputRef.current?.select();
+    }
+  }, [isEditingName, activeTactic.id]);
+
+  // Picking another tactic closes a rename that was open on the previous one.
+  useEffect(() => {
+    if (renameTarget.current !== null && renameTarget.current !== activeTactic.id) {
+      renameTarget.current = null;
+      setIsEditingName(false);
+    }
+  }, [activeTactic.id]);
+
+  function cancelRename(): void {
+    onTacticNameChange(activeTactic.name);
+    setIsEditingName(false);
+  }
+
   function handleSaveClick(): void {
     onSave();
     setShowSavedCue(true);
@@ -177,10 +231,28 @@ export default function TacticsCommandBar({
             </div>
 
             <div className="flex flex-wrap gap-2 xl:justify-end">
-              <Button type="button" variant="ghost" size="sm" icon={<Plus />} onClick={onCreateNew}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                icon={<Plus />}
+                onClick={() => {
+                  setPendingRename({ after: activeTactic.id });
+                  onCreateNew();
+                }}
+              >
                 {t("tactics.newTactic")}
               </Button>
-              <Button type="button" variant="ghost" size="sm" icon={<Copy />} onClick={onDuplicate}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                icon={<Copy />}
+                onClick={() => {
+                  setPendingRename({ after: activeTactic.id });
+                  onDuplicate();
+                }}
+              >
                 {t("tactics.duplicateTactic")}
               </Button>
               {isActiveSavedCustom ? (
@@ -241,6 +313,35 @@ export default function TacticsCommandBar({
                 </div>
               </button>
 
+              {isEditingName ? (
+                <label className="mt-2 block">
+                  <span className="mb-1 block text-[10px] font-heading font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
+                    {t("tactics.tacticName")}
+                  </span>
+                  <input
+                    ref={nameInputRef}
+                    type="text"
+                    value={tacticName}
+                    maxLength={MAX_TACTIC_NAME_LENGTH}
+                    onChange={(event) => onTacticNameChange(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.preventDefault();
+                        if (!isSaveDisabled) {
+                          handleSaveClick();
+                        }
+                        setIsEditingName(false);
+                      } else if (event.key === "Escape") {
+                        event.preventDefault();
+                        cancelRename();
+                      }
+                    }}
+                    onBlur={() => setIsEditingName(false)}
+                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-900 transition-colors placeholder:text-gray-400 hover:border-primary-300 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-white/10 dark:bg-navy-800/90 dark:text-gray-100 dark:hover:border-primary-400"
+                  />
+                </label>
+              ) : null}
+
               {isOpen ? (
                 <div className="absolute left-0 right-0 top-full z-50 mt-2 rounded-2xl border border-gray-200 bg-white p-2 shadow-2xl dark:border-navy-600 dark:bg-navy-800">
                   <div className="mb-2 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-navy-600 dark:bg-navy-700">
@@ -299,15 +400,35 @@ export default function TacticsCommandBar({
                                   </span>
                                 </div>
                               </button>
-                              <button
-                                type="button"
-                                aria-label={t("tactics.deleteTacticNamed", { name: entry.name })}
-                                title={t("tactics.deleteTactic")}
-                                onClick={() => setPendingDelete(entry)}
-                                className="absolute bottom-2 right-2 rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
-                              >
-                                <Trash2 className="h-4 w-4" aria-hidden="true" />
-                              </button>
+                              <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  aria-label={t("tactics.renameTacticNamed", { name: entry.name })}
+                                  title={t("tactics.renameTactic")}
+                                  onClick={() => {
+                                    if (entry.id === activeTactic.id) {
+                                      setIsEditingName(true);
+                                    } else {
+                                      setPendingRename({ on: entry.id });
+                                      onSelectTactic(entry.id);
+                                    }
+                                    setIsOpen(false);
+                                    setSearch("");
+                                  }}
+                                  className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-primary-500/10 hover:text-primary-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-gray-500 dark:hover:text-primary-300"
+                                >
+                                  <Pencil className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                                <button
+                                  type="button"
+                                  aria-label={t("tactics.deleteTacticNamed", { name: entry.name })}
+                                  title={t("tactics.deleteTactic")}
+                                  onClick={() => setPendingDelete(entry)}
+                                  className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                                >
+                                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>

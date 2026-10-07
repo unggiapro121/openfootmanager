@@ -266,6 +266,8 @@ export function useTacticsLibrary({
     activeTactic,
     tacticLibrary,
     isCommandBarDirty,
+    draftTacticName,
+    setDraftTacticName,
     applyTacticSelection,
     handleCreateCustomTactic,
     handleDuplicateTactic,

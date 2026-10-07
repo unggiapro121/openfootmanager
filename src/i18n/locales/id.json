@@ -735,6 +735,8 @@
     "updateTactic": "Perbarui taktik",
     "tacticSaved": "Tersimpan",
     "tacticName": "Nama taktik",
+    "renameTactic": "Ganti nama taktik",
+    "renameTacticNamed": "Ganti nama {{name}}",
     "identitySummary": "Ringkasan identitas",
     "synced": "Tersinkron",
     "unsavedChanges": "Perubahan belum disimpan",

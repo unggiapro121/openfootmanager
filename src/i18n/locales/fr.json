@@ -783,6 +783,8 @@
     "updateTactic": "Mettre à jour la tactique",
     "tacticSaved": "Enregistré",
     "tacticName": "Nom de la tactique",
+    "renameTactic": "Renommer la tactique",
+    "renameTacticNamed": "Renommer {{name}}",
     "identitySummary": "Résumé d'identité",
     "synced": "Synchronisé",
     "unsavedChanges": "Modifications non enregistrées",

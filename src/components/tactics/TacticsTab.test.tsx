@@ -4,8 +4,10 @@ import { invoke } from "@tauri-apps/api/core";
 import type { GameStateData, PlayerData, TeamData } from "../../store/gameStore";
 import TacticsTab from "./TacticsTab";
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
+vi.mock("react-i18next", () => {
+  // One `t` for every render, as react-i18next gives: effects that list `t` as a
+  // dependency must not re-run on each render just because the mock made a new one.
+  const translation = {
     t: (key: string, fallback?: string | Record<string, unknown>) => {
       if (key === "playerProfile.daysRemaining") {
         return `${String((fallback as Record<string, unknown> | undefined)?.count ?? "")} days remaining`;
@@ -19,8 +21,9 @@ vi.mock("react-i18next", () => ({
       return typeof fallback === "string" ? fallback : key;
     },
     i18n: { language: "en" },
-  }),
-}));
+  };
+  return { useTranslation: () => translation };
+});
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
@@ -280,6 +283,34 @@ describe("TacticsTab", () => {
     });
     expect(screen.queryByRole("button", { name: "tactics.deleteTactic" })).not.toBeInTheDocument();
     expect(mockedInvoke).not.toHaveBeenCalledWith("set_formation", expect.anything());
+  });
+
+  /**
+   * Given a manager who creates a new tactic, when he types a name of his own
+   * over the generated one and saves, then the tactic is stored under his name.
+   */
+  it("lets a new tactic be renamed and saves the name", async () => {
+    render(
+      <TacticsTab gameState={makeGameState()} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.newTactic" }));
+    const nameInput = screen.getByRole("textbox", { name: "tactics.tacticName" });
+    await waitFor(() => expect(nameInput).toHaveFocus());
+
+    fireEvent.change(nameInput, { target: { value: "Pressing 4-3-3" } });
+    fireEvent.click(screen.getByRole("button", { name: "tactics.updateTactic" }));
+
+    await waitFor(() => {
+      const names = Object.keys(localStorage)
+        .filter((key) => key.startsWith("ofm:tactics:custom"))
+        .flatMap((key) =>
+          (JSON.parse(localStorage.getItem(key) ?? "[]") as { name: string }[]).map(
+            (entry) => entry.name,
+          ),
+        );
+      expect(names).toEqual(["Pressing 4-3-3"]);
+    });
   });
 
   it("renders the top tactical controls plus bench player in the left panel", () => {

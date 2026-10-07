@@ -735,6 +735,8 @@
     "updateTactic": "Aktualizovat taktiku",
     "tacticSaved": "Uloženo",
     "tacticName": "Název taktiky",
+    "renameTactic": "Přejmenovat taktiku",
+    "renameTacticNamed": "Přejmenovat {{name}}",
     "identitySummary": "Shrnutí identity",
     "synced": "Synchronizováno",
     "unsavedChanges": "Neuložené změny",

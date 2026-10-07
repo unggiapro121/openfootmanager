@@ -735,6 +735,8 @@
     "updateTactic": "Update tactic",
     "tacticSaved": "Saved",
     "tacticName": "Tactic name",
+    "renameTactic": "Rename tactic",
+    "renameTacticNamed": "Rename {{name}}",
     "identitySummary": "Identity summary",
     "synced": "Synced",
     "unsavedChanges": "Unsaved changes",
