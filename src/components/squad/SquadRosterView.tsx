@@ -11,12 +11,14 @@ import {
   MoreVertical,
   Repeat,
   RotateCcw,
+  Shirt,
   TimerOff,
   Trash2,
   Users,
 } from "lucide-react";
 import { TraitList } from "../TraitBadge";
 import { SquadSortHeader } from "./SquadSortHeader";
+import JerseyNumberPickerModal from "./JerseyNumberPickerModal";
 import {
   calcAge,
   getPlayerOvr,
@@ -111,6 +113,7 @@ export default function SquadRosterView({
   const [contractActionError, setContractActionError] = useState<string | null>(null);
   const menuRefs = useRef<Map<string, ContextMenuHandle>>(new Map());
   const [openMenuPlayerId, setOpenMenuPlayerId] = useState<string | null>(null);
+  const [jerseyPickerPlayerId, setJerseyPickerPlayerId] = useState<string | null>(null);
 
   const roster = players
     .filter((player) => isSeniorSquadPlayer(player))
@@ -121,6 +124,9 @@ export default function SquadRosterView({
     );
 
   const playersById = useMemo(() => new Map(roster.map((player) => [player.id, player])), [roster]);
+  const jerseyPickerPlayer = jerseyPickerPlayerId
+    ? playersById.get(jerseyPickerPlayerId)
+    : undefined;
 
   const available = roster.filter((player) => !player.injury);
   const formation = team.formation || "4-4-2";
@@ -698,6 +704,11 @@ export default function SquadRosterView({
                           void updateSquadPlanning(player.id, "promote");
                         },
                       },
+                  {
+                    label: t("squad.jerseyPickerAction"),
+                    icon: <Shirt className="w-4 h-4" />,
+                    onClick: () => setJerseyPickerPlayerId(player.id),
+                  },
                   buildDividerMenuItem(),
                   {
                     label: t("common.renewContract"),
@@ -968,6 +979,15 @@ export default function SquadRosterView({
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
           {contractActionError}
         </div>
+      ) : null}
+
+      {jerseyPickerPlayer ? (
+        <JerseyNumberPickerModal
+          player={jerseyPickerPlayer}
+          squad={players}
+          onClose={() => setJerseyPickerPlayerId(null)}
+          onAssigned={(updated) => onMutationComplete?.(updated)}
+        />
       ) : null}
     </div>
   );

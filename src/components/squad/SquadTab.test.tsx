@@ -294,6 +294,35 @@ describe("SquadTab", () => {
     });
   });
 
+  /**
+   * Given the squad page, when "change shirt number" is chosen from a player's menu
+   * and a free number picked, then the number is assigned and the game updated.
+   */
+  it("changes a shirt number from the roster context menu", async () => {
+    const gameState = makeGameState();
+    const onGameUpdate = vi.fn();
+    renderSquadTab(gameState, { onGameUpdate });
+    mockedInvoke.mockResolvedValue(gameState);
+
+    const playerRow = screen.getByText("GK1").closest("tr");
+    expect(playerRow).not.toBeNull();
+    fireEvent.contextMenu(playerRow as HTMLTableRowElement);
+    fireEvent.click(screen.getByRole("menuitem", { name: "squad.jerseyPickerAction" }));
+
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "#42" }));
+
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith("assign_jersey_number", {
+        playerId: "gk1",
+        jerseyNumber: 42,
+        swapWithHolder: false,
+      });
+      expect(onGameUpdate).toHaveBeenCalledWith(gameState);
+    });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("offers contract actions from the roster context menu", async () => {
     const gameState = makeGameState();
     const onGameUpdate = vi.fn();
