@@ -354,12 +354,46 @@ pub fn apply_match_command(
     command: engine::MatchCommand,
 ) -> Result<engine::MatchSnapshot, String> {
     info!("[cmd] apply_match_command: {:?}", command);
-    let snapshot = state
+    let position_swap = match &command {
+        engine::MatchCommand::PreMatchSwapPositions {
+            side,
+            player_a_id,
+            player_b_id,
+        } => Some((*side, player_a_id.clone(), player_b_id.clone())),
+        _ => None,
+    };
+    let mut snapshot = state
         .with_live_match(|session| {
             session.apply_command(command)?;
             Ok::<engine::MatchSnapshot, String>(session.snapshot())
         })
         .ok_or_else(|| "be.error.noActiveLiveMatch".to_string())??;
+
+    // Two starters who traded slots each take the role that suits them in the
+    // new one. Read the game and write the match one after the other, never
+    // holding both locks at once.
+    if let Some((side, player_a_id, player_b_id)) = position_swap {
+        let role_commands = state
+            .get_game(|game| {
+                live_match_manager::pre_match_position_swap_roles(
+                    game,
+                    &snapshot,
+                    side,
+                    [&player_a_id, &player_b_id],
+                )
+            })
+            .unwrap_or_default();
+        if !role_commands.is_empty() {
+            snapshot = state
+                .with_live_match(|session| {
+                    for role_command in role_commands {
+                        session.apply_command(role_command)?;
+                    }
+                    Ok::<engine::MatchSnapshot, String>(session.snapshot())
+                })
+                .ok_or_else(|| "be.error.noActiveLiveMatch".to_string())??;
+        }
+    }
 
     info!(
         "[cmd] apply_match_command: snapshot phase={:?}, minute={}, home_players={}, away_players={}",

@@ -466,9 +466,9 @@ pub(crate) fn build_renewal_feedback(
     } else {
         0
     };
-    let value_pressure = if player.market_value >= 2_000_000 {
+    let value_pressure = if player.market_value >= crate::economy::valuation::STAR_VALUE {
         12
-    } else if player.market_value >= 750_000 {
+    } else if player.market_value >= crate::economy::valuation::NOTABLE_VALUE {
         6
     } else {
         0

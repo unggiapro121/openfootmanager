@@ -15,7 +15,7 @@ fn make_team(id: &str, name: &str) -> Team {
         "Stadium".to_string(),
         40_000,
     );
-    team.finance = 2_000_000;
+    team.finance = 20_000_000;
     team
 }
 
@@ -36,6 +36,9 @@ fn make_game() -> Game {
     Game::new(clock, manager, vec![team1], vec![], vec![], vec![])
 }
 
+/// Given a club with €20M and its medical facility at level 1,
+/// When it upgrades the facility,
+/// Then €2.5M is booked out of its cash and the facility reaches level 2.
 #[test]
 fn upgrade_facility_deducts_funds_and_increments_level() {
     let mut game = make_game();
@@ -43,7 +46,7 @@ fn upgrade_facility_deducts_funds_and_increments_level() {
 
     let cost = club::upgrade_facility(&mut game, "team1", FacilityType::Medical).unwrap();
 
-    assert_eq!(cost, 250_000);
+    assert_eq!(cost, 2_500_000);
     assert_eq!(game.teams[0].finance, initial_finance - cost);
     assert_eq!(game.teams[0].facilities.medical, 2);
     assert_eq!(game.cash_journal.cash_for("team1"), game.teams[0].finance);
@@ -54,10 +57,13 @@ fn upgrade_facility_deducts_funds_and_increments_level() {
     );
 }
 
+/// Given a club with €1M and its training facility at level 1,
+/// When it tries to upgrade the facility, which costs €2.5M,
+/// Then the upgrade is refused with the cost and nothing changes.
 #[test]
 fn upgrade_facility_rejects_when_funds_are_insufficient() {
     let mut game = make_game();
-    game.teams[0].finance = 100_000;
+    game.teams[0].finance = 1_000_000;
     game.teams[0].facilities = Facilities {
         training: 1,
         medical: 1,
@@ -68,8 +74,8 @@ fn upgrade_facility_rejects_when_funds_are_insufficient() {
 
     assert_eq!(
         result.unwrap_err(),
-        "be.error.finance.facilityUpgradeInsufficientFunds?amount=250000"
+        "be.error.finance.facilityUpgradeInsufficientFunds?amount=2500000"
     );
-    assert_eq!(game.teams[0].finance, 100_000);
+    assert_eq!(game.teams[0].finance, 1_000_000);
     assert_eq!(game.teams[0].facilities.training, 1);
 }

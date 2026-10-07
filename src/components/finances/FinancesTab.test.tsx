@@ -354,15 +354,16 @@ describe("FinancesTab facilities", () => {
   });
 
   it("invokes facility upgrade and publishes the updated game state", async () => {
-    const initialState = createGameState();
+    // Enough for a level-one upgrade at €2.5M, with the rest left over.
+    const initialState = createGameState({ finance: 9_000_000 });
     const updatedState = createGameState({
-      finance: 650000,
+      finance: 6_500_000,
       facilities: {
         training: 2,
         medical: 2,
         scouting: 3,
       },
-      season_expenses: 750000,
+      season_expenses: 3_000_000,
     });
     const onGameUpdate = vi.fn();
     mockedInvoke.mockImplementation((command) => {
@@ -484,6 +485,8 @@ describe("FinancesTab facilities", () => {
             weekly_wage_budget: 962,
             weekly_recurring_income: 0,
             weekly_sponsor_income: 0,
+            weekly_broadcast_income: 0,
+            weekly_commercial_income: 0,
             projected_weekly_net: -100000,
             cash_runway_weeks: 9,
             wage_budget_usage_percent: 10400,
@@ -546,6 +549,8 @@ describe("FinancesTab facilities", () => {
             weekly_wage_budget: 962,
             weekly_recurring_income: 0,
             weekly_sponsor_income: 0,
+            weekly_broadcast_income: 0,
+            weekly_commercial_income: 0,
             projected_weekly_net: -100000,
             cash_runway_weeks: 3,
             wage_budget_usage_percent: 10400,
@@ -609,6 +614,8 @@ describe("FinancesTab facilities", () => {
             weekly_wage_budget: 962,
             weekly_recurring_income: 0,
             weekly_sponsor_income: 0,
+            weekly_broadcast_income: 0,
+            weekly_commercial_income: 0,
             projected_weekly_net: -100000,
             cash_runway_weeks: 3,
             wage_budget_usage_percent: 10400,
@@ -679,6 +686,8 @@ describe("FinancesTab facilities", () => {
             weekly_wage_budget: 962,
             weekly_recurring_income: 0,
             weekly_sponsor_income: 0,
+            weekly_broadcast_income: 0,
+            weekly_commercial_income: 0,
             projected_weekly_net: -100000,
             cash_runway_weeks: 3,
             wage_budget_usage_percent: 10400,
@@ -716,6 +725,8 @@ describe("FinancesTab facilities", () => {
             weekly_wage_budget: 38461,
             weekly_recurring_income: 0,
             weekly_sponsor_income: 0,
+            weekly_broadcast_income: 0,
+            weekly_commercial_income: 0,
             projected_weekly_net: -1700,
             cash_runway_weeks: 8,
             wage_budget_usage_percent: 4,

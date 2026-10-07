@@ -86,6 +86,18 @@ export function formatVal(value: number): string {
   const { currency, language } = getFormattingSettings();
   const absoluteValue = convertCurrencyValue(Math.abs(value), currency.exchange_rate);
 
+  // A big club's cash runs into the billions on the real-world money scale.
+  if (absoluteValue >= 1_000_000_000) {
+    return `${prefixCurrency(
+      (absoluteValue / 1_000_000_000).toLocaleString(language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+      value,
+      currency.code,
+    )}B`;
+  }
+
   if (absoluteValue >= 1_000_000) {
     return `${prefixCurrency(
       (absoluteValue / 1_000_000).toLocaleString(language, {

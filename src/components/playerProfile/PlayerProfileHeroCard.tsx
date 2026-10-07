@@ -1,15 +1,14 @@
 import { Shield } from "lucide-react";
 import { countryName } from "../../lib/countries";
-import { positionBadgeVariant } from "../../lib/helpers";
 import type { PlayerData } from "../../store/gameStore";
 import ContextMenu from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
-import { translatePositionLabel } from "../squad/SquadTab.helpers";
+import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
 import { formatPlayerAnnualWage, formatPlayerMarketValue } from "./PlayerProfile.helpers";
 import type { PlayerProfileScoutStatus, ScoutAvailability } from "./PlayerProfile.scouting";
 import PlayerProfileScoutAction from "./PlayerProfileScoutAction";
 import { TraitList } from "../TraitBadge";
-import { Badge, Card, CountryFlag, JerseyIcon, PlayerAvatar } from "../ui";
+import { Card, CountryFlag, JerseyIcon, PlayerAvatar } from "../ui";
 import type { TeamData } from "../../store/types";
 
 type TranslateFn = (key: string, options?: Record<string, string | number>) => string;
@@ -87,15 +86,11 @@ export default function PlayerProfileHeroCard({
             <h2 className="text-3xl font-heading font-bold text-white uppercase tracking-wide">
               {player.full_name}
             </h2>
-            <div className="flex items-center gap-3 mt-2">
-              <Badge variant={positionBadgeVariant(primaryPosition)}>
-                {translatePositionLabel(t, primaryPosition)}
-              </Badge>
-              {player.alternate_positions?.map((alternatePosition) => (
-                <Badge key={alternatePosition} variant="neutral">
-                  {translatePositionLabel(t, alternatePosition)}
-                </Badge>
-              ))}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+              <PlayerPositionBadges
+                primaryPosition={primaryPosition}
+                alternatePositions={player.alternate_positions}
+              />
               <span className="text-gray-400 text-sm">
                 <CountryFlag
                   code={player.nationality}

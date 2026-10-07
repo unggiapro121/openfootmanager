@@ -79,6 +79,12 @@ pub enum MatchCommand {
         player_off_id: String,
         player_on_id: String,
     },
+    /// Two starters trade formation slots before kick-off.
+    PreMatchSwapPositions {
+        side: Side,
+        player_a_id: String,
+        player_b_id: String,
+    },
     ChangePlayerRole {
         side: Side,
         player_id: String,
@@ -371,6 +377,16 @@ impl LiveMatchState {
                     return Err("be.error.liveMatch.preMatchSwapTooLate".into());
                 }
                 self.do_pre_match_swap(side, &player_off_id, &player_on_id)
+            }
+            MatchCommand::PreMatchSwapPositions {
+                side,
+                player_a_id,
+                player_b_id,
+            } => {
+                if self.phase != MatchPhase::PreKickOff {
+                    return Err("be.error.liveMatch.preMatchSwapTooLate".into());
+                }
+                self.do_pre_match_position_swap(side, &player_a_id, &player_b_id)
             }
             MatchCommand::ChangeTacticalDial { side, dial } => {
                 dial.set_on(&mut self.team_mut(side).tactics);

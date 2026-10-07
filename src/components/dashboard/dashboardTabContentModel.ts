@@ -1,5 +1,7 @@
 import type { GameStateData, PlayerSelectionOptions } from "../../store/gameStore";
+import type { Dispatch, SetStateAction } from "react";
 import type { SquadListSortState } from "../squad/SquadRosterView.state";
+import type { TransferMarketFilters } from "../transfers/TransfersTab.filters";
 import type { DashboardNavigateContext } from "./dashboardProfileNavigation";
 
 export interface DashboardTabContentHandlers {
@@ -8,6 +10,7 @@ export interface DashboardTabContentHandlers {
   onGameUpdate: (state: GameStateData) => void;
   onNavigate: (tab: string, context?: DashboardNavigateContext) => void;
   onSquadListSortChange?: (sortState: SquadListSortState) => void;
+  onTransferMarketFiltersChange?: Dispatch<SetStateAction<TransferMarketFilters>>;
 }
 
 export interface DashboardTabContentModel {
@@ -16,6 +19,7 @@ export interface DashboardTabContentModel {
   seasonComplete: boolean;
   visitedOnboardingTabs: ReadonlySet<string>;
   squadListSortState: SquadListSortState;
+  transferMarketFilters?: TransferMarketFilters;
   initialMessageId: string | null;
   managerId: string;
   handlers: DashboardTabContentHandlers;
@@ -27,6 +31,7 @@ interface CreateDashboardTabContentModelArgs {
   seasonComplete: boolean;
   visitedOnboardingTabs: ReadonlySet<string>;
   squadListSortState?: SquadListSortState;
+  transferMarketFilters?: TransferMarketFilters;
   initialMessageId: string | null;
   handlers: DashboardTabContentHandlers;
 }
@@ -43,6 +48,7 @@ export function createDashboardTabContentModel(
       sortKey: "pos",
       sortDir: "asc",
     },
+    transferMarketFilters: args.transferMarketFilters,
     initialMessageId: args.initialMessageId,
     managerId: args.gameState.manager.id,
     handlers: args.handlers,

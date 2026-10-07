@@ -3,8 +3,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import type { InvokeArgs } from "@tauri-apps/api/core";
 
+import { useState } from "react";
+
 import type { GameStateData, PlayerData, StaffData, TeamData } from "../../store/gameStore";
 import TransfersTab from "./TransfersTab";
+import {
+  DEFAULT_TRANSFER_MARKET_FILTERS,
+  type TransferMarketFilters,
+} from "./TransfersTab.filters";
 
 /**
  * The fields these mocks read out of an invoke payload. Tauri's IPC boundary is untyped by
@@ -975,6 +981,55 @@ describe("TransfersTab", (): void => {
       expect(screen.getByText("Projected financial impact")).toBeInTheDocument();
       expect(screen.getByLabelText("Offered Wage")).toBeInTheDocument();
     });
+  });
+
+  /**
+   * Given the market narrowed to free agents, when the tab is left for a player's
+   * profile and comes back, then the free-agent filter is still applied.
+   */
+  it("keeps market filters held by the caller across a remount", (): void => {
+    const state = createGameState([
+      createPlayer({
+        id: "listed",
+        full_name: "Listed Player",
+        team_id: "team-2",
+        transfer_listed: true,
+        transfer_offers: [],
+      }),
+      createPlayer({
+        id: "free-agent",
+        full_name: "Free Agent Player",
+        team_id: null,
+        contract_end: null,
+        transfer_offers: [],
+      }),
+    ]);
+
+    function Host({ showTab }: { showTab: boolean }) {
+      const [filters, setFilters] = useState<TransferMarketFilters>(
+        DEFAULT_TRANSFER_MARKET_FILTERS,
+      );
+      return showTab ? (
+        <TransfersTab
+          gameState={state}
+          onSelectPlayer={vi.fn()}
+          onSelectTeam={vi.fn()}
+          marketFilters={filters}
+          onMarketFiltersChange={setFilters}
+        />
+      ) : null;
+    }
+
+    const { rerender } = render(<Host showTab />);
+    expect(screen.getByText("Listed Player")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /free agent \(1\)/i }));
+    expect(screen.queryByText("Listed Player")).not.toBeInTheDocument();
+
+    rerender(<Host showTab={false} />);
+    rerender(<Host showTab />);
+
+    expect(screen.getByText("Free Agent Player")).toBeInTheDocument();
+    expect(screen.queryByText("Listed Player")).not.toBeInTheDocument();
   });
 
   it("submits a loan offer from the player market", async (): Promise<void> => {

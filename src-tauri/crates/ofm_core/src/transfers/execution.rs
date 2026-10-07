@@ -6,12 +6,20 @@
 
 use super::*;
 
+/// Fees are quoted the way clubs quote them: in 50k steps under a million,
+/// 100k under ten million, 500k under a hundred million, then whole millions.
 pub(super) fn round_transfer_fee(value: u64) -> u64 {
     if value == 0 {
         return 0;
     }
 
-    value.div_ceil(50_000) * 50_000
+    let step = match value {
+        ..1_000_000 => 50_000,
+        1_000_000..10_000_000 => 100_000,
+        10_000_000..100_000_000 => 500_000,
+        _ => 1_000_000,
+    };
+    value.div_ceil(step) * step
 }
 
 pub(super) fn build_transfer_feedback(
@@ -544,7 +552,9 @@ pub(super) fn should_generate_major_transfer_news(
     player: &domain::player::Player,
     fee: u64,
 ) -> bool {
-    fee >= 1_000_000 || player.market_value >= 1_000_000
+    // Twenty million is where a fee makes the back pages in real football.
+    const MAJOR_TRANSFER_FEE: u64 = 20_000_000;
+    fee >= MAJOR_TRANSFER_FEE || player.market_value >= MAJOR_TRANSFER_FEE
 }
 pub fn process_pending_transfer_registrations(game: &mut Game) {
     if !transfer_window_is_open(game) {

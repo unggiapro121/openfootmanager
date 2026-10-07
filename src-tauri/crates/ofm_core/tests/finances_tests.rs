@@ -28,7 +28,30 @@ fn make_team(id: &str, name: &str) -> Team {
     );
     t.finance = 5_000_000;
     t.wage_budget = 2_000_000;
+    // No standing, so its broadcast and commercial income is the base share every
+    // professional club gets, and the wage tests below can count it exactly.
+    t.reputation = 0;
     t
+}
+
+/// What the club is paid each Monday from television and commercial deals.
+fn central_income(team: &Team) -> i64 {
+    ofm_core::economy::revenue::weekly_broadcast_income(team.reputation)
+        + ofm_core::economy::revenue::weekly_commercial_income(team.reputation)
+}
+
+/// A Monday game whose club spends more on wages than its central income brings
+/// in, so its cash runs down week on week.
+fn make_loss_making_monday_game() -> Game {
+    let mut game = make_monday_game();
+    game.players
+        .push(make_player("p-expensive", "team1", 40_000));
+    game
+}
+
+/// The loss-making club's weekly loss: wages less central income.
+fn weekly_loss(game: &Game) -> i64 {
+    finances::calc_wages(game, "team1") - central_income(&game.teams[0])
 }
 
 fn make_player(id: &str, team_id: &str, wage: u32) -> Player {
@@ -144,9 +167,14 @@ fn team_finance_snapshot_uses_canonical_backend_values() {
     assert_eq!(snapshot.annual_wage_bill, 1_700);
     assert_eq!(snapshot.weekly_wage_spend, 1_700);
     assert_eq!(snapshot.weekly_wage_budget, 2_000_000);
+    let central = central_income(&game.teams[0]);
     assert_eq!(snapshot.weekly_sponsor_income, 2_000);
-    assert_eq!(snapshot.weekly_recurring_income, 2_000);
-    assert_eq!(snapshot.projected_weekly_net, 300);
+    assert_eq!(
+        snapshot.weekly_broadcast_income + snapshot.weekly_commercial_income,
+        central
+    );
+    assert_eq!(snapshot.weekly_recurring_income, 2_000 + central);
+    assert_eq!(snapshot.projected_weekly_net, 2_000 + central - 1_700);
     assert_eq!(snapshot.cash_runway_weeks, None);
     assert_eq!(snapshot.wage_budget_usage_percent, 0);
     assert!(!snapshot.currently_in_debt);
@@ -174,12 +202,13 @@ fn team_finance_snapshot_flags_wage_pressure() {
 
 #[test]
 fn team_finance_snapshot_flags_runway_crisis() {
-    let mut game = make_monday_game();
-    game.teams[0].finance = 3_400;
+    let mut game = make_loss_making_monday_game();
+    let loss = weekly_loss(&game);
+    game.teams[0].finance = loss * 2;
 
     let snapshot = finances::team_finance_snapshot(&game, "team1").expect("snapshot");
 
-    assert_eq!(snapshot.projected_weekly_net, -1_700);
+    assert_eq!(snapshot.projected_weekly_net, -loss);
     assert_eq!(snapshot.cash_runway_weeks, Some(2));
     assert_eq!(
         snapshot.runway_status,
@@ -213,19 +242,19 @@ fn team_finance_snapshot_treats_negative_balance_as_critical() {
 fn request_board_support_recovers_cash_crisis_and_applies_board_costs() {
     let mut game = make_monday_game();
     game.teams[0].finance = -25_000;
-    game.teams[0].transfer_budget = 300_000;
+    game.teams[0].transfer_budget = 3_000_000;
     game.manager.satisfaction = 70;
 
     let result = finances::request_board_support(&mut game, "team1").expect("support");
 
-    assert!(result.support_amount >= 150_000);
+    assert!(result.support_amount >= 1_500_000);
     assert_eq!(result.transfer_budget_reduction, result.support_amount / 2);
     assert_eq!(result.satisfaction_penalty, 12);
     assert_eq!(game.manager.satisfaction, 58);
     assert_eq!(game.teams[0].season_income, result.support_amount);
     assert_eq!(
         game.teams[0].transfer_budget,
-        300_000 - result.transfer_budget_reduction
+        3_000_000 - result.transfer_budget_reduction
     );
     assert_eq!(
         game.teams[0].financial_ledger.last().expect("ledger").kind,
@@ -265,8 +294,9 @@ fn finance_action_previews_are_available_without_mutating_state() {
 
 #[test]
 fn request_board_support_can_recover_runway_without_random_events() {
-    let mut game = make_monday_game();
-    game.teams[0].finance = 13_600;
+    let mut game = make_loss_making_monday_game();
+    // Six weeks of runway: a warning, which is what opens the board's door.
+    game.teams[0].finance = weekly_loss(&game) * 6;
 
     let preview = finances::preview_board_support(&game, "team1").expect("preview");
     let result = finances::request_board_support(&mut game, "team1").expect("support");
@@ -444,11 +474,19 @@ fn team_finance_snapshot_reports_marketing_campaign_cooldown() {
     assert_eq!(snapshot.marketing_campaign_cooldown_days_remaining, 14);
 }
 
+/// Given a club whose following outgrows its ground,
+/// When two home gates are taken,
+/// Then each is a full house at the club's ticket price.
 #[test]
-fn calc_matchday_uses_explicit_attendance_and_ticket_inputs() {
-    let revenue = finances::calc_matchday(40_000, 2, 0.75, 20.0);
+fn calc_matchday_fills_the_ground_for_two_home_games() {
+    let mut team = make_team("team1", "Big Club");
+    team.reputation = 850;
+    team.stadium_capacity = 40_000;
 
-    assert_eq!(revenue, 1_200_000);
+    let revenue = finances::calc_matchday(&team, 2, 1.0);
+
+    let ticket = ofm_core::economy::revenue::ticket_price(850);
+    assert_eq!(revenue, 2 * (40_000.0 * ticket) as i64);
 }
 
 #[test]
@@ -506,11 +544,15 @@ fn weekly_sponsorship_payout_is_applied_and_duration_decrements_on_monday() {
 
     let wages = 1_700;
     let expected_sponsor_income = 125_000;
+    let central = central_income(&game.teams[0]);
     assert_eq!(
         game.teams[0].finance,
-        initial_finance - wages + expected_sponsor_income
+        initial_finance - wages + expected_sponsor_income + central
     );
-    assert_eq!(game.teams[0].season_income, expected_sponsor_income);
+    assert_eq!(
+        game.teams[0].season_income,
+        expected_sponsor_income + central
+    );
     assert_eq!(
         game.teams[0].sponsorship.as_ref().unwrap().remaining_weeks,
         1
@@ -542,7 +584,7 @@ fn wages_deducted_on_monday() {
     let expected_deduction = 1_700;
     assert_eq!(
         game.teams[0].finance,
-        initial_finance - expected_deduction,
+        initial_finance - expected_deduction + central_income(&game.teams[0]),
         "Finance should be reduced by weekly wages"
     );
 }
@@ -571,7 +613,10 @@ fn stored_weekly_wage_is_posted_in_full_on_monday() {
 
     finances::process_weekly_finances(&mut game);
 
-    assert_eq!(game.teams[0].finance, initial_finance - 5_000);
+    assert_eq!(
+        game.teams[0].finance,
+        initial_finance - 5_000 + central_income(&game.teams[0])
+    );
     let wages = game
         .cash_journal
         .iter()
@@ -622,8 +667,14 @@ fn monday_payday_splits_loan_wages_between_parent_and_loanee() {
 
     finances::process_weekly_finances(&mut game);
 
-    assert_eq!(game.teams[0].finance, parent_finance - 5_000);
-    assert_eq!(game.teams[1].finance, loanee_finance - 5_000);
+    assert_eq!(
+        game.teams[0].finance,
+        parent_finance - 5_000 + central_income(&game.teams[0])
+    );
+    assert_eq!(
+        game.teams[1].finance,
+        loanee_finance - 5_000 + central_income(&game.teams[1])
+    );
     assert_eq!(finances::calc_wages(&game, "parent"), 5_000);
     assert_eq!(finances::calc_wages(&game, "loanee"), 5_000);
 }
@@ -690,8 +741,15 @@ fn weekly_wages_are_charged_to_each_member_own_team() {
     finances::process_weekly_finances(&mut game);
 
     // Then: each team is charged exactly its OWN members' wages, not the other's
-    assert_eq!(finance_of(&game, "team1"), t1_initial - 1_200);
-    assert_eq!(finance_of(&game, "team2"), t2_initial - 1_000);
+    let central = |g: &Game, id: &str| central_income(g.teams.iter().find(|t| t.id == id).unwrap());
+    assert_eq!(
+        finance_of(&game, "team1"),
+        t1_initial - 1_200 + central(&game, "team1")
+    );
+    assert_eq!(
+        finance_of(&game, "team2"),
+        t2_initial - 1_000 + central(&game, "team2")
+    );
 }
 
 #[test]
@@ -761,7 +819,7 @@ fn warning_finances_reduce_board_satisfaction_midseason() {
 
 #[test]
 fn critical_finances_reduce_board_satisfaction_more_aggressively() {
-    let mut game = make_monday_game();
+    let mut game = make_loss_making_monday_game();
     game.teams[0].finance = 3_400;
     game.manager.satisfaction = 60;
 
@@ -787,7 +845,7 @@ fn critical_finances_reduce_board_satisfaction_more_aggressively() {
 
 #[test]
 fn repeated_critical_finance_weeks_continue_to_reduce_satisfaction() {
-    let mut game = make_monday_game();
+    let mut game = make_loss_making_monday_game();
     game.teams[0].finance = -50_000;
     game.manager.satisfaction = 80;
 
@@ -809,7 +867,7 @@ fn repeated_critical_finance_weeks_continue_to_reduce_satisfaction() {
 
 #[test]
 fn critical_warning_when_in_debt() {
-    let mut game = make_monday_game();
+    let mut game = make_loss_making_monday_game();
     game.teams[0].finance = -100_000;
 
     finances::process_weekly_finances(&mut game);
@@ -843,9 +901,9 @@ fn critical_warning_when_in_debt() {
 
 #[test]
 fn warning_when_low_runway() {
-    let mut game = make_monday_game();
-    // Set finance to ~2 weeks of wages (weekly wages ~1700, so ~3400)
-    game.teams[0].finance = 3400;
+    let mut game = make_loss_making_monday_game();
+    // Two weeks of the club's weekly loss: one is left after this Monday.
+    game.teams[0].finance = weekly_loss(&game) * 2;
 
     finances::process_weekly_finances(&mut game);
 
@@ -854,7 +912,7 @@ fn warning_when_low_runway() {
         .iter()
         .filter(|m| m.id.starts_with("finance_warning_"))
         .collect();
-    // After deducting wages (1700), finance=1700, weeks_left=1700/1700=1 → < 4
+    // After this week's loss one week of runway is left, under the four-week line.
     assert_eq!(warning_msgs.len(), 1, "Should send low reserves warning");
 }
 
@@ -905,7 +963,7 @@ fn wage_over_budget_warning() {
 
 #[test]
 fn financial_warnings_not_duplicated() {
-    let mut game = make_monday_game();
+    let mut game = make_loss_making_monday_game();
     game.teams[0].finance = -100_000;
 
     finances::process_weekly_finances(&mut game);
@@ -1040,8 +1098,8 @@ fn away_match_no_income() {
     let wages = 1_700;
     assert_eq!(
         game.teams[0].finance,
-        initial_finance - wages,
-        "Away match should generate no income for team1"
+        initial_finance - wages + central_income(&game.teams[0]),
+        "Away match should generate no gate income for team1"
     );
 }
 
@@ -1066,8 +1124,14 @@ fn multiple_teams_processed_independently() {
 
     let t1_wages = 1_700;
     let t2_wages = 2_000;
-    assert_eq!(game.teams[0].finance, initial_t1 - t1_wages);
-    assert_eq!(game.teams[1].finance, initial_t2 - t2_wages);
+    assert_eq!(
+        game.teams[0].finance,
+        initial_t1 - t1_wages + central_income(&game.teams[0])
+    );
+    assert_eq!(
+        game.teams[1].finance,
+        initial_t2 - t2_wages + central_income(&game.teams[1])
+    );
 }
 
 // ---------------------------------------------------------------------------

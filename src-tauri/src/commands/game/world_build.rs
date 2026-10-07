@@ -84,6 +84,8 @@ pub(super) fn build_game_from_world_data(
     let mut game = Game::new(clock, manager, teams, players, staff, vec![]);
     // Stored on the game, which is the one place the day's dice come from.
     game.seed = seed;
+    // Chosen with the world and fixed with it: there is no command to change it later.
+    game.development_speed = startup_options.development_speed;
     if game
         .staff
         .iter()
@@ -139,5 +141,8 @@ pub(super) fn build_game_from_world_data(
     // Once the competitions are in place, so "does the player's club play
     // today" has an answer. A package can leave a club thin.
     ofm_core::squad_floor::repair_squads_on_load(&mut game);
+    // Last, once the squads are final: every player signed above is priced and
+    // paid by the club he opens the career at.
+    ofm_core::economy::open_world_economy(&mut game);
     (game, stats)
 }

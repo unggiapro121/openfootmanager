@@ -28,7 +28,7 @@
 //! different jobs, and the attributes are the only thing that separates them.
 
 use crate::ai_math::mean_u8;
-use domain::player::Player;
+use domain::player::{Player, Position};
 use domain::team::{PlayStyle, PlayerRole, Team};
 
 /// How far above his own average a player must score before a specialist role
@@ -182,13 +182,19 @@ fn player_baseline(player: &Player) -> f64 {
 ///
 /// [`Position::valid_roles`]: domain::player::Position::valid_roles
 fn role_for(player: &Player, play_style: &PlayStyle) -> PlayerRole {
+    role_for_position(player, &player.natural_position, play_style)
+}
+
+/// [`role_for`] at a position the player is fielded in rather than his own:
+/// the same scoring, choosing only among the roles `position` admits.
+pub(crate) fn role_for_position(
+    player: &Player,
+    position: &Position,
+    play_style: &PlayStyle,
+) -> PlayerRole {
     let baseline = player_baseline(player);
     let preferred = style_preferences(play_style);
-    let candidates = player
-        .natural_position
-        .valid_roles()
-        .len()
-        .saturating_sub(1);
+    let candidates = position.valid_roles().len().saturating_sub(1);
 
     // A role is earned on the player's own profile, against the margin; the
     // style bonus then only ranks the roles he has earned. Adding it before the
@@ -198,7 +204,7 @@ fn role_for(player: &Player, play_style: &PlayStyle) -> PlayerRole {
     let mut best = PlayerRole::Standard;
     let mut best_score = f64::NEG_INFINITY;
 
-    for role in player.natural_position.valid_roles() {
+    for role in position.valid_roles() {
         if *role == PlayerRole::Standard {
             continue;
         }

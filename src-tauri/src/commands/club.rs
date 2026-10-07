@@ -131,10 +131,15 @@ mod tests {
         Game::new(clock, manager, vec![make_team()], vec![], vec![], vec![])
     }
 
+    /// Given a healthy club with €3M and its medical facility at level 1,
+    /// When the manager upgrades the facility,
+    /// Then the €2.5M upgrade is paid and level 2 is stored in the live game.
     #[test]
     fn upgrade_facility_internal_updates_state() {
         let state = StateManager::new();
-        state.set_game(make_game());
+        let mut game = make_game();
+        game.teams[0].finance = 3_000_000;
+        state.set_game(game);
 
         let response = upgrade_facility_internal(&state, "Medical").expect("response");
         let team = response
@@ -144,7 +149,7 @@ mod tests {
             .unwrap();
 
         assert_eq!(team.facilities.medical, 2);
-        assert_eq!(team.finance, 750_000);
+        assert_eq!(team.finance, 500_000);
 
         let stored_game = state.get_game(|game| game.clone()).expect("stored game");
         let stored_team = stored_game
@@ -153,7 +158,7 @@ mod tests {
             .find(|team| team.id == "team-1")
             .expect("stored team should exist");
         assert_eq!(stored_team.facilities.medical, 2);
-        assert_eq!(stored_team.finance, 750_000);
+        assert_eq!(stored_team.finance, 500_000);
     }
 
     #[test]
@@ -181,14 +186,25 @@ mod tests {
         assert_eq!(stored_team.finance, 1_000_000);
     }
 
+    /// Given a club within its wage budget but losing 260k a week, after its
+    /// broadcast and commercial income, with 40k in the bank,
+    /// When the manager tries to upgrade a facility,
+    /// Then the upgrade is refused because the club's finances are critical.
     #[test]
     fn upgrade_facility_internal_rejects_warning_finance_clubs() {
         let state = StateManager::new();
         let mut game = make_game();
+        let reputation = game.teams[0].reputation;
+        let central_income = ofm_core::economy::revenue::weekly_broadcast_income(reputation)
+            + ofm_core::economy::revenue::weekly_commercial_income(reputation);
+        let weekly_wages = central_income + 260_000;
         game.teams[0].finance = 40_000;
-        game.teams[0].wage_budget = 1_000_000;
-        game.players
-            .push(make_player("player-1", "team-1", 260_000));
+        game.teams[0].wage_budget = weekly_wages + 1_000_000;
+        game.players.push(make_player(
+            "player-1",
+            "team-1",
+            u32::try_from(weekly_wages).expect("a weekly wage fits in u32"),
+        ));
         state.set_game(game);
 
         let error = upgrade_facility_internal(&state, "Medical").expect_err("should fail");

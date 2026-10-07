@@ -72,6 +72,8 @@ fn seeded_world(seed: u64) -> Game {
         start,
     ));
     ofm_core::season_context::refresh_game_context(&mut game);
+    // As a career opens in the game: every club's wages and cash fitted to its means.
+    ofm_core::economy::open_world_economy(&mut game);
     game
 }
 

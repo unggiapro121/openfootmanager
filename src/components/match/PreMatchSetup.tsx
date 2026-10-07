@@ -61,23 +61,22 @@ export default function PreMatchSetup({
     });
   };
 
-  // Player roles, editable from the pitch like on the tactics board; optimistic
-  // local state persisted fire-and-forget, same pattern as the phase blueprint.
-  const [playerRoles, setPlayerRoles] = useState<Record<string, PlayerRole>>(() => {
-    const uid = userSide === "Home" ? snapshot.home_team.id : snapshot.away_team.id;
-    return gameState.teams.find((tm) => tm.id === uid)?.player_roles ?? {};
-  });
-
-  const handlePlayerRoleChange = (playerId: string, role: PlayerRole) => {
-    const previous = playerRoles[playerId] ?? "Standard";
-    setPlayerRoles((prev) => ({ ...prev, [playerId]: role }));
+  // Player roles, editable from the pitch like on the tactics board. The match
+  // was built before this screen opened, so a role has to reach it as a match
+  // command — the snapshot is what the dropdown shows. It is also saved on the
+  // player, fire-and-forget, so it carries over to later matches.
+  const handlePlayerRoleChange = async (playerId: string, role: PlayerRole) => {
+    try {
+      const snap = await invoke<MatchSnapshot>("apply_match_command", {
+        command: { ChangePlayerRole: { side: userSide, player_id: playerId, role } },
+      });
+      onUpdateSnapshot(snap);
+    } catch (err) {
+      console.error("Player role change failed:", err);
+      return;
+    }
     void setPlayerRole(playerId, role).catch((err: unknown) => {
-      console.error("Failed to set player role:", err);
-      // Roll back the optimistic value so the UI doesn't show a role that was
-      // never persisted — unless the user has already picked something newer.
-      setPlayerRoles((prev) =>
-        prev[playerId] === role ? { ...prev, [playerId]: previous } : prev,
-      );
+      console.error("Failed to save player role:", err);
     });
   };
 
@@ -172,12 +171,12 @@ export default function PreMatchSetup({
               selectSize="sm"
               variant="ghost"
               fullWidth
-              value={playerRoles[player.id] ?? "Standard"}
+              value={player.role ?? "Standard"}
               onChange={(e) => {
-                handlePlayerRoleChange(player.id, e.target.value as PlayerRole);
+                void handlePlayerRoleChange(player.id, e.target.value as PlayerRole);
               }}
             >
-              {getRoleOptions(displayPosition, playerRoles[player.id] ?? "Standard").map((role) => (
+              {getRoleOptions(displayPosition, player.role ?? "Standard").map((role) => (
                 <option key={role} value={role}>
                   {t(`tactics.playerRoles.${role}`, role)}
                 </option>
@@ -268,6 +267,27 @@ export default function PreMatchSetup({
       onUpdateSnapshot(snap);
     } catch (err) {
       console.error("Pre-match swap failed:", err);
+    }
+    setSelectedStarterId(null);
+  };
+
+  // Dropping one starter on another trades their slots; the backend gives each
+  // the role that suits them in the new slot. This match only — the saved XI is
+  // left as it was.
+  const handlePositionSwap = async (playerAId: string, playerBId: string) => {
+    try {
+      const snap = await invoke<MatchSnapshot>("apply_match_command", {
+        command: {
+          PreMatchSwapPositions: {
+            side: userSide,
+            player_a_id: playerAId,
+            player_b_id: playerBId,
+          },
+        },
+      });
+      onUpdateSnapshot(snap);
+    } catch (err) {
+      console.error("Pre-match position swap failed:", err);
     }
     setSelectedStarterId(null);
   };
@@ -475,6 +495,7 @@ export default function PreMatchSetup({
           players={userTeam.players}
           selectedId={selectedStarterId}
           onPlayerClick={(id) => setSelectedStarterId(id === selectedStarterId ? null : id)}
+          onPlayerDrop={(draggedId, targetId) => void handlePositionSwap(draggedId, targetId)}
           renderToken={(p, { isSelected, slotPosition }) =>
             renderUserToken(p, isSelected, slotPosition)
           }

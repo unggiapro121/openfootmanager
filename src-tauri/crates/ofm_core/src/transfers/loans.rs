@@ -137,7 +137,8 @@ pub(crate) fn suggested_loan_wage_contribution_pct(
     score: i32,
     player: &domain::player::Player,
 ) -> u8 {
-    if score >= 70 || player.wage() <= 150_000 {
+    // A squad player's wage, on the real-world scale, is cheap enough to cover in full.
+    if score >= 70 || player.wage() <= 15_000 {
         100
     } else if score >= 60 {
         75
@@ -410,11 +411,11 @@ pub(crate) fn loan_borrower_wage_ceiling(
         ceiling += 14;
     }
 
-    if borrower_team.finance >= 5_000_000 {
+    if borrower_team.finance >= 50_000_000 {
         ceiling += 8;
     }
 
-    if player.wage() <= 750_000 {
+    if player.wage() <= 75_000 {
         ceiling += 6;
     }
 

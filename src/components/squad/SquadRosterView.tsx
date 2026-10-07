@@ -5,18 +5,21 @@ import type {
   PlayerSelectionOptions,
   TeamData,
 } from "../../store/gameStore";
-import { Badge, Card, ProgressBar, Select, CountryFlag, PlayerAvatar, InjuryBadge } from "../ui";
+import { Badge, Card, Select, CountryFlag, PlayerAvatar, InjuryBadge } from "../ui";
+import { condColor } from "../../lib/playerConditionDisplay";
 import {
   AlertTriangle,
   MoreVertical,
   Repeat,
   RotateCcw,
+  Shirt,
   TimerOff,
   Trash2,
   Users,
 } from "lucide-react";
 import { TraitList } from "../TraitBadge";
 import { SquadSortHeader } from "./SquadSortHeader";
+import JerseyNumberPickerModal from "./JerseyNumberPickerModal";
 import {
   calcAge,
   getPlayerOvr,
@@ -111,6 +114,7 @@ export default function SquadRosterView({
   const [contractActionError, setContractActionError] = useState<string | null>(null);
   const menuRefs = useRef<Map<string, ContextMenuHandle>>(new Map());
   const [openMenuPlayerId, setOpenMenuPlayerId] = useState<string | null>(null);
+  const [jerseyPickerPlayerId, setJerseyPickerPlayerId] = useState<string | null>(null);
 
   const roster = players
     .filter((player) => isSeniorSquadPlayer(player))
@@ -121,6 +125,9 @@ export default function SquadRosterView({
     );
 
   const playersById = useMemo(() => new Map(roster.map((player) => [player.id, player])), [roster]);
+  const jerseyPickerPlayer = jerseyPickerPlayerId
+    ? playersById.get(jerseyPickerPlayerId)
+    : undefined;
 
   const available = roster.filter((player) => !player.injury);
   const formation = team.formation || "4-4-2";
@@ -581,6 +588,8 @@ export default function SquadRosterView({
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
+                {/* No fixed width: trait pills never wrap (TraitBadge), so the column's
+                    minimum is the widest pill on show, in whatever language. */}
                 <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {t("squad.traits")}
                 </th>
@@ -614,11 +623,14 @@ export default function SquadRosterView({
                 />
                 <SquadSortHeader
                   col="contract"
-                  label={t("common.contract")}
+                  label={t("squad.contractYears")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
+                <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {t("finances.contractRisk")}
+                </th>
                 <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 text-right">
                   <span className="sr-only">{t("common.actions")}</span>
                 </th>
@@ -698,6 +710,11 @@ export default function SquadRosterView({
                           void updateSquadPlanning(player.id, "promote");
                         },
                       },
+                  {
+                    label: t("squad.jerseyPickerAction"),
+                    icon: <Shirt className="w-4 h-4" />,
+                    onClick: () => setJerseyPickerPlayerId(player.id),
+                  },
                   buildDividerMenuItem(),
                   {
                     label: t("common.renewContract"),
@@ -863,6 +880,7 @@ export default function SquadRosterView({
                                 : "danger"
                           }
                           size="sm"
+                          className="whitespace-nowrap"
                         >
                           {t(`squad.styleFitValues.${styleFit}`)}
                         </Badge>
@@ -874,8 +892,12 @@ export default function SquadRosterView({
                       <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
                         {age}
                       </td>
-                      <td className="py-2.5 px-4 w-28">
-                        <ProgressBar value={player.condition} variant="auto" size="sm" showLabel />
+                      {/* Condition as a coloured figure: the bar beside it was too short
+                          to read and only repeated the number. */}
+                      <td
+                        className={`py-2.5 px-4 text-sm font-medium tabular-nums ${condColor(player.condition)}`}
+                      >
+                        {player.condition}%
                       </td>
                       <td className="py-2.5 px-4 text-sm text-gray-500 dark:text-gray-400 tabular-nums">
                         {player.morale}
@@ -894,24 +916,12 @@ export default function SquadRosterView({
                           {ovr}
                         </span>
                       </td>
-                      {/* Contract: years + risk + expires_on + market pills */}
+                      {/* Contract: years remaining + market pills. The expiry date lives on
+                          the player profile; here it only pushed the row taller. */}
                       <td className="py-2.5 px-4 text-xs text-gray-600 dark:text-gray-400">
                         <div className="space-y-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-medium text-gray-700 dark:text-gray-300">
-                              {getContractYearsRemaining(player.contract_end, clockDate)}
-                            </span>
-                            <Badge
-                              variant={getContractRiskBadgeVariant(contractRiskLevel)}
-                              size="sm"
-                            >
-                              {contractRiskLabel}
-                            </Badge>
-                          </div>
-                          <div className="text-gray-500 dark:text-gray-400">
-                            {player.contract_end
-                              ? t("finances.contractExpiresOn", { date: player.contract_end })
-                              : "—"}
+                          <div className="text-sm font-medium tabular-nums text-gray-700 dark:text-gray-300">
+                            {getContractYearsRemaining(player.contract_end, clockDate)}
                           </div>
                           {player.transfer_listed || player.loan_listed || player.injury ? (
                             <div className="flex flex-wrap gap-1">
@@ -929,6 +939,16 @@ export default function SquadRosterView({
                             </div>
                           ) : null}
                         </div>
+                      </td>
+                      {/* Contract risk: its own column so the badge never wraps under the dates */}
+                      <td className="py-2.5 px-4">
+                        <Badge
+                          variant={getContractRiskBadgeVariant(contractRiskLevel)}
+                          size="sm"
+                          className="whitespace-nowrap"
+                        >
+                          {contractRiskLabel}
+                        </Badge>
                       </td>
                       {/* Actions (last column) */}
                       <td className="py-2.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
@@ -968,6 +988,15 @@ export default function SquadRosterView({
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300">
           {contractActionError}
         </div>
+      ) : null}
+
+      {jerseyPickerPlayer ? (
+        <JerseyNumberPickerModal
+          player={jerseyPickerPlayer}
+          squad={players}
+          onClose={() => setJerseyPickerPlayerId(null)}
+          onAssigned={(updated) => onMutationComplete?.(updated)}
+        />
       ) : null}
     </div>
   );

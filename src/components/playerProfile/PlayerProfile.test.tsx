@@ -119,6 +119,9 @@ vi.mock("react-i18next", () => ({
         return `${params?.percent}% wages covered by loan club`;
       if (key === "playerProfile.loanBuyOption") return `Buy option ${params?.fee}`;
       if (key === "playerProfile.attributes") return "Attributes";
+      if (key === "common.ovr") return "OVR";
+      if (key.startsWith("common.posAbbr.") || key.startsWith("common.positions."))
+        return String(params?.defaultValue ?? key);
       if (key === "playerProfile.seasonStats") return "Season Stats";
       if (key === "playerProfile.advancedStats") return "Advanced Stats";
       if (key === "playerProfile.shots") return "Shots";
@@ -482,6 +485,31 @@ describe("PlayerProfile contract surfaces", () => {
     });
     expect(screen.queryByRole("button", { name: "Submit Offer" })).toBeNull();
     expect(invoke).not.toHaveBeenCalledWith("preview_contract_termination", expect.anything());
+  });
+
+  /**
+   * Given a forward who also plays attacking midfield, when his profile opens,
+   * then the position badges are abbreviated and carry the full name on hover.
+   */
+  it("abbreviates the position badges in the hero header", () => {
+    const player = createPlayer({ alternate_positions: ["AttackingMidfielder"] });
+    const gameState = createGameState(player);
+
+    render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
+
+    expect(screen.getByTitle("Forward")).toHaveTextContent("FW");
+    expect(screen.getByTitle("Attacking Midfielder")).toHaveTextContent("AM");
+  });
+
+  /** Given an own-club player, when his attributes are shown, then the header carries his OVR. */
+  it("shows the overall beside the attributes title", () => {
+    const player = createPlayer();
+    const gameState = createGameState(player);
+
+    render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
+
+    const header = screen.getByRole("heading", { name: /Attributes/ });
+    expect(header).toHaveTextContent(/OVR \d+/);
   });
 
   it("renders expiry date, years remaining, and contract risk for the selected player", () => {

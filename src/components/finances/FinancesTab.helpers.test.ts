@@ -26,6 +26,8 @@ function healthySnapshot(
     weeklyWageBudget: 30_000,
     weeklyRecurringIncome: 25_000,
     weeklySponsorIncome: 25_000,
+    weeklyBroadcastIncome: 0,
+    weeklyCommercialIncome: 0,
     projectedWeeklyNet: 5_770,
     cashRunwayWeeks: null,
     wageBudgetUsagePercent: 64,
@@ -56,8 +58,8 @@ describe("formatSignedAmount", () => {
 
 describe("getFacilityUpgradeCost", () => {
   it("scales linearly with the current level", () => {
-    expect(getFacilityUpgradeCost(1)).toBe(250_000);
-    expect(getFacilityUpgradeCost(4)).toBe(1_000_000);
+    expect(getFacilityUpgradeCost(1)).toBe(2_500_000);
+    expect(getFacilityUpgradeCost(4)).toBe(10_000_000);
   });
 });
 

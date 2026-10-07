@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
 import type { PlayerData } from "../../store/gameStore";
-import { Badge, Button, Card, CountryFlag } from "../ui";
+import { Button, Card, CountryFlag } from "../ui";
 import { Eye, GitCompareArrows, X } from "lucide-react";
-import { calcAge, getPlayerOvr, positionBadgeVariant } from "../../lib/helpers";
-import { normalisePosition, translatePositionLabel } from "../squad/SquadTab.helpers";
+import { calcAge, getPlayerOvr } from "../../lib/helpers";
+import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
+import { normalisePosition } from "../squad/SquadTab.helpers";
 
 const ATTRIBUTE_GROUPS: {
   labelKey: string;
@@ -63,7 +64,6 @@ function getNormalizedPlayerPosition(player: PlayerData): string {
 
 function PlayerSummary({ label, player }: { label: string; player: PlayerData }) {
   const { t } = useTranslation();
-  const normalizedPosition = getNormalizedPlayerPosition(player);
   const displayPosition = player.natural_position || player.position;
   const overallRating = getPlayerOvr(player);
 
@@ -77,15 +77,18 @@ function PlayerSummary({ label, player }: { label: string; player: PlayerData })
           <p className="text-base font-heading font-bold text-gray-900 dark:text-gray-100 mt-1">
             {player.full_name}
           </p>
+          {/* Positions on their own row, nationality and age beneath: a player with
+              several positions otherwise pushed his age onto a ragged second line. */}
           <div className="flex items-center gap-2 mt-2 flex-wrap">
-            <Badge variant={positionBadgeVariant(normalizedPosition)} size="sm">
-              {translatePositionLabel(t, displayPosition)}
-            </Badge>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              <CountryFlag code={player.nationality} className="text-xs leading-none mr-1" />
-              {t("common.age")} {calcAge(player.date_of_birth)}
-            </span>
+            <PlayerPositionBadges
+              primaryPosition={displayPosition}
+              alternatePositions={player.alternate_positions}
+            />
           </div>
+          <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+            <CountryFlag code={player.nationality} className="text-xs leading-none mr-1" />
+            {t("common.age")} {calcAge(player.date_of_birth)}
+          </p>
         </div>
         <div className="text-right shrink-0">
           <div className="text-sm font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">

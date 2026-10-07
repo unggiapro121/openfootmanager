@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from "react";
+import { useId, useState, type DragEvent, type ReactNode } from "react";
 import { buildPitchRows } from "../squad/SquadTab.helpers";
 import type { EnginePlayerData } from "./types";
 
@@ -115,6 +115,11 @@ interface FormationPitchProps {
   selectedId?: string | null;
   subbedOnIds?: Set<string>;
   onPlayerClick?: (id: string) => void;
+  /**
+   * Makes the tokens draggable: dropping one player on another calls this with
+   * both ids, and the caller decides what the drop means (e.g. trading slots).
+   */
+  onPlayerDrop?: (draggedId: string, targetId: string) => void;
   className?: string;
   /**
    * Optional custom token renderer. When provided it replaces the default
@@ -135,10 +140,13 @@ export function FormationPitch({
   selectedId,
   subbedOnIds,
   onPlayerClick,
+  onPlayerDrop,
   className,
   renderToken,
 }: FormationPitchProps) {
   const uid = useId();
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
   const surfaceId = `pitch-surface-${uid}`;
   const stripesId = `pitch-stripes-${uid}`;
   const slots =
@@ -246,7 +254,9 @@ export function FormationPitch({
           .slice(0, 2)
           .join("")
           .toUpperCase();
-        const sharedClass = `absolute z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 transition-all ${onPlayerClick ? "cursor-pointer hover:scale-110" : ""} ${isSelected ? "scale-110" : ""}`;
+        const isDragged = draggedId === p.id;
+        const isDropTarget = dropTargetId === p.id && !isDragged;
+        const sharedClass = `absolute z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 transition-all ${onPlayerClick ? "cursor-pointer hover:scale-110" : ""} ${isSelected ? "scale-110" : ""} ${isDragged ? "opacity-40" : ""} ${isDropTarget ? "scale-110 ring-2 ring-white/80" : ""}`;
         const sharedStyle = { left: `${x}%`, top: `${y}%` };
         const tokenContent = renderToken ? (
           renderToken(p, { isSelected, isSubOn, slotPosition })
@@ -271,6 +281,37 @@ export function FormationPitch({
           </>
         );
 
+        const dragHandlers = onPlayerDrop
+          ? {
+              draggable: true,
+              onDragStart: (e: DragEvent<HTMLDivElement>) => {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", p.id);
+                setDraggedId(p.id);
+              },
+              onDragOver: (e: DragEvent<HTMLDivElement>) => {
+                if (!draggedId || draggedId === p.id) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                setDropTargetId(p.id);
+              },
+              onDragLeave: () => {
+                setDropTargetId((current) => (current === p.id ? null : current));
+              },
+              onDrop: (e: DragEvent<HTMLDivElement>) => {
+                e.preventDefault();
+                const fromId = draggedId ?? e.dataTransfer.getData("text/plain");
+                setDraggedId(null);
+                setDropTargetId(null);
+                if (fromId && fromId !== p.id) onPlayerDrop(fromId, p.id);
+              },
+              onDragEnd: () => {
+                setDraggedId(null);
+                setDropTargetId(null);
+              },
+            }
+          : {};
+
         if (onPlayerClick) {
           // div-with-button-role rather than <button>: rich tokens can embed
           // interactive controls (e.g. the role combobox), which HTML forbids
@@ -283,6 +324,7 @@ export function FormationPitch({
               aria-label={p.name}
               className={`${sharedClass} rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-300/70`}
               style={sharedStyle}
+              {...dragHandlers}
               onClick={() => onPlayerClick(p.id)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
@@ -296,7 +338,7 @@ export function FormationPitch({
           );
         }
         return (
-          <div key={p.id} className={sharedClass} style={sharedStyle}>
+          <div key={p.id} className={sharedClass} style={sharedStyle} {...dragHandlers}>
             {tokenContent}
           </div>
         );

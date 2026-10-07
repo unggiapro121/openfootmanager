@@ -160,6 +160,8 @@ function FinancesTabContent({
   const facilities = myTeam.facilities ?? DEFAULT_FACILITIES;
   const activeSponsorship = myTeam.sponsorship ?? null;
   const weeklySponsorIncome = financeSnapshot.weeklySponsorIncome;
+  const weeklyBroadcastIncome = financeSnapshot.weeklyBroadcastIncome;
+  const weeklyCommercialIncome = financeSnapshot.weeklyCommercialIncome;
   const projectedWeeklyNet = financeSnapshot.projectedWeeklyNet;
   const cashRunwayWeeks = financeSnapshot.cashRunwayWeeks;
   const wageBudgetUsagePercent = financeSnapshot.wageBudgetUsagePercent;
@@ -560,7 +562,7 @@ function FinancesTabContent({
       <Card className="lg:col-span-3">
         <CardHeader>{t("finances.cashFlow")}</CardHeader>
         <CardBody>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
               <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
                 {t("finances.weeklyWageSpend")}
@@ -575,6 +577,22 @@ function FinancesTabContent({
               </p>
               <p className="font-heading font-bold text-xl text-primary-500">
                 {formatWeeklyAmount(formatSignedAmount(weeklySponsorIncome), weeklySuffix)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
+              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                {t("finances.weeklyBroadcastIncome")}
+              </p>
+              <p className="font-heading font-bold text-xl text-primary-500">
+                {formatWeeklyAmount(formatSignedAmount(weeklyBroadcastIncome), weeklySuffix)}
+              </p>
+            </div>
+            <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">
+              <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                {t("finances.weeklyCommercialIncome")}
+              </p>
+              <p className="font-heading font-bold text-xl text-primary-500">
+                {formatWeeklyAmount(formatSignedAmount(weeklyCommercialIncome), weeklySuffix)}
               </p>
             </div>
             <div className="rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800 p-4 text-center">

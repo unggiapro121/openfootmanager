@@ -45,7 +45,7 @@ export const FACILITY_DEFINITIONS: FacilityDefinition[] = [
 ];
 
 export function getFacilityUpgradeCost(level: number): number {
-  return level * 250_000;
+  return level * 2_500_000;
 }
 
 export function formatSignedAmount(value: number): string {
@@ -99,6 +99,10 @@ export function mapLocalFinanceSnapshot(
     weeklyWageBudget: snapshot.weeklyWageBudget,
     weeklyRecurringIncome: snapshot.weeklySponsorIncome,
     weeklySponsorIncome: snapshot.weeklySponsorIncome,
+    // Broadcast and commercial income are the backend's to work out; the local
+    // snapshot only stands in until it answers.
+    weeklyBroadcastIncome: 0,
+    weeklyCommercialIncome: 0,
     projectedWeeklyNet: snapshot.projectedWeeklyNet,
     cashRunwayWeeks: snapshot.cashRunwayWeeks,
     wageBudgetUsagePercent: snapshot.wageBudgetUsagePercent,

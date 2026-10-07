@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { useGameStore } from "./gameStore";
 import type { GameStateData } from "./types";
 
@@ -12,6 +12,7 @@ beforeEach(() => {
     managerName: null,
     gameState: null,
     isDirty: false,
+    dirtySince: null,
   });
 });
 
@@ -360,6 +361,37 @@ describe("useGameStore", () => {
       useGameStore.getState().setGameState(makeGameState());
       useGameStore.getState().clearGame();
       expect(useGameStore.getState().isDirty).toBe(false);
+    });
+  });
+
+  describe("dirtySince", () => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    /**
+     * Given a clean game, when it changes twice, then dirtySince marks the first
+     * change — later ones must not push the auto-save back.
+     */
+    it("records when the first unsaved change happened", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(1_000);
+      useGameStore.getState().setGameState(makeGameState());
+      vi.setSystemTime(5_000);
+      useGameStore.getState().setGameState(makeGameState());
+
+      expect(useGameStore.getState().dirtySince).toBe(1_000);
+    });
+
+    /** Given unsaved changes, when the game is saved or closed, then dirtySince clears. */
+    it("clears on markClean and clearGame", () => {
+      useGameStore.getState().setGameState(makeGameState());
+      useGameStore.getState().markClean();
+      expect(useGameStore.getState().dirtySince).toBeNull();
+
+      useGameStore.getState().setGameState(makeGameState());
+      useGameStore.getState().clearGame();
+      expect(useGameStore.getState().dirtySince).toBeNull();
     });
   });
 });

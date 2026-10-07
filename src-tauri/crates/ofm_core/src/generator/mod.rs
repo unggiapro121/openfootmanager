@@ -515,6 +515,39 @@ pub fn normalize_imported_world_for_career_start(world: &mut WorldData, opening_
     floor_imported_world_opening_cash(world);
 }
 
+/// A contract that generation staged and the career has not opened yet. Only
+/// these can be repriced: an opened one is a recorded agreement.
+fn has_staged_contract(player: &Player) -> bool {
+    player.wage() > 0
+        && player
+            .movement_history
+            .iter()
+            .all(|entry| entry.contract.is_none())
+}
+
+/// Pay every signed player his market wage as the career opens, scaled by his
+/// club's pay level so its opening wage bill fits what its income can carry. A
+/// rich club pays a premium, a poor one far below the market, as small clubs do.
+pub(crate) fn fit_opening_wages_to_means(game: &mut crate::game::Game) {
+    crate::economy::set_pay_levels(game, has_staged_contract);
+    let clubs: std::collections::HashMap<String, (u32, f64)> = game
+        .teams
+        .iter()
+        .map(|team| (team.id.clone(), (team.reputation, team.pay_level)))
+        .collect();
+    for player in game.players.iter_mut() {
+        if !has_staged_contract(player) {
+            continue;
+        }
+        let Some(&(reputation, pay_level)) = player.team_id.as_deref().and_then(|id| clubs.get(id))
+        else {
+            continue;
+        };
+        let market = crate::economy::valuation::market_wage(player, Some(reputation));
+        player.stage_wage(crate::economy::scaled_wage(market, pay_level));
+    }
+}
+
 fn floor_imported_world_opening_cash(world: &mut WorldData) {
     let bills: Vec<(String, i64)> = world
         .teams

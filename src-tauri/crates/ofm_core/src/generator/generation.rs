@@ -538,25 +538,7 @@ pub(super) fn generate_random_player_from_def(
         },
     };
 
-    // Size market value and wage from the same position-weighted rating the
-    // player will be shown with, so a keeper is priced on keeping.
     let current_year: u32 = opening_year;
-
-    let approx_ovr =
-        crate::player_rating::ovr_from_attributes(&attributes, &position).round() as u32;
-
-    let age_factor = if age <= 23 {
-        1.5
-    } else if age <= 28 {
-        1.2
-    } else if age <= 32 {
-        0.8
-    } else {
-        0.4
-    };
-    let base_value = (approx_ovr as f64).powi(2) * 500.0;
-    let market_value = (base_value * age_factor) as u64;
-    let wage = (market_value / 200).max(crate::contracts::MINIMUM_DEFAULT_WAGE) as u32;
     let contract_years = if age <= 21 {
         rng.random_range(3..6)
     } else if age <= 27 {
@@ -580,8 +562,6 @@ pub(super) fn generate_random_player_from_def(
         attributes,
     );
     player.team_id = Some(team_id.to_string());
-    player.market_value = market_value;
-    player.stage_wage(wage);
     player.stage_contract_end(Some(contract_end));
     player.condition = rng.random_range(75..100);
     player.morale = rng.random_range(40..76);
@@ -603,6 +583,10 @@ pub(super) fn generate_random_player_from_def(
     };
     player.potential = generate_potential(temp_ovr, player_age);
     refresh_player_derived(&mut player, current_year);
+    // Priced once rating and potential are settled, since both drive the price.
+    // No club yet: the career's opening reprices him at the club he plays for.
+    player.market_value = generated_market_value(&player, opening_year);
+    player.stage_wage(crate::economy::valuation::market_wage(&player, None));
 
     player.jersey_number = jersey_number_for_slot(index);
 
@@ -1023,26 +1007,6 @@ pub(super) fn generate_player_from_def(
         bound_attributes_by_ceiling(&mut attributes, &def.position, ceiling);
     }
 
-    let approx_ovr =
-        crate::player_rating::ovr_from_attributes(&attributes, &def.position).round() as u32;
-    let age_factor = if age <= 23 {
-        1.5
-    } else if age <= 28 {
-        1.2
-    } else if age <= 32 {
-        0.8
-    } else {
-        0.4
-    };
-    let generated_value = ((approx_ovr as f64).powi(2) * 500.0 * age_factor) as u64;
-    // An authored figure wins. An omitted wage is sized from the value the player
-    // ends up with rather than the one the author replaced, and saturates because an
-    // authored value can be far larger than any generated one.
-    let market_value = def.value.unwrap_or(generated_value);
-    let wage = def.wage.unwrap_or_else(|| {
-        u32::try_from((market_value / 200).max(crate::contracts::MINIMUM_DEFAULT_WAGE))
-            .unwrap_or(u32::MAX)
-    });
     // Rolled whether or not a contract was authored, so a package that authors none
     // draws exactly the random numbers it always did and generates the same players.
     let contract_years = if age <= 27 {
@@ -1080,8 +1044,6 @@ pub(super) fn generate_player_from_def(
         .as_ref()
         .map(|photo| photo.trim().to_string())
         .filter(|photo| !photo.is_empty());
-    player.market_value = market_value;
-    player.stage_wage(wage);
     player.stage_contract_start(authored_contract.start.map(contract_date));
     player.stage_contract_end(Some(
         authored_contract
@@ -1133,7 +1095,26 @@ pub(super) fn generate_player_from_def(
         .potential
         .unwrap_or_else(|| generate_potential(temp_ovr, age));
     refresh_player_derived(&mut player, current_year);
+    // An authored figure wins; one left out is priced like any generated
+    // player's, from the rating and potential he ended up with.
+    player.market_value = def
+        .value
+        .unwrap_or_else(|| generated_market_value(&player, opening_year));
+    player.stage_wage(
+        def.wage
+            .unwrap_or_else(|| crate::economy::valuation::market_wage(&player, None)),
+    );
     player
+}
+
+/// A generated player's value on the day his world opens, before he is at a
+/// club: the career's opening reprices him there.
+fn generated_market_value(player: &Player, opening_year: u32) -> u64 {
+    let opening_day = i32::try_from(opening_year)
+        .ok()
+        .and_then(|year| chrono::NaiveDate::from_ymd_opt(year, 7, 1))
+        .unwrap_or_default();
+    crate::economy::valuation::market_value(player, None, opening_day)
 }
 
 /// Generate a random unemployed manager (no team) using the provided name pool.
@@ -1384,10 +1365,10 @@ mod tests {
         assert_eq!(player.market_value, 9_000_000);
     }
 
-    /// Omit the wage and it is sized from the value the player actually ends up
-    /// with, not from a value the author replaced.
+    /// Omit the wage and it is sized from what the player can do, whatever
+    /// value the author wrote: pay follows ability, not the price tag.
     #[test]
-    fn an_omitted_wage_follows_an_authored_value() {
+    fn an_omitted_wage_follows_the_players_ability() {
         let player = generate_from_json(
             striker_json(serde_json::json!({ "value": 4_000_000 })),
             2026,
@@ -1396,8 +1377,8 @@ mod tests {
         assert_eq!(player.market_value, 4_000_000);
         assert_eq!(
             player.wage(),
-            4_000_000 / 200,
-            "wage should be sized from the authored value"
+            crate::economy::valuation::market_wage(&player, None),
+            "wage should be sized from the player's ability"
         );
     }
 

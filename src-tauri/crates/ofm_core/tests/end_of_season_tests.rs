@@ -1277,7 +1277,7 @@ fn summary_reflects_the_users_division_when_not_in_the_primary_competition() {
     );
 
     // The payout message matches the tier-scaled ledger (half the top-flight
-    // champion's 5,000,000).
+    // champion's 40,000,000).
     let payout = game
         .messages
         .iter()
@@ -1285,7 +1285,7 @@ fn summary_reflects_the_users_division_when_not_in_the_primary_competition() {
         .expect("payout message for the user's division");
     assert_eq!(
         payout.i18n_params.get("amount"),
-        Some(&"2500000".to_string())
+        Some(&"20000000".to_string())
     );
 }
 
@@ -2217,14 +2217,14 @@ fn champion_receives_prize_money_and_ledger_entry() {
     process_end_of_season(&mut game);
 
     let team1 = game.teams.iter().find(|team| team.id == "team1").unwrap();
-    assert_eq!(team1.finance, initial_finance + 5_000_000);
-    assert_eq!(team1.season_income, 5_000_000);
+    assert_eq!(team1.finance, initial_finance + 40_000_000);
+    assert_eq!(team1.season_income, 40_000_000);
     assert_eq!(team1.financial_ledger.len(), 1);
     assert_eq!(
         team1.financial_ledger[0].kind,
         FinancialTransactionKind::PrizeMoney
     );
-    assert_eq!(team1.financial_ledger[0].amount, 5_000_000);
+    assert_eq!(team1.financial_ledger[0].amount, 40_000_000);
     assert_eq!(
         team1.financial_ledger[0].description,
         "be.msg.seasonPayout.ledgerDescription?season=1&position=1&suffix=st"
@@ -2449,8 +2449,8 @@ fn an_unfinished_upper_tier_does_not_pay_top_flight_prize_money() {
         .finance
         - before;
     assert_eq!(
-        gained, 2_500_000,
-        "the second division's champion earns half the top flight's 5,000,000, \
+        gained, 20_000_000,
+        "the second division's champion earns half the top flight's 40,000,000, \
          even while the first division is unfinished"
     );
 }
@@ -2505,7 +2505,7 @@ fn a_split_season_tells_the_player_one_consistent_story() {
         "the closing table is the one the year ended on"
     );
     assert_eq!(team1.history[0].league_position, 2, "and the record agrees");
-    assert_eq!(gained, 3_000_000, "paid for second");
+    assert_eq!(gained, 24_000_000, "paid for second");
     assert_eq!(
         payout.i18n_params.get("amount"),
         Some(&gained.to_string()),
@@ -2637,7 +2637,7 @@ fn a_regional_table_is_not_a_division_for_prize_money() {
         .expect("team1");
     assert_eq!(
         team1.finance - before,
-        5_000_000,
+        40_000_000,
         "team1 won its division and is paid as champion of it"
     );
     assert_eq!(
@@ -2661,7 +2661,7 @@ fn a_regional_table_is_not_a_division_for_prize_money() {
 fn a_split_season_pays_and_records_one_division_once() {
     let mut game = make_completed_season_game();
     // Different champions in the two halves, on purpose: team2 wins the
-    // Apertura and team1 the Clausura. team1's payout is then 5,000,000 only if
+    // Apertura and team1 the Clausura. team1's payout is then 40,000,000 only if
     // the closing table was the one retained — with the same champion in both,
     // keeping either table would satisfy every assertion below.
     let mut apertura = first_division("ar-d1-apertura", "AR", "america", &["team2", "team1"]);
@@ -2698,7 +2698,7 @@ fn a_split_season_pays_and_records_one_division_once() {
     );
     assert_eq!(
         team1.finance - before,
-        5_000_000,
+        40_000_000,
         "the champion is paid once, at top-flight rate"
     );
     assert_eq!(
@@ -2805,7 +2805,7 @@ fn top_half_finish_receives_expected_prize_money() {
     process_end_of_season(&mut game);
 
     let team1 = game.teams.iter().find(|team| team.id == "team1").unwrap();
-    assert_eq!(team1.finance, initial_finance + 3_000_000);
+    assert_eq!(team1.finance, initial_finance + 24_000_000);
 }
 
 #[test]
@@ -2839,7 +2839,7 @@ fn lower_table_finish_receives_expected_prize_money() {
     process_end_of_season(&mut game);
 
     let team1 = game.teams.iter().find(|team| team.id == "team1").unwrap();
-    assert_eq!(team1.finance, initial_finance + 150_000);
+    assert_eq!(team1.finance, initial_finance + 1_200_000);
 }
 
 #[test]
@@ -3649,13 +3649,12 @@ fn process_end_of_season_refreshes_transfer_budget_from_finance() {
 
     process_end_of_season(&mut game);
 
-    // Formula matches worldgen (generator/mod.rs:543): 15% of finance.
-    // We assert the invariant against post-prize finance so the test stays
-    // valid regardless of how much prize money each team receives.
+    // Half the cash in hand (`economy::set_season_budgets`), asserted against
+    // post-prize finance so the test stays valid whatever prize each team gets.
     let team1 = game.teams.iter().find(|t| t.id == "team1").unwrap();
     let team2 = game.teams.iter().find(|t| t.id == "team2").unwrap();
-    assert_eq!(team1.transfer_budget, (team1.finance as f64 * 0.15) as i64);
-    assert_eq!(team2.transfer_budget, (team2.finance as f64 * 0.15) as i64);
+    assert_eq!(team1.transfer_budget, team1.finance / 2);
+    assert_eq!(team2.transfer_budget, team2.finance / 2);
     // Team1 went in with an empty envelope; the refill must have run.
     assert!(team1.transfer_budget > 0);
 }

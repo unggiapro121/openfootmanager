@@ -55,7 +55,9 @@ fn make_player(id: &str) -> Player {
         default_attrs(),
     );
     player.team_id = Some("team-2".to_string());
-    player.stage_contract_end(Some("2028-06-30".to_string()));
+    // Over two years left: his club can ask his full value, with no discount
+    // for a contract running down.
+    player.stage_contract_end(Some("2029-06-30".to_string()));
     player.market_value = 1_000_000;
     player.morale = 70;
     player
@@ -1858,11 +1860,17 @@ fn countering_incoming_loan_offer_can_execute_accepted_terms() {
     );
 }
 
+/// Given a loan-listed squad player on an affordable wage and a borrower
+/// offering to pay 40% of it,
+/// When the manager counters asking for 70%, a little beyond what the
+/// borrower will pay,
+/// Then talks stay live with the borrower suggesting 60%.
 #[test]
 fn countering_incoming_loan_offer_can_keep_talks_live_with_suggested_terms() {
     let mut player = make_user_player("player-counter-loan-live");
     player.loan_listed = true;
-    player.stage_wage(520_000);
+    // Under the 75k a week a borrower is glad to share in.
+    player.stage_wage(52_000);
     player.ovr = 60;
     player.potential = 62;
     player.loan_offers.push(make_pending_incoming_loan_offer(
@@ -2192,6 +2200,11 @@ fn generates_pending_incoming_offer_for_contract_risk_player() {
     }));
 }
 
+/// Given a transfer-listed player at one AI club with a month left on his deal,
+/// and another AI club able to pay for him,
+/// When the market runs,
+/// Then the clubs complete the deal between themselves: the fee moves from
+/// buyer to seller, the move is logged, and the user's inbox stays empty.
 #[test]
 fn ai_clubs_complete_transfer_between_themselves_without_inbox_message() {
     let mut player = make_player("player-ai-market");
@@ -2218,17 +2231,19 @@ fn ai_clubs_complete_transfer_between_themselves_without_inbox_message() {
     assert_eq!(player.team_id.as_deref(), Some("team-2"));
     assert!(game.messages.is_empty());
 
+    // His €1.2M value, listed (×0.9) and with a month left to run (×0.35).
+    let fee = 378_000;
     let buyer = game.teams.iter().find(|team| team.id == "team-2").unwrap();
     let seller = game.teams.iter().find(|team| team.id == "team-3").unwrap();
-    assert_eq!(buyer.finance, 5_100_000);
-    assert_eq!(seller.finance, 3_900_000);
+    assert_eq!(buyer.finance, 6_000_000 - fee);
+    assert_eq!(seller.finance, 3_000_000 + fee);
 
     let transfer_log = &game.league.as_ref().unwrap().transfer_log;
     assert_eq!(transfer_log.len(), 1);
     assert_eq!(transfer_log[0].player_id, "player-ai-market");
     assert_eq!(transfer_log[0].from_team_id, "team-3");
     assert_eq!(transfer_log[0].to_team_id, "team-2");
-    assert_eq!(transfer_log[0].fee, 900_000);
+    assert_eq!(transfer_log[0].fee, fee as u64);
 }
 
 #[test]
@@ -2736,10 +2751,14 @@ fn excessive_counter_offer_is_rejected_and_closes_the_negotiation() {
     );
 }
 
+/// Given two players on long contracts at a modest club, one unhappy and
+/// rarely picked, the other content and a regular,
+/// When a much bigger club bids just over their value for each,
+/// Then the unhappy player's club accepts and the content player's refuses.
 #[test]
 fn unhappy_player_with_bigger_ambition_gap_is_easier_to_buy() {
     let mut open_player = make_player("player-open");
-    open_player.stage_contract_end(Some("2028-06-30".to_string()));
+    open_player.stage_contract_end(Some("2029-06-30".to_string()));
     open_player.morale = 35;
     open_player.stats.appearances = 1;
 
@@ -2750,7 +2769,7 @@ fn unhappy_player_with_bigger_ambition_gap_is_easier_to_buy() {
         make_transfer_bid(&mut open_game, "player-open", 1_050_000).expect("open-player bid");
 
     let mut content_player = make_player("player-content");
-    content_player.stage_contract_end(Some("2028-06-30".to_string()));
+    content_player.stage_contract_end(Some("2029-06-30".to_string()));
     content_player.morale = 80;
     content_player.stats.appearances = 12;
 
@@ -2830,14 +2849,17 @@ fn selling_key_player_can_reduce_remaining_starters_morale() {
     assert!(teammate.morale < 75);
 }
 
+/// Given a €22M player, past the €20M at which a move makes the news,
+/// When the user's €29M bid for him is accepted,
+/// Then a major-transfer article names both clubs and the player.
 #[test]
 fn accepted_major_transfer_generates_news_article() {
     let mut player = make_player("player-news-major");
-    player.market_value = 1_400_000;
+    player.market_value = 22_000_000;
 
-    let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
+    let mut game = make_game_with_player(player, vec![], 40_000_000, 35_000_000);
 
-    let result = make_transfer_bid(&mut game, "player-news-major", 1_700_000)
+    let result = make_transfer_bid(&mut game, "player-news-major", 29_000_000)
         .expect("major transfer bid should succeed");
 
     assert_eq!(result.decision, TransferNegotiationDecision::Accepted);
@@ -2877,12 +2899,15 @@ fn smaller_completed_transfer_does_not_generate_news_article() {
     assert!(game.news.is_empty());
 }
 
+/// Given a major transfer whose news article already exists,
+/// When the user's bid for the €22M player is accepted,
+/// Then the article is not written a second time.
 #[test]
 fn completed_transfer_news_is_not_duplicated_when_article_already_exists() {
     let mut player = make_player("player-news-dup");
-    player.market_value = 1_400_000;
+    player.market_value = 22_000_000;
 
-    let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
+    let mut game = make_game_with_player(player, vec![], 40_000_000, 35_000_000);
     game.news.push(
         NewsArticle::new(
             "transfer_news_player-news-dup_team-2_team-1_2026-08-01".to_string(),
@@ -2896,7 +2921,7 @@ fn completed_transfer_news_is_not_duplicated_when_article_already_exists() {
         .with_players(vec!["player-news-dup".to_string()]),
     );
 
-    let result = make_transfer_bid(&mut game, "player-news-dup", 1_700_000)
+    let result = make_transfer_bid(&mut game, "player-news-dup", 29_000_000)
         .expect("major transfer bid should succeed");
 
     assert_eq!(result.decision, TransferNegotiationDecision::Accepted);
@@ -3363,7 +3388,9 @@ fn a_club_that_is_turned_down_does_not_come_straight_back() {
     let mut player = make_user_player("player-persistent-suitor");
     player.transfer_listed = false;
     player.stage_contract_end(Some("2026-11-01".to_string()));
-    player.market_value = 1_400_000;
+    // A notable name with three months left: enough to draw bids unlisted, at
+    // a fee (half his value, for the time left) the suitors can afford.
+    player.market_value = 10_000_000;
 
     let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
     game.teams[1].finance = 9_000_000;
@@ -3466,7 +3493,9 @@ fn make_persistent_suitor_game(player_id: &str, ai_teams: usize) -> Game {
     let mut player = make_user_player(player_id);
     player.transfer_listed = false;
     player.stage_contract_end(Some("2026-11-01".to_string()));
-    player.market_value = 1_400_000;
+    // A notable name with three months left: enough to draw bids unlisted, at
+    // a fee (half his value, for the time left) the suitors can afford.
+    player.market_value = 10_000_000;
 
     let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
     game.teams[1].finance = 9_000_000;
@@ -4177,12 +4206,19 @@ fn entry_of_kind(
         .unwrap_or_else(|| panic!("no {kind:?} entry in the ledger"))
 }
 
+/// Given a player whose ability earns more at the buying club than the odd
+/// 7,777 a week his seller pays him,
+/// When the user's bid for him is accepted,
+/// Then he signs a new contract on the buyer's standard terms: a three-year deal
+/// from today and the buyer's round-thousand wage, not the seller's.
 #[test]
 fn a_permanent_transfer_creates_a_new_contract_with_the_buyers_terms() {
     let mut player = make_player("player-buyer-terms");
     // The seller's deal: a wage that is not a round thousand and an end date a
     // standard contract would never produce, so carrying either across shows.
     player.stage_wage(7_777);
+    // Rated well enough that the buyer's standard wage is a raise on it.
+    player.ovr = 70;
     player.stage_contract_start(Some("2019-07-01".to_string()));
     let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
 
@@ -4322,6 +4358,11 @@ fn a_loan_out_and_back_writes_movements_but_no_contract() {
     assert_eq!(player.contract_start(), Some("2019-07-01"));
 }
 
+/// Given a loan-listed player on an odd 2,222 a week at his parent club, below
+/// what his ability earns at the borrower,
+/// When the borrower agrees a loan with a buy option and exercises it,
+/// Then he signs a new three-year contract on the buyer's standard wage, not
+/// the parent's.
 #[test]
 fn a_loan_to_buy_creates_a_new_contract_with_the_buyers_terms() {
     let mut player = make_player("player-buy-terms");
@@ -4329,7 +4370,9 @@ fn a_loan_to_buy_creates_a_new_contract_with_the_buyers_terms() {
     player.ovr = 62;
     player.potential = 74;
     player.stats.appearances = 0;
-    player.stage_wage(520_000);
+    // Not a round thousand, and below the buyer's standard wage for a 62, so
+    // carrying it across shows.
+    player.stage_wage(2_222);
     player.stage_contract_start(Some("2019-07-01".to_string()));
     let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
     attach_transfer_log_league(&mut game);
@@ -4368,11 +4411,11 @@ fn a_loan_to_buy_creates_a_new_contract_with_the_buyers_terms() {
     assert_eq!(
         record.end.as_deref(),
         Some(three_years_on.as_str()),
-        "three years from the purchase, not the seller's 2028-06-30"
+        "three years from the purchase, not the seller's 2029-06-30"
     );
     assert!(
-        record.weekly_wage > 520_000,
-        "the buyer's standard wage, not the parent's 520,000 carried across: {}",
+        record.weekly_wage > 2_222 && record.weekly_wage.is_multiple_of(1_000),
+        "the buyer's standard wage, not the parent's 2,222 carried across: {}",
         record.weekly_wage
     );
     assert_eq!(player.contract_end(), Some(three_years_on.as_str()));
