@@ -2,6 +2,7 @@ use crate::game::Game;
 use chrono::{Datelike, NaiveDate};
 use domain::manager::{Manager, ManagerCareerEntry};
 use domain::staff::{Staff, StaffRole};
+use domain::team::PlayStyle;
 
 const BASE_AI_MANAGER_SATISFACTION: i32 = 50;
 const AI_MANAGER_REPLACEMENT_DELAY_DAYS: u32 = 7;
@@ -79,7 +80,15 @@ fn next_generated_manager_id(game: &Game, team_id: &str) -> String {
 }
 
 /// Invent a manager for a club that has none, leaving its staff untouched.
-fn create_generated_manager(game: &Game, team_id: &str) -> Option<Manager> {
+///
+/// `preferred_style` is the style they are strongest in: the club's own as a
+/// career opens, so the world keeps the identities it was built with; `None`
+/// for a mid-career appointment, who brings a style of their own.
+fn create_generated_manager(
+    game: &Game,
+    team_id: &str,
+    preferred_style: Option<PlayStyle>,
+) -> Option<Manager> {
     let team = game.teams.iter().find(|team| team.id == team_id)?;
     let opening_year = game.clock.current_date.year().max(0) as u32;
 
@@ -99,6 +108,7 @@ fn create_generated_manager(game: &Game, team_id: &str) -> Option<Manager> {
     // a manager appointed below the sacking threshold would be dismissed by the
     // club that had just hired them.
     manager.satisfaction = BASE_AI_MANAGER_SATISFACTION as u8;
+    crate::manager_mastery::roll_play_style_mastery(&mut manager, preferred_style);
     manager.hire(team.id.clone());
     manager.career_history.push(ManagerCareerEntry::open(
         team.id.clone(),
@@ -134,6 +144,8 @@ fn create_seeded_manager(
     manager.reputation = stand_in_manager_reputation(source_staff);
     manager.satisfaction = BASE_AI_MANAGER_SATISFACTION as u8;
     manager.fan_approval = 50;
+    // A stand-in covers the post, so they run the club's style, not one of their own.
+    crate::manager_mastery::roll_play_style_mastery(&mut manager, Some(team.play_style.clone()));
     manager.hire(team.id.clone());
     manager.career_history.push(ManagerCareerEntry::open(
         team.id.clone(),
@@ -254,7 +266,12 @@ pub fn seed_ai_managers(game: &mut Game) {
         .collect();
 
     for team_id in team_ids_to_seed {
-        let Some(manager) = create_generated_manager(game, &team_id) else {
+        let club_style = game
+            .teams
+            .iter()
+            .find(|team| team.id == team_id)
+            .map(|team| team.play_style.clone());
+        let Some(manager) = create_generated_manager(game, &team_id, club_style) else {
             continue;
         };
         if let Some(team) = game.teams.iter_mut().find(|team| team.id == team_id) {
@@ -305,7 +322,7 @@ pub fn process_vacant_ai_clubs(game: &mut Game) {
                 let manager_id = next_seeded_manager_id(game, &team_id, source_staff);
                 create_seeded_manager(game, &team_id, source_staff, manager_id)
             }
-            None => create_generated_manager(game, &team_id),
+            None => create_generated_manager(game, &team_id, None),
         };
         let Some(manager) = appointment else {
             continue;
@@ -371,9 +388,10 @@ mod tests {
     use chrono::{TimeZone, Utc};
     use domain::league::{Fixture, FixtureStatus, League, MatchResult};
     use domain::manager::Manager;
+    use domain::manager::PlayStyleMastery;
     use domain::message::{ActionType, InboxMessage, MessageAction, MessageContext};
     use domain::staff::{Staff, StaffAttributes, StaffRole};
-    use domain::team::Team;
+    use domain::team::{PlayStyle, Team};
 
     fn make_team(id: &str, name: &str) -> Team {
         Team::new(
@@ -639,6 +657,72 @@ mod tests {
             .find(|member| member.id == "staff-physio")
             .expect("the physio is still on the staff list");
         assert_eq!(physio.role, StaffRole::Physio, "the physio's role changed");
+    }
+
+    fn manager_of<'a>(game: &'a Game, team_id: &str) -> &'a Manager {
+        game.managers
+            .iter()
+            .find(|manager| manager.team_id.as_deref() == Some(team_id))
+            .expect("the club has a manager")
+    }
+
+    fn set_play_style(game: &mut Game, team_id: &str, play_style: PlayStyle) {
+        if let Some(team) = game.teams.iter_mut().find(|team| team.id == team_id) {
+            team.play_style = play_style;
+        }
+    }
+
+    /// Given an AI club that plays Counter as a career opens,
+    /// When it is given its manager,
+    /// Then the manager is strongest at Counter: the club's identity is theirs.
+    #[test]
+    fn a_world_start_manager_is_strongest_in_the_clubs_style() {
+        let mut game = make_game();
+        set_play_style(&mut game, "team2", PlayStyle::Counter);
+
+        seed_ai_managers(&mut game);
+
+        assert_eq!(
+            manager_of(&game, "team2").play_style_mastery.best_style(),
+            PlayStyle::Counter
+        );
+    }
+
+    /// Given an AI club that plays Possession and falls vacant,
+    /// When its assistant steps up,
+    /// Then the stand-in is strongest at Possession: covering, not reinventing.
+    #[test]
+    fn a_stand_in_is_strongest_in_the_clubs_style() {
+        let mut game = make_game();
+        set_play_style(&mut game, "team2", PlayStyle::Possession);
+        seed_ai_managers(&mut game);
+        vacate_club(&mut game, "team2");
+
+        process_vacant_ai_clubs(&mut game);
+
+        assert_eq!(
+            manager_of(&game, "team2").play_style_mastery.best_style(),
+            PlayStyle::Possession
+        );
+    }
+
+    /// Given an AI club with no assistant that falls vacant,
+    /// When it appoints someone new,
+    /// Then the new manager arrives with a mastery of their own, not the neutral one.
+    #[test]
+    fn a_new_appointment_arrives_with_a_mastery_of_their_own() {
+        let mut game = make_game();
+        game.staff
+            .retain(|member| member.team_id.as_deref() != Some("team2"));
+        seed_ai_managers(&mut game);
+        vacate_club(&mut game, "team2");
+
+        process_vacant_ai_clubs(&mut game);
+
+        assert_ne!(
+            manager_of(&game, "team2").play_style_mastery,
+            PlayStyleMastery::default()
+        );
     }
 
     /// Two spells at one club must be two people, not the same one twice.

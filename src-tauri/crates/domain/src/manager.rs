@@ -1,3 +1,4 @@
+use crate::team::PlayStyle;
 use serde::{Deserialize, Serialize};
 
 fn default_fan_approval() -> u8 {
@@ -31,7 +32,88 @@ pub struct Manager {
 
     // Employment history
     pub career_history: Vec<ManagerCareerEntry>,
+
+    /// How well the manager gets each play style across, one value per style.
+    /// A save written before this existed loads neutral (50 in every style).
+    #[serde(default)]
+    pub play_style_mastery: PlayStyleMastery,
 }
+
+/// The neutral mastery: a style plays exactly as the engine's table prices it.
+const NEUTRAL_MASTERY: u8 = 50;
+
+/// A manager's command of each play style, 1–100. Keys serialize as the play
+/// style names ("Balanced" … "HighPress"), the ids the frontend already uses.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase", default)]
+pub struct PlayStyleMastery {
+    pub balanced: u8,
+    pub attacking: u8,
+    pub defensive: u8,
+    pub possession: u8,
+    pub counter: u8,
+    pub high_press: u8,
+}
+
+impl Default for PlayStyleMastery {
+    fn default() -> Self {
+        Self {
+            balanced: NEUTRAL_MASTERY,
+            attacking: NEUTRAL_MASTERY,
+            defensive: NEUTRAL_MASTERY,
+            possession: NEUTRAL_MASTERY,
+            counter: NEUTRAL_MASTERY,
+            high_press: NEUTRAL_MASTERY,
+        }
+    }
+}
+
+impl PlayStyleMastery {
+    pub fn for_style(&self, style: &PlayStyle) -> u8 {
+        match style {
+            PlayStyle::Balanced => self.balanced,
+            PlayStyle::Attacking => self.attacking,
+            PlayStyle::Defensive => self.defensive,
+            PlayStyle::Possession => self.possession,
+            PlayStyle::Counter => self.counter,
+            PlayStyle::HighPress => self.high_press,
+        }
+    }
+
+    pub fn set(&mut self, style: &PlayStyle, value: u8) {
+        let slot = match style {
+            PlayStyle::Balanced => &mut self.balanced,
+            PlayStyle::Attacking => &mut self.attacking,
+            PlayStyle::Defensive => &mut self.defensive,
+            PlayStyle::Possession => &mut self.possession,
+            PlayStyle::Counter => &mut self.counter,
+            PlayStyle::HighPress => &mut self.high_press,
+        };
+        *slot = value;
+    }
+
+    /// The style the manager is strongest in; on a tie, the earlier style in
+    /// `ALL_PLAY_STYLES` order, so a neutral manager prefers Balanced.
+    pub fn best_style(&self) -> PlayStyle {
+        let mut best = PlayStyle::Balanced;
+        for style in ALL_PLAY_STYLES {
+            if self.for_style(&style) > self.for_style(&best) {
+                best = style;
+            }
+        }
+        best
+    }
+}
+
+/// Every play style, in the order the game lists them.
+pub const ALL_PLAY_STYLES: [PlayStyle; 6] = [
+    PlayStyle::Balanced,
+    PlayStyle::Attacking,
+    PlayStyle::Defensive,
+    PlayStyle::Possession,
+    PlayStyle::Counter,
+    PlayStyle::HighPress,
+];
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ManagerCareerStats {
@@ -97,6 +179,7 @@ impl Manager {
             warning_stage: 0,
             career_stats: ManagerCareerStats::default(),
             career_history: Vec::new(),
+            play_style_mastery: PlayStyleMastery::default(),
         }
     }
 
@@ -202,5 +285,62 @@ mod tests {
             (30..=99).contains(&elite_rating) && (30..=99).contains(&journeyman_rating),
             "ratings stay in the OVR-like band"
         );
+    }
+
+    /// Given a newly created manager — the player's own character,
+    /// When their play style mastery is read,
+    /// Then every style is 50, the neutral level at which a style plays as designed.
+    #[test]
+    fn a_new_manager_is_neutral_in_every_style() {
+        let mastery = manager().play_style_mastery;
+
+        for style in ALL_PLAY_STYLES {
+            assert_eq!(mastery.for_style(&style), 50, "{style:?}");
+        }
+    }
+
+    /// Given a manager strongest at Counter,
+    /// When their preferred style is asked for,
+    /// Then it is Counter, and each style reads its own value.
+    #[test]
+    fn the_best_style_is_the_highest_mastery() {
+        let mastery = PlayStyleMastery {
+            balanced: 40,
+            attacking: 55,
+            defensive: 30,
+            possession: 61,
+            counter: 77,
+            high_press: 12,
+        };
+
+        assert_eq!(mastery.best_style(), PlayStyle::Counter);
+        assert_eq!(mastery.for_style(&PlayStyle::Possession), 61);
+        assert_eq!(mastery.for_style(&PlayStyle::HighPress), 12);
+    }
+
+    /// Given a mastery table,
+    /// When it is serialized,
+    /// Then its keys are the play style names the frontend already uses.
+    #[test]
+    fn mastery_is_keyed_by_play_style_name() {
+        let json = serde_json::to_value(PlayStyleMastery::default()).expect("serialize");
+
+        assert_eq!(json["Balanced"], 50);
+        assert_eq!(json["HighPress"], 50);
+    }
+
+    /// Given a saved manager written before managers had a play style mastery,
+    /// When it is loaded,
+    /// Then the manager is neutral in every style rather than failing to load.
+    #[test]
+    fn a_manager_saved_without_mastery_loads_neutral() {
+        let mut json = serde_json::to_value(manager()).expect("serialize");
+        json.as_object_mut()
+            .expect("object")
+            .remove("play_style_mastery");
+
+        let loaded: Manager = serde_json::from_value(json).expect("old save should load");
+
+        assert_eq!(loaded.play_style_mastery.for_style(&PlayStyle::Counter), 50);
     }
 }

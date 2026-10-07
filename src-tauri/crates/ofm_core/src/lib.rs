@@ -28,6 +28,7 @@ pub mod history_generation;
 pub mod inbox;
 pub mod job_offers;
 pub mod live_match_manager;
+pub(crate) mod manager_mastery;
 pub(crate) mod match_form;
 pub mod matchday;
 pub mod messages;

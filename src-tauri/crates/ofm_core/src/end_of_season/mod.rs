@@ -1315,6 +1315,7 @@ fn convert_retired_players_to_candidates(game: &mut Game) {
             mgr.reputation = reputation;
             mgr.satisfaction = 50;
             mgr.fan_approval = 50;
+            crate::manager_mastery::roll_play_style_mastery(&mut mgr, None);
             // team_id stays None (unemployed)
             new_managers.push(mgr);
         }

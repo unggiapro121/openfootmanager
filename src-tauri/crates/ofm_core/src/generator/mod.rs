@@ -645,12 +645,13 @@ pub fn replenish_manager_and_scout_market(game: &mut crate::game::Game) {
                 let idx = rng.random_range(0..country_codes.len());
                 country_codes[idx].clone()
             };
-            let mgr = generation::generate_random_unemployed_manager(
+            let mut mgr = generation::generate_random_unemployed_manager(
                 &nationality,
                 &names_def,
                 market_year,
                 &mut rng,
             );
+            crate::manager_mastery::roll_play_style_mastery(&mut mgr, None);
             game.managers.push(mgr);
         }
     }
