@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import type {
   GameStateData,
   LoanOfferData,
@@ -78,6 +78,11 @@ import {
   type TransferAvailabilityFilter,
   type TransferTabView,
 } from "./TransfersTab.model";
+import {
+  DEFAULT_TRANSFER_MARKET_FILTERS,
+  type TransferMarketFilters,
+  updateTransferMarketFilter,
+} from "./TransfersTab.filters";
 import { calculateAvailableScouts } from "../scouting/ScoutingTab.helpers";
 import { buildAlreadyScoutingIds } from "../scouting/ScoutingTab.model";
 import {
@@ -97,6 +102,9 @@ interface TransfersTabProps {
   onSelectPlayer: (id: string, options?: PlayerSelectionOptions) => void;
   onSelectTeam: (id: string) => void;
   onGameUpdate?: (game: GameStateData) => void;
+  /** Market filters kept by the caller so they survive a visit to a player's profile. */
+  marketFilters?: TransferMarketFilters;
+  onMarketFiltersChange?: Dispatch<SetStateAction<TransferMarketFilters>>;
 }
 
 const TRANSFER_MARKET_PAGE_SIZE = 30;
@@ -145,6 +153,8 @@ export default function TransfersTab({
   onSelectPlayer,
   onSelectTeam,
   onGameUpdate,
+  marketFilters,
+  onMarketFiltersChange,
 }: TransfersTabProps) {
   const { t, i18n } = useTranslation();
   const weeklySuffix = t("finances.perWeekSuffix", "/wk");
@@ -159,17 +169,36 @@ export default function TransfersTab({
     transferWindow.status === "Closed" && closedWindowRegistrationDate
       ? closedWindowRegistrationDate
       : gameState.clock.current_date;
-  const [view, setView] = useState<TransferTabView>("players");
-  const [availabilityFilter, setAvailabilityFilter] = useState<TransferAvailabilityFilter>("all");
-  const [search, setSearch] = useState("");
-  const [specificPositions, setSpecificPositions] = useState<string[]>([]);
+  // Controlled when the dashboard holds the filters, local otherwise (tests,
+  // embedded uses). Each setter updates one field from the latest state.
+  const [localMarketFilters, setLocalMarketFilters] = useState(DEFAULT_TRANSFER_MARKET_FILTERS);
+  const isControlled = marketFilters !== undefined && onMarketFiltersChange !== undefined;
+  const filters = isControlled ? marketFilters : localMarketFilters;
+  const setFilters = isControlled ? onMarketFiltersChange : setLocalMarketFilters;
+  const filterSetter =
+    <K extends keyof TransferMarketFilters>(key: K) =>
+    (value: SetStateAction<TransferMarketFilters[K]>) =>
+      setFilters((previous) => updateTransferMarketFilter(previous, key, value));
+  const {
+    view,
+    availabilityFilter,
+    search,
+    specificPositions,
+    affordableOnly,
+    ovrSortDir,
+    marketPage,
+  } = filters;
+  const setView = filterSetter("view");
+  const setAvailabilityFilter = filterSetter("availabilityFilter");
+  const setSearch = filterSetter("search");
+  const setSpecificPositions = filterSetter("specificPositions");
+  const setAffordableOnly = filterSetter("affordableOnly");
+  const setOvrSortDir = filterSetter("ovrSortDir");
+  const setMarketPage = filterSetter("marketPage");
   const [openPositionPopover, setOpenPositionPopover] = useState<string | null>(null);
   const positionFilterRef = useRef<HTMLDivElement | null>(null);
-  const [affordableOnly, setAffordableOnly] = useState(false);
   // Click the OVR header to cycle: none → desc → asc → none. Applied over the
   // filter output before pagination so sorted rows stay stable across pages.
-  const [ovrSortDir, setOvrSortDir] = useState<"none" | "desc" | "asc">("none");
-  const [marketPage, setMarketPage] = useState(1);
   const cycleOvrSort = () => {
     setOvrSortDir((current) => (current === "none" ? "desc" : current === "desc" ? "asc" : "none"));
     setMarketPage(1);

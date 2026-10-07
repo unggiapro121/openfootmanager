@@ -32,6 +32,10 @@ import {
   type SquadListSortState,
 } from "../components/squad/SquadRosterView.state";
 import {
+  DEFAULT_TRANSFER_MARKET_FILTERS,
+  type TransferMarketFilters,
+} from "../components/transfers/TransfersTab.filters";
+import {
   isOnboardingPageTab,
   loadVisitedOnboardingTabs,
   saveVisitedOnboardingTabs,
@@ -129,6 +133,9 @@ export default function Dashboard(): JSX.Element {
   const [activeSaveId, setActiveSaveId] = useState<string | null>(null);
   const [squadListSortState, setSquadListSortState] = useState<SquadListSortState>(
     DEFAULT_SQUAD_LIST_SORT_STATE,
+  );
+  const [transferMarketFilters, setTransferMarketFilters] = useState<TransferMarketFilters>(
+    DEFAULT_TRANSFER_MARKET_FILTERS,
   );
   const [financeVerdict, setFinanceVerdict] = useState<{
     teamId: string;
@@ -253,6 +260,7 @@ export default function Dashboard(): JSX.Element {
 
   useEffect(() => {
     setSquadListSortState(DEFAULT_SQUAD_LIST_SORT_STATE);
+    setTransferMarketFilters(DEFAULT_TRANSFER_MARKET_FILTERS);
   }, [activeSaveId]);
 
   useEffect(() => {
@@ -514,6 +522,7 @@ export default function Dashboard(): JSX.Element {
     seasonComplete,
     visitedOnboardingTabs,
     squadListSortState,
+    transferMarketFilters,
     initialMessageId: profileNavigation.initialMessageId,
     handlers: {
       onSelectPlayer: selectPlayer,
@@ -521,6 +530,7 @@ export default function Dashboard(): JSX.Element {
       onGameUpdate: setGameState,
       onNavigate: handleNavigate,
       onSquadListSortChange: setSquadListSortState,
+      onTransferMarketFiltersChange: setTransferMarketFilters,
     },
   });
 
