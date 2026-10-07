@@ -9,12 +9,14 @@ import {
   Search,
   Shield,
   Target,
+  Trash2,
   Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type JSX } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
+import DashboardModalFrame from "../dashboard/DashboardModalFrame";
 import { Badge, Button, Card, Select } from "../ui";
 import { FORMATIONS } from "./TacticsTab.helpers";
 
@@ -35,6 +37,8 @@ interface TacticsCommandBarProps {
   isDirty: boolean;
   onCreateNew: () => void;
   onDuplicate: () => void;
+  /** Remove a saved custom tactic; the team's live setup is untouched. */
+  onDelete: (id: string) => void;
   onFormationChange: (formation: string) => void;
   onPlayStyleChange: (playStyle: string) => void;
   onSave: () => void;
@@ -64,6 +68,7 @@ export default function TacticsCommandBar({
   isDirty,
   onCreateNew,
   onDuplicate,
+  onDelete,
   onFormationChange,
   onPlayStyleChange,
   onSave,
@@ -72,6 +77,7 @@ export default function TacticsCommandBar({
 }: TacticsCommandBarProps): JSX.Element {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<TacticsLibraryEntry | null>(null);
   const [search, setSearch] = useState("");
   const [showSavedCue, setShowSavedCue] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -108,6 +114,11 @@ export default function TacticsCommandBar({
   // persist. Presets stay enabled even when isDirty is false because saving
   // there always creates a new custom tactic, which is an observable action.
   const isSaveDisabled = activeTactic.type === "custom" && !isDirty;
+  // Only a tactic that is actually stored can be deleted — not a preset, and not
+  // the unsaved "current setup" stand-in shown when nothing matches.
+  const isActiveSavedCustom = tacticLibrary.some(
+    (entry) => entry.type === "custom" && entry.id === activeTactic.id,
+  );
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -172,6 +183,18 @@ export default function TacticsCommandBar({
               <Button type="button" variant="ghost" size="sm" icon={<Copy />} onClick={onDuplicate}>
                 {t("tactics.duplicateTactic")}
               </Button>
+              {isActiveSavedCustom ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  icon={<Trash2 />}
+                  onClick={() => setPendingDelete(activeTactic)}
+                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                >
+                  {t("tactics.deleteTactic")}
+                </Button>
+              ) : null}
               <Button
                 type="button"
                 variant="accent"
@@ -244,36 +267,48 @@ export default function TacticsCommandBar({
                         </div>
                         <div className="space-y-1">
                           {customEntries.map((entry) => (
-                            <button
-                              key={entry.id}
-                              type="button"
-                              role="option"
-                              aria-selected={entry.id === activeTactic.id}
-                              onClick={() => {
-                                onSelectTactic(entry.id);
-                                setIsOpen(false);
-                                setSearch("");
-                              }}
-                              className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${
-                                entry.id === activeTactic.id
-                                  ? "border-primary-300 bg-primary-50 dark:border-primary-400 dark:bg-primary-500/10"
-                                  : "border-transparent bg-gray-50 hover:border-gray-200 hover:bg-white dark:bg-navy-700/70 dark:hover:border-navy-500 dark:hover:bg-navy-700"
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-3">
-                                <div className="min-w-0">
-                                  <div className="truncate text-sm font-heading font-bold text-gray-900 dark:text-gray-100">
-                                    {entry.name}
+                            // The delete control sits beside the option, not inside
+                            // it: a button may not contain another button.
+                            <div key={entry.id} className="relative">
+                              <button
+                                type="button"
+                                role="option"
+                                aria-selected={entry.id === activeTactic.id}
+                                onClick={() => {
+                                  onSelectTactic(entry.id);
+                                  setIsOpen(false);
+                                  setSearch("");
+                                }}
+                                className={`w-full rounded-xl border px-3 py-3 pb-9 text-left transition-colors ${
+                                  entry.id === activeTactic.id
+                                    ? "border-primary-300 bg-primary-50 dark:border-primary-400 dark:bg-primary-500/10"
+                                    : "border-transparent bg-gray-50 hover:border-gray-200 hover:bg-white dark:bg-navy-700/70 dark:hover:border-navy-500 dark:hover:bg-navy-700"
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <div className="min-w-0">
+                                    <div className="truncate text-sm font-heading font-bold text-gray-900 dark:text-gray-100">
+                                      {entry.name}
+                                    </div>
+                                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                      {entry.description}
+                                    </div>
                                   </div>
-                                  <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    {entry.description}
-                                  </div>
+                                  <span className="shrink-0 text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
+                                    {summarizeTactic(entry, t)}
+                                  </span>
                                 </div>
-                                <span className="shrink-0 text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
-                                  {summarizeTactic(entry, t)}
-                                </span>
-                              </div>
-                            </button>
+                              </button>
+                              <button
+                                type="button"
+                                aria-label={t("tactics.deleteTacticNamed", { name: entry.name })}
+                                title={t("tactics.deleteTactic")}
+                                onClick={() => setPendingDelete(entry)}
+                                className="absolute bottom-2 right-2 rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:text-gray-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                              >
+                                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                              </button>
+                            </div>
                           ))}
                         </div>
                       </div>
@@ -363,6 +398,49 @@ export default function TacticsCommandBar({
           </div>
         </div>
       </div>
+      {pendingDelete ? (
+        <DashboardModalFrame maxWidthClassName="max-w-md">
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-tactic-title"
+            className="space-y-4"
+          >
+            <div>
+              <h3
+                id="delete-tactic-title"
+                className="text-lg font-heading font-bold text-gray-900 dark:text-gray-100"
+              >
+                {t("tactics.deleteTacticConfirmTitle")}
+              </h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                {t("tactics.deleteTacticConfirmBody", { name: pendingDelete.name })}
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPendingDelete(null)}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  onDelete(pendingDelete.id);
+                  setPendingDelete(null);
+                }}
+                className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
+              >
+                {t("tactics.deleteTactic")}
+              </Button>
+            </div>
+          </div>
+        </DashboardModalFrame>
+      ) : null}
     </Card>
   );
 }

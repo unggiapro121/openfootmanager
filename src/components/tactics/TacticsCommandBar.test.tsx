@@ -45,6 +45,7 @@ function buildProps(
     isDirty: false,
     onCreateNew: vi.fn(),
     onDuplicate: vi.fn(),
+    onDelete: vi.fn(),
     onFormationChange: vi.fn(),
     onPlayStyleChange: vi.fn(),
     onSave: vi.fn(),
@@ -56,6 +57,12 @@ function buildProps(
 
 function renderCommandBar(overrides: Partial<React.ComponentProps<typeof TacticsCommandBar>> = {}) {
   return render(<TacticsCommandBar {...buildProps(overrides)} />);
+}
+
+/** The dialog's confirm button: rendered last of the controls sharing its name. */
+function lastButton(name: string): HTMLElement {
+  const buttons = screen.getAllByRole("button", { name });
+  return buttons[buttons.length - 1];
 }
 
 describe("TacticsCommandBar", () => {
@@ -132,5 +139,60 @@ describe("TacticsCommandBar", () => {
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toBeEnabled();
     expect(screen.queryByRole("button", { name: "tactics.tacticSaved" })).not.toBeInTheDocument();
+  });
+
+  /**
+   * Given a saved custom tactic selected, when delete is pressed and confirmed,
+   * then that tactic is deleted.
+   */
+  it("deletes the selected custom tactic after confirming", () => {
+    const onDelete = vi.fn();
+    renderCommandBar({ activeTactic: customTactic, onDelete });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.deleteTactic" }));
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(screen.getByRole("alertdialog")).toBeInTheDocument();
+
+    fireEvent.click(lastButton("tactics.deleteTactic"));
+
+    expect(onDelete).toHaveBeenCalledWith("custom:1");
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  /** Given the confirmation is open, when it is cancelled, then nothing is deleted. */
+  it("keeps the tactic when the confirmation is cancelled", () => {
+    const onDelete = vi.fn();
+    renderCommandBar({ activeTactic: customTactic, onDelete });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.deleteTactic" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  /** Given a preset selected, then there is nothing of the user's to delete. */
+  it("offers no delete for a preset", () => {
+    renderCommandBar({ activeTactic: presetTactic });
+
+    expect(screen.queryByRole("button", { name: "tactics.deleteTactic" })).not.toBeInTheDocument();
+  });
+
+  /** Given the tactic list open, then each saved tactic can be deleted from its row. */
+  it("deletes a custom tactic from its row in the list", () => {
+    const onDelete = vi.fn();
+    const other: TacticsLibraryEntry = { ...customTactic, id: "custom:2", name: "Other" };
+    renderCommandBar({
+      activeTactic: presetTactic,
+      onDelete,
+      tacticLibrary: [customTactic, other, presetTactic],
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.chooseTactic" }));
+    // The fake translator drops the name, so pick the second row's control.
+    fireEvent.click(screen.getAllByRole("button", { name: "tactics.deleteTacticNamed" })[1]);
+    fireEvent.click(screen.getByRole("button", { name: "tactics.deleteTactic" }));
+
+    expect(onDelete).toHaveBeenCalledWith("custom:2");
   });
 });

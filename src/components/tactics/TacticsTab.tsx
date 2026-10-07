@@ -80,6 +80,7 @@ export default function TacticsTab({
     handleCreateCustomTactic,
     handleDuplicateTactic,
     handleSaveTactic,
+    handleDeleteTactic,
   } = useTacticsLibrary({
     gameState,
     formation,
@@ -107,6 +108,7 @@ export default function TacticsTab({
         isDirty={isCommandBarDirty}
         onCreateNew={handleCreateCustomTactic}
         onDuplicate={handleDuplicateTactic}
+        onDelete={handleDeleteTactic}
         onFormationChange={(nextFormation) => {
           void handleFormationChange(nextFormation);
         }}

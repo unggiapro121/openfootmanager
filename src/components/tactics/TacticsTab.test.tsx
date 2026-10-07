@@ -229,6 +229,12 @@ const createDataTransfer = () => {
   };
 };
 
+/** The dialog's confirm button: rendered last of the controls sharing its name. */
+function lastButton(name: string): HTMLElement {
+  const buttons = screen.getAllByRole("button", { name });
+  return buttons[buttons.length - 1];
+}
+
 describe("TacticsTab", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -239,6 +245,41 @@ describe("TacticsTab", () => {
       if (command === "get_squad") return defaultRoster;
       return defaultGameState;
     });
+  });
+
+  /**
+   * Given a custom tactic the manager created, when it is deleted and the delete
+   * confirmed, then it is gone from My tactics and from storage, and the team's
+   * formation is left as it was.
+   */
+  it("deletes a custom tactic and forgets it", async () => {
+    render(
+      <TacticsTab gameState={makeGameState()} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.newTactic" }));
+    await waitFor(() => {
+      const stored = Object.keys(localStorage).filter((key) =>
+        key.startsWith("ofm:tactics:custom"),
+      );
+      expect(stored.map((key) => JSON.parse(localStorage.getItem(key) ?? "[]").length)).toEqual([
+        1,
+      ]);
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "tactics.deleteTactic" }));
+    fireEvent.click(lastButton("tactics.deleteTactic"));
+
+    await waitFor(() => {
+      const stored = Object.keys(localStorage).filter((key) =>
+        key.startsWith("ofm:tactics:custom"),
+      );
+      expect(stored.map((key) => JSON.parse(localStorage.getItem(key) ?? "[]").length)).toEqual([
+        0,
+      ]);
+    });
+    expect(screen.queryByRole("button", { name: "tactics.deleteTactic" })).not.toBeInTheDocument();
+    expect(mockedInvoke).not.toHaveBeenCalledWith("set_formation", expect.anything());
   });
 
   it("renders the top tactical controls plus bench player in the left panel", () => {
