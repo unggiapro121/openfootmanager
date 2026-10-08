@@ -45,6 +45,8 @@ vi.mock("react-i18next", () => ({
       if (key === "common.wage") return "Wage";
       if (key === "common.age") return "Age";
       if (key === "common.height") return "Height";
+      if (key === "common.footednessLabel") return "Foot";
+      if (key === "common.weakFoot") return "Weak foot";
       if (key === "common.weight") return "Weight";
       if (key === "common.viewTeam") return "View team";
       if (key === "common.freeAgent") return "Free Agent";
@@ -389,6 +391,12 @@ function RenewalHarness({ initialPlayer }: { initialPlayer?: PlayerData }) {
   );
 }
 
+/** The value the hero's stat strip shows under `label`, as a reader hears it. */
+function heroStat(label: string): string {
+  const term = screen.getByText(label, { selector: "dt" });
+  return term.nextElementSibling?.textContent ?? "";
+}
+
 describe("PlayerProfile contract surfaces", () => {
   beforeEach(() => {
     vi.mocked(invoke).mockReset();
@@ -513,8 +521,23 @@ describe("PlayerProfile contract surfaces", () => {
 
     render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
 
-    expect(screen.getByText("Height: 188 cm")).toBeInTheDocument();
-    expect(screen.getByText("Weight: 82 kg")).toBeInTheDocument();
+    expect(heroStat("Height")).toBe("188 cm");
+    expect(heroStat("Weight")).toBe("82 kg");
+  });
+
+  /**
+   * Given a right-footed player rated 2 of 5 on his weaker foot, when his profile
+   * opens, then both feet sit side by side in the hero's stat strip, the weaker
+   * foot as a 2/5 rating.
+   */
+  it("shows both feet together in the hero's stat strip", () => {
+    const player = createPlayer({ footedness: "Right", weak_foot: 2 });
+    const gameState = createGameState(player);
+
+    render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
+
+    expect(heroStat("Foot")).toBe("common.footedness.Right");
+    expect(heroStat("Weak foot")).toBe("2/5");
   });
 
   /**
@@ -527,8 +550,8 @@ describe("PlayerProfile contract surfaces", () => {
 
     render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
 
-    expect(screen.getByText("Height: —")).toBeInTheDocument();
-    expect(screen.getByText("Weight: —")).toBeInTheDocument();
+    expect(heroStat("Height")).toBe("—");
+    expect(heroStat("Weight")).toBe("—");
   });
 
   /** Given an own-club player, when his attributes are shown, then the header carries his OVR. */

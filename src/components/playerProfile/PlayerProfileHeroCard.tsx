@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Shield } from "lucide-react";
 import { countryName } from "../../lib/countries";
 import type { PlayerData } from "../../store/gameStore";
@@ -35,6 +36,38 @@ interface PlayerProfileHeroCardProps {
   onSelectTeam?: (id: string) => void;
   team?: TeamData;
   t: TranslateFn;
+}
+
+/** One cell of the hero's stat strip: a small label over its value. */
+function HeroStat({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-[10px] font-heading font-bold uppercase tracking-widest text-gray-500">
+        {label}
+      </dt>
+      <dd className="mt-0.5 text-sm font-semibold text-gray-200">{children}</dd>
+    </div>
+  );
+}
+
+const WEAK_FOOT_MAX = 5;
+
+/** The weaker foot as five dots, the rating read out as "n/5". */
+function WeakFootRating({ value }: { value: number }) {
+  return (
+    <span className="inline-flex h-5 items-center gap-1">
+      {Array.from({ length: WEAK_FOOT_MAX }, (_, index) => (
+        <span
+          key={index}
+          aria-hidden="true"
+          className={`h-2 w-2 rounded-full ${index < value ? "bg-primary-400" : "bg-navy-600"}`}
+        />
+      ))}
+      <span className="sr-only">
+        {value}/{WEAK_FOOT_MAX}
+      </span>
+    </span>
+  );
 }
 
 export default function PlayerProfileHeroCard({
@@ -107,24 +140,22 @@ export default function PlayerProfileHeroCard({
               <span className="text-gray-400 text-sm">
                 {t("common.age")} {age}
               </span>
-              <span className="text-gray-500">•</span>
-              <span className="text-gray-400 text-sm">
-                {t("common.footednessLabel")}: {footednessLabel}
-              </span>
-              <span className="text-gray-500">•</span>
-              <span className="text-gray-400 text-sm">
-                {t("common.weakFoot")}: {weakFootValue}/5
-              </span>
-              <span className="text-gray-500">•</span>
-              <span className="text-gray-400 text-sm">
-                {t("common.height")}:{" "}
-                {formatPlayerPhysique(player.height_cm, "centimeter", language)}
-              </span>
-              <span className="text-gray-500">•</span>
-              <span className="text-gray-400 text-sm">
-                {t("common.weight")}: {formatPlayerPhysique(player.weight_kg, "kilogram", language)}
-              </span>
             </div>
+            {/* Feet and build as one strip of label-over-value cells. On a narrow
+                screen it folds into two rows, keeping the two feet together and
+                height beside weight. */}
+            <dl className="mt-3 grid max-w-xl grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
+              <HeroStat label={t("common.footednessLabel")}>{footednessLabel}</HeroStat>
+              <HeroStat label={t("common.weakFoot")}>
+                <WeakFootRating value={weakFootValue} />
+              </HeroStat>
+              <HeroStat label={t("common.height")}>
+                {formatPlayerPhysique(player.height_cm, "centimeter", language)}
+              </HeroStat>
+              <HeroStat label={t("common.weight")}>
+                {formatPlayerPhysique(player.weight_kg, "kilogram", language)}
+              </HeroStat>
+            </dl>
             <p className="text-gray-400 text-sm mt-2 flex items-center gap-1.5">
               <Shield className="w-4 h-4" />
               {player.team_id && onSelectTeam ? (
