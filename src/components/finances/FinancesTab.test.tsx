@@ -77,6 +77,8 @@ vi.mock("react-i18next", async () => {
           if (key === "finances.contractRiskStable") return "Stable";
           if (key === "finances.contractExpiresOn") return `Expires ${params?.date}`;
           if (key === "finances.atRiskWages") return `${params?.amount}/wk at risk`;
+          if (key === "finances.academyWage")
+            return `${params?.paid} (first team: ${params?.contract})`;
           if (key === "finances.noContractRisks") return "No imminent contract risks";
           if (key === "finances.selectRiskPlayer") return `Select ${params?.player}`;
           if (key === "common.renewContract") return "Renew Contract";
@@ -775,6 +777,26 @@ describe("FinancesTab facilities", () => {
     expect(screen.getByText("€10K/wk")).toBeInTheDocument();
     expect(screen.getByText("-€30K/wk")).toBeInTheDocument();
     expect(screen.getByText("9 weeks at current pace")).toBeInTheDocument();
+  });
+
+  it("counts an expiring academy contract at what the club pays", () => {
+    const gameState = createGameState(
+      { wage_budget: 50000 },
+      [],
+      [
+        createPlayer({
+          id: "player-academy",
+          full_name: "Kid Expiring",
+          wage: 30000,
+          squad_role: "Youth",
+          contract_end: "2025-04-30",
+        }),
+      ],
+    );
+
+    render(<FinancesTab gameState={gameState} onSelectPlayer={vi.fn()} />);
+
+    expect(screen.getByText("€15,000/wk at risk")).toBeInTheDocument();
   });
 
   it("renders wage pressure and contract risk indicators for expiring players", () => {

@@ -1191,7 +1191,8 @@
     "payrollStaff": "Nhân viên ({{count}})",
     "payrollNoStaff": "CLB chưa có nhân viên nào.",
     "staffName": "Nhân viên",
-    "staffRole": "Vai trò"
+    "staffRole": "Vai trò",
+    "academyWage": "{{paid}} (đội 1: {{contract}})"
   },
   "inbox": {
     "title": "Hộp thư",

@@ -1191,7 +1191,8 @@
     "payrollStaff": "Staf ({{count}})",
     "payrollNoStaff": "Klub tidak memiliki staf.",
     "staffName": "Anggota staf",
-    "staffRole": "Peran"
+    "staffRole": "Peran",
+    "academyWage": "{{paid}} (tim utama: {{contract}})"
   },
   "inbox": {
     "title": "Kotak Masuk",

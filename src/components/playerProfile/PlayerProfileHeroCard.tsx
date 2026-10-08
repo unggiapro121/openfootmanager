@@ -6,7 +6,7 @@ import ContextMenu from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
 import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
 import {
-  formatPlayerAnnualWage,
+  formatPlayerProfileWage,
   formatPlayerMarketValue,
   formatPlayerPhysique,
 } from "./PlayerProfile.helpers";
@@ -209,7 +209,7 @@ export default function PlayerProfileHeroCard({
             />
             <QuickStat
               label={t("common.wage")}
-              value={formatPlayerAnnualWage(player.wage, wageSuffix)}
+              value={formatPlayerProfileWage(player, wageSuffix, t)}
               color="text-white"
             />
           </div>
@@ -234,7 +234,7 @@ export default function PlayerProfileHeroCard({
         />
         <MobileQuickStat
           label={t("common.wage")}
-          value={formatPlayerAnnualWage(player.wage, wageSuffix)}
+          value={formatPlayerProfileWage(player, wageSuffix, t)}
           color="text-gray-700 dark:text-gray-200"
         />
       </div>

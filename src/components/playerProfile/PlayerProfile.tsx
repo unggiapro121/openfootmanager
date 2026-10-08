@@ -12,7 +12,7 @@ import TransferBidModal from "../transfers/TransferBidModal";
 import { useFreeAgentContractFlow } from "../transfers/useFreeAgentContractFlow";
 import { useTransferBidFlow } from "../transfers/useTransferBidFlow";
 import PlayerProfileActionsMenu from "./PlayerProfileActionsMenu";
-import { getPlayerAge, getPlayerTeamName } from "./PlayerProfile.helpers";
+import { formatPlayerProfileWage, getPlayerAge, getPlayerTeamName } from "./PlayerProfile.helpers";
 import { buildPlayerProfileRelationship } from "./PlayerProfile.viewModel";
 import PlayerProfileAdvancedStatsCard from "./PlayerProfileAdvancedStatsCard";
 import { buildPlayerAttributeGroups, isGoalkeeper } from "./PlayerProfile.attributes";
@@ -304,8 +304,7 @@ export default function PlayerProfile({
           condition={player.condition}
           morale={player.morale}
           marketValue={player.market_value}
-          wage={player.wage}
-          wageSuffix={weeklySuffix}
+          wageLabel={formatPlayerProfileWage(player, weeklySuffix, t)}
           language={i18n.language}
           contractRiskLevel={contractRiskLevel}
           contractRiskLabel={contractRiskLabel}

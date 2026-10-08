@@ -1191,7 +1191,8 @@
     "payrollStaff": "职员（{{count}}）",
     "payrollNoStaff": "俱乐部目前没有雇佣职员。",
     "staffName": "职员",
-    "staffRole": "职位"
+    "staffRole": "职位",
+    "academyWage": "{{paid}}（一线队：{{contract}}）"
   },
   "inbox": {
     "title": "收件箱",

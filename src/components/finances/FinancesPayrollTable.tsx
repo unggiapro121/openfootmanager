@@ -4,7 +4,7 @@ import { User } from "lucide-react";
 import { Card, CardHeader, CardBody, Badge } from "../ui";
 import { calcAge, formatExactMoney, formatVal, positionBadgeVariant } from "../../lib/helpers";
 import { getPlayerOvr } from "../../lib/playerOvr";
-import { weeklyWageAmount } from "../../lib/finance";
+import { formatPlayerWageLine, getPaidWeeklyWage, weeklyWageAmount } from "../../lib/finance";
 import type { PlayerData, PlayerSelectionOptions, StaffData } from "../../store/gameStore";
 import ContextMenu from "../ContextMenu";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
@@ -103,7 +103,7 @@ function PlayerPayroll({
       </thead>
       <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
         {[...roster]
-          .sort((a, b) => b.wage - a.wage)
+          .sort((a, b) => getPaidWeeklyWage(b) - getPaidWeeklyWage(a))
           .slice(0, 10)
           .map((p) => {
             const contextItems = onSelectPlayer
@@ -151,7 +151,7 @@ function PlayerPayroll({
                   {getPlayerOvr(p)}
                 </td>
                 <td className="py-3 px-5 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {formatExactMoney(weeklyWageAmount(p.wage))}
+                  {formatPlayerWageLine(p, (amount) => formatExactMoney(amount), t)}
                 </td>
                 <td className="py-3 px-5 text-sm text-gray-600 dark:text-gray-400">
                   {formatVal(p.market_value)}

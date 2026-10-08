@@ -150,8 +150,14 @@ pub fn has_let_expire_intent(player: &Player) -> bool {
         .is_some_and(|intent| matches!(intent, ContractExitIntent::LetExpire { .. }))
 }
 
+/// Severance is on what the club pays the player, so an academy player is paid
+/// off at half his contract.
 pub(crate) fn termination_severance_cost(player: &Player, current_date: NaiveDate) -> i64 {
-    severance_for_remaining_term(player.contract_end(), player.wage(), current_date)
+    severance_for_remaining_term(
+        player.contract_end(),
+        crate::finances::paid_weekly_wage(player),
+        current_date,
+    )
 }
 
 /// Paying someone off: every week left on the contract at their weekly wage,

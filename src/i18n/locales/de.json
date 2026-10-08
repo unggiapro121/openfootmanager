@@ -1191,7 +1191,8 @@
     "payrollStaff": "Mitarbeiter ({{count}})",
     "payrollNoStaff": "Der Verein beschäftigt keine Mitarbeiter.",
     "staffName": "Mitarbeiter",
-    "staffRole": "Funktion"
+    "staffRole": "Funktion",
+    "academyWage": "{{paid}} (Profikader: {{contract}})"
   },
   "inbox": {
     "title": "Posteingang",

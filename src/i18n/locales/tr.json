@@ -1191,7 +1191,8 @@
     "payrollStaff": "Personel ({{count}})",
     "payrollNoStaff": "Kulübün hiç personeli yok.",
     "staffName": "Personel",
-    "staffRole": "Görev"
+    "staffRole": "Görev",
+    "academyWage": "{{paid}} (A takım: {{contract}})"
   },
   "inbox": {
     "title": "Gelen Kutusu",

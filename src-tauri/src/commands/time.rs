@@ -1062,6 +1062,30 @@ mod tests {
         );
     }
 
+    /// Given two expiring contracts worth 60,000 a week against a 50,000 budget,
+    /// both academy players the club pays half of,
+    /// When the time blockers are worked out,
+    /// Then there is no wage-risk warning: the club risks 30,000, under budget.
+    #[test]
+    fn academy_wages_at_risk_count_at_what_the_club_pays() {
+        let mut game = make_game(11);
+        game.teams[0].wage_budget = 50_000;
+        for (id, end, wage) in [("p10", "2025-08-01", 35_000), ("p11", "2025-09-01", 25_000)] {
+            let player = game
+                .players
+                .iter_mut()
+                .find(|player| player.id == id)
+                .unwrap();
+            player.stage_contract_end(Some(end.to_string()));
+            player.stage_wage(wage);
+            player.squad_role = domain::player::SquadRole::Youth;
+        }
+
+        let blockers = compute_blocking_actions(&game);
+
+        assert!(blocker_by_id(&blockers, "contract_wage_risk").is_none());
+    }
+
     #[test]
     fn large_at_risk_wage_share_triggers_finance_blocker() {
         let mut game = make_game(11);

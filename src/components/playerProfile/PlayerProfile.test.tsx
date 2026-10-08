@@ -43,6 +43,8 @@ vi.mock("react-i18next", () => ({
       if (key === "common.morale") return "Morale";
       if (key === "common.value") return "Value";
       if (key === "common.wage") return "Wage";
+      if (key === "finances.academyWage")
+        return `${params?.paid} (first team: ${params?.contract})`;
       if (key === "common.age") return "Age";
       if (key === "common.height") return "Height";
       if (key === "common.footednessLabel") return "Foot";
@@ -515,6 +517,15 @@ describe("PlayerProfile contract surfaces", () => {
    * Given a player with a recorded height and weight, when his profile opens,
    * then the hero header shows both with their units.
    */
+  it("shows an academy player's paid wage beside his first-team contract", () => {
+    const player = createPlayer({ wage: 12_000, squad_role: "Youth" });
+    const gameState = createGameState(player);
+
+    render(<PlayerProfile player={player} gameState={gameState} isOwnClub onClose={vi.fn()} />);
+
+    expect(screen.getAllByText(/6K.* \(first team: .*12K/).length).toBeGreaterThan(0);
+  });
+
   it("shows the player's height and weight in the hero header", () => {
     const player = createPlayer({ height_cm: 188, weight_kg: 82 });
     const gameState = createGameState(player);

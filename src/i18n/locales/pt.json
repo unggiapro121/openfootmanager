@@ -1191,7 +1191,8 @@
     "payrollStaff": "Equipa técnica ({{count}})",
     "payrollNoStaff": "O clube não tem equipa técnica contratada.",
     "staffName": "Membro da equipa técnica",
-    "staffRole": "Função"
+    "staffRole": "Função",
+    "academyWage": "{{paid}} (equipa principal: {{contract}})"
   },
   "inbox": {
     "title": "Caixa de Entrada",

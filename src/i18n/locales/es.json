@@ -1191,7 +1191,8 @@
     "payrollStaff": "Personal ({{count}})",
     "payrollNoStaff": "El club no tiene personal contratado.",
     "staffName": "Miembro del personal",
-    "staffRole": "Puesto"
+    "staffRole": "Puesto",
+    "academyWage": "{{paid}} (primer equipo: {{contract}})"
   },
   "inbox": {
     "title": "Bandeja de Entrada",

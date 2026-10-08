@@ -638,9 +638,10 @@ mod tests {
     /// youth minimum, he joins on the minimum.
     #[test]
     fn a_recruit_the_board_refuses_at_his_wage_joins_on_the_youth_minimum() {
-        // A budget of 10,000 lets the bill reach 11,000: 9,000 + 3,000 is over,
-        // 9,000 + the minimum is not.
-        let game = world_on_a_budget(10_000, 9_000);
+        // A budget of 10,000 lets the bill reach 11,000. An academy recruit costs
+        // the club half his wage: 9,700 + 1,500 is over, 9,700 + half the minimum
+        // is not.
+        let game = world_on_a_budget(10_000, 9_700);
         let recruit = a_recruit_of("rival");
         assert_eq!(
             agreed_wage(&game, rival(&game), &recruit, 3_000),
@@ -674,9 +675,10 @@ mod tests {
     /// plan is not taken.
     #[test]
     fn each_recruit_is_judged_with_the_earlier_ones_on_the_bill() {
-        // A budget of 1,000 lets the bill reach 1,100: 500 + one recruit at no
-        // more than 600 fits, a second recruit does not.
-        let before = world_on_a_budget(1_000, 500);
+        // A budget of 1,000 lets the bill reach 1,100. An academy recruit costs
+        // the club half his wage: one at the minimum takes 700 to 950, still
+        // inside the budget, and a second (1,200) is over the 1,100 cap.
+        let before = world_on_a_budget(1_000, 700);
         let after = intake(&before);
         assert_eq!(newcomers(&before, &after, "rival").len(), 1);
     }
@@ -686,10 +688,11 @@ mod tests {
     /// then he is not taken either: the first refusal ends the club's intake.
     #[test]
     fn the_first_refusal_ends_the_clubs_intake() {
-        // A budget of 1,000 lets the bill reach 1,100: 700 leaves room for 400.
-        // The first recruit is refused at 3,000 and at the minimum; the second,
-        // asking 300, would fit.
-        let mut game = world_on_a_budget(1_000, 700);
+        // A budget of 1,000 lets the bill reach 1,100: 900 leaves room for 200.
+        // An academy recruit costs the club half his wage, so the first is
+        // refused at 3,000 (1,500) and at the minimum (250); the second, asking
+        // 300 (150), would fit.
+        let mut game = world_on_a_budget(1_000, 900);
         let end = season_end() + chrono::Months::new(36);
         let drawn = |id: &str, asking: u32| Drawn {
             recruit: youngster(id, "rival", Position::Forward),

@@ -11,6 +11,8 @@ vi.mock("react-i18next", () => ({
       if (key === "finances.until") return `Until ${params?.year}`;
       if (key === "finances.payrollPlayers") return `Players (${params?.count})`;
       if (key === "finances.payrollStaff") return `Staff (${params?.count})`;
+      if (key === "finances.academyWage")
+        return `${params?.paid} (first team: ${params?.contract})`;
       return key;
     },
     i18n: { language: "en" },
@@ -141,5 +143,18 @@ describe("FinancesPayrollTable", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Staff (0)" }));
 
     expect(screen.getByRole("tabpanel")).toHaveTextContent("finances.payrollNoStaff");
+  });
+
+  it("shows an academy player's paid wage beside his first-team contract", () => {
+    const academy = createPlayer({
+      id: "player-9",
+      full_name: "Kid Prospect",
+      wage: 12_000,
+      squad_role: "Youth",
+    });
+    render(<FinancesPayrollTable roster={[academy]} staff={[]} />);
+
+    const row = screen.getByRole("row", { name: /Kid Prospect/ });
+    expect(row).toHaveTextContent(/6,000 \(first team: .*12,000\)/);
   });
 });

@@ -300,7 +300,7 @@ fn contract_wage_risk_blocker(
             !has_let_expire_intent(player)
                 && contract_warning_stage(player.contract_end(), current_date).is_some()
         })
-        .map(|player| player.wage())
+        .map(ofm_core::finances::paid_weekly_wage)
         .sum();
 
     let wage_budget = team.wage_budget.max(0) as u32;

@@ -1191,7 +1191,8 @@
     "payrollStaff": "Staff ({{count}})",
     "payrollNoStaff": "The club employs no staff.",
     "staffName": "Staff member",
-    "staffRole": "Role"
+    "staffRole": "Role",
+    "academyWage": "{{paid}} (first team: {{contract}})"
   },
   "inbox": {
     "title": "Inbox",

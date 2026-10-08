@@ -1191,7 +1191,8 @@
     "payrollStaff": "Realizační tým ({{count}})",
     "payrollNoStaff": "Klub nemá žádné členy realizačního týmu.",
     "staffName": "Člen týmu",
-    "staffRole": "Funkce"
+    "staffRole": "Funkce",
+    "academyWage": "{{paid}} (A-tým: {{contract}})"
   },
   "inbox": {
     "title": "Doručená pošta",

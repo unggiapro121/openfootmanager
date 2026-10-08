@@ -1210,7 +1210,8 @@
     "payrollStaff": "Staff tecnico ({{count}})",
     "payrollNoStaff": "Il club non ha staff sotto contratto.",
     "staffName": "Membro dello staff",
-    "staffRole": "Ruolo"
+    "staffRole": "Ruolo",
+    "academyWage": "{{paid}} (prima squadra: {{contract}})"
   },
   "inbox": {
     "title": "Posta",

@@ -355,6 +355,21 @@ fn termination_preview_reports_severance_and_squad_safety() {
     assert_eq!(preview.squad_safety.projected_roster_size, 11);
 }
 
+/// Given the same player in the academy, where the club pays half his contract,
+/// When releasing him is previewed,
+/// Then the severance is half: it pays off what the club actually pays him.
+#[test]
+fn an_academy_players_severance_is_on_what_the_club_pays_him() {
+    let mut game = make_squad_game();
+    if let Some(player) = game.players.iter_mut().find(|p| p.id == "player-1") {
+        player.squad_role = domain::player::SquadRole::Youth;
+    }
+
+    let preview = preview_contract_termination(&game, "player-1").expect("preview");
+
+    assert_eq!(preview.severance_cost, 66_000);
+}
+
 #[test]
 fn terminate_contract_now_releases_player_and_charges_severance() {
     let mut game = make_squad_game();

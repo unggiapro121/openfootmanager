@@ -104,6 +104,11 @@ fn transfer_budget_from_cash(finance: i64) -> i64 {
 /// Set each club's pay level so that paying its squad at that level fits what
 /// its income can carry. `on_the_books` picks the players counted: the ones with
 /// a contract, or at a career's opening the ones generation staged one for.
+///
+/// Academy players count at their whole market wage even though the club pays
+/// them half: they are promoted onto that whole wage. Counting them at half was
+/// measured to leave more AI clubs in debt over six seasons (27 of 150 against
+/// 17), since clubs set wages for a bill that grew as their academy came through.
 pub(crate) fn set_pay_levels(game: &mut Game, on_the_books: impl Fn(&Player) -> bool) {
     let reputations = club_reputations(game);
     let mut market_bills: HashMap<String, f64> = HashMap::new();

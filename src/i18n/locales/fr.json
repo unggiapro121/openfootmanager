@@ -1191,7 +1191,8 @@
     "payrollStaff": "Staff ({{count}})",
     "payrollNoStaff": "Le club n'emploie aucun membre du staff.",
     "staffName": "Membre du staff",
-    "staffRole": "Rôle"
+    "staffRole": "Rôle",
+    "academyWage": "{{paid}} (équipe première : {{contract}})"
   },
   "inbox": {
     "title": "Boîte de Réception",

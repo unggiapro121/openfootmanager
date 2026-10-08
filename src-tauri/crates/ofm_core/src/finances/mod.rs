@@ -216,6 +216,28 @@ pub fn calc_wages(game: &Game, team_id: &str) -> i64 {
     player_wages + staff_wages
 }
 
+/// What `player`'s club pays him a week: his contract, halved while he is in
+/// the academy. The contract itself stays at the first-team rate, which is what
+/// negotiations, bids and promotion work from.
+pub fn paid_weekly_wage(player: &domain::player::Player) -> u32 {
+    u32::try_from(paid_for_contract(player, i64::from(player.wage()))).unwrap_or(u32::MAX)
+}
+
+/// `wage` as the club pays it for `player`: half while he is in the academy and
+/// not out on loan. On loan he plays first-team football, so the split is on the
+/// whole contract.
+fn paid_for_contract(player: &domain::player::Player, wage: i64) -> i64 {
+    let in_the_academy = player.squad_role == domain::player::SquadRole::Youth;
+    if in_the_academy && player.active_loan.is_none() {
+        wage / ACADEMY_WAGE_DIVISOR
+    } else {
+        wage
+    }
+}
+
+/// An academy player is paid half his first-team contract.
+const ACADEMY_WAGE_DIVISOR: i64 = 2;
+
 /// This club's share of `player.wage` this week (loan split, otherwise the
 /// employing club).
 pub fn player_weekly_wage_for_team(player: &domain::player::Player, team_id: &str) -> i64 {
@@ -246,7 +268,7 @@ fn weekly_share(
     }
 
     if offered_to_this_club || player.team_id.as_deref() == Some(team_id) {
-        wage
+        paid_for_contract(player, wage)
     } else {
         0
     }
@@ -1006,7 +1028,11 @@ pub fn process_weekly_finances(game: &mut Game) {
                 player_weekly_wage_for_team(player, &loan.parent_team_id),
             );
         } else if let Some(team_id) = &player.team_id {
-            add_weekly_wage(&mut player_wages_by_team, team_id, i64::from(player.wage()));
+            add_weekly_wage(
+                &mut player_wages_by_team,
+                team_id,
+                player_weekly_wage_for_team(player, team_id),
+            );
         }
     }
     for staff_member in &game.staff {

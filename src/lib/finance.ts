@@ -38,16 +38,46 @@ function clampPercent(value: number): number {
   return Math.max(0, Math.min(100, value));
 }
 
+/**
+ * What a player's club pays him a week: his contract, halved while he is in the
+ * academy and not out on loan. Mirrors `finances::paid_weekly_wage` in the
+ * backend, which charges the books; this copy only labels and totals the screens
+ * that read the roster directly.
+ */
+export function getPaidWeeklyWage(player: PlayerData): number {
+  const contract = Math.max(0, player.wage);
+  const inTheAcademy = player.squad_role === "Youth" && !player.active_loan;
+  return inTheAcademy ? Math.floor(contract / 2) : contract;
+}
+
+/**
+ * The wage line a screen shows for `player`: the contract alone for a first-team
+ * player, or what the club pays beside the contract for an academy player.
+ * `format` renders an amount; `t` resolves `finances.academyWage`.
+ */
+export function formatPlayerWageLine(
+  player: PlayerData,
+  format: (amount: number) => string,
+  t: (key: string, params: Record<string, string>) => string,
+): string {
+  const contract = Math.max(0, player.wage);
+  const paid = getPaidWeeklyWage(player);
+  if (paid === contract) {
+    return format(contract);
+  }
+  return t("finances.academyWage", { paid: format(paid), contract: format(contract) });
+}
+
 export function getPlayerAnnualWageCommitment(player: PlayerData, teamId?: string | null): number {
   const annualWage = Math.max(0, player.wage);
 
   if (!teamId) {
-    return annualWage;
+    return getPaidWeeklyWage(player);
   }
 
   const activeLoan = player.active_loan ?? null;
   if (!activeLoan) {
-    return player.team_id === teamId ? annualWage : 0;
+    return player.team_id === teamId ? getPaidWeeklyWage(player) : 0;
   }
 
   const loanTeamContributionPct = clampPercent(activeLoan.wage_contribution_pct);

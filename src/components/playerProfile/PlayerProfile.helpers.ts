@@ -1,6 +1,6 @@
 import type { PlayerData, PlayerSeasonStats, TeamData } from "../../store/gameStore";
 import type { TOptions } from "i18next";
-import { weeklyWageAmount } from "../../lib/finance";
+import { formatPlayerWageLine, weeklyWageAmount } from "../../lib/finance";
 import {
   formatAnnualAmount,
   formatExactMoney,
@@ -86,6 +86,15 @@ export function formatPlayerWage(annualWage: number, weeklySuffix: string): stri
 
 export function formatPlayerAnnualWage(annualWage: number, annualSuffix: string): string {
   return formatAnnualAmount(formatVal(annualWage), annualSuffix);
+}
+
+/** The profile's wage line: what the club pays beside the contract for an academy player. */
+export function formatPlayerProfileWage(
+  player: PlayerData,
+  weeklySuffix: string,
+  t: (key: string, params: Record<string, string>) => string,
+): string {
+  return formatPlayerWageLine(player, (amount) => formatPlayerAnnualWage(amount, weeklySuffix), t);
 }
 
 /** A body measurement the profile can show. */

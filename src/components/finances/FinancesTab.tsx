@@ -11,7 +11,7 @@ import {
   getContractRiskLevel,
   getContractYearsRemaining,
 } from "../../lib/helpers";
-import { weeklyWageAmount, getTeamFinanceSnapshot } from "../../lib/finance";
+import { formatPlayerWageLine, getPaidWeeklyWage, getTeamFinanceSnapshot } from "../../lib/finance";
 import { getFinanceSnapshot } from "../../services/financeService";
 import { useTranslation } from "react-i18next";
 import { resolveBackendError, resolveMessage } from "../../utils/backendI18n";
@@ -132,6 +132,7 @@ function FinancesTabContent({
           player.id,
           player.team_id ?? "",
           player.wage,
+          player.squad_role ?? "",
           player.contract_end ?? "",
           player.active_loan?.parent_team_id ?? "",
           player.active_loan?.loan_team_id ?? "",
@@ -252,7 +253,7 @@ function FinancesTabContent({
       return leftDate.localeCompare(rightDate);
     });
   const atRiskWages = contractRiskPlayers.reduce(
-    (sum, { player }) => sum + weeklyWageAmount(player.wage),
+    (sum, { player }) => sum + getPaidWeeklyWage(player),
     0,
   );
   const selectedRiskPlayers = contractRiskPlayers.filter(({ player }) =>
@@ -764,9 +765,10 @@ function FinancesTabContent({
                             : t("finances.contractRiskWarning")}
                         </Badge>
                         <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                          {formatWeeklyAmount(
-                            formatExactMoney(weeklyWageAmount(player.wage)),
-                            weeklySuffix,
+                          {formatPlayerWageLine(
+                            player,
+                            (amount) => formatWeeklyAmount(formatExactMoney(amount), weeklySuffix),
+                            t,
                           )}
                         </span>
                         {onSelectPlayer ? (

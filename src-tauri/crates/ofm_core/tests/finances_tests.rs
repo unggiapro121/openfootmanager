@@ -146,6 +146,102 @@ fn calc_wages_sums_player_and_staff_wages_for_a_team() {
     assert_eq!(weekly_wages, 1_700);
 }
 
+// ---------------------------------------------------------------------------
+// Academy wages — an academy player is paid half his first-team contract
+// ---------------------------------------------------------------------------
+
+fn academy_player(id: &str, team_id: &str, wage: u32) -> Player {
+    let mut player = make_player(id, team_id, wage);
+    player.squad_role = domain::player::SquadRole::Youth;
+    player
+}
+
+/// Given a club paying a 1,000 first-teamer, a 500 one, a 200 coach and an
+/// academy player on a 4,000 contract,
+/// When its weekly wage bill is worked out,
+/// Then the academy player counts at 2,000: half his contract.
+#[test]
+fn an_academy_player_counts_at_half_his_contract_in_the_wage_bill() {
+    let mut game = make_monday_game();
+    game.players.push(academy_player("y1", "team1", 4_000));
+
+    assert_eq!(finances::calc_wages(&game, "team1"), 1_700 + 2_000);
+    assert_eq!(finances::paid_weekly_wage(&game.players[2]), 2_000);
+}
+
+/// Given the same club on a Monday,
+/// When the week's wages are paid,
+/// Then the academy player is paid half his contract, as the wage bill says.
+#[test]
+fn payday_pays_an_academy_player_half_his_contract() {
+    let mut game = make_monday_game();
+    game.players.push(academy_player("y1", "team1", 4_000));
+    let initial_finance = game.teams[0].finance;
+
+    finances::process_weekly_finances(&mut game);
+
+    assert_eq!(
+        game.teams[0].finance,
+        initial_finance - (1_700 + 2_000) + central_income(&game.teams[0])
+    );
+}
+
+/// Given an academy player promoted to the first team,
+/// When the wage bill is worked out,
+/// Then he is paid his whole contract again.
+#[test]
+fn a_promoted_academy_player_is_paid_in_full() {
+    let mut game = make_monday_game();
+    let mut promoted = academy_player("y1", "team1", 4_000);
+    promoted.squad_role = domain::player::SquadRole::Senior;
+    game.players.push(promoted);
+
+    assert_eq!(finances::calc_wages(&game, "team1"), 1_700 + 4_000);
+}
+
+/// Given an academy player out on loan, his parent paying half of a 4,000 wage,
+/// When each club's share is worked out,
+/// Then the split is on the whole contract: on loan he plays first-team football.
+#[test]
+fn an_academy_player_on_loan_is_split_on_his_whole_contract() {
+    let mut player = academy_player("y1", "parent", 4_000);
+    player.active_loan = Some(ActiveLoan {
+        parent_team_id: "parent".to_string(),
+        loan_team_id: "loanee".to_string(),
+        start_date: "2025-01-01".to_string(),
+        end_date: "2026-06-30".to_string(),
+        wage_contribution_pct: 50,
+        buy_option_fee: None,
+        loan_start_minutes: 0,
+        loan_start_appearances: 0,
+        development_reported_minutes: 0,
+        development_reported_appearances: 0,
+    });
+
+    assert_eq!(
+        finances::player_weekly_wage_for_team(&player, "parent"),
+        2_000
+    );
+    assert_eq!(
+        finances::player_weekly_wage_for_team(&player, "loanee"),
+        2_000
+    );
+    assert_eq!(finances::paid_weekly_wage(&player), 4_000);
+}
+
+/// Given an academy player the club offers a 6,000 contract,
+/// When the club's commitment at that wage is worked out,
+/// Then it is 3,000: the board judges an academy contract on what it pays.
+#[test]
+fn an_academy_contract_is_committed_at_half() {
+    let player = academy_player("y1", "team1", 4_000);
+
+    assert_eq!(
+        finances::weekly_commitment_at_wage(&player, "team1", 6_000),
+        3_000
+    );
+}
+
 #[test]
 fn calc_cash_runway_weeks_uses_projected_weekly_net() {
     assert_eq!(finances::calc_cash_runway_weeks(180_000, -30_000), Some(6));

@@ -5,6 +5,7 @@ import {
   weeklyWageAmount,
   getAnnualWageBill,
   getCashRunwayWeeks,
+  getPaidWeeklyWage,
   getPlayerAnnualWageCommitment,
   getTeamFinanceSnapshot,
   getWeeklyWageSpend,
@@ -209,5 +210,40 @@ describe("finance helpers", () => {
 
     expect(getPlayerAnnualWageCommitment(loanedPlayer, "loan")).toBe(50);
     expect(getPlayerAnnualWageCommitment(loanedPlayer, "parent")).toBe(51);
+  });
+
+  describe("academy wages", () => {
+    it("pays an academy player half his contract", () => {
+      expect(getPaidWeeklyWage(createPlayer({ wage: 4_001, squad_role: "Youth" }))).toBe(2_000);
+      expect(getPaidWeeklyWage(createPlayer({ wage: 4_000, squad_role: "Senior" }))).toBe(4_000);
+      expect(getPaidWeeklyWage(createPlayer({ wage: 4_000 }))).toBe(4_000);
+    });
+
+    it("splits an academy player out on loan on his whole contract", () => {
+      const onLoan = createPlayer({
+        wage: 4_000,
+        squad_role: "Youth",
+        team_id: "parent",
+        active_loan: {
+          parent_team_id: "parent",
+          loan_team_id: "loanee",
+          start_date: "2025-01-01",
+          end_date: "2026-06-30",
+          wage_contribution_pct: 50,
+        },
+      });
+
+      expect(getPaidWeeklyWage(onLoan)).toBe(4_000);
+      expect(getPlayerAnnualWageCommitment(onLoan, "parent")).toBe(2_000);
+    });
+
+    it("counts academy players at half in the wage bill", () => {
+      const players = [
+        createPlayer({ wage: 1_000, team_id: "team-1" }),
+        createPlayer({ id: "academy", wage: 4_000, squad_role: "Youth", team_id: "team-1" }),
+      ];
+
+      expect(getWeeklyWageSpend(players, [], "team-1")).toBe(3_000);
+    });
   });
 });

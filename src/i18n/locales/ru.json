@@ -1191,7 +1191,8 @@
     "payrollStaff": "Персонал ({{count}})",
     "payrollNoStaff": "В клубе нет персонала.",
     "staffName": "Сотрудник",
-    "staffRole": "Должность"
+    "staffRole": "Должность",
+    "academyWage": "{{paid}} (основа: {{contract}})"
   },
   "inbox": {
     "title": "Входящие",
