@@ -33,6 +33,7 @@ fn make_player(id: &str, name: &str, position: Position, skill: u8) -> PlayerDat
         handling: skill,
         reflexes: skill,
         aerial: skill,
+        height_cm: 0,
         traits: vec![],
         role: PlayerRole::Standard,
     }

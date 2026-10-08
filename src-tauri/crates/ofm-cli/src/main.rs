@@ -218,6 +218,8 @@ const SCHEMA_PLAYER: &str = r##"// Player entity — place inside players/*.json
   "value": null,              // optional: market value, 0-9007199254740991 (omit and it is sized from ability and age)
   "weakFoot": null,           // optional: 1-5. Only kept for a specific position, not for
                               //   Goalkeeper/Defender/Midfielder/Forward, which are re-inferred
+  "heightCm": null,           // optional: 150-210 (omit and it is drawn from the position)
+  "weightKg": null,           // optional: 50-110 (omit and it is drawn from the height)
   "alternatePositions": [],   // optional: other positions the player covers (same restriction)
   "condition": null,          // optional: 0-100 match sharpness (omit and it is rolled)
   "morale": null,             // optional: 0-100 (omit and it is rolled)

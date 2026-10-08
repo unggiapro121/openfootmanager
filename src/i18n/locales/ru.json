@@ -523,6 +523,8 @@
     },
     "footednessLabel": "Рабочая нога",
     "weakFoot": "Слабая нога",
+    "height": "Рост",
+    "weight": "Вес",
     "playStyles": {
       "Balanced": "Сбалансированный",
       "Attacking": "Атакующий",

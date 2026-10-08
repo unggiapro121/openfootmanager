@@ -617,6 +617,7 @@ fn make_player(
         handling: biased(base, gk_off, rng),
         reflexes: biased(base, gk_off, rng),
         aerial: noise(base, rng),
+        height_cm: 0,
         traits: vec![],
         role: {
             let choices: &[PlayerRole] = match position {

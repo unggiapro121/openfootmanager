@@ -69,6 +69,19 @@ impl LiveMatchState {
             .unwrap_or_else(PlayerSnap::nobody)
     }
 
+    /// The attacker who meets a cross, never the man who crossed it. Falls back
+    /// to an ordinary forward only if the crosser is all the side has left.
+    pub(super) fn snap_header_target<R: Rng>(
+        &self,
+        side: Side,
+        crosser_id: &str,
+        rng: &mut R,
+    ) -> PlayerSnap {
+        let team = self.team_ref(side);
+        crate::shared::snap_header_target(&team.players, &self.sent_off, crosser_id, rng)
+            .unwrap_or_else(|| self.snap_player(side, Position::Forward, rng))
+    }
+
     pub(super) fn snap_player_by_id(&self, player_id: &str, side: Side) -> PlayerSnap {
         let team = self.team_ref(side);
         team.players
@@ -319,6 +332,7 @@ mod commentary_detail_tests {
             handling: 70,
             reflexes: 70,
             aerial: 70,
+            height_cm: 0,
             traits: vec![],
             role: crate::types::PlayerRole::Standard,
         }

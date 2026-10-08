@@ -527,6 +527,8 @@
     },
     "footednessLabel": "Chân thuận",
     "weakFoot": "Chân không thuận",
+    "height": "Chiều cao",
+    "weight": "Cân nặng",
     "playStyles": {
       "Balanced": "Cân bằng",
       "Attacking": "Tấn công",

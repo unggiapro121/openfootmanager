@@ -1,11 +1,12 @@
 use rand::{Rng, RngExt};
 
+use crate::duel;
 use crate::event::{EventDetail, EventType, MatchEvent};
 use crate::shared::{
-    PlayStylePhase, PlayerSnap, TraitContext, play_style_modifier, role_attribute_modifier,
-    tactics_buildup_mod, tactics_cross_probability, tactics_defensive_conversion_mod,
-    tactics_foul_modifier, tactics_shape_modifier, tactics_tempo_progression,
-    tactics_width_versus_shape, trait_bonus,
+    PlayStylePhase, PlayerSnap, ShotSetup, TraitContext, play_style_modifier,
+    role_attribute_modifier, tactics_buildup_mod, tactics_cross_probability,
+    tactics_defensive_conversion_mod, tactics_foul_modifier, tactics_shape_modifier,
+    tactics_tempo_progression, tactics_width_versus_shape, trait_bonus,
 };
 use crate::types::{Position, Side, Zone};
 
@@ -23,7 +24,7 @@ impl LiveMatchState {
         let zone = self.ball_zone;
 
         if zone.is_box_for(att_side) {
-            self.resolve_shot(minute, att_side, rng)
+            self.resolve_shot(minute, att_side, ShotSetup::default(), rng)
         } else if zone == Zone::attacking_third(att_side) {
             self.resolve_attacking_third(minute, att_side, def_side, rng)
         } else if zone == Zone::Midfield {
@@ -88,19 +89,11 @@ impl LiveMatchState {
         let attacker = self.snap_player(att_side, Position::Midfielder, rng);
         let defender = self.snap_player(def_side, Position::Midfielder, rng);
 
-        let att_raw = (attacker.dribbling as f64
-            + attacker.passing as f64
-            + attacker.vision as f64
-            + attacker.teamwork as f64)
-            / 4.0;
-        let def_raw = (defender.tackling as f64
-            + defender.positioning as f64
-            + defender.decisions as f64
-            + defender.teamwork as f64)
-            / 4.0;
-        let att_rating = self.condition_adjusted_skill(&attacker.id, att_raw)
+        // The players' ratings live in `duel`; what is left here is every
+        // modifier the duel always had, applied exactly as strongly.
+        let att_rating = self.condition_adjusted_skill(&attacker.id, 1.0)
             * trait_bonus(&attacker, TraitContext::Midfield);
-        let def_rating = self.condition_adjusted_skill(&defender.id, def_raw)
+        let def_rating = self.condition_adjusted_skill(&defender.id, 1.0)
             * trait_bonus(&defender, TraitContext::Tackling);
 
         let att_mod = play_style_modifier(self.team_ref(att_side), PlayStylePhase::Midfield)
@@ -112,7 +105,7 @@ impl LiveMatchState {
             * crate::shared::home_mod(att_side, &self.config)
             * tactics_tempo_progression(&self.team_ref(att_side).tactics);
         let def_eff = def_rating * def_mod * crate::shared::home_mod(def_side, &self.config);
-        let success = att_eff / (att_eff + def_eff);
+        let success = duel::midfield_win_probability(&attacker, &defender, att_eff / def_eff);
 
         if rng.random_range(0.0..1.0f64) < success {
             let evt = MatchEvent::new(minute, EventType::PassCompleted, att_side, Zone::Midfield)
@@ -168,19 +161,10 @@ impl LiveMatchState {
         let attacker = self.snap_player(att_side, Position::Forward, rng);
         let defender = self.snap_player(def_side, Position::Defender, rng);
 
-        let att_raw = (attacker.dribbling as f64
-            + attacker.pace as f64
-            + attacker.agility as f64
-            + attacker.composure as f64)
-            / 4.0;
-        let def_raw = (defender.defending as f64
-            + defender.tackling as f64
-            + defender.positioning as f64
-            + defender.aerial as f64)
-            / 4.0;
-        let att_rating = self.condition_adjusted_skill(&attacker.id, att_raw)
+        // As in midfield: ratings in `duel`, every existing modifier here.
+        let att_rating = self.condition_adjusted_skill(&attacker.id, 1.0)
             * trait_bonus(&attacker, TraitContext::Dribbling);
-        let def_rating = self.condition_adjusted_skill(&defender.id, def_raw)
+        let def_rating = self.condition_adjusted_skill(&defender.id, 1.0)
             * trait_bonus(&defender, TraitContext::Tackling);
 
         let att_mod = play_style_modifier(self.team_ref(att_side), PlayStylePhase::Attack)
@@ -196,7 +180,7 @@ impl LiveMatchState {
                 &self.team_ref(att_side).tactics,
                 &self.team_ref(def_side).tactics,
             );
-        let success = att_eff / (att_eff + def_eff);
+        let success = duel::one_v_one_win_probability(&attacker, &defender, att_eff / def_eff);
         let zone = Zone::attacking_third(att_side);
         let cross_prob = tactics_cross_probability(&self.team_ref(att_side).tactics);
 
@@ -211,14 +195,17 @@ impl LiveMatchState {
                     .with_player(&winger_id);
                 self.events.push(cross_evt.clone());
                 events.push(cross_evt);
-                let header = self.snap_player(att_side, Position::Forward, rng);
+                let header = self.snap_header_target(att_side, &winger_id, rng);
                 let def_header = self.snap_player(def_side, Position::Defender, rng);
-                let aerial_att = header.aerial as f64;
-                let aerial_def = def_header.aerial as f64;
-                let aerial_win = aerial_att / (aerial_att + aerial_def);
+                let aerial_win = duel::aerial_win_probability(&header, &def_header);
                 if rng.random_range(0.0..1.0f64) < aerial_win {
                     self.ball_zone = Zone::attacking_box(att_side);
-                    let shot_events = self.resolve_shot(minute, att_side, rng);
+                    // He won the header, so the chance is his; the cross is the assist.
+                    let setup = ShotSetup {
+                        shooter: Some(header),
+                        assister: Some(winger_id),
+                    };
+                    let shot_events = self.resolve_shot(minute, att_side, setup, rng);
                     events.extend(shot_events);
                 } else {
                     let clear_evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
@@ -277,7 +264,13 @@ impl LiveMatchState {
         events
     }
 
-    fn resolve_shot<R: Rng>(&mut self, minute: u8, att_side: Side, rng: &mut R) -> Vec<MatchEvent> {
+    fn resolve_shot<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        setup: ShotSetup,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
         let mut events = Vec::new();
         let def_side = att_side.opposite();
         let zone = Zone::attacking_box(att_side);
@@ -285,7 +278,10 @@ impl LiveMatchState {
         // Box foul rate fixed at 3.6% per shot — independent of foul_probability (which tunes outfield fouls)
         if rng.random_range(0.0..1.0f64) < 0.036 {
             let fouler = self.snap_player(def_side, Position::Defender, rng);
-            let fouled = self.snap_player(att_side, Position::Forward, rng);
+            let fouled = match &setup.shooter {
+                Some(shooter) => shooter.clone(),
+                None => self.snap_player(att_side, Position::Forward, rng),
+            };
             let foul_evt = MatchEvent::new(minute, EventType::Foul, def_side, zone)
                 .with_player(&fouler.id)
                 .with_secondary(&fouled.id)
@@ -312,8 +308,14 @@ impl LiveMatchState {
             // Foul but no penalty: advantage played, shot continues
         }
 
-        let shooter = self.snap_player(att_side, Position::Forward, rng);
-        let assister = self.snap_player(att_side, Position::Midfielder, rng);
+        let shooter = match setup.shooter {
+            Some(shooter) => shooter,
+            None => self.snap_player(att_side, Position::Forward, rng),
+        };
+        let assister_id = match setup.assister {
+            Some(id) => id,
+            None => self.snap_player(att_side, Position::Midfielder, rng).id,
+        };
         let goalkeeper = self.snap_player(def_side, Position::Goalkeeper, rng);
 
         let shoot_raw =
@@ -366,7 +368,7 @@ impl LiveMatchState {
             let context = self.goal_context(att_side);
             let evt = MatchEvent::new(minute, EventType::Goal, att_side, zone)
                 .with_player(&shooter.id)
-                .with_secondary(&assister.id)
+                .with_secondary(&assister_id)
                 .with_detail(EventDetail::Goal { context });
             self.events.push(evt.clone());
             events.push(evt);
@@ -553,6 +555,7 @@ mod event_detail_tests {
             handling: 70,
             reflexes: 70,
             aerial: 70,
+            height_cm: 0,
             traits: vec![],
             role: crate::types::PlayerRole::Standard,
         }

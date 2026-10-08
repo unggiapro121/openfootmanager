@@ -542,6 +542,8 @@
     },
     "footednessLabel": "Piede",
     "weakFoot": "Piede debole",
+    "height": "Altezza",
+    "weight": "Peso",
     "playStyles": {
       "Balanced": "Equilibrato",
       "Attacking": "Offensivo",

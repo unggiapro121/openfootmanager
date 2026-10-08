@@ -121,6 +121,10 @@ pub struct PlayerData {
     #[serde(default = "default_engine_attr")]
     pub aerial: u8,
 
+    /// Height in cm; 0 means not known and counts as average in the air.
+    #[serde(default)]
+    pub height_cm: u16,
+
     // Traits (string names matching domain::player::PlayerTrait variants)
     #[serde(default)]
     pub traits: Vec<String>,

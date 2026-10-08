@@ -214,6 +214,7 @@ mod tests {
             handling: 70,
             reflexes: 70,
             aerial: 70,
+            height_cm: 0,
             traits: vec![],
             role: PlayerRole::Standard,
         }

@@ -88,6 +88,39 @@ export function formatPlayerAnnualWage(annualWage: number, annualSuffix: string)
   return formatAnnualAmount(formatVal(annualWage), annualSuffix);
 }
 
+/** A body measurement the profile can show. */
+export type PhysiqueUnit = "centimeter" | "kilogram";
+
+const PHYSIQUE_FALLBACK_SYMBOL: Record<PhysiqueUnit, string> = {
+  centimeter: "cm",
+  kilogram: "kg",
+};
+
+/**
+ * Format a player's height or weight in the reader's language ("188 cm",
+ * "188 см", "188厘米"). Zero or absent means the world was made before players
+ * carried a physique, so it reads as unknown rather than as "0 cm".
+ */
+export function formatPlayerPhysique(
+  value: number | undefined,
+  unit: PhysiqueUnit,
+  language: string,
+): string {
+  if (!value || value <= 0) {
+    return "—";
+  }
+  try {
+    return new Intl.NumberFormat(language, {
+      style: "unit",
+      unit,
+      unitDisplay: "short",
+      maximumFractionDigits: 0,
+    }).format(value);
+  } catch {
+    return `${value} ${PHYSIQUE_FALLBACK_SYMBOL[unit]}`;
+  }
+}
+
 export function getAttributeColorClass(value: number): string {
   return getAttributeValueClassName(value);
 }

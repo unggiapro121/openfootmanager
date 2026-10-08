@@ -43,6 +43,7 @@ fn player(id: &str, position: Position, skill: u8, condition: u8) -> PlayerData 
         handling: skill,
         reflexes: skill,
         aerial: skill,
+        height_cm: 0,
         traits: vec![],
         role: PlayerRole::Standard,
     }

@@ -267,6 +267,10 @@ pub fn entity_template(kind: EntityKind, name: Option<&str>) -> Value {
                 // Kept only for a specific `position`; a general group has both
                 // re-inferred when a career opens.
                 "weakFoot": null,
+                // Height in cm (150-210) and weight in kg (50-110); drawn from the
+                // position when left out.
+                "heightCm": null,
+                "weightKg": null,
                 "alternatePositions": [],
                 "condition": null,
                 "morale": null,
@@ -554,6 +558,8 @@ mod tests {
             wage: Some(10_000),
             value: Some(5_000_000),
             weak_foot: Some(3),
+            height_cm: Some(181),
+            weight_kg: Some(76),
             alternate_positions: vec![Position::LeftWinger],
             condition: Some(90),
             morale: Some(70),

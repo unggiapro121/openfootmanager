@@ -71,6 +71,32 @@ Each simulated minute follows this sequence:
 | Attacking third | `resolve_attacking_third` | Forward vs Defender | Ball → Attacking box | Tackle/Clearance, possible corner (25%), may trigger foul |
 | Attacking box | `resolve_shot` | Forward shoots vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
 
+### Duel Resolution
+
+The midfield duel, the one-on-one in the attacking third and the aerial duel after a cross are
+decided by one shared module, `engine/src/duel.rs`, so the instant and live engines cannot drift
+apart:
+
+```text
+logit P(attacker wins) = Σ γᵢ · ln(attackerᵢ / defenderᵢ)   per compared component
+                       + ln(M_attacker / M_defender)       condition, traits, style, role, home, tactics
+                       + ln k                              the duel's anchor
+```
+
+With one component, γ = 1 and k = 1 this is exactly the old `a / (a + d)`. γ above 1 makes
+attribute differences matter while two equal players still meet at 50/50; each anchor `k` holds the
+league-wide share of duels the attacker wins where it was before the formulas changed.
+
+| Duel | Components | γ |
+|---|---|---|
+| Midfield | attacker: passing, dribbling, vision, teamwork, agility, strength; defender: tackling, positioning, decisions, teamwork, pace, strength | 1 (higher compounds over ~90 duels a match into runaway favourites) |
+| One-on-one | technique: dribbling + composure vs tackling + defending + positioning; physique: pace + agility + strength on both sides (the forward's weighted to pace, the defender's to strength) | 2 and 2 |
+| Aerial (after a cross) | `0.55·aerial + 0.20·positioning + 0.25·strength`, times a height factor (±8% across ±20 cm of 182 cm; an unknown height of 0 is neutral) | 2 |
+
+When the attacker wins the aerial duel, **he** takes the shot and the crosser is credited with the
+assist (`ShotSetup`); the header taker is never the crosser. Every other shot still draws its
+shooter and provider as before.
+
 ### Shot Resolution
 
 When the ball reaches the attacking box, a shot is taken:
@@ -103,6 +129,10 @@ The engine uses 19 player attributes, grouped into categories:
 **Technical**: passing, shooting, tackling, dribbling, defending
 **Mental**: positioning, vision, decisions, composure, aggression, teamwork, leadership
 **Goalkeeper**: handling, reflexes, aerial
+
+Besides attributes, `PlayerData` carries `height_cm` (0 when not known). It feeds only the height
+factor of the aerial duel. The generator draws it with the player's weight and ties `aerial`,
+`strength`, `agility` and `pace` to the body (see `ofm_core/src/generator/physique.rs`).
 
 ### Overall Rating
 

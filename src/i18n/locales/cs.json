@@ -527,6 +527,8 @@
     },
     "footednessLabel": "Preferovaná noha",
     "weakFoot": "Slabší noha",
+    "height": "Výška",
+    "weight": "Hmotnost",
     "playStyles": {
       "Balanced": "Vyvážený",
       "Attacking": "Útočný",

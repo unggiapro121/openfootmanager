@@ -156,6 +156,8 @@ describe.each([
   ["condition", "common.condition", WIRE_MAX.u8],
   ["morale", "common.morale", WIRE_MAX.u8],
   ["weakFoot", "common.weakFoot", WIRE_MAX.u8],
+  ["heightCm", "common.height", WIRE_MAX.u16],
+  ["weightKg", "common.weight", WIRE_MAX.u8],
 ] as const)("PlayerForm %s", (field, label, max) => {
   it("shows an authored value", () => {
     renderForm({ [field]: 3 } as Partial<PlayerDef>);

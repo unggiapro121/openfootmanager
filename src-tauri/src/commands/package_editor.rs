@@ -944,6 +944,8 @@ mod tests {
             wage: Some(250_000),
             value: Some(60_000_000),
             weak_foot: Some(4),
+            height_cm: Some(176),
+            weight_kg: Some(83),
             alternate_positions: vec![Position::AttackingMidfielder],
             condition: Some(92),
             morale: Some(80),
@@ -1086,6 +1088,7 @@ mod tests {
         assert_eq!(p.wage, Some(250_000));
         assert_eq!(p.value, Some(60_000_000));
         assert_eq!(p.weak_foot, Some(4));
+        assert_eq!((p.height_cm, p.weight_kg), (Some(176), Some(83)));
         assert_eq!(p.alternate_positions, vec![Position::AttackingMidfielder]);
         assert_eq!(p.condition, Some(92));
         assert_eq!(p.morale, Some(80));

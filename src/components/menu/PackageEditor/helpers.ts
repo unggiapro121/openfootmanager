@@ -326,8 +326,10 @@ export function parseRating(v: string): number | null {
  * from the Rust definitions would make these derivable instead of restated.
  */
 export const WIRE_MAX = {
-  /** `u8`: condition, morale and weak foot. */
+  /** `u8`: condition, morale, weak foot and weight. */
   u8: 255,
+  /** `u16`: height. */
+  u16: 65_535,
   /** `u32`: age, wage, contract length, and a career entry's season and counts. */
   u32: 4_294_967_295,
   /** `u64` held to what a JavaScript number represents exactly: market value. */

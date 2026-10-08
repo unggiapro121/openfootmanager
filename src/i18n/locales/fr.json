@@ -523,6 +523,8 @@
     },
     "footednessLabel": "Pied",
     "weakFoot": "Mauvais pied",
+    "height": "Taille",
+    "weight": "Poids",
     "playStyles": {
       "Balanced": "Équilibré",
       "Attacking": "Offensif",

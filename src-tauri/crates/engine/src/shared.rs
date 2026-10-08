@@ -33,6 +33,7 @@ pub(crate) struct PlayerSnap {
     pub handling: u8,
     pub reflexes: u8,
     pub aerial: u8,
+    pub height_cm: u16,
     pub traits: Vec<String>,
     pub role: PlayerRole,
 }
@@ -67,6 +68,7 @@ impl PlayerSnap {
             handling: 0,
             reflexes: 0,
             aerial: 0,
+            height_cm: 0,
             traits: Vec::new(),
             role: PlayerRole::Standard,
         }
@@ -94,6 +96,7 @@ impl PlayerSnap {
             handling: p.handling,
             reflexes: p.reflexes,
             aerial: p.aerial,
+            height_cm: p.height_cm,
             traits: p.traits.clone(),
             role: p.role,
         }
@@ -155,6 +158,51 @@ pub(crate) fn snap_from_squad<R: Rng>(
     }
     // Everyone available has been sent off: anyone on the teamsheet will do.
     players.first().map(PlayerSnap::from)
+}
+
+/// The player who meets a cross: a forward other than the one who crossed it,
+/// a midfielder when no other forward is on, else any outfielder but him.
+/// `None` only when the crosser is all his side has left.
+pub(crate) fn snap_header_target<R: Rng>(
+    players: &[PlayerData],
+    sent_off: &std::collections::HashSet<String>,
+    crosser_id: &str,
+    rng: &mut R,
+) -> Option<PlayerSnap> {
+    let available: Vec<&PlayerData> = players
+        .iter()
+        .filter(|player| {
+            !sent_off.contains(&player.id)
+                && player.id != crosser_id
+                && player.position != Position::Goalkeeper
+        })
+        .collect();
+    for preferred in [Position::Forward, Position::Midfielder] {
+        let pool: Vec<&PlayerData> = available
+            .iter()
+            .filter(|player| player.position == preferred)
+            .copied()
+            .collect();
+        if !pool.is_empty() {
+            return Some(PlayerSnap::from(pool[rng.random_range(0..pool.len())]));
+        }
+    }
+    if available.is_empty() {
+        None
+    } else {
+        Some(PlayerSnap::from(
+            available[rng.random_range(0..available.len())],
+        ))
+    }
+}
+
+/// What an attack already knows when it shoots: who won the header that set it
+/// up, and who crossed the ball. Left empty, the shooter and the provider are
+/// drawn as they always were.
+#[derive(Clone, Default)]
+pub(crate) struct ShotSetup {
+    pub shooter: Option<PlayerSnap>,
+    pub assister: Option<String>,
 }
 
 pub(crate) fn trait_bonus(snap: &PlayerSnap, context: TraitContext) -> f64 {

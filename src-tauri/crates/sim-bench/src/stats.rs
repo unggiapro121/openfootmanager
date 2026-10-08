@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use engine::{EventType, GoalSource, MatchReport};
+use engine::{EventType, GoalSource, MatchEvent, MatchReport, Zone};
 use serde::Serialize;
 
 /// Aggregated statistics across N simulated matches.
@@ -62,6 +62,9 @@ pub struct BenchStats {
 
     // Possession (sum of home % for averaging)
     pub home_possession_sum: f64,
+
+    // Duels, read from the events each one leaves behind (attacker's view).
+    pub duels: DuelCounts,
 
     // Goals-per-game frequency histogram: total_goals_in_game → count_of_games
     pub goals_per_game_hist: HashMap<u8, u32>,
@@ -158,6 +161,8 @@ impl BenchStats {
                 GoalSource::Penalty => {} // already counted in penalty_goals
             }
         }
+
+        self.duels.add(&report.events);
 
         for event in &report.events {
             if event.is_goal() {
@@ -339,6 +344,7 @@ impl BenchStats {
                 free_kick_pct: self.free_kick_goal_pct(),
                 penalty_pct: self.penalty_goal_pct(),
             },
+            duels: self.duels.to_json(self.games),
             possession: PossessionJson {
                 home_avg_pct: self.avg_home_possession(),
                 away_avg_pct: 100.0 - self.avg_home_possession(),
@@ -361,6 +367,7 @@ pub struct JsonSummary {
     pub discipline: DisciplineJson,
     pub set_pieces: SetPiecesJson,
     pub goal_sources: GoalSourcesJson,
+    pub duels: DuelsJson,
     pub possession: PossessionJson,
     pub performance: PerfJson,
 }
@@ -433,6 +440,118 @@ pub struct PerfJson {
     pub games_per_sec: f64,
 }
 
+/// How often the attacking side won each kind of duel the engine resolves.
+///
+/// The engine records no duel as such, so each is read from the events it
+/// leaves: a midfield duel ends in a `PassCompleted` (won) or a `Tackle` /
+/// `Interception` (lost) in midfield; a one-on-one in a `Dribble` (won) or a
+/// `DribbleTackled` / a `Clearance` that follows no cross (lost); an aerial
+/// duel is every `Cross`, lost when a `Clearance` comes straight after it.
+#[derive(Default)]
+pub struct DuelCounts {
+    pub midfield_won: u64,
+    pub midfield_lost: u64,
+    pub one_v_one_won: u64,
+    pub one_v_one_lost: u64,
+    pub aerial_won: u64,
+    pub aerial_lost: u64,
+    /// Goals scored from the shot an aerial duel won.
+    pub cross_goals: u64,
+}
+
+impl DuelCounts {
+    pub fn add(&mut self, events: &[MatchEvent]) {
+        for (index, event) in events.iter().enumerate() {
+            let previous = index.checked_sub(1).map(|i| &events[i].event_type);
+            match event.event_type {
+                EventType::PassCompleted if event.zone == Zone::Midfield => self.midfield_won += 1,
+                EventType::Tackle | EventType::Interception if event.zone == Zone::Midfield => {
+                    self.midfield_lost += 1
+                }
+                EventType::Dribble => self.one_v_one_won += 1,
+                EventType::DribbleTackled => self.one_v_one_lost += 1,
+                EventType::Clearance if previous != Some(&EventType::Cross) => {
+                    self.one_v_one_lost += 1
+                }
+                EventType::Cross => self.add_cross(&events[index + 1..]),
+                _ => {}
+            }
+        }
+    }
+
+    fn add_cross(&mut self, after: &[MatchEvent]) {
+        if after.first().map(|e| &e.event_type) == Some(&EventType::Clearance) {
+            self.aerial_lost += 1;
+            return;
+        }
+        self.aerial_won += 1;
+        // The shot that follows ends at the first goal, save, miss or penalty.
+        let ending = after.iter().find(|e| {
+            matches!(
+                e.event_type,
+                EventType::Goal
+                    | EventType::ShotSaved
+                    | EventType::ShotOffTarget
+                    | EventType::ShotBlocked
+                    | EventType::PenaltyAwarded
+            )
+        });
+        if ending.map(|e| &e.event_type) == Some(&EventType::Goal) {
+            self.cross_goals += 1;
+        }
+    }
+
+    fn share(won: u64, lost: u64) -> f64 {
+        let total = won + lost;
+        if total == 0 {
+            return 0.0;
+        }
+        won as f64 / total as f64 * 100.0
+    }
+
+    pub fn midfield_win_pct(&self) -> f64 {
+        Self::share(self.midfield_won, self.midfield_lost)
+    }
+
+    pub fn one_v_one_win_pct(&self) -> f64 {
+        Self::share(self.one_v_one_won, self.one_v_one_lost)
+    }
+
+    pub fn aerial_win_pct(&self) -> f64 {
+        Self::share(self.aerial_won, self.aerial_lost)
+    }
+
+    pub fn to_json(&self, games: u32) -> DuelsJson {
+        let per_game = |count: u64| {
+            if games == 0 {
+                0.0
+            } else {
+                count as f64 / f64::from(games)
+            }
+        };
+        DuelsJson {
+            midfield_per_game: per_game(self.midfield_won + self.midfield_lost),
+            midfield_attacker_win_pct: self.midfield_win_pct(),
+            one_v_one_per_game: per_game(self.one_v_one_won + self.one_v_one_lost),
+            one_v_one_attacker_win_pct: self.one_v_one_win_pct(),
+            aerial_per_game: per_game(self.aerial_won + self.aerial_lost),
+            aerial_attacker_win_pct: self.aerial_win_pct(),
+            cross_goals_per_game: per_game(self.cross_goals),
+        }
+    }
+}
+
+#[derive(Serialize)]
+pub struct DuelsJson {
+    pub midfield_per_game: f64,
+    pub midfield_attacker_win_pct: f64,
+    pub one_v_one_per_game: f64,
+    pub one_v_one_attacker_win_pct: f64,
+    pub aerial_per_game: f64,
+    pub aerial_attacker_win_pct: f64,
+    pub cross_goals_per_game: f64,
+}
+
 fn goal_bucket(minute: u8) -> usize {
     match minute {
         1..=15 => 0,
@@ -442,5 +561,42 @@ fn goal_bucket(minute: u8) -> usize {
         61..=75 => 4,
         76..=90 => 5,
         _ => 6,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use engine::Side;
+
+    fn event(event_type: EventType, zone: Zone) -> MatchEvent {
+        MatchEvent::new(10, event_type, Side::Home, zone)
+    }
+
+    /// Given the events a match leaves, when duels are counted, then each kind
+    /// is read from its own events, and a goal straight after a won header is
+    /// a cross goal.
+    #[test]
+    fn duels_are_read_from_the_events_they_leave() {
+        let third = Zone::AwayDefense;
+        let events = vec![
+            event(EventType::PassCompleted, Zone::Midfield),
+            event(EventType::Interception, Zone::Midfield),
+            event(EventType::PassCompleted, Zone::HomeDefense),
+            event(EventType::Dribble, third),
+            event(EventType::Cross, third),
+            event(EventType::Clearance, third),
+            event(EventType::Clearance, third),
+            event(EventType::Dribble, third),
+            event(EventType::Cross, third),
+            event(EventType::Goal, Zone::AwayBox),
+        ];
+        let mut duels = DuelCounts::default();
+        duels.add(&events);
+
+        assert_eq!((duels.midfield_won, duels.midfield_lost), (1, 1));
+        assert_eq!((duels.one_v_one_won, duels.one_v_one_lost), (2, 1));
+        assert_eq!((duels.aerial_won, duels.aerial_lost), (1, 1));
+        assert_eq!(duels.cross_goals, 1);
     }
 }

@@ -9,9 +9,9 @@ use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 use clap::{Parser, ValueEnum};
 use colored::Colorize;
-use engine::{simulate_with_rng, MatchConfig, PlayStyle};
+use engine::{simulate_with_rng, LiveMatchState, MatchConfig, MatchReport, PlayStyle, TeamData};
 use rand::rngs::StdRng;
-use rand::SeedableRng;
+use rand::{Rng, SeedableRng};
 
 use builder::{build_team, build_team_with_tactics};
 use stats::BenchStats;
@@ -95,6 +95,18 @@ struct Cli {
     #[arg(long)]
     ai_path_ab: bool,
 
+    /// Which engine plays the matches: `instant` (the default, and what the
+    /// sweeps use) or `live`, the one every real fixture goes through.
+    #[arg(long, value_enum, default_value_t = EngineArg::Instant)]
+    engine: EngineArg,
+
+    /// Rating-gap sweep: for gaps of 0, 5, 10, 15 and 20 OVR around
+    /// `--away-rating`, play `--games` matches (the stronger side at home in
+    /// half of them) and tabulate how often the stronger side wins, draws and
+    /// loses. The check that duel changes do not make favourites unbeatable.
+    #[arg(long)]
+    rating_gap_sweep: bool,
+
     // ── MatchConfig overrides ────────────────────────────────────────────────
     #[arg(long, help = "Home advantage multiplier (default 1.08)")]
     home_advantage: Option<f64>,
@@ -119,6 +131,44 @@ struct Cli {
 
     #[arg(long, help = "Injury probability per foul (default 0.03)")]
     injury_probability: Option<f64>,
+}
+
+#[derive(Clone, Copy, ValueEnum, Debug, PartialEq, Eq)]
+enum EngineArg {
+    Instant,
+    Live,
+}
+
+/// Play one match through the chosen engine. The live engine runs without
+/// benches or managers: the same XIs, minute by minute, to the final whistle.
+fn play_match<R: Rng>(
+    engine: EngineArg,
+    home: &TeamData,
+    away: &TeamData,
+    config: &MatchConfig,
+    rng: &mut R,
+) -> MatchReport {
+    match engine {
+        EngineArg::Instant => simulate_with_rng(home, away, config, rng),
+        EngineArg::Live => {
+            let mut state = LiveMatchState::new(
+                home.clone(),
+                away.clone(),
+                config.clone(),
+                Vec::new(),
+                Vec::new(),
+                false,
+            );
+            // Bounded so a phase-machine bug cannot hang the bench.
+            for _ in 0..200 {
+                if state.is_finished() {
+                    break;
+                }
+                state.step_minute(rng);
+            }
+            state.into_report()
+        }
+    }
 }
 
 #[derive(Clone, Copy, ValueEnum, Debug)]
@@ -195,6 +245,11 @@ fn main() {
         return;
     }
 
+    if cli.rating_gap_sweep {
+        run_rating_gap_sweep(&config, &cli);
+        return;
+    }
+
     if cli.ai_path_ab {
         ai_path::run(
             &config,
@@ -243,7 +298,7 @@ fn main() {
     for i in 0..cli.games {
         let game_seed = base_seed.wrapping_add(i as u64);
         let mut rng = StdRng::seed_from_u64(game_seed);
-        let report = simulate_with_rng(&home, &away, &config, &mut rng);
+        let report = play_match(cli.engine, &home, &away, &config, &mut rng);
         bench_stats.add(&report);
     }
 
@@ -295,6 +350,71 @@ fn main() {
     } else if !cli.verbose {
         // Default mode: JSON to stdout
         println!("{json}");
+    }
+}
+
+/// How the stronger side fares as the rating gap widens. Each gap is played
+/// with the stronger side at home in half the games, so home advantage cancels.
+fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
+    let base = cli.seed.unwrap_or(42);
+    let centre = i32::from(cli.away_rating);
+    println!(
+        "Rating-gap sweep · {} games per gap · engine {:?} · centre OVR {centre}",
+        cli.games, cli.engine
+    );
+    println!("  gap  strong  weak   win%   draw%  loss%  goals/game");
+    for gap in [0i32, 5, 10, 15, 20] {
+        let strong_rating = (centre + (gap + 1) / 2).clamp(10, 99) as u8;
+        let weak_rating = (centre - gap / 2).clamp(10, 99) as u8;
+        let mut team_rng = StdRng::seed_from_u64(base.wrapping_add(0xDEAD_BEEF + gap as u64));
+        let formation = &cli.home_formation;
+        let strong = build_team(
+            "strong",
+            "Strong FC",
+            strong_rating,
+            PlayStyle::Balanced,
+            formation,
+            &mut team_rng,
+        );
+        let weak = build_team(
+            "weak",
+            "Weak FC",
+            weak_rating,
+            PlayStyle::Balanced,
+            formation,
+            &mut team_rng,
+        );
+
+        let (mut wins, mut draws, mut losses, mut goals) = (0u32, 0u32, 0u32, 0u32);
+        for i in 0..cli.games {
+            let mut rng = StdRng::seed_from_u64(base.wrapping_add(i as u64));
+            let strong_home = i % 2 == 0;
+            let (home, away) = if strong_home {
+                (&strong, &weak)
+            } else {
+                (&weak, &strong)
+            };
+            let report = play_match(cli.engine, home, away, config, &mut rng);
+            let (for_goals, against) = if strong_home {
+                (report.home_goals, report.away_goals)
+            } else {
+                (report.away_goals, report.home_goals)
+            };
+            goals += u32::from(for_goals) + u32::from(against);
+            match for_goals.cmp(&against) {
+                std::cmp::Ordering::Greater => wins += 1,
+                std::cmp::Ordering::Equal => draws += 1,
+                std::cmp::Ordering::Less => losses += 1,
+            }
+        }
+        let pct = |n: u32| n as f64 / cli.games as f64 * 100.0;
+        println!(
+            "  {gap:>3}  {strong_rating:>6}  {weak_rating:>4}  {:>5.1}  {:>5.1}  {:>5.1}  {:>9.2}",
+            pct(wins),
+            pct(draws),
+            pct(losses),
+            goals as f64 / cli.games as f64
+        );
     }
 }
 
