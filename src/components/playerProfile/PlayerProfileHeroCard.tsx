@@ -117,7 +117,8 @@ export default function PlayerProfileHeroCard({
               </span>
               <span className="text-gray-500">•</span>
               <span className="text-gray-400 text-sm">
-                {t("common.height")}: {formatPlayerPhysique(player.height_cm, "centimeter", language)}
+                {t("common.height")}:{" "}
+                {formatPlayerPhysique(player.height_cm, "centimeter", language)}
               </span>
               <span className="text-gray-500">•</span>
               <span className="text-gray-400 text-sm">
