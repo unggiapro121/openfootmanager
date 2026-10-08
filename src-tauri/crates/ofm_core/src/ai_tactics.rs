@@ -293,8 +293,10 @@ const FORM_MINIMUM: usize = 3;
 // p70 and a third of clubs read as leaking; they moved to 3.2 and 1.4. Playing
 // every active fixture on the live engine, with benches and managers, lifted
 // scoring again to about 2.52, and six probe seasons put the pooled p85 at 3.4
-// and p15 at 1.6. Anything that changes how many goals are scored should
-// re-read that table before trusting these.
+// and p15 at 1.6. Resolving duels on height and weight brought it back down to
+// about 2.26, and eight probe seasons put p85 at 3.2 and p15 at 1.4. Anything
+// that changes how many goals are scored should re-read that table before
+// trusting these.
 //
 // The first pass used 2.2 and 0.8, which read like a matched pair and were
 // nothing of the kind: 2.2 sat just above the median and fired for two clubs in
@@ -303,9 +305,9 @@ const FORM_MINIMUM: usize = 3;
 // and the reaction table came out as one column of compact blocks.
 
 /// Conceding at this rate says the plan is not holding, whatever the badge says.
-const LEAKY: f64 = 3.4;
+const LEAKY: f64 = 3.2;
 /// Scoring at this rate says the same about the other end.
-const BLUNT: f64 = 1.6;
+const BLUNT: f64 = 1.4;
 
 struct FormReading {
     conceded_per_game: f64,

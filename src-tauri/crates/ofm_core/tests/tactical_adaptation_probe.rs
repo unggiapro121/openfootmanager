@@ -546,15 +546,15 @@ fn report_how_far_clubs_drift_from_their_blueprint() {
 
 /// The review's form triggers (`ai_tactics`'s `LEAKY` and `BLUNT`) are p85 of
 /// goals conceded and p15 of goals scored over this probe's five-match windows,
-/// read when a club scored about 2.52 a game. They are only right while that
+/// read when a club scored about 2.26 a game. They are only right while that
 /// holds. This pins it, so an engine change that moves how many goals are
 /// scored fails here instead of silently mistuning the triggers — re-read the
 /// window table (`report_how_far_clubs_drift_from_their_blueprint`) and move
 /// the triggers with it, then move this band.
 ///
 /// The band is wide on purpose: match results are not seeded, and single
-/// seasons have read anywhere from 2.37 to 2.66. The last two moves it exists
-/// to catch were 2.06 -> 2.29 and 2.29 -> 2.52.
+/// seasons have read anywhere from 2.07 to 2.37. The moves it exists to catch
+/// were 2.06 -> 2.29, 2.29 -> 2.52 and 2.52 -> 2.26.
 #[test]
 fn the_form_triggers_are_read_off_the_scoring_rate_they_were_calibrated_on() {
     let world = generator::generate_world_seeded(
@@ -570,8 +570,8 @@ fn the_form_triggers_are_read_off_the_scoring_rate_they_were_calibrated_on() {
     assert!(!scored.is_empty(), "the probe season played no matches");
     let per_game = scored.iter().sum::<f64>() / scored.len() as f64;
     assert!(
-        (2.30..=2.75).contains(&per_game),
+        (2.00..=2.50).contains(&per_game),
         "clubs now score {per_game:.2} a game; the form triggers were calibrated at about \
-         2.52. Re-read the window table and move LEAKY / BLUNT with it."
+         2.26. Re-read the window table and move LEAKY / BLUNT with it."
     );
 }
