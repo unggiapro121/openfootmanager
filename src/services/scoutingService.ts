@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 
 import type { GameStateData } from "../store/gameStore";
+import type { ClubAssessments, PlayerProjection } from "../store/types";
 
 export interface StartYouthScoutingInput {
   scoutId: string;
@@ -22,6 +23,16 @@ export async function quoteYouthSearch(
   objective: string,
 ): Promise<YouthSearchQuote> {
   return invoke<YouthSearchQuote>("quote_youth_search", { scoutId, region, objective });
+}
+
+/** Where the club expects one of its own or watched players to go. */
+export async function getPlayerProjection(playerId: string): Promise<PlayerProjection> {
+  return invoke<PlayerProjection>("get_player_projection", { playerId });
+}
+
+/** The club's best judge of potential and his read of every own player's ceiling. */
+export async function getClubPotentialAssessments(): Promise<ClubAssessments> {
+  return invoke<ClubAssessments>("get_club_potential_assessments");
 }
 
 export async function sendScout(scoutId: string, playerId: string): Promise<GameStateData> {

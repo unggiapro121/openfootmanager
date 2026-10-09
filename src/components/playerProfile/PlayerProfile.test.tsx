@@ -365,9 +365,40 @@ function createAdvancedStatsSummary() {
   };
 }
 
+/** The club's projection of an own player, as `get_player_projection` returns it. */
+function createProjection(wonderkid = false) {
+  return {
+    player_id: "player-1",
+    assessor: { staff_id: "scout-1", name: "Ann Scout", role: "Scout" },
+    estimate: {
+      prospect_id: "player-1",
+      ovr_low: 70,
+      ovr_high: 70,
+      ovr_band: 0,
+      potential_low: 76,
+      potential_high: 84,
+      potential_band: 5,
+    },
+    wonderkid,
+    projection: {
+      points: [
+        { season: 0, age: 20, low: 70, expected: 70, high: 70 },
+        { season: 1, age: 21, low: 73, expected: 74, high: 75 },
+      ],
+      peak_expected: 80,
+      peak_age: 24,
+    },
+    reference: { playing_time: 67, match_form: 70, coaching: "Club" },
+  };
+}
+
 function defaultInvokeResponse(command: string) {
   if (command === "get_player_stats_overview") {
     return createAdvancedStatsSummary();
+  }
+
+  if (command === "get_player_projection") {
+    return createProjection();
   }
 
   if (command === "get_player_match_history") {
@@ -403,6 +434,59 @@ describe("PlayerProfile contract surfaces", () => {
   beforeEach(() => {
     vi.mocked(invoke).mockReset();
     vi.mocked(invoke).mockImplementation(async (command: string) => defaultInvokeResponse(command));
+  });
+
+  /**
+   * Given one of the club's own players whom its scout reads as a wonderkid,
+   * when his profile opens, then it shows the club's development projection and
+   * the Wonderkid badge from that read.
+   */
+  it("shows the club's projection and its Wonderkid read for an own player", async () => {
+    const player = createPlayer({ traits: ["Speedster"] });
+    vi.mocked(invoke).mockImplementation(async (command: string) =>
+      command === "get_player_projection" ? createProjection(true) : defaultInvokeResponse(command),
+    );
+
+    render(
+      <PlayerProfile
+        player={player}
+        gameState={createGameState(player, [createStaff()])}
+        isOwnClub
+        onClose={vi.fn()}
+        onGameUpdate={vi.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("playerProfile.projection.title")).toBeInTheDocument();
+    });
+    expect(screen.getByText("76–84")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /^traits\.Wonderkid\./ })).toBeInTheDocument();
+    expect(invoke).toHaveBeenCalledWith("get_player_projection", { playerId: "player-1" });
+  });
+
+  /**
+   * Given a player of another club the club does not watch, when his profile
+   * opens, then the club asks for no projection and shows none.
+   */
+  it("projects nobody the club neither owns nor watches", async () => {
+    const player = createPlayer({ team_id: "team-2" });
+
+    render(
+      <PlayerProfile
+        player={player}
+        gameState={createGameState(player, [createStaff()])}
+        isOwnClub={false}
+        onClose={vi.fn()}
+        onGameUpdate={vi.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(invoke).toHaveBeenCalledWith("get_player_stats_overview", expect.anything());
+    });
+    expect(invoke).not.toHaveBeenCalledWith("get_player_projection", expect.anything());
+    expect(screen.queryByText("playerProfile.projection.title")).not.toBeInTheDocument();
   });
 
   // The dashboard opens a profile straight into one of these modals when the

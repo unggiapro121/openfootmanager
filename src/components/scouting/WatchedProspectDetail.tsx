@@ -4,7 +4,9 @@ import { countryName } from "../../lib/countries";
 import { formatPlayerWageLine } from "../../lib/finance";
 import { calcAge, formatVal, formatWeeklyAmount } from "../../lib/helpers";
 import type { ScoutReportData, WatchedProspect } from "../../store/types";
+import { usePlayerProjection } from "../../hooks/usePlayerProjection";
 import DashboardModalFrame from "../dashboard/DashboardModalFrame";
+import PlayerDevelopmentProjectionCard from "../playerProfile/PlayerDevelopmentProjectionCard";
 import { Badge, Button, CountryFlag } from "../ui";
 import ProspectAttributeGroups from "./ProspectAttributeGroups";
 import ProspectPhysique from "./ProspectPhysique";
@@ -41,6 +43,12 @@ export default function WatchedProspectDetail({
   const { t, i18n } = useTranslation();
   const language = i18n.language;
   const weeklySuffix = t("finances.perWeekSuffix");
+  // The projection follows the club's read, which narrows week by week.
+  const { estimate } = entry;
+  const { projection, error: projectionError } = usePlayerProjection(
+    entry.prospect.id,
+    `${entry.weeks_followed ?? 0}|${estimate.potential_low}-${estimate.potential_high}|${estimate.ovr_low}-${estimate.ovr_high}`,
+  );
 
   return (
     <DashboardModalFrame maxWidthClassName="max-w-3xl">
@@ -107,6 +115,8 @@ export default function WatchedProspectDetail({
           reads={report.attribute_reads ?? []}
           isKeeper={report.position === "Goalkeeper"}
         />
+
+        <PlayerDevelopmentProjectionCard projection={projection} error={projectionError} t={t} />
 
         <div className="flex flex-wrap justify-end gap-2">
           <Button size="sm" disabled={busy || action.disabled} onClick={action.onClick}>

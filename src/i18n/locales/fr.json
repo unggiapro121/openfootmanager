@@ -403,7 +403,10 @@
     "potDecent": "Correct",
     "potLimited": "Limité",
     "delegateToYouthAcademy": "Déléguer au centre de formation",
-    "promoteToSeniorSquad": "Promouvoir en équipe première"
+    "promoteToSeniorSquad": "Promouvoir en équipe première",
+    "assessedBy": "Potentiel évalué par {{name}}",
+    "noAssessor": "Personne au club ne peut évaluer le potentiel : engagez un recruteur ou un entraîneur adjoint.",
+    "notAssessed": "Non évalué"
   },
   "common": {
     "currentWage": "Salaire actuel",
@@ -1762,7 +1765,22 @@
     "renewalProjectionBudgetUsage": "Utilisation du budget salarial {{before}}% → {{after}}%",
     "renewalProjectionRunway": "Réserve de trésorerie {{before}} → {{after}}",
     "ratingTrend": "Tendance de note",
-    "scoutedEstimate": "Selon le recruteur : ~{{ovr}} · confiance {{confidence}}"
+    "scoutedEstimate": "Selon le recruteur : ~{{ovr}} · confiance {{confidence}}",
+    "projection": {
+      "title": "Projection de progression",
+      "assessedBy": "Évalué par {{name}}",
+      "noAssessor": "Personne au club ne peut évaluer le potentiel de ce joueur. Engagez un recruteur ou un entraîneur adjoint pour obtenir une projection.",
+      "estimatedPotential": "Potentiel est.",
+      "seasonAhead": "Saison +{{n}} ({{age}} ans)",
+      "expectedPeak": "Pic attendu",
+      "peakValue": "{{ovr}} à {{age}} ans",
+      "expected": "Attendu",
+      "range": "Fourchette",
+      "assumptions": "Suppose un entraînement normal, environ deux matchs joués sur trois et une note moyenne proche de {{rating}}.",
+      "coachingClub": "Tient compte du staff technique actuel de votre club.",
+      "coachingStandard": "Suppose un encadrement moyen, car il s'entraîne ailleurs.",
+      "disclaimer": "Une prévision de recruteur, pas une promesse : plus de matchs et une meilleure forme accélèrent sa progression, trop peu de temps de jeu la freine."
+    }
   },
   "teamProfile": {
     "clubInfo": "Informations du Club",
@@ -2933,6 +2951,10 @@
       "staffContractYearsInvalid": "Les contrats du staff durent d'un à trois ans.",
       "staff": {
         "marketRefreshesUsed": "Vous avez utilisé les renouvellements de ce mois. Ils reviennent le 1er."
+      },
+      "projection": {
+        "notAssessed": "Votre club n'a pas évalué ce joueur.",
+        "noAssessor": "Personne au club ne peut évaluer le potentiel."
       }
     },
     "sender": {
@@ -3808,7 +3830,8 @@
     },
     "Wonderkid": {
       "label": "Enfant Prodige",
-      "desc": "Jeune talent au potentiel exceptionnel"
+      "desc": "Vos recruteurs estiment que ce jeune a un potentiel exceptionnel",
+      "scoutedPotential": "Potentiel estimé"
     }
   },
   "date": {
@@ -4300,12 +4323,12 @@
     "itemCrashDesc": "Inclus parce que quelque chose a planté pendant votre dernière session.",
     "optionalHeading": "À ajouter si vous voulez — désactivé par défaut",
     "includeSave": "Ma sauvegarde",
-      "includeSaveDesc": "Nous permet de rejouer exactement la situation dans laquelle vous étiez.",
+    "includeSaveDesc": "Nous permet de rejouer exactement la situation dans laquelle vous étiez.",
     "includeSaveNoCareer": "Aucune carrière ouverte, il n'y a donc rien à joindre.",
     "nothingSentYet": "Rien n'est enregistré ni ouvert avant que vous n'appuyiez sur le bouton ci-dessous. Envoyer le formulaire demande un compte GitHub — le fichier est à vous dans tous les cas.",
     "savedTo": "Votre fichier de rapport a été enregistré ici :",
     "dragItIn": "Glissez-le sur le formulaire GitHub dans votre navigateur, puis envoyez. C'est tout.",
-      "browserDidNotOpen": "Votre navigateur ne s'est pas ouvert. Le fichier ci-dessus est enregistré — joignez-le à un nouveau ticket sur GitHub quand vous pouvez.",
+    "browserDidNotOpen": "Votre navigateur ne s'est pas ouvert. Le fichier ci-dessus est enregistré — joignez-le à un nouveau ticket sur GitHub quand vous pouvez.",
     "review": "Vérifier ce qui est envoyé",
     "saveAndOpen": "Enregistrer le fichier et ouvrir GitHub",
     "working": "En cours…"

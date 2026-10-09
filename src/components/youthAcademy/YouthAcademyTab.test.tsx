@@ -423,6 +423,65 @@ describe("YouthAcademyTab", () => {
     expect(onSelectPlayer).toHaveBeenCalledWith("player-young");
   });
 
+  it("shows the club's read of each prospect's ceiling, never the truth", async () => {
+    const youthPlayer = createPlayer({
+      id: "player-young",
+      full_name: "Rising Star",
+      squad_role: "Youth",
+    });
+    const state = createGameState([youthPlayer]);
+    mockedInvoke.mockImplementation(async (command: string) => {
+      if (command === "get_squad") return state.players.filter((p) => p.team_id === "team-1");
+      if (command === "get_staff") return makeEmptyStaffSlice();
+      if (command === "get_club_potential_assessments")
+        return {
+          assessor: { staff_id: "s1", name: "Ann Scout", role: "Scout" },
+          players: [
+            {
+              player_id: "player-young",
+              potential_low: 70,
+              potential_high: 82,
+              potential_band: 8,
+              potential_believed: 76,
+              wonderkid: false,
+            },
+          ],
+        };
+      return state;
+    });
+
+    render(<YouthAcademyTab gameState={state} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("70–82")).toBeInTheDocument();
+    });
+    expect(screen.getByText("76")).toBeInTheDocument();
+    expect(screen.getByText("potExcellent")).toBeInTheDocument();
+    expect(screen.getByText("youthAcademy.assessedBy")).toBeInTheDocument();
+  });
+
+  it("says nobody can judge the prospects when the club has no scout or assistant", async () => {
+    const youthPlayer = createPlayer({
+      id: "player-young",
+      full_name: "Rising Star",
+      squad_role: "Youth",
+    });
+    const state = createGameState([youthPlayer]);
+    mockedInvoke.mockImplementation(async (command: string) => {
+      if (command === "get_squad") return state.players.filter((p) => p.team_id === "team-1");
+      if (command === "get_staff") return makeEmptyStaffSlice();
+      if (command === "get_club_potential_assessments") return { assessor: null, players: [] };
+      return state;
+    });
+
+    render(<YouthAcademyTab gameState={state} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("youthAcademy.noAssessor")).toBeInTheDocument();
+    });
+    expect(screen.getByText("youthAcademy.notAssessed")).toBeInTheDocument();
+  });
+
   // Regression (issue #250): the prospects list is rendered from the cached
   // get_squad fetch, which only refreshes on remount or when the game clock
   // advances. Promoting a player must patch that cache from the mutation

@@ -403,7 +403,10 @@
     "potExcellent": "Mükemmel",
     "potPromising": "Umut vadeden",
     "potDecent": "İyi",
-    "potLimited": "Sınırlı"
+    "potLimited": "Sınırlı",
+    "assessedBy": "Potansiyeli değerlendiren: {{name}}",
+    "noAssessor": "Kulüpte potansiyeli değerlendirebilecek kimse yok: bir gözlemci veya yardımcı antrenör işe alın.",
+    "notAssessed": "Değerlendirilmedi"
   },
   "common": {
     "currentWage": "Mevcut maaş",
@@ -1762,7 +1765,22 @@
     "renewalProjectionWageBill": "Haftalık maaş yükü {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Maaş bütçesi kullanımı %{{before}} → %{{after}}",
     "renewalProjectionRunway": "Nakit yeterliliği {{before}} → {{after}}",
-    "scoutedEstimate": "Gözlemciye göre: ~{{ovr}} · güven {{confidence}}"
+    "scoutedEstimate": "Gözlemciye göre: ~{{ovr}} · güven {{confidence}}",
+    "projection": {
+      "title": "Gelişim tahmini",
+      "assessedBy": "Değerlendiren: {{name}}",
+      "noAssessor": "Kulüpte bu oyuncunun potansiyelini değerlendirebilecek kimse yok. Tahmin almak için bir gözlemci veya yardımcı antrenör işe alın.",
+      "estimatedPotential": "Tahmini pot.",
+      "seasonAhead": "Sezon +{{n}} ({{age}} yaş)",
+      "expectedPeak": "Beklenen zirve",
+      "peakValue": "{{age}} yaşında {{ovr}}",
+      "expected": "Beklenen",
+      "range": "Aralık",
+      "assumptions": "Normal antrenman, maçların yaklaşık üçte ikisinde oynama ve {{rating}} civarında ortalama reyting varsayılır.",
+      "coachingClub": "Kulübünüzün mevcut teknik ekibi esas alınır.",
+      "coachingStandard": "Başka bir kulüpte çalıştığı için ortalama bir teknik ekip esas alınır.",
+      "disclaimer": "Bu bir gözlemci tahmini, söz değil: daha çok maç ve iyi form gelişimini hızlandırır, az süre almak yavaşlatır."
+    }
   },
   "teamProfile": {
     "clubInfo": "Kulüp Bilgisi",
@@ -2933,6 +2951,10 @@
       "staffContractYearsInvalid": "Personel sözleşmeleri bir ila üç yıl sürer.",
       "staff": {
         "marketRefreshesUsed": "Bu ayın yenileme haklarını kullandın. Ayın 1'inde geri gelir."
+      },
+      "projection": {
+        "notAssessed": "Kulübünüz bu oyuncuyu değerlendirmedi.",
+        "noAssessor": "Kulüpte potansiyeli değerlendirebilecek kimse yok."
       }
     },
     "sender": {
@@ -3808,7 +3830,8 @@
     },
     "Wonderkid": {
       "label": "Harika Çocuk",
-      "desc": "Olağanüstü potansiyele sahip genç yetenek"
+      "desc": "Gözlemcileriniz bu genç oyuncunun olağanüstü bir potansiyeli olduğunu düşünüyor",
+      "scoutedPotential": "Tahmini potansiyel"
     }
   },
   "date": {
@@ -4300,12 +4323,12 @@
     "itemCrashDesc": "Son oturumunda bir şey çöktüğü için eklendi.",
     "optionalHeading": "İstersen ekle — varsayılan olarak kapalı",
     "includeSave": "Kayıt dosyam",
-      "includeSaveDesc": "İçinde bulunduğun durumu birebir yeniden oynatmamızı sağlar.",
+    "includeSaveDesc": "İçinde bulunduğun durumu birebir yeniden oynatmamızı sağlar.",
     "includeSaveNoCareer": "Açık bir kariyer yok, eklenecek bir şey de yok.",
     "nothingSentYet": "Aşağıdaki düğmeye basana kadar hiçbir şey kaydedilmez veya açılmaz. Formu göndermek için bir GitHub hesabı gerekir — dosya her durumda senin.",
     "savedTo": "Rapor dosyan buraya kaydedildi:",
     "dragItIn": "Tarayıcıdaki GitHub formuna sürükle ve gönder. Hepsi bu.",
-      "browserDidNotOpen": "Tarayıcın açılmadı. Yukarıdaki dosya kaydedildi — fırsatın olduğunda GitHub'da yeni bir issue'ya ekle.",
+    "browserDidNotOpen": "Tarayıcın açılmadı. Yukarıdaki dosya kaydedildi — fırsatın olduğunda GitHub'da yeni bir issue'ya ekle.",
     "review": "Ne gönderildiğini incele",
     "saveAndOpen": "Dosyayı kaydet ve GitHub'ı aç",
     "working": "Çalışıyor…"

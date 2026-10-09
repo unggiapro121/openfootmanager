@@ -6,6 +6,7 @@ import { calcAge, getPlayerOvr } from "../../lib/helpers";
 import { PlayerPositionBadges } from "../squad/PlayerPositionBadges";
 import { normalisePosition } from "../squad/SquadTab.helpers";
 import { TraitList } from "../TraitBadge";
+import { withScoutedWonderkid } from "../../lib/scoutedTraits";
 
 const ATTRIBUTE_GROUPS: {
   labelKey: string;
@@ -43,6 +44,8 @@ interface TacticsPlayerFocusPanelProps {
   onClose?: () => void;
   onConfirmSwap: () => void;
   selectedPlayer: PlayerData | null;
+  /** Players the club's scouts read as wonderkids; the badge shows for them only. */
+  scoutedWonderkids?: ReadonlySet<string>;
 }
 
 function valueTone(value: number): string {
@@ -63,8 +66,17 @@ function getNormalizedPlayerPosition(player: PlayerData): string {
   return normalisePosition(player.natural_position || player.position);
 }
 
-function PlayerSummary({ label, player }: { label: string; player: PlayerData }) {
+function PlayerSummary({
+  label,
+  player,
+  scoutedWonderkids,
+}: {
+  label: string;
+  player: PlayerData;
+  scoutedWonderkids?: ReadonlySet<string>;
+}) {
   const { t } = useTranslation();
+  const traits = withScoutedWonderkid(player.traits, scoutedWonderkids?.has(player.id));
   const displayPosition = player.natural_position || player.position;
   const overallRating = getPlayerOvr(player);
 
@@ -87,9 +99,9 @@ function PlayerSummary({ label, player }: { label: string; player: PlayerData })
             />
           </div>
           {/* Traits as icons only, named on hover: the card has no room for their labels. */}
-          {player.traits.length > 0 ? (
+          {traits.length > 0 ? (
             <div className="mt-2">
-              <TraitList traits={player.traits} iconOnly />
+              <TraitList traits={traits} iconOnly />
             </div>
           ) : null}
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -217,11 +229,13 @@ function CompareAttributes({
   comparePlayer,
   onConfirmSwap,
   selectedPlayer,
+  scoutedWonderkids,
 }: {
   canConfirmSwap: boolean;
   comparePlayer: PlayerData;
   onConfirmSwap: () => void;
   selectedPlayer: PlayerData;
+  scoutedWonderkids?: ReadonlySet<string>;
 }) {
   const { t } = useTranslation();
   const showGoalkeeperAttrs =
@@ -231,8 +245,16 @@ function CompareAttributes({
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-        <PlayerSummary label={t("tactics.selectedPlayer")} player={selectedPlayer} />
-        <PlayerSummary label={t("tactics.comparePlayer")} player={comparePlayer} />
+        <PlayerSummary
+          label={t("tactics.selectedPlayer")}
+          player={selectedPlayer}
+          scoutedWonderkids={scoutedWonderkids}
+        />
+        <PlayerSummary
+          label={t("tactics.comparePlayer")}
+          player={comparePlayer}
+          scoutedWonderkids={scoutedWonderkids}
+        />
       </div>
       <div className="flex flex-col gap-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-800/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -291,6 +313,7 @@ export default function TacticsPlayerFocusPanel({
   onClose,
   onConfirmSwap,
   selectedPlayer,
+  scoutedWonderkids,
 }: TacticsPlayerFocusPanelProps) {
   const { t } = useTranslation();
 
@@ -321,10 +344,15 @@ export default function TacticsPlayerFocusPanel({
               comparePlayer={comparePlayer}
               onConfirmSwap={onConfirmSwap}
               selectedPlayer={selectedPlayer}
+              scoutedWonderkids={scoutedWonderkids}
             />
           ) : (
             <div className="space-y-4">
-              <PlayerSummary label={t("tactics.selectedPlayer")} player={selectedPlayer} />
+              <PlayerSummary
+                label={t("tactics.selectedPlayer")}
+                player={selectedPlayer}
+                scoutedWonderkids={scoutedWonderkids}
+              />
               <div className="rounded-xl border border-dashed border-gray-200 dark:border-navy-600 px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                 {t("tactics.selectSecondPlayer")}
               </div>

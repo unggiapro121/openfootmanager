@@ -4,6 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import {
   assignWatchlistScout,
   cancelYouthScouting,
+  getClubPotentialAssessments,
+  getPlayerProjection,
   quoteYouthSearch,
   reassignYouthScouting,
   sendScout,
@@ -21,6 +23,25 @@ const mockedInvoke = vi.mocked(invoke);
 describe("scoutingService", () => {
   beforeEach(() => {
     mockedInvoke.mockReset();
+  });
+
+  it("asks for a player's projection and passes the backend's refusal on", async () => {
+    const projection = { player_id: "player-1", wonderkid: false };
+    mockedInvoke.mockResolvedValueOnce(projection);
+
+    await expect(getPlayerProjection("player-1")).resolves.toBe(projection);
+    expect(mockedInvoke).toHaveBeenCalledWith("get_player_projection", { playerId: "player-1" });
+
+    mockedInvoke.mockRejectedValueOnce("be.error.projection.noAssessor");
+    await expect(getPlayerProjection("player-1")).rejects.toBe("be.error.projection.noAssessor");
+  });
+
+  it("asks for the club's potential assessments", async () => {
+    const assessments = { assessor: null, players: [] };
+    mockedInvoke.mockResolvedValueOnce(assessments);
+
+    await expect(getClubPotentialAssessments()).resolves.toBe(assessments);
+    expect(mockedInvoke).toHaveBeenCalledWith("get_club_potential_assessments");
   });
 
   it("calls the send scout backend command", async () => {

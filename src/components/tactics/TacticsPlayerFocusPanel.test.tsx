@@ -56,7 +56,7 @@ describe("TacticsPlayerFocusPanel", () => {
     const selected = createPlayer({
       id: "gil",
       full_name: "David Gil",
-      traits: ["Tireless", "Wonderkid"],
+      traits: ["Tireless"],
     });
 
     render(
@@ -65,12 +65,33 @@ describe("TacticsPlayerFocusPanel", () => {
         selectedPlayer={selected}
         comparePlayer={null}
         onConfirmSwap={vi.fn()}
+        scoutedWonderkids={new Set(["gil"])}
       />,
     );
 
     const traits = screen.getAllByRole("img", { name: /^traits\.(Tireless|Wonderkid)\.label: / });
     expect(traits).toHaveLength(2);
     expect(screen.queryByText("traits.Tireless.label")).toBeNull();
+  });
+
+  /**
+   * Given a player the club's scouts do not read as a wonderkid, then he has
+   * no Wonderkid badge: the badge is the club's judgement, not the truth.
+   */
+  it("shows Wonderkid only where the club's read says so", () => {
+    const selected = createPlayer({ id: "gil", full_name: "David Gil", traits: ["Tireless"] });
+
+    render(
+      <TacticsPlayerFocusPanel
+        canConfirmSwap={false}
+        selectedPlayer={selected}
+        comparePlayer={null}
+        onConfirmSwap={vi.fn()}
+        scoutedWonderkids={new Set(["someone-else"])}
+      />,
+    );
+
+    expect(screen.getAllByRole("img", { name: /^traits\./ })).toHaveLength(1);
   });
 
   /**

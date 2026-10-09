@@ -199,7 +199,8 @@ const TRAIT_META: Record<string, TraitMeta> = {
     category: "special",
     requirements: [
       { labelKey: "youthAcademy.age", value: 20, operator: "<=" },
-      { labelKey: "youthAcademy.potential", value: 90, operator: ">=" },
+      // The club's read of his ceiling, not the truth: the badge is a scout's judgement.
+      { labelKey: "traits.Wonderkid.scoutedPotential", value: 90, operator: ">=" },
       { labelKey: "youthAcademy.growth", value: 14, operator: ">=" },
     ],
   },

@@ -403,7 +403,10 @@
     "potExcellent": "Excelentní",
     "potPromising": "Nadějný",
     "potDecent": "Slušný",
-    "potLimited": "Omezený"
+    "potLimited": "Omezený",
+    "assessedBy": "Potenciál hodnotí {{name}}",
+    "noAssessor": "Nikdo v klubu neumí posoudit potenciál: najměte skauta nebo asistenta trenéra.",
+    "notAssessed": "Nehodnoceno"
   },
   "common": {
     "currentWage": "Současný plat",
@@ -1762,7 +1765,22 @@
     "renewalProjectionWageBill": "Týdenní mzdové náklady: {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Využití platového rozpočtu: {{before}} % → {{after}} %",
     "renewalProjectionRunway": "Finanční rezerva: {{before}} → {{after}}",
-    "scoutedEstimate": "Podle skauta: ~{{ovr}} · spolehlivost {{confidence}}"
+    "scoutedEstimate": "Podle skauta: ~{{ovr}} · spolehlivost {{confidence}}",
+    "projection": {
+      "title": "Prognóza vývoje",
+      "assessedBy": "Hodnotí {{name}}",
+      "noAssessor": "Nikdo v klubu neumí posoudit potenciál tohoto hráče. Pro prognózu najměte skauta nebo asistenta trenéra.",
+      "estimatedPotential": "Odhad potenciálu",
+      "seasonAhead": "Sezóna +{{n}} (věk {{age}})",
+      "expectedPeak": "Očekávaný vrchol",
+      "peakValue": "{{ovr}} ve věku {{age}}",
+      "expected": "Očekávání",
+      "range": "Rozpětí",
+      "assumptions": "Předpokládá běžný trénink, hraní zhruba ve dvou ze tří zápasů a průměrné hodnocení kolem {{rating}}.",
+      "coachingClub": "Počítá se současným trenérským týmem vašeho klubu.",
+      "coachingStandard": "Počítá s průměrným trénováním, protože trénuje jinde.",
+      "disclaimer": "Odhad skauta, ne slib: víc zápasů a lepší forma urychlí jeho vývoj, málo herního času ho zpomalí."
+    }
   },
   "teamProfile": {
     "clubInfo": "Informace o klubu",
@@ -2933,6 +2951,10 @@
       "staffContractYearsInvalid": "Smlouvy členů týmu se uzavírají na jeden až tři roky.",
       "staff": {
         "marketRefreshesUsed": "Obnovení pro tento měsíc jste vyčerpali. Vrátí se 1. dne."
+      },
+      "projection": {
+        "notAssessed": "Váš klub tohoto hráče nehodnotil.",
+        "noAssessor": "Nikdo v klubu neumí posoudit potenciál."
       }
     },
     "sender": {
@@ -3808,7 +3830,8 @@
     },
     "Wonderkid": {
       "label": "Zázračné dítě",
-      "desc": "Mladý talent s výjimečným potenciálem"
+      "desc": "Vaši skauti hodnotí tohoto mladíka jako výjimečný talent",
+      "scoutedPotential": "Odhadovaný potenciál"
     }
   },
   "date": {
@@ -4300,12 +4323,12 @@
     "itemCrashDesc": "Přiloženo, protože při vaší minulé hře něco spadlo.",
     "optionalHeading": "Přidejte, pokud chcete — ve výchozím stavu vypnuto",
     "includeSave": "Moje uložená hra",
-      "includeSaveDesc": "Umožní nám přehrát přesně tu situaci, ve které jste se ocitli.",
+    "includeSaveDesc": "Umožní nám přehrát přesně tu situaci, ve které jste se ocitli.",
     "includeSaveNoCareer": "Žádná kariéra není otevřená, není co přiložit.",
     "nothingSentYet": "Nic se neuloží ani neotevře, dokud nestisknete tlačítko níže. Odeslání formuláře vyžaduje účet na GitHubu — soubor je váš tak jako tak.",
     "savedTo": "Soubor s hlášením byl uložen sem:",
     "dragItIn": "Přetáhněte ho do formuláře na GitHubu v prohlížeči a odešlete. A to je všechno.",
-      "browserDidNotOpen": "Prohlížeč se neotevřel. Soubor výše je uložený — přiložte ho k novému issue na GitHubu, až budete moci.",
+    "browserDidNotOpen": "Prohlížeč se neotevřel. Soubor výše je uložený — přiložte ho k novému issue na GitHubu, až budete moci.",
     "review": "Zkontrolovat, co se odešle",
     "saveAndOpen": "Uložit soubor a otevřít GitHub",
     "working": "Pracuji…"

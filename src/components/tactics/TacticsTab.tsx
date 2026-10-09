@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import { useMemo, type JSX } from "react";
 import type { GameStateData, PlayerSelectionOptions } from "../../store/gameStore";
 import { useTranslation } from "react-i18next";
 import { setPlayerRole } from "../../services/squadService";
@@ -11,6 +11,8 @@ import TacticsPlayerFocusPanel from "./TacticsPlayerFocusPanel";
 import { useTacticsLibrary } from "./useTacticsLibrary";
 import { useTacticsFilters } from "./useTacticsFilters";
 import { useTacticsLineup } from "./useTacticsLineup";
+import { useClubPotentialAssessments } from "../../hooks/useClubPotentialAssessments";
+import { assessmentRefreshKey } from "../../lib/scoutedTraits";
 
 interface TacticsTabProps {
   gameState: GameStateData | null;
@@ -61,6 +63,20 @@ export default function TacticsTab({
     handleAssignMatchRole,
     handleTacticsPhaseChange,
   } = useTacticsLineup({ gameState, onGameUpdate });
+  const { byPlayer: clubReads } = useClubPotentialAssessments(
+    assessmentRefreshKey(
+      gameState?.clock.current_date ?? "",
+      gameState?.staff ?? [],
+      gameState?.manager.team_id,
+    ),
+  );
+  const scoutedWonderkids = useMemo(
+    () =>
+      new Set(
+        [...clubReads.values()].filter((read) => read.wonderkid).map((read) => read.player_id),
+      ),
+    [clubReads],
+  );
 
   const {
     playerSearch,
@@ -244,6 +260,7 @@ export default function TacticsTab({
                   void handleConfirmSwap();
                 }}
                 selectedPlayer={selectedPlayer}
+                scoutedWonderkids={scoutedWonderkids}
               />
             </div>
           </div>

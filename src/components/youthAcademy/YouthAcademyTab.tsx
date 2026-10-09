@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { GameStateData } from "../../store/gameStore";
 import { useGameStore } from "../../store/gameStore";
 import { useFetchedSquad } from "../../hooks/useFetchedSquad";
+import { useClubPotentialAssessments } from "../../hooks/useClubPotentialAssessments";
+import { assessmentRefreshKey, withScoutedWonderkid } from "../../lib/scoutedTraits";
 import { getStaff, type StaffSlice } from "../../services/staffService";
 import {
   Card,
@@ -129,6 +131,10 @@ export default function YouthAcademyTab({
     setSelectedYouthScoutId(availableScouts[0]?.id ?? "");
   }, [availableScouts, selectedYouthScoutId]);
 
+  // The club sees its youngsters' ceilings only as its best judge reads them.
+  const assessments = useClubPotentialAssessments(
+    assessmentRefreshKey(clockDate, fetchedStaff?.team_staff ?? gameState?.staff ?? [], teamId),
+  );
   const roster = fetchedSquad ?? gameState?.players.filter((p) => p.team_id === teamId) ?? [];
   const youthPlayers = roster
     .filter((player) => isYouthAcademyPlayer(player))
@@ -136,9 +142,9 @@ export default function YouthAcademyTab({
       ...p,
       age: calcAge(p.date_of_birth),
       ovr: p.ovr ?? 0,
-      potential: p.potential ?? 1,
+      read: assessments.byPlayer.get(p.id) ?? null,
     }))
-    .sort((a, b) => b.potential - a.potential);
+    .sort((a, b) => (b.read?.potential_believed ?? -1) - (a.read?.potential_believed ?? -1));
   const eligibleSeniorPlayers = roster
     .filter((player) => canDelegateToYouthAcademy(player))
     .map((player) => ({
@@ -151,11 +157,14 @@ export default function YouthAcademyTab({
     youthPlayers.length > 0
       ? Math.round(youthPlayers.reduce((s, p) => s + p.ovr, 0) / youthPlayers.length)
       : 0;
+  const believedCeilings = youthPlayers.flatMap((p) => (p.read ? [p.read.potential_believed] : []));
   const avgPotential =
-    youthPlayers.length > 0
-      ? Math.round(youthPlayers.reduce((s, p) => s + p.potential, 0) / youthPlayers.length)
-      : 0;
-  const highPotential = youthPlayers.filter((p) => p.potential >= 75).length;
+    believedCeilings.length > 0
+      ? Math.round(
+          believedCeilings.reduce((s, ceiling) => s + ceiling, 0) / believedCeilings.length,
+        )
+      : "?";
+  const highPotential = believedCeilings.filter((ceiling) => ceiling >= 75).length;
 
   // Youth development staff
   const youthCoach =
@@ -240,6 +249,14 @@ export default function YouthAcademyTab({
           {t("youthAcademy.playersUnder21", { count: youthPlayers.length })}
         </Badge>
       </div>
+
+      {assessments.loaded ? (
+        <p className="-mt-2 text-xs text-gray-500 dark:text-gray-400">
+          {assessments.assessor
+            ? t("youthAcademy.assessedBy", { name: assessments.assessor.name })
+            : t("youthAcademy.noAssessor")}
+        </p>
+      ) : null}
 
       {/* Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -466,8 +483,11 @@ export default function YouthAcademyTab({
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
                 {youthPlayers.map((player) => {
-                  const potLabel = getPotentialLabel(player.potential, t);
-                  const growthRoom = player.potential - player.ovr;
+                  const read = player.read;
+                  const potLabel = read ? getPotentialLabel(read.potential_believed, t) : null;
+                  const growthRoom = read
+                    ? Math.max(0, read.potential_believed - player.ovr)
+                    : null;
                   const contextItems = [
                     buildViewProfileMenuItem(t, () => onSelectPlayer?.(player.id)),
                     buildPromoteToSeniorSquadMenuItem(t, () => {
@@ -536,33 +556,48 @@ export default function YouthAcademyTab({
                           </span>
                         </td>
                         <td className="py-2.5 px-4 text-center">
-                          <span
-                            className={`text-sm font-heading font-bold tabular-nums ${potLabel.color}`}
-                          >
-                            {player.potential}
-                          </span>
-                          <p
-                            className={`text-[9px] font-heading uppercase tracking-wider ${potLabel.color}`}
-                          >
-                            {potLabel.label}
-                          </p>
+                          {read && potLabel ? (
+                            <>
+                              <span
+                                className={`text-sm font-heading font-bold tabular-nums ${potLabel.color}`}
+                              >
+                                {`${read.potential_low}–${read.potential_high}`}
+                              </span>
+                              <p
+                                className={`text-[9px] font-heading uppercase tracking-wider ${potLabel.color}`}
+                              >
+                                {potLabel.label}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-[9px] font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                              {t("youthAcademy.notAssessed")}
+                            </p>
+                          )}
                         </td>
                         <td className="py-2.5 px-4">
-                          <div className="flex items-center gap-2">
-                            <ProgressBar
-                              value={Math.min(100, (player.ovr / player.potential) * 100)}
-                              variant={
-                                growthRoom > 15 ? "accent" : growthRoom > 5 ? "primary" : "auto"
-                              }
-                              size="sm"
-                            />
-                            <span className="text-[10px] font-heading font-bold text-gray-500 tabular-nums w-6">
-                              +{growthRoom}
-                            </span>
-                          </div>
+                          {read && growthRoom !== null ? (
+                            <div className="flex items-center gap-2">
+                              <ProgressBar
+                                value={Math.min(100, (player.ovr / read.potential_believed) * 100)}
+                                variant={
+                                  growthRoom > 15 ? "accent" : growthRoom > 5 ? "primary" : "auto"
+                                }
+                                size="sm"
+                              />
+                              <span className="text-[10px] font-heading font-bold text-gray-500 tabular-nums w-6">
+                                +{growthRoom}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">?</span>
+                          )}
                         </td>
                         <td className="py-2.5 px-4">
-                          <TraitList traits={player.traits || []} max={2} />
+                          <TraitList
+                            traits={withScoutedWonderkid(player.traits || [], read?.wonderkid)}
+                            max={2}
+                          />
                         </td>
                         <td className="py-2.5 px-4 text-center">
                           <span

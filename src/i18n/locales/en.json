@@ -403,7 +403,10 @@
     "potExcellent": "Excellent",
     "potPromising": "Promising",
     "potDecent": "Decent",
-    "potLimited": "Limited"
+    "potLimited": "Limited",
+    "assessedBy": "Potential judged by {{name}}",
+    "noAssessor": "Nobody at the club can judge potential: hire a scout or an assistant manager.",
+    "notAssessed": "Not judged"
   },
   "common": {
     "currentWage": "Current Wage",
@@ -1762,7 +1765,22 @@
     "renewalProjectionWageBill": "Weekly wage bill {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Wage budget use {{before}}% → {{after}}%",
     "renewalProjectionRunway": "Cash runway {{before}} → {{after}}",
-    "scoutedEstimate": "Scouted: ~{{ovr}} · confidence {{confidence}}"
+    "scoutedEstimate": "Scouted: ~{{ovr}} · confidence {{confidence}}",
+    "projection": {
+      "title": "Development projection",
+      "assessedBy": "Judged by {{name}}",
+      "noAssessor": "Nobody at the club can judge this player's potential. Hire a scout or an assistant manager to get a projection.",
+      "estimatedPotential": "Est. potential",
+      "seasonAhead": "Season +{{n}} (age {{age}})",
+      "expectedPeak": "Expected peak",
+      "peakValue": "{{ovr}} at {{age}}",
+      "expected": "Expected",
+      "range": "Range",
+      "assumptions": "Assumes normal training, playing about two in every three matches and an average rating near {{rating}}.",
+      "coachingClub": "Uses your club's current coaching staff.",
+      "coachingStandard": "Uses average coaching, as he trains elsewhere.",
+      "disclaimer": "A scout's forecast, not a promise: more games and better form make him grow faster, too little football slower."
+    }
   },
   "teamProfile": {
     "clubInfo": "Club Information",
@@ -2933,6 +2951,10 @@
       "staffContractYearsInvalid": "Staff contracts run for one to three years.",
       "staff": {
         "marketRefreshesUsed": "You have used this month's refreshes. They come back on the 1st."
+      },
+      "projection": {
+        "notAssessed": "Your club has not assessed this player.",
+        "noAssessor": "Nobody at the club can judge potential."
       }
     },
     "sender": {
@@ -3808,7 +3830,8 @@
     },
     "Wonderkid": {
       "label": "Wonderkid",
-      "desc": "Young talent with exceptional potential"
+      "desc": "Your scouts judge this youngster to have exceptional potential",
+      "scoutedPotential": "Scouted potential"
     }
   },
   "date": {
@@ -4300,12 +4323,12 @@
     "itemCrashDesc": "Included because something crashed during your last session.",
     "optionalHeading": "Add if you want to — off by default",
     "includeSave": "My save file",
-      "includeSaveDesc": "Lets us replay the exact situation you were in.",
+    "includeSaveDesc": "Lets us replay the exact situation you were in.",
     "includeSaveNoCareer": "No career is open, so there is nothing to attach.",
     "nothingSentYet": "Nothing is saved or opened until you press the button below. Submitting the form needs a GitHub account — the file is yours either way.",
     "savedTo": "Your report file was saved here:",
     "dragItIn": "Drag it onto the GitHub form in your browser, then submit. That is everything.",
-      "browserDidNotOpen": "Your browser did not open. The file above is saved — attach it to a new issue on GitHub when you can.",
+    "browserDidNotOpen": "Your browser did not open. The file above is saved — attach it to a new issue on GitHub when you can.",
     "review": "Review what is sent",
     "saveAndOpen": "Save the file and open GitHub",
     "working": "Working…"

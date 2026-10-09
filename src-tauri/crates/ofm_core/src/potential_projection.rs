@@ -116,6 +116,9 @@ pub struct PlayerAssessment {
     pub potential_low: u8,
     pub potential_high: u8,
     pub potential_band: u8,
+    /// The ceiling the club believes: the middle of its range, by which the
+    /// squad screens rank and average.
+    pub potential_believed: u8,
     pub wonderkid: bool,
 }
 
@@ -408,6 +411,7 @@ pub fn club_assessments(game: &Game) -> Result<ClubAssessments, String> {
                 potential_low: estimate.potential_low,
                 potential_high: estimate.potential_high,
                 potential_band: estimate.potential_band,
+                potential_believed: believed(estimate.potential_low, estimate.potential_high),
                 wonderkid: scouted_wonderkid(&estimate, age_today(game, player)),
             }
         })
@@ -657,6 +661,10 @@ mod tests {
         let read = &assessments.players[0];
         assert_eq!(read.potential_band, 2);
         assert!(read.potential_low >= 93);
+        assert_eq!(
+            read.potential_believed,
+            believed(read.potential_low, read.potential_high)
+        );
         assert!(read.wonderkid);
     }
 
