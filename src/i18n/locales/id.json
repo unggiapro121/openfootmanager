@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Seimbang",
     "objectiveHighPotential": "Potensi tinggi",
     "objectiveReadySoon": "Siap segera",
-    "youthRecruitmentHint": "Kirim scout yang bebas untuk mencari prospek akademi baru. Pencarian yang selesai mengirimkan pemain langsung ke akademimu.",
+    "youthRecruitmentHint": "Kirim pemandu bakat untuk mencari pemain muda bagi akademi. Setiap pencarian ada biayanya dan pemandu bakat beristirahat seminggu setelahnya. Pantau seorang pemain muda agar pemandu bakat mengikutinya sebelum Anda memutuskan.",
     "startYouthSearch": "Mulai pencarian pemain muda",
     "activeYouthSearches": "{{count}} pencarian pemain muda aktif",
     "noYouthSearches": "Tidak ada pencarian rekrutmen pemain muda yang berjalan.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "Belum terungkap",
     "confidence": "Keyakinan",
     "youthSearchQuote": "Biaya {{fee}} · {{days}} hari",
-    "scoutResting": "Istirahat {{days}} hari lagi"
+    "scoutResting": "Istirahat {{days}} hari lagi",
+    "watchlistTitle": "Daftar pantauan",
+    "watchlistHint": "Pemain muda yang Anda pantau. Tugaskan pemandu bakat dan rentangnya menyempit setiap Senin hingga Anda tahu persis kemampuannya.",
+    "watchlistEmpty": "Belum ada pemain di daftar pantauan. Pilih Pantau di laporan pencarian pemain muda.",
+    "watchlistScout": "Pemandu bakat",
+    "watchlistTimeLeft": "Sisa waktu",
+    "watchlistScoutFor": "Pemandu bakat yang memantau {{name}}",
+    "watchlistNoScout": "Tanpa pemandu bakat",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Sisa {{weeks}} mgg",
+    "watchlistSign": "Rekrut",
+    "watchlistUnwatch": "Lepas"
   },
   "match": {
     "live": "Langsung",
@@ -2896,7 +2907,12 @@
         "youthAssignmentNotFound": "Penugasan rekrutmen pemuda tidak ditemukan",
         "scoutAlreadyAssignedToSearch": "Scout sudah ditugaskan ke pencarian ini",
         "scoutResting": "Pemandu bakat ini masih istirahat {{days}} hari lagi setelah pencarian pemain muda terakhirnya.",
-        "insufficientFunds": "Klub tidak sanggup membayar biaya pencarian {{fee}}."
+        "insufficientFunds": "Klub tidak sanggup membayar biaya pencarian {{fee}}.",
+        "prospectNotWatched": "Pemain muda itu tidak ada di daftar pantauan.",
+        "prospectAlreadyWatched": "Pemain muda itu sudah ada di daftar pantauan.",
+        "scoutWatchlistFull": "Pemandu bakat ini sudah memantau tiga pemain muda.",
+        "wagePolicy": "Dewan tidak mau menambahkan gaji pemain muda ini ke total gaji.",
+        "prospectAlreadySigned": "Pemain muda itu sudah tanda tangan."
       },
       "invalidPath": "Jalur tidak valid.",
       "staffWageBudget": "Dewan tidak mengizinkan total gaji mingguan melebihi anggaran {{budget}}.",
@@ -3383,24 +3399,26 @@
             "label": "Tandatangani ke Akademi",
             "description": "Tawarkan kontrak pemuda kepada prospek ini dan tambahkan ke akademi."
           },
-          "shortlist": {
-            "label": "Shortlist",
-            "description": "Pertahankan prospek ini untuk dipertimbangkan dan pindahkan ke pesan shortlist terpisah."
-          },
           "discard": {
             "label": "Buang",
             "description": "Lewati prospek ini dan hapus dari laporan."
+          },
+          "watch": {
+            "label": "Pantau",
+            "description": "Masukkan pemain muda ini ke daftar pantauan agar pemandu bakat mengikutinya."
+          },
+          "unwatch": {
+            "label": "Lepas",
+            "description": "Keluarkan pemain muda ini dari daftar pantauan."
           }
         },
         "effect": {
           "sign": "{{player}} menandatangani kontrak pemuda dan bergabung dengan akademi kamu.",
-          "shortlist": "{{player}} ditambahkan ke shortlist pemuda kamu.",
-          "discard": "{{player}} dihapus dari laporan rekrutmen pemuda."
+          "discard": "{{player}} dihapus dari laporan rekrutmen pemuda.",
+          "watch": "{{player}} masuk daftar pantauan Anda.",
+          "unwatch": "{{player}} keluar dari daftar pantauan Anda.",
+          "wagePolicy": "Dewan tidak mau menambahkan gaji {{player}} ke total gaji."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Prospek muda masuk shortlist",
-        "body": "{{player}} telah dipindahkan ke shortlist pemuda kamu. Kamu dapat meninjaunya lagi nanti sebelum mengambil keputusan final."
       },
       "scoutReport": {
         "subject": "Laporan Scout: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} telah meninggalkan klub",
         "body": "Kontrak {{name}} sebagai {{role}} telah habis dan {{name}} meninggalkan klub. Anda bisa mencari pengganti di bursa staf."
+      },
+      "youthWatchReport": {
+        "subject": "Laporan pemandu bakat — {{player}}",
+        "body": "Bos, saya sudah memantau {{player}} selama {{weeks}} minggu. Begini penilaian saya hari ini. Rekrut atau lepas dia kapan pun Anda siap."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} keluar dari daftar pantauan",
+        "body": "Kita sudah memantau {{player}} dua belas minggu tanpa bergerak, jadi saya mengeluarkannya dari daftar."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} bergabung dengan klub lain",
+        "body": "{{player}} bergabung dengan akademi {{team}} sebelum kita bergerak."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} sudah tidak tersedia",
+        "body": "{{player}} sudah tidak tersedia, jadi saya mengeluarkannya dari daftar pantauan."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "Daftar pantauan butuh pemandu bakat",
+        "body": "{{scout}} telah meninggalkan klub. {{count}} pemain muda yang ia pantau tetap di daftar, tanpa pemandu bakat."
       }
     },
     "news": {

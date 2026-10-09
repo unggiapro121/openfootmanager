@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Ausgewogen",
     "objectiveHighPotential": "Hohes Potenzial",
     "objectiveReadySoon": "Schnell einsatzbereit",
-    "youthRecruitmentHint": "Schicke einen freien Scout los, um nach einem neuen Akademietalent zu suchen. Abgeschlossene Suchen liefern Spieler direkt in deine Jugendakademie.",
+    "youthRecruitmentHint": "Schicke einen Scout auf die Suche nach Talenten für die Jugendakademie. Jede Suche kostet eine Gebühr, danach pausiert der Scout eine Woche. Beobachte ein Talent, damit ein Scout es verfolgt, bevor du entscheidest.",
     "startYouthSearch": "Jugendsuche starten",
     "activeYouthSearches": "{{count}} aktive Jugendsuchen",
     "noYouthSearches": "Derzeit laufen keine Jugendrekrutierungssuchen.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "Nicht entdeckt",
     "confidence": "Zuverlässigkeit",
     "youthSearchQuote": "Kosten {{fee}} · {{days}} Tage",
-    "scoutResting": "Pausiert noch {{days}} Tage"
+    "scoutResting": "Pausiert noch {{days}} Tage",
+    "watchlistTitle": "Beobachtungsliste",
+    "watchlistHint": "Talente, die du beobachtest. Gib einem einen Scout, und seine Spannen werden jeden Montag enger, bis du genau weißt, was er kann.",
+    "watchlistEmpty": "Du beobachtest keine Talente. Wähle Beobachten in einem Bericht zur Nachwuchssuche.",
+    "watchlistScout": "Scout",
+    "watchlistTimeLeft": "Verbleibend",
+    "watchlistScoutFor": "Scout, der {{name}} beobachtet",
+    "watchlistNoScout": "Kein Scout",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Noch {{weeks}} Wo.",
+    "watchlistSign": "Verpflichten",
+    "watchlistUnwatch": "Streichen"
   },
   "match": {
     "live": "Live",
@@ -2888,7 +2899,12 @@
         "youthAssignmentNotFound": "Jugendscouting-Auftrag nicht gefunden",
         "scoutAlreadyAssignedToSearch": "Der Scout ist bereits dieser Suche zugewiesen",
         "scoutResting": "Dieser Scout pausiert nach seiner letzten Nachwuchssuche noch {{days}} Tage.",
-        "insufficientFunds": "Der Verein kann die Suchgebühr von {{fee}} nicht bezahlen."
+        "insufficientFunds": "Der Verein kann die Suchgebühr von {{fee}} nicht bezahlen.",
+        "prospectNotWatched": "Dieses Talent steht nicht auf deiner Beobachtungsliste.",
+        "prospectAlreadyWatched": "Dieses Talent steht bereits auf deiner Beobachtungsliste.",
+        "scoutWatchlistFull": "Dieser Scout beobachtet bereits drei Talente.",
+        "wagePolicy": "Der Vorstand nimmt das Gehalt dieses Talents nicht in die Gehaltskosten auf.",
+        "prospectAlreadySigned": "Dieses Talent hat bereits unterschrieben."
       },
       "invalidPath": "Ungültiger Pfad.",
       "conflict": {
@@ -3383,24 +3399,26 @@
             "label": "Für Akademie verpflichten",
             "description": "Biete diesem Talent einen Jugendvertrag an und füge es der Akademie hinzu."
           },
-          "shortlist": {
-            "label": "Auf Shortlist setzen",
-            "description": "Behalte dieses Talent im Blick und verschiebe es in eine separate Shortlist-Nachricht."
-          },
           "discard": {
             "label": "Verwerfen",
             "description": "Lehne dieses Talent ab und entferne es aus dem Bericht."
+          },
+          "watch": {
+            "label": "Beobachten",
+            "description": "Setze dieses Talent auf deine Beobachtungsliste, damit ein Scout es verfolgt."
+          },
+          "unwatch": {
+            "label": "Streichen",
+            "description": "Nimm dieses Talent von deiner Beobachtungsliste."
           }
         },
         "effect": {
           "sign": "{{player}} hat einen Jugendvertrag unterschrieben und ist deiner Akademie beigetreten.",
-          "shortlist": "{{player}} wurde zu deiner Jugend-Shortlist hinzugefügt.",
-          "discard": "{{player}} wurde aus dem Bericht zur Jugendrekrutierung entfernt."
+          "discard": "{{player}} wurde aus dem Bericht zur Jugendrekrutierung entfernt.",
+          "watch": "{{player}} steht auf deiner Beobachtungsliste.",
+          "unwatch": "{{player}} steht nicht mehr auf deiner Beobachtungsliste.",
+          "wagePolicy": "Der Vorstand nimmt das Gehalt von {{player}} nicht in die Gehaltskosten auf."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Jugendtalent auf der Shortlist",
-        "body": "{{player}} wurde auf deine Jugend-Shortlist verschoben. Du kannst ihn später erneut prüfen, bevor du eine endgültige Entscheidung triffst."
       },
       "scoutReport": {
         "subject": "Scout-Bericht: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} hat den Verein verlassen",
         "body": "Der Vertrag von {{name}} als {{role}} ist ausgelaufen, und {{name}} hat den Verein verlassen. Auf dem Mitarbeitermarkt findest du Ersatz."
+      },
+      "youthWatchReport": {
+        "subject": "Scoutbericht — {{player}}",
+        "body": "Chef, ich beobachte {{player}} jetzt seit {{weeks}} Wochen. So schätze ich ihn heute ein. Verpflichte ihn oder lass ihn gehen, wann immer du willst."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} von der Liste genommen",
+        "body": "Wir haben {{player}} zwölf Wochen beobachtet, ohne zu handeln, also habe ich ihn von der Liste genommen."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} hat woanders unterschrieben",
+        "body": "{{player}} ist in die Akademie von {{team}} gewechselt, bevor wir zugeschlagen haben."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} ist nicht mehr verfügbar",
+        "body": "{{player}} ist nicht mehr verfügbar, daher habe ich ihn von der Beobachtungsliste genommen."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "Beobachtungsliste braucht einen Scout",
+        "body": "{{scout}} hat den Verein verlassen. Die {{count}} Talente, die er beobachtet hat, stehen weiter auf der Liste, ohne Scout."
       }
     },
     "news": {

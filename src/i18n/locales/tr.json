@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Dengeli",
     "objectiveHighPotential": "Yüksek potansiyel",
     "objectiveReadySoon": "Yakında hazır",
-    "youthRecruitmentHint": "Yeni bir akademi yeteneği bulması için boştaki bir gözlemciyi görevlendirin. Tamamlanan aramalar oyuncuları doğrudan altyapı akademinize kazandırır.",
+    "youthRecruitmentHint": "Akademi için genç oyuncu aramaya bir gözlemci gönder. Her aramanın bir ücreti var ve gözlemci sonrasında bir hafta dinlenir. Karar vermeden önce bir gözlemcinin takip etmesi için bir genci izleme listesine al.",
     "startYouthSearch": "Genç oyuncu araması başlat",
     "activeYouthSearches": "{{count}} aktif genç oyuncu araması",
     "noYouthSearches": "Yürüyen genç oyuncu araması yok.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "Keşfedilmedi",
     "confidence": "Güven",
     "youthSearchQuote": "Ücret {{fee}} · {{days}} gün",
-    "scoutResting": "{{days}} gün daha dinleniyor"
+    "scoutResting": "{{days}} gün daha dinleniyor",
+    "watchlistTitle": "İzleme listesi",
+    "watchlistHint": "Takip ettiğin gençler. Birine gözlemci ata, aralıkları her pazartesi daralsın ve tam olarak ne olduğunu öğren.",
+    "watchlistEmpty": "İzleme listende kimse yok. Bir genç oyuncu arama raporunda İzle'yi seç.",
+    "watchlistScout": "Gözlemci",
+    "watchlistTimeLeft": "Kalan süre",
+    "watchlistScoutFor": "{{name}} adlı genci izleyen gözlemci",
+    "watchlistNoScout": "Gözlemci yok",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "{{weeks}} hafta kaldı",
+    "watchlistSign": "İmzala",
+    "watchlistUnwatch": "Bırak"
   },
   "match": {
     "live": "Canlı",
@@ -2896,7 +2907,12 @@
         "youthAssignmentNotFound": "Genç oyuncu kazanım görevi bulunamadı",
         "scoutAlreadyAssignedToSearch": "Gözlemci bu aramaya zaten atanmış",
         "scoutResting": "Bu gözlemci son genç oyuncu aramasından sonra {{days}} gün daha dinleniyor.",
-        "insufficientFunds": "Kulüp {{fee}} arama ücretini karşılayamıyor."
+        "insufficientFunds": "Kulüp {{fee}} arama ücretini karşılayamıyor.",
+        "prospectNotWatched": "Bu genç izleme listende değil.",
+        "prospectAlreadyWatched": "Bu genç zaten izleme listende.",
+        "scoutWatchlistFull": "Bu gözlemci zaten üç genci takip ediyor.",
+        "wagePolicy": "Yönetim bu gencin maaşını bütçeye eklemiyor.",
+        "prospectAlreadySigned": "Bu genç zaten imza attı."
       },
       "invalidPath": "Geçersiz yol.",
       "staffWageBudget": "Yönetim, haftalık maaş giderinin {{budget}} bütçesini aşmasına izin vermez.",
@@ -3383,24 +3399,26 @@
             "label": "Akademiye kaydet",
             "description": "Bu yeteneğe bir gençlik sözleşmesi önerin ve onu akademiye ekleyin."
           },
-          "shortlist": {
-            "label": "Kısa listeye al",
-            "description": "Bu yeteneği değerlendirmede tutun ve ayrı bir kısa liste mesajına taşıyın."
-          },
           "discard": {
             "label": "Gözden çıkar",
             "description": "Bu yeteneği pas geçin ve rapordan çıkarın."
+          },
+          "watch": {
+            "label": "İzle",
+            "description": "Bir gözlemcinin takip etmesi için bu genci izleme listene ekle."
+          },
+          "unwatch": {
+            "label": "Bırak",
+            "description": "Bu genci izleme listenden çıkar."
           }
         },
         "effect": {
           "sign": "{{player}} gençlik sözleşmesi imzaladı ve akademinize katıldı.",
-          "shortlist": "{{player}} genç oyuncu kısa listenize eklendi.",
-          "discard": "{{player}} genç oyuncu kazanım raporundan çıkarıldı."
+          "discard": "{{player}} genç oyuncu kazanım raporundan çıkarıldı.",
+          "watch": "{{player}} izleme listende.",
+          "unwatch": "{{player}} artık izleme listende değil.",
+          "wagePolicy": "Yönetim {{player}} adlı oyuncunun maaşını bütçeye eklemiyor."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Genç yetenek kısa listeye alındı",
-        "body": "{{player}} genç oyuncu kısa listenize taşındı. Nihai kararı vermeden önce onu daha sonra tekrar inceleyebilirsiniz."
       },
       "scoutReport": {
         "subject": "Gözlemci Raporu: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} kulüpten ayrıldı",
         "body": "{{name}} adlı {{role}} personelinin sözleşmesi sona erdi ve kulüpten ayrıldı. Personel pazarında yerine birini arayabilirsiniz."
+      },
+      "youthWatchReport": {
+        "subject": "Gözlemci raporu — {{player}}",
+        "body": "Hocam, {{player}} adlı genci {{weeks}} haftadır takip ediyorum. Bugün onu böyle değerlendiriyorum. İstediğin zaman imzala ya da bırak."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} listeden çıkarıldı",
+        "body": "{{player}} adlı genci on iki haftadır izliyoruz ama bir adım atmadık, bu yüzden onu listeden çıkardım."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} başka bir kulüple anlaştı",
+        "body": "{{player}}, biz harekete geçmeden {{team}} akademisine katıldı."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} artık piyasada değil",
+        "body": "{{player}} artık müsait değil, bu yüzden onu izleme listesinden çıkardım."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "İzleme listesinin gözlemciye ihtiyacı var",
+        "body": "{{scout}} kulüpten ayrıldı. Takip ettiği {{count}} genç gözlemcisiz olarak listede duruyor."
       }
     },
     "news": {

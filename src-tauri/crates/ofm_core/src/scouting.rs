@@ -19,6 +19,8 @@ const ERR_YOUTH_ASSIGNMENT_NOT_FOUND: &str = "be.error.scouting.youthAssignmentN
 const ERR_SCOUT_ALREADY_ASSIGNED_TO_SEARCH: &str = "be.error.scouting.scoutAlreadyAssignedToSearch";
 const ERR_SCOUT_RESTING: &str = "be.error.scouting.scoutResting";
 const ERR_SCOUTING_INSUFFICIENT_FUNDS: &str = "be.error.scouting.insufficientFunds";
+const ERR_SCOUTING_WAGE_POLICY: &str = "be.error.scouting.wagePolicy";
+const ERR_PROSPECT_ALREADY_SIGNED: &str = "be.error.scouting.prospectAlreadySigned";
 
 fn scouting_error_with_params(key: &str, params: &[(&str, String)]) -> String {
     if params.is_empty() {
@@ -59,7 +61,7 @@ fn scout_assignment_count(game: &Game, scout_id: &str) -> usize {
             .count()
 }
 
-fn resolve_user_scout<'a>(
+pub(crate) fn resolve_user_scout<'a>(
     game: &'a Game,
     scout_id: &str,
 ) -> Result<&'a domain::staff::Staff, String> {
@@ -580,13 +582,11 @@ fn youth_prospect_options() -> Vec<ActionOption> {
             description_key: Some("be.msg.youthRecruitment.option.sign.description".to_string()),
         },
         ActionOption {
-            id: "shortlist".to_string(),
+            id: "watch".to_string(),
             label: String::new(),
             description: String::new(),
-            label_key: Some("be.msg.youthRecruitment.option.shortlist.label".to_string()),
-            description_key: Some(
-                "be.msg.youthRecruitment.option.shortlist.description".to_string(),
-            ),
+            label_key: Some("be.msg.youthRecruitment.option.watch.label".to_string()),
+            description_key: Some("be.msg.youthRecruitment.option.watch.description".to_string()),
         },
         ActionOption {
             id: "discard".to_string(),
@@ -653,6 +653,61 @@ fn generate_youth_recruitment_candidates(
     recommend_by_estimate(candidates, search.objective)
 }
 
+/// Sign a scouted youngster into the user's academy and return him as signed.
+///
+/// He signs on the terms he was generated with when those are still in the
+/// future, and on the club's standard terms when they are not; the board judges
+/// the wage as it judges every academy recruit, at what the club would pay him
+/// there. Signing him is a contract made mid-career, so it goes in his history.
+pub(crate) fn sign_youth_prospect(game: &mut Game, prospect: Player) -> Result<Player, String> {
+    if game.players.iter().any(|player| player.id == prospect.id) {
+        return Err(ERR_PROSPECT_ALREADY_SIGNED.to_string());
+    }
+    let team_id = game
+        .manager
+        .team_id
+        .clone()
+        .ok_or("be.error.noTeamAssigned")?;
+    let team = game
+        .teams
+        .iter()
+        .find(|team| team.id == team_id)
+        .ok_or("be.error.teamNotFound")?;
+
+    let mut signed = prospect;
+    signed.team_id = Some(team_id);
+    signed.squad_role = SquadRole::Youth;
+    let today = game.clock.current_date.date_naive();
+    let own_terms = signed
+        .contract_end()
+        .and_then(crate::contracts::parse_contract_date)
+        .filter(|end| *end > today)
+        .map(|end| (signed.wage(), end))
+        .filter(|(wage, _)| *wage > 0);
+    let terms =
+        own_terms.or_else(|| crate::contracts::standard_contract_terms(&signed, team, today, 0));
+    if let Some((wage, _)) = terms
+        && !crate::contract_wage_policy::joining_wage_policy_verdict(game, team, &signed, wage)
+            .permits()
+    {
+        return Err(ERR_SCOUTING_WAGE_POLICY.to_string());
+    }
+    if let Some((wage, end)) = terms {
+        crate::contracts::record_movement(
+            &mut signed,
+            crate::contracts::contract_entry(
+                PlayerMovementKind::FreeAgentSigning,
+                today,
+                team,
+                crate::contracts::contract_record(today, end, wage, ContractSource::FreeAgent),
+            ),
+        );
+    }
+    signed.jersey_number = crate::roster::resolve_jersey_for(game, &signed, team);
+    game.players.push(signed.clone());
+    Ok(signed)
+}
+
 pub struct YouthRecruitmentEffect {
     pub message: String,
     pub i18n_key: String,
@@ -673,7 +728,7 @@ pub fn apply_youth_recruitment_response(
         .actions
         .iter()
         .position(|action| action.id == action_id)?;
-    let prospect_id = action_id.strip_prefix("prospect:")?;
+    let prospect_id = action_id.strip_prefix("prospect:")?.to_string();
 
     let prospects = game.messages[message_index]
         .context
@@ -683,6 +738,7 @@ pub fn apply_youth_recruitment_response(
         .iter()
         .position(|prospect| prospect.id == prospect_id)?;
     let prospect = prospects[prospect_index].clone();
+    let prospect_name = prospect.full_name.clone();
 
     match option_id {
         "discard" => {
@@ -699,68 +755,29 @@ pub fn apply_youth_recruitment_response(
             })
         }
         "sign" => {
-            if game.players.iter().any(|player| player.id == prospect.id) {
-                return None;
-            }
-
-            let mut signed_player = prospect;
-            signed_player.team_id = game.manager.team_id.clone();
-            signed_player.squad_role = SquadRole::Youth;
-            if let Some(team_id) = signed_player.team_id.clone()
-                && let Some(team) = game.teams.iter().find(|team| team.id == team_id)
-            {
-                signed_player.jersey_number =
-                    crate::roster::resolve_jersey_for(game, &signed_player, team);
-            }
-            // Signing him is a contract made mid-career, so it goes in his history. He
-            // signs on the terms he was generated with when those are still in the
-            // future, and on the club's standard terms when they are not.
-            let today = game.clock.current_date.date_naive();
-            if let Some(team) = game
-                .teams
-                .iter()
-                .find(|team| Some(&team.id) == game.manager.team_id.as_ref())
-            {
-                let own_terms = signed_player
-                    .contract_end()
-                    .and_then(crate::contracts::parse_contract_date)
-                    .filter(|end| *end > today)
-                    .map(|end| (signed_player.wage(), end))
-                    .filter(|(wage, _)| *wage > 0);
-                if let Some((wage, end)) = own_terms.or_else(|| {
-                    crate::contracts::standard_contract_terms(&signed_player, team, today, 0)
-                }) {
-                    crate::contracts::record_movement(
-                        &mut signed_player,
-                        crate::contracts::contract_entry(
-                            PlayerMovementKind::FreeAgentSigning,
-                            today,
-                            team,
-                            crate::contracts::contract_record(
-                                today,
-                                end,
-                                wage,
-                                ContractSource::FreeAgent,
-                            ),
-                        ),
-                    );
+            let signed = match sign_youth_prospect(game, prospect) {
+                Ok(signed) => signed,
+                Err(error) if error == ERR_SCOUTING_WAGE_POLICY => {
+                    return Some(YouthRecruitmentEffect {
+                        message: String::new(),
+                        i18n_key: "be.msg.youthRecruitment.effect.wagePolicy".to_string(),
+                        i18n_params: params(&[("player", &prospect_name)]),
+                    });
                 }
-            }
-            let player_id = signed_player.id.clone();
-            let player_name = signed_player.full_name.clone();
-            let signed_jersey_number = signed_player.jersey_number;
-            game.players.push(signed_player);
+                Err(_) => return None,
+            };
 
+            crate::youth_watchlist::forget(game, &signed.id);
             let message = &mut game.messages[message_index];
-            message.context.player_id = Some(player_id);
+            message.context.player_id = Some(signed.id.clone());
             if let Some(prospects) = message.context.youth_prospects.as_mut()
                 && let Some(updated_prospect) = prospects
                     .iter_mut()
                     .find(|candidate| candidate.id == prospect_id)
             {
-                updated_prospect.team_id = game.manager.team_id.clone();
+                updated_prospect.team_id = signed.team_id.clone();
                 updated_prospect.squad_role = SquadRole::Youth;
-                updated_prospect.jersey_number = signed_jersey_number;
+                updated_prospect.jersey_number = signed.jersey_number;
             }
             if let Some(action) = message.actions.get_mut(action_index) {
                 action.resolved = true;
@@ -769,79 +786,40 @@ pub fn apply_youth_recruitment_response(
             Some(YouthRecruitmentEffect {
                 message: String::new(),
                 i18n_key: "be.msg.youthRecruitment.effect.sign".to_string(),
-                i18n_params: params(&[("player", &player_name)]),
+                i18n_params: params(&[("player", &signed.full_name)]),
             })
         }
-        "shortlist" => {
-            let sender = game.messages[message_index].sender.clone();
-            let date = game.messages[message_index].date.clone();
-            let team_id = game.messages[message_index].context.team_id.clone();
-            let youth_target_position = game.messages[message_index]
+        "watch" => {
+            let estimate = game.messages[message_index]
                 .context
-                .youth_target_position
-                .clone();
-            let youth_search_region = game.messages[message_index]
-                .context
-                .youth_search_region
-                .clone();
-            let youth_search_objective = game.messages[message_index]
-                .context
-                .youth_search_objective
-                .clone();
-            let prospect_name = prospect.full_name.clone();
-            let shortlist_options = youth_prospect_options();
-
-            game.messages.push(
-                InboxMessage::new(
-                    format!("youth-shortlist-{}", prospect.id),
-                    String::new(),
-                    String::new(),
-                    sender,
-                    date,
-                )
-                .with_category(MessageCategory::ScoutReport)
-                .with_sender_role("")
-                .with_action(MessageAction {
-                    id: format!("prospect:{}", prospect.id),
-                    label: prospect.full_name.clone(),
-                    action_type: ActionType::ChooseOption {
-                        options: vec![shortlist_options[0].clone(), shortlist_options[2].clone()],
-                    },
-                    resolved: false,
-                    label_key: None,
-                })
-                .with_context(MessageContext {
-                    team_id,
-                    youth_target_position,
-                    youth_search_region,
-                    youth_search_objective,
-                    youth_prospects: Some(vec![prospect]),
-                    ..MessageContext::default()
-                })
-                .with_i18n(
-                    "be.msg.youthRecruitmentShortlist.subject",
-                    "be.msg.youthRecruitmentShortlist.body",
-                    params(&[("player", &prospect_name)]),
-                ),
-            );
-
-            if let Some(shortlist_message) = game.messages.last_mut() {
-                shortlist_message.sender_role_key = Some("be.role.scout".to_string());
-            }
-
-            let message = &mut game.messages[message_index];
-            if let Some(remaining) = message.context.youth_prospects.as_mut() {
-                remaining.remove(prospect_index);
-            }
-            message.actions.remove(action_index);
-
+                .youth_prospect_estimates
+                .iter()
+                .find(|estimate| estimate.prospect_id == prospect_id)
+                .cloned()?;
+            crate::youth_watchlist::watch(game, prospect, estimate).ok()?;
+            resolve_action(game, message_index, action_index);
             Some(YouthRecruitmentEffect {
                 message: String::new(),
-                i18n_key: "be.msg.youthRecruitment.effect.shortlist".to_string(),
+                i18n_key: "be.msg.youthRecruitment.effect.watch".to_string(),
+                i18n_params: params(&[("player", &prospect_name)]),
+            })
+        }
+        "unwatch" => {
+            crate::youth_watchlist::unwatch(game, &prospect_id).ok()?;
+            resolve_action(game, message_index, action_index);
+            Some(YouthRecruitmentEffect {
+                message: String::new(),
+                i18n_key: "be.msg.youthRecruitment.effect.unwatch".to_string(),
                 i18n_params: params(&[("player", &prospect_name)]),
             })
         }
         _ => None,
+    }
+}
+
+fn resolve_action(game: &mut Game, message_index: usize, action_index: usize) {
+    if let Some(action) = game.messages[message_index].actions.get_mut(action_index) {
+        action.resolved = true;
     }
 }
 
@@ -1118,7 +1096,7 @@ const YOUTH_PROSPECTS_RECOMMENDED: usize = 3;
 /// The scout's read of one rating: his estimate lands within `band` of the
 /// truth, and the range is `band` either side of the estimate, so the truth is
 /// always inside it.
-fn read_rating(truth: u8, band: u8, rng: &mut impl rand::Rng) -> (u8, u8) {
+pub(crate) fn read_rating(truth: u8, band: u8, rng: &mut impl rand::Rng) -> (u8, u8) {
     let band = i16::from(band);
     let estimate = i16::from(truth) + rng.random_range(-band..=band);
     let low = (estimate - band).clamp(1, 99) as u8;
@@ -1145,6 +1123,7 @@ fn estimate_prospect(
         potential_low,
         potential_high,
         potential_band,
+        attributes: Vec::new(),
     }
 }
 
@@ -1349,6 +1328,7 @@ mod tests {
                 potential_low: read.1 - 5,
                 potential_high: read.1 + 5,
                 potential_band: 5,
+                attributes: Vec::new(),
             };
             (player, estimate)
         }

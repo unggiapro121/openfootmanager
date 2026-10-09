@@ -2,11 +2,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 
 import {
+  assignWatchlistScout,
   cancelYouthScouting,
   quoteYouthSearch,
   reassignYouthScouting,
   sendScout,
+  signWatchedProspect,
   startYouthScouting,
+  unwatchProspect,
 } from "./scoutingService";
 
 vi.mock("@tauri-apps/api/core", () => ({
@@ -82,5 +85,27 @@ describe("scoutingService", () => {
       region: "Domestic",
       objective: "Balanced",
     });
+  });
+
+  it("sends the watchlist commands", async () => {
+    mockedInvoke.mockResolvedValue({});
+
+    await assignWatchlistScout("kid-1", "scout-1");
+    await assignWatchlistScout("kid-1", null);
+    await signWatchedProspect("kid-1");
+    await unwatchProspect("kid-1");
+
+    expect(mockedInvoke).toHaveBeenNthCalledWith(1, "assign_watchlist_scout", {
+      prospectId: "kid-1",
+      scoutId: "scout-1",
+    });
+    expect(mockedInvoke).toHaveBeenNthCalledWith(2, "assign_watchlist_scout", {
+      prospectId: "kid-1",
+      scoutId: null,
+    });
+    expect(mockedInvoke).toHaveBeenNthCalledWith(3, "sign_watched_prospect", {
+      prospectId: "kid-1",
+    });
+    expect(mockedInvoke).toHaveBeenNthCalledWith(4, "unwatch_prospect", { prospectId: "kid-1" });
   });
 });

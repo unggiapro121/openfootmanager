@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type {
@@ -535,6 +535,41 @@ describe("ScoutingTab", () => {
         fee: 300000,
       });
       expect(onGameUpdate).toHaveBeenCalledWith(updatedState);
+    });
+  });
+
+  it("signs a prospect from the watchlist and forwards the updated state", async () => {
+    const updated = createGameState({ scouts: [createScout()] });
+    invokeMock.mockImplementation(async (command: string) =>
+      command === "sign_watched_prospect" ? updated : undefined,
+    );
+    const onGameUpdate = vi.fn();
+    const gameState = createGameState({ scouts: [createScout()] });
+    gameState.youth_watchlist = [
+      {
+        prospect: { ...gameState.players[0], id: "kid-1", full_name: "Kid Watched" },
+        estimate: {
+          prospect_id: "kid-1",
+          ovr_low: 55,
+          ovr_high: 63,
+          ovr_band: 5,
+          potential_low: 70,
+          potential_high: 86,
+          potential_band: 8,
+        },
+        scout_id: null,
+        added_on: "2026-08-03",
+        expires_on: "2026-10-26",
+      },
+    ];
+
+    render(<ScoutingTab gameState={gameState} onGameUpdate={onGameUpdate} />);
+    const row = screen.getByRole("row", { name: /Kid Watched/ });
+    fireEvent.click(within(row).getByRole("button", { name: "scouting.watchlistSign" }));
+
+    await waitFor(() => {
+      expect(invokeMock).toHaveBeenCalledWith("sign_watched_prospect", { prospectId: "kid-1" });
+      expect(onGameUpdate).toHaveBeenCalledWith(updated);
     });
   });
 });

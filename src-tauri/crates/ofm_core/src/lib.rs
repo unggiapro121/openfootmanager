@@ -63,3 +63,4 @@ pub mod turn;
 pub mod world;
 pub mod world_cup;
 pub mod youth_intake;
+pub mod youth_watchlist;

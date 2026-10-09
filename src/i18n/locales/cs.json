@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Vyvážený",
     "objectiveHighPotential": "Vysoký potenciál",
     "objectiveReadySoon": "Brzy připraven",
-    "youthRecruitmentHint": "Pošlete volného skauta vyhledat nové talenty do akademie. Dokončená vyhledávání doručí hráče přímo do vaší mládežnické akademie.",
+    "youthRecruitmentHint": "Pošlete skauta hledat talenty pro akademii. Každé hledání stojí poplatek a skaut pak týden odpočívá. Sledujte talent, aby ho skaut zkoumal, než se rozhodnete.",
     "startYouthSearch": "Zahájit vyhledávání mládeže",
     "activeYouthSearches": "Aktivní vyhledávání mládeže: {{count}}",
     "noYouthSearches": "Běží žádná vyhledávání pro nábor mládeže.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "Neobjeveno",
     "confidence": "Spolehlivost odhadu",
     "youthSearchQuote": "Cena {{fee}} · {{days}} dní",
-    "scoutResting": "Odpočívá ještě {{days}} dní"
+    "scoutResting": "Odpočívá ještě {{days}} dní",
+    "watchlistTitle": "Sledované talenty",
+    "watchlistHint": "Talenty, které sledujete. Přidělte jim skauta a jejich rozpětí se každé pondělí zúží, dokud nebudete přesně vědět, co v nich je.",
+    "watchlistEmpty": "Nesledujete žádné talenty. V hlášení o hledání mladíků zvolte Sledovat.",
+    "watchlistScout": "Skaut",
+    "watchlistTimeLeft": "Zbývá",
+    "watchlistScoutFor": "Skaut sledující {{name}}",
+    "watchlistNoScout": "Bez skauta",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Zbývá {{weeks}} týd.",
+    "watchlistSign": "Podepsat",
+    "watchlistUnwatch": "Pustit"
   },
   "match": {
     "live": "Živě",
@@ -2896,7 +2907,12 @@
         "youthAssignmentNotFound": "Úkol pro nábor mládeže nebyl nalezen",
         "scoutAlreadyAssignedToSearch": "Skaut je již k tomuto vyhledávání přiřazen",
         "scoutResting": "Tento skaut po posledním hledání mladíků odpočívá ještě {{days}} dní.",
-        "insufficientFunds": "Klub nemá na poplatek za hledání {{fee}}."
+        "insufficientFunds": "Klub nemá na poplatek za hledání {{fee}}.",
+        "prospectNotWatched": "Tento talent není mezi sledovanými.",
+        "prospectAlreadyWatched": "Tento talent už je mezi sledovanými.",
+        "scoutWatchlistFull": "Tento skaut už sleduje tři talenty.",
+        "wagePolicy": "Vedení nepřidá plat tohoto talentu do mzdových nákladů.",
+        "prospectAlreadySigned": "Tento talent už podepsal."
       },
       "invalidPath": "Neplatná cesta.",
       "staffWageBudget": "Vedení nedovolí, aby týdenní mzdové náklady překročily rozpočet {{budget}}.",
@@ -3383,24 +3399,26 @@
             "label": "Podepsat do akademie",
             "description": "Nabídnout tomuto nadějnému hráči mládežnickou smlouvu a přidat ho do akademie."
           },
-          "shortlist": {
-            "label": "Přidat do užšího výběru",
-            "description": "Ponechat si tohoto nadějného hráče v patrnosti a přesunout ho do samostatné zprávy s užším výběrem."
-          },
           "discard": {
             "label": "Vyřadit",
             "description": "Odmítnout tohoto nadějného hráče a odstranit ho ze zprávy."
+          },
+          "watch": {
+            "label": "Sledovat",
+            "description": "Přidejte talent mezi sledované, aby ho mohl skaut zkoumat."
+          },
+          "unwatch": {
+            "label": "Pustit",
+            "description": "Odeberte talent ze sledovaných."
           }
         },
         "effect": {
           "sign": "{{player}} podepsal mládežnickou smlouvu a připojil se k vaší akademii.",
-          "shortlist": "{{player}} byl přidán do vašeho užšího výběru mládeže.",
-          "discard": "{{player}} byl odebrán ze zprávy o náboru mládeže."
+          "discard": "{{player}} byl odebrán ze zprávy o náboru mládeže.",
+          "watch": "{{player}} je mezi sledovanými.",
+          "unwatch": "{{player}} už není mezi sledovanými.",
+          "wagePolicy": "Vedení nepřidá plat hráče {{player}} do mzdových nákladů."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Nadějný mladík přidán do užšího výběru",
-        "body": "{{player}} byl přesunut do vašeho užšího výběru mládeže. Můžete se k němu vrátit později, než učiníte konečné rozhodnutí."
       },
       "scoutReport": {
         "subject": "Zpráva skauta: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} opustil(a) klub",
         "body": "Smlouva {{name}} na pozici {{role}} vypršela a tento člen týmu klub opustil. Náhradu můžete hledat na trhu realizačního týmu."
+      },
+      "youthWatchReport": {
+        "subject": "Hlášení skauta — {{player}}",
+        "body": "Šéfe, {{player}} sleduji už {{weeks}} týdnů. Takhle ho dnes hodnotím. Podepište ho, nebo ho pusťte, kdykoli budete chtít."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} vyřazen ze sledovaných",
+        "body": "{{player}} jsme sledovali dvanáct týdnů a nic jsme neudělali, tak jsem ho ze seznamu vyřadil."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} podepsal jinde",
+        "body": "{{player}} přestoupil do akademie {{team}} dřív, než jsme stihli jednat."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} už není k mání",
+        "body": "{{player}} už není k dispozici, tak jsem ho ze sledovaných vyřadil."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "Sledované talenty potřebují skauta",
+        "body": "{{scout}} odešel z klubu. {{count}} talentů, které sledoval, zůstává na seznamu bez skauta."
       }
     },
     "news": {

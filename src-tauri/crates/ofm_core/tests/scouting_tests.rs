@@ -685,54 +685,125 @@ fn youth_recruitment_response_signs_selected_prospect() {
     assert_eq!(signed_prospect.team_id.as_deref(), Some("team1"));
 }
 
+/// Given a club whose board will not add a single euro to its wage bill,
+/// When the manager signs a scouted prospect,
+/// Then the board refuses: he is not signed and the choice stays open.
 #[test]
-fn youth_recruitment_response_shortlists_selected_prospect() {
+fn signing_a_scouted_prospect_needs_the_boards_wage_approval() {
     let mut game = make_game();
     start_youth_scouting(
         &mut game,
         "scout1",
-        YouthScoutingRegion::International,
-        YouthScoutingObjective::HighPotential,
-        Some(Position::Forward),
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+        None,
     )
     .unwrap();
     complete_scouting(&mut game);
+    game.teams[0].wage_budget = 0;
+    let message = youth_report(&game).clone();
+    let action_id = message.actions[0].id.clone();
+    let prospect_id = action_id.trim_start_matches("prospect:").to_string();
 
-    let message = game
-        .messages
-        .iter()
-        .find(|candidate| {
-            candidate.subject_key.as_deref() == Some("be.msg.youthRecruitmentReport.subject")
-        })
-        .expect("expected youth recruitment report")
-        .clone();
+    let effect = apply_youth_recruitment_response(&mut game, &message.id, &action_id, "sign")
+        .expect("an effect explaining the refusal");
+
+    assert_eq!(effect.i18n_key, "be.msg.youthRecruitment.effect.wagePolicy");
+    assert!(!game.players.iter().any(|player| player.id == prospect_id));
+    assert!(!youth_report(&game).actions[0].resolved);
+}
+
+/// Given a youth report,
+/// When the manager watches one of its prospects,
+/// Then he goes on the watchlist with the report's ranges and no scout, and
+/// stays in the report with his choice made.
+#[test]
+fn youth_recruitment_response_watches_selected_prospect() {
+    let mut game = make_game();
+    start_youth_scouting(
+        &mut game,
+        "scout1",
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+        Some(Position::Defender),
+    )
+    .unwrap();
+    complete_scouting(&mut game);
+    let message = youth_report(&game).clone();
     let action_id = message.actions[1].id.clone();
+    let prospect_id = action_id.trim_start_matches("prospect:").to_string();
 
-    let effect = apply_youth_recruitment_response(&mut game, &message.id, &action_id, "shortlist")
-        .expect("expected shortlist effect");
+    let effect = apply_youth_recruitment_response(&mut game, &message.id, &action_id, "watch")
+        .expect("expected watch effect");
 
-    assert_eq!(effect.message, "");
-    assert_eq!(
-        effect.i18n_key,
-        "be.msg.youthRecruitment.effect.shortlist".to_string()
-    );
-    assert!(game.messages.iter().any(|candidate| {
-        candidate.subject_key.as_deref() == Some("be.msg.youthRecruitmentShortlist.subject")
-    }));
-    let updated_message = game
-        .messages
+    assert_eq!(effect.i18n_key, "be.msg.youthRecruitment.effect.watch");
+    let watched = game
+        .youth_watchlist
         .iter()
-        .find(|candidate| candidate.id == message.id)
-        .expect("expected updated original report message");
-    assert_eq!(
-        updated_message
-            .context
-            .youth_prospects
-            .as_ref()
-            .expect("expected remaining prospects")
-            .len(),
-        2
+        .find(|entry| entry.prospect.id == prospect_id)
+        .expect("on the watchlist");
+    assert!(watched.scout_id.is_none());
+    let report_estimate = message
+        .context
+        .youth_prospect_estimates
+        .iter()
+        .find(|estimate| estimate.prospect_id == prospect_id)
+        .unwrap();
+    assert_eq!(&watched.estimate, report_estimate);
+    let updated = youth_report(&game);
+    assert!(updated.actions[1].resolved);
+    assert_eq!(updated.context.youth_prospects.as_ref().unwrap().len(), 3);
+    assert!(
+        message.actions[1]
+            .action_type
+            .clone()
+            .eq_options(&["sign", "watch", "discard"])
     );
+}
+
+/// Given a prospect on the watchlist and his scout's weekly report,
+/// When the manager signs him from the report,
+/// Then he joins the academy and leaves the watchlist.
+#[test]
+fn signing_from_a_report_takes_a_prospect_off_the_watchlist() {
+    let mut game = make_game();
+    start_youth_scouting(
+        &mut game,
+        "scout1",
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+        None,
+    )
+    .unwrap();
+    complete_scouting(&mut game);
+    let message = youth_report(&game).clone();
+    let action_id = message.actions[0].id.clone();
+    apply_youth_recruitment_response(&mut game, &message.id, &action_id, "watch").unwrap();
+    assert_eq!(game.youth_watchlist.len(), 1);
+    let message = youth_report(&game).clone();
+
+    apply_youth_recruitment_response(&mut game, &message.id, &action_id, "sign").unwrap();
+
+    assert!(game.youth_watchlist.is_empty());
+}
+
+trait OptionIds {
+    fn eq_options(self, ids: &[&str]) -> bool;
+}
+
+impl OptionIds for ActionType {
+    fn eq_options(self, ids: &[&str]) -> bool {
+        match self {
+            ActionType::ChooseOption { options } => {
+                options
+                    .iter()
+                    .map(|option| option.id.as_str())
+                    .collect::<Vec<_>>()
+                    == ids
+            }
+            _ => false,
+        }
+    }
 }
 
 #[test]

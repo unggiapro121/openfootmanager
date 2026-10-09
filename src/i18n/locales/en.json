@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Balanced",
     "objectiveHighPotential": "High potential",
     "objectiveReadySoon": "Ready soon",
-    "youthRecruitmentHint": "Send a free scout to search for a new academy prospect. Completed searches deliver players straight into your youth academy.",
+    "youthRecruitmentHint": "Send a scout to search for academy prospects. Each search has a fee, and the scout rests for a week afterwards. Watch a prospect to have a scout follow him before you decide.",
     "startYouthSearch": "Start youth search",
     "activeYouthSearches": "{{count}} active youth searches",
     "noYouthSearches": "No youth recruitment searches are running.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "Not discovered",
     "confidence": "Confidence",
     "youthSearchQuote": "Fee {{fee}} · {{days}} days",
-    "scoutResting": "Resting {{days}} more days"
+    "scoutResting": "Resting {{days}} more days",
+    "watchlistTitle": "Watchlist",
+    "watchlistHint": "Prospects you are following. Give one a scout and his ranges narrow every Monday until you know exactly what he is.",
+    "watchlistEmpty": "No prospects on your watchlist. Choose Watch on a youth scouting report.",
+    "watchlistScout": "Scout",
+    "watchlistTimeLeft": "Time left",
+    "watchlistScoutFor": "Scout following {{name}}",
+    "watchlistNoScout": "No scout",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "{{weeks}} wk left",
+    "watchlistSign": "Sign",
+    "watchlistUnwatch": "Let go"
   },
   "match": {
     "live": "Live",
@@ -2896,7 +2907,12 @@
         "youthAssignmentNotFound": "Youth recruitment assignment not found",
         "scoutAlreadyAssignedToSearch": "Scout is already assigned to this search",
         "scoutResting": "This scout is resting for {{days}} more days after his last youth search.",
-        "insufficientFunds": "The club cannot cover the {{fee}} search fee."
+        "insufficientFunds": "The club cannot cover the {{fee}} search fee.",
+        "prospectNotWatched": "That prospect is not on your watchlist.",
+        "prospectAlreadyWatched": "That prospect is already on your watchlist.",
+        "scoutWatchlistFull": "This scout is already following three prospects.",
+        "wagePolicy": "The board will not add this prospect's wage to the bill.",
+        "prospectAlreadySigned": "That prospect has already signed."
       },
       "invalidPath": "Invalid path.",
       "staffWageBudget": "The board will not let the weekly wage bill go over its {{budget}} budget.",
@@ -3383,24 +3399,26 @@
             "label": "Sign to academy",
             "description": "Offer this prospect a youth contract and add them to the academy."
           },
-          "shortlist": {
-            "label": "Shortlist",
-            "description": "Keep this prospect under consideration and move them into a separate shortlist message."
-          },
           "discard": {
             "label": "Discard",
             "description": "Pass on this prospect and remove them from the report."
+          },
+          "watch": {
+            "label": "Watch",
+            "description": "Put this prospect on your watchlist so a scout can follow him."
+          },
+          "unwatch": {
+            "label": "Let go",
+            "description": "Take this prospect off your watchlist."
           }
         },
         "effect": {
           "sign": "{{player}} signed a youth contract and joined your academy.",
-          "shortlist": "{{player}} was added to your youth shortlist.",
-          "discard": "{{player}} was removed from the youth recruitment report."
+          "discard": "{{player}} was removed from the youth recruitment report.",
+          "watch": "{{player}} is on your watchlist.",
+          "unwatch": "{{player}} is off your watchlist.",
+          "wagePolicy": "The board will not add {{player}}'s wage to the bill."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Youth prospect shortlisted",
-        "body": "{{player}} has been moved to your youth shortlist. You can review them again later before making a final decision."
       },
       "scoutReport": {
         "subject": "Scout Report: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} has left the club",
         "body": "{{name}}'s contract as our {{role}} has run out and they have left the club. You can look for a replacement on the staff market."
+      },
+      "youthWatchReport": {
+        "subject": "Scout Report — {{player}}",
+        "body": "Boss, I have been following {{player}} for {{weeks}} weeks now. Here is where I would put him today. Sign him, or let him go, whenever you are ready."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} is off the watchlist",
+        "body": "We have been watching {{player}} for twelve weeks without making a move, so I have taken him off the list."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} has signed elsewhere",
+        "body": "{{player}} has joined the {{team}} academy before we moved for him."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} is off the market",
+        "body": "{{player}} is no longer available, so I have taken him off the watchlist."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "Watchlist needs a scout",
+        "body": "{{scout}} has left the club. The {{count}} prospects he was following are still on the watchlist, without a scout."
       }
     },
     "news": {

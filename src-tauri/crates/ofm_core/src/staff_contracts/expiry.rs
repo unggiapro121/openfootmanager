@@ -159,6 +159,7 @@ fn let_contract_run_out(game: &mut Game, index: usize) {
         crate::messages::staff_contract_expired_message(&key, &team_id, &name, role, &today)
     });
     crate::scouting::call_off_assignments_of(game, &staff_id);
+    crate::youth_watchlist::scout_left(game, &staff_id);
 }
 
 fn renew_for_ai_club(game: &mut Game, index: usize, today: NaiveDate) {

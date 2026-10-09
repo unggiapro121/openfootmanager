@@ -88,6 +88,8 @@ fn write_game_to_connection(
         serde_json::to_string(&game.emitted_events).map_err(|_| game_persistence_write_error())?;
     let scout_youth_rest_until_json = serde_json::to_string(&game.scout_youth_rest_until)
         .map_err(|_| game_persistence_write_error())?;
+    let youth_watchlist_json =
+        serde_json::to_string(&game.youth_watchlist).map_err(|_| game_persistence_write_error())?;
     let extra_translations_json = serde_json::to_string(&game.extra_translations)
         .map_err(|_| game_persistence_write_error())?;
     let package_lockfile_json = serde_json::to_string(&game.package_lockfile)
@@ -122,6 +124,7 @@ fn write_game_to_connection(
             legacy_world_cup_draw: game.legacy_world_cup_draw,
             development_speed_percent: game.development_speed.percent(),
             scout_youth_rest_until_json,
+            youth_watchlist_json,
             available_staff_market_last_activity_date: game
                 .available_staff_market_last_activity_date
                 .clone(),
@@ -358,6 +361,7 @@ impl GamePersistenceReader {
             // months later is impossible to trace back to this line otherwise.
             scout_youth_rest_until: serde_json::from_str(&meta.scout_youth_rest_until_json)
                 .unwrap_or_default(),
+            youth_watchlist: serde_json::from_str(&meta.youth_watchlist_json).unwrap_or_default(),
             emitted_events: serde_json::from_str(&meta.emitted_events_json).unwrap_or_else(|_| {
                 log::warn!(
                     "[load] sent-ledger JSON is malformed; reseeding it from the inbox. \
@@ -506,6 +510,7 @@ mod tests {
             legacy_world_cup_draw: false,
             development_speed_percent: 100,
             scout_youth_rest_until_json: "{}".to_string(),
+            youth_watchlist_json: "[]".to_string(),
         }
     }
 
@@ -823,6 +828,72 @@ mod tests {
 
         let loaded = GamePersistenceReader::read_game(&db).unwrap();
         assert_eq!(loaded.scout_youth_rest_until, game.scout_youth_rest_until);
+    }
+
+    /// Given a prospect on the youth watchlist with a scout following him,
+    /// When the game is saved and read back,
+    /// Then he is still on the list, as read, with his scout and his deadline.
+    #[test]
+    fn write_and_read_game_preserves_the_youth_watchlist() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let mut game = sample_game_with_clock(2032, 18);
+        let prospect = domain::player::Player::new(
+            "kid-1".to_string(),
+            "Kid".to_string(),
+            "Kid One".to_string(),
+            "2016-01-01".to_string(),
+            "GB".to_string(),
+            domain::player::Position::Forward,
+            domain::player::PlayerAttributes {
+                pace: 60,
+                stamina: 60,
+                strength: 60,
+                agility: 60,
+                passing: 60,
+                shooting: 60,
+                tackling: 60,
+                dribbling: 60,
+                defending: 60,
+                positioning: 60,
+                vision: 60,
+                decisions: 60,
+                composure: 60,
+                aggression: 60,
+                teamwork: 60,
+                leadership: 60,
+                handling: 20,
+                reflexes: 20,
+                aerial: 60,
+            },
+        );
+        game.youth_watchlist
+            .push(ofm_core::youth_watchlist::WatchedProspect {
+                prospect,
+                estimate: domain::message::ProspectEstimate {
+                    prospect_id: "kid-1".to_string(),
+                    ovr_low: 55,
+                    ovr_high: 63,
+                    ovr_band: 5,
+                    potential_low: 70,
+                    potential_high: 86,
+                    potential_band: 8,
+                    attributes: vec![],
+                },
+                scout_id: Some("scout-1".to_string()),
+                added_on: "2032-01-18".to_string(),
+                expires_on: "2032-04-11".to_string(),
+                weeks_followed: 1,
+            });
+
+        GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+
+        let loaded = GamePersistenceReader::read_game(&db).unwrap();
+        assert_eq!(loaded.youth_watchlist.len(), 1);
+        let entry = &loaded.youth_watchlist[0];
+        assert_eq!(entry.prospect.id, "kid-1");
+        assert_eq!(entry.estimate, game.youth_watchlist[0].estimate);
+        assert_eq!(entry.scout_id.as_deref(), Some("scout-1"));
+        assert_eq!(entry.expires_on, "2032-04-11");
     }
 
     #[test]

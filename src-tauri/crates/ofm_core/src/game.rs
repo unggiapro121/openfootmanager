@@ -105,6 +105,9 @@ pub struct Game {
     /// (`YYYY-MM-DD`), keyed by scout id: a scout rests after every search.
     #[serde(default)]
     pub scout_youth_rest_until: BTreeMap<String, String>,
+    /// Youth prospects the user is following, until they sign, leave or expire.
+    #[serde(default)]
+    pub youth_watchlist: Vec<crate::youth_watchlist::WatchedProspect>,
     #[serde(default)]
     pub board_objectives: Vec<BoardObjective>,
     #[serde(default)]
@@ -198,6 +201,7 @@ impl Game {
             scouting_assignments: vec![],
             youth_scouting_assignments: vec![],
             scout_youth_rest_until: BTreeMap::new(),
+            youth_watchlist: Vec::new(),
             board_objectives: vec![],
             season_context: SeasonContext::default(),
             days_since_last_job_offer: None,

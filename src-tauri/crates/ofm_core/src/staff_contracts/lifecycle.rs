@@ -146,6 +146,7 @@ pub fn release_staff(game: &mut Game, team_id: &str, staff_id: &str) -> Result<i
         staff.wage = preview.asking_wage;
     }
     crate::scouting::call_off_assignments_of(game, staff_id);
+    crate::youth_watchlist::scout_left(game, staff_id);
     Ok(preview.severance_cost)
 }
 

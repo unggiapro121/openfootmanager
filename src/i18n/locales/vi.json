@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Cân bằng",
     "objectiveHighPotential": "Tiềm năng cao",
     "objectiveReadySoon": "Sớm sẵn sàng",
-    "youthRecruitmentHint": "Cử một tuyển trạch viên đang rảnh đi tìm tài năng mới cho học viện. Các đợt tìm kiếm hoàn tất sẽ đưa cầu thủ thẳng vào học viện trẻ của bạn.",
+    "youthRecruitmentHint": "Cử tuyển trạch viên đi tìm cầu thủ trẻ cho học viện. Mỗi lần tìm tốn phí và tuyển trạch viên được nghỉ một tuần sau đó. Theo dõi một ứng viên để có tuyển trạch viên bám sát trước khi bạn quyết định.",
     "startYouthSearch": "Bắt đầu tìm cầu thủ trẻ",
     "activeYouthSearches": "{{count}} đợt tìm cầu thủ trẻ đang chạy",
     "noYouthSearches": "Không có đợt tìm cầu thủ trẻ nào đang chạy.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "Chưa khám phá",
     "confidence": "Độ tin cậy",
     "youthSearchQuote": "Phí {{fee}} · {{days}} ngày",
-    "scoutResting": "Đang nghỉ thêm {{days}} ngày"
+    "scoutResting": "Đang nghỉ thêm {{days}} ngày",
+    "watchlistTitle": "Danh sách theo dõi",
+    "watchlistHint": "Các ứng viên bạn đang theo dõi. Gán một tuyển trạch viên và khoảng chỉ số của cậu ấy sẽ hẹp lại mỗi thứ Hai cho tới khi biết chính xác.",
+    "watchlistEmpty": "Chưa có ứng viên nào. Chọn Theo dõi trong báo cáo tìm cầu thủ trẻ.",
+    "watchlistScout": "Tuyển trạch viên",
+    "watchlistTimeLeft": "Còn lại",
+    "watchlistScoutFor": "Tuyển trạch viên theo dõi {{name}}",
+    "watchlistNoScout": "Chưa gán",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Còn {{weeks}} tuần",
+    "watchlistSign": "Ký",
+    "watchlistUnwatch": "Bỏ theo dõi"
   },
   "match": {
     "live": "Trực tiếp",
@@ -2896,7 +2907,12 @@
         "youthAssignmentNotFound": "Không tìm thấy nhiệm vụ tuyển cầu thủ trẻ",
         "scoutAlreadyAssignedToSearch": "Tuyển trạch viên đã được giao cho đợt tìm kiếm này",
         "scoutResting": "Tuyển trạch viên này đang nghỉ thêm {{days}} ngày sau lần tìm cầu thủ trẻ gần nhất.",
-        "insufficientFunds": "CLB không đủ tiền trả phí tìm kiếm {{fee}}."
+        "insufficientFunds": "CLB không đủ tiền trả phí tìm kiếm {{fee}}.",
+        "prospectNotWatched": "Ứng viên này không có trong danh sách theo dõi.",
+        "prospectAlreadyWatched": "Ứng viên này đã có trong danh sách theo dõi.",
+        "scoutWatchlistFull": "Tuyển trạch viên này đã theo dõi đủ 3 ứng viên.",
+        "wagePolicy": "Ban lãnh đạo không đồng ý thêm lương của ứng viên này vào quỹ lương.",
+        "prospectAlreadySigned": "Ứng viên này đã ký hợp đồng."
       },
       "invalidPath": "Đường dẫn không hợp lệ.",
       "staffWageBudget": "Ban lãnh đạo không cho phép quỹ lương tuần vượt ngân sách {{budget}}.",
@@ -3383,24 +3399,26 @@
             "label": "Ký vào học viện",
             "description": "Đề nghị hợp đồng trẻ cho tài năng này và đưa vào học viện."
           },
-          "shortlist": {
-            "label": "Đưa vào danh sách theo dõi",
-            "description": "Tiếp tục cân nhắc tài năng này và chuyển sang một tin nhắn danh sách theo dõi riêng."
-          },
           "discard": {
             "label": "Bỏ qua",
             "description": "Bỏ qua tài năng này và gỡ khỏi báo cáo."
+          },
+          "watch": {
+            "label": "Theo dõi",
+            "description": "Đưa ứng viên vào danh sách theo dõi để một tuyển trạch viên bám sát."
+          },
+          "unwatch": {
+            "label": "Bỏ theo dõi",
+            "description": "Đưa ứng viên ra khỏi danh sách theo dõi."
           }
         },
         "effect": {
           "sign": "{{player}} đã ký hợp đồng trẻ và gia nhập học viện của bạn.",
-          "shortlist": "{{player}} đã được đưa vào danh sách theo dõi cầu thủ trẻ.",
-          "discard": "{{player}} đã bị gỡ khỏi báo cáo tuyển cầu thủ trẻ."
+          "discard": "{{player}} đã bị gỡ khỏi báo cáo tuyển cầu thủ trẻ.",
+          "watch": "{{player}} đã vào danh sách theo dõi.",
+          "unwatch": "{{player}} đã ra khỏi danh sách theo dõi.",
+          "wagePolicy": "Ban lãnh đạo không đồng ý thêm lương của {{player}} vào quỹ lương."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Đã đưa tài năng trẻ vào danh sách theo dõi",
-        "body": "{{player}} đã được chuyển vào danh sách theo dõi cầu thủ trẻ. Bạn có thể xem lại sau trước khi đưa ra quyết định cuối cùng."
       },
       "scoutReport": {
         "subject": "Báo cáo tuyển trạch: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} đã rời CLB",
         "body": "Hợp đồng {{role}} của {{name}} đã hết hạn và người này đã rời CLB. Sếp có thể tìm người thay thế trên thị trường nhân sự."
+      },
+      "youthWatchReport": {
+        "subject": "Báo cáo tuyển trạch — {{player}}",
+        "body": "Sếp, tôi đã theo dõi {{player}} được {{weeks}} tuần. Dưới đây là đánh giá hiện tại của tôi. Sếp có thể ký hoặc bỏ qua cậu ấy bất cứ lúc nào."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} đã rời danh sách theo dõi",
+        "body": "Chúng ta đã theo dõi {{player}} suốt 12 tuần mà không ra quyết định, nên tôi đã đưa cậu ấy ra khỏi danh sách."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} đã ký với CLB khác",
+        "body": "{{player}} đã gia nhập học viện của {{team}} trước khi chúng ta kịp ra tay."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} không còn trên thị trường",
+        "body": "{{player}} không còn khả dụng nên tôi đã đưa cậu ấy ra khỏi danh sách theo dõi."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "Danh sách theo dõi cần tuyển trạch viên",
+        "body": "{{scout}} đã rời CLB. {{count}} ứng viên người này đang theo dõi vẫn nằm trong danh sách nhưng chưa có tuyển trạch viên."
       }
     },
     "news": {

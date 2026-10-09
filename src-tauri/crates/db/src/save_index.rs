@@ -497,6 +497,7 @@ mod tests {
                 legacy_world_cup_draw: false,
                 development_speed_percent: 100,
                 scout_youth_rest_until_json: "{}".to_string(),
+                youth_watchlist_json: "[]".to_string(),
             },
         )
         .unwrap();
@@ -625,6 +626,7 @@ mod tests {
                 legacy_world_cup_draw: false,
                 development_speed_percent: 100,
                 scout_youth_rest_until_json: "{}".to_string(),
+                youth_watchlist_json: "[]".to_string(),
             },
         )
         .unwrap();

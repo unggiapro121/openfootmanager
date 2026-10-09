@@ -5,10 +5,13 @@ import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/erro
 import { Card, CardBody } from "../ui";
 import { Eye, ScanSearch } from "lucide-react";
 import {
+  assignWatchlistScout,
   cancelYouthScouting,
   reassignYouthScouting,
   sendScout,
+  signWatchedProspect,
   startYouthScouting,
+  unwatchProspect,
 } from "../../services/scoutingService";
 import { calculateAvailableScouts, scoutMaxSlots } from "./ScoutingTab.helpers";
 import {
@@ -22,6 +25,7 @@ import ScoutingScoutDetailsCard from "./ScoutingScoutDetailsCard";
 import ScoutingPlayerSearchCard from "./ScoutingPlayerSearchCard";
 import ScoutingYouthRecruitmentCard from "./ScoutingYouthRecruitmentCard";
 import { useYouthSearchQuote } from "./useYouthSearchQuote";
+import ScoutingWatchlistCard from "./ScoutingWatchlistCard";
 import FreeAgentContractModal from "../transfers/FreeAgentContractModal";
 import TransferBidModal from "../transfers/TransferBidModal";
 import { useFreeAgentContractFlow } from "../transfers/useFreeAgentContractFlow";
@@ -174,6 +178,22 @@ export default function ScoutingTab({
     }
   };
 
+  const [watchlistBusy, setWatchlistBusy] = useState(false);
+  const [watchlistError, setWatchlistError] = useState<string | null>(null);
+
+  const runWatchlistAction = async (action: () => Promise<GameStateData>) => {
+    setWatchlistBusy(true);
+    setWatchlistError(null);
+    try {
+      onGameUpdate(await action());
+    } catch (err) {
+      console.error("Watchlist action failed:", err);
+      setWatchlistError(resolveTranslatedErrorMessage(err, t));
+    } finally {
+      setWatchlistBusy(false);
+    }
+  };
+
   const handleCancelYouthScouting = async (assignmentId: string) => {
     setYouthSearchError(null);
     try {
@@ -257,6 +277,23 @@ export default function ScoutingTab({
           }}
         />
       )}
+
+      <ScoutingWatchlistCard
+        watchlist={gameState.youth_watchlist ?? []}
+        scouts={scouts}
+        currentDate={gameState.clock.current_date}
+        busy={watchlistBusy}
+        errorMessage={watchlistError}
+        onAssignScout={(prospectId, scoutId) => {
+          void runWatchlistAction(() => assignWatchlistScout(prospectId, scoutId));
+        }}
+        onSign={(prospectId) => {
+          void runWatchlistAction(() => signWatchedProspect(prospectId));
+        }}
+        onUnwatch={(prospectId) => {
+          void runWatchlistAction(() => unwatchProspect(prospectId));
+        }}
+      />
 
       <ScoutingScoutDetailsCard
         scouts={scouts}

@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Equilibrado",
     "objectiveHighPotential": "Alto potencial",
     "objectiveReadySoon": "Listo pronto",
-    "youthRecruitmentHint": "Envía a un ojeador libre para buscar una nueva promesa para la cantera. Las búsquedas completadas incorporan jugadores directamente a tu cantera.",
+    "youthRecruitmentHint": "Envía a un ojeador a buscar promesas para la cantera. Cada búsqueda tiene un coste y el ojeador descansa una semana después. Sigue a una promesa para que un ojeador la observe antes de decidir.",
     "startYouthSearch": "Iniciar búsqueda juvenil",
     "activeYouthSearches": "{{count}} búsquedas juveniles activas",
     "noYouthSearches": "No hay búsquedas de captación juvenil en marcha.",
@@ -1965,7 +1965,18 @@
     "undiscovered": "No descubierto",
     "confidence": "Confianza",
     "youthSearchQuote": "Coste {{fee}} · {{days}} días",
-    "scoutResting": "Descansa {{days}} días más"
+    "scoutResting": "Descansa {{days}} días más",
+    "watchlistTitle": "Seguimiento",
+    "watchlistHint": "Promesas que sigues. Asígnale un ojeador y sus rangos se estrechan cada lunes hasta saber exactamente cómo es.",
+    "watchlistEmpty": "No sigues a ninguna promesa. Elige Seguir en un informe de búsqueda de juveniles.",
+    "watchlistScout": "Ojeador",
+    "watchlistTimeLeft": "Tiempo restante",
+    "watchlistScoutFor": "Ojeador que sigue a {{name}}",
+    "watchlistNoScout": "Sin ojeador",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Quedan {{weeks}} sem.",
+    "watchlistSign": "Fichar",
+    "watchlistUnwatch": "Descartar"
   },
   "match": {
     "live": "En Vivo",
@@ -2888,7 +2899,12 @@
         "youthAssignmentNotFound": "No se encontró la asignación de captación juvenil",
         "scoutAlreadyAssignedToSearch": "El ojeador ya está asignado a esta búsqueda",
         "scoutResting": "Este ojeador descansa {{days}} días más tras su última búsqueda de juveniles.",
-        "insufficientFunds": "El club no puede pagar la tarifa de búsqueda de {{fee}}."
+        "insufficientFunds": "El club no puede pagar la tarifa de búsqueda de {{fee}}.",
+        "prospectNotWatched": "Esa promesa no está en tu lista de seguimiento.",
+        "prospectAlreadyWatched": "Esa promesa ya está en tu lista de seguimiento.",
+        "scoutWatchlistFull": "Este ojeador ya sigue a tres promesas.",
+        "wagePolicy": "La directiva no añadirá el salario de esta promesa a la masa salarial.",
+        "prospectAlreadySigned": "Esa promesa ya ha firmado."
       },
       "invalidPath": "Ruta no válida.",
       "conflict": {
@@ -3383,24 +3399,26 @@
             "label": "Firmar para la academia",
             "description": "Ofrece a esta promesa un contrato juvenil y añádela a la academia."
           },
-          "shortlist": {
-            "label": "Preseleccionar",
-            "description": "Mantén a esta promesa en consideración y muévela a un mensaje separado de preselección."
-          },
           "discard": {
             "label": "Descartar",
             "description": "Descarta a esta promesa y elimínala del informe."
+          },
+          "watch": {
+            "label": "Seguir",
+            "description": "Añade esta promesa a tu lista de seguimiento para que un ojeador la observe."
+          },
+          "unwatch": {
+            "label": "Descartar",
+            "description": "Quita esta promesa de tu lista de seguimiento."
           }
         },
         "effect": {
           "sign": "{{player}} firmó un contrato juvenil y se unió a tu academia.",
-          "shortlist": "{{player}} fue añadido a tu preselección juvenil.",
-          "discard": "{{player}} fue eliminado del informe de captación juvenil."
+          "discard": "{{player}} fue eliminado del informe de captación juvenil.",
+          "watch": "{{player}} está en tu lista de seguimiento.",
+          "unwatch": "{{player}} ya no está en tu lista de seguimiento.",
+          "wagePolicy": "La directiva no añadirá el salario de {{player}} a la masa salarial."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Promesa juvenil preseleccionada",
-        "body": "{{player}} ha sido movido a tu preselección juvenil. Puedes revisarlo de nuevo más tarde antes de tomar una decisión final."
       },
       "scoutReport": {
         "subject": "Informe del ojeador: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} ha dejado el club",
         "body": "El contrato de {{name}} como {{role}} ha vencido y ha dejado el club. Puedes buscar un sustituto en el mercado de personal."
+      },
+      "youthWatchReport": {
+        "subject": "Informe de ojeador — {{player}}",
+        "body": "Jefe, llevo {{weeks}} semanas siguiendo a {{player}}. Así lo veo hoy. Fíchalo o descártalo cuando quieras."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} sale del seguimiento",
+        "body": "Hemos seguido a {{player}} durante doce semanas sin movernos, así que lo he quitado de la lista."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} ha firmado por otro club",
+        "body": "{{player}} se ha unido a la cantera del {{team}} antes de que nos moviéramos."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} ya no está disponible",
+        "body": "{{player}} ya no está disponible, así que lo he quitado de la lista de seguimiento."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "El seguimiento necesita un ojeador",
+        "body": "{{scout}} ha dejado el club. Las {{count}} promesas que seguía siguen en la lista, sin ojeador."
       }
     },
     "news": {

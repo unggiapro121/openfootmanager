@@ -55,3 +55,18 @@ export async function reassignYouthScouting(
     scoutId,
   });
 }
+
+export async function assignWatchlistScout(
+  prospectId: string,
+  scoutId: string | null,
+): Promise<GameStateData> {
+  return invoke<GameStateData>("assign_watchlist_scout", { prospectId, scoutId });
+}
+
+export async function signWatchedProspect(prospectId: string): Promise<GameStateData> {
+  return invoke<GameStateData>("sign_watched_prospect", { prospectId });
+}
+
+export async function unwatchProspect(prospectId: string): Promise<GameStateData> {
+  return invoke<GameStateData>("unwatch_prospect", { prospectId });
+}

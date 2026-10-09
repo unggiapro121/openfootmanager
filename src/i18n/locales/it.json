@@ -1942,7 +1942,7 @@
     "objectiveBalanced": "Equilibrato",
     "objectiveHighPotential": "Alto potenziale",
     "objectiveReadySoon": "Pronto a breve",
-    "youthRecruitmentHint": "Invia un osservatore libero a cercare un nuovo prospetto per il vivaio. Le ricerche completate inseriscono i giocatori direttamente nel settore giovanile.",
+    "youthRecruitmentHint": "Manda un osservatore a cercare giovani per il settore giovanile. Ogni ricerca ha un costo e l'osservatore riposa una settimana dopo. Segui un giovane perché un osservatore lo tenga d'occhio prima di decidere.",
     "startYouthSearch": "Avvia ricerca giovanile",
     "activeYouthSearches": "{{count}} ricerche giovanili attive",
     "noYouthSearches": "Nessuna ricerca di reclutamento giovanile è in corso.",
@@ -1984,7 +1984,18 @@
     "undiscovered": "Non scoperto",
     "confidence": "Affidabilità",
     "youthSearchQuote": "Costo {{fee}} · {{days}} giorni",
-    "scoutResting": "A riposo ancora {{days}} giorni"
+    "scoutResting": "A riposo ancora {{days}} giorni",
+    "watchlistTitle": "Lista osservati",
+    "watchlistHint": "I giovani che stai seguendo. Affidane uno a un osservatore e le sue forbici si restringono ogni lunedì finché non sai esattamente quanto vale.",
+    "watchlistEmpty": "Non stai seguendo nessun giovane. Scegli Segui in un rapporto di ricerca giovani.",
+    "watchlistScout": "Osservatore",
+    "watchlistTimeLeft": "Tempo rimasto",
+    "watchlistScoutFor": "Osservatore che segue {{name}}",
+    "watchlistNoScout": "Nessun osservatore",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Ancora {{weeks}} sett.",
+    "watchlistSign": "Ingaggia",
+    "watchlistUnwatch": "Lascia perdere"
   },
   "match": {
     "live": "Diretta",
@@ -2888,7 +2899,12 @@
         "youthAssignmentNotFound": "Incarico di scouting giovanile non trovato",
         "scoutAlreadyAssignedToSearch": "L'osservatore è già assegnato a questa ricerca",
         "scoutResting": "Questo osservatore riposa ancora {{days}} giorni dopo l'ultima ricerca di giovani.",
-        "insufficientFunds": "Il club non può coprire il costo di ricerca di {{fee}}."
+        "insufficientFunds": "Il club non può coprire il costo di ricerca di {{fee}}.",
+        "prospectNotWatched": "Quel giovane non è nella tua lista osservati.",
+        "prospectAlreadyWatched": "Quel giovane è già nella tua lista osservati.",
+        "scoutWatchlistFull": "Questo osservatore segue già tre giovani.",
+        "wagePolicy": "La dirigenza non aggiungerà lo stipendio di questo giovane al monte ingaggi.",
+        "prospectAlreadySigned": "Quel giovane ha già firmato."
       },
       "invalidPath": "Percorso non valido.",
       "conflict": {
@@ -3383,24 +3399,26 @@
             "label": "Ingaggia per l'accademia",
             "description": "Offri a questo prospetto un contratto giovanile e aggiungilo all'accademia."
           },
-          "shortlist": {
-            "label": "Metti in lista",
-            "description": "Tieni questo prospetto in considerazione e spostalo in un messaggio separato di shortlist."
-          },
           "discard": {
             "label": "Scarta",
             "description": "Rinuncia a questo prospetto e rimuovilo dal rapporto."
+          },
+          "watch": {
+            "label": "Segui",
+            "description": "Aggiungi questo giovane alla lista osservati perché un osservatore lo segua."
+          },
+          "unwatch": {
+            "label": "Lascia perdere",
+            "description": "Togli questo giovane dalla lista osservati."
           }
         },
         "effect": {
           "sign": "{{player}} ha firmato un contratto giovanile ed è entrato nella tua accademia.",
-          "shortlist": "{{player}} è stato aggiunto alla tua shortlist giovanile.",
-          "discard": "{{player}} è stato rimosso dal rapporto di reclutamento giovanile."
+          "discard": "{{player}} è stato rimosso dal rapporto di reclutamento giovanile.",
+          "watch": "{{player}} è nella tua lista osservati.",
+          "unwatch": "{{player}} non è più nella tua lista osservati.",
+          "wagePolicy": "La dirigenza non aggiungerà lo stipendio di {{player}} al monte ingaggi."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Prospetto giovanile in shortlist",
-        "body": "{{player}} è stato spostato nella tua shortlist giovanile. Potrai rivederlo più tardi prima di prendere una decisione finale."
       },
       "scoutReport": {
         "subject": "Rapporto osservatore: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} ha lasciato il club",
         "body": "Il contratto di {{name}} come {{role}} è scaduto e ha lasciato il club. Puoi cercare un sostituto nel mercato dello staff."
+      },
+      "youthWatchReport": {
+        "subject": "Rapporto osservatore — {{player}}",
+        "body": "Mister, seguo {{player}} da {{weeks}} settimane. Ecco come lo valuto oggi. Ingaggialo o lascialo perdere quando vuoi."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} esce dalla lista",
+        "body": "Abbiamo seguito {{player}} per dodici settimane senza muoverci, quindi l'ho tolto dalla lista."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} ha firmato altrove",
+        "body": "{{player}} è entrato nel settore giovanile del {{team}} prima che ci muovessimo."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} non è più disponibile",
+        "body": "{{player}} non è più disponibile, quindi l'ho tolto dalla lista osservati."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "La lista osservati ha bisogno di un osservatore",
+        "body": "{{scout}} ha lasciato il club. I {{count}} giovani che seguiva restano nella lista, senza osservatore."
       }
     },
     "news": {

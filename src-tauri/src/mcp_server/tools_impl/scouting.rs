@@ -236,3 +236,46 @@ pub fn scout_youth_reassign(
 
     Ok("## Youth Scouting Reassigned\n\nScout has been changed.".to_string())
 }
+
+// ─── youth watchlist ────────────────────────────────────────────────────────
+
+fn emit_changed(ctx: &Arc<McpContext>) {
+    use tauri::Emitter;
+    let _ = ctx.app_handle.emit("game-state-changed", ());
+}
+
+pub fn scout_watchlist_assign(
+    ctx: Arc<McpContext>,
+    prospect_id: String,
+    scout_id: Option<String>,
+) -> Result<String, String> {
+    crate::commands::transfers::assign_watchlist_scout_internal(
+        &ctx.state_manager,
+        &prospect_id,
+        scout_id.as_deref(),
+    )?;
+    emit_changed(&ctx);
+    Ok(match scout_id {
+        Some(scout) => format!("## Watchlist\n\nScout {scout} now follows prospect {prospect_id}."),
+        None => format!("## Watchlist\n\nProspect {prospect_id} no longer has a scout."),
+    })
+}
+
+pub fn scout_watchlist_sign(ctx: Arc<McpContext>, prospect_id: String) -> Result<String, String> {
+    crate::commands::transfers::sign_watched_prospect_internal(&ctx.state_manager, &prospect_id)?;
+    emit_changed(&ctx);
+    Ok(format!(
+        "## Watchlist\n\nProspect {prospect_id} signed to the academy."
+    ))
+}
+
+pub fn scout_watchlist_unwatch(
+    ctx: Arc<McpContext>,
+    prospect_id: String,
+) -> Result<String, String> {
+    crate::commands::transfers::unwatch_prospect_internal(&ctx.state_manager, &prospect_id)?;
+    emit_changed(&ctx);
+    Ok(format!(
+        "## Watchlist\n\nProspect {prospect_id} removed from the watchlist."
+    ))
+}

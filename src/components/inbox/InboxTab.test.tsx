@@ -44,6 +44,8 @@ const mockTranslationState = vi.hoisted(() => ({
       "youthAcademy.ovr": "OVR",
       "youthAcademy.potential": "Potential",
       "inbox.youthProspectRange": "{{low}}–{{high}}",
+      "common.attributes.pace": "Pace",
+      "common.attrGroups.physical": "Physical",
       "youthAcademy.potPromising": "Promising",
     },
     "pt-BR": {
@@ -137,9 +139,9 @@ beforeAll(function defineMatchMedia(): void {
       "be.msg.youthRecruitment.option.sign.label": "Sign to academy",
       "be.msg.youthRecruitment.option.sign.description":
         "Offer this prospect a youth contract and add them to the academy.",
-      "be.msg.youthRecruitment.option.shortlist.label": "Shortlist",
-      "be.msg.youthRecruitment.option.shortlist.description":
-        "Keep this prospect under consideration and move them into a separate shortlist message.",
+      "be.msg.youthRecruitment.option.watch.label": "Watch",
+      "be.msg.youthRecruitment.option.watch.description":
+        "Put this prospect on your watchlist so a scout can follow him.",
       "be.msg.youthRecruitment.option.discard.label": "Discard",
       "be.msg.youthRecruitment.option.discard.description":
         "Pass on this prospect and remove them from the report.",
@@ -1220,11 +1222,11 @@ describe("InboxTab", (): void => {
                       description_key: "be.msg.youthRecruitment.option.sign.description",
                     },
                     {
-                      id: "shortlist",
+                      id: "watch",
                       label: "placeholder",
                       description: "placeholder",
-                      label_key: "be.msg.youthRecruitment.option.shortlist.label",
-                      description_key: "be.msg.youthRecruitment.option.shortlist.description",
+                      label_key: "be.msg.youthRecruitment.option.watch.label",
+                      description_key: "be.msg.youthRecruitment.option.watch.description",
                     },
                     {
                       id: "discard",
@@ -1252,7 +1254,7 @@ describe("InboxTab", (): void => {
     expect(screen.getAllByText(/Wage\/wk:/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Market Value:/).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Sign to academy" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Shortlist" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Watch" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Discard" })).toBeInTheDocument();
   });
 
@@ -1304,5 +1306,47 @@ describe("InboxTab", (): void => {
     expect(screen.queryByText("OVR 61")).not.toBeInTheDocument();
     expect(screen.queryByText("Potential 84")).not.toBeInTheDocument();
     expect(screen.queryByText(/Market Value:/)).not.toBeInTheDocument();
+  });
+
+  it("shows the headline attributes a following scout has read", async (): Promise<void> => {
+    await renderInboxTab({
+      gameState: createGameState([
+        createMessage({
+          id: "youth-watch-report-kid-2026-08-10",
+          category: "ScoutReport",
+          read: true,
+          subject_key: "be.msg.youthWatchReport.subject",
+          body_key: "be.msg.youthWatchReport.body",
+          i18n_params: { player: "Leo Builder", scout: "Joao Scout", weeks: "2" },
+          context: {
+            team_id: "t1",
+            player_id: null,
+            fixture_id: null,
+            youth_prospects: [createProspect({ id: "kid", full_name: "Leo Builder" })],
+            youth_prospect_estimates: [
+              {
+                prospect_id: "kid",
+                ovr_low: 60,
+                ovr_high: 64,
+                ovr_band: 2,
+                potential_low: 80,
+                potential_high: 84,
+                potential_band: 2,
+                attributes: [
+                  { key: "Pace", low: 58, high: 62 },
+                  { key: "Physical", low: 50, high: 54 },
+                ],
+              },
+            ],
+            match_result: null,
+          },
+          actions: [] as MessageAction[],
+        }),
+      ]),
+      initialMessageId: "youth-watch-report-kid-2026-08-10",
+    });
+
+    expect(screen.getByText("Pace 58–62")).toBeInTheDocument();
+    expect(screen.getByText("Physical 50–54")).toBeInTheDocument();
   });
 });

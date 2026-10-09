@@ -480,6 +480,25 @@ export interface ProspectEstimate {
   potential_low: number;
   potential_high: number;
   potential_band: number;
+  /** Headline attributes a following scout has seen; absent in a first report. */
+  attributes?: AttributeRead[];
+}
+
+/** One headline attribute as a scout reads it ("Pace", "Shooting", …). */
+export interface AttributeRead {
+  key: string;
+  low: number;
+  high: number;
+}
+
+/** Mirrors `ofm_core::youth_watchlist::WatchedProspect`. */
+export interface WatchedProspect {
+  prospect: PlayerData;
+  estimate: ProspectEstimate;
+  scout_id?: string | null;
+  added_on: string;
+  expires_on: string;
+  weeks_followed?: number;
 }
 
 export interface MessageContext {
@@ -842,6 +861,7 @@ export interface GameStateData {
   league: LeagueData | null;
   scouting_assignments: ScoutingAssignment[];
   youth_scouting_assignments?: YouthScoutingAssignment[];
+  youth_watchlist?: WatchedProspect[];
   board_objectives: BoardObjective[];
   season_context?: SeasonContextData;
   available_staff_market_last_activity_date?: string | null;

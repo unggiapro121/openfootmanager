@@ -290,6 +290,16 @@ export default function InboxMessageDetailPane({
                             </div>
                           </div>
 
+                          {ratings.attributeReads.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {ratings.attributeReads.map((read) => (
+                                <Badge key={read} variant="neutral" size="sm">
+                                  {read}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : null}
+
                           <div className="grid gap-3 sm:grid-cols-2">
                             <div className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 dark:border-navy-600 dark:bg-navy-700/40">
                               <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
@@ -516,6 +526,16 @@ function translateYouthSearchObjective(t: TFunction, value: string): string {
   return t("scouting.objectiveBalanced");
 }
 
+/** The label for each headline attribute a scout report reads. */
+const ATTRIBUTE_READ_LABEL_KEYS: Record<string, string> = {
+  Pace: "common.attributes.pace",
+  Shooting: "common.attributes.shooting",
+  Passing: "common.attributes.passing",
+  Dribbling: "common.attributes.dribbling",
+  Defending: "common.attributes.defending",
+  Physical: "common.attrGroups.physical",
+};
+
 /**
  * What a report card says about a prospect's ratings. Before he is signed, the
  * scout's ranges, with the midpoint as what the scout believes; once signed, or
@@ -532,6 +552,7 @@ function describeProspectRatings(
   believedOvr: number;
   believedPotential: number;
   isEstimate: boolean;
+  attributeReads: string[];
 } {
   const estimate = signedToAcademy
     ? undefined
@@ -545,6 +566,7 @@ function describeProspectRatings(
       believedOvr: ovr,
       believedPotential: potential,
       isEstimate: false,
+      attributeReads: [],
     };
   }
   const range = (low: number, high: number) => t("inbox.youthProspectRange", { low, high });
@@ -554,6 +576,10 @@ function describeProspectRatings(
     believedOvr: Math.floor((estimate.ovr_low + estimate.ovr_high) / 2),
     believedPotential: Math.floor((estimate.potential_low + estimate.potential_high) / 2),
     isEstimate: true,
+    attributeReads: (estimate.attributes ?? []).map(
+      (read) =>
+        `${t(ATTRIBUTE_READ_LABEL_KEYS[read.key] ?? read.key)} ${range(read.low, read.high)}`,
+    ),
   };
 }
 

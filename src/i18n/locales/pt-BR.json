@@ -2596,7 +2596,7 @@
     "objectiveBalanced": "Equilibrado",
     "objectiveHighPotential": "Alto potencial",
     "objectiveReadySoon": "Pronto em breve",
-    "youthRecruitmentHint": "Envie um olheiro livre para procurar uma nova promessa para a base. As buscas concluídas levam jogadores direto para a sua base.",
+    "youthRecruitmentHint": "Envie um olheiro para buscar promessas para a base. Cada busca tem um custo e o olheiro descansa uma semana depois. Acompanhe uma promessa para que um olheiro a observe antes de você decidir.",
     "startYouthSearch": "Iniciar busca da base",
     "activeYouthSearches": "{{count}} buscas da base ativas",
     "noYouthSearches": "Nenhuma busca de recrutamento da base está em andamento.",
@@ -2638,7 +2638,18 @@
     "undiscovered": "Não descoberto",
     "confidence": "Confiança",
     "youthSearchQuote": "Custo {{fee}} · {{days}} dias",
-    "scoutResting": "Descansando mais {{days}} dias"
+    "scoutResting": "Descansando mais {{days}} dias",
+    "watchlistTitle": "Acompanhamento",
+    "watchlistHint": "Promessas que você está acompanhando. Escale um olheiro e as faixas ficam mais estreitas toda segunda-feira até você saber exatamente o que ele é.",
+    "watchlistEmpty": "Você não está acompanhando nenhuma promessa. Escolha Acompanhar em um relatório de busca de jovens.",
+    "watchlistScout": "Olheiro",
+    "watchlistTimeLeft": "Tempo restante",
+    "watchlistScoutFor": "Olheiro que acompanha {{name}}",
+    "watchlistNoScout": "Sem olheiro",
+    "watchlistScoutLoad": "{{name}} ({{count}}/3)",
+    "watchlistWeeksLeft": "Faltam {{weeks}} sem.",
+    "watchlistSign": "Contratar",
+    "watchlistUnwatch": "Liberar"
   },
   "be": {
     "error": {
@@ -2888,7 +2899,12 @@
         "youthAssignmentNotFound": "A tarefa de busca da base não foi encontrada",
         "scoutAlreadyAssignedToSearch": "O olheiro já está designado para esta busca",
         "scoutResting": "Este olheiro descansa mais {{days}} dias depois da última busca por jovens.",
-        "insufficientFunds": "O clube não consegue pagar a taxa de busca de {{fee}}."
+        "insufficientFunds": "O clube não consegue pagar a taxa de busca de {{fee}}.",
+        "prospectNotWatched": "Essa promessa não está na sua lista de acompanhamento.",
+        "prospectAlreadyWatched": "Essa promessa já está na sua lista de acompanhamento.",
+        "scoutWatchlistFull": "Este olheiro já acompanha três promessas.",
+        "wagePolicy": "A diretoria não vai somar o salário desta promessa à folha.",
+        "prospectAlreadySigned": "Essa promessa já assinou."
       },
       "invalidPath": "Caminho inválido.",
       "conflict": {
@@ -3383,24 +3399,26 @@
             "label": "Assinar para a academia",
             "description": "Ofereça a esta promessa um contrato de base e adicione-a à academia."
           },
-          "shortlist": {
-            "label": "Pré-selecionar",
-            "description": "Mantenha esta promessa em observação e mova-a para uma mensagem separada de pré-lista."
-          },
           "discard": {
             "label": "Descartar",
             "description": "Dispense esta promessa e remova-a do relatório."
+          },
+          "watch": {
+            "label": "Acompanhar",
+            "description": "Coloque esta promessa na lista de acompanhamento para um olheiro observá-la."
+          },
+          "unwatch": {
+            "label": "Liberar",
+            "description": "Tire esta promessa da lista de acompanhamento."
           }
         },
         "effect": {
           "sign": "{{player}} assinou um contrato de base e entrou na sua academia.",
-          "shortlist": "{{player}} foi adicionado à sua pré-lista de base.",
-          "discard": "{{player}} foi removido do relatório de recrutamento de base."
+          "discard": "{{player}} foi removido do relatório de recrutamento de base.",
+          "watch": "{{player}} está na sua lista de acompanhamento.",
+          "unwatch": "{{player}} saiu da sua lista de acompanhamento.",
+          "wagePolicy": "A diretoria não vai somar o salário de {{player}} à folha."
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "Promessa da base pré-selecionada",
-        "body": "{{player}} foi movido para sua pré-lista de base. Você pode revisá-lo novamente depois antes de tomar a decisão final."
       },
       "scoutReport": {
         "subject": "Relatório de Observação: {{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} deixou o clube",
         "body": "O contrato de {{name}} como {{role}} terminou e deixou o clube. Você pode procurar um substituto no mercado da comissão técnica."
+      },
+      "youthWatchReport": {
+        "subject": "Relatório do olheiro — {{player}}",
+        "body": "Chefe, estou acompanhando {{player}} há {{weeks}} semanas. É assim que eu o vejo hoje. Contrate ou libere quando quiser."
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} saiu do acompanhamento",
+        "body": "Acompanhamos {{player}} por doze semanas sem agir, então tirei ele da lista."
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} assinou com outro clube",
+        "body": "{{player}} entrou na base do {{team}} antes de agirmos."
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} não está mais disponível",
+        "body": "{{player}} não está mais disponível, então tirei ele da lista de acompanhamento."
+      },
+      "youthWatchScoutLeft": {
+        "subject": "O acompanhamento precisa de um olheiro",
+        "body": "{{scout}} deixou o clube. As {{count}} promessas que ele acompanhava continuam na lista, sem olheiro."
       }
     },
     "news": {

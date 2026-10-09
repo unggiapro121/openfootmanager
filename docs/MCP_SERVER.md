@@ -85,7 +85,7 @@ This ensures all agents start from the same state and cannot manipulate the game
 
 ## Tool Reference
 
-89 tools are available across 15 categories. Use the built-in `help_list_categories` and `help_find_tool` tools to discover tools at runtime.
+92 tools are available across 15 categories. Use the built-in `help_list_categories` and `help_find_tool` tools to discover tools at runtime.
 
 > **Adding a new tool?** Follow the checklist in `src-tauri/src/mcp_server/tools.rs` at `tool_catalog()` — register the route, add to the catalog, add the implementation, emit `game-state-changed` if it mutates state, update competition-mode disabled list if needed, and update this document.
 
@@ -196,6 +196,9 @@ This ensures all agents start from the same state and cannot manipulate the game
 | `scout_get_reports` | View completed scout reports and active assignments |
 | `scout_youth_start` | Start a youth scouting assignment (region, objective, target position); charges the search fee and needs the scout rested 7 days since his last youth search |
 | `scout_youth_cancel` | Cancel an active youth scouting assignment |
+| `scout_watchlist_assign` | Assign (or remove) the scout following a watched youth prospect; max 3 per scout |
+| `scout_watchlist_sign` | Sign a watched youth prospect into the academy |
+| `scout_watchlist_unwatch` | Remove a youth prospect from the watchlist |
 | `scout_youth_reassign` | Reassign a youth scouting assignment to a different scout |
 
 ### Season (3 tools)

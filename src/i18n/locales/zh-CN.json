@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "均衡",
     "objectiveHighPotential": "高潜力",
     "objectiveReadySoon": "即战力优先",
-    "youthRecruitmentHint": "派出一名空闲球探寻找新的青训苗子。搜索完成后，球员会直接加入你的青训营。",
+    "youthRecruitmentHint": "派球探为青训营寻找新秀。每次搜寻都需付费，球探之后休息一周。关注一名新秀，让球探在你决定前持续跟踪。",
     "startYouthSearch": "开始青训搜索",
     "activeYouthSearches": "{{count}} 个进行中的青训搜索",
     "noYouthSearches": "当前没有正在进行的青训招募搜索。",
@@ -1965,7 +1965,18 @@
     "undiscovered": "尚未发掘",
     "confidence": "置信度",
     "youthSearchQuote": "费用 {{fee}} · {{days}} 天",
-    "scoutResting": "还需休息 {{days}} 天"
+    "scoutResting": "还需休息 {{days}} 天",
+    "watchlistTitle": "关注名单",
+    "watchlistHint": "你正在关注的新秀。为其指派球探后，评估范围每周一都会缩小，直到你确切了解他的水平。",
+    "watchlistEmpty": "关注名单为空。在青训搜寻报告中选择“关注”。",
+    "watchlistScout": "球探",
+    "watchlistTimeLeft": "剩余时间",
+    "watchlistScoutFor": "跟踪 {{name}} 的球探",
+    "watchlistNoScout": "未指派",
+    "watchlistScoutLoad": "{{name}}（{{count}}/3）",
+    "watchlistWeeksLeft": "剩余 {{weeks}} 周",
+    "watchlistSign": "签约",
+    "watchlistUnwatch": "放弃"
   },
   "match": {
     "live": "直播中",
@@ -2888,7 +2899,12 @@
         "youthAssignmentNotFound": "未找到青训招募任务",
         "scoutAlreadyAssignedToSearch": "该球探已经分配给这项搜索",
         "scoutResting": "这名球探在上次青训搜寻后还需休息 {{days}} 天。",
-        "insufficientFunds": "俱乐部无法支付 {{fee}} 的搜寻费用。"
+        "insufficientFunds": "俱乐部无法支付 {{fee}} 的搜寻费用。",
+        "prospectNotWatched": "该新秀不在你的关注名单中。",
+        "prospectAlreadyWatched": "该新秀已在你的关注名单中。",
+        "scoutWatchlistFull": "这名球探已在跟踪三名新秀。",
+        "wagePolicy": "董事会不同意将该新秀的工资计入工资总额。",
+        "prospectAlreadySigned": "该新秀已经签约。"
       },
       "invalidPath": "路径无效。",
       "conflict": {
@@ -3383,24 +3399,26 @@
             "label": "签入青训学院",
             "description": "为这名潜力球员提供青训合同，并将其加入学院。"
           },
-          "shortlist": {
-            "label": "加入候选名单",
-            "description": "继续观察这名潜力球员，并将其移入单独的候选消息中。"
-          },
           "discard": {
             "label": "放弃",
             "description": "放弃这名潜力球员，并将其从报告中移除。"
+          },
+          "watch": {
+            "label": "关注",
+            "description": "将该新秀加入关注名单，以便球探跟踪。"
+          },
+          "unwatch": {
+            "label": "放弃",
+            "description": "将该新秀移出关注名单。"
           }
         },
         "effect": {
           "sign": "{{player}} 已签下青训合同并加入你的青训学院。",
-          "shortlist": "{{player}} 已加入你的青训候选名单。",
-          "discard": "{{player}} 已从青训招募报告中移除。"
+          "discard": "{{player}} 已从青训招募报告中移除。",
+          "watch": "{{player}} 已加入你的关注名单。",
+          "unwatch": "{{player}} 已移出你的关注名单。",
+          "wagePolicy": "董事会不同意将 {{player}} 的工资计入工资总额。"
         }
-      },
-      "youthRecruitmentShortlist": {
-        "subject": "青训潜力球员已入候选名单",
-        "body": "{{player}} 已移入你的青训候选名单。你可以稍后再次查看，再做最终决定。"
       },
       "scoutReport": {
         "subject": "球探报告:{{player}}",
@@ -3480,6 +3498,26 @@
       "staffContractExpired": {
         "subject": "{{name}} 已离开俱乐部",
         "body": "{{name}} 担任{{role}}的合同已到期，已离开俱乐部。您可以在职员市场寻找替代人选。"
+      },
+      "youthWatchReport": {
+        "subject": "球探报告 — {{player}}",
+        "body": "老板，我已跟踪 {{player}} {{weeks}} 周。以下是我目前的评估。您随时可以签下他或放弃。"
+      },
+      "youthWatchExpired": {
+        "subject": "{{player}} 已移出关注名单",
+        "body": "我们关注 {{player}} 已满十二周仍未行动，因此我将他移出了名单。"
+      },
+      "youthWatchTaken": {
+        "subject": "{{player}} 已与其他俱乐部签约",
+        "body": "在我们出手之前，{{player}} 已加入 {{team}} 的青训营。"
+      },
+      "youthWatchGone": {
+        "subject": "{{player}} 已不在市场上",
+        "body": "{{player}} 已无法签约，因此我将他移出了关注名单。"
+      },
+      "youthWatchScoutLeft": {
+        "subject": "关注名单需要球探",
+        "body": "{{scout}} 已离开俱乐部。他跟踪的 {{count}} 名新秀仍在名单中，但暂无球探。"
       }
     },
     "news": {

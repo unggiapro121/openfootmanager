@@ -129,6 +129,19 @@ pub struct ProspectEstimate {
     pub potential_low: u8,
     pub potential_high: u8,
     pub potential_band: u8,
+    /// Headline attributes a scout following the prospect has seen, each as a
+    /// range. Empty in a first report.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub attributes: Vec<AttributeRead>,
+}
+
+/// One headline attribute as a scout reads it: `key` is the report's name for it
+/// ("Pace", "Shooting", "Passing", "Dribbling", "Defending", "Physical").
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AttributeRead {
+    pub key: String,
+    pub low: u8,
+    pub high: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

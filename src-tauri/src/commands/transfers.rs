@@ -464,6 +464,62 @@ pub fn quote_youth_search_internal(
 }
 
 #[tauri::command]
+pub fn assign_watchlist_scout(
+    state: State<'_, Arc<StateManager>>,
+    prospect_id: String,
+    scout_id: Option<String>,
+) -> Result<Game, String> {
+    assign_watchlist_scout_internal(&state, &prospect_id, scout_id.as_deref())
+}
+
+/// Put a scout on a watched prospect, or take his scout off with `None`.
+pub fn assign_watchlist_scout_internal(
+    state: &StateManager,
+    prospect_id: &str,
+    scout_id: Option<&str>,
+) -> Result<Game, String> {
+    info!("[cmd] assign_watchlist_scout: prospect_id={prospect_id}, scout_id={scout_id:?}");
+    mutate_active_game(state, |game| {
+        ofm_core::youth_watchlist::assign_scout(game, prospect_id, scout_id)
+    })
+}
+
+#[tauri::command]
+pub fn sign_watched_prospect(
+    state: State<'_, Arc<StateManager>>,
+    prospect_id: String,
+) -> Result<Game, String> {
+    sign_watched_prospect_internal(&state, &prospect_id)
+}
+
+/// Sign a watched prospect into the academy and take him off the watchlist.
+pub fn sign_watched_prospect_internal(
+    state: &StateManager,
+    prospect_id: &str,
+) -> Result<Game, String> {
+    info!("[cmd] sign_watched_prospect: prospect_id={prospect_id}");
+    mutate_active_game(state, |game| {
+        ofm_core::youth_watchlist::sign(game, prospect_id).map(|_| ())
+    })
+}
+
+#[tauri::command]
+pub fn unwatch_prospect(
+    state: State<'_, Arc<StateManager>>,
+    prospect_id: String,
+) -> Result<Game, String> {
+    unwatch_prospect_internal(&state, &prospect_id)
+}
+
+/// Let a watched prospect go.
+pub fn unwatch_prospect_internal(state: &StateManager, prospect_id: &str) -> Result<Game, String> {
+    info!("[cmd] unwatch_prospect: prospect_id={prospect_id}");
+    mutate_active_game(state, |game| {
+        ofm_core::youth_watchlist::unwatch(game, prospect_id)
+    })
+}
+
+#[tauri::command]
 pub fn cancel_youth_scouting(
     state: State<'_, Arc<StateManager>>,
     assignment_id: String,
@@ -527,7 +583,7 @@ mod tests {
         make_loan_offer_internal, make_transfer_bid_internal,
         preview_transfer_bid_financial_impact_internal, quote_youth_search_internal,
         respond_to_loan_offer_internal, respond_to_offer_internal, toggle_loan_list_internal,
-        toggle_transfer_list_internal,
+        toggle_transfer_list_internal, unwatch_prospect_internal,
     };
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
@@ -1253,6 +1309,22 @@ mod tests {
         let result = quote_youth_search_internal(&state, "scout1", None, None);
 
         assert_eq!(result, Err("be.error.noActiveGameSession".to_string()));
+    }
+
+    /// Given a game with nobody on the watchlist,
+    /// When a prospect is let go,
+    /// Then the command says he is not watched, and the game is unchanged.
+    #[test]
+    fn unwatching_someone_not_watched_is_refused() {
+        let state = StateManager::new();
+        state.set_game(make_game());
+
+        let result = unwatch_prospect_internal(&state, "nobody");
+
+        assert_eq!(
+            result.err(),
+            Some("be.error.scouting.prospectNotWatched".to_string())
+        );
     }
 
     #[test]

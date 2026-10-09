@@ -208,8 +208,7 @@ fn draw_recruits(game: &Game, team_index: usize, plan: &IntakePlan, date: NaiveD
 
 /// Sign `recruits` into the academy of the club at `team_index`, in order, each
 /// on the wage the board agrees to, until the first the board will not pay even
-/// the youth minimum: that ends the club's intake. Joining is a contract made
-/// mid-career, so it goes in his history, as a scouted youngster's signing does.
+/// the youth minimum: that ends the club's intake.
 fn sign_until_refused(
     game: &mut Game,
     team_index: usize,
@@ -218,29 +217,72 @@ fn sign_until_refused(
 ) -> Intake {
     let mut joined = Vec::with_capacity(recruits.len());
     for Drawn {
-        mut recruit,
+        recruit,
         asking,
         end,
     } in recruits
     {
-        let team = &game.teams[team_index];
-        let Some(wage) = agreed_wage(game, team, &recruit, asking) else {
+        let name = recruit.full_name.clone();
+        if !sign_on_terms(game, team_index, recruit, asking, end, date) {
             break;
-        };
-        crate::contracts::record_movement(
-            &mut recruit,
-            crate::contracts::contract_entry(
-                PlayerMovementKind::FreeAgentSigning,
-                date,
-                team,
-                crate::contracts::contract_record(date, end, wage, ContractSource::FreeAgent),
-            ),
-        );
-        recruit.jersey_number = crate::roster::resolve_jersey_for(game, &recruit, team);
-        joined.push(recruit.full_name.clone());
-        game.players.push(recruit);
+        }
+        joined.push(name);
     }
     Intake { joined, refused: 0 }
+}
+
+/// Sign `recruit` into the academy of the club at `team_index` on the terms he
+/// asks — his own when they run past `date`, the club's standard ones otherwise —
+/// if the board will pay him. Returns whether he joined.
+pub(crate) fn sign_into_academy(
+    game: &mut Game,
+    team_index: usize,
+    mut recruit: Player,
+    date: NaiveDate,
+) -> bool {
+    let team = &game.teams[team_index];
+    recruit.team_id = Some(team.id.clone());
+    recruit.squad_role = SquadRole::Youth;
+    let own_terms = recruit
+        .contract_end()
+        .and_then(crate::contracts::parse_contract_date)
+        .filter(|end| *end > date)
+        .map(|end| (recruit.wage(), end))
+        .filter(|(wage, _)| *wage > 0);
+    let Some((asking, end)) =
+        own_terms.or_else(|| crate::contracts::standard_contract_terms(&recruit, team, date, 0))
+    else {
+        return false;
+    };
+    sign_on_terms(game, team_index, recruit, asking, end, date)
+}
+
+/// Joining is a contract made mid-career, so it goes in his history, as a
+/// scouted youngster's signing does. Returns whether the board would pay him.
+fn sign_on_terms(
+    game: &mut Game,
+    team_index: usize,
+    mut recruit: Player,
+    asking: u32,
+    end: NaiveDate,
+    date: NaiveDate,
+) -> bool {
+    let team = &game.teams[team_index];
+    let Some(wage) = agreed_wage(game, team, &recruit, asking) else {
+        return false;
+    };
+    crate::contracts::record_movement(
+        &mut recruit,
+        crate::contracts::contract_entry(
+            PlayerMovementKind::FreeAgentSigning,
+            date,
+            team,
+            crate::contracts::contract_record(date, end, wage, ContractSource::FreeAgent),
+        ),
+    );
+    recruit.jersey_number = crate::roster::resolve_jersey_for(game, &recruit, team);
+    game.players.push(recruit);
+    true
 }
 
 /// Tell the player who joined the academy, and that the board would not take on

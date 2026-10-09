@@ -581,6 +581,21 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
         tools_impl::scouting::scout_youth_cancel
     );
 
+    id_tool!(
+        "scout_watchlist_sign",
+        "Sign a youth prospect on the watchlist into the academy (the board's wage policy applies at the academy rate, half the contract)",
+        prospect_id_schema(),
+        prospect_id,
+        tools_impl::scouting::scout_watchlist_sign
+    );
+    id_tool!(
+        "scout_watchlist_unwatch",
+        "Remove a youth prospect from the watchlist",
+        prospect_id_schema(),
+        prospect_id,
+        tools_impl::scouting::scout_watchlist_unwatch
+    );
+
     // ─── Phase 4: Custom-schema tools ───────────────────────────────────────
 
     // squad_set_formation
@@ -1461,6 +1476,32 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
         }
     );
 
+    // scout_watchlist_assign
+    custom_tool!(
+        "scout_watchlist_assign",
+        "Assign a scout to follow a youth prospect on the watchlist (max 3 per scout), or omit scout_id to take the scout off. A followed prospect's OVR/potential ranges narrow one band each Monday and the scout reports weekly",
+        build_schema(
+            &[
+                ("prospect_id", "string", "Prospect ID on the watchlist"),
+                ("scout_id", "string", "Scout staff ID; omit to unassign")
+            ],
+            &["prospect_id"]
+        ),
+        ctx,
+        args,
+        {
+            let pid = match require_string_param(args, "prospect_id") {
+                Ok(v) => v,
+                Err(e) => return Ok(e),
+            };
+            let sid = extract_string_param(args, "scout_id").filter(|value| !value.is_empty());
+            match tools_impl::scouting::scout_watchlist_assign(ctx, pid, sid) {
+                Ok(text) => Ok(text_result(text)),
+                Err(e) => Ok(err_result(&e)),
+            }
+        }
+    );
+
     // scout_youth_reassign
     custom_tool!(
         "scout_youth_reassign",
@@ -1746,6 +1787,10 @@ fn assignment_id_schema() -> Arc<serde_json::Map<String, serde_json::Value>> {
     param_schema("assignment_id", "Scouting assignment ID")
 }
 
+fn prospect_id_schema() -> Arc<serde_json::Map<String, serde_json::Value>> {
+    param_schema("prospect_id", "Youth prospect ID on the watchlist")
+}
+
 // ─── Tool catalog for help tools ─────────────────────────────────────────────
 // Single source of truth for tool names, descriptions, and categories.
 //
@@ -2018,6 +2063,21 @@ pub fn tool_catalog() -> Vec<(&'static str, &'static str, &'static str)> {
         (
             "scout_youth_reassign",
             "Reassign youth scouting parameters",
+            "Scouting",
+        ),
+        (
+            "scout_watchlist_assign",
+            "Assign or remove the scout following a watched youth prospect",
+            "Scouting",
+        ),
+        (
+            "scout_watchlist_sign",
+            "Sign a watched youth prospect into the academy",
+            "Scouting",
+        ),
+        (
+            "scout_watchlist_unwatch",
+            "Remove a youth prospect from the watchlist",
             "Scouting",
         ),
         (

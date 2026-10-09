@@ -3,6 +3,7 @@
     "app.name",
     "tactics.playStyleWithMastery",
     "inbox.youthProspectRange",
+    "scouting.watchlistScoutLoad",
     "app.publisher",
     "date.day",
     "match.pen",
@@ -104,6 +105,7 @@
     "scouting.youthSearchRegionLabel",
     "scouting.regionInternational",
     "scouting.scoutLabel",
+    "scouting.watchlistScout",
     "match.live",
     "match.pause",
     "match.normal",
@@ -567,7 +569,6 @@
   ],
   "id": [
     "awardsCeremony.rating",
-    "be.msg.youthRecruitment.option.shortlist.label",
     "be.news.matchReport.scorer",
     "be.news.preseasonDigest.resultLine",
     "be.news.roundup.resultLine",
