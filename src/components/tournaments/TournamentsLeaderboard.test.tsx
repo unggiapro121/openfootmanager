@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import TournamentsTopScorers from "./TournamentsTopScorers";
-import type { TopScorerEntry } from "./TournamentsTab.helpers";
+import type { LeaderEntryData } from "../../services/competitionsService";
+import TournamentsLeaderboard from "./TournamentsLeaderboard";
 
 vi.mock("react-i18next", async () => {
   const { useRef } = await import("react");
@@ -20,50 +20,55 @@ vi.mock("react-i18next", async () => {
   };
 });
 
-function scorer(overrides: Partial<TopScorerEntry> = {}): TopScorerEntry {
+function leader(overrides: Partial<LeaderEntryData> = {}): LeaderEntryData {
   return {
     playerId: "player-1",
-    goals: 12,
-    playerName: {
-      match_name: "Striker",
-      full_name: "Ada Striker",
-      team_id: "team-1",
-      team_name: "Alpha FC",
-    },
+    name: "Striker",
+    fullName: "Ada Striker",
+    teamId: "team-1",
+    teamName: "Alpha FC",
+    value: 12,
     ...overrides,
-  } as TopScorerEntry;
+  };
 }
 
-function renderScorers(props: Partial<React.ComponentProps<typeof TournamentsTopScorers>> = {}) {
+function renderBoard(props: Partial<React.ComponentProps<typeof TournamentsLeaderboard>> = {}) {
   return render(
-    <TournamentsTopScorers topScorers={[scorer()]} onSelectTeam={vi.fn()} {...props} />,
+    <TournamentsLeaderboard
+      title="tournaments.topScorers"
+      emptyText="tournaments.noGoals"
+      entries={[leader()]}
+      testIdPrefix="tournaments-top-scorer"
+      onSelectTeam={vi.fn()}
+      {...props}
+    />,
   );
 }
 
-describe("TournamentsTopScorers", () => {
-  it("says so when nobody has scored yet", () => {
-    renderScorers({ topScorers: [] });
+describe("TournamentsLeaderboard", () => {
+  // Given no one on the board yet, then it says so instead of an empty list.
+  it("says so when the board is empty", () => {
+    renderBoard({ entries: [] });
 
     expect(screen.getByText("tournaments.noGoals")).toBeInTheDocument();
   });
 
-  it("ranks the scorers with their club and tally", () => {
-    renderScorers({
-      topScorers: [
-        scorer(),
-        scorer({
+  // Given two leaders, then each is ranked with his club and tally, under the title.
+  it("ranks the leaders with their club and tally", () => {
+    renderBoard({
+      entries: [
+        leader(),
+        leader({
           playerId: "player-2",
-          goals: 9,
-          playerName: {
-            match_name: "Winger",
-            full_name: "Cy Winger",
-            team_id: "team-2",
-            team_name: "Beta United",
-          },
+          fullName: "Cy Winger",
+          teamId: "team-2",
+          teamName: "Beta United",
+          value: 9,
         }),
       ],
     });
 
+    expect(screen.getByText("tournaments.topScorers")).toBeInTheDocument();
     expect(screen.getByText("Ada Striker")).toBeInTheDocument();
     expect(screen.getByText("Alpha FC")).toBeInTheDocument();
     expect(screen.getByText("12")).toBeInTheDocument();
@@ -72,27 +77,16 @@ describe("TournamentsTopScorers", () => {
     expect(screen.getByText("2")).toBeInTheDocument();
   });
 
-  // A player loaded from the slice can be clubless; the row still has to render.
-  it("falls back to the team id, then to nothing, when there is no club name", () => {
-    renderScorers({
-      topScorers: [
-        scorer({
-          playerName: {
-            match_name: "Striker",
-            full_name: "Ada Striker",
-            team_id: "team-9",
-            team_name: null,
-          },
-        }),
-      ],
-    });
+  // A player can be clubless; the row still has to render.
+  it("falls back to the team id when there is no club name", () => {
+    renderBoard({ entries: [leader({ teamId: "team-9", teamName: null })] });
 
     expect(screen.getByText("team-9")).toBeInTheDocument();
   });
 
   it("offers the profile and the club when both are reachable", () => {
     const onSelectPlayer = vi.fn();
-    renderScorers({ onSelectPlayer });
+    renderBoard({ onSelectPlayer });
 
     fireEvent.contextMenu(screen.getByTestId("tournaments-top-scorer-player-1"));
     fireEvent.click(screen.getByRole("menuitem", { name: "View profile" }));
@@ -102,7 +96,7 @@ describe("TournamentsTopScorers", () => {
 
   it("offers only the club when there is no way to open a profile", () => {
     const onSelectTeam = vi.fn();
-    renderScorers({ onSelectTeam });
+    renderBoard({ onSelectTeam });
 
     fireEvent.contextMenu(screen.getByTestId("tournaments-top-scorer-player-1"));
 

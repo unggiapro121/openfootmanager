@@ -182,12 +182,16 @@ interface GameStore {
    */
   dirtySince: number | null;
   showFiredModal: boolean;
+  /** The fixture whose match-details dialog is open, or null. */
+  matchDetailFixtureId: string | null;
   setGameActive: (active: boolean, managerName?: string) => void;
   setGameState: (state: GameStateData) => void;
   setMessages: (messages: MessageData[]) => void;
   setSessionState: (state: SessionState) => void;
   markClean: () => void;
   setShowFiredModal: (show: boolean) => void;
+  openMatchDetail: (fixtureId: string) => void;
+  closeMatchDetail: () => void;
   clearGame: () => void;
 }
 
@@ -199,6 +203,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   isDirty: false,
   dirtySince: null,
   showFiredModal: false,
+  matchDetailFixtureId: null,
   setGameActive: (active, managerName) =>
     set({
       hasActiveGame: active,
@@ -231,6 +236,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
   setSessionState: (state) => set({ sessionState: state }),
   markClean: () => set({ isDirty: false, dirtySince: null }),
   setShowFiredModal: (show) => set({ showFiredModal: show }),
+  openMatchDetail: (fixtureId) => set({ matchDetailFixtureId: fixtureId }),
+  closeMatchDetail: () => set({ matchDetailFixtureId: null }),
   clearGame: () =>
     set({
       hasActiveGame: false,
@@ -240,5 +247,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       isDirty: false,
       dirtySince: null,
       showFiredModal: false,
+      matchDetailFixtureId: null,
     }),
 }));

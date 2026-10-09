@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import RoundDigestScreen from "./RoundDigestScreen";
-import type { GameStateData } from "../../store/gameStore";
+import { type GameStateData, useGameStore } from "../../store/gameStore";
 import type { MatchSnapshot, RoundSummary } from "./types";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
@@ -394,7 +394,9 @@ describe("RoundDigestScreen", () => {
     expect(onFinish).toHaveBeenCalledOnce();
   });
 
-  it("opens and closes the other-match details modal", () => {
+  // Given another match of the round with a report, when its "view details"
+  // is pressed, then the shared match-details dialog is opened for that fixture.
+  it("opens the shared match details for another match of the round", () => {
     const gameStateWithReport = {
       ...makeGameState(),
       league: {
@@ -443,11 +445,7 @@ describe("RoundDigestScreen", () => {
 
     fireEvent.click(screen.getByText("match.viewDetails"));
 
-    expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("match.matchDetails")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("common.close"));
-
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("fix2");
+    useGameStore.getState().closeMatchDetail();
   });
 });

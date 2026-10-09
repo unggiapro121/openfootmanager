@@ -35,9 +35,7 @@ pub struct AdvanceTimeWithModeResponse {
 fn scheduled_user_fixture_index(game: &Game, today: &str) -> Option<(Option<usize>, usize)> {
     let user_team_id = game.manager.team_id.as_ref()?;
     for (competition_index, competition) in game.competitions.iter().enumerate() {
-        if !game.active_competition_ids.is_empty()
-            && !game.active_competition_ids.contains(&competition.id)
-        {
+        if !game.competition_in_active_scope(competition) {
             continue;
         }
         if let Some(fixture_index) =

@@ -15,7 +15,7 @@ import {
 } from "../../lib/helpers";
 import { resolveSeasonContext } from "../../lib/seasonContext";
 import { competitionDisplayName } from "../../lib/competitionName";
-import type { GameStateData, LeagueData } from "../../store/gameStore";
+import { type GameStateData, type LeagueData, useGameStore } from "../../store/gameStore";
 import {
   fetchSchedule,
   type MatchdayGroup,
@@ -25,6 +25,7 @@ import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/erro
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
 import { Badge, Card, CardBody, Select } from "../ui";
 import ScheduleCalendarGrid from "./ScheduleCalendarGrid";
+import MatchScoreButton from "../match/MatchScoreButton";
 
 interface ScheduleTabProps {
   gameState: GameStateData;
@@ -473,6 +474,7 @@ function MatchdayGroupCard({
   buildTeamMenuItem: (label: string, teamId: string) => ContextMenuItem;
   t: ReturnType<typeof useTranslation>["t"];
 }) {
+  const openMatchDetail = useGameStore((state) => state.openMatchDetail);
   const setRef = (el: HTMLDivElement | null) => {
     if (el) {
       groupRefs.current.set(group.date, el);
@@ -502,7 +504,15 @@ function MatchdayGroupCard({
               const isUserMatch =
                 fixture.home_team_id === userTeamId || fixture.away_team_id === userTeamId;
               const completed = fixture.status === "Completed";
-              const contextItems = [
+              const contextItems: ContextMenuItem[] = [
+                ...(completed
+                  ? [
+                      {
+                        label: t("match.viewMatchDetails"),
+                        onClick: () => openMatchDetail(fixture.id),
+                      },
+                    ]
+                  : []),
                 buildTeamMenuItem(
                   `${t("common.viewTeam")}: ${fixture.home_team_name}`,
                   fixture.home_team_id,
@@ -521,37 +531,39 @@ function MatchdayGroupCard({
                     }`}
                     data-testid={`schedule-fixture-${fixture.id}`}
                   >
-                    <span
+                    <button
+                      type="button"
                       onClick={() => onSelectTeam(fixture.home_team_id)}
-                      className={`flex-1 cursor-pointer text-right text-sm font-semibold hover:underline ${
+                      className={`flex-1 cursor-pointer rounded text-right text-sm font-semibold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
                         fixture.home_team_id === userTeamId
                           ? "text-primary-600 dark:text-primary-400"
                           : "text-gray-800 dark:text-gray-200"
                       }`}
                     >
                       {fixture.home_team_name}
-                    </span>
+                    </button>
                     <div className="mx-3 w-24 text-center">
                       {completed && fixture.result ? (
-                        <span className="font-heading text-lg font-bold text-gray-800 dark:text-gray-100">
+                        <MatchScoreButton fixtureId={fixture.id} className="text-lg">
                           {fixture.result.home_goals} - {fixture.result.away_goals}
-                        </span>
+                        </MatchScoreButton>
                       ) : (
                         <Badge variant="neutral" size="sm">
-                          vs
+                          {t("common.vs")}
                         </Badge>
                       )}
                     </div>
-                    <span
+                    <button
+                      type="button"
                       onClick={() => onSelectTeam(fixture.away_team_id)}
-                      className={`flex-1 cursor-pointer text-left text-sm font-semibold hover:underline ${
+                      className={`flex-1 cursor-pointer rounded text-left text-sm font-semibold hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
                         fixture.away_team_id === userTeamId
                           ? "text-primary-600 dark:text-primary-400"
                           : "text-gray-800 dark:text-gray-200"
                       }`}
                     >
                       {fixture.away_team_name}
-                    </span>
+                    </button>
                   </div>
                 </ContextMenu>
               );
@@ -638,12 +650,12 @@ function InternationalView({
                     </span>
                     <div className="mx-3 w-24 text-center">
                       {completed && fixture.result ? (
-                        <span className="font-heading text-lg font-bold text-gray-800 dark:text-gray-100">
+                        <MatchScoreButton fixtureId={fixture.id} className="text-lg">
                           {fixture.result.home_goals} - {fixture.result.away_goals}
-                        </span>
+                        </MatchScoreButton>
                       ) : (
                         <Badge variant="neutral" size="sm">
-                          vs
+                          {t("common.vs")}
                         </Badge>
                       )}
                     </div>

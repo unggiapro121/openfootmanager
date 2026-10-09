@@ -1,5 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
+import { useGameStore } from "../../store/gameStore";
 
 import PlayerProfileRecentMatchesCard, {
   type PlayerRecentMatchEntry,
@@ -54,5 +56,15 @@ describe("PlayerProfileRecentMatchesCard", () => {
 
     // One rated match is not a trend: the chart shows its empty state.
     expect(screen.getByText("common.noChartData")).toBeInTheDocument();
+  });
+
+  // Given a recent match, when its score is pressed, then its match details open.
+  it("opens a recent match's details from its score", () => {
+    useGameStore.setState({ matchDetailFixtureId: null });
+    render(<PlayerProfileRecentMatchesCard matches={[match("f1", 7.2, 90)]} t={t} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /match\.viewMatchDetails/ }));
+
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("f1");
   });
 });

@@ -1,3 +1,4 @@
+import MatchScoreButton from "../match/MatchScoreButton";
 import { Card, CardBody, CardHeader } from "../ui";
 
 import type { TeamProfileTranslate, TeamRecentMatchEntry } from "./TeamProfile.types";
@@ -47,9 +48,9 @@ export default function TeamProfileRecentMatchesCard({
                 <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
                   {scoreLabel}
                 </p>
-                <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
-                  {match.goalsFor}-{match.goalsAgainst}
-                </p>
+                <MatchScoreButton fixtureId={match.fixtureId} className="text-base">
+                  {match.goalsFor} - {match.goalsAgainst}
+                </MatchScoreButton>
               </div>
 
               <div className="text-center">

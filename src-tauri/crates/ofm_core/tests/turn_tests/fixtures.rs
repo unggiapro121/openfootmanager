@@ -322,6 +322,8 @@ pub(crate) fn empty_report(home_goals: u8, away_goals: u8) -> MatchReport {
         total_minutes: 90,
         home_penalties: None,
         away_penalties: None,
+        home_sheet: None,
+        away_sheet: None,
     }
 }
 
@@ -391,6 +393,8 @@ pub(crate) fn report_with_scorer(
         total_minutes: 90,
         home_penalties: None,
         away_penalties: None,
+        home_sheet: None,
+        away_sheet: None,
     }
 }
 
@@ -449,6 +453,8 @@ pub(crate) fn full_squad_report(home_goals: u8, away_goals: u8) -> MatchReport {
         total_minutes: 90,
         home_penalties: None,
         away_penalties: None,
+        home_sheet: None,
+        away_sheet: None,
     }
 }
 

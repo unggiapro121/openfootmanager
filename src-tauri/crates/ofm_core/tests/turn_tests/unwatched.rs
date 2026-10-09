@@ -255,6 +255,43 @@ fn a_match_nobody_watches_still_uses_the_bench() {
     }
 }
 
+/// Given a matchday nobody watches,
+/// When the day is played,
+/// Then the fixture's report keeps both sides' kickoff lineups: eleven starters
+/// each, all from that club, and a formation.
+#[test]
+fn a_match_nobody_watches_keeps_both_lineups() {
+    let mut game = game_with_deep_squads();
+
+    turn::process_day(&mut game);
+
+    let report = game.league.as_ref().unwrap().fixtures[0]
+        .result
+        .as_ref()
+        .and_then(|result| result.report.clone())
+        .expect("the played fixture keeps a report");
+    for (team_id, lineup) in [
+        ("team1", &report.home_lineup),
+        ("team2", &report.away_lineup),
+    ] {
+        let lineup = lineup.as_ref().expect("a lineup for each side");
+        assert!(!lineup.formation.is_empty());
+        assert_eq!(lineup.starters.len(), 11, "{team_id}");
+        for slot in &lineup.starters {
+            let player = game
+                .players
+                .iter()
+                .find(|player| player.id == slot.player_id);
+            assert_eq!(
+                player.and_then(|player| player.team_id.as_deref()),
+                Some(team_id),
+                "{} started for {team_id}",
+                slot.player_id
+            );
+        }
+    }
+}
+
 /// team1 is the manager's own club. Nobody is watching this fixture either — the
 /// player advanced past it — so it gets a touchline like everyone else. The side
 /// the player happens to own is not the side that goes unmanaged.

@@ -247,6 +247,10 @@ vi.mock("../utils/backendI18n", () => ({
   resolveBackendText: (_key: string | undefined, fallback: string) => fallback ?? "",
 }));
 
+// The match-details dialog has its own tests; this store mock answers every
+// selector with the same object, which would open it on every render.
+vi.mock("../components/match/MatchDetailDialogHost", () => ({ default: () => null }));
+
 vi.mock("../store/gameStore", () => ({
   useGameStore: () => ({
     hasActiveGame: true,

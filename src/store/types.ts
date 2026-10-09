@@ -659,11 +659,23 @@ export interface CompactTeamMatchStatsData {
   red_cards: number;
 }
 
+/** A side's team sheet at kick-off; substitutions are in the report's events. */
+export interface CompactLineupData {
+  formation: string;
+  play_style: string;
+  /** Starters in formation-slot order, each with the slot's position (e.g. "CenterBack"). */
+  starters: { player_id: string; position: string }[];
+  bench: string[];
+}
+
 export interface CompactMatchReportData {
   total_minutes: number;
   home_stats: CompactTeamMatchStatsData;
   away_stats: CompactTeamMatchStatsData;
   events: CompactMatchEventData[];
+  /** Absent for matches played before lineups were recorded. */
+  home_lineup?: CompactLineupData | null;
+  away_lineup?: CompactLineupData | null;
 }
 
 export interface StandingData {

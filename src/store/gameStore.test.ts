@@ -395,3 +395,24 @@ describe("useGameStore", () => {
     });
   });
 });
+
+describe("match detail dialog state", () => {
+  // Given no dialog open, when a fixture is opened, then its id is held; when
+  // closed, nothing is held.
+  it("opens and closes the match detail dialog for one fixture", () => {
+    useGameStore.getState().openMatchDetail("fixture-9");
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("fixture-9");
+
+    useGameStore.getState().closeMatchDetail();
+    expect(useGameStore.getState().matchDetailFixtureId).toBeNull();
+  });
+
+  // Given a dialog open when the game is left, then it does not reopen in the next game.
+  it("forgets the open match when the game is cleared", () => {
+    useGameStore.getState().openMatchDetail("fixture-9");
+
+    useGameStore.getState().clearGame();
+
+    expect(useGameStore.getState().matchDetailFixtureId).toBeNull();
+  });
+});

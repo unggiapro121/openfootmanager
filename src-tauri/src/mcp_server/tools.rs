@@ -49,6 +49,11 @@ fn player_id_schema() -> Arc<serde_json::Map<String, serde_json::Value>> {
     param_schema("player_id", "Player entity ID")
 }
 
+/// Schema for tools taking a single `fixture_id` parameter.
+fn fixture_id_schema() -> Arc<serde_json::Map<String, serde_json::Value>> {
+    param_schema("fixture_id", "Fixture entity ID (from info_fixtures)")
+}
+
 /// Schema for tools taking a single `message_id` parameter.
 fn message_id_schema() -> Arc<serde_json::Map<String, serde_json::Value>> {
     param_schema("message_id", "Message entity ID")
@@ -494,6 +499,18 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
         player_id_schema(),
         player_id,
         tools_impl::info::info_player_stats
+    );
+    real_tool!(
+        "info_competition_leaders",
+        "Goal, assist and card leaders of each competition your club is in",
+        tools_impl::info::info_competition_leaders
+    );
+    id_tool!(
+        "info_fixture_detail",
+        "Full record of one fixture: score, scorers, team stats, lineups and player ratings",
+        fixture_id_schema(),
+        fixture_id,
+        tools_impl::info::info_fixture_detail
     );
     id_tool!(
         "inbox_mark_read",
@@ -1834,6 +1851,16 @@ pub fn tool_catalog() -> Vec<(&'static str, &'static str, &'static str)> {
         (
             "info_match_preview",
             "Next opponent details, form, and standings comparison",
+            "Information",
+        ),
+        (
+            "info_fixture_detail",
+            "Full record of one played fixture (score, scorers, team stats, lineups, player ratings). Use after info_fixtures to review any match, including AI-vs-AI ones",
+            "Information",
+        ),
+        (
+            "info_competition_leaders",
+            "Top scorers, assists, yellow and red cards in each competition your club plays in (league, cups, continental)",
             "Information",
         ),
         (

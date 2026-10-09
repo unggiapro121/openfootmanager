@@ -310,7 +310,7 @@ describe("TeamProfile", () => {
         limit: 5,
       });
       expect(screen.getByText("Bravo FC")).toBeInTheDocument();
-      expect(screen.getByText("3-1")).toBeInTheDocument();
+      expect(screen.getByText("3 - 1")).toBeInTheDocument();
       expect(screen.getByText("62.0%")).toBeInTheDocument();
     });
   });

@@ -1,6 +1,5 @@
 import type { TFunction } from "i18next";
 import type { FixtureData, LeagueData } from "../../store/gameStore";
-import type { PlayerNameEntry } from "../../services/competitionsService";
 
 export function isKnockoutCompetition(competition: LeagueData): boolean {
   return (
@@ -71,42 +70,4 @@ export function summarizeCompetitionProgress(
     completedMatches: competitiveFixtures.filter((fixture) => fixture.status === "Completed")
       .length,
   };
-}
-
-export interface TopScorerEntry {
-  playerId: string;
-  playerName: PlayerNameEntry;
-  goals: number;
-}
-
-/**
- * Goal tallies from the competition's own fixtures, best first.
- *
- * Scorers with no entry in `playerNames` are dropped rather than shown with a
- * blank name — they belong to a competition whose players are not loaded.
- */
-export function buildTopScorers(
-  competitiveFixtures: FixtureData[],
-  playerNames: Record<string, PlayerNameEntry>,
-  limit = 10,
-): TopScorerEntry[] {
-  const goals: Record<string, number> = {};
-
-  competitiveFixtures.forEach((fixture) => {
-    if (!fixture.result) return;
-
-    [...fixture.result.home_scorers, ...fixture.result.away_scorers].forEach((scorer) => {
-      goals[scorer.player_id] = (goals[scorer.player_id] || 0) + 1;
-    });
-  });
-
-  return Object.entries(goals)
-    .map(([playerId, count]) => ({
-      playerId,
-      playerName: playerNames[playerId] ?? null,
-      goals: count,
-    }))
-    .filter((entry): entry is TopScorerEntry => entry.playerName !== null)
-    .sort((a, b) => b.goals - a.goals)
-    .slice(0, limit);
 }

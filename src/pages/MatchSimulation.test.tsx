@@ -28,6 +28,10 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+// The match-details dialog has its own tests; this store mock answers every
+// selector with the same object, which would open it on every render.
+vi.mock("../components/match/MatchDetailDialogHost", () => ({ default: () => null }));
+
 vi.mock("../store/gameStore", () => ({
   useGameStore: () => gameStoreState,
 }));

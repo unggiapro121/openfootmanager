@@ -20,6 +20,7 @@ pub mod economy;
 pub mod end_of_season;
 pub mod finances;
 pub mod firing;
+pub mod fixture_lookup;
 pub mod football_identity;
 pub mod game;
 pub mod generator;

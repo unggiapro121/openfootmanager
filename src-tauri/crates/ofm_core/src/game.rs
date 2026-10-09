@@ -384,7 +384,21 @@ impl Game {
     /// Whether a competition falls within the player's active simulation scope.
     /// Empty scope sets mean "everything is active" (the legacy, unscoped game),
     /// so this stays backward compatible with worlds that never set a scope.
+    ///
+    /// A competition the managed club plays in is always in scope, whatever was
+    /// selected. The scope is chosen when the career opens; a promotion, a new
+    /// cup or a job abroad can put the club in a competition — or a region —
+    /// nobody selected, and its fixtures must still be played by the engine so
+    /// they carry a report and player stats.
     pub fn competition_in_active_scope(&self, competition: &League) -> bool {
+        if self
+            .manager
+            .team_id
+            .as_ref()
+            .is_some_and(|team_id| competition.participant_ids.contains(team_id))
+        {
+            return true;
+        }
         let competition_selected = self.active_competition_ids.is_empty()
             || self.active_competition_ids.contains(&competition.id);
         let region_selected = self.active_region_ids.is_empty()
@@ -407,10 +421,16 @@ impl Game {
         }
         let mut ids = HashSet::new();
         for competition in &self.competitions {
+            // Participants as well as standings: a cup clears its standings at
+            // the season's turn and a knockout never had any.
             if self.competition_in_active_scope(competition) {
-                for entry in &competition.standings {
-                    ids.insert(entry.team_id.clone());
-                }
+                ids.extend(competition.participant_ids.iter().cloned());
+                ids.extend(
+                    competition
+                        .standings
+                        .iter()
+                        .map(|entry| entry.team_id.clone()),
+                );
             }
         }
         // The player's own club is always simulated in full.
@@ -467,6 +487,72 @@ mod tests {
             &["team1".to_string(), "team2".to_string()],
         ));
         game
+    }
+
+    /// A game scoped to Europe only, with a South American league `sa-league`
+    /// between `sa1` and `sa2`, and a South American cup `sa-cup` whose only
+    /// participant listing is `participant_ids`, its standings empty as a cup's are.
+    fn game_scoped_to_europe() -> Game {
+        let mut game = game_with_only_a_legacy_league();
+        let mut league = League::new(
+            "sa-league".to_string(),
+            "South American League".to_string(),
+            2026,
+            &["sa1".to_string(), "sa2".to_string()],
+        );
+        league.region_id = Some("south-america".to_string());
+        league.participant_ids = vec!["sa1".to_string(), "sa2".to_string()];
+        let mut cup = League::new(
+            "sa-cup".to_string(),
+            "South American Cup".to_string(),
+            2026,
+            &[],
+        );
+        cup.region_id = Some("south-america".to_string());
+        cup.participant_ids = vec!["sa3".to_string(), "sa4".to_string()];
+        game.competitions = vec![league, cup];
+        game.active_region_ids = vec!["europe".to_string()];
+        game.active_competition_ids = vec!["eu-league".to_string()];
+        game
+    }
+
+    /// Given a career scoped to Europe, when the manager takes a South American
+    /// club, then its league is simulated in full though neither the league nor
+    /// its region was ever selected.
+    #[test]
+    fn the_managed_clubs_competition_is_always_in_scope() {
+        let mut game = game_scoped_to_europe();
+        game.manager.hire("sa1".to_string());
+
+        let league = game.competitions[0].clone();
+
+        assert!(game.competition_in_active_scope(&league));
+    }
+
+    /// Given the same career with the manager at no South American club, then
+    /// that league stays dormant: only the managed club's competitions are added.
+    #[test]
+    fn other_competitions_outside_the_scope_stay_dormant() {
+        let mut game = game_scoped_to_europe();
+        game.manager.hire("eu1".to_string());
+
+        let league = game.competitions[0].clone();
+
+        assert!(!game.competition_in_active_scope(&league));
+    }
+
+    /// Given the manager at a club that plays only in a cup, whose standings are
+    /// empty, then the cup's clubs count as actively simulated teams.
+    #[test]
+    fn active_teams_include_clubs_listed_only_by_a_cup() {
+        let mut game = game_scoped_to_europe();
+        game.manager.hire("sa3".to_string());
+
+        let ids = game
+            .active_team_ids()
+            .expect("a scoped game names its active teams");
+
+        assert!(ids.contains("sa4"), "{ids:?}");
     }
 
     #[test]

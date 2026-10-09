@@ -13,6 +13,7 @@ import DashboardHeader, {
 } from "../components/dashboard/DashboardHeader";
 import DashboardOverlays from "../components/dashboard/DashboardOverlays";
 import FiredModal from "../components/dashboard/FiredModal";
+import MatchDetailDialogHost from "../components/match/MatchDetailDialogHost";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardWorkspaceContent from "../components/dashboard/DashboardWorkspaceContent";
 import {
@@ -595,6 +596,7 @@ export default function Dashboard(): JSX.Element {
         onDigestStop={abortDigest}
       />
       <FiredModal />
+      <MatchDetailDialogHost onSelectPlayer={selectPlayer} onSelectTeam={selectTeam} />
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">

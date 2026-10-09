@@ -1,3 +1,4 @@
+pub mod competition_leaders;
 pub mod competitions;
 pub mod inbox;
 pub mod news;

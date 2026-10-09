@@ -436,6 +436,42 @@ fn apply_match_report_updates_fixture_status() {
     assert_eq!(persisted_report.away_stats.possession_pct, 50);
 }
 
+/// Given a played match whose report names the home side's team sheet,
+/// When the report is applied,
+/// Then the fixture keeps that lineup: formation, play style, each starter in
+/// the slot the formation gives him, and the bench. A side with no sheet keeps none.
+#[test]
+fn apply_match_report_persists_the_kickoff_lineup() {
+    let mut game = make_game_with_match();
+    let mut report = empty_report(1, 0);
+    let starters: Vec<String> = (1..=11).map(|n| format!("h{n}")).collect();
+    report.home_sheet = Some(engine::TeamSheet {
+        formation: "4-4-2".to_string(),
+        play_style: engine::PlayStyle::Counter,
+        starters: starters.clone(),
+        bench: vec!["h12".to_string(), "h13".to_string()],
+    });
+
+    turn::apply_match_report(&mut game, 0, "team1", "team2", &report);
+
+    let persisted = game.league.as_ref().unwrap().fixtures[0]
+        .result
+        .as_ref()
+        .and_then(|result| result.report.as_ref())
+        .expect("compact report should persist");
+    let lineup = persisted.home_lineup.as_ref().expect("home lineup");
+    assert_eq!(lineup.formation, "4-4-2");
+    assert_eq!(lineup.play_style, "Counter");
+    assert_eq!(lineup.bench, vec!["h12".to_string(), "h13".to_string()]);
+    let slots = ofm_core::player_rating::formation_slots("4-4-2");
+    assert_eq!(lineup.starters.len(), 11);
+    for (index, slot) in lineup.starters.iter().enumerate() {
+        assert_eq!(slot.player_id, starters[index]);
+        assert_eq!(slot.position, format!("{:?}", slots[index]));
+    }
+    assert_eq!(persisted.away_lineup, None);
+}
+
 #[test]
 fn apply_match_report_persists_shootout_score() {
     // Regression: a live match decided on penalties used to persist with

@@ -2,18 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { GameStateData, LeagueData } from "../../store/gameStore";
 import type { SeasonContextData, WorldCupChampionData } from "../../store/types";
-import {
-  fetchCompetitionsView,
-  type CompetitionsView,
-  type PlayerNameEntry,
-} from "../../services/competitionsService";
+import { fetchCompetitionsView, type CompetitionsView } from "../../services/competitionsService";
 import { resolveSeasonContext } from "../../lib/seasonContext";
 
 interface UseTournamentsDataResult {
   teamNames: Record<string, string>;
   nationalTeamNames: Record<string, string>;
   nationalTeamNameKeys: Record<string, string>;
-  playerNames: Record<string, PlayerNameEntry>;
   userTeamId: string | null;
   seasonContext: SeasonContextData;
   isPreseason: boolean;
@@ -68,10 +63,6 @@ export function useTournamentsData(gameState: GameStateData): UseTournamentsData
   );
   const nationalTeamNames = competitionsView?.national_team_names ?? fallbackNationalTeamNames;
   const nationalTeamNameKeys = competitionsView?.national_team_name_keys ?? {};
-
-  // The player-name fallback stays in the component: it walks every player in
-  // the world, and the component only needs it once a competition is on show.
-  const playerNames = competitionsView?.player_names ?? {};
 
   const userTeamId = competitionsView?.manager_team_id ?? gameState.manager.team_id;
   const seasonContext = resolveSeasonContext(gameState);
@@ -134,7 +125,6 @@ export function useTournamentsData(gameState: GameStateData): UseTournamentsData
     teamNames,
     nationalTeamNames,
     nationalTeamNameKeys,
-    playerNames,
     userTeamId,
     seasonContext,
     isPreseason,

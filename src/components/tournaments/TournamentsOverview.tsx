@@ -3,10 +3,11 @@ import { useTranslation } from "react-i18next";
 import StandingsTable from "./StandingsTable";
 import TournamentsGroupTable from "./TournamentsGroupTable";
 import TournamentsPreseasonNote from "./TournamentsPreseasonNote";
-import TournamentsTopScorers from "./TournamentsTopScorers";
-import { localizedRoundName, type TopScorerEntry } from "./TournamentsTab.helpers";
+import TournamentsLeaderboard from "./TournamentsLeaderboard";
+import { localizedRoundName } from "./TournamentsTab.helpers";
 import type { TournamentsTeamLookup } from "./teamLookup";
 import { Card, CardHeader, CardBody, Badge } from "../ui";
+import type { CompetitionLeadersData } from "../../services/competitionsService";
 import type { LeagueData, StandingData } from "../../store/gameStore";
 
 type Group = NonNullable<LeagueData["groups"]>[number];
@@ -18,13 +19,15 @@ interface TournamentsOverviewProps {
   knockoutRounds: KnockoutRound[];
   isKnockout: boolean;
   isPreseason: boolean;
-  topScorers: TopScorerEntry[];
+  /** The competition's leaders; null until they load. */
+  leaders: CompetitionLeadersData | null;
   teams: TournamentsTeamLookup;
   onSelectPlayer?: (id: string) => void;
 }
 
 /**
- * The competition at a glance: how it stands, and who is scoring.
+ * The competition at a glance: how it stands, who is scoring and creating,
+ * and who is being booked.
  *
  * What "how it stands" means depends on the competition — a bracket's round
  * progress, a group stage's mini tables, or a league's own table — and during
@@ -36,7 +39,7 @@ export default function TournamentsOverview({
   knockoutRounds,
   isKnockout,
   isPreseason,
-  topScorers,
+  leaders,
   teams,
   onSelectPlayer,
 }: TournamentsOverviewProps) {
@@ -91,20 +94,60 @@ export default function TournamentsOverview({
     );
   })();
 
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <Card className="lg:col-span-2">
-        <CardHeader>
-          {isKnockout ? t("tournaments.bracket") : t("tournaments.leagueTable")}
-        </CardHeader>
-        <CardBody className="p-0">{summary}</CardBody>
-      </Card>
+  const board = (
+    title: string,
+    emptyText: string,
+    entries: CompetitionLeadersData["goals"] | undefined,
+    testIdPrefix: string,
+  ) => (
+    <TournamentsLeaderboard
+      title={title}
+      emptyText={emptyText}
+      entries={entries ?? []}
+      testIdPrefix={testIdPrefix}
+      onSelectTeam={teams.onSelectTeam}
+      onSelectPlayer={onSelectPlayer}
+    />
+  );
 
-      <TournamentsTopScorers
-        topScorers={topScorers}
-        onSelectTeam={teams.onSelectTeam}
-        onSelectPlayer={onSelectPlayer}
-      />
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            {isKnockout ? t("tournaments.bracket") : t("tournaments.leagueTable")}
+          </CardHeader>
+          <CardBody className="p-0">{summary}</CardBody>
+        </Card>
+
+        {board(
+          t("tournaments.topScorers"),
+          t("tournaments.noGoals"),
+          leaders?.goals,
+          "tournaments-top-scorer",
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {board(
+          t("tournaments.topAssists"),
+          t("tournaments.noAssists"),
+          leaders?.assists,
+          "tournaments-top-assist",
+        )}
+        {board(
+          t("tournaments.mostYellowCards"),
+          t("tournaments.noCards"),
+          leaders?.yellowCards,
+          "tournaments-yellow-card",
+        )}
+        {board(
+          t("tournaments.mostRedCards"),
+          t("tournaments.noCards"),
+          leaders?.redCards,
+          "tournaments-red-card",
+        )}
+      </div>
     </div>
   );
 }

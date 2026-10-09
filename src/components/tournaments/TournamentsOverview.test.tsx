@@ -55,7 +55,7 @@ function renderOverview(props: Partial<React.ComponentProps<typeof TournamentsOv
       knockoutRounds={[]}
       isKnockout={false}
       isPreseason={false}
-      topScorers={[]}
+      leaders={null}
       teams={teams}
       {...props}
     />,
@@ -129,5 +129,44 @@ describe("TournamentsOverview", () => {
     renderOverview();
 
     expect(screen.getByText("tournaments.noGoals")).toBeInTheDocument();
+  });
+
+  // Given leaders for every board, then the overview shows the scorers, the
+  // assists and both cards boards, each with its own title.
+  it("shows the goal, assist and card leaders", () => {
+    const entry = (playerId: string, value: number) => ({
+      playerId,
+      name: playerId,
+      fullName: `Full ${playerId}`,
+      teamId: "team-1",
+      teamName: "Alpha FC",
+      value,
+    });
+    renderOverview({
+      leaders: {
+        competitionId: "eng-1",
+        goals: [entry("scorer", 9)],
+        assists: [entry("creator", 6)],
+        yellowCards: [entry("hacker", 4)],
+        redCards: [],
+      },
+    });
+
+    expect(screen.getByText("tournaments.topScorers")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.topAssists")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.mostYellowCards")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.mostRedCards")).toBeInTheDocument();
+    expect(screen.getByText("Full creator")).toBeInTheDocument();
+    expect(screen.getByText("Full hacker")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.noCards")).toBeInTheDocument();
+  });
+
+  // Given no leaders loaded yet, then every board shows its empty text.
+  it("shows empty boards while there are no leaders", () => {
+    renderOverview({ leaders: null });
+
+    expect(screen.getByText("tournaments.noGoals")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.noAssists")).toBeInTheDocument();
+    expect(screen.getAllByText("tournaments.noCards")).toHaveLength(2);
   });
 });
