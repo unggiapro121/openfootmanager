@@ -229,6 +229,16 @@ fn reveal(entry: &mut WatchedProspect, count: usize, rng: &mut impl rand::Rng) {
     }
 }
 
+/// Whether the club knows the prospect exactly: overall, potential and every
+/// attribute read, all down to no error.
+fn fully_known(entry: &WatchedProspect) -> bool {
+    let estimate = &entry.estimate;
+    estimate.ovr_band == 0
+        && estimate.potential_band == 0
+        && estimate.attributes.len() == reveal_order(&entry.prospect).len()
+        && estimate.attributes.iter().all(|read| read.band == 0)
+}
+
 /// The band after `band` in the weekly narrowing.
 fn next_band(band: u8) -> u8 {
     BAND_STEPS
@@ -320,7 +330,13 @@ pub fn process_youth_watchlist(game: &mut Game) {
             );
             entry.weeks_followed += 1;
             entry.restate();
-            messages::weekly_report(game, &entry, &scout, &today_text);
+            // Once there is nothing left to learn, the scout files a last report
+            // and stops, freeing his slot; the prospect stays on the list.
+            let complete = fully_known(&entry);
+            messages::weekly_report(game, &entry, &scout, &today_text, complete);
+            if complete {
+                entry.scout_id = None;
+            }
         }
         game.youth_watchlist.push(entry);
     }
@@ -439,7 +455,21 @@ mod messages {
         entry: &WatchedProspect,
         scout: &Staff,
         date: &str,
+        complete: bool,
     ) {
+        let (id_prefix, subject_key, body_key) = if complete {
+            (
+                "youth-watch-complete",
+                "be.msg.youthWatchComplete.subject",
+                "be.msg.youthWatchComplete.body",
+            )
+        } else {
+            (
+                "youth-watch-report",
+                "be.msg.youthWatchReport.subject",
+                "be.msg.youthWatchReport.body",
+            )
+        };
         let scout_name = format!("{} {}", scout.first_name, scout.last_name);
         let option = |id: &str| ActionOption {
             id: id.to_string(),
@@ -449,7 +479,7 @@ mod messages {
             description_key: Some(format!("be.msg.youthRecruitment.option.{id}.description")),
         };
         let mut message = InboxMessage::new(
-            format!("youth-watch-report-{}-{date}", entry.prospect.id),
+            format!("{id_prefix}-{}-{date}", entry.prospect.id),
             String::new(),
             String::new(),
             scout_name.clone(),
@@ -474,8 +504,8 @@ mod messages {
             ..MessageContext::default()
         })
         .with_i18n(
-            "be.msg.youthWatchReport.subject",
-            "be.msg.youthWatchReport.body",
+            subject_key,
+            body_key,
             params(&[
                 ("player", &entry.prospect.full_name),
                 ("scout", &scout_name),
@@ -780,6 +810,41 @@ mod tests {
         for read in &all {
             assert!(read.low <= 60 && 60 <= read.high, "{read:?}");
         }
+    }
+
+    /// Given a prospect a good scout follows until he knows everything,
+    /// When the Monday that completes him passes,
+    /// Then the scout sends one "assessment complete" report, stops following
+    /// him to free his slot, and sends nothing more; he stays on the list.
+    #[test]
+    fn a_fully_known_prospect_frees_his_scout() {
+        let mut game = world();
+        watched(&mut game, "p1", 60, 80);
+        assign_scout(&mut game, "p1", Some("good")).unwrap();
+
+        for _ in 0..8 {
+            next_monday(&mut game);
+        }
+
+        let entry = entry(&game, "p1");
+        assert_eq!(entry.scout_id, None);
+        assert_eq!(
+            entry.estimate.attributes.len(),
+            reveal_order(&entry.prospect).len()
+        );
+        let complete: Vec<_> = game
+            .messages
+            .iter()
+            .filter(|message| message.id.starts_with("youth-watch-complete-p1"))
+            .collect();
+        assert_eq!(complete.len(), 1);
+        assert_eq!(complete[0].context.youth_prospect_reports.len(), 1);
+        let reports = game
+            .messages
+            .iter()
+            .filter(|message| message.id.starts_with("youth-watch-report-p1-"))
+            .count();
+        assert!(reports < 8, "{reports} weekly reports");
     }
 
     /// Given a prospect followed by a poor scout,

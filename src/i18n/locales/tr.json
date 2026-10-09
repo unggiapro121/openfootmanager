@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "İzleme listesinin gözlemciye ihtiyacı var",
         "body": "{{scout}} kulüpten ayrıldı. Takip ettiği {{count}} genç gözlemcisiz olarak listede duruyor."
+      },
+      "youthWatchComplete": {
+        "subject": "Değerlendirme tamamlandı — {{player}}",
+        "body": "Hocam, {{weeks}} haftanın sonunda {{player}} hakkında her şeyi biliyorum. İşte son raporum. Başka birini takip edebilmek için onu bıraktım; sen karar verene kadar listede kalıyor."
       }
     },
     "news": {

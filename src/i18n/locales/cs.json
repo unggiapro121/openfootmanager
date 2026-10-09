@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "Sledované talenty potřebují skauta",
         "body": "{{scout}} odešel z klubu. {{count}} talentů, které sledoval, zůstává na seznamu bez skauta."
+      },
+      "youthWatchComplete": {
+        "subject": "Hodnocení dokončeno — {{player}}",
+        "body": "Šéfe, po {{weeks}} týdnech o {{player}} vím všechno. Tady je moje závěrečné hlášení. Přestávám ho sledovat, abych mohl převzít jiný talent; na seznamu zůstává, dokud nerozhodnete."
       }
     },
     "news": {

@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "Watchlist needs a scout",
         "body": "{{scout}} has left the club. The {{count}} prospects he was following are still on the watchlist, without a scout."
+      },
+      "youthWatchComplete": {
+        "subject": "Assessment complete — {{player}}",
+        "body": "Boss, after {{weeks}} weeks I know everything there is to know about {{player}}. Here is my final report. I have stopped following him so I can take on someone else; he stays on the watchlist until you decide."
       }
     },
     "news": {

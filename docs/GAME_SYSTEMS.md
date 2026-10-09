@@ -776,6 +776,9 @@ that says so (`bodyEmpty`), with the fee spent.
   position weighs them in its overall (`player_rating::attribute_weights`; only keepers have handling
   and reflexes), each at the overall's current band. A weekly report carries his player card as read
   that week, and the watchlist keeps the latest (`WatchedProspect::report`).
+- Once overall, potential and every attribute are exact, the scout files one "assessment complete"
+  report (`be.msg.youthWatchComplete`) instead of the weekly one and stops following him, freeing his
+  slot; the prospect stays on the list without a scout.
 - A prospect's card shows his height, weight and feet exactly, and every attribute in the profile's
   groups: the figure for those read, "??" for the rest. Opening him on the watchlist shows the same as
   a profile-like detail form.

@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "La liste de suivi a besoin d'un recruteur",
         "body": "{{scout}} a quitté le club. Les {{count}} jeunes qu'il suivait restent sur la liste, sans recruteur."
+      },
+      "youthWatchComplete": {
+        "subject": "Évaluation terminée — {{player}}",
+        "body": "Boss, après {{weeks}} semaines je sais tout de {{player}}. Voici mon rapport final. J'arrête de le suivre pour en prendre un autre ; il reste sur la liste jusqu'à votre décision."
       }
     },
     "news": {

@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "关注名单需要球探",
         "body": "{{scout}} 已离开俱乐部。他跟踪的 {{count}} 名新秀仍在名单中，但暂无球探。"
+      },
+      "youthWatchComplete": {
+        "subject": "评估完成 — {{player}}",
+        "body": "老板，经过 {{weeks}} 周，我已完全掌握 {{player}} 的情况。这是我的最终报告。我已停止跟踪他，可以接手其他新秀；在您决定之前，他仍留在关注名单上。"
       }
     },
     "news": {

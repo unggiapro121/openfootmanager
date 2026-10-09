@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "El seguimiento necesita un ojeador",
         "body": "{{scout}} ha dejado el club. Las {{count}} promesas que seguía siguen en la lista, sin ojeador."
+      },
+      "youthWatchComplete": {
+        "subject": "Evaluación completa — {{player}}",
+        "body": "Jefe, tras {{weeks}} semanas ya lo sé todo de {{player}}. Este es mi informe final. Dejo de seguirlo para ocuparme de otro; sigue en la lista hasta que decidas."
       }
     },
     "news": {

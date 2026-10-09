@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "Danh sách theo dõi cần tuyển trạch viên",
         "body": "{{scout}} đã rời CLB. {{count}} ứng viên người này đang theo dõi vẫn nằm trong danh sách nhưng chưa có tuyển trạch viên."
+      },
+      "youthWatchComplete": {
+        "subject": "Đánh giá xong — {{player}}",
+        "body": "Sếp, sau {{weeks}} tuần tôi đã nắm rõ mọi thông số của {{player}}. Đây là báo cáo cuối cùng. Tôi ngừng theo dõi để nhận ứng viên khác; cậu ấy vẫn ở trong danh sách theo dõi cho tới khi Sếp quyết định."
       }
     },
     "news": {

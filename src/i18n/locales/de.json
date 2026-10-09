@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "Beobachtungsliste braucht einen Scout",
         "body": "{{scout}} hat den Verein verlassen. Die {{count}} Talente, die er beobachtet hat, stehen weiter auf der Liste, ohne Scout."
+      },
+      "youthWatchComplete": {
+        "subject": "Bewertung abgeschlossen — {{player}}",
+        "body": "Chef, nach {{weeks}} Wochen weiß ich alles über {{player}}. Hier ist mein Abschlussbericht. Ich beobachte ihn nicht mehr und kann ein anderes Talent übernehmen; er bleibt auf der Liste, bis du entscheidest."
       }
     },
     "news": {

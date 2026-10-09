@@ -3518,6 +3518,10 @@
       "youthWatchScoutLeft": {
         "subject": "Daftar pantauan butuh pemandu bakat",
         "body": "{{scout}} telah meninggalkan klub. {{count}} pemain muda yang ia pantau tetap di daftar, tanpa pemandu bakat."
+      },
+      "youthWatchComplete": {
+        "subject": "Penilaian selesai — {{player}}",
+        "body": "Bos, setelah {{weeks}} minggu saya sudah tahu semua tentang {{player}}. Ini laporan terakhir saya. Saya berhenti memantaunya agar bisa memantau pemain lain; ia tetap di daftar sampai Anda memutuskan."
       }
     },
     "news": {
