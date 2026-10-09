@@ -239,10 +239,22 @@ fn apply_opening_youth_assignments(players: &mut [Player], candidate_indices: Ve
     assigned
 }
 
-fn seed_opening_youth_academy(players: &mut [Player], opening_year: i32) {
+/// Move the club's youngest generated prospects into its academy.
+///
+/// `authored_ids` are never candidates. A package author decides who is a
+/// prospect by writing `youth: true`; a player they left in the senior squad is
+/// a first-teamer, and demoting him would undo the authored squad that
+/// `trim_backfill_players` exists to keep (#349). Generated backfill still
+/// seeds the academy, so a club authored entirely of seniors keeps one.
+fn seed_opening_youth_academy(
+    players: &mut [Player],
+    opening_year: i32,
+    authored_ids: &HashSet<String>,
+) {
     let mut eligible_indices: Vec<usize> = players
         .iter()
         .enumerate()
+        .filter(|(_, player)| !authored_ids.contains(&player.id))
         .filter(|(_, player)| is_opening_youth_candidate(player, opening_year))
         .map(|(index, _)| index)
         .collect();
@@ -330,14 +342,19 @@ fn as_free_agent(mut player: Player) -> Player {
     player
 }
 
+/// `authored_contract_ids` are the authored players whose contract the author
+/// wrote, so the contract cap leaves them alone; `authored_squad_ids` are every
+/// authored player, none of whom the opening academy may take. They differ: an
+/// author who writes a squad but no contracts still wrote who is a first-teamer.
 fn normalize_generated_team(
     team: &mut Team,
     players: &mut [Player],
     opening_year: i32,
-    authored_ids: &HashSet<String>,
+    authored_contract_ids: &HashSet<String>,
+    authored_squad_ids: &HashSet<String>,
 ) {
-    seed_opening_youth_academy(players, opening_year);
-    normalize_opening_contracts(players, opening_year, authored_ids);
+    seed_opening_youth_academy(players, opening_year, authored_squad_ids);
+    normalize_opening_contracts(players, opening_year, authored_contract_ids);
     // Last, and here rather than in `build_club`: the package path calls this
     // again after swapping generated players for authored ones, and a role
     // belongs to the squad that finished rather than the one that was built.
@@ -906,6 +923,7 @@ fn build_club(
         &mut team_players,
         opening_year as i32,
         &HashSet::new(),
+        &HashSet::new(),
     );
     (team, team_players, team_staff)
 }
@@ -1042,11 +1060,13 @@ fn build_package_club(
 
     let mut placed = vec![false; players.len()];
     let mut authored_ids = HashSet::new();
+    let mut authored_squad_ids = HashSet::new();
     for def in authored {
         let authored_player = generate_player_from_def(def, &team.id, opening_year, names_def, rng);
         if authored_player::authors_a_contract(def) {
             authored_ids.insert(authored_player.id.clone());
         }
+        authored_squad_ids.insert(authored_player.id.clone());
         let group = authored_player.position.to_group_position();
         let slot = players
             .iter()
@@ -1070,7 +1090,13 @@ fn build_package_club(
     // Authored wages may differ from the players they replaced, so re-normalise
     // the opening wage budget to the final squad. The authored players are named so
     // the contract cap, which runs again here, leaves their deals alone.
-    normalize_generated_team(&mut team, &mut players, opening_year as i32, &authored_ids);
+    normalize_generated_team(
+        &mut team,
+        &mut players,
+        opening_year as i32,
+        &authored_ids,
+        &authored_squad_ids,
+    );
     (team, players, staff)
 }
 
@@ -1955,6 +1981,52 @@ mod tests {
         assert_eq!(players.len(), 30);
     }
 
+    /// Given a package club whose authored squad is full and includes three
+    /// 19-year-old first-teamers the author did not mark `youth`,
+    /// when the club is built for a career,
+    /// then they stay in the senior squad: the opening academy is seeded from
+    /// generated backfill only, never by demoting a player the author wrote.
+    #[test]
+    fn authored_young_first_teamers_are_not_demoted_to_the_academy() {
+        let mut authored = authored_squad(3, 8, 8, 6);
+        let teenager_year = TEST_OPENING_YEAR as i32 - 19;
+        for index in [5, 12, 20] {
+            authored[index].date_of_birth = Some(format!("{teenager_year}-03-01"));
+        }
+
+        let players = build_test_package_club(&authored);
+
+        let demoted: Vec<&str> = players
+            .iter()
+            .filter(|player| player.match_name.starts_with("Authored"))
+            .filter(|player| player.squad_role == SquadRole::Youth)
+            .map(|player| player.match_name.as_str())
+            .collect();
+        assert!(
+            demoted.is_empty(),
+            "authored seniors moved to the academy: {demoted:?}"
+        );
+    }
+
+    /// Given a package club whose author marked one prospect `youth: true`,
+    /// when the club is built,
+    /// then that prospect is in the academy — the author's own choice is the one
+    /// way a package seeds an academy for its authored players.
+    #[test]
+    fn an_authored_youth_prospect_still_opens_in_the_academy() {
+        let mut authored = authored_squad(3, 8, 8, 6);
+        authored[12].date_of_birth = Some(format!("{}-03-01", TEST_OPENING_YEAR as i32 - 17));
+        authored[12].youth = true;
+
+        let players = build_test_package_club(&authored);
+
+        let prospect = players
+            .iter()
+            .find(|player| player.match_name == "Authored12")
+            .expect("authored prospect should be in the squad");
+        assert_eq!(prospect.squad_role, SquadRole::Youth);
+    }
+
     #[test]
     fn trim_keeps_the_opening_youth_academy_intact() {
         // Trimming prefers dropping senior backfill over youth-aged prospects, so
@@ -2082,6 +2154,7 @@ mod tests {
                 &mut team,
                 &mut players,
                 opening_year as i32,
+                &HashSet::new(),
                 &HashSet::new(),
             );
 

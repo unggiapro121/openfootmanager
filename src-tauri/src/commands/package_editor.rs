@@ -1,9 +1,10 @@
 use ofm_core::generator::{
-    export_directory_to_ofm, extract_ofm_to_dir, load_world_package, CompetitionDefinition,
-    ConfederationDef, CountryDef, NamesDefinition, PlayerDef, StaffDef, TeamDef, WorldMetaDef,
+    export_directory_to_ofm, extract_ofm_to_dir, load_world_package, parse_definition_str,
+    CompetitionDefinition, ConfederationDef, CountryDef, NamesDefinition, PlayerDef, StaffDef,
+    TeamDef, WorldMetaDef,
 };
 use serde_json::json;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use tauri::Manager as _;
 
 // ---------------------------------------------------------------------------
@@ -37,10 +38,71 @@ pub struct PackageProjectData {
 // ---------------------------------------------------------------------------
 
 fn write_json_atomic(path: &Path, value: &serde_json::Value) -> Result<(), String> {
+    // A package opened from an archive keeps whatever layout it was built with,
+    // and one with no confederations or name pools has no folder for them.
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
     let content = serde_json::to_string_pretty(value).map_err(|e| e.to_string())?;
     let tmp = path.with_extension("json.tmp");
     std::fs::write(&tmp, &content).map_err(|e| e.to_string())?;
     std::fs::rename(&tmp, path).map_err(|e| e.to_string())
+}
+
+/// The schemas `save_package_project` writes in full, one file each.
+const SAVED_SCHEMAS: &[&str] = &[
+    "world",
+    "confederation",
+    "country",
+    "team",
+    "player",
+    "staff",
+    "names",
+    "competition",
+];
+
+fn collect_definition_files(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.is_dir() {
+            collect_definition_files(&path, out);
+        } else if matches!(
+            path.extension()
+                .and_then(|ext| ext.to_str())
+                .map(str::to_ascii_lowercase)
+                .as_deref(),
+            Some("json") | Some("yaml") | Some("yml")
+        ) {
+            out.push(path);
+        }
+    }
+}
+
+/// Entity files other than the ones a save writes. Save sends every entity of
+/// every saved schema, so a package that splits them — one file per club, say,
+/// as a generated real-world package does — would otherwise keep its old files
+/// beside the new combined one, and every player would load twice.
+fn superseded_entity_files(pkg_dir: &Path, written: &[PathBuf]) -> Vec<PathBuf> {
+    let mut files = Vec::new();
+    collect_definition_files(pkg_dir, &mut files);
+    files
+        .into_iter()
+        .filter(|path| !written.contains(path))
+        .filter(|path| {
+            let Ok(text) = std::fs::read_to_string(path) else {
+                return false;
+            };
+            // Translation files and anything unparseable carry no schema and
+            // are left alone.
+            parse_definition_str::<serde_json::Value>(&text)
+                .ok()
+                .and_then(|value| value.get("schema")?.as_str().map(str::to_string))
+                .is_some_and(|schema| SAVED_SCHEMAS.contains(&schema.as_str()))
+        })
+        .collect()
 }
 
 // ---------------------------------------------------------------------------
@@ -194,52 +256,64 @@ pub fn save_package_project(
 ) -> Result<(), String> {
     let pkg_dir = Path::new(&dir);
 
-    write_json_atomic(
-        &pkg_dir.join("package.json"),
-        &ofm_core::generator::manifest_json(&meta)?,
-    )?;
+    let manifest_path = pkg_dir.join("package.json");
+    let confederations_path = pkg_dir.join("confederations").join("confederations.json");
+    let countries_path = pkg_dir.join("countries").join("countries.json");
+    let teams_path = pkg_dir.join("teams").join("teams.json");
+    let players_path = pkg_dir.join("players").join("players.json");
+    let staff_path = pkg_dir.join("staff").join("staff.json");
+    let names_path = pkg_dir.join("names").join("names.json");
+    let competitions_path = pkg_dir.join("competitions").join("competitions.json");
+    let superseded = superseded_entity_files(
+        pkg_dir,
+        &[
+            manifest_path.clone(),
+            confederations_path.clone(),
+            countries_path.clone(),
+            teams_path.clone(),
+            players_path.clone(),
+            staff_path.clone(),
+            names_path.clone(),
+            competitions_path.clone(),
+        ],
+    );
+
+    write_json_atomic(&manifest_path, &ofm_core::generator::manifest_json(&meta)?)?;
 
     let confs = serde_json::to_value(&confederations).map_err(|e| e.to_string())?;
     write_json_atomic(
-        &pkg_dir.join("confederations").join("confederations.json"),
+        &confederations_path,
         &json!({"schema": "confederation", "items": confs}),
     )?;
 
     let ctrs = serde_json::to_value(&countries).map_err(|e| e.to_string())?;
     write_json_atomic(
-        &pkg_dir.join("countries").join("countries.json"),
+        &countries_path,
         &json!({"schema": "country", "items": ctrs}),
     )?;
 
     let tms = serde_json::to_value(&teams).map_err(|e| e.to_string())?;
-    write_json_atomic(
-        &pkg_dir.join("teams").join("teams.json"),
-        &json!({"schema": "team", "items": tms}),
-    )?;
+    write_json_atomic(&teams_path, &json!({"schema": "team", "items": tms}))?;
 
     let pls = serde_json::to_value(&players).map_err(|e| e.to_string())?;
-    write_json_atomic(
-        &pkg_dir.join("players").join("players.json"),
-        &json!({"schema": "player", "items": pls}),
-    )?;
+    write_json_atomic(&players_path, &json!({"schema": "player", "items": pls}))?;
 
-    std::fs::create_dir_all(pkg_dir.join("staff")).map_err(|e| e.to_string())?;
     let stf = serde_json::to_value(&staff).map_err(|e| e.to_string())?;
-    write_json_atomic(
-        &pkg_dir.join("staff").join("staff.json"),
-        &json!({"schema": "staff", "items": stf}),
-    )?;
+    write_json_atomic(&staff_path, &json!({"schema": "staff", "items": stf}))?;
 
-    write_json_atomic(
-        &pkg_dir.join("names").join("names.json"),
-        &ofm_core::generator::names_json(&names)?,
-    )?;
+    write_json_atomic(&names_path, &ofm_core::generator::names_json(&names)?)?;
 
     let comps = serde_json::to_value(&competitions).map_err(|e| e.to_string())?;
     write_json_atomic(
-        &pkg_dir.join("competitions").join("competitions.json"),
+        &competitions_path,
         &json!({"schema": "competition", "items": comps}),
     )?;
+
+    // Only once every combined file is down: removed earlier, a failed write
+    // would lose entities rather than leave them duplicated.
+    for path in superseded {
+        std::fs::remove_file(&path).map_err(|e| e.to_string())?;
+    }
 
     Ok(())
 }
@@ -286,6 +360,58 @@ mod tests {
         let project = root.join("world-editor").join(project_name_for(&archive));
         let legacy = root.join("world-editor-temp").join("pkg");
         (archive, project, legacy)
+    }
+
+    #[test]
+    fn saving_a_split_package_creates_missing_folders_and_does_not_duplicate() {
+        // The shape a generated real-world package has: one player file per
+        // club, and no confederations, countries or names folders at all.
+        let dir = temp_project(
+            "save-split",
+            &[
+                (
+                    "package.json",
+                    r#"{"schema":"world","id":"split","name":"Split","version":"1.0.0","license":"MIT"}"#,
+                ),
+                (
+                    "teams/arsenal.json",
+                    r##"{"schema":"team","id":"arsenal","name":"Arsenal","shortName":"ARS","city":"London","country":"ENG","colors":{"primary":"#ff0000","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Emirates Stadium"}"##,
+                ),
+                (
+                    "players/arsenal.json",
+                    r#"{"schema":"player","items":[{"id":"saka","firstName":"Bukayo","lastName":"Saka","club":"arsenal","nationality":"ENG","position":"RightWinger","overall":85}]}"#,
+                ),
+                ("translations.vi.json", r#"{"hello":"xin chào"}"#),
+            ],
+        );
+        let path = dir.to_str().unwrap().to_string();
+        let loaded = read_package_project(path.clone()).unwrap();
+        assert_eq!((loaded.teams.len(), loaded.players.len()), (1, 1));
+
+        save_package_project(
+            path.clone(),
+            loaded.meta,
+            loaded.confederations,
+            loaded.countries,
+            loaded.teams,
+            loaded.players,
+            loaded.staff,
+            loaded.names.unwrap_or(NamesDefinition {
+                version: 1,
+                description: String::new(),
+                pools: HashMap::new(),
+            }),
+            loaded.competitions,
+        )
+        .unwrap();
+
+        let reloaded = read_package_project(path).unwrap();
+        assert_eq!((reloaded.teams.len(), reloaded.players.len()), (1, 1));
+        assert!(!dir.join("players/arsenal.json").exists());
+        assert!(!dir.join("teams/arsenal.json").exists());
+        assert!(dir.join("translations.vi.json").exists());
+
+        std::fs::remove_dir_all(&dir).ok();
     }
 
     #[test]
