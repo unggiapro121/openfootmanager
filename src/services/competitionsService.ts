@@ -1,11 +1,23 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { LeagueData, SeasonAwardsData, WorldCupChampionData } from "../store/types";
 
-export interface PlayerNameEntry {
-  match_name: string;
-  full_name: string;
-  team_id: string | null;
-  team_name: string | null;
+/** One leaderboard row: the player as he is now, and his tally. */
+export interface LeaderEntryData {
+  playerId: string;
+  name: string;
+  fullName: string;
+  teamId: string | null;
+  teamName: string | null;
+  value: number;
+}
+
+/** A competition's season leaders, best first, ten at most per board. */
+export interface CompetitionLeadersData {
+  competitionId: string;
+  goals: LeaderEntryData[];
+  assists: LeaderEntryData[];
+  yellowCards: LeaderEntryData[];
+  redCards: LeaderEntryData[];
 }
 
 export interface CompetitionsView {
@@ -13,7 +25,6 @@ export interface CompetitionsView {
   team_names: Record<string, string>;
   national_team_names: Record<string, string>;
   national_team_name_keys: Record<string, string>;
-  player_names: Record<string, PlayerNameEntry>;
   world_cup_champions: WorldCupChampionData[];
   manager_team_id: string | null;
   active_competition_ids: string[];
@@ -25,4 +36,10 @@ export async function fetchCompetitionsView(): Promise<CompetitionsView> {
 
 export async function fetchSeasonAwards(): Promise<SeasonAwardsData> {
   return invoke<SeasonAwardsData>("get_season_awards");
+}
+
+export async function fetchCompetitionLeaders(
+  competitionId: string,
+): Promise<CompetitionLeadersData> {
+  return invoke<CompetitionLeadersData>("get_competition_leaders", { competitionId });
 }

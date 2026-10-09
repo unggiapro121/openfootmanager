@@ -182,3 +182,26 @@ pub struct FixturePlayerRefDto {
     /// Natural position, e.g. `"CenterBack"`.
     pub position: String,
 }
+
+/// One row of a competition leaderboard.
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct LeaderEntryDto {
+    pub player_id: String,
+    pub name: String,
+    pub full_name: String,
+    pub team_id: Option<String>,
+    pub team_name: Option<String>,
+    pub value: u32,
+}
+
+/// A competition's goal, assist, yellow-card and red-card leaders, best first.
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct CompetitionLeadersDto {
+    pub competition_id: String,
+    pub goals: Vec<LeaderEntryDto>,
+    pub assists: Vec<LeaderEntryDto>,
+    pub yellow_cards: Vec<LeaderEntryDto>,
+    pub red_cards: Vec<LeaderEntryDto>,
+}

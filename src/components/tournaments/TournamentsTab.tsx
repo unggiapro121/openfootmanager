@@ -2,11 +2,11 @@ import { useState } from "react";
 import CompetitionsOverview from "./CompetitionsOverview";
 import TournamentsAwardsGrid from "./TournamentsAwardsGrid";
 import {
-  buildTopScorers,
   byTablePosition,
   isKnockoutCompetition,
   summarizeCompetitionProgress,
 } from "./TournamentsTab.helpers";
+import { useCompetitionLeaders } from "./useCompetitionLeaders";
 import { useSeasonAwards } from "./useSeasonAwards";
 import { useTournamentsData } from "./useTournamentsData";
 import type { GameStateData } from "../../store/gameStore";
@@ -42,7 +42,6 @@ export default function TournamentsTab({
     teamNames,
     nationalTeamNames,
     nationalTeamNameKeys,
-    playerNames,
     userTeamId,
     seasonContext,
     isPreseason,
@@ -59,6 +58,7 @@ export default function TournamentsTab({
     view === "awards",
     gameState.clock?.current_date,
   );
+  const leaders = useCompetitionLeaders(league?.id ?? null, gameState.clock?.current_date);
 
   if (!league) {
     return (
@@ -83,23 +83,6 @@ export default function TournamentsTab({
 
   const progress = summarizeCompetitionProgress(competitiveFixtures);
   const { sortedMatchdays, seasonComplete } = progress;
-
-  // Build fallback player name lookup from gameState.players while slice loads.
-  const fallbackPlayerNames = Object.fromEntries(
-    (gameState.players ?? []).map((p) => [
-      p.id,
-      {
-        match_name: p.match_name,
-        full_name: p.full_name,
-        team_id: p.team_id ?? null,
-        team_name: teamNames[p.team_id ?? ""] ?? null,
-      },
-    ]),
-  );
-  const resolvedPlayerNames =
-    Object.keys(playerNames).length > 0 ? playerNames : fallbackPlayerNames;
-
-  const topScorers = buildTopScorers(competitiveFixtures, resolvedPlayerNames);
 
   const isClubTeam = (id: string) => id in teamNames;
   const resolveTeamName = (id: string) => {
@@ -158,7 +141,7 @@ export default function TournamentsTab({
           knockoutRounds={knockoutRounds}
           isKnockout={isKnockout}
           isPreseason={isPreseason}
-          topScorers={topScorers}
+          leaders={leaders}
           teams={teams}
           onSelectPlayer={onSelectPlayer}
         />

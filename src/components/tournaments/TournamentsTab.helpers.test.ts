@@ -2,9 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { TFunction } from "i18next";
 
 import type { FixtureData, LeagueData } from "../../store/gameStore";
-import type { PlayerNameEntry } from "../../services/competitionsService";
 import {
-  buildTopScorers,
   byTablePosition,
   isKnockoutCompetition,
   localizedRoundName,
@@ -49,16 +47,6 @@ function played(
     },
     ...overrides,
   });
-}
-
-function name(overrides: Partial<PlayerNameEntry> = {}): PlayerNameEntry {
-  return {
-    match_name: "A. Player",
-    full_name: "Ada Player",
-    team_id: "team-1",
-    team_name: "Alpha FC",
-    ...overrides,
-  } as PlayerNameEntry;
 }
 
 function standing(points: number, goalsFor: number, goalsAgainst: number) {
@@ -182,49 +170,5 @@ describe("summarizeCompetitionProgress", () => {
 
     expect(progress.totalGoals).toBe(3);
     expect(progress.completedMatches).toBe(1);
-  });
-});
-
-describe("buildTopScorers", () => {
-  const names = {
-    p1: name({ match_name: "One" }),
-    p2: name({ match_name: "Two" }),
-    p3: name({ match_name: "Three" }),
-  };
-
-  it("tallies goals from both sides and sorts best first", () => {
-    const scorers = buildTopScorers(
-      [played(1, ["p1", "p2"], ["p1"]), played(2, ["p3"], ["p1"])],
-      names,
-    );
-
-    expect(scorers.map((entry) => [entry.playerId, entry.goals])).toEqual([
-      ["p1", 3],
-      ["p2", 1],
-      ["p3", 1],
-    ]);
-  });
-
-  it("drops scorers with no known name rather than showing a blank row", () => {
-    const scorers = buildTopScorers([played(1, ["p1", "unknown", "unknown"], [])], names);
-
-    expect(scorers).toHaveLength(1);
-    expect(scorers[0].playerId).toBe("p1");
-  });
-
-  it("ignores fixtures that have not been played", () => {
-    expect(buildTopScorers([fixture()], names)).toEqual([]);
-  });
-
-  it("caps the table at the requested limit", () => {
-    const many = Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`q${i}`, name()]));
-    const goals = played(
-      1,
-      Array.from({ length: 12 }, (_, i) => `q${i}`),
-      [],
-    );
-
-    expect(buildTopScorers([goals], many)).toHaveLength(10);
-    expect(buildTopScorers([goals], many, 3)).toHaveLength(3);
   });
 });

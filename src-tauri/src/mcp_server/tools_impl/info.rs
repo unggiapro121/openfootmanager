@@ -1179,6 +1179,73 @@ mod info_news_tests {
     }
 }
 
+// ─── info_competition_leaders ───────────────────────────────────────────────
+
+/// The goal, assist and card leaders of every competition the agent's club is
+/// in. It takes no id because no other tool hands an agent competition ids.
+pub fn info_competition_leaders(ctx: Arc<McpContext>) -> Result<String, String> {
+    let competitions: Vec<(String, String)> = ctx
+        .state_manager
+        .get_game(|game| {
+            let Some(team_id) = game.manager.team_id.as_ref() else {
+                return Vec::new();
+            };
+            game.competitions
+                .iter()
+                .filter(|competition| competition.participant_ids.contains(team_id))
+                .map(|competition| (competition.id.clone(), competition.name.clone()))
+                .collect()
+        })
+        .ok_or_else(|| "be.error.noActiveGameSession".to_string())?;
+    if competitions.is_empty() {
+        return Ok("Your club is not in any competition.\n".to_string());
+    }
+    let mut out = String::new();
+    for (competition_id, name) in competitions {
+        let leaders = crate::commands::stats::get_competition_leaders_internal(
+            &ctx.state_manager,
+            &competition_id,
+        )?;
+        out.push_str(&render_competition_leaders(&name, &leaders));
+    }
+    Ok(out)
+}
+
+/// One competition's boards, the top five of each, with players and clubs named.
+fn render_competition_leaders(
+    name: &str,
+    leaders: &crate::commands::stats::CompetitionLeadersDto,
+) -> String {
+    let mut out = format!("## {name}\n\n");
+    for (title, entries) in [
+        ("Goals", &leaders.goals),
+        ("Assists", &leaders.assists),
+        ("Yellow cards", &leaders.yellow_cards),
+        ("Red cards", &leaders.red_cards),
+    ] {
+        let list: Vec<String> = entries
+            .iter()
+            .take(5)
+            .map(|entry| {
+                format!(
+                    "{} ({}) {}",
+                    entry.full_name,
+                    entry.team_name.as_deref().unwrap_or("no club"),
+                    entry.value
+                )
+            })
+            .collect();
+        let line = if list.is_empty() {
+            "none yet".to_string()
+        } else {
+            list.join(", ")
+        };
+        out.push_str(&format!("**{title}:** {line}\n"));
+    }
+    out.push('\n');
+    out
+}
+
 // ─── club_request_board_support ─────────────────────────────────────────────
 
 #[cfg(test)]
@@ -1261,5 +1328,42 @@ mod info_fixture_detail_tests {
         assert!(text.contains("Kane 34'"), "{text}");
         assert!(text.contains("4-3-3"), "{text}");
         assert!(text.contains("58%"), "{text}");
+    }
+}
+
+#[cfg(test)]
+mod info_competition_leaders_tests {
+    use super::render_competition_leaders;
+    use crate::commands::stats::{CompetitionLeadersDto, LeaderEntryDto};
+
+    /// Given a competition with one scorer and no cards yet,
+    /// When its leaders are rendered for an agent,
+    /// Then the text names the competition, the scorer with his club and tally,
+    /// and says the empty boards have no one yet.
+    #[test]
+    fn renders_each_board_with_names_and_tallies() {
+        let leaders = CompetitionLeadersDto {
+            competition_id: "eng-1".to_string(),
+            goals: vec![LeaderEntryDto {
+                player_id: "p9".to_string(),
+                name: "Kane".to_string(),
+                full_name: "Harry Kane".to_string(),
+                team_id: Some("a".to_string()),
+                team_name: Some("Alpha FC".to_string()),
+                value: 7,
+            }],
+            assists: vec![],
+            yellow_cards: vec![],
+            red_cards: vec![],
+        };
+
+        let text = render_competition_leaders("Premier", &leaders);
+
+        assert!(text.starts_with("## Premier"), "{text}");
+        assert!(
+            text.contains("**Goals:** Harry Kane (Alpha FC) 7"),
+            "{text}"
+        );
+        assert!(text.contains("**Red cards:** none yet"), "{text}");
     }
 }

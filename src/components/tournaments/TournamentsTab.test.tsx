@@ -282,8 +282,29 @@ describe("TournamentsTab", () => {
     expect(onSelectTeam).toHaveBeenCalledWith("team-2");
   });
 
-  it("offers a top-scorer context menu action to view the player profile", () => {
+  // The boards come from the backend's per-match stats, not from the fixtures.
+  it("offers a top-scorer context menu action to view the player profile", async () => {
     const onSelectPlayer = vi.fn();
+    vi.mocked(invoke).mockImplementation(async (command) =>
+      command === "get_competition_leaders"
+        ? {
+            competitionId: "league-1",
+            goals: [
+              {
+                playerId: "player-1",
+                name: "Striker",
+                fullName: "Ada Striker",
+                teamId: "team-1",
+                teamName: "Alpha FC",
+                value: 2,
+              },
+            ],
+            assists: [],
+            yellowCards: [],
+            redCards: [],
+          }
+        : undefined,
+    );
 
     render(
       <TournamentsTab
@@ -293,10 +314,11 @@ describe("TournamentsTab", () => {
       />,
     );
 
-    fireEvent.contextMenu(screen.getByTestId("tournaments-top-scorer-player-1"));
+    fireEvent.contextMenu(await screen.findByTestId("tournaments-top-scorer-player-1"));
     fireEvent.click(screen.getByRole("menuitem", { name: "View profile" }));
 
     expect(onSelectPlayer).toHaveBeenCalledWith("player-1");
+    expect(invoke).toHaveBeenCalledWith("get_competition_leaders", { competitionId: "league-1" });
   });
 
   it("renders a knockout bracket with byes when a cup is selected", () => {

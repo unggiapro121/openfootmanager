@@ -1,6 +1,7 @@
 use std::sync::Arc;
 mod dto;
 mod fixture;
+mod leaders;
 mod player;
 mod shared;
 mod team;
@@ -11,15 +12,16 @@ mod tests;
 use ofm_core::state::StateManager;
 use tauri::State;
 
-pub use self::dto::FixtureDetailDto;
+pub use self::dto::{CompetitionLeadersDto, FixtureDetailDto};
 // Only the MCP renderer's tests build one by hand.
 #[cfg(all(test, feature = "mcp"))]
-pub(crate) use self::dto::FixturePlayerRefDto;
+pub(crate) use self::dto::{FixturePlayerRefDto, LeaderEntryDto};
 use self::dto::{
     PlayerMatchHistoryEntryDto, PlayerStatsOverviewDto, TeamMatchHistoryEntryDto,
     TeamStatsOverviewDto,
 };
 pub use self::fixture::get_fixture_detail_internal;
+pub use self::leaders::get_competition_leaders_internal;
 pub use self::player::{get_player_match_history_internal, get_player_stats_overview_internal};
 pub use self::team::{get_team_match_history_internal, get_team_stats_overview_internal};
 
@@ -65,4 +67,13 @@ pub fn get_fixture_detail(
     fixture_id: String,
 ) -> Result<FixtureDetailDto, String> {
     get_fixture_detail_internal(&state, &fixture_id)
+}
+
+/// A competition's goal, assist and card leaders for the Tournaments screen.
+#[tauri::command]
+pub fn get_competition_leaders(
+    state: State<'_, Arc<StateManager>>,
+    competition_id: String,
+) -> Result<CompetitionLeadersDto, String> {
+    get_competition_leaders_internal(&state, &competition_id)
 }

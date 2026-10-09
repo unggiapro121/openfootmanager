@@ -12,6 +12,7 @@ use ofm_core::game::Game;
 use ofm_core::state::StateManager;
 
 use super::fixture::get_fixture_detail_internal;
+use super::leaders::get_competition_leaders_internal;
 use super::player::{get_player_match_history_internal, get_player_stats_overview_internal};
 use super::team::{get_team_match_history_internal, get_team_stats_overview_internal};
 
@@ -809,4 +810,46 @@ fn get_fixture_detail_of_an_unknown_fixture_is_an_error() {
     let error = get_fixture_detail_internal(&state, "no-such-fixture").unwrap_err();
 
     assert_eq!(error, "be.error.liveMatch.fixtureNotFound");
+}
+
+/// Given a player who scored in a league fixture and again in a fixture of
+/// another competition,
+/// When the league's leaders are fetched,
+/// Then only the league goal counts, and the row names him and his club.
+#[test]
+fn get_competition_leaders_counts_only_that_competitions_fixtures() {
+    let state = game_with_a_played_fixture();
+
+    let leaders = get_competition_leaders_internal(&state, "league-1").unwrap();
+
+    assert_eq!(leaders.competition_id, "league-1");
+    assert_eq!(leaders.goals.len(), 1);
+    let scorer = &leaders.goals[0];
+    assert_eq!(scorer.player_id, "player-1");
+    assert_eq!(scorer.value, 1);
+    assert_eq!(scorer.team_name.as_deref(), Some("Alpha FC"));
+    assert!(leaders.red_cards.is_empty());
+}
+
+/// Given an id no competition has,
+/// When its leaders are fetched,
+/// Then every board is empty rather than an error.
+#[test]
+fn get_competition_leaders_of_an_unknown_competition_is_empty() {
+    let state = game_with_a_played_fixture();
+
+    let leaders = get_competition_leaders_internal(&state, "no-such-competition").unwrap();
+
+    assert!(leaders.goals.is_empty());
+    assert!(leaders.assists.is_empty());
+}
+
+/// Given no game is loaded,
+/// When leaders are fetched,
+/// Then the error is the translated "no active game" key.
+#[test]
+fn get_competition_leaders_without_a_game_is_an_error() {
+    let error = get_competition_leaders_internal(&StateManager::new(), "league-1").unwrap_err();
+
+    assert_eq!(error, "be.error.noActiveGameSession");
 }

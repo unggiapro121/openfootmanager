@@ -201,6 +201,7 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `apply_match_command` | command | `MatchSnapshot` | Send a tactical command |
 | `get_match_snapshot` | — | `MatchSnapshot` | Get current match state |
 | `finish_live_match` | — | `FinishLiveMatchResponse` (`game`, `round_summary`, `player_ratings`) | Apply results and clean up; `player_ratings` holds the engine's rating for each player who was rated |
+| `get_competition_leaders` | competition_id | `CompetitionLeadersDto` | A competition's top 10 for goals, assists, yellow and red cards this season, summed from the per-match stats rows of its own played fixtures; empty for an unknown competition |
 | `get_fixture_detail` | fixture_id | `FixtureDetailDto` | One fixture's full record — result with its compact report and kickoff lineups, plus the team and player stats captured when it was played; looked up across competitions, national teams and the legacy league |
 
 ### Team Management Commands

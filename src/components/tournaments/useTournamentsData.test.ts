@@ -48,7 +48,6 @@ function slice(over: Partial<CompetitionsView> = {}): CompetitionsView {
     team_names: {},
     national_team_names: {},
     national_team_name_keys: {},
-    player_names: {},
     world_cup_champions: [],
     manager_team_id: null,
     active_competition_ids: [],

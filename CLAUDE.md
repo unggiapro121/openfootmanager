@@ -255,7 +255,7 @@ Read-only reviewers. Point them at your diff before you open a PR.
 | [`docs/GAME_SYSTEMS.md`](docs/GAME_SYSTEMS.md) | Training, staff, traits, schedule generation, inbox, news, finances, transfers |
 | [`docs/MATCH_SIMULATION.md`](docs/MATCH_SIMULATION.md) | The engine: zone model, action resolution, attributes, live match phases, AI |
 | [`docs/SAVE_SYSTEM_DESIGN.md`](docs/SAVE_SYSTEM_DESIGN.md) | Save format and persistence design |
-| [`docs/MCP_SERVER.md`](docs/MCP_SERVER.md) | The MCP server: 93 tools, competition mode, transport, adding a tool |
+| [`docs/MCP_SERVER.md`](docs/MCP_SERVER.md) | The MCP server: 94 tools, competition mode, transport, adding a tool |
 | [`docs/modding/`](docs/modding/) | `.ofm` packages, the CLI, the Package Editor, the entity schema reference |
 | [`docs/DEFINITIONS.md`](docs/DEFINITIONS.md) | World-generator definition file formats |
 
