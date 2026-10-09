@@ -83,6 +83,7 @@ pub(super) fn build_foundation_competition_plan(
         target: CONTINENTAL_CHAMPIONS_CUP_ID.to_string(),
         rule,
         fallback_to: None,
+        ineligible: Vec::new(),
     };
 
     let make_format = |kind: CompetitionFormat| FormatDef {

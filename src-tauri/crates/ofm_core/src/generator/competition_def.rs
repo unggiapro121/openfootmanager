@@ -296,7 +296,7 @@ pub fn validate_definitions(
         validate_region_and_country(competition, ctx, &mut errors);
         validate_format(competition, &mut errors);
         validate_participants(competition, ctx, &known_ids, &mut errors);
-        validate_berths(competition, &known_ids, &mut errors);
+        validate_berths(competition, ctx, &known_ids, &mut errors);
 
         for error in &mut errors[raised_before..] {
             error.competition_index = Some(index);
@@ -411,6 +411,7 @@ fn detect_duplicate_tier_priorities(
 
 fn validate_berths(
     competition: &CompetitionDefinition,
+    ctx: &WorldValidationContext,
     known_ids: &HashSet<&str>,
     errors: &mut Vec<DefinitionError>,
 ) {
@@ -424,6 +425,15 @@ fn validate_berths(
         check_berth_target(competition, &berth.target, known_ids, errors);
         if let Some(fallback) = &berth.fallback_to {
             check_berth_target(competition, fallback, known_ids, errors);
+        }
+        // A misspelt reserve side would otherwise be silently eligible.
+        for team_id in &berth.ineligible {
+            if !ctx.team_ids.contains(team_id.as_str()) {
+                errors.push(
+                    DefinitionError::new("be.error.competitionDef.unknownTeam", &competition.id)
+                        .with("team", team_id.clone()),
+                );
+            }
         }
 
         match &berth.rule {
@@ -1277,6 +1287,7 @@ mod tests {
                 target: "ucl".to_string(),
                 rule: BerthRule::PositionRange { from: 1, to: 1 },
                 fallback_to: None,
+                ineligible: Vec::new(),
             }];
         }
         let mut cup = explicit("ucl", &["team-a", "team-b"]);
@@ -1325,6 +1336,7 @@ mod tests {
             target: "tr-1".to_string(),
             rule: BerthRule::PositionRange { from: 1, to: 1 },
             fallback_to: None,
+            ineligible: Vec::new(),
         }];
         let file = CompetitionDefinitionFile {
             format_version: 1,
@@ -1342,6 +1354,7 @@ mod tests {
             target: target.to_string(),
             rule,
             fallback_to: None,
+            ineligible: Vec::new(),
         }
     }
 
@@ -1373,6 +1386,7 @@ mod tests {
                 target: "tr-1".to_string(),
                 rule: BerthRule::PositionRange { from: 1, to: 2 },
                 fallback_to: Some("also-ghost".to_string()),
+                ineligible: Vec::new(),
             },
         ];
         let file = CompetitionDefinitionFile {
@@ -1415,6 +1429,37 @@ mod tests {
         let errors = validate_definitions(&file, &ctx());
         let reported = codes(&errors);
         assert!(reported.contains(&"be.error.competitionDef.berthPlayoffTooSmall"));
+    }
+
+    /// Given a berth that names a club ineligible which the world does not have,
+    /// When the definitions are validated,
+    /// Then it is reported as an unknown team — a misspelt reserve side would
+    ///      otherwise be silently eligible and promoted.
+    #[test]
+    fn an_unknown_ineligible_club_is_reported() {
+        let mut league = explicit("de-3", &["team-a", "team-b"]);
+        let mut second = explicit("de-2", &["team-a", "team-b"]);
+        second.priority = 0;
+        league.priority = 1;
+        let mut berth = berth("de-2", BerthRule::PositionRange { from: 1, to: 1 });
+        berth.ineligible = vec!["team-a".to_string(), "ghost-ii".to_string()];
+        league.berths = vec![berth];
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![second, league],
+        };
+        let errors = validate_definitions(&file, &ctx());
+        let unknown: Vec<_> = errors
+            .iter()
+            .filter(|e| e.code == "be.error.competitionDef.unknownTeam")
+            .collect();
+        assert_eq!(unknown.len(), 1, "{errors:?}");
+        assert!(
+            unknown[0]
+                .params
+                .iter()
+                .any(|(key, value)| key == "team" && value == "ghost-ii")
+        );
     }
 
     #[test]

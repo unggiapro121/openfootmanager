@@ -303,7 +303,10 @@ const SCHEMA_COMPETITION: &str = r##"// Competition entity — place inside comp
   "seasonStartDay": 1,    // optional: 1-31 (default 1)
   // Berths - qualification spots this competition awards into others:
   "berths": [
-    // { "rule": "TopN", "count": 4, "targetCompetition": "ucl", "fromTop": true }
+    // { "target": "ucl", "rule": { "kind": "positionRange", "from": 1, "to": 4 } }
+    // rule kinds: "positionRange" { from, to } | "cupWinner" | "playoffWinner" { from, to }
+    // optional "fallbackTo": "uel"            — where the place goes if the club already qualified higher
+    // optional "ineligible": ["club-ii"]      — clubs passed over (e.g. reserve sides); next finisher takes it
   ],
   "nameKey": null,        // optional: i18n key; translated via t(nameKey, { year }) instead of "name"
   "logo": null            // optional: relative path to a badge image asset

@@ -590,6 +590,7 @@ fn apply_pyramid_still_swaps_when_top_flight_is_only_a_non_position_berth_target
         target: "eng-1".to_string(),
         rule: BerthRule::PlayoffWinner { from: 3, to: 6 },
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
     let mut cup = League::new(
         "eng-cup".to_string(),
@@ -604,12 +605,14 @@ fn apply_pyramid_still_swaps_when_top_flight_is_only_a_non_position_berth_target
         target: "eng-1".to_string(),
         rule: BerthRule::CupWinner,
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
     let mut other = division("other", 0, "WAL", &[("w1", 20), ("w2", 10)]);
     other.berths = vec![Berth {
         target: "missing-continental".to_string(),
         rule: BerthRule::PositionRange { from: 1, to: 1 },
         fallback_to: Some("eng-1".to_string()),
+        ineligible: Vec::new(),
     }];
 
     let mut competitions = vec![eng_top, eng_second, cup, other];
@@ -672,6 +675,7 @@ fn cup_winner_into_top_flight_does_not_block_linear_pr_or_mutate_the_cup() {
         target: "eng-1".to_string(),
         rule: BerthRule::CupWinner,
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
     cup.fixtures = vec![Fixture {
         id: final_id.to_string(),

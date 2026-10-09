@@ -591,6 +591,22 @@ A league awarding several berths at once — a continental place and a relegatio
 | `"cupWinner"` | The winner of this cup |
 | `"playoffWinner"` | The winner of a playoff contested by league finishers in `[from, to]` (1-based, inclusive) |
 
+**Clubs that may not take a berth.** A berth can carry `"ineligible": ["club-id", ...]` — typically a club's reserve
+side, which German and Portuguese rules keep out of its parent's division and above. Those clubs are passed over
+*before* places are counted, so a `positionRange` of 1–3 whose champion is a reserve side promotes the clubs that
+finished second, third and fourth; the place is never left empty. Every id must name a club in the world, or
+validation reports `be.error.competitionDef.unknownTeam`. Omitted, nobody is excluded, as before the field existed.
+
+```json
+"berths": [
+  {
+    "target": "ger-2-bundesliga",
+    "rule": { "kind": "positionRange", "from": 1, "to": 3 },
+    "ineligible": ["borussia-dortmund-ii", "vfb-stuttgart-ii"]
+  }
+]
+```
+
 ### Full Example
 
 A domestic league using `topByReputation` selector:

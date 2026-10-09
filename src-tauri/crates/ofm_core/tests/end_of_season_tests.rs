@@ -383,12 +383,14 @@ fn default_berths_reproduce_the_inferred_continental_field() {
         target: "europe-cup".to_string(),
         rule: BerthRule::PositionRange { from: 1, to: 4 },
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
     let mut cup = domestic_cup("es-cup", "ES", "europe", "es-e", "es-f");
     cup.berths = vec![Berth {
         target: "europe-cup".to_string(),
         rule: BerthRule::CupWinner,
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
     game.competitions = vec![first, cup, continental_cup("europe-cup", "europe", 5)];
 
@@ -439,11 +441,13 @@ fn berths_keep_each_club_in_its_most_prestigious_continental_target() {
             target: "ucl".to_string(),
             rule: BerthRule::PositionRange { from: 1, to: 2 },
             fallback_to: None,
+            ineligible: Vec::new(),
         },
         Berth {
             target: "uel".to_string(),
             rule: BerthRule::PositionRange { from: 3, to: 4 },
             fallback_to: None,
+            ineligible: Vec::new(),
         },
     ];
     // The cup is won by the 4th-placed club, whose cup berth outranks its Europa
@@ -453,6 +457,7 @@ fn berths_keep_each_club_in_its_most_prestigious_continental_target() {
         target: "ucl".to_string(),
         rule: BerthRule::CupWinner,
         fallback_to: Some("uel".to_string()),
+        ineligible: Vec::new(),
     }];
 
     let mut ucl = continental_cup("ucl", "europe", 3);
@@ -512,11 +517,13 @@ fn a_continental_fallback_places_a_club_no_other_route_would() {
             target: "ucl".to_string(),
             rule: BerthRule::PositionRange { from: 1, to: 4 },
             fallback_to: None,
+            ineligible: Vec::new(),
         },
         Berth {
             target: "uel".to_string(),
             rule: BerthRule::PositionRange { from: 5, to: 7 },
             fallback_to: None,
+            ineligible: Vec::new(),
         },
     ];
     // 8th-placed es-h wins the cup, but the cup's primary target is not part
@@ -526,6 +533,7 @@ fn a_continental_fallback_places_a_club_no_other_route_would() {
         target: "super-cup".to_string(),
         rule: BerthRule::CupWinner,
         fallback_to: Some("uel".to_string()),
+        ineligible: Vec::new(),
     }];
 
     let mut ucl = continental_cup("ucl", "europe", 4);
@@ -1369,6 +1377,7 @@ fn a_shared_continental_berth_does_not_detach_first_divisions_from_their_ladder(
         target: "ccc".to_string(),
         rule: BerthRule::PositionRange { from: 1, to: 2 },
         fallback_to: None,
+        ineligible: Vec::new(),
     };
     let tier = |id: &str, country: &str, priority: u32, clubs: [&str; 2]| {
         let mut division = first_division(id, country, "europe", &clubs);
@@ -1471,6 +1480,7 @@ fn process_end_of_season_merges_regional_groups_into_a_berth_fed_central() {
         target: target.to_string(),
         rule: BerthRule::PositionRange { from, to },
         fallback_to: None,
+        ineligible: Vec::new(),
     };
 
     let central = finished_table(
@@ -1655,6 +1665,7 @@ fn process_end_of_season_never_leaves_a_club_in_two_leagues() {
             target: "central".to_string(),
             rule: BerthRule::PositionRange { from: 1, to: 2 },
             fallback_to: None,
+            ineligible: Vec::new(),
         }],
     );
     let low = table("low", 2, &[("l1", 20), ("l2", 10)], vec![]);
@@ -2349,6 +2360,7 @@ fn a_berth_promotion_is_not_reported_as_a_relegation() {
         target: "central".to_string(),
         rule: BerthRule::PositionRange { from: 1, to: 1 },
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
 
     game.league = Some(feeder.clone());

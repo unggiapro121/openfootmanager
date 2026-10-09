@@ -47,6 +47,7 @@ pub(super) fn position_berth(target: &str, from: u32, to: u32) -> Berth {
         target: target.to_string(),
         rule: BerthRule::PositionRange { from, to },
         fallback_to: None,
+        ineligible: Vec::new(),
     }
 }
 

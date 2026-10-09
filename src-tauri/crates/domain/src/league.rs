@@ -124,6 +124,11 @@ pub struct Berth {
     /// already in the Champions Cup → their cup berth drops to the Europa Cup).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fallback_to: Option<String>,
+    /// Clubs that can never take this berth: a club's reserve side, which may not
+    /// rise to its parent's division or above. Its place passes to the next
+    /// eligible finisher rather than going unfilled.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ineligible: Vec<String>,
 }
 
 /// How a [`Berth`] selects qualifying clubs from the source competition.

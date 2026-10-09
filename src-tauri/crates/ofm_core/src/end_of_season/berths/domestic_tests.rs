@@ -171,6 +171,7 @@ fn domestic_promotion_ignores_a_fallback_target() {
         target: "missing-continental".to_string(),
         rule: BerthRule::PositionRange { from: 1, to: 1 },
         fallback_to: Some("eng-1".to_string()),
+        ineligible: Vec::new(),
     }];
     let mut game = empty_game();
     game.competitions = vec![eng, wales];
@@ -646,6 +647,7 @@ fn apply_domestic_berth_ignores_unfinished_non_position_range_source() {
         target: "central".to_string(),
         rule: BerthRule::PlayoffWinner { from: 1, to: 2 },
         fallback_to: None,
+        ineligible: Vec::new(),
     }];
     playoff.fixtures.push(scheduled);
     game.competitions.push(playoff);
@@ -677,5 +679,78 @@ fn apply_domestic_berth_ignores_unfinished_non_position_range_source() {
         by_id("playoff").participant_ids,
         vec!["p1".to_string(), "p2".to_string()],
         "PlayoffWinner source is not a feeder"
+    );
+}
+
+/// A third division whose champion is a club's reserve side, feeding the second
+/// division through a two-place berth that names that reserve side ineligible.
+fn pyramid_with_a_reserve_side_on_top() -> Game {
+    let second = division(
+        "second",
+        0,
+        "DE",
+        &[("t1", 40), ("t2", 30), ("t3", 20), ("t4", 10)],
+    );
+    let mut third = division(
+        "third",
+        1,
+        "DE",
+        &[("reserve-ii", 40), ("l1", 30), ("l2", 20), ("l3", 10)],
+    );
+    let mut berth = position_berth("second", 1, 2);
+    berth.ineligible = vec!["reserve-ii".to_string()];
+    third.berths = vec![berth];
+    let mut game = empty_game();
+    game.competitions = vec![second, third];
+    game
+}
+
+/// Given a third division won by a reserve side that may not be promoted,
+/// When the season rolls over,
+/// Then its place goes to the next eligible finisher: the runner-up and the
+///      third-placed club go up, the reserve side stays, and the second division
+///      relegates exactly as many clubs as it received.
+#[test]
+fn an_ineligible_champion_stays_and_the_next_eligible_finisher_is_promoted() {
+    let mut game = pyramid_with_a_reserve_side_on_top();
+    let fields = resolve_domestic_berth_fields(&game);
+
+    apply_domestic_berth_promotion_relegation(&mut game, &fields);
+
+    let roster = |id: &str| -> HashSet<String> {
+        game.competitions
+            .iter()
+            .find(|c| c.id == id)
+            .expect(id)
+            .participant_ids
+            .iter()
+            .cloned()
+            .collect()
+    };
+    assert_eq!(
+        roster("second"),
+        HashSet::from(["t1", "t2", "l1", "l2"].map(String::from))
+    );
+    assert_eq!(
+        roster("third"),
+        HashSet::from(["reserve-ii", "l3", "t3", "t4"].map(String::from))
+    );
+}
+
+/// Given a berth with no ineligible clubs,
+/// When it is read from a package or a save written before the field existed,
+/// Then it deserializes with an empty list and serializes without the field, so
+///      older data is unchanged in both directions.
+#[test]
+fn a_berth_without_ineligible_clubs_round_trips_unchanged() {
+    let berth: Berth = serde_json::from_str(
+        r#"{"target":"second","rule":{"kind":"positionRange","from":1,"to":2}}"#,
+    )
+    .expect("berth without the field should load");
+    assert!(berth.ineligible.is_empty());
+    assert!(
+        !serde_json::to_string(&berth)
+            .expect("serialize")
+            .contains("ineligible")
     );
 }

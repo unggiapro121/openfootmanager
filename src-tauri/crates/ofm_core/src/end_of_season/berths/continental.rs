@@ -108,21 +108,30 @@ pub fn competition_has_incoming_berths(game: &Game, target_id: &str) -> bool {
 
 /// Teams a single berth rule selects from a competition's finished results.
 /// `PlayoffWinner` is scheduled and resolved separately (Phase C.3b).
-pub(super) fn evaluate_berth_rule(source: &League, rule: &BerthRule) -> Vec<String> {
-    match rule {
+/// The clubs `berth` awards from `source`'s results.
+///
+/// A club the berth names ineligible is passed over before places are counted,
+/// so a "top three" berth whose champion is a reserve side promotes the clubs
+/// finishing second, third and fourth — the place goes to the next eligible
+/// finisher, as the German and Portuguese leagues award it.
+pub(super) fn evaluate_berth_rule(source: &League, berth: &Berth) -> Vec<String> {
+    let eligible = |team_id: &String| !berth.ineligible.contains(team_id);
+    match &berth.rule {
         BerthRule::PositionRange { from, to } => {
             let start = (*from as usize).saturating_sub(1);
             let count = (*to).saturating_sub(*from).saturating_add(1) as usize;
             source
                 .sorted_standings()
                 .into_iter()
+                .map(|entry| entry.team_id)
+                .filter(eligible)
                 .skip(start)
                 .take(count)
-                .map(|entry| entry.team_id)
                 .collect()
         }
         BerthRule::CupWinner => crate::world_cup::world_cup_champion(source)
             .into_iter()
+            .filter(eligible)
             .collect(),
         BerthRule::PlayoffWinner { .. } => Vec::new(),
     }
@@ -134,7 +143,7 @@ fn berth_winners(source: &League, target_id: &str) -> Vec<String> {
         .berths
         .iter()
         .filter(|berth| berth.target == target_id)
-        .flat_map(|berth| evaluate_berth_rule(source, &berth.rule))
+        .flat_map(|berth| evaluate_berth_rule(source, berth))
         .collect()
 }
 
@@ -221,7 +230,7 @@ where
             if !(options.berth_eligible)(source, berth) {
                 continue;
             }
-            for winner in evaluate_berth_rule(source, &berth.rule) {
+            for winner in evaluate_berth_rule(source, berth) {
                 consider(&winner, &berth.target);
                 if options.follow_fallback
                     && let Some(fallback) = &berth.fallback_to
@@ -244,7 +253,7 @@ where
             if !(options.berth_eligible)(source, berth) {
                 continue;
             }
-            for winner in evaluate_berth_rule(source, &berth.rule) {
+            for winner in evaluate_berth_rule(source, berth) {
                 if !emitted.insert(winner.clone()) {
                     continue;
                 }

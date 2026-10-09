@@ -53,7 +53,7 @@ fn domestic_position_range_promoted(
         .filter(|berth| {
             berth.target == target_id && matches!(berth.rule, BerthRule::PositionRange { .. })
         })
-        .flat_map(|berth| evaluate_berth_rule(source, &berth.rule))
+        .flat_map(|berth| evaluate_berth_rule(source, berth))
         .collect();
     if promoted.is_empty() {
         None
