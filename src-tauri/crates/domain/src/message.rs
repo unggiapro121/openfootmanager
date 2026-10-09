@@ -139,13 +139,16 @@ pub struct ProspectEstimate {
     pub attributes: Vec<AttributeRead>,
 }
 
-/// One headline attribute as a scout reads it: `key` is the report's name for it
-/// ("Pace", "Shooting", "Passing", "Dribbling", "Defending", "Physical").
+/// One attribute as a scout reads it: `key` is its `PlayerAttributes` field
+/// name ("pace", "handling", …), the truth lies in `low..=high`, and `band` is
+/// how wide the read still is either side.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AttributeRead {
     pub key: String,
     pub low: u8,
     pub high: u8,
+    #[serde(default)]
+    pub band: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -196,6 +199,20 @@ pub struct ScoutReportData {
     pub potential_key: String,
     /// i18n key for report confidence level
     pub confidence_key: String,
+    /// What anyone can see of a youngster: his build and his feet. Only a
+    /// youth prospect's card carries them.
+    #[serde(default)]
+    pub height_cm: Option<u16>,
+    #[serde(default)]
+    pub weight_kg: Option<u8>,
+    #[serde(default)]
+    pub footedness: Option<crate::player::Footedness>,
+    #[serde(default)]
+    pub weak_foot: Option<u8>,
+    /// Every attribute a following scout has read of a youth prospect; one
+    /// not listed is unknown.
+    #[serde(default)]
+    pub attribute_reads: Vec<AttributeRead>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -45,16 +45,43 @@ pub const MAX_WATCHED_PER_SCOUT: usize = 3;
 /// The bands a followed prospect's ranges step down through, a step a week.
 const BAND_STEPS: [u8; 5] = [12, 8, 5, 2, 0];
 
-/// The headline attributes a weekly report can reveal, as the player scout
-/// report names them.
-const HEADLINE_ATTRIBUTES: [&str; 6] = [
-    "Pace",
-    "Shooting",
-    "Passing",
-    "Dribbling",
-    "Defending",
-    "Physical",
-];
+/// How many more attributes a scout of `judging_ability` reads each week.
+fn reveals_per_week(judging_ability: u8) -> usize {
+    match judging_ability {
+        80.. => 4,
+        60..=79 => 3,
+        _ => 2,
+    }
+}
+
+/// The order a following scout reads `prospect`'s attributes in: the heaviest
+/// in his position's overall first, then the rest, ties in an order fixed for
+/// him. Only a keeper has handling and reflexes to read.
+pub(crate) fn reveal_order(prospect: &Player) -> Vec<&'static str> {
+    use crate::player_rating::{ATTRIBUTE_KEYS, attribute_weights};
+    let position = crate::player_rating::primary_position(prospect);
+    let keeper = position == domain::player::Position::Goalkeeper;
+    let weights = attribute_weights(&position);
+    let weight = |key: &str| {
+        weights
+            .iter()
+            .find(|(weighted, _)| *weighted == key)
+            .map_or(0, |(_, weight)| *weight)
+    };
+    let seed = crate::stable_hash::stable_hash(prospect.id.as_bytes(), 0);
+    let mut keys: Vec<&'static str> = ATTRIBUTE_KEYS
+        .iter()
+        .copied()
+        .filter(|key| keeper || !matches!(*key, "handling" | "reflexes"))
+        .collect();
+    keys.sort_by_key(|key| {
+        (
+            std::cmp::Reverse(weight(key)),
+            crate::stable_hash::stable_hash(key.as_bytes(), seed),
+        )
+    });
+    keys
+}
 
 const ERR_NOT_WATCHED: &str = "be.error.scouting.prospectNotWatched";
 const ERR_ALREADY_WATCHED: &str = "be.error.scouting.prospectAlreadyWatched";
@@ -128,8 +155,10 @@ pub fn assign_scout(
     let mut rng = game.rng_for(&format!("youth-watchlist/assign/{prospect_id}"), &today);
     let entry = &mut game.youth_watchlist[index];
     entry.scout_id = Some(scout_id.to_string());
+    let attribute_band = ovr_band;
     let ovr_band = ovr_band.min(entry.estimate.ovr_band);
     let potential_band = potential_band.min(entry.estimate.potential_band);
+    narrow_reads(entry, |band| band.min(attribute_band), &mut rng);
     narrow(entry, ovr_band, potential_band, &mut rng);
     Ok(())
 }
@@ -152,6 +181,52 @@ fn narrow(entry: &mut WatchedProspect, ovr_band: u8, potential_band: u8, rng: &m
         estimate.potential_band = potential_band;
     }
     entry.restate();
+}
+
+/// Read each attribute already read again, within the band `to` gives for its
+/// current one, keeping only what both reads agree on.
+fn narrow_reads(entry: &mut WatchedProspect, to: impl Fn(u8) -> u8, rng: &mut impl rand::Rng) {
+    for read in &mut entry.estimate.attributes {
+        let band = to(read.band);
+        if band < read.band {
+            let truth =
+                crate::player_rating::attribute_value(&entry.prospect.attributes, &read.key);
+            let (low, high) = crate::scouting::read_rating(truth, band, rng);
+            read.low = read.low.max(low);
+            read.high = read.high.min(high);
+            read.band = band;
+        }
+    }
+}
+
+/// Read `count` attributes not read yet, next in his reveal order, each within
+/// his overall's current band.
+fn reveal(entry: &mut WatchedProspect, count: usize, rng: &mut impl rand::Rng) {
+    let band = entry.estimate.ovr_band;
+    let next: Vec<&str> = reveal_order(&entry.prospect)
+        .into_iter()
+        .filter(|key| {
+            !entry
+                .estimate
+                .attributes
+                .iter()
+                .any(|read| read.key == *key)
+        })
+        .take(count)
+        .collect();
+    for key in next {
+        let truth = crate::player_rating::attribute_value(&entry.prospect.attributes, key);
+        let (low, high) = crate::scouting::read_rating(truth, band, rng);
+        entry
+            .estimate
+            .attributes
+            .push(domain::message::AttributeRead {
+                key: key.to_string(),
+                low,
+                high,
+                band,
+            });
+    }
 }
 
 /// The band after `band` in the weekly narrowing.
@@ -237,52 +312,18 @@ pub fn process_youth_watchlist(game: &mut Game) {
             let ovr_band = next_band(entry.estimate.ovr_band);
             let potential_band = next_band(entry.estimate.potential_band);
             narrow(&mut entry, ovr_band, potential_band, &mut rng);
+            narrow_reads(&mut entry, next_band, &mut rng);
+            reveal(
+                &mut entry,
+                reveals_per_week(scout.attributes.judging_ability),
+                &mut rng,
+            );
             entry.weeks_followed += 1;
-            if entry.weeks_followed >= 2 {
-                entry.estimate.attributes =
-                    read_attributes(&entry, scout.attributes.judging_ability, &mut rng);
-                entry.restate();
-            }
+            entry.restate();
             messages::weekly_report(game, &entry, &scout, &today_text);
         }
         game.youth_watchlist.push(entry);
     }
-}
-
-/// The headline attributes `judging_ability` reveals, each read within the
-/// prospect's current overall band. Which ones a scout sees is fixed per
-/// prospect, so the list only grows with a better scout.
-fn read_attributes(
-    entry: &WatchedProspect,
-    judging_ability: u8,
-    rng: &mut impl rand::Rng,
-) -> Vec<domain::message::AttributeRead> {
-    let attributes = &entry.prospect.attributes;
-    let values = [
-        attributes.pace,
-        attributes.shooting,
-        attributes.passing,
-        attributes.dribbling,
-        attributes.defending,
-        attributes.strength,
-    ];
-    let mut order: Vec<usize> = (0..HEADLINE_ATTRIBUTES.len()).collect();
-    let seed = crate::stable_hash::stable_hash(entry.prospect.id.as_bytes(), 0);
-    order.sort_by_key(|index| crate::stable_hash::stable_hash(&[*index as u8], seed));
-    order.truncate(crate::scouting::revealed_attribute_count(judging_ability));
-    order.sort_unstable();
-    order
-        .into_iter()
-        .map(|index| {
-            let (low, high) =
-                crate::scouting::read_rating(values[index], entry.estimate.ovr_band, rng);
-            domain::message::AttributeRead {
-                key: HEADLINE_ATTRIBUTES[index].to_string(),
-                low,
-                high,
-            }
-        })
-        .collect()
 }
 
 /// A scout the user's club no longer employs stops following his prospects;
@@ -683,37 +724,76 @@ mod tests {
         assert_eq!(entry(&game, "p1").estimate, before);
     }
 
-    /// Given a followed prospect,
-    /// When the first and second Mondays pass,
-    /// Then the scout reports each week, and from the second report adds the
-    /// headline attributes his judgement reveals: all six for a good scout.
+    /// Given a central midfielder and a keeper,
+    /// When their reveal order is drawn,
+    /// Then each starts with what matters most for his position, the keeper's
+    /// with handling and reflexes, and only a keeper's includes them.
     #[test]
-    fn a_scout_reports_weekly_and_reveals_attributes_from_the_second_week() {
+    fn attributes_come_out_in_the_order_the_position_weighs_them() {
+        let mut midfielder = prospect("m", 60, 80);
+        midfielder.position = Position::CentralMidfielder;
+        let mut keeper = prospect("k", 60, 80);
+        keeper.position = Position::Goalkeeper;
+
+        let order = reveal_order(&midfielder);
+        assert_eq!(order[0], "passing");
+        assert!(order[1..3].contains(&"vision") && order[1..3].contains(&"decisions"));
+        assert_eq!(order.len(), 17);
+        assert!(!order.contains(&"handling") && !order.contains(&"reflexes"));
+        let keeper_order = reveal_order(&keeper);
+        assert_eq!(keeper_order.len(), 19);
+        assert!(keeper_order[..2].contains(&"handling") && keeper_order[..2].contains(&"reflexes"));
+    }
+
+    fn reads(game: &Game, id: &str) -> Vec<domain::message::AttributeRead> {
+        entry(game, id).estimate.attributes.clone()
+    }
+
+    /// Given a prospect followed by a scout who judges ability at 90,
+    /// When the Mondays pass,
+    /// Then he reveals four attributes a week until all are known, each new
+    /// one at the overall band of the day, narrowing a step a week after, and
+    /// every range holds the truth.
+    #[test]
+    fn a_good_scout_reveals_four_attributes_a_week() {
         let mut game = world();
         watched(&mut game, "p1", 60, 80);
         assign_scout(&mut game, "p1", Some("good")).unwrap();
+        let total = reveal_order(&entry(&game, "p1").prospect).len();
 
         next_monday(&mut game);
-        let reports = |game: &Game| -> Vec<ProspectEstimate> {
-            game.messages
-                .iter()
-                .filter(|message| message.id.starts_with("youth-watch-report-p1-"))
-                .flat_map(|message| message.context.youth_prospect_estimates.clone())
-                .collect()
-        };
-        assert_eq!(reports(&game).len(), 1);
-        assert!(reports(&game)[0].attributes.is_empty());
+        let first = reads(&game, "p1");
+        assert_eq!(first.len(), 4);
+        let band = entry(&game, "p1").estimate.ovr_band;
+        assert!(first.iter().all(|read| read.band == band));
 
         next_monday(&mut game);
-        let second = reports(&game);
-        assert_eq!(second.len(), 2);
-        assert_eq!(second[1].attributes.len(), 6);
-        assert!(
-            second[1]
-                .attributes
-                .iter()
-                .all(|read| read.low <= 60 && 60 <= read.high)
-        );
+        let second = reads(&game, "p1");
+        assert_eq!(second.len(), 8);
+        assert!(second[..4].iter().all(|read| read.band == next_band(band)));
+
+        for _ in 0..4 {
+            next_monday(&mut game);
+        }
+        let all = reads(&game, "p1");
+        assert_eq!(all.len(), total);
+        for read in &all {
+            assert!(read.low <= 60 && 60 <= read.high, "{read:?}");
+        }
+    }
+
+    /// Given a prospect followed by a poor scout,
+    /// When a Monday passes,
+    /// Then only two attributes come out.
+    #[test]
+    fn a_poor_scout_reveals_two_attributes_a_week() {
+        let mut game = world();
+        watched(&mut game, "p1", 60, 80);
+        assign_scout(&mut game, "p1", Some("poor")).unwrap();
+
+        next_monday(&mut game);
+
+        assert_eq!(reads(&game, "p1").len(), 2);
     }
 
     /// Given a watched prospect and his scout,
@@ -730,7 +810,8 @@ mod tests {
             .clone()
             .expect("a card from the start");
         assert_eq!(first.confidence_key, "common.scoutConfidence.low");
-        assert_eq!(first.pace, None);
+        assert!(first.attribute_reads.is_empty());
+        assert_eq!(first.height_cm, Some(entry(&game, "p1").prospect.height_cm));
         assign_scout(&mut game, "p1", Some("good")).unwrap();
 
         next_monday(&mut game);
@@ -743,10 +824,10 @@ mod tests {
             .flat_map(|message| message.context.youth_prospect_reports.clone())
             .collect();
         assert_eq!(cards.len(), 2);
-        assert_eq!(cards[0].pace, None);
-        assert!(cards[1].pace.is_some());
+        assert_eq!(cards[0].attribute_reads.len(), 4);
+        assert_eq!(cards[1].attribute_reads.len(), 8);
         let latest = entry(&game, "p1").report.clone().unwrap();
-        assert_eq!(latest.pace, cards[1].pace);
+        assert_eq!(latest.attribute_reads.len(), 8);
         assert_eq!(latest.confidence_key, "common.scoutConfidence.exact");
         assert_eq!(latest.avg_rating, Some(60));
     }

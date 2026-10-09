@@ -1027,6 +1027,11 @@ fn build_scout_report(
         rating_key: rating_key.to_string(),
         potential_key: potential_key.to_string(),
         confidence_key: confidence_key.to_string(),
+        height_cm: None,
+        weight_kg: None,
+        footedness: None,
+        weak_foot: None,
+        attribute_reads: Vec::new(),
     };
 
     let msg_id = format!("scout_report_{}", assignment_id);
@@ -1227,18 +1232,23 @@ pub fn prospect_report(prospect: &Player, estimate: &ProspectEstimate) -> ScoutR
         nationality: prospect.nationality.clone(),
         dob: prospect.date_of_birth.clone(),
         team_name: None,
-        pace: attribute("Pace"),
-        shooting: attribute("Shooting"),
-        passing: attribute("Passing"),
-        dribbling: attribute("Dribbling"),
-        defending: attribute("Defending"),
-        physical: attribute("Physical"),
+        pace: attribute("pace"),
+        shooting: attribute("shooting"),
+        passing: attribute("passing"),
+        dribbling: attribute("dribbling"),
+        defending: attribute("defending"),
+        physical: attribute("strength"),
         condition: None,
         morale: None,
         avg_rating: Some(ovr),
         rating_key: rating_key_for(ovr).to_string(),
         potential_key: potential_key_for(potential).to_string(),
         confidence_key: prospect_confidence_key(estimate.ovr_band).to_string(),
+        height_cm: Some(prospect.height_cm),
+        weight_kg: Some(prospect.weight_kg),
+        footedness: Some(prospect.footedness),
+        weak_foot: Some(prospect.weak_foot),
+        attribute_reads: estimate.attributes.clone(),
     }
 }
 
@@ -1318,14 +1328,16 @@ mod prospect_card_tests {
         let mut estimate = read((60, 64), (70, 74), 2);
         estimate.attributes = vec![
             AttributeRead {
-                key: "Pace".to_string(),
+                key: "pace".to_string(),
                 low: 60,
                 high: 68,
+                band: 5,
             },
             AttributeRead {
-                key: "Physical".to_string(),
+                key: "strength".to_string(),
                 low: 79,
                 high: 79,
+                band: 0,
             },
         ];
 
@@ -1334,6 +1346,8 @@ mod prospect_card_tests {
         assert_eq!(card.pace, Some(64));
         assert_eq!(card.physical, Some(79));
         assert_eq!(card.shooting, None);
+        assert_eq!(card.attribute_reads.len(), 2);
+        assert_eq!(card.height_cm, Some(kid().height_cm));
         assert_eq!(card.potential_key, "common.scoutPotential.strong");
     }
 

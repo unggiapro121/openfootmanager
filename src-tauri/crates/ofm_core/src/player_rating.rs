@@ -308,108 +308,168 @@ fn footedness_penalty(player: &Player, slot_position: &Position) -> f64 {
     }
 }
 
-fn weighted_score(attrs: &PlayerAttributes, position: &Position) -> f64 {
-    match position {
-        Position::Goalkeeper => weighted_average(&[
-            (attrs.handling, 28),
-            (attrs.reflexes, 28),
-            (attrs.aerial, 14),
-            (attrs.positioning, 10),
-            (attrs.decisions, 10),
-            (attrs.composure, 5),
-            (attrs.strength, 5),
-        ]),
-        Position::RightBack | Position::LeftBack => weighted_average(&[
-            (attrs.pace, 18),
-            (attrs.stamina, 16),
-            (attrs.tackling, 17),
-            (attrs.defending, 16),
-            (attrs.positioning, 12),
-            (attrs.passing, 10),
-            (attrs.dribbling, 6),
-            (attrs.decisions, 5),
-        ]),
-        Position::CenterBack => weighted_average(&[
-            (attrs.defending, 24),
-            (attrs.tackling, 18),
-            (attrs.positioning, 18),
-            (attrs.strength, 14),
-            (attrs.aerial, 12),
-            (attrs.decisions, 8),
-            (attrs.composure, 6),
-        ]),
-        Position::RightWingBack | Position::LeftWingBack => weighted_average(&[
-            (attrs.pace, 18),
-            (attrs.stamina, 18),
-            (attrs.tackling, 14),
-            (attrs.defending, 12),
-            (attrs.passing, 13),
-            (attrs.dribbling, 11),
-            (attrs.vision, 7),
-            (attrs.decisions, 7),
-        ]),
-        Position::DefensiveMidfielder => weighted_average(&[
-            (attrs.tackling, 18),
-            (attrs.positioning, 18),
-            (attrs.decisions, 16),
-            (attrs.passing, 14),
-            (attrs.defending, 12),
-            (attrs.stamina, 10),
-            (attrs.vision, 7),
-            (attrs.strength, 5),
-        ]),
-        Position::CentralMidfielder => weighted_average(&[
-            (attrs.passing, 20),
-            (attrs.vision, 16),
-            (attrs.decisions, 16),
-            (attrs.stamina, 12),
-            (attrs.dribbling, 10),
-            (attrs.positioning, 9),
-            (attrs.teamwork, 9),
-            (attrs.tackling, 8),
-        ]),
-        Position::AttackingMidfielder => weighted_average(&[
-            (attrs.vision, 20),
-            (attrs.passing, 18),
-            (attrs.dribbling, 16),
-            (attrs.decisions, 14),
-            (attrs.shooting, 10),
-            (attrs.positioning, 8),
-            (attrs.composure, 8),
-            (attrs.pace, 6),
-        ]),
-        Position::RightMidfielder | Position::LeftMidfielder => weighted_average(&[
-            (attrs.pace, 17),
-            (attrs.stamina, 16),
-            (attrs.passing, 15),
-            (attrs.dribbling, 14),
-            (attrs.vision, 10),
-            (attrs.decisions, 10),
-            (attrs.positioning, 10),
-            (attrs.tackling, 8),
-        ]),
-        Position::RightWinger | Position::LeftWinger => weighted_average(&[
-            (attrs.pace, 22),
-            (attrs.dribbling, 22),
-            (attrs.passing, 14),
-            (attrs.shooting, 12),
-            (attrs.vision, 10),
-            (attrs.decisions, 8),
-            (attrs.positioning, 6),
-            (attrs.stamina, 6),
-        ]),
-        Position::Striker => weighted_average(&[
-            (attrs.shooting, 26),
-            (attrs.positioning, 18),
-            (attrs.decisions, 14),
-            (attrs.pace, 12),
-            (attrs.dribbling, 10),
-            (attrs.strength, 8),
-            (attrs.composure, 8),
-            (attrs.aerial, 4),
-        ]),
+/// Each attribute's weight in `position`'s overall, by its `PlayerAttributes`
+/// field name. The one table behind every position-weighted rating, and the
+/// order a following scout reads a youngster's attributes in.
+pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] {
+    match canonical_position(position) {
+        Position::Goalkeeper => &[
+            ("handling", 28),
+            ("reflexes", 28),
+            ("aerial", 14),
+            ("positioning", 10),
+            ("decisions", 10),
+            ("composure", 5),
+            ("strength", 5),
+        ],
+        Position::RightBack | Position::LeftBack => &[
+            ("pace", 18),
+            ("stamina", 16),
+            ("tackling", 17),
+            ("defending", 16),
+            ("positioning", 12),
+            ("passing", 10),
+            ("dribbling", 6),
+            ("decisions", 5),
+        ],
+        Position::CenterBack => &[
+            ("defending", 24),
+            ("tackling", 18),
+            ("positioning", 18),
+            ("strength", 14),
+            ("aerial", 12),
+            ("decisions", 8),
+            ("composure", 6),
+        ],
+        Position::RightWingBack | Position::LeftWingBack => &[
+            ("pace", 18),
+            ("stamina", 18),
+            ("tackling", 14),
+            ("defending", 12),
+            ("passing", 13),
+            ("dribbling", 11),
+            ("vision", 7),
+            ("decisions", 7),
+        ],
+        Position::DefensiveMidfielder => &[
+            ("tackling", 18),
+            ("positioning", 18),
+            ("decisions", 16),
+            ("passing", 14),
+            ("defending", 12),
+            ("stamina", 10),
+            ("vision", 7),
+            ("strength", 5),
+        ],
+        Position::CentralMidfielder => &[
+            ("passing", 20),
+            ("vision", 16),
+            ("decisions", 16),
+            ("stamina", 12),
+            ("dribbling", 10),
+            ("positioning", 9),
+            ("teamwork", 9),
+            ("tackling", 8),
+        ],
+        Position::AttackingMidfielder => &[
+            ("vision", 20),
+            ("passing", 18),
+            ("dribbling", 16),
+            ("decisions", 14),
+            ("shooting", 10),
+            ("positioning", 8),
+            ("composure", 8),
+            ("pace", 6),
+        ],
+        Position::RightMidfielder | Position::LeftMidfielder => &[
+            ("pace", 17),
+            ("stamina", 16),
+            ("passing", 15),
+            ("dribbling", 14),
+            ("vision", 10),
+            ("decisions", 10),
+            ("positioning", 10),
+            ("tackling", 8),
+        ],
+        Position::RightWinger | Position::LeftWinger => &[
+            ("pace", 22),
+            ("dribbling", 22),
+            ("passing", 14),
+            ("shooting", 12),
+            ("vision", 10),
+            ("decisions", 8),
+            ("positioning", 6),
+            ("stamina", 6),
+        ],
+        Position::Striker => &[
+            ("shooting", 26),
+            ("positioning", 18),
+            ("decisions", 14),
+            ("pace", 12),
+            ("dribbling", 10),
+            ("strength", 8),
+            ("composure", 8),
+            ("aerial", 4),
+        ],
         Position::Defender | Position::Midfielder | Position::Forward => unreachable!(),
     }
+}
+
+/// The value of the attribute called `key` (a `PlayerAttributes` field name).
+pub fn attribute_value(attrs: &PlayerAttributes, key: &str) -> u8 {
+    match key {
+        "pace" => attrs.pace,
+        "stamina" => attrs.stamina,
+        "strength" => attrs.strength,
+        "agility" => attrs.agility,
+        "passing" => attrs.passing,
+        "shooting" => attrs.shooting,
+        "tackling" => attrs.tackling,
+        "dribbling" => attrs.dribbling,
+        "defending" => attrs.defending,
+        "positioning" => attrs.positioning,
+        "vision" => attrs.vision,
+        "decisions" => attrs.decisions,
+        "composure" => attrs.composure,
+        "aggression" => attrs.aggression,
+        "teamwork" => attrs.teamwork,
+        "leadership" => attrs.leadership,
+        "handling" => attrs.handling,
+        "reflexes" => attrs.reflexes,
+        "aerial" => attrs.aerial,
+        _ => 0,
+    }
+}
+
+/// Every attribute a player has, by field name, in the profile's order.
+pub const ATTRIBUTE_KEYS: [&str; 19] = [
+    "pace",
+    "stamina",
+    "strength",
+    "agility",
+    "aerial",
+    "passing",
+    "shooting",
+    "tackling",
+    "dribbling",
+    "defending",
+    "positioning",
+    "vision",
+    "decisions",
+    "composure",
+    "aggression",
+    "teamwork",
+    "leadership",
+    "handling",
+    "reflexes",
+];
+
+fn weighted_score(attrs: &PlayerAttributes, position: &Position) -> f64 {
+    let values: Vec<(u8, i32)> = attribute_weights(position)
+        .iter()
+        .map(|(key, weight)| (attribute_value(attrs, key), *weight))
+        .collect();
+    weighted_average(&values)
 }
 
 fn critical_penalty(attrs: &PlayerAttributes, position: &Position) -> f64 {
