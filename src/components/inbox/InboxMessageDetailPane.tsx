@@ -6,8 +6,10 @@ import { useTranslation } from "react-i18next";
 
 import { calcAge, formatDateFull, formatVal, formatWeeklyAmount } from "../../lib/helpers";
 import { countryName } from "../../lib/countries";
+import { formatPlayerWageLine } from "../../lib/finance";
 import { positionBadgeVariant } from "../../lib/playerRating";
-import type { MessageData } from "../../store/gameStore";
+import type { MessageData, PlayerData } from "../../store/gameStore";
+import type { ProspectEstimate } from "../../store/types";
 import ScoutPlayerCard from "../ScoutPlayerCard";
 import SwitchClubConfirmModal from "../SwitchClubConfirmModal";
 import { Badge, Button, Card, CardBody, CountryFlag, ProgressBar } from "../ui";
@@ -234,9 +236,15 @@ export default function InboxMessageDetailPane({
                       ? chooseOptionActionType.ChooseOption.options
                       : [];
                     const signedToAcademy = prospect.team_id === currentTeamId;
-                    const potential = prospect.potential ?? 0;
+                    const ratings = describeProspectRatings(
+                      prospect,
+                      selectedMessage.context?.youth_prospect_estimates,
+                      signedToAcademy,
+                      t,
+                    );
+                    const potential = ratings.believedPotential;
                     const potentialLabel = getProspectPotentialLabel(potential, t);
-                    const growthRoom = Math.max(0, potential - (prospect.ovr ?? 0));
+                    const growthRoom = Math.max(0, potential - ratings.believedOvr);
 
                     return (
                       <Card key={prospect.id}>
@@ -274,10 +282,10 @@ export default function InboxMessageDetailPane({
 
                             <div className="flex flex-wrap gap-2">
                               <Badge variant="neutral" size="sm">
-                                {t("youthAcademy.ovr")} {prospect.ovr ?? 0}
+                                {`${t("youthAcademy.ovr")} ${ratings.ovrText}`}
                               </Badge>
                               <Badge variant="neutral" size="sm">
-                                {t("youthAcademy.potential")} {prospect.potential ?? 0}
+                                {`${t("youthAcademy.potential")} ${ratings.potentialText}`}
                               </Badge>
                             </div>
                           </div>
@@ -291,7 +299,7 @@ export default function InboxMessageDetailPane({
                                 <ProgressBar
                                   value={Math.min(
                                     100,
-                                    potential > 0 ? ((prospect.ovr ?? 0) / potential) * 100 : 0,
+                                    potential > 0 ? (ratings.believedOvr / potential) * 100 : 0,
                                   )}
                                   variant={
                                     growthRoom > 15 ? "accent" : growthRoom > 5 ? "primary" : "auto"
@@ -316,17 +324,24 @@ export default function InboxMessageDetailPane({
                               <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300">
                                 <Badge variant="neutral" size="sm">
                                   {t("finances.wagePerWeek")}:{" "}
-                                  {formatWeeklyAmount(formatVal(prospect.wage ?? 0), weeklySuffix)}
+                                  {formatPlayerWageLine(
+                                    prospect,
+                                    (amount) => formatWeeklyAmount(formatVal(amount), weeklySuffix),
+                                    t,
+                                  )}
                                 </Badge>
                                 {prospect.contract_end ? (
                                   <Badge variant="neutral" size="sm">
                                     {formatDateFull(prospect.contract_end, language)}
                                   </Badge>
                                 ) : null}
-                                <Badge variant="neutral" size="sm">
-                                  {t("finances.marketValue")}:{" "}
-                                  {formatVal(prospect.market_value ?? 0)}
-                                </Badge>
+                                {/* A price would give the true ratings away. */}
+                                {ratings.isEstimate ? null : (
+                                  <Badge variant="neutral" size="sm">
+                                    {t("finances.marketValue")}:{" "}
+                                    {formatVal(prospect.market_value ?? 0)}
+                                  </Badge>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -499,6 +514,47 @@ function translateYouthSearchObjective(t: TFunction, value: string): string {
   }
 
   return t("scouting.objectiveBalanced");
+}
+
+/**
+ * What a report card says about a prospect's ratings. Before he is signed, the
+ * scout's ranges, with the midpoint as what the scout believes; once signed, or
+ * on a report written before scouts gave ranges, the true ratings.
+ */
+function describeProspectRatings(
+  prospect: PlayerData,
+  estimates: ProspectEstimate[] | undefined,
+  signedToAcademy: boolean,
+  t: TFunction,
+): {
+  ovrText: string;
+  potentialText: string;
+  believedOvr: number;
+  believedPotential: number;
+  isEstimate: boolean;
+} {
+  const estimate = signedToAcademy
+    ? undefined
+    : estimates?.find((candidate) => candidate.prospect_id === prospect.id);
+  if (!estimate) {
+    const ovr = prospect.ovr ?? 0;
+    const potential = prospect.potential ?? 0;
+    return {
+      ovrText: String(ovr),
+      potentialText: String(potential),
+      believedOvr: ovr,
+      believedPotential: potential,
+      isEstimate: false,
+    };
+  }
+  const range = (low: number, high: number) => t("inbox.youthProspectRange", { low, high });
+  return {
+    ovrText: range(estimate.ovr_low, estimate.ovr_high),
+    potentialText: range(estimate.potential_low, estimate.potential_high),
+    believedOvr: Math.floor((estimate.ovr_low + estimate.ovr_high) / 2),
+    believedPotential: Math.floor((estimate.potential_low + estimate.potential_high) / 2),
+    isEstimate: true,
+  };
 }
 
 function getProspectPotentialLabel(

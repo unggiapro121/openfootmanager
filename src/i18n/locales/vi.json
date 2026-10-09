@@ -1244,7 +1244,8 @@
       "Media": "Truyền thông",
       "System": "Hệ thống",
       "JobOffer": "Lời mời làm việc"
-    }
+    },
+    "youthProspectRange": "{{low}}–{{high}}"
   },
   "manager": {
     "managerOf": "HLV của {{team}}",

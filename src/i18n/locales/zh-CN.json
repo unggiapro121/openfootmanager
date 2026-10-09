@@ -1244,7 +1244,8 @@
       "Media": "媒体",
       "System": "系统",
       "JobOffer": "工作邀请"
-    }
+    },
+    "youthProspectRange": "{{low}}–{{high}}"
   },
   "manager": {
     "managerOf": "{{team}} 主教练",

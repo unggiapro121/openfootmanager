@@ -43,6 +43,7 @@ const mockTranslationState = vi.hoisted(() => ({
       "youthAcademy.growth": "Growth",
       "youthAcademy.ovr": "OVR",
       "youthAcademy.potential": "Potential",
+      "inbox.youthProspectRange": "{{low}}–{{high}}",
       "youthAcademy.potPromising": "Promising",
     },
     "pt-BR": {
@@ -74,6 +75,11 @@ vi.mock("react-i18next", async (importOriginal) => {
         const resolved = mockTranslationState.translations[mockTranslationState.language]?.[key];
 
         if (resolved) {
+          if (value && typeof value === "object") {
+            return resolved.replace(/\{\{(\w+)\}\}/g, (match, name: string) =>
+              name in value ? String((value as Record<string, unknown>)[name]) : match,
+            );
+          }
           return resolved;
         }
 
@@ -1248,5 +1254,55 @@ describe("InboxTab", (): void => {
     expect(screen.getByRole("button", { name: "Sign to academy" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Shortlist" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Discard" })).toBeInTheDocument();
+  });
+
+  it("shows a youth prospect's ranges, not his true ratings", async (): Promise<void> => {
+    await renderInboxTab({
+      gameState: createGameState([
+        createMessage({
+          id: "youth-scout-3",
+          category: "ScoutReport",
+          read: true,
+          subject_key: "be.msg.youthRecruitmentReport.subject",
+          body_key: "be.msg.youthRecruitmentReport.bodyAny",
+          i18n_params: { scout: "Joao Scout", team: "FC Test", count: "1" },
+          context: {
+            team_id: "t1",
+            player_id: null,
+            fixture_id: null,
+            youth_search_region: "Domestic",
+            youth_search_objective: "HighPotential",
+            youth_prospects: [
+              createProspect({
+                id: "prospect-open",
+                full_name: "Leo Builder",
+                ovr: 61,
+                potential: 84,
+              }),
+            ],
+            youth_prospect_estimates: [
+              {
+                prospect_id: "prospect-open",
+                ovr_low: 59,
+                ovr_high: 69,
+                ovr_band: 5,
+                potential_low: 70,
+                potential_high: 86,
+                potential_band: 8,
+              },
+            ],
+            match_result: null,
+          },
+          actions: [] as MessageAction[],
+        }),
+      ]),
+      initialMessageId: "youth-scout-3",
+    });
+
+    expect(screen.getByText("OVR 59–69")).toBeInTheDocument();
+    expect(screen.getByText("Potential 70–86")).toBeInTheDocument();
+    expect(screen.queryByText("OVR 61")).not.toBeInTheDocument();
+    expect(screen.queryByText("Potential 84")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Market Value:/)).not.toBeInTheDocument();
   });
 });

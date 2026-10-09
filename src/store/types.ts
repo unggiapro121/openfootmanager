@@ -471,6 +471,17 @@ export interface PlayerSelectionOptions {
   openTermination?: boolean;
 }
 
+/** A scout's read of a youth prospect; the true value is always inside each range. */
+export interface ProspectEstimate {
+  prospect_id: string;
+  ovr_low: number;
+  ovr_high: number;
+  ovr_band: number;
+  potential_low: number;
+  potential_high: number;
+  potential_band: number;
+}
+
 export interface MessageContext {
   team_id: string | null;
   team_name?: string | null;
@@ -480,6 +491,8 @@ export interface MessageContext {
   youth_search_region?: string | null;
   youth_search_objective?: string | null;
   youth_prospects?: PlayerData[];
+  /** The scout's read of each prospect: the ranges a report shows. */
+  youth_prospect_estimates?: ProspectEstimate[];
   match_result: null | {
     home_team_id: string;
     home_team_name?: string;

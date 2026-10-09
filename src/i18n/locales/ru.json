@@ -1244,7 +1244,8 @@
       "Media": "Медиа",
       "System": "Система",
       "JobOffer": "Предложения о работе"
-    }
+    },
+    "youthProspectRange": "{{low}}–{{high}}"
   },
   "manager": {
     "managerOf": "Главный тренер {{team}}",

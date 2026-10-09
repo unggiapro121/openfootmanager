@@ -2,6 +2,7 @@
   "global": [
     "app.name",
     "tactics.playStyleWithMastery",
+    "inbox.youthProspectRange",
     "app.publisher",
     "date.day",
     "match.pen",

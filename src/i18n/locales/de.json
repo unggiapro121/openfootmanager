@@ -1244,7 +1244,8 @@
       "Media": "Medien",
       "System": "System",
       "JobOffer": "Stellenangebote"
-    }
+    },
+    "youthProspectRange": "{{low}}–{{high}}"
   },
   "manager": {
     "managerOf": "Trainer von {{team}}",

@@ -1244,7 +1244,8 @@
       "Media": "Média",
       "System": "Systém",
       "JobOffer": "Nabídky práce"
-    }
+    },
+    "youthProspectRange": "{{low}}–{{high}}"
   },
   "manager": {
     "managerOf": "Manažer týmu {{team}}",
