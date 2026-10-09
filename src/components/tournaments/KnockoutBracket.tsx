@@ -1,5 +1,7 @@
 import type { JSX } from "react";
-import type { FixtureData } from "../../store/gameStore";
+import { useTranslation } from "react-i18next";
+
+import { type FixtureData, useGameStore } from "../../store/gameStore";
 import { Badge } from "../ui";
 
 interface KnockoutRound {
@@ -52,6 +54,8 @@ function MatchSlot({
   userTeamId,
   tbdLabel,
 }: MatchSlotProps): JSX.Element {
+  const { t } = useTranslation();
+  const openMatchDetail = useGameStore((state) => state.openMatchDetail);
   if (!fixture) {
     return (
       <div
@@ -108,30 +112,51 @@ function MatchSlot({
         : neutralRow
     : neutralRow;
 
-  return (
-    <div
-      data-testid={`tournaments-bracket-${fixtureId}`}
-      className={`rounded-lg border overflow-hidden ${
-        userInvolved
-          ? "border-primary-400/50 dark:border-primary-500/40"
-          : "border-gray-200 dark:border-navy-600"
-      }`}
-    >
+  const border = userInvolved
+    ? "border-primary-400/50 dark:border-primary-500/40"
+    : "border-gray-200 dark:border-navy-600";
+  const rows = (
+    <>
       {/* Home team row */}
-      <div className={`${baseRow} ${homeRowStyle}`}>
+      <span className={`${baseRow} ${homeRowStyle}`}>
         <span className="flex-1 truncate max-w-[9rem]">{homeName}</span>
         {decidedByPenalties && <PenaltyScore score={result.home_penalties ?? 0} />}
         {result && <ScoreBadge score={result.home_goals} />}
-      </div>
+      </span>
       {/* Divider */}
-      <div className="h-px bg-gray-100 dark:bg-navy-700" />
+      <span className="block h-px bg-gray-100 dark:bg-navy-700" />
       {/* Away team row */}
-      <div className={`${baseRow} ${awayRowStyle}`}>
+      <span className={`${baseRow} ${awayRowStyle}`}>
         <span className="flex-1 truncate max-w-[9rem]">{awayName}</span>
         {decidedByPenalties && <PenaltyScore score={result.away_penalties ?? 0} />}
         {result && <ScoreBadge score={result.away_goals} />}
+      </span>
+    </>
+  );
+
+  // Only a played tie has details to show; an unplayed one stays plain.
+  if (fixture.status !== "Completed" || !result) {
+    return (
+      <div
+        data-testid={`tournaments-bracket-${fixtureId}`}
+        className={`rounded-lg border overflow-hidden ${border}`}
+      >
+        {rows}
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      data-testid={`tournaments-bracket-${fixtureId}`}
+      title={t("match.viewMatchDetails")}
+      onClick={() => openMatchDetail(fixture.id)}
+      className={`block w-full rounded-lg border overflow-hidden text-left transition-colors hover:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:hover:border-primary-500 dark:focus:ring-offset-navy-800 ${border}`}
+    >
+      {rows}
+      <span className="sr-only">{t("match.viewMatchDetails")}</span>
+    </button>
   );
 }
 

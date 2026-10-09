@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { TeamData } from "../../store/gameStore";
+import { type TeamData, useGameStore } from "../../store/gameStore";
 import type { HomeRecentResult } from "./HomeTab.helpers";
 import HomeRecentResultsCard from "./HomeRecentResultsCard";
 
@@ -94,5 +94,15 @@ describe("HomeRecentResultsCard", () => {
     render(<HomeRecentResultsCard recentResults={[]} teams={[]} />);
 
     expect(screen.getByText("No matches played yet.")).toBeInTheDocument();
+  });
+
+  // Given a recent result, when its score is pressed, then its match details open.
+  it("opens a recent result's match details from its score", () => {
+    useGameStore.setState({ matchDetailFixtureId: null });
+    render(<HomeRecentResultsCard recentResults={[createRecentResult()]} teams={[createTeam()]} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /match\.viewMatchDetails/ }));
+
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("fixture-1");
   });
 });

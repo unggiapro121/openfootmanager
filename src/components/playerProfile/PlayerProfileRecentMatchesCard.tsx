@@ -1,3 +1,4 @@
+import MatchScoreButton from "../match/MatchScoreButton";
 import { Card, CardBody, CardHeader } from "../ui";
 import { PlayerRatingTrendChart } from "./PlayerRatingTrendChart";
 
@@ -70,9 +71,9 @@ export default function PlayerProfileRecentMatchesCard({
                 <p className="text-[11px] uppercase tracking-wider text-gray-400 dark:text-gray-500">
                   {t("playerProfile.recentMatchesScore")}
                 </p>
-                <p className="font-heading font-bold text-base text-gray-700 dark:text-gray-200 tabular-nums">
-                  {match.team_goals}-{match.opponent_goals}
-                </p>
+                <MatchScoreButton fixtureId={match.fixture_id} className="text-base">
+                  {match.team_goals} - {match.opponent_goals}
+                </MatchScoreButton>
               </div>
 
               <div className="text-center">

@@ -2,7 +2,12 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 
-import type { FixtureData, GameStateData, TeamData } from "../../store/gameStore";
+import {
+  type FixtureData,
+  type GameStateData,
+  type TeamData,
+  useGameStore,
+} from "../../store/gameStore";
 import type { MatchdayGroup, ScheduleSlice } from "../../services/scheduleService";
 import { formatMatchDate } from "../../lib/dateFormatting";
 import ScheduleTab from "./ScheduleTab";
@@ -366,6 +371,44 @@ describe("ScheduleTab", () => {
       expect(screen.getByTestId("schedule-fixture-fix-upcoming")).toBeInTheDocument();
       expect(screen.getByTestId("schedule-fixture-fix-past")).toBeInTheDocument();
     });
+  });
+
+  // Given a played fixture in the calendar, when its score is pressed, then the
+  // match-details dialog is opened for that fixture.
+  it("opens the match details from a played fixture's score", async () => {
+    mockedInvoke.mockResolvedValue(
+      makeSlice({
+        upcoming_groups: [
+          makeGroup({
+            fixtures: [
+              {
+                ...makeGroup().fixtures[0],
+                id: "fix-done",
+                status: "Completed",
+                result: { home_goals: 3, away_goals: 1 },
+              },
+            ],
+          }),
+        ],
+      }),
+    );
+    render(<ScheduleTab gameState={makeGameState(true)} onSelectTeam={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: /match\.viewMatchDetails/ }));
+
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("fix-done");
+    useGameStore.getState().closeMatchDetail();
+  });
+
+  // Given a fixture in the calendar, then each team name is a button that opens
+  // that team, reachable from the keyboard.
+  it("opens a team from its name, which is a button", async () => {
+    const onSelectTeam = vi.fn();
+    render(<ScheduleTab gameState={makeGameState(true)} onSelectTeam={onSelectTeam} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Beta FC" }));
+
+    expect(onSelectTeam).toHaveBeenCalledWith("team-2");
   });
 
   it("calendar view offers context menu actions for fixture teams", async () => {

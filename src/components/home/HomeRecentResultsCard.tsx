@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { TeamData } from "../../store/gameStore";
+import MatchScoreButton from "../match/MatchScoreButton";
 import { Card, CardBody, CardHeader, TeamLogo } from "../ui";
 import type { HomeRecentResult } from "./HomeTab.helpers";
 
@@ -71,9 +72,9 @@ export default function HomeRecentResultsCard({
                     <span className="text-sm font-medium text-gray-800 dark:text-gray-200 flex-1 truncate">
                       {opponent?.name ?? t("common.unknown")}
                     </span>
-                    <span className="text-sm font-heading font-bold text-gray-700 dark:text-gray-300 tabular-nums">
+                    <MatchScoreButton fixtureId={result.fixture.id} className="text-sm">
                       {result.myGoals} - {result.opponentGoals}
-                    </span>
+                    </MatchScoreButton>
                   </div>
                 );
               })}

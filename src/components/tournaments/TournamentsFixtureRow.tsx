@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 import ContextMenu from "../ContextMenu";
+import MatchScoreButton from "../match/MatchScoreButton";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
 import { Badge } from "../ui";
 import type { TournamentsTeamLookup } from "./teamLookup";
@@ -67,9 +68,9 @@ export default function TournamentsFixtureRow({
         {teamName(fixture.home_team_id, "text-right")}
         <div className="w-24 text-center mx-3">
           {completed && fixture.result ? (
-            <span className="font-heading font-bold text-lg text-gray-800 dark:text-gray-100">
+            <MatchScoreButton fixtureId={fixture.id} className="text-lg">
               {fixture.result.home_goals} - {fixture.result.away_goals}
-            </span>
+            </MatchScoreButton>
           ) : (
             <Badge variant="neutral" size="sm">
               {t("common.vs")}

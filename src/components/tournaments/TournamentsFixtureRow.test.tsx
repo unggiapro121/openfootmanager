@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { useGameStore } from "../../store/gameStore";
 import TournamentsFixtureRow from "./TournamentsFixtureRow";
 import type { TournamentsTeamLookup } from "./teamLookup";
 import type { FixtureData } from "../../store/gameStore";
@@ -42,6 +43,10 @@ function renderRow(props: Partial<React.ComponentProps<typeof TournamentsFixture
 }
 
 describe("TournamentsFixtureRow", () => {
+  beforeEach(() => {
+    useGameStore.setState({ matchDetailFixtureId: null });
+  });
+
   it("shows both teams and no score before a fixture is played", () => {
     renderRow();
 
@@ -60,6 +65,21 @@ describe("TournamentsFixtureRow", () => {
 
     expect(screen.getByText("3 - 1")).toBeInTheDocument();
     expect(screen.queryByText("common.vs")).toBeNull();
+  });
+
+  // Given a played fixture, when its score is pressed, then its match details open.
+  it("opens the match details from a played fixture's score", () => {
+    renderRow({
+      fixture: fixture({
+        status: "Completed",
+        result: { home_goals: 3, away_goals: 1 },
+      } as Partial<FixtureData>),
+    });
+
+    // The score names the button; the action is read after it.
+    fireEvent.click(screen.getByRole("button", { name: /^3 - 1.*match\.viewMatchDetails$/ }));
+
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("fixture-1");
   });
 
   // A completed fixture with no result payload must not claim a scoreline.

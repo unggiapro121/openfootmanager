@@ -882,7 +882,7 @@ describe("PlayerProfile contract surfaces", () => {
       });
       expect(screen.getByText("Recent Matches")).toBeInTheDocument();
       expect(screen.getByText("Bravo FC")).toBeInTheDocument();
-      expect(screen.getByText("3-0")).toBeInTheDocument();
+      expect(screen.getByText("3 - 0")).toBeInTheDocument();
       expect(screen.getByText("8.4")).toBeInTheDocument();
     });
   });

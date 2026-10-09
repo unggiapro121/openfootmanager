@@ -1,8 +1,12 @@
-import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { FixtureData } from "../../store/gameStore";
+import { type FixtureData, useGameStore } from "../../store/gameStore";
 import KnockoutBracket from "./KnockoutBracket";
+
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
 
 function penaltyFixture(): FixtureData {
   return {
@@ -49,8 +53,8 @@ describe("KnockoutBracket penalty shootouts", () => {
     expect(within(slot).getByText("(2)")).toBeInTheDocument();
     // ...and it is actually marked as the winner — the level score must not
     // leave both rows neutral (the "wrong team advanced" regression).
-    const awayRow = within(slot).getByText("France").closest("div");
-    const homeRow = within(slot).getByText("Brazil").closest("div");
+    const awayRow = within(slot).getByText("France").parentElement;
+    const homeRow = within(slot).getByText("Brazil").parentElement;
     expect(awayRow?.className).toContain("bg-primary-50");
     expect(homeRow?.className).not.toContain("bg-primary-50");
   });
@@ -67,5 +71,27 @@ describe("KnockoutBracket penalty shootouts", () => {
 
     const slot = screen.getByTestId("tournaments-bracket-ko-1");
     expect(within(slot).queryByText(/\(\d+\)/)).not.toBeInTheDocument();
+  });
+});
+
+describe("KnockoutBracket match details", () => {
+  beforeEach(() => {
+    useGameStore.setState({ matchDetailFixtureId: null });
+  });
+
+  // Given a played tie, when its slot is pressed, then its match details open.
+  it("opens the match details of a played tie", () => {
+    renderBracket(penaltyFixture());
+
+    fireEvent.click(screen.getByRole("button", { name: /match.viewMatchDetails/ }));
+
+    expect(useGameStore.getState().matchDetailFixtureId).toBe("ko-1");
+  });
+
+  // Given a tie not yet played, then its slot is not a control.
+  it("leaves an unplayed tie inert", () => {
+    renderBracket({ ...penaltyFixture(), status: "Scheduled", result: null });
+
+    expect(screen.queryByRole("button")).toBeNull();
   });
 });

@@ -16,6 +16,7 @@ import MatchLive from "../components/match/MatchLive";
 import HalfTimeBreak from "../components/match/HalfTimeBreak";
 import PostMatchScreen from "../components/match/PostMatchScreen";
 import RoundDigestScreen from "../components/match/RoundDigestScreen";
+import MatchDetailDialogHost from "../components/match/MatchDetailDialogHost";
 import PressConference from "../components/match/PressConference";
 import PenaltyShootoutScreen from "../components/match/PenaltyShootoutScreen";
 
@@ -407,16 +408,19 @@ export default function MatchSimulation() {
           currentFixture.competition !== "PreseasonTournament"
         : roundSummary !== null;
       return (
-        <RoundDigestScreen
-          snapshot={snapshot}
-          gameState={gameState}
-          currentFixture={currentFixture}
-          userSide={userSide}
-          isLeagueFixture={isLeagueFixture}
-          roundSummary={roundSummary}
-          onPressConference={handlePressConference}
-          onFinish={handleFinishMatch}
-        />
+        <>
+          <RoundDigestScreen
+            snapshot={snapshot}
+            gameState={gameState}
+            currentFixture={currentFixture}
+            userSide={userSide}
+            isLeagueFixture={isLeagueFixture}
+            roundSummary={roundSummary}
+            onPressConference={handlePressConference}
+            onFinish={handleFinishMatch}
+          />
+          <MatchDetailDialogHost />
+        </>
       );
     }
 
