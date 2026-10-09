@@ -58,8 +58,9 @@ pub struct Player {
     #[serde(default)]
     pub squad_role: SquadRole,
 
-    // Traits / flairs derived from attributes
-    #[serde(default)]
+    // Traits / flairs derived from attributes. Sent out without `Wonderkid`,
+    // which would give the ceiling away; see `crate::persisted`.
+    #[serde(default, serialize_with = "crate::persisted::traits")]
     pub traits: Vec<PlayerTrait>,
 
     // Derived ratings (set by ofm_core, backend is source of truth)
@@ -67,7 +68,9 @@ pub struct Player {
     #[serde(default)]
     pub ovr: u8,
     /// Player's ceiling rating (1–99). Set at generation; higher than ovr for young players.
-    #[serde(default)]
+    /// Serialized as 0 except through `crate::persisted::Persisted`: the manager
+    /// knows it only through a scout's read.
+    #[serde(default, serialize_with = "crate::persisted::potential")]
     pub potential: u8,
 
     // Contract & value

@@ -1,4 +1,5 @@
 use domain::message::{InboxMessage, MessageCategory, MessagePriority};
+use domain::persisted::Persisted;
 use rusqlite::{Connection, params};
 
 const GAME_PERSISTENCE_LOAD_ERROR: &str = "be.error.gamePersistence.loadFailed";
@@ -8,7 +9,7 @@ const GAME_PERSISTENCE_WRITE_ERROR: &str = "be.error.gamePersistence.writeFailed
 pub fn upsert_message(conn: &Connection, msg: &InboxMessage) -> Result<(), String> {
     let actions_json = serde_json::to_string(&msg.actions)
         .map_err(|_| GAME_PERSISTENCE_WRITE_ERROR.to_string())?;
-    let context_json = serde_json::to_string(&msg.context)
+    let context_json = serde_json::to_string(&Persisted(&msg.context))
         .map_err(|_| GAME_PERSISTENCE_WRITE_ERROR.to_string())?;
 
     // Pack all i18n fields into a single JSON object
@@ -233,6 +234,39 @@ mod tests {
         )
         .with_category(MessageCategory::Welcome)
         .with_priority(MessagePriority::High)
+    }
+
+    /// Given a youth report carrying a prospect with a true ceiling of 82,
+    /// When it is stored and loaded,
+    /// Then the prospect keeps his ceiling: only the client is kept from it.
+    #[test]
+    fn a_stored_report_keeps_its_prospects_true_ceilings() {
+        let db = test_db();
+        let mut prospect = domain::player::Player::new(
+            "kid".to_string(),
+            "Kid".to_string(),
+            "Kid One".to_string(),
+            "2016-01-01".to_string(),
+            "GB".to_string(),
+            domain::player::Position::Forward,
+            serde_json::from_value(serde_json::json!({
+                "pace": 60, "stamina": 60, "strength": 60, "agility": 60, "passing": 60,
+                "shooting": 60, "tackling": 60, "dribbling": 60, "defending": 60,
+                "positioning": 60, "vision": 60, "decisions": 60, "composure": 60,
+                "aggression": 60, "teamwork": 60, "leadership": 60, "handling": 20,
+                "reflexes": 20, "aerial": 60
+            }))
+            .unwrap(),
+        );
+        prospect.potential = 82;
+        let mut msg = sample_message("youth-report");
+        msg.context.youth_prospects = Some(vec![prospect]);
+
+        upsert_message(db.conn(), &msg).unwrap();
+        let all = load_all_messages(db.conn()).unwrap();
+
+        let prospects = all[0].context.youth_prospects.as_ref().unwrap();
+        assert_eq!(prospects[0].potential, 82);
     }
 
     #[test]

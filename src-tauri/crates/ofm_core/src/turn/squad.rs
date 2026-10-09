@@ -755,7 +755,14 @@ fn to_engine_player(
         reflexes: p.attributes.reflexes,
         aerial: p.attributes.aerial,
         height_cm: p.height_cm,
-        traits: p.traits.iter().map(|t| format!("{:?}", t)).collect(),
+        // Live-match snapshots reach the client, and Wonderkid would give the
+        // ceiling away; the engine has no use for it.
+        traits: p
+            .traits
+            .iter()
+            .filter(|t| **t != domain::player::PlayerTrait::Wonderkid)
+            .map(|t| format!("{:?}", t))
+            .collect(),
         role,
     }
 }

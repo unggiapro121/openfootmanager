@@ -225,7 +225,8 @@ pub fn build_world_from_package(
 /// Serialise a `WorldData` to a pretty-printed JSON string.
 pub fn export_world_to_json(world: &WorldData) -> Result<String, String> {
     let normalized = normalize_world(world.clone());
-    serde_json::to_string_pretty(&normalized).map_err(|_| WORLD_SERIALIZE_FAILED_ERROR.to_string())
+    serde_json::to_string_pretty(&domain::persisted::Persisted(&normalized))
+        .map_err(|_| WORLD_SERIALIZE_FAILED_ERROR.to_string())
 }
 
 fn load_world_from_manifest_path(
@@ -292,7 +293,7 @@ pub fn load_world_from_path(path: &Path) -> Result<WorldData, String> {
 
 pub fn export_world_package(world: &WorldData, manifest_path: &Path) -> Result<String, String> {
     fn write_json(path: &Path, value: &impl serde::Serialize) -> Result<(), String> {
-        let json = serde_json::to_string_pretty(value)
+        let json = serde_json::to_string_pretty(&domain::persisted::Persisted(value))
             .map_err(|_| WORLD_SERIALIZE_FAILED_ERROR.to_string())?;
         std::fs::write(path, json).map_err(|_| WORLD_SERIALIZE_FAILED_ERROR.to_string())
     }
@@ -651,9 +652,13 @@ mod tests {
             player.birth_country = None;
         }
 
+        world.players[0].potential = 88;
+
         let json = export_world_to_json(&world).unwrap();
         let reparsed: WorldData = serde_json::from_str(&json).unwrap();
 
+        // A world file is storage: it keeps every true ceiling.
+        assert_eq!(reparsed.players[0].potential, 88);
         assert_eq!(reparsed.name, RANDOM_WORLD_NAME_KEY);
         assert!(
             reparsed
