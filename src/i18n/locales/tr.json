@@ -1963,7 +1963,9 @@
     "morale": "Moral",
     "estimatedAttributes": "Tahmini Özellikler",
     "undiscovered": "Keşfedilmedi",
-    "confidence": "Güven"
+    "confidence": "Güven",
+    "youthSearchQuote": "Ücret {{fee}} · {{days}} gün",
+    "scoutResting": "{{days}} gün daha dinleniyor"
   },
   "match": {
     "live": "Canlı",
@@ -2892,7 +2894,9 @@
         "playerAlreadyScouted": "Bu oyuncu zaten gözlemleniyor",
         "youthSearchAlreadyActive": "Eşleşen bir genç oyuncu araması zaten aktif",
         "youthAssignmentNotFound": "Genç oyuncu kazanım görevi bulunamadı",
-        "scoutAlreadyAssignedToSearch": "Gözlemci bu aramaya zaten atanmış"
+        "scoutAlreadyAssignedToSearch": "Gözlemci bu aramaya zaten atanmış",
+        "scoutResting": "Bu gözlemci son genç oyuncu aramasından sonra {{days}} gün daha dinleniyor.",
+        "insufficientFunds": "Kulüp {{fee}} arama ücretini karşılayamıyor."
       },
       "invalidPath": "Geçersiz yol.",
       "staffWageBudget": "Yönetim, haftalık maaş giderinin {{budget}} bütçesini aşmasına izin vermez.",

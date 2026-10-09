@@ -9,6 +9,21 @@ export interface StartYouthScoutingInput {
   targetPosition?: string | null;
 }
 
+/** Mirrors `ofm_core::scouting::YouthSearchQuote`. */
+export interface YouthSearchQuote {
+  fee: number;
+  days: number;
+  rest_days_left: number;
+}
+
+export async function quoteYouthSearch(
+  scoutId: string,
+  region: string,
+  objective: string,
+): Promise<YouthSearchQuote> {
+  return invoke<YouthSearchQuote>("quote_youth_search", { scoutId, region, objective });
+}
+
 export async function sendScout(scoutId: string, playerId: string): Promise<GameStateData> {
   return invoke<GameStateData>("send_scout", {
     scoutId,

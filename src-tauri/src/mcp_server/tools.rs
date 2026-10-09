@@ -1416,7 +1416,7 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
     // scout_youth_start
     custom_tool!(
         "scout_youth_start",
-        "Start youth scouting assignment",
+        "Start youth scouting assignment. Charges a fee up front (15,000 domestic, 50,000 international, x1.5 for HighPotential) and the scout must have rested 7 days since his last youth search",
         build_schema(
             &[
                 ("scout_id", "string", "Staff member ID"),

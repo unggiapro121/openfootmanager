@@ -145,6 +145,7 @@ pub fn release_staff(game: &mut Game, team_id: &str, staff_id: &str) -> Result<i
         staff.contract_end = None;
         staff.wage = preview.asking_wage;
     }
+    crate::scouting::call_off_assignments_of(game, staff_id);
     Ok(preview.severance_cost)
 }
 
@@ -448,5 +449,34 @@ mod tests {
         assert_eq!(preview.severance_cost, 44_000);
         assert_eq!(preview.projected_wage_bill, i64::from(asking));
         assert_eq!(preview.contract_end.as_deref(), Some("2026-10-12"));
+    }
+
+    /// Given a scout out on a player assignment and a youth search,
+    /// When the club releases him,
+    /// Then both are called off: a scout who has left reports to nobody.
+    #[test]
+    fn releasing_a_scout_calls_off_his_assignments() {
+        let mut game = game_with(vec![employed(coach("s1", 60), USER_TEAM, 2_000, None)]);
+        game.scouting_assignments
+            .push(crate::game::ScoutingAssignment {
+                id: "a1".to_string(),
+                scout_id: "s1".to_string(),
+                player_id: "p1".to_string(),
+                days_remaining: 3,
+            });
+        game.youth_scouting_assignments
+            .push(crate::game::YouthScoutingAssignment {
+                id: "y1".to_string(),
+                scout_id: "s1".to_string(),
+                region: Default::default(),
+                objective: Default::default(),
+                target_position: None,
+                days_remaining: 3,
+            });
+
+        release_staff(&mut game, USER_TEAM, "s1").expect("release");
+
+        assert!(game.scouting_assignments.is_empty());
+        assert!(game.youth_scouting_assignments.is_empty());
     }
 }

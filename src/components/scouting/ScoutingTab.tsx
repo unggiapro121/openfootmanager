@@ -21,6 +21,7 @@ import ScoutingOverviewCards from "./ScoutingOverviewCards";
 import ScoutingScoutDetailsCard from "./ScoutingScoutDetailsCard";
 import ScoutingPlayerSearchCard from "./ScoutingPlayerSearchCard";
 import ScoutingYouthRecruitmentCard from "./ScoutingYouthRecruitmentCard";
+import { useYouthSearchQuote } from "./useYouthSearchQuote";
 import FreeAgentContractModal from "../transfers/FreeAgentContractModal";
 import TransferBidModal from "../transfers/TransferBidModal";
 import { useFreeAgentContractFlow } from "../transfers/useFreeAgentContractFlow";
@@ -99,6 +100,12 @@ export default function ScoutingTab({
   const youthAssignments = gameState.youth_scouting_assignments || [];
   const allAssignments = [...assignments, ...youthAssignments];
   const availableScouts = calculateAvailableScouts(scouts, allAssignments);
+  const youthSearchQuote = useYouthSearchQuote(
+    selectedYouthScoutId,
+    youthRegion,
+    youthObjective,
+    `${gameState.clock.current_date}|${youthAssignments.length}`,
+  );
 
   useEffect(() => {
     if (
@@ -234,6 +241,7 @@ export default function ScoutingTab({
           objective={youthObjective}
           targetPosition={youthTargetPosition}
           errorMessage={youthSearchError}
+          quote={youthSearchQuote}
           onScoutChange={setSelectedYouthScoutId}
           onRegionChange={setYouthRegion}
           onObjectiveChange={setYouthObjective}

@@ -402,6 +402,161 @@ fn a_better_scout_reports_narrower_ranges() {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Youth search fee and the scout's rest
+// ---------------------------------------------------------------------------
+
+fn start_search(
+    game: &mut Game,
+    region: YouthScoutingRegion,
+    objective: YouthScoutingObjective,
+) -> Result<(), String> {
+    start_youth_scouting(game, "scout1", region, objective, None)
+}
+
+/// Given each region and objective,
+/// When a youth search starts,
+/// Then the club pays its fee at once: 15,000 at home, 50,000 abroad, half as
+/// much again for a high-potential search.
+#[test]
+fn a_youth_search_charges_its_fee_when_it_starts() {
+    use YouthScoutingObjective::*;
+    use YouthScoutingRegion::*;
+    for (region, objective, fee) in [
+        (Domestic, Balanced, 15_000),
+        (Domestic, HighPotential, 22_500),
+        (International, ReadySoon, 50_000),
+        (International, HighPotential, 75_000),
+    ] {
+        let mut game = make_game();
+        let cash = game.teams[0].finance;
+
+        start_search(&mut game, region, objective).expect("search starts");
+
+        assert_eq!(
+            game.teams[0].finance,
+            cash - fee,
+            "{region:?} {objective:?}"
+        );
+        assert!(game.cash_journal.iter().any(|post| {
+            post.kind == ofm_core::finances::CashKind::ScoutingExpenses && post.amount == -fee
+        }));
+    }
+}
+
+/// Given a club that cannot cover the fee,
+/// When it tries to start a youth search,
+/// Then it is refused, and neither the search nor any payment is made.
+#[test]
+fn a_club_that_cannot_pay_the_fee_cannot_search() {
+    let mut game = make_game();
+    game.teams[0].finance = 10_000;
+
+    let result = start_search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+    );
+
+    assert_eq!(
+        result,
+        Err("be.error.scouting.insufficientFunds?fee=15000".to_string())
+    );
+    assert!(game.youth_scouting_assignments.is_empty());
+    assert_eq!(game.teams[0].finance, 10_000);
+}
+
+/// Given a scout who has just finished a youth search,
+/// When he is sent on another,
+/// Then he is refused for seven days, told how many are left, and goes again
+/// once they have passed.
+#[test]
+fn a_scout_rests_seven_days_after_a_youth_search() {
+    let mut game = make_game();
+    start_search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+    )
+    .unwrap();
+    // The fixture's scout judges potential at 75, so a domestic balanced search
+    // takes 5 days; process the day it finishes and stop there.
+    for _ in 0..5 {
+        game.clock.advance_days(1);
+        process_scouting(&mut game);
+    }
+    assert!(game.youth_scouting_assignments.is_empty());
+
+    let refused = start_search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+    );
+    assert_eq!(
+        refused,
+        Err("be.error.scouting.scoutResting?days=7".to_string())
+    );
+
+    game.clock.advance_days(6);
+    let still_resting = start_search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+    );
+    assert_eq!(
+        still_resting,
+        Err("be.error.scouting.scoutResting?days=1".to_string())
+    );
+
+    game.clock.advance_days(1);
+    start_search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+    )
+    .expect("rested");
+}
+
+/// Given a youth search the club has paid for,
+/// When it is cancelled,
+/// Then the fee is not returned.
+#[test]
+fn a_cancelled_youth_search_keeps_its_fee() {
+    let mut game = make_game();
+    let cash = game.teams[0].finance;
+    start_search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+    )
+    .unwrap();
+    let assignment_id = game.youth_scouting_assignments[0].id.clone();
+
+    ofm_core::scouting::cancel_youth_scouting(&mut game, &assignment_id).unwrap();
+
+    assert_eq!(game.teams[0].finance, cash - 15_000);
+}
+
+/// Given the fixture's scout, who judges potential at 75,
+/// When a high-potential search abroad is quoted,
+/// Then the quote gives its fee, how many days it takes and that he is free.
+#[test]
+fn a_youth_search_quote_gives_fee_days_and_rest() {
+    let game = make_game();
+
+    let quote = ofm_core::scouting::quote_youth_search(
+        &game,
+        "scout1",
+        YouthScoutingRegion::International,
+        YouthScoutingObjective::HighPotential,
+    )
+    .expect("quote");
+
+    assert_eq!(quote.fee, 75_000);
+    assert_eq!(quote.days, 7);
+    assert_eq!(quote.rest_days_left, 0);
+}
+
 #[test]
 fn process_scouting_completes_youth_recruitment_report() {
     let mut game = make_game();

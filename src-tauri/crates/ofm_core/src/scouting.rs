@@ -17,6 +17,8 @@ const ERR_PLAYER_ALREADY_SCOUTED: &str = "be.error.scouting.playerAlreadyScouted
 const ERR_YOUTH_SEARCH_ALREADY_ACTIVE: &str = "be.error.scouting.youthSearchAlreadyActive";
 const ERR_YOUTH_ASSIGNMENT_NOT_FOUND: &str = "be.error.scouting.youthAssignmentNotFound";
 const ERR_SCOUT_ALREADY_ASSIGNED_TO_SEARCH: &str = "be.error.scouting.scoutAlreadyAssignedToSearch";
+const ERR_SCOUT_RESTING: &str = "be.error.scouting.scoutResting";
+const ERR_SCOUTING_INSUFFICIENT_FUNDS: &str = "be.error.scouting.insufficientFunds";
 
 fn scouting_error_with_params(key: &str, params: &[(&str, String)]) -> String {
     if params.is_empty() {
@@ -92,6 +94,59 @@ fn assignment_days_for_player_scouting(judging_ability: u8) -> u32 {
     } else {
         5
     }
+}
+
+/// What a youth search costs up front: 15,000 at home, 50,000 abroad, and half
+/// as much again when the brief is high potential.
+pub fn youth_search_fee(region: YouthScoutingRegion, objective: YouthScoutingObjective) -> i64 {
+    let base = match region {
+        YouthScoutingRegion::Domestic => 15_000,
+        YouthScoutingRegion::International => 50_000,
+    };
+    match objective {
+        YouthScoutingObjective::HighPotential => base * 3 / 2,
+        YouthScoutingObjective::Balanced | YouthScoutingObjective::ReadySoon => base,
+    }
+}
+
+/// What starting a youth search would mean: its fee, how many days it takes,
+/// and how many days the scout has left to rest first.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct YouthSearchQuote {
+    pub fee: i64,
+    pub days: u32,
+    pub rest_days_left: i64,
+}
+
+pub fn quote_youth_search(
+    game: &Game,
+    scout_id: &str,
+    region: YouthScoutingRegion,
+    objective: YouthScoutingObjective,
+) -> Result<YouthSearchQuote, String> {
+    let scout = resolve_user_scout(game, scout_id)?;
+    Ok(YouthSearchQuote {
+        fee: youth_search_fee(region, objective),
+        days: assignment_days_for_youth_scouting(
+            scout.attributes.judging_potential,
+            region,
+            objective,
+        ),
+        rest_days_left: youth_search_rest_days_left(game, scout_id),
+    })
+}
+
+/// Days a scout rests after finishing a youth search before he can start another.
+const YOUTH_SEARCH_REST_DAYS: i64 = 7;
+
+/// Days until `scout_id` may go on another youth search; 0 when he is free.
+pub fn youth_search_rest_days_left(game: &Game, scout_id: &str) -> i64 {
+    let today = game.clock.current_date.date_naive();
+    game.scout_youth_rest_until
+        .get(scout_id)
+        .and_then(|date| chrono::NaiveDate::parse_from_str(date, "%Y-%m-%d").ok())
+        .map(|until| (until - today).num_days().max(0))
+        .unwrap_or(0)
 }
 
 fn assignment_days_for_youth_scouting(
@@ -205,8 +260,42 @@ pub fn start_youth_scouting(
         return Err(ERR_YOUTH_SEARCH_ALREADY_ACTIVE.to_string());
     }
 
+    let rest_days = youth_search_rest_days_left(game, scout_id);
+    if rest_days > 0 {
+        return Err(scouting_error_with_params(
+            ERR_SCOUT_RESTING,
+            &[("days", rest_days.to_string())],
+        ));
+    }
+
     let days =
         assignment_days_for_youth_scouting(scout.attributes.judging_potential, region, objective);
+    let fee = youth_search_fee(region, objective);
+    let team_id = game
+        .manager
+        .team_id
+        .clone()
+        .ok_or("be.error.noTeamAssigned")?;
+    let cash = game
+        .teams
+        .iter()
+        .find(|team| team.id == team_id)
+        .map(|team| team.finance)
+        .ok_or("be.error.teamNotFound")?;
+    if cash < fee {
+        return Err(scouting_error_with_params(
+            ERR_SCOUTING_INSUFFICIENT_FUNDS,
+            &[("fee", fee.to_string())],
+        ));
+    }
+    let today = game.clock.current_date.date_naive();
+    crate::finances::post(
+        game,
+        &team_id,
+        -fee,
+        crate::finances::CashKind::ScoutingExpenses,
+        today,
+    )?;
     game.youth_scouting_assignments
         .push(YouthScoutingAssignment {
             id: Uuid::new_v4().to_string(),
@@ -218,6 +307,15 @@ pub fn start_youth_scouting(
         });
 
     Ok(())
+}
+
+/// Call off everything `scout_id` is working on: he has left the club, so his
+/// reports would come from nobody.
+pub(crate) fn call_off_assignments_of(game: &mut Game, scout_id: &str) {
+    game.scouting_assignments
+        .retain(|assignment| assignment.scout_id != scout_id);
+    game.youth_scouting_assignments
+        .retain(|assignment| assignment.scout_id != scout_id);
 }
 
 pub fn cancel_youth_scouting(game: &mut Game, assignment_id: &str) -> Result<(), String> {
@@ -362,6 +460,10 @@ fn complete_youth_scouting_assignment(
     else {
         return;
     };
+    let rest_until =
+        game.clock.current_date.date_naive() + chrono::Duration::days(YOUTH_SEARCH_REST_DAYS);
+    game.scout_youth_rest_until
+        .insert(scout.id.clone(), rest_until.format("%Y-%m-%d").to_string());
 
     // Prospects are scouted mid-career, so they are aged against the running
     // clock rather than the year the world opened in.

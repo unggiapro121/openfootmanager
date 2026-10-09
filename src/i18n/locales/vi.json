@@ -1963,7 +1963,9 @@
     "morale": "Tinh thần",
     "estimatedAttributes": "Chỉ số ước tính",
     "undiscovered": "Chưa khám phá",
-    "confidence": "Độ tin cậy"
+    "confidence": "Độ tin cậy",
+    "youthSearchQuote": "Phí {{fee}} · {{days}} ngày",
+    "scoutResting": "Đang nghỉ thêm {{days}} ngày"
   },
   "match": {
     "live": "Trực tiếp",
@@ -2892,7 +2894,9 @@
         "playerAlreadyScouted": "Cầu thủ này đang được tuyển trạch",
         "youthSearchAlreadyActive": "Đã có một đợt tìm cầu thủ trẻ tương tự đang chạy",
         "youthAssignmentNotFound": "Không tìm thấy nhiệm vụ tuyển cầu thủ trẻ",
-        "scoutAlreadyAssignedToSearch": "Tuyển trạch viên đã được giao cho đợt tìm kiếm này"
+        "scoutAlreadyAssignedToSearch": "Tuyển trạch viên đã được giao cho đợt tìm kiếm này",
+        "scoutResting": "Tuyển trạch viên này đang nghỉ thêm {{days}} ngày sau lần tìm cầu thủ trẻ gần nhất.",
+        "insufficientFunds": "CLB không đủ tiền trả phí tìm kiếm {{fee}}."
       },
       "invalidPath": "Đường dẫn không hợp lệ.",
       "staffWageBudget": "Ban lãnh đạo không cho phép quỹ lương tuần vượt ngân sách {{budget}}.",

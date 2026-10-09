@@ -150,6 +150,7 @@ fn let_contract_run_out(game: &mut Game, index: usize) {
         return;
     };
     staff.wage = staff_asking_wage(staff);
+    let staff_id = staff.id.clone();
     let key = format!("staff_contract_expired_{}_{}", staff.id, contract_end);
     let name = full_name(staff);
     let role = role_key(staff);
@@ -157,6 +158,7 @@ fn let_contract_run_out(game: &mut Game, index: usize) {
     crate::inbox::emit_once(game, &key, || {
         crate::messages::staff_contract_expired_message(&key, &team_id, &name, role, &today)
     });
+    crate::scouting::call_off_assignments_of(game, &staff_id);
 }
 
 fn renew_for_ai_club(game: &mut Game, index: usize, today: NaiveDate) {
@@ -340,5 +342,31 @@ mod tests {
         let on_market = staff_member(&game, "c1");
         assert_eq!(on_market.wage, staff_asking_wage(on_market));
         assert_eq!(staff_member(&game, "c2").wage, 1_000);
+    }
+
+    /// Given one of the user's scouts on a youth search when his contract ends,
+    /// When the day is processed,
+    /// Then the search is called off with him.
+    #[test]
+    fn a_scout_whose_contract_ends_leaves_his_searches_behind() {
+        let mut game = game_with(vec![employed(
+            coach("s1", 60),
+            USER_TEAM,
+            2_000,
+            Some("2026-08-01"),
+        )]);
+        game.youth_scouting_assignments
+            .push(crate::game::YouthScoutingAssignment {
+                id: "y1".to_string(),
+                scout_id: "s1".to_string(),
+                region: Default::default(),
+                objective: Default::default(),
+                target_position: None,
+                days_remaining: 3,
+            });
+
+        process_staff_contracts(&mut game);
+
+        assert!(game.youth_scouting_assignments.is_empty());
     }
 }

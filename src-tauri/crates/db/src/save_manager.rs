@@ -701,6 +701,7 @@ impl SaveManager {
         game.news.clear();
         game.scouting_assignments.clear();
         game.youth_scouting_assignments.clear();
+        game.scout_youth_rest_until.clear();
         game.board_objectives.clear();
 
         // A new career is a new game: its World Cups are drawn from its own seed, whatever the

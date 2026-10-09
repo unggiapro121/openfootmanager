@@ -15,6 +15,10 @@ vi.mock("react-i18next", () => ({
       if (key === "scouting.activeYouthSearches") {
         return `Active: ${params?.count ?? 0}`;
       }
+      if (key === "scouting.youthSearchQuote") {
+        return `Fee ${params?.fee} · ${params?.days} days`;
+      }
+      if (key === "scouting.scoutResting") return `Resting ${params?.days} more days`;
       return key;
     },
     i18n: { language: "en" },
@@ -73,5 +77,27 @@ describe("ScoutingYouthRecruitmentCard target-position dropdown", () => {
     fireEvent.click(screen.getByRole("combobox", { name: "scouting.youthTargetLabel" }));
 
     expect(screen.getByRole("option", { name: "Goalkeeper" })).toBeInTheDocument();
+  });
+});
+
+describe("ScoutingYouthRecruitmentCard quote", () => {
+  it("shows what the search will cost and how long it takes", () => {
+    renderCard({ quote: { fee: 22_500, days: 6, rest_days_left: 0 } });
+
+    expect(screen.getByText(/^Fee .*22,500 · 6 days$/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "scouting.startYouthSearch" })).toBeEnabled();
+  });
+
+  it("will not start a search while the scout is resting", () => {
+    renderCard({ quote: { fee: 15_000, days: 5, rest_days_left: 3 } });
+
+    expect(screen.getByText("Resting 3 more days")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "scouting.startYouthSearch" })).toBeDisabled();
+  });
+
+  it("announces a refused search", () => {
+    renderCard({ errorMessage: "Not enough money" });
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Not enough money");
   });
 });

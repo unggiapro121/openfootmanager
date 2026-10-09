@@ -12,7 +12,7 @@ use domain::team::Team;
 use domain::world_history::WorldHistoryArchive;
 
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ObjectiveType {
@@ -101,6 +101,10 @@ pub struct Game {
     pub scouting_assignments: Vec<ScoutingAssignment>,
     #[serde(default)]
     pub youth_scouting_assignments: Vec<YouthScoutingAssignment>,
+    /// When each of the user's scouts may next go on a youth search
+    /// (`YYYY-MM-DD`), keyed by scout id: a scout rests after every search.
+    #[serde(default)]
+    pub scout_youth_rest_until: BTreeMap<String, String>,
     #[serde(default)]
     pub board_objectives: Vec<BoardObjective>,
     #[serde(default)]
@@ -193,6 +197,7 @@ impl Game {
             league: None,
             scouting_assignments: vec![],
             youth_scouting_assignments: vec![],
+            scout_youth_rest_until: BTreeMap::new(),
             board_objectives: vec![],
             season_context: SeasonContext::default(),
             days_since_last_job_offer: None,

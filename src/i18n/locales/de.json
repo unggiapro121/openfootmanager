@@ -1963,7 +1963,9 @@
     "morale": "Moral",
     "estimatedAttributes": "Geschätzte Attribute",
     "undiscovered": "Nicht entdeckt",
-    "confidence": "Zuverlässigkeit"
+    "confidence": "Zuverlässigkeit",
+    "youthSearchQuote": "Kosten {{fee}} · {{days}} Tage",
+    "scoutResting": "Pausiert noch {{days}} Tage"
   },
   "match": {
     "live": "Live",
@@ -2884,7 +2886,9 @@
         "playerAlreadyScouted": "Dieser Spieler wird bereits beobachtet",
         "youthSearchAlreadyActive": "Eine passende Jugendsuche ist bereits aktiv",
         "youthAssignmentNotFound": "Jugendscouting-Auftrag nicht gefunden",
-        "scoutAlreadyAssignedToSearch": "Der Scout ist bereits dieser Suche zugewiesen"
+        "scoutAlreadyAssignedToSearch": "Der Scout ist bereits dieser Suche zugewiesen",
+        "scoutResting": "Dieser Scout pausiert nach seiner letzten Nachwuchssuche noch {{days}} Tage.",
+        "insufficientFunds": "Der Verein kann die Suchgebühr von {{fee}} nicht bezahlen."
       },
       "invalidPath": "Ungültiger Pfad.",
       "conflict": {

@@ -2,6 +2,8 @@ import { GraduationCap, RefreshCcw, ScanSearch, Clock, XCircle } from "lucide-re
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { formatExactMoney } from "../../lib/helpers";
+import type { YouthSearchQuote } from "../../services/scoutingService";
 import type { StaffData, YouthScoutingAssignment } from "../../store/gameStore";
 import { Badge, Button, Card, CardBody, CardHeader, Select } from "../ui";
 
@@ -17,6 +19,8 @@ interface ScoutingYouthRecruitmentCardProps {
   objective: string;
   targetPosition: string;
   errorMessage?: string | null;
+  /** What the selected search would cost and take; absent until it is known. */
+  quote?: YouthSearchQuote | null;
   onScoutChange: (value: string) => void;
   onRegionChange: (value: string) => void;
   onObjectiveChange: (value: string) => void;
@@ -38,6 +42,7 @@ export default function ScoutingYouthRecruitmentCard({
   objective,
   targetPosition,
   errorMessage,
+  quote = null,
   onScoutChange,
   onRegionChange,
   onObjectiveChange,
@@ -49,7 +54,9 @@ export default function ScoutingYouthRecruitmentCard({
   const { t } = useTranslation();
   const [reassignTargets, setReassignTargets] = useState<Record<string, string>>({});
   const availableScoutCount = availableScouts.length;
-  const canStart = availableScoutCount > 0 && selectedScoutId.length > 0 && !isStarting;
+  const scoutResting = (quote?.rest_days_left ?? 0) > 0;
+  const canStart =
+    availableScoutCount > 0 && selectedScoutId.length > 0 && !isStarting && !scoutResting;
 
   function formatRegion(value?: string): string {
     if (value === "International") return t("scouting.regionInternational");
@@ -165,7 +172,24 @@ export default function ScoutingYouthRecruitmentCard({
               {t("scouting.noScoutsFree")}
             </span>
           ) : null}
-          {errorMessage ? <span className="text-xs text-red-500">{errorMessage}</span> : null}
+          {quote ? (
+            <Badge variant="neutral" size="sm">
+              {t("scouting.youthSearchQuote", {
+                fee: formatExactMoney(quote.fee),
+                days: quote.days,
+              })}
+            </Badge>
+          ) : null}
+          {scoutResting ? (
+            <span className="text-xs text-accent-700 dark:text-accent-300">
+              {t("scouting.scoutResting", { days: quote?.rest_days_left ?? 0 })}
+            </span>
+          ) : null}
+          {errorMessage ? (
+            <span role="alert" className="text-xs text-red-600 dark:text-red-400">
+              {errorMessage}
+            </span>
+          ) : null}
         </div>
 
         {youthAssignments.length === 0 ? (

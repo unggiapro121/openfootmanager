@@ -1963,7 +1963,9 @@
     "morale": "Moral",
     "estimatedAttributes": "Attributs estimés",
     "undiscovered": "Non découvert",
-    "confidence": "Confiance"
+    "confidence": "Confiance",
+    "youthSearchQuote": "Coût {{fee}} · {{days}} jours",
+    "scoutResting": "Au repos encore {{days}} jours"
   },
   "match": {
     "live": "En Direct",
@@ -2884,7 +2886,9 @@
         "playerAlreadyScouted": "Ce joueur est déjà observé",
         "youthSearchAlreadyActive": "Une recherche de recrutement jeune identique est déjà active",
         "youthAssignmentNotFound": "Mission de recrutement jeune introuvable",
-        "scoutAlreadyAssignedToSearch": "Le recruteur est déjà affecté à cette recherche"
+        "scoutAlreadyAssignedToSearch": "Le recruteur est déjà affecté à cette recherche",
+        "scoutResting": "Ce recruteur se repose encore {{days}} jours après sa dernière recherche de jeunes.",
+        "insufficientFunds": "Le club ne peut pas couvrir les frais de recherche de {{fee}}."
       },
       "invalidPath": "Chemin invalide.",
       "conflict": {

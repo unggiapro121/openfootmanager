@@ -440,6 +440,30 @@ pub fn start_youth_scouting(
 }
 
 #[tauri::command]
+pub fn quote_youth_search(
+    state: State<'_, Arc<StateManager>>,
+    scout_id: String,
+    region: Option<String>,
+    objective: Option<String>,
+) -> Result<ofm_core::scouting::YouthSearchQuote, String> {
+    quote_youth_search_internal(&state, &scout_id, region.as_deref(), objective.as_deref())
+}
+
+/// What a youth search would cost and take, read without changing anything.
+pub fn quote_youth_search_internal(
+    state: &StateManager,
+    scout_id: &str,
+    region: Option<&str>,
+    objective: Option<&str>,
+) -> Result<ofm_core::scouting::YouthSearchQuote, String> {
+    let region = parse_youth_region(region)?;
+    let objective = parse_youth_objective(objective)?;
+    state
+        .get_game(|game| ofm_core::scouting::quote_youth_search(game, scout_id, region, objective))
+        .unwrap_or_else(|| Err("be.error.noActiveGameSession".to_string()))
+}
+
+#[tauri::command]
 pub fn cancel_youth_scouting(
     state: State<'_, Arc<StateManager>>,
     assignment_id: String,
@@ -501,8 +525,9 @@ mod tests {
     use super::{
         counter_loan_offer_internal, counter_offer_internal, exercise_loan_buy_option_internal,
         make_loan_offer_internal, make_transfer_bid_internal,
-        preview_transfer_bid_financial_impact_internal, respond_to_loan_offer_internal,
-        respond_to_offer_internal, toggle_loan_list_internal, toggle_transfer_list_internal,
+        preview_transfer_bid_financial_impact_internal, quote_youth_search_internal,
+        respond_to_loan_offer_internal, respond_to_offer_internal, toggle_loan_list_internal,
+        toggle_transfer_list_internal,
     };
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
@@ -1216,6 +1241,18 @@ mod tests {
             response.projection.pending_registration_date.as_deref(),
             Some("2027-01-02"),
         );
+    }
+
+    /// Given no game loaded,
+    /// When a youth search is quoted,
+    /// Then the command reports there is no active game rather than a quote.
+    #[test]
+    fn quote_youth_search_without_a_game_reports_it() {
+        let state = StateManager::new();
+
+        let result = quote_youth_search_internal(&state, "scout1", None, None);
+
+        assert_eq!(result, Err("be.error.noActiveGameSession".to_string()));
     }
 
     #[test]

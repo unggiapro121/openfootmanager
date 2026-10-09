@@ -194,7 +194,7 @@ This ensures all agents start from the same state and cannot manipulate the game
 |------|-------------|
 | `scout_send` | Send a scout to report on a specific player |
 | `scout_get_reports` | View completed scout reports and active assignments |
-| `scout_youth_start` | Start a youth scouting assignment (region, objective, target position) |
+| `scout_youth_start` | Start a youth scouting assignment (region, objective, target position); charges the search fee and needs the scout rested 7 days since his last youth search |
 | `scout_youth_cancel` | Cancel an active youth scouting assignment |
 | `scout_youth_reassign` | Reassign a youth scouting assignment to a different scout |
 

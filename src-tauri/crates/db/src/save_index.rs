@@ -496,6 +496,7 @@ mod tests {
                 seed: 0,
                 legacy_world_cup_draw: false,
                 development_speed_percent: 100,
+                scout_youth_rest_until_json: "{}".to_string(),
             },
         )
         .unwrap();
@@ -623,6 +624,7 @@ mod tests {
                 seed: 0,
                 legacy_world_cup_draw: false,
                 development_speed_percent: 100,
+                scout_youth_rest_until_json: "{}".to_string(),
             },
         )
         .unwrap();

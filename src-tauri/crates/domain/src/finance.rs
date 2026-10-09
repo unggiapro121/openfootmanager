@@ -40,6 +40,8 @@ pub enum CashKind {
     /// Shirt, kit and partner deals every club has, paid weekly. A one-off
     /// sponsorship the manager lands is `Sponsorship`.
     Commercial,
+    /// What a youth search costs the club up front: the scout's travel and fees.
+    ScoutingExpenses,
 }
 
 impl CashKind {

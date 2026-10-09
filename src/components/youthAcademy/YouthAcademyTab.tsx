@@ -42,6 +42,8 @@ import {
 import type { DashboardNavigateContext } from "../dashboard/dashboardProfileNavigation";
 import type { PlayerSquadRole } from "../../store/types";
 import { calculateAvailableScouts } from "../scouting/ScoutingTab.helpers";
+import { resolveTranslatedErrorMessage } from "../../utils/errorMessage";
+import { useYouthSearchQuote } from "../scouting/useYouthSearchQuote";
 import ScoutingYouthRecruitmentCard from "../scouting/ScoutingYouthRecruitmentCard";
 
 interface YouthAcademyTabProps {
@@ -109,6 +111,12 @@ export default function YouthAcademyTab({
     ...youthAssignments,
   ];
   const availableScouts = calculateAvailableScouts(scouts, allAssignments);
+  const youthSearchQuote = useYouthSearchQuote(
+    selectedYouthScoutId,
+    youthRegion,
+    youthObjective,
+    `${clockDate}|${youthAssignments.length}`,
+  );
 
   useEffect(() => {
     if (
@@ -196,7 +204,7 @@ export default function YouthAcademyTab({
       applyScoutingUpdate(updated);
       setSelectedYouthScoutId("");
     } catch (err) {
-      setYouthSearchError(String(err));
+      setYouthSearchError(resolveTranslatedErrorMessage(err, t));
     } finally {
       setStartingYouthSearch(false);
     }
@@ -207,7 +215,7 @@ export default function YouthAcademyTab({
     try {
       applyScoutingUpdate(await cancelYouthScouting(assignmentId));
     } catch (err) {
-      setYouthSearchError(String(err));
+      setYouthSearchError(resolveTranslatedErrorMessage(err, t));
     }
   };
 
@@ -216,7 +224,7 @@ export default function YouthAcademyTab({
     try {
       applyScoutingUpdate(await reassignYouthScouting(assignmentId, scoutId));
     } catch (err) {
-      setYouthSearchError(String(err));
+      setYouthSearchError(resolveTranslatedErrorMessage(err, t));
     }
   };
 
@@ -376,6 +384,7 @@ export default function YouthAcademyTab({
           objective={youthObjective}
           targetPosition={youthTargetPosition}
           errorMessage={youthSearchError}
+          quote={youthSearchQuote}
           onScoutChange={setSelectedYouthScoutId}
           onRegionChange={setYouthRegion}
           onObjectiveChange={setYouthObjective}

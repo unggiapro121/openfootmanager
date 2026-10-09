@@ -1963,7 +1963,9 @@
     "morale": "Morale",
     "estimatedAttributes": "Estimated Attributes",
     "undiscovered": "Not discovered",
-    "confidence": "Confidence"
+    "confidence": "Confidence",
+    "youthSearchQuote": "Fee {{fee}} · {{days}} days",
+    "scoutResting": "Resting {{days}} more days"
   },
   "match": {
     "live": "Live",
@@ -2892,7 +2894,9 @@
         "playerAlreadyScouted": "This player is already being scouted",
         "youthSearchAlreadyActive": "A matching youth recruitment search is already active",
         "youthAssignmentNotFound": "Youth recruitment assignment not found",
-        "scoutAlreadyAssignedToSearch": "Scout is already assigned to this search"
+        "scoutAlreadyAssignedToSearch": "Scout is already assigned to this search",
+        "scoutResting": "This scout is resting for {{days}} more days after his last youth search.",
+        "insufficientFunds": "The club cannot cover the {{fee}} search fee."
       },
       "invalidPath": "Invalid path.",
       "staffWageBudget": "The board will not let the weekly wage bill go over its {{budget}} budget.",

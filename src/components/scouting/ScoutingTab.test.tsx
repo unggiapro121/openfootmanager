@@ -313,9 +313,12 @@ describe("ScoutingTab", () => {
 
   it("shows scout assignment errors inline in the player search card", async () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    invokeMock.mockRejectedValueOnce(
-      new Error("Scout is already assigned to another scouting task."),
-    );
+    invokeMock.mockImplementation(async (command: string) => {
+      if (command === "send_scout") {
+        throw new Error("Scout is already assigned to another scouting task.");
+      }
+      return undefined;
+    });
     try {
       render(
         <ScoutingTab

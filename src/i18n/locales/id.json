@@ -1963,7 +1963,9 @@
     "morale": "Moral",
     "estimatedAttributes": "Perkiraan Atribut",
     "undiscovered": "Belum terungkap",
-    "confidence": "Keyakinan"
+    "confidence": "Keyakinan",
+    "youthSearchQuote": "Biaya {{fee}} · {{days}} hari",
+    "scoutResting": "Istirahat {{days}} hari lagi"
   },
   "match": {
     "live": "Langsung",
@@ -2892,7 +2894,9 @@
         "playerAlreadyScouted": "Pemain ini sudah sedang discouting",
         "youthSearchAlreadyActive": "Pencarian rekrutmen pemuda yang cocok sudah aktif",
         "youthAssignmentNotFound": "Penugasan rekrutmen pemuda tidak ditemukan",
-        "scoutAlreadyAssignedToSearch": "Scout sudah ditugaskan ke pencarian ini"
+        "scoutAlreadyAssignedToSearch": "Scout sudah ditugaskan ke pencarian ini",
+        "scoutResting": "Pemandu bakat ini masih istirahat {{days}} hari lagi setelah pencarian pemain muda terakhirnya.",
+        "insufficientFunds": "Klub tidak sanggup membayar biaya pencarian {{fee}}."
       },
       "invalidPath": "Jalur tidak valid.",
       "staffWageBudget": "Dewan tidak mengizinkan total gaji mingguan melebihi anggaran {{budget}}.",

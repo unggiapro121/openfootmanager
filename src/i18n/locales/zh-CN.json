@@ -1963,7 +1963,9 @@
     "morale": "士气",
     "estimatedAttributes": "预估属性",
     "undiscovered": "尚未发掘",
-    "confidence": "置信度"
+    "confidence": "置信度",
+    "youthSearchQuote": "费用 {{fee}} · {{days}} 天",
+    "scoutResting": "还需休息 {{days}} 天"
   },
   "match": {
     "live": "直播中",
@@ -2884,7 +2886,9 @@
         "playerAlreadyScouted": "这名球员已经在被考察",
         "youthSearchAlreadyActive": "已有相同的青训招募搜索在进行中",
         "youthAssignmentNotFound": "未找到青训招募任务",
-        "scoutAlreadyAssignedToSearch": "该球探已经分配给这项搜索"
+        "scoutAlreadyAssignedToSearch": "该球探已经分配给这项搜索",
+        "scoutResting": "这名球探在上次青训搜寻后还需休息 {{days}} 天。",
+        "insufficientFunds": "俱乐部无法支付 {{fee}} 的搜寻费用。"
       },
       "invalidPath": "路径无效。",
       "conflict": {

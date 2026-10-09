@@ -292,6 +292,7 @@ pub fn run() {
             counter_offer,
             send_scout,
             start_youth_scouting,
+            quote_youth_search,
             cancel_youth_scouting,
             reassign_youth_scouting,
             check_season_complete,

@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 import {
   cancelYouthScouting,
+  quoteYouthSearch,
   reassignYouthScouting,
   sendScout,
   startYouthScouting,
@@ -68,6 +69,18 @@ describe("scoutingService", () => {
     expect(mockedInvoke).toHaveBeenCalledWith("reassign_youth_scouting", {
       assignmentId: "ysa-1",
       scoutId: "staff-2",
+    });
+  });
+
+  it("quotes a youth search without changing anything", async () => {
+    const quote = { fee: 15_000, days: 5, rest_days_left: 0 };
+    mockedInvoke.mockResolvedValueOnce(quote);
+
+    await expect(quoteYouthSearch("scout-1", "Domestic", "Balanced")).resolves.toEqual(quote);
+    expect(mockedInvoke).toHaveBeenCalledWith("quote_youth_search", {
+      scoutId: "scout-1",
+      region: "Domestic",
+      objective: "Balanced",
     });
   });
 });

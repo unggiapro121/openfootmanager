@@ -1963,7 +1963,9 @@
     "morale": "Мораль",
     "estimatedAttributes": "Оценка качеств",
     "undiscovered": "Не раскрыто",
-    "confidence": "Надёжность"
+    "confidence": "Надёжность",
+    "youthSearchQuote": "Стоимость {{fee}} · {{days}} дн.",
+    "scoutResting": "Отдыхает ещё {{days}} дн."
   },
   "match": {
     "live": "Матч",
@@ -2884,7 +2886,9 @@
         "playerAlreadyScouted": "Этот игрок уже находится в поиске",
         "youthSearchAlreadyActive": "Подходящий поиск по подбору молодежи уже активен",
         "youthAssignmentNotFound": "Задание по набору молодежи не найдено",
-        "scoutAlreadyAssignedToSearch": "Этот скаут уже назначен на этот поиск."
+        "scoutAlreadyAssignedToSearch": "Этот скаут уже назначен на этот поиск.",
+        "scoutResting": "Этот скаут отдыхает ещё {{days}} дн. после последнего поиска молодёжи.",
+        "insufficientFunds": "Клубу не хватает денег на оплату поиска {{fee}}."
       },
       "invalidPath": "Неверный путь.",
       "conflict": {

@@ -1963,7 +1963,9 @@
     "morale": "Morálka",
     "estimatedAttributes": "Odhadované atributy",
     "undiscovered": "Neobjeveno",
-    "confidence": "Spolehlivost odhadu"
+    "confidence": "Spolehlivost odhadu",
+    "youthSearchQuote": "Cena {{fee}} · {{days}} dní",
+    "scoutResting": "Odpočívá ještě {{days}} dní"
   },
   "match": {
     "live": "Živě",
@@ -2892,7 +2894,9 @@
         "playerAlreadyScouted": "Tento hráč již je skautován",
         "youthSearchAlreadyActive": "Odpovídající vyhledávání pro nábor mládeže je již aktivní",
         "youthAssignmentNotFound": "Úkol pro nábor mládeže nebyl nalezen",
-        "scoutAlreadyAssignedToSearch": "Skaut je již k tomuto vyhledávání přiřazen"
+        "scoutAlreadyAssignedToSearch": "Skaut je již k tomuto vyhledávání přiřazen",
+        "scoutResting": "Tento skaut po posledním hledání mladíků odpočívá ještě {{days}} dní.",
+        "insufficientFunds": "Klub nemá na poplatek za hledání {{fee}}."
       },
       "invalidPath": "Neplatná cesta.",
       "staffWageBudget": "Vedení nedovolí, aby týdenní mzdové náklady překročily rozpočet {{budget}}.",
