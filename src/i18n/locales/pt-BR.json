@@ -1108,7 +1108,9 @@
       "hireConfirm": "Contratar",
       "renewConfirm": "Renovar",
       "releaseConfirm": "Demitir e pagar"
-    }
+    },
+    "refreshMarket": "Atualizar ({{left}}/{{total}})",
+    "refreshMarketHint": "Troca todos do mercado por caras novas. Grátis, três vezes por mês; o mercado também se renova no dia 1 de cada mês, quando suas atualizações voltam."
   },
   "finances": {
     "overview": "Visão Financeira",
@@ -2922,7 +2924,10 @@
         "fallbackTeamsFilled": "Apenas um time foi definido. Adversários procedurais foram gerados automaticamente para tornar o jogo jogável."
       },
       "staffWageBudget": "A diretoria não deixa a folha salarial semanal passar do orçamento de {{budget}}.",
-      "staffContractYearsInvalid": "Os contratos da comissão técnica duram de um a três anos."
+      "staffContractYearsInvalid": "Os contratos da comissão técnica duram de um a três anos.",
+      "staff": {
+        "marketRefreshesUsed": "Você já usou as atualizações deste mês. Elas voltam no dia 1."
+      }
     },
     "sender": {
       "boardOfDirectors": "Diretoria",

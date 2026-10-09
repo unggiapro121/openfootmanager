@@ -1127,7 +1127,9 @@
       "hireConfirm": "Ingaggia",
       "renewConfirm": "Rinnova",
       "releaseConfirm": "Licenzia e paga"
-    }
+    },
+    "refreshMarket": "Rinnova ({{left}}/{{total}})",
+    "refreshMarketHint": "Sostituisce tutti quelli sul mercato con volti nuovi. Gratis, tre volte al mese; il mercato si rinnova anche il 1° di ogni mese, quando tornano i tuoi rinnovi."
   },
   "finances": {
     "overview": "Panoramica finanziaria",
@@ -2922,7 +2924,10 @@
         "fallbackTeamsFilled": "È stata definita una sola squadra. Sono stati generati automaticamente avversari procedurali per rendere il gioco giocabile."
       },
       "staffWageBudget": "La dirigenza non permette che il monte ingaggi settimanale superi il budget di {{budget}}.",
-      "staffContractYearsInvalid": "I contratti dello staff durano da uno a tre anni."
+      "staffContractYearsInvalid": "I contratti dello staff durano da uno a tre anni.",
+      "staff": {
+        "marketRefreshesUsed": "Hai usato i rinnovi di questo mese. Tornano il 1°."
+      }
     },
     "sender": {
       "boardOfDirectors": "Consiglio di amministrazione",

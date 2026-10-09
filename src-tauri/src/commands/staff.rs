@@ -59,6 +59,17 @@ pub fn release_staff_internal(state: &StateManager, staff_id: &str) -> Result<Ga
 }
 
 #[tauri::command]
+pub fn refresh_staff_market(state: State<'_, Arc<StateManager>>) -> Result<Game, String> {
+    refresh_staff_market_internal(&state)
+}
+
+/// Replaces the whole staff market, free, while the month's refreshes last.
+pub fn refresh_staff_market_internal(state: &StateManager) -> Result<Game, String> {
+    info!("[cmd] refresh_staff_market");
+    mutate_active_game(state, ofm_core::generator::refresh_available_staff_market)
+}
+
+#[tauri::command]
 pub fn renew_staff_contract(
     state: State<'_, Arc<StateManager>>,
     staff_id: String,
@@ -107,8 +118,8 @@ pub fn preview_staff_contract_internal(
 #[cfg(test)]
 mod tests {
     use super::{
-        hire_staff_internal, preview_staff_contract_internal, release_staff_internal,
-        renew_staff_contract_internal,
+        hire_staff_internal, preview_staff_contract_internal, refresh_staff_market_internal,
+        release_staff_internal, renew_staff_contract_internal,
     };
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
@@ -205,6 +216,32 @@ mod tests {
     fn with_dangling_team_id(mut game: Game) -> Game {
         game.teams[0].id = "team-elsewhere".to_string();
         game
+    }
+
+    /// Given the market as the month began,
+    /// When the manager refreshes it three times and tries a fourth,
+    /// Then each refresh brings a new market and the fourth is refused.
+    #[test]
+    fn refresh_staff_market_internal_replaces_the_market_three_times_a_month() {
+        let state = StateManager::new();
+        state.set_game(make_game());
+
+        for _ in 0..3 {
+            let game = refresh_staff_market_internal(&state).expect("a refresh");
+            assert_eq!(
+                game.staff
+                    .iter()
+                    .filter(|staff| staff.team_id.is_none())
+                    .count(),
+                12
+            );
+            assert!(!game.staff.iter().any(|staff| staff.id == "staff-1"));
+        }
+
+        assert_eq!(
+            refresh_staff_market_internal(&state).err(),
+            Some("be.error.staff.marketRefreshesUsed".to_string())
+        );
     }
 
     #[test]

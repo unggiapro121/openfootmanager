@@ -56,7 +56,8 @@ thread_local! {
 }
 const OPENING_YOUTH_ACADEMY_SIZE: usize = 3;
 use crate::roster::YOUTH_ACADEMY_MAX_AGE as OPENING_YOUTH_MAX_AGE;
-const AVAILABLE_STAFF_MARKET_ROTATION_DAYS: i64 = 30;
+/// Manual refreshes of the staff market a manager gets each calendar month.
+pub const STAFF_MARKET_REFRESHES_PER_MONTH: u8 = 3;
 
 /// Unattached players a generated world opens with, per club, by position
 /// group. Real football always has players between clubs; a club short of
@@ -578,37 +579,73 @@ pub fn process_available_staff_market(game: &mut crate::game::Game) -> bool {
     changed
 }
 
+/// The market turns over on the first day of each calendar month, and at once
+/// whenever the manager has signed everyone on it.
 fn rotate_available_staff_market(game: &mut crate::game::Game) -> bool {
-    use chrono::NaiveDate;
-
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
     let current_year = game.clock.current_date.year() as u32;
-    let available_count = available_staff_count(&game.staff);
 
-    if available_count == 0 {
-        replace_available_staff_market(&mut game.staff, &game.teams, current_year);
-        game.available_staff_market_last_activity_date = Some(today);
-        return true;
-    }
-
-    let Some(last_activity) = game.available_staff_market_last_activity_date.as_deref() else {
-        game.available_staff_market_last_activity_date = Some(today);
-        return true;
-    };
-
-    let Ok(last_activity_date) = NaiveDate::parse_from_str(last_activity, "%Y-%m-%d") else {
-        game.available_staff_market_last_activity_date = Some(today);
-        return true;
-    };
-
-    let current_date = game.clock.current_date.date_naive();
-    if (current_date - last_activity_date).num_days() < AVAILABLE_STAFF_MARKET_ROTATION_DAYS {
+    let due = available_staff_count(&game.staff) == 0
+        || match game.available_staff_market_last_activity_date.as_deref() {
+            // A career that has never turned it over starts counting today.
+            None => {
+                game.available_staff_market_last_activity_date = Some(today);
+                return true;
+            }
+            Some(last) => month_of(last) != month_of(&today),
+        };
+    if !due {
         return false;
     }
-
     replace_available_staff_market(&mut game.staff, &game.teams, current_year);
     game.available_staff_market_last_activity_date = Some(today);
     true
+}
+
+/// The `YYYY-MM` of a `YYYY-MM-DD` date.
+fn month_of(date: &str) -> &str {
+    date.get(..7).unwrap_or(date)
+}
+
+/// The current month of the game, `YYYY-MM`.
+fn current_month(game: &crate::game::Game) -> String {
+    game.clock.current_date.format("%Y-%m").to_string()
+}
+
+/// How many manual refreshes of the staff market the manager has left this
+/// month: all of them once a new month has begun.
+pub fn staff_market_refreshes_left(game: &crate::game::Game) -> u8 {
+    let refreshes = &game.staff_market_refreshes;
+    if refreshes.month == current_month(game) {
+        STAFF_MARKET_REFRESHES_PER_MONTH.saturating_sub(refreshes.used)
+    } else {
+        STAFF_MARKET_REFRESHES_PER_MONTH
+    }
+}
+
+/// The manager refreshes the staff market: everyone unattached is replaced by a
+/// new market, priced at once. Free, but limited to
+/// [`STAFF_MARKET_REFRESHES_PER_MONTH`] a calendar month.
+pub fn refresh_available_staff_market(game: &mut crate::game::Game) -> Result<(), String> {
+    if staff_market_refreshes_left(game) == 0 {
+        return Err("be.error.staff.marketRefreshesUsed".to_string());
+    }
+    let month = current_month(game);
+    let used = if game.staff_market_refreshes.month == month {
+        game.staff_market_refreshes.used
+    } else {
+        0
+    };
+    game.staff_market_refreshes = crate::game::StaffMarketRefreshes {
+        month,
+        used: used + 1,
+    };
+    let current_year = game.clock.current_date.year() as u32;
+    replace_available_staff_market(&mut game.staff, &game.teams, current_year);
+    game.available_staff_market_last_activity_date =
+        Some(game.clock.current_date.format("%Y-%m-%d").to_string());
+    crate::staff_contracts::price_unattached_staff(game);
+    Ok(())
 }
 
 /// Ensure the unemployed manager and scout pools each meet a floor of `team_count * 2`.
@@ -3099,55 +3136,127 @@ mod tests {
         );
     }
 
+    fn free_staff_ids(game: &Game) -> Vec<String> {
+        game.staff
+            .iter()
+            .filter(|staff_member| staff_member.team_id.is_none())
+            .map(|staff_member| staff_member.id.clone())
+            .collect()
+    }
+
+    /// Given a market last turned over on the 1st of the month,
+    /// When later days of the same month are processed,
+    /// Then it stays as it is, however many days pass.
     #[test]
-    fn process_available_staff_market_does_not_rotate_before_thirty_days() {
-        let initial_staff = vec![make_import_staff("free-1", None, StaffRole::Coach)];
-        let mut game = make_staff_market_game(initial_staff);
-        game.available_staff_market_last_activity_date = Some("2026-07-03".to_string());
+    fn the_staff_market_does_not_turn_over_within_a_month() {
+        let mut game =
+            make_staff_market_game(vec![make_import_staff("free-1", None, StaffRole::Coach)]);
+        game.available_staff_market_last_activity_date = Some("2026-08-01".to_string());
+        game.clock.advance_days(30);
 
         let changed = process_available_staff_market(&mut game);
 
         assert!(!changed);
-        assert_eq!(
-            game.staff
-                .iter()
-                .filter(|staff_member| staff_member.team_id.is_none())
-                .map(|staff_member| staff_member.id.as_str())
-                .collect::<Vec<_>>(),
-            vec!["free-1"]
-        );
-        assert_eq!(
-            game.available_staff_market_last_activity_date.as_deref(),
-            Some("2026-07-03")
-        );
-    }
-
-    #[test]
-    fn process_available_staff_market_rotates_after_thirty_days() {
-        let initial_staff = vec![make_import_staff("free-1", None, StaffRole::Coach)];
-        let mut game = make_staff_market_game(initial_staff);
-        game.available_staff_market_last_activity_date = Some("2026-07-02".to_string());
-
-        let changed = process_available_staff_market(&mut game);
-
-        assert!(changed);
-        assert_eq!(
-            game.staff
-                .iter()
-                .filter(|staff_member| staff_member.team_id.is_none())
-                .count(),
-            12
-        );
-        assert!(
-            !game
-                .staff
-                .iter()
-                .any(|staff_member| staff_member.id == "free-1")
-        );
+        assert_eq!(free_staff_ids(&game), ["free-1"]);
         assert_eq!(
             game.available_staff_market_last_activity_date.as_deref(),
             Some("2026-08-01")
         );
+    }
+
+    /// Given a market last turned over on the 31st,
+    /// When the 1st of the next month is processed,
+    /// Then the whole market turns over, a day later.
+    #[test]
+    fn the_staff_market_turns_over_on_the_first_of_each_month() {
+        let mut game =
+            make_staff_market_game(vec![make_import_staff("free-1", None, StaffRole::Coach)]);
+        game.available_staff_market_last_activity_date = Some("2026-07-31".to_string());
+
+        let changed = process_available_staff_market(&mut game);
+
+        assert!(changed);
+        assert_eq!(free_staff_ids(&game).len(), 12);
+        assert!(!free_staff_ids(&game).contains(&"free-1".to_string()));
+        assert_eq!(
+            game.available_staff_market_last_activity_date.as_deref(),
+            Some("2026-08-01")
+        );
+    }
+
+    /// Given a fresh month,
+    /// When the manager refreshes the market,
+    /// Then everyone unattached - a man he just released too - is replaced by
+    /// twelve new faces, priced, and he has two refreshes left.
+    #[test]
+    fn a_refresh_replaces_the_whole_market_and_spends_a_turn() {
+        let mut game =
+            make_staff_market_game(vec![make_import_staff("released", None, StaffRole::Coach)]);
+        game.available_staff_market_last_activity_date = Some("2026-08-01".to_string());
+        assert_eq!(staff_market_refreshes_left(&game), 3);
+
+        refresh_available_staff_market(&mut game).expect("a refresh");
+
+        let free = free_staff_ids(&game);
+        assert_eq!(free.len(), 12);
+        assert!(!free.contains(&"released".to_string()));
+        assert!(
+            game.staff
+                .iter()
+                .filter(|staff_member| staff_member.team_id.is_none())
+                .all(|staff_member| staff_member.wage > 0)
+        );
+        assert_eq!(staff_market_refreshes_left(&game), 2);
+    }
+
+    /// Given a manager who has refreshed three times this month,
+    /// When he tries a fourth,
+    /// Then he is refused and the market is unchanged.
+    #[test]
+    fn a_fourth_refresh_in_a_month_is_refused() {
+        let mut game = make_staff_market_game(vec![]);
+        game.available_staff_market_last_activity_date = Some("2026-08-01".to_string());
+        for _ in 0..3 {
+            refresh_available_staff_market(&mut game).expect("a refresh");
+        }
+        let before = free_staff_ids(&game);
+
+        assert_eq!(
+            refresh_available_staff_market(&mut game),
+            Err("be.error.staff.marketRefreshesUsed".to_string())
+        );
+        assert_eq!(free_staff_ids(&game), before);
+        assert_eq!(staff_market_refreshes_left(&game), 0);
+    }
+
+    /// Given a manager who used every refresh in August,
+    /// When September comes,
+    /// Then he has three again; unused ones never carry over.
+    #[test]
+    fn refreshes_come_back_on_the_first_of_the_month() {
+        let mut game = make_staff_market_game(vec![]);
+        game.available_staff_market_last_activity_date = Some("2026-08-01".to_string());
+        for _ in 0..3 {
+            refresh_available_staff_market(&mut game).expect("a refresh");
+        }
+        game.clock.advance_days(31);
+
+        assert_eq!(staff_market_refreshes_left(&game), 3);
+    }
+
+    /// Given a market the manager has signed empty mid-month,
+    /// When the day is processed,
+    /// Then a new market appears at once, and no refresh is spent.
+    #[test]
+    fn an_emptied_market_refills_without_spending_a_refresh() {
+        let mut game = make_staff_market_game(vec![]);
+        game.available_staff_market_last_activity_date = Some("2026-08-01".to_string());
+        game.clock.advance_days(10);
+
+        assert!(process_available_staff_market(&mut game));
+
+        assert_eq!(free_staff_ids(&game).len(), 12);
+        assert_eq!(staff_market_refreshes_left(&game), 3);
     }
 
     /// Given a market due to rotate,

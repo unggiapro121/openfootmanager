@@ -499,6 +499,7 @@ mod tests {
                 scout_youth_rest_until_json: "{}".to_string(),
                 youth_watchlist_json: "[]".to_string(),
                 youth_pool_json: "null".to_string(),
+                staff_market_refreshes_json: "{}".to_string(),
             },
         )
         .unwrap();
@@ -629,6 +630,7 @@ mod tests {
                 scout_youth_rest_until_json: "{}".to_string(),
                 youth_watchlist_json: "[]".to_string(),
                 youth_pool_json: "null".to_string(),
+                staff_market_refreshes_json: "{}".to_string(),
             },
         )
         .unwrap();

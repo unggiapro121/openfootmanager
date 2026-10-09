@@ -42,6 +42,11 @@ export async function renewStaffContract(
   return invoke<GameStateData>("renew_staff_contract", { staffId, contractYears });
 }
 
+/** Replace the whole staff market; free, three times a calendar month. */
+export async function refreshStaffMarket(): Promise<GameStateData> {
+  return invoke<GameStateData>("refresh_staff_market");
+}
+
 export async function previewStaffContract(staffId: string): Promise<StaffContractPreviewData> {
   return invoke<StaffContractPreviewData>("preview_staff_contract", { staffId });
 }

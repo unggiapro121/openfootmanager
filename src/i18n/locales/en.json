@@ -1108,7 +1108,9 @@
       "hireConfirm": "Hire",
       "renewConfirm": "Renew",
       "releaseConfirm": "Release and pay"
-    }
+    },
+    "refreshMarket": "Refresh ({{left}}/{{total}})",
+    "refreshMarketHint": "Replace everyone on the market with new faces. Free, three times a month; the market also turns over on the 1st of each month, when your refreshes come back."
   },
   "finances": {
     "overview": "Financial Overview",
@@ -2922,7 +2924,10 @@
       },
       "invalidPath": "Invalid path.",
       "staffWageBudget": "The board will not let the weekly wage bill go over its {{budget}} budget.",
-      "staffContractYearsInvalid": "Staff contracts run for one to three years."
+      "staffContractYearsInvalid": "Staff contracts run for one to three years.",
+      "staff": {
+        "marketRefreshesUsed": "You have used this month's refreshes. They come back on the 1st."
+      }
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",

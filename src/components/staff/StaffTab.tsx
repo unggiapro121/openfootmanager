@@ -13,6 +13,7 @@ import {
   GraduationCap,
   Star,
   FileSignature,
+  RefreshCw,
 } from "lucide-react";
 import { getTeamName, calcAge, formatDate, formatVal, formatWeeklyAmount } from "../../lib/helpers";
 import { countryName } from "../../lib/countries";
@@ -20,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import {
   hireStaff,
   previewStaffContract,
+  refreshStaffMarket,
   releaseStaff,
   renewStaffContract,
   type StaffContractPreviewData,
@@ -59,6 +61,23 @@ function bestAttr(s: StaffData): { key: string; value: number } {
   return attrs.reduce((a, b) => (b.value > a.value ? b : a));
 }
 
+/**
+ * Manual refreshes of the staff market a manager gets each calendar month.
+ * Mirrors `STAFF_MARKET_REFRESHES_PER_MONTH` in the backend generator, which
+ * enforces it; this copy only labels the button.
+ */
+const STAFF_MARKET_REFRESHES_PER_MONTH = 3;
+
+/** Refreshes left this month: all of them once a new month has begun. */
+function staffMarketRefreshesLeft(gameState: GameStateData | null | undefined): number {
+  const refreshes = gameState?.staff_market_refreshes;
+  const month = gameState?.clock.current_date.slice(0, 7);
+  if (!refreshes || refreshes.month !== month) {
+    return STAFF_MARKET_REFRESHES_PER_MONTH;
+  }
+  return Math.max(0, STAFF_MARKET_REFRESHES_PER_MONTH - refreshes.used);
+}
+
 export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffTabProps) {
   const { t, i18n } = useTranslation();
   const { sessionState } = useGameStore();
@@ -76,12 +95,27 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
 
   const teamId = sessionState?.manager?.team_id ?? gameState?.manager?.team_id ?? null;
 
+  const today = gameState?.clock.current_date;
+  // Again whenever the day moves on: the market turns over on the 1st of each
+  // month, and a tab left open must not keep showing last month's faces.
   useEffect(() => {
     if (!teamId) return;
+    void today;
     void getStaff(teamId)
       .then(setFetchedStaff)
       .catch(() => {});
-  }, [teamId]);
+  }, [teamId, today]);
+
+  const refreshesLeft = staffMarketRefreshesLeft(gameState);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const handleRefreshMarket = () => {
+    setActionLoading("refresh-market");
+    setRefreshError(null);
+    void refreshStaffMarket()
+      .then(applyStaffUpdate)
+      .catch((err: unknown) => setRefreshError(resolveBackendError(err)))
+      .finally(() => setActionLoading(null));
+  };
 
   const weeklySuffix = t("finances.perWeekSuffix", "/wk");
   const openScoutingWorkflowLabel = t("staff.openScoutingWorkflow");
@@ -182,6 +216,29 @@ export default function StaffTab({ gameState, onGameUpdate, onNavigate }: StaffT
             {t("staff.available", { count: availableStaff.length })}
           </button>
         </div>
+
+        {view === "available" ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleRefreshMarket}
+              disabled={refreshesLeft === 0 || actionLoading !== null}
+              title={t("staff.refreshMarketHint")}
+              className="px-3 py-2 rounded-lg font-heading font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 bg-white dark:bg-navy-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-navy-600 hover:border-primary-400 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              {t("staff.refreshMarket", {
+                left: refreshesLeft,
+                total: STAFF_MARKET_REFRESHES_PER_MONTH,
+              })}
+            </button>
+            {refreshError ? (
+              <span role="alert" className="text-xs text-red-600 dark:text-red-400">
+                {refreshError}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="relative flex-1 min-w-[180px] max-w-xs">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
