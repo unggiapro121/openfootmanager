@@ -787,6 +787,14 @@ that says so (`bodyEmpty`), with the fee spent.
   club signed stay until the manager lets them go.
 - A scout who is released or whose contract ends leaves his prospects on the list without a scout,
   and the manager is told.
+- **Watching an ordinary player.** A player scout report carries the read a watch starts from
+  (`MessageContext::player_estimate`: each reported figure ± the scout's band) and a Watch choice.
+  The player joins the list as `WatchKind::Player` and is followed by the same rules, counting
+  towards a scout's three. His status is his current club or Free; Make an offer opens the transfer
+  bid (or free-agent contract) on the scouting screen. Each Monday his copy is refreshed and any range
+  he has grown out of is read again at its band. He has no season expiry; he leaves when unwatched,
+  quietly when he joins the user's club, and with a message when he retires. While he is watched, his
+  profile's hidden attributes show the scouts' figures.
 
 Measured with `tests/youth_scouting_probe.rs` (ignored, run in release) on 30 seeded compact worlds,
 four domestic high-potential searches per world and cell. Rank is the share of the nation's cohort

@@ -583,7 +583,7 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
 
     id_tool!(
         "scout_watchlist_sign",
-        "Sign a youth prospect on the watchlist into the academy (the board's wage policy applies at the academy rate, half the contract). Fails if an AI club has signed him first",
+        "Sign a youth prospect on the watchlist into the academy (the board's wage policy applies at the academy rate, half the contract). Fails if an AI club has signed him first, and for a watched ordinary player, who is bought through a transfer offer instead",
         prospect_id_schema(),
         prospect_id,
         tools_impl::scouting::scout_watchlist_sign
