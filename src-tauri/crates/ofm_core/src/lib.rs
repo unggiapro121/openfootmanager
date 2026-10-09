@@ -40,6 +40,7 @@ pub mod player_identity;
 pub mod player_rating;
 pub mod player_wear;
 pub(crate) mod playing_time;
+pub mod potential_projection;
 pub mod promotion;
 pub mod random_events;
 pub mod reputation;
