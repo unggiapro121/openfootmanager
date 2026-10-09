@@ -603,7 +603,9 @@ A club's pay level (`economy::set_pay_levels`) still counts academy players at t
 wage. Counting them at half raised every club's pay level and left AI clubs as deep in debt as
 before; counting them in full kept the saving. Ten seeded compact worlds over six seasons, AI clubs
 below zero cash at the end: 28 of 150 before the change, 27 with the pay level at half, 17 with it
-at full. Academy contracts are 8–13.5% of the wage bill at their full value.
+at full. Academy contracts are 8–13.5% of the wage bill at their full value. With AI clubs
+signing from the youth pool through the season, the same measure gave 19 of 150 (median AI cash
+88M, against 89M before the pool).
 
 The `FinancesTab` displays an overview with cards for balance, wage budget, transfer budget, and a payroll table.
 
@@ -662,10 +664,11 @@ the top-up; the manager is told when it applied.
 
 ## Youth Intake
 
-Every club, the player's included, takes new youngsters into its academy at each season's end
-(`ofm_core::youth_intake`). Without it a world only loses players: retirements outrun graduations,
-the academies the generator seeds are empty within a few seasons, and the free-agent pool drains
-after them.
+The player's club takes new youngsters into its academy at each season's end
+(`ofm_core::youth_intake`); AI clubs take theirs from the season's youth pool through the season
+instead (see [Youth Scouting](#youth-scouting)). Between them they keep the world supplied: without
+new youngsters a world only loses players — retirements outrun graduations, the academies the
+generator seeds are empty within a few seasons, and the free-agent pool drains after them.
 
 The rule is one pure function of a club's academy, `youth_intake::plan_for`: a club takes what it
 lacks of an academy of **1 goalkeeper, 2 defenders, 2 midfielders and 1 forward**
@@ -674,7 +677,8 @@ than **three** (`MAX_INTAKE`). A keeper comes first when the academy has none; a
 thinnest groups. The plan says how many and where they play, with no randomness, so an academy
 cost can be attached to it later. No money moves today.
 
-`apply_youth_intake` then takes each club's intake (`take_youth_intake`, one club at a time). The
+The same plan sizes each AI club's demand on the pool. `apply_youth_intake` takes the player's
+club's intake (`take_youth_intake`). The
 youngsters are drawn at 15–17 (a birth late in the year makes some 14 by the 1 July count) from
 the save's own seed (`Game::rng_for("youth-intake/<club>", date)`), so a replayed season end takes
 in the same youngsters and two careers from one package do not. Each joins on a contract that
@@ -693,8 +697,8 @@ Measured on a three-nation pyramid of 80 clubs over five seasons and three seeds
 (`tests/youth_intake_wages_probe.rs`, ignored, run in release): the board turned away none of 2,240
 planned recruits. From the second season on, every club sits over its wage budget on the policy's
 25,000-a-week grace, which is allowed per decision, so a recruit at the minimum cannot be refused.
-`tests/squad_floor_seasons.rs` fails if a solvent AI club ever goes two season ends running without
-a youngster.
+`tests/squad_floor_seasons.rs` fails if a solvent AI club ever goes two seasons running without
+signing a youngster.
 
 Measured on a seeded compact world with a league: the world opens below the intake's equilibrium,
 grows for about a dozen seasons, and then holds at about a fifth above its opening size, with around
@@ -705,8 +709,28 @@ band over twelve seasons on three seeds.
 
 ## Youth Scouting
 
-A scout does not create talent: he decides whom the club finds and how much it knows about them
-(`ofm_core::scouting`, `ofm_core::youth_watchlist`).
+A scout does not create talent: young talent is shared by the whole world, and the scout decides
+whom the club finds before anyone else does, and how much it knows about them
+(`ofm_core::youth_pool`, `ofm_core::scouting`, `ofm_core::youth_watchlist`).
+
+### The season's youth pool
+
+- **Drawn** once when a season opens (at the season end's squad turnover; a career with none draws
+  one on its first Monday). Every nation with a club has a pool: in each position group, 1.5 times
+  what its AI clubs' academies lack by the intake's rule (`plan_for`), and at least one. The player's
+  club adds nothing — its intake is generated separately. Youngsters are 15–21, from the shared youth
+  generator, with ids from nation, day and draw so a seeded season replays.
+- **Hidden**: the pool lives in `Game::youth_pool`, outside `game.players`, so no free-agent list,
+  aging, retirement or squad top-up can reach it. The only way to learn of a youngster is a report.
+- **AI clubs sign from it every Monday** — their only source of youngsters. A club with demand left
+  signs one with chance `demand left / Mondays left in the season`, so it signs steadily and is sure
+  to try on the last Monday. It chooses with its best scout by judging ability: views
+  `4 + JA/25 + (facility − 1)` youngsters of its nation in the group it needs, estimates them within
+  that scout's band and signs the best on a balanced score, under its board's wage policy at the
+  academy rate. A refused wage skips the week.
+- **Closes** at the season end: whoever is unsigned leaves the game, and the next pool is drawn.
+- Saved as `youth_pool_json` on `game_meta` (v056). On a standard world (440 clubs, 16 nations) the
+  pool holds about 1,500 youngsters, 2.2 MB of JSON against 17.7 MB for the world's players.
 
 ### The search
 
@@ -716,8 +740,10 @@ A scout does not create talent: he decides whom the club finds and how much it k
   ×1.5 for a high-potential search. `quote_youth_search` shows the fee, the days and the rest left.
 - **Days**: 4 / 5 / 6 / 7 by judging potential (≥ 80 / ≥ 60 / ≥ 40 / lower), +1 international,
   +1 high potential.
-- **Youngsters seen**: 4 for a balanced search, 6 otherwise, + `judging_ability / 25`, + the
-  scouting facility level − 1. Their true quality does not depend on the scout.
+- **Youngsters seen**: on the day the search completes, at random from what is **left in the pool**
+  — the club's nation for a domestic search, every other nation for an international one, filtered
+  by position — 4 for a balanced search, 6 otherwise, + `judging_ability / 25`, + the scouting
+  facility level − 1. Fewer if the pool has fewer.
 - **Judgement**: the scout estimates each one's OVR (by judging ability) and potential (by judging
   potential) within his band — ±2 / ±5 / ±8 / ±12 for ratings ≥ 80 / ≥ 60 / ≥ 40 / lower, the band a
   player report uses — ranks them on the estimates and recommends three.
@@ -726,39 +752,43 @@ A scout does not create talent: he decides whom the club finds and how much it k
 
 Each prospect shows a **range** for OVR and potential, never the true value: the estimate ± the band,
 clamped to 1–99, so the truth is always inside. The options are Sign, Watch and Discard. Signing
-reveals everything.
+reveals everything and takes him out of the pool; a refused wage leaves him in it. Discarding only
+takes him off the report. A prospect an AI club has signed since, or who left the market, cannot be
+signed or watched: the manager is told where he went. A pool with nobody suitable left gives a report
+that says so (`bodyEmpty`), with the fee spent.
 
 ### The watchlist
 
-- **Watch** puts the prospect and the report's ranges on the watchlist, with no scout.
+- **Watch** puts a prospect still in the pool, with the report's ranges, on the watchlist, with no
+  scout. He stays until he signs somewhere, the manager lets him go, or the season ends.
 - The manager gives each prospect a scout on the Scouting screen, at most **three** per scout.
   Following does not take the scout's assignment slot. A new scout drops the band straight to his
   own if it is narrower; ranges never widen.
-- **Every Monday**, for each prospect, in order:
-  1. after **12 weeks** he leaves the list;
-  2. an AI club may sign him first — weekly chance `3% + 4% × clamp((potential − 60) / 30, 0, 1)`.
-     He joins an AI academy, same nation first, through the youth intake's signing path and wage
-     policy; if none can pay he leaves the market;
-  3. with a scout, the band narrows one step (12 → 8 → 5 → 2 → 0) and the new range is the
-     intersection of the old one and a fresh read, so it always holds the truth;
-  4. with a scout, a weekly report, which from the second week adds headline attributes — as many as
-     a player report at that judging ability shows, read within the OVR band.
+- **Every Monday**, after the AI clubs have signed: an AI club that signed a watched prospect takes
+  him off the list and the manager is told where he went; then each prospect with a scout narrows a
+  band (12 → 8 → 5 → 2 → 0), the new range being the intersection of the old one and a fresh read,
+  and gets a weekly report, which from the second week adds headline attributes — as many as a player
+  report at that judging ability shows, read within the OVR band.
+- When the pool closes, everyone on the list leaves the market and the manager is told.
 - A scout who is released or whose contract ends leaves his prospects on the list without a scout,
   and the manager is told.
-- Signing from a report or the list goes through the board's wage policy on the paid academy wage
-  (`be.error.scouting.wagePolicy`).
 
-Measured with `tests/youth_scouting_probe.rs` (ignored, run in release), 2,000 domestic
-high-potential searches per row, true ratings of the three recommended:
+Measured with `tests/youth_scouting_probe.rs` (ignored, run in release) on 30 seeded compact worlds,
+four domestic high-potential searches per world and cell. Rank is the share of the nation's cohort
+with more true potential than the youngster recommended — 0% is the cohort's best:
 
-| Scout rating | Facility | Mean OVR | Mean potential | Potential ≥ 85 |
+| When | Scout | Facility | Mean rank | In the top 10% |
 |---|---|---|---|---|
-| 20 | 1 | 70.5 | 89.4 | 74.3% |
-| 50 | 1 | 71.5 | 91.5 | 86.6% |
-| 80 | 1 | 72.4 | 93.2 | 95.8% |
-| 80 | 3 | 72.9 | 94.4 | 98.2% |
+| Week 1 | 20 | 1 | 29.7% | 24.7% |
+| Week 1 | 50 | 1 | 22.5% | 29.4% |
+| Week 1 | 80 | 1 | 16.4% | 36.7% |
+| Week 1 | 80 | 3 | 12.0% | 48.3% |
+| Week 20 | 20 | 1 | 48.1% | 7.2% |
+| Week 20 | 80 | 3 | 29.3% | 16.9% |
+| Week 40 | 20 | 1 | 56.1% | 5.6% |
+| Week 40 | 80 | 3 | 40.5% | 8.9% |
 
-A better scout and a better facility find better youngsters. The youngsters themselves run hot —
-even the worst scout's picks are three-quarters elite on potential — which is the youth generator's
-distribution, not this search.
-
+A better scout and a better facility find better youngsters, and the early search beats the late one:
+by mid-season the AI clubs have taken much of the best. Every AI club filled its demand (998 of 998).
+AI clubs whose best scout judges 80+ signed youngsters of mean potential 89.8, against 89.4 for
+60–79 — the generator gives AI clubs no scout below 60, so their spread is narrow.
