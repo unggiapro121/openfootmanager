@@ -13,6 +13,14 @@ impl StatsState {
         self.player_matches.extend(other.player_matches);
         self.team_matches.extend(other.team_matches);
     }
+
+    /// Drops every player and team row from a season before `first_season`.
+    pub fn retain_seasons_from(&mut self, first_season: u32) {
+        self.player_matches
+            .retain(|record| record.season >= first_season);
+        self.team_matches
+            .retain(|record| record.season >= first_season);
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -67,4 +75,95 @@ pub struct TeamMatchStatsRecord {
     pub fouls_committed: u16,
     pub yellow_cards: u8,
     pub red_cards: u8,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn player_row(fixture_id: &str, season: u32) -> PlayerMatchStatsRecord {
+        PlayerMatchStatsRecord {
+            fixture_id: fixture_id.to_string(),
+            season,
+            matchday: 1,
+            date: "2026-01-01".to_string(),
+            competition: FixtureCompetition::League,
+            player_id: "p1".to_string(),
+            team_id: "a".to_string(),
+            opponent_team_id: "b".to_string(),
+            home_team_id: "a".to_string(),
+            away_team_id: "b".to_string(),
+            home_goals: 0,
+            away_goals: 0,
+            minutes_played: 90,
+            goals: 0,
+            assists: 0,
+            shots: 0,
+            shots_on_target: 0,
+            passes_completed: 0,
+            passes_attempted: 0,
+            tackles_won: 0,
+            interceptions: 0,
+            fouls_committed: 0,
+            yellow_cards: 0,
+            red_cards: 0,
+            rating: 6.5,
+        }
+    }
+
+    fn team_row(fixture_id: &str, season: u32) -> TeamMatchStatsRecord {
+        TeamMatchStatsRecord {
+            fixture_id: fixture_id.to_string(),
+            season,
+            matchday: 1,
+            date: "2026-01-01".to_string(),
+            competition: FixtureCompetition::League,
+            team_id: "a".to_string(),
+            opponent_team_id: "b".to_string(),
+            home_team_id: "a".to_string(),
+            away_team_id: "b".to_string(),
+            goals_for: 0,
+            goals_against: 0,
+            possession_pct: 50,
+            shots: 0,
+            shots_on_target: 0,
+            passes_completed: 0,
+            passes_attempted: 0,
+            tackles_won: 0,
+            interceptions: 0,
+            fouls_committed: 0,
+            yellow_cards: 0,
+            red_cards: 0,
+        }
+    }
+
+    /// Given player and team rows from three seasons, when the ones before the
+    /// middle season are dropped, then the middle and latest seasons remain in
+    /// both lists.
+    #[test]
+    fn keeps_only_the_seasons_from_the_given_one() {
+        let mut stats = StatsState {
+            player_matches: vec![
+                player_row("old", 1),
+                player_row("mid", 2),
+                player_row("new", 3),
+            ],
+            team_matches: vec![team_row("old", 1), team_row("mid", 2), team_row("new", 3)],
+        };
+
+        stats.retain_seasons_from(2);
+
+        let players: Vec<&str> = stats
+            .player_matches
+            .iter()
+            .map(|r| r.fixture_id.as_str())
+            .collect();
+        let teams: Vec<&str> = stats
+            .team_matches
+            .iter()
+            .map(|r| r.fixture_id.as_str())
+            .collect();
+        assert_eq!(players, vec!["mid", "new"]);
+        assert_eq!(teams, vec!["mid", "new"]);
+    }
 }

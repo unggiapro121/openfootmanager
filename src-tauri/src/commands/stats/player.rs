@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use domain::player::{Player, PlayerSeasonStats, Position};
 use domain::stats::PlayerMatchStatsRecord;
+use ofm_core::fixture_lookup::scheduled_fixture_ids;
 use ofm_core::state::StateManager;
 
 use super::dto::{
@@ -227,13 +228,16 @@ fn build_history_overview(
         .map(|candidate| candidate.id.clone())
         .collect::<Vec<_>>();
 
+    let this_season = scheduled_fixture_ids(&game);
+
     let Some(history_aggregates) = state.get_stats_state(|stats| {
         let mut records_by_player: HashMap<String, Vec<PlayerMatchStatsRecord>> = HashMap::new();
 
         for record in &stats.player_matches {
-            if same_position_ids
-                .iter()
-                .any(|candidate_id| candidate_id == &record.player_id)
+            if this_season.contains(&record.fixture_id)
+                && same_position_ids
+                    .iter()
+                    .any(|candidate_id| candidate_id == &record.player_id)
             {
                 records_by_player
                     .entry(record.player_id.clone())

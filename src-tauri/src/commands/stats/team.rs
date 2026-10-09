@@ -1,4 +1,5 @@
 use domain::stats::TeamMatchStatsRecord;
+use ofm_core::fixture_lookup::scheduled_fixture_ids;
 use ofm_core::state::StateManager;
 
 use super::dto::{
@@ -112,12 +113,15 @@ pub fn get_team_stats_overview_internal(
     team_id: &str,
 ) -> Result<Option<TeamStatsOverviewDto>, String> {
     ensure_team_exists(state, team_id)?;
+    let this_season = state
+        .get_game(scheduled_fixture_ids)
+        .ok_or_else(|| "be.error.noActiveGameSession".to_string())?;
 
     let Some(records) = state.get_stats_state(|stats| {
         stats
             .team_matches
             .iter()
-            .filter(|record| record.team_id == team_id)
+            .filter(|record| record.team_id == team_id && this_season.contains(&record.fixture_id))
             .cloned()
             .collect::<Vec<_>>()
     }) else {
