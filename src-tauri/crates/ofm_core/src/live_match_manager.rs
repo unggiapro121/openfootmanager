@@ -503,6 +503,47 @@ pub fn play_unwatched_fixture(
     })
 }
 
+/// Play a fixture of `game.league` that fell before the career opened, so it
+/// leaves the same report, lineups and stats rows as any match played since.
+///
+/// It differs from [`play_unwatched_fixture`] in two ways, both because the
+/// match belongs to the past. It does not go through the kick-off gate, which
+/// signs free agents for a short squad: nobody can be signed into a match that
+/// has already happened. And its randomness is drawn from the fixture's own date,
+/// not today's, so two meetings of the same clubs do not replay identically.
+/// An `Err` is a side with nobody to field.
+pub(crate) fn play_past_fixture(
+    game: &Game,
+    fixture_index: usize,
+) -> Result<UnwatchedFixture, String> {
+    let allows_extra_time = crate::matchday::fixture_allows_extra_time(game, fixture_index);
+    let mut session =
+        create_live_match(game, fixture_index, MatchMode::Instant, allows_extra_time)?;
+    session.user_side = None;
+    let date = game
+        .league
+        .as_ref()
+        .and_then(|league| league.fixtures.get(fixture_index))
+        .map(|fixture| fixture.date.clone())
+        .unwrap_or_default();
+    session.rng = game.rng_for(
+        &format!(
+            "season-replay/match/{}/{}",
+            session.home_team_id, session.away_team_id
+        ),
+        &date,
+    );
+    let league_round_context = session.league_round_context.clone();
+    session.run_to_completion();
+
+    Ok(UnwatchedFixture {
+        home_team_id: session.home_team_id.clone(),
+        away_team_id: session.away_team_id.clone(),
+        report: session.match_state.into_report(),
+        league_round_context,
+    })
+}
+
 fn manager_for_team<'a>(game: &'a Game, team_id: &str) -> Option<&'a Manager> {
     let manager_id = game
         .teams

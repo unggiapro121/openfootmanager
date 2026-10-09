@@ -5,6 +5,8 @@
 //! before competitions existed. A screen that opens "this match" has only the
 //! id, so it needs the one search that knows all three.
 
+use std::collections::HashSet;
+
 use domain::league::Fixture;
 
 use crate::game::Game;
@@ -57,6 +59,22 @@ pub fn side_name(game: &Game, team_id: &str) -> String {
         .find(|team| team.id == team_id)
         .map(|team| team.name.clone())
         .unwrap_or_else(|| team_id.to_string())
+}
+
+/// The ids of every fixture still on a schedule — this season's. Fixture ids
+/// are unique and a rollover replaces each competition's fixtures, so a stats
+/// row from an earlier season points at an id no schedule holds.
+pub fn scheduled_fixture_ids(game: &Game) -> HashSet<String> {
+    game.competitions
+        .iter()
+        .flat_map(|competition| competition.fixtures.iter())
+        .chain(
+            game.national_teams
+                .iter()
+                .flat_map(|team| team.fixtures.iter()),
+        )
+        .map(|fixture| fixture.id.clone())
+        .collect()
 }
 
 fn competition_name(game: &Game, competition_id: &str) -> String {
@@ -148,6 +166,34 @@ mod tests {
 
         assert_eq!(found.fixture.home_team_id, "nt-eng");
         assert_eq!(side_name(&game, "nt-fra"), "France");
+    }
+
+    /// Given fixtures in competitions and on a national team's list, then all
+    /// of them are on the schedule, and nothing else is.
+    #[test]
+    fn the_schedule_holds_every_competition_and_national_team_fixture() {
+        let mut game = game();
+        let mut england = NationalTeam::new(
+            "nt-eng".to_string(),
+            "England".to_string(),
+            "ENG".to_string(),
+            None,
+        );
+        england
+            .fixtures
+            .push(fixture("friendly", "intl-friendlies", "nt-eng", "nt-fra"));
+        game.national_teams = vec![england];
+
+        let ids = scheduled_fixture_ids(&game);
+
+        assert_eq!(
+            ids,
+            HashSet::from([
+                "league-fixture".to_string(),
+                "cup-fixture".to_string(),
+                "friendly".to_string()
+            ])
+        );
     }
 
     /// Given an id no fixture has, then nothing is found.

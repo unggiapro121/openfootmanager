@@ -49,6 +49,7 @@ pub mod schedule;
 pub mod scouting;
 pub mod season_awards;
 pub mod season_context;
+pub mod season_replay;
 pub mod seed;
 pub mod slices;
 pub mod squad_floor;

@@ -120,12 +120,20 @@ pub fn bootstrap_game_for_mcp(
     // this resumes a career rather than starting one: nobody is choosing a club, so
     // the clock stays where the world put it and contracts are dated against that.
     // Otherwise a club is being chosen, which is `begin_career`'s job.
-    let stats_state = if game.manager.team_id.is_some() {
+    let stats_state = if let Some(managed) = game.manager.team_id.clone() {
         date_opening_contracts(&mut game, None);
+        // As `begin_career` does for a club being chosen; a no-op for a world
+        // whose club competitions have already been played through the engine.
+        let mut stats_state = current_stats_state;
+        ofm_core::season_replay::replay_user_competitions_through_engine(
+            &mut game,
+            &managed,
+            &mut stats_state,
+        );
         ofm_core::ai_hiring::seed_ai_managers(&mut game);
         ofm_core::season_context::refresh_game_context(&mut game);
         ofm_core::transfers::seed_opening_ai_loan_market(&mut game);
-        current_stats_state
+        stats_state
     } else {
         // Manager has no team — need an explicit team_id to assign one
         let tid = team_id.ok_or(

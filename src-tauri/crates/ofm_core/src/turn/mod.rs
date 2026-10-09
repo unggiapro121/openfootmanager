@@ -19,6 +19,7 @@ use log::{debug, info};
 
 // Re-export public items
 pub use news::generate_matchday_news;
+pub(crate) use post_match::record_match_outcome;
 pub use post_match::{apply_match_report, apply_match_report_with_capture};
 pub use round_summary::{
     NotableUpset, RoundResultSummary, RoundSummary, StandingDelta, TopScorerDelta,

@@ -55,6 +55,22 @@ fn make_player(id: &str, team_id: &str, natural_position: Position) -> Player {
     player
 }
 
+/// The game with a league whose current schedule holds `fixture_ids`, as
+/// every fixture of the season being played is held.
+fn on_the_current_schedule(mut game: Game, fixture_ids: &[&str]) -> Game {
+    let mut league = League::new("league-now".to_string(), "Now".to_string(), 2026, &[]);
+    league.fixtures = fixture_ids
+        .iter()
+        .map(|id| Fixture {
+            id: id.to_string(),
+            status: FixtureStatus::Completed,
+            ..Default::default()
+        })
+        .collect();
+    game.competitions.push(league);
+    game
+}
+
 fn make_game(players: Vec<Player>) -> Game {
     let clock = GameClock::new(Utc.with_ymd_and_hms(2025, 7, 1, 0, 0, 0).unwrap());
     let mut manager = Manager::new(
@@ -266,7 +282,19 @@ fn get_player_stats_overview_aggregates_history_and_uses_exact_position_cohorts(
     let broad_bucket_peer = make_player("player-4", "team-1", Position::Forward);
 
     let state = StateManager::new();
-    state.set_game(make_game(vec![player, peer_a, peer_b, broad_bucket_peer]));
+    state.set_game(on_the_current_schedule(
+        make_game(vec![player, peer_a, peer_b, broad_bucket_peer]),
+        &[
+            "fixture-a",
+            "fixture-b",
+            "fixture-peer-a-1",
+            "fixture-peer-a-2",
+            "fixture-peer-b-1",
+            "fixture-peer-b-2",
+            "fixture-forward-only-1",
+            "fixture-forward-only-2",
+        ],
+    ));
     state.set_stats_state(StatsState {
         player_matches: vec![
             PlayerMatchStatsRecord {
@@ -598,11 +626,10 @@ fn get_player_match_history_returns_empty_when_stats_state_is_missing() {
 #[test]
 fn get_team_stats_overview_aggregates_totals_and_match_averages() {
     let state = StateManager::new();
-    state.set_game(make_game(vec![make_player(
-        "player-1",
-        "team-1",
-        Position::Striker,
-    )]));
+    state.set_game(on_the_current_schedule(
+        make_game(vec![make_player("player-1", "team-1", Position::Striker)]),
+        &["fixture-1", "fixture-2"],
+    ));
     state.set_stats_state(sample_team_stats_state());
 
     let overview = get_team_stats_overview_internal(&state, "team-1")
@@ -852,4 +879,55 @@ fn get_competition_leaders_without_a_game_is_an_error() {
     let error = get_competition_leaders_internal(&StateManager::new(), "league-1").unwrap_err();
 
     assert_eq!(error, "be.error.noActiveGameSession");
+}
+
+/// Given a player's rows from a match of this season and from one of the season
+/// just ended, which is no longer on any schedule,
+/// When his stats overview is built,
+/// Then only this season's match counts.
+#[test]
+fn get_player_stats_overview_counts_only_this_seasons_matches() {
+    let state = StateManager::new();
+    state.set_game(on_the_current_schedule(
+        make_game(vec![make_player("player-1", "team-1", Position::Striker)]),
+        &["this-season"],
+    ));
+    let mut stats = sample_stats_state();
+    stats.player_matches.truncate(1);
+    let this_season = PlayerMatchStatsRecord {
+        fixture_id: "this-season".to_string(),
+        shots: 3,
+        ..stats.player_matches[0].clone()
+    };
+    let last_season = PlayerMatchStatsRecord {
+        fixture_id: "last-season".to_string(),
+        shots: 40,
+        ..stats.player_matches[0].clone()
+    };
+    stats.player_matches = vec![this_season, last_season];
+    state.set_stats_state(stats);
+
+    let overview = get_player_stats_overview_internal(&state, "player-1").unwrap();
+
+    assert_eq!(overview.metrics.shots.total, 3);
+}
+
+/// Given a team's rows from a match of this season and from one of the season
+/// just ended, which is no longer on any schedule,
+/// When its stats overview is built,
+/// Then only this season's match counts.
+#[test]
+fn get_team_stats_overview_counts_only_this_seasons_matches() {
+    let state = StateManager::new();
+    state.set_game(on_the_current_schedule(
+        make_game(vec![make_player("player-1", "team-1", Position::Striker)]),
+        &["fixture-1"],
+    ));
+    state.set_stats_state(sample_team_stats_state());
+
+    let overview = get_team_stats_overview_internal(&state, "team-1")
+        .unwrap()
+        .expect("expected team overview");
+
+    assert_eq!(overview.matches_played, 1);
 }
