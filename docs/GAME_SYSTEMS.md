@@ -770,7 +770,8 @@ that says so (`bodyEmpty`), with the fee spent.
   own if it is narrower; ranges never widen.
 - **Every Monday**, after the AI clubs have signed: a watched prospect an AI club signed stays on the
   list marked with his new club (`WatchedProspect::signed_by`), his scout stops following him, he can
-  no longer be signed or given a scout, and the manager is told where he went; then each prospect with a scout narrows a
+  no longer be signed into the academy or given a scout - Sign becomes Make an offer at his new club -
+  and the manager is told where he went; then each prospect with a scout narrows a
   band (12 → 8 → 5 → 2 → 0), the new range being the intersection of the old one and a fresh read,
   and every attribute already read narrows a band too; then the scout reads K more attributes —
   4 / 3 / 2 / 2 for judging ability ≥ 80 / ≥ 60 / ≥ 40 / lower — in the order the prospect's

@@ -164,12 +164,14 @@ describe("ScoutingWatchlistCard", () => {
     expect(props.onUnwatch).toHaveBeenCalledWith("p1");
   });
 
-  it("shows each prospect's status: free, or the club that signed him", () => {
-    renderCard({
+  it("shows each prospect's status, and offers to buy one another club signed", () => {
+    const signedKid = createPlayer({ id: "p2", full_name: "Kid p2", team_id: "rival" });
+    const props = renderCard({
       watchlist: [
         watched("p1"),
         { ...watched("p2"), signed_by: "Rival FC", signed_by_team_id: "rival" },
       ],
+      players: [signedKid],
     });
 
     const free = screen.getByRole("row", { name: /Kid p1/ });
@@ -177,23 +179,29 @@ describe("ScoutingWatchlistCard", () => {
     expect(within(free).getByRole("button", { name: "scouting.watchlistSign" })).toBeEnabled();
     const signed = screen.getByRole("row", { name: /Kid p2/ });
     expect(signed).toHaveTextContent("Rival FC");
-    expect(within(signed).getByRole("button", { name: "scouting.watchlistSign" })).toBeDisabled();
+    expect(within(signed).queryByRole("button", { name: "scouting.watchlistSign" })).toBeNull();
+    fireEvent.click(within(signed).getByRole("button", { name: "scouting.watchlistMakeOffer" }));
+    expect(props.onMakeOffer).toHaveBeenCalledWith(signedKid);
     expect(
       within(signed).getByRole("combobox", { name: "scouting.watchlistScoutFor" }),
     ).toBeDisabled();
     expect(within(signed).getByRole("button", { name: "scouting.watchlistUnwatch" })).toBeEnabled();
   });
 
-  it("disables signing in the detail form of a prospect another club signed", () => {
-    renderCard({
+  it("offers to buy, not sign, in the detail form of a prospect another club signed", () => {
+    const signedKid = createPlayer({ id: "p2", full_name: "Kid p2", team_id: "rival" });
+    const props = renderCard({
       watchlist: [{ ...watched("p2"), signed_by: "Rival FC", signed_by_team_id: "rival" }],
+      players: [signedKid],
     });
 
     fireEvent.click(screen.getByRole("button", { name: "Kid p2" }));
 
     const dialog = screen.getByRole("dialog", { name: "Kid p2" });
     expect(dialog).toHaveTextContent("Rival FC");
-    expect(within(dialog).getByRole("button", { name: "scouting.watchlistSign" })).toBeDisabled();
+    expect(within(dialog).queryByRole("button", { name: "scouting.watchlistSign" })).toBeNull();
+    fireEvent.click(within(dialog).getByRole("button", { name: "scouting.watchlistMakeOffer" }));
+    expect(props.onMakeOffer).toHaveBeenCalledWith(signedKid);
   });
 
   it("shows a watched player's club and offers to buy him instead of signing", () => {

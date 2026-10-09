@@ -109,6 +109,8 @@ export default function ScoutingWatchlistCard({
                   const status = statusOf(entry);
                   // A youngster another club has signed can no longer be followed.
                   const signedElsewhere = !isPlayer && !status.free;
+                  // Once he belongs to a club, he is bought rather than signed.
+                  const buyable = isPlayer || signedElsewhere;
                   const choices = scouts.filter(
                     (scout) =>
                       scout.id === entry.scout_id || load(scout.id) < MAX_WATCHED_PER_SCOUT,
@@ -170,7 +172,7 @@ export default function ScoutingWatchlistCard({
                       </td>
                       <td className="py-2">
                         <div className="flex justify-end gap-2">
-                          {isPlayer ? (
+                          {buyable ? (
                             <Button
                               size="sm"
                               disabled={busy}
@@ -179,11 +181,7 @@ export default function ScoutingWatchlistCard({
                               {t("scouting.watchlistMakeOffer")}
                             </Button>
                           ) : (
-                            <Button
-                              size="sm"
-                              disabled={busy || signedElsewhere}
-                              onClick={() => onSign(prospect.id)}
-                            >
+                            <Button size="sm" disabled={busy} onClick={() => onSign(prospect.id)}>
                               {t("scouting.watchlistSign")}
                             </Button>
                           )}
@@ -212,7 +210,7 @@ export default function ScoutingWatchlistCard({
           scoutName={openedScout ? `${openedScout.first_name} ${openedScout.last_name}` : null}
           status={statusOf(opened)}
           action={
-            opened.kind === "Player"
+            opened.kind === "Player" || !statusOf(opened).free
               ? {
                   label: t("scouting.watchlistMakeOffer"),
                   disabled: false,
@@ -220,7 +218,7 @@ export default function ScoutingWatchlistCard({
                 }
               : {
                   label: t("scouting.watchlistSign"),
-                  disabled: !statusOf(opened).free,
+                  disabled: false,
                   onClick: () => onSign(opened.prospect.id),
                 }
           }
