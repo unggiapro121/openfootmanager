@@ -366,14 +366,11 @@ fn complete_youth_scouting_assignment(
     // Prospects are scouted mid-career, so they are aged against the running
     // clock rather than the year the world opened in.
     let current_year = chrono::Datelike::year(&game.clock.current_date) as u32;
-    let prospects = generate_youth_recruitment_candidates(
-        &team,
-        assignment.region,
-        assignment.objective,
-        assignment.target_position.as_ref(),
-        current_year,
-    );
-    if prospects.is_empty() {
+    // Seeded by the search, so a replayed day turns up the same youngsters.
+    let mut rng = game.rng_for(&format!("youth-scout/{}", assignment.id), date);
+    let recommended =
+        generate_youth_recruitment_candidates(&team, &scout, assignment, current_year, &mut rng);
+    if recommended.is_empty() {
         return;
     }
 
@@ -383,7 +380,7 @@ fn complete_youth_scouting_assignment(
         &scout_name,
         &team.id,
         &team.name,
-        &prospects,
+        &recommended,
         assignment.region,
         assignment.objective,
         assignment.target_position.as_ref(),
@@ -397,7 +394,7 @@ fn build_youth_recruitment_report(
     scout_name: &str,
     team_id: &str,
     team_name: &str,
-    prospects: &[Player],
+    recommended: &[(Player, domain::message::ProspectEstimate)],
     region: YouthScoutingRegion,
     objective: YouthScoutingObjective,
     target_position: Option<&Position>,
@@ -414,6 +411,10 @@ fn build_youth_recruitment_report(
     .with_category(MessageCategory::ScoutReport)
     .with_sender_role("");
 
+    let prospects: Vec<Player> = recommended
+        .iter()
+        .map(|(prospect, _)| prospect.clone())
+        .collect();
     let message = prospects.iter().fold(message, |message, prospect| {
         message.with_action(MessageAction {
             id: format!("prospect:{}", prospect.id),
@@ -433,7 +434,11 @@ fn build_youth_recruitment_report(
             .map(|position| format!("{:?}", position)),
         youth_search_region: Some(format!("{:?}", region)),
         youth_search_objective: Some(format!("{:?}", objective)),
-        youth_prospects: Some(prospects.to_vec()),
+        youth_prospects: Some(prospects.clone()),
+        youth_prospect_estimates: recommended
+            .iter()
+            .map(|(_, estimate)| estimate.clone())
+            .collect(),
         ..MessageContext::default()
     });
 
@@ -491,57 +496,59 @@ fn youth_prospect_options() -> Vec<ActionOption> {
     ]
 }
 
-fn prospect_score(player: &Player, objective: YouthScoutingObjective) -> (u8, u8) {
+fn rank_by_objective(ovr: u8, potential: u8, objective: YouthScoutingObjective) -> (u8, u8) {
     match objective {
-        YouthScoutingObjective::Balanced => (
-            player.ovr.saturating_add(player.potential / 2),
-            player.potential,
-        ),
-        YouthScoutingObjective::HighPotential => (player.potential, player.ovr),
-        YouthScoutingObjective::ReadySoon => (player.ovr, player.potential),
+        YouthScoutingObjective::Balanced => (ovr.saturating_add(potential / 2), potential),
+        YouthScoutingObjective::HighPotential => (potential, ovr),
+        YouthScoutingObjective::ReadySoon => (ovr, potential),
     }
 }
 
+/// Who a youth search turns up: `viewed` youngsters, each read by `scout`, of
+/// whom he recommends three on what he saw.
 fn generate_youth_recruitment_candidates(
     team: &domain::team::Team,
-    region: YouthScoutingRegion,
-    objective: YouthScoutingObjective,
-    target_position: Option<&Position>,
+    scout: &domain::staff::Staff,
+    search: &YouthScoutingAssignment,
     current_year: u32,
-) -> Vec<Player> {
-    let pool_size = match objective {
-        YouthScoutingObjective::Balanced => 4,
-        YouthScoutingObjective::HighPotential => 6,
-        YouthScoutingObjective::ReadySoon => 6,
-    };
+    rng: &mut impl rand::Rng,
+) -> Vec<(Player, domain::message::ProspectEstimate)> {
+    let viewed = youth_candidates_viewed(
+        search.objective,
+        scout.attributes.judging_ability,
+        team.facilities.scouting,
+    );
     let domestic_nationality = if team.football_nation.is_empty() {
         Some(team.country.as_str())
     } else {
         Some(team.football_nation.as_str())
     };
 
-    let mut prospects: Vec<Player> = (0..pool_size)
+    let candidates = (0..viewed)
         .map(|_| {
-            let mut prospect = crate::generator::generate_youth_academy_recruit_with_nationality(
+            let mut prospect = crate::generator::generate_youth_academy_recruit_from(
                 team,
-                target_position,
-                match region {
+                search.target_position.as_ref(),
+                match search.region {
                     YouthScoutingRegion::Domestic => domestic_nationality,
                     YouthScoutingRegion::International => None,
                 },
                 current_year,
+                rng,
             );
             prospect.team_id = None;
             prospect.squad_role = SquadRole::Youth;
-            prospect
+            let estimate = estimate_prospect(
+                &prospect,
+                scout.attributes.judging_ability,
+                scout.attributes.judging_potential,
+                rng,
+            );
+            (prospect, estimate)
         })
         .collect();
 
-    prospects.sort_by(|left, right| {
-        prospect_score(right, objective).cmp(&prospect_score(left, objective))
-    });
-    prospects.truncate(3);
-    prospects
+    recommend_by_estimate(candidates, search.objective)
 }
 
 pub struct YouthRecruitmentEffect {
@@ -784,15 +791,7 @@ fn build_scout_report(
     let mut rng = crate::seed::rng_from_key(&format!("scout-report/{assignment_id}/{date}"));
 
     // Accuracy: higher judging = less noise on reported attributes
-    let noise_range = if judging_ability >= 80 {
-        2
-    } else if judging_ability >= 60 {
-        5
-    } else if judging_ability >= 40 {
-        8
-    } else {
-        12
-    };
+    let noise_range = judgement_band(judging_ability);
 
     let mut fuzz = |val: u8| -> u8 {
         let delta: i16 = rng.random_range(-(noise_range as i16)..=(noise_range as i16));
@@ -814,15 +813,7 @@ fn build_scout_report(
     // 60-79: 5 attrs + condition
     // 40-59: 3 attrs
     // <40: 2 attrs
-    let reveal_count: usize = if judging_ability >= 80 {
-        6
-    } else if judging_ability >= 60 {
-        5
-    } else if judging_ability >= 40 {
-        3
-    } else {
-        2
-    };
+    let reveal_count = revealed_attribute_count(judging_ability);
 
     // Shuffle indices to determine which attrs are hidden
     let mut indices: Vec<usize> = (0..6).collect();
@@ -971,6 +962,112 @@ fn build_scout_report(
     .with_sender_i18n("be.sender.scout", "be.role.scout")
 }
 
+/// How far either side of the truth a scout's read of a rating can land.
+pub(crate) fn judgement_band(rating: u8) -> u8 {
+    if rating >= 80 {
+        2
+    } else if rating >= 60 {
+        5
+    } else if rating >= 40 {
+        8
+    } else {
+        12
+    }
+}
+
+/// How many of a report's six headline attributes a scout gets to see.
+pub(crate) fn revealed_attribute_count(rating: u8) -> usize {
+    if rating >= 80 {
+        6
+    } else if rating >= 60 {
+        5
+    } else if rating >= 40 {
+        3
+    } else {
+        2
+    }
+}
+
+/// Youngsters a search looks at for each objective, before judging ability and
+/// facilities add more.
+fn youth_candidates_base(objective: YouthScoutingObjective) -> usize {
+    match objective {
+        YouthScoutingObjective::Balanced => 4,
+        YouthScoutingObjective::HighPotential | YouthScoutingObjective::ReadySoon => 6,
+    }
+}
+
+/// How many youngsters a youth search looks at before the scout picks three:
+/// the objective's base, one more for every 25 points of judging ability, and
+/// one more for every scouting facility level above the first.
+pub(crate) fn youth_candidates_viewed(
+    objective: YouthScoutingObjective,
+    judging_ability: u8,
+    scouting_facility_level: u8,
+) -> usize {
+    youth_candidates_base(objective)
+        + usize::from(judging_ability / 25)
+        + usize::from(scouting_facility_level.saturating_sub(1))
+}
+
+/// A youth search recommends this many of the youngsters it looks at.
+const YOUTH_PROSPECTS_RECOMMENDED: usize = 3;
+
+/// The scout's read of one rating: his estimate lands within `band` of the
+/// truth, and the range is `band` either side of the estimate, so the truth is
+/// always inside it.
+fn read_rating(truth: u8, band: u8, rng: &mut impl rand::Rng) -> (u8, u8) {
+    let band = i16::from(band);
+    let estimate = i16::from(truth) + rng.random_range(-band..=band);
+    let low = (estimate - band).clamp(1, 99) as u8;
+    let high = (estimate + band).clamp(1, 99) as u8;
+    (low.min(truth), high.max(truth))
+}
+
+/// What a scout of `judging_ability` / `judging_potential` makes of `prospect`.
+fn estimate_prospect(
+    prospect: &Player,
+    judging_ability: u8,
+    judging_potential: u8,
+    rng: &mut impl rand::Rng,
+) -> domain::message::ProspectEstimate {
+    let ovr_band = judgement_band(judging_ability);
+    let potential_band = judgement_band(judging_potential);
+    let (ovr_low, ovr_high) = read_rating(prospect.ovr, ovr_band, rng);
+    let (potential_low, potential_high) = read_rating(prospect.potential, potential_band, rng);
+    domain::message::ProspectEstimate {
+        prospect_id: prospect.id.clone(),
+        ovr_low,
+        ovr_high,
+        ovr_band,
+        potential_low,
+        potential_high,
+        potential_band,
+    }
+}
+
+/// The midpoint of a range: what the scout believes the rating is.
+fn believed(low: u8, high: u8) -> u8 {
+    ((u16::from(low) + u16::from(high)) / 2) as u8
+}
+
+/// The three a scout recommends, ranked on his estimates rather than the truth.
+fn recommend_by_estimate(
+    mut candidates: Vec<(Player, domain::message::ProspectEstimate)>,
+    objective: YouthScoutingObjective,
+) -> Vec<(Player, domain::message::ProspectEstimate)> {
+    let score = |estimate: &domain::message::ProspectEstimate| {
+        rank_by_objective(
+            believed(estimate.ovr_low, estimate.ovr_high),
+            believed(estimate.potential_low, estimate.potential_high),
+            objective,
+        )
+    };
+    candidates.sort_by_key(|candidate| std::cmp::Reverse(score(&candidate.1)));
+    candidates.truncate(YOUTH_PROSPECTS_RECOMMENDED);
+    candidates
+}
+
 #[cfg(test)]
 mod tests {
     use super::build_scout_report;
@@ -1093,5 +1190,87 @@ mod tests {
         assert_eq!(report.player_id, "player-1");
         assert_eq!(report.player_name, "Jamie Prospect");
         assert_eq!(report.team_name.as_deref(), Some("London FC"));
+    }
+
+    mod youth_judgement {
+        use super::super::*;
+        use domain::message::ProspectEstimate;
+
+        /// Given scouts across the judging scale,
+        /// When their bands and revealed attributes are read,
+        /// Then they follow the thresholds the player scout report has always used.
+        #[test]
+        fn bands_and_reveals_follow_the_judging_thresholds() {
+            assert_eq!(
+                [95, 80, 79, 60, 59, 40, 39, 0].map(judgement_band),
+                [2, 2, 5, 5, 8, 8, 12, 12]
+            );
+            assert_eq!([80, 60, 40, 39].map(revealed_attribute_count), [6, 5, 3, 2]);
+        }
+
+        /// Given searches by scouts of different judging ability and clubs of
+        /// different scouting facility,
+        /// When the number of youngsters looked at is worked out,
+        /// Then it is the objective's base, +1 for every 25 points of judging
+        /// ability, +1 for every facility level above the first.
+        #[test]
+        fn a_better_scout_and_facility_look_at_more_youngsters() {
+            use YouthScoutingObjective::*;
+            assert_eq!(youth_candidates_viewed(Balanced, 30, 1), 5);
+            assert_eq!(youth_candidates_viewed(Balanced, 80, 1), 7);
+            assert_eq!(youth_candidates_viewed(HighPotential, 100, 3), 12);
+            assert_eq!(youth_candidates_viewed(ReadySoon, 0, 0), 6);
+        }
+
+        fn candidate(
+            id: &str,
+            ovr: u8,
+            potential: u8,
+            read: (u8, u8),
+        ) -> (Player, ProspectEstimate) {
+            let mut player = Player::new(
+                id.to_string(),
+                id.to_string(),
+                id.to_string(),
+                "2009-01-01".to_string(),
+                "GB".to_string(),
+                Position::Midfielder,
+                crate::test_support::uniform_attributes(60),
+            );
+            player.ovr = ovr;
+            player.potential = potential;
+            let estimate = ProspectEstimate {
+                prospect_id: id.to_string(),
+                ovr_low: read.0 - 5,
+                ovr_high: read.0 + 5,
+                ovr_band: 5,
+                potential_low: read.1 - 5,
+                potential_high: read.1 + 5,
+                potential_band: 5,
+            };
+            (player, estimate)
+        }
+
+        /// Given four youngsters, the truly best of whom the scout misreads as
+        /// the weakest,
+        /// When the scout picks three for a high-potential search,
+        /// Then he picks on what he saw: the truly best is left out.
+        #[test]
+        fn the_scout_recommends_on_his_estimates_not_the_truth() {
+            let candidates = vec![
+                candidate("hidden-gem", 60, 90, (55, 62)),
+                candidate("a", 58, 75, (58, 80)),
+                candidate("b", 57, 72, (57, 78)),
+                candidate("c", 56, 70, (56, 76)),
+            ];
+
+            let picked: Vec<String> =
+                recommend_by_estimate(candidates, YouthScoutingObjective::HighPotential)
+                    .into_iter()
+                    .map(|(player, _)| player.id)
+                    .collect();
+
+            assert_eq!(picked, vec!["a", "b", "c"]);
+        }
     }
 }

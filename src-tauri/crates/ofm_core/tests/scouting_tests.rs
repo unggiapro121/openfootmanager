@@ -336,6 +336,72 @@ fn report_has_scout_report_data() {
     assert_eq!(report.team_name.as_deref(), Some("Rival FC"));
 }
 
+fn youth_report(game: &Game) -> &domain::message::InboxMessage {
+    game.messages
+        .iter()
+        .find(|message| {
+            message.subject_key.as_deref() == Some("be.msg.youthRecruitmentReport.subject")
+        })
+        .expect("expected a youth recruitment report")
+}
+
+fn run_youth_search(judging_ability: u8, judging_potential: u8) -> Game {
+    let mut game = make_game();
+    game.staff[0].attributes.judging_ability = judging_ability;
+    game.staff[0].attributes.judging_potential = judging_potential;
+    start_youth_scouting(
+        &mut game,
+        "scout1",
+        YouthScoutingRegion::Domestic,
+        YouthScoutingObjective::Balanced,
+        None,
+    )
+    .unwrap();
+    complete_scouting(&mut game);
+    game
+}
+
+/// Given youth searches by scouts good and poor,
+/// When their reports arrive,
+/// Then every prospect carries the scout's ranges, and each true overall and
+/// potential lies inside its range.
+#[test]
+fn a_youth_report_carries_ranges_that_hold_the_truth() {
+    for (ability, potential) in [(90, 90), (50, 50), (10, 10)] {
+        let game = run_youth_search(ability, potential);
+        let context = &youth_report(&game).context;
+        let prospects = context.youth_prospects.as_ref().expect("prospects");
+
+        assert_eq!(context.youth_prospect_estimates.len(), prospects.len());
+        for prospect in prospects {
+            let estimate = context
+                .youth_prospect_estimates
+                .iter()
+                .find(|estimate| estimate.prospect_id == prospect.id)
+                .expect("an estimate for every prospect");
+            assert!((estimate.ovr_low..=estimate.ovr_high).contains(&prospect.ovr));
+            assert!(
+                (estimate.potential_low..=estimate.potential_high).contains(&prospect.potential)
+            );
+        }
+    }
+}
+
+/// Given a scout who judges well and one who judges poorly,
+/// When their reports arrive,
+/// Then the good scout's ranges are ±2 and the poor scout's ±12.
+#[test]
+fn a_better_scout_reports_narrower_ranges() {
+    for (rating, band) in [(90, 2), (20, 12)] {
+        let game = run_youth_search(rating, rating);
+        let estimates = &youth_report(&game).context.youth_prospect_estimates;
+        assert!(!estimates.is_empty());
+        for estimate in estimates {
+            assert_eq!((estimate.ovr_band, estimate.potential_band), (band, band));
+        }
+    }
+}
+
 #[test]
 fn process_scouting_completes_youth_recruitment_report() {
     let mut game = make_game();

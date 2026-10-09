@@ -107,10 +107,28 @@ pub struct MessageContext {
     pub youth_search_objective: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub youth_prospects: Option<Vec<Player>>,
+    /// What the scout makes of each prospect in `youth_prospects`, by id: the
+    /// ranges the report shows instead of the true ratings.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub youth_prospect_estimates: Vec<ProspectEstimate>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scout_report: Option<ScoutReportData>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delegated_renewal_report: Option<DelegatedRenewalReportData>,
+}
+
+/// A scout's read of a youth prospect: the ranges his overall and potential
+/// fall in, and how wide each range is either side of the scout's estimate.
+/// The true value is always inside the range.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ProspectEstimate {
+    pub prospect_id: String,
+    pub ovr_low: u8,
+    pub ovr_high: u8,
+    pub ovr_band: u8,
+    pub potential_low: u8,
+    pub potential_high: u8,
+    pub potential_band: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

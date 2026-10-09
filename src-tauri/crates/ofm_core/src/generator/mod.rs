@@ -28,6 +28,7 @@ pub use scaffold::{
     slugify,
 };
 pub use world_io::*;
+pub(crate) use youth::generate_youth_academy_recruit_from;
 pub(crate) use youth::generate_youth_intake_recruit;
 pub use youth::{generate_youth_academy_recruit, generate_youth_academy_recruit_with_nationality};
 
