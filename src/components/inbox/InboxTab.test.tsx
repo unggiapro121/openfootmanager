@@ -1342,6 +1342,51 @@ describe("InboxTab", (): void => {
     expect(screen.queryByText(/Market Value:/)).not.toBeInTheDocument();
   });
 
+  it("offers to watch a player from his scout report", async (): Promise<void> => {
+    await renderInboxTab({
+      gameState: createGameState([
+        createMessage({
+          id: "scout_report_a1",
+          category: "ScoutReport",
+          read: true,
+          subject_key: "be.msg.scoutReport.subject",
+          body_key: "be.msg.scoutReport.body",
+          i18n_params: { player: "Neumann", scout: "Joao Scout" },
+          context: {
+            team_id: null,
+            player_id: "p-neumann",
+            fixture_id: null,
+            scout_report: prospectCard({ player_id: "p-neumann", player_name: "Neumann" }),
+            match_result: null,
+          },
+          actions: [
+            {
+              id: "watch",
+              label: "",
+              action_type: {
+                ChooseOption: {
+                  options: [
+                    {
+                      id: "watch",
+                      label: "",
+                      description: "",
+                      label_key: "be.msg.scoutReport.option.watch.label",
+                      description_key: "be.msg.scoutReport.option.watch.description",
+                    },
+                  ],
+                },
+              },
+              resolved: false,
+            },
+          ] as MessageAction[],
+        }),
+      ]),
+      initialMessageId: "scout_report_a1",
+    });
+
+    expect(screen.getByRole("button", { name: /^Watch / })).toBeInTheDocument();
+  });
+
   it("shows a prospect's build and every attribute, ?? until read", async (): Promise<void> => {
     await renderInboxTab({
       gameState: createGameState([

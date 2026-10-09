@@ -1753,7 +1753,8 @@
     "renewalProjectionWageBill": "Недельный фонд зарплат {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Использование зарплатного бюджета {{before}}% → {{after}}%",
     "renewalProjectionRunway": "Финансовый запас {{before}} → {{after}}",
-    "ratingTrend": "Динамика рейтинга"
+    "ratingTrend": "Динамика рейтинга",
+    "scoutedEstimate": "По данным скаута: ~{{ovr}} · надёжность {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "Информация о клубе",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "Отпустить",
     "watchlistWeeksFollowed": "Наблюдение: {{weeks}} нед.",
     "watchlistStatus": "Статус",
-    "watchlistStatusFree": "Свободен"
+    "watchlistStatusFree": "Свободен",
+    "watchlistMakeOffer": "Сделать предложение"
   },
   "match": {
     "live": "Матч",

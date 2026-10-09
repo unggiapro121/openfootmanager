@@ -13,8 +13,11 @@ interface WatchedProspectDetailProps {
   entry: WatchedProspect;
   report: ScoutReportData;
   scoutName: string | null;
+  /** Free, or the club he belongs to now. */
+  status: { free: boolean; label: string };
+  /** Sign a youngster, or make an offer for a player. */
+  action: { label: string; disabled: boolean; onClick: () => void };
   busy: boolean;
-  onSign: () => void;
   onUnwatch: () => void;
   onClose: () => void;
 }
@@ -29,8 +32,9 @@ export default function WatchedProspectDetail({
   entry,
   report,
   scoutName,
+  status,
+  action,
   busy,
-  onSign,
   onUnwatch,
   onClose,
 }: WatchedProspectDetailProps) {
@@ -69,8 +73,8 @@ export default function WatchedProspectDetail({
         <ProspectPhysique report={report} />
 
         <div className="flex flex-wrap gap-2">
-          <Badge variant={entry.signed_by ? "neutral" : "success"} size="sm">
-            {`${t("scouting.watchlistStatus")}: ${entry.signed_by ?? t("scouting.watchlistStatusFree")}`}
+          <Badge variant={status.free ? "success" : "neutral"} size="sm">
+            {`${t("scouting.watchlistStatus")}: ${status.label}`}
           </Badge>
           {report.avg_rating !== null ? (
             <Badge variant="neutral" size="sm">
@@ -105,8 +109,8 @@ export default function WatchedProspectDetail({
         />
 
         <div className="flex flex-wrap justify-end gap-2">
-          <Button size="sm" disabled={busy || Boolean(entry.signed_by)} onClick={onSign}>
-            {t("scouting.watchlistSign")}
+          <Button size="sm" disabled={busy || action.disabled} onClick={action.onClick}>
+            {action.label}
           </Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={onUnwatch}>
             {t("scouting.watchlistUnwatch")}

@@ -292,6 +292,15 @@ export default function ScoutingTab({
         onUnwatch={(prospectId) => {
           void runWatchlistAction(() => unwatchProspect(prospectId));
         }}
+        players={gameState.players}
+        teams={gameState.teams}
+        onMakeOffer={(player) => {
+          if (player.team_id) {
+            openBidNegotiation(player);
+          } else {
+            openFreeAgentContract(player);
+          }
+        }}
       />
 
       <ScoutingScoutDetailsCard

@@ -593,6 +593,80 @@ describe("PlayerProfile contract surfaces", () => {
     ).toBeGreaterThan(0);
   });
 
+  it("shows what the club's scouts have read of a watched player", () => {
+    const player = createPlayer({ team_id: "team-2" });
+    const gameState = createGameState(player);
+    gameState.youth_watchlist = [
+      {
+        kind: "Player",
+        prospect: player,
+        estimate: {
+          prospect_id: player.id,
+          ovr_low: 68,
+          ovr_high: 72,
+          ovr_band: 2,
+          potential_low: 70,
+          potential_high: 74,
+          potential_band: 2,
+          attributes: [{ key: "passing", low: 62, high: 66, band: 2 }],
+        },
+        scout_id: null,
+        added_on: "2026-08-01",
+        report: {
+          player_id: player.id,
+          player_name: player.full_name,
+          position: "Forward",
+          nationality: "GB",
+          dob: player.date_of_birth,
+          team_name: null,
+          pace: null,
+          shooting: null,
+          passing: 64,
+          dribbling: null,
+          defending: null,
+          physical: null,
+          condition: null,
+          morale: null,
+          avg_rating: 70,
+          rating_key: "common.scoutRatings.veryGood",
+          potential_key: "common.scoutPotential.strong",
+          confidence_key: "common.scoutConfidence.high",
+          attribute_reads: [{ key: "passing", low: 62, high: 66, band: 2 }],
+        },
+      },
+    ];
+
+    render(
+      <PlayerProfile
+        player={player}
+        gameState={gameState}
+        isOwnClub={false}
+        onClose={vi.fn()}
+        onGameUpdate={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("playerProfile.scoutedEstimate")).toBeInTheDocument();
+    expect(screen.getByTestId("hidden-attr-passing")).toHaveTextContent("64");
+    expect(screen.getByTestId("hidden-attr-vision")).toHaveTextContent("??");
+  });
+
+  it("keeps every attribute hidden for a player nobody is watching", () => {
+    const player = createPlayer({ team_id: "team-2" });
+    render(
+      <PlayerProfile
+        player={player}
+        gameState={createGameState(player)}
+        isOwnClub={false}
+        onClose={vi.fn()}
+        onGameUpdate={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByText("playerProfile.scoutedEstimate")).toBeNull();
+    expect(screen.getByTestId("hidden-attr-passing")).toHaveTextContent("??");
+  });
+
   it("hides contract actions for loaned-in players owned by another club", () => {
     const player = createPlayer({
       team_id: "team-1",

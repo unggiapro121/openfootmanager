@@ -1753,7 +1753,8 @@
     "renewalProjectionTitle": "Tác động tài chính dự kiến",
     "renewalProjectionWageBill": "Quỹ lương mỗi tuần {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Mức dùng ngân sách lương {{before}}% → {{after}}%",
-    "renewalProjectionRunway": "Thời gian trụ được {{before}} → {{after}}"
+    "renewalProjectionRunway": "Thời gian trụ được {{before}} → {{after}}",
+    "scoutedEstimate": "Theo tuyển trạch: ~{{ovr}} · độ tin cậy {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "Thông tin câu lạc bộ",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "Bỏ theo dõi",
     "watchlistWeeksFollowed": "Đã theo dõi {{weeks}} tuần",
     "watchlistStatus": "Trạng thái",
-    "watchlistStatusFree": "Tự do"
+    "watchlistStatusFree": "Tự do",
+    "watchlistMakeOffer": "Hỏi mua"
   },
   "match": {
     "live": "Trực tiếp",

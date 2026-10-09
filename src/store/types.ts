@@ -502,6 +502,8 @@ export interface AttributeRead {
 
 /** Mirrors `ofm_core::youth_watchlist::WatchedProspect`. */
 export interface WatchedProspect {
+  /** A pool youngster, or a player of another club watched from his report. */
+  kind?: "Prospect" | "Player";
   prospect: PlayerData;
   estimate: ProspectEstimate;
   scout_id?: string | null;

@@ -1753,7 +1753,8 @@
     "renewalProjectionTitle": "Öngörülen finansal etki",
     "renewalProjectionWageBill": "Haftalık maaş yükü {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Maaş bütçesi kullanımı %{{before}} → %{{after}}",
-    "renewalProjectionRunway": "Nakit yeterliliği {{before}} → {{after}}"
+    "renewalProjectionRunway": "Nakit yeterliliği {{before}} → {{after}}",
+    "scoutedEstimate": "Gözlemciye göre: ~{{ovr}} · güven {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "Kulüp Bilgisi",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "Bırak",
     "watchlistWeeksFollowed": "{{weeks}} haftadır izleniyor",
     "watchlistStatus": "Durum",
-    "watchlistStatusFree": "Serbest"
+    "watchlistStatusFree": "Serbest",
+    "watchlistMakeOffer": "Teklif yap"
   },
   "match": {
     "live": "Canlı",

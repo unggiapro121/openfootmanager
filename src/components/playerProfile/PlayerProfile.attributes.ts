@@ -4,6 +4,8 @@ import type { AttributeRead } from "../../store/types";
 type TranslateFn = (key: string) => string;
 
 export interface PlayerAttributeEntry {
+  /** The attribute's field name, to match a scout's read of it. */
+  key?: PlayerAttributeKey;
   name: string;
   value: number;
 }
@@ -99,6 +101,7 @@ export function buildPlayerAttributeGroups(
   ][]) {
     const bucket = buckets.get(groupKey) ?? [];
     bucket.push({
+      key: attributeKey,
       name: translate(`common.attributes.${attributeKey}`),
       value: player.attributes[attributeKey],
     });

@@ -1753,7 +1753,8 @@
     "renewalProjectionWageBill": "Nómina semanal {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Uso del presupuesto salarial {{before}}% → {{after}}%",
     "renewalProjectionRunway": "Reserva de caja {{before}} → {{after}}",
-    "ratingTrend": "Tendencia de calificación"
+    "ratingTrend": "Tendencia de calificación",
+    "scoutedEstimate": "Según el ojeador: ~{{ovr}} · confianza {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "Información del Club",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "Descartar",
     "watchlistWeeksFollowed": "Seguido {{weeks}} sem.",
     "watchlistStatus": "Estado",
-    "watchlistStatusFree": "Libre"
+    "watchlistStatusFree": "Libre",
+    "watchlistMakeOffer": "Hacer oferta"
   },
   "match": {
     "live": "En Vivo",

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { calcAge, positionBadgeVariant } from "../../lib/helpers";
-import type { StaffData, WatchedProspect } from "../../store/types";
+import type { PlayerData, StaffData, TeamData, WatchedProspect } from "../../store/types";
 import { Badge, Button, Card, CardBody, CardHeader, Select } from "../ui";
 import WatchedProspectDetail from "./WatchedProspectDetail";
 
@@ -19,13 +19,24 @@ interface ScoutingWatchlistCardProps {
   onAssignScout: (prospectId: string, scoutId: string | null) => void;
   onSign: (prospectId: string) => void;
   onUnwatch: (prospectId: string) => void;
+  /** The world's players and clubs, for a watched player's current club. */
+  players: PlayerData[];
+  teams: TeamData[];
+  /** Open the offer for a watched player: a bid, or a free agent's contract. */
+  onMakeOffer: (player: PlayerData) => void;
+}
+
+/** Where a watched player stands: free, or the club he belongs to now. */
+interface WatchStatus {
+  free: boolean;
+  label: string;
 }
 
 /**
- * The youth watchlist: each prospect the club is following, as his scouts read
- * him now, and who follows him. Opening one shows his latest player card. He
- * stays until he signs somewhere, the manager lets him go, or the season's
- * youth pool closes.
+ * The watchlist: each youngster or player the club is following, as his scouts
+ * read him now, where he stands and who follows him. Opening one shows his
+ * detail form. A youngster can be signed while he is free; a player of another
+ * club is bought through an offer.
  */
 export default function ScoutingWatchlistCard({
   watchlist,
@@ -35,6 +46,9 @@ export default function ScoutingWatchlistCard({
   onAssignScout,
   onSign,
   onUnwatch,
+  players,
+  teams,
+  onMakeOffer,
 }: ScoutingWatchlistCardProps) {
   const { t } = useTranslation();
   const load = (scoutId: string) => watchlist.filter((entry) => entry.scout_id === scoutId).length;
@@ -42,6 +56,21 @@ export default function ScoutingWatchlistCard({
   const [openId, setOpenId] = useState<string | null>(null);
   const opened = watchlist.find((entry) => entry.prospect.id === openId);
   const openedScout = scouts.find((scout) => scout.id === opened?.scout_id);
+  // A watched player is read live from the world: his club changes as he moves.
+  const livePlayer = (entry: WatchedProspect): PlayerData =>
+    players.find((player) => player.id === entry.prospect.id) ?? entry.prospect;
+  const statusOf = (entry: WatchedProspect): WatchStatus => {
+    const club =
+      entry.kind === "Player"
+        ? (() => {
+            const teamId = livePlayer(entry).team_id;
+            return teamId ? (teams.find((team) => team.id === teamId)?.name ?? teamId) : null;
+          })()
+        : (entry.signed_by ?? null);
+    return club
+      ? { free: false, label: club }
+      : { free: true, label: t("scouting.watchlistStatusFree") };
+  };
 
   return (
     <Card>
@@ -76,7 +105,10 @@ export default function ScoutingWatchlistCard({
               <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
                 {watchlist.map((entry) => {
                   const { prospect, estimate } = entry;
-                  const signedElsewhere = Boolean(entry.signed_by);
+                  const isPlayer = entry.kind === "Player";
+                  const status = statusOf(entry);
+                  // A youngster another club has signed can no longer be followed.
+                  const signedElsewhere = !isPlayer && !status.free;
                   const choices = scouts.filter(
                     (scout) =>
                       scout.id === entry.scout_id || load(scout.id) < MAX_WATCHED_PER_SCOUT,
@@ -111,15 +143,9 @@ export default function ScoutingWatchlistCard({
                           : range(estimate.potential_low, estimate.potential_high)}
                       </td>
                       <td className="py-2 pr-3">
-                        {signedElsewhere ? (
-                          <Badge variant="neutral" size="sm">
-                            {entry.signed_by}
-                          </Badge>
-                        ) : (
-                          <Badge variant="success" size="sm">
-                            {t("scouting.watchlistStatusFree")}
-                          </Badge>
-                        )}
+                        <Badge variant={status.free ? "success" : "neutral"} size="sm">
+                          {status.label}
+                        </Badge>
                       </td>
                       <td className="py-2 pr-3 min-w-[10rem]">
                         <Select
@@ -144,13 +170,23 @@ export default function ScoutingWatchlistCard({
                       </td>
                       <td className="py-2">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            disabled={busy || signedElsewhere}
-                            onClick={() => onSign(prospect.id)}
-                          >
-                            {t("scouting.watchlistSign")}
-                          </Button>
+                          {isPlayer ? (
+                            <Button
+                              size="sm"
+                              disabled={busy}
+                              onClick={() => onMakeOffer(livePlayer(entry))}
+                            >
+                              {t("scouting.watchlistMakeOffer")}
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              disabled={busy || signedElsewhere}
+                              onClick={() => onSign(prospect.id)}
+                            >
+                              {t("scouting.watchlistSign")}
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="outline"
@@ -174,8 +210,21 @@ export default function ScoutingWatchlistCard({
           entry={opened}
           report={opened.report}
           scoutName={openedScout ? `${openedScout.first_name} ${openedScout.last_name}` : null}
+          status={statusOf(opened)}
+          action={
+            opened.kind === "Player"
+              ? {
+                  label: t("scouting.watchlistMakeOffer"),
+                  disabled: false,
+                  onClick: () => onMakeOffer(livePlayer(opened)),
+                }
+              : {
+                  label: t("scouting.watchlistSign"),
+                  disabled: !statusOf(opened).free,
+                  onClick: () => onSign(opened.prospect.id),
+                }
+          }
           busy={busy}
-          onSign={() => onSign(opened.prospect.id)}
           onUnwatch={() => {
             onUnwatch(opened.prospect.id);
             setOpenId(null);

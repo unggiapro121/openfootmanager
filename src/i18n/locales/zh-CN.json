@@ -1753,7 +1753,8 @@
     "renewalProjectionWageBill": "周薪总支出 {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "薪资预算占用 {{before}}% → {{after}}%",
     "renewalProjectionRunway": "现金储备 {{before}} → {{after}}",
-    "ratingTrend": "评分趋势"
+    "ratingTrend": "评分趋势",
+    "scoutedEstimate": "球探评估：~{{ovr}} · 可信度 {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "俱乐部信息",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "放弃",
     "watchlistWeeksFollowed": "已跟踪 {{weeks}} 周",
     "watchlistStatus": "状态",
-    "watchlistStatusFree": "自由身"
+    "watchlistStatusFree": "自由身",
+    "watchlistMakeOffer": "报价"
   },
   "match": {
     "live": "直播中",

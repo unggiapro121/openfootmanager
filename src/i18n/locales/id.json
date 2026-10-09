@@ -1753,7 +1753,8 @@
     "renewalProjectionTitle": "Perkiraan dampak finansial",
     "renewalProjectionWageBill": "Beban gaji mingguan {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Penggunaan anggaran gaji {{before}}% → {{after}}%",
-    "renewalProjectionRunway": "Jarak kas {{before}} → {{after}}"
+    "renewalProjectionRunway": "Jarak kas {{before}} → {{after}}",
+    "scoutedEstimate": "Menurut pemandu bakat: ~{{ovr}} · keyakinan {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "Informasi Klub",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "Lepas",
     "watchlistWeeksFollowed": "Dipantau {{weeks}} mgg",
     "watchlistStatus": "Status",
-    "watchlistStatusFree": "Bebas"
+    "watchlistStatusFree": "Bebas",
+    "watchlistMakeOffer": "Ajukan tawaran"
   },
   "match": {
     "live": "Langsung",

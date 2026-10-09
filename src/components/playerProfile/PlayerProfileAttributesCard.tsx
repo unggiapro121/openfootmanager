@@ -4,6 +4,7 @@ import { getAttributeColorClass } from "./PlayerProfile.helpers";
 import { getAttributeColors } from "../../lib/playerAttributeDisplay";
 import type { PlayerAttributeGroup } from "./PlayerProfile.attributes";
 import type { PlayerData } from "../../store/gameStore";
+import type { AttributeRead } from "../../store/types";
 import { Card, CardBody, CardHeader, ProgressBar } from "../ui";
 import { PlayerAttributeRadarChart } from "./PlayerAttributeRadarChart";
 import PlayerProfileStatCard from "./PlayerProfileStatCard";
@@ -30,6 +31,12 @@ interface PlayerProfileAttributesCardProps {
   averageLabel: string;
   hiddenTitle: string;
   hiddenBody: string;
+  /**
+   * What the club's scouts have read of a watched player: shown in place of
+   * "??" for those attributes, with `scoutSummary` under the title.
+   */
+  scoutReads?: AttributeRead[];
+  scoutSummary?: string | null;
   listLabel: string;
   radarLabel: string;
 }
@@ -45,6 +52,8 @@ export default function PlayerProfileAttributesCard({
   averageLabel,
   hiddenTitle,
   hiddenBody,
+  scoutReads = [],
+  scoutSummary = null,
   listLabel,
   radarLabel,
 }: PlayerProfileAttributesCardProps) {
@@ -141,6 +150,11 @@ export default function PlayerProfileAttributesCard({
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-xs mx-auto">
               {hiddenBody}
             </p>
+            {scoutSummary ? (
+              <p className="mt-2 text-sm font-semibold text-primary-600 dark:text-primary-400">
+                {scoutSummary}
+              </p>
+            ) : null}
             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:auto-rows-fr text-left">
               {attrGroups.map((group) => (
                 <PlayerProfileStatCard
@@ -154,22 +168,35 @@ export default function PlayerProfileAttributesCard({
                   }
                 >
                   <div className="grid grid-cols-[auto_1fr_1.75rem] items-center gap-x-3 gap-y-2.5">
-                    {group.attrs.map((attr) => (
-                      <Fragment key={attr.name}>
-                        <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                          {attr.name}
-                        </span>
-                        <ProgressBar
-                          value={placeholderWidth(attr.name)}
-                          variant="muted"
-                          size="sm"
-                          className="min-w-0"
-                        />
-                        <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
-                          ??
-                        </span>
-                      </Fragment>
-                    ))}
+                    {group.attrs.map((attr) => {
+                      const read = scoutReads.find((candidate) => candidate.key === attr.key);
+                      const value = read ? Math.floor((read.low + read.high) / 2) : null;
+                      return (
+                        <Fragment key={attr.name}>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                            {attr.name}
+                          </span>
+                          <ProgressBar
+                            value={value ?? placeholderWidth(attr.name)}
+                            variant={
+                              value === null ? "muted" : getAttributeColors(value).barVariant
+                            }
+                            size="sm"
+                            className="min-w-0"
+                          />
+                          <span
+                            data-testid={`hidden-attr-${attr.key ?? attr.name}`}
+                            className={`text-xs text-right ${
+                              value === null
+                                ? "text-gray-400 dark:text-gray-500"
+                                : `font-heading font-bold tabular-nums ${getAttributeColorClass(value)}`
+                            }`}
+                          >
+                            {value ?? "??"}
+                          </span>
+                        </Fragment>
+                      );
+                    })}
                   </div>
                 </PlayerProfileStatCard>
               ))}

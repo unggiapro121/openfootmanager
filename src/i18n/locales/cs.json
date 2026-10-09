@@ -1753,7 +1753,8 @@
     "renewalProjectionTitle": "Předpokládaný finanční dopad",
     "renewalProjectionWageBill": "Týdenní mzdové náklady: {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Využití platového rozpočtu: {{before}} % → {{after}} %",
-    "renewalProjectionRunway": "Finanční rezerva: {{before}} → {{after}}"
+    "renewalProjectionRunway": "Finanční rezerva: {{before}} → {{after}}",
+    "scoutedEstimate": "Podle skauta: ~{{ovr}} · spolehlivost {{confidence}}"
   },
   "teamProfile": {
     "clubInfo": "Informace o klubu",
@@ -1978,7 +1979,8 @@
     "watchlistUnwatch": "Pustit",
     "watchlistWeeksFollowed": "Sledován {{weeks}} týd.",
     "watchlistStatus": "Stav",
-    "watchlistStatusFree": "Volný"
+    "watchlistStatusFree": "Volný",
+    "watchlistMakeOffer": "Podat nabídku"
   },
   "match": {
     "live": "Živě",

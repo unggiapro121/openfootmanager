@@ -58,6 +58,11 @@ export default function PlayerProfile({
   const weeklySuffix = t("finances.perWeekSuffix", "/wk");
   const primaryPosition = player.natural_position || player.position;
   const footednessLabel = t(`common.footedness.${player.footedness || "Right"}`);
+  // While the club watches him, its scouts' latest read of him.
+  const watchedRead =
+    gameState.youth_watchlist?.find(
+      (entry) => entry.kind === "Player" && entry.prospect.id === player.id,
+    )?.report ?? null;
   const weakFootValue = player.weak_foot ?? 2;
 
   const { advancedStats, recentMatches } = usePlayerProfileData({
@@ -337,6 +342,15 @@ export default function PlayerProfile({
           averageLabel={t("common.average")}
           hiddenTitle={t("playerProfile.attributesHidden")}
           hiddenBody={t("playerProfile.scoutToView")}
+          scoutReads={watchedRead?.attribute_reads ?? []}
+          scoutSummary={
+            watchedRead
+              ? t("playerProfile.scoutedEstimate", {
+                  ovr: watchedRead.avg_rating ?? "?",
+                  confidence: t(watchedRead.confidence_key),
+                })
+              : null
+          }
           listLabel={t("common.listView")}
           radarLabel={t("common.radarView")}
         />

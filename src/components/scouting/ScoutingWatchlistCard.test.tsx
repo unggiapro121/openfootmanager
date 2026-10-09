@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { StaffData, WatchedProspect } from "../../store/types";
-import { createPlayer } from "../../test-utils/factories";
+import { createPlayer, createTeam } from "../../test-utils/factories";
 import ScoutingWatchlistCard from "./ScoutingWatchlistCard";
 
 vi.mock("react-i18next", () => ({
@@ -82,6 +82,9 @@ function renderCard(overrides: Partial<React.ComponentProps<typeof ScoutingWatch
     onAssignScout: vi.fn(),
     onSign: vi.fn(),
     onUnwatch: vi.fn(),
+    players: [],
+    teams: [],
+    onMakeOffer: vi.fn(),
     ...overrides,
   };
   render(<ScoutingWatchlistCard {...props} />);
@@ -191,5 +194,33 @@ describe("ScoutingWatchlistCard", () => {
     const dialog = screen.getByRole("dialog", { name: "Kid p2" });
     expect(dialog).toHaveTextContent("Rival FC");
     expect(within(dialog).getByRole("button", { name: "scouting.watchlistSign" })).toBeDisabled();
+  });
+
+  it("shows a watched player's club and offers to buy him instead of signing", () => {
+    const pro = createPlayer({ id: "pro", full_name: "Kid pro", team_id: "team-9" });
+    const props = renderCard({
+      watchlist: [{ ...watched("pro"), kind: "Player", prospect: pro }],
+      players: [pro],
+      teams: [createTeam({ id: "team-9", name: "Nine FC" })],
+    });
+
+    const row = screen.getByRole("row", { name: /Kid pro/ });
+    expect(row).toHaveTextContent("Nine FC");
+    expect(within(row).queryByRole("button", { name: "scouting.watchlistSign" })).toBeNull();
+    fireEvent.click(within(row).getByRole("button", { name: "scouting.watchlistMakeOffer" }));
+    expect(props.onMakeOffer).toHaveBeenCalledWith(pro);
+    expect(within(row).getByRole("combobox", { name: "scouting.watchlistScoutFor" })).toBeEnabled();
+  });
+
+  it("shows a watched free agent as free", () => {
+    const pro = createPlayer({ id: "pro", full_name: "Kid pro", team_id: null });
+    renderCard({
+      watchlist: [{ ...watched("pro"), kind: "Player", prospect: pro }],
+      players: [pro],
+    });
+
+    expect(screen.getByRole("row", { name: /Kid pro/ })).toHaveTextContent(
+      "scouting.watchlistStatusFree",
+    );
   });
 });
