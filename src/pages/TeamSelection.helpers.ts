@@ -1,7 +1,6 @@
 import type { TFunction } from "i18next";
 
-import type { GameStateData, LeagueData, PlayerData, WorldRegionData } from "../store/gameStore";
-import { getPlayerOvr } from "../lib/helpers";
+import type { GameStateData, LeagueData, WorldRegionData } from "../store/gameStore";
 import { buildRegionLabel, inferRegionId } from "../lib/teamRegions";
 
 export function competitionScopeLabel(t: TFunction, scope?: string): string | null {
@@ -66,10 +65,6 @@ export function teamCompetitions(teamId: string, competitions: LeagueData[]): Le
         (fixture) => fixture.home_team_id === teamId || fixture.away_team_id === teamId,
       ),
   );
-}
-
-export function likelyXi(players: PlayerData[]): PlayerData[] {
-  return [...players].sort((left, right) => getPlayerOvr(right) - getPlayerOvr(left)).slice(0, 11);
 }
 
 export function sortCompetitions(competitions: LeagueData[]): LeagueData[] {

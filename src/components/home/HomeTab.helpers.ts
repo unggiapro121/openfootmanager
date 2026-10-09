@@ -1,11 +1,11 @@
 import {
   getFixtureCompetitionName,
-  getPlayerOvr,
   getUserCompetition,
   getUserCompetitions,
   getUserNextFixture,
 } from "../../lib/helpers";
 import type { TFunction } from "i18next";
+import { likelyXiAverageOvr } from "../../lib/playerOvr";
 import { hasCompetitiveStandings } from "../../lib/seasonContext";
 import type {
   FixtureData,
@@ -145,12 +145,7 @@ export function getHomeRosterOverview(roster: PlayerData[]): HomeRosterOverview 
     roster.length > 0
       ? Math.round(roster.reduce((total, player) => total + player.condition, 0) / roster.length)
       : 0;
-  const avgOvr =
-    roster.length > 0
-      ? Math.round(
-          roster.reduce((total, player) => total + getPlayerOvr(player), 0) / roster.length,
-        )
-      : 0;
+  const avgOvr = likelyXiAverageOvr(roster);
   const exhaustedCount = roster.filter((player) => player.condition < 40).length;
   const unavailablePlayers = roster
     .filter((player) => player.injury != null)

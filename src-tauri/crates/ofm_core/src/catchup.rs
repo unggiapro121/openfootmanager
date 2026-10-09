@@ -11,23 +11,16 @@ use domain::league::{CompetitionType, FixtureStatus, League, MatchResult};
 use domain::player::Player;
 use rand::Rng;
 
-const CATCHUP_XI: usize = 11;
-
 /// Average OVR of a club's best XI, used as scoreline strength. Falls back to a
 /// neutral rating when the club has no players on the books.
 pub(crate) fn club_strength(players: &[Player], club_id: &str) -> f64 {
-    let mut ovrs: Vec<u8> = players
-        .iter()
-        .filter(|p| p.team_id.as_deref() == Some(club_id))
-        .map(|p| p.ovr)
-        .collect();
-    if ovrs.is_empty() {
-        return 50.0;
-    }
-    ovrs.sort_unstable_by(|a, b| b.cmp(a));
-    let count = ovrs.len().min(CATCHUP_XI);
-    let total: u32 = ovrs.iter().take(count).map(|&o| u32::from(o)).sum();
-    total as f64 / count as f64
+    crate::player_rating::likely_xi_average_ovr(
+        players
+            .iter()
+            .filter(|p| p.team_id.as_deref() == Some(club_id))
+            .map(|p| p.ovr),
+    )
+    .unwrap_or(50.0)
 }
 
 /// Settle one fixture of `competition` by scoreline alone: a score drawn from

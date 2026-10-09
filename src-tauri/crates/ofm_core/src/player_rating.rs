@@ -470,9 +470,47 @@ fn slot_side(position: &Position) -> Option<Side> {
     }
 }
 
+/// How many players start a match: the likely XI a club's strength is read from.
+const LIKELY_XI: usize = 11;
+
+/// The average OVR of the eleven best of `ovrs` — the side a club would most
+/// likely start — or `None` for a club with nobody. Reserves who would not
+/// start say nothing about how strong the club is on a matchday.
+pub fn likely_xi_average_ovr(ovrs: impl IntoIterator<Item = u8>) -> Option<f64> {
+    let mut ovrs: Vec<u8> = ovrs.into_iter().collect();
+    if ovrs.is_empty() {
+        return None;
+    }
+    ovrs.sort_unstable_by(|a, b| b.cmp(a));
+    let starters = ovrs.len().min(LIKELY_XI);
+    let total: u32 = ovrs.iter().take(starters).map(|&ovr| u32::from(ovr)).sum();
+    Some(f64::from(total) / starters as f64)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Given more than eleven players, then only the eleven best count.
+    #[test]
+    fn the_likely_xi_average_reads_only_the_eleven_best() {
+        let mut ovrs = vec![80_u8; 11];
+        ovrs.extend([40, 45, 50]);
+
+        assert_eq!(likely_xi_average_ovr(ovrs), Some(80.0));
+    }
+
+    /// Given fewer than eleven players, then all of them count.
+    #[test]
+    fn a_short_squad_averages_everyone_it_has() {
+        assert_eq!(likely_xi_average_ovr([70, 80]), Some(75.0));
+    }
+
+    /// Given nobody, then there is no average.
+    #[test]
+    fn nobody_has_no_likely_xi_average() {
+        assert_eq!(likely_xi_average_ovr([]), None);
+    }
 
     /// A specialist keeper: elite at keeping, poor at everything an outfielder
     /// does. The flat attribute average buries him; the weighted OVR does not.

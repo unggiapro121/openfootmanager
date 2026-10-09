@@ -3,16 +3,16 @@ import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 
 import type { GameStateData, LeagueData, PlayerData, TeamData } from "../store/gameStore";
-import { getActiveCompetitions, getPlayerOvr } from "../lib/helpers";
+import { getActiveCompetitions } from "../lib/helpers";
 import { buildRegionLabel, inferRegionId } from "../lib/teamRegions";
 import { competitionDisplayName } from "../lib/competitionName";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
 import { showError } from "../lib/errorDialog";
+import { likelyXi, likelyXiAverageOvr } from "../lib/playerOvr";
 import {
   buildFallbackRegions,
   competitionRequiredRegions,
-  likelyXi,
   sortCompetitions,
   teamCompetitions,
 } from "./TeamSelection.helpers";
@@ -242,11 +242,7 @@ export function useTeamSelection({
     (gameState?.players ?? []).filter((player) => player.team_id === teamId);
 
   const getTeamAvgOvr = (teamId: string): number => {
-    const players = getTeamPlayers(teamId);
-    if (players.length === 0) return 0;
-    return Math.round(
-      players.reduce((sum, player) => sum + getPlayerOvr(player), 0) / players.length,
-    );
+    return likelyXiAverageOvr(getTeamPlayers(teamId));
   };
 
   const selectedTeam = teams.find((team) => team.id === selectedTeamId) ?? teams[0] ?? null;

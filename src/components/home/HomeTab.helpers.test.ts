@@ -499,6 +499,19 @@ describe("HomeTab.helpers", (): void => {
     expect(result.coldPlayers.map((player) => player.id)).toEqual(["player-cold"]);
   });
 
+  // Given eleven regulars and a weak reserve, then the squad's average OVR is
+  // the likely starting eleven's, not dragged down by the reserve.
+  it("averages the likely starting eleven's OVR", () => {
+    const roster = [
+      ...Array.from({ length: 11 }, (_, index) =>
+        createPlayer({ id: `starter-${index}`, ovr: 80 }),
+      ),
+      createPlayer({ id: "reserve", ovr: 40 }),
+    ];
+
+    expect(getHomeRosterOverview(roster).avgOvr).toBe(80);
+  });
+
   it("returns the latest completed results for the managed team", (): void => {
     const gameState = createGameState({
       teams: [
