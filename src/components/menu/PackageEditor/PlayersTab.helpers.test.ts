@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  FREE_AGENTS_FILTER,
+  competitionClubIds,
   filterPlayerRows,
+  leagueCompetitions,
   matchesPositionFilter,
   positionFilterGroups,
 } from "./PlayersTab.helpers";
 import { emptyPlayer } from "./helpers";
 import en from "../../../i18n/locales/en.json";
-import type { PlayerDef, Position } from "./types";
+import type { CompetitionDef, PlayerDef, Position, TeamDef } from "./types";
 
 function player(overrides: Partial<PlayerDef> = {}): PlayerDef {
   return { ...emptyPlayer(), ...overrides };
@@ -218,5 +221,77 @@ describe("filterPlayerRows with a position filter", () => {
 
     expect(scoped).toHaveLength(4);
     expect(filtered).toHaveLength(1);
+  });
+});
+
+describe("league and club filters", () => {
+  const players = [
+    player({ id: "a", club: "arsenal" }),
+    player({ id: "b", club: "chelsea" }),
+    player({ id: "c", club: "real-madrid" }),
+    player({ id: "d", club: "" }),
+  ];
+
+  function league(overrides: Partial<CompetitionDef>): CompetitionDef {
+    return {
+      id: "l",
+      name: "L",
+      type: "League",
+      scope: "Domestic",
+      priority: 0,
+      format: { kind: "LeagueTable" },
+      participants: {},
+      ...overrides,
+    } as CompetitionDef;
+  }
+
+  function team(id: string, country: string): TeamDef {
+    return { id, country } as TeamDef;
+  }
+
+  it("filters by one club, or by players without one", () => {
+    const ids = (clubFilter: string) =>
+      filterPlayerRows({ players, query: "", teamNames: NO_TEAMS, clubFilter }).filtered.map(
+        ({ player: p }) => p.id,
+      );
+
+    expect(ids("chelsea")).toEqual(["b"]);
+    expect(ids(FREE_AGENTS_FILTER)).toEqual(["d"]);
+    expect(ids("All")).toEqual(["a", "b", "c", "d"]);
+  });
+
+  it("filters by the clubs of a league", () => {
+    const { filtered } = filterPlayerRows({
+      players,
+      query: "",
+      teamNames: NO_TEAMS,
+      leagueClubs: new Set(["arsenal", "chelsea"]),
+    });
+
+    expect(filtered.map(({ i }) => i)).toEqual([0, 1]);
+  });
+
+  it("reads a league's clubs from its explicit list or its country selector", () => {
+    const teams = [team("arsenal", "ENG"), team("chelsea", "ENG"), team("real-madrid", "ESP")];
+
+    expect(
+      competitionClubIds(league({ participants: { explicit: ["arsenal"] } }), teams),
+    ).toEqual(new Set(["arsenal"]));
+    expect(
+      competitionClubIds(
+        league({
+          participants: {
+            selector: { kind: "allInCountry", country: "ENG", excludeCompetitions: [] },
+          },
+        }),
+        teams,
+      ),
+    ).toEqual(new Set(["arsenal", "chelsea"]));
+  });
+
+  it("offers only leagues in the league filter", () => {
+    const comps = [league({ id: "pl" }), league({ id: "fa", type: "Cup" })];
+
+    expect(leagueCompetitions(comps).map((c) => c.id)).toEqual(["pl"]);
   });
 });

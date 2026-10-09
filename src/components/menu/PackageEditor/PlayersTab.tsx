@@ -7,9 +7,17 @@ import { POSITION_COLOR, entityRowKey } from "./helpers";
 import { EntityListFooter, EntityListShell, EntityRow, ExportCsvButton } from "./shared";
 import { ENTITY_LIST_PAGE_SIZE, buildTeamNameMap, capRows } from "./entityList.helpers";
 import { useKeepRevealed } from "./entityList.reveal";
-import { filterPlayerRows, positionFilterGroups, type PositionFilter } from "./PlayersTab.helpers";
+import {
+  FREE_AGENTS_FILTER,
+  competitionClubIds,
+  filterPlayerRows,
+  leagueCompetitions,
+  positionFilterGroups,
+  type ClubFilter,
+  type PositionFilter,
+} from "./PlayersTab.helpers";
 import { Select } from "../../ui/Select";
-import type { PlayerDef, Position, TeamDef } from "./types";
+import type { CompetitionDef, PlayerDef, Position, TeamDef } from "./types";
 
 interface PlayerAvatarCellProps {
   player: PlayerDef;
@@ -47,9 +55,47 @@ function PlayerAvatarCell({ player, posAbbr, projectDir }: PlayerAvatarCellProps
   );
 }
 
+interface FilterSelectProps {
+  caption: string;
+  value: string;
+  onChange: (value: string) => void;
+  children: React.ReactNode;
+}
+
+/**
+ * A list-column dropdown. The column has no room for a visible caption, but
+ * the control still needs a name it can be announced with — named after the
+ * caption *and* itself, the way CountryCombobox does it, so it reads
+ * "<field>, <current value>": a bare aria-label would replace the button's
+ * contents, which is where the chosen value is.
+ */
+function FilterSelect({ caption, value, onChange, children }: FilterSelectProps) {
+  const selectId = useId();
+  const captionId = useId();
+  return (
+    <div className="min-w-0">
+      <span id={captionId} className="sr-only">
+        {caption}
+      </span>
+      <Select
+        selectSize="sm"
+        fullWidth
+        id={selectId}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-labelledby={`${captionId} ${selectId}`}
+      >
+        {children}
+      </Select>
+    </div>
+  );
+}
+
 interface PlayersTabProps {
   players: PlayerDef[];
   teams?: TeamDef[];
+  /** Offers a league filter when the package defines leagues. */
+  competitions?: CompetitionDef[];
   onAdd: () => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
@@ -64,6 +110,7 @@ interface PlayersTabProps {
 export function PlayersTab({
   players,
   teams,
+  competitions,
   onAdd,
   onEdit,
   onDelete,
@@ -75,17 +122,41 @@ export function PlayersTab({
   youthOnly,
 }: PlayersTabProps) {
   const { t } = useTranslation();
-  const positionFilterId = useId();
-  const positionFilterCaptionId = useId();
   const [query, setQuery] = useState("");
 
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("All");
+  const [leagueFilter, setLeagueFilter] = useState("All");
+  const [clubFilter, setClubFilter] = useState<ClubFilter>("All");
   const [visibleCount, setVisibleCount] = useState(ENTITY_LIST_PAGE_SIZE);
 
   const teamNames = useMemo(() => buildTeamNameMap(teams), [teams]);
+  const leagues = useMemo(() => leagueCompetitions(competitions), [competitions]);
+  const leagueClubs = useMemo(() => {
+    const league = leagues.find((c) => c.id === leagueFilter);
+    return league ? competitionClubIds(league, teams) : null;
+  }, [leagues, leagueFilter, teams]);
+  // The club dropdown follows the league one, so picking a league leaves a
+  // short list rather than every club in the world.
+  const clubOptions = useMemo(
+    () =>
+      [...teamNames]
+        .filter(([id]) => !leagueClubs || leagueClubs.has(id))
+        .map(([id, name]) => [id, name || id] as const)
+        .sort(([, a], [, b]) => a.localeCompare(b)),
+    [teamNames, leagueClubs],
+  );
   const { scoped, filtered } = useMemo(
-    () => filterPlayerRows({ players, youthOnly, positionFilter, query, teamNames }),
-    [players, youthOnly, positionFilter, query, teamNames],
+    () =>
+      filterPlayerRows({
+        players,
+        youthOnly,
+        positionFilter,
+        query,
+        teamNames,
+        leagueClubs,
+        clubFilter,
+      }),
+    [players, youthOnly, positionFilter, query, teamNames, leagueClubs, clubFilter],
   );
   const { visible } = capRows(
     filtered,
@@ -104,6 +175,26 @@ export function PlayersTab({
 
   function handlePositionFilterChange(next: string) {
     setPositionFilter(next as PositionFilter);
+    setVisibleCount(ENTITY_LIST_PAGE_SIZE);
+  }
+
+  function handleLeagueFilterChange(next: string) {
+    setLeagueFilter(next);
+    // A club outside the new league would leave the list silently empty.
+    const league = leagues.find((c) => c.id === next);
+    if (
+      league &&
+      clubFilter !== "All" &&
+      clubFilter !== FREE_AGENTS_FILTER &&
+      !competitionClubIds(league, teams).has(clubFilter)
+    ) {
+      setClubFilter("All");
+    }
+    setVisibleCount(ENTITY_LIST_PAGE_SIZE);
+  }
+
+  function handleClubFilterChange(next: string) {
+    setClubFilter(next);
     setVisibleCount(ENTITY_LIST_PAGE_SIZE);
   }
 
@@ -134,24 +225,10 @@ export function PlayersTab({
             </div>
             {scoped.length > 0 && (
               <>
-                {/*
-                  The list column has no room for a visible caption, but the
-                  control still needs a name it can be announced with.
-                */}
-                <span id={positionFilterCaptionId} className="sr-only">
-                  {t("worldEditor.filterByPosition")}
-                </span>
-                <Select
-                  selectSize="sm"
-                  fullWidth
-                  id={positionFilterId}
+                <FilterSelect
+                  caption={t("worldEditor.filterByPosition")}
                   value={positionFilter}
-                  onChange={(e) => handlePositionFilterChange(e.target.value)}
-                  // Named after the caption *and* itself, the way CountryCombobox
-                  // does it, so it reads "<field>, <current value>": a bare
-                  // aria-label would replace the button's contents, which is
-                  // where the chosen position is.
-                  aria-labelledby={`${positionFilterCaptionId} ${positionFilterId}`}
+                  onChange={handlePositionFilterChange}
                 >
                   {/*
                   Flat children, never a fragment: Select reads its options out
@@ -167,7 +244,38 @@ export function PlayersTab({
                       ))}
                     </optgroup>
                   ))}
-                </Select>
+                </FilterSelect>
+                {(leagues.length > 0 || clubOptions.length > 0) && (
+                  <div className={`grid gap-2 ${leagues.length > 0 ? "grid-cols-2" : ""}`}>
+                    {leagues.length > 0 && (
+                      <FilterSelect
+                        caption={t("worldEditor.filterByLeague")}
+                        value={leagueFilter}
+                        onChange={handleLeagueFilterChange}
+                      >
+                        <option value="All">{t("worldEditor.allLeagues")}</option>
+                        {leagues.map((league) => (
+                          <option key={league.id} value={league.id}>
+                            {league.name || league.id}
+                          </option>
+                        ))}
+                      </FilterSelect>
+                    )}
+                    <FilterSelect
+                      caption={t("worldEditor.filterByClub")}
+                      value={clubFilter}
+                      onChange={handleClubFilterChange}
+                    >
+                      <option value="All">{t("worldEditor.allClubs")}</option>
+                      <option value={FREE_AGENTS_FILTER}>{t("worldEditor.freeAgents")}</option>
+                      {clubOptions.map(([id, name]) => (
+                        <option key={id} value={id}>
+                          {name}
+                        </option>
+                      ))}
+                    </FilterSelect>
+                  </div>
+                )}
               </>
             )}
           </div>

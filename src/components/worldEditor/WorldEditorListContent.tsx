@@ -95,6 +95,7 @@ export function WorldEditorListContent({
         <PlayersTab
           players={players}
           teams={teams}
+          competitions={competitions}
           youthOnly={false}
           onAdd={playerEditor.handleAdd}
           onEdit={playerEditor.handleSelect}
@@ -110,6 +111,7 @@ export function WorldEditorListContent({
         <PlayersTab
           players={players}
           teams={teams}
+          competitions={competitions}
           youthOnly={true}
           onAdd={youthEditor.handleAdd}
           onEdit={youthEditor.handleSelect}

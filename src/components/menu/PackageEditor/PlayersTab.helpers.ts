@@ -1,6 +1,6 @@
 import { CORE_POSITIONS, normalisePosition } from "../../squad/SquadTab.helpers";
 import { POSITIONS } from "./helpers";
-import type { PlayerDef, Position } from "./types";
+import type { CompetitionDef, PlayerDef, Position, TeamDef } from "./types";
 
 type CorePosition = (typeof CORE_POSITIONS)[number];
 
@@ -61,6 +61,51 @@ export function positionFilterGroups(): PositionFilterGroup[] {
   ];
 }
 
+/**
+ * What the club dropdown is set to: everything, players without a club, or one
+ * team id. The free-agent value cannot be a team id — ids are slugs.
+ */
+export type ClubFilter = string;
+
+export const FREE_AGENTS_FILTER = "__free__";
+
+/** The domestic leagues a package defines, the ones the league filter offers. */
+export function leagueCompetitions(competitions: CompetitionDef[] | undefined): CompetitionDef[] {
+  return (competitions ?? []).filter((c) => c.type === "League" && c.id);
+}
+
+/**
+ * The clubs a league draws, as far as the package says without running the
+ * engine: its explicit list, or every club of the country for an
+ * `allInCountry` selector. A `topByReputation` cut needs the engine's
+ * reputation roll, so it is approximated by the whole country too — the
+ * filter is a way to find players, not a promise of who qualifies.
+ */
+export function competitionClubIds(
+  competition: CompetitionDef,
+  teams: TeamDef[] | undefined,
+): Set<string> {
+  const ids = new Set(competition.participants?.explicit ?? []);
+  const selector = competition.participants?.selector;
+  const country = selector?.country ?? competition.countryId;
+  if (
+    selector &&
+    country &&
+    (selector.kind === "allInCountry" || selector.kind === "topByReputation")
+  ) {
+    for (const team of teams ?? []) {
+      if (team.id && team.country === country) ids.add(team.id);
+    }
+  }
+  return ids;
+}
+
+function matchesClubFilter(club: string, filter: ClubFilter): boolean {
+  if (filter === "All") return true;
+  if (filter === FREE_AGENTS_FILTER) return !club;
+  return club === filter;
+}
+
 /** A player paired with its index in the unfiltered array. */
 export interface IndexedPlayer {
   player: PlayerDef;
@@ -75,6 +120,10 @@ export interface FilterPlayerRowsParams {
   positionFilter?: PositionFilter;
   query: string;
   teamNames: Map<string, string>;
+  /** Clubs of the chosen league; null or omitted means every league. */
+  leagueClubs?: ReadonlySet<string> | null;
+  /** Defaults to "All". */
+  clubFilter?: ClubFilter;
 }
 
 export interface FilteredPlayerRows {
@@ -104,6 +153,8 @@ export function filterPlayerRows({
   positionFilter = "All",
   query,
   teamNames,
+  leagueClubs = null,
+  clubFilter = "All",
 }: FilterPlayerRowsParams): FilteredPlayerRows {
   const scoped: IndexedPlayer[] = [];
   for (let i = 0; i < players.length; i += 1) {
@@ -114,19 +165,24 @@ export function filterPlayerRows({
     scoped.push({ player, i });
   }
 
-  // Position before the search box: one comparison rules a player out where
-  // the query needs six.
-  const byPosition =
-    positionFilter === "All"
+  // The dropdowns before the search box: one comparison rules a player out
+  // where the query needs six.
+  const byDropdowns =
+    positionFilter === "All" && clubFilter === "All" && !leagueClubs
       ? scoped
-      : scoped.filter(({ player }) => matchesPositionFilter(player.position, positionFilter));
+      : scoped.filter(
+          ({ player }) =>
+            matchesPositionFilter(player.position, positionFilter) &&
+            matchesClubFilter(player.club, clubFilter) &&
+            (!leagueClubs || leagueClubs.has(player.club)),
+        );
 
   const q = query.trim().toLowerCase();
   if (!q) {
-    return { scoped, filtered: byPosition };
+    return { scoped, filtered: byDropdowns };
   }
 
-  const filtered = byPosition.filter(({ player }) => {
+  const filtered = byDropdowns.filter(({ player }) => {
     // Club matches on the name the row displays as well as the stored id —
     // searching for what is on screen finding nothing was its own small bug.
     const clubName = player.club ? teamNames.get(player.club) : undefined;
