@@ -837,7 +837,7 @@ mod tests {
 
     /// Given a prospect on the youth watchlist with a scout following him,
     /// When the game is saved and read back,
-    /// Then he is still on the list, as read, with his scout and his deadline.
+    /// Then he is still on the list, as read, with his scout.
     #[test]
     fn write_and_read_game_preserves_the_youth_watchlist() {
         let db = GameDatabase::open_in_memory().unwrap();
@@ -851,7 +851,6 @@ mod tests {
         assert_eq!(entry.prospect.id, "kid-1");
         assert_eq!(entry.estimate, game.youth_watchlist[0].estimate);
         assert_eq!(entry.scout_id.as_deref(), Some("scout-1"));
-        assert_eq!(entry.expires_on, "2032-04-11");
     }
 
     /// A career following one prospect, with a scout on him.
@@ -901,7 +900,6 @@ mod tests {
                 },
                 scout_id: Some("scout-1".to_string()),
                 added_on: "2032-01-18".to_string(),
-                expires_on: "2032-04-11".to_string(),
                 weeks_followed: 1,
             });
         game

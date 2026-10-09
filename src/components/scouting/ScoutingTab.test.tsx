@@ -559,7 +559,6 @@ describe("ScoutingTab", () => {
         },
         scout_id: null,
         added_on: "2026-08-03",
-        expires_on: "2026-10-26",
       },
     ];
 

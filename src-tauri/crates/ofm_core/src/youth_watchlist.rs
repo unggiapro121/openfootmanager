@@ -20,8 +20,6 @@ pub struct WatchedProspect {
     #[serde(default)]
     pub scout_id: Option<String>,
     pub added_on: String,
-    /// The day he drops off the list if he has not been signed.
-    pub expires_on: String,
     /// Weekly reports a scout has sent on him.
     #[serde(default)]
     pub weeks_followed: u32,
@@ -29,9 +27,6 @@ pub struct WatchedProspect {
 
 /// Most prospects one scout can follow at once.
 pub const MAX_WATCHED_PER_SCOUT: usize = 3;
-
-/// How long a prospect stays on the list unsigned.
-const WATCH_WEEKS: i64 = 12;
 
 /// The bands a followed prospect's ranges step down through, a step a week.
 const BAND_STEPS: [u8; 5] = [12, 8, 5, 2, 0];
@@ -51,8 +46,9 @@ const ERR_NOT_WATCHED: &str = "be.error.scouting.prospectNotWatched";
 const ERR_ALREADY_WATCHED: &str = "be.error.scouting.prospectAlreadyWatched";
 const ERR_SCOUT_WATCHLIST_FULL: &str = "be.error.scouting.scoutWatchlistFull";
 
-/// Put a prospect from a report on the watchlist, as the report read him, for
-/// twelve weeks and with no scout yet.
+/// Put a prospect from a report on the watchlist, as the report read him, with
+/// no scout yet. He must still be in the season's pool; he stays on the list
+/// until he signs somewhere, the user lets him go, or the season ends.
 pub(crate) fn watch(
     game: &mut Game,
     prospect: Player,
@@ -65,14 +61,13 @@ pub(crate) fn watch(
     {
         return Err(ERR_ALREADY_WATCHED.to_string());
     }
+    crate::youth_pool::locate(game, &prospect.id)?;
     let today = game.clock.current_date.date_naive();
-    let expires = today + chrono::Duration::weeks(WATCH_WEEKS);
     game.youth_watchlist.push(WatchedProspect {
         prospect,
         estimate,
         scout_id: None,
         added_on: today.format("%Y-%m-%d").to_string(),
-        expires_on: expires.format("%Y-%m-%d").to_string(),
         weeks_followed: 0,
     });
     Ok(())
@@ -183,56 +178,44 @@ pub(crate) fn signed_by_club(game: &mut Game, prospect_id: &str, club_name: &str
     };
     let entry = game.youth_watchlist.remove(index);
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
-    messages::signed_elsewhere(
+    messages::signed_by_club(
         game,
         &entry.prospect.id,
         &entry.prospect.full_name,
-        Some(club_name),
+        club_name,
         &today,
     );
 }
 
-/// The week's watchlist business, on Mondays: prospects whose time is up leave,
-/// others may be signed by another club first, and the rest who have a scout
-/// narrow a band and get a report.
+/// The season's pool is closing on `date`: everyone still on the list leaves
+/// the market with it, and the user is told of each.
+pub(crate) fn pool_closed(game: &mut Game, date: chrono::NaiveDate) {
+    let date = date.format("%Y-%m-%d").to_string();
+    for entry in std::mem::take(&mut game.youth_watchlist) {
+        messages::left_market(game, &entry, &date);
+    }
+}
+
+/// The week's watchlist business, on Mondays, after the AI clubs have signed
+/// from the pool: each prospect with a scout narrows a band and gets a report.
 pub fn process_youth_watchlist(game: &mut Game) {
     use chrono::Datelike;
     if game.clock.current_date.weekday() != chrono::Weekday::Mon {
         return;
     }
-    let today = game.clock.current_date.date_naive();
-    let today_text = today.format("%Y-%m-%d").to_string();
+    let today_text = game.clock.current_date.format("%Y-%m-%d").to_string();
     let entries = std::mem::take(&mut game.youth_watchlist);
     for mut entry in entries {
-        let expired = chrono::NaiveDate::parse_from_str(&entry.expires_on, "%Y-%m-%d")
-            .is_ok_and(|expires| today >= expires);
-        if expired {
-            messages::expired(game, &entry, &today_text);
-            continue;
-        }
-        let mut rng = game.rng_for(
-            &format!("youth-watchlist/{}", entry.prospect.id),
-            &today_text,
-        );
-        if rand::RngExt::random_bool(&mut rng, interception_chance(entry.prospect.potential)) {
-            let player_name = entry.prospect.full_name.clone();
-            let prospect_id = entry.prospect.id.clone();
-            let club = signed_elsewhere(game, entry, &mut rng);
-            messages::signed_elsewhere(
-                game,
-                &prospect_id,
-                &player_name,
-                club.as_deref(),
-                &today_text,
-            );
-            continue;
-        }
         if let Some(scout) = entry
             .scout_id
             .as_deref()
             .and_then(|id| game.staff.iter().find(|staff| staff.id == id))
             .cloned()
         {
+            let mut rng = game.rng_for(
+                &format!("youth-watchlist/{}", entry.prospect.id),
+                &today_text,
+            );
             let ovr_band = next_band(entry.estimate.ovr_band);
             let potential_band = next_band(entry.estimate.potential_band);
             narrow(&mut entry, ovr_band, potential_band, &mut rng);
@@ -305,42 +288,6 @@ pub(crate) fn scout_left(game: &mut Game, scout_id: &str) {
     }
 }
 
-/// The weekly chance another club signs a watched prospect first: 3%, rising to
-/// 7% for a prospect of true potential 90 or more.
-fn interception_chance(potential: u8) -> f64 {
-    let pull = ((f64::from(potential) - 60.0) / 30.0).clamp(0.0, 1.0);
-    0.03 + 0.04 * pull
-}
-
-/// Another club signs the prospect into its academy: an AI club of his football
-/// nation if one will pay him, otherwise any AI club that will. Returns the
-/// club's name, or `None` when nobody would, and he leaves the market.
-fn signed_elsewhere(
-    game: &mut Game,
-    entry: WatchedProspect,
-    rng: &mut impl rand::Rng,
-) -> Option<String> {
-    use rand::seq::SliceRandom;
-    let user_team = game.manager.team_id.clone();
-    let nation = entry.prospect.football_nation.clone();
-    let (mut home, mut abroad): (Vec<usize>, Vec<usize>) = game
-        .teams
-        .iter()
-        .enumerate()
-        .filter(|(_, team)| Some(&team.id) != user_team.as_ref())
-        .map(|(index, _)| index)
-        .partition(|index| game.teams[*index].football_nation == nation);
-    home.shuffle(rng);
-    abroad.shuffle(rng);
-    let date = game.clock.current_date.date_naive();
-    for index in home.into_iter().chain(abroad) {
-        if crate::youth_intake::sign_into_academy(game, index, entry.prospect.clone(), date) {
-            return Some(game.teams[index].name.clone());
-        }
-    }
-    None
-}
-
 mod messages {
     use super::WatchedProspect;
     use crate::game::Game;
@@ -380,40 +327,31 @@ mod messages {
         message
     }
 
-    pub(super) fn expired(game: &mut Game, entry: &WatchedProspect, date: &str) {
+    pub(super) fn left_market(game: &mut Game, entry: &WatchedProspect, date: &str) {
         let message = notice(
-            format!("youth-watch-expired-{}", entry.prospect.id),
+            format!("youth-watch-gone-{}", entry.prospect.id),
             date,
-            "be.msg.youthWatchExpired.subject",
-            "be.msg.youthWatchExpired.body",
+            "be.msg.youthWatchGone.subject",
+            "be.msg.youthWatchGone.body",
             &[("player", &entry.prospect.full_name)],
         );
         crate::inbox::emit(game, message);
     }
 
-    pub(super) fn signed_elsewhere(
+    pub(super) fn signed_by_club(
         game: &mut Game,
         prospect_id: &str,
         player_name: &str,
-        club: Option<&str>,
+        club: &str,
         date: &str,
     ) {
-        let message = match club {
-            Some(club) => notice(
-                format!("youth-watch-taken-{prospect_id}"),
-                date,
-                "be.msg.youthWatchTaken.subject",
-                "be.msg.youthWatchTaken.body",
-                &[("player", player_name), ("team", club)],
-            ),
-            None => notice(
-                format!("youth-watch-taken-{prospect_id}"),
-                date,
-                "be.msg.youthWatchGone.subject",
-                "be.msg.youthWatchGone.body",
-                &[("player", player_name)],
-            ),
-        };
+        let message = notice(
+            format!("youth-watch-taken-{prospect_id}"),
+            date,
+            "be.msg.youthWatchTaken.subject",
+            "be.msg.youthWatchTaken.body",
+            &[("player", player_name), ("team", club)],
+        );
         crate::inbox::emit(game, message);
     }
 
@@ -492,7 +430,7 @@ mod messages {
 mod tests {
     use super::*;
     use crate::clock::GameClock;
-    use chrono::{TimeZone, Utc};
+    use chrono::{NaiveDate, TimeZone, Utc};
     use domain::manager::Manager;
     use domain::player::Position;
     use domain::staff::{Staff, StaffAttributes, StaffRole};
@@ -619,10 +557,11 @@ mod tests {
 
     /// Given a prospect from a report,
     /// When the user watches him,
-    /// Then he is on the list with no scout, the report's ranges, and twelve
-    /// weeks to run; watching him twice is refused.
+    /// Then he is on the list with no scout and the report's ranges; watching
+    /// him twice is refused, and so is watching a youngster no longer in the
+    /// pool.
     #[test]
-    fn watching_puts_a_prospect_on_the_list_for_twelve_weeks() {
+    fn watching_puts_a_prospect_on_the_list() {
         let mut game = world();
         watched(&mut game, "p1", 60, 80);
 
@@ -630,12 +569,17 @@ mod tests {
         assert_eq!(entry.scout_id, None);
         assert_eq!(entry.estimate.ovr_band, 12);
         assert_eq!(entry.added_on, "2026-08-03");
-        assert_eq!(entry.expires_on, "2026-10-26");
         let again = prospect("p1", 60, 80);
         let estimate = wide_estimate(&again);
         assert_eq!(
             watch(&mut game, again, estimate),
             Err("be.error.scouting.prospectAlreadyWatched".to_string())
+        );
+        let gone = prospect("gone", 60, 80);
+        let estimate = wide_estimate(&gone);
+        assert_eq!(
+            watch(&mut game, gone, estimate),
+            Err("be.error.scouting.prospectOffMarket".to_string())
         );
     }
 
@@ -753,61 +697,74 @@ mod tests {
     }
 
     /// Given a prospect nobody signs,
-    /// When twelve weeks pass,
-    /// Then he drops off the list and the user is told.
+    /// When twenty weeks pass,
+    /// Then he is still on the list: only the season's end takes him off it.
     #[test]
-    fn an_unsigned_prospect_expires_after_twelve_weeks() {
+    fn a_watched_prospect_does_not_expire() {
         let mut game = world();
         watched(&mut game, "p1", 40, 45);
-        game.clock.advance_days(7 * 12);
 
-        process_youth_watchlist(&mut game);
+        for _ in 0..20 {
+            next_monday(&mut game);
+        }
+
+        assert_eq!(game.youth_watchlist.len(), 1);
+    }
+
+    /// Given a watched prospect and an English AI club that needs a midfielder
+    /// on the season's last Monday,
+    /// When the AI clubs sign from the pool,
+    /// Then the club signs him, he leaves the list, and the user is told where.
+    #[test]
+    fn an_ai_club_signing_a_watched_prospect_takes_him_off_the_list() {
+        let mut game = world();
+        watched(&mut game, "p1", 60, 80);
+        let pool = game.youth_pool.as_mut().unwrap();
+        pool.ends_on = "2026-08-03".to_string();
+        pool.demand
+            .insert("ai-eng".to_string(), vec![Position::Midfielder]);
+
+        crate::youth_pool::process_ai_signings(&mut game);
 
         assert!(game.youth_watchlist.is_empty());
-        assert!(
-            game.messages
-                .iter()
-                .any(|message| message.id == "youth-watch-expired-p1")
-        );
-    }
-
-    /// Given prospects of rising true potential,
-    /// When the weekly chance of another club signing them first is read,
-    /// Then it runs from 3% to 7%.
-    #[test]
-    fn better_prospects_are_more_likely_to_be_signed_elsewhere() {
-        assert!((interception_chance(50) - 0.03).abs() < 1e-9);
-        assert!((interception_chance(75) - 0.05).abs() < 1e-9);
-        assert!((interception_chance(95) - 0.07).abs() < 1e-9);
-    }
-
-    /// Given an English prospect another club moves for,
-    /// When he is signed elsewhere,
-    /// Then he joins the English AI club's academy and becomes a real player.
-    #[test]
-    fn a_prospect_signed_elsewhere_joins_an_ai_academy_of_his_nation() {
-        let mut game = world();
-        let player = prospect("p1", 60, 80);
-        let entry = WatchedProspect {
-            estimate: wide_estimate(&player),
-            prospect: player,
-            scout_id: None,
-            added_on: "2026-08-03".to_string(),
-            expires_on: "2026-10-26".to_string(),
-            weeks_followed: 0,
-        };
-        let mut rng = rand::rngs::StdRng::seed_from_u64(1);
-
-        let club = signed_elsewhere(&mut game, entry, &mut rng);
-
-        assert_eq!(club.as_deref(), Some("ai-eng FC"));
         let joined = game
             .players
             .iter()
             .find(|player| player.id == "p1")
-            .expect("a real player now");
+            .unwrap();
         assert_eq!(joined.team_id.as_deref(), Some("ai-eng"));
-        assert_eq!(joined.squad_role, domain::player::SquadRole::Youth);
+        let told = game
+            .messages
+            .iter()
+            .find(|message| message.id == "youth-watch-taken-p1")
+            .expect("the user is told");
+        assert_eq!(
+            told.i18n_params.get("team").map(String::as_str),
+            Some("ai-eng FC")
+        );
+    }
+
+    /// Given two watched prospects,
+    /// When the season ends and its pool gives way to the next,
+    /// Then the list is empty and the user is told each one left the market.
+    #[test]
+    fn the_seasons_end_clears_the_list() {
+        let mut game = world();
+        watched(&mut game, "p1", 60, 80);
+        watched(&mut game, "p2", 55, 75);
+        let season_end = NaiveDate::from_ymd_opt(2027, 5, 30).unwrap();
+
+        crate::youth_pool::roll_over(&mut game, season_end);
+
+        assert!(game.youth_watchlist.is_empty());
+        for id in ["p1", "p2"] {
+            assert!(
+                game.messages
+                    .iter()
+                    .any(|message| message.id == format!("youth-watch-gone-{id}")),
+                "{id}"
+            );
+        }
     }
 
     /// Given a followed prospect,
@@ -868,6 +825,4 @@ mod tests {
             Err("be.error.scouting.prospectNotWatched".to_string())
         );
     }
-
-    use rand::SeedableRng;
 }

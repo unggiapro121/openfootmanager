@@ -583,14 +583,14 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
 
     id_tool!(
         "scout_watchlist_sign",
-        "Sign a youth prospect on the watchlist into the academy (the board's wage policy applies at the academy rate, half the contract)",
+        "Sign a youth prospect on the watchlist into the academy (the board's wage policy applies at the academy rate, half the contract). Fails if an AI club has signed him first",
         prospect_id_schema(),
         prospect_id,
         tools_impl::scouting::scout_watchlist_sign
     );
     id_tool!(
         "scout_watchlist_unwatch",
-        "Remove a youth prospect from the watchlist",
+        "Remove a youth prospect from the watchlist; he stays in the season's pool",
         prospect_id_schema(),
         prospect_id,
         tools_impl::scouting::scout_watchlist_unwatch
@@ -1431,7 +1431,7 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
     // scout_youth_start
     custom_tool!(
         "scout_youth_start",
-        "Start youth scouting assignment. Charges a fee up front (15,000 domestic, 50,000 international, x1.5 for HighPotential) and the scout must have rested 7 days since his last youth search",
+        "Start youth scouting assignment. The scout searches what is left of the season's shared youth pool (AI clubs sign from it every Monday), domestic = the club's nation, international = every other nation. Charges a fee up front (15,000 domestic, 50,000 international, x1.5 for HighPotential) and the scout must have rested 7 days since his last youth search",
         build_schema(
             &[
                 ("scout_id", "string", "Staff member ID"),
@@ -1479,7 +1479,7 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
     // scout_watchlist_assign
     custom_tool!(
         "scout_watchlist_assign",
-        "Assign a scout to follow a youth prospect on the watchlist (max 3 per scout), or omit scout_id to take the scout off. A followed prospect's OVR/potential ranges narrow one band each Monday and the scout reports weekly",
+        "Assign a scout to follow a youth prospect on the watchlist (max 3 per scout), or omit scout_id to take the scout off. A followed prospect's OVR/potential ranges narrow one band each Monday and the scout reports weekly. Prospects stay until they sign somewhere or the season ends",
         build_schema(
             &[
                 ("prospect_id", "string", "Prospect ID on the watchlist"),

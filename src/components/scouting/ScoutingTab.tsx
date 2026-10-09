@@ -281,7 +281,6 @@ export default function ScoutingTab({
       <ScoutingWatchlistCard
         watchlist={gameState.youth_watchlist ?? []}
         scouts={scouts}
-        currentDate={gameState.clock.current_date}
         busy={watchlistBusy}
         errorMessage={watchlistError}
         onAssignScout={(prospectId, scoutId) => {

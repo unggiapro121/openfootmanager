@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Balanced",
     "objectiveHighPotential": "High potential",
     "objectiveReadySoon": "Ready soon",
-    "youthRecruitmentHint": "Send a scout to search for academy prospects. Each search has a fee, and the scout rests for a week afterwards. Watch a prospect to have a scout follow him before you decide.",
+    "youthRecruitmentHint": "Send a scout to search this season's pool of young players. Other clubs are signing from it too, so the best go early. Each search has a fee, and the scout rests for a week afterwards.",
     "startYouthSearch": "Start youth search",
     "activeYouthSearches": "{{count}} active youth searches",
     "noYouthSearches": "No youth recruitment searches are running.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Fee {{fee}} · {{days}} days",
     "scoutResting": "Resting {{days}} more days",
     "watchlistTitle": "Watchlist",
-    "watchlistHint": "Prospects you are following. Give one a scout and his ranges narrow every Monday until you know exactly what he is.",
+    "watchlistHint": "Prospects you are following. Give one a scout and his ranges narrow every Monday. He stays until he signs somewhere or the season ends.",
     "watchlistEmpty": "No prospects on your watchlist. Choose Watch on a youth scouting report.",
     "watchlistScout": "Scout",
-    "watchlistTimeLeft": "Time left",
     "watchlistScoutFor": "Scout following {{name}}",
     "watchlistNoScout": "No scout",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "{{weeks}} wk left",
     "watchlistSign": "Sign",
     "watchlistUnwatch": "Let go"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Scout Report — {{player}}",
         "body": "Boss, I have been following {{player}} for {{weeks}} weeks now. Here is where I would put him today. Sign him, or let him go, whenever you are ready."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} is off the watchlist",
-        "body": "We have been watching {{player}} for twelve weeks without making a move, so I have taken him off the list."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} has signed elsewhere",
         "body": "{{player}} has joined the {{team}} academy before we moved for him."
       },
       "youthWatchGone": {
         "subject": "{{player}} is off the market",
-        "body": "{{player}} is no longer available, so I have taken him off the watchlist."
+        "body": "The season is over and {{player}} never signed for a club, so he is off the market and off the watchlist."
       },
       "youthWatchScoutLeft": {
         "subject": "Watchlist needs a scout",

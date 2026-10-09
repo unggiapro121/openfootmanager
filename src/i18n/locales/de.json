@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Ausgewogen",
     "objectiveHighPotential": "Hohes Potenzial",
     "objectiveReadySoon": "Schnell einsatzbereit",
-    "youthRecruitmentHint": "Schicke einen Scout auf die Suche nach Talenten für die Jugendakademie. Jede Suche kostet eine Gebühr, danach pausiert der Scout eine Woche. Beobachte ein Talent, damit ein Scout es verfolgt, bevor du entscheidest.",
+    "youthRecruitmentHint": "Schicke einen Scout in den Nachwuchspool dieser Saison. Andere Vereine verpflichten auch daraus, die Besten sind also schnell weg. Jede Suche kostet eine Gebühr, danach pausiert der Scout eine Woche.",
     "startYouthSearch": "Jugendsuche starten",
     "activeYouthSearches": "{{count}} aktive Jugendsuchen",
     "noYouthSearches": "Derzeit laufen keine Jugendrekrutierungssuchen.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Kosten {{fee}} · {{days}} Tage",
     "scoutResting": "Pausiert noch {{days}} Tage",
     "watchlistTitle": "Beobachtungsliste",
-    "watchlistHint": "Talente, die du beobachtest. Gib einem einen Scout, und seine Spannen werden jeden Montag enger, bis du genau weißt, was er kann.",
+    "watchlistHint": "Talente, die du beobachtest. Gib einem einen Scout, und seine Spannen werden jeden Montag enger. Er bleibt auf der Liste, bis er irgendwo unterschreibt oder die Saison endet.",
     "watchlistEmpty": "Du beobachtest keine Talente. Wähle Beobachten in einem Bericht zur Nachwuchssuche.",
     "watchlistScout": "Scout",
-    "watchlistTimeLeft": "Verbleibend",
     "watchlistScoutFor": "Scout, der {{name}} beobachtet",
     "watchlistNoScout": "Kein Scout",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Noch {{weeks}} Wo.",
     "watchlistSign": "Verpflichten",
     "watchlistUnwatch": "Streichen"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Scoutbericht — {{player}}",
         "body": "Chef, ich beobachte {{player}} jetzt seit {{weeks}} Wochen. So schätze ich ihn heute ein. Verpflichte ihn oder lass ihn gehen, wann immer du willst."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} von der Liste genommen",
-        "body": "Wir haben {{player}} zwölf Wochen beobachtet, ohne zu handeln, also habe ich ihn von der Liste genommen."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} hat woanders unterschrieben",
         "body": "{{player}} ist in die Akademie von {{team}} gewechselt, bevor wir zugeschlagen haben."
       },
       "youthWatchGone": {
-        "subject": "{{player}} ist nicht mehr verfügbar",
-        "body": "{{player}} ist nicht mehr verfügbar, daher habe ich ihn von der Beobachtungsliste genommen."
+        "subject": "{{player}} ist vom Markt",
+        "body": "Die Saison ist vorbei und {{player}} hat bei keinem Verein unterschrieben. Er ist vom Markt und von der Beobachtungsliste."
       },
       "youthWatchScoutLeft": {
         "subject": "Beobachtungsliste braucht einen Scout",

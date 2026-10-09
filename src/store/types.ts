@@ -497,7 +497,6 @@ export interface WatchedProspect {
   estimate: ProspectEstimate;
   scout_id?: string | null;
   added_on: string;
-  expires_on: string;
   weeks_followed?: number;
 }
 

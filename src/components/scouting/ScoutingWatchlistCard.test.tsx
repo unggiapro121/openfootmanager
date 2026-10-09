@@ -9,7 +9,6 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string | number>) => {
       if (key === "inbox.youthProspectRange") return `${params?.low}–${params?.high}`;
-      if (key === "scouting.watchlistWeeksLeft") return `${params?.weeks} wk left`;
       if (key === "scouting.watchlistScoutLoad") return `${params?.name} (${params?.count}/3)`;
       return key;
     },
@@ -47,7 +46,6 @@ function watched(id: string, scoutId: string | null = null): WatchedProspect {
     },
     scout_id: scoutId,
     added_on: "2026-08-03",
-    expires_on: "2026-10-26",
   };
 }
 
@@ -55,7 +53,6 @@ function renderCard(overrides: Partial<React.ComponentProps<typeof ScoutingWatch
   const props: React.ComponentProps<typeof ScoutingWatchlistCard> = {
     watchlist: [watched("p1")],
     scouts: [scout("s1", "Ana"), scout("s2", "Ben")],
-    currentDate: "2026-08-10T12:00:00Z",
     busy: false,
     onAssignScout: vi.fn(),
     onSign: vi.fn(),
@@ -67,13 +64,13 @@ function renderCard(overrides: Partial<React.ComponentProps<typeof ScoutingWatch
 }
 
 describe("ScoutingWatchlistCard", () => {
-  it("lists each watched prospect with his ranges and weeks left", () => {
+  it("lists each watched prospect with his ranges and no deadline", () => {
     renderCard();
 
     const row = screen.getByRole("row", { name: /Kid p1/ });
     expect(row).toHaveTextContent("55–63");
     expect(row).toHaveTextContent("70–86");
-    expect(row).toHaveTextContent("11 wk left");
+    expect(screen.queryByText("scouting.watchlistTimeLeft")).not.toBeInTheDocument();
   });
 
   it("says so when nobody is being watched", () => {

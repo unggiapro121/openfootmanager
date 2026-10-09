@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Vyvážený",
     "objectiveHighPotential": "Vysoký potenciál",
     "objectiveReadySoon": "Brzy připraven",
-    "youthRecruitmentHint": "Pošlete skauta hledat talenty pro akademii. Každé hledání stojí poplatek a skaut pak týden odpočívá. Sledujte talent, aby ho skaut zkoumal, než se rozhodnete.",
+    "youthRecruitmentHint": "Pošlete skauta hledat v letošním zásobníku mladých hráčů. Ostatní kluby z něj také podepisují, takže ti nejlepší rychle zmizí. Každé hledání stojí poplatek a skaut pak týden odpočívá.",
     "startYouthSearch": "Zahájit vyhledávání mládeže",
     "activeYouthSearches": "Aktivní vyhledávání mládeže: {{count}}",
     "noYouthSearches": "Běží žádná vyhledávání pro nábor mládeže.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Cena {{fee}} · {{days}} dní",
     "scoutResting": "Odpočívá ještě {{days}} dní",
     "watchlistTitle": "Sledované talenty",
-    "watchlistHint": "Talenty, které sledujete. Přidělte jim skauta a jejich rozpětí se každé pondělí zúží, dokud nebudete přesně vědět, co v nich je.",
+    "watchlistHint": "Talenty, které sledujete. Přidělte jim skauta a jejich rozpětí se každé pondělí zúží. Talent zůstává na seznamu, dokud nepodepíše za klub nebo neskončí sezóna.",
     "watchlistEmpty": "Nesledujete žádné talenty. V hlášení o hledání mladíků zvolte Sledovat.",
     "watchlistScout": "Skaut",
-    "watchlistTimeLeft": "Zbývá",
     "watchlistScoutFor": "Skaut sledující {{name}}",
     "watchlistNoScout": "Bez skauta",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Zbývá {{weeks}} týd.",
     "watchlistSign": "Podepsat",
     "watchlistUnwatch": "Pustit"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Hlášení skauta — {{player}}",
         "body": "Šéfe, {{player}} sleduji už {{weeks}} týdnů. Takhle ho dnes hodnotím. Podepište ho, nebo ho pusťte, kdykoli budete chtít."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} vyřazen ze sledovaných",
-        "body": "{{player}} jsme sledovali dvanáct týdnů a nic jsme neudělali, tak jsem ho ze seznamu vyřadil."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} podepsal jinde",
         "body": "{{player}} přestoupil do akademie {{team}} dřív, než jsme stihli jednat."
       },
       "youthWatchGone": {
-        "subject": "{{player}} už není k mání",
-        "body": "{{player}} už není k dispozici, tak jsem ho ze sledovaných vyřadil."
+        "subject": "{{player}} už není na trhu",
+        "body": "Sezóna skončila a {{player}} nepodepsal za žádný klub, takže opouští trh i seznam sledovaných."
       },
       "youthWatchScoutLeft": {
         "subject": "Sledované talenty potřebují skauta",

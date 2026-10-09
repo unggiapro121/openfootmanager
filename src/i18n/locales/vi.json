@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Cân bằng",
     "objectiveHighPotential": "Tiềm năng cao",
     "objectiveReadySoon": "Sớm sẵn sàng",
-    "youthRecruitmentHint": "Cử tuyển trạch viên đi tìm cầu thủ trẻ cho học viện. Mỗi lần tìm tốn phí và tuyển trạch viên được nghỉ một tuần sau đó. Theo dõi một ứng viên để có tuyển trạch viên bám sát trước khi bạn quyết định.",
+    "youthRecruitmentHint": "Cử tuyển trạch viên tìm trong kho cầu thủ trẻ của mùa này. Các CLB khác cũng đang ký từ kho, nên người giỏi sẽ hết sớm. Mỗi lần tìm tốn phí và tuyển trạch viên được nghỉ một tuần sau đó.",
     "startYouthSearch": "Bắt đầu tìm cầu thủ trẻ",
     "activeYouthSearches": "{{count}} đợt tìm cầu thủ trẻ đang chạy",
     "noYouthSearches": "Không có đợt tìm cầu thủ trẻ nào đang chạy.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Phí {{fee}} · {{days}} ngày",
     "scoutResting": "Đang nghỉ thêm {{days}} ngày",
     "watchlistTitle": "Danh sách theo dõi",
-    "watchlistHint": "Các ứng viên bạn đang theo dõi. Gán một tuyển trạch viên và khoảng chỉ số của cậu ấy sẽ hẹp lại mỗi thứ Hai cho tới khi biết chính xác.",
+    "watchlistHint": "Các ứng viên bạn đang theo dõi. Gán một tuyển trạch viên và khoảng chỉ số sẽ hẹp lại mỗi thứ Hai. Ứng viên ở lại danh sách tới khi ký với một CLB hoặc hết mùa.",
     "watchlistEmpty": "Chưa có ứng viên nào. Chọn Theo dõi trong báo cáo tìm cầu thủ trẻ.",
     "watchlistScout": "Tuyển trạch viên",
-    "watchlistTimeLeft": "Còn lại",
     "watchlistScoutFor": "Tuyển trạch viên theo dõi {{name}}",
     "watchlistNoScout": "Chưa gán",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Còn {{weeks}} tuần",
     "watchlistSign": "Ký",
     "watchlistUnwatch": "Bỏ theo dõi"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Báo cáo tuyển trạch — {{player}}",
         "body": "Sếp, tôi đã theo dõi {{player}} được {{weeks}} tuần. Dưới đây là đánh giá hiện tại của tôi. Sếp có thể ký hoặc bỏ qua cậu ấy bất cứ lúc nào."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} đã rời danh sách theo dõi",
-        "body": "Chúng ta đã theo dõi {{player}} suốt 12 tuần mà không ra quyết định, nên tôi đã đưa cậu ấy ra khỏi danh sách."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} đã ký với CLB khác",
         "body": "{{player}} đã gia nhập học viện của {{team}} trước khi chúng ta kịp ra tay."
       },
       "youthWatchGone": {
-        "subject": "{{player}} không còn trên thị trường",
-        "body": "{{player}} không còn khả dụng nên tôi đã đưa cậu ấy ra khỏi danh sách theo dõi."
+        "subject": "{{player}} đã rời thị trường",
+        "body": "Mùa giải đã kết thúc mà {{player}} không ký với CLB nào, nên đã rời thị trường và rời danh sách theo dõi."
       },
       "youthWatchScoutLeft": {
         "subject": "Danh sách theo dõi cần tuyển trạch viên",

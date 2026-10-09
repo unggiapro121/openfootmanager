@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Dengeli",
     "objectiveHighPotential": "Yüksek potansiyel",
     "objectiveReadySoon": "Yakında hazır",
-    "youthRecruitmentHint": "Akademi için genç oyuncu aramaya bir gözlemci gönder. Her aramanın bir ücreti var ve gözlemci sonrasında bir hafta dinlenir. Karar vermeden önce bir gözlemcinin takip etmesi için bir genci izleme listesine al.",
+    "youthRecruitmentHint": "Bu sezonun genç oyuncu havuzunda arama yapması için bir gözlemci gönder. Diğer kulüpler de bu havuzdan imza atıyor, en iyiler çabuk gider. Her aramanın bir ücreti var ve gözlemci sonrasında bir hafta dinlenir.",
     "startYouthSearch": "Genç oyuncu araması başlat",
     "activeYouthSearches": "{{count}} aktif genç oyuncu araması",
     "noYouthSearches": "Yürüyen genç oyuncu araması yok.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Ücret {{fee}} · {{days}} gün",
     "scoutResting": "{{days}} gün daha dinleniyor",
     "watchlistTitle": "İzleme listesi",
-    "watchlistHint": "Takip ettiğin gençler. Birine gözlemci ata, aralıkları her pazartesi daralsın ve tam olarak ne olduğunu öğren.",
+    "watchlistHint": "Takip ettiğin gençler. Birine gözlemci ata, aralıkları her pazartesi daralsın. Bir kulüple anlaşana ya da sezon bitene kadar listede kalır.",
     "watchlistEmpty": "İzleme listende kimse yok. Bir genç oyuncu arama raporunda İzle'yi seç.",
     "watchlistScout": "Gözlemci",
-    "watchlistTimeLeft": "Kalan süre",
     "watchlistScoutFor": "{{name}} adlı genci izleyen gözlemci",
     "watchlistNoScout": "Gözlemci yok",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "{{weeks}} hafta kaldı",
     "watchlistSign": "İmzala",
     "watchlistUnwatch": "Bırak"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Gözlemci raporu — {{player}}",
         "body": "Hocam, {{player}} adlı genci {{weeks}} haftadır takip ediyorum. Bugün onu böyle değerlendiriyorum. İstediğin zaman imzala ya da bırak."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} listeden çıkarıldı",
-        "body": "{{player}} adlı genci on iki haftadır izliyoruz ama bir adım atmadık, bu yüzden onu listeden çıkardım."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} başka bir kulüple anlaştı",
         "body": "{{player}}, biz harekete geçmeden {{team}} akademisine katıldı."
       },
       "youthWatchGone": {
-        "subject": "{{player}} artık piyasada değil",
-        "body": "{{player}} artık müsait değil, bu yüzden onu izleme listesinden çıkardım."
+        "subject": "{{player}} piyasadan çekildi",
+        "body": "Sezon bitti ve {{player}} hiçbir kulüple anlaşmadı, bu yüzden piyasadan ve izleme listesinden çıktı."
       },
       "youthWatchScoutLeft": {
         "subject": "İzleme listesinin gözlemciye ihtiyacı var",

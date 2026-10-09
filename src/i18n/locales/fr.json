@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Équilibré",
     "objectiveHighPotential": "Haut potentiel",
     "objectiveReadySoon": "Prêt rapidement",
-    "youthRecruitmentHint": "Envoyez un recruteur chercher des jeunes pour le centre de formation. Chaque recherche a un coût et le recruteur se repose une semaine ensuite. Suivez un jeune pour qu'un recruteur l'observe avant de décider.",
+    "youthRecruitmentHint": "Envoyez un recruteur chercher dans le vivier de jeunes de la saison. D'autres clubs y recrutent aussi, alors les meilleurs partent vite. Chaque recherche a un coût et le recruteur se repose une semaine ensuite.",
     "startYouthSearch": "Lancer une recherche de jeunes",
     "activeYouthSearches": "{{count}} recherches de jeunes actives",
     "noYouthSearches": "Aucune recherche de recrutement des jeunes n'est en cours.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Coût {{fee}} · {{days}} jours",
     "scoutResting": "Au repos encore {{days}} jours",
     "watchlistTitle": "Liste de suivi",
-    "watchlistHint": "Les jeunes que vous suivez. Confiez-en un à un recruteur et ses fourchettes se resserrent chaque lundi jusqu'à connaître sa valeur exacte.",
+    "watchlistHint": "Les jeunes que vous suivez. Confiez-en un à un recruteur et ses fourchettes se resserrent chaque lundi. Il reste sur la liste jusqu'à ce qu'il signe dans un club ou que la saison se termine.",
     "watchlistEmpty": "Vous ne suivez aucun jeune. Choisissez Suivre dans un rapport de recherche de jeunes.",
     "watchlistScout": "Recruteur",
-    "watchlistTimeLeft": "Temps restant",
     "watchlistScoutFor": "Recruteur qui suit {{name}}",
     "watchlistNoScout": "Aucun recruteur",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Encore {{weeks}} sem.",
     "watchlistSign": "Recruter",
     "watchlistUnwatch": "Abandonner"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Rapport de recrutement — {{player}}",
         "body": "Boss, je suis {{player}} depuis {{weeks}} semaines. Voici comment je le situe aujourd'hui. Recrutez-le ou laissez-le partir quand vous voulez."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} retiré du suivi",
-        "body": "Nous suivons {{player}} depuis douze semaines sans bouger, je l'ai donc retiré de la liste."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} a signé ailleurs",
         "body": "{{player}} a rejoint le centre de formation de {{team}} avant que nous agissions."
       },
       "youthWatchGone": {
-        "subject": "{{player}} n'est plus disponible",
-        "body": "{{player}} n'est plus disponible, je l'ai donc retiré de la liste de suivi."
+        "subject": "{{player}} n'est plus sur le marché",
+        "body": "La saison est terminée et {{player}} n'a signé dans aucun club : il quitte le marché et la liste de suivi."
       },
       "youthWatchScoutLeft": {
         "subject": "La liste de suivi a besoin d'un recruteur",

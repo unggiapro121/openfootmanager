@@ -131,8 +131,9 @@ pub fn open_season(game: &mut Game, date: NaiveDate) {
 }
 
 /// Close the season's pool and open the next one, on the season's end `date`:
-/// whoever is still unsigned leaves the game.
+/// whoever is still unsigned leaves the game, the watchlist with them.
 pub fn roll_over(game: &mut Game, date: NaiveDate) {
+    crate::youth_watchlist::pool_closed(game, date);
     game.youth_pool = None;
     open_season(game, date);
 }

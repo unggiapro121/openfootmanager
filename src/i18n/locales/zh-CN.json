@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "均衡",
     "objectiveHighPotential": "高潜力",
     "objectiveReadySoon": "即战力优先",
-    "youthRecruitmentHint": "派球探为青训营寻找新秀。每次搜寻都需付费，球探之后休息一周。关注一名新秀，让球探在你决定前持续跟踪。",
+    "youthRecruitmentHint": "派球探在本赛季的新秀库中搜寻。其他俱乐部也在从中签人，好苗子很快就会被签走。每次搜寻都需付费，球探之后休息一周。",
     "startYouthSearch": "开始青训搜索",
     "activeYouthSearches": "{{count}} 个进行中的青训搜索",
     "noYouthSearches": "当前没有正在进行的青训招募搜索。",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "费用 {{fee}} · {{days}} 天",
     "scoutResting": "还需休息 {{days}} 天",
     "watchlistTitle": "关注名单",
-    "watchlistHint": "你正在关注的新秀。为其指派球探后，评估范围每周一都会缩小，直到你确切了解他的水平。",
+    "watchlistHint": "你正在关注的新秀。为其指派球探后，评估范围每周一都会缩小。他会留在名单上，直到与某家俱乐部签约或赛季结束。",
     "watchlistEmpty": "关注名单为空。在青训搜寻报告中选择“关注”。",
     "watchlistScout": "球探",
-    "watchlistTimeLeft": "剩余时间",
     "watchlistScoutFor": "跟踪 {{name}} 的球探",
     "watchlistNoScout": "未指派",
     "watchlistScoutLoad": "{{name}}（{{count}}/3）",
-    "watchlistWeeksLeft": "剩余 {{weeks}} 周",
     "watchlistSign": "签约",
     "watchlistUnwatch": "放弃"
   },
@@ -3507,17 +3505,13 @@
         "subject": "球探报告 — {{player}}",
         "body": "老板，我已跟踪 {{player}} {{weeks}} 周。以下是我目前的评估。您随时可以签下他或放弃。"
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} 已移出关注名单",
-        "body": "我们关注 {{player}} 已满十二周仍未行动，因此我将他移出了名单。"
-      },
       "youthWatchTaken": {
         "subject": "{{player}} 已与其他俱乐部签约",
         "body": "在我们出手之前，{{player}} 已加入 {{team}} 的青训营。"
       },
       "youthWatchGone": {
-        "subject": "{{player}} 已不在市场上",
-        "body": "{{player}} 已无法签约，因此我将他移出了关注名单。"
+        "subject": "{{player}} 已离开市场",
+        "body": "赛季已经结束，{{player}} 没有与任何俱乐部签约，因此已离开市场并移出关注名单。"
       },
       "youthWatchScoutLeft": {
         "subject": "关注名单需要球探",

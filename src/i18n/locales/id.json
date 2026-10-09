@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Seimbang",
     "objectiveHighPotential": "Potensi tinggi",
     "objectiveReadySoon": "Siap segera",
-    "youthRecruitmentHint": "Kirim pemandu bakat untuk mencari pemain muda bagi akademi. Setiap pencarian ada biayanya dan pemandu bakat beristirahat seminggu setelahnya. Pantau seorang pemain muda agar pemandu bakat mengikutinya sebelum Anda memutuskan.",
+    "youthRecruitmentHint": "Kirim pemandu bakat untuk mencari di kumpulan pemain muda musim ini. Klub lain juga merekrut dari sana, jadi yang terbaik cepat habis. Setiap pencarian ada biayanya dan pemandu bakat beristirahat seminggu setelahnya.",
     "startYouthSearch": "Mulai pencarian pemain muda",
     "activeYouthSearches": "{{count}} pencarian pemain muda aktif",
     "noYouthSearches": "Tidak ada pencarian rekrutmen pemain muda yang berjalan.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Biaya {{fee}} · {{days}} hari",
     "scoutResting": "Istirahat {{days}} hari lagi",
     "watchlistTitle": "Daftar pantauan",
-    "watchlistHint": "Pemain muda yang Anda pantau. Tugaskan pemandu bakat dan rentangnya menyempit setiap Senin hingga Anda tahu persis kemampuannya.",
+    "watchlistHint": "Pemain muda yang Anda pantau. Tugaskan pemandu bakat dan rentangnya menyempit setiap Senin. Ia tetap di daftar sampai bergabung dengan sebuah klub atau musim berakhir.",
     "watchlistEmpty": "Belum ada pemain di daftar pantauan. Pilih Pantau di laporan pencarian pemain muda.",
     "watchlistScout": "Pemandu bakat",
-    "watchlistTimeLeft": "Sisa waktu",
     "watchlistScoutFor": "Pemandu bakat yang memantau {{name}}",
     "watchlistNoScout": "Tanpa pemandu bakat",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Sisa {{weeks}} mgg",
     "watchlistSign": "Rekrut",
     "watchlistUnwatch": "Lepas"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Laporan pemandu bakat — {{player}}",
         "body": "Bos, saya sudah memantau {{player}} selama {{weeks}} minggu. Begini penilaian saya hari ini. Rekrut atau lepas dia kapan pun Anda siap."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} keluar dari daftar pantauan",
-        "body": "Kita sudah memantau {{player}} dua belas minggu tanpa bergerak, jadi saya mengeluarkannya dari daftar."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} bergabung dengan klub lain",
         "body": "{{player}} bergabung dengan akademi {{team}} sebelum kita bergerak."
       },
       "youthWatchGone": {
-        "subject": "{{player}} sudah tidak tersedia",
-        "body": "{{player}} sudah tidak tersedia, jadi saya mengeluarkannya dari daftar pantauan."
+        "subject": "{{player}} sudah keluar dari pasar",
+        "body": "Musim telah berakhir dan {{player}} tidak bergabung dengan klub mana pun, jadi ia keluar dari pasar dan dari daftar pantauan."
       },
       "youthWatchScoutLeft": {
         "subject": "Daftar pantauan butuh pemandu bakat",

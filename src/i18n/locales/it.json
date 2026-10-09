@@ -1942,7 +1942,7 @@
     "objectiveBalanced": "Equilibrato",
     "objectiveHighPotential": "Alto potenziale",
     "objectiveReadySoon": "Pronto a breve",
-    "youthRecruitmentHint": "Manda un osservatore a cercare giovani per il settore giovanile. Ogni ricerca ha un costo e l'osservatore riposa una settimana dopo. Segui un giovane perché un osservatore lo tenga d'occhio prima di decidere.",
+    "youthRecruitmentHint": "Manda un osservatore a cercare nel vivaio di giovani della stagione. Anche gli altri club ingaggiano da lì, quindi i migliori vanno via presto. Ogni ricerca ha un costo e l'osservatore riposa una settimana dopo.",
     "startYouthSearch": "Avvia ricerca giovanile",
     "activeYouthSearches": "{{count}} ricerche giovanili attive",
     "noYouthSearches": "Nessuna ricerca di reclutamento giovanile è in corso.",
@@ -1986,14 +1986,12 @@
     "youthSearchQuote": "Costo {{fee}} · {{days}} giorni",
     "scoutResting": "A riposo ancora {{days}} giorni",
     "watchlistTitle": "Lista osservati",
-    "watchlistHint": "I giovani che stai seguendo. Affidane uno a un osservatore e le sue forbici si restringono ogni lunedì finché non sai esattamente quanto vale.",
+    "watchlistHint": "I giovani che stai seguendo. Affidane uno a un osservatore e le sue forbici si restringono ogni lunedì. Resta nella lista finché non firma per un club o finisce la stagione.",
     "watchlistEmpty": "Non stai seguendo nessun giovane. Scegli Segui in un rapporto di ricerca giovani.",
     "watchlistScout": "Osservatore",
-    "watchlistTimeLeft": "Tempo rimasto",
     "watchlistScoutFor": "Osservatore che segue {{name}}",
     "watchlistNoScout": "Nessun osservatore",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Ancora {{weeks}} sett.",
     "watchlistSign": "Ingaggia",
     "watchlistUnwatch": "Lascia perdere"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Rapporto osservatore — {{player}}",
         "body": "Mister, seguo {{player}} da {{weeks}} settimane. Ecco come lo valuto oggi. Ingaggialo o lascialo perdere quando vuoi."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} esce dalla lista",
-        "body": "Abbiamo seguito {{player}} per dodici settimane senza muoverci, quindi l'ho tolto dalla lista."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} ha firmato altrove",
         "body": "{{player}} è entrato nel settore giovanile del {{team}} prima che ci muovessimo."
       },
       "youthWatchGone": {
-        "subject": "{{player}} non è più disponibile",
-        "body": "{{player}} non è più disponibile, quindi l'ho tolto dalla lista osservati."
+        "subject": "{{player}} non è più sul mercato",
+        "body": "La stagione è finita e {{player}} non ha firmato per nessun club, quindi esce dal mercato e dalla lista osservati."
       },
       "youthWatchScoutLeft": {
         "subject": "La lista osservati ha bisogno di un osservatore",

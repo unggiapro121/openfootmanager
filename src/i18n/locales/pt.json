@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Equilibrado",
     "objectiveHighPotential": "Alto potencial",
     "objectiveReadySoon": "Pronto em breve",
-    "youthRecruitmentHint": "Envie um olheiro à procura de promessas para a formação. Cada pesquisa tem um custo e o olheiro descansa uma semana a seguir. Acompanhe uma promessa para que um olheiro a siga antes de decidir.",
+    "youthRecruitmentHint": "Envie um olheiro procurar na bolsa de jovens desta época. Outros clubes também contratam dela, por isso os melhores saem cedo. Cada pesquisa tem um custo e o olheiro descansa uma semana a seguir.",
     "startYouthSearch": "Iniciar pesquisa jovem",
     "activeYouthSearches": "{{count}} pesquisas jovens ativas",
     "noYouthSearches": "Não há pesquisas de recrutamento jovem em curso.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Custo {{fee}} · {{days}} dias",
     "scoutResting": "A descansar mais {{days}} dias",
     "watchlistTitle": "Acompanhamento",
-    "watchlistHint": "Promessas que está a acompanhar. Atribua-lhes um olheiro e os intervalos estreitam todas as segundas-feiras até se saber exatamente o que valem.",
+    "watchlistHint": "Promessas que está a acompanhar. Atribua-lhes um olheiro e os intervalos estreitam todas as segundas-feiras. Fica na lista até assinar por um clube ou a época terminar.",
     "watchlistEmpty": "Não está a acompanhar nenhuma promessa. Escolha Acompanhar num relatório de pesquisa de jovens.",
     "watchlistScout": "Olheiro",
-    "watchlistTimeLeft": "Tempo restante",
     "watchlistScoutFor": "Olheiro que acompanha {{name}}",
     "watchlistNoScout": "Sem olheiro",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Faltam {{weeks}} sem.",
     "watchlistSign": "Contratar",
     "watchlistUnwatch": "Dispensar"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Relatório de olheiro — {{player}}",
         "body": "Mister, já acompanho {{player}} há {{weeks}} semanas. É assim que o vejo hoje. Contrate-o ou dispense-o quando quiser."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} saiu do acompanhamento",
-        "body": "Acompanhámos {{player}} durante doze semanas sem avançar, por isso retirei-o da lista."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} assinou por outro clube",
         "body": "{{player}} juntou-se à formação do {{team}} antes de avançarmos."
       },
       "youthWatchGone": {
-        "subject": "{{player}} já não está disponível",
-        "body": "{{player}} já não está disponível, por isso retirei-o da lista de acompanhamento."
+        "subject": "{{player}} saiu do mercado",
+        "body": "A época terminou e {{player}} não assinou por nenhum clube, por isso saiu do mercado e da lista de acompanhamento."
       },
       "youthWatchScoutLeft": {
         "subject": "O acompanhamento precisa de um olheiro",

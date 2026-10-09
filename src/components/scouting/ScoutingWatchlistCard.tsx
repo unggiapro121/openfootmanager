@@ -9,13 +9,9 @@ import { Badge, Button, Card, CardBody, CardHeader, Select } from "../ui";
 /** Most prospects one scout can follow at once; the backend enforces it too. */
 const MAX_WATCHED_PER_SCOUT = 3;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
 interface ScoutingWatchlistCardProps {
   watchlist: WatchedProspect[];
   scouts: StaffData[];
-  /** The game's current date, to count the weeks each prospect has left. */
-  currentDate: string;
   busy: boolean;
   errorMessage?: string | null;
   onAssignScout: (prospectId: string, scoutId: string | null) => void;
@@ -23,20 +19,14 @@ interface ScoutingWatchlistCardProps {
   onUnwatch: (prospectId: string) => void;
 }
 
-function weeksLeft(expiresOn: string, currentDate: string): number {
-  const days =
-    (Date.parse(`${expiresOn}T00:00:00Z`) - Date.parse(currentDate.slice(0, 10))) / DAY_MS;
-  return Math.max(0, Math.ceil(days / 7));
-}
-
 /**
  * The youth watchlist: each prospect the club is following, the ranges the
- * scouts have narrowed him to, who follows him and how long he has left.
+ * scouts have narrowed him to, and who follows him. He stays until he signs
+ * somewhere, the manager lets him go, or the season's youth pool closes.
  */
 export default function ScoutingWatchlistCard({
   watchlist,
   scouts,
-  currentDate,
   busy,
   errorMessage,
   onAssignScout,
@@ -73,7 +63,6 @@ export default function ScoutingWatchlistCard({
                   <th className="py-2 pr-3">{t("youthAcademy.ovr")}</th>
                   <th className="py-2 pr-3">{t("youthAcademy.potential")}</th>
                   <th className="py-2 pr-3">{t("scouting.watchlistScout")}</th>
-                  <th className="py-2 pr-3">{t("scouting.watchlistTimeLeft")}</th>
                   <th className="py-2" />
                 </tr>
               </thead>
@@ -125,11 +114,6 @@ export default function ScoutingWatchlistCard({
                             </option>
                           ))}
                         </Select>
-                      </td>
-                      <td className="py-2 pr-3 text-gray-600 dark:text-gray-300">
-                        {t("scouting.watchlistWeeksLeft", {
-                          weeks: weeksLeft(entry.expires_on, currentDate),
-                        })}
                       </td>
                       <td className="py-2">
                         <div className="flex justify-end gap-2">

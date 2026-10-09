@@ -1923,7 +1923,7 @@
     "objectiveBalanced": "Equilibrado",
     "objectiveHighPotential": "Alto potencial",
     "objectiveReadySoon": "Listo pronto",
-    "youthRecruitmentHint": "Envía a un ojeador a buscar promesas para la cantera. Cada búsqueda tiene un coste y el ojeador descansa una semana después. Sigue a una promesa para que un ojeador la observe antes de decidir.",
+    "youthRecruitmentHint": "Envía a un ojeador a buscar en la bolsa de jóvenes de esta temporada. Otros clubes también fichan de ella, así que los mejores vuelan pronto. Cada búsqueda tiene un coste y el ojeador descansa una semana después.",
     "startYouthSearch": "Iniciar búsqueda juvenil",
     "activeYouthSearches": "{{count}} búsquedas juveniles activas",
     "noYouthSearches": "No hay búsquedas de captación juvenil en marcha.",
@@ -1967,14 +1967,12 @@
     "youthSearchQuote": "Coste {{fee}} · {{days}} días",
     "scoutResting": "Descansa {{days}} días más",
     "watchlistTitle": "Seguimiento",
-    "watchlistHint": "Promesas que sigues. Asígnale un ojeador y sus rangos se estrechan cada lunes hasta saber exactamente cómo es.",
+    "watchlistHint": "Promesas que sigues. Asígnale un ojeador y sus rangos se estrechan cada lunes. Sigue en la lista hasta que firme por un club o acabe la temporada.",
     "watchlistEmpty": "No sigues a ninguna promesa. Elige Seguir en un informe de búsqueda de juveniles.",
     "watchlistScout": "Ojeador",
-    "watchlistTimeLeft": "Tiempo restante",
     "watchlistScoutFor": "Ojeador que sigue a {{name}}",
     "watchlistNoScout": "Sin ojeador",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
-    "watchlistWeeksLeft": "Quedan {{weeks}} sem.",
     "watchlistSign": "Fichar",
     "watchlistUnwatch": "Descartar"
   },
@@ -3507,17 +3505,13 @@
         "subject": "Informe de ojeador — {{player}}",
         "body": "Jefe, llevo {{weeks}} semanas siguiendo a {{player}}. Así lo veo hoy. Fíchalo o descártalo cuando quieras."
       },
-      "youthWatchExpired": {
-        "subject": "{{player}} sale del seguimiento",
-        "body": "Hemos seguido a {{player}} durante doce semanas sin movernos, así que lo he quitado de la lista."
-      },
       "youthWatchTaken": {
         "subject": "{{player}} ha firmado por otro club",
         "body": "{{player}} se ha unido a la cantera del {{team}} antes de que nos moviéramos."
       },
       "youthWatchGone": {
-        "subject": "{{player}} ya no está disponible",
-        "body": "{{player}} ya no está disponible, así que lo he quitado de la lista de seguimiento."
+        "subject": "{{player}} ya no está en el mercado",
+        "body": "La temporada ha terminado y {{player}} no ha firmado por ningún club, así que sale del mercado y de la lista de seguimiento."
       },
       "youthWatchScoutLeft": {
         "subject": "El seguimiento necesita un ojeador",
