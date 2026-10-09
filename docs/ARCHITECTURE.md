@@ -215,6 +215,17 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `renew_staff_contract` | staff_id, contract_years? | `Game` | Give a staff member a fresh 1–3 year contract at their asking wage |
 | `preview_staff_contract` | staff_id | `StaffContractPreview` | Asking wage, severance and the wage bill before/after, for the hire, renew and release dialogs |
 
+### Youth Scouting Commands
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `quote_youth_search` | scout_id, region?, objective? | `YouthSearchQuote` | Fee, search days and the scout's rest days left, before a search is started |
+| `start_youth_scouting` | scout_id, region?, objective?, target_position? | `Game` | Pay the fee and send the scout; refused while he rests or the club cannot pay |
+| `cancel_youth_scouting` | assignment_id | `Game` | Call off a search; the fee is not refunded |
+| `assign_watchlist_scout` | prospect_id, scout_id? | `Game` | Give a watched prospect a scout (at most three each), or take him off with `null` |
+| `sign_watched_prospect` | prospect_id | `Game` | Sign a watched prospect into the academy, under the board's wage policy |
+| `unwatch_prospect` | prospect_id | `Game` | Take a prospect off the watchlist |
+
 ### Settings Commands
 
 | Command | Parameters | Returns | Description |

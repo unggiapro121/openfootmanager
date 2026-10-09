@@ -18,6 +18,7 @@ This document describes the major gameplay systems in OpenFoot Manager beyond ma
 - [Transfers](#transfers)
 - [The Squad Floor](#the-squad-floor)
 - [Youth Intake](#youth-intake)
+- [Youth Scouting](#youth-scouting)
 
 ---
 
@@ -248,7 +249,7 @@ Each team can employ staff in 4 roles:
 |------|----------------|-------|
 | **Assistant Manager** | Coaching quality | Counts as coaching staff for training calculations |
 | **Coach** | Coaching quality + specialization bonus | Primary training contributor |
-| **Scout** | — | (Future: scouting reports) |
+| **Scout** | — | Player reports and youth searches — see [Youth Scouting](#youth-scouting) |
 | **Physio** | Recovery multiplier | Boosts condition recovery for all training |
 
 ### Staff Attributes
@@ -256,8 +257,8 @@ Each team can employ staff in 4 roles:
 | Attribute | Range | Effect |
 |-----------|-------|--------|
 | `coaching` | 0–100 | Training quality multiplier: 0→0.85×, 100→1.35× |
-| `judging_ability` | 0–100 | (Future: player evaluation accuracy) |
-| `judging_potential` | 0–100 | (Future: potential assessment) |
+| `judging_ability` | 0–100 | Accuracy of OVR and attribute reads; how many youngsters a youth search sees |
+| `judging_potential` | 0–100 | Accuracy of potential reads; how long a youth search takes |
 | `physiotherapy` | 0–100 | Recovery bonus: 0→1.0×, 100→1.4× |
 
 ### Coaching Bonuses
@@ -418,7 +419,7 @@ The inbox system provides contextual communication from in-game characters. Mess
 | Transfer | (Future) | Transfer offers |
 | Injury | (Future) | Injury reports |
 | Contract | (Future) | Contract negotiations |
-| ScoutReport | (Future) | Player scouting |
+| ScoutReport | Scout | Player reports, youth search reports, weekly watchlist reports |
 | Media | (Future) | Press stories |
 | System | System | Technical messages |
 
@@ -586,7 +587,23 @@ Each team tracks financial state:
 ### Expenses
 - Staff wages (weekly)
 - Player wages (weekly)
+- Youth search fees (`CashKind::ScoutingExpenses`)
 - Transfer fees (future)
+
+### Academy wages
+
+An academy player (`squad_role == Youth`) not out on loan is paid **half** his contract wage, at every
+club (`finances::paid_weekly_wage`). The contract keeps the first-team wage: negotiation, renewal,
+transfer bids, AI decisions and the split of a loan all use it. What the club actually pays — the
+Monday payroll, the weekly wage bill, the board's wage policy for a player in the academy, severance
+and the expiring-contract warning — uses the paid wage. Promotion to the first team pays the full
+contract from the next payday. The UI shows both, as "€6K (first team: €12K)".
+
+A club's pay level (`economy::set_pay_levels`) still counts academy players at their full market
+wage. Counting them at half raised every club's pay level and left AI clubs as deep in debt as
+before; counting them in full kept the saving. Ten seeded compact worlds over six seasons, AI clubs
+below zero cash at the end: 28 of 150 before the change, 27 with the pay level at half, 17 with it
+at full. Academy contracts are 8–13.5% of the wage bill at their full value.
 
 The `FinancesTab` displays an overview with cards for balance, wage budget, transfer budget, and a payroll table.
 
@@ -683,3 +700,65 @@ Measured on a seeded compact world with a league: the world opens below the inta
 grows for about a dozen seasons, and then holds at about a fifth above its opening size, with around
 six academy players and seven free agents per club. `tests/squad_floor_seasons.rs` asserts that
 band over twelve seasons on three seeds.
+
+---
+
+## Youth Scouting
+
+A scout does not create talent: he decides whom the club finds and how much it knows about them
+(`ofm_core::scouting`, `ofm_core::youth_watchlist`).
+
+### The search
+
+- **Who can go**: a scout of the player's club with no other assignment, who has finished resting —
+  **7 days** after his last youth search, per scout (`Game::scout_youth_rest_until`).
+- **Fee**, paid when the search starts and never refunded: 15,000 domestic, 50,000 international,
+  ×1.5 for a high-potential search. `quote_youth_search` shows the fee, the days and the rest left.
+- **Days**: 4 / 5 / 6 / 7 by judging potential (≥ 80 / ≥ 60 / ≥ 40 / lower), +1 international,
+  +1 high potential.
+- **Youngsters seen**: 4 for a balanced search, 6 otherwise, + `judging_ability / 25`, + the
+  scouting facility level − 1. Their true quality does not depend on the scout.
+- **Judgement**: the scout estimates each one's OVR (by judging ability) and potential (by judging
+  potential) within his band — ±2 / ±5 / ±8 / ±12 for ratings ≥ 80 / ≥ 60 / ≥ 40 / lower, the band a
+  player report uses — ranks them on the estimates and recommends three.
+
+### The report
+
+Each prospect shows a **range** for OVR and potential, never the true value: the estimate ± the band,
+clamped to 1–99, so the truth is always inside. The options are Sign, Watch and Discard. Signing
+reveals everything.
+
+### The watchlist
+
+- **Watch** puts the prospect and the report's ranges on the watchlist, with no scout.
+- The manager gives each prospect a scout on the Scouting screen, at most **three** per scout.
+  Following does not take the scout's assignment slot. A new scout drops the band straight to his
+  own if it is narrower; ranges never widen.
+- **Every Monday**, for each prospect, in order:
+  1. after **12 weeks** he leaves the list;
+  2. an AI club may sign him first — weekly chance `3% + 4% × clamp((potential − 60) / 30, 0, 1)`.
+     He joins an AI academy, same nation first, through the youth intake's signing path and wage
+     policy; if none can pay he leaves the market;
+  3. with a scout, the band narrows one step (12 → 8 → 5 → 2 → 0) and the new range is the
+     intersection of the old one and a fresh read, so it always holds the truth;
+  4. with a scout, a weekly report, which from the second week adds headline attributes — as many as
+     a player report at that judging ability shows, read within the OVR band.
+- A scout who is released or whose contract ends leaves his prospects on the list without a scout,
+  and the manager is told.
+- Signing from a report or the list goes through the board's wage policy on the paid academy wage
+  (`be.error.scouting.wagePolicy`).
+
+Measured with `tests/youth_scouting_probe.rs` (ignored, run in release), 2,000 domestic
+high-potential searches per row, true ratings of the three recommended:
+
+| Scout rating | Facility | Mean OVR | Mean potential | Potential ≥ 85 |
+|---|---|---|---|---|
+| 20 | 1 | 70.5 | 89.4 | 74.3% |
+| 50 | 1 | 71.5 | 91.5 | 86.6% |
+| 80 | 1 | 72.4 | 93.2 | 95.8% |
+| 80 | 3 | 72.9 | 94.4 | 98.2% |
+
+A better scout and a better facility find better youngsters. The youngsters themselves run hot —
+even the worst scout's picks are three-quarters elite on potential — which is the youth generator's
+distribution, not this search.
+
