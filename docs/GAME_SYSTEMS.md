@@ -754,8 +754,8 @@ The scout reads each prospect as a **range** for OVR and potential, never the tr
 estimate ± the band, clamped to 1–99, so the truth is always inside. The report shows him as the
 player card a player scout report uses (`scouting::prospect_report`, `MessageContext::
 youth_prospect_reports`): the midpoint of each range as one figure, the rating and potential labels,
-and a confidence from the OVR band (±0 exact, ±2 high, ±5 moderate, wider low); headline attributes
-stay undiscovered until a scout follows him. The options are Sign, Watch and Discard. Signing
+and a confidence from the OVR band (±0 exact, ±2 high, ±5 moderate, wider low); his attributes stay
+"??" until a scout follows him. The options are Sign, Watch and Discard. Signing
 reveals everything and takes him out of the pool; a refused wage leaves him in it. Discarding only
 takes him off the report. A prospect an AI club has signed since, or who left the market, cannot be
 signed or watched: the manager is told where he went. A pool with nobody suitable left gives a report
@@ -771,10 +771,14 @@ that says so (`bodyEmpty`), with the fee spent.
 - **Every Monday**, after the AI clubs have signed: an AI club that signed a watched prospect takes
   him off the list and the manager is told where he went; then each prospect with a scout narrows a
   band (12 → 8 → 5 → 2 → 0), the new range being the intersection of the old one and a fresh read,
-  and gets a weekly report, which from the second week adds headline attributes — as many as a player
-  report at that judging ability shows, read within the OVR band. Every weekly report carries his
-  player card as read that week, and the watchlist keeps the latest (`WatchedProspect::report`):
-  the table shows his estimated OVR and potential label, and opening him shows the full card.
+  and every attribute already read narrows a band too; then the scout reads K more attributes —
+  4 / 3 / 2 / 2 for judging ability ≥ 80 / ≥ 60 / ≥ 40 / lower — in the order the prospect's
+  position weighs them in its overall (`player_rating::attribute_weights`; only keepers have handling
+  and reflexes), each at the overall's current band. A weekly report carries his player card as read
+  that week, and the watchlist keeps the latest (`WatchedProspect::report`).
+- A prospect's card shows his height, weight and feet exactly, and every attribute in the profile's
+  groups: the figure for those read, "??" for the rest. Opening him on the watchlist shows the same as
+  a profile-like detail form.
 - When the pool closes, everyone on the list leaves the market and the manager is told.
 - A scout who is released or whose contract ends leaves his prospects on the list without a scout,
   and the manager is told.
