@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Bez skauta",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Podepsat",
-    "watchlistUnwatch": "Pustit"
+    "watchlistUnwatch": "Pustit",
+    "watchlistWeeksFollowed": "Sledován {{weeks}} týd."
   },
   "match": {
     "live": "Živě",

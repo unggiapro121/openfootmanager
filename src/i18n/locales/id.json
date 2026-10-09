@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Tanpa pemandu bakat",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Rekrut",
-    "watchlistUnwatch": "Lepas"
+    "watchlistUnwatch": "Lepas",
+    "watchlistWeeksFollowed": "Dipantau {{weeks}} mgg"
   },
   "match": {
     "live": "Langsung",

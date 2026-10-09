@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Aucun recruteur",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Recruter",
-    "watchlistUnwatch": "Abandonner"
+    "watchlistUnwatch": "Abandonner",
+    "watchlistWeeksFollowed": "Suivi depuis {{weeks}} sem."
   },
   "match": {
     "live": "En Direct",

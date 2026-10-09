@@ -1,4 +1,5 @@
 import type { PlayerData } from "../../store/gameStore";
+import type { AttributeRead } from "../../store/types";
 
 type TranslateFn = (key: string) => string;
 
@@ -128,4 +129,46 @@ export function getPlayerAttributeEntry(
     name: translate(`common.attributes.${key}`),
     value: player.attributes[key],
   };
+}
+
+/** An attribute as a scout has read it: `value` is null until it is read. */
+export interface ReadAttributeEntry {
+  key: PlayerAttributeKey;
+  name: string;
+  value: number | null;
+}
+
+export interface ReadAttributeGroup {
+  label: string;
+  attrs: ReadAttributeEntry[];
+}
+
+/**
+ * Every attribute in the profile's groups, as a following scout has read a
+ * youngster: the middle of each read, null for those not read yet. The keeping
+ * group appears only for a keeper.
+ */
+export function buildReadAttributeGroups(
+  reads: AttributeRead[],
+  isKeeper: boolean,
+  translate: TranslateFn,
+): ReadAttributeGroup[] {
+  const buckets = new Map<AttributeGroupKey, ReadAttributeEntry[]>();
+  for (const [attributeKey, groupKey] of Object.entries(ATTRIBUTE_META) as [
+    PlayerAttributeKey,
+    AttributeGroupKey,
+  ][]) {
+    const read = reads.find((candidate) => candidate.key === attributeKey);
+    const bucket = buckets.get(groupKey) ?? [];
+    bucket.push({
+      key: attributeKey,
+      name: translate(`common.attributes.${attributeKey}`),
+      value: read ? Math.floor((read.low + read.high) / 2) : null,
+    });
+    buckets.set(groupKey, bucket);
+  }
+  return GROUP_ORDER.filter((group) => group !== "goalkeeper" || isKeeper).map((groupKey) => ({
+    label: translate(GROUP_LABEL_KEY[groupKey]),
+    attrs: buckets.get(groupKey) ?? [],
+  }));
 }

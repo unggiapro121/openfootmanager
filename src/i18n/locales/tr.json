@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Gözlemci yok",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "İmzala",
-    "watchlistUnwatch": "Bırak"
+    "watchlistUnwatch": "Bırak",
+    "watchlistWeeksFollowed": "{{weeks}} haftadır izleniyor"
   },
   "match": {
     "live": "Canlı",

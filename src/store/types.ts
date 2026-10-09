@@ -447,6 +447,13 @@ export interface ScoutReportData {
   rating_key: string;
   potential_key: string;
   confidence_key: string;
+  /** A youth prospect's build and feet; absent on an ordinary scout report. */
+  height_cm?: number | null;
+  weight_kg?: number | null;
+  footedness?: string | null;
+  weak_foot?: number | null;
+  /** Every attribute a following scout has read of a youth prospect. */
+  attribute_reads?: AttributeRead[];
 }
 
 export interface DelegatedRenewalCaseMessageData {
@@ -489,6 +496,8 @@ export interface AttributeRead {
   key: string;
   low: number;
   high: number;
+  /** How wide the read still is either side. */
+  band?: number;
 }
 
 /** Mirrors `ofm_core::youth_watchlist::WatchedProspect`. */

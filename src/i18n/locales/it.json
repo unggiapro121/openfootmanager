@@ -1994,7 +1994,8 @@
     "watchlistNoScout": "Nessun osservatore",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Ingaggia",
-    "watchlistUnwatch": "Lascia perdere"
+    "watchlistUnwatch": "Lascia perdere",
+    "watchlistWeeksFollowed": "Seguito da {{weeks}} sett."
   },
   "match": {
     "live": "Diretta",

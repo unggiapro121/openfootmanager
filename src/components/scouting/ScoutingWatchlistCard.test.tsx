@@ -65,6 +65,11 @@ function watched(id: string, scoutId: string | null = null): WatchedProspect {
       rating_key: "common.scoutRatings.average",
       potential_key: "common.scoutPotential.strong",
       confidence_key: "common.scoutConfidence.moderate",
+      height_cm: 178,
+      weight_kg: 69,
+      footedness: "Left",
+      weak_foot: 3,
+      attribute_reads: [{ key: "passing", low: 62, high: 66, band: 2 }],
     },
   };
 }
@@ -93,14 +98,20 @@ describe("ScoutingWatchlistCard", () => {
     expect(row).not.toHaveTextContent("55–63");
   });
 
-  it("opens a prospect's latest card and acts from it", () => {
+  it("opens a prospect's detail form, ?? for what is not read yet", () => {
     const props = renderCard();
 
     fireEvent.click(screen.getByRole("button", { name: "Kid p1" }));
 
     const dialog = screen.getByRole("dialog", { name: "Kid p1" });
-    expect(dialog).toHaveTextContent("scouting.estimatedAttributes (1/6)");
-    expect(dialog).toHaveTextContent("64");
+    expect(dialog).toHaveTextContent("178");
+    expect(dialog).toHaveTextContent("69");
+    expect(dialog).toHaveTextContent("common.footedness.Left");
+    const passing = within(dialog).getByTestId("prospect-attr-passing");
+    expect(passing).toHaveTextContent("64");
+    const vision = within(dialog).getByTestId("prospect-attr-vision");
+    expect(vision).toHaveTextContent("??");
+    expect(dialog).toHaveTextContent("~59");
     fireEvent.click(within(dialog).getByRole("button", { name: "scouting.watchlistSign" }));
     expect(props.onSign).toHaveBeenCalledWith("p1");
 

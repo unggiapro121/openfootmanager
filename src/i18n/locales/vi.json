@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Chưa gán",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Ký",
-    "watchlistUnwatch": "Bỏ theo dõi"
+    "watchlistUnwatch": "Bỏ theo dõi",
+    "watchlistWeeksFollowed": "Đã theo dõi {{weeks}} tuần"
   },
   "match": {
     "live": "Trực tiếp",

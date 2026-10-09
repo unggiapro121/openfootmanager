@@ -10,7 +10,7 @@ import PlayerProfileStatCard from "./PlayerProfileStatCard";
 
 // Deterministic placeholder bar width (20-79%) for hidden attributes, derived
 // from the attribute name. Stable across renders, unlike Math.random().
-function placeholderWidth(name: string): number {
+export function placeholderWidth(name: string): number {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = (hash * 31 + name.charCodeAt(i)) % 60;

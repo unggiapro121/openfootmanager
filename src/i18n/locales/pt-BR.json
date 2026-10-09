@@ -2648,7 +2648,8 @@
     "watchlistNoScout": "Sem olheiro",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Contratar",
-    "watchlistUnwatch": "Liberar"
+    "watchlistUnwatch": "Liberar",
+    "watchlistWeeksFollowed": "Acompanhado há {{weeks}} sem."
   },
   "be": {
     "error": {

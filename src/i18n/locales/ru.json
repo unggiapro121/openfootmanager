@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Без скаута",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Подписать",
-    "watchlistUnwatch": "Отпустить"
+    "watchlistUnwatch": "Отпустить",
+    "watchlistWeeksFollowed": "Наблюдение: {{weeks}} нед."
   },
   "match": {
     "live": "Матч",

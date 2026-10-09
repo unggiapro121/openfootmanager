@@ -5,9 +5,8 @@ import { useTranslation } from "react-i18next";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { calcAge, positionBadgeVariant } from "../../lib/helpers";
 import type { StaffData, WatchedProspect } from "../../store/types";
-import DashboardModalFrame from "../dashboard/DashboardModalFrame";
-import ScoutPlayerCard from "../ScoutPlayerCard";
 import { Badge, Button, Card, CardBody, CardHeader, Select } from "../ui";
+import WatchedProspectDetail from "./WatchedProspectDetail";
 
 /** Most prospects one scout can follow at once; the backend enforces it too. */
 const MAX_WATCHED_PER_SCOUT = 3;
@@ -42,6 +41,7 @@ export default function ScoutingWatchlistCard({
   const range = (low: number, high: number) => t("inbox.youthProspectRange", { low, high });
   const [openId, setOpenId] = useState<string | null>(null);
   const opened = watchlist.find((entry) => entry.prospect.id === openId);
+  const openedScout = scouts.find((scout) => scout.id === opened?.scout_id);
 
   return (
     <Card>
@@ -153,30 +153,18 @@ export default function ScoutingWatchlistCard({
         )}
       </CardBody>
       {opened?.report ? (
-        <DashboardModalFrame maxWidthClassName="max-w-lg">
-          <div role="dialog" aria-modal="true" aria-label={opened.prospect.full_name}>
-            <ScoutPlayerCard report={opened.report} />
-            <div className="mt-4 flex flex-wrap justify-end gap-2">
-              <Button size="sm" disabled={busy} onClick={() => onSign(opened.prospect.id)}>
-                {t("scouting.watchlistSign")}
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={busy}
-                onClick={() => {
-                  onUnwatch(opened.prospect.id);
-                  setOpenId(null);
-                }}
-              >
-                {t("scouting.watchlistUnwatch")}
-              </Button>
-              <Button size="sm" variant="ghost" onClick={() => setOpenId(null)}>
-                {t("common.close")}
-              </Button>
-            </div>
-          </div>
-        </DashboardModalFrame>
+        <WatchedProspectDetail
+          entry={opened}
+          report={opened.report}
+          scoutName={openedScout ? `${openedScout.first_name} ${openedScout.last_name}` : null}
+          busy={busy}
+          onSign={() => onSign(opened.prospect.id)}
+          onUnwatch={() => {
+            onUnwatch(opened.prospect.id);
+            setOpenId(null);
+          }}
+          onClose={() => setOpenId(null)}
+        />
       ) : null}
     </Card>
   );

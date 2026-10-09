@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { User, Calendar, Shield, Eye, EyeOff, TrendingUp, BarChart3 } from "lucide-react";
 import { ProgressBar, CountryFlag } from "./ui";
+import ProspectAttributeGroups from "./scouting/ProspectAttributeGroups";
+import ProspectPhysique from "./scouting/ProspectPhysique";
 import { countryName } from "../lib/countries";
 import type { ScoutReportData } from "../store/gameStore";
 
@@ -41,6 +43,12 @@ export default function ScoutPlayerCard({ report, onPlayerClick }: ScoutPlayerCa
   ];
 
   const discoveredCount = attrs.filter((a) => a.value !== null).length;
+  // A youth prospect's card carries his build and every attribute read so far,
+  // shown in the profile's groups; an ordinary report keeps its six figures.
+  const isProspect = report.height_cm != null;
+  const prospectReads = report.attribute_reads ?? [];
+  const prospectIsKeeper = report.position === "Goalkeeper";
+  const prospectTotal = prospectIsKeeper ? 19 : 17;
 
   return (
     <div
@@ -106,37 +114,47 @@ export default function ScoutPlayerCard({ report, onPlayerClick }: ScoutPlayerCa
           )}
         </div>
 
-        {/* Attributes grid */}
-        <div className="space-y-1.5">
-          <p className="text-xs font-heading font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
-            <BarChart3 className="w-3 h-3" />
-            {t("scouting.estimatedAttributes")} ({discoveredCount}/6)
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
-            {attrs.map((attr) => (
-              <div key={attr.labelKey} className="flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-300 w-20 truncate">
-                  {t(attr.labelKey)}
-                </span>
-                {attr.value !== null ? (
-                  <>
-                    <div className="flex-1">
-                      <ProgressBar value={attr.value} size="sm" />
-                    </div>
-                    <span className="text-xs font-bold tabular-nums text-gray-700 dark:text-gray-200 w-6 text-right">
-                      {attr.value}
-                    </span>
-                  </>
-                ) : (
-                  <div className="flex-1 flex items-center gap-1.5 text-gray-400 dark:text-gray-500">
-                    <EyeOff className="w-3 h-3" />
-                    <span className="text-xs italic">{t("scouting.undiscovered")}</span>
-                  </div>
-                )}
-              </div>
-            ))}
+        {isProspect ? (
+          <div className="space-y-3">
+            <ProspectPhysique report={report} />
+            <p className="text-xs font-heading font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+              <BarChart3 className="w-3 h-3" />
+              {t("scouting.estimatedAttributes")} ({prospectReads.length}/{prospectTotal})
+            </p>
+            <ProspectAttributeGroups reads={prospectReads} isKeeper={prospectIsKeeper} />
           </div>
-        </div>
+        ) : (
+          <div className="space-y-1.5">
+            <p className="text-xs font-heading font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
+              <BarChart3 className="w-3 h-3" />
+              {t("scouting.estimatedAttributes")} ({discoveredCount}/6)
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+              {attrs.map((attr) => (
+                <div key={attr.labelKey} className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300 w-20 truncate">
+                    {t(attr.labelKey)}
+                  </span>
+                  {attr.value !== null ? (
+                    <>
+                      <div className="flex-1">
+                        <ProgressBar value={attr.value} size="sm" />
+                      </div>
+                      <span className="text-xs font-bold tabular-nums text-gray-700 dark:text-gray-200 w-6 text-right">
+                        {attr.value}
+                      </span>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex items-center gap-1.5 text-gray-400 dark:text-gray-500">
+                      <EyeOff className="w-3 h-3" />
+                      <span className="text-xs italic">{t("scouting.undiscovered")}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Assessment footer */}
         <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-navy-600">

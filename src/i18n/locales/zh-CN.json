@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "未指派",
     "watchlistScoutLoad": "{{name}}（{{count}}/3）",
     "watchlistSign": "签约",
-    "watchlistUnwatch": "放弃"
+    "watchlistUnwatch": "放弃",
+    "watchlistWeeksFollowed": "已跟踪 {{weeks}} 周"
   },
   "match": {
     "live": "直播中",

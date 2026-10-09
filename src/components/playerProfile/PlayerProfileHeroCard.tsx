@@ -53,7 +53,7 @@ function HeroStat({ label, children }: { label: string; children: ReactNode }) {
 const WEAK_FOOT_MAX = 5;
 
 /** The weaker foot as five dots, the rating read out as "n/5". */
-function WeakFootRating({ value }: { value: number }) {
+export function WeakFootRating({ value }: { value: number }) {
   return (
     <span className="inline-flex h-5 items-center gap-1">
       {Array.from({ length: WEAK_FOOT_MAX }, (_, index) => (

@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Sem olheiro",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Contratar",
-    "watchlistUnwatch": "Dispensar"
+    "watchlistUnwatch": "Dispensar",
+    "watchlistWeeksFollowed": "Acompanhado {{weeks}} sem."
   },
   "match": {
     "live": "Ao Vivo",

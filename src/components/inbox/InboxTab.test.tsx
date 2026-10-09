@@ -1342,6 +1342,46 @@ describe("InboxTab", (): void => {
     expect(screen.queryByText(/Market Value:/)).not.toBeInTheDocument();
   });
 
+  it("shows a prospect's build and every attribute, ?? until read", async (): Promise<void> => {
+    await renderInboxTab({
+      gameState: createGameState([
+        createMessage({
+          id: "youth-watch-report-kid-2026-08-17",
+          category: "ScoutReport",
+          read: true,
+          subject_key: "be.msg.youthWatchReport.subject",
+          body_key: "be.msg.youthWatchReport.body",
+          i18n_params: { player: "Leo Builder", scout: "Joao Scout", weeks: "1" },
+          context: {
+            team_id: "t1",
+            player_id: null,
+            fixture_id: null,
+            youth_prospects: [createProspect({ id: "kid", full_name: "Leo Builder" })],
+            youth_prospect_reports: [
+              prospectCard({
+                player_id: "kid",
+                player_name: "Leo Builder",
+                height_cm: 178,
+                weight_kg: 69,
+                footedness: "Right",
+                weak_foot: 2,
+                attribute_reads: [{ key: "passing", low: 62, high: 66, band: 2 }],
+              }),
+            ],
+            match_result: null,
+          },
+          actions: [] as MessageAction[],
+        }),
+      ]),
+      initialMessageId: "youth-watch-report-kid-2026-08-17",
+    });
+
+    expect(screen.getByText("Estimated attributes (1/17)")).toBeInTheDocument();
+    expect(screen.getByTestId("prospect-attr-passing")).toHaveTextContent("64");
+    expect(screen.getByTestId("prospect-attr-vision")).toHaveTextContent("??");
+    expect(screen.getByText(/178/)).toBeInTheDocument();
+  });
+
   it("shows the headline attributes a following scout has read", async (): Promise<void> => {
     await renderInboxTab({
       gameState: createGameState([

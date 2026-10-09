@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { PlayerData } from "../../store/gameStore";
-import { buildPlayerAttributeGroups, getPlayerAttributeEntry } from "./PlayerProfile.attributes";
+import {
+  buildPlayerAttributeGroups,
+  buildReadAttributeGroups,
+  getPlayerAttributeEntry,
+} from "./PlayerProfile.attributes";
 
 function createPlayer(overrides: Partial<PlayerData> = {}): PlayerData {
   return {
@@ -165,5 +169,34 @@ describe("PlayerProfile.attributes", () => {
       name: "common.attributes.pace",
       value: 60,
     });
+  });
+});
+
+describe("buildReadAttributeGroups", () => {
+  const reads = [
+    { key: "passing", low: 60, high: 68, band: 5 },
+    { key: "pace", low: 70, high: 70, band: 0 },
+  ];
+
+  it("groups every attribute, with the middle of each read and null for the rest", () => {
+    const groups = buildReadAttributeGroups(reads, false, (key) => key);
+
+    expect(groups.map((group) => group.label)).toEqual([
+      "common.attrGroups.physical",
+      "common.attrGroups.technical",
+      "common.attrGroups.mental",
+    ]);
+    const all = groups.flatMap((group) => group.attrs);
+    expect(all).toHaveLength(17);
+    expect(all.find((attr) => attr.name === "common.attributes.passing")?.value).toBe(64);
+    expect(all.find((attr) => attr.name === "common.attributes.pace")?.value).toBe(70);
+    expect(all.find((attr) => attr.name === "common.attributes.vision")?.value).toBeNull();
+  });
+
+  it("adds the goalkeeping group for a keeper", () => {
+    const groups = buildReadAttributeGroups([], true, (key) => key);
+
+    expect(groups.map((group) => group.label)).toContain("common.attrGroups.goalkeeper");
+    expect(groups.flatMap((group) => group.attrs).every((attr) => attr.value === null)).toBe(true);
   });
 });

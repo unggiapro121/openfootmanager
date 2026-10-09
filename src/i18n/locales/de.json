@@ -1975,7 +1975,8 @@
     "watchlistNoScout": "Kein Scout",
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Verpflichten",
-    "watchlistUnwatch": "Streichen"
+    "watchlistUnwatch": "Streichen",
+    "watchlistWeeksFollowed": "Beobachtet seit {{weeks}} Wo."
   },
   "match": {
     "live": "Live",
