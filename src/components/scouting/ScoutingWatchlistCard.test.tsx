@@ -46,6 +46,26 @@ function watched(id: string, scoutId: string | null = null): WatchedProspect {
     },
     scout_id: scoutId,
     added_on: "2026-08-03",
+    report: {
+      player_id: id,
+      player_name: `Kid ${id}`,
+      position: "Midfielder",
+      nationality: "GB",
+      dob: "2009-01-01",
+      team_name: null,
+      pace: 64,
+      shooting: null,
+      passing: null,
+      dribbling: null,
+      defending: null,
+      physical: null,
+      condition: null,
+      morale: null,
+      avg_rating: 59,
+      rating_key: "common.scoutRatings.average",
+      potential_key: "common.scoutPotential.strong",
+      confidence_key: "common.scoutConfidence.moderate",
+    },
   };
 }
 
@@ -64,13 +84,28 @@ function renderCard(overrides: Partial<React.ComponentProps<typeof ScoutingWatch
 }
 
 describe("ScoutingWatchlistCard", () => {
-  it("lists each watched prospect with his ranges and no deadline", () => {
+  it("lists each watched prospect as his scouts read him now", () => {
     renderCard();
 
     const row = screen.getByRole("row", { name: /Kid p1/ });
-    expect(row).toHaveTextContent("55–63");
-    expect(row).toHaveTextContent("70–86");
-    expect(screen.queryByText("scouting.watchlistTimeLeft")).not.toBeInTheDocument();
+    expect(row).toHaveTextContent("~59");
+    expect(row).toHaveTextContent("common.scoutPotential.strong");
+    expect(row).not.toHaveTextContent("55–63");
+  });
+
+  it("opens a prospect's latest card and acts from it", () => {
+    const props = renderCard();
+
+    fireEvent.click(screen.getByRole("button", { name: "Kid p1" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Kid p1" });
+    expect(dialog).toHaveTextContent("scouting.estimatedAttributes (1/6)");
+    expect(dialog).toHaveTextContent("64");
+    fireEvent.click(within(dialog).getByRole("button", { name: "scouting.watchlistSign" }));
+    expect(props.onSign).toHaveBeenCalledWith("p1");
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "common.close" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("says so when nobody is being watched", () => {

@@ -15,7 +15,7 @@ interface AttrRow {
 }
 
 function confidenceColor(key: string): string {
-  if (key.endsWith(".high")) return "text-success-500";
+  if (key.endsWith(".exact") || key.endsWith(".high")) return "text-success-500";
   if (key.endsWith(".moderate")) return "text-accent-500";
   return "text-red-500";
 }

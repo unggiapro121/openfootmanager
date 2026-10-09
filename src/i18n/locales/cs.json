@@ -601,7 +601,8 @@
     "scoutConfidence": {
       "high": "Vysoká",
       "moderate": "Střední",
-      "low": "Nízká"
+      "low": "Nízká",
+      "exact": "Přesná"
     },
     "attrGroups": {
       "physical": "Fyzické",

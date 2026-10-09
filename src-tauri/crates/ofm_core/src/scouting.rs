@@ -537,6 +537,10 @@ fn build_youth_recruitment_report(
             .iter()
             .map(|(_, estimate)| estimate.clone())
             .collect(),
+        youth_prospect_reports: recommended
+            .iter()
+            .map(|(prospect, estimate)| prospect_report(prospect, estimate))
+            .collect(),
         ..MessageContext::default()
     });
 
@@ -977,17 +981,7 @@ fn build_scout_report(
         }
     };
 
-    let rating_key = if rating_base >= 80 {
-        "common.scoutRatings.excellent"
-    } else if rating_base >= 70 {
-        "common.scoutRatings.veryGood"
-    } else if rating_base >= 60 {
-        "common.scoutRatings.good"
-    } else if rating_base >= 50 {
-        "common.scoutRatings.average"
-    } else {
-        "common.scoutRatings.belowAverage"
-    };
+    let rating_key = rating_key_for(rating_base);
 
     // Potential assessment: use the player's actual potential (fuzzed) when the scout
     // has sufficient judging_potential skill.  High-potential scouts can also spot
@@ -999,13 +993,7 @@ fn build_scout_report(
         } else {
             rating_base // fallback to fuzzed OVR if no potential stored
         };
-        if fuzzed_potential >= 85 {
-            "common.scoutPotential.worldClass"
-        } else if fuzzed_potential >= 70 {
-            "common.scoutPotential.strong"
-        } else {
-            "common.scoutPotential.moderate"
-        }
+        potential_key_for(fuzzed_potential)
     } else {
         "common.scoutPotential.unclear"
     };
@@ -1180,6 +1168,189 @@ fn recommend_by_estimate(
     candidates.sort_by_key(|candidate| std::cmp::Reverse(score(&candidate.1)));
     candidates.truncate(YOUTH_PROSPECTS_RECOMMENDED);
     candidates
+}
+
+/// The words a report puts on an overall rating it believes.
+fn rating_key_for(rating: u32) -> &'static str {
+    if rating >= 80 {
+        "common.scoutRatings.excellent"
+    } else if rating >= 70 {
+        "common.scoutRatings.veryGood"
+    } else if rating >= 60 {
+        "common.scoutRatings.good"
+    } else if rating >= 50 {
+        "common.scoutRatings.average"
+    } else {
+        "common.scoutRatings.belowAverage"
+    }
+}
+
+/// The words a report puts on a potential it believes.
+fn potential_key_for(potential: u32) -> &'static str {
+    if potential >= 85 {
+        "common.scoutPotential.worldClass"
+    } else if potential >= 70 {
+        "common.scoutPotential.strong"
+    } else {
+        "common.scoutPotential.moderate"
+    }
+}
+
+/// How sure a read of a youngster is, by how wide its overall range still is:
+/// exact once a scout has followed him down to nothing.
+fn prospect_confidence_key(ovr_band: u8) -> &'static str {
+    match ovr_band {
+        0 => "common.scoutConfidence.exact",
+        1..=2 => "common.scoutConfidence.high",
+        3..=5 => "common.scoutConfidence.moderate",
+        _ => "common.scoutConfidence.low",
+    }
+}
+
+/// A youngster as the club's scouts read him, drawn as the player card a scout
+/// report uses: one figure per rating, the middle of the range he is believed to
+/// lie in, and only the headline attributes a scout has read.
+pub fn prospect_report(prospect: &Player, estimate: &ProspectEstimate) -> ScoutReportData {
+    let attribute = |key: &str| {
+        estimate
+            .attributes
+            .iter()
+            .find(|read| read.key == key)
+            .map(|read| believed(read.low, read.high))
+    };
+    let ovr = u32::from(believed(estimate.ovr_low, estimate.ovr_high));
+    let potential = u32::from(believed(estimate.potential_low, estimate.potential_high));
+    ScoutReportData {
+        player_id: prospect.id.clone(),
+        player_name: prospect.full_name.clone(),
+        position: format!("{:?}", prospect.position),
+        nationality: prospect.nationality.clone(),
+        dob: prospect.date_of_birth.clone(),
+        team_name: None,
+        pace: attribute("Pace"),
+        shooting: attribute("Shooting"),
+        passing: attribute("Passing"),
+        dribbling: attribute("Dribbling"),
+        defending: attribute("Defending"),
+        physical: attribute("Physical"),
+        condition: None,
+        morale: None,
+        avg_rating: Some(ovr),
+        rating_key: rating_key_for(ovr).to_string(),
+        potential_key: potential_key_for(potential).to_string(),
+        confidence_key: prospect_confidence_key(estimate.ovr_band).to_string(),
+    }
+}
+
+#[cfg(test)]
+mod prospect_card_tests {
+    use super::prospect_report;
+    use domain::message::{AttributeRead, ProspectEstimate};
+    use domain::player::{Player, PlayerAttributes, Position};
+
+    fn kid() -> Player {
+        let attributes: PlayerAttributes = serde_json::from_value(serde_json::json!({
+            "pace": 60, "stamina": 60, "strength": 60, "agility": 60, "passing": 60,
+            "shooting": 60, "tackling": 60, "dribbling": 60, "defending": 60,
+            "positioning": 60, "vision": 60, "decisions": 60, "composure": 60,
+            "aggression": 60, "teamwork": 60, "leadership": 60, "handling": 20,
+            "reflexes": 20, "aerial": 60
+        }))
+        .unwrap();
+        Player::new(
+            "kid".to_string(),
+            "Kid".to_string(),
+            "Kid One".to_string(),
+            "2009-01-01".to_string(),
+            "ENG".to_string(),
+            Position::Goalkeeper,
+            attributes,
+        )
+    }
+
+    fn read(ovr: (u8, u8), potential: (u8, u8), ovr_band: u8) -> ProspectEstimate {
+        ProspectEstimate {
+            prospect_id: "kid".to_string(),
+            ovr_low: ovr.0,
+            ovr_high: ovr.1,
+            ovr_band,
+            potential_low: potential.0,
+            potential_high: potential.1,
+            potential_band: 5,
+            attributes: Vec::new(),
+        }
+    }
+
+    /// Given a scout's read of a youngster,
+    /// When it is drawn as a player card,
+    /// Then each rating is the middle of its range, labelled as a player report
+    /// labels it, and nothing he has not read is shown.
+    #[test]
+    fn a_prospect_card_shows_the_middle_of_each_range() {
+        let card = prospect_report(&kid(), &read((88, 98), (90, 99), 5));
+
+        assert_eq!(card.player_id, "kid");
+        assert_eq!(card.player_name, "Kid One");
+        assert_eq!(card.position, "Goalkeeper");
+        assert_eq!(card.avg_rating, Some(93));
+        assert_eq!(card.rating_key, "common.scoutRatings.excellent");
+        assert_eq!(card.potential_key, "common.scoutPotential.worldClass");
+        assert_eq!(card.confidence_key, "common.scoutConfidence.moderate");
+        assert_eq!(card.team_name, None);
+        assert_eq!(card.condition, None);
+        for value in [
+            card.pace,
+            card.shooting,
+            card.passing,
+            card.dribbling,
+            card.defending,
+            card.physical,
+        ] {
+            assert_eq!(value, None);
+        }
+    }
+
+    /// Given reads of headline attributes,
+    /// When the card is drawn,
+    /// Then those show the middle of their ranges and the rest stay unread.
+    #[test]
+    fn a_prospect_card_shows_the_attributes_the_scout_read() {
+        let mut estimate = read((60, 64), (70, 74), 2);
+        estimate.attributes = vec![
+            AttributeRead {
+                key: "Pace".to_string(),
+                low: 60,
+                high: 68,
+            },
+            AttributeRead {
+                key: "Physical".to_string(),
+                low: 79,
+                high: 79,
+            },
+        ];
+
+        let card = prospect_report(&kid(), &estimate);
+
+        assert_eq!(card.pace, Some(64));
+        assert_eq!(card.physical, Some(79));
+        assert_eq!(card.shooting, None);
+        assert_eq!(card.potential_key, "common.scoutPotential.strong");
+    }
+
+    /// Given the overall band narrowing week by week,
+    /// When the card is drawn at each step,
+    /// Then its confidence rises from low to exact.
+    #[test]
+    fn a_prospect_cards_confidence_follows_the_overall_band() {
+        let confidence =
+            |band| prospect_report(&kid(), &read((60, 64), (70, 74), band)).confidence_key;
+
+        assert_eq!(confidence(12), "common.scoutConfidence.low");
+        assert_eq!(confidence(8), "common.scoutConfidence.low");
+        assert_eq!(confidence(5), "common.scoutConfidence.moderate");
+        assert_eq!(confidence(2), "common.scoutConfidence.high");
+        assert_eq!(confidence(0), "common.scoutConfidence.exact");
+    }
 }
 
 #[cfg(test)]

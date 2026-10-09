@@ -498,6 +498,8 @@ export interface WatchedProspect {
   scout_id?: string | null;
   added_on: string;
   weeks_followed?: number;
+  /** His player card as the club reads him now. */
+  report?: ScoutReportData | null;
 }
 
 export interface MessageContext {
@@ -511,6 +513,8 @@ export interface MessageContext {
   youth_prospects?: PlayerData[];
   /** The scout's read of each prospect: the ranges a report shows. */
   youth_prospect_estimates?: ProspectEstimate[];
+  /** Each prospect drawn as a scout's player card, from his estimate. */
+  youth_prospect_reports?: ScoutReportData[];
   match_result: null | {
     home_team_id: string;
     home_team_name?: string;

@@ -199,7 +199,11 @@ fn report_scouting_against_the_pool() {
             .values()
             .map(Vec::len)
             .sum::<usize>();
-        for player in game.players.iter().filter(|p| p.id.starts_with("youth-pool-")) {
+        for player in game
+            .players
+            .iter()
+            .filter(|p| p.id.starts_with("youth-pool-"))
+        {
             let Some(club) = player.team_id.as_deref() else {
                 continue;
             };
@@ -221,7 +225,10 @@ fn report_scouting_against_the_pool() {
     }
 
     println!();
-    println!("{} worlds, {SEARCHES} high-potential searches each per cell.", worlds());
+    println!(
+        "{} worlds, {SEARCHES} high-potential searches each per cell.",
+        worlds()
+    );
     println!("Rank of the recommended in the nation's cohort by true potential (0% = best).");
     println!(
         "{:>8} {:>6} {:>9} {:>11} {:>10}",
@@ -245,9 +252,12 @@ fn report_scouting_against_the_pool() {
     println!("AI signings from the pool, by the club's best scout's judging ability:");
     for band in ["< 40", "40-59", "60-79", ">= 80"] {
         let potentials = ai_by_band.get(band).cloned().unwrap_or_default();
-        let mean = potentials.iter().map(|p| f64::from(*p)).sum::<f64>()
-            / potentials.len().max(1) as f64;
-        println!("{band:>6}: mean potential {mean:.1} (n={})", potentials.len());
+        let mean =
+            potentials.iter().map(|p| f64::from(*p)).sum::<f64>() / potentials.len().max(1) as f64;
+        println!(
+            "{band:>6}: mean potential {mean:.1} (n={})",
+            potentials.len()
+        );
     }
     println!(
         "AI demand filled by the season's end: {:.1}% ({} of {})",

@@ -597,7 +597,8 @@
     "scoutConfidence": {
       "high": "高",
       "moderate": "中",
-      "low": "低"
+      "low": "低",
+      "exact": "精确"
     },
     "attrGroups": {
       "physical": "身体",

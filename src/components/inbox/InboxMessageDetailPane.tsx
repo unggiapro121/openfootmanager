@@ -4,16 +4,12 @@ import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { calcAge, formatDateFull, formatVal, formatWeeklyAmount } from "../../lib/helpers";
-import { countryName } from "../../lib/countries";
+import { formatDateFull, formatVal, formatWeeklyAmount } from "../../lib/helpers";
 import { formatPlayerWageLine } from "../../lib/finance";
-import { positionBadgeVariant } from "../../lib/playerRating";
-import type { MessageData, PlayerData } from "../../store/gameStore";
-import type { ProspectEstimate } from "../../store/types";
+import type { MessageData } from "../../store/gameStore";
 import ScoutPlayerCard from "../ScoutPlayerCard";
 import SwitchClubConfirmModal from "../SwitchClubConfirmModal";
-import { Badge, Button, Card, CardBody, CountryFlag, ProgressBar } from "../ui";
-import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
+import { Badge, Button, Card, CardBody } from "../ui";
 import InboxDelegatedRenewalReport from "./InboxDelegatedRenewalReport";
 import {
   getActionButtonClassName,
@@ -236,124 +232,38 @@ export default function InboxMessageDetailPane({
                       ? chooseOptionActionType.ChooseOption.options
                       : [];
                     const signedToAcademy = prospect.team_id === currentTeamId;
-                    const ratings = describeProspectRatings(
-                      prospect,
-                      selectedMessage.context?.youth_prospect_estimates,
-                      signedToAcademy,
-                      t,
+                    const card = selectedMessage.context?.youth_prospect_reports?.find(
+                      (candidate) => candidate.player_id === prospect.id,
                     );
-                    const potential = ratings.believedPotential;
-                    const potentialLabel = getProspectPotentialLabel(potential, t);
-                    const growthRoom = Math.max(0, potential - ratings.believedOvr);
 
                     return (
                       <Card key={prospect.id}>
-                        <CardBody className="space-y-4">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <p className="font-heading font-bold text-base text-gray-900 dark:text-gray-100">
-                                  {prospect.full_name}
-                                </p>
-                                <Badge variant={positionBadgeVariant(prospect.position)} size="sm">
-                                  {translatePositionAbbreviation(t, prospect.position)}
-                                </Badge>
-                                {signedToAcademy ? (
-                                  <Badge variant="success" size="sm">
-                                    {t("inbox.youthProspectSigned")}
-                                  </Badge>
-                                ) : null}
-                              </div>
-                              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
-                                <span>{t(`common.positions.${prospect.position}`)}</span>
-                                <span>
-                                  {t("common.age")} {calcAge(prospect.date_of_birth)}
-                                </span>
-                                <span className="inline-flex items-center gap-1">
-                                  <CountryFlag
-                                    code={prospect.nationality}
-                                    locale={language}
-                                    className="text-xs leading-none"
-                                  />
-                                  <span>{countryName(prospect.nationality, language)}</span>
-                                </span>
-                              </div>
-                            </div>
+                        <CardBody className="space-y-3">
+                          {card ? (
+                            <ScoutPlayerCard
+                              report={card}
+                              onPlayerClick={signedToAcademy ? onScoutPlayerClick : undefined}
+                            />
+                          ) : (
+                            <p className="font-heading font-bold text-base text-gray-900 dark:text-gray-100">
+                              {prospect.full_name}
+                            </p>
+                          )}
 
-                            <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300">
+                            <Badge variant="neutral" size="sm">
+                              {t("finances.wagePerWeek")}:{" "}
+                              {formatPlayerWageLine(
+                                prospect,
+                                (amount) => formatWeeklyAmount(formatVal(amount), weeklySuffix),
+                                t,
+                              )}
+                            </Badge>
+                            {prospect.contract_end ? (
                               <Badge variant="neutral" size="sm">
-                                {`${t("youthAcademy.ovr")} ${ratings.ovrText}`}
+                                {formatDateFull(prospect.contract_end, language)}
                               </Badge>
-                              <Badge variant="neutral" size="sm">
-                                {`${t("youthAcademy.potential")} ${ratings.potentialText}`}
-                              </Badge>
-                            </div>
-                          </div>
-
-                          {ratings.attributeReads.length > 0 ? (
-                            <div className="flex flex-wrap gap-2">
-                              {ratings.attributeReads.map((read) => (
-                                <Badge key={read} variant="neutral" size="sm">
-                                  {read}
-                                </Badge>
-                              ))}
-                            </div>
-                          ) : null}
-
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <div className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 dark:border-navy-600 dark:bg-navy-700/40">
-                              <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                                {t("youthAcademy.growth")}
-                              </p>
-                              <div className="mt-2 flex items-center gap-2">
-                                <ProgressBar
-                                  value={Math.min(
-                                    100,
-                                    potential > 0 ? (ratings.believedOvr / potential) * 100 : 0,
-                                  )}
-                                  variant={
-                                    growthRoom > 15 ? "accent" : growthRoom > 5 ? "primary" : "auto"
-                                  }
-                                  size="sm"
-                                />
-                                <span className="w-8 text-right text-xs font-heading font-bold tabular-nums text-gray-500 dark:text-gray-400">
-                                  +{growthRoom}
-                                </span>
-                              </div>
-                              <p
-                                className={`mt-1 text-[10px] font-heading uppercase tracking-wider ${potentialLabel.color}`}
-                              >
-                                {potentialLabel.label}
-                              </p>
-                            </div>
-
-                            <div className="rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 dark:border-navy-600 dark:bg-navy-700/40">
-                              <p className="text-[10px] font-heading font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                                {t("playerProfile.contractInfo")}
-                              </p>
-                              <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300">
-                                <Badge variant="neutral" size="sm">
-                                  {t("finances.wagePerWeek")}:{" "}
-                                  {formatPlayerWageLine(
-                                    prospect,
-                                    (amount) => formatWeeklyAmount(formatVal(amount), weeklySuffix),
-                                    t,
-                                  )}
-                                </Badge>
-                                {prospect.contract_end ? (
-                                  <Badge variant="neutral" size="sm">
-                                    {formatDateFull(prospect.contract_end, language)}
-                                  </Badge>
-                                ) : null}
-                                {/* A price would give the true ratings away. */}
-                                {ratings.isEstimate ? null : (
-                                  <Badge variant="neutral" size="sm">
-                                    {t("finances.marketValue")}:{" "}
-                                    {formatVal(prospect.market_value ?? 0)}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
+                            ) : null}
                           </div>
 
                           {signedToAcademy ? (
@@ -524,81 +434,4 @@ function translateYouthSearchObjective(t: TFunction, value: string): string {
   }
 
   return t("scouting.objectiveBalanced");
-}
-
-/** The label for each headline attribute a scout report reads. */
-const ATTRIBUTE_READ_LABEL_KEYS: Record<string, string> = {
-  Pace: "common.attributes.pace",
-  Shooting: "common.attributes.shooting",
-  Passing: "common.attributes.passing",
-  Dribbling: "common.attributes.dribbling",
-  Defending: "common.attributes.defending",
-  Physical: "common.attrGroups.physical",
-};
-
-/**
- * What a report card says about a prospect's ratings. Before he is signed, the
- * scout's ranges, with the midpoint as what the scout believes; once signed, or
- * on a report written before scouts gave ranges, the true ratings.
- */
-function describeProspectRatings(
-  prospect: PlayerData,
-  estimates: ProspectEstimate[] | undefined,
-  signedToAcademy: boolean,
-  t: TFunction,
-): {
-  ovrText: string;
-  potentialText: string;
-  believedOvr: number;
-  believedPotential: number;
-  isEstimate: boolean;
-  attributeReads: string[];
-} {
-  const estimate = signedToAcademy
-    ? undefined
-    : estimates?.find((candidate) => candidate.prospect_id === prospect.id);
-  if (!estimate) {
-    const ovr = prospect.ovr ?? 0;
-    const potential = prospect.potential ?? 0;
-    return {
-      ovrText: String(ovr),
-      potentialText: String(potential),
-      believedOvr: ovr,
-      believedPotential: potential,
-      isEstimate: false,
-      attributeReads: [],
-    };
-  }
-  const range = (low: number, high: number) => t("inbox.youthProspectRange", { low, high });
-  return {
-    ovrText: range(estimate.ovr_low, estimate.ovr_high),
-    potentialText: range(estimate.potential_low, estimate.potential_high),
-    believedOvr: Math.floor((estimate.ovr_low + estimate.ovr_high) / 2),
-    believedPotential: Math.floor((estimate.potential_low + estimate.potential_high) / 2),
-    isEstimate: true,
-    attributeReads: (estimate.attributes ?? []).map(
-      (read) =>
-        `${t(ATTRIBUTE_READ_LABEL_KEYS[read.key] ?? read.key)} ${range(read.low, read.high)}`,
-    ),
-  };
-}
-
-function getProspectPotentialLabel(
-  potential: number,
-  t: TFunction,
-): { label: string; color: string } {
-  if (potential >= 85) {
-    return { label: t("youthAcademy.potWorldClass"), color: "text-accent-400" };
-  }
-  if (potential >= 75) {
-    return { label: t("youthAcademy.potExcellent"), color: "text-green-400" };
-  }
-  if (potential >= 65) {
-    return { label: t("youthAcademy.potPromising"), color: "text-primary-400" };
-  }
-  if (potential >= 55) {
-    return { label: t("youthAcademy.potDecent"), color: "text-gray-400" };
-  }
-
-  return { label: t("youthAcademy.potLimited"), color: "text-gray-500" };
 }

@@ -111,6 +111,10 @@ pub struct MessageContext {
     /// ranges the report shows instead of the true ratings.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub youth_prospect_estimates: Vec<ProspectEstimate>,
+    /// Each prospect in `youth_prospects` drawn as a scout's player card, from
+    /// his estimate: what the inbox shows of him.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub youth_prospect_reports: Vec<ScoutReportData>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scout_report: Option<ScoutReportData>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

@@ -1,9 +1,12 @@
 import { Eye } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { calcAge, positionBadgeVariant } from "../../lib/helpers";
 import type { StaffData, WatchedProspect } from "../../store/types";
+import DashboardModalFrame from "../dashboard/DashboardModalFrame";
+import ScoutPlayerCard from "../ScoutPlayerCard";
 import { Badge, Button, Card, CardBody, CardHeader, Select } from "../ui";
 
 /** Most prospects one scout can follow at once; the backend enforces it too. */
@@ -20,9 +23,10 @@ interface ScoutingWatchlistCardProps {
 }
 
 /**
- * The youth watchlist: each prospect the club is following, the ranges the
- * scouts have narrowed him to, and who follows him. He stays until he signs
- * somewhere, the manager lets him go, or the season's youth pool closes.
+ * The youth watchlist: each prospect the club is following, as his scouts read
+ * him now, and who follows him. Opening one shows his latest player card. He
+ * stays until he signs somewhere, the manager lets him go, or the season's
+ * youth pool closes.
  */
 export default function ScoutingWatchlistCard({
   watchlist,
@@ -36,6 +40,8 @@ export default function ScoutingWatchlistCard({
   const { t } = useTranslation();
   const load = (scoutId: string) => watchlist.filter((entry) => entry.scout_id === scoutId).length;
   const range = (low: number, high: number) => t("inbox.youthProspectRange", { low, high });
+  const [openId, setOpenId] = useState<string | null>(null);
+  const opened = watchlist.find((entry) => entry.prospect.id === openId);
 
   return (
     <Card>
@@ -77,9 +83,13 @@ export default function ScoutingWatchlistCard({
                     <tr key={prospect.id}>
                       <td className="py-2 pr-3">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-800 dark:text-gray-100">
+                          <button
+                            type="button"
+                            onClick={() => setOpenId(prospect.id)}
+                            className="font-semibold text-gray-800 dark:text-gray-100 hover:text-primary-600 dark:hover:text-primary-400 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+                          >
                             {prospect.full_name}
-                          </span>
+                          </button>
                           <Badge variant={positionBadgeVariant(prospect.position)} size="sm">
                             {translatePositionAbbreviation(t, prospect.position)}
                           </Badge>
@@ -89,10 +99,14 @@ export default function ScoutingWatchlistCard({
                         </span>
                       </td>
                       <td className="py-2 pr-3 tabular-nums text-gray-700 dark:text-gray-200">
-                        {range(estimate.ovr_low, estimate.ovr_high)}
+                        {entry.report?.avg_rating != null
+                          ? `~${entry.report.avg_rating}`
+                          : range(estimate.ovr_low, estimate.ovr_high)}
                       </td>
-                      <td className="py-2 pr-3 tabular-nums text-gray-700 dark:text-gray-200">
-                        {range(estimate.potential_low, estimate.potential_high)}
+                      <td className="py-2 pr-3 text-gray-700 dark:text-gray-200">
+                        {entry.report
+                          ? t(entry.report.potential_key)
+                          : range(estimate.potential_low, estimate.potential_high)}
                       </td>
                       <td className="py-2 pr-3 min-w-[10rem]">
                         <Select
@@ -138,6 +152,32 @@ export default function ScoutingWatchlistCard({
           </div>
         )}
       </CardBody>
+      {opened?.report ? (
+        <DashboardModalFrame maxWidthClassName="max-w-lg">
+          <div role="dialog" aria-modal="true" aria-label={opened.prospect.full_name}>
+            <ScoutPlayerCard report={opened.report} />
+            <div className="mt-4 flex flex-wrap justify-end gap-2">
+              <Button size="sm" disabled={busy} onClick={() => onSign(opened.prospect.id)}>
+                {t("scouting.watchlistSign")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={busy}
+                onClick={() => {
+                  onUnwatch(opened.prospect.id);
+                  setOpenId(null);
+                }}
+              >
+                {t("scouting.watchlistUnwatch")}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setOpenId(null)}>
+                {t("common.close")}
+              </Button>
+            </div>
+          </div>
+        </DashboardModalFrame>
+      ) : null}
     </Card>
   );
 }

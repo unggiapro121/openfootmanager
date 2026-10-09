@@ -601,7 +601,8 @@
     "scoutConfidence": {
       "high": "Yüksek",
       "moderate": "Orta",
-      "low": "Düşük"
+      "low": "Düşük",
+      "exact": "Kesin"
     },
     "attrGroups": {
       "physical": "Fiziksel",

@@ -23,6 +23,20 @@ pub struct WatchedProspect {
     /// Weekly reports a scout has sent on him.
     #[serde(default)]
     pub weeks_followed: u32,
+    /// His player card as the club reads him now, redrawn whenever the read
+    /// changes; what the watchlist shows when he is opened.
+    #[serde(default)]
+    pub report: Option<domain::message::ScoutReportData>,
+}
+
+impl WatchedProspect {
+    /// Redraw the card from the current read.
+    fn restate(&mut self) {
+        self.report = Some(crate::scouting::prospect_report(
+            &self.prospect,
+            &self.estimate,
+        ));
+    }
 }
 
 /// Most prospects one scout can follow at once.
@@ -63,13 +77,16 @@ pub(crate) fn watch(
     }
     crate::youth_pool::locate(game, &prospect.id)?;
     let today = game.clock.current_date.date_naive();
-    game.youth_watchlist.push(WatchedProspect {
+    let mut entry = WatchedProspect {
         prospect,
         estimate,
         scout_id: None,
         added_on: today.format("%Y-%m-%d").to_string(),
         weeks_followed: 0,
-    });
+        report: None,
+    };
+    entry.restate();
+    game.youth_watchlist.push(entry);
     Ok(())
 }
 
@@ -134,6 +151,7 @@ fn narrow(entry: &mut WatchedProspect, ovr_band: u8, potential_band: u8, rng: &m
         estimate.potential_high = estimate.potential_high.min(high);
         estimate.potential_band = potential_band;
     }
+    entry.restate();
 }
 
 /// The band after `band` in the weekly narrowing.
@@ -223,6 +241,7 @@ pub fn process_youth_watchlist(game: &mut Game) {
             if entry.weeks_followed >= 2 {
                 entry.estimate.attributes =
                     read_attributes(&entry, scout.attributes.judging_ability, &mut rng);
+                entry.restate();
             }
             messages::weekly_report(game, &entry, &scout, &today_text);
         }
@@ -410,6 +429,7 @@ mod messages {
             team_id: game.manager.team_id.clone(),
             youth_prospects: Some(vec![entry.prospect.clone()]),
             youth_prospect_estimates: vec![entry.estimate.clone()],
+            youth_prospect_reports: entry.report.clone().into_iter().collect(),
             ..MessageContext::default()
         })
         .with_i18n(
@@ -694,6 +714,41 @@ mod tests {
                 .iter()
                 .all(|read| read.low <= 60 && 60 <= read.high)
         );
+    }
+
+    /// Given a watched prospect and his scout,
+    /// When the weeks pass,
+    /// Then each weekly report carries his player card as read that week, and
+    /// the watchlist holds the latest card: attributes from the second week,
+    /// and more confidence as the band narrows.
+    #[test]
+    fn the_weekly_report_and_the_watchlist_carry_the_latest_card() {
+        let mut game = world();
+        watched(&mut game, "p1", 60, 80);
+        let first = entry(&game, "p1")
+            .report
+            .clone()
+            .expect("a card from the start");
+        assert_eq!(first.confidence_key, "common.scoutConfidence.low");
+        assert_eq!(first.pace, None);
+        assign_scout(&mut game, "p1", Some("good")).unwrap();
+
+        next_monday(&mut game);
+        next_monday(&mut game);
+
+        let cards: Vec<_> = game
+            .messages
+            .iter()
+            .filter(|message| message.id.starts_with("youth-watch-report-p1-"))
+            .flat_map(|message| message.context.youth_prospect_reports.clone())
+            .collect();
+        assert_eq!(cards.len(), 2);
+        assert_eq!(cards[0].pace, None);
+        assert!(cards[1].pace.is_some());
+        let latest = entry(&game, "p1").report.clone().unwrap();
+        assert_eq!(latest.pace, cards[1].pace);
+        assert_eq!(latest.confidence_key, "common.scoutConfidence.exact");
+        assert_eq!(latest.avg_rating, Some(60));
     }
 
     /// Given a prospect nobody signs,

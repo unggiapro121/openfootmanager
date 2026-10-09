@@ -3,7 +3,12 @@ import { invoke } from "@tauri-apps/api/core";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import i18n from "../../i18n";
 
-import type { GameStateData, MessageAction, MessageData } from "../../store/gameStore";
+import type {
+  GameStateData,
+  MessageAction,
+  MessageData,
+  ScoutReportData,
+} from "../../store/gameStore";
 import { useSettingsStore } from "../../store/settingsStore";
 import InboxTab from "./InboxTab";
 
@@ -43,16 +48,45 @@ const mockTranslationState = vi.hoisted(() => ({
       "youthAcademy.growth": "Growth",
       "youthAcademy.ovr": "OVR",
       "youthAcademy.potential": "Potential",
-      "inbox.youthProspectRange": "{{low}}–{{high}}",
       "common.attributes.pace": "Pace",
-      "common.attrGroups.physical": "Physical",
-      "youthAcademy.potPromising": "Promising",
+      "common.attributes.strength": "Strength",
+      "common.scoutRatings.good": "Good",
+      "common.scoutPotential.strong": "Strong prospect",
+      "common.scoutConfidence.moderate": "Moderate",
+      "scouting.confidence": "Confidence",
+      "scouting.estimatedAttributes": "Estimated attributes",
+      "scouting.undiscovered": "Undiscovered",
     },
     "pt-BR": {
       "inbox.effectOutcomeLabel": "Desfecho",
     },
   } as Record<string, Record<string, string>>,
 }));
+
+/** A scout's player card for a youth prospect, as the backend draws it. */
+function prospectCard(overrides: Partial<ScoutReportData>): ScoutReportData {
+  return {
+    player_id: "kid",
+    player_name: "Kid",
+    position: "Midfielder",
+    nationality: "GB",
+    dob: "2009-01-01",
+    team_name: null,
+    pace: null,
+    shooting: null,
+    passing: null,
+    dribbling: null,
+    defending: null,
+    physical: null,
+    condition: null,
+    morale: null,
+    avg_rating: 62,
+    rating_key: "common.scoutRatings.good",
+    potential_key: "common.scoutPotential.strong",
+    confidence_key: "common.scoutConfidence.moderate",
+    ...overrides,
+  };
+}
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
@@ -1195,6 +1229,10 @@ describe("InboxTab", (): void => {
                 natural_position: "Forward",
               }),
             ],
+            youth_prospect_reports: [
+              prospectCard({ player_id: "prospect-signed", player_name: "Mateus Anchor" }),
+              prospectCard({ player_id: "prospect-open", player_name: "Leo Builder" }),
+            ],
             match_result: null,
           },
           actions: [
@@ -1252,13 +1290,12 @@ describe("InboxTab", (): void => {
     expect(screen.getAllByText("Signed to academy").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "View profile" })).toBeInTheDocument();
     expect(screen.getAllByText(/Wage\/wk:/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Market Value:/).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Sign to academy" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Watch" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Discard" })).toBeInTheDocument();
   });
 
-  it("shows a youth prospect's ranges, not his true ratings", async (): Promise<void> => {
+  it("shows a youth prospect as the scout's player card, not his true ratings", async (): Promise<void> => {
     await renderInboxTab({
       gameState: createGameState([
         createMessage({
@@ -1282,16 +1319,12 @@ describe("InboxTab", (): void => {
                 potential: 84,
               }),
             ],
-            youth_prospect_estimates: [
-              {
-                prospect_id: "prospect-open",
-                ovr_low: 59,
-                ovr_high: 69,
-                ovr_band: 5,
-                potential_low: 70,
-                potential_high: 86,
-                potential_band: 8,
-              },
+            youth_prospect_reports: [
+              prospectCard({
+                player_id: "prospect-open",
+                player_name: "Leo Builder",
+                avg_rating: 64,
+              }),
             ],
             match_result: null,
           },
@@ -1301,10 +1334,11 @@ describe("InboxTab", (): void => {
       initialMessageId: "youth-scout-3",
     });
 
-    expect(screen.getByText("OVR 59–69")).toBeInTheDocument();
-    expect(screen.getByText("Potential 70–86")).toBeInTheDocument();
-    expect(screen.queryByText("OVR 61")).not.toBeInTheDocument();
-    expect(screen.queryByText("Potential 84")).not.toBeInTheDocument();
+    expect(screen.getByText("Good (~64)")).toBeInTheDocument();
+    expect(screen.getByText("Strong prospect")).toBeInTheDocument();
+    expect(screen.getByText("Confidence: Moderate")).toBeInTheDocument();
+    expect(screen.getByText("Estimated attributes (0/6)")).toBeInTheDocument();
+    expect(screen.queryByText(/\b61\b/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Market Value:/)).not.toBeInTheDocument();
   });
 
@@ -1323,20 +1357,13 @@ describe("InboxTab", (): void => {
             player_id: null,
             fixture_id: null,
             youth_prospects: [createProspect({ id: "kid", full_name: "Leo Builder" })],
-            youth_prospect_estimates: [
-              {
-                prospect_id: "kid",
-                ovr_low: 60,
-                ovr_high: 64,
-                ovr_band: 2,
-                potential_low: 80,
-                potential_high: 84,
-                potential_band: 2,
-                attributes: [
-                  { key: "Pace", low: 58, high: 62 },
-                  { key: "Physical", low: 50, high: 54 },
-                ],
-              },
+            youth_prospect_reports: [
+              prospectCard({
+                player_id: "kid",
+                player_name: "Leo Builder",
+                pace: 60,
+                physical: 52,
+              }),
             ],
             match_result: null,
           },
@@ -1346,7 +1373,10 @@ describe("InboxTab", (): void => {
       initialMessageId: "youth-watch-report-kid-2026-08-10",
     });
 
-    expect(screen.getByText("Pace 58–62")).toBeInTheDocument();
-    expect(screen.getByText("Physical 50–54")).toBeInTheDocument();
+    expect(screen.getByText("Estimated attributes (2/6)")).toBeInTheDocument();
+    expect(screen.getByText("Pace")).toBeInTheDocument();
+    expect(screen.getByText("60")).toBeInTheDocument();
+    expect(screen.getByText("Strength")).toBeInTheDocument();
+    expect(screen.getByText("52")).toBeInTheDocument();
   });
 });

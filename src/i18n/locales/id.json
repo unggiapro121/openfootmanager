@@ -601,7 +601,8 @@
     "scoutConfidence": {
       "high": "Tinggi",
       "moderate": "Sedang",
-      "low": "Rendah"
+      "low": "Rendah",
+      "exact": "Pasti"
     },
     "attrGroups": {
       "physical": "Fisik",

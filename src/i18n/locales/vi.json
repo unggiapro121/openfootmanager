@@ -601,7 +601,8 @@
     "scoutConfidence": {
       "high": "Cao",
       "moderate": "Vừa phải",
-      "low": "Thấp"
+      "low": "Thấp",
+      "exact": "Chính xác"
     },
     "attrGroups": {
       "physical": "Thể chất",

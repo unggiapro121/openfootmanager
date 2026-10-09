@@ -901,6 +901,7 @@ mod tests {
                 scout_id: Some("scout-1".to_string()),
                 added_on: "2032-01-18".to_string(),
                 weeks_followed: 1,
+                report: None,
             });
         game
     }

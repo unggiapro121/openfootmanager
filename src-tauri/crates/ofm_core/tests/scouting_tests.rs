@@ -642,6 +642,30 @@ fn a_domestic_search_reports_youngsters_of_the_home_pool() {
     assert!(prospects.iter().all(|kid| kid.id.starts_with("home-")));
 }
 
+/// Given a youth search,
+/// When its report arrives,
+/// Then each prospect comes with the player card his estimate gives: the
+/// middle of each range, and no attribute read yet.
+#[test]
+fn a_youth_report_carries_a_player_card_for_each_prospect() {
+    let mut game = make_game();
+    search(&mut game, YouthScoutingRegion::Domestic, None);
+
+    let context = &youth_report(&game).context;
+    let prospects = context.youth_prospects.as_ref().unwrap();
+    assert_eq!(context.youth_prospect_reports.len(), prospects.len());
+    for (card, estimate) in context
+        .youth_prospect_reports
+        .iter()
+        .zip(&context.youth_prospect_estimates)
+    {
+        assert_eq!(card.player_id, estimate.prospect_id);
+        let rating = card.avg_rating.unwrap() as u8;
+        assert!((estimate.ovr_low..=estimate.ovr_high).contains(&rating));
+        assert_eq!(card.pace, None);
+    }
+}
+
 /// Given a pool at home and abroad,
 /// When the scout searches abroad,
 /// Then he never reports a youngster of the home pool.

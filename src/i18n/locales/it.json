@@ -616,7 +616,8 @@
     "scoutConfidence": {
       "high": "Alta",
       "moderate": "Media",
-      "low": "Bassa"
+      "low": "Bassa",
+      "exact": "Esatta"
     },
     "attrGroups": {
       "physical": "Fisico",

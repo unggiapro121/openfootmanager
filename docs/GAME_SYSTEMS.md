@@ -750,8 +750,12 @@ whom the club finds before anyone else does, and how much it knows about them
 
 ### The report
 
-Each prospect shows a **range** for OVR and potential, never the true value: the estimate ± the band,
-clamped to 1–99, so the truth is always inside. The options are Sign, Watch and Discard. Signing
+The scout reads each prospect as a **range** for OVR and potential, never the true value: the
+estimate ± the band, clamped to 1–99, so the truth is always inside. The report shows him as the
+player card a player scout report uses (`scouting::prospect_report`, `MessageContext::
+youth_prospect_reports`): the midpoint of each range as one figure, the rating and potential labels,
+and a confidence from the OVR band (±0 exact, ±2 high, ±5 moderate, wider low); headline attributes
+stay undiscovered until a scout follows him. The options are Sign, Watch and Discard. Signing
 reveals everything and takes him out of the pool; a refused wage leaves him in it. Discarding only
 takes him off the report. A prospect an AI club has signed since, or who left the market, cannot be
 signed or watched: the manager is told where he went. A pool with nobody suitable left gives a report
@@ -768,7 +772,9 @@ that says so (`bodyEmpty`), with the fee spent.
   him off the list and the manager is told where he went; then each prospect with a scout narrows a
   band (12 → 8 → 5 → 2 → 0), the new range being the intersection of the old one and a fresh read,
   and gets a weekly report, which from the second week adds headline attributes — as many as a player
-  report at that judging ability shows, read within the OVR band.
+  report at that judging ability shows, read within the OVR band. Every weekly report carries his
+  player card as read that week, and the watchlist keeps the latest (`WatchedProspect::report`):
+  the table shows his estimated OVR and potential label, and opening him shows the full card.
 - When the pool closes, everyone on the list leaves the market and the manager is told.
 - A scout who is released or whose contract ends leaves his prospects on the list without a scout,
   and the manager is told.
