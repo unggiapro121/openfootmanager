@@ -1033,6 +1033,110 @@ pub fn info_finance_snapshot(
     ))
 }
 
+// ─── info_fixture_detail ────────────────────────────────────────────────────
+
+pub fn info_fixture_detail(ctx: Arc<McpContext>, fixture_id: String) -> Result<String, String> {
+    let detail =
+        crate::commands::stats::get_fixture_detail_internal(&ctx.state_manager, &fixture_id)?;
+    Ok(render_fixture_detail(&detail))
+}
+
+/// One fixture as an agent reads it: the score, scorers, team stats, lineups
+/// and the per-player ratings, with names rather than ids.
+fn render_fixture_detail(detail: &crate::commands::stats::FixtureDetailDto) -> String {
+    let name_of = |player_id: &str| {
+        detail
+            .players
+            .iter()
+            .find(|player| player.id == player_id)
+            .map(|player| player.name.clone())
+            .unwrap_or_else(|| player_id.to_string())
+    };
+    let mut out = format!(
+        "## {} — {} (matchday {})\n\n",
+        detail.competition_name, detail.date, detail.matchday
+    );
+    let Some(result) = &detail.result else {
+        out.push_str(&format!(
+            "{} vs {} — not played yet.\n",
+            detail.home_team_name, detail.away_team_name
+        ));
+        return out;
+    };
+    out.push_str(&format!(
+        "**{} {} - {} {}**\n\n",
+        detail.home_team_name, result.home_goals, result.away_goals, detail.away_team_name
+    ));
+    for (side, scorers) in [
+        (&detail.home_team_name, &result.home_scorers),
+        (&detail.away_team_name, &result.away_scorers),
+    ] {
+        if !scorers.is_empty() {
+            let list: Vec<String> = scorers
+                .iter()
+                .map(|goal| format!("{} {}'", name_of(&goal.player_id), goal.minute))
+                .collect();
+            out.push_str(&format!("Scorers ({side}): {}\n", list.join(", ")));
+        }
+    }
+    let Some(report) = &result.report else {
+        out.push_str("\nNo detailed statistics were recorded for this match.\n");
+        return out;
+    };
+    let (home, away) = (&report.home_stats, &report.away_stats);
+    out.push_str(&format!(
+        "\n| Stat | {} | {} |\n|---|---|---|\n| Possession | {}% | {}% |\n| Shots (on target) | {} ({}) | {} ({}) |\n| Corners | {} | {} |\n| Fouls | {} | {} |\n| Cards (Y/R) | {}/{} | {}/{} |\n",
+        detail.home_team_name,
+        detail.away_team_name,
+        home.possession_pct,
+        away.possession_pct,
+        home.shots,
+        home.shots_on_target,
+        away.shots,
+        away.shots_on_target,
+        home.corners,
+        away.corners,
+        home.fouls,
+        away.fouls,
+        home.yellow_cards,
+        home.red_cards,
+        away.yellow_cards,
+        away.red_cards,
+    ));
+    for (side, lineup) in [
+        (&detail.home_team_name, &report.home_lineup),
+        (&detail.away_team_name, &report.away_lineup),
+    ] {
+        if let Some(lineup) = lineup {
+            let starters: Vec<String> = lineup
+                .starters
+                .iter()
+                .map(|slot| format!("{} ({})", name_of(&slot.player_id), slot.position))
+                .collect();
+            out.push_str(&format!(
+                "\n**{side}** {} {}: {}\n",
+                lineup.formation,
+                lineup.play_style,
+                starters.join(", ")
+            ));
+        }
+    }
+    if !detail.player_stats.is_empty() {
+        out.push_str("\n| Player | Mins | G | A | Rating |\n|---|---|---|---|---|\n");
+        for row in &detail.player_stats {
+            out.push_str(&format!(
+                "| {} | {} | {} | {} | {:.1} |\n",
+                name_of(&row.player_id),
+                row.minutes_played,
+                row.goals,
+                row.assists,
+                row.rating
+            ));
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod info_news_tests {
     use super::render_recent_news;
@@ -1076,3 +1180,86 @@ mod info_news_tests {
 }
 
 // ─── club_request_board_support ─────────────────────────────────────────────
+
+#[cfg(test)]
+mod info_fixture_detail_tests {
+    use super::render_fixture_detail;
+    use crate::commands::stats::{FixtureDetailDto, FixturePlayerRefDto};
+    use domain::league::{CompactLineup, GoalEvent, LineupSlot, MatchResult};
+
+    /// Given a played fixture with a scorer and a home lineup,
+    /// When it is rendered for an agent,
+    /// Then the text names both sides with the score, the scorer with his minute,
+    /// and the home formation.
+    #[test]
+    fn renders_the_score_scorers_and_lineup() {
+        let detail = FixtureDetailDto {
+            fixture_id: "f1".to_string(),
+            competition_id: "eng-1".to_string(),
+            competition_name: "Premier".to_string(),
+            competition: "League".to_string(),
+            matchday: 3,
+            date: "2026-08-20".to_string(),
+            home_team_id: "a".to_string(),
+            home_team_name: "Alpha FC".to_string(),
+            away_team_id: "b".to_string(),
+            away_team_name: "Bravo FC".to_string(),
+            result: Some(MatchResult {
+                home_goals: 2,
+                away_goals: 0,
+                home_scorers: vec![GoalEvent {
+                    player_id: "p9".to_string(),
+                    minute: 34,
+                }],
+                report: Some(domain::league::CompactMatchReport {
+                    total_minutes: 92,
+                    home_stats: domain::league::CompactTeamMatchStats {
+                        possession_pct: 58,
+                        shots: 14,
+                        shots_on_target: 6,
+                        fouls: 8,
+                        corners: 7,
+                        yellow_cards: 1,
+                        red_cards: 0,
+                    },
+                    away_stats: domain::league::CompactTeamMatchStats {
+                        possession_pct: 42,
+                        shots: 6,
+                        shots_on_target: 1,
+                        fouls: 12,
+                        corners: 2,
+                        yellow_cards: 3,
+                        red_cards: 0,
+                    },
+                    events: vec![],
+                    home_lineup: Some(CompactLineup {
+                        formation: "4-3-3".to_string(),
+                        play_style: "Possession".to_string(),
+                        starters: vec![LineupSlot {
+                            player_id: "p9".to_string(),
+                            position: "Striker".to_string(),
+                        }],
+                        bench: vec![],
+                    }),
+                    away_lineup: None,
+                }),
+                ..Default::default()
+            }),
+            team_stats: vec![],
+            player_stats: vec![],
+            players: vec![FixturePlayerRefDto {
+                id: "p9".to_string(),
+                name: "Kane".to_string(),
+                full_name: "Harry Kane".to_string(),
+                position: "Striker".to_string(),
+            }],
+        };
+
+        let text = render_fixture_detail(&detail);
+
+        assert!(text.contains("Alpha FC 2 - 0 Bravo FC"), "{text}");
+        assert!(text.contains("Kane 34'"), "{text}");
+        assert!(text.contains("4-3-3"), "{text}");
+        assert!(text.contains("58%"), "{text}");
+    }
+}

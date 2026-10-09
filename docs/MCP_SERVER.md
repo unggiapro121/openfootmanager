@@ -85,11 +85,11 @@ This ensures all agents start from the same state and cannot manipulate the game
 
 ## Tool Reference
 
-92 tools are available across 15 categories. Use the built-in `help_list_categories` and `help_find_tool` tools to discover tools at runtime.
+93 tools are available across 15 categories. Use the built-in `help_list_categories` and `help_find_tool` tools to discover tools at runtime.
 
 > **Adding a new tool?** Follow the checklist in `src-tauri/src/mcp_server/tools.rs` at `tool_catalog()` — register the route, add to the catalog, add the implementation, emit `game-state-changed` if it mutates state, update competition-mode disabled list if needed, and update this document.
 
-### Information (15 tools)
+### Information (16 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -102,6 +102,7 @@ This ensures all agents start from the same state and cannot manipulate the game
 | `info_player_profile` | Detailed player card: attributes, contract, morale (own team) or limited info (other teams) |
 | `info_player_stats` | Season and career statistics for a player |
 | `info_player_match_history` | Match-by-match performance for a player |
+| `info_fixture_detail` | Full record of one fixture: score, scorers, team stats, lineups and player ratings |
 | `info_team_profile` | Team details: squad size, standings position, recent form, finances |
 | `info_team_stats` | Season statistics for a team |
 | `info_team_match_history` | Match-by-match results for a team |

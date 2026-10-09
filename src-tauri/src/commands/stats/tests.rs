@@ -1,5 +1,8 @@
 use chrono::{TimeZone, Utc};
-use domain::league::FixtureCompetition;
+use domain::league::{
+    CompactLineup, CompactMatchReport, CompactTeamMatchStats, Fixture, FixtureCompetition,
+    FixtureStatus, GoalEvent, League, LineupSlot, MatchResult,
+};
 use domain::manager::Manager;
 use domain::player::{Player, PlayerAttributes, PlayerSeasonStats, Position};
 use domain::stats::{PlayerMatchStatsRecord, StatsState, TeamMatchStatsRecord};
@@ -8,6 +11,7 @@ use ofm_core::clock::GameClock;
 use ofm_core::game::Game;
 use ofm_core::state::StateManager;
 
+use super::fixture::get_fixture_detail_internal;
 use super::player::{get_player_match_history_internal, get_player_stats_overview_internal};
 use super::team::{get_team_match_history_internal, get_team_stats_overview_internal};
 
@@ -664,4 +668,145 @@ fn get_team_match_history_returns_empty_when_stats_state_is_missing() {
     let history = get_team_match_history_internal(&state, "team-1", None).unwrap();
 
     assert!(history.is_empty());
+}
+
+fn team_stats(possession_pct: u8) -> CompactTeamMatchStats {
+    CompactTeamMatchStats {
+        possession_pct,
+        shots: 10,
+        shots_on_target: 4,
+        fouls: 9,
+        corners: 5,
+        yellow_cards: 1,
+        red_cards: 0,
+    }
+}
+
+/// A game whose league holds `fixture-older` (team-1 2-1 team-2, played, with
+/// a report naming player-1 as scorer and starter) and `fixture-next`, still to
+/// be played.
+fn game_with_a_played_fixture() -> StateManager {
+    let mut game = make_game(vec![make_player("player-1", "team-1", Position::Striker)]);
+    let mut league = League::new("league-1".to_string(), "Premier".to_string(), 2025, &[]);
+    league.fixtures = vec![
+        Fixture {
+            id: "fixture-older".to_string(),
+            competition_id: "league-1".to_string(),
+            matchday: 1,
+            date: "2025-06-10".to_string(),
+            home_team_id: "team-1".to_string(),
+            away_team_id: "team-2".to_string(),
+            status: FixtureStatus::Completed,
+            result: Some(MatchResult {
+                home_goals: 2,
+                away_goals: 1,
+                home_scorers: vec![GoalEvent {
+                    player_id: "player-1".to_string(),
+                    minute: 12,
+                }],
+                report: Some(CompactMatchReport {
+                    total_minutes: 93,
+                    home_stats: team_stats(55),
+                    away_stats: team_stats(45),
+                    events: vec![],
+                    home_lineup: Some(CompactLineup {
+                        formation: "4-4-2".to_string(),
+                        play_style: "Balanced".to_string(),
+                        starters: vec![LineupSlot {
+                            player_id: "player-1".to_string(),
+                            position: "Striker".to_string(),
+                        }],
+                        bench: vec![],
+                    }),
+                    away_lineup: None,
+                }),
+                ..Default::default()
+            }),
+            ..Default::default()
+        },
+        Fixture {
+            id: "fixture-next".to_string(),
+            competition_id: "league-1".to_string(),
+            matchday: 2,
+            date: "2025-07-20".to_string(),
+            home_team_id: "team-2".to_string(),
+            away_team_id: "team-1".to_string(),
+            ..Default::default()
+        },
+    ];
+    game.competitions = vec![league];
+    let state = StateManager::new();
+    state.set_game(game);
+    let mut stats = sample_stats_state();
+    stats.team_matches = sample_team_stats_state()
+        .team_matches
+        .into_iter()
+        .map(|mut record| {
+            record.fixture_id = "fixture-older".to_string();
+            record
+        })
+        .collect();
+    state.set_stats_state(stats);
+    state
+}
+
+/// Given a played fixture with a report and stats rows,
+/// When its detail is fetched,
+/// Then it names both sides and the competition, carries the result with its
+/// report and lineup, and only that fixture's team and player stats, with the
+/// players it mentions named.
+#[test]
+fn get_fixture_detail_returns_a_played_fixtures_full_record() {
+    let state = game_with_a_played_fixture();
+
+    let detail = get_fixture_detail_internal(&state, "fixture-older").unwrap();
+
+    assert_eq!(detail.competition_name, "Premier");
+    assert_eq!(detail.home_team_name, "Alpha FC");
+    assert_eq!(detail.away_team_name, "Bravo FC");
+    let result = detail.result.expect("a played fixture has a result");
+    assert_eq!((result.home_goals, result.away_goals), (2, 1));
+    let report = result.report.expect("the report");
+    assert_eq!(report.home_lineup.expect("lineup").formation, "4-4-2");
+    assert!(
+        detail
+            .player_stats
+            .iter()
+            .all(|row| row.player_id == "player-1"),
+        "only fixture-older's rows: {:?}",
+        detail.player_stats
+    );
+    assert_eq!(detail.player_stats.len(), 1);
+    assert_eq!(detail.player_stats[0].rating, 7.2);
+    assert!(!detail.team_stats.is_empty());
+    assert!(detail
+        .players
+        .iter()
+        .any(|player| player.id == "player-1" && player.position == "Striker"));
+}
+
+/// Given a fixture still to be played,
+/// When its detail is fetched,
+/// Then it has no result and no stats.
+#[test]
+fn get_fixture_detail_of_an_unplayed_fixture_has_no_result() {
+    let state = game_with_a_played_fixture();
+
+    let detail = get_fixture_detail_internal(&state, "fixture-next").unwrap();
+
+    assert!(detail.result.is_none());
+    assert!(detail.player_stats.is_empty());
+    assert!(detail.team_stats.is_empty());
+}
+
+/// Given an id no fixture has,
+/// When its detail is fetched,
+/// Then the error is the translated "fixture not found" key.
+#[test]
+fn get_fixture_detail_of_an_unknown_fixture_is_an_error() {
+    let state = game_with_a_played_fixture();
+
+    let error = get_fixture_detail_internal(&state, "no-such-fixture").unwrap_err();
+
+    assert_eq!(error, "be.error.liveMatch.fixtureNotFound");
 }

@@ -112,3 +112,73 @@ pub struct TeamStatsOverviewDto {
     pub possession_average: Option<f32>,
     pub metrics: TeamStatsOverviewMetricsDto,
 }
+
+/// Everything kept about one fixture, for the match-details dialog.
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FixtureDetailDto {
+    pub fixture_id: String,
+    pub competition_id: String,
+    pub competition_name: String,
+    pub competition: String,
+    pub matchday: u32,
+    pub date: String,
+    pub home_team_id: String,
+    pub home_team_name: String,
+    pub away_team_id: String,
+    pub away_team_name: String,
+    /// The result as the fixture keeps it, report and lineups included; `None`
+    /// until the match is played.
+    pub result: Option<domain::league::MatchResult>,
+    pub team_stats: Vec<FixtureTeamStatsDto>,
+    pub player_stats: Vec<FixturePlayerStatsDto>,
+    /// Every player the result or the stats mention, named, so a dialog can
+    /// show a scorer who has since retired or left.
+    pub players: Vec<FixturePlayerRefDto>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FixtureTeamStatsDto {
+    pub team_id: String,
+    pub possession_pct: u8,
+    pub shots: u16,
+    pub shots_on_target: u16,
+    pub passes_completed: u16,
+    pub passes_attempted: u16,
+    pub tackles_won: u16,
+    pub interceptions: u16,
+    pub fouls_committed: u16,
+    pub yellow_cards: u8,
+    pub red_cards: u8,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FixturePlayerStatsDto {
+    pub player_id: String,
+    pub team_id: String,
+    pub minutes_played: u8,
+    pub goals: u8,
+    pub assists: u8,
+    pub shots: u8,
+    pub shots_on_target: u8,
+    pub passes_completed: u8,
+    pub passes_attempted: u8,
+    pub tackles_won: u8,
+    pub interceptions: u8,
+    pub fouls_committed: u8,
+    pub yellow_cards: u8,
+    pub red_cards: u8,
+    pub rating: f32,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FixturePlayerRefDto {
+    pub id: String,
+    pub name: String,
+    pub full_name: String,
+    /// Natural position, e.g. `"CenterBack"`.
+    pub position: String,
+}
