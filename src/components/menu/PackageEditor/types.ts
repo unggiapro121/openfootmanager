@@ -21,6 +21,8 @@ export interface TeamDef {
   logo: string | null;
   kitPattern: KitPattern | null;
   foundedYear: number | null;
+  /** Seats in the home ground (500–200000). Absent or null: generated at world build. */
+  stadiumCapacity?: number | null;
 }
 
 export interface WorldMetaDef {

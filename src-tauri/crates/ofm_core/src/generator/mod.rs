@@ -797,7 +797,8 @@ fn build_team(tdef: &TeamDef, rng: &mut impl rand::Rng) -> domain::team::Team {
         tdef.country.clone(),
         tdef.city.clone(),
         stadium,
-        rng.random_range(10000..80000),
+        tdef.stadium_capacity
+            .unwrap_or_else(|| rng.random_range(10000..80000)),
     );
     // Inclusive *and* ordered, because `rand` panics on any empty range and that
     // panic is uniquely expensive here: `build_team` runs inside `start_new_game`,
@@ -1628,6 +1629,35 @@ mod tests {
 
         assert_eq!(team.reputation, 640);
         assert_eq!(team.finance, 1_000_000);
+    }
+
+    /// Given a package club whose author wrote its real stadium capacity,
+    /// when the club is built,
+    /// then the club plays in a ground of exactly that size — capacity caps
+    /// matchday attendance and so the club's gate income, which made a random
+    /// draw between 10,000 and 80,000 seats the largest single swing in a real
+    /// club's revenue.
+    #[test]
+    fn an_authored_stadium_capacity_is_used_as_written() {
+        let mut rng = StdRng::seed_from_u64(7);
+        let mut tdef = test_team_def();
+        tdef.stadium_capacity = Some(60_704);
+
+        let team = build_team(&tdef, &mut rng);
+
+        assert_eq!(team.stadium_capacity, 60_704);
+    }
+
+    /// Given a package club with no stadium capacity,
+    /// when the club is built,
+    /// then the engine still draws one in the generated range, as every older
+    /// package expects.
+    #[test]
+    fn a_club_without_a_stadium_capacity_still_gets_a_generated_one() {
+        let mut rng = StdRng::seed_from_u64(7);
+        let team = build_team(&test_team_def(), &mut rng);
+
+        assert!((10_000..80_000).contains(&team.stadium_capacity));
     }
 
     /// `..=` alone does not close the panic class — `rand` treats `900..=300` as

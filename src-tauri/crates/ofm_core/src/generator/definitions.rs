@@ -315,6 +315,10 @@ pub struct TeamDef {
     /// Year the team was founded. If not provided, will be randomly generated.
     #[serde(default)]
     pub founded_year: Option<u32>,
+    /// Seats in the home ground. Caps matchday attendance and so gate income;
+    /// drawn between 10,000 and 80,000 when omitted, as before the field existed.
+    #[serde(default, alias = "stadium_capacity")]
+    pub stadium_capacity: Option<u32>,
 }
 
 fn default_play_style() -> String {

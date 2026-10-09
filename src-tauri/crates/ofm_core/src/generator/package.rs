@@ -453,6 +453,9 @@ const UNKNOWN_COMPETITION: &str = "be.error.package.unknownCompetition";
 const UNKNOWN_REGION: &str = "be.error.package.unknownRegion";
 const REVERSED_RANGE: &str = "be.error.package.reversedRange";
 const OUT_OF_RANGE: &str = "be.error.package.outOfRange";
+// Its own key rather than `OUT_OF_RANGE`, whose message quotes the reputation and
+// finance bounds in every locale and would tell an author the wrong legal range.
+const STADIUM_CAPACITY_OUT_OF_RANGE: &str = "be.error.package.stadiumCapacityOutOfRange";
 // Deliberately not `OUT_OF_RANGE`: that message is written about teams in every
 // locale — it names `{{team}}` and quotes the reputation and finance bounds — so
 // reusing it for a player would render an empty club and the wrong legal range.
@@ -468,6 +471,11 @@ const POTENTIAL_BELOW_DEFAULT: &str = "be.error.package.potentialBelowDefaultAbi
 
 /// Maximum team reputation. Reputation is a `u32`, so it cannot go below 0.
 const MAX_REPUTATION: u32 = 1000;
+
+/// Seats a package may give a club's ground: from a small non-league ground to
+/// above the largest stadium in football (about 115,000). Zero would mean a club
+/// that can sell no tickets at all, which is a typing slip rather than a ground.
+const STADIUM_CAPACITY: std::ops::RangeInclusive<u32> = 500..=200_000;
 
 /// A structured problem found while loading a package. `code` is an i18n key,
 /// `file` locates the offending file (empty for aggregate-level problems), and
@@ -1294,6 +1302,17 @@ pub fn validate_references(package: &WorldPackage) -> Vec<PackageError> {
                         .with("field", "financeRange"),
                 );
             }
+        }
+        if let Some(capacity) = team.stadium_capacity
+            && !STADIUM_CAPACITY.contains(&capacity)
+        {
+            errors.push(
+                PackageError::new(STADIUM_CAPACITY_OUT_OF_RANGE, "")
+                    .with("team", &team.id)
+                    .with("capacity", capacity.to_string())
+                    .with("min", STADIUM_CAPACITY.start().to_string())
+                    .with("max", STADIUM_CAPACITY.end().to_string()),
+            );
         }
     }
 
@@ -4991,6 +5010,55 @@ colors:
             "reputation above 1000 must produce an OUT_OF_RANGE error: {errors:?}"
         );
         std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given a team whose stadium capacity is outside what a football ground holds,
+    /// when the package is validated,
+    /// then it is refused with its own message naming the capacity and the legal
+    /// range — the generic out-of-range message quotes reputation and finance.
+    #[test]
+    fn a_stadium_capacity_outside_the_plausible_range_is_refused() {
+        for capacity in [0, 499, 200_001] {
+            let (_, errors, dir) = package_from_files(&[(
+                "a.yaml",
+                &format!(
+                    "schema: team\nid: team-a\nname: Team A\ncity: City A\ncountry: ES\ncolors: {{ primary: \"#111\", secondary: \"#fff\" }}\nstadiumCapacity: {capacity}\n"
+                ),
+            )]);
+            let error = errors
+                .iter()
+                .find(|e| e.code == STADIUM_CAPACITY_OUT_OF_RANGE)
+                .unwrap_or_else(|| panic!("capacity {capacity} must be refused: {errors:?}"));
+            let named = error
+                .params
+                .iter()
+                .find(|(key, _)| key == "capacity")
+                .map(|(_, value)| value.as_str());
+            assert_eq!(named, Some(capacity.to_string().as_str()));
+            std::fs::remove_dir_all(&dir).ok();
+        }
+    }
+
+    /// Given a team with a real stadium capacity at either end of the range,
+    /// when the package is validated,
+    /// then it is accepted.
+    #[test]
+    fn a_plausible_stadium_capacity_is_accepted() {
+        for capacity in [500, 99_354, 200_000] {
+            let (_, errors, dir) = package_from_files(&[(
+                "a.yaml",
+                &format!(
+                    "schema: team\nid: team-a\nname: Team A\ncity: City A\ncountry: ES\ncolors: {{ primary: \"#111\", secondary: \"#fff\" }}\nstadiumCapacity: {capacity}\n"
+                ),
+            )]);
+            assert!(
+                !errors
+                    .iter()
+                    .any(|e| e.code == STADIUM_CAPACITY_OUT_OF_RANGE),
+                "capacity {capacity} must be accepted: {errors:?}"
+            );
+            std::fs::remove_dir_all(&dir).ok();
+        }
     }
 
     #[test]

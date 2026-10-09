@@ -178,6 +178,7 @@ const SCHEMA_TEAM: &str = r##"// Team entity — place inside teams/*.json in th
   "playStyle": "Balanced",    // optional: "Balanced" | "Attacking" | "Defensive"
                               //   | "Possession" | "Counter" | "HighPress"
   "stadiumName": "My Arena",  // optional
+  "stadiumCapacity": 30000,   // optional: seats, 500-200000 (randomly 10000-80000 if omitted)
   "reputationRange": [300, 900],      // optional: [min, max] 0-1000
   "financeRange": [500000, 10000000], // optional: [min, max] budget in euros
   "kitPattern": "Solid",      // optional: "Solid" | "Stripes" | "Hoops" | "HalfAndHalf" | "Diagonal"

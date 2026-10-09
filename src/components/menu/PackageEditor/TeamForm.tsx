@@ -218,6 +218,21 @@ export function TeamForm({
             value={editingTeam.stadiumName}
             onChange={(v) => updateField("stadiumName", v)}
           />
+          <LabeledInput
+            label={t("worldEditor.teamStadiumCapacity")}
+            type="number"
+            value={editingTeam.stadiumCapacity?.toString() ?? ""}
+            onChange={(v) => {
+              // Blank is "let the engine draw a capacity", never zero seats; the
+              // package check reports a capacity outside 500-200,000.
+              if (!v) return updateField("stadiumCapacity", null);
+              const seats = Number(v);
+              if (Number.isInteger(seats) && seats >= 0 && seats <= 0xffffffff) {
+                updateField("stadiumCapacity", seats);
+              }
+            }}
+            placeholder="53400"
+          />
 
           <div className="flex gap-3">
             <div className="flex flex-col gap-1 flex-1">

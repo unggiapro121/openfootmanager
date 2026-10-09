@@ -276,8 +276,16 @@ fn group_admits(group: &[String], code: &str, regions: &HashMap<String, String>)
 }
 
 /// Place each team of one pot into a distinct group (one per group) without
-/// breaching the confederation cap, by backtracking. Returns whether it found a
-/// full assignment.
+/// breaching the confederation cap. Returns whether it found a full assignment.
+///
+/// The assignment is the one plain backtracking over the pot's order finds first —
+/// each group takes the earliest team that still lets the rest of the pot fit — so
+/// a career keeps the groups it was promised. What changed is how "lets the rest
+/// fit" is answered. Backtracking found out by trying every ordering, which on a
+/// pot that fails only at its last group is 12! attempts, repeated for each of up
+/// to 64 reshuffles; a 2026 career with a real-world package spent over a minute
+/// here. Within one pot a team's admission to a group depends only on the earlier
+/// pots, so the question is a bipartite matching, answered in polynomial time.
 fn place_pot(
     pot: &[String],
     used: &mut [bool],
@@ -285,20 +293,76 @@ fn place_pot(
     groups: &mut [Vec<String>],
     regions: &HashMap<String, String>,
 ) -> bool {
-    if group_index == groups.len() {
-        return true;
+    if !pot_fits(pot, used, &groups[group_index..], regions) {
+        return false;
     }
-    for (i, code) in pot.iter().enumerate() {
-        if used[i] || !group_admits(&groups[group_index], code, regions) {
+    for group in group_index..groups.len() {
+        let earliest_that_fits = (0..pot.len()).find(|&team| {
+            if used[team] || !group_admits(&groups[group], &pot[team], regions) {
+                return false;
+            }
+            used[team] = true;
+            let rest_fits = pot_fits(pot, used, &groups[group + 1..], regions);
+            used[team] = false;
+            rest_fits
+        });
+        // `pot_fits` held for this group and every later one, so a team always fits.
+        let Some(team) = earliest_that_fits else {
+            return false;
+        };
+        groups[group].push(pot[team].clone());
+        used[team] = true;
+    }
+    true
+}
+
+/// Whether every group in `groups` can take a distinct unused team of `pot` it
+/// admits — a perfect matching of groups into teams, by augmenting paths.
+fn pot_fits(
+    pot: &[String],
+    used: &[bool],
+    groups: &[Vec<String>],
+    regions: &HashMap<String, String>,
+) -> bool {
+    let mut group_of_team: Vec<Option<usize>> = vec![None; pot.len()];
+    (0..groups.len()).all(|group| {
+        let mut visited = vec![false; pot.len()];
+        augment(
+            group,
+            pot,
+            used,
+            groups,
+            regions,
+            &mut group_of_team,
+            &mut visited,
+        )
+    })
+}
+
+/// Find `group` a team, moving an already matched team to another group it admits
+/// when that frees one (Kuhn's augmenting path).
+fn augment(
+    group: usize,
+    pot: &[String],
+    used: &[bool],
+    groups: &[Vec<String>],
+    regions: &HashMap<String, String>,
+    group_of_team: &mut [Option<usize>],
+    visited: &mut [bool],
+) -> bool {
+    for team in 0..pot.len() {
+        if used[team] || visited[team] || !group_admits(&groups[group], &pot[team], regions) {
             continue;
         }
-        groups[group_index].push(code.clone());
-        used[i] = true;
-        if place_pot(pot, used, group_index + 1, groups, regions) {
+        visited[team] = true;
+        let freed = match group_of_team[team] {
+            None => true,
+            Some(other) => augment(other, pot, used, groups, regions, group_of_team, visited),
+        };
+        if freed {
+            group_of_team[team] = Some(group);
             return true;
         }
-        used[i] = false;
-        groups[group_index].pop();
     }
     false
 }
@@ -2349,6 +2413,126 @@ mod tests {
     fn a_career_from_before_seeding_keeps_the_groups_it_was_promised() {
         assert_eq!(groups_drawn_for(7, true), groups_drawn_for(99, true));
         assert_ne!(groups_drawn_for(7, true), groups_drawn_for(7, false));
+    }
+
+    /// The pot placement as it was written before the draw learned to prune: plain
+    /// backtracking over every ordering. Kept here as the oracle the faster one must
+    /// match exactly, because existing careers were promised the groups it draws.
+    fn reference_place_pot(
+        pot: &[String],
+        used: &mut [bool],
+        group_index: usize,
+        groups: &mut [Vec<String>],
+        regions: &HashMap<String, String>,
+    ) -> bool {
+        if group_index == groups.len() {
+            return true;
+        }
+        for (i, code) in pot.iter().enumerate() {
+            if used[i] || !group_admits(&groups[group_index], code, regions) {
+                continue;
+            }
+            groups[group_index].push(code.clone());
+            used[i] = true;
+            if reference_place_pot(pot, used, group_index + 1, groups, regions) {
+                return true;
+            }
+            used[i] = false;
+            groups[group_index].pop();
+        }
+        false
+    }
+
+    /// A pot of `teams` drawn into `group_count` groups that already hold `seeded`
+    /// teams, with nations spread over a few confederations so caps genuinely bind.
+    fn constrained_pot_case(
+        rng: &mut StdRng,
+        group_count: usize,
+    ) -> (Vec<String>, Vec<Vec<String>>, HashMap<String, String>) {
+        let confederations = ["europe", "asia", "africa", "south-america"];
+        let mut regions = HashMap::new();
+        let code = |n: usize, regions: &mut HashMap<String, String>, rng: &mut StdRng| {
+            let id = format!("N{n}");
+            let region = confederations[rng.random_range(0..confederations.len())];
+            regions.insert(id.clone(), region.to_string());
+            id
+        };
+        let mut next = 0;
+        let mut groups = vec![Vec::new(); group_count];
+        for group in &mut groups {
+            for _ in 0..rng.random_range(0..3) {
+                group.push(code(next, &mut regions, rng));
+                next += 1;
+            }
+        }
+        let pot = (0..group_count)
+            .map(|_| {
+                next += 1;
+                code(next, &mut regions, rng)
+            })
+            .collect();
+        (pot, groups, regions)
+    }
+
+    /// Given many pots, each against groups already part-filled so the confederation
+    /// caps bind,
+    /// When each pot is placed,
+    /// Then the result is exactly what the original backtracking placed — same
+    ///      success, same groups — so no career's promised draw changes.
+    #[test]
+    fn pot_placement_matches_the_original_backtracking_exactly() {
+        let mut rng = StdRng::seed_from_u64(2026);
+        for _ in 0..400 {
+            let (pot, groups, regions) = constrained_pot_case(&mut rng, 6);
+            let mut expected_groups = groups.clone();
+            let expected = reference_place_pot(
+                &pot,
+                &mut vec![false; pot.len()],
+                0,
+                &mut expected_groups,
+                &regions,
+            );
+            let mut actual_groups = groups.clone();
+            let actual = place_pot(
+                &pot,
+                &mut vec![false; pot.len()],
+                0,
+                &mut actual_groups,
+                &regions,
+            );
+            assert_eq!(actual, expected);
+            if expected {
+                assert_eq!(actual_groups, expected_groups);
+            }
+        }
+    }
+
+    /// Given a full 12-group pot of one confederation where only the last group
+    /// already holds a team of it — so every ordering fails, but only at the end,
+    /// When the pot is placed,
+    /// Then the draw reports it unplaceable at once. Backtracking tried all 12!
+    ///      orderings, up to 64 times per pot, which held a 2026 career's world
+    ///      build for over a minute.
+    #[test]
+    fn an_unplaceable_pot_is_rejected_without_trying_every_ordering() {
+        let mut regions: HashMap<String, String> = HashMap::new();
+        let pot: Vec<String> = (0..12).map(|n| format!("AS{n}")).collect();
+        for code in &pot {
+            regions.insert(code.clone(), "asia".to_string());
+        }
+        regions.insert("HOST".to_string(), "asia".to_string());
+        let mut groups = vec![Vec::new(); 12];
+        groups[11].push("HOST".to_string());
+
+        let started = std::time::Instant::now();
+        let placed = place_pot(&pot, &mut [false; 12], 0, &mut groups, &regions);
+
+        assert!(!placed);
+        assert!(
+            started.elapsed() < std::time::Duration::from_secs(5),
+            "an unplaceable pot took {:?}",
+            started.elapsed()
+        );
     }
 
     #[test]

@@ -145,6 +145,7 @@ Defines a football club.
 | `colors.secondary` | string | yes | — | Secondary kit color as a hex string. Example: `"#ffffff"`. |
 | `playStyle` | string | no | `"Balanced"` | Team's tactical tendency. One of: `"Balanced"`, `"Attacking"`, `"Defensive"`, `"Possession"`, `"Counter"`, `"HighPress"`. An unrecognised value is silently read as `"Balanced"`. |
 | `stadiumName` | string | no | `""` | Home stadium name. |
+| `stadiumCapacity` | integer (500–200000) or null | no | `null` | Seats in the home ground. It caps matchday attendance, and so the club's gate income. If omitted or `null`, the game draws a random capacity between 10,000 and 80,000 at world generation, as it did before the field existed. |
 | `reputationRange` | [integer, integer] or null | no | `null` | `[min, max]` reputation (0–1000). The game draws a random value in this range at world generation. Higher = more prestigious. |
 | `financeRange` | [integer, integer] or null | no | `null` | `[min, max]` budget in euros. The game draws a random value in this range at world generation. |
 | `logo` | string or null | no | `null` | Relative path to the team's logo image inside the package. Example: `"assets/logos/manchester-city.png"`. |
@@ -163,6 +164,7 @@ Defines a football club.
   "colors": { "primary": "#1c6bba", "secondary": "#ffffff" },
   "playStyle": "HighPress",
   "stadiumName": "Etihad Stadium",
+  "stadiumCapacity": 53400,
   "reputationRange": [850, 1000],
   "financeRange": [50000000, 200000000],
   "foundedYear": 2005

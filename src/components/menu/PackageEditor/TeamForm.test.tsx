@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { TeamForm } from "./TeamForm";
@@ -76,5 +76,50 @@ describe("TeamForm club range guidance", () => {
 
     expect(screen.queryByText(/of 1000/)).not.toBeInTheDocument();
     expect(screen.queryByText(/transfer budget/)).not.toBeInTheDocument();
+  });
+});
+
+describe("TeamForm stadium capacity", () => {
+  function renderWithSpy(overrides: Partial<TeamDef>) {
+    const updateField = vi.fn();
+    const team: TeamDef = { ...emptyTeam(), name: "Santos FC", ...overrides };
+    render(
+      <TeamForm
+        editingTeam={team}
+        editingTeamIndex={0}
+        isBusy={false}
+        onBack={() => {}}
+        onSave={() => {}}
+        updateField={updateField}
+        onAssetError={() => {}}
+      />,
+    );
+    return { updateField, input: screen.getByLabelText("worldEditor.teamStadiumCapacity") };
+  }
+
+  // Given a club with a real ground, when the form opens, then its capacity is shown.
+  it("shows the authored capacity", () => {
+    const { input } = renderWithSpy({ stadiumCapacity: 53_400 });
+
+    expect(input).toHaveValue(53_400);
+  });
+
+  // Given an author typing a capacity, when the value is a whole number, then it is stored.
+  it("stores a typed capacity as a number", () => {
+    const { input, updateField } = renderWithSpy({ stadiumCapacity: null });
+
+    fireEvent.change(input, { target: { value: "60704" } });
+
+    expect(updateField).toHaveBeenCalledWith("stadiumCapacity", 60_704);
+  });
+
+  // Given an author clearing the field, then it is stored as null — "let the engine
+  // draw one" — never as zero seats, which would leave the club no gate income.
+  it("stores a cleared capacity as null", () => {
+    const { input, updateField } = renderWithSpy({ stadiumCapacity: 53_400 });
+
+    fireEvent.change(input, { target: { value: "" } });
+
+    expect(updateField).toHaveBeenCalledWith("stadiumCapacity", null);
   });
 });

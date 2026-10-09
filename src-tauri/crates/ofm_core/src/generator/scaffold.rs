@@ -217,6 +217,7 @@ pub fn entity_template(kind: EntityKind, name: Option<&str>) -> Value {
                 "colors": { "primary": "#cc0000", "secondary": "#ffffff" },
                 "playStyle": "Balanced",
                 "stadiumName": format!("{display} Arena"),
+                "stadiumCapacity": 30000,
                 "reputationRange": [300, 900],
                 "financeRange": [500000, 10000000],
                 "foundedYear": 1900,
@@ -520,6 +521,7 @@ mod tests {
             logo: Some("assets/images/sample.png".into()),
             kit_pattern: Some("Solid".into()),
             founded_year: Some(1900),
+            stadium_capacity: Some(30_000),
         };
 
         let player = PlayerDef {

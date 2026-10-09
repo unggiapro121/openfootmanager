@@ -1023,6 +1023,7 @@ mod tests {
             logo: None,
             kit_pattern: None,
             founded_year: None,
+            stadium_capacity: None,
         }];
 
         // Player WITH explicit attributes — exercises camelCase serde mapping and Position round-trip

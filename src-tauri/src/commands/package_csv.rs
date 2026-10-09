@@ -47,6 +47,7 @@ const TEAM_HEADERS: &[&str] = &[
     "country",
     "playStyle",
     "stadiumName",
+    "stadiumCapacity",
     "primaryColor",
     "secondaryColor",
     "reputationMin",
@@ -250,6 +251,7 @@ fn team_row(team: &TeamDef) -> Vec<String> {
         team.country.clone(),
         team.play_style.clone(),
         team.stadium_name.clone(),
+        optional(&team.stadium_capacity),
         team.colors.primary.clone(),
         team.colors.secondary.clone(),
         reputation_min,
@@ -410,10 +412,28 @@ mod tests {
         let row = team_row(&team_def(json));
 
         assert_eq!(row.len(), TEAM_HEADERS.len());
-        assert_eq!(row[9], "100");
-        assert_eq!(row[10], "200");
-        assert_eq!(row[11], "1000");
-        assert_eq!(row[12], "2000");
+        assert_eq!(row[10], "100");
+        assert_eq!(row[11], "200");
+        assert_eq!(row[12], "1000");
+        assert_eq!(row[13], "2000");
+    }
+
+    /// Given a team with an authored stadium capacity and one without,
+    /// when they are exported,
+    /// then the capacity is a plain number in its own column and the absent one
+    /// is blank — blank means "let the engine draw one", never zero seats.
+    #[test]
+    fn stadium_capacity_is_exported_as_a_number_and_blank_when_absent() {
+        let column = TEAM_HEADERS
+            .iter()
+            .position(|header| *header == "stadiumCapacity")
+            .expect("stadiumCapacity column");
+        let mut json = base_team("FC Test");
+        json["stadiumCapacity"] = serde_json::json!(53_400);
+
+        assert_eq!(team_row(&team_def(json))[column], "53400");
+        assert_eq!(team_row(&team_def(base_team("FC Test")))[column], "");
+        assert!(!TEAM_TEXT_HEADERS.contains(&"stadiumCapacity"));
     }
 
     #[test]
@@ -421,10 +441,10 @@ mod tests {
         let row = team_row(&team_def(base_team("FC Test")));
         // Blank means "omitted" — inventing a bound here would silently pin a
         // reputation the author never chose.
-        assert_eq!(row[9], "");
         assert_eq!(row[10], "");
         assert_eq!(row[11], "");
         assert_eq!(row[12], "");
+        assert_eq!(row[13], "");
     }
 
     #[test]
@@ -729,8 +749,8 @@ mod tests {
             .next()
             .expect("one row")
             .expect("valid row");
-        assert_eq!(&record[11], "-2000000");
-        assert_eq!(&record[12], "-1000000");
+        assert_eq!(&record[12], "-2000000");
+        assert_eq!(&record[13], "-1000000");
     }
 
     #[test]

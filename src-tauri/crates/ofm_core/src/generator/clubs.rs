@@ -515,6 +515,7 @@ pub fn generate_club_defs(config: &WorldGenConfig, rng: &mut impl Rng) -> Vec<Te
                 logo: None,
                 kit_pattern: None,
                 founded_year: None,
+                stadium_capacity: None,
             });
         }
     }
