@@ -1108,7 +1108,9 @@
       "hireConfirm": "Najmout",
       "renewConfirm": "Prodloužit",
       "releaseConfirm": "Propustit a zaplatit"
-    }
+    },
+    "refreshMarket": "Obnovit ({{left}}/{{total}})",
+    "refreshMarketHint": "Nahradí všechny na trhu novými tvářemi. Zdarma, třikrát za měsíc; trh se také obmění 1. dne každého měsíce, kdy se obnovení vrátí."
   },
   "finances": {
     "overview": "Finanční přehled",
@@ -2933,7 +2935,10 @@
       },
       "invalidPath": "Neplatná cesta.",
       "staffWageBudget": "Vedení nedovolí, aby týdenní mzdové náklady překročily rozpočet {{budget}}.",
-      "staffContractYearsInvalid": "Smlouvy členů týmu se uzavírají na jeden až tři roky."
+      "staffContractYearsInvalid": "Smlouvy členů týmu se uzavírají na jeden až tři roky.",
+      "staff": {
+        "marketRefreshesUsed": "Obnovení pro tento měsíc jste vyčerpali. Vrátí se 1. dne."
+      }
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",

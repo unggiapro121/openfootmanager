@@ -271,6 +271,7 @@ pub fn run() {
             set_team_kit_pattern,
             hire_staff,
             release_staff,
+            refresh_staff_market,
             renew_staff_contract,
             preview_staff_contract,
             mark_message_read,

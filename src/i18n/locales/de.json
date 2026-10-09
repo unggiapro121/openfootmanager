@@ -1108,7 +1108,9 @@
       "hireConfirm": "Einstellen",
       "renewConfirm": "Verlängern",
       "releaseConfirm": "Entlassen und zahlen"
-    }
+    },
+    "refreshMarket": "Erneuern ({{left}}/{{total}})",
+    "refreshMarketHint": "Ersetzt alle auf dem Markt durch neue Gesichter. Kostenlos, dreimal pro Monat; der Markt wechselt außerdem am 1. jedes Monats, wenn deine Erneuerungen zurückkommen."
   },
   "finances": {
     "overview": "Finanzübersicht",
@@ -2933,7 +2935,10 @@
         "fallbackTeamsFilled": "Es wurde nur ein Team definiert. Prozedurale Gegner wurden automatisch generiert, um das Spiel spielbar zu machen."
       },
       "staffWageBudget": "Der Vorstand lässt die wöchentlichen Gehaltskosten nicht über das Budget von {{budget}} steigen.",
-      "staffContractYearsInvalid": "Verträge für Mitarbeiter laufen ein bis drei Jahre."
+      "staffContractYearsInvalid": "Verträge für Mitarbeiter laufen ein bis drei Jahre.",
+      "staff": {
+        "marketRefreshesUsed": "Du hast die Erneuerungen dieses Monats verbraucht. Sie kommen am 1. zurück."
+      }
     },
     "sender": {
       "boardOfDirectors": "Vorstand",

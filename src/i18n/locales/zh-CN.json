@@ -1108,7 +1108,9 @@
       "hireConfirm": "聘用",
       "renewConfirm": "续约",
       "releaseConfirm": "解雇并支付"
-    }
+    },
+    "refreshMarket": "刷新（{{left}}/{{total}}）",
+    "refreshMarketHint": "用新面孔替换市场上的所有人。免费，每月三次；市场也会在每月 1 日自动更新，届时刷新次数恢复。"
   },
   "finances": {
     "overview": "财务概览",
@@ -2933,7 +2935,10 @@
         "fallbackTeamsFilled": "仅定义了一支球队。已自动生成程序化对手以使游戏可玩。"
       },
       "staffWageBudget": "董事会不允许每周工资总额超过 {{budget}} 的预算。",
-      "staffContractYearsInvalid": "职员合同期限为一到三年。"
+      "staffContractYearsInvalid": "职员合同期限为一到三年。",
+      "staff": {
+        "marketRefreshesUsed": "本月的刷新次数已用完，将在 1 日恢复。"
+      }
     },
     "sender": {
       "boardOfDirectors": "董事会",

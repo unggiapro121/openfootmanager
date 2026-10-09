@@ -1108,7 +1108,9 @@
       "hireConfirm": "Rekrut",
       "renewConfirm": "Perpanjang",
       "releaseConfirm": "Lepas dan bayar"
-    }
+    },
+    "refreshMarket": "Segarkan ({{left}}/{{total}})",
+    "refreshMarketHint": "Ganti semua di pasar dengan wajah baru. Gratis, tiga kali sebulan; pasar juga diperbarui setiap tanggal 1, saat jatah penyegaran kembali."
   },
   "finances": {
     "overview": "Ringkasan Keuangan",
@@ -2933,7 +2935,10 @@
       },
       "invalidPath": "Jalur tidak valid.",
       "staffWageBudget": "Dewan tidak mengizinkan total gaji mingguan melebihi anggaran {{budget}}.",
-      "staffContractYearsInvalid": "Kontrak staf berlaku satu sampai tiga tahun."
+      "staffContractYearsInvalid": "Kontrak staf berlaku satu sampai tiga tahun.",
+      "staff": {
+        "marketRefreshesUsed": "Jatah penyegaran bulan ini sudah habis. Akan kembali pada tanggal 1."
+      }
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",

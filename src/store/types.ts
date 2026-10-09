@@ -894,6 +894,8 @@ export interface GameStateData {
   board_objectives: BoardObjective[];
   season_context?: SeasonContextData;
   available_staff_market_last_activity_date?: string | null;
+  /** The manual staff-market refreshes used in `month` (`YYYY-MM`). */
+  staff_market_refreshes?: { month: string; used: number };
   extra_translations?: Record<string, Record<string, unknown>>;
   package_lockfile?: Array<{ id: string; version: string; hash: string }>;
   /** How fast players develop in this career, as a percentage of the realistic pace (100 = 1×). */

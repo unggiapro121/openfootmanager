@@ -120,6 +120,9 @@ pub struct Game {
     pub days_since_last_job_offer: Option<u32>,
     #[serde(default)]
     pub available_staff_market_last_activity_date: Option<String>,
+    /// The manual staff-market refreshes used in the current month.
+    #[serde(default)]
+    pub staff_market_refreshes: StaffMarketRefreshes,
     #[serde(default)]
     pub vacant_team_days: HashMap<String, u32>,
     #[serde(default)]
@@ -176,6 +179,16 @@ pub struct Game {
     pub squad_floor_top_ups: Vec<crate::squad_floor::SquadFloorTopUp>,
 }
 
+/// The manager's refreshes of the staff market in one calendar month of the
+/// game. A new month starts with none used.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct StaffMarketRefreshes {
+    /// The month counted, `YYYY-MM`.
+    pub month: String,
+    pub used: u8,
+}
+
 impl Game {
     pub fn new(
         clock: GameClock,
@@ -211,6 +224,7 @@ impl Game {
             season_context: SeasonContext::default(),
             days_since_last_job_offer: None,
             available_staff_market_last_activity_date: None,
+            staff_market_refreshes: StaffMarketRefreshes::default(),
             vacant_team_days: HashMap::new(),
             world_history: WorldHistoryArchive::default(),
             emitted_events: BTreeSet::new(),

@@ -92,6 +92,8 @@ fn write_game_to_connection(
         serde_json::to_string(&game.youth_watchlist).map_err(|_| game_persistence_write_error())?;
     let youth_pool_json =
         serde_json::to_string(&game.youth_pool).map_err(|_| game_persistence_write_error())?;
+    let staff_market_refreshes_json = serde_json::to_string(&game.staff_market_refreshes)
+        .map_err(|_| game_persistence_write_error())?;
     let extra_translations_json = serde_json::to_string(&game.extra_translations)
         .map_err(|_| game_persistence_write_error())?;
     let package_lockfile_json = serde_json::to_string(&game.package_lockfile)
@@ -128,6 +130,7 @@ fn write_game_to_connection(
             scout_youth_rest_until_json,
             youth_watchlist_json,
             youth_pool_json,
+            staff_market_refreshes_json,
             available_staff_market_last_activity_date: game
                 .available_staff_market_last_activity_date
                 .clone(),
@@ -366,6 +369,8 @@ impl GamePersistenceReader {
                 .unwrap_or_default(),
             youth_watchlist: serde_json::from_str(&meta.youth_watchlist_json).unwrap_or_default(),
             youth_pool: serde_json::from_str(&meta.youth_pool_json).unwrap_or_default(),
+            staff_market_refreshes: serde_json::from_str(&meta.staff_market_refreshes_json)
+                .unwrap_or_default(),
             emitted_events: serde_json::from_str(&meta.emitted_events_json).unwrap_or_else(|_| {
                 log::warn!(
                     "[load] sent-ledger JSON is malformed; reseeding it from the inbox. \
@@ -516,6 +521,7 @@ mod tests {
             scout_youth_rest_until_json: "{}".to_string(),
             youth_watchlist_json: "[]".to_string(),
             youth_pool_json: "null".to_string(),
+            staff_market_refreshes_json: "{}".to_string(),
         }
     }
 
@@ -907,6 +913,23 @@ mod tests {
                 signed_by_team_id: None,
             });
         game
+    }
+
+    /// Given a manager who has refreshed the staff market twice this month,
+    /// when the career is saved and loaded, then he still has one left.
+    #[test]
+    fn write_and_read_game_preserves_staff_market_refreshes() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let mut game = sample_game_with_clock(2032, 18);
+        game.staff_market_refreshes = ofm_core::game::StaffMarketRefreshes {
+            month: "2032-01".to_string(),
+            used: 2,
+        };
+
+        GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+
+        let loaded = GamePersistenceReader::read_game(&db).unwrap();
+        assert_eq!(loaded.staff_market_refreshes, game.staff_market_refreshes);
     }
 
     /// Given a career whose season youth pool has been drawn, when it is saved

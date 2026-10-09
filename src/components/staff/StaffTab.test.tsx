@@ -37,6 +37,7 @@ vi.mock("react-i18next", () => ({
         return key.replace("staff.specializations.", "");
       if (key === "staff.contractUntil") return `Until ${params?.date}`;
       if (key === "staff.askingWage") return `Asks ${params?.wage}`;
+      if (key === "staff.refreshMarket") return `Refresh (${params?.left}/${params?.total})`;
       return fallback ?? key;
     },
     i18n: { language: "en" },
@@ -363,6 +364,75 @@ describe("StaffTab", () => {
 
     expect(screen.getByText("Sam Scout")).toBeInTheDocument();
     expect(screen.queryByText("Pat Physio")).not.toBeInTheDocument();
+  });
+
+  it("refreshes the market and shows the refreshes left this month", async () => {
+    const coach = createStaff({ id: "staff-2", team_id: null });
+    const refreshed = createGameState([createStaff({ id: "new-1", team_id: null })]);
+    refreshed.staff_market_refreshes = { month: "2026-08", used: 1 };
+    const onGameUpdate = vi.fn();
+    invokeMock.mockImplementation(async (command: string) => {
+      if (command === "get_staff") return makeStaffSlice([coach]);
+      if (command === "refresh_staff_market") return refreshed;
+      throw new Error(command);
+    });
+
+    render(<StaffTab gameState={createGameState([coach])} onGameUpdate={onGameUpdate} />);
+    await openAvailableView(1);
+    fireEvent.click(screen.getByRole("button", { name: "Refresh (3/3)" }));
+
+    await waitFor(() => expect(onGameUpdate).toHaveBeenCalledWith(refreshed));
+    expect(invokeMock).toHaveBeenCalledWith("refresh_staff_market");
+  });
+
+  it("disables the refresh once the month's refreshes are used", async () => {
+    const coach = createStaff({ id: "staff-2", team_id: null });
+    const state = createGameState([coach]);
+    state.staff_market_refreshes = { month: "2026-08", used: 3 };
+    invokeMock.mockImplementation(async (command: string) => {
+      if (command === "get_staff") return makeStaffSlice([coach]);
+      throw new Error(command);
+    });
+
+    render(<StaffTab gameState={state} />);
+    await openAvailableView(1);
+
+    expect(screen.getByRole("button", { name: "Refresh (0/3)" })).toBeDisabled();
+  });
+
+  it("counts last month's refreshes as none used", async () => {
+    const coach = createStaff({ id: "staff-2", team_id: null });
+    const state = createGameState([coach]);
+    state.staff_market_refreshes = { month: "2026-07", used: 3 };
+    invokeMock.mockImplementation(async (command: string) => {
+      if (command === "get_staff") return makeStaffSlice([coach]);
+      throw new Error(command);
+    });
+
+    render(<StaffTab gameState={state} />);
+    await openAvailableView(1);
+
+    expect(screen.getByRole("button", { name: "Refresh (3/3)" })).toBeEnabled();
+  });
+
+  it("loads the market again when the day moves on", async () => {
+    const first = createStaff({ id: "staff-2", first_name: "Old", team_id: null });
+    const second = createStaff({ id: "staff-3", first_name: "New", team_id: null });
+    let market = [first];
+    invokeMock.mockImplementation(async (command: string) => {
+      if (command === "get_staff") return makeStaffSlice(market);
+      throw new Error(command);
+    });
+    const { rerender } = render(<StaffTab gameState={createGameState([first])} />);
+    await openAvailableView(1);
+    expect(screen.getByText("Old Coach")).toBeInTheDocument();
+
+    market = [second];
+    const nextDay = createGameState([second]);
+    nextDay.clock.current_date = "2026-09-01T00:00:00Z";
+    rerender(<StaffTab gameState={nextDay} />);
+
+    expect(await screen.findByText("New Coach")).toBeInTheDocument();
   });
 
   it("hires an available staff member on the default two-year term after confirming", async () => {

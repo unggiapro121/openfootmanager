@@ -296,6 +296,16 @@ At a career's opening, club staff are priced at their asking wage scaled by the 
 
 The world generates 12 unattached free-agent staff at game start, plus 4 staff per team (AssistantManager, Coach, Scout, Physio).
 
+**The staff market** is those 12: 4 coaches, 3 scouts, 3 physios and 2 assistant managers
+(`generator::process_available_staff_market`).
+- It turns over completely on the **1st of each calendar month** of the game.
+- It refills at once whenever the manager has signed everyone on it.
+- The manager can **refresh** it by hand, replacing all twelve, free, **three times a calendar month**
+  (`refresh_available_staff_market`, `Game::staff_market_refreshes`). Unused refreshes do not carry
+  over, and they come back on the 1st.
+- Every turnover removes everyone unattached, including staff the manager just released.
+- AI clubs never hire from it.
+
 ### Head Coach (the manager)
 
 The head coach is the club's `Manager` — the player's own character, or an AI club's manager — and is not a staff role. Training stays with the coaching staff above; the head coach acts on the match.

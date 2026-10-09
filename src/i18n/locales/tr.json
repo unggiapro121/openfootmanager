@@ -1108,7 +1108,9 @@
       "hireConfirm": "İşe al",
       "renewConfirm": "Uzat",
       "releaseConfirm": "Ayrıl ve öde"
-    }
+    },
+    "refreshMarket": "Yenile ({{left}}/{{total}})",
+    "refreshMarketHint": "Piyasadaki herkesi yeni yüzlerle değiştirir. Ücretsiz, ayda üç kez; piyasa ayrıca her ayın 1'inde yenilenir ve yenileme hakların geri gelir."
   },
   "finances": {
     "overview": "Finansal Genel Bakış",
@@ -2933,7 +2935,10 @@
       },
       "invalidPath": "Geçersiz yol.",
       "staffWageBudget": "Yönetim, haftalık maaş giderinin {{budget}} bütçesini aşmasına izin vermez.",
-      "staffContractYearsInvalid": "Personel sözleşmeleri bir ila üç yıl sürer."
+      "staffContractYearsInvalid": "Personel sözleşmeleri bir ila üç yıl sürer.",
+      "staff": {
+        "marketRefreshesUsed": "Bu ayın yenileme haklarını kullandın. Ayın 1'inde geri gelir."
+      }
     },
     "sender": {
       "boardOfDirectors": "Yönetim Kurulu",

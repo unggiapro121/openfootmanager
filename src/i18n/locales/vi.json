@@ -1108,7 +1108,9 @@
       "hireConfirm": "Thuê",
       "renewConfirm": "Gia hạn",
       "releaseConfirm": "Chấm dứt và bồi thường"
-    }
+    },
+    "refreshMarket": "Làm mới ({{left}}/{{total}})",
+    "refreshMarketHint": "Thay toàn bộ danh sách bằng người mới. Miễn phí, 3 lần mỗi tháng; danh sách cũng tự làm mới vào ngày 1 mỗi tháng, khi lượt được khôi phục."
   },
   "finances": {
     "overview": "Tổng quan tài chính",
@@ -2933,7 +2935,10 @@
       },
       "invalidPath": "Đường dẫn không hợp lệ.",
       "staffWageBudget": "Ban lãnh đạo không cho phép quỹ lương tuần vượt ngân sách {{budget}}.",
-      "staffContractYearsInvalid": "Hợp đồng nhân sự có thời hạn từ 1 đến 3 năm."
+      "staffContractYearsInvalid": "Hợp đồng nhân sự có thời hạn từ 1 đến 3 năm.",
+      "staff": {
+        "marketRefreshesUsed": "Bạn đã dùng hết lượt làm mới tháng này. Lượt sẽ được khôi phục vào ngày 1."
+      }
     },
     "sender": {
       "boardOfDirectors": "Hội đồng quản trị",
