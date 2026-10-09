@@ -464,6 +464,41 @@ pub fn quote_youth_search_internal(
 }
 
 #[tauri::command]
+pub fn get_player_projection(
+    state: State<'_, Arc<StateManager>>,
+    player_id: String,
+) -> Result<ofm_core::potential_projection::PlayerProjection, String> {
+    get_player_projection_internal(&state, &player_id)
+}
+
+/// Where the club expects one of its own or watched players to go, read
+/// without changing anything.
+pub fn get_player_projection_internal(
+    state: &StateManager,
+    player_id: &str,
+) -> Result<ofm_core::potential_projection::PlayerProjection, String> {
+    state
+        .get_game(|game| ofm_core::potential_projection::player_projection(game, player_id))
+        .unwrap_or_else(|| Err("be.error.noActiveGameSession".to_string()))
+}
+
+#[tauri::command]
+pub fn get_club_potential_assessments(
+    state: State<'_, Arc<StateManager>>,
+) -> Result<ofm_core::potential_projection::ClubAssessments, String> {
+    get_club_potential_assessments_internal(&state)
+}
+
+/// The club's read of every one of its players' ceilings, by its best judge.
+pub fn get_club_potential_assessments_internal(
+    state: &StateManager,
+) -> Result<ofm_core::potential_projection::ClubAssessments, String> {
+    state
+        .get_game(ofm_core::potential_projection::club_assessments)
+        .unwrap_or_else(|| Err("be.error.noActiveGameSession".to_string()))
+}
+
+#[tauri::command]
 pub fn assign_watchlist_scout(
     state: State<'_, Arc<StateManager>>,
     prospect_id: String,
@@ -580,6 +615,7 @@ fn parse_youth_target_position(value: Option<&str>) -> Result<Option<Position>, 
 mod tests {
     use super::{
         counter_loan_offer_internal, counter_offer_internal, exercise_loan_buy_option_internal,
+        get_club_potential_assessments_internal, get_player_projection_internal,
         make_loan_offer_internal, make_transfer_bid_internal,
         preview_transfer_bid_financial_impact_internal, quote_youth_search_internal,
         respond_to_loan_offer_internal, respond_to_offer_internal, toggle_loan_list_internal,
@@ -1297,6 +1333,83 @@ mod tests {
             response.projection.pending_registration_date.as_deref(),
             Some("2027-01-02"),
         );
+    }
+
+    /// Given no game loaded,
+    /// When a projection or the club's assessments are asked for,
+    /// Then each command reports there is no active game.
+    #[test]
+    fn projection_commands_without_a_game_report_it() {
+        let state = StateManager::new();
+
+        assert_eq!(
+            get_player_projection_internal(&state, "player-1"),
+            Err("be.error.noActiveGameSession".to_string())
+        );
+        assert_eq!(
+            get_club_potential_assessments_internal(&state),
+            Err("be.error.noActiveGameSession".to_string())
+        );
+    }
+
+    /// Given a club with nobody to judge its players,
+    /// When one of them is projected and the club's assessments are read,
+    /// Then the projection reports the missing assessor and the assessments
+    /// are empty.
+    #[test]
+    fn projection_commands_without_an_assessor_say_so() {
+        let state = StateManager::new();
+        state.set_game(make_game());
+
+        assert_eq!(
+            get_player_projection_internal(&state, "player-1"),
+            Err("be.error.projection.noAssessor".to_string())
+        );
+        let assessments = get_club_potential_assessments_internal(&state).unwrap();
+        assert!(assessments.assessor.is_none() && assessments.players.is_empty());
+    }
+
+    /// Given a club with a scout,
+    /// When its player is projected and its assessments are read,
+    /// Then both come back from the scout's read, every player of the club
+    /// assessed.
+    #[test]
+    fn projection_commands_read_the_clubs_scout() {
+        let state = StateManager::new();
+        let mut game = make_game();
+        let mut scout = domain::staff::Staff::new(
+            "scout-1".to_string(),
+            "Sam".to_string(),
+            "Scout".to_string(),
+            "1980-01-01".to_string(),
+            domain::staff::StaffRole::Scout,
+            domain::staff::StaffAttributes {
+                coaching: 40,
+                judging_ability: 60,
+                judging_potential: 70,
+                physiotherapy: 20,
+            },
+        );
+        scout.team_id = Some("team-1".to_string());
+        game.staff.push(scout);
+        state.set_game(game);
+
+        let projection = get_player_projection_internal(&state, "player-1").unwrap();
+        assert_eq!(projection.assessor.unwrap().staff_id, "scout-1");
+        let assessments = get_club_potential_assessments_internal(&state).unwrap();
+        let squad = state
+            .get_game(|game| {
+                game.players
+                    .iter()
+                    .filter(|p| p.team_id.as_deref() == Some("team-1"))
+                    .count()
+            })
+            .unwrap();
+        assert_eq!(assessments.players.len(), squad);
+        assert!(assessments
+            .players
+            .iter()
+            .any(|p| p.player_id == "player-1"));
     }
 
     /// Given no game loaded,

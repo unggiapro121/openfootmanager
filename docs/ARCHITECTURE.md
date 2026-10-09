@@ -221,6 +221,8 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | Command | Parameters | Returns | Description |
 |---------|-----------|---------|-------------|
 | `quote_youth_search` | scout_id, region?, objective? | `YouthSearchQuote` | Fee, search days and the scout's rest days left, before a search is started |
+| `get_player_projection` | player_id | `PlayerProjection` | The club's read of an own or watched player's ceiling and his projected overall season by season under reference conditions |
+| `get_club_potential_assessments` | — | `ClubAssessments` | The club's best judge of potential and his read of every own player's ceiling, with the scouted wonderkid flag |
 | `start_youth_scouting` | scout_id, region?, objective?, target_position? | `Game` | Pay the fee and send the scout; refused while he rests or the club cannot pay |
 | `cancel_youth_scouting` | assignment_id | `Game` | Call off a search; the fee is not refunded |
 | `assign_watchlist_scout` | prospect_id, scout_id? | `Game` | Give a watched prospect a scout (at most three each), or take him off with `null` |
