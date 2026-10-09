@@ -2907,7 +2907,8 @@
         "scoutWatchlistFull": "Questo osservatore segue già tre giovani.",
         "wagePolicy": "La dirigenza non aggiungerà lo stipendio di questo giovane al monte ingaggi.",
         "prospectJoinedClub": "Quel giovane è già passato al {{team}}.",
-        "prospectOffMarket": "Quel giovane non è più sul mercato."
+        "prospectOffMarket": "Quel giovane non è più sul mercato.",
+        "watchedPlayerNotProspect": "Questo giocatore non è un giovane del vivaio; fai un'offerta per lui."
       },
       "invalidPath": "Percorso non valido.",
       "conflict": {
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Rapporto osservatore: {{player}}",
-        "body": "Il tuo osservatore {{scout}} ha completato la valutazione di {{player}}. Rapporto completo disponibile nella sezione osservazione."
+        "body": "Il tuo osservatore {{scout}} ha completato la valutazione di {{player}}. Rapporto completo disponibile nella sezione osservazione.",
+        "option": {
+          "watch": {
+            "label": "Segui",
+            "description": "Aggiungi questo giocatore alla lista osservati perché un osservatore continui a seguirlo."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} è nella tua lista osservati.",
+          "alreadyWatched": "{{player}} è già nella tua lista osservati."
+        }
       },
       "boardWarning": {
         "subject": "Preoccupazione del Consiglio — Revisione delle Prestazioni",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Valutazione completata — {{player}}",
         "body": "Mister, dopo {{weeks}} settimane so tutto di {{player}}. Ecco il mio rapporto finale. Smetto di seguirlo per occuparmi di un altro; resta nella lista finché non decidi."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} si è ritirato",
+        "body": "{{player}} si è ritirato dal calcio, quindi l'ho tolto dalla lista osservati."
       }
     },
     "news": {

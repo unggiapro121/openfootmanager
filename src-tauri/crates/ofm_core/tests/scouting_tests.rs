@@ -7,8 +7,8 @@ use domain::team::Team;
 use ofm_core::clock::GameClock;
 use ofm_core::game::{Game, YouthScoutingObjective, YouthScoutingRegion};
 use ofm_core::scouting::{
-    apply_youth_recruitment_response, process_scouting, scout_max_assignments, send_scout,
-    start_youth_scouting,
+    apply_player_watch_response, apply_youth_recruitment_response, process_scouting,
+    scout_max_assignments, send_scout, start_youth_scouting,
 };
 
 // ---------------------------------------------------------------------------
@@ -319,6 +319,88 @@ fn send_scout_rejects_when_scout_has_youth_assignment() {
         result.unwrap_err(),
         "be.error.scouting.scoutAssignmentFull?currentCount=1&maxSlots=1"
     );
+}
+
+// ---------------------------------------------------------------------------
+// Watching a player from his scout report
+// ---------------------------------------------------------------------------
+
+fn player_report(game: &Game) -> InboxMessage {
+    game.messages
+        .iter()
+        .find(|message| message.context.scout_report.is_some())
+        .expect("a player scout report")
+        .clone()
+}
+
+/// Given a scout sent to a rival's player,
+/// When his report arrives,
+/// Then it carries the read a watch would start from - every range around
+/// the truth, the attributes it revealed and no others - and a Watch choice.
+#[test]
+fn a_player_report_carries_a_starting_read_and_a_watch_choice() {
+    let mut game = make_game();
+    send_scout(&mut game, "scout1", "p2").unwrap();
+    complete_scouting(&mut game);
+
+    let message = player_report(&game);
+    let player = game.players.iter().find(|p| p.id == "p2").unwrap();
+    let estimate = message
+        .context
+        .player_estimate
+        .clone()
+        .expect("a starting read");
+    assert!((estimate.ovr_low..=estimate.ovr_high).contains(&player.ovr));
+    assert!((estimate.potential_low..=estimate.potential_high).contains(&player.potential));
+    let card = message.context.scout_report.clone().unwrap();
+    let revealed = [
+        card.pace,
+        card.shooting,
+        card.passing,
+        card.dribbling,
+        card.defending,
+        card.physical,
+    ]
+    .iter()
+    .filter(|value| value.is_some())
+    .count();
+    assert_eq!(estimate.attributes.len(), revealed);
+    for read in &estimate.attributes {
+        let truth = ofm_core::player_rating::attribute_value(&player.attributes, &read.key);
+        assert!(read.low <= truth && truth <= read.high, "{read:?}");
+    }
+    assert!(message.actions.iter().any(|action| action.id == "watch"));
+}
+
+/// Given a player scout report,
+/// When the manager chooses Watch,
+/// Then the player goes on the watchlist with the report's read and no scout,
+/// and watching him again is refused.
+#[test]
+fn watching_from_a_player_report_puts_him_on_the_watchlist() {
+    let mut game = make_game();
+    send_scout(&mut game, "scout1", "p2").unwrap();
+    complete_scouting(&mut game);
+    let message = player_report(&game);
+
+    let effect =
+        apply_player_watch_response(&mut game, &message.id, "watch", "watch").expect("an effect");
+
+    assert_eq!(effect.i18n_key, "be.msg.scoutReport.effect.watch");
+    let entry = game
+        .youth_watchlist
+        .iter()
+        .find(|entry| entry.prospect.id == "p2")
+        .expect("on the watchlist");
+    assert_eq!(entry.kind, ofm_core::youth_watchlist::WatchKind::Player);
+    assert_eq!(entry.scout_id, None);
+    assert_eq!(
+        Some(&entry.estimate),
+        message.context.player_estimate.as_ref()
+    );
+    let again = apply_player_watch_response(&mut game, &message.id, "watch", "watch").unwrap();
+    assert_eq!(again.i18n_key, "be.msg.scoutReport.effect.alreadyWatched");
+    assert_eq!(game.youth_watchlist.len(), 1);
 }
 
 #[test]

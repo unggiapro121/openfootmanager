@@ -213,9 +213,14 @@ pub fn resolve_message_action_internal(
                                 Some(effect.i18n_key),
                                 Some(effect.i18n_params),
                             ),
-                            None => match ofm_core::scouting::apply_youth_recruitment_response(
+                            None => match ofm_core::scouting::apply_player_watch_response(
                                 game, message_id, action_id, opt,
-                            ) {
+                            )
+                            .or_else(|| {
+                                ofm_core::scouting::apply_youth_recruitment_response(
+                                    game, message_id, action_id, opt,
+                                )
+                            }) {
                                 Some(effect) => (
                                     Some(effect.message),
                                     Some(effect.i18n_key),

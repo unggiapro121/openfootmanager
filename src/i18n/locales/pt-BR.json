@@ -2907,7 +2907,8 @@
         "scoutWatchlistFull": "Este olheiro já acompanha três promessas.",
         "wagePolicy": "A diretoria não vai somar o salário desta promessa à folha.",
         "prospectJoinedClub": "Essa promessa já entrou no {{team}}.",
-        "prospectOffMarket": "Essa promessa não está mais no mercado."
+        "prospectOffMarket": "Essa promessa não está mais no mercado.",
+        "watchedPlayerNotProspect": "Este jogador não é uma promessa da base; faça uma proposta por ele."
       },
       "invalidPath": "Caminho inválido.",
       "conflict": {
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Relatório de Observação: {{player}}",
-        "body": "Seu olheiro {{scout}} concluiu a avaliação de {{player}}. Relatório completo disponível na seção de observação."
+        "body": "Seu olheiro {{scout}} concluiu a avaliação de {{player}}. Relatório completo disponível na seção de observação.",
+        "option": {
+          "watch": {
+            "label": "Acompanhar",
+            "description": "Coloque este jogador na lista de acompanhamento para um olheiro continuar observando."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} está na sua lista de acompanhamento.",
+          "alreadyWatched": "{{player}} já está na sua lista de acompanhamento."
+        }
       },
       "boardWarning": {
         "subject": "Preocupação da Diretoria — Avaliação de Desempenho",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Avaliação concluída — {{player}}",
         "body": "Chefe, depois de {{weeks}} semanas já sei tudo sobre {{player}}. Aqui está meu relatório final. Parei de acompanhá-lo para seguir outro; ele continua na lista até você decidir."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} se aposentou",
+        "body": "{{player}} se aposentou do futebol, então tirei ele da lista de acompanhamento."
       }
     },
     "news": {

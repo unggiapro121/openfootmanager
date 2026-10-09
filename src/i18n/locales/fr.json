@@ -2907,7 +2907,8 @@
         "scoutWatchlistFull": "Ce recruteur suit déjà trois jeunes.",
         "wagePolicy": "La direction refuse d'ajouter le salaire de ce jeune à la masse salariale.",
         "prospectJoinedClub": "Ce jeune a déjà rejoint {{team}}.",
-        "prospectOffMarket": "Ce jeune n'est plus sur le marché."
+        "prospectOffMarket": "Ce jeune n'est plus sur le marché.",
+        "watchedPlayerNotProspect": "Ce joueur n'est pas un jeune du vivier ; faites plutôt une offre."
       },
       "invalidPath": "Chemin invalide.",
       "conflict": {
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Rapport de scout : {{player}}",
-        "body": "Votre recruteur {{scout}} a terminé son évaluation de {{player}}. Rapport complet disponible dans la section recrutement."
+        "body": "Votre recruteur {{scout}} a terminé son évaluation de {{player}}. Rapport complet disponible dans la section recrutement.",
+        "option": {
+          "watch": {
+            "label": "Suivre",
+            "description": "Ajoutez ce joueur à votre liste de suivi pour qu'un recruteur continue de l'observer."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} est dans votre liste de suivi.",
+          "alreadyWatched": "{{player}} est déjà dans votre liste de suivi."
+        }
       },
       "boardWarning": {
         "subject": "Inquiétude du Conseil — Bilan de Performance",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Évaluation terminée — {{player}}",
         "body": "Boss, après {{weeks}} semaines je sais tout de {{player}}. Voici mon rapport final. J'arrête de le suivre pour en prendre un autre ; il reste sur la liste jusqu'à votre décision."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} a pris sa retraite",
+        "body": "{{player}} a pris sa retraite, je l'ai donc retiré de la liste de suivi."
       }
     },
     "news": {

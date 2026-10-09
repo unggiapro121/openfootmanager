@@ -986,17 +986,15 @@ fn build_scout_report(
     // Potential assessment: use the player's actual potential (fuzzed) when the scout
     // has sufficient judging_potential skill.  High-potential scouts can also spot
     // Wonderkid-level talent accurately.
-    let potential_key = if judging_potential >= 70 {
-        let fuzzed_potential = if player_potential > 0 {
+    let fuzzed_potential = (judging_potential >= 70).then(|| {
+        if player_potential > 0 {
             let delta: i16 = rng.random_range(-(noise_range as i16)..=(noise_range as i16));
             ((player_potential as i16) + delta).clamp(1, 99) as u32
         } else {
             rating_base // fallback to fuzzed OVR if no potential stored
-        };
-        potential_key_for(fuzzed_potential)
-    } else {
-        "common.scoutPotential.unclear"
-    };
+        }
+    });
+    let potential_key = fuzzed_potential.map_or("common.scoutPotential.unclear", potential_key_for);
 
     // Confidence level
     let confidence_key = if judging_ability >= 80 {
@@ -1034,6 +1032,59 @@ fn build_scout_report(
         attribute_reads: Vec::new(),
     };
 
+    // The read a watch starts from: every reported figure ± the scout's band,
+    // widened to the truth only where clamping or a legacy rating moved it.
+    let around = |reported: u32, truth: u8| {
+        let band = i32::from(noise_range);
+        let reported = reported as i32;
+        let low = (reported - band).clamp(1, 99) as u8;
+        let high = (reported + band).clamp(1, 99) as u8;
+        (low.min(truth), high.max(truth))
+    };
+    let (ovr_low, ovr_high) = around(rating_base, player_ovr);
+    let (potential_low, potential_high, potential_band) = match fuzzed_potential {
+        Some(fuzzed) => {
+            let (low, high) = around(fuzzed, player_potential);
+            (low, high, noise_range)
+        }
+        None => {
+            let (low, high) = read_rating(player_potential, 12, &mut rng);
+            (low, high, 12)
+        }
+    };
+    const REPORT_ATTRIBUTE_KEYS: [&str; 6] = [
+        "pace",
+        "shooting",
+        "passing",
+        "dribbling",
+        "defending",
+        "strength",
+    ];
+    let player_estimate = ProspectEstimate {
+        prospect_id: player_id.to_string(),
+        ovr_low,
+        ovr_high,
+        ovr_band: noise_range,
+        potential_low,
+        potential_high,
+        potential_band,
+        attributes: REPORT_ATTRIBUTE_KEYS
+            .iter()
+            .enumerate()
+            .filter_map(|(index, key)| {
+                let reported = to_opt(index)?;
+                let truth = crate::player_rating::attribute_value(attrs, key);
+                let (low, high) = around(u32::from(reported), truth);
+                Some(AttributeRead {
+                    key: (*key).to_string(),
+                    low,
+                    high,
+                    band: noise_range,
+                })
+            })
+            .collect(),
+    };
+
     let msg_id = format!("scout_report_{}", assignment_id);
 
     InboxMessage::new(
@@ -1053,9 +1104,25 @@ fn build_scout_report(
         resolved: false,
         label_key: Some("be.msg.event.ack".to_string()),
     })
+    .with_action(MessageAction {
+        id: PLAYER_WATCH_ACTION.to_string(),
+        label: String::new(),
+        action_type: ActionType::ChooseOption {
+            options: vec![ActionOption {
+                id: PLAYER_WATCH_ACTION.to_string(),
+                label: String::new(),
+                description: String::new(),
+                label_key: Some("be.msg.scoutReport.option.watch.label".to_string()),
+                description_key: Some("be.msg.scoutReport.option.watch.description".to_string()),
+            }],
+        },
+        resolved: false,
+        label_key: None,
+    })
     .with_context(MessageContext {
         player_id: Some(player_id.to_string()),
         scout_report: Some(report_data),
+        player_estimate: Some(player_estimate),
         ..Default::default()
     })
     .with_i18n("be.msg.scoutReport.subject", "be.msg.scoutReport.body", {
@@ -1066,6 +1133,50 @@ fn build_scout_report(
         p
     })
     .with_sender_i18n("be.sender.scout", "be.role.scout")
+}
+
+/// The choice on a player scout report that puts him on the watchlist.
+const PLAYER_WATCH_ACTION: &str = "watch";
+
+/// The manager chose Watch on a player scout report: put the player on the
+/// watchlist from the report's read. `None` for anything that is not that
+/// choice on such a report, so the caller tries the next handler.
+pub fn apply_player_watch_response(
+    game: &mut Game,
+    message_id: &str,
+    action_id: &str,
+    option_id: &str,
+) -> Option<YouthRecruitmentEffect> {
+    if action_id != PLAYER_WATCH_ACTION || option_id != PLAYER_WATCH_ACTION {
+        return None;
+    }
+    let message_index = game
+        .messages
+        .iter()
+        .position(|message| message.id == message_id)?;
+    let message = &game.messages[message_index];
+    let estimate = message.context.player_estimate.clone()?;
+    let player_name = message
+        .context
+        .scout_report
+        .as_ref()
+        .map(|report| report.player_name.clone())
+        .unwrap_or_default();
+    let action_index = message.actions.iter().position(|a| a.id == action_id)?;
+    let key =
+        match crate::youth_watchlist::watch_player(game, &estimate.prospect_id.clone(), estimate) {
+            Ok(()) => "be.msg.scoutReport.effect.watch",
+            Err(error) if error == "be.error.scouting.prospectAlreadyWatched" => {
+                "be.msg.scoutReport.effect.alreadyWatched"
+            }
+            Err(_) => return None,
+        };
+    resolve_action(game, message_index, action_index);
+    Some(YouthRecruitmentEffect {
+        message: String::new(),
+        i18n_key: key.to_string(),
+        i18n_params: params(&[("player", &player_name)]),
+    })
 }
 
 /// How far either side of the truth a scout's read of a rating can land.
@@ -1479,9 +1590,11 @@ mod tests {
             message.i18n_params.get("scout"),
             Some(&"Alex Scout".to_string())
         );
-        assert!(
-            matches!(message.actions.as_slice(), [action] if matches!(action.action_type, ActionType::Acknowledge))
-        );
+        assert!(matches!(
+            message.actions.as_slice(),
+            [ack, watch] if matches!(ack.action_type, ActionType::Acknowledge)
+                && matches!(watch.action_type, ActionType::ChooseOption { .. })
+        ));
         let report = message
             .context
             .scout_report

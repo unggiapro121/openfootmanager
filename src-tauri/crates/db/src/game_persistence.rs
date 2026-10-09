@@ -887,6 +887,7 @@ mod tests {
         );
         game.youth_watchlist
             .push(ofm_core::youth_watchlist::WatchedProspect {
+                kind: Default::default(),
                 prospect,
                 estimate: domain::message::ProspectEstimate {
                     prospect_id: "kid-1".to_string(),

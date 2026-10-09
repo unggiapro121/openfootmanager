@@ -2915,7 +2915,8 @@
         "scoutWatchlistFull": "Bu gözlemci zaten üç genci takip ediyor.",
         "wagePolicy": "Yönetim bu gencin maaşını bütçeye eklemiyor.",
         "prospectJoinedClub": "Bu genç zaten {{team}} kulübüne katıldı.",
-        "prospectOffMarket": "Bu genç artık piyasada değil."
+        "prospectOffMarket": "Bu genç artık piyasada değil.",
+        "watchedPlayerNotProspect": "Bu oyuncu genç havuzundan değil; onun için teklif yap."
       },
       "invalidPath": "Geçersiz yol.",
       "staffWageBudget": "Yönetim, haftalık maaş giderinin {{budget}} bütçesini aşmasına izin vermez.",
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Gözlemci Raporu: {{player}}",
-        "body": "Gözlemciniz {{scout}}, {{player}} değerlendirmesini tamamladı. Raporun tamamı gözlemcilik bölümünde."
+        "body": "Gözlemciniz {{scout}}, {{player}} değerlendirmesini tamamladı. Raporun tamamı gözlemcilik bölümünde.",
+        "option": {
+          "watch": {
+            "label": "İzle",
+            "description": "Bir gözlemcinin takibe devam etmesi için bu oyuncuyu izleme listene ekle."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} izleme listende.",
+          "alreadyWatched": "{{player}} zaten izleme listende."
+        }
       },
       "boardWarning": {
         "subject": "Yönetim Endişesi — Performans Değerlendirmesi",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Değerlendirme tamamlandı — {{player}}",
         "body": "Hocam, {{weeks}} haftanın sonunda {{player}} hakkında her şeyi biliyorum. İşte son raporum. Başka birini takip edebilmek için onu bıraktım; sen karar verene kadar listede kalıyor."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} futbolu bıraktı",
+        "body": "{{player}} futbolu bıraktı, bu yüzden onu izleme listesinden çıkardım."
       }
     },
     "news": {

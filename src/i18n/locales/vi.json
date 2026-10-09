@@ -2915,7 +2915,8 @@
         "scoutWatchlistFull": "Tuyển trạch viên này đã theo dõi đủ 3 ứng viên.",
         "wagePolicy": "Ban lãnh đạo không đồng ý thêm lương của ứng viên này vào quỹ lương.",
         "prospectJoinedClub": "Ứng viên này đã gia nhập {{team}}.",
-        "prospectOffMarket": "Ứng viên này không còn trên thị trường."
+        "prospectOffMarket": "Ứng viên này không còn trên thị trường.",
+        "watchedPlayerNotProspect": "Cầu thủ này không phải ứng viên trẻ; hãy hỏi mua thay vì ký."
       },
       "invalidPath": "Đường dẫn không hợp lệ.",
       "staffWageBudget": "Ban lãnh đạo không cho phép quỹ lương tuần vượt ngân sách {{budget}}.",
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Báo cáo tuyển trạch: {{player}}",
-        "body": "Tuyển trạch viên {{scout}} đã hoàn tất đánh giá về {{player}}. Báo cáo đầy đủ có trong mục tuyển trạch."
+        "body": "Tuyển trạch viên {{scout}} đã hoàn tất đánh giá về {{player}}. Báo cáo đầy đủ có trong mục tuyển trạch.",
+        "option": {
+          "watch": {
+            "label": "Theo dõi",
+            "description": "Đưa cầu thủ vào danh sách theo dõi để tuyển trạch viên tiếp tục theo dõi."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} đã vào danh sách theo dõi.",
+          "alreadyWatched": "{{player}} đã có trong danh sách theo dõi."
+        }
       },
       "boardWarning": {
         "subject": "Ban lãnh đạo lo ngại — Đánh giá thành tích",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Đánh giá xong — {{player}}",
         "body": "Sếp, sau {{weeks}} tuần tôi đã nắm rõ mọi thông số của {{player}}. Đây là báo cáo cuối cùng. Tôi ngừng theo dõi để nhận ứng viên khác; cậu ấy vẫn ở trong danh sách theo dõi cho tới khi Sếp quyết định."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} đã giải nghệ",
+        "body": "{{player}} đã giải nghệ nên tôi đã đưa cậu ấy ra khỏi danh sách theo dõi."
       }
     },
     "news": {

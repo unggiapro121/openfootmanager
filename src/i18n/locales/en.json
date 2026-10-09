@@ -2915,7 +2915,8 @@
         "scoutWatchlistFull": "This scout is already following three prospects.",
         "wagePolicy": "The board will not add this prospect's wage to the bill.",
         "prospectJoinedClub": "That prospect has already joined {{team}}.",
-        "prospectOffMarket": "That prospect is no longer on the market."
+        "prospectOffMarket": "That prospect is no longer on the market.",
+        "watchedPlayerNotProspect": "This player is not a youth prospect; make an offer for him instead."
       },
       "invalidPath": "Invalid path.",
       "staffWageBudget": "The board will not let the weekly wage bill go over its {{budget}} budget.",
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Scout Report: {{player}}",
-        "body": "Your scout {{scout}} has completed their assessment of {{player}}. Full report available in the scouting section."
+        "body": "Your scout {{scout}} has completed their assessment of {{player}}. Full report available in the scouting section.",
+        "option": {
+          "watch": {
+            "label": "Watch",
+            "description": "Put this player on your watchlist so a scout can keep following him."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} is on your watchlist.",
+          "alreadyWatched": "{{player}} is already on your watchlist."
+        }
       },
       "boardWarning": {
         "subject": "Board Concern — Performance Review",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Assessment complete — {{player}}",
         "body": "Boss, after {{weeks}} weeks I know everything there is to know about {{player}}. Here is my final report. I have stopped following him so I can take on someone else; he stays on the watchlist until you decide."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} has retired",
+        "body": "{{player}} has retired from football, so I have taken him off the watchlist."
       }
     },
     "news": {

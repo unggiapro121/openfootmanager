@@ -2915,7 +2915,8 @@
         "scoutWatchlistFull": "Pemandu bakat ini sudah memantau tiga pemain muda.",
         "wagePolicy": "Dewan tidak mau menambahkan gaji pemain muda ini ke total gaji.",
         "prospectJoinedClub": "Pemain muda itu sudah bergabung dengan {{team}}.",
-        "prospectOffMarket": "Pemain muda itu sudah tidak ada di pasar."
+        "prospectOffMarket": "Pemain muda itu sudah tidak ada di pasar.",
+        "watchedPlayerNotProspect": "Pemain ini bukan pemain muda dari kumpulan; ajukan tawaran untuknya."
       },
       "invalidPath": "Jalur tidak valid.",
       "staffWageBudget": "Dewan tidak mengizinkan total gaji mingguan melebihi anggaran {{budget}}.",
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Laporan Scout: {{player}}",
-        "body": "Scout kamu {{scout}} telah menyelesaikan penilaiannya terhadap {{player}}. Laporan lengkap tersedia di bagian scouting."
+        "body": "Scout kamu {{scout}} telah menyelesaikan penilaiannya terhadap {{player}}. Laporan lengkap tersedia di bagian scouting.",
+        "option": {
+          "watch": {
+            "label": "Pantau",
+            "description": "Masukkan pemain ini ke daftar pantauan agar pemandu bakat terus memantaunya."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} masuk daftar pantauan Anda.",
+          "alreadyWatched": "{{player}} sudah ada di daftar pantauan Anda."
+        }
       },
       "boardWarning": {
         "subject": "Kekhawatiran Manajemen — Tinjauan Performa",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Penilaian selesai — {{player}}",
         "body": "Bos, setelah {{weeks}} minggu saya sudah tahu semua tentang {{player}}. Ini laporan terakhir saya. Saya berhenti memantaunya agar bisa memantau pemain lain; ia tetap di daftar sampai Anda memutuskan."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} telah pensiun",
+        "body": "{{player}} telah pensiun dari sepak bola, jadi saya mengeluarkannya dari daftar pantauan."
       }
     },
     "news": {

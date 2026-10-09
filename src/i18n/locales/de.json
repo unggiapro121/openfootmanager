@@ -2907,7 +2907,8 @@
         "scoutWatchlistFull": "Dieser Scout beobachtet bereits drei Talente.",
         "wagePolicy": "Der Vorstand nimmt das Gehalt dieses Talents nicht in die Gehaltskosten auf.",
         "prospectJoinedClub": "Dieses Talent ist bereits zu {{team}} gewechselt.",
-        "prospectOffMarket": "Dieses Talent ist nicht mehr auf dem Markt."
+        "prospectOffMarket": "Dieses Talent ist nicht mehr auf dem Markt.",
+        "watchedPlayerNotProspect": "Dieser Spieler ist kein Nachwuchstalent; gib stattdessen ein Angebot ab."
       },
       "invalidPath": "Ungültiger Pfad.",
       "conflict": {
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Scout-Bericht: {{player}}",
-        "body": "Dein Scout {{scout}} hat seine Einschätzung zu {{player}} abgeschlossen. Der vollständige Bericht ist im Scouting-Bereich verfügbar."
+        "body": "Dein Scout {{scout}} hat seine Einschätzung zu {{player}} abgeschlossen. Der vollständige Bericht ist im Scouting-Bereich verfügbar.",
+        "option": {
+          "watch": {
+            "label": "Beobachten",
+            "description": "Setze diesen Spieler auf deine Beobachtungsliste, damit ein Scout ihn weiter verfolgt."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} steht auf deiner Beobachtungsliste.",
+          "alreadyWatched": "{{player}} steht bereits auf deiner Beobachtungsliste."
+        }
       },
       "boardWarning": {
         "subject": "Bedenken des Vorstands — Leistungsüberprüfung",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Bewertung abgeschlossen — {{player}}",
         "body": "Chef, nach {{weeks}} Wochen weiß ich alles über {{player}}. Hier ist mein Abschlussbericht. Ich beobachte ihn nicht mehr und kann ein anderes Talent übernehmen; er bleibt auf der Liste, bis du entscheidest."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} hat seine Karriere beendet",
+        "body": "{{player}} hat seine Karriere beendet, daher habe ich ihn von der Beobachtungsliste genommen."
       }
     },
     "news": {

@@ -1,18 +1,30 @@
-//! The youth watchlist: scouted youngsters the user follows week by week until
-//! the club signs them, lets them go, or another club signs them first.
-//!
-//! A prospect on the list is not in `Game::players`: he is nobody's yet. A scout
-//! the user assigns narrows the ranges in which his overall and potential lie,
-//! one judgement band a week, and reports each Monday.
+//! The watchlist: players the user follows week by week. Most are youngsters
+//! from the season's pool, who are nobody's yet and live outside
+//! `Game::players`; the rest are ordinary players of other clubs, watched from
+//! a scout's report. A scout the user assigns narrows what the club knows of
+//! each, one judgement band a week, and reports each Monday.
 
 use crate::game::Game;
 use domain::message::ProspectEstimate;
 use domain::player::Player;
 use serde::{Deserialize, Serialize};
 
-/// A youngster on the user's watchlist.
+/// What kind of player a watchlist entry follows.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum WatchKind {
+    /// A youngster of the season's pool.
+    #[default]
+    Prospect,
+    /// A player in `Game::players`, watched from his scout report: `prospect`
+    /// is a copy refreshed each Monday.
+    Player,
+}
+
+/// A player on the user's watchlist.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WatchedProspect {
+    #[serde(default)]
+    pub kind: WatchKind,
     pub prospect: Player,
     /// What the club knows of him: the ranges and how wide they are.
     pub estimate: ProspectEstimate,
@@ -93,6 +105,9 @@ pub(crate) fn reveal_order(prospect: &Player) -> Vec<&'static str> {
 const ERR_NOT_WATCHED: &str = "be.error.scouting.prospectNotWatched";
 const ERR_ALREADY_WATCHED: &str = "be.error.scouting.prospectAlreadyWatched";
 const ERR_SCOUT_WATCHLIST_FULL: &str = "be.error.scouting.scoutWatchlistFull";
+const ERR_NOT_PROSPECT: &str = "be.error.scouting.watchedPlayerNotProspect";
+const ERR_PLAYER_NOT_FOUND: &str = "be.error.playerNotFound";
+const ERR_OWN_PLAYER: &str = "be.error.scouting.cannotScoutOwnPlayer";
 
 /// Put a prospect from a report on the watchlist, as the report read him, with
 /// no scout yet. He must still be in the season's pool; he stays on the list
@@ -112,6 +127,7 @@ pub(crate) fn watch(
     crate::youth_pool::locate(game, &prospect.id)?;
     let today = game.clock.current_date.date_naive();
     let mut entry = WatchedProspect {
+        kind: WatchKind::Prospect,
         prospect,
         estimate,
         scout_id: None,
@@ -124,6 +140,53 @@ pub(crate) fn watch(
     entry.restate();
     game.youth_watchlist.push(entry);
     Ok(())
+}
+
+/// Put a player of another club (or a free agent) on the watchlist from his
+/// scout report, as the report read him, with no scout yet. He stays until the
+/// user lets him go, he joins the user's club, or he retires.
+pub(crate) fn watch_player(
+    game: &mut Game,
+    player_id: &str,
+    estimate: ProspectEstimate,
+) -> Result<(), String> {
+    if game
+        .youth_watchlist
+        .iter()
+        .any(|entry| entry.prospect.id == player_id)
+    {
+        return Err(ERR_ALREADY_WATCHED.to_string());
+    }
+    let player = followable_player(game, player_id)?.clone();
+    let today = game.clock.current_date.date_naive();
+    let mut entry = WatchedProspect {
+        kind: WatchKind::Player,
+        prospect: player,
+        estimate,
+        scout_id: None,
+        added_on: today.format("%Y-%m-%d").to_string(),
+        weeks_followed: 0,
+        report: None,
+        signed_by: None,
+        signed_by_team_id: None,
+    };
+    entry.restate();
+    game.youth_watchlist.push(entry);
+    Ok(())
+}
+
+/// The player `player_id` if the user's club can still follow him: he exists,
+/// has not retired and does not play for the user's club.
+fn followable_player<'a>(game: &'a Game, player_id: &str) -> Result<&'a Player, String> {
+    let player = game
+        .players
+        .iter()
+        .find(|player| player.id == player_id && !player.retired)
+        .ok_or(ERR_PLAYER_NOT_FOUND)?;
+    if player.team_id.is_some() && player.team_id == game.manager.team_id {
+        return Err(ERR_OWN_PLAYER.to_string());
+    }
+    Ok(player)
 }
 
 fn index_of(game: &Game, prospect_id: &str) -> Result<usize, String> {
@@ -145,8 +208,16 @@ pub fn assign_scout(
         game.youth_watchlist[index].scout_id = None;
         return Ok(());
     };
-    // A prospect another club has signed can no longer be followed.
-    crate::youth_pool::locate(game, prospect_id)?;
+    // A youngster another club has signed can no longer be followed; a
+    // watched player can while he is still someone else's.
+    match game.youth_watchlist[index].kind {
+        WatchKind::Prospect => {
+            crate::youth_pool::locate(game, prospect_id)?;
+        }
+        WatchKind::Player => {
+            followable_player(game, prospect_id)?;
+        }
+    }
     let scout = crate::scouting::resolve_user_scout(game, scout_id)?;
     let (ovr_band, potential_band) = (
         crate::scouting::judgement_band(scout.attributes.judging_ability),
@@ -240,6 +311,56 @@ fn reveal(entry: &mut WatchedProspect, count: usize, rng: &mut impl rand::Rng) {
     }
 }
 
+/// A watched player who has retired leaves the list, and the user is told; one
+/// who has joined the user's club leaves it quietly. Checked every day.
+fn drop_departed_players(game: &mut Game, date: &str) {
+    let user_team = game.manager.team_id.clone();
+    let mut retired = Vec::new();
+    game.youth_watchlist.retain(|entry| {
+        if entry.kind != WatchKind::Player {
+            return true;
+        }
+        match game.players.iter().find(|p| p.id == entry.prospect.id) {
+            Some(player) if player.retired => {
+                retired.push(entry.clone());
+                false
+            }
+            Some(player) => player.team_id.is_none() || player.team_id != user_team,
+            None => false,
+        }
+    });
+    for entry in retired {
+        messages::retired(game, &entry, date);
+    }
+}
+
+/// A player keeps developing while he is watched: a range that no longer
+/// holds his true value is read again at its own band, so every range always
+/// does. A pool youngster never changes, so this never fires for him.
+fn follow_the_truth(entry: &mut WatchedProspect, rng: &mut impl rand::Rng) {
+    let outside = |value: u8, low: u8, high: u8| !(low..=high).contains(&value);
+    let estimate = &mut entry.estimate;
+    let player = &entry.prospect;
+    if outside(player.ovr, estimate.ovr_low, estimate.ovr_high) {
+        (estimate.ovr_low, estimate.ovr_high) =
+            crate::scouting::read_rating(player.ovr, estimate.ovr_band, rng);
+    }
+    if outside(
+        player.potential,
+        estimate.potential_low,
+        estimate.potential_high,
+    ) {
+        (estimate.potential_low, estimate.potential_high) =
+            crate::scouting::read_rating(player.potential, estimate.potential_band, rng);
+    }
+    for read in &mut estimate.attributes {
+        let value = crate::player_rating::attribute_value(&player.attributes, &read.key);
+        if outside(value, read.low, read.high) {
+            (read.low, read.high) = crate::scouting::read_rating(value, read.band, rng);
+        }
+    }
+}
+
 /// Whether the club knows the prospect exactly: overall, potential and every
 /// attribute read, all down to no error.
 fn fully_known(entry: &WatchedProspect) -> bool {
@@ -261,7 +382,10 @@ fn next_band(band: u8) -> u8 {
 
 /// Sign a watched prospect into the user's academy and take him off the list.
 pub fn sign(game: &mut Game, prospect_id: &str) -> Result<Player, String> {
-    index_of(game, prospect_id)?;
+    let index = index_of(game, prospect_id)?;
+    if game.youth_watchlist[index].kind == WatchKind::Player {
+        return Err(ERR_NOT_PROSPECT.to_string());
+    }
     let signed = crate::scouting::sign_youth_prospect(game, prospect_id)?;
     forget(game, prospect_id);
     Ok(signed)
@@ -306,7 +430,7 @@ pub(crate) fn pool_closed(game: &mut Game, date: chrono::NaiveDate) {
     let date = date.format("%Y-%m-%d").to_string();
     let (signed, free): (Vec<_>, Vec<_>) = std::mem::take(&mut game.youth_watchlist)
         .into_iter()
-        .partition(|entry| entry.signed_by.is_some());
+        .partition(|entry| entry.signed_by.is_some() || entry.kind == WatchKind::Player);
     game.youth_watchlist = signed;
     for entry in free {
         messages::left_market(game, &entry, &date);
@@ -317,12 +441,18 @@ pub(crate) fn pool_closed(game: &mut Game, date: chrono::NaiveDate) {
 /// from the pool: each prospect with a scout narrows a band and gets a report.
 pub fn process_youth_watchlist(game: &mut Game) {
     use chrono::Datelike;
+    let today_text = game.clock.current_date.format("%Y-%m-%d").to_string();
+    drop_departed_players(game, &today_text);
     if game.clock.current_date.weekday() != chrono::Weekday::Mon {
         return;
     }
-    let today_text = game.clock.current_date.format("%Y-%m-%d").to_string();
     let entries = std::mem::take(&mut game.youth_watchlist);
     for mut entry in entries {
+        if entry.kind == WatchKind::Player
+            && let Some(live) = game.players.iter().find(|p| p.id == entry.prospect.id)
+        {
+            entry.prospect = live.clone();
+        }
         if let Some(scout) = entry
             .scout_id
             .as_deref()
@@ -333,6 +463,7 @@ pub fn process_youth_watchlist(game: &mut Game) {
                 &format!("youth-watchlist/{}", entry.prospect.id),
                 &today_text,
             );
+            follow_the_truth(&mut entry, &mut rng);
             let ovr_band = next_band(entry.estimate.ovr_band);
             let potential_band = next_band(entry.estimate.potential_band);
             narrow(&mut entry, ovr_band, potential_band, &mut rng);
@@ -423,6 +554,17 @@ mod messages {
             date,
             "be.msg.youthWatchGone.subject",
             "be.msg.youthWatchGone.body",
+            &[("player", &entry.prospect.full_name)],
+        );
+        crate::inbox::emit(game, message);
+    }
+
+    pub(super) fn retired(game: &mut Game, entry: &WatchedProspect, date: &str) {
+        let message = notice(
+            format!("youth-watch-retired-{}-{date}", entry.prospect.id),
+            date,
+            "be.msg.youthWatchRetired.subject",
+            "be.msg.youthWatchRetired.body",
             &[("player", &entry.prospect.full_name)],
         );
         crate::inbox::emit(game, message);
@@ -1024,6 +1166,155 @@ mod tests {
                 .messages
                 .iter()
                 .any(|message| message.id == "youth-watch-gone-p1")
+        );
+    }
+
+    /// A rival's senior midfielder, rated 60 everywhere, watched from a
+    /// report that read him within ±12 and revealed nothing.
+    fn watched_player(game: &mut Game) {
+        let mut player = prospect("pro", 60, 70);
+        player.team_id = Some("ai-eng".to_string());
+        player.squad_role = domain::player::SquadRole::Senior;
+        game.players.push(player.clone());
+        watch_player(game, "pro", wide_estimate(&player)).expect("watched");
+    }
+
+    /// Given a rival's player watched from his report,
+    /// When a good scout follows him,
+    /// Then he is watched as a player, reads more each week like a youngster,
+    /// and is not refused for being outside the pool.
+    #[test]
+    fn a_watched_player_is_followed_like_a_prospect() {
+        let mut game = world();
+        watched_player(&mut game);
+        assert_eq!(entry(&game, "pro").kind, WatchKind::Player);
+
+        assign_scout(&mut game, "pro", Some("good")).unwrap();
+        next_monday(&mut game);
+
+        assert_eq!(reads(&game, "pro").len(), 4);
+        assert!(entry(&game, "pro").report.is_some());
+    }
+
+    /// Given a scout already following two youngsters and a watched player,
+    /// When he is given a third youngster,
+    /// Then he is refused: the three-a-scout limit counts players too.
+    #[test]
+    fn players_count_towards_a_scouts_three() {
+        let mut game = world();
+        watched_player(&mut game);
+        assign_scout(&mut game, "pro", Some("good")).unwrap();
+        for id in ["p1", "p2", "p3"] {
+            watched(&mut game, id, 60, 80);
+        }
+        assign_scout(&mut game, "p1", Some("good")).unwrap();
+        assign_scout(&mut game, "p2", Some("good")).unwrap();
+
+        assert_eq!(
+            assign_scout(&mut game, "p3", Some("good")),
+            Err("be.error.scouting.scoutWatchlistFull".to_string())
+        );
+    }
+
+    /// Given a watched player whose attributes grow while he is followed,
+    /// When the next Monday's read comes,
+    /// Then every range still holds his true value.
+    #[test]
+    fn a_watched_players_ranges_follow_him_as_he_develops() {
+        let mut game = world();
+        watched_player(&mut game);
+        assign_scout(&mut game, "pro", Some("good")).unwrap();
+        next_monday(&mut game);
+        let player = game.players.iter_mut().find(|p| p.id == "pro").unwrap();
+        player.attributes.passing = 75;
+        player.attributes.vision = 75;
+        player.ovr = 66;
+
+        next_monday(&mut game);
+
+        let entry = entry(&game, "pro");
+        assert!((entry.estimate.ovr_low..=entry.estimate.ovr_high).contains(&66));
+        let live = game.players.iter().find(|p| p.id == "pro").unwrap();
+        for read in &entry.estimate.attributes {
+            let truth = crate::player_rating::attribute_value(&live.attributes, &read.key);
+            assert!(read.low <= truth && truth <= read.high, "{read:?}");
+        }
+    }
+
+    /// Given a watched player,
+    /// When he retires,
+    /// Then he leaves the list the next day and the user is told.
+    #[test]
+    fn a_watched_player_who_retires_leaves_the_list() {
+        let mut game = world();
+        watched_player(&mut game);
+        game.players
+            .iter_mut()
+            .find(|p| p.id == "pro")
+            .unwrap()
+            .retired = true;
+        game.clock.advance_days(1);
+
+        process_youth_watchlist(&mut game);
+
+        assert!(game.youth_watchlist.is_empty());
+        assert!(
+            game.messages
+                .iter()
+                .any(|m| m.id.starts_with("youth-watch-retired-pro"))
+        );
+    }
+
+    /// Given a watched player,
+    /// When he signs for the user's club,
+    /// Then he leaves the list quietly.
+    #[test]
+    fn a_watched_player_who_joins_the_users_club_leaves_quietly() {
+        let mut game = world();
+        watched_player(&mut game);
+        game.players
+            .iter_mut()
+            .find(|p| p.id == "pro")
+            .unwrap()
+            .team_id = Some(USER.to_string());
+        game.clock.advance_days(1);
+
+        process_youth_watchlist(&mut game);
+
+        assert!(game.youth_watchlist.is_empty());
+        assert!(!game.messages.iter().any(|m| m.id.contains("pro")));
+    }
+
+    /// Given a watched player and a free youngster,
+    /// When the season's pool closes,
+    /// Then only the youngster leaves; the player was never in the pool.
+    #[test]
+    fn the_seasons_end_keeps_watched_players() {
+        let mut game = world();
+        watched_player(&mut game);
+        watched(&mut game, "p1", 60, 80);
+
+        crate::youth_pool::roll_over(&mut game, NaiveDate::from_ymd_opt(2027, 5, 30).unwrap());
+
+        let left: Vec<&str> = game
+            .youth_watchlist
+            .iter()
+            .map(|entry| entry.prospect.id.as_str())
+            .collect();
+        assert_eq!(left, ["pro"]);
+    }
+
+    /// Given a watched player,
+    /// When something tries to sign him as a youngster,
+    /// Then it is refused.
+    #[test]
+    fn a_watched_player_cannot_be_signed_as_a_prospect() {
+        let mut game = world();
+        watched_player(&mut game);
+
+        assert_eq!(
+            sign(&mut game, "pro").map(|p| p.id),
+            Err("be.error.scouting.watchedPlayerNotProspect".to_string())
         );
     }
 

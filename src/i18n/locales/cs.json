@@ -2915,7 +2915,8 @@
         "scoutWatchlistFull": "Tento skaut už sleduje tři talenty.",
         "wagePolicy": "Vedení nepřidá plat tohoto talentu do mzdových nákladů.",
         "prospectJoinedClub": "Tento talent už přestoupil do {{team}}.",
-        "prospectOffMarket": "Tento talent už není na trhu."
+        "prospectOffMarket": "Tento talent už není na trhu.",
+        "watchedPlayerNotProspect": "Tento hráč není mladý talent; podejte na něj nabídku."
       },
       "invalidPath": "Neplatná cesta.",
       "staffWageBudget": "Vedení nedovolí, aby týdenní mzdové náklady překročily rozpočet {{budget}}.",
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "Zpráva skauta: {{player}}",
-        "body": "Váš skaut {{scout}} dokončil hodnocení hráče {{player}}. Celá zpráva je k dispozici v sekci skautingu."
+        "body": "Váš skaut {{scout}} dokončil hodnocení hráče {{player}}. Celá zpráva je k dispozici v sekci skautingu.",
+        "option": {
+          "watch": {
+            "label": "Sledovat",
+            "description": "Přidejte hráče mezi sledované, aby ho skaut mohl dál sledovat."
+          }
+        },
+        "effect": {
+          "watch": "{{player}} je mezi sledovanými.",
+          "alreadyWatched": "{{player}} už je mezi sledovanými."
+        }
       },
       "boardWarning": {
         "subject": "Obavy představenstva — Hodnocení výsledků",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "Hodnocení dokončeno — {{player}}",
         "body": "Šéfe, po {{weeks}} týdnech o {{player}} vím všechno. Tady je moje závěrečné hlášení. Přestávám ho sledovat, abych mohl převzít jiný talent; na seznamu zůstává, dokud nerozhodnete."
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} ukončil kariéru",
+        "body": "{{player}} ukončil kariéru, takže jsem ho vyřadil ze sledovaných."
       }
     },
     "news": {

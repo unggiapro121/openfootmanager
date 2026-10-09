@@ -2907,7 +2907,8 @@
         "scoutWatchlistFull": "这名球探已在跟踪三名新秀。",
         "wagePolicy": "董事会不同意将该新秀的工资计入工资总额。",
         "prospectJoinedClub": "该新秀已加盟 {{team}}。",
-        "prospectOffMarket": "该新秀已不在市场上。"
+        "prospectOffMarket": "该新秀已不在市场上。",
+        "watchedPlayerNotProspect": "该球员不是新秀，请改为报价。"
       },
       "invalidPath": "路径无效。",
       "conflict": {
@@ -3428,7 +3429,17 @@
       },
       "scoutReport": {
         "subject": "球探报告:{{player}}",
-        "body": "您的球探{{scout}}已完成对{{player}}的评估。完整报告可在球探工作板块查看。"
+        "body": "您的球探{{scout}}已完成对{{player}}的评估。完整报告可在球探工作板块查看。",
+        "option": {
+          "watch": {
+            "label": "关注",
+            "description": "将该球员加入关注名单，以便球探继续跟踪。"
+          }
+        },
+        "effect": {
+          "watch": "{{player}} 已加入你的关注名单。",
+          "alreadyWatched": "{{player}} 已在你的关注名单中。"
+        }
       },
       "boardWarning": {
         "subject": "董事会关切——战绩审视",
@@ -3524,6 +3535,10 @@
       "youthWatchComplete": {
         "subject": "评估完成 — {{player}}",
         "body": "老板，经过 {{weeks}} 周，我已完全掌握 {{player}} 的情况。这是我的最终报告。我已停止跟踪他，可以接手其他新秀；在您决定之前，他仍留在关注名单上。"
+      },
+      "youthWatchRetired": {
+        "subject": "{{player}} 已退役",
+        "body": "{{player}} 已退役，因此我已将他移出关注名单。"
       }
     },
     "news": {

@@ -117,6 +117,10 @@ pub struct MessageContext {
     pub youth_prospect_reports: Vec<ScoutReportData>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scout_report: Option<ScoutReportData>,
+    /// What a player scout report read of him, as ranges a watch can start
+    /// from: each reported figure ± the scout's band.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub player_estimate: Option<ProspectEstimate>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delegated_renewal_report: Option<DelegatedRenewalReportData>,
 }
