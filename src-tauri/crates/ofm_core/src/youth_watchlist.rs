@@ -647,7 +647,11 @@ mod messages {
             id: format!("prospect:{}", entry.prospect.id),
             label: entry.prospect.full_name.clone(),
             action_type: ActionType::ChooseOption {
-                options: vec![option("sign"), option("unwatch")],
+                // A player of another club is bought, not signed into the academy.
+                options: match entry.kind {
+                    super::WatchKind::Prospect => vec![option("sign"), option("unwatch")],
+                    super::WatchKind::Player => vec![option("unwatch")],
+                },
             },
             resolved: false,
             label_key: None,
@@ -1194,6 +1198,38 @@ mod tests {
 
         assert_eq!(reads(&game, "pro").len(), 4);
         assert!(entry(&game, "pro").report.is_some());
+    }
+
+    /// Given a watched player and a watched youngster, each followed,
+    /// When their weekly reports come,
+    /// Then only the youngster's offers Sign: a player of another club is
+    /// bought, not signed into the academy.
+    #[test]
+    fn a_watched_players_report_offers_no_academy_signing() {
+        let mut game = world();
+        game.staff.push(scout("good2", 90));
+        watched_player(&mut game);
+        watched(&mut game, "p1", 60, 80);
+        assign_scout(&mut game, "pro", Some("good")).unwrap();
+        assign_scout(&mut game, "p1", Some("good2")).unwrap();
+
+        next_monday(&mut game);
+
+        let options = |id: &str| -> Vec<String> {
+            let message = game
+                .messages
+                .iter()
+                .find(|m| m.id.starts_with(&format!("youth-watch-report-{id}-")))
+                .expect("a weekly report");
+            match &message.actions[0].action_type {
+                domain::message::ActionType::ChooseOption { options } => {
+                    options.iter().map(|option| option.id.clone()).collect()
+                }
+                _ => Vec::new(),
+            }
+        };
+        assert_eq!(options("pro"), ["unwatch"]);
+        assert_eq!(options("p1"), ["sign", "unwatch"]);
     }
 
     /// Given a scout already following two youngsters and a watched player,
