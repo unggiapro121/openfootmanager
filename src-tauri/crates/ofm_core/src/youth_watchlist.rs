@@ -152,9 +152,8 @@ fn next_band(band: u8) -> u8 {
 
 /// Sign a watched prospect into the user's academy and take him off the list.
 pub fn sign(game: &mut Game, prospect_id: &str) -> Result<Player, String> {
-    let index = index_of(game, prospect_id)?;
-    let prospect = game.youth_watchlist[index].prospect.clone();
-    let signed = crate::scouting::sign_youth_prospect(game, prospect)?;
+    index_of(game, prospect_id)?;
+    let signed = crate::scouting::sign_youth_prospect(game, prospect_id)?;
     forget(game, prospect_id);
     Ok(signed)
 }
@@ -592,9 +591,17 @@ mod tests {
         }
     }
 
+    /// Put a prospect in the season's pool, as a scout's report found him, and
+    /// on the watchlist.
     fn watched(game: &mut Game, id: &str, ovr: u8, potential: u8) {
         let player = prospect(id, ovr, potential);
         let estimate = wide_estimate(&player);
+        game.youth_pool
+            .get_or_insert_with(Default::default)
+            .nations
+            .entry("ENG".to_string())
+            .or_default()
+            .push(player.clone());
         watch(game, player, estimate).expect("watched");
     }
 

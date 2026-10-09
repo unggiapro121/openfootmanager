@@ -2912,7 +2912,8 @@
         "prospectAlreadyWatched": "Ứng viên này đã có trong danh sách theo dõi.",
         "scoutWatchlistFull": "Tuyển trạch viên này đã theo dõi đủ 3 ứng viên.",
         "wagePolicy": "Ban lãnh đạo không đồng ý thêm lương của ứng viên này vào quỹ lương.",
-        "prospectAlreadySigned": "Ứng viên này đã ký hợp đồng."
+        "prospectJoinedClub": "Ứng viên này đã gia nhập {{team}}.",
+        "prospectOffMarket": "Ứng viên này không còn trên thị trường."
       },
       "invalidPath": "Đường dẫn không hợp lệ.",
       "staffWageBudget": "Ban lãnh đạo không cho phép quỹ lương tuần vượt ngân sách {{budget}}.",
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Báo cáo tuyển trạch — Tuyển cầu thủ trẻ",
         "bodyAny": "{{scout}} đã hoàn tất đợt tìm cầu thủ trẻ mới nhất cho {{team}}. Tôi đã tìm được {{count}} tài năng ở thị trường {{regionLabel}} với tiêu chí {{objectiveLabel}}.\n\nHãy xem các thẻ đính kèm và quyết định ai sẽ gia nhập học viện.",
-        "bodyTargeted": "{{scout}} đã hoàn tất đợt tìm cầu thủ trẻ mới nhất cho {{team}}. Tôi đã tìm được {{count}} tài năng ở thị trường {{regionLabel}} với tiêu chí {{objectiveLabel}}, tập trung vào {{targetLabel}}.\n\nHãy xem các thẻ đính kèm và quyết định ai sẽ gia nhập học viện."
+        "bodyTargeted": "{{scout}} đã hoàn tất đợt tìm cầu thủ trẻ mới nhất cho {{team}}. Tôi đã tìm được {{count}} tài năng ở thị trường {{regionLabel}} với tiêu chí {{objectiveLabel}}, tập trung vào {{targetLabel}}.\n\nHãy xem các thẻ đính kèm và quyết định ai sẽ gia nhập học viện.",
+        "bodyEmpty": "{{scout}} đã hoàn tất đợt tìm cầu thủ trẻ cho {{team}}, nhưng thị trường {{regionLabel}} mùa này không còn ai phù hợp. Các CLB khác đã ký những người giỏi nhất."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} đã bị gỡ khỏi báo cáo tuyển cầu thủ trẻ.",
           "watch": "{{player}} đã vào danh sách theo dõi.",
           "unwatch": "{{player}} đã ra khỏi danh sách theo dõi.",
-          "wagePolicy": "Ban lãnh đạo không đồng ý thêm lương của {{player}} vào quỹ lương."
+          "wagePolicy": "Ban lãnh đạo không đồng ý thêm lương của {{player}} vào quỹ lương.",
+          "joinedClub": "{{player}} đã gia nhập {{team}}.",
+          "offMarket": "{{player}} không còn trên thị trường."
         }
       },
       "scoutReport": {

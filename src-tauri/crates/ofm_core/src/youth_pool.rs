@@ -42,6 +42,11 @@ const POOL_AGES: std::ops::RangeInclusive<u32> = 15..=21;
 /// A pool's season length when the season's own end is not known.
 const FALLBACK_SEASON_DAYS: i64 = 364;
 
+/// The nation whose pool a club draws on: its football nation.
+pub fn nation_of(team: &domain::team::Team) -> &str {
+    crate::generator::team_local_nationality(team)
+}
+
 /// Draw the season's pool on `date`, replacing any pool there was.
 ///
 /// Each AI club's demand is what the annual intake rule says its academy
@@ -74,7 +79,7 @@ pub fn open_season(game: &mut Game, date: NaiveDate) {
     by_id.sort_by(|a, b| game.teams[*a].id.cmp(&game.teams[*b].id));
     for index in by_id {
         let team = &game.teams[index];
-        let nation = crate::generator::team_local_nationality(team).to_string();
+        let nation = nation_of(team).to_string();
         templates.entry(nation.clone()).or_insert(index);
         let counts = need.entry(nation).or_insert([0; 4]);
         for group in demand.get(&team.id).into_iter().flatten() {
@@ -264,7 +269,7 @@ pub fn process_ai_signings(game: &mut Game) {
         let Some(team_index) = game.teams.iter().position(|team| team.id == club) else {
             continue;
         };
-        let nation = crate::generator::team_local_nationality(&game.teams[team_index]).to_string();
+        let nation = nation_of(&game.teams[team_index]).to_string();
         let Some((prospect_id, group)) = choose(game, team_index, &nation, &wanted, &mut rng)
         else {
             continue;
@@ -287,6 +292,84 @@ pub fn process_ai_signings(game: &mut Game) {
         let club_name = game.teams[team_index].name.clone();
         crate::youth_watchlist::signed_by_club(game, &prospect_id, &club_name);
     }
+}
+
+/// Where a youngster a scout once reported has got to.
+pub enum Whereabouts<'a> {
+    /// Still in the season's pool.
+    Pool(&'a Player),
+    /// Signed by a club, named here.
+    Club(String),
+    /// Gone from the game: the season ended without anyone signing him.
+    Gone,
+}
+
+pub(crate) const ERR_PROSPECT_JOINED_CLUB: &str = "be.error.scouting.prospectJoinedClub";
+pub(crate) const ERR_PROSPECT_OFF_MARKET: &str = "be.error.scouting.prospectOffMarket";
+
+/// Where the youngster `prospect_id` is now.
+pub fn whereabouts<'a>(game: &'a Game, prospect_id: &str) -> Whereabouts<'a> {
+    if let Some(player) = game
+        .youth_pool
+        .iter()
+        .flat_map(|pool| pool.nations.values().flatten())
+        .find(|player| player.id == prospect_id)
+    {
+        return Whereabouts::Pool(player);
+    }
+    game.players
+        .iter()
+        .find(|player| player.id == prospect_id)
+        .and_then(|player| player.team_id.as_deref())
+        .and_then(|club| game.teams.iter().find(|team| team.id == club))
+        .map_or(Whereabouts::Gone, |team| {
+            Whereabouts::Club(team.name.clone())
+        })
+}
+
+/// The youngster `prospect_id` if he is still in the pool, or the reason he
+/// cannot be had: the club he joined, or that he left the market.
+pub(crate) fn locate<'a>(game: &'a Game, prospect_id: &str) -> Result<&'a Player, String> {
+    match whereabouts(game, prospect_id) {
+        Whereabouts::Pool(player) => Ok(player),
+        Whereabouts::Club(team) => Err(format!(
+            "{ERR_PROSPECT_JOINED_CLUB}?team={}",
+            query_value(&team)
+        )),
+        Whereabouts::Gone => Err(ERR_PROSPECT_OFF_MARKET.to_string()),
+    }
+}
+
+/// `value` made safe inside an error key's query string, which the UI reads
+/// with `URLSearchParams`: a club named "Brighton & Hove" must not split it.
+fn query_value(value: &str) -> String {
+    value
+        .chars()
+        .map(|c| match c {
+            '%' => "%25".to_string(),
+            '&' => "%26".to_string(),
+            '+' => "%2B".to_string(),
+            '=' => "%3D".to_string(),
+            '#' => "%23".to_string(),
+            other => other.to_string(),
+        })
+        .collect()
+}
+
+/// Take the youngster `prospect_id` out of the pool, wherever he is in it.
+pub(crate) fn take(game: &mut Game, prospect_id: &str) -> Option<Player> {
+    let nation = game
+        .youth_pool
+        .as_ref()?
+        .nations
+        .iter()
+        .find_map(|(nation, players)| {
+            players
+                .iter()
+                .any(|player| player.id == prospect_id)
+                .then(|| nation.clone())
+        })?;
+    take_from(game, &nation, prospect_id)
 }
 
 /// Take a youngster out of `nation`'s pool.

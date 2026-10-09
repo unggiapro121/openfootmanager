@@ -2912,7 +2912,8 @@
         "prospectAlreadyWatched": "That prospect is already on your watchlist.",
         "scoutWatchlistFull": "This scout is already following three prospects.",
         "wagePolicy": "The board will not add this prospect's wage to the bill.",
-        "prospectAlreadySigned": "That prospect has already signed."
+        "prospectJoinedClub": "That prospect has already joined {{team}}.",
+        "prospectOffMarket": "That prospect is no longer on the market."
       },
       "invalidPath": "Invalid path.",
       "staffWageBudget": "The board will not let the weekly wage bill go over its {{budget}} budget.",
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Scout Report — Youth Recruitment",
         "bodyAny": "{{scout}} has completed the latest youth recruitment search for {{team}}. I found {{count}} prospects in the {{regionLabel}} market with a {{objectiveLabel}} profile.\n\nReview the attached cards and decide who should join the academy.",
-        "bodyTargeted": "{{scout}} has completed the latest youth recruitment search for {{team}}. I found {{count}} prospects in the {{regionLabel}} market with a {{objectiveLabel}} profile, focused on {{targetLabel}}.\n\nReview the attached cards and decide who should join the academy."
+        "bodyTargeted": "{{scout}} has completed the latest youth recruitment search for {{team}}. I found {{count}} prospects in the {{regionLabel}} market with a {{objectiveLabel}} profile, focused on {{targetLabel}}.\n\nReview the attached cards and decide who should join the academy.",
+        "bodyEmpty": "{{scout}} has finished the youth search for {{team}}, but there is nobody suitable left in the {{regionLabel}} market this season. Other clubs have already signed the best of them."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} was removed from the youth recruitment report.",
           "watch": "{{player}} is on your watchlist.",
           "unwatch": "{{player}} is off your watchlist.",
-          "wagePolicy": "The board will not add {{player}}'s wage to the bill."
+          "wagePolicy": "The board will not add {{player}}'s wage to the bill.",
+          "joinedClub": "{{player}} has already joined {{team}}.",
+          "offMarket": "{{player}} is no longer on the market."
         }
       },
       "scoutReport": {

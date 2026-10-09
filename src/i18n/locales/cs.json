@@ -2912,7 +2912,8 @@
         "prospectAlreadyWatched": "Tento talent už je mezi sledovanými.",
         "scoutWatchlistFull": "Tento skaut už sleduje tři talenty.",
         "wagePolicy": "Vedení nepřidá plat tohoto talentu do mzdových nákladů.",
-        "prospectAlreadySigned": "Tento talent už podepsal."
+        "prospectJoinedClub": "Tento talent už přestoupil do {{team}}.",
+        "prospectOffMarket": "Tento talent už není na trhu."
       },
       "invalidPath": "Neplatná cesta.",
       "staffWageBudget": "Vedení nedovolí, aby týdenní mzdové náklady překročily rozpočet {{budget}}.",
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Zpráva skauta — Nábor mládeže",
         "bodyAny": "{{scout}} dokončil nejnovější vyhledávání v rámci náboru mládeže pro tým {{team}}. Na trhu v regionu {{regionLabel}} jsem našel {{count}} nadějných hráčů s profilem {{objectiveLabel}}.\n\nProhlédněte si přiložené karty a rozhodněte, kdo by se měl připojit k akademii.",
-        "bodyTargeted": "{{scout}} dokončil nejnovější vyhledávání v rámci náboru mládeže pro tým {{team}}. Na trhu v regionu {{regionLabel}} jsem našel {{count}} nadějných hráčů s profilem {{objectiveLabel}}, se zaměřením na pozici {{targetLabel}}.\n\nProhlédněte si přiložené karty and rozhodněte, kdo by se měl připojit k akademii."
+        "bodyTargeted": "{{scout}} dokončil nejnovější vyhledávání v rámci náboru mládeže pro tým {{team}}. Na trhu v regionu {{regionLabel}} jsem našel {{count}} nadějných hráčů s profilem {{objectiveLabel}}, se zaměřením na pozici {{targetLabel}}.\n\nProhlédněte si přiložené karty and rozhodněte, kdo by se měl připojit k akademii.",
+        "bodyEmpty": "{{scout}} dokončil hledání mladíků pro {{team}}, ale na trhu {{regionLabel}} už letos nikdo vhodný nezbyl. Nejlepší už podepsaly jiné kluby."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} byl odebrán ze zprávy o náboru mládeže.",
           "watch": "{{player}} je mezi sledovanými.",
           "unwatch": "{{player}} už není mezi sledovanými.",
-          "wagePolicy": "Vedení nepřidá plat hráče {{player}} do mzdových nákladů."
+          "wagePolicy": "Vedení nepřidá plat hráče {{player}} do mzdových nákladů.",
+          "joinedClub": "{{player}} už přestoupil do {{team}}.",
+          "offMarket": "{{player}} už není na trhu."
         }
       },
       "scoutReport": {

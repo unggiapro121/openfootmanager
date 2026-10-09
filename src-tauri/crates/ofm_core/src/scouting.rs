@@ -20,7 +20,6 @@ const ERR_SCOUT_ALREADY_ASSIGNED_TO_SEARCH: &str = "be.error.scouting.scoutAlrea
 const ERR_SCOUT_RESTING: &str = "be.error.scouting.scoutResting";
 const ERR_SCOUTING_INSUFFICIENT_FUNDS: &str = "be.error.scouting.insufficientFunds";
 const ERR_SCOUTING_WAGE_POLICY: &str = "be.error.scouting.wagePolicy";
-const ERR_PROSPECT_ALREADY_SIGNED: &str = "be.error.scouting.prospectAlreadySigned";
 
 fn scouting_error_with_params(key: &str, params: &[(&str, String)]) -> String {
     if params.is_empty() {
@@ -467,16 +466,11 @@ fn complete_youth_scouting_assignment(
     game.scout_youth_rest_until
         .insert(scout.id.clone(), rest_until.format("%Y-%m-%d").to_string());
 
-    // Prospects are scouted mid-career, so they are aged against the running
-    // clock rather than the year the world opened in.
-    let current_year = chrono::Datelike::year(&game.clock.current_date) as u32;
-    // Seeded by the search, so a replayed day turns up the same youngsters.
+    // Seeded by the search, so a replayed day picks the same youngsters.
     let mut rng = game.rng_for(&format!("youth-scout/{}", assignment.id), date);
+    crate::youth_pool::ensure_pool(game);
     let recommended =
-        generate_youth_recruitment_candidates(&team, &scout, assignment, current_year, &mut rng);
-    if recommended.is_empty() {
-        return;
-    }
+        generate_youth_recruitment_candidates(game, &team, &scout, assignment, &mut rng);
 
     let scout_name = format!("{} {}", scout.first_name, scout.last_name);
     game.messages.push(build_youth_recruitment_report(
@@ -553,7 +547,9 @@ fn build_youth_recruitment_report(
         ("regionLabel", region_i18n_key(region)),
         ("objectiveLabel", objective_i18n_key(objective)),
     ]);
-    let body_key = if let Some(target_position) = target_position.as_ref() {
+    let body_key = if prospects.is_empty() {
+        "be.msg.youthRecruitmentReport.bodyEmpty"
+    } else if let Some(target_position) = target_position.as_ref() {
         i18n_params.insert(
             "targetLabel".to_string(),
             youth_target_position_i18n_key(target_position).to_string(),
@@ -610,63 +606,71 @@ pub(crate) fn rank_by_objective(
     }
 }
 
-/// Who a youth search turns up: `viewed` youngsters, each read by `scout`, of
-/// whom he recommends three on what he saw.
+/// Who a youth search turns up: `viewed` youngsters still in the season's pool
+/// of the search's region, each read by `scout`, of whom he recommends three on
+/// what he saw. Fewer when the pool has fewer left, none when it has nobody.
 fn generate_youth_recruitment_candidates(
+    game: &Game,
     team: &domain::team::Team,
     scout: &domain::staff::Staff,
     search: &YouthScoutingAssignment,
-    current_year: u32,
     rng: &mut impl rand::Rng,
 ) -> Vec<(Player, domain::message::ProspectEstimate)> {
+    use rand::seq::SliceRandom;
     let viewed = youth_candidates_viewed(
         search.objective,
         scout.attributes.judging_ability,
         team.facilities.scouting,
     );
-    let domestic_nationality = if team.football_nation.is_empty() {
-        Some(team.country.as_str())
-    } else {
-        Some(team.football_nation.as_str())
-    };
+    let home = crate::youth_pool::nation_of(team);
+    let wanted_group = search
+        .target_position
+        .as_ref()
+        .map(Position::to_group_position);
+    let mut candidates: Vec<&Player> = game
+        .youth_pool
+        .iter()
+        .flat_map(|pool| pool.nations.iter())
+        .filter(|(nation, _)| match search.region {
+            YouthScoutingRegion::Domestic => nation.as_str() == home,
+            YouthScoutingRegion::International => nation.as_str() != home,
+        })
+        .flat_map(|(_, players)| players)
+        .filter(|player| {
+            wanted_group
+                .as_ref()
+                .is_none_or(|group| player.position.to_group_position() == *group)
+        })
+        .collect();
+    candidates.shuffle(rng);
+    candidates.truncate(viewed);
 
-    let candidates = (0..viewed)
-        .map(|_| {
-            let mut prospect = crate::generator::generate_youth_academy_recruit_from(
-                team,
-                search.target_position.as_ref(),
-                match search.region {
-                    YouthScoutingRegion::Domestic => domestic_nationality,
-                    YouthScoutingRegion::International => None,
-                },
-                current_year,
-                rng,
-            );
-            prospect.team_id = None;
-            prospect.squad_role = SquadRole::Youth;
+    let candidates = candidates
+        .into_iter()
+        .map(|prospect| {
             let estimate = estimate_prospect(
-                &prospect,
+                prospect,
                 scout.attributes.judging_ability,
                 scout.attributes.judging_potential,
                 rng,
             );
-            (prospect, estimate)
+            (prospect.clone(), estimate)
         })
         .collect();
 
     recommend_by_estimate(candidates, search.objective)
 }
 
-/// Sign a scouted youngster into the user's academy and return him as signed.
+/// Sign a scouted youngster from the season's pool into the user's academy and
+/// return him as signed. He leaves the pool only once he has signed: a board
+/// that refuses his wage leaves him there for another club.
 ///
 /// He signs on the terms he was generated with when those are still in the
 /// future, and on the club's standard terms when they are not; the board judges
 /// the wage as it judges every academy recruit, at what the club would pay him
 /// there. Signing him is a contract made mid-career, so it goes in his history.
-pub(crate) fn sign_youth_prospect(game: &mut Game, prospect: Player) -> Result<Player, String> {
-    if game.players.iter().any(|player| player.id == prospect.id) {
-        return Err(ERR_PROSPECT_ALREADY_SIGNED.to_string());
-    }
+pub(crate) fn sign_youth_prospect(game: &mut Game, prospect_id: &str) -> Result<Player, String> {
+    let prospect = crate::youth_pool::locate(game, prospect_id)?.clone();
     let team_id = game
         .manager
         .team_id
@@ -708,6 +712,7 @@ pub(crate) fn sign_youth_prospect(game: &mut Game, prospect: Player) -> Result<P
         );
     }
     signed.jersey_number = crate::roster::resolve_jersey_for(game, &signed, team);
+    crate::youth_pool::take(game, prospect_id);
     game.players.push(signed.clone());
     Ok(signed)
 }
@@ -744,6 +749,30 @@ pub fn apply_youth_recruitment_response(
     let prospect = prospects[prospect_index].clone();
     let prospect_name = prospect.full_name.clone();
 
+    // Signing or watching needs him still in the pool; tell the manager where
+    // he went if he is not, and close the choice.
+    if matches!(option_id, "sign" | "watch") {
+        let gone = match crate::youth_pool::whereabouts(game, &prospect_id) {
+            crate::youth_pool::Whereabouts::Pool(_) => None,
+            crate::youth_pool::Whereabouts::Club(team) => Some((
+                "be.msg.youthRecruitment.effect.joinedClub",
+                params(&[("player", &prospect_name), ("team", &team)]),
+            )),
+            crate::youth_pool::Whereabouts::Gone => Some((
+                "be.msg.youthRecruitment.effect.offMarket",
+                params(&[("player", &prospect_name)]),
+            )),
+        };
+        if let Some((key, i18n_params)) = gone {
+            resolve_action(game, message_index, action_index);
+            return Some(YouthRecruitmentEffect {
+                message: String::new(),
+                i18n_key: key.to_string(),
+                i18n_params,
+            });
+        }
+    }
+
     match option_id {
         "discard" => {
             let mut remaining = prospects;
@@ -759,7 +788,7 @@ pub fn apply_youth_recruitment_response(
             })
         }
         "sign" => {
-            let signed = match sign_youth_prospect(game, prospect) {
+            let signed = match sign_youth_prospect(game, &prospect_id) {
                 Ok(signed) => signed,
                 Err(error) if error == ERR_SCOUTING_WAGE_POLICY => {
                     return Some(YouthRecruitmentEffect {

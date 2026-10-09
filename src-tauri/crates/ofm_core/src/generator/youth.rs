@@ -38,25 +38,6 @@ pub fn generate_youth_academy_recruit_with_nationality(
     )
 }
 
-/// As [`generate_youth_academy_recruit_with_nationality`], drawn from `rng` so a
-/// youth search can be replayed.
-pub(crate) fn generate_youth_academy_recruit_from(
-    team: &Team,
-    target_position: Option<&Position>,
-    nationality_override: Option<&str>,
-    current_year: u32,
-    rng: &mut impl rand::Rng,
-) -> Player {
-    youth_recruit(
-        team,
-        target_position,
-        nationality_override,
-        current_year,
-        None,
-        rng,
-    )
-}
-
 /// A youngster joining `team`'s academy in its annual intake: of `group`, aged
 /// `age`, drawn from `rng`. The same recruit a youth scout finds, at the age a
 /// club takes one in rather than the age it scouts one.

@@ -2904,7 +2904,8 @@
         "prospectAlreadyWatched": "Dieses Talent steht bereits auf deiner Beobachtungsliste.",
         "scoutWatchlistFull": "Dieser Scout beobachtet bereits drei Talente.",
         "wagePolicy": "Der Vorstand nimmt das Gehalt dieses Talents nicht in die Gehaltskosten auf.",
-        "prospectAlreadySigned": "Dieses Talent hat bereits unterschrieben."
+        "prospectJoinedClub": "Dieses Talent ist bereits zu {{team}} gewechselt.",
+        "prospectOffMarket": "Dieses Talent ist nicht mehr auf dem Markt."
       },
       "invalidPath": "Ungültiger Pfad.",
       "conflict": {
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Scout-Bericht — Jugendrekrutierung",
         "bodyAny": "{{scout}} hat die letzte Suche nach Jugendspielern für {{team}} abgeschlossen. Ich habe {{count}} Talente im Markt {{regionLabel}} mit einem {{objectiveLabel}}-Profil gefunden.\n\nPrüfe die beigefügten Karten und entscheide, wer in die Akademie aufgenommen werden soll.",
-        "bodyTargeted": "{{scout}} hat die letzte Suche nach Jugendspielern für {{team}} abgeschlossen. Ich habe {{count}} Talente im Markt {{regionLabel}} mit einem {{objectiveLabel}}-Profil gefunden, mit Fokus auf {{targetLabel}}.\n\nPrüfe die beigefügten Karten und entscheide, wer in die Akademie aufgenommen werden soll."
+        "bodyTargeted": "{{scout}} hat die letzte Suche nach Jugendspielern für {{team}} abgeschlossen. Ich habe {{count}} Talente im Markt {{regionLabel}} mit einem {{objectiveLabel}}-Profil gefunden, mit Fokus auf {{targetLabel}}.\n\nPrüfe die beigefügten Karten und entscheide, wer in die Akademie aufgenommen werden soll.",
+        "bodyEmpty": "{{scout}} hat die Nachwuchssuche für {{team}} abgeschlossen, aber auf dem Markt {{regionLabel}} ist in dieser Saison niemand Passendes mehr übrig. Andere Vereine haben die Besten bereits verpflichtet."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} wurde aus dem Bericht zur Jugendrekrutierung entfernt.",
           "watch": "{{player}} steht auf deiner Beobachtungsliste.",
           "unwatch": "{{player}} steht nicht mehr auf deiner Beobachtungsliste.",
-          "wagePolicy": "Der Vorstand nimmt das Gehalt von {{player}} nicht in die Gehaltskosten auf."
+          "wagePolicy": "Der Vorstand nimmt das Gehalt von {{player}} nicht in die Gehaltskosten auf.",
+          "joinedClub": "{{player}} ist bereits zu {{team}} gewechselt.",
+          "offMarket": "{{player}} ist nicht mehr auf dem Markt."
         }
       },
       "scoutReport": {

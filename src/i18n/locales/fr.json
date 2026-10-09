@@ -2904,7 +2904,8 @@
         "prospectAlreadyWatched": "Ce jeune est déjà dans votre liste de suivi.",
         "scoutWatchlistFull": "Ce recruteur suit déjà trois jeunes.",
         "wagePolicy": "La direction refuse d'ajouter le salaire de ce jeune à la masse salariale.",
-        "prospectAlreadySigned": "Ce jeune a déjà signé."
+        "prospectJoinedClub": "Ce jeune a déjà rejoint {{team}}.",
+        "prospectOffMarket": "Ce jeune n'est plus sur le marché."
       },
       "invalidPath": "Chemin invalide.",
       "conflict": {
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Rapport du recruteur — Recrutement des jeunes",
         "bodyAny": "{{scout}} a terminé la dernière mission de recrutement des jeunes pour {{team}}. J'ai trouvé {{count}} espoirs sur le marché {{regionLabel}} avec un profil {{objectiveLabel}}.\n\nConsultez les fiches jointes et décidez qui doit rejoindre l'académie.",
-        "bodyTargeted": "{{scout}} a terminé la dernière mission de recrutement des jeunes pour {{team}}. J'ai trouvé {{count}} espoirs sur le marché {{regionLabel}} avec un profil {{objectiveLabel}}, axé sur {{targetLabel}}.\n\nConsultez les fiches jointes et décidez qui doit rejoindre l'académie."
+        "bodyTargeted": "{{scout}} a terminé la dernière mission de recrutement des jeunes pour {{team}}. J'ai trouvé {{count}} espoirs sur le marché {{regionLabel}} avec un profil {{objectiveLabel}}, axé sur {{targetLabel}}.\n\nConsultez les fiches jointes et décidez qui doit rejoindre l'académie.",
+        "bodyEmpty": "{{scout}} a terminé la recherche de jeunes pour {{team}}, mais il ne reste personne d'intéressant sur le marché {{regionLabel}} cette saison. D'autres clubs ont déjà recruté les meilleurs."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} a été retiré du rapport de recrutement des jeunes.",
           "watch": "{{player}} est dans votre liste de suivi.",
           "unwatch": "{{player}} n'est plus dans votre liste de suivi.",
-          "wagePolicy": "La direction refuse d'ajouter le salaire de {{player}} à la masse salariale."
+          "wagePolicy": "La direction refuse d'ajouter le salaire de {{player}} à la masse salariale.",
+          "joinedClub": "{{player}} a déjà rejoint {{team}}.",
+          "offMarket": "{{player}} n'est plus sur le marché."
         }
       },
       "scoutReport": {

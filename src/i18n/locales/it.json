@@ -2904,7 +2904,8 @@
         "prospectAlreadyWatched": "Quel giovane è già nella tua lista osservati.",
         "scoutWatchlistFull": "Questo osservatore segue già tre giovani.",
         "wagePolicy": "La dirigenza non aggiungerà lo stipendio di questo giovane al monte ingaggi.",
-        "prospectAlreadySigned": "Quel giovane ha già firmato."
+        "prospectJoinedClub": "Quel giovane è già passato al {{team}}.",
+        "prospectOffMarket": "Quel giovane non è più sul mercato."
       },
       "invalidPath": "Percorso non valido.",
       "conflict": {
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Rapporto dell'osservatore — Reclutamento giovanile",
         "bodyAny": "{{scout}} ha completato l'ultima ricerca di reclutamento giovanile per {{team}}. Ho trovato {{count}} prospetti nel mercato {{regionLabel}} con un profilo {{objectiveLabel}}.\n\nEsamina le schede allegate e decidi chi deve entrare nell'accademia.",
-        "bodyTargeted": "{{scout}} ha completato l'ultima ricerca di reclutamento giovanile per {{team}}. Ho trovato {{count}} prospetti nel mercato {{regionLabel}} con un profilo {{objectiveLabel}}, focalizzato su {{targetLabel}}.\n\nEsamina le schede allegate e decidi chi deve entrare nell'accademia."
+        "bodyTargeted": "{{scout}} ha completato l'ultima ricerca di reclutamento giovanile per {{team}}. Ho trovato {{count}} prospetti nel mercato {{regionLabel}} con un profilo {{objectiveLabel}}, focalizzato su {{targetLabel}}.\n\nEsamina le schede allegate e decidi chi deve entrare nell'accademia.",
+        "bodyEmpty": "{{scout}} ha concluso la ricerca di giovani per il {{team}}, ma sul mercato {{regionLabel}} non resta nessuno adatto in questa stagione. Altri club hanno già ingaggiato i migliori."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} è stato rimosso dal rapporto di reclutamento giovanile.",
           "watch": "{{player}} è nella tua lista osservati.",
           "unwatch": "{{player}} non è più nella tua lista osservati.",
-          "wagePolicy": "La dirigenza non aggiungerà lo stipendio di {{player}} al monte ingaggi."
+          "wagePolicy": "La dirigenza non aggiungerà lo stipendio di {{player}} al monte ingaggi.",
+          "joinedClub": "{{player}} è già passato al {{team}}.",
+          "offMarket": "{{player}} non è più sul mercato."
         }
       },
       "scoutReport": {

@@ -2904,7 +2904,8 @@
         "prospectAlreadyWatched": "Essa promessa já está na lista de acompanhamento.",
         "scoutWatchlistFull": "Este olheiro já acompanha três promessas.",
         "wagePolicy": "A direção não aceita juntar o salário desta promessa à folha salarial.",
-        "prospectAlreadySigned": "Essa promessa já assinou."
+        "prospectJoinedClub": "Essa promessa já se juntou ao {{team}}.",
+        "prospectOffMarket": "Essa promessa já não está no mercado."
       },
       "invalidPath": "Caminho inválido.",
       "conflict": {
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Relatório do olheiro — Recrutamento de formação",
         "bodyAny": "{{scout}} concluiu a mais recente busca de recrutamento de formação para {{team}}. Encontrei {{count}} promessas no mercado {{regionLabel}} com perfil {{objectiveLabel}}.\n\nReveja os cartões anexos e decida quem deve entrar na academia.",
-        "bodyTargeted": "{{scout}} concluiu a mais recente busca de recrutamento de formação para {{team}}. Encontrei {{count}} promessas no mercado {{regionLabel}} com perfil {{objectiveLabel}}, com foco em {{targetLabel}}.\n\nReveja os cartões anexos e decida quem deve entrar na academia."
+        "bodyTargeted": "{{scout}} concluiu a mais recente busca de recrutamento de formação para {{team}}. Encontrei {{count}} promessas no mercado {{regionLabel}} com perfil {{objectiveLabel}}, com foco em {{targetLabel}}.\n\nReveja os cartões anexos e decida quem deve entrar na academia.",
+        "bodyEmpty": "{{scout}} terminou a pesquisa de jovens para o {{team}}, mas já não há ninguém adequado no mercado {{regionLabel}} esta época. Outros clubes já contrataram os melhores."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} foi removido do relatório de recrutamento de formação.",
           "watch": "{{player}} está na sua lista de acompanhamento.",
           "unwatch": "{{player}} saiu da sua lista de acompanhamento.",
-          "wagePolicy": "A direção não aceita juntar o salário de {{player}} à folha salarial."
+          "wagePolicy": "A direção não aceita juntar o salário de {{player}} à folha salarial.",
+          "joinedClub": "{{player}} já se juntou ao {{team}}.",
+          "offMarket": "{{player}} já não está no mercado."
         }
       },
       "scoutReport": {

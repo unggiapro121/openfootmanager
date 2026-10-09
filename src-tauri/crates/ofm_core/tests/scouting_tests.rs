@@ -105,14 +105,82 @@ fn make_game() -> Game {
     ];
     let scout = make_scout("scout1", "team1", 80, 75);
 
-    Game::new(
+    let mut game = Game::new(
         clock,
         manager,
         vec![team1, team2],
         players,
         vec![scout],
         vec![],
+    );
+    stock_pool(&mut game, 5);
+    game
+}
+
+const GROUPS: [Position; 4] = [
+    Position::Goalkeeper,
+    Position::Defender,
+    Position::Midfielder,
+    Position::Forward,
+];
+
+/// A youngster of the season's pool: unattached, in the academy age.
+fn pool_kid(id: &str, position: Position, potential: u8) -> Player {
+    let mut kid = make_player(id, id, "none");
+    kid.team_id = None;
+    kid.squad_role = domain::player::SquadRole::Youth;
+    kid.position = position;
+    kid.date_of_birth = "2008-01-01".to_string();
+    kid.potential = potential;
+    kid
+}
+
+/// The club's nation in the season's pool.
+fn home(game: &Game) -> String {
+    ofm_core::youth_pool::nation_of(&game.teams[0]).to_string()
+}
+
+/// A pool of `per_group` youngsters in every position group at home and in
+/// Spain, and no AI club demand, so nobody signs from it but the player.
+fn stock_pool(game: &mut Game, per_group: usize) {
+    let mut pool = ofm_core::youth_pool::YouthPool {
+        generated_on: "2025-06-15".to_string(),
+        ends_on: "2026-06-14".to_string(),
+        ..Default::default()
+    };
+    for (nation, tag) in [(home(game), "home"), ("Spain".to_string(), "abroad")] {
+        let kids = GROUPS
+            .iter()
+            .flat_map(|group| {
+                (0..per_group).map(move |n| {
+                    pool_kid(&format!("{tag}-{group:?}-{n}"), group.clone(), 70 + n as u8)
+                })
+            })
+            .collect();
+        pool.nations.insert(nation, kids);
+    }
+    game.youth_pool = Some(pool);
+}
+
+fn in_pool(game: &Game, prospect_id: &str) -> bool {
+    game.youth_pool.as_ref().is_some_and(|pool| {
+        pool.nations
+            .values()
+            .flatten()
+            .any(|kid| kid.id == prospect_id)
+    })
+}
+
+fn search(game: &mut Game, region: YouthScoutingRegion, position: Option<Position>) {
+    start_youth_scouting(
+        game,
+        "scout1",
+        region,
+        YouthScoutingObjective::Balanced,
+        position,
     )
+    .unwrap();
+    complete_scouting(game);
 }
 
 // ---------------------------------------------------------------------------
@@ -557,6 +625,154 @@ fn a_youth_search_quote_gives_fee_days_and_rest() {
     assert_eq!(quote.rest_days_left, 0);
 }
 
+// ---------------------------------------------------------------------------
+// Searching the season's pool
+// ---------------------------------------------------------------------------
+
+/// Given a pool at home and abroad,
+/// When the scout searches at home,
+/// Then everyone he reports is one of the home pool's youngsters.
+#[test]
+fn a_domestic_search_reports_youngsters_of_the_home_pool() {
+    let mut game = make_game();
+    search(&mut game, YouthScoutingRegion::Domestic, None);
+
+    let prospects = youth_report(&game).context.youth_prospects.clone().unwrap();
+    assert_eq!(prospects.len(), 3);
+    assert!(prospects.iter().all(|kid| kid.id.starts_with("home-")));
+}
+
+/// Given a pool at home and abroad,
+/// When the scout searches abroad,
+/// Then he never reports a youngster of the home pool.
+#[test]
+fn an_international_search_looks_only_abroad() {
+    let mut game = make_game();
+    search(&mut game, YouthScoutingRegion::International, None);
+
+    let prospects = youth_report(&game).context.youth_prospects.clone().unwrap();
+    assert!(!prospects.is_empty());
+    assert!(prospects.iter().all(|kid| kid.id.starts_with("abroad-")));
+}
+
+/// Given a home pool with two defenders left,
+/// When the scout searches for defenders,
+/// Then he reports those two and no more.
+#[test]
+fn a_search_reports_no_more_than_the_pool_holds() {
+    let mut game = make_game();
+    stock_pool(&mut game, 2);
+    search(
+        &mut game,
+        YouthScoutingRegion::Domestic,
+        Some(Position::Defender),
+    );
+
+    let report = youth_report(&game);
+    assert_eq!(report.context.youth_prospects.as_ref().unwrap().len(), 2);
+    assert_eq!(report.actions.len(), 2);
+}
+
+/// Given a pool with nobody left,
+/// When a search completes,
+/// Then the report says so and offers nothing, and the fee stays spent and the
+/// scout rests all the same.
+#[test]
+fn an_empty_pool_gives_an_empty_report() {
+    let mut game = make_game();
+    stock_pool(&mut game, 0);
+    let cash = game.teams[0].finance;
+    search(&mut game, YouthScoutingRegion::Domestic, None);
+
+    let report = youth_report(&game);
+    assert_eq!(
+        report.body_key.as_deref(),
+        Some("be.msg.youthRecruitmentReport.bodyEmpty")
+    );
+    assert!(report.actions.is_empty());
+    assert!(game.teams[0].finance < cash);
+    assert!(game.scout_youth_rest_until.contains_key("scout1"));
+}
+
+/// Given a report, and an AI club that has since signed one of its prospects,
+/// When the manager tries to sign him,
+/// Then he is told where the youngster went, and nobody joins.
+#[test]
+fn a_prospect_an_ai_club_signed_cannot_be_signed_from_the_report() {
+    let mut game = make_game();
+    search(&mut game, YouthScoutingRegion::Domestic, None);
+    let message = youth_report(&game).clone();
+    let action_id = message.actions[0].id.clone();
+    let prospect_id = action_id.trim_start_matches("prospect:").to_string();
+    // The AI club takes him from the pool.
+    let pool = game.youth_pool.as_mut().unwrap();
+    let mut taken = None;
+    for kids in pool.nations.values_mut() {
+        if let Some(index) = kids.iter().position(|kid| kid.id == prospect_id) {
+            taken = Some(kids.remove(index));
+        }
+    }
+    let mut taken = taken.unwrap();
+    taken.team_id = Some("team2".to_string());
+    game.players.push(taken);
+
+    for option in ["sign", "watch"] {
+        let effect = apply_youth_recruitment_response(&mut game, &message.id, &action_id, option)
+            .expect("an effect explaining why");
+        assert_eq!(effect.i18n_key, "be.msg.youthRecruitment.effect.joinedClub");
+        assert_eq!(
+            effect.i18n_params.get("team").map(String::as_str),
+            Some("Rival FC")
+        );
+    }
+    let signed = game.players.iter().find(|p| p.id == prospect_id).unwrap();
+    assert_eq!(signed.team_id.as_deref(), Some("team2"));
+    assert!(game.youth_watchlist.is_empty());
+}
+
+/// Given a report whose prospect has left the market,
+/// When the manager tries to sign him,
+/// Then he is told the youngster is gone.
+#[test]
+fn a_prospect_who_left_the_market_cannot_be_signed() {
+    let mut game = make_game();
+    search(&mut game, YouthScoutingRegion::Domestic, None);
+    let message = youth_report(&game).clone();
+    let action_id = message.actions[0].id.clone();
+    stock_pool(&mut game, 0);
+
+    let effect = apply_youth_recruitment_response(&mut game, &message.id, &action_id, "sign")
+        .expect("an effect explaining why");
+
+    assert_eq!(effect.i18n_key, "be.msg.youthRecruitment.effect.offMarket");
+}
+
+/// Given a report,
+/// When the manager signs one prospect and discards another,
+/// Then the signed one leaves the pool and the discarded one stays in it.
+#[test]
+fn signing_takes_a_youngster_from_the_pool_and_discarding_does_not() {
+    let mut game = make_game();
+    search(&mut game, YouthScoutingRegion::Domestic, None);
+    let message = youth_report(&game).clone();
+    let signed_id = message.actions[0]
+        .id
+        .trim_start_matches("prospect:")
+        .to_string();
+    let discarded_id = message.actions[1]
+        .id
+        .trim_start_matches("prospect:")
+        .to_string();
+
+    apply_youth_recruitment_response(&mut game, &message.id, &message.actions[0].id, "sign")
+        .unwrap();
+    apply_youth_recruitment_response(&mut game, &message.id, &message.actions[1].id, "discard")
+        .unwrap();
+
+    assert!(!in_pool(&game, &signed_id));
+    assert!(in_pool(&game, &discarded_id));
+}
+
 #[test]
 fn process_scouting_completes_youth_recruitment_report() {
     let mut game = make_game();
@@ -711,6 +927,7 @@ fn signing_a_scouted_prospect_needs_the_boards_wage_approval() {
     assert_eq!(effect.i18n_key, "be.msg.youthRecruitment.effect.wagePolicy");
     assert!(!game.players.iter().any(|player| player.id == prospect_id));
     assert!(!youth_report(&game).actions[0].resolved);
+    assert!(in_pool(&game, &prospect_id));
 }
 
 /// Given a youth report,

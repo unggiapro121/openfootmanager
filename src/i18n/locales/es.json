@@ -2904,7 +2904,8 @@
         "prospectAlreadyWatched": "Esa promesa ya está en tu lista de seguimiento.",
         "scoutWatchlistFull": "Este ojeador ya sigue a tres promesas.",
         "wagePolicy": "La directiva no añadirá el salario de esta promesa a la masa salarial.",
-        "prospectAlreadySigned": "Esa promesa ya ha firmado."
+        "prospectJoinedClub": "Esa promesa ya se ha unido al {{team}}.",
+        "prospectOffMarket": "Esa promesa ya no está en el mercado."
       },
       "invalidPath": "Ruta no válida.",
       "conflict": {
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Informe del ojeador — Captación juvenil",
         "bodyAny": "{{scout}} ha completado la última búsqueda de captación juvenil para {{team}}. Encontré {{count}} promesas en el mercado {{regionLabel}} con un perfil {{objectiveLabel}}.\n\nRevisa las fichas adjuntas y decide quién debe unirse a la academia.",
-        "bodyTargeted": "{{scout}} ha completado la última búsqueda de captación juvenil para {{team}}. Encontré {{count}} promesas en el mercado {{regionLabel}} con un perfil {{objectiveLabel}}, centrado en {{targetLabel}}.\n\nRevisa las fichas adjuntas y decide quién debe unirse a la academia."
+        "bodyTargeted": "{{scout}} ha completado la última búsqueda de captación juvenil para {{team}}. Encontré {{count}} promesas en el mercado {{regionLabel}} con un perfil {{objectiveLabel}}, centrado en {{targetLabel}}.\n\nRevisa las fichas adjuntas y decide quién debe unirse a la academia.",
+        "bodyEmpty": "{{scout}} ha terminado la búsqueda de juveniles para el {{team}}, pero no queda nadie adecuado en el mercado {{regionLabel}} esta temporada. Otros clubes ya han fichado a los mejores."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} fue eliminado del informe de captación juvenil.",
           "watch": "{{player}} está en tu lista de seguimiento.",
           "unwatch": "{{player}} ya no está en tu lista de seguimiento.",
-          "wagePolicy": "La directiva no añadirá el salario de {{player}} a la masa salarial."
+          "wagePolicy": "La directiva no añadirá el salario de {{player}} a la masa salarial.",
+          "joinedClub": "{{player}} ya se ha unido al {{team}}.",
+          "offMarket": "{{player}} ya no está en el mercado."
         }
       },
       "scoutReport": {

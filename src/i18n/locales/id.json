@@ -2912,7 +2912,8 @@
         "prospectAlreadyWatched": "Pemain muda itu sudah ada di daftar pantauan.",
         "scoutWatchlistFull": "Pemandu bakat ini sudah memantau tiga pemain muda.",
         "wagePolicy": "Dewan tidak mau menambahkan gaji pemain muda ini ke total gaji.",
-        "prospectAlreadySigned": "Pemain muda itu sudah tanda tangan."
+        "prospectJoinedClub": "Pemain muda itu sudah bergabung dengan {{team}}.",
+        "prospectOffMarket": "Pemain muda itu sudah tidak ada di pasar."
       },
       "invalidPath": "Jalur tidak valid.",
       "staffWageBudget": "Dewan tidak mengizinkan total gaji mingguan melebihi anggaran {{budget}}.",
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Laporan Scout — Rekrutmen Pemain Muda",
         "bodyAny": "{{scout}} telah menyelesaikan pencarian rekrutmen pemain muda terbaru untuk {{team}}. Saya menemukan {{count}} prospek di pasar {{regionLabel}} dengan profil {{objectiveLabel}}.\n\nTinjau kartu terlampir dan putuskan siapa yang harus bergabung dengan akademi.",
-        "bodyTargeted": "{{scout}} telah menyelesaikan pencarian rekrutmen pemain muda terbaru untuk {{team}}. Saya menemukan {{count}} prospek di pasar {{regionLabel}} dengan profil {{objectiveLabel}}, berfokus pada {{targetLabel}}.\n\nTinjau kartu terlampir dan putuskan siapa yang harus bergabung dengan akademi."
+        "bodyTargeted": "{{scout}} telah menyelesaikan pencarian rekrutmen pemain muda terbaru untuk {{team}}. Saya menemukan {{count}} prospek di pasar {{regionLabel}} dengan profil {{objectiveLabel}}, berfokus pada {{targetLabel}}.\n\nTinjau kartu terlampir dan putuskan siapa yang harus bergabung dengan akademi.",
+        "bodyEmpty": "{{scout}} telah menyelesaikan pencarian pemain muda untuk {{team}}, tetapi musim ini tidak ada lagi yang cocok di pasar {{regionLabel}}. Klub lain sudah merekrut yang terbaik."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} dihapus dari laporan rekrutmen pemuda.",
           "watch": "{{player}} masuk daftar pantauan Anda.",
           "unwatch": "{{player}} keluar dari daftar pantauan Anda.",
-          "wagePolicy": "Dewan tidak mau menambahkan gaji {{player}} ke total gaji."
+          "wagePolicy": "Dewan tidak mau menambahkan gaji {{player}} ke total gaji.",
+          "joinedClub": "{{player}} sudah bergabung dengan {{team}}.",
+          "offMarket": "{{player}} sudah tidak ada di pasar."
         }
       },
       "scoutReport": {

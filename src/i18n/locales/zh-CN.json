@@ -2904,7 +2904,8 @@
         "prospectAlreadyWatched": "该新秀已在你的关注名单中。",
         "scoutWatchlistFull": "这名球探已在跟踪三名新秀。",
         "wagePolicy": "董事会不同意将该新秀的工资计入工资总额。",
-        "prospectAlreadySigned": "该新秀已经签约。"
+        "prospectJoinedClub": "该新秀已加盟 {{team}}。",
+        "prospectOffMarket": "该新秀已不在市场上。"
       },
       "invalidPath": "路径无效。",
       "conflict": {
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "球探报告——青训招募",
         "bodyAny": "{{scout}} 已完成 {{team}} 最近一次青训招募搜索。我在 {{regionLabel}} 市场找到了 {{count}} 名符合 {{objectiveLabel}} 方向的潜力球员。\n\n请查看附带的球员卡，并决定谁应该加入青训学院。",
-        "bodyTargeted": "{{scout}} 已完成 {{team}} 最近一次青训招募搜索。我在 {{regionLabel}} 市场找到了 {{count}} 名符合 {{objectiveLabel}} 方向、重点针对 {{targetLabel}} 的潜力球员。\n\n请查看附带的球员卡，并决定谁应该加入青训学院。"
+        "bodyTargeted": "{{scout}} 已完成 {{team}} 最近一次青训招募搜索。我在 {{regionLabel}} 市场找到了 {{count}} 名符合 {{objectiveLabel}} 方向、重点针对 {{targetLabel}} 的潜力球员。\n\n请查看附带的球员卡，并决定谁应该加入青训学院。",
+        "bodyEmpty": "{{scout}} 已完成为 {{team}} 的青训搜寻，但本赛季 {{regionLabel}} 市场已没有合适的人选。其他俱乐部已签下了最好的球员。"
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} 已从青训招募报告中移除。",
           "watch": "{{player}} 已加入你的关注名单。",
           "unwatch": "{{player}} 已移出你的关注名单。",
-          "wagePolicy": "董事会不同意将 {{player}} 的工资计入工资总额。"
+          "wagePolicy": "董事会不同意将 {{player}} 的工资计入工资总额。",
+          "joinedClub": "{{player}} 已加盟 {{team}}。",
+          "offMarket": "{{player}} 已不在市场上。"
         }
       },
       "scoutReport": {

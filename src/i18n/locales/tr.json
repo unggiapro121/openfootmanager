@@ -2912,7 +2912,8 @@
         "prospectAlreadyWatched": "Bu genç zaten izleme listende.",
         "scoutWatchlistFull": "Bu gözlemci zaten üç genci takip ediyor.",
         "wagePolicy": "Yönetim bu gencin maaşını bütçeye eklemiyor.",
-        "prospectAlreadySigned": "Bu genç zaten imza attı."
+        "prospectJoinedClub": "Bu genç zaten {{team}} kulübüne katıldı.",
+        "prospectOffMarket": "Bu genç artık piyasada değil."
       },
       "invalidPath": "Geçersiz yol.",
       "staffWageBudget": "Yönetim, haftalık maaş giderinin {{budget}} bütçesini aşmasına izin vermez.",
@@ -3391,7 +3392,8 @@
       "youthRecruitmentReport": {
         "subject": "Gözlemci Raporu — Genç Oyuncu Kazanımı",
         "bodyAny": "{{scout}}, {{team}} için son genç oyuncu aramasını tamamladı. {{regionLabel}} pazarında {{objectiveLabel}} profilinde {{count}} yetenek buldum.\n\nEkli kartları inceleyin ve akademiye kimin katılacağına karar verin.",
-        "bodyTargeted": "{{scout}}, {{team}} için son genç oyuncu aramasını tamamladı. {{regionLabel}} pazarında, {{targetLabel}} odaklı ve {{objectiveLabel}} profilinde {{count}} yetenek buldum.\n\nEkli kartları inceleyin ve akademiye kimin katılacağına karar verin."
+        "bodyTargeted": "{{scout}}, {{team}} için son genç oyuncu aramasını tamamladı. {{regionLabel}} pazarında, {{targetLabel}} odaklı ve {{objectiveLabel}} profilinde {{count}} yetenek buldum.\n\nEkli kartları inceleyin ve akademiye kimin katılacağına karar verin.",
+        "bodyEmpty": "{{scout}}, {{team}} için genç oyuncu aramasını tamamladı ama bu sezon {{regionLabel}} piyasasında uygun kimse kalmadı. En iyilerini diğer kulüpler çoktan imzaladı."
       },
       "youthRecruitment": {
         "option": {
@@ -3417,7 +3419,9 @@
           "discard": "{{player}} genç oyuncu kazanım raporundan çıkarıldı.",
           "watch": "{{player}} izleme listende.",
           "unwatch": "{{player}} artık izleme listende değil.",
-          "wagePolicy": "Yönetim {{player}} adlı oyuncunun maaşını bütçeye eklemiyor."
+          "wagePolicy": "Yönetim {{player}} adlı oyuncunun maaşını bütçeye eklemiyor.",
+          "joinedClub": "{{player}} zaten {{team}} kulübüne katıldı.",
+          "offMarket": "{{player}} artık piyasada değil."
         }
       },
       "scoutReport": {
