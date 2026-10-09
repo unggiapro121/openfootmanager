@@ -13,6 +13,7 @@ use domain::stats::StatsState;
 use crate::contracts::{club_season_anchors, record_opening_contracts};
 use crate::game::Game;
 use crate::player_identity::upgrade_game_player_identities;
+use crate::season_replay::replay_user_competitions_through_engine;
 use crate::world::{
     ensure_multi_competition_foundations, rebuild_competitions_for_management_date,
     resolve_simulation_scope, team_season_anchor,
@@ -107,8 +108,12 @@ pub struct CareerScope {
 ///    ([`date_opening_contracts`] — it reads each club's season anchor *before* the
 ///    clock moves, which is the reason this ordering is written once);
 /// 4. the simulation scope is resolved for the club and what was asked for;
-/// 5. the manager takes the club ([`take_charge_of_club`]);
-/// 6. player positions are made granular, so they are right now rather than after
+/// 5. the club's competitions are played up to today through the engine, so a
+///    career opening mid-season finds every past match of its league and cups
+///    with a report and stats rows
+///    ([`replay_user_competitions_through_engine`]);
+/// 6. the manager takes the club ([`take_charge_of_club`]);
+/// 7. player positions are made granular, so they are right now rather than after
 ///    the first save and reload.
 ///
 /// `game` is changed in place; on an error after step 1 it may be partly changed,
@@ -117,7 +122,7 @@ pub fn begin_career(
     game: &mut Game,
     team_id: &str,
     scope: CareerScope,
-    stats_state: StatsState,
+    mut stats_state: StatsState,
 ) -> Result<StatsState, String> {
     if !game.teams.iter().any(|team| team.id == team_id) {
         return Err("be.error.teamNotFound".to_string());
@@ -131,6 +136,10 @@ pub fn begin_career(
         resolve_simulation_scope(game, team_id, scope.regions, scope.competitions)?;
     game.active_region_ids = regions;
     game.active_competition_ids = competitions;
+
+    // Before the club is taken: nothing the club's own manager would be told
+    // about — results, mail, the board — belongs to matches played before him.
+    replay_user_competitions_through_engine(game, team_id, &mut stats_state);
 
     let stats_state = take_charge_of_club(game, team_id, stats_state)?;
 

@@ -211,6 +211,59 @@ fn the_player_takes_charge_of_the_chosen_club_and_of_no_other() {
     );
 }
 
+// ── Scenario: the club's season so far ──────────────────────────────────────
+
+/// Given a career that opens mid-season, after the club's league has played
+/// some matchdays,
+/// When the career begins,
+/// Then those matchdays were played in full — each has a report — and their
+/// stats rows are handed back with the career.
+#[test]
+fn a_mid_season_career_finds_its_clubs_past_matches_played_in_full() {
+    let mut game = world_awaiting_a_manager();
+    game.clock.advance_days(120);
+
+    let stats = begin(&mut game, "eng-a").expect("the career begins");
+
+    let past: Vec<_> = game
+        .competitions
+        .iter()
+        .filter(|competition| competition.participant_ids.iter().any(|id| id == "eng-a"))
+        .flat_map(|competition| competition.fixtures.iter())
+        .filter(|fixture| fixture.status == domain::league::FixtureStatus::Completed)
+        .collect();
+    assert!(!past.is_empty(), "the club's season has started");
+    for fixture in &past {
+        assert!(
+            fixture
+                .result
+                .as_ref()
+                .is_some_and(|result| result.report.is_some()),
+            "{} was settled by scoreline alone",
+            fixture.id
+        );
+    }
+    assert!(past.iter().all(|fixture| {
+        stats
+            .team_matches
+            .iter()
+            .any(|row| row.fixture_id == fixture.id)
+    }));
+}
+
+/// Given a career that opens at the start of the club's season,
+/// When the career begins,
+/// Then nothing has been played and no stats row exists.
+#[test]
+fn a_career_at_the_start_of_the_season_has_nothing_to_replay() {
+    let mut game = world_awaiting_a_manager();
+
+    let stats = begin(&mut game, "eng-a").expect("the career begins");
+
+    assert!(stats.player_matches.is_empty());
+    assert!(stats.team_matches.is_empty());
+}
+
 // ── Scenario: the simulation follows the club ───────────────────────────────
 
 /// Given clubs in two countries,

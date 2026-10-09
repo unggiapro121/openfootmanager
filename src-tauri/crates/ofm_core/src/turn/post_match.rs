@@ -113,6 +113,46 @@ pub fn apply_match_report_with_capture<F>(
 ) where
     F: FnMut(StatsState),
 {
+    let outcome = record_match_outcome(
+        game,
+        fixture_index,
+        home_team_id,
+        away_team_id,
+        report,
+        on_capture,
+    );
+    apply_present_day_consequences(
+        game,
+        fixture_index,
+        home_team_id,
+        away_team_id,
+        report,
+        outcome,
+    );
+}
+
+/// What kind of fixture was just recorded, for the consequences that follow it.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct RecordedOutcome {
+    counts_for_standings: bool,
+    generates_match_news: bool,
+}
+
+/// The match as history keeps it: the fixture's result and report, the table,
+/// any group or bracket it moves on, the per-match stats rows and each player's
+/// season totals. Nothing here depends on when the match is recorded, which is
+/// why a match from before the career opened is recorded with this alone.
+pub(crate) fn record_match_outcome<F>(
+    game: &mut Game,
+    fixture_index: usize,
+    home_team_id: &str,
+    away_team_id: &str,
+    report: &engine::MatchReport,
+    on_capture: &mut F,
+) -> RecordedOutcome
+where
+    F: FnMut(StatsState),
+{
     // Convert engine GoalDetails → domain GoalEvents
     let home_scorers: Vec<GoalEvent> = report
         .goals
@@ -184,6 +224,28 @@ pub fn apply_match_report_with_capture<F>(
 
     // Update player season stats from the engine report
     apply_player_stats(game, report, home_team_id, away_team_id);
+
+    RecordedOutcome {
+        counts_for_standings,
+        generates_match_news,
+    }
+}
+
+/// What a match does to the world on the day it is played: playing time and
+/// form, promises, fitness and injuries, morale, team form, the board and the
+/// fans, the inbox and the news.
+fn apply_present_day_consequences(
+    game: &mut Game,
+    fixture_index: usize,
+    home_team_id: &str,
+    away_team_id: &str,
+    report: &engine::MatchReport,
+    outcome: RecordedOutcome,
+) {
+    let RecordedOutcome {
+        counts_for_standings,
+        generates_match_news,
+    } = outcome;
     record_playing_time_and_form(game, report, home_team_id, away_team_id);
     resolve_post_match_promises(game, report, home_team_id, away_team_id);
 
