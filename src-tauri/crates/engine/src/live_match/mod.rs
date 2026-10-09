@@ -15,7 +15,7 @@ use crate::rating::{RosterEntry, rate_players};
 pub(crate) use observation::AiObservation;
 
 use crate::event::MatchEvent;
-use crate::report::MatchReport;
+use crate::report::{MatchReport, TeamSheet};
 use crate::types::{
     MatchConfig, PlayStyle, PlayerData, PlayerRole, Side, TacticalDial, TeamData, Zone,
 };
@@ -240,6 +240,10 @@ pub struct LiveMatchState {
     home_bench: Vec<PlayerData>,
     away_bench: Vec<PlayerData>,
 
+    /// Both sides as they kicked off, taken when the match starts so that the
+    /// report names who started rather than who finished.
+    kickoff_sheets: Option<(TeamSheet, TeamSheet)>,
+
     // Set piece takers
     home_set_pieces: SetPieceTakers,
     away_set_pieces: SetPieceTakers,
@@ -289,6 +293,7 @@ impl LiveMatchState {
             away,
             config,
             phase: MatchPhase::PreKickOff,
+            kickoff_sheets: None,
             current_minute: 0,
             home_score: 0,
             away_score: 0,
@@ -445,6 +450,10 @@ impl LiveMatchState {
         if self.penalty_state.home_taken > 0 || self.penalty_state.away_taken > 0 {
             report.home_penalties = Some(self.penalty_state.home_scored);
             report.away_penalties = Some(self.penalty_state.away_scored);
+        }
+        if let Some((home_sheet, away_sheet)) = self.kickoff_sheets {
+            report.home_sheet = Some(home_sheet);
+            report.away_sheet = Some(away_sheet);
         }
         report
     }

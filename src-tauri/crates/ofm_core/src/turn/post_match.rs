@@ -1,8 +1,8 @@
 use crate::game::Game;
 use crate::messages;
 use domain::league::{
-    CompactMatchEvent, CompactMatchReport, CompactTeamMatchStats, FixtureStatus, GoalEvent,
-    MatchResult,
+    CompactLineup, CompactMatchEvent, CompactMatchReport, CompactTeamMatchStats, FixtureStatus,
+    GoalEvent, LineupSlot, MatchResult,
 };
 use domain::player::{
     PlayerIssue, PlayerIssueCategory, PlayerPromiseKind, Position as DomainPosition,
@@ -55,6 +55,31 @@ fn compact_match_report(report: &engine::MatchReport) -> CompactMatchReport {
         home_stats: compact_team_stats(&report.home_stats, home_possession_pct),
         away_stats: compact_team_stats(&report.away_stats, away_possession_pct),
         events,
+        home_lineup: report.home_sheet.as_ref().map(compact_lineup),
+        away_lineup: report.away_sheet.as_ref().map(compact_lineup),
+    }
+}
+
+/// The team sheet as the fixture keeps it, each starter tagged with the slot
+/// his formation put him in.
+fn compact_lineup(sheet: &engine::TeamSheet) -> CompactLineup {
+    let slots = crate::player_rating::formation_slots(&sheet.formation);
+    CompactLineup {
+        formation: sheet.formation.clone(),
+        play_style: format!("{:?}", sheet.play_style),
+        starters: sheet
+            .starters
+            .iter()
+            .enumerate()
+            .map(|(index, player_id)| LineupSlot {
+                player_id: player_id.clone(),
+                position: slots
+                    .get(index)
+                    .map(|position| format!("{position:?}"))
+                    .unwrap_or_default(),
+            })
+            .collect(),
+        bench: sheet.bench.clone(),
     }
 }
 

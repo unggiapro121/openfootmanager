@@ -2198,3 +2198,94 @@ fn the_header_winner_shoots_and_the_crosser_assists() {
     }
     assert!(cross_goals > 0, "no goal came from a cross in 60 matches");
 }
+
+fn play_out(state: &mut LiveMatchState, rng: &mut StdRng) {
+    for _ in 0..400 {
+        if state.is_finished() {
+            return;
+        }
+        state.step_minute(rng);
+    }
+    panic!("the match never finished");
+}
+
+/// Given a match between two 4-4-2 sides with five on each bench,
+/// When it is played to the end,
+/// Then the report carries each side's team sheet as it kicked off: formation,
+/// play style, the eleven starters in slot order and the bench.
+#[test]
+fn report_carries_each_sides_kickoff_team_sheet() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(7);
+    let expected_starters: Vec<String> = state
+        .snapshot()
+        .home_team
+        .players
+        .iter()
+        .map(|player| player.id.clone())
+        .collect();
+
+    play_out(&mut state, &mut rng);
+    let report = state.into_report();
+
+    let home = report.home_sheet.expect("the home side's team sheet");
+    assert_eq!(home.formation, "4-4-2");
+    assert_eq!(home.play_style, PlayStyle::Balanced);
+    assert_eq!(home.starters, expected_starters);
+    assert_eq!(home.bench.len(), 5);
+    let away = report.away_sheet.expect("the away side's team sheet");
+    assert_eq!(away.starters.len(), 11);
+    assert_eq!(away.starters[0], "away_gk");
+}
+
+/// Given a substitution in the first minutes,
+/// When the match is played to the end,
+/// Then the team sheet still lists the player who started, not his replacement.
+#[test]
+fn kickoff_team_sheet_keeps_the_starters_after_a_substitution() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(7);
+    state.step_minute(&mut rng);
+    state.step_minute(&mut rng);
+    let player_off_id = state.snapshot().home_team.players[5].id.clone();
+    let player_on_id = state.bench(Side::Home)[2].id.clone();
+    state
+        .apply_command(MatchCommand::Substitute {
+            side: Side::Home,
+            player_off_id: player_off_id.clone(),
+            player_on_id: player_on_id.clone(),
+        })
+        .unwrap();
+
+    play_out(&mut state, &mut rng);
+    let sheet = state.into_report().home_sheet.expect("team sheet");
+
+    assert_eq!(sheet.starters[5], player_off_id);
+    assert!(sheet.bench.contains(&player_on_id));
+}
+
+/// Given a formation change made before kick-off,
+/// When the match is played,
+/// Then the team sheet records the formation the side kicked off in.
+#[test]
+fn kickoff_team_sheet_reflects_changes_made_before_kickoff() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(7);
+    state
+        .apply_command(MatchCommand::ChangeFormation {
+            side: Side::Home,
+            formation: "3-5-2".to_string(),
+        })
+        .unwrap();
+
+    play_out(&mut state, &mut rng);
+
+    assert_eq!(
+        state
+            .into_report()
+            .home_sheet
+            .expect("team sheet")
+            .formation,
+        "3-5-2"
+    );
+}

@@ -9,6 +9,7 @@ use crate::shared::{
 use crate::types::{Side, Zone};
 
 use super::{LiveMatchState, MatchPhase, MinuteResult};
+use crate::report::TeamSheet;
 
 // ---------------------------------------------------------------------------
 // Phase transitions
@@ -16,6 +17,10 @@ use super::{LiveMatchState, MatchPhase, MinuteResult};
 
 impl LiveMatchState {
     pub(super) fn start_match<R: Rng>(&mut self, rng: &mut R) -> MinuteResult {
+        self.kickoff_sheets = Some((
+            TeamSheet::of(&self.home, &self.home_bench),
+            TeamSheet::of(&self.away, &self.away_bench),
+        ));
         self.phase = MatchPhase::FirstHalf;
         self.current_minute = 0;
         self.period_started_at = 0;

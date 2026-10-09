@@ -16,7 +16,7 @@ pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,
     SetPieceTakers, SubstitutionRecord,
 };
-pub use report::{GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamStats};
+pub use report::{GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet, TeamStats};
 pub use types::{
     BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle,
     MatchConfig, PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side,

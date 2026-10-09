@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use crate::event::{EventType, MatchEvent};
-use crate::types::{Side, Zone};
+use crate::types::{PlayStyle, Side, TeamData, Zone};
 
 // ---------------------------------------------------------------------------
 // TeamStats — aggregate stats for one side
@@ -89,6 +89,31 @@ pub struct GoalDetail {
 // MatchReport — the complete output of a simulated match
 // ---------------------------------------------------------------------------
 
+/// A side as it kicked off: the shape it lined up in and who was picked.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct TeamSheet {
+    pub formation: String,
+    pub play_style: PlayStyle,
+    /// The eleven starters' ids, in formation-slot order (the goalkeeper first).
+    pub starters: Vec<String>,
+    pub bench: Vec<String>,
+}
+
+impl TeamSheet {
+    pub fn of(team: &TeamData, bench: &[crate::types::PlayerData]) -> Self {
+        Self {
+            formation: team.formation.clone(),
+            play_style: team.play_style,
+            starters: team
+                .players
+                .iter()
+                .map(|player| player.id.clone())
+                .collect(),
+            bench: bench.iter().map(|player| player.id.clone()).collect(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MatchReport {
     pub home_goals: u8,
@@ -108,6 +133,12 @@ pub struct MatchReport {
     pub home_penalties: Option<u8>,
     #[serde(default)]
     pub away_penalties: Option<u8>,
+    /// Each side as it kicked off. Only a live match records them; the instant
+    /// engine and reports rebuilt from events have none.
+    #[serde(default)]
+    pub home_sheet: Option<TeamSheet>,
+    #[serde(default)]
+    pub away_sheet: Option<TeamSheet>,
 }
 
 impl MatchReport {
@@ -362,6 +393,8 @@ impl MatchReport {
             total_minutes,
             home_penalties: None,
             away_penalties: None,
+            home_sheet: None,
+            away_sheet: None,
         }
     }
 }

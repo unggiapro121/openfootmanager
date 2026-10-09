@@ -349,6 +349,30 @@ pub struct CompactMatchReport {
     pub home_stats: CompactTeamMatchStats,
     pub away_stats: CompactTeamMatchStats,
     pub events: Vec<CompactMatchEvent>,
+    /// Each side as it kicked off. `None` for a match played before lineups
+    /// were recorded, or settled without the match engine. Defaulted, or a
+    /// report without them would fail to load and take the result with it.
+    #[serde(default)]
+    pub home_lineup: Option<CompactLineup>,
+    #[serde(default)]
+    pub away_lineup: Option<CompactLineup>,
+}
+
+/// A side's team sheet at kick-off. Substitutions are in the report's events.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct CompactLineup {
+    pub formation: String,
+    pub play_style: String,
+    /// The starters in formation-slot order, each with the slot he filled.
+    pub starters: Vec<LineupSlot>,
+    pub bench: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct LineupSlot {
+    pub player_id: String,
+    /// The granular position of the formation slot, e.g. `"CenterBack"`.
+    pub position: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -520,6 +544,25 @@ impl Default for Fixture {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Given a match report saved before lineups were recorded,
+    /// When it is read back,
+    /// Then it loads with no lineups rather than failing, which would drop the
+    /// whole result on load.
+    #[test]
+    fn a_report_saved_before_lineups_loads_without_them() {
+        let report: CompactMatchReport = serde_json::from_str(
+            r#"{"total_minutes":93,
+                "home_stats":{"possession_pct":55,"shots":12,"shots_on_target":5,"fouls":9,"corners":6,"yellow_cards":1,"red_cards":0},
+                "away_stats":{"possession_pct":45,"shots":8,"shots_on_target":3,"fouls":11,"corners":2,"yellow_cards":2,"red_cards":0},
+                "events":[]}"#,
+        )
+        .unwrap();
+
+        assert_eq!(report.total_minutes, 93);
+        assert_eq!(report.home_lineup, None);
+        assert_eq!(report.away_lineup, None);
+    }
 
     #[test]
     fn old_competition_rules_default_to_four_clubs_per_group() {
