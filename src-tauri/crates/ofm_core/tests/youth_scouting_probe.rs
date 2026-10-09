@@ -1,57 +1,98 @@
-//! How much a scout's judgement is worth on a youth search: the true overall and
-//! potential of the three youngsters he recommends, by scout and by facilities.
+//! What a scout's judgement is worth against the season's youth pool, which the
+//! AI clubs are signing from at the same time.
 //!
-//! Run it explicitly — it plays thousands of searches:
+//! Run it explicitly — it plays many seeded worlds:
 //!
 //! ```text
 //! cargo test -p ofm_core --test youth_scouting_probe --release -- --ignored --nocapture
 //! ```
 //!
-//! A scout looks at more youngsters the better he judges ability and the better
-//! the club's scouting facility, then recommends three on his own estimates. The
-//! world generates the same youngsters for everyone, so any rise in the columns
-//! below is the scout choosing better, not better youngsters existing.
+//! Every youngster in the pool is ranked by true potential within his nation's
+//! cohort as the pool was drawn. A recommendation's rank is the share of that
+//! cohort with more potential than him: 0% is the cohort's best. The pool is
+//! the same for every scout, so a better rank is the scout choosing better, or
+//! choosing earlier, not better youngsters existing.
 
 use chrono::{TimeZone, Utc};
 use domain::manager::Manager;
 use domain::staff::{Staff, StaffAttributes, StaffRole};
-use domain::team::Team;
 use ofm_core::clock::GameClock;
 use ofm_core::game::{Game, YouthScoutingObjective, YouthScoutingRegion};
-use ofm_core::scouting::{process_scouting, start_youth_scouting};
+use ofm_core::generator::{
+    DefinitionSources, WorldGenConfig, generate_world_data_seeded_with,
+    repair_opening_youth_academies,
+};
+use ofm_core::scouting::start_youth_scouting;
+use ofm_core::turn;
+use std::collections::HashMap;
 
-fn searches_per_row() -> usize {
-    std::env::var("OFM_PROBE_SEARCHES")
+fn worlds() -> u64 {
+    std::env::var("OFM_PROBE_WORLDS")
         .ok()
         .and_then(|value| value.parse().ok())
-        .unwrap_or(2_000)
+        .unwrap_or(12)
 }
 
-fn game_with_scout(rating: u8, facility_level: u8, search: usize) -> Game {
-    let clock = GameClock::new(Utc.with_ymd_and_hms(2025, 6, 15, 12, 0, 0).unwrap());
+/// Searches per world for each scout and moment, each its own draw.
+const SEARCHES: usize = 4;
+
+/// A seeded compact world with a league, opened as a career opens.
+fn seeded_world(seed: u64) -> Game {
+    let world = generate_world_data_seeded_with(
+        seed,
+        &WorldGenConfig::compact(),
+        &DefinitionSources::embedded_only(),
+    );
+    let start = Utc.with_ymd_and_hms(2026, 7, 1, 0, 0, 0).unwrap();
     let mut manager = Manager::new(
-        "mgr1".to_string(),
-        "Test".to_string(),
+        "probe-mgr".to_string(),
+        "Probe".to_string(),
         "Manager".to_string(),
         "1980-01-01".to_string(),
         "England".to_string(),
     );
-    manager.hire("team1".to_string());
-    let mut team = Team::new(
-        "team1".to_string(),
-        "Test FC".to_string(),
-        "TST".to_string(),
-        "England".to_string(),
-        "London".to_string(),
-        "Stadium".to_string(),
-        40_000,
+    manager.hire(world.teams[0].id.clone());
+    let team_ids: Vec<String> = world.teams.iter().map(|team| team.id.clone()).collect();
+    let mut game = Game::new(
+        GameClock::new(start),
+        manager,
+        world.teams,
+        world.players,
+        world.staff,
+        vec![],
     );
-    team.facilities.scouting = facility_level;
-    team.finance = 100_000_000;
+    game.seed = seed;
+    game.available_staff_market_last_activity_date = Some(start.format("%Y-%m-%d").to_string());
+    repair_opening_youth_academies(&mut game);
+    game.league = Some(ofm_core::schedule::generate_league(
+        "Probe League",
+        2026,
+        &team_ids,
+        start,
+    ));
+    ofm_core::season_context::refresh_game_context(&mut game);
+    ofm_core::economy::open_world_economy(&mut game);
+    game.teams[0].finance = 1_000_000_000;
+    game
+}
+
+/// Each pool youngster's rank in his nation's cohort, as the pool was drawn.
+fn cohort_ranks(game: &Game) -> HashMap<String, f64> {
+    let mut ranks = HashMap::new();
+    for kids in game.youth_pool.as_ref().expect("a pool").nations.values() {
+        for kid in kids {
+            let better = kids.iter().filter(|other| other.potential > kid.potential);
+            ranks.insert(kid.id.clone(), better.count() as f64 / kids.len() as f64);
+        }
+    }
+    ranks
+}
+
+fn probe_scout(rating: u8) -> Staff {
     let mut scout = Staff::new(
-        "scout1".to_string(),
+        "probe-scout".to_string(),
+        "Probe".to_string(),
         "Scout".to_string(),
-        "One".to_string(),
         "1985-01-01".to_string(),
         StaffRole::Scout,
         StaffAttributes {
@@ -61,67 +102,157 @@ fn game_with_scout(rating: u8, facility_level: u8, search: usize) -> Game {
             physiotherapy: 20,
         },
     );
-    scout.team_id = Some("team1".to_string());
-    let mut game = Game::new(clock, manager, vec![team], vec![], vec![scout], vec![]);
-    // A different save seed per search, so each search draws its own youngsters.
-    game.seed = search as u64;
-    game
+    scout.team_id = None;
+    scout
 }
 
-/// The recommended youngsters' true (overall, potential) from one search.
-fn one_search(rating: u8, facility_level: u8, search: usize) -> Vec<(u8, u8)> {
-    let mut game = game_with_scout(rating, facility_level, search);
-    start_youth_scouting(
+/// The ranks of the youngsters one high-potential search recommends.
+fn one_search(game: &Game, rating: u8, facility: u8, ranks: &HashMap<String, f64>) -> Vec<f64> {
+    let mut game = game.clone();
+    let mut scout = probe_scout(rating);
+    scout.team_id = game.manager.team_id.clone();
+    game.staff.push(scout);
+    game.teams[0].facilities.scouting = facility;
+    if start_youth_scouting(
         &mut game,
-        "scout1",
+        "probe-scout",
         YouthScoutingRegion::Domestic,
         YouthScoutingObjective::HighPotential,
         None,
     )
-    .expect("search starts");
-    for _ in 0..12 {
-        process_scouting(&mut game);
-        game.clock.advance_days(1);
+    .is_err()
+    {
+        return Vec::new();
+    }
+    for _ in 0..10 {
+        turn::process_day(&mut game);
     }
     game.messages
         .iter()
         .filter_map(|message| message.context.youth_prospects.as_ref())
         .flatten()
-        .map(|prospect| (prospect.ovr, prospect.potential))
+        .filter_map(|kid| ranks.get(&kid.id).copied())
         .collect()
+}
+
+#[derive(Default)]
+struct Cell {
+    ranks: Vec<f64>,
+}
+
+impl Cell {
+    fn mean(&self) -> f64 {
+        100.0 * self.ranks.iter().sum::<f64>() / self.ranks.len().max(1) as f64
+    }
+    fn top_tenth(&self) -> f64 {
+        let top = self.ranks.iter().filter(|rank| **rank < 0.10).count();
+        100.0 * top as f64 / self.ranks.len().max(1) as f64
+    }
 }
 
 #[test]
 #[ignore]
-fn report_recommended_youngsters_by_scout_and_facility() {
-    let searches = searches_per_row();
-    println!();
-    println!("High-potential searches, {searches} per row; true ratings of the three recommended.");
-    println!(
-        "{:>6} {:>9} {:>9} {:>11} {:>14}",
-        "scout", "facility", "mean OVR", "mean pot.", "pot. >= 85 %"
-    );
-    for (rating, facility_level) in [(20, 1), (50, 1), (80, 1), (80, 3)] {
-        let mut ovr = 0u64;
-        let mut potential = 0u64;
-        let mut elite = 0u64;
-        let mut count = 0u64;
-        for search in 0..searches {
-            for (o, p) in one_search(rating, facility_level, search) {
-                ovr += u64::from(o);
-                potential += u64::from(p);
-                elite += u64::from(p >= 85);
-                count += 1;
+fn report_scouting_against_the_pool() {
+    let cells_spec: [(u8, u8); 4] = [(20, 1), (50, 1), (80, 1), (80, 3)];
+    let moments: [(&str, u32); 3] = [("week 1", 0), ("week 20", 140), ("week 40", 280)];
+    let mut cells: HashMap<(usize, usize), Cell> = HashMap::new();
+    // AI signings: true potential by the signing club's best scout band.
+    let mut ai_by_band: HashMap<&str, Vec<u8>> = HashMap::new();
+    let mut demand_start = 0usize;
+    let mut demand_left = 0usize;
+
+    for seed in 0..worlds() {
+        let mut game = seeded_world(seed);
+        ofm_core::youth_pool::ensure_pool(&mut game);
+        let ranks = cohort_ranks(&game);
+        let pool = game.youth_pool.as_ref().unwrap();
+        demand_start += pool.demand.values().map(Vec::len).sum::<usize>();
+        let mut played = 0;
+        for (moment_index, (_, day)) in moments.iter().enumerate() {
+            while played < *day {
+                turn::process_day(&mut game);
+                played += 1;
+            }
+            for (cell_index, (rating, facility)) in cells_spec.iter().enumerate() {
+                for search in 0..SEARCHES {
+                    // A different search each time: the clock moves a day per search.
+                    let mut copy = game.clone();
+                    copy.clock.advance_days(search as i64);
+                    let found = one_search(&copy, *rating, *facility, &ranks);
+                    cells
+                        .entry((moment_index, cell_index))
+                        .or_default()
+                        .ranks
+                        .extend(found);
+                }
             }
         }
-        let count = count.max(1) as f64;
-        println!(
-            "{:>6} {:>9} {:>9.1} {:>11.1} {:>13.1}%",
-            rating,
-            facility_level,
-            ovr as f64 / count,
-            potential as f64 / count,
-            100.0 * elite as f64 / count
-        );
+        while played < 364 {
+            turn::process_day(&mut game);
+            played += 1;
+        }
+        demand_left += game
+            .youth_pool
+            .as_ref()
+            .unwrap()
+            .demand
+            .values()
+            .map(Vec::len)
+            .sum::<usize>();
+        for player in game.players.iter().filter(|p| p.id.starts_with("youth-pool-")) {
+            let Some(club) = player.team_id.as_deref() else {
+                continue;
+            };
+            let best = game
+                .staff
+                .iter()
+                .filter(|s| s.role == StaffRole::Scout && s.team_id.as_deref() == Some(club))
+                .map(|s| s.attributes.judging_ability)
+                .max()
+                .unwrap_or(0);
+            let band = match best {
+                80.. => ">= 80",
+                60..=79 => "60-79",
+                40..=59 => "40-59",
+                _ => "< 40",
+            };
+            ai_by_band.entry(band).or_default().push(player.potential);
+        }
     }
+
+    println!();
+    println!("{} worlds, {SEARCHES} high-potential searches each per cell.", worlds());
+    println!("Rank of the recommended in the nation's cohort by true potential (0% = best).");
+    println!(
+        "{:>8} {:>6} {:>9} {:>11} {:>10}",
+        "moment", "scout", "facility", "mean rank", "top 10%"
+    );
+    for (moment_index, (moment, _)) in moments.iter().enumerate() {
+        for (cell_index, (rating, facility)) in cells_spec.iter().enumerate() {
+            let cell = &cells[&(moment_index, cell_index)];
+            println!(
+                "{:>8} {:>6} {:>9} {:>10.1}% {:>9.1}%   (n={})",
+                moment,
+                rating,
+                facility,
+                cell.mean(),
+                cell.top_tenth(),
+                cell.ranks.len()
+            );
+        }
+    }
+    println!();
+    println!("AI signings from the pool, by the club's best scout's judging ability:");
+    for band in ["< 40", "40-59", "60-79", ">= 80"] {
+        let potentials = ai_by_band.get(band).cloned().unwrap_or_default();
+        let mean = potentials.iter().map(|p| f64::from(*p)).sum::<f64>()
+            / potentials.len().max(1) as f64;
+        println!("{band:>6}: mean potential {mean:.1} (n={})", potentials.len());
+    }
+    println!(
+        "AI demand filled by the season's end: {:.1}% ({} of {})",
+        100.0 * (demand_start - demand_left) as f64 / demand_start.max(1) as f64,
+        demand_start - demand_left,
+        demand_start
+    );
 }
