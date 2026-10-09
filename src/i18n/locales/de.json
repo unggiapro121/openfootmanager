@@ -617,7 +617,13 @@
     "center": "Zentrum",
     "right": "Rechts",
     "competition": "Wettbewerb",
-    "confirmDelete": "Löschen bestätigen"
+    "confirmDelete": "Löschen bestätigen",
+    "scoutPotentialShort": {
+      "worldClass": "Weltklasse",
+      "strong": "Stark",
+      "moderate": "Mäßig",
+      "unclear": "Unklar"
+    }
   },
   "teamSelection": {
     "title": "Wähle Deinen Verein",

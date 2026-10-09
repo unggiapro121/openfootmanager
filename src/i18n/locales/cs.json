@@ -617,7 +617,13 @@
     "listView": "Seznam",
     "radarView": "Radar",
     "competition": "Soutěž",
-    "confirmDelete": "Potvrdit smazání"
+    "confirmDelete": "Potvrdit smazání",
+    "scoutPotentialShort": {
+      "worldClass": "Světová třída",
+      "strong": "Vysoký",
+      "moderate": "Střední",
+      "unclear": "Nejasný"
+    }
   },
   "teamSelection": {
     "title": "Vyberte si klub",

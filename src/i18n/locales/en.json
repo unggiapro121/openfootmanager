@@ -617,7 +617,13 @@
     "listView": "List",
     "radarView": "Radar",
     "competition": "Competition",
-    "confirmDelete": "Confirm delete"
+    "confirmDelete": "Confirm delete",
+    "scoutPotentialShort": {
+      "worldClass": "World class",
+      "strong": "Strong",
+      "moderate": "Moderate",
+      "unclear": "Unclear"
+    }
   },
   "teamSelection": {
     "title": "Choose Your Club",

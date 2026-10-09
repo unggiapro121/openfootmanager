@@ -97,7 +97,8 @@ describe("ScoutingWatchlistCard", () => {
 
     const row = screen.getByRole("row", { name: /Kid p1/ });
     expect(row).toHaveTextContent("~59");
-    expect(row).toHaveTextContent("common.scoutPotential.strong");
+    // The column is already headed Potential, so the cell says only how much.
+    expect(row).toHaveTextContent("common.scoutPotentialShort.strong");
     expect(row).not.toHaveTextContent("55–63");
   });
 

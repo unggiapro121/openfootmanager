@@ -617,7 +617,13 @@
     "listView": "Liste",
     "radarView": "Radar",
     "competition": "Turnuva",
-    "confirmDelete": "Silmeyi onayla"
+    "confirmDelete": "Silmeyi onayla",
+    "scoutPotentialShort": {
+      "worldClass": "Dünya klasında",
+      "strong": "Yüksek",
+      "moderate": "Orta",
+      "unclear": "Belirsiz"
+    }
   },
   "teamSelection": {
     "title": "Kulübünü Seç",
