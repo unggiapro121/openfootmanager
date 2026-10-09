@@ -617,7 +617,13 @@
     "center": "Центр",
     "right": "Правый",
     "competition": "Соревнование",
-    "confirmDelete": "Подтвердить удаление"
+    "confirmDelete": "Подтвердить удаление",
+    "scoutPotentialShort": {
+      "worldClass": "Мирового уровня",
+      "strong": "Высокий",
+      "moderate": "Средний",
+      "unclear": "Неясен"
+    }
   },
   "teamSelection": {
     "title": "Выберите клуб",

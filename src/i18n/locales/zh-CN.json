@@ -617,7 +617,13 @@
     "center": "中路",
     "right": "右侧",
     "competition": "赛事",
-    "confirmDelete": "确认删除"
+    "confirmDelete": "确认删除",
+    "scoutPotentialShort": {
+      "worldClass": "世界级",
+      "strong": "强",
+      "moderate": "中等",
+      "unclear": "不明"
+    }
   },
   "teamSelection": {
     "title": "选择您的俱乐部",

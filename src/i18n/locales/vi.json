@@ -617,7 +617,13 @@
     "listView": "Danh sách",
     "radarView": "Biểu đồ radar",
     "competition": "Giải đấu",
-    "confirmDelete": "Xác nhận xóa"
+    "confirmDelete": "Xác nhận xóa",
+    "scoutPotentialShort": {
+      "worldClass": "Đẳng cấp thế giới",
+      "strong": "Phát triển lớn",
+      "moderate": "Vừa phải",
+      "unclear": "Chưa rõ"
+    }
   },
   "teamSelection": {
     "title": "Chọn câu lạc bộ",

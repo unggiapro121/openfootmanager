@@ -26,6 +26,14 @@ interface ScoutingWatchlistCardProps {
   onMakeOffer: (player: PlayerData) => void;
 }
 
+/**
+ * The short form of a report's potential label for a column already headed
+ * Potential: "World class", not "World class potential".
+ */
+function potentialShortKey(potentialKey: string): string {
+  return potentialKey.replace("common.scoutPotential.", "common.scoutPotentialShort.");
+}
+
 /** Where a watched player stands: free, or the club he belongs to now. */
 interface WatchStatus {
   free: boolean;
@@ -141,7 +149,7 @@ export default function ScoutingWatchlistCard({
                       </td>
                       <td className="py-2 pr-3 text-gray-700 dark:text-gray-200">
                         {entry.report
-                          ? t(entry.report.potential_key)
+                          ? t(potentialShortKey(entry.report.potential_key))
                           : range(estimate.potential_low, estimate.potential_high)}
                       </td>
                       <td className="py-2 pr-3">

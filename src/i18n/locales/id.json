@@ -617,7 +617,13 @@
     "listView": "Daftar",
     "radarView": "Radar",
     "competition": "Kompetisi",
-    "confirmDelete": "Konfirmasi penghapusan"
+    "confirmDelete": "Konfirmasi penghapusan",
+    "scoutPotentialShort": {
+      "worldClass": "Kelas dunia",
+      "strong": "Tinggi",
+      "moderate": "Sedang",
+      "unclear": "Belum jelas"
+    }
   },
   "teamSelection": {
     "title": "Pilih Klub",

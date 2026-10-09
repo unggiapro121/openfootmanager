@@ -617,7 +617,13 @@
     "center": "Centro",
     "right": "Direita",
     "competition": "Competição",
-    "confirmDelete": "Confirmar exclusão"
+    "confirmDelete": "Confirmar exclusão",
+    "scoutPotentialShort": {
+      "worldClass": "De nível mundial",
+      "strong": "Alto",
+      "moderate": "Moderado",
+      "unclear": "Incerto"
+    }
   },
   "teamSelection": {
     "title": "Escolha Seu Clube",
