@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Cena {{fee}} · {{days}} dní",
     "scoutResting": "Odpočívá ještě {{days}} dní",
     "watchlistTitle": "Sledované talenty",
-    "watchlistHint": "Talenty, které sledujete. Přidělte jim skauta a jejich rozpětí se každé pondělí zúží. Talent zůstává na seznamu, dokud nepodepíše za klub nebo neskončí sezóna.",
+    "watchlistHint": "Talenty, které sledujete. Přidělte jim skauta a každé pondělí se dozvíte víc. Pokud ho dřív podepíše jiný klub, zůstane tady s názvem nového klubu; volné talenty na konci sezóny odejdou.",
     "watchlistEmpty": "Nesledujete žádné talenty. V hlášení o hledání mladíků zvolte Sledovat.",
     "watchlistScout": "Skaut",
     "watchlistScoutFor": "Skaut sledující {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Podepsat",
     "watchlistUnwatch": "Pustit",
-    "watchlistWeeksFollowed": "Sledován {{weeks}} týd."
+    "watchlistWeeksFollowed": "Sledován {{weeks}} týd.",
+    "watchlistStatus": "Stav",
+    "watchlistStatusFree": "Volný"
   },
   "match": {
     "live": "Živě",

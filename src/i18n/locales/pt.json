@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Custo {{fee}} · {{days}} dias",
     "scoutResting": "A descansar mais {{days}} dias",
     "watchlistTitle": "Acompanhamento",
-    "watchlistHint": "Promessas que está a acompanhar. Atribua-lhes um olheiro e os intervalos estreitam todas as segundas-feiras. Fica na lista até assinar por um clube ou a época terminar.",
+    "watchlistHint": "Promessas que está a acompanhar. Atribua-lhes um olheiro e a cada segunda-feira fica a saber mais. Se outro clube o contratar primeiro, fica aqui com o novo clube; as que continuam livres saem no fim da época.",
     "watchlistEmpty": "Não está a acompanhar nenhuma promessa. Escolha Acompanhar num relatório de pesquisa de jovens.",
     "watchlistScout": "Olheiro",
     "watchlistScoutFor": "Olheiro que acompanha {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Contratar",
     "watchlistUnwatch": "Dispensar",
-    "watchlistWeeksFollowed": "Acompanhado {{weeks}} sem."
+    "watchlistWeeksFollowed": "Acompanhado {{weeks}} sem.",
+    "watchlistStatus": "Estado",
+    "watchlistStatusFree": "Livre"
   },
   "match": {
     "live": "Ao Vivo",

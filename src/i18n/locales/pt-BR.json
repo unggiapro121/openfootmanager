@@ -2641,7 +2641,7 @@
     "youthSearchQuote": "Custo {{fee}} · {{days}} dias",
     "scoutResting": "Descansando mais {{days}} dias",
     "watchlistTitle": "Acompanhamento",
-    "watchlistHint": "Promessas que você está acompanhando. Escale um olheiro e as faixas ficam mais estreitas toda segunda-feira. Ela fica na lista até assinar com um clube ou a temporada acabar.",
+    "watchlistHint": "Promessas que você está acompanhando. Escale um olheiro e a cada segunda-feira você descobre mais. Se outro clube contratar antes, ela continua aqui com o novo clube; as que seguem livres saem no fim da temporada.",
     "watchlistEmpty": "Você não está acompanhando nenhuma promessa. Escolha Acompanhar em um relatório de busca de jovens.",
     "watchlistScout": "Olheiro",
     "watchlistScoutFor": "Olheiro que acompanha {{name}}",
@@ -2649,7 +2649,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Contratar",
     "watchlistUnwatch": "Liberar",
-    "watchlistWeeksFollowed": "Acompanhado há {{weeks}} sem."
+    "watchlistWeeksFollowed": "Acompanhado há {{weeks}} sem.",
+    "watchlistStatus": "Status",
+    "watchlistStatusFree": "Livre"
   },
   "be": {
     "error": {

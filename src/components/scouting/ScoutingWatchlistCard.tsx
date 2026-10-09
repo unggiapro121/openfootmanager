@@ -68,6 +68,7 @@ export default function ScoutingWatchlistCard({
                   <th className="py-2 pr-3">{t("common.player")}</th>
                   <th className="py-2 pr-3">{t("youthAcademy.ovr")}</th>
                   <th className="py-2 pr-3">{t("youthAcademy.potential")}</th>
+                  <th className="py-2 pr-3">{t("scouting.watchlistStatus")}</th>
                   <th className="py-2 pr-3">{t("scouting.watchlistScout")}</th>
                   <th className="py-2" />
                 </tr>
@@ -75,6 +76,7 @@ export default function ScoutingWatchlistCard({
               <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
                 {watchlist.map((entry) => {
                   const { prospect, estimate } = entry;
+                  const signedElsewhere = Boolean(entry.signed_by);
                   const choices = scouts.filter(
                     (scout) =>
                       scout.id === entry.scout_id || load(scout.id) < MAX_WATCHED_PER_SCOUT,
@@ -108,11 +110,22 @@ export default function ScoutingWatchlistCard({
                           ? t(entry.report.potential_key)
                           : range(estimate.potential_low, estimate.potential_high)}
                       </td>
+                      <td className="py-2 pr-3">
+                        {signedElsewhere ? (
+                          <Badge variant="neutral" size="sm">
+                            {entry.signed_by}
+                          </Badge>
+                        ) : (
+                          <Badge variant="success" size="sm">
+                            {t("scouting.watchlistStatusFree")}
+                          </Badge>
+                        )}
+                      </td>
                       <td className="py-2 pr-3 min-w-[10rem]">
                         <Select
                           selectSize="xs"
                           value={entry.scout_id ?? ""}
-                          disabled={busy}
+                          disabled={busy || signedElsewhere}
                           aria-label={t("scouting.watchlistScoutFor", { name: prospect.full_name })}
                           onChange={(event) =>
                             onAssignScout(prospect.id, event.target.value || null)
@@ -131,7 +144,11 @@ export default function ScoutingWatchlistCard({
                       </td>
                       <td className="py-2">
                         <div className="flex justify-end gap-2">
-                          <Button size="sm" disabled={busy} onClick={() => onSign(prospect.id)}>
+                          <Button
+                            size="sm"
+                            disabled={busy || signedElsewhere}
+                            onClick={() => onSign(prospect.id)}
+                          >
                             {t("scouting.watchlistSign")}
                           </Button>
                           <Button

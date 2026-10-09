@@ -1987,7 +1987,7 @@
     "youthSearchQuote": "Costo {{fee}} · {{days}} giorni",
     "scoutResting": "A riposo ancora {{days}} giorni",
     "watchlistTitle": "Lista osservati",
-    "watchlistHint": "I giovani che stai seguendo. Affidane uno a un osservatore e le sue forbici si restringono ogni lunedì. Resta nella lista finché non firma per un club o finisce la stagione.",
+    "watchlistHint": "I giovani che stai seguendo. Affidane uno a un osservatore e ogni lunedì ne saprai di più. Se un altro club lo ingaggia prima, resta qui con il nuovo club; quelli ancora liberi escono a fine stagione.",
     "watchlistEmpty": "Non stai seguendo nessun giovane. Scegli Segui in un rapporto di ricerca giovani.",
     "watchlistScout": "Osservatore",
     "watchlistScoutFor": "Osservatore che segue {{name}}",
@@ -1995,7 +1995,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Ingaggia",
     "watchlistUnwatch": "Lascia perdere",
-    "watchlistWeeksFollowed": "Seguito da {{weeks}} sett."
+    "watchlistWeeksFollowed": "Seguito da {{weeks}} sett.",
+    "watchlistStatus": "Stato",
+    "watchlistStatusFree": "Libero"
   },
   "match": {
     "live": "Diretta",

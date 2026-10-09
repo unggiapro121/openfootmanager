@@ -509,6 +509,9 @@ export interface WatchedProspect {
   weeks_followed?: number;
   /** His player card as the club reads him now. */
   report?: ScoutReportData | null;
+  /** The club that signed him before the user did, by name and id. */
+  signed_by?: string | null;
+  signed_by_team_id?: string | null;
 }
 
 export interface MessageContext {

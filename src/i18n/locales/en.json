@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Fee {{fee}} · {{days}} days",
     "scoutResting": "Resting {{days}} more days",
     "watchlistTitle": "Watchlist",
-    "watchlistHint": "Prospects you are following. Give one a scout and his ranges narrow every Monday. He stays until he signs somewhere or the season ends.",
+    "watchlistHint": "Prospects you are following. Give one a scout and he learns a little more every Monday. If another club signs him first, he stays here marked with his new club; prospects still free leave when the season ends.",
     "watchlistEmpty": "No prospects on your watchlist. Choose Watch on a youth scouting report.",
     "watchlistScout": "Scout",
     "watchlistScoutFor": "Scout following {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Sign",
     "watchlistUnwatch": "Let go",
-    "watchlistWeeksFollowed": "Followed {{weeks}} wk"
+    "watchlistWeeksFollowed": "Followed {{weeks}} wk",
+    "watchlistStatus": "Status",
+    "watchlistStatusFree": "Free"
   },
   "match": {
     "live": "Live",

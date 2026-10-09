@@ -768,8 +768,9 @@ that says so (`bodyEmpty`), with the fee spent.
 - The manager gives each prospect a scout on the Scouting screen, at most **three** per scout.
   Following does not take the scout's assignment slot. A new scout drops the band straight to his
   own if it is narrower; ranges never widen.
-- **Every Monday**, after the AI clubs have signed: an AI club that signed a watched prospect takes
-  him off the list and the manager is told where he went; then each prospect with a scout narrows a
+- **Every Monday**, after the AI clubs have signed: a watched prospect an AI club signed stays on the
+  list marked with his new club (`WatchedProspect::signed_by`), his scout stops following him, he can
+  no longer be signed or given a scout, and the manager is told where he went; then each prospect with a scout narrows a
   band (12 → 8 → 5 → 2 → 0), the new range being the intersection of the old one and a fresh read,
   and every attribute already read narrows a band too; then the scout reads K more attributes —
   4 / 3 / 2 / 2 for judging ability ≥ 80 / ≥ 60 / ≥ 40 / lower — in the order the prospect's
@@ -782,7 +783,8 @@ that says so (`bodyEmpty`), with the fee spent.
 - A prospect's card shows his height, weight and feet exactly, and every attribute in the profile's
   groups: the figure for those read, "??" for the rest. Opening him on the watchlist shows the same as
   a profile-like detail form.
-- When the pool closes, everyone on the list leaves the market and the manager is told.
+- When the pool closes, every prospect still free leaves the market and the manager is told; those a
+  club signed stay until the manager lets them go.
 - A scout who is released or whose contract ends leaves his prospects on the list without a scout,
   and the manager is told.
 

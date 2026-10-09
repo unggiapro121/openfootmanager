@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Phí {{fee}} · {{days}} ngày",
     "scoutResting": "Đang nghỉ thêm {{days}} ngày",
     "watchlistTitle": "Danh sách theo dõi",
-    "watchlistHint": "Các ứng viên bạn đang theo dõi. Gán một tuyển trạch viên và khoảng chỉ số sẽ hẹp lại mỗi thứ Hai. Ứng viên ở lại danh sách tới khi ký với một CLB hoặc hết mùa.",
+    "watchlistHint": "Các ứng viên bạn đang theo dõi. Gán tuyển trạch viên để mỗi thứ Hai biết thêm về cậu ấy. Nếu CLB khác ký trước, ứng viên vẫn ở đây kèm tên CLB mới; ứng viên còn tự do sẽ rời danh sách khi hết mùa.",
     "watchlistEmpty": "Chưa có ứng viên nào. Chọn Theo dõi trong báo cáo tìm cầu thủ trẻ.",
     "watchlistScout": "Tuyển trạch viên",
     "watchlistScoutFor": "Tuyển trạch viên theo dõi {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Ký",
     "watchlistUnwatch": "Bỏ theo dõi",
-    "watchlistWeeksFollowed": "Đã theo dõi {{weeks}} tuần"
+    "watchlistWeeksFollowed": "Đã theo dõi {{weeks}} tuần",
+    "watchlistStatus": "Trạng thái",
+    "watchlistStatusFree": "Tự do"
   },
   "match": {
     "live": "Trực tiếp",

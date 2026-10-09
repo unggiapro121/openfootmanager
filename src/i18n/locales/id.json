@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Biaya {{fee}} · {{days}} hari",
     "scoutResting": "Istirahat {{days}} hari lagi",
     "watchlistTitle": "Daftar pantauan",
-    "watchlistHint": "Pemain muda yang Anda pantau. Tugaskan pemandu bakat dan rentangnya menyempit setiap Senin. Ia tetap di daftar sampai bergabung dengan sebuah klub atau musim berakhir.",
+    "watchlistHint": "Pemain muda yang Anda pantau. Tugaskan pemandu bakat dan setiap Senin Anda tahu lebih banyak. Jika klub lain merekrutnya lebih dulu, ia tetap di sini dengan klub barunya; yang masih bebas keluar saat musim berakhir.",
     "watchlistEmpty": "Belum ada pemain di daftar pantauan. Pilih Pantau di laporan pencarian pemain muda.",
     "watchlistScout": "Pemandu bakat",
     "watchlistScoutFor": "Pemandu bakat yang memantau {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Rekrut",
     "watchlistUnwatch": "Lepas",
-    "watchlistWeeksFollowed": "Dipantau {{weeks}} mgg"
+    "watchlistWeeksFollowed": "Dipantau {{weeks}} mgg",
+    "watchlistStatus": "Status",
+    "watchlistStatusFree": "Bebas"
   },
   "match": {
     "live": "Langsung",

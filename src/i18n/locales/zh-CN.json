@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "费用 {{fee}} · {{days}} 天",
     "scoutResting": "还需休息 {{days}} 天",
     "watchlistTitle": "关注名单",
-    "watchlistHint": "你正在关注的新秀。为其指派球探后，评估范围每周一都会缩小。他会留在名单上，直到与某家俱乐部签约或赛季结束。",
+    "watchlistHint": "你正在关注的新秀。为其指派球探，每周一都能多了解一些。若其他俱乐部先签下他，他仍留在此处并显示新俱乐部；仍为自由身的新秀会在赛季结束时离开。",
     "watchlistEmpty": "关注名单为空。在青训搜寻报告中选择“关注”。",
     "watchlistScout": "球探",
     "watchlistScoutFor": "跟踪 {{name}} 的球探",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}}（{{count}}/3）",
     "watchlistSign": "签约",
     "watchlistUnwatch": "放弃",
-    "watchlistWeeksFollowed": "已跟踪 {{weeks}} 周"
+    "watchlistWeeksFollowed": "已跟踪 {{weeks}} 周",
+    "watchlistStatus": "状态",
+    "watchlistStatusFree": "自由身"
   },
   "match": {
     "live": "直播中",

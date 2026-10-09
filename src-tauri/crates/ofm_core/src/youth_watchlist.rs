@@ -27,6 +27,13 @@ pub struct WatchedProspect {
     /// changes; what the watchlist shows when he is opened.
     #[serde(default)]
     pub report: Option<domain::message::ScoutReportData>,
+    /// The club that signed him from the pool before the user did, by name
+    /// and id: he stays on the list, no longer followed and no longer
+    /// signable, until the user lets him go.
+    #[serde(default)]
+    pub signed_by: Option<String>,
+    #[serde(default)]
+    pub signed_by_team_id: Option<String>,
 }
 
 impl WatchedProspect {
@@ -111,6 +118,8 @@ pub(crate) fn watch(
         added_on: today.format("%Y-%m-%d").to_string(),
         weeks_followed: 0,
         report: None,
+        signed_by: None,
+        signed_by_team_id: None,
     };
     entry.restate();
     game.youth_watchlist.push(entry);
@@ -136,6 +145,8 @@ pub fn assign_scout(
         game.youth_watchlist[index].scout_id = None;
         return Ok(());
     };
+    // A prospect another club has signed can no longer be followed.
+    crate::youth_pool::locate(game, prospect_id)?;
     let scout = crate::scouting::resolve_user_scout(game, scout_id)?;
     let (ovr_band, potential_band) = (
         crate::scouting::judgement_band(scout.attributes.judging_ability),
@@ -270,31 +281,34 @@ pub(crate) fn forget(game: &mut Game, prospect_id: &str) {
 }
 
 /// An AI club signed `prospect_id` from the pool: if the user was watching
-/// him, he leaves the list and the user is told where he went.
-pub(crate) fn signed_by_club(game: &mut Game, prospect_id: &str, club_name: &str) {
-    let Some(index) = game
+/// him, he stays on the list marked with his new club and his scout stops
+/// following him, and the user is told where he went.
+pub(crate) fn signed_by_club(game: &mut Game, prospect_id: &str, team_id: &str, club_name: &str) {
+    let Some(entry) = game
         .youth_watchlist
-        .iter()
-        .position(|entry| entry.prospect.id == prospect_id)
+        .iter_mut()
+        .find(|entry| entry.prospect.id == prospect_id)
     else {
         return;
     };
-    let entry = game.youth_watchlist.remove(index);
+    entry.signed_by = Some(club_name.to_string());
+    entry.signed_by_team_id = Some(team_id.to_string());
+    entry.scout_id = None;
+    let (id, name) = (entry.prospect.id.clone(), entry.prospect.full_name.clone());
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
-    messages::signed_by_club(
-        game,
-        &entry.prospect.id,
-        &entry.prospect.full_name,
-        club_name,
-        &today,
-    );
+    messages::signed_by_club(game, &id, &name, club_name, &today);
 }
 
-/// The season's pool is closing on `date`: everyone still on the list leaves
-/// the market with it, and the user is told of each.
+/// The season's pool is closing on `date`: every prospect still free leaves
+/// the market with it, and the user is told of each. Those a club has signed
+/// stay until the user lets them go.
 pub(crate) fn pool_closed(game: &mut Game, date: chrono::NaiveDate) {
     let date = date.format("%Y-%m-%d").to_string();
-    for entry in std::mem::take(&mut game.youth_watchlist) {
+    let (signed, free): (Vec<_>, Vec<_>) = std::mem::take(&mut game.youth_watchlist)
+        .into_iter()
+        .partition(|entry| entry.signed_by.is_some());
+    game.youth_watchlist = signed;
+    for entry in free {
         messages::left_market(game, &entry, &date);
     }
 }
@@ -912,22 +926,32 @@ mod tests {
         assert_eq!(game.youth_watchlist.len(), 1);
     }
 
-    /// Given a watched prospect and an English AI club that needs a midfielder
-    /// on the season's last Monday,
-    /// When the AI clubs sign from the pool,
-    /// Then the club signs him, he leaves the list, and the user is told where.
-    #[test]
-    fn an_ai_club_signing_a_watched_prospect_takes_him_off_the_list() {
+    /// A watched prospect followed by the good scout, and an English AI club
+    /// that needs a midfielder on the season's last Monday, which signs him.
+    fn signed_by_ai() -> Game {
         let mut game = world();
         watched(&mut game, "p1", 60, 80);
+        assign_scout(&mut game, "p1", Some("good")).unwrap();
         let pool = game.youth_pool.as_mut().unwrap();
         pool.ends_on = "2026-08-03".to_string();
         pool.demand
             .insert("ai-eng".to_string(), vec![Position::Midfielder]);
-
         crate::youth_pool::process_ai_signings(&mut game);
+        game
+    }
 
-        assert!(game.youth_watchlist.is_empty());
+    /// Given a watched prospect an AI club moves for,
+    /// When it signs him,
+    /// Then he stays on the list marked with his new club, his scout stops
+    /// following him, and the user is told where he went.
+    #[test]
+    fn an_ai_club_signing_a_watched_prospect_marks_him_signed() {
+        let game = signed_by_ai();
+
+        let entry = entry(&game, "p1");
+        assert_eq!(entry.signed_by.as_deref(), Some("ai-eng FC"));
+        assert_eq!(entry.signed_by_team_id.as_deref(), Some("ai-eng"));
+        assert_eq!(entry.scout_id, None);
         let joined = game
             .players
             .iter()
@@ -945,27 +969,62 @@ mod tests {
         );
     }
 
-    /// Given two watched prospects,
-    /// When the season ends and its pool gives way to the next,
-    /// Then the list is empty and the user is told each one left the market.
+    /// Given a watched prospect another club has signed,
+    /// When the weeks pass and the user tries to give him a scout or sign him,
+    /// Then no scout reports on him, and both are refused with his club named.
     #[test]
-    fn the_seasons_end_clears_the_list() {
-        let mut game = world();
-        watched(&mut game, "p1", 60, 80);
+    fn a_prospect_signed_elsewhere_is_no_longer_followed_or_signable() {
+        let mut game = signed_by_ai();
+        let estimate = entry(&game, "p1").estimate.clone();
+
+        next_monday(&mut game);
+        next_monday(&mut game);
+
+        assert_eq!(entry(&game, "p1").estimate, estimate);
+        assert!(
+            !game
+                .messages
+                .iter()
+                .any(|message| message.id.starts_with("youth-watch-report-p1-2026-08-1"))
+        );
+        let refused = "be.error.scouting.prospectJoinedClub?team=ai-eng FC".to_string();
+        assert_eq!(
+            assign_scout(&mut game, "p1", Some("good")),
+            Err(refused.clone())
+        );
+        assert_eq!(sign(&mut game, "p1").map(|player| player.id), Err(refused));
+        assert!(unwatch(&mut game, "p1").is_ok());
+    }
+
+    /// Given a free prospect and one another club signed,
+    /// When the season ends and its pool gives way to the next,
+    /// Then the free one leaves the market and the list, with a message, and
+    /// the signed one stays on the list for the user to let go.
+    #[test]
+    fn the_seasons_end_takes_only_the_free_prospects() {
+        let mut game = signed_by_ai();
         watched(&mut game, "p2", 55, 75);
         let season_end = NaiveDate::from_ymd_opt(2027, 5, 30).unwrap();
 
         crate::youth_pool::roll_over(&mut game, season_end);
 
-        assert!(game.youth_watchlist.is_empty());
-        for id in ["p1", "p2"] {
-            assert!(
-                game.messages
-                    .iter()
-                    .any(|message| message.id == format!("youth-watch-gone-{id}")),
-                "{id}"
-            );
-        }
+        let left: Vec<&str> = game
+            .youth_watchlist
+            .iter()
+            .map(|entry| entry.prospect.id.as_str())
+            .collect();
+        assert_eq!(left, ["p1"]);
+        assert!(
+            game.messages
+                .iter()
+                .any(|message| message.id == "youth-watch-gone-p2")
+        );
+        assert!(
+            !game
+                .messages
+                .iter()
+                .any(|message| message.id == "youth-watch-gone-p1")
+        );
     }
 
     /// Given a followed prospect,

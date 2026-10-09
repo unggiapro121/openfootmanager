@@ -160,4 +160,36 @@ describe("ScoutingWatchlistCard", () => {
     expect(props.onSign).toHaveBeenCalledWith("p1");
     expect(props.onUnwatch).toHaveBeenCalledWith("p1");
   });
+
+  it("shows each prospect's status: free, or the club that signed him", () => {
+    renderCard({
+      watchlist: [
+        watched("p1"),
+        { ...watched("p2"), signed_by: "Rival FC", signed_by_team_id: "rival" },
+      ],
+    });
+
+    const free = screen.getByRole("row", { name: /Kid p1/ });
+    expect(free).toHaveTextContent("scouting.watchlistStatusFree");
+    expect(within(free).getByRole("button", { name: "scouting.watchlistSign" })).toBeEnabled();
+    const signed = screen.getByRole("row", { name: /Kid p2/ });
+    expect(signed).toHaveTextContent("Rival FC");
+    expect(within(signed).getByRole("button", { name: "scouting.watchlistSign" })).toBeDisabled();
+    expect(
+      within(signed).getByRole("combobox", { name: "scouting.watchlistScoutFor" }),
+    ).toBeDisabled();
+    expect(within(signed).getByRole("button", { name: "scouting.watchlistUnwatch" })).toBeEnabled();
+  });
+
+  it("disables signing in the detail form of a prospect another club signed", () => {
+    renderCard({
+      watchlist: [{ ...watched("p2"), signed_by: "Rival FC", signed_by_team_id: "rival" }],
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Kid p2" }));
+
+    const dialog = screen.getByRole("dialog", { name: "Kid p2" });
+    expect(dialog).toHaveTextContent("Rival FC");
+    expect(within(dialog).getByRole("button", { name: "scouting.watchlistSign" })).toBeDisabled();
+  });
 });

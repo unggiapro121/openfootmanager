@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Kosten {{fee}} · {{days}} Tage",
     "scoutResting": "Pausiert noch {{days}} Tage",
     "watchlistTitle": "Beobachtungsliste",
-    "watchlistHint": "Talente, die du beobachtest. Gib einem einen Scout, und seine Spannen werden jeden Montag enger. Er bleibt auf der Liste, bis er irgendwo unterschreibt oder die Saison endet.",
+    "watchlistHint": "Talente, die du beobachtest. Gib einem einen Scout, und du erfährst jeden Montag mehr. Verpflichtet ihn ein anderer Verein zuerst, bleibt er hier mit seinem neuen Verein; wer noch frei ist, verschwindet zum Saisonende.",
     "watchlistEmpty": "Du beobachtest keine Talente. Wähle Beobachten in einem Bericht zur Nachwuchssuche.",
     "watchlistScout": "Scout",
     "watchlistScoutFor": "Scout, der {{name}} beobachtet",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Verpflichten",
     "watchlistUnwatch": "Streichen",
-    "watchlistWeeksFollowed": "Beobachtet seit {{weeks}} Wo."
+    "watchlistWeeksFollowed": "Beobachtet seit {{weeks}} Wo.",
+    "watchlistStatus": "Status",
+    "watchlistStatusFree": "Frei"
   },
   "match": {
     "live": "Live",

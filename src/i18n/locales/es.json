@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Coste {{fee}} · {{days}} días",
     "scoutResting": "Descansa {{days}} días más",
     "watchlistTitle": "Seguimiento",
-    "watchlistHint": "Promesas que sigues. Asígnale un ojeador y sus rangos se estrechan cada lunes. Sigue en la lista hasta que firme por un club o acabe la temporada.",
+    "watchlistHint": "Promesas que sigues. Asígnales un ojeador y cada lunes sabrás algo más. Si otro club lo ficha antes, sigue aquí con su nuevo club; las que siguen libres se van al acabar la temporada.",
     "watchlistEmpty": "No sigues a ninguna promesa. Elige Seguir en un informe de búsqueda de juveniles.",
     "watchlistScout": "Ojeador",
     "watchlistScoutFor": "Ojeador que sigue a {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Fichar",
     "watchlistUnwatch": "Descartar",
-    "watchlistWeeksFollowed": "Seguido {{weeks}} sem."
+    "watchlistWeeksFollowed": "Seguido {{weeks}} sem.",
+    "watchlistStatus": "Estado",
+    "watchlistStatusFree": "Libre"
   },
   "match": {
     "live": "En Vivo",

@@ -69,6 +69,9 @@ export default function WatchedProspectDetail({
         <ProspectPhysique report={report} />
 
         <div className="flex flex-wrap gap-2">
+          <Badge variant={entry.signed_by ? "neutral" : "success"} size="sm">
+            {`${t("scouting.watchlistStatus")}: ${entry.signed_by ?? t("scouting.watchlistStatusFree")}`}
+          </Badge>
           {report.avg_rating !== null ? (
             <Badge variant="neutral" size="sm">
               {`${t(report.rating_key)} (~${report.avg_rating})`}
@@ -102,7 +105,7 @@ export default function WatchedProspectDetail({
         />
 
         <div className="flex flex-wrap justify-end gap-2">
-          <Button size="sm" disabled={busy} onClick={onSign}>
+          <Button size="sm" disabled={busy || Boolean(entry.signed_by)} onClick={onSign}>
             {t("scouting.watchlistSign")}
           </Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={onUnwatch}>

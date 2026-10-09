@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Ücret {{fee}} · {{days}} gün",
     "scoutResting": "{{days}} gün daha dinleniyor",
     "watchlistTitle": "İzleme listesi",
-    "watchlistHint": "Takip ettiğin gençler. Birine gözlemci ata, aralıkları her pazartesi daralsın. Bir kulüple anlaşana ya da sezon bitene kadar listede kalır.",
+    "watchlistHint": "Takip ettiğin gençler. Birine gözlemci ata, her pazartesi biraz daha fazlasını öğren. Başka bir kulüp önce imzalarsa yeni kulübüyle burada kalır; hâlâ serbest olanlar sezon sonunda ayrılır.",
     "watchlistEmpty": "İzleme listende kimse yok. Bir genç oyuncu arama raporunda İzle'yi seç.",
     "watchlistScout": "Gözlemci",
     "watchlistScoutFor": "{{name}} adlı genci izleyen gözlemci",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "İmzala",
     "watchlistUnwatch": "Bırak",
-    "watchlistWeeksFollowed": "{{weeks}} haftadır izleniyor"
+    "watchlistWeeksFollowed": "{{weeks}} haftadır izleniyor",
+    "watchlistStatus": "Durum",
+    "watchlistStatusFree": "Serbest"
   },
   "match": {
     "live": "Canlı",

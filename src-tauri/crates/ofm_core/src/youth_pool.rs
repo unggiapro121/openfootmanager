@@ -291,7 +291,7 @@ pub fn process_ai_signings(game: &mut Game) {
             groups.remove(slot);
         }
         let club_name = game.teams[team_index].name.clone();
-        crate::youth_watchlist::signed_by_club(game, &prospect_id, &club_name);
+        crate::youth_watchlist::signed_by_club(game, &prospect_id, &club, &club_name);
     }
 }
 

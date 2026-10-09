@@ -1968,7 +1968,7 @@
     "youthSearchQuote": "Coût {{fee}} · {{days}} jours",
     "scoutResting": "Au repos encore {{days}} jours",
     "watchlistTitle": "Liste de suivi",
-    "watchlistHint": "Les jeunes que vous suivez. Confiez-en un à un recruteur et ses fourchettes se resserrent chaque lundi. Il reste sur la liste jusqu'à ce qu'il signe dans un club ou que la saison se termine.",
+    "watchlistHint": "Les jeunes que vous suivez. Confiez-en un à un recruteur et vous en saurez un peu plus chaque lundi. Si un autre club le recrute d'abord, il reste ici avec son nouveau club ; ceux encore libres partent à la fin de la saison.",
     "watchlistEmpty": "Vous ne suivez aucun jeune. Choisissez Suivre dans un rapport de recherche de jeunes.",
     "watchlistScout": "Recruteur",
     "watchlistScoutFor": "Recruteur qui suit {{name}}",
@@ -1976,7 +1976,9 @@
     "watchlistScoutLoad": "{{name}} ({{count}}/3)",
     "watchlistSign": "Recruter",
     "watchlistUnwatch": "Abandonner",
-    "watchlistWeeksFollowed": "Suivi depuis {{weeks}} sem."
+    "watchlistWeeksFollowed": "Suivi depuis {{weeks}} sem.",
+    "watchlistStatus": "Statut",
+    "watchlistStatusFree": "Libre"
   },
   "match": {
     "live": "En Direct",

@@ -902,6 +902,8 @@ mod tests {
                 added_on: "2032-01-18".to_string(),
                 weeks_followed: 1,
                 report: None,
+                signed_by: None,
+                signed_by_team_id: None,
             });
         game
     }

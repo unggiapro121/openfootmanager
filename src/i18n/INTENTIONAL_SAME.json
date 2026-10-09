@@ -31,6 +31,7 @@
     "worldEditor.staffId"
   ],
   "de": [
+    "scouting.watchlistStatus",
     "nations.eng",
     "nations.wal",
     "nations.pt",
@@ -395,6 +396,7 @@
     "worldEditor.staffSpecialization.Fitness"
   ],
   "pt-BR": [
+    "scouting.watchlistStatus",
     "nations.pt",
     "nations.cn",
     "nations.sn",
@@ -568,6 +570,7 @@
     "tournaments.competitions.premierDivision"
   ],
   "id": [
+    "scouting.watchlistStatus",
     "awardsCeremony.rating",
     "be.news.matchReport.scorer",
     "be.news.preseasonDigest.resultLine",
