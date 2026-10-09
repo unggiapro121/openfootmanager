@@ -108,6 +108,10 @@ pub struct Game {
     /// Youth prospects the user is following, until they sign, leave or expire.
     #[serde(default)]
     pub youth_watchlist: Vec<crate::youth_watchlist::WatchedProspect>,
+    /// The season's unattached youngsters, shared by every club; drawn when a
+    /// season opens.
+    #[serde(default)]
+    pub youth_pool: Option<crate::youth_pool::YouthPool>,
     #[serde(default)]
     pub board_objectives: Vec<BoardObjective>,
     #[serde(default)]
@@ -202,6 +206,7 @@ impl Game {
             youth_scouting_assignments: vec![],
             scout_youth_rest_until: BTreeMap::new(),
             youth_watchlist: Vec::new(),
+            youth_pool: None,
             board_objectives: vec![],
             season_context: SeasonContext::default(),
             days_since_last_job_offer: None,

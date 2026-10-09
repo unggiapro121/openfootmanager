@@ -90,6 +90,8 @@ fn write_game_to_connection(
         .map_err(|_| game_persistence_write_error())?;
     let youth_watchlist_json =
         serde_json::to_string(&game.youth_watchlist).map_err(|_| game_persistence_write_error())?;
+    let youth_pool_json =
+        serde_json::to_string(&game.youth_pool).map_err(|_| game_persistence_write_error())?;
     let extra_translations_json = serde_json::to_string(&game.extra_translations)
         .map_err(|_| game_persistence_write_error())?;
     let package_lockfile_json = serde_json::to_string(&game.package_lockfile)
@@ -125,6 +127,7 @@ fn write_game_to_connection(
             development_speed_percent: game.development_speed.percent(),
             scout_youth_rest_until_json,
             youth_watchlist_json,
+            youth_pool_json,
             available_staff_market_last_activity_date: game
                 .available_staff_market_last_activity_date
                 .clone(),
@@ -362,6 +365,7 @@ impl GamePersistenceReader {
             scout_youth_rest_until: serde_json::from_str(&meta.scout_youth_rest_until_json)
                 .unwrap_or_default(),
             youth_watchlist: serde_json::from_str(&meta.youth_watchlist_json).unwrap_or_default(),
+            youth_pool: serde_json::from_str(&meta.youth_pool_json).unwrap_or_default(),
             emitted_events: serde_json::from_str(&meta.emitted_events_json).unwrap_or_else(|_| {
                 log::warn!(
                     "[load] sent-ledger JSON is malformed; reseeding it from the inbox. \
@@ -511,6 +515,7 @@ mod tests {
             development_speed_percent: 100,
             scout_youth_rest_until_json: "{}".to_string(),
             youth_watchlist_json: "[]".to_string(),
+            youth_pool_json: "null".to_string(),
         }
     }
 
@@ -836,6 +841,21 @@ mod tests {
     #[test]
     fn write_and_read_game_preserves_the_youth_watchlist() {
         let db = GameDatabase::open_in_memory().unwrap();
+        let game = game_with_watched_prospect();
+
+        GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+
+        let loaded = GamePersistenceReader::read_game(&db).unwrap();
+        assert_eq!(loaded.youth_watchlist.len(), 1);
+        let entry = &loaded.youth_watchlist[0];
+        assert_eq!(entry.prospect.id, "kid-1");
+        assert_eq!(entry.estimate, game.youth_watchlist[0].estimate);
+        assert_eq!(entry.scout_id.as_deref(), Some("scout-1"));
+        assert_eq!(entry.expires_on, "2032-04-11");
+    }
+
+    /// A career following one prospect, with a scout on him.
+    fn game_with_watched_prospect() -> Game {
         let mut game = sample_game_with_clock(2032, 18);
         let prospect = domain::player::Player::new(
             "kid-1".to_string(),
@@ -884,16 +904,44 @@ mod tests {
                 expires_on: "2032-04-11".to_string(),
                 weeks_followed: 1,
             });
+        game
+    }
+
+    /// Given a career whose season youth pool has been drawn, when it is saved
+    /// and loaded, then the pool comes back with its youngsters and demand.
+    #[test]
+    fn write_and_read_game_preserves_the_youth_pool() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let mut game = sample_game_with_clock(2032, 18);
+        // The watchlist test's prospect, recast as a pool youngster.
+        let mut kid = game_with_watched_prospect()
+            .youth_watchlist
+            .remove(0)
+            .prospect;
+        kid.id = "pool-kid".to_string();
+        let mut pool = ofm_core::youth_pool::YouthPool {
+            generated_on: "2032-01-18".to_string(),
+            ends_on: "2033-01-17".to_string(),
+            ..Default::default()
+        };
+        pool.nations.insert("ENG".to_string(), vec![kid]);
+        pool.demand.insert(
+            "rival".to_string(),
+            vec![domain::player::Position::Goalkeeper],
+        );
+        game.youth_pool = Some(pool);
 
         GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
 
         let loaded = GamePersistenceReader::read_game(&db).unwrap();
-        assert_eq!(loaded.youth_watchlist.len(), 1);
-        let entry = &loaded.youth_watchlist[0];
-        assert_eq!(entry.prospect.id, "kid-1");
-        assert_eq!(entry.estimate, game.youth_watchlist[0].estimate);
-        assert_eq!(entry.scout_id.as_deref(), Some("scout-1"));
-        assert_eq!(entry.expires_on, "2032-04-11");
+        let pool = loaded.youth_pool.expect("the pool survives a save");
+        assert_eq!(pool.generated_on, "2032-01-18");
+        assert_eq!(pool.ends_on, "2033-01-17");
+        assert_eq!(pool.nations["ENG"][0].id, "pool-kid");
+        assert_eq!(
+            pool.demand["rival"],
+            vec![domain::player::Position::Goalkeeper]
+        );
     }
 
     #[test]

@@ -85,12 +85,12 @@ fn intake_size(have: [usize; 4]) -> usize {
     lacking.clamp(MIN_INTAKE, MAX_INTAKE)
 }
 
-/// Every club takes its season's intake into its academy on `date`, the end of
-/// `season`.
+/// The player's club takes its season's intake into its academy on `date`, the
+/// end of `season`. AI clubs take none: they sign their youngsters from the
+/// season's youth pool through the season instead (`youth_pool`).
 pub fn apply_youth_intake(game: &mut Game, date: NaiveDate, season: u32) {
-    let clubs: Vec<String> = game.teams.iter().map(|team| team.id.clone()).collect();
-    for club in clubs {
-        take_youth_intake(game, &club, date, season);
+    if let Some(team_id) = game.manager.team_id.clone() {
+        take_youth_intake(game, &team_id, date, season);
     }
 }
 
@@ -406,9 +406,13 @@ mod tests {
             .collect()
     }
 
+    /// Both clubs take the intake the rule gives them — at a real season's end
+    /// only the player's club does, but the rule is the same for any club.
     fn intake(game: &Game) -> Game {
         let mut after = game.clone();
-        apply_youth_intake(&mut after, season_end(), SEASON);
+        for club in ["user", "rival"] {
+            take_youth_intake(&mut after, club, season_end(), SEASON);
+        }
         after
     }
 
@@ -590,7 +594,7 @@ mod tests {
         let mut after = before.clone();
         crate::end_of_season::apply_season_end_squad_turnover(&mut after, season_end(), SEASON);
 
-        let recruits = newcomers(&before, &after, "rival");
+        let recruits = newcomers(&before, &after, "user");
         assert_eq!(recruits.len(), MAX_INTAKE);
         for recruit in recruits {
             assert_eq!(

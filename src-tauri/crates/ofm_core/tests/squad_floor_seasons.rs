@@ -101,15 +101,16 @@ struct Census {
 
 /// The census at a season's end, `before` being the players there before its
 /// turnover ran on `season_end`.
-fn census(game: &Game, before: &HashSet<String>, season_end: &str) -> Census {
+/// `season_start` holds who was in the world when the season began: an AI club
+/// signs its youngsters from the season's youth pool through the season, and
+/// nobody else is created, so a recruit is anyone new to the world it holds. He
+/// may already have been promoted — the pool runs to 21.
+fn census(game: &Game, season_start: &HashSet<String>) -> Census {
     let active: Vec<_> = game.players.iter().filter(|p| !p.retired).collect();
     let took_someone = |club: &str| {
-        game.players.iter().any(|p| {
-            !before.contains(&p.id)
-                && p.squad_role == SquadRole::Youth
-                && p.contract_club_id() == Some(club)
-                && p.contract_start() == Some(season_end)
-        })
+        game.players
+            .iter()
+            .any(|p| !season_start.contains(&p.id) && p.contract_club_id() == Some(club))
     };
     Census {
         ai_without_recruits: ai_clubs(game)
@@ -156,11 +157,11 @@ fn play_seasons_watching(
 ) -> Vec<Census> {
     let mut censuses: Vec<Census> = Vec::new();
     for year in 0..years {
+        let season_start: HashSet<String> = game.players.iter().map(|p| p.id.clone()).collect();
         for _ in 0..365 {
             turn::process_day(game);
         }
         let today = game.clock.current_date.date_naive();
-        let before: HashSet<String> = game.players.iter().map(|p| p.id.clone()).collect();
         ofm_core::end_of_season::apply_season_end_squad_turnover(game, today, 2026 + year);
         for club in ai_clubs(game) {
             assert!(
@@ -169,7 +170,7 @@ fn play_seasons_watching(
                 squad_shortfall(game, &club)
             );
         }
-        let this_season = census(game, &before, &today.format("%Y-%m-%d").to_string());
+        let this_season = census(game, &season_start);
         after_each(&this_season, censuses.last());
         censuses.push(this_season);
     }
@@ -321,22 +322,24 @@ fn a_club_with_an_empty_academy_keeps_its_floor_through_the_market() {
 
 /// Given a world with no free agents and no academies anywhere, when a season
 /// is played, every day still finishes: clubs that cannot be filled play with
-/// who they have, and nobody is created for them — the only newcomers are the
-/// season end's youth intake, into the academies.
+/// who they have, and nobody is created for them — the only newcomers are
+/// youngsters for the academies: the player's club's intake at the season's
+/// end, and what AI clubs sign from the season's youth pool.
 #[test]
 fn a_world_with_no_free_agents_and_no_academies_still_finishes_every_day() {
     let mut game = seeded_world(SEEDS[0]);
     game.players
         .retain(|p| p.team_id.is_some() && p.squad_role == SquadRole::Senior);
+    let before: std::collections::HashSet<String> =
+        game.players.iter().map(|p| p.id.clone()).collect();
 
     for _ in 0..365 {
         turn::process_day(&mut game);
     }
-    let before: std::collections::HashSet<String> =
-        game.players.iter().map(|p| p.id.clone()).collect();
-    // Every academy is empty, so every club takes the intake an empty academy
-    // plans for.
-    let intake: usize = game
+    // Every academy is empty, so every club means to take what an empty
+    // academy plans for: the player's club at the season's end, the AI clubs
+    // from the pool.
+    let most: usize = game
         .teams
         .iter()
         .map(|_| {
@@ -347,25 +350,22 @@ fn a_world_with_no_free_agents_and_no_academies_still_finishes_every_day() {
         .sum();
     let today = game.clock.current_date.date_naive();
     ofm_core::end_of_season::apply_season_end_squad_turnover(&mut game, today, 2026);
-    for _ in 0..30 {
-        turn::process_day(&mut game);
-    }
 
     let newcomers: Vec<_> = game
         .players
         .iter()
         .filter(|p| !before.contains(&p.id))
         .collect();
-    assert_eq!(
-        newcomers.len(),
-        intake,
-        "a player was created beyond the intake"
+    assert!(
+        !newcomers.is_empty() && newcomers.len() <= most,
+        "{} newcomers, against at most {most} planned",
+        newcomers.len()
     );
-    let season_end = today.format("%Y-%m-%d").to_string();
+    // An AI club with no seniors to spare may already have promoted one.
     for newcomer in newcomers {
         assert!(
-            newcomer.contract_start() == Some(season_end.as_str()) && newcomer.team_id.is_some(),
-            "{} was created, and not by the season end's intake",
+            newcomer.team_id.is_some(),
+            "{} was created, and not for a club",
             newcomer.id
         );
     }
@@ -385,6 +385,13 @@ fn a_world_with_no_free_agents_and_no_academies_still_finishes_every_day() {
 /// then on, free agents peaked at 141 for sixteen clubs, and every AI club
 /// kept 18–27 seniors. Without the intake the same world had lost half its
 /// players by the eleventh season.
+///
+/// Since AI clubs sign from the season's youth pool, which runs to 21, a few of
+/// their youngsters reach the first team sooner. Over seventeen runs of these
+/// three seeds the largest AI senior squad was 25–31 (31 twice), against 26–30
+/// over fifteen runs before the pool; population and free agents stayed in the
+/// same bands. The cap allows 32 for that tail. Multi-season play still draws
+/// on unseeded dice elsewhere, so the runs differ.
 #[test]
 fn the_worlds_population_stays_stable_over_twelve_seasons() {
     for seed in SEEDS {
@@ -407,7 +414,7 @@ fn the_worlds_population_stays_stable_over_twelve_seasons() {
             );
             for &seniors in &census.ai_seniors {
                 assert!(
-                    (ofm_core::squad_floor::MIN_SENIOR_PLAYERS..=30).contains(&seniors),
+                    (ofm_core::squad_floor::MIN_SENIOR_PLAYERS..=32).contains(&seniors),
                     "{label}: an AI club holds {seniors} seniors after season {year}"
                 );
             }

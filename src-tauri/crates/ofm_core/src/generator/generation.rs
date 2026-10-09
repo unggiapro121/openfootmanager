@@ -590,7 +590,8 @@ pub(super) fn generate_random_player_from_def(
         use crate::player_rating::natural_ovr;
         natural_ovr(&player).round() as u8
     };
-    player.potential = generate_potential(temp_ovr, player_age);
+    // From the generation's own stream, so a seeded world or season pool replays.
+    player.potential = crate::player_rating::generate_potential_from(temp_ovr, player_age, rng);
     refresh_player_derived(&mut player, current_year);
     // Priced once rating and potential are settled, since both drive the price.
     // No club yet: the career's opening reprices him at the club he plays for.

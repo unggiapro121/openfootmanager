@@ -172,6 +172,27 @@ pub(crate) fn forget(game: &mut Game, prospect_id: &str) {
         .retain(|entry| entry.prospect.id != prospect_id);
 }
 
+/// An AI club signed `prospect_id` from the pool: if the user was watching
+/// him, he leaves the list and the user is told where he went.
+pub(crate) fn signed_by_club(game: &mut Game, prospect_id: &str, club_name: &str) {
+    let Some(index) = game
+        .youth_watchlist
+        .iter()
+        .position(|entry| entry.prospect.id == prospect_id)
+    else {
+        return;
+    };
+    let entry = game.youth_watchlist.remove(index);
+    let today = game.clock.current_date.format("%Y-%m-%d").to_string();
+    messages::signed_elsewhere(
+        game,
+        &entry.prospect.id,
+        &entry.prospect.full_name,
+        Some(club_name),
+        &today,
+    );
+}
+
 /// The week's watchlist business, on Mondays: prospects whose time is up leave,
 /// others may be signed by another club first, and the rest who have a scout
 /// narrow a band and get a report.

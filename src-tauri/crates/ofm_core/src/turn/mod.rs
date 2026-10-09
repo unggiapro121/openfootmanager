@@ -187,6 +187,7 @@ fn process_day_common(game: &mut Game, today: &str) {
     progress_injury_recovery(game);
     random_events::check_random_events(game);
     scouting::process_scouting(game);
+    crate::youth_pool::process_ai_signings(game);
     crate::youth_watchlist::process_youth_watchlist(game);
     transfers::process_pending_transfer_registrations(game);
     transfers::process_pending_loan_registrations(game);

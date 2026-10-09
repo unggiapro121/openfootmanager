@@ -799,13 +799,17 @@ fn notify_user_division_change(
 /// What a season's end does to squads: players age and some retire, every AI
 /// club rebuilds before the new season rather than on its next review day — a
 /// summer's retirements can take several players from one club at once — and
-/// then every club takes its youth intake. The intake comes last so the rebuild
-/// cannot promote a youngster on the day he joins: academy promotion goes by
-/// rating, and nothing else would stop a fifteen-year-old being picked.
+/// then the player's club takes its youth intake and the season's youth pool
+/// gives way to the next, from which AI clubs sign through the coming season.
+/// The intake comes after the rebuild so the rebuild cannot promote a youngster
+/// on the day he joins: academy promotion goes by rating, and nothing else would
+/// stop a fifteen-year-old being picked. The pool is drawn last, from the
+/// academies as the rebuild left them.
 pub fn apply_season_end_squad_turnover(game: &mut Game, date: chrono::NaiveDate, season: u32) {
     crate::aging::apply_seasonal_aging(game, date, season);
     crate::ai_contracts::plan_every_ai_squad(game);
     crate::youth_intake::apply_youth_intake(game, date, season);
+    crate::youth_pool::roll_over(game, date);
 }
 
 pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {

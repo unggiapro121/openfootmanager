@@ -70,6 +70,29 @@ pub(crate) fn generate_youth_intake_recruit(
     youth_recruit(team, Some(group), None, current_year, Some(age), rng)
 }
 
+/// A youngster for a nation's season youth pool: of `group`, aged `age`, of
+/// `nation`. `template` is a club of that nation, which the shared generator
+/// draws names and squad slots for; he joins no club here.
+pub(crate) fn generate_youth_pool_member(
+    template: &Team,
+    group: &Position,
+    nation: &str,
+    age: u32,
+    current_year: u32,
+    rng: &mut impl rand::Rng,
+) -> Player {
+    let mut player = youth_recruit(
+        template,
+        Some(group),
+        Some(nation),
+        current_year,
+        Some(age),
+        rng,
+    );
+    player.team_id = None;
+    player
+}
+
 fn youth_recruit(
     team: &Team,
     target_position: Option<&Position>,

@@ -498,6 +498,7 @@ mod tests {
                 development_speed_percent: 100,
                 scout_youth_rest_until_json: "{}".to_string(),
                 youth_watchlist_json: "[]".to_string(),
+                youth_pool_json: "null".to_string(),
             },
         )
         .unwrap();
@@ -627,6 +628,7 @@ mod tests {
                 development_speed_percent: 100,
                 scout_youth_rest_until_json: "{}".to_string(),
                 youth_watchlist_json: "[]".to_string(),
+                youth_pool_json: "null".to_string(),
             },
         )
         .unwrap();

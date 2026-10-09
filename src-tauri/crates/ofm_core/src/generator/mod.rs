@@ -30,6 +30,7 @@ pub use scaffold::{
 pub use world_io::*;
 pub(crate) use youth::generate_youth_academy_recruit_from;
 pub(crate) use youth::generate_youth_intake_recruit;
+pub(crate) use youth::generate_youth_pool_member;
 pub use youth::{generate_youth_academy_recruit, generate_youth_academy_recruit_with_nationality};
 
 use domain::league::{CompetitionFormat, CompetitionScope};

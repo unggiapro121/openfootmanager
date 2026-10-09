@@ -598,7 +598,11 @@ fn youth_prospect_options() -> Vec<ActionOption> {
     ]
 }
 
-fn rank_by_objective(ovr: u8, potential: u8, objective: YouthScoutingObjective) -> (u8, u8) {
+pub(crate) fn rank_by_objective(
+    ovr: u8,
+    potential: u8,
+    objective: YouthScoutingObjective,
+) -> (u8, u8) {
     match objective {
         YouthScoutingObjective::Balanced => (ovr.saturating_add(potential / 2), potential),
         YouthScoutingObjective::HighPotential => (potential, ovr),
@@ -1105,7 +1109,7 @@ pub(crate) fn read_rating(truth: u8, band: u8, rng: &mut impl rand::Rng) -> (u8,
 }
 
 /// What a scout of `judging_ability` / `judging_potential` makes of `prospect`.
-fn estimate_prospect(
+pub(crate) fn estimate_prospect(
     prospect: &Player,
     judging_ability: u8,
     judging_potential: u8,
@@ -1128,7 +1132,7 @@ fn estimate_prospect(
 }
 
 /// The midpoint of a range: what the scout believes the rating is.
-fn believed(low: u8, high: u8) -> u8 {
+pub(crate) fn believed(low: u8, high: u8) -> u8 {
     ((u16::from(low) + u16::from(high)) / 2) as u8
 }
 
