@@ -73,6 +73,7 @@ export function SubPanel({
   const team = side === "Home" ? snapshot.home_team : snapshot.away_team;
   const bench = side === "Home" ? snapshot.home_bench : snapshot.away_bench;
   const subsMade = side === "Home" ? snapshot.home_subs_made : snapshot.away_subs_made;
+  const setPieces = side === "Home" ? snapshot.home_set_pieces : snapshot.away_set_pieces;
 
   const subbedOnIds = new Set(
     snapshot.substitutions.filter((s) => s.side === side).map((s) => s.player_on_id),
@@ -208,7 +209,8 @@ export function SubPanel({
               sentOff={snapshot.sent_off}
               subbedOnIds={subbedOnIds}
               onPlayerDrop={onSwapPositions}
-              className="h-[260px] w-full max-w-sm shrink-0"
+              className="w-full max-w-[28rem] shrink-0"
+              roles={setPieces}
             />
           </div>
         ) : (
@@ -288,7 +290,7 @@ export function SubPanel({
             {/* Main body: two columns */}
             <div className="flex min-h-0 flex-1 overflow-hidden">
               {/* Left: formation pitch + on-field player list */}
-              <div className="flex min-w-0 flex-1 flex-col border-r border-gray-200 dark:border-navy-700">
+              <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto border-r border-gray-200 dark:border-navy-700">
                 <div className="shrink-0 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-navy-700 dark:bg-navy-800/50">
                   <p className="font-heading text-xs uppercase tracking-widest text-red-400">
                     {selectedOff
@@ -306,14 +308,15 @@ export function SubPanel({
                   subbedOnIds={subbedOnIds}
                   onPlayerClick={handleSelectOffPlayer}
                   onPlayerDrop={onSwapPositions}
-                  className="mx-4 mt-3 h-[210px] shrink-0"
+                  className="mx-4 mt-3 shrink-0"
+                  roles={setPieces}
                 />
                 <p className="mx-4 mt-1 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
                   {t("match.dragToSwapPositions")}
                 </p>
 
                 {/* On-field player table */}
-                <div className="min-h-0 flex-1 overflow-auto px-4 py-2">
+                <div className="px-4 py-2">
                   <table className="w-full text-left">
                     <thead>
                       <tr className="border-b border-gray-200 font-heading text-[10px] uppercase tracking-widest text-gray-600 dark:border-navy-700 dark:text-gray-500">

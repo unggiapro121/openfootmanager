@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getPlayerOvr } from "../../lib/helpers";
 import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
 import ContextMenu from "../ContextMenu";
-import { Badge, Card, PitchToken, Select } from "../ui";
+import { Badge, Card, PitchSurface, PitchToken, Select, pitchRoleMarkers } from "../ui";
 import {
   isPlayerExactForSlot,
   isPlayerOutOfPosition,
@@ -53,12 +53,6 @@ interface TacticsPitchProps {
 
 type FitTone = "exact" | "adapted" | "out" | "empty";
 
-interface RoleMarker {
-  key: keyof TeamMatchRolesData;
-  shortLabel: string;
-  toneClassName: string;
-}
-
 function getFitTone(player: PlayerData | null, slotPosition: string): FitTone {
   if (!player) {
     return "empty";
@@ -73,59 +67,6 @@ function getFitTone(player: PlayerData | null, slotPosition: string): FitTone {
   }
 
   return "adapted";
-}
-
-function getRoleMarkers(
-  matchRoles: TeamMatchRolesData | undefined,
-  playerId: string,
-): RoleMarker[] {
-  if (!matchRoles) {
-    return [];
-  }
-
-  const markers: RoleMarker[] = [];
-
-  if (matchRoles.captain === playerId) {
-    markers.push({
-      key: "captain",
-      shortLabel: "C",
-      toneClassName: "border-accent-500 bg-accent-500 text-white",
-    });
-  }
-
-  if (matchRoles.vice_captain === playerId) {
-    markers.push({
-      key: "vice_captain",
-      shortLabel: "VC",
-      toneClassName: "border-white/60 bg-gray-800/85 text-white",
-    });
-  }
-
-  if (matchRoles.penalty_taker === playerId) {
-    markers.push({
-      key: "penalty_taker",
-      shortLabel: "PK",
-      toneClassName: "border-primary-500 bg-primary-500 text-white",
-    });
-  }
-
-  if (matchRoles.free_kick_taker === playerId) {
-    markers.push({
-      key: "free_kick_taker",
-      shortLabel: "FK",
-      toneClassName: "border-success-600 bg-success-600 text-white",
-    });
-  }
-
-  if (matchRoles.corner_taker === playerId) {
-    markers.push({
-      key: "corner_taker",
-      shortLabel: "CK",
-      toneClassName: "border-orange-500 bg-orange-500 text-white",
-    });
-  }
-
-  return markers;
 }
 
 function getPitchMarkerClassName(options: {
@@ -320,107 +261,11 @@ export default function TacticsPitch({
       </div>
 
       <div className="p-5 sm:p-6 lg:p-7">
-        <div className="relative mx-auto w-full max-w-[36rem] overflow-hidden rounded-[1.5rem] border border-primary-500/20 bg-linear-to-b from-primary-500 to-primary-700 shadow-inner">
+        <PitchSurface
+          className="mx-auto w-full max-w-[36rem]"
+          overlay={tacticsPhase ? <TacticalOverlays phase={tacticsPhase} /> : null}
+        >
           <div className="aspect-[8/10] min-h-[35rem] w-full">
-            <svg
-              viewBox="0 0 100 140"
-              preserveAspectRatio="none"
-              className="absolute inset-0 h-full w-full"
-              aria-hidden="true"
-            >
-              <defs>
-                <linearGradient id="tactics-pitch-surface" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="rgba(63, 172, 99, 0.94)" />
-                  <stop offset="100%" stopColor="rgba(31, 109, 61, 0.98)" />
-                </linearGradient>
-                <pattern
-                  id="tactics-pitch-stripes"
-                  width="100"
-                  height="20"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <rect width="100" height="10" fill="rgba(255,255,255,0.04)" />
-                </pattern>
-              </defs>
-              <rect x="0" y="0" width="100" height="140" fill="url(#tactics-pitch-surface)" />
-              <rect x="0" y="0" width="100" height="140" fill="url(#tactics-pitch-stripes)" />
-              <rect
-                x="4"
-                y="4"
-                width="92"
-                height="132"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <line
-                x1="4"
-                y1="70"
-                x2="96"
-                y2="70"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <circle
-                cx="50"
-                cy="70"
-                r="11"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <circle cx="50" cy="70" r="0.8" fill="rgba(255,255,255,0.75)" />
-              <rect
-                x="18"
-                y="4"
-                width="64"
-                height="18"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <rect
-                x="31"
-                y="4"
-                width="38"
-                height="8"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <rect
-                x="18"
-                y="118"
-                width="64"
-                height="18"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <rect
-                x="31"
-                y="128"
-                width="38"
-                height="8"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <path
-                d="M 38 22 A 12 12 0 0 0 62 22"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              <path
-                d="M 38 118 A 12 12 0 0 1 62 118"
-                fill="none"
-                stroke="rgba(255,255,255,0.55)"
-                strokeWidth="0.6"
-              />
-              {tacticsPhase ? <TacticalOverlays phase={tacticsPhase} /> : null}
-            </svg>
-
             {pitchSlots.map((slot) => {
               const player = slot.player;
               const fitTone = getFitTone(player, slot.position);
@@ -442,7 +287,7 @@ export default function TacticsPitch({
 
                   {player ? (
                     (() => {
-                      const roleMarkers = getRoleMarkers(matchRoles, player.id);
+                      const roleMarkers = pitchRoleMarkers(matchRoles, player.id);
 
                       return (
                         <ContextMenu
@@ -501,7 +346,7 @@ export default function TacticsPitch({
                               ovr={getPlayerOvr(player)}
                               condition={player.condition}
                               fitTone={fitTone}
-                              hidePortrait
+                              avatar={player}
                               markers={roleMarkers}
                             >
                               {/* Role combobox */}
@@ -556,7 +401,7 @@ export default function TacticsPitch({
               );
             })}
           </div>
-        </div>
+        </PitchSurface>
       </div>
     </Card>
   );

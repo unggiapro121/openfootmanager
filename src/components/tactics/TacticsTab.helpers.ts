@@ -266,7 +266,7 @@ function parseCoordinateValue(value: string): number {
   return Number.isFinite(parsed) ? parsed : 50;
 }
 
-function getSlotXCoordinates(slotCount: number): number[] {
+export function getSlotXCoordinates(slotCount: number): number[] {
   // Rows of five (back/mid fives in 4-5-1, 3-5-2, 5-4-1…) get pushed toward
   // the touchlines so neighbouring markers don't overlap; smaller rows keep
   // the centered even spread.

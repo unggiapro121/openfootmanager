@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { FormationPitch } from "./FormationPitch";
@@ -107,8 +107,9 @@ describe("FormationPitch with a sent-off player", () => {
     expect(onPlayerDrop).not.toHaveBeenCalled();
   });
 
-  // Given a defender in the striker's slot, then his token shows the slot and
-  // his rating there, in red: he is out of position.
+  // Given a defender in the striker's slot, then his token — the shared one,
+  // with his face — shows the slot, his rating there, and a red ring: he is out
+  // of position.
   it("shows each token's slot and rating there", () => {
     const players = eleven();
     players[9] = {
@@ -122,6 +123,7 @@ describe("FormationPitch with a sent-off player", () => {
 
     const token = screen.getByTestId("pitch-token-p9");
     expect(token).toHaveTextContent("52");
-    expect(token.querySelector(".text-red-400")).not.toBeNull();
+    expect(token).toHaveTextContent("common.posAbbr.Striker");
+    expect(within(token).getByTestId("pitch-token-avatar")).toHaveClass("ring-red-400");
   });
 });

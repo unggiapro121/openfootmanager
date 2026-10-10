@@ -421,23 +421,6 @@ export default function HalfTimeBreak({
                   </div>
                 </div>
 
-                {/* Lineup — drag to trade positions, e.g. into a sent-off player's slot */}
-                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
-                  <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">
-                    {t("match.lineups")}
-                  </h3>
-                  <p className="mb-3 text-[11px] text-gray-500 dark:text-gray-400">
-                    {t("match.dragToSwapPositions")}
-                  </p>
-                  <FormationPitch
-                    formation={userTeam.formation}
-                    players={userTeam.players}
-                    sentOff={snapshot.sent_off}
-                    onPlayerDrop={handleSwapPositions}
-                    className="h-[260px] w-full"
-                  />
-                </div>
-
                 {/* Play Style */}
                 <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
                   <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
@@ -486,6 +469,31 @@ export default function HalfTimeBreak({
               </>
             )}
           </div>
+          {/* Lineup — the shared pitch needs the width of the whole grid */}
+          {!isSpectator && (
+            <div className="col-span-3 flex justify-center">
+              <div className="w-full max-w-[36rem]">
+                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+                  <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">
+                    {t("match.lineups")}
+                  </h3>
+                  <p className="mb-3 text-[11px] text-gray-500 dark:text-gray-400">
+                    {t("match.dragToSwapPositions")}
+                  </p>
+                  <FormationPitch
+                    formation={userTeam.formation}
+                    players={userTeam.players}
+                    sentOff={snapshot.sent_off}
+                    onPlayerDrop={handleSwapPositions}
+                    roles={
+                      userSide === "Home" ? snapshot.home_set_pieces : snapshot.away_set_pieces
+                    }
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

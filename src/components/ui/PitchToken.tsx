@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
-import type { KitPattern } from "../../store/types";
+import type { TeamMatchRolesData } from "../../store/types";
 import { getPositionColor } from "../../lib/positionColors";
 import { PlayerAvatar } from "./PlayerAvatar";
-import JerseyIcon from "./JerseyIcon";
 
 /** How well a player fits the slot they occupy — drives the avatar ring colour. */
 export type PitchFitTone = "exact" | "adapted" | "out" | "empty";
@@ -28,25 +27,34 @@ export interface PitchTokenProps {
   fitTone?: PitchFitTone;
   /** When present, renders a face/generated avatar; otherwise initials from name. */
   avatar?: { full_name: string; match_name: string; media?: { face?: string } };
-  /** Optional kit jersey rendered under the avatar. */
-  jersey?: {
-    primaryColor: string;
-    secondaryColor: string;
-    pattern: KitPattern;
-    number?: number | null;
-  };
-  /** Plain "#N" fallback shown when no kit `jersey` is available. */
-  jerseyNumber?: number | null;
-  /**
-   * When true, skips the face avatar and kit jersey graphics, replacing the
-   * avatar with a plain fit-tone ring. Used by the tactics board, where the
-   * portraits and kit colours added clutter without helping tactical setup.
-   */
-  hidePortrait?: boolean;
   /** Role markers stacked at the top-left (max 3 shown). */
   markers?: PitchTokenMarker[];
   /** Optional slot below the name — e.g. a tactical-role combobox. */
   children?: ReactNode;
+}
+
+/**
+ * The duties a player carries on a pitch — captain, vice-captain, penalties,
+ * free kicks, corners — as marker chips, in that order. The one definition the
+ * tactics board and the match screens share.
+ */
+export function pitchRoleMarkers(
+  roles: Partial<TeamMatchRolesData> | undefined,
+  playerId: string,
+): PitchTokenMarker[] {
+  if (!roles) {
+    return [];
+  }
+  const duties: [keyof TeamMatchRolesData, string, string][] = [
+    ["captain", "C", "border-accent-500 bg-accent-500 text-white"],
+    ["vice_captain", "VC", "border-white/60 bg-gray-800/85 text-white"],
+    ["penalty_taker", "PK", "border-primary-500 bg-primary-500 text-white"],
+    ["free_kick_taker", "FK", "border-success-600 bg-success-600 text-white"],
+    ["corner_taker", "CK", "border-orange-500 bg-orange-500 text-white"],
+  ];
+  return duties
+    .filter(([key]) => roles[key] === playerId)
+    .map(([key, shortLabel, toneClassName]) => ({ key, shortLabel, toneClassName }));
 }
 
 function fitRingClass(fitTone: PitchFitTone): string {
@@ -74,10 +82,10 @@ function conditionFillClass(condition: number, fitTone: PitchFitTone): string {
 }
 
 /**
- * Presentational pitch token shared by the tactics board and the pre-match
- * screen: a circular avatar with a fit-tone ring, corner badges (position +
- * OVR), stacked role markers, an optional kit jersey, the player name, an
- * optional control slot (e.g. a role combobox), and a condition bar.
+ * The pitch token every lineup uses — tactics board, pre-match, substitutions,
+ * half-time: the player's face in a fit-tone ring, corner badges (position +
+ * OVR), stacked role markers, the name, an optional control slot (e.g. a role
+ * combobox), and a condition bar.
  *
  * It renders visuals only — wrap it in a button / drag handle and wire
  * interactions at the call site.
@@ -90,9 +98,6 @@ export function PitchToken({
   condition,
   fitTone = "empty",
   avatar,
-  jersey,
-  jerseyNumber,
-  hidePortrait = false,
   markers,
   children,
 }: PitchTokenProps) {
@@ -119,33 +124,21 @@ export function PitchToken({
             {positionAbbr}
           </span>
         </div>
-        {hidePortrait ? (
-          <div className={`h-11 w-11 rounded-full bg-gray-800/60 ${fitRingClass(fitTone)}`} />
-        ) : (
+        <div
+          data-testid="pitch-token-avatar"
+          className={`h-11 w-11 overflow-hidden rounded-full bg-gray-800/60 ${fitRingClass(fitTone)}`}
+        >
           <PlayerAvatar
             player={avatar ?? { full_name: name, match_name: name }}
-            className={`h-11 w-11 overflow-hidden rounded-full ${fitRingClass(fitTone)}`}
+            className="h-full w-full"
           />
-        )}
+        </div>
         <div className="absolute -bottom-1 -right-1.5 z-10">
           <span className="rounded-full bg-gray-900 px-2 py-0.5 text-xs font-heading font-bold leading-4 text-white ring-1 ring-white/30">
             {ovr}
           </span>
         </div>
       </div>
-
-      {!hidePortrait &&
-        (jersey ? (
-          <JerseyIcon
-            size="md"
-            primaryColor={jersey.primaryColor}
-            secondaryColor={jersey.secondaryColor}
-            pattern={jersey.pattern}
-            number={jersey.number}
-          />
-        ) : jerseyNumber != null ? (
-          <span className="text-[10px] font-heading font-bold text-white/80">#{jerseyNumber}</span>
-        ) : null)}
 
       <div className="max-w-full truncate text-xs font-heading font-bold uppercase tracking-[0.12em] text-white drop-shadow-sm">
         {name}

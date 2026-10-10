@@ -14,3 +14,5 @@ export { InjuryBadge } from "./InjuryBadge";
 export { default as JerseyIcon } from "./JerseyIcon";
 export { PitchToken } from "./PitchToken";
 export type { PitchFitTone } from "./PitchToken";
+export { pitchRoleMarkers } from "./PitchToken";
+export { PitchSurface } from "./PitchSurface";

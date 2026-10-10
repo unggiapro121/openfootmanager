@@ -3,13 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { FixtureData, GameStateData } from "../../store/gameStore";
 import { getFixtureCompetitionName, getFixtureDisplayLabel } from "../../lib/helpers";
-import {
-  type MatchSnapshot,
-  type EnginePlayerData,
-  type PositionFit,
-  FORMATIONS,
-  PLAY_STYLES,
-} from "./types";
+import { type MatchSnapshot, type EnginePlayerData, FORMATIONS, PLAY_STYLES } from "./types";
 import PreMatchLineup, {
   parseFormationNeeds,
   POSITION_KEY_STATS,
@@ -20,27 +14,13 @@ import PreMatchLineup, {
 import { condColor } from "../../lib/playerConditionDisplay";
 import { getSetPieceStats } from "./SetPieceSelector";
 import { FormationPitch } from "./FormationPitch";
-import { ratingAt } from "./slotRatings";
 import { makeTeamFallback } from "./helpers";
-import {
-  isPlayerExactForSlot,
-  isPlayerOutOfPosition,
-  normalisePosition,
-  translatePositionAbbreviation,
-} from "../squad/SquadTab.helpers";
 import { PhaseBlueprintPanel } from "../tactics/PhaseBlueprintPanel";
 import { setPlayerRole, setTacticsPhase } from "../../services/squadService";
 import { getRoleOptions } from "../../lib/playerRoles";
 import type { PlayerRole, TacticsPhaseSettings } from "../../store/types";
-import { PitchToken, Select, TeamLogo, ThemeToggle, type PitchFitTone } from "../ui";
+import { Select, TeamLogo, ThemeToggle } from "../ui";
 import { ChevronRight, Crown, Footprints, CornerDownRight, CircleDot, Wand2 } from "lucide-react";
-
-/** The backend's familiarity, as the pitch token's fit ring draws it. */
-const PITCH_FIT_TONE: Record<PositionFit, PitchFitTone> = {
-  Natural: "exact",
-  Adapted: "adapted",
-  Unfamiliar: "out",
-};
 
 interface PreMatchSetupProps {
   snapshot: MatchSnapshot;
@@ -106,133 +86,37 @@ export default function PreMatchSetup({
   const awayTeamColor = awayFullTeam?.colors?.primary ?? "#6366f1";
   const userColor = userSide === "Home" ? homeTeamColor : awayTeamColor;
 
-  const userFullTeam = userSide === "Home" ? homeFullTeam : awayFullTeam;
-  const userPrimary = userFullTeam?.colors?.primary ?? userColor;
-  const userSecondary = userFullTeam?.colors?.secondary ?? "#1a3a6b";
-  const userPattern = userFullTeam?.kit_pattern ?? "Solid";
-
-  const oppFullTeam = userSide === "Home" ? awayFullTeam : homeFullTeam;
-  const oppPrimary = oppFullTeam?.colors?.primary ?? "#6366f1";
-  const oppSecondary = oppFullTeam?.colors?.secondary ?? "#1a3a6b";
-  const oppPattern = oppFullTeam?.kit_pattern ?? "Solid";
-
-  // Index the full squad so pitch tokens can be enriched with face/jersey/natural
-  // position that the lightweight match snapshot player doesn't carry.
-  const storeById = useMemo(
-    () => new Map(gameState.players.map((p) => [p.id, p])),
-    [gameState.players],
-  );
-
   const jerseyNumberById = useMemo(
     () => new Map(gameState.players.map((p) => [p.id, p.jersey_number])),
     [gameState.players],
   );
 
-  // Rich token for the user's command pitch (avatar, kit, OVR, fit ring).
-  const renderUserToken = (
-    player: EnginePlayerData,
-    isSelected: boolean,
-    slotPosition?: string,
-  ) => {
-    const sp = storeById.get(player.id);
-    // The backend's rating in this slot, which is also what the engine plays
-    // him at, when it sent one.
-    const slotRating = slotPosition ? ratingAt(player, slotPosition) : undefined;
-    // With a granular slot (slot-aligned pitch), grade fit exactly like the
-    // tactics board; otherwise fall back to the coarse group comparison.
-    const fit: PitchFitTone = slotRating
-      ? PITCH_FIT_TONE[slotRating.fit]
-      : !sp
-        ? "exact"
-        : slotPosition
-          ? isPlayerExactForSlot(sp, slotPosition)
-            ? "exact"
-            : isPlayerOutOfPosition(sp, slotPosition)
-              ? "out"
-              : "adapted"
-          : normalisePosition(sp.natural_position || sp.position) === player.position
-            ? "exact"
-            : "out";
-    const displayPosition = slotPosition ?? player.position;
+  // The role picker under each of the user's tokens, like on the tactics board.
+  const renderRolePicker = (player: EnginePlayerData, slotPosition?: string) => {
+    const position = slotPosition ?? player.position;
     return (
       <div
-        className={`flex w-24 flex-col items-center gap-0.5 rounded-xl px-1 py-1 ${
-          isSelected ? "bg-accent-500/25 ring-2 ring-accent-300/70" : ""
-        }`}
+        draggable={false}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        className="w-full"
       >
-        <PitchToken
-          name={(sp?.match_name || player.name).toUpperCase()}
-          positionAbbr={translatePositionAbbreviation(t, displayPosition)}
-          position={displayPosition}
-          ovr={slotRating?.ovr ?? player.ovr}
-          condition={player.condition}
-          fitTone={fit}
-          avatar={
-            sp
-              ? { full_name: sp.full_name, match_name: sp.match_name, media: sp.media }
-              : { full_name: player.name, match_name: player.name }
-          }
-          jersey={{
-            primaryColor: userPrimary,
-            secondaryColor: userSecondary,
-            pattern: userPattern,
-            number: sp?.jersey_number,
+        <Select
+          selectSize="sm"
+          variant="ghost"
+          fullWidth
+          value={player.role ?? "Standard"}
+          onChange={(e) => {
+            void handlePlayerRoleChange(player.id, e.target.value as PlayerRole);
           }}
         >
-          <div
-            draggable={false}
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-            className="w-full"
-          >
-            <Select
-              selectSize="sm"
-              variant="ghost"
-              fullWidth
-              value={player.role ?? "Standard"}
-              onChange={(e) => {
-                void handlePlayerRoleChange(player.id, e.target.value as PlayerRole);
-              }}
-            >
-              {getRoleOptions(displayPosition, player.role ?? "Standard").map((role) => (
-                <option key={role} value={role}>
-                  {t(`tactics.playerRoles.${role}`, role)}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </PitchToken>
-      </div>
-    );
-  };
-
-  // Basic token for the opponent's scouting pitch: avatar, kit, and OVR only —
-  // no fit ring or role furniture, which is the user's-side detail.
-  const renderOppToken = (player: EnginePlayerData, slotPosition?: string) => {
-    const sp = storeById.get(player.id);
-    const displayPosition = slotPosition ?? player.position;
-    const slotRating = slotPosition ? ratingAt(player, slotPosition) : undefined;
-    return (
-      <div className="flex w-24 flex-col items-center gap-0.5 rounded-xl px-1 py-1">
-        <PitchToken
-          name={(sp?.match_name || player.name).toUpperCase()}
-          positionAbbr={translatePositionAbbreviation(t, displayPosition)}
-          position={displayPosition}
-          ovr={slotRating?.ovr ?? player.ovr}
-          condition={player.condition}
-          avatar={
-            sp
-              ? { full_name: sp.full_name, match_name: sp.match_name, media: sp.media }
-              : { full_name: player.name, match_name: player.name }
-          }
-          jersey={{
-            primaryColor: oppPrimary,
-            secondaryColor: oppSecondary,
-            pattern: oppPattern,
-            number: sp?.jersey_number,
-          }}
-        />
+          {getRoleOptions(position, player.role ?? "Standard").map((role) => (
+            <option key={role} value={role}>
+              {t(`tactics.playerRoles.${role}`, role)}
+            </option>
+          ))}
+        </Select>
       </div>
     );
   };
@@ -509,17 +393,16 @@ export default function PreMatchSetup({
       </div>
       {/* Center: the pitch — portrait aspect (SVG is 100x140) so it fills the
           column height without squishing, capped by available width. */}
-      <div className="flex min-h-0 items-center justify-center overflow-hidden">
+      <div className="flex min-h-0 justify-center overflow-y-auto">
         <FormationPitch
           formation={userTeam.formation}
           players={userTeam.players}
           selectedId={selectedStarterId}
           onPlayerClick={(id) => setSelectedStarterId(id === selectedStarterId ? null : id)}
           onPlayerDrop={(draggedId, targetId) => void handlePositionSwap(draggedId, targetId)}
-          renderToken={(p, { isSelected, slotPosition }) =>
-            renderUserToken(p, isSelected, slotPosition)
-          }
-          className="aspect-[5/7] h-full max-h-full w-auto max-w-full"
+          roles={userSetPieces}
+          renderTokenExtra={renderRolePicker}
+          className="w-full max-w-[36rem]"
         />
       </div>
       {/* Right: set pieces + phase blueprint */}
@@ -550,12 +433,12 @@ export default function PreMatchSetup({
             {oppTeam.formation} · {t(`common.playStyles.${oppTeam.play_style}`, oppTeam.play_style)}
           </p>
         </div>
-        <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+        <div className="flex min-h-0 flex-1 justify-center overflow-y-auto">
           <FormationPitch
             formation={oppTeam.formation}
             players={oppTeam.players}
-            renderToken={(p, { slotPosition }) => renderOppToken(p, slotPosition)}
-            className="aspect-[5/7] h-full max-h-full w-auto max-w-full"
+            roles={userSide === "Home" ? snapshot.away_set_pieces : snapshot.home_set_pieces}
+            className="w-full max-w-[36rem]"
           />
         </div>
       </div>
