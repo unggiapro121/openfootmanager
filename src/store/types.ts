@@ -328,8 +328,6 @@ export interface PlayerData {
   morale_core?: PlayerMoraleCoreData;
   /** Position-weighted overall rating (1–99). Computed by the backend from the player's natural position. */
   ovr?: number;
-  /** Player's potential ceiling (1–99). Set at generation; higher than ovr for young players. */
-  potential?: number;
   /** Recent match form, in tenths of a rating point (60 = 6.0, an ordinary game). */
   match_form?: number;
   /** Jersey/squad number (1–99). Null if unassigned. */
@@ -489,6 +487,60 @@ export interface ProspectEstimate {
   potential_band: number;
   /** Headline attributes a following scout has seen; absent in a first report. */
   attributes?: AttributeRead[];
+}
+
+/** Mirrors `ofm_core::potential_projection::Assessor`: who made a read. */
+export interface Assessor {
+  staff_id: string;
+  name: string;
+  role: "AssistantManager" | "Coach" | "Scout" | "Physio";
+}
+
+/** Mirrors `ofm_core::potential_projection::ProjectionPoint`. */
+export interface ProjectionPoint {
+  /** Seasons from now; 0 is today. */
+  season: number;
+  age: number;
+  low: number;
+  expected: number;
+  high: number;
+}
+
+/** Mirrors `ofm_core::potential_projection::PlayerProjection`. */
+export interface PlayerProjection {
+  player_id: string;
+  assessor: Assessor | null;
+  estimate: ProspectEstimate;
+  /** Whether the club's read makes him a wonderkid; a read, not the truth. */
+  wonderkid: boolean;
+  projection: {
+    points: ProjectionPoint[];
+    peak_expected: number;
+    peak_age: number;
+  };
+  /** The conditions the projection assumes. */
+  reference: {
+    playing_time: number;
+    match_form: number;
+    coaching: "Club" | "Standard";
+  };
+}
+
+/** Mirrors `ofm_core::potential_projection::PlayerAssessment`. */
+export interface PlayerAssessment {
+  player_id: string;
+  potential_low: number;
+  potential_high: number;
+  potential_band: number;
+  /** The ceiling the club believes, by which squad screens rank and average. */
+  potential_believed: number;
+  wonderkid: boolean;
+}
+
+/** Mirrors `ofm_core::potential_projection::ClubAssessments`. */
+export interface ClubAssessments {
+  assessor: Assessor | null;
+  players: PlayerAssessment[];
 }
 
 /** One headline attribute as a scout reads it ("Pace", "Shooting", …). */

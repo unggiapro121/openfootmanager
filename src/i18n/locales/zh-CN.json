@@ -403,7 +403,10 @@
     "potExcellent": "优秀",
     "potPromising": "有前途",
     "potDecent": "尚可",
-    "potLimited": "有限"
+    "potLimited": "有限",
+    "assessedBy": "潜力评估：{{name}}",
+    "noAssessor": "俱乐部里没有人能评估潜力：请聘请球探或助理教练。",
+    "notAssessed": "未评估"
   },
   "common": {
     "currentWage": "当前工资",
@@ -1772,7 +1775,22 @@
     "renewalProjectionBudgetUsage": "薪资预算占用 {{before}}% → {{after}}%",
     "renewalProjectionRunway": "现金储备 {{before}} → {{after}}",
     "ratingTrend": "评分趋势",
-    "scoutedEstimate": "球探评估：~{{ovr}} · 可信度 {{confidence}}"
+    "scoutedEstimate": "球探评估：~{{ovr}} · 可信度 {{confidence}}",
+    "projection": {
+      "title": "发展预测",
+      "assessedBy": "评估人：{{name}}",
+      "noAssessor": "俱乐部里没有人能评估这名球员的潜力。聘请球探或助理教练后即可获得预测。",
+      "estimatedPotential": "预估潜力",
+      "seasonAhead": "第 +{{n}} 季（{{age}} 岁）",
+      "expectedPeak": "预计巅峰",
+      "peakValue": "{{age}} 岁时 {{ovr}}",
+      "expected": "预计",
+      "range": "区间",
+      "assumptions": "假设正常训练、约三分之二的比赛出场、平均评分约 {{rating}}。",
+      "coachingClub": "按你俱乐部现有的教练组计算。",
+      "coachingStandard": "由于他在其他俱乐部训练，按中等水平的教练组计算。",
+      "disclaimer": "这是球探的预测，而非承诺：出场更多、状态更好会让他成长更快，出场太少则会放慢。"
+    }
   },
   "teamProfile": {
     "clubInfo": "俱乐部信息",
@@ -2950,6 +2968,10 @@
       "staffContractYearsInvalid": "职员合同期限为一到三年。",
       "staff": {
         "marketRefreshesUsed": "本月的刷新次数已用完，将在 1 日恢复。"
+      },
+      "projection": {
+        "notAssessed": "你的俱乐部尚未评估这名球员。",
+        "noAssessor": "俱乐部里没有人能评估潜力。"
       }
     },
     "sender": {
@@ -3825,7 +3847,8 @@
     },
     "Wonderkid": {
       "label": "天才少年",
-      "desc": "潜力非凡的年轻才俊"
+      "desc": "你的球探认为这名年轻球员潜力非凡",
+      "scoutedPotential": "球探评估潜力"
     }
   },
   "date": {
@@ -4323,12 +4346,12 @@
     "itemCrashDesc": "包含在内，因为你上次游戏时有程序崩溃。",
     "optionalHeading": "可选添加 — 默认关闭",
     "includeSave": "我的存档",
-      "includeSaveDesc": "让我们能重现你当时的确切情况。",
+    "includeSaveDesc": "让我们能重现你当时的确切情况。",
     "includeSaveNoCareer": "当前没有进行中的生涯，没有可附加的内容。",
     "nothingSentYet": "在你点击下方按钮之前，不会保存或打开任何内容。提交表单需要 GitHub 账号 —— 无论如何，文件都是你的。",
     "savedTo": "你的报告文件已保存在：",
     "dragItIn": "把它拖到浏览器中的 GitHub 表单里，然后提交。就这么简单。",
-      "browserDidNotOpen": "浏览器没有打开。上方的文件已保存 —— 方便时把它附加到 GitHub 上的新 issue 里。",
+    "browserDidNotOpen": "浏览器没有打开。上方的文件已保存 —— 方便时把它附加到 GitHub 上的新 issue 里。",
     "review": "查看将发送的内容",
     "saveAndOpen": "保存文件并打开 GitHub",
     "working": "处理中……"

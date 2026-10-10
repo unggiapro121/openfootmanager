@@ -20,6 +20,8 @@ type TranslateFn = (key: string, options?: Record<string, string | number>) => s
 
 interface PlayerProfileHeroCardProps {
   player: PlayerData;
+  /** His traits as the club shows them, Wonderkid only where its read says so. */
+  traits: string[];
   ovr: number;
   primaryPosition: string;
   age: number;
@@ -72,6 +74,7 @@ export function WeakFootRating({ value }: { value: number }) {
 
 export default function PlayerProfileHeroCard({
   player,
+  traits,
   ovr,
   primaryPosition,
   age,
@@ -173,9 +176,9 @@ export default function PlayerProfileHeroCard({
                 <span>{teamName}</span>
               )}
             </p>
-            {player.traits && player.traits.length > 0 ? (
+            {traits.length > 0 ? (
               <div className="mt-3">
-                <TraitList traits={player.traits} size="sm" />
+                <TraitList traits={traits} size="sm" />
               </div>
             ) : null}
           </div>

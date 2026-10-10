@@ -17,7 +17,7 @@ vi.mock("react-i18next", () => ({
         "common.attributes.aggression": "Agresividad",
         "common.attributes.composure": "Compostura",
         "youthAcademy.age": "Edad",
-        "youthAcademy.potential": "Potencial",
+        "traits.Wonderkid.scoutedPotential": "Potencial estimado",
         "youthAcademy.growth": "Crecimiento",
       };
 
@@ -53,11 +53,15 @@ describe("TraitBadge", () => {
     ).toBeInTheDocument();
   });
 
+  // The badge is the club's judgement, so its rule names the scouted ceiling,
+  // never the true one.
   it("uses translated non-attribute labels for wonderkid requirements", () => {
     render(<TraitBadge trait="Wonderkid" />);
 
     expect(
-      screen.getByLabelText("Talento especial | Edad <= 20, Potencial 90+, Crecimiento 14+"),
+      screen.getByLabelText(
+        "Talento especial | Edad <= 20, Potencial estimado 90+, Crecimiento 14+",
+      ),
     ).toBeInTheDocument();
   });
 });

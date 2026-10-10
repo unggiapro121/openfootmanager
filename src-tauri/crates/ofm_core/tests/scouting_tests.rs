@@ -1470,6 +1470,33 @@ fn low_judging_potential_gives_unclear_assessment() {
     );
 }
 
+/// Given a scout who reads ability poorly (±12) but potential well (±2),
+/// When his report on a player arrives,
+/// Then its overall is read within his ability band and its potential within
+/// his potential band, each holding the truth.
+#[test]
+fn a_player_report_judges_potential_by_judging_potential() {
+    let mut game = make_game();
+    game.staff[0].attributes.judging_ability = 20;
+    game.staff[0].attributes.judging_potential = 90;
+    let target = game.players.iter_mut().find(|p| p.id == "p2").unwrap();
+    target.potential = 80;
+    send_scout(&mut game, "scout1", "p2").unwrap();
+    complete_scouting(&mut game);
+
+    let estimate = game
+        .messages
+        .iter()
+        .find(|m| m.category == MessageCategory::ScoutReport)
+        .and_then(|m| m.context.player_estimate.clone())
+        .expect("a player report carries its read");
+    let player = game.players.iter().find(|p| p.id == "p2").unwrap();
+
+    assert_eq!((estimate.ovr_band, estimate.potential_band), (12, 2));
+    assert!((estimate.potential_low..=estimate.potential_high).contains(&player.potential));
+    assert!(estimate.potential_high - estimate.potential_low <= 4);
+}
+
 // ---------------------------------------------------------------------------
 // Assignment removal after completion
 // ---------------------------------------------------------------------------

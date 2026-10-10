@@ -15,6 +15,40 @@ pub struct TeamCoachingBonus {
     pub physio_mult: f64,   // Recovery bonus from physio staff
 }
 
+/// What a team's coaches and assistant managers multiply training gains by:
+/// 0.8 with none, otherwise 0.85 (coaching 0) to 1.35 (coaching 100) on their
+/// average coaching.
+pub(crate) fn coaching_mult(game: &Game, team_id: &str) -> f64 {
+    let coaching: Vec<f64> = game
+        .staff
+        .iter()
+        .filter(|s| s.team_id.as_deref() == Some(team_id))
+        .filter(|s| matches!(s.role, StaffRole::Coach | StaffRole::AssistantManager))
+        .map(|s| s.attributes.coaching as f64)
+        .collect();
+    if coaching.is_empty() {
+        return 0.8;
+    }
+    let avg_coaching = coaching.iter().sum::<f64>() / coaching.len() as f64;
+    0.85 + (avg_coaching / 100.0) * 0.5
+}
+
+/// How fast a player of `age` improves in training: youngsters fastest,
+/// veterans slowest.
+pub(crate) fn age_factor(age: u32) -> f64 {
+    if age <= 21 {
+        1.5
+    } else if age <= 25 {
+        1.2
+    } else if age <= 29 {
+        1.0
+    } else if age <= 33 {
+        0.6
+    } else {
+        0.3
+    }
+}
+
 /// Compute coaching bonuses from a team's staff.
 fn compute_coaching_bonus(game: &Game, team_id: &str, focus: &TrainingFocus) -> TeamCoachingBonus {
     let team_staff: Vec<_> = game
@@ -23,23 +57,13 @@ fn compute_coaching_bonus(game: &Game, team_id: &str, focus: &TrainingFocus) -> 
         .filter(|s| s.team_id.as_deref() == Some(team_id))
         .collect();
 
-    // Average coaching rating of coaches + assistant managers
+    // Coaches + assistant managers, for the specialist check below.
     let coaching_staff: Vec<_> = team_staff
         .iter()
         .filter(|s| matches!(s.role, StaffRole::Coach | StaffRole::AssistantManager))
         .collect();
 
-    let coaching_mult = if coaching_staff.is_empty() {
-        0.8 // Penalty for having no coaching staff
-    } else {
-        let avg_coaching: f64 = coaching_staff
-            .iter()
-            .map(|s| s.attributes.coaching as f64)
-            .sum::<f64>()
-            / coaching_staff.len() as f64;
-        // Range: 0.85 (coaching=0) to 1.35 (coaching=100)
-        0.85 + (avg_coaching / 100.0) * 0.5
-    };
+    let coaching_mult = coaching_mult(game, team_id);
 
     // Check if any coach specializes in the current training focus
     let focus_spec = match focus {
@@ -417,17 +441,7 @@ fn train_player(
     }
 
     // Age factor for attribute gains: younger players grow faster, older players slower
-    let age_factor = if age <= 21 {
-        1.5
-    } else if age <= 25 {
-        1.2
-    } else if age <= 29 {
-        1.0
-    } else if age <= 33 {
-        0.6
-    } else {
-        0.3
-    };
+    let age_factor = age_factor(age);
 
     // Base gain per attribute per session, boosted by coaching staff, held back
     // for a player who is not getting games, and nudged by how well he is playing.

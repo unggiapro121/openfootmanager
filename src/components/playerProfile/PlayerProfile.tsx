@@ -32,6 +32,9 @@ import { useInitialModalIntent } from "./useInitialModalIntent";
 import { usePlayerProfileData } from "./usePlayerProfileData";
 import { useScoutPlayerFlow } from "./useScoutPlayerFlow";
 import { useContractRenewalFlow } from "./useContractRenewalFlow";
+import PlayerDevelopmentProjectionCard from "./PlayerDevelopmentProjectionCard";
+import { usePlayerProjection } from "../../hooks/usePlayerProjection";
+import { assessmentRefreshKey, withScoutedWonderkid } from "../../lib/scoutedTraits";
 
 interface PlayerProfileProps {
   player: PlayerData;
@@ -104,6 +107,14 @@ export default function PlayerProfile({
     hasLetExpireIntent,
     hasAssistantManager,
   } = buildPlayerProfileRelationship(player, gameState, isOwnClub);
+  // The club projects only players it reads: its own, and those it watches.
+  const isAssessed =
+    isManagerSquadProfile ||
+    (gameState.youth_watchlist ?? []).some((entry) => entry.prospect.id === player.id);
+  const { projection, error: projectionError } = usePlayerProjection(
+    isAssessed ? player.id : null,
+    assessmentRefreshKey(gameState.clock.current_date, gameState.staff, managerTeamId),
+  );
 
   const {
     freeAgentTarget,
@@ -247,6 +258,7 @@ export default function PlayerProfile({
 
       <PlayerProfileHeroCard
         player={player}
+        traits={withScoutedWonderkid(player.traits ?? [], projection?.wonderkid)}
         ovr={ovr}
         primaryPosition={primaryPosition}
         age={age}
@@ -358,6 +370,10 @@ export default function PlayerProfile({
 
       {/* Full-width data cards, stacked for a uniform page */}
       <div className="grid grid-cols-1 gap-5 mt-5">
+        {isAssessed ? (
+          <PlayerDevelopmentProjectionCard projection={projection} error={projectionError} t={t} />
+        ) : null}
+
         <PlayerProfileSeasonStatsCard stats={player.stats} matchForm={player.match_form} t={t} />
 
         <PlayerProfileAdvancedStatsCard summary={advancedStats} t={t} />

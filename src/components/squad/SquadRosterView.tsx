@@ -18,6 +18,8 @@ import {
   Users,
 } from "lucide-react";
 import { TraitList } from "../TraitBadge";
+import { useClubPotentialAssessments } from "../../hooks/useClubPotentialAssessments";
+import { withScoutedWonderkid } from "../../lib/scoutedTraits";
 import { SquadSortHeader } from "./SquadSortHeader";
 import JerseyNumberPickerModal from "./JerseyNumberPickerModal";
 import {
@@ -100,6 +102,8 @@ export default function SquadRosterView({
   onSortStateChange,
 }: SquadRosterViewProps) {
   const { t } = useTranslation();
+  // Wonderkid badges are the club's reads of its players, renewed each day.
+  const { byPlayer: clubReads } = useClubPotentialAssessments(clockDate);
   const [playerSearch, setPlayerSearch] = useState("");
   // Ties each visible filter label to its control, so the control is announced by that label.
   const searchInputId = useId();
@@ -887,7 +891,14 @@ export default function SquadRosterView({
                       </td>
                       {/* Traits — all of them, as icons that wrap as needed */}
                       <td className="py-2.5 px-4">
-                        <TraitList traits={player.traits || []} size="xs" iconOnly />
+                        <TraitList
+                          traits={withScoutedWonderkid(
+                            player.traits || [],
+                            clubReads.get(player.id)?.wonderkid,
+                          )}
+                          size="xs"
+                          iconOnly
+                        />
                       </td>
                       <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
                         {age}

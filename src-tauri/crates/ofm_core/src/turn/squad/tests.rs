@@ -817,3 +817,19 @@ mod coach_mastery {
         assert_eq!(team_data.coach, engine::CoachMastery::default());
     }
 }
+
+/// Given a wonderkid with the Speedster trait,
+/// When he is handed to the match engine, whose snapshots reach the client,
+/// Then he keeps Speedster but not Wonderkid, which would give his ceiling away.
+#[test]
+fn the_engine_never_learns_who_is_a_wonderkid() {
+    let mut player = mk("kid", 60, 100);
+    player.traits = vec![
+        domain::player::PlayerTrait::Speedster,
+        domain::player::PlayerTrait::Wonderkid,
+    ];
+
+    let engine_player = to_engine_player(&player, EnginePlayerRole::Standard, None);
+
+    assert_eq!(engine_player.traits, vec!["Speedster".to_string()]);
+}

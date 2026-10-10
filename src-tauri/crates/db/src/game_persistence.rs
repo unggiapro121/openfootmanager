@@ -1,4 +1,5 @@
 use chrono::Utc;
+use domain::persisted::Persisted;
 use domain::stats::StatsState;
 use domain::world_history::WorldHistoryArchive;
 use rusqlite::Connection;
@@ -88,10 +89,10 @@ fn write_game_to_connection(
         serde_json::to_string(&game.emitted_events).map_err(|_| game_persistence_write_error())?;
     let scout_youth_rest_until_json = serde_json::to_string(&game.scout_youth_rest_until)
         .map_err(|_| game_persistence_write_error())?;
-    let youth_watchlist_json =
-        serde_json::to_string(&game.youth_watchlist).map_err(|_| game_persistence_write_error())?;
-    let youth_pool_json =
-        serde_json::to_string(&game.youth_pool).map_err(|_| game_persistence_write_error())?;
+    let youth_watchlist_json = serde_json::to_string(&Persisted(&game.youth_watchlist))
+        .map_err(|_| game_persistence_write_error())?;
+    let youth_pool_json = serde_json::to_string(&Persisted(&game.youth_pool))
+        .map_err(|_| game_persistence_write_error())?;
     let staff_market_refreshes_json = serde_json::to_string(&game.staff_market_refreshes)
         .map_err(|_| game_persistence_write_error())?;
     let extra_translations_json = serde_json::to_string(&game.extra_translations)
@@ -843,7 +844,8 @@ mod tests {
 
     /// Given a prospect on the youth watchlist with a scout following him,
     /// When the game is saved and read back,
-    /// Then he is still on the list, as read, with his scout.
+    /// Then he is still on the list, as read, with his scout and his true
+    /// ceiling.
     #[test]
     fn write_and_read_game_preserves_the_youth_watchlist() {
         let db = GameDatabase::open_in_memory().unwrap();
@@ -857,6 +859,14 @@ mod tests {
         assert_eq!(entry.prospect.id, "kid-1");
         assert_eq!(entry.estimate, game.youth_watchlist[0].estimate);
         assert_eq!(entry.scout_id.as_deref(), Some("scout-1"));
+        // The true ceiling is hidden from the client, never from the save.
+        assert_eq!(entry.prospect.potential, 82);
+        assert!(
+            entry
+                .prospect
+                .traits
+                .contains(&domain::player::PlayerTrait::Wonderkid)
+        );
     }
 
     /// A career following one prospect, with a scout on him.
@@ -891,6 +901,9 @@ mod tests {
                 aerial: 60,
             },
         );
+        let mut prospect = prospect;
+        prospect.potential = 82;
+        prospect.traits = vec![domain::player::PlayerTrait::Wonderkid];
         game.youth_watchlist
             .push(ofm_core::youth_watchlist::WatchedProspect {
                 kind: Default::default(),
@@ -933,7 +946,8 @@ mod tests {
     }
 
     /// Given a career whose season youth pool has been drawn, when it is saved
-    /// and loaded, then the pool comes back with its youngsters and demand.
+    /// and loaded, then the pool comes back with its youngsters, their true
+    /// ceilings, and demand.
     #[test]
     fn write_and_read_game_preserves_the_youth_pool() {
         let db = GameDatabase::open_in_memory().unwrap();
@@ -963,6 +977,7 @@ mod tests {
         assert_eq!(pool.generated_on, "2032-01-18");
         assert_eq!(pool.ends_on, "2033-01-17");
         assert_eq!(pool.nations["ENG"][0].id, "pool-kid");
+        assert_eq!(pool.nations["ENG"][0].potential, 82);
         assert_eq!(
             pool.demand["rival"],
             vec![domain::player::Position::Goalkeeper]

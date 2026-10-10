@@ -984,11 +984,13 @@ fn build_scout_report(
     let rating_key = rating_key_for(rating_base);
 
     // Potential assessment: use the player's actual potential (fuzzed) when the scout
-    // has sufficient judging_potential skill.  High-potential scouts can also spot
-    // Wonderkid-level talent accurately.
+    // has sufficient judging_potential skill, within the band that skill gives —
+    // as a youth search reads it — so a scout who judges potential well reads
+    // a ceiling closely whatever his eye for current ability.
+    let potential_noise = judgement_band(judging_potential);
     let fuzzed_potential = (judging_potential >= 70).then(|| {
         if player_potential > 0 {
-            let delta: i16 = rng.random_range(-(noise_range as i16)..=(noise_range as i16));
+            let delta: i16 = rng.random_range(-(potential_noise as i16)..=(potential_noise as i16));
             ((player_potential as i16) + delta).clamp(1, 99) as u32
         } else {
             rating_base // fallback to fuzzed OVR if no potential stored
@@ -1034,18 +1036,18 @@ fn build_scout_report(
 
     // The read a watch starts from: every reported figure ± the scout's band,
     // widened to the truth only where clamping or a legacy rating moved it.
-    let around = |reported: u32, truth: u8| {
-        let band = i32::from(noise_range);
+    let around = |reported: u32, truth: u8, band: u8| {
+        let band = i32::from(band);
         let reported = reported as i32;
         let low = (reported - band).clamp(1, 99) as u8;
         let high = (reported + band).clamp(1, 99) as u8;
         (low.min(truth), high.max(truth))
     };
-    let (ovr_low, ovr_high) = around(rating_base, player_ovr);
+    let (ovr_low, ovr_high) = around(rating_base, player_ovr, noise_range);
     let (potential_low, potential_high, potential_band) = match fuzzed_potential {
         Some(fuzzed) => {
-            let (low, high) = around(fuzzed, player_potential);
-            (low, high, noise_range)
+            let (low, high) = around(fuzzed, player_potential, potential_noise);
+            (low, high, potential_noise)
         }
         None => {
             let (low, high) = read_rating(player_potential, 12, &mut rng);
@@ -1074,7 +1076,7 @@ fn build_scout_report(
             .filter_map(|(index, key)| {
                 let reported = to_opt(index)?;
                 let truth = crate::player_rating::attribute_value(attrs, key);
-                let (low, high) = around(u32::from(reported), truth);
+                let (low, high) = around(u32::from(reported), truth, noise_range);
                 Some(AttributeRead {
                     key: (*key).to_string(),
                     low,

@@ -1316,7 +1316,6 @@ describe("InboxTab", (): void => {
                 id: "prospect-open",
                 full_name: "Leo Builder",
                 ovr: 61,
-                potential: 84,
               }),
             ],
             youth_prospect_reports: [

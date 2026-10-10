@@ -294,6 +294,8 @@ pub fn run() {
             send_scout,
             start_youth_scouting,
             quote_youth_search,
+            get_player_projection,
+            get_club_potential_assessments,
             assign_watchlist_scout,
             sign_watched_prospect,
             unwatch_prospect,

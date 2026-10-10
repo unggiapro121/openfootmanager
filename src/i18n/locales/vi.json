@@ -403,7 +403,10 @@
     "potExcellent": "Xuất sắc",
     "potPromising": "Triển vọng",
     "potDecent": "Khá",
-    "potLimited": "Hạn chế"
+    "potLimited": "Hạn chế",
+    "assessedBy": "Tiềm năng do {{name}} đánh giá",
+    "noAssessor": "CLB không có ai đánh giá được tiềm năng: hãy thuê tuyển trạch viên hoặc trợ lý HLV.",
+    "notAssessed": "Chưa đánh giá"
   },
   "common": {
     "currentWage": "Lương hiện tại",
@@ -1772,7 +1775,22 @@
     "renewalProjectionWageBill": "Quỹ lương mỗi tuần {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Mức dùng ngân sách lương {{before}}% → {{after}}%",
     "renewalProjectionRunway": "Thời gian trụ được {{before}} → {{after}}",
-    "scoutedEstimate": "Theo tuyển trạch: ~{{ovr}} · độ tin cậy {{confidence}}"
+    "scoutedEstimate": "Theo tuyển trạch: ~{{ovr}} · độ tin cậy {{confidence}}",
+    "projection": {
+      "title": "Dự báo phát triển",
+      "assessedBy": "Người đánh giá: {{name}}",
+      "noAssessor": "CLB không có ai đánh giá được tiềm năng của cầu thủ này. Hãy thuê tuyển trạch viên hoặc trợ lý HLV để có dự báo.",
+      "estimatedPotential": "Tiềm năng dự kiến",
+      "seasonAhead": "Mùa +{{n}} ({{age}} tuổi)",
+      "expectedPeak": "Đỉnh dự kiến",
+      "peakValue": "{{ovr}} lúc {{age}} tuổi",
+      "expected": "Dự kiến",
+      "range": "Khoảng",
+      "assumptions": "Giả định tập luyện bình thường, ra sân khoảng 2/3 số trận và điểm trung bình quanh {{rating}}.",
+      "coachingClub": "Tính theo ban huấn luyện hiện tại của CLB bạn.",
+      "coachingStandard": "Tính theo ban huấn luyện mức trung bình, vì cầu thủ tập luyện ở CLB khác.",
+      "disclaimer": "Đây là dự báo của tuyển trạch viên, không phải lời hứa: được đá nhiều và phong độ tốt sẽ giúp cầu thủ tiến bộ nhanh hơn, ít ra sân thì chậm hơn."
+    }
   },
   "teamProfile": {
     "clubInfo": "Thông tin câu lạc bộ",
@@ -2950,6 +2968,10 @@
       "staffContractYearsInvalid": "Hợp đồng nhân sự có thời hạn từ 1 đến 3 năm.",
       "staff": {
         "marketRefreshesUsed": "Bạn đã dùng hết lượt làm mới tháng này. Lượt sẽ được khôi phục vào ngày 1."
+      },
+      "projection": {
+        "notAssessed": "CLB của bạn chưa đánh giá cầu thủ này.",
+        "noAssessor": "CLB không có ai đánh giá được tiềm năng."
       }
     },
     "sender": {
@@ -3825,7 +3847,8 @@
     },
     "Wonderkid": {
       "label": "Thần đồng",
-      "desc": "Tài năng trẻ với tiềm năng vượt trội"
+      "desc": "Tuyển trạch viên của bạn đánh giá cầu thủ trẻ này có tiềm năng vượt trội",
+      "scoutedPotential": "Tiềm năng ước tính"
     }
   },
   "date": {

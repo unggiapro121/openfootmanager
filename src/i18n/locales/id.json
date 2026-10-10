@@ -403,7 +403,10 @@
     "potExcellent": "Luar Biasa",
     "potPromising": "Menjanjikan",
     "potDecent": "Cukup Baik",
-    "potLimited": "Terbatas"
+    "potLimited": "Terbatas",
+    "assessedBy": "Potensi dinilai oleh {{name}}",
+    "noAssessor": "Tidak ada staf klub yang bisa menilai potensi: rekrut scout atau asisten manajer.",
+    "notAssessed": "Belum dinilai"
   },
   "common": {
     "currentWage": "Gaji Saat Ini",
@@ -1772,7 +1775,22 @@
     "renewalProjectionWageBill": "Beban gaji mingguan {{before}} → {{after}}",
     "renewalProjectionBudgetUsage": "Penggunaan anggaran gaji {{before}}% → {{after}}%",
     "renewalProjectionRunway": "Jarak kas {{before}} → {{after}}",
-    "scoutedEstimate": "Menurut pemandu bakat: ~{{ovr}} · keyakinan {{confidence}}"
+    "scoutedEstimate": "Menurut pemandu bakat: ~{{ovr}} · keyakinan {{confidence}}",
+    "projection": {
+      "title": "Proyeksi perkembangan",
+      "assessedBy": "Dinilai oleh {{name}}",
+      "noAssessor": "Tidak ada staf klub yang bisa menilai potensi pemain ini. Rekrut scout atau asisten manajer untuk mendapatkan proyeksi.",
+      "estimatedPotential": "Perkiraan potensi",
+      "seasonAhead": "Musim +{{n}} (usia {{age}})",
+      "expectedPeak": "Perkiraan puncak",
+      "peakValue": "{{ovr}} di usia {{age}}",
+      "expected": "Perkiraan",
+      "range": "Rentang",
+      "assumptions": "Mengasumsikan latihan normal, bermain sekitar dua dari tiga pertandingan, dan rata-rata rating sekitar {{rating}}.",
+      "coachingClub": "Memakai staf pelatih klubmu saat ini.",
+      "coachingStandard": "Memakai pelatihan rata-rata, karena ia berlatih di klub lain.",
+      "disclaimer": "Ini perkiraan scout, bukan janji: lebih banyak bermain dan performa bagus mempercepat perkembangannya, kurang bermain memperlambatnya."
+    }
   },
   "teamProfile": {
     "clubInfo": "Informasi Klub",
@@ -2950,6 +2968,10 @@
       "staffContractYearsInvalid": "Kontrak staf berlaku satu sampai tiga tahun.",
       "staff": {
         "marketRefreshesUsed": "Jatah penyegaran bulan ini sudah habis. Akan kembali pada tanggal 1."
+      },
+      "projection": {
+        "notAssessed": "Klubmu belum menilai pemain ini.",
+        "noAssessor": "Tidak ada staf klub yang bisa menilai potensi."
       }
     },
     "sender": {
@@ -3825,7 +3847,8 @@
     },
     "Wonderkid": {
       "label": "Wonderkid",
-      "desc": "Bakat muda dengan potensi luar biasa"
+      "desc": "Pemandu bakatmu menilai pemain muda ini punya potensi luar biasa",
+      "scoutedPotential": "Potensi hasil scouting"
     }
   },
   "date": {
@@ -4323,12 +4346,12 @@
     "itemCrashDesc": "Disertakan karena ada yang macet pada sesi terakhirmu.",
     "optionalHeading": "Tambahkan kalau mau — mati secara bawaan",
     "includeSave": "Berkas simpananku",
-      "includeSaveDesc": "Memungkinkan kami memutar ulang situasi persis yang kamu alami.",
+    "includeSaveDesc": "Memungkinkan kami memutar ulang situasi persis yang kamu alami.",
     "includeSaveNoCareer": "Tidak ada karier yang terbuka, jadi tidak ada yang bisa dilampirkan.",
     "nothingSentYet": "Tidak ada yang disimpan atau dibuka sampai kamu menekan tombol di bawah. Mengirim formulir butuh akun GitHub — berkasnya tetap milikmu.",
     "savedTo": "Berkas laporanmu disimpan di sini:",
     "dragItIn": "Seret ke formulir GitHub di peramban, lalu kirim. Selesai.",
-      "browserDidNotOpen": "Peramban tidak terbuka. Berkas di atas sudah tersimpan — lampirkan ke issue baru di GitHub saat sempat.",
+    "browserDidNotOpen": "Peramban tidak terbuka. Berkas di atas sudah tersimpan — lampirkan ke issue baru di GitHub saat sempat.",
     "review": "Tinjau yang akan dikirim",
     "saveAndOpen": "Simpan berkas dan buka GitHub",
     "working": "Sedang bekerja…"

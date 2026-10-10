@@ -8,7 +8,7 @@ use std::hash::{Hash, Hasher};
 const MIN_ATTRIBUTE: u8 = 1;
 const MAX_ATTRIBUTE: u8 = 99;
 
-fn player_age_on(current_date: NaiveDate, date_of_birth: &str) -> i32 {
+pub(crate) fn player_age_on(current_date: NaiveDate, date_of_birth: &str) -> i32 {
     let Ok(dob) = NaiveDate::parse_from_str(date_of_birth, "%Y-%m-%d") else {
         return 30;
     };

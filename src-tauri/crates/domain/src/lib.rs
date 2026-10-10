@@ -7,6 +7,7 @@ pub mod message;
 pub mod national_team;
 pub mod negotiation;
 pub mod news;
+pub mod persisted;
 pub mod player;
 pub mod season;
 pub mod staff;
