@@ -51,6 +51,22 @@ export interface EnginePlayerData {
   aerial: number;
   traits: string[];
   role: string;
+  /**
+   * His rating at each pitch position, worked out by the backend with the rule
+   * lineups are picked by. Absent for players the engine was handed without
+   * them.
+   */
+  position_ratings?: PositionRating[];
+}
+
+/** How familiar a pitch position is to a player. */
+export type PositionFit = "Natural" | "Adapted" | "Unfamiliar";
+
+export interface PositionRating {
+  /** A granular pitch position, e.g. "CenterBack". */
+  position: string;
+  ovr: number;
+  fit: PositionFit;
 }
 
 export interface EngineTeamData {

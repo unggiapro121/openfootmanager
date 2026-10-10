@@ -2010,6 +2010,7 @@
     "events": "Événements",
     "stats": "Statistiques",
     "lineups": "Compositions",
+    "dragToSwapPositions": "Faites glisser un joueur sur un autre pour échanger leurs postes, y compris à la place d'un exclu.",
     "simSpeed": "Vitesse de Simulation",
     "pause": "Pause",
     "slow": "Lent",

@@ -1,6 +1,20 @@
 import { useId, useState, type DragEvent, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { buildPitchRows } from "../squad/SquadTab.helpers";
-import type { EnginePlayerData } from "./types";
+import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
+import { ratingAt } from "./slotRatings";
+import type { EnginePlayerData, PositionFit } from "./types";
+
+/**
+ * On the pitch, whose colours do not change with the theme: the slot label in
+ * white when he is at home there, amber when adapted, red when out of position,
+ * and the token ring to match.
+ */
+const PITCH_FIT_TONE: Record<PositionFit, { label: string; ring: string }> = {
+  Natural: { label: "text-white", ring: "border-primary-300/80" },
+  Adapted: { label: "text-accent-300", ring: "border-accent-400" },
+  Unfamiliar: { label: "text-red-400", ring: "border-red-500" },
+};
 
 interface FormationSlot {
   player: EnginePlayerData;
@@ -8,6 +22,8 @@ interface FormationSlot {
   y: number;
   /** Granular formation slot (e.g. "CenterBack") — only in slot-aligned mode. */
   slotPosition?: string;
+  /** He has been sent off: his slot is still his, but he plays no part. */
+  isSentOff?: boolean;
 }
 
 /**
@@ -36,9 +52,9 @@ function buildSlotAlignedSlots(
     row.positions.forEach((slotPosition, colIdx) => {
       const player = players[slotIndex];
       slotIndex += 1;
-      if (sentOff.includes(player.id)) {
-        return;
-      }
+      // A sent-off player keeps his slot on the teamsheet. Drawing it, rather
+      // than leaving a hole, gives the manager something to drop a player onto
+      // when he wants to fill the gap.
       slots.push({
         player,
         x:
@@ -47,6 +63,7 @@ function buildSlotAlignedSlots(
             : Math.round((100 * (colIdx + 1)) / (row.positions.length + 1)),
         y: Number.isFinite(y) ? y : 50,
         slotPosition,
+        isSentOff: sentOff.includes(player.id),
       });
     });
   }
@@ -144,6 +161,7 @@ export function FormationPitch({
   className,
   renderToken,
 }: FormationPitchProps) {
+  const { t } = useTranslation();
   const uid = useId();
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
@@ -245,7 +263,7 @@ export function FormationPitch({
           strokeWidth="0.6"
         />
       </svg>
-      {slots.map(({ player: p, x, y, slotPosition }) => {
+      {slots.map(({ player: p, x, y, slotPosition, isSentOff }) => {
         const isSelected = selectedId === p.id;
         const isSubOn = subbedOnIds?.has(p.id) ?? false;
         const initials = p.name
@@ -258,17 +276,27 @@ export function FormationPitch({
         const isDropTarget = dropTargetId === p.id && !isDragged;
         const sharedClass = `absolute z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 transition-all ${onPlayerClick ? "cursor-pointer hover:scale-110" : ""} ${isSelected ? "scale-110" : ""} ${isDragged ? "opacity-40" : ""} ${isDropTarget ? "scale-110 ring-2 ring-white/80" : ""}`;
         const sharedStyle = { left: `${x}%`, top: `${y}%` };
+        // His rating in the slot he stands in, when the backend rated him.
+        const slotRating = slotPosition ? ratingAt(p, slotPosition) : undefined;
+        const fitTone = slotRating ? PITCH_FIT_TONE[slotRating.fit] : undefined;
         const tokenContent = renderToken ? (
           renderToken(p, { isSelected, isSubOn, slotPosition })
         ) : (
           <>
+            {slotRating && slotPosition && (
+              <span
+                className={`rounded bg-navy-900/70 px-1 font-heading text-[8px] font-bold leading-tight ${fitTone?.label ?? ""}`}
+              >
+                {translatePositionAbbreviation(t, slotPosition)} {slotRating.ovr}
+              </span>
+            )}
             <div
               className={`flex h-7 w-7 items-center justify-center rounded-full border-2 font-heading text-[9px] font-bold text-white shadow-md transition-all ${
                 isSelected
                   ? "border-red-300 bg-red-500/80 ring-2 ring-red-500/50"
                   : p.condition < 50
                     ? "border-yellow-400/80 bg-yellow-600/70"
-                    : "border-white/30 bg-navy-800/80"
+                    : `${fitTone?.ring ?? "border-white/30"} bg-navy-800/80`
               }`}
             >
               {isSubOn ? "▲" : initials}
@@ -281,14 +309,8 @@ export function FormationPitch({
           </>
         );
 
-        const dragHandlers = onPlayerDrop
+        const dropHandlers = onPlayerDrop
           ? {
-              draggable: true,
-              onDragStart: (e: DragEvent<HTMLDivElement>) => {
-                e.dataTransfer.effectAllowed = "move";
-                e.dataTransfer.setData("text/plain", p.id);
-                setDraggedId(p.id);
-              },
               onDragOver: (e: DragEvent<HTMLDivElement>) => {
                 if (!draggedId || draggedId === p.id) return;
                 e.preventDefault();
@@ -303,14 +325,51 @@ export function FormationPitch({
                 const fromId = draggedId ?? e.dataTransfer.getData("text/plain");
                 setDraggedId(null);
                 setDropTargetId(null);
-                if (fromId && fromId !== p.id) onPlayerDrop(fromId, p.id);
+                // A sent-off player is never a drag source, whatever the event claims.
+                if (fromId && fromId !== p.id && !sentOff.includes(fromId)) {
+                  onPlayerDrop(fromId, p.id);
+                }
+              },
+            }
+          : {};
+        const dragHandlers = onPlayerDrop
+          ? {
+              draggable: true,
+              onDragStart: (e: DragEvent<HTMLDivElement>) => {
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", p.id);
+                setDraggedId(p.id);
               },
               onDragEnd: () => {
                 setDraggedId(null);
                 setDropTargetId(null);
               },
+              ...dropHandlers,
             }
           : {};
+
+        if (isSentOff) {
+          // Still a drop target, so a player can be moved into the gap; never a
+          // drag source or a click target: he cannot move or come off himself.
+          return (
+            <div
+              key={p.id}
+              data-testid={`pitch-token-${p.id}`}
+              role="img"
+              aria-label={`${p.name} — ${t("match.eventTypes.RedCard")}`}
+              className={`absolute z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 rounded-xl transition-all ${isDropTarget ? "scale-110 ring-2 ring-white/80" : ""}`}
+              style={sharedStyle}
+              {...dropHandlers}
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-dashed border-white/40 bg-navy-900/40">
+                <span aria-hidden="true" className="h-3.5 w-2.5 rounded-sm bg-red-600 shadow" />
+              </div>
+              <span className="max-w-[44px] truncate text-center font-heading text-[8px] font-bold text-white/40 line-through drop-shadow">
+                {p.name.split(" ").pop()}
+              </span>
+            </div>
+          );
+        }
 
         if (onPlayerClick) {
           // div-with-button-role rather than <button>: rich tokens can embed
@@ -319,6 +378,7 @@ export function FormationPitch({
           return (
             <div
               key={p.id}
+              data-testid={`pitch-token-${p.id}`}
               role="button"
               tabIndex={0}
               aria-label={p.name}
@@ -338,7 +398,13 @@ export function FormationPitch({
           );
         }
         return (
-          <div key={p.id} className={sharedClass} style={sharedStyle} {...dragHandlers}>
+          <div
+            key={p.id}
+            data-testid={`pitch-token-${p.id}`}
+            className={sharedClass}
+            style={sharedStyle}
+            {...dragHandlers}
+          >
             {tokenContent}
           </div>
         );

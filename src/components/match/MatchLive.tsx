@@ -18,6 +18,7 @@ import { useSettingsStore } from "../../store/settingsStore";
 import { EventFeed, MatchStats, Lineups } from "./MatchPanels";
 import MatchScreenLayout from "./MatchScreenLayout";
 import { SubPanel } from "./SubPanel";
+import { swapMatchPositions } from "../../services/liveMatchService";
 import {
   Play,
   Pause,
@@ -212,6 +213,15 @@ export default function MatchLive({
       setShowSubPanel(false);
     } catch (err) {
       console.error("Substitution failed:", err);
+    }
+  };
+
+  const handleSwapPositions = async (playerAId: string, playerBId: string) => {
+    if (!userSide || isSpectator) return;
+    try {
+      onSnapshotUpdate(await swapMatchPositions(userSide, playerAId, playerBId));
+    } catch (err) {
+      console.error("Position swap failed:", err);
     }
   };
 
@@ -601,6 +611,7 @@ export default function MatchLive({
           snapshot={snapshot}
           side={userSide}
           onSubstitute={handleSubstitution}
+          onSwapPositions={handleSwapPositions}
           onFormationChange={handleFormationChange}
           onPlayStyleChange={handlePlayStyleChange}
           onClose={() => setShowSubPanel(false)}

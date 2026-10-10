@@ -41,6 +41,7 @@ fn make_player(id: &str, name: &str, pos: Position, skill: u8) -> PlayerData {
         height_cm: 0,
         traits: vec![],
         role: PlayerRole::Standard,
+        position_ratings: Vec::new(),
     }
 }
 
@@ -1458,6 +1459,7 @@ fn make_player_with_traits(
         height_cm: 0,
         traits: traits.iter().map(|t| t.to_string()).collect(),
         role: PlayerRole::Standard,
+        position_ratings: Vec::new(),
     }
 }
 
@@ -2287,5 +2289,358 @@ fn kickoff_team_sheet_reflects_changes_made_before_kickoff() {
             .expect("team sheet")
             .formation,
         "3-5-2"
+    );
+}
+
+// ===========================================================================
+// Tests: reshuffling during the match (SwapPositions) and playing a man down
+// ===========================================================================
+
+fn kicked_off_match() -> (LiveMatchState, StdRng) {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(42);
+    state.step_minute(&mut rng); // PreKickOff → FirstHalf
+    state.step_minute(&mut rng);
+    (state, rng)
+}
+
+fn swap(state: &mut LiveMatchState, a: &str, b: &str) -> Result<(), String> {
+    state.apply_command(MatchCommand::SwapPositions {
+        side: Side::Home,
+        player_a_id: a.to_string(),
+        player_b_id: b.to_string(),
+    })
+}
+
+/// Given a match under way, when two starters swap positions,
+/// then they trade slots, each slot keeps its position, and no substitution is used.
+#[test]
+fn swap_positions_works_during_the_match() {
+    let (mut state, _) = kicked_off_match();
+
+    swap(&mut state, "home_def1", "home_fwd2").unwrap();
+
+    let snap = state.snapshot();
+    let players = &snap.home_team.players;
+    assert_eq!(players[1].id, "home_fwd2");
+    assert_eq!(players[1].position, Position::Defender);
+    assert_eq!(players[10].id, "home_def1");
+    assert_eq!(players[10].position, Position::Forward);
+    assert_eq!(snap.home_subs_made, 0);
+}
+
+/// Given a defender sent off, when a forward swaps with him,
+/// then the forward fills the defender's slot and the sent-off player takes the
+/// forward's slot, still sent off.
+#[test]
+fn swap_positions_moves_a_player_into_a_sent_off_players_slot() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_def2");
+
+    swap(&mut state, "home_fwd1", "home_def2").unwrap();
+
+    let snap = state.snapshot();
+    let players = &snap.home_team.players;
+    assert_eq!(players[2].id, "home_fwd1");
+    assert_eq!(players[2].position, Position::Defender);
+    assert_eq!(players[9].id, "home_def2");
+    assert_eq!(players[9].position, Position::Forward);
+    assert!(snap.sent_off.contains("home_def2"));
+}
+
+/// Given a sent-off player moved to another slot, when the match plays on,
+/// then he never appears in an event again.
+#[test]
+fn a_sent_off_player_who_changed_slots_never_plays_again() {
+    let (mut state, mut rng) = kicked_off_match();
+    state.test_send_off("home_def2");
+    swap(&mut state, "home_fwd1", "home_def2").unwrap();
+    let events_before = state.snapshot().events.len();
+
+    run_to_finish(&mut state, &mut rng);
+
+    let snap = state.snapshot();
+    assert!(
+        snap.events[events_before..]
+            .iter()
+            .all(|e| e.player_id.as_deref() != Some("home_def2")
+                && e.secondary_player_id.as_deref() != Some("home_def2")),
+        "the sent-off player was picked after changing slots"
+    );
+}
+
+/// Given a player not in the XI, when he is named in a swap, then it is refused.
+#[test]
+fn swap_positions_rejects_a_player_outside_the_xi() {
+    let (mut state, _) = kicked_off_match();
+    let bench_id = state.bench(Side::Home)[0].id.clone();
+
+    let result = swap(&mut state, "home_def1", &bench_id);
+
+    assert_eq!(
+        result.unwrap_err(),
+        "be.error.liveMatch.playerNotInStartingXi"
+    );
+}
+
+/// Given the old pre-match command, when used after kick-off, then it is still
+/// refused: only the new command works during the match.
+#[test]
+fn the_pre_match_swap_command_stays_pre_match_only() {
+    let (mut state, _) = kicked_off_match();
+
+    let result = state.apply_command(MatchCommand::PreMatchSwapPositions {
+        side: Side::Home,
+        player_a_id: "home_def1".to_string(),
+        player_b_id: "home_fwd1".to_string(),
+    });
+
+    assert_eq!(
+        result.unwrap_err(),
+        "be.error.liveMatch.preMatchSwapTooLate"
+    );
+}
+
+/// Given a defender sent off, when the formation changes to 3-5-2,
+/// then he keeps his slot, the XI stays slot-aligned (GK, 3 DEF, 5 MID, 2 FWD in
+/// order), and the players still on the pitch fill the other slots.
+#[test]
+fn a_formation_change_keeps_the_sent_off_player_in_his_slot_and_the_xi_in_slot_order() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_def2");
+
+    state
+        .apply_command(MatchCommand::ChangeFormation {
+            side: Side::Home,
+            formation: "3-5-2".to_string(),
+        })
+        .unwrap();
+
+    let snap = state.snapshot();
+    let players = &snap.home_team.players;
+    assert_eq!(players.len(), 11);
+    assert_eq!(players[2].id, "home_def2");
+    assert_eq!(players[0].id, "home_gk");
+    let expected = [
+        Position::Goalkeeper,
+        Position::Defender,
+        Position::Defender,
+        Position::Defender,
+        Position::Midfielder,
+        Position::Midfielder,
+        Position::Midfielder,
+        Position::Midfielder,
+        Position::Midfielder,
+        Position::Forward,
+        Position::Forward,
+    ];
+    let positions: Vec<Position> = players.iter().map(|p| p.position).collect();
+    assert_eq!(positions, expected);
+}
+
+/// Given a full XI, then every line is at full strength.
+#[test]
+fn every_line_is_at_full_strength_with_eleven() {
+    let (state, _) = kicked_off_match();
+    for line in [Position::Defender, Position::Midfielder, Position::Forward] {
+        assert_eq!(state.line_strength(Side::Home, line), 1.0);
+    }
+}
+
+/// Given one of four defenders sent off, then the back line plays at 3/4 and
+/// the other lines are untouched.
+#[test]
+fn a_line_missing_a_player_is_weaker_by_its_share() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_def2");
+
+    assert_eq!(state.line_strength(Side::Home, Position::Defender), 0.75);
+    assert_eq!(state.line_strength(Side::Home, Position::Midfielder), 1.0);
+    assert_eq!(state.line_strength(Side::Home, Position::Forward), 1.0);
+}
+
+/// Given a forward pulled back into the sent-off defender's slot, then the back
+/// line is whole again and the front line carries the missing man.
+#[test]
+fn moving_the_gap_moves_the_weakness() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_def2");
+
+    swap(&mut state, "home_fwd1", "home_def2").unwrap();
+
+    assert_eq!(state.line_strength(Side::Home, Position::Defender), 1.0);
+    assert_eq!(state.line_strength(Side::Home, Position::Forward), 0.5);
+}
+
+/// Given a line with nobody left in it, then whoever covers it plays at the
+/// floor of one half, not at nothing.
+#[test]
+fn an_empty_line_plays_at_the_floor() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_fwd1");
+    state.test_send_off("home_fwd2");
+
+    assert_eq!(state.line_strength(Side::Home, Position::Forward), 0.5);
+}
+
+/// Given the goalkeeper sent off, then the goalkeeping line is not scaled: a
+/// missing keeper is already punished by who ends up in goal.
+#[test]
+fn the_goalkeeping_line_is_never_scaled() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_gk");
+
+    assert_eq!(state.line_strength(Side::Home, Position::Goalkeeper), 1.0);
+}
+
+/// Given the keeper sent off, when a substitute keeper replaces an outfield
+/// player, then the new keeper takes the goalkeeper's slot and the sent-off
+/// keeper takes the vacated outfield slot, so that line carries the missing man.
+#[test]
+fn a_substitute_keeper_takes_the_sent_off_keepers_slot() {
+    let (mut state, _) = kicked_off_match();
+    state.test_send_off("home_gk");
+
+    state
+        .apply_command(MatchCommand::Substitute {
+            side: Side::Home,
+            player_off_id: "home_fwd2".to_string(),
+            player_on_id: "home_sub_gk".to_string(),
+        })
+        .unwrap();
+
+    let snap = state.snapshot();
+    let players = &snap.home_team.players;
+    assert_eq!(players[0].id, "home_sub_gk");
+    assert_eq!(players[0].position, Position::Goalkeeper);
+    assert_eq!(players[10].id, "home_gk");
+    assert_eq!(players[10].position, Position::Forward);
+    assert_eq!(state.line_strength(Side::Home, Position::Forward), 0.5);
+}
+
+/// Given two equal sides, when the home side plays the whole match without two
+/// of its defenders, then over many matches it concedes clearly more than it
+/// does with eleven.
+#[test]
+fn a_side_missing_defenders_concedes_more() {
+    let conceded = |short: bool| -> u32 {
+        (0..300u64)
+            .map(|seed| {
+                let mut state = make_live_match(false);
+                let mut rng = seeded_rng(seed);
+                state.step_minute(&mut rng);
+                if short {
+                    state.test_send_off("home_def1");
+                    state.test_send_off("home_def2");
+                }
+                run_to_finish(&mut state, &mut rng);
+                u32::from(state.snapshot().away_score)
+            })
+            .sum()
+    };
+    let full = conceded(false);
+    let short = conceded(true);
+    assert!(
+        f64::from(short) > f64::from(full) * 1.15,
+        "conceded {short} two defenders down against {full} with eleven"
+    );
+}
+
+// ===========================================================================
+// Tests: playing out of position
+// ===========================================================================
+
+/// Rated 80 at his natural position and 40 at every other, as `ofm_core` would
+/// rate a specialist.
+fn specialist(mut player: PlayerData, natural: PitchPosition) -> PlayerData {
+    player.position_ratings = [
+        PitchPosition::Goalkeeper,
+        PitchPosition::RightBack,
+        PitchPosition::CenterBack,
+        PitchPosition::LeftBack,
+        PitchPosition::RightWingBack,
+        PitchPosition::LeftWingBack,
+        PitchPosition::DefensiveMidfielder,
+        PitchPosition::CentralMidfielder,
+        PitchPosition::AttackingMidfielder,
+        PitchPosition::RightMidfielder,
+        PitchPosition::LeftMidfielder,
+        PitchPosition::RightWinger,
+        PitchPosition::LeftWinger,
+        PitchPosition::Striker,
+    ]
+    .into_iter()
+    .map(|position| PositionRating {
+        position,
+        ovr: if position == natural { 80 } else { 40 },
+        fit: if position == natural {
+            PositionFit::Natural
+        } else {
+            PositionFit::Unfamiliar
+        },
+    })
+    .collect();
+    player
+}
+
+/// A 4-4-2 home side of specialists, each rated for the slot he starts in.
+fn match_of_specialists(rated: bool) -> LiveMatchState {
+    let mut home = make_team("home", "Home FC", 70, PlayStyle::Balanced);
+    if rated {
+        let slots = formation_slots(&home.formation);
+        home.players = home
+            .players
+            .into_iter()
+            .zip(slots)
+            .map(|(player, slot)| specialist(player, slot))
+            .collect();
+    }
+    LiveMatchState::new(
+        home,
+        make_team("away", "Away FC", 70, PlayStyle::Balanced),
+        MatchConfig::default(),
+        make_bench("home", 65),
+        make_bench("away", 65),
+        false,
+    )
+}
+
+/// Given a left-back rated 80 there and 40 up front, when he swaps into the
+/// striker's slot, then he brings half of himself there, and the striker who
+/// went to left-back half of himself too.
+#[test]
+fn a_player_out_of_position_brings_his_rating_there() {
+    let mut state = match_of_specialists(true);
+    assert_eq!(state.slot_effectiveness("home_def1"), 1.0);
+
+    swap(&mut state, "home_def1", "home_fwd2").unwrap();
+
+    assert_eq!(state.slot_effectiveness("home_def1"), 0.5);
+    assert_eq!(state.slot_effectiveness("home_fwd2"), 0.5);
+}
+
+/// Given a side that swaps both strikers with two defenders, when it plays rated
+/// for its positions, then over many matches it scores clearly less than the
+/// same swap made by players rated alike everywhere.
+#[test]
+fn a_side_playing_defenders_up_front_scores_less() {
+    let scored = |rated: bool| -> u32 {
+        (0..300u64)
+            .map(|seed| {
+                let mut state = match_of_specialists(rated);
+                let mut rng = seeded_rng(seed);
+                state.step_minute(&mut rng);
+                swap(&mut state, "home_def1", "home_fwd1").unwrap();
+                swap(&mut state, "home_def2", "home_fwd2").unwrap();
+                run_to_finish(&mut state, &mut rng);
+                u32::from(state.snapshot().home_score)
+            })
+            .sum()
+    };
+    let unrated = scored(false);
+    let rated = scored(true);
+    assert!(
+        f64::from(rated) < f64::from(unrated) * 0.85,
+        "scored {rated} out of position against {unrated} unrated"
     );
 }

@@ -167,6 +167,17 @@ pub fn ai_decide<R: Rng>(
         _ => return commands,
     }
 
+    // A gap at the back is closed before anything else is considered, and the
+    // minute it appears: like a missing goalkeeper, it does not wait for a
+    // checkpoint. The goalkeeper comes first, though — see
+    // `put_someone_in_goal`, which needs the substitution this might spend.
+    if obs.keeper_on_pitch {
+        let closing = close_the_gap_at_the_back(&obs, profile, rng);
+        if !closing.is_empty() {
+            return closing;
+        }
+    }
+
     let taking_stock = takes_stock(&obs, profile);
 
     if obs.subs_made < obs.max_subs
@@ -286,6 +297,85 @@ fn put_someone_in_goal<R: Rng>(
         player_off_id: makes_way.id.clone(),
         player_on_id: keeper_on.id.clone(),
     })
+}
+
+/// A defender has been sent off: his slot is a gap in the back line, which
+/// plays a man short (`LiveMatchState::line_strength`) until somebody fills it.
+///
+/// Filling it moves the gap to another line, and a line loses strength by the
+/// share of it that is missing: one of four midfielders costs a quarter, one of
+/// two forwards costs half. So the gap goes to whichever of the midfield and
+/// the front line has more players still on (the midfield on a tie), never
+/// leaving the front line empty.
+///
+/// With a change left, a defender on the bench and the game not being chased,
+/// the manager brings the defender on for a player of that line and moves him
+/// into the gap: two commands, applied in order. Otherwise he moves a player
+/// of that line back into the gap, which costs nothing.
+///
+/// Nothing to do once the back line is whole, so the manager acts once per
+/// dismissal. A gap anywhere but the back line is left where it is.
+fn close_the_gap_at_the_back<R: Rng>(
+    obs: &AiObservation<'_>,
+    profile: &AiProfile,
+    rng: &mut R,
+) -> Vec<MatchCommand> {
+    let Some(gap) = obs
+        .team
+        .players
+        .iter()
+        .find(|p| p.position == Position::Defender && obs.is_sent_off(p))
+    else {
+        return Vec::new();
+    };
+
+    let playing = |position: Position| -> Vec<&PlayerData> {
+        obs.team
+            .players
+            .iter()
+            .filter(|p| p.position == position && obs.available(p))
+            .collect()
+    };
+    let midfielders = playing(Position::Midfielder);
+    let forwards = playing(Position::Forward);
+    let spare_forwards = if forwards.len() > A_FORWARD_TO_CHASE_CLEARANCES {
+        forwards
+    } else {
+        Vec::new()
+    };
+    let (thinnest_loss, other) = if spare_forwards.len() > midfielders.len() {
+        (&spare_forwards, &midfielders)
+    } else {
+        (&midfielders, &spare_forwards)
+    };
+    let Some(mover) = least_missed(thinnest_loss, obs, profile, rng)
+        .or_else(|| least_missed(other, obs, profile, rng))
+    else {
+        return Vec::new();
+    };
+    let swap_into_gap = |player_id: &str| MatchCommand::SwapPositions {
+        side: obs.side,
+        player_a_id: player_id.to_string(),
+        player_b_id: gap.id.clone(),
+    };
+
+    if obs.subs_made < obs.max_subs
+        && !chasing(obs)
+        && let Some(defender_on) = obs
+            .bench
+            .iter()
+            .find(|p| p.position == Position::Defender && obs.available(p))
+    {
+        return vec![
+            MatchCommand::Substitute {
+                side: obs.side,
+                player_off_id: mover.id.clone(),
+                player_on_id: defender_on.id.clone(),
+            },
+            swap_into_gap(&defender_on.id),
+        ];
+    }
+    vec![swap_into_gap(&mover.id)]
 }
 
 /// Take off whoever has least left to give, and replace him in kind.

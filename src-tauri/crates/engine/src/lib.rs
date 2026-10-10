@@ -3,6 +3,7 @@ pub(crate) mod duel;
 pub mod engine;
 pub mod event;
 pub mod live_match;
+pub mod pitch_position;
 pub mod rating;
 pub mod report;
 pub(crate) mod shared;
@@ -16,6 +17,7 @@ pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,
     SetPieceTakers, SubstitutionRecord,
 };
+pub use pitch_position::{PitchPosition, PositionFit, PositionRating, formation_slots};
 pub use report::{GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet, TeamStats};
 pub use types::{
     BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle,

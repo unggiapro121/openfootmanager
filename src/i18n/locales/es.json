@@ -2010,6 +2010,7 @@
     "events": "Eventos",
     "stats": "Estadísticas",
     "lineups": "Alineaciones",
+    "dragToSwapPositions": "Arrastra a un jugador sobre otro para intercambiar posiciones, incluso al puesto de un expulsado.",
     "simSpeed": "Velocidad de Simulación",
     "pause": "Pausa",
     "slow": "Lento",

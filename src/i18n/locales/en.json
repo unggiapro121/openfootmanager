@@ -2010,6 +2010,7 @@
     "events": "Events",
     "stats": "Stats",
     "lineups": "Lineups",
+    "dragToSwapPositions": "Drag a player onto another to swap positions — including onto a sent-off player's spot.",
     "simSpeed": "Simulation Speed",
     "pause": "Pause",
     "slow": "Slow",

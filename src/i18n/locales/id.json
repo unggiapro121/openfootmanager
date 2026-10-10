@@ -2010,6 +2010,7 @@
     "events": "Peristiwa",
     "stats": "Statistik",
     "lineups": "Susunan Pemain",
+    "dragToSwapPositions": "Seret pemain ke pemain lain untuk bertukar posisi, termasuk ke posisi pemain yang dikartu merah.",
     "simSpeed": "Kecepatan Simulasi",
     "pause": "Jeda",
     "slow": "Lambat",

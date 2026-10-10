@@ -349,19 +349,31 @@ pub fn step_live_match(
     Ok(results)
 }
 
-pub fn apply_match_command(
-    state: &StateManager,
-    command: engine::MatchCommand,
-) -> Result<engine::MatchSnapshot, String> {
-    info!("[cmd] apply_match_command: {:?}", command);
-    let position_swap = match &command {
+/// The side and the two players of a command that trades formation slots —
+/// before kick-off or during the match — whose players then take the role their
+/// new slot suits.
+fn position_swap_of(command: &engine::MatchCommand) -> Option<(engine::Side, String, String)> {
+    match command {
         engine::MatchCommand::PreMatchSwapPositions {
+            side,
+            player_a_id,
+            player_b_id,
+        }
+        | engine::MatchCommand::SwapPositions {
             side,
             player_a_id,
             player_b_id,
         } => Some((*side, player_a_id.clone(), player_b_id.clone())),
         _ => None,
-    };
+    }
+}
+
+pub fn apply_match_command(
+    state: &StateManager,
+    command: engine::MatchCommand,
+) -> Result<engine::MatchSnapshot, String> {
+    info!("[cmd] apply_match_command: {:?}", command);
+    let position_swap = position_swap_of(&command);
     let mut snapshot = state
         .with_live_match(|session| {
             session.apply_command(command)?;
@@ -418,4 +430,45 @@ pub fn get_match_snapshot(state: &StateManager) -> Result<engine::MatchSnapshot,
     );
 
     Ok(snapshot)
+}
+
+#[cfg(test)]
+mod position_swap_tests {
+    use super::position_swap_of;
+    use engine::{MatchCommand, Side};
+
+    /// Given a slot trade before kick-off or during the match, then both are
+    /// recognised, so the players get the role their new slot suits either way.
+    #[test]
+    fn both_slot_trades_are_recognised() {
+        let pre_match = MatchCommand::PreMatchSwapPositions {
+            side: Side::Home,
+            player_a_id: "a".to_string(),
+            player_b_id: "b".to_string(),
+        };
+        let in_match = MatchCommand::SwapPositions {
+            side: Side::Away,
+            player_a_id: "c".to_string(),
+            player_b_id: "d".to_string(),
+        };
+
+        assert_eq!(
+            position_swap_of(&pre_match),
+            Some((Side::Home, "a".to_string(), "b".to_string()))
+        );
+        assert_eq!(
+            position_swap_of(&in_match),
+            Some((Side::Away, "c".to_string(), "d".to_string()))
+        );
+    }
+
+    /// Given any other command, then no roles are reassigned.
+    #[test]
+    fn other_commands_are_not_slot_trades() {
+        let formation = MatchCommand::ChangeFormation {
+            side: Side::Home,
+            formation: "4-4-2".to_string(),
+        };
+        assert_eq!(position_swap_of(&formation), None);
+    }
 }

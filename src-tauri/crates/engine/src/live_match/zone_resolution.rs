@@ -17,6 +17,14 @@ use super::helpers::{danger_band, foul_severity, save_quality};
 // Action resolution
 // ---------------------------------------------------------------------------
 
+/// `probability` with its odds multiplied by `ratio`: the same scaling a duel
+/// gets from multiplying one side's effective rating, for a duel that only
+/// hands back a probability.
+fn scale_odds(probability: f64, ratio: f64) -> f64 {
+    let scaled = probability * ratio;
+    scaled / (scaled + (1.0 - probability))
+}
+
 impl LiveMatchState {
     pub(super) fn resolve_action<R: Rng>(&mut self, minute: u8, rng: &mut R) -> Vec<MatchEvent> {
         let att_side = self.possession;
@@ -50,8 +58,11 @@ impl LiveMatchState {
                 + passer.composure as f64
                 + passer.teamwork as f64)
                 / 4.0,
-        ) * trait_bonus(&passer, TraitContext::Passing);
-        let press = self.effective_press(def_side);
+        ) * trait_bonus(&passer, TraitContext::Passing)
+            * self.line_strength(att_side, Position::Defender);
+        // The press comes from the midfield: a midfield a man short presses less.
+        let press =
+            self.effective_press(def_side) * self.line_strength(def_side, Position::Midfielder);
         let ball_zone = self.ball_zone;
 
         let buildup_mod = tactics_buildup_mod(&self.team_ref(att_side).tactics);
@@ -103,8 +114,12 @@ impl LiveMatchState {
         let att_eff = att_rating
             * att_mod
             * crate::shared::home_mod(att_side, &self.config)
-            * tactics_tempo_progression(&self.team_ref(att_side).tactics);
-        let def_eff = def_rating * def_mod * crate::shared::home_mod(def_side, &self.config);
+            * tactics_tempo_progression(&self.team_ref(att_side).tactics)
+            * self.line_strength(att_side, Position::Midfielder);
+        let def_eff = def_rating
+            * def_mod
+            * crate::shared::home_mod(def_side, &self.config)
+            * self.line_strength(def_side, Position::Midfielder);
         let success = duel::midfield_win_probability(&attacker, &defender, att_eff / def_eff);
 
         if rng.random_range(0.0..1.0f64) < success {
@@ -171,10 +186,14 @@ impl LiveMatchState {
             * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
         let def_mod = play_style_modifier(self.team_ref(def_side), PlayStylePhase::Defense)
             * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
-        let att_eff = att_rating * att_mod * crate::shared::home_mod(att_side, &self.config);
+        let att_eff = att_rating
+            * att_mod
+            * crate::shared::home_mod(att_side, &self.config)
+            * self.line_strength(att_side, Position::Forward);
         let def_eff = def_rating
             * def_mod
             * crate::shared::home_mod(def_side, &self.config)
+            * self.line_strength(def_side, Position::Defender)
             * tactics_shape_modifier(&self.team_ref(def_side).tactics)
             * tactics_width_versus_shape(
                 &self.team_ref(att_side).tactics,
@@ -197,7 +216,13 @@ impl LiveMatchState {
                 events.push(cross_evt);
                 let header = self.snap_header_target(att_side, &winger_id, rng);
                 let def_header = self.snap_player(def_side, Position::Defender, rng);
-                let aerial_win = duel::aerial_win_probability(&header, &def_header);
+                let aerial_win = scale_odds(
+                    duel::aerial_win_probability(&header, &def_header),
+                    (self.line_strength(att_side, Position::Forward)
+                        * self.slot_effectiveness(&header.id))
+                        / (self.line_strength(def_side, Position::Defender)
+                            * self.slot_effectiveness(&def_header.id)),
+                );
                 if rng.random_range(0.0..1.0f64) < aerial_win {
                     self.ball_zone = Zone::attacking_box(att_side);
                     // He won the header, so the chance is his; the cross is the assist.
@@ -558,6 +583,7 @@ mod event_detail_tests {
             height_cm: 0,
             traits: vec![],
             role: crate::types::PlayerRole::Standard,
+            position_ratings: Vec::new(),
         }
     }
 

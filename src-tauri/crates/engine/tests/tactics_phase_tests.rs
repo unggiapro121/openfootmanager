@@ -61,6 +61,7 @@ fn mk(id: &str, pos: Position) -> PlayerData {
         height_cm: 0,
         traits: vec![],
         role: PlayerRole::Standard,
+        position_ratings: Vec::new(),
     }
 }
 

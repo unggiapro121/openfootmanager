@@ -833,3 +833,52 @@ fn the_engine_never_learns_who_is_a_wonderkid() {
 
     assert_eq!(engine_player.traits, vec!["Speedster".to_string()]);
 }
+
+/// Given every formation the match screens offer, then the engine's slot layout
+/// is the same as the one lineups are picked and drawn by — the engine keeps its
+/// own copy because it may not depend on `ofm_core`.
+#[test]
+fn the_engine_lays_out_formation_slots_like_the_lineup_picker() {
+    for formation in [
+        "4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3", "4-1-4-1",
+    ] {
+        let picker: Vec<PitchPosition> = formation_slots(formation)
+            .iter()
+            .map(|slot| {
+                PITCH_POSITIONS
+                    .iter()
+                    .find(|(domain_position, _)| domain_position == slot)
+                    .map(|(_, pitch)| *pitch)
+                    .expect("every lineup slot is a granular position")
+            })
+            .collect();
+        assert_eq!(engine::formation_slots(formation), picker, "{formation}");
+    }
+}
+
+/// Given a centre-back, when he is rated for the engine, then he is rated at all
+/// fourteen positions, at home as Natural, at full-back as Adapted, up front as
+/// Unfamiliar and lower — the same figures the lineup picker uses.
+#[test]
+fn a_player_is_rated_at_every_pitch_position_by_the_lineup_rule() {
+    let centre_back = mk_pos("cb", DomainPos::CenterBack, 70, 100);
+
+    let ratings = position_ratings(&centre_back);
+    let at = |position: PitchPosition| {
+        ratings
+            .iter()
+            .find(|rating| rating.position == position)
+            .copied()
+            .expect("rated at every position")
+    };
+
+    assert_eq!(ratings.len(), 14);
+    assert_eq!(at(PitchPosition::CenterBack).fit, PositionFit::Natural);
+    assert_eq!(at(PitchPosition::RightBack).fit, PositionFit::Adapted);
+    assert_eq!(at(PitchPosition::Striker).fit, PositionFit::Unfamiliar);
+    assert!(at(PitchPosition::Striker).ovr < at(PitchPosition::CenterBack).ovr);
+    assert_eq!(
+        at(PitchPosition::Striker).ovr,
+        positional_fit_for_assignment(&centre_back, &DomainPos::Striker).round() as u8
+    );
+}

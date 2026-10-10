@@ -1,5 +1,5 @@
 use crate::event::{EventType, MatchEvent};
-use crate::types::{PlayerRole, Position, Side, Zone};
+use crate::types::{PlayerData, PlayerRole, Position, Side, Zone};
 
 use super::{LiveMatchState, SubstitutionRecord, is_role_valid_for_position};
 
@@ -85,6 +85,24 @@ impl LiveMatchState {
 
         self.team_mut(side).players.insert(off_idx, player_on);
 
+        // A substitute keeper belongs in the goalkeeper's slot. Left in the
+        // outfield slot he came on for, the pitch would draw him there and the
+        // sent-off keeper in goal, and the line he came off from would look
+        // whole when it is the one a man short. Trading with the sent-off keeper
+        // puts each where he is.
+        if goes_in_goal
+            && let Some(sent_off_keeper) =
+                self.team_ref(side).players.iter().position(|p| {
+                    p.position == Position::Goalkeeper && self.sent_off.contains(&p.id)
+                })
+            && sent_off_keeper != off_idx
+        {
+            let team = self.team_mut(side);
+            team.players.swap(off_idx, sent_off_keeper);
+            team.players[off_idx].position = player_off.position;
+            team.players[sent_off_keeper].position = Position::Goalkeeper;
+        }
+
         // Move subbed-off player to bench (they can't come back, but we keep them)
         match side {
             Side::Home => self.home_bench.push(player_off),
@@ -166,14 +184,15 @@ impl LiveMatchState {
         Ok(())
     }
 
-    /// Pre-match position swap: two starters trade formation slots. Only valid
-    /// during PreKickOff phase.
+    /// Two players in the XI trade formation slots: the pre-match swap before
+    /// kick-off, `MatchCommand::SwapPositions` at any time. Either may be a
+    /// sent-off player, who stays sent off in his new slot.
     ///
     /// The XI is slot-aligned, so trading slots is trading indices. The slot
     /// keeps its position, as in [`Self::do_pre_match_swap`], and a role the
     /// new position does not admit falls back to `Standard` — the caller picks
     /// a better one if it can.
-    pub(super) fn do_pre_match_position_swap(
+    pub(super) fn swap_slots(
         &mut self,
         side: Side,
         player_a_id: &str,
@@ -227,48 +246,76 @@ impl LiveMatchState {
         }
     }
 
-    /// Apply a formation change: update the formation string and redistribute
-    /// outfield player positions to match the new shape.
+    /// Apply a formation change: set the formation string and lay the XI out in
+    /// its slots, keeping the XI slot-aligned (entry i plays slot i: the keeper,
+    /// then the back line, the midfield and the front line, as the pitch draws
+    /// them).
+    ///
+    /// - The goalkeeper on the pitch takes slot 0.
+    /// - A sent-off player keeps his slot: he is still on the teamsheet, and the
+    ///   manager moves the gap with [`Self::swap_slots`] if he wants it elsewhere.
+    ///   A sent-off keeper whose slot the keeper on the pitch needs takes that
+    ///   keeper's old slot instead.
+    /// - Everyone else still playing fills the remaining slots, most defensive
+    ///   first (defending + tackling + strength), from the back line forward.
+    ///
+    /// Each slot gives its occupant its position; a role the new position does
+    /// not admit falls back to `Standard`.
     pub(super) fn apply_formation(&mut self, side: Side, formation: &str) {
-        let (num_def, num_mid, num_fwd) = Self::parse_formation(formation);
+        let (num_def, num_mid, _) = Self::parse_formation(formation);
+        let sent_off = self.sent_off.clone();
         let team = self.team_mut(side);
         team.formation = formation.to_string();
 
-        // Collect outfield players (skip GK) sorted by defensive-ness
-        // (defenders first, then midfielders, then forwards) using a simple
-        // heuristic: defending+tackling vs shooting+dribbling
-        let mut outfield_indices: Vec<usize> = team
-            .players
+        let players = std::mem::take(&mut team.players);
+        let is_off = |player: &PlayerData| sent_off.contains(&player.id);
+        let keeper_idx = players
             .iter()
-            .enumerate()
-            .filter(|(_, p)| p.position != Position::Goalkeeper)
-            .map(|(i, _)| i)
-            .collect();
+            .position(|p| p.position == Position::Goalkeeper && !is_off(p));
 
-        // Sort by defensive score descending (most defensive first)
-        outfield_indices.sort_by(|&a, &b| {
-            let pa = &team.players[a];
-            let pb = &team.players[b];
-            let def_a = (pa.defending as u16 + pa.tackling as u16 + pa.strength as u16) as f64;
-            let def_b = (pb.defending as u16 + pb.tackling as u16 + pb.strength as u16) as f64;
-            def_b
-                .partial_cmp(&def_a)
-                .unwrap_or(std::cmp::Ordering::Equal)
-        });
-
-        // Assign positions: first num_def → Defender, next num_mid → Midfielder, rest → Forward
-        for (slot, &idx) in outfield_indices.iter().enumerate() {
-            let new_pos = if slot < num_def {
-                Position::Defender
-            } else if slot < num_def + num_mid {
-                Position::Midfielder
-            } else if slot < num_def + num_mid + num_fwd {
-                Position::Forward
+        let mut slots: Vec<Option<PlayerData>> = vec![None; players.len()];
+        let mut outfield = Vec::new();
+        for (idx, player) in players.into_iter().enumerate() {
+            if Some(idx) == keeper_idx {
+                slots[0] = Some(player);
+            } else if is_off(&player) {
+                let target = match keeper_idx {
+                    Some(keeper) if idx == 0 => keeper,
+                    _ => idx,
+                };
+                slots[target] = Some(player);
+            } else if keeper_idx.is_none() && idx == 0 {
+                // Nobody in goal: whoever stands in slot 0 stays there.
+                slots[0] = Some(player);
             } else {
-                // Extra players (e.g. if team has <11 due to red cards) keep current
-                continue;
+                outfield.push(player);
+            }
+        }
+
+        outfield.sort_by_key(|p| {
+            std::cmp::Reverse(
+                u16::from(p.defending) + u16::from(p.tackling) + u16::from(p.strength),
+            )
+        });
+        let mut outfield = outfield.into_iter();
+        for slot in slots.iter_mut().skip(1) {
+            if slot.is_none() {
+                *slot = outfield.next();
+            }
+        }
+
+        team.players = slots.into_iter().flatten().collect();
+        for (idx, player) in team.players.iter_mut().enumerate().skip(1) {
+            player.position = if idx <= num_def {
+                Position::Defender
+            } else if idx <= num_def + num_mid {
+                Position::Midfielder
+            } else {
+                Position::Forward
             };
-            team.players[idx].position = new_pos;
+            if !is_role_valid_for_position(player.role, player.position) {
+                player.role = PlayerRole::Standard;
+            }
         }
     }
 }

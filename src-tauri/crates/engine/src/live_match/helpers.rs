@@ -9,6 +9,10 @@ use crate::types::{PlayerData, Position, Side, TeamData};
 
 use super::{LiveMatchState, SetPieceTakers};
 
+/// Strength of a line whose every slot is held by a sent-off player: someone
+/// from another line covers it, at half the effect.
+const EMPTY_LINE_STRENGTH: f64 = 0.5;
+
 // ---------------------------------------------------------------------------
 // Stamina system
 // ---------------------------------------------------------------------------
@@ -42,7 +46,56 @@ impl LiveMatchState {
         }
     }
 
-    /// Adjust a skill value based on the player's current in-match condition.
+    /// How much of a line is still playing: the share of its slots held by
+    /// players who have not been sent off. A back four missing one plays at
+    /// 3/4; moving a forward into the gap makes it whole and leaves the front
+    /// line short instead. A line nobody is left in is covered by players from
+    /// elsewhere, at [`EMPTY_LINE_STRENGTH`]. The goalkeeping line is never
+    /// scaled: a side without its keeper is already punished by who is in goal.
+    pub fn line_strength(&self, side: Side, line: Position) -> f64 {
+        if line == Position::Goalkeeper {
+            return 1.0;
+        }
+        let in_line = self
+            .team_ref(side)
+            .players
+            .iter()
+            .filter(|player| player.position == line);
+        let (slots, playing) = in_line.fold((0u32, 0u32), |(slots, playing), player| {
+            let still_on = u32::from(!self.sent_off.contains(&player.id));
+            (slots + 1, playing + still_on)
+        });
+        match (slots, playing) {
+            (0, _) => 1.0,
+            (_, 0) => EMPTY_LINE_STRENGTH,
+            _ => f64::from(playing) / f64::from(slots),
+        }
+    }
+
+    /// How much of himself a player brings to the slot he stands in now: his
+    /// rating there over his rating at his natural position (see
+    /// `PlayerData::effectiveness_at`). Slots move with swaps, substitutions
+    /// and formation changes, so this is read from the XI as it is. 1.0 for a
+    /// player not in either XI, or when the XI does not fill the formation.
+    pub fn slot_effectiveness(&self, player_id: &str) -> f64 {
+        [&self.home, &self.away]
+            .into_iter()
+            .find_map(|team| {
+                let index = team.players.iter().position(|p| p.id == player_id)?;
+                if team.players[index].position_ratings.is_empty() {
+                    return Some(1.0);
+                }
+                let slots = crate::pitch_position::formation_slots(&team.formation);
+                if slots.len() != team.players.len() {
+                    return Some(1.0);
+                }
+                Some(team.players[index].effectiveness_at(slots[index]))
+            })
+            .unwrap_or(1.0)
+    }
+
+    /// Adjust a skill value based on the player's current in-match condition
+    /// and how well he plays the slot he is in.
     pub(super) fn condition_adjusted_skill(&self, player_id: &str, base_skill: f64) -> f64 {
         let condition = self
             .player_conditions
@@ -51,7 +104,7 @@ impl LiveMatchState {
             .unwrap_or(50.0);
         // At 100% condition: full skill. At 50%: ~80% skill. At 0%: ~60% skill.
         let factor = 0.6 + 0.4 * (condition / 100.0);
-        base_skill * factor
+        base_skill * factor * self.slot_effectiveness(player_id)
     }
 
     // -----------------------------------------------------------------------
@@ -335,6 +388,7 @@ mod commentary_detail_tests {
             height_cm: 0,
             traits: vec![],
             role: crate::types::PlayerRole::Standard,
+            position_ratings: Vec::new(),
         }
     }
 

@@ -644,6 +644,7 @@ fn make_player(
             };
             choices[rng.random_range(0..choices.len())]
         },
+        position_ratings: Vec::new(),
     }
 }
 

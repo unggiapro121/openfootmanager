@@ -294,6 +294,7 @@ mod empty_squad_tests {
             ovr: 60,
             traits: vec![],
             role: crate::types::PlayerRole::Standard,
+            position_ratings: Vec::new(),
         }
     }
 

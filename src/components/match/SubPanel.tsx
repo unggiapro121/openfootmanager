@@ -22,6 +22,8 @@ import {
   sortByPositionGroup,
   type MatchScenarioId,
 } from "./SubPanel.helpers";
+import { naturalPositionOf, slotPositionsOf } from "./slotRatings";
+import { SlotOvr } from "./SlotOvr";
 
 const CompareBar = ({ label, valA, valB }: { label: string; valA: number; valB: number }) => {
   const diff = valB - valA;
@@ -50,6 +52,7 @@ export function SubPanel({
   snapshot,
   side,
   onSubstitute,
+  onSwapPositions,
   onFormationChange,
   onPlayStyleChange,
   onClose,
@@ -57,6 +60,8 @@ export function SubPanel({
   snapshot: MatchSnapshot;
   side: "Home" | "Away";
   onSubstitute: (offId: string, onId: string) => void;
+  /** Two players of the XI trade slots — dragged on the pitch. Not a substitution. */
+  onSwapPositions: (playerAId: string, playerBId: string) => void;
   onFormationChange: (formation: string) => void;
   onPlayStyleChange: (playStyle: string) => void;
   onClose: () => void;
@@ -79,6 +84,14 @@ export function SubPanel({
     bench.filter((p) => !subbedOffIds.has(p.id) && !subbedOnIds.has(p.id)),
   );
   const selectedPlayer = selectedOff ? team.players.find((p) => p.id === selectedOff) : null;
+  // The pitch position each XI entry plays (entry i plays slot i), and the one
+  // being vacated: the bench is rated for it.
+  const slots = slotPositionsOf(team.formation, team.players.length);
+  const slotOf = (playerId: string) => {
+    const index = team.players.findIndex((p) => p.id === playerId);
+    return index >= 0 ? slots?.[index] : undefined;
+  };
+  const vacatedSlot = selectedOff ? slotOf(selectedOff) : undefined;
   const comparedPlayer = selectedBench ? availableBench.find((p) => p.id === selectedBench) : null;
 
   const scenario = getMatchScenario(snapshot, side);
@@ -178,13 +191,25 @@ export function SubPanel({
         </div>
 
         {subsMade >= snapshot.max_subs ? (
-          <div className="flex flex-1 items-center justify-center p-12">
+          // Changing positions costs no substitution, so the pitch stays.
+          <div className="flex flex-1 flex-col items-center gap-4 overflow-auto p-6">
             <div className="flex flex-col items-center gap-3">
               <AlertTriangle className="h-8 w-8 text-yellow-500" />
               <p className="font-heading text-sm font-bold uppercase tracking-wider text-yellow-500">
                 {t("match.allSubsUsed")}
               </p>
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {t("match.dragToSwapPositions")}
+            </p>
+            <FormationPitch
+              formation={team.formation}
+              players={team.players}
+              sentOff={snapshot.sent_off}
+              subbedOnIds={subbedOnIds}
+              onPlayerDrop={onSwapPositions}
+              className="h-[260px] w-full max-w-sm shrink-0"
+            />
           </div>
         ) : (
           <>
@@ -280,8 +305,12 @@ export function SubPanel({
                   selectedId={selectedOff}
                   subbedOnIds={subbedOnIds}
                   onPlayerClick={handleSelectOffPlayer}
+                  onPlayerDrop={onSwapPositions}
                   className="mx-4 mt-3 h-[210px] shrink-0"
                 />
+                <p className="mx-4 mt-1 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
+                  {t("match.dragToSwapPositions")}
+                </p>
 
                 {/* On-field player table */}
                 <div className="min-h-0 flex-1 overflow-auto px-4 py-2">
@@ -295,9 +324,40 @@ export function SubPanel({
                       </tr>
                     </thead>
                     <tbody>
-                      {sortByPositionGroup(
-                        team.players.filter((p) => !snapshot.sent_off.includes(p.id)),
-                      ).map((p) => {
+                      {sortByPositionGroup(team.players).map((p) => {
+                        if (snapshot.sent_off.includes(p.id)) {
+                          // Still on the teamsheet, never a candidate to come off.
+                          return (
+                            <tr
+                              key={p.id}
+                              data-testid={`sub-panel-off-${p.id}`}
+                              aria-disabled="true"
+                              className="text-sm opacity-50"
+                            >
+                              <td className="py-2 pr-2">
+                                <div className="flex items-center gap-1.5">
+                                  <span
+                                    aria-hidden="true"
+                                    className="h-3 w-2 shrink-0 rounded-sm bg-red-600"
+                                  />
+                                  <span className="truncate font-medium text-gray-500 line-through dark:text-gray-400">
+                                    {p.name}
+                                  </span>
+                                  <span className="sr-only">{t("match.eventTypes.RedCard")}</span>
+                                </div>
+                              </td>
+                              <td className="w-12 py-2 text-center">
+                                <span className="font-heading text-xs text-gray-500 dark:text-gray-400">
+                                  {translatePositionAbbreviation(t, slotOf(p.id) ?? p.position)}
+                                </span>
+                              </td>
+                              <td className="w-12 py-2 text-center font-heading font-bold text-gray-500 dark:text-gray-400">
+                                {p.ovr}
+                              </td>
+                              <td className="w-24 py-2" />
+                            </tr>
+                          );
+                        }
                         const isSelected = selectedOff === p.id;
                         const isSubOn = subbedOnIds.has(p.id);
                         const row = (
@@ -332,11 +392,11 @@ export function SubPanel({
                             </td>
                             <td className="w-12 py-2 text-center">
                               <span className="font-heading text-xs text-gray-500 dark:text-gray-400">
-                                {translatePositionAbbreviation(t, p.position)}
+                                {translatePositionAbbreviation(t, slotOf(p.id) ?? p.position)}
                               </span>
                             </td>
-                            <td className="w-12 py-2 text-center font-heading font-bold text-gray-500 dark:text-gray-400">
-                              {p.ovr}
+                            <td className="w-12 py-2 text-center font-heading font-bold">
+                              <SlotOvr player={p} slot={slotOf(p.id)} />
                             </td>
                             <td className="w-24 py-2">
                               <div className="flex items-center gap-1.5">
@@ -439,12 +499,15 @@ export function SubPanel({
                                 <span
                                   className={`font-heading text-xs ${!posMatch && selectedOff ? "text-yellow-400" : "text-gray-500 dark:text-gray-400"}`}
                                 >
-                                  {translatePositionAbbreviation(t, p.position)}
+                                  {translatePositionAbbreviation(
+                                    t,
+                                    naturalPositionOf(p) ?? p.position,
+                                  )}
                                   {!posMatch && selectedOff && " !"}
                                 </span>
                               </td>
-                              <td className="w-12 py-2 text-center font-heading font-bold text-gray-500 dark:text-gray-400">
-                                {p.ovr}
+                              <td className="w-12 py-2 text-center font-heading font-bold">
+                                <SlotOvr player={p} slot={vacatedSlot} />
                               </td>
                               <td className="w-24 py-2">
                                 <div className="flex items-center gap-1.5">

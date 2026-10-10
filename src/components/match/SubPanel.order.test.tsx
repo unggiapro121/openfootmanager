@@ -136,6 +136,7 @@ describe("SubPanel bench order", () => {
         snapshot={snapshotWithBench(bench)}
         side="Home"
         onSubstitute={vi.fn()}
+        onSwapPositions={vi.fn()}
         onFormationChange={vi.fn()}
         onPlayStyleChange={vi.fn()}
         onClose={vi.fn()}

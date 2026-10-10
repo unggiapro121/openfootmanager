@@ -313,5 +313,6 @@ fn make_player(
         height_cm: synthetic_height(position, rng),
         traits: vec![],
         role,
+        position_ratings: Vec::new(),
     }
 }

@@ -2010,6 +2010,7 @@
     "events": "Olaylar",
     "stats": "İstatistikler",
     "lineups": "Dizilişler",
+    "dragToSwapPositions": "Pozisyonları değiştirmek için bir oyuncuyu diğerinin üzerine sürükleyin; atılan oyuncunun yerine de sürükleyebilirsiniz.",
     "simSpeed": "Simülasyon Hızı",
     "pause": "Duraklat",
     "slow": "Yavaş",

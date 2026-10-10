@@ -46,6 +46,7 @@ fn player(id: &str, position: Position, skill: u8, condition: u8) -> PlayerData 
         height_cm: 0,
         traits: vec![],
         role: PlayerRole::Standard,
+        position_ratings: Vec::new(),
     }
 }
 
@@ -688,4 +689,145 @@ fn the_player_taken_off_is_the_one_with_least_left_to_give() {
     }
 
     panic!("two goals down for a whole match and not one substitution was made");
+}
+
+// ---------------------------------------------------------------------------
+// Closing the gap a red card leaves
+// ---------------------------------------------------------------------------
+
+fn match_under_way(home_bench: Vec<PlayerData>) -> (LiveMatchState, StdRng) {
+    let mut state = LiveMatchState::new(
+        team("home", eleven("home", 60, 100)),
+        team("away", eleven("away", 60, 100)),
+        MatchConfig::default(),
+        home_bench,
+        bench("away", 55),
+        false,
+    );
+    let mut rng = StdRng::seed_from_u64(9);
+    state.step_minute(&mut rng); // kick off
+    state.step_minute(&mut rng);
+    (state, rng)
+}
+
+fn manage_home(state: &mut LiveMatchState, rng: &mut StdRng, minutes: usize) {
+    let manager = profile(50, AiPersonality::Pragmatist);
+    for _ in 0..minutes {
+        if state.step_minute(rng).is_finished {
+            break;
+        }
+        for cmd in ai_decide(state, Side::Home, &manager, rng) {
+            let _ = state.apply_command(cmd);
+        }
+    }
+}
+
+/// Given a centre-back sent off and a defender on the bench, when the AI
+/// manages the next minutes, then a defender is in the gap at the back and the
+/// back line is whole again.
+#[test]
+fn a_side_that_loses_a_defender_fills_the_back_line() {
+    let (mut state, mut rng) = match_under_way(bench("home", 55));
+    state.test_send_off("home_def1");
+
+    manage_home(&mut state, &mut rng, 3);
+
+    assert_eq!(state.line_strength(Side::Home, Position::Defender), 1.0);
+    let snapshot = state.snapshot();
+    let slot_one = &snapshot.home_team.players[2];
+    assert_eq!(
+        slot_one.id, "home_sub_def",
+        "the substitute defender takes the gap"
+    );
+    assert_eq!(snapshot.home_subs_made, 1);
+}
+
+/// Given a defender sent off and no defender on the bench, when the AI
+/// manages, then it pulls an outfield player back into the gap without a
+/// substitution.
+#[test]
+fn without_a_defender_on_the_bench_someone_drops_back() {
+    let no_defender: Vec<PlayerData> = bench("home", 55)
+        .into_iter()
+        .filter(|p| p.position != Position::Defender)
+        .collect();
+    let (mut state, mut rng) = match_under_way(no_defender);
+    state.test_send_off("home_def1");
+
+    manage_home(&mut state, &mut rng, 3);
+
+    assert_eq!(state.line_strength(Side::Home, Position::Defender), 1.0);
+    assert_eq!(state.snapshot().home_subs_made, 0);
+}
+
+/// Given every substitution already used, when a defender is sent off, then
+/// the AI still closes the gap: changing positions is free.
+#[test]
+fn with_no_substitutions_left_the_gap_is_still_closed() {
+    let (mut state, mut rng) = match_under_way(bench("home", 55));
+    for (off, on) in [
+        ("home_mid0", "home_sub_mid"),
+        ("home_fwd0", "home_sub_fwd"),
+        ("home_mid1", "home_sub_gk"),
+        ("home_mid2", "home_sub_def"),
+    ] {
+        state
+            .apply_command(MatchCommand::Substitute {
+                side: Side::Home,
+                player_off_id: off.to_string(),
+                player_on_id: on.to_string(),
+            })
+            .unwrap();
+    }
+    // A fifth change would need a fifth bench player; with none left the
+    // limit that matters is the empty bench.
+    state.test_send_off("home_def1");
+
+    manage_home(&mut state, &mut rng, 3);
+
+    assert_eq!(state.line_strength(Side::Home, Position::Defender), 1.0);
+}
+
+/// Given a forward sent off, then the AI leaves the shape alone: a front line a
+/// man short is the gap a side down to ten can best afford.
+#[test]
+fn a_forward_sent_off_is_left_alone() {
+    let (mut state, mut rng) = match_under_way(bench("home", 55));
+    state.test_send_off("home_fwd1");
+    let before: Vec<String> = state
+        .snapshot()
+        .home_team
+        .players
+        .iter()
+        .map(|p| p.id.clone())
+        .collect();
+
+    manage_home(&mut state, &mut rng, 3);
+
+    let after: Vec<String> = state
+        .snapshot()
+        .home_team
+        .players
+        .iter()
+        .map(|p| p.id.clone())
+        .collect();
+    assert_eq!(before, after);
+}
+
+/// Given a 4-4-2 that loses a centre-back with no defender on the bench, then
+/// the AI pulls a midfielder back, not a forward: one of four midfielders costs
+/// the side less than one of two forwards.
+#[test]
+fn the_gap_goes_to_the_line_that_can_best_spare_a_man() {
+    let no_defender: Vec<PlayerData> = bench("home", 55)
+        .into_iter()
+        .filter(|p| p.position != Position::Defender)
+        .collect();
+    let (mut state, mut rng) = match_under_way(no_defender);
+    state.test_send_off("home_def1");
+
+    manage_home(&mut state, &mut rng, 3);
+
+    assert_eq!(state.line_strength(Side::Home, Position::Midfielder), 0.75);
+    assert_eq!(state.line_strength(Side::Home, Position::Forward), 1.0);
 }

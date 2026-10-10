@@ -85,6 +85,15 @@ pub enum MatchCommand {
         player_a_id: String,
         player_b_id: String,
     },
+    /// Two players in the XI trade formation slots at any point of the match.
+    /// Not a substitution and not limited. Either may be a sent-off player:
+    /// that is how a side down to ten moves its gap to the line it can best
+    /// spare.
+    SwapPositions {
+        side: Side,
+        player_a_id: String,
+        player_b_id: String,
+    },
     ChangePlayerRole {
         side: Side,
         player_id: String,
@@ -391,8 +400,13 @@ impl LiveMatchState {
                 if self.phase != MatchPhase::PreKickOff {
                     return Err("be.error.liveMatch.preMatchSwapTooLate".into());
                 }
-                self.do_pre_match_position_swap(side, &player_a_id, &player_b_id)
+                self.swap_slots(side, &player_a_id, &player_b_id)
             }
+            MatchCommand::SwapPositions {
+                side,
+                player_a_id,
+                player_b_id,
+            } => self.swap_slots(side, &player_a_id, &player_b_id),
             MatchCommand::ChangeTacticalDial { side, dial } => {
                 dial.set_on(&mut self.team_mut(side).tactics);
                 Ok(())

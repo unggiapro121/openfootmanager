@@ -131,6 +131,12 @@ pub struct PlayerData {
 
     #[serde(default)]
     pub role: PlayerRole,
+
+    /// His rating at each pitch position, worked out by `ofm_core` before the
+    /// match. Read for the slot he stands in (see `pitch_position`); empty for
+    /// synthetic players, who then play every slot as themselves.
+    #[serde(default)]
+    pub position_ratings: Vec<crate::pitch_position::PositionRating>,
 }
 
 fn default_engine_attr() -> u8 {

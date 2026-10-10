@@ -1938,6 +1938,7 @@
     "events": "Eventos",
     "stats": "Estatísticas",
     "lineups": "Escalações",
+    "dragToSwapPositions": "Arraste um jogador sobre outro para trocar de posição, inclusive para o lugar de um expulso.",
     "simSpeed": "Velocidade de Simulação",
     "pause": "Pausa",
     "slow": "Lento",

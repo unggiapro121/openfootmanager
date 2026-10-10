@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import type { MatchSnapshot, MatchEvent, EnginePlayerData } from "./types";
 import { getEventDisplay, getEventTypeLabel, getPlayerName } from "./helpers";
 import { getCommentary } from "./commentary";
+import { naturalPositionOf, slotPositionsOf } from "./slotRatings";
+import { SlotOvr } from "./SlotOvr";
 import { Badge } from "../ui";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 
@@ -202,6 +204,8 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
     sentOff: string[],
   ) => {
     const positions = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
+    const slots = slotPositionsOf(team.formation, team.players.length);
+    const slotOf = (playerId: string) => slots?.[team.players.findIndex((p) => p.id === playerId)];
     const subbedOnIds = new Set(
       snapshot.substitutions.filter((s) => s.side === side).map((s) => s.player_on_id),
     );
@@ -247,6 +251,12 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
                     >
                       {p.name}
                     </span>
+                    <span className="w-7 text-center font-heading text-[10px] text-gray-500 dark:text-gray-400">
+                      {translatePositionAbbreviation(t, slotOf(p.id) ?? p.position)}
+                    </span>
+                    <span className="w-6 text-right font-heading text-[10px] font-bold tabular-nums">
+                      <SlotOvr player={p} slot={slotOf(p.id)} />
+                    </span>
                     {yc > 0 && (
                       <span className="w-3 h-4 rounded-sm bg-yellow-400 text-navy-900 text-[8px] flex items-center justify-center font-bold">
                         {yc > 1 ? yc : ""}
@@ -289,7 +299,7 @@ export function Lineups({ snapshot }: { snapshot: MatchSnapshot }) {
                     {p.name}
                   </span>
                   <Badge variant="neutral" size="sm">
-                    {translatePositionAbbreviation(t, p.position)}
+                    {translatePositionAbbreviation(t, naturalPositionOf(p) ?? p.position)}
                   </Badge>
                   <span className="text-gray-500 dark:text-gray-400 tabular-nums text-[10px] w-6 text-right">
                     {Math.round(p.condition)}

@@ -13,6 +13,8 @@ import {
 import { getEventDisplay, getPlayerName, makeTeamFallback } from "./helpers";
 import { getTalkIcon } from "./TeamTalkIcons";
 import { SubPanel } from "./SubPanel";
+import { FormationPitch } from "./FormationPitch";
+import { swapMatchPositions } from "../../services/liveMatchService";
 import { Badge, TeamLogo, ThemeToggle } from "../ui";
 import { Play, RefreshCw, Shield, Zap, Target, Crosshair, Flag, MessageCircle } from "lucide-react";
 
@@ -116,6 +118,14 @@ export default function HalfTimeBreak({
       setShowSubPanel(false);
     } catch (err) {
       console.error("Substitution failed:", err);
+    }
+  };
+
+  const handleSwapPositions = async (playerAId: string, playerBId: string) => {
+    try {
+      onUpdateSnapshot(await swapMatchPositions(userSide, playerAId, playerBId));
+    } catch (err) {
+      console.error("Position swap failed:", err);
     }
   };
 
@@ -411,6 +421,23 @@ export default function HalfTimeBreak({
                   </div>
                 </div>
 
+                {/* Lineup — drag to trade positions, e.g. into a sent-off player's slot */}
+                <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
+                  <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">
+                    {t("match.lineups")}
+                  </h3>
+                  <p className="mb-3 text-[11px] text-gray-500 dark:text-gray-400">
+                    {t("match.dragToSwapPositions")}
+                  </p>
+                  <FormationPitch
+                    formation={userTeam.formation}
+                    players={userTeam.players}
+                    sentOff={snapshot.sent_off}
+                    onPlayerDrop={handleSwapPositions}
+                    className="h-[260px] w-full"
+                  />
+                </div>
+
                 {/* Play Style */}
                 <div className="bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-sm p-4 transition-colors duration-300">
                   <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
@@ -468,6 +495,7 @@ export default function HalfTimeBreak({
           snapshot={snapshot}
           side={userSide}
           onSubstitute={handleSubstitution}
+          onSwapPositions={handleSwapPositions}
           onFormationChange={handleFormationChange}
           onPlayStyleChange={handlePlayStyleChange}
           onClose={() => setShowSubPanel(false)}

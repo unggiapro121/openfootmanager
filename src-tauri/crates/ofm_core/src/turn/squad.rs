@@ -1,13 +1,14 @@
 use crate::game::Game;
 use crate::player_rating::{
-    effective_rating_for_assignment, formation_slots, natural_ovr, positional_fit_for_assignment,
+    SlotFamiliarity, effective_rating_for_assignment, formation_slots, natural_ovr,
+    positional_fit_for_assignment, slot_familiarity,
 };
 use crate::stable_hash::stable_hash;
 use domain::player::Position as DomainPosition;
 use engine::{
-    BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle, PlayStyle,
-    PlayerData, PlayerRole as EnginePlayerRole, Position, PressingIntensity, TacticsBuildUpStyle,
-    TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
+    BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle, PitchPosition,
+    PlayStyle, PlayerData, PlayerRole as EnginePlayerRole, Position, PositionFit, PositionRating,
+    PressingIntensity, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
 };
 use std::collections::{HashMap, HashSet};
 
@@ -764,7 +765,63 @@ fn to_engine_player(
             .map(|t| format!("{:?}", t))
             .collect(),
         role,
+        position_ratings: position_ratings(p),
     }
+}
+
+/// The engine's pitch position for each granular domain position.
+const PITCH_POSITIONS: [(DomainPosition, PitchPosition); 14] = [
+    (DomainPosition::Goalkeeper, PitchPosition::Goalkeeper),
+    (DomainPosition::RightBack, PitchPosition::RightBack),
+    (DomainPosition::CenterBack, PitchPosition::CenterBack),
+    (DomainPosition::LeftBack, PitchPosition::LeftBack),
+    (DomainPosition::RightWingBack, PitchPosition::RightWingBack),
+    (DomainPosition::LeftWingBack, PitchPosition::LeftWingBack),
+    (
+        DomainPosition::DefensiveMidfielder,
+        PitchPosition::DefensiveMidfielder,
+    ),
+    (
+        DomainPosition::CentralMidfielder,
+        PitchPosition::CentralMidfielder,
+    ),
+    (
+        DomainPosition::AttackingMidfielder,
+        PitchPosition::AttackingMidfielder,
+    ),
+    (
+        DomainPosition::RightMidfielder,
+        PitchPosition::RightMidfielder,
+    ),
+    (
+        DomainPosition::LeftMidfielder,
+        PitchPosition::LeftMidfielder,
+    ),
+    (DomainPosition::RightWinger, PitchPosition::RightWinger),
+    (DomainPosition::LeftWinger, PitchPosition::LeftWinger),
+    (DomainPosition::Striker, PitchPosition::Striker),
+];
+
+/// The player rated at every pitch position, with the same rule AI lineups are
+/// picked by (`positional_fit_for_assignment`: attributes weighted for the
+/// position, less what an unfamiliar position and the wrong foot cost him), so
+/// the engine plays him where he stands as well as the lineup picker thinks he
+/// would.
+fn position_ratings(p: &domain::player::Player) -> Vec<PositionRating> {
+    PITCH_POSITIONS
+        .iter()
+        .map(|(domain_position, pitch_position)| PositionRating {
+            position: *pitch_position,
+            ovr: positional_fit_for_assignment(p, domain_position)
+                .round()
+                .clamp(1.0, 99.0) as u8,
+            fit: match slot_familiarity(p, domain_position) {
+                SlotFamiliarity::Natural => PositionFit::Natural,
+                SlotFamiliarity::Alternate | SlotFamiliarity::SameGroup => PositionFit::Adapted,
+                SlotFamiliarity::OtherGroup => PositionFit::Unfamiliar,
+            },
+        })
+        .collect()
 }
 
 /// Auto-select set-piece takers from a set of player IDs.

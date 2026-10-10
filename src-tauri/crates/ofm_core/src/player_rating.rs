@@ -274,24 +274,45 @@ fn canonical_position(position: &Position) -> Position {
     }
 }
 
-fn compatibility_penalty(player: &Player, slot_position: &Position) -> f64 {
-    let primary = primary_position(player);
-    if &primary == slot_position {
-        return 0.0;
-    }
+/// How familiar a slot's position is to a player, from most to least.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SlotFamiliarity {
+    /// His natural position.
+    Natural,
+    /// One of his alternate positions.
+    Alternate,
+    /// Another position in his natural group.
+    SameGroup,
+    /// Another group altogether.
+    OtherGroup,
+}
 
-    let alternates = player
+/// How familiar `slot_position` is to `player`.
+pub fn slot_familiarity(player: &Player, slot_position: &Position) -> SlotFamiliarity {
+    let slot = canonical_position(slot_position);
+    let primary = primary_position(player);
+    if primary == slot {
+        return SlotFamiliarity::Natural;
+    }
+    if player
         .alternate_positions
         .iter()
-        .map(canonical_position)
-        .collect::<Vec<_>>();
-
-    if alternates.iter().any(|position| position == slot_position) {
-        4.0
-    } else if primary.to_group_position() == slot_position.to_group_position() {
-        8.0
+        .any(|position| canonical_position(position) == slot)
+    {
+        SlotFamiliarity::Alternate
+    } else if primary.to_group_position() == slot.to_group_position() {
+        SlotFamiliarity::SameGroup
     } else {
-        14.0
+        SlotFamiliarity::OtherGroup
+    }
+}
+
+fn compatibility_penalty(player: &Player, slot_position: &Position) -> f64 {
+    match slot_familiarity(player, slot_position) {
+        SlotFamiliarity::Natural => 0.0,
+        SlotFamiliarity::Alternate => 4.0,
+        SlotFamiliarity::SameGroup => 8.0,
+        SlotFamiliarity::OtherGroup => 14.0,
     }
 }
 

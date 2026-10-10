@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { SubPanel } from "./SubPanel";
@@ -140,6 +140,7 @@ describe("SubPanel", () => {
     snapshot: createSnapshot(),
     side: "Home" as const,
     onSubstitute: vi.fn(),
+    onSwapPositions: vi.fn(),
     onFormationChange: vi.fn(),
     onPlayStyleChange: vi.fn(),
     onClose: vi.fn(),
@@ -222,5 +223,134 @@ describe("SubPanel", () => {
     expect(screen.getAllByText("Starter One").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Bench One").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Confirm substitution" })).toBeInTheDocument();
+  });
+});
+
+describe("SubPanel position swaps", () => {
+  const XI_POSITIONS = [
+    "Goalkeeper",
+    "Defender",
+    "Defender",
+    "Defender",
+    "Defender",
+    "Midfielder",
+    "Midfielder",
+    "Midfielder",
+    "Midfielder",
+    "Forward",
+    "Forward",
+  ];
+
+  function elevenASide(overrides: Partial<MatchSnapshot> = {}): MatchSnapshot {
+    const snapshot = createSnapshot();
+    snapshot.home_team = makeTeam({
+      players: XI_POSITIONS.map((position, index) =>
+        makePlayer({ id: `p${index}`, name: `Player ${index}`, position }),
+      ),
+    });
+    return { ...snapshot, ...overrides };
+  }
+
+  function drag(fromId: string, toId: string) {
+    const dataTransfer = {
+      setData: vi.fn(),
+      getData: () => fromId,
+      effectAllowed: "",
+      dropEffect: "",
+    };
+    fireEvent.dragStart(screen.getByTestId(`pitch-token-${fromId}`), { dataTransfer });
+    fireEvent.dragOver(screen.getByTestId(`pitch-token-${toId}`), { dataTransfer });
+    fireEvent.drop(screen.getByTestId(`pitch-token-${toId}`), { dataTransfer });
+  }
+
+  const props = (snapshot: MatchSnapshot) => ({
+    snapshot,
+    side: "Home" as const,
+    onSubstitute: vi.fn(),
+    onSwapPositions: vi.fn(),
+    onFormationChange: vi.fn(),
+    onPlayStyleChange: vi.fn(),
+    onClose: vi.fn(),
+  });
+
+  // Given a defender sent off, when a forward is dragged onto his slot on the
+  // pitch, then the panel asks for the two to trade positions.
+  it("swaps a player into a sent-off player's slot by dragging", () => {
+    const p = props(elevenASide({ sent_off: ["p2"] }));
+    render(<SubPanel {...p} />);
+
+    drag("p9", "p2");
+
+    expect(p.onSwapPositions).toHaveBeenCalledWith("p9", "p2");
+  });
+
+  // Given every substitution used, then the pitch is still there: changing
+  // positions costs no substitution.
+  it("keeps the pitch for position swaps once every substitution is used", () => {
+    const p = props(elevenASide({ home_subs_made: 5 }));
+    render(<SubPanel {...p} />);
+
+    expect(screen.getByText("match.allSubsUsed")).toBeInTheDocument();
+    drag("p1", "p10");
+
+    expect(p.onSwapPositions).toHaveBeenCalledWith("p1", "p10");
+  });
+
+  // Given a player sent off, then he is still listed among the players on the
+  // pitch, but cannot be picked to come off.
+  it("lists the sent-off player without letting him be taken off", () => {
+    const p = props(elevenASide({ sent_off: ["p2"] }));
+    render(<SubPanel {...p} />);
+
+    const row = screen.getByTestId("sub-panel-off-p2");
+    expect(row).toHaveAttribute("aria-disabled", "true");
+    fireEvent.click(row);
+
+    expect(screen.queryByText("match.takingOff")).not.toBeInTheDocument();
+  });
+
+  // Given a defender standing in the striker's slot, then the on-field list
+  // names the slot (ST, not DEF) and shows his rating there, in red.
+  it("shows each player's slot position and his rating there", () => {
+    const snapshot = elevenASide();
+    snapshot.home_team.players[9] = makePlayer({
+      id: "p9",
+      name: "Player 9",
+      position: "Forward",
+      position_ratings: [
+        { position: "CenterBack", ovr: 80, fit: "Natural" },
+        { position: "Striker", ovr: 52, fit: "Unfamiliar" },
+      ],
+    });
+    render(<SubPanel {...props(snapshot)} />);
+
+    const row = screen.getByTestId("sub-panel-off-p9");
+    expect(within(row).getByText("common.posAbbr.Striker")).toBeInTheDocument();
+    expect(within(row).getByText("52")).toHaveClass("text-red-600");
+  });
+
+  // Given a player picked to come off from the striker's slot, then each bench
+  // player shows his natural position and his rating in that slot.
+  it("rates the bench for the slot being vacated", () => {
+    const snapshot = elevenASide({
+      home_bench: [
+        makePlayer({
+          id: "bench-cb",
+          name: "Bench CB",
+          position: "Defender",
+          position_ratings: [
+            { position: "CenterBack", ovr: 75, fit: "Natural" },
+            { position: "Striker", ovr: 48, fit: "Unfamiliar" },
+          ],
+        }),
+      ],
+    });
+    render(<SubPanel {...props(snapshot)} />);
+
+    fireEvent.click(screen.getByTestId("sub-panel-off-p9"));
+
+    const row = screen.getByTestId("sub-panel-bench-bench-cb");
+    expect(within(row).getByText(/common\.posAbbr\.CenterBack/)).toBeInTheDocument();
+    expect(within(row).getByText("48")).toHaveClass("text-red-600");
   });
 });

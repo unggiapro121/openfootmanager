@@ -78,6 +78,11 @@ impl AiObservation<'_> {
                 .any(|sub| sub.player_off_id == player.id)
     }
 
+    /// Has this player been sent off? He still holds his slot in the XI.
+    pub(crate) fn is_sent_off(&self, player: &PlayerData) -> bool {
+        self.sent_off.contains(&player.id)
+    }
+
     /// This player's condition as the manager sees it right now.
     ///
     /// Rounded to a whole number before being read back as a float, which looks
@@ -217,6 +222,7 @@ mod tests {
             height_cm: 0,
             traits: vec![],
             role: PlayerRole::Standard,
+            position_ratings: Vec::new(),
         }
     }
 

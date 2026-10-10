@@ -3,7 +3,13 @@ import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { FixtureData, GameStateData } from "../../store/gameStore";
 import { getFixtureCompetitionName, getFixtureDisplayLabel } from "../../lib/helpers";
-import { type MatchSnapshot, type EnginePlayerData, FORMATIONS, PLAY_STYLES } from "./types";
+import {
+  type MatchSnapshot,
+  type EnginePlayerData,
+  type PositionFit,
+  FORMATIONS,
+  PLAY_STYLES,
+} from "./types";
 import PreMatchLineup, {
   parseFormationNeeds,
   POSITION_KEY_STATS,
@@ -14,6 +20,7 @@ import PreMatchLineup, {
 import { condColor } from "../../lib/playerConditionDisplay";
 import { getSetPieceStats } from "./SetPieceSelector";
 import { FormationPitch } from "./FormationPitch";
+import { ratingAt } from "./slotRatings";
 import { makeTeamFallback } from "./helpers";
 import {
   isPlayerExactForSlot,
@@ -27,6 +34,13 @@ import { getRoleOptions } from "../../lib/playerRoles";
 import type { PlayerRole, TacticsPhaseSettings } from "../../store/types";
 import { PitchToken, Select, TeamLogo, ThemeToggle, type PitchFitTone } from "../ui";
 import { ChevronRight, Crown, Footprints, CornerDownRight, CircleDot, Wand2 } from "lucide-react";
+
+/** The backend's familiarity, as the pitch token's fit ring draws it. */
+const PITCH_FIT_TONE: Record<PositionFit, PitchFitTone> = {
+  Natural: "exact",
+  Adapted: "adapted",
+  Unfamiliar: "out",
+};
 
 interface PreMatchSetupProps {
   snapshot: MatchSnapshot;
@@ -121,19 +135,24 @@ export default function PreMatchSetup({
     slotPosition?: string,
   ) => {
     const sp = storeById.get(player.id);
+    // The backend's rating in this slot, which is also what the engine plays
+    // him at, when it sent one.
+    const slotRating = slotPosition ? ratingAt(player, slotPosition) : undefined;
     // With a granular slot (slot-aligned pitch), grade fit exactly like the
     // tactics board; otherwise fall back to the coarse group comparison.
-    const fit: PitchFitTone = !sp
-      ? "exact"
-      : slotPosition
-        ? isPlayerExactForSlot(sp, slotPosition)
-          ? "exact"
-          : isPlayerOutOfPosition(sp, slotPosition)
-            ? "out"
-            : "adapted"
-        : normalisePosition(sp.natural_position || sp.position) === player.position
-          ? "exact"
-          : "out";
+    const fit: PitchFitTone = slotRating
+      ? PITCH_FIT_TONE[slotRating.fit]
+      : !sp
+        ? "exact"
+        : slotPosition
+          ? isPlayerExactForSlot(sp, slotPosition)
+            ? "exact"
+            : isPlayerOutOfPosition(sp, slotPosition)
+              ? "out"
+              : "adapted"
+          : normalisePosition(sp.natural_position || sp.position) === player.position
+            ? "exact"
+            : "out";
     const displayPosition = slotPosition ?? player.position;
     return (
       <div
@@ -145,7 +164,7 @@ export default function PreMatchSetup({
           name={(sp?.match_name || player.name).toUpperCase()}
           positionAbbr={translatePositionAbbreviation(t, displayPosition)}
           position={displayPosition}
-          ovr={player.ovr}
+          ovr={slotRating?.ovr ?? player.ovr}
           condition={player.condition}
           fitTone={fit}
           avatar={
@@ -193,13 +212,14 @@ export default function PreMatchSetup({
   const renderOppToken = (player: EnginePlayerData, slotPosition?: string) => {
     const sp = storeById.get(player.id);
     const displayPosition = slotPosition ?? player.position;
+    const slotRating = slotPosition ? ratingAt(player, slotPosition) : undefined;
     return (
       <div className="flex w-24 flex-col items-center gap-0.5 rounded-xl px-1 py-1">
         <PitchToken
           name={(sp?.match_name || player.name).toUpperCase()}
           positionAbbr={translatePositionAbbreviation(t, displayPosition)}
           position={displayPosition}
-          ovr={player.ovr}
+          ovr={slotRating?.ovr ?? player.ovr}
           condition={player.condition}
           avatar={
             sp
