@@ -423,6 +423,10 @@ pub fn club_assessments(game: &Game) -> Result<ClubAssessments, String> {
 }
 
 #[cfg(test)]
+#[path = "potential_projection_probe.rs"]
+mod probe;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use crate::clock::GameClock;
