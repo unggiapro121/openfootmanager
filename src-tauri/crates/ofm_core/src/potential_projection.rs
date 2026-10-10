@@ -27,10 +27,14 @@ const REFERENCE_INTENSITY: f64 = 1.0;
 /// Coaching assumed for a player the club does not coach itself: a staff of
 /// average coaching (50), as `training::coaching_mult` rates it.
 const STANDARD_COACHING_MULT: f64 = 1.10;
-/// Overall a season per unit of every other multiplier. A regular starter of 18
-/// (age factor 1.5) under average coaching (1.10) gains about +3.5 a season at
-/// 1× in training, so 3.5 / (1.5 × 1.10).
-const PROJECTION_K: f64 = 2.12;
+/// Overall a season per unit of every other multiplier. Tuned with the probe
+/// (`potential_projection_probe.rs`, 24 compact worlds, three years): players
+/// who lived near the reference conditions end within ±0.3 of the expected
+/// line on average after one, two and three years, regulars in good form
+/// about +1 to +2 ahead, players who rarely play 1.5 to 5 behind. The
+/// training doc's +3.5 a season for an 18-year-old starter would give 2.12;
+/// a real season has fewer useful sessions than that figure assumed.
+const PROJECTION_K: f64 = 1.70;
 /// Most seasons a projection looks ahead.
 const PROJECTION_SEASONS: u32 = 10;
 /// The age a projection stops at.

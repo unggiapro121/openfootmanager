@@ -11,7 +11,8 @@
 //!
 //! "Near reference" are players whose average playing time (55–80) and match
 //! form (6.5–7.5) over the three seasons sat close to the reference conditions;
-//! their median miss is what `PROJECTION_K` is tuned on.
+//! their mean miss is what `PROJECTION_K` is tuned on. Each multiple in
+//! `K_SCALES` is reported, so a retune reads off the row whose miss is nearest 0.
 
 use super::*;
 use crate::clock::GameClock;
@@ -26,7 +27,7 @@ use std::collections::HashMap;
 const SEASONS: usize = 3;
 /// Multiples of `PROJECTION_K` tried at once. Growth is linear in the coaching
 /// multiplier, so scaling it is scaling K.
-const K_SCALES: [f64; 6] = [0.55, 0.6, 0.65, 0.7, 0.8, 1.0];
+const K_SCALES: [f64; 5] = [0.8, 0.9, 1.0, 1.1, 1.25];
 const OLDEST_TRACKED: u32 = 23;
 
 fn worlds() -> u64 {
@@ -159,38 +160,42 @@ fn track(game: &Game) -> HashMap<String, Tracked> {
         .collect()
 }
 
-/// Play one season to its end, sampling playing time and form each Monday.
-fn play_season(game: &mut Game, tracked: &mut HashMap<String, Tracked>) -> bool {
-    for _ in 0..420 {
+/// A sacked probe manager would leave no league to finish; keep him on.
+fn keep_manager(game: &mut Game) {
+    if game.manager.team_id.is_none() {
+        let club = game.teams[0].id.clone();
+        game.manager.hire(club);
+    }
+}
+
+/// Play `SEASONS` years day by day, rolling each season over as it ends,
+/// sampling playing time and form each Monday and reading every tracked
+/// player's overall on each anniversary of the start.
+fn play_years(game: &mut Game, tracked: &mut HashMap<String, Tracked>) {
+    for day in 1..=(365 * SEASONS) {
+        keep_manager(game);
         if crate::end_of_season::is_season_complete(game) {
-            break;
+            if let Err(error) = crate::end_of_season::advance_to_next_season(game) {
+                println!("rollover refused on day {day}: {error}");
+            }
+            keep_manager(game);
         }
         crate::turn::process_day(game);
-        if game.clock.current_date.weekday() == chrono::Weekday::Mon {
-            for player in &game.players {
-                if let Some(entry) = tracked.get_mut(&player.id) {
-                    entry.playing_time.push(player.playing_time);
-                    entry.match_form.push(player.match_form);
-                }
+        let monday = game.clock.current_date.weekday() == chrono::Weekday::Mon;
+        let anniversary = (day % 365 == 0).then(|| day / 365 - 1);
+        for player in &game.players {
+            let Some(entry) = tracked.get_mut(&player.id) else {
+                continue;
+            };
+            if monday {
+                entry.playing_time.push(player.playing_time);
+                entry.match_form.push(player.match_form);
             }
-        }
-    }
-    match crate::end_of_season::advance_to_next_season(game) {
-        // A sacked probe manager would leave no league to finish; keep him on.
-        Ok(_) => {
-            if game.manager.team_id.is_none() {
-                let club = game.teams[0].id.clone();
-                game.manager.hire(club);
+            if let Some(season) = anniversary
+                && !player.retired
+            {
+                entry.actual[season] = Some(player.ovr);
             }
-            true
-        }
-        Err(error) => {
-            println!(
-                "rollover refused on {}: {error}; manager team {:?}",
-                game.clock.current_date.date_naive(),
-                game.manager.team_id
-            );
-            false
         }
     }
 }
@@ -225,9 +230,11 @@ fn report(label: &str, entries: &[&Tracked], scale: usize) {
             .collect();
         let within: f64 = misses.iter().filter(|miss| miss.abs() <= 2.0).count() as f64
             / misses.len().max(1) as f64;
+        let mean = misses.iter().sum::<f64>() / misses.len().max(1) as f64;
         line.push_str(&format!(
-            " | +{}: miss med {:+.1} | gain act {:.1} proj {:.1} | ±2 {:.0}%",
+            " | +{}: miss mean {:+.1} med {:+.0} | gain act {:.0} proj {:.0} | ±2 {:.0}%",
             season + 1,
+            mean,
             median(misses),
             median(gains),
             median(projected),
@@ -247,19 +254,7 @@ fn probe_projection_against_three_seasons() {
     for seed in 1..=worlds() {
         let mut game = seeded_world(seed);
         let mut tracked = track(&game);
-        for season in 0..SEASONS {
-            if !play_season(&mut game, &mut tracked) {
-                println!("world {seed}: season {season} did not roll over");
-                break;
-            }
-            for player in &game.players {
-                if let Some(entry) = tracked.get_mut(&player.id)
-                    && !player.retired
-                {
-                    entry.actual[season] = Some(player.ovr);
-                }
-            }
-        }
+        play_years(&mut game, &mut tracked);
         all.extend(tracked.into_values());
     }
 
@@ -275,7 +270,11 @@ fn probe_projection_against_three_seasons() {
         report("near reference", &pick(&|e| e.near_reference()));
         report("regular in form", &pick(&|e| e.regular_in_form()));
         report("rarely plays", &pick(&|e| e.rarely_plays()));
-        for (label, ages) in [("age <= 18", 0..=18), ("age 19-20", 19..=20), ("age 21-23", 21..=23)] {
+        for (label, ages) in [
+            ("age <= 18", 0..=18),
+            ("age 19-20", 19..=20),
+            ("age 21-23", 21..=23),
+        ] {
             report(
                 &format!("near ref, {label}"),
                 &pick(&|e| e.near_reference() && ages.contains(&e.age)),
