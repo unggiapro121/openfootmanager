@@ -11,6 +11,7 @@ import {
   Zap,
   Clock,
   ChevronRight,
+  FileArchive,
   Package2,
 } from "lucide-react";
 import type { WorldMetaDef } from "../menu/PackageEditor/types";
@@ -21,9 +22,16 @@ export interface RecentProject {
   path: string;
   name: string;
   openedAt: string;
+  /** The `.ofm` the project was opened from, when the author picked one on disk. */
+  source?: string;
 }
 
 type HomeView = "home" | "new-form";
+
+/** The last segment of a path, on either separator. */
+function fileName(path: string): string {
+  return path.split(/[\\/]/).pop() ?? path;
+}
 
 function toSlug(name: string): string {
   return name
@@ -359,6 +367,14 @@ export function WorldEditorHome({
                       <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
                         {proj.name}
                       </p>
+                      {proj.source ? (
+                        <p className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 truncate">
+                          <FileArchive className="w-3 h-3 flex-shrink-0" aria-hidden="true" />
+                          <span className="truncate" title={proj.source}>
+                            {fileName(proj.source)}
+                          </span>
+                        </p>
+                      ) : null}
                       <p className="text-xs text-gray-400 dark:text-gray-500 truncate font-mono">
                         {proj.path}
                       </p>

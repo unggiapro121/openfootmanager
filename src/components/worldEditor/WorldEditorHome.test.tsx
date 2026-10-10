@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
-import { WorldEditorHome } from "./WorldEditorHome";
+import { type RecentProject, WorldEditorHome } from "./WorldEditorHome";
 
 const invoke = vi.fn();
 vi.mock("@tauri-apps/api/core", () => ({
@@ -45,6 +45,7 @@ beforeEach(() => {
 function renderHome(handlers: {
   onOpenRecent?: (path: string) => void;
   onOpenInstalled?: (path: string) => void;
+  recentProjects?: RecentProject[];
 }) {
   const onOpenRecent = handlers.onOpenRecent ?? vi.fn();
   const onOpenInstalled = handlers.onOpenInstalled ?? vi.fn();
@@ -53,7 +54,7 @@ function renderHome(handlers: {
       <WorldEditorHome
         isBusy={false}
         errorMsg={null}
-        recentProjects={[]}
+        recentProjects={handlers.recentProjects ?? []}
         onNewPackage={() => {}}
         onOpenPackageFile={() => {}}
         onOpenPackageFolder={() => {}}
@@ -80,5 +81,32 @@ describe("opening an installed package from the editor home", () => {
       "/home/user/.local/share/openfootmanager/packages/brazil-1962.ofm",
     );
     expect(onOpenRecent).not.toHaveBeenCalled();
+  });
+});
+
+describe("recent projects", () => {
+  // Given two projects of the same package, one opened from a file picked on
+  // disk, then the picked one names the file it came from, so the two can be
+  // told apart.
+  it("names the file a project was opened from", () => {
+    renderHome({
+      recentProjects: [
+        {
+          path: "/data/world-editor/real-world-ab12cd34ef56",
+          name: "Real World 2025/26",
+          openedAt: "2026-10-10T00:00:00.000Z",
+          source: "/Users/me/ofm-packages/real-world-2025-26.ofm",
+        },
+        {
+          path: "/data/world-editor/real-world",
+          name: "Real World 2024/25",
+          openedAt: "2026-10-09T00:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(screen.getByText("real-world-2025-26.ofm")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Real World 2025\/26/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Real World 2024\/25/ })).toBeInTheDocument();
   });
 });

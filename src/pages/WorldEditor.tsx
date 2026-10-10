@@ -32,6 +32,7 @@ import type {
   WorldMetaDef,
 } from "../components/menu/PackageEditor/types";
 import { WorldEditorHome, type RecentProject } from "../components/worldEditor/WorldEditorHome";
+import { rememberRecentProject } from "../components/worldEditor/recentProjects";
 import type { SamplePackage } from "../components/menu/PackageEditor/sampleData";
 import { WorldEditorLayout } from "../components/worldEditor/WorldEditorLayout";
 import { WorldEditorTopBar, type SaveState } from "../components/worldEditor/WorldEditorTopBar";
@@ -44,7 +45,6 @@ import { WorldEditorListContent } from "../components/worldEditor/WorldEditorLis
 
 const AUTO_SAVE_KEY = "worldEditor.autoSave";
 const RECENT_PROJECTS_KEY = "worldEditor.recentProjects";
-const MAX_RECENT = 8;
 
 function readRecentProjects(): RecentProject[] {
   try {
@@ -224,13 +224,9 @@ export default function WorldEditor() {
     setIsDirty(false);
   }
 
-  function addRecentProject(path: string, name: string) {
+  function addRecentProject(path: string, name: string, source?: string) {
     setRecentProjects((prev) => {
-      const filtered = prev.filter((p) => p.path !== path);
-      const updated = [{ path, name, openedAt: new Date().toISOString() }, ...filtered].slice(
-        0,
-        MAX_RECENT,
-      );
+      const updated = rememberRecentProject(prev, { path, name, source }, new Date().toISOString());
       try {
         localStorage.setItem(RECENT_PROJECTS_KEY, JSON.stringify(updated));
       } catch {
@@ -356,12 +352,20 @@ export default function WorldEditor() {
     }
   }
 
-  async function openFromPath(path: string, mode: "file" | "folder") {
+  /**
+   * Open a project. An installed package opens the author's ongoing project for
+   * it; a `.ofm` picked on disk opens what is in that file (`picked`), and the
+   * file is remembered as the project's source.
+   */
+  async function openFromPath(path: string, mode: "installed" | "picked" | "folder") {
     let dir: string;
-    if (mode === "file") {
+    if (mode !== "folder") {
       setIsBusy(true);
       try {
-        dir = await invoke<string>("extract_ofm_for_editing", { ofmPath: path });
+        dir = await invoke<string>("extract_ofm_for_editing", {
+          ofmPath: path,
+          picked: mode === "picked",
+        });
       } catch (err) {
         flashError(resolveBackendError(err));
         setIsBusy(false);
@@ -375,7 +379,7 @@ export default function WorldEditor() {
       const data = await invoke<PackageProjectData>("read_package_project", { dir });
       setProjectDir(dir);
       loadProjectState(data);
-      addRecentProject(dir, data.meta.name || data.meta.id);
+      addRecentProject(dir, data.meta.name || data.meta.id, mode === "picked" ? path : undefined);
       setSelectedSection("metadata");
       setFormPanel("metadata");
     } catch (err) {
@@ -404,7 +408,7 @@ export default function WorldEditor() {
       flashError(t("worldEditor.openPackageFileInvalid"));
       return;
     }
-    await openFromPath(selected, "file");
+    await openFromPath(selected, "picked");
   }
 
   async function handleOpenPackageFolder() {
@@ -634,7 +638,7 @@ export default function WorldEditor() {
           void openFromPath(path, "folder");
         }}
         onOpenInstalled={(ofmPath) => {
-          void openFromPath(ofmPath, "file");
+          void openFromPath(ofmPath, "installed");
         }}
       />
     );

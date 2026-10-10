@@ -414,6 +414,74 @@ mod tests {
         std::fs::remove_dir_all(&dir).ok();
     }
 
+    /// Rebuild `archive` in place from `files`, as a re-export does.
+    fn rebuild(archive: &Path, tag: &str, files: &[(&str, &str)]) {
+        let source = temp_project(&format!("{tag}-rebuild"), files);
+        std::fs::remove_file(archive).ok();
+        export_directory_to_ofm(&source, archive).unwrap();
+        std::fs::remove_dir_all(&source).ok();
+    }
+
+    const WORLD_V1: &str = r#"{"schema":"world","id":"real-world","name":"Real World 2024/25"}"#;
+    const WORLD_V2: &str = r#"{"schema":"world","id":"real-world","name":"Real World 2025/26"}"#;
+
+    /// Given a project already made for a package, and a newer archive of the
+    /// same package picked from disk,
+    /// When the picked archive is opened,
+    /// Then it opens as a project of its own holding the newer archive, and the
+    /// older project is left as it was.
+    #[test]
+    fn a_picked_archive_with_new_contents_opens_as_its_own_project() {
+        let (archive, project, _) = archive_for("picked-new", &[("package.json", WORLD_V1)]);
+        let root = project.parent().unwrap().to_path_buf();
+        extract_ofm_to_dir(&archive, &project).unwrap();
+        rebuild(&archive, "picked-new", &[("package.json", WORLD_V2)]);
+
+        let opened = project_for_picked_archive(&root, &archive, "real-world").unwrap();
+
+        assert_ne!(opened, project, "the older project was handed back");
+        let (pkg, _) = load_world_package(&opened);
+        assert_eq!(pkg.meta.unwrap().name, "Real World 2025/26");
+        let (old, _) = load_world_package(&project);
+        assert_eq!(old.meta.unwrap().name, "Real World 2024/25");
+
+        std::fs::remove_dir_all(root.parent().unwrap()).ok();
+    }
+
+    /// Given a picked archive opened and edited,
+    /// When the same unchanged archive is picked again,
+    /// Then the edited project is opened, not a fresh extract.
+    #[test]
+    fn picking_the_same_archive_again_keeps_its_edits() {
+        let (archive, project, _) = archive_for("picked-same", &[("package.json", WORLD_V1)]);
+        let root = project.parent().unwrap().to_path_buf();
+        let first = project_for_picked_archive(&root, &archive, "real-world").unwrap();
+        let edited = first.join("countries/added-by-the-author.json");
+        std::fs::create_dir_all(edited.parent().unwrap()).unwrap();
+        std::fs::write(&edited, r#"{"schema":"country","id":"ES","name":"Spain"}"#).unwrap();
+
+        let again = project_for_picked_archive(&root, &archive, "real-world").unwrap();
+
+        assert_eq!(again, first);
+        assert!(edited.exists());
+        std::fs::remove_dir_all(root.parent().unwrap()).ok();
+    }
+
+    /// Given no project yet for a package,
+    /// When an archive of it is picked,
+    /// Then it opens under the package's own name, as an installed one would.
+    #[test]
+    fn a_first_picked_archive_takes_the_packages_own_project() {
+        let (archive, project, _) = archive_for("picked-first", &[("package.json", WORLD_V1)]);
+        let root = project.parent().unwrap().to_path_buf();
+
+        let opened = project_for_picked_archive(&root, &archive, "real-world").unwrap();
+
+        assert_eq!(opened, root.join("real-world"));
+        assert!(opened.join("package.json").exists());
+        std::fs::remove_dir_all(root.parent().unwrap()).ok();
+    }
+
     #[test]
     fn an_archive_opens_as_a_project_named_after_the_package() {
         // Not after the file: "Open package file" takes any `.ofm` from anywhere
@@ -1418,13 +1486,78 @@ fn open_project_for_archive(
     extract_ofm_to_dir(ofm, project_dir)
 }
 
+/// Which archive each project under the projects root was extracted from, by
+/// content digest. Kept beside the projects rather than inside one, so it is
+/// never packed into an archive built from a project.
+const PICKED_SOURCES_FILE: &str = ".picked-sources.json";
+
+/// A short, stable fingerprint of an archive's bytes: the first twelve hex
+/// digits of its SHA-256.
+fn archive_digest(ofm: &Path) -> Result<String, String> {
+    use sha2::{Digest, Sha256};
+    let bytes = std::fs::read(ofm).map_err(|_| "be.error.package.noManifest".to_string())?;
+    let digest = Sha256::digest(&bytes);
+    Ok(digest
+        .iter()
+        .take(6)
+        .map(|byte| format!("{byte:02x}"))
+        .collect())
+}
+
+fn read_picked_sources(projects_root: &Path) -> serde_json::Map<String, serde_json::Value> {
+    std::fs::read_to_string(projects_root.join(PICKED_SOURCES_FILE))
+        .ok()
+        .and_then(|text| serde_json::from_str(&text).ok())
+        .unwrap_or_default()
+}
+
+/// The project for an archive picked from anywhere on disk, extracted if new.
+///
+/// Unlike an installed package, whose project is the author's ongoing work on
+/// it, a picked file is a choice of *that file*: opening it must show what is
+/// in it. So the package's own project is used only while it is free or was
+/// made from this very archive; a different archive of the same package — a
+/// newer build, say — opens as a project of its own, named after its digest,
+/// and the older project stays as it was, still in recent projects.
+fn project_for_picked_archive(
+    projects_root: &Path,
+    ofm: &Path,
+    name: &str,
+) -> Result<PathBuf, String> {
+    let digest = archive_digest(ofm)?;
+    let mut sources = read_picked_sources(projects_root);
+    let own = projects_root.join(name);
+    let own_is_this_archive = sources.get(name).and_then(|value| value.as_str()) == Some(&digest);
+    let (project_name, project_dir) = if !dir_is_nonempty(&own) || own_is_this_archive {
+        (name.to_string(), own)
+    } else {
+        let versioned = format!("{name}-{digest}");
+        let dir = projects_root.join(&versioned);
+        (versioned, dir)
+    };
+
+    if !dir_is_nonempty(&project_dir) {
+        extract_ofm_to_dir(ofm, &project_dir)?;
+    }
+    sources.insert(project_name, serde_json::Value::String(digest));
+    write_json_atomic(
+        &projects_root.join(PICKED_SOURCES_FILE),
+        &serde_json::Value::Object(sources),
+    )?;
+    Ok(project_dir)
+}
+
 /// Open an installed or picked `.ofm` archive as an editable project, returning
-/// the project directory. Extracts on first open and keeps the author's work on
-/// every open after that.
+/// the project directory.
+///
+/// An installed package (`picked` false or absent) opens its project as the
+/// author left it, extracting only on first open. A file the author picked
+/// opens what is in that file ([`project_for_picked_archive`]).
 #[tauri::command]
 pub fn extract_ofm_for_editing(
     app_handle: tauri::AppHandle,
     ofm_path: String,
+    picked: Option<bool>,
 ) -> Result<String, String> {
     let ofm = Path::new(&ofm_path);
     let name = project_name_for(ofm);
@@ -1433,6 +1566,13 @@ pub fn extract_ofm_for_editing(
         .path()
         .app_data_dir()
         .map_err(|e| e.to_string())?;
+    if picked.unwrap_or(false) {
+        let project_dir = project_for_picked_archive(&base_dir.join("world-editor"), ofm, &name)?;
+        return project_dir
+            .to_str()
+            .map(str::to_string)
+            .ok_or_else(|| "be.error.invalidPath".to_string());
+    }
     // Alongside projects made with "New package", because that is what it is
     // now — not under `world-editor-temp`, which said the opposite.
     let project_dir = base_dir.join("world-editor").join(&name);

@@ -67,6 +67,8 @@ chrono = "0.4.44"
 rand = "0.10"
 semver = "1"
 base64 = "0.22"
+# Fingerprints a `.ofm` the world editor opens from disk; same version ofm_core uses.
+sha2 = "0.10"
 image = { version = "0.25.6", default-features = false, features = ["png", "webp"] }
 webp = "0.3.1"
 # Pin `time` below 0.3.52: that release made a breaking change to
