@@ -319,17 +319,12 @@
     "homeRegion": "Khu vực của bạn",
     "homeCountry": "Quốc gia của bạn",
     "allCountries": "Tất cả quốc gia",
-    "simulationScope": "Phạm vi mô phỏng",
+    "league": "Giải đấu",
+    "allLeagues": "Mọi giải đấu",
     "otherClubs": "Các câu lạc bộ khác",
     "searchClubs": "Tìm câu lạc bộ…",
     "clubCount": "{{n}} câu lạc bộ",
     "noClubsMatch": "Không có câu lạc bộ nào khớp với tìm kiếm.",
-    "simulatedRegions": "Khu vực được mô phỏng",
-    "simulatedCompetitions": "Giải đấu được mô phỏng",
-    "homeBadge": "Nhà",
-    "yourClub": "câu lạc bộ của bạn",
-    "yourClubBadge": "CLB của bạn",
-    "requiresRegions": "Cần có {{regions}}",
     "selectedClub": "Câu lạc bộ đã chọn",
     "formation": "Sơ đồ",
     "overall": "Tổng thể",
@@ -337,10 +332,8 @@
     "competitions": "Giải đấu",
     "keyPlayers": "Cầu thủ chủ chốt",
     "activeCompetitions": "Giải đấu đang tham gia",
-    "clubCompetitionsAlwaysSimulated": "Các giải đấu của câu lạc bộ bạn luôn được mô phỏng, kể cả khi bạn tắt các khu vực hoặc giải đấu khác.",
     "selectClubPrompt": "Chọn một câu lạc bộ để xem đội hình và các giải đấu.",
     "playersCount": "{{count}} cầu thủ",
-    "scopeSummary": "Sẽ tải {{regionsCount}} khu vực và {{competitionsCount}} giải đấu được mô phỏng.",
     "regionLabels": {
       "north-america": "Bắc Mỹ",
       "central-america": "Trung Mỹ",
@@ -363,13 +356,6 @@
       "InternationalClub": "Cấp CLB quốc tế",
       "InternationalNation": "Cấp đội tuyển quốc gia",
       "FriendlyCup": "Cúp giao hữu"
-    },
-    "scopeMessages": {
-      "homeRegionAlwaysActive": "Khu vực bạn chơi luôn được bật.",
-      "regionRequiredByCompetition": "{{competition}} nằm trong lịch thi đấu của {{club}}, nên {{region}} phải luôn được bật.",
-      "regionRemovedDisablesCompetitions": "{{region}} đã bị loại khỏi phạm vi mô phỏng, nên các giải đấu phụ thuộc cũng bị tắt theo.",
-      "clubCompetitionLocked": "{{competition}} nằm trong lịch thi đấu của {{club}} và sẽ luôn được mô phỏng.",
-      "autoEnabledRegions": "{{competition}} cần có {{regions}}, nên các khu vực đó đã được tự động bật."
     }
   },
   "youthAcademy": {

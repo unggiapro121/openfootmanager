@@ -99,9 +99,6 @@ export default function TeamSelectionSidebar({
                   </Badge>
                 ))}
               </div>
-              <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-                {t("teamSelect.clubCompetitionsAlwaysSimulated")}
-              </p>
             </div>
           </>
         ) : (

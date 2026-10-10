@@ -1082,6 +1082,13 @@ mod tests {
         pool.ends_on = "2026-08-03".to_string();
         pool.demand
             .insert("ai-eng".to_string(), vec![Position::Midfielder]);
+        // A potential-80 youngster is beyond a level-1 network's reach.
+        let ai_club = game
+            .teams
+            .iter_mut()
+            .find(|team| team.id == "ai-eng")
+            .unwrap();
+        ai_club.facilities.scouting = 2;
         crate::youth_pool::process_ai_signings(&mut game);
         game
     }

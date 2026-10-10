@@ -647,6 +647,9 @@ fn generate_youth_recruitment_candidates(
         })
         .collect();
     candidates.shuffle(rng);
+    let reach =
+        scouting_potential_reach(team.facilities.scouting, scout.attributes.judging_potential);
+    candidates.retain(|prospect| comes_across(prospect, reach, rng));
     candidates.truncate(viewed);
 
     let candidates = candidates
@@ -1229,6 +1232,38 @@ pub(crate) fn youth_candidates_viewed(
         + usize::from(scouting_facility_level.saturating_sub(1))
 }
 
+/// The highest potential a club's scouting network reliably turns up: one step
+/// per scouting facility level (75 at level 1 … uncapped from level 5), five more
+/// when the scout judges potential well. A level-1 department should not be
+/// walking into the world's best youngsters.
+pub(crate) fn scouting_potential_reach(facility_level: u8, judging_potential: u8) -> u8 {
+    let reach: u8 = match facility_level {
+        ..=1 => 75,
+        2 => 80,
+        3 => 85,
+        4 => 90,
+        _ => 99,
+    };
+    if judging_potential >= SHARP_EYE_JUDGING_POTENTIAL {
+        reach.saturating_add(SHARP_EYE_REACH_BONUS).min(99)
+    } else {
+        reach
+    }
+}
+
+/// Judging potential from which a scout sees further than his network.
+const SHARP_EYE_JUDGING_POTENTIAL: u8 = 70;
+/// How much further such a scout sees.
+const SHARP_EYE_REACH_BONUS: u8 = 5;
+/// Chance in a hundred that a youngster beyond the network's reach is spotted
+/// anyway — word of mouth, a lucky trip.
+const BEYOND_REACH_SIGHTING_PERCENT: u32 = 10;
+
+/// Whether a scouting network reaching `reach` comes across `prospect` at all.
+pub(crate) fn comes_across(prospect: &Player, reach: u8, rng: &mut impl rand::Rng) -> bool {
+    prospect.potential <= reach || rng.random_range(0..100) < BEYOND_REACH_SIGHTING_PERCENT
+}
+
 /// A youth search recommends this many of the youngsters it looks at.
 const YOUTH_PROSPECTS_RECOMMENDED: usize = 3;
 
@@ -1362,6 +1397,66 @@ pub fn prospect_report(prospect: &Player, estimate: &ProspectEstimate) -> ScoutR
         footedness: Some(prospect.footedness),
         weak_foot: Some(prospect.weak_foot),
         attribute_reads: estimate.attributes.clone(),
+    }
+}
+
+#[cfg(test)]
+mod scouting_reach_tests {
+    use super::{comes_across, scouting_potential_reach};
+    use crate::test_support::uniform_attributes;
+    use domain::player::{Player, Position};
+    use rand::SeedableRng;
+
+    fn prospect(potential: u8) -> Player {
+        let mut player = Player::new(
+            "kid".to_string(),
+            "Kid".to_string(),
+            "Kid One".to_string(),
+            "2011-01-01".to_string(),
+            "IN".to_string(),
+            Position::Defender,
+            uniform_attributes(50),
+        );
+        player.potential = potential;
+        player
+    }
+
+    fn sightings(potential: u8, reach: u8) -> usize {
+        let mut rng = rand::rngs::StdRng::seed_from_u64(3);
+        (0..1_000)
+            .filter(|_| comes_across(&prospect(potential), reach, &mut rng))
+            .count()
+    }
+
+    /// Given each scouting facility level, then the network's reach rises a step
+    /// at a time and stops limiting at level 5.
+    #[test]
+    fn reach_rises_with_the_scouting_facility() {
+        let reach: Vec<u8> = (1..=5)
+            .map(|level| scouting_potential_reach(level, 50))
+            .collect();
+        assert_eq!(reach, vec![75, 80, 85, 90, 99]);
+    }
+
+    /// Given a scout who judges potential well, then he sees five further than
+    /// his network, never past 99.
+    #[test]
+    fn a_sharp_eyed_scout_sees_further() {
+        assert_eq!(scouting_potential_reach(1, 70), 80);
+        assert_eq!(scouting_potential_reach(1, 69), 75);
+        assert_eq!(scouting_potential_reach(5, 90), 99);
+    }
+
+    /// Given a youngster within reach, then the network always comes across him;
+    /// given one beyond it, then only about one search in ten does.
+    #[test]
+    fn youngsters_beyond_reach_are_seldom_found() {
+        assert_eq!(sightings(75, 75), 1_000);
+        let beyond = sightings(92, 75);
+        assert!(
+            (60..=140).contains(&beyond),
+            "spotted {beyond} times in 1000"
+        );
     }
 }
 

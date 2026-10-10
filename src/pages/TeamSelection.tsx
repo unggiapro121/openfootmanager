@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../store/gameStore";
-import { buildRegionLabel } from "../lib/teamRegions";
-import { Badge, Card, CardBody, ThemeToggle } from "../components/ui";
+import { ThemeToggle } from "../components/ui";
 import { ArrowLeft, ChevronRight, Loader2 } from "lucide-react";
 import TeamSelectionScopePanel from "./TeamSelectionScopePanel";
 import TeamSelectionGrid from "./TeamSelectionGrid";
@@ -17,21 +16,17 @@ export default function TeamSelection() {
   const {
     clubSearch,
     setClubSearch,
-    scopeExpanded,
-    setScopeExpanded,
     selectedHomeRegionId,
     setSelectedHomeRegionId,
     selectedCountryCode,
     setSelectedCountryCode,
-    regionSelection,
+    selectedLeagueId,
+    setSelectedLeagueId,
+    leagueOptions,
     setSelectedTeamId,
-    scopeMessage,
-    setScopeMessage,
     isConfirming,
     regions,
     regionCountries,
-    activeRegionIds,
-    availableCompetitions,
     filteredTeams,
     teamGroups,
     getTeamPlayers,
@@ -39,11 +34,6 @@ export default function TeamSelection() {
     selectedTeam,
     selectedTeamXi,
     selectedTeamCompetitions,
-    mandatoryCompetitionIds,
-    competitionSelection,
-    enabledCompetitionIds,
-    handleRegionToggle,
-    handleCompetitionToggle,
     handleConfirm,
   } = useTeamSelection({ gameState, setGameState, setGameActive, navigate });
 
@@ -54,7 +44,8 @@ export default function TeamSelection() {
 
   return (
     <div className="min-h-screen bg-gray-100 transition-colors duration-300 dark:bg-navy-900">
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 shadow-sm dark:border-navy-700 dark:bg-navy-800">
+      {/* Sticky so the confirm button stays reachable while scrolling the club list. */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 shadow-sm dark:border-navy-700 dark:bg-navy-800">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -99,35 +90,16 @@ export default function TeamSelection() {
       </header>
 
       <div className="space-y-5 p-6">
-        {scopeMessage && (
-          <Card accent="accent">
-            <CardBody className="py-3">
-              <p className="text-sm text-gray-700 dark:text-gray-200">
-                {t(scopeMessage.key, scopeMessage.values)}
-              </p>
-            </CardBody>
-          </Card>
-        )}
-
         <TeamSelectionScopePanel
-          scopeExpanded={scopeExpanded}
-          onToggleScopeExpanded={() => setScopeExpanded((value) => !value)}
           regions={regions}
           selectedHomeRegionId={selectedHomeRegionId}
-          onSelectHomeRegion={(regionId) => {
-            setSelectedHomeRegionId(regionId);
-            setScopeMessage(null);
-          }}
+          onSelectHomeRegion={setSelectedHomeRegionId}
           selectedCountryCode={selectedCountryCode}
           onSelectCountry={setSelectedCountryCode}
           regionCountries={regionCountries}
-          regionSelection={regionSelection}
-          onRegionToggle={handleRegionToggle}
-          availableCompetitions={availableCompetitions}
-          competitionSelection={competitionSelection}
-          mandatoryCompetitionIds={mandatoryCompetitionIds}
-          activeRegionIds={activeRegionIds}
-          onCompetitionToggle={handleCompetitionToggle}
+          leagueOptions={leagueOptions}
+          selectedLeagueId={selectedLeagueId}
+          onSelectLeague={setSelectedLeagueId}
         />
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
@@ -149,24 +121,6 @@ export default function TeamSelection() {
             getTeamAvgOvr={getTeamAvgOvr}
           />
         </div>
-
-        <Card>
-          <CardBody className="flex flex-wrap items-center justify-between gap-3 py-3">
-            <div className="text-sm text-gray-600 dark:text-gray-300">
-              {t("teamSelect.scopeSummary", {
-                regionsCount: activeRegionIds.length,
-                competitionsCount: enabledCompetitionIds.length,
-              })}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {activeRegionIds.map((regionId) => (
-                <Badge key={regionId} variant="neutral">
-                  {buildRegionLabel(t, regionId)}
-                </Badge>
-              ))}
-            </div>
-          </CardBody>
-        </Card>
       </div>
     </div>
   );

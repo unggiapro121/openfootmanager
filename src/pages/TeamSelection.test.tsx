@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { invoke } from "@tauri-apps/api/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { GameStateData, LeagueData } from "../store/gameStore";
@@ -62,10 +63,30 @@ function league(overrides: Partial<LeagueData> = {}): LeagueData {
 
 function buildGameState(): GameStateData {
   return {
-    teams: [createTeam({ id: "team-1", name: "Alpha FC", country: "GB" })],
+    teams: [
+      createTeam({ id: "team-1", name: "Alpha FC", country: "GB" }),
+      createTeam({ id: "team-2", name: "Beta Town", country: "GB" }),
+    ],
     players: [createPlayer({ id: "p1", team_id: "team-1" })],
     regions: [{ id: "europe", name: "Europe", country_codes: ["GB"] }],
-    competitions: [league()],
+    competitions: [
+      league(),
+      league({
+        id: "championship",
+        name: "Championship",
+        participant_ids: ["team-2"],
+        priority: 2,
+      }),
+      league({
+        id: "ucl",
+        name: "Champions League",
+        scope: "Continental",
+        kind: "Cup",
+        country_id: undefined,
+        participant_ids: ["team-1"],
+        priority: 0,
+      }),
+    ],
     league: null,
     manager: { first_name: "Sam", last_name: "Boss" },
   } as unknown as GameStateData;
@@ -80,16 +101,21 @@ describe("TeamSelection", () => {
     } as unknown as ReturnType<typeof useGameStore>);
   });
 
-  it("renders the scope panel, the club grid, and the selected-team sidebar", () => {
+  function renderPage() {
     render(
       <ThemeProvider>
         <TeamSelection />
       </ThemeProvider>,
     );
+  }
 
-    // Page chrome + scope panel
+  /** Given the page, When it renders, Then filters, club grid and sidebar are shown. */
+  it("renders the filters, the club grid, and the selected-team sidebar", () => {
+    renderPage();
+
+    // Page chrome + filters
     expect(screen.getByText("teamSelect.title")).toBeInTheDocument();
-    expect(screen.getByText("teamSelect.simulationScope")).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: "teamSelect.league" })).toBeInTheDocument();
 
     // Club grid renders the team; sidebar auto-selects the first team, so the
     // club name appears in both the card and the sidebar header.
@@ -97,5 +123,41 @@ describe("TeamSelection", () => {
 
     // Confirm button reflects the auto-selected club.
     expect(screen.getByText("teamSelect.manage")).toBeInTheDocument();
+  });
+
+  /** Given the page, When it renders, Then the header carrying the confirm button stays pinned. */
+  it("keeps the header with the confirm button sticky", () => {
+    renderPage();
+
+    expect(screen.getByRole("banner")).toHaveClass("sticky", "top-0");
+  });
+
+  /** Given two domestic leagues in a country, When one is picked, Then only its clubs are listed. */
+  it("offers the country's domestic leagues and filters clubs by the chosen one", () => {
+    renderPage();
+    expect(screen.getByText("Beta Town")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("combobox", { name: "teamSelect.league" }));
+    const options = screen.getAllByRole("option").map((option) => option.textContent);
+    expect(options).toEqual(["teamSelect.allLeagues", "Premier League", "Championship"]);
+
+    fireEvent.click(screen.getByRole("option", { name: "Premier League" }));
+
+    expect(screen.queryByText("Beta Town")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Alpha FC").length).toBeGreaterThanOrEqual(1);
+  });
+
+  /** Given no simulation-scope picker, When the club is confirmed, Then every competition is simulated. */
+  it("simulates every competition when confirming the club", () => {
+    vi.mocked(invoke).mockReturnValue(new Promise(() => {}));
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "teamSelect.manage" }));
+
+    expect(invoke).toHaveBeenCalledWith("select_team", {
+      teamId: "team-1",
+      activeRegionIds: ["europe"],
+      activeCompetitionIds: ["ucl", "epl", "championship"],
+    });
   });
 });

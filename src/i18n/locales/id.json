@@ -319,17 +319,12 @@
     "homeRegion": "Wilayah Asal",
     "homeCountry": "Negara Asal",
     "allCountries": "Semua negara",
-    "simulationScope": "Cakupan Simulasi",
+    "league": "Liga",
+    "allLeagues": "Semua liga",
     "otherClubs": "Klub lainnya",
     "searchClubs": "Cari klub…",
     "clubCount": "{{n}} klub",
     "noClubsMatch": "Tidak ada klub yang cocok dengan pencarian.",
-    "simulatedRegions": "Wilayah yang Disimulasikan",
-    "simulatedCompetitions": "Kompetisi yang Disimulasikan",
-    "homeBadge": "Asal",
-    "yourClub": "klub kamu",
-    "yourClubBadge": "Klub Kamu",
-    "requiresRegions": "Membutuhkan {{regions}}",
     "selectedClub": "Klub Terpilih",
     "formation": "Formasi",
     "overall": "Keseluruhan",
@@ -337,10 +332,8 @@
     "competitions": "Kompetisi",
     "keyPlayers": "Pemain Kunci",
     "activeCompetitions": "Kompetisi Aktif",
-    "clubCompetitionsAlwaysSimulated": "Kompetisi klub kamu selalu disimulasikan, meskipun wilayah atau turnamen lain dimatikan.",
     "selectClubPrompt": "Pilih klub untuk memeriksa skuad dan kompetisinya.",
     "playersCount": "{{count}} pemain",
-    "scopeSummary": "{{regionsCount}} wilayah dan {{competitionsCount}} kompetisi yang disimulasikan akan dimuat.",
     "regionLabels": {
       "north-america": "Amerika Utara",
       "central-america": "Amerika Tengah",
@@ -363,13 +356,6 @@
       "InternationalClub": "Klub Internasional",
       "InternationalNation": "Tim Nasional Internasional",
       "FriendlyCup": "Piala Persahabatan"
-    },
-    "scopeMessages": {
-      "homeRegionAlwaysActive": "Wilayah yang dapat dimainkan selalu aktif.",
-      "regionRequiredByCompetition": "{{competition}} bagian dari jadwal {{club}}, jadi {{region}} harus tetap aktif.",
-      "regionRemovedDisablesCompetitions": "{{region}} dihapus dari cakupan simulasi, sehingga kompetisi yang bergantung padanya ikut dimatikan.",
-      "clubCompetitionLocked": "{{competition}} ada di jadwal {{club}} dan akan selalu disimulasikan.",
-      "autoEnabledRegions": "{{competition}} membutuhkan {{regions}}, sehingga wilayah tersebut diaktifkan secara otomatis."
     }
   },
   "youthAcademy": {

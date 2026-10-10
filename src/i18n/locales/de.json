@@ -319,17 +319,12 @@
     "homeRegion": "Heimatregion",
     "homeCountry": "Heimatland",
     "allCountries": "Alle Länder",
-    "simulationScope": "Simulationsumfang",
+    "league": "Liga",
+    "allLeagues": "Alle Ligen",
     "otherClubs": "Andere Vereine",
     "searchClubs": "Vereine suchen…",
     "clubCount": "{{n}} Vereine",
     "noClubsMatch": "Keine Vereine entsprechen deiner Suche.",
-    "simulatedRegions": "Simulierte Regionen",
-    "simulatedCompetitions": "Simulierte Wettbewerbe",
-    "homeBadge": "Heimat",
-    "yourClub": "dein Verein",
-    "yourClubBadge": "Dein Verein",
-    "requiresRegions": "Benötigt {{regions}}",
     "selectedClub": "Ausgewählter Verein",
     "formation": "Formation",
     "overall": "Gesamtstärke",
@@ -337,10 +332,8 @@
     "competitions": "Wettbewerbe",
     "keyPlayers": "Schlüsselspieler",
     "activeCompetitions": "Aktive Wettbewerbe",
-    "clubCompetitionsAlwaysSimulated": "Die Wettbewerbe deines Vereins werden immer simuliert, selbst wenn du andere Regionen oder Turniere deaktivierst.",
     "selectClubPrompt": "Wähle einen Verein aus, um Kader und Wettbewerbe zu sehen.",
     "playersCount": "{{count}} Spieler",
-    "scopeSummary": "{{regionsCount}} simulierte Regionen und {{competitionsCount}} simulierte Wettbewerbe werden geladen.",
     "regionLabels": {
       "north-america": "Nordamerika",
       "central-america": "Mittelamerika",
@@ -363,13 +356,6 @@
       "InternationalClub": "Internationaler Klubwettbewerb",
       "InternationalNation": "Internationaler Nationalmannschaftswettbewerb",
       "FriendlyCup": "Freundschaftsturnier"
-    },
-    "scopeMessages": {
-      "homeRegionAlwaysActive": "Deine spielbare Region bleibt immer aktiv.",
-      "regionRequiredByCompetition": "{{competition}} ist Teil des Spielplans von {{club}}, daher muss {{region}} aktiv bleiben.",
-      "regionRemovedDisablesCompetitions": "{{region}} wurde aus dem Simulationsumfang entfernt, daher wurden abhängige Wettbewerbe ebenfalls deaktiviert.",
-      "clubCompetitionLocked": "{{competition}} steht im Spielplan von {{club}} und wird immer simuliert.",
-      "autoEnabledRegions": "{{competition}} benötigt {{regions}}, deshalb wurden diese Regionen automatisch aktiviert."
     }
   },
   "youthAcademy": {

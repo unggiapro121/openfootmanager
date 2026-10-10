@@ -95,7 +95,7 @@ pub fn generate_potential_from(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u
 }
 
 /// Parse birth year from a "YYYY-MM-DD" date string and return approximate age.
-fn player_age(date_of_birth: &str, current_year: u32) -> u32 {
+pub(crate) fn player_age(date_of_birth: &str, current_year: u32) -> u32 {
     let birth_year: u32 = date_of_birth
         .split('-')
         .next()

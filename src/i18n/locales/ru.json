@@ -319,17 +319,12 @@
     "homeRegion": "Домашний регион",
     "homeCountry": "Домашняя страна",
     "allCountries": "Все страны",
-    "simulationScope": "Объём симуляции",
+    "league": "Лига",
+    "allLeagues": "Все лиги",
     "otherClubs": "Другие клубы",
     "searchClubs": "Поиск клубов…",
     "clubCount": "Клубов: {{n}}",
     "noClubsMatch": "Нет клубов по вашему запросу.",
-    "simulatedRegions": "Симулируемые регионы",
-    "simulatedCompetitions": "Симулируемые турниры",
-    "homeBadge": "Дом",
-    "yourClub": "вашего клуба",
-    "yourClubBadge": "Ваш клуб",
-    "requiresRegions": "Требуются регионы: {{regions}}",
     "selectedClub": "Выбранный клуб",
     "formation": "Схема",
     "overall": "Общий уровень",
@@ -337,10 +332,8 @@
     "competitions": "Турниры",
     "keyPlayers": "Ключевые игроки",
     "activeCompetitions": "Активные турниры",
-    "clubCompetitionsAlwaysSimulated": "Турниры вашего клуба всегда симулируются, даже если отключены другие регионы или соревнования.",
     "selectClubPrompt": "Выберите клуб, чтобы посмотреть состав и турниры.",
     "playersCount": "{{count}} игроков",
-    "scopeSummary": "Будут загружены {{regionsCount}} симулируемых регионов и {{competitionsCount}} симулируемых турниров.",
     "regionLabels": {
       "north-america": "Северная Америка",
       "central-america": "Центральная Америка",
@@ -363,13 +356,6 @@
       "InternationalClub": "Международный клубный турнир",
       "InternationalNation": "Международный турнир сборных",
       "FriendlyCup": "Товарищеский кубок"
-    },
-    "scopeMessages": {
-      "homeRegionAlwaysActive": "Ваш игровой регион всегда остаётся активным.",
-      "regionRequiredByCompetition": "{{competition}} входит в календарь {{club}}, поэтому регион {{region}} должен оставаться активным.",
-      "regionRemovedDisablesCompetitions": "Регион {{region}} был убран из области симуляции, поэтому зависимые турниры тоже были отключены.",
-      "clubCompetitionLocked": "{{competition}} есть в календаре {{club}} и всегда будет симулироваться.",
-      "autoEnabledRegions": "Для {{competition}} нужны регионы {{regions}}, поэтому они были включены автоматически."
     }
   },
   "youthAcademy": {

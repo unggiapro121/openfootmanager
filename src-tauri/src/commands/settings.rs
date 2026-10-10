@@ -12,7 +12,7 @@ const SAVE_MANAGER_UNAVAILABLE_ERROR: &str = "be.error.saveManagerUnavailable";
 pub struct AppSettings {
     pub theme: String, // "dark" | "light" | "system"
     #[serde(default = "default_language")]
-    pub language: String, // "en" | "es" | "pt" | "fr" | "de"
+    pub language: String, // a code from `SUPPORTED_LANGUAGES` in `src/i18n/index.ts`
     pub currency: String, // "EUR" | "GBP" | "USD"
     pub default_match_mode: String, // "live" | "spectator" | "delegate"
     pub auto_save: bool,
@@ -40,8 +40,10 @@ pub struct AppSettingsResponse {
     pub supported_currencies: Vec<CurrencyDefinition>,
 }
 
+/// The game is distributed to Vietnamese players first; anyone else picks their language in
+/// Settings, and that choice is what gets saved from then on.
 fn default_language() -> String {
-    "en".to_string()
+    "vi".to_string()
 }
 fn default_ui_scale() -> String {
     "normal".to_string()
@@ -54,7 +56,7 @@ impl Default for AppSettings {
     fn default() -> Self {
         Self {
             theme: "dark".to_string(),
-            language: "en".to_string(),
+            language: default_language(),
             currency: "EUR".to_string(),
             default_match_mode: "live".to_string(),
             auto_save: true,
@@ -158,6 +160,31 @@ mod tests {
             currency: currency.to_string(),
             ..AppSettings::default()
         }
+    }
+
+    /// Given a first launch with no settings file, when settings are created,
+    /// then the game speaks Vietnamese.
+    #[test]
+    fn a_first_launch_defaults_to_vietnamese() {
+        assert_eq!(AppSettings::default().language, "vi");
+    }
+
+    /// Given a settings file saved without a language, when it loads,
+    /// then the language is Vietnamese, as on a first launch.
+    #[test]
+    fn settings_saved_without_a_language_load_as_vietnamese() {
+        let without_language = r#"{
+            "theme": "dark",
+            "currency": "EUR",
+            "default_match_mode": "live",
+            "auto_save": true,
+            "match_speed": "normal",
+            "show_match_commentary": true,
+            "confirm_advance": false
+        }"#;
+        let settings: AppSettings =
+            serde_json::from_str(without_language).expect("settings should parse");
+        assert_eq!(settings.language, "vi");
     }
 
     /// Given a settings file saved before the auto-save interval existed, when it

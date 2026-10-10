@@ -233,8 +233,22 @@ pub fn install_package(
     path: String,
 ) -> Result<ofm_core::generator::PackageInfo, String> {
     info!("[cmd] install_package: path={}", path);
-    let src = std::path::Path::new(&path);
+    let packages_dir = packages_dir(&app_handle)?;
+    let assets_root = package_assets_dir(&app_handle).ok();
+    install_package_internal(
+        std::path::Path::new(&path),
+        &packages_dir,
+        assets_root.as_deref(),
+        &app_handle.package_info().version,
+    )
+}
 
+fn install_package_internal(
+    src: &std::path::Path,
+    packages_dir: &std::path::Path,
+    assets_root: Option<&std::path::Path>,
+    game_version: &semver::Version,
+) -> Result<ofm_core::generator::PackageInfo, String> {
     // Reject archives that exceed the on-disk size limit before doing any I/O.
     let src_size = std::fs::metadata(src).map(|m| m.len()).unwrap_or(0);
     if src_size > ofm_core::generator::MAX_ARCHIVE_BYTES {
@@ -249,8 +263,7 @@ pub fn install_package(
     if !meta.game_min_version.is_empty() {
         match semver::Version::parse(&meta.game_min_version) {
             Ok(required) => {
-                let current = app_handle.package_info().version.clone();
-                if current < required {
+                if *game_version < required {
                     return Err("be.error.package.versionTooOld".to_string());
                 }
             }
@@ -281,12 +294,16 @@ pub fn install_package(
         return Err(err.code.clone());
     }
 
-    let packages_dir = packages_dir(&app_handle)?;
-    std::fs::create_dir_all(&packages_dir)
+    std::fs::create_dir_all(packages_dir)
         .map_err(|_| "be.error.package.installFailed".to_string())?;
 
+    // Copy under a name the package listing ignores, then rename into place: a
+    // bundled package is installed on a background thread at startup, and the
+    // packages screen must never list a half-copied archive.
     let dest = packages_dir.join(format!("{id}.ofm"));
-    std::fs::copy(src, &dest).map_err(|_| "be.error.package.installFailed".to_string())?;
+    let partial = packages_dir.join(format!("{id}.ofm.partial"));
+    std::fs::copy(src, &partial).map_err(|_| "be.error.package.installFailed".to_string())?;
+    std::fs::rename(&partial, &dest).map_err(|_| "be.error.package.installFailed".to_string())?;
 
     // Land the artwork now, so "extracted assets exist" tracks "package is
     // installed" and nothing else. World creation extracts too, but a save
@@ -294,8 +311,8 @@ pub fn install_package(
     // that path — so a package uninstalled and reinstalled after the save was
     // made would otherwise leave every club in it on a generated crest forever.
     // Best effort, exactly as at world load: the world still plays without art.
-    if let Ok(assets_root) = package_assets_dir(&app_handle) {
-        extract_assets_for_package(&dest, &assets_root, &id);
+    if let Some(assets_root) = assets_root {
+        extract_assets_for_package(&dest, assets_root, &id);
     }
 
     let logo_data_url = meta
@@ -320,6 +337,80 @@ pub fn install_package(
         installed_path: dest.to_string_lossy().to_string(),
         logo_data_url,
     })
+}
+
+/// Install the packages shipped inside the app bundle (`<resources>/default-packages/*.ofm`), so a
+/// new career can start from them without the player installing anything by hand.
+///
+/// Runs at every launch but installs a bundled archive only once: a marker per archive under
+/// `seeded-packages/` records what was installed, so a player who uninstalls the package does not
+/// get it back on the next launch. Only a different bundled archive — a newer build of the game
+/// shipping a new version of it — is installed again.
+pub fn seed_bundled_packages(app_handle: &tauri::AppHandle) {
+    let Ok(resource_dir) = app_handle.path().resource_dir() else {
+        return;
+    };
+    let (Ok(packages_dir), Ok(assets_root), Ok(app_data_dir)) = (
+        packages_dir(app_handle),
+        package_assets_dir(app_handle),
+        app_handle.path().app_data_dir(),
+    ) else {
+        return;
+    };
+    seed_bundled_packages_internal(
+        &resource_dir.join("default-packages"),
+        &packages_dir,
+        &assets_root,
+        &app_data_dir.join("seeded-packages"),
+        &app_handle.package_info().version,
+    );
+}
+
+fn seed_bundled_packages_internal(
+    bundled_dir: &std::path::Path,
+    packages_dir: &std::path::Path,
+    assets_root: &std::path::Path,
+    markers_dir: &std::path::Path,
+    game_version: &semver::Version,
+) {
+    let Ok(entries) = std::fs::read_dir(bundled_dir) else {
+        return;
+    };
+    for entry in entries.flatten() {
+        let archive = entry.path();
+        if archive.extension().and_then(|e| e.to_str()) != Some("ofm") {
+            continue;
+        }
+        let (Some(name), Some(fingerprint)) = (
+            archive.file_name().and_then(|n| n.to_str()),
+            bundled_archive_fingerprint(&archive),
+        ) else {
+            continue;
+        };
+        let marker = markers_dir.join(name);
+        if std::fs::read_to_string(&marker).is_ok_and(|seeded| seeded == fingerprint) {
+            continue;
+        }
+        match install_package_internal(&archive, packages_dir, Some(assets_root), game_version) {
+            Ok(installed) => {
+                info!("[setup] installed bundled package {}", installed.id);
+                let recorded = std::fs::create_dir_all(markers_dir)
+                    .and_then(|()| std::fs::write(&marker, &fingerprint));
+                if let Err(err) = recorded {
+                    warn!("[setup] could not record bundled package {name}: {err}");
+                }
+            }
+            Err(err) => warn!("[setup] bundled package {name} was not installed: {err}"),
+        }
+    }
+}
+
+/// Identifies one build of a bundled archive. The manifest version alone is not enough: package
+/// builds are re-run without bumping it, and a rebuilt archive must still reach the player.
+fn bundled_archive_fingerprint(archive: &std::path::Path) -> Option<String> {
+    let size = std::fs::metadata(archive).ok()?.len();
+    let version = ofm_core::generator::read_package_manifest_from_ofm(archive)?.version;
+    Some(format!("{version}:{size}"))
 }
 
 /// List all installed `.ofm` packages in the user's packages directory.
@@ -931,6 +1022,122 @@ mod tests {
                 .exists(),
             "the reinstalled package's own artwork must still land",
         );
+    }
+
+    /// A bundled `.ofm` whose manifest names it `seed-pkg` at `version`, with one badge so the
+    /// install's artwork extraction is observable. `marker` varies the archive's bytes, standing in
+    /// for a package rebuilt without a version bump.
+    fn write_bundled_package(bundled_dir: &Path, version: &str, marker: &str) -> PathBuf {
+        let source = bundled_dir.with_extension(format!("src-{version}-{marker}"));
+        let images = source.join("assets/images");
+        fs::create_dir_all(&images).expect("fixture tree should be created");
+        fs::write(images.join("badge.png"), marker).expect("badge should be written");
+        fs::write(
+            source.join("package.json"),
+            format!(r#"{{"schema":"world","id":"seed-pkg","name":"Seed","version":"{version}"}}"#),
+        )
+        .expect("manifest should be written");
+        fs::create_dir_all(bundled_dir).expect("bundled dir should be created");
+        let archive = bundled_dir.join("real-world.ofm");
+        ofm_core::generator::export_directory_to_ofm(&source, &archive)
+            .expect("archive should build");
+        archive
+    }
+
+    struct SeedDirs {
+        _temp: TempCommandDir,
+        bundled: PathBuf,
+        packages: PathBuf,
+        assets: PathBuf,
+        markers: PathBuf,
+    }
+
+    impl SeedDirs {
+        fn new() -> Self {
+            let temp = TempCommandDir::new();
+            let root = temp.path().to_path_buf();
+            Self {
+                _temp: temp,
+                bundled: root.join("resources/default-packages"),
+                packages: root.join("app-data/packages"),
+                assets: root.join("app-data/package-assets"),
+                markers: root.join("app-data/seeded-packages"),
+            }
+        }
+
+        fn seed(&self) {
+            super::seed_bundled_packages_internal(
+                &self.bundled,
+                &self.packages,
+                &self.assets,
+                &self.markers,
+                &semver::Version::new(0, 3, 0),
+            );
+        }
+    }
+
+    /// Given a fresh install whose bundle ships a package,
+    /// when the game starts,
+    /// then the package is installed under its manifest id with its artwork extracted.
+    #[test]
+    fn a_bundled_package_is_installed_on_first_launch() {
+        let dirs = SeedDirs::new();
+        write_bundled_package(&dirs.bundled, "1.0.0", "a");
+
+        dirs.seed();
+
+        assert!(dirs.packages.join("seed-pkg.ofm").exists());
+        assert!(dirs
+            .assets
+            .join("seed-pkg/assets/images/badge.png")
+            .exists());
+        assert!(!dirs.packages.join("seed-pkg.ofm.partial").exists());
+    }
+
+    /// Given a bundled package the player has since uninstalled,
+    /// when the game starts again with the same bundle,
+    /// then the package stays uninstalled.
+    #[test]
+    fn an_uninstalled_bundled_package_is_not_reinstalled() {
+        let dirs = SeedDirs::new();
+        write_bundled_package(&dirs.bundled, "1.0.0", "a");
+        dirs.seed();
+        super::uninstall_package_from_dirs(&dirs.packages, Some(&dirs.assets), "seed-pkg")
+            .expect("uninstall should succeed");
+
+        dirs.seed();
+
+        assert!(!dirs.packages.join("seed-pkg.ofm").exists());
+    }
+
+    /// Given a package seeded by an earlier build,
+    /// when a newer build ships a rebuilt archive of it under the same version,
+    /// then the rebuilt archive replaces the installed one.
+    #[test]
+    fn a_rebuilt_bundled_package_replaces_the_seeded_one() {
+        let dirs = SeedDirs::new();
+        write_bundled_package(&dirs.bundled, "1.0.0", "a");
+        dirs.seed();
+        let rebuilt = write_bundled_package(&dirs.bundled, "1.0.0", "rebuilt-badge");
+
+        dirs.seed();
+
+        assert_eq!(
+            fs::read(dirs.packages.join("seed-pkg.ofm")).unwrap(),
+            fs::read(rebuilt).unwrap(),
+        );
+    }
+
+    /// Given an app bundle with no default packages,
+    /// when the game starts,
+    /// then nothing is installed and no packages directory is created.
+    #[test]
+    fn a_bundle_without_default_packages_installs_nothing() {
+        let dirs = SeedDirs::new();
+
+        dirs.seed();
+
+        assert!(!dirs.packages.exists());
     }
 
     /// A minimal `.ofm` carrying one image under the asset tree. Built through

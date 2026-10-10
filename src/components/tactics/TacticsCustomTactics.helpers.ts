@@ -38,6 +38,28 @@ export function isSamePhaseBlueprint(
   return PHASE_FIELDS.every((field) => left[field] === right[field]);
 }
 
+/**
+ * The saved custom tactic the team is playing right now, if any: same
+ * formation, play style and phase blueprint. A tactic saved before blueprints
+ * were kept matches on its shape alone. The active tactic is not persisted, so
+ * this is how the library finds it again when the tactics screen reopens.
+ */
+export function findCustomTacticForSetup(
+  customTactics: readonly TacticsLibraryEntry[],
+  formation: string,
+  playStyle: string,
+  phase: TacticsPhaseSettings | undefined,
+): TacticsLibraryEntry | null {
+  const sameShape = customTactics.filter(
+    (entry) => entry.formation === formation && entry.playStyle === playStyle,
+  );
+  return (
+    sameShape.find((entry) => entry.phase && phase && isSamePhaseBlueprint(entry.phase, phase)) ??
+    sameShape.find((entry) => !entry.phase) ??
+    null
+  );
+}
+
 export function buildCustomTacticsStorageKey(gameState: GameStateData): string {
   return [
     TACTICS_STORAGE_KEY_PREFIX,

@@ -10,6 +10,7 @@ import {
 } from "./TacticsTab.helpers";
 import {
   buildCustomTacticsStorageKey,
+  findCustomTacticForSetup,
   isSamePhaseBlueprint,
   loadCustomTactics,
   saveCustomTactics,
@@ -42,9 +43,18 @@ export function useTacticsLibrary({
   const [customTactics, setCustomTactics] = useState<TacticsLibraryEntry[]>(() =>
     gameState ? loadCustomTactics(gameState) : [],
   );
-  const [activeTacticId, setActiveTacticId] = useState<string | null>(
-    initialPreset ? `preset:${initialPreset.id}` : null,
-  );
+  // Reopening the screen must show the saved tactic the team is playing, not a
+  // generic stand-in that reads like another saved tactic.
+  const [activeTacticId, setActiveTacticId] = useState<string | null>(() => {
+    const playing = findCustomTacticForSetup(
+      customTactics,
+      formation,
+      activePlayStyle,
+      tacticsPhase,
+    );
+    if (playing) return playing.id;
+    return initialPreset ? `preset:${initialPreset.id}` : null;
+  });
   const [draftTacticName, setDraftTacticName] = useState(
     initialPreset?.id
       ? t(`tactics.presetNames.${initialPreset.id}`, initialPreset.id)
@@ -161,10 +171,22 @@ export function useTacticsLibrary({
     setDraftTacticName(nextName);
   }, [activeTactic?.id, activeTactic?.name, activeTactic?.type, t]);
 
+  /**
+   * The first free "Custom tactic N". Counting saved tactics is not enough: after
+   * a delete the count lands on a number another tactic already carries.
+   */
+  function nextCustomTacticName(): string {
+    const takenNames = new Set(customTactics.map((entry) => entry.name));
+    let count = customTactics.length + 1;
+    while (takenNames.has(t("tactics.customTacticNumber", { count }))) {
+      count += 1;
+    }
+    return t("tactics.customTacticNumber", { count });
+  }
+
   function createCustomTacticEntry(
     overrides: Partial<TacticsLibraryEntry> = {},
   ): TacticsLibraryEntry {
-    const customCount = customTactics.length + 1;
     const sourcePresetName = matchedPreset
       ? t(`tactics.presetNames.${matchedPreset.id}`, matchedPreset.id)
       : null;
@@ -173,7 +195,7 @@ export function useTacticsLibrary({
       description: overrides.description ?? t("tactics.customTacticDescription"),
       formation: overrides.formation ?? formation,
       id: overrides.id ?? `custom:${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      name: overrides.name ?? t("tactics.customTacticNumber", { count: customCount }),
+      name: overrides.name ?? nextCustomTacticName(),
       phase: overrides.phase ?? tacticsPhase,
       playStyle: overrides.playStyle ?? activePlayStyle,
       sourcePresetName:
@@ -260,10 +282,15 @@ export function useTacticsLibrary({
       return;
     }
 
+    // The unsaved stand-in is labelled with the bare generic name; saving it under
+    // that name, or under one a saved tactic already has, makes two look alike.
+    const isNameTaken =
+      nextName === t("tactics.customTactic") ||
+      customTactics.some((entry) => entry.name === nextName);
     const nextTactic = createCustomTacticEntry({
       description: activeTactic?.description,
       formation,
-      name: nextName,
+      name: isNameTaken ? undefined : nextName,
       playStyle: activePlayStyle,
       sourcePresetName: activeTactic?.name ?? null,
     });

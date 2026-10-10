@@ -1129,6 +1129,13 @@ pub(super) fn generate_player_from_def(
 
 /// A generated player's value on the day his world opens, before he is at a
 /// club: the career's opening reprices him there.
+/// Price a generated player again after his ratings were changed: market value
+/// and the wage that follows it, as at generation.
+pub(super) fn reprice_generated_player(player: &mut Player, opening_year: u32) {
+    player.market_value = generated_market_value(player, opening_year);
+    player.stage_wage(crate::economy::valuation::market_wage(player, None));
+}
+
 fn generated_market_value(player: &Player, opening_year: u32) -> u64 {
     let opening_day = i32::try_from(opening_year)
         .ok()

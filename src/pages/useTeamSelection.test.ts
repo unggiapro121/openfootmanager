@@ -29,44 +29,49 @@ function league(overrides: Partial<LeagueData> = {}): LeagueData {
   };
 }
 
-// Selected team (team-1) participates in epl (Domestic, requires home region
-// "europe") and intl (Continental, requires non-home "south_america"); both are
-// therefore mandatory. asia_cup is a non-mandatory Continental comp requiring
-// "asia". This shape makes every toggle constraint branch reachable.
+// One region with two countries: GB holds two domestic leagues (epl, champ),
+// ES holds one (laliga). The continental cup is not a domestic league and so
+// never appears in the league filter.
 function buildGameState(): GameStateData {
   return {
-    teams: [createTeam({ id: "team-1", country: "GB", short_name: "ALP" })],
-    players: [createPlayer({ id: "p1", team_id: "team-1" })],
-    regions: [
-      { id: "europe", name: "Europe", country_codes: ["GB"] },
-      { id: "south_america", name: "South America", country_codes: ["BR"] },
-      { id: "asia", name: "Asia", country_codes: ["JP"] },
+    teams: [
+      createTeam({ id: "team-1", name: "Alpha FC", country: "GB", reputation: 800 }),
+      createTeam({ id: "team-2", name: "Beta Town", country: "GB", reputation: 500 }),
+      createTeam({ id: "team-3", name: "Gamma CF", country: "ES", reputation: 700 }),
     ],
+    players: [createPlayer({ id: "p1", team_id: "team-1" })],
+    regions: [{ id: "europe", name: "Europe", country_codes: ["GB", "ES"] }],
     competitions: [
+      league({
+        id: "ucl",
+        scope: "Continental",
+        kind: "Cup",
+        participant_ids: ["team-1", "team-3"],
+        priority: 0,
+      }),
       league({
         id: "epl",
         scope: "Domestic",
         kind: "League",
-        region_id: "europe",
         country_id: "GB",
         participant_ids: ["team-1"],
         priority: 1,
       }),
       league({
-        id: "intl",
-        scope: "Continental",
-        kind: "Cup",
-        required_region_ids: ["south_america"],
-        participant_ids: ["team-1"],
+        id: "champ",
+        scope: "Domestic",
+        kind: "League",
+        country_id: "GB",
+        participant_ids: ["team-2"],
         priority: 2,
       }),
       league({
-        id: "asia_cup",
-        scope: "Continental",
-        kind: "Cup",
-        required_region_ids: ["asia"],
-        participant_ids: ["team-9"],
-        priority: 3,
+        id: "laliga",
+        scope: "Domestic",
+        kind: "League",
+        country_id: "ES",
+        participant_ids: ["team-3"],
+        priority: 1,
       }),
     ],
     league: null,
@@ -87,94 +92,52 @@ function renderController() {
   return renderHook(() => useTeamSelection({ gameState, ...externals }));
 }
 
-describe("useTeamSelection scope toggles", () => {
+const ids = (items: { id: string }[]) => items.map((item) => item.id);
+
+describe("useTeamSelection league filter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("initializes the home region, region selection, and competition selection", () => {
+  /** Given a fresh page, When it mounts, Then the first region and country are picked with no league filter. */
+  it("starts on the first region and country with every league shown", () => {
     const { result } = renderController();
 
     expect(result.current.selectedHomeRegionId).toBe("europe");
-    expect(result.current.regionSelection.europe).toBe(true);
-    expect(result.current.selectedTeam?.id).toBe("team-1");
-    expect(result.current.mandatoryCompetitionIds.has("epl")).toBe(true);
-    expect(result.current.mandatoryCompetitionIds.has("intl")).toBe(true);
+    expect(result.current.selectedCountryCode).toBe("GB");
+    expect(result.current.selectedLeagueId).toBeNull();
+    expect(ids(result.current.filteredTeams)).toEqual(["team-1", "team-2"]);
   });
 
-  it("refuses to toggle the home region off", () => {
+  /** Given a country, When the league options are listed, Then only its domestic leagues appear. */
+  it("offers only the selected country's domestic leagues", () => {
     const { result } = renderController();
 
-    act(() => result.current.handleRegionToggle("europe"));
+    expect(ids(result.current.leagueOptions)).toEqual(["epl", "champ"]);
 
-    expect(result.current.scopeMessage?.key).toBe(
-      "teamSelect.scopeMessages.homeRegionAlwaysActive",
-    );
-    expect(result.current.regionSelection.europe).toBe(true);
+    act(() => result.current.setSelectedCountryCode("ES"));
+
+    expect(ids(result.current.leagueOptions)).toEqual(["laliga"]);
   });
 
-  it("enables a non-home region when toggled on", () => {
+  /** Given a league is picked, When clubs are listed, Then only that league's clubs remain. */
+  it("narrows the clubs to the picked league", () => {
     const { result } = renderController();
 
-    act(() => result.current.handleRegionToggle("asia"));
+    act(() => result.current.setSelectedLeagueId("champ"));
 
-    expect(result.current.regionSelection.asia).toBe(true);
-    expect(result.current.scopeMessage).toBeNull();
+    expect(ids(result.current.filteredTeams)).toEqual(["team-2"]);
+    expect(result.current.selectedTeam?.id).toBe("team-2");
   });
 
-  it("blocks disabling a region required by a mandatory competition", () => {
+  /** Given a league is picked, When the country changes, Then the stale league stops filtering. */
+  it("drops a league that does not belong to the newly selected country", () => {
     const { result } = renderController();
 
-    act(() => result.current.handleRegionToggle("south_america")); // enable
-    act(() => result.current.handleRegionToggle("south_america")); // try disable
+    act(() => result.current.setSelectedLeagueId("epl"));
+    act(() => result.current.setSelectedCountryCode("ES"));
 
-    expect(result.current.scopeMessage?.key).toBe(
-      "teamSelect.scopeMessages.regionRequiredByCompetition",
-    );
-    expect(result.current.regionSelection.south_america).toBe(true);
-  });
-
-  it("disables stranded dependent competitions when a region is removed", () => {
-    const { result } = renderController();
-
-    act(() => result.current.handleRegionToggle("asia")); // enable, asia_cup stays on
-    act(() => result.current.handleRegionToggle("asia")); // disable, strands asia_cup
-
-    expect(result.current.competitionSelection.asia_cup).toBe(false);
-    expect(result.current.scopeMessage?.key).toBe(
-      "teamSelect.scopeMessages.regionRemovedDisablesCompetitions",
-    );
-  });
-
-  it("auto-enables missing regions when enabling a competition", () => {
-    const { result } = renderController();
-    const asiaCup = () => result.current.availableCompetitions.find((c) => c.id === "asia_cup")!;
-
-    act(() => result.current.handleCompetitionToggle(asiaCup())); // turn asia_cup off
-    act(() => result.current.handleCompetitionToggle(asiaCup())); // turn back on -> needs asia
-
-    expect(result.current.regionSelection.asia).toBe(true);
-    expect(result.current.competitionSelection.asia_cup).toBe(true);
-    expect(result.current.scopeMessage?.key).toBe("teamSelect.scopeMessages.autoEnabledRegions");
-  });
-
-  it("locks mandatory competitions against being disabled", () => {
-    const { result } = renderController();
-    const epl = result.current.availableCompetitions.find((c) => c.id === "epl")!;
-
-    act(() => result.current.handleCompetitionToggle(epl));
-
-    expect(result.current.scopeMessage?.key).toBe("teamSelect.scopeMessages.clubCompetitionLocked");
-    expect(result.current.competitionSelection.epl).toBe(true);
-  });
-
-  it("disables an enabled non-locked competition and clears the message", () => {
-    const { result } = renderController();
-    const asiaCup = result.current.availableCompetitions.find((c) => c.id === "asia_cup")!;
-
-    act(() => result.current.handleCompetitionToggle(asiaCup));
-
-    expect(result.current.competitionSelection.asia_cup).toBe(false);
-    expect(result.current.scopeMessage).toBeNull();
+    expect(result.current.selectedLeagueId).toBeNull();
+    expect(ids(result.current.filteredTeams)).toEqual(["team-3"]);
   });
 });

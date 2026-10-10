@@ -4,25 +4,13 @@ import { useTranslation } from "react-i18next";
 
 import type { GameStateData, LeagueData, PlayerData, TeamData } from "../store/gameStore";
 import { getActiveCompetitions } from "../lib/helpers";
-import { buildRegionLabel, inferRegionId } from "../lib/teamRegions";
+import { inferRegionId } from "../lib/teamRegions";
 import { competitionDisplayName } from "../lib/competitionName";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
 import { showError } from "../lib/errorDialog";
 import { likelyXi, likelyXiAverageOvr } from "../lib/playerOvr";
-import {
-  buildFallbackRegions,
-  competitionRequiredRegions,
-  sortCompetitions,
-  teamCompetitions,
-} from "./TeamSelection.helpers";
-
-type CompetitionSelection = Record<string, boolean>;
-type RegionSelection = Record<string, boolean>;
-export type ScopeMessage = {
-  key: string;
-  values?: Record<string, string | number>;
-};
+import { buildFallbackRegions, sortCompetitions, teamCompetitions } from "./TeamSelection.helpers";
 
 interface UseTeamSelectionArgs {
   gameState: GameStateData | null;
@@ -38,16 +26,11 @@ export function useTeamSelection({
   navigate,
 }: UseTeamSelectionArgs) {
   const { t } = useTranslation();
-  const compName = (c: LeagueData) => competitionDisplayName(c, t);
-
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [clubSearch, setClubSearch] = useState("");
-  const [scopeExpanded, setScopeExpanded] = useState(true);
   const [selectedHomeRegionId, setSelectedHomeRegionId] = useState<string | null>(null);
   const [selectedCountryCode, setSelectedCountryCode] = useState<string | null>(null);
-  const [regionSelection, setRegionSelection] = useState<RegionSelection>({});
-  const [competitionSelection, setCompetitionSelection] = useState<CompetitionSelection>({});
-  const [scopeMessage, setScopeMessage] = useState<ScopeMessage | null>(null);
+  const [selectedLeagueId, setSelectedLeagueId] = useState<string | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
 
   const competitions = useMemo(
@@ -97,61 +80,23 @@ export function useTeamSelection({
     }
   }, [regionCountries, selectedCountryCode]);
 
-  useEffect(() => {
-    if (regions.length === 0) {
-      return;
-    }
-
-    setRegionSelection((current) => {
-      const next = Object.fromEntries(
-        regions.map((region) => [region.id, current[region.id] ?? false]),
-      );
-      if (selectedHomeRegionId) {
-        next[selectedHomeRegionId] = true;
+  // Each club's domestic league (its first, i.e. strongest, domestic league).
+  const leagueByTeam = useMemo(() => {
+    const byTeam = new Map<string, LeagueData>();
+    for (const competition of competitions) {
+      if (competition.kind !== "League" || competition.scope !== "Domestic") {
+        continue;
       }
-      return next;
-    });
-  }, [regions, selectedHomeRegionId]);
-
-  useEffect(() => {
-    if (competitions.length === 0) {
-      return;
+      for (const teamId of competition.participant_ids ?? []) {
+        if (!byTeam.has(teamId)) {
+          byTeam.set(teamId, competition);
+        }
+      }
     }
-
-    setCompetitionSelection((current) =>
-      Object.fromEntries(
-        competitions.map((competition) => [competition.id, current[competition.id] ?? true]),
-      ),
-    );
+    return byTeam;
   }, [competitions]);
 
-  const activeRegionIds = regions
-    .filter((region) => region.id === selectedHomeRegionId || Boolean(regionSelection[region.id]))
-    .map((region) => region.id);
-
-  const homeRegionTeamIds = new Set(
-    (gameState?.teams ?? [])
-      .filter((team) => regionCountries.includes(team.country))
-      .map((team) => team.id),
-  );
-
-  const availableCompetitions = competitions.filter((competition) => {
-    if (!selectedHomeRegionId) {
-      return true;
-    }
-
-    const requiredRegions = competitionRequiredRegions(competition);
-    return (
-      requiredRegions.includes(selectedHomeRegionId) ||
-      competition.region_id === selectedHomeRegionId ||
-      (competition.country_id ? regionCountries.includes(competition.country_id) : false) ||
-      competition.participant_ids?.some((teamId) => homeRegionTeamIds.has(teamId)) ||
-      competition.scope === "Continental" ||
-      competition.scope === "International"
-    );
-  });
-
-  const teams = (gameState?.teams ?? []).filter((team) => {
+  const countryTeams = (gameState?.teams ?? []).filter((team) => {
     if (selectedCountryCode) {
       return team.country === selectedCountryCode;
     }
@@ -161,7 +106,21 @@ export function useTeamSelection({
     return true;
   });
 
-  // Free-text search over the country/region-filtered clubs (name or city).
+  // Domestic leagues that hold at least one club of the selected country/region.
+  const leagueOptions = competitions.filter((competition) =>
+    countryTeams.some((team) => leagueByTeam.get(team.id)?.id === competition.id),
+  );
+
+  // A league picked for another country no longer applies once the country changes.
+  const activeLeagueId = leagueOptions.some((league) => league.id === selectedLeagueId)
+    ? selectedLeagueId
+    : null;
+
+  const teams = activeLeagueId
+    ? countryTeams.filter((team) => leagueByTeam.get(team.id)?.id === activeLeagueId)
+    : countryTeams;
+
+  // Free-text search over the country/league-filtered clubs (name or city).
   const clubSearchQuery = clubSearch.trim().toLowerCase();
   const filteredTeams = clubSearchQuery
     ? teams.filter(
@@ -174,18 +133,6 @@ export function useTeamSelection({
   // Group the visible clubs by their domestic league/division (strongest first),
   // with any club not in a league falling into an "other" bucket.
   const teamGroups = useMemo(() => {
-    const leagueByTeam = new Map<string, LeagueData>();
-    for (const competition of competitions) {
-      if (competition.kind !== "League" || competition.scope !== "Domestic") {
-        continue;
-      }
-      for (const teamId of competition.participant_ids ?? []) {
-        if (!leagueByTeam.has(teamId)) {
-          leagueByTeam.set(teamId, competition);
-        }
-      }
-    }
-
     const groups = new Map<
       string,
       { id: string; name: string; order: number; teams: TeamData[] }
@@ -223,7 +170,7 @@ export function useTeamSelection({
       });
     }
     return ordered;
-  }, [competitions, filteredTeams, t]);
+  }, [filteredTeams, leagueByTeam, t]);
 
   useEffect(() => {
     if (teams.length === 0) {
@@ -251,151 +198,16 @@ export function useTeamSelection({
   const selectedTeamCompetitions = selectedTeam
     ? teamCompetitions(selectedTeam.id, competitions)
     : [];
-  const mandatoryCompetitionIds = new Set(
-    selectedTeamCompetitions.map((competition) => competition.id),
-  );
-  const enabledCompetitionIds = Array.from(
-    new Set(
-      Object.entries(competitionSelection)
-        .filter(([, enabled]) => enabled)
-        .map(([competitionId]) => competitionId)
-        .concat(Array.from(mandatoryCompetitionIds)),
-    ),
-  );
-
-  const handleRegionToggle = (regionId: string) => {
-    if (regionId === selectedHomeRegionId) {
-      setScopeMessage({ key: "teamSelect.scopeMessages.homeRegionAlwaysActive" });
-      return;
-    }
-
-    const nextEnabled = !regionSelection[regionId];
-    if (nextEnabled) {
-      setRegionSelection((current) => ({
-        ...current,
-        [regionId]: true,
-      }));
-      setScopeMessage(null);
-      return;
-    }
-
-    const blockedMandatoryCompetition = selectedTeamCompetitions.find((competition) =>
-      competitionRequiredRegions(competition).includes(regionId),
-    );
-    if (blockedMandatoryCompetition) {
-      setScopeMessage({
-        key: "teamSelect.scopeMessages.regionRequiredByCompetition",
-        values: {
-          competition: compName(blockedMandatoryCompetition),
-          club: selectedTeam?.short_name ?? t("teamSelect.yourClub"),
-          region: buildRegionLabel(t, regionId),
-        },
-      });
-      return;
-    }
-
-    const nextActiveRegions = new Set(
-      activeRegionIds.filter((activeRegionId) => activeRegionId !== regionId),
-    );
-    const blockedCompetitionIds = competitions
-      .filter((competition) => {
-        if (!competitionSelection[competition.id]) {
-          return false;
-        }
-        return competitionRequiredRegions(competition).some(
-          (requiredRegionId) => !nextActiveRegions.has(requiredRegionId),
-        );
-      })
-      .map((competition) => competition.id);
-
-    setRegionSelection((current) => ({
-      ...current,
-      [regionId]: false,
-    }));
-    if (blockedCompetitionIds.length > 0) {
-      setCompetitionSelection((current) => {
-        const next = { ...current };
-        for (const competitionId of blockedCompetitionIds) {
-          next[competitionId] = false;
-        }
-        return next;
-      });
-      setScopeMessage({
-        key: "teamSelect.scopeMessages.regionRemovedDisablesCompetitions",
-        values: {
-          region: buildRegionLabel(t, regionId),
-        },
-      });
-    } else {
-      setScopeMessage(null);
-    }
-  };
-
-  const handleCompetitionToggle = (competition: LeagueData) => {
-    const currentlyEnabled = Boolean(competitionSelection[competition.id]);
-    const isLocked = mandatoryCompetitionIds.has(competition.id);
-
-    if (currentlyEnabled) {
-      if (isLocked) {
-        setScopeMessage({
-          key: "teamSelect.scopeMessages.clubCompetitionLocked",
-          values: {
-            competition: compName(competition),
-            club: selectedTeam?.short_name ?? t("teamSelect.yourClub"),
-          },
-        });
-        return;
-      }
-
-      setCompetitionSelection((current) => ({
-        ...current,
-        [competition.id]: false,
-      }));
-      setScopeMessage(null);
-      return;
-    }
-
-    const requiredRegions = competitionRequiredRegions(competition);
-    const missingRegions = requiredRegions.filter(
-      (requiredRegionId) => !activeRegionIds.includes(requiredRegionId),
-    );
-
-    if (missingRegions.length > 0) {
-      setRegionSelection((current) => {
-        const next = { ...current };
-        for (const regionId of missingRegions) {
-          next[regionId] = true;
-        }
-        if (selectedHomeRegionId) {
-          next[selectedHomeRegionId] = true;
-        }
-        return next;
-      });
-      setScopeMessage({
-        key: "teamSelect.scopeMessages.autoEnabledRegions",
-        values: {
-          competition: compName(competition),
-          regions: missingRegions.map((regionId) => buildRegionLabel(t, regionId)).join(", "),
-        },
-      });
-    } else {
-      setScopeMessage(null);
-    }
-
-    setCompetitionSelection((current) => ({
-      ...current,
-      [competition.id]: true,
-    }));
-  };
-
   const handleConfirm = async () => {
     if (!selectedTeam || isConfirming) return;
     setIsConfirming(true);
     try {
+      // Simulate every competition: the backend activates whatever regions
+      // those competitions need on top of the club's home region.
       const updatedGame = await invoke<GameStateData>("select_team", {
         teamId: selectedTeam.id,
-        activeRegionIds,
-        activeCompetitionIds: enabledCompetitionIds,
+        activeRegionIds: selectedHomeRegionId ? [selectedHomeRegionId] : [],
+        activeCompetitionIds: competitions.map((competition) => competition.id),
       });
       try {
         await prewarmManagerSquadPortraits(updatedGame);
@@ -420,22 +232,18 @@ export function useTeamSelection({
   return {
     clubSearch,
     setClubSearch,
-    scopeExpanded,
-    setScopeExpanded,
     selectedHomeRegionId,
     setSelectedHomeRegionId,
     selectedCountryCode,
     setSelectedCountryCode,
-    regionSelection,
+    selectedLeagueId: activeLeagueId,
+    setSelectedLeagueId,
+    leagueOptions,
     setSelectedTeamId,
-    scopeMessage,
-    setScopeMessage,
     isConfirming,
     competitions,
     regions,
     regionCountries,
-    activeRegionIds,
-    availableCompetitions,
     filteredTeams,
     teamGroups,
     getTeamPlayers,
@@ -443,11 +251,6 @@ export function useTeamSelection({
     selectedTeam,
     selectedTeamXi,
     selectedTeamCompetitions,
-    mandatoryCompetitionIds,
-    competitionSelection,
-    enabledCompetitionIds,
-    handleRegionToggle,
-    handleCompetitionToggle,
     handleConfirm,
   };
 }

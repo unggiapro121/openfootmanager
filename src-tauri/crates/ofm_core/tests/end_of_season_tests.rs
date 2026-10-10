@@ -1256,7 +1256,10 @@ fn season_waits_for_leagues_that_finish_before_the_users_next_kickoff() {
             season: 1,
             participant_ids: clubs.iter().map(|c| c.to_string()).collect(),
             fixtures,
-            standings: clubs.iter().map(|c| make_standing(c, 1, 0, 1, 1, 1)).collect(),
+            standings: clubs
+                .iter()
+                .map(|c| make_standing(c, 1, 0, 1, 1, 1))
+                .collect(),
             ..Default::default()
         }
     }
@@ -1265,9 +1268,27 @@ fn season_waits_for_leagues_that_finish_before_the_users_next_kickoff() {
         game.teams.push(make_team(id, id));
     }
     game.competitions = vec![
-        league("sco-1", "SCO", ["team1", "team2"], ["2025-08-02", "2026-03-14"], true),
-        league("eng-1", "ENG", ["team3", "team4"], ["2025-08-16", "2026-05-24"], false),
-        league("kor-1", "KR", ["team5", "team6"], ["2026-02-28", "2026-10-10"], false),
+        league(
+            "sco-1",
+            "SCO",
+            ["team1", "team2"],
+            ["2025-08-02", "2026-03-14"],
+            true,
+        ),
+        league(
+            "eng-1",
+            "ENG",
+            ["team3", "team4"],
+            ["2025-08-16", "2026-05-24"],
+            false,
+        ),
+        league(
+            "kor-1",
+            "KR",
+            ["team5", "team6"],
+            ["2026-02-28", "2026-10-10"],
+            false,
+        ),
     ];
 
     assert!(

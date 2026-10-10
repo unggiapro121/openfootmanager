@@ -111,6 +111,12 @@ pub fn run() {
 
             app.manage(Arc::new(SaveManagerState(Mutex::new(save_manager))));
 
+            // Off the setup thread: validating and unpacking a full real-world package takes
+            // seconds, and the main menu has no reason to wait for it — the packages screen is
+            // several steps into creating a career.
+            let seeding_handle = app.handle().clone();
+            std::thread::spawn(move || commands::world::seed_bundled_packages(&seeding_handle));
+
             // --- MCP server startup (feature-flagged) ---
             #[cfg(feature = "mcp")]
             match mcp_server::config::parse_mcp_config_from_args() {

@@ -212,10 +212,12 @@ fn choose(
             .iter()
             .filter(|player| group_index(&player.position) == group_index(group))
             .collect();
+        candidates.shuffle(rng);
+        let reach = crate::scouting::scouting_potential_reach(facility, potential);
+        candidates.retain(|prospect| crate::scouting::comes_across(prospect, reach, rng));
         if candidates.is_empty() {
             continue;
         }
-        candidates.shuffle(rng);
         candidates.truncate(viewed);
         let best = candidates
             .into_iter()
