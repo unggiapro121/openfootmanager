@@ -703,9 +703,11 @@ mod tests {
             &["team3".to_string()],
         );
         running.country_id = Some("BR".to_string());
+        // Past the English league's next kickoff (August), so it is on another
+        // calendar and does not hold the old club's finished season open.
         let mut upcoming = domain::league::Fixture {
             id: "b1".to_string(),
-            date: "2026-12-20".to_string(),
+            date: "2027-08-20".to_string(),
             home_team_id: "team3".to_string(),
             away_team_id: "team1".to_string(),
             status: FixtureStatus::Scheduled,

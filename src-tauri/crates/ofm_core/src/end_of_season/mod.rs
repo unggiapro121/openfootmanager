@@ -32,7 +32,10 @@ pub fn expected_fixture_count(team_count: usize) -> Option<usize> {
 }
 
 pub fn has_full_schedule(league: &League) -> bool {
-    match expected_fixture_count(league.standings.len()) {
+    // `expected_fixture_count` is the double round robin; a league authored
+    // with one leg (MLS) or three (K League) plays half or one and a half times it.
+    let legs = usize::from(league.rules.league_legs);
+    match expected_fixture_count(league.standings.len()).map(|double| double / 2 * legs) {
         Some(expected_fixture_count) => {
             league
                 .fixtures
@@ -95,6 +98,20 @@ fn is_competition_complete(competition: &League) -> bool {
     }
 }
 
+/// How far after the rollover each competition's next season may start: every
+/// competition renews on its first season-start date after `now + this`.
+const ROLLOVER_LEAD_DAYS: i64 = 28;
+
+/// The date of a league's last matchday this season.
+fn last_league_fixture(league: &League) -> Option<chrono::NaiveDate> {
+    league
+        .fixtures
+        .iter()
+        .filter(|fixture| fixture.counts_for_league_standings())
+        .filter_map(|fixture| chrono::NaiveDate::parse_from_str(&fixture.date, "%Y-%m-%d").ok())
+        .max()
+}
+
 /// Check if the season is complete for the purposes of allowing rollover.
 /// Only the user's own league(s) gate the button; foreign leagues on different
 /// hemispheres may still be in progress and are skipped during regeneration.
@@ -143,7 +160,44 @@ pub fn is_season_complete(game: &Game) -> bool {
                     && !is_league_season_ended(competition)
                     && has_a_fixture_still_to_come(competition, &today)
             });
-            return !countrymen_still_playing;
+            if countrymen_still_playing {
+                return false;
+            }
+            // A league still playing that will finish before the user's league
+            // kicks off again is part of this season, even abroad. One matchday a
+            // week, a short league ends months early (the Scottish Premiership's
+            // 33 rounds in March, the Premier League's 38 in May), and rollover
+            // skips a league that is mid-season, so rolling over at the short
+            // league's end would cost the long ones a whole season. Waiting costs
+            // the user nothing — their league still kicks off on its own date —
+            // as long as the rollover it waits for lands before that date; a
+            // league that runs past it (Brazil, April to December, for a European
+            // club) is on another calendar and does not hold the season open.
+            let now = game.clock.current_date;
+            let user_next_kickoff = user_leagues
+                .iter()
+                .map(|league| {
+                    crate::generator::next_season_start(
+                        now + Duration::days(ROLLOVER_LEAD_DAYS),
+                        league.season_start_month,
+                        league.season_start_day,
+                    )
+                    .date_naive()
+                })
+                .min();
+            let this_season_still_playing = user_next_kickoff.is_some_and(|next_kickoff| {
+                game.competitions.iter().any(|competition| {
+                    competition.rules.format == CompetitionFormat::LeagueTable
+                        && !crate::world_cup::is_world_cup_competition(competition)
+                        && !crate::world_cup::is_world_cup_qualifying(competition)
+                        && season_has_started(competition)
+                        && has_a_fixture_still_to_come(competition, &today)
+                        && last_league_fixture(competition).is_some_and(|last| {
+                            last + Duration::days(ROLLOVER_LEAD_DAYS) <= next_kickoff
+                        })
+                })
+            });
+            return !this_season_still_playing;
         }
         // Fallback when user has no known league (e.g. international-only):
         // all league tables must complete before rollover is available.
@@ -1087,7 +1141,7 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     //    Each competition computes its own next-season start from its stored
     //    season_start_month; `rollover_anchor` is just the global trigger point.
     let next_season = season + 1;
-    let rollover_anchor = game.clock.current_date + Duration::days(28);
+    let rollover_anchor = game.clock.current_date + Duration::days(ROLLOVER_LEAD_DAYS);
     let user_division_before =
         user_division(game, &user_team_id).map(|division| (division.id.clone(), division.priority));
     regenerate_competitions_for_new_season(game, next_season, rollover_anchor);

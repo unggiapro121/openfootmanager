@@ -1231,6 +1231,57 @@ fn season_not_complete_while_another_division_is_unfinished() {
     assert!(is_season_complete(&game));
 }
 
+/// A short league (the Scottish Premiership's 33 rounds, done in March) must
+/// not roll the season over while a longer one (the Premier League, to May) is
+/// still playing: rollover skips a mid-season league, which would lose a whole
+/// season. A league that runs past the user's next kickoff (K League, February
+/// to October) is on another calendar and does not hold the season open.
+#[test]
+fn season_waits_for_leagues_that_finish_before_the_users_next_kickoff() {
+    fn league(id: &str, country: &str, clubs: [&str; 2], dates: [&str; 2], played: bool) -> League {
+        let mut fixtures = vec![
+            make_completed_fixture(&format!("{id}-1"), clubs[0], clubs[1], 1, 0),
+            make_completed_fixture(&format!("{id}-2"), clubs[1], clubs[0], 0, 1),
+        ];
+        fixtures[0].date = dates[0].to_string();
+        fixtures[1].date = dates[1].to_string();
+        if !played {
+            fixtures[1].status = FixtureStatus::Scheduled;
+            fixtures[1].result = None;
+        }
+        League {
+            id: id.to_string(),
+            name: id.to_string(),
+            country_id: Some(country.to_string()),
+            season: 1,
+            participant_ids: clubs.iter().map(|c| c.to_string()).collect(),
+            fixtures,
+            standings: clubs.iter().map(|c| make_standing(c, 1, 0, 1, 1, 1)).collect(),
+            ..Default::default()
+        }
+    }
+    let mut game = make_completed_season_game();
+    for id in ["team3", "team4", "team5", "team6"] {
+        game.teams.push(make_team(id, id));
+    }
+    game.competitions = vec![
+        league("sco-1", "SCO", ["team1", "team2"], ["2025-08-02", "2026-03-14"], true),
+        league("eng-1", "ENG", ["team3", "team4"], ["2025-08-16", "2026-05-24"], false),
+        league("kor-1", "KR", ["team5", "team6"], ["2026-02-28", "2026-10-10"], false),
+    ];
+
+    assert!(
+        !is_season_complete(&game),
+        "the Premier League finishes before the Scottish season kicks off again"
+    );
+
+    game.competitions[1].fixtures[1].status = FixtureStatus::Completed;
+    assert!(
+        is_season_complete(&game),
+        "K League runs past the Scottish kickoff and must not hold the season open"
+    );
+}
+
 #[test]
 fn summary_reflects_the_users_division_when_not_in_the_primary_competition() {
     let mut game = make_completed_season_game();
@@ -1724,6 +1775,33 @@ fn expected_fixture_count_covers_odd_team_counts() {
     assert_eq!(expected_fixture_count(4), Some(12));
     assert_eq!(expected_fixture_count(5), Some(20));
     assert_eq!(expected_fixture_count(1), None);
+}
+
+/// A league authored with one leg (MLS) or three (K League, the Scottish
+/// Premiership) has a full schedule at its own fixture count, not at the double
+/// round robin's — otherwise its season never ends and the career stalls.
+#[test]
+fn a_full_schedule_follows_the_leagues_leg_count() {
+    let teams: Vec<String> = (0..4).map(|i| format!("team{i}")).collect();
+    let start = Utc.with_ymd_and_hms(2026, 8, 1, 0, 0, 0).unwrap();
+    for legs in [1u8, 2, 3] {
+        let mut league = League::new("l".to_string(), "League".to_string(), 2026, &teams);
+        league.rules.league_legs = legs;
+        league.fixtures = ofm_core::schedule::build_round_robin_fixtures_with(
+            "l",
+            &teams,
+            start,
+            FixtureCompetition::League,
+            legs,
+            7,
+        );
+
+        assert!(
+            ofm_core::end_of_season::has_full_schedule(&league),
+            "{legs} legs: {} fixtures",
+            league.fixtures.len()
+        );
+    }
 }
 
 #[test]

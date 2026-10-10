@@ -13,7 +13,9 @@ struct ObjectiveTargets {
 }
 
 impl ObjectiveTargets {
-    fn new(reputation: u32, num_teams: u32) -> Self {
+    /// `legs` is how many times the league's clubs meet (one for MLS, three for
+    /// K League): it sets how many matches the season holds.
+    fn new(reputation: u32, num_teams: u32, legs: u32) -> Self {
         const HIGH_REPUTATION: u32 = 800;
         const MEDIUM_REPUTATION: u32 = 650;
         const LOW_REPUTATION: u32 = 400;
@@ -35,7 +37,7 @@ impl ObjectiveTargets {
         .min(league_size);
 
         let total_matchdays = if league_size > 1 {
-            (league_size - 1) * 2
+            (league_size - 1) * legs
         } else {
             0
         };
@@ -151,8 +153,12 @@ pub fn generate_objectives(game: &mut Game) {
         })
         .filter(|&count| count > 1)
         .unwrap_or(game.teams.len()) as u32;
+    let legs = game
+        .league
+        .as_ref()
+        .map_or(2, |league| u32::from(league.rules.league_legs));
     let reputation = team.reputation;
-    let targets = ObjectiveTargets::new(reputation, num_teams);
+    let targets = ObjectiveTargets::new(reputation, num_teams, legs);
 
     game.board_objectives = vec![
         BoardObjective {
@@ -451,6 +457,19 @@ mod tests {
             message.i18n_params.get("financeTarget"),
             Some(&"100".to_string())
         );
+    }
+
+    /// A league of one leg (MLS) plays half the matchdays of a double round
+    /// robin; the win target must be set against the matches actually played.
+    #[test]
+    fn generate_objectives_scales_wins_by_the_leagues_leg_count() {
+        let mut game = make_game(800, 3, 4);
+        game.league.as_mut().unwrap().rules.league_legs = 1;
+
+        generate_objectives(&mut game);
+
+        // 4 clubs, one leg: three matches. 60% of them for a top club.
+        assert_eq!(objective_by_id(&game, "obj_wins").target, 1);
     }
 
     #[test]
