@@ -25,6 +25,13 @@ vi.mock("react-i18next", () => ({
         "teams.searchPlaceholder": "Search clubs",
         "teams.noResults": "No clubs match your search.",
         "teams.otherClubs": "Other clubs",
+        "teams.region": "Region",
+        "teams.country": "Country",
+        "teams.league": "League",
+        "teams.club": "Club",
+        "teams.playStyle": "Style",
+        "nations.eng": "England",
+        "nations.esp": "Spain",
         "common.playStyles.Balanced": "Equilibrado",
         "common.playStyles.Counter": "Contra-ataque",
       };
@@ -140,24 +147,25 @@ function applySearch(cards: TeamCard[], search: string | null): TeamCard[] {
   );
 }
 
+const spanishClub = () =>
+  buildCard({ id: "team-es", name: "Gamma CF", city: "Madrid", league_pos: 1 });
+
 function buildDirectory(cards: TeamCard[], search: string | null): TeamsDirectory {
-  const filtered = applySearch(cards, search);
-  if (filtered.length === 0) {
+  const english = applySearch(cards, search).sort((a, b) => a.league_pos - b.league_pos);
+  const spanish = applySearch([spanishClub()], search);
+  const leagues = [
+    { id: "league-1", name: "League", country_id: "ENG", teams: english },
+    { id: "liga-1", name: "Liga", country_id: "ESP", teams: spanish },
+  ].filter((league) => league.teams.length > 0);
+  if (leagues.length === 0) {
     return { regions: [] };
   }
-  const sorted = [...filtered].sort((a, b) => a.league_pos - b.league_pos);
   return {
     regions: [
       {
         id: "europe",
-        team_count: sorted.length,
-        leagues: [
-          {
-            id: "league-1",
-            name: "League",
-            teams: sorted,
-          },
-        ],
+        team_count: english.length + spanish.length,
+        leagues,
       },
     ],
   };
@@ -171,12 +179,28 @@ function setupDirectoryMock(cards: TeamCard[]) {
   });
 }
 
+/** The names of the clubs in the table, top to bottom. */
+function clubRows(): string[] {
+  return screen
+    .getAllByRole("row")
+    .slice(1)
+    .map((row) => row.querySelector("button")?.textContent ?? "");
+}
+
+function pick(filter: string, option: string) {
+  fireEvent.click(screen.getByRole("combobox", { name: filter }));
+  fireEvent.click(screen.getByRole("option", { name: option }));
+}
+
 describe("TeamsListTab", () => {
   beforeEach(() => {
     mockedInvoke.mockReset();
   });
 
-  it("orders teams by league position and marks the user team", async () => {
+  // Given the user's club in an English league, when the screen opens, then the
+  // filters stand on its region, country and league, and the table lists that
+  // league's clubs by position with the user's marked.
+  it("opens on the user's league, ordered by position", async () => {
     setupDirectoryMock([
       buildCard({ id: "team-1", name: "Alpha FC", league_pos: 2, points: 1 }),
       buildCard({ id: "team-2", name: "Beta FC", league_pos: 1, points: 3 }),
@@ -185,30 +209,44 @@ describe("TeamsListTab", () => {
     render(<TeamsListTab gameState={gameStateWithManagerTeam("team-1")} onSelectTeam={vi.fn()} />);
 
     await screen.findByText("Beta FC");
-    const headings = screen.getAllByRole("heading", { level: 3 });
-    expect(headings[0]).toHaveTextContent("Beta FC");
-    expect(headings[1]).toHaveTextContent("Alpha FC");
+    expect(screen.getByRole("combobox", { name: "Country" })).toHaveTextContent("England");
+    expect(screen.getByRole("combobox", { name: "League" })).toHaveTextContent("League");
+    expect(clubRows()).toEqual(["Beta FC", "Alpha FC"]);
     expect(screen.getByText("Your Team")).toBeInTheDocument();
+    expect(screen.queryByText("Gamma CF")).not.toBeInTheDocument();
   });
 
-  it("filters clubs by name via the search box", async () => {
+  // Given another country picked, then its league's clubs replace the list.
+  it("lists another country's league when it is picked", async () => {
+    setupDirectoryMock([buildCard({ id: "team-1", name: "Alpha FC", league_pos: 1 })]);
+
+    render(<TeamsListTab gameState={gameStateWithManagerTeam("team-1")} onSelectTeam={vi.fn()} />);
+    await screen.findByText("Alpha FC");
+
+    pick("Country", "Spain");
+
+    expect(clubRows()).toEqual(["Gamma CF"]);
+    expect(screen.getByRole("combobox", { name: "League" })).toHaveTextContent("Liga");
+  });
+
+  // Given a search, then matching clubs from every league are listed, whatever
+  // the filters say.
+  it("searches clubs across every league", async () => {
     setupDirectoryMock([
       buildCard({ id: "team-1", name: "Alpha FC", league_pos: 2 }),
       buildCard({ id: "team-2", name: "Beta FC", league_pos: 1 }),
     ]);
 
     render(<TeamsListTab gameState={gameStateWithManagerTeam("team-1")} onSelectTeam={vi.fn()} />);
-
     await screen.findByText("Alpha FC");
 
     fireEvent.change(screen.getByPlaceholderText("Search clubs"), {
-      target: { value: "beta" },
+      target: { value: "a" },
     });
 
-    await waitFor(() => {
-      expect(screen.queryByText("Alpha FC")).not.toBeInTheDocument();
-    });
-    expect(screen.getByText("Beta FC")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("Gamma CF")).toBeInTheDocument());
+    expect(screen.getByText("Alpha FC")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "League" })).toBeNull();
   });
 
   it("shows an empty state when no clubs match", async () => {
@@ -227,7 +265,8 @@ describe("TeamsListTab", () => {
     });
   });
 
-  it("selects a team when its card is clicked", async () => {
+  // The club's name is a button, so the row can be opened from the keyboard.
+  it("opens a club from its name", async () => {
     const onSelectTeam = vi.fn();
     setupDirectoryMock([
       buildCard({ id: "team-1", name: "Alpha FC", league_pos: 2 }),
@@ -238,7 +277,7 @@ describe("TeamsListTab", () => {
       <TeamsListTab gameState={gameStateWithManagerTeam("team-1")} onSelectTeam={onSelectTeam} />,
     );
 
-    fireEvent.click(await screen.findByText("Beta FC"));
+    fireEvent.click(await screen.findByRole("button", { name: "Beta FC" }));
 
     expect(onSelectTeam).toHaveBeenCalledWith("team-2");
   });
@@ -251,9 +290,8 @@ describe("TeamsListTab", () => {
 
     render(<TeamsListTab gameState={gameStateWithManagerTeam("team-1")} onSelectTeam={vi.fn()} />);
 
-    expect(await screen.findByText(/4-4-2 — Equilibrado/)).toBeInTheDocument();
-    expect(screen.getByText(/4-4-2 — Contra-ataque/)).toBeInTheDocument();
-    expect(screen.queryByText(/4-4-2 — Balanced/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/4-4-2 — Counter/)).not.toBeInTheDocument();
+    expect(await screen.findByText("Equilibrado")).toBeInTheDocument();
+    expect(screen.getByText("Contra-ataque")).toBeInTheDocument();
+    expect(screen.queryByText("Balanced")).not.toBeInTheDocument();
   });
 });

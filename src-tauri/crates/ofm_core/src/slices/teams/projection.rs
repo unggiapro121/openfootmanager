@@ -16,12 +16,8 @@ pub(super) fn project_card(
         .unwrap_or(&[]);
     let roster_size = roster.len();
     let total_value: u64 = roster.iter().map(|p| p.market_value).sum();
-    let avg_ovr = if roster.is_empty() {
-        0
-    } else {
-        let total: u32 = roster.iter().map(|p| u32::from(p.ovr)).sum();
-        (total / roster.len() as u32) as u8
-    };
+    let avg_ovr = crate::player_rating::likely_xi_average_ovr(roster.iter().map(|p| p.ovr))
+        .map_or(0, |average| average.round() as u8);
 
     let (league_pos, standing) = match standing_by_team.get(team.id.as_str()) {
         Some((pos, entry)) => (*pos, Some(project_standing(entry))),

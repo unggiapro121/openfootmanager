@@ -32,6 +32,7 @@
   ],
   "de": [
     "scouting.watchlistStatus",
+    "teams.region",
     "nations.eng",
     "nations.wal",
     "nations.pt",
@@ -142,6 +143,7 @@
     "packageBuild.patches"
   ],
   "fr": [
+    "teams.club",
     "finances.payrollStaff",
     "settings.autoSaveIntervals.5",
     "settings.autoSaveIntervals.30",
@@ -267,6 +269,7 @@
     "packageBuild.patches"
   ],
   "it": [
+    "teams.club",
     "nations.ru",
     "nations.sn",
     "nations.gh",
@@ -336,6 +339,7 @@
     "teamSelect.regionLabels.africa"
   ],
   "es": [
+    "teams.club",
     "nations.pt",
     "nations.cn",
     "nations.sn",
@@ -521,6 +525,7 @@
     "worldEditor.competitionFormat"
   ],
   "cs": [
+    "teams.region",
     "dashboard.recapTransferLine",
     "common.gf",
     "common.ga",

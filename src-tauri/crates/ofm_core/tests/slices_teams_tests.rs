@@ -334,3 +334,26 @@ fn roster_stats_use_only_team_members() {
     assert_eq!(card_b.avg_ovr, 55);
     assert_eq!(card_b.total_value, 300_000);
 }
+
+/// Given a club of eleven regulars and a string of weak reserves,
+/// When its card is projected,
+/// Then the average OVR is the eleven best players', not dragged down by the
+/// reserves who would not start.
+#[test]
+fn average_ovr_is_the_likely_starting_elevens() {
+    let team = make_team("a", "Alpha FC", "ENG", "A");
+    let mut players: Vec<Player> = (0..11)
+        .map(|index| make_player(&format!("starter{index}"), Some("a"), 80, 1_000_000))
+        .collect();
+    players.extend(
+        (0..9).map(|index| make_player(&format!("reserve{index}"), Some("a"), 50, 100_000)),
+    );
+    let league = make_domestic_league("epl", "Premier", "ENG", Some("UEFA"), &["a"]);
+    let game = make_game(vec![team], players, vec![league]);
+
+    let dir = query_directory(&game, &empty_query());
+    let card = &dir.regions[0].leagues[0].teams[0];
+
+    assert_eq!(card.roster_size, 20);
+    assert_eq!(card.avg_ovr, 80);
+}

@@ -3,14 +3,12 @@ import type { TFunction } from "i18next";
 
 import type { FixtureData, LeagueData } from "../store/types";
 import type { GameStateData } from "../store/gameStore";
-import { getPlayerOvr } from "../lib/helpers";
-import { createPlayer, createTeam } from "../test-utils/factories";
+import { createTeam } from "../test-utils/factories";
 import {
   buildFallbackRegions,
   competitionKindLabel,
   competitionRequiredRegions,
   competitionScopeLabel,
-  likelyXi,
   sortCompetitions,
   teamCompetitions,
 } from "./TeamSelection.helpers";
@@ -84,34 +82,6 @@ describe("teamCompetitions", () => {
 
     expect(teamCompetitions("t1", [a])).toEqual([a]);
     expect(teamCompetitions("t5", [a])).toEqual([]);
-  });
-});
-
-describe("likelyXi", () => {
-  it("returns the top 11 players sorted by descending overall", () => {
-    const players = Array.from({ length: 14 }, (_, index) =>
-      createPlayer({
-        id: `p${index}`,
-        attributes: {
-          ...createPlayer().attributes,
-          shooting: 40 + index,
-          passing: 40 + index,
-          pace: 40 + index,
-        },
-      }),
-    );
-
-    const result = likelyXi(players);
-
-    expect(result).toHaveLength(11);
-    for (let i = 1; i < result.length; i += 1) {
-      expect(getPlayerOvr(result[i - 1])).toBeGreaterThanOrEqual(getPlayerOvr(result[i]));
-    }
-  });
-
-  it("returns all players when fewer than 11 are provided", () => {
-    const players = [createPlayer({ id: "a" }), createPlayer({ id: "b" })];
-    expect(likelyXi(players)).toHaveLength(2);
   });
 });
 
