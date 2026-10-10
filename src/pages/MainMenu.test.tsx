@@ -670,6 +670,72 @@ describe("MainMenu", () => {
     expect(navigateMock).toHaveBeenCalledWith("/select-team");
   });
 
+  function mockRealWorldInstalled() {
+    mockedInvoke.mockImplementation(async (command: string) => {
+      if (command === "list_installed_packages") {
+        return [
+          {
+            id: "real-world-2024-25",
+            name: "Real World 2024/25",
+            description: "",
+            packageType: "database",
+            teamCount: 302,
+            playerCount: 8206,
+            issues: [],
+          },
+        ];
+      }
+      if (command === "start_new_game") {
+        return { id: "game-1" };
+      }
+      return null;
+    });
+  }
+
+  // Given the real-world package is installed, when a career is started without touching the
+  // package list, then it starts from that package — it is the default world.
+  it("starts from the real-world package when the player leaves the default selected", async () => {
+    mockRealWorldInstalled();
+    render(<MainMenu />);
+
+    await openCreateManagerForm();
+    fillManagerDetails();
+    await selectNationality("en", "ES");
+    fireEvent.click(screen.getByText("createManager.chooseWorld"));
+    await screen.findByText("toggle-real-world-2024-25");
+    await advanceThroughPackages();
+    fireEvent.click(screen.getByText("start-world"));
+
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith(
+        "start_new_game",
+        expect.objectContaining({ packageIds: ["real-world-2024-25"] }),
+      );
+    });
+  });
+
+  // Given the default package is pre-selected, when the player unticks it, then the career is
+  // generated as a random world: no package ids are sent.
+  it("generates a random world once the player unticks the default package", async () => {
+    mockRealWorldInstalled();
+    render(<MainMenu />);
+
+    await openCreateManagerForm();
+    fillManagerDetails();
+    await selectNationality("en", "ES");
+    fireEvent.click(screen.getByText("createManager.chooseWorld"));
+    fireEvent.click(await screen.findByText("toggle-real-world-2024-25"));
+    await advanceThroughPackages();
+    fireEvent.click(screen.getByText("start-world"));
+
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith(
+        "start_new_game",
+        expect.objectContaining({ packageIds: undefined }),
+      );
+    });
+  });
+
   it("installs a world package from a picked .ofm file and makes it activatable", async () => {
     dialogOpenResult = "/tmp/custom-world.ofm";
     let installed = false;

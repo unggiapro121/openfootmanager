@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -12,6 +12,7 @@ import type { CareerStartPhase, CreateManagerFormData } from "../components/menu
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
 import type { ManagerProfile } from "../components/menu/types";
 import { applyExtraTranslations } from "../lib/extraTranslations";
+import { initialPackageSelection } from "../lib/defaultWorldPackage";
 import { REALISTIC_DEVELOPMENT_SPEED_PERCENT } from "../lib/developmentSpeed";
 import { formatAppVersion } from "../lib/appVersion";
 import { resolveBackendError } from "../utils/backendI18n";
@@ -294,6 +295,9 @@ export default function MainMenu() {
   // Installed packages state
   const [installedPackages, setInstalledPackages] = useState<PackageInfo[]>([]);
   const [activePackageIds, setActivePackageIds] = useState<string[]>([]);
+  // Set by the player's first toggle. Read inside the async list reload, so a ref rather than
+  // state: the reload must see a choice made while the request was in flight.
+  const playerChosePackagesRef = useRef(false);
   const [isInstallingPackage, setIsInstallingPackage] = useState(false);
   const [packageStackErrors, setPackageStackErrors] = useState<PackageIssue[]>([]);
   const [historyDepthYears, setHistoryDepthYears] = useState(initialHistoryDepthYears);
@@ -447,6 +451,10 @@ export default function MainMenu() {
       // Tauri commands can resolve to null; never let installedPackages become
       // null or downstream `.filter` calls (here and in PackageBuildStep) throw.
       setInstalledPackages(pkgs ?? []);
+      const installedIds = (pkgs ?? []).map((pkg) => pkg.id);
+      setActivePackageIds((prev) =>
+        initialPackageSelection(installedIds, prev, playerChosePackagesRef.current),
+      );
     } catch (err) {
       console.error("Failed to list packages:", err);
     }
@@ -490,6 +498,7 @@ export default function MainMenu() {
   };
 
   const handleTogglePackage = (id: string) => {
+    playerChosePackagesRef.current = true;
     setActivePackageIds((prev) =>
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id],
     );
