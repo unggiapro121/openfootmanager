@@ -180,7 +180,15 @@ pub fn regenerate_league_for_season(league: &mut League, season: u32, start_date
         .collect();
 
     if team_ids.len() >= 2 {
-        append_round_robin_fixtures(league, &team_ids, start_date);
+        let fixtures = build_round_robin_fixtures_with(
+            &league.id,
+            &team_ids,
+            start_date,
+            FixtureCompetition::League,
+            league.rules.league_legs,
+            7,
+        );
+        league.fixtures.extend(fixtures);
     }
 }
 
@@ -780,6 +788,21 @@ mod tests {
                 .all(|s| s.points == 0 && s.played == 0)
         );
         assert_eq!(league.participant_ids.len(), 4);
+    }
+
+    /// A league authored with other than two legs (MLS plays one, K League three)
+    /// keeps that format in every season, not only the first.
+    #[test]
+    fn regenerate_league_for_season_keeps_the_leagues_leg_count() {
+        let teams: Vec<String> = (0..4).map(|i| format!("team_{i}")).collect();
+        let start = Utc.with_ymd_and_hms(2026, 2, 21, 0, 0, 0).unwrap();
+        let mut league = generate_league("K League", 2026, &teams, start);
+        league.rules.league_legs = 3;
+
+        let next_start = Utc.with_ymd_and_hms(2027, 2, 21, 0, 0, 0).unwrap();
+        regenerate_league_for_season(&mut league, 2027, next_start);
+
+        assert_eq!(league.fixtures.len(), 18); // 4 teams, three legs
     }
 
     #[test]

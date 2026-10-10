@@ -1048,12 +1048,13 @@ fn build_competition(
     let mut competition = match def.format.kind {
         CompetitionFormat::LeagueTable => {
             let mut league = League::new(def.id.clone(), def.name.clone(), season, team_ids);
+            league.rules.league_legs = def.format.legs.unwrap_or(league.rules.league_legs);
             league.fixtures = crate::schedule::build_round_robin_fixtures_with(
                 &def.id,
                 team_ids,
                 season_start,
                 fixture_competition,
-                def.format.legs.unwrap_or(2),
+                league.rules.league_legs,
                 7,
             );
             league
@@ -1234,6 +1235,21 @@ mod tests {
 
     fn codes(errors: &[DefinitionError]) -> Vec<&str> {
         errors.iter().map(|e| e.code.as_str()).collect()
+    }
+
+    /// The leg count is kept on the league it builds, because rollover rebuilds
+    /// the fixtures from the league alone, long after the definition is gone.
+    #[test]
+    fn a_league_keeps_its_authored_leg_count() {
+        use chrono::TimeZone;
+        let mut def = explicit("tr-1", &["team-a", "team-b", "team-c", "team-d"]);
+        def.format.legs = Some(1);
+        let start = Utc.with_ymd_and_hms(2026, 2, 21, 0, 0, 0).unwrap();
+
+        let league = build_explicit_competition(&def, 2026, start).unwrap();
+
+        assert_eq!(league.rules.league_legs, 1);
+        assert_eq!(league.fixtures.len(), 6);
     }
 
     #[test]

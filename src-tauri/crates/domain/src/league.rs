@@ -43,6 +43,9 @@ fn default_group_size() -> u32 {
 pub struct CompetitionRules {
     pub format: CompetitionFormat,
     pub counts_in_season_flow: bool,
+    /// League-table only: round-robin legs a season (MLS plays one, K League three).
+    /// Kept here because rollover rebuilds a league's fixtures from the league alone.
+    pub league_legs: u8,
     /// Maximum clubs per snake-seeded group; uneven fields are balanced.
     #[serde(default = "default_group_size")]
     pub group_size: u32,
@@ -73,6 +76,7 @@ impl Default for CompetitionRules {
         Self {
             format: CompetitionFormat::LeagueTable,
             counts_in_season_flow: true,
+            league_legs: 2,
             group_size: DEFAULT_GROUP_SIZE,
             group_qualifiers_per_group: 2,
             group_best_third_qualifiers: 0,

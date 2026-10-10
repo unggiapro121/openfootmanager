@@ -204,6 +204,7 @@ fn build_group_cup(
     cup.rules = CompetitionRules {
         format: CompetitionFormat::GroupAndKnockout,
         counts_in_season_flow: true,
+        league_legs: CompetitionRules::default().league_legs,
         group_size: config.group_size,
         group_qualifiers_per_group: config.qualifiers_per_group,
         group_best_third_qualifiers: config.best_third_qualifiers,
