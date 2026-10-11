@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { describe, expect, it, vi } from "vitest";
 
-import { changeMatchPlayerRole, swapMatchPositions } from "./liveMatchService";
+import { autoPickMatchLineup, changeMatchPlayerRole, swapMatchPositions } from "./liveMatchService";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 
@@ -34,3 +34,13 @@ describe("changeMatchPlayerRole", () => {
   });
 });
 
+describe("autoPickMatchLineup", () => {
+  // Given the user's side, then the backend is asked to pick its strongest XI.
+  it("asks for the strongest XI", async () => {
+    vi.mocked(invoke).mockResolvedValue({ phase: "PreKickOff" });
+
+    await autoPickMatchLineup("Away");
+
+    expect(invoke).toHaveBeenCalledWith("auto_pick_match_lineup", { side: "Away" });
+  });
+});

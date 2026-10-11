@@ -8,6 +8,7 @@ use tauri::State;
 pub use crate::application::live_match::FinishLiveMatchResponse;
 use crate::application::live_match::{
     apply_match_command as apply_match_command_service,
+    auto_pick_match_lineup as auto_pick_match_lineup_service,
     finish_live_match as finish_live_match_service,
     get_match_snapshot as get_match_snapshot_service,
     start_live_match_with_identity as start_live_match_service,
@@ -142,6 +143,15 @@ pub fn apply_match_command(
     command: engine::MatchCommand,
 ) -> Result<engine::MatchSnapshot, String> {
     apply_match_command_service(&state, command)
+}
+
+/// Before kick-off, rearrange `side`'s XI into its strongest lineup.
+#[tauri::command]
+pub fn auto_pick_match_lineup(
+    state: State<'_, Arc<StateManager>>,
+    side: engine::Side,
+) -> Result<engine::MatchSnapshot, String> {
+    auto_pick_match_lineup_service(&state, side)
 }
 
 /// Get current match snapshot without advancing time.

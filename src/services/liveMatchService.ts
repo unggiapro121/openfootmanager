@@ -28,3 +28,11 @@ export async function changeMatchPlayerRole(
     command: { ChangePlayerRole: { side, player_id: playerId, role } },
   });
 }
+
+/**
+ * Before kick-off, the backend rearranges `side`'s XI into the strongest lineup
+ * for its formation (the AI lineup rule), from the starters and the bench.
+ */
+export async function autoPickMatchLineup(side: "Home" | "Away"): Promise<MatchSnapshot> {
+  return invoke<MatchSnapshot>("auto_pick_match_lineup", { side });
+}

@@ -16,6 +16,7 @@ import { getSetPieceStats } from "./SetPieceSelector";
 import { FormationPitch } from "./FormationPitch";
 import { MatchRolePicker } from "./MatchRolePicker";
 import { createMatchRoleChange } from "./matchRoleChange";
+import { autoPickMatchLineup } from "../../services/liveMatchService";
 import { makeTeamFallback } from "./helpers";
 import { PhaseBlueprintPanel } from "../tactics/PhaseBlueprintPanel";
 import { setTacticsPhase } from "../../services/squadService";
@@ -180,49 +181,12 @@ export default function PreMatchSetup({
     }
   };
 
+  // The strongest XI for the formation, picked and seated by the backend with
+  // the rule AI clubs pick theirs by.
   const handleAutoSelect = async () => {
     setIsAutoSelecting(true);
     try {
-      const pool = [...userTeam.players, ...userBench];
-      const idealIds = new Set<string>();
-
-      for (const pos of ["Goalkeeper", "Defender", "Midfielder", "Forward"]) {
-        const candidates = pool
-          .filter((p) => p.position === pos)
-          .sort((a, b) => b.ovr * (b.condition / 100) - a.ovr * (a.condition / 100));
-        const needed = formationNeeds[pos] ?? 0;
-        for (let i = 0; i < Math.min(needed, candidates.length); i++) {
-          idealIds.add(candidates[i].id);
-        }
-      }
-
-      if (idealIds.size < 11) {
-        const rest = pool
-          .filter((p) => !idealIds.has(p.id))
-          .sort((a, b) => b.ovr * (b.condition / 100) - a.ovr * (a.condition / 100));
-        for (const p of rest) {
-          if (idealIds.size >= 11) break;
-          idealIds.add(p.id);
-        }
-      }
-
-      const currentIds = new Set(userTeam.players.map((p) => p.id));
-      const toAdd = [...idealIds].filter((id) => !currentIds.has(id));
-      const toRemove = [...currentIds].filter((id) => !idealIds.has(id));
-
-      let snap: MatchSnapshot | null = null;
-      for (let i = 0; i < Math.min(toAdd.length, toRemove.length); i++) {
-        snap = await invoke<MatchSnapshot>("apply_match_command", {
-          command: {
-            PreMatchSwap: {
-              side: userSide,
-              player_off_id: toRemove[i],
-              player_on_id: toAdd[i],
-            },
-          },
-        });
-      }
-      if (snap) onUpdateSnapshot(snap);
+      onUpdateSnapshot(await autoPickMatchLineup(userSide));
     } catch (err) {
       console.error("Auto-select failed:", err);
     } finally {

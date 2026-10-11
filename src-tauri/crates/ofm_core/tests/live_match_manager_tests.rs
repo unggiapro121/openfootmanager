@@ -849,3 +849,114 @@ fn extra_time_flag_passed_through() {
     let session = live_match_manager::create_live_match(&game, 0, MatchMode::Instant, true);
     assert!(session.is_ok());
 }
+
+fn apply_all(session: &mut live_match_manager::LiveMatchSession, commands: Vec<MatchCommand>) {
+    for command in commands {
+        session.apply_command(command).unwrap();
+    }
+}
+
+fn home_group_by_slot(session: &live_match_manager::LiveMatchSession) -> Vec<String> {
+    session
+        .snapshot()
+        .home_team
+        .players
+        .iter()
+        .map(|p| {
+            let id = p.id.trim_start_matches("team1_");
+            id.trim_end_matches(char::is_numeric).to_string()
+        })
+        .collect()
+}
+
+/// Given a defender and a forward swapped into each other's slots before
+/// kick-off, when the best lineup is picked, then each is back in a slot of his
+/// own line: keeper, four defenders, four midfielders, two forwards.
+#[test]
+fn the_best_lineup_puts_players_back_in_their_own_slots() {
+    let game = make_game_with_fixture();
+    let mut session =
+        live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
+    let starters: Vec<String> = session
+        .snapshot()
+        .home_team
+        .players
+        .iter()
+        .map(|p| p.id.clone())
+        .collect();
+    session
+        .apply_command(MatchCommand::PreMatchSwapPositions {
+            side: Side::Home,
+            player_a_id: starters[1].clone(),
+            player_b_id: starters[10].clone(),
+        })
+        .unwrap();
+
+    let commands =
+        live_match_manager::best_pre_match_lineup(&game, &session.snapshot(), Side::Home);
+    apply_all(&mut session, commands);
+
+    assert_eq!(
+        home_group_by_slot(&session),
+        [
+            "gk", "def", "def", "def", "def", "mid", "mid", "mid", "mid", "fwd", "fwd"
+        ]
+    );
+}
+
+/// Given a forward on the bench who is now far better than the starting ones,
+/// when the best lineup is picked, then he starts, up front.
+#[test]
+fn the_best_lineup_brings_a_better_player_off_the_bench() {
+    let mut game = make_game_with_fixture();
+    let session = live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
+    let bench_forward = session
+        .snapshot()
+        .home_bench
+        .iter()
+        .find(|p| p.id.starts_with("team1_fwd"))
+        .map(|p| p.id.clone())
+        .expect("a forward on the bench");
+    let mut session = session;
+    let star = game
+        .players
+        .iter_mut()
+        .find(|p| p.id == bench_forward)
+        .unwrap();
+    star.attributes.shooting = 99;
+    star.attributes.positioning = 99;
+    star.attributes.composure = 99;
+    star.attributes.dribbling = 99;
+    star.attributes.pace = 99;
+
+    let commands =
+        live_match_manager::best_pre_match_lineup(&game, &session.snapshot(), Side::Home);
+    apply_all(&mut session, commands);
+
+    let snapshot = session.snapshot();
+    let slot = snapshot
+        .home_team
+        .players
+        .iter()
+        .position(|p| p.id == bench_forward);
+    assert!(
+        matches!(slot, Some(9 | 10)),
+        "the star forward starts up front: {slot:?}"
+    );
+    assert_eq!(
+        snapshot.home_subs_made, 0,
+        "a pre-match change is not a substitution"
+    );
+}
+
+/// Given a lineup that is already the best, then nothing is changed.
+#[test]
+fn the_best_lineup_leaves_the_best_lineup_alone() {
+    let game = make_game_with_fixture();
+    let session = live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
+
+    let commands =
+        live_match_manager::best_pre_match_lineup(&game, &session.snapshot(), Side::Home);
+
+    assert!(commands.is_empty(), "{commands:?}");
+}

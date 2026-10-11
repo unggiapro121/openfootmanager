@@ -28,6 +28,7 @@ pub mod group_stage;
 pub mod history_generation;
 pub mod inbox;
 pub mod job_offers;
+mod lineup_assignment;
 pub mod live_match_manager;
 pub(crate) mod manager_mastery;
 pub(crate) mod match_form;

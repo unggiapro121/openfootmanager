@@ -321,6 +321,7 @@ pub fn run() {
             get_team_stats_overview,
             step_live_match,
             apply_match_command,
+            auto_pick_match_lineup,
             get_match_snapshot,
             finish_live_match,
             generate_player_portrait,

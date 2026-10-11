@@ -248,4 +248,22 @@ describe("PreMatchSetup lineup", () => {
       command: { ChangePlayerRole: { side: "Home", player_id: "h-df", role: "Stopper" } },
     });
   });
+
+  /**
+   * Given the pre-match screen, when "pick the strongest XI" is pressed, then
+   * the backend picks and seats it, and the screen shows the lineup it returns.
+   */
+  it("asks the backend to pick the strongest XI", async () => {
+    const picked = { ...snapshot(), current_minute: 0 };
+    vi.mocked(invoke).mockResolvedValue(picked);
+    const onUpdateSnapshot = vi.fn();
+    renderSetup(undefined, undefined, onUpdateSnapshot);
+
+    fireEvent.click(screen.getByText("match.autoSelectXI"));
+
+    await waitFor(() =>
+      expect(invoke).toHaveBeenCalledWith("auto_pick_match_lineup", { side: "Home" }),
+    );
+    await waitFor(() => expect(onUpdateSnapshot).toHaveBeenCalledWith(picked));
+  });
 });

@@ -418,6 +418,31 @@ pub fn apply_match_command(
     Ok(snapshot)
 }
 
+/// Before kick-off, rearrange `side`'s XI into the strongest lineup for its
+/// formation from the players in the match, by the AI lineup rule
+/// (`live_match_manager::best_pre_match_lineup`). Reads the game and writes the
+/// match one after the other, never holding both locks at once.
+pub fn auto_pick_match_lineup(
+    state: &StateManager,
+    side: engine::Side,
+) -> Result<engine::MatchSnapshot, String> {
+    info!("[cmd] auto_pick_match_lineup: {:?}", side);
+    let snapshot = state
+        .with_live_match(|session| session.snapshot())
+        .ok_or_else(|| "be.error.noActiveLiveMatch".to_string())?;
+    let commands = state
+        .get_game(|game| live_match_manager::best_pre_match_lineup(game, &snapshot, side))
+        .ok_or_else(|| "be.error.noActiveGameSession".to_string())?;
+    state
+        .with_live_match(|session| {
+            for command in commands {
+                session.apply_command(command)?;
+            }
+            Ok::<engine::MatchSnapshot, String>(session.snapshot())
+        })
+        .ok_or_else(|| "be.error.noActiveLiveMatch".to_string())?
+}
+
 pub fn get_match_snapshot(state: &StateManager) -> Result<engine::MatchSnapshot, String> {
     log::debug!("[cmd] get_match_snapshot");
     let snapshot = state
