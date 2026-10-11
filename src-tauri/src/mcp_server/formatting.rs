@@ -15,6 +15,13 @@ pub fn translate_error(key: &str) -> String {
             "Player not found. Check the player ID and try again.".to_string()
         }
         "be.error.playerNotInSquad" => "Player is not in your squad.".to_string(),
+        "be.error.budgetRebalanceOutOfRange" => {
+            "That wage budget is out of range: it cannot fall below the weekly wage bill or cost more than the transfer budget. Read the range from the finance snapshot.".to_string()
+        }
+        "be.error.budgetRebalanceStep" => {
+            "Change the wage budget in steps of 1,000 a week, or set it to an end of its range."
+                .to_string()
+        }
         "be.error.saveManagerUnavailable" => {
             "Save manager is unavailable. This is an internal error.".to_string()
         }

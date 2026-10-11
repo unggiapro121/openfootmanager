@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "Der Verein beschäftigt keine Mitarbeiter.",
     "staffName": "Mitarbeiter",
     "staffRole": "Funktion",
-    "academyWage": "{{paid}} (Profikader: {{contract}})"
+    "academyWage": "{{paid}} (Profikader: {{contract}})",
+    "budgetBalance": {
+      "title": "Budgetausgleich",
+      "hint": "Verschiebe nicht ausgegebenes Transfergeld ins Gehaltsbudget oder senke das Gehaltsbudget, um Transfergeld freizumachen. Jede 1 pro Woche kostet oder bringt 1 für jeden verbleibenden Zahltag dieser Saison.",
+      "paydaysLeft": "Noch {{count}} Zahltage in dieser Saison",
+      "apply": "Übernehmen",
+      "reset": "Zurücksetzen"
+    }
   },
   "inbox": {
     "title": "Posteingang",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Dein Verein hat diesen Spieler nicht eingeschätzt.",
         "noAssessor": "Niemand im Verein kann Potenzial einschätzen."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Dieses Gehaltsbudget liegt außerhalb des Rahmens: Es darf nicht unter den aktuellen Gehaltskosten liegen und nicht mehr kosten als das Transferbudget.",
+      "budgetRebalanceStep": "Ändere das Gehaltsbudget in Schritten von 1.000 pro Woche."
     },
     "sender": {
       "boardOfDirectors": "Vorstand",

@@ -156,10 +156,37 @@ pub fn request_marketing_campaign_internal(
         .ok_or("be.error.noActiveGameSession".to_string())?
 }
 
+#[tauri::command]
+pub async fn rebalance_budgets(
+    state: State<'_, Arc<StateManager>>,
+    wage_budget: i64,
+) -> Result<Game, String> {
+    rebalance_budgets_internal(&state, wage_budget)
+}
+
+/// Set the managed club's weekly wage budget, paying for the change from its
+/// transfer budget.
+pub fn rebalance_budgets_internal(state: &StateManager, wage_budget: i64) -> Result<Game, String> {
+    info!("[cmd] rebalance_budgets: wage_budget={}", wage_budget);
+
+    state
+        .update_game(|game| {
+            let team_id = game
+                .manager
+                .team_id
+                .clone()
+                .ok_or("be.error.noTeamAssigned".to_string())?;
+
+            ofm_core::finances::budget_rebalance::rebalance_budgets(game, &team_id, wage_budget)?;
+            Ok(game.clone())
+        })
+        .ok_or("be.error.noActiveGameSession".to_string())?
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
-        get_finance_snapshot_internal, request_board_support_internal,
+        get_finance_snapshot_internal, rebalance_budgets_internal, request_board_support_internal,
         request_marketing_campaign_internal, request_sponsor_pitch_internal,
     };
     use chrono::{TimeZone, Utc};
@@ -358,5 +385,61 @@ mod tests {
             .messages
             .iter()
             .any(|message| message.id == response.result.message_id));
+    }
+
+    /// Given a season with no known end (52 paydays), when the manager moves
+    /// £20k a week off the wage budget, then the transfer budget gains £1.04m
+    /// in the active game.
+    #[test]
+    fn rebalance_budgets_internal_moves_money_in_the_active_game() {
+        let state = StateManager::new();
+        state.set_game(make_game());
+
+        let game = rebalance_budgets_internal(&state, 100_000).expect("rebalanced");
+
+        assert_eq!(game.teams[0].wage_budget, 100_000);
+        assert_eq!(game.teams[0].transfer_budget, 1_340_000);
+        let stored = state.get_game(|game| game.teams[0].transfer_budget);
+        assert_eq!(stored, Some(1_340_000));
+    }
+
+    /// Given a wage budget past the transfer budget's reach, when the manager
+    /// rebalances, then the backend refuses it with a translation key.
+    #[test]
+    fn rebalance_budgets_internal_refuses_out_of_range() {
+        let state = StateManager::new();
+        state.set_game(make_game());
+
+        let error = rebalance_budgets_internal(&state, 126_000).unwrap_err();
+
+        assert_eq!(error, "be.error.budgetRebalanceOutOfRange");
+    }
+
+    /// Given a manager without a club, when rebalancing, then it is refused.
+    #[test]
+    fn rebalance_budgets_internal_needs_a_team() {
+        let state = StateManager::new();
+        let mut game = make_game();
+        game.manager.team_id = None;
+        state.set_game(game);
+
+        let error = rebalance_budgets_internal(&state, 100_000).unwrap_err();
+
+        assert_eq!(error, "be.error.noTeamAssigned");
+    }
+
+    /// Given the finance screen, when its snapshot loads, then the previews
+    /// carry the wage budget's range.
+    #[test]
+    fn get_finance_snapshot_internal_carries_the_rebalance_terms() {
+        let state = StateManager::new();
+        state.set_game(make_game());
+
+        let response = get_finance_snapshot_internal(&state, None).expect("response");
+        let terms = response.previews.budget_rebalance.expect("terms");
+
+        assert_eq!(terms.paydays_left, 52);
+        assert_eq!(terms.min_wage_budget, 1_000);
+        assert_eq!(terms.max_wage_budget, 125_000);
     }
 }

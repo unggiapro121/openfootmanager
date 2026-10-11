@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "El club no tiene personal contratado.",
     "staffName": "Miembro del personal",
     "staffRole": "Puesto",
-    "academyWage": "{{paid}} (primer equipo: {{contract}})"
+    "academyWage": "{{paid}} (primer equipo: {{contract}})",
+    "budgetBalance": {
+      "title": "Equilibrio de presupuestos",
+      "hint": "Pasa dinero de fichajes sin gastar al presupuesto salarial, o baja el presupuesto salarial para liberar dinero de fichajes. Cada 1 por semana cuesta o libera 1 por cada día de pago que queda esta temporada.",
+      "paydaysLeft": "Quedan {{count}} días de pago esta temporada",
+      "apply": "Aplicar",
+      "reset": "Restablecer"
+    }
   },
   "inbox": {
     "title": "Bandeja de Entrada",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Tu club no ha evaluado a este jugador.",
         "noAssessor": "Nadie en el club puede evaluar el potencial."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Ese presupuesto salarial está fuera de rango: no puede quedar por debajo de la masa salarial actual ni costar más que el presupuesto de fichajes.",
+      "budgetRebalanceStep": "Cambia el presupuesto salarial en pasos de 1.000 por semana."
     },
     "sender": {
       "boardOfDirectors": "Junta Directiva",

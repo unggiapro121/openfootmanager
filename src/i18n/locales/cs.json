@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "Klub nemá žádné členy realizačního týmu.",
     "staffName": "Člen týmu",
     "staffRole": "Funkce",
-    "academyWage": "{{paid}} (A-tým: {{contract}})"
+    "academyWage": "{{paid}} (A-tým: {{contract}})",
+    "budgetBalance": {
+      "title": "Vyrovnání rozpočtů",
+      "hint": "Přesuňte nevyužité peníze na přestupy do platového rozpočtu, nebo platový rozpočet snižte a uvolněte peníze na přestupy. Každá 1 týdně stojí nebo uvolní 1 za každý zbývající výplatní den této sezóny.",
+      "paydaysLeft": "Zbývající výplatní dny této sezóny: {{count}}",
+      "apply": "Použít",
+      "reset": "Obnovit"
+    }
   },
   "inbox": {
     "title": "Doručená pošta",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Váš klub tohoto hráče nehodnotil.",
         "noAssessor": "Nikdo v klubu neumí posoudit potenciál."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Tento platový rozpočet je mimo rozsah: nesmí klesnout pod současné mzdové náklady ani stát víc, než pokryje přestupový rozpočet.",
+      "budgetRebalanceStep": "Měňte platový rozpočet po krocích 1 000 týdně."
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",

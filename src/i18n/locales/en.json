@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "The club employs no staff.",
     "staffName": "Staff member",
     "staffRole": "Role",
-    "academyWage": "{{paid}} (first team: {{contract}})"
+    "academyWage": "{{paid}} (first team: {{contract}})",
+    "budgetBalance": {
+      "title": "Budget Balance",
+      "hint": "Move unspent transfer money into the wage budget, or lower the wage budget to free transfer money. Each 1 a week costs or frees 1 for every payday left this season.",
+      "paydaysLeft": "{{count}} paydays left this season",
+      "apply": "Apply",
+      "reset": "Reset"
+    }
   },
   "inbox": {
     "title": "Inbox",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Your club has not assessed this player.",
         "noAssessor": "Nobody at the club can judge potential."
-      }
+      },
+      "budgetRebalanceOutOfRange": "That wage budget is out of range: it cannot go below the current wage bill or cost more than the transfer budget.",
+      "budgetRebalanceStep": "Change the wage budget in steps of 1,000 a week."
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",

@@ -1278,6 +1278,32 @@ pub fn build_tool_router(context: &Arc<McpContext>, disabled: &[String]) -> OfmT
         }
     );
 
+    // club_rebalance_budgets
+    custom_tool!(
+        "club_rebalance_budgets",
+        "Set the weekly wage budget, paid for from the transfer budget",
+        build_schema(
+            &[(
+                "weekly_wage_budget",
+                "integer",
+                "New weekly wage budget; each unit of change costs one unit per payday left in the season"
+            )],
+            &["weekly_wage_budget"]
+        ),
+        ctx,
+        args,
+        {
+            let wage_budget = match require_u64_param(args, "weekly_wage_budget") {
+                Ok(v) => v,
+                Err(e) => return Ok(e),
+            };
+            match tools_impl::club::club_rebalance_budgets(ctx, wage_budget) {
+                Ok(text) => Ok(text_result(text)),
+                Err(e) => Ok(err_result(&e)),
+            }
+        }
+    );
+
     // help_find_tool
     custom_tool!(
         "help_find_tool",
@@ -2030,6 +2056,11 @@ pub fn tool_catalog() -> Vec<(&'static str, &'static str, &'static str)> {
         (
             "club_request_board_support",
             "Request board support for transfer budget or wage bill",
+            "Club",
+        ),
+        (
+            "club_rebalance_budgets",
+            "Trade transfer budget for weekly wage budget, or back",
             "Club",
         ),
         (

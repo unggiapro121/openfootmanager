@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "Le club n'emploie aucun membre du staff.",
     "staffName": "Membre du staff",
     "staffRole": "Rôle",
-    "academyWage": "{{paid}} (équipe première : {{contract}})"
+    "academyWage": "{{paid}} (équipe première : {{contract}})",
+    "budgetBalance": {
+      "title": "Équilibre des budgets",
+      "hint": "Transférez l'argent des transferts non dépensé vers le budget salarial, ou baissez le budget salarial pour libérer de l'argent pour les transferts. Chaque 1 par semaine coûte ou libère 1 pour chaque jour de paie restant cette saison.",
+      "paydaysLeft": "{{count}} jours de paie restants cette saison",
+      "apply": "Appliquer",
+      "reset": "Réinitialiser"
+    }
   },
   "inbox": {
     "title": "Boîte de Réception",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Votre club n'a pas évalué ce joueur.",
         "noAssessor": "Personne au club ne peut évaluer le potentiel."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Ce budget salarial est hors limites : il ne peut pas descendre sous la masse salariale actuelle ni coûter plus que le budget transferts.",
+      "budgetRebalanceStep": "Modifiez le budget salarial par paliers de 1 000 par semaine."
     },
     "sender": {
       "boardOfDirectors": "Conseil d'Administration",

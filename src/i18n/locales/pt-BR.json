@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "O clube não tem comissão técnica contratada.",
     "staffName": "Membro da comissão",
     "staffRole": "Função",
-    "academyWage": "{{paid}} (time principal: {{contract}})"
+    "academyWage": "{{paid}} (time principal: {{contract}})",
+    "budgetBalance": {
+      "title": "Equilíbrio de orçamentos",
+      "hint": "Passe a verba de transferências não usada para o teto salarial, ou reduza o teto salarial para liberar verba de transferências. Cada 1 por semana custa ou libera 1 para cada dia de pagamento que resta nesta temporada.",
+      "paydaysLeft": "Faltam {{count}} dias de pagamento nesta temporada",
+      "apply": "Aplicar",
+      "reset": "Redefinir"
+    }
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Seu clube não avaliou este jogador.",
         "noAssessor": "Ninguém no clube consegue avaliar o potencial."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Esse teto salarial está fora dos limites: não pode ficar abaixo da folha salarial atual nem custar mais que a verba de transferências.",
+      "budgetRebalanceStep": "Altere o teto salarial em passos de 1.000 por semana."
     },
     "sender": {
       "boardOfDirectors": "Diretoria",

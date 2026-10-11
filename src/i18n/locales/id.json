@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "Klub tidak memiliki staf.",
     "staffName": "Anggota staf",
     "staffRole": "Peran",
-    "academyWage": "{{paid}} (tim utama: {{contract}})"
+    "academyWage": "{{paid}} (tim utama: {{contract}})",
+    "budgetBalance": {
+      "title": "Keseimbangan Anggaran",
+      "hint": "Pindahkan dana transfer yang belum terpakai ke anggaran gaji, atau turunkan anggaran gaji untuk membebaskan dana transfer. Setiap 1 per minggu menghabiskan atau membebaskan 1 untuk setiap hari gajian yang tersisa musim ini.",
+      "paydaysLeft": "Tersisa {{count}} hari gajian musim ini",
+      "apply": "Terapkan",
+      "reset": "Atur ulang"
+    }
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "Klubmu belum menilai pemain ini.",
         "noAssessor": "Tidak ada staf klub yang bisa menilai potensi."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Anggaran gaji itu di luar batas: tidak boleh di bawah beban gaji saat ini dan tidak boleh melebihi yang bisa ditanggung anggaran transfer.",
+      "budgetRebalanceStep": "Ubah anggaran gaji dengan kelipatan 1.000 per minggu."
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",

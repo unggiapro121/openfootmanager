@@ -1210,7 +1210,14 @@
     "payrollNoStaff": "CLB chưa có nhân viên nào.",
     "staffName": "Nhân viên",
     "staffRole": "Vai trò",
-    "academyWage": "{{paid}} (đội 1: {{contract}})"
+    "academyWage": "{{paid}} (đội 1: {{contract}})",
+    "budgetBalance": {
+      "title": "Cân đối ngân sách",
+      "hint": "Chuyển tiền chuyển nhượng chưa dùng sang ngân sách lương, hoặc giảm ngân sách lương để có thêm tiền chuyển nhượng. Mỗi 1 đồng một tuần tốn hoặc trả lại 1 đồng cho mỗi kỳ trả lương còn lại của mùa.",
+      "paydaysLeft": "Còn {{count}} kỳ trả lương mùa này",
+      "apply": "Áp dụng",
+      "reset": "Đặt lại"
+    }
   },
   "inbox": {
     "title": "Hộp thư",
@@ -2963,7 +2970,9 @@
       "projection": {
         "notAssessed": "CLB của bạn chưa đánh giá cầu thủ này.",
         "noAssessor": "CLB không có ai đánh giá được tiềm năng."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Ngân sách lương này nằm ngoài giới hạn: không được thấp hơn quỹ lương hiện tại và không được tốn quá ngân sách chuyển nhượng.",
+      "budgetRebalanceStep": "Thay đổi ngân sách lương theo từng bước 1.000 mỗi tuần."
     },
     "sender": {
       "boardOfDirectors": "Hội đồng quản trị",
