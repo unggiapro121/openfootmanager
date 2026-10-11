@@ -6,20 +6,10 @@
 
 use super::*;
 
+use rand::RngExt;
+
 use crate::squad_floor::group_index as position_group_index;
 
-/// Whether a club has a realistic reason to pursue a target: it isn't far below
-/// the player's current club in stature, and it isn't already overloaded in the
-/// player's position group.
-pub(crate) fn buyer_has_genuine_interest(
-    buyer_reputation: u32,
-    owner_reputation: u32,
-    buyer_position_depth: usize,
-) -> bool {
-    let reputation_deficit = owner_reputation as i32 - buyer_reputation as i32;
-    reputation_deficit <= MAX_BUYER_REPUTATION_DEFICIT
-        && buyer_position_depth < POSITION_GROUP_SURPLUS_THRESHOLD
-}
 /// Current squad depth per club and broad position group, computed once so the
 /// market sweep doesn't re-scan every roster. The same count the squad floor
 /// keeps, owned so the sweep can go on to move players.
@@ -193,23 +183,13 @@ pub fn evaluate_transfer_market(game: &mut Game) {
         .map(|(index, player)| (player.id.clone(), index))
         .collect();
 
-    // In a multi-competition world only the player's active scope shops the
-    // market each day; dormant clubs are handled by lighter periodic passes.
-    // `None` means no scope is configured, so every club is a potential buyer.
-    let active_team_ids = game.active_team_ids();
-    let buyer_ids: Vec<String> = game
-        .teams
-        .iter()
-        .filter(|team| Some(team.id.as_str()) != user_team_id.as_deref())
-        .filter(|team| {
-            active_team_ids
-                .as_ref()
-                .is_none_or(|ids| ids.contains(&team.id))
-        })
-        .map(|team| team.id.clone())
-        .collect();
-    let mut completed_ai_transfers = 0_usize;
-    let mut moved_player_ids: HashSet<String> = HashSet::new();
+    // Every AI club, inside the simulated scope or not: the whole world is a
+    // market. The shortlist below holds only the manager's players — the AI
+    // clubs' business with each other is their weekly review
+    // (`run_ai_transfer_reviews`) — so this stays cheap.
+    let buyer_ids = crate::ai_tactics::ai_clubs(game);
+    let first_choices = first_choice_ids(game);
+    let mut talks_rng = game.rng_for("transfer-market/talks", &today);
     // New incoming offers opened to user players today, tracked to throttle the
     // inbox: at most one new club per player and a hard squad-wide ceiling.
     let mut new_offers_per_player: std::collections::HashMap<String, usize> =
@@ -253,17 +233,11 @@ pub fn evaluate_transfer_market(game: &mut Game) {
         if player_has_pending_registration(player) {
             continue;
         }
-        // An AI club at the floor in his group will not sell him, so no buyer
-        // should spend its approach on him. `execute_transfer` refuses the sale
-        // regardless; this keeps the refusal from costing a buyer its day. The
-        // player's own club is left to decide for itself.
+        // Only the manager's players: AI clubs deal with each other on their
+        // review day, where a buyer that cannot or will not buy a player never
+        // spends its turn on him.
         let is_user_owned = Some(owner_team_id) == user_team_id.as_deref();
-        if !is_user_owned
-            && player.squad_role == domain::player::SquadRole::Senior
-            && position_depths
-                .get(owner_team_id)
-                .is_some_and(|depths| !crate::squad_floor::can_spare_one(*depths, &player.position))
-        {
+        if !is_user_owned {
             continue;
         }
         let mut score = incoming_interest_score(current_date, player);
@@ -276,7 +250,6 @@ pub fn evaluate_transfer_market(game: &mut Game) {
         shortlist.push(MarketTarget {
             player_id: player.id.clone(),
             owner_team_id: owner_team_id.to_string(),
-            is_user_owned,
             score,
             fee: suggested_incoming_fee(current_date, player),
             position_group_index: position_group_index(&player.position),
@@ -329,14 +302,15 @@ pub fn evaluate_transfer_market(game: &mut Game) {
         // filters is its highest-appeal eligible signing.
         // Worked out once for this buyer, and only if a target gets as far as needing it.
         let mut buyer_wage_facts: Option<BuyerWageFacts> = None;
+        let buyer_needs = line_needs(&buyer_team.formation);
         let chosen = shortlist.iter().find(|target| {
-            if target.owner_team_id == buyer_id || moved_player_ids.contains(&target.player_id) {
+            if target.owner_team_id == buyer_id {
                 return false;
             }
             if loan_offer_player_id.as_deref() == Some(target.player_id.as_str()) {
                 return false;
             }
-            if target.is_user_owned {
+            {
                 let budget = IncomingOfferBudget {
                     new_today: &new_offers_per_player,
                     approach_clubs: &approach_clubs,
@@ -350,16 +324,21 @@ pub fn evaluate_transfer_market(game: &mut Game) {
                 {
                     return false;
                 }
-            } else if completed_ai_transfers >= MAX_COMPLETED_AI_TRANSFERS_PER_DAY {
+            }
+            // No club buys into a line it is already overloaded in.
+            if line_is_overloaded(
+                buyer_depths[target.position_group_index],
+                buyer_needs[target.position_group_index],
+            ) {
                 return false;
             }
-            // Clubs only chase players that fit their stature and a position they
-            // actually need, so a single star doesn't draw the whole division.
-            if !buyer_has_genuine_interest(
-                buyer_team.reputation,
-                target.owner_reputation,
-                buyer_depths[target.position_group_index],
-            ) {
+            // A player hesitates to drop to a much smaller club, more the
+            // bigger the drop, unless he is open to any offer.
+            let open = player_index.get(&target.player_id).is_some_and(|&index| {
+                open_to_offers(&game.players[index], &first_choices, current_date)
+            });
+            let chance = approach_chance(buyer_team.reputation, target.owner_reputation, open);
+            if talks_rng.random_range(0.0..1.0) >= chance {
                 return false;
             }
             buyer_team.transfer_budget >= target.fee as i64
@@ -383,7 +362,6 @@ pub fn evaluate_transfer_market(game: &mut Game) {
         let candidate = MarketCandidate {
             player_id: target.player_id.clone(),
             owner_team_id: target.owner_team_id.clone(),
-            score: target.score,
             fee: target.fee,
         };
 
@@ -397,24 +375,6 @@ pub fn evaluate_transfer_market(game: &mut Game) {
                 .or_default()
                 .insert(buyer_id.clone());
             new_user_offers_today += 1;
-            continue;
-        }
-
-        if candidate.score <= 60 || completed_ai_transfers >= MAX_COMPLETED_AI_TRANSFERS_PER_DAY {
-            continue;
-        }
-
-        if execute_transfer(
-            game,
-            &candidate.player_id,
-            &buyer_id,
-            &candidate.owner_team_id,
-            candidate.fee,
-        )
-        .is_ok()
-        {
-            moved_player_ids.insert(candidate.player_id);
-            completed_ai_transfers += 1;
         }
     }
 }

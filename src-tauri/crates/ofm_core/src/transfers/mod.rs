@@ -22,6 +22,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use uuid::Uuid;
 
+mod ai_market;
 mod bids;
 mod consts;
 mod execution;
@@ -30,6 +31,10 @@ mod loans;
 mod market;
 mod registration;
 
+pub use ai_market::run_ai_transfer_reviews;
+pub(crate) use ai_market::{
+    approach_chance, first_choice_ids, line_is_overloaded, line_needs, open_to_offers,
+};
 pub use bids::*;
 use consts::*;
 pub use execution::*;
@@ -109,7 +114,6 @@ pub(crate) enum PlayerImportance {
 pub(crate) struct MarketCandidate {
     player_id: String,
     owner_team_id: String,
-    score: i32,
     fee: u64,
 }
 
@@ -118,7 +122,6 @@ pub(crate) struct MarketCandidate {
 pub(crate) struct MarketTarget {
     player_id: String,
     owner_team_id: String,
-    is_user_owned: bool,
     score: i32,
     fee: u64,
     /// Broad position group (0=GK, 1=DEF, 2=MID, 3=FWD), used to gate buyers

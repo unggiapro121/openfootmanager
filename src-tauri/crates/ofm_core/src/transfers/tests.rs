@@ -126,9 +126,10 @@ fn evaluate_transfer_market_targets_award_leaderboard_user_player() {
 /// Given the same leaderboard player, one buying club in the active competition
 /// and one in a dormant competition,
 /// When the transfer market is evaluated,
-/// Then only the active club bids.
+/// Then both clubs bid over two days: the whole world is a market, not just the
+/// simulated scope.
 #[test]
-fn dormant_clubs_outside_the_active_scope_skip_the_market() {
+fn clubs_outside_the_active_scope_bid_too() {
     use domain::league::{League, StandingEntry};
 
     let mut game = make_game();
@@ -152,6 +153,10 @@ fn dormant_clubs_outside_the_active_scope_skip_the_market() {
     game.competitions = vec![active, dormant];
     game.active_competition_ids = vec!["active-league".to_string()];
 
+    // One new club a day may approach a player, so the second club gets its
+    // turn the next morning.
+    evaluate_transfer_market(&mut game);
+    game.clock.current_date += chrono::Duration::days(1);
     evaluate_transfer_market(&mut game);
 
     let player = game
@@ -168,10 +173,10 @@ fn dormant_clubs_outside_the_active_scope_skip_the_market() {
         "an active club should still bid on the user's standout player"
     );
     assert!(
-        !player
+        player
             .transfer_offers
             .iter()
             .any(|offer| offer.from_team_id == "team2"),
-        "a dormant club outside the active simulation scope must not shop the market"
+        "a club outside the active simulation scope shops the market too"
     );
 }

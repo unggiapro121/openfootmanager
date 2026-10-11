@@ -162,7 +162,7 @@ fn contracts_running_down(game: &Game, team_id: &str, current_date: NaiveDate) -
 }
 
 /// Does the club want this player for another contract?
-fn keeps(game: &Game, team: &Team, player: &Player, current_date: NaiveDate) -> bool {
+pub(crate) fn keeps(game: &Game, team: &Team, player: &Player, current_date: NaiveDate) -> bool {
     needed_for_depth(game, &team.id, player) || worth_keeping(game, team, player, current_date)
 }
 

@@ -4,7 +4,6 @@
 //! keys the UI resolves, can be read and adjusted without scrolling the logic.
 
 pub(super) const TRANSFER_NEGOTIATION_STALE_DAYS: i64 = 14;
-pub(super) const MAX_COMPLETED_AI_TRANSFERS_PER_DAY: usize = 2;
 pub(super) const AWARD_LEADERBOARD_INTEREST_BONUS: i32 = 25;
 /// Only one new club may open talks for a given user player on a single day,
 /// so stars draw steady interest over the window instead of a same-day flood.
@@ -33,12 +32,6 @@ pub(super) const CLOSED_OFFER_RETENTION_DAYS: i64 = 120;
 /// these ever reordered, pruning would erase the memory of a refusal while it was still meant to
 /// hold and the rejected club could come straight back.
 const _: () = assert!(CLOSED_OFFER_RETENTION_DAYS > REBID_COOLDOWN_DAYS);
-/// A club won't pursue a player whose current club out-reputes it by more than
-/// this margin — the player wouldn't realistically drop to a much smaller side.
-pub(super) const MAX_BUYER_REPUTATION_DEFICIT: i32 = 150;
-/// A club already this deep in a position group has no need to sign another
-/// there, so it looks elsewhere.
-pub(super) const POSITION_GROUP_SURPLUS_THRESHOLD: usize = 8;
 pub(super) const ERR_TRANSFER_WINDOW_CLOSED: &str = "be.error.transfers.transferWindowClosed";
 pub(super) const ERR_CANNOT_BID_ON_OWN_PLAYER: &str = "be.error.transfers.cannotBidOnOwnPlayer";
 pub(super) const ERR_PLAYER_HAS_NO_TEAM: &str = "be.error.transfers.playerHasNoTeam";

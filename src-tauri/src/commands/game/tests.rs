@@ -574,3 +574,175 @@ fn authored_group_size_reaches_the_game_built_from_a_loaded_world() {
             .all(|g| g.team_ids.len() == size.unwrap_or(4)));
     }
 }
+
+/// Transfer-market probe on the real-world package: one summer window of a
+/// career at Como, every club run by the AI but Como.
+///
+/// ```text
+/// OFM_PACKAGE=/path/to/real-world-2025-26.ofm \
+///   cargo test --release -p openfootmanager transfer_market_probe -- --ignored --nocapture
+/// ```
+///
+/// Reports, per AI club, the signings and sales of the window (the design aims
+/// for a median of three to seven), by nation; the offers the manager's players
+/// drew, listed and unlisted; and how many clubs end the window in debt.
+#[test]
+#[ignore = "measurement probe on the real-world package; see the doc comment"]
+fn transfer_market_probe() {
+    use std::collections::{BTreeMap, HashMap};
+
+    let path = std::env::var("OFM_PACKAGE")
+        .unwrap_or_else(|_| "../../ofm-packages/real-world-2025-26.ofm".to_string());
+    let (package, errors) =
+        ofm_core::generator::load_world_package_from_ofm(std::path::Path::new(&path));
+    assert!(errors.is_empty(), "package errors: {errors:?}");
+    let world = ofm_core::generator::build_world_from_package(
+        &package,
+        None,
+        &ofm_core::generator::DefinitionSources::embedded_only(),
+    )
+    .expect("the package builds a world");
+
+    let manager = domain::manager::Manager::new(
+        "mgr-user".to_string(),
+        "Alex".to_string(),
+        "Manager".to_string(),
+        "1980-01-01".to_string(),
+        "England".to_string(),
+    );
+    let startup_options = StartupOptions {
+        start_year: 2026,
+        start_phase: StartPhase::SeasonStart,
+        history_depth_years: DEFAULT_GENERATED_HISTORY_DEPTH_YEARS,
+        development_speed: ofm_core::development_speed::DevelopmentSpeed::REALISTIC,
+    };
+    let clock = game_clock_for_world(&startup_options, &world.metadata).unwrap();
+    let (mut game, stats) = build_game_from_world_data(clock, manager, &startup_options, world);
+    let user_club = std::env::var("OFM_CLUB").unwrap_or_else(|_| "como".to_string());
+    begin_career(&mut game, &user_club, CareerScope::default(), stats).expect("career opens");
+
+    let in_debt_at_start = game.teams.iter().filter(|team| team.finance < 0).count();
+    // Play until the window has opened and closed again.
+    let mut seen_open = false;
+    let mut window = (String::new(), String::new());
+    for _ in 0..400 {
+        ofm_core::turn::process_day(&mut game);
+        let context = &game.season_context.transfer_window;
+        let open = matches!(
+            context.status,
+            domain::season::TransferWindowStatus::Open
+                | domain::season::TransferWindowStatus::DeadlineDay
+        );
+        if open && !seen_open {
+            seen_open = true;
+            window = (
+                context.opens_on.clone().unwrap_or_default(),
+                context.closes_on.clone().unwrap_or_default(),
+            );
+        }
+        if seen_open && !open {
+            break;
+        }
+    }
+    assert!(seen_open, "the window never opened");
+
+    // Deals of the window, counted once each.
+    let mut seen = std::collections::HashSet::new();
+    let mut bought: HashMap<String, usize> = HashMap::new();
+    let mut sold: HashMap<String, usize> = HashMap::new();
+    let deals = game
+        .competitions
+        .iter()
+        .chain(game.league.iter())
+        .flat_map(|competition| competition.transfer_log.iter())
+        .filter(|deal| deal.date >= window.0 && deal.date <= window.1)
+        .filter(|deal| seen.insert((deal.date.clone(), deal.player_id.clone())))
+        .collect::<Vec<_>>();
+    for deal in &deals {
+        *bought.entry(deal.to_team_id.clone()).or_default() += 1;
+        *sold.entry(deal.from_team_id.clone()).or_default() += 1;
+    }
+
+    let ai: Vec<&domain::team::Team> = game
+        .teams
+        .iter()
+        .filter(|team| team.id != user_club)
+        .collect();
+    let mut buys: Vec<usize> = ai
+        .iter()
+        .map(|t| bought.get(&t.id).copied().unwrap_or(0))
+        .collect();
+    let mut sales: Vec<usize> = ai
+        .iter()
+        .map(|t| sold.get(&t.id).copied().unwrap_or(0))
+        .collect();
+    buys.sort_unstable();
+    sales.sort_unstable();
+    let pct = |v: &[usize], q: f64| v[((v.len() - 1) as f64 * q) as usize];
+    eprintln!("WINDOW {} → {}  deals {}", window.0, window.1, deals.len());
+    eprintln!(
+        "BUYS per AI club: p10 {} median {} p90 {} max {}  clubs with none {}/{}",
+        pct(&buys, 0.1),
+        pct(&buys, 0.5),
+        pct(&buys, 0.9),
+        buys.last().unwrap(),
+        buys.iter().filter(|b| **b == 0).count(),
+        buys.len()
+    );
+    eprintln!(
+        "SALES per AI club: p10 {} median {} p90 {} max {}  clubs with none {}/{}",
+        pct(&sales, 0.1),
+        pct(&sales, 0.5),
+        pct(&sales, 0.9),
+        sales.last().unwrap(),
+        sales.iter().filter(|s| **s == 0).count(),
+        sales.len()
+    );
+
+    let mut by_nation: BTreeMap<String, (usize, usize, usize, u32)> = BTreeMap::new();
+    for team in &ai {
+        let entry = by_nation.entry(team.football_nation.clone()).or_default();
+        entry.0 += 1;
+        entry.1 += bought.get(&team.id).copied().unwrap_or(0);
+        entry.2 += sold.get(&team.id).copied().unwrap_or(0);
+        entry.3 += team.reputation;
+    }
+    for (nation, (clubs, b, s, reputation)) in &by_nation {
+        eprintln!(
+            "NATION {nation:4} clubs {clubs:3}  buys/club {:.1}  sales/club {:.1}  reputation {}",
+            *b as f64 / *clubs as f64,
+            *s as f64 / *clubs as f64,
+            reputation / *clubs as u32
+        );
+    }
+
+    let user_players: Vec<&domain::player::Player> = game
+        .players
+        .iter()
+        .filter(|p| p.team_id.as_deref() == Some(user_club.as_str()))
+        .collect();
+    let offers_in_window = |p: &domain::player::Player| {
+        p.transfer_offers
+            .iter()
+            .filter(|offer| offer.date >= window.0 && offer.date <= window.1)
+            .count()
+    };
+    let listed: Vec<&&domain::player::Player> =
+        user_players.iter().filter(|p| p.transfer_listed).collect();
+    let unlisted: Vec<&&domain::player::Player> =
+        user_players.iter().filter(|p| !p.transfer_listed).collect();
+    let per = |group: &[&&domain::player::Player]| {
+        group.iter().map(|p| offers_in_window(p)).sum::<usize>() as f64 / group.len().max(1) as f64
+    };
+    eprintln!(
+        "USER offers per player: listed {:.2} ({} players)  unlisted {:.2} ({} players)",
+        per(&listed),
+        listed.len(),
+        per(&unlisted),
+        unlisted.len()
+    );
+    eprintln!(
+        "DEBT clubs in debt: at career start {in_debt_at_start}, after the window {}",
+        game.teams.iter().filter(|team| team.finance < 0).count()
+    );
+}

@@ -42,6 +42,8 @@ pub fn refresh_weekly_player_values(game: &mut Game) {
 /// authored wages: both are worked out like everyone else's, so no player
 /// starts frozen on a price the market no longer pays.
 pub fn open_world_economy(game: &mut Game) {
+    // First: reputation feeds prices, wages, income and budgets below.
+    crate::reputation::align_reputations_with_squads(game);
     let today = game.clock.current_date.date_naive();
     reprice_players(game, today, Repricing::Exact);
     crate::generator::fit_opening_wages_to_means(game);

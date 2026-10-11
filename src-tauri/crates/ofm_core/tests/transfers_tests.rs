@@ -2200,11 +2200,41 @@ fn generates_pending_incoming_offer_for_contract_risk_player() {
     }));
 }
 
-/// Given a transfer-listed player at one AI club with a month left on his deal,
-/// and another AI club able to pay for him,
-/// When the market runs,
-/// Then the clubs complete the deal between themselves: the fee moves from
-/// buyer to seller, the move is logged, and the user's inbox stays empty.
+/// Seven days of reviews: every AI club takes its weekly turn once.
+fn run_a_week_of_ai_reviews(game: &mut Game) {
+    for weekday in 0..7 {
+        ofm_core::transfers::run_ai_transfer_reviews(game, weekday);
+    }
+}
+
+/// Give a club the cover its 4-4-2 needs at the back and in midfield, so the
+/// line it is short in is the one a test means it to be.
+fn cover_back_and_midfield(game: &mut Game, team_id: &str) {
+    for group in [Position::Defender, Position::Midfielder] {
+        let id = format!("cover-{team_id}-{group:?}");
+        let mut player = Player::new(
+            id.clone(),
+            id.clone(),
+            id,
+            "1996-01-01".to_string(),
+            "England".to_string(),
+            group,
+            default_attrs(),
+        );
+        player.team_id = Some(team_id.to_string());
+        player.stage_contract_end(Some("2031-06-30".to_string()));
+        player.stage_wage(0);
+        player.morale = 70;
+        game.players.push(player);
+    }
+}
+
+/// Given an AI club a forward short of what its formation needs and able to
+/// pay, and a listed forward at another AI club,
+/// When a week of AI reviews runs,
+/// Then the clubs complete a deal between themselves: a forward moves to the
+/// buyer, the fee moves from buyer to seller, the move is logged, and the
+/// user's inbox stays empty.
 #[test]
 fn ai_clubs_complete_transfer_between_themselves_without_inbox_message() {
     let mut player = make_player("player-ai-market");
@@ -2215,82 +2245,76 @@ fn ai_clubs_complete_transfer_between_themselves_without_inbox_message() {
 
     let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
     game.teams
-        .push(make_ai_team("team-3", "Seller FC", 3_000_000, 1_000_000));
+        .push(make_ai_team("team-3", "Seller FC", 3_000_000, 0));
     game.teams[1].finance = 6_000_000;
     game.teams[1].transfer_budget = 3_000_000;
     give_every_club_squad_depth(&mut game);
+    cover_back_and_midfield(&mut game, "team-2");
+    // The seller has its own cover, so it reviews as a seller, not a buyer.
+    cover_back_and_midfield(&mut game, "team-3");
     attach_transfer_log_league(&mut game);
 
-    evaluate_transfer_market(&mut game);
+    // The manager's own forwards would draw an offer to the inbox instead.
+    game.players
+        .retain(|player| !player.id.starts_with("depth-team-1-Forward"));
 
-    let player = game
-        .players
-        .iter()
-        .find(|player| player.id == "player-ai-market")
-        .unwrap();
-    assert_eq!(player.team_id.as_deref(), Some("team-2"));
-    assert!(game.messages.is_empty());
-
-    // His €1.2M value, listed (×0.9) and with a month left to run (×0.35).
-    let fee = 378_000;
-    let buyer = game.teams.iter().find(|team| team.id == "team-2").unwrap();
-    let seller = game.teams.iter().find(|team| team.id == "team-3").unwrap();
-    assert_eq!(buyer.finance, 6_000_000 - fee);
-    assert_eq!(seller.finance, 3_000_000 + fee);
+    run_a_week_of_ai_reviews(&mut game);
 
     let transfer_log = &game.league.as_ref().unwrap().transfer_log;
-    assert_eq!(transfer_log.len(), 1);
-    assert_eq!(transfer_log[0].player_id, "player-ai-market");
+    assert_eq!(transfer_log.len(), 1, "{transfer_log:?}");
     assert_eq!(transfer_log[0].from_team_id, "team-3");
-    assert_eq!(transfer_log[0].to_team_id, "team-2");
-    assert_eq!(transfer_log[0].fee, fee as u64);
+    let deal = &transfer_log[0];
+    assert_eq!(deal.to_team_id, "team-2");
+    let signed = game
+        .players
+        .iter()
+        .find(|p| p.id == deal.player_id)
+        .unwrap();
+    assert_eq!(signed.position.to_group_position(), Position::Forward);
+    assert_eq!(signed.team_id.as_deref(), Some("team-2"));
+    assert!(game.messages.is_empty());
+    let buyer = game.teams.iter().find(|team| team.id == "team-2").unwrap();
+    assert_eq!(buyer.finance, 6_000_000 - deal.fee as i64);
 }
 
+/// Given an AI club two forwards short and two listed forwards on the market,
+/// When one week of AI reviews runs,
+/// Then it signs one of them: a club acts once a week, so its deals spread
+/// across the window.
 #[test]
-fn ai_market_limits_completed_ai_transfers_per_day() {
+fn an_ai_club_signs_at_most_one_player_a_week() {
     let mut first = make_player("player-ai-limit-1");
     first.team_id = Some("team-3".to_string());
-    first.stage_contract_end(Some("2026-09-01".to_string()));
-    first.market_value = 1_200_000;
     first.transfer_listed = true;
-
     let mut second = make_player("player-ai-limit-2");
     second.team_id = Some("team-3".to_string());
-    second.stage_contract_end(Some("2026-09-01".to_string()));
-    second.market_value = 1_100_000;
     second.transfer_listed = true;
-
-    let mut third = make_player("player-ai-limit-3");
-    third.team_id = Some("team-3".to_string());
-    third.stage_contract_end(Some("2026-09-01".to_string()));
-    third.market_value = 1_000_000;
-    third.transfer_listed = true;
 
     let mut game = make_game_with_player(first, vec![], 5_000_000, 2_000_000);
     game.players.push(second);
-    game.players.push(third);
     game.teams
-        .push(make_ai_team("team-3", "Seller FC", 3_000_000, 1_000_000));
-    game.teams
-        .push(make_ai_team("team-4", "Buyer B", 6_000_000, 3_000_000));
-    game.teams
-        .push(make_ai_team("team-5", "Buyer C", 6_000_000, 3_000_000));
-    game.teams[1].finance = 6_000_000;
-    game.teams[1].transfer_budget = 3_000_000;
+        .push(make_ai_team("team-3", "Seller FC", 3_000_000, 0));
+    game.teams[1].finance = 9_000_000;
+    game.teams[1].transfer_budget = 6_000_000;
     give_every_club_squad_depth(&mut game);
+    cover_back_and_midfield(&mut game, "team-2");
+    // The seller has its own cover, so it reviews as a seller, not a buyer.
+    cover_back_and_midfield(&mut game, "team-3");
+    game.players
+        .retain(|player| player.id != "depth-team-2-Forward-2");
     attach_transfer_log_league(&mut game);
 
-    evaluate_transfer_market(&mut game);
-
-    let moved_players = game
-        .players
+    run_a_week_of_ai_reviews(&mut game);
+    let signed_in_a_week = game
+        .league
+        .as_ref()
+        .unwrap()
+        .transfer_log
         .iter()
-        .filter(|player| player.team_id.as_deref() != Some("team-3"))
-        .filter(|player| player.id.starts_with("player-ai-limit"))
+        .filter(|deal| deal.to_team_id == "team-2")
         .count();
 
-    assert_eq!(moved_players, 2);
-    assert_eq!(game.league.as_ref().unwrap().transfer_log.len(), 2);
+    assert_eq!(signed_in_a_week, 1);
 }
 
 #[test]
@@ -4146,46 +4170,40 @@ fn squad_floor_a_club_that_sells_aggressively_never_goes_below_fifteen() {
     assert_eq!(seller_seniors(&game), 15);
 }
 
-/// The best target on the market belongs to a club at the floor in his group,
-/// the second best to a club with depth. The buyer signs the second: it does
-/// not sell the first club short, and it does not spend its one approach of
-/// the day on a sale that was always going to be refused.
+/// Given a listed forward at a club already at the floor in forwards, and an
+/// AI club short of a forward,
+/// When a week of AI reviews runs,
+/// Then the forward stays: no club is sold short of the squad floor.
 #[test]
 fn squad_floor_ai_buyers_pass_over_a_player_whose_club_cannot_sell_him() {
     let mut floor_bound = make_player("player-floor-ai");
     floor_bound.team_id = Some("team-3".to_string());
-    floor_bound.stage_contract_end(Some("2026-09-01".to_string()));
     floor_bound.market_value = 1_200_000;
     floor_bound.transfer_listed = true;
-    let mut available = make_player("player-floor-ai-alt");
-    available.team_id = Some("team-4".to_string());
-    available.stage_contract_end(Some("2026-09-01".to_string()));
-    available.market_value = 1_000_000;
-    available.transfer_listed = true;
 
     let mut game = make_game_with_player(floor_bound, vec![], 5_000_000, 2_000_000);
-    game.players.push(available);
-    // Neither selling club can afford to buy, so team-2 is the only buyer.
     game.teams
         .push(make_ai_team("team-3", "Seller FC", 3_000_000, 0));
-    game.teams
-        .push(make_ai_team("team-4", "Other Seller", 3_000_000, 0));
     game.teams[1].finance = 6_000_000;
     game.teams[1].transfer_budget = 3_000_000;
     give_every_club_squad_depth(&mut game);
+    cover_back_and_midfield(&mut game, "team-2");
+    // The seller has its own cover, so it reviews as a seller, not a buyer.
+    cover_back_and_midfield(&mut game, "team-3");
     leave_club_at_the_forward_floor(&mut game, "team-3");
+    // Only the floor-bound forward is a forward team-3 could part with.
+    game.players
+        .retain(|player| !player.id.starts_with("depth-team-3-Forward"));
     attach_transfer_log_league(&mut game);
 
-    evaluate_transfer_market(&mut game);
+    run_a_week_of_ai_reviews(&mut game);
 
-    let team_of = |id: &str| {
-        game.players
-            .iter()
-            .find(|player| player.id == id)
-            .and_then(|player| player.team_id.clone())
-    };
-    assert_eq!(team_of("player-floor-ai").as_deref(), Some("team-3"));
-    assert_eq!(team_of("player-floor-ai-alt").as_deref(), Some("team-2"));
+    let team_of = game
+        .players
+        .iter()
+        .find(|player| player.id == "player-floor-ai")
+        .and_then(|player| player.team_id.clone());
+    assert_eq!(team_of.as_deref(), Some("team-3"));
 }
 
 // ---------------------------------------------------------------------------
