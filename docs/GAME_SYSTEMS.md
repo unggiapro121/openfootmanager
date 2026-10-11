@@ -230,6 +230,23 @@ This applies to every club too. It was AI-only until it turned out to be the
 difference between a squad that stabilises and one that reaches condition 2 within
 two months of the season starting.
 
+### Match Injuries
+
+A player hurt in a club match (see [MATCH_SIMULATION.md](MATCH_SIMULATION.md#foul--discipline)) is
+injured for real when the match report is applied (`player_wear::assign_match_injury`):
+
+| Tier | Share (fitness ≥ 50) | Share (fitness < 50) | Days out |
+|---|---|---|---|
+| Light | 60% | 40% | 3–10 |
+| Medium | 30% | 45% | 11–35 |
+| Serious | 10% | 15% | 36–120 |
+
+A player already injured keeps his injury. The manager is told of his own players. National-team
+matches keep their own roll (`roll_match_injury`, 5–21 days). Measured with
+`tests/match_injury_probe.rs` (ignored, run in release) on five seeded compact worlds of 16 clubs:
+134–164 match injuries a season, 8–10 per club — about one every three matches — and on average 0.6
+players per club out with one.
+
 ### Fitness Warnings
 
 After training each day, `check_squad_fitness_warnings()` evaluates the user's squad:
@@ -427,7 +444,7 @@ The inbox system provides contextual communication from in-game characters. Mess
 | JobOffer | Board of Directors | Vacancy-driven approaches and application replies for unemployed managers |
 | Finance | (Future) | Budget updates |
 | Transfer | (Future) | Transfer offers |
-| Injury | (Future) | Injury reports |
+| Injury | Head Physio | A player of the manager's club hurt in a match (`be.msg.matchInjury`) |
 | Contract | (Future) | Contract negotiations |
 | ScoutReport | Scout | Player reports, youth search reports, weekly watchlist reports |
 | Media | (Future) | Press stories |
