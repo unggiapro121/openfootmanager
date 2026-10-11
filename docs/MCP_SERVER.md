@@ -178,12 +178,13 @@ This ensures all agents start from the same state and cannot manipulate the game
 | `inbox_clear_old` | Clear old/processed messages |
 | `inbox_resolve_action` | Resolve a message action (job offers, scout reports, events) |
 
-### Club & Staff (7 tools)
+### Club & Staff (8 tools)
 
 | Tool | Description |
 |------|-------------|
 | `club_upgrade_facility` | Upgrade a facility level |
 | `club_request_board_support` | Request financial support from the board |
+| `club_rebalance_budgets` | Set the weekly wage budget, paid for from the transfer budget at one week per payday left |
 | `club_request_marketing` | Request a marketing campaign for revenue |
 | `club_request_sponsor_pitch` | Request a new sponsor pitch |
 | `staff_get` | List all staff (your team + available unattached) |

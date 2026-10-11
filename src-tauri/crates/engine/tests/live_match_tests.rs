@@ -1810,6 +1810,76 @@ fn cannot_substitute_red_carded_player() {
     );
 }
 
+// ===========================================================================
+// Tests: Injuries
+// ===========================================================================
+
+/// An injured player is off the pitch in all but name: from the minute he is
+/// hurt he never touches the ball again.
+#[test]
+fn an_injured_player_takes_no_further_part() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(7);
+    state.step_minute(&mut rng);
+    state.step_minute(&mut rng);
+    let hurt = state.snapshot().home_team.players[9].id.clone(); // a forward
+    state.test_injure(&hurt);
+
+    let mut later = Vec::new();
+    loop {
+        let result = state.step_minute(&mut rng);
+        later.extend(result.events);
+        if result.is_finished {
+            break;
+        }
+    }
+
+    let touched: Vec<_> = later
+        .iter()
+        .filter(|event| event.player_id.as_deref() == Some(hurt.as_str()))
+        .map(|event| (event.minute, event.event_type.clone()))
+        .collect();
+    assert!(
+        touched.is_empty(),
+        "the injured forward still played: {touched:?}"
+    );
+    assert!(state.snapshot().injured.contains(&hurt));
+}
+
+/// Unlike a sent-off player, an injured one can be replaced, and once he has
+/// been he is no longer counted as injured on the pitch.
+#[test]
+fn an_injured_player_can_be_substituted() {
+    let mut state = make_live_match(false);
+    let mut rng = seeded_rng(42);
+    state.step_minute(&mut rng);
+    state.step_minute(&mut rng);
+    let hurt = state.snapshot().home_team.players[3].id.clone();
+    let bench_player = state.bench(Side::Home)[1].id.clone();
+    state.test_injure(&hurt);
+
+    state
+        .apply_command(MatchCommand::Substitute {
+            side: Side::Home,
+            player_off_id: hurt.clone(),
+            player_on_id: bench_player.clone(),
+        })
+        .expect("an injured player can be replaced");
+
+    let snap = state.snapshot();
+    assert!(!snap.injured.contains(&hurt));
+    assert!(snap.home_team.players.iter().any(|p| p.id == bench_player));
+}
+
+/// A player short of match fitness is likelier to be hurt in a challenge.
+#[test]
+fn an_unfit_player_is_likelier_to_be_hurt() {
+    use ::engine::injury_fitness_multiplier;
+    assert!(injury_fitness_multiplier(20) > injury_fitness_multiplier(60));
+    assert!(injury_fitness_multiplier(60) > injury_fitness_multiplier(95));
+    assert_eq!(injury_fitness_multiplier(80), 1.0);
+}
+
 #[test]
 fn cannot_bring_back_already_substituted_off_player() {
     let mut state = make_live_match(false);

@@ -572,7 +572,13 @@
       "twistedAnkle": "Ayak bileği burkulması",
       "kneeBruise": "Diz ezilmesi",
       "hamstringTightness": "Arka adale gerginliği",
-      "calfStrain": "Baldır zorlanması"
+      "calfStrain": "Baldır zorlanması",
+      "hamstringTear": "Arka adale yırtığı",
+      "ankleSprain": "Ayak bileği burkulması",
+      "groinStrain": "Kasık gerilmesi",
+      "kneeLigament": "Diz bağı hasarı",
+      "brokenFoot": "Ayak kırığı",
+      "achillesInjury": "Aşil tendonu sakatlığı"
     },
     "scoutRatings": {
       "excellent": "Mükemmel",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "Kulübün hiç personeli yok.",
     "staffName": "Personel",
     "staffRole": "Görev",
-    "academyWage": "{{paid}} (A takım: {{contract}})"
+    "academyWage": "{{paid}} (A takım: {{contract}})",
+    "budgetBalance": {
+      "title": "Bütçe Dengesi",
+      "hint": "Harcanmamış transfer parasını maaş bütçesine aktar ya da maaş bütçesini düşürerek transfer parası aç. Haftalık her 1, bu sezon kalan her maaş günü için 1'e mal olur ya da 1 geri kazandırır.",
+      "paydaysLeft": "Bu sezon {{count}} maaş günü kaldı",
+      "apply": "Uygula",
+      "reset": "Sıfırla"
+    }
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -2644,7 +2657,9 @@
     "yourResult": "Sizin Sonucunuz",
     "continue": "Devam Et",
     "notableUpset": "Dikkat Çeken Sürpriz",
-    "pts": "P"
+    "pts": "P",
+    "injuredPrompt": "{{name}} sakatlandı ve devam edemiyor. Oyuna gireni seç ya da kapatıp bir kişi eksik oyna.",
+    "injuredBadge": "Sakat"
   },
   "endOfSeason": {
     "seasonComplete": "Sezon Tamamlandı",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Kulübünüz bu oyuncuyu değerlendirmedi.",
         "noAssessor": "Kulüpte potansiyeli değerlendirebilecek kimse yok."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Bu maaş bütçesi aralığın dışında: mevcut maaş yükünün altına inemez ve transfer bütçesinin karşılayabileceğinden fazlasına mal olamaz.",
+      "budgetRebalanceStep": "Maaş bütçesini haftalık 1.000'lik adımlarla değiştir."
     },
     "sender": {
       "boardOfDirectors": "Yönetim Kurulu",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} futbolu bıraktı",
         "body": "{{player}} futbolu bıraktı, bu yüzden onu izleme listesinden çıkardım."
+      },
+      "matchInjury": {
+        "subject": "{{player}} sakatlandı",
+        "body": "Hocam, {{player}} maçta sakatlandı ({{injury}}). Yaklaşık {{days}} gün forma giyemeyecek."
       }
     },
     "news": {

@@ -230,6 +230,23 @@ This applies to every club too. It was AI-only until it turned out to be the
 difference between a squad that stabilises and one that reaches condition 2 within
 two months of the season starting.
 
+### Match Injuries
+
+A player hurt in a club match (see [MATCH_SIMULATION.md](MATCH_SIMULATION.md#foul--discipline)) is
+injured for real when the match report is applied (`player_wear::assign_match_injury`):
+
+| Tier | Share (fitness ≥ 50) | Share (fitness < 50) | Days out |
+|---|---|---|---|
+| Light | 60% | 40% | 3–10 |
+| Medium | 30% | 45% | 11–35 |
+| Serious | 10% | 15% | 36–120 |
+
+A player already injured keeps his injury. The manager is told of his own players. National-team
+matches keep their own roll (`roll_match_injury`, 5–21 days). Measured with
+`tests/match_injury_probe.rs` (ignored, run in release) on five seeded compact worlds of 16 clubs:
+134–164 match injuries a season, 8–10 per club — about one every three matches — and on average 0.6
+players per club out with one.
+
 ### Fitness Warnings
 
 After training each day, `check_squad_fitness_warnings()` evaluates the user's squad:
@@ -427,7 +444,7 @@ The inbox system provides contextual communication from in-game characters. Mess
 | JobOffer | Board of Directors | Vacancy-driven approaches and application replies for unemployed managers |
 | Finance | (Future) | Budget updates |
 | Transfer | (Future) | Transfer offers |
-| Injury | (Future) | Injury reports |
+| Injury | Head Physio | A player of the manager's club hurt in a match (`be.msg.matchInjury`) |
 | Contract | (Future) | Contract negotiations |
 | ScoutReport | Scout | Player reports, youth search reports, weekly watchlist reports |
 | Media | (Future) | Press stories |
@@ -616,6 +633,28 @@ below zero cash at the end: 28 of 150 before the change, 27 with the pay level a
 at full. Academy contracts are 8–13.5% of the wage bill at their full value. With AI clubs
 signing from the youth pool through the season, the same measure gave 19 of 150 (median AI cash
 88M, against 89M before the pool).
+
+### Budget balance
+
+The manager can move money between the two budgets the board sets each season
+(`finances::budget_rebalance`). A weekly wage is paid on every Monday left in the season, so the two
+trade at that rate:
+
+```
+paydays_left  = Mondays after today up to the season's end (at least 1; 52 if the end is unknown)
+new wage budget W' → transfer_budget -= (W' − wage_budget) × paydays_left
+```
+
+- **Range:** from the weekly wage bill (`calc_wages`, staff included) up to the wage budget plus the
+  transfer budget spread over the paydays left, rounded down to a step. A club already paying more
+  than its budget may only raise it.
+- **Step:** 1,000 a week; either end of the range is allowed even off the step.
+- Free and unlimited. Cash is not touched: only the board's allowances move.
+- `economy::set_season_budgets` sets both budgets afresh each season, so a rebalance does not carry
+  over.
+
+The range comes to the UI with the finance snapshot's previews (`budget_rebalance`); the Finances tab
+shows it as a slider with the transfer budget moving the other way.
 
 The `FinancesTab` displays an overview with cards for balance, wage budget, transfer budget, and a payroll table.
 

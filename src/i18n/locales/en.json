@@ -572,7 +572,13 @@
       "twistedAnkle": "Twisted ankle",
       "kneeBruise": "Knee bruise",
       "hamstringTightness": "Hamstring tightness",
-      "calfStrain": "Calf strain"
+      "calfStrain": "Calf strain",
+      "hamstringTear": "Hamstring tear",
+      "ankleSprain": "Ankle sprain",
+      "groinStrain": "Groin strain",
+      "kneeLigament": "Knee ligament damage",
+      "brokenFoot": "Broken foot",
+      "achillesInjury": "Achilles injury"
     },
     "scoutRatings": {
       "excellent": "Excellent",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "The club employs no staff.",
     "staffName": "Staff member",
     "staffRole": "Role",
-    "academyWage": "{{paid}} (first team: {{contract}})"
+    "academyWage": "{{paid}} (first team: {{contract}})",
+    "budgetBalance": {
+      "title": "Budget Balance",
+      "hint": "Move unspent transfer money into the wage budget, or lower the wage budget to free transfer money. Each 1 a week costs or frees 1 for every payday left this season.",
+      "paydaysLeft": "{{count}} paydays left this season",
+      "apply": "Apply",
+      "reset": "Reset"
+    }
   },
   "inbox": {
     "title": "Inbox",
@@ -2644,7 +2657,9 @@
     "yourResult": "Your Result",
     "continue": "Continue",
     "notableUpset": "Notable Upset",
-    "pts": "pts"
+    "pts": "pts",
+    "injuredPrompt": "{{name}} is injured and can't continue. Choose who comes on, or close to play on a man short.",
+    "injuredBadge": "Injured"
   },
   "endOfSeason": {
     "seasonComplete": "Season Complete",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Your club has not assessed this player.",
         "noAssessor": "Nobody at the club can judge potential."
-      }
+      },
+      "budgetRebalanceOutOfRange": "That wage budget is out of range: it cannot go below the current wage bill or cost more than the transfer budget.",
+      "budgetRebalanceStep": "Change the wage budget in steps of 1,000 a week."
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} has retired",
         "body": "{{player}} has retired from football, so I have taken him off the watchlist."
+      },
+      "matchInjury": {
+        "subject": "{{player}} injured",
+        "body": "Boss, {{player}} picked up an injury in the match ({{injury}}). He is expected to be out for about {{days}} days."
       }
     },
     "news": {

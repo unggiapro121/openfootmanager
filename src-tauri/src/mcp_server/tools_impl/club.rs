@@ -101,6 +101,31 @@ pub fn club_request_board_support(ctx: Arc<McpContext>) -> Result<String, String
     Ok(format!("## Board Support\n\n**Amount**: {}\n**Transfer Budget Reduction**: {}\n**Satisfaction Penalty**: {}", response.result.support_amount, response.result.transfer_budget_reduction, response.result.satisfaction_penalty))
 }
 
+// ─── club_rebalance_budgets ─────────────────────────────────────────────────
+
+pub fn club_rebalance_budgets(ctx: Arc<McpContext>, wage_budget: u64) -> Result<String, String> {
+    let wage_budget =
+        i64::try_from(wage_budget).map_err(|_| "be.error.budgetRebalanceOutOfRange".to_string())?;
+    let game =
+        crate::commands::finances::rebalance_budgets_internal(&ctx.state_manager, wage_budget)?;
+
+    {
+        use tauri::Emitter;
+        let _ = ctx.app_handle.emit("game-state-changed", ());
+    }
+
+    let team = game
+        .manager
+        .team_id
+        .as_deref()
+        .and_then(|team_id| game.teams.iter().find(|team| team.id == team_id))
+        .ok_or("be.error.managedTeamNotFound".to_string())?;
+    Ok(format!(
+        "## Budgets Rebalanced\n\n**Weekly Wage Budget**: {}\n**Transfer Budget**: {}",
+        team.wage_budget, team.transfer_budget
+    ))
+}
+
 // ─── club_request_marketing ─────────────────────────────────────────────────
 
 // ─── club_request_marketing ─────────────────────────────────────────────────

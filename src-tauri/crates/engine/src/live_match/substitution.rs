@@ -79,6 +79,9 @@ impl LiveMatchState {
             player_on.position = player_off.position;
         }
 
+        // Replaced, he is no longer hurt on the pitch.
+        self.injured.remove(player_off_id);
+
         // Initialize condition for incoming player
         self.player_conditions
             .insert(player_on.id.clone(), player_on.condition as f64);

@@ -228,6 +228,12 @@ fn consider_substitution<R: Rng>(
         return Some(cmd);
     }
 
+    // A player hurt on the pitch is taken off at once, like a keeper sent off:
+    // it does not wait for a checkpoint.
+    if let Some(cmd) = replace_the_injured(obs) {
+        return Some(cmd);
+    }
+
     // Exhaustion is not a judgement call, and this branch has never been behind
     // a dice roll. Holding it back to a checkpoint would make the AI react to a
     // spent player *later* than it does today, and the condition economy was
@@ -248,6 +254,22 @@ fn consider_substitution<R: Rng>(
     }
 
     None
+}
+
+/// A player hurt on the pitch makes way for the bench player best suited to
+/// his position.
+fn replace_the_injured(obs: &AiObservation<'_>) -> Option<MatchCommand> {
+    // With no substitutions left the side plays on a man short.
+    if obs.subs_made >= obs.max_subs {
+        return None;
+    }
+    let hurt = obs.injured_on_pitch()?;
+    let on = find_best_bench_replacement(obs.bench, hurt.position, obs, None)?;
+    Some(MatchCommand::Substitute {
+        side: obs.side,
+        player_off_id: hurt.id.clone(),
+        player_on_id: on.id.clone(),
+    })
 }
 
 /// Is this side behind in a way that calls for something to be done?

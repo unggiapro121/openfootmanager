@@ -252,6 +252,7 @@ fn apply_present_day_consequences(
     // Deplete stamina for players who played, scaled by minutes on pitch
     deplete_match_stamina(game, home_team_id, report);
     deplete_match_stamina(game, away_team_id, report);
+    apply_match_injuries(game, report);
 
     // Update morale based on result and individual performance
     update_post_match_morale(game, report, home_team_id, away_team_id);
@@ -762,6 +763,53 @@ fn update_team_form(
                     }
                 }
             }
+        }
+    }
+}
+
+/// Everyone hurt in the match is injured for real: how badly is rolled from
+/// the match-injury tiers (`player_wear::assign_match_injury`). The manager is
+/// told about his own players.
+fn apply_match_injuries(game: &mut Game, report: &engine::MatchReport) {
+    let today = game.clock.current_date.format("%Y-%m-%d").to_string();
+    let user_team = game.manager.team_id.clone();
+    let hurt: Vec<String> = report
+        .events
+        .iter()
+        .filter(|event| event.event_type == engine::EventType::Injury)
+        .filter_map(|event| event.player_id.clone())
+        .collect();
+    for player_id in hurt {
+        let mut rng = game.rng_today(&format!("post-match/injury/{player_id}"));
+        let Some(player) = game.players.iter_mut().find(|p| p.id == player_id) else {
+            continue;
+        };
+        let Some(injury) = crate::player_wear::assign_match_injury(player, &mut rng) else {
+            continue;
+        };
+        if player.team_id.is_some() && player.team_id == user_team {
+            let name = player.full_name.clone();
+            let mut params = std::collections::HashMap::new();
+            params.insert("player".to_string(), name);
+            params.insert("injury".to_string(), injury.name.clone());
+            params.insert("days".to_string(), injury.days_remaining.to_string());
+            let message = domain::message::InboxMessage::new(
+                format!("match-injury-{player_id}-{today}"),
+                String::new(),
+                String::new(),
+                String::new(),
+                today.clone(),
+            )
+            .with_category(domain::message::MessageCategory::Injury)
+            .with_priority(domain::message::MessagePriority::High)
+            .with_sender_role("")
+            .with_i18n(
+                "be.msg.matchInjury.subject",
+                "be.msg.matchInjury.body",
+                params,
+            )
+            .with_sender_i18n("be.sender.headPhysio", "be.role.headPhysio");
+            crate::inbox::emit(game, message);
         }
     }
 }

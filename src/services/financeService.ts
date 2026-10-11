@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 
+import type { GameStateData } from "../store/gameStore";
+
 export type FinanceHealthLevelData = "stable" | "watch" | "warning" | "critical";
 
 interface BackendTeamFinanceSnapshotData {
@@ -40,10 +42,20 @@ interface BackendMarketingCampaignPreviewData {
   cooldown_days: number;
 }
 
+interface BackendBudgetRebalanceTermsData {
+  paydays_left: number;
+  wage_budget: number;
+  transfer_budget: number;
+  min_wage_budget: number;
+  max_wage_budget: number;
+  step: number;
+}
+
 interface BackendFinanceActionPreviewsData {
   board_support?: BackendBoardSupportPreviewData | null;
   sponsor_pitch?: BackendSponsorPitchPreviewData | null;
   marketing_campaign?: BackendMarketingCampaignPreviewData | null;
+  budget_rebalance?: BackendBudgetRebalanceTermsData | null;
 }
 
 interface BackendFinanceSnapshotResponseData {
@@ -89,10 +101,21 @@ export interface MarketingCampaignPreviewData {
   cooldownDays: number;
 }
 
+/** How far the weekly wage budget may move, priced in transfer budget. */
+export interface BudgetRebalanceTermsData {
+  paydaysLeft: number;
+  wageBudget: number;
+  transferBudget: number;
+  minWageBudget: number;
+  maxWageBudget: number;
+  step: number;
+}
+
 export interface FinanceRecoveryPreviewsData {
   boardSupport: BoardSupportPreviewData | null;
   sponsorPitch: SponsorPitchPreviewData | null;
   marketingCampaign: MarketingCampaignPreviewData | null;
+  budgetRebalance: BudgetRebalanceTermsData | null;
 }
 
 export interface FinanceSnapshotData {
@@ -147,6 +170,16 @@ function mapPreviews(
           cooldownDays: previews.marketing_campaign.cooldown_days,
         }
       : null,
+    budgetRebalance: previews?.budget_rebalance
+      ? {
+          paydaysLeft: previews.budget_rebalance.paydays_left,
+          wageBudget: previews.budget_rebalance.wage_budget,
+          transferBudget: previews.budget_rebalance.transfer_budget,
+          minWageBudget: previews.budget_rebalance.min_wage_budget,
+          maxWageBudget: previews.budget_rebalance.max_wage_budget,
+          step: previews.budget_rebalance.step,
+        }
+      : null,
   };
 }
 
@@ -159,4 +192,9 @@ export async function getFinanceSnapshot(teamId?: string): Promise<FinanceSnapsh
     snapshot: mapSnapshot(response.snapshot),
     previews: mapPreviews(response.previews),
   };
+}
+
+/** Set the managed club's weekly wage budget, paid for from its transfer budget. */
+export async function rebalanceBudgets(wageBudget: number): Promise<GameStateData> {
+  return invoke<GameStateData>("rebalance_budgets", { wageBudget });
 }

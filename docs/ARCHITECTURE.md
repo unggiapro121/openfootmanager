@@ -217,6 +217,7 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `renew_staff_contract` | staff_id, contract_years? | `Game` | Give a staff member a fresh 1–3 year contract at their asking wage |
 | `preview_staff_contract` | staff_id | `StaffContractPreview` | Asking wage, severance and the wage bill before/after, for the hire, renew and release dialogs |
 | `refresh_staff_market` | — | `Game` | Replace the whole staff market, free, three times a calendar month |
+| `rebalance_budgets` | wage_budget | `Game` | Set the weekly wage budget, paid for from the transfer budget at one week's change per payday left in the season |
 
 ### Youth Scouting Commands
 

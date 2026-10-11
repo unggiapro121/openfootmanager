@@ -123,6 +123,25 @@ vi.mock("react-i18next", async () => {
 
 const mockedInvoke = vi.mocked(invoke);
 
+const CRITICAL_SNAPSHOT = {
+  annual_wage_bill: 5200000,
+  weekly_wage_spend: 100000,
+  weekly_wage_budget: 962,
+  weekly_recurring_income: 0,
+  weekly_sponsor_income: 0,
+  weekly_broadcast_income: 0,
+  weekly_commercial_income: 0,
+  projected_weekly_net: -100000,
+  cash_runway_weeks: 3,
+  wage_budget_usage_percent: 10400,
+  currently_in_debt: true,
+  currently_over_budget: true,
+  wage_budget_status: "critical",
+  runway_status: "critical",
+  overall_status: "critical",
+  marketing_campaign_cooldown_days_remaining: 0,
+};
+
 function pendingPromise<T>(): Promise<T> {
   return new Promise(() => {});
 }
@@ -610,24 +629,7 @@ describe("FinancesTab facilities", () => {
     mockedInvoke.mockImplementation((command) => {
       if (command === "get_finance_snapshot") {
         return Promise.resolve({
-          snapshot: {
-            annual_wage_bill: 5200000,
-            weekly_wage_spend: 100000,
-            weekly_wage_budget: 962,
-            weekly_recurring_income: 0,
-            weekly_sponsor_income: 0,
-            weekly_broadcast_income: 0,
-            weekly_commercial_income: 0,
-            projected_weekly_net: -100000,
-            cash_runway_weeks: 3,
-            wage_budget_usage_percent: 10400,
-            currently_in_debt: true,
-            currently_over_budget: true,
-            wage_budget_status: "critical",
-            runway_status: "critical",
-            overall_status: "critical",
-            marketing_campaign_cooldown_days_remaining: 0,
-          },
+          snapshot: CRITICAL_SNAPSHOT,
           previews: {
             board_support: {
               support_amount: 150000,
@@ -670,6 +672,32 @@ describe("FinancesTab facilities", () => {
           "Campaign netted €112,500 after €37,500 in spend (€150,000 gross). Cooldown: 28 days",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("offers the budget balance slider when the backend sends rebalance terms", async () => {
+    const initialState = createGameState({ wage_budget: 50000 }, [], [createPlayer()]);
+    mockedInvoke.mockImplementation((command) =>
+      command === "get_finance_snapshot"
+        ? Promise.resolve({
+            snapshot: CRITICAL_SNAPSHOT,
+            previews: {
+              budget_rebalance: {
+                paydays_left: 10,
+                wage_budget: 50000,
+                transfer_budget: 300000,
+                min_wage_budget: 20000,
+                max_wage_budget: 80000,
+                step: 1000,
+              },
+            },
+          })
+        : Promise.reject(new Error(`Unexpected command: ${command}`)),
+    );
+
+    render(<FinancesTab gameState={initialState} />);
+
+    expect(await screen.findByText("finances.budgetBalance.title")).toBeInTheDocument();
+    expect(screen.getByRole("slider", { name: "Wage Budget" })).toBeInTheDocument();
   });
 
   it("disables the marketing campaign action while the campaign is cooling down", async () => {

@@ -614,6 +614,39 @@ fn apply_match_report_depletes_stamina() {
     }
 }
 
+/// Given a match in which one of each side's players was hurt,
+/// When its report is applied,
+/// Then both are injured and out for at least a few days, and the manager is
+/// told about his own player only.
+#[test]
+fn apply_match_report_injures_the_players_hurt_in_it() {
+    let mut game = make_game_with_match();
+    let mut report = full_squad_report(1, 0);
+    for (id, side) in [("t1_mid2", Side::Home), ("t2_def1", Side::Away)] {
+        report.events.push(
+            engine::MatchEvent::new(30, engine::EventType::Injury, side, engine::Zone::Midfield)
+                .with_player(id),
+        );
+    }
+
+    turn::apply_match_report(&mut game, 0, "team1", "team2", &report);
+
+    for id in ["t1_mid2", "t2_def1"] {
+        let player = game.players.iter().find(|p| p.id == id).unwrap();
+        let injury = player.injury.as_ref().expect("injured");
+        assert!((3..=120).contains(&injury.days_remaining), "{injury:?}");
+        assert!(injury.name.starts_with("common.injuries."));
+    }
+    let told: Vec<&str> = game
+        .messages
+        .iter()
+        .filter(|m| m.id.starts_with("match-injury-"))
+        .map(|m| m.id.as_str())
+        .collect();
+    assert_eq!(told.len(), 1, "{told:?}");
+    assert!(told[0].contains("t1_mid2"));
+}
+
 #[test]
 fn apply_match_report_updates_morale() {
     let mut game = make_game_with_match();

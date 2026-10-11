@@ -568,7 +568,13 @@
       "twistedAnkle": "Verstauchter Knöchel",
       "kneeBruise": "Knieprellung",
       "hamstringTightness": "Oberschenkelzerrung",
-      "calfStrain": "Wadenzerrung"
+      "calfStrain": "Wadenzerrung",
+      "hamstringTear": "Oberschenkelriss",
+      "ankleSprain": "Sprunggelenkverstauchung",
+      "groinStrain": "Leistenzerrung",
+      "kneeLigament": "Kniebandverletzung",
+      "brokenFoot": "Fußbruch",
+      "achillesInjury": "Achillessehnenverletzung"
     },
     "scoutRatings": {
       "excellent": "Ausgezeichnet",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "Der Verein beschäftigt keine Mitarbeiter.",
     "staffName": "Mitarbeiter",
     "staffRole": "Funktion",
-    "academyWage": "{{paid}} (Profikader: {{contract}})"
+    "academyWage": "{{paid}} (Profikader: {{contract}})",
+    "budgetBalance": {
+      "title": "Budgetausgleich",
+      "hint": "Verschiebe nicht ausgegebenes Transfergeld ins Gehaltsbudget oder senke das Gehaltsbudget, um Transfergeld freizumachen. Jede 1 pro Woche kostet oder bringt 1 für jeden verbleibenden Zahltag dieser Saison.",
+      "paydaysLeft": "Noch {{count}} Zahltage in dieser Saison",
+      "apply": "Übernehmen",
+      "reset": "Zurücksetzen"
+    }
   },
   "inbox": {
     "title": "Posteingang",
@@ -2644,7 +2657,9 @@
     "yourResult": "Dein Ergebnis",
     "continue": "Weiter",
     "notableUpset": "Überraschungsergebnis",
-    "pts": "Pkt."
+    "pts": "Pkt.",
+    "injuredPrompt": "{{name}} ist verletzt und kann nicht weiterspielen. Wähle, wer reinkommt, oder schließe, um in Unterzahl weiterzuspielen.",
+    "injuredBadge": "Verletzt"
   },
   "endOfSeason": {
     "seasonComplete": "Saison beendet",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Dein Verein hat diesen Spieler nicht eingeschätzt.",
         "noAssessor": "Niemand im Verein kann Potenzial einschätzen."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Dieses Gehaltsbudget liegt außerhalb des Rahmens: Es darf nicht unter den aktuellen Gehaltskosten liegen und nicht mehr kosten als das Transferbudget.",
+      "budgetRebalanceStep": "Ändere das Gehaltsbudget in Schritten von 1.000 pro Woche."
     },
     "sender": {
       "boardOfDirectors": "Vorstand",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} hat seine Karriere beendet",
         "body": "{{player}} hat seine Karriere beendet, daher habe ich ihn von der Beobachtungsliste genommen."
+      },
+      "matchInjury": {
+        "subject": "{{player}} verletzt",
+        "body": "Chef, {{player}} hat sich im Spiel verletzt ({{injury}}). Er fällt voraussichtlich etwa {{days}} Tage aus."
       }
     },
     "news": {

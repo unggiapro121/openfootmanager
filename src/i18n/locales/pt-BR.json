@@ -568,7 +568,13 @@
       "twistedAnkle": "Tornozelo torcido",
       "kneeBruise": "Contusão no joelho",
       "hamstringTightness": "Tensão no posterior da coxa",
-      "calfStrain": "Distensão na panturrilha"
+      "calfStrain": "Distensão na panturrilha",
+      "hamstringTear": "Ruptura na posterior da coxa",
+      "ankleSprain": "Entorse no tornozelo",
+      "groinStrain": "Estiramento na virilha",
+      "kneeLigament": "Lesão nos ligamentos do joelho",
+      "brokenFoot": "Fratura no pé",
+      "achillesInjury": "Lesão no tendão de Aquiles"
     },
     "scoutRatings": {
       "excellent": "Excelente",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "O clube não tem comissão técnica contratada.",
     "staffName": "Membro da comissão",
     "staffRole": "Função",
-    "academyWage": "{{paid}} (time principal: {{contract}})"
+    "academyWage": "{{paid}} (time principal: {{contract}})",
+    "budgetBalance": {
+      "title": "Equilíbrio de orçamentos",
+      "hint": "Passe a verba de transferências não usada para o teto salarial, ou reduza o teto salarial para liberar verba de transferências. Cada 1 por semana custa ou libera 1 para cada dia de pagamento que resta nesta temporada.",
+      "paydaysLeft": "Faltam {{count}} dias de pagamento nesta temporada",
+      "apply": "Aplicar",
+      "reset": "Redefinir"
+    }
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -2572,7 +2585,9 @@
     "yourResult": "Seu resultado",
     "continue": "Continuar",
     "notableUpset": "Grande surpresa",
-    "pts": "pts"
+    "pts": "pts",
+    "injuredPrompt": "{{name}} se machucou e não pode continuar. Escolha quem entra ou feche para jogar com um a menos.",
+    "injuredBadge": "Machucado"
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Encerrada",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Seu clube não avaliou este jogador.",
         "noAssessor": "Ninguém no clube consegue avaliar o potencial."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Esse teto salarial está fora dos limites: não pode ficar abaixo da folha salarial atual nem custar mais que a verba de transferências.",
+      "budgetRebalanceStep": "Altere o teto salarial em passos de 1.000 por semana."
     },
     "sender": {
       "boardOfDirectors": "Diretoria",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} se aposentou",
         "body": "{{player}} se aposentou do futebol, então tirei ele da lista de acompanhamento."
+      },
+      "matchInjury": {
+        "subject": "{{player}} machucado",
+        "body": "Chefe, {{player}} se machucou na partida ({{injury}}). Deve ficar fora cerca de {{days}} dias."
       }
     },
     "news": {

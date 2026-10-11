@@ -12,7 +12,13 @@ import {
   FORMATIONS,
   isPersistableSpeed,
 } from "./types";
-import { getEventDisplay, getPlayerName, makeTeamFallback, phaseLabel } from "./helpers";
+import {
+  firstNewInjury,
+  getEventDisplay,
+  getPlayerName,
+  makeTeamFallback,
+  phaseLabel,
+} from "./helpers";
 import { Badge, TeamLogo } from "../ui";
 import { useSettingsStore } from "../../store/settingsStore";
 import { EventFeed, MatchStats, Lineups } from "./MatchPanels";
@@ -84,6 +90,9 @@ export default function MatchLive({
   const eventFeedRef = useRef<HTMLDivElement>(null);
   // Track phases we've already signaled to avoid double-firing
   const signaledRef = useRef<Set<string>>(new Set());
+  // Injuries to the manager's players he has already been stopped for.
+  const injuriesRaisedRef = useRef<Set<string>>(new Set());
+  const [injuredOff, setInjuredOff] = useState<string | undefined>(undefined);
 
   const homeFullTeam = gameState.teams.find((t) => t.id === snapshot.home_team.id);
   const awayFullTeam = gameState.teams.find((t) => t.id === snapshot.away_team.id);
@@ -125,6 +134,20 @@ export default function MatchLive({
           const snap = await invoke<MatchSnapshot>("get_match_snapshot");
           onSnapshotUpdate(snap);
 
+          // One of the manager's players is hurt: stop and let him choose who
+          // comes on. Closing the panel plays on a man short.
+          if (userSide && !isSpectator) {
+            const hurt = firstNewInjury(snap, userSide, injuriesRaisedRef.current);
+            if (hurt) {
+              injuriesRaisedRef.current.add(hurt);
+              setIsRunning(false);
+              setSpeed("paused");
+              setInjuredOff(hurt);
+              setShowSubPanel(true);
+              return;
+            }
+          }
+
           // Check for phase transitions that should pause
           const phase = lastResult.phase;
           if (phase === "HalfTime" && !signaledRef.current.has("HalfTime")) {
@@ -165,7 +188,15 @@ export default function MatchLive({
         setIsRunning(false);
       }
     },
-    [onSnapshotUpdate, onImportantEvent, onHalfTime, onFullTime, onPenaltyShootout],
+    [
+      onSnapshotUpdate,
+      onImportantEvent,
+      onHalfTime,
+      onFullTime,
+      onPenaltyShootout,
+      userSide,
+      isSpectator,
+    ],
   );
 
   // Auto-step timer
@@ -212,6 +243,7 @@ export default function MatchLive({
       });
       onSnapshotUpdate(snap);
       setShowSubPanel(false);
+      setInjuredOff(undefined);
     } catch (err) {
       console.error("Substitution failed:", err);
     }
@@ -618,7 +650,11 @@ export default function MatchLive({
           onRoleChange={(playerId, role) => void handleRoleChange(playerId, role)}
           onFormationChange={handleFormationChange}
           onPlayStyleChange={handlePlayStyleChange}
-          onClose={() => setShowSubPanel(false)}
+          onClose={() => {
+            setShowSubPanel(false);
+            setInjuredOff(undefined);
+          }}
+          initialOff={injuredOff}
         />
       )}
     </MatchScreenLayout>

@@ -147,6 +147,21 @@ describe("SubPanel", () => {
     onClose: vi.fn(),
   });
 
+  it("opens on an injured player, marked and already chosen to come off", () => {
+    const props = createProps();
+    props.snapshot.injured = ["starter-2"];
+
+    render(<SubPanel {...props} initialOff="starter-2" />);
+
+    expect(screen.getByText("match.injuredPrompt")).toBeInTheDocument();
+    expect(screen.getByLabelText("match.injuredBadge")).toBeInTheDocument();
+    fireEvent.contextMenu(screen.getByTestId("sub-panel-bench-bench-2"));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Select replacement" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm substitution" }));
+
+    expect(props.onSubstitute).toHaveBeenCalledWith("starter-2", "bench-2");
+  });
+
   it("shows a disabled bench context menu action until a player is selected to come off", () => {
     const props = createProps();
 

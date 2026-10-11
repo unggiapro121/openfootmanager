@@ -101,6 +101,7 @@ impl LiveMatchState {
             home_yellows,
             away_yellows,
             sent_off: self.sent_off.clone(),
+            injured: self.injured.clone(),
             penalty_shootout,
         }
     }

@@ -31,7 +31,7 @@ impl LiveMatchState {
             .map(|p| (p, home_rate))
             .chain(self.away.players.iter().map(|p| (p, away_rate)));
         for (p, fatigue_rate) in players {
-            if self.sent_off.contains(&p.id) {
+            if self.out_of_play(&p.id) {
                 continue;
             }
             let stamina_factor = p.stamina as f64 / 100.0;
@@ -111,6 +111,23 @@ impl LiveMatchState {
     // Player selection helpers
     // -----------------------------------------------------------------------
 
+    /// Whether a player can take no further part: sent off, or hurt and not
+    /// yet replaced.
+    pub(crate) fn out_of_play(&self, player_id: &str) -> bool {
+        self.sent_off.contains(player_id) || self.injured.contains(player_id)
+    }
+
+    /// Everyone who can take no further part, for the shared selection code.
+    pub(super) fn out_of_play_set(
+        &self,
+    ) -> std::borrow::Cow<'_, std::collections::HashSet<String>> {
+        if self.injured.is_empty() {
+            std::borrow::Cow::Borrowed(&self.sent_off)
+        } else {
+            std::borrow::Cow::Owned(self.sent_off.union(&self.injured).cloned().collect())
+        }
+    }
+
     pub(super) fn snap_player<R: Rng>(
         &self,
         side: Side,
@@ -118,7 +135,7 @@ impl LiveMatchState {
         rng: &mut R,
     ) -> PlayerSnap {
         let team = self.team_ref(side);
-        crate::shared::snap_from_squad(&team.players, &self.sent_off, preferred, rng)
+        crate::shared::snap_from_squad(&team.players, &self.out_of_play_set(), preferred, rng)
             .unwrap_or_else(PlayerSnap::nobody)
     }
 
@@ -131,7 +148,7 @@ impl LiveMatchState {
         rng: &mut R,
     ) -> PlayerSnap {
         let team = self.team_ref(side);
-        crate::shared::snap_header_target(&team.players, &self.sent_off, crosser_id, rng)
+        crate::shared::snap_header_target(&team.players, &self.out_of_play_set(), crosser_id, rng)
             .unwrap_or_else(|| self.snap_player(side, Position::Forward, rng))
     }
 
@@ -152,7 +169,7 @@ impl LiveMatchState {
             if let Some(p) = team
                 .players
                 .iter()
-                .find(|p| p.id == *id && !self.sent_off.contains(&p.id))
+                .find(|p| p.id == *id && !self.out_of_play(&p.id))
             {
                 return PlayerSnap::from(p);
             }
@@ -162,7 +179,7 @@ impl LiveMatchState {
         let mut candidates: Vec<&PlayerData> = team
             .players
             .iter()
-            .filter(|p| !self.sent_off.contains(&p.id))
+            .filter(|p| !self.out_of_play(&p.id))
             .collect();
         candidates.sort_by_key(|p| std::cmp::Reverse(p.shooting));
         if let Some(p) = candidates.first() {
@@ -179,7 +196,7 @@ impl LiveMatchState {
         let team = self.team_ref(side);
         // No goalkeeper available — pick first available
         for p in &team.players {
-            if !self.sent_off.contains(&p.id) {
+            if !self.out_of_play(&p.id) {
                 return PlayerSnap::from(p);
             }
         }
@@ -262,7 +279,7 @@ impl LiveMatchState {
         self.team_ref(side)
             .players
             .iter()
-            .find(|p| p.position == Position::Goalkeeper && !self.sent_off.contains(&p.id))
+            .find(|p| p.position == Position::Goalkeeper && !self.out_of_play(&p.id))
     }
 
     pub(super) fn goal_context(&self, side: Side) -> GoalContext {

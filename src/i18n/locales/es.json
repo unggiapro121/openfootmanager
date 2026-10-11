@@ -568,7 +568,13 @@
       "twistedAnkle": "Tobillo torcido",
       "kneeBruise": "Contusión en la rodilla",
       "hamstringTightness": "Tensión en el isquiotibial",
-      "calfStrain": "Distensión en la pantorrilla"
+      "calfStrain": "Distensión en la pantorrilla",
+      "hamstringTear": "Rotura de isquiotibiales",
+      "ankleSprain": "Esguince de tobillo",
+      "groinStrain": "Distensión inguinal",
+      "kneeLigament": "Lesión de ligamento de rodilla",
+      "brokenFoot": "Fractura de pie",
+      "achillesInjury": "Lesión en el tendón de Aquiles"
     },
     "scoutRatings": {
       "excellent": "Excelente",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "El club no tiene personal contratado.",
     "staffName": "Miembro del personal",
     "staffRole": "Puesto",
-    "academyWage": "{{paid}} (primer equipo: {{contract}})"
+    "academyWage": "{{paid}} (primer equipo: {{contract}})",
+    "budgetBalance": {
+      "title": "Equilibrio de presupuestos",
+      "hint": "Pasa dinero de fichajes sin gastar al presupuesto salarial, o baja el presupuesto salarial para liberar dinero de fichajes. Cada 1 por semana cuesta o libera 1 por cada día de pago que queda esta temporada.",
+      "paydaysLeft": "Quedan {{count}} días de pago esta temporada",
+      "apply": "Aplicar",
+      "reset": "Restablecer"
+    }
   },
   "inbox": {
     "title": "Bandeja de Entrada",
@@ -2644,7 +2657,9 @@
     "yourResult": "Tu resultado",
     "continue": "Continuar",
     "notableUpset": "Sorpresa notable",
-    "pts": "pts."
+    "pts": "pts.",
+    "injuredPrompt": "{{name}} está lesionado y no puede seguir. Elige quién entra o cierra para jugar con uno menos.",
+    "injuredBadge": "Lesionado"
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Completa",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Tu club no ha evaluado a este jugador.",
         "noAssessor": "Nadie en el club puede evaluar el potencial."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Ese presupuesto salarial está fuera de rango: no puede quedar por debajo de la masa salarial actual ni costar más que el presupuesto de fichajes.",
+      "budgetRebalanceStep": "Cambia el presupuesto salarial en pasos de 1.000 por semana."
     },
     "sender": {
       "boardOfDirectors": "Junta Directiva",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} se ha retirado",
         "body": "{{player}} se ha retirado del fútbol, así que lo he quitado de la lista de seguimiento."
+      },
+      "matchInjury": {
+        "subject": "{{player}}, lesionado",
+        "body": "Jefe, {{player}} se lesionó en el partido ({{injury}}). Estará de baja unos {{days}} días."
       }
     },
     "news": {

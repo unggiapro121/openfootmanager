@@ -175,6 +175,10 @@ pub struct MatchSnapshot {
     pub home_yellows: HashMap<String, u8>,
     pub away_yellows: HashMap<String, u8>,
     pub sent_off: HashSet<String>,
+    /// Players hurt this match and still on the pitch: they take no further
+    /// part, but unlike the sent-off they can be replaced.
+    #[serde(default)]
+    pub injured: HashSet<String>,
     pub penalty_shootout: Option<PenaltyShootoutSnapshot>,
 }
 
@@ -238,6 +242,8 @@ pub struct LiveMatchState {
     // Discipline
     yellows: HashMap<String, u8>,
     sent_off: HashSet<String>,
+    /// Hurt and still on the pitch; see [`LiveMatchState::out_of_play`].
+    injured: HashSet<String>,
 
     // Substitutions
     home_subs_made: u8,
@@ -313,6 +319,7 @@ impl LiveMatchState {
             away_possession_ticks: 0,
             yellows: HashMap::new(),
             sent_off: HashSet::new(),
+            injured: HashSet::new(),
             home_subs_made: 0,
             away_subs_made: 0,
             max_subs: 5,
@@ -493,6 +500,12 @@ impl LiveMatchState {
             Side::Home => &self.home_bench,
             Side::Away => &self.away_bench,
         }
+    }
+
+    /// Injure a player on the pitch, as a challenge would.
+    #[doc(hidden)]
+    pub fn test_injure(&mut self, player_id: &str) {
+        self.injured.insert(player_id.to_string());
     }
 
     /// Simulate a red card for a player (adds to sent_off set).

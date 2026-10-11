@@ -1,3 +1,4 @@
+pub mod budget_rebalance;
 pub mod journal;
 
 pub use domain::finance::{CashJournal, CashKind};
@@ -112,6 +113,7 @@ pub struct FinanceActionPreviews {
     pub board_support: Option<BoardSupportResult>,
     pub sponsor_pitch: Option<SponsorPitchPreview>,
     pub marketing_campaign: Option<MarketingCampaignPreview>,
+    pub budget_rebalance: Option<budget_rebalance::BudgetRebalanceTerms>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -785,6 +787,7 @@ pub fn finance_action_previews(game: &Game, team_id: &str) -> Option<FinanceActi
         board_support: preview_board_support(game, team_id).ok(),
         sponsor_pitch: preview_sponsor_pitch(game, team_id).ok(),
         marketing_campaign: preview_marketing_campaign(game, team_id).ok(),
+        budget_rebalance: budget_rebalance::budget_rebalance_terms(game, team_id).ok(),
     })
 }
 

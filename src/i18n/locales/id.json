@@ -572,7 +572,13 @@
       "twistedAnkle": "Pergelangan kaki terkilir",
       "kneeBruise": "Memar lutut",
       "hamstringTightness": "Otot hamstring menegang",
-      "calfStrain": "Cedera betis"
+      "calfStrain": "Cedera betis",
+      "hamstringTear": "Robek hamstring",
+      "ankleSprain": "Keseleo pergelangan kaki",
+      "groinStrain": "Cedera selangkangan",
+      "kneeLigament": "Cedera ligamen lutut",
+      "brokenFoot": "Patah tulang kaki",
+      "achillesInjury": "Cedera tendon Achilles"
     },
     "scoutRatings": {
       "excellent": "Sangat Baik",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "Klub tidak memiliki staf.",
     "staffName": "Anggota staf",
     "staffRole": "Peran",
-    "academyWage": "{{paid}} (tim utama: {{contract}})"
+    "academyWage": "{{paid}} (tim utama: {{contract}})",
+    "budgetBalance": {
+      "title": "Keseimbangan Anggaran",
+      "hint": "Pindahkan dana transfer yang belum terpakai ke anggaran gaji, atau turunkan anggaran gaji untuk membebaskan dana transfer. Setiap 1 per minggu menghabiskan atau membebaskan 1 untuk setiap hari gajian yang tersisa musim ini.",
+      "paydaysLeft": "Tersisa {{count}} hari gajian musim ini",
+      "apply": "Terapkan",
+      "reset": "Atur ulang"
+    }
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -2644,7 +2657,9 @@
     "yourResult": "Hasil Kamu",
     "continue": "Lanjut",
     "notableUpset": "Kejutan Menonjol",
-    "pts": "poin"
+    "pts": "poin",
+    "injuredPrompt": "{{name}} cedera dan tidak bisa melanjutkan. Pilih pemain pengganti, atau tutup untuk bermain dengan kekurangan pemain.",
+    "injuredBadge": "Cedera"
   },
   "endOfSeason": {
     "seasonComplete": "Musim Selesai",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Klubmu belum menilai pemain ini.",
         "noAssessor": "Tidak ada staf klub yang bisa menilai potensi."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Anggaran gaji itu di luar batas: tidak boleh di bawah beban gaji saat ini dan tidak boleh melebihi yang bisa ditanggung anggaran transfer.",
+      "budgetRebalanceStep": "Ubah anggaran gaji dengan kelipatan 1.000 per minggu."
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} telah pensiun",
         "body": "{{player}} telah pensiun dari sepak bola, jadi saya mengeluarkannya dari daftar pantauan."
+      },
+      "matchInjury": {
+        "subject": "{{player}} cedera",
+        "body": "Bos, {{player}} cedera dalam pertandingan ({{injury}}). Ia diperkirakan absen sekitar {{days}} hari."
       }
     },
     "news": {

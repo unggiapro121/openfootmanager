@@ -33,6 +33,7 @@ import {
   isChooseOptionAction,
   isPendingSponsorOffer,
 } from "./FinancesTab.helpers";
+import FinancesBudgetBalanceCard from "./FinancesBudgetBalanceCard";
 import FinancesFacilitiesCard from "./FinancesFacilitiesCard";
 import FinancesPayrollTable from "./FinancesPayrollTable";
 
@@ -559,6 +560,13 @@ function FinancesTabContent({
           />
         </CardBody>
       </Card>
+      {recoveryPreviews?.budgetRebalance ? (
+        <FinancesBudgetBalanceCard
+          key={financeSnapshotKey}
+          terms={recoveryPreviews.budgetRebalance}
+          onGameUpdate={onGameUpdate}
+        />
+      ) : null}
 
       <Card className="lg:col-span-3">
         <CardHeader>{t("finances.cashFlow")}</CardHeader>

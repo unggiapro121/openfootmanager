@@ -115,7 +115,13 @@ Fouls can occur after tackles in midfield and the attacking third:
 2. **If foul occurs in the box** → 8% chance of a **penalty** being awarded.
 3. **Card probability** — 30% chance of a yellow, modified by aggression. 4% chance a card is upgraded to red.
 4. **Second yellow** → automatic red card and sending off.
-5. **Injury** — 3% chance per foul that the fouled player is injured.
+5. **Injury** — 3% chance per foul that the fouled player is injured, scaled by his match fitness
+   (`injury_fitness_multiplier`: ×3 under 30, ×2 under 50, ×1.5 under 70, ×0.7 at 90 and over), at
+   most once a match. In the live match he takes no further part from that minute — every place that
+   skips a sent-off player skips him too (`out_of_play`) — but unlike a sent-off player he can be
+   substituted. The AI replaces him at once with the bench player best suited to his position; the
+   manager's own match pauses (`step_many` stops) so he can choose, or play on a man short. After the
+   match the injury is applied for real — see [GAME_SYSTEMS.md](GAME_SYSTEMS.md#match-injuries).
 
 Sent-off players are excluded from all future player selection for their team.
 
@@ -272,7 +278,7 @@ All probabilities and multipliers are tuneable via `MatchConfig`:
 | `red_card_probability` | 0.04 | Chance a card is direct red |
 | `penalty_probability` | 0.08 | Chance a box foul is a penalty |
 | `stoppage_time_max` | 4 | Max stoppage time minutes per half |
-| `injury_probability` | 0.03 | Chance of injury per foul |
+| `injury_probability` | 0.03 | Chance of injury per foul, before the fitness factor |
 
 ---
 

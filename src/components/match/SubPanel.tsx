@@ -13,6 +13,7 @@ import {
   Shield,
   Swords,
   Sparkles,
+  Cross,
 } from "lucide-react";
 import ContextMenu from "../ContextMenu";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
@@ -59,6 +60,7 @@ export function SubPanel({
   onFormationChange,
   onPlayStyleChange,
   onClose,
+  initialOff,
 }: {
   snapshot: MatchSnapshot;
   side: "Home" | "Away";
@@ -70,12 +72,17 @@ export function SubPanel({
   onFormationChange: (formation: string) => void;
   onPlayStyleChange: (playStyle: string) => void;
   onClose: () => void;
+  /** A player to have chosen to come off already: one just hurt. */
+  initialOff?: string;
 }) {
   const { t } = useTranslation();
-  const [selectedOff, setSelectedOff] = useState<string | null>(null);
+  const [selectedOff, setSelectedOff] = useState<string | null>(initialOff ?? null);
   const [selectedBench, setSelectedBench] = useState<string | null>(null);
 
   const team = side === "Home" ? snapshot.home_team : snapshot.away_team;
+  // Hurt on the pitch and not yet replaced: they take no further part.
+  const injuredIds = new Set(snapshot.injured ?? []);
+  const injuredOnPitch = team.players.filter((player) => injuredIds.has(player.id));
   const bench = side === "Home" ? snapshot.home_bench : snapshot.away_bench;
   const subsMade = side === "Home" ? snapshot.home_subs_made : snapshot.away_subs_made;
   const setPieces = side === "Home" ? snapshot.home_set_pieces : snapshot.away_set_pieces;
@@ -298,6 +305,13 @@ export function SubPanel({
               {/* Left: formation pitch + on-field player list */}
               <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto border-r border-gray-200 dark:border-navy-700">
                 <div className="shrink-0 border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-navy-700 dark:bg-navy-800/50">
+                  {injuredOnPitch.length > 0 ? (
+                    <p role="alert" className="mb-1 text-xs text-red-600 dark:text-red-400">
+                      {t("match.injuredPrompt", {
+                        name: injuredOnPitch.map((player) => player.name).join(", "),
+                      })}
+                    </p>
+                  ) : null}
                   <p className="font-heading text-xs uppercase tracking-widest text-red-400">
                     {selectedOff
                       ? t("match.takingOff", { name: selectedPlayer?.name })
@@ -395,6 +409,13 @@ export function SubPanel({
                                   <UserMinus className="h-3.5 w-3.5 shrink-0 text-red-400" />
                                 )}
                                 {isSubOn && <span className="text-[10px] text-green-400">▲</span>}
+                                {injuredIds.has(p.id) && (
+                                  <Cross
+                                    role="img"
+                                    aria-label={t("match.injuredBadge")}
+                                    className="h-3.5 w-3.5 shrink-0 text-red-500"
+                                  />
+                                )}
                                 <span
                                   className={`truncate font-medium ${isSelected ? "text-red-400" : "text-gray-700 dark:text-gray-300"}`}
                                 >

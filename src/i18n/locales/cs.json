@@ -572,7 +572,13 @@
       "twistedAnkle": "Podvrtnutý kotník",
       "kneeBruise": "Pohmožděné koleno",
       "hamstringTightness": "Ztuhlý zadní stehenní sval",
-      "calfStrain": "Natažené lýtko"
+      "calfStrain": "Natažené lýtko",
+      "hamstringTear": "Natržení hamstringu",
+      "ankleSprain": "Podvrtnutý kotník",
+      "groinStrain": "Natažené tříslo",
+      "kneeLigament": "Poranění kolenních vazů",
+      "brokenFoot": "Zlomenina nohy",
+      "achillesInjury": "Zranění Achillovy šlachy"
     },
     "scoutRatings": {
       "excellent": "Vynikající",
@@ -1190,7 +1196,14 @@
     "payrollNoStaff": "Klub nemá žádné členy realizačního týmu.",
     "staffName": "Člen týmu",
     "staffRole": "Funkce",
-    "academyWage": "{{paid}} (A-tým: {{contract}})"
+    "academyWage": "{{paid}} (A-tým: {{contract}})",
+    "budgetBalance": {
+      "title": "Vyrovnání rozpočtů",
+      "hint": "Přesuňte nevyužité peníze na přestupy do platového rozpočtu, nebo platový rozpočet snižte a uvolněte peníze na přestupy. Každá 1 týdně stojí nebo uvolní 1 za každý zbývající výplatní den této sezóny.",
+      "paydaysLeft": "Zbývající výplatní dny této sezóny: {{count}}",
+      "apply": "Použít",
+      "reset": "Obnovit"
+    }
   },
   "inbox": {
     "title": "Doručená pošta",
@@ -2644,7 +2657,9 @@
     "yourResult": "Váš výsledek",
     "continue": "Pokračovat",
     "notableUpset": "Velké překvapení",
-    "pts": "b."
+    "pts": "b.",
+    "injuredPrompt": "{{name}} je zraněný a nemůže pokračovat. Vyberte, kdo nastoupí, nebo zavřete a hrajte v oslabení.",
+    "injuredBadge": "Zraněný"
   },
   "endOfSeason": {
     "seasonComplete": "Sezóna dokončena",
@@ -2959,7 +2974,9 @@
       "projection": {
         "notAssessed": "Váš klub tohoto hráče nehodnotil.",
         "noAssessor": "Nikdo v klubu neumí posoudit potenciál."
-      }
+      },
+      "budgetRebalanceOutOfRange": "Tento platový rozpočet je mimo rozsah: nesmí klesnout pod současné mzdové náklady ani stát víc, než pokryje přestupový rozpočet.",
+      "budgetRebalanceStep": "Měňte platový rozpočet po krocích 1 000 týdně."
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",
@@ -3578,6 +3595,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} ukončil kariéru",
         "body": "{{player}} ukončil kariéru, takže jsem ho vyřadil ze sledovaných."
+      },
+      "matchInjury": {
+        "subject": "{{player}} zraněn",
+        "body": "Šéfe, {{player}} se v zápase zranil ({{injury}}). Vynechá zhruba {{days}} dní."
       }
     },
     "news": {
