@@ -953,3 +953,14 @@ export interface GameStateData {
   /** How fast players develop in this career, as a percentage of the realistic pace (100 = 1×). */
   development_speed?: number;
 }
+
+/** How familiar a pitch position is to a player. */
+export type PositionFit = "Natural" | "Adapted" | "Unfamiliar";
+
+/** A player's rating at one pitch position, worked out by the backend. */
+export interface PositionRating {
+  /** A granular pitch position, e.g. "CenterBack". */
+  position: string;
+  ovr: number;
+  fit: PositionFit;
+}

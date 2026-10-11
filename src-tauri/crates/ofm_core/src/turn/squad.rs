@@ -807,7 +807,7 @@ const PITCH_POSITIONS: [(DomainPosition, PitchPosition); 14] = [
 /// position, less what an unfamiliar position and the wrong foot cost him), so
 /// the engine plays him where he stands as well as the lineup picker thinks he
 /// would.
-fn position_ratings(p: &domain::player::Player) -> Vec<PositionRating> {
+pub(crate) fn position_ratings(p: &domain::player::Player) -> Vec<PositionRating> {
     PITCH_POSITIONS
         .iter()
         .map(|(domain_position, pitch_position)| PositionRating {

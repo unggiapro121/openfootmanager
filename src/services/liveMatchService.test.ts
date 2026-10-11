@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { describe, expect, it, vi } from "vitest";
 
-import { swapMatchPositions } from "./liveMatchService";
+import { changeMatchPlayerRole, swapMatchPositions } from "./liveMatchService";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
 
@@ -19,3 +19,18 @@ describe("swapMatchPositions", () => {
     expect(snapshot).toEqual({ phase: "SecondHalf" });
   });
 });
+
+describe("changeMatchPlayerRole", () => {
+  // Given a player of the user's side, then the backend is asked to change his
+  // role for this match.
+  it("sends the in-match role change", async () => {
+    vi.mocked(invoke).mockResolvedValue({ phase: "FirstHalf" });
+
+    await changeMatchPlayerRole("Home", "p9", "Poacher");
+
+    expect(invoke).toHaveBeenCalledWith("apply_match_command", {
+      command: { ChangePlayerRole: { side: "Home", player_id: "p9", role: "Poacher" } },
+    });
+  });
+});
+

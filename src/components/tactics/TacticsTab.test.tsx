@@ -928,4 +928,41 @@ describe("TacticsTab", () => {
       });
     });
   });
+
+  /**
+   * Given the backend rates a starter 40 and unfamiliar in every position, when
+   * the tactics board shows him, then his token carries that rating and a red
+   * ring — the rating he would actually play at there, not his natural one.
+   */
+  it("shows a starter at the rating the backend gives his slot", async () => {
+    const gameState = makeGameState();
+    const roster = gameState.players.filter((p) => p.team_id === "team1");
+    const everywhere = [
+      "Goalkeeper",
+      "LeftBack",
+      "CenterBack",
+      "RightBack",
+      "LeftWingBack",
+      "RightWingBack",
+      "DefensiveMidfielder",
+      "CentralMidfielder",
+      "AttackingMidfielder",
+      "LeftMidfielder",
+      "RightMidfielder",
+      "LeftWinger",
+      "RightWinger",
+      "Striker",
+    ].map((position) => ({ position, ovr: 40, fit: "Unfamiliar" }));
+    mockedInvoke.mockImplementation(async (command: string) => {
+      if (command === "get_squad") return roster;
+      if (command === "get_squad_position_ratings") return { f1: everywhere };
+      return gameState;
+    });
+
+    render(<TacticsTab gameState={gameState} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />);
+
+    const token = await screen.findByTestId("pitch-player-f1");
+    await waitFor(() => expect(token).toHaveTextContent("40"));
+    expect(within(token).getByTestId("pitch-token-avatar")).toHaveClass("ring-red-400");
+  });
 });

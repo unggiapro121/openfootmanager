@@ -14,11 +14,12 @@ import PreMatchLineup, {
 import { condColor } from "../../lib/playerConditionDisplay";
 import { getSetPieceStats } from "./SetPieceSelector";
 import { FormationPitch } from "./FormationPitch";
+import { MatchRolePicker } from "./MatchRolePicker";
+import { createMatchRoleChange } from "./matchRoleChange";
 import { makeTeamFallback } from "./helpers";
 import { PhaseBlueprintPanel } from "../tactics/PhaseBlueprintPanel";
-import { setPlayerRole, setTacticsPhase } from "../../services/squadService";
-import { getRoleOptions } from "../../lib/playerRoles";
-import type { PlayerRole, TacticsPhaseSettings } from "../../store/types";
+import { setTacticsPhase } from "../../services/squadService";
+import type { TacticsPhaseSettings } from "../../store/types";
 import { Select, TeamLogo, ThemeToggle } from "../ui";
 import { ChevronRight, Crown, Footprints, CornerDownRight, CircleDot, Wand2 } from "lucide-react";
 
@@ -55,24 +56,9 @@ export default function PreMatchSetup({
     });
   };
 
-  // Player roles, editable from the pitch like on the tactics board. The match
-  // was built before this screen opened, so a role has to reach it as a match
-  // command — the snapshot is what the dropdown shows. It is also saved on the
-  // player, fire-and-forget, so it carries over to later matches.
-  const handlePlayerRoleChange = async (playerId: string, role: PlayerRole) => {
-    try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: { ChangePlayerRole: { side: userSide, player_id: playerId, role } },
-      });
-      onUpdateSnapshot(snap);
-    } catch (err) {
-      console.error("Player role change failed:", err);
-      return;
-    }
-    void setPlayerRole(playerId, role).catch((err: unknown) => {
-      console.error("Failed to save player role:", err);
-    });
-  };
+  // Player roles, editable from the pitch like on the tactics board: the match
+  // takes the role now, and it is kept on the player for later matches.
+  const handlePlayerRoleChange = createMatchRoleChange(userSide, onUpdateSnapshot);
 
   const homeTeam = snapshot.home_team;
   const awayTeam = snapshot.away_team;
@@ -92,34 +78,13 @@ export default function PreMatchSetup({
   );
 
   // The role picker under each of the user's tokens, like on the tactics board.
-  const renderRolePicker = (player: EnginePlayerData, slotPosition?: string) => {
-    const position = slotPosition ?? player.position;
-    return (
-      <div
-        draggable={false}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-        className="w-full"
-      >
-        <Select
-          selectSize="sm"
-          variant="ghost"
-          fullWidth
-          value={player.role ?? "Standard"}
-          onChange={(e) => {
-            void handlePlayerRoleChange(player.id, e.target.value as PlayerRole);
-          }}
-        >
-          {getRoleOptions(position, player.role ?? "Standard").map((role) => (
-            <option key={role} value={role}>
-              {t(`tactics.playerRoles.${role}`, role)}
-            </option>
-          ))}
-        </Select>
-      </div>
-    );
-  };
+  const renderRolePicker = (player: EnginePlayerData, slotPosition?: string) => (
+    <MatchRolePicker
+      position={slotPosition ?? player.position}
+      role={player.role}
+      onChange={(role) => void handlePlayerRoleChange(player.id, role)}
+    />
+  );
 
   const fixtureLabel = currentFixture
     ? getFixtureDisplayLabel(

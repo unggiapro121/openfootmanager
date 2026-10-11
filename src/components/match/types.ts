@@ -1,3 +1,4 @@
+import type { PositionRating } from "../../store/types";
 // Shared types for match simulation components — mirrors Rust engine types
 
 import type { TFunction } from "i18next";
@@ -59,15 +60,7 @@ export interface EnginePlayerData {
   position_ratings?: PositionRating[];
 }
 
-/** How familiar a pitch position is to a player. */
-export type PositionFit = "Natural" | "Adapted" | "Unfamiliar";
-
-export interface PositionRating {
-  /** A granular pitch position, e.g. "CenterBack". */
-  position: string;
-  ovr: number;
-  fit: PositionFit;
-}
+export type { PositionFit, PositionRating } from "../../store/types";
 
 export interface EngineTeamData {
   id: string;

@@ -1,10 +1,26 @@
 import { invoke } from "@tauri-apps/api/core";
 
 import type { GameStateData, PlayerData } from "../store/gameStore";
-import type { PlayerRole, PlayerSquadRole, TacticsPhaseSettings } from "../store/types";
+import type {
+  PlayerRole,
+  PlayerSquadRole,
+  PositionRating,
+  TacticsPhaseSettings,
+} from "../store/types";
 
 export async function getSquad(teamId: string): Promise<PlayerData[]> {
   return invoke<PlayerData[]>("get_squad", { teamId });
+}
+
+/**
+ * Each player of `teamId` rated at every pitch position, by player id — the
+ * ratings a match is played at, so a player out of position shows as he would
+ * play there.
+ */
+export async function getSquadPositionRatings(
+  teamId: string,
+): Promise<Record<string, PositionRating[]>> {
+  return invoke<Record<string, PositionRating[]>>("get_squad_position_ratings", { teamId });
 }
 
 export async function setPlayerSquadRole(

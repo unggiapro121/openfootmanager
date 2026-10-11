@@ -19,6 +19,7 @@ import { EventFeed, MatchStats, Lineups } from "./MatchPanels";
 import MatchScreenLayout from "./MatchScreenLayout";
 import { SubPanel } from "./SubPanel";
 import { swapMatchPositions } from "../../services/liveMatchService";
+import { createMatchRoleChange } from "./matchRoleChange";
 import {
   Play,
   Pause,
@@ -224,6 +225,8 @@ export default function MatchLive({
       console.error("Position swap failed:", err);
     }
   };
+
+  const handleRoleChange = createMatchRoleChange(isSpectator ? null : userSide, onSnapshotUpdate);
 
   const handleFormationChange = async (formation: string) => {
     if (!userSide || isSpectator) return;
@@ -612,6 +615,7 @@ export default function MatchLive({
           side={userSide}
           onSubstitute={handleSubstitution}
           onSwapPositions={handleSwapPositions}
+          onRoleChange={(playerId, role) => void handleRoleChange(playerId, role)}
           onFormationChange={handleFormationChange}
           onPlayStyleChange={handlePlayStyleChange}
           onClose={() => setShowSubPanel(false)}

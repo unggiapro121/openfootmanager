@@ -1,14 +1,19 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { ThemeProvider } from "../../context/ThemeContext";
 import type { GameStateData } from "../../store/gameStore";
 import HalfTimeBreak from "./HalfTimeBreak";
 import type { EnginePlayerData, MatchSnapshot } from "./types";
-import { swapMatchPositions } from "../../services/liveMatchService";
+import { changeMatchPlayerRole, swapMatchPositions } from "../../services/liveMatchService";
+import { setPlayerRole } from "../../services/squadService";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
-vi.mock("../../services/liveMatchService", () => ({ swapMatchPositions: vi.fn() }));
+vi.mock("../../services/liveMatchService", () => ({
+  swapMatchPositions: vi.fn(),
+  changeMatchPlayerRole: vi.fn(),
+}));
+vi.mock("../../services/squadService", () => ({ setPlayerRole: vi.fn() }));
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -123,5 +128,35 @@ describe("HalfTimeBreak", () => {
 
     expect(swapMatchPositions).toHaveBeenCalledWith("Home", "home-p9", "home-p2");
     await waitFor(() => expect(onUpdateSnapshot).toHaveBeenCalledWith(updated));
+  });
+
+  // Given the half-time lineup pitch, when a player's role is picked under his
+  // token, then the role changes for this match and is kept on the player.
+  it("changes a player's role on the half-time pitch", async () => {
+    const updated = snapshot();
+    vi.mocked(changeMatchPlayerRole).mockResolvedValue(updated);
+    vi.mocked(setPlayerRole).mockResolvedValue({} as never);
+    const onUpdateSnapshot = vi.fn();
+    render(
+      <ThemeProvider>
+        <HalfTimeBreak
+          snapshot={snapshot()}
+          gameState={{ teams: [] } as unknown as GameStateData}
+          userSide="Home"
+          isSpectator={false}
+          importantEvents={[]}
+          onResume={vi.fn()}
+          onUpdateSnapshot={onUpdateSnapshot}
+        />
+      </ThemeProvider>,
+    );
+
+    const token = screen.getByTestId("pitch-token-home-p9");
+    fireEvent.click(within(token).getByRole("combobox", { name: "tactics.playerRoleLabel" }));
+    fireEvent.click(screen.getByRole("option", { name: "tactics.playerRoles.Poacher" }));
+
+    expect(changeMatchPlayerRole).toHaveBeenCalledWith("Home", "home-p9", "Poacher");
+    await waitFor(() => expect(onUpdateSnapshot).toHaveBeenCalledWith(updated));
+    expect(setPlayerRole).toHaveBeenCalledWith("home-p9", "Poacher");
   });
 });

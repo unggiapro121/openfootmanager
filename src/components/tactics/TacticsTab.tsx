@@ -29,6 +29,7 @@ export default function TacticsTab({
 
   const {
     team,
+    positionRatings,
     formation,
     activePlayStyle,
     initialPreset,
@@ -153,6 +154,7 @@ export default function TacticsTab({
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[260px_1fr_270px] xl:items-start">
         {/* Left: player list */}
         <TacticsPlayerList
+          positionRatings={positionRatings}
           bench={filteredBench}
           comparePlayerId={comparePlayerId}
           dragState={dragState}
@@ -184,6 +186,7 @@ export default function TacticsTab({
 
         {/* Center: pitch */}
         <TacticsPitch
+          positionRatings={positionRatings}
           dragState={dragState}
           formation={formation}
           comparePlayerId={comparePlayerId}

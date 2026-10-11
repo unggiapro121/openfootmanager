@@ -9,7 +9,7 @@ use ofm_core::slices::news::{query_news_feed, NewsFeed, NewsFeedQuery};
 use ofm_core::slices::players::{query_page, PlayersPage, PlayersPageQuery};
 use ofm_core::slices::schedule::{query_schedule, ScheduleQuery, ScheduleSlice};
 use ofm_core::slices::session::{project_session, SessionState, SessionStateQuery};
-use ofm_core::slices::squad::query_squad;
+use ofm_core::slices::squad::{query_squad, query_squad_position_ratings};
 use ofm_core::slices::staff::{query_staff, StaffSlice};
 use ofm_core::slices::teams::{query_directory, TeamsDirectory, TeamsDirectoryQuery};
 use ofm_core::state::StateManager;
@@ -94,6 +94,17 @@ pub async fn get_squad(
 ) -> Result<Vec<domain::player::Player>, String> {
     state
         .get_game(|game| query_squad(game, &team_id))
+        .ok_or_else(|| NO_ACTIVE_GAME.to_string())
+}
+
+/// Each player of `team_id` rated at every pitch position, by player id.
+#[tauri::command]
+pub async fn get_squad_position_ratings(
+    state: State<'_, Arc<StateManager>>,
+    team_id: String,
+) -> Result<std::collections::HashMap<String, Vec<engine::PositionRating>>, String> {
+    state
+        .get_game(|game| query_squad_position_ratings(game, &team_id))
         .ok_or_else(|| NO_ACTIVE_GAME.to_string())
 }
 

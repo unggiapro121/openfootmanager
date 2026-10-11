@@ -141,6 +141,7 @@ describe("SubPanel", () => {
     side: "Home" as const,
     onSubstitute: vi.fn(),
     onSwapPositions: vi.fn(),
+    onRoleChange: vi.fn(),
     onFormationChange: vi.fn(),
     onPlayStyleChange: vi.fn(),
     onClose: vi.fn(),
@@ -268,6 +269,7 @@ describe("SubPanel position swaps", () => {
     side: "Home" as const,
     onSubstitute: vi.fn(),
     onSwapPositions: vi.fn(),
+    onRoleChange: vi.fn(),
     onFormationChange: vi.fn(),
     onPlayStyleChange: vi.fn(),
     onClose: vi.fn(),
@@ -352,5 +354,27 @@ describe("SubPanel position swaps", () => {
     const row = screen.getByTestId("sub-panel-bench-bench-cb");
     expect(within(row).getByText(/common\.posAbbr\.CenterBack/)).toBeInTheDocument();
     expect(within(row).getByText("48")).toHaveClass("text-red-600");
+  });
+
+  // Given a player on the pitch, when his role is changed in the on-field list,
+  // then the panel asks for the change with the role the slot admits.
+  it("changes a player's role during the match", () => {
+    const p = props(elevenASide());
+    render(<SubPanel {...p} />);
+
+    const row = screen.getByTestId("sub-panel-off-p9");
+    fireEvent.click(within(row).getByRole("combobox", { name: "tactics.playerRoleLabel" }));
+    fireEvent.click(screen.getByRole("option", { name: "Poacher" }));
+
+    expect(p.onRoleChange).toHaveBeenCalledWith("p9", "Poacher");
+  });
+
+  // Given the substitution panel, then its pitch uses the compact token so the
+  // whole shape fits the dialog.
+  it("draws the pitch with compact tokens", () => {
+    render(<SubPanel {...props(elevenASide())} />);
+
+    const token = screen.getByTestId("pitch-token-p9");
+    expect(within(token).getByTestId("pitch-token-avatar")).toHaveClass("h-8");
   });
 });

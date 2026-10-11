@@ -5,16 +5,9 @@ import { useGameStore } from "../../store/gameStore";
 import type { TeamMatchRolesData } from "../../store/types";
 import { buildPitchRows, translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { getSlotXCoordinates } from "../tactics/TacticsTab.helpers";
-import { PitchSurface, PitchToken, pitchRoleMarkers, type PitchFitTone } from "../ui";
+import { PitchSurface, PitchToken, fitToneOf, pitchRoleMarkers } from "../ui";
 import { ratingAt } from "./slotRatings";
-import type { EnginePlayerData, PositionFit } from "./types";
-
-/** The backend's familiarity, as the token's fit ring draws it. */
-const FIT_TONE: Record<PositionFit, PitchFitTone> = {
-  Natural: "exact",
-  Adapted: "adapted",
-  Unfamiliar: "out",
-};
+import type { EnginePlayerData } from "./types";
 
 interface FormationSlot {
   player: EnginePlayerData;
@@ -141,6 +134,8 @@ interface FormationPitchProps {
   roles?: Partial<TeamMatchRolesData>;
   /** A control under a token's name, e.g. the pre-match role picker. */
   renderTokenExtra?: (player: EnginePlayerData, slotPosition?: string) => ReactNode;
+  /** Small tokens, for a pitch that must fit a dialog. */
+  compact?: boolean;
 }
 
 /**
@@ -160,6 +155,7 @@ export function FormationPitch({
   className = "",
   roles,
   renderTokenExtra,
+  compact = false,
 }: FormationPitchProps) {
   const { t } = useTranslation();
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -190,14 +186,15 @@ export function FormationPitch({
               position={position}
               ovr={slotRating?.ovr ?? p.ovr}
               condition={p.condition}
-              fitTone={slotRating ? FIT_TONE[slotRating.fit] : "empty"}
+              fitTone={slotRating ? fitToneOf(slotRating.fit) : "empty"}
               avatar={full ?? { full_name: p.name, match_name: p.name }}
               markers={pitchRoleMarkers(roles, p.id)}
+              size={compact ? "sm" : "md"}
             >
               {!isSentOff && renderTokenExtra?.(p, slotPosition)}
             </PitchToken>
           );
-          const wrapperClass = `absolute z-20 flex w-[6rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 rounded-2xl px-1 py-1 text-center transition-all ${
+          const wrapperClass = `absolute z-20 flex ${compact ? "w-[4.25rem]" : "w-[6rem]"} -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-0.5 rounded-2xl px-1 py-1 text-center transition-all ${
             isSelected ? "bg-accent-500/15 shadow-lg ring-2 ring-accent-300/60" : ""
           } ${isDragged ? "opacity-60" : ""} ${isDropTarget ? "bg-primary-500/10 shadow-lg ring-2 ring-white/80" : ""}`;
           const style = { left: `${x}%`, top: `${y}%` };

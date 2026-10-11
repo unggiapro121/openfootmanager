@@ -1,10 +1,21 @@
 import type { ReactNode } from "react";
-import type { TeamMatchRolesData } from "../../store/types";
+import type { PositionFit, TeamMatchRolesData } from "../../store/types";
 import { getPositionColor } from "../../lib/positionColors";
 import { PlayerAvatar } from "./PlayerAvatar";
 
 /** How well a player fits the slot they occupy — drives the avatar ring colour. */
 export type PitchFitTone = "exact" | "adapted" | "out" | "empty";
+
+const FIT_TONE: Record<PositionFit, PitchFitTone> = {
+  Natural: "exact",
+  Adapted: "adapted",
+  Unfamiliar: "out",
+};
+
+/** The backend's familiarity with a slot, as the token's fit ring draws it. */
+export function fitToneOf(fit: PositionFit): PitchFitTone {
+  return FIT_TONE[fit];
+}
 
 /** A small role marker chip (Captain, Penalty taker, etc.) stacked top-left. */
 export interface PitchTokenMarker {
@@ -31,6 +42,8 @@ export interface PitchTokenProps {
   markers?: PitchTokenMarker[];
   /** Optional slot below the name — e.g. a tactical-role combobox. */
   children?: ReactNode;
+  /** "sm" for a pitch that must fit a dialog, such as the substitution panel. */
+  size?: "md" | "sm";
 }
 
 /**
@@ -100,7 +113,10 @@ export function PitchToken({
   avatar,
   markers,
   children,
+  size = "md",
 }: PitchTokenProps) {
+  const isSmall = size === "sm";
+  const badge = isSmall ? "px-1.5 text-[10px]" : "px-2 text-xs";
   return (
     <>
       {/* Avatar with overlaid badges */}
@@ -110,7 +126,7 @@ export function PitchToken({
             {markers.slice(0, 3).map((marker) => (
               <span
                 key={marker.key}
-                className={`rounded-full border px-1.5 py-0.5 text-[10px] font-heading font-bold leading-4 ${marker.toneClassName}`}
+                className={`rounded-full border font-heading font-bold ${isSmall ? "px-1 text-[8px] leading-3" : "px-1.5 py-0.5 text-[10px] leading-4"} ${marker.toneClassName}`}
               >
                 {marker.shortLabel}
               </span>
@@ -119,14 +135,14 @@ export function PitchToken({
         )}
         <div className="absolute -right-1.5 -top-1.5 z-10">
           <span
-            className={`rounded-full ${position ? getPositionColor(position) : "bg-gray-900"} px-2 py-0.5 text-xs font-heading font-bold uppercase leading-4 text-white ring-1 ring-white/40`}
+            className={`rounded-full ${position ? getPositionColor(position) : "bg-gray-900"} ${badge} py-0.5 font-heading font-bold uppercase leading-4 text-white ring-1 ring-white/40`}
           >
             {positionAbbr}
           </span>
         </div>
         <div
           data-testid="pitch-token-avatar"
-          className={`h-11 w-11 overflow-hidden rounded-full bg-gray-800/60 ${fitRingClass(fitTone)}`}
+          className={`${isSmall ? "h-8 w-8" : "h-11 w-11"} overflow-hidden rounded-full bg-gray-800/60 ${fitRingClass(fitTone)}`}
         >
           <PlayerAvatar
             player={avatar ?? { full_name: name, match_name: name }}
@@ -134,13 +150,17 @@ export function PitchToken({
           />
         </div>
         <div className="absolute -bottom-1 -right-1.5 z-10">
-          <span className="rounded-full bg-gray-900 px-2 py-0.5 text-xs font-heading font-bold leading-4 text-white ring-1 ring-white/30">
+          <span
+            className={`rounded-full bg-gray-900 ${badge} py-0.5 font-heading font-bold leading-4 text-white ring-1 ring-white/30`}
+          >
             {ovr}
           </span>
         </div>
       </div>
 
-      <div className="max-w-full truncate text-xs font-heading font-bold uppercase tracking-[0.12em] text-white drop-shadow-sm">
+      <div
+        className={`max-w-full truncate font-heading font-bold uppercase text-white drop-shadow-sm ${isSmall ? "text-[9px] tracking-[0.08em]" : "text-xs tracking-[0.12em]"}`}
+      >
         {name}
       </div>
 

@@ -244,6 +244,7 @@ pub fn run() {
             get_competitions_view,
             get_session_state,
             get_squad,
+            get_squad_position_ratings,
             get_staff,
             get_active_save_id,
             advance_time,

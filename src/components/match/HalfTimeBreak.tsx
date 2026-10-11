@@ -15,6 +15,8 @@ import { getTalkIcon } from "./TeamTalkIcons";
 import { SubPanel } from "./SubPanel";
 import { FormationPitch } from "./FormationPitch";
 import { swapMatchPositions } from "../../services/liveMatchService";
+import { createMatchRoleChange } from "./matchRoleChange";
+import { MatchRolePicker } from "./MatchRolePicker";
 import { Badge, TeamLogo, ThemeToggle } from "../ui";
 import { Play, RefreshCw, Shield, Zap, Target, Crosshair, Flag, MessageCircle } from "lucide-react";
 
@@ -128,6 +130,8 @@ export default function HalfTimeBreak({
       console.error("Position swap failed:", err);
     }
   };
+
+  const handleRoleChange = createMatchRoleChange(userSide, onUpdateSnapshot);
 
   const handleDeliverTalk = async () => {
     if (!selectedTalk) return;
@@ -485,6 +489,13 @@ export default function HalfTimeBreak({
                     players={userTeam.players}
                     sentOff={snapshot.sent_off}
                     onPlayerDrop={handleSwapPositions}
+                    renderTokenExtra={(player, slotPosition) => (
+                      <MatchRolePicker
+                        position={slotPosition ?? player.position}
+                        role={player.role}
+                        onChange={(role) => void handleRoleChange(player.id, role)}
+                      />
+                    )}
                     roles={
                       userSide === "Home" ? snapshot.home_set_pieces : snapshot.away_set_pieces
                     }
@@ -504,6 +515,7 @@ export default function HalfTimeBreak({
           side={userSide}
           onSubstitute={handleSubstitution}
           onSwapPositions={handleSwapPositions}
+          onRoleChange={(playerId, role) => void handleRoleChange(playerId, role)}
           onFormationChange={handleFormationChange}
           onPlayStyleChange={handlePlayStyleChange}
           onClose={() => setShowSubPanel(false)}

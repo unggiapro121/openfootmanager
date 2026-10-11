@@ -4,7 +4,12 @@ import { invoke } from "@tauri-apps/api/core";
 
 import type { GameStateData, PlayerData, TeamMatchRolesData } from "../../store/gameStore";
 import { useGameStore } from "../../store/gameStore";
-import { getSquad, setTacticsPhase as setTacticsPhaseService } from "../../services/squadService";
+import {
+  getSquad,
+  getSquadPositionRatings,
+  setTacticsPhase as setTacticsPhaseService,
+} from "../../services/squadService";
+import type { PositionRating } from "../../store/types";
 import type { TacticsPhaseSettings } from "../../store/types";
 
 import {
@@ -69,6 +74,18 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
     void getSquad(teamId)
       .then(setFetchedSquad)
       .catch(() => {});
+  }, [teamId]);
+
+  // Each player's rating at every position, from the backend: the board shows
+  // a player out of position at the rating he would play there.
+  const [positionRatings, setPositionRatings] = useState<Record<string, PositionRating[]>>({});
+  useEffect(() => {
+    if (!teamId) return;
+    void getSquadPositionRatings(teamId)
+      .then(setPositionRatings)
+      .catch((err: unknown) => {
+        console.error("Failed to load position ratings:", err);
+      });
   }, [teamId]);
 
   const team = sessionState?.team ?? gameState?.teams?.find((t) => t.id === teamId) ?? null;
@@ -430,6 +447,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
 
   return {
     team,
+    positionRatings,
     formation,
     activePlayStyle,
     initialPreset,

@@ -1,9 +1,11 @@
+import type { PositionRating } from "../../store/types";
 import type { DragEvent, JSX } from "react";
 import { useTranslation } from "react-i18next";
 import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
 import type { DragState, SquadSection } from "../squad/SquadTab.helpers";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { getPlayerOvr } from "../../lib/helpers";
+import { ratingAtPosition } from "../../lib/positionRatings";
 import { Badge, InjuryBadge, ProgressBar } from "../ui";
 import ContextMenu from "../ContextMenu";
 import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers";
@@ -34,6 +36,8 @@ interface TacticsPlayerListProps {
   selectedPlayerId: string | null;
   starters: PlayerData[];
   xiActivePosition: Map<string, string>;
+  /** Each player's rating at every position, by id (backend). */
+  positionRatings?: Record<string, PositionRating[]>;
 }
 
 // The player's condition as a short bar, coloured by how fresh he is, so a
@@ -58,6 +62,7 @@ function ConditionBar({ condition }: { condition: number }): JSX.Element {
 
 function PlayerRow({
   comparePlayerId,
+  deployedOvr,
   deployedPosition,
   isSelected,
   matchRoles,
@@ -74,6 +79,8 @@ function PlayerRow({
   selectedPlayerId,
 }: {
   comparePlayerId: string | null;
+  /** His rating in the slot he is deployed in, when the backend sent it. */
+  deployedOvr?: number;
   deployedPosition?: string;
   isSelected: boolean;
   matchRoles?: TeamMatchRolesData;
@@ -95,7 +102,7 @@ function PlayerRow({
   selectedPlayerId: string | null;
 }): JSX.Element {
   const { t } = useTranslation();
-  const ovr = getPlayerOvr(player);
+  const ovr = deployedOvr ?? getPlayerOvr(player);
   const isCompare = comparePlayerId === player.id;
   // Starters show the slot they are deployed in (issue #272); the natural
   // position remains for bench players, who have no deployed slot.
@@ -227,6 +234,7 @@ export default function TacticsPlayerList({
   selectedPlayerId,
   starters,
   xiActivePosition,
+  positionRatings,
 }: TacticsPlayerListProps): JSX.Element {
   const { t } = useTranslation();
   const draggedPlayerId = dragState?.playerId ?? null;
@@ -265,6 +273,12 @@ export default function TacticsPlayerList({
               key={player.id}
               comparePlayerId={comparePlayerId}
               deployedPosition={xiActivePosition.get(player.id)}
+              deployedOvr={
+                ratingAtPosition(
+                  positionRatings?.[player.id],
+                  xiActivePosition.get(player.id) ?? "",
+                )?.ovr
+              }
               isSelected={selectedPlayerId === player.id}
               matchRoles={matchRoles}
               onAssignMatchRole={onAssignMatchRole}

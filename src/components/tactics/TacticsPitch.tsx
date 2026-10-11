@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getPlayerOvr } from "../../lib/helpers";
 import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
 import ContextMenu from "../ContextMenu";
-import { Badge, Card, PitchSurface, PitchToken, Select, pitchRoleMarkers } from "../ui";
+import { Badge, Card, PitchSurface, PitchToken, Select, fitToneOf, pitchRoleMarkers } from "../ui";
 import {
   isPlayerExactForSlot,
   isPlayerOutOfPosition,
@@ -15,7 +15,8 @@ import {
 } from "../squad/SquadTab.helpers";
 import type { TacticsPitchSlot } from "./TacticsTab.helpers";
 import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers";
-import type { PlayerRole, TacticsPhaseSettings } from "../../store/types";
+import type { PlayerRole, PositionRating, TacticsPhaseSettings } from "../../store/types";
+import { ratingAtPosition } from "../../lib/positionRatings";
 import { getRoleOptions } from "../../lib/playerRoles";
 
 interface TacticsPitchProps {
@@ -47,6 +48,8 @@ interface TacticsPitchProps {
   onSlotDrop: (event: DragEvent<HTMLElement>, slotIndex: number) => void;
   outOfPositionCount: number;
   pitchSlots: TacticsPitchSlot[];
+  /** Each player's rating at every position, by id (backend). */
+  positionRatings?: Record<string, PositionRating[]>;
   selectedPlayer: PlayerData | null;
   selectedPlayerId: string | null;
 }
@@ -216,6 +219,7 @@ export default function TacticsPitch({
   onSlotDrop,
   outOfPositionCount,
   pitchSlots,
+  positionRatings,
   selectedPlayer,
   selectedPlayerId,
 }: TacticsPitchProps): JSX.Element {
@@ -268,7 +272,14 @@ export default function TacticsPitch({
           <div className="aspect-[8/10] min-h-[35rem] w-full">
             {pitchSlots.map((slot) => {
               const player = slot.player;
-              const fitTone = getFitTone(player, slot.position);
+              // The rating he plays at in this slot, from the backend; the
+              // front-end grading only when the backend has not answered yet.
+              const slotRating = player
+                ? ratingAtPosition(positionRatings?.[player.id], slot.position)
+                : undefined;
+              const fitTone = slotRating
+                ? fitToneOf(slotRating.fit)
+                : getFitTone(player, slot.position);
               const isHovered = hoveredSlot === slot.index;
 
               return (
@@ -343,7 +354,7 @@ export default function TacticsPitch({
                               name={getPitchDisplayName(player)}
                               positionAbbr={translatePositionAbbreviation(t, slot.position)}
                               position={slot.position}
-                              ovr={getPlayerOvr(player)}
+                              ovr={slotRating?.ovr ?? getPlayerOvr(player)}
                               condition={player.condition}
                               fitTone={fitTone}
                               avatar={player}

@@ -24,6 +24,8 @@ import {
 } from "./SubPanel.helpers";
 import { naturalPositionOf, slotPositionsOf } from "./slotRatings";
 import { SlotOvr } from "./SlotOvr";
+import { MatchRolePicker } from "./MatchRolePicker";
+import type { PlayerRole } from "../../store/types";
 
 const CompareBar = ({ label, valA, valB }: { label: string; valA: number; valB: number }) => {
   const diff = valB - valA;
@@ -53,6 +55,7 @@ export function SubPanel({
   side,
   onSubstitute,
   onSwapPositions,
+  onRoleChange,
   onFormationChange,
   onPlayStyleChange,
   onClose,
@@ -62,6 +65,8 @@ export function SubPanel({
   onSubstitute: (offId: string, onId: string) => void;
   /** Two players of the XI trade slots — dragged on the pitch. Not a substitution. */
   onSwapPositions: (playerAId: string, playerBId: string) => void;
+  /** A player of the XI takes another role for the rest of the match. */
+  onRoleChange: (playerId: string, role: PlayerRole) => void;
   onFormationChange: (formation: string) => void;
   onPlayStyleChange: (playStyle: string) => void;
   onClose: () => void;
@@ -209,7 +214,8 @@ export function SubPanel({
               sentOff={snapshot.sent_off}
               subbedOnIds={subbedOnIds}
               onPlayerDrop={onSwapPositions}
-              className="w-full max-w-[28rem] shrink-0"
+              compact
+              className="w-full max-w-[21rem] shrink-0"
               roles={setPieces}
             />
           </div>
@@ -308,7 +314,8 @@ export function SubPanel({
                   subbedOnIds={subbedOnIds}
                   onPlayerClick={handleSelectOffPlayer}
                   onPlayerDrop={onSwapPositions}
-                  className="mx-4 mt-3 shrink-0"
+                  compact
+                  className="mx-auto mt-3 w-full max-w-[21rem] shrink-0"
                   roles={setPieces}
                 />
                 <p className="mx-4 mt-1 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
@@ -323,6 +330,7 @@ export function SubPanel({
                         <th className="py-2 pr-2">{t("match.player")}</th>
                         <th className="w-12 py-2 text-center">{t("common.position")}</th>
                         <th className="w-12 py-2 text-center">{t("common.ovr")}</th>
+                        <th className="w-28 py-2 pl-2">{t("tactics.playerRoleLabel")}</th>
                         <th className="w-24 py-2">{t("match.fitness")}</th>
                       </tr>
                     </thead>
@@ -357,6 +365,7 @@ export function SubPanel({
                               <td className="w-12 py-2 text-center font-heading font-bold text-gray-500 dark:text-gray-400">
                                 {p.ovr}
                               </td>
+                              <td className="w-28 py-2" />
                               <td className="w-24 py-2" />
                             </tr>
                           );
@@ -400,6 +409,14 @@ export function SubPanel({
                             </td>
                             <td className="w-12 py-2 text-center font-heading font-bold">
                               <SlotOvr player={p} slot={slotOf(p.id)} />
+                            </td>
+                            <td className="w-28 py-1 pl-2">
+                              <MatchRolePicker
+                                position={slotOf(p.id) ?? p.position}
+                                role={p.role}
+                                onChange={(role) => onRoleChange(p.id, role)}
+                                selectSize="xs"
+                              />
                             </td>
                             <td className="w-24 py-2">
                               <div className="flex items-center gap-1.5">

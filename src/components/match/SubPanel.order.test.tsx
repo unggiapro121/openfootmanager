@@ -137,6 +137,7 @@ describe("SubPanel bench order", () => {
         side="Home"
         onSubstitute={vi.fn()}
         onSwapPositions={vi.fn()}
+        onRoleChange={vi.fn()}
         onFormationChange={vi.fn()}
         onPlayStyleChange={vi.fn()}
         onClose={vi.fn()}

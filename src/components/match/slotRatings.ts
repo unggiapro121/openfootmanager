@@ -1,3 +1,4 @@
+import { ratingAtPosition } from "../../lib/positionRatings";
 import { buildPitchRows } from "../squad/SquadTab.helpers";
 import type { EnginePlayerData, PositionFit, PositionRating } from "./types";
 
@@ -13,7 +14,7 @@ export function slotPositionsOf(formation: string, count: number): string[] | nu
 
 /** The backend's rating of `player` at `position`, if it sent one. */
 export function ratingAt(player: EnginePlayerData, position: string): PositionRating | undefined {
-  return player.position_ratings?.find((rating) => rating.position === position);
+  return ratingAtPosition(player.position_ratings, position);
 }
 
 /** The position `player` is rated Natural at. */
