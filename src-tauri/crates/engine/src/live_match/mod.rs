@@ -547,9 +547,14 @@ fn is_role_valid_for_position(role: PlayerRole, position: crate::types::Position
                 | PlayerRole::InsideForward
                 | PlayerRole::InvertedWinger
         ),
+        // Wingers (LW/RW) play in the Forward bucket, so the wide roles belong
+        // here too — as in `domain::Position::Forward.valid_roles()`.
         Position::Forward => matches!(
             role,
             PlayerRole::Standard
+                | PlayerRole::WideForward
+                | PlayerRole::InsideForward
+                | PlayerRole::InvertedWinger
                 | PlayerRole::Poacher
                 | PlayerRole::TargetMan
                 | PlayerRole::DeepLyingForward

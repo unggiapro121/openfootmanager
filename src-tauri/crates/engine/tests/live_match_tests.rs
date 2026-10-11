@@ -1118,6 +1118,36 @@ fn pre_match_position_swap_trades_slots_between_starters() {
     assert_eq!(snap.home_subs_made, 0);
 }
 
+/// Given a live match with a forward-line player (a winger plays in the Forward bucket),
+/// When the manager gives him each of the wide-forward roles,
+/// Then the match takes every one of them instead of silently keeping the old role.
+#[test]
+fn a_forward_can_take_the_wide_forward_roles_in_play() {
+    let mut state = make_live_match(false);
+    for role in [
+        PlayerRole::WideForward,
+        PlayerRole::InsideForward,
+        PlayerRole::InvertedWinger,
+    ] {
+        state
+            .apply_command(MatchCommand::ChangePlayerRole {
+                side: Side::Home,
+                player_id: "home_fwd1".to_string(),
+                role,
+            })
+            .unwrap();
+        let snap = state.snapshot();
+        let player = snap
+            .home_team
+            .players
+            .iter()
+            .find(|p| p.id == "home_fwd1")
+            .unwrap();
+        assert_eq!(player.position, Position::Forward);
+        assert_eq!(player.role, role);
+    }
+}
+
 #[test]
 fn pre_match_position_swap_drops_a_role_the_new_position_does_not_admit() {
     let mut state = make_live_match(false);
