@@ -2641,7 +2641,9 @@
     "yourResult": "Tu resultado",
     "continue": "Continuar",
     "notableUpset": "Sorpresa notable",
-    "pts": "pts."
+    "pts": "pts.",
+    "injuredPrompt": "{{name}} está lesionado y no puede seguir. Elige quién entra o cierra para jugar con uno menos.",
+    "injuredBadge": "Lesionado"
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Completa",

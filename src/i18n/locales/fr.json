@@ -2641,7 +2641,9 @@
     "yourResult": "Votre résultat",
     "continue": "Continuer",
     "notableUpset": "Résultat surprise",
-    "pts": "pts"
+    "pts": "pts",
+    "injuredPrompt": "{{name}} est blessé et ne peut pas continuer. Choisissez qui entre, ou fermez pour jouer à dix.",
+    "injuredBadge": "Blessé"
   },
   "endOfSeason": {
     "seasonComplete": "Saison Terminée",

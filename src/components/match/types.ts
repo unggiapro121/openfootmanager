@@ -107,6 +107,8 @@ export interface MatchSnapshot {
   home_yellows: Record<string, number>;
   away_yellows: Record<string, number>;
   sent_off: string[];
+  /** Hurt this match and still on the pitch, waiting to be replaced. */
+  injured?: string[];
   penalty_shootout?: PenaltyShootoutSnapshot | null;
 }
 

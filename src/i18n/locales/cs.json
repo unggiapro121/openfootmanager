@@ -2641,7 +2641,9 @@
     "yourResult": "Váš výsledek",
     "continue": "Pokračovat",
     "notableUpset": "Velké překvapení",
-    "pts": "b."
+    "pts": "b.",
+    "injuredPrompt": "{{name}} je zraněný a nemůže pokračovat. Vyberte, kdo nastoupí, nebo zavřete a hrajte v oslabení.",
+    "injuredBadge": "Zraněný"
   },
   "endOfSeason": {
     "seasonComplete": "Sezóna dokončena",

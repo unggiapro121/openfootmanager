@@ -582,14 +582,20 @@ fn step_many_stops_at_every_phase_that_needs_the_manager() {
             if last.is_finished {
                 break;
             }
-            // Every stop must be a decision point or the finish — never a mid-half cut.
+            // Every stop must be a decision point or the finish — never a mid-half cut,
+            // unless one of the manager's own players was hurt that minute.
+            let own_injury = last.events.iter().any(|event| {
+                event.event_type == engine::EventType::Injury
+                    && Some(event.side) == session.user_side
+            });
             assert!(
-                matches!(
-                    last.phase,
-                    MatchPhase::HalfTime
-                        | MatchPhase::ExtraTimeHalfTime
-                        | MatchPhase::PenaltyShootout
-                ),
+                own_injury
+                    || matches!(
+                        last.phase,
+                        MatchPhase::HalfTime
+                            | MatchPhase::ExtraTimeHalfTime
+                            | MatchPhase::PenaltyShootout
+                    ),
                 "step_many stopped at {:?}, which needs no manager decision",
                 last.phase
             );
@@ -599,6 +605,40 @@ fn step_many_stops_at_every_phase_that_needs_the_manager() {
     assert!(
         saw.contains("HalfTime"),
         "never observed the half-time stop; saw {saw:?}"
+    );
+}
+
+/// A fast-forward stops the minute one of the manager's players is hurt, so
+/// he can choose who comes on; the minute's events carry the injury.
+#[test]
+fn step_many_stops_when_the_managers_player_is_hurt() {
+    let mut stopped = 0;
+    for seed in 0..60 {
+        let mut game = make_game_with_fixture();
+        // A different save each time, or all sixty would be the one match.
+        game.seed = seed;
+        let mut session =
+            live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
+        let user_side = session.user_side.expect("the manager's club plays");
+        for _ in 0..40 {
+            let results = session.step_many(500);
+            let last = results.last().unwrap();
+            if last.is_finished {
+                break;
+            }
+            let hurt = last.events.iter().find(|event| {
+                event.event_type == engine::EventType::Injury && event.side == user_side
+            });
+            if let Some(event) = hurt {
+                stopped += 1;
+                let id = event.player_id.clone().unwrap();
+                assert!(session.snapshot().injured.contains(&id));
+            }
+        }
+    }
+    assert!(
+        stopped > 0,
+        "no fast-forward ever stopped for an injury in 60 matches"
     );
 }
 

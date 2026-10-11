@@ -2641,7 +2641,9 @@
     "yourResult": "Your Result",
     "continue": "Continue",
     "notableUpset": "Notable Upset",
-    "pts": "pts"
+    "pts": "pts",
+    "injuredPrompt": "{{name}} is injured and can't continue. Choose who comes on, or close to play on a man short.",
+    "injuredBadge": "Injured"
   },
   "endOfSeason": {
     "seasonComplete": "Season Complete",

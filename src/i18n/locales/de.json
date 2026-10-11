@@ -2641,7 +2641,9 @@
     "yourResult": "Dein Ergebnis",
     "continue": "Weiter",
     "notableUpset": "Überraschungsergebnis",
-    "pts": "Pkt."
+    "pts": "Pkt.",
+    "injuredPrompt": "{{name}} ist verletzt und kann nicht weiterspielen. Wähle, wer reinkommt, oder schließe, um in Unterzahl weiterzuspielen.",
+    "injuredBadge": "Verletzt"
   },
   "endOfSeason": {
     "seasonComplete": "Saison beendet",

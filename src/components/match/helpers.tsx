@@ -174,6 +174,24 @@ export function getEventTypeLabel(eventType: string, t?: TranslateFn): string {
   return t ? t(`match.eventTypes.${eventType}`, { defaultValue: fallbackLabel }) : fallbackLabel;
 }
 
+/**
+ * The first of `side`'s players hurt and still on the pitch that the manager
+ * has not been told about yet, or null. What pauses his match so he can choose
+ * who comes on.
+ */
+export function firstNewInjury(
+  snapshot: MatchSnapshot,
+  side: "Home" | "Away",
+  alreadyRaised: ReadonlySet<string>,
+): string | null {
+  const injured = new Set(snapshot.injured ?? []);
+  const team = side === "Home" ? snapshot.home_team : snapshot.away_team;
+  return (
+    team.players.find((player) => injured.has(player.id) && !alreadyRaised.has(player.id))?.id ??
+    null
+  );
+}
+
 export function getPlayerName(snapshot: MatchSnapshot, playerId: string | null): string {
   if (!playerId) return "";
   for (const p of snapshot.home_team.players) {

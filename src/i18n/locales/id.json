@@ -2641,7 +2641,9 @@
     "yourResult": "Hasil Kamu",
     "continue": "Lanjut",
     "notableUpset": "Kejutan Menonjol",
-    "pts": "poin"
+    "pts": "poin",
+    "injuredPrompt": "{{name}} cedera dan tidak bisa melanjutkan. Pilih pemain pengganti, atau tutup untuk bermain dengan kekurangan pemain.",
+    "injuredBadge": "Cedera"
   },
   "endOfSeason": {
     "seasonComplete": "Musim Selesai",

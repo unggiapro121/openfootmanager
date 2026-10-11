@@ -2641,7 +2641,9 @@
     "yourResult": "Sizin Sonucunuz",
     "continue": "Devam Et",
     "notableUpset": "Dikkat Çeken Sürpriz",
-    "pts": "P"
+    "pts": "P",
+    "injuredPrompt": "{{name}} sakatlandı ve devam edemiyor. Oyuna gireni seç ya da kapatıp bir kişi eksik oyna.",
+    "injuredBadge": "Sakat"
   },
   "endOfSeason": {
     "seasonComplete": "Sezon Tamamlandı",

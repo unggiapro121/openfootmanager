@@ -6,6 +6,7 @@ import {
   getEventTypeLabel,
   makeTeamFallback,
   resolveMatchFixture,
+  firstNewInjury,
 } from "./helpers";
 import i18n, { i18nReady } from "../../i18n";
 import { getTeamTalkOptions, isPersistableSpeed } from "./types";
@@ -400,5 +401,27 @@ describe("isPersistableSpeed", () => {
   it("marks one-shot speeds as non-persistable so they don't resume after half-time", () => {
     expect(isPersistableSpeed("paused")).toBe(false);
     expect(isPersistableSpeed("instant")).toBe(false);
+  });
+});
+
+describe("firstNewInjury", () => {
+  const snapshotWith = (injured: string[]) =>
+    ({
+      home_team: { players: [{ id: "h1" }, { id: "h2" }] },
+      away_team: { players: [{ id: "a1" }] },
+      injured,
+    }) as unknown as MatchSnapshot;
+
+  it("finds the manager's player hurt and still on the pitch", () => {
+    expect(firstNewInjury(snapshotWith(["a1", "h2"]), "Home", new Set())).toBe("h2");
+  });
+
+  it("ignores one already raised, and the other side's", () => {
+    expect(firstNewInjury(snapshotWith(["a1", "h2"]), "Home", new Set(["h2"]))).toBeNull();
+    expect(firstNewInjury(snapshotWith(["a1"]), "Home", new Set())).toBeNull();
+  });
+
+  it("reads an old snapshot with no injuries as none", () => {
+    expect(firstNewInjury(snapshotWith(undefined as never), "Home", new Set())).toBeNull();
   });
 });

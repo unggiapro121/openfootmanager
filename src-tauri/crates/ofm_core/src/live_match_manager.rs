@@ -171,7 +171,8 @@ impl LiveMatchSession {
 
     /// Step multiple minutes at once (for fast-forward / instant sim).
     ///
-    /// Stops early at full time **and when the match reaches a phase that needs the manager**.
+    /// Stops early at full time, **when the match reaches a phase that needs the manager**, and
+    /// the minute one of the manager's own players is hurt.
     /// Callers decide what to do from the last result, so batching straight through half time
     /// would leave the last result reading "second half" and the half-time team talk would never
     /// be offered. Stopping on the transition means a caller sees the same sequence of decision
@@ -188,8 +189,15 @@ impl LiveMatchSession {
             let result = self.step();
             let finished = result.is_finished;
             let needs_manager = result.phase != starting_phase && phase_needs_manager(result.phase);
+            // One of the manager's own players hurt this minute: he chooses who
+            // comes on, or plays on a man short.
+            let own_injury = self.user_side.is_some_and(|side| {
+                result.events.iter().any(|event| {
+                    event.event_type == engine::EventType::Injury && event.side == side
+                })
+            });
             results.push(result);
-            if finished || needs_manager {
+            if finished || needs_manager || own_injury {
                 break;
             }
         }

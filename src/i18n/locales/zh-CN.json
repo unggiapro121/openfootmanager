@@ -2641,7 +2641,9 @@
     "yourResult": "你的成绩",
     "continue": "继续",
     "notableUpset": "重大爆冷",
-    "pts": "分"
+    "pts": "分",
+    "injuredPrompt": "{{name}} 受伤无法继续比赛。请选择换上的球员，或关闭以少打多。",
+    "injuredBadge": "受伤"
   },
   "endOfSeason": {
     "seasonComplete": "赛季结束",

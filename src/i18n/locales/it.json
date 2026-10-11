@@ -2660,7 +2660,9 @@
     "yourResult": "Il tuo risultato",
     "continue": "Continua",
     "notableUpset": "Sorpresa del turno",
-    "pts": "pts."
+    "pts": "pts.",
+    "injuredPrompt": "{{name}} è infortunato e non può continuare. Scegli chi entra o chiudi per giocare in inferiorità.",
+    "injuredBadge": "Infortunato"
   },
   "notifications": {
     "attentionRequired": "Attenzione Richiesta",

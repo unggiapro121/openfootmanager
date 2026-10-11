@@ -2641,7 +2641,9 @@
     "yourResult": "Kết quả của bạn",
     "continue": "Tiếp tục",
     "notableUpset": "Cú sốc đáng chú ý",
-    "pts": "điểm"
+    "pts": "điểm",
+    "injuredPrompt": "{{name}} chấn thương và không thể tiếp tục. Chọn người vào sân, hoặc đóng lại để chơi thiếu người.",
+    "injuredBadge": "Chấn thương"
   },
   "endOfSeason": {
     "seasonComplete": "Mùa giải kết thúc",
