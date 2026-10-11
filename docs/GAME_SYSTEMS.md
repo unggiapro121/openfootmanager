@@ -634,6 +634,28 @@ at full. Academy contracts are 8–13.5% of the wage bill at their full value. W
 signing from the youth pool through the season, the same measure gave 19 of 150 (median AI cash
 88M, against 89M before the pool).
 
+### Budget balance
+
+The manager can move money between the two budgets the board sets each season
+(`finances::budget_rebalance`). A weekly wage is paid on every Monday left in the season, so the two
+trade at that rate:
+
+```
+paydays_left  = Mondays after today up to the season's end (at least 1; 52 if the end is unknown)
+new wage budget W' → transfer_budget -= (W' − wage_budget) × paydays_left
+```
+
+- **Range:** from the weekly wage bill (`calc_wages`, staff included) up to the wage budget plus the
+  transfer budget spread over the paydays left, rounded down to a step. A club already paying more
+  than its budget may only raise it.
+- **Step:** 1,000 a week; either end of the range is allowed even off the step.
+- Free and unlimited. Cash is not touched: only the board's allowances move.
+- `economy::set_season_budgets` sets both budgets afresh each season, so a rebalance does not carry
+  over.
+
+The range comes to the UI with the finance snapshot's previews (`budget_rebalance`); the Finances tab
+shows it as a slider with the transfer budget moving the other way.
+
 The `FinancesTab` displays an overview with cards for balance, wage budget, transfer budget, and a payroll table.
 
 ---
