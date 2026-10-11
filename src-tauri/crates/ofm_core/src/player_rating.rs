@@ -537,16 +537,14 @@ enum Side {
     Right,
 }
 
-/// The foot a slot asks for. Full-backs, wing-backs and wide midfielders cross
-/// from the touchline, so the foot on that side matters. Wingers are left out:
-/// one on his weaker side is an inverted winger, cutting inside to shoot, a way
-/// of playing the position rather than a flaw in it.
+/// The foot a slot asks for. Full-backs and wing-backs overlap and cross from
+/// the touchline, so the foot on that side matters. Wide midfielders and wingers
+/// are left out: one on his weaker side cuts inside to shoot or combine, a way of
+/// playing the position rather than a flaw in it.
 fn slot_side(position: &Position) -> Option<Side> {
     match position {
-        Position::LeftBack | Position::LeftWingBack | Position::LeftMidfielder => Some(Side::Left),
-        Position::RightBack | Position::RightWingBack | Position::RightMidfielder => {
-            Some(Side::Right)
-        }
+        Position::LeftBack | Position::LeftWingBack => Some(Side::Left),
+        Position::RightBack | Position::RightWingBack => Some(Side::Right),
         _ => None,
     }
 }
@@ -803,17 +801,31 @@ mod tests {
     }
 
     /// Given the same right-footed player, when he is rated at left midfield (one
-    /// of his positions), then his foot still costs him there, on top of what an
-    /// alternate position costs: a wide midfielder delivers from the touchline,
-    /// on the side his foot is for.
+    /// of his positions), then only the alternate position costs him, not his
+    /// foot: a wide midfielder on his weaker side cuts inside just the same.
     #[test]
-    fn a_wide_midfielder_on_his_weaker_side_is_still_penalised() {
+    fn an_inverted_wide_midfielder_is_not_penalised_for_his_foot() {
         let player = right_footed_left_winger();
         let alternate_position_cost = 4.0;
 
+        assert_eq!(
+            positional_fit_for_assignment(&player, &Position::LeftMidfielder),
+            ovr_for_position(&player, &Position::LeftMidfielder) - alternate_position_cost
+        );
+    }
+
+    /// Given a right-footed player, when he is rated at left back, then his foot
+    /// still costs him: a full-back overlaps and crosses from the touchline.
+    #[test]
+    fn a_full_back_on_his_weaker_side_is_still_penalised() {
+        let mut player = make_player(Position::LeftBack);
+        player.natural_position = Position::LeftBack;
+        player.footedness = Footedness::Right;
+        player.weak_foot = 3;
+
         assert!(
-            positional_fit_for_assignment(&player, &Position::LeftMidfielder)
-                < ovr_for_position(&player, &Position::LeftMidfielder) - alternate_position_cost
+            positional_fit_for_assignment(&player, &Position::LeftBack)
+                < ovr_for_position(&player, &Position::LeftBack)
         );
     }
 
