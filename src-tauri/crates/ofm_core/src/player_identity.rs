@@ -1,19 +1,53 @@
 use crate::game::Game;
 use crate::player_rating::formation_slots;
+use chrono::Datelike;
 use domain::player::{Footedness, Player, Position};
 use std::collections::HashMap;
 
 pub fn upgrade_game_player_identities(game: &mut Game) -> bool {
     let slot_map = build_assigned_slot_map(game);
+    let reputations = crate::economy::club_reputations(game);
+    let today = game.clock.current_date.date_naive();
     let mut changed = false;
 
     for player in &mut game.players {
+        let natural_before = player.natural_position.clone();
         if upgrade_player_identity(player, slot_map.get(&player.id)) {
             changed = true;
+            if player.natural_position != natural_before {
+                let reputation = player
+                    .team_id
+                    .as_deref()
+                    .and_then(|team_id| reputations.get(team_id).copied());
+                rate_at_new_natural_position(player, reputation, today);
+            }
         }
     }
 
     changed
+}
+
+/// Settle a player's ratings on the natural position he was just given.
+///
+/// A player known only by his group was rated, given a ceiling and priced as the
+/// position that group stands for (a defender as a centre-back). Once he has a
+/// position of his own, those figures have to follow it, or his profile shows an
+/// overall no slot on the pitch gives him. His ceiling moves by as much as his
+/// overall, so the room he has to grow is the room he was drawn with. His wage is
+/// a contract term and stays as agreed.
+fn rate_at_new_natural_position(
+    player: &mut Player,
+    club_reputation: Option<u32>,
+    today: chrono::NaiveDate,
+) {
+    let old_ovr = i16::from(player.ovr);
+    let new_ovr = crate::player_rating::natural_ovr(player).round() as u8;
+    if old_ovr > 0 && player.potential > 0 {
+        let shifted = i16::from(player.potential) + i16::from(new_ovr) - old_ovr;
+        player.potential = shifted.clamp(i16::from(new_ovr.max(1)), 99) as u8;
+    }
+    crate::player_rating::refresh_player_derived(player, today.year().unsigned_abs());
+    player.market_value = crate::economy::valuation::market_value(player, club_reputation, today);
 }
 
 pub fn upgrade_player_identity(player: &mut Player, assigned_slot: Option<&Position>) -> bool {
@@ -743,5 +777,114 @@ mod tests {
         assert!(changed);
         assert_eq!(game.players[0].natural_position, Position::RightBack);
         assert_eq!(game.players[1].natural_position, Position::Striker);
+    }
+
+    fn hill_attributes() -> PlayerAttributes {
+        PlayerAttributes {
+            pace: 70,
+            stamina: 91,
+            strength: 80,
+            agility: 86,
+            passing: 41,
+            shooting: 92,
+            tackling: 88,
+            dribbling: 41,
+            defending: 80,
+            positioning: 95,
+            vision: 43,
+            decisions: 90,
+            composure: 63,
+            aggression: 79,
+            teamwork: 70,
+            leadership: 54,
+            handling: 27,
+            reflexes: 46,
+            aerial: 76,
+        }
+    }
+
+    /// A club whose left-back slot holds `player`, on 4 Aug 2026.
+    fn game_with_left_back(player: Player) -> Game {
+        let clock = GameClock::new(Utc.with_ymd_and_hms(2026, 8, 4, 0, 0, 0).unwrap());
+        let mut team = make_team();
+        team.formation = "4-4-2".to_string();
+        team.reputation = 700;
+        team.starting_xi_ids = vec!["p-gk".to_string(), player.id.clone()];
+        Game::new(
+            clock,
+            make_manager(),
+            vec![team],
+            vec![player],
+            vec![],
+            vec![],
+        )
+    }
+
+    /// A defender known only by his group, rated as the centre-back the group
+    /// stands for (83, potential 99).
+    fn group_rated_defender() -> Player {
+        let mut player = make_player("p-hill", Position::Defender, hill_attributes());
+        player.team_id = Some("team-1".to_string());
+        player.potential = 99;
+        crate::player_rating::refresh_player_derived(&mut player, 2026);
+        player.market_value = 76_000_000;
+        player.stage_wage(97_442);
+        player
+    }
+
+    /// Given a defender rated as a centre-back (83) while he stands in the
+    /// left-back slot, when his position is made granular, then he is a left-back
+    /// rated as one, and his potential drops by as much as his overall did.
+    #[test]
+    fn a_defender_made_a_left_back_is_rated_as_one() {
+        let player = group_rated_defender();
+        assert_eq!(player.ovr, 83, "fixture: rated as a centre-back");
+        let left_back_rating =
+            crate::player_rating::ovr_for_position(&player, &Position::LeftBack).round() as u8;
+        let mut game = game_with_left_back(player);
+
+        upgrade_game_player_identities(&mut game);
+
+        let hill = &game.players[0];
+        assert_eq!(hill.natural_position, Position::LeftBack);
+        assert_eq!(hill.ovr, left_back_rating);
+        assert_eq!(hill.potential, 99 - (83 - left_back_rating));
+    }
+
+    /// Given the same defender, when his position is made granular, then his
+    /// market value is priced again at once from his new overall, and the wage
+    /// on his contract is left as it was.
+    #[test]
+    fn a_defender_made_a_left_back_is_repriced_but_keeps_his_wage() {
+        let mut game = game_with_left_back(group_rated_defender());
+
+        upgrade_game_player_identities(&mut game);
+
+        let hill = &game.players[0];
+        let today = game.clock.current_date.date_naive();
+        assert_eq!(
+            hill.market_value,
+            crate::economy::valuation::market_value(hill, Some(700), today)
+        );
+        assert_eq!(hill.wage(), 97_442);
+    }
+
+    /// Given a player whose natural position is already granular and whose
+    /// stored ratings disagree with it, when identities are upgraded, then
+    /// nothing about him is recomputed: only a change of position does that.
+    #[test]
+    fn a_player_already_granular_keeps_his_ratings() {
+        let mut player = group_rated_defender();
+        player.natural_position = Position::LeftBack;
+        player.alternate_positions = vec![Position::CenterBack];
+        let mut game = game_with_left_back(player);
+
+        upgrade_game_player_identities(&mut game);
+
+        let hill = &game.players[0];
+        assert_eq!(
+            (hill.ovr, hill.potential, hill.market_value),
+            (83, 99, 76_000_000)
+        );
     }
 }
