@@ -537,16 +537,16 @@ enum Side {
     Right,
 }
 
+/// The foot a slot asks for. Full-backs, wing-backs and wide midfielders cross
+/// from the touchline, so the foot on that side matters. Wingers are left out:
+/// one on his weaker side is an inverted winger, cutting inside to shoot, a way
+/// of playing the position rather than a flaw in it.
 fn slot_side(position: &Position) -> Option<Side> {
     match position {
-        Position::LeftBack
-        | Position::LeftWingBack
-        | Position::LeftMidfielder
-        | Position::LeftWinger => Some(Side::Left),
-        Position::RightBack
-        | Position::RightWingBack
-        | Position::RightMidfielder
-        | Position::RightWinger => Some(Side::Right),
+        Position::LeftBack | Position::LeftWingBack | Position::LeftMidfielder => Some(Side::Left),
+        Position::RightBack | Position::RightWingBack | Position::RightMidfielder => {
+            Some(Side::Right)
+        }
         _ => None,
     }
 }
@@ -778,6 +778,43 @@ mod tests {
         let wrong_side = effective_rating_for_assignment(&player, &Position::LeftBack);
 
         assert!(same_side > wrong_side);
+    }
+
+    fn right_footed_left_winger() -> Player {
+        let mut player = make_player(Position::LeftWinger);
+        player.natural_position = Position::LeftWinger;
+        player.alternate_positions = vec![Position::LeftMidfielder];
+        player.footedness = Footedness::Right;
+        player.weak_foot = 3;
+        player
+    }
+
+    /// Given a right-footed left winger (an inverted winger, cutting inside to
+    /// shoot), when he is rated on the left wing, then his foot costs him
+    /// nothing: on the wing either foot is a way to play.
+    #[test]
+    fn an_inverted_winger_is_not_penalised_for_his_foot() {
+        let player = right_footed_left_winger();
+
+        assert_eq!(
+            positional_fit_for_assignment(&player, &Position::LeftWinger),
+            ovr_for_position(&player, &Position::LeftWinger)
+        );
+    }
+
+    /// Given the same right-footed player, when he is rated at left midfield (one
+    /// of his positions), then his foot still costs him there, on top of what an
+    /// alternate position costs: a wide midfielder delivers from the touchline,
+    /// on the side his foot is for.
+    #[test]
+    fn a_wide_midfielder_on_his_weaker_side_is_still_penalised() {
+        let player = right_footed_left_winger();
+        let alternate_position_cost = 4.0;
+
+        assert!(
+            positional_fit_for_assignment(&player, &Position::LeftMidfielder)
+                < ovr_for_position(&player, &Position::LeftMidfielder) - alternate_position_cost
+        );
     }
 
     #[test]
