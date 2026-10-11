@@ -629,6 +629,42 @@ fn a_side_whose_goalkeeper_is_sent_off_puts_another_one_in_goal() {
     );
 }
 
+/// An injured player is replaced at once, ahead of any tactical change, by
+/// the bench player best suited to his position.
+#[test]
+fn a_side_replaces_an_injured_player() {
+    let mut state = LiveMatchState::new(
+        team("home", eleven("home", 60, 100)),
+        team("away", eleven("away", 60, 100)),
+        MatchConfig::default(),
+        bench("home", 55),
+        bench("away", 55),
+        false,
+    );
+    let mut rng = StdRng::seed_from_u64(4);
+    let manager = profile(50, AiPersonality::Pragmatist);
+    state.step_minute(&mut rng);
+    state.step_minute(&mut rng);
+    state.test_injure("home_def1");
+
+    state.step_minute(&mut rng);
+    for cmd in ai_decide(&state, Side::Home, &manager, &mut rng) {
+        let _ = state.apply_command(cmd);
+    }
+
+    let snapshot = state.snapshot();
+    assert!(
+        !snapshot
+            .home_team
+            .players
+            .iter()
+            .any(|p| p.id == "home_def1"),
+        "the injured defender is still on the pitch"
+    );
+    assert!(snapshot.injured.is_empty());
+    assert_eq!(snapshot.home_team.players.len(), 11);
+}
+
 // ---------------------------------------------------------------------------
 // Who comes off
 // ---------------------------------------------------------------------------

@@ -9,6 +9,19 @@ pub(crate) mod shared;
 pub mod types;
 
 // Re-export key types for convenience
+/// How much likelier a player of `fitness` is to be hurt in a challenge: the
+/// less match-fit, the likelier. Mirrors the table `ofm_core` uses for
+/// match-day injuries.
+pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
+    match fitness {
+        0..=29 => 3.0,
+        30..=49 => 2.0,
+        50..=69 => 1.5,
+        90.. => 0.7,
+        _ => 1.0,
+    }
+}
+
 pub use engine::simulate;
 pub use engine::simulate_with_rng;
 pub use event::{EventType, MatchEvent};

@@ -458,7 +458,17 @@ impl LiveMatchState {
         let card_events = self.maybe_card(minute, fouling_side, &fouler.id, zone, rng);
         events.extend(card_events);
 
-        if rng.random_range(0.0..1.0f64) < self.config.injury_probability {
+        // An unknown player reads as fit enough not to change the odds.
+        let fouled_fitness = self
+            .team_ref(att_side)
+            .players
+            .iter()
+            .find(|player| player.id == fouled.id)
+            .map_or(80, |player| player.fitness);
+        let injury_chance =
+            self.config.injury_probability * crate::injury_fitness_multiplier(fouled_fitness);
+        if !self.injured.contains(&fouled.id) && rng.random_range(0.0..1.0f64) < injury_chance {
+            self.injured.insert(fouled.id.clone());
             let evt =
                 MatchEvent::new(minute, EventType::Injury, att_side, zone).with_player(&fouled.id);
             self.events.push(evt.clone());
