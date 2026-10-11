@@ -582,7 +582,13 @@
       "twistedAnkle": "Tobillo torcido",
       "kneeBruise": "Contusión en la rodilla",
       "hamstringTightness": "Tensión en el isquiotibial",
-      "calfStrain": "Distensión en la pantorrilla"
+      "calfStrain": "Distensión en la pantorrilla",
+      "hamstringTear": "Rotura de isquiotibiales",
+      "ankleSprain": "Esguince de tobillo",
+      "groinStrain": "Distensión inguinal",
+      "kneeLigament": "Lesión de ligamento de rodilla",
+      "brokenFoot": "Fractura de pie",
+      "achillesInjury": "Lesión en el tendón de Aquiles"
     },
     "scoutRatings": {
       "excellent": "Excelente",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} se ha retirado",
         "body": "{{player}} se ha retirado del fútbol, así que lo he quitado de la lista de seguimiento."
+      },
+      "matchInjury": {
+        "subject": "{{player}}, lesionado",
+        "body": "Jefe, {{player}} se lesionó en el partido ({{injury}}). Estará de baja unos {{days}} días."
       }
     },
     "news": {

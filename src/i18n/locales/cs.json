@@ -586,7 +586,13 @@
       "twistedAnkle": "Podvrtnutý kotník",
       "kneeBruise": "Pohmožděné koleno",
       "hamstringTightness": "Ztuhlý zadní stehenní sval",
-      "calfStrain": "Natažené lýtko"
+      "calfStrain": "Natažené lýtko",
+      "hamstringTear": "Natržení hamstringu",
+      "ankleSprain": "Podvrtnutý kotník",
+      "groinStrain": "Natažené tříslo",
+      "kneeLigament": "Poranění kolenních vazů",
+      "brokenFoot": "Zlomenina nohy",
+      "achillesInjury": "Zranění Achillovy šlachy"
     },
     "scoutRatings": {
       "excellent": "Vynikající",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} ukončil kariéru",
         "body": "{{player}} ukončil kariéru, takže jsem ho vyřadil ze sledovaných."
+      },
+      "matchInjury": {
+        "subject": "{{player}} zraněn",
+        "body": "Šéfe, {{player}} se v zápase zranil ({{injury}}). Vynechá zhruba {{days}} dní."
       }
     },
     "news": {

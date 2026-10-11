@@ -586,7 +586,13 @@
       "twistedAnkle": "Pergelangan kaki terkilir",
       "kneeBruise": "Memar lutut",
       "hamstringTightness": "Otot hamstring menegang",
-      "calfStrain": "Cedera betis"
+      "calfStrain": "Cedera betis",
+      "hamstringTear": "Robek hamstring",
+      "ankleSprain": "Keseleo pergelangan kaki",
+      "groinStrain": "Cedera selangkangan",
+      "kneeLigament": "Cedera ligamen lutut",
+      "brokenFoot": "Patah tulang kaki",
+      "achillesInjury": "Cedera tendon Achilles"
     },
     "scoutRatings": {
       "excellent": "Sangat Baik",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} telah pensiun",
         "body": "{{player}} telah pensiun dari sepak bola, jadi saya mengeluarkannya dari daftar pantauan."
+      },
+      "matchInjury": {
+        "subject": "{{player}} cedera",
+        "body": "Bos, {{player}} cedera dalam pertandingan ({{injury}}). Ia diperkirakan absen sekitar {{days}} hari."
       }
     },
     "news": {

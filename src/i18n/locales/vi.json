@@ -586,7 +586,13 @@
       "twistedAnkle": "Trẹo mắt cá chân",
       "kneeBruise": "Bầm đầu gối",
       "hamstringTightness": "Căng gân kheo",
-      "calfStrain": "Căng cơ bắp chân"
+      "calfStrain": "Căng cơ bắp chân",
+      "hamstringTear": "Rách gân kheo",
+      "ankleSprain": "Bong gân cổ chân",
+      "groinStrain": "Căng cơ háng",
+      "kneeLigament": "Tổn thương dây chằng gối",
+      "brokenFoot": "Gãy xương bàn chân",
+      "achillesInjury": "Chấn thương gân Achilles"
     },
     "scoutRatings": {
       "excellent": "Xuất sắc",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} đã giải nghệ",
         "body": "{{player}} đã giải nghệ nên tôi đã đưa cậu ấy ra khỏi danh sách theo dõi."
+      },
+      "matchInjury": {
+        "subject": "{{player}} chấn thương",
+        "body": "Sếp, {{player}} bị chấn thương trong trận ({{injury}}). Dự kiến phải nghỉ khoảng {{days}} ngày."
       }
     },
     "news": {

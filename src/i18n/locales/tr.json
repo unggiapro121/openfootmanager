@@ -586,7 +586,13 @@
       "twistedAnkle": "Ayak bileği burkulması",
       "kneeBruise": "Diz ezilmesi",
       "hamstringTightness": "Arka adale gerginliği",
-      "calfStrain": "Baldır zorlanması"
+      "calfStrain": "Baldır zorlanması",
+      "hamstringTear": "Arka adale yırtığı",
+      "ankleSprain": "Ayak bileği burkulması",
+      "groinStrain": "Kasık gerilmesi",
+      "kneeLigament": "Diz bağı hasarı",
+      "brokenFoot": "Ayak kırığı",
+      "achillesInjury": "Aşil tendonu sakatlığı"
     },
     "scoutRatings": {
       "excellent": "Mükemmel",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} futbolu bıraktı",
         "body": "{{player}} futbolu bıraktı, bu yüzden onu izleme listesinden çıkardım."
+      },
+      "matchInjury": {
+        "subject": "{{player}} sakatlandı",
+        "body": "Hocam, {{player}} maçta sakatlandı ({{injury}}). Yaklaşık {{days}} gün forma giyemeyecek."
       }
     },
     "news": {

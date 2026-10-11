@@ -582,7 +582,13 @@
       "twistedAnkle": "Entorse de la cheville",
       "kneeBruise": "Contusion au genou",
       "hamstringTightness": "Raideur aux ischio-jambiers",
-      "calfStrain": "Élongation du mollet"
+      "calfStrain": "Élongation du mollet",
+      "hamstringTear": "Déchirure des ischio-jambiers",
+      "ankleSprain": "Entorse de la cheville",
+      "groinStrain": "Élongation à l'aine",
+      "kneeLigament": "Lésion des ligaments du genou",
+      "brokenFoot": "Fracture du pied",
+      "achillesInjury": "Blessure au tendon d'Achille"
     },
     "scoutRatings": {
       "excellent": "Excellent",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} a pris sa retraite",
         "body": "{{player}} a pris sa retraite, je l'ai donc retiré de la liste de suivi."
+      },
+      "matchInjury": {
+        "subject": "{{player}} blessé",
+        "body": "Boss, {{player}} s'est blessé pendant le match ({{injury}}). Il devrait être absent environ {{days}} jours."
       }
     },
     "news": {

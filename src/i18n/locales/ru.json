@@ -582,7 +582,13 @@
       "twistedAnkle": "Подвернутая лодыжка",
       "kneeBruise": "Ушиб колена",
       "hamstringTightness": "Зажатость задней поверхности бедра",
-      "calfStrain": "Растяжение икроножной мышцы"
+      "calfStrain": "Растяжение икроножной мышцы",
+      "hamstringTear": "Разрыв подколенного сухожилия",
+      "ankleSprain": "Растяжение голеностопа",
+      "groinStrain": "Растяжение паха",
+      "kneeLigament": "Повреждение связок колена",
+      "brokenFoot": "Перелом стопы",
+      "achillesInjury": "Травма ахиллова сухожилия"
     },
     "scoutRatings": {
       "excellent": "Отлично",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} завершил карьеру",
         "body": "{{player}} завершил карьеру, поэтому я убрал его из списка наблюдения."
+      },
+      "matchInjury": {
+        "subject": "{{player}} травмирован",
+        "body": "Шеф, {{player}} получил травму в матче ({{injury}}). Он пропустит примерно {{days}} дн."
       }
     },
     "news": {

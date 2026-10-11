@@ -586,7 +586,13 @@
       "twistedAnkle": "Twisted ankle",
       "kneeBruise": "Knee bruise",
       "hamstringTightness": "Hamstring tightness",
-      "calfStrain": "Calf strain"
+      "calfStrain": "Calf strain",
+      "hamstringTear": "Hamstring tear",
+      "ankleSprain": "Ankle sprain",
+      "groinStrain": "Groin strain",
+      "kneeLigament": "Knee ligament damage",
+      "brokenFoot": "Broken foot",
+      "achillesInjury": "Achilles injury"
     },
     "scoutRatings": {
       "excellent": "Excellent",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} has retired",
         "body": "{{player}} has retired from football, so I have taken him off the watchlist."
+      },
+      "matchInjury": {
+        "subject": "{{player}} injured",
+        "body": "Boss, {{player}} picked up an injury in the match ({{injury}}). He is expected to be out for about {{days}} days."
       }
     },
     "news": {

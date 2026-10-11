@@ -582,7 +582,13 @@
       "twistedAnkle": "Tornozelo torcido",
       "kneeBruise": "Contusão no joelho",
       "hamstringTightness": "Tensão no posterior da coxa",
-      "calfStrain": "Distensão na panturrilha"
+      "calfStrain": "Distensão na panturrilha",
+      "hamstringTear": "Ruptura na posterior da coxa",
+      "ankleSprain": "Entorse no tornozelo",
+      "groinStrain": "Estiramento na virilha",
+      "kneeLigament": "Lesão nos ligamentos do joelho",
+      "brokenFoot": "Fratura no pé",
+      "achillesInjury": "Lesão no tendão de Aquiles"
     },
     "scoutRatings": {
       "excellent": "Excelente",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} se aposentou",
         "body": "{{player}} se aposentou do futebol, então tirei ele da lista de acompanhamento."
+      },
+      "matchInjury": {
+        "subject": "{{player}} machucado",
+        "body": "Chefe, {{player}} se machucou na partida ({{injury}}). Deve ficar fora cerca de {{days}} dias."
       }
     },
     "news": {

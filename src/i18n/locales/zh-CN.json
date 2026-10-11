@@ -582,7 +582,13 @@
       "twistedAnkle": "脚踝扭伤",
       "kneeBruise": "膝盖挫伤",
       "hamstringTightness": "腿筋紧张",
-      "calfStrain": "小腿拉伤"
+      "calfStrain": "小腿拉伤",
+      "hamstringTear": "腘绳肌撕裂",
+      "ankleSprain": "踝关节扭伤",
+      "groinStrain": "腹股沟拉伤",
+      "kneeLigament": "膝关节韧带损伤",
+      "brokenFoot": "足部骨折",
+      "achillesInjury": "跟腱伤"
     },
     "scoutRatings": {
       "excellent": "极佳",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} 已退役",
         "body": "{{player}} 已退役，因此我已将他移出关注名单。"
+      },
+      "matchInjury": {
+        "subject": "{{player}} 受伤",
+        "body": "老板，{{player}} 在比赛中受伤（{{injury}}），预计需要休养约 {{days}} 天。"
       }
     },
     "news": {

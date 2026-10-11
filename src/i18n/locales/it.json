@@ -601,7 +601,13 @@
       "twistedAnkle": "Distorsione alla caviglia",
       "kneeBruise": "Contusione al ginocchio",
       "hamstringTightness": "Tensione al bicipite femorale",
-      "calfStrain": "Stiramento al polpaccio"
+      "calfStrain": "Stiramento al polpaccio",
+      "hamstringTear": "Lesione al bicipite femorale",
+      "ankleSprain": "Distorsione alla caviglia",
+      "groinStrain": "Stiramento all'inguine",
+      "kneeLigament": "Lesione ai legamenti del ginocchio",
+      "brokenFoot": "Frattura al piede",
+      "achillesInjury": "Infortunio al tendine d'Achille"
     },
     "scoutRatings": {
       "excellent": "Eccellente",
@@ -3576,6 +3582,10 @@
       "youthWatchRetired": {
         "subject": "{{player}} si è ritirato",
         "body": "{{player}} si è ritirato dal calcio, quindi l'ho tolto dalla lista osservati."
+      },
+      "matchInjury": {
+        "subject": "{{player}} infortunato",
+        "body": "Mister, {{player}} si è infortunato in partita ({{injury}}). Dovrebbe restare fuori circa {{days}} giorni."
       }
     },
     "news": {
