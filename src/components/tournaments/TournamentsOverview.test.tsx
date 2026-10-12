@@ -132,7 +132,7 @@ describe("TournamentsOverview", () => {
   });
 
   // Given leaders for every board, then the overview shows the scorers, the
-  // assists and both cards boards, each with its own title.
+  // assists, the clean sheets and both cards boards, each with its own title.
   it("shows the goal, assist and card leaders", () => {
     const entry = (playerId: string, value: number) => ({
       playerId,
@@ -147,6 +147,7 @@ describe("TournamentsOverview", () => {
         competitionId: "eng-1",
         goals: [entry("scorer", 9)],
         assists: [entry("creator", 6)],
+        cleanSheets: [entry("keeper", 5)],
         yellowCards: [entry("hacker", 4)],
         redCards: [],
       },
@@ -158,6 +159,8 @@ describe("TournamentsOverview", () => {
     expect(screen.getByText("tournaments.mostRedCards")).toBeInTheDocument();
     expect(screen.getByText("Full creator")).toBeInTheDocument();
     expect(screen.getByText("Full hacker")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.topCleanSheets")).toBeInTheDocument();
+    expect(screen.getByText("Full keeper")).toBeInTheDocument();
     expect(screen.getByText("tournaments.noCards")).toBeInTheDocument();
   });
 
@@ -167,6 +170,7 @@ describe("TournamentsOverview", () => {
 
     expect(screen.getByText("tournaments.noGoals")).toBeInTheDocument();
     expect(screen.getByText("tournaments.noAssists")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.noCleanSheets")).toBeInTheDocument();
     expect(screen.getAllByText("tournaments.noCards")).toHaveLength(2);
   });
 });

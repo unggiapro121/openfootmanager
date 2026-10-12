@@ -25,6 +25,7 @@ import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/erro
 import ContextMenu, { type ContextMenuItem } from "../ContextMenu";
 import { Badge, Card, CardBody, Select } from "../ui";
 import ScheduleCalendarGrid from "./ScheduleCalendarGrid";
+import CompetitionLeaderboards from "../tournaments/CompetitionLeaderboards";
 import MatchScoreButton from "../match/MatchScoreButton";
 
 interface ScheduleTabProps {
@@ -252,16 +253,25 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
       )}
 
       {view === "standings" && (
-        <StandingsView
-          competition={selectedCompetition}
-          userTeamId={userTeamId ?? null}
-          isPreseason={isPreseason}
-          seasonContext={seasonContext}
-          onSelectTeam={onSelectTeam}
-          buildTeamMenuItem={buildTeamMenuItem}
-          gameState={gameState}
-          t={t}
-        />
+        <div className="flex flex-col gap-5">
+          <StandingsView
+            competition={selectedCompetition}
+            userTeamId={userTeamId ?? null}
+            isPreseason={isPreseason}
+            seasonContext={seasonContext}
+            onSelectTeam={onSelectTeam}
+            buildTeamMenuItem={buildTeamMenuItem}
+            gameState={gameState}
+            t={t}
+          />
+          {!isPreseason && (
+            <CompetitionLeaderboards
+              competitionId={selectedCompetition?.id ?? null}
+              currentDate={gameState.clock.current_date}
+              onSelectTeam={onSelectTeam}
+            />
+          )}
+        </div>
       )}
     </div>
   );

@@ -856,6 +856,8 @@ fn get_competition_leaders_counts_only_that_competitions_fixtures() {
     assert_eq!(scorer.value, 1);
     assert_eq!(scorer.team_name.as_deref(), Some("Alpha FC"));
     assert!(leaders.red_cards.is_empty());
+    // The fixture's scorer is no keeper, so no clean sheet is credited.
+    assert!(leaders.clean_sheets.is_empty());
 }
 
 /// Given an id no competition has,

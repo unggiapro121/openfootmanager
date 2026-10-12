@@ -16,6 +16,7 @@ export interface CompetitionLeadersData {
   competitionId: string;
   goals: LeaderEntryData[];
   assists: LeaderEntryData[];
+  cleanSheets: LeaderEntryData[];
   yellowCards: LeaderEntryData[];
   redCards: LeaderEntryData[];
 }

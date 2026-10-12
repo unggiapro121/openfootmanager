@@ -195,13 +195,15 @@ pub struct LeaderEntryDto {
     pub value: u32,
 }
 
-/// A competition's goal, assist, yellow-card and red-card leaders, best first.
+/// A competition's goal, assist, clean-sheet, yellow-card and red-card leaders,
+/// best first.
 #[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct CompetitionLeadersDto {
     pub competition_id: String,
     pub goals: Vec<LeaderEntryDto>,
     pub assists: Vec<LeaderEntryDto>,
+    pub clean_sheets: Vec<LeaderEntryDto>,
     pub yellow_cards: Vec<LeaderEntryDto>,
     pub red_cards: Vec<LeaderEntryDto>,
 }

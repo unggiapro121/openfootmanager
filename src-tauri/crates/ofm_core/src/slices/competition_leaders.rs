@@ -1,4 +1,5 @@
-//! A competition's player leaderboards: goals, assists, yellow and red cards.
+//! A competition's player leaderboards: goals, assists, clean sheets, yellow and
+//! red cards.
 //!
 //! The per-match stats rows carry the kind of fixture (league, cup, …) but not
 //! which competition it belonged to, so a competition's rows are picked by the
@@ -7,6 +8,7 @@
 use std::collections::{BTreeMap, HashSet};
 
 use domain::league::FixtureStatus;
+use domain::player::Position;
 use domain::stats::PlayerMatchStatsRecord;
 use serde::Serialize;
 
@@ -28,6 +30,7 @@ pub struct LeaderEntry {
 pub struct CompetitionLeaders {
     pub goals: Vec<LeaderEntry>,
     pub assists: Vec<LeaderEntry>,
+    pub clean_sheets: Vec<LeaderEntry>,
     pub yellow_cards: Vec<LeaderEntry>,
     pub red_cards: Vec<LeaderEntry>,
 }
@@ -36,6 +39,7 @@ pub struct CompetitionLeaders {
 struct Tally {
     goals: u32,
     assists: u32,
+    clean_sheets: u32,
     yellow_cards: u32,
     red_cards: u32,
 }
@@ -59,11 +63,20 @@ pub fn competition_leaders(
     rows: &[PlayerMatchStatsRecord],
     limit: usize,
 ) -> CompetitionLeaders {
+    let keepers: HashSet<&str> = game
+        .players
+        .iter()
+        .filter(|player| player.natural_position == Position::Goalkeeper)
+        .map(|player| player.id.as_str())
+        .collect();
     let mut tallies: BTreeMap<&str, Tally> = BTreeMap::new();
     for row in rows {
         let tally = tallies.entry(row.player_id.as_str()).or_default();
         tally.goals += u32::from(row.goals);
         tally.assists += u32::from(row.assists);
+        if keepers.contains(row.player_id.as_str()) && kept_a_clean_sheet(row) {
+            tally.clean_sheets += 1;
+        }
         tally.yellow_cards += u32::from(row.yellow_cards);
         tally.red_cards += u32::from(row.red_cards);
     }
@@ -71,9 +84,21 @@ pub fn competition_leaders(
     CompetitionLeaders {
         goals: board(|tally| tally.goals),
         assists: board(|tally| tally.assists),
+        clean_sheets: board(|tally| tally.clean_sheets),
         yellow_cards: board(|tally| tally.yellow_cards),
         red_cards: board(|tally| tally.red_cards),
     }
+}
+
+/// The same rule the season's player stats use: a keeper who played, and whose
+/// side conceded nothing.
+fn kept_a_clean_sheet(row: &PlayerMatchStatsRecord) -> bool {
+    let conceded = if row.team_id == row.home_team_id {
+        row.away_goals
+    } else {
+        row.home_goals
+    };
+    row.minutes_played > 0 && conceded == 0
 }
 
 fn leaderboard(
@@ -141,6 +166,13 @@ mod tests {
         player
     }
 
+    fn keeper(id: &str, name: &str, team_id: &str) -> Player {
+        let mut keeper = player(id, name, team_id);
+        keeper.position = Position::Goalkeeper;
+        keeper.natural_position = Position::Goalkeeper;
+        keeper
+    }
+
     fn team(id: &str, name: &str) -> Team {
         Team::new(
             id.to_string(),
@@ -180,6 +212,8 @@ mod tests {
                 player("bellingham", "Bellingham", "blues"),
                 // An id that sorts last for a name that sorts first.
                 player("z-adams", "Adams", "blues"),
+                keeper("pickford", "Pickford", "reds"),
+                keeper("raya", "Raya", "blues"),
             ],
             vec![],
             vec![],
@@ -325,5 +359,55 @@ mod tests {
         }];
 
         assert!(competition_leaders(&game(), &rows, 10).goals.is_empty());
+    }
+
+    /// Given two keepers, one whose side conceded nothing in both his matches
+    /// (home and away) and one who conceded, then only the first has clean
+    /// sheets, counted per match.
+    #[test]
+    fn counts_a_keepers_clean_sheets_from_the_score() {
+        let rows = vec![
+            // Reds at home win 2-0: Pickford keeps a clean sheet, Raya does not.
+            PlayerMatchStatsRecord {
+                home_goals: 2,
+                ..row("l1", "pickford")
+            },
+            PlayerMatchStatsRecord {
+                team_id: "blues".to_string(),
+                opponent_team_id: "reds".to_string(),
+                home_goals: 2,
+                ..row("l1", "raya")
+            },
+            // Reds away at Blues, 0-1: Pickford again.
+            PlayerMatchStatsRecord {
+                home_team_id: "blues".to_string(),
+                away_team_id: "reds".to_string(),
+                away_goals: 1,
+                ..row("l2", "pickford")
+            },
+        ];
+
+        let leaders = competition_leaders(&game(), &rows, 10);
+
+        assert_eq!(values(&leaders.clean_sheets), vec![("pickford", 2)]);
+    }
+
+    /// Given an outfielder whose side conceded nothing, or a keeper who stayed
+    /// on the bench, then neither is credited a clean sheet.
+    #[test]
+    fn credits_clean_sheets_only_to_keepers_who_played() {
+        let rows = vec![
+            row("l1", "kane"),
+            PlayerMatchStatsRecord {
+                minutes_played: 0,
+                ..row("l2", "pickford")
+            },
+        ];
+
+        assert!(
+            competition_leaders(&game(), &rows, 10)
+                .clean_sheets
+                .is_empty()
+        );
     }
 }

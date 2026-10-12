@@ -436,6 +436,41 @@ describe("ScheduleTab", () => {
     expect(onSelectTeam).toHaveBeenCalledWith("team-2");
   });
 
+  // Given a league with leaders, when its standings are shown, then its top
+  // scorers, top assists and clean sheets are shown under the table.
+  it("shows the league's scorer, assist and clean-sheet leaders with its standings", async () => {
+    const entry = (playerId: string, value: number) => ({
+      playerId,
+      name: playerId,
+      fullName: `Full ${playerId}`,
+      teamId: "team-2",
+      teamName: "Beta FC",
+      value,
+    });
+    mockedInvoke.mockImplementation(async (command: string) =>
+      command === "get_competition_leaders"
+        ? {
+            competitionId: "league-1",
+            goals: [entry("scorer", 7)],
+            assists: [entry("creator", 4)],
+            cleanSheets: [entry("keeper", 3)],
+            yellowCards: [],
+            redCards: [],
+          }
+        : makeSlice(),
+    );
+    render(<ScheduleTab gameState={makeGameState(true)} onSelectTeam={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Standings/i }));
+
+    expect(await screen.findByText("Full scorer")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.topScorers")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.topAssists")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.topCleanSheets")).toBeInTheDocument();
+    expect(screen.getByText("Full creator")).toBeInTheDocument();
+    expect(screen.getByText("Full keeper")).toBeInTheDocument();
+  });
+
   it("marks promotion and relegation zones in standings", async () => {
     const state = makeGameState(true);
     const standing = (teamId: string, points: number) => ({

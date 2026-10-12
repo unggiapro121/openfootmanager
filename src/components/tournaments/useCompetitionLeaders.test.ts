@@ -11,7 +11,7 @@ vi.mock("../../services/competitionsService", () => ({
 const mockedFetch = vi.mocked(fetchCompetitionLeaders);
 
 function leaders(competitionId: string) {
-  return { competitionId, goals: [], assists: [], yellowCards: [], redCards: [] };
+  return { competitionId, goals: [], assists: [], cleanSheets: [], yellowCards: [], redCards: [] };
 }
 
 describe("useCompetitionLeaders", () => {
