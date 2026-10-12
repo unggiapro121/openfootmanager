@@ -716,7 +716,8 @@
       "strong": "强",
       "good": "良好",
       "risky": "有风险"
-    }
+    },
+    "styleFitKeeperHint": "扑救 {{save}}（决定比赛结果）· 风格偏差 {{lean}}"
   },
   "tactics": {
     "formationStyle": "阵型与风格",

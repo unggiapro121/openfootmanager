@@ -716,7 +716,8 @@
       "strong": "Stark",
       "good": "Gut",
       "risky": "Riskant"
-    }
+    },
+    "styleFitKeeperHint": "Paraden {{save}} (entscheidet Spiele) · Stil-Abweichung {{lean}}"
   },
   "tactics": {
     "formationStyle": "Formation & Stil",

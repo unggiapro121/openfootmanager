@@ -201,6 +201,16 @@ describe("SquadTab", () => {
   });
 
   /**
+   * Given a roster with one keeper in goal, when the roster is shown, then only the keeper's
+   * style-fit badge explains, in its tooltip, that keepers are scored on shot-stopping.
+   */
+  it("explains the keeper style fit in a tooltip on the keeper row only", () => {
+    renderSquadTab(makeGameState());
+
+    expect(screen.getAllByTitle("squad.styleFitKeeperHint")).toHaveLength(1);
+  });
+
+  /**
    * Given a player with traits, when the roster is shown, then each trait is an
    * icon alone, named in its tooltip, so the column stays narrow.
    */

@@ -716,7 +716,8 @@
       "strong": "Forte",
       "good": "Bonne",
       "risky": "Risquée"
-    }
+    },
+    "styleFitKeeperHint": "Arrêts {{save}} (décide des matchs) · Écart de style {{lean}}"
   },
   "tactics": {
     "formationStyle": "Formation & style",

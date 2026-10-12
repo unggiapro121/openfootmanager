@@ -692,6 +692,7 @@
       "good": "Good",
       "risky": "Risky"
     },
+    "styleFitKeeperHint": "Shot-stopping {{save}} (decides match outcomes) · Style lean {{lean}}",
     "noBench": "No bench players.",
     "viewProfile": "View profile",
     "swapPlayer": "Swap player",

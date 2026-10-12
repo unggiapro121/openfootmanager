@@ -716,7 +716,8 @@
       "strong": "Fuerte",
       "good": "Bueno",
       "risky": "Arriesgado"
-    }
+    },
+    "styleFitKeeperHint": "Paradas {{save}} (decide los partidos) · Ajuste de estilo {{lean}}"
   },
   "tactics": {
     "formationStyle": "Formación y Estilo",

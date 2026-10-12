@@ -5,9 +5,16 @@ interface BadgeProps {
   variant?: "primary" | "accent" | "success" | "danger" | "neutral";
   size?: "sm" | "md";
   className?: string;
+  title?: string;
 }
 
-export function Badge({ children, variant = "neutral", size = "sm", className = "" }: BadgeProps) {
+export function Badge({
+  children,
+  variant = "neutral",
+  size = "sm",
+  className = "",
+  title,
+}: BadgeProps) {
   const variants = {
     primary: "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300",
     accent: "bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300",
@@ -23,6 +30,7 @@ export function Badge({ children, variant = "neutral", size = "sm", className = 
 
   return (
     <span
+      title={title}
       className={`inline-flex items-center font-bold font-heading uppercase tracking-wider rounded-md ${variants[variant]} ${sizes[size]} ${className}`}
     >
       {children}

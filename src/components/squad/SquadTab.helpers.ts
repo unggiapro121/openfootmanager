@@ -7,6 +7,7 @@ import { canonicalPosition, normalisePosition } from "../../lib/positions";
 
 import type { PlayerData } from "../../store/gameStore";
 import { getPlayerOvr } from "../../lib/helpers";
+import { getKeeperShotStopping, getKeeperStyleLean, isKeeperStyleFitSlot } from "./keeperStyleFit";
 
 export type SquadSection = "xi" | "bench";
 export type DragState = {
@@ -477,6 +478,10 @@ export function getPlayStyleFit(
   currentPos?: string,
 ): SquadStyleFit {
   const attributeScore = (() => {
+    // Outfield attributes say nothing about a keeper, and the old mix rated every keeper risky.
+    if (isKeeperStyleFitSlot(player, currentPos)) {
+      return getKeeperShotStopping(player) + getKeeperStyleLean(player, playStyle);
+    }
     switch (playStyle) {
       case "Attacking":
         return averageAttributes(player, ["shooting", "dribbling", "pace", "passing"]);

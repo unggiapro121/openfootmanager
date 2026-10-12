@@ -692,6 +692,7 @@
       "good": "Dobrá",
       "risky": "Riziková"
     },
+    "styleFitKeeperHint": "Chytání {{save}} (rozhoduje zápasy) · Stylová odchylka {{lean}}",
     "noBench": "Žádní hráči na lavičce.",
     "viewProfile": "Zobrazit profil",
     "swapPlayer": "Prohodit hráče",

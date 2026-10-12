@@ -716,7 +716,8 @@
       "strong": "Forte",
       "good": "Bom",
       "risky": "Arriscado"
-    }
+    },
+    "styleFitKeeperHint": "Defesas {{save}} (decide os jogos) · Ajuste ao estilo {{lean}}"
   },
   "tactics": {
     "formationStyle": "Formação & Estilo",

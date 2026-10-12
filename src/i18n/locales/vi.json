@@ -692,6 +692,7 @@
       "good": "Hợp",
       "risky": "Rủi ro"
     },
+    "styleFitKeeperHint": "Cản phá {{save}} (quyết định kết quả trận) · Độ lệch kiểu chơi {{lean}}",
     "noBench": "Không có cầu thủ dự bị.",
     "viewProfile": "Xem hồ sơ",
     "swapPlayer": "Đổi cầu thủ",

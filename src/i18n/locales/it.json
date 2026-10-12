@@ -735,7 +735,8 @@
       "strong": "Forte",
       "good": "Buono",
       "risky": "Rischioso"
-    }
+    },
+    "styleFitKeeperHint": "Parate {{save}} (decide le partite) · Scarto di stile {{lean}}"
   },
   "tactics": {
     "formationStyle": "Formazione e stile",

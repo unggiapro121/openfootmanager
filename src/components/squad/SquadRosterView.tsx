@@ -21,6 +21,7 @@ import { TraitList } from "../TraitBadge";
 import { useClubPotentialAssessments } from "../../hooks/useClubPotentialAssessments";
 import { withScoutedWonderkid } from "../../lib/scoutedTraits";
 import { SquadSortHeader } from "./SquadSortHeader";
+import { getKeeperFitBreakdown } from "./keeperStyleFit";
 import JerseyNumberPickerModal from "./JerseyNumberPickerModal";
 import {
   calcAge,
@@ -649,6 +650,7 @@ export default function SquadRosterView({
                 const wrongPos = inXI && isOutOfPosition(player);
                 const tacticalFit = getTacticalFit(player);
                 const styleFit = getPlayStyleFit(player, activePlayStyle, currentPos);
+                const keeperFit = getKeeperFitBreakdown(player, activePlayStyle, currentPos);
                 const contractRiskLevel = getContractRiskLevel(player.contract_end, clockDate);
                 const contractRiskLabel =
                   contractRiskLevel === "critical"
@@ -885,6 +887,7 @@ export default function SquadRosterView({
                           }
                           size="sm"
                           className="whitespace-nowrap"
+                          title={keeperFit ? t("squad.styleFitKeeperHint", keeperFit) : undefined}
                         >
                           {t(`squad.styleFitValues.${styleFit}`)}
                         </Badge>

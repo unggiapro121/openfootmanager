@@ -692,6 +692,7 @@
       "good": "İyi",
       "risky": "Riskli"
     },
+    "styleFitKeeperHint": "Kurtarış {{save}} (maç sonucunu belirler) · Stil sapması {{lean}}",
     "noBench": "Yedek oyuncu yok.",
     "viewProfile": "Profili görüntüle",
     "swapPlayer": "Oyuncuyu değiştir",

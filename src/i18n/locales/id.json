@@ -692,6 +692,7 @@
       "good": "Baik",
       "risky": "Berisiko"
     },
+    "styleFitKeeperHint": "Penyelamatan {{save}} (menentukan hasil laga) · Selisih gaya {{lean}}",
     "noBench": "Tidak ada pemain cadangan.",
     "viewProfile": "Lihat profil",
     "swapPlayer": "Tukar pemain",
