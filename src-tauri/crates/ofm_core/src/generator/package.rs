@@ -4085,6 +4085,61 @@ colors:
         std::fs::remove_dir_all(&dir).ok();
     }
 
+    /// Given a package player with no club (and stray contract and academy fields),
+    /// when the world is built, then he opens as a free agent: no club, no contract,
+    /// no wage, no shirt, senior — with his authored identity and ability kept.
+    #[test]
+    fn authored_players_without_a_club_open_as_free_agents() {
+        let dir = temp_package();
+        write(
+            &dir,
+            "team.yaml",
+            "schema: team\nid: home-fc\nname: Home FC\ncity: Town\ncountry: ENG\ncolors: { primary: \"#000\", secondary: \"#fff\" }\n",
+        );
+        // Contract fields and the academy flag on a club-less player describe
+        // nothing real, so the world must drop them rather than carry them over.
+        write(
+            &dir,
+            "free.yaml",
+            "schema: player\nid: free-one\nname: Free One\nnationality: ENG\nposition: Striker\noverall: 75\ncontractLength: 3\nwage: 50000\nyouth: true\n",
+        );
+
+        let (package, errors) = load_world_package(&dir);
+        assert!(
+            errors.is_empty(),
+            "a player with no club is valid: {errors:?}"
+        );
+
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let agent = world
+            .players
+            .iter()
+            .find(|p| p.id == "free-one")
+            .expect("the club-less authored player should be in the world");
+        assert_eq!(agent.team_id, None);
+        assert!(agent.contract_end().is_none());
+        assert!(agent.contract_start().is_none());
+        assert_eq!(agent.wage(), 0);
+        assert_eq!(agent.jersey_number, None);
+        assert_eq!(agent.squad_role, domain::player::SquadRole::Senior);
+        assert_eq!(agent.full_name, "Free One");
+        assert!(
+            agent.ovr >= 60,
+            "the authored ability carries over, got {}",
+            agent.ovr
+        );
+
+        // The free agent is not counted into anyone's squad.
+        assert!(
+            world
+                .players
+                .iter()
+                .filter(|p| p.team_id.as_deref() == Some("home-fc"))
+                .all(|p| p.id != "free-one")
+        );
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
     #[test]
     fn authored_players_are_placed_in_their_clubs() {
         let dir = temp_package();
