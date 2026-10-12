@@ -1,6 +1,7 @@
 //! Youngsters joining a club's academy: the one youth-recruit generator,
 //! behind both a youth scout's prospects and the annual intake.
 
+use super::calibration::scale_attributes;
 use super::*;
 use domain::player::{Player, Position};
 use domain::team::Team;
@@ -167,35 +168,6 @@ fn draw_youth_potential(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u8 {
     potential
         .max(ovr.saturating_add(youth_min_growth(age)))
         .min(99)
-}
-
-fn scale_attributes(attributes: &mut domain::player::PlayerAttributes, factor: f64) {
-    let scale = |value: &mut u8| {
-        *value = (f64::from(*value) * factor).round().clamp(1.0, 99.0) as u8;
-    };
-    for value in [
-        &mut attributes.pace,
-        &mut attributes.stamina,
-        &mut attributes.strength,
-        &mut attributes.agility,
-        &mut attributes.passing,
-        &mut attributes.shooting,
-        &mut attributes.tackling,
-        &mut attributes.dribbling,
-        &mut attributes.defending,
-        &mut attributes.positioning,
-        &mut attributes.vision,
-        &mut attributes.decisions,
-        &mut attributes.composure,
-        &mut attributes.aggression,
-        &mut attributes.teamwork,
-        &mut attributes.leadership,
-        &mut attributes.handling,
-        &mut attributes.reflexes,
-        &mut attributes.aerial,
-    ] {
-        scale(value);
-    }
 }
 
 /// Bring a freshly generated youngster down to what his age allows: attributes

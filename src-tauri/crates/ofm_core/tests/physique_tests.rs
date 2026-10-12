@@ -84,13 +84,20 @@ fn generated_players_have_real_heights_and_weights_for_their_position() {
     }
 }
 
-/// Given a generated world, when height and weight are set against the
+/// Given generated worlds, when height and weight are set against the
 /// attributes they shape within each position, then aerial ability follows
 /// height, strength follows weight and agility falls with height, about as
 /// strongly as in real football.
+///
+/// Five compact worlds are pooled: one holds about 430 players, few enough for a
+/// correlation to drift by ±0.06 from one seed to the next, which the bands
+/// below are too tight to absorb.
 #[test]
 fn the_attributes_a_body_shapes_follow_it() {
-    let players = generated_players(23);
+    let players: Vec<Player> = [23, 29, 31, 37, 41]
+        .into_iter()
+        .flat_map(generated_players)
+        .collect();
     let outfield = &GROUPS[1..];
     let link = |body: fn(&Player) -> f64, attr: fn(&Player) -> f64| {
         let groups: Vec<Vec<(f64, f64)>> = outfield

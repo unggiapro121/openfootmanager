@@ -1,4 +1,5 @@
 mod authored_player;
+mod calibration;
 pub mod clubs;
 pub mod competition_def;
 pub mod definitions;
@@ -305,23 +306,35 @@ pub fn repair_opening_youth_academies(game: &mut crate::game::Game) -> bool {
 /// follows the standard squad layout (GK 0-1, DEF 2-8, MID 9-15, FWD 16-21)
 /// and drives the position; the player belongs to no club and holds no
 /// contract, so clubs may sign them afterwards.
+///
+/// `pool_ovrs` are the OVRs of the nation's players already in the world. The
+/// player is drawn at the level of their lower half when there are enough of
+/// them, and at the nation's ranking tier otherwise, so filling a minnow's pool
+/// does not hand it, or the clubs that sign from it, a squad of regulars.
 pub fn generate_national_team_player(
     nationality: &str,
     squad_slot: usize,
     opening_year: u32,
+    pool_ovrs: &[u8],
 ) -> Player {
     let mut rng = rand::rng();
     let names_def = default_names_definition();
     let nationality = generation::canonicalize_generated_nationality(nationality);
     // Avoid the youth-reserved slots so the player generates at a senior age.
     let slot = senior_slot(squad_slot % SQUAD_SLOTS);
-    let player = generate_random_player_from_def(
+    let mut player = generate_random_player_from_def(
         "national-pool",
         slot,
         &nationality,
         opening_year,
         None,
         &names_def,
+        &mut rng,
+    );
+    calibration::calibrate_generated_player(
+        &mut player,
+        calibration::FillerLevel::for_nation(&nationality, pool_ovrs),
+        opening_year,
         &mut rng,
     );
     as_free_agent(player)
@@ -854,6 +867,7 @@ fn build_club(
 ) -> (domain::team::Team, Vec<Player>, Vec<Staff>) {
     let mut team = build_team(tdef, rng);
     let team_id = team.id.clone();
+    let level = calibration::FillerLevel::for_reputation(team.reputation);
 
     let mut team_players = Vec::with_capacity(GENERATED_CLUB_PLAYERS);
     for slot in 0..SQUAD_SLOTS {
@@ -867,6 +881,7 @@ fn build_club(
             names_def,
             rng,
         );
+        calibration::calibrate_generated_player(&mut player, level, opening_year, rng);
         if rng.random_range(0..100) < 12 {
             player.transfer_listed = true;
         } else if rng.random_range(0..100) < 8 {
@@ -909,6 +924,7 @@ fn build_club(
         names_def,
         rng,
     );
+    calibration::calibrate_generated_player(&mut academy_keeper, level, opening_year, rng);
     academy_keeper.squad_role = domain::player::SquadRole::Youth;
     academy_keeper.jersey_number = crate::roster::jersey_among(
         team_players
@@ -930,10 +946,12 @@ fn build_club(
 }
 
 /// The free agents a generated world opens with: [`OPENING_FREE_AGENTS_PER_CLUB`]
-/// for each of `club_count` clubs, senior-aged, drawn from `rng` so a seeded
-/// world opens with the same pool.
+/// for each club, senior-aged, drawn from `rng` so a seeded world opens with the
+/// same pool. Each is drawn at the level of a club picked from
+/// `club_reputations`, so the pool is spread across the world's levels, from the
+/// lower half of each, as players between clubs are.
 fn generate_opening_free_agents(
-    club_count: usize,
+    club_reputations: &[u32],
     country_codes: &[String],
     opening_year: u32,
     names_def: &NamesDefinition,
@@ -941,15 +959,22 @@ fn generate_opening_free_agents(
 ) -> Vec<Player> {
     let mut free_agents = Vec::new();
     for (group, per_club) in OPENING_FREE_AGENTS_PER_CLUB {
-        for _ in 0..club_count * per_club {
+        for _ in 0..club_reputations.len() * per_club {
             let nationality = &country_codes[rng.random_range(0..country_codes.len())];
-            let player = generate_random_player_from_def(
+            let mut player = generate_random_player_from_def(
                 "",
                 senior_slot_for(&group),
                 nationality,
                 opening_year,
                 None,
                 names_def,
+                rng,
+            );
+            let reputation = club_reputations[rng.random_range(0..club_reputations.len())];
+            calibration::calibrate_generated_player(
+                &mut player,
+                calibration::FillerLevel::for_reputation(reputation),
+                opening_year,
                 rng,
             );
             let mut agent = as_free_agent(player);
@@ -1045,6 +1070,9 @@ fn trim_backfill_players(
 /// squad balance is kept), appending if the position is already full. Generated
 /// players left over are then trimmed back by [`trim_backfill_players`] — the
 /// generated squad is a backfill, not a floor to pad the authored squad on top of.
+///
+/// Also returns the ids of the club's authored players, so the world build can
+/// tell them from the backfill when it levels the backfill to its league.
 fn build_package_club(
     tdef: &TeamDef,
     authored: &[&package::PlayerDef],
@@ -1052,11 +1080,11 @@ fn build_package_club(
     opening_year: u32,
     names_def: &NamesDefinition,
     rng: &mut impl rand::Rng,
-) -> (domain::team::Team, Vec<Player>, Vec<Staff>) {
+) -> (domain::team::Team, Vec<Player>, Vec<Staff>, HashSet<String>) {
     let (mut team, mut players, staff) =
         build_club(tdef, country_codes, opening_year, names_def, rng);
     if authored.is_empty() {
-        return (team, players, staff);
+        return (team, players, staff, HashSet::new());
     }
 
     let mut placed = vec![false; players.len()];
@@ -1098,7 +1126,7 @@ fn build_package_club(
         &authored_ids,
         &authored_squad_ids,
     );
-    (team, players, staff)
+    (team, players, staff, authored_squad_ids)
 }
 
 /// Human-readable name for the built-in confederations, falling back to the id.
@@ -1361,6 +1389,7 @@ pub fn build_world_data_from_package(
     let mut teams = Vec::new();
     let mut players = Vec::new();
     let mut staff = Vec::new();
+    let mut authored_player_ids = HashSet::new();
     for tdef in &package.teams {
         let authored = authored_by_club
             .get(tdef.id.as_str())
@@ -1370,7 +1399,7 @@ pub fn build_world_data_from_package(
             .get(tdef.id.as_str())
             .map(Vec::as_slice)
             .unwrap_or(NO_AUTHORED_STAFF);
-        let (team, team_players, mut team_staff) = build_package_club(
+        let (team, team_players, mut team_staff, team_authored_ids) = build_package_club(
             tdef,
             authored,
             &country_codes,
@@ -1407,7 +1436,15 @@ pub fn build_world_data_from_package(
         teams.push(team);
         players.extend(team_players);
         staff.extend(team_staff);
+        authored_player_ids.extend(team_authored_ids);
     }
+    calibration::calibrate_backfill_to_leagues(
+        &mut players,
+        &package.competitions,
+        &authored_player_ids,
+        opening_year,
+        &mut rng,
+    );
     // Unattached authored staff (no club) go directly into the staff list.
     for sdef in package.staff.iter().filter(|s| s.club.is_empty()) {
         staff.push(generation::generate_staff_from_authored_def(
@@ -1548,8 +1585,9 @@ fn generate_world_with_rng(
         teams_out.push(team);
     }
 
+    let club_reputations: Vec<u32> = teams_out.iter().map(|team| team.reputation).collect();
     players.extend(generate_opening_free_agents(
-        team_defs.len(),
+        &club_reputations,
         country_codes,
         opening_year,
         &names_def,
@@ -1843,7 +1881,7 @@ mod tests {
         let country_codes = generation::nationality_distribution();
         let mut rng = StdRng::seed_from_u64(42);
         let refs: Vec<&package::PlayerDef> = authored.iter().collect();
-        let (_team, players, _staff) = build_package_club(
+        let (_team, players, _staff, _) = build_package_club(
             &tdef,
             &refs,
             country_codes,
@@ -2281,7 +2319,7 @@ mod tests {
 
     #[test]
     fn generate_national_team_player_is_a_senior_free_agent() {
-        let player = generate_national_team_player("JP", 5, TEST_OPENING_YEAR);
+        let player = generate_national_team_player("JP", 5, TEST_OPENING_YEAR, &[]);
 
         assert_eq!(player.nationality, "JP");
         assert_eq!(
@@ -2832,7 +2870,7 @@ mod tests {
         // past the youth cap (the youth-reserved slot would cap every player at it).
         let mut saw_senior_age = false;
         for _ in 0..64 {
-            let player = generate_national_team_player("GB", 1, TEST_OPENING_YEAR);
+            let player = generate_national_team_player("GB", 1, TEST_OPENING_YEAR, &[]);
             assert_eq!(
                 player.position,
                 Position::Goalkeeper,

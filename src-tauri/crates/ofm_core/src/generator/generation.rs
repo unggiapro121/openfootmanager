@@ -444,9 +444,13 @@ pub(super) fn senior_slot(slot: usize) -> usize {
 }
 
 /// A generated player for squad slot `index`. `age` fixes his age; `None`
-/// draws it from the slot (17–21 for a youth-reserved slot, 17–35 otherwise),
-/// exactly as before the parameter existed, so every seeded world — all of
-/// which pass `None` — is unchanged by it.
+/// draws it from the slot: 17–21 for a youth-reserved slot, otherwise 18–35
+/// spread as real senior squads are (see `calibration::draw_senior_age`).
+///
+/// The attributes are a raw profile on a senior scale. Every caller outside the
+/// academy brings the player to his real level with
+/// `calibration::calibrate_generated_player`; the academy's own recruits are
+/// grown into their age by `youth::grow_into_age` instead.
 pub(super) fn generate_random_player_from_def(
     team_id: &str,
     index: usize,
@@ -472,7 +476,7 @@ pub(super) fn generate_random_player_from_def(
         if is_youth_reserved_slot(index) {
             rng.random_range(17..22)
         } else {
-            rng.random_range(17..36)
+            super::calibration::draw_senior_age(rng)
         }
     });
     let birth_year = opening_year.saturating_sub(age);
