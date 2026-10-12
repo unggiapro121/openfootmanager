@@ -34,6 +34,7 @@ pub fn get_competition_leaders_internal(
         competition_id: competition_id.to_string(),
         goals: entry_dtos(leaders.goals),
         assists: entry_dtos(leaders.assists),
+        clean_sheets: entry_dtos(leaders.clean_sheets),
         yellow_cards: entry_dtos(leaders.yellow_cards),
         red_cards: entry_dtos(leaders.red_cards),
     })

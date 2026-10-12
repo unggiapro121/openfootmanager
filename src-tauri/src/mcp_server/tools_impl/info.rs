@@ -1220,6 +1220,7 @@ fn render_competition_leaders(
     for (title, entries) in [
         ("Goals", &leaders.goals),
         ("Assists", &leaders.assists),
+        ("Clean sheets", &leaders.clean_sheets),
         ("Yellow cards", &leaders.yellow_cards),
         ("Red cards", &leaders.red_cards),
     ] {
@@ -1353,6 +1354,7 @@ mod info_competition_leaders_tests {
                 value: 7,
             }],
             assists: vec![],
+            clean_sheets: vec![],
             yellow_cards: vec![],
             red_cards: vec![],
         };
@@ -1365,5 +1367,6 @@ mod info_competition_leaders_tests {
             "{text}"
         );
         assert!(text.contains("**Red cards:** none yet"), "{text}");
+        assert!(text.contains("**Clean sheets:** none yet"), "{text}");
     }
 }

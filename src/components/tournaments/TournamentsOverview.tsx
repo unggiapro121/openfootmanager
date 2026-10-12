@@ -27,7 +27,7 @@ interface TournamentsOverviewProps {
 
 /**
  * The competition at a glance: how it stands, who is scoring and creating,
- * and who is being booked.
+ * which keepers are keeping clean sheets, and who is being booked.
  *
  * What "how it stands" means depends on the competition — a bracket's round
  * progress, a group stage's mini tables, or a league's own table — and during
@@ -128,12 +128,18 @@ export default function TournamentsOverview({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         {board(
           t("tournaments.topAssists"),
           t("tournaments.noAssists"),
           leaders?.assists,
           "tournaments-top-assist",
+        )}
+        {board(
+          t("tournaments.topCleanSheets"),
+          t("tournaments.noCleanSheets"),
+          leaders?.cleanSheets,
+          "tournaments-clean-sheet",
         )}
         {board(
           t("tournaments.mostYellowCards"),
