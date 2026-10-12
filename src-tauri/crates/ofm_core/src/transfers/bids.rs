@@ -309,6 +309,7 @@ pub fn project_transfer_bid_financial_impact(
         projected_wage_budget_usage_pct,
         exceeds_transfer_budget: transfer_budget_after < 0,
         exceeds_finance: finance_after < 0,
+        max_affordable_fee: affordable_transfer_fee(team),
         pending_registration_date,
     })
 }

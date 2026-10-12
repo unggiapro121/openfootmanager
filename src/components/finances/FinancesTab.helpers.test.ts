@@ -37,6 +37,7 @@ function healthySnapshot(
     runwayStatus: "stable",
     overallStatus: "stable",
     marketingCampaignCooldownDaysRemaining: 0,
+    affordableTransferFee: 0,
     ...overrides,
   };
 }

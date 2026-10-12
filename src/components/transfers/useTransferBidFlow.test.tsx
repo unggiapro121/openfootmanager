@@ -221,6 +221,7 @@ describe("useTransferBidFlow", (): void => {
         projected_wage_budget_usage_pct: 4,
         exceeds_transfer_budget: false,
         exceeds_finance: false,
+        max_affordable_fee: 2000000,
       },
     });
   });

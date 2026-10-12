@@ -1275,6 +1275,29 @@ mod tests {
         assert!(!stored_player.loan_listed);
     }
 
+    /// Given a club whose transfer budget (€2M) is larger than its cash (€1.5M),
+    /// When the user previews a bid,
+    /// Then the largest fee it can pay is its cash, not its budget.
+    #[test]
+    fn preview_transfer_bid_caps_the_affordable_fee_at_the_clubs_cash() {
+        let state = StateManager::new();
+        let mut game = make_bid_game();
+        let team = game
+            .teams
+            .iter_mut()
+            .find(|team| team.id == "team-1")
+            .expect("user team");
+        team.finance = 1_500_000;
+        team.transfer_budget = 2_000_000;
+        state.set_game(game);
+
+        let response =
+            preview_transfer_bid_financial_impact_internal(&state, "player-2", 1_000_000)
+                .expect("response");
+
+        assert_eq!(response.projection.max_affordable_fee, 1_500_000);
+    }
+
     #[test]
     fn preview_transfer_bid_financial_impact_internal_returns_projection() {
         let state = StateManager::new();
@@ -1290,6 +1313,7 @@ mod tests {
         assert_eq!(response.projection.finance_after, 4_000_000);
         assert!(!response.projection.exceeds_transfer_budget);
         assert!(!response.projection.exceeds_finance);
+        assert_eq!(response.projection.max_affordable_fee, 2_000_000);
         // Window is open in the fixture — the debit fires today, no deferred
         // registration date to surface.
         assert!(response.projection.pending_registration_date.is_none());

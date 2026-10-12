@@ -208,6 +208,12 @@ pub(super) fn reserve_player_for_pending_transfer(
     Ok(())
 }
 
+/// The largest fee a club can pay now: a signing needs both the budget and the
+/// cash for it, and the two drift apart within a season.
+pub fn affordable_transfer_fee(team: &Team) -> i64 {
+    team.finance.min(team.transfer_budget).max(0)
+}
+
 pub(super) fn transfer_buyer_can_register(game: &Game, buyer_team_id: &str, fee: u64) -> bool {
     let Ok(fee_i64) = i64::try_from(fee) else {
         return false;
@@ -216,7 +222,7 @@ pub(super) fn transfer_buyer_can_register(game: &Game, buyer_team_id: &str, fee:
     game.teams
         .iter()
         .find(|team| team.id == buyer_team_id)
-        .is_some_and(|team| team.finance >= fee_i64 && team.transfer_budget >= fee_i64)
+        .is_some_and(|team| affordable_transfer_fee(team) >= fee_i64)
 }
 
 pub(super) fn ensure_transfer_cash_postable(

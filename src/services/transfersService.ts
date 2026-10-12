@@ -37,6 +37,8 @@ export interface TransferBidProjectionData {
     projected_wage_budget_usage_pct: number;
     exceeds_transfer_budget: boolean;
     exceeds_finance: boolean;
+    /** Largest fee the club can pay now: the lower of its transfer budget and its cash. */
+    max_affordable_fee: number;
     /** Debit fires on this date (window closed → PendingRegistration). Absent when the deal would execute immediately. */
     pending_registration_date?: string | null;
   };
