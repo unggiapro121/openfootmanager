@@ -2810,6 +2810,7 @@
         "contractLengthOutOfRange": "\"{{entity}}\" has a contractLength of {{length}}. A contract runs from 1 to {{max}} years.",
         "contractEndNotAfterStart": "\"{{entity}}\" has a contract that ends ({{end}}) on or before the day it starts ({{start}}).",
         "playerFieldOutOfRange": "\"{{entity}}\" has a {{field}} outside its range. It must be between {{min}} and {{max}}.",
+        "duplicateJerseyNumber": "\"{{entity}}\" and \"{{holder}}\" both wear shirt {{number}} at \"{{team}}\". Each player of a club needs his own number.",
         "alternatePositionInvalid": "\"{{entity}}\" lists {{position}} as an alternate position. An alternate must be a specific position, different from the player's own, and listed only once.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" has a weak foot or alternate positions, but {{position}} is a general group, so the game would re-work them from the player's attributes and discard what you wrote. Give the player a specific position, such as CentralMidfielder or Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" has a career entry (row {{row}}) with no club name.",

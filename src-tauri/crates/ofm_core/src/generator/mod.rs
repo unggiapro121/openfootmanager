@@ -1090,10 +1090,15 @@ fn build_package_club(
     let mut placed = vec![false; players.len()];
     let mut authored_ids = HashSet::new();
     let mut authored_squad_ids = HashSet::new();
+    let mut authored_shirt_ids = HashSet::new();
     for def in authored {
-        let authored_player = generate_player_from_def(def, &team.id, opening_year, names_def, rng);
+        let mut authored_player =
+            generate_player_from_def(def, &team.id, opening_year, names_def, rng);
         if authored_player::authors_a_contract(def) {
             authored_ids.insert(authored_player.id.clone());
+        }
+        if def.jersey_number.is_some() {
+            authored_shirt_ids.insert(authored_player.id.clone());
         }
         authored_squad_ids.insert(authored_player.id.clone());
         let group = authored_player.position.to_group_position();
@@ -1104,6 +1109,11 @@ fn build_package_club(
             .map(|(index, _)| index);
         match slot {
             Some(index) => {
+                // No shirt of his own: he wears the one his slot was given, so a
+                // keeper still takes 1 and a striker a forward's number.
+                if authored_player.jersey_number.is_none() {
+                    authored_player.jersey_number = players[index].jersey_number;
+                }
                 players[index] = authored_player;
                 placed[index] = true;
             }
@@ -1115,6 +1125,7 @@ fn build_package_club(
     }
 
     trim_backfill_players(&mut players, &placed, authored.len(), opening_year as i32);
+    crate::roster::number_opening_squad(&mut players, &authored_shirt_ids);
 
     // Authored wages may differ from the players they replaced, so re-normalise
     // the opening wage budget to the final squad. The authored players are named so
@@ -1799,6 +1810,60 @@ mod tests {
 
     fn build_test_package_club(authored: &[package::PlayerDef]) -> Vec<Player> {
         build_test_package_club_in_year(authored, TEST_OPENING_YEAR)
+    }
+
+    fn shirt_of(players: &[Player], id: &str) -> Option<u8> {
+        players
+            .iter()
+            .find(|player| player.id == id)
+            .and_then(|player| player.jersey_number)
+    }
+
+    /// Given a package club whose authored players carry their real shirt numbers,
+    /// when the club is built,
+    /// then each wears the number the package gave him.
+    #[test]
+    fn authored_players_wear_their_package_shirt_numbers() {
+        let mut authored = authored_squad(2, 8, 8, 4);
+        for (def, number) in authored.iter_mut().zip([31u8, 1, 4, 99]) {
+            def.jersey_number = Some(number);
+        }
+
+        let players = build_test_package_club(&authored);
+
+        assert_eq!(shirt_of(&players, "authored-0"), Some(31));
+        assert_eq!(shirt_of(&players, "authored-1"), Some(1));
+        assert_eq!(shirt_of(&players, "authored-2"), Some(4));
+        assert_eq!(shirt_of(&players, "authored-3"), Some(99));
+    }
+
+    /// Given a package club where only a few authored players have a shirt number
+    /// and the rest of the squad is generated backfill,
+    /// when the club is built,
+    /// then every player wears a shirt and no two share one.
+    #[test]
+    fn every_player_of_a_package_club_wears_a_distinct_shirt() {
+        let mut authored = authored_squad(1, 3, 3, 2);
+        // Numbers the generated squad slots also hand out, so the backfill has to give way.
+        for (def, number) in authored.iter_mut().zip([13u8, 2, 5]) {
+            def.jersey_number = Some(number);
+        }
+
+        let players = build_test_package_club(&authored);
+
+        let shirts: Vec<u8> = players
+            .iter()
+            .map(|player| {
+                player
+                    .jersey_number
+                    .unwrap_or_else(|| panic!("{} has no shirt", player.id))
+            })
+            .collect();
+        let distinct: HashSet<u8> = shirts.iter().copied().collect();
+        assert_eq!(distinct.len(), shirts.len(), "shirts clash: {shirts:?}");
+        assert_eq!(shirt_of(&players, "authored-0"), Some(13));
+        assert_eq!(shirt_of(&players, "authored-1"), Some(2));
+        assert_eq!(shirt_of(&players, "authored-2"), Some(5));
     }
 
     /// An authored player born in `birth_year`, for era-sensitive assertions.

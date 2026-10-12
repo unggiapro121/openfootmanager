@@ -2810,6 +2810,7 @@
         "contractLengthOutOfRange": "\"{{entity}}\" oyuncusunun contractLength değeri {{length}}. Bir sözleşme 1 ile {{max}} yıl arasında sürer.",
         "contractEndNotAfterStart": "\"{{entity}}\" oyuncusunun sözleşmesi ({{end}}), başladığı günde ({{start}}) ya da ondan önce bitiyor.",
         "playerFieldOutOfRange": "\"{{entity}}\" oyuncusunun {{field}} değeri aralık dışında. {{min}} ile {{max}} arasında olmalıdır.",
+        "duplicateJerseyNumber": "\"{{entity}}\" ve \"{{holder}}\" \"{{team}}\" takımında aynı forma numarasını ({{number}}) giyiyor. Kulübün her oyuncusunun kendi numarası olmalıdır.",
         "alternatePositionInvalid": "\"{{entity}}\" oyuncusu için {{position}} alternatif pozisyon olarak listelenmiş. Alternatif, belirli bir pozisyon olmalı, oyuncunun kendi pozisyonundan farklı olmalı ve yalnızca bir kez listelenmelidir.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" oyuncusunda zayıf ayak veya alternatif pozisyonlar var, ancak {{position}} genel bir gruptur; bu yüzden oyun bunları oyuncunun özelliklerinden yeniden hesaplar ve yazdığınızı atar. Oyuncuya CentralMidfielder veya Striker gibi belirli bir pozisyon verin.",
         "careerEntryNeedsClub": "\"{{entity}}\" oyuncusunun kariyer kaydında (satır {{row}}) kulüp adı yok.",

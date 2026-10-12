@@ -10,7 +10,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use domain::league::CompetitionScope;
@@ -131,6 +131,10 @@ pub struct PlayerDef {
     /// Morale, 0 to 100. Rolled in a realistic band when omitted.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub morale: Option<u8>,
+    /// Shirt number at his club, 1 to 99, unique within the club. A player left
+    /// without one is handed a free number when a career opens; a free agent's is ignored.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub jersey_number: Option<u8>,
     /// Clubs the player has played for before. The club is a free-text name, so a
     /// spell at a club the package does not define is fine; `teamId` is optional and
     /// checked against the package's teams when it is given.
@@ -442,6 +446,7 @@ const MISSING_ID: &str = "be.error.package.missingId";
 /// fragment inside a translated sentence.
 const MISSING_METADATA: &str = "be.error.package.missingMetadata";
 const DUPLICATE_ID: &str = "be.error.package.duplicateId";
+const DUPLICATE_JERSEY_NUMBER: &str = "be.error.package.duplicateJerseyNumber";
 const INVALID_PACKAGE_ID: &str = "be.error.package.invalidPackageId";
 const WORLD_EXPORT_NOT_PACKAGE: &str = "be.error.package.worldExportNotPackage";
 const UNKNOWN_CONFEDERATION: &str = "be.error.package.unknownConfederation";
@@ -1155,6 +1160,32 @@ fn player_potential_errors(player: &PlayerDef, source: &str) -> Vec<PackageError
     Vec::new()
 }
 
+/// Two players of one club given the same shirt. The players table refuses the
+/// pair, so the author is told rather than one shirt being quietly reassigned.
+/// A free agent's number is dropped when he is built, so it clashes with nobody.
+fn duplicate_jersey_number_errors(package: &WorldPackage) -> Vec<PackageError> {
+    let mut holders: HashMap<(&str, u8), &str> = HashMap::new();
+    let mut errors = Vec::new();
+    for (index, player) in package.players.iter().enumerate() {
+        let Some(number) = player.jersey_number else {
+            continue;
+        };
+        if player.club.is_empty() {
+            continue;
+        }
+        if let Some(holder) = holders.insert((player.club.as_str(), number), &player.id) {
+            errors.push(
+                PackageError::new(DUPLICATE_JERSEY_NUMBER, &package.source_at("player", index))
+                    .with("entity", &player.id)
+                    .with("holder", holder)
+                    .with("team", &player.club)
+                    .with("number", number.to_string()),
+            );
+        }
+    }
+    errors
+}
+
 pub fn validate_references(package: &WorldPackage) -> Vec<PackageError> {
     let mut errors = Vec::new();
 
@@ -1216,6 +1247,7 @@ pub fn validate_references(package: &WorldPackage) -> Vec<PackageError> {
             &team_ids,
         ));
     }
+    errors.extend(duplicate_jersey_number_errors(package));
 
     for (index, staff) in package.staff.iter().enumerate() {
         if !staff.club.is_empty() && !team_ids.contains(staff.club.as_str()) {
@@ -3371,6 +3403,59 @@ colors:
         );
         let (_package, errors) = load_world_package(&dir);
         (dir, errors)
+    }
+
+    /// Given a package where two players of one club share shirt 7, a player of
+    /// another club also wears 7, and two free agents both carry 9,
+    /// when it is loaded,
+    /// then only the clash inside the one club is reported, naming both players.
+    #[test]
+    fn two_players_of_one_club_sharing_a_shirt_is_reported() {
+        let dir = temp_package();
+        write(
+            &dir,
+            "world.yaml",
+            "schema: world\nid: shirts\nname: Shirts\nversion: 1.0.0\nlicense: CC0-1.0\n",
+        );
+        write(
+            &dir,
+            "teams/clubs.json",
+            r##"{"schema":"team","items":[
+                {"id":"c1","name":"Club","city":"Town","country":"ENG","colors":{"primary":"#000","secondary":"#fff"}},
+                {"id":"c2","name":"Other","city":"Town","country":"ENG","colors":{"primary":"#000","secondary":"#fff"}}]}"##,
+        );
+        write(
+            &dir,
+            "players/squad.json",
+            r#"{"schema":"player","items":[
+                {"id":"p1","name":"P One","club":"c1","nationality":"ENG","position":"Striker","jerseyNumber":7},
+                {"id":"p2","name":"P Two","club":"c1","nationality":"ENG","position":"Striker","jerseyNumber":7},
+                {"id":"p3","name":"P Three","club":"c2","nationality":"ENG","position":"Striker","jerseyNumber":7},
+                {"id":"f1","name":"F One","club":"","nationality":"ENG","position":"Striker","jerseyNumber":9},
+                {"id":"f2","name":"F Two","club":"","nationality":"ENG","position":"Striker","jerseyNumber":9}]}"#,
+        );
+
+        let (_package, errors) = load_world_package(&dir);
+
+        let clashes: Vec<_> = errors
+            .iter()
+            .filter(|e| e.code == DUPLICATE_JERSEY_NUMBER)
+            .collect();
+        assert_eq!(clashes.len(), 1, "{errors:?}");
+        let param = |key: &str| {
+            clashes[0]
+                .params
+                .iter()
+                .find(|(name, _)| name == key)
+                .map(|(_, value)| value.as_str())
+        };
+        assert_eq!(param("entity"), Some("p2"));
+        assert_eq!(param("holder"), Some("p1"));
+        assert_eq!(param("team"), Some("c1"));
+        assert_eq!(param("number"), Some("7"));
+        assert_eq!(clashes[0].file, "players/squad.json");
+
+        std::fs::remove_dir_all(&dir).ok();
     }
 
     /// A ceiling outside 1–99 is an authoring mistake, not a value to clamp.

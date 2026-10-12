@@ -1107,6 +1107,9 @@ pub(super) fn generate_player_from_def(
     if def.youth {
         player.squad_role = domain::player::SquadRole::Youth;
     }
+    // `build_package_club` settles clashes with the generated backfill and numbers
+    // whoever is still without a shirt.
+    player.jersey_number = def.jersey_number;
 
     let temp_ovr = {
         use crate::player_rating::natural_ovr;

@@ -2810,6 +2810,7 @@
         "contractLengthOutOfRange": "У «{{entity}}» contractLength равен {{length}}. Контракт длится от 1 до {{max}} лет.",
         "contractEndNotAfterStart": "Контракт «{{entity}}» заканчивается ({{end}}) в день начала ({{start}}) или раньше.",
         "playerFieldOutOfRange": "У «{{entity}}» значение {{field}} вне допустимого диапазона. Оно должно быть от {{min}} до {{max}}.",
+        "duplicateJerseyNumber": "«{{entity}}» и «{{holder}}» в «{{team}}» носят один и тот же номер {{number}}. У каждого игрока клуба должен быть свой номер.",
         "alternatePositionInvalid": "У «{{entity}}» в запасных позициях указана {{position}}. Запасная позиция должна быть конкретной, отличаться от основной позиции игрока и указываться только один раз.",
         "identityNeedsSpecificPosition": "У «{{entity}}» заданы слабая нога или запасные позиции, но {{position}} — это общая группа, поэтому игра пересчитает их по атрибутам игрока и отбросит написанное вами. Задайте игроку конкретную позицию, например CentralMidfielder или Striker.",
         "careerEntryNeedsClub": "У «{{entity}}» в записи карьеры (строка {{row}}) не указано название клуба.",

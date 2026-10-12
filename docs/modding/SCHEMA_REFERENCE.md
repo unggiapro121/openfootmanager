@@ -205,6 +205,7 @@ Defines a specific player. Reference teams and countries by their `id`.
 | `alternatePositions` | array of positions | no | `[]` | Other positions the player can cover. Same restriction as `weakFoot`. |
 | `condition` | integer (0–100) or null | no | `null` | Match sharpness. Omit it and it is rolled in a realistic band. |
 | `morale` | integer (0–100) or null | no | `null` | Morale. Omit it and it is rolled in a realistic band. |
+| `jerseyNumber` | integer (1–99) or null | no | `null` | Shirt number at the club. Two players of one club may not share one. Omit it and the player is handed a free number when a career opens; a free agent's is ignored. |
 | `careerHistory` | array of career entries | no | `[]` | Earlier clubs. See [Career history](#career-history). |
 
 > **Tip**: You only need to specify `overall` *or* `attributes` — not both. For most authored players, `overall` is sufficient. Use `attributes` for precise control.

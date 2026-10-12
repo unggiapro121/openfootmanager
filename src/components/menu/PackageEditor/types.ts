@@ -181,6 +181,8 @@ export interface PlayerDef {
   alternatePositions?: Position[];
   condition?: number | null;
   morale?: number | null;
+  /** Shirt number at the club, 1–99, unique within the club. */
+  jerseyNumber?: number | null;
   careerHistory?: PlayerCareerEntryDef[];
 }
 

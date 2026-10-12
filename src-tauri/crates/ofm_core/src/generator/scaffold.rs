@@ -565,6 +565,7 @@ mod tests {
             alternate_positions: vec![Position::LeftWinger],
             condition: Some(90),
             morale: Some(70),
+            jersey_number: None,
             career_history: vec![PlayerCareerEntryDef {
                 season: 2020,
                 team_id: Some("club-id".into()),

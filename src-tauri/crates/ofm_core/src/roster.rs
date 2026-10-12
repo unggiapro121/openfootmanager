@@ -54,6 +54,38 @@ pub(crate) fn jersey_among(
     }
 }
 
+/// Give a club's opening squad one shirt each, no two alike.
+///
+/// Players in `first_claim` (a package's authored numbers) keep theirs ahead of
+/// everyone else, so a generated backfill player handed the same number by his
+/// squad slot is the one who moves. Anyone left without a shirt, or whose shirt
+/// was already taken, gets the lowest free number.
+pub(crate) fn number_opening_squad(
+    players: &mut [Player],
+    first_claim: &std::collections::HashSet<String>,
+) {
+    let mut taken = std::collections::HashSet::new();
+    for claims_first in [true, false] {
+        for player in players
+            .iter_mut()
+            .filter(|player| first_claim.contains(&player.id) == claims_first)
+        {
+            if let Some(number) = player.jersey_number
+                && !taken.insert(number)
+            {
+                player.jersey_number = None;
+            }
+        }
+    }
+    for player in players
+        .iter_mut()
+        .filter(|player| player.jersey_number.is_none())
+    {
+        player.jersey_number = jersey_among(taken.iter().copied(), None);
+        taken.extend(player.jersey_number);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -62,6 +94,7 @@ mod tests {
     use domain::manager::Manager;
     use domain::player::{Player, PlayerAttributes, Position};
     use domain::team::Team;
+    use std::collections::HashSet;
 
     fn default_attrs() -> PlayerAttributes {
         PlayerAttributes {
@@ -205,6 +238,71 @@ mod tests {
         assert_eq!(
             resolve_jersey_for(&game, &moving, &make_team("team-a")),
             None
+        );
+    }
+
+    fn shirts(players: &[Player]) -> Vec<(&str, Option<u8>)> {
+        players
+            .iter()
+            .map(|player| (player.id.as_str(), player.jersey_number))
+            .collect()
+    }
+
+    /// Given a package club whose authored striker wears 9 and a generated
+    /// backfill player also handed 9 by his squad slot,
+    /// when the opening squad is numbered,
+    /// then the authored player keeps 9 and the backfill player takes a free shirt.
+    #[test]
+    fn an_authored_number_wins_over_a_generated_one() {
+        let mut players = vec![
+            make_player("generated", Some("team-a"), Some(9)),
+            make_player("authored", Some("team-a"), Some(9)),
+        ];
+        let first_claim = HashSet::from(["authored".to_string()]);
+        number_opening_squad(&mut players, &first_claim);
+        assert_eq!(
+            shirts(&players),
+            vec![("generated", Some(1)), ("authored", Some(9))]
+        );
+    }
+
+    /// Given an opening squad where some players were given no shirt,
+    /// when it is numbered,
+    /// then each of them takes the lowest number nobody else wears.
+    #[test]
+    fn players_without_a_shirt_take_the_lowest_free_numbers() {
+        let mut players = vec![
+            make_player("keeper", Some("team-a"), Some(1)),
+            make_player("no-shirt-1", Some("team-a"), None),
+            make_player("striker", Some("team-a"), Some(3)),
+            make_player("no-shirt-2", Some("team-a"), None),
+        ];
+        number_opening_squad(&mut players, &HashSet::new());
+        assert_eq!(
+            shirts(&players),
+            vec![
+                ("keeper", Some(1)),
+                ("no-shirt-1", Some(2)),
+                ("striker", Some(3)),
+                ("no-shirt-2", Some(4)),
+            ]
+        );
+    }
+
+    /// Given two authored players claiming the same shirt (a package that skipped validation),
+    /// when the opening squad is numbered,
+    /// then the first keeps it and the second is moved to a free number, never left sharing.
+    #[test]
+    fn a_shirt_claimed_twice_is_kept_by_the_first_claimant() {
+        let mut players = vec![
+            make_player("first", Some("team-a"), Some(1)),
+            make_player("second", Some("team-a"), Some(1)),
+        ];
+        let first_claim = HashSet::from(["first".to_string(), "second".to_string()]);
+        number_opening_squad(&mut players, &first_claim);
+        assert_eq!(
+            shirts(&players),
+            vec![("first", Some(1)), ("second", Some(2))]
         );
     }
 }

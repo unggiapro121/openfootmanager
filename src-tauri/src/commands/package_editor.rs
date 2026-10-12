@@ -1144,6 +1144,7 @@ mod tests {
             alternate_positions: vec![Position::AttackingMidfielder],
             condition: Some(92),
             morale: Some(80),
+            jersey_number: None,
             career_history: vec![
                 // A club the package does not define: name only.
                 PlayerCareerEntryDef {

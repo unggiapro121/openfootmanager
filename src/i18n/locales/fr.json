@@ -2793,6 +2793,7 @@
         "contractLengthOutOfRange": "\"{{entity}}\" a un contractLength de {{length}}. Un contrat dure de 1 à {{max}} ans.",
         "contractEndNotAfterStart": "\"{{entity}}\" a un contrat qui se termine ({{end}}) le jour où il commence ({{start}}) ou avant.",
         "playerFieldOutOfRange": "\"{{entity}}\" a un {{field}} hors limites. Il doit être compris entre {{min}} et {{max}}.",
+        "duplicateJerseyNumber": "\"{{entity}}\" et \"{{holder}}\" portent tous deux le numéro {{number}} à \"{{team}}\". Chaque joueur d'un club doit avoir son propre numéro.",
         "alternatePositionInvalid": "\"{{entity}}\" indique {{position}} comme poste alternatif. Un poste alternatif doit être un poste précis, différent de celui du joueur, et n'apparaître qu'une fois.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" indique un mauvais pied ou des postes alternatifs, mais {{position}} est un groupe général : le jeu les recalculerait à partir des attributs du joueur et écarterait ce que vous avez écrit. Donnez au joueur un poste précis, comme CentralMidfielder ou Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" a une entrée de carrière (ligne {{row}}) sans nom de club.",

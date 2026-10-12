@@ -18,6 +18,8 @@ use std::collections::HashSet;
 /// wider than the generator draws, so a real outlier can still be entered.
 const HEIGHT_CM_RANGE: (u16, u16) = (150, 210);
 const WEIGHT_KG_RANGE: (u8, u8) = (50, 110);
+/// The shirts a club hands out, as `roster::jersey_among` and the players table allow.
+const JERSEY_NUMBER_RANGE: (u8, u8) = (1, 99);
 
 /// The interval an author wrote, resolved against the year the career opens in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -252,6 +254,16 @@ pub(super) fn authored_player_errors(
             "weightKg",
             WEIGHT_KG_RANGE.0.into(),
             WEIGHT_KG_RANGE.1.into(),
+        ));
+    }
+    if player
+        .jersey_number
+        .is_some_and(|value| !(JERSEY_NUMBER_RANGE.0..=JERSEY_NUMBER_RANGE.1).contains(&value))
+    {
+        errors.push(out_of_range(
+            "jerseyNumber",
+            JERSEY_NUMBER_RANGE.0.into(),
+            JERSEY_NUMBER_RANGE.1.into(),
         ));
     }
     if player.condition.is_some_and(|value| value > 100) {
@@ -560,6 +572,8 @@ mod tests {
             ("weightKg", 111, "50", "110"),
             ("condition", 101, "0", "100"),
             ("morale", 101, "0", "100"),
+            ("jerseyNumber", 0, "1", "99"),
+            ("jerseyNumber", 100, "1", "99"),
             // One past what a JavaScript number holds exactly: the editor would
             // already have rounded it.
             ("value", 9_007_199_254_740_992, "0", "9007199254740991"),
@@ -589,6 +603,8 @@ mod tests {
             serde_json::json!({ "condition": 0 }),
             serde_json::json!({ "condition": 100 }),
             serde_json::json!({ "morale": 0 }),
+            serde_json::json!({ "jerseyNumber": 1 }),
+            serde_json::json!({ "jerseyNumber": 99 }),
             serde_json::json!({ "value": 0 }),
             serde_json::json!({ "value": 9_007_199_254_740_991_u64 }),
             serde_json::json!({ "wage": 0 }),

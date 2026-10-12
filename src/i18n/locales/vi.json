@@ -2810,6 +2810,7 @@
         "contractLengthOutOfRange": "\"{{entity}}\" có contractLength là {{length}}. Hợp đồng kéo dài từ 1 đến {{max}} năm.",
         "contractEndNotAfterStart": "\"{{entity}}\" có hợp đồng kết thúc ({{end}}) vào hoặc trước ngày bắt đầu ({{start}}).",
         "playerFieldOutOfRange": "\"{{entity}}\" có {{field}} nằm ngoài phạm vi. Giá trị phải từ {{min}} đến {{max}}.",
+        "duplicateJerseyNumber": "\"{{entity}}\" và \"{{holder}}\" cùng mặc áo số {{number}} ở \"{{team}}\". Mỗi cầu thủ của một CLB cần một số áo riêng.",
         "alternatePositionInvalid": "\"{{entity}}\" khai {{position}} là vị trí phụ. Vị trí phụ phải là một vị trí cụ thể, khác với vị trí chính của cầu thủ, và chỉ được khai một lần.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" có chân không thuận hoặc vị trí phụ, nhưng {{position}} chỉ là một nhóm vị trí chung, nên game sẽ tính lại chúng từ chỉ số của cầu thủ và bỏ đi những gì bạn đã nhập. Hãy cho cầu thủ một vị trí cụ thể, chẳng hạn CentralMidfielder hoặc Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" có một mục sự nghiệp (dòng {{row}}) không có tên câu lạc bộ.",

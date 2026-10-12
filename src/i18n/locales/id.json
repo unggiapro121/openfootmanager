@@ -2810,6 +2810,7 @@
         "contractLengthOutOfRange": "\"{{entity}}\" memiliki contractLength sebesar {{length}}. Kontrak berlangsung 1 sampai {{max}} tahun.",
         "contractEndNotAfterStart": "Kontrak \"{{entity}}\" berakhir ({{end}}) pada atau sebelum hari kontrak itu dimulai ({{start}}).",
         "playerFieldOutOfRange": "\"{{entity}}\" memiliki {{field}} di luar rentang. Nilainya harus antara {{min}} dan {{max}}.",
+        "duplicateJerseyNumber": "\"{{entity}}\" dan \"{{holder}}\" sama-sama memakai nomor punggung {{number}} di \"{{team}}\". Setiap pemain klub harus punya nomor sendiri.",
         "alternatePositionInvalid": "\"{{entity}}\" mencantumkan {{position}} sebagai posisi alternatif. Posisi alternatif harus posisi spesifik, berbeda dari posisi pemain itu sendiri, dan hanya dicantumkan sekali.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" memiliki kaki lemah atau posisi alternatif, tetapi {{position}} adalah kelompok umum, sehingga permainan akan menghitung ulang dari atribut pemain dan membuang yang Anda tulis. Beri pemain posisi spesifik, seperti CentralMidfielder atau Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" memiliki entri karier (baris {{row}}) tanpa nama klub.",
