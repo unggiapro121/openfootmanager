@@ -241,7 +241,7 @@ function DigestDayRow({ entry }: { entry: DigestEntry }): JSX.Element {
         {recap.news.map((article, i) => (
           <NewsCard
             key={article.id}
-            text={article.textKey ? t(article.textKey, article.params ?? {}) : article.text}
+            text={resolveBackendText(article.textKey, article.text, article.params)}
             idx={newsOffset + i}
           />
         ))}
@@ -249,7 +249,7 @@ function DigestDayRow({ entry }: { entry: DigestEntry }): JSX.Element {
         {recap.inbox.map((item, i) => (
           <InboxCard
             key={item.id}
-            text={item.textKey ? t(item.textKey, item.params ?? {}) : item.text}
+            text={resolveBackendText(item.textKey, item.text, item.params)}
             category={item.category}
             idx={inboxOffset + i}
           />

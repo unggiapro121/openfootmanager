@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { GameStateData, PlayerSelectionOptions } from "../../store/gameStore";
 import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/errorMessage";
 import { Card, CardBody, Badge, Select, CountryFlag, PlayerAvatar } from "../ui";
@@ -26,6 +26,9 @@ import {
   type PlayersPage,
   type PlayersPageQuery,
 } from "../../services/playersService";
+import { fetchTeamsDirectory, type TeamsDirectory } from "../../services/teamsService";
+import { buildDirectoryTree } from "../teams/TeamsListTab.helpers";
+import { buildLeagueFilterGroups, buildTeamFilterGroups } from "./PlayersListTab.helpers";
 import {
   buildDividerMenuItem,
   buildOfferFreeAgentContractMenuItem,
@@ -54,6 +57,7 @@ const DEFAULT_QUERY: PlayersPageQuery = {
   search: null,
   position: null,
   team_id: null,
+  league_id: null,
   status: "all",
   sort_key: "ovr",
   sort_asc: false,
@@ -109,6 +113,32 @@ export default function PlayersListTab({
       cancelled = true;
     };
   }, [query, refetchKey, t]);
+
+  // The club directory only feeds the league and team pickers, so a failed
+  // fetch leaves them with just their "all" option rather than blocking the table.
+  const [directory, setDirectory] = useState<TeamsDirectory | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetchTeamsDirectory({ search: null })
+      .then((result) => {
+        if (!cancelled) setDirectory(result);
+      })
+      .catch(() => {
+        if (!cancelled) setDirectory(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const directoryTree = useMemo(
+    () => (directory ? buildDirectoryTree(directory, t) : []),
+    [directory, t],
+  );
+  const leagueGroups = useMemo(() => buildLeagueFilterGroups(directoryTree), [directoryTree]);
+  const teamGroups = useMemo(
+    () => buildTeamFilterGroups(directoryTree, query.league_id),
+    [directoryTree, query.league_id],
+  );
 
   const findFullPlayer = useCallback(
     (id: string) => gameState.players.find((p) => p.id === id),
@@ -269,16 +299,40 @@ export default function PlayersListTab({
         </div>
 
         <Select
+          value={query.league_id ?? ""}
+          onChange={(e) => patchQuery({ league_id: e.target.value || null, team_id: null })}
+          selectSize="sm"
+          aria-label={t("players.leagueFilter")}
+          className="min-w-44 font-heading font-bold uppercase tracking-wider"
+        >
+          <option value="">{t("players.allLeagues")}</option>
+          {leagueGroups.map((group) => (
+            <optgroup key={group.id} label={group.label}>
+              {group.options.map((league) => (
+                <option key={league.id} value={league.id}>
+                  {league.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
+
+        <Select
           value={query.team_id ?? ""}
           onChange={(e) => patchQuery({ team_id: e.target.value || null })}
           selectSize="sm"
+          aria-label={t("players.teamFilter")}
           className="min-w-44 font-heading font-bold uppercase tracking-wider"
         >
           <option value="">{t("players.allTeams")}</option>
-          {gameState.teams.map((tm) => (
-            <option key={tm.id} value={tm.id}>
-              {tm.name}
-            </option>
+          {teamGroups.map((group) => (
+            <optgroup key={group.id} label={group.label}>
+              {group.options.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </Select>
       </div>

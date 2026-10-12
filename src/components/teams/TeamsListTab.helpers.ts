@@ -9,7 +9,7 @@ import {
 } from "../../services/teamsService";
 
 /** The country of clubs that play in no league the world knows a country for. */
-const NO_COUNTRY = "__no-country";
+export const NO_COUNTRY = "__no-country";
 
 export interface DirectoryLeague {
   id: string;

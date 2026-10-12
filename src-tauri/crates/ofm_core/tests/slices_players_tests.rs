@@ -1,4 +1,5 @@
 use chrono::{TimeZone, Utc};
+use domain::league::League;
 use domain::manager::Manager;
 use domain::player::{Injury, Player, PlayerAttributes, Position};
 use domain::team::Team;
@@ -123,6 +124,7 @@ fn baseline_query() -> PlayersPageQuery {
         search: None,
         position: None,
         team_id: None,
+        league_id: None,
         status: PlayerStatusFilter::All,
         sort_key: PlayerSortKey::Ovr,
         sort_asc: false,
@@ -269,6 +271,38 @@ fn team_id_filter_is_exact_match() {
 
     assert_eq!(page.items.len(), 1);
     assert_eq!(page.items[0].id, "p2");
+}
+
+#[test]
+fn league_id_filter_keeps_players_of_that_leagues_clubs() {
+    let mut game = make_game(
+        vec![
+            make_team("t1", "A"),
+            make_team("t2", "B"),
+            make_team("t3", "C"),
+        ],
+        vec![
+            PlayerSpec::new("p1", "Alpha", Some("t1")).build(),
+            PlayerSpec::new("p2", "Beta", Some("t2")).build(),
+            PlayerSpec::new("p3", "Gamma", Some("t3")).build(),
+            PlayerSpec::new("p4", "Free", None).build(),
+        ],
+    );
+    game.competitions = vec![League {
+        id: "l1".to_string(),
+        participant_ids: vec!["t1".to_string(), "t3".to_string()],
+        ..League::default()
+    }];
+
+    let mut q = baseline_query();
+    q.league_id = Some("l1".to_string());
+    let page = query_page(&game, &q);
+    let mut ids: Vec<&str> = page.items.iter().map(|p| p.id.as_str()).collect();
+    ids.sort_unstable();
+    assert_eq!(ids, ["p1", "p3"]);
+
+    q.league_id = Some("missing".to_string());
+    assert_eq!(query_page(&game, &q).total, 0);
 }
 
 #[test]

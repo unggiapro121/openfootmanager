@@ -8,6 +8,7 @@ export interface PlayersPageQuery {
   search: string | null;
   position: string | null;
   team_id: string | null;
+  league_id: string | null;
   status: PlayerStatusFilter;
   sort_key: PlayerSortKey;
   sort_asc: boolean;

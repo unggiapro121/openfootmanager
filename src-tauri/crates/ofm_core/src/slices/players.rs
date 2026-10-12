@@ -1,8 +1,9 @@
 use crate::game::Game;
+use crate::slices::teams::league_member_ids;
 use domain::player::{Player, Position};
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -28,6 +29,9 @@ pub struct PlayersPageQuery {
     pub search: Option<String>,
     pub position: Option<Position>,
     pub team_id: Option<String>,
+    /// Restrict to players whose club is in this competition.
+    #[serde(default)]
+    pub league_id: Option<String>,
     pub status: PlayerStatusFilter,
     pub sort_key: PlayerSortKey,
     pub sort_asc: bool,
@@ -90,10 +94,23 @@ pub fn query_page(game: &Game, query: &PlayersPageQuery) -> PlayersPage {
         .filter(|s| !s.is_empty())
         .map(str::to_ascii_lowercase);
 
+    let league_members = query
+        .league_id
+        .as_deref()
+        .map(|league_id| league_clubs(game, league_id));
+
     let mut matches: Vec<&Player> = game
         .players
         .iter()
         .filter(|player| matches_filters(player, query, needle.as_deref()))
+        .filter(|player| {
+            league_members.as_ref().is_none_or(|members| {
+                player
+                    .team_id
+                    .as_deref()
+                    .is_some_and(|id| members.contains(id))
+            })
+        })
         .collect();
 
     sort_matches(&mut matches, query, &teams);
@@ -115,6 +132,15 @@ pub fn query_page(game: &Game, query: &PlayersPageQuery) -> PlayersPage {
         page,
         page_size: query.page_size,
     }
+}
+
+/// Clubs in a competition. An unknown id yields none, so the filter matches nobody.
+fn league_clubs<'a>(game: &'a Game, league_id: &str) -> HashSet<&'a str> {
+    game.competitions
+        .iter()
+        .find(|c| c.id == league_id)
+        .map(|league| league_member_ids(league).into_iter().collect())
+        .unwrap_or_default()
 }
 
 fn matches_filters(player: &Player, query: &PlayersPageQuery, needle: Option<&str>) -> bool {

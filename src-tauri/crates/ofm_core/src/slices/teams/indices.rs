@@ -53,7 +53,7 @@ pub(super) fn index_league_membership<'a>(
     (league_by_team, standing_by_team)
 }
 
-fn league_member_ids(league: &League) -> Vec<&str> {
+pub(crate) fn league_member_ids(league: &League) -> Vec<&str> {
     if !league.participant_ids.is_empty() {
         league.participant_ids.iter().map(String::as_str).collect()
     } else {

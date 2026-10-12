@@ -376,6 +376,46 @@ describe("PlayersListTab", () => {
     expect(onSelectPlayer).toHaveBeenCalledWith("player-2");
   });
 
+  // Given clubs in two leagues, when a league is picked, then the players query
+  // asks for that league and the team picker offers only that league's clubs.
+  it("narrows the players and the team picker to the chosen league", async () => {
+    const gameState = createGameState();
+    const card = (id: string, name: string) => ({ team: { id, name } });
+    setupSliceMock(gameState, {
+      get_teams_directory: () => ({
+        regions: [
+          {
+            id: "europe",
+            team_count: 2,
+            leagues: [
+              { id: "league-a", name: "Alpha League", teams: [card("team-1", "Alpha FC")] },
+              { id: "league-b", name: "Beta League", teams: [card("team-2", "Beta FC")] },
+            ],
+          },
+        ],
+      }),
+    });
+
+    render(
+      <PlayersListTab gameState={gameState} onSelectPlayer={vi.fn()} onSelectTeam={vi.fn()} />,
+    );
+    await screen.findByText("A. Keeper");
+
+    fireEvent.click(screen.getByRole("combobox", { name: "players.leagueFilter" }));
+    fireEvent.click(await screen.findByRole("option", { name: "Beta League" }));
+
+    await waitFor(() => {
+      const queries = mockedInvoke.mock.calls
+        .filter(([cmd]) => cmd === "get_players_page")
+        .map(([, args]) => (args as { query: PlayersPageQuery }).query);
+      expect(queries[queries.length - 1]).toMatchObject({ league_id: "league-b", team_id: null });
+    });
+
+    fireEvent.click(screen.getByRole("combobox", { name: "players.teamFilter" }));
+    expect(await screen.findByRole("option", { name: "Beta FC" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "Alpha FC" })).not.toBeInTheDocument();
+  });
+
   it("keeps team navigation separate from player row selection", async () => {
     const onSelectPlayer = vi.fn();
     const onSelectTeam = vi.fn();

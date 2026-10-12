@@ -1,4 +1,6 @@
 mod indices;
+
+pub(crate) use indices::league_member_ids;
 mod projection;
 
 use crate::game::Game;

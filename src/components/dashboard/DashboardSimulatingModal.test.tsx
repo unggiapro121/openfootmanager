@@ -124,3 +124,31 @@ describe("DashboardSimulatingModal attention-event stop", () => {
     expect(onDismiss).toHaveBeenCalledOnce();
   });
 });
+
+describe("DashboardSimulatingModal headline params", () => {
+  it("translates an i18n-key param such as the injury name in an inbox subject", () => {
+    render(
+      <DashboardSimulatingModal
+        digestEntries={[
+          {
+            date: "2026-07-10",
+            recap: recapWith({
+              inbox: [
+                {
+                  id: "training_injury_p1_2026-07-10",
+                  date: "2026-07-10",
+                  text: "",
+                  textKey: "be.msg.trainingInjury.subject",
+                  params: { player: "Wan-Bissaka", injury: "common.injuries.kneeBruise" },
+                  category: "Injury",
+                },
+              ],
+            }),
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("Injury — Wan-Bissaka (Knee bruise)")).toBeInTheDocument();
+  });
+});
