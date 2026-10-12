@@ -577,7 +577,16 @@ generate_world(data_dir)
   - DEF: high defending/tackling/strength, lower shooting
   - MID: balanced, higher passing/vision/stamina
   - FWD: high shooting/pace/dribbling, lower defending
-- **Age**: 17–35, with attribute ranges scaled by age (younger = lower ceiling, older = higher but declining)
+- **Age**: 18–35, spread as real senior squads are (few teenagers, a peak at 23–26); one squad slot
+  per position group is youth-aged (17–21)
+- **Level** (`generator/calibration.rs`): the attributes above are a raw profile; every player
+  generated outside the academy is then scaled to an OVR drawn from the 25th–50th percentile of the
+  squads he joins, lowered for his age. The level comes from the club's reputation; in a `.ofm`
+  package it comes from the authored players of the club's league instead, once that league has 150
+  of them; for a national pool, from the nation's players in the world, or its ranking tier when the
+  world has fewer than eight. Potential is his OVR plus room to grow drawn from real players of his
+  age, so a 90+ ceiling is as rare as it is in real football. All tables were measured on the
+  real-world 2025/26 package.
 - **Condition**: Starts at 75–100
 
 ### Definition Files
