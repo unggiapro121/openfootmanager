@@ -1418,6 +1418,23 @@ pub fn build_world_data_from_package(
             &mut rng,
         ));
     }
+    // Unattached authored players (no club) open as free agents, the same shape
+    // a generated world's opening pool has: no club, no contract, no wage, no
+    // shirt. Any contract fields the author wrote describe a deal with nobody,
+    // so they are dropped; the signing club prices the wage when it signs him.
+    for def in package.players.iter().filter(|p| p.club.is_empty()) {
+        let mut agent = as_free_agent(generate_player_from_def(
+            def,
+            "",
+            opening_year,
+            &names_def,
+            &mut rng,
+        ));
+        agent.jersey_number = None;
+        // An academy belongs to a club; a free agent has none to be in.
+        agent.squad_role = domain::player::SquadRole::Senior;
+        players.push(agent);
+    }
 
     let mut build_notices: Vec<String> = Vec::new();
 

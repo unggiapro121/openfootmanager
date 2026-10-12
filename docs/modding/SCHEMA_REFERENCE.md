@@ -183,7 +183,7 @@ Defines a specific player. Reference teams and countries by their `id`.
 | `name` | string | no | `""` | Full display name (used as fallback if `firstName`/`lastName` are empty). |
 | `firstName` | string | no | `""` | First name. Used for display and name pool lookup. |
 | `lastName` | string | no | `""` | Last name. |
-| `club` | string | no | `""` | Team `id` this player starts at. Must match an existing team. |
+| `club` | string | no | `""` | Team `id` this player starts at; a non-empty value must match an existing team. Empty = the player opens as a **free agent**: no club, no contract, no wage, not in an academy. Contract fields, `wage` and `youth` are ignored for a free agent; the club that signs him sets the terms. |
 | `nationality` | string | no | `""` | Country `id` (ISO alpha-2 or football code). Example: `"ENG"`, `"ES"`. |
 | `position` | string | no | `"Goalkeeper"` | Player position. See [Position Values](#position-values). |
 | `footedness` | string or null | no | `"Right"` | Preferred foot: `"Right"`, `"Left"`, or `"Both"`. |
