@@ -55,6 +55,9 @@ pub fn upgrade_facility(
         .iter_mut()
         .find(|team| team.id == team_id)
         .ok_or_else(|| "be.error.managedTeamNotFound".to_string())?;
+    // An upgrade spends the same money a signing would. Left out of the budget,
+    // it kept advertising cash the club no longer had.
+    team.transfer_budget = (team.transfer_budget - cost).max(0);
     match facility_type {
         FacilityType::Training => {
             team.facilities.training = team.facilities.training.saturating_add(1);

@@ -21,6 +21,7 @@ interface BackendTeamFinanceSnapshotData {
   runway_status: FinanceHealthLevelData;
   overall_status: FinanceHealthLevelData;
   marketing_campaign_cooldown_days_remaining: number;
+  affordable_transfer_fee: number;
 }
 
 interface BackendBoardSupportPreviewData {
@@ -80,6 +81,8 @@ export interface TeamFinanceSnapshotData {
   runwayStatus: FinanceHealthLevelData;
   overallStatus: FinanceHealthLevelData;
   marketingCampaignCooldownDaysRemaining: number;
+  /** Largest fee the club can pay now: its cash can cap this below the transfer budget. */
+  affordableTransferFee: number;
 }
 
 export interface BoardSupportPreviewData {
@@ -141,6 +144,7 @@ function mapSnapshot(snapshot: BackendTeamFinanceSnapshotData): TeamFinanceSnaps
     runwayStatus: snapshot.runway_status,
     overallStatus: snapshot.overall_status,
     marketingCampaignCooldownDaysRemaining: snapshot.marketing_campaign_cooldown_days_remaining,
+    affordableTransferFee: snapshot.affordable_transfer_fee,
   };
 }
 

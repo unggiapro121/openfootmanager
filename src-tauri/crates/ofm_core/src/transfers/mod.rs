@@ -80,6 +80,10 @@ pub struct TransferBidFinancialProjection {
     pub projected_wage_budget_usage_pct: i64,
     pub exceeds_transfer_budget: bool,
     pub exceeds_finance: bool,
+    /// The largest fee the club can pay now: the lower of its transfer budget
+    /// and its cash.
+    #[serde(default)]
+    pub max_affordable_fee: i64,
     /// Set when the window is closed and this bid would land as
     /// PendingRegistration: the date the debit will actually fire. `None` when
     /// the window is open and the debit fires immediately on acceptance.

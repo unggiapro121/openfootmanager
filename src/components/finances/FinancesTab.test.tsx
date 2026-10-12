@@ -103,6 +103,9 @@ vi.mock("react-i18next", async () => {
           if (key === "finances.clubBalance") return "Club Balance";
           if (key === "finances.wageBudget") return "Wage Budget";
           if (key === "finances.transferBudget") return "Transfer Budget";
+          if (key === "finances.transferBudgetCashLimit") {
+            return `Cash limits signings to ${params?.amount}`;
+          }
           if (key === "finances.seasonIncome") return "Season Income";
           if (key === "finances.seasonExpenses") return "Season Expenses";
           if (key === "finances.perWeekSuffix") return "/wk";
@@ -140,6 +143,7 @@ const CRITICAL_SNAPSHOT = {
   runway_status: "critical",
   overall_status: "critical",
   marketing_campaign_cooldown_days_remaining: 0,
+  affordable_transfer_fee: 300000,
 };
 
 function pendingPromise<T>(): Promise<T> {
@@ -672,6 +676,24 @@ describe("FinancesTab facilities", () => {
           "Campaign netted €112,500 after €37,500 in spend (€150,000 gross). Cooldown: 28 days",
       ),
     ).toBeInTheDocument();
+  });
+
+  // Given a transfer budget larger than the cash the club holds, then the
+  // overview says the cash, not the budget, caps what it can pay for a player.
+  it("notes when the club's cash caps its transfer budget", async () => {
+    const initialState = createGameState({ transfer_budget: 300000 }, [], [createPlayer()]);
+    mockedInvoke.mockImplementation((command) =>
+      command === "get_finance_snapshot"
+        ? Promise.resolve({
+            snapshot: { ...CRITICAL_SNAPSHOT, affordable_transfer_fee: 120000 },
+            previews: {},
+          })
+        : Promise.reject(new Error(`Unexpected command: ${command}`)),
+    );
+
+    render(<FinancesTab gameState={initialState} />);
+
+    expect(await screen.findByText(/Cash limits signings to/)).toBeInTheDocument();
   });
 
   it("offers the budget balance slider when the backend sends rebalance terms", async () => {

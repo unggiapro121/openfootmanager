@@ -112,6 +112,9 @@ export function mapLocalFinanceSnapshot(
     runwayStatus: snapshot.runwayStatus,
     overallStatus: snapshot.overallStatus,
     marketingCampaignCooldownDaysRemaining: snapshot.marketingCampaignCooldownDaysRemaining,
+    // The backend decides what the club can afford; until it answers, the
+    // budget stands in and no cash limit is shown.
+    affordableTransferFee: team.transfer_budget,
   };
 }
 

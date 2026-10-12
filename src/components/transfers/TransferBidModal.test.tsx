@@ -38,6 +38,9 @@ vi.mock("react-i18next", () => ({
       if (key === "transfers.bidImpactOverBalance") {
         return "This bid would push the club into debt";
       }
+      if (key === "transfers.bidImpactMaxAffordable") {
+        return `The most you can pay right now is ${params?.amount}`;
+      }
       if (key === "transfers.negotiationPulse") return "Negotiation pulse";
       if (key === "transfers.negotiationRound") return `Round ${params?.count}`;
       if (key === "transfers.negotiationPatience") return "Patience";
@@ -196,6 +199,7 @@ function createProjection(
     projected_wage_budget_usage_pct: 4,
     exceeds_transfer_budget: false,
     exceeds_finance: false,
+    max_affordable_fee: 2000000,
     ...overrides,
   };
 }
@@ -229,6 +233,46 @@ describe("TransferBidModal", () => {
 
     expect(screen.getByText("Your club cannot afford this fee.")).toBeInTheDocument();
     expect(screen.queryByText("error")).not.toBeInTheDocument();
+  });
+
+  function renderWithProjection(projection: TransferBidProjectionData["projection"]) {
+    render(
+      <TransferBidModal
+        bidTarget={createPlayer()}
+        teams={[createTeam(), createTeam({ id: "team-2", name: "Seller FC" })]}
+        bidAmount="39"
+        onBidAmountChange={vi.fn()}
+        myTeam={createTeam()}
+        bidFee={39000000}
+        bidProjection={projection}
+        bidFeedback={null}
+        activeBidOffer={null}
+        hasExistingOffer={false}
+        bidResult={null}
+        bidError={null}
+        bidLoading={false}
+        bidSubmitDisabled
+        onSubmit={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+  }
+
+  // Given a fee the club's cash cannot cover though its budget can, then the
+  // modal names the largest fee it could pay instead of only refusing.
+  it("names the largest affordable fee when the bid is beyond the club's cash", () => {
+    renderWithProjection(createProjection({ exceeds_finance: true, max_affordable_fee: 16926762 }));
+
+    expect(
+      screen.getByText(`The most you can pay right now is ${formatExactMoney(16926762)}`),
+    ).toBeInTheDocument();
+  });
+
+  // Given a fee the club can afford, then no limit is shown.
+  it("shows no limit for an affordable bid", () => {
+    renderWithProjection(createProjection());
+
+    expect(screen.queryByText(/The most you can pay/)).not.toBeInTheDocument();
   });
 
   it("renders the active negotiation state for an existing offer", () => {

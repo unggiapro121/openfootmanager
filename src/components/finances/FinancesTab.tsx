@@ -471,7 +471,14 @@ function FinancesTabContent({
     }
   }
 
-  const financeItems = [
+  const transferBudgetNote =
+    financeSnapshot.affordableTransferFee < myTeam.transfer_budget
+      ? t("finances.transferBudgetCashLimit", {
+          amount: formatVal(financeSnapshot.affordableTransferFee),
+        })
+      : null;
+
+  const financeItems: { label: string; value: number; color: string; note?: string | null }[] = [
     {
       label: t("finances.clubBalance"),
       value: myTeam.finance,
@@ -486,6 +493,7 @@ function FinancesTabContent({
       label: t("finances.transferBudget"),
       value: myTeam.transfer_budget,
       color: "text-gray-800 dark:text-gray-200",
+      note: transferBudgetNote,
     },
     {
       label: t("finances.seasonIncome"),
@@ -517,6 +525,9 @@ function FinancesTabContent({
                 <p className={`font-heading font-bold text-xl ${item.color}`}>
                   {formatVal(item.value)}
                 </p>
+                {item.note ? (
+                  <p className="mt-1 text-xs text-accent-700 dark:text-accent-400">{item.note}</p>
+                ) : null}
               </div>
             ))}
             <div className="bg-gray-50 dark:bg-navy-800 rounded-xl p-4 text-center">

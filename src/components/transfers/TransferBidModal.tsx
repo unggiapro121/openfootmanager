@@ -196,6 +196,13 @@ export function TransferBidForm({
               {t("transfers.bidImpactOverBalance")}
             </p>
           ) : null}
+          {bidProjection.exceeds_finance || bidProjection.exceeds_transfer_budget ? (
+            <p className="text-xs font-semibold text-red-600 dark:text-red-300">
+              {t("transfers.bidImpactMaxAffordable", {
+                amount: formatExactMoney(bidProjection.max_affordable_fee),
+              })}
+            </p>
+          ) : null}
         </div>
       ) : null}
       <NegotiationFeedbackPanel

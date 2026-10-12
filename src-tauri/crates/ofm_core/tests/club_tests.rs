@@ -79,3 +79,31 @@ fn upgrade_facility_rejects_when_funds_are_insufficient() {
     assert_eq!(game.teams[0].finance, 1_000_000);
     assert_eq!(game.teams[0].facilities.training, 1);
 }
+
+/// Given a club with €10M of transfer budget,
+/// When it upgrades a facility for €2.5M,
+/// Then the upgrade comes out of the transfer budget as well as the cash,
+/// so the budget never promises money the club has spent.
+#[test]
+fn upgrade_facility_spends_from_the_transfer_budget() {
+    let mut game = make_game();
+    game.teams[0].transfer_budget = 10_000_000;
+
+    let cost = club::upgrade_facility(&mut game, "team1", FacilityType::Training).unwrap();
+
+    assert_eq!(game.teams[0].transfer_budget, 10_000_000 - cost);
+}
+
+/// Given a club with €1M of transfer budget but enough cash,
+/// When it upgrades a facility for €2.5M,
+/// Then the upgrade goes ahead and the transfer budget stops at zero.
+#[test]
+fn upgrade_facility_floors_the_transfer_budget_at_zero() {
+    let mut game = make_game();
+    game.teams[0].transfer_budget = 1_000_000;
+
+    club::upgrade_facility(&mut game, "team1", FacilityType::Training).unwrap();
+
+    assert_eq!(game.teams[0].transfer_budget, 0);
+    assert_eq!(game.teams[0].facilities.training, 2);
+}

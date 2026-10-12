@@ -277,6 +277,34 @@ fn team_finance_snapshot_uses_canonical_backend_values() {
     assert!(!snapshot.currently_over_budget);
 }
 
+/// Given a club whose transfer budget (€120M) outruns its cash (€17M),
+/// When its finance snapshot is taken,
+/// Then the fee it can actually pay is its cash.
+#[test]
+fn team_finance_snapshot_caps_the_affordable_fee_at_cash() {
+    let mut game = make_monday_game();
+    game.teams[0].finance = 17_000_000;
+    game.teams[0].transfer_budget = 120_000_000;
+
+    let snapshot = finances::team_finance_snapshot(&game, "team1").expect("snapshot");
+
+    assert_eq!(snapshot.affordable_transfer_fee, 17_000_000);
+}
+
+/// Given a club in debt,
+/// When its finance snapshot is taken,
+/// Then it can afford no fee at all rather than a negative one.
+#[test]
+fn team_finance_snapshot_affords_nothing_in_debt() {
+    let mut game = make_monday_game();
+    game.teams[0].finance = -5_000_000;
+    game.teams[0].transfer_budget = 10_000_000;
+
+    let snapshot = finances::team_finance_snapshot(&game, "team1").expect("snapshot");
+
+    assert_eq!(snapshot.affordable_transfer_fee, 0);
+}
+
 #[test]
 fn team_finance_snapshot_flags_wage_pressure() {
     let mut game = make_monday_game();

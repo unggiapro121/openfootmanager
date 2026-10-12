@@ -84,6 +84,9 @@ pub struct TeamFinanceSnapshot {
     pub runway_status: FinanceHealthLevel,
     pub overall_status: FinanceHealthLevel,
     pub marketing_campaign_cooldown_days_remaining: u32,
+    /// The largest transfer fee the club can pay now, which its cash can cap
+    /// below its transfer budget.
+    pub affordable_transfer_fee: i64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -389,6 +392,7 @@ pub fn team_finance_snapshot(game: &Game, team_id: &str) -> Option<TeamFinanceSn
             team,
             game.clock.current_date.date_naive(),
         ),
+        affordable_transfer_fee: crate::transfers::affordable_transfer_fee(team),
     })
 }
 
