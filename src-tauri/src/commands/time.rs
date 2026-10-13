@@ -242,7 +242,15 @@ pub fn skip_to_match_day_internal(state: &StateManager) -> Result<serde_json::Va
 ///   - `blocked`    — action-required blocker exists; game state unchanged
 ///   - `fired`      — manager was dismissed during today's processing
 ///   - `advanced`   — quiet day processed successfully; game state updated
-pub fn advance_one_day_internal(state: &StateManager) -> Result<serde_json::Value, String> {
+///
+/// `acknowledged_blocker_ids` are the blockers the manager has already chosen to
+/// continue past in this run: they no longer stop the day, though any other
+/// blocker still does. Without them, "continue anyway" asked for the very same
+/// check again and the day never moved on.
+pub fn advance_one_day_internal(
+    state: &StateManager,
+    acknowledged_blocker_ids: &[String],
+) -> Result<serde_json::Value, String> {
     // The whole check-process-respond sequence runs under the game lock
     // (update_game) so a concurrent GUI/MCP write is never clobbered by a
     // stale clone written back afterwards.
@@ -262,7 +270,15 @@ pub fn advance_one_day_internal(state: &StateManager) -> Result<serde_json::Valu
                 });
             }
 
-            let blockers = compute_blocking_actions(game);
+            let blockers: Vec<serde_json::Value> = compute_blocking_actions(game)
+                .into_iter()
+                .filter(|blocker| {
+                    !blocker
+                        .get("id")
+                        .and_then(serde_json::Value::as_str)
+                        .is_some_and(|id| acknowledged_blocker_ids.iter().any(|ack| ack == id))
+                })
+                .collect();
             if !blockers.is_empty() {
                 info!(
                     "[cmd] advance_one_day: blocked date={} count={}",
@@ -321,9 +337,11 @@ pub fn advance_one_day_internal(state: &StateManager) -> Result<serde_json::Valu
 #[tauri::command]
 pub async fn advance_one_day(
     state: State<'_, Arc<StateManager>>,
+    acknowledged_blocker_ids: Option<Vec<String>>,
 ) -> Result<serde_json::Value, String> {
     let state = state.inner().clone();
-    run_off_thread(move || advance_one_day_internal(&state)).await
+    let acknowledged = acknowledged_blocker_ids.unwrap_or_default();
+    run_off_thread(move || advance_one_day_internal(&state, &acknowledged)).await
 }
 
 fn count_high_priority_messages(game: &Game) -> usize {
@@ -1395,7 +1413,7 @@ mod tests {
         // checks game.competitions, not the legacy game.league mirror.
         state.set_game(make_game_with_competition_matchday());
 
-        let result = super::advance_one_day_internal(&state).expect("advance_one_day result");
+        let result = super::advance_one_day_internal(&state, &[]).expect("advance_one_day result");
 
         assert_eq!(
             result.get("action").and_then(Value::as_str),
@@ -1425,7 +1443,7 @@ mod tests {
         }
         state.set_game(game);
 
-        let result = super::advance_one_day_internal(&state).expect("advance_one_day result");
+        let result = super::advance_one_day_internal(&state, &[]).expect("advance_one_day result");
 
         assert_eq!(
             result.get("action").and_then(Value::as_str),
@@ -1435,13 +1453,68 @@ mod tests {
         assert!(!blockers.is_empty(), "blockers array must be populated");
     }
 
+    /// Given a day blocked by an injured starter, and the manager choosing to
+    /// continue anyway past exactly that warning,
+    /// When the day is advanced with the warning acknowledged,
+    /// Then the day goes ahead instead of stopping on it again.
+    #[test]
+    fn advance_one_day_goes_past_blockers_the_manager_acknowledged() {
+        let state = StateManager::new();
+        let mut game = make_game(14);
+        let player = game.players.iter_mut().find(|p| p.id == "p5").unwrap();
+        player.injury = Some(Injury {
+            name: "Calf strain".to_string(),
+            days_remaining: 6,
+        });
+        state.set_game(game);
+        let first = super::advance_one_day_internal(&state, &[]).expect("advance_one_day result");
+        assert_eq!(first.get("action").and_then(Value::as_str), Some("blocked"));
+        let acknowledged: Vec<String> = first["blockers"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|blocker| blocker.get("id").and_then(Value::as_str).map(String::from))
+            .collect();
+
+        let second =
+            super::advance_one_day_internal(&state, &acknowledged).expect("advance_one_day result");
+
+        assert_eq!(
+            second.get("action").and_then(Value::as_str),
+            Some("advanced")
+        );
+    }
+
+    /// Given a day blocked by an injured starter,
+    /// When the manager has acknowledged only a different warning,
+    /// Then the day still stops on the injured starter.
+    #[test]
+    fn advance_one_day_still_stops_on_a_blocker_not_acknowledged() {
+        let state = StateManager::new();
+        let mut game = make_game(14);
+        let player = game.players.iter_mut().find(|p| p.id == "p5").unwrap();
+        player.injury = Some(Injury {
+            name: "Calf strain".to_string(),
+            days_remaining: 6,
+        });
+        state.set_game(game);
+
+        let result = super::advance_one_day_internal(&state, &["urgent_messages".to_string()])
+            .expect("advance_one_day result");
+
+        assert_eq!(
+            result.get("action").and_then(Value::as_str),
+            Some("blocked")
+        );
+    }
+
     #[test]
     fn advance_one_day_advances_quiet_day_and_returns_date() {
         let state = StateManager::new();
         // No match today, no blockers.
         state.set_game(make_game(11));
 
-        let result = super::advance_one_day_internal(&state).expect("advance_one_day result");
+        let result = super::advance_one_day_internal(&state, &[]).expect("advance_one_day result");
 
         assert_eq!(
             result.get("action").and_then(Value::as_str),
@@ -1471,7 +1544,7 @@ mod tests {
         game.manager.fire("2025-06-10");
         state.set_game(game);
 
-        let result = super::advance_one_day_internal(&state).expect("advance_one_day result");
+        let result = super::advance_one_day_internal(&state, &[]).expect("advance_one_day result");
 
         assert_eq!(
             result.get("action").and_then(Value::as_str),

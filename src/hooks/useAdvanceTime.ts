@@ -104,7 +104,10 @@ export function useAdvanceTime(
     setBlockerModal(options?.blockerModal ?? null);
   }
 
-  const runStreamingDigest = (options?: { resume?: boolean }) => {
+  const runStreamingDigest = (options?: {
+    resume?: boolean;
+    acknowledgedBlockerIds?: string[];
+  }) => {
     resumeAfterBlockerRef.current = () => void startDigest({ resume: true });
     void startDigest(options);
   };
@@ -186,7 +189,15 @@ export function useAdvanceTime(
       : () => doAdvance(resolvedMode);
     const blockers = await checkBlockingActions("handleContinue");
     if (blockers.length > 0) {
-      setBlockerModal({ blockers, pendingAction: runContinue });
+      // Continuing anyway is a choice about these warnings: the day-by-day run
+      // must not stop on them again for the very next day.
+      const acknowledgedBlockerIds = blockers.map((blocker) => blocker.id);
+      setBlockerModal({
+        blockers,
+        pendingAction: continueToNextEvent
+          ? () => runStreamingDigest({ acknowledgedBlockerIds })
+          : runContinue,
+      });
       return;
     }
     runContinue();

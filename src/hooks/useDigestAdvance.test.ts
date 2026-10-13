@@ -90,6 +90,70 @@ describe("useDigestAdvance", () => {
     expect(result.current.entries).toHaveLength(0);
   });
 
+  // Given a run stopped by a warning, when the manager continues anyway, then
+  // the next day is asked for with that warning acknowledged, so it does not
+  // stop on the same warning again.
+  it("resuming after a blocked stop acknowledges the warnings it stopped on", async () => {
+    mockedAdvanceOneDay
+      .mockResolvedValueOnce({
+        action: "blocked",
+        date: "2026-09-01",
+        blockers: [{ id: "injured_xi", severity: "warn", text: "1 injured", tab: "Squad" }],
+        results: [],
+      })
+      .mockResolvedValueOnce(makeAdvancedResponse("2026-09-01"))
+      .mockResolvedValueOnce({ action: "match_day", date: "2026-09-02", results: [] });
+
+    const { result } = renderHook(() => useDigestAdvance(setGameState, onFired));
+
+    await act(async () => {
+      await result.current.startDigest();
+    });
+    await act(async () => {
+      await result.current.startDigest({ resume: true });
+    });
+
+    expect(mockedAdvanceOneDay).toHaveBeenNthCalledWith(1, []);
+    expect(mockedAdvanceOneDay).toHaveBeenNthCalledWith(2, ["injured_xi"]);
+    expect(mockedAdvanceOneDay).toHaveBeenNthCalledWith(3, ["injured_xi"]);
+    expect(result.current.stopReason).toEqual({ kind: "match_day" });
+  });
+
+  // Given warnings the manager already chose to continue past before the run
+  // started, then the run asks for every day with them acknowledged.
+  it("starts with the warnings the manager already acknowledged", async () => {
+    mockedAdvanceOneDay.mockResolvedValueOnce({
+      action: "match_day",
+      date: "2026-09-01",
+      results: [],
+    });
+
+    const { result } = renderHook(() => useDigestAdvance(setGameState, onFired));
+
+    await act(async () => {
+      await result.current.startDigest({ acknowledgedBlockerIds: ["injured_xi"] });
+    });
+
+    expect(mockedAdvanceOneDay).toHaveBeenCalledWith(["injured_xi"]);
+  });
+
+  // Given a fresh run, then warnings acknowledged in an earlier run are not
+  // carried over: each new run checks everything again.
+  it("forgets acknowledged warnings when a new run starts", async () => {
+    mockedAdvanceOneDay.mockResolvedValue({ action: "match_day", date: "2026-09-01", results: [] });
+
+    const { result } = renderHook(() => useDigestAdvance(setGameState, onFired));
+
+    await act(async () => {
+      await result.current.startDigest({ acknowledgedBlockerIds: ["injured_xi"] });
+    });
+    await act(async () => {
+      await result.current.startDigest();
+    });
+
+    expect(mockedAdvanceOneDay).toHaveBeenLastCalledWith([]);
+  });
+
   it("calls onFired and sets fired stop reason when manager is dismissed", async () => {
     mockedAdvanceOneDay.mockResolvedValueOnce({
       action: "fired",
