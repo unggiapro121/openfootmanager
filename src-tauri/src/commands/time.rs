@@ -484,12 +484,13 @@ mod tests {
         advance_time_with_mode_internal, compute_blocking_actions, continue_reached_attention_event,
     };
     use chrono::{TimeZone, Utc};
+    use domain::contract_ledger::{ContractRecord, ContractSource};
     use domain::league::{Fixture, FixtureCompetition, FixtureStatus};
     use domain::manager::Manager;
     use domain::message::{InboxMessage, MessagePriority};
     use domain::player::{
-        ContractExitIntent, ContractRenewalState, Injury, Player, PlayerAttributes, Position,
-        RenewalSessionStatus,
+        ContractExitIntent, ContractRenewalState, Injury, Player, PlayerAttributes,
+        PlayerMovementEntry, PlayerMovementKind, Position, RenewalSessionStatus,
     };
     use domain::season::TransferWindowStatus;
     use domain::stats::StatsState;
@@ -1009,6 +1010,38 @@ mod tests {
                 .and_then(Value::as_str),
             Some("2")
         );
+    }
+
+    /// Given the best player in the XI who agreed a one-year renewal today,
+    /// When the game checks what needs attention before advancing,
+    /// Then his contract is not flagged as a risk: it was just renewed.
+    #[test]
+    fn a_key_player_just_renewed_for_a_year_is_no_contract_risk() {
+        let mut game = make_game(11);
+        let key_player = game
+            .players
+            .iter_mut()
+            .find(|player| player.id == "p10")
+            .unwrap();
+        key_player.attributes.pace = 92;
+        key_player.attributes.shooting = 94;
+        key_player.attributes.dribbling = 90;
+        key_player
+            .record_movement(PlayerMovementEntry {
+                to_team_id: Some("team1".to_string()),
+                contract: Some(ContractRecord {
+                    start: Some("2025-06-15".to_string()),
+                    end: Some("2026-06-15".to_string()),
+                    weekly_wage: 35_000,
+                    source: ContractSource::Renewal,
+                }),
+                ..PlayerMovementEntry::new("2025-06-15", PlayerMovementKind::Renewal)
+            })
+            .unwrap();
+
+        let blockers = compute_blocking_actions(&game);
+
+        assert!(blocker_by_id(&blockers, "key_contract_risk").is_none());
     }
 
     #[test]

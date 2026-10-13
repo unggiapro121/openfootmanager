@@ -1,8 +1,9 @@
 use crate::contract_wage_policy::{WagePolicyVerdict, wage_policy_verdict};
 use crate::contracts::{
     ContractWarningStage, DelegatedRenewalCase, DelegatedRenewalOptions, DelegatedRenewalReport,
-    DelegatedRenewalResultStatus, contract_warning_stage, expected_contract_years, expected_wage,
-    has_active_manager_block, has_let_expire_intent, round_up_to_nearest_thousand,
+    DelegatedRenewalResultStatus, contract_needs_renewal, contract_warning_stage,
+    expected_contract_years, expected_wage, has_active_manager_block, has_let_expire_intent,
+    round_up_to_nearest_thousand,
 };
 use crate::game::Game;
 use chrono::NaiveDate;
@@ -61,19 +62,18 @@ pub fn delegate_renewals(
                 return None;
             }
 
-            if let Some(selected_ids) = selected_ids.as_ref() {
-                if selected_ids.contains(&player.id) {
-                    return Some(index);
-                }
-
+            // Only a contract that needs renewing is renewed, even when the
+            // manager names the player: the assistant offers the years his age
+            // calls for, which can be fewer than a longer deal has left, and
+            // re-signing a deal just agreed would only shorten it.
+            if !contract_needs_renewal(player, current_date) {
                 return None;
             }
 
-            if contract_warning_stage(player.contract_end(), current_date).is_some() {
-                return Some(index);
+            match selected_ids.as_ref() {
+                Some(selected_ids) => selected_ids.contains(&player.id).then_some(index),
+                None => Some(index),
             }
-
-            None
         })
         .collect();
     let mut report = DelegatedRenewalReport {

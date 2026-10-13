@@ -27,7 +27,7 @@ import {
   calcAge,
   getPlayerOvr,
   getContractRiskBadgeVariant,
-  getContractRiskLevel,
+  getPlayerContractRiskLevel,
   getContractYearsRemaining,
   positionBadgeVariant,
 } from "../../lib/helpers";
@@ -651,7 +651,7 @@ export default function SquadRosterView({
                 const tacticalFit = getTacticalFit(player);
                 const styleFit = getPlayStyleFit(player, activePlayStyle, currentPos);
                 const keeperFit = getKeeperFitBreakdown(player, activePlayStyle, currentPos);
-                const contractRiskLevel = getContractRiskLevel(player.contract_end, clockDate);
+                const contractRiskLevel = getPlayerContractRiskLevel(player, clockDate);
                 const contractRiskLabel =
                   contractRiskLevel === "critical"
                     ? t("finances.contractRiskCritical")
@@ -892,16 +892,20 @@ export default function SquadRosterView({
                           {t(`squad.styleFitValues.${styleFit}`)}
                         </Badge>
                       </td>
-                      {/* Traits — all of them, as icons that wrap as needed */}
+                      {/* Traits — all of them, as icons that wrap as needed. Wide
+                          enough for three a row, or a player with several stacks
+                          them one per row and the row grows tall. */}
                       <td className="py-2.5 px-4">
-                        <TraitList
-                          traits={withScoutedWonderkid(
-                            player.traits || [],
-                            clubReads.get(player.id)?.wonderkid,
-                          )}
-                          size="xs"
-                          iconOnly
-                        />
+                        <div className="min-w-20">
+                          <TraitList
+                            traits={withScoutedWonderkid(
+                              player.traits || [],
+                              clubReads.get(player.id)?.wonderkid,
+                            )}
+                            size="xs"
+                            iconOnly
+                          />
+                        </div>
                       </td>
                       <td className="py-2.5 px-4 text-sm text-gray-600 dark:text-gray-400 tabular-nums">
                         {age}

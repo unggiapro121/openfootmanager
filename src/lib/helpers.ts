@@ -34,6 +34,7 @@ export {
 export {
   getContractRiskBadgeVariant,
   getContractRiskLevel,
+  getPlayerContractRiskLevel,
   getContractYearsRemaining,
 } from "./contractUtils";
 export {
