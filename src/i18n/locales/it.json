@@ -2692,7 +2692,8 @@
       "pitchLabel": "{{home}} contro {{away}}, vista dall'alto",
       "allNames": "Tutti i nomi",
       "hide": "Nascondi radar",
-      "show": "Mostra radar"
+      "show": "Mostra radar",
+      "speedHint": "Il radar mostra le azioni pericolose al suo ritmo. Nascondilo per scegliere la velocità."
     }
   },
   "notifications": {

@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} 对阵 {{away}}，俯视图",
       "allNames": "显示全部姓名",
       "hide": "隐藏雷达",
-      "show": "显示雷达"
+      "show": "显示雷达",
+      "speedHint": "雷达按自己的节奏展示危险时刻。隐藏雷达即可选择速度。"
     }
   },
   "endOfSeason": {

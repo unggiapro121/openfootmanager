@@ -36,6 +36,8 @@ export interface DrawnPlayer {
 export interface RadarPicture {
   ball: PitchPoint;
   lift: number;
+  /** 0 while the ball is out of play, fading out and back in either side. */
+  ballOpacity: number;
   trail: PitchPoint[];
   overlay: RadarOverlay | null;
   players: DrawnPlayer[];
@@ -269,7 +271,10 @@ function drawBall(
   palette: RadarPalette,
   ball: PitchPoint,
   lift: number,
+  opacity: number,
 ): void {
+  if (opacity <= 0) return;
+  ctx.globalAlpha = opacity;
   ctx.fillStyle = palette.shadow;
   ctx.beginPath();
   ctx.ellipse(ball.x, ball.y, 0.95, 0.5, 0, 0, Math.PI * 2);
@@ -281,6 +286,7 @@ function drawBall(
   circle(ctx, { x: ball.x, y: ball.y - lift }, 0.85 * (1 + lift / 14));
   ctx.fill();
   ctx.stroke();
+  ctx.globalAlpha = 1;
 }
 
 /** The banner's opacity through the celebration: in fast, held, then fading. */
@@ -349,6 +355,6 @@ export function drawRadar(
     drawPlayer(ctx, palette, player);
     drawPlayerMark(ctx, palette, picture.overlay, player);
   }
-  drawBall(ctx, palette, picture.ball, picture.lift);
+  drawBall(ctx, palette, picture.ball, picture.lift, picture.ballOpacity);
   if (celebration) drawCelebration(ctx, palette, picture.goalLabel, celebration.progress);
 }

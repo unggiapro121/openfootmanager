@@ -4,21 +4,32 @@ import { ChevronDown, ChevronUp, Radar, Tags } from "lucide-react";
 
 import { usePrefersReducedMotion } from "../../../hooks/usePrefersReducedMotion";
 import { useGameStore } from "../../../store/gameStore";
-import type { MatchSnapshot, SimSpeed } from "../types";
+import type { MatchSnapshot } from "../types";
 import { type DrawnPlayer, RADAR_VIEW, type RadarPicture, drawRadar } from "./radarDraw";
 import type { RadarKits, Side } from "./radarGeometry";
 import { FONT_CLASSES, PALETTE_CLASSES, readPalette } from "./radarPalette";
-import { advancePlayback } from "./radarPlayback";
+import { type RadarRun, advanceRun, startRun } from "./radarRun";
 import type { RadarScene } from "./radarScene";
-import { type RadarSim, restingSim, stepSim } from "./radarSim";
 import type { RadarStage } from "./radarStage";
-import { radarPacing, useRadarDirector } from "./useRadarDirector";
+import { RADAR_PACING, useRadarDirector } from "./useRadarDirector";
 
 interface MatchRadar2DProps {
   snapshot: MatchSnapshot;
-  speed: SimSpeed;
   kits: RadarKits;
+  /** Whether the radar is shown. Showing it is the 2D mode: the match waits for the radar. */
+  isOpen: boolean;
+  onToggle: () => void;
+  /** The match is paused: the radar holds still where it is. */
+  paused: boolean;
+  /**
+   * Called once the radar has played out everything it has taken in, with how
+   * many of the snapshot's events that is, so the next minute can be asked for.
+   */
+  onCaughtUp?: (staged: number) => void;
 }
+
+/** With motion reduced, how long each minute stays on the radar before the next is asked for. */
+const STILL_MINUTE_MS = 800;
 
 const CELEBRATION_MS = 1800;
 const SHAKE: Keyframe[] = [
@@ -46,6 +57,8 @@ interface RadarCast {
   showAllNames: boolean;
   stage: RadarStage;
   goalLabel: string;
+  paused: boolean;
+  onCaughtUp?: (staged: number) => void;
 }
 
 /** The goal being celebrated: its serial, and when its celebration started (ms, the frame clock). */
@@ -92,7 +105,7 @@ function noteGoal(
 }
 
 function pictureOf(
-  sim: RadarSim,
+  run: RadarRun,
   scene: RadarScene,
   cast: RadarCast,
   celebration: Celebration,
@@ -107,7 +120,7 @@ function pictureOf(
   ];
   for (const { side, team, kit } of sides) {
     for (const player of team.players) {
-      const at = sim.players[player.id]?.at;
+      const at = run.sim.players[player.id]?.at;
       if (!at) continue;
       // Match names and shirt numbers live on the full player, not the match snapshot.
       const full = squadById.get(player.id);
@@ -126,8 +139,9 @@ function pictureOf(
     }
   }
   return {
-    ball: sim.ball,
-    lift: sim.lift,
+    ball: run.ball.at,
+    lift: run.ball.lift,
+    ballOpacity: run.ball.opacity,
     trail: scene.trail,
     overlay: scene.overlay,
     players,
@@ -144,16 +158,31 @@ function shake(element: HTMLElement | null): void {
   }
 }
 
-interface RadarFieldProps extends MatchRadar2DProps {
+interface RadarFieldProps {
+  snapshot: MatchSnapshot;
+  kits: RadarKits;
+  paused: boolean;
+  onCaughtUp?: (staged: number) => void;
   showAllNames: boolean;
   reducedMotion: boolean;
 }
 
-function RadarField({ snapshot, speed, kits, showAllNames, reducedMotion }: RadarFieldProps) {
+/** Whether the radar has nothing left to play: no step on screen, none queued, the ball in play. */
+function isPlayedOut(run: RadarRun): boolean {
+  return !run.playback.step && run.playback.queue.length === 0 && run.ball.kind !== "dead";
+}
+
+function RadarField({
+  snapshot,
+  kits,
+  paused,
+  onCaughtUp,
+  showAllNames,
+  reducedMotion,
+}: RadarFieldProps) {
   const { t } = useTranslation();
-  const pacing = useMemo(() => radarPacing(speed), [speed]);
-  const isAnimated = pacing !== null && !reducedMotion;
-  const { stage, playback } = useRadarDirector(snapshot, pacing, reducedMotion);
+  const isAnimated = !reducedMotion;
+  const { stage, playback, staged } = useRadarDirector(snapshot, RADAR_PACING, reducedMotion);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const swatchesRef = useRef<HTMLDivElement>(null);
   const shakeRef = useRef<HTMLDivElement>(null);
@@ -167,8 +196,10 @@ function RadarField({ snapshot, speed, kits, showAllNames, reducedMotion }: Rada
     showAllNames,
     stage,
     goalLabel: t("match.eventTypes.Goal"),
+    paused,
+    onCaughtUp,
   };
-  const simRef = useRef<RadarSim | null>(null);
+  const runRef = useRef<RadarRun | null>(null);
   const celebrationRef = useRef<Celebration>({
     serial: playback.current.scene.goal?.serial ?? 0,
     side: null,
@@ -176,11 +207,12 @@ function RadarField({ snapshot, speed, kits, showAllNames, reducedMotion }: Rada
   });
 
   // Moving: a frame loop advances the script, simulates the pitch and draws it.
-  // Nothing in it sets React state, so play moving on never re-renders.
+  // Nothing in it sets React state, so play moving on never re-renders. Paused,
+  // it holds still. Played out, it says so, and the match moves on.
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas?.getContext("2d");
-    if (!isAnimated || !canvas || !context) return;
+    if (!isAnimated || !canvas) return;
+    const context = canvas.getContext("2d");
     let palette = readPalette(swatchesRef.current);
     let frames = 0;
     let last: number | null = null;
@@ -188,50 +220,64 @@ function RadarField({ snapshot, speed, kits, showAllNames, reducedMotion }: Rada
     const tick = (now: number) => {
       const cast = castRef.current;
       if (!cast) return;
-      const dt = last === null ? 0 : Math.min(now - last, MAX_FRAME_GAP_MS);
+      const dt = last === null || cast.paused ? 0 : Math.min(now - last, MAX_FRAME_GAP_MS);
       last = now;
-      playback.current = advancePlayback(playback.current, dt);
-      const scene = playback.current.scene;
-      const sim = stepSim(
-        simRef.current ?? restingSim(cast.stage, scene),
+      const run = advanceRun(
+        {
+          ...(runRef.current ?? startRun(cast.stage, playback.current)),
+          playback: playback.current,
+        },
         cast.stage,
-        playback.current,
         dt,
       );
-      simRef.current = sim;
+      runRef.current = run;
+      playback.current = run.playback;
+      if (!cast.paused && isPlayedOut(run)) cast.onCaughtUp?.(staged.current);
+      if (!context) {
+        handle = requestAnimationFrame(tick);
+        return;
+      }
+      const scene = run.playback.scene;
       const progress = noteGoal(celebrationRef.current, scene, now, () => shake(shakeRef.current));
       frames += 1;
       if (frames % PALETTE_REFRESH_FRAMES === 0) palette = readPalette(swatchesRef.current);
       const pulse = (now / 1000) % 1;
-      const picture = pictureOf(sim, scene, cast, celebrationRef.current, progress, pulse);
+      const picture = pictureOf(run, scene, cast, celebrationRef.current, progress, pulse);
       drawRadar(context, picture, palette, fitCanvas(canvas));
       handle = requestAnimationFrame(tick);
     };
     handle = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(handle);
-  }, [isAnimated, playback]);
+  }, [isAnimated, playback, staged]);
 
-  // Still (reduced motion, the skip-ahead speed): draw where play rests, after
-  // every render. A goal's banner shows without moving, then a redraw clears it.
+  // Still (reduced motion): draw where play rests, after every render. A goal's
+  // banner shows without moving, then a redraw clears it. Each minute stays a
+  // moment before the next is asked for.
   useEffect(() => {
+    const cast = castRef.current;
+    if (isAnimated || !cast) return;
+    const next = paused
+      ? undefined
+      : setTimeout(() => onCaughtUp?.(staged.current), STILL_MINUTE_MS);
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
-    const cast = castRef.current;
-    if (isAnimated || !canvas || !context || !cast) return;
+    if (!canvas || !context) return () => clearTimeout(next);
     const scene = playback.current.scene;
-    const sim = restingSim(cast.stage, scene);
-    simRef.current = sim;
+    const run = startRun(cast.stage, playback.current);
+    runRef.current = run;
     const draw = () => {
       const progress = noteGoal(celebrationRef.current, scene, performance.now(), () => {});
       const still = progress === null ? null : 0.5;
-      const picture = pictureOf(sim, scene, cast, celebrationRef.current, still, null);
+      const picture = pictureOf(run, scene, cast, celebrationRef.current, still, null);
       drawRadar(context, picture, readPalette(swatchesRef.current), fitCanvas(canvas));
       return progress;
     };
     const progress = draw();
-    if (progress === null) return;
-    const timer = setTimeout(draw, (1 - progress) * CELEBRATION_MS);
-    return () => clearTimeout(timer);
+    const timer = progress === null ? undefined : setTimeout(draw, (1 - progress) * CELEBRATION_MS);
+    return () => {
+      clearTimeout(next);
+      clearTimeout(timer);
+    };
   });
 
   return (
@@ -266,10 +312,16 @@ function RadarField({ snapshot, speed, kits, showAllNames, reducedMotion }: Rada
  * already says — the event feed stays the full account — so the pitch is one
  * labelled picture to a screen reader.
  */
-export function MatchRadar2D({ snapshot, speed, kits }: MatchRadar2DProps) {
+export function MatchRadar2D({
+  snapshot,
+  kits,
+  isOpen,
+  onToggle,
+  paused,
+  onCaughtUp,
+}: MatchRadar2DProps) {
   const { t } = useTranslation();
   const reducedMotion = usePrefersReducedMotion();
-  const [isOpen, setIsOpen] = useState(true);
   const [showAllNames, setShowAllNames] = useState(false);
   const titleId = useId();
 
@@ -305,7 +357,7 @@ export function MatchRadar2D({ snapshot, speed, kits }: MatchRadar2DProps) {
           <button
             type="button"
             aria-expanded={isOpen}
-            onClick={() => setIsOpen((open) => !open)}
+            onClick={onToggle}
             className={`${TOGGLE_CLASS} bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-200`}
           >
             {isOpen ? (
@@ -320,8 +372,9 @@ export function MatchRadar2D({ snapshot, speed, kits }: MatchRadar2DProps) {
       {isOpen && (
         <RadarField
           snapshot={snapshot}
-          speed={speed}
           kits={kits}
+          paused={paused}
+          onCaughtUp={onCaughtUp}
           showAllNames={showAllNames}
           reducedMotion={reducedMotion}
         />

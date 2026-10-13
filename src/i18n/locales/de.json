@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} gegen {{away}}, von oben gesehen",
       "allNames": "Alle Namen",
       "hide": "Radar ausblenden",
-      "show": "Radar einblenden"
+      "show": "Radar einblenden",
+      "speedHint": "Das Radar zeigt die gefährlichen Szenen in seinem eigenen Tempo. Blende es aus, um die Geschwindigkeit zu wählen."
     }
   },
   "endOfSeason": {

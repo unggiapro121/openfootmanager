@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} against {{away}}, seen from above",
       "allNames": "All names",
       "hide": "Hide radar",
-      "show": "Show radar"
+      "show": "Show radar",
+      "speedHint": "The radar plays the dangerous moments at its own pace. Hide it to choose a speed."
     }
   },
   "endOfSeason": {

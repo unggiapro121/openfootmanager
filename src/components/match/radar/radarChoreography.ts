@@ -17,7 +17,6 @@ import {
   toPitch,
   zoneAhead,
   zoneCentreX,
-  zoneSpan,
 } from "./radarGeometry";
 import {
   type RadarBeat,
@@ -26,8 +25,21 @@ import {
   type RadarStep,
   focusOf,
 } from "./radarScene";
-import { type LineGroup, type RadarStage, standingIn } from "./radarStage";
+import { type RadarStage, standingIn } from "./radarStage";
 import { PACE_SPEED, crossingPoint, meetingPoint, paceSeconds, timeSteps } from "./radarTiming";
+import {
+  TOUCH_AHEAD,
+  ballCarrier,
+  cast,
+  jitter,
+  lineFor,
+  linkedReceiver,
+  nearestOpponent,
+  only,
+  standIn,
+} from "./radarCasting";
+import { highlightsOf, isAttackingPlay } from "./radarHighlights";
+import { type RadarSettle, quietSteps, settleStepsFor } from "./radarSettle";
 
 /**
  * The match radar's director's script: turns the engine's events into short
@@ -36,87 +48,6 @@ import { PACE_SPEED, crossingPoint, meetingPoint, paceSeconds, timeSteps } from 
  * pass), it casts a plausible stand-in from the right line, chosen
  * deterministically so a replay always looks the same.
  */
-
-// ---------------------------------------------------------------------------
-// Casting helpers
-// ---------------------------------------------------------------------------
-
-/** -1…1 from a seed: a small, repeatable variation. */
-function jitter(seed: string): number {
-  return ((seedOf(seed) % 2001) - 1000) / 1000;
-}
-
-/** Which line a side's ball arrives in when it moves into `zone`. */
-function lineFor(side: Side, zone: string): LineGroup {
-  const depth = fromPitch(side, { x: zoneCentreX(zone), y: CENTRE_LANE }).depth;
-  if (depth < 40) return "Defender";
-  if (depth < 65) return "Midfielder";
-  return "Forward";
-}
-
-function standIn(
-  stage: RadarStage,
-  side: Side,
-  group: LineGroup,
-  seed: string,
-  exclude: string | null,
-): string | null {
-  const candidates = stage.line(side, group).filter((id) => id !== exclude);
-  const pool = candidates.length > 0 ? candidates : stage.line(side, "Midfielder");
-  return pool.length > 0 ? pool[seedOf(seed) % pool.length] : null;
-}
-
-/** The nearest player of the side without the ball to `point`. */
-function nearestOpponent(
-  stage: RadarStage,
-  side: Side,
-  point: PitchPoint,
-  focus: ShapeFocus,
-  lines?: LineGroup[],
-): string | null {
-  const defending = opposite(side);
-  const eligible = lines ? new Set(lines.flatMap((group) => stage.line(defending, group))) : null;
-  let nearest: string | null = null;
-  let best = Number.POSITIVE_INFINITY;
-  for (const [id, at] of stage.shapeAt(focus)) {
-    if (stage.sideOf(id) !== defending || id === stage.goalkeeper(defending)) continue;
-    if (eligible && !eligible.has(id)) continue;
-    const gap = distance(at, point);
-    if (gap < best) {
-      best = gap;
-      nearest = id;
-    }
-  }
-  return nearest;
-}
-
-/** The engine names the man on the ball next; for a pass, he is the receiver. */
-const ON_THE_BALL = new Set([
-  "PassCompleted",
-  "PassIntercepted",
-  "Dribble",
-  "DribbleTackled",
-  "Cross",
-  "ShotSaved",
-  "ShotOffTarget",
-  "ShotBlocked",
-  "ShotOnTarget",
-  "Goal",
-]);
-
-function linkedReceiver(event: MatchEvent, next: MatchEvent | undefined): string | null {
-  if (!next || next.side !== event.side || !ON_THE_BALL.has(next.event_type)) return null;
-  return next.player_id && next.player_id !== event.player_id ? next.player_id : null;
-}
-
-/** Inline helper: the id list without nulls. */
-function cast(...ids: (string | null | undefined)[]): string[] {
-  return ids.filter((id): id is string => !!id);
-}
-
-function only(id: string | null | undefined, at: PitchPoint): Record<string, PitchPoint> {
-  return id ? { [id]: at } : {};
-}
 
 // ---------------------------------------------------------------------------
 // Beats
@@ -176,14 +107,24 @@ function takeBall(cue: Cue, actor: string | null): Takeover {
   if (gap <= FETCH_METRES) {
     return {
       at: ball,
-      step: { ball: { at: ball }, movers: only(actor, ball), waitFor: [actor] },
+      step: {
+        ball: { at: ball },
+        movers: only(actor, ball),
+        waitFor: [actor],
+        action: { kind: "take", by: actor },
+      },
       seconds: gap / PACE_SPEED.run,
     };
   }
   const at = meetingPoint(from, ball, (point) => distance(ball, point) / PACE_SPEED.pass, 0);
   return {
     at,
-    step: { ball: { at, ease: "linear" }, movers: only(actor, at), pace: "pass" },
+    step: {
+      ball: { at, ease: "linear" },
+      movers: only(actor, at),
+      pace: "pass",
+      action: { kind: "take", by: actor },
+    },
     seconds: paceSeconds("pass", distance(ball, at)),
   };
 }
@@ -211,14 +152,6 @@ function closers(
   return Object.fromEntries(
     near.map(({ id, from, gap }) => [id, lerp(at, from, CLOSING_GAP / gap)]),
   );
-}
-
-/** The player running with the ball in `scene`, if one is. */
-function ballCarrier(stage: RadarStage, scene: RadarScene, side: Side): string | null {
-  const carrier = Object.entries(scene.movers).find(
-    ([id, at]) => stage.sideOf(id) === side && distance(at, scene.ball) <= TOUCH_AHEAD + 0.5,
-  );
-  return carrier?.[0] ?? null;
 }
 
 /**
@@ -251,6 +184,7 @@ function contestBall(cue: Cue): { at: PitchPoint; step: RadarStep } {
       highlight: cast(winner),
       possession: event.side,
       overlay: null,
+      action: winner ? { kind: "take", by: winner } : undefined,
     },
   };
 }
@@ -288,7 +222,11 @@ function stagePass(cue: Cue): Staging {
         highlight: cast(passer),
         possession: side,
       },
-      { ball: { at: to, ease: "linear" }, highlight: cast(passer, receiver) },
+      {
+        ball: { at: to, ease: "linear" },
+        highlight: cast(passer, receiver),
+        action: { kind: "kick", by: passer, to, receiver, pace: "pass", peak: 0 },
+      },
     ],
   };
 }
@@ -324,7 +262,11 @@ function stageInterceptedPass(cue: Cue): Staging {
         highlight: cast(passer),
         possession: side,
       },
-      { ball: { at: cut, ease: "linear" }, highlight: cast(passer, interceptor) },
+      {
+        ball: { at: cut, ease: "linear" },
+        highlight: cast(passer, interceptor),
+        action: { kind: "kick", by: passer, to: cut, receiver: interceptor, pace: "pass", peak: 0 },
+      },
       { overlay: { kind: "cut", from, at: cut }, possession: opposite(side) },
     ],
   };
@@ -338,40 +280,10 @@ function stageWinBack(cue: Cue): Staging {
 /** A dribble's length, and how many touches the dribbler takes over it. */
 const DRIBBLE_METRES = 10;
 const DRIBBLE_TOUCHES = 3;
-/** How far ahead of the dribbler each touch pushes the ball. */
-const TOUCH_AHEAD = 1.4;
 /** How far the run bends away from the defender at its widest. */
 const DRIBBLE_BEND = 2.5;
 /** How far goal-side the defender holds off the dribbler: a few metres, never on top of him. */
 const JOCKEY_GAP = 6;
-
-/** The longest a single touch carries the ball. */
-const TOUCH_METRES = 3.5;
-
-/**
- * A run with the ball from `from` to `to` (both in `side`'s view), as touches
- * of at most a few metres: each pushes the ball a stride ahead and the runner
- * runs onto it, so ball and runner always travel together.
- */
-function carryTouches(
-  side: Side,
-  runner: string,
-  from: { depth: number; lane: number },
-  to: { depth: number; lane: number },
-): RadarStep[] {
-  const length = Math.hypot(to.depth - from.depth, to.lane - from.lane);
-  const touches = Math.max(1, Math.ceil(length / TOUCH_METRES));
-  return Array.from({ length: touches }, (_, index) => {
-    const progress = (index + 1) / touches;
-    const depth = from.depth + (to.depth - from.depth) * progress;
-    const lane = from.lane + (to.lane - from.lane) * progress;
-    return {
-      pace: "carry" as const,
-      ball: { at: onPitch(toPitch(side, depth + TOUCH_AHEAD, lane)), ease: "push" as const },
-      movers: { [runner]: onPitch(toPitch(side, depth, lane)) },
-    };
-  });
-}
 
 /**
  * A dribble, touch by touch: each touch pushes the ball a stride ahead and the
@@ -414,6 +326,7 @@ function stageDribble(cue: Cue): Staging {
       ball: { at: onPitch(toPitch(side, runDepth + TOUCH_AHEAD, runLane)), ease: "push" },
       movers: { ...only(runner, feet), ...only(defender, onPitch(jockey)) },
       highlight: cast(runner, defender),
+      action: runner ? { kind: "carry", by: runner } : undefined,
     });
   }
   return {
@@ -460,6 +373,7 @@ function stageTackledDribble(cue: Cue): Staging {
       {
         ball: { at: toPitch(side, depth - 3, lane) },
         possession: opposite(side),
+        action: { kind: "roll", to: toPitch(side, depth - 3, lane), chaser: defender ?? null },
       },
     ],
   };
@@ -507,9 +421,13 @@ function stageCross(cue: Cue): Staging {
         },
         waitFor: cast(winger),
         highlight: cast(winger, target),
+        action: winger ? { kind: "carry", by: winger } : undefined,
       },
-      { ball: { at: lerp(wingSpot, landing, 0.5), lift: 7, ease: "out" } },
-      { ball: { at: landing, lift: 0, ease: "in" } },
+      {
+        pace: "air",
+        ball: { at: landing, lift: 0 },
+        action: { kind: "kick", by: winger, to: landing, receiver: target, pace: "air", peak: 7 },
+      },
     ],
   };
 }
@@ -523,8 +441,19 @@ function stageClearance(cue: Cue): Staging {
   return {
     steps: [
       { ...won.step, possession: undefined },
-      { ball: { at: lerp(at, out, 0.5), lift: 5, ease: "out" } },
-      { ball: { at: out, lift: 0, ease: "in" }, possession: side },
+      {
+        pace: "air",
+        ball: { at: out, lift: 0 },
+        possession: side,
+        action: {
+          kind: "kick",
+          by: event.player_id,
+          to: out,
+          receiver: null,
+          pace: "air",
+          peak: 5,
+        },
+      },
     ],
   };
 }
@@ -560,6 +489,7 @@ function stageShotFinish(cue: Cue, spot: PitchPoint, shooter: string | null): Ra
           movers: only(keeper, save),
           highlight: cast(shooter, keeper),
           possession: opposite(side),
+          action: { kind: "kick", by: shooter, to: save, receiver: keeper, pace: "shot", peak: 0 },
         },
       ];
     }
@@ -572,14 +502,37 @@ function stageShotFinish(cue: Cue, spot: PitchPoint, shooter: string | null): Ra
         : lerp(spot, goal, 0.2);
       const rebound = onPitch(toPitch(side, 80, fromPitch(side, spot).lane + spin * 10));
       return [
-        { ball: { at: block, ease: "linear" }, movers: only(blocker, block), pace: "shot" },
-        { ball: { at: rebound }, highlight: cast(shooter, blocker) },
+        {
+          ball: { at: block, ease: "linear" },
+          movers: only(blocker, block),
+          pace: "shot",
+          action: {
+            kind: "kick",
+            by: shooter,
+            to: block,
+            receiver: blocker,
+            pace: "shot",
+            peak: 0,
+          },
+        },
+        {
+          ball: { at: rebound },
+          highlight: cast(shooter, blocker),
+          action: { kind: "roll", to: rebound, chaser: null },
+        },
       ];
     }
     default: {
       // Off target, or a missed penalty: past a post.
       const wide = toPitch(side, 107, CENTRE_LANE + (spin >= 0 ? 1 : -1) * (GOAL_HALF_WIDTH + 3));
-      return [{ ball: { at: wide, ease: "linear" }, possession: opposite(side), pace: "shot" }];
+      return [
+        {
+          ball: { at: wide, ease: "linear" },
+          possession: opposite(side),
+          pace: "shot",
+          action: { kind: "kick", by: shooter, to: wide, receiver: null, pace: "shot", peak: 0 },
+        },
+      ];
     }
   }
 }
@@ -601,7 +554,13 @@ function celebrate(cue: Cue, spot: PitchPoint, scorer: string | null, spin: numb
     });
   });
   return [
-    { ball: { at: net, ease: "linear" }, goal: side, highlight: cast(scorer), pace: "shot" },
+    {
+      ball: { at: net, ease: "linear" },
+      goal: side,
+      highlight: cast(scorer),
+      pace: "shot",
+      action: { kind: "kick", by: scorer, to: net, receiver: null, pace: "shot", peak: 0 },
+    },
     { movers: huddle },
   ];
 }
@@ -619,6 +578,7 @@ function stageShot(cue: Cue): Staging {
         highlight: cast(shooter),
         possession: cue.event.side,
         overlay: null,
+        action: shooter ? { kind: "take", by: shooter } : undefined,
       },
       ...stageShotFinish(cue, spot, shooter),
     ],
@@ -639,6 +599,7 @@ function stagePenalty(cue: Cue): Staging {
         movers: only(taker, toPitch(side, 91, CENTRE_LANE)),
         highlight: cast(taker),
         pace: "place",
+        action: placed(cue, spot),
       },
       ...stageShotFinish(cue, spot, taker),
     ],
@@ -659,9 +620,15 @@ function stageRestart(cue: Cue, at: PitchPoint, focusX: number, whistle = false)
         highlight: [],
         possession: cue.event.side,
         pace: "place",
+        action: placed(cue, at),
       },
     ],
   };
+}
+
+/** A ball put on its spot for a restart: out of play and back there, unless it is there already. */
+function placed(cue: Cue, spot: PitchPoint): RadarStep["action"] {
+  return distance(cue.scene.ball, spot) > 1 ? { kind: "dead", spot } : undefined;
 }
 
 /**
@@ -800,12 +767,6 @@ function isFinalThirdPlay(event: MatchEvent): boolean {
   return false;
 }
 
-/** Where the engine left the ball at the end of the batch. */
-export interface RadarSettle {
-  ballZone: string;
-  possession: Side;
-}
-
 /**
  * Stage a batch of events — the events of one tick of the live match — from
  * `start`. Pass `settle` to end where the engine left the ball: possession can
@@ -855,43 +816,63 @@ export function choreographBatch(
   return { beats, end: scene };
 }
 
-/** How far inside a zone's edge a settled ball is put, so it reads as in that zone. */
-const SETTLE_INSET = 2;
+/** A beat of `steps` staged from `scene`, timed. */
+function beatOf(stage: RadarStage, scene: RadarScene, key: string, steps: RadarStep[]) {
+  const timed = timeSteps(stage, scene, steps);
+  const beat: RadarBeat = {
+    key,
+    eventType: "Settle",
+    steps,
+    stepMs: timed.stepMs,
+    runMs: timed.runMs,
+    important: false,
+    prefer: false,
+  };
+  return { beat, end: timed.end };
+}
 
-function settleStepsFor(
+/**
+ * Stage what the 2D radar shows of a minute: its dangerous play only
+ * (`highlightsOf`). A minute with none is a quick change of scene to where the
+ * engine left the ball. A move that starts far from the ball opens with the
+ * same quick change, the ball back at the feet of the man who starts it.
+ */
+export function choreographHighlights(
+  events: MatchEvent[],
   stage: RadarStage,
-  scene: RadarScene,
-  settle: RadarSettle,
-): RadarStep[] | null {
-  const ballInGoal = scene.ball.x < 0 || scene.ball.x > PITCH_LENGTH;
-  const [from, to] = zoneSpan(settle.ballZone);
-  const x = clamp(scene.ball.x, from + SETTLE_INSET, to - SETTLE_INSET);
-  const ballMoves = ballInGoal || Math.abs(x - scene.ball.x) > SETTLE_INSET;
-  if (!ballMoves && scene.possession === settle.possession) return null;
-  if (!ballMoves) return [{ possession: settle.possession, pace: "place" }];
-  // After a goal the engine restarts from the centre spot. Otherwise the ball is
-  // only nudged back into the zone the engine left it in — a zone is a wide band.
-  const at = ballInGoal ? { x: HALFWAY, y: CENTRE_LANE } : { x, y: clamp(scene.ball.y, 10, 58) };
-  // A player still on the ball takes it there himself rather than the ball rolling off alone.
-  const carrier =
-    !ballInGoal && settle.possession === scene.possession
-      ? ballCarrier(stage, scene, settle.possession)
-      : null;
-  if (carrier) {
-    const target = fromPitch(settle.possession, at);
-    return carryTouches(
-      settle.possession,
-      carrier,
-      fromPitch(settle.possession, scene.movers[carrier]),
-      { depth: target.depth - TOUCH_AHEAD, lane: target.lane },
+  start: RadarScene,
+  settle?: RadarSettle,
+): { beats: RadarBeat[]; end: RadarScene } {
+  const highlights = highlightsOf(events);
+  if (highlights.length === 0) {
+    if (!settle) return { beats: [], end: start };
+    const quiet = beatOf(
+      stage,
+      start,
+      `quiet-${settle.ballZone}`,
+      quietSteps(stage, start, settle),
     );
+    return { beats: [quiet.beat], end: quiet.end };
   }
-  return [
+  const [first] = highlights;
+  // Only a move opened by the attacking side playing the ball gets a lead-in;
+  // a restart or a card places the ball itself.
+  const starter = isAttackingPlay(first) ? first.player_id : null;
+  const starterAt = starter ? standingIn(stage, start, starter) : null;
+  if (!starter || !starterAt || distance(starterAt, start.ball) <= FETCH_METRES) {
+    return choreographBatch(highlights, stage, start, settle);
+  }
+  const leadIn = beatOf(stage, start, `lead-in-${first.minute}`, [
     {
-      ball: { at, lift: 0 },
+      ball: { at: starterAt, lift: 0 },
       resetMovers: true,
-      possession: settle.possession,
-      pace: ballInGoal ? "place" : "pass",
+      possession: first.side,
+      highlight: [],
+      overlay: null,
+      pace: "place",
+      action: { kind: "dead", spot: starterAt, quick: true, holder: starter },
     },
-  ];
+  ]);
+  const rest = choreographBatch(highlights, stage, leadIn.end, settle);
+  return { beats: [leadIn.beat, ...rest.beats], end: rest.end };
 }

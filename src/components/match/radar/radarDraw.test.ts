@@ -28,6 +28,7 @@ function picture(overrides: Partial<RadarPicture> = {}): RadarPicture {
   return {
     ball: { x: HALFWAY, y: CENTRE_LANE },
     lift: 0,
+    ballOpacity: 1,
     trail: [],
     overlay: null,
     players: [],

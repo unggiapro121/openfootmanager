@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} gặp {{away}}, nhìn từ trên xuống",
       "allNames": "Hiện tất cả tên",
       "hide": "Ẩn radar",
-      "show": "Hiện radar"
+      "show": "Hiện radar",
+      "speedHint": "Radar diễn các pha nguy hiểm theo nhịp riêng. Ẩn radar để chọn tốc độ."
     }
   },
   "endOfSeason": {

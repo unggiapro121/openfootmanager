@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} - {{away}}, yukarıdan görünüm",
       "allNames": "Tüm isimler",
       "hide": "Radarı gizle",
-      "show": "Radarı göster"
+      "show": "Radarı göster",
+      "speedHint": "Radar tehlikeli anları kendi temposunda gösterir. Hız seçmek için radarı gizleyin."
     }
   },
   "endOfSeason": {

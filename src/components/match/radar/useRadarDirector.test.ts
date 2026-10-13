@@ -1,11 +1,11 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { type MatchSnapshot, SPEED_MS } from "../types";
+import type { MatchSnapshot } from "../types";
 import { HALFWAY } from "./radarGeometry";
 import { advancePlayback } from "./radarPlayback";
 import { radarEvent, radarSnapshot } from "./radarTestFixtures";
-import { type RadarPacing, radarPacing, useRadarDirector } from "./useRadarDirector";
+import { RADAR_PACING, type RadarPacing, useRadarDirector } from "./useRadarDirector";
 
 interface Props {
   snapshot: MatchSnapshot;
@@ -13,10 +13,9 @@ interface Props {
   reducedMotion: boolean;
 }
 
-const SLOW = radarPacing("slow");
-/** Plenty of slack, so a test about what plays is not about what gets skipped. */
+const SLOW = RADAR_PACING;
+/** Real pace, so a test about what plays is not about how fast. */
 const UNHURRIED: RadarPacing = { timeScale: 1, maxLagMs: 60_000, holdMs: 1_000 };
-const FAST = radarPacing("fast");
 const FRAME_MS = 1000 / 60;
 
 function host(initial: Props) {
@@ -44,6 +43,8 @@ function play(hosted: Host, ms: number, watch?: () => void) {
 const sceneOf = (hosted: Host) => hosted.result.current.playback.current.scene;
 
 const dribble = radarEvent("Dribble", "Home", "AwayDefense", "h_st1");
+/** An attack the radar acts out: a dribble, and the shot it ends in. */
+const attack = [dribble, radarEvent("ShotSaved", "Home", "AwayBox", "h_st1", "a_gk")];
 
 describe("useRadarDirector", () => {
   beforeEach(() => vi.useFakeTimers());
@@ -55,7 +56,7 @@ describe("useRadarDirector", () => {
     const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
     expect(sceneOf(hosted).ball.x).toBe(HALFWAY);
 
-    const next = radarSnapshot({ events: [dribble], ball_zone: "AwayDefense" });
+    const next = radarSnapshot({ events: attack, ball_zone: "AwayBox" });
     hosted.rerender({ snapshot: next, pacing: SLOW, reducedMotion: false });
     play(hosted, 4000);
     expect(sceneOf(hosted).ball.x).toBeGreaterThan(HALFWAY);
@@ -67,7 +68,7 @@ describe("useRadarDirector", () => {
   it("jumps to the end at the skip-ahead speed", () => {
     const hosted = host({ snapshot: radarSnapshot(), pacing: null, reducedMotion: false });
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [dribble], ball_zone: "AwayDefense" }),
+      snapshot: radarSnapshot({ events: attack, ball_zone: "AwayBox" }),
       pacing: null,
       reducedMotion: false,
     });
@@ -82,7 +83,7 @@ describe("useRadarDirector", () => {
   it("does not animate for reduced motion", () => {
     const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: true });
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [dribble], ball_zone: "AwayDefense" }),
+      snapshot: radarSnapshot({ events: attack, ball_zone: "AwayBox" }),
       pacing: SLOW,
       reducedMotion: true,
     });
@@ -104,19 +105,19 @@ describe("useRadarDirector", () => {
     expect(sceneOf(hosted).ball.x).toBe(HALFWAY);
   });
 
-  // Given a dribble still playing, when the next minute lands, then the dribble
+  // Given an attack still playing, when the next minute lands, then the attack
   // is not cut short: it plays on, and the next minute follows it.
-  it("lets a dribble finish before the next minute plays", () => {
+  it("lets an attack finish before the next minute plays", () => {
     const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [dribble], ball_zone: "AwayDefense" }),
+      snapshot: radarSnapshot({ events: attack, ball_zone: "AwayBox" }),
       pacing: SLOW,
       reducedMotion: false,
     });
     play(hosted, 300);
     const goal = radarEvent("Goal", "Home", "AwayBox", "h_st1", null, 11);
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [dribble, goal], ball_zone: "Midfield" }),
+      snapshot: radarSnapshot({ events: [...attack, goal], ball_zone: "Midfield" }),
       pacing: SLOW,
       reducedMotion: false,
     });
@@ -132,6 +133,7 @@ describe("useRadarDirector", () => {
   it("plays a pass to the next minute's man on the ball", () => {
     const pass = radarEvent("PassCompleted", "Home", "Midfield", "h_cm2", null, 20);
     const run = radarEvent("Dribble", "Home", "AwayDefense", "h_rm", null, 21);
+    const shot = radarEvent("ShotOffTarget", "Home", "AwayBox", "h_rm", null, 21);
     const hosted = host({ snapshot: radarSnapshot(), pacing: UNHURRIED, reducedMotion: false });
     const passedTo = new Set<string>();
     const watch = () => {
@@ -147,7 +149,7 @@ describe("useRadarDirector", () => {
     });
     play(hosted, 400, watch);
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [pass, run], ball_zone: "AwayBox" }),
+      snapshot: radarSnapshot({ events: [pass, run, shot], ball_zone: "AwayBox" }),
       pacing: UNHURRIED,
       reducedMotion: false,
     });
@@ -155,12 +157,13 @@ describe("useRadarDirector", () => {
     expect([...passedTo]).toEqual(["h_rm"]);
   });
 
-  // Given a slow match, where the next minute lands a full tick after the pass,
-  // then the pass still waits for it: the ball never goes to a stand-in, only
-  // to the man who acts next (the pass itself may be skipped to keep up).
-  it("holds a pass for the next minute at the slow speed", () => {
+  // Given the next minute landing a while after a pass that ends a minute, then
+  // the pass still waits for it: the ball never goes to a stand-in, only to the
+  // man who acts next.
+  it("holds a pass for the next minute when it is slow to come", () => {
     const pass = radarEvent("PassCompleted", "Home", "Midfield", "h_cm2", null, 20);
     const run = radarEvent("Dribble", "Home", "AwayDefense", "h_rm", null, 21);
+    const shot = radarEvent("ShotOffTarget", "Home", "AwayBox", "h_rm", null, 21);
     const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
     const passedTo = new Set<string>();
     let runnerShown = false;
@@ -178,7 +181,7 @@ describe("useRadarDirector", () => {
     });
     play(hosted, 2200, watch);
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [pass, run], ball_zone: "AwayBox" }),
+      snapshot: radarSnapshot({ events: [pass, run, shot], ball_zone: "AwayBox" }),
       pacing: SLOW,
       reducedMotion: false,
     });
@@ -188,8 +191,9 @@ describe("useRadarDirector", () => {
   });
 
   // Given a pass that ends a minute and no minute after it (the match paused),
-  // then the pass still plays after a short wait.
-  it("plays a held pass on its own when no minute follows", () => {
+  // then the radar does not stall on it: it lets it go after a short wait and
+  // comes to rest.
+  it("lets a held pass go when no minute follows", () => {
     const pass = radarEvent("PassCompleted", "Home", "HomeDefense", "h_cb1", null, 20);
     const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
     hosted.rerender({
@@ -198,67 +202,69 @@ describe("useRadarDirector", () => {
       reducedMotion: false,
     });
     play(hosted, 5000);
-    expect(sceneOf(hosted).highlight).toContain("h_cb1");
+    const { playback } = hosted.result.current;
+    expect(playback.current.step).toBeNull();
+    expect(playback.current.queue).toHaveLength(0);
   });
 
-  // Given a fast match that keeps landing minutes, then the radar skips routine
-  // play to keep up but still shows the goal at the end.
-  it("keeps up with a fast match without losing a goal", () => {
-    let events = [] as ReturnType<typeof radarEvent>[];
-    const hosted = host({ snapshot: radarSnapshot(), pacing: FAST, reducedMotion: false });
-    for (let minute = 1; minute <= 12; minute++) {
-      events = [
-        ...events,
-        radarEvent("PassCompleted", "Home", "Midfield", "h_cm1", null, minute),
-        radarEvent("Dribble", "Home", "AwayDefense", "h_st1", null, minute),
-      ];
-      hosted.rerender({
-        snapshot: radarSnapshot({ events, ball_zone: "AwayDefense" }),
-        pacing: FAST,
-        reducedMotion: false,
-      });
-      play(hosted, 200);
-    }
-    const goal = radarEvent("Goal", "Home", "AwayBox", "h_st1", null, 13);
+  // Given a minute with nothing dangerous in it, then the radar passes over it
+  // in a moment, the ball put where the engine left it.
+  it("passes over a quiet minute in a moment", () => {
+    const quiet = [
+      radarEvent("PassCompleted", "Home", "HomeDefense", "h_cb1"),
+      radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+      radarEvent("Tackle", "Away", "Midfield", "a_cm1"),
+    ];
+    const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
     hosted.rerender({
-      snapshot: radarSnapshot({ events: [...events, goal], ball_zone: "Midfield" }),
-      pacing: FAST,
+      snapshot: radarSnapshot({ events: quiet, ball_zone: "HomeDefense", possession: "Away" }),
+      pacing: SLOW,
       reducedMotion: false,
     });
-    play(hosted, (FAST?.maxLagMs ?? 0) + 2500);
-    expect(sceneOf(hosted).goal?.side).toBe("Home");
+    const beats = hosted.result.current.playback.current.queue;
+    expect(beats).toHaveLength(1);
+    expect(beats[0].stepMs.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(500);
+    expect(sceneOf(hosted).highlight).toEqual([]);
+  });
+
+  // Given a minute, then the director counts its events as taken in at once,
+  // so the screen knows the radar has it.
+  it("counts the events it has taken in", () => {
+    const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
+    expect(hosted.result.current.staged.current).toBe(0);
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: attack, ball_zone: "AwayBox" }),
+      pacing: SLOW,
+      reducedMotion: false,
+    });
+    expect(hosted.result.current.staged.current).toBe(2);
+  });
+
+  // Given several minutes each with a goal, queued behind one another, then
+  // every one is played: the match waits for the radar, so nothing is skipped.
+  it("plays every minute it is given, skipping none", () => {
+    let events = [] as ReturnType<typeof radarEvent>[];
+    const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
+    for (let minute = 1; minute <= 3; minute++) {
+      events = [...events, radarEvent("Goal", "Home", "AwayBox", "h_st1", null, minute)];
+      hosted.rerender({
+        snapshot: radarSnapshot({ events, ball_zone: "Midfield", possession: "Away" }),
+        pacing: SLOW,
+        reducedMotion: false,
+      });
+    }
+    play(hosted, 30_000);
+    expect(sceneOf(hosted).goal?.serial).toBe(3);
   });
 });
 
-describe("radarPacing", () => {
-  // Given each simulation speed, then movements keep a real pace (a faster
-  // match plays only a little quicker), the skip-ahead speed does not animate,
-  // and a single step while paused plays at the normal pace.
-  it("follows the simulation speed", () => {
-    const slow = radarPacing("slow");
-    const normal = radarPacing("normal");
-    const fast = radarPacing("fast");
-    expect(normal?.timeScale ?? 0).toBeLessThan(slow?.timeScale ?? 0);
-    expect(fast?.timeScale ?? 0).toBeLessThan(normal?.timeScale ?? 0);
-    // Never more than twice life speed, even when the match is fast.
-    expect(fast?.timeScale ?? 0).toBeGreaterThanOrEqual(0.5);
-    expect(radarPacing("instant")).toBeNull();
-    const paused = radarPacing("paused");
-    expect(paused?.timeScale).toBe(normal?.timeScale);
-    expect(paused?.maxLagMs).toBe(normal?.maxLagMs);
-  });
-
-  // Given a slower match, then the radar may trail it a little further, since
-  // each minute lasts longer.
-  it("lets a slower match trail further behind", () => {
-    expect(radarPacing("slow")?.maxLagMs ?? 0).toBeGreaterThan(radarPacing("fast")?.maxLagMs ?? 0);
-  });
-
-  // Given each running speed, then a pass that ends a minute waits longer than
-  // a tick, so the next minute can name its receiver.
-  it("holds a pass longer than a tick", () => {
-    for (const speed of ["slow", "normal", "fast"] as const) {
-      expect(radarPacing(speed)?.holdMs ?? 0).toBeGreaterThan(SPEED_MS[speed]);
-    }
+describe("RADAR_PACING", () => {
+  // Given the 2D mode, where the match waits for the radar, then nothing is
+  // ever skipped to keep up, and play runs a little quicker than life but not
+  // so quick that it slides.
+  it("never skips, at a pace close to life", () => {
+    expect(RADAR_PACING.maxLagMs).toBe(Number.POSITIVE_INFINITY);
+    expect(RADAR_PACING.timeScale).toBeGreaterThanOrEqual(0.6);
+    expect(RADAR_PACING.timeScale).toBeLessThanOrEqual(1);
   });
 });

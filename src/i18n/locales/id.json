@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} melawan {{away}}, dilihat dari atas",
       "allNames": "Semua nama",
       "hide": "Sembunyikan radar",
-      "show": "Tampilkan radar"
+      "show": "Tampilkan radar",
+      "speedHint": "Radar menampilkan peluang berbahaya dengan temponya sendiri. Sembunyikan radar untuk memilih kecepatan."
     }
   },
   "endOfSeason": {

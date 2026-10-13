@@ -1,13 +1,14 @@
 import { type RefObject, useEffect, useRef } from "react";
 
-import { type MatchEvent, type MatchSnapshot, SPEED_MS, type SimSpeed } from "../types";
-import { type RadarSettle, choreographBatch } from "./radarChoreography";
+import type { MatchEvent, MatchSnapshot } from "../types";
+import { choreographHighlights } from "./radarChoreography";
+import type { RadarSettle } from "./radarSettle";
 import { type Playback, enqueueBeats, jumpTo, restingPlayback } from "./radarPlayback";
 import { type RadarScene, initialRadarScene } from "./radarScene";
 import { type RadarStage, buildRadarStage, lineupsKey } from "./radarStage";
 import { queueBeat } from "./radarTiming";
 
-/** How the radar keeps time with the match at one simulation speed. */
+/** How the radar keeps time with play. */
 export interface RadarPacing {
   /** Radar time per second of real pace: below 1 plays a little quicker than life. */
   timeScale: number;
@@ -15,47 +16,23 @@ export interface RadarPacing {
   maxLagMs: number;
   /**
    * How long a pass that ends a minute waits for the next minute to name its
-   * receiver: one tick, and a margin for the round trip and render.
+   * receiver, before it plays on its own (the match paused).
    */
   holdMs: number;
 }
 
 /**
- * Radar time per second of real pace. An engine minute holds a few seconds of
- * real play but a tick lasts only 0.2–2 s, so the radar plays a little quicker
- * than life — never so quick that a run with the ball turns into a slide.
+ * The 2D radar's pacing. The match waits for the radar — the next minute is
+ * asked for only once the radar has played the last — so nothing ever piles up
+ * to be skipped, and there is one pace: a little quicker than life, never so
+ * quick that a run with the ball turns into a slide. Wanting it faster is what
+ * the text mode and its speeds are for.
  */
-const TIME_SCALE: Record<"slow" | "normal" | "fast", number> = {
-  slow: 0.8,
-  normal: 0.65,
-  fast: 0.55,
+export const RADAR_PACING: RadarPacing = {
+  timeScale: 0.7,
+  maxLagMs: Number.POSITIVE_INFINITY,
+  holdMs: 1400,
 };
-
-const MAX_LAG_MS: Record<"slow" | "normal" | "fast", number> = {
-  slow: 3200,
-  normal: 2000,
-  fast: 1500,
-};
-
-/** What a tick costs on top of its interval: the round trip to the engine and the render. */
-const TICK_MARGIN_MS = 600;
-
-/**
- * The radar's pacing at a simulation speed. Movements keep a real pace at every
- * speed; a faster match means more of the routine play is skipped to keep up,
- * not that the players move faster. The skip-ahead speed covers ten minutes a
- * tick and is not animated at all (null); a single step while paused plays at
- * the normal pace, and no next minute follows it on its own.
- */
-export function radarPacing(speed: SimSpeed): RadarPacing | null {
-  if (speed === "instant") return null;
-  const pace = speed === "paused" ? "normal" : speed;
-  return {
-    timeScale: TIME_SCALE[pace],
-    maxLagMs: MAX_LAG_MS[pace],
-    holdMs: SPEED_MS[speed] + TICK_MARGIN_MS,
-  };
-}
 
 /**
  * The stage for the current line-ups. Every tick brings a fresh snapshot, so
@@ -72,11 +49,12 @@ function useStage(snapshot: MatchSnapshot): RadarStage {
 }
 
 /**
- * Acts out the live match on the radar. Each new snapshot's new events are
- * staged and queued in the playback behind whatever is still playing; when the
- * queue would leave the radar too far behind the match, the oldest routine
- * beats are skipped. Without animation, the playback jumps straight to the end
+ * Acts out the live match on the radar. Each new snapshot's dangerous play is
+ * staged (`choreographHighlights`) and queued in the playback behind whatever
+ * is still playing. Without animation, the playback jumps straight to the end
  * of the minute. Events from before the radar opened are not replayed.
+ * `staged` counts the snapshot's events taken in so far: the radar has played a
+ * minute out once they are all taken in and the playback is empty.
  *
  * The playback lives in a ref and the frame loop plays it: nothing here makes
  * React render as play moves on.
@@ -85,7 +63,7 @@ export function useRadarDirector(
   snapshot: MatchSnapshot,
   pacing: RadarPacing | null,
   reducedMotion: boolean,
-): { stage: RadarStage; playback: RefObject<Playback> } {
+): { stage: RadarStage; playback: RefObject<Playback>; staged: RefObject<number> } {
   const stage = useStage(snapshot);
   const playback = useRef<Playback>(restingPlayback(initialRadarScene(snapshot)));
   const seenRef = useRef(snapshot.events.length);
@@ -108,7 +86,7 @@ export function useRadarDirector(
     const isAnimated = pacing !== null && !reducedMotion;
 
     const stageAndQueue = (events: MatchEvent[], settleTo: RadarSettle | undefined) => {
-      const { beats, end } = choreographBatch(events, stage, endRef.current, settleTo);
+      const { beats, end } = choreographHighlights(events, stage, endRef.current, settleTo);
       endRef.current = end;
       if (!isAnimated) {
         // No animation: rest at once where everything queued and new ends.
@@ -134,6 +112,8 @@ export function useRadarDirector(
     if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
     heldPassRef.current = null;
     const batch = held ? [held, ...fresh] : fresh;
+    // Nothing has happened: nothing to show.
+    if (batch.length === 0) return;
 
     const last = batch[batch.length - 1];
     if (isAnimated && last?.event_type === "PassCompleted") {
@@ -155,5 +135,5 @@ export function useRadarDirector(
     [],
   );
 
-  return { stage, playback };
+  return { stage, playback, staged: seenRef };
 }

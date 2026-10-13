@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} contra {{away}}, vista de cima",
       "allNames": "Todos os nomes",
       "hide": "Ocultar radar",
-      "show": "Mostrar radar"
+      "show": "Mostrar radar",
+      "speedHint": "O radar mostra as jogadas de perigo ao seu próprio ritmo. Esconda-o para escolher a velocidade."
     }
   },
   "endOfSeason": {

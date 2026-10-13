@@ -27,6 +27,7 @@ import { SubPanel } from "./SubPanel";
 import { swapMatchPositions } from "../../services/liveMatchService";
 import { createMatchRoleChange } from "./matchRoleChange";
 import { MatchRadar2D } from "./radar/MatchRadar2D";
+import { type FetchedMinutes, isPlayedOut } from "./radarGate";
 import { pickRadarKits } from "./radar/radarGeometry";
 import {
   Play,
@@ -85,6 +86,9 @@ export default function MatchLive({
       ? settings.match_speed
       : "normal");
   const [speed, setSpeed] = useState<SimSpeed>(initialSpeed);
+  // The speed the text mode last ran at: what resuming in 2D goes back to.
+  const runningSpeedRef = useRef<SimSpeed>(initialSpeed);
+  if (speed !== "paused") runningSpeedRef.current = speed;
   const [activePanel, setActivePanel] = useState<ActivePanel>("events");
   const [isRunning, setIsRunning] = useState(true);
   const [showSubPanel, setShowSubPanel] = useState(false);
@@ -95,6 +99,10 @@ export default function MatchLive({
   // Injuries to the manager's players he has already been stopped for.
   const injuriesRaisedRef = useRef<Set<string>>(new Set());
   const [injuredOff, setInjuredOff] = useState<string | undefined>(undefined);
+  // The radar shown is the 2D mode; hidden, the text mode with its speeds.
+  const [is2D, setIs2D] = useState(true);
+  // In 2D, the latest minute from the engine, which the radar plays before it is shown.
+  const [radarSnapshot, setRadarSnapshot] = useState<MatchSnapshot | null>(null);
 
   const homeFullTeam = gameState.teams.find((t) => t.id === snapshot.home_team.id);
   const awayFullTeam = gameState.teams.find((t) => t.id === snapshot.away_team.id);
@@ -119,80 +127,88 @@ export default function MatchLive({
   // entering any phase that needs the manager — so a half time, shootout or finish is always the
   // last entry of a batch, never buried in the middle. See `phase_needs_manager` in
   // ofm_core/live_match_manager.rs; MINUTES_PER_TICK on this side is what makes batches possible.
-  const stepMatch = useCallback(
-    async (minutes: number) => {
-      try {
-        const results = await invoke<MinuteResult[]>("step_live_match", { minutes });
-        if (results.length > 0) {
-          const lastResult = results[results.length - 1];
+  const fetchMinutes = useCallback(async (minutes: number): Promise<FetchedMinutes | null> => {
+    try {
+      const results = await invoke<MinuteResult[]>("step_live_match", { minutes });
+      if (results.length === 0) return null;
+      const snap = await invoke<MatchSnapshot>("get_match_snapshot");
+      return { results, snapshot: snap };
+    } catch (err) {
+      console.error("Failed to step match:", err);
+      setIsRunning(false);
+      return null;
+    }
+  }, []);
 
-          // Collect important events
-          for (const r of results) {
-            for (const evt of r.events) {
-              const display = getEventDisplay(evt);
-              if (display.important) {
-                onImportantEvent(evt);
-              }
-            }
-          }
+  /**
+   * Shows what a step of the match brought: its events, the new snapshot, and
+   * any stop it calls for. Returns whether play goes on.
+   */
+  const present = useCallback(
+    ({ results, snapshot: snap }: FetchedMinutes): boolean => {
+      const lastResult = results[results.length - 1];
 
-          // Fetch full snapshot
-          const snap = await invoke<MatchSnapshot>("get_match_snapshot");
-          onSnapshotUpdate(snap);
-
-          // One of the manager's players is hurt: stop and let him choose who
-          // comes on. Closing the panel plays on a man short.
-          if (userSide && !isSpectator) {
-            const hurt = firstNewInjury(snap, userSide, injuriesRaisedRef.current);
-            if (hurt) {
-              injuriesRaisedRef.current.add(hurt);
-              setIsRunning(false);
-              setSpeed("paused");
-              setInjuredOff(hurt);
-              setShowSubPanel(true);
-              return;
-            }
-          }
-
-          // Check for phase transitions that should pause
-          const phase = lastResult.phase;
-          if (phase === "HalfTime" && !signaledRef.current.has("HalfTime")) {
-            signaledRef.current.add("HalfTime");
-            setIsRunning(false);
-            setSpeed("paused");
-            // Small delay so the last event renders before transitioning
-            setTimeout(() => onHalfTime("HalfTime"), 600);
-            return;
-          }
-
-          if (phase === "ExtraTimeHalfTime" && !signaledRef.current.has("ExtraTimeHalfTime")) {
-            signaledRef.current.add("ExtraTimeHalfTime");
-            setIsRunning(false);
-            setSpeed("paused");
-            setTimeout(() => onHalfTime("ExtraTimeHalfTime"), 600);
-            return;
-          }
-
-          if (phase === "PenaltyShootout" && !signaledRef.current.has("PenaltyShootout")) {
-            signaledRef.current.add("PenaltyShootout");
-            setIsRunning(false);
-            setSpeed("paused");
-            setTimeout(() => onPenaltyShootout?.(), 600);
-            return;
-          }
-
-          if (lastResult.is_finished && !signaledRef.current.has("Finished")) {
-            signaledRef.current.add("Finished");
-            setIsRunning(false);
-            setSpeed("paused");
-            setTimeout(() => onFullTime(), 600);
-            return;
+      // Collect important events
+      for (const r of results) {
+        for (const evt of r.events) {
+          const display = getEventDisplay(evt);
+          if (display.important) {
+            onImportantEvent(evt);
           }
         }
-      } catch (err) {
-        console.error("Failed to step match:", err);
-        setIsRunning(false);
       }
+
+      onSnapshotUpdate(snap);
+
+      // One of the manager's players is hurt: stop and let him choose who
+      // comes on. Closing the panel plays on a man short.
+      if (userSide && !isSpectator) {
+        const hurt = firstNewInjury(snap, userSide, injuriesRaisedRef.current);
+        if (hurt) {
+          injuriesRaisedRef.current.add(hurt);
+          setIsRunning(false);
+          setSpeed("paused");
+          setInjuredOff(hurt);
+          setShowSubPanel(true);
+          return false;
+        }
+      }
+
+      // Check for phase transitions that should pause
+      const phase = lastResult.phase;
+      if (phase === "HalfTime" && !signaledRef.current.has("HalfTime")) {
+        signaledRef.current.add("HalfTime");
+        setIsRunning(false);
+        setSpeed("paused");
+        // Small delay so the last event renders before transitioning
+        setTimeout(() => onHalfTime("HalfTime"), 600);
+        return false;
+      }
+
+      if (phase === "ExtraTimeHalfTime" && !signaledRef.current.has("ExtraTimeHalfTime")) {
+        signaledRef.current.add("ExtraTimeHalfTime");
+        setIsRunning(false);
+        setSpeed("paused");
+        setTimeout(() => onHalfTime("ExtraTimeHalfTime"), 600);
+        return false;
+      }
+
+      if (phase === "PenaltyShootout" && !signaledRef.current.has("PenaltyShootout")) {
+        signaledRef.current.add("PenaltyShootout");
+        setIsRunning(false);
+        setSpeed("paused");
+        setTimeout(() => onPenaltyShootout?.(), 600);
+        return false;
+      }
+
+      if (lastResult.is_finished && !signaledRef.current.has("Finished")) {
+        signaledRef.current.add("Finished");
+        setIsRunning(false);
+        setSpeed("paused");
+        setTimeout(() => onFullTime(), 600);
+        return false;
+      }
+      return true;
     },
     [
       onSnapshotUpdate,
@@ -205,6 +221,54 @@ export default function MatchLive({
     ],
   );
 
+  const stepMatch = useCallback(
+    async (minutes: number) => {
+      const fetched = await fetchMinutes(minutes);
+      if (fetched) present(fetched);
+    },
+    [fetchMinutes, present],
+  );
+
+  // 2D mode: the match waits for the radar. A minute is fetched and handed to
+  // the radar, and shown — score, feed, any stop — only once the radar has
+  // played it out; then the next is fetched.
+  const pendingRef = useRef<FetchedMinutes | null>(null);
+  const isFetchingRef = useRef(false);
+  const canPlayOnRef = useRef(false);
+  // Paused, the radar holds still and never says it is done; this covers what it cannot know.
+  canPlayOnRef.current = !isFinished && !showSubPanel;
+  const fetchForRadar = useCallback(async () => {
+    if (isFetchingRef.current || pendingRef.current) return;
+    isFetchingRef.current = true;
+    const fetched = await fetchMinutes(1);
+    isFetchingRef.current = false;
+    if (!fetched) return;
+    pendingRef.current = fetched;
+    setRadarSnapshot(fetched.snapshot);
+  }, [fetchMinutes]);
+  const handleRadarCaughtUp = useCallback(
+    (staged: number) => {
+      const pending = pendingRef.current;
+      if (pending) {
+        if (!isPlayedOut(pending, staged)) return;
+        pendingRef.current = null;
+        if (!present(pending)) return;
+      }
+      if (canPlayOnRef.current) void fetchForRadar();
+    },
+    [present, fetchForRadar],
+  );
+  const toggleRadar = useCallback(() => {
+    if (is2D) {
+      // Back to text: show at once whatever the radar was still playing.
+      const pending = pendingRef.current;
+      pendingRef.current = null;
+      if (pending) present(pending);
+      setRadarSnapshot(null);
+    }
+    setIs2D((open) => !open);
+  }, [is2D, present]);
+
   // Auto-step timer
   useEffect(() => {
     if (timerRef.current) {
@@ -212,7 +276,7 @@ export default function MatchLive({
       timerRef.current = null;
     }
 
-    if (isRunning && speed !== "paused" && !isFinished && !showSubPanel) {
+    if (!is2D && isRunning && speed !== "paused" && !isFinished && !showSubPanel) {
       timerRef.current = setTimeout(async () => {
         await stepMatch(MINUTES_PER_TICK[speed]);
       }, SPEED_MS[speed]);
@@ -229,6 +293,7 @@ export default function MatchLive({
     stepMatch,
     isFinished,
     showSubPanel,
+    is2D,
   ]);
 
   // Auto-scroll event feed
@@ -411,7 +476,14 @@ export default function MatchLive({
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel: Radar, then Event Feed + Stats */}
         <div className="flex-1 flex flex-col min-w-0">
-          <MatchRadar2D snapshot={snapshot} speed={speed} kits={radarKits} />
+          <MatchRadar2D
+            snapshot={radarSnapshot ?? snapshot}
+            kits={radarKits}
+            isOpen={is2D}
+            onToggle={toggleRadar}
+            paused={!isRunning || speed === "paused"}
+            onCaughtUp={handleRadarCaughtUp}
+          />
           <div className="flex bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 transition-colors duration-300">
             {[
               {
@@ -467,64 +539,109 @@ export default function MatchLive({
             <h3 className="text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-3">
               {t("match.simSpeed")}
             </h3>
-            <div className="flex gap-1">
-              {[
-                {
-                  id: "paused" as SimSpeed,
-                  icon: <Pause className="w-4 h-4" />,
-                  label: t("match.pause"),
-                },
-                {
-                  id: "slow" as SimSpeed,
-                  icon: <Play className="w-4 h-4" />,
-                  label: t("match.slow"),
-                },
-                {
-                  id: "normal" as SimSpeed,
-                  icon: <Play className="w-4 h-4" />,
-                  label: t("match.normal"),
-                },
-                {
-                  id: "fast" as SimSpeed,
-                  icon: <FastForward className="w-4 h-4" />,
-                  label: t("match.fast"),
-                },
-                {
-                  id: "instant" as SimSpeed,
-                  icon: <SkipForward className="w-4 h-4" />,
-                  label: t("match.max"),
-                },
-              ].map((s) => (
-                <button
-                  type="button"
-                  key={s.id}
-                  onClick={() => {
-                    setSpeed(s.id);
-                    setIsRunning(s.id !== "paused");
-                    if (isPersistableSpeed(s.id)) {
-                      onPreferredSpeedChange?.(s.id);
-                    }
-                  }}
-                  className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-lg text-xs font-heading uppercase tracking-wider transition-all ${
-                    speed === s.id
-                      ? "bg-primary-500/20 text-primary-500 dark:text-primary-400 ring-1 ring-primary-500/50"
-                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-700"
-                  }`}
-                >
-                  {s.icon}
-                  <span className="text-[10px]">{s.label}</span>
-                </button>
-              ))}
-            </div>
-            {speed === "paused" && (
-              <button
-                type="button"
-                onClick={() => stepMatch(1)}
-                className="w-full mt-2 flex items-center justify-center gap-2 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-navy-700 dark:hover:bg-navy-600 rounded-lg text-sm font-heading uppercase tracking-wider text-gray-700 dark:text-gray-300 transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-                {t("match.step1Min")}
-              </button>
+            {is2D ? (
+              <>
+                <div className="flex gap-1">
+                  {[
+                    {
+                      isPause: true,
+                      icon: <Pause className="w-4 h-4" />,
+                      label: t("match.pause"),
+                    },
+                    {
+                      isPause: false,
+                      icon: <Play className="w-4 h-4" />,
+                      label: t("match.resumeMatch"),
+                    },
+                  ].map((control) => {
+                    const isActive = control.isPause === (speed === "paused");
+                    return (
+                      <button
+                        type="button"
+                        key={control.label}
+                        aria-pressed={isActive}
+                        onClick={() => {
+                          setSpeed(control.isPause ? "paused" : runningSpeedRef.current);
+                          setIsRunning(!control.isPause);
+                        }}
+                        className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-lg text-xs font-heading uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${
+                          isActive
+                            ? "bg-primary-500/20 text-primary-500 dark:text-primary-400 ring-1 ring-primary-500/50"
+                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-700"
+                        }`}
+                      >
+                        {control.icon}
+                        <span className="text-[10px]">{control.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
+                  {t("match.radar.speedHint")}
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex gap-1">
+                  {[
+                    {
+                      id: "paused" as SimSpeed,
+                      icon: <Pause className="w-4 h-4" />,
+                      label: t("match.pause"),
+                    },
+                    {
+                      id: "slow" as SimSpeed,
+                      icon: <Play className="w-4 h-4" />,
+                      label: t("match.slow"),
+                    },
+                    {
+                      id: "normal" as SimSpeed,
+                      icon: <Play className="w-4 h-4" />,
+                      label: t("match.normal"),
+                    },
+                    {
+                      id: "fast" as SimSpeed,
+                      icon: <FastForward className="w-4 h-4" />,
+                      label: t("match.fast"),
+                    },
+                    {
+                      id: "instant" as SimSpeed,
+                      icon: <SkipForward className="w-4 h-4" />,
+                      label: t("match.max"),
+                    },
+                  ].map((s) => (
+                    <button
+                      type="button"
+                      key={s.id}
+                      onClick={() => {
+                        setSpeed(s.id);
+                        setIsRunning(s.id !== "paused");
+                        if (isPersistableSpeed(s.id)) {
+                          onPreferredSpeedChange?.(s.id);
+                        }
+                      }}
+                      className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-lg text-xs font-heading uppercase tracking-wider transition-all ${
+                        speed === s.id
+                          ? "bg-primary-500/20 text-primary-500 dark:text-primary-400 ring-1 ring-primary-500/50"
+                          : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-700"
+                      }`}
+                    >
+                      {s.icon}
+                      <span className="text-[10px]">{s.label}</span>
+                    </button>
+                  ))}
+                </div>
+                {speed === "paused" && (
+                  <button
+                    type="button"
+                    onClick={() => stepMatch(1)}
+                    className="w-full mt-2 flex items-center justify-center gap-2 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-navy-700 dark:hover:bg-navy-600 rounded-lg text-sm font-heading uppercase tracking-wider text-gray-700 dark:text-gray-300 transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                    {t("match.step1Min")}
+                  </button>
+                )}
+              </>
             )}
           </div>
 

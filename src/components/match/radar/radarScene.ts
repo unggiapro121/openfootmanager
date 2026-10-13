@@ -59,8 +59,45 @@ export interface RadarScene {
   goal: { side: Side; serial: number } | null;
 }
 
+/**
+ * What the ball does in a step. The script says who does what with it; the
+ * simulation (`radarRun`) carries it out against where the players really are,
+ * and so decides exactly when and where.
+ */
+export type BallAction =
+  /** `by` must have the ball before play goes on: he goes to it, or a team-mate on it plays it to him. */
+  | { kind: "take"; by: string }
+  /** `by` strikes it towards `to`; a `receiver` meets it where he gets to in time. */
+  | {
+      kind: "kick";
+      by: string | null;
+      to: PitchPoint;
+      receiver: string | null;
+      pace: "pass" | "shot" | "air";
+      /** How high it rises at the top of its flight, in metres; 0 along the ground. */
+      peak: number;
+    }
+  /** `by` runs with it at his feet. */
+  | { kind: "carry"; by: string }
+  /** It runs loose towards `to`, `chaser` going after it. */
+  | { kind: "roll"; to: PitchPoint; chaser: string | null }
+  /**
+   * Out of play: it goes, and comes back at `spot` once the players are in
+   * place — or, `quick`, in a moment. It comes back at the feet of `holder` if
+   * one is named, else lying at `spot` with `chaser` going for it.
+   */
+  | {
+      kind: "dead";
+      spot: PitchPoint;
+      quick?: boolean;
+      holder?: string | null;
+      chaser?: string | null;
+    };
+
 /** One movement within a beat. Fields left out keep their current value. */
 export interface RadarStep {
+  /** What the ball does, for the simulation to carry out. */
+  action?: BallAction;
   /** How fast it moves; inferred from what moves when left out. */
   pace?: RadarPace;
   ball?: { at: PitchPoint; lift?: number; ease?: RadarEase };

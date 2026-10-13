@@ -2601,7 +2601,8 @@
       "pitchLabel": "{{home}} contra {{away}}, vista de cima",
       "allNames": "Todos os nomes",
       "hide": "Ocultar radar",
-      "show": "Mostrar radar"
+      "show": "Mostrar radar",
+      "speedHint": "O radar mostra os lances de perigo no próprio ritmo. Oculte-o para escolher a velocidade."
     }
   },
   "endOfSeason": {

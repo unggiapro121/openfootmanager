@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Profiler } from "react";
+import { Profiler, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { MatchSnapshot } from "../types";
 import { MatchRadar2D } from "./MatchRadar2D";
 import { radarEvent, radarSnapshot, recordingContext } from "./radarTestFixtures";
 
@@ -14,6 +15,27 @@ const BANNER = "MATCH.EVENTTYPES.GOAL";
 
 let canvas = recordingContext();
 
+interface RadarProps {
+  snapshot: MatchSnapshot;
+  paused?: boolean;
+  onCaughtUp?: (staged: number) => void;
+}
+
+/** The radar as the match screen holds it: shown, its hide and show the manager's to toggle. */
+function Radar({ snapshot, paused = false, onCaughtUp }: RadarProps) {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <MatchRadar2D
+      snapshot={snapshot}
+      kits={kits}
+      isOpen={isOpen}
+      onToggle={() => setIsOpen((open) => !open)}
+      paused={paused}
+      onCaughtUp={onCaughtUp}
+    />
+  );
+}
+
 /** What the last few frames wrote on the canvas, after `ms` more of play. */
 function textsAfter(ms: number): string[] {
   act(() => vi.advanceTimersByTime(ms));
@@ -23,6 +45,12 @@ function textsAfter(ms: number): string[] {
 }
 
 const namesIn = (texts: string[]) => new Set(texts.filter((text) => text.startsWith("Player ")));
+
+const goalMinute = radarSnapshot({
+  events: [radarEvent("Goal", "Home", "AwayBox", "h_st1", "h_lm")],
+  ball_zone: "Midfield",
+  possession: "Away",
+});
 
 describe("MatchRadar2D", () => {
   beforeEach(() => {
@@ -38,7 +66,7 @@ describe("MatchRadar2D", () => {
   // Given a live match, then the radar is a labelled region holding a labelled
   // picture of the pitch.
   it("shows the pitch as a labelled picture", () => {
-    render(<MatchRadar2D snapshot={radarSnapshot()} speed="normal" kits={kits} />);
+    render(<Radar snapshot={radarSnapshot()} />);
     expect(screen.getByRole("region", { name: "match.radar.title" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "match.radar.pitchLabel" })).toBeInTheDocument();
   });
@@ -46,7 +74,7 @@ describe("MatchRadar2D", () => {
   // Given the radar, when the manager turns on every name, then all 22 players
   // are named on the pitch, and the toggle says it is on.
   it("names every player when asked", () => {
-    render(<MatchRadar2D snapshot={radarSnapshot()} speed="normal" kits={kits} />);
+    render(<Radar snapshot={radarSnapshot()} />);
     const toggle = screen.getByRole("button", { name: "match.radar.allNames" });
     expect(toggle).toHaveAttribute("aria-pressed", "false");
     expect(namesIn(textsAfter(50)).size).toBe(0);
@@ -61,9 +89,7 @@ describe("MatchRadar2D", () => {
 
   // Given a player sent off, then he is not on the radar.
   it("leaves a sent-off player off the pitch", () => {
-    render(
-      <MatchRadar2D snapshot={radarSnapshot({ sent_off: ["h_cb2"] })} speed="normal" kits={kits} />,
-    );
+    render(<Radar snapshot={radarSnapshot({ sent_off: ["h_cb2"] })} />);
     fireEvent.click(screen.getByRole("button", { name: "match.radar.allNames" }));
     const names = namesIn(textsAfter(50));
     expect(names.has("Player h_cb2")).toBe(false);
@@ -73,7 +99,7 @@ describe("MatchRadar2D", () => {
   // Given the radar, when the manager hides it, then the pitch goes and the
   // button offers to show it again; showing it brings the pitch back.
   it("hides and shows again", () => {
-    render(<MatchRadar2D snapshot={radarSnapshot()} speed="normal" kits={kits} />);
+    render(<Radar snapshot={radarSnapshot()} />);
     const hide = screen.getByRole("button", { name: "match.radar.hide" });
     expect(hide).toHaveAttribute("aria-expanded", "true");
 
@@ -90,22 +116,10 @@ describe("MatchRadar2D", () => {
   // Given a goal in the next minute, when it plays out, then the radar flashes
   // the goal and names the scorer; the banner clears afterwards.
   it("celebrates a goal", () => {
-    const { rerender } = render(
-      <MatchRadar2D snapshot={radarSnapshot()} speed="slow" kits={kits} />,
-    );
-    rerender(
-      <MatchRadar2D
-        snapshot={radarSnapshot({
-          events: [radarEvent("Goal", "Home", "AwayBox", "h_st1", "h_lm")],
-          ball_zone: "Midfield",
-          possession: "Away",
-        })}
-        speed="slow"
-        kits={kits}
-      />,
-    );
+    const { rerender } = render(<Radar snapshot={radarSnapshot()} />);
+    rerender(<Radar snapshot={goalMinute} />);
     let texts: string[] = [];
-    for (let elapsed = 0; elapsed < 3000 && !texts.includes(BANNER); elapsed += 100) {
+    for (let elapsed = 0; elapsed < 5000 && !texts.includes(BANNER); elapsed += 100) {
       texts = textsAfter(50);
     }
     expect(texts).toContain(BANNER);
@@ -113,47 +127,53 @@ describe("MatchRadar2D", () => {
     expect(textsAfter(4000)).not.toContain(BANNER);
   });
 
-  // Given a goal being celebrated, when the manager switches to the skip-ahead
-  // speed mid-celebration, then the banner still clears.
-  it("clears the goal banner after a switch to the skip-ahead speed", () => {
-    const goal = radarSnapshot({
-      events: [radarEvent("Goal", "Home", "AwayBox", "h_st1", "h_lm")],
-      ball_zone: "Midfield",
-      possession: "Away",
-    });
+  // Given a minute handed to the radar, then it says it has played the minute
+  // out — with all of the minute's events taken in — only once it has, so the
+  // screen can show the minute and ask for the next.
+  it("says when it has played a minute out, and not before", () => {
+    const onCaughtUp = vi.fn();
+    const { rerender } = render(<Radar snapshot={radarSnapshot()} onCaughtUp={onCaughtUp} />);
+    rerender(<Radar snapshot={goalMinute} onCaughtUp={onCaughtUp} />);
+    act(() => vi.advanceTimersByTime(200));
+    expect(onCaughtUp).not.toHaveBeenCalledWith(1);
+    act(() => vi.advanceTimersByTime(15_000));
+    expect(onCaughtUp).toHaveBeenCalledWith(1);
+  });
+
+  // Given the match paused, then the radar holds still where it is and does
+  // not ask for the next minute.
+  it("holds still while the match is paused", () => {
+    const onCaughtUp = vi.fn();
     const { rerender } = render(
-      <MatchRadar2D snapshot={radarSnapshot()} speed="slow" kits={kits} />,
+      <Radar snapshot={radarSnapshot()} paused onCaughtUp={onCaughtUp} />,
     );
-    rerender(<MatchRadar2D snapshot={goal} speed="slow" kits={kits} />);
-    let texts: string[] = [];
-    for (let elapsed = 0; elapsed < 3000 && !texts.includes(BANNER); elapsed += 100) {
-      texts = textsAfter(50);
+    rerender(<Radar snapshot={goalMinute} paused onCaughtUp={onCaughtUp} />);
+    let wasScored = false;
+    for (let elapsed = 0; elapsed < 15_000; elapsed += 100) {
+      wasScored ||= textsAfter(50).includes(BANNER);
     }
-    expect(texts).toContain(BANNER);
-
-    rerender(<MatchRadar2D snapshot={goal} speed="instant" kits={kits} />);
-    act(() => vi.advanceTimersByTime(4000));
-    canvas.clear();
-    rerender(<MatchRadar2D snapshot={goal} speed="instant" kits={kits} />);
-
-    expect(canvas.texts()).not.toContain(BANNER);
+    expect(wasScored).toBe(false);
+    expect(onCaughtUp).not.toHaveBeenCalled();
   });
 
   // Given a minute playing out, then the players move without React rendering
   // the radar again: only a new snapshot or the manager's clicks render it (T4).
   it("moves the players without re-rendering", () => {
     let renders = 0;
-    const tree = (snapshot: ReturnType<typeof radarSnapshot>) => (
+    const tree = (snapshot: MatchSnapshot) => (
       <Profiler id="radar" onRender={() => (renders += 1)}>
-        <MatchRadar2D snapshot={snapshot} speed="slow" kits={kits} />
+        <Radar snapshot={snapshot} />
       </Profiler>
     );
     const { rerender } = render(tree(radarSnapshot()));
     rerender(
       tree(
         radarSnapshot({
-          events: [radarEvent("Dribble", "Home", "AwayDefense", "h_st1")],
-          ball_zone: "AwayDefense",
+          events: [
+            radarEvent("Dribble", "Home", "AwayDefense", "h_st1"),
+            radarEvent("ShotSaved", "Home", "AwayBox", "h_st1", "a_gk"),
+          ],
+          ball_zone: "AwayBox",
         }),
       ),
     );

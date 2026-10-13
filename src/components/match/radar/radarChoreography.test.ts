@@ -87,7 +87,8 @@ describe("choreographBatch — attacking", () => {
   it("arcs a cross onto the man it is aimed at", () => {
     const events = [radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1")];
     const [beat] = choreographBatch(events, stage, start).beats;
-    expect(beat.steps.some((step) => (step.ball?.lift ?? 0) > 0)).toBe(true);
+    const kick = beat.steps.find((step) => step.action?.kind === "kick")?.action;
+    expect(kick?.kind === "kick" && kick.peak > 0 && kick.receiver === "h_st1").toBe(true);
     const scene = play([beat]);
     expect(scene.lift).toBe(0);
     expect(distance(scene.ball, scene.movers.h_st1)).toBeLessThan(2);
@@ -231,13 +232,15 @@ describe("choreographBatch — the match around the ball", () => {
     const scene = play(beats);
     expect(scene.ball.x).toBeGreaterThanOrEqual(zoneSpan("AwayBox")[0]);
     expect(distance(scene.ball, scene.movers.h_rm)).toBeLessThan(2);
-    // Touch by touch, never a long roll with the dribbler chasing after it.
-    for (const step of settle.steps) {
+    // He has it already; then touch by touch, never a long roll with him chasing after it.
+    const [take, ...touches] = settle.steps;
+    expect(take.action).toEqual({ kind: "take", by: "h_rm" });
+    for (const step of touches) {
       expect(step.pace).toBe("carry");
       const feet = step.movers?.h_rm;
       expect(distance(step.ball?.at ?? scene.ball, feet ?? { x: 0, y: 0 })).toBeLessThan(2);
     }
-    expect(settle.steps.length).toBeGreaterThan(1);
+    expect(touches.length).toBeGreaterThan(1);
   });
 
   // After a goal, the engine restarts from the centre spot, and so does the radar.

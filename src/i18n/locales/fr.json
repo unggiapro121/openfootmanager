@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} contre {{away}}, vue du dessus",
       "allNames": "Tous les noms",
       "hide": "Masquer le radar",
-      "show": "Afficher le radar"
+      "show": "Afficher le radar",
+      "speedHint": "Le radar montre les occasions dangereuses à son propre rythme. Masquez-le pour choisir la vitesse."
     }
   },
   "endOfSeason": {

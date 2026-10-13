@@ -2673,7 +2673,8 @@
       "pitchLabel": "{{home}} proti {{away}}, pohled shora",
       "allNames": "Všechna jména",
       "hide": "Skrýt radar",
-      "show": "Zobrazit radar"
+      "show": "Zobrazit radar",
+      "speedHint": "Radar ukazuje nebezpečné situace vlastním tempem. Skryjte ho, chcete-li zvolit rychlost."
     }
   },
   "endOfSeason": {
