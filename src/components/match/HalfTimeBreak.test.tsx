@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { invoke } from "@tauri-apps/api/core";
 
 import { ThemeProvider } from "../../context/ThemeContext";
 import type { GameStateData } from "../../store/gameStore";
@@ -158,5 +159,48 @@ describe("HalfTimeBreak", () => {
     expect(changeMatchPlayerRole).toHaveBeenCalledWith("Home", "home-p9", "Poacher");
     await waitFor(() => expect(onUpdateSnapshot).toHaveBeenCalledWith(updated));
     expect(setPlayerRole).toHaveBeenCalledWith("home-p9", "Poacher");
+  });
+});
+
+describe("HalfTimeBreak substitutions", () => {
+  // Given the half-time break, when one substitution is made, then the panel
+  // stays open for the next and closes only on Done.
+  it("keeps the substitutions panel open until Done", async () => {
+    const bench = {
+      ...team("home").players[9],
+      id: "home-sub",
+      name: "home sub",
+    } as EnginePlayerData;
+    const before = { ...snapshot(), home_bench: [bench] } as MatchSnapshot;
+    vi.mocked(invoke).mockResolvedValue({ ...before, home_subs_made: 1 });
+    render(
+      <ThemeProvider>
+        <HalfTimeBreak
+          snapshot={before}
+          gameState={{ teams: [] } as unknown as GameStateData}
+          userSide="Home"
+          isSpectator={false}
+          importantEvents={[]}
+          onResume={vi.fn()}
+          onUpdateSnapshot={vi.fn()}
+        />
+      </ThemeProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "match.makeSubstitution" }));
+    fireEvent.click(screen.getByTestId("sub-panel-off-home-p9"));
+    fireEvent.click(screen.getByTestId("sub-panel-bench-home-sub"));
+    fireEvent.click(screen.getByRole("button", { name: "match.confirmSubstitution" }));
+
+    const done = await screen.findByRole("button", { name: "common.done" });
+    expect(invoke).toHaveBeenCalledWith("apply_match_command", {
+      command: {
+        Substitute: { side: "Home", player_off_id: "home-p9", player_on_id: "home-sub" },
+      },
+    });
+    expect(screen.getByText("match.substitutionsTitle")).toBeInTheDocument();
+
+    fireEvent.click(done);
+    expect(screen.queryByText("match.substitutionsTitle")).not.toBeInTheDocument();
   });
 });

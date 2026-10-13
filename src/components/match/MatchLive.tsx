@@ -232,9 +232,10 @@ export default function MatchLive({
     }
   }, [importantEvents.length]);
 
-  // Apply substitution
+  // Apply substitution. The panel stays open, and the match paused, so the
+  // manager can make his next change at once; he resumes with Done.
   const handleSubstitution = async (playerOffId: string, playerOnId: string) => {
-    if (!userSide || isSpectator) return;
+    if (!userSide || isSpectator) return false;
     try {
       const snap = await invoke<MatchSnapshot>("apply_match_command", {
         command: {
@@ -242,10 +243,11 @@ export default function MatchLive({
         },
       });
       onSnapshotUpdate(snap);
-      setShowSubPanel(false);
       setInjuredOff(undefined);
+      return true;
     } catch (err) {
       console.error("Substitution failed:", err);
+      return false;
     }
   };
 
