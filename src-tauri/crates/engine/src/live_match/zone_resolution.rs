@@ -210,12 +210,16 @@ impl LiveMatchState {
             events.push(evt);
             if rng.random_range(0.0..1.0f64) < cross_prob {
                 let winger_id = attacker.id.clone();
-                let cross_evt = MatchEvent::new(minute, EventType::Cross, att_side, zone)
-                    .with_player(&winger_id);
-                self.events.push(cross_evt.clone());
-                events.push(cross_evt);
+                // Pick who the cross is aimed at before announcing it, so the
+                // event can name him. Emitting draws nothing from `rng`, so the
+                // draws happen in the same order as ever and no result changes.
                 let header = self.snap_header_target(att_side, &winger_id, rng);
                 let def_header = self.snap_player(def_side, Position::Defender, rng);
+                let cross_evt = MatchEvent::new(minute, EventType::Cross, att_side, zone)
+                    .with_player(&winger_id)
+                    .with_secondary(&header.id);
+                self.events.push(cross_evt.clone());
+                events.push(cross_evt);
                 let aerial_win = scale_odds(
                     duel::aerial_win_probability(&header, &def_header),
                     (self.line_strength(att_side, Position::Forward)
@@ -403,6 +407,7 @@ impl LiveMatchState {
         } else {
             let evt = MatchEvent::new(minute, EventType::ShotSaved, att_side, zone)
                 .with_player(&shooter.id)
+                .with_secondary(&goalkeeper.id)
                 .with_detail(EventDetail::Save {
                     quality: save_quality(gk_rating),
                 });

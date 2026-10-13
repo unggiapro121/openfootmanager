@@ -2301,6 +2301,95 @@ fn the_header_winner_shoots_and_the_crosser_assists() {
     assert!(cross_goals > 0, "no goal came from a cross in 60 matches");
 }
 
+/// Given many watched matches,
+/// When a winger crosses,
+/// Then the cross names the team-mate it is aimed at — never the crosser — and
+/// when that man wins the header, the shot that follows is his.
+#[test]
+fn a_cross_names_the_team_mate_it_is_aimed_at() {
+    let mut crosses = 0;
+    let mut headers_won = 0;
+    for seed in 0..60 {
+        let mut state = make_live_match(false);
+        let mut rng = seeded_rng(seed);
+        run_to_finish(&mut state, &mut rng);
+        let snapshot = state.snapshot();
+        let events = snapshot.events;
+        for (index, cross) in events.iter().enumerate() {
+            if cross.event_type != EventType::Cross {
+                continue;
+            }
+            crosses += 1;
+            let target = cross
+                .secondary_player_id
+                .as_deref()
+                .unwrap_or_else(|| panic!("seed {seed}: a cross with no target"));
+            assert_ne!(Some(target), cross.player_id.as_deref(), "seed {seed}");
+            let attackers = match cross.side {
+                Side::Home => &snapshot.home_team,
+                Side::Away => &snapshot.away_team,
+            };
+            assert!(
+                attackers.players.iter().any(|player| player.id == target),
+                "seed {seed}: the cross is aimed at someone not in the side"
+            );
+            let shot = events[index + 1..].first().filter(|next| {
+                matches!(
+                    next.event_type,
+                    EventType::Goal
+                        | EventType::ShotSaved
+                        | EventType::ShotOffTarget
+                        | EventType::ShotBlocked
+                )
+            });
+            if let Some(shot) = shot {
+                assert_eq!(shot.player_id.as_deref(), Some(target), "seed {seed}");
+                headers_won += 1;
+            }
+        }
+    }
+    assert!(
+        crosses > 0 && headers_won > 0,
+        "no cross was won in 60 matches"
+    );
+}
+
+/// Given many watched matches,
+/// When a shot on target is saved,
+/// Then the save names the goalkeeper of the defending side who made it.
+#[test]
+fn a_saved_shot_names_the_goalkeeper_who_saved_it() {
+    let mut saves = 0;
+    for seed in 0..40 {
+        let mut state = make_live_match(false);
+        let mut rng = seeded_rng(seed);
+        run_to_finish(&mut state, &mut rng);
+        let snapshot = state.snapshot();
+        for save in snapshot
+            .events
+            .iter()
+            .filter(|e| e.event_type == EventType::ShotSaved)
+        {
+            saves += 1;
+            let defenders = match save.side {
+                Side::Home => &snapshot.away_team,
+                Side::Away => &snapshot.home_team,
+            };
+            let keeper = save
+                .secondary_player_id
+                .as_deref()
+                .unwrap_or_else(|| panic!("seed {seed}: a save with no keeper"));
+            let keeper = defenders
+                .players
+                .iter()
+                .find(|player| player.id == keeper)
+                .unwrap_or_else(|| panic!("seed {seed}: the keeper is not in the defending side"));
+            assert_eq!(keeper.position, Position::Goalkeeper, "seed {seed}");
+        }
+    }
+    assert!(saves > 0, "no shot was saved in 40 matches");
+}
+
 fn play_out(state: &mut LiveMatchState, rng: &mut StdRng) {
     for _ in 0..400 {
         if state.is_finished() {

@@ -310,8 +310,9 @@ rating = 6.0 − 0.5 (an ordinary game's work)
                        foul −0.05 · yellow −0.3 · red / second yellow −1.5
        + the result:   win +0.3 · loss −0.3
        + keepers:      clean sheet (≥ 60 min) +0.6, else −0.25 per goal conceded × share of match;
-                       +0.15 per save (credited to the side's longest-serving keeper — the
-                       engine records the shooter on `ShotSaved`, not the keeper)
+                       +0.15 per save (credited to the side's longest-serving keeper; the
+                       live engine names the saving keeper as `ShotSaved`'s secondary player,
+                       for the match radar, but the rating does not read it yet)
        + defenders:    clean sheet (≥ 60 min) +0.4, else −0.15 per goal conceded × share of match
 
 under 30 minutes: pulled toward 6.0 in proportion to the minutes played
