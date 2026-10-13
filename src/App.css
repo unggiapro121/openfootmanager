@@ -61,6 +61,27 @@
   --color-navy-800: #131b33;
   --color-navy-700: #1a2340;
   --color-navy-600: #243054;
+
+  /* Match radar (components/match/radar). Used only under motion-safe:, so a
+     player who prefers reduced motion sees the radar still. */
+  --animate-radar-sway: radar-sway 3.6s ease-in-out infinite;
+  --animate-radar-ripple: radar-ripple 1.2s ease-out;
+  --animate-radar-goal: radar-goal 1.8s ease-out forwards;
+
+  /* SVG user units: a few tenths of a metre on the radar pitch. */
+  @keyframes radar-sway {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(0.35px, -0.25px); }
+  }
+  @keyframes radar-ripple {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.35; }
+  }
+  @keyframes radar-goal {
+    0% { opacity: 0; }
+    12%, 80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
 }
 
 @layer base {

@@ -2686,7 +2686,14 @@
     "notableUpset": "Sorpresa del turno",
     "pts": "pts.",
     "injuredPrompt": "{{name}} è infortunato e non può continuare. Scegli chi entra o chiudi per giocare in inferiorità.",
-    "injuredBadge": "Infortunato"
+    "injuredBadge": "Infortunato",
+    "radar": {
+      "title": "Radar della partita",
+      "pitchLabel": "{{home}} contro {{away}}, vista dall'alto",
+      "allNames": "Tutti i nomi",
+      "hide": "Nascondi radar",
+      "show": "Mostra radar"
+    }
   },
   "notifications": {
     "attentionRequired": "Attenzione Richiesta",

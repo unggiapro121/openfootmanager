@@ -2667,7 +2667,14 @@
     "notableUpset": "Résultat surprise",
     "pts": "pts",
     "injuredPrompt": "{{name}} est blessé et ne peut pas continuer. Choisissez qui entre, ou fermez pour jouer à dix.",
-    "injuredBadge": "Blessé"
+    "injuredBadge": "Blessé",
+    "radar": {
+      "title": "Radar du match",
+      "pitchLabel": "{{home}} contre {{away}}, vue du dessus",
+      "allNames": "Tous les noms",
+      "hide": "Masquer le radar",
+      "show": "Afficher le radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Saison Terminée",

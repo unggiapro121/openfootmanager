@@ -21,6 +21,7 @@ import { FolderOpen, Settings, PlusCircle, ChevronRight, Power, Package, Bug } f
 import { DISCORD_INVITE_URL, GITHUB_REPO_URL } from "../lib/communityLinks";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
 import { showError } from "../lib/errorDialog";
+import { prefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 function DiscordIcon({ className }: { className?: string }) {
   return (
@@ -224,11 +225,6 @@ const CREATE_MANAGER_FIELD_ORDER = [
   "startPhase",
   "nationality",
 ] as const satisfies ReadonlyArray<keyof CreateManagerFormData>;
-
-function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 function deferFocusToNextPaint(callback: () => void): void {
   requestAnimationFrame(() => {

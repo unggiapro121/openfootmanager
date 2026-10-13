@@ -2667,7 +2667,14 @@
     "notableUpset": "Notable Upset",
     "pts": "pts",
     "injuredPrompt": "{{name}} is injured and can't continue. Choose who comes on, or close to play on a man short.",
-    "injuredBadge": "Injured"
+    "injuredBadge": "Injured",
+    "radar": {
+      "title": "Match radar",
+      "pitchLabel": "{{home}} against {{away}}, seen from above",
+      "allNames": "All names",
+      "hide": "Hide radar",
+      "show": "Show radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Season Complete",

@@ -2667,7 +2667,14 @@
     "notableUpset": "Velké překvapení",
     "pts": "b.",
     "injuredPrompt": "{{name}} je zraněný a nemůže pokračovat. Vyberte, kdo nastoupí, nebo zavřete a hrajte v oslabení.",
-    "injuredBadge": "Zraněný"
+    "injuredBadge": "Zraněný",
+    "radar": {
+      "title": "Radar zápasu",
+      "pitchLabel": "{{home}} proti {{away}}, pohled shora",
+      "allNames": "Všechna jména",
+      "hide": "Skrýt radar",
+      "show": "Zobrazit radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Sezóna dokončena",

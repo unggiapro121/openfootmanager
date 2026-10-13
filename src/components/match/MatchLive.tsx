@@ -26,6 +26,8 @@ import MatchScreenLayout from "./MatchScreenLayout";
 import { SubPanel } from "./SubPanel";
 import { swapMatchPositions } from "../../services/liveMatchService";
 import { createMatchRoleChange } from "./matchRoleChange";
+import { MatchRadar2D } from "./radar/MatchRadar2D";
+import { pickRadarKits } from "./radar/radarGeometry";
 import {
   Play,
   Pause,
@@ -98,6 +100,10 @@ export default function MatchLive({
   const awayFullTeam = gameState.teams.find((t) => t.id === snapshot.away_team.id);
   const homeTeamColor = homeFullTeam?.colors?.primary || "#10b981";
   const awayTeamColor = awayFullTeam?.colors?.primary || "#6366f1";
+  const radarKits = useMemo(
+    () => pickRadarKits(homeFullTeam?.colors, awayFullTeam?.colors),
+    [homeFullTeam?.colors, awayFullTeam?.colors],
+  );
 
   const playerJerseyMap = useMemo(() => {
     const m = new Map<string, number>();
@@ -403,8 +409,9 @@ export default function MatchLive({
     >
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel: Event Feed + Stats */}
-        <div className="flex-1 flex flex-col">
+        {/* Left Panel: Radar, then Event Feed + Stats */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <MatchRadar2D snapshot={snapshot} speed={speed} kits={radarKits} />
           <div className="flex bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 transition-colors duration-300">
             {[
               {

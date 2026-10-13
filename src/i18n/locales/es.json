@@ -2667,7 +2667,14 @@
     "notableUpset": "Sorpresa notable",
     "pts": "pts.",
     "injuredPrompt": "{{name}} está lesionado y no puede seguir. Elige quién entra o cierra para jugar con uno menos.",
-    "injuredBadge": "Lesionado"
+    "injuredBadge": "Lesionado",
+    "radar": {
+      "title": "Radar del partido",
+      "pitchLabel": "{{home}} contra {{away}}, vista desde arriba",
+      "allNames": "Todos los nombres",
+      "hide": "Ocultar radar",
+      "show": "Mostrar radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Completa",

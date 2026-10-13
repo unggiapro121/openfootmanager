@@ -2667,7 +2667,14 @@
     "notableUpset": "Dikkat Çeken Sürpriz",
     "pts": "P",
     "injuredPrompt": "{{name}} sakatlandı ve devam edemiyor. Oyuna gireni seç ya da kapatıp bir kişi eksik oyna.",
-    "injuredBadge": "Sakat"
+    "injuredBadge": "Sakat",
+    "radar": {
+      "title": "Maç radarı",
+      "pitchLabel": "{{home}} - {{away}}, yukarıdan görünüm",
+      "allNames": "Tüm isimler",
+      "hide": "Radarı gizle",
+      "show": "Radarı göster"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Sezon Tamamlandı",

@@ -2667,7 +2667,14 @@
     "notableUpset": "重大爆冷",
     "pts": "分",
     "injuredPrompt": "{{name}} 受伤无法继续比赛。请选择换上的球员，或关闭以少打多。",
-    "injuredBadge": "受伤"
+    "injuredBadge": "受伤",
+    "radar": {
+      "title": "比赛雷达",
+      "pitchLabel": "{{home}} 对阵 {{away}}，俯视图",
+      "allNames": "显示全部姓名",
+      "hide": "隐藏雷达",
+      "show": "显示雷达"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "赛季结束",

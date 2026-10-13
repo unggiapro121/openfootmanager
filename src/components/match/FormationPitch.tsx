@@ -9,7 +9,7 @@ import { PitchSurface, PitchToken, fitToneOf, pitchRoleMarkers } from "../ui";
 import { ratingAt } from "./slotRatings";
 import type { EnginePlayerData } from "./types";
 
-interface FormationSlot {
+export interface FormationSlot {
   player: EnginePlayerData;
   x: number;
   y: number;
@@ -116,6 +116,23 @@ export function buildFormationSlots(
   });
 }
 
+/**
+ * Where each of a side's players stands in its shape: at his own formation slot
+ * when the XI is slot-aligned, otherwise grouped by position. The one layout
+ * every pitch drawing of a live XI shares — the formation boards and the match
+ * radar.
+ */
+export function layoutFormationSlots(
+  formation: string,
+  players: EnginePlayerData[],
+  sentOff: string[] = [],
+): FormationSlot[] {
+  return (
+    buildSlotAlignedSlots(formation, players, sentOff) ??
+    buildFormationSlots(formation, players, sentOff)
+  );
+}
+
 interface FormationPitchProps {
   formation: string;
   players: EnginePlayerData[];
@@ -163,9 +180,7 @@ export function FormationPitch({
   // Faces and match names live on the full player, not the match snapshot.
   const squad = useGameStore((state) => state.gameState?.players);
   const squadById = useMemo(() => new Map((squad ?? []).map((p) => [p.id, p])), [squad]);
-  const slots =
-    buildSlotAlignedSlots(formation, players, sentOff) ??
-    buildFormationSlots(formation, players, sentOff);
+  const slots = layoutFormationSlots(formation, players, sentOff);
 
   return (
     <PitchSurface className={className}>

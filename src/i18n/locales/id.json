@@ -2667,7 +2667,14 @@
     "notableUpset": "Kejutan Menonjol",
     "pts": "poin",
     "injuredPrompt": "{{name}} cedera dan tidak bisa melanjutkan. Pilih pemain pengganti, atau tutup untuk bermain dengan kekurangan pemain.",
-    "injuredBadge": "Cedera"
+    "injuredBadge": "Cedera",
+    "radar": {
+      "title": "Radar pertandingan",
+      "pitchLabel": "{{home}} melawan {{away}}, dilihat dari atas",
+      "allNames": "Semua nama",
+      "hide": "Sembunyikan radar",
+      "show": "Tampilkan radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Musim Selesai",

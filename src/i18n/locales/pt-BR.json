@@ -2595,7 +2595,14 @@
     "notableUpset": "Grande surpresa",
     "pts": "pts",
     "injuredPrompt": "{{name}} se machucou e não pode continuar. Escolha quem entra ou feche para jogar com um a menos.",
-    "injuredBadge": "Machucado"
+    "injuredBadge": "Machucado",
+    "radar": {
+      "title": "Radar da partida",
+      "pitchLabel": "{{home}} contra {{away}}, vista de cima",
+      "allNames": "Todos os nomes",
+      "hide": "Ocultar radar",
+      "show": "Mostrar radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Encerrada",

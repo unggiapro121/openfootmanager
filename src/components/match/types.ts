@@ -1,4 +1,4 @@
-import type { PositionRating } from "../../store/types";
+import type { DefensiveLine, PitchWidth, PositionRating } from "../../store/types";
 // Shared types for match simulation components — mirrors Rust engine types
 
 import type { TFunction } from "i18next";
@@ -68,6 +68,21 @@ export interface EngineTeamData {
   formation: string;
   play_style: string;
   players: EnginePlayerData[];
+  /**
+   * The side's tactical dials as the engine plays them. The engine always sends
+   * them; optional so hand-built snapshots in tests need not.
+   */
+  tactics?: EngineTacticsData;
+}
+
+/**
+ * Mirrors the engine's `TacticsConfig`, not the domain's `TacticsPhaseSettings`:
+ * the two share dial names but not every dial's options. Only the dials the UI
+ * reads are typed; the rest come over the wire untouched.
+ */
+export interface EngineTacticsData {
+  defensive_line: DefensiveLine;
+  width: PitchWidth;
 }
 
 export interface SetPieceTakers {

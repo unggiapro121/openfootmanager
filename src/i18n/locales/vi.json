@@ -2667,7 +2667,14 @@
     "notableUpset": "Cú sốc đáng chú ý",
     "pts": "điểm",
     "injuredPrompt": "{{name}} chấn thương và không thể tiếp tục. Chọn người vào sân, hoặc đóng lại để chơi thiếu người.",
-    "injuredBadge": "Chấn thương"
+    "injuredBadge": "Chấn thương",
+    "radar": {
+      "title": "Radar trận đấu",
+      "pitchLabel": "{{home}} gặp {{away}}, nhìn từ trên xuống",
+      "allNames": "Hiện tất cả tên",
+      "hide": "Ẩn radar",
+      "show": "Hiện radar"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Mùa giải kết thúc",

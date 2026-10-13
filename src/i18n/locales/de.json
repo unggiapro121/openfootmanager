@@ -2667,7 +2667,14 @@
     "notableUpset": "Überraschungsergebnis",
     "pts": "Pkt.",
     "injuredPrompt": "{{name}} ist verletzt und kann nicht weiterspielen. Wähle, wer reinkommt, oder schließe, um in Unterzahl weiterzuspielen.",
-    "injuredBadge": "Verletzt"
+    "injuredBadge": "Verletzt",
+    "radar": {
+      "title": "Spielradar",
+      "pitchLabel": "{{home}} gegen {{away}}, von oben gesehen",
+      "allNames": "Alle Namen",
+      "hide": "Radar ausblenden",
+      "show": "Radar einblenden"
+    }
   },
   "endOfSeason": {
     "seasonComplete": "Saison beendet",
