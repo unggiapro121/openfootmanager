@@ -64,7 +64,8 @@ export function SubPanel({
 }: {
   snapshot: MatchSnapshot;
   side: "Home" | "Away";
-  onSubstitute: (offId: string, onId: string) => void;
+  /** Resolves true once the match has made the change; false when it refused. */
+  onSubstitute: (offId: string, onId: string) => Promise<boolean>;
   /** Two players of the XI trade slots — dragged on the pitch. Not a substitution. */
   onSwapPositions: (playerAId: string, playerBId: string) => void;
   /** A player of the XI takes another role for the rest of the match. */
@@ -78,6 +79,9 @@ export function SubPanel({
   const { t } = useTranslation();
   const [selectedOff, setSelectedOff] = useState<string | null>(initialOff ?? null);
   const [selectedBench, setSelectedBench] = useState<string | null>(null);
+  // The change just made, shown until the next one, so a manager making
+  // several in one stop sees each land without the panel closing on him.
+  const [lastChange, setLastChange] = useState<{ onName: string; offName: string } | null>(null);
 
   const team = side === "Home" ? snapshot.home_team : snapshot.away_team;
   // Hurt on the pitch and not yet replaced: they take no further part.
@@ -150,9 +154,12 @@ export function SubPanel({
     setSelectedBench((cur) => (cur === playerId ? null : playerId));
   };
 
-  const handleConfirmSubstitution = () => {
-    if (!selectedOff || !selectedBench) return;
-    onSubstitute(selectedOff, selectedBench);
+  const handleConfirmSubstitution = async () => {
+    if (!selectedPlayer || !comparedPlayer) return;
+    const applied = await onSubstitute(selectedPlayer.id, comparedPlayer.id);
+    if (applied === false) return;
+    setLastChange({ onName: comparedPlayer.name, offName: selectedPlayer.name });
+    handleClearSelection();
   };
 
   const handleApplyRecommendation = (offId: string, onId: string) => {
@@ -225,6 +232,7 @@ export function SubPanel({
               className="w-full max-w-[21rem] shrink-0"
               roles={setPieces}
             />
+            <DoneButton onClick={onClose} label={t("common.done")} />
           </div>
         ) : (
           <>
@@ -667,7 +675,7 @@ export function SubPanel({
                       </button>
                       <button
                         type="button"
-                        onClick={handleConfirmSubstitution}
+                        onClick={() => void handleConfirmSubstitution()}
                         className="rounded-lg bg-green-500 px-3 py-1.5 font-heading text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-green-400"
                       >
                         {t("match.confirmSubstitution")}
@@ -712,14 +720,37 @@ export function SubPanel({
                   </span>
                 </div>
               ) : (
-                <p className="text-center font-heading text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                  {t("match.selectPlayerOff")}
-                </p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  {lastChange ? (
+                    <span className="flex items-center gap-1.5 text-sm text-green-600 dark:text-green-400">
+                      <UserPlus className="h-3.5 w-3.5 shrink-0" />
+                      <span className="font-heading font-bold">{lastChange.onName}</span>
+                      {t("match.subFor", { name: lastChange.offName })}
+                    </span>
+                  ) : null}
+                  <p className="font-heading text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                    {t("match.selectPlayerOff")}
+                  </p>
+                  <DoneButton onClick={onClose} label={t("common.done")} />
+                </div>
               )}
             </div>
           </>
         )}
       </div>
     </div>
+  );
+}
+
+/** Closes the panel once the manager has made his changes; play resumes. */
+function DoneButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="ml-auto rounded-lg bg-primary-500 px-4 py-1.5 font-heading text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+    >
+      {label}
+    </button>
   );
 }

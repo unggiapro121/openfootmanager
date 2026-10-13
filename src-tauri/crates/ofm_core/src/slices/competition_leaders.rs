@@ -3,11 +3,12 @@
 //!
 //! The per-match stats rows carry the kind of fixture (league, cup, …) but not
 //! which competition it belonged to, so a competition's rows are picked by the
-//! ids of its own played fixtures.
+//! ids of its own played fixtures. A league's fixture list also holds its
+//! clubs' pre-season friendlies, which are not part of the competition.
 
 use std::collections::{BTreeMap, HashSet};
 
-use domain::league::FixtureStatus;
+use domain::league::{FixtureCompetition, FixtureStatus};
 use domain::player::Position;
 use domain::stats::PlayerMatchStatsRecord;
 use serde::Serialize;
@@ -44,15 +45,26 @@ struct Tally {
     red_cards: u32,
 }
 
-/// The ids of a competition's played fixtures; empty for an unknown competition.
+/// The ids of a competition's played fixtures, friendlies left out; empty for
+/// an unknown competition.
 pub fn played_fixture_ids(game: &Game, competition_id: &str) -> HashSet<String> {
     game.competitions
         .iter()
         .filter(|competition| competition.id == competition_id)
         .flat_map(|competition| competition.fixtures.iter())
         .filter(|fixture| fixture.status == FixtureStatus::Completed)
+        .filter(|fixture| !is_friendly(&fixture.competition))
         .map(|fixture| fixture.id.clone())
         .collect()
+}
+
+fn is_friendly(competition: &FixtureCompetition) -> bool {
+    matches!(
+        competition,
+        FixtureCompetition::Friendly
+            | FixtureCompetition::FriendlyCup
+            | FixtureCompetition::PreseasonTournament
+    )
 }
 
 /// The leaderboards built from `rows`, which the caller has already narrowed to
@@ -147,7 +159,7 @@ mod tests {
     use crate::clock::GameClock;
     use crate::test_support::uniform_attributes;
     use chrono::{TimeZone, Utc};
-    use domain::league::{Fixture, FixtureCompetition, League};
+    use domain::league::{Fixture, League};
     use domain::manager::Manager;
     use domain::player::{Player, Position};
     use domain::team::Team;
@@ -223,6 +235,15 @@ mod tests {
             fixture("l1", FixtureStatus::Completed),
             fixture("l2", FixtureStatus::Completed),
             fixture("l3", FixtureStatus::Scheduled),
+            // Pre-season friendlies are kept in the league's fixture list.
+            Fixture {
+                competition: FixtureCompetition::Friendly,
+                ..fixture("f1", FixtureStatus::Completed)
+            },
+            Fixture {
+                competition: FixtureCompetition::PreseasonTournament,
+                ..fixture("f2", FixtureStatus::Completed)
+            },
         ];
         let mut cup = League::new("eng-cup".to_string(), "FA Cup".to_string(), 2026, &[]);
         cup.fixtures = vec![fixture("c1", FixtureStatus::Completed)];
@@ -267,8 +288,9 @@ mod tests {
             .collect()
     }
 
-    /// Given a league with played and unplayed fixtures, then only the played
-    /// ones are its fixtures to count, and a cup's are not among them.
+    /// Given a league with played and unplayed fixtures and friendlies, then
+    /// only the played competitive ones are its fixtures to count, and a cup's
+    /// are not among them.
     #[test]
     fn only_a_competitions_own_played_fixtures_count() {
         let ids = played_fixture_ids(&game(), "eng-1");

@@ -117,9 +117,11 @@ export default function HalfTimeBreak({
         },
       });
       onUpdateSnapshot(snap);
-      setShowSubPanel(false);
+      // The panel stays open for the next change; Done closes it.
+      return true;
     } catch (err) {
       console.error("Substitution failed:", err);
+      return false;
     }
   };
 

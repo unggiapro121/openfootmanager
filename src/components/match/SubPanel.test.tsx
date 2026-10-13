@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { SubPanel } from "./SubPanel";
@@ -33,6 +33,14 @@ vi.mock("react-i18next", () => ({
 
       if (key === "match.selectPlayerToTakeOffFirst") {
         return "Select player to take off first";
+      }
+
+      if (key === "match.subFor" && typeof arg === "object" && arg !== null && "name" in arg) {
+        return `for ${String((arg as { name: string }).name)}`;
+      }
+
+      if (key === "common.done") {
+        return "Done";
       }
 
       if (key === "match.confirmSubstitution") {
@@ -190,6 +198,52 @@ describe("SubPanel", () => {
     expect(props.onSubstitute).toHaveBeenCalledWith("starter-1", "bench-1");
   });
 
+  // Given a confirmed substitution, then the panel stays open with the choice
+  // cleared, so the next change can be made straight away, and says who came on.
+  it("stays open and ready for the next change after a substitution", async () => {
+    const props = { ...createProps(), onSubstitute: vi.fn().mockResolvedValue(true) };
+
+    render(<SubPanel {...props} />);
+
+    fireEvent.contextMenu(screen.getByTestId("sub-panel-off-starter-1"));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Select to take off" }));
+    fireEvent.contextMenu(screen.getByTestId("sub-panel-bench-bench-1"));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Select replacement" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm substitution" }));
+
+    expect(await screen.findByRole("button", { name: "Done" })).toBeInTheDocument();
+    expect(screen.getByText(/for Starter One/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Confirm substitution" })).not.toBeInTheDocument();
+    expect(props.onClose).not.toHaveBeenCalled();
+  });
+
+  // Given a substitution the match refused, then the choice is kept so the
+  // manager can see it and try again.
+  it("keeps the choice when the substitution is refused", async () => {
+    const props = { ...createProps(), onSubstitute: vi.fn().mockResolvedValue(false) };
+
+    render(<SubPanel {...props} />);
+
+    fireEvent.contextMenu(screen.getByTestId("sub-panel-off-starter-1"));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Select to take off" }));
+    fireEvent.contextMenu(screen.getByTestId("sub-panel-bench-bench-1"));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Select replacement" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm substitution" }));
+
+    await waitFor(() => expect(props.onSubstitute).toHaveBeenCalled());
+    expect(screen.getByRole("button", { name: "Confirm substitution" })).toBeInTheDocument();
+  });
+
+  // Given nothing chosen, then a Done button closes the panel and play resumes.
+  it("closes from the Done button once the changes are made", () => {
+    const props = createProps();
+
+    render(<SubPanel {...props} />);
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+
+    expect(props.onClose).toHaveBeenCalled();
+  });
+
   it("allows clearing the selected off-player through the context menu", () => {
     const props = createProps();
 
@@ -315,6 +369,17 @@ describe("SubPanel position swaps", () => {
 
   // Given a player sent off, then he is still listed among the players on the
   // pitch, but cannot be picked to come off.
+  // Given every substitution used, then the panel still offers Done to resume.
+  it("offers Done once every substitution is used", () => {
+    const snapshot = elevenASide();
+    const p = props({ ...snapshot, home_subs_made: snapshot.max_subs });
+
+    render(<SubPanel {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+
+    expect(p.onClose).toHaveBeenCalled();
+  });
+
   it("lists the sent-off player without letting him be taken off", () => {
     const p = props(elevenASide({ sent_off: ["p2"] }));
     render(<SubPanel {...p} />);
