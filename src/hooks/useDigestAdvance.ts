@@ -29,9 +29,21 @@ export function useDigestAdvance(
   // Abort flag so an in-flight loop can be cancelled (e.g. on unmount).
   const abortRef = useRef(false);
   const inFlightRef = useRef(false);
+  // Warnings the manager has chosen to continue past in this run. Resuming
+  // after a blocked stop is that choice, so the warnings it stopped on join the
+  // set; a fresh run starts over and checks everything again.
+  const acknowledgedRef = useRef<Set<string>>(new Set());
+  const lastBlockedIdsRef = useRef<string[]>([]);
 
-  const startDigest = async (options?: { resume?: boolean }) => {
+  const startDigest = async (options?: { resume?: boolean; acknowledgedBlockerIds?: string[] }) => {
     if (inFlightRef.current) return;
+    if (options?.resume) {
+      for (const id of lastBlockedIdsRef.current) acknowledgedRef.current.add(id);
+    } else {
+      acknowledgedRef.current = new Set();
+    }
+    for (const id of options?.acknowledgedBlockerIds ?? []) acknowledgedRef.current.add(id);
+    lastBlockedIdsRef.current = [];
     inFlightRef.current = true;
     abortRef.current = false;
     setIsRunning(true);
@@ -50,7 +62,7 @@ export function useDigestAdvance(
           return;
         }
 
-        const result = await advanceOneDay();
+        const result = await advanceOneDay([...acknowledgedRef.current]);
 
         if (abortRef.current) {
           setStopReason({ kind: "stopped" });
@@ -70,7 +82,9 @@ export function useDigestAdvance(
         }
 
         if (result.action === "blocked") {
-          setStopReason({ kind: "blocked", blockers: result.blockers ?? [] });
+          const blockers = result.blockers ?? [];
+          lastBlockedIdsRef.current = blockers.map((blocker) => blocker.id);
+          setStopReason({ kind: "blocked", blockers });
           return;
         }
 

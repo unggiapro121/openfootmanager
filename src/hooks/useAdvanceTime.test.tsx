@@ -21,6 +21,7 @@ const mockedInvoke = vi.mocked(invoke);
 function HookHarness(props: {
   defaultMatchMode?: "live" | "spectator" | "delegate";
   hasMatchToday: boolean;
+  continueToNextEvent?: boolean;
 }): JSX.Element {
   const [, setGameState] = useState<GameStateData | null>(null);
   const {
@@ -35,6 +36,7 @@ function HookHarness(props: {
     props.defaultMatchMode,
     true,
     false,
+    props.continueToNextEvent ?? false,
   );
 
   return (
@@ -50,6 +52,9 @@ function HookHarness(props: {
       </button>
       <div data-testid="show-match-confirm">{String(showMatchConfirm)}</div>
       <div data-testid="blocker-count">{blockerModal?.blockers.length ?? 0}</div>
+      <button type="button" onClick={() => blockerModal?.pendingAction?.()}>
+        Continue Anyway
+      </button>
     </div>
   );
 }
@@ -134,6 +139,32 @@ describe("useAdvanceTime", (): void => {
 
     expect(mockedInvoke).toHaveBeenCalledTimes(1);
     expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  // Given the day-by-day run and a warning before it starts, when the manager
+  // continues anyway, then the run asks for each day with that warning
+  // acknowledged, so it does not stop on it again straight away.
+  it("passes the warnings continued past into the day-by-day run", async (): Promise<void> => {
+    mockedInvoke.mockImplementation(async (command: string) => {
+      if (command === "check_blocking_actions") {
+        return [{ id: "injured_xi", severity: "warn", tab: "Squad", text: "1 injured" }];
+      }
+      return { action: "match_day", date: "2026-09-28", results: [] };
+    });
+
+    render(<HookHarness hasMatchToday={false} defaultMatchMode="spectator" continueToNextEvent />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    await waitFor((): void => {
+      expect(screen.getByTestId("blocker-count")).toHaveTextContent("1");
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Continue Anyway" }));
+
+    await waitFor((): void => {
+      expect(mockedInvoke).toHaveBeenCalledWith("advance_one_day", {
+        acknowledgedBlockerIds: ["injured_xi"],
+      });
+    });
   });
 
   it("advances time on a normal day when blocker checks return empty", async (): Promise<void> => {

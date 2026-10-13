@@ -85,6 +85,12 @@ export interface OneDayResponse {
  * *before* advancing so the frontend digest loop can surface per-day events
  * without ever auto-simulating the user's own match.
  */
-export async function advanceOneDay(): Promise<OneDayResponse> {
-  return invoke<OneDayResponse>("advance_one_day");
+/**
+ * Advance one day. `acknowledgedBlockerIds` are the warnings the manager chose to
+ * continue past in this run: they no longer stop the day, any other still does.
+ */
+export async function advanceOneDay(
+  acknowledgedBlockerIds: string[] = [],
+): Promise<OneDayResponse> {
+  return invoke<OneDayResponse>("advance_one_day", { acknowledgedBlockerIds });
 }
