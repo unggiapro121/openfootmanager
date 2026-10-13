@@ -26,7 +26,7 @@ import {
   calcAge,
   getPlayerOvr,
   getContractRiskBadgeVariant,
-  getContractRiskLevel,
+  getPlayerContractRiskLevel,
   getContractYearsRemaining,
   positionBadgeVariant,
 } from "../../lib/helpers";
@@ -649,7 +649,7 @@ export default function SquadRosterView({
                 const wrongPos = inXI && isOutOfPosition(player);
                 const tacticalFit = getTacticalFit(player);
                 const styleFit = getPlayStyleFit(player, activePlayStyle, currentPos);
-                const contractRiskLevel = getContractRiskLevel(player.contract_end, clockDate);
+                const contractRiskLevel = getPlayerContractRiskLevel(player, clockDate);
                 const contractRiskLabel =
                   contractRiskLevel === "critical"
                     ? t("finances.contractRiskCritical")

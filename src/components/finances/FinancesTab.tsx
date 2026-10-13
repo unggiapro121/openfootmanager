@@ -8,7 +8,7 @@ import {
   formatVal,
   formatWeeklyAmount,
   getContractRiskBadgeVariant,
-  getContractRiskLevel,
+  getPlayerContractRiskLevel,
   getContractYearsRemaining,
 } from "../../lib/helpers";
 import { formatPlayerWageLine, getPaidWeeklyWage, getTeamFinanceSnapshot } from "../../lib/finance";
@@ -240,7 +240,7 @@ function FinancesTabContent({
     : null;
   const contractRiskPlayers = roster
     .map((player) => {
-      const riskLevel = getContractRiskLevel(player.contract_end, gameState.clock.current_date);
+      const riskLevel = getPlayerContractRiskLevel(player, gameState.clock.current_date);
 
       return {
         player,

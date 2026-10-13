@@ -5,6 +5,36 @@
 
 use super::*;
 
+/// How long a deal the club has just agreed counts as settled. A renewal runs
+/// from the day it is signed, so a one-year deal starts inside the final-year
+/// warning; without this grace it would be flagged as at risk the day it was done.
+const FRESH_CONTRACT_DAYS: i64 = 180;
+
+/// Whether the club should be renewing this player now: his contract is in its
+/// final year, and it is not one the club agreed in the last six months. The
+/// contract a career opened with is never fresh, since nobody at the club agreed it.
+pub fn contract_needs_renewal(player: &Player, current_date: NaiveDate) -> bool {
+    contract_warning_stage(player.contract_end(), current_date).is_some()
+        && !is_freshly_agreed(player, current_date)
+}
+
+fn is_freshly_agreed(player: &Player, current_date: NaiveDate) -> bool {
+    let Some(contract) = player.current_contract() else {
+        return false;
+    };
+    if matches!(
+        contract.source,
+        ContractSource::Initial | ContractSource::LegacyMigrated
+    ) {
+        return false;
+    }
+    contract
+        .start
+        .as_deref()
+        .and_then(|start| NaiveDate::parse_from_str(start, "%Y-%m-%d").ok())
+        .is_some_and(|start| (current_date - start).num_days() < FRESH_CONTRACT_DAYS)
+}
+
 pub fn contract_warning_stage(
     contract_end: Option<&str>,
     current_date: NaiveDate,
@@ -154,4 +184,106 @@ pub(crate) fn contract_expired_message(
         i18n_params,
     )
     .with_sender_i18n("be.sender.assistantManager", "be.role.assistantManager")
+}
+
+#[cfg(test)]
+mod needs_renewal_tests {
+    use super::*;
+    use crate::test_support::uniform_attributes;
+    use domain::contract_ledger::ContractRecord;
+    use domain::player::{PlayerMovementEntry, PlayerMovementKind, Position};
+
+    fn day(year: i32, month: u32, date: u32) -> NaiveDate {
+        NaiveDate::from_ymd_opt(year, month, date).unwrap()
+    }
+
+    fn player_on(
+        kind: PlayerMovementKind,
+        source: ContractSource,
+        start: &str,
+        end: &str,
+    ) -> Player {
+        let mut player = Player::new(
+            "p".to_string(),
+            "P".to_string(),
+            "Player".to_string(),
+            "1991-07-08".to_string(),
+            "Netherlands".to_string(),
+            Position::CenterBack,
+            uniform_attributes(80),
+        );
+        player.team_id = Some("club".to_string());
+        player
+            .record_movement(PlayerMovementEntry {
+                to_team_id: Some("club".to_string()),
+                contract: Some(ContractRecord {
+                    start: Some(start.to_string()),
+                    end: Some(end.to_string()),
+                    weekly_wage: 248_000,
+                    source,
+                }),
+                ..PlayerMovementEntry::new(start, kind)
+            })
+            .unwrap();
+        player
+    }
+
+    /// Given a one-year renewal signed today,
+    /// When the club asks whether he needs renewing,
+    /// Then he does not: the deal was just done, though it has under a year left.
+    #[test]
+    fn a_contract_just_renewed_does_not_need_renewing() {
+        let player = player_on(
+            PlayerMovementKind::Renewal,
+            ContractSource::Renewal,
+            "2026-08-31",
+            "2027-08-31",
+        );
+
+        assert!(contract_warning_stage(player.contract_end(), day(2026, 8, 31)).is_some());
+        assert!(!contract_needs_renewal(&player, day(2026, 8, 31)));
+    }
+
+    /// Given that one-year renewal seven months on,
+    /// When the club asks again,
+    /// Then he needs renewing, as any expiring contract does.
+    #[test]
+    fn a_renewal_needs_renewing_again_once_it_is_no_longer_fresh() {
+        let player = player_on(
+            PlayerMovementKind::Renewal,
+            ContractSource::Renewal,
+            "2026-08-31",
+            "2027-08-31",
+        );
+
+        assert!(contract_needs_renewal(&player, day(2027, 4, 1)));
+    }
+
+    /// Given the contract a player had when the career opened, now in its final
+    /// year a few weeks into the career, then he needs renewing: it was not
+    /// agreed by this club, so it is never fresh.
+    #[test]
+    fn an_opening_contract_ending_soon_needs_renewing_at_once() {
+        let player = player_on(
+            PlayerMovementKind::InitialContract,
+            ContractSource::Initial,
+            "2026-06-01",
+            "2027-06-30",
+        );
+
+        assert!(contract_needs_renewal(&player, day(2026, 7, 15)));
+    }
+
+    /// Given a contract with more than a year left, then it needs no renewal.
+    #[test]
+    fn a_long_contract_needs_no_renewal() {
+        let player = player_on(
+            PlayerMovementKind::InitialContract,
+            ContractSource::Initial,
+            "2026-06-01",
+            "2028-06-30",
+        );
+
+        assert!(!contract_needs_renewal(&player, day(2026, 8, 31)));
+    }
 }

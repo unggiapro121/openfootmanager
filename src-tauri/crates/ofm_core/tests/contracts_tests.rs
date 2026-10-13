@@ -953,6 +953,31 @@ fn stale_manual_renewal_talks_cool_off_and_restart_from_round_one() {
     );
 }
 
+/// Given a player named for delegation whose contract still has two years to
+/// run,
+/// When renewals are delegated to the assistant,
+/// Then the assistant leaves him alone rather than signing him to the shorter
+/// deal his age calls for.
+#[test]
+fn delegation_never_shortens_a_contract_with_years_left() {
+    let mut game = make_game();
+    game.staff.push(make_assistant_manager());
+    game.players[0].stage_contract_end(Some("2028-08-01".to_string()));
+
+    let report = delegate_renewals(
+        &mut game,
+        DelegatedRenewalOptions {
+            player_ids: Some(vec!["player-1".to_string()]),
+            max_wage_increase_pct: 35,
+            max_contract_years: 1,
+        },
+    )
+    .expect("assistant delegation should return a report");
+
+    assert!(report.cases.is_empty());
+    assert_eq!(game.players[0].contract_end(), Some("2028-08-01"));
+}
+
 /// Given a player who asks 14k, distrusts the manager, and an assistant
 /// allowed a 35% raise,
 /// When renewals are delegated to the assistant,
