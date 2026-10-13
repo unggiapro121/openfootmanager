@@ -84,6 +84,15 @@ export function fromPitch(side: Side, point: PitchPoint): { depth: number; lane:
     : { depth: PITCH_LENGTH - point.x, lane: PITCH_WIDTH - point.y };
 }
 
+/** A stable small number from a string, so stand-ins and flourishes never flicker. */
+export function seedOf(text: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index++) {
+    hash = Math.imul(hash ^ text.charCodeAt(index), 16777619);
+  }
+  return Math.abs(hash);
+}
+
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }

@@ -121,7 +121,7 @@ function returnTimes(
   step: RadarStep,
 ): Record<string, number> {
   if (!step.resetMovers) return {};
-  const after = focusOf(applyStep(scene, step, 0));
+  const after = focusOf(applyStep(scene, step));
   const times: Record<string, number> = {};
   for (const [id, at] of Object.entries(scene.movers)) {
     if (step.movers && id in step.movers) continue;
@@ -178,7 +178,7 @@ export function timeSteps(
     const timing = stepTiming(stage, current, step);
     stepMs.push(timing.ms);
     runMs.push(timing.runMs);
-    current = applyStep(current, step, 0);
+    current = applyStep(current, step);
   }
   return { stepMs, runMs, end: current };
 }

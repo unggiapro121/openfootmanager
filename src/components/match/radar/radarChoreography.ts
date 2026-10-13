@@ -13,6 +13,7 @@ import {
   lerp,
   onPitch,
   opposite,
+  seedOf,
   toPitch,
   zoneAhead,
   zoneCentreX,
@@ -39,15 +40,6 @@ import { PACE_SPEED, crossingPoint, meetingPoint, paceSeconds, timeSteps } from 
 // ---------------------------------------------------------------------------
 // Casting helpers
 // ---------------------------------------------------------------------------
-
-/** A stable small number from a string, so stand-ins and flourishes never flicker. */
-function seedOf(text: string): number {
-  let hash = 2166136261;
-  for (let index = 0; index < text.length; index++) {
-    hash = Math.imul(hash ^ text.charCodeAt(index), 16777619);
-  }
-  return Math.abs(hash);
-}
 
 /** -1…1 from a seed: a small, repeatable variation. */
 function jitter(seed: string): number {

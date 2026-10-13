@@ -99,3 +99,40 @@ export function radarSnapshot(overrides: Partial<MatchSnapshot> = {}): MatchSnap
     ...overrides,
   };
 }
+
+export interface DrawCall {
+  method: string;
+  args: unknown[];
+}
+
+/**
+ * A stand-in 2D context that records every call made on it — jsdom has no
+ * canvas — so a test can ask what was drawn: `texts()` lists what was written.
+ */
+export function recordingContext() {
+  const calls: DrawCall[] = [];
+  const state: Record<string | symbol, unknown> = {
+    measureText: (text: string) => ({ width: text.length }),
+  };
+  const context = new Proxy(state, {
+    get(target, property) {
+      if (property in target) return target[property];
+      return (...args: unknown[]) => {
+        calls.push({ method: String(property), args });
+      };
+    },
+    set(target, property, value) {
+      target[property] = value;
+      return true;
+    },
+  });
+  return {
+    context: context as unknown as CanvasRenderingContext2D,
+    calls,
+    texts: () =>
+      calls.filter((call) => call.method === "fillText").map((call) => String(call.args[0])),
+    clear: () => {
+      calls.length = 0;
+    },
+  };
+}

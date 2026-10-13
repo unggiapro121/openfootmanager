@@ -1,18 +1,39 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { Profiler } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MatchRadar2D } from "./MatchRadar2D";
-import { radarEvent, radarSnapshot } from "./radarTestFixtures";
+import { radarEvent, radarSnapshot, recordingContext } from "./radarTestFixtures";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
 const kits = { home: "#c8102e", away: "#1d4ed8" };
+const BANNER = "MATCH.EVENTTYPES.GOAL";
+
+let canvas = recordingContext();
+
+/** What the last few frames wrote on the canvas, after `ms` more of play. */
+function textsAfter(ms: number): string[] {
+  act(() => vi.advanceTimersByTime(ms));
+  canvas.clear();
+  act(() => vi.advanceTimersByTime(50));
+  return canvas.texts();
+}
+
+const namesIn = (texts: string[]) => new Set(texts.filter((text) => text.startsWith("Player ")));
 
 describe("MatchRadar2D", () => {
-  beforeEach(() => vi.useFakeTimers());
-  afterEach(() => vi.useRealTimers());
+  beforeEach(() => {
+    vi.useFakeTimers();
+    canvas = recordingContext();
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(canvas.context as never);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
 
   // Given a live match, then the radar is a labelled region holding a labelled
   // picture of the pitch.
@@ -28,13 +49,14 @@ describe("MatchRadar2D", () => {
     render(<MatchRadar2D snapshot={radarSnapshot()} speed="normal" kits={kits} />);
     const toggle = screen.getByRole("button", { name: "match.radar.allNames" });
     expect(toggle).toHaveAttribute("aria-pressed", "false");
-    expect(screen.queryByText("Player h_gk")).not.toBeInTheDocument();
+    expect(namesIn(textsAfter(50)).size).toBe(0);
 
     fireEvent.click(toggle);
 
     expect(toggle).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByText("Player h_gk")).toBeInTheDocument();
-    expect(screen.getAllByText(/^Player /)).toHaveLength(22);
+    const names = namesIn(textsAfter(50));
+    expect(names.has("Player h_gk")).toBe(true);
+    expect(names.size).toBe(22);
   });
 
   // Given a player sent off, then he is not on the radar.
@@ -43,8 +65,9 @@ describe("MatchRadar2D", () => {
       <MatchRadar2D snapshot={radarSnapshot({ sent_off: ["h_cb2"] })} speed="normal" kits={kits} />,
     );
     fireEvent.click(screen.getByRole("button", { name: "match.radar.allNames" }));
-    expect(screen.queryByText("Player h_cb2")).not.toBeInTheDocument();
-    expect(screen.getAllByText(/^Player /)).toHaveLength(21);
+    const names = namesIn(textsAfter(50));
+    expect(names.has("Player h_cb2")).toBe(false);
+    expect(names.size).toBe(21);
   });
 
   // Given the radar, when the manager hides it, then the pitch goes and the
@@ -81,12 +104,13 @@ describe("MatchRadar2D", () => {
         kits={kits}
       />,
     );
-    act(() => vi.advanceTimersByTime(2500));
-    expect(screen.getByText("match.eventTypes.Goal")).toBeInTheDocument();
-    expect(screen.getByText("Player h_st1")).toBeInTheDocument();
-
-    act(() => vi.advanceTimersByTime(4000));
-    expect(screen.queryByText("match.eventTypes.Goal")).not.toBeInTheDocument();
+    let texts: string[] = [];
+    for (let elapsed = 0; elapsed < 3000 && !texts.includes(BANNER); elapsed += 100) {
+      texts = textsAfter(50);
+    }
+    expect(texts).toContain(BANNER);
+    expect(texts).toContain("Player h_st1");
+    expect(textsAfter(4000)).not.toContain(BANNER);
   });
 
   // Given a goal being celebrated, when the manager switches to the skip-ahead
@@ -101,15 +125,42 @@ describe("MatchRadar2D", () => {
       <MatchRadar2D snapshot={radarSnapshot()} speed="slow" kits={kits} />,
     );
     rerender(<MatchRadar2D snapshot={goal} speed="slow" kits={kits} />);
-    for (let elapsed = 0; elapsed < 3000; elapsed += 50) {
-      if (screen.queryByText("match.eventTypes.Goal")) break;
-      act(() => vi.advanceTimersByTime(50));
+    let texts: string[] = [];
+    for (let elapsed = 0; elapsed < 3000 && !texts.includes(BANNER); elapsed += 100) {
+      texts = textsAfter(50);
     }
-    expect(screen.getByText("match.eventTypes.Goal")).toBeInTheDocument();
+    expect(texts).toContain(BANNER);
 
     rerender(<MatchRadar2D snapshot={goal} speed="instant" kits={kits} />);
     act(() => vi.advanceTimersByTime(4000));
+    canvas.clear();
+    rerender(<MatchRadar2D snapshot={goal} speed="instant" kits={kits} />);
 
-    expect(screen.queryByText("match.eventTypes.Goal")).not.toBeInTheDocument();
+    expect(canvas.texts()).not.toContain(BANNER);
+  });
+
+  // Given a minute playing out, then the players move without React rendering
+  // the radar again: only a new snapshot or the manager's clicks render it (T4).
+  it("moves the players without re-rendering", () => {
+    let renders = 0;
+    const tree = (snapshot: ReturnType<typeof radarSnapshot>) => (
+      <Profiler id="radar" onRender={() => (renders += 1)}>
+        <MatchRadar2D snapshot={snapshot} speed="slow" kits={kits} />
+      </Profiler>
+    );
+    const { rerender } = render(tree(radarSnapshot()));
+    rerender(
+      tree(
+        radarSnapshot({
+          events: [radarEvent("Dribble", "Home", "AwayDefense", "h_st1")],
+          ball_zone: "AwayDefense",
+        }),
+      ),
+    );
+    const afterSnapshot = renders;
+    canvas.clear();
+    act(() => vi.advanceTimersByTime(3000));
+    expect(canvas.calls.filter((call) => call.method === "clearRect").length).toBeGreaterThan(60);
+    expect(renders).toBe(afterSnapshot);
   });
 });

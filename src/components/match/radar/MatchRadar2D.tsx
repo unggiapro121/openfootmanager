@@ -1,21 +1,17 @@
-import { type RefObject, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Radar, Tags } from "lucide-react";
 
 import { usePrefersReducedMotion } from "../../../hooks/usePrefersReducedMotion";
 import { useGameStore } from "../../../store/gameStore";
 import type { MatchSnapshot, SimSpeed } from "../types";
-import { RadarPitch } from "./RadarPitch";
-import type { RadarEase, RadarOverlay, RadarScene } from "./radarScene";
-import { scenePositions } from "./radarStage";
-import {
-  CENTRE_LANE,
-  HALFWAY,
-  type PitchPoint,
-  type RadarKits,
-  type Side,
-  kitNumberTone,
-} from "./radarGeometry";
+import { type DrawnPlayer, RADAR_VIEW, type RadarPicture, drawRadar } from "./radarDraw";
+import type { RadarKits, Side } from "./radarGeometry";
+import { FONT_CLASSES, PALETTE_CLASSES, readPalette } from "./radarPalette";
+import { advancePlayback } from "./radarPlayback";
+import type { RadarScene } from "./radarScene";
+import { type RadarSim, restingSim, stepSim } from "./radarSim";
+import type { RadarStage } from "./radarStage";
 import { radarPacing, useRadarDirector } from "./useRadarDirector";
 
 interface MatchRadar2DProps {
@@ -23,15 +19,6 @@ interface MatchRadar2DProps {
   speed: SimSpeed;
   kits: RadarKits;
 }
-
-const EASING: Record<RadarEase, string> = {
-  linear: "linear",
-  out: "cubic-bezier(0.2, 0.7, 0.3, 1)",
-  in: "cubic-bezier(0.6, 0, 0.9, 0.4)",
-  inOut: "ease-in-out",
-  // A touch on the ground: quick off the foot, then rolling to a stop.
-  push: "cubic-bezier(0.25, 0.8, 0.45, 1)",
-};
 
 const CELEBRATION_MS = 1800;
 const SHAKE: Keyframe[] = [
@@ -41,230 +28,120 @@ const SHAKE: Keyframe[] = [
   { transform: "translate(-3px, 1px)" },
   { transform: "translate(0, 0)" },
 ];
-
-/** Dot colours for a side whose kit colour is unknown or clashes: the theme's home and away. */
-const FALLBACK_FILL: Record<Side, string> = {
-  Home: "fill-primary-500 dark:fill-primary-400",
-  Away: "fill-indigo-500 dark:fill-indigo-400",
-};
+/** A frame later than this after the last (a hidden tab, a stall) is treated as this long. */
+const MAX_FRAME_GAP_MS = 250;
+/** How often the loop re-reads the theme's colours, so a theme switch shows within a moment. */
+const PALETTE_REFRESH_FRAMES = 30;
+/** The canvas's drawing size before it has been laid out, in pixels per metre. */
+const INITIAL_PIXELS_PER_METRE = 6;
 
 const TOGGLE_CLASS =
   "flex items-center gap-1 rounded px-2 py-1 text-[10px] font-heading uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800";
 
+/** Everything the frame loop draws from, kept current on every render without restarting it. */
+interface RadarCast {
+  snapshot: MatchSnapshot;
+  kits: RadarKits;
+  squadById: Map<string, { jersey_number?: number | null; match_name?: string | null }>;
+  showAllNames: boolean;
+  stage: RadarStage;
+  goalLabel: string;
+}
+
+/** The goal being celebrated: its serial, and when its celebration started (ms, the frame clock). */
+interface Celebration {
+  serial: number;
+  side: Side | null;
+  startedAt: number;
+}
+
+/** Sizes the canvas to its laid-out box and the screen's pixel density; returns pixels per metre. */
+function fitCanvas(canvas: HTMLCanvasElement): number {
+  const box = canvas.getBoundingClientRect();
+  const cssPerMetre =
+    box.width > 0 && box.height > 0
+      ? Math.min(box.width / RADAR_VIEW.width, box.height / RADAR_VIEW.height)
+      : INITIAL_PIXELS_PER_METRE;
+  const perMetre = cssPerMetre * (window.devicePixelRatio || 1);
+  const width = Math.round(RADAR_VIEW.width * perMetre);
+  const height = Math.round(RADAR_VIEW.height * perMetre);
+  if (canvas.width !== width) canvas.width = width;
+  if (canvas.height !== height) canvas.height = height;
+  return perMetre;
+}
+
 /**
- * How a player's move eases and how long it takes: a run with a pace of its own
- * (meeting a pass, jogging back into shape) keeps it; anyone else acting out the
- * step moves with it; the rest drift with the shape.
+ * Notes a new goal in `scene` as the start of its celebration at `now`, and
+ * returns how far through the celebration is (0…1), or null when none is on.
  */
-function playerTransition(scene: RadarScene, playerId: string): string {
-  const isMover = playerId in scene.movers;
-  const runMs = scene.runMs[playerId];
-  if (runMs !== undefined) {
-    return `transform ${runMs}ms ${isMover ? EASING[scene.moveEase] : "ease-in-out"}`;
+function noteGoal(
+  celebration: Celebration,
+  scene: RadarScene,
+  now: number,
+  onStart: () => void,
+): number | null {
+  const goal = scene.goal;
+  if (goal && goal.serial !== celebration.serial) {
+    celebration.serial = goal.serial;
+    celebration.side = goal.side;
+    celebration.startedAt = now;
+    onStart();
   }
-  return isMover
-    ? `transform ${scene.moveMs}ms ${EASING[scene.moveEase]}`
-    : `transform ${scene.shapeMs}ms ease-in-out`;
+  const progress = (now - celebration.startedAt) / CELEBRATION_MS;
+  return celebration.side && progress >= 0 && progress < 1 ? progress : null;
 }
 
-function translate(point: PitchPoint): string {
-  return `translate(${point.x}px, ${point.y}px)`;
-}
-
-/**
- * The goal just scored, for as long as it is celebrated: a banner over the
- * pitch, a flicker of the net and — unless the player prefers reduced motion —
- * a shake of the whole radar.
- */
-function useGoalCelebration(
-  goal: RadarScene["goal"],
-  reducedMotion: boolean,
-  shakeRef: RefObject<HTMLDivElement | null>,
-): RadarScene["goal"] {
-  const [celebrating, setCelebrating] = useState<RadarScene["goal"]>(null);
-  // Keyed on the serial, not the object: the same goal can reach here as two
-  // objects (played step by step, or jumped to), and a re-run for the second
-  // would clear the first one's timer and leave the banner up.
-  const serial = goal?.serial ?? 0;
-  const seenSerial = useRef(serial);
-  const goalRef = useRef(goal);
-  goalRef.current = goal;
-  const reducedMotionRef = useRef(reducedMotion);
-  reducedMotionRef.current = reducedMotion;
-
-  useEffect(() => {
-    const latest = goalRef.current;
-    if (!latest || serial === seenSerial.current) return;
-    seenSerial.current = serial;
-    setCelebrating(latest);
-    const radar = shakeRef.current;
-    if (!reducedMotionRef.current && typeof radar?.animate === "function") {
-      radar.animate(SHAKE, { duration: 480, easing: "ease-in-out" });
+function pictureOf(
+  sim: RadarSim,
+  scene: RadarScene,
+  cast: RadarCast,
+  celebration: Celebration,
+  progress: number | null,
+  pulse: number | null,
+): RadarPicture {
+  const { snapshot, kits, squadById, showAllNames } = cast;
+  const players: DrawnPlayer[] = [];
+  const sides = [
+    { side: "Home" as const, team: snapshot.home_team, kit: kits.home },
+    { side: "Away" as const, team: snapshot.away_team, kit: kits.away },
+  ];
+  for (const { side, team, kit } of sides) {
+    for (const player of team.players) {
+      const at = sim.players[player.id]?.at;
+      if (!at) continue;
+      // Match names and shirt numbers live on the full player, not the match snapshot.
+      const full = squadById.get(player.id);
+      const isHighlighted = scene.highlight.includes(player.id);
+      players.push({
+        id: player.id,
+        side,
+        at,
+        kit,
+        number: full?.jersey_number ?? null,
+        name: full?.match_name || player.name,
+        showName: showAllNames || isHighlighted,
+        isHighlighted,
+        isKeeper: player.position === "Goalkeeper",
+      });
     }
-    const timer = setTimeout(() => setCelebrating(null), CELEBRATION_MS);
-    return () => clearTimeout(timer);
-  }, [serial, shakeRef]);
-
-  return celebrating;
-}
-
-function RadarBall({ scene }: { scene: RadarScene }) {
-  // In the air the shadow travels steadily while the ball rises and falls on
-  // its own curve; on the ground both share the step's easing.
-  const isAerial = scene.ballEase === "out" || scene.ballEase === "in";
-  const groundEase = isAerial ? EASING.linear : EASING[scene.ballEase];
-  return (
-    <g
-      style={{
-        transform: translate(scene.ball),
-        transition: `transform ${scene.ballMs}ms ${groundEase}`,
-      }}
-    >
-      <ellipse rx={0.95} ry={0.5} className="fill-navy-900/35 dark:fill-navy-900/50" />
-      <g
-        style={{
-          transform: `translate(0px, ${-scene.lift}px) scale(${1 + scene.lift / 14})`,
-          transition: `transform ${scene.ballMs}ms ${EASING[scene.ballEase]}`,
-        }}
-      >
-        <circle
-          r={0.85}
-          strokeWidth={0.18}
-          className="fill-white stroke-navy-900 dark:fill-gray-100 dark:stroke-navy-900"
-        />
-      </g>
-    </g>
-  );
-}
-
-function OverlayMarks({ overlay }: { overlay: RadarOverlay | null }) {
-  if (overlay?.kind === "cut") {
-    const { from, at } = overlay;
-    return (
-      <g strokeWidth={0.35} strokeLinecap="round" className="stroke-red-500 dark:stroke-red-400">
-        <line x1={from.x} y1={from.y} x2={at.x} y2={at.y} strokeDasharray="1 0.8" />
-        <line x1={at.x - 1} y1={at.y - 1} x2={at.x + 1} y2={at.y + 1} />
-        <line x1={at.x - 1} y1={at.y + 1} x2={at.x + 1} y2={at.y - 1} />
-      </g>
-    );
   }
-  if (overlay?.kind === "whistle") {
-    return (
-      <circle
-        cx={overlay.at.x}
-        cy={overlay.at.y}
-        r={2.6}
-        strokeWidth={0.3}
-        className="fill-none stroke-white/90 dark:stroke-white/80 transform-fill origin-center motion-safe:animate-ping"
-      />
-    );
-  }
-  return null;
+  return {
+    ball: sim.ball,
+    lift: sim.lift,
+    trail: scene.trail,
+    overlay: scene.overlay,
+    players,
+    celebration:
+      celebration.side && progress !== null ? { side: celebration.side, progress } : null,
+    pulse,
+    goalLabel: cast.goalLabel,
+  };
 }
 
-function PlayerMarks({ overlay, playerId }: { overlay: RadarOverlay | null; playerId: string }) {
-  if (overlay?.kind === "card" && overlay.playerId === playerId) {
-    const fill =
-      overlay.colour === "yellow"
-        ? "fill-accent-400 stroke-accent-700 dark:fill-accent-400 dark:stroke-accent-700"
-        : "fill-red-600 stroke-red-900 dark:fill-red-500 dark:stroke-red-900";
-    return (
-      <rect
-        x={1.2}
-        y={-4.4}
-        width={1.4}
-        height={1.9}
-        rx={0.15}
-        strokeWidth={0.12}
-        transform="rotate(12)"
-        className={fill}
-      />
-    );
+function shake(element: HTMLElement | null): void {
+  if (typeof element?.animate === "function") {
+    element.animate(SHAKE, { duration: 480, easing: "ease-in-out" });
   }
-  if (overlay?.kind === "injury" && overlay.playerId === playerId) {
-    return (
-      <g transform="translate(1.7 -1.7)">
-        <circle r={0.9} className="fill-red-600 dark:fill-red-500" />
-        <path
-          d="M -0.5 0 H 0.5 M 0 -0.5 V 0.5"
-          strokeWidth={0.28}
-          className="stroke-white dark:stroke-white"
-        />
-      </g>
-    );
-  }
-  return null;
-}
-
-interface RadarPlayerProps {
-  id: string;
-  side: Side;
-  at: PitchPoint;
-  kit: string | null;
-  number: number | null;
-  name: string;
-  showName: boolean;
-  isHighlighted: boolean;
-  isKeeper: boolean;
-  /** The CSS transition for his moves: brisk when he is in the action, a glide when not. */
-  transition: string;
-  overlay: RadarOverlay | null;
-  swayIndex: number;
-}
-
-function RadarPlayer(props: RadarPlayerProps) {
-  const { id, side, at, kit, number, name, showName, isHighlighted, isKeeper } = props;
-  const numberFill =
-    kitNumberTone(kit) === "dark"
-      ? "fill-navy-900 dark:fill-navy-900"
-      : "fill-white dark:fill-white";
-  const ring = isHighlighted
-    ? "stroke-accent-400 dark:stroke-accent-300"
-    : "stroke-white/85 dark:stroke-white/70";
-  return (
-    <g
-      style={{
-        transform: translate(at),
-        transition: props.transition,
-      }}
-    >
-      <g
-        className="motion-safe:animate-radar-sway"
-        style={{ animationDelay: `-${(props.swayIndex * 0.37) % 3.6}s` }}
-      >
-        <circle
-          r={1.7}
-          strokeWidth={isHighlighted ? 0.45 : 0.22}
-          strokeDasharray={isKeeper ? "0.9 0.45" : undefined}
-          style={kit ? { fill: kit } : undefined}
-          className={`${kit ? "" : FALLBACK_FILL[side]} ${ring}`}
-        />
-        {number != null && (
-          <text
-            fontSize={1.45}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className={`font-heading font-bold ${numberFill}`}
-          >
-            {number}
-          </text>
-        )}
-      </g>
-      {showName && (
-        <text
-          y={3.5}
-          fontSize={1.6}
-          textAnchor="middle"
-          paintOrder="stroke"
-          strokeWidth={0.45}
-          className="font-sans font-semibold fill-white stroke-navy-900/80 dark:fill-white dark:stroke-navy-900/90"
-        >
-          {name}
-        </text>
-      )}
-      <PlayerMarks overlay={props.overlay} playerId={id} />
-    </g>
-  );
 }
 
 interface RadarFieldProps extends MatchRadar2DProps {
@@ -275,91 +152,110 @@ interface RadarFieldProps extends MatchRadar2DProps {
 function RadarField({ snapshot, speed, kits, showAllNames, reducedMotion }: RadarFieldProps) {
   const { t } = useTranslation();
   const pacing = useMemo(() => radarPacing(speed), [speed]);
-  const { scene, stage } = useRadarDirector(snapshot, pacing, reducedMotion);
+  const isAnimated = pacing !== null && !reducedMotion;
+  const { stage, playback } = useRadarDirector(snapshot, pacing, reducedMotion);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const swatchesRef = useRef<HTMLDivElement>(null);
   const shakeRef = useRef<HTMLDivElement>(null);
-  const celebration = useGoalCelebration(scene.goal, reducedMotion, shakeRef);
-  // Match names and shirt numbers live on the full player, not the match snapshot.
   const squad = useGameStore((state) => state.gameState?.players);
   const squadById = useMemo(() => new Map((squad ?? []).map((p) => [p.id, p])), [squad]);
-  const positions = scenePositions(stage, scene);
-  const sides: { side: Side; team: MatchSnapshot["home_team"]; kit: string | null }[] = [
-    { side: "Home", team: snapshot.home_team, kit: kits.home },
-    { side: "Away", team: snapshot.away_team, kit: kits.away },
-  ];
+  const castRef = useRef<RadarCast | null>(null);
+  castRef.current = {
+    snapshot,
+    kits,
+    squadById,
+    showAllNames,
+    stage,
+    goalLabel: t("match.eventTypes.Goal"),
+  };
+  const simRef = useRef<RadarSim | null>(null);
+  const celebrationRef = useRef<Celebration>({
+    serial: playback.current.scene.goal?.serial ?? 0,
+    side: null,
+    startedAt: Number.NEGATIVE_INFINITY,
+  });
+
+  // Moving: a frame loop advances the script, simulates the pitch and draws it.
+  // Nothing in it sets React state, so play moving on never re-renders.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!isAnimated || !canvas || !context) return;
+    let palette = readPalette(swatchesRef.current);
+    let frames = 0;
+    let last: number | null = null;
+    let handle = 0;
+    const tick = (now: number) => {
+      const cast = castRef.current;
+      if (!cast) return;
+      const dt = last === null ? 0 : Math.min(now - last, MAX_FRAME_GAP_MS);
+      last = now;
+      playback.current = advancePlayback(playback.current, dt);
+      const scene = playback.current.scene;
+      const sim = stepSim(
+        simRef.current ?? restingSim(cast.stage, scene),
+        cast.stage,
+        playback.current,
+        dt,
+      );
+      simRef.current = sim;
+      const progress = noteGoal(celebrationRef.current, scene, now, () => shake(shakeRef.current));
+      frames += 1;
+      if (frames % PALETTE_REFRESH_FRAMES === 0) palette = readPalette(swatchesRef.current);
+      const pulse = (now / 1000) % 1;
+      const picture = pictureOf(sim, scene, cast, celebrationRef.current, progress, pulse);
+      drawRadar(context, picture, palette, fitCanvas(canvas));
+      handle = requestAnimationFrame(tick);
+    };
+    handle = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(handle);
+  }, [isAnimated, playback]);
+
+  // Still (reduced motion, the skip-ahead speed): draw where play rests, after
+  // every render. A goal's banner shows without moving, then a redraw clears it.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    const cast = castRef.current;
+    if (isAnimated || !canvas || !context || !cast) return;
+    const scene = playback.current.scene;
+    const sim = restingSim(cast.stage, scene);
+    simRef.current = sim;
+    const draw = () => {
+      const progress = noteGoal(celebrationRef.current, scene, performance.now(), () => {});
+      const still = progress === null ? null : 0.5;
+      const picture = pictureOf(sim, scene, cast, celebrationRef.current, still, null);
+      drawRadar(context, picture, readPalette(swatchesRef.current), fitCanvas(canvas));
+      return progress;
+    };
+    const progress = draw();
+    if (progress === null) return;
+    const timer = setTimeout(draw, (1 - progress) * CELEBRATION_MS);
+    return () => clearTimeout(timer);
+  });
 
   return (
     <div ref={shakeRef} className="px-3 pb-3">
-      <svg
-        viewBox="-4 -2.5 113 73"
+      <canvas
+        ref={canvasRef}
+        width={RADAR_VIEW.width * INITIAL_PIXELS_PER_METRE}
+        height={RADAR_VIEW.height * INITIAL_PIXELS_PER_METRE}
         role="img"
         aria-label={t("match.radar.pitchLabel", {
           home: snapshot.home_team.name,
           away: snapshot.away_team.name,
         })}
-        className="mx-auto block h-auto max-h-80 w-full"
-      >
-        <RadarPitch
-          rippleEnd={celebration ? (celebration.side === "Home" ? "right" : "left") : null}
-        />
-        {scene.trail.length > 1 && (
-          <polyline
-            points={scene.trail.map((point) => `${point.x},${point.y}`).join(" ")}
-            fill="none"
-            strokeWidth={0.3}
-            strokeLinecap="round"
-            strokeDasharray="0.6 0.9"
-            className="stroke-white/40 dark:stroke-white/30"
-          />
-        )}
-        <OverlayMarks overlay={scene.overlay} />
-        {sides.flatMap(({ side, team, kit }) =>
-          team.players.map((player, index) => {
-            const at = positions.get(player.id);
-            if (!at) return null;
-            const full = squadById.get(player.id);
-            return (
-              <RadarPlayer
-                key={player.id}
-                id={player.id}
-                side={side}
-                at={at}
-                kit={kit}
-                number={full?.jersey_number ?? null}
-                name={full?.match_name || player.name}
-                showName={showAllNames || scene.highlight.includes(player.id)}
-                isHighlighted={scene.highlight.includes(player.id)}
-                isKeeper={player.position === "Goalkeeper"}
-                transition={playerTransition(scene, player.id)}
-                overlay={scene.overlay}
-                swayIndex={index + (side === "Away" ? 11 : 0)}
-              />
-            );
-          }),
-        )}
-        <RadarBall scene={scene} />
-        {celebration && (
-          <g key={celebration.serial} className="motion-safe:animate-radar-goal">
-            <rect
-              x={HALFWAY - 15}
-              y={CENTRE_LANE - 28}
-              width={30}
-              height={9}
-              rx={2}
-              className="fill-navy-900/75 dark:fill-navy-900/85"
-            />
-            <text
-              x={HALFWAY}
-              y={CENTRE_LANE - 23.5}
-              fontSize={5.5}
-              textAnchor="middle"
-              dominantBaseline="central"
-              className="font-heading font-bold uppercase tracking-wider fill-accent-400 dark:fill-accent-400"
-            >
-              {t("match.eventTypes.Goal")}
-            </text>
-          </g>
-        )}
-      </svg>
+        className="mx-auto block h-auto max-h-80 w-full object-contain"
+      />
+      {/* The radar's colours and fonts as theme tokens, read by the canvas (see radarPalette). */}
+      <div ref={swatchesRef} aria-hidden="true" className="hidden">
+        {Object.entries(PALETTE_CLASSES).map(([key, classes]) => (
+          <span key={key} data-radar-colour={key} className={classes} />
+        ))}
+        {Object.entries(FONT_CLASSES).map(([key, classes]) => (
+          <span key={key} data-radar-font={key} className={classes} />
+        ))}
+      </div>
     </div>
   );
 }

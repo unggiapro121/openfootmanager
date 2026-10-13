@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 
 import { type MatchEvent, type MatchSnapshot, SPEED_MS, type SimSpeed } from "../types";
 import { type RadarSettle, choreographBatch } from "./radarChoreography";
-import { type RadarScene, applyStep, initialRadarScene } from "./radarScene";
+import { type Playback, enqueueBeats, jumpTo, restingPlayback } from "./radarPlayback";
+import { type RadarScene, initialRadarScene } from "./radarScene";
 import { type RadarStage, buildRadarStage, lineupsKey } from "./radarStage";
-import { type QueuedBeat, queueBeat, queuedRuns, trimBacklog } from "./radarTiming";
+import { queueBeat } from "./radarTiming";
 
 /** How the radar keeps time with the match at one simulation speed. */
 export interface RadarPacing {
@@ -72,26 +73,24 @@ function useStage(snapshot: MatchSnapshot): RadarStage {
 
 /**
  * Acts out the live match on the radar. Each new snapshot's new events are
- * staged and queued behind whatever is still playing, and every beat plays at
- * its real pace from start to finish. When the queue would leave the radar too
- * far behind the match, the oldest routine beats are skipped. Events from
- * before the radar opened are not replayed.
+ * staged and queued in the playback behind whatever is still playing; when the
+ * queue would leave the radar too far behind the match, the oldest routine
+ * beats are skipped. Without animation, the playback jumps straight to the end
+ * of the minute. Events from before the radar opened are not replayed.
+ *
+ * The playback lives in a ref and the frame loop plays it: nothing here makes
+ * React render as play moves on.
  */
 export function useRadarDirector(
   snapshot: MatchSnapshot,
   pacing: RadarPacing | null,
   reducedMotion: boolean,
-): { scene: RadarScene; stage: RadarStage } {
+): { stage: RadarStage; playback: RefObject<Playback> } {
   const stage = useStage(snapshot);
-  const [scene, setScene] = useState(() => initialRadarScene(snapshot));
+  const playback = useRef<Playback>(restingPlayback(initialRadarScene(snapshot)));
   const seenRef = useRef(snapshot.events.length);
-  /** What is on screen, step by step. */
-  const shownRef = useRef<RadarScene>(scene);
   /** Where everything queued ends, so the next batch is staged from there. */
-  const endRef = useRef<RadarScene>(scene);
-  const queueRef = useRef<QueuedBeat[]>([]);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isPlayingRef = useRef(false);
+  const endRef = useRef<RadarScene>(playback.current.scene);
 
   /**
    * A completed pass that ended the last minute. The engine names its receiver
@@ -102,30 +101,6 @@ export function useRadarDirector(
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const show = (next: RadarScene) => {
-      shownRef.current = next;
-      setScene(next);
-    };
-
-    const playNext = () => {
-      const entry = queueRef.current.shift();
-      if (!entry) {
-        isPlayingRef.current = false;
-        return;
-      }
-      isPlayingRef.current = true;
-      const playStep = (index: number) => {
-        if (index >= entry.beat.steps.length) {
-          playNext();
-          return;
-        }
-        const ms = entry.stepMs[index];
-        show(applyStep(shownRef.current, entry.beat.steps[index], ms, queuedRuns(entry, index)));
-        timerRef.current = setTimeout(() => playStep(index + 1), ms);
-      };
-      playStep(0);
-    };
-
     const settle: RadarSettle = {
       ballZone: snapshot.ball_zone,
       possession: snapshot.possession,
@@ -136,19 +111,16 @@ export function useRadarDirector(
       const { beats, end } = choreographBatch(events, stage, endRef.current, settleTo);
       endRef.current = end;
       if (!isAnimated) {
-        // No animation: show where everything queued and new ends, at once.
-        if (timerRef.current) clearTimeout(timerRef.current);
-        isPlayingRef.current = false;
-        queueRef.current = [];
-        show(end);
+        // No animation: rest at once where everything queued and new ends.
+        playback.current = jumpTo(end);
         return;
       }
       if (beats.length === 0) return;
-      queueRef.current = trimBacklog(
-        [...queueRef.current, ...beats.map((beat) => queueBeat(beat, pacing.timeScale))],
+      playback.current = enqueueBeats(
+        playback.current,
+        beats.map((beat) => queueBeat(beat, pacing.timeScale)),
         pacing.maxLagMs,
       );
-      if (!isPlayingRef.current) playNext();
     };
 
     const events = snapshot.events;
@@ -178,11 +150,10 @@ export function useRadarDirector(
 
   useEffect(
     () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
       if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
     },
     [],
   );
 
-  return { scene, stage };
+  return { stage, playback };
 }

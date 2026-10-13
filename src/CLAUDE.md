@@ -58,6 +58,10 @@ Rules:
 - **Every colour class needs its `dark:` partner.** Both themes ship; neither is an afterthought.
 - Headings use `font-heading` with `uppercase tracking-wider`, matching `Button.tsx`.
 - The font stacks include CJK fallbacks for `zh-CN`. Don't strip them when editing `@theme`.
+- **A `<canvas>` takes its colours from token classes too.** It cannot carry a class, so render one
+  hidden swatch per colour with the token class and its `dark:` partner, and read the resolved colour
+  with `getComputedStyle` (re-read now and then, so a theme switch shows). No hex, no CSS-variable
+  names in TypeScript. The match radar is the worked example: `components/match/radar/radarPalette.ts`.
 
 ---
 

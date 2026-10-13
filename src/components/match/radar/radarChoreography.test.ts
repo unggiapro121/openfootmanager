@@ -26,7 +26,7 @@ const start = initialRadarScene(snapshot);
 
 function play(beats: RadarBeat[], from: RadarScene = start): RadarScene {
   return beats.reduce(
-    (scene, beat) => beat.steps.reduce((inner, step) => applyStep(inner, step, 0), scene),
+    (scene, beat) => beat.steps.reduce((inner, step) => applyStep(inner, step), scene),
     from,
   );
 }
@@ -162,7 +162,7 @@ describe("choreographBatch — the match around the ball", () => {
   it("brings the ball along when a skipped beat left it elsewhere", () => {
     const elsewhere: RadarScene = { ...start, ball: { x: 20, y: 10 } };
     const firstStep = (event: ReturnType<typeof radarEvent>) =>
-      applyStep(elsewhere, choreographBatch([event], stage, start).beats[0].steps[0], 0);
+      applyStep(elsewhere, choreographBatch([event], stage, start).beats[0].steps[0]);
     for (const [eventType, playerId] of [
       ["Tackle", "a_cm1"],
       ["Interception", "a_cm1"],
@@ -260,7 +260,7 @@ describe("choreographBatch — dribbling", () => {
 
   /** The scene just before step `index` of the beat. */
   const before = (index: number) =>
-    beat.steps.slice(0, index).reduce((scene, step) => applyStep(scene, step, 0), start);
+    beat.steps.slice(0, index).reduce((scene, step) => applyStep(scene, step), start);
 
   // Given a dribble, then it is acted out touch by touch, not as one slide.
   it("takes the ball forward in several touches", () => {
@@ -398,7 +398,7 @@ function flights(beat: RadarBeat, from: RadarScene = start) {
     if (step.ball && step.pace !== "carry" && step.pace !== "place") {
       legs.push({ metres: distance(scene.ball, step.ball.at), ms: beat.stepMs[index] });
     }
-    scene = applyStep(scene, step, 0);
+    scene = applyStep(scene, step);
   }
   return legs;
 }
@@ -416,7 +416,7 @@ describe("choreographBatch — the shapes follow the ball", () => {
     let scene = start;
     for (const beat of choreographBatch(events, stage, start).beats) {
       for (const step of beat.steps) {
-        scene = applyStep(scene, step, 0);
+        scene = applyStep(scene, step);
         if (step.ball && step.focusX === undefined) expect(scene.focusX).toBe(scene.ball.x);
       }
     }
@@ -431,7 +431,7 @@ describe("choreographBatch — the shapes follow the ball", () => {
       start,
     ).beats;
     const scenes = [start];
-    for (const step of beat.steps) scenes.push(applyStep(scenes[scenes.length - 1], step, 0));
+    for (const step of beat.steps) scenes.push(applyStep(scenes[scenes.length - 1], step));
     const firstTouch = scenes[2];
     const lastTouch = scenes[scenes.length - 1];
     expect(standingIn(lastTouch, "h_cb1").x).toBeGreaterThan(standingIn(firstTouch, "h_cb1").x);
