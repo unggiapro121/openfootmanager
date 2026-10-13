@@ -132,6 +132,27 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
     }
   }, [pendingStartingXiIds, savedStartingXiKey]);
 
+  // The saved XI can still name a player who cannot play (injured since, or no
+  // longer in the squad) while the screen shows a fit player filling his slot.
+  // The check before advancing reads the saved XI, so it kept naming a player the
+  // manager could see on the bench. Save what is shown, once per lineup.
+  const savedXiHasUnavailablePlayer =
+    roster.length > 0 &&
+    (team?.starting_xi_ids || []).some((id) => {
+      const player = playersById.get(id);
+      return !player || player.injury != null;
+    });
+  const autoSavedXiKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (pendingStartingXiIds || !savedXiHasUnavailablePlayer || startingXiIds.length !== 11) {
+      return;
+    }
+    const shownXiKey = startingXiIds.join(",");
+    if (shownXiKey === savedStartingXiKey || autoSavedXiKeyRef.current === shownXiKey) return;
+    autoSavedXiKeyRef.current = shownXiKey;
+    void persistStartingXI(startingXiIds);
+  }, [pendingStartingXiIds, savedXiHasUnavailablePlayer, savedStartingXiKey, startingXiIds]);
+
   const pitchSlotRows = useMemo<PitchSlotRow[]>(
     () => buildPitchSlotRows(pitchRows, startingXiIds, playersById),
     [pitchRows, playersById, startingXiIds],
