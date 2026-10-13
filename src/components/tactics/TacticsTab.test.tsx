@@ -467,6 +467,56 @@ describe("TacticsTab", () => {
     expect(screen.getByText("6d")).toBeInTheDocument();
   });
 
+  /**
+   * Given a saved starting XI with a striker who has since been injured, when
+   * the tactics screen fills his slot from the bench, then that lineup is saved,
+   * so the XI the game checks before advancing is the one on screen.
+   */
+  it("saves the lineup it shows when an injured starter's slot is filled", async () => {
+    const gameState = makeGameState();
+    const injuredStarter = gameState.players.find((player) => player.id === "f2");
+    if (injuredStarter) injuredStarter.injury = { name: "Calf strain", days_remaining: 6 };
+    mockedInvoke.mockImplementation(async (command: string) => {
+      if (command === "get_squad") return gameState.players.filter((p) => p.team_id === "team1");
+      return gameState;
+    });
+
+    render(<TacticsTab gameState={gameState} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />);
+
+    await waitFor(() => {
+      const saved = mockedInvoke.mock.calls.find(([command]) => command === "set_starting_xi");
+      expect(saved).toBeDefined();
+      const { playerIds } = (saved?.[1] ?? { playerIds: [] }) as { playerIds: string[] };
+      expect(playerIds).toHaveLength(11);
+      expect(playerIds).not.toContain("f2");
+      expect(playerIds.slice(0, 10)).toEqual([
+        "gk1",
+        "d1",
+        "d2",
+        "d3",
+        "d4",
+        "m1",
+        "m2",
+        "m3",
+        "m4",
+        "f1",
+      ]);
+    });
+  });
+
+  /**
+   * Given a saved starting XI with everyone fit, when the tactics screen opens,
+   * then nothing is saved: viewing the lineup does not change it.
+   */
+  it("does not save anything just for showing a healthy lineup", async () => {
+    render(
+      <TacticsTab gameState={makeGameState()} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />,
+    );
+
+    await screen.findAllByText(/./);
+    expect(mockedInvoke).not.toHaveBeenCalledWith("set_starting_xi", expect.anything());
+  });
+
   it("keeps youth academy players out of first-team tactics selection", async () => {
     const gameState = makeGameState();
     gameState.players.push(
