@@ -102,17 +102,22 @@ export function settleStepsFor(
   if (isTurnover) return turnoverSteps(stage, scene, settle.possession, at);
   // The side keeps it: the man on it, or the nearest, takes it there himself.
   const side = settle.possession;
-  const carrier = ballCarrier(stage, scene, side) ?? nearestTo(stage, scene, side, scene.ball);
+  const onIt = ballCarrier(stage, scene, side);
+  const carrier = onIt ?? nearestTo(stage, scene, side, scene.ball);
   if (!carrier) return null;
   const start = fromPitch(side, scene.movers[carrier] ?? scene.ball);
   const target = fromPitch(side, at);
+  const take: RadarStep = {
+    ball: { at: scene.ball },
+    movers: only(carrier, scene.movers[carrier] ?? scene.ball),
+    waitFor: [carrier],
+    action: { kind: "take", by: carrier },
+  };
+  // A zone is a wide band: with the ball beyond it, he keeps it where it is
+  // rather than carry it back towards his own goal.
+  if (target.depth < fromPitch(side, scene.ball).depth) return onIt ? null : [take];
   return [
-    {
-      ball: { at: scene.ball },
-      movers: only(carrier, scene.movers[carrier] ?? scene.ball),
-      waitFor: [carrier],
-      action: { kind: "take", by: carrier },
-    },
+    take,
     ...carryTouches(side, carrier, start, { depth: target.depth - TOUCH_AHEAD, lane: target.lane }),
   ];
 }

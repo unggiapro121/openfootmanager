@@ -465,8 +465,12 @@ function isDone(action: BallAction, run: RadarRun): boolean {
       );
     case "dead":
       return ball.kind !== "dead";
-    case "carry":
-      return true;
+    case "carry": {
+      // The carrier is on his touch: the next one is never played before he gets there.
+      const mark = run.marks[action.by];
+      const at = run.sim.players[action.by]?.at;
+      return !mark || !at || distance(at, mark.at) <= REACH;
+    }
   }
 }
 
@@ -538,6 +542,12 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
   }
 
   const marks = { ...next.marks, ...ballMarks(next, action, stage, time) };
+  // A man on the ball whom the script is not moving shields it where he stands:
+  // his place in the shape never drags him off with it.
+  const holderAt = next.ball.kind === "held" ? next.sim.players[next.ball.holder]?.at : undefined;
+  if (next.ball.kind === "held" && holderAt && !(next.ball.holder in marks)) {
+    marks[next.ball.holder] = { at: holderAt, deadline: time };
+  }
   const sim = stepPlayers(next.sim, stage, playback.scene, next.ball.at, marks, dt, idle);
   let ball = moveBall(next.ball, sim, time, dt);
   const takers = [taker, ball.kind === "loose" ? ball.chaser : null].filter(
@@ -547,9 +557,14 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
   next = { ...next, sim, ball };
 
   if (!step) return next;
+  const isDoneOrGivenUp = !!action && (isDone(action, next) || time - next.since > MAX_ACTION_S);
+  // A carry plays at its own pace, but holds at its end for a carrier left behind.
+  const waitsForCarrier = action?.kind === "carry" && !isDoneOrGivenUp;
   const waitsOnBall = action && action.kind !== "carry";
-  if (!waitsOnBall) return { ...next, playback: advancePlayback(next.playback, dt * 1000) };
-  if (isDone(action, next) || time - next.since > MAX_ACTION_S) {
+  if (!waitsOnBall && !waitsForCarrier) {
+    return { ...next, playback: advancePlayback(next.playback, dt * 1000) };
+  }
+  if (waitsOnBall && isDoneOrGivenUp) {
     return { ...next, playback: advancePlayback(next.playback, step.ms - step.elapsed) };
   }
   // Waiting on the ball: the script holds just short of the step's end.

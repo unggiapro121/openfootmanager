@@ -219,28 +219,49 @@ describe("choreographBatch — the match around the ball", () => {
     expect(scene.movers.h_cm1).toEqual(scene.ball);
   });
 
-  // Given a dribble the engine ends in the box, then the dribbler carries the
-  // ball in himself: it never rolls on without him.
-  it("carries the ball on with the dribbler when the engine moves it on", () => {
-    const events = [radarEvent("Dribble", "Home", "AwayDefense", "h_rm")];
+  // Given a pass in midfield that the engine follows up in the attacking third,
+  // then the man on the ball carries it on himself: it never rolls on without him.
+  it("carries the ball on with the man on it when the engine moves it on", () => {
+    const events = [radarEvent("PassCompleted", "Home", "Midfield", "h_cm1")];
     const { beats } = choreographBatch(events, stage, start, {
       ballZone: "AwayBox",
       possession: "Home",
     });
     const settle = beats[beats.length - 1];
     expect(settle.eventType).toBe("Settle");
+    const [take, ...touches] = settle.steps;
+    const carrier = take.action?.kind === "take" ? take.action.by : "";
     const scene = play(beats);
     expect(scene.ball.x).toBeGreaterThanOrEqual(zoneSpan("AwayBox")[0]);
-    expect(distance(scene.ball, scene.movers.h_rm)).toBeLessThan(2);
+    expect(distance(scene.ball, scene.movers[carrier])).toBeLessThan(2);
     // He has it already; then touch by touch, never a long roll with him chasing after it.
-    const [take, ...touches] = settle.steps;
-    expect(take.action).toEqual({ kind: "take", by: "h_rm" });
+    expect(carrier.startsWith("h_")).toBe(true);
     for (const step of touches) {
       expect(step.pace).toBe("carry");
-      const feet = step.movers?.h_rm;
+      const feet = step.movers?.[carrier];
       expect(distance(step.ball?.at ?? scene.ball, feet ?? { x: 0, y: 0 })).toBeLessThan(2);
     }
     expect(touches.length).toBeGreaterThan(1);
+  });
+
+  // Given the side keeping the ball beyond the zone the engine names, then the
+  // radar leaves it there: no one carries it back towards his own goal.
+  it("never carries the ball back towards the side's own goal", () => {
+    const events = [radarEvent("Dribble", "Home", "AwayDefense", "h_st2")];
+    const { beats } = choreographBatch(events, stage, start, {
+      ballZone: "AwayDefense",
+      possession: "Home",
+    });
+    const afterDribble = play(beats.slice(0, 1));
+    expect(afterDribble.ball.x).toBeGreaterThan(zoneSpan("AwayDefense")[1]);
+    let scene = afterDribble;
+    for (const beat of beats.slice(1)) {
+      for (const step of beat.steps) {
+        const next = applyStep(scene, step);
+        expect(next.ball.x).toBeGreaterThanOrEqual(scene.ball.x - 1e-6);
+        scene = next;
+      }
+    }
   });
 
   // After a goal, the engine restarts from the centre spot, and so does the radar.
@@ -346,6 +367,78 @@ describe("choreographBatch — dribbling", () => {
       depthOf(lastTouch.step.movers?.h_rm),
     );
   });
+
+  // Given a dribble that comes off, then the engine has the ball in the box
+  // after it, so the run ends there — inside the box, well short of the keeper.
+  it("ends the run in the box, short of the keeper", () => {
+    const feet = touches[touches.length - 1].step.movers?.h_rm ?? start.ball;
+    expect(feet.x).toBeGreaterThanOrEqual(zoneSpan("AwayBox")[0]);
+    expect(feet.x).toBeLessThanOrEqual(93);
+    const keeper = standingIn(play([beat]), "a_gk");
+    expect(keeper.x - feet.x).toBeGreaterThan(5);
+  });
+
+  // Given a dribble that starts deep in the box, then the dribbler neither runs
+  // on past the keeper nor back towards halfway: he beats his man across.
+  it("holds its depth when it starts deep in the box", () => {
+    const deep: RadarScene = {
+      ...start,
+      ball: { x: 96, y: 40 },
+      movers: { h_st2: { x: 96, y: 40 } },
+      possession: "Home",
+    };
+    const events = [radarEvent("Dribble", "Home", "AwayDefense", "h_st2")];
+    const [deepBeat] = choreographBatch(events, stage, deep).beats;
+    for (const step of deepBeat.steps.filter((each) => each.pace === "carry")) {
+      expect(step.movers?.h_st2?.x).toBeCloseTo(96, 6);
+    }
+  });
+});
+
+describe("choreographBatch — shooting from the box", () => {
+  /** Where the ball lies each time a step strikes a shot. */
+  function shotOrigins(events: ReturnType<typeof radarEvent>[], from: RadarScene) {
+    const origins: { x: number; y: number }[] = [];
+    let scene = from;
+    for (const beat of choreographBatch(events, stage, from).beats) {
+      for (const step of beat.steps) {
+        if (step.action?.kind === "kick" && step.action.pace === "shot") origins.push(scene.ball);
+        scene = applyStep(scene, step);
+      }
+    }
+    return origins;
+  }
+  const inTheBox = (point: { x: number; y: number }) =>
+    point.x >= zoneSpan("AwayBox")[0] && Math.abs(point.y - CENTRE_LANE) <= 20.16;
+  /** A counter-attack: the striker has the ball 27 m out, in the middle of the attacking third. */
+  const counter: RadarScene = {
+    ...start,
+    ball: { x: 78, y: 30 },
+    movers: { h_st2: { x: 78, y: 30 } },
+    possession: "Home",
+  };
+
+  for (const shot of ["Goal", "ShotSaved", "ShotOffTarget", "ShotBlocked", "ShotOnTarget"]) {
+    // Given a shot from a man on the ball outside the box, then he takes it into
+    // the box first: the engine only ever shoots from inside it.
+    it(`strikes a ${shot} from inside the box after a counter`, () => {
+      const origins = shotOrigins([radarEvent(shot, "Home", "AwayBox", "h_st2", "a_gk")], counter);
+      expect(origins.length).toBeGreaterThan(0);
+      for (const origin of origins) expect(inTheBox(origin), JSON.stringify(origin)).toBe(true);
+    });
+
+    // Given a winger's dribble down the line and then his shot, then he cuts
+    // inside into the box before he strikes it.
+    it(`strikes a ${shot} from inside the box after a dribble down the wing`, () => {
+      const events = [
+        radarEvent("Dribble", "Home", "AwayDefense", "h_rm"),
+        radarEvent(shot, "Home", "AwayBox", "h_rm", "a_gk"),
+      ];
+      const origins = shotOrigins(events, start);
+      expect(origins.length).toBeGreaterThan(0);
+      for (const origin of origins) expect(inTheBox(origin), JSON.stringify(origin)).toBe(true);
+    });
+  }
 });
 
 describe("choreographBatch — timing", () => {
@@ -492,8 +585,10 @@ describe("choreographBatch — the ball keeps its own pace", () => {
       stage,
       start,
     ).beats;
-    const { arrive, ballThere } = arrivals(shot, "h_st2");
-    expect(arrive).toBeLessThanOrEqual(ballThere + 1);
+    const [take] = shot.steps;
+    expect(take.action).toEqual({ kind: "take", by: "h_st2" });
+    expect(take.ball?.at).toEqual(take.movers?.h_st2);
+    expect(shot.runMs[0].h_st2).toBeLessThanOrEqual(shot.stepMs[0] + 1);
   });
 });
 
@@ -571,9 +666,12 @@ describe("choreographBatch — closing the ball down", () => {
   // Given a tackler far from the ball, then the man on it runs at him and the
   // two meet in between, so the tackler is not left a 30-metre sprint.
   it("meets a far tackler halfway", () => {
-    const dribbled = play(
-      choreographBatch([radarEvent("Dribble", "Home", "AwayDefense", "h_rm")], stage, start).beats,
-    );
+    const dribbled: RadarScene = {
+      ...start,
+      ball: { x: 50, y: 58 },
+      movers: { h_rm: { x: 50, y: 58 } },
+      possession: "Home",
+    };
     const [tackle] = choreographBatch(
       [radarEvent("Tackle", "Away", "AwayDefense", "a_lb")],
       stage,
