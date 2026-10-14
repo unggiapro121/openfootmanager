@@ -1290,7 +1290,7 @@ pub(crate) fn youth_candidates_viewed(
 ) -> usize {
     youth_candidates_base(objective)
         + usize::from(judging_ability / 25)
-        + usize::from(scouting_facility_level.saturating_sub(1))
+        + crate::facilities::youth_search_extra(scouting_facility_level) as usize
 }
 
 /// The highest potential a club's scouting network reliably turns up: one step
@@ -1298,13 +1298,7 @@ pub(crate) fn youth_candidates_viewed(
 /// when the scout judges potential well. A level-1 department should not be
 /// walking into the world's best youngsters.
 pub(crate) fn scouting_potential_reach(facility_level: u8, judging_potential: u8) -> u8 {
-    let reach: u8 = match facility_level {
-        ..=1 => 75,
-        2 => 80,
-        3 => 85,
-        4 => 90,
-        _ => 99,
-    };
+    let reach = crate::facilities::potential_reach(facility_level);
     if judging_potential >= SHARP_EYE_JUDGING_POTENTIAL {
         reach.saturating_add(SHARP_EYE_REACH_BONUS).min(99)
     } else {

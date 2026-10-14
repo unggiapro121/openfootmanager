@@ -2935,7 +2935,8 @@
         "facilityUpgradeOverBudget": "Kulüp maaş bütçesini aşmışken tesis yükseltmeleri engellenir.",
         "facilityUpgradeCritical": "Kulüp ciddi finansal baskı altındayken tesis yükseltmeleri engellenir.",
         "amountOverflow": "Bu nakit hareketi kaydedilemeyecek kadar büyük.",
-        "openingBalanceReserved": "Açılış bakiyesi kayıtları otomatik oluşturulur ve doğrudan gönderilemez."
+        "openingBalanceReserved": "Açılış bakiyesi kayıtları otomatik oluşturulur ve doğrudan gönderilemez.",
+        "facilityUpgradeMaxLevel": "Bu tesis zaten en üst seviyede."
       },
       "createManager": {
         "nameRequired": "Ad ve soyad zorunludur.",

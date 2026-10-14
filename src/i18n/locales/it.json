@@ -2927,7 +2927,8 @@
         "facilityUpgradeOverBudget": "I potenziamenti delle strutture sono bloccati finché il club supera il budget salariale.",
         "facilityUpgradeCritical": "I potenziamenti delle strutture sono bloccati finché il club è sotto forte pressione finanziaria.",
         "amountOverflow": "Questo movimento di cassa è troppo grande per essere registrato.",
-        "openingBalanceReserved": "Le registrazioni del saldo di apertura vengono create automaticamente e non possono essere inviate direttamente."
+        "openingBalanceReserved": "Le registrazioni del saldo di apertura vengono create automaticamente e non possono essere inviate direttamente.",
+        "facilityUpgradeMaxLevel": "Questa struttura è già al livello massimo."
       },
       "createManager": {
         "nameRequired": "Nome e cognome sono obbligatori.",

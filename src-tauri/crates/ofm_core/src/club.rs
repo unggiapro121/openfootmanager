@@ -1,6 +1,7 @@
+use crate::facilities::{MAX_FACILITY_LEVEL, level_of};
 use crate::finances::{CashKind, post};
 use crate::game::Game;
-use domain::team::{Facilities, FacilityType, Team};
+use domain::team::{FacilityType, Team};
 
 pub const BASE_FACILITY_UPGRADE_COST: i64 = 2_500_000;
 
@@ -17,16 +18,10 @@ fn facility_upgrade_insufficient_funds_error(amount: i64) -> String {
     message
 }
 
-fn facility_level(facilities: &Facilities, facility_type: &FacilityType) -> u8 {
-    match facility_type {
-        FacilityType::Training => facilities.training,
-        FacilityType::Medical => facilities.medical,
-        FacilityType::Scouting => facilities.scouting,
-    }
-}
-
-pub fn next_upgrade_cost(team: &Team, facility_type: &FacilityType) -> i64 {
-    i64::from(facility_level(&team.facilities, facility_type)) * BASE_FACILITY_UPGRADE_COST
+/// What the next level of `facility_type` costs, or `None` once it is at the top.
+pub fn next_upgrade_cost(team: &Team, facility_type: &FacilityType) -> Option<i64> {
+    let level = level_of(&team.facilities, facility_type);
+    (level < MAX_FACILITY_LEVEL).then(|| i64::from(level) * BASE_FACILITY_UPGRADE_COST)
 }
 
 pub fn upgrade_facility(
@@ -40,7 +35,8 @@ pub fn upgrade_facility(
             .iter()
             .find(|team| team.id == team_id)
             .ok_or_else(|| "be.error.managedTeamNotFound".to_string())?;
-        let cost = next_upgrade_cost(team, &facility_type);
+        let cost = next_upgrade_cost(team, &facility_type)
+            .ok_or_else(|| "be.error.finance.facilityUpgradeMaxLevel".to_string())?;
         if team.finance < cost {
             return Err(facility_upgrade_insufficient_funds_error(cost));
         }
@@ -60,13 +56,13 @@ pub fn upgrade_facility(
     team.transfer_budget = (team.transfer_budget - cost).max(0);
     match facility_type {
         FacilityType::Training => {
-            team.facilities.training = team.facilities.training.saturating_add(1);
+            team.facilities.training += 1;
         }
         FacilityType::Medical => {
-            team.facilities.medical = team.facilities.medical.saturating_add(1);
+            team.facilities.medical += 1;
         }
         FacilityType::Scouting => {
-            team.facilities.scouting = team.facilities.scouting.saturating_add(1);
+            team.facilities.scouting += 1;
         }
     }
 

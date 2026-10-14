@@ -2935,7 +2935,8 @@
         "facilityUpgradeOverBudget": "Peningkatan fasilitas diblokir selama klub melebihi anggaran gaji.",
         "facilityUpgradeCritical": "Peningkatan fasilitas diblokir selama klub berada di bawah tekanan finansial yang serius.",
         "amountOverflow": "Pergerakan kas ini terlalu besar untuk dicatat.",
-        "openingBalanceReserved": "Postingan saldo awal dibuat otomatis dan tidak dapat dikirim langsung."
+        "openingBalanceReserved": "Postingan saldo awal dibuat otomatis dan tidak dapat dikirim langsung.",
+        "facilityUpgradeMaxLevel": "Fasilitas ini sudah berada di level tertinggi."
       },
       "createManager": {
         "nameRequired": "Nama depan dan nama belakang wajib diisi.",

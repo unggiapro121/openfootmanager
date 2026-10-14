@@ -2935,7 +2935,8 @@
         "facilityUpgradeOverBudget": "Không thể nâng cấp cơ sở vật chất khi câu lạc bộ đang vượt ngân sách lương.",
         "facilityUpgradeCritical": "Không thể nâng cấp cơ sở vật chất khi câu lạc bộ đang chịu áp lực tài chính nghiêm trọng.",
         "amountOverflow": "Khoản tiền này quá lớn để ghi nhận.",
-        "openingBalanceReserved": "Bút toán số dư đầu kỳ được tạo tự động và không thể gửi trực tiếp."
+        "openingBalanceReserved": "Bút toán số dư đầu kỳ được tạo tự động và không thể gửi trực tiếp.",
+        "facilityUpgradeMaxLevel": "Cơ sở này đã ở cấp tối đa."
       },
       "createManager": {
         "nameRequired": "Bắt buộc nhập tên và họ.",

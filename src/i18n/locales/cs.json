@@ -2935,7 +2935,8 @@
         "facilityUpgradeOverBudget": "Vylepšování zázemí je zablokováno, dokud klub překračuje svůj platový rozpočet.",
         "facilityUpgradeCritical": "Vylepšování zázemí je zablokováno, dokud je klub pod vážným finančním tlakem.",
         "amountOverflow": "Tento peněžní pohyb je příliš velký na zaúčtování.",
-        "openingBalanceReserved": "Počáteční zůstatek se vytváří automaticky a nelze ho zadat přímo."
+        "openingBalanceReserved": "Počáteční zůstatek se vytváří automaticky a nelze ho zadat přímo.",
+        "facilityUpgradeMaxLevel": "Toto zázemí je už na nejvyšší úrovni."
       },
       "createManager": {
         "nameRequired": "Jméno a příjmení jsou povinné údaje.",

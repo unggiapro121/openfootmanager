@@ -2927,7 +2927,8 @@
         "facilityUpgradeOverBudget": "Les améliorations d'installations sont bloquées tant que le club dépasse son budget salarial.",
         "facilityUpgradeCritical": "Les améliorations d'installations sont bloquées tant que le club subit une forte pression financière.",
         "amountOverflow": "Ce mouvement de trésorerie est trop important pour être enregistré.",
-        "openingBalanceReserved": "Les écritures de solde d'ouverture sont créées automatiquement et ne peuvent pas être soumises directement."
+        "openingBalanceReserved": "Les écritures de solde d'ouverture sont créées automatiquement et ne peuvent pas être soumises directement.",
+        "facilityUpgradeMaxLevel": "Cette installation est déjà au niveau maximum."
       },
       "createManager": {
         "nameRequired": "Le prénom et le nom sont requis.",

@@ -2927,7 +2927,8 @@
         "facilityUpgradeOverBudget": "As melhorias das infraestruturas estão bloqueadas enquanto o clube exceder o orçamento salarial.",
         "facilityUpgradeCritical": "As melhorias das infraestruturas estão bloqueadas enquanto o clube estiver sob forte pressão financeira.",
         "amountOverflow": "Este movimento de numerário é demasiado grande para ser registado.",
-        "openingBalanceReserved": "Os lançamentos de saldo de abertura são criados automaticamente e não podem ser submetidos diretamente."
+        "openingBalanceReserved": "Os lançamentos de saldo de abertura são criados automaticamente e não podem ser submetidos diretamente.",
+        "facilityUpgradeMaxLevel": "Esta infraestrutura já está no nível máximo."
       },
       "createManager": {
         "nameRequired": "O primeiro nome e o apelido são obrigatórios.",

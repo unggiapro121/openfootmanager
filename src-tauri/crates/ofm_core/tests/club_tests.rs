@@ -107,3 +107,37 @@ fn upgrade_facility_floors_the_transfer_budget_at_zero() {
     assert_eq!(game.teams[0].transfer_budget, 0);
     assert_eq!(game.teams[0].facilities.training, 2);
 }
+
+/// Given a club with plenty of cash and its scouting department at level 10,
+/// When it tries to upgrade the department again,
+/// Then the upgrade is refused as at the top level and no money moves.
+#[test]
+fn upgrade_facility_refuses_past_the_top_level() {
+    let mut game = make_game();
+    game.teams[0].finance = 100_000_000;
+    game.teams[0].facilities.scouting = 10;
+
+    let result = club::upgrade_facility(&mut game, "team1", FacilityType::Scouting);
+
+    assert_eq!(
+        result.unwrap_err(),
+        "be.error.finance.facilityUpgradeMaxLevel"
+    );
+    assert_eq!(game.teams[0].finance, 100_000_000);
+    assert_eq!(game.teams[0].facilities.scouting, 10);
+}
+
+/// Given a club with its medical facility at level 9,
+/// When it upgrades the facility,
+/// Then it pays €22.5M and reaches the top level.
+#[test]
+fn upgrade_facility_reaches_the_top_level() {
+    let mut game = make_game();
+    game.teams[0].finance = 100_000_000;
+    game.teams[0].facilities.medical = 9;
+
+    let cost = club::upgrade_facility(&mut game, "team1", FacilityType::Medical).unwrap();
+
+    assert_eq!(cost, 22_500_000);
+    assert_eq!(game.teams[0].facilities.medical, 10);
+}

@@ -2927,7 +2927,8 @@
         "facilityUpgradeOverBudget": "当俱乐部超出工资预算时，设施升级会被禁止。",
         "facilityUpgradeCritical": "当俱乐部面临严重财务压力时，设施升级会被禁止。",
         "amountOverflow": "这笔资金变动过大，无法入账。",
-        "openingBalanceReserved": "期初余额分录会自动创建，不能直接提交。"
+        "openingBalanceReserved": "期初余额分录会自动创建，不能直接提交。",
+        "facilityUpgradeMaxLevel": "该设施已达到最高等级。"
       },
       "createManager": {
         "nameRequired": "名字和姓氏均为必填项。",

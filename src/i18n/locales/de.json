@@ -2927,7 +2927,8 @@
         "facilityUpgradeOverBudget": "Ausbauten sind blockiert, solange der Club sein Gehaltsbudget überschreitet.",
         "facilityUpgradeCritical": "Ausbauten sind blockiert, solange der Club unter erheblichem finanziellem Druck steht.",
         "amountOverflow": "Diese Kassenbewegung ist zu groß, um verbucht zu werden.",
-        "openingBalanceReserved": "Eröffnungssalden werden automatisch erstellt und können nicht direkt gebucht werden."
+        "openingBalanceReserved": "Eröffnungssalden werden automatisch erstellt und können nicht direkt gebucht werden.",
+        "facilityUpgradeMaxLevel": "Diese Einrichtung ist bereits auf der höchsten Stufe."
       },
       "createManager": {
         "nameRequired": "Vorname und Nachname sind erforderlich.",
