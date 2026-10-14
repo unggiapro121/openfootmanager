@@ -19,6 +19,7 @@ interface FinancesFacilitiesCardProps {
   facilityUpgradeError: FacilityUpgradeErrorState | null;
   actionLoading: string | null;
   onUpgrade: (facility: FacilityId) => void;
+  onShowDetails: (facility: FacilityId) => void;
 }
 
 export default function FinancesFacilitiesCard({
@@ -28,6 +29,7 @@ export default function FinancesFacilitiesCard({
   facilityUpgradeError,
   actionLoading,
   onUpgrade,
+  onShowDetails,
 }: FinancesFacilitiesCardProps) {
   const { t } = useTranslation();
   const financeBlockReason = facilityUpgradeBlockReason(financeSnapshot);
@@ -75,13 +77,25 @@ export default function FinancesFacilitiesCard({
                           amount: formatExactMoney(nextUpgradeCost),
                         })}
                   </p>
-                  <Button
-                    disabled={!canUpgrade || isLoading}
-                    onClick={() => onUpgrade(facility.id)}
-                    size="sm"
-                  >
-                    {t("finances.upgradeFacility")}
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      disabled={!canUpgrade || isLoading}
+                      onClick={() => onUpgrade(facility.id)}
+                      size="sm"
+                    >
+                      {t("finances.upgradeFacility")}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onShowDetails(facility.id)}
+                      aria-label={t("finances.facilityDetailsFor", {
+                        facility: t(facility.titleKey),
+                      })}
+                    >
+                      {t("finances.facilityDetails")}
+                    </Button>
+                  </div>
                   {!atMaxLevel && !canAffordUpgrade && !upgradeReason && (
                     <p className="text-xs text-red-500 dark:text-red-400">
                       {t("finances.insufficientFunds")}

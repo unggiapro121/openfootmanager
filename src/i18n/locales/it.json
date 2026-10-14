@@ -1245,7 +1245,10 @@
     "facilityUpgradeNow": "Ora",
     "facilityUpgradeAfter": "Dopo il potenziamento",
     "facilityUpgradeConfirm": "Potenzia — {{cost}}",
-    "facilityMaxLevel": "Livello massimo raggiunto"
+    "facilityMaxLevel": "Livello massimo raggiunto",
+    "facilityDetails": "Dettagli",
+    "facilityDetailsFor": "Dettagli: {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — livello {{level}}"
   },
   "inbox": {
     "title": "Posta",

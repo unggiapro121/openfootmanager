@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "Jetzt",
     "facilityUpgradeAfter": "Nach dem Ausbau",
     "facilityUpgradeConfirm": "Ausbauen — {{cost}}",
-    "facilityMaxLevel": "Höchste Stufe erreicht"
+    "facilityMaxLevel": "Höchste Stufe erreicht",
+    "facilityDetails": "Einzelheiten",
+    "facilityDetailsFor": "Einzelheiten: {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — Stufe {{level}}"
   },
   "inbox": {
     "title": "Posteingang",

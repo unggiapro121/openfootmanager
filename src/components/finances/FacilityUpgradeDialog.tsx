@@ -19,6 +19,8 @@ interface FacilityUpgradeDialogProps {
   /** A finance rule that forbids any upgrade now, as a backend error key. */
   blockReason: string | null;
   isUpgrading: boolean;
+  /** Only show what the facility does at its current level, with nothing to buy. */
+  detailsOnly?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -26,6 +28,7 @@ interface FacilityUpgradeDialogProps {
 /**
  * Asks before a facility upgrade spends the money: what it costs, what the
  * balance becomes, and every effect now and after — the backend's numbers.
+ * With `detailsOnly`, it just lists what the facility does at its level.
  */
 export default function FacilityUpgradeDialog({
   facility,
@@ -33,6 +36,7 @@ export default function FacilityUpgradeDialog({
   balance,
   blockReason,
   isUpgrading,
+  detailsOnly = false,
   onCancel,
   onConfirm,
 }: FacilityUpgradeDialogProps): JSX.Element {
@@ -63,11 +67,12 @@ export default function FacilityUpgradeDialog({
   }, [isUpgrading, onCancel]);
 
   const cost = preview?.cost ?? null;
-  const refusal =
-    loadError ??
-    (blockReason ? resolveBackendError(blockReason) : null) ??
-    (preview && cost === null ? t("finances.facilityMaxLevel") : null) ??
-    (cost !== null && balance < cost ? t("finances.insufficientFunds") : null);
+  const refusal = detailsOnly
+    ? loadError
+    : (loadError ??
+      (blockReason ? resolveBackendError(blockReason) : null) ??
+      (preview && cost === null ? t("finances.facilityMaxLevel") : null) ??
+      (cost !== null && balance < cost ? t("finances.insufficientFunds") : null));
   const canConfirm = preview !== null && cost !== null && refusal === null && !isUpgrading;
   const writeEffect = (format: Parameters<typeof formatFacilityEffect>[0], values: number[]) =>
     formatFacilityEffect(format, values, i18n.language) ?? t("finances.facilityEffectNone");
@@ -84,16 +89,18 @@ export default function FacilityUpgradeDialog({
           id="facility-upgrade-title"
           className="text-lg font-heading font-bold uppercase tracking-wider text-gray-900 dark:text-gray-100"
         >
-          {preview
-            ? t("finances.facilityUpgradeTitle", {
-                facility: t(titleKey),
-                from: preview.level,
-                to: preview.level + 1,
-              })
-            : t(titleKey)}
+          {preview && detailsOnly
+            ? t("finances.facilityDetailsTitle", { facility: t(titleKey), level: preview.level })
+            : preview
+              ? t("finances.facilityUpgradeTitle", {
+                  facility: t(titleKey),
+                  from: preview.level,
+                  to: preview.level + 1,
+                })
+              : t(titleKey)}
         </h3>
 
-        {preview && cost !== null && (
+        {preview && cost !== null && !detailsOnly && (
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {t("finances.facilityUpgradeCostLine", {
               cost: formatExactMoney(cost),
@@ -113,9 +120,11 @@ export default function FacilityUpgradeDialog({
                 <th scope="col" className="py-1 px-2 text-right font-bold whitespace-nowrap">
                   {t("finances.facilityUpgradeNow")}
                 </th>
-                <th scope="col" className="py-1 pl-2 text-right font-bold whitespace-nowrap">
-                  {t("finances.facilityUpgradeAfter")}
-                </th>
+                {!detailsOnly && (
+                  <th scope="col" className="py-1 pl-2 text-right font-bold whitespace-nowrap">
+                    {t("finances.facilityUpgradeAfter")}
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -132,13 +141,15 @@ export default function FacilityUpgradeDialog({
                     <td className="py-2 px-2 text-right tabular-nums whitespace-nowrap">
                       {writeEffect(effect.format, effect.current)}
                     </td>
-                    <td
-                      className={`py-2 pl-2 text-right tabular-nums whitespace-nowrap ${
-                        changes ? "font-semibold text-primary-700 dark:text-primary-300" : ""
-                      }`}
-                    >
-                      {effect.next ? writeEffect(effect.format, effect.next) : "—"}
-                    </td>
+                    {!detailsOnly && (
+                      <td
+                        className={`py-2 pl-2 text-right tabular-nums whitespace-nowrap ${
+                          changes ? "font-semibold text-primary-700 dark:text-primary-300" : ""
+                        }`}
+                      >
+                        {effect.next ? writeEffect(effect.format, effect.next) : "—"}
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -153,14 +164,22 @@ export default function FacilityUpgradeDialog({
         {refusal && <p className="text-sm text-red-500 dark:text-red-400">{refusal}</p>}
 
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" size="sm" onClick={onCancel} disabled={isUpgrading}>
-            {t("common.cancel")}
-          </Button>
-          <Button size="sm" onClick={onConfirm} disabled={!canConfirm}>
-            {cost !== null
-              ? t("finances.facilityUpgradeConfirm", { cost: formatExactMoney(cost) })
-              : t("finances.upgradeFacility")}
-          </Button>
+          {detailsOnly ? (
+            <Button size="sm" onClick={onCancel}>
+              {t("common.close")}
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={onCancel} disabled={isUpgrading}>
+                {t("common.cancel")}
+              </Button>
+              <Button size="sm" onClick={onConfirm} disabled={!canConfirm}>
+                {cost !== null
+                  ? t("finances.facilityUpgradeConfirm", { cost: formatExactMoney(cost) })
+                  : t("finances.upgradeFacility")}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </DashboardModalFrame>

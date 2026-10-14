@@ -96,6 +96,7 @@ function FinancesTabContent({
   const [facilityUpgradeError, setFacilityUpgradeError] =
     useState<FacilityUpgradeErrorState | null>(null);
   const [pendingFacilityUpgrade, setPendingFacilityUpgrade] = useState<FacilityId | null>(null);
+  const [facilityDetails, setFacilityDetails] = useState<FacilityId | null>(null);
   const [boardSupportFeedback, setBoardSupportFeedback] = useState<{
     tone: "success" | "error";
     text: string;
@@ -1008,7 +1009,24 @@ function FinancesTabContent({
           setFacilityUpgradeError(null);
           setPendingFacilityUpgrade(facility);
         }}
+        onShowDetails={setFacilityDetails}
       />
+
+      {facilityDetails && (
+        <FacilityUpgradeDialog
+          facility={facilityDetails}
+          titleKey={
+            FACILITY_DEFINITIONS.find((facility) => facility.id === facilityDetails)?.titleKey ??
+            "finances.facilities"
+          }
+          balance={myTeam.finance}
+          blockReason={null}
+          isUpgrading={false}
+          detailsOnly
+          onCancel={() => setFacilityDetails(null)}
+          onConfirm={() => setFacilityDetails(null)}
+        />
+      )}
 
       {pendingFacilityUpgrade && (
         <FacilityUpgradeDialog

@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "Hiện tại",
     "facilityUpgradeAfter": "Sau nâng cấp",
     "facilityUpgradeConfirm": "Nâng cấp — {{cost}}",
-    "facilityMaxLevel": "Đã đạt cấp tối đa"
+    "facilityMaxLevel": "Đã đạt cấp tối đa",
+    "facilityDetails": "Chi tiết",
+    "facilityDetailsFor": "Chi tiết: {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — cấp {{level}}"
   },
   "inbox": {
     "title": "Hộp thư",

@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "Nyní",
     "facilityUpgradeAfter": "Po vylepšení",
     "facilityUpgradeConfirm": "Vylepšit — {{cost}}",
-    "facilityMaxLevel": "Dosažena nejvyšší úroveň"
+    "facilityMaxLevel": "Dosažena nejvyšší úroveň",
+    "facilityDetails": "Podrobnosti",
+    "facilityDetailsFor": "Podrobnosti: {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — úroveň {{level}}"
   },
   "inbox": {
     "title": "Doručená pošta",

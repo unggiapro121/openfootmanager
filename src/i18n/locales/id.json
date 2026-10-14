@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "Sekarang",
     "facilityUpgradeAfter": "Setelah peningkatan",
     "facilityUpgradeConfirm": "Tingkatkan — {{cost}}",
-    "facilityMaxLevel": "Level tertinggi tercapai"
+    "facilityMaxLevel": "Level tertinggi tercapai",
+    "facilityDetails": "Detail",
+    "facilityDetailsFor": "Detail: {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — tingkat {{level}}"
   },
   "inbox": {
     "title": "Kotak Masuk",

@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "Şu an",
     "facilityUpgradeAfter": "Yükseltme sonrası",
     "facilityUpgradeConfirm": "Yükselt — {{cost}}",
-    "facilityMaxLevel": "En üst seviyeye ulaşıldı"
+    "facilityMaxLevel": "En üst seviyeye ulaşıldı",
+    "facilityDetails": "Ayrıntılar",
+    "facilityDetailsFor": "Ayrıntılar: {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — seviye {{level}}"
   },
   "inbox": {
     "title": "Gelen Kutusu",
