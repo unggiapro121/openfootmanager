@@ -2693,7 +2693,7 @@
     "youthSearchQuote": "Custo {{fee}} · {{days}} dias",
     "scoutResting": "Descansando mais {{days}} dias",
     "watchlistTitle": "Acompanhamento",
-    "watchlistHint": "Promessas que você está acompanhando. Escale um olheiro e a cada segunda-feira você descobre mais. Se outro clube contratar antes, ela continua aqui com o novo clube; as que seguem livres saem no fim da temporada.",
+    "watchlistHint": "Jogadores que você está acompanhando. O olheiro que fez o relatório sobre um jogador o acompanha e toda segunda-feira descobre um pouco mais até conhecê-lo por completo; aqui você pode trocar ou remover o olheiro. Se outro clube contratar um jovem primeiro, ele fica aqui com o novo clube; os que continuam livres saem no fim da temporada.",
     "watchlistEmpty": "Você não está acompanhando nenhuma promessa. Escolha Acompanhar em um relatório de busca de jovens.",
     "watchlistScout": "Olheiro",
     "watchlistScoutFor": "Olheiro que acompanha {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} machucado",
         "body": "Chefe, {{player}} se machucou na partida ({{injury}}). Deve ficar fora cerca de {{days}} dias."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} vai acompanhar {{player}} e informar toda segunda-feira até conhecê-lo por completo.",
+          "scoutFull": "{{player}} está na sua lista de observação, mas {{scout}} já acompanha o máximo de jogadores que pode. Passe {{player}} para outro olheiro na tela de Observação."
+        }
       }
     },
     "news": {

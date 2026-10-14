@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Phí {{fee}} · {{days}} ngày",
     "scoutResting": "Đang nghỉ thêm {{days}} ngày",
     "watchlistTitle": "Danh sách theo dõi",
-    "watchlistHint": "Các ứng viên bạn đang theo dõi. Gán tuyển trạch viên để mỗi thứ Hai biết thêm về cậu ấy. Nếu CLB khác ký trước, ứng viên vẫn ở đây kèm tên CLB mới; ứng viên còn tự do sẽ rời danh sách khi hết mùa.",
+    "watchlistHint": "Các cầu thủ bạn đang theo dõi. Tuyển trạch viên viết báo cáo sẽ tự theo dõi cầu thủ đó, mỗi thứ Hai biết thêm một chút cho tới khi nắm rõ; bạn có thể đổi hoặc bỏ người theo dõi tại đây. Nếu CLB khác ký trước, ứng viên vẫn ở đây kèm tên CLB mới; ứng viên còn tự do sẽ rời danh sách khi hết mùa.",
     "watchlistEmpty": "Chưa có ứng viên nào. Chọn Theo dõi trong báo cáo tìm cầu thủ trẻ.",
     "watchlistScout": "Tuyển trạch viên",
     "watchlistScoutFor": "Tuyển trạch viên theo dõi {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} chấn thương",
         "body": "Sếp, {{player}} bị chấn thương trong trận ({{injury}}). Dự kiến phải nghỉ khoảng {{days}} ngày."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} sẽ theo dõi {{player}} và báo cáo mỗi thứ Hai cho tới khi nắm rõ cậu ấy.",
+          "scoutFull": "{{player}} đã vào danh sách theo dõi, nhưng {{scout}} đã theo dõi đủ số cầu thủ tối đa. Hãy giao {{player}} cho tuyển trạch viên khác ở màn Tuyển trạch."
+        }
       }
     },
     "news": {

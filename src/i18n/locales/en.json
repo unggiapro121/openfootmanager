@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Fee {{fee}} · {{days}} days",
     "scoutResting": "Resting {{days}} more days",
     "watchlistTitle": "Watchlist",
-    "watchlistHint": "Prospects you are following. Give one a scout and he learns a little more every Monday. If another club signs him first, he stays here marked with his new club; prospects still free leave when the season ends.",
+    "watchlistHint": "Players you are following. The scout who reported on a player follows him, learning a little more every Monday until he knows him fully; change or remove his scout here. If another club signs a prospect first, he stays here marked with his new club; prospects still free leave when the season ends.",
     "watchlistEmpty": "No prospects on your watchlist. Choose Watch on a youth scouting report.",
     "watchlistScout": "Scout",
     "watchlistScoutFor": "Scout following {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} injured",
         "body": "Boss, {{player}} picked up an injury in the match ({{injury}}). He is expected to be out for about {{days}} days."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} will follow {{player}} and report every Monday until he knows him fully.",
+          "scoutFull": "{{player}} is on your watchlist, but {{scout}} already follows as many players as he can. Hand {{player}} to another scout on the Scouting screen."
+        }
       }
     },
     "news": {

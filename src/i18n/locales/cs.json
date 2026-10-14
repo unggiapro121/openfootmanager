@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Cena {{fee}} · {{days}} dní",
     "scoutResting": "Odpočívá ještě {{days}} dní",
     "watchlistTitle": "Sledované talenty",
-    "watchlistHint": "Talenty, které sledujete. Přidělte jim skauta a každé pondělí se dozvíte víc. Pokud ho dřív podepíše jiný klub, zůstane tady s názvem nového klubu; volné talenty na konci sezóny odejdou.",
+    "watchlistHint": "Hráči, které sleduješ. Skaut, který o hráči podal zprávu, ho dál sleduje a každé pondělí se dozví o něco víc, dokud ho plně nepozná; zde můžeš skauta změnit nebo odebrat. Pokud talent podepíše jiný klub dřív, zůstane tu s novým klubem; ti, kdo jsou stále volní, odejdou na konci sezóny.",
     "watchlistEmpty": "Nesledujete žádné talenty. V hlášení o hledání mladíků zvolte Sledovat.",
     "watchlistScout": "Skaut",
     "watchlistScoutFor": "Skaut sledující {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} zraněn",
         "body": "Šéfe, {{player}} se v zápase zranil ({{injury}}). Vynechá zhruba {{days}} dní."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} bude sledovat hráče {{player}} a každé pondělí podá zprávu, dokud ho plně nepozná.",
+          "scoutFull": "{{player}} je na tvém seznamu sledovaných, ale {{scout}} už sleduje maximální počet hráčů. Přiděl hráče {{player}} jinému skautovi na obrazovce Skauting."
+        }
       }
     },
     "news": {

@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Coût {{fee}} · {{days}} jours",
     "scoutResting": "Au repos encore {{days}} jours",
     "watchlistTitle": "Liste de suivi",
-    "watchlistHint": "Les jeunes que vous suivez. Confiez-en un à un recruteur et vous en saurez un peu plus chaque lundi. Si un autre club le recrute d'abord, il reste ici avec son nouveau club ; ceux encore libres partent à la fin de la saison.",
+    "watchlistHint": "Les joueurs que vous suivez. Le recruteur qui a rédigé le rapport sur un joueur le suit et en apprend un peu plus chaque lundi jusqu'à le connaître parfaitement ; vous pouvez changer ou retirer son recruteur ici. Si un autre club recrute un espoir avant vous, il reste ici avec son nouveau club ; ceux encore libres partent à la fin de la saison.",
     "watchlistEmpty": "Vous ne suivez aucun jeune. Choisissez Suivre dans un rapport de recherche de jeunes.",
     "watchlistScout": "Recruteur",
     "watchlistScoutFor": "Recruteur qui suit {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} blessé",
         "body": "Boss, {{player}} s'est blessé pendant le match ({{injury}}). Il devrait être absent environ {{days}} jours."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} suivra {{player}} et fera un rapport chaque lundi jusqu'à le connaître parfaitement.",
+          "scoutFull": "{{player}} est dans votre liste de suivi, mais {{scout}} suit déjà autant de joueurs qu'il le peut. Confiez {{player}} à un autre recruteur dans l'écran Recrutement."
+        }
       }
     },
     "news": {

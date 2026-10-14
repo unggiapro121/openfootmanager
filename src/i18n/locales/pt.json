@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Custo {{fee}} · {{days}} dias",
     "scoutResting": "A descansar mais {{days}} dias",
     "watchlistTitle": "Acompanhamento",
-    "watchlistHint": "Promessas que está a acompanhar. Atribua-lhes um olheiro e a cada segunda-feira fica a saber mais. Se outro clube o contratar primeiro, fica aqui com o novo clube; as que continuam livres saem no fim da época.",
+    "watchlistHint": "Jogadores que estás a acompanhar. O olheiro que fez o relatório sobre um jogador acompanha-o e todas as segundas-feiras fica a saber um pouco mais até o conhecer por completo; aqui podes mudar ou retirar o olheiro. Se outro clube contratar um jovem primeiro, ele fica aqui com o novo clube; os que continuam livres saem no fim da época.",
     "watchlistEmpty": "Não está a acompanhar nenhuma promessa. Escolha Acompanhar num relatório de pesquisa de jovens.",
     "watchlistScout": "Olheiro",
     "watchlistScoutFor": "Olheiro que acompanha {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} lesionado",
         "body": "Mister, {{player}} lesionou-se no jogo ({{injury}}). Deve ficar de fora cerca de {{days}} dias."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} vai acompanhar {{player}} e informar todas as segundas-feiras até o conhecer por completo.",
+          "scoutFull": "{{player}} está na tua lista de observação, mas {{scout}} já acompanha o máximo de jogadores que pode. Entrega {{player}} a outro olheiro no ecrã de Observação."
+        }
       }
     },
     "news": {

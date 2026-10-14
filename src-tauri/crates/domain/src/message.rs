@@ -121,6 +121,11 @@ pub struct MessageContext {
     /// from: each reported figure ± the scout's band.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub player_estimate: Option<ProspectEstimate>,
+    /// The scout who wrote a scout report, player or youth: the one who goes on
+    /// following a player the manager watches from it. Absent in reports from
+    /// before it was recorded; those are matched by the sender's name.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scout_id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delegated_renewal_report: Option<DelegatedRenewalReportData>,
 }

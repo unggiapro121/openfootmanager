@@ -374,26 +374,31 @@ fn a_player_report_carries_a_starting_read_and_a_watch_choice() {
 
 /// Given a player scout report,
 /// When the manager chooses Watch,
-/// Then the player goes on the watchlist with the report's read and no scout,
-/// and watching him again is refused.
+/// Then the player goes on the watchlist with the report's read, followed by
+/// the scout who wrote the report, and watching him again is refused.
 #[test]
 fn watching_from_a_player_report_puts_him_on_the_watchlist() {
     let mut game = make_game();
     send_scout(&mut game, "scout1", "p2").unwrap();
     complete_scouting(&mut game);
     let message = player_report(&game);
+    assert_eq!(message.context.scout_id.as_deref(), Some("scout1"));
 
     let effect =
         apply_player_watch_response(&mut game, &message.id, "watch", "watch").expect("an effect");
 
-    assert_eq!(effect.i18n_key, "be.msg.scoutReport.effect.watch");
+    assert_eq!(effect.i18n_key, "be.msg.watchlist.effect.following");
+    assert_eq!(
+        effect.i18n_params.get("scout").map(String::as_str),
+        Some("Scout Nrscout1")
+    );
     let entry = game
         .youth_watchlist
         .iter()
         .find(|entry| entry.prospect.id == "p2")
         .expect("on the watchlist");
     assert_eq!(entry.kind, ofm_core::youth_watchlist::WatchKind::Player);
-    assert_eq!(entry.scout_id, None);
+    assert_eq!(entry.scout_id.as_deref(), Some("scout1"));
     assert_eq!(
         Some(&entry.estimate),
         message.context.player_estimate.as_ref()
@@ -401,6 +406,72 @@ fn watching_from_a_player_report_puts_him_on_the_watchlist() {
     let again = apply_player_watch_response(&mut game, &message.id, "watch", "watch").unwrap();
     assert_eq!(again.i18n_key, "be.msg.scoutReport.effect.alreadyWatched");
     assert_eq!(game.youth_watchlist.len(), 1);
+}
+
+/// Given a player report whose scout already follows the most players he can,
+/// When the manager chooses Watch,
+/// Then the player still goes on the watchlist, unfollowed, and the manager is
+/// told to hand him to another scout.
+#[test]
+fn watching_with_the_reporting_scout_full_leaves_the_player_unfollowed() {
+    let mut game = make_game();
+    send_scout(&mut game, "scout1", "p2").unwrap();
+    complete_scouting(&mut game);
+    let message = player_report(&game);
+    let template = game.players.iter().find(|p| p.id == "p2").unwrap().clone();
+    for index in 0..ofm_core::youth_watchlist::MAX_WATCHED_PER_SCOUT {
+        let mut prospect = template.clone();
+        prospect.id = format!("followed-{index}");
+        game.youth_watchlist
+            .push(ofm_core::youth_watchlist::WatchedProspect {
+                kind: ofm_core::youth_watchlist::WatchKind::Player,
+                prospect,
+                estimate: message.context.player_estimate.clone().unwrap(),
+                scout_id: Some("scout1".to_string()),
+                added_on: "2025-06-01".to_string(),
+                weeks_followed: 0,
+                report: None,
+                signed_by: None,
+                signed_by_team_id: None,
+            });
+    }
+
+    let effect =
+        apply_player_watch_response(&mut game, &message.id, "watch", "watch").expect("an effect");
+
+    assert_eq!(effect.i18n_key, "be.msg.watchlist.effect.scoutFull");
+    let entry = game
+        .youth_watchlist
+        .iter()
+        .find(|entry| entry.prospect.id == "p2")
+        .expect("on the watchlist");
+    assert_eq!(entry.scout_id, None);
+}
+
+/// Given a player report from before reports named their scout's id,
+/// When the manager chooses Watch,
+/// Then the scout is found by the report's sender name and follows the player.
+#[test]
+fn watching_from_an_older_report_finds_its_scout_by_name() {
+    let mut game = make_game();
+    send_scout(&mut game, "scout1", "p2").unwrap();
+    complete_scouting(&mut game);
+    let message_id = player_report(&game).id.clone();
+    let message = game
+        .messages
+        .iter_mut()
+        .find(|m| m.id == message_id)
+        .unwrap();
+    message.context.scout_id = None;
+
+    apply_player_watch_response(&mut game, &message_id, "watch", "watch").expect("an effect");
+
+    let entry = game
+        .youth_watchlist
+        .iter()
+        .find(|entry| entry.prospect.id == "p2")
+        .expect("on the watchlist");
+    assert_eq!(entry.scout_id.as_deref(), Some("scout1"));
 }
 
 #[test]
@@ -1038,8 +1109,8 @@ fn signing_a_scouted_prospect_needs_the_boards_wage_approval() {
 
 /// Given a youth report,
 /// When the manager watches one of its prospects,
-/// Then he goes on the watchlist with the report's ranges and no scout, and
-/// stays in the report with his choice made.
+/// Then he goes on the watchlist with the report's ranges, followed by the
+/// scout who found him, and stays in the report with his choice made.
 #[test]
 fn youth_recruitment_response_watches_selected_prospect() {
     let mut game = make_game();
@@ -1059,13 +1130,13 @@ fn youth_recruitment_response_watches_selected_prospect() {
     let effect = apply_youth_recruitment_response(&mut game, &message.id, &action_id, "watch")
         .expect("expected watch effect");
 
-    assert_eq!(effect.i18n_key, "be.msg.youthRecruitment.effect.watch");
+    assert_eq!(effect.i18n_key, "be.msg.watchlist.effect.following");
     let watched = game
         .youth_watchlist
         .iter()
         .find(|entry| entry.prospect.id == prospect_id)
         .expect("on the watchlist");
-    assert!(watched.scout_id.is_none());
+    assert_eq!(watched.scout_id.as_deref(), Some("scout1"));
     let report_estimate = message
         .context
         .youth_prospect_estimates

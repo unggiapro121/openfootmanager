@@ -2030,7 +2030,7 @@
     "youthSearchQuote": "Costo {{fee}} · {{days}} giorni",
     "scoutResting": "A riposo ancora {{days}} giorni",
     "watchlistTitle": "Lista osservati",
-    "watchlistHint": "I giovani che stai seguendo. Affidane uno a un osservatore e ogni lunedì ne saprai di più. Se un altro club lo ingaggia prima, resta qui con il nuovo club; quelli ancora liberi escono a fine stagione.",
+    "watchlistHint": "I giocatori che stai seguendo. L'osservatore che ha scritto il rapporto su un giocatore lo segue e ogni lunedì ne sa un po' di più finché non lo conosce a fondo; qui puoi cambiare o togliere l'osservatore. Se un altro club tessera un giovane prima di te, resta qui con il nuovo club; quelli ancora liberi escono a fine stagione.",
     "watchlistEmpty": "Non stai seguendo nessun giovane. Scegli Segui in un rapporto di ricerca giovani.",
     "watchlistScout": "Osservatore",
     "watchlistScoutFor": "Osservatore che segue {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} infortunato",
         "body": "Mister, {{player}} si è infortunato in partita ({{injury}}). Dovrebbe restare fuori circa {{days}} giorni."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} seguirà {{player}} e farà rapporto ogni lunedì finché non lo conoscerà a fondo.",
+          "scoutFull": "{{player}} è nella tua lista di osservazione, ma {{scout}} segue già il massimo dei giocatori possibile. Affida {{player}} a un altro osservatore nella schermata Osservatori."
+        }
       }
     },
     "news": {

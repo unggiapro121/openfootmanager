@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Biaya {{fee}} · {{days}} hari",
     "scoutResting": "Istirahat {{days}} hari lagi",
     "watchlistTitle": "Daftar pantauan",
-    "watchlistHint": "Pemain muda yang Anda pantau. Tugaskan pemandu bakat dan setiap Senin Anda tahu lebih banyak. Jika klub lain merekrutnya lebih dulu, ia tetap di sini dengan klub barunya; yang masih bebas keluar saat musim berakhir.",
+    "watchlistHint": "Pemain yang kamu pantau. Pemandu bakat yang membuat laporan tentang seorang pemain akan terus memantaunya dan tiap Senin tahu sedikit lebih banyak sampai mengenalnya sepenuhnya; ganti atau lepas pemandunya di sini. Jika klub lain merekrut seorang talenta lebih dulu, ia tetap di sini dengan klub barunya; yang masih bebas keluar dari daftar saat musim berakhir.",
     "watchlistEmpty": "Belum ada pemain di daftar pantauan. Pilih Pantau di laporan pencarian pemain muda.",
     "watchlistScout": "Pemandu bakat",
     "watchlistScoutFor": "Pemandu bakat yang memantau {{name}}",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} cedera",
         "body": "Bos, {{player}} cedera dalam pertandingan ({{injury}}). Ia diperkirakan absen sekitar {{days}} hari."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} akan memantau {{player}} dan melapor setiap Senin sampai mengenalnya sepenuhnya.",
+          "scoutFull": "{{player}} sudah masuk daftar pantauan, tetapi {{scout}} sudah memantau pemain sebanyak yang ia mampu. Serahkan {{player}} ke pemandu bakat lain di layar Pemanduan Bakat."
+        }
       }
     },
     "news": {

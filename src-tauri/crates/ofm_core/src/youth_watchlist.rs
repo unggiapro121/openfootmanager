@@ -245,6 +245,28 @@ pub fn assign_scout(
     Ok(())
 }
 
+/// Hand a just-watched player to the scout whose report he was watched from.
+/// The report is that scout's own read, so nothing is read again; he only has
+/// to work for the club and have a free slot.
+pub(crate) fn follow_from_report(
+    game: &mut Game,
+    prospect_id: &str,
+    scout_id: &str,
+) -> Result<(), String> {
+    let index = index_of(game, prospect_id)?;
+    crate::scouting::resolve_user_scout(game, scout_id)?;
+    let already_following = game
+        .youth_watchlist
+        .iter()
+        .filter(|entry| entry.scout_id.as_deref() == Some(scout_id))
+        .count();
+    if already_following >= MAX_WATCHED_PER_SCOUT {
+        return Err(ERR_SCOUT_WATCHLIST_FULL.to_string());
+    }
+    game.youth_watchlist[index].scout_id = Some(scout_id.to_string());
+    Ok(())
+}
+
 /// Read the prospect again within the new bands and keep only what both reads
 /// agree on, so the ranges never widen and always hold the truth.
 fn narrow(entry: &mut WatchedProspect, ovr_band: u8, potential_band: u8, rng: &mut impl rand::Rng) {

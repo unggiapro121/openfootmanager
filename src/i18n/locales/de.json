@@ -2011,7 +2011,7 @@
     "youthSearchQuote": "Kosten {{fee}} · {{days}} Tage",
     "scoutResting": "Pausiert noch {{days}} Tage",
     "watchlistTitle": "Beobachtungsliste",
-    "watchlistHint": "Talente, die du beobachtest. Gib einem einen Scout, und du erfährst jeden Montag mehr. Verpflichtet ihn ein anderer Verein zuerst, bleibt er hier mit seinem neuen Verein; wer noch frei ist, verschwindet zum Saisonende.",
+    "watchlistHint": "Spieler, die du beobachtest. Der Scout, der über einen Spieler berichtet hat, beobachtet ihn weiter und erfährt jeden Montag etwas mehr, bis er ihn vollständig kennt; hier kannst du den Scout wechseln oder abziehen. Verpflichtet ein anderer Verein ein Talent zuerst, bleibt es hier mit seinem neuen Verein; noch freie Talente verschwinden am Saisonende.",
     "watchlistEmpty": "Du beobachtest keine Talente. Wähle Beobachten in einem Bericht zur Nachwuchssuche.",
     "watchlistScout": "Scout",
     "watchlistScoutFor": "Scout, der {{name}} beobachtet",
@@ -3607,6 +3607,12 @@
       "matchInjury": {
         "subject": "{{player}} verletzt",
         "body": "Chef, {{player}} hat sich im Spiel verletzt ({{injury}}). Er fällt voraussichtlich etwa {{days}} Tage aus."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}} beobachtet {{player}} und berichtet jeden Montag, bis er ihn vollständig kennt.",
+          "scoutFull": "{{player}} steht auf deiner Beobachtungsliste, aber {{scout}} beobachtet bereits so viele Spieler, wie er kann. Gib {{player}} im Scouting-Bildschirm einem anderen Scout."
+        }
       }
     },
     "news": {
