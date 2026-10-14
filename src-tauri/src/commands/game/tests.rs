@@ -746,3 +746,47 @@ fn transfer_market_probe() {
         game.teams.iter().filter(|team| team.finance < 0).count()
     );
 }
+
+/// Given a fresh world of a giant (980) and a minnow (200),
+/// When a new game is built from it,
+/// Then each club opens with the facilities its reputation earns, the same
+///      level for all three.
+#[test]
+fn a_new_world_gives_clubs_facilities_by_reputation() {
+    let mut world = make_imported_baseline_world_without_staff();
+    let reputations = [980, 200];
+    for (team, reputation) in world.teams.iter_mut().zip(reputations) {
+        team.reputation = reputation;
+    }
+    let ids: Vec<String> = world.teams.iter().map(|team| team.id.clone()).collect();
+    assert_eq!(ids.len(), 2);
+
+    let game = game_from(world);
+
+    for (id, level) in ids.iter().zip([6, 1]) {
+        let team = game.teams.iter().find(|team| &team.id == id).expect("club");
+        let facilities = &team.facilities;
+        assert_eq!(
+            (facilities.training, facilities.medical, facilities.scouting),
+            (level, level, level),
+            "{id} at reputation {}",
+            team.reputation
+        );
+    }
+}
+
+/// Given a snapshot of a career in progress, whose club built its medical
+///       facility up to level 8,
+/// When a new game is built from it,
+/// Then the club keeps level 8: only a fresh world is given opening levels.
+#[test]
+fn a_snapshot_keeps_the_facilities_its_clubs_built() {
+    let mut world = make_historical_snapshot_world();
+    world.teams[0].facilities.medical = 8;
+    let id = world.teams[0].id.clone();
+
+    let game = game_from(world);
+
+    let team = game.teams.iter().find(|team| team.id == id).expect("club");
+    assert_eq!(team.facilities.medical, 8);
+}

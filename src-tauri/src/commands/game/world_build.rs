@@ -125,6 +125,9 @@ pub(super) fn build_game_from_world_data(
             (game, stats)
         }
         ofm_core::generator::WorldDataKind::RosterBaseline => {
+            // A fresh world: every club opens with the facilities its reputation
+            // earns. A snapshot keeps the levels its clubs built.
+            ofm_core::facilities::assign_opening_levels(&mut game.teams);
             // Authored definitions, if any, become the world's competitions;
             // otherwise ensure_multi_competition_foundations auto-builds them.
             game.competitions = competitions;
