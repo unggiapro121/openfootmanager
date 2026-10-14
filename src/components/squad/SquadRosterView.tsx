@@ -5,7 +5,7 @@ import type {
   PlayerSelectionOptions,
   TeamData,
 } from "../../store/gameStore";
-import { Badge, Card, Select, CountryFlag, PlayerAvatar, InjuryBadge } from "../ui";
+import { Badge, Card, Select, CountryFlag, PlayerAvatar, InjuryBadge, SortHeader } from "../ui";
 import { condColor } from "../../lib/playerConditionDisplay";
 import {
   AlertTriangle,
@@ -21,7 +21,6 @@ import { TraitList } from "../TraitBadge";
 import SquadCoverageSummary from "./SquadCoverageSummary";
 import { useClubPotentialAssessments } from "../../hooks/useClubPotentialAssessments";
 import { withScoutedWonderkid } from "../../lib/scoutedTraits";
-import { SquadSortHeader } from "./SquadSortHeader";
 import { getKeeperFitBreakdown } from "./keeperStyleFit";
 import JerseyNumberPickerModal from "./JerseyNumberPickerModal";
 import {
@@ -520,7 +519,7 @@ export default function SquadRosterView({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 dark:bg-navy-800 border-b border-gray-200 dark:border-navy-600 text-xs">
-                <SquadSortHeader
+                <SortHeader
                   col="jersey"
                   label={t("squad.jerseyNumber")}
                   ariaLabel={t("squad.jerseyNumberFull")}
@@ -528,28 +527,28 @@ export default function SquadRosterView({
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="name"
                   label={t("common.name")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="pos"
                   label={t("squad.pos")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="fit"
                   label={t("squad.formationFit")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="style"
                   label={t("squad.styleFit")}
                   sortKey={sortKey}
@@ -561,35 +560,35 @@ export default function SquadRosterView({
                 <th className="py-2.5 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {t("squad.traits")}
                 </th>
-                <SquadSortHeader
+                <SortHeader
                   col="age"
                   label={t("common.age")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="condition"
                   label={t("common.condition")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="morale"
                   label={t("common.morale")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="ovr"
                   label={t("common.ovr")}
                   sortKey={sortKey}
                   sortDir={sortDir}
                   onSort={toggleSort}
                 />
-                <SquadSortHeader
+                <SortHeader
                   col="contract"
                   label={t("squad.contractYears")}
                   sortKey={sortKey}

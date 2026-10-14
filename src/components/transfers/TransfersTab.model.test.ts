@@ -5,6 +5,8 @@ import {
   deriveTransferCollections,
   filterTransferPlayers,
   getCurrentTransferList,
+  nextMarketSort,
+  sortMarketPlayers,
   type TransferTabView,
 } from "./TransfersTab.model";
 
@@ -521,5 +523,81 @@ describe("TransfersTab.model", () => {
     expect(
       filterTransferPlayers(players, "", null, "free_agent").map((player) => player.id),
     ).toEqual(["free-agent"]);
+  });
+});
+
+describe("sortMarketPlayers", () => {
+  const players = [
+    createPlayer({ id: "mid", date_of_birth: "1995-06-01", market_value: 5_000_000, ovr: 70 }),
+    createPlayer({ id: "young", date_of_birth: "2004-02-01", market_value: 20_000_000, ovr: 65 }),
+    createPlayer({ id: "old", date_of_birth: "1988-03-01", market_value: 900_000, ovr: 75 }),
+  ];
+  const ids = (sorted: PlayerData[]) => sorted.map((player) => player.id);
+
+  // Given players of different values, when sorted by value descending and
+  // ascending, then the dearest comes first, then the cheapest.
+  it("sorts by market value both ways", () => {
+    expect(ids(sortMarketPlayers(players, { column: "value", dir: "desc" }))).toEqual([
+      "young",
+      "mid",
+      "old",
+    ]);
+    expect(ids(sortMarketPlayers(players, { column: "value", dir: "asc" }))).toEqual([
+      "old",
+      "mid",
+      "young",
+    ]);
+  });
+
+  // Given players born in different years, when sorted by age descending,
+  // then the oldest comes first; ascending, the youngest.
+  it("sorts by age both ways", () => {
+    expect(ids(sortMarketPlayers(players, { column: "age", dir: "desc" }))).toEqual([
+      "old",
+      "mid",
+      "young",
+    ]);
+    expect(ids(sortMarketPlayers(players, { column: "age", dir: "asc" }))).toEqual([
+      "young",
+      "mid",
+      "old",
+    ]);
+  });
+
+  // Given players of different ratings, when sorted by OVR descending, then the
+  // best comes first; with no direction, the list keeps its own order.
+  it("sorts by OVR and leaves an unsorted list alone", () => {
+    expect(ids(sortMarketPlayers(players, { column: "ovr", dir: "desc" }))).toEqual([
+      "old",
+      "mid",
+      "young",
+    ]);
+    expect(ids(sortMarketPlayers(players, { column: "ovr", dir: "none" }))).toEqual([
+      "mid",
+      "young",
+      "old",
+    ]);
+  });
+});
+
+describe("nextMarketSort", () => {
+  // Given a column header clicked repeatedly, then it cycles descending,
+  // ascending, unsorted.
+  it("cycles one column through descending, ascending and off", () => {
+    let sort = nextMarketSort({ column: "ovr", dir: "none" }, "value");
+    expect(sort).toEqual({ column: "value", dir: "desc" });
+    sort = nextMarketSort(sort, "value");
+    expect(sort).toEqual({ column: "value", dir: "asc" });
+    sort = nextMarketSort(sort, "value");
+    expect(sort).toEqual({ column: "value", dir: "none" });
+  });
+
+  // Given the market sorted by OVR, when another header is clicked, then that
+  // column takes over, starting descending.
+  it("switches to another column starting descending", () => {
+    expect(nextMarketSort({ column: "ovr", dir: "asc" }, "age")).toEqual({
+      column: "age",
+      dir: "desc",
+    });
   });
 });

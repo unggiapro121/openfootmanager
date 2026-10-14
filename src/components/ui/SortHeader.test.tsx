@@ -1,15 +1,16 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { SquadSortHeader } from "./SquadSortHeader";
-import type { SquadListSortKey } from "./SquadRosterView.state";
+import { SortHeader } from "./SortHeader";
 
-function renderHeader(sortKey: SquadListSortKey, sortDir: "asc" | "desc", onSort = vi.fn()) {
+type Column = "pos" | "age";
+
+function renderHeader(sortKey: Column | null, sortDir: "asc" | "desc", onSort = vi.fn()) {
   render(
     <table>
       <thead>
         <tr>
-          <SquadSortHeader
+          <SortHeader<Column>
             col="age"
             label="Age"
             sortKey={sortKey}
@@ -23,7 +24,7 @@ function renderHeader(sortKey: SquadListSortKey, sortDir: "asc" | "desc", onSort
   return onSort;
 }
 
-describe("SquadSortHeader", () => {
+describe("SortHeader", () => {
   it("sorts from a real, focusable button named after its column", () => {
     const onSort = renderHeader("pos", "asc");
 
@@ -40,6 +41,12 @@ describe("SquadSortHeader", () => {
 
   it("reports the sort only on the sorted column", () => {
     renderHeader("pos", "asc");
+    expect(screen.getByRole("columnheader", { name: "Age" })).not.toHaveAttribute("aria-sort");
+  });
+
+  // Given a table kept in its own order, then no column reports a sort.
+  it("reports no sort when the table is unsorted", () => {
+    renderHeader(null, "desc");
     expect(screen.getByRole("columnheader", { name: "Age" })).not.toHaveAttribute("aria-sort");
   });
 
