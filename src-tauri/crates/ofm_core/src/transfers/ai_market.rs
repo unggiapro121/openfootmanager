@@ -14,11 +14,14 @@ use super::*;
 
 use crate::player_rating::{formation_slots, positional_fit_for_assignment};
 use crate::squad_floor::{can_spare_one, group_index};
+use domain::season::TransferWindowKind;
 use rand::RngExt;
 use std::collections::HashMap;
 
 /// Deals — signings, and separately sales — a club makes in a window.
 const DEALS_PER_WINDOW: std::ops::RangeInclusive<usize> = 3..=7;
+/// The same in a winter window, which is for filling a gap, not rebuilding.
+const DEALS_PER_WINTER_WINDOW: std::ops::RangeInclusive<usize> = 1..=3;
 /// A line needs its formation slots and this many more as cover.
 const COVER_PER_LINE: usize = 2;
 /// A line is overloaded beyond its need by more than this; no club buys there.
@@ -113,11 +116,19 @@ pub(crate) fn open_to_offers(
 
 /// How many signings, or sales, `team_id` makes in the window opening on
 /// `opens_on`: drawn once per club and window, stable across the days of it.
-pub(crate) fn window_quota(team_id: &str, opens_on: &str, purpose: &str) -> usize {
-    let span = (DEALS_PER_WINDOW.end() - DEALS_PER_WINDOW.start() + 1) as u64;
+pub(crate) fn window_quota(
+    team_id: &str,
+    opens_on: &str,
+    kind: TransferWindowKind,
+    purpose: &str,
+) -> usize {
+    let deals = match kind {
+        TransferWindowKind::Summer => DEALS_PER_WINDOW,
+        TransferWindowKind::Winter => DEALS_PER_WINTER_WINDOW,
+    };
+    let span = (deals.end() - deals.start() + 1) as u64;
     let key = format!("{team_id}/{opens_on}/{purpose}");
-    DEALS_PER_WINDOW.start()
-        + (crate::stable_hash::stable_hash(key.as_bytes(), 0x7a5f) % span) as usize
+    deals.start() + (crate::stable_hash::stable_hash(key.as_bytes(), 0x7a5f) % span) as usize
 }
 
 /// Signings and sales so far this window, by club.
@@ -199,7 +210,13 @@ fn list_unwanted(game: &mut Game, team_id: &str, opens_on: &str) {
     let already_listed = squad_of(game, team_id)
         .filter(|p| p.transfer_listed)
         .count();
-    let mut room = window_quota(team_id, opens_on, "sell").saturating_sub(sold + already_listed);
+    let mut room = window_quota(
+        team_id,
+        opens_on,
+        game.season_context.transfer_window.kind,
+        "sell",
+    )
+    .saturating_sub(sold + already_listed);
     if room == 0 {
         return;
     }
@@ -325,7 +342,14 @@ fn buy_for_need(game: &mut Game, team_id: &str, opens_on: &str, first_choices: &
         return;
     };
     let deals = window_deals(game, opens_on);
-    if deals.get(team_id).map_or(0, |d| d.bought) >= window_quota(team_id, opens_on, "buy") {
+    if deals.get(team_id).map_or(0, |d| d.bought)
+        >= window_quota(
+            team_id,
+            opens_on,
+            game.season_context.transfer_window.kind,
+            "buy",
+        )
+    {
         return;
     }
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
@@ -405,7 +429,15 @@ fn prospects_for(
             let spare = depths
                 .get(owner_id)
                 .is_none_or(|seniors| can_spare_one(*seniors, &player.position));
-            if !spare || owner_sold >= window_quota(owner_id, opens_on, "sell") {
+            if !spare
+                || owner_sold
+                    >= window_quota(
+                        owner_id,
+                        opens_on,
+                        game.season_context.transfer_window.kind,
+                        "sell",
+                    )
+            {
                 continue;
             }
         }
@@ -652,10 +684,38 @@ mod tests {
     #[test]
     fn window_quotas_are_three_to_seven_and_stable() {
         let quotas: Vec<usize> = (0..200)
-            .map(|index| window_quota(&format!("club-{index}"), "2026-06-15", "buy"))
+            .map(|index| {
+                window_quota(
+                    &format!("club-{index}"),
+                    "2026-06-15",
+                    TransferWindowKind::Summer,
+                    "buy",
+                )
+            })
             .collect();
         assert!(quotas.iter().all(|q| (3..=7).contains(q)));
-        assert_eq!(quotas[0], window_quota("club-0", "2026-06-15", "buy"));
+        assert_eq!(
+            quotas[0],
+            window_quota("club-0", "2026-06-15", TransferWindowKind::Summer, "buy")
+        );
+        assert!(quotas.iter().any(|q| *q != quotas[0]));
+    }
+
+    /// Given many clubs in a winter window, then each makes one to three deals:
+    /// January is a window for filling a gap, not for rebuilding a squad.
+    #[test]
+    fn winter_window_quotas_are_one_to_three() {
+        let quotas: Vec<usize> = (0..200)
+            .map(|index| {
+                window_quota(
+                    &format!("club-{index}"),
+                    "2027-01-01",
+                    TransferWindowKind::Winter,
+                    "buy",
+                )
+            })
+            .collect();
+        assert!(quotas.iter().all(|q| (1..=3).contains(q)));
         assert!(quotas.iter().any(|q| *q != quotas[0]));
     }
 

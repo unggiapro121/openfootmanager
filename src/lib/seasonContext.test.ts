@@ -189,7 +189,9 @@ describe("seasonContext", (): void => {
     expect(context.transfer_window.closes_on).toBe("2026-08-31");
   });
 
-  it("rolls the next transfer opening forward after the current window closes", (): void => {
+  // Given an August season after its summer window, then the next window is
+  // January's, as the backend has it.
+  it("rolls the next transfer opening forward to the winter window", (): void => {
     const context = resolveSeasonContext(
       createGameState({
         clock: {
@@ -200,7 +202,40 @@ describe("seasonContext", (): void => {
     );
 
     expect(context.transfer_window.status).toBe("Closed");
-    expect(context.transfer_window.days_until_opens).toBe(290);
+    expect(context.transfer_window.kind).toBe("Winter");
+    expect(context.transfer_window.days_until_opens).toBe(108);
+    expect(context.transfer_window.opens_on).toBe("2027-01-01");
+    expect(context.transfer_window.closes_on).toBe("2027-01-31");
+  });
+
+  // Given mid-January, then the winter window is open.
+  it("opens the winter window in January", (): void => {
+    const context = resolveSeasonContext(
+      createGameState({
+        clock: {
+          current_date: "2027-01-15T12:00:00Z",
+          start_date: "2026-07-01T12:00:00Z",
+        },
+      }),
+    );
+
+    expect(context.transfer_window.status).toBe("Open");
+    expect(context.transfer_window.kind).toBe("Winter");
+    expect(context.transfer_window.days_remaining).toBe(16);
+  });
+
+  // Given February, after the winter window, then next summer's window is next.
+  it("looks to next summer once the winter window has closed", (): void => {
+    const context = resolveSeasonContext(
+      createGameState({
+        clock: {
+          current_date: "2027-02-10T12:00:00Z",
+          start_date: "2026-07-01T12:00:00Z",
+        },
+      }),
+    );
+
+    expect(context.transfer_window.kind).toBe("Summer");
     expect(context.transfer_window.opens_on).toBe("2027-07-02");
     expect(context.transfer_window.closes_on).toBe("2027-08-31");
   });

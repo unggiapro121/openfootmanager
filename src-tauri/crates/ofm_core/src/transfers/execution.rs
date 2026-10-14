@@ -577,14 +577,11 @@ pub fn process_pending_transfer_registrations(game: &mut Game) {
         .iter()
         .flat_map(|player| {
             player.transfer_offers.iter().filter_map(|offer| {
+                // A pending move waits for the next open window, and one is open
+                // now. Its stored date is not consulted: it is the window that was
+                // next when the move was agreed, and a save from before the winter
+                // window existed holds next summer's date for a January move.
                 if offer.status != TransferOfferStatus::PendingRegistration {
-                    return None;
-                }
-
-                let registration_date = offer.registration_date.as_deref()?;
-                let registration_date =
-                    NaiveDate::parse_from_str(registration_date, "%Y-%m-%d").ok()?;
-                if registration_date > current_date {
                     return None;
                 }
 

@@ -2,10 +2,16 @@ use crate::end_of_season::{is_league_complete, is_season_complete};
 use crate::game::Game;
 use chrono::{Datelike, Duration, NaiveDate};
 use domain::league::League;
-use domain::season::{SeasonContext, SeasonPhase, TransferWindowContext, TransferWindowStatus};
+use domain::season::{
+    SeasonContext, SeasonPhase, TransferWindowContext, TransferWindowKind, TransferWindowStatus,
+};
 
 const TRANSFER_WINDOW_PRESEASON_DAYS: i64 = 30;
 const TRANSFER_WINDOW_POST_START_DAYS: i64 = 30;
+/// The winter window opens on the first of the month this many months after the
+/// season's opening month — January for an August season, June for a January one
+/// — and runs to the end of that month.
+const WINTER_WINDOW_MONTHS_AFTER_START: u32 = 5;
 
 pub fn refresh_game_context(game: &mut Game) {
     game.season_context = derive_season_context(game);
@@ -79,14 +85,17 @@ fn derive_transfer_window_context(
         return TransferWindowContext::default();
     };
 
-    let mut opens_on = transfer_window_opens_on(window_season_start);
-    let mut closes_on = transfer_window_closes_on(window_season_start);
-
-    while current_date > closes_on {
+    // The window in force, or the next to open: each season has its summer
+    // window and then its winter one, and past both lie the next season's.
+    let (kind, opens_on, closes_on) = loop {
+        let upcoming = season_windows(window_season_start)
+            .into_iter()
+            .find(|(_, _, closes_on)| current_date <= *closes_on);
+        if let Some(window) = upcoming {
+            break window;
+        }
         window_season_start = add_year_clamped(window_season_start);
-        opens_on = transfer_window_opens_on(window_season_start);
-        closes_on = transfer_window_closes_on(window_season_start);
-    }
+    };
 
     let (status, days_until_opens, days_remaining) = if current_date < opens_on {
         (
@@ -108,6 +117,7 @@ fn derive_transfer_window_context(
 
     TransferWindowContext {
         status,
+        kind,
         opens_on: Some(format_date(opens_on)),
         closes_on: Some(format_date(closes_on)),
         days_until_opens,
@@ -117,6 +127,31 @@ fn derive_transfer_window_context(
 
 fn format_date(date: NaiveDate) -> String {
     date.format("%Y-%m-%d").to_string()
+}
+
+/// A season's two windows in the order they open: summer, then winter.
+fn season_windows(season_start: NaiveDate) -> [(TransferWindowKind, NaiveDate, NaiveDate); 2] {
+    let winter_opens_on = season_start
+        .with_day(1)
+        .and_then(|first| {
+            first.checked_add_months(chrono::Months::new(WINTER_WINDOW_MONTHS_AFTER_START))
+        })
+        .unwrap_or(season_start);
+    let winter_closes_on = winter_opens_on
+        .checked_add_months(chrono::Months::new(1))
+        .map_or(winter_opens_on, |next_month| next_month - Duration::days(1));
+    [
+        (
+            TransferWindowKind::Summer,
+            transfer_window_opens_on(season_start),
+            transfer_window_closes_on(season_start),
+        ),
+        (
+            TransferWindowKind::Winter,
+            winter_opens_on,
+            winter_closes_on,
+        ),
+    ]
 }
 
 fn transfer_window_opens_on(season_start: NaiveDate) -> NaiveDate {
@@ -150,7 +185,7 @@ mod tests {
         Fixture, FixtureCompetition, FixtureStatus, League, MatchResult, StandingEntry,
     };
     use domain::manager::Manager;
-    use domain::season::{SeasonPhase, TransferWindowStatus};
+    use domain::season::{SeasonPhase, TransferWindowKind, TransferWindowStatus};
     use domain::team::Team;
 
     /// The dashboard decides whether to show the end-of-season screen, and it
@@ -329,6 +364,65 @@ mod tests {
         assert_eq!(context.transfer_window.days_remaining, Some(0));
     }
 
+    /// A season opening on 1 August: its league fixture, and a game on `date`.
+    fn august_season_on(date: (i32, u32, u32)) -> Game {
+        let league = League {
+            id: "league1".to_string(),
+            name: "Premier Division".to_string(),
+            season: 2026,
+            fixtures: vec![make_fixture(
+                "fx1",
+                "2026-08-01",
+                FixtureStatus::Completed,
+                1,
+            )],
+            standings: vec![
+                StandingEntry::new("team1".to_string()),
+                StandingEntry::new("team2".to_string()),
+            ],
+            ..Default::default()
+        };
+        make_game(date, Some(league))
+    }
+
+    /// Given an August season in mid-January,
+    /// When the season context is derived,
+    /// Then the winter window is open, running through January.
+    #[test]
+    fn opens_the_winter_window_in_january() {
+        let context = derive_season_context(&august_season_on((2027, 1, 15)));
+
+        assert_eq!(context.transfer_window.status, TransferWindowStatus::Open);
+        assert_eq!(context.transfer_window.kind, TransferWindowKind::Winter);
+        assert_eq!(
+            context.transfer_window.opens_on.as_deref(),
+            Some("2027-01-01")
+        );
+        assert_eq!(
+            context.transfer_window.closes_on.as_deref(),
+            Some("2027-01-31")
+        );
+        assert_eq!(context.transfer_window.days_remaining, Some(16));
+    }
+
+    /// Given an August season in February, after the winter window,
+    /// When the season context is derived,
+    /// Then the next window is the following summer's.
+    #[test]
+    fn looks_to_next_summer_once_the_winter_window_has_closed() {
+        let context = derive_season_context(&august_season_on((2027, 2, 10)));
+
+        assert_eq!(context.transfer_window.status, TransferWindowStatus::Closed);
+        assert_eq!(context.transfer_window.kind, TransferWindowKind::Summer);
+        assert_eq!(
+            context.transfer_window.opens_on.as_deref(),
+            Some("2027-07-02")
+        );
+    }
+
+    /// Given an August season in mid-September, after the summer window,
+    /// When the season context is derived,
+    /// Then the next window is January's, not next summer's.
     #[test]
     fn derives_next_window_after_current_window_has_closed() {
         let league = League {
@@ -354,15 +448,16 @@ mod tests {
         let context = derive_season_context(&game);
 
         assert_eq!(context.transfer_window.status, TransferWindowStatus::Closed);
+        assert_eq!(context.transfer_window.kind, TransferWindowKind::Winter);
         assert_eq!(
             context.transfer_window.opens_on.as_deref(),
-            Some("2027-07-02")
+            Some("2027-01-01")
         );
         assert_eq!(
             context.transfer_window.closes_on.as_deref(),
-            Some("2027-08-31")
+            Some("2027-01-31")
         );
-        assert_eq!(context.transfer_window.days_until_opens, Some(290));
+        assert_eq!(context.transfer_window.days_until_opens, Some(108));
         assert_eq!(context.transfer_window.days_remaining, None);
     }
 

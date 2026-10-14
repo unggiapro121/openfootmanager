@@ -822,8 +822,13 @@ export type SeasonPhase = "Preseason" | "InSeason" | "PostSeason";
 
 export type TransferWindowStatus = "Closed" | "Open" | "DeadlineDay";
 
+/** Which of a season's two windows. Mirrors `TransferWindowKind` in the domain crate. */
+export type TransferWindowKind = "Summer" | "Winter";
+
 export interface TransferWindowContextData {
   status: TransferWindowStatus;
+  /** Absent in contexts from before the winter window existed: read as Summer. */
+  kind?: TransferWindowKind;
   opens_on: string | null;
   closes_on: string | null;
   days_until_opens: number | null;
