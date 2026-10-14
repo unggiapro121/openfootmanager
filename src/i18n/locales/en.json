@@ -1496,26 +1496,7 @@
     "transferFeedbackCounterHeadline": "They want more before shaking hands.",
     "transferFeedbackCounterDetail": "The bid was close enough to keep talking, but their side are signalling a price nearer {{fee}}.",
     "transferFeedbackRejectedHeadline": "They shut this round down.",
-    "transferFeedbackRejectedDetail": "The proposal did not move them enough. You would need a stronger fee, closer to {{fee}}, to reopen serious talks.",
-    "filters": {
-      "button": "Filters",
-      "buttonActive": "Filters ({{count}} on)",
-      "title": "Filter players",
-      "min": "From",
-      "max": "To",
-      "position": "Position",
-      "positionGroup": "Position group",
-      "specificPosition": "Specific position",
-      "anyPositionGroup": "Any group",
-      "anyPosition": "Any position",
-      "competition": "Competition",
-      "region": "Region",
-      "country": "Country",
-      "league": "League",
-      "anyRegion": "Any region",
-      "anyCountry": "Any country",
-      "clear": "Clear filters"
-    }
+    "transferFeedbackRejectedDetail": "The proposal did not move them enough. You would need a stronger fee, closer to {{fee}}, to reopen serious talks."
   },
   "transferCentreWorld": {
     "title": "Transfer Centre",
@@ -2911,7 +2892,9 @@
         "selectorMissingSource": "This selector needs a source competition.",
         "unknownExcludedCompetition": "Unknown excluded competition \"{{excluded}}\".",
         "selectorCycle": "Circular qualification between competitions.",
-        "duplicateTierPriority": "Divisions of {{country}} share priority {{priority}}. Lower is the higher division, and each tier needs its own number, or none of them is promoted or relegated."
+        "duplicateTierPriority": "Divisions of {{country}} share priority {{priority}}. Lower is the higher division, and each tier needs its own number, or none of them is promoted or relegated.",
+        "roundDatesOnNonKnockout": "Round dates only apply to a knockout format.",
+        "invalidRoundDate": "Round date \"{{date}}\" is not a day of the year. Use MM-DD, for example 05-16."
       },
       "worldParseFailed": "Failed to parse the world database file.",
       "worldWriteFileFailed": "Failed to export the world database file.",
@@ -4427,5 +4410,24 @@
     "review": "Review what is sent",
     "saveAndOpen": "Save the file and open GitHub",
     "working": "Working…"
+  },
+  "playerFilters": {
+    "button": "Filters",
+    "buttonActive": "Filters ({{count}} on)",
+    "title": "Filter players",
+    "min": "From",
+    "max": "To",
+    "position": "Position",
+    "positionGroup": "Position group",
+    "specificPosition": "Specific position",
+    "anyPositionGroup": "Any group",
+    "anyPosition": "Any position",
+    "competition": "Competition",
+    "region": "Region",
+    "country": "Country",
+    "league": "League",
+    "anyRegion": "Any region",
+    "anyCountry": "Any country",
+    "clear": "Clear filters"
   }
 }

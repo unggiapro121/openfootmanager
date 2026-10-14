@@ -13,6 +13,7 @@ pub mod clock;
 pub mod club;
 pub mod contract_wage_policy;
 pub mod contracts;
+pub(crate) mod cup_calendar;
 pub mod currency;
 pub mod delegated_renewals;
 pub mod development_speed;

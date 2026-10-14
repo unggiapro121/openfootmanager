@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type { TeamCard, TeamsDirectory } from "../../services/teamsService";
 import { buildDirectoryTree } from "../teams/TeamsListTab.helpers";
-import { buildLeagueFilterGroups, buildTeamFilterGroups } from "./PlayersListTab.helpers";
+import { buildTeamFilterGroups } from "./PlayersListTab.helpers";
 
 const t = ((key: string, options?: Record<string, unknown>) =>
   key.startsWith("nations.")
@@ -40,28 +40,10 @@ const directory: TeamsDirectory = {
 
 const tree = buildDirectoryTree(directory, t);
 
-describe("buildLeagueFilterGroups", () => {
-  // Given leagues across regions, then each region is a group of its leagues,
-  // each league labelled with its country, and clubs in no league offer no league.
-  it("groups leagues by region, naming each league's country", () => {
-    expect(buildLeagueFilterGroups(tree)).toEqual([
-      {
-        id: "europe",
-        label: "Europe",
-        options: [
-          { id: "eng-1", name: "Premier (Nation eng)" },
-          { id: "eng-2", name: "Championship (Nation eng)" },
-          { id: "esp-1", name: "La Liga (Nation esp)" },
-        ],
-      },
-    ]);
-  });
-});
-
 describe("buildTeamFilterGroups", () => {
-  // Given no league is chosen, then every club is offered, grouped by league,
+  // Given no competition scope, then every club is offered, grouped by league,
   // clubs in name order and clubs in no league last.
-  it("groups every club by league when no league is chosen", () => {
+  it("groups every club by league when no scope is chosen", () => {
     const groups = buildTeamFilterGroups(tree, null);
 
     expect(groups.map((group) => group.label)).toEqual([
@@ -76,15 +58,17 @@ describe("buildTeamFilterGroups", () => {
     ]);
   });
 
-  // Given a league is chosen, then only that league's clubs are offered.
-  it("offers only the chosen league's clubs", () => {
-    expect(buildTeamFilterGroups(tree, "eng-2")).toEqual([
+  // Given the clubs of a scope, then only they are offered, under their own
+  // leagues, and a league with none of them is left out.
+  it("offers only the clubs of the scope", () => {
+    expect(buildTeamFilterGroups(tree, new Set(["lee", "che"]))).toEqual([
+      { id: "eng-1", label: "Premier (Nation eng)", options: [{ id: "che", name: "Chelsea" }] },
       { id: "eng-2", label: "Championship (Nation eng)", options: [{ id: "lee", name: "Leeds" }] },
     ]);
   });
 
-  // Given a league id the directory does not know, then no club is offered.
-  it("offers nothing for an unknown league", () => {
-    expect(buildTeamFilterGroups(tree, "missing")).toEqual([]);
+  // Given a scope with no clubs, then no club is offered.
+  it("offers nothing for an empty scope", () => {
+    expect(buildTeamFilterGroups(tree, new Set())).toEqual([]);
   });
 });

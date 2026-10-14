@@ -19,6 +19,7 @@ import { type GameStateData, type LeagueData, useGameStore } from "../../store/g
 import {
   fetchSchedule,
   type MatchdayGroup,
+  type ScheduleQuery,
   type ScheduleSlice,
 } from "../../services/scheduleService";
 import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/errorMessage";
@@ -47,12 +48,49 @@ function sortStandings(competition: LeagueData | null): LeagueData["standings"] 
 
 type View = "calendar" | "fixtures" | "standings" | "international";
 
+type TFunction = ReturnType<typeof useTranslation>["t"];
+
+/** The schedule `query` asks for, refetched whenever the query or `refreshKey` changes. */
+function useScheduleSlice(
+  query: ScheduleQuery | null,
+  refreshKey: string,
+  t: TFunction,
+): { slice: ScheduleSlice | null; error: string | null } {
+  const [slice, setSlice] = useState<ScheduleSlice | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const competitionId = query?.competition_id ?? null;
+  const club = query?.club ?? false;
+
+  useEffect(() => {
+    if (competitionId === null) {
+      setSlice(null);
+      return;
+    }
+    let cancelled = false;
+    fetchSchedule(
+      club ? { competition_id: competitionId, club } : { competition_id: competitionId },
+    )
+      .then((result) => {
+        if (cancelled) return;
+        setSlice(result);
+        setError(null);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(resolveTranslatedErrorMessage(getErrorMessage(err), t));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [competitionId, club, refreshKey, t]);
+
+  return { slice, error };
+}
+
 export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProps) {
   const { t } = useTranslation();
   const [view, setView] = useState<View>("calendar");
   const [selectedCompetitionId, setSelectedCompetitionId] = useState<string | null>(null);
-  const [slice, setSlice] = useState<ScheduleSlice | null>(null);
-  const [fetchError, setFetchError] = useState<string | null>(null);
   const [visiblePastCount, setVisiblePastCount] = useState(PAST_PAGE_SIZE);
   const groupRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -75,10 +113,27 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
     userCompetitions[0] ??
     activeCompetitions[0] ??
     null;
+  const currentDate = gameState.clock.current_date;
+  const { slice, error: sliceError } = useScheduleSlice(
+    selectedCompetition ? { competition_id: selectedCompetition.id } : null,
+    currentDate,
+    t,
+  );
+  // The calendar is the club's whole season, cups beside the league.
+  const { slice: clubSlice, error: clubError } = useScheduleSlice(
+    selectedCompetition ? { competition_id: "", club: true } : null,
+    currentDate,
+    t,
+  );
+  const fetchError = view === "calendar" ? clubError : sliceError;
   const sliceCompetition = activeCompetitions.find((c) => c.id === slice?.competition_id);
   const sliceCompetitionName = sliceCompetition
     ? competitionDisplayName(sliceCompetition, t)
     : (slice?.competition_name ?? "");
+  const groupCompetitionName = (group: MatchdayGroup): string => {
+    const competition = activeCompetitions.find((c) => c.id === group.fixtures[0]?.competition_id);
+    return competition ? competitionDisplayName(competition, t) : "";
+  };
 
   // Initialise the competition selection.
   useEffect(() => {
@@ -96,28 +151,6 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
     setSelectedCompetitionId(preferred);
   }, [activeCompetitions, selectedCompetitionId, userCompetitions]);
 
-  // Fetch schedule slice whenever the competition changes.
-  useEffect(() => {
-    if (!selectedCompetition) {
-      setSlice(null);
-      return;
-    }
-    let cancelled = false;
-    fetchSchedule({ competition_id: selectedCompetition.id })
-      .then((result) => {
-        if (cancelled) return;
-        setSlice(result);
-        setFetchError(null);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setFetchError(resolveTranslatedErrorMessage(getErrorMessage(err), t));
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedCompetition?.id, t]);
-
   // Reset past-group paging when competition changes.
   useEffect(() => {
     setVisiblePastCount(PAST_PAGE_SIZE);
@@ -130,13 +163,13 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
     }
   }, []);
 
-  // Auto-scroll to the next user fixture on load when mid-season (past groups present).
+  // Auto-scroll the calendar to the next user fixture on load when mid-season.
   useEffect(() => {
-    if (!slice?.next_user_match_date || slice.past_groups.length === 0) return;
-    const date = slice.next_user_match_date;
+    if (!clubSlice?.next_user_match_date || clubSlice.past_groups.length === 0) return;
+    const date = clubSlice.next_user_match_date;
     const id = setTimeout(() => scrollToDate(date), 50);
     return () => clearTimeout(id);
-  }, [slice?.competition_id, slice?.next_user_match_date, slice?.past_groups.length, scrollToDate]);
+  }, [clubSlice?.next_user_match_date, clubSlice?.past_groups.length, scrollToDate]);
 
   const buildTeamMenuItem = (label: string, teamId: string): ContextMenuItem => ({
     label,
@@ -149,7 +182,7 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
     );
   }
 
-  const competitionSwitcher = activeCompetitions.length > 1 && (
+  const competitionSwitcher = view !== "calendar" && activeCompetitions.length > 1 && (
     <Select
       value={selectedCompetition?.id ?? ""}
       onChange={(e) => setSelectedCompetitionId(e.target.value)}
@@ -218,8 +251,8 @@ export default function ScheduleTab({ gameState, onSelectTeam }: ScheduleTabProp
 
       {view === "calendar" && (
         <CalendarView
-          slice={slice}
-          competitionName={sliceCompetitionName}
+          slice={clubSlice}
+          competitionNameOf={groupCompetitionName}
           userTeamId={userTeamId ?? null}
           groupRefs={groupRefs}
           visiblePastCount={visiblePastCount}
@@ -305,7 +338,7 @@ function ViewButton({
 
 function CalendarView({
   slice,
-  competitionName,
+  competitionNameOf,
   userTeamId,
   groupRefs,
   visiblePastCount,
@@ -316,7 +349,7 @@ function CalendarView({
   t,
 }: {
   slice: ScheduleSlice | null;
-  competitionName: string;
+  competitionNameOf: (group: MatchdayGroup) => string;
   userTeamId: string | null;
   groupRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
   visiblePastCount: number;
@@ -350,7 +383,7 @@ function CalendarView({
               group={group}
               userTeamId={userTeamId}
               groupRefs={groupRefs}
-              competitionName={competitionName}
+              competitionName={competitionNameOf(group)}
               onSelectTeam={onSelectTeam}
               buildTeamMenuItem={buildTeamMenuItem}
               t={t}
@@ -380,7 +413,7 @@ function CalendarView({
                 group={group}
                 userTeamId={userTeamId}
                 groupRefs={groupRefs}
-                competitionName={competitionName}
+                competitionName={competitionNameOf(group)}
                 dimmed
                 onSelectTeam={onSelectTeam}
                 buildTeamMenuItem={buildTeamMenuItem}

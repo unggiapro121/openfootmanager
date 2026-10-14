@@ -1,22 +1,6 @@
 import type { GameStateData, PlayerData } from "../../store/gameStore";
 import { canonicalPosition, normalisePosition } from "../squad/SquadTab.helpers";
 
-// Specific positions grouped by the broad category they refine. Used both by
-// the position-refinement popover in TransfersTab.tsx and as default selections
-// when a group is activated.
-export const SPECIFIC_POSITIONS_BY_GROUP: Record<string, string[]> = {
-  Goalkeeper: ["Goalkeeper"],
-  Defender: ["CenterBack", "LeftBack", "RightBack", "LeftWingBack", "RightWingBack"],
-  Midfielder: [
-    "DefensiveMidfielder",
-    "CentralMidfielder",
-    "AttackingMidfielder",
-    "LeftMidfielder",
-    "RightMidfielder",
-  ],
-  Forward: ["LeftWinger", "RightWinger", "Striker"],
-};
-
 export type TransferTabView = "my_list" | "players" | "offers";
 
 export type TransferAvailabilityFilter = "all" | "transfer" | "loan" | "free_agent";

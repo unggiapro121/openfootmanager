@@ -1496,26 +1496,7 @@
     "transferFeedbackCounterHeadline": "他们希望得到更多才肯握手。",
     "transferFeedbackCounterDetail": "出价已足够接近,谈判仍在继续,但对方暗示的价位更接近 {{fee}}。",
     "transferFeedbackRejectedHeadline": "他们这一轮直接关闭了谈判。",
-    "transferFeedbackRejectedDetail": "该报价未能打动他们。你需要更有力的报价,接近 {{fee}},才能重启正式谈判。",
-    "filters": {
-      "button": "筛选",
-      "buttonActive": "筛选（已启用 {{count}} 项）",
-      "title": "筛选球员",
-      "min": "从",
-      "max": "到",
-      "position": "位置",
-      "positionGroup": "位置类别",
-      "specificPosition": "具体位置",
-      "anyPositionGroup": "任意类别",
-      "anyPosition": "任意位置",
-      "competition": "赛事",
-      "region": "地区",
-      "country": "国家",
-      "league": "联赛",
-      "anyRegion": "任意地区",
-      "anyCountry": "任意国家",
-      "clear": "清除筛选"
-    }
+    "transferFeedbackRejectedDetail": "该报价未能打动他们。你需要更有力的报价,接近 {{fee}},才能重启正式谈判。"
   },
   "transferCentreWorld": {
     "title": "转会中心",
@@ -2886,7 +2867,9 @@
         "selectorMissingSource": "该选择器需要一个来源赛事。",
         "unknownExcludedCompetition": "未知的排除赛事“{{excluded}}”。",
         "selectorCycle": "赛事之间存在循环资格依赖。",
-        "duplicateTierPriority": "{{country}} 有多个级别的优先级同为 {{priority}}。数值越小级别越高，每个级别需要各自的数值，否则它们都不会升降级。"
+        "duplicateTierPriority": "{{country}} 有多个级别的优先级同为 {{priority}}。数值越小级别越高，每个级别需要各自的数值，否则它们都不会升降级。",
+        "roundDatesOnNonKnockout": "轮次日期仅适用于淘汰赛赛制。",
+        "invalidRoundDate": "轮次日期“{{date}}”不是一年中的某一天。请使用 MM-DD 格式，例如 05-16。"
       },
       "worldParseFailed": "解析世界数据库文件失败。",
       "worldWriteFileFailed": "导出世界数据库文件失败。",
@@ -4427,5 +4410,24 @@
     "review": "查看将发送的内容",
     "saveAndOpen": "保存文件并打开 GitHub",
     "working": "处理中……"
+  },
+  "playerFilters": {
+    "button": "筛选",
+    "buttonActive": "筛选（已启用 {{count}} 项）",
+    "title": "筛选球员",
+    "min": "从",
+    "max": "到",
+    "position": "位置",
+    "positionGroup": "位置类别",
+    "specificPosition": "具体位置",
+    "anyPositionGroup": "任意类别",
+    "anyPosition": "任意位置",
+    "competition": "赛事",
+    "region": "地区",
+    "country": "国家",
+    "league": "联赛",
+    "anyRegion": "任意地区",
+    "anyCountry": "任意国家",
+    "clear": "清除筛选"
   }
 }

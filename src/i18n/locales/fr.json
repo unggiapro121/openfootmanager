@@ -1496,26 +1496,7 @@
     "transferFeedbackCounterHeadline": "Ils veulent plus avant de conclure.",
     "transferFeedbackCounterDetail": "L'offre était assez proche pour continuer à parler, mais leur camp vise plutôt un prix autour de {{fee}}.",
     "transferFeedbackRejectedHeadline": "Ils ont fermé cette manche.",
-    "transferFeedbackRejectedDetail": "La proposition ne les a pas assez fait bouger. Il faudrait une somme plus forte, plus proche de {{fee}}, pour rouvrir des discussions sérieuses.",
-    "filters": {
-      "button": "Filtres",
-      "buttonActive": "Filtres ({{count}} actifs)",
-      "title": "Filtrer les joueurs",
-      "min": "De",
-      "max": "À",
-      "position": "Poste",
-      "positionGroup": "Groupe de postes",
-      "specificPosition": "Poste précis",
-      "anyPositionGroup": "Tous les groupes",
-      "anyPosition": "Tous les postes",
-      "competition": "Compétition",
-      "region": "Région",
-      "country": "Pays",
-      "league": "Ligue",
-      "anyRegion": "Toutes les régions",
-      "anyCountry": "Tous les pays",
-      "clear": "Effacer les filtres"
-    }
+    "transferFeedbackRejectedDetail": "La proposition ne les a pas assez fait bouger. Il faudrait une somme plus forte, plus proche de {{fee}}, pour rouvrir des discussions sérieuses."
   },
   "transferCentreWorld": {
     "title": "Centre des transferts",
@@ -2886,7 +2867,9 @@
         "selectorMissingSource": "Ce sélecteur nécessite une compétition source.",
         "unknownExcludedCompetition": "Compétition exclue inconnue \"{{excluded}}\".",
         "selectorCycle": "Qualification circulaire entre compétitions.",
-        "duplicateTierPriority": "Des divisions de {{country}} partagent la priorité {{priority}}. Plus le nombre est bas, plus la division est élevée, et chaque échelon a besoin du sien, sinon aucune ne monte ni ne descend."
+        "duplicateTierPriority": "Des divisions de {{country}} partagent la priorité {{priority}}. Plus le nombre est bas, plus la division est élevée, et chaque échelon a besoin du sien, sinon aucune ne monte ni ne descend.",
+        "roundDatesOnNonKnockout": "Les dates de tour ne s'appliquent qu'à un format à élimination directe.",
+        "invalidRoundDate": "La date de tour « {{date}} » n'est pas un jour de l'année. Utilisez MM-JJ, par exemple 05-16."
       },
       "worldParseFailed": "Impossible d'interpréter le fichier de base de données du monde.",
       "worldWriteFileFailed": "Impossible d'exporter le fichier de base de données du monde.",
@@ -4427,5 +4410,24 @@
     "review": "Vérifier ce qui est envoyé",
     "saveAndOpen": "Enregistrer le fichier et ouvrir GitHub",
     "working": "En cours…"
+  },
+  "playerFilters": {
+    "button": "Filtres",
+    "buttonActive": "Filtres ({{count}} actifs)",
+    "title": "Filtrer les joueurs",
+    "min": "De",
+    "max": "À",
+    "position": "Poste",
+    "positionGroup": "Groupe de postes",
+    "specificPosition": "Poste précis",
+    "anyPositionGroup": "Tous les groupes",
+    "anyPosition": "Tous les postes",
+    "competition": "Compétition",
+    "region": "Région",
+    "country": "Pays",
+    "league": "Ligue",
+    "anyRegion": "Toutes les régions",
+    "anyCountry": "Tous les pays",
+    "clear": "Effacer les filtres"
   }
 }

@@ -179,6 +179,13 @@ fn process_day_common(game: &mut Game, today: &str) {
     // Weekly financial processing (wages, matchday income, warnings)
     crate::finances::process_weekly_finances(game);
 
+    // A cup round seeded since yesterday (its last round just finished) is
+    // moved off its clubs' league days; rounds already clear do not move.
+    crate::cup_calendar::settle_cup_rounds(
+        &mut game.competitions,
+        game.clock.current_date.date_naive(),
+    );
+
     // Board objectives (generate if missing, update progress)
     board_objectives::generate_objectives(game);
     board_objectives::update_objective_progress(game);

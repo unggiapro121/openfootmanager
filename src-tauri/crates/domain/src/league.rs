@@ -65,6 +65,12 @@ pub struct CompetitionRules {
     /// like the World Cup where multiple matches happen on the same day.
     #[serde(default = "default_knockout_matches_per_day")]
     pub knockout_matches_per_day: u32,
+    /// Knockout only: the calendar day ("MM-DD") each round is played on, in
+    /// order, the final last. A bracket with fewer rounds takes the last dates,
+    /// as clubs that start later skip the early rounds. Empty: rounds follow
+    /// `knockout_round_gap_days`.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub knockout_round_dates: Vec<String>,
 }
 
 fn default_knockout_matches_per_day() -> u32 {
@@ -84,6 +90,7 @@ impl Default for CompetitionRules {
             group_matchday_gap_days: 7,
             knockout_round_gap_days: 14,
             knockout_matches_per_day: 1,
+            knockout_round_dates: Vec::new(),
         }
     }
 }

@@ -6,6 +6,10 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, Deserialize)]
 pub struct ScheduleQuery {
     pub competition_id: String,
+    /// The user's club's own matches in every competition, instead of one
+    /// competition's whole schedule; `competition_id` is then ignored.
+    #[serde(default)]
+    pub club: bool,
 }
 
 #[derive(Debug, Serialize, PartialEq, Eq)]
@@ -61,11 +65,39 @@ pub struct ScheduleSlice {
 }
 
 pub fn query_schedule(game: &Game, query: &ScheduleQuery) -> Option<ScheduleSlice> {
+    let user_team_id = game.manager.team_id.as_deref().unwrap_or("");
+    if query.club {
+        // Every competition's matches of the user's club: its whole season in one
+        // calendar, cups and continental ties beside the league.
+        let fixtures: Vec<&Fixture> = game
+            .competitions
+            .iter()
+            .flat_map(|competition| competition.fixtures.iter())
+            .filter(|f| f.home_team_id == user_team_id || f.away_team_id == user_team_id)
+            .collect();
+        return Some(build_slice(game, String::new(), String::new(), &fixtures));
+    }
     let competition = game
         .competitions
         .iter()
         .find(|c| c.id == query.competition_id)?;
+    let fixtures: Vec<&Fixture> = competition.fixtures.iter().collect();
+    Some(build_slice(
+        game,
+        competition.id.clone(),
+        competition.name.clone(),
+        &fixtures,
+    ))
+}
 
+/// The schedule of `fixtures` in matchday groups, split into past and upcoming
+/// around the game date, with the user's next match marked.
+fn build_slice(
+    game: &Game,
+    competition_id: String,
+    competition_name: String,
+    fixtures: &[&Fixture],
+) -> ScheduleSlice {
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
     let user_team_id = game.manager.team_id.as_deref().unwrap_or("");
 
@@ -80,7 +112,7 @@ pub fn query_schedule(game: &Game, query: &ScheduleQuery) -> Option<ScheduleSlic
     // Key format mirrors the frontend's getFixtureGroupKey.
     let mut groups: BTreeMap<String, Vec<FixtureSummary>> = BTreeMap::new();
 
-    let mut sorted_fixtures: Vec<&Fixture> = competition.fixtures.iter().collect();
+    let mut sorted_fixtures: Vec<&Fixture> = fixtures.to_vec();
     sorted_fixtures.sort_by(|a, b| a.date.cmp(&b.date).then(a.matchday.cmp(&b.matchday)));
 
     for fixture in sorted_fixtures {
@@ -90,8 +122,7 @@ pub fn query_schedule(game: &Game, query: &ScheduleQuery) -> Option<ScheduleSlic
     }
 
     // Find the key of the group containing the user's earliest upcoming match.
-    let next_user_match_key: Option<String> = competition
-        .fixtures
+    let next_user_match_key: Option<String> = fixtures
         .iter()
         .filter(|f| {
             f.status == FixtureStatus::Scheduled
@@ -99,7 +130,7 @@ pub fn query_schedule(game: &Game, query: &ScheduleQuery) -> Option<ScheduleSlic
                 && (f.home_team_id == user_team_id || f.away_team_id == user_team_id)
         })
         .min_by_key(|f| &f.date)
-        .map(group_key);
+        .map(|fixture| group_key(fixture));
 
     let next_user_match_date = next_user_match_key.as_deref().and_then(|key| {
         groups
@@ -144,14 +175,14 @@ pub fn query_schedule(game: &Game, query: &ScheduleQuery) -> Option<ScheduleSlic
     upcoming_groups.sort_by(|a, b| a.date.cmp(&b.date));
     past_groups.sort_by(|a, b| b.date.cmp(&a.date));
 
-    Some(ScheduleSlice {
-        competition_id: competition.id.clone(),
-        competition_name: competition.name.clone(),
+    ScheduleSlice {
+        competition_id,
+        competition_name,
         today,
         past_groups,
         upcoming_groups,
         next_user_match_date,
-    })
+    }
 }
 
 fn group_key(fixture: &Fixture) -> String {
@@ -326,11 +357,77 @@ mod tests {
         game
     }
 
+    /// Given the user's club in a league and a cup, and a cup tie it is not in,
+    /// When the club's schedule is asked for,
+    /// Then it lists the club's own matches of both competitions, in date order,
+    /// each under its own competition, and nobody else's.
+    #[test]
+    fn the_club_schedule_lists_the_clubs_matches_in_every_competition() {
+        let mut game = make_game(
+            vec![
+                make_fixture(
+                    "l1",
+                    1,
+                    "2026-08-10",
+                    "user-team",
+                    "other-team",
+                    FixtureStatus::Scheduled,
+                ),
+                make_fixture(
+                    "l2",
+                    2,
+                    "2026-08-17",
+                    "other-team",
+                    "user-team",
+                    FixtureStatus::Scheduled,
+                ),
+            ],
+            "2026-08-01",
+            "user-team",
+        );
+        let cup_tie = |id: &str, home: &str, away: &str| Fixture {
+            competition_id: "cup-1".to_string(),
+            competition: FixtureCompetition::Cup,
+            ..make_fixture(id, 1, "2026-08-13", home, away, FixtureStatus::Scheduled)
+        };
+        game.competitions.push(League {
+            id: "cup-1".to_string(),
+            name: "Test Cup".to_string(),
+            fixtures: vec![
+                cup_tie("c1", "user-team", "other-team"),
+                cup_tie("c2", "other-team", "third-team"),
+            ],
+            ..Default::default()
+        });
+
+        let slice = query_schedule(
+            &game,
+            &ScheduleQuery {
+                competition_id: String::new(),
+                club: true,
+            },
+        )
+        .expect("a club schedule");
+
+        let listed: Vec<(&str, &str)> = slice
+            .upcoming_groups
+            .iter()
+            .flat_map(|group| group.fixtures.iter())
+            .map(|fixture| (fixture.id.as_str(), fixture.competition_id.as_str()))
+            .collect();
+        assert_eq!(
+            listed,
+            [("l1", "league-1"), ("c1", "cup-1"), ("l2", "league-1")]
+        );
+        assert_eq!(slice.next_user_match_date.as_deref(), Some("2026-08-10"));
+    }
+
     #[test]
     fn returns_none_for_unknown_competition() {
         let game = make_game(vec![], "2026-08-15", "user-team");
         let query = ScheduleQuery {
             competition_id: "no-such-league".to_string(),
+            club: false,
         };
         assert!(query_schedule(&game, &query).is_none());
     }
@@ -361,6 +458,7 @@ mod tests {
             &game,
             &ScheduleQuery {
                 competition_id: "league-1".to_string(),
+                club: false,
             },
         )
         .unwrap();
@@ -399,6 +497,7 @@ mod tests {
             &game,
             &ScheduleQuery {
                 competition_id: "league-1".to_string(),
+                club: false,
             },
         )
         .unwrap();
@@ -426,6 +525,7 @@ mod tests {
             &game,
             &ScheduleQuery {
                 competition_id: "league-1".to_string(),
+                club: false,
             },
         )
         .unwrap();
@@ -454,6 +554,7 @@ mod tests {
             &game,
             &ScheduleQuery {
                 competition_id: "league-1".to_string(),
+                club: false,
             },
         )
         .unwrap();
@@ -495,6 +596,7 @@ mod tests {
             &game,
             &ScheduleQuery {
                 competition_id: "league-1".to_string(),
+                club: false,
             },
         )
         .unwrap();
@@ -526,6 +628,7 @@ mod tests {
             &game,
             &ScheduleQuery {
                 competition_id: "league-1".to_string(),
+                club: false,
             },
         )
         .unwrap();

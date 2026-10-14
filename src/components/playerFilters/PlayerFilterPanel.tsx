@@ -6,18 +6,17 @@ import { Select } from "../ui";
 import { translatePositionLabel } from "../squad/SquadTab.helpers";
 import type { DirectoryRegion } from "../teams/TeamsListTab.helpers";
 import {
-  MARKET_PANEL_DEFAULTS,
-  type TransferMarketFilters,
-  countActiveMarketFilters,
-} from "./TransfersTab.filters";
-import { SPECIFIC_POSITIONS_BY_GROUP } from "./TransfersTab.model";
+  PLAYER_FILTER_DEFAULTS,
+  POSITION_GROUPS,
+  type PlayerFilterValues,
+  SPECIFIC_POSITIONS_BY_GROUP,
+  countActivePlayerFilters,
+} from "./playerFilters";
 
-const POSITION_GROUPS = ["Goalkeeper", "Defender", "Midfielder", "Forward"] as const;
-
-interface TransferMarketFilterPanelProps {
-  filters: TransferMarketFilters;
+interface PlayerFilterPanelProps {
+  filters: PlayerFilterValues;
   /** Set some of the panel's fields; the caller resets the page. */
-  onChange: (patch: Partial<TransferMarketFilters>) => void;
+  onChange: (patch: Partial<PlayerFilterValues>) => void;
   /** Regions → countries → leagues, for the competition pickers. */
   directoryTree: DirectoryRegion[];
 }
@@ -35,20 +34,20 @@ function parseBound(value: string): number | null {
 }
 
 /**
- * The transfer market's filter button and the panel it opens: age and OVR
+ * The player filter button and the panel it opens: age and OVR
  * ranges, a position group then one of its positions, and a competition by
  * region, then country, then league. The badge counts the filters that are on.
  */
-export default function TransferMarketFilterPanel({
+export default function PlayerFilterPanel({
   filters,
   onChange,
   directoryTree,
-}: TransferMarketFilterPanelProps) {
+}: PlayerFilterPanelProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
-  const activeCount = countActiveMarketFilters(filters);
+  const activeCount = countActivePlayerFilters(filters);
 
   useEffect(() => {
     if (!open) return;
@@ -90,8 +89,8 @@ export default function TransferMarketFilterPanel({
           inputMode="numeric"
           min={bounds[0]}
           max={bounds[1]}
-          aria-label={`${label} ${t("transfers.filters.min")}`}
-          placeholder={t("transfers.filters.min")}
+          aria-label={`${label} ${t("playerFilters.min")}`}
+          placeholder={t("playerFilters.min")}
           value={filters[minKey] ?? ""}
           onChange={(event) => onChange({ [minKey]: parseBound(event.target.value) })}
           className={fieldClass}
@@ -104,8 +103,8 @@ export default function TransferMarketFilterPanel({
           inputMode="numeric"
           min={bounds[0]}
           max={bounds[1]}
-          aria-label={`${label} ${t("transfers.filters.max")}`}
-          placeholder={t("transfers.filters.max")}
+          aria-label={`${label} ${t("playerFilters.max")}`}
+          placeholder={t("playerFilters.max")}
           value={filters[maxKey] ?? ""}
           onChange={(event) => onChange({ [maxKey]: parseBound(event.target.value) })}
           className={fieldClass}
@@ -122,14 +121,14 @@ export default function TransferMarketFilterPanel({
         aria-controls={panelId}
         aria-label={
           activeCount > 0
-            ? t("transfers.filters.buttonActive", { count: activeCount })
-            : t("transfers.filters.button")
+            ? t("playerFilters.buttonActive", { count: activeCount })
+            : t("playerFilters.button")
         }
         onClick={() => setOpen((current) => !current)}
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${activeCount > 0 ? "bg-primary-700 text-white shadow-sm" : "bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600"}`}
       >
         <SlidersHorizontal className="w-4 h-4" aria-hidden="true" />
-        {t("transfers.filters.button")}
+        {t("playerFilters.button")}
         {activeCount > 0 ? (
           <span
             aria-hidden="true"
@@ -144,7 +143,7 @@ export default function TransferMarketFilterPanel({
         <div
           id={panelId}
           role="dialog"
-          aria-label={t("transfers.filters.title")}
+          aria-label={t("playerFilters.title")}
           className="absolute left-0 top-full mt-2 z-30 w-[22rem] max-w-[calc(100vw-2rem)] p-4 space-y-4 rounded-xl bg-white dark:bg-navy-800 border border-gray-200 dark:border-navy-600 shadow-xl"
         >
           <div className="grid grid-cols-2 gap-3">
@@ -153,18 +152,18 @@ export default function TransferMarketFilterPanel({
           </div>
 
           <fieldset className="space-y-1.5">
-            <legend className={labelClass}>{t("transfers.filters.position")}</legend>
+            <legend className={labelClass}>{t("playerFilters.position")}</legend>
             <div className="grid grid-cols-2 gap-2">
               <Select
                 selectSize="sm"
                 fullWidth
-                aria-label={t("transfers.filters.positionGroup")}
+                aria-label={t("playerFilters.positionGroup")}
                 value={filters.positionGroup ?? ""}
                 onChange={(event) =>
                   onChange({ positionGroup: event.target.value || null, position: null })
                 }
               >
-                <option value="">{t("transfers.filters.anyPositionGroup")}</option>
+                <option value="">{t("playerFilters.anyPositionGroup")}</option>
                 {POSITION_GROUPS.map((group) => (
                   <option key={group} value={group}>
                     {t(`common.positionGroups.${group}`, {
@@ -177,11 +176,11 @@ export default function TransferMarketFilterPanel({
                 selectSize="sm"
                 fullWidth
                 disabled={groupPositions.length <= 1}
-                aria-label={t("transfers.filters.specificPosition")}
+                aria-label={t("playerFilters.specificPosition")}
                 value={filters.position ?? ""}
                 onChange={(event) => onChange({ position: event.target.value || null })}
               >
-                <option value="">{t("transfers.filters.anyPosition")}</option>
+                <option value="">{t("playerFilters.anyPosition")}</option>
                 {groupPositions.map((position) => (
                   <option key={position} value={position}>
                     {t(`common.posAbbr.${position}`)} · {translatePositionLabel(t, position)}
@@ -192,12 +191,12 @@ export default function TransferMarketFilterPanel({
           </fieldset>
 
           <fieldset className="space-y-1.5">
-            <legend className={labelClass}>{t("transfers.filters.competition")}</legend>
+            <legend className={labelClass}>{t("playerFilters.competition")}</legend>
             <div className="grid grid-cols-1 gap-2">
               <Select
                 selectSize="sm"
                 fullWidth
-                aria-label={t("transfers.filters.region")}
+                aria-label={t("playerFilters.region")}
                 value={filters.regionId ?? ""}
                 onChange={(event) =>
                   onChange({
@@ -207,7 +206,7 @@ export default function TransferMarketFilterPanel({
                   })
                 }
               >
-                <option value="">{t("transfers.filters.anyRegion")}</option>
+                <option value="">{t("playerFilters.anyRegion")}</option>
                 {directoryTree.map((candidate) => (
                   <option key={candidate.id} value={candidate.id}>
                     {candidate.name}
@@ -218,13 +217,13 @@ export default function TransferMarketFilterPanel({
                 selectSize="sm"
                 fullWidth
                 disabled={!region}
-                aria-label={t("transfers.filters.country")}
+                aria-label={t("playerFilters.country")}
                 value={filters.countryId ?? ""}
                 onChange={(event) =>
                   onChange({ countryId: event.target.value || null, leagueId: null })
                 }
               >
-                <option value="">{t("transfers.filters.anyCountry")}</option>
+                <option value="">{t("playerFilters.anyCountry")}</option>
                 {(region?.countries ?? []).map((candidate) => (
                   <option key={candidate.id} value={candidate.id}>
                     {candidate.name}
@@ -235,7 +234,7 @@ export default function TransferMarketFilterPanel({
                 selectSize="sm"
                 fullWidth
                 disabled={!country}
-                aria-label={t("transfers.filters.league")}
+                aria-label={t("playerFilters.league")}
                 value={filters.leagueId ?? ""}
                 onChange={(event) => onChange({ leagueId: event.target.value || null })}
               >
@@ -253,10 +252,10 @@ export default function TransferMarketFilterPanel({
             <button
               type="button"
               disabled={activeCount === 0}
-              onClick={() => onChange(MARKET_PANEL_DEFAULTS)}
+              onClick={() => onChange(PLAYER_FILTER_DEFAULTS)}
               className="px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-navy-600 hover:bg-gray-50 dark:hover:bg-navy-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              {t("transfers.filters.clear")}
+              {t("playerFilters.clear")}
             </button>
           </div>
         </div>

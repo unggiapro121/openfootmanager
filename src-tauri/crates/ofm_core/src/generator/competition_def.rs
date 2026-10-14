@@ -95,6 +95,12 @@ pub struct FormatDef {
     /// Best next-placed finishers that also advance (GroupAndKnockout).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub best_third_qualifiers: Option<u32>,
+    /// Knockout only: the day ("MM-DD") each round is played on, in order, the
+    /// final last. A bracket with fewer rounds plays the last dates; a cup round
+    /// is moved off any of its clubs' league days. Empty: rounds follow the gap
+    /// between rounds.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub round_dates: Vec<String>,
 }
 
 impl FormatDef {
@@ -560,6 +566,26 @@ fn validate_format(competition: &CompetitionDefinition, errors: &mut Vec<Definit
             "be.error.competitionDef.groupConfigOnNonGroupFormat",
             &competition.id,
         ));
+    }
+    if !format.round_dates.is_empty() && format.kind != CompetitionFormat::Knockout {
+        errors.push(DefinitionError::new(
+            "be.error.competitionDef.roundDatesOnNonKnockout",
+            &competition.id,
+        ));
+    }
+    for date in &format.round_dates {
+        // Checked against a leap year, so 29 February is accepted.
+        let valid = date
+            .split_once('-')
+            .filter(|(month, day)| month.len() == 2 && day.len() == 2)
+            .and_then(|(month, day)| Some((month.parse().ok()?, day.parse().ok()?)))
+            .is_some_and(|(month, day)| NaiveDate::from_ymd_opt(2000, month, day).is_some());
+        if !valid {
+            errors.push(
+                DefinitionError::new("be.error.competitionDef.invalidRoundDate", &competition.id)
+                    .with("date", date.clone()),
+            );
+        }
     }
     if let Some(month) = competition.season_start_month
         && !(1..=12).contains(&month)
@@ -1063,6 +1089,9 @@ fn build_competition(
             let mut cup = League::new(def.id.clone(), def.name.clone(), season, team_ids);
             cup.standings.clear();
             cup.rules.format = CompetitionFormat::Knockout;
+            // Before seeding: the first round's date and its one-day shape read them.
+            cup.kind = def.r#type.clone();
+            cup.rules.knockout_round_dates = def.format.round_dates.clone();
             crate::schedule::seed_knockout_round(
                 &mut cup,
                 team_ids,
@@ -1220,6 +1249,7 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                round_dates: Vec::new(),
             },
             participants: ParticipantSpec {
                 explicit: Some(teams.iter().map(|t| t.to_string()).collect()),
@@ -1250,6 +1280,57 @@ mod tests {
 
         assert_eq!(league.rules.league_legs, 1);
         assert_eq!(league.fixtures.len(), 6);
+    }
+
+    /// Given a knockout cup authored with round dates,
+    /// When it is built, then it keeps the dates for later seasons and its
+    /// first round is on the calendar date, every tie the same day.
+    #[test]
+    fn a_cup_keeps_its_authored_round_dates() {
+        use chrono::TimeZone;
+        let mut def = explicit("tr-cup", &["team-a", "team-b", "team-c", "team-d"]);
+        def.r#type = CompetitionType::Cup;
+        def.format.kind = CompetitionFormat::Knockout;
+        def.format.round_dates = vec!["12-06".into(), "04-25".into(), "05-16".into()];
+        let start = Utc.with_ymd_and_hms(2026, 8, 9, 0, 0, 0).unwrap();
+
+        let cup = build_explicit_competition(&def, 2026, start).unwrap();
+
+        assert_eq!(cup.rules.knockout_round_dates, def.format.round_dates);
+        let dates: std::collections::BTreeSet<&str> =
+            cup.fixtures.iter().map(|f| f.date.as_str()).collect();
+        assert_eq!(dates, ["2027-04-25"].into_iter().collect());
+    }
+
+    /// Given round dates on a league, or a date that is not a day of the year,
+    /// then each is reported.
+    #[test]
+    fn round_dates_must_be_days_of_the_year_on_a_knockout() {
+        let mut league = explicit("tr-1", &["team-a", "team-b"]);
+        league.format.round_dates = vec!["11-01".into()];
+        let mut cup = explicit("tr-cup", &["team-a", "team-b"]);
+        cup.format.kind = CompetitionFormat::Knockout;
+        cup.format.round_dates = vec!["11-01".into(), "02-30".into(), "May 16".into()];
+        let file = CompetitionDefinitionFile {
+            format_version: 1,
+            competitions: vec![league, cup],
+        };
+
+        let errors = validate_definitions(&file, &ctx());
+
+        let reported = codes(&errors);
+        assert!(reported.contains(&"be.error.competitionDef.roundDatesOnNonKnockout"));
+        let bad: Vec<&str> = errors
+            .iter()
+            .filter(|e| e.code == "be.error.competitionDef.invalidRoundDate")
+            .filter_map(|e| {
+                e.params
+                    .iter()
+                    .find(|(key, _)| key == "date")
+                    .map(|(_, value)| value.as_str())
+            })
+            .collect();
+        assert_eq!(bad, ["02-30", "May 16"]);
     }
 
     #[test]
@@ -1675,6 +1756,7 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                round_dates: Vec::new(),
             },
             participants: ParticipantSpec {
                 explicit: None,

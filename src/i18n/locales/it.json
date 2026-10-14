@@ -1515,26 +1515,7 @@
     "transferFeedbackCounterHeadline": "Vogliono di più prima di stringersi la mano.",
     "transferFeedbackCounterDetail": "L'offerta era abbastanza vicina per continuare a parlare, ma la controparte segnala un prezzo più vicino a {{fee}}.",
     "transferFeedbackRejectedHeadline": "Hanno chiuso questo round.",
-    "transferFeedbackRejectedDetail": "La proposta non li ha smossi abbastanza. Servirebbe una cifra più forte, più vicina a {{fee}}, per riaprire una trattativa seria.",
-    "filters": {
-      "button": "Filtri",
-      "buttonActive": "Filtri ({{count}} attivi)",
-      "title": "Filtra giocatori",
-      "min": "Da",
-      "max": "A",
-      "position": "Ruolo",
-      "positionGroup": "Gruppo di ruoli",
-      "specificPosition": "Ruolo specifico",
-      "anyPositionGroup": "Qualsiasi gruppo",
-      "anyPosition": "Qualsiasi ruolo",
-      "competition": "Competizione",
-      "region": "Regione",
-      "country": "Paese",
-      "league": "Campionato",
-      "anyRegion": "Qualsiasi regione",
-      "anyCountry": "Qualsiasi paese",
-      "clear": "Azzera filtri"
-    }
+    "transferFeedbackRejectedDetail": "La proposta non li ha smossi abbastanza. Servirebbe una cifra più forte, più vicina a {{fee}}, per riaprire una trattativa seria."
   },
   "transferCentreWorld": {
     "title": "Centro trasferimenti",
@@ -2886,7 +2867,9 @@
         "selectorMissingSource": "Questo selettore richiede una competizione di origine.",
         "unknownExcludedCompetition": "Competizione esclusa sconosciuta \"{{excluded}}\".",
         "selectorCycle": "Qualificazione circolare tra competizioni.",
-        "duplicateTierPriority": "Più divisioni di {{country}} condividono la priorità {{priority}}. Un numero più basso indica una divisione superiore, e ogni livello ha bisogno del proprio, altrimenti nessuna viene promossa o retrocessa."
+        "duplicateTierPriority": "Più divisioni di {{country}} condividono la priorità {{priority}}. Un numero più basso indica una divisione superiore, e ogni livello ha bisogno del proprio, altrimenti nessuna viene promossa o retrocessa.",
+        "roundDatesOnNonKnockout": "Le date dei turni valgono solo per un formato a eliminazione diretta.",
+        "invalidRoundDate": "La data del turno \"{{date}}\" non è un giorno dell'anno. Usa MM-GG, per esempio 05-16."
       },
       "worldParseFailed": "Impossibile interpretare il file del database del mondo.",
       "worldWriteFileFailed": "Impossibile esportare il file del database del mondo.",
@@ -4427,5 +4410,24 @@
     "review": "Controlla cosa viene inviato",
     "saveAndOpen": "Salva il file e apri GitHub",
     "working": "In corso…"
+  },
+  "playerFilters": {
+    "button": "Filtri",
+    "buttonActive": "Filtri ({{count}} attivi)",
+    "title": "Filtra giocatori",
+    "min": "Da",
+    "max": "A",
+    "position": "Ruolo",
+    "positionGroup": "Gruppo di ruoli",
+    "specificPosition": "Ruolo specifico",
+    "anyPositionGroup": "Qualsiasi gruppo",
+    "anyPosition": "Qualsiasi ruolo",
+    "competition": "Competizione",
+    "region": "Regione",
+    "country": "Paese",
+    "league": "Campionato",
+    "anyRegion": "Qualsiasi regione",
+    "anyCountry": "Qualsiasi paese",
+    "clear": "Azzera filtri"
   }
 }

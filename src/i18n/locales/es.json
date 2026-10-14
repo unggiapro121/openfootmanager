@@ -1496,26 +1496,7 @@
     "transferFeedbackCounterHeadline": "Quieren más antes de cerrar el trato.",
     "transferFeedbackCounterDetail": "La oferta fue suficiente para seguir hablando, pero su lado está marcando un precio más cercano a {{fee}}.",
     "transferFeedbackRejectedHeadline": "Han cerrado esta ronda.",
-    "transferFeedbackRejectedDetail": "La propuesta no les movió lo suficiente. Necesitarías una cifra mejor, más cerca de {{fee}}, para reabrir conversaciones serias.",
-    "filters": {
-      "button": "Filtros",
-      "buttonActive": "Filtros ({{count}} activos)",
-      "title": "Filtrar jugadores",
-      "min": "Desde",
-      "max": "Hasta",
-      "position": "Posición",
-      "positionGroup": "Grupo de posición",
-      "specificPosition": "Posición concreta",
-      "anyPositionGroup": "Cualquier grupo",
-      "anyPosition": "Cualquier posición",
-      "competition": "Competición",
-      "region": "Región",
-      "country": "País",
-      "league": "Liga",
-      "anyRegion": "Cualquier región",
-      "anyCountry": "Cualquier país",
-      "clear": "Quitar filtros"
-    }
+    "transferFeedbackRejectedDetail": "La propuesta no les movió lo suficiente. Necesitarías una cifra mejor, más cerca de {{fee}}, para reabrir conversaciones serias."
   },
   "transferCentreWorld": {
     "title": "Centro de fichajes",
@@ -2886,7 +2867,9 @@
         "selectorMissingSource": "Este selector necesita una competición de origen.",
         "unknownExcludedCompetition": "Competición excluida desconocida \"{{excluded}}\".",
         "selectorCycle": "Clasificación circular entre competiciones.",
-        "duplicateTierPriority": "Varias divisiones de {{country}} comparten la prioridad {{priority}}. Un número menor indica una división superior, y cada categoría necesita el suyo, o ninguna asciende ni desciende."
+        "duplicateTierPriority": "Varias divisiones de {{country}} comparten la prioridad {{priority}}. Un número menor indica una división superior, y cada categoría necesita el suyo, o ninguna asciende ni desciende.",
+        "roundDatesOnNonKnockout": "Las fechas de ronda solo se aplican a un formato de eliminatoria.",
+        "invalidRoundDate": "La fecha de ronda \"{{date}}\" no es un día del año. Usa MM-DD, por ejemplo 05-16."
       },
       "worldParseFailed": "No se pudo interpretar el archivo de la base de datos del mundo.",
       "worldWriteFileFailed": "No se pudo exportar el archivo de la base de datos del mundo.",
@@ -4427,5 +4410,24 @@
     "review": "Revisar qué se envía",
     "saveAndOpen": "Guardar el archivo y abrir GitHub",
     "working": "Trabajando…"
+  },
+  "playerFilters": {
+    "button": "Filtros",
+    "buttonActive": "Filtros ({{count}} activos)",
+    "title": "Filtrar jugadores",
+    "min": "Desde",
+    "max": "Hasta",
+    "position": "Posición",
+    "positionGroup": "Grupo de posición",
+    "specificPosition": "Posición concreta",
+    "anyPositionGroup": "Cualquier grupo",
+    "anyPosition": "Cualquier posición",
+    "competition": "Competición",
+    "region": "Región",
+    "country": "País",
+    "league": "Liga",
+    "anyRegion": "Cualquier región",
+    "anyCountry": "Cualquier país",
+    "clear": "Quitar filtros"
   }
 }

@@ -32,6 +32,24 @@ pub struct PlayersPageQuery {
     /// Restrict to players whose club is in this competition.
     #[serde(default)]
     pub league_id: Option<String>,
+    /// Restrict to players of these clubs: a competition scope the caller
+    /// resolved to its clubs. Empty matches nobody; absent restricts nothing.
+    #[serde(default)]
+    pub team_ids: Option<Vec<String>>,
+    /// Restrict to players whose natural position is one of these exact
+    /// positions (a left back is not a centre back). Empty restricts nothing.
+    #[serde(default)]
+    pub positions: Vec<Position>,
+    /// Inclusive age range on the game date; each bound is optional.
+    #[serde(default)]
+    pub age_min: Option<u8>,
+    #[serde(default)]
+    pub age_max: Option<u8>,
+    /// Inclusive OVR range; each bound is optional.
+    #[serde(default)]
+    pub ovr_min: Option<u8>,
+    #[serde(default)]
+    pub ovr_max: Option<u8>,
     pub status: PlayerStatusFilter,
     pub sort_key: PlayerSortKey,
     pub sort_asc: bool,
@@ -98,19 +116,19 @@ pub fn query_page(game: &Game, query: &PlayersPageQuery) -> PlayersPage {
         .league_id
         .as_deref()
         .map(|league_id| league_clubs(game, league_id));
+    let scope_members: Option<HashSet<&str>> = query
+        .team_ids
+        .as_ref()
+        .map(|ids| ids.iter().map(String::as_str).collect());
+    let today = game.clock.current_date.date_naive();
 
     let mut matches: Vec<&Player> = game
         .players
         .iter()
         .filter(|player| matches_filters(player, query, needle.as_deref()))
-        .filter(|player| {
-            league_members.as_ref().is_none_or(|members| {
-                player
-                    .team_id
-                    .as_deref()
-                    .is_some_and(|id| members.contains(id))
-            })
-        })
+        .filter(|player| matches_ranges(player, query, today))
+        .filter(|player| plays_for_one_of(player, league_members.as_ref()))
+        .filter(|player| plays_for_one_of(player, scope_members.as_ref()))
         .collect();
 
     sort_matches(&mut matches, query, &teams);
@@ -141,6 +159,37 @@ fn league_clubs<'a>(game: &'a Game, league_id: &str) -> HashSet<&'a str> {
         .find(|c| c.id == league_id)
         .map(|league| league_member_ids(league).into_iter().collect())
         .unwrap_or_default()
+}
+
+/// Whether the player is at one of `clubs`; no set restricts nothing, and a
+/// free agent is at none.
+fn plays_for_one_of(player: &Player, clubs: Option<&HashSet<&str>>) -> bool {
+    clubs.is_none_or(|clubs| {
+        player
+            .team_id
+            .as_deref()
+            .is_some_and(|id| clubs.contains(id))
+    })
+}
+
+/// The query's exact positions and its age and OVR ranges, each bound inclusive
+/// and optional. Age is taken on `today`, the game date.
+fn matches_ranges(player: &Player, query: &PlayersPageQuery, today: chrono::NaiveDate) -> bool {
+    let within = |value: i32, min: Option<u8>, max: Option<u8>| {
+        min.is_none_or(|min| value >= i32::from(min))
+            && max.is_none_or(|max| value <= i32::from(max))
+    };
+    if !query.positions.is_empty() && !query.positions.contains(&player.natural_position) {
+        return false;
+    }
+    if !within(i32::from(player.ovr), query.ovr_min, query.ovr_max) {
+        return false;
+    }
+    if query.age_min.is_some() || query.age_max.is_some() {
+        let age = crate::aging::player_age_on(today, &player.date_of_birth);
+        return within(age, query.age_min, query.age_max);
+    }
+    true
 }
 
 fn matches_filters(player: &Player, query: &PlayersPageQuery, needle: Option<&str>) -> bool {

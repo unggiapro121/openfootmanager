@@ -269,7 +269,14 @@ pub fn seed_knockout_round(
     let byes = team_ids.len().next_power_of_two() - team_ids.len();
     let (bye_teams, playing_teams) = team_ids.split_at(byes);
 
-    let mpd = cup.rules.knockout_matches_per_day.max(1) as usize;
+    let start_date = authored_round_date(cup, team_ids.len(), start_date).unwrap_or(start_date);
+    // A domestic cup plays a whole round on one day; other knockouts spread
+    // theirs `knockout_matches_per_day` at a time.
+    let mpd = if cup.kind == CompetitionType::Cup {
+        usize::MAX
+    } else {
+        cup.rules.knockout_matches_per_day.max(1) as usize
+    };
     let mut round_fixture_ids = Vec::new();
     for (pair_index, pair) in playing_teams.chunks(2).enumerate() {
         if pair.len() < 2 {
@@ -298,6 +305,48 @@ pub fn seed_knockout_round(
         bye_team_ids: bye_teams.to_vec(),
         completed: false,
     });
+}
+
+/// The authored date of the round about to be seeded for `entrants` clubs, if
+/// the cup has a round calendar. The rounds still to play (this one to the
+/// final) take the last dates of the calendar; each date is the first of its
+/// day-of-year after the cup's latest fixture, or after `start_date` for a
+/// first round. `None` without a calendar, or with fewer dates than rounds.
+fn authored_round_date(
+    cup: &League,
+    entrants: usize,
+    start_date: DateTime<Utc>,
+) -> Option<DateTime<Utc>> {
+    let dates = &cup.rules.knockout_round_dates;
+    let rounds_left = entrants.next_power_of_two().trailing_zeros() as usize;
+    let index = dates.len().checked_sub(rounds_left)?;
+    let after = cup
+        .fixtures
+        .iter()
+        .filter_map(|fixture| date_str_to_utc(&fixture.date))
+        .max()
+        .unwrap_or(start_date - Duration::days(1));
+    next_month_day_after(&dates[index], after)
+}
+
+/// The first `MM-DD` strictly after `after`. 29 February falls back to the
+/// 28th in a year without it.
+fn next_month_day_after(month_day: &str, after: DateTime<Utc>) -> Option<DateTime<Utc>> {
+    use chrono::Datelike;
+    let (month, day) = month_day.split_once('-')?;
+    let (month, day): (u32, u32) = (month.parse().ok()?, day.parse().ok()?);
+    let on = |year: i32| {
+        chrono::NaiveDate::from_ymd_opt(year, month, day)
+            .or_else(|| chrono::NaiveDate::from_ymd_opt(year, month, day.saturating_sub(1)))
+            .and_then(|date| date.and_hms_opt(0, 0, 0))
+            .map(|naive| DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc))
+    };
+    let this_year = on(after.year())?;
+    if this_year > after {
+        Some(this_year)
+    } else {
+        on(after.year() + 1)
+    }
 }
 
 pub fn advance_knockout_competition_round(cup: &mut League) {
@@ -701,6 +750,93 @@ mod tests {
                 });
             }
         }
+    }
+
+    fn round_dates(cup: &League) -> Vec<Vec<String>> {
+        cup.knockout_rounds
+            .iter()
+            .map(|round| {
+                let mut dates: Vec<String> = cup
+                    .fixtures
+                    .iter()
+                    .filter(|f| round.fixture_ids.contains(&f.id))
+                    .map(|f| f.date.clone())
+                    .collect();
+                dates.dedup();
+                dates
+            })
+            .collect()
+    }
+
+    /// Given a domestic cup with many first-round ties,
+    /// When its first round is seeded,
+    /// Then every tie is on the same day, as a real cup round is.
+    #[test]
+    fn a_domestic_cup_round_is_played_on_one_day() {
+        let teams: Vec<String> = (0..24).map(|i| format!("team_{i}")).collect();
+        let start = Utc.with_ymd_and_hms(2026, 9, 1, 0, 0, 0).unwrap();
+        let cup = generate_knockout_cup(
+            "Cup",
+            2026,
+            &teams,
+            start,
+            CompetitionType::Cup,
+            CompetitionScope::Domestic,
+        );
+
+        assert_eq!(round_dates(&cup), vec![vec!["2026-09-01".to_string()]]);
+    }
+
+    /// Given a continental cup, whose rounds are spread one match a day,
+    /// When its first round is seeded,
+    /// Then the ties keep their own days.
+    #[test]
+    fn a_continental_cup_round_keeps_one_match_a_day() {
+        let teams: Vec<String> = (0..8).map(|i| format!("team_{i}")).collect();
+        let start = Utc.with_ymd_and_hms(2026, 9, 1, 0, 0, 0).unwrap();
+        let cup = generate_knockout_cup(
+            "Cup",
+            2026,
+            &teams,
+            start,
+            CompetitionType::ContinentalClub,
+            CompetitionScope::Continental,
+        );
+
+        assert_eq!(round_dates(&cup)[0].len(), 4);
+    }
+
+    /// Given a cup authored with the FA Cup's eight round dates and a field of
+    /// six (three rounds),
+    /// When it is played through,
+    /// Then its rounds take the last three dates, the final the last of all,
+    /// each in the season that starts in August 2026.
+    #[test]
+    fn authored_round_dates_place_each_round_and_the_final_last() {
+        let teams: Vec<String> = (0..6).map(|i| format!("team_{i}")).collect();
+        let start = Utc.with_ymd_and_hms(2026, 8, 9, 0, 0, 0).unwrap();
+        let mut cup = League::new("fa".into(), "FA Cup".into(), 2026, &teams);
+        cup.kind = CompetitionType::Cup;
+        cup.rules.format = CompetitionFormat::Knockout;
+        cup.rules.knockout_round_dates = [
+            "11-01", "12-06", "01-10", "02-14", "03-07", "04-04", "04-25", "05-16",
+        ]
+        .map(String::from)
+        .to_vec();
+        seed_knockout_round(&mut cup, &teams, start, FixtureCompetition::Cup);
+        for _ in 0..3 {
+            resolve_scheduled_fixtures(&mut cup);
+            advance_knockout_competition_round(&mut cup);
+        }
+
+        assert_eq!(
+            round_dates(&cup),
+            vec![
+                vec!["2027-04-04".to_string()],
+                vec!["2027-04-25".to_string()],
+                vec!["2027-05-16".to_string()],
+            ]
+        );
     }
 
     #[test]

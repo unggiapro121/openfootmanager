@@ -125,6 +125,12 @@ fn baseline_query() -> PlayersPageQuery {
         position: None,
         team_id: None,
         league_id: None,
+        team_ids: None,
+        positions: vec![],
+        age_min: None,
+        age_max: None,
+        ovr_min: None,
+        ovr_max: None,
         status: PlayerStatusFilter::All,
         sort_key: PlayerSortKey::Ovr,
         sort_asc: false,
@@ -302,6 +308,104 @@ fn league_id_filter_keeps_players_of_that_leagues_clubs() {
     assert_eq!(ids, ["p1", "p3"]);
 
     q.league_id = Some("missing".to_string());
+    assert_eq!(query_page(&game, &q).total, 0);
+}
+
+fn ids(page: &ofm_core::slices::players::PlayersPage) -> Vec<&str> {
+    let mut ids: Vec<&str> = page.items.iter().map(|p| p.id.as_str()).collect();
+    ids.sort_unstable();
+    ids
+}
+
+/// Given players of 18, 25 and 36 on the game date (1 July 2026),
+/// When the age range is 20 to 30,
+/// Then only the 25-year-old is listed; each bound is inclusive and open alone.
+#[test]
+fn age_range_keeps_players_of_those_ages() {
+    let mut young = PlayerSpec::new("young", "Young", Some("t1"));
+    young.dob = "2008-03-01";
+    let mut prime = PlayerSpec::new("prime", "Prime", Some("t1"));
+    prime.dob = "2001-06-30";
+    let mut veteran = PlayerSpec::new("veteran", "Veteran", Some("t1"));
+    veteran.dob = "1990-01-01";
+    let game = make_game(
+        vec![make_team("t1", "A")],
+        vec![young.build(), prime.build(), veteran.build()],
+    );
+
+    let mut q = baseline_query();
+    q.age_min = Some(20);
+    q.age_max = Some(30);
+    assert_eq!(ids(&query_page(&game, &q)), ["prime"]);
+
+    q.age_max = None;
+    assert_eq!(ids(&query_page(&game, &q)), ["prime", "veteran"]);
+}
+
+/// Given players rated 60, 75 and 90,
+/// When the OVR range is 70 to 80,
+/// Then only the 75 is listed.
+#[test]
+fn ovr_range_keeps_players_rated_inside_it() {
+    let players = [("low", 60), ("mid", 75), ("high", 90)].map(|(id, ovr)| {
+        let mut spec = PlayerSpec::new(id, id, Some("t1"));
+        spec.ovr = ovr;
+        spec.build()
+    });
+    let game = make_game(vec![make_team("t1", "A")], players.to_vec());
+
+    let mut q = baseline_query();
+    q.ovr_min = Some(70);
+    q.ovr_max = Some(80);
+    assert_eq!(ids(&query_page(&game, &q)), ["mid"]);
+}
+
+/// Given a left back, a centre back and a striker,
+/// When the positions asked for are left and right back,
+/// Then only the left back is listed: a specific position, not its group.
+#[test]
+fn positions_keep_players_of_those_exact_positions() {
+    let players = [
+        ("lb", Position::LeftBack),
+        ("cb", Position::CenterBack),
+        ("st", Position::Striker),
+    ]
+    .map(|(id, position)| {
+        let mut spec = PlayerSpec::new(id, id, Some("t1"));
+        spec.position = position;
+        spec.build()
+    });
+    let game = make_game(vec![make_team("t1", "A")], players.to_vec());
+
+    let mut q = baseline_query();
+    q.positions = vec![Position::LeftBack, Position::RightBack];
+    assert_eq!(ids(&query_page(&game, &q)), ["lb"]);
+}
+
+/// Given players of three clubs and a free agent,
+/// When the clubs asked for are two of them,
+/// Then only their players are listed; an empty list matches nobody.
+#[test]
+fn team_ids_keep_players_of_those_clubs() {
+    let game = make_game(
+        vec![
+            make_team("t1", "A"),
+            make_team("t2", "B"),
+            make_team("t3", "C"),
+        ],
+        vec![
+            PlayerSpec::new("p1", "One", Some("t1")).build(),
+            PlayerSpec::new("p2", "Two", Some("t2")).build(),
+            PlayerSpec::new("p3", "Three", Some("t3")).build(),
+            PlayerSpec::new("free", "Free", None).build(),
+        ],
+    );
+
+    let mut q = baseline_query();
+    q.team_ids = Some(vec!["t1".to_string(), "t3".to_string()]);
+    assert_eq!(ids(&query_page(&game, &q)), ["p1", "p3"]);
+
+    q.team_ids = Some(vec![]);
     assert_eq!(query_page(&game, &q).total, 0);
 }
 
