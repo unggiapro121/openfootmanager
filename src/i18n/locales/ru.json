@@ -1474,26 +1474,7 @@
     "transferFeedbackCounterHeadline": "Они хотят больше перед рукопожатием.",
     "transferFeedbackCounterDetail": "Предложение было достаточно близким, чтобы продолжать разговор, но их сторона намекает на сумму ближе к {{fee}}.",
     "transferFeedbackRejectedHeadline": "Они закрыли этот раунд.",
-    "transferFeedbackRejectedDetail": "Предложение не произвело должного эффекта. Чтобы вновь открыть серьёзные переговоры, нужна сумма ближе к {{fee}}.",
-    "filters": {
-      "button": "Фильтры",
-      "buttonActive": "Фильтры (активно: {{count}})",
-      "title": "Фильтр игроков",
-      "min": "От",
-      "max": "До",
-      "position": "Позиция",
-      "positionGroup": "Группа позиций",
-      "specificPosition": "Точная позиция",
-      "anyPositionGroup": "Любая группа",
-      "anyPosition": "Любая позиция",
-      "competition": "Турнир",
-      "region": "Регион",
-      "country": "Страна",
-      "league": "Лига",
-      "anyRegion": "Любой регион",
-      "anyCountry": "Любая страна",
-      "clear": "Сбросить фильтры"
-    }
+    "transferFeedbackRejectedDetail": "Предложение не произвело должного эффекта. Чтобы вновь открыть серьёзные переговоры, нужна сумма ближе к {{fee}}."
   },
   "transferCentreWorld": {
     "title": "Трансферный центр",
@@ -2873,7 +2854,9 @@
         "selectorMissingSource": "Этому селектору нужен исходный турнир.",
         "unknownExcludedCompetition": "Неизвестный исключённый турнир \"{{excluded}}\".",
         "selectorCycle": "Циклическая квалификация между турнирами.",
-        "duplicateTierPriority": "Несколько дивизионов страны {{country}} имеют одинаковый приоритет {{priority}}. Чем меньше число, тем выше дивизион, и каждому уровню нужен свой, иначе ни один не выйдет и не вылетит."
+        "duplicateTierPriority": "Несколько дивизионов страны {{country}} имеют одинаковый приоритет {{priority}}. Чем меньше число, тем выше дивизион, и каждому уровню нужен свой, иначе ни один не выйдет и не вылетит.",
+        "roundDatesOnNonKnockout": "Даты раундов применимы только к формату на выбывание.",
+        "invalidRoundDate": "Дата раунда «{{date}}» не является днём года. Используйте ММ-ДД, например 05-16."
       },
       "worldParseFailed": "Не удалось проанализировать файл мировой базы данных.",
       "worldWriteFileFailed": "Не удалось экспортировать файл мировой базы данных.",
@@ -4396,5 +4379,24 @@
     "review": "Проверить, что отправляется",
     "saveAndOpen": "Сохранить файл и открыть GitHub",
     "working": "Выполняется…"
+  },
+  "playerFilters": {
+    "button": "Фильтры",
+    "buttonActive": "Фильтры (активно: {{count}})",
+    "title": "Фильтр игроков",
+    "min": "От",
+    "max": "До",
+    "position": "Позиция",
+    "positionGroup": "Группа позиций",
+    "specificPosition": "Точная позиция",
+    "anyPositionGroup": "Любая группа",
+    "anyPosition": "Любая позиция",
+    "competition": "Турнир",
+    "region": "Регион",
+    "country": "Страна",
+    "league": "Лига",
+    "anyRegion": "Любой регион",
+    "anyCountry": "Любая страна",
+    "clear": "Сбросить фильтры"
   }
 }

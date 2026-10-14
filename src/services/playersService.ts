@@ -9,6 +9,15 @@ export interface PlayersPageQuery {
   position: string | null;
   team_id: string | null;
   league_id: string | null;
+  /** Only players of these clubs (a competition scope resolved to its clubs); null restricts nothing. */
+  team_ids: string[] | null;
+  /** Only players whose natural position is one of these; empty restricts nothing. */
+  positions: string[];
+  /** Inclusive ranges; null is open on that side. Age is on the game date. */
+  age_min: number | null;
+  age_max: number | null;
+  ovr_min: number | null;
+  ovr_max: number | null;
   status: PlayerStatusFilter;
   sort_key: PlayerSortKey;
   sort_asc: boolean;

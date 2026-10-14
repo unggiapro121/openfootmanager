@@ -31,8 +31,8 @@
     "worldEditor.staffId"
   ],
   "de": [
-    "transfers.filters.position",
-    "transfers.filters.region",
+    "playerFilters.position",
+    "playerFilters.region",
     "scouting.watchlistStatus",
     "teams.region",
     "nations.eng",
@@ -527,7 +527,7 @@
     "worldEditor.competitionFormat"
   ],
   "cs": [
-    "transfers.filters.region",
+    "playerFilters.region",
     "teams.region",
     "dashboard.recapTransferLine",
     "common.gf",

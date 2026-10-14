@@ -1019,8 +1019,8 @@ describe("TransfersTab", (): void => {
     render(<TransfersTab gameState={state} onSelectPlayer={vi.fn()} onSelectTeam={vi.fn()} />);
     expect(screen.getByText("Weak Player")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "transfers.filters.button" }));
-    fireEvent.change(screen.getByRole("spinbutton", { name: "common.ovr transfers.filters.min" }), {
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "common.ovr playerFilters.min" }), {
       target: { value: "75" },
     });
 

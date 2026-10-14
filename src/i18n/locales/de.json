@@ -1474,26 +1474,7 @@
     "transferFeedbackCounterHeadline": "Sie wollen mehr, bevor sie einschlagen.",
     "transferFeedbackCounterDetail": "Das Angebot war nah genug, um weiterzureden, aber ihre Seite signalisiert eher einen Preis um {{fee}}.",
     "transferFeedbackRejectedHeadline": "Diese Runde haben sie beendet.",
-    "transferFeedbackRejectedDetail": "Der Vorschlag hat sie nicht genug bewegt. Du brauchst eine stärkere Summe, eher in Richtung {{fee}}, um ernste Gespräche wieder zu öffnen.",
-    "filters": {
-      "button": "Filter",
-      "buttonActive": "Filter ({{count}} aktiv)",
-      "title": "Spieler filtern",
-      "min": "Von",
-      "max": "Bis",
-      "position": "Position",
-      "positionGroup": "Positionsgruppe",
-      "specificPosition": "Genaue Position",
-      "anyPositionGroup": "Alle Gruppen",
-      "anyPosition": "Alle Positionen",
-      "competition": "Wettbewerb",
-      "region": "Region",
-      "country": "Land",
-      "league": "Liga",
-      "anyRegion": "Alle Regionen",
-      "anyCountry": "Alle Länder",
-      "clear": "Filter zurücksetzen"
-    }
+    "transferFeedbackRejectedDetail": "Der Vorschlag hat sie nicht genug bewegt. Du brauchst eine stärkere Summe, eher in Richtung {{fee}}, um ernste Gespräche wieder zu öffnen."
   },
   "transferCentreWorld": {
     "title": "Transferzentrum",
@@ -2856,7 +2837,9 @@
         "selectorMissingSource": "Dieser Selektor benötigt einen Quellwettbewerb.",
         "unknownExcludedCompetition": "Unbekannter ausgeschlossener Wettbewerb \"{{excluded}}\".",
         "selectorCycle": "Zirkuläre Qualifikation zwischen Wettbewerben.",
-        "duplicateTierPriority": "Mehrere Ligen von {{country}} teilen sich die Priorität {{priority}}. Ein niedrigerer Wert bedeutet eine höhere Liga, und jede Stufe braucht einen eigenen, sonst steigt keine auf oder ab."
+        "duplicateTierPriority": "Mehrere Ligen von {{country}} teilen sich die Priorität {{priority}}. Ein niedrigerer Wert bedeutet eine höhere Liga, und jede Stufe braucht einen eigenen, sonst steigt keine auf oder ab.",
+        "roundDatesOnNonKnockout": "Rundendaten gelten nur für ein K.-o.-Format.",
+        "invalidRoundDate": "Rundendatum „{{date}}“ ist kein Tag des Jahres. Verwende MM-TT, zum Beispiel 05-16."
       },
       "worldParseFailed": "Die Weltdatenbankdatei konnte nicht verarbeitet werden.",
       "worldWriteFileFailed": "Die Weltdatenbankdatei konnte nicht exportiert werden.",
@@ -4396,5 +4379,24 @@
     "review": "Prüfen, was gesendet wird",
     "saveAndOpen": "Datei speichern und GitHub öffnen",
     "working": "Arbeitet…"
+  },
+  "playerFilters": {
+    "button": "Filter",
+    "buttonActive": "Filter ({{count}} aktiv)",
+    "title": "Spieler filtern",
+    "min": "Von",
+    "max": "Bis",
+    "position": "Position",
+    "positionGroup": "Positionsgruppe",
+    "specificPosition": "Genaue Position",
+    "anyPositionGroup": "Alle Gruppen",
+    "anyPosition": "Alle Positionen",
+    "competition": "Wettbewerb",
+    "region": "Region",
+    "country": "Land",
+    "league": "Liga",
+    "anyRegion": "Alle Regionen",
+    "anyCountry": "Alle Länder",
+    "clear": "Filter zurücksetzen"
   }
 }

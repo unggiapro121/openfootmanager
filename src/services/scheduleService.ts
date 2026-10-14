@@ -3,6 +3,8 @@ import type { FixtureCompetition } from "../store/types";
 
 export interface ScheduleQuery {
   competition_id: string;
+  /** The user's club's matches in every competition; `competition_id` is then ignored. */
+  club?: boolean;
 }
 
 export interface FixtureResult {

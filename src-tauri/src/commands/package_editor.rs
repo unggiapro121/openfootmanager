@@ -1196,6 +1196,7 @@ mod tests {
                 group_size: None,
                 qualifiers_per_group: None,
                 best_third_qualifiers: None,
+                round_dates: Vec::new(),
             },
             participants: ParticipantSpec {
                 explicit: None,

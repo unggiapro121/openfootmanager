@@ -1474,26 +1474,7 @@
     "transferFeedbackCounterHeadline": "Mereka menginginkan lebih sebelum berjabat tangan.",
     "transferFeedbackCounterDetail": "Tawaran cukup dekat untuk terus bernegosiasi, tetapi pihak mereka mengisyaratkan harga yang mendekati {{fee}}.",
     "transferFeedbackRejectedHeadline": "Mereka menghentikan putaran ini.",
-    "transferFeedbackRejectedDetail": "Proposal tidak cukup menggugah mereka. Kamu membutuhkan nominal yang lebih kuat, mendekati {{fee}}, untuk membuka negosiasi serius lagi.",
-    "filters": {
-      "button": "Filter",
-      "buttonActive": "Filter ({{count}} aktif)",
-      "title": "Saring pemain",
-      "min": "Dari",
-      "max": "Sampai",
-      "position": "Posisi",
-      "positionGroup": "Kelompok posisi",
-      "specificPosition": "Posisi khusus",
-      "anyPositionGroup": "Semua kelompok",
-      "anyPosition": "Semua posisi",
-      "competition": "Kompetisi",
-      "region": "Wilayah",
-      "country": "Negara",
-      "league": "Liga",
-      "anyRegion": "Semua wilayah",
-      "anyCountry": "Semua negara",
-      "clear": "Hapus filter"
-    }
+    "transferFeedbackRejectedDetail": "Proposal tidak cukup menggugah mereka. Kamu membutuhkan nominal yang lebih kuat, mendekati {{fee}}, untuk membuka negosiasi serius lagi."
   },
   "transferCentreWorld": {
     "title": "Pusat Transfer",
@@ -2881,7 +2862,9 @@
         "selectorMissingSource": "Pemilih ini membutuhkan kompetisi sumber.",
         "unknownExcludedCompetition": "Kompetisi yang dikecualikan \"{{excluded}}\" tidak dikenal.",
         "selectorCycle": "Kualifikasi melingkar antar kompetisi.",
-        "duplicateTierPriority": "Beberapa divisi {{country}} memiliki prioritas {{priority}} yang sama. Angka lebih kecil berarti divisi lebih tinggi, dan setiap tingkat butuh angkanya sendiri, atau tidak ada yang promosi maupun degradasi."
+        "duplicateTierPriority": "Beberapa divisi {{country}} memiliki prioritas {{priority}} yang sama. Angka lebih kecil berarti divisi lebih tinggi, dan setiap tingkat butuh angkanya sendiri, atau tidak ada yang promosi maupun degradasi.",
+        "roundDatesOnNonKnockout": "Tanggal babak hanya berlaku untuk format sistem gugur.",
+        "invalidRoundDate": "Tanggal babak \"{{date}}\" bukan hari dalam setahun. Gunakan BB-HH, misalnya 05-16."
       },
       "worldParseFailed": "Gagal mengurai berkas basis data dunia.",
       "worldWriteFileFailed": "Gagal mengekspor berkas basis data dunia.",
@@ -4396,5 +4379,24 @@
     "review": "Tinjau yang akan dikirim",
     "saveAndOpen": "Simpan berkas dan buka GitHub",
     "working": "Sedang bekerja…"
+  },
+  "playerFilters": {
+    "button": "Filter",
+    "buttonActive": "Filter ({{count}} aktif)",
+    "title": "Saring pemain",
+    "min": "Dari",
+    "max": "Sampai",
+    "position": "Posisi",
+    "positionGroup": "Kelompok posisi",
+    "specificPosition": "Posisi khusus",
+    "anyPositionGroup": "Semua kelompok",
+    "anyPosition": "Semua posisi",
+    "competition": "Kompetisi",
+    "region": "Wilayah",
+    "country": "Negara",
+    "league": "Liga",
+    "anyRegion": "Semua wilayah",
+    "anyCountry": "Semua negara",
+    "clear": "Hapus filter"
   }
 }

@@ -5,16 +5,13 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { TeamCard } from "../../services/teamsService";
 import { buildDirectoryTree } from "../teams/TeamsListTab.helpers";
-import TransferMarketFilterPanel from "./TransferMarketFilterPanel";
-import {
-  DEFAULT_TRANSFER_MARKET_FILTERS,
-  type TransferMarketFilters,
-} from "./TransfersTab.filters";
+import PlayerFilterPanel from "./PlayerFilterPanel";
+import { PLAYER_FILTER_DEFAULTS, type PlayerFilterValues } from "./playerFilters";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, unknown>) => {
-      if (key === "transfers.filters.buttonActive") return `Filters (${params?.count} on)`;
+      if (key === "playerFilters.buttonActive") return `Filters (${params?.count} on)`;
       if (key.startsWith("common.posAbbr.")) return key.replace("common.posAbbr.", "");
       return key;
     },
@@ -40,10 +37,10 @@ const tree = buildDirectoryTree(
   tKey,
 );
 
-function Host({ onFilters }: { onFilters?: (filters: TransferMarketFilters) => void }) {
-  const [filters, setFilters] = useState(DEFAULT_TRANSFER_MARKET_FILTERS);
+function Host({ onFilters }: { onFilters?: (filters: PlayerFilterValues) => void }) {
+  const [filters, setFilters] = useState(PLAYER_FILTER_DEFAULTS);
   return (
-    <TransferMarketFilterPanel
+    <PlayerFilterPanel
       filters={filters}
       directoryTree={tree}
       onChange={(patch) =>
@@ -62,15 +59,15 @@ function pick(name: string, option: string) {
   fireEvent.click(screen.getByRole("option", { name: option }));
 }
 
-describe("TransferMarketFilterPanel", () => {
+describe("PlayerFilterPanel", () => {
   // Given the market, then filtering is one button that opens a panel, and
   // Escape closes it again.
   it("opens and closes the filter panel from one button", () => {
     render(<Host />);
-    const button = screen.getByRole("button", { name: "transfers.filters.button" });
+    const button = screen.getByRole("button", { name: "playerFilters.button" });
 
     fireEvent.click(button);
-    expect(screen.getByRole("dialog", { name: "transfers.filters.title" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "playerFilters.title" })).toBeInTheDocument();
     expect(button).toHaveAttribute("aria-expanded", "true");
 
     fireEvent.keyDown(document, { key: "Escape" });
@@ -82,18 +79,16 @@ describe("TransferMarketFilterPanel", () => {
   it("offers the group's positions once a position group is chosen", () => {
     const onFilters = vi.fn();
     render(<Host onFilters={onFilters} />);
-    fireEvent.click(screen.getByRole("button", { name: "transfers.filters.button" }));
-    expect(
-      screen.getByRole("combobox", { name: "transfers.filters.specificPosition" }),
-    ).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    expect(screen.getByRole("combobox", { name: "playerFilters.specificPosition" })).toBeDisabled();
 
-    pick("transfers.filters.positionGroup", "common.positionGroups.Defender");
-    fireEvent.click(screen.getByRole("combobox", { name: "transfers.filters.specificPosition" }));
+    pick("playerFilters.positionGroup", "common.positionGroups.Defender");
+    fireEvent.click(screen.getByRole("combobox", { name: "playerFilters.specificPosition" }));
     const options = within(screen.getByRole("listbox"))
       .getAllByRole("option")
       .map((option) => option.textContent?.split(" ")[0]);
     expect(options).toEqual([
-      "transfers.filters.anyPosition",
+      "playerFilters.anyPosition",
       "CenterBack",
       "LeftBack",
       "RightBack",
@@ -111,17 +106,17 @@ describe("TransferMarketFilterPanel", () => {
   it("narrows the competition from region to country to league", () => {
     const onFilters = vi.fn();
     render(<Host onFilters={onFilters} />);
-    fireEvent.click(screen.getByRole("button", { name: "transfers.filters.button" }));
-    expect(screen.getByRole("combobox", { name: "transfers.filters.country" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    expect(screen.getByRole("combobox", { name: "playerFilters.country" })).toBeDisabled();
 
-    pick("transfers.filters.region", "Europe");
-    pick("transfers.filters.country", "ESP");
-    pick("transfers.filters.league", "La Liga");
+    pick("playerFilters.region", "Europe");
+    pick("playerFilters.country", "ESP");
+    pick("playerFilters.league", "La Liga");
 
     expect(onFilters).toHaveBeenLastCalledWith(
       expect.objectContaining({ regionId: "europe", countryId: "ESP", leagueId: "esp-1" }),
     );
-    pick("transfers.filters.region", "transfers.filters.anyRegion");
+    pick("playerFilters.region", "playerFilters.anyRegion");
     expect(onFilters).toHaveBeenLastCalledWith(
       expect.objectContaining({ regionId: null, countryId: null, leagueId: null }),
     );
@@ -131,19 +126,19 @@ describe("TransferMarketFilterPanel", () => {
   // on, and Clear turns them all off.
   it("counts the filters on and clears them", () => {
     render(<Host />);
-    fireEvent.click(screen.getByRole("button", { name: "transfers.filters.button" }));
-    fireEvent.change(screen.getByRole("spinbutton", { name: "common.age transfers.filters.min" }), {
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "common.age playerFilters.min" }), {
       target: { value: "18" },
     });
-    fireEvent.change(screen.getByRole("spinbutton", { name: "common.ovr transfers.filters.max" }), {
+    fireEvent.change(screen.getByRole("spinbutton", { name: "common.ovr playerFilters.max" }), {
       target: { value: "80" },
     });
 
     expect(screen.getByRole("button", { name: "Filters (2 on)" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "transfers.filters.clear" }));
-    expect(screen.getByRole("button", { name: "transfers.filters.button" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("spinbutton", { name: "common.age transfers.filters.min" }),
-    ).toHaveValue(null);
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.clear" }));
+    expect(screen.getByRole("button", { name: "playerFilters.button" })).toBeInTheDocument();
+    expect(screen.getByRole("spinbutton", { name: "common.age playerFilters.min" })).toHaveValue(
+      null,
+    );
   });
 });

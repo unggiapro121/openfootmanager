@@ -1474,26 +1474,7 @@
     "transferFeedbackCounterHeadline": "Họ muốn nhiều hơn trước khi bắt tay.",
     "transferFeedbackCounterDetail": "Mức giá đủ gần để tiếp tục trao đổi, nhưng phía họ đang ra tín hiệu muốn mức giá gần {{fee}} hơn.",
     "transferFeedbackRejectedHeadline": "Họ đã khép lại vòng này.",
-    "transferFeedbackRejectedDetail": "Đề nghị chưa đủ sức thuyết phục họ. Bạn sẽ cần mức phí cao hơn, gần {{fee}}, để mở lại đàm phán nghiêm túc.",
-    "filters": {
-      "button": "Bộ lọc",
-      "buttonActive": "Bộ lọc ({{count}} đang bật)",
-      "title": "Lọc cầu thủ",
-      "min": "Từ",
-      "max": "Đến",
-      "position": "Vị trí",
-      "positionGroup": "Nhóm vị trí",
-      "specificPosition": "Vị trí cụ thể",
-      "anyPositionGroup": "Mọi nhóm",
-      "anyPosition": "Mọi vị trí",
-      "competition": "Giải đấu",
-      "region": "Khu vực",
-      "country": "Quốc gia",
-      "league": "Giải",
-      "anyRegion": "Mọi khu vực",
-      "anyCountry": "Mọi quốc gia",
-      "clear": "Xoá bộ lọc"
-    }
+    "transferFeedbackRejectedDetail": "Đề nghị chưa đủ sức thuyết phục họ. Bạn sẽ cần mức phí cao hơn, gần {{fee}}, để mở lại đàm phán nghiêm túc."
   },
   "transferCentreWorld": {
     "title": "Trung tâm chuyển nhượng",
@@ -2881,7 +2862,9 @@
         "selectorMissingSource": "Bộ chọn này cần có giải đấu nguồn.",
         "unknownExcludedCompetition": "Giải đấu bị loại trừ không xác định \"{{excluded}}\".",
         "selectorCycle": "Vòng lặp suất dự giải giữa các giải đấu.",
-        "duplicateTierPriority": "Các hạng đấu của {{country}} có cùng mức ưu tiên {{priority}}. Số nhỏ hơn là hạng đấu cao hơn, và mỗi hạng cần một số riêng, nếu không sẽ không có đội nào được thăng hạng hay xuống hạng."
+        "duplicateTierPriority": "Các hạng đấu của {{country}} có cùng mức ưu tiên {{priority}}. Số nhỏ hơn là hạng đấu cao hơn, và mỗi hạng cần một số riêng, nếu không sẽ không có đội nào được thăng hạng hay xuống hạng.",
+        "roundDatesOnNonKnockout": "Ngày các vòng chỉ áp dụng cho thể thức loại trực tiếp.",
+        "invalidRoundDate": "Ngày vòng \"{{date}}\" không phải một ngày trong năm. Dùng dạng MM-DD, ví dụ 05-16."
       },
       "worldParseFailed": "Không phân tích được file cơ sở dữ liệu thế giới.",
       "worldWriteFileFailed": "Không xuất được file cơ sở dữ liệu thế giới.",
@@ -4396,5 +4379,24 @@
     "review": "Xem những gì được gửi",
     "saveAndOpen": "Lưu file và mở GitHub",
     "working": "Đang xử lý…"
+  },
+  "playerFilters": {
+    "button": "Bộ lọc",
+    "buttonActive": "Bộ lọc ({{count}} đang bật)",
+    "title": "Lọc cầu thủ",
+    "min": "Từ",
+    "max": "Đến",
+    "position": "Vị trí",
+    "positionGroup": "Nhóm vị trí",
+    "specificPosition": "Vị trí cụ thể",
+    "anyPositionGroup": "Mọi nhóm",
+    "anyPosition": "Mọi vị trí",
+    "competition": "Giải đấu",
+    "region": "Khu vực",
+    "country": "Quốc gia",
+    "league": "Giải",
+    "anyRegion": "Mọi khu vực",
+    "anyCountry": "Mọi quốc gia",
+    "clear": "Xoá bộ lọc"
   }
 }

@@ -306,6 +306,13 @@ function applyQuery(items: PlayerSummary[], query: PlayersPageQuery): PlayersPag
   if (query.team_id) {
     filtered = filtered.filter((s) => s.team_id === query.team_id);
   }
+  if (query.positions.length > 0) {
+    filtered = filtered.filter((s) => query.positions.includes(s.natural_position));
+  }
+  if (query.team_ids) {
+    const teamIds = query.team_ids;
+    filtered = filtered.filter((s) => s.team_id !== null && teamIds.includes(s.team_id));
+  }
   if (query.status === "transfer") {
     filtered = filtered.filter((s) => s.transfer_listed);
   } else if (query.status === "loan") {
@@ -320,6 +327,14 @@ function applyQuery(items: PlayerSummary[], query: PlayersPageQuery): PlayersPag
 }
 
 type InvokeOverrides = Record<string, (args: unknown) => unknown>;
+
+/** The query of the latest players page the screen asked the backend for. */
+function lastPlayersQuery(): PlayersPageQuery | undefined {
+  const queries = mockedInvoke.mock.calls
+    .filter(([cmd]) => cmd === "get_players_page")
+    .map(([, args]) => (args as { query: PlayersPageQuery }).query);
+  return queries[queries.length - 1];
+}
 
 function setupSliceMock(gameState: GameStateData, overrides: InvokeOverrides = {}) {
   mockedInvoke.mockImplementation(async (cmd: string, args?: unknown) => {
@@ -370,7 +385,13 @@ describe("PlayersListTab", () => {
     });
     expect(screen.getByText("A. Keeper")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Goalkeeper" }));
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "playerFilters.positionGroup" }));
+    fireEvent.click(screen.getByRole("option", { name: "common.positionGroups.Goalkeeper" }));
+    await waitFor(() => {
+      expect(lastPlayersQuery()).toMatchObject({ positions: ["Goalkeeper"] });
+    });
+    fireEvent.keyDown(document, { key: "Escape" });
     fireEvent.click(await screen.findByText("A. Keeper"));
 
     expect(onSelectPlayer).toHaveBeenCalledWith("player-2");
@@ -378,7 +399,10 @@ describe("PlayersListTab", () => {
 
   // Given clubs in two leagues, when a league is picked, then the players query
   // asks for that league and the team picker offers only that league's clubs.
-  it("narrows the players and the team picker to the chosen league", async () => {
+  // Given clubs in two leagues, when a league is chosen in the filter panel,
+  // then the players query asks for that league's clubs and the team picker
+  // offers only them.
+  it("narrows the players and the team picker to the league chosen in the filter panel", async () => {
     const gameState = createGameState();
     const card = (id: string, name: string) => ({ team: { id, name } });
     setupSliceMock(gameState, {
@@ -401,15 +425,19 @@ describe("PlayersListTab", () => {
     );
     await screen.findByText("A. Keeper");
 
-    fireEvent.click(screen.getByRole("combobox", { name: "players.leagueFilter" }));
-    fireEvent.click(await screen.findByRole("option", { name: "Beta League" }));
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    const pick = async (picker: string, option: string) => {
+      fireEvent.click(screen.getByRole("combobox", { name: picker }));
+      fireEvent.click(await screen.findByRole("option", { name: option }));
+    };
+    await pick("playerFilters.region", "teamSelect.regionLabels.europe");
+    await pick("playerFilters.country", "teams.otherClubs");
+    await pick("playerFilters.league", "Beta League");
 
     await waitFor(() => {
-      const queries = mockedInvoke.mock.calls
-        .filter(([cmd]) => cmd === "get_players_page")
-        .map(([, args]) => (args as { query: PlayersPageQuery }).query);
-      expect(queries[queries.length - 1]).toMatchObject({ league_id: "league-b", team_id: null });
+      expect(lastPlayersQuery()).toMatchObject({ team_ids: ["team-2"], team_id: null });
     });
+    fireEvent.keyDown(document, { key: "Escape" });
 
     fireEvent.click(screen.getByRole("combobox", { name: "players.teamFilter" }));
     expect(await screen.findByRole("option", { name: "Beta FC" })).toBeInTheDocument();

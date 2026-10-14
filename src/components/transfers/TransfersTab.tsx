@@ -82,8 +82,9 @@ import {
   type TransferMarketFilters,
   updateTransferMarketFilter,
 } from "./TransfersTab.filters";
-import TransferMarketFilterPanel from "./TransferMarketFilterPanel";
-import { applyMarketPanelFilters, teamIdsInScope } from "./TransferMarketFilterPanel.helpers";
+import PlayerFilterPanel from "../playerFilters/PlayerFilterPanel";
+import { teamIdsInScope } from "../playerFilters/playerFilters";
+import { applyMarketPanelFilters } from "./TransfersTab.panelFilters";
 import { useDirectoryTree } from "../teams/useDirectoryTree";
 import { calculateAvailableScouts } from "../scouting/ScoutingTab.helpers";
 import { buildAlreadyScoutingIds } from "../scouting/ScoutingTab.model";
@@ -995,7 +996,7 @@ export default function TransfersTab({
           />
         </div>
         {isPlayersView && (
-          <TransferMarketFilterPanel
+          <PlayerFilterPanel
             filters={filters}
             onChange={handlePanelFiltersChange}
             directoryTree={directoryTree}

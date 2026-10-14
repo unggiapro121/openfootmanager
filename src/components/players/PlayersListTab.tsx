@@ -27,7 +27,14 @@ import {
   type PlayersPageQuery,
 } from "../../services/playersService";
 import { useDirectoryTree } from "../teams/useDirectoryTree";
-import { buildLeagueFilterGroups, buildTeamFilterGroups } from "./PlayersListTab.helpers";
+import { buildTeamFilterGroups } from "./PlayersListTab.helpers";
+import PlayerFilterPanel from "../playerFilters/PlayerFilterPanel";
+import {
+  PLAYER_FILTER_DEFAULTS,
+  type PlayerFilterValues,
+  positionsForFilter,
+  teamIdsInScope,
+} from "../playerFilters/playerFilters";
 import {
   buildDividerMenuItem,
   buildOfferFreeAgentContractMenuItem,
@@ -57,6 +64,12 @@ const DEFAULT_QUERY: PlayersPageQuery = {
   position: null,
   team_id: null,
   league_id: null,
+  team_ids: null,
+  positions: [],
+  age_min: null,
+  age_max: null,
+  ovr_min: null,
+  ovr_max: null,
   status: "all",
   sort_key: "ovr",
   sort_asc: false,
@@ -72,6 +85,7 @@ export default function PlayersListTab({
 }: PlayersListTabProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState<PlayersPageQuery>(DEFAULT_QUERY);
+  const [panelFilters, setPanelFilters] = useState<PlayerFilterValues>(PLAYER_FILTER_DEFAULTS);
   const [slice, setSlice] = useState<PlayersPage | null>(null);
   const [refetchKey, setRefetchKey] = useState(0);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -96,9 +110,43 @@ export default function PlayersListTab({
     [onGameUpdate, refetchSlice],
   );
 
+  const directoryTree = useDirectoryTree();
+  const scopeTeamIds = useMemo(
+    () =>
+      teamIdsInScope(
+        directoryTree,
+        panelFilters.regionId,
+        panelFilters.countryId,
+        panelFilters.leagueId,
+      ),
+    [directoryTree, panelFilters.regionId, panelFilters.countryId, panelFilters.leagueId],
+  );
+  // The filter panel's values, as the fields the backend's paged query reads.
+  const backendQuery = useMemo<PlayersPageQuery>(
+    () => ({
+      ...query,
+      positions: positionsForFilter(panelFilters.positionGroup, panelFilters.position),
+      team_ids: scopeTeamIds ? [...scopeTeamIds] : null,
+      age_min: panelFilters.ageMin,
+      age_max: panelFilters.ageMax,
+      ovr_min: panelFilters.ovrMin,
+      ovr_max: panelFilters.ovrMax,
+    }),
+    [query, panelFilters, scopeTeamIds],
+  );
+  const handlePanelFiltersChange = useCallback(
+    (patch: Partial<PlayerFilterValues>) => {
+      setPanelFilters((previous) => ({ ...previous, ...patch }));
+      // A new competition scope can leave the chosen club outside it.
+      const scopeChanged = "regionId" in patch || "countryId" in patch || "leagueId" in patch;
+      patchQuery(scopeChanged ? { team_id: null } : {});
+    },
+    [patchQuery],
+  );
+
   useEffect(() => {
     let cancelled = false;
-    fetchPlayersPage(query)
+    fetchPlayersPage(backendQuery)
       .then((result) => {
         if (cancelled) return;
         setSlice(result);
@@ -111,13 +159,11 @@ export default function PlayersListTab({
     return () => {
       cancelled = true;
     };
-  }, [query, refetchKey, t]);
+  }, [backendQuery, refetchKey, t]);
 
-  const directoryTree = useDirectoryTree();
-  const leagueGroups = useMemo(() => buildLeagueFilterGroups(directoryTree), [directoryTree]);
   const teamGroups = useMemo(
-    () => buildTeamFilterGroups(directoryTree, query.league_id),
-    [directoryTree, query.league_id],
+    () => buildTeamFilterGroups(directoryTree, scopeTeamIds),
+    [directoryTree, scopeTeamIds],
   );
 
   const findFullPlayer = useCallback(
@@ -209,7 +255,6 @@ export default function PlayersListTab({
   const page = query.page;
   const pageSize = slice?.page_size ?? query.page_size;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const positions = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
   return (
     <div>
@@ -226,33 +271,11 @@ export default function PlayersListTab({
           />
         </div>
 
-        <div className="flex gap-1.5">
-          <button
-            type="button"
-            onClick={() => patchQuery({ position: null })}
-            className={`px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-all ${
-              !query.position
-                ? "bg-primary-500 text-white shadow-sm"
-                : "bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600"
-            }`}
-          >
-            {t("players.allPos")}
-          </button>
-          {positions.map((pos) => (
-            <button
-              type="button"
-              key={pos}
-              onClick={() => patchQuery({ position: query.position === pos ? null : pos })}
-              className={`px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-all ${
-                query.position === pos
-                  ? "bg-primary-500 text-white shadow-sm"
-                  : "bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600"
-              }`}
-            >
-              {t(`common.posAbbr.${pos}`)}
-            </button>
-          ))}
-        </div>
+        <PlayerFilterPanel
+          filters={panelFilters}
+          onChange={handlePanelFiltersChange}
+          directoryTree={directoryTree}
+        />
 
         <div className="flex gap-1.5">
           <button
@@ -277,25 +300,6 @@ export default function PlayersListTab({
             {t("transfers.loan")}
           </button>
         </div>
-
-        <Select
-          value={query.league_id ?? ""}
-          onChange={(e) => patchQuery({ league_id: e.target.value || null, team_id: null })}
-          selectSize="sm"
-          aria-label={t("players.leagueFilter")}
-          className="min-w-44 font-heading font-bold uppercase tracking-wider"
-        >
-          <option value="">{t("players.allLeagues")}</option>
-          {leagueGroups.map((group) => (
-            <optgroup key={group.id} label={group.label}>
-              {group.options.map((league) => (
-                <option key={league.id} value={league.id}>
-                  {league.name}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </Select>
 
         <Select
           value={query.team_id ?? ""}

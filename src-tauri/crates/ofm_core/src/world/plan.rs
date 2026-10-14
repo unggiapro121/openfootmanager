@@ -92,6 +92,7 @@ pub(super) fn build_foundation_competition_plan(
         group_size: None,
         qualifiers_per_group: None,
         best_third_qualifiers: None,
+        round_dates: Vec::new(),
     };
 
     let mut teams_by_country: BTreeMap<String, Vec<String>> = BTreeMap::new();
@@ -376,6 +377,7 @@ pub(super) fn build_foundation_competition_plan(
                             group_size: Some(domain::league::DEFAULT_GROUP_SIZE),
                             qualifiers_per_group: Some(2),
                             best_third_qualifiers: None,
+                            round_dates: Vec::new(),
                         },
                         participants: ParticipantSpec {
                             explicit: Some(participants),

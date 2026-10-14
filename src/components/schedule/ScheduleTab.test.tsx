@@ -563,6 +563,63 @@ describe("ScheduleTab", () => {
     expect(screen.queryByRole("button", { name: /Load more/i })).not.toBeInTheDocument();
   });
 
+  it("calendar lists the club's matches in every competition, each under its own competition", async () => {
+    const state = makeGameState(true);
+    state.competitions = [
+      ...(state.competitions ?? []),
+      {
+        id: "cup-1",
+        name: "FA Cup",
+        season: 1,
+        participant_ids: ["team-1", "team-3"],
+        fixtures: [],
+        standings: [],
+      },
+    ];
+    state.active_competition_ids = ["league-1", "cup-1"];
+    const cupTie = makeGroup({
+      key: "cup-1-round",
+      date: "2026-09-09",
+      competition: "Cup",
+      fixtures: [
+        {
+          ...makeGroup().fixtures[0],
+          id: "fix-cup",
+          date: "2026-09-09",
+          away_team_id: "team-3",
+          away_team_name: "Gamma FC",
+          competition: "Cup",
+          competition_id: "cup-1",
+        },
+      ],
+    });
+    mockedInvoke.mockImplementation(async (_command, args) => {
+      const query = (args as { query: { club?: boolean } }).query;
+      return query.club
+        ? makeSlice({
+            competition_id: "",
+            competition_name: "",
+            upcoming_groups: [makeGroup({ is_next_user_match: true }), cupTie],
+          })
+        : makeSlice();
+    });
+
+    render(<ScheduleTab gameState={state} onSelectTeam={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("schedule-fixture-fix-cup")).toBeInTheDocument();
+    });
+    expect(mockedInvoke).toHaveBeenCalledWith("get_schedule", {
+      query: { competition_id: "", club: true },
+    });
+    expect(screen.getByText(`FA Cup – ${formatMatchDate("2026-09-09")}`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`Premier League – Matchday 1 – ${formatMatchDate("2026-09-05")}`),
+    ).toBeInTheDocument();
+    // One calendar for every competition: the switcher belongs to the other views.
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  });
+
   it("competition switcher triggers a new fetch", async () => {
     const state = makeGameState(true);
     state.competitions = [
@@ -593,6 +650,7 @@ describe("ScheduleTab", () => {
       });
     });
 
+    fireEvent.click(screen.getByRole("button", { name: "Fixtures" }));
     await act(async () => {
       fireEvent.click(screen.getByRole("combobox"));
     });

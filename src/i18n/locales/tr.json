@@ -1474,26 +1474,7 @@
     "transferFeedbackCounterHeadline": "El sıkışmadan önce daha fazlasını istiyorlar.",
     "transferFeedbackCounterDetail": "Teklif görüşmeyi sürdürecek kadar yakındı, ancak karşı taraf {{fee}} civarında bir fiyata işaret ediyor.",
     "transferFeedbackRejectedHeadline": "Bu turu kapattılar.",
-    "transferFeedbackRejectedDetail": "Öneri onları yeterince etkilemedi. Ciddi görüşmeleri yeniden başlatmak için {{fee}} civarında daha güçlü bir bonservis gerekir.",
-    "filters": {
-      "button": "Filtreler",
-      "buttonActive": "Filtreler ({{count}} açık)",
-      "title": "Oyuncuları filtrele",
-      "min": "En az",
-      "max": "En çok",
-      "position": "Mevki",
-      "positionGroup": "Mevki grubu",
-      "specificPosition": "Belirli mevki",
-      "anyPositionGroup": "Tüm gruplar",
-      "anyPosition": "Tüm mevkiler",
-      "competition": "Turnuva",
-      "region": "Bölge",
-      "country": "Ülke",
-      "league": "Lig",
-      "anyRegion": "Tüm bölgeler",
-      "anyCountry": "Tüm ülkeler",
-      "clear": "Filtreleri temizle"
-    }
+    "transferFeedbackRejectedDetail": "Öneri onları yeterince etkilemedi. Ciddi görüşmeleri yeniden başlatmak için {{fee}} civarında daha güçlü bir bonservis gerekir."
   },
   "transferCentreWorld": {
     "title": "Transfer Merkezi",
@@ -2881,7 +2862,9 @@
         "selectorMissingSource": "Bu seçici bir kaynak turnuva gerektiriyor.",
         "unknownExcludedCompetition": "Bilinmeyen hariç tutulan turnuva \"{{excluded}}\".",
         "selectorCycle": "Turnuvalar arasında döngüsel katılım ilişkisi.",
-        "duplicateTierPriority": "{{country}} ülkesinin birden fazla ligi {{priority}} önceliğini paylaşıyor. Daha düşük sayı daha üst lig demektir ve her kademenin kendi sayısı olmalı, yoksa hiçbiri yükselmez veya düşmez."
+        "duplicateTierPriority": "{{country}} ülkesinin birden fazla ligi {{priority}} önceliğini paylaşıyor. Daha düşük sayı daha üst lig demektir ve her kademenin kendi sayısı olmalı, yoksa hiçbiri yükselmez veya düşmez.",
+        "roundDatesOnNonKnockout": "Tur tarihleri yalnızca eleme formatı için geçerlidir.",
+        "invalidRoundDate": "\"{{date}}\" tur tarihi yılın bir günü değil. AA-GG biçimini kullan, örneğin 05-16."
       },
       "worldParseFailed": "Dünya veritabanı dosyası ayrıştırılamadı.",
       "worldWriteFileFailed": "Dünya veritabanı dosyası dışa aktarılamadı.",
@@ -4396,5 +4379,24 @@
     "review": "Ne gönderildiğini incele",
     "saveAndOpen": "Dosyayı kaydet ve GitHub'ı aç",
     "working": "Çalışıyor…"
+  },
+  "playerFilters": {
+    "button": "Filtreler",
+    "buttonActive": "Filtreler ({{count}} açık)",
+    "title": "Oyuncuları filtrele",
+    "min": "En az",
+    "max": "En çok",
+    "position": "Mevki",
+    "positionGroup": "Mevki grubu",
+    "specificPosition": "Belirli mevki",
+    "anyPositionGroup": "Tüm gruplar",
+    "anyPosition": "Tüm mevkiler",
+    "competition": "Turnuva",
+    "region": "Bölge",
+    "country": "Ülke",
+    "league": "Lig",
+    "anyRegion": "Tüm bölgeler",
+    "anyCountry": "Tüm ülkeler",
+    "clear": "Filtreleri temizle"
   }
 }

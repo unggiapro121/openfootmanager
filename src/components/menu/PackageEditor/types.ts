@@ -249,6 +249,8 @@ export interface FormatDef {
   groupSize?: number;
   qualifiersPerGroup?: number;
   bestThirdQualifiers?: number;
+  /** Knockout only: the day ("MM-DD") of each round, the final last. */
+  roundDates?: string[];
 }
 
 export interface SelectorSpec {

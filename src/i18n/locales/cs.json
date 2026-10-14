@@ -1474,26 +1474,7 @@
     "transferFeedbackCounterHeadline": "Před stvrzením dohody požadují více.",
     "transferFeedbackCounterDetail": "Nabídka byla dostatečně vysoká na to, aby se pokračovalo v jednání, ale druhá strana dává najevo, že si představuje cenu bližší k {{fee}}.",
     "transferFeedbackRejectedHeadline": "Tato fáze vyjednávání byla ukončena.",
-    "transferFeedbackRejectedDetail": "Návrh je nepřesvědčil. Pro opětovné zahájení vážných rozhovorů budete muset nabídnout vyšší částku, bližší k {{fee}}.",
-    "filters": {
-      "button": "Filtry",
-      "buttonActive": "Filtry (aktivní: {{count}})",
-      "title": "Filtrovat hráče",
-      "min": "Od",
-      "max": "Do",
-      "position": "Pozice",
-      "positionGroup": "Skupina pozic",
-      "specificPosition": "Konkrétní pozice",
-      "anyPositionGroup": "Jakákoli skupina",
-      "anyPosition": "Jakákoli pozice",
-      "competition": "Soutěž",
-      "region": "Region",
-      "country": "Země",
-      "league": "Liga",
-      "anyRegion": "Jakýkoli region",
-      "anyCountry": "Jakákoli země",
-      "clear": "Zrušit filtry"
-    }
+    "transferFeedbackRejectedDetail": "Návrh je nepřesvědčil. Pro opětovné zahájení vážných rozhovorů budete muset nabídnout vyšší částku, bližší k {{fee}}."
   },
   "transferCentreWorld": {
     "title": "Přestupové centrum",
@@ -2881,7 +2862,9 @@
         "selectorMissingSource": "Tento selektor vyžaduje zdrojovou soutěž.",
         "unknownExcludedCompetition": "Neznámá vyloučená soutěž „{{excluded}}“.",
         "selectorCycle": "Kruhová kvalifikace mezi soutěžemi.",
-        "duplicateTierPriority": "Několik soutěží země {{country}} sdílí prioritu {{priority}}. Nižší číslo znamená vyšší soutěž a každá úroveň potřebuje vlastní, jinak nikdo nepostoupí ani nesestoupí."
+        "duplicateTierPriority": "Několik soutěží země {{country}} sdílí prioritu {{priority}}. Nižší číslo znamená vyšší soutěž a každá úroveň potřebuje vlastní, jinak nikdo nepostoupí ani nesestoupí.",
+        "roundDatesOnNonKnockout": "Data kol platí jen pro vyřazovací formát.",
+        "invalidRoundDate": "Datum kola „{{date}}“ není den v roce. Použijte MM-DD, například 05-16."
       },
       "worldParseFailed": "Nepodařilo se zpracovat databázový soubor světa.",
       "worldWriteFileFailed": "Nepodařilo se exportovat databázový soubor světa.",
@@ -4396,5 +4379,24 @@
     "review": "Zkontrolovat, co se odešle",
     "saveAndOpen": "Uložit soubor a otevřít GitHub",
     "working": "Pracuji…"
+  },
+  "playerFilters": {
+    "button": "Filtry",
+    "buttonActive": "Filtry (aktivní: {{count}})",
+    "title": "Filtrovat hráče",
+    "min": "Od",
+    "max": "Do",
+    "position": "Pozice",
+    "positionGroup": "Skupina pozic",
+    "specificPosition": "Konkrétní pozice",
+    "anyPositionGroup": "Jakákoli skupina",
+    "anyPosition": "Jakákoli pozice",
+    "competition": "Soutěž",
+    "region": "Region",
+    "country": "Země",
+    "league": "Liga",
+    "anyRegion": "Jakýkoli region",
+    "anyCountry": "Jakákoli země",
+    "clear": "Zrušit filtry"
   }
 }
