@@ -1139,9 +1139,9 @@
     "facilityTraining": "Cơ sở tập luyện",
     "facilityMedical": "Cơ sở y tế",
     "facilityScouting": "Bộ phận tuyển trạch",
-    "facilityTrainingEffect": "Dần nâng cao hiệu quả tập luyện.",
-    "facilityMedicalEffect": "Hỗ trợ tốt hơn cho việc hồi phục và điều trị của cầu thủ.",
-    "facilityScoutingEffect": "Nâng cao chất lượng tuyển trạch và độ sâu thông tin.",
+    "facilityTrainingEffect": "Cầu thủ phát triển chỉ số nhanh hơn trong mỗi buổi tập.",
+    "facilityMedicalEffect": "Cầu thủ hồi thể lực nhanh hơn, ít chấn thương nặng hơn và trở lại sớm hơn sau chấn thương.",
+    "facilityScoutingEffect": "Tuyển trạch viên xem được nhiều cầu thủ trẻ hơn, đánh giá chính xác hơn, và học viện nhận được lứa trẻ tốt hơn mỗi mùa.",
     "facilityLevel": "Cấp {{level}}",
     "nextUpgradeCost": "Lần nâng cấp tiếp theo: {{amount}}",
     "upgradeFacility": "Nâng cấp",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Còn {{count}} kỳ trả lương mùa này",
       "apply": "Áp dụng",
       "reset": "Đặt lại"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Hồi thể lực mỗi ngày",
+      "injuryDays": "Thời gian nghỉ khi chấn thương",
+      "matchInjurySeverity": "Chấn thương trận: nhẹ / vừa / nặng",
+      "trainingInjuries": "Chấn thương ở sân tập",
+      "development": "Tốc độ phát triển chỉ số",
+      "youthSearchExtra": "Cầu thủ trẻ xem thêm mỗi lần tìm",
+      "potentialReach": "Tầm phát hiện tiềm năng",
+      "estimateNarrowing": "Khoảng ước lượng hẹp hơn",
+      "intakePotential": "Lứa trẻ cuối mùa: tiềm năng cộng thêm",
+      "intakeGems": "Lứa trẻ cuối mùa: tỉ lệ \"viên ngọc\"",
+      "intakeTopTalent": "Lứa trẻ cuối mùa: tỉ lệ tài năng hàng đầu (90–95)"
+    },
+    "facilityEffectNone": "Không đổi",
+    "facilityUpgradeTitle": "Nâng cấp {{facility}} — cấp {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Chi phí: {{cost}} (số dư {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Tác dụng",
+    "facilityUpgradeNow": "Hiện tại",
+    "facilityUpgradeAfter": "Sau nâng cấp",
+    "facilityUpgradeConfirm": "Nâng cấp — {{cost}}",
+    "facilityMaxLevel": "Đã đạt cấp tối đa"
   },
   "inbox": {
     "title": "Hộp thư",

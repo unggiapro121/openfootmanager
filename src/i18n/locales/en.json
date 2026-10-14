@@ -1139,9 +1139,9 @@
     "facilityTraining": "Training Facility",
     "facilityMedical": "Medical Facility",
     "facilityScouting": "Scouting Facility",
-    "facilityTrainingEffect": "Improves training effectiveness over time.",
-    "facilityMedicalEffect": "Improves player recovery and treatment support.",
-    "facilityScoutingEffect": "Improves scouting quality and information depth.",
+    "facilityTrainingEffect": "Players develop their attributes faster in every session.",
+    "facilityMedicalEffect": "Players recover condition faster, suffer fewer serious injuries and return sooner from injury.",
+    "facilityScoutingEffect": "Scouts look at more youngsters and judge more accurately, and the academy gets a better intake each season.",
     "facilityLevel": "Level {{level}}",
     "nextUpgradeCost": "Next upgrade: {{amount}}",
     "upgradeFacility": "Upgrade",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "{{count}} paydays left this season",
       "apply": "Apply",
       "reset": "Reset"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Daily condition recovery",
+      "injuryDays": "Time out when injured",
+      "matchInjurySeverity": "Match injuries: light / medium / serious",
+      "trainingInjuries": "Training-ground injuries",
+      "development": "Attribute development",
+      "youthSearchExtra": "Extra youngsters looked at per search",
+      "potentialReach": "Potential the network reliably finds",
+      "estimateNarrowing": "Scout estimates narrower by",
+      "intakePotential": "Season-end intake: potential bonus",
+      "intakeGems": "Season-end intake: hidden gem chance",
+      "intakeTopTalent": "Season-end intake: top talent (90–95) chance"
+    },
+    "facilityEffectNone": "No change",
+    "facilityUpgradeTitle": "Upgrade {{facility}} — level {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Cost: {{cost}} (balance {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Effect",
+    "facilityUpgradeNow": "Now",
+    "facilityUpgradeAfter": "After upgrade",
+    "facilityUpgradeConfirm": "Upgrade — {{cost}}",
+    "facilityMaxLevel": "Top level reached"
   },
   "inbox": {
     "title": "Inbox",

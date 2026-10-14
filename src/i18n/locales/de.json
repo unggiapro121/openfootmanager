@@ -1139,9 +1139,9 @@
     "facilityTraining": "Trainingsanlage",
     "facilityMedical": "Medizinische Abteilung",
     "facilityScouting": "Scouting-Abteilung",
-    "facilityTrainingEffect": "Verbessert langfristig die Trainingseffektivität.",
-    "facilityMedicalEffect": "Verbessert Regeneration und medizinische Betreuung.",
-    "facilityScoutingEffect": "Verbessert die Scouting-Qualität und Informationstiefe.",
+    "facilityTrainingEffect": "Spieler entwickeln ihre Attribute in jeder Einheit schneller.",
+    "facilityMedicalEffect": "Spieler erholen sich schneller, verletzen sich seltener schwer und kehren früher von Verletzungen zurück.",
+    "facilityScoutingEffect": "Scouts sichten mehr Talente und urteilen genauer, und die Akademie erhält jede Saison einen besseren Jahrgang.",
     "facilityLevel": "Stufe {{level}}",
     "nextUpgradeCost": "Nächstes Upgrade: {{amount}}",
     "upgradeFacility": "Ausbauen",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Noch {{count}} Zahltage in dieser Saison",
       "apply": "Übernehmen",
       "reset": "Zurücksetzen"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Tägliche Erholung der Kondition",
+      "injuryDays": "Ausfallzeit bei Verletzungen",
+      "matchInjurySeverity": "Spielverletzungen: leicht / mittel / schwer",
+      "trainingInjuries": "Trainingsverletzungen",
+      "development": "Entwicklung der Attribute",
+      "youthSearchExtra": "Zusätzlich gesichtete Talente pro Suche",
+      "potentialReach": "Potenzial, das das Netzwerk zuverlässig findet",
+      "estimateNarrowing": "Scout-Schätzungen enger um",
+      "intakePotential": "Jugendjahrgang zum Saisonende: Potenzialbonus",
+      "intakeGems": "Jugendjahrgang zum Saisonende: Chance auf ein Juwel",
+      "intakeTopTalent": "Jugendjahrgang zum Saisonende: Chance auf ein Ausnahmetalent (90–95)"
+    },
+    "facilityEffectNone": "Unverändert",
+    "facilityUpgradeTitle": "{{facility}} ausbauen — Stufe {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Kosten: {{cost}} (Kontostand {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Wirkung",
+    "facilityUpgradeNow": "Jetzt",
+    "facilityUpgradeAfter": "Nach dem Ausbau",
+    "facilityUpgradeConfirm": "Ausbauen — {{cost}}",
+    "facilityMaxLevel": "Höchste Stufe erreicht"
   },
   "inbox": {
     "title": "Posteingang",

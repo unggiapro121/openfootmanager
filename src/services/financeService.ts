@@ -202,3 +202,43 @@ export async function getFinanceSnapshot(teamId?: string): Promise<FinanceSnapsh
 export async function rebalanceBudgets(wageBudget: number): Promise<GameStateData> {
   return invoke<GameStateData>("rebalance_budgets", { wageBudget });
 }
+
+export type FacilityKind = "Training" | "Medical" | "Scouting";
+
+/** How the upgrade dialog writes an effect's numbers (`ofm_core::facilities::EffectFormat`). */
+export type FacilityEffectFormat =
+  | "multiplier"
+  | "percentChange"
+  | "percent"
+  | "count"
+  | "value"
+  | "split";
+
+export interface FacilityEffectChangeData {
+  /** i18n key of the effect's label. */
+  key: string;
+  format: FacilityEffectFormat;
+  /** One number, or three (light / medium / serious) for a split. */
+  current: number[];
+  /** The same numbers after the upgrade; `null` at the top level. */
+  next: number[] | null;
+}
+
+export interface FacilityUpgradePreviewData {
+  facility: FacilityKind;
+  level: number;
+  maxLevel: number;
+  /** `null` once the facility is at the top level. */
+  cost: number | null;
+  effects: FacilityEffectChangeData[];
+}
+
+export async function getFacilityUpgradePreview(
+  facility: FacilityKind,
+): Promise<FacilityUpgradePreviewData> {
+  return invoke<FacilityUpgradePreviewData>("get_facility_upgrade_preview", { facility });
+}
+
+export async function upgradeFacility(facility: FacilityKind): Promise<GameStateData> {
+  return invoke<GameStateData>("upgrade_facility", { facility });
+}

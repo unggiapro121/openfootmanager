@@ -1139,9 +1139,9 @@
     "facilityTraining": "Tréninkové zázemí",
     "facilityMedical": "Lékařské zázemí",
     "facilityScouting": "Skautské zázemí",
-    "facilityTrainingEffect": "Časem zvyšuje efektivitu tréninku.",
-    "facilityMedicalEffect": "Zlepšuje regeneraci hráčů a podporu léčby.",
-    "facilityScoutingEffect": "Zlepšuje kvalitu skautingu a hloubku informací.",
+    "facilityTrainingEffect": "Hráči rozvíjejí atributy rychleji při každém tréninku.",
+    "facilityMedicalEffect": "Hráči rychleji obnovují kondici, méně často se vážně zraní a dříve se vracejí po zranění.",
+    "facilityScoutingEffect": "Skauti prohlédnou více mladíků a hodnotí přesněji, a akademie dostává každou sezónu lepší ročník.",
     "facilityLevel": "{{level}}. úroveň",
     "nextUpgradeCost": "Další vylepšení: {{amount}}",
     "upgradeFacility": "Vylepšit",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Zbývající výplatní dny této sezóny: {{count}}",
       "apply": "Použít",
       "reset": "Obnovit"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Denní obnova kondice",
+      "injuryDays": "Doba výpadku po zranění",
+      "matchInjurySeverity": "Zranění v zápasech: lehká / střední / vážná",
+      "trainingInjuries": "Zranění na tréninku",
+      "development": "Rozvoj atributů",
+      "youthSearchExtra": "Další mladíci prohlédnutí při hledání",
+      "potentialReach": "Potenciál, který síť spolehlivě najde",
+      "estimateNarrowing": "Odhady skautů užší o",
+      "intakePotential": "Ročník na konci sezóny: bonus potenciálu",
+      "intakeGems": "Ročník na konci sezóny: šance na klenot",
+      "intakeTopTalent": "Ročník na konci sezóny: šance na supertalent (90–95)"
+    },
+    "facilityEffectNone": "Beze změny",
+    "facilityUpgradeTitle": "Vylepšit {{facility}} — úroveň {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Cena: {{cost}} (zůstatek {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Účinek",
+    "facilityUpgradeNow": "Nyní",
+    "facilityUpgradeAfter": "Po vylepšení",
+    "facilityUpgradeConfirm": "Vylepšit — {{cost}}",
+    "facilityMaxLevel": "Dosažena nejvyšší úroveň"
   },
   "inbox": {
     "title": "Doručená pošta",

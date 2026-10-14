@@ -14,10 +14,28 @@ pub fn club_upgrade_facility(ctx: Arc<McpContext>, facility: String) -> Result<S
         let _ = ctx.app_handle.emit("game-state-changed", ());
     }
 
-    Ok(format!(
-        "## Facility Upgraded\n\n**{}** upgraded.",
-        facility
-    ))
+    let preview = crate::commands::club::get_facility_upgrade_preview_internal(
+        &ctx.state_manager,
+        &facility,
+    )?;
+    let mut output = format!(
+        "## Facility Upgraded\n\n**{}** is now level {} of {}.\n\n| Effect | Value |\n|--------|-------|\n",
+        facility, preview.level, preview.max_level
+    );
+    for effect in &preview.effects {
+        let values: Vec<String> = effect
+            .current
+            .iter()
+            .map(|value| value.to_string())
+            .collect();
+        output.push_str(&format!(
+            "| {} | {} ({:?}) |\n",
+            effect.key.trim_start_matches("finances.facilityEffects."),
+            values.join(" / "),
+            effect.format
+        ));
+    }
+    Ok(output)
 }
 
 // ─── staff_get ──────────────────────────────────────────────────────────────

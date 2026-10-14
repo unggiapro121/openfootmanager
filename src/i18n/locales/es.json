@@ -1139,9 +1139,9 @@
     "facilityTraining": "Instalación de Entrenamiento",
     "facilityMedical": "Instalación Médica",
     "facilityScouting": "Instalación de Ojeo",
-    "facilityTrainingEffect": "Mejora la eficacia del entrenamiento con el tiempo.",
-    "facilityMedicalEffect": "Mejora la recuperación y la atención médica de los jugadores.",
-    "facilityScoutingEffect": "Mejora la calidad del ojeo y la profundidad de la información.",
+    "facilityTrainingEffect": "Los jugadores desarrollan sus atributos más rápido en cada sesión.",
+    "facilityMedicalEffect": "Los jugadores recuperan la forma antes, sufren menos lesiones graves y vuelven antes de las lesiones.",
+    "facilityScoutingEffect": "Los ojeadores ven a más jóvenes y evalúan con más precisión, y la cantera recibe una hornada mejor cada temporada.",
     "facilityLevel": "Nivel {{level}}",
     "nextUpgradeCost": "Siguiente mejora: {{amount}}",
     "upgradeFacility": "Mejorar",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Quedan {{count}} días de pago esta temporada",
       "apply": "Aplicar",
       "reset": "Restablecer"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Recuperación física diaria",
+      "injuryDays": "Tiempo de baja por lesión",
+      "matchInjurySeverity": "Lesiones en partido: leves / moderadas / graves",
+      "trainingInjuries": "Lesiones en entrenamientos",
+      "development": "Desarrollo de atributos",
+      "youthSearchExtra": "Jóvenes extra vistos por búsqueda",
+      "potentialReach": "Potencial que la red detecta con fiabilidad",
+      "estimateNarrowing": "Estimaciones de ojeadores más precisas en",
+      "intakePotential": "Hornada de fin de temporada: potencial extra",
+      "intakeGems": "Hornada de fin de temporada: probabilidad de joya",
+      "intakeTopTalent": "Hornada de fin de temporada: probabilidad de crack (90–95)"
+    },
+    "facilityEffectNone": "Sin cambios",
+    "facilityUpgradeTitle": "Mejorar {{facility}} — nivel {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Coste: {{cost}} (saldo {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Efecto",
+    "facilityUpgradeNow": "Ahora",
+    "facilityUpgradeAfter": "Tras la mejora",
+    "facilityUpgradeConfirm": "Mejorar — {{cost}}",
+    "facilityMaxLevel": "Nivel máximo alcanzado"
   },
   "inbox": {
     "title": "Bandeja de Entrada",

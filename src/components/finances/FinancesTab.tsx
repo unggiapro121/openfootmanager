@@ -12,7 +12,7 @@ import {
   getContractYearsRemaining,
 } from "../../lib/helpers";
 import { formatPlayerWageLine, getPaidWeeklyWage, getTeamFinanceSnapshot } from "../../lib/finance";
-import { getFinanceSnapshot } from "../../services/financeService";
+import { getFinanceSnapshot, upgradeFacility } from "../../services/financeService";
 import { useTranslation } from "react-i18next";
 import { resolveBackendError, resolveMessage } from "../../utils/backendI18n";
 import {
@@ -25,6 +25,8 @@ import {
   type SponsorPitchResponseData,
   type MarketingCampaignResponseData,
   DEFAULT_FACILITIES,
+  FACILITY_DEFINITIONS,
+  facilityUpgradeBlockReason,
   formatSignedAmount,
   boardSupportAvailable,
   sponsorPitchAvailable,
@@ -35,6 +37,7 @@ import {
 } from "./FinancesTab.helpers";
 import FinancesBudgetBalanceCard from "./FinancesBudgetBalanceCard";
 import FinancesFacilitiesCard from "./FinancesFacilitiesCard";
+import FacilityUpgradeDialog from "./FacilityUpgradeDialog";
 import FinancesPayrollTable from "./FinancesPayrollTable";
 
 interface FinancesTabProps {
@@ -92,6 +95,7 @@ function FinancesTabContent({
   );
   const [facilityUpgradeError, setFacilityUpgradeError] =
     useState<FacilityUpgradeErrorState | null>(null);
+  const [pendingFacilityUpgrade, setPendingFacilityUpgrade] = useState<FacilityId | null>(null);
   const [boardSupportFeedback, setBoardSupportFeedback] = useState<{
     tone: "success" | "error";
     text: string;
@@ -323,11 +327,11 @@ function FinancesTabContent({
     setFacilityUpgradeError(null);
     setActionLoading(facility);
     try {
-      const updated = await invoke<GameStateData>("upgrade_facility", {
-        facility,
-      });
+      const updated = await upgradeFacility(facility);
+      setPendingFacilityUpgrade(null);
       onGameUpdate?.(updated);
     } catch (error) {
+      setPendingFacilityUpgrade(null);
       console.error("Failed to upgrade facility:", error);
       setFacilityUpgradeError({
         facilityId: facility,
@@ -1000,8 +1004,26 @@ function FinancesTabContent({
         teamFinance={myTeam.finance}
         facilityUpgradeError={facilityUpgradeError}
         actionLoading={actionLoading}
-        onUpgrade={(facility) => void handleUpgradeFacility(facility)}
+        onUpgrade={(facility) => {
+          setFacilityUpgradeError(null);
+          setPendingFacilityUpgrade(facility);
+        }}
       />
+
+      {pendingFacilityUpgrade && (
+        <FacilityUpgradeDialog
+          facility={pendingFacilityUpgrade}
+          titleKey={
+            FACILITY_DEFINITIONS.find((facility) => facility.id === pendingFacilityUpgrade)
+              ?.titleKey ?? "finances.facilities"
+          }
+          balance={myTeam.finance}
+          blockReason={facilityUpgradeBlockReason(financeSnapshot)}
+          isUpgrading={actionLoading === pendingFacilityUpgrade}
+          onCancel={() => setPendingFacilityUpgrade(null)}
+          onConfirm={() => void handleUpgradeFacility(pendingFacilityUpgrade)}
+        />
+      )}
 
       <FinancesPayrollTable roster={roster} staff={teamStaff} onSelectPlayer={onSelectPlayer} />
     </div>

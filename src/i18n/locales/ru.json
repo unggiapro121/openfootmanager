@@ -1139,9 +1139,9 @@
     "facilityTraining": "Тренировочная база",
     "facilityMedical": "Медицинский центр",
     "facilityScouting": "Скаутский отдел",
-    "facilityTrainingEffect": "Со временем повышает эффективность тренировок.",
-    "facilityMedicalEffect": "Улучшает восстановление и лечение игроков.",
-    "facilityScoutingEffect": "Повышает качество скаутинга и глубину данных.",
+    "facilityTrainingEffect": "Игроки быстрее развивают характеристики на каждом занятии.",
+    "facilityMedicalEffect": "Игроки быстрее восстанавливают форму, реже получают тяжёлые травмы и раньше возвращаются после травм.",
+    "facilityScoutingEffect": "Скауты просматривают больше юниоров и оценивают точнее, а академия каждый сезон получает более сильный набор.",
     "facilityLevel": "Уровень {{level}}",
     "nextUpgradeCost": "Следующее улучшение: €{{amount}}",
     "upgradeFacility": "Улучшить",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Дней выплаты до конца сезона: {{count}}",
       "apply": "Применить",
       "reset": "Сбросить"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Ежедневное восстановление формы",
+      "injuryDays": "Срок восстановления после травмы",
+      "matchInjurySeverity": "Травмы в матчах: лёгкие / средние / тяжёлые",
+      "trainingInjuries": "Травмы на тренировках",
+      "development": "Развитие характеристик",
+      "youthSearchExtra": "Дополнительные юниоры за поиск",
+      "potentialReach": "Потенциал, который сеть находит надёжно",
+      "estimateNarrowing": "Оценки скаутов точнее на",
+      "intakePotential": "Набор в конце сезона: бонус к потенциалу",
+      "intakeGems": "Набор в конце сезона: шанс на самородка",
+      "intakeTopTalent": "Набор в конце сезона: шанс на суперталант (90–95)"
+    },
+    "facilityEffectNone": "Без изменений",
+    "facilityUpgradeTitle": "Улучшить: {{facility}} — уровень {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Стоимость: {{cost}} (баланс {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Эффект",
+    "facilityUpgradeNow": "Сейчас",
+    "facilityUpgradeAfter": "После улучшения",
+    "facilityUpgradeConfirm": "Улучшить — {{cost}}",
+    "facilityMaxLevel": "Достигнут максимальный уровень"
   },
   "inbox": {
     "title": "Входящие",

@@ -345,6 +345,21 @@ function createGameState(
   };
 }
 
+const MEDICAL_PREVIEW = {
+  facility: "Medical",
+  level: 1,
+  maxLevel: 10,
+  cost: 2_500_000,
+  effects: [
+    {
+      key: "finances.facilityEffects.conditionRecovery",
+      format: "multiplier",
+      current: [1],
+      next: [1.1],
+    },
+  ],
+};
+
 describe("FinancesTab facilities", () => {
   beforeEach(() => {
     mockedInvoke.mockReset();
@@ -396,6 +411,10 @@ describe("FinancesTab facilities", () => {
         return pendingPromise();
       }
 
+      if (command === "get_facility_upgrade_preview") {
+        return Promise.resolve(MEDICAL_PREVIEW);
+      }
+
       if (command === "upgrade_facility") {
         return Promise.resolve(updatedState);
       }
@@ -407,6 +426,7 @@ describe("FinancesTab facilities", () => {
 
     const upgradeButtons = screen.getAllByRole("button", { name: "Upgrade" });
     fireEvent.click(upgradeButtons[1]);
+    fireEvent.click(await screen.findByRole("button", { name: "finances.facilityUpgradeConfirm" }));
 
     await waitFor(() => {
       expect(mockedInvoke).toHaveBeenCalledWith("upgrade_facility", {
@@ -414,6 +434,55 @@ describe("FinancesTab facilities", () => {
       });
     });
     expect(onGameUpdate).toHaveBeenCalledWith(updatedState);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  /**
+   * Given a club that can afford an upgrade,
+   * When the manager presses Upgrade and then cancels the dialog,
+   * Then no upgrade is asked for.
+   */
+  it("asks before upgrading and spends nothing when cancelled", async () => {
+    const initialState = createGameState({ finance: 9_000_000 });
+    mockedInvoke.mockImplementation((command) => {
+      if (command === "get_finance_snapshot") {
+        return pendingPromise();
+      }
+
+      if (command === "get_facility_upgrade_preview") {
+        return Promise.resolve(MEDICAL_PREVIEW);
+      }
+
+      return Promise.reject(new Error(`Unexpected command: ${command}`));
+    });
+
+    render(<FinancesTab gameState={initialState} />);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Upgrade" })[1]);
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(mockedInvoke).not.toHaveBeenCalledWith("upgrade_facility", expect.anything());
+  });
+
+  /**
+   * Given a club whose training facility is at the top level,
+   * When the facilities card renders,
+   * Then that facility's Upgrade button is disabled and says the top is reached.
+   */
+  it("disables the upgrade of a facility at the top level", () => {
+    const gameState = createGameState({
+      finance: 90_000_000,
+      facilities: { training: 10, medical: 1, scouting: 1 },
+    });
+
+    render(<FinancesTab gameState={gameState} />);
+
+    const upgradeButtons = screen.getAllByRole("button", { name: "Upgrade" });
+    expect(upgradeButtons[0]).toBeDisabled();
+    expect(upgradeButtons[1]).toBeEnabled();
+    expect(screen.getByText("finances.facilityMaxLevel")).toBeInTheDocument();
   });
 
   it("renders active sponsorship and pending sponsor offers", () => {

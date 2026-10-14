@@ -2,11 +2,49 @@ use log::info;
 use std::sync::Arc;
 use tauri::State;
 
+use domain::team::FacilityType;
+use ofm_core::club::FacilityUpgradePreview;
 use ofm_core::finances::{self, FinanceHealthLevel};
 use ofm_core::game::Game;
 use ofm_core::state::StateManager;
 
-use crate::commands::util::mutate_active_game;
+use crate::commands::util::{mutate_active_game, user_team_id};
+
+fn parse_facility(facility: &str) -> Result<FacilityType, String> {
+    match facility {
+        "Training" => Ok(FacilityType::Training),
+        "Medical" => Ok(FacilityType::Medical),
+        "Scouting" => Ok(FacilityType::Scouting),
+        _ => Err("be.error.unknownFacilityType".to_string()),
+    }
+}
+
+#[tauri::command]
+pub fn get_facility_upgrade_preview(
+    state: State<'_, Arc<StateManager>>,
+    facility: String,
+) -> Result<FacilityUpgradePreview, String> {
+    get_facility_upgrade_preview_internal(&state, &facility)
+}
+
+/// What upgrading one of the manager's club facilities would cost and change.
+pub fn get_facility_upgrade_preview_internal(
+    state: &StateManager,
+    facility: &str,
+) -> Result<FacilityUpgradePreview, String> {
+    let facility_type = parse_facility(facility)?;
+    state
+        .get_game(|game| {
+            let team_id = user_team_id(game)?;
+            let team = game
+                .teams
+                .iter()
+                .find(|team| team.id == team_id)
+                .ok_or_else(|| "be.error.managedTeamNotFound".to_string())?;
+            Ok(ofm_core::club::upgrade_preview(team, facility_type))
+        })
+        .unwrap_or_else(|| Err("be.error.noActiveGameSession".to_string()))
+}
 
 #[tauri::command]
 pub fn upgrade_facility(
@@ -27,12 +65,7 @@ pub fn upgrade_facility_internal(state: &StateManager, facility: &str) -> Result
             .clone()
             .ok_or("be.error.noTeamAssigned".to_string())?;
 
-        let facility_type = match facility {
-            "Training" => domain::team::FacilityType::Training,
-            "Medical" => domain::team::FacilityType::Medical,
-            "Scouting" => domain::team::FacilityType::Scouting,
-            _ => return Err("be.error.unknownFacilityType".to_string()),
-        };
+        let facility_type = parse_facility(facility)?;
 
         let snapshot = finances::team_finance_snapshot(game, &team_id)
             .ok_or("be.error.managedTeamNotFound".to_string())?;
@@ -54,7 +87,7 @@ pub fn upgrade_facility_internal(state: &StateManager, facility: &str) -> Result
 
 #[cfg(test)]
 mod tests {
-    use super::upgrade_facility_internal;
+    use super::{get_facility_upgrade_preview_internal, upgrade_facility_internal};
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
     use domain::player::{Player, PlayerAttributes, Position};
@@ -129,6 +162,41 @@ mod tests {
         manager.hire("team-1".to_string());
 
         Game::new(clock, manager, vec![make_team()], vec![], vec![], vec![])
+    }
+
+    /// Given a club with its training facility at level 3,
+    /// When the manager previews an upgrade of it,
+    /// Then the preview prices level 4 at €7.5M and shows +4% → +6% development.
+    #[test]
+    fn get_facility_upgrade_preview_internal_reads_the_managed_club() {
+        let state = StateManager::new();
+        let mut game = make_game();
+        game.teams[0].facilities.training = 3;
+        state.set_game(game);
+
+        let preview = get_facility_upgrade_preview_internal(&state, "Training").expect("preview");
+
+        assert_eq!(preview.level, 3);
+        assert_eq!(preview.cost, Some(7_500_000));
+        assert_eq!(preview.effects[0].current, vec![4.0]);
+        assert_eq!(preview.effects[0].next, Some(vec![6.0]));
+    }
+
+    /// Given no game in progress, or an unknown facility,
+    /// When a preview is asked for,
+    /// Then it is refused with a translation key.
+    #[test]
+    fn get_facility_upgrade_preview_internal_refuses_without_a_game_or_facility() {
+        let state = StateManager::new();
+        assert_eq!(
+            get_facility_upgrade_preview_internal(&state, "Medical"),
+            Err("be.error.noActiveGameSession".to_string())
+        );
+        state.set_game(make_game());
+        assert_eq!(
+            get_facility_upgrade_preview_internal(&state, "Gym"),
+            Err("be.error.unknownFacilityType".to_string())
+        );
     }
 
     /// Given a healthy club with €3M and its medical facility at level 1,

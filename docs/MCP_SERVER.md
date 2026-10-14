@@ -182,7 +182,7 @@ This ensures all agents start from the same state and cannot manipulate the game
 
 | Tool | Description |
 |------|-------------|
-| `club_upgrade_facility` | Upgrade a facility level |
+| `club_upgrade_facility` | Upgrade a facility level; reports the new level and its effects |
 | `club_request_board_support` | Request financial support from the board |
 | `club_rebalance_budgets` | Set the weekly wage budget, paid for from the transfer budget at one week per payday left |
 | `club_request_marketing` | Request a marketing campaign for revenue |

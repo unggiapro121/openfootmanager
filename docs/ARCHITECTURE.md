@@ -218,6 +218,8 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `preview_staff_contract` | staff_id | `StaffContractPreview` | Asking wage, severance and the wage bill before/after, for the hire, renew and release dialogs |
 | `refresh_staff_market` | — | `Game` | Replace the whole staff market, free, three times a calendar month |
 | `rebalance_budgets` | wage_budget | `Game` | Set the weekly wage budget, paid for from the transfer budget at one week's change per payday left in the season |
+| `upgrade_facility` | facility | `Game` | Raise a facility one level (top level 10), paid from cash and the transfer budget; refused over the wage budget, in warning/critical finances, or short of cash |
+| `get_facility_upgrade_preview` | facility | `FacilityUpgradePreview` | Level, next upgrade's cost (none at the top) and every effect before and after, from `ofm_core::facilities`, for the upgrade dialog |
 
 ### Youth Scouting Commands
 

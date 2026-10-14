@@ -1139,9 +1139,9 @@
     "facilityTraining": "Centro de treino",
     "facilityMedical": "Centro médico",
     "facilityScouting": "Departamento de olheiros",
-    "facilityTrainingEffect": "Melhora a eficácia do treino ao longo do tempo.",
-    "facilityMedicalEffect": "Melhora a recuperação e o suporte médico dos jogadores.",
-    "facilityScoutingEffect": "Melhora a qualidade da observação e a profundidade das informações.",
+    "facilityTrainingEffect": "Os jogadores desenvolvem os atributos mais rápido em cada sessão.",
+    "facilityMedicalEffect": "Os jogadores recuperam o físico mais rápido, sofrem menos lesões graves e voltam mais cedo das lesões.",
+    "facilityScoutingEffect": "Os olheiros observam mais jovens e avaliam com mais precisão, e a base recebe uma safra melhor a cada temporada.",
     "facilityLevel": "Nível {{level}}",
     "nextUpgradeCost": "Próxima melhoria: {{amount}}",
     "upgradeFacility": "Melhorar",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Faltam {{count}} dias de pagamento nesta temporada",
       "apply": "Aplicar",
       "reset": "Redefinir"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Recuperação física diária",
+      "injuryDays": "Tempo afastado por lesão",
+      "matchInjurySeverity": "Lesões em jogo: leves / moderadas / graves",
+      "trainingInjuries": "Lesões nos treinos",
+      "development": "Desenvolvimento de atributos",
+      "youthSearchExtra": "Jovens extras observados por busca",
+      "potentialReach": "Potencial que a rede encontra com segurança",
+      "estimateNarrowing": "Estimativas dos olheiros mais precisas em",
+      "intakePotential": "Safra de fim de temporada: potencial extra",
+      "intakeGems": "Safra de fim de temporada: chance de joia",
+      "intakeTopTalent": "Safra de fim de temporada: chance de craque (90–95)"
+    },
+    "facilityEffectNone": "Sem alteração",
+    "facilityUpgradeTitle": "Melhorar {{facility}} — nível {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Custo: {{cost}} (saldo {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Efeito",
+    "facilityUpgradeNow": "Agora",
+    "facilityUpgradeAfter": "Após a melhoria",
+    "facilityUpgradeConfirm": "Melhorar — {{cost}}",
+    "facilityMaxLevel": "Nível máximo atingido"
   },
   "inbox": {
     "title": "Caixa de Entrada",

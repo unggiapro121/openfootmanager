@@ -7,6 +7,7 @@ import {
   type FacilityId,
   type FacilityUpgradeErrorState,
   FACILITY_DEFINITIONS,
+  FACILITY_MAX_LEVEL,
   getFacilityUpgradeCost,
   facilityUpgradeBlockReason,
 } from "./FinancesTab.helpers";
@@ -38,9 +39,10 @@ export default function FinancesFacilitiesCard({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {FACILITY_DEFINITIONS.map((facility) => {
             const level = facilities[facility.levelKey];
+            const atMaxLevel = level >= FACILITY_MAX_LEVEL;
             const nextUpgradeCost = getFacilityUpgradeCost(level);
             const canAffordUpgrade = teamFinance >= nextUpgradeCost;
-            const canUpgrade = canAffordUpgrade && !financeBlockReason;
+            const canUpgrade = !atMaxLevel && canAffordUpgrade && !financeBlockReason;
             const isLoading = actionLoading === facility.id;
             const upgradeReason = financeBlockReason
               ? resolveBackendError(financeBlockReason)
@@ -67,9 +69,11 @@ export default function FinancesFacilitiesCard({
 
                 <div className="space-y-2 mt-auto">
                   <p className="text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    {t("finances.nextUpgradeCost", {
-                      amount: formatExactMoney(nextUpgradeCost),
-                    })}
+                    {atMaxLevel
+                      ? t("finances.facilityMaxLevel")
+                      : t("finances.nextUpgradeCost", {
+                          amount: formatExactMoney(nextUpgradeCost),
+                        })}
                   </p>
                   <Button
                     disabled={!canUpgrade || isLoading}
@@ -78,7 +82,7 @@ export default function FinancesFacilitiesCard({
                   >
                     {t("finances.upgradeFacility")}
                   </Button>
-                  {!canAffordUpgrade && !upgradeReason && (
+                  {!atMaxLevel && !canAffordUpgrade && !upgradeReason && (
                     <p className="text-xs text-red-500 dark:text-red-400">
                       {t("finances.insufficientFunds")}
                     </p>

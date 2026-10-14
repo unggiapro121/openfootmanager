@@ -1139,9 +1139,9 @@
     "facilityTraining": "训练设施",
     "facilityMedical": "医疗设施",
     "facilityScouting": "球探设施",
-    "facilityTrainingEffect": "长期提升训练效果。",
-    "facilityMedicalEffect": "提升球员恢复与治疗支持。",
-    "facilityScoutingEffect": "提升球探工作质量与情报深度。",
+    "facilityTrainingEffect": "球员每次训练的属性成长更快。",
+    "facilityMedicalEffect": "球员体能恢复更快，重伤更少，伤愈复出更早。",
+    "facilityScoutingEffect": "球探能考察更多青训球员、评估更准确，青训营每个赛季的新人也更出色。",
     "facilityLevel": "等级 {{level}}",
     "nextUpgradeCost": "下次升级：{{amount}}",
     "upgradeFacility": "升级",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "本赛季还剩 {{count}} 个发薪日",
       "apply": "应用",
       "reset": "重置"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "每日体能恢复",
+      "injuryDays": "伤病缺阵时间",
+      "matchInjurySeverity": "比赛伤病：轻 / 中 / 重",
+      "trainingInjuries": "训练场伤病",
+      "development": "属性成长",
+      "youthSearchExtra": "每次搜索额外考察的青训球员",
+      "potentialReach": "球探网络可稳定发现的潜力上限",
+      "estimateNarrowing": "球探估值范围缩小",
+      "intakePotential": "赛季末青训新人：潜力加成",
+      "intakeGems": "赛季末青训新人：璞玉概率",
+      "intakeTopTalent": "赛季末青训新人：顶级天才（90–95）概率"
+    },
+    "facilityEffectNone": "无变化",
+    "facilityUpgradeTitle": "升级{{facility}} — 等级 {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "费用：{{cost}}（余额 {{before}} → {{after}}）",
+    "facilityUpgradeEffect": "效果",
+    "facilityUpgradeNow": "当前",
+    "facilityUpgradeAfter": "升级后",
+    "facilityUpgradeConfirm": "升级 — {{cost}}",
+    "facilityMaxLevel": "已达最高等级"
   },
   "inbox": {
     "title": "收件箱",

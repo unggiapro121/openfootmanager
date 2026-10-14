@@ -3,7 +3,12 @@ import { formatVal } from "../../lib/helpers";
 import type { TeamFinanceSnapshot } from "../../lib/finance";
 import type { FinanceSnapshotData, TeamFinanceSnapshotData } from "../../services/financeService";
 
-export type FacilityId = "Training" | "Medical" | "Scouting";
+import type { FacilityKind } from "../../services/financeService";
+
+export type FacilityId = FacilityKind;
+
+/** Mirrors `ofm_core::facilities::MAX_FACILITY_LEVEL`; the upgrade dialog's preview is the authority. */
+export const FACILITY_MAX_LEVEL = 10;
 
 export interface FacilityUpgradeErrorState {
   facilityId: FacilityId;

@@ -141,3 +141,64 @@ fn upgrade_facility_reaches_the_top_level() {
     assert_eq!(cost, 22_500_000);
     assert_eq!(game.teams[0].facilities.medical, 10);
 }
+
+/// Given a club whose medical facility is at level 4,
+/// When it previews the next upgrade,
+/// Then it sees the €10M price and every medical effect at level 4 and level 5.
+#[test]
+fn upgrade_preview_shows_the_cost_and_each_effect_before_and_after() {
+    let mut game = make_game();
+    game.teams[0].facilities.medical = 4;
+
+    let preview = club::upgrade_preview(&game.teams[0], FacilityType::Medical);
+
+    assert_eq!(preview.level, 4);
+    assert_eq!(preview.max_level, 10);
+    assert_eq!(preview.cost, Some(10_000_000));
+    type Line<'a> = (&'a str, Vec<f64>, Option<Vec<f64>>);
+    let lines: Vec<Line> = preview
+        .effects
+        .iter()
+        .map(|effect| (effect.key, effect.current.clone(), effect.next.clone()))
+        .collect();
+    assert_eq!(
+        lines,
+        vec![
+            (
+                "finances.facilityEffects.conditionRecovery",
+                vec![1.3],
+                Some(vec![1.4])
+            ),
+            (
+                "finances.facilityEffects.injuryDays",
+                vec![-12.0],
+                Some(vec![-16.0])
+            ),
+            (
+                "finances.facilityEffects.matchInjurySeverity",
+                vec![64.2, 27.3, 8.5],
+                Some(vec![65.6, 26.4, 8.0])
+            ),
+            (
+                "finances.facilityEffects.trainingInjuries",
+                vec![-9.0],
+                Some(vec![-12.0])
+            ),
+        ]
+    );
+}
+
+/// Given a club whose scouting department is at the top level,
+/// When it previews an upgrade,
+/// Then there is no price and no "after" for any effect.
+#[test]
+fn upgrade_preview_at_the_top_level_offers_nothing_more() {
+    let mut game = make_game();
+    game.teams[0].facilities.scouting = 10;
+
+    let preview = club::upgrade_preview(&game.teams[0], FacilityType::Scouting);
+
+    assert_eq!(preview.cost, None);
+    assert!(preview.effects.iter().all(|effect| effect.next.is_none()));
+    assert!(!preview.effects.is_empty());
+}

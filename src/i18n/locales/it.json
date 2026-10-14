@@ -1158,9 +1158,9 @@
     "facilityTraining": "Centro di allenamento",
     "facilityMedical": "Centro medico",
     "facilityScouting": "Reparto osservatori",
-    "facilityTrainingEffect": "Migliora nel tempo l'efficacia dell'allenamento.",
-    "facilityMedicalEffect": "Migliora il recupero e il supporto medico dei giocatori.",
-    "facilityScoutingEffect": "Migliora la qualità dell'osservazione e la profondità delle informazioni.",
+    "facilityTrainingEffect": "I giocatori sviluppano gli attributi più in fretta a ogni sessione.",
+    "facilityMedicalEffect": "I giocatori recuperano più in fretta, subiscono meno infortuni gravi e rientrano prima dagli infortuni.",
+    "facilityScoutingEffect": "Gli osservatori vedono più giovani e valutano con più precisione, e il vivaio riceve una leva migliore ogni stagione.",
     "facilityLevel": "Livello {{level}}",
     "nextUpgradeCost": "Prossimo upgrade: {{amount}}",
     "upgradeFacility": "Potenzia",
@@ -1224,7 +1224,28 @@
       "paydaysLeft": "{{count}} giorni di paga rimasti in questa stagione",
       "apply": "Applica",
       "reset": "Ripristina"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Recupero fisico giornaliero",
+      "injuryDays": "Tempo di stop per infortunio",
+      "matchInjurySeverity": "Infortuni in partita: lievi / medi / gravi",
+      "trainingInjuries": "Infortuni in allenamento",
+      "development": "Sviluppo degli attributi",
+      "youthSearchExtra": "Giovani in più osservati per ricerca",
+      "potentialReach": "Potenziale che la rete individua con certezza",
+      "estimateNarrowing": "Stime degli osservatori più strette di",
+      "intakePotential": "Leva di fine stagione: potenziale extra",
+      "intakeGems": "Leva di fine stagione: probabilità di gioiello",
+      "intakeTopTalent": "Leva di fine stagione: probabilità di fuoriclasse (90–95)"
+    },
+    "facilityEffectNone": "Nessuna variazione",
+    "facilityUpgradeTitle": "Potenzia {{facility}} — livello {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Costo: {{cost}} (saldo {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Effetto",
+    "facilityUpgradeNow": "Ora",
+    "facilityUpgradeAfter": "Dopo il potenziamento",
+    "facilityUpgradeConfirm": "Potenzia — {{cost}}",
+    "facilityMaxLevel": "Livello massimo raggiunto"
   },
   "inbox": {
     "title": "Posta",

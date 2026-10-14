@@ -250,6 +250,7 @@ pub fn run() {
             advance_time,
             advance_time_with_mode,
             upgrade_facility,
+            get_facility_upgrade_preview,
             get_finance_snapshot,
             request_board_support,
             rebalance_budgets,

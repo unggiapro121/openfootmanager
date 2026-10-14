@@ -1139,9 +1139,9 @@
     "facilityTraining": "Antrenman Tesisi",
     "facilityMedical": "Sağlık Tesisi",
     "facilityScouting": "Gözlemcilik Tesisi",
-    "facilityTrainingEffect": "Zaman içinde antrenman verimliliğini artırır.",
-    "facilityMedicalEffect": "Oyuncu iyileşmesini ve tedavi desteğini geliştirir.",
-    "facilityScoutingEffect": "Gözlemcilik kalitesini ve bilgi derinliğini artırır.",
+    "facilityTrainingEffect": "Oyuncular her antrenmanda özelliklerini daha hızlı geliştirir.",
+    "facilityMedicalEffect": "Oyuncular kondisyonlarını daha hızlı toplar, daha az ağır sakatlık yaşar ve sakatlıktan daha erken döner.",
+    "facilityScoutingEffect": "Gözlemciler daha çok genç inceler ve daha isabetli değerlendirir; altyapı her sezon daha iyi bir alım yapar.",
     "facilityLevel": "Seviye {{level}}",
     "nextUpgradeCost": "Sonraki yükseltme: {{amount}}",
     "upgradeFacility": "Yükselt",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Bu sezon {{count}} maaş günü kaldı",
       "apply": "Uygula",
       "reset": "Sıfırla"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Günlük kondisyon yenilenmesi",
+      "injuryDays": "Sakatlıkta sahalardan uzak kalma süresi",
+      "matchInjurySeverity": "Maç sakatlıkları: hafif / orta / ağır",
+      "trainingInjuries": "Antrenman sakatlıkları",
+      "development": "Özellik gelişimi",
+      "youthSearchExtra": "Arama başına fazladan incelenen genç",
+      "potentialReach": "Ağın güvenle bulduğu potansiyel",
+      "estimateNarrowing": "Gözlemci tahminlerinde daralma",
+      "intakePotential": "Sezon sonu altyapı alımı: potansiyel bonusu",
+      "intakeGems": "Sezon sonu altyapı alımı: cevher şansı",
+      "intakeTopTalent": "Sezon sonu altyapı alımı: üst düzey yetenek (90–95) şansı"
+    },
+    "facilityEffectNone": "Değişiklik yok",
+    "facilityUpgradeTitle": "{{facility}} yükselt — seviye {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Maliyet: {{cost}} (bakiye {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Etki",
+    "facilityUpgradeNow": "Şu an",
+    "facilityUpgradeAfter": "Yükseltme sonrası",
+    "facilityUpgradeConfirm": "Yükselt — {{cost}}",
+    "facilityMaxLevel": "En üst seviyeye ulaşıldı"
   },
   "inbox": {
     "title": "Gelen Kutusu",

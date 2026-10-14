@@ -1139,9 +1139,9 @@
     "facilityTraining": "Fasilitas Latihan",
     "facilityMedical": "Fasilitas Medis",
     "facilityScouting": "Fasilitas Scouting",
-    "facilityTrainingEffect": "Meningkatkan efektivitas latihan seiring waktu.",
-    "facilityMedicalEffect": "Meningkatkan pemulihan pemain dan dukungan perawatan.",
-    "facilityScoutingEffect": "Meningkatkan kualitas scouting dan kedalaman informasi.",
+    "facilityTrainingEffect": "Pemain mengembangkan atribut lebih cepat di setiap sesi.",
+    "facilityMedicalEffect": "Pemain memulihkan kondisi lebih cepat, lebih jarang cedera berat, dan lebih cepat kembali dari cedera.",
+    "facilityScoutingEffect": "Pemandu bakat melihat lebih banyak pemain muda dan menilai lebih akurat, serta akademi mendapat angkatan yang lebih baik tiap musim.",
     "facilityLevel": "Level {{level}}",
     "nextUpgradeCost": "Upgrade berikutnya: {{amount}}",
     "upgradeFacility": "Upgrade",
@@ -1205,7 +1205,28 @@
       "paydaysLeft": "Tersisa {{count}} hari gajian musim ini",
       "apply": "Terapkan",
       "reset": "Atur ulang"
-    }
+    },
+    "facilityEffects": {
+      "conditionRecovery": "Pemulihan kondisi harian",
+      "injuryDays": "Lama absen saat cedera",
+      "matchInjurySeverity": "Cedera pertandingan: ringan / sedang / berat",
+      "trainingInjuries": "Cedera saat latihan",
+      "development": "Perkembangan atribut",
+      "youthSearchExtra": "Pemain muda tambahan per pencarian",
+      "potentialReach": "Potensi yang pasti ditemukan jaringan",
+      "estimateNarrowing": "Perkiraan pemandu bakat lebih sempit",
+      "intakePotential": "Angkatan akhir musim: bonus potensi",
+      "intakeGems": "Angkatan akhir musim: peluang permata",
+      "intakeTopTalent": "Angkatan akhir musim: peluang talenta top (90–95)"
+    },
+    "facilityEffectNone": "Tidak berubah",
+    "facilityUpgradeTitle": "Tingkatkan {{facility}} — level {{from}} → {{to}}",
+    "facilityUpgradeCostLine": "Biaya: {{cost}} (saldo {{before}} → {{after}})",
+    "facilityUpgradeEffect": "Efek",
+    "facilityUpgradeNow": "Sekarang",
+    "facilityUpgradeAfter": "Setelah peningkatan",
+    "facilityUpgradeConfirm": "Tingkatkan — {{cost}}",
+    "facilityMaxLevel": "Level tertinggi tercapai"
   },
   "inbox": {
     "title": "Kotak Masuk",

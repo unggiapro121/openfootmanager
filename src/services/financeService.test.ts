@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 
-import { getFinanceSnapshot, rebalanceBudgets } from "./financeService";
+import {
+  getFacilityUpgradePreview,
+  getFinanceSnapshot,
+  rebalanceBudgets,
+  upgradeFacility,
+} from "./financeService";
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
@@ -55,5 +60,24 @@ describe("financeService", () => {
     const data = await getFinanceSnapshot();
 
     expect(data.previews.budgetRebalance).toBeNull();
+  });
+
+  it("asks the backend for a facility's upgrade preview", async () => {
+    const preview = { facility: "Medical", level: 4, maxLevel: 10, cost: 10_000_000, effects: [] };
+    mockedInvoke.mockResolvedValueOnce(preview);
+
+    await expect(getFacilityUpgradePreview("Medical")).resolves.toBe(preview);
+    expect(mockedInvoke).toHaveBeenCalledWith("get_facility_upgrade_preview", {
+      facility: "Medical",
+    });
+  });
+
+  it("passes a refused upgrade's error key through", async () => {
+    mockedInvoke.mockRejectedValueOnce("be.error.finance.facilityUpgradeMaxLevel");
+
+    await expect(upgradeFacility("Scouting")).rejects.toBe(
+      "be.error.finance.facilityUpgradeMaxLevel",
+    );
+    expect(mockedInvoke).toHaveBeenCalledWith("upgrade_facility", { facility: "Scouting" });
   });
 });
