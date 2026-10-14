@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
 import type {
   GameStateData,
   LoanOfferData,
@@ -34,7 +34,7 @@ import {
 } from "../../lib/helpers";
 import { useTranslation } from "react-i18next";
 import { countryName } from "../../lib/countries";
-import { translatePositionAbbreviation, translatePositionLabel } from "../squad/SquadTab.helpers";
+import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { resolveSeasonContext } from "../../lib/seasonContext";
 import { formatDate } from "../../lib/dateFormatting";
 import type { NegotiationFeedbackPanelData } from "../NegotiationFeedbackPanel";
@@ -74,7 +74,6 @@ import {
   filterTransferPlayers,
   getCurrentTransferList,
   getMyListedPlayers,
-  SPECIFIC_POSITIONS_BY_GROUP,
   type TransferAvailabilityFilter,
   type TransferTabView,
 } from "./TransfersTab.model";
@@ -83,6 +82,9 @@ import {
   type TransferMarketFilters,
   updateTransferMarketFilter,
 } from "./TransfersTab.filters";
+import TransferMarketFilterPanel from "./TransferMarketFilterPanel";
+import { applyMarketPanelFilters, teamIdsInScope } from "./TransferMarketFilterPanel.helpers";
+import { useDirectoryTree } from "../teams/useDirectoryTree";
 import { calculateAvailableScouts } from "../scouting/ScoutingTab.helpers";
 import { buildAlreadyScoutingIds } from "../scouting/ScoutingTab.model";
 import {
@@ -179,24 +181,16 @@ export default function TransfersTab({
     <K extends keyof TransferMarketFilters>(key: K) =>
     (value: SetStateAction<TransferMarketFilters[K]>) =>
       setFilters((previous) => updateTransferMarketFilter(previous, key, value));
-  const {
-    view,
-    availabilityFilter,
-    search,
-    specificPositions,
-    affordableOnly,
-    ovrSortDir,
-    marketPage,
-  } = filters;
+  const { view, availabilityFilter, search, affordableOnly, ovrSortDir, marketPage } = filters;
   const setView = filterSetter("view");
   const setAvailabilityFilter = filterSetter("availabilityFilter");
   const setSearch = filterSetter("search");
-  const setSpecificPositions = filterSetter("specificPositions");
   const setAffordableOnly = filterSetter("affordableOnly");
   const setOvrSortDir = filterSetter("ovrSortDir");
   const setMarketPage = filterSetter("marketPage");
-  const [openPositionPopover, setOpenPositionPopover] = useState<string | null>(null);
-  const positionFilterRef = useRef<HTMLDivElement | null>(null);
+  const directoryTree = useDirectoryTree();
+  const handlePanelFiltersChange = (patch: Partial<TransferMarketFilters>) =>
+    setFilters((previous) => ({ ...previous, ...patch, marketPage: 1 }));
   // Click the OVR header to cycle: none → desc → asc → none. Applied over the
   // filter output before pagination so sorted rows stay stable across pages.
   const cycleOvrSort = () => {
@@ -250,68 +244,6 @@ export default function TransfersTab({
   } | null>(null);
   const [dealWorkspaceTarget, setDealWorkspaceTarget] = useState<PlayerData | null>(null);
   const [dealWorkspaceKind, setDealWorkspaceKind] = useState<DealKind>("transfer");
-
-  useEffect(() => {
-    if (!openPositionPopover) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!positionFilterRef.current) return;
-      if (positionFilterRef.current.contains(event.target as Node)) return;
-      setOpenPositionPopover(null);
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openPositionPopover]);
-
-  const handleSelectPositionGroup = (group: string | null) => {
-    setMarketPage(1);
-
-    if (group === null) {
-      setSpecificPositions([]);
-      setOpenPositionPopover(null);
-      return;
-    }
-
-    const groupSpecifics = SPECIFIC_POSITIONS_BY_GROUP[group] ?? [];
-
-    // No popover for single-position groups (just GK). Treat as a toggle on
-    // its lone specific so the chip can also be used to deactivate.
-    if (groupSpecifics.length <= 1) {
-      const only = groupSpecifics[0];
-      if (only) {
-        setSpecificPositions((prev) =>
-          prev.includes(only) ? prev.filter((entry) => entry !== only) : [...prev, only],
-        );
-      }
-      setOpenPositionPopover(null);
-      return;
-    }
-
-    // Re-clicking the chip whose popover is open just closes the popover —
-    // the user is done refining.
-    if (openPositionPopover === group) {
-      setOpenPositionPopover(null);
-      return;
-    }
-
-    // Otherwise: union this group's specifics into the existing selection and
-    // open the refinement popover. This makes the category a "select all"
-    // shortcut without resetting earlier picks from other groups.
-    setSpecificPositions((prev) => {
-      const set = new Set(prev);
-      for (const position of groupSpecifics) set.add(position);
-      return Array.from(set);
-    });
-    setOpenPositionPopover(group);
-  };
-
-  const handleToggleSpecificPosition = (position: string) => {
-    setMarketPage(1);
-    setSpecificPositions((prev) =>
-      prev.includes(position) ? prev.filter((entry) => entry !== position) : [...prev, position],
-    );
-  };
 
   const openLoanOffer = (player: PlayerData) => {
     setLoanTarget(player);
@@ -672,8 +604,6 @@ export default function TransfersTab({
     (loanCounterBuyOptionEnabled &&
       (parsedLoanCounterBuyOptionFee === null || parsedLoanCounterBuyOptionFee <= 0));
 
-  const positions = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
-
   const tabs: {
     id: TransferTabView;
     label: string;
@@ -716,26 +646,35 @@ export default function TransfersTab({
             finance: myTeam.finance,
           }
         : null,
-      specificPositions,
     );
+    const narrowed = isPlayersView
+      ? applyMarketPanelFilters(
+          filtered,
+          filters,
+          gameState.clock.current_date,
+          teamIdsInScope(directoryTree, filters.regionId, filters.countryId, filters.leagueId),
+        )
+      : filtered;
 
     if (ovrSortDir === "none") {
-      return filtered;
+      return narrowed;
     }
 
     // Direction encoded in the comparator (rather than sort().reverse()) so
     // tied players keep the same relative order in both asc and desc.
     const factor = ovrSortDir === "desc" ? -1 : 1;
-    return [...filtered].sort((left, right) => factor * (getPlayerOvr(left) - getPlayerOvr(right)));
+    return [...narrowed].sort((left, right) => factor * (getPlayerOvr(left) - getPlayerOvr(right)));
   }, [
     affordableOnly,
     availabilityFilter,
     currentList,
+    directoryTree,
+    filters,
+    gameState.clock.current_date,
     isPlayersView,
     myTeam,
     ovrSortDir,
     search,
-    specificPositions,
   ]);
   const marketTotalPages = Math.max(1, Math.ceil(filteredList.length / TRANSFER_MARKET_PAGE_SIZE));
   const safeMarketPage = Math.min(marketPage, marketTotalPages);
@@ -1055,90 +994,13 @@ export default function TransfersTab({
             className="w-full pl-9 pr-3 py-2 rounded-lg bg-white dark:bg-navy-800 border border-gray-200 dark:border-navy-600 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
           />
         </div>
-        <div ref={positionFilterRef} className="flex gap-1.5">
-          <button
-            type="button"
-            onClick={() => handleSelectPositionGroup(null)}
-            aria-pressed={specificPositions.length === 0}
-            aria-label={t("transfers.allPositions")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-all ${specificPositions.length === 0 ? "bg-primary-700 text-white shadow-sm" : "bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600"}`}
-          >
-            {t("common.all")}
-          </button>
-          {positions.map((pos) => {
-            const groupSpecifics = SPECIFIC_POSITIONS_BY_GROUP[pos] ?? [];
-            const refinable = groupSpecifics.length > 1;
-            const selectedInGroup = specificPositions.filter((entry) =>
-              groupSpecifics.includes(entry),
-            ).length;
-            const isActive = selectedInGroup > 0;
-            const isPartial = isActive && refinable && selectedInGroup < groupSpecifics.length;
-            const groupLabel = t(`common.positionGroups.${pos}`, {
-              defaultValue: t(`common.positions.${pos}`, { defaultValue: pos }),
-            });
-
-            return (
-              <div key={pos} className="relative">
-                <button
-                  type="button"
-                  onClick={() => handleSelectPositionGroup(pos)}
-                  aria-haspopup={refinable ? "true" : undefined}
-                  aria-expanded={refinable ? openPositionPopover === pos : undefined}
-                  aria-pressed={isPartial ? "mixed" : isActive}
-                  aria-label={
-                    isPartial
-                      ? t("transfers.positionGroupPartialSelection", {
-                          group: groupLabel,
-                          selected: selectedInGroup,
-                          total: groupSpecifics.length,
-                        })
-                      : groupLabel
-                  }
-                  className={`px-3 py-1.5 rounded-lg text-xs font-heading font-bold uppercase tracking-wider transition-all inline-flex items-center gap-1 ${isActive ? "bg-primary-700 text-white shadow-sm" : "bg-white dark:bg-navy-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600"}`}
-                >
-                  {t(`common.posAbbr.${pos}`)}
-                  {isPartial && (
-                    <span
-                      aria-hidden="true"
-                      className="bg-white/20 text-[0.65rem] px-1.5 py-0.5 rounded-full leading-none"
-                    >
-                      {selectedInGroup}/{groupSpecifics.length}
-                    </span>
-                  )}
-                </button>
-                {refinable && openPositionPopover === pos && (
-                  <div
-                    role="dialog"
-                    aria-label={t("transfers.refinePositionGroup", {
-                      group: groupLabel,
-                    })}
-                    className="absolute left-0 top-full mt-1 z-20 min-w-[180px] p-2 rounded-lg bg-white dark:bg-navy-800 border border-gray-200 dark:border-navy-600 shadow-lg"
-                  >
-                    <div className="flex flex-wrap gap-1.5">
-                      {groupSpecifics.map((position) => {
-                        const selected = specificPositions.includes(position);
-                        const positionLabel = translatePositionLabel(t, position);
-                        return (
-                          <button
-                            type="button"
-                            key={position}
-                            onClick={() => handleToggleSpecificPosition(position)}
-                            aria-pressed={selected}
-                            aria-label={positionLabel}
-                            title={positionLabel}
-                            className={`px-2.5 py-1 rounded-md text-xs font-heading font-bold uppercase tracking-wider transition-all ${selected ? "bg-primary-700 text-white shadow-sm" : "bg-gray-50 dark:bg-navy-700 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600 hover:text-gray-700 dark:hover:text-gray-200"}`}
-                          >
-                            {t(`common.posAbbr.${position}`)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {isPlayersView && (
+          <TransferMarketFilterPanel
+            filters={filters}
+            onChange={handlePanelFiltersChange}
+            directoryTree={directoryTree}
+          />
+        )}
         {isPlayersView && (
           <div className="flex flex-wrap gap-1.5">
             {availabilityFilters.map((filter) => (

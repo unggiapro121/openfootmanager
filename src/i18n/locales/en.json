@@ -1475,7 +1475,26 @@
     "transferFeedbackCounterHeadline": "They want more before shaking hands.",
     "transferFeedbackCounterDetail": "The bid was close enough to keep talking, but their side are signalling a price nearer {{fee}}.",
     "transferFeedbackRejectedHeadline": "They shut this round down.",
-    "transferFeedbackRejectedDetail": "The proposal did not move them enough. You would need a stronger fee, closer to {{fee}}, to reopen serious talks."
+    "transferFeedbackRejectedDetail": "The proposal did not move them enough. You would need a stronger fee, closer to {{fee}}, to reopen serious talks.",
+    "filters": {
+      "button": "Filters",
+      "buttonActive": "Filters ({{count}} on)",
+      "title": "Filter players",
+      "min": "From",
+      "max": "To",
+      "position": "Position",
+      "positionGroup": "Position group",
+      "specificPosition": "Specific position",
+      "anyPositionGroup": "Any group",
+      "anyPosition": "Any position",
+      "competition": "Competition",
+      "region": "Region",
+      "country": "Country",
+      "league": "League",
+      "anyRegion": "Any region",
+      "anyCountry": "Any country",
+      "clear": "Clear filters"
+    }
   },
   "transferCentreWorld": {
     "title": "Transfer Centre",

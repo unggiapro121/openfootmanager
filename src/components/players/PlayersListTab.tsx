@@ -26,8 +26,7 @@ import {
   type PlayersPage,
   type PlayersPageQuery,
 } from "../../services/playersService";
-import { fetchTeamsDirectory, type TeamsDirectory } from "../../services/teamsService";
-import { buildDirectoryTree } from "../teams/TeamsListTab.helpers";
+import { useDirectoryTree } from "../teams/useDirectoryTree";
 import { buildLeagueFilterGroups, buildTeamFilterGroups } from "./PlayersListTab.helpers";
 import {
   buildDividerMenuItem,
@@ -114,26 +113,7 @@ export default function PlayersListTab({
     };
   }, [query, refetchKey, t]);
 
-  // The club directory only feeds the league and team pickers, so a failed
-  // fetch leaves them with just their "all" option rather than blocking the table.
-  const [directory, setDirectory] = useState<TeamsDirectory | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    fetchTeamsDirectory({ search: null })
-      .then((result) => {
-        if (!cancelled) setDirectory(result);
-      })
-      .catch(() => {
-        if (!cancelled) setDirectory(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  const directoryTree = useMemo(
-    () => (directory ? buildDirectoryTree(directory, t) : []),
-    [directory, t],
-  );
+  const directoryTree = useDirectoryTree();
   const leagueGroups = useMemo(() => buildLeagueFilterGroups(directoryTree), [directoryTree]);
   const teamGroups = useMemo(
     () => buildTeamFilterGroups(directoryTree, query.league_id),

@@ -1475,7 +1475,26 @@
     "transferFeedbackCounterHeadline": "Họ muốn nhiều hơn trước khi bắt tay.",
     "transferFeedbackCounterDetail": "Mức giá đủ gần để tiếp tục trao đổi, nhưng phía họ đang ra tín hiệu muốn mức giá gần {{fee}} hơn.",
     "transferFeedbackRejectedHeadline": "Họ đã khép lại vòng này.",
-    "transferFeedbackRejectedDetail": "Đề nghị chưa đủ sức thuyết phục họ. Bạn sẽ cần mức phí cao hơn, gần {{fee}}, để mở lại đàm phán nghiêm túc."
+    "transferFeedbackRejectedDetail": "Đề nghị chưa đủ sức thuyết phục họ. Bạn sẽ cần mức phí cao hơn, gần {{fee}}, để mở lại đàm phán nghiêm túc.",
+    "filters": {
+      "button": "Bộ lọc",
+      "buttonActive": "Bộ lọc ({{count}} đang bật)",
+      "title": "Lọc cầu thủ",
+      "min": "Từ",
+      "max": "Đến",
+      "position": "Vị trí",
+      "positionGroup": "Nhóm vị trí",
+      "specificPosition": "Vị trí cụ thể",
+      "anyPositionGroup": "Mọi nhóm",
+      "anyPosition": "Mọi vị trí",
+      "competition": "Giải đấu",
+      "region": "Khu vực",
+      "country": "Quốc gia",
+      "league": "Giải",
+      "anyRegion": "Mọi khu vực",
+      "anyCountry": "Mọi quốc gia",
+      "clear": "Xoá bộ lọc"
+    }
   },
   "transferCentreWorld": {
     "title": "Trung tâm chuyển nhượng",

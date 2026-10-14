@@ -1475,7 +1475,26 @@
     "transferFeedbackCounterHeadline": "El sıkışmadan önce daha fazlasını istiyorlar.",
     "transferFeedbackCounterDetail": "Teklif görüşmeyi sürdürecek kadar yakındı, ancak karşı taraf {{fee}} civarında bir fiyata işaret ediyor.",
     "transferFeedbackRejectedHeadline": "Bu turu kapattılar.",
-    "transferFeedbackRejectedDetail": "Öneri onları yeterince etkilemedi. Ciddi görüşmeleri yeniden başlatmak için {{fee}} civarında daha güçlü bir bonservis gerekir."
+    "transferFeedbackRejectedDetail": "Öneri onları yeterince etkilemedi. Ciddi görüşmeleri yeniden başlatmak için {{fee}} civarında daha güçlü bir bonservis gerekir.",
+    "filters": {
+      "button": "Filtreler",
+      "buttonActive": "Filtreler ({{count}} açık)",
+      "title": "Oyuncuları filtrele",
+      "min": "En az",
+      "max": "En çok",
+      "position": "Mevki",
+      "positionGroup": "Mevki grubu",
+      "specificPosition": "Belirli mevki",
+      "anyPositionGroup": "Tüm gruplar",
+      "anyPosition": "Tüm mevkiler",
+      "competition": "Turnuva",
+      "region": "Bölge",
+      "country": "Ülke",
+      "league": "Lig",
+      "anyRegion": "Tüm bölgeler",
+      "anyCountry": "Tüm ülkeler",
+      "clear": "Filtreleri temizle"
+    }
   },
   "transferCentreWorld": {
     "title": "Transfer Merkezi",

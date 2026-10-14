@@ -1494,7 +1494,26 @@
     "transferFeedbackCounterHeadline": "Vogliono di più prima di stringersi la mano.",
     "transferFeedbackCounterDetail": "L'offerta era abbastanza vicina per continuare a parlare, ma la controparte segnala un prezzo più vicino a {{fee}}.",
     "transferFeedbackRejectedHeadline": "Hanno chiuso questo round.",
-    "transferFeedbackRejectedDetail": "La proposta non li ha smossi abbastanza. Servirebbe una cifra più forte, più vicina a {{fee}}, per riaprire una trattativa seria."
+    "transferFeedbackRejectedDetail": "La proposta non li ha smossi abbastanza. Servirebbe una cifra più forte, più vicina a {{fee}}, per riaprire una trattativa seria.",
+    "filters": {
+      "button": "Filtri",
+      "buttonActive": "Filtri ({{count}} attivi)",
+      "title": "Filtra giocatori",
+      "min": "Da",
+      "max": "A",
+      "position": "Ruolo",
+      "positionGroup": "Gruppo di ruoli",
+      "specificPosition": "Ruolo specifico",
+      "anyPositionGroup": "Qualsiasi gruppo",
+      "anyPosition": "Qualsiasi ruolo",
+      "competition": "Competizione",
+      "region": "Regione",
+      "country": "Paese",
+      "league": "Campionato",
+      "anyRegion": "Qualsiasi regione",
+      "anyCountry": "Qualsiasi paese",
+      "clear": "Azzera filtri"
+    }
   },
   "transferCentreWorld": {
     "title": "Centro trasferimenti",

@@ -16,16 +16,10 @@ describe("updateTransferMarketFilter", () => {
 
   /** Given a selection, when a field is set from its previous value, then the updater sees it. */
   it("applies an updater to the field's previous value", () => {
-    const withCentreBacks = {
-      ...DEFAULT_TRANSFER_MARKET_FILTERS,
-      specificPositions: ["CenterBack"],
-    };
+    const onPageTwo = { ...DEFAULT_TRANSFER_MARKET_FILTERS, marketPage: 2 };
 
-    const next = updateTransferMarketFilter(withCentreBacks, "specificPositions", (previous) => [
-      ...previous,
-      "LeftBack",
-    ]);
+    const next = updateTransferMarketFilter(onPageTwo, "marketPage", (previous) => previous + 1);
 
-    expect(next.specificPositions).toEqual(["CenterBack", "LeftBack"]);
+    expect(next.marketPage).toBe(3);
   });
 });

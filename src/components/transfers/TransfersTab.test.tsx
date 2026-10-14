@@ -29,6 +29,14 @@ vi.mock("@tauri-apps/api/core", () => ({
   isTauri: vi.fn(() => false),
 }));
 
+// The filter panel's competition pickers load the club directory. These tests
+// queue invoke answers for the deals they make, so the directory is served
+// apart from invoke rather than taking one of those answers.
+vi.mock("../../services/teamsService", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../services/teamsService")>()),
+  fetchTeamsDirectory: vi.fn(async () => ({ regions: [] })),
+}));
+
 vi.mock("../../utils/backendI18n", () => ({
   resolveBackendError: (error: unknown) => (error instanceof Error ? error.message : String(error)),
 }));
@@ -987,6 +995,39 @@ describe("TransfersTab", (): void => {
    * Given the market narrowed to free agents, when the tab is left for a player's
    * profile and comes back, then the free-agent filter is still applied.
    */
+  // Given two listed players of different ratings, when the filter panel's OVR
+  // minimum is set above the weaker one, then only the stronger stays listed.
+  it("narrows the player market from the filter panel", (): void => {
+    const state = createGameState([
+      createPlayer({
+        id: "strong",
+        full_name: "Strong Player",
+        team_id: "team-2",
+        transfer_listed: true,
+        ovr: 82,
+        transfer_offers: [],
+      }),
+      createPlayer({
+        id: "weak",
+        full_name: "Weak Player",
+        team_id: "team-2",
+        transfer_listed: true,
+        ovr: 61,
+        transfer_offers: [],
+      }),
+    ]);
+    render(<TransfersTab gameState={state} onSelectPlayer={vi.fn()} onSelectTeam={vi.fn()} />);
+    expect(screen.getByText("Weak Player")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "transfers.filters.button" }));
+    fireEvent.change(screen.getByRole("spinbutton", { name: "common.ovr transfers.filters.min" }), {
+      target: { value: "75" },
+    });
+
+    expect(screen.getByText("Strong Player")).toBeInTheDocument();
+    expect(screen.queryByText("Weak Player")).not.toBeInTheDocument();
+  });
+
   it("keeps market filters held by the caller across a remount", (): void => {
     const state = createGameState([
       createPlayer({
