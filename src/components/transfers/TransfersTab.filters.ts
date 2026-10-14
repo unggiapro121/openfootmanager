@@ -1,5 +1,5 @@
 import { PLAYER_FILTER_DEFAULTS, type PlayerFilterValues } from "../playerFilters/playerFilters";
-import type { TransferAvailabilityFilter, TransferTabView } from "./TransfersTab.model";
+import type { MarketSort, TransferAvailabilityFilter, TransferTabView } from "./TransfersTab.model";
 
 // Kept apart from TransfersTab.model so the dashboard can hold the filters
 // without pulling the lazily loaded tab's model into the main bundle.
@@ -14,7 +14,7 @@ export interface TransferMarketFilters extends PlayerFilterValues {
   availabilityFilter: TransferAvailabilityFilter;
   search: string;
   affordableOnly: boolean;
-  ovrSortDir: "none" | "desc" | "asc";
+  sort: MarketSort;
   marketPage: number;
 }
 
@@ -24,7 +24,7 @@ export const DEFAULT_TRANSFER_MARKET_FILTERS: TransferMarketFilters = {
   search: "",
   ...PLAYER_FILTER_DEFAULTS,
   affordableOnly: false,
-  ovrSortDir: "none",
+  sort: { column: "ovr", dir: "none" },
   marketPage: 1,
 };
 

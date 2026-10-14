@@ -1028,6 +1028,48 @@ describe("TransfersTab", (): void => {
     expect(screen.queryByText("Weak Player")).not.toBeInTheDocument();
   });
 
+  // Given listed players of different values and ages, when the value header
+  // is clicked, then the dearest is listed first; when the age header is
+  // clicked, the oldest is, and the header reports the sort.
+  it("sorts the player market by value and by age from the column headers", (): void => {
+    const state = createGameState([
+      createPlayer({
+        id: "cheap-old",
+        full_name: "Cheap Veteran",
+        team_id: "team-2",
+        transfer_listed: true,
+        market_value: 1_000_000,
+        date_of_birth: "1988-01-01",
+        transfer_offers: [],
+      }),
+      createPlayer({
+        id: "dear-young",
+        full_name: "Dear Prospect",
+        team_id: "team-2",
+        transfer_listed: true,
+        market_value: 30_000_000,
+        date_of_birth: "2005-01-01",
+        transfer_offers: [],
+      }),
+    ]);
+    render(<TransfersTab gameState={state} onSelectPlayer={vi.fn()} onSelectTeam={vi.fn()} />);
+    const listedNames = () =>
+      screen.getAllByText(/Cheap Veteran|Dear Prospect/).map((element) => element.textContent);
+
+    fireEvent.click(screen.getByRole("button", { name: "common.value" }));
+    expect(listedNames()).toEqual(["Dear Prospect", "Cheap Veteran"]);
+    expect(screen.getByRole("columnheader", { name: "common.value" })).toHaveAttribute(
+      "aria-sort",
+      "descending",
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "common.age" }));
+    expect(listedNames()).toEqual(["Cheap Veteran", "Dear Prospect"]);
+    expect(screen.getByRole("columnheader", { name: "common.value" })).not.toHaveAttribute(
+      "aria-sort",
+    );
+  });
+
   it("keeps market filters held by the caller across a remount", (): void => {
     const state = createGameState([
       createPlayer({

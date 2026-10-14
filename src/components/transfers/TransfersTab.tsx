@@ -6,7 +6,7 @@ import type {
   PlayerSelectionOptions,
   TransferOfferData,
 } from "../../store/gameStore";
-import { Card, CardBody, Badge, CountryFlag, PlayerAvatar } from "../ui";
+import { Card, CardBody, Badge, CountryFlag, PlayerAvatar, SortHeader } from "../ui";
 import ContextMenu from "../ContextMenu";
 import {
   Search,
@@ -21,8 +21,6 @@ import {
   UserPlus,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
-  ChevronDown,
 } from "lucide-react";
 import {
   getTeamName,
@@ -74,6 +72,9 @@ import {
   filterTransferPlayers,
   getCurrentTransferList,
   getMyListedPlayers,
+  type MarketSortColumn,
+  nextMarketSort,
+  sortMarketPlayers,
   type TransferAvailabilityFilter,
   type TransferTabView,
 } from "./TransfersTab.model";
@@ -182,20 +183,20 @@ export default function TransfersTab({
     <K extends keyof TransferMarketFilters>(key: K) =>
     (value: SetStateAction<TransferMarketFilters[K]>) =>
       setFilters((previous) => updateTransferMarketFilter(previous, key, value));
-  const { view, availabilityFilter, search, affordableOnly, ovrSortDir, marketPage } = filters;
+  const { view, availabilityFilter, search, affordableOnly, sort, marketPage } = filters;
   const setView = filterSetter("view");
   const setAvailabilityFilter = filterSetter("availabilityFilter");
   const setSearch = filterSetter("search");
   const setAffordableOnly = filterSetter("affordableOnly");
-  const setOvrSortDir = filterSetter("ovrSortDir");
+  const setSort = filterSetter("sort");
   const setMarketPage = filterSetter("marketPage");
   const directoryTree = useDirectoryTree();
   const handlePanelFiltersChange = (patch: Partial<TransferMarketFilters>) =>
     setFilters((previous) => ({ ...previous, ...patch, marketPage: 1 }));
-  // Click the OVR header to cycle: none → desc → asc → none. Applied over the
+  // Click a sortable header to cycle it: desc → asc → off. Applied over the
   // filter output before pagination so sorted rows stay stable across pages.
-  const cycleOvrSort = () => {
-    setOvrSortDir((current) => (current === "none" ? "desc" : current === "desc" ? "asc" : "none"));
+  const sortBy = (column: MarketSortColumn) => {
+    setSort((current) => nextMarketSort(current, column));
     setMarketPage(1);
   };
   const [counterTarget, setCounterTarget] = useState<CounterTarget | null>(null);
@@ -657,14 +658,7 @@ export default function TransfersTab({
         )
       : filtered;
 
-    if (ovrSortDir === "none") {
-      return narrowed;
-    }
-
-    // Direction encoded in the comparator (rather than sort().reverse()) so
-    // tied players keep the same relative order in both asc and desc.
-    const factor = ovrSortDir === "desc" ? -1 : 1;
-    return [...narrowed].sort((left, right) => factor * (getPlayerOvr(left) - getPlayerOvr(right)));
+    return sortMarketPlayers(narrowed, sort);
   }, [
     affordableOnly,
     availabilityFilter,
@@ -674,8 +668,8 @@ export default function TransfersTab({
     gameState.clock.current_date,
     isPlayersView,
     myTeam,
-    ovrSortDir,
     search,
+    sort,
   ]);
   const marketTotalPages = Math.max(1, Math.ceil(filteredList.length / TRANSFER_MARKET_PAGE_SIZE));
   const safeMarketPage = Math.min(marketPage, marketTotalPages);
@@ -1097,45 +1091,36 @@ export default function TransfersTab({
                     <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                       {t("common.player")}
                     </th>
-                    <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                      {t("common.age")}
-                    </th>
+                    <SortHeader
+                      col="age"
+                      label={t("common.age")}
+                      sortKey={sort.dir === "none" ? null : sort.column}
+                      sortDir={sort.dir === "asc" ? "asc" : "desc"}
+                      onSort={sortBy}
+                      paddingClassName="py-3 px-4"
+                    />
                     <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                       {t("common.team")}
                     </th>
-                    <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                      {t("common.value")}
-                    </th>
+                    <SortHeader
+                      col="value"
+                      label={t("common.value")}
+                      sortKey={sort.dir === "none" ? null : sort.column}
+                      sortDir={sort.dir === "asc" ? "asc" : "desc"}
+                      onSort={sortBy}
+                      paddingClassName="py-3 px-4"
+                    />
                     <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                       {t("common.wage")}
                     </th>
-                    <th
-                      aria-sort={
-                        ovrSortDir === "desc"
-                          ? "descending"
-                          : ovrSortDir === "asc"
-                            ? "ascending"
-                            : "none"
-                      }
-                      tabIndex={0}
-                      className={`py-3 px-4 font-heading font-bold uppercase tracking-wider cursor-pointer select-none hover:text-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 transition-colors ${ovrSortDir !== "none" ? "text-primary-500 dark:text-primary-400" : "text-gray-500 dark:text-gray-400"}`}
-                      onClick={cycleOvrSort}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          cycleOvrSort();
-                        }
-                      }}
-                    >
-                      <div className="flex items-center gap-1">
-                        {t("common.ovr")}
-                        {ovrSortDir === "desc" ? (
-                          <ChevronDown className="w-3 h-3" />
-                        ) : ovrSortDir === "asc" ? (
-                          <ChevronUp className="w-3 h-3" />
-                        ) : null}
-                      </div>
-                    </th>
+                    <SortHeader
+                      col="ovr"
+                      label={t("common.ovr")}
+                      sortKey={sort.dir === "none" ? null : sort.column}
+                      sortDir={sort.dir === "asc" ? "asc" : "desc"}
+                      onSort={sortBy}
+                      paddingClassName="py-3 px-4"
+                    />
                     <th className="py-3 px-4 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                       {t("common.status")}
                     </th>

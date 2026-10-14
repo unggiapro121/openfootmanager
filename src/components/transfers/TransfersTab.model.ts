@@ -1,9 +1,43 @@
+import { getPlayerOvr } from "../../lib/playerOvr";
 import type { GameStateData, PlayerData } from "../../store/gameStore";
 import { canonicalPosition, normalisePosition } from "../squad/SquadTab.helpers";
 
 export type TransferTabView = "my_list" | "players" | "offers";
 
 export type TransferAvailabilityFilter = "all" | "transfer" | "loan" | "free_agent";
+
+export type MarketSortColumn = "ovr" | "value" | "age";
+
+/** Which column orders the market, and which way; `none` keeps the list's own order. */
+export interface MarketSort {
+  column: MarketSortColumn;
+  dir: "none" | "desc" | "asc";
+}
+
+/**
+ * The sort after a click on `column`'s header: the same column cycles
+ * descending → ascending → off; another column takes over, descending first.
+ */
+export function nextMarketSort(current: MarketSort, column: MarketSortColumn): MarketSort {
+  if (current.column !== column || current.dir === "none") return { column, dir: "desc" };
+  return { column, dir: current.dir === "desc" ? "asc" : "none" };
+}
+
+/** Age compared by birth date: an earlier birth is the older player. */
+const SORT_KEYS: Record<MarketSortColumn, (left: PlayerData, right: PlayerData) => number> = {
+  ovr: (left, right) => getPlayerOvr(left) - getPlayerOvr(right),
+  value: (left, right) => left.market_value - right.market_value,
+  age: (left, right) => right.date_of_birth.localeCompare(left.date_of_birth),
+};
+
+export function sortMarketPlayers(players: PlayerData[], sort: MarketSort): PlayerData[] {
+  if (sort.dir === "none") return players;
+  // Direction encoded in the comparator (rather than sort().reverse()) so tied
+  // players keep the same relative order in both directions.
+  const factor = sort.dir === "desc" ? -1 : 1;
+  const compare = SORT_KEYS[sort.column];
+  return [...players].sort((left, right) => factor * compare(left, right));
+}
 
 export interface TransferCollections {
   myTransferList: PlayerData[];
