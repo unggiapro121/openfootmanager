@@ -18,6 +18,7 @@ import {
   Users,
 } from "lucide-react";
 import { TraitList } from "../TraitBadge";
+import SquadCoverageSummary from "./SquadCoverageSummary";
 import { useClubPotentialAssessments } from "../../hooks/useClubPotentialAssessments";
 import { withScoutedWonderkid } from "../../lib/scoutedTraits";
 import { SquadSortHeader } from "./SquadSortHeader";
@@ -513,45 +514,7 @@ export default function SquadRosterView({
               ? t(`tactics.presetNames.${currentPreset.id}`, currentPreset.id)
               : t(`common.playStyles.${activePlayStyle}`, activePlayStyle)}
           </p>
-          <div className="mt-3 flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-heading font-bold uppercase tracking-wider text-gray-300">
-                {t("squad.coverageTitle")}
-              </span>
-              <Badge variant={thinCoverageCount > 0 ? "danger" : "success"} size="sm">
-                {thinCoverageCount > 0
-                  ? t("squad.coverageNeedsAttention", {
-                      count: thinCoverageCount,
-                    })
-                  : t("squad.coverageStable")}
-              </Badge>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {roleCoverage.map((coverage) => (
-                <Badge
-                  key={coverage.role}
-                  variant={
-                    coverage.status === "covered"
-                      ? "success"
-                      : coverage.status === "thin"
-                        ? "accent"
-                        : "danger"
-                  }
-                  size="sm"
-                  className="gap-1"
-                >
-                  <span>{translatePositionAbbreviation(t, coverage.role)}</span>
-                  <span>
-                    {t("squad.coverageBadge", {
-                      starters: coverage.naturalStarters,
-                      required: coverage.requiredSlots,
-                      bench: coverage.benchOptions,
-                    })}
-                  </span>
-                </Badge>
-              ))}
-            </div>
-          </div>
+          <SquadCoverageSummary roleCoverage={roleCoverage} />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
