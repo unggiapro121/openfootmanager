@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "Actuel",
     "facilityUpgradeAfter": "Après amélioration",
     "facilityUpgradeConfirm": "Améliorer — {{cost}}",
-    "facilityMaxLevel": "Niveau maximum atteint"
+    "facilityMaxLevel": "Niveau maximum atteint",
+    "facilityDetails": "Détails",
+    "facilityDetailsFor": "Détails : {{facility}}",
+    "facilityDetailsTitle": "{{facility}} — niveau {{level}}"
   },
   "inbox": {
     "title": "Boîte de Réception",

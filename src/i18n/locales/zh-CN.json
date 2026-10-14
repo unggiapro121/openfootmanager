@@ -1226,7 +1226,10 @@
     "facilityUpgradeNow": "当前",
     "facilityUpgradeAfter": "升级后",
     "facilityUpgradeConfirm": "升级 — {{cost}}",
-    "facilityMaxLevel": "已达最高等级"
+    "facilityMaxLevel": "已达最高等级",
+    "facilityDetails": "详情",
+    "facilityDetailsFor": "详情：{{facility}}",
+    "facilityDetailsTitle": "{{facility}} — 等级 {{level}}"
   },
   "inbox": {
     "title": "收件箱",

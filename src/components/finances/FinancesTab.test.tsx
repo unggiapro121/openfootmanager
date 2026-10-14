@@ -467,6 +467,41 @@ describe("FinancesTab facilities", () => {
   });
 
   /**
+   * Given a club with a facility at the top level,
+   * When the manager opens that facility's details,
+   * Then the effects dialog opens with nothing to buy, even though Upgrade is disabled.
+   */
+  it("shows a facility's current effects from its Details button", async () => {
+    const gameState = createGameState({
+      finance: 90_000_000,
+      facilities: { training: 10, medical: 1, scouting: 1 },
+    });
+    mockedInvoke.mockImplementation((command) => {
+      if (command === "get_finance_snapshot") {
+        return pendingPromise();
+      }
+
+      if (command === "get_facility_upgrade_preview") {
+        return Promise.resolve(MEDICAL_PREVIEW);
+      }
+
+      return Promise.reject(new Error(`Unexpected command: ${command}`));
+    });
+
+    render(<FinancesTab gameState={gameState} />);
+
+    fireEvent.click(screen.getAllByRole("button", { name: "finances.facilityDetailsFor" })[0]);
+
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    expect(mockedInvoke).toHaveBeenCalledWith("get_facility_upgrade_preview", {
+      facility: "Training",
+    });
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(mockedInvoke).not.toHaveBeenCalledWith("upgrade_facility", expect.anything());
+  });
+
+  /**
    * Given a club whose training facility is at the top level,
    * When the facilities card renders,
    * Then that facility's Upgrade button is disabled and says the top is reached.

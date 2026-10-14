@@ -41,7 +41,7 @@ const MEDICAL_LEVEL_FOUR: FacilityUpgradePreviewData = {
 
 function renderDialog(
   preview: FacilityUpgradePreviewData,
-  { balance = 16_900_000, blockReason = null as string | null } = {},
+  { balance = 16_900_000, blockReason = null as string | null, detailsOnly = false } = {},
 ) {
   mockedInvoke.mockResolvedValueOnce(preview);
   const onCancel = vi.fn();
@@ -53,6 +53,7 @@ function renderDialog(
       balance={balance}
       blockReason={blockReason}
       isUpgrading={false}
+      detailsOnly={detailsOnly}
       onCancel={onCancel}
       onConfirm={onConfirm}
     />,
@@ -133,5 +134,30 @@ describe("FacilityUpgradeDialog", () => {
 
     expect(await screen.findByText("finances.facilityMaxLevel")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "finances.upgradeFacility" })).toBeDisabled();
+  });
+
+  /**
+   * Given the medical facility at level 4,
+   * When its details are opened,
+   * Then only what it does now is listed, with nothing to buy and a Close button.
+   */
+  it("lists the current level's effects in details mode", async () => {
+    const { onCancel, onConfirm } = renderDialog(MEDICAL_LEVEL_FOUR, { detailsOnly: true });
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByRole("heading")).toHaveTextContent(
+      'finances.facilityDetailsTitle {"facility":"finances.facilityMedical","level":4}',
+    );
+    const recovery = within(dialog).getByRole("row", { name: /conditionRecovery/ });
+    expect(recovery).toHaveTextContent("×1.3");
+    expect(recovery).not.toHaveTextContent("×1.4");
+    expect(screen.queryByText(/facilityUpgradeCostLine/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /facilityUpgradeConfirm/ }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    expect(onConfirm).not.toHaveBeenCalled();
   });
 });
