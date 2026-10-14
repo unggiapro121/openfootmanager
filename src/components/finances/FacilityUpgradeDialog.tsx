@@ -73,7 +73,7 @@ export default function FacilityUpgradeDialog({
     formatFacilityEffect(format, values, i18n.language) ?? t("finances.facilityEffectNone");
 
   return (
-    <DashboardModalFrame maxWidthClassName="max-w-lg">
+    <DashboardModalFrame maxWidthClassName="max-w-2xl">
       <div
         className="space-y-4"
         role="dialog"
@@ -110,10 +110,10 @@ export default function FacilityUpgradeDialog({
                 <th scope="col" className="py-1 pr-2 font-bold">
                   {t("finances.facilityUpgradeEffect")}
                 </th>
-                <th scope="col" className="py-1 px-2 text-right font-bold">
+                <th scope="col" className="py-1 px-2 text-right font-bold whitespace-nowrap">
                   {t("finances.facilityUpgradeNow")}
                 </th>
-                <th scope="col" className="py-1 pl-2 text-right font-bold">
+                <th scope="col" className="py-1 pl-2 text-right font-bold whitespace-nowrap">
                   {t("finances.facilityUpgradeAfter")}
                 </th>
               </tr>
@@ -129,11 +129,11 @@ export default function FacilityUpgradeDialog({
                     <th scope="row" className="py-2 pr-2 text-left font-normal">
                       {t(effect.key)}
                     </th>
-                    <td className="py-2 px-2 text-right tabular-nums">
+                    <td className="py-2 px-2 text-right tabular-nums whitespace-nowrap">
                       {writeEffect(effect.format, effect.current)}
                     </td>
                     <td
-                      className={`py-2 pl-2 text-right tabular-nums ${
+                      className={`py-2 pl-2 text-right tabular-nums whitespace-nowrap ${
                         changes ? "font-semibold text-primary-700 dark:text-primary-300" : ""
                       }`}
                     >
