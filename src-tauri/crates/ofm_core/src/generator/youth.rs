@@ -35,21 +35,52 @@ pub fn generate_youth_academy_recruit_with_nationality(
         nationality_override,
         current_year,
         None,
+        IntakeLift::none(),
         &mut rand::rng(),
     )
 }
 
 /// A youngster joining `team`'s academy in its annual intake: of `group`, aged
 /// `age`, drawn from `rng`. The same recruit a youth scout finds, at the age a
-/// club takes one in rather than the age it scouts one.
+/// club takes one in rather than the age it scouts one, lifted by the club's
+/// scouting department; `top_talent` makes him the intake's rare 90–95 ceiling.
 pub(crate) fn generate_youth_intake_recruit(
     team: &Team,
     group: &Position,
     age: u32,
     current_year: u32,
+    top_talent: bool,
     rng: &mut impl rand::Rng,
 ) -> Player {
-    youth_recruit(team, Some(group), None, current_year, Some(age), rng)
+    let lift = IntakeLift::for_scouting_level(team.facilities.scouting, top_talent);
+    youth_recruit(team, Some(group), None, current_year, Some(age), lift, rng)
+}
+
+/// What a club's scouting department adds to the youngsters of its own intake.
+#[derive(Debug, Clone, Copy)]
+struct IntakeLift {
+    /// Points added to every drawn potential.
+    potential_bonus: u8,
+    /// Chance in a thousand of a gem.
+    gem_per_mille: u32,
+    /// A ceiling of 90–95 instead of the usual draw.
+    top_talent: bool,
+}
+
+impl IntakeLift {
+    /// No lift — a level-1 department's: the youngsters of the season's pool
+    /// and a club's opening academy.
+    fn none() -> Self {
+        Self::for_scouting_level(1, false)
+    }
+
+    fn for_scouting_level(level: u8, top_talent: bool) -> Self {
+        Self {
+            potential_bonus: crate::facilities::intake_potential_bonus(level),
+            gem_per_mille: crate::facilities::intake_gem_per_mille(level),
+            top_talent,
+        }
+    }
 }
 
 /// A youngster for a nation's season youth pool: of `group`, aged `age`, of
@@ -69,6 +100,7 @@ pub(crate) fn generate_youth_pool_member(
         Some(nation),
         current_year,
         Some(age),
+        IntakeLift::none(),
         rng,
     );
     player.team_id = None;
@@ -81,6 +113,7 @@ fn youth_recruit(
     nationality_override: Option<&str>,
     current_year: u32,
     age: Option<u32>,
+    lift: IntakeLift,
     rng: &mut impl rand::Rng,
 ) -> Player {
     use domain::player::SquadRole;
@@ -109,7 +142,7 @@ fn youth_recruit(
     player.squad_role = SquadRole::Youth;
     player.transfer_listed = false;
     player.loan_listed = false;
-    grow_into_age(&mut player, current_year, rng);
+    grow_into_age(&mut player, current_year, lift, rng);
     player
 }
 
@@ -154,16 +187,21 @@ fn youth_min_growth(age: u32) -> u8 {
     }
 }
 
-/// Chance in a hundred that a youngster is a gem, whose ceiling is lifted.
-const GEM_CHANCE_PERCENT: u32 = 5;
+/// The ceiling of an intake's top talent.
+const TOP_TALENT_POTENTIAL: std::ops::RangeInclusive<u8> = 90..=95;
 
 /// A youngster's potential, drawn on its own rather than as his overall plus a
 /// bonus: around 70 for most, above 80 for one in ten, 85 and up for about
-/// one in twenty. Never less than his overall plus the room his age leaves.
-fn draw_youth_potential(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u8 {
+/// one in twenty. A club's own intake is lifted by its scouting department.
+/// Never less than his overall plus the room his age leaves.
+fn draw_youth_potential(ovr: u8, age: u32, lift: IntakeLift, rng: &mut impl rand::Rng) -> u8 {
     let mut potential = 52 + rng.random_range(0u8..=18) + rng.random_range(0u8..=18);
-    if rng.random_range(0..100) < GEM_CHANCE_PERCENT {
+    if rng.random_range(0..1000) < lift.gem_per_mille {
         potential = potential.saturating_add(rng.random_range(5u8..=12));
+    }
+    potential = potential.saturating_add(lift.potential_bonus);
+    if lift.top_talent {
+        potential = rng.random_range(TOP_TALENT_POTENTIAL);
     }
     potential
         .max(ovr.saturating_add(youth_min_growth(age)))
@@ -173,7 +211,12 @@ fn draw_youth_potential(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u8 {
 /// Bring a freshly generated youngster down to what his age allows: attributes
 /// scaled by [`youth_maturity`], then capped at [`youth_ovr_ceiling`]; his
 /// potential, rating-derived traits, value and wage settled on the result.
-fn grow_into_age(player: &mut Player, current_year: u32, rng: &mut impl rand::Rng) {
+fn grow_into_age(
+    player: &mut Player,
+    current_year: u32,
+    lift: IntakeLift,
+    rng: &mut impl rand::Rng,
+) {
     use crate::player_rating::natural_ovr;
 
     let age = crate::player_rating::player_age(&player.date_of_birth, current_year);
@@ -189,7 +232,7 @@ fn grow_into_age(player: &mut Player, current_year: u32, rng: &mut impl rand::Rn
     }
 
     let ovr = natural_ovr(player).round() as u8;
-    player.potential = draw_youth_potential(ovr, age, rng);
+    player.potential = draw_youth_potential(ovr, age, lift, rng);
     crate::player_rating::refresh_player_derived(player, current_year);
     reprice_generated_player(player, current_year);
 }
@@ -294,6 +337,70 @@ mod tests {
             (0.02..=0.08).contains(&gem_share),
             "share at 85+ was {gem_share:.3}"
         );
+    }
+
+    /// The potentials of `count` intake recruits of a club whose scouting
+    /// department is at `level`.
+    fn intake_potentials(level: u8, count: usize) -> Vec<u8> {
+        let mut team = club();
+        team.facilities.scouting = level;
+        let mut rng = rand::rngs::StdRng::seed_from_u64(7);
+        (0..count)
+            .map(|index| {
+                let age = 15 + (index % 3) as u32;
+                generate_youth_intake_recruit(&team, &GROUPS[index % 4], age, 2026, false, &mut rng)
+                    .potential
+            })
+            .collect()
+    }
+
+    fn mean(values: &[u8]) -> f64 {
+        values.iter().map(|value| f64::from(*value)).sum::<f64>() / values.len() as f64
+    }
+
+    fn share_at_least(values: &[u8], floor: u8) -> f64 {
+        values.iter().filter(|value| **value >= floor).count() as f64 / values.len() as f64
+    }
+
+    /// Given intake recruits at a level-1 and a level-10 scouting department,
+    /// When their potentials are compared,
+    /// Then level 10 averages about five points more (the +5 bonus, less what
+    /// the floor of room to grow already gave the weakest) and turns up far
+    /// more youngsters of 85 and up.
+    #[test]
+    fn a_top_scouting_department_lifts_the_intake() {
+        let basic = intake_potentials(1, 4_000);
+        let top = intake_potentials(10, 4_000);
+        let lift = mean(&top) - mean(&basic);
+        assert!((4.0..=6.0).contains(&lift), "mean lift {lift:.2}");
+        assert!(
+            share_at_least(&top, 85) > 2.5 * share_at_least(&basic, 85),
+            "85+: level 1 {:.3}, level 10 {:.3}",
+            share_at_least(&basic, 85),
+            share_at_least(&top, 85)
+        );
+    }
+
+    /// Given an intake recruit marked as the intake's top talent,
+    /// Then his ceiling lies between 90 and 95.
+    #[test]
+    fn a_top_talent_has_a_ceiling_of_ninety_to_ninety_five() {
+        let mut rng = rand::rngs::StdRng::seed_from_u64(3);
+        for index in 0..200 {
+            let recruit = generate_youth_intake_recruit(
+                &club(),
+                &GROUPS[index % 4],
+                15,
+                2026,
+                true,
+                &mut rng,
+            );
+            assert!(
+                (90..=95).contains(&recruit.potential),
+                "{}",
+                recruit.potential
+            );
+        }
     }
 
     /// Given any youngster, then his potential leaves him room to grow.

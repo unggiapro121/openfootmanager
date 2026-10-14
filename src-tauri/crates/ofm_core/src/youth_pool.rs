@@ -222,7 +222,8 @@ fn choose(
         let best = candidates
             .into_iter()
             .map(|player| {
-                let estimate = crate::scouting::estimate_prospect(player, ability, potential, rng);
+                let estimate =
+                    crate::scouting::estimate_prospect(player, ability, potential, facility, rng);
                 let score = crate::scouting::rank_by_objective(
                     crate::scouting::believed(estimate.ovr_low, estimate.ovr_high),
                     crate::scouting::believed(estimate.potential_low, estimate.potential_high),

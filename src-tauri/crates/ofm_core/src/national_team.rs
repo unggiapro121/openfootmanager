@@ -418,8 +418,11 @@ fn apply_carry_back(
     for pid in xi {
         if let Some(player) = game.players.iter_mut().find(|p| p.id == pid) {
             // A call-up's injury is treated back at his club.
-            let medical_level =
-                crate::facilities::medical_level_at(&game.teams, player.team_id.as_deref());
+            let medical_level = crate::facilities::level_at(
+                &game.teams,
+                player.team_id.as_deref(),
+                &domain::team::FacilityType::Medical,
+            );
             crate::player_wear::apply_match_wear(player, 90, rng);
             crate::player_wear::roll_match_injury(player, medical_level, rng);
             if morale_delta != 0 {

@@ -404,6 +404,11 @@ pub fn process_scouting(game: &mut Game) {
             let scout_name = format!("{} {}", scout.first_name, scout.last_name);
             let judging_ability = scout.attributes.judging_ability;
             let judging_potential = scout.attributes.judging_potential;
+            let scouting_level = crate::facilities::level_at(
+                &game.teams,
+                scout.team_id.as_deref(),
+                &domain::team::FacilityType::Scouting,
+            );
             let team_name = player
                 .team_id
                 .as_ref()
@@ -425,6 +430,7 @@ pub fn process_scouting(game: &mut Game) {
                 player.potential,
                 judging_ability,
                 judging_potential,
+                scouting_level,
                 team_name.as_deref(),
                 &today,
             );
@@ -663,6 +669,7 @@ fn generate_youth_recruitment_candidates(
                 prospect,
                 scout.attributes.judging_ability,
                 scout.attributes.judging_potential,
+                team.facilities.scouting,
                 rng,
             );
             (prospect.clone(), estimate)
@@ -910,6 +917,7 @@ fn build_scout_report(
     player_potential: u8,
     judging_ability: u8,
     judging_potential: u8,
+    scouting_level: u8,
     team_name: Option<&str>,
     date: &str,
 ) -> InboxMessage {
@@ -917,7 +925,7 @@ fn build_scout_report(
     let mut rng = crate::seed::rng_from_key(&format!("scout-report/{assignment_id}/{date}"));
 
     // Accuracy: higher judging = less noise on reported attributes
-    let noise_range = judgement_band(judging_ability);
+    let noise_range = judgement_band(judging_ability, scouting_level);
 
     let mut fuzz = |val: u8| -> u8 {
         let delta: i16 = rng.random_range(-(noise_range as i16)..=(noise_range as i16));
@@ -996,7 +1004,7 @@ fn build_scout_report(
     // has sufficient judging_potential skill, within the band that skill gives —
     // as a youth search reads it — so a scout who judges potential well reads
     // a ceiling closely whatever his eye for current ability.
-    let potential_noise = judgement_band(judging_potential);
+    let potential_noise = judgement_band(judging_potential, scouting_level);
     let fuzzed_potential = (judging_potential >= 70).then(|| {
         if player_potential > 0 {
             let delta: i16 = rng.random_range(-(potential_noise as i16)..=(potential_noise as i16));
@@ -1245,8 +1253,17 @@ fn follow_with_reporting_scout(
     }
 }
 
-/// How far either side of the truth a scout's read of a rating can land.
-pub(crate) fn judgement_band(rating: u8) -> u8 {
+/// How far either side of the truth a scout of `rating` judgement can land,
+/// working for a club whose scouting department is at `facility_level`: the
+/// scout's own band, narrowed by the department from level 6, never under 1.
+pub(crate) fn judgement_band(rating: u8, facility_level: u8) -> u8 {
+    scout_band(rating)
+        .saturating_sub(crate::facilities::estimate_band_narrowing(facility_level))
+        .max(1)
+}
+
+/// How far either side of the truth a scout's own judgement lands.
+fn scout_band(rating: u8) -> u8 {
     if rating >= 80 {
         2
     } else if rating >= 60 {
@@ -1338,10 +1355,11 @@ pub(crate) fn estimate_prospect(
     prospect: &Player,
     judging_ability: u8,
     judging_potential: u8,
+    scouting_level: u8,
     rng: &mut impl rand::Rng,
 ) -> domain::message::ProspectEstimate {
-    let ovr_band = judgement_band(judging_ability);
-    let potential_band = judgement_band(judging_potential);
+    let ovr_band = judgement_band(judging_ability, scouting_level);
+    let potential_band = judgement_band(judging_potential, scouting_level);
     let (ovr_low, ovr_high) = read_rating(prospect.ovr, ovr_band, rng);
     let (potential_low, potential_high) = read_rating(prospect.potential, potential_band, rng);
     domain::message::ProspectEstimate {
@@ -1676,6 +1694,7 @@ mod tests {
             79,
             50,
             50,
+            1,
             Some("London FC"),
             "2026-08-01",
         );
@@ -1717,6 +1736,7 @@ mod tests {
             79,
             85,
             83,
+            1,
             Some("London FC"),
             "2026-08-01",
         );
@@ -1766,10 +1786,22 @@ mod tests {
         #[test]
         fn bands_and_reveals_follow_the_judging_thresholds() {
             assert_eq!(
-                [95, 80, 79, 60, 59, 40, 39, 0].map(judgement_band),
+                [95, 80, 79, 60, 59, 40, 39, 0].map(|rating| judgement_band(rating, 1)),
                 [2, 2, 5, 5, 8, 8, 12, 12]
             );
             assert_eq!([80, 60, 40, 39].map(revealed_attribute_count), [6, 5, 3, 2]);
+        }
+
+        /// Given a scout of judging 50 (±8 on his own) and scouting departments
+        /// of every level,
+        /// When his band is worked out,
+        /// Then it is ±8 up to level 5 and narrows by one a level after, to ±3
+        /// at level 10; a sharp scout's band never drops under ±1.
+        #[test]
+        fn a_scouting_department_from_level_six_narrows_every_estimate() {
+            let bands: Vec<u8> = (1..=10).map(|level| judgement_band(50, level)).collect();
+            assert_eq!(bands, [8, 8, 8, 8, 8, 7, 6, 5, 4, 3]);
+            assert_eq!(judgement_band(90, 10), 1);
         }
 
         /// Given searches by scouts of different judging ability and clubs of

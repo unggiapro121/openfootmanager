@@ -178,15 +178,18 @@ fn draw_recruits(game: &Game, team_index: usize, plan: &IntakePlan, date: NaiveD
         &date.format("%Y-%m-%d").to_string(),
     );
     let team = &game.teams[team_index];
+    let top_talent = top_talent_index(team, plan, &mut rng);
     plan.groups
         .iter()
-        .filter_map(|group| {
+        .enumerate()
+        .filter_map(|(index, group)| {
             let age = rng.random_range(INTAKE_AGES);
             let recruit = crate::generator::generate_youth_intake_recruit(
                 team,
                 group,
                 age,
                 date.year() as u32,
+                top_talent == Some(index),
                 &mut rng,
             );
             let own_terms = recruit
@@ -204,6 +207,14 @@ fn draw_recruits(game: &Game, team_index: usize, plan: &IntakePlan, date: NaiveD
             })
         })
         .collect()
+}
+
+/// Which of `plan`'s recruits, if any, is the intake's top talent: once an
+/// intake, at the chance `team`'s scouting department gives.
+fn top_talent_index(team: &Team, plan: &IntakePlan, rng: &mut impl rand::Rng) -> Option<usize> {
+    let chance = crate::facilities::intake_top_talent_per_mille(team.facilities.scouting);
+    (!plan.groups.is_empty() && rng.random_range(0..1000) < chance)
+        .then(|| rng.random_range(0..plan.groups.len()))
 }
 
 /// Sign `recruits` into the academy of the club at `team_index`, in order, each
@@ -372,6 +383,28 @@ mod tests {
             "Ground".to_string(),
             20_000,
         )
+    }
+
+    /// How many of 10,000 intakes bring a top talent, at scouting `level`.
+    fn top_talents_in(level: u8) -> usize {
+        use rand::SeedableRng;
+        let mut club = team("user");
+        club.facilities.scouting = level;
+        let plan = plan_for(std::iter::empty());
+        let mut rng = rand::rngs::StdRng::seed_from_u64(9);
+        (0..10_000)
+            .filter(|_| top_talent_index(&club, &plan, &mut rng).is_some())
+            .count()
+    }
+
+    /// Given intakes at a level-1 and a level-10 scouting department,
+    /// When top talents are counted,
+    /// Then level 1 never brings one and level 10 brings one in about 4.5%.
+    #[test]
+    fn a_top_scouting_department_sometimes_brings_a_top_talent() {
+        assert_eq!(top_talents_in(1), 0);
+        let at_ten = top_talents_in(10);
+        assert!((350..=550).contains(&at_ten), "{at_ten} of 10,000");
     }
 
     /// The player's club `user` and an AI club `rival`, with these academies.

@@ -129,8 +129,11 @@ pub fn check_random_events(game: &mut Game) {
                 let player = eligible[rng.random_range(0..eligible.len())];
                 // Base 2% chance, scaled by fitness: less fit → higher probability
                 let fitness_mult = injury_probability_from_fitness(player.fitness);
-                let medical_level =
-                    crate::facilities::medical_level_at(&game.teams, Some(&user_team_id));
+                let medical_level = crate::facilities::level_at(
+                    &game.teams,
+                    Some(&user_team_id),
+                    &domain::team::FacilityType::Medical,
+                );
                 let base_prob = 1.0_f64 / 50.0;
                 let injury_prob = (base_prob
                     * fitness_mult

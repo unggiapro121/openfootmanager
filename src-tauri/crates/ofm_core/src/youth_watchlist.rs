@@ -219,9 +219,14 @@ pub fn assign_scout(
         }
     }
     let scout = crate::scouting::resolve_user_scout(game, scout_id)?;
+    let scouting_level = crate::facilities::level_at(
+        &game.teams,
+        scout.team_id.as_deref(),
+        &domain::team::FacilityType::Scouting,
+    );
     let (ovr_band, potential_band) = (
-        crate::scouting::judgement_band(scout.attributes.judging_ability),
-        crate::scouting::judgement_band(scout.attributes.judging_potential),
+        crate::scouting::judgement_band(scout.attributes.judging_ability, scouting_level),
+        crate::scouting::judgement_band(scout.attributes.judging_potential, scouting_level),
     );
     let already_following = game
         .youth_watchlist
@@ -896,6 +901,23 @@ mod tests {
         assert!((after_good.ovr_low..=after_good.ovr_high).contains(&60));
         assert!((after_good.potential_low..=after_good.potential_high).contains(&80));
         assert_eq!(after_poor, after_good);
+    }
+
+    /// Given a prospect read at ±12 and the poor scout (±12 on his own) at a
+    /// club whose scouting department is at level 10,
+    /// When the poor scout takes him on,
+    /// Then the department narrows the scout's read to ±7 at once.
+    #[test]
+    fn a_top_scouting_department_narrows_a_poor_scouts_read() {
+        let mut game = world();
+        game.teams[0].facilities.scouting = 10;
+        watched(&mut game, "p1", 60, 80);
+
+        assign_scout(&mut game, "p1", Some("poor")).unwrap();
+
+        let estimate = entry(&game, "p1").estimate.clone();
+        assert_eq!((estimate.ovr_band, estimate.potential_band), (7, 7));
+        assert!((estimate.potential_low..=estimate.potential_high).contains(&80));
     }
 
     /// Given a prospect followed by the poor scout,

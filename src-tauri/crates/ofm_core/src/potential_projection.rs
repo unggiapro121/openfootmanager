@@ -168,7 +168,12 @@ pub(crate) fn own_estimate(game: &Game, player: &Player, assessor: &Staff) -> Pr
         &format!("own-assessment/{}/{}", player.id, assessor.id),
         &month,
     );
-    let band = judgement_band(assessor.attributes.judging_potential);
+    let scouting_level = crate::facilities::level_at(
+        &game.teams,
+        assessor.team_id.as_deref(),
+        &domain::team::FacilityType::Scouting,
+    );
+    let band = judgement_band(assessor.attributes.judging_potential, scouting_level);
     let (low, high) = read_rating(player.potential, band, &mut rng);
     // A ceiling below the overall the club can see is no read at all.
     ProspectEstimate {

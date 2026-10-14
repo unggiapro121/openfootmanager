@@ -784,8 +784,11 @@ fn apply_match_injuries(game: &mut Game, report: &engine::MatchReport) {
         let Some(player) = game.players.iter_mut().find(|p| p.id == player_id) else {
             continue;
         };
-        let medical_level =
-            crate::facilities::medical_level_at(&game.teams, player.team_id.as_deref());
+        let medical_level = crate::facilities::level_at(
+            &game.teams,
+            player.team_id.as_deref(),
+            &domain::team::FacilityType::Medical,
+        );
         let Some(injury) = crate::player_wear::assign_match_injury(player, medical_level, &mut rng)
         else {
             continue;
