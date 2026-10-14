@@ -1474,7 +1474,26 @@
     "transferFeedbackCounterHeadline": "他们希望得到更多才肯握手。",
     "transferFeedbackCounterDetail": "出价已足够接近,谈判仍在继续,但对方暗示的价位更接近 {{fee}}。",
     "transferFeedbackRejectedHeadline": "他们这一轮直接关闭了谈判。",
-    "transferFeedbackRejectedDetail": "该报价未能打动他们。你需要更有力的报价,接近 {{fee}},才能重启正式谈判。"
+    "transferFeedbackRejectedDetail": "该报价未能打动他们。你需要更有力的报价,接近 {{fee}},才能重启正式谈判。",
+    "filters": {
+      "button": "筛选",
+      "buttonActive": "筛选（已启用 {{count}} 项）",
+      "title": "筛选球员",
+      "min": "从",
+      "max": "到",
+      "position": "位置",
+      "positionGroup": "位置类别",
+      "specificPosition": "具体位置",
+      "anyPositionGroup": "任意类别",
+      "anyPosition": "任意位置",
+      "competition": "赛事",
+      "region": "地区",
+      "country": "国家",
+      "league": "联赛",
+      "anyRegion": "任意地区",
+      "anyCountry": "任意国家",
+      "clear": "清除筛选"
+    }
   },
   "transferCentreWorld": {
     "title": "转会中心",

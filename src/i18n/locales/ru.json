@@ -1474,7 +1474,26 @@
     "transferFeedbackCounterHeadline": "Они хотят больше перед рукопожатием.",
     "transferFeedbackCounterDetail": "Предложение было достаточно близким, чтобы продолжать разговор, но их сторона намекает на сумму ближе к {{fee}}.",
     "transferFeedbackRejectedHeadline": "Они закрыли этот раунд.",
-    "transferFeedbackRejectedDetail": "Предложение не произвело должного эффекта. Чтобы вновь открыть серьёзные переговоры, нужна сумма ближе к {{fee}}."
+    "transferFeedbackRejectedDetail": "Предложение не произвело должного эффекта. Чтобы вновь открыть серьёзные переговоры, нужна сумма ближе к {{fee}}.",
+    "filters": {
+      "button": "Фильтры",
+      "buttonActive": "Фильтры (активно: {{count}})",
+      "title": "Фильтр игроков",
+      "min": "От",
+      "max": "До",
+      "position": "Позиция",
+      "positionGroup": "Группа позиций",
+      "specificPosition": "Точная позиция",
+      "anyPositionGroup": "Любая группа",
+      "anyPosition": "Любая позиция",
+      "competition": "Турнир",
+      "region": "Регион",
+      "country": "Страна",
+      "league": "Лига",
+      "anyRegion": "Любой регион",
+      "anyCountry": "Любая страна",
+      "clear": "Сбросить фильтры"
+    }
   },
   "transferCentreWorld": {
     "title": "Трансферный центр",

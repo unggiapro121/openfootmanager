@@ -1474,7 +1474,26 @@
     "transferFeedbackCounterHeadline": "Sie wollen mehr, bevor sie einschlagen.",
     "transferFeedbackCounterDetail": "Das Angebot war nah genug, um weiterzureden, aber ihre Seite signalisiert eher einen Preis um {{fee}}.",
     "transferFeedbackRejectedHeadline": "Diese Runde haben sie beendet.",
-    "transferFeedbackRejectedDetail": "Der Vorschlag hat sie nicht genug bewegt. Du brauchst eine stärkere Summe, eher in Richtung {{fee}}, um ernste Gespräche wieder zu öffnen."
+    "transferFeedbackRejectedDetail": "Der Vorschlag hat sie nicht genug bewegt. Du brauchst eine stärkere Summe, eher in Richtung {{fee}}, um ernste Gespräche wieder zu öffnen.",
+    "filters": {
+      "button": "Filter",
+      "buttonActive": "Filter ({{count}} aktiv)",
+      "title": "Spieler filtern",
+      "min": "Von",
+      "max": "Bis",
+      "position": "Position",
+      "positionGroup": "Positionsgruppe",
+      "specificPosition": "Genaue Position",
+      "anyPositionGroup": "Alle Gruppen",
+      "anyPosition": "Alle Positionen",
+      "competition": "Wettbewerb",
+      "region": "Region",
+      "country": "Land",
+      "league": "Liga",
+      "anyRegion": "Alle Regionen",
+      "anyCountry": "Alle Länder",
+      "clear": "Filter zurücksetzen"
+    }
   },
   "transferCentreWorld": {
     "title": "Transferzentrum",

@@ -1474,7 +1474,26 @@
     "transferFeedbackCounterHeadline": "Před stvrzením dohody požadují více.",
     "transferFeedbackCounterDetail": "Nabídka byla dostatečně vysoká na to, aby se pokračovalo v jednání, ale druhá strana dává najevo, že si představuje cenu bližší k {{fee}}.",
     "transferFeedbackRejectedHeadline": "Tato fáze vyjednávání byla ukončena.",
-    "transferFeedbackRejectedDetail": "Návrh je nepřesvědčil. Pro opětovné zahájení vážných rozhovorů budete muset nabídnout vyšší částku, bližší k {{fee}}."
+    "transferFeedbackRejectedDetail": "Návrh je nepřesvědčil. Pro opětovné zahájení vážných rozhovorů budete muset nabídnout vyšší částku, bližší k {{fee}}.",
+    "filters": {
+      "button": "Filtry",
+      "buttonActive": "Filtry (aktivní: {{count}})",
+      "title": "Filtrovat hráče",
+      "min": "Od",
+      "max": "Do",
+      "position": "Pozice",
+      "positionGroup": "Skupina pozic",
+      "specificPosition": "Konkrétní pozice",
+      "anyPositionGroup": "Jakákoli skupina",
+      "anyPosition": "Jakákoli pozice",
+      "competition": "Soutěž",
+      "region": "Region",
+      "country": "Země",
+      "league": "Liga",
+      "anyRegion": "Jakýkoli region",
+      "anyCountry": "Jakákoli země",
+      "clear": "Zrušit filtry"
+    }
   },
   "transferCentreWorld": {
     "title": "Přestupové centrum",
