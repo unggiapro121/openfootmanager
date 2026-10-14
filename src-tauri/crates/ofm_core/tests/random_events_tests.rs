@@ -246,6 +246,41 @@ fn check_random_events_training_injury_applies_injury() {
     }
 }
 
+/// Training-ground injuries over `days` days at medical `level`: how many, and
+/// the days out they cost. Each injury is cleared the next day, so the whole
+/// squad stays at risk.
+fn training_injuries_at(level: u8, days: usize) -> (u32, u32) {
+    let mut game = make_game();
+    game.league = None;
+    game.teams[0].facilities.medical = level;
+    let (mut count, mut days_out) = (0, 0);
+    for _ in 0..days {
+        check_random_events(&mut game);
+        for player in game.players.iter_mut() {
+            if let Some(injury) = player.injury.take() {
+                count += 1;
+                days_out += injury.days_remaining;
+            }
+        }
+        game.messages.clear();
+        game.clock.advance_days(1);
+    }
+    (count, days_out)
+}
+
+/// Given the same club over many seasons, once with a level-1 and once with a
+/// level-10 medical facility,
+/// When training-ground injuries are counted,
+/// Then the level-10 club has fewer of them and loses about half the days.
+#[test]
+fn a_top_medical_facility_means_fewer_and_shorter_training_injuries() {
+    let (count_one, days_one) = training_injuries_at(1, 20_000);
+    let (count_ten, days_ten) = training_injuries_at(10, 20_000);
+    assert!(count_ten < count_one, "{count_ten} vs {count_one}");
+    let ratio = f64::from(days_ten) / f64::from(days_one);
+    assert!((0.30..=0.65).contains(&ratio), "{ratio:.3}");
+}
+
 #[test]
 fn check_random_events_media_story_affects_morale() {
     let mut game = make_game();

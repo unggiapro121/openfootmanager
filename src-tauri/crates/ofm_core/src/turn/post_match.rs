@@ -784,7 +784,10 @@ fn apply_match_injuries(game: &mut Game, report: &engine::MatchReport) {
         let Some(player) = game.players.iter_mut().find(|p| p.id == player_id) else {
             continue;
         };
-        let Some(injury) = crate::player_wear::assign_match_injury(player, &mut rng) else {
+        let medical_level =
+            crate::facilities::medical_level_at(&game.teams, player.team_id.as_deref());
+        let Some(injury) = crate::player_wear::assign_match_injury(player, medical_level, &mut rng)
+        else {
             continue;
         };
         if player.team_id.is_some() && player.team_id == user_team {

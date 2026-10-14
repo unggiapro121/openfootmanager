@@ -293,7 +293,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
         .map(|t| {
             let bonus = compute_coaching_bonus(game, &t.id, &t.training_focus);
             let medical_facility_mult =
-                1.0 + f64::from(t.facilities.medical.saturating_sub(1)) * 0.1;
+                crate::facilities::condition_recovery_mult(t.facilities.medical);
             let mut group_overrides = std::collections::HashMap::new();
             for group in &t.training_groups {
                 for pid in &group.player_ids {

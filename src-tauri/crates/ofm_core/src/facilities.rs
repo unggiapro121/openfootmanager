@@ -24,6 +24,15 @@ pub fn level_of(facilities: &Facilities, facility: &FacilityType) -> u8 {
 
 // --- Medical -----------------------------------------------------------------
 
+/// The medical level that looks after a player of `team_id`: the club he trains
+/// and plays with, so a loanee is treated by the club borrowing him. A player
+/// without a club gets level 1.
+pub fn medical_level_at(teams: &[Team], team_id: Option<&str>) -> u8 {
+    team_id
+        .and_then(|id| teams.iter().find(|team| team.id == id))
+        .map_or(1, |team| team.facilities.medical)
+}
+
 /// How much faster players get their condition back each day: ×(1 + 0.1·k).
 pub fn condition_recovery_mult(level: u8) -> f64 {
     1.0 + f64::from(steps(level)) * 0.1

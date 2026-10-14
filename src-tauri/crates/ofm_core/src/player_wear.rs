@@ -54,9 +54,10 @@ fn injury_multiplier_from_fitness(fitness: u8) -> f64 {
     }
 }
 
-/// Roll for a match-day injury. On a hit, sets the player's injury and returns
-/// `true`. Already-injured players are skipped (returns `false`).
-pub fn roll_match_injury(player: &mut Player, rng: &mut impl Rng) -> bool {
+/// Roll for a match-day injury. On a hit, sets the player's injury, shortened
+/// by the club's `medical_level`, and returns `true`. Already-injured players
+/// are skipped (returns `false`).
+pub fn roll_match_injury(player: &mut Player, medical_level: u8, rng: &mut impl Rng) -> bool {
     if player.injury.is_some() {
         return false;
     }
@@ -69,7 +70,7 @@ pub fn roll_match_injury(player: &mut Player, rng: &mut impl Rng) -> bool {
         return false;
     }
 
-    let days = rng.random_range(5..=21);
+    let days = crate::facilities::injury_days(rng.random_range(5..=21), medical_level);
     let name = MATCH_INJURY_NAMES[rng.random_range(0..MATCH_INJURY_NAMES.len())];
     player.injury = Some(Injury {
         name: name.to_string(),
@@ -78,12 +79,12 @@ pub fn roll_match_injury(player: &mut Player, rng: &mut impl Rng) -> bool {
     true
 }
 
-/// The three kinds of match injury, light to serious: share of injuries for a
-/// match-fit player, the days out, and what it might be.
-const MATCH_INJURY_TIERS: [(u32, std::ops::RangeInclusive<u32>, &[&str]); 3] = [
-    (60, 3..=10, &MATCH_INJURY_NAMES),
+/// The three kinds of match injury, light to serious: the days out, and what
+/// it might be. How often each comes up is the medical facility's
+/// (`facilities::match_injury_tier_shares`).
+const MATCH_INJURY_TIERS: [(std::ops::RangeInclusive<u32>, &[&str]); 3] = [
+    (3..=10, &MATCH_INJURY_NAMES),
     (
-        30,
         11..=35,
         &[
             "common.injuries.hamstringTear",
@@ -92,7 +93,6 @@ const MATCH_INJURY_TIERS: [(u32, std::ops::RangeInclusive<u32>, &[&str]); 3] = [
         ],
     ),
     (
-        10,
         36..=120,
         &[
             "common.injuries.kneeLigament",
@@ -104,38 +104,38 @@ const MATCH_INJURY_TIERS: [(u32, std::ops::RangeInclusive<u32>, &[&str]); 3] = [
 
 /// A player hurt in a match: how bad, and for how long. A light knock is the
 /// usual outcome; a player short of match fitness (under 50) is half as likely
-/// again to suffer a medium or serious one. Returns the injury, or `None` when
-/// he is already injured, which is left as it is.
-pub fn assign_match_injury(player: &mut Player, rng: &mut impl Rng) -> Option<Injury> {
+/// again to suffer a medium or serious one. A better medical facility at the
+/// club he trains with (`medical_level`) makes bad injuries rarer and every
+/// injury shorter. Returns the injury, or `None` when he is already injured,
+/// which is left as it is.
+pub fn assign_match_injury(
+    player: &mut Player,
+    medical_level: u8,
+    rng: &mut impl Rng,
+) -> Option<Injury> {
     if player.injury.is_some() {
         return None;
     }
-    let unfit = player.fitness < 50;
-    let weights: Vec<u32> = MATCH_INJURY_TIERS
+    let shares = crate::facilities::match_injury_tier_shares(medical_level, player.fitness < 50);
+    let mut roll = rng.random_range(0.0..shares.iter().sum::<f64>());
+    let tier = shares
         .iter()
-        .enumerate()
-        .map(|(tier, (share, _, _))| match (tier, unfit) {
-            (0, true) => share - 20,
-            (_, true) => share * 3 / 2,
-            _ => *share,
-        })
-        .collect();
-    let mut roll = rng.random_range(0..weights.iter().sum::<u32>());
-    let tier = weights
-        .iter()
-        .position(|weight| {
-            if roll < *weight {
+        .position(|share| {
+            if roll < *share {
                 true
             } else {
-                roll -= weight;
+                roll -= share;
                 false
             }
         })
         .unwrap_or(0);
-    let (_, days, names) = &MATCH_INJURY_TIERS[tier];
+    let (days, names) = &MATCH_INJURY_TIERS[tier];
     let injury = Injury {
         name: names[rng.random_range(0..names.len())].to_string(),
-        days_remaining: rng.random_range(days.clone()),
+        days_remaining: crate::facilities::injury_days(
+            rng.random_range(days.clone()),
+            medical_level,
+        ),
     };
     player.injury = Some(injury.clone());
     Some(injury)
@@ -220,21 +220,67 @@ mod tests {
     }
 
     fn tiers(fitness: u8) -> [usize; 3] {
+        tiers_at(fitness, 1)
+    }
+
+    /// How many of 4000 match injuries fall in each tier, told apart by name.
+    fn tiers_at(fitness: u8, medical_level: u8) -> [usize; 3] {
         let mut rng = StdRng::seed_from_u64(11);
         let mut counts = [0; 3];
         for _ in 0..4000 {
             let mut player = make_player(70);
             player.fitness = fitness;
-            let injury = assign_match_injury(&mut player, &mut rng).expect("injured");
-            let tier = match injury.days_remaining {
-                3..=10 => 0,
-                11..=35 => 1,
-                36..=120 => 2,
-                other => panic!("{other} days is in no tier"),
-            };
+            let injury =
+                assign_match_injury(&mut player, medical_level, &mut rng).expect("injured");
+            let tier = MATCH_INJURY_TIERS
+                .iter()
+                .position(|(_, names)| names.contains(&injury.name.as_str()))
+                .expect("a tier's injury");
             counts[tier] += 1;
         }
         counts
+    }
+
+    fn total_days_at(medical_level: u8) -> u32 {
+        let mut rng = StdRng::seed_from_u64(12);
+        (0..4000)
+            .map(|_| {
+                let mut player = make_player(70);
+                player.fitness = 80;
+                assign_match_injury(&mut player, medical_level, &mut rng)
+                    .expect("injured")
+                    .days_remaining
+            })
+            .sum()
+    }
+
+    /// Given match injuries at a club with a level-10 medical facility,
+    /// Then about 73% are light, 22% medium and 5.5% serious.
+    #[test]
+    fn a_top_medical_facility_makes_bad_injuries_rarer() {
+        let [light, medium, serious] = tiers_at(80, 10);
+        assert!((2730..=3080).contains(&light), "{light}");
+        assert!((740..=1010).contains(&medium), "{medium}");
+        assert!((140..=300).contains(&serious), "{serious}");
+    }
+
+    /// Given the same injuries at level 1 and at level 10,
+    /// Then the level-10 club loses about half the player-days.
+    #[test]
+    fn a_top_medical_facility_halves_the_days_lost() {
+        let level_one = f64::from(total_days_at(1));
+        let level_ten = f64::from(total_days_at(10));
+        let ratio = level_ten / level_one;
+        assert!((0.40..=0.58).contains(&ratio), "{ratio:.3}");
+    }
+
+    /// Given an unfit player at a level-10 medical facility,
+    /// Then he is still hurt worse than a fit one there.
+    #[test]
+    fn an_unfit_player_is_hurt_worse_at_any_medical_level() {
+        let fit = tiers_at(80, 10);
+        let unfit = tiers_at(30, 10);
+        assert!(unfit[2] > fit[2] && unfit[1] > fit[1], "{fit:?} {unfit:?}");
     }
 
     /// Given a match-fit player hurt in a match, many times over,
@@ -267,7 +313,7 @@ mod tests {
         });
         let mut rng = StdRng::seed_from_u64(1);
 
-        assert!(assign_match_injury(&mut player, &mut rng).is_none());
+        assert!(assign_match_injury(&mut player, 1, &mut rng).is_none());
         assert_eq!(player.injury.as_ref().unwrap().days_remaining, 4);
     }
 
@@ -280,7 +326,7 @@ mod tests {
         });
         let mut rng = StdRng::seed_from_u64(4);
 
-        assert!(!roll_match_injury(&mut player, &mut rng));
+        assert!(!roll_match_injury(&mut player, 1, &mut rng));
         assert_eq!(player.injury.as_ref().unwrap().name, "existing");
     }
 
@@ -291,7 +337,7 @@ mod tests {
         for _ in 0..500 {
             let mut player = make_player(70);
             player.fitness = 20; // 3x multiplier
-            if roll_match_injury(&mut player, &mut rng) {
+            if roll_match_injury(&mut player, 1, &mut rng) {
                 assert!(player.injury.is_some());
                 let injury = player.injury.unwrap();
                 assert!(MATCH_INJURY_NAMES.contains(&injury.name.as_str()));

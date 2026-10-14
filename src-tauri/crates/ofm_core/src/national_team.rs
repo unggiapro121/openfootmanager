@@ -417,8 +417,11 @@ fn apply_carry_back(
     let xi = match_day_xi(squad_player_ids, &game.players);
     for pid in xi {
         if let Some(player) = game.players.iter_mut().find(|p| p.id == pid) {
+            // A call-up's injury is treated back at his club.
+            let medical_level =
+                crate::facilities::medical_level_at(&game.teams, player.team_id.as_deref());
             crate::player_wear::apply_match_wear(player, 90, rng);
-            crate::player_wear::roll_match_injury(player, rng);
+            crate::player_wear::roll_match_injury(player, medical_level, rng);
             if morale_delta != 0 {
                 player.morale = (player.morale as i16 + morale_delta).clamp(10, 100) as u8;
             }
