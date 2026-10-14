@@ -11,6 +11,7 @@ import ScoutPlayerCard from "../ScoutPlayerCard";
 import SwitchClubConfirmModal from "../SwitchClubConfirmModal";
 import { Badge, Button, Card, CardBody } from "../ui";
 import InboxDelegatedRenewalReport from "./InboxDelegatedRenewalReport";
+import ScoutReportChoices from "./ScoutReportChoices";
 import {
   getActionButtonClassName,
   getCategoryColor,
@@ -19,6 +20,9 @@ import {
   isPlayerEventMessage,
   renderMessageBodyLine,
 } from "./inboxHelpers";
+
+/** The choice a player scout report offers; `PLAYER_WATCH_ACTION` in `ofm_core::scouting`. */
+const SCOUT_REPORT_WATCH_ACTION_ID = "watch";
 
 interface PendingSwitch {
   messageId: string;
@@ -185,10 +189,22 @@ export default function InboxMessageDetailPane({
           />
 
           {selectedMessage.context?.scout_report ? (
-            <ScoutPlayerCard
-              report={selectedMessage.context.scout_report}
-              onPlayerClick={onScoutPlayerClick}
-            />
+            <Card className="mt-6">
+              <CardBody className="space-y-3">
+                <ScoutPlayerCard
+                  report={selectedMessage.context.scout_report}
+                  onPlayerClick={onScoutPlayerClick}
+                />
+                <ScoutReportChoices
+                  action={selectedMessage.actions.find(
+                    (action) => action.id === SCOUT_REPORT_WATCH_ACTION_ID,
+                  )}
+                  onChoose={(actionId, optionId) =>
+                    onAction(selectedMessage.id, actionId, optionId)
+                  }
+                />
+              </CardBody>
+            </Card>
           ) : null}
 
           {selectedMessage.category === "ScoutReport" && !selectedMessage.context?.scout_report ? (
@@ -223,14 +239,6 @@ export default function InboxMessageDetailPane({
                     const action = selectedMessage.actions.find(
                       (candidate) => candidate.id === `prospect:${prospect.id}`,
                     );
-                    const chooseOptionActionType =
-                      action && isChooseOptionAction(action.action_type)
-                        ? action.action_type
-                        : null;
-                    const chooseOptionActionId = action?.id ?? null;
-                    const options = chooseOptionActionType
-                      ? chooseOptionActionType.ChooseOption.options
-                      : [];
                     const signedToAcademy = prospect.team_id === currentTeamId;
                     const card = selectedMessage.context?.youth_prospect_reports?.find(
                       (candidate) => candidate.player_id === prospect.id,
@@ -280,27 +288,14 @@ export default function InboxMessageDetailPane({
                                 {t("squad.viewProfile")}
                               </Button>
                             </div>
-                          ) : action?.resolved ? (
-                            <div className="mt-3 text-xs font-heading font-bold uppercase tracking-wider text-primary-500">
-                              {t("inbox.responded")}
-                            </div>
-                          ) : chooseOptionActionId && options.length > 0 ? (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {options.map((option: (typeof options)[number]) => (
-                                <Button
-                                  key={option.id}
-                                  type="button"
-                                  size="sm"
-                                  variant={option.id === "discard" ? "outline" : "primary"}
-                                  onClick={() =>
-                                    onAction(selectedMessage.id, chooseOptionActionId, option.id)
-                                  }
-                                >
-                                  {option.label}
-                                </Button>
-                              ))}
-                            </div>
-                          ) : null}
+                          ) : (
+                            <ScoutReportChoices
+                              action={action}
+                              onChoose={(actionId, optionId) =>
+                                onAction(selectedMessage.id, actionId, optionId)
+                              }
+                            />
+                          )}
                         </CardBody>
                       </Card>
                     );
@@ -339,6 +334,13 @@ export default function InboxMessageDetailPane({
           {selectedMessage.actions.length > 0 && !hasYouthProspects ? (
             <div className="mt-6">
               {selectedMessage.actions.map((action) => {
+                // Shown under the player's card, as on a youth report.
+                if (
+                  selectedMessage.context?.scout_report &&
+                  action.id === SCOUT_REPORT_WATCH_ACTION_ID
+                ) {
+                  return null;
+                }
                 if (isChooseOptionAction(action.action_type)) {
                   const options = action.action_type.ChooseOption.options;
 

@@ -5,13 +5,15 @@ import type {
   TransferWindowContextData,
   TransferWindowStatus,
 } from "../store/gameStore";
-import { TRANSFER_WINDOW_DAYS } from "./domainConstants";
+import type { TransferWindowKind } from "../store/types";
+import { TRANSFER_WINDOW_DAYS, WINTER_WINDOW_MONTHS_AFTER_START } from "./domainConstants";
 import { getUserCompetition } from "./fixtures";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_TRANSFER_WINDOW: TransferWindowContextData = {
   status: "Closed",
+  kind: "Summer",
   opens_on: null,
   closes_on: null,
   days_until_opens: null,
@@ -48,6 +50,7 @@ function normaliseSeasonContext(context: SeasonContextData): SeasonContextData {
     days_until_season_start: context.days_until_season_start ?? null,
     transfer_window: {
       status: context.transfer_window?.status ?? "Closed",
+      kind: context.transfer_window?.kind ?? "Summer",
       opens_on: context.transfer_window?.opens_on ?? null,
       closes_on: context.transfer_window?.closes_on ?? null,
       days_until_opens: context.transfer_window?.days_until_opens ?? null,
@@ -106,15 +109,15 @@ function deriveTransferWindowContext(
     return DEFAULT_TRANSFER_WINDOW;
   }
 
+  // The window in force, or the next to open: each season has its summer
+  // window and then its winter one, and past both lie the next season's.
   let windowSeasonStart = seasonStart;
-  let opensOn = transferWindowOpensOn(windowSeasonStart);
-  let closesOn = transferWindowClosesOn(windowSeasonStart);
-
-  while (currentDate > closesOn) {
+  let upcoming = seasonWindows(windowSeasonStart).find((window) => currentDate <= window.closesOn);
+  while (!upcoming) {
     windowSeasonStart = addYearsClamped(windowSeasonStart, 1);
-    opensOn = transferWindowOpensOn(windowSeasonStart);
-    closesOn = transferWindowClosesOn(windowSeasonStart);
+    upcoming = seasonWindows(windowSeasonStart).find((window) => currentDate <= window.closesOn);
   }
+  const { kind, opensOn, closesOn } = upcoming;
 
   let status: TransferWindowStatus = "Closed";
   let daysUntilOpens: number | null = null;
@@ -129,6 +132,7 @@ function deriveTransferWindowContext(
 
   return {
     status,
+    kind,
     opens_on: formatUtcDate(opensOn),
     closes_on: formatUtcDate(closesOn),
     days_until_opens: daysUntilOpens,
@@ -175,6 +179,34 @@ function addYearsClamped(date: Date, years: number): Date {
   }
 
   return new Date(Date.UTC(targetYear, date.getUTCMonth() + 1, 0));
+}
+
+interface SeasonWindow {
+  kind: TransferWindowKind;
+  opensOn: Date;
+  closesOn: Date;
+}
+
+/** A season's two windows in the order they open: summer, then winter. */
+function seasonWindows(seasonStart: Date): SeasonWindow[] {
+  const winterOpensOn = new Date(
+    Date.UTC(
+      seasonStart.getUTCFullYear(),
+      seasonStart.getUTCMonth() + WINTER_WINDOW_MONTHS_AFTER_START,
+      1,
+    ),
+  );
+  const winterClosesOn = new Date(
+    Date.UTC(winterOpensOn.getUTCFullYear(), winterOpensOn.getUTCMonth() + 1, 0),
+  );
+  return [
+    {
+      kind: "Summer",
+      opensOn: transferWindowOpensOn(seasonStart),
+      closesOn: transferWindowClosesOn(seasonStart),
+    },
+    { kind: "Winter", opensOn: winterOpensOn, closesOn: winterClosesOn },
+  ];
 }
 
 function transferWindowOpensOn(seasonStart: Date): Date {

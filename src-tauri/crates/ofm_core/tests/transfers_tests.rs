@@ -412,6 +412,37 @@ fn a_permanent_transfer_starts_a_new_contract_on_the_day_it_registers() {
     );
 }
 
+/// Given a move agreed after the summer window closed, when the game had no
+/// winter window and so scheduled it for next summer,
+/// When the January window opens,
+/// Then the move registers then, rather than waiting for the date it was given.
+#[test]
+fn a_pending_transfer_registers_in_the_first_open_window_whatever_its_date() {
+    let player = make_player("player-sold-in-september");
+    let mut game = make_game_with_player(player, vec![], 5_000_000, 2_000_000);
+    game.clock.current_date = Utc.with_ymd_and_hms(2026, 9, 9, 12, 0, 0).unwrap();
+    game.season_context.transfer_window.status = TransferWindowStatus::Closed;
+    game.season_context.transfer_window.opens_on = Some("2027-07-11".to_string());
+    make_transfer_bid(&mut game, "player-sold-in-september", 2_000_000)
+        .expect("an accepted closed-window bid schedules registration");
+
+    game.clock.current_date = Utc.with_ymd_and_hms(2027, 1, 15, 12, 0, 0).unwrap();
+    game.season_context.transfer_window.status = TransferWindowStatus::Open;
+    game.season_context.transfer_window.opens_on = Some("2027-01-01".to_string());
+    process_pending_transfer_registrations(&mut game);
+
+    let player = game
+        .players
+        .iter()
+        .find(|player| player.id == "player-sold-in-september")
+        .unwrap();
+    assert_eq!(player.team_id.as_deref(), Some("team-1"));
+    assert_eq!(
+        player.transfer_offers[0].status,
+        TransferOfferStatus::Accepted
+    );
+}
+
 #[test]
 fn accepted_closed_window_transfer_bid_is_registered_when_the_window_opens() {
     let player = make_player("player-bid-closed");

@@ -16,10 +16,20 @@ pub enum TransferWindowStatus {
     DeadlineDay,
 }
 
+/// Which of a season's two windows: the long one around its start, or the short
+/// one at its midpoint (January for a season that starts in August).
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Default)]
+pub enum TransferWindowKind {
+    #[default]
+    Summer,
+    Winter,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(default)]
 pub struct TransferWindowContext {
     pub status: TransferWindowStatus,
+    pub kind: TransferWindowKind,
     pub opens_on: Option<String>,
     pub closes_on: Option<String>,
     pub days_until_opens: Option<i64>,

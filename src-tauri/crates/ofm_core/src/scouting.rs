@@ -428,6 +428,8 @@ pub fn process_scouting(game: &mut Game) {
                 team_name.as_deref(),
                 &today,
             );
+            let mut msg = msg;
+            msg.context.scout_id = Some(scout.id.clone());
             game.messages.push(msg);
         }
     }
@@ -473,7 +475,7 @@ fn complete_youth_scouting_assignment(
         generate_youth_recruitment_candidates(game, &team, &scout, assignment, &mut rng);
 
     let scout_name = format!("{} {}", scout.first_name, scout.last_name);
-    game.messages.push(build_youth_recruitment_report(
+    let mut report = build_youth_recruitment_report(
         &assignment.id,
         &scout_name,
         &team.id,
@@ -483,7 +485,9 @@ fn complete_youth_scouting_assignment(
         assignment.objective,
         assignment.target_position.as_ref(),
         date,
-    ));
+    );
+    report.context.scout_id = Some(scout.id.clone());
+    game.messages.push(report);
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -838,11 +842,13 @@ pub fn apply_youth_recruitment_response(
                 .cloned()?;
             crate::youth_watchlist::watch(game, prospect, estimate).ok()?;
             resolve_action(game, message_index, action_index);
-            Some(YouthRecruitmentEffect {
-                message: String::new(),
-                i18n_key: "be.msg.youthRecruitment.effect.watch".to_string(),
-                i18n_params: params(&[("player", &prospect_name)]),
-            })
+            Some(follow_with_reporting_scout(
+                game,
+                message_index,
+                &prospect_id,
+                &prospect_name,
+                "be.msg.youthRecruitment.effect.watch",
+            ))
         }
         "unwatch" => {
             crate::youth_watchlist::unwatch(game, &prospect_id).ok()?;
@@ -1168,20 +1174,75 @@ pub fn apply_player_watch_response(
         .map(|report| report.player_name.clone())
         .unwrap_or_default();
     let action_index = message.actions.iter().position(|a| a.id == action_id)?;
-    let key =
-        match crate::youth_watchlist::watch_player(game, &estimate.prospect_id.clone(), estimate) {
-            Ok(()) => "be.msg.scoutReport.effect.watch",
-            Err(error) if error == "be.error.scouting.prospectAlreadyWatched" => {
-                "be.msg.scoutReport.effect.alreadyWatched"
-            }
-            Err(_) => return None,
-        };
+    let player_id = estimate.prospect_id.clone();
+    match crate::youth_watchlist::watch_player(game, &player_id, estimate) {
+        Ok(()) => {}
+        Err(error) if error == "be.error.scouting.prospectAlreadyWatched" => {
+            resolve_action(game, message_index, action_index);
+            return Some(YouthRecruitmentEffect {
+                message: String::new(),
+                i18n_key: "be.msg.scoutReport.effect.alreadyWatched".to_string(),
+                i18n_params: params(&[("player", &player_name)]),
+            });
+        }
+        Err(_) => return None,
+    }
     resolve_action(game, message_index, action_index);
-    Some(YouthRecruitmentEffect {
+    Some(follow_with_reporting_scout(
+        game,
+        message_index,
+        &player_id,
+        &player_name,
+        "be.msg.scoutReport.effect.watch",
+    ))
+}
+
+/// The scout who wrote report `message_index`: by the id it records, or, for a
+/// report from before it recorded one, by its sender's name among the club's
+/// scouts.
+fn reporting_scout(game: &Game, message_index: usize) -> Option<domain::staff::Staff> {
+    let message = &game.messages[message_index];
+    let user_team_id = game.manager.team_id.as_deref()?;
+    game.staff
+        .iter()
+        .filter(|staff| {
+            staff.role == StaffRole::Scout && staff.team_id.as_deref() == Some(user_team_id)
+        })
+        .find(|staff| match message.context.scout_id.as_deref() {
+            Some(scout_id) => staff.id == scout_id,
+            None => format!("{} {}", staff.first_name, staff.last_name) == message.sender,
+        })
+        .cloned()
+}
+
+/// A player just watched from a report goes on being followed by the scout who
+/// wrote it. When that scout has gone or has no slot free, the player stays on
+/// the watchlist unfollowed and the manager is told; with no scout to name,
+/// `unfollowed_key` says only that he is on the list.
+fn follow_with_reporting_scout(
+    game: &mut Game,
+    message_index: usize,
+    player_id: &str,
+    player_name: &str,
+    unfollowed_key: &str,
+) -> YouthRecruitmentEffect {
+    let Some(scout) = reporting_scout(game, message_index) else {
+        return YouthRecruitmentEffect {
+            message: String::new(),
+            i18n_key: unfollowed_key.to_string(),
+            i18n_params: params(&[("player", player_name)]),
+        };
+    };
+    let scout_name = format!("{} {}", scout.first_name, scout.last_name);
+    let key = match crate::youth_watchlist::follow_from_report(game, player_id, &scout.id) {
+        Ok(()) => "be.msg.watchlist.effect.following",
+        Err(_) => "be.msg.watchlist.effect.scoutFull",
+    };
+    YouthRecruitmentEffect {
         message: String::new(),
         i18n_key: key.to_string(),
-        i18n_params: params(&[("player", &player_name)]),
-    })
+        i18n_params: params(&[("player", player_name), ("scout", &scout_name)]),
+    }
 }
 
 /// How far either side of the truth a scout's read of a rating can land.

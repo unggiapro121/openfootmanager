@@ -1383,7 +1383,9 @@ describe("InboxTab", (): void => {
       initialMessageId: "scout_report_a1",
     });
 
-    expect(screen.getByRole("button", { name: /^Watch / })).toBeInTheDocument();
+    // The same small Watch button a youth report's prospect card has, not a
+    // response card with a description further down the message.
+    expect(screen.getByRole("button", { name: "Watch" })).toBeInTheDocument();
   });
 
   it("shows a prospect's build and every attribute, ?? until read", async (): Promise<void> => {

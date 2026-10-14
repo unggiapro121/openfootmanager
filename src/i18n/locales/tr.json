@@ -2012,7 +2012,7 @@
     "youthSearchQuote": "Ücret {{fee}} · {{days}} gün",
     "scoutResting": "{{days}} gün daha dinleniyor",
     "watchlistTitle": "İzleme listesi",
-    "watchlistHint": "Takip ettiğin gençler. Birine gözlemci ata, her pazartesi biraz daha fazlasını öğren. Başka bir kulüp önce imzalarsa yeni kulübüyle burada kalır; hâlâ serbest olanlar sezon sonunda ayrılır.",
+    "watchlistHint": "Takip ettiğin oyuncular. Bir oyuncu hakkında rapor yazan gözlemci onu takip etmeye devam eder ve onu tamamen tanıyana kadar her pazartesi biraz daha öğrenir; gözlemciyi burada değiştirebilir ya da kaldırabilirsin. Başka bir kulüp bir genç oyuncuyu önce alırsa yeni kulübüyle burada kalır; hâlâ boşta olanlar sezon sonunda listeden çıkar.",
     "watchlistEmpty": "İzleme listende kimse yok. Bir genç oyuncu arama raporunda İzle'yi seç.",
     "watchlistScout": "Gözlemci",
     "watchlistScoutFor": "{{name}} adlı genci izleyen gözlemci",
@@ -3616,6 +3616,12 @@
       "matchInjury": {
         "subject": "{{player}} sakatlandı",
         "body": "Hocam, {{player}} maçta sakatlandı ({{injury}}). Yaklaşık {{days}} gün forma giyemeyecek."
+      },
+      "watchlist": {
+        "effect": {
+          "following": "{{scout}}, {{player}} oyuncusunu takip edecek ve onu tamamen tanıyana kadar her pazartesi rapor verecek.",
+          "scoutFull": "{{player}} takip listende, ancak {{scout}} zaten takip edebileceği en fazla oyuncuyu izliyor. {{player}} oyuncusunu Gözlem ekranında başka bir gözlemciye ver."
+        }
       }
     },
     "news": {
