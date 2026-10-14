@@ -250,6 +250,8 @@ struct TeamTrainingPlan {
     schedule: TrainingSchedule,
     bonus: TeamCoachingBonus,
     medical_facility_mult: f64,
+    /// What the club's training facility adds to every session's gains.
+    training_facility_mult: f64,
     /// player_id → group focus override (players not in any group use default_focus)
     group_overrides: std::collections::HashMap<String, TrainingFocus>,
     /// Why today's session runs at reduced load, if it does.
@@ -294,6 +296,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
             let bonus = compute_coaching_bonus(game, &t.id, &t.training_focus);
             let medical_facility_mult =
                 crate::facilities::condition_recovery_mult(t.facilities.medical);
+            let training_facility_mult = crate::facilities::development_mult(t.facilities.training);
             let mut group_overrides = std::collections::HashMap::new();
             for group in &t.training_groups {
                 for pid in &group.player_ids {
@@ -308,6 +311,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
                     schedule: t.training_schedule.clone(),
                     bonus,
                     medical_facility_mult,
+                    training_facility_mult,
                     group_overrides,
                     taper: tapering.get(&t.id).copied(),
                 },
@@ -443,14 +447,16 @@ fn train_player(
     // Age factor for attribute gains: younger players grow faster, older players slower
     let age_factor = age_factor(age);
 
-    // Base gain per attribute per session, boosted by coaching staff, held back
-    // for a player who is not getting games, and nudged by how well he is playing.
+    // Base gain per attribute per session, boosted by coaching staff and the
+    // training facility, held back for a player who is not getting games, and
+    // nudged by how well he is playing.
     let gain = BASE_TRAINING_GAIN
         * day.development_multiplier
         * intensity_mult
         * age_factor
         * plan.bonus.coaching_mult
         * plan.bonus.specialization_mult
+        * plan.training_facility_mult
         * crate::playing_time::development_factor(player.playing_time)
         * crate::match_form::development_factor(player.match_form);
 

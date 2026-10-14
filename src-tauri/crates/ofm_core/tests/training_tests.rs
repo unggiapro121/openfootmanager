@@ -12,6 +12,8 @@ use ofm_core::training;
 mod determinism;
 #[path = "training_tests/development_speed.rs"]
 mod development_speed;
+#[path = "training_tests/facility.rs"]
+mod facility;
 #[path = "training_tests/fixtures.rs"]
 mod fixtures;
 #[path = "training_tests/match_form.rs"]

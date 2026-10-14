@@ -207,3 +207,16 @@ pub(crate) fn physical_total(game: &Game, player_id: &str) -> u32 {
     .map(|value| u32::from(*value))
     .sum()
 }
+
+/// Train `game`'s squad for `days` calendar days, on the days its schedule says.
+pub(crate) fn train_for_days(game: &mut Game, days: u32) {
+    use chrono::Datelike;
+    for _ in 0..days {
+        for player in game.players.iter_mut() {
+            player.condition = 90;
+        }
+        game.clock.advance_days(1);
+        let weekday = game.clock.current_date.weekday().num_days_from_monday();
+        training::process_training(game, weekday);
+    }
+}

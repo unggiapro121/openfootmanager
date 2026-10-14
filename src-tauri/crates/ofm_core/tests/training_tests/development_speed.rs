@@ -1,20 +1,7 @@
 //! The career's development speed scales every training gain in the world.
 
 use super::*;
-use chrono::Datelike;
 use ofm_core::development_speed::DevelopmentSpeed;
-
-/// Train `game`'s squad for `days` calendar days, on the days its schedule says.
-fn train_for_days(game: &mut Game, days: u32) {
-    for _ in 0..days {
-        for player in game.players.iter_mut() {
-            player.condition = 90;
-        }
-        game.clock.advance_days(1);
-        let weekday = game.clock.current_date.weekday().num_days_from_monday();
-        training::process_training(game, weekday);
-    }
-}
 
 fn game_with_regular_trainee(speed_percent: u16) -> Game {
     let mut game = make_game();
