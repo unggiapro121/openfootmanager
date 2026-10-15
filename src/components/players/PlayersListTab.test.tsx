@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -6,6 +7,7 @@ import type { GameStateData, PlayerData, StaffData, TeamData } from "../../store
 import type { PlayerSummary, PlayersPage, PlayersPageQuery } from "../../services/playersService";
 import { resetPackageAssetRoot } from "../../hooks/usePackageAssetSrc";
 import PlayersListTab from "./PlayersListTab";
+import { DEFAULT_PLAYERS_LIST_FILTERS, type PlayersListFilters } from "./PlayersListTab.filters";
 
 vi.mock("@tauri-apps/api/core", () => ({
   convertFileSrc: vi.fn((path: string) => `asset://localhost/${path}`),
@@ -395,6 +397,47 @@ describe("PlayersListTab", () => {
     fireEvent.click(await screen.findByText("A. Keeper"));
 
     expect(onSelectPlayer).toHaveBeenCalledWith("player-2");
+  });
+
+  // Given a search and a position filter, when the tab is left for a player's
+  // profile and comes back, then both are still applied, held by the caller.
+  it("keeps the filters held by the caller across a remount", async () => {
+    const gameState = createGameState();
+    setupSliceMock(gameState);
+
+    function Host({ showTab }: { showTab: boolean }) {
+      const [filters, setFilters] = useState<PlayersListFilters>(DEFAULT_PLAYERS_LIST_FILTERS);
+      return showTab ? (
+        <PlayersListTab
+          gameState={gameState}
+          onSelectPlayer={vi.fn()}
+          onSelectTeam={vi.fn()}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+      ) : null;
+    }
+
+    const { rerender } = render(<Host showTab />);
+    await screen.findByText("A. Keeper");
+    fireEvent.change(screen.getByPlaceholderText("Search players"), {
+      target: { value: "keeper" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "playerFilters.positionGroup" }));
+    fireEvent.click(screen.getByRole("option", { name: "common.positionGroups.Goalkeeper" }));
+    fireEvent.keyDown(document, { key: "Escape" });
+    await waitFor(() => {
+      expect(screen.queryByText("J. Smith")).not.toBeInTheDocument();
+    });
+
+    rerender(<Host showTab={false} />);
+    rerender(<Host showTab />);
+
+    await screen.findByText("A. Keeper");
+    expect(screen.getByPlaceholderText("Search players")).toHaveValue("keeper");
+    expect(screen.queryByText("J. Smith")).not.toBeInTheDocument();
+    expect(lastPlayersQuery()).toMatchObject({ search: "keeper", positions: ["Goalkeeper"] });
   });
 
   // Given clubs in two leagues, when a league is picked, then the players query

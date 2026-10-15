@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import type { GameStateData, PlayerSelectionOptions } from "../../store/gameStore";
 import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/errorMessage";
 import { Card, CardBody, Badge, Select, CountryFlag, PlayerAvatar } from "../ui";
@@ -28,9 +35,9 @@ import {
 } from "../../services/playersService";
 import { useDirectoryTree } from "../teams/useDirectoryTree";
 import { buildTeamFilterGroups } from "./PlayersListTab.helpers";
+import { DEFAULT_PLAYERS_LIST_FILTERS, type PlayersListFilters } from "./PlayersListTab.filters";
 import PlayerFilterPanel from "../playerFilters/PlayerFilterPanel";
 import {
-  PLAYER_FILTER_DEFAULTS,
   type PlayerFilterValues,
   positionsForFilter,
   teamIdsInScope,
@@ -55,37 +62,26 @@ interface PlayersListTabProps {
   onGameUpdate?: (game: GameStateData) => void;
   onSelectPlayer: (id: string, options?: PlayerSelectionOptions) => void;
   onSelectTeam: (id: string) => void;
+  /** The filters, when the caller holds them across the tab's remounts. */
+  filters?: PlayersListFilters;
+  onFiltersChange?: Dispatch<SetStateAction<PlayersListFilters>>;
 }
-
-const PAGE_SIZE = 30;
-
-const DEFAULT_QUERY: PlayersPageQuery = {
-  search: null,
-  position: null,
-  team_id: null,
-  league_id: null,
-  team_ids: null,
-  positions: [],
-  age_min: null,
-  age_max: null,
-  ovr_min: null,
-  ovr_max: null,
-  status: "all",
-  sort_key: "ovr",
-  sort_asc: false,
-  page: 1,
-  page_size: PAGE_SIZE,
-};
 
 export default function PlayersListTab({
   gameState,
   onGameUpdate,
   onSelectPlayer,
   onSelectTeam,
+  filters: heldFilters,
+  onFiltersChange,
 }: PlayersListTabProps) {
   const { t } = useTranslation();
-  const [query, setQuery] = useState<PlayersPageQuery>(DEFAULT_QUERY);
-  const [panelFilters, setPanelFilters] = useState<PlayerFilterValues>(PLAYER_FILTER_DEFAULTS);
+  // Controlled when the dashboard holds the filters, local otherwise (tests,
+  // embedded uses).
+  const [localFilters, setLocalFilters] = useState(DEFAULT_PLAYERS_LIST_FILTERS);
+  const isControlled = heldFilters !== undefined && onFiltersChange !== undefined;
+  const { query, panel: panelFilters } = isControlled ? heldFilters : localFilters;
+  const setFilters = isControlled ? onFiltersChange : setLocalFilters;
   const [slice, setSlice] = useState<PlayersPage | null>(null);
   const [refetchKey, setRefetchKey] = useState(0);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -93,12 +89,18 @@ export default function PlayersListTab({
   const [scoutError, setScoutError] = useState<string | null>(null);
   const managerTeamId = gameState.manager.team_id ?? "";
 
-  const patchQuery = useCallback((patch: Partial<PlayersPageQuery>) => {
-    setQuery((q) => {
-      const resetPage = !("page" in patch);
-      return { ...q, ...patch, ...(resetPage ? { page: 1 } : {}) };
-    });
-  }, []);
+  const patchQuery = useCallback(
+    (patch: Partial<PlayersPageQuery>) => {
+      setFilters((previous) => {
+        const resetPage = !("page" in patch);
+        return {
+          ...previous,
+          query: { ...previous.query, ...patch, ...(resetPage ? { page: 1 } : {}) },
+        };
+      });
+    },
+    [setFilters],
+  );
 
   const refetchSlice = useCallback(() => setRefetchKey((k) => k + 1), []);
 
@@ -136,12 +138,12 @@ export default function PlayersListTab({
   );
   const handlePanelFiltersChange = useCallback(
     (patch: Partial<PlayerFilterValues>) => {
-      setPanelFilters((previous) => ({ ...previous, ...patch }));
+      setFilters((previous) => ({ ...previous, panel: { ...previous.panel, ...patch } }));
       // A new competition scope can leave the chosen club outside it.
       const scopeChanged = "regionId" in patch || "countryId" in patch || "leagueId" in patch;
       patchQuery(scopeChanged ? { team_id: null } : {});
     },
-    [patchQuery],
+    [patchQuery, setFilters],
   );
 
   useEffect(() => {

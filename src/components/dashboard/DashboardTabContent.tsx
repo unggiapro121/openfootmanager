@@ -43,6 +43,7 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
     seasonComplete,
     squadListSortState,
     transferMarketFilters,
+    playersListFilters,
     visitedOnboardingTabs,
     handlers: {
       onGameUpdate,
@@ -51,6 +52,7 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
       onSelectTeam,
       onSquadListSortChange,
       onTransferMarketFiltersChange,
+      onPlayersListFiltersChange,
     },
   } = viewModel;
 
@@ -140,6 +142,8 @@ export default function DashboardTabContent({ viewModel }: DashboardTabContentPr
         onGameUpdate={onGameUpdate}
         onSelectPlayer={onSelectPlayer}
         onSelectTeam={onSelectTeam}
+        filters={playersListFilters}
+        onFiltersChange={onPlayersListFiltersChange}
       />
     );
   } else if (activeTab === "Managers") {
