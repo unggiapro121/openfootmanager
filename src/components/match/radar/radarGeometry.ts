@@ -21,6 +21,9 @@ export const HALFWAY = PITCH_LENGTH / 2;
 export const CENTRE_LANE = PITCH_WIDTH / 2;
 /** Half the width of a goal mouth (7.32 m). */
 export const GOAL_HALF_WIDTH = 3.66;
+/** How far the penalty box reaches from the goal line, and half its width (40.32 m). */
+const BOX_DEPTH = PITCH_LENGTH - 16.5;
+export const BOX_HALF_WIDTH = 20.16;
 
 const PITCH_ZONES = ["HomeBox", "HomeDefense", "Midfield", "AwayDefense", "AwayBox"] as const;
 export type PitchZone = (typeof PITCH_ZONES)[number];
@@ -82,6 +85,12 @@ export function fromPitch(side: Side, point: PitchPoint): { depth: number; lane:
   return side === "Home"
     ? { depth: point.x, lane: point.y }
     : { depth: PITCH_LENGTH - point.x, lane: PITCH_WIDTH - point.y };
+}
+
+/** Whether `point` is inside the box `side` attacks: the engine only ever shoots from there. */
+export function inBox(side: Side, point: PitchPoint): boolean {
+  const { depth, lane } = fromPitch(side, point);
+  return depth >= BOX_DEPTH && Math.abs(lane - CENTRE_LANE) <= BOX_HALF_WIDTH;
 }
 
 /** A stable small number from a string, so stand-ins and flourishes never flicker. */

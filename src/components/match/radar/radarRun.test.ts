@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { MatchEvent } from "../types";
 import { choreographBatch, choreographHighlights } from "./radarChoreography";
 import type { RadarSettle } from "./radarSettle";
-import { distance, toPitch } from "./radarGeometry";
+import { CENTRE_LANE, distance, toPitch, zoneSpan } from "./radarGeometry";
 import { enqueueBeats, restingPlayback } from "./radarPlayback";
 import { type RadarRun, advanceRun, startRun } from "./radarRun";
 import { type RadarScene, focusOf, initialRadarScene } from "./radarScene";
@@ -64,6 +64,28 @@ function ballSpeed(frames: RadarRun[], index: number): number {
 }
 
 const holderOf = (run: RadarRun) => (run.ball.kind === "held" ? run.ball.holder : null);
+
+/** Whether `point` is in the box the home side attacks. */
+const isInAwayBox = (point: { x: number; y: number }) =>
+  point.x >= zoneSpan("AwayBox")[0] && Math.abs(point.y - CENTRE_LANE) <= 20.16;
+
+/**
+ * The frames in which a man keeps the ball while the script has no mark for
+ * him, and the furthest he moves in any one of them.
+ */
+function unscriptedHolding(frames: RadarRun[]): { frames: number; furthest: number } {
+  let held = 0;
+  let furthest = 0;
+  for (let index = 1; index < frames.length; index++) {
+    const now = frames[index];
+    const holder = holderOf(now);
+    if (!holder || holder !== holderOf(frames[index - 1]) || holder in now.marks) continue;
+    held += 1;
+    const from = frames[index - 1].sim.players[holder].at;
+    furthest = Math.max(furthest, distance(from, now.sim.players[holder].at));
+  }
+  return { frames: held, furthest };
+}
 
 const playerIds = Object.keys(startRun(stage, restingPlayback(start)).sim.players);
 const homeIds = playerIds.filter((id) => id.startsWith("h_"));
@@ -193,6 +215,26 @@ describe("radar run — a busy minute", () => {
     }
   });
 
+  // Given an open-play shot, then it leaves the shooter's foot inside the box,
+  // as the engine has it; never from 20-odd metres out (T15).
+  it("strikes every open-play shot from inside the box", () => {
+    let shots = 0;
+    for (let index = 1; index < frames.length; index++) {
+      const now = frames[index];
+      const before = frames[index - 1];
+      const isStruck =
+        now.ball.kind === "flight" &&
+        (before.ball.kind !== "flight" || before.ball.startedAt !== now.ball.startedAt);
+      const acting = now.acting;
+      const action = acting?.beat.beat.steps[acting.index]?.action;
+      const isPenalty = acting?.beat.beat.eventType.startsWith("Penalty");
+      if (!isStruck || action?.kind !== "kick" || action.pace !== "shot" || isPenalty) continue;
+      shots += 1;
+      expect(isInAwayBox(now.ball.at), JSON.stringify(now.ball.at)).toBe(true);
+    }
+    expect(shots).toBeGreaterThanOrEqual(3);
+  });
+
   // Given a loose ball, then it is never left rolling about for a second with
   // no one going after it (T13).
   it("never leaves a rolling ball with no one after it", () => {
@@ -306,6 +348,23 @@ describe("radar run — the 2D mode's quick changes of scene", () => {
     expect(holderOf(firstHeld ?? frames[0])).toBe("a_cb1");
     const takenAt = frames.indexOf(firstHeld ?? frames[0]);
     expect(takenAt * FRAME_S).toBeLessThanOrEqual(0.55);
+  });
+});
+
+describe("radar run — a man left on the ball", () => {
+  // Given the 2D mode passing over a quiet minute that leaves the ball in the
+  // box, then whoever picks it up shields it where he stands while the script
+  // has no mark for him: his place in the shape never drags him, ball and all,
+  // about the box or back towards his own goal (T14).
+  it("leaves him where he stands when the script does not move him", () => {
+    const frames = simulate([radarEvent("Dribble", "Home", "AwayDefense", "h_st2")], {
+      restMs: 8000,
+      highlightsOnly: true,
+      settle: { ballZone: "AwayBox", possession: "Home" },
+    });
+    const { frames: held, furthest } = unscriptedHolding(frames);
+    expect(held).toBeGreaterThan(60);
+    expect(furthest).toBeLessThan(1e-6);
   });
 });
 

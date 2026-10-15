@@ -1,5 +1,6 @@
 import type { MatchEvent } from "../types";
 import {
+  BOX_HALF_WIDTH,
   CENTRE_LANE,
   GOAL_HALF_WIDTH,
   HALFWAY,
@@ -10,6 +11,7 @@ import {
   clamp,
   distance,
   fromPitch,
+  inBox,
   lerp,
   onPitch,
   opposite,
@@ -30,6 +32,7 @@ import { PACE_SPEED, crossingPoint, meetingPoint, paceSeconds, timeSteps } from 
 import {
   TOUCH_AHEAD,
   ballCarrier,
+  carryTouches,
   cast,
   jitter,
   lineFor,
@@ -277,9 +280,17 @@ function stageWinBack(cue: Cue): Staging {
   return { steps: [contestBall(cue).step] };
 }
 
-/** A dribble's length, and how many touches the dribbler takes over it. */
+/** The shortest a dribble runs. */
 const DRIBBLE_METRES = 10;
-const DRIBBLE_TOUCHES = 3;
+/**
+ * Where a dribble ends: in the box, as the engine has it after one that comes
+ * off, and well short of the keeper standing a few metres off his line.
+ */
+const DRIBBLE_END_DEPTH = 90;
+const DRIBBLE_MAX_DEPTH = 93;
+/** The longest a touch of a dribble carries the ball, and the fewest touches a dribble takes. */
+const DRIBBLE_TOUCH_METRES = 3.5;
+const DRIBBLE_MIN_TOUCHES = 3;
 /** How far the run bends away from the defender at its widest. */
 const DRIBBLE_BEND = 2.5;
 /** How far goal-side the defender holds off the dribbler: a few metres, never on top of him. */
@@ -298,8 +309,16 @@ function stageDribble(cue: Cue): Staging {
   const take = takeBall(cue, runner);
   const start = take.at;
   const { depth, lane } = fromPitch(side, start);
-  // Wide men run down the line; the rest straight at goal.
+  // Wide men run down the line; the rest straight at goal. Never back towards halfway.
   const endLane = clamp(lane + (lane < 24 ? -4 : lane > 44 ? 4 : 0), 3, 65);
+  const endDepth = Math.max(
+    depth,
+    clamp(depth + DRIBBLE_METRES, DRIBBLE_END_DEPTH, DRIBBLE_MAX_DEPTH),
+  );
+  const touchCount = Math.max(
+    DRIBBLE_MIN_TOUCHES,
+    Math.ceil(Math.hypot(endDepth - depth, endLane - lane) / DRIBBLE_TOUCH_METRES),
+  );
   // A defender or midfielder steps up to him — not a forward caught upfield.
   const focus: ShapeFocus = { x: start.x, y: start.y, possession: side };
   const defender = nearestOpponent(stage, side, start, focus, ["Defender", "Midfielder"]);
@@ -309,18 +328,18 @@ function stageDribble(cue: Cue): Staging {
   const bend = lane < 8 ? 1 : lane > 60 ? -1 : awayFromDefender;
 
   const touches: RadarStep[] = [];
-  for (let touch = 1; touch <= DRIBBLE_TOUCHES; touch++) {
-    const progress = touch / DRIBBLE_TOUCHES;
-    const runDepth = depth + DRIBBLE_METRES * progress;
+  for (let touch = 1; touch <= touchCount; touch++) {
+    const progress = touch / touchCount;
+    const runDepth = depth + (endDepth - depth) * progress;
     const runLane =
       lane + (endLane - lane) * progress + bend * DRIBBLE_BEND * Math.sin(Math.PI * progress);
     const feet = onPitch(toPitch(side, runDepth, runLane));
-    const isLastTouch = touch === DRIBBLE_TOUCHES;
+    const isLastTouch = touch === touchCount;
     // Goal-side and giving ground, then beaten: on the last touch the dribbler is past him.
     // Beaten, he turns aside where he stood rather than dropping back through the dribbler.
     const jockey = isLastTouch
       ? toPitch(side, runDepth - 1, runLane - bend * 6.5)
-      : toPitch(side, runDepth + JOCKEY_GAP - touch * 0.6, runLane - bend * 1.2);
+      : toPitch(side, runDepth + JOCKEY_GAP - progress * 1.8, runLane - bend * 1.2);
     touches.push({
       pace: "carry",
       ball: { at: onPitch(toPitch(side, runDepth + TOUCH_AHEAD, runLane)), ease: "push" },
@@ -458,16 +477,47 @@ function stageClearance(cue: Cue): Staging {
   };
 }
 
-/** Where a shot is struck from: the shooter's feet if he has the ball, else laid into his path. */
+/** How deep in the box a shot is struck when the shooter has to be put there. */
+const SHOT_DEPTH = 90;
+/** How far inside the box's side lines a shooter carrying it in cuts to. */
+const SHOT_LANE_INSET = 3;
+
+/** Where the shooter takes the ball: at his feet if he has it, else laid into his path. */
 function shootingSpot(cue: Cue, shooter: string | null): PitchPoint {
   const { scene } = cue;
   const side = cue.event.side;
   const from = where(cue, shooter);
   if (shooter && distance(from, scene.ball) <= TOUCH_AHEAD + 0.6) return from;
   const lane = fromPitch(side, from).lane;
-  const want = toPitch(side, 88, CENTRE_LANE + (lane - CENTRE_LANE) * 0.45);
+  const want = toPitch(side, SHOT_DEPTH, CENTRE_LANE + (lane - CENTRE_LANE) * 0.45);
   if (!shooter) return want;
   return meetingPoint(from, want, (point) => distance(scene.ball, point) / PACE_SPEED.pass, 0);
+}
+
+/**
+ * The shooter's way to where he strikes it: he takes the ball, and if that is
+ * outside the box he carries it in first — the engine only ever shoots from
+ * inside it.
+ */
+function shotApproach(cue: Cue, shooter: string | null): { steps: RadarStep[]; spot: PitchPoint } {
+  const side = cue.event.side;
+  const at = shootingSpot(cue, shooter);
+  const take: RadarStep = {
+    ball: { at, ease: "linear" },
+    movers: only(shooter, at),
+    highlight: cast(shooter),
+    possession: side,
+    overlay: null,
+    action: shooter ? { kind: "take", by: shooter } : undefined,
+  };
+  if (!shooter || inBox(side, at)) return { steps: [take], spot: at };
+  const from = fromPitch(side, at);
+  const edge = BOX_HALF_WIDTH - SHOT_LANE_INSET;
+  const carry = carryTouches(side, shooter, from, {
+    depth: Math.max(SHOT_DEPTH - TOUCH_AHEAD, from.depth),
+    lane: clamp(from.lane, CENTRE_LANE - edge, CENTRE_LANE + edge),
+  });
+  return { steps: [take, ...carry], spot: carry[carry.length - 1]?.ball?.at ?? at };
 }
 
 function stageShotFinish(cue: Cue, spot: PitchPoint, shooter: string | null): RadarStep[] {
@@ -567,22 +617,9 @@ function celebrate(cue: Cue, spot: PitchPoint, scorer: string | null, spin: numb
 
 function stageShot(cue: Cue): Staging {
   const shooter = cue.event.player_id;
-  const spot = shootingSpot(cue, shooter);
+  const { steps, spot } = shotApproach(cue, shooter);
   const isGoal = cue.event.event_type === "Goal";
-  return {
-    important: isGoal,
-    steps: [
-      {
-        ball: { at: spot, ease: "linear" },
-        movers: only(shooter, spot),
-        highlight: cast(shooter),
-        possession: cue.event.side,
-        overlay: null,
-        action: shooter ? { kind: "take", by: shooter } : undefined,
-      },
-      ...stageShotFinish(cue, spot, shooter),
-    ],
-  };
+  return { important: isGoal, steps: [...steps, ...stageShotFinish(cue, spot, shooter)] };
 }
 
 function stagePenalty(cue: Cue): Staging {
