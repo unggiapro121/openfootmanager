@@ -306,6 +306,9 @@ pub async fn exit_to_menu(
 /// module. Kept apart so each peel of `game.rs` can take its own tests with it
 /// without duplicating a fixture or reaching into a sibling.
 #[cfg(test)]
+mod real_world_probe;
+
+#[cfg(test)]
 mod testkit;
 
 #[cfg(test)]
