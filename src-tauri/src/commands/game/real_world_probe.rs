@@ -285,6 +285,135 @@ fn real_world_habit_shares() {
     }
 }
 
+/// What real players do inside a match, read from full engine reports: the
+/// compact reports a career keeps hold only goals, cards and substitutions.
+#[derive(Default, Serialize)]
+struct MatchShares {
+    matches: u32,
+    goals: u32,
+    goals_squared: u64,
+    shots: u64,
+    corners: u64,
+    corner_goals: u64,
+    penalties_awarded: u64,
+    aerial_won: u64,
+    aerial_lost: u64,
+    cross_goals: u64,
+    fouls_final_third: u64,
+    fouls_in_box: u64,
+}
+
+impl MatchShares {
+    fn add(&mut self, report: &engine::MatchReport) {
+        let goals = u32::from(report.home_goals) + u32::from(report.away_goals);
+        self.matches += 1;
+        self.goals += goals;
+        self.goals_squared += u64::from(goals * goals);
+        self.shots += u64::from(report.home_stats.shots + report.away_stats.shots);
+        self.corners += u64::from(report.home_stats.corners + report.away_stats.corners);
+        self.corner_goals += report
+            .goals
+            .iter()
+            .filter(|goal| goal.goal_source == engine::GoalSource::Corner)
+            .count() as u64;
+        self.penalties_awarded += report
+            .events
+            .iter()
+            .filter(|event| event.event_type == engine::EventType::PenaltyAwarded)
+            .count() as u64;
+        let tally = engine::EventTally::of(&report.events);
+        self.aerial_won += tally.aerial_won;
+        self.aerial_lost += tally.aerial_lost;
+        self.cross_goals += tally.cross_goals;
+        self.fouls_final_third += tally.fouls_final_third;
+        self.fouls_in_box += tally.fouls_in_box;
+    }
+
+    fn per_match(&self, count: u64) -> f64 {
+        count as f64 / f64::from(self.matches.max(1))
+    }
+
+    fn pct(part: u64, whole: u64) -> f64 {
+        part as f64 / whole.max(1) as f64 * 100.0
+    }
+}
+
+/// Given the real-world package,
+/// when every scheduled fixture of the probe club's league is played once in
+/// each of `OFM_MATCH_PROBE_RUNS` worlds (default 10) (the world itself is left as it was),
+/// then the shares only a full report shows are printed: defenders' aerial
+/// wins, goals per corner, penalties and fouls by zone (phase 2, P2.0).
+#[test]
+#[ignore = "builds the real-world package and plays a league season of matches; run explicitly"]
+fn real_world_match_probe() {
+    let Ok(package) = std::env::var("OFM_REAL_WORLD_PACKAGE") else {
+        eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
+        return;
+    };
+    let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
+    // A world's league season takes seconds, so this one plays more of them.
+    let run_count = env_or("OFM_MATCH_PROBE_RUNS", 10_u64).max(1);
+    let started = std::time::Instant::now();
+    let mut shares = MatchShares::default();
+    for seed in first_seed..first_seed + run_count {
+        let game = build_game(Path::new(&package), seed);
+        let fixture_count = game
+            .league
+            .as_ref()
+            .map_or(0, |league| league.fixtures.len());
+        for index in 0..fixture_count {
+            let Ok(mut session) = ofm_core::live_match_manager::create_live_match(
+                &game,
+                index,
+                ofm_core::live_match_manager::MatchMode::Instant,
+                false,
+            ) else {
+                continue;
+            };
+            session.user_side = None;
+            session.run_to_completion();
+            shares.add(&session.match_state.into_report());
+        }
+    }
+    let n = f64::from(shares.matches.max(1));
+    let mean = f64::from(shares.goals) / n;
+    let se = ((shares.goals_squared as f64 / n - mean * mean).max(0.0) / n).sqrt();
+    println!(
+        "real-world match probe · {} runs · {} matches · {:.1}s",
+        run_count,
+        shares.matches,
+        started.elapsed().as_secs_f64()
+    );
+    println!(
+        "  goals/game {mean:.3} ± {se:.3} · shots/game {:.2} · penalties/game {:.3}",
+        shares.per_match(shares.shots),
+        shares.per_match(shares.penalties_awarded)
+    );
+    println!(
+        "  defender aerial win {:.1}% ({} duels) · cross goals {:.1}% of goals",
+        MatchShares::pct(shares.aerial_lost, shares.aerial_won + shares.aerial_lost),
+        shares.aerial_won + shares.aerial_lost,
+        MatchShares::pct(shares.cross_goals, u64::from(shares.goals))
+    );
+    println!(
+        "  corners/game {:.2} · goals per corner {:.2}% · corner goals {:.1}% of goals",
+        shares.per_match(shares.corners),
+        MatchShares::pct(shares.corner_goals, shares.corners),
+        MatchShares::pct(shares.corner_goals, u64::from(shares.goals))
+    );
+    println!(
+        "  fouls/game in the final third {:.2} · in the box {:.2}",
+        shares.per_match(shares.fouls_final_third),
+        shares.per_match(shares.fouls_in_box)
+    );
+    if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
+        let json = serde_json::to_string_pretty(&shares).expect("match shares serialize");
+        std::fs::write(&out, json).expect("match shares written");
+        println!("  → {out}");
+    }
+    assert!(shares.matches > 0, "the probe played no matches");
+}
+
 #[test]
 #[ignore = "builds the real-world package and plays months of it; run explicitly"]
 fn real_world_probe() {

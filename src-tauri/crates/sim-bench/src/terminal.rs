@@ -226,6 +226,14 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
     );
     metric("  Fouls/game       ", f, 1, "18–28", check(f, 18.0, 28.0));
     metric(
+        "    in final third ",
+        stats.fouls_final_third_pg(),
+        1,
+        "",
+        true,
+    );
+    metric("    in the box     ", stats.fouls_in_box_pg(), 2, "", true);
+    metric(
         "  Penalties/game   ",
         p,
         2,
@@ -270,7 +278,7 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
     let cross_goals = if stats.games == 0 {
         0.0
     } else {
-        duels.cross_goals as f64 / f64::from(stats.games)
+        duels.tally.cross_goals as f64 / f64::from(stats.games)
     };
     metric("  Cross goals/game ", cross_goals, 2, "", true);
     println!();

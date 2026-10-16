@@ -220,7 +220,7 @@ fn match_time(result: &SweepResult, stage: Stage) -> Check {
 
 fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
     let goals = result.stats.total_goals.max(1);
-    let value = result.stats.duels.cross_goals as f64 / f64::from(goals) * 100.0;
+    let value = result.stats.duels.tally.cross_goals as f64 / f64::from(goals) * 100.0;
     let (verdict, band) = judged_at_gd5(stage, value, 16.0, 22.0);
     Check {
         name: "bàn từ tạt + đánh đầu (%)",
@@ -232,8 +232,7 @@ fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
 
 fn defender_aerial_win(result: &SweepResult, stage: Stage) -> Check {
     let duels = &result.stats.duels;
-    let total = (duels.aerial_won + duels.aerial_lost).max(1);
-    let value = duels.aerial_lost as f64 / total as f64 * 100.0;
+    let value = duels.tally.defender_aerial_win_pct();
     // Only measured in the loose band until P2.2 (the two-stage aerial duel)
     // reworks the contest: staging sits at 48%, so a gate here would fail every
     // GĐ1 change for something it does not touch. Judge it at 54–62 from P2.2.
@@ -296,9 +295,9 @@ mod tests {
             total_goals: 300,
             ..Default::default()
         };
-        stats.duels.cross_goals = 60;
-        stats.duels.aerial_won = 42;
-        stats.duels.aerial_lost = 58;
+        stats.duels.tally.cross_goals = 60;
+        stats.duels.tally.aerial_won = 42;
+        stats.duels.tally.aerial_lost = 58;
         SweepResult {
             rows,
             stats,
@@ -425,8 +424,8 @@ mod tests {
     #[test]
     fn aerial_duels_are_only_measured_until_the_two_stage_aerial_duel() {
         let mut r = result(vec![row(0, 800, 400, 800)]);
-        r.stats.duels.aerial_won = 52;
-        r.stats.duels.aerial_lost = 48;
+        r.stats.duels.tally.aerial_won = 52;
+        r.stats.duels.tally.aerial_lost = 48;
         assert_eq!(
             defender_aerial_win(&r, Stage::LanCan).verdict,
             Verdict::Measure

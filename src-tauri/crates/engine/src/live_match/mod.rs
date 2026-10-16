@@ -290,13 +290,23 @@ impl LiveMatchState {
     /// Create a new live match. `starting_xi` are already in `home.players` / `away.players`.
     /// Bench players are separate and available for substitution.
     pub fn new(
-        home: TeamData,
-        away: TeamData,
+        mut home: TeamData,
+        mut away: TeamData,
         config: MatchConfig,
-        home_bench: Vec<PlayerData>,
-        away_bench: Vec<PlayerData>,
+        mut home_bench: Vec<PlayerData>,
+        mut away_bench: Vec<PlayerData>,
         allows_extra_time: bool,
     ) -> Self {
+        for player in home
+            .players
+            .iter_mut()
+            .chain(away.players.iter_mut())
+            .chain(home_bench.iter_mut())
+            .chain(away_bench.iter_mut())
+        {
+            player.declare_split_attributes();
+        }
+
         // Initialize player conditions from their condition attribute
         let mut player_conditions = HashMap::new();
         for p in home.players.iter().chain(away.players.iter()) {
