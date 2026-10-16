@@ -128,12 +128,18 @@ Sent-off players are excluded from all future player selection for their team.
 
 ## Player Attributes
 
-The engine uses 19 player attributes, grouped into categories:
+Players carry 26 attributes, grouped into categories:
 
 **Physical**: pace, stamina, strength, agility
-**Technical**: passing, shooting, tackling, dribbling, defending
+**Technical**: passing (short), long_passing, crossing, curve, free_kick, shooting (inside the box), long_shots, tackling, dribbling, first_touch, heading, defending
 **Mental**: positioning, vision, decisions, composure, aggression, teamwork, leadership
-**Goalkeeper**: handling, reflexes, aerial
+**Goalkeeper**: handling, reflexes, aerial (jumping and contesting a high ball)
+
+The seven split attributes came out of four older blends. The engine's phases are still tuned on
+those blends, so the bridge (`ofm_core/turn/squad.rs`) hands the engine `passing`, `shooting`,
+`dribbling` and `aerial` rebuilt by the pre-split formulas (`PlayerAttributes::legacy_blends`),
+and the seven ride along in `PlayerData` unread. Each phase moves onto the split attributes in
+phase 2; until then a match plays exactly as it did.
 
 Besides attributes, `PlayerData` carries `height_cm` (0 when not known). It feeds only the height
 factor of the aerial duel. The generator draws it with the player's weight and ties `aerial`,

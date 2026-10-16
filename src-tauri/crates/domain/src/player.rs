@@ -317,11 +317,34 @@ pub struct PlayerAttributes {
     pub agility: u8,
 
     // Technical
+    /// Short passing, combination play (≤ 20 m). Before the 26-attribute split
+    /// this was a blend of short and long passing, crossing and curve.
     pub passing: u8,
+    /// Finishing inside the box. The long-range part now lives in `long_shots`.
     pub shooting: u8,
     pub tackling: u8,
+    /// Running with the ball past a man. Ball control now lives in `first_touch`.
     pub dribbling: u8,
     pub defending: u8,
+
+    // The seven attributes split out of `passing`, `shooting`, `dribbling` and
+    // `aerial`. 0 means "not declared": a package or generator that predates
+    // them leaves 0, and `ofm_core::attribute_split` derives them from the old
+    // blends. Every real value is 1–99, so 0 is never ambiguous.
+    #[serde(default)]
+    pub long_passing: u8,
+    #[serde(default)]
+    pub crossing: u8,
+    #[serde(default)]
+    pub curve: u8,
+    #[serde(default)]
+    pub free_kick: u8,
+    #[serde(default)]
+    pub long_shots: u8,
+    #[serde(default)]
+    pub first_touch: u8,
+    #[serde(default)]
+    pub heading: u8,
 
     // Mental
     pub positioning: u8,
@@ -341,8 +364,83 @@ pub struct PlayerAttributes {
     pub handling: u8,
     #[serde(default = "default_attr")]
     pub reflexes: u8,
+    /// Jumping and contesting a high ball (a keeper's claiming for a GK). The
+    /// technique of heading it now lives in `heading`.
     #[serde(default = "default_attr")]
     pub aerial: u8,
+}
+
+/// `passing`, `shooting`, `dribbling` and `aerial` as they were measured before
+/// the 26-attribute split: one blended number each.
+///
+/// Every rule tuned on the blends (the match engine, the pre-split OVR table,
+/// role and position fit, trait thresholds) reads these until it is moved onto
+/// the split attributes, so the split changes the data without changing the
+/// game. The formulas are the ones the package build used to blend with; a
+/// rule that has moved over stops reading its blend, and this goes when none
+/// is left.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct LegacyBlends {
+    pub passing: u8,
+    pub shooting: u8,
+    pub dribbling: u8,
+    pub aerial: u8,
+}
+
+fn blend(parts: &[(u8, f64)]) -> u8 {
+    let value: f64 = parts.iter().map(|&(v, w)| f64::from(v) * w).sum();
+    value.round().clamp(1.0, 99.0) as u8
+}
+
+impl PlayerAttributes {
+    /// The pre-split blends of these attributes. A family whose split
+    /// attributes are still 0 (undeclared) reads its stored field unchanged.
+    /// A goalkeeper's aerial never mixed in heading, so it stays his own.
+    pub fn legacy_blends(&self, is_goalkeeper: bool) -> LegacyBlends {
+        let passing = if self.long_passing == 0 || self.crossing == 0 || self.curve == 0 {
+            self.passing
+        } else {
+            blend(&[
+                (self.passing, 0.45),
+                (self.long_passing, 0.30),
+                (self.crossing, 0.15),
+                (self.curve, 0.10),
+            ])
+        };
+        let shooting = if self.long_shots == 0 {
+            self.shooting
+        } else {
+            blend(&[(self.shooting, 0.8), (self.long_shots, 0.2)])
+        };
+        let dribbling = if self.first_touch == 0 {
+            self.dribbling
+        } else {
+            blend(&[(self.dribbling, 0.5), (self.first_touch, 0.5)])
+        };
+        let aerial = if is_goalkeeper || self.heading == 0 {
+            self.aerial
+        } else {
+            blend(&[(self.aerial, 0.5), (self.heading, 0.5)])
+        };
+        LegacyBlends {
+            passing,
+            shooting,
+            dribbling,
+            aerial,
+        }
+    }
+    /// A copy with `passing`, `shooting`, `dribbling` and `aerial` holding their
+    /// legacy blends, for a rule written field by field against the blends.
+    pub fn with_legacy_blends(&self, is_goalkeeper: bool) -> PlayerAttributes {
+        let blends = self.legacy_blends(is_goalkeeper);
+        PlayerAttributes {
+            passing: blends.passing,
+            shooting: blends.shooting,
+            dribbling: blends.dribbling,
+            aerial: blends.aerial,
+            ..self.clone()
+        }
+    }
 }
 
 fn default_attr() -> u8 {
@@ -762,9 +860,13 @@ pub enum PlayerTrait {
     Wonderkid, // age <= 21 && potential >= 85 && (potential - ovr) >= 10
 }
 
-/// Derive traits purely from a player's attributes (position-independent).
-pub fn compute_traits(attrs: &PlayerAttributes, _position: &Position) -> Vec<PlayerTrait> {
+/// Derive traits purely from a player's attributes. The position only tells a
+/// keeper apart, whose aerial blend is his own.
+pub fn compute_traits(attrs: &PlayerAttributes, position: &Position) -> Vec<PlayerTrait> {
     let mut traits = Vec::new();
+    // Thresholds were set on the pre-split blends; read those until the trait
+    // rework (phase 2, P1.5) moves each trait onto the split attributes.
+    let blends = attrs.legacy_blends(matches!(position, Position::Goalkeeper));
 
     // Physical
     if attrs.pace >= 85 {
@@ -781,13 +883,13 @@ pub fn compute_traits(attrs: &PlayerAttributes, _position: &Position) -> Vec<Pla
     }
 
     // Technical
-    if attrs.passing >= 80 && attrs.vision >= 80 {
+    if blends.passing >= 80 && attrs.vision >= 80 {
         traits.push(PlayerTrait::Playmaker);
     }
-    if attrs.shooting >= 85 {
+    if blends.shooting >= 85 {
         traits.push(PlayerTrait::Sharpshooter);
     }
-    if attrs.dribbling >= 85 {
+    if blends.dribbling >= 85 {
         traits.push(PlayerTrait::Dribbler);
     }
     if attrs.tackling >= 80 && attrs.aggression >= 70 {
@@ -821,18 +923,18 @@ pub fn compute_traits(attrs: &PlayerAttributes, _position: &Position) -> Vec<Pla
     if attrs.reflexes >= 85 {
         traits.push(PlayerTrait::CatReflexes);
     }
-    if attrs.aerial >= 85 {
+    if blends.aerial >= 85 {
         traits.push(PlayerTrait::AerialDominance);
     }
 
     // Combo / Special — purely attribute-based
-    if attrs.shooting >= 75 && attrs.dribbling >= 75 && attrs.pace >= 70 && attrs.strength >= 70 {
+    if blends.shooting >= 75 && blends.dribbling >= 75 && attrs.pace >= 70 && attrs.strength >= 70 {
         traits.push(PlayerTrait::CompleteForward);
     }
     if attrs.stamina >= 85 && attrs.pace >= 70 && attrs.teamwork >= 75 {
         traits.push(PlayerTrait::Engine);
     }
-    if attrs.passing >= 80 && attrs.shooting >= 75 && attrs.vision >= 75 {
+    if blends.passing >= 80 && blends.shooting >= 75 && attrs.vision >= 75 {
         traits.push(PlayerTrait::SetPieceSpecialist);
     }
 
@@ -901,6 +1003,69 @@ impl Player {
 mod tests {
     use super::*;
 
+    /// Given attributes from before the split (the seven new fields 0),
+    /// when the legacy blends are read,
+    /// then they are the stored fields unchanged.
+    #[test]
+    fn legacy_blends_of_undeclared_attributes_are_the_stored_fields() {
+        let attrs = sample_attributes();
+        let blends = attrs.legacy_blends(false);
+        assert_eq!(
+            (
+                blends.passing,
+                blends.shooting,
+                blends.dribbling,
+                blends.aerial
+            ),
+            (attrs.passing, attrs.shooting, attrs.dribbling, attrs.aerial)
+        );
+    }
+
+    /// Given split attributes,
+    /// when the legacy blends are read,
+    /// then each is rebuilt by the pre-split formula (0.45/0.30/0.15/0.10 for
+    /// passing, 0.8/0.2 for shooting, halves for dribbling and aerial).
+    #[test]
+    fn legacy_blends_rebuild_the_pre_split_formulas() {
+        let mut attrs = sample_attributes();
+        attrs.passing = 80;
+        attrs.long_passing = 60;
+        attrs.crossing = 40;
+        attrs.curve = 50;
+        attrs.shooting = 70;
+        attrs.long_shots = 50;
+        attrs.dribbling = 60;
+        attrs.first_touch = 80;
+        attrs.aerial = 70;
+        attrs.heading = 50;
+        let blends = attrs.legacy_blends(false);
+        // 36 + 18 + 6 + 5 = 65; 56 + 10 = 66; 70; 60.
+        assert_eq!(
+            (
+                blends.passing,
+                blends.shooting,
+                blends.dribbling,
+                blends.aerial
+            ),
+            (65, 66, 70, 60)
+        );
+    }
+
+    /// Given a goalkeeper with a heading value,
+    /// when the aerial blend is read,
+    /// then it is the keeper's aerial alone: a keeper's aerial never mixed in heading.
+    #[test]
+    fn a_goalkeepers_aerial_blend_ignores_heading() {
+        let mut attrs = sample_attributes();
+        attrs.aerial = 80;
+        attrs.heading = 20;
+        attrs.long_passing = 60;
+        attrs.crossing = 30;
+        attrs.curve = 30;
+        assert_eq!(attrs.legacy_blends(true).aerial, 80);
+        assert_eq!(attrs.legacy_blends(false).aerial, 50);
+    }
+
     fn sample_attributes() -> PlayerAttributes {
         PlayerAttributes {
             pace: 70,
@@ -922,6 +1087,13 @@ mod tests {
             handling: 20,
             reflexes: 24,
             aerial: 44,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         }
     }
 

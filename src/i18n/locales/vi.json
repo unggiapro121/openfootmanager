@@ -545,7 +545,7 @@
       "stamina": "Sức bền",
       "strength": "Sức mạnh",
       "agility": "Nhanh nhẹn",
-      "passing": "Chuyền bóng",
+      "passing": "Chuyền ngắn",
       "shooting": "Dứt điểm",
       "tackling": "Tắc bóng",
       "dribbling": "Rê bóng",
@@ -559,7 +559,14 @@
       "leadership": "Thủ lĩnh",
       "handling": "Bắt bóng",
       "reflexes": "Phản xạ",
-      "aerial": "Không chiến"
+      "aerial": "Không chiến",
+      "long_passing": "Chuyền dài",
+      "crossing": "Tạt bóng",
+      "curve": "Độ xoáy",
+      "free_kick": "Đá phạt",
+      "long_shots": "Sút xa",
+      "heading": "Đánh đầu",
+      "first_touch": "Khống chế bóng"
     },
     "moods": {
       "excellent": "Rất tốt",

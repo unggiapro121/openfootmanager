@@ -545,7 +545,7 @@
       "stamina": "Stamina",
       "strength": "Kekuatan",
       "agility": "Kelincahan",
-      "passing": "Umpan",
+      "passing": "Umpan Pendek",
       "shooting": "Tembakan",
       "tackling": "Tackling",
       "dribbling": "Dribbling",
@@ -559,7 +559,14 @@
       "leadership": "Kepemimpinan",
       "handling": "Menangkap",
       "reflexes": "Refleks",
-      "aerial": "Udara"
+      "aerial": "Udara",
+      "long_passing": "Umpan Panjang",
+      "crossing": "Umpan Silang",
+      "curve": "Lengkungan",
+      "free_kick": "Tendangan Bebas",
+      "long_shots": "Tembakan Jarak Jauh",
+      "heading": "Sundulan",
+      "first_touch": "Sentuhan Pertama"
     },
     "moods": {
       "excellent": "Sangat Baik",

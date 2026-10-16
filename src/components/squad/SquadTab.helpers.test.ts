@@ -58,6 +58,13 @@ const makePlayer = (
     handling: 60,
     reflexes: 60,
     aerial: 60,
+    long_passing: 60,
+    crossing: 60,
+    curve: 60,
+    free_kick: 60,
+    long_shots: 60,
+    heading: 60,
+    first_touch: 60,
   },
   condition: 100,
   morale: 80,
@@ -229,6 +236,13 @@ describe("SquadTab helpers", () => {
           handling: 10,
           reflexes: 10,
           aerial: 10,
+          long_passing: 55,
+          crossing: 55,
+          curve: 55,
+          free_kick: 55,
+          long_shots: 40,
+          heading: 10,
+          first_touch: 50,
         },
       }),
       makePlayer("cb1", "Center Back", {
@@ -253,6 +267,13 @@ describe("SquadTab helpers", () => {
           handling: 10,
           reflexes: 10,
           aerial: 10,
+          long_passing: 62,
+          crossing: 62,
+          curve: 62,
+          free_kick: 62,
+          long_shots: 42,
+          heading: 10,
+          first_touch: 52,
         },
       }),
       makePlayer("cb2", "Center Back"),
@@ -534,6 +555,13 @@ describe("SquadTab helpers", () => {
             handling: 10,
             reflexes: 10,
             aerial: 60,
+            long_passing: 62,
+            crossing: 62,
+            curve: 62,
+            free_kick: 62,
+            long_shots: 58,
+            heading: 60,
+            first_touch: 61,
           },
         }),
         "HighPress",
@@ -563,11 +591,36 @@ describe("SquadTab helpers", () => {
             handling: 10,
             reflexes: 10,
             aerial: 55,
+            long_passing: 46,
+            crossing: 46,
+            curve: 46,
+            free_kick: 46,
+            long_shots: 49,
+            heading: 55,
+            first_touch: 47,
           },
         }),
         "Possession",
       ),
     ).toBe("risky");
+  });
+
+  it("reads crossing, long passing and first touch in the styles that use them", () => {
+    // Every attribute at 60 reads "good"; one weak new attribute must pull the
+    // style that relies on it down to "risky".
+    const flat = makePlayer("flat", "Midfielder");
+    const base = Object.fromEntries(
+      Object.keys(flat.attributes).map((key) => [key, 60]),
+    ) as PlayerData["attributes"];
+    const weakAt = (key: keyof PlayerData["attributes"]) =>
+      makePlayer(key, "Midfielder", { attributes: { ...base, [key]: 20 } });
+
+    expect(getPlayStyleFit(makePlayer("ok", "Midfielder", { attributes: base }), "Counter")).toBe(
+      "good",
+    );
+    expect(getPlayStyleFit(weakAt("crossing"), "Attacking")).toBe("risky");
+    expect(getPlayStyleFit(weakAt("long_passing"), "Counter")).toBe("risky");
+    expect(getPlayStyleFit(weakAt("first_touch"), "Possession")).toBe("risky");
   });
 
   it("downgrades play-style fit when the player is out of position", () => {

@@ -75,7 +75,9 @@ fn reveals_per_week(judging_ability: u8) -> usize {
 
 /// The order a following scout reads `prospect`'s attributes in: the heaviest
 /// in his position's overall first, then the rest, ties in an order fixed for
-/// him. Only a keeper has handling and reflexes to read.
+/// him. Only a keeper has handling and reflexes to read, and a keeper has no
+/// outfield technique (crossing, curve, free kicks, long shots, first touch,
+/// heading) worth a scout's week; his long passing is his kicking, and is read.
 pub(crate) fn reveal_order(prospect: &Player) -> Vec<&'static str> {
     use crate::player_rating::{ATTRIBUTE_KEYS, attribute_weights};
     let position = crate::player_rating::primary_position(prospect);
@@ -92,6 +94,13 @@ pub(crate) fn reveal_order(prospect: &Player) -> Vec<&'static str> {
         .iter()
         .copied()
         .filter(|key| keeper || !matches!(*key, "handling" | "reflexes"))
+        .filter(|key| {
+            !keeper
+                || !matches!(
+                    *key,
+                    "crossing" | "curve" | "free_kick" | "long_shots" | "first_touch" | "heading"
+                )
+        })
         .collect();
     keys.sort_by_key(|key| {
         (
@@ -972,10 +981,12 @@ mod tests {
         let order = reveal_order(&midfielder);
         assert_eq!(order[0], "passing");
         assert!(order[1..3].contains(&"vision") && order[1..3].contains(&"decisions"));
-        assert_eq!(order.len(), 17);
+        // 26 attributes less the keeper's two.
+        assert_eq!(order.len(), 24);
         assert!(!order.contains(&"handling") && !order.contains(&"reflexes"));
         let keeper_order = reveal_order(&keeper);
-        assert_eq!(keeper_order.len(), 19);
+        // 26 less the six outfield techniques a keeper has none of.
+        assert_eq!(keeper_order.len(), 20);
         assert!(keeper_order[..2].contains(&"handling") && keeper_order[..2].contains(&"reflexes"));
     }
 

@@ -12,10 +12,12 @@ function getStatAttributeKey(label: string): string | null {
       return "shooting";
     case "COM":
       return "composure";
-    case "PAS":
-      return "passing";
-    case "VIS":
-      return "vision";
+    case "FKA":
+      return "free_kick";
+    case "CRO":
+      return "crossing";
+    case "CUR":
+      return "curve";
     case "LDR":
       return "leadership";
     case "TMW":
@@ -39,21 +41,22 @@ export function getSetPieceStats(
           { label: "COM", value: a.composure },
         ],
       };
+    // Free kick and corner copy the weights of the backend auto-pick
+    // (`auto_select_set_pieces` in ofm_core/turn/squad.rs); keep the two in step.
     case "freekick":
       return {
-        score: Math.round((a.passing + a.vision + a.shooting / 2) / 2.5),
+        score: Math.round(0.65 * a.free_kick + 0.35 * a.curve),
         stats: [
-          { label: "PAS", value: a.passing },
-          { label: "VIS", value: a.vision },
-          { label: "SHO", value: a.shooting },
+          { label: "FKA", value: a.free_kick },
+          { label: "CUR", value: a.curve },
         ],
       };
     case "corner":
       return {
-        score: Math.round((a.passing + a.vision) / 2),
+        score: Math.round(0.7 * a.crossing + 0.3 * a.curve),
         stats: [
-          { label: "PAS", value: a.passing },
-          { label: "VIS", value: a.vision },
+          { label: "CRO", value: a.crossing },
+          { label: "CUR", value: a.curve },
         ],
       };
     case "captain":

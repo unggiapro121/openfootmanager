@@ -11,6 +11,7 @@ import { TeamCombobox } from "../../ui/TeamCombobox";
 import {
   POSITIONS,
   PLAYER_ATTR_GROUPS,
+  attributeSliderMin,
   emptyAttributes,
   parseOptionalWhole,
   parseRating,
@@ -305,7 +306,7 @@ export function PlayerForm({
                         <div className="flex items-center gap-1.5">
                           <input
                             type="range"
-                            min={1}
+                            min={attributeSliderMin(key)}
                             max={99}
                             value={attrs[key as keyof typeof attrs]}
                             onChange={(e) =>

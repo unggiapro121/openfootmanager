@@ -36,9 +36,18 @@ const ATTRIBUTE_META = {
 
   // Technical
   passing: "technical",
+  long_passing: "technical",
+  crossing: "technical",
+  curve: "technical",
+  free_kick: "technical",
   shooting: "technical",
-  tackling: "technical",
+  long_shots: "technical",
   dribbling: "technical",
+  first_touch: "technical",
+  // Heading is the technique; the jump and the contest for the ball are
+  // `aerial`, which stays in Physical.
+  heading: "technical",
+  tackling: "technical",
   defending: "technical",
 
   // Mental

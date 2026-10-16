@@ -545,7 +545,7 @@
       "stamina": "Dayanıklılık",
       "strength": "Güç",
       "agility": "Çeviklik",
-      "passing": "Pas",
+      "passing": "Kısa Pas",
       "shooting": "Şut",
       "tackling": "Müdahale",
       "dribbling": "Dripling",
@@ -559,7 +559,14 @@
       "leadership": "Liderlik",
       "handling": "Top Tutma",
       "reflexes": "Refleks",
-      "aerial": "Hava Hakimiyeti"
+      "aerial": "Hava Hakimiyeti",
+      "long_passing": "Uzun Pas",
+      "crossing": "Orta",
+      "curve": "Falso",
+      "free_kick": "Serbest Vuruş",
+      "long_shots": "Uzaktan Şut",
+      "heading": "Kafa Vuruşu",
+      "first_touch": "İlk Dokunuş"
     },
     "moods": {
       "excellent": "Mükemmel",

@@ -26,7 +26,7 @@ interface RadarEntry {
 // Fixed radar picks per player type — kept as attribute keys, not positional
 // indices, so reordering the profile's attribute groups can't silently change
 // what the radar shows.
-const OUTFIELD_RADAR_KEYS: readonly PlayerAttributeKey[] = [
+export const OUTFIELD_RADAR_KEYS: readonly PlayerAttributeKey[] = [
   "pace",
   "shooting",
   "passing",
@@ -48,14 +48,27 @@ const GK_RADAR_KEYS: readonly PlayerAttributeKey[] = [
   "strength",
 ];
 
-function buildRadarData(
+// The radar keeps eight axes. Two of them stand for a skill the attributes now
+// split in two, so those axes read the mean of both halves: passing = short +
+// long passing, shooting = finishing in the box + long shots.
+const BLENDED_AXES: Partial<Record<PlayerAttributeKey, PlayerAttributeKey>> = {
+  passing: "long_passing",
+  shooting: "long_shots",
+};
+
+export function buildRadarData(
   player: PlayerData,
   keys: readonly PlayerAttributeKey[],
   translate: (key: string) => string,
 ): RadarEntry[] {
   return keys.map((key) => {
     const entry = getPlayerAttributeEntry(player, key, translate);
-    return { attr: entry.name, value: entry.value, fullMark: 100 };
+    const partner = BLENDED_AXES[key];
+    const value =
+      partner === undefined
+        ? entry.value
+        : Math.round((entry.value + player.attributes[partner]) / 2);
+    return { attr: entry.name, value, fullMark: 100 };
   });
 }
 

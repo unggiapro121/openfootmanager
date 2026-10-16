@@ -322,9 +322,11 @@ fn infer_weak_foot(
         return 5;
     }
 
+    // Tuned on the pre-split blends.
+    let blended = player.attributes.with_legacy_blends(is_keeper(player));
     let technical_balance = average(&[
-        player.attributes.passing,
-        player.attributes.dribbling,
+        blended.passing,
+        blended.dribbling,
         player.attributes.decisions,
         player.attributes.composure,
         player.attributes.teamwork,
@@ -339,8 +341,14 @@ fn infer_weak_foot(
     }
 }
 
+/// A keeper's aerial blend is his own (see `PlayerAttributes::legacy_blends`).
+fn is_keeper(player: &Player) -> bool {
+    player.natural_position.to_group_position() == Position::Goalkeeper
+}
+
 fn score_position(player: &Player, position: &Position) -> i32 {
-    let attrs = &player.attributes;
+    // The weights below were tuned on the pre-split blends.
+    let attrs = &player.attributes.with_legacy_blends(is_keeper(player));
     match position {
         Position::Goalkeeper => weighted_sum(&[
             (attrs.handling, 30),
@@ -551,6 +559,13 @@ mod tests {
             handling: 20,
             reflexes: 20,
             aerial: 48,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         };
         let mut player = make_player("legacy-rb", Position::Defender, attrs);
 
@@ -584,6 +599,13 @@ mod tests {
             handling: 20,
             reflexes: 20,
             aerial: 80,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         };
         let mut player = make_player("legacy-cb", Position::Defender, attrs);
 
@@ -622,6 +644,13 @@ mod tests {
             handling: 20,
             reflexes: 20,
             aerial: 60,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         };
         let mut player = make_player("p-lw", Position::Forward, attrs);
         // Simulate a save where the initial upgrade has already run.
@@ -671,6 +700,13 @@ mod tests {
             handling: 20,
             reflexes: 20,
             aerial: 46,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         };
         let mut player = make_player("p-mixed", Position::Defender, attrs);
         player.natural_position = Position::RightBack;
@@ -732,6 +768,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 46,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         right_back.team_id = Some("team-1".to_string());
@@ -759,6 +802,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 68,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         striker.team_id = Some("team-1".to_string());
@@ -800,6 +850,13 @@ mod tests {
             handling: 27,
             reflexes: 46,
             aerial: 76,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         }
     }
 

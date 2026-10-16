@@ -43,7 +43,18 @@ const PROJECTION_LAST_AGE: u32 = 34;
 /// to this age, which ignores the ceiling (`aging::technical_growth`).
 const TECHNICAL_GROWTH_LAST_AGE: u32 = 32;
 const EXPECTED_TECHNICAL_GROWTH: f64 = 0.5;
-const TECHNICAL_GROWTH_ATTRIBUTES: [&str; 4] = ["passing", "vision", "decisions", "composure"];
+/// Mirrors `aging::apply_attribute_curve`: the passing family and free kicks
+/// grow with passing. Only the keys the OVR table weighs add to the projection.
+const TECHNICAL_GROWTH_ATTRIBUTES: [&str; 8] = [
+    "passing",
+    "long_passing",
+    "crossing",
+    "curve",
+    "free_kick",
+    "vision",
+    "decisions",
+    "composure",
+];
 /// Seasonal aging: 1–3 pace lost a season from this age (`aging::veteran_pace_loss`).
 const PACE_LOSS_FIRST_AGE: u32 = 30;
 const EXPECTED_PACE_LOSS: f64 = 2.0;

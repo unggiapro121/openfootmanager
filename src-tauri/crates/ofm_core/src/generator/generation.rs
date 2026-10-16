@@ -16,6 +16,8 @@ use crate::player_rating::{generate_potential, refresh_player_derived};
 
 /// Compute a sensible alternate position based on primary position and attributes.
 fn compute_alternate_position(primary: &Position, attrs: &PlayerAttributes) -> Option<Position> {
+    // Thresholds tuned on the pre-split blends.
+    let attrs = &attrs.with_legacy_blends(primary.to_group_position() == Position::Goalkeeper);
     match primary.to_group_position() {
         Position::Goalkeeper => None,
         Position::Defender => {
@@ -492,7 +494,7 @@ pub(super) fn generate_random_player_from_def(
     // The body comes first: the attributes it shapes are drawn to follow it.
     let body = sample_physique(&position, None, None, rng);
     let links = BodyLinks::for_position(&position);
-    let attributes = PlayerAttributes {
+    let mut attributes = PlayerAttributes {
         pace: correlated_range(40, 95, body.z_height, links.pace, rng),
         stamina: rng.random_range(40..95),
         strength: correlated_range(40, 95, body.z_weight, links.strength, rng),
@@ -547,7 +549,19 @@ pub(super) fn generate_random_player_from_def(
             };
             correlated_range(lo, hi, body.z_height, links.aerial, rng)
         },
+        // Drawn as the old blends above, then split into these seven by
+        // `attribute_split` once the position is known. Zero means "not yet".
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     };
+    // After every draw above, so the split consumes no randomness and the
+    // generated world is the same one it always was.
+    crate::attribute_split::split_legacy_attributes(&mut attributes, &position);
 
     let current_year: u32 = opening_year;
     let contract_years = if age <= 21 {
@@ -880,6 +894,14 @@ pub(super) fn attributes_for_overall(
         } else {
             correlated_jitter(base - 10, 10, (30, 80), z_height, links.aerial, rng)
         },
+        // Split out of the blends above by the caller (`attribute_split`).
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 
@@ -983,6 +1005,21 @@ fn bound_attributes_by_ceiling(
         ] {
             *slot = slot.saturating_sub(overshoot).max(1);
         }
+        // Split attributes still at 0 are undeclared and derived later; only
+        // declared ones are bounded, and never down to 0.
+        for slot in [
+            &mut attributes.long_passing,
+            &mut attributes.crossing,
+            &mut attributes.curve,
+            &mut attributes.free_kick,
+            &mut attributes.long_shots,
+            &mut attributes.first_touch,
+            &mut attributes.heading,
+        ] {
+            if *slot != 0 {
+                *slot = slot.saturating_sub(overshoot).max(1);
+            }
+        }
     }
 }
 
@@ -1028,6 +1065,9 @@ pub(super) fn generate_player_from_def(
     if let (Some(ceiling), None) = (def.potential, def.attributes.as_ref()) {
         bound_attributes_by_ceiling(&mut attributes, &def.position, ceiling);
     }
+    // A package from before the 26-attribute split, and the spread invented
+    // above, carry the seven split attributes as 0: derive them.
+    crate::attribute_split::split_legacy_attributes(&mut attributes, &def.position);
 
     // Rolled whether or not a contract was authored, so a package that authors none
     // draws exactly the random numbers it always did and generates the same players.

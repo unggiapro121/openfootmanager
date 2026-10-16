@@ -232,6 +232,13 @@ mod tests {
                 handling: 50,
                 reflexes: 50,
                 aerial: 50,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         let staff = domain::staff::Staff::new(
@@ -336,6 +343,13 @@ mod tests {
                     handling: 20,
                     reflexes: 20,
                     aerial: 70,
+                    long_passing: 0,
+                    crossing: 0,
+                    curve: 0,
+                    free_kick: 0,
+                    long_shots: 0,
+                    first_touch: 0,
+                    heading: 0,
                 },
             );
             player.natural_position = position;

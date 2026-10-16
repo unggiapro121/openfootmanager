@@ -77,7 +77,23 @@ export { POSITION_COLOR } from "../../../lib/positionColors";
 // render the same attributes in the same order.
 export const PLAYER_ATTR_GROUPS = [
   { groupKey: "physical", keys: ["pace", "stamina", "strength", "agility"] },
-  { groupKey: "technical", keys: ["passing", "shooting", "tackling", "dribbling", "defending"] },
+  {
+    groupKey: "technical",
+    keys: [
+      "passing",
+      "long_passing",
+      "crossing",
+      "curve",
+      "free_kick",
+      "shooting",
+      "long_shots",
+      "dribbling",
+      "first_touch",
+      "heading",
+      "tackling",
+      "defending",
+    ],
+  },
   {
     groupKey: "mental",
     keys: [
@@ -94,6 +110,22 @@ export const PLAYER_ATTR_GROUPS = [
 ] as const;
 
 export type PlayerAttrKey = (typeof PLAYER_ATTR_GROUPS)[number]["keys"][number];
+
+// The attributes the backend can derive from the older ones. For these 0 is a
+// real value ("not authored"), so their sliders start at 0, not 1.
+const DERIVABLE_ATTR_KEYS: ReadonlySet<PlayerAttrKey> = new Set([
+  "long_passing",
+  "crossing",
+  "curve",
+  "free_kick",
+  "long_shots",
+  "heading",
+  "first_touch",
+]);
+
+export function attributeSliderMin(key: PlayerAttrKey): number {
+  return DERIVABLE_ATTR_KEYS.has(key) ? 0 : 1;
+}
 
 export const COMPETITION_TYPES: CompetitionType[] = [
   "League",
@@ -189,6 +221,15 @@ export function emptyAttributes(): PlayerAttributesDef {
     handling: 50,
     reflexes: 50,
     aerial: 50,
+    // 0 means "not authored": the backend derives these from passing, shooting,
+    // dribbling and aerial (and the position) when it loads the package.
+    long_passing: 0,
+    crossing: 0,
+    curve: 0,
+    free_kick: 0,
+    long_shots: 0,
+    heading: 0,
+    first_touch: 0,
   };
 }
 

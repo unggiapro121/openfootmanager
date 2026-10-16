@@ -49,10 +49,20 @@ const TRAINING_FOCUS_ICONS: Record<string, ReactNode> = {
 
 const TRAINING_FOCUS_ATTRS: Record<string, string[]> = {
   Physical: ["pace", "stamina", "strength", "agility"],
-  Technical: ["passing", "shooting", "dribbling"],
+  Technical: [
+    "passing",
+    "long_passing",
+    "crossing",
+    "curve",
+    "free_kick",
+    "shooting",
+    "long_shots",
+    "dribbling",
+    "first_touch",
+  ],
   Tactical: ["positioning", "vision", "decisions", "composure"],
-  Defending: ["tackling", "defending", "strength", "positioning"],
-  Attacking: ["shooting", "dribbling", "pace"],
+  Defending: ["tackling", "defending", "strength", "positioning", "heading"],
+  Attacking: ["shooting", "long_shots", "dribbling", "first_touch", "heading", "pace"],
   Recovery: [],
 };
 

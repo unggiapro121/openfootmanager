@@ -1212,12 +1212,15 @@ pub(crate) fn increase_attribute(value: &mut u8) -> u8 {
     }
 }
 pub(crate) fn improve_loan_player_attributes(player: &mut domain::player::Player) -> u8 {
+    use crate::attribute_split::{Blend, raise_blend};
+    // A blended attribute grows with the split attributes that came out of it,
+    // so a loan moves the pre-split blend by the point it always did.
     let attributes = &mut player.attributes;
     match player.natural_position.to_group_position() {
         Position::Goalkeeper => {
             increase_attribute(&mut attributes.handling)
                 + increase_attribute(&mut attributes.reflexes)
-                + increase_attribute(&mut attributes.aerial)
+                + raise_blend(attributes, Blend::Aerial, 1, true)
         }
         Position::Defender => {
             increase_attribute(&mut attributes.defending)
@@ -1225,13 +1228,13 @@ pub(crate) fn improve_loan_player_attributes(player: &mut domain::player::Player
                 + increase_attribute(&mut attributes.positioning)
         }
         Position::Midfielder => {
-            increase_attribute(&mut attributes.passing)
+            raise_blend(attributes, Blend::Passing, 1, false)
                 + increase_attribute(&mut attributes.vision)
                 + increase_attribute(&mut attributes.decisions)
         }
         Position::Forward => {
-            increase_attribute(&mut attributes.shooting)
-                + increase_attribute(&mut attributes.dribbling)
+            raise_blend(attributes, Blend::Shooting, 1, false)
+                + raise_blend(attributes, Blend::Dribbling, 1, false)
                 + increase_attribute(&mut attributes.positioning)
         }
         _ => 0,

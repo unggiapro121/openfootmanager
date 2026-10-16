@@ -541,7 +541,7 @@
       "stamina": "耐力",
       "strength": "力量",
       "agility": "敏捷",
-      "passing": "传球",
+      "passing": "短传",
       "shooting": "射门",
       "tackling": "抢断",
       "dribbling": "盘带",
@@ -555,7 +555,14 @@
       "leadership": "领导力",
       "handling": "扑接能力",
       "reflexes": "反应",
-      "aerial": "制空"
+      "aerial": "制空",
+      "long_passing": "长传",
+      "crossing": "传中",
+      "curve": "弧线",
+      "free_kick": "任意球",
+      "long_shots": "远射",
+      "heading": "头球",
+      "first_touch": "停球"
     },
     "moods": {
       "excellent": "极佳",

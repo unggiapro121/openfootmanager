@@ -458,21 +458,50 @@ pub fn attribute_value(attrs: &PlayerAttributes, key: &str) -> u8 {
         "handling" => attrs.handling,
         "reflexes" => attrs.reflexes,
         "aerial" => attrs.aerial,
+        "long_passing" => attrs.long_passing,
+        "crossing" => attrs.crossing,
+        "curve" => attrs.curve,
+        "free_kick" => attrs.free_kick,
+        "long_shots" => attrs.long_shots,
+        "first_touch" => attrs.first_touch,
+        "heading" => attrs.heading,
         _ => 0,
     }
 }
 
+/// The value the OVR table weighs for `key`. The table in `attribute_weights`
+/// was tuned on the pre-split blends, so `passing`, `shooting`, `dribbling` and
+/// `aerial` read their legacy blends; every other key reads the field. When the
+/// table moves onto the split attributes (phase 2, P1.4) this reads fields only.
+fn rated_value(attrs: &PlayerAttributes, key: &str, position: &Position) -> u8 {
+    let blends = attrs.legacy_blends(matches!(position, Position::Goalkeeper));
+    match key {
+        "passing" => blends.passing,
+        "shooting" => blends.shooting,
+        "dribbling" => blends.dribbling,
+        "aerial" => blends.aerial,
+        _ => attribute_value(attrs, key),
+    }
+}
+
 /// Every attribute a player has, by field name, in the profile's order.
-pub const ATTRIBUTE_KEYS: [&str; 19] = [
+pub const ATTRIBUTE_KEYS: [&str; 26] = [
     "pace",
     "stamina",
     "strength",
     "agility",
     "aerial",
     "passing",
+    "long_passing",
+    "crossing",
+    "curve",
+    "free_kick",
     "shooting",
+    "long_shots",
     "tackling",
     "dribbling",
+    "first_touch",
+    "heading",
     "defending",
     "positioning",
     "vision",
@@ -488,12 +517,14 @@ pub const ATTRIBUTE_KEYS: [&str; 19] = [
 fn weighted_score(attrs: &PlayerAttributes, position: &Position) -> f64 {
     let values: Vec<(u8, i32)> = attribute_weights(position)
         .iter()
-        .map(|(key, weight)| (attribute_value(attrs, key), *weight))
+        .map(|(key, weight)| (rated_value(attrs, key, position), *weight))
         .collect();
     weighted_average(&values)
 }
 
 fn critical_penalty(attrs: &PlayerAttributes, position: &Position) -> f64 {
+    let rated = |key: &str| rated_value(attrs, key, position);
+    let (passing, dribbling, shooting) = (rated("passing"), rated("dribbling"), rated("shooting"));
     let critical_min = match position {
         Position::Goalkeeper => attrs.handling.min(attrs.reflexes).min(attrs.positioning),
         Position::RightBack | Position::LeftBack => {
@@ -503,16 +534,14 @@ fn critical_penalty(attrs: &PlayerAttributes, position: &Position) -> f64 {
         Position::RightWingBack | Position::LeftWingBack => {
             attrs.pace.min(attrs.stamina).min(attrs.tackling)
         }
-        Position::DefensiveMidfielder => attrs.tackling.min(attrs.positioning).min(attrs.passing),
-        Position::CentralMidfielder => attrs.passing.min(attrs.vision).min(attrs.decisions),
-        Position::AttackingMidfielder => attrs.vision.min(attrs.passing).min(attrs.dribbling),
+        Position::DefensiveMidfielder => attrs.tackling.min(attrs.positioning).min(passing),
+        Position::CentralMidfielder => passing.min(attrs.vision).min(attrs.decisions),
+        Position::AttackingMidfielder => attrs.vision.min(passing).min(dribbling),
         Position::RightMidfielder | Position::LeftMidfielder => {
-            attrs.pace.min(attrs.passing).min(attrs.stamina)
+            attrs.pace.min(passing).min(attrs.stamina)
         }
-        Position::RightWinger | Position::LeftWinger => {
-            attrs.pace.min(attrs.dribbling).min(attrs.passing)
-        }
-        Position::Striker => attrs.shooting.min(attrs.positioning).min(attrs.decisions),
+        Position::RightWinger | Position::LeftWinger => attrs.pace.min(dribbling).min(passing),
+        Position::Striker => shooting.min(attrs.positioning).min(attrs.decisions),
         Position::Defender | Position::Midfielder | Position::Forward => 50,
     };
 
@@ -688,6 +717,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 70,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         )
     }

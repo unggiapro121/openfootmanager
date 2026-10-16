@@ -39,6 +39,13 @@ fn default_attrs() -> PlayerAttributes {
         handling: 30,
         reflexes: 30,
         aerial: 60,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 
@@ -1403,6 +1410,13 @@ fn unfit_players_get_more_training_injuries() {
                 handling: 30,
                 reflexes: 30,
                 aerial: 60,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         player.team_id = Some("team1".to_string());

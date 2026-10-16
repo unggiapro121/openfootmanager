@@ -121,6 +121,25 @@ pub struct PlayerData {
     #[serde(default = "default_engine_attr")]
     pub aerial: u8,
 
+    // The seven attributes `ofm_core` splits out of passing, shooting, dribbling
+    // and aerial. Carried now so later phases need not change this struct; no
+    // phase reads them yet. Until each mechanism moves over, the four fields
+    // above keep the old blended meaning (the bridge rebuilds them).
+    #[serde(default)]
+    pub long_passing: u8,
+    #[serde(default)]
+    pub crossing: u8,
+    #[serde(default)]
+    pub curve: u8,
+    #[serde(default)]
+    pub free_kick: u8,
+    #[serde(default)]
+    pub long_shots: u8,
+    #[serde(default)]
+    pub first_touch: u8,
+    #[serde(default)]
+    pub heading: u8,
+
     /// Height in cm; 0 means not known and counts as average in the air.
     #[serde(default)]
     pub height_cm: u16,

@@ -541,7 +541,7 @@
       "stamina": "Resistência",
       "strength": "Força",
       "agility": "Agilidade",
-      "passing": "Passe",
+      "passing": "Passe curto",
       "shooting": "Remate",
       "tackling": "Desarme",
       "dribbling": "Drible",
@@ -555,7 +555,14 @@
       "leadership": "Liderança",
       "handling": "Enquadramento",
       "reflexes": "Reflexos",
-      "aerial": "Jogo Aéreo"
+      "aerial": "Jogo Aéreo",
+      "long_passing": "Passe longo",
+      "crossing": "Cruzamentos",
+      "curve": "Efeito",
+      "free_kick": "Livres",
+      "long_shots": "Remates de longe",
+      "heading": "Cabeceamento",
+      "first_touch": "Controlo de bola"
     },
     "moods": {
       "excellent": "Excelente",

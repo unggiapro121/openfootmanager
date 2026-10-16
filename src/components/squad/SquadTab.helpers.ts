@@ -484,13 +484,25 @@ export function getPlayStyleFit(
     }
     switch (playStyle) {
       case "Attacking":
-        return averageAttributes(player, ["shooting", "dribbling", "pace", "passing"]);
+        return averageAttributes(player, ["shooting", "dribbling", "pace", "passing", "crossing"]);
       case "Defensive":
         return averageAttributes(player, ["defending", "tackling", "positioning", "strength"]);
       case "Possession":
-        return averageAttributes(player, ["passing", "vision", "decisions", "composure"]);
+        return averageAttributes(player, [
+          "passing",
+          "first_touch",
+          "vision",
+          "decisions",
+          "composure",
+        ]);
       case "Counter":
-        return averageAttributes(player, ["pace", "dribbling", "passing", "positioning"]);
+        return averageAttributes(player, [
+          "pace",
+          "dribbling",
+          "passing",
+          "long_passing",
+          "positioning",
+        ]);
       case "HighPress":
         return averageAttributes(player, ["stamina", "aggression", "teamwork", "pace", "tackling"]);
       default:

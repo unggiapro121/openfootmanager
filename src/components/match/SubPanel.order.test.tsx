@@ -39,6 +39,13 @@ const player = (id: string, position: string, name = id): EnginePlayerData =>
     handling: 20,
     reflexes: 20,
     aerial: 60,
+    long_passing: 70,
+    crossing: 70,
+    curve: 70,
+    free_kick: 70,
+    long_shots: 70,
+    heading: 60,
+    first_touch: 70,
     traits: [],
     role: "Standard",
   }) as EnginePlayerData;

@@ -1,7 +1,8 @@
+use crate::attribute_split::Blend;
 use crate::contracts::{iso, record_movement};
 use crate::game::Game;
 use chrono::{Datelike, NaiveDate};
-use domain::player::{Player, PlayerMovementEntry, PlayerMovementKind};
+use domain::player::{Player, PlayerMovementEntry, PlayerMovementKind, Position};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
@@ -60,7 +61,14 @@ fn apply_attribute_curve(player: &mut Player, age: i32, season: u32) {
 
     let growth = technical_growth(&player.id, age, season);
     if growth > 0 {
-        increase_attribute(&mut player.attributes.passing, growth);
+        // Passing grows with age as a family (short and long passing, crossing,
+        // curve), so the pre-split blend grows exactly as it did; free kicks,
+        // the other late-maturing technique, grow with it.
+        let is_gk = player.natural_position.to_group_position() == Position::Goalkeeper;
+        crate::attribute_split::raise_blend(&mut player.attributes, Blend::Passing, growth, is_gk);
+        if player.attributes.free_kick != 0 {
+            increase_attribute(&mut player.attributes.free_kick, growth);
+        }
         increase_attribute(&mut player.attributes.vision, growth);
         increase_attribute(&mut player.attributes.decisions, growth);
         increase_attribute(&mut player.attributes.composure, growth);
@@ -197,6 +205,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 70,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         player.team_id = Some("team1".to_string());

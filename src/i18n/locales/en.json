@@ -545,7 +545,7 @@
       "stamina": "Stamina",
       "strength": "Strength",
       "agility": "Agility",
-      "passing": "Passing",
+      "passing": "Short Passing",
       "shooting": "Shooting",
       "tackling": "Tackling",
       "dribbling": "Dribbling",
@@ -559,7 +559,14 @@
       "leadership": "Leadership",
       "handling": "Handling",
       "reflexes": "Reflexes",
-      "aerial": "Aerial"
+      "aerial": "Aerial",
+      "long_passing": "Long Passing",
+      "crossing": "Crossing",
+      "curve": "Curve",
+      "free_kick": "Free Kicks",
+      "long_shots": "Long Shots",
+      "heading": "Heading",
+      "first_touch": "First Touch"
     },
     "moods": {
       "excellent": "Excellent",

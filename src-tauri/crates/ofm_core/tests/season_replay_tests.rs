@@ -46,6 +46,13 @@ fn attributes(goalkeeper: bool) -> PlayerAttributes {
         handling: keeping,
         reflexes: keeping,
         aerial: 60,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 

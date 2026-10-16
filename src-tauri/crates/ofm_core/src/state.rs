@@ -197,6 +197,13 @@ mod tests {
             handling: if is_gk { 75 } else { 20 },
             reflexes: if is_gk { 75 } else { 30 },
             aerial: 60,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         }
     }
 

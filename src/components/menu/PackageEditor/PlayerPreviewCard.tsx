@@ -46,6 +46,13 @@ function estimateAttributesFromOvr(overall: number, position: Position): PlayerA
     handling: isGK ? b : 20,
     reflexes: isGK ? b : 30,
     aerial: isGK ? b : isDef ? b : Math.max(30, b - 10),
+    long_passing: isGK ? Math.max(30, b - 10) : b,
+    crossing: isGK ? 30 : b,
+    curve: isGK ? 30 : b,
+    free_kick: isGK ? 30 : b,
+    long_shots: isGK ? 30 : b,
+    heading: isGK ? 30 : isDef || isFwd ? b : Math.max(30, b - 10),
+    first_touch: isGK ? 30 : b,
   };
 }
 
@@ -163,21 +170,28 @@ export function PlayerPreviewCard({
                         | number
                         | undefined;
                       if (val == null) return null;
-                      const label = t(`common.attributes.${key}`).slice(0, 3).toUpperCase();
+                      // Full names: a three-letter cut made "Long Passing" and
+                      // "Long Shots" both read "LON".
+                      const label = t(`common.attributes.${key}`);
                       return (
-                        <div key={key} className="flex items-center gap-1">
-                          <span className="w-7 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 flex-shrink-0">
-                            {label}
-                          </span>
-                          <div className="flex-1 h-1 bg-gray-100 dark:bg-navy-600 rounded-full overflow-hidden">
+                        <div key={key} className="flex flex-col gap-0.5 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span
+                              title={label}
+                              className="truncate text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500"
+                            >
+                              {label}
+                            </span>
+                            <span className="text-[10px] font-bold tabular-nums text-gray-700 dark:text-gray-200 flex-shrink-0">
+                              {val}
+                            </span>
+                          </div>
+                          <div className="h-1 bg-gray-100 dark:bg-navy-600 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${attrColor(val)}`}
                               style={{ width: `${(val / 99) * 100}%` }}
                             />
                           </div>
-                          <span className="w-5 text-right text-[10px] font-bold tabular-nums text-gray-700 dark:text-gray-200 flex-shrink-0">
-                            {val}
-                          </span>
                         </div>
                       );
                     })}

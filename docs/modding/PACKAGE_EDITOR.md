@@ -151,7 +151,7 @@ Each player has the following fields:
 | **Age** | Used when there is no date of birth: the player is this old on the day a career opens, whatever year that is. The form writes both as typed and does not pick between them. |
 | **Photo** | Optional player photo asset, bundled into the package. |
 | **Overall** | Single ability rating (1–99). The engine generates a realistic attribute spread from this. |
-| **Attributes** | Toggle to switch from Overall mode to explicit attribute control. Shows 19 sliders grouped into Physical, Technical, Mental, and Goalkeeper categories. |
+| **Attributes** | Toggle to switch from Overall mode to explicit attribute control. Shows 26 sliders grouped into Physical, Technical, Mental, and Goalkeeper categories. The seven split technical sliders (long passing, crossing, curve, free kicks, long shots, first touch, heading) go down to 0, which means "derive it from the old blend". |
 | **Potential** | Career ceiling (1–99). Leave it blank and the engine rolls one from the player's ability and age. See [`potential`](SCHEMA_REFERENCE.md#potential--the-career-ceiling) for what it does. |
 | **Contract start / end** | Dates `YYYY-MM-DD`. An end is kept exactly as written; a start that is left out is given when a career opens. See [Contracts](SCHEMA_REFERENCE.md#contracts). |
 | **Contract length** | Years, as an alternative to an end date (give one or the other, not both). Counted from the start date if there is one, otherwise from the year the career opens, so the player is never already out of contract. |

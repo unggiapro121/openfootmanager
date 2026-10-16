@@ -968,6 +968,13 @@ mod tests {
                 handling: 20,
                 reflexes: 25,
                 aerial: 40,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
 
@@ -1173,6 +1180,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 70,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         player.natural_position = position;
@@ -1262,6 +1276,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 70,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         player.team_id = Some("team-001".to_string());
@@ -1549,6 +1570,13 @@ mod tests {
             handling: value,
             reflexes: value,
             aerial: value,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         }
     }
 

@@ -72,6 +72,11 @@ fn infer_world_regions(teams: &[domain::team::Team]) -> Vec<WorldRegionDefinitio
 }
 
 fn normalize_world(mut world: WorldData) -> WorldData {
+    // A world file from before the 26-attribute split carries the seven split
+    // attributes as 0; a player already split is left as is.
+    for player in &mut world.players {
+        crate::attribute_split::split_legacy_attributes(&mut player.attributes, &player.position);
+    }
     crate::football_identity::upgrade_world_football_identities(
         &mut world.teams,
         &mut world.players,
