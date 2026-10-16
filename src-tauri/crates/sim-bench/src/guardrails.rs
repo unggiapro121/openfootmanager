@@ -116,7 +116,9 @@ fn goals_per_game(result: &SweepResult, stage: Stage) -> Check {
     let value = result.stats.gpg();
     let (lo, hi) = match stage {
         Stage::LanCan => (1.5, 4.5),
-        Stage::Gd5 => (2.0, 2.5),
+        // Where the 2024-25 leagues sit: 2.69 across 18, 2.83 in the top five
+        // (fm-document/comon/sim-bench/reference/).
+        Stage::Gd5 => (2.6, 2.9),
     };
     Check {
         name: "bàn/trận",
@@ -152,7 +154,8 @@ fn monotone_gap_curve(result: &SweepResult) -> Check {
 }
 
 /// At gap 0 the two sides are mirror images and home alternates, so the win
-/// and loss rates must agree. At GĐ5 the split must also be near 40/20/40.
+/// and loss rates must agree. At GĐ5 the split must also be near 35/30/35:
+/// two even sides draw about 30% of the time in real football.
 fn zero_gap_symmetry(result: &SweepResult, stage: Stage) -> Check {
     let Some(row) = result.rows.iter().find(|r| r.gap == 0) else {
         return Check {
@@ -175,10 +178,10 @@ fn zero_gap_symmetry(result: &SweepResult, stage: Stage) -> Check {
         ),
         Stage::Gd5 => {
             let near = |v: f64, target: f64| (v - target).abs() <= 3.0;
-            let ok = asymmetry <= 3.0 && near(win, 40.0) && near(draw, 20.0) && near(loss, 40.0);
+            let ok = asymmetry <= 3.0 && near(win, 35.0) && near(draw, 30.0) && near(loss, 35.0);
             (
                 if ok { Verdict::Pass } else { Verdict::Fail },
-                format!("≤ 3 và 40/20/40 ±3 (đang {win:.1}/{draw:.1}/{loss:.1})"),
+                format!("≤ 3 và 35/30/35 ±3 (đang {win:.1}/{draw:.1}/{loss:.1})"),
             )
         }
     };
@@ -231,15 +234,18 @@ fn defender_aerial_win(result: &SweepResult, stage: Stage) -> Check {
     let duels = &result.stats.duels;
     let total = (duels.aerial_won + duels.aerial_lost).max(1);
     let value = duels.aerial_lost as f64 / total as f64 * 100.0;
-    let (lo, hi) = match stage {
-        Stage::LanCan => (54.0, 62.0),
-        Stage::Gd5 => (56.0, 59.0),
+    // Only measured in the loose band until P2.2 (the two-stage aerial duel)
+    // reworks the contest: staging sits at 48%, so a gate here would fail every
+    // GĐ1 change for something it does not touch. Judge it at 54–62 from P2.2.
+    let (verdict, band) = match stage {
+        Stage::LanCan => (Verdict::Measure, "đo tới P2.2 (sau đó 54–62)".to_string()),
+        Stage::Gd5 => (in_band(value, 56.0, 59.0), "56–59".to_string()),
     };
     Check {
         name: "hậu vệ thắng không chiến (%)",
         value: Some(value),
-        band: format!("{lo}–{hi}"),
-        verdict: in_band(value, lo, hi),
+        band,
+        verdict,
     }
 }
 
@@ -364,12 +370,15 @@ mod tests {
 
     /// Given an even mirror split of 30/40/30,
     /// when gap 0 is judged at each stage,
-    /// then the loose band passes it and GĐ5 fails it for missing 40/20/40.
+    /// then the loose band passes it and GĐ5 fails it for missing 35/30/35,
+    /// the split real even matches show (about 30% draws).
     #[test]
-    fn gd5_also_asks_for_forty_twenty_forty() {
+    fn gd5_also_asks_for_thirty_five_thirty_thirty_five() {
         let r = result(vec![row(0, 600, 800, 600)]);
         assert_eq!(zero_gap_symmetry(&r, Stage::LanCan).verdict, Verdict::Pass);
         assert_eq!(zero_gap_symmetry(&r, Stage::Gd5).verdict, Verdict::Fail);
+        let real = result(vec![row(0, 700, 600, 700)]);
+        assert_eq!(zero_gap_symmetry(&real, Stage::Gd5).verdict, Verdict::Pass);
     }
 
     /// Given a cross-goal share of 20%,
@@ -397,17 +406,31 @@ mod tests {
         assert_eq!(verdict(&gd5, "bàn từ sút xa"), Verdict::Fail);
     }
 
-    /// Given three goals a game and defenders winning 58% in the air,
-    /// when both are judged,
-    /// then both sit inside the loose band.
+    /// Given three goals a game,
+    /// when they are judged,
+    /// then they pass the loose band and fail GĐ5's 2.6–2.9, which is where the
+    /// 2024-25 leagues sit (2.69 across 18, 2.83 in the top five).
     #[test]
-    fn goals_and_aerial_duels_are_judged_against_their_bands() {
-        let r = result(vec![row(0, 800, 400, 800)]);
+    fn goals_are_judged_against_their_bands() {
+        let mut r = result(vec![row(0, 800, 400, 800)]);
         assert_eq!(goals_per_game(&r, Stage::LanCan).verdict, Verdict::Pass);
         assert_eq!(goals_per_game(&r, Stage::Gd5).verdict, Verdict::Fail);
+        r.stats.total_goals = 275;
+        assert_eq!(goals_per_game(&r, Stage::Gd5).verdict, Verdict::Pass);
+    }
+
+    /// Given defenders winning 48% in the air, as on staging before P2.2,
+    /// when the aerial row is judged,
+    /// then the loose band only measures it and GĐ5 fails it.
+    #[test]
+    fn aerial_duels_are_only_measured_until_the_two_stage_aerial_duel() {
+        let mut r = result(vec![row(0, 800, 400, 800)]);
+        r.stats.duels.aerial_won = 52;
+        r.stats.duels.aerial_lost = 48;
         assert_eq!(
             defender_aerial_win(&r, Stage::LanCan).verdict,
-            Verdict::Pass
+            Verdict::Measure
         );
+        assert_eq!(defender_aerial_win(&r, Stage::Gd5).verdict, Verdict::Fail);
     }
 }
