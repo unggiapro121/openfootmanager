@@ -256,7 +256,7 @@ Traits are computed from a player's attributes and position (see `domain::player
 |---|---|---|
 | **Shooting** | Sharpshooter (+8%), CoolHead (+4%), CompleteForward (+5%) | |
 | **Dribbling** | Dribbler (+8%), Speedster (+4%), Agile (+4%) | |
-| **Passing** | Playmaker (+8%), Visionary (+5%), SetPieceSpecialist (+3%) | |
+| **Passing** | Playmaker (+8%), Visionary (+5%), DeadBallSpecialist (+3%) | |
 | **Tackling** | BallWinner (+8%), Rock (+5%), Tank (+4%) | |
 | **Goalkeeping** | SafeHands (+8%), CatReflexes (+6%), AerialDominance (+4%) | |
 | **Foul** | HotHead (+25% foul chance), CoolHead (−30% foul chance) | |
@@ -463,7 +463,7 @@ The `ofm_core/turn/` bridge is the only place the conversion is allowed to live 
    with too few fit players to fill the formation makes the shortfall up from its injured
    list rather than fielding a short side — the engine has no forfeit, and an empty side
    would crash it. The builder also maps positions, play styles, roles, the nine tactical
-   dials, and all 19 attributes + traits.
+   dials, and all 26 attributes + traits.
 2. **`simulate_matchday()`** — for each fixture on a match day, opens a `LiveMatchSession`
    through `create_live_match()` and runs it to completion. The bench comes with it, so an
    unwatched match has substitutions and tactical changes like any other; `user_side` is

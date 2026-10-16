@@ -336,9 +336,15 @@ The head coach is the club's `Manager` — the player's own character, or an AI 
 
 ## Player Traits
 
-Traits are automatically computed from a player's attributes and position by `compute_traits()` in `domain/player.rs`. They are recalculated whenever a `Player` is created via `Player::new()`.
+Traits are automatically computed from a player's attributes and position by `compute_traits()` in `domain/player.rs`. They are recalculated whenever a `Player` is created via `Player::new()`, and every training day by `refresh_player_derived`.
 
-### 20 Defined Traits
+The original traits read the pre-split blends of passing, shooting, dribbling and aerial
+(`PlayerAttributes::legacy_blends`), on which their match effects were tuned; the split-technique
+traits read the split attributes themselves and have no match effect yet (phase 2 adds them with
+the mechanics). One trait is a habit, not a threshold: `ShootsFromDistance` is drawn once, when the
+player enters the world, by `ofm_core::assigned_traits`, and kept by every recompute.
+
+### Defined Traits
 
 **Physical:**
 | Trait | Requirement |
@@ -371,14 +377,30 @@ Traits are automatically computed from a player's attributes and position by `co
 |-------|------------|
 | SafeHands | handling ≥ 85 (GK only) |
 | CatReflexes | reflexes ≥ 85 (GK only) |
-| AerialDominance | aerial ≥ 85 |
+| AerialDominance | outfield: aerial ≥ 88, strength ≥ 80; keeper: aerial ≥ 85 |
 
 **Special/Combo:**
 | Trait | Requirement |
 |-------|------------|
 | CompleteForward | Forward: shooting ≥ 75, dribbling ≥ 75, pace ≥ 70, strength ≥ 70 |
 | Engine | Midfielder: stamina ≥ 85, pace ≥ 70, teamwork ≥ 75 |
-| SetPieceSpecialist | passing ≥ 80, shooting ≥ 75, vision ≥ 75 |
+
+**Split technique (phase 2):**
+| Trait | Requirement |
+|-------|------------|
+| LongPasser | long_passing ≥ 80, vision ≥ 70 |
+| Crosser | crossing ≥ 80 |
+| Curler | curve ≥ 80, and shooting ≥ 70 or long_shots ≥ 70 |
+| LongShooter | long_shots ≥ 80 |
+| PowerHeader | heading ≥ 80, aerial ≥ 70 |
+| PressResistant | first_touch ≥ 80, composure ≥ 75 |
+| DeadBallSpecialist | free_kick ≥ 80, curve ≥ 75 (replaces SetPieceSpecialist) |
+| TikiTaka | passing ≥ 85, teamwork ≥ 75 |
+
+**Habit (assigned once):**
+| Trait | Chance |
+|-------|------------|
+| ShootsFromDistance | logistic in long shots against the position's norm, OVR and wonderkid status, capped at 60%; never a keeper (see `ofm_core/src/assigned_traits.rs`) |
 
 ### Trait Effects in Simulation
 
