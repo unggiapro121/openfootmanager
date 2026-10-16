@@ -11,9 +11,8 @@ pub struct MatchEvent {
     /// ID of the primary player involved (scorer, passer, fouler, etc.).
     pub player_id: Option<String>,
     /// ID of a secondary player: the assist provider of a goal, the fouled
-    /// player, the player substituted off. The live engine also names the man
-    /// a cross is aimed at and the keeper who made a save; the instant engine
-    /// leaves those two `None`.
+    /// player, the player substituted off, the man a cross is aimed at and the
+    /// keeper who made a save.
     pub secondary_player_id: Option<String>,
     /// Optional engine-derived qualifier for richer commentary. `None` for
     /// events that carry no extra colour.

@@ -9,7 +9,7 @@
 use super::*;
 
 // ---------------------------------------------------------------------------
-// Instant simulation fields an eleven, not a squad list
+// An unwatched fixture fields an eleven, not a squad list
 //
 // Every fixture the player was not watching used to go through
 // `build_engine_team`, which handed the engine every player on the books —
@@ -223,7 +223,7 @@ fn a_club_in_a_dormant_competition_still_recovers_on_its_matchday() {
 // A match nobody watches is still a match somebody manages
 //
 // Every fixture in the world bar the one the player sat through was resolved by
-// `engine::simulate`: a one-shot with no command loop, so eleven players a side
+// the old instant engine: a one-shot with no command loop, so eleven players a side
 // played ninety minutes and the bench never moved. The manager the AI slices
 // taught to read a game only ever managed one club a matchday.
 // ---------------------------------------------------------------------------

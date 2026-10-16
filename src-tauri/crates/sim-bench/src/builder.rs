@@ -48,48 +48,6 @@ pub fn build_team_with_tactics(
     }
 }
 
-/// Build a full 22-man squad: a starting XI plus a same-shaped bench.
-///
-/// Real squads carry a second choice for every slot, which is exactly what the
-/// instant-simulation path currently hands to the engine wholesale. The A/B mode
-/// needs both halves separately so it can ask what each path does with them.
-/// Bench players are `bench_ovr_penalty` points weaker so rotation has a cost.
-pub fn build_squad_with_bench(
-    id: &str,
-    name: &str,
-    avg_ovr: u8,
-    bench_ovr_penalty: u8,
-    play_style: PlayStyle,
-    formation: &str,
-    rng: &mut impl Rng,
-) -> (TeamData, Vec<PlayerData>) {
-    let (n_def, n_mid, n_fwd, used_fallback) = parse_formation(formation);
-    let shape = (n_def, n_mid, n_fwd);
-    let starters = build_group(id, "", avg_ovr, shape, rng);
-    let bench = build_group(
-        id,
-        "sub",
-        avg_ovr.saturating_sub(bench_ovr_penalty),
-        shape,
-        rng,
-    );
-
-    let team = TeamData {
-        id: id.to_string(),
-        name: name.to_string(),
-        formation: if used_fallback {
-            "4-4-2".to_string()
-        } else {
-            formation.to_string()
-        },
-        play_style,
-        coach: engine::CoachMastery::default(),
-        tactics: TacticsConfig::default(),
-        players: starters,
-    };
-    (team, bench)
-}
-
 /// One GK plus the outfield shape, ids namespaced by `tag` so a squad's starters
 /// and its bench never collide. `tag` is empty for starters, which keeps their
 /// ids byte-identical to what the single-XI builders have always produced — the

@@ -3,8 +3,8 @@
 //! A live-match day is not `process_day`: the user's own fixture is played separately, and the rest
 //! of the day happens around it. That sequence used to live only in the Tauri application layer, in
 //! two near-copies — and [`crate::turn::finish_live_match_day_with_capture`] is only its *tail*.
-//! Driving the tail alone leaves the user's fixture `Scheduled`, so the sweep plays it through the
-//! batch engine instead of the live one, which is a path no real caller takes.
+//! Driving the tail alone leaves the user's fixture `Scheduled`, so the sweep plays it as an
+//! unwatched fixture, with the AI managing the user's side, which is a path no real caller takes.
 //!
 //! So it lives here, where the season harness and the application layer can both call it rather
 //! than each keeping their own version. #608 is what that costs: two copies of a day's steps

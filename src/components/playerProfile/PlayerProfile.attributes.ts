@@ -31,7 +31,7 @@ const ATTRIBUTE_META = {
   strength: "physical",
   agility: "physical",
   // Aerial belongs with Physical — engine uses it for header duels for every
-  // player, not just GK claims (see engine/resolution.rs & zone_resolution.rs).
+  // player, not just GK claims (see engine/duel.rs and live_match/zone_resolution.rs).
   aerial: "physical",
 
   // Technical

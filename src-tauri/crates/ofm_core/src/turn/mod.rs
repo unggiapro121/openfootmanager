@@ -508,7 +508,7 @@ where
     // One match path. Every fixture in an active competition is played by the
     // engine the player watches: eleven starters, a real bench, and a manager on
     // both touchlines reading the game at the same checkpoints. It used to be
-    // `engine::simulate`, a one-shot with no command loop — so no substitution
+    // the old instant engine, a one-shot with no command loop — so no substitution
     // and no tactical change was possible in any match but the player's own.
     // Extra time, and the engine's own shootout, follow the one knockout
     // predicate inside `play_unwatched_fixture`.

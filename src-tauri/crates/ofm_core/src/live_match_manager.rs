@@ -1,7 +1,7 @@
 // Squad selection and the domain → engine conversion live in `turn::squad`,
 // which is where the crate's boundary rule puts them: `engine` has no knowledge
 // of `domain`, and `ofm_core/turn/` is the single bridge between the two. The
-// live path and the instant path both build their sides from there, so there is
+// watched and unwatched paths both build their sides from there, so there is
 // one answer to "who is playing" rather than one per code path.
 use crate::ai_roles::role_for_position;
 use crate::player_rating::{effective_rating_for_assignment, formation_slots};

@@ -1,4 +1,3 @@
-mod ai_path;
 mod builder;
 mod html;
 mod stats;
@@ -9,9 +8,9 @@ use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 use clap::{Parser, ValueEnum};
 use colored::Colorize;
-use engine::{simulate_with_rng, LiveMatchState, MatchConfig, MatchReport, PlayStyle, TeamData};
+use engine::{simulate_with_rng, MatchConfig, PlayStyle};
 use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
+use rand::SeedableRng;
 
 use builder::{build_team, build_team_with_tactics};
 use stats::BenchStats;
@@ -84,22 +83,6 @@ struct Cli {
     #[arg(long)]
     phase_sweep: bool,
 
-    /// AI-path A/B: run the same 22-man squads through the instant path (whole
-    /// squad, no manager) and the live path (XI + bench, `ai_decide` on both
-    /// sides), and tabulate who actually played, what the managers did, and how
-    /// much condition the production wear formula would charge for it.
-    ///
-    /// Both sides are mirrors: Balanced, on the home rating and formation.
-    /// `--home-style`, `--away-style`, `--away-rating` and `--away-formation` do
-    /// not apply, because an A/B of two paths wants the matchup held fixed.
-    #[arg(long)]
-    ai_path_ab: bool,
-
-    /// Which engine plays the matches: `instant` (the default, and what the
-    /// sweeps use) or `live`, the one every real fixture goes through.
-    #[arg(long, value_enum, default_value_t = EngineArg::Instant)]
-    engine: EngineArg,
-
     /// Rating-gap sweep: for gaps of 0, 5, 10, 15 and 20 OVR around
     /// `--away-rating`, play `--games` matches (the stronger side at home in
     /// half of them) and tabulate how often the stronger side wins, draws and
@@ -131,44 +114,6 @@ struct Cli {
 
     #[arg(long, help = "Injury probability per foul (default 0.03)")]
     injury_probability: Option<f64>,
-}
-
-#[derive(Clone, Copy, ValueEnum, Debug, PartialEq, Eq)]
-enum EngineArg {
-    Instant,
-    Live,
-}
-
-/// Play one match through the chosen engine. The live engine runs without
-/// benches or managers: the same XIs, minute by minute, to the final whistle.
-fn play_match<R: Rng>(
-    engine: EngineArg,
-    home: &TeamData,
-    away: &TeamData,
-    config: &MatchConfig,
-    rng: &mut R,
-) -> MatchReport {
-    match engine {
-        EngineArg::Instant => simulate_with_rng(home, away, config, rng),
-        EngineArg::Live => {
-            let mut state = LiveMatchState::new(
-                home.clone(),
-                away.clone(),
-                config.clone(),
-                Vec::new(),
-                Vec::new(),
-                false,
-            );
-            // Bounded so a phase-machine bug cannot hang the bench.
-            for _ in 0..200 {
-                if state.is_finished() {
-                    break;
-                }
-                state.step_minute(rng);
-            }
-            state.into_report()
-        }
-    }
 }
 
 #[derive(Clone, Copy, ValueEnum, Debug)]
@@ -250,17 +195,6 @@ fn main() {
         return;
     }
 
-    if cli.ai_path_ab {
-        ai_path::run(
-            &config,
-            cli.games,
-            cli.seed,
-            cli.home_rating,
-            &cli.home_formation,
-        );
-        return;
-    }
-
     // Derive a base seed: explicit or from system clock
     let base_seed = cli.seed.unwrap_or_else(|| {
         SystemTime::now()
@@ -298,7 +232,7 @@ fn main() {
     for i in 0..cli.games {
         let game_seed = base_seed.wrapping_add(i as u64);
         let mut rng = StdRng::seed_from_u64(game_seed);
-        let report = play_match(cli.engine, &home, &away, &config, &mut rng);
+        let report = simulate_with_rng(&home, &away, &config, &mut rng);
         bench_stats.add(&report);
     }
 
@@ -359,8 +293,8 @@ fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
     let base = cli.seed.unwrap_or(42);
     let centre = i32::from(cli.away_rating);
     println!(
-        "Rating-gap sweep · {} games per gap · engine {:?} · centre OVR {centre}",
-        cli.games, cli.engine
+        "Rating-gap sweep · {} games per gap · centre OVR {centre}",
+        cli.games
     );
     println!("  gap  strong  weak   win%   draw%  loss%  goals/game");
     for gap in [0i32, 5, 10, 15, 20] {
@@ -394,7 +328,7 @@ fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
             } else {
                 (&weak, &strong)
             };
-            let report = play_match(cli.engine, home, away, config, &mut rng);
+            let report = simulate_with_rng(home, away, config, &mut rng);
             let (for_goals, against) = if strong_home {
                 (report.home_goals, report.away_goals)
             } else {

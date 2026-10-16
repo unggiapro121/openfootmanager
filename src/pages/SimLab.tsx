@@ -788,7 +788,8 @@ function BenchmarkTab({ r }: { r: SimBatchResults }) {
 
       <Card title="Interpretation">
         <p className="text-sm text-slate-400 leading-relaxed">
-          This is single-threaded throughput for the static simulation engine (
+          This is single-threaded throughput for the live match engine run headless, with no
+          benches or managers (
           <code className="bg-navy-800 px-1 rounded">engine::simulate_with_rng</code>). For deeper
           analysis, use the <code className="bg-navy-800 px-1 rounded">ofm-sim-bench --bench</code>{" "}
           CLI which measures per-game latency distribution (p50/p95/p99).

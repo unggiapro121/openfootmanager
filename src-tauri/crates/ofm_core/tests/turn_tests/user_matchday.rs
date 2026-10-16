@@ -4,8 +4,9 @@
 //! surrounds it — swap the competition in, create the session, sweep the rest of the round, apply
 //! the user's result, restore the competition, run the tail — lived only in the Tauri application
 //! layer, in two near-copies. A season harness driving the tail alone would leave the user's own
-//! fixture `Scheduled`, so the sweep would play it through the batch engine: a path no real caller
-//! takes, and exactly the flaw #618's review found in two hand-written tests.
+//! fixture `Scheduled`, so the sweep would play it as an unwatched fixture, with the AI managing the
+//! user's side: a path no real caller takes, and exactly the flaw #618's review found in two
+//! hand-written tests.
 
 use domain::league::{Fixture, FixtureCompetition, FixtureStatus, League, StandingEntry};
 use ofm_core::game::Game;

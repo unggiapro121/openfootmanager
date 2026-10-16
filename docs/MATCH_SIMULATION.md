@@ -1,16 +1,16 @@
 # Match Simulation
 
-This document describes how OpenFoot Manager simulates football matches. There are two engines. The **live** engine (`live_match/`) plays a match a minute at a time and accepts commands between minutes — substitutions, formation changes, tactical instructions, half-time talks — and depletes condition per minute. The **instant** engine (`engine.rs`) resolves a whole match in one call and takes no commands.
+This document describes how OpenFoot Manager simulates football matches. There is one engine. The **live** engine (`live_match/`) plays a match a minute at a time and accepts commands between minutes — substitutions, formation changes, tactical instructions, half-time talks — and depletes condition per minute. `simulate` / `simulate_with_rng` (`headless.rs`) drive the same engine from kick-off to the final whistle in one call, with no benches, no commands and no extra time.
 
 **Every fixture in an actively simulated competition is played by the live engine**, whether or not anybody is watching. The difference between the player's own match and the other nine on the same date is who is in the dugout, not which engine plays it: an unwatched match simply has an AI manager on both touchlines. Competitions outside the player's active scope are a third, much cheaper tier — a scoreline model, not a match engine (`turn/dormant.rs`).
 
-The instant engine is now used only by the tools: `sim-bench` (including its `--phase-sweep` dial table and the control arm of its A/B) and the `sim_lab` developer command. Numbers measured through it describe the same resolution logic but not the same match — no bench, no manager, no per-minute condition.
+The one-call entry is used by the tools: `sim-bench` (including its `--phase-sweep` dial table) and the `sim_lab` developer command. Numbers measured through it come from the same engine as a real fixture, but not the same match: no bench and no manager. A separate instant engine (`engine/`, a copy of the phase logic with team-level condition only) existed until phase 2 and was removed so every rule is written once.
 
 ## Historical Context
 
 The original OFM simulation (documented in `docs/legacy/simulation.rst`) used a detailed event model with 15 pitch zones, transition matrices, and event chains (pass → intercept → foul → free kick). That system tracked possession through a fine-grained state machine.
 
-The current implementation simplifies this to a **5-zone, action-based** model. Rather than modelling individual ball movements across 15 regions with transition matrices, the engine resolves 1–3 **actions per minute** in the current zone, with zone progression driven by action outcomes. This keeps the simulation fast enough for instant mode (a full match in ~2ms) while still producing realistic statistics and event feeds.
+The current implementation simplifies this to a **5-zone, action-based** model. Rather than modelling individual ball movements across 15 regions with transition matrices, the engine resolves 1–3 **actions per minute** in the current zone, with zone progression driven by action outcomes. This keeps the simulation fast (a full headless match in about 0.3 ms) while still producing realistic statistics and event feeds.
 
 ---
 
@@ -22,7 +22,7 @@ The simulation lives in the `engine` crate (`src-tauri/crates/engine/`), which i
 engine/
 ├── types.rs      — PlayerData, TeamData, MatchConfig, Zone, Side, PlayStyle
 ├── event.rs      — MatchEvent struct + EventType enum (22 event variants)
-├── engine.rs     — Core instant simulation (simulate / simulate_with_rng)
+├── headless.rs   — simulate / simulate_with_rng: a whole match in one call, on the live engine
 ├── report.rs     — MatchReport, TeamStats, PlayerMatchStats, GoalDetail
 ├── live_match.rs — LiveMatchState for step-by-step simulation
 ├── ai.rs         — AI manager decision engine
@@ -74,8 +74,7 @@ Each simulated minute follows this sequence:
 ### Duel Resolution
 
 The midfield duel, the one-on-one in the attacking third and the aerial duel after a cross are
-decided by one shared module, `engine/src/duel.rs`, so the instant and live engines cannot drift
-apart:
+decided by one shared module, `engine/src/duel.rs`:
 
 ```text
 logit P(attacker wins) = Σ γᵢ · ln(attackerᵢ / defenderᵢ)   per compared component
@@ -226,15 +225,13 @@ were calibrated when the generated-world probe measured about **2.29 goals per
 club per game** after #605 changed the selected eleven. A scoring change needs
 a fresh run of `tactical_adaptation_probe` before those cutoffs can be trusted.
 
-Both the instant engine (`engine/`) and the live engine (`live_match/`) consume
-the dials identically, with one exception: the stamina cost of pressing needs
-per-minute condition, so it exists only in the live engine — which, since every
-competitive fixture goes through that engine, means it is now charged in every
-match the game plays. Magnitudes live in `engine::shared` and are tabulated by
+The live engine consumes every dial, including the stamina cost of pressing,
+which needs per-minute condition and so is charged in every match the game
+plays. Magnitudes live in `engine::shared` and are tabulated by
 `cargo run -p sim-bench -- --phase-sweep`, each dial's effect on possession %,
 shots and goals against a neutral opponent. Read that table with its path in
-mind: the sweep runs through the instant engine, so it prices a dial in a match
-with no bench and no pressing cost. `tests/tactical_identity_probe.rs` is the
+mind: the sweep plays headless matches, so it prices a dial in a match with no
+bench and no manager. `tests/tactical_identity_probe.rs` is the
 measurement taken on the path the game actually plays.
 
 ---
@@ -297,8 +294,8 @@ with the time between the two substitutions, not with every minute up to his exi
 ### Match Ratings
 
 `engine/src/rating.rs` rates every player on either side's books — starters and the bench, so a
-player taken off is rated for the time he played. Both report builders call it (`LiveMatchState::
-into_report`, and `simulate_with_rng` for the instant engine).
+player taken off is rated for the time he played. `LiveMatchState::into_report` calls it, so a
+headless match from `simulate_with_rng` is rated the same way.
 
 ```
 rating = 6.0 − 0.5 (an ordinary game's work)
@@ -480,7 +477,7 @@ For live matches, `live_match_manager.rs` provides:
 
 The simulation has **69 dedicated tests**:
 
-**Instant simulation** (`tests/simulation_tests.rs` — 36 tests):
+**Headless simulation** (`tests/simulation_tests.rs`, through `simulate_with_rng` on the live engine):
 - Types: overall rating, condition effect, position counts, rating scaling
 - Zones: attacking box, attacking third, defensive third, zone advancement
 - Events: builder pattern, goal detection, chronological ordering
