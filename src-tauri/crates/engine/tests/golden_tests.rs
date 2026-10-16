@@ -240,26 +240,26 @@ const FIXTURES: [Fixture; 20] = [
 
 /// (fixture name, home goals, away goals, event fingerprint), in `FIXTURES` order.
 const GOLDEN: [(&str, u8, u8, u64); 20] = [
-    ("even_442", 4, 1, 0x29133381571D0EA2),
-    ("even_433", 1, 1, 0x59C0FB7F9A25744D),
-    ("gap_5", 6, 2, 0x020E39B4B57959EA),
-    ("gap_10", 4, 1, 0x572D3891BC829DCB),
-    ("gap_20_away_strong", 0, 3, 0xEDF50AB846786323),
-    ("three_at_back", 1, 7, 0xCFE2BDB8DBA52D95),
-    ("one_four_one", 4, 2, 0x5AD7B6F2ED7734FC),
-    ("press_vs_block", 1, 1, 0x950A9DC6E252CCEC),
-    ("direct_wide", 2, 1, 0x251FC560EDD7D2BA),
-    ("specialists_433", 3, 2, 0x4DDDBB4F2831FF2B),
-    ("low_league", 2, 1, 0xD2806FD4C8EA4D6B),
-    ("elite", 5, 0, 0x4DA02C7635B4F157),
-    ("managed_even", 2, 1, 0xF7D7E6BF43C7584C),
-    ("managed_gap_10", 4, 0, 0x36E01FF52B9EC3C2),
-    ("managed_specialists", 2, 2, 0x6C814B0FBB3418C6),
-    ("managed_press", 3, 1, 0x1DAC0E27125F8CB3),
-    ("managed_block", 1, 3, 0x116C17A20C92A523),
-    ("managed_three_back", 0, 2, 0xF5D8A249B18761BD),
-    ("managed_low_league", 1, 1, 0x30925CDEE3BF2346),
-    ("managed_elite", 5, 2, 0x47566F712B6680CE),
+    ("even_442", 4, 1, 0x99F852E5D0C785AF),
+    ("even_433", 1, 1, 0xB35B3D50BE00CF5C),
+    ("gap_5", 6, 2, 0xEC3CBED5D8437107),
+    ("gap_10", 4, 1, 0x6BD39A57D935956D),
+    ("gap_20_away_strong", 0, 3, 0xFC066DAB2D78D9C8),
+    ("three_at_back", 1, 7, 0x6873EAB45CFE3E04),
+    ("one_four_one", 4, 2, 0xA74F98020558686F),
+    ("press_vs_block", 1, 1, 0x94F489AA26A74F23),
+    ("direct_wide", 2, 1, 0x4D097622F066022A),
+    ("specialists_433", 3, 2, 0xFF1E49C6826B7324),
+    ("low_league", 2, 1, 0x8A89D6FC6EFEA5A2),
+    ("elite", 5, 0, 0x460A7317422A3357),
+    ("managed_even", 2, 1, 0x24E59D7FD4FA0851),
+    ("managed_gap_10", 4, 0, 0x917C666160F6CC71),
+    ("managed_specialists", 2, 2, 0x03E0AC2F111D636C),
+    ("managed_press", 3, 1, 0x8B54A74294F121B0),
+    ("managed_block", 1, 3, 0xC8F9F00FB1A5F7D3),
+    ("managed_three_back", 0, 2, 0xFD6FA7A4EF7344B2),
+    ("managed_low_league", 1, 1, 0x19FB4DFE8B453303),
+    ("managed_elite", 5, 2, 0xE74250CD2F88DABC),
 ];
 
 // ---------------------------------------------------------------------------
@@ -500,10 +500,13 @@ fn fnv1a(hash: u64, bytes: &[u8]) -> u64 {
 }
 
 /// The fields that make up what happened, written out by name so that adding a
-/// field to `MatchEvent` does not by itself move every fingerprint.
+/// field to `MatchEvent` does not by itself move every fingerprint. Event
+/// protocol 2's four fields joined in P2.1, after the table was shown to hold
+/// without them: they describe what happened, so a change to them is a change
+/// to the match.
 fn event_line(e: &MatchEvent) -> String {
     format!(
-        "{}|{:?}|{:?}|{:?}|{}|{}|{:?}\n",
+        "{}|{:?}|{:?}|{:?}|{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}\n",
         e.minute,
         e.event_type,
         e.side,
@@ -511,6 +514,10 @@ fn event_line(e: &MatchEvent) -> String {
         e.player_id.as_deref().unwrap_or("-"),
         e.secondary_player_id.as_deref().unwrap_or("-"),
         e.detail,
+        e.shot_kind,
+        e.set_piece,
+        e.goal_source,
+        e.lane,
     )
 }
 
