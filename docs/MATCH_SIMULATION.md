@@ -473,6 +473,29 @@ For live matches, `live_match_manager.rs` provides:
 
 ---
 
+## Measuring the Engine (sim-bench)
+
+Every change that can move results is measured with `sim-bench` (`src-tauri/crates/sim-bench/`):
+
+- `--rating-gap-sweep` plays each gap (0–20, `--gap-step`) with `--pairs` independently drawn
+  squad pairs (default 60), the stronger side at home in half of each pair's games. One pair
+  decides nothing: two separately drawn sides of the same rating differ by about 14 win points.
+  Gap 0 pits a squad against its own mirror, so the even matchup really is even. `--managed`
+  adds seven-man benches and `ai_decide` on both sides, the way every unwatched fixture plays.
+- `--guardrails` is the phase-2 gate: a fixed managed sweep (gaps 0–20 step 2, 60 pairs, 2,000
+  matches a gap) judged against the agreed bands, `--stage lan-can` for the loose band and
+  `--stage gd5` for the calibration target. It exits 1 on a FAIL. Build it with `--release`;
+  in a debug build the timing row is reported but not judged.
+
+```bash
+cargo run --release -p sim-bench -- --guardrails --stage lan-can --out guardrails.json
+```
+
+The bands and the reasons for them are in the phase-2 plan
+(`fm-document/game-engine/phase 2/implementation-plan-phase2.md` §6, outside this repository).
+
+---
+
 ## Test Coverage
 
 The simulation has **69 dedicated tests**:

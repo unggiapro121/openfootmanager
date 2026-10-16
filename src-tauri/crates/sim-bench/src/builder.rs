@@ -48,6 +48,36 @@ pub fn build_team_with_tactics(
     }
 }
 
+/// A seven-man bench: a keeper and two of each outfield group, `bench_penalty`
+/// points weaker than the XI so a substitution has a cost. Ids carry a `sub`
+/// tag, so they never collide with the starters.
+pub fn build_bench(
+    team_id: &str,
+    avg_ovr: u8,
+    bench_penalty: u8,
+    rng: &mut impl Rng,
+) -> Vec<PlayerData> {
+    build_group(
+        team_id,
+        "sub",
+        avg_ovr.saturating_sub(bench_penalty),
+        (2, 2, 2),
+        rng,
+    )
+}
+
+/// The same team under another id: every player keeps every attribute, only the
+/// ids change, so a match against it is a match between two identical sides.
+pub fn mirror(team: &TeamData, id: &str, name: &str) -> TeamData {
+    let mut copy = team.clone();
+    copy.id = id.to_string();
+    copy.name = name.to_string();
+    for player in &mut copy.players {
+        player.id = player.id.replacen(&team.id, id, 1);
+    }
+    copy
+}
+
 /// One GK plus the outfield shape, ids namespaced by `tag` so a squad's starters
 /// and its bench never collide. `tag` is empty for starters, which keeps their
 /// ids byte-identical to what the single-XI builders have always produced — the

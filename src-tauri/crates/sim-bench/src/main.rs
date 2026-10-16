@@ -1,6 +1,8 @@
 mod builder;
+mod guardrails;
 mod html;
 mod stats;
+mod sweep;
 mod terminal;
 
 use std::path::PathBuf;
@@ -83,12 +85,37 @@ struct Cli {
     #[arg(long)]
     phase_sweep: bool,
 
-    /// Rating-gap sweep: for gaps of 0, 5, 10, 15 and 20 OVR around
-    /// `--away-rating`, play `--games` matches (the stronger side at home in
-    /// half of them) and tabulate how often the stronger side wins, draws and
-    /// loses. The check that duel changes do not make favourites unbeatable.
+    /// Rating-gap sweep: for gaps of 0 to 20 OVR (step `--gap-step`) around
+    /// `--away-rating`, play `--games` matches per gap spread over `--pairs`
+    /// independently drawn squad pairs (the stronger side at home in half of
+    /// each pair's games; gap 0 is a squad against its own mirror) and tabulate
+    /// how often the stronger side wins, draws and loses.
     #[arg(long)]
     rating_gap_sweep: bool,
+
+    /// Squad pairs per gap in the rating-gap sweep. One pair decides nothing:
+    /// two separately drawn sides of the same rating differ by ~14 win points.
+    #[arg(long, default_value_t = 60, value_parser = clap::value_parser!(u32).range(1..))]
+    pairs: u32,
+
+    /// Step between gaps in the rating-gap sweep.
+    #[arg(long, default_value_t = 5, value_parser = clap::value_parser!(u8).range(1..=20))]
+    gap_step: u8,
+
+    /// Rating-gap sweep with seven-man benches and AI managers on both sides,
+    /// the way every unwatched fixture is played.
+    #[arg(long)]
+    managed: bool,
+
+    /// Phase-2 guardrails: a fixed managed sweep (gaps 0–20 step 2, 60 pairs,
+    /// 2,000 matches a gap) judged against the agreed bands. Exits 1 on a FAIL.
+    /// Build with --release, or the timing row is not judged.
+    #[arg(long)]
+    guardrails: bool,
+
+    /// Which bands `--guardrails` judges against.
+    #[arg(long, value_enum, default_value_t = guardrails::Stage::LanCan)]
+    stage: guardrails::Stage,
 
     // ── MatchConfig overrides ────────────────────────────────────────────────
     #[arg(long, help = "Home advantage multiplier (default 1.08)")]
@@ -190,6 +217,11 @@ fn main() {
         return;
     }
 
+    if cli.guardrails {
+        run_guardrails(&config, &cli);
+        return;
+    }
+
     if cli.rating_gap_sweep {
         run_rating_gap_sweep(&config, &cli);
         return;
@@ -287,68 +319,35 @@ fn main() {
     }
 }
 
-/// How the stronger side fares as the rating gap widens. Each gap is played
-/// with the stronger side at home in half the games, so home advantage cancels.
+/// How the stronger side fares as the rating gap widens (see `sweep`).
 fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
-    let base = cli.seed.unwrap_or(42);
-    let centre = i32::from(cli.away_rating);
-    println!(
-        "Rating-gap sweep · {} games per gap · centre OVR {centre}",
-        cli.games
-    );
-    println!("  gap  strong  weak   win%   draw%  loss%  goals/game");
-    for gap in [0i32, 5, 10, 15, 20] {
-        let strong_rating = (centre + (gap + 1) / 2).clamp(10, 99) as u8;
-        let weak_rating = (centre - gap / 2).clamp(10, 99) as u8;
-        let mut team_rng = StdRng::seed_from_u64(base.wrapping_add(0xDEAD_BEEF + gap as u64));
-        let formation = &cli.home_formation;
-        let strong = build_team(
-            "strong",
-            "Strong FC",
-            strong_rating,
-            PlayStyle::Balanced,
-            formation,
-            &mut team_rng,
-        );
-        let weak = build_team(
-            "weak",
-            "Weak FC",
-            weak_rating,
-            PlayStyle::Balanced,
-            formation,
-            &mut team_rng,
-        );
+    let spec = sweep::SweepSpec {
+        centre: cli.away_rating,
+        gaps: (0..=20).step_by(usize::from(cli.gap_step)).collect(),
+        pairs: cli.pairs,
+        games_per_gap: cli.games,
+        managed: cli.managed,
+        formation: &cli.home_formation,
+        seed: cli.seed.unwrap_or(42),
+    };
+    let result = sweep::run(config, &spec);
+    sweep::print_table(&result, &spec);
+}
 
-        let (mut wins, mut draws, mut losses, mut goals) = (0u32, 0u32, 0u32, 0u32);
-        for i in 0..cli.games {
-            let mut rng = StdRng::seed_from_u64(base.wrapping_add(i as u64));
-            let strong_home = i % 2 == 0;
-            let (home, away) = if strong_home {
-                (&strong, &weak)
-            } else {
-                (&weak, &strong)
-            };
-            let report = simulate_with_rng(home, away, config, &mut rng);
-            let (for_goals, against) = if strong_home {
-                (report.home_goals, report.away_goals)
-            } else {
-                (report.away_goals, report.home_goals)
-            };
-            goals += u32::from(for_goals) + u32::from(against);
-            match for_goals.cmp(&against) {
-                std::cmp::Ordering::Greater => wins += 1,
-                std::cmp::Ordering::Equal => draws += 1,
-                std::cmp::Ordering::Less => losses += 1,
-            }
-        }
-        let pct = |n: u32| n as f64 / cli.games as f64 * 100.0;
-        println!(
-            "  {gap:>3}  {strong_rating:>6}  {weak_rating:>4}  {:>5.1}  {:>5.1}  {:>5.1}  {:>9.2}",
-            pct(wins),
-            pct(draws),
-            pct(losses),
-            goals as f64 / cli.games as f64
-        );
+/// The phase-2 guardrail run. The table goes to stdout, the checks to `--out`
+/// as JSON when given, and a FAIL sets the exit code so a script can gate on it.
+fn run_guardrails(config: &MatchConfig, cli: &Cli) {
+    let seed = cli.seed.unwrap_or(42);
+    let (result, checks) = guardrails::run(config, cli.stage, seed);
+    sweep::print_table(&result, &guardrails::spec(seed));
+    guardrails::print_checks(&checks, cli.stage);
+    if let Some(ref out_path) = cli.out {
+        let json = serde_json::to_string_pretty(&checks).expect("JSON serialization failed");
+        std::fs::write(out_path, json).expect("Failed to write JSON");
+        eprintln!("guardrail checks → {}", out_path.display());
+    }
+    if guardrails::any_failed(&checks) {
+        std::process::exit(1);
     }
 }
 
