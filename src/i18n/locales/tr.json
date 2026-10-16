@@ -2505,6 +2505,13 @@
             "0": "{{player}} hat-trick'ini tamamlıyor! Şapka çıkartılır!",
             "1": "{{player}} üç golle sahne alıyor — ne büyük gün!"
           }
+        },
+        "header": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} herkesten yükseğe çıkıp kafayla {{team}} adına ağları sarsıyor!",
+            "1": "{{player}}'dan sert bir kafa vuruşu, {{team}} golü buldu!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "Gol Kaynakları",
     "openPlay": "Akan Oyun",
     "cornersGoals": "Kornerler",
+    "headerGoals": "Kafa golleri",
+    "headedGoal": "kafa",
     "freekickGoals": "Serbest Vuruşlar",
     "penaltyGoals": "Penaltılar",
     "changeRole": "Rol Değiştir",

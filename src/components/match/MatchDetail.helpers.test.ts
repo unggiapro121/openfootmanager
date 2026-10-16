@@ -81,6 +81,27 @@ describe("MatchDetail helpers", () => {
     expect(label).toBe('Striker (match.assist:{"name":"Sub"})');
   });
 
+  // Given a headed goal, with and without an assist, then the label says it
+  // was a header before naming the assist.
+  it("labels a headed goal as a header", () => {
+    const nameOf = playerNameOf(detail());
+    const headed = {
+      minute: 30,
+      event_type: "Goal",
+      side: "Home" as const,
+      player_id: "st",
+      secondary_player_id: "sub",
+      goal_source: "Header",
+    };
+
+    expect(eventLabel(headed, nameOf, t)).toBe(
+      'Striker (match.headedGoal, match.assist:{"name":"Sub"})',
+    );
+    expect(eventLabel({ ...headed, secondary_player_id: null }, nameOf, t)).toBe(
+      "Striker (match.headedGoal)",
+    );
+  });
+
   // Given a lineup and a substitute who came on, then the side's players list
   // the starters in slot order first and the substitute after them.
   it("lists starters in lineup order, then substitutes who played", () => {

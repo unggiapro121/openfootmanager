@@ -2490,6 +2490,13 @@
             "0": "{{player}} completa la tripletta! Che spettacolo!",
             "1": "Tre gol di {{player}} — che giornata memorabile!"
           }
+        },
+        "header": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} salta più in alto di tutti e la mette di testa per il {{team}}!",
+            "1": "Potente colpo di testa di {{player}}, gol del {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2708,6 +2715,8 @@
     "goalSources": "Fonti dei gol",
     "openPlay": "Azione da gioco",
     "cornersGoals": "Calci d'angolo",
+    "headerGoals": "Colpi di testa",
+    "headedGoal": "di testa",
     "freekickGoals": "Calci di punizione",
     "penaltyGoals": "Rigori",
     "changeRole": "Cambia ruolo",

@@ -2505,6 +2505,13 @@
             "0": "{{player}} melengkapi hat-trick! Luar biasa!",
             "1": "Tiga gol untuk {{player}} — hari yang sempurna!"
           }
+        },
+        "header": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} melompat paling tinggi dan menyundul bola masuk untuk {{team}}!",
+            "1": "Sundulan keras {{player}}, gol untuk {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "Sumber Gol",
     "openPlay": "Permainan Terbuka",
     "cornersGoals": "Tendangan Sudut",
+    "headerGoals": "Sundulan",
+    "headedGoal": "sundulan",
     "freekickGoals": "Tendangan Bebas",
     "penaltyGoals": "Penalti",
     "changeRole": "Ubah Peran",

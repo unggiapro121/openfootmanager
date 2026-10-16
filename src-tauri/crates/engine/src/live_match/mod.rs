@@ -14,7 +14,7 @@ use crate::rating::{RosterEntry, rate_players};
 
 pub(crate) use observation::AiObservation;
 
-use crate::event::MatchEvent;
+use crate::event::{MatchEvent, SetPiece};
 use crate::report::{MatchReport, TeamSheet};
 use crate::types::{
     MatchConfig, PlayStyle, PlayerData, PlayerRole, Side, TacticalDial, TeamData, Zone,
@@ -180,6 +180,9 @@ pub struct MatchSnapshot {
     #[serde(default)]
     pub injured: HashSet<String>,
     pub penalty_shootout: Option<PenaltyShootoutSnapshot>,
+    /// The event protocol `events` follow (`report::EVENT_PROTOCOL_VERSION`).
+    #[serde(default = "crate::report::first_event_protocol")]
+    pub protocol_version: u8,
 }
 
 // ---------------------------------------------------------------------------
@@ -284,6 +287,13 @@ pub struct LiveMatchState {
 
     // Rolling window of the last 10 ball_zone values (oldest first)
     recent_zones: VecDeque<Zone>,
+
+    /// A set piece that left `Side` with the ball in the opposition box: the
+    /// next action, if that side still has the ball there, is part of it.
+    pending_set_piece: Option<(SetPiece, Side)>,
+    /// The set piece the action being resolved belongs to. `emit` tags every
+    /// event of the action with it.
+    active_set_piece: Option<SetPiece>,
 }
 
 impl LiveMatchState {
@@ -347,6 +357,8 @@ impl LiveMatchState {
             player_conditions,
             penalty_state: PenaltyShootoutState::default(),
             recent_zones: VecDeque::with_capacity(10),
+            pending_set_piece: None,
+            active_set_piece: None,
         }
     }
 

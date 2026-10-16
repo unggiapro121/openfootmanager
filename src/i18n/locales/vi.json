@@ -2505,6 +2505,13 @@
             "0": "{{player}} hoàn tất cú hat-trick! Xin ngả mũ thán phục!",
             "1": "Ba bàn cho {{player}} — một ngày tuyệt vời!"
           }
+        },
+        "header": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} bật cao hơn tất cả và đánh đầu ghi bàn cho {{team}}!",
+            "1": "Cú đánh đầu uy lực của {{player}}, {{team}} có bàn thắng!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "Nguồn gốc bàn thắng",
     "openPlay": "Tình huống bóng sống",
     "cornersGoals": "Phạt góc",
+    "headerGoals": "Đánh đầu",
+    "headedGoal": "đánh đầu",
     "freekickGoals": "Đá phạt",
     "penaltyGoals": "Phạt đền",
     "changeRole": "Đổi vai trò",

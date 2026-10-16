@@ -24,14 +24,17 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
     }
 }
 
-pub use event::{EventType, MatchEvent};
+pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind};
 pub use headless::{simulate, simulate_with_rng};
 pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,
     SetPieceTakers, SubstitutionRecord,
 };
 pub use pitch_position::{PitchPosition, PositionFit, PositionRating, formation_slots};
-pub use report::{GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet, TeamStats};
+pub use report::{
+    EVENT_PROTOCOL_VERSION, GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet,
+    TeamStats,
+};
 pub use tally::EventTally;
 pub use types::{
     BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle,

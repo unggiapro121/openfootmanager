@@ -706,6 +706,7 @@ fn goal_sources_section(stats: &BenchStats) -> String {
     let op = stats.open_play_goal_pct();
     let co = stats.corner_goal_pct();
     let fk = stats.free_kick_goal_pct();
+    let he = stats.header_goal_pct();
     let pe = stats.penalty_goal_pct();
 
     format!(
@@ -713,7 +714,7 @@ fn goal_sources_section(stats: &BenchStats) -> String {
   <h2>Goal Sources</h2>
   <div class="stat-row">
     <span class="stat-label">Open play %</span>
-    <span class="stat-value {op_cls}">{op:.1}%</span>
+    <span class="stat-value">{op:.1}%</span>
   </div>
   <div class="stat-row">
     <span class="stat-label">Corners %</span>
@@ -724,11 +725,14 @@ fn goal_sources_section(stats: &BenchStats) -> String {
     <span class="stat-value {fk_cls}">{fk:.1}%</span>
   </div>
   <div class="stat-row">
+    <span class="stat-label">Headers %</span>
+    <span class="stat-value">{he:.1}%</span>
+  </div>
+  <div class="stat-row">
     <span class="stat-label">Penalties %</span>
     <span class="stat-value {pe_cls}">{pe:.1}%</span>
   </div>
 </div>"#,
-        op_cls = range_class(op, 60.0, 75.0),
         op = op,
         co_cls = range_class(co, 10.0, 20.0),
         co = co,
@@ -805,13 +809,6 @@ fn targets_table(stats: &BenchStats, xg: f64) -> String {
             "pct",
         ),
         ("BTTS %", stats.btts_pct(), 50.0, 55.0, "pct"),
-        (
-            "Open play goals %",
-            stats.open_play_goal_pct(),
-            60.0,
-            75.0,
-            "pct",
-        ),
         ("Corner goals %", stats.corner_goal_pct(), 10.0, 20.0, "pct"),
         (
             "Free kick goals %",

@@ -409,6 +409,11 @@ pub struct CompactMatchEvent {
     pub side: String,
     pub player_id: Option<String>,
     pub secondary_player_id: Option<String>,
+    /// How a goal was made (the engine's `GoalSource`, by name: `"Header"`,
+    /// `"Corner"`, …). `None` on other events and on goals saved before event
+    /// protocol 2.
+    #[serde(default)]
+    pub goal_source: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -578,6 +583,26 @@ mod tests {
         assert_eq!(report.total_minutes, 93);
         assert_eq!(report.home_lineup, None);
         assert_eq!(report.away_lineup, None);
+    }
+
+    /// Given a goal saved before event protocol 2 and one saved after,
+    /// When both are read back,
+    /// Then the old one has no source and the new one keeps its own.
+    #[test]
+    fn a_goals_source_survives_a_save_and_old_goals_load_without_one() {
+        let old: CompactMatchEvent = serde_json::from_str(
+            r#"{"minute":12,"event_type":"Goal","side":"Home","player_id":"p1","secondary_player_id":null}"#,
+        )
+        .unwrap();
+        assert_eq!(old.goal_source, None);
+
+        let header = CompactMatchEvent {
+            goal_source: Some("Header".to_string()),
+            ..old
+        };
+        let back: CompactMatchEvent =
+            serde_json::from_str(&serde_json::to_string(&header).unwrap()).unwrap();
+        assert_eq!(back.goal_source.as_deref(), Some("Header"));
     }
 
     #[test]

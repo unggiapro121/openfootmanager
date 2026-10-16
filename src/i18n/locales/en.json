@@ -2505,6 +2505,13 @@
             "0": "{{player}} completes the hat-trick! Take a bow!",
             "1": "Three goals for {{player}} — what a day!"
           }
+        },
+        "header": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} rises highest and heads it in for {{team}}!",
+            "1": "A powerful header from {{player}} — {{team}} score!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "Goal Sources",
     "openPlay": "Open Play",
     "cornersGoals": "Corners",
+    "headerGoals": "Headers",
+    "headedGoal": "header",
     "freekickGoals": "Free Kicks",
     "penaltyGoals": "Penalties",
     "changeRole": "Change Role",

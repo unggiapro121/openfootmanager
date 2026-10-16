@@ -47,6 +47,7 @@ fn compact_match_report(report: &engine::MatchReport) -> CompactMatchReport {
             side: format!("{:?}", event.side),
             player_id: event.player_id.clone(),
             secondary_player_id: event.secondary_player_id.clone(),
+            goal_source: event.goal_source.map(|source| format!("{source:?}")),
         })
         .collect();
 

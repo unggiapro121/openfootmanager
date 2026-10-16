@@ -55,6 +55,8 @@ pub struct BenchStats {
     pub open_play_goals: u64,
     pub corner_goals: u64,
     pub free_kick_goals: u64,
+    /// Headers from open play; a header from a corner is a corner goal.
+    pub header_goals: u64,
 
     // Tackles & interceptions
     pub tackles: u64,
@@ -158,6 +160,7 @@ impl BenchStats {
                 GoalSource::OpenPlay => self.open_play_goals += 1,
                 GoalSource::Corner => self.corner_goals += 1,
                 GoalSource::FreeKick => self.free_kick_goals += 1,
+                GoalSource::Header => self.header_goals += 1,
                 GoalSource::Penalty => {} // already counted in penalty_goals
             }
         }
@@ -291,6 +294,9 @@ impl BenchStats {
     pub fn free_kick_goal_pct(&self) -> f64 {
         self.free_kick_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
+    pub fn header_goal_pct(&self) -> f64 {
+        self.header_goals as f64 / self.total_goals.max(1) as f64 * 100.0
+    }
     pub fn penalty_goal_pct(&self) -> f64 {
         self.penalty_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
@@ -350,6 +356,7 @@ impl BenchStats {
                 open_play_pct: self.open_play_goal_pct(),
                 corner_pct: self.corner_goal_pct(),
                 free_kick_pct: self.free_kick_goal_pct(),
+                header_pct: self.header_goal_pct(),
                 penalty_pct: self.penalty_goal_pct(),
             },
             duels: self.duels.to_json(self.games),
@@ -434,6 +441,7 @@ pub struct GoalSourcesJson {
     pub open_play_pct: f64,
     pub corner_pct: f64,
     pub free_kick_pct: f64,
+    pub header_pct: f64,
     pub penalty_pct: f64,
 }
 

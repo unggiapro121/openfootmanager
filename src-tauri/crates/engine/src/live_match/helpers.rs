@@ -1,6 +1,7 @@
 use rand::Rng;
 
-use crate::event::{DangerBand, FoulSeverity, GoalContext, SaveQuality};
+use crate::event::{DangerBand, FoulSeverity, GoalContext, Lane, MatchEvent, SaveQuality};
+use crate::report::GoalSource;
 use crate::shared::{
     PlayStylePhase, PlayerSnap, home_mod, play_style_modifier, tactics_pressing_fatigue,
     tactics_pressing_press,
@@ -92,6 +93,41 @@ impl LiveMatchState {
                 Some(team.players[index].effectiveness_at(slots[index]))
             })
             .unwrap_or(1.0)
+    }
+
+    /// Record `event` in the match log and in `out`, the events of the action
+    /// being resolved, after filling in what event protocol 2 adds: the set
+    /// piece the action belongs to, the actor's lane, and a goal's source.
+    /// Every event an action produces goes through here, so a tag cannot be
+    /// on the copy the report keeps and missing from the one the UI is sent.
+    pub(super) fn emit(&mut self, out: &mut Vec<MatchEvent>, mut event: MatchEvent) {
+        if event.set_piece.is_none() {
+            event.set_piece = self.active_set_piece;
+        }
+        if event.lane.is_none() {
+            event.lane = event
+                .player_id
+                .as_deref()
+                .and_then(|id| self.lane_of(event.side, id));
+        }
+        if event.is_goal() {
+            event.goal_source = Some(GoalSource::of(event.shot_kind, event.set_piece));
+        }
+        self.events.push(event.clone());
+        out.push(event);
+    }
+
+    /// The lane of the formation slot `player_id` stands in for `side`, or
+    /// `None` for a player not in that XI or an XI that does not fill the
+    /// formation.
+    fn lane_of(&self, side: Side, player_id: &str) -> Option<Lane> {
+        let team = self.team_ref(side);
+        let index = team.players.iter().position(|p| p.id == player_id)?;
+        let slots = crate::pitch_position::formation_slots(&team.formation);
+        if slots.len() != team.players.len() {
+            return None;
+        }
+        Some(slots[index].lane())
     }
 
     /// Adjust a skill value based on the player's current in-match condition

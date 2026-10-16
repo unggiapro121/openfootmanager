@@ -22,10 +22,15 @@ export function eventLabel(event: CompactMatchEventData, nameOf: NameOf, t: Tran
   const name = (playerId: string | null) => nameOf(playerId) ?? t("common.unknown");
   const primary = name(event.player_id);
   switch (event.event_type) {
-    case "Goal":
-      return event.secondary_player_id
-        ? `${primary} (${t("match.assist", { name: name(event.secondary_player_id) })})`
-        : primary;
+    case "Goal": {
+      const notes = [
+        event.goal_source === "Header" ? t("match.headedGoal") : null,
+        event.secondary_player_id
+          ? t("match.assist", { name: name(event.secondary_player_id) })
+          : null,
+      ].filter((note) => note !== null);
+      return notes.length > 0 ? `${primary} (${notes.join(", ")})` : primary;
+    }
     case "PenaltyGoal":
     case "PenaltyMiss":
       return `${primary} (${t(`match.eventTypes.${event.event_type}`)})`;

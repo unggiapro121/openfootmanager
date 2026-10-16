@@ -338,6 +338,7 @@ pub(crate) fn empty_report(home_goals: u8, away_goals: u8) -> MatchReport {
         away_penalties: None,
         home_sheet: None,
         away_sheet: None,
+        protocol_version: engine::EVENT_PROTOCOL_VERSION,
     }
 }
 
@@ -409,6 +410,7 @@ pub(crate) fn report_with_scorer(
         away_penalties: None,
         home_sheet: None,
         away_sheet: None,
+        protocol_version: engine::EVENT_PROTOCOL_VERSION,
     }
 }
 
@@ -469,6 +471,7 @@ pub(crate) fn full_squad_report(home_goals: u8, away_goals: u8) -> MatchReport {
         away_penalties: None,
         home_sheet: None,
         away_sheet: None,
+        protocol_version: engine::EVENT_PROTOCOL_VERSION,
     }
 }
 

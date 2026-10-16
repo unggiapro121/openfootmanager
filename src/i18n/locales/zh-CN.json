@@ -2471,6 +2471,13 @@
             "0": "{{player}} 完成帽子戏法！精彩绝伦！",
             "1": "{{player}}三球在身——难忘的一天！"
           }
+        },
+        "header": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}} 高高跃起，头球为{{team}}破门！",
+            "1": "{{player}} 势大力沉的头球，{{team}}进球了！"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "进球来源",
     "openPlay": "进攻中的进球",
     "cornersGoals": "角球",
+    "headerGoals": "头球",
+    "headedGoal": "头球",
     "freekickGoals": "任意球",
     "penaltyGoals": "点球",
     "changeRole": "更改角色",

@@ -941,6 +941,7 @@ mod tests {
             away_penalties: None,
             home_sheet: None,
             away_sheet: None,
+            protocol_version: engine::EVENT_PROTOCOL_VERSION,
         }
     }
 
