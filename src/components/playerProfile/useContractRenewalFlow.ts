@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 
+import {
+  delegateRenewals,
+  previewRenewalFinancialImpact,
+  proposeRenewal,
+} from "../../services/contractService";
 import type { GameStateData, PlayerData } from "../../store/gameStore";
 import { resolveBackendText } from "../../utils/backendI18n";
 import { resolveTranslatedErrorMessage } from "../../utils/errorMessage";
 import {
   type DelegatedRenewalCaseData,
-  type DelegatedRenewalResponseData,
   type NegotiationFeedbackData,
   getRenewalStatusClassName,
   getRenewalStatusMessage,
@@ -194,10 +197,7 @@ export function useContractRenewalFlow({
 
     const loadProjection = async (): Promise<void> => {
       try {
-        const result = await invoke<RenewalProjectionData>("preview_renewal_financial_impact", {
-          playerId: player.id,
-          weeklyWage: renewalOfferedWage,
-        });
+        const result = await previewRenewalFinancialImpact(player.id, renewalOfferedWage);
 
         if (!cancelled) {
           setRenewalProjection(result.projection ?? null);
@@ -227,11 +227,7 @@ export function useContractRenewalFlow({
     setRenewalCooledOff(false);
 
     try {
-      const result = await invoke<RenewalResponseData>("propose_renewal", {
-        playerId: player.id,
-        weeklyWage: renewalOfferedWage,
-        contractYears: renewalOfferedYears,
-      });
+      const result = await proposeRenewal(player.id, renewalOfferedWage, renewalOfferedYears);
 
       onGameUpdate?.(result.game);
       setRenewalStatus(result.outcome);
@@ -308,8 +304,7 @@ export function useContractRenewalFlow({
     setRenewalCooledOff(false);
 
     try {
-      const result = await invoke<DelegatedRenewalResponseData>("delegate_renewals", {
-        playerIds: [player.id],
+      const result = await delegateRenewals([player.id], {
         maxWageIncreasePct: 35,
         maxContractYears: 3,
       });

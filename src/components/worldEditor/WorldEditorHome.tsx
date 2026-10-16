@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { invoke } from "@tauri-apps/api/core";
 import {
   ArrowLeft,
   Package,
@@ -17,6 +16,7 @@ import {
 import type { WorldMetaDef } from "../menu/PackageEditor/types";
 import { SAMPLE_PACKAGES, type SamplePackage } from "../menu/PackageEditor/sampleData";
 import type { PackageInfo } from "../menu/WorldSelect";
+import { listInstalledPackages } from "../../services/packageService";
 
 export interface RecentProject {
   path: string;
@@ -82,7 +82,7 @@ export function WorldEditorHome({
   const [installedPackages, setInstalledPackages] = useState<PackageInfo[]>([]);
 
   useEffect(() => {
-    invoke<PackageInfo[]>("list_installed_packages")
+    listInstalledPackages()
       .then(setInstalledPackages)
       .catch(() => {});
   }, []);

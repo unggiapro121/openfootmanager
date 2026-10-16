@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { FinanceCashFlowChart } from "./FinanceCashFlowChart";
 import type { GameStateData, PlayerSelectionOptions, TeamData } from "../../store/gameStore";
 import { Card, CardHeader, CardBody, Badge, ProgressBar, Button, Checkbox } from "../ui";
@@ -12,18 +11,21 @@ import {
   getContractYearsRemaining,
 } from "../../lib/helpers";
 import { formatPlayerWageLine, getPaidWeeklyWage, getTeamFinanceSnapshot } from "../../lib/finance";
-import { getFinanceSnapshot, upgradeFacility } from "../../services/financeService";
+import {
+  getFinanceSnapshot,
+  launchMarketingCampaign,
+  requestBoardSupport,
+  requestSponsorPitch,
+  upgradeFacility,
+} from "../../services/financeService";
+import { delegateRenewals } from "../../services/contractService";
+import { resolveMessageAction } from "../../services/inboxService";
 import { useTranslation } from "react-i18next";
 import { resolveBackendError, resolveMessage } from "../../utils/backendI18n";
 import {
   type FacilityId,
   type FacilityUpgradeErrorState,
   type TaggedFinanceSnapshotData,
-  type ResolveMessageActionResult,
-  type DelegatedRenewalResponseData,
-  type BoardSupportResponseData,
-  type SponsorPitchResponseData,
-  type MarketingCampaignResponseData,
   DEFAULT_FACILITIES,
   FACILITY_DEFINITIONS,
   facilityUpgradeBlockReason,
@@ -349,7 +351,7 @@ function FinancesTabContent({
     setActionLoading(loadingKey);
 
     try {
-      const response = await invoke<BoardSupportResponseData>("request_board_support");
+      const response = await requestBoardSupport();
       onGameUpdate?.(response.game);
       setBoardSupportFeedback({
         tone: "success",
@@ -376,7 +378,7 @@ function FinancesTabContent({
     setActionLoading(loadingKey);
 
     try {
-      const response = await invoke<SponsorPitchResponseData>("request_sponsor_pitch");
+      const response = await requestSponsorPitch();
       onGameUpdate?.(response.game);
       setSponsorPitchFeedback({
         tone: "success",
@@ -403,7 +405,7 @@ function FinancesTabContent({
     setActionLoading(loadingKey);
 
     try {
-      const response = await invoke<MarketingCampaignResponseData>("request_marketing_campaign");
+      const response = await launchMarketingCampaign();
       onGameUpdate?.(response.game);
       setMarketingCampaignFeedback({
         tone: "success",
@@ -435,11 +437,10 @@ function FinancesTabContent({
     setDelegatedRenewalsSummary(null);
 
     try {
-      const result = await invoke<DelegatedRenewalResponseData>("delegate_renewals", {
-        playerIds: selectedRiskPlayers.map(({ player }) => player.id),
-        maxWageIncreasePct: 35,
-        maxContractYears: 3,
-      });
+      const result = await delegateRenewals(
+        selectedRiskPlayers.map(({ player }) => player.id),
+        { maxWageIncreasePct: 35, maxContractYears: 3 },
+      );
       onGameUpdate?.(result.game);
       setDelegatedRenewalsSummary(
         t("finances.delegatedRenewalsSummary", {
@@ -463,11 +464,7 @@ function FinancesTabContent({
     const loadingKey = `sponsor:${messageId}:${optionId}`;
     setActionLoading(loadingKey);
     try {
-      const result = await invoke<ResolveMessageActionResult>("resolve_message_action", {
-        messageId,
-        actionId,
-        optionId,
-      });
+      const result = await resolveMessageAction(messageId, actionId, optionId);
       onGameUpdate?.(result.game);
     } catch (error) {
       console.error("Failed to resolve sponsor offer:", error);

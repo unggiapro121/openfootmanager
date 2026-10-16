@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { GameStateData } from "../../store/gameStore";
 import {
@@ -10,6 +9,7 @@ import {
 } from "./types";
 import { getEventDisplay, getPlayerName, makeTeamFallback } from "./helpers";
 import { getTalkIcon } from "./TeamTalkIcons";
+import { giveTeamTalk } from "../../services/liveMatchService";
 import { Badge, TeamLogo, ThemeToggle } from "../ui";
 import { QuickStat, renderScorers, PlayerRatingsPanel } from "./PostMatchHelpers";
 import { PossessionDonut } from "./PostMatchCharts";
@@ -183,15 +183,7 @@ export default function PostMatchScreen({
     setTalkPending(true);
     setTalkError(null);
     try {
-      const results = await invoke<
-        {
-          player_id: string;
-          player_name: string;
-          old_morale: number;
-          new_morale: number;
-          delta: number;
-        }[]
-      >("apply_team_talk", { tone: selectedTalk, context });
+      const results = await giveTeamTalk(selectedTalk, context);
       setTalkResults(results);
       setTalkDelivered(true);
     } catch (err) {

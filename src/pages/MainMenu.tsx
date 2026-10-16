@@ -1,12 +1,9 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { listen } from "@tauri-apps/api/event";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useGameStore, type GameStateData } from "../store/gameStore";
+import { useGameStore } from "../store/gameStore";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import type { CareerStartPhase, CreateManagerFormData } from "../components/menu/CreateManagerForm";
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
@@ -17,6 +14,28 @@ import { REALISTIC_DEVELOPMENT_SPEED_PERCENT } from "../lib/developmentSpeed";
 import { formatAppVersion } from "../lib/appVersion";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
+import {
+  deleteManagerProfile,
+  getManagerProfiles,
+  saveManagerProfile,
+  touchManagerProfile,
+  updateManagerProfile,
+} from "../services/menuService";
+import {
+  installPackage,
+  listInstalledPackages,
+  uninstallPackage,
+} from "../services/packageService";
+import { destroyWindow, onBackendEvent } from "../services/platformService";
+import {
+  deleteSave,
+  getActiveGame,
+  listSaves,
+  loadGame,
+  type SaveEntry,
+  startNewGame,
+  type StartupOptionsPayload,
+} from "../services/sessionService";
 import { FolderOpen, Settings, PlusCircle, ChevronRight, Power, Package, Bug } from "lucide-react";
 import { DISCORD_INVITE_URL, GITHUB_REPO_URL } from "../lib/communityLinks";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
@@ -45,17 +64,6 @@ const SavesList = lazy(() => import("../components/menu/SavesList"));
 const PackageBuildStep = lazy(() => import("../components/menu/PackageBuildStep"));
 const GenerationStep = lazy(() => import("../components/menu/WorldSelect"));
 
-interface SaveEntry {
-  id: string;
-  name: string;
-  manager_name: string;
-  team_name: string;
-  db_filename: string;
-  checksum: string;
-  created_at: string;
-  last_played_at: string;
-}
-
 /**
  * Minimum manager age (years) on create.
  */
@@ -69,13 +77,6 @@ const MIN_CAREER_START_YEAR = 1900;
 const DEFAULT_GENERATED_HISTORY_DEPTH_YEARS = 12;
 const MAX_GENERATED_HISTORY_DEPTH_YEARS = 24;
 const GENERATED_HISTORY_DEPTH_STORAGE_KEY = "ofm-generated-history-depth-years";
-
-type StartupOptionsPayload = {
-  startYear: number;
-  startPhase: CareerStartPhase;
-  historyDepthYears: number;
-  developmentSpeedPercent: number;
-};
 
 function defaultCareerStartYear(): string {
   return String(new Date().getFullYear());
@@ -306,14 +307,14 @@ export default function MainMenu() {
   }, [historyDepthYears]);
 
   useEffect(() => {
-    invoke<ManagerProfile[]>("get_manager_profiles")
+    getManagerProfiles()
       .then((p) => setProfiles(p ?? []))
       .catch((error) => console.error("Failed to load manager profiles:", error));
   }, []);
 
   // Check if a game is already active (e.g. loaded by MCP --mcp-auto-start before frontend mounted)
   useEffect(() => {
-    invoke<GameStateData>("get_active_game")
+    getActiveGame()
       .then((state) => {
         const mgrName = `${state.manager.first_name} ${state.manager.last_name}`;
         applyExtraTranslations(state.extra_translations);
@@ -328,9 +329,9 @@ export default function MainMenu() {
 
   // Listen for game loaded by MCP auto-start (event may arrive after mount)
   useEffect(() => {
-    const unlisten = listen("game-state-changed", async () => {
+    const unlisten = onBackendEvent("game-state-changed", async () => {
       try {
-        const state = await invoke<GameStateData>("get_active_game");
+        const state = await getActiveGame();
         const mgrName = `${state.manager.first_name} ${state.manager.last_name}`;
         applyExtraTranslations(state.extra_translations);
         setGameState(state);
@@ -443,7 +444,7 @@ export default function MainMenu() {
 
   const loadInstalledPackages = async () => {
     try {
-      const pkgs = await invoke<PackageInfo[]>("list_installed_packages");
+      const pkgs = await listInstalledPackages();
       // Tauri commands can resolve to null; never let installedPackages become
       // null or downstream `.filter` calls (here and in PackageBuildStep) throw.
       setInstalledPackages(pkgs ?? []);
@@ -471,7 +472,7 @@ export default function MainMenu() {
     if (typeof selected !== "string") return;
     setIsInstallingPackage(true);
     try {
-      await invoke<PackageInfo>("install_package", { path: selected });
+      await installPackage(selected);
       await loadInstalledPackages();
     } catch (err) {
       console.error("Failed to install package:", err);
@@ -483,7 +484,7 @@ export default function MainMenu() {
 
   const handleUninstallPackage = async (id: string) => {
     try {
-      await invoke("uninstall_package", { id });
+      await uninstallPackage(id);
       setInstalledPackages((prev) => prev.filter((p) => p.id !== id));
       setActivePackageIds((prev) => prev.filter((pid) => pid !== id));
       setPackageStackErrors([]);
@@ -524,7 +525,7 @@ export default function MainMenu() {
 
     setIsStarting(true);
     try {
-      const game = await invoke<GameStateData>("start_new_game", {
+      const game = await startNewGame({
         firstName: formData.firstName,
         lastName: formData.lastName,
         dob: formData.dob,
@@ -550,7 +551,7 @@ export default function MainMenu() {
     setMenuState("load");
     setIsLoadingSaves(true);
     try {
-      const dbSaves = await invoke<SaveEntry[]>("get_saves");
+      const dbSaves = await listSaves();
       setSaves(dbSaves);
     } catch (error) {
       console.error("Failed to load saves:", error);
@@ -562,8 +563,8 @@ export default function MainMenu() {
   const handleLoadGame = async (saveId: string) => {
     setLoadingSaveId(saveId);
     try {
-      const managerName = await invoke<string>("load_game", { saveId });
-      const activeGame = await invoke<GameStateData>("get_active_game");
+      const managerName = await loadGame(saveId);
+      const activeGame = await getActiveGame();
       try {
         await prewarmManagerSquadPortraits(activeGame);
       } catch (portraitError) {
@@ -584,7 +585,7 @@ export default function MainMenu() {
 
   const handleDeleteSave = async (saveId: string) => {
     try {
-      await invoke<boolean>("delete_save", { saveId });
+      await deleteSave(saveId);
       setSaves((prev) => prev.filter((s) => s.id !== saveId));
       setConfirmDeleteId(null);
     } catch (error) {
@@ -602,7 +603,7 @@ export default function MainMenu() {
     }));
     setFormErrors({});
     setLoadedProfile(profile);
-    void invoke("touch_manager_profile", { id: profile.id });
+    void touchManagerProfile(profile.id);
   };
 
   const formDiffersFromProfile = (form: CreateManagerFormData, profile: ManagerProfile) =>
@@ -619,8 +620,7 @@ export default function MainMenu() {
   const handleUpdateProfile = async () => {
     if (!loadedProfile) return;
     try {
-      const updated = await invoke<ManagerProfile | null>("update_manager_profile", {
-        id: loadedProfile.id,
+      const updated = await updateManagerProfile(loadedProfile.id, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         dob: formData.dob,
@@ -644,7 +644,7 @@ export default function MainMenu() {
 
   const handleDeleteProfile = async (id: string) => {
     try {
-      await invoke<boolean>("delete_manager_profile", { id });
+      await deleteManagerProfile(id);
       setProfiles((prev) => prev.filter((p) => p.id !== id));
       if (loadedProfile?.id === id) setLoadedProfile(null);
     } catch (error) {
@@ -654,13 +654,15 @@ export default function MainMenu() {
 
   const autoSaveProfile = async (forceNew = false) => {
     try {
-      const saved = await invoke<ManagerProfile>("save_manager_profile", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dob: formData.dob,
-        nationality: formData.nationality,
-        force: forceNew || undefined,
-      });
+      const saved = await saveManagerProfile(
+        {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          dob: formData.dob,
+          nationality: formData.nationality,
+        },
+        forceNew || undefined,
+      );
       setProfiles((prev) => {
         const exists = prev.some((p) => p.id === saved.id);
         const next =
@@ -681,7 +683,7 @@ export default function MainMenu() {
       if (document.fullscreenElement) {
         await document.exitFullscreen();
       }
-      await getCurrentWindow().destroy();
+      await destroyWindow();
     } catch (error) {
       console.error("Failed to exit app:", error);
     }

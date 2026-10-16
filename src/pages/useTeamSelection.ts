@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 
 import type { GameStateData, LeagueData, PlayerData, TeamData } from "../store/gameStore";
@@ -8,6 +7,7 @@ import { inferRegionId } from "../lib/teamRegions";
 import { competitionDisplayName } from "../lib/competitionName";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
+import { selectTeam } from "../services/sessionService";
 import { showError } from "../lib/errorDialog";
 import { likelyXi, likelyXiAverageOvr } from "../lib/playerOvr";
 import { buildFallbackRegions, sortCompetitions, teamCompetitions } from "./TeamSelection.helpers";
@@ -204,11 +204,11 @@ export function useTeamSelection({
     try {
       // Simulate every competition: the backend activates whatever regions
       // those competitions need on top of the club's home region.
-      const updatedGame = await invoke<GameStateData>("select_team", {
-        teamId: selectedTeam.id,
-        activeRegionIds: selectedHomeRegionId ? [selectedHomeRegionId] : [],
-        activeCompetitionIds: competitions.map((competition) => competition.id),
-      });
+      const updatedGame = await selectTeam(
+        selectedTeam.id,
+        selectedHomeRegionId ? [selectedHomeRegionId] : [],
+        competitions.map((competition) => competition.id),
+      );
       try {
         await prewarmManagerSquadPortraits(updatedGame);
       } catch (portraitError) {

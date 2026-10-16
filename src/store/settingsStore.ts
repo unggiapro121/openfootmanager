@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { invoke } from "@tauri-apps/api/core";
+import { getSettings, saveSettings } from "../services/settingsService";
 
 export interface AppSettings {
   theme: "dark" | "light" | "system";
@@ -21,12 +21,6 @@ export interface CurrencyDefinition {
   code: AppSettings["currency"];
   symbol: string;
   exchange_rate: number;
-}
-
-interface SettingsResponse {
-  settings: Partial<AppSettings>;
-  currency: CurrencyDefinition;
-  supported_currencies: CurrencyDefinition[];
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -55,7 +49,7 @@ function mergeWithDefaultSettings(settings: Partial<AppSettings> = {}): AppSetti
 }
 
 async function persistSettings(settings: AppSettings) {
-  await invoke("save_settings", { settings });
+  await saveSettings(settings);
 }
 
 function indexSupportedCurrencies(
@@ -99,7 +93,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
 
   loadSettings: async () => {
     try {
-      const response = await invoke<SettingsResponse>("get_settings");
+      const response = await getSettings();
       const settings = mergeWithDefaultSettings(response.settings);
       const supportedCurrencies = indexSupportedCurrencies(response.supported_currencies);
 

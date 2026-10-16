@@ -1,16 +1,10 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { GameStateData } from "../../store/gameStore";
-import {
-  type MatchSnapshot,
-  type MatchEvent,
-  type MinuteResult,
-  type SimSpeed,
-  SPEED_MS,
-} from "./types";
+import { type MatchSnapshot, type MatchEvent, type SimSpeed, SPEED_MS } from "./types";
 import { Play, Pause, FastForward, SkipForward } from "lucide-react";
 import { TeamLogo } from "../ui";
+import { getMatchSnapshot, stepLiveMatch } from "../../services/liveMatchService";
 
 interface PenaltyShootoutScreenProps {
   snapshot: MatchSnapshot;
@@ -50,9 +44,7 @@ export default function PenaltyShootoutScreen({
     try {
       // Always one at a time, never batched like the live match: here a "minute" is a single
       // penalty, and the whole point of the screen is watching each one.
-      const results = await invoke<MinuteResult[]>("step_live_match", {
-        minutes: 1,
-      });
+      const results = await stepLiveMatch(1);
       if (results.length > 0) {
         for (const r of results) {
           for (const evt of r.events) {
@@ -62,7 +54,7 @@ export default function PenaltyShootoutScreen({
           }
         }
 
-        const snap = await invoke<MatchSnapshot>("get_match_snapshot");
+        const snap = await getMatchSnapshot();
         onSnapshotUpdate(snap);
 
         const lastResult = results[results.length - 1];

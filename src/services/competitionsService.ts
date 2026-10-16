@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./transport";
 import type { LeagueData, SeasonAwardsData, WorldCupChampionData } from "../store/types";
 
 /** One leaderboard row: the player as he is now, and his tally. */

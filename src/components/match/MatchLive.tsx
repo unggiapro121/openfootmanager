@@ -1,11 +1,9 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { GameStateData } from "../../store/gameStore";
 import {
   type MatchSnapshot,
   type MatchEvent,
-  type MinuteResult,
   type SimSpeed,
   SPEED_MS,
   MINUTES_PER_TICK,
@@ -24,7 +22,14 @@ import { useSettingsStore } from "../../store/settingsStore";
 import { EventFeed, MatchStats, Lineups } from "./MatchPanels";
 import MatchScreenLayout from "./MatchScreenLayout";
 import { SubPanel } from "./SubPanel";
-import { swapMatchPositions } from "../../services/liveMatchService";
+import {
+  changeMatchFormation,
+  changeMatchPlayStyle,
+  getMatchSnapshot,
+  stepLiveMatch,
+  substituteMatchPlayer,
+  swapMatchPositions,
+} from "../../services/liveMatchService";
 import { createMatchRoleChange } from "./matchRoleChange";
 import { MatchRadar2D } from "./radar/MatchRadar2D";
 import { type FetchedMinutes, isPlayedOut } from "./radarGate";
@@ -129,9 +134,9 @@ export default function MatchLive({
   // ofm_core/live_match_manager.rs; MINUTES_PER_TICK on this side is what makes batches possible.
   const fetchMinutes = useCallback(async (minutes: number): Promise<FetchedMinutes | null> => {
     try {
-      const results = await invoke<MinuteResult[]>("step_live_match", { minutes });
+      const results = await stepLiveMatch(minutes);
       if (results.length === 0) return null;
-      const snap = await invoke<MatchSnapshot>("get_match_snapshot");
+      const snap = await getMatchSnapshot();
       return { results, snapshot: snap };
     } catch (err) {
       console.error("Failed to step match:", err);
@@ -308,11 +313,7 @@ export default function MatchLive({
   const handleSubstitution = async (playerOffId: string, playerOnId: string) => {
     if (!userSide || isSpectator) return false;
     try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: {
-          Substitute: { side: userSide, player_off_id: playerOffId, player_on_id: playerOnId },
-        },
-      });
+      const snap = await substituteMatchPlayer(userSide, playerOffId, playerOnId);
       onSnapshotUpdate(snap);
       setInjuredOff(undefined);
       return true;
@@ -336,9 +337,7 @@ export default function MatchLive({
   const handleFormationChange = async (formation: string) => {
     if (!userSide || isSpectator) return;
     try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: { ChangeFormation: { side: userSide, formation } },
-      });
+      const snap = await changeMatchFormation(userSide, formation);
       onSnapshotUpdate(snap);
     } catch (err) {
       console.error("Formation change failed:", err);
@@ -348,9 +347,7 @@ export default function MatchLive({
   const handlePlayStyleChange = async (playStyle: string) => {
     if (!userSide || isSpectator) return;
     try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: { ChangePlayStyle: { side: userSide, play_style: playStyle } },
-      });
+      const snap = await changeMatchPlayStyle(userSide, playStyle);
       onSnapshotUpdate(snap);
     } catch (err) {
       console.error("Play style change failed:", err);

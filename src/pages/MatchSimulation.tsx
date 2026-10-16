@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
-import { useGameStore, type GameStateData } from "../store/gameStore";
+import { useGameStore } from "../store/gameStore";
 import { useSettingsStore } from "../store/settingsStore";
 import type {
   MatchSnapshot,
@@ -10,6 +9,7 @@ import type {
   MatchDayStage,
   RoundSummary,
 } from "../components/match/types";
+import { finishLiveMatch, getMatchSnapshot, startLiveMatch } from "../services/liveMatchService";
 import { resolveMatchFixture } from "../components/match/helpers";
 import PreMatchSetup from "../components/match/PreMatchSetup";
 import MatchLive from "../components/match/MatchLive";
@@ -30,12 +30,6 @@ interface MatchRouteState {
   fixtureId?: string;
   mode?: string;
   snapshot?: MatchSnapshot;
-}
-
-interface FinishLiveMatchResponse {
-  game: GameStateData;
-  round_summary?: RoundSummary | null;
-  player_ratings: Record<string, number>;
 }
 
 export default function MatchSimulation() {
@@ -115,7 +109,7 @@ export default function MatchSimulation() {
         matchMode,
       });
       try {
-        const snap = await invoke<MatchSnapshot | null>("get_match_snapshot");
+        const snap: MatchSnapshot | null = await getMatchSnapshot();
         if (!snap) throw new Error("No active match snapshot");
         console.info("[MatchSimulation] fetchSnapshot:success", {
           awayPlayers: snap.away_team.players.length,
@@ -158,7 +152,7 @@ export default function MatchSimulation() {
             competitionsWithET.includes(fixture?.competition ?? "");
           // The raw index may point into a cup while game.league mirrors the
           // domestic league after a restart. Use stable fixture identity.
-          const restoredSnapshot = await invoke<MatchSnapshot>("start_live_match", {
+          const restoredSnapshot = await startLiveMatch({
             allowsExtraTime,
             fixtureIndex: routeState.fixtureIndex,
             competitionId: routeState.competitionId,
@@ -237,7 +231,7 @@ export default function MatchSimulation() {
 
     try {
       console.info("[MatchSimulation] finalizeMatch:start");
-      const response = await invoke<FinishLiveMatchResponse>("finish_live_match");
+      const response = await finishLiveMatch();
       console.info("[MatchSimulation] finalizeMatch:success", {
         hasRoundSummary: !!response.round_summary,
         hasUpdatedGame: !!response.game,

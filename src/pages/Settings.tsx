@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore, type AppSettings } from "../store/settingsStore";
 import { useTheme } from "../context/ThemeContext";
@@ -8,6 +7,7 @@ import { ThemeToggle, Select } from "../components/ui";
 import { AUTO_SAVE_INTERVAL_OPTIONS } from "../hooks/useAutoSave.helpers";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
 import { formatAppVersion } from "../lib/appVersion";
+import { clearAllSaves, exportWorldDatabase } from "../services/settingsService";
 import { SegmentedControl, Section, SettingRow, Toggle } from "./Settings.components";
 import DevelopmentSpeedSetting from "./Settings.developmentSpeed";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
@@ -103,7 +103,7 @@ export default function Settings() {
 
   const handleClearSaves = async () => {
     try {
-      await invoke("clear_all_saves");
+      await clearAllSaves();
       setClearSuccess(true);
       setConfirmClear(false);
       setTimeout(() => setClearSuccess(false), 3000);
@@ -115,9 +115,7 @@ export default function Settings() {
   const handleExportWorld = async () => {
     try {
       // Simple export to app data dir
-      const path = await invoke<string>("export_world_database", {
-        exportPath: "exported_world.json",
-      });
+      const path = await exportWorldDatabase("exported_world.json");
       setExportPath(path);
       setTimeout(() => setExportPath(null), 5000);
     } catch (err) {

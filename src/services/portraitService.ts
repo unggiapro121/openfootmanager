@@ -1,4 +1,5 @@
-import { convertFileSrc, invoke, isTauri } from "@tauri-apps/api/core";
+import { convertFileSrc, isTauri } from "@tauri-apps/api/core";
+import { invoke } from "./transport";
 
 import { findNextFixture } from "../lib/fixtures";
 import { resolveLocalMediaPath } from "../lib/mediaAssets";

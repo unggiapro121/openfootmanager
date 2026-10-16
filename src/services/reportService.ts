@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./transport";
 
 /** One log file the report would carry. */
 export interface LogFileSummary {

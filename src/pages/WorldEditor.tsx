@@ -1,9 +1,17 @@
 import { useState, useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
-import { invoke } from "@tauri-apps/api/core";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { resolveBackendError } from "../utils/backendI18n";
+import {
+  buildOfm,
+  createWorldProject,
+  exportPlayersCsv,
+  exportTeamsCsv,
+  extractOfmForEditing,
+  readPackageProject,
+  savePackageProject,
+} from "../services/worldEditorService";
 import {
   emptyCompetition,
   emptyConfederation,
@@ -255,7 +263,7 @@ export default function WorldEditor() {
         const s = stateRef.current;
         setSaveState("saving");
         try {
-          await invoke("save_package_project", {
+          await savePackageProject({
             dir: projectDir,
             meta: overrides?.meta ?? s.meta,
             confederations: overrides?.confederations ?? s.confederations,
@@ -325,9 +333,9 @@ export default function WorldEditor() {
   async function handleNewPackage(newMeta: WorldMetaDef, sample: SamplePackage | null) {
     setIsBusy(true);
     try {
-      const dir = await invoke<string>("create_world_project", { slug: newMeta.id, meta: newMeta });
+      const dir = await createWorldProject(newMeta.id, newMeta);
       if (sample) {
-        await invoke("save_package_project", {
+        await savePackageProject({
           dir,
           meta: newMeta,
           confederations: sample.confederations,
@@ -339,7 +347,7 @@ export default function WorldEditor() {
           competitions: sample.competitions,
         });
       }
-      const data = await invoke<PackageProjectData>("read_package_project", { dir });
+      const data = await readPackageProject(dir);
       setProjectDir(dir);
       loadProjectState(data);
       addRecentProject(dir, newMeta.name || newMeta.id);
@@ -362,10 +370,7 @@ export default function WorldEditor() {
     if (mode !== "folder") {
       setIsBusy(true);
       try {
-        dir = await invoke<string>("extract_ofm_for_editing", {
-          ofmPath: path,
-          picked: mode === "picked",
-        });
+        dir = await extractOfmForEditing(path, mode === "picked");
       } catch (err) {
         flashError(resolveBackendError(err));
         setIsBusy(false);
@@ -376,7 +381,7 @@ export default function WorldEditor() {
       setIsBusy(true);
     }
     try {
-      const data = await invoke<PackageProjectData>("read_package_project", { dir });
+      const data = await readPackageProject(dir);
       setProjectDir(dir);
       loadProjectState(data);
       addRecentProject(dir, data.meta.name || data.meta.id, mode === "picked" ? path : undefined);
@@ -425,7 +430,7 @@ export default function WorldEditor() {
     setIsBusy(true);
     try {
       await persist();
-      const data = await invoke<PackageProjectData>("read_package_project", { dir: projectDir });
+      const data = await readPackageProject(projectDir);
       setIssues(data.issues);
     } catch {
       // persist already handled the error
@@ -439,7 +444,7 @@ export default function WorldEditor() {
    * Exports the in-memory list rather than what's on disk, so what the editor
    * currently shows is what lands in the file even with auto-save off.
    */
-  async function exportCsv(command: string, payload: Record<string, unknown>, defaultName: string) {
+  async function exportCsv(writeCsv: (output: string) => Promise<void>, defaultName: string) {
     let outPath: string | null;
     try {
       outPath = await save({
@@ -452,7 +457,7 @@ export default function WorldEditor() {
     if (typeof outPath !== "string") return;
     setIsBusy(true);
     try {
-      await invoke(command, { ...payload, output: outPath });
+      await writeCsv(outPath);
       flashSuccess(t("worldEditor.exportCsvSuccess"));
     } catch (err) {
       flashError(resolveBackendError(err));
@@ -462,9 +467,12 @@ export default function WorldEditor() {
   }
 
   const handleExportTeamsCsv = () =>
-    void exportCsv("export_teams_csv", { teams }, `${meta.id || "package"}-teams.csv`);
+    void exportCsv((output) => exportTeamsCsv(teams, output), `${meta.id || "package"}-teams.csv`);
   const handleExportPlayersCsv = () =>
-    void exportCsv("export_players_csv", { players }, `${meta.id || "package"}-players.csv`);
+    void exportCsv(
+      (output) => exportPlayersCsv(players, output),
+      `${meta.id || "package"}-players.csv`,
+    );
 
   async function handleBuild() {
     const defaultName = `${meta.id || "package"}.ofm`;
@@ -486,7 +494,7 @@ export default function WorldEditor() {
       return;
     }
     try {
-      await invoke("build_ofm", { dir: projectDir, output: outPath });
+      await buildOfm(projectDir, outPath);
       flashSuccess(t("worldEditor.buildSuccess"));
     } catch (err) {
       flashError(resolveBackendError(err));
