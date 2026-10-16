@@ -171,7 +171,7 @@ frontend files 500).
   (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
 - `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only under
   `ofm_core/src/turn/`, except for synthetic inputs in `src-tauri/crates/sim-bench/src/builder.rs`
-  and `src-tauri/src/commands/sim_lab.rs` until the engine overhaul removes the old instant engine.
+  and `src-tauri/src/commands/sim_lab.rs` because they need synthetic teams, not a game.
   Other modules may drive the engine, never build its input. review until PR 4
 - `src-tauri/src/application/` never imports `commands` or `mcp_server`. Commands and MCP tools adapt
   the same `_internal` function. review until PR 4 (imports) + review (duplication)

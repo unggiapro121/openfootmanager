@@ -506,7 +506,7 @@ mod empty_squad_tests {
         }
     }
 
-    /// The batch engine refuses a match with an empty side, but the live,
+    /// `simulate_with_rng` refuses a match with an empty side, but the live,
     /// spectator and delegated paths build `LiveMatchState` directly and never
     /// reach that guard. Goalkeeper selection ended by indexing `players[0]`,
     /// so a shootout with an empty XI panicked out of the Tauri command and

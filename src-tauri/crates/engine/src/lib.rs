@@ -1,7 +1,7 @@
 pub mod ai;
 pub(crate) mod duel;
-pub mod engine;
 pub mod event;
+mod headless;
 pub mod live_match;
 pub mod pitch_position;
 pub mod rating;
@@ -23,9 +23,8 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
     }
 }
 
-pub use engine::simulate;
-pub use engine::simulate_with_rng;
 pub use event::{EventType, MatchEvent};
+pub use headless::{simulate, simulate_with_rng};
 pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,
     SetPieceTakers, SubstitutionRecord,

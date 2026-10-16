@@ -49,7 +49,7 @@ review requirement until programme PR 4.
    why its mirror types are deliberate. `ofm_core/src/turn/` is the only domain-to-engine bridge
    and place to build engine `TeamData`, `PlayerData` and `TacticsConfig` inputs, with named
    exceptions for synthetic inputs in `src-tauri/crates/sim-bench/src/builder.rs` and
-   `src-tauri/src/commands/sim_lab.rs` until the engine overhaul removes the old instant engine.
+   `src-tauri/src/commands/sim_lab.rs` because they need synthetic teams, not a game.
    Other modules may drive the engine. `domain` may have data,
    constructors, `Default` and pure value semantics; outcome-deciding game rules and I/O belong
    in `ofm_core`. Application code imports neither commands nor MCP modules. Commands and tools
