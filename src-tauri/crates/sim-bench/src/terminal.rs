@@ -258,6 +258,14 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
     let cr = stats.crosses_pg();
 
     metric("  Corners/game     ", c, 1, "8–14", check(c, 8.0, 14.0));
+    let gpc = stats.goals_per_corner_pct();
+    metric(
+        "  Goals/corner %   ",
+        gpc,
+        2,
+        "2.5–3.5",
+        check(gpc, 2.5, 3.5),
+    );
     metric("  Free kicks/game  ", fk, 1, "", true);
     metric("  Goal kicks/game  ", gk, 1, "8–14", check(gk, 8.0, 14.0));
     metric("  Crosses/game     ", cr, 1, "15–30", check(cr, 15.0, 30.0));

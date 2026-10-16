@@ -20,7 +20,7 @@ use super::helpers::{danger_band, foul_severity, save_quality};
 /// `probability` with its odds multiplied by `ratio`: the same scaling a duel
 /// gets from multiplying one side's effective rating, for a duel that only
 /// hands back a probability.
-fn scale_odds(probability: f64, ratio: f64) -> f64 {
+pub(super) fn scale_odds(probability: f64, ratio: f64) -> f64 {
     let scaled = probability * ratio;
     scaled / (scaled + (1.0 - probability))
 }
@@ -31,14 +31,7 @@ impl LiveMatchState {
         let def_side = att_side.opposite();
         let zone = self.ball_zone;
 
-        // A set piece carries over into this action only if its side still has
-        // the ball in the box it left it in.
-        self.active_set_piece = self
-            .pending_set_piece
-            .take()
-            .filter(|(_, side)| *side == att_side && zone.is_box_for(att_side))
-            .map(|(set_piece, _)| set_piece);
-        let events = if zone.is_box_for(att_side) {
+        if zone.is_box_for(att_side) {
             self.resolve_shot(minute, att_side, rng)
         } else if zone == Zone::attacking_third(att_side) {
             self.resolve_attacking_third(minute, att_side, def_side, rng)
@@ -46,9 +39,7 @@ impl LiveMatchState {
             self.resolve_midfield(minute, att_side, def_side, rng)
         } else {
             self.resolve_buildup(minute, att_side, def_side, rng)
-        };
-        self.active_set_piece = None;
-        events
+        }
     }
 
     fn resolve_buildup<R: Rng>(
@@ -274,14 +265,9 @@ impl LiveMatchState {
                 return events;
             }
             if rng.random_range(0.0..1.0f64) < 0.25 {
-                let evt = MatchEvent::new(minute, EventType::Corner, att_side, zone)
-                    .with_set_piece(SetPiece::Corner);
-                self.emit(&mut events, evt);
-                if rng.random_range(0.0..1.0f64) < 0.30 {
-                    self.ball_zone = Zone::attacking_box(att_side);
-                    self.pending_set_piece = Some((SetPiece::Corner, att_side));
-                    return events;
-                }
+                let corner_events = self.resolve_corner(minute, att_side, rng);
+                events.extend(corner_events);
+                return events;
             }
             self.possession = def_side;
             self.ball_zone = Zone::defensive_third(att_side);
@@ -412,12 +398,8 @@ impl LiveMatchState {
         let def_side = att_side.opposite();
         let zone = Zone::attacking_box(att_side);
         if rng.random_range(0.0..1.0f64) < 0.40 {
-            let corner_evt = MatchEvent::new(minute, EventType::Corner, att_side, zone)
-                .with_set_piece(SetPiece::Corner);
-            self.emit(events, corner_evt);
-            self.possession = att_side;
-            self.ball_zone = Zone::attacking_box(att_side);
-            self.pending_set_piece = Some((SetPiece::Corner, att_side));
+            let corner_events = self.resolve_corner(minute, att_side, rng);
+            events.extend(corner_events);
         } else {
             let gk_evt = MatchEvent::new(minute, EventType::GoalKick, def_side, zone);
             self.emit(events, gk_evt);

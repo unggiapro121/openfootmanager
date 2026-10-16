@@ -101,7 +101,20 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
             verdict: not_yet(stage),
         },
         defender_aerial_win(result, stage),
+        goals_per_corner(result),
     ]
+}
+
+/// What a corner is worth, measured at every stage (phase 2, P2.3): real
+/// football scores from about 2.5–3% of corners, and P2.3 calibrates corners
+/// to it. No decision makes it a gate.
+fn goals_per_corner(result: &SweepResult) -> Check {
+    Check {
+        name: "bàn mỗi quả phạt góc (%)",
+        value: Some(result.stats.goals_per_corner_pct()),
+        band: "đo (thực tế 2,5–3)".to_string(),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// A share the engine cannot produce yet: information before GĐ5, a failure at it.

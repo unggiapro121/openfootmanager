@@ -193,8 +193,9 @@ mod tests {
 
     /// Given many headers,
     /// when each is played out,
-    /// then none is fouled into a penalty, every attempt is a header, and a
-    /// goal names the crosser as the assist.
+    /// then none is fouled into a penalty, every attempt is a header, and the
+    /// header's own goal names the crosser as the assist. (A save can lead to
+    /// a corner, whose events follow in the same list.)
     #[test]
     fn a_header_is_never_fouled_and_always_a_header() {
         let mut state = match_with_heading(70);
@@ -218,9 +219,19 @@ mod tests {
                 ) {
                     assert_eq!(event.shot_kind, Some(ShotKind::Header));
                 }
-                if event.event_type == EventType::Goal {
-                    assert_eq!(event.secondary_player_id.as_deref(), Some("home_m1"));
-                }
+            }
+            let own = events
+                .iter()
+                .find(|e| {
+                    matches!(
+                        e.event_type,
+                        EventType::Goal | EventType::ShotSaved | EventType::ShotOffTarget
+                    )
+                })
+                .expect("the header is an attempt");
+            assert_eq!(own.player_id.as_deref(), Some("home_f1"));
+            if own.event_type == EventType::Goal {
+                assert_eq!(own.secondary_player_id.as_deref(), Some("home_m1"));
             }
         }
     }

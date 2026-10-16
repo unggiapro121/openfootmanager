@@ -68,7 +68,7 @@ Each simulated minute follows this sequence:
 |---|---|---|---|---|
 | Own defense (buildup) | `resolve_buildup` | Defenders pass | Ball → Midfield | Interception, possession flips |
 | Midfield | `resolve_midfield` | Midfielder vs Midfielder | Ball → Attacking third | Tackle/Interception, may trigger foul |
-| Attacking third | `resolve_attacking_third` | Forward vs Defender | Ball → Attacking box | Tackle/Clearance, possible corner (25%), may trigger foul |
+| Attacking third | `resolve_attacking_third` | Forward vs Defender | Ball → Attacking box | Tackle/Clearance, possible corner (25%, played out at once), may trigger foul |
 | Attacking box | `resolve_shot` | Forward shoots vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
 
 ### Duel Resolution
@@ -111,6 +111,19 @@ goal      = clamp(0.28·defensive line + (rating − keeper)/160, 0.08, 0.65)
 
 A miss is off target (a won header is never blocked); a save is parried for a corner 40% of the
 time, as any save. A header is never fouled into a penalty.
+
+### Corners
+
+A corner (25% of the one-on-ones the defence wins, 40% of saves) is played out in the same action
+(`live_match/set_pieces.rs`, phase 2 P2.3). The club's `corner_taker` takes it while he is on the
+pitch, otherwise the outfielder with the best `0.70·crossing + 0.30·curve`. His delivery `Q` (that
+blend, × condition, ×1.04 for `DeadBallSpecialist`) decides how often the ball reaches the aerial
+contest, `clamp(0.70 + (Q − 65)/200, 0.40, 0.85)`; a ball that does not is cleared (70%) or kept short.
+The man meeting it is drawn from the forwards (weight 1.0), the two centre-backs who head best (0.9)
+and the midfielders (0.5), never the taker; the aerial duel's odds are multiplied by
+`clamp(1 + (Q − 65)/250, 0.92, 1.08)`, and a won duel is a header with the taker as the assist.
+Every event of a corner carries `set_piece = Corner`. A corner is worth about 3% of a goal, as in
+real football (it had been worth 5.7%).
 
 ### Shot Resolution
 
