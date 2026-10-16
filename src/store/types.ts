@@ -68,6 +68,9 @@ export type PlayerRole =
   | "AnchorMan"
   | "BallWinner"
   | "DeepLyingPlaymaker"
+  // Phase 2: known to the backend, not offered at any position yet (P4.4)
+  | "HalfBack"
+  | "DefensiveWinger"
   // Central Midfielder
   | "BoxToBox"
   | "Carrilero"
