@@ -347,11 +347,15 @@ mod tests {
     }
 
     /// Given varied pre-split attributes at every position,
-    /// when they are split,
-    /// then the overall rating at that position is exactly what it was: the
-    /// split changes the data, not the player.
+    /// when they are split and rated on the split OVR table,
+    /// then the rating moves by at most three points. Table B shares each
+    /// blend's weight among its family in proportions close to the blend's;
+    /// the largest moves are a keeper's (+2.2: his kicking now counts, X3) and
+    /// a very weak holding or central midfielder's, whose critical minimum now
+    /// reads short passing rather than the blend.
     #[test]
-    fn splitting_keeps_the_overall_rating() {
+    fn splitting_moves_the_overall_rating_by_at_most_three() {
+        let mut worst = 0.0f64;
         for position in &POSITIONS {
             for (i, base) in [35u8, 52, 61, 68, 77, 86].into_iter().enumerate() {
                 let mut before = legacy(base, base + 4, base.saturating_sub(6), base + 2);
@@ -359,13 +363,19 @@ mod tests {
                 before.pace = 90 - 6 * i as u8;
                 let mut after = before.clone();
                 split_legacy_attributes(&mut after, position);
-                assert_eq!(
-                    crate::player_rating::ovr_from_attributes(&after, position),
-                    crate::player_rating::ovr_from_attributes(&before, position),
-                    "{position:?} at {base}"
-                );
+                let declared = |mut a: PlayerAttributes| {
+                    // The pre-split player on table B: every family at its blend.
+                    (a.long_passing, a.crossing, a.curve, a.free_kick) =
+                        (a.passing, a.passing, a.passing, a.passing);
+                    (a.long_shots, a.first_touch, a.heading) = (a.shooting, a.dribbling, a.aerial);
+                    a
+                };
+                let shift = crate::player_rating::ovr_from_attributes(&after, position)
+                    - crate::player_rating::ovr_from_attributes(&declared(before), position);
+                worst = worst.max(shift.abs());
             }
         }
+        assert!(worst <= 3.0, "largest OVR shift {worst:.2}");
     }
 
     /// Given the same old passing for a centre-back and a full-back,
