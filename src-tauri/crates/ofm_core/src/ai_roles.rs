@@ -110,6 +110,10 @@ fn role_profile(role: &PlayerRole) -> [fn(&domain::player::PlayerAttributes) -> 
         R::TargetMan => [|a| a.strength, |a| a.aerial, |a| a.shooting],
         R::DeepLyingForward => [|a| a.passing, |a| a.vision, |a| a.teamwork],
         R::False9 => [|a| a.vision, |a| a.dribbling, |a| a.decisions],
+        // Profiles for the two phase-2 roles, ready for when a position admits
+        // them (P4.4); until then `valid_roles` keeps the AI from reaching them.
+        R::HalfBack => [|a| a.positioning, |a| a.passing, |a| a.tackling],
+        R::DefensiveWinger => [|a| a.stamina, |a| a.tackling, |a| a.crossing],
         R::PressingForward => [|a| a.stamina, |a| a.aggression, |a| a.pace],
         R::CompleteForward => [|a| a.shooting, |a| a.dribbling, |a| a.strength],
     }
@@ -304,6 +308,73 @@ mod tests {
             position,
             attributes,
         )
+    }
+
+    /// Given the two roles that arrive with phase 2,
+    /// when their names are parsed, each position's choices are read, and the
+    /// AI picks a role for a player built to fit them,
+    /// then they parse, no position offers them and the AI never gives them:
+    /// they wait for the lane mechanics that make them mean something (P4.4).
+    #[test]
+    fn the_two_new_roles_exist_but_are_not_yet_offered() {
+        assert_eq!("HalfBack".parse::<PlayerRole>(), Ok(PlayerRole::HalfBack));
+        assert_eq!(
+            "DefensiveWinger".parse::<PlayerRole>(),
+            Ok(PlayerRole::DefensiveWinger)
+        );
+        let positions = [
+            Position::Goalkeeper,
+            Position::RightBack,
+            Position::CenterBack,
+            Position::LeftBack,
+            Position::RightWingBack,
+            Position::LeftWingBack,
+            Position::DefensiveMidfielder,
+            Position::CentralMidfielder,
+            Position::AttackingMidfielder,
+            Position::RightMidfielder,
+            Position::LeftMidfielder,
+            Position::RightWinger,
+            Position::LeftWinger,
+            Position::Striker,
+            Position::Defender,
+            Position::Midfielder,
+            Position::Forward,
+        ];
+        for position in &positions {
+            for role in [PlayerRole::HalfBack, PlayerRole::DefensiveWinger] {
+                assert!(
+                    !position.valid_roles().contains(&role),
+                    "{position:?} offers {role:?}"
+                );
+            }
+        }
+        let mut attrs = flat_attrs(50);
+        (
+            attrs.positioning,
+            attrs.passing,
+            attrs.tackling,
+            attrs.stamina,
+            attrs.crossing,
+        ) = (95, 95, 95, 95, 95);
+        for position in [
+            Position::DefensiveMidfielder,
+            Position::RightMidfielder,
+            Position::LeftWinger,
+        ] {
+            let built_for_it = player("p", position.clone(), attrs.clone());
+            for style in [
+                PlayStyle::Balanced,
+                PlayStyle::Defensive,
+                PlayStyle::Counter,
+            ] {
+                let role = role_for_position(&built_for_it, &position, &style);
+                assert!(!matches!(
+                    role,
+                    PlayerRole::HalfBack | PlayerRole::DefensiveWinger
+                ));
+            }
+        }
     }
 
     fn club(play_style: PlayStyle) -> Team {

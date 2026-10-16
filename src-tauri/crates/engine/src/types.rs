@@ -48,6 +48,9 @@ pub enum PlayerRole {
     WingBack,
     // Defensive Midfielder
     AnchorMan,
+    // Phase 2: carried, but no role modifier yet and no position admits them.
+    HalfBack,
+    DefensiveWinger,
     BallWinner,
     DeepLyingPlaymaker,
     // Central Midfielder

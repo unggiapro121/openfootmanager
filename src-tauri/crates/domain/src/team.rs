@@ -117,6 +117,9 @@ pub enum PlayerRole {
     // Defensive Midfielder
     AnchorMan,
     BallWinner,
+    /// Drops between the centre-backs in build-up (phase 2). Not offered at
+    /// any position yet: its lane mechanics arrive in P4.4.
+    HalfBack,
     DeepLyingPlaymaker,
     // Central Midfielder
     BoxToBox,
@@ -127,6 +130,8 @@ pub enum PlayerRole {
     ShadowStriker,
     // Wide
     WideForward,
+    /// A wide man who tracks back first (phase 2). Not offered yet; see HalfBack.
+    DefensiveWinger,
     InsideForward,
     InvertedWinger,
     // Striker
@@ -154,6 +159,8 @@ impl std::str::FromStr for PlayerRole {
             "InvertedFB" => Ok(Self::InvertedFB),
             "WingBack" => Ok(Self::WingBack),
             "AnchorMan" => Ok(Self::AnchorMan),
+            "HalfBack" => Ok(Self::HalfBack),
+            "DefensiveWinger" => Ok(Self::DefensiveWinger),
             "BallWinner" => Ok(Self::BallWinner),
             "DeepLyingPlaymaker" => Ok(Self::DeepLyingPlaymaker),
             "BoxToBox" => Ok(Self::BoxToBox),

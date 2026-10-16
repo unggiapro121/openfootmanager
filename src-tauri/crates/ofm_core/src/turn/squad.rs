@@ -654,6 +654,8 @@ pub(crate) fn domain_to_engine_role(role: &domain::team::PlayerRole) -> EnginePl
         domain::team::PlayerRole::TargetMan => EnginePlayerRole::TargetMan,
         domain::team::PlayerRole::DeepLyingForward => EnginePlayerRole::DeepLyingForward,
         domain::team::PlayerRole::False9 => EnginePlayerRole::False9,
+        domain::team::PlayerRole::HalfBack => EnginePlayerRole::HalfBack,
+        domain::team::PlayerRole::DefensiveWinger => EnginePlayerRole::DefensiveWinger,
         domain::team::PlayerRole::PressingForward => EnginePlayerRole::PressingForward,
         domain::team::PlayerRole::CompleteForward => EnginePlayerRole::CompleteForward,
     }
