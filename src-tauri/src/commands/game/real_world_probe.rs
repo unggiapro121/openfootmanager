@@ -109,6 +109,9 @@ struct ProbeReport {
     mean_ovr_by_group: BTreeMap<String, f64>,
     /// How many players carry each trait.
     trait_counts: BTreeMap<String, u32>,
+    /// Share of players at each natural position who shoot from distance by
+    /// habit (phase 2, P1.5): (players, share in %).
+    shoots_from_distance_by_position: BTreeMap<String, (u32, f64)>,
 }
 
 fn build_game(package: &Path, seed: u64) -> Game {
@@ -206,6 +209,28 @@ fn mean_ovr_by_group(game: &Game) -> BTreeMap<String, f64> {
         .collect()
 }
 
+fn shoots_from_distance_by_position(game: &Game) -> BTreeMap<String, (u32, f64)> {
+    let mut counts: BTreeMap<String, (u32, u32)> = BTreeMap::new();
+    for player in &game.players {
+        let entry = counts
+            .entry(format!("{:?}", player.natural_position))
+            .or_default();
+        entry.0 += 1;
+        entry.1 += u32::from(
+            player
+                .traits
+                .contains(&domain::player::PlayerTrait::ShootsFromDistance),
+        );
+    }
+    counts
+        .into_iter()
+        .map(|(position, (n, with))| {
+            let share = f64::from(with) / f64::from(n.max(1)) * 100.0;
+            (position, (n, (share * 10.0).round() / 10.0))
+        })
+        .collect()
+}
+
 fn trait_counts(game: &Game) -> BTreeMap<String, u32> {
     let mut counts = BTreeMap::new();
     for player in &game.players {
@@ -219,6 +244,47 @@ fn trait_counts(game: &Game) -> BTreeMap<String, u32> {
 /// Given the real-world package and a fixed seed,
 /// when a career is opened and `OFM_PROBE_DAYS` days are played,
 /// then the league results, OVR means and trait counts are printed for comparison.
+/// Given the real-world package,
+/// when a career opens,
+/// then the share of players who shoot from distance by habit is printed by
+/// natural position, real (package) and generated players apart: the habit's
+/// base rates were set on the real ones (P1.5), and the generator's flat
+/// attribute draws put generated attackers above them.
+#[test]
+#[ignore = "builds the real-world package; run explicitly with OFM_REAL_WORLD_PACKAGE"]
+fn real_world_habit_shares() {
+    let Ok(package) = std::env::var("OFM_REAL_WORLD_PACKAGE") else {
+        return;
+    };
+    let game = build_game(
+        Path::new(&package),
+        env_or("OFM_PROBE_SEED", 20_260_601_u64),
+    );
+    // Real (package) players carry slug ids; generated ones carry UUIDs.
+    let mut by: BTreeMap<(String, bool), (u32, u32)> = BTreeMap::new();
+    for player in &game.players {
+        let generated = player.id.len() == 36 && player.id.matches('-').count() == 4;
+        let e = by
+            .entry((format!("{:?}", player.natural_position), generated))
+            .or_default();
+        e.0 += 1;
+        e.1 += u32::from(
+            player
+                .traits
+                .contains(&domain::player::PlayerTrait::ShootsFromDistance),
+        );
+    }
+    for ((position, generated), (n, with)) in by {
+        if n >= 50 {
+            println!(
+                "{position:<22} {:<9} n {n:>5}  {:.1}%",
+                if generated { "generated" } else { "real" },
+                f64::from(with) / f64::from(n) * 100.0
+            );
+        }
+    }
+}
+
 #[test]
 #[ignore = "builds the real-world package and plays months of it; run explicitly"]
 fn real_world_probe() {
@@ -265,6 +331,7 @@ fn real_world_probe() {
         league: pooled,
         mean_ovr_by_group: mean_ovr_by_group(&game),
         trait_counts: trait_counts(&game),
+        shoots_from_distance_by_position: shoots_from_distance_by_position(&game),
     };
     let l = &report.league;
     println!(
@@ -292,6 +359,10 @@ fn real_world_probe() {
         report.mean_ovr_by_group
     );
     println!("  traits (last run): {:?}", report.trait_counts);
+    println!(
+        "  shoots from distance by natural position (players, %): {:?}",
+        report.shoots_from_distance_by_position
+    );
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
         let json = serde_json::to_string_pretty(&report).expect("probe report serializes");
         std::fs::write(&out, json).expect("probe report written");

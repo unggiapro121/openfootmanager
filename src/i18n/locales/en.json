@@ -3906,14 +3906,46 @@
       "label": "Engine",
       "desc": "Box-to-box powerhouse"
     },
-    "SetPieceSpecialist": {
-      "label": "Set Piece Spec.",
-      "desc": "Deadly from dead balls"
+    "DeadBallSpecialist": {
+      "label": "Dead Ball Spec.",
+      "desc": "Deadly from free kicks and corners"
+    },
+    "LongPasser": {
+      "label": "Long Passer",
+      "desc": "Switches play with pinpoint long balls"
+    },
+    "Crosser": {
+      "label": "Crosser",
+      "desc": "Whips in dangerous crosses"
+    },
+    "Curler": {
+      "label": "Curler",
+      "desc": "Bends shots around the keeper"
+    },
+    "LongShooter": {
+      "label": "Long Shooter",
+      "desc": "Dangerous from outside the box"
+    },
+    "PowerHeader": {
+      "label": "Power Header",
+      "desc": "Heads the ball with real power"
+    },
+    "PressResistant": {
+      "label": "Press Resistant",
+      "desc": "Keeps the ball under pressure"
+    },
+    "TikiTaka": {
+      "label": "Tiki-Taka",
+      "desc": "Thrives on quick short passing"
     },
     "Wonderkid": {
       "label": "Wonderkid",
       "desc": "Your scouts judge this youngster to have exceptional potential",
       "scoutedPotential": "Scouted potential"
+    },
+    "ShootsFromDistance": {
+      "label": "Shoots From Distance",
+      "desc": "Shoots from distance more than most"
     }
   },
   "date": {

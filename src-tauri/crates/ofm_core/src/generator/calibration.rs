@@ -411,6 +411,7 @@ pub(super) fn calibrate_generated_player(
     let ovr = natural_ovr(player).round() as u8;
     player.potential = draw_potential(ovr, age, rng);
     crate::player_rating::refresh_player_derived(player, current_year);
+    crate::assigned_traits::assign_traits(player, current_year);
     reprice_generated_player(player, current_year);
 }
 

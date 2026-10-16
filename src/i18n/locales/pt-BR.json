@@ -3906,14 +3906,46 @@
       "label": "Motor",
       "desc": "Potência área-a-área"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Espec. Bola Parada",
-      "desc": "Letal nas cobranças"
+      "desc": "Letal em faltas e escanteios"
+    },
+    "LongPasser": {
+      "label": "Lançador",
+      "desc": "Vira o jogo com lançamentos precisos"
+    },
+    "Crosser": {
+      "label": "Cruzador",
+      "desc": "Levanta cruzamentos perigosos na área"
+    },
+    "Curler": {
+      "label": "Chute Colocado",
+      "desc": "Bate de curva longe do goleiro"
+    },
+    "LongShooter": {
+      "label": "Finalizador de Longe",
+      "desc": "Perigoso de fora da área"
+    },
+    "PowerHeader": {
+      "label": "Cabeceador",
+      "desc": "Cabeceia com muita força"
+    },
+    "PressResistant": {
+      "label": "Resistente à Pressão",
+      "desc": "Segura a bola mesmo pressionado"
+    },
+    "TikiTaka": {
+      "label": "Toque Curto",
+      "desc": "Brilha na troca rápida de passes curtos"
     },
     "Wonderkid": {
       "label": "Prodígio",
       "desc": "Seus olheiros avaliam que este jovem tem um potencial excepcional",
       "scoutedPotential": "Potencial estimado"
+    },
+    "ShootsFromDistance": {
+      "label": "Chuta de Longe",
+      "desc": "Arrisca de longe mais do que a maioria"
     }
   },
   "date": {

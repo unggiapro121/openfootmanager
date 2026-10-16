@@ -3906,14 +3906,46 @@
       "label": "Mesin Berlari",
       "desc": "Tenaga kotak ke kotak"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Spesialis Bola Mati",
-      "desc": "Mematikan dari situasi bola mati"
+      "desc": "Mematikan dari tendangan bebas dan sepak pojok"
+    },
+    "LongPasser": {
+      "label": "Pengumpan Jauh",
+      "desc": "Memindahkan permainan dengan umpan panjang yang akurat"
+    },
+    "Crosser": {
+      "label": "Spesialis Umpan Silang",
+      "desc": "Melepaskan umpan silang berbahaya"
+    },
+    "Curler": {
+      "label": "Tendangan Melengkung",
+      "desc": "Membelokkan tembakan menjauhi kiper"
+    },
+    "LongShooter": {
+      "label": "Penembak Jarak Jauh",
+      "desc": "Berbahaya dari luar kotak penalti"
+    },
+    "PowerHeader": {
+      "label": "Sundulan Keras",
+      "desc": "Menyundul bola dengan sangat keras"
+    },
+    "PressResistant": {
+      "label": "Tahan Tekanan",
+      "desc": "Menjaga bola di bawah tekanan"
+    },
+    "TikiTaka": {
+      "label": "Umpan Pendek",
+      "desc": "Unggul dalam umpan pendek yang cepat"
     },
     "Wonderkid": {
       "label": "Wonderkid",
       "desc": "Pemandu bakatmu menilai pemain muda ini punya potensi luar biasa",
       "scoutedPotential": "Potensi hasil scouting"
+    },
+    "ShootsFromDistance": {
+      "label": "Suka Menembak Jauh",
+      "desc": "Lebih sering menembak dari jauh dibanding kebanyakan pemain"
     }
   },
   "date": {

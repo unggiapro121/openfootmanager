@@ -3906,14 +3906,46 @@
       "label": "Motore",
       "desc": "Forza box-to-box"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Spec. piazzati",
-      "desc": "Micidiale sui calci piazzati"
+      "desc": "Micidiale su punizioni e calci d'angolo"
+    },
+    "LongPasser": {
+      "label": "Lanciatore",
+      "desc": "Cambia gioco con lanci lunghi precisi"
+    },
+    "Crosser": {
+      "label": "Crossatore",
+      "desc": "Mette in mezzo cross pericolosi"
+    },
+    "Curler": {
+      "label": "Tiro a giro",
+      "desc": "Piega il pallone lontano dal portiere"
+    },
+    "LongShooter": {
+      "label": "Tiratore da fuori",
+      "desc": "Pericoloso da fuori area"
+    },
+    "PowerHeader": {
+      "label": "Colpitore di testa",
+      "desc": "Colpisce di testa con potenza"
+    },
+    "PressResistant": {
+      "label": "Resiste al pressing",
+      "desc": "Protegge palla sotto pressione"
+    },
+    "TikiTaka": {
+      "label": "Fraseggio",
+      "desc": "Brilla nel fraseggio rapido palla a terra"
     },
     "Wonderkid": {
       "label": "Predestinato",
       "desc": "I tuoi osservatori ritengono che questo giovane abbia un potenziale eccezionale",
       "scoutedPotential": "Potenziale stimato"
+    },
+    "ShootsFromDistance": {
+      "label": "Tira da lontano",
+      "desc": "Tenta da lontano più della maggior parte"
     }
   },
   "date": {

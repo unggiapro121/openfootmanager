@@ -3906,14 +3906,46 @@
       "label": "Motorová myš",
       "desc": "Neúnavný záložník typu box-to-box"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Specialista na standardky",
-      "desc": "Smrtící ze standardních situací"
+      "desc": "Smrtící z přímých kopů a rohů"
+    },
+    "LongPasser": {
+      "label": "Dlouhé přihrávky",
+      "desc": "Mění stranu přesnými dlouhými míči"
+    },
+    "Crosser": {
+      "label": "Specialista na centry",
+      "desc": "Posílá nebezpečné centry"
+    },
+    "Curler": {
+      "label": "Falšovaná střela",
+      "desc": "Stáčí střely mimo dosah brankáře"
+    },
+    "LongShooter": {
+      "label": "Střelec z dálky",
+      "desc": "Nebezpečný zpoza vápna"
+    },
+    "PowerHeader": {
+      "label": "Silová hlavička",
+      "desc": "Hlavičkuje s velkou silou"
+    },
+    "PressResistant": {
+      "label": "Odolný vůči presinku",
+      "desc": "Udrží míč i pod tlakem"
+    },
+    "TikiTaka": {
+      "label": "Krátká kombinace",
+      "desc": "Vyniká v rychlé kombinaci krátkých přihrávek"
     },
     "Wonderkid": {
       "label": "Zázračné dítě",
       "desc": "Vaši skauti hodnotí tohoto mladíka jako výjimečný talent",
       "scoutedPotential": "Odhadovaný potenciál"
+    },
+    "ShootsFromDistance": {
+      "label": "Zkouší to z dálky",
+      "desc": "Střílí z dálky častěji než většina hráčů"
     }
   },
   "date": {

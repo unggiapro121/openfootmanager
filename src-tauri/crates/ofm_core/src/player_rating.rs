@@ -52,8 +52,10 @@ pub fn refresh_player_derived(player: &mut Player, current_year: u32) {
         player.potential.max(ovr)
     };
 
-    // 3. Recompute attribute-based traits
+    // 3. Recompute attribute-based traits, keeping the habits a player was
+    //    given once (they are not read off attributes and must not be lost).
     let mut traits = domain::player::compute_traits(&player.attributes, &player.natural_position);
+    traits.extend(player.traits.iter().filter(|t| t.is_assigned()).cloned());
 
     // 4. Award Wonderkid trait: young player whose ceiling far exceeds current ability
     if qualifies_for_wonderkid(age, potential, ovr) && !traits.contains(&PlayerTrait::Wonderkid) {
