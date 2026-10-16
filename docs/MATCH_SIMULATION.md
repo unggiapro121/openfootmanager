@@ -90,15 +90,31 @@ league-wide share of duels the attacker wins where it was before the formulas ch
 |---|---|---|
 | Midfield | attacker: passing, dribbling, vision, teamwork, agility, strength; defender: tackling, positioning, decisions, teamwork, pace, strength | 1 (higher compounds over ~90 duels a match into runaway favourites) |
 | One-on-one | technique: dribbling + composure vs tackling + defending + positioning; physique: pace + agility + strength on both sides (the forward's weighted to pace, the defender's to strength) | 2 and 2 |
-| Aerial (after a cross) | `0.55·aerial + 0.20·positioning + 0.25·strength`, times a height factor (±8% across ±20 cm of 182 cm; an unknown height of 0 is neutral) | 2 |
+| Aerial (after a cross) | `0.55·aerial + 0.20·positioning + 0.25·strength`, times a height factor (±8% across ±20 cm of 182 cm; an unknown height of 0 is neutral) and ×1.08 for `AerialDominance` | 2 |
 
-When the attacker wins the aerial duel, **he** takes the shot and the crosser is credited with the
-assist (`ShotSetup`); the header taker is never the crosser. Every other shot still draws its
-shooter and provider as before.
+The aerial anchor is the one that moved: since phase 2 (P2.2) it is 0.64, so defenders win about 58%
+of the duels after a cross, as they do in real football (they had won 48%). `ofm-sim-bench
+--guardrails` gates the share at 54–62%.
+
+### Headers
+
+When the attacker wins the aerial duel, **he** heads at goal and the crosser is credited with the
+assist; the header taker is never the crosser. A header is its own attempt
+(`live_match/header.rs`), not a shot with the feet:
+
+```text
+rating    = 0.60·heading + 0.20·composure + 0.20·decisions            (× condition)
+on target = clamp(0.40 + (rating − 50)/200, 0.15, 0.85), × 1.08 for PowerHeader
+keeper    = 0.50·reflexes + 0.35·handling + 0.15·positioning          (× condition, keeper traits)
+goal      = clamp(0.28·defensive line + (rating − keeper)/160, 0.08, 0.65)
+```
+
+A miss is off target (a won header is never blocked); a save is parried for a corner 40% of the
+time, as any save. A header is never fouled into a penalty.
 
 ### Shot Resolution
 
-When the ball reaches the attacking box, a shot is taken:
+When the ball reaches the attacking box other than from a won header, a shot is taken:
 
 1. **Accuracy check** — base accuracy (configurable, default 45%) adjusted by the shooter's `shooting + composure + decisions` rating. Clamped to 15%–85%.
    - **Miss**: 40% chance the shot is blocked, 60% chance off target.
@@ -135,11 +151,12 @@ Players carry 26 attributes, grouped into categories:
 **Mental**: positioning, vision, decisions, composure, aggression, teamwork, leadership
 **Goalkeeper**: handling, reflexes, aerial (jumping and contesting a high ball)
 
-The seven split attributes came out of four older blends. The engine's phases are still tuned on
-those blends, so the bridge (`ofm_core/turn/squad.rs`) hands the engine `passing`, `shooting`,
-`dribbling` and `aerial` rebuilt by the pre-split formulas (`PlayerAttributes::legacy_blends`),
-and the seven ride along in `PlayerData` unread. Each phase moves onto the split attributes in
-phase 2; until then a match plays exactly as it did.
+The seven split attributes came out of four older blends. The phases not yet moved onto them are
+tuned on those blends, so the bridge (`ofm_core/turn/squad.rs`) hands the engine `passing`,
+`shooting` and `dribbling` rebuilt by the pre-split formulas (`PlayerAttributes::legacy_blends`).
+`aerial` and `heading` moved in phase 2's P2.2: the aerial duel reads `aerial` (jumping and
+strength) and the header reads `heading`. A synthetic player who leaves any of the seven at 0 has
+it filled at kick-off from the field it split from (`PlayerData::declare_split_attributes`).
 
 Besides attributes, `PlayerData` carries `height_cm` (0 when not known). It feeds only the height
 factor of the aerial duel. The generator draws it with the player's weight and ties `aerial`,
@@ -291,8 +308,24 @@ After simulation, a `MatchReport` is generated from the raw event list:
 
 - **TeamStats** — goals, shots (on/off/blocked), passes (completed/intercepted), tackles, interceptions, fouls, corners, free kicks, penalties, cards, possession ticks
 - **PlayerMatchStats** — minutes played, goals, assists, shots, passes, tackles, interceptions, fouls, cards, match rating (0–10)
-- **GoalDetails** — minute, scorer, assister, whether it was a penalty
+- **GoalDetails** — minute, scorer, assister, and the goal's source (`GoalSource`: open play, header, corner, free kick, penalty)
 - **Possession %** — computed from possession ticks: `home_ticks / (home_ticks + away_ticks)`
+
+### Event protocol 2
+
+Reports and snapshots carry `protocol_version` (2 for every match played since phase 2's P2.1, 1 when
+read from before). Protocol 2 events add four optional fields, filled in by `LiveMatchState::emit`,
+the one place every action's events pass through:
+
+| Field | On | Meaning |
+|---|---|---|
+| `shot_kind` | every attempt (shots, goals, penalties) | `Open`, `Header` or `Penalty` |
+| `set_piece` | a `Corner` or `FreeKick` event, and everything the action a corner leads to produces | `Corner` or `FreeKick` |
+| `goal_source` | `Goal`, `PenaltyGoal` | decided once, when the goal is scored (`GoalSource::of`): a penalty is a penalty, then a corner beats a header, then the rest is open play. The report, the match history (`CompactMatchEvent.goal_source`) and the UI only read it |
+| `lane` | events led by a player in the XI | `Left`, `Centre` or `Right`, from his formation slot as his side attacks. Display only; the engine does not read it |
+
+Before protocol 2 a goal's source was inferred from the events before it, which counted a goal
+scored several actions after a free kick as a free-kick goal.
 
 Minutes are counted from when a player came on: a substitute who is himself taken off is credited
 with the time between the two substitutions, not with every minute up to his exit.
@@ -491,7 +524,9 @@ Every change that can move results is measured with `sim-bench` (`src-tauri/crat
 - `--guardrails` is the phase-2 gate: a fixed managed sweep (gaps 0–20 step 2, 60 pairs, 2,000
   matches a gap) judged against the agreed bands, `--stage lan-can` for the loose band and
   `--stage gd5` for the calibration target. It exits 1 on a FAIL. Build it with `--release`;
-  in a debug build the timing row is reported but not judged.
+  in a debug build the timing row is reported but not judged. Rows that compare sampled rates
+  allow for sampling noise: the win curve may dip only within 2σ, and the gap-0 mirror split may
+  differ by more than 3 points only within 2σ (about 3.9 points over 2,000 matches).
 
 ```bash
 cargo run --release -p sim-bench -- --guardrails --stage lan-can --out guardrails.json

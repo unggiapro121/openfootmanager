@@ -730,9 +730,11 @@ fn to_engine_player(
         DomainPosition::Forward => Position::Forward,
         _ => Position::Midfielder,
     };
-    // The engine's phases are still tuned on the pre-split blends, so the four
-    // blended fields carry those; the split attributes ride along unread until
-    // each phase moves over to them (phase 2, GĐ2–GĐ4).
+    // The engine's phases that have not moved to the split attributes yet are
+    // tuned on the pre-split blends, so those fields carry the blends; each
+    // goes over to its own value as its phase moves (phase 2, GĐ2–GĐ4).
+    // `aerial` moved at P2.2: the duel reads jumping and strength, the header
+    // reads `heading`.
     let blends = p
         .attributes
         .legacy_blends(p.natural_position.to_group_position() == DomainPosition::Goalkeeper);
@@ -762,7 +764,7 @@ fn to_engine_player(
         leadership: p.attributes.leadership,
         handling: p.attributes.handling,
         reflexes: p.attributes.reflexes,
-        aerial: blends.aerial,
+        aerial: p.attributes.aerial,
         long_passing: p.attributes.long_passing,
         crossing: p.attributes.crossing,
         curve: p.attributes.curve,

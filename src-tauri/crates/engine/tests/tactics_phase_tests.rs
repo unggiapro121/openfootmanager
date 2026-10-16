@@ -15,7 +15,11 @@ use engine::{
 use rand::SeedableRng;
 use rand::rngs::StdRng;
 
-const SEEDS: u64 = 200;
+/// Matches per dial setting. The tempo dial moves possession and shots by
+/// about 1%, which over 200 matches was inside the sampling noise: P2.2's
+/// header rework changed nothing about tempo, only the random stream, and two
+/// of these flipped. At 1,000 the effects clear the noise on staging and after.
+const SEEDS: u64 = 1000;
 const SHOTS: [EventType; 4] = [
     EventType::Goal,
     EventType::ShotSaved,

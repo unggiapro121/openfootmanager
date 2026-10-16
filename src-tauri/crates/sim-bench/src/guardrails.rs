@@ -154,8 +154,12 @@ fn monotone_gap_curve(result: &SweepResult) -> Check {
 }
 
 /// At gap 0 the two sides are mirror images and home alternates, so the win
-/// and loss rates must agree. At GĐ5 the split must also be near 35/30/35:
-/// two even sides draw about 30% of the time in real football.
+/// and loss rates must agree. They are judged against sampling noise, as the
+/// monotone curve is: a gap over 3 points fails only when it is also beyond
+/// two standard errors of a fair split, which over the sweep's 2,000 games is
+/// about 3.9 points. A bare "≤ 3" failed a fair engine about one run in eight
+/// (phase 2, P2.2). At GĐ5 the split must also be near 35/30/35: two even
+/// sides draw about 30% of the time in real football.
 fn zero_gap_symmetry(result: &SweepResult, stage: Stage) -> Check {
     let Some(row) = result.rows.iter().find(|r| r.gap == 0) else {
         return Check {
@@ -167,21 +171,29 @@ fn zero_gap_symmetry(result: &SweepResult, stage: Stage) -> Check {
     };
     let (win, draw, loss) = (row.pct(row.wins), row.pct(row.draws), row.pct(row.losses));
     let asymmetry = (win - loss).abs();
+    // Standard error of (win − loss), in points: Var = (pW + pL − (pW − pL)²) / n.
+    let (p_win, p_loss) = (win / 100.0, loss / 100.0);
+    let noise = 2.0
+        * ((p_win + p_loss - (p_win - p_loss).powi(2)) / f64::from(row.games.max(1))).sqrt()
+        * 100.0;
+    let symmetric = asymmetry <= 3.0_f64.max(noise);
     let (verdict, band) = match stage {
         Stage::LanCan => (
-            if asymmetry <= 3.0 {
+            if symmetric {
                 Verdict::Pass
             } else {
                 Verdict::Fail
             },
-            format!("≤ 3 (đang {win:.1}/{draw:.1}/{loss:.1})"),
+            format!("≤ 3 hoặc ≤ 2σ = {noise:.1} (đang {win:.1}/{draw:.1}/{loss:.1})"),
         ),
         Stage::Gd5 => {
             let near = |v: f64, target: f64| (v - target).abs() <= 3.0;
-            let ok = asymmetry <= 3.0 && near(win, 35.0) && near(draw, 30.0) && near(loss, 35.0);
+            let ok = symmetric && near(win, 35.0) && near(draw, 30.0) && near(loss, 35.0);
             (
                 if ok { Verdict::Pass } else { Verdict::Fail },
-                format!("≤ 3 và 35/30/35 ±3 (đang {win:.1}/{draw:.1}/{loss:.1})"),
+                format!(
+                    "≤ 3 hoặc ≤ 2σ = {noise:.1}, và 35/30/35 ±3 (đang {win:.1}/{draw:.1}/{loss:.1})"
+                ),
             )
         }
     };
@@ -233,11 +245,10 @@ fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
 fn defender_aerial_win(result: &SweepResult, stage: Stage) -> Check {
     let duels = &result.stats.duels;
     let value = duels.tally.defender_aerial_win_pct();
-    // Only measured in the loose band until P2.2 (the two-stage aerial duel)
-    // reworks the contest: staging sits at 48%, so a gate here would fail every
-    // GĐ1 change for something it does not touch. Judge it at 54–62 from P2.2.
+    // Gated in the loose band since P2.2, the two-stage aerial duel, which set
+    // the duel's anchor for defenders to win 58% (decision X22).
     let (verdict, band) = match stage {
-        Stage::LanCan => (Verdict::Measure, "đo tới P2.2 (sau đó 54–62)".to_string()),
+        Stage::LanCan => (in_band(value, 54.0, 62.0), "54–62".to_string()),
         Stage::Gd5 => (in_band(value, 56.0, 59.0), "56–59".to_string()),
     };
     Check {
@@ -367,6 +378,26 @@ mod tests {
         );
     }
 
+    /// Given mirrored sides 3.1 points apart over 2,000 games (36.9/23.1/40.0),
+    /// within two standard errors of an even split,
+    /// when gap 0 is judged,
+    /// then it passes: the gap is the sampling noise of a fair split, which a
+    /// bare "≤ 3" would fail about one run in eight. The same gap over 20,000
+    /// games is no longer noise, and fails.
+    #[test]
+    fn a_mirror_gap_within_sampling_noise_passes() {
+        let noisy = result(vec![row(0, 738, 462, 800)]);
+        assert_eq!(
+            zero_gap_symmetry(&noisy, Stage::LanCan).verdict,
+            Verdict::Pass
+        );
+        let real = result(vec![row(0, 7_380, 4_620, 8_000)]);
+        assert_eq!(
+            zero_gap_symmetry(&real, Stage::LanCan).verdict,
+            Verdict::Fail
+        );
+    }
+
     /// Given an even mirror split of 30/40/30,
     /// when gap 0 is judged at each stage,
     /// then the loose band passes it and GĐ5 fails it for missing 35/30/35,
@@ -418,18 +449,26 @@ mod tests {
         assert_eq!(goals_per_game(&r, Stage::Gd5).verdict, Verdict::Pass);
     }
 
-    /// Given defenders winning 48% in the air, as on staging before P2.2,
+    /// Given defenders winning 48% in the air, as before P2.2, and then 58%,
     /// when the aerial row is judged,
-    /// then the loose band only measures it and GĐ5 fails it.
+    /// then since the two-stage aerial duel both stages gate it: 48% fails
+    /// both, 58% passes the loose 54–62 band and GĐ5's 56–59.
     #[test]
-    fn aerial_duels_are_only_measured_until_the_two_stage_aerial_duel() {
+    fn aerial_duels_are_gated_since_the_two_stage_aerial_duel() {
         let mut r = result(vec![row(0, 800, 400, 800)]);
         r.stats.duels.tally.aerial_won = 52;
         r.stats.duels.tally.aerial_lost = 48;
         assert_eq!(
             defender_aerial_win(&r, Stage::LanCan).verdict,
-            Verdict::Measure
+            Verdict::Fail
         );
         assert_eq!(defender_aerial_win(&r, Stage::Gd5).verdict, Verdict::Fail);
+        r.stats.duels.tally.aerial_won = 42;
+        r.stats.duels.tally.aerial_lost = 58;
+        assert_eq!(
+            defender_aerial_win(&r, Stage::LanCan).verdict,
+            Verdict::Pass
+        );
+        assert_eq!(defender_aerial_win(&r, Stage::Gd5).verdict, Verdict::Pass);
     }
 }

@@ -33,6 +33,8 @@ pub(crate) struct PlayerSnap {
     pub handling: u8,
     pub reflexes: u8,
     pub aerial: u8,
+    /// Heading technique: where a won header goes (phase 2, P2.2).
+    pub heading: u8,
     pub height_cm: u16,
     pub traits: Vec<String>,
     pub role: PlayerRole,
@@ -68,6 +70,7 @@ impl PlayerSnap {
             handling: 0,
             reflexes: 0,
             aerial: 0,
+            heading: 0,
             height_cm: 0,
             traits: Vec::new(),
             role: PlayerRole::Standard,
@@ -96,6 +99,7 @@ impl PlayerSnap {
             handling: p.handling,
             reflexes: p.reflexes,
             aerial: p.aerial,
+            heading: p.heading,
             height_cm: p.height_cm,
             traits: p.traits.clone(),
             role: p.role,
@@ -194,16 +198,6 @@ pub(crate) fn snap_header_target<R: Rng>(
             available[rng.random_range(0..available.len())],
         ))
     }
-}
-
-/// What an attack already knows when it shoots: who won the header that set it
-/// up, who crossed the ball, and what kind of attempt it is. Left empty, the
-/// shooter and the provider are drawn as they always were, for an open shot.
-#[derive(Clone, Default)]
-pub(crate) struct ShotSetup {
-    pub shooter: Option<PlayerSnap>,
-    pub assister: Option<String>,
-    pub kind: crate::event::ShotKind,
 }
 
 pub(crate) fn trait_bonus(snap: &PlayerSnap, context: TraitContext) -> f64 {
