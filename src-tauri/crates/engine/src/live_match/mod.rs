@@ -2,6 +2,7 @@ mod header;
 mod helpers;
 mod observation;
 mod penalty;
+mod set_pieces;
 mod simulation;
 mod snapshot;
 mod substitution;
@@ -291,11 +292,8 @@ pub struct LiveMatchState {
     // Rolling window of the last 10 ball_zone values (oldest first)
     recent_zones: VecDeque<Zone>,
 
-    /// A set piece that left `Side` with the ball in the opposition box: the
-    /// next action, if that side still has the ball there, is part of it.
-    pending_set_piece: Option<(SetPiece, Side)>,
-    /// The set piece the action being resolved belongs to. `emit` tags every
-    /// event of the action with it.
+    /// The set piece being played out (a corner, from the kick to the header
+    /// or the clearance). `emit` tags every event with it.
     active_set_piece: Option<SetPiece>,
 }
 
@@ -360,7 +358,6 @@ impl LiveMatchState {
             player_conditions,
             penalty_state: PenaltyShootoutState::default(),
             recent_zones: VecDeque::with_capacity(10),
-            pending_set_piece: None,
             active_set_piece: None,
         }
     }

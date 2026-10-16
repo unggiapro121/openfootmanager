@@ -297,6 +297,10 @@ impl BenchStats {
     pub fn header_goal_pct(&self) -> f64 {
         self.header_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
+    /// Goals a corner leads to, per corner, in percent (real football: 2.5–3).
+    pub fn goals_per_corner_pct(&self) -> f64 {
+        self.corner_goals as f64 / self.corners.max(1) as f64 * 100.0
+    }
     pub fn penalty_goal_pct(&self) -> f64 {
         self.penalty_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
@@ -351,6 +355,7 @@ impl BenchStats {
                 free_kicks_per_game: self.free_kicks_pg(),
                 goal_kicks_per_game: self.goal_kicks_pg(),
                 crosses_per_game: self.crosses_pg(),
+                goals_per_corner_pct: self.goals_per_corner_pct(),
             },
             goal_sources: GoalSourcesJson {
                 open_play_pct: self.open_play_goal_pct(),
@@ -434,6 +439,7 @@ pub struct SetPiecesJson {
     pub free_kicks_per_game: f64,
     pub goal_kicks_per_game: f64,
     pub crosses_per_game: f64,
+    pub goals_per_corner_pct: f64,
 }
 
 #[derive(Serialize)]
@@ -486,7 +492,11 @@ impl DuelCounts {
                 }
                 EventType::Dribble => self.one_v_one_won += 1,
                 EventType::DribbleTackled => self.one_v_one_lost += 1,
-                EventType::Clearance if previous != Some(&EventType::Cross) => {
+                // A corner the defence clears before anyone meets it is no
+                // one-on-one.
+                EventType::Clearance
+                    if previous != Some(&EventType::Cross) && event.set_piece.is_none() =>
+                {
                     self.one_v_one_lost += 1
                 }
                 _ => {}
