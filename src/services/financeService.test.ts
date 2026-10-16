@@ -4,7 +4,10 @@ import { invoke } from "@tauri-apps/api/core";
 import {
   getFacilityUpgradePreview,
   getFinanceSnapshot,
+  launchMarketingCampaign,
   rebalanceBudgets,
+  requestBoardSupport,
+  requestSponsorPitch,
   upgradeFacility,
 } from "./financeService";
 
@@ -79,5 +82,80 @@ describe("financeService", () => {
       "be.error.finance.facilityUpgradeMaxLevel",
     );
     expect(mockedInvoke).toHaveBeenCalledWith("upgrade_facility", { facility: "Scouting" });
+  });
+
+  it("asks the board for support without sending any arguments", async () => {
+    // Given the board agrees to an emergency cash injection
+    const response = {
+      game: { manager: { id: "manager-1" } },
+      result: {
+        support_amount: 5_000_000,
+        transfer_budget_reduction: 2_000_000,
+        satisfaction_penalty: 5,
+      },
+    };
+    mockedInvoke.mockResolvedValueOnce(response);
+
+    // When the manager asks for board support
+    const result = await requestBoardSupport();
+
+    // Then the backend command is called with no argument object and its answer comes back as is
+    expect(result).toBe(response);
+    expect(mockedInvoke).toHaveBeenCalledWith("request_board_support");
+    expect(mockedInvoke.mock.calls[0]).toHaveLength(1);
+  });
+
+  it("passes the board's refusal through unchanged", async () => {
+    // Given the board refuses because support was already granted this season
+    mockedInvoke.mockRejectedValueOnce("be.error.finance.boardSupportUnavailable");
+
+    // When the manager asks for board support
+    // Then the refusal key reaches the caller untouched
+    await expect(requestBoardSupport()).rejects.toBe("be.error.finance.boardSupportUnavailable");
+  });
+
+  it("pitches the club to sponsors without sending any arguments", async () => {
+    // Given a sponsor answers the pitch with an offer
+    const response = {
+      game: { manager: { id: "manager-1" } },
+      result: {
+        message_id: "msg-1",
+        sponsor_name: "Acme",
+        weekly_amount: 40_000,
+        duration_weeks: 52,
+      },
+    };
+    mockedInvoke.mockResolvedValueOnce(response);
+
+    // When the manager pitches to sponsors
+    const result = await requestSponsorPitch();
+
+    // Then the backend command is called with no argument object and its answer comes back as is
+    expect(result).toBe(response);
+    expect(mockedInvoke).toHaveBeenCalledWith("request_sponsor_pitch");
+    expect(mockedInvoke.mock.calls[0]).toHaveLength(1);
+  });
+
+  it("launches a marketing campaign through the request command", async () => {
+    // Given the campaign runs and earns more than it costs
+    const response = {
+      game: { manager: { id: "manager-1" } },
+      result: {
+        message_id: "msg-2",
+        gross_revenue: 300_000,
+        campaign_cost: 100_000,
+        net_income: 200_000,
+        cooldown_days: 30,
+      },
+    };
+    mockedInvoke.mockResolvedValueOnce(response);
+
+    // When the manager launches a marketing campaign
+    const result = await launchMarketingCampaign();
+
+    // Then the request command is called with no argument object and its answer comes back as is
+    expect(result).toBe(response);
+    expect(mockedInvoke).toHaveBeenCalledWith("request_marketing_campaign");
+    expect(mockedInvoke.mock.calls[0]).toHaveLength(1);
   });
 });

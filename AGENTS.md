@@ -97,7 +97,9 @@ frontend files 500).
 - Frontend (`src/architecture.test.ts`): `src/lib`, `src/utils`, `src/services`, `src/store` import no
   component or page; `src/components/ui` imports no feature folder or page; features do not import
   `src/pages`; `invoke` from `@tauri-apps/api/core` appears only in `src/services/`. Type-only imports
-  and re-exports obey the same rules. review until PR 8
+  and re-exports obey the same rules. test for the `@tauri-apps/api` rule (any `@tauri-apps/api/*`
+  import outside `src/services/` fails `src/architecture.test.ts`; services call `invoke` from
+  `services/transport.ts`); review for the rest until PR 8
 - Frontend presents backend policy; it does not recompute a game rule Rust owns. Prefer a Rust
   projection or generated type over a second hand-written formula. review
 

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { GameStateData } from "../../store/gameStore";
 import {
@@ -14,7 +13,13 @@ import { getEventDisplay, getPlayerName, makeTeamFallback } from "./helpers";
 import { getTalkIcon } from "./TeamTalkIcons";
 import { SubPanel } from "./SubPanel";
 import { FormationPitch } from "./FormationPitch";
-import { swapMatchPositions } from "../../services/liveMatchService";
+import {
+  changeMatchFormation,
+  changeMatchPlayStyle,
+  giveTeamTalk,
+  substituteMatchPlayer,
+  swapMatchPositions,
+} from "../../services/liveMatchService";
 import { createMatchRoleChange } from "./matchRoleChange";
 import { MatchRolePicker } from "./MatchRolePicker";
 import { Badge, TeamLogo, ThemeToggle } from "../ui";
@@ -85,9 +90,7 @@ export default function HalfTimeBreak({
 
   const handleFormationChange = async (formation: string) => {
     try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: { ChangeFormation: { side: userSide, formation } },
-      });
+      const snap = await changeMatchFormation(userSide, formation);
       onUpdateSnapshot(snap);
     } catch (err) {
       console.error("Formation change failed:", err);
@@ -96,9 +99,7 @@ export default function HalfTimeBreak({
 
   const handlePlayStyleChange = async (playStyle: string) => {
     try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: { ChangePlayStyle: { side: userSide, play_style: playStyle } },
-      });
+      const snap = await changeMatchPlayStyle(userSide, playStyle);
       onUpdateSnapshot(snap);
     } catch (err) {
       console.error("Play style change failed:", err);
@@ -107,15 +108,7 @@ export default function HalfTimeBreak({
 
   const handleSubstitution = async (playerOffId: string, playerOnId: string) => {
     try {
-      const snap = await invoke<MatchSnapshot>("apply_match_command", {
-        command: {
-          Substitute: {
-            side: userSide,
-            player_off_id: playerOffId,
-            player_on_id: playerOnId,
-          },
-        },
-      });
+      const snap = await substituteMatchPlayer(userSide, playerOffId, playerOnId);
       onUpdateSnapshot(snap);
       // The panel stays open for the next change; Done closes it.
       return true;
@@ -141,15 +134,7 @@ export default function HalfTimeBreak({
     const oppScore = userSide === "Home" ? snapshot.away_score : snapshot.home_score;
     const context = userScore > oppScore ? "winning" : userScore < oppScore ? "losing" : "drawing";
     try {
-      const results = await invoke<
-        {
-          player_id: string;
-          player_name: string;
-          old_morale: number;
-          new_morale: number;
-          delta: number;
-        }[]
-      >("apply_team_talk", { tone: selectedTalk, context });
+      const results = await giveTeamTalk(selectedTalk, context);
       setTalkResults(results);
     } catch (err) {
       console.error("Team talk failed:", err);

@@ -2,9 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { applyExtraTranslations } from "../lib/extraTranslations";
 import type { JSX } from "react";
 import { useNavigate } from "react-router-dom";
-import { invoke } from "@tauri-apps/api/core";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { listen } from "@tauri-apps/api/event";
 import type { MatchModeType } from "../hooks/useAdvanceTime";
 import { useGameStore } from "../store/gameStore";
 import type { GameStateData, PlayerSelectionOptions } from "../store/gameStore";
@@ -68,6 +65,8 @@ import {
   queueBackgroundPortraitPrewarm,
 } from "../services/portraitService";
 import { getFinanceSnapshot, type TeamFinanceSnapshotData } from "../services/financeService";
+import { destroyWindow, onBackendEvent, onWindowCloseRequested } from "../services/platformService";
+import { exitToMenu, getActiveGame, getActiveSaveId, saveGame } from "../services/sessionService";
 
 const CLUB_TABS = new Set([
   "Squad",
@@ -178,8 +177,8 @@ export default function Dashboard(): JSX.Element {
   }, [gameState]);
   const loadActiveGameState = useCallback(async () => {
     const [stateResult, saveIdResult] = await Promise.allSettled([
-      invoke<GameStateData>("get_active_game"),
-      invoke<string | null>("get_active_save_id"),
+      getActiveGame(),
+      getActiveSaveId(),
     ]);
 
     if (stateResult.status === "rejected") {
@@ -217,7 +216,7 @@ export default function Dashboard(): JSX.Element {
 
   // Refresh state when MCP tools mutate game (backend emits "game-state-changed")
   useEffect(() => {
-    const unlisten = listen("game-state-changed", async () => {
+    const unlisten = onBackendEvent("game-state-changed", async () => {
       try {
         await loadActiveGameState();
       } catch {
@@ -361,7 +360,7 @@ export default function Dashboard(): JSX.Element {
   const handleSave = useCallback(async () => {
     setIsSaving(true);
     try {
-      await invoke("save_game");
+      await saveGame();
       markClean();
       setSaveFlash(true);
       setTimeout(() => setSaveFlash(false), 2000);
@@ -383,8 +382,7 @@ export default function Dashboard(): JSX.Element {
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const isClosingRef = useRef(false);
   useEffect(() => {
-    const appWindow = getCurrentWindow();
-    const unlisten = appWindow.onCloseRequested(async (event) => {
+    const unlisten = onWindowCloseRequested(async (event) => {
       if (isClosingRef.current) return;
       if (isDirty) {
         event.preventDefault();
@@ -401,13 +399,13 @@ export default function Dashboard(): JSX.Element {
     setShowCloseConfirm(false);
     if (save) {
       try {
-        await invoke("save_game");
+        await saveGame();
         markClean();
       } catch (err) {
         console.error("Auto-save on close failed:", err);
       }
     }
-    await getCurrentWindow().destroy();
+    await destroyWindow();
   };
 
   const MODE_META: Record<MatchModeType, DashboardMatchModeMeta> = {
@@ -455,7 +453,7 @@ export default function Dashboard(): JSX.Element {
 
     setIsExitingToMenu(true);
     try {
-      await invoke("exit_to_menu");
+      await exitToMenu();
       clearGame();
       navigate("/");
     } catch (err) {

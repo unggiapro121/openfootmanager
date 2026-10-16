@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import type { GameStateData } from "../../store/gameStore";
 import type { MatchSnapshot } from "./types";
+import {
+  type PressConferenceAnswer,
+  submitPressConference,
+} from "../../services/pressConferenceService";
 import { Badge, ThemeToggle } from "../ui";
 import { ChevronRight, Mic, MessageSquare } from "lucide-react";
 
@@ -29,17 +32,6 @@ interface PressResponse {
   text: string;
   textKey: string;
   textParams?: Record<string, string>;
-}
-
-interface AnswerPayload {
-  question_id: string;
-  response_id: string;
-  response_tone: string;
-  response_text: string;
-  response_text_key: string;
-  response_text_params?: Record<string, string>;
-  question_text: string;
-  player_id?: string;
 }
 
 interface PlayerFocusQuestion extends PressQuestion {
@@ -240,7 +232,7 @@ export default function PressConference({
   const submitToBackend = async () => {
     setSubmitting(true);
     try {
-      const payloads: AnswerPayload[] = questions
+      const payloads: PressConferenceAnswer[] = questions
         .map((q) => {
           const rid = answers[q.id];
           const resp = q.responses.find((r) => r.id === rid);
@@ -257,12 +249,7 @@ export default function PressConference({
         })
         .filter((p) => p.response_id);
 
-      const result = await invoke<{
-        game: GameStateData;
-        morale_delta: number;
-      }>("submit_press_conference", {
-        answers: payloads,
-      });
+      const result = await submitPressConference(payloads);
       if (result.game && onGameUpdate) {
         onGameUpdate(result.game);
       }

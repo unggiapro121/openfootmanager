@@ -1,9 +1,8 @@
-import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir } from "@tauri-apps/api/path";
 import { useEffect, useState } from "react";
 
 import { resolveLocalMediaPath } from "../lib/mediaAssets";
 import { isPackageQualifiedAsset, joinAssetRoot } from "../lib/packageAssets";
+import { appDataDirectory, localFileUrl } from "../services/platformService";
 
 /**
  * The app data directory, resolved once per session.
@@ -17,7 +16,7 @@ function resolveAppDataDir(): Promise<string> {
   // Only a resolved lookup is worth keeping. A rejected promise is still
   // truthy, so caching one would turn a single transient failure into "no
   // package artwork anywhere until the app restarts".
-  appDataDirPromise ??= appDataDir().catch((err) => {
+  appDataDirPromise ??= appDataDirectory().catch((err) => {
     appDataDirPromise = null;
     throw err;
   });
@@ -51,7 +50,7 @@ export function usePackageAssetSrc(path: string | null | undefined): string | nu
     resolveAppDataDir()
       .then((dir) => {
         if (!active) return;
-        setPackageSrc(convertFileSrc(joinAssetRoot(dir, path!.trim())));
+        setPackageSrc(localFileUrl(joinAssetRoot(dir, path!.trim())));
       })
       .catch(() => {
         // No app data dir means no package assets; the caller's fallback

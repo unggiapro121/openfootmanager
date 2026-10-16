@@ -1,5 +1,10 @@
 import { invoke } from "./transport";
 
+import type {
+  TeamRecentMatchEntry,
+  TeamStatsOverview,
+} from "../components/teamProfile/TeamProfile.types";
+
 export const UNGROUPED_LEAGUE_ID = "__ungrouped";
 
 export interface TeamsDirectoryQuery {
@@ -68,4 +73,26 @@ export interface TeamsDirectory {
 
 export function fetchTeamsDirectory(query: TeamsDirectoryQuery): Promise<TeamsDirectory> {
   return invoke<TeamsDirectory>("get_teams_directory", { query });
+}
+
+const TEAM_PROFILE_RECENT_MATCH_LIMIT = 5;
+
+/** A club's season figures for its profile; `null` when the backend has none for it. */
+export async function fetchTeamStatsOverview(teamId: string): Promise<TeamStatsOverview | null> {
+  return invoke<TeamStatsOverview | null>("get_team_stats_overview", {
+    teamId,
+  });
+}
+
+/** A club's most recent `limit` results; an empty list when the backend sends none. */
+export async function fetchTeamRecentMatches(
+  teamId: string,
+  limit = TEAM_PROFILE_RECENT_MATCH_LIMIT,
+): Promise<TeamRecentMatchEntry[]> {
+  const result = await invoke<TeamRecentMatchEntry[] | null>("get_team_match_history", {
+    teamId,
+    limit,
+  });
+
+  return Array.isArray(result) ? result : [];
 }

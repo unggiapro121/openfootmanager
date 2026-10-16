@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { invoke } from "@tauri-apps/api/core";
 import {
   X,
   ArrowLeft,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "../ui";
 import type { PackageInfo, PackageIssue, StackConflictInfo } from "./WorldSelect";
+import { checkPackageStack } from "../../services/packageService";
 
 interface PackageBuildStepProps {
   installedPackages: PackageInfo[];
@@ -194,7 +194,7 @@ export default function PackageBuildStep({
       return;
     }
     let cancelled = false;
-    invoke<StackConflictInfo[]>("check_package_stack", { packageIds: activePackageIds })
+    checkPackageStack(activePackageIds)
       .then((conflicts) => {
         if (!cancelled) setStackConflicts(conflicts);
       })

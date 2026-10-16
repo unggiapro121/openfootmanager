@@ -1,5 +1,10 @@
 import { invoke } from "./transport";
 
+import type {
+  DelegatedRenewalResponseData,
+  RenewalProjectionData,
+  RenewalResponseData,
+} from "../components/playerProfile/PlayerProfile.renewal";
 import type { GameStateData } from "../store/gameStore";
 
 export type SquadSafetyIssue =
@@ -69,5 +74,53 @@ export async function terminateContractNow(
 ): Promise<ContractTerminationResponseData> {
   return invoke<ContractTerminationResponseData>("terminate_contract_now", {
     playerId,
+  });
+}
+
+/**
+ * What the club's wage bill and cash runway would look like if the player
+ * signed on at `weeklyWage`, before any offer is made.
+ */
+export async function previewRenewalFinancialImpact(
+  playerId: string,
+  weeklyWage: number,
+): Promise<RenewalProjectionData> {
+  return invoke<RenewalProjectionData>("preview_renewal_financial_impact", {
+    playerId,
+    weeklyWage,
+  });
+}
+
+/** Offer the player a new contract; he accepts, rejects or counters. */
+export async function proposeRenewal(
+  playerId: string,
+  weeklyWage: number,
+  contractYears: number,
+): Promise<RenewalResponseData> {
+  return invoke<RenewalResponseData>("propose_renewal", {
+    playerId,
+    weeklyWage,
+    contractYears,
+  });
+}
+
+/** The ceiling the assistant manager may agree to when renewing on the manager's behalf. */
+export interface DelegatedRenewalLimits {
+  maxWageIncreasePct: number;
+  maxContractYears: number;
+}
+
+/**
+ * Hand the renewal talks for `playerIds` to the assistant manager, who
+ * negotiates within `limits` and reports each player's outcome.
+ */
+export async function delegateRenewals(
+  playerIds: string[],
+  limits: DelegatedRenewalLimits,
+): Promise<DelegatedRenewalResponseData> {
+  return invoke<DelegatedRenewalResponseData>("delegate_renewals", {
+    playerIds,
+    maxWageIncreasePct: limits.maxWageIncreasePct,
+    maxContractYears: limits.maxContractYears,
   });
 }

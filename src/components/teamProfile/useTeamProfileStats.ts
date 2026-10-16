@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { fetchTeamRecentMatches, fetchTeamStatsOverview } from "./TeamProfile.gateway";
+import { fetchTeamRecentMatches, fetchTeamStatsOverview } from "../../services/teamsService";
 import type { TeamRecentMatchEntry, TeamStatsOverview } from "./TeamProfile.types";
 
 interface TeamProfileStatsState {

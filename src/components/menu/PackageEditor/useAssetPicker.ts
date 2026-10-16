@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useAssetDataUrl, evictAssetDataUrl } from "../../../hooks/useAssetDataUrl";
+import { copyPackageAsset } from "../../../services/worldEditorService";
 
 const IMAGE_FILTERS = [
   { name: "Images", extensions: ["png", "jpg", "jpeg", "gif", "webp", "svg"] },
@@ -46,11 +46,7 @@ export function useAssetPicker(options: UseAssetPickerOptions) {
     try {
       const selected = await open({ multiple: false, filters: IMAGE_FILTERS });
       if (!selected || Array.isArray(selected)) return;
-      const copied = await invoke<string>("copy_package_asset", {
-        dir: projectDir,
-        entityId: entityId(),
-        srcPath: selected,
-      });
+      const copied = await copyPackageAsset(projectDir, entityId(), selected);
       // The path is reused for an entity, so drop any cached data URL before
       // pointing the preview at the freshly written file, then bump the refresh
       // key so it re-reads even when the path is unchanged.

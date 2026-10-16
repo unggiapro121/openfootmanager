@@ -1,5 +1,8 @@
 import { invoke } from "./transport";
 
+import type { PlayerAdvancedStatsSummary } from "../components/playerProfile/PlayerProfile.helpers";
+import type { PlayerRecentMatchEntry } from "../components/playerProfile/PlayerProfileRecentMatchesCard";
+
 export type PlayerSortKey = "name" | "position" | "age" | "ovr" | "value" | "team";
 
 export type PlayerStatusFilter = "all" | "transfer" | "loan";
@@ -57,4 +60,19 @@ export interface PlayersPage {
 
 export function fetchPlayersPage(query: PlayersPageQuery): Promise<PlayersPage> {
   return invoke<PlayersPage>("get_players_page", { query });
+}
+
+/** The backend's season advanced-stats view of one player, percentiles included. */
+export async function getPlayerStatsOverview(
+  playerId: string,
+): Promise<PlayerAdvancedStatsSummary> {
+  return invoke<PlayerAdvancedStatsSummary>("get_player_stats_overview", { playerId });
+}
+
+/** The player's most recent `limit` matches, newest first. */
+export async function getPlayerMatchHistory(
+  playerId: string,
+  limit: number,
+): Promise<PlayerRecentMatchEntry[]> {
+  return invoke<PlayerRecentMatchEntry[]>("get_player_match_history", { playerId, limit });
 }

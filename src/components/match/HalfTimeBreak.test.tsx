@@ -10,7 +10,10 @@ import { changeMatchPlayerRole, swapMatchPositions } from "../../services/liveMa
 import { setPlayerRole } from "../../services/squadService";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn() }));
-vi.mock("../../services/liveMatchService", () => ({
+// The rest of the service stays real, so a substitution still reaches the
+// mocked `invoke` the test asserts on.
+vi.mock("../../services/liveMatchService", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../services/liveMatchService")>()),
   swapMatchPositions: vi.fn(),
   changeMatchPlayerRole: vi.fn(),
 }));

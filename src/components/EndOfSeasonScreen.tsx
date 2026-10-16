@@ -1,32 +1,12 @@
 import { useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { useTranslation } from "react-i18next";
-import type { GameStateData, SeasonAwardsData } from "../store/gameStore";
+import type { GameStateData } from "../store/gameStore";
+import { advanceToNextSeason, type EndOfSeasonSummary } from "../services/seasonService";
 import { useGameStore } from "../store/gameStore";
 import { Card, CardBody } from "./ui";
 import { competitionDisplayName } from "../lib/competitionName";
 import AwardsCeremonyScreen from "./season/AwardsCeremonyScreen";
 import { Trophy, Star, ArrowRight, Crown } from "lucide-react";
-
-interface EndOfSeasonSummary {
-  season: number;
-  league_name: string;
-  champion_id: string;
-  champion_name: string;
-  user_position: number;
-  user_points: number;
-  user_won: number;
-  user_drawn: number;
-  user_lost: number;
-  user_goals_for: number;
-  user_goals_against: number;
-  golden_boot_player: string;
-  golden_boot_goals: number;
-  poty_player: string;
-  poty_rating: number;
-  total_teams: number;
-  season_awards: SeasonAwardsData;
-}
 
 interface EndOfSeasonScreenProps {
   gameState: GameStateData;
@@ -65,11 +45,7 @@ export default function EndOfSeasonScreen({ gameState, onGameUpdate }: EndOfSeas
     if (loading) return;
     setLoading(true);
     try {
-      const result = await invoke<{
-        action?: string;
-        game: GameStateData;
-        summary: EndOfSeasonSummary;
-      }>("advance_to_next_season");
+      const result = await advanceToNextSeason();
       if (result.action === "fired") {
         onGameUpdate(result.game);
         setShowFiredModal(true);

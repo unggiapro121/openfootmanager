@@ -1,5 +1,10 @@
 import { invoke } from "./transport";
 
+import type {
+  BoardSupportResponseData,
+  MarketingCampaignResponseData,
+  SponsorPitchResponseData,
+} from "../components/finances/FinancesTab.helpers";
 import type { GameStateData } from "../store/gameStore";
 
 export type FinanceHealthLevelData = "stable" | "watch" | "warning" | "critical";
@@ -201,6 +206,21 @@ export async function getFinanceSnapshot(teamId?: string): Promise<FinanceSnapsh
 /** Set the managed club's weekly wage budget, paid for from its transfer budget. */
 export async function rebalanceBudgets(wageBudget: number): Promise<GameStateData> {
   return invoke<GameStateData>("rebalance_budgets", { wageBudget });
+}
+
+/** Ask the board for an emergency cash injection, paid back out of the transfer budget. */
+export async function requestBoardSupport(): Promise<BoardSupportResponseData> {
+  return invoke<BoardSupportResponseData>("request_board_support");
+}
+
+/** Pitch the club to sponsors; a willing one sends an offer to the inbox. */
+export async function requestSponsorPitch(): Promise<SponsorPitchResponseData> {
+  return invoke<SponsorPitchResponseData>("request_sponsor_pitch");
+}
+
+/** Run a marketing campaign: pay its cost now for commercial revenue, then wait out its cooldown. */
+export async function launchMarketingCampaign(): Promise<MarketingCampaignResponseData> {
+  return invoke<MarketingCampaignResponseData>("request_marketing_campaign");
 }
 
 export type FacilityKind = "Training" | "Medical" | "Scouting";

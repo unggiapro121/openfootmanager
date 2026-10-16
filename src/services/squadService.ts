@@ -1,6 +1,6 @@
 import { invoke } from "./transport";
 
-import type { GameStateData, PlayerData } from "../store/gameStore";
+import type { GameStateData, PlayerData, TeamMatchRolesData } from "../store/gameStore";
 import type {
   PlayerRole,
   PlayerSquadRole,
@@ -35,6 +35,21 @@ export async function setPlayerSquadRole(
 
 export async function setStartingXi(playerIds: string[]): Promise<GameStateData> {
   return invoke<GameStateData>("set_starting_xi", { playerIds });
+}
+
+/** Switch the managed club to `formation`, e.g. "4-3-3". */
+export async function setFormation(formation: string): Promise<GameStateData> {
+  return invoke<GameStateData>("set_formation", { formation });
+}
+
+/** Set the managed club's overall play style. */
+export async function setPlayStyle(playStyle: string): Promise<GameStateData> {
+  return invoke<GameStateData>("set_play_style", { playStyle });
+}
+
+/** Name the managed club's captain and set-piece takers. */
+export async function setTeamMatchRoles(matchRoles: TeamMatchRolesData): Promise<GameStateData> {
+  return invoke<GameStateData>("set_team_match_roles", { matchRoles });
 }
 
 export async function setPlayerRole(

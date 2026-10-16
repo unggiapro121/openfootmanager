@@ -123,22 +123,6 @@ export function mapLocalFinanceSnapshot(
   };
 }
 
-export interface ResolveMessageActionResult {
-  game: GameStateData;
-  effect: string | null;
-  effect_i18n_key?: string | null;
-  effect_i18n_params?: Record<string, string> | null;
-}
-
-export interface DelegatedRenewalResponseData {
-  game: GameStateData;
-  report: {
-    success_count: number;
-    failure_count: number;
-    stalled_count: number;
-  };
-}
-
 export interface TaggedFinanceSnapshotData {
   key: string;
   data: FinanceSnapshotData;

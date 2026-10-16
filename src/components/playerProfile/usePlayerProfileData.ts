@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
 
+import { getPlayerMatchHistory, getPlayerStatsOverview } from "../../services/playersService";
 import type { GameStateData, PlayerData } from "../../store/gameStore";
 import { buildPlayerAdvancedStats, type PlayerAdvancedStatsSummary } from "./PlayerProfile.helpers";
 import type { PlayerRecentMatchEntry } from "./PlayerProfileRecentMatchesCard";
@@ -61,9 +61,7 @@ export function usePlayerProfileData({
 
     const loadAdvancedStats = async (): Promise<void> => {
       try {
-        const result = await invoke<PlayerAdvancedStatsSummary>("get_player_stats_overview", {
-          playerId: player.id,
-        });
+        const result = await getPlayerStatsOverview(player.id);
 
         if (!cancelled && !areAdvancedStatsEqual(result, fallbackAdvancedStats)) {
           setAdvancedStatsOverride(result);
@@ -109,10 +107,7 @@ export function usePlayerProfileData({
 
     const loadRecentMatches = async (): Promise<void> => {
       try {
-        const result = await invoke<PlayerRecentMatchEntry[]>("get_player_match_history", {
-          playerId: player.id,
-          limit: RECENT_MATCH_LIMIT,
-        });
+        const result = await getPlayerMatchHistory(player.id, RECENT_MATCH_LIMIT);
 
         if (!cancelled) {
           setRecentMatches((current) => (haveSameFixtures(current, result) ? current : result));
