@@ -125,9 +125,9 @@ pub struct PlayerData {
     pub aerial: u8,
 
     // The seven attributes `ofm_core` splits out of passing, shooting, dribbling
-    // and aerial. Carried now so later phases need not change this struct; no
-    // phase reads them yet. Until each mechanism moves over, the four fields
-    // above keep the old blended meaning (the bridge rebuilds them).
+    // and aerial. Until each mechanism moves over, the field it splits from
+    // keeps the old blended meaning (the bridge rebuilds it). Moved so far:
+    // `aerial` and `heading` (P2.2).
     #[serde(default)]
     pub long_passing: u8,
     #[serde(default)]

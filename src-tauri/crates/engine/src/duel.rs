@@ -40,7 +40,12 @@ pub(crate) const GAMMA_MIDFIELD: f64 = 1.0;
 /// Measured on 2,400 live-engine matches between generated clubs, picked as
 /// the game picks them: midfield 51.1%, one-on-one 50.2%, aerial 44.2% before
 /// the change and within 0.3 points of each after it.
-pub(crate) const ANCHOR_AERIAL: f64 = 0.955;
+///
+/// The aerial anchor is the exception: phase 2 (P2.2, decision X22) moved it
+/// from 0.955 to 0.64 so defenders win 58% of the duels after a cross, as they
+/// do in real football, where they had won 48%. Measured on the lan-can sweep
+/// (`ofm-sim-bench --guardrails`): 57.5–57.8% over four seeds.
+pub(crate) const ANCHOR_AERIAL: f64 = 0.64;
 pub(crate) const ANCHOR_ONE_V_ONE: f64 = 1.14;
 pub(crate) const ANCHOR_MIDFIELD: f64 = 1.015;
 
@@ -84,12 +89,24 @@ pub(crate) fn height_factor(height_cm: u16) -> f64 {
         .clamp(HEIGHT_FACTOR_MIN, HEIGHT_FACTOR_MAX)
 }
 
-/// A player's strength in a contested header: reach and timing (`aerial`),
-/// reading where the ball drops (`positioning`), holding his ground
-/// (`strength`), then his height. The same for attacker and defender.
+/// How much further a player dominant in the air reaches (phase 2, X36). Only
+/// outfielders contest a header after a cross, so a keeper's `AerialDominance`
+/// never meets this; it counts in his own goalkeeping instead.
+const AERIAL_DOMINANCE_REACH: f64 = 1.08;
+
+/// A player's strength in a contested header: reach and timing (`aerial`,
+/// which since phase 2 is jumping and strength, not heading), reading where
+/// the ball drops (`positioning`), holding his ground (`strength`), then his
+/// height and `AerialDominance`. The same for attacker and defender.
 pub(crate) fn aerial_rating(p: &PlayerSnap) -> f64 {
+    let dominance = if p.has_trait("AerialDominance") {
+        AERIAL_DOMINANCE_REACH
+    } else {
+        1.0
+    };
     (0.55 * f64::from(p.aerial) + 0.20 * f64::from(p.positioning) + 0.25 * f64::from(p.strength))
         * height_factor(p.height_cm)
+        * dominance
 }
 
 /// The two halves of a one-on-one in the attacking third:
@@ -279,9 +296,28 @@ mod tests {
         assert!(p > 0.55, "p = {p}");
     }
 
+    /// Given two equal players, one of them dominant in the air,
+    /// when they contest a header,
+    /// then the dominant one's reach counts 8% more, so his odds of winning
+    /// grow by 1.08² (the aerial duel's γ is 2), whichever side he is on.
+    #[test]
+    fn aerial_dominance_reaches_eight_percent_higher() {
+        let plain = player(70);
+        let mut dominant = player(70);
+        dominant.traits = vec!["AerialDominance".to_string()];
+        let odds = |p: f64| p / (1.0 - p);
+        let base = odds(aerial_win_probability(&plain, &plain));
+        let attacking = odds(aerial_win_probability(&dominant, &plain));
+        let defending = odds(aerial_win_probability(&plain, &dominant));
+        assert!((attacking / base - 1.08_f64.powi(2)).abs() < 1e-9);
+        assert!((base / defending - 1.08_f64.powi(2)).abs() < 1e-9);
+    }
+
     /// Given a short striker who reads the ball well against a tall defender
-    /// who does not, when they contest a header, then the striker can still
-    /// win it more often than not.
+    /// who does not, when they contest a header, then the striker still wins
+    /// it more often than two evenly matched players would: reading the ball
+    /// makes up for the height. (Since P2.2 the even contest itself favours the
+    /// defender, 61/39, so "more often than not" is no longer the bar.)
     #[test]
     fn a_short_striker_who_reads_the_ball_can_win_in_the_air() {
         let mut striker = player(70);
@@ -293,6 +329,7 @@ mod tests {
         defender.positioning = 55;
         defender.strength = 75;
         let p = aerial_win_probability(&striker, &defender);
-        assert!(p > 0.5, "p = {p}");
+        let even = ANCHOR_AERIAL / (1.0 + ANCHOR_AERIAL);
+        assert!(p > even, "p = {p}, even = {even}");
     }
 }

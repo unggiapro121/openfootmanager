@@ -3,10 +3,10 @@ use rand::{Rng, RngExt};
 use crate::duel;
 use crate::event::{EventDetail, EventType, MatchEvent, SetPiece, ShotKind};
 use crate::shared::{
-    PlayStylePhase, PlayerSnap, ShotSetup, TraitContext, play_style_modifier,
-    role_attribute_modifier, tactics_buildup_mod, tactics_cross_probability,
-    tactics_defensive_conversion_mod, tactics_foul_modifier, tactics_shape_modifier,
-    tactics_tempo_progression, tactics_width_versus_shape, trait_bonus,
+    PlayStylePhase, PlayerSnap, TraitContext, play_style_modifier, role_attribute_modifier,
+    tactics_buildup_mod, tactics_cross_probability, tactics_defensive_conversion_mod,
+    tactics_foul_modifier, tactics_shape_modifier, tactics_tempo_progression,
+    tactics_width_versus_shape, trait_bonus,
 };
 use crate::types::{Position, Side, Zone};
 
@@ -39,7 +39,7 @@ impl LiveMatchState {
             .filter(|(_, side)| *side == att_side && zone.is_box_for(att_side))
             .map(|(set_piece, _)| set_piece);
         let events = if zone.is_box_for(att_side) {
-            self.resolve_shot(minute, att_side, ShotSetup::default(), rng)
+            self.resolve_shot(minute, att_side, rng)
         } else if zone == Zone::attacking_third(att_side) {
             self.resolve_attacking_third(minute, att_side, def_side, rng)
         } else if zone == Zone::Midfield {
@@ -230,14 +230,11 @@ impl LiveMatchState {
                 );
                 if rng.random_range(0.0..1.0f64) < aerial_win {
                     self.ball_zone = Zone::attacking_box(att_side);
-                    // He won the header, so the chance is his; the cross is the assist.
-                    let setup = ShotSetup {
-                        shooter: Some(header),
-                        assister: Some(winger_id),
-                        kind: ShotKind::Header,
-                    };
-                    let shot_events = self.resolve_shot(minute, att_side, setup, rng);
-                    events.extend(shot_events);
+                    // He won the ball in the air, so the header is his; the
+                    // cross is the assist.
+                    let header_events =
+                        self.resolve_header(minute, att_side, header, winger_id, rng);
+                    events.extend(header_events);
                 } else {
                     let clear_evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
                         .with_player(&def_header.id);
@@ -292,13 +289,9 @@ impl LiveMatchState {
         events
     }
 
-    fn resolve_shot<R: Rng>(
-        &mut self,
-        minute: u8,
-        att_side: Side,
-        setup: ShotSetup,
-        rng: &mut R,
-    ) -> Vec<MatchEvent> {
+    /// A shot worked inside the box. A header from a cross is not one of
+    /// these: it is played out by `resolve_header`.
+    fn resolve_shot<R: Rng>(&mut self, minute: u8, att_side: Side, rng: &mut R) -> Vec<MatchEvent> {
         let mut events = Vec::new();
         let def_side = att_side.opposite();
         let zone = Zone::attacking_box(att_side);
@@ -306,10 +299,7 @@ impl LiveMatchState {
         // Box foul rate fixed at 3.6% per shot — independent of foul_probability (which tunes outfield fouls)
         if rng.random_range(0.0..1.0f64) < 0.036 {
             let fouler = self.snap_player(def_side, Position::Defender, rng);
-            let fouled = match &setup.shooter {
-                Some(shooter) => shooter.clone(),
-                None => self.snap_player(att_side, Position::Forward, rng),
-            };
+            let fouled = self.snap_player(att_side, Position::Forward, rng);
             let foul_evt = MatchEvent::new(minute, EventType::Foul, def_side, zone)
                 .with_player(&fouler.id)
                 .with_secondary(&fouled.id)
@@ -334,15 +324,9 @@ impl LiveMatchState {
             // Foul but no penalty: advantage played, shot continues
         }
 
-        let kind = setup.kind;
-        let shooter = match setup.shooter {
-            Some(shooter) => shooter,
-            None => self.snap_player(att_side, Position::Forward, rng),
-        };
-        let assister_id = match setup.assister {
-            Some(id) => id,
-            None => self.snap_player(att_side, Position::Midfielder, rng).id,
-        };
+        let kind = ShotKind::Open;
+        let shooter = self.snap_player(att_side, Position::Forward, rng);
+        let assister_id = self.snap_player(att_side, Position::Midfielder, rng).id;
         let goalkeeper = self.snap_player(def_side, Position::Goalkeeper, rng);
 
         let shoot_raw =
@@ -410,23 +394,36 @@ impl LiveMatchState {
                     quality: save_quality(gk_rating),
                 });
             self.emit(&mut events, evt);
-            // 40% of saves → corner (keeper parries wide), 60% → goal kick (keeper catches)
-            if rng.random_range(0.0..1.0f64) < 0.40 {
-                let corner_evt = MatchEvent::new(minute, EventType::Corner, att_side, zone)
-                    .with_set_piece(SetPiece::Corner);
-                self.emit(&mut events, corner_evt);
-                self.possession = att_side;
-                self.ball_zone = Zone::attacking_box(att_side);
-                self.pending_set_piece = Some((SetPiece::Corner, att_side));
-            } else {
-                let gk_evt = MatchEvent::new(minute, EventType::GoalKick, def_side, zone);
-                self.emit(&mut events, gk_evt);
-                self.ball_zone = Zone::defensive_third(def_side);
-                self.possession = def_side;
-            }
+            self.after_save(minute, att_side, &mut events, rng);
         }
 
         events
+    }
+
+    /// What a save leaves: 40% of the time the keeper parries it wide for a
+    /// corner, otherwise he holds it and the defending side restarts.
+    pub(super) fn after_save<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        events: &mut Vec<MatchEvent>,
+        rng: &mut R,
+    ) {
+        let def_side = att_side.opposite();
+        let zone = Zone::attacking_box(att_side);
+        if rng.random_range(0.0..1.0f64) < 0.40 {
+            let corner_evt = MatchEvent::new(minute, EventType::Corner, att_side, zone)
+                .with_set_piece(SetPiece::Corner);
+            self.emit(events, corner_evt);
+            self.possession = att_side;
+            self.ball_zone = Zone::attacking_box(att_side);
+            self.pending_set_piece = Some((SetPiece::Corner, att_side));
+        } else {
+            let gk_evt = MatchEvent::new(minute, EventType::GoalKick, def_side, zone);
+            self.emit(events, gk_evt);
+            self.ball_zone = Zone::defensive_third(def_side);
+            self.possession = def_side;
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -557,72 +554,8 @@ mod event_detail_tests {
 
     use crate::event::{EventDetail, EventType, GoalContext};
     use crate::live_match::LiveMatchState;
-    use crate::types::{MatchConfig, PlayStyle, PlayerData, Position, TeamData};
-
-    fn make_player(id: &str, pos: Position) -> PlayerData {
-        PlayerData {
-            id: id.to_string(),
-            name: id.to_string(),
-            position: pos,
-            ovr: 70,
-            condition: 90,
-            fitness: 75,
-            pace: 70,
-            stamina: 70,
-            strength: 70,
-            agility: 70,
-            passing: 70,
-            shooting: 70,
-            tackling: 70,
-            dribbling: 70,
-            defending: 70,
-            positioning: 70,
-            vision: 70,
-            decisions: 70,
-            composure: 70,
-            aggression: 70,
-            teamwork: 70,
-            leadership: 70,
-            handling: 70,
-            reflexes: 70,
-            aerial: 70,
-            long_passing: 0,
-            crossing: 0,
-            curve: 0,
-            free_kick: 0,
-            long_shots: 0,
-            first_touch: 0,
-            heading: 0,
-            height_cm: 0,
-            traits: vec![],
-            role: crate::types::PlayerRole::Standard,
-            position_ratings: Vec::new(),
-        }
-    }
-
-    fn make_team(id: &str) -> TeamData {
-        TeamData {
-            id: id.to_string(),
-            name: id.to_string(),
-            formation: "4-4-2".to_string(),
-            play_style: PlayStyle::Balanced,
-            coach: crate::types::CoachMastery::default(),
-            tactics: crate::types::TacticsConfig::default(),
-            players: vec![
-                make_player(&format!("{id}_gk"), Position::Goalkeeper),
-                make_player(&format!("{id}_d1"), Position::Defender),
-                make_player(&format!("{id}_d2"), Position::Defender),
-                make_player(&format!("{id}_d3"), Position::Defender),
-                make_player(&format!("{id}_d4"), Position::Defender),
-                make_player(&format!("{id}_m1"), Position::Midfielder),
-                make_player(&format!("{id}_m2"), Position::Midfielder),
-                make_player(&format!("{id}_m3"), Position::Midfielder),
-                make_player(&format!("{id}_m4"), Position::Midfielder),
-                make_player(&format!("{id}_f1"), Position::Forward),
-                make_player(&format!("{id}_f2"), Position::Forward),
-            ],
-        }
-    }
+    use crate::live_match::test_support::{make_player, make_team};
+    use crate::types::{MatchConfig, Position};
 
     /// Given synthetic players who set only the old attributes, and one forward
     /// who declared his heading,

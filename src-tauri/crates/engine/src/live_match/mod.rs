@@ -1,9 +1,12 @@
+mod header;
 mod helpers;
 mod observation;
 mod penalty;
 mod simulation;
 mod snapshot;
 mod substitution;
+#[cfg(test)]
+mod test_support;
 mod zone_resolution;
 
 use rand::Rng;
