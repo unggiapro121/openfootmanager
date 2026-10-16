@@ -15,15 +15,17 @@
 //!   lost: cleared
 //! ```
 //!
-//! The two centre-backs who head the ball best go up for it: the man meeting it
-//! is drawn from the forwards (weight 1.0), those two (0.9) and the midfielders
-//! (0.5), never the taker or a keeper. `REACH_BASE` is set so a corner is worth
+//! The two centre-backs (by formation slot) who head the ball best go up for
+//! it: the man meeting it is drawn from the forwards (weight 1.0), those two
+//! (0.9) and the midfielders (0.5), never the taker or a keeper. Full-backs and
+//! wing-backs stay back, however well they head. `REACH_BASE` is set so a corner is worth
 //! about 3% of a goal, as in real football (2.5–3%); it had been worth 5.7%.
 
 use rand::{Rng, RngExt};
 
 use crate::duel;
 use crate::event::{EventType, MatchEvent, SetPiece};
+use crate::pitch_position::PitchPosition;
 use crate::shared::PlayerSnap;
 use crate::types::{PlayerData, Position, Side, Zone};
 
@@ -102,11 +104,23 @@ impl LiveMatchState {
                 p.id != taker_id && p.position != Position::Goalkeeper && !self.out_of_play(&p.id)
             })
             .collect();
-        let mut defenders: Vec<&PlayerData> = eligible
-            .iter()
-            .copied()
-            .filter(|p| p.position == Position::Defender)
-            .collect();
+        // The centre-backs go up, whoever else heads the ball well: a full-back
+        // or wing-back stays to guard the counter. A back line with no
+        // centre-back slot (an XI that does not fill its formation) sends its
+        // best-heading defenders instead.
+        let at_centre_back =
+            |p: &&PlayerData| self.slot_of(side, &p.id) == Some(PitchPosition::CenterBack);
+        let centre_backs: Vec<&PlayerData> =
+            eligible.iter().copied().filter(at_centre_back).collect();
+        let mut defenders: Vec<&PlayerData> = if centre_backs.is_empty() {
+            eligible
+                .iter()
+                .copied()
+                .filter(|p| p.position == Position::Defender)
+                .collect()
+        } else {
+            centre_backs
+        };
         let heads_it = |p: &PlayerData| f64::from(p.heading) * duel::height_factor(p.height_cm);
         defenders.sort_by(|a, b| heads_it(b).total_cmp(&heads_it(a)));
         defenders.truncate(CENTRE_BACKS_UP);
@@ -331,6 +345,29 @@ mod tests {
         assert!(targets.contains("home_d2") && targets.contains("home_d3"));
         assert!(!targets.contains("home_d1") && !targets.contains("home_d4"));
         assert!(goals > 0);
+    }
+
+    /// Given a 4-4-2 whose full-backs head the ball far better than its
+    /// centre-backs,
+    /// when it takes corners,
+    /// then the centre-backs still go up and the full-backs stay back: it is
+    /// the slot that sends a defender forward, not his heading.
+    #[test]
+    fn full_backs_stay_back_however_well_they_head() {
+        let mut home = make_team("home");
+        home.players[1].heading = 95;
+        home.players[4].heading = 95;
+        home.players[2].heading = 40;
+        home.players[3].heading = 40;
+        let mut state = corner_match(home);
+        let mut targets = std::collections::HashSet::new();
+        for events in corners(&mut state, 3_000, 9) {
+            for event in events.iter().filter(|e| e.event_type == EventType::Cross) {
+                targets.insert(event.secondary_player_id.clone().expect("a target"));
+            }
+        }
+        assert!(targets.contains("home_d2") && targets.contains("home_d3"));
+        assert!(!targets.contains("home_d1") && !targets.contains("home_d4"));
     }
 
     /// Given the reach chance and the help a delivery gives,
