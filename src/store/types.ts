@@ -709,6 +709,8 @@ export interface CompactMatchEventData {
   side: "Home" | "Away";
   player_id: string | null;
   secondary_player_id: string | null;
+  /** How a goal was made (engine `GoalSource`); absent before event protocol 2. */
+  goal_source?: string | null;
 }
 
 export interface CompactTeamMatchStatsData {

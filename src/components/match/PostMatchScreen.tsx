@@ -40,47 +40,46 @@ interface PostMatchScreenProps {
 
 type PostMatchTab = "teamTalk" | "matchReport" | "playerRatings" | "tactics";
 
-const SET_PIECE_CLEAR_EVENTS = new Set([
-  "ShotOffTarget",
-  "ShotBlocked",
-  "ShotSaved",
-  "PenaltyMiss",
-  "Clearance",
-  "Interception",
-  "PassIntercepted",
-  "GoalKick",
-]);
+export interface GoalSourceCounts {
+  openPlay: number;
+  headers: number;
+  corners: number;
+  freekicks: number;
+  penalties: number;
+}
 
-export function computeGoalSources(
-  events: MatchEvent[],
-  side: "Home" | "Away",
-): { openPlay: number; corners: number; freekicks: number; penalties: number } {
-  const sources = { openPlay: 0, corners: 0, freekicks: 0, penalties: 0 };
-  // Track (type, side) so a set piece by one team doesn't attribute the other's goal
-  let lastSetPiece: { type: "Corner" | "FreeKick"; side: "Home" | "Away" } | null = null;
+/**
+ * How `side`'s goals were made, read from the source the engine stamped on
+ * each goal (event protocol 2). A goal saved before then has none: a penalty
+ * still says what it is, anything else counts as open play.
+ */
+export function computeGoalSources(events: MatchEvent[], side: "Home" | "Away"): GoalSourceCounts {
+  const sources: GoalSourceCounts = {
+    openPlay: 0,
+    headers: 0,
+    corners: 0,
+    freekicks: 0,
+    penalties: 0,
+  };
   for (const evt of events) {
-    if (evt.event_type === "Corner") {
-      lastSetPiece = { type: "Corner", side: evt.side };
-    } else if (evt.event_type === "FreeKick") {
-      lastSetPiece = null;
-      // Only dangerous FKs: taking side must be in their attacking third
-      const dangerousZone = evt.side === "Home" ? "AwayDefense" : "HomeDefense";
-      if (evt.zone === dangerousZone) {
-        lastSetPiece = { type: "FreeKick", side: evt.side };
-      }
-    } else if (SET_PIECE_CLEAR_EVENTS.has(evt.event_type)) {
-      lastSetPiece = null;
-    } else if (evt.event_type === "Goal") {
-      if (evt.side === side) {
-        if (lastSetPiece?.type === "Corner" && lastSetPiece.side === side) sources.corners++;
-        else if (lastSetPiece?.type === "FreeKick" && lastSetPiece.side === side)
-          sources.freekicks++;
-        else sources.openPlay++;
-      }
-      lastSetPiece = null;
-    } else if (evt.event_type === "PenaltyGoal") {
-      if (evt.side === side) sources.penalties++;
-      lastSetPiece = null;
+    if (evt.side !== side) continue;
+    if (evt.event_type !== "Goal" && evt.event_type !== "PenaltyGoal") continue;
+    const source = evt.goal_source ?? (evt.event_type === "PenaltyGoal" ? "Penalty" : "OpenPlay");
+    switch (source) {
+      case "Header":
+        sources.headers++;
+        break;
+      case "Corner":
+        sources.corners++;
+        break;
+      case "FreeKick":
+        sources.freekicks++;
+        break;
+      case "Penalty":
+        sources.penalties++;
+        break;
+      default:
+        sources.openPlay++;
     }
   }
   return sources;
@@ -684,12 +683,13 @@ export default function PostMatchScreen({
             {(() => {
               const homeSrc = computeGoalSources(snapshot.events, "Home");
               const awaySrc = computeGoalSources(snapshot.events, "Away");
-              const homeTotal =
-                homeSrc.openPlay + homeSrc.corners + homeSrc.freekicks + homeSrc.penalties || 1;
-              const awayTotal =
-                awaySrc.openPlay + awaySrc.corners + awaySrc.freekicks + awaySrc.penalties || 1;
-              const sourceKeys: { key: keyof typeof homeSrc; label: string }[] = [
+              const sum = (src: GoalSourceCounts): number =>
+                src.openPlay + src.headers + src.corners + src.freekicks + src.penalties;
+              const homeTotal = sum(homeSrc) || 1;
+              const awayTotal = sum(awaySrc) || 1;
+              const sourceKeys: { key: keyof GoalSourceCounts; label: string }[] = [
                 { key: "openPlay", label: t("match.openPlay") },
+                { key: "headers", label: t("match.headerGoals") },
                 { key: "corners", label: t("match.cornersGoals") },
                 { key: "freekicks", label: t("match.freekickGoals") },
                 { key: "penalties", label: t("match.penaltyGoals") },

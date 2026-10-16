@@ -10,6 +10,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::event::Lane;
 use crate::types::{PlayerData, Position};
 
 /// The fourteen positions a formation slot can be. Mirrors the granular half of
@@ -48,6 +49,25 @@ impl PitchPosition {
             | Self::RightMidfielder
             | Self::LeftMidfielder => Position::Midfielder,
             Self::RightWinger | Self::LeftWinger | Self::Striker => Position::Forward,
+        }
+    }
+
+    /// The third of the pitch's width the slot stands in, seen from its own
+    /// side's attacking direction.
+    pub fn lane(self) -> Lane {
+        match self {
+            Self::RightBack | Self::RightWingBack | Self::RightMidfielder | Self::RightWinger => {
+                Lane::Right
+            }
+            Self::LeftBack | Self::LeftWingBack | Self::LeftMidfielder | Self::LeftWinger => {
+                Lane::Left
+            }
+            Self::Goalkeeper
+            | Self::CenterBack
+            | Self::DefensiveMidfielder
+            | Self::CentralMidfielder
+            | Self::AttackingMidfielder
+            | Self::Striker => Lane::Centre,
         }
     }
 }

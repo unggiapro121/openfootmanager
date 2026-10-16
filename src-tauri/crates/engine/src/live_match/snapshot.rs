@@ -103,6 +103,7 @@ impl LiveMatchState {
             sent_off: self.sent_off.clone(),
             injured: self.injured.clone(),
             penalty_shootout,
+            protocol_version: crate::report::EVENT_PROTOCOL_VERSION,
         }
     }
 }

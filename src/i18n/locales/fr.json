@@ -2471,6 +2471,13 @@
             "0": "{{player}} complète son hat-trick ! Chapeau bas !",
             "1": "Trois buts pour {{player}} — quelle journée !"
           }
+        },
+        "header": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} s'élève plus haut que tout le monde et marque de la tête pour {{team}} !",
+            "1": "Une tête puissante de {{player}}, but pour {{team}} !"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "Sources de buts",
     "openPlay": "Jeu ouvert",
     "cornersGoals": "Corners",
+    "headerGoals": "Têtes",
+    "headedGoal": "de la tête",
     "freekickGoals": "Coups francs",
     "penaltyGoals": "Pénaltis",
     "changeRole": "Changer le rôle",

@@ -1,6 +1,6 @@
 use rand::{Rng, RngExt};
 
-use crate::event::{EventType, MatchEvent};
+use crate::event::{EventType, MatchEvent, ShotKind};
 use crate::types::{Position, Side, Zone};
 
 use super::{LiveMatchState, MinuteResult, PenaltyShootoutState};
@@ -45,18 +45,18 @@ impl LiveMatchState {
         let scored = rng.random_range(0.0..1.0f64) < conversion;
         if scored {
             let evt = MatchEvent::new(minute, EventType::ShootoutGoal, kicking_side, zone)
+                .with_shot_kind(ShotKind::Penalty)
                 .with_player(&taker.id);
-            self.events.push(evt.clone());
-            events.push(evt);
+            self.emit(&mut events, evt);
             match kicking_side {
                 Side::Home => self.penalty_state.home_scored += 1,
                 Side::Away => self.penalty_state.away_scored += 1,
             }
         } else {
             let evt = MatchEvent::new(minute, EventType::ShootoutMiss, kicking_side, zone)
+                .with_shot_kind(ShotKind::Penalty)
                 .with_player(&taker.id);
-            self.events.push(evt.clone());
-            events.push(evt);
+            self.emit(&mut events, evt);
         }
 
         match kicking_side {
@@ -85,8 +85,7 @@ impl LiveMatchState {
             self.phase = super::MatchPhase::Finished;
 
             let evt = MatchEvent::new(minute, EventType::FullTime, Side::Home, Zone::Midfield);
-            self.events.push(evt.clone());
-            events.push(evt);
+            self.emit(&mut events, evt);
         }
 
         MinuteResult {
@@ -131,15 +130,15 @@ impl LiveMatchState {
             // opener/equaliser/... sub-variants. Brace/hat-trick is still detected on
             // the frontend via goal tally, which counts PenaltyGoal events.
             let evt = MatchEvent::new(minute, EventType::PenaltyGoal, att_side, zone)
+                .with_shot_kind(ShotKind::Penalty)
                 .with_player(&taker.id);
-            self.events.push(evt.clone());
-            events.push(evt);
+            self.emit(&mut events, evt);
             self.add_goal(att_side);
         } else {
             let evt = MatchEvent::new(minute, EventType::PenaltyMiss, att_side, zone)
+                .with_shot_kind(ShotKind::Penalty)
                 .with_player(&taker.id);
-            self.events.push(evt.clone());
-            events.push(evt);
+            self.emit(&mut events, evt);
         }
 
         events

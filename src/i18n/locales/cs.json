@@ -2505,6 +2505,13 @@
             "0": "{{player}} dokončuje hattrick! Klobouk dolů!",
             "1": "Tři góly pro hráče {{player}} — to je den!"
           }
+        },
+        "header": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} vyskočil nejvýš a hlavou skóroval za tým {{team}}!",
+            "1": "Tvrdá hlavička {{player}} — {{team}} slaví gól!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2689,6 +2696,8 @@
     "goalSources": "Zdroje gólů",
     "openPlay": "Ze hry",
     "cornersGoals": "Rohové kopy",
+    "headerGoals": "Hlavičky",
+    "headedGoal": "hlavou",
     "freekickGoals": "Přímé kopy",
     "penaltyGoals": "Penalty",
     "changeRole": "Změnit roli",

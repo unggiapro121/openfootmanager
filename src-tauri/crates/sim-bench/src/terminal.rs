@@ -290,13 +290,10 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
     let fkp = stats.free_kick_goal_pct();
     let pep = stats.penalty_goal_pct();
 
-    metric(
-        "  Open play %      ",
-        op,
-        1,
-        "60–75%",
-        check(op, 60.0, 75.0),
-    );
+    // Open play no longer counts headers (event protocol 2), so it has no band
+    // until phase 2's GĐ5 sets the shares.
+    metric("  Open play %      ", op, 1, "", true);
+    metric("  Headers %        ", stats.header_goal_pct(), 1, "", true);
     metric(
         "  Corners %        ",
         co,

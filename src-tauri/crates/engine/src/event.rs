@@ -1,3 +1,4 @@
+use crate::report::GoalSource;
 use crate::types::{Side, Zone};
 use serde::{Deserialize, Serialize};
 
@@ -18,6 +19,48 @@ pub struct MatchEvent {
     /// events that carry no extra colour.
     #[serde(default)]
     pub detail: Option<EventDetail>,
+    /// What kind of attempt a shot, a goal or a penalty was. `None` on every
+    /// other event, and on events saved before event protocol 2.
+    #[serde(default)]
+    pub shot_kind: Option<ShotKind>,
+    /// The set piece this event is part of: the corner itself, and everything
+    /// the corner leads to before the ball is cleared, shot or lost.
+    #[serde(default)]
+    pub set_piece: Option<SetPiece>,
+    /// How a goal was made, decided once by the engine when it is scored, so
+    /// the report, the match history and the UI all read the same answer.
+    #[serde(default)]
+    pub goal_source: Option<GoalSource>,
+    /// The lane of the formation slot the acting player stands in, seen from
+    /// his side's attacking direction. For display only: the engine does not
+    /// read it.
+    #[serde(default)]
+    pub lane: Option<Lane>,
+}
+
+/// What kind of attempt on goal an event records.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ShotKind {
+    /// A shot with the feet from inside the box.
+    #[default]
+    Open,
+    /// A header from a won aerial duel.
+    Header,
+    Penalty,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SetPiece {
+    Corner,
+    FreeKick,
+}
+
+/// A third of the pitch's width, from the attacking side's point of view.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Lane {
+    Left,
+    Centre,
+    Right,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -122,6 +165,10 @@ impl MatchEvent {
             player_id: None,
             secondary_player_id: None,
             detail: None,
+            shot_kind: None,
+            set_piece: None,
+            goal_source: None,
+            lane: None,
         }
     }
 
@@ -137,6 +184,16 @@ impl MatchEvent {
 
     pub fn with_detail(mut self, detail: EventDetail) -> Self {
         self.detail = Some(detail);
+        self
+    }
+
+    pub fn with_shot_kind(mut self, kind: ShotKind) -> Self {
+        self.shot_kind = Some(kind);
+        self
+    }
+
+    pub fn with_set_piece(mut self, set_piece: SetPiece) -> Self {
+        self.set_piece = Some(set_piece);
         self
     }
 

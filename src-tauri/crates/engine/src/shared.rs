@@ -197,12 +197,13 @@ pub(crate) fn snap_header_target<R: Rng>(
 }
 
 /// What an attack already knows when it shoots: who won the header that set it
-/// up, and who crossed the ball. Left empty, the shooter and the provider are
-/// drawn as they always were.
+/// up, who crossed the ball, and what kind of attempt it is. Left empty, the
+/// shooter and the provider are drawn as they always were, for an open shot.
 #[derive(Clone, Default)]
 pub(crate) struct ShotSetup {
     pub shooter: Option<PlayerSnap>,
     pub assister: Option<String>,
+    pub kind: crate::event::ShotKind,
 }
 
 pub(crate) fn trait_bonus(snap: &PlayerSnap, context: TraitContext) -> f64 {

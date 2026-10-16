@@ -15,6 +15,14 @@ export type EventDetail =
   | { Foul: { severity: FoulSeverity } }
   | { Goal: { context: GoalContext } };
 
+/** What kind of attempt a shot, goal or penalty was (event protocol 2). */
+export type ShotKind = "Open" | "Header" | "Penalty";
+export type SetPiece = "Corner" | "FreeKick";
+/** How a goal was made, as the engine decided when it was scored. */
+export type GoalSource = "OpenPlay" | "Corner" | "FreeKick" | "Penalty" | "Header";
+/** A third of the pitch's width, seen from the acting side's attack. */
+export type Lane = "Left" | "Centre" | "Right";
+
 export interface MatchEvent {
   minute: number;
   event_type: string;
@@ -23,6 +31,11 @@ export interface MatchEvent {
   player_id: string | null;
   secondary_player_id: string | null;
   detail?: EventDetail | null;
+  // Event protocol 2. Absent on events saved before it.
+  shot_kind?: ShotKind | null;
+  set_piece?: SetPiece | null;
+  goal_source?: GoalSource | null;
+  lane?: Lane | null;
 }
 
 export interface EnginePlayerData {

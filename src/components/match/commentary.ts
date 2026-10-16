@@ -105,14 +105,15 @@ function goalTally(evt: MatchEvent, snapshot: MatchSnapshot): number {
 }
 
 /**
- * Resolve the variant sub-key, with goal tally (hat-trick/brace) taking
- * precedence over goal context.
+ * Resolve the variant sub-key: the goal tally (hat-trick/brace) first, then
+ * how the goal was made (a header), then the goal's context.
  */
 function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
   if (evt.event_type === "Goal" || evt.event_type === "PenaltyGoal") {
     const tally = goalTally(evt, snapshot);
     if (tally === 3) return "hattrick";
     if (tally === 2) return "brace";
+    if (evt.goal_source === "Header") return "header";
   }
   return detailVariant(evt.detail);
 }

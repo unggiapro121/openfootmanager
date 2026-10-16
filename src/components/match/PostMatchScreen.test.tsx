@@ -665,81 +665,63 @@ describe("PostMatchScreen", (): void => {
 // computeGoalSources unit tests
 // ---------------------------------------------------------------------------
 
-function makeEvent(event_type: string, side: "Home" | "Away", zone = "Midfield"): MatchEvent {
-  return { minute: 1, event_type, side, zone, player_id: null, secondary_player_id: null };
+function makeEvent(
+  event_type: string,
+  side: "Home" | "Away",
+  goal_source?: MatchEvent["goal_source"],
+): MatchEvent {
+  return {
+    minute: 1,
+    event_type,
+    side,
+    zone: "Midfield",
+    player_id: null,
+    secondary_player_id: null,
+    goal_source,
+  };
 }
 
+const NONE = { openPlay: 0, headers: 0, corners: 0, freekicks: 0, penalties: 0 };
+
 describe("computeGoalSources", (): void => {
-  it("counts open-play goals", (): void => {
-    const events: MatchEvent[] = [makeEvent("Goal", "Home")];
-    expect(computeGoalSources(events, "Home")).toEqual({
-      openPlay: 1,
-      corners: 0,
-      freekicks: 0,
-      penalties: 0,
-    });
-  });
-
-  it("counts corner goals for the correct side only", (): void => {
-    // Away earns a corner, but Home scores — should be open play for Home, not corner
-    const events: MatchEvent[] = [makeEvent("Corner", "Away"), makeEvent("Goal", "Home")];
-    expect(computeGoalSources(events, "Home")).toEqual({
-      openPlay: 1,
-      corners: 0,
-      freekicks: 0,
-      penalties: 0,
-    });
-    // Away scoring after their own corner is a corner goal
-    const events2: MatchEvent[] = [makeEvent("Corner", "Away"), makeEvent("Goal", "Away")];
-    expect(computeGoalSources(events2, "Away")).toEqual({
-      openPlay: 0,
-      corners: 1,
-      freekicks: 0,
-      penalties: 0,
-    });
-  });
-
-  it("only counts attacking-third free kicks as set-piece windows", (): void => {
-    // Home FK in HomeDefense (their own third) should NOT open a set-piece window
-    const defensive = makeEvent("FreeKick", "Home", "HomeDefense");
-    const goal = makeEvent("Goal", "Home");
-    expect(computeGoalSources([defensive, goal], "Home")).toEqual({
-      openPlay: 1,
-      corners: 0,
-      freekicks: 0,
-      penalties: 0,
-    });
-    // Home FK in AwayDefense (their attacking third) SHOULD open a window
-    const attacking = makeEvent("FreeKick", "Home", "AwayDefense");
-    expect(computeGoalSources([attacking, goal], "Home")).toEqual({
-      openPlay: 0,
-      corners: 0,
-      freekicks: 1,
-      penalties: 0,
-    });
-  });
-
-  it("clears the set-piece window on defensive events", (): void => {
+  it("counts each goal under the source the engine stamped on it", (): void => {
     const events: MatchEvent[] = [
-      makeEvent("Corner", "Home"),
-      makeEvent("Clearance", "Away"),
-      makeEvent("Goal", "Home"),
+      makeEvent("Goal", "Home", "OpenPlay"),
+      makeEvent("Goal", "Home", "Header"),
+      makeEvent("Goal", "Home", "Corner"),
+      makeEvent("Goal", "Home", "FreeKick"),
+      makeEvent("PenaltyGoal", "Home", "Penalty"),
     ];
     expect(computeGoalSources(events, "Home")).toEqual({
       openPlay: 1,
-      corners: 0,
-      freekicks: 0,
-      penalties: 0,
+      headers: 1,
+      corners: 1,
+      freekicks: 1,
+      penalties: 1,
     });
   });
 
-  it("counts penalty goals", (): void => {
-    const events: MatchEvent[] = [makeEvent("PenaltyGoal", "Home")];
-    expect(computeGoalSources(events, "Home")).toEqual({
-      openPlay: 0,
-      corners: 0,
-      freekicks: 0,
-      penalties: 1,
-    });
+  it("counts only the asked side's goals", (): void => {
+    const events: MatchEvent[] = [
+      makeEvent("Corner", "Away"),
+      makeEvent("Goal", "Away", "Corner"),
+      makeEvent("Goal", "Home", "OpenPlay"),
+    ];
+    expect(computeGoalSources(events, "Home")).toEqual({ ...NONE, openPlay: 1 });
+    expect(computeGoalSources(events, "Away")).toEqual({ ...NONE, corners: 1 });
+  });
+
+  it("does not infer a set piece from the events before a goal", (): void => {
+    // A corner, then an open-play goal: the engine said open play, so it is.
+    const events: MatchEvent[] = [
+      makeEvent("Corner", "Home"),
+      makeEvent("Goal", "Home", "OpenPlay"),
+    ];
+    expect(computeGoalSources(events, "Home")).toEqual({ ...NONE, openPlay: 1 });
+  });
+
+  it("reads a goal saved before event protocol 2 as open play, a penalty as a penalty", (): void => {
+    const events: MatchEvent[] = [makeEvent("Goal", "Home"), makeEvent("PenaltyGoal", "Home")];
+    expect(computeGoalSources(events, "Home")).toEqual({ ...NONE, openPlay: 1, penalties: 1 });
   });
 });

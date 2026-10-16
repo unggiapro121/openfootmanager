@@ -2399,6 +2399,13 @@
             "0": "{{player}} completa o hat-trick! Que espetáculo!",
             "1": "Três gols de {{player}} — que dia histórico!"
           }
+        },
+        "header": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} sobe mais alto que todos e cabeceia para o gol do {{team}}!",
+            "1": "Cabeçada forte de {{player}}, gol do {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2617,6 +2624,8 @@
     "goalSources": "Fontes de gol",
     "openPlay": "Jogo aberto",
     "cornersGoals": "Escanteios",
+    "headerGoals": "Cabeçadas",
+    "headedGoal": "de cabeça",
     "freekickGoals": "Faltas",
     "penaltyGoals": "Pênaltis",
     "changeRole": "Mudar papel",
