@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./transport";
 
 import type { MatchSnapshot } from "../components/match/types";
 import type { PlayerRole } from "../store/types";

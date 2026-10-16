@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./transport";
 
 /**
  * A selectable football nation, mirrored from the backend's combined nation

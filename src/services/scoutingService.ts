@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { invoke } from "./transport";
 
 import type { GameStateData } from "../store/gameStore";
 import type { ClubAssessments, PlayerProjection } from "../store/types";
