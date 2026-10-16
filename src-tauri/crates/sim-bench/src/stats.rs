@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use engine::{EventTally, EventType, GoalSource, MatchEvent, MatchReport, Zone};
+use engine::{EventTally, EventType, GoalSource, MatchEvent, MatchReport, ShotKind, Zone};
 use serde::Serialize;
 
 /// Aggregated statistics across N simulated matches.
@@ -57,6 +57,9 @@ pub struct BenchStats {
     pub free_kick_goals: u64,
     /// Headers from open play; a header from a corner is a corner goal.
     pub header_goals: u64,
+    pub direct_free_kick_goals: u64,
+    /// Shots taken straight from a free kick (phase 2, P2.4).
+    pub direct_free_kicks: u64,
 
     // Tackles & interceptions
     pub tackles: u64,
@@ -161,6 +164,7 @@ impl BenchStats {
                 GoalSource::Corner => self.corner_goals += 1,
                 GoalSource::FreeKick => self.free_kick_goals += 1,
                 GoalSource::Header => self.header_goals += 1,
+                GoalSource::DirectFreeKick => self.direct_free_kick_goals += 1,
                 GoalSource::Penalty => {} // already counted in penalty_goals
             }
         }
@@ -175,6 +179,14 @@ impl BenchStats {
                 EventType::Injury => self.injuries += 1,
                 EventType::GoalKick => self.goal_kicks += 1,
                 EventType::Cross => self.crosses += 1,
+                EventType::Goal
+                | EventType::ShotSaved
+                | EventType::ShotOffTarget
+                | EventType::ShotBlocked
+                    if event.shot_kind == Some(ShotKind::DirectFreeKick) =>
+                {
+                    self.direct_free_kicks += 1
+                }
                 _ => {}
             }
         }
@@ -298,6 +310,16 @@ impl BenchStats {
         self.header_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
     /// Goals a corner leads to, per corner, in percent (real football: 2.5–3).
+    pub fn direct_free_kick_goal_pct(&self) -> f64 {
+        self.direct_free_kick_goals as f64 / self.total_goals.max(1) as f64 * 100.0
+    }
+    pub fn direct_free_kicks_pg(&self) -> f64 {
+        self.per_game_u64(self.direct_free_kicks)
+    }
+    /// Direct free kicks that went in, in percent (real football: about 5.6).
+    pub fn direct_free_kick_conversion_pct(&self) -> f64 {
+        self.direct_free_kick_goals as f64 / self.direct_free_kicks.max(1) as f64 * 100.0
+    }
     pub fn goals_per_corner_pct(&self) -> f64 {
         self.corner_goals as f64 / self.corners.max(1) as f64 * 100.0
     }
@@ -356,12 +378,15 @@ impl BenchStats {
                 goal_kicks_per_game: self.goal_kicks_pg(),
                 crosses_per_game: self.crosses_pg(),
                 goals_per_corner_pct: self.goals_per_corner_pct(),
+                direct_free_kicks_per_game: self.direct_free_kicks_pg(),
+                direct_free_kick_conversion_pct: self.direct_free_kick_conversion_pct(),
             },
             goal_sources: GoalSourcesJson {
                 open_play_pct: self.open_play_goal_pct(),
                 corner_pct: self.corner_goal_pct(),
                 free_kick_pct: self.free_kick_goal_pct(),
                 header_pct: self.header_goal_pct(),
+                direct_free_kick_pct: self.direct_free_kick_goal_pct(),
                 penalty_pct: self.penalty_goal_pct(),
             },
             duels: self.duels.to_json(self.games),
@@ -440,6 +465,8 @@ pub struct SetPiecesJson {
     pub goal_kicks_per_game: f64,
     pub crosses_per_game: f64,
     pub goals_per_corner_pct: f64,
+    pub direct_free_kicks_per_game: f64,
+    pub direct_free_kick_conversion_pct: f64,
 }
 
 #[derive(Serialize)]
@@ -448,6 +475,7 @@ pub struct GoalSourcesJson {
     pub corner_pct: f64,
     pub free_kick_pct: f64,
     pub header_pct: f64,
+    pub direct_free_kick_pct: f64,
     pub penalty_pct: f64,
 }
 

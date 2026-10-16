@@ -2406,6 +2406,13 @@
             "0": "{{player}} sobe mais alto que todos e cabeceia para o gol do {{team}}!",
             "1": "Cabeçada forte de {{player}}, gol do {{team}}!"
           }
+        },
+        "freeKick": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} acerta a falta no ângulo para o {{team}}!",
+            "1": "Indefensável! {{player}} marca direto de falta!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2626,6 +2633,7 @@
     "cornersGoals": "Escanteios",
     "headerGoals": "Cabeçadas",
     "headedGoal": "de cabeça",
+    "directFreeKickGoal": "de falta",
     "freekickGoals": "Faltas",
     "penaltyGoals": "Pênaltis",
     "changeRole": "Mudar papel",

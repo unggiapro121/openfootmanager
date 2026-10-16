@@ -12,6 +12,7 @@ use crate::types::{Position, Side, Zone};
 
 use super::LiveMatchState;
 use super::helpers::{danger_band, foul_severity, save_quality};
+use super::set_pieces::DIRECT_FREE_KICK_SHARE;
 
 // ---------------------------------------------------------------------------
 // Action resolution
@@ -259,9 +260,14 @@ impl LiveMatchState {
                 false
             };
             if fouled {
-                // Fouled team (att_side) retains possession for the free kick in the attacking third
+                // The fouled side keeps the ball for the free kick in its
+                // attacking third, and now and then shoots straight from it.
                 self.possession = att_side;
                 self.ball_zone = zone;
+                if rng.random_range(0.0..1.0f64) < DIRECT_FREE_KICK_SHARE {
+                    let free_kick_events = self.resolve_direct_free_kick(minute, att_side, rng);
+                    events.extend(free_kick_events);
+                }
                 return events;
             }
             if rng.random_range(0.0..1.0f64) < 0.25 {

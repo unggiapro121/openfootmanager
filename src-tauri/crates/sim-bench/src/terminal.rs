@@ -267,6 +267,16 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
         check(gpc, 2.5, 3.5),
     );
     metric("  Free kicks/game  ", fk, 1, "", true);
+    let dfk = stats.direct_free_kicks_pg();
+    metric(
+        "  Direct FKs/game  ",
+        dfk,
+        2,
+        "0.8–1.0",
+        check(dfk, 0.8, 1.0),
+    );
+    let dfc = stats.direct_free_kick_conversion_pct();
+    metric("  Direct FK goal % ", dfc, 1, "5–7", check(dfc, 5.0, 7.0));
     metric("  Goal kicks/game  ", gk, 1, "8–14", check(gk, 8.0, 14.0));
     metric("  Crosses/game     ", cr, 1, "15–30", check(cr, 15.0, 30.0));
     println!();

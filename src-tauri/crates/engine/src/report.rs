@@ -72,6 +72,8 @@ pub enum GoalSource {
     Penalty,
     /// A header from open play. A header from a corner is a `Corner` goal.
     Header,
+    /// Scored straight from a free kick (phase 2, P2.4).
+    DirectFreeKick,
 }
 
 impl GoalSource {
@@ -81,6 +83,7 @@ impl GoalSource {
     pub fn of(shot_kind: Option<ShotKind>, set_piece: Option<SetPiece>) -> Self {
         match (shot_kind, set_piece) {
             (Some(ShotKind::Penalty), _) => Self::Penalty,
+            (Some(ShotKind::DirectFreeKick), _) => Self::DirectFreeKick,
             (_, Some(SetPiece::Corner)) => Self::Corner,
             (_, Some(SetPiece::FreeKick)) => Self::FreeKick,
             (Some(ShotKind::Header), None) => Self::Header,

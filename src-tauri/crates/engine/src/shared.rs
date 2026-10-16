@@ -38,6 +38,8 @@ pub(crate) struct PlayerSnap {
     /// Delivery from wide and from a corner (phase 2, P2.3).
     pub crossing: u8,
     pub curve: u8,
+    /// Striking a dead ball at goal (phase 2, P2.4).
+    pub free_kick: u8,
     pub height_cm: u16,
     pub traits: Vec<String>,
     pub role: PlayerRole,
@@ -76,6 +78,7 @@ impl PlayerSnap {
             heading: 0,
             crossing: 0,
             curve: 0,
+            free_kick: 0,
             height_cm: 0,
             traits: Vec::new(),
             role: PlayerRole::Standard,
@@ -107,6 +110,7 @@ impl PlayerSnap {
             heading: p.heading,
             crossing: p.crossing,
             curve: p.curve,
+            free_kick: p.free_kick,
             height_cm: p.height_cm,
             traits: p.traits.clone(),
             role: p.role,

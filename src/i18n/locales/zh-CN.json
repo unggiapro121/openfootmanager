@@ -2478,6 +2478,13 @@
             "0": "{{player}} 高高跃起，头球为{{team}}破门！",
             "1": "{{player}} 势大力沉的头球，{{team}}进球了！"
           }
+        },
+        "freeKick": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}} 任意球兜入死角，为{{team}}破门！",
+            "1": "无法阻挡！{{player}} 直接任意球破门！"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "角球",
     "headerGoals": "头球",
     "headedGoal": "头球",
+    "directFreeKickGoal": "任意球",
     "freekickGoals": "任意球",
     "penaltyGoals": "点球",
     "changeRole": "更改角色",

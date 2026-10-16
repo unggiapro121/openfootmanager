@@ -192,7 +192,8 @@ fn the_attempt_a_corner_leads_to_is_part_of_it() {
                 }
             }
         }
-        // The first attempt of a match comes before any corner.
+        // An attempt before the match's first corner cannot be part of one
+        // (it can be a direct free kick).
         let first_attempt = report
             .events
             .iter()
@@ -204,12 +205,46 @@ fn the_attempt_a_corner_leads_to_is_part_of_it() {
         if let (Some(attempt), Some(corner)) = (first_attempt, first_corner)
             && attempt < corner
         {
-            assert_eq!(report.events[attempt].set_piece, None);
+            assert_ne!(report.events[attempt].set_piece, Some(SetPiece::Corner));
         }
     }
     assert!(
         corner_attempts > 50,
         "only {corner_attempts} corner attempts"
+    );
+}
+
+/// Given a hundred seeded matches,
+/// when their direct free kicks are read,
+/// then each comes from a free kick awarded in that side's attacking third,
+/// none from midfield, and there are some.
+#[test]
+fn direct_free_kicks_come_only_from_the_attacking_third() {
+    let mut direct = 0;
+    for report in reports(100) {
+        let mut last_free_kick: Option<&MatchEvent> = None;
+        for event in &report.events {
+            if event.event_type == EventType::FreeKick {
+                last_free_kick = Some(event);
+            }
+            if event.shot_kind == Some(ShotKind::DirectFreeKick)
+                && SHOT_EVENTS.contains(&event.event_type)
+            {
+                direct += 1;
+                let awarded = last_free_kick.expect("a free kick before the shot");
+                assert_eq!(awarded.side, event.side);
+                assert_eq!(awarded.minute, event.minute);
+                assert_eq!(
+                    awarded.zone,
+                    Zone::attacking_third(event.side),
+                    "{awarded:?}"
+                );
+            }
+        }
+    }
+    assert!(
+        direct > 20,
+        "only {direct} direct free kicks in 100 matches"
     );
 }
 

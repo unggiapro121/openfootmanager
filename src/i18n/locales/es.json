@@ -2478,6 +2478,13 @@
             "0": "¡{{player}} se eleva más que nadie y marca de cabeza para el {{team}}!",
             "1": "¡Potente cabezazo de {{player}}, gol del {{team}}!"
           }
+        },
+        "freeKick": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡{{player}} clava la falta en la escuadra para el {{team}}!",
+            "1": "¡Imparable! ¡{{player}} marca directamente de falta!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Córners",
     "headerGoals": "Cabezazos",
     "headedGoal": "de cabeza",
+    "directFreeKickGoal": "de falta",
     "freekickGoals": "Tiros libres",
     "penaltyGoals": "Penaltis",
     "changeRole": "Cambiar rol",

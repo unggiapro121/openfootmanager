@@ -102,6 +102,25 @@ describe("MatchDetail helpers", () => {
     );
   });
 
+  // Given a goal straight from a free kick, then the label says so; it has no
+  // assist.
+  it("labels a direct free-kick goal", () => {
+    const nameOf = playerNameOf(detail());
+    const label = eventLabel(
+      {
+        minute: 30,
+        event_type: "Goal",
+        side: "Home",
+        player_id: "st",
+        secondary_player_id: null,
+        goal_source: "DirectFreeKick",
+      },
+      nameOf,
+      t,
+    );
+    expect(label).toBe("Striker (match.directFreeKickGoal)");
+  });
+
   // Given a lineup and a substitute who came on, then the side's players list
   // the starters in slot order first and the substitute after them.
   it("lists starters in lineup order, then substitutes who played", () => {

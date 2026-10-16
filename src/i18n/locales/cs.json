@@ -2512,6 +2512,13 @@
             "0": "{{player}} vyskočil nejvýš a hlavou skóroval za tým {{team}}!",
             "1": "Tvrdá hlavička {{player}} — {{team}} slaví gól!"
           }
+        },
+        "freeKick": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} zakroutil přímý kop do šibenice za tým {{team}}!",
+            "1": "Nechytatelné! {{player}} skóruje přímo z přímého kopu!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Rohové kopy",
     "headerGoals": "Hlavičky",
     "headedGoal": "hlavou",
+    "directFreeKickGoal": "přímý kop",
     "freekickGoals": "Přímé kopy",
     "penaltyGoals": "Penalty",
     "changeRole": "Změnit roli",

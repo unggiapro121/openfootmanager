@@ -2512,6 +2512,13 @@
             "0": "{{player}} herkesten yükseğe çıkıp kafayla {{team}} adına ağları sarsıyor!",
             "1": "{{player}}'dan sert bir kafa vuruşu, {{team}} golü buldu!"
           }
+        },
+        "freeKick": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} serbest vuruşu doksana gönderiyor, {{team}} golü buldu!",
+            "1": "Durdurulamaz! {{player}} doğrudan serbest vuruştan gol atıyor!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Kornerler",
     "headerGoals": "Kafa golleri",
     "headedGoal": "kafa",
+    "directFreeKickGoal": "serbest vuruş",
     "freekickGoals": "Serbest Vuruşlar",
     "penaltyGoals": "Penaltılar",
     "changeRole": "Rol Değiştir",

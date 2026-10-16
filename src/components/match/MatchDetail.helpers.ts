@@ -25,6 +25,7 @@ export function eventLabel(event: CompactMatchEventData, nameOf: NameOf, t: Tran
     case "Goal": {
       const notes = [
         event.goal_source === "Header" ? t("match.headedGoal") : null,
+        event.goal_source === "DirectFreeKick" ? t("match.directFreeKickGoal") : null,
         event.secondary_player_id
           ? t("match.assist", { name: name(event.secondary_player_id) })
           : null,

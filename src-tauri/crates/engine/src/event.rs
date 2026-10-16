@@ -47,6 +47,8 @@ pub enum ShotKind {
     /// A header from a won aerial duel.
     Header,
     Penalty,
+    /// A shot straight at goal from a free kick (phase 2, P2.4).
+    DirectFreeKick,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

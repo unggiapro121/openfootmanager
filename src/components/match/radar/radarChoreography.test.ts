@@ -441,6 +441,38 @@ describe("choreographBatch — shooting from the box", () => {
   }
 });
 
+describe("choreographBatch — shooting from distance", () => {
+  /** Where the ball lies each time a step strikes a shot. */
+  function shotOrigins(events: ReturnType<typeof radarEvent>[], from: RadarScene) {
+    const origins: { x: number; y: number }[] = [];
+    let scene = from;
+    for (const beat of choreographBatch(events, stage, from).beats) {
+      for (const step of beat.steps) {
+        if (step.action?.kind === "kick" && step.action.pace === "shot") origins.push(scene.ball);
+        scene = applyStep(scene, step);
+      }
+    }
+    return origins;
+  }
+  const outsideTheBox = (point: { x: number; y: number }) =>
+    point.x < zoneSpan("AwayBox")[0] && point.x > zoneSpan("AwayDefense")[0];
+
+  for (const shot of ["Goal", "ShotSaved", "ShotOffTarget", "ShotBlocked"]) {
+    // Given a direct free kick (event protocol 2), then it is struck from where
+    // the foul gave it, outside the box: it is not carried in like a shot from
+    // open play.
+    it(`strikes a direct free kick ${shot} from outside the box`, () => {
+      const kick = {
+        ...radarEvent(shot, "Home", "AwayDefense", "h_st2", "a_gk"),
+        shot_kind: "DirectFreeKick" as const,
+      };
+      const origins = shotOrigins([kick], start);
+      expect(origins.length).toBeGreaterThan(0);
+      for (const origin of origins) expect(outsideTheBox(origin), JSON.stringify(origin)).toBe(true);
+    });
+  }
+});
+
 describe("choreographBatch — timing", () => {
   // Given a long pass and a short one, then the long one takes longer: steps
   // are timed by how far the ball travels, not squeezed into a fixed slot.
