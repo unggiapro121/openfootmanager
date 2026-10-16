@@ -37,6 +37,13 @@ function createPlayer(overrides: Partial<PlayerData> = {}): PlayerData {
       handling: 76,
       reflexes: 77,
       aerial: 78,
+      long_passing: 64,
+      crossing: 64,
+      curve: 64,
+      free_kick: 64,
+      long_shots: 65,
+      heading: 78,
+      first_touch: 67,
     },
     condition: 80,
     morale: 75,
@@ -88,9 +95,16 @@ describe("PlayerProfile.attributes", () => {
 
     expect(groups[1]?.attrs.map((attr) => attr.name)).toEqual([
       "common.attributes.passing",
+      "common.attributes.long_passing",
+      "common.attributes.crossing",
+      "common.attributes.curve",
+      "common.attributes.free_kick",
       "common.attributes.shooting",
-      "common.attributes.tackling",
+      "common.attributes.long_shots",
       "common.attributes.dribbling",
+      "common.attributes.first_touch",
+      "common.attributes.heading",
+      "common.attributes.tackling",
       "common.attributes.defending",
     ]);
     expect(groups[1]?.average).toBe(66);
@@ -187,7 +201,7 @@ describe("buildReadAttributeGroups", () => {
       "common.attrGroups.mental",
     ]);
     const all = groups.flatMap((group) => group.attrs);
-    expect(all).toHaveLength(17);
+    expect(all).toHaveLength(24);
     expect(all.find((attr) => attr.name === "common.attributes.passing")?.value).toBe(64);
     expect(all.find((attr) => attr.name === "common.attributes.pace")?.value).toBe(70);
     expect(all.find((attr) => attr.name === "common.attributes.vision")?.value).toBeNull();

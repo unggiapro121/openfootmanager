@@ -524,6 +524,14 @@ fn apply_fitness_change(
     }
 }
 
+/// `try_gain` for one of the seven split attributes: one still at 0 is
+/// undeclared (see `attribute_split`), and training must not declare it.
+fn try_gain_split(current: &mut u8, gain: f64, rng: &mut impl Rng) {
+    if *current != 0 {
+        try_gain(current, gain, rng);
+    }
+}
+
 fn try_gain(current: &mut u8, gain: f64, rng: &mut impl Rng) {
     use rand::RngExt;
     if *current >= 99 {
@@ -553,6 +561,14 @@ fn apply_focus_gains(
             try_gain(&mut attrs.passing, gain, rng);
             try_gain(&mut attrs.shooting, gain, rng);
             try_gain(&mut attrs.dribbling, gain, rng);
+            // Each split attribute trains in the focus of the blend it came out
+            // of, so a position's OVR grows at the same speed (phase 2, rule R1).
+            try_gain_split(&mut attrs.long_passing, gain, rng);
+            try_gain_split(&mut attrs.crossing, gain, rng);
+            try_gain_split(&mut attrs.curve, gain, rng);
+            try_gain_split(&mut attrs.free_kick, gain, rng);
+            try_gain_split(&mut attrs.long_shots, gain, rng);
+            try_gain_split(&mut attrs.first_touch, gain, rng);
         }
         TrainingFocus::Tactical => {
             try_gain(&mut attrs.positioning, gain, rng);
@@ -565,11 +581,15 @@ fn apply_focus_gains(
             try_gain(&mut attrs.defending, gain, rng);
             try_gain(&mut attrs.strength, gain * 0.5, rng);
             try_gain(&mut attrs.positioning, gain * 0.5, rng);
+            try_gain_split(&mut attrs.heading, gain * 0.5, rng);
         }
         TrainingFocus::Attacking => {
             try_gain(&mut attrs.shooting, gain, rng);
             try_gain(&mut attrs.dribbling, gain, rng);
             try_gain(&mut attrs.pace, gain * 0.5, rng);
+            try_gain_split(&mut attrs.long_shots, gain, rng);
+            try_gain_split(&mut attrs.first_touch, gain, rng);
+            try_gain_split(&mut attrs.heading, gain * 0.5, rng);
         }
         TrainingFocus::Recovery => {
             // No attribute gains on recovery days

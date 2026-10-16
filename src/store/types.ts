@@ -301,6 +301,13 @@ export interface PlayerData {
     handling: number;
     reflexes: number;
     aerial: number;
+    long_passing: number;
+    crossing: number;
+    curve: number;
+    free_kick: number;
+    long_shots: number;
+    heading: number;
+    first_touch: number;
   };
   condition: number;
   morale: number;

@@ -45,6 +45,13 @@ fn sample_attributes() -> PlayerAttributes {
         handling: 12,
         reflexes: 14,
         aerial: 40,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 

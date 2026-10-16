@@ -545,7 +545,7 @@
       "stamina": "Vytrvalost",
       "strength": "Síla",
       "agility": "Abitita",
-      "passing": "Přihrávky",
+      "passing": "Krátké přihrávky",
       "shooting": "Střelba",
       "tackling": "Odebírání míče",
       "dribbling": "Driblink",
@@ -559,7 +559,14 @@
       "leadership": "Vůdcovství",
       "handling": "Chytání",
       "reflexes": "Reflexy",
-      "aerial": "Vzdušné souboje"
+      "aerial": "Vzdušné souboje",
+      "long_passing": "Dlouhé přihrávky",
+      "crossing": "Centry",
+      "curve": "Faleš",
+      "free_kick": "Přímé kopy",
+      "long_shots": "Střely z dálky",
+      "heading": "Hlavičky",
+      "first_touch": "Zpracování míče"
     },
     "moods": {
       "excellent": "Vynikající",

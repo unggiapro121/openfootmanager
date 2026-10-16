@@ -2071,6 +2071,13 @@ mod tests {
             handling: 87,
             reflexes: 90,
             aerial: 83,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         });
 
         // A striker of comparable standing, same age.
@@ -3167,6 +3174,13 @@ mod tests {
                 handling: 20,
                 reflexes: 20,
                 aerial: 62,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
             },
         );
         player.team_id = Some(team_id.to_string());

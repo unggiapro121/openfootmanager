@@ -28,6 +28,13 @@ fn gk_attrs() -> PlayerAttributes {
         handling: 85,
         reflexes: 88,
         aerial: 75,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 
@@ -52,6 +59,13 @@ fn striker_attrs() -> PlayerAttributes {
         handling: 10,
         reflexes: 15,
         aerial: 72,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 

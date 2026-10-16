@@ -728,6 +728,12 @@ fn to_engine_player(
         DomainPosition::Forward => Position::Forward,
         _ => Position::Midfielder,
     };
+    // The engine's phases are still tuned on the pre-split blends, so the four
+    // blended fields carry those; the split attributes ride along unread until
+    // each phase moves over to them (phase 2, GĐ2–GĐ4).
+    let blends = p
+        .attributes
+        .legacy_blends(p.natural_position.to_group_position() == DomainPosition::Goalkeeper);
 
     PlayerData {
         id: p.id.clone(),
@@ -740,10 +746,10 @@ fn to_engine_player(
         stamina: p.attributes.stamina,
         strength: p.attributes.strength,
         agility: p.attributes.agility,
-        passing: p.attributes.passing,
-        shooting: p.attributes.shooting,
+        passing: blends.passing,
+        shooting: blends.shooting,
         tackling: p.attributes.tackling,
-        dribbling: p.attributes.dribbling,
+        dribbling: blends.dribbling,
         defending: p.attributes.defending,
         positioning: p.attributes.positioning,
         vision: p.attributes.vision,
@@ -754,7 +760,14 @@ fn to_engine_player(
         leadership: p.attributes.leadership,
         handling: p.attributes.handling,
         reflexes: p.attributes.reflexes,
-        aerial: p.attributes.aerial,
+        aerial: blends.aerial,
+        long_passing: p.attributes.long_passing,
+        crossing: p.attributes.crossing,
+        curve: p.attributes.curve,
+        free_kick: p.attributes.free_kick,
+        long_shots: p.attributes.long_shots,
+        first_touch: p.attributes.first_touch,
+        heading: p.attributes.heading,
         height_cm: p.height_cm,
         // Live-match snapshots reach the client, and Wonderkid would give the
         // ceiling away; the engine has no use for it.
@@ -850,33 +863,35 @@ pub fn auto_select_set_pieces(
         .max_by_key(|p| (p.attributes.leadership as u16) + (p.attributes.teamwork as u16))
         .map(|p| p.id.clone());
 
-    // Penalty taker: highest shooting + composure (exclude GK)
+    // Penalty taker: highest shooting + composure (exclude GK). The match takes
+    // its penalties from this pick, so it reads the pre-split shooting blend the
+    // penalty model was tuned on (phase 2 moves penalties over in P2.4).
     let penalty = players
         .iter()
         .filter(|p| p.position != DomainPosition::Goalkeeper)
-        .max_by_key(|p| (p.attributes.shooting as u16) + (p.attributes.composure as u16))
-        .map(|p| p.id.clone());
-
-    // Free kick taker: highest passing + vision + shooting (exclude GK)
-    let free_kick = players
-        .iter()
-        .filter(|p| p.position != DomainPosition::Goalkeeper)
         .max_by_key(|p| {
-            (p.attributes.passing as u16)
-                + (p.attributes.vision as u16)
-                + (p.attributes.shooting as u16) / 2
+            u16::from(p.attributes.legacy_blends(false).shooting)
+                + u16::from(p.attributes.composure)
         })
         .map(|p| p.id.clone());
 
-    // Corner taker: highest passing + vision (exclude GK, prefer different from FK)
+    // Free kick taker: 0.65·free kicks + 0.35·curve, in hundredths (exclude GK).
+    let free_kick = players
+        .iter()
+        .filter(|p| p.position != DomainPosition::Goalkeeper)
+        .max_by_key(|p| 65 * u16::from(p.attributes.free_kick) + 35 * u16::from(p.attributes.curve))
+        .map(|p| p.id.clone());
+
+    // Corner taker: 0.70·crossing + 0.30·curve, in hundredths (exclude GK,
+    // prefer someone other than the free-kick taker).
     let corner = players
         .iter()
         .filter(|p| p.position != DomainPosition::Goalkeeper)
         .max_by_key(|p| {
-            let base = (p.attributes.passing as u16) + (p.attributes.vision as u16);
+            let base = 70 * u16::from(p.attributes.crossing) + 30 * u16::from(p.attributes.curve);
             // Small penalty if same as free kick taker to encourage variety
             if free_kick.as_ref() == Some(&p.id) {
-                base.saturating_sub(5)
+                base.saturating_sub(500)
             } else {
                 base
             }

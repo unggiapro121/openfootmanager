@@ -617,6 +617,13 @@ fn make_player(
         handling: biased(base, gk_off, rng),
         reflexes: biased(base, gk_off, rng),
         aerial: noise(base, rng),
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
         height_cm: 0,
         traits: vec![],
         role: {

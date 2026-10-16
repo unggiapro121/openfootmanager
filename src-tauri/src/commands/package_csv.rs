@@ -125,8 +125,10 @@ const PLAYER_TEXT_HEADERS: &[&str] = &[
     "contractEnd",
 ];
 
-/// The 19 attribute columns, in the order [`PlayerAttributes`] declares them:
-/// physical, technical, mental, then goalkeeping.
+/// The 26 attribute columns: the original 19 in the order [`PlayerAttributes`]
+/// declared them (physical, technical, mental, goalkeeping), then the seven split
+/// out of the blends. Appended rather than interleaved, so a column read by
+/// position in an older sheet still means what it did.
 const PLAYER_ATTRIBUTE_HEADERS: &[&str] = &[
     "pace",
     "stamina",
@@ -147,6 +149,13 @@ const PLAYER_ATTRIBUTE_HEADERS: &[&str] = &[
     "handling",
     "reflexes",
     "aerial",
+    "long_passing",
+    "crossing",
+    "curve",
+    "free_kick",
+    "long_shots",
+    "first_touch",
+    "heading",
 ];
 
 fn attribute_values(attributes: &PlayerAttributes) -> Vec<String> {
@@ -170,6 +179,13 @@ fn attribute_values(attributes: &PlayerAttributes) -> Vec<String> {
         attributes.handling.to_string(),
         attributes.reflexes.to_string(),
         attributes.aerial.to_string(),
+        attributes.long_passing.to_string(),
+        attributes.crossing.to_string(),
+        attributes.curve.to_string(),
+        attributes.free_kick.to_string(),
+        attributes.long_shots.to_string(),
+        attributes.first_touch.to_string(),
+        attributes.heading.to_string(),
     ]
 }
 

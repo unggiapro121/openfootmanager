@@ -80,10 +80,10 @@ Training is processed daily on non-match days. The system is controlled by three
 | Focus | Attributes Trained | Notes |
 |-------|-------------------|-------|
 | **Physical** | pace, stamina, strength, agility | Full gain on all 4 |
-| **Technical** | passing, shooting, dribbling | Full gain on all 3 |
+| **Technical** | passing, long_passing, crossing, curve, free_kick, shooting, long_shots, dribbling, first_touch | Full gain on all 9 |
 | **Tactical** | positioning, vision, decisions, composure | Full gain on all 4 |
-| **Defending** | tackling, defending + strength, positioning (half gain) | Mixed defensive |
-| **Attacking** | shooting, dribbling + pace (half gain) | Mixed offensive |
+| **Defending** | tackling, defending + strength, positioning, heading (half gain) | Mixed defensive |
+| **Attacking** | shooting, long_shots, dribbling, first_touch + pace, heading (half gain) | Mixed offensive |
 | **Recovery** | — (no attribute gains) | Maximum condition recovery |
 
 ### Training Intensity

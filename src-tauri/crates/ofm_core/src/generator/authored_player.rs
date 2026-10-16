@@ -155,6 +155,16 @@ const CONTRACT_END_AND_LENGTH: &str = "be.error.package.contractEndAndLength";
 const CONTRACT_LENGTH_OUT_OF_RANGE: &str = "be.error.package.contractLengthOutOfRange";
 const CONTRACT_END_NOT_AFTER_START: &str = "be.error.package.contractEndNotAfterStart";
 const PLAYER_FIELD_OUT_OF_RANGE: &str = "be.error.package.playerFieldOutOfRange";
+/// The attributes a package may leave at 0 for the generator to derive.
+const SPLIT_ATTRIBUTE_KEYS: [&str; 7] = [
+    "long_passing",
+    "crossing",
+    "curve",
+    "free_kick",
+    "long_shots",
+    "first_touch",
+    "heading",
+];
 const ALTERNATE_POSITION_INVALID: &str = "be.error.package.alternatePositionInvalid";
 const IDENTITY_NEEDS_SPECIFIC_POSITION: &str = "be.error.package.identityNeedsSpecificPosition";
 const CAREER_ENTRY_NEEDS_CLUB: &str = "be.error.package.careerEntryNeedsClub";
@@ -224,6 +234,18 @@ pub(super) fn authored_player_errors(
                 .with("start", text(&player.contract_start))
                 .with("end", text(&player.contract_end)),
         });
+    }
+
+    if let Some(attributes) = &player.attributes {
+        for key in crate::player_rating::ATTRIBUTE_KEYS {
+            // The seven split attributes may be 0, which means "derive me from
+            // the old blends" (see `attribute_split`); every other one is 1–99.
+            let floor = u8::from(!SPLIT_ATTRIBUTE_KEYS.contains(&key));
+            let value = crate::player_rating::attribute_value(attributes, key);
+            if !(floor..=99).contains(&value) {
+                errors.push(out_of_range(&format!("attributes.{key}"), floor.into(), 99));
+            }
+        }
     }
 
     if player
@@ -485,6 +507,49 @@ mod tests {
 
     fn codes(errors: &[PackageError]) -> Vec<&str> {
         errors.iter().map(|error| error.code.as_str()).collect()
+    }
+
+    fn attributes_json(overrides: serde_json::Value) -> serde_json::Value {
+        let mut attributes = serde_json::Map::new();
+        for key in crate::player_rating::ATTRIBUTE_KEYS {
+            attributes.insert(key.to_string(), serde_json::json!(60));
+        }
+        attributes.extend(overrides.as_object().unwrap().clone());
+        serde_json::json!({ "attributes": attributes })
+    }
+
+    /// Given an authored player with one of the nineteen original attributes at 0,
+    /// when the package is validated,
+    /// then it is refused for that field: those run 1–99.
+    #[test]
+    fn an_original_attribute_at_zero_is_refused() {
+        let errors = validate(attributes_json(serde_json::json!({ "passing": 0 })));
+        assert_eq!(codes(&errors), ["be.error.package.playerFieldOutOfRange"]);
+        assert_eq!(param(&errors[0], "field"), Some("attributes.passing"));
+        assert_eq!(param(&errors[0], "min"), Some("1"));
+    }
+
+    /// Given an authored player who leaves the seven split attributes at 0,
+    /// when the package is validated,
+    /// then it is accepted: 0 there means "derive from the old blends".
+    #[test]
+    fn a_split_attribute_at_zero_is_accepted() {
+        let zeros = serde_json::json!({
+            "long_passing": 0, "crossing": 0, "curve": 0, "free_kick": 0,
+            "long_shots": 0, "first_touch": 0, "heading": 0,
+        });
+        assert!(validate(attributes_json(zeros)).is_empty());
+    }
+
+    /// Given an authored player with a split attribute above 99,
+    /// when the package is validated,
+    /// then it is refused for that field, with 0 as the floor.
+    #[test]
+    fn a_split_attribute_above_99_is_refused() {
+        let errors = validate(attributes_json(serde_json::json!({ "crossing": 120 })));
+        assert_eq!(codes(&errors), ["be.error.package.playerFieldOutOfRange"]);
+        assert_eq!(param(&errors[0], "field"), Some("attributes.crossing"));
+        assert_eq!(param(&errors[0], "min"), Some("0"));
     }
 
     #[test]

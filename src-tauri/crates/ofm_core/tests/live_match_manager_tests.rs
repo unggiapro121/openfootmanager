@@ -43,6 +43,13 @@ fn default_attrs(pos: Position) -> PlayerAttributes {
         handling: if is_gk { 75 } else { 20 },
         reflexes: if is_gk { 75 } else { 30 },
         aerial: 60,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 
@@ -730,6 +737,62 @@ fn auto_select_set_pieces_empty_ids_returns_none() {
     assert!(penalty.is_none());
     assert!(free_kick.is_none());
     assert!(corner.is_none());
+}
+
+/// The squad's outfielders, with every split attribute set so none decides by default.
+fn set_piece_squad(game: &mut ofm_core::game::Game) -> Vec<String> {
+    for player in game
+        .players
+        .iter_mut()
+        .filter(|p| p.team_id.as_deref() == Some("team1"))
+    {
+        let a = &mut player.attributes;
+        (a.free_kick, a.curve, a.crossing) = (50, 50, 50);
+    }
+    game.players
+        .iter()
+        .filter(|p| p.team_id.as_deref() == Some("team1"))
+        .map(|p| p.id.clone())
+        .collect()
+}
+
+/// Given a squad where one player has the best free kicks and curve but only
+/// ordinary passing and vision,
+/// when set-piece takers are picked,
+/// then he takes the free kicks: the pick reads free_kick and curve now.
+#[test]
+fn auto_select_set_pieces_picks_the_free_kick_specialist() {
+    let mut game = make_game_with_fixture();
+    let ids = set_piece_squad(&mut game);
+    let specialist = game
+        .players
+        .iter_mut()
+        .find(|p| p.id == "team1_mid0")
+        .unwrap();
+    (specialist.attributes.free_kick, specialist.attributes.curve) = (92, 88);
+    (specialist.attributes.passing, specialist.attributes.vision) = (40, 40);
+
+    let (_, _, free_kick, _) = live_match_manager::auto_select_set_pieces(&game, &ids);
+    assert_eq!(free_kick.as_deref(), Some("team1_mid0"));
+}
+
+/// Given a squad where one player crosses far better than the rest,
+/// when set-piece takers are picked,
+/// then he takes the corners: the pick reads crossing and curve.
+#[test]
+fn auto_select_set_pieces_picks_the_best_crosser_for_corners() {
+    let mut game = make_game_with_fixture();
+    let ids = set_piece_squad(&mut game);
+    let crosser = game
+        .players
+        .iter_mut()
+        .find(|p| p.id == "team1_mid1")
+        .unwrap();
+    (crosser.attributes.crossing, crosser.attributes.curve) = (93, 80);
+    (crosser.attributes.passing, crosser.attributes.vision) = (40, 40);
+
+    let (_, _, _, corner) = live_match_manager::auto_select_set_pieces(&game, &ids);
+    assert_eq!(corner.as_deref(), Some("team1_mid1"));
 }
 
 #[test]

@@ -14,6 +14,8 @@ import {
   parseRating,
   parseOptionalWhole,
   WIRE_MAX,
+  attributeSliderMin,
+  emptyAttributes,
   emptyTeam,
   entityRowKey,
   makeRange,
@@ -464,5 +466,25 @@ describe("PLAY_STYLES", () => {
     for (const style of PLAY_STYLES) {
       expect(normalizePlayStyle(style)).toBe(style);
     }
+  });
+});
+
+describe("emptyAttributes", () => {
+  it("leaves the seven split attributes at 0 so the backend derives them", () => {
+    const attrs = emptyAttributes();
+    for (const key of [
+      "long_passing",
+      "crossing",
+      "curve",
+      "free_kick",
+      "long_shots",
+      "heading",
+      "first_touch",
+    ] as const) {
+      expect(attrs[key]).toBe(0);
+      expect(attributeSliderMin(key)).toBe(0);
+    }
+    expect(attrs.passing).toBe(50);
+    expect(attributeSliderMin("passing")).toBe(1);
   });
 });

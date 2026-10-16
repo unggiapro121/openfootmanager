@@ -1675,6 +1675,13 @@ mod tests {
             handling: 18,
             reflexes: 20,
             aerial: 55,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         }
     }
 

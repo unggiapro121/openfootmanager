@@ -44,6 +44,13 @@ const makePlayer = (overrides: Partial<PlayerData> = {}): PlayerData => ({
     handling: 30,
     reflexes: 30,
     aerial: 50,
+    long_passing: 75,
+    crossing: 75,
+    curve: 75,
+    free_kick: 75,
+    long_shots: 80,
+    heading: 50,
+    first_touch: 70,
   },
   condition: 100,
   morale: 80,
@@ -88,22 +95,27 @@ describe("getSetPieceStats", () => {
     ]);
   });
 
-  it("freekick: weights passing, vision, and shooting support", () => {
-    const result = getSetPieceStats("freekick", player);
-    expect(result.score).toBe(Math.round((a.passing + a.vision + a.shooting / 2) / 2.5));
+  // A set-piece specialist: dead-ball skill, crossing and curve differ from passing
+  // and vision on purpose, so the old formulas would give other scores.
+  const specialist = makePlayer({
+    attributes: { ...a, free_kick: 80, crossing: 70, curve: 60, passing: 40, vision: 40 },
+  });
+
+  it("freekick: 0.65 free kick + 0.35 curve, as the backend auto-pick", () => {
+    const result = getSetPieceStats("freekick", specialist);
+    expect(result.score).toBe(73);
     expect(result.stats).toEqual([
-      { label: "PAS", value: a.passing },
-      { label: "VIS", value: a.vision },
-      { label: "SHO", value: a.shooting },
+      { label: "FKA", value: 80 },
+      { label: "CUR", value: 60 },
     ]);
   });
 
-  it("corner: weights passing and vision", () => {
-    const result = getSetPieceStats("corner", player);
-    expect(result.score).toBe(Math.round((a.passing + a.vision) / 2));
+  it("corner: 0.70 crossing + 0.30 curve, as the backend auto-pick", () => {
+    const result = getSetPieceStats("corner", specialist);
+    expect(result.score).toBe(67);
     expect(result.stats).toEqual([
-      { label: "PAS", value: a.passing },
-      { label: "VIS", value: a.vision },
+      { label: "CRO", value: 70 },
+      { label: "CUR", value: 60 },
     ]);
   });
 
@@ -246,6 +258,43 @@ describe("SetPieceSelector component", () => {
 
     expect(screen.getAllByText("common.attributes.shooting").length).toBeGreaterThan(0);
     expect(screen.getAllByText("common.attributes.composure").length).toBeGreaterThan(0);
+  });
+
+  it("translates the corner stat labels", () => {
+    render(
+      <SetPieceSelector
+        label="Corner Taker"
+        icon={<span>CK</span>}
+        assignment="corner"
+        currentId="p1"
+        players={players}
+        allSquad={allSquad}
+        onSelect={() => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Corner Taker"));
+
+    expect(screen.getAllByText("common.attributes.crossing").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("common.attributes.curve").length).toBeGreaterThan(0);
+  });
+
+  it("translates the free-kick stat label", () => {
+    render(
+      <SetPieceSelector
+        label="Free Kick Taker"
+        icon={<span>FK</span>}
+        assignment="freekick"
+        currentId="p1"
+        players={players}
+        allSquad={allSquad}
+        onSelect={() => {}}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("Free Kick Taker"));
+
+    expect(screen.getAllByText("common.attributes.free_kick").length).toBeGreaterThan(0);
   });
 
   it("calls onSelect and collapses when a player is picked", () => {

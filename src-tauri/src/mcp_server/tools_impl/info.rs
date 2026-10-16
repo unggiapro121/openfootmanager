@@ -471,7 +471,7 @@ pub fn info_player_profile(ctx: Arc<McpContext>, player_id: String) -> Result<St
             [
                 ("Pace", attrs.pace),
                 ("Shooting", attrs.shooting),
-                ("Passing", attrs.passing),
+                ("Short Passing", attrs.passing),
             ],
             [
                 ("Dribbling", attrs.dribbling),
@@ -498,7 +498,21 @@ pub fn info_player_profile(ctx: Arc<McpContext>, player_id: String) -> Result<St
                 ("Handling", attrs.handling),
                 ("Reflexes", attrs.reflexes),
             ],
-            [("Aerial", attrs.aerial), ("", 0), ("", 0)],
+            [
+                ("Aerial", attrs.aerial),
+                ("Heading", attrs.heading),
+                ("First Touch", attrs.first_touch),
+            ],
+            [
+                ("Long Passing", attrs.long_passing),
+                ("Crossing", attrs.crossing),
+                ("Curve", attrs.curve),
+            ],
+            [
+                ("Free Kicks", attrs.free_kick),
+                ("Long Shots", attrs.long_shots),
+                ("", 0),
+            ],
         ];
         for row in &attr_rows {
             // Skip empty cells at the end

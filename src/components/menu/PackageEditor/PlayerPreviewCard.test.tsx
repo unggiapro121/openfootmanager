@@ -36,6 +36,26 @@ describe("PlayerPreviewCard", () => {
     expect(screen.queryByText("Left")).not.toBeInTheDocument();
   });
 
+  it("labels every attribute by its full name, so the two long skills stay apart", () => {
+    render(<PlayerPreviewCard editing={makePlayer({ overall: 70 })} photoDataUrl={null} />);
+    // A three-letter cut made both of these "LON".
+    expect(screen.getByText("common.attributes.long_passing")).toBeInTheDocument();
+    expect(screen.getByText("common.attributes.long_shots")).toBeInTheDocument();
+  });
+
+  it("estimates the new technical attributes from the overall rating", () => {
+    render(
+      <PlayerPreviewCard
+        editing={makePlayer({ overall: 70, position: "Striker" })}
+        photoDataUrl={null}
+      />,
+    );
+    for (const key of ["crossing", "curve", "free_kick", "heading", "first_touch"]) {
+      const row = screen.getByText(`common.attributes.${key}`).closest("div");
+      expect(row?.textContent).toContain("70");
+    }
+  });
+
   it("omits the footedness row for right-footed players (the default)", () => {
     render(<PlayerPreviewCard editing={makePlayer({ footedness: "Right" })} photoDataUrl={null} />);
     // The whole row is gone — assert on the row label, not just the value, so a

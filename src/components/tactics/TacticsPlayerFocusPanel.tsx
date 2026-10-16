@@ -18,7 +18,20 @@ const ATTRIBUTE_GROUPS: {
   },
   {
     labelKey: "common.attrGroups.technical",
-    attrs: ["passing", "shooting", "tackling", "dribbling", "defending"],
+    attrs: [
+      "passing",
+      "long_passing",
+      "crossing",
+      "curve",
+      "free_kick",
+      "shooting",
+      "long_shots",
+      "dribbling",
+      "first_touch",
+      "heading",
+      "tackling",
+      "defending",
+    ],
   },
   {
     labelKey: "common.attrGroups.mental",

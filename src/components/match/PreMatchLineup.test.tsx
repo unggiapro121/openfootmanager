@@ -71,6 +71,13 @@ const makePlayer = (overrides: Partial<EnginePlayerData> = {}): EnginePlayerData
   handling: 70,
   reflexes: 70,
   aerial: 70,
+  long_passing: 70,
+  crossing: 70,
+  curve: 70,
+  free_kick: 70,
+  long_shots: 70,
+  heading: 70,
+  first_touch: 70,
   traits: [],
   role: "Standard",
   ...overrides,
@@ -266,6 +273,11 @@ describe("POSITION_KEY_STATS", () => {
         expect(stat).toHaveProperty("key");
       }
     }
+  });
+
+  it("shows long passing for midfielders and heading for forwards", () => {
+    expect(POSITION_KEY_STATS.Midfielder.map((stat) => stat.key)).toContain("long_passing");
+    expect(POSITION_KEY_STATS.Forward.map((stat) => stat.key)).toContain("heading");
   });
 });
 

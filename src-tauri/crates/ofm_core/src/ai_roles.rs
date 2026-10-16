@@ -149,8 +149,15 @@ fn style_preferences(play_style: &PlayStyle) -> &'static [PlayerRole] {
 /// 20 would drag his average down far enough that every keeper cleared the
 /// specialist margin on anything, and an outfielder's `handling` of 30 would do
 /// the same in reverse.
+/// The role profiles and the baseline were tuned on the pre-split blends.
+fn blended_attributes(player: &Player) -> domain::player::PlayerAttributes {
+    let is_keeper =
+        player.natural_position.to_group_position() == domain::player::Position::Goalkeeper;
+    player.attributes.with_legacy_blends(is_keeper)
+}
+
 fn player_baseline(player: &Player) -> f64 {
-    let a = &player.attributes;
+    let a = &blended_attributes(player);
     let outfield = [
         a.pace,
         a.stamina,
@@ -201,6 +208,7 @@ pub(crate) fn role_for_position(
     // margin check would let a club's taste carry a player short of the margin
     // over it, which is exactly what `STYLE_PREFERENCE` promises not to do.
     let threshold = baseline + specialist_margin(candidates);
+    let attributes = blended_attributes(player);
     let mut best = PlayerRole::Standard;
     let mut best_score = f64::NEG_INFINITY;
 
@@ -209,11 +217,7 @@ pub(crate) fn role_for_position(
             continue;
         }
         let profile = role_profile(role);
-        let earned = mean_u8(
-            profile
-                .iter()
-                .map(|attribute| attribute(&player.attributes)),
-        );
+        let earned = mean_u8(profile.iter().map(|attribute| attribute(&attributes)));
         if earned <= threshold {
             continue;
         }
@@ -280,6 +284,13 @@ mod tests {
             handling: level,
             reflexes: level,
             aerial: level,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
         }
     }
 

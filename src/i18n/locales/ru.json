@@ -541,7 +541,7 @@
       "stamina": "Выносливость",
       "strength": "Сила",
       "agility": "Ловкость",
-      "passing": "Пас",
+      "passing": "Короткий пас",
       "shooting": "Удар",
       "tackling": "Отбор",
       "dribbling": "Дриблинг",
@@ -555,7 +555,14 @@
       "leadership": "Лидерство",
       "handling": "Игра руками",
       "reflexes": "Реакция",
-      "aerial": "Игра головой"
+      "aerial": "Верховая борьба",
+      "long_passing": "Длинный пас",
+      "crossing": "Навесы",
+      "curve": "Подкрутка",
+      "free_kick": "Штрафные",
+      "long_shots": "Дальние удары",
+      "heading": "Игра головой",
+      "first_touch": "Приём мяча"
     },
     "moods": {
       "excellent": "Отлично",

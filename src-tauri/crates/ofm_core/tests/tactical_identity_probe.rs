@@ -116,6 +116,13 @@ fn attrs(level: u8, position: &Position) -> PlayerAttributes {
         handling: if gk { level } else { 30 },
         reflexes: if gk { level } else { 30 },
         aerial: level,
+        long_passing: 0,
+        crossing: 0,
+        curve: 0,
+        free_kick: 0,
+        long_shots: 0,
+        first_touch: 0,
+        heading: 0,
     }
 }
 

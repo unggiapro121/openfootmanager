@@ -324,26 +324,35 @@ fn draw_potential(ovr: u8, age: u32, rng: &mut impl Rng) -> u8 {
 const RAW_PROFILE_OVR: f64 = 68.0;
 
 fn scale_each<'a>(values: impl IntoIterator<Item = &'a mut u8>, factor: f64) {
-    for value in values {
+    // A split attribute at 0 is undeclared (see `attribute_split`) and stays so.
+    for value in values.into_iter().filter(|value| **value != 0) {
         *value = (f64::from(*value) * factor).round().clamp(1.0, 99.0) as u8;
     }
 }
 
-/// The attributes a player's body shapes (see `physique::BodyLinks`).
-fn body_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 4] {
+/// The attributes a player's body shapes (see `physique::BodyLinks`). Heading
+/// scales with aerial, the blend it came out of, so the blend scales as it did.
+fn body_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 5] {
     [
         &mut attributes.pace,
         &mut attributes.strength,
         &mut attributes.agility,
         &mut attributes.aerial,
+        &mut attributes.heading,
     ]
 }
 
 /// Every attribute the body does not shape.
-fn trained_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 15] {
+fn trained_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 21] {
     [
         &mut attributes.stamina,
         &mut attributes.passing,
+        &mut attributes.long_passing,
+        &mut attributes.crossing,
+        &mut attributes.curve,
+        &mut attributes.free_kick,
+        &mut attributes.long_shots,
+        &mut attributes.first_touch,
         &mut attributes.shooting,
         &mut attributes.tackling,
         &mut attributes.dribbling,

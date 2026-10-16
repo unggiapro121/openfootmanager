@@ -21,13 +21,13 @@ export const POSITION_KEY_STATS: Record<string, { label: string; key: string }[]
   ],
   Midfielder: [
     { label: "PAS", key: "passing" },
+    { label: "LPA", key: "long_passing" },
     { label: "VIS", key: "vision" },
-    { label: "STA", key: "stamina" },
   ],
   Forward: [
     { label: "SHO", key: "shooting" },
     { label: "PAC", key: "pace" },
-    { label: "DRI", key: "dribbling" },
+    { label: "HEA", key: "heading" },
   ],
 };
 
