@@ -3906,14 +3906,46 @@
       "label": "Moteur",
       "desc": "Puissance de surface à surface"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Spéc. Coups de Pied",
-      "desc": "Mortel sur coups de pied arrêtés"
+      "desc": "Mortel sur coups francs et corners"
+    },
+    "LongPasser": {
+      "label": "Jeu Long",
+      "desc": "Renverse le jeu avec de longs ballons précis"
+    },
+    "Crosser": {
+      "label": "Centreur",
+      "desc": "Distille des centres dangereux"
+    },
+    "Curler": {
+      "label": "Frappe Enroulée",
+      "desc": "Enroule ses frappes hors de portée du gardien"
+    },
+    "LongShooter": {
+      "label": "Frappeur de Loin",
+      "desc": "Dangereux à l'extérieur de la surface"
+    },
+    "PowerHeader": {
+      "label": "Tête Puissante",
+      "desc": "Place des têtes très puissantes"
+    },
+    "PressResistant": {
+      "label": "Résiste au Pressing",
+      "desc": "Garde le ballon sous le pressing"
+    },
+    "TikiTaka": {
+      "label": "Jeu Court",
+      "desc": "S'épanouit dans le jeu de passes courtes"
     },
     "Wonderkid": {
       "label": "Enfant Prodige",
       "desc": "Vos recruteurs estiment que ce jeune a un potentiel exceptionnel",
       "scoutedPotential": "Potentiel estimé"
+    },
+    "ShootsFromDistance": {
+      "label": "Tente de Loin",
+      "desc": "Tente sa chance de loin plus que la plupart"
     }
   },
   "date": {

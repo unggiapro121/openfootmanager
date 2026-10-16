@@ -237,7 +237,9 @@ pub(crate) fn trait_bonus(snap: &PlayerSnap, context: TraitContext) -> f64 {
             if snap.has_trait("Visionary") {
                 bonus *= 1.05;
             }
-            if snap.has_trait("SetPieceSpecialist") {
+            // The set-piece specialist's passing edge carries over to the trait
+            // that replaced him; its own set-piece effects arrive with P2.3–P2.4.
+            if snap.has_trait("DeadBallSpecialist") {
                 bonus *= 1.03;
             }
         }

@@ -3906,14 +3906,46 @@
       "label": "发动机",
       "desc": "攻防两端的中场大师"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "定位球专家",
-      "desc": "定位球极具杀伤力"
+      "desc": "任意球和角球极具杀伤力"
+    },
+    "LongPasser": {
+      "label": "长传手",
+      "desc": "精准长传转移进攻"
+    },
+    "Crosser": {
+      "label": "传中专家",
+      "desc": "传中极具威胁"
+    },
+    "Curler": {
+      "label": "弧线球",
+      "desc": "踢出绕过门将的弧线球"
+    },
+    "LongShooter": {
+      "label": "远射手",
+      "desc": "禁区外极具威胁"
+    },
+    "PowerHeader": {
+      "label": "头球杀手",
+      "desc": "头球攻门势大力沉"
+    },
+    "PressResistant": {
+      "label": "抗压大师",
+      "desc": "在逼抢下也能护住球"
+    },
+    "TikiTaka": {
+      "label": "传控大师",
+      "desc": "擅长快速短传配合"
     },
     "Wonderkid": {
       "label": "天才少年",
       "desc": "你的球探认为这名年轻球员潜力非凡",
       "scoutedPotential": "球探评估潜力"
+    },
+    "ShootsFromDistance": {
+      "label": "爱远射",
+      "desc": "比大多数球员更爱远射"
     }
   },
   "date": {

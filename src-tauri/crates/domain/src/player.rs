@@ -851,21 +851,42 @@ pub enum PlayerTrait {
     // Goalkeeper
     SafeHands,       // handling >= 85 (GK only)
     CatReflexes,     // reflexes >= 85 (GK only)
-    AerialDominance, // aerial >= 85
+    AerialDominance, // outfield: aerial >= 88 && strength >= 80; GK: aerial >= 85
     // Combo / Special
     CompleteForward, // FWD: shooting >= 75 && dribbling >= 75 && pace >= 70 && strength >= 70
     Engine,          // MID: stamina >= 85 && pace >= 70 && teamwork >= 75
-    SetPieceSpecialist, // passing >= 80 && shooting >= 75 && vision >= 75
+    // Split technique (phase 2). They show on the profile now; their match
+    // effects arrive with the mechanics that read them (GĐ2–GĐ4).
+    LongPasser,         // long_passing >= 80 && vision >= 70
+    Crosser,            // crossing >= 80
+    Curler,             // curve >= 80 && (shooting >= 70 || long_shots >= 70)
+    LongShooter,        // long_shots >= 80
+    PowerHeader,        // heading >= 80 && aerial >= 70
+    PressResistant,     // first_touch >= 80 && composure >= 75
+    DeadBallSpecialist, // free_kick >= 80 && curve >= 75 (replaces SetPieceSpecialist)
+    TikiTaka,           // passing >= 85 && teamwork >= 75
+    // Habit: assigned once when the player enters the world (see
+    // `Player::assigned_traits`), never read off attributes.
+    ShootsFromDistance,
     // Potential / Star
     Wonderkid, // age <= 21 && potential >= 85 && (potential - ovr) >= 10
+}
+
+impl PlayerTrait {
+    /// A habit given once (see `ofm_core::assigned_traits`), which recomputing
+    /// traits from attributes must keep rather than drop.
+    pub fn is_assigned(&self) -> bool {
+        matches!(self, PlayerTrait::ShootsFromDistance)
+    }
 }
 
 /// Derive traits purely from a player's attributes. The position only tells a
 /// keeper apart, whose aerial blend is his own.
 pub fn compute_traits(attrs: &PlayerAttributes, position: &Position) -> Vec<PlayerTrait> {
     let mut traits = Vec::new();
-    // Thresholds were set on the pre-split blends; read those until the trait
-    // rework (phase 2, P1.5) moves each trait onto the split attributes.
+    // The original traits' thresholds, and their match effects, were tuned on
+    // the pre-split blends, so they read those until the mechanics they feed
+    // move onto the split attributes (GĐ2–GĐ4).
     let blends = attrs.legacy_blends(matches!(position, Position::Goalkeeper));
 
     // Physical
@@ -923,7 +944,12 @@ pub fn compute_traits(attrs: &PlayerAttributes, position: &Position) -> Vec<Play
     if attrs.reflexes >= 85 {
         traits.push(PlayerTrait::CatReflexes);
     }
-    if blends.aerial >= 85 {
+    let dominates_the_air = if matches!(position, Position::Goalkeeper) {
+        attrs.aerial >= 85
+    } else {
+        attrs.aerial >= 88 && attrs.strength >= 80
+    };
+    if dominates_the_air {
         traits.push(PlayerTrait::AerialDominance);
     }
 
@@ -934,8 +960,31 @@ pub fn compute_traits(attrs: &PlayerAttributes, position: &Position) -> Vec<Play
     if attrs.stamina >= 85 && attrs.pace >= 70 && attrs.teamwork >= 75 {
         traits.push(PlayerTrait::Engine);
     }
-    if blends.passing >= 80 && blends.shooting >= 75 && attrs.vision >= 75 {
-        traits.push(PlayerTrait::SetPieceSpecialist);
+
+    // Split technique. These read the split attributes themselves.
+    if attrs.long_passing >= 80 && attrs.vision >= 70 {
+        traits.push(PlayerTrait::LongPasser);
+    }
+    if attrs.crossing >= 80 {
+        traits.push(PlayerTrait::Crosser);
+    }
+    if attrs.curve >= 80 && (attrs.shooting >= 70 || attrs.long_shots >= 70) {
+        traits.push(PlayerTrait::Curler);
+    }
+    if attrs.long_shots >= 80 {
+        traits.push(PlayerTrait::LongShooter);
+    }
+    if attrs.heading >= 80 && attrs.aerial >= 70 {
+        traits.push(PlayerTrait::PowerHeader);
+    }
+    if attrs.first_touch >= 80 && attrs.composure >= 75 {
+        traits.push(PlayerTrait::PressResistant);
+    }
+    if attrs.free_kick >= 80 && attrs.curve >= 75 {
+        traits.push(PlayerTrait::DeadBallSpecialist);
+    }
+    if attrs.passing >= 85 && attrs.teamwork >= 75 {
+        traits.push(PlayerTrait::TikiTaka);
     }
 
     traits
@@ -1002,6 +1051,120 @@ impl Player {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Every attribute, split ones included, at an unremarkable 50.
+    fn plain() -> PlayerAttributes {
+        let mut a = sample_attributes();
+        for v in [
+            &mut a.pace,
+            &mut a.stamina,
+            &mut a.strength,
+            &mut a.agility,
+            &mut a.passing,
+            &mut a.shooting,
+            &mut a.tackling,
+            &mut a.dribbling,
+            &mut a.defending,
+            &mut a.positioning,
+            &mut a.vision,
+            &mut a.decisions,
+            &mut a.composure,
+            &mut a.aggression,
+            &mut a.teamwork,
+            &mut a.leadership,
+            &mut a.handling,
+            &mut a.reflexes,
+            &mut a.aerial,
+            &mut a.long_passing,
+            &mut a.crossing,
+            &mut a.curve,
+            &mut a.free_kick,
+            &mut a.long_shots,
+            &mut a.first_touch,
+            &mut a.heading,
+        ] {
+            *v = 50;
+        }
+        a
+    }
+
+    fn traits_of(a: &PlayerAttributes, position: Position) -> Vec<PlayerTrait> {
+        compute_traits(a, &position)
+    }
+
+    /// Given a player one point under and then exactly at each new trait's
+    /// thresholds,
+    /// when traits are computed,
+    /// then the trait appears only at the threshold.
+    #[test]
+    fn each_split_attribute_trait_starts_at_its_threshold() {
+        type Setter = fn(&mut PlayerAttributes, u8);
+        let cases: [(PlayerTrait, Setter); 8] = [
+            (PlayerTrait::LongPasser, |a, d| {
+                (a.long_passing, a.vision) = (80 - d, 70)
+            }),
+            (PlayerTrait::Crosser, |a, d| a.crossing = 80 - d),
+            (PlayerTrait::Curler, |a, d| {
+                (a.curve, a.long_shots) = (80 - d, 70)
+            }),
+            (PlayerTrait::LongShooter, |a, d| a.long_shots = 80 - d),
+            (PlayerTrait::PowerHeader, |a, d| {
+                (a.heading, a.aerial) = (80 - d, 70)
+            }),
+            (PlayerTrait::PressResistant, |a, d| {
+                (a.first_touch, a.composure) = (80 - d, 75)
+            }),
+            (PlayerTrait::DeadBallSpecialist, |a, d| {
+                (a.free_kick, a.curve) = (80 - d, 75)
+            }),
+            (PlayerTrait::TikiTaka, |a, d| {
+                (a.passing, a.teamwork) = (85 - d, 75)
+            }),
+        ];
+        for (expected, set) in cases {
+            let mut below = plain();
+            set(&mut below, 1);
+            assert!(
+                !traits_of(&below, Position::CentralMidfielder).contains(&expected),
+                "{expected:?} below"
+            );
+            let mut at = plain();
+            set(&mut at, 0);
+            assert!(
+                traits_of(&at, Position::CentralMidfielder).contains(&expected),
+                "{expected:?} at"
+            );
+        }
+    }
+
+    /// Given an outfielder who jumps at 90 but is not strong, and a keeper at 85,
+    /// when traits are computed,
+    /// then only the keeper dominates the air: an outfielder needs strength 80 too.
+    #[test]
+    fn aerial_dominance_asks_an_outfielder_for_strength() {
+        let mut jumper = plain();
+        jumper.aerial = 90;
+        assert!(!traits_of(&jumper, Position::CenterBack).contains(&PlayerTrait::AerialDominance));
+        jumper.strength = 80;
+        jumper.aerial = 88;
+        assert!(traits_of(&jumper, Position::CenterBack).contains(&PlayerTrait::AerialDominance));
+        let mut keeper = plain();
+        keeper.aerial = 85;
+        assert!(traits_of(&keeper, Position::Goalkeeper).contains(&PlayerTrait::AerialDominance));
+    }
+
+    /// Given a player with outstanding long shots,
+    /// when traits are computed,
+    /// then he is a long shooter but never "shoots from distance": that habit is
+    /// assigned once, not read off attributes.
+    #[test]
+    fn shooting_from_distance_is_never_computed() {
+        let mut a = plain();
+        a.long_shots = 99;
+        let traits = traits_of(&a, Position::AttackingMidfielder);
+        assert!(traits.contains(&PlayerTrait::LongShooter));
+        assert!(!traits.contains(&PlayerTrait::ShootsFromDistance));
+    }
 
     /// Given attributes from before the split (the seven new fields 0),
     /// when the legacy blends are read,

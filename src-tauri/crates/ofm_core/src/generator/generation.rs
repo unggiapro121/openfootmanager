@@ -500,10 +500,21 @@ pub(super) fn generate_random_player_from_def(
         strength: correlated_range(40, 95, body.z_weight, links.strength, rng),
         agility: correlated_range(40, 95, body.z_height, links.agility, rng),
         passing: rng.random_range(40..95),
+        // Shooting, and the long shots split out of it, by group as in the EA
+        // data: a defender's well under his level (centre-backs ~30 under,
+        // full-backs ~20), and a narrower band elsewhere than the flat 40–95 it
+        // used to be, whose spread made one generated attacker in three a
+        // habitual long-range shooter (see `assigned_traits`). Calibration then
+        // scales every player to his level, so the OVR lands where it did. One
+        // draw either way, so the random stream is unchanged.
         shooting: if is_gk {
             rng.random_range(20..50)
+        } else if is_def {
+            rng.random_range(25..65)
+        } else if is_fwd {
+            rng.random_range(55..86)
         } else {
-            rng.random_range(40..95)
+            rng.random_range(50..76)
         },
         tackling: if is_gk || is_fwd {
             rng.random_range(20..60)
@@ -611,6 +622,8 @@ pub(super) fn generate_random_player_from_def(
     // From the generation's own stream, so a seeded world or season pool replays.
     player.potential = crate::player_rating::generate_potential_from(temp_ovr, player_age, rng);
     refresh_player_derived(&mut player, current_year);
+    // A habit, drawn once from the player's id (see `assigned_traits`).
+    crate::assigned_traits::assign_traits(&mut player, current_year);
     // Priced once rating and potential are settled, since both drive the price.
     // No club yet: the career's opening reprices him at the club he plays for.
     player.market_value = generated_market_value(&player, opening_year);
@@ -848,8 +861,11 @@ pub(super) fn attributes_for_overall(
         strength: correlated_jitter(base, 8, (30, 97), z_weight, links.strength, rng),
         agility: correlated_jitter(base, 8, (30, 97), z_height, links.agility, rng),
         passing: jitter(base, 8, 30, 97, rng),
+        // See the random generator: a defender's shooting sits ~25 under his level.
         shooting: if is_gk {
             rng.random_range(20..50)
+        } else if is_def {
+            jitter(base - 25, 8, 20, 80, rng)
         } else {
             jitter(base, 8, 30, 97, rng)
         },
@@ -1164,6 +1180,8 @@ pub(super) fn generate_player_from_def(
         .potential
         .unwrap_or_else(|| generate_potential(temp_ovr, age));
     refresh_player_derived(&mut player, current_year);
+    // A habit, drawn once from the player's id (see `assigned_traits`).
+    crate::assigned_traits::assign_traits(&mut player, current_year);
     // An authored figure wins; one left out is priced like any generated
     // player's, from the rating and potential he ended up with.
     player.market_value = def

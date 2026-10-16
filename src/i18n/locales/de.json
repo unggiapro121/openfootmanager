@@ -3906,14 +3906,46 @@
       "label": "Motor",
       "desc": "Box-to-Box Kraftpaket"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Standardspezialist",
-      "desc": "Tödlich bei ruhenden Bällen"
+      "desc": "Tödlich bei Freistößen und Ecken"
+    },
+    "LongPasser": {
+      "label": "Ballverteiler",
+      "desc": "Verlagert das Spiel mit präzisen langen Bällen"
+    },
+    "Crosser": {
+      "label": "Flankengeber",
+      "desc": "Schlägt gefährliche Flanken"
+    },
+    "Curler": {
+      "label": "Schlenzer",
+      "desc": "Schlenzt den Ball am Torwart vorbei"
+    },
+    "LongShooter": {
+      "label": "Distanzschütze",
+      "desc": "Gefährlich aus der Distanz"
+    },
+    "PowerHeader": {
+      "label": "Kopfballstark",
+      "desc": "Köpft mit enormer Wucht"
+    },
+    "PressResistant": {
+      "label": "Pressingresistent",
+      "desc": "Behauptet den Ball unter Druck"
+    },
+    "TikiTaka": {
+      "label": "Kurzpassspiel",
+      "desc": "Glänzt im schnellen Kurzpassspiel"
     },
     "Wonderkid": {
       "label": "Wunderkind",
       "desc": "Deine Scouts trauen diesem Talent außergewöhnliches Potenzial zu",
       "scoutedPotential": "Geschätztes Potenzial"
+    },
+    "ShootsFromDistance": {
+      "label": "Zieht aus der Distanz ab",
+      "desc": "Schießt öfter aus der Distanz als die meisten"
     }
   },
   "date": {

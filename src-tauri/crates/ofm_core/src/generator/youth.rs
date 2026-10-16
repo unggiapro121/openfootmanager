@@ -234,6 +234,7 @@ fn grow_into_age(
     let ovr = natural_ovr(player).round() as u8;
     player.potential = draw_youth_potential(ovr, age, lift, rng);
     crate::player_rating::refresh_player_derived(player, current_year);
+    crate::assigned_traits::assign_traits(player, current_year);
     reprice_generated_player(player, current_year);
 }
 

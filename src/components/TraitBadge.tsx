@@ -1,21 +1,29 @@
 import {
+  ArrowUpFromDot,
   Brain,
   Cat,
   CircleDot,
   Cog,
+  CornerUpRight,
   Crown,
   Crosshair,
   Dumbbell,
   Eye,
   Flame,
+  Goal,
   Hand,
   Heart,
   Mountain,
+  Repeat,
   Rocket,
+  Send,
   Shield,
+  ShieldCheck,
   Sparkles,
+  Spline,
   Star,
   Target,
+  Telescope,
   Users,
   Wind,
   Zap,
@@ -23,20 +31,28 @@ import {
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-type TraitCategory = "physical" | "technical" | "mental" | "goalkeeper" | "special";
+type TraitCategory = "physical" | "technical" | "mental" | "goalkeeper" | "special" | "habit";
 
 interface TraitMeta {
   icon: ReactNode;
   color: string;
   category: TraitCategory;
+  /** Every entry must hold. Empty for a habit rolled once rather than earned from attributes. */
   requirements: TraitRequirement[];
+  /** A separate rule a goalkeeper earns the trait on instead. */
+  goalkeeperRequirements?: TraitRequirement[];
 }
 
-type TraitRequirement = {
+type AttributeRequirement = {
   labelKey: string;
   value: number;
   operator: ">=" | "<" | "<=";
 };
+
+/** One threshold, or a group of which any one is enough. */
+type TraitRequirement = AttributeRequirement | { anyOf: AttributeRequirement[] };
+
+// These thresholds copy `compute_traits` in src-tauri/crates/domain/src/player.rs; keep them in step.
 
 const TRAIT_META: Record<string, TraitMeta> = {
   Speedster: {
@@ -94,6 +110,68 @@ const TRAIT_META: Record<string, TraitMeta> = {
     requirements: [
       { labelKey: "common.attributes.tackling", value: 80, operator: ">=" },
       { labelKey: "common.attributes.aggression", value: 70, operator: ">=" },
+    ],
+  },
+  LongPasser: {
+    icon: <Send className="w-3 h-3" />,
+    color: "text-indigo-400 bg-indigo-500/10 ring-indigo-500/30",
+    category: "technical",
+    requirements: [
+      { labelKey: "common.attributes.long_passing", value: 80, operator: ">=" },
+      { labelKey: "common.attributes.vision", value: 70, operator: ">=" },
+    ],
+  },
+  Crosser: {
+    icon: <CornerUpRight className="w-3 h-3" />,
+    color: "text-rose-400 bg-rose-500/10 ring-rose-500/30",
+    category: "technical",
+    requirements: [{ labelKey: "common.attributes.crossing", value: 80, operator: ">=" }],
+  },
+  Curler: {
+    icon: <Spline className="w-3 h-3" />,
+    color: "text-fuchsia-400 bg-fuchsia-500/10 ring-fuchsia-500/30",
+    category: "technical",
+    requirements: [
+      { labelKey: "common.attributes.curve", value: 80, operator: ">=" },
+      {
+        anyOf: [
+          { labelKey: "common.attributes.shooting", value: 70, operator: ">=" },
+          { labelKey: "common.attributes.long_shots", value: 70, operator: ">=" },
+        ],
+      },
+    ],
+  },
+  LongShooter: {
+    icon: <Goal className="w-3 h-3" />,
+    color: "text-orange-400 bg-orange-500/10 ring-orange-500/30",
+    category: "technical",
+    requirements: [{ labelKey: "common.attributes.long_shots", value: 80, operator: ">=" }],
+  },
+  PowerHeader: {
+    icon: <ArrowUpFromDot className="w-3 h-3" />,
+    color: "text-sky-400 bg-sky-500/10 ring-sky-500/30",
+    category: "technical",
+    requirements: [
+      { labelKey: "common.attributes.heading", value: 80, operator: ">=" },
+      { labelKey: "common.attributes.aerial", value: 70, operator: ">=" },
+    ],
+  },
+  PressResistant: {
+    icon: <ShieldCheck className="w-3 h-3" />,
+    color: "text-teal-400 bg-teal-500/10 ring-teal-500/30",
+    category: "technical",
+    requirements: [
+      { labelKey: "common.attributes.first_touch", value: 80, operator: ">=" },
+      { labelKey: "common.attributes.composure", value: 75, operator: ">=" },
+    ],
+  },
+  TikiTaka: {
+    icon: <Repeat className="w-3 h-3" />,
+    color: "text-emerald-400 bg-emerald-500/10 ring-emerald-500/30",
+    category: "technical",
+    requirements: [
+      { labelKey: "common.attributes.passing", value: 85, operator: ">=" },
+      { labelKey: "common.attributes.teamwork", value: 75, operator: ">=" },
     ],
   },
   Rock: {
@@ -159,8 +237,12 @@ const TRAIT_META: Record<string, TraitMeta> = {
   AerialDominance: {
     icon: <Mountain className="w-3 h-3" />,
     color: "text-sky-400 bg-sky-500/10 ring-sky-500/30",
-    category: "goalkeeper",
-    requirements: [{ labelKey: "common.attributes.aerial", value: 85, operator: ">=" }],
+    category: "physical",
+    requirements: [
+      { labelKey: "common.attributes.aerial", value: 88, operator: ">=" },
+      { labelKey: "common.attributes.strength", value: 80, operator: ">=" },
+    ],
+    goalkeeperRequirements: [{ labelKey: "common.attributes.aerial", value: 85, operator: ">=" }],
   },
   CompleteForward: {
     icon: <Star className="w-3 h-3" />,
@@ -183,14 +265,13 @@ const TRAIT_META: Record<string, TraitMeta> = {
       { labelKey: "common.attributes.teamwork", value: 75, operator: ">=" },
     ],
   },
-  SetPieceSpecialist: {
+  DeadBallSpecialist: {
     icon: <CircleDot className="w-3 h-3" />,
     color: "text-lime-400 bg-lime-500/10 ring-lime-500/30",
     category: "special",
     requirements: [
-      { labelKey: "common.attributes.passing", value: 80, operator: ">=" },
-      { labelKey: "common.attributes.shooting", value: 75, operator: ">=" },
-      { labelKey: "common.attributes.vision", value: 75, operator: ">=" },
+      { labelKey: "common.attributes.free_kick", value: 80, operator: ">=" },
+      { labelKey: "common.attributes.curve", value: 75, operator: ">=" },
     ],
   },
   Wonderkid: {
@@ -204,10 +285,16 @@ const TRAIT_META: Record<string, TraitMeta> = {
       { labelKey: "youthAcademy.growth", value: 14, operator: ">=" },
     ],
   },
+  ShootsFromDistance: {
+    icon: <Telescope className="w-3 h-3" />,
+    color: "text-stone-400 bg-stone-500/10 ring-stone-500/30",
+    category: "habit",
+    requirements: [],
+  },
 };
 
-function formatRequirement(
-  requirement: TraitRequirement,
+function formatThreshold(
+  requirement: AttributeRequirement,
   translate: (key: string) => string,
 ): string {
   const value =
@@ -218,18 +305,33 @@ function formatRequirement(
   return `${translate(requirement.labelKey)} ${value}`;
 }
 
-function buildTraitTooltip(traitName: string, translate: (key: string) => string): string {
-  const baseDescription = translate(`traits.${traitName}.desc`);
-  const requirements =
-    TRAIT_META[traitName]?.requirements.map((requirement) =>
-      formatRequirement(requirement, translate),
-    ) ?? [];
+function formatRequirements(
+  requirements: TraitRequirement[],
+  translate: (key: string) => string,
+): string {
+  return requirements
+    .map((requirement) =>
+      "anyOf" in requirement
+        ? `(${requirement.anyOf.map((option) => formatThreshold(option, translate)).join(" / ")})`
+        : formatThreshold(requirement, translate),
+    )
+    .join(", ");
+}
 
-  if (requirements.length === 0) {
-    return baseDescription;
+function buildTraitTooltip(traitName: string, translate: (key: string) => string): string {
+  const meta = TRAIT_META[traitName];
+  const parts = [translate(`traits.${traitName}.desc`)];
+
+  if (meta && meta.requirements.length > 0) {
+    parts.push(formatRequirements(meta.requirements, translate));
+  }
+  if (meta?.goalkeeperRequirements) {
+    parts.push(
+      `${translate("common.posAbbr.Goalkeeper")}: ${formatRequirements(meta.goalkeeperRequirements, translate)}`,
+    );
   }
 
-  return `${baseDescription} | ${requirements.join(", ")}`;
+  return parts.join(" | ");
 }
 
 export function TraitBadge({

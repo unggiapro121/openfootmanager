@@ -3906,14 +3906,46 @@
       "label": "Động cơ",
       "desc": "Cỗ máy box-to-box"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Chuyên gia bóng chết",
-      "desc": "Cực kỳ nguy hiểm từ các tình huống cố định"
+      "desc": "Cực kỳ nguy hiểm từ đá phạt và phạt góc"
+    },
+    "LongPasser": {
+      "label": "Chuyền dài",
+      "desc": "Đổi cánh bằng những đường chuyền dài chính xác"
+    },
+    "Crosser": {
+      "label": "Chuyên gia tạt bóng",
+      "desc": "Tạt bóng nguy hiểm vào vòng cấm"
+    },
+    "Curler": {
+      "label": "Cứa lòng",
+      "desc": "Cứa lòng đưa bóng vòng qua thủ môn"
+    },
+    "LongShooter": {
+      "label": "Sút xa",
+      "desc": "Nguy hiểm từ ngoài vòng cấm"
+    },
+    "PowerHeader": {
+      "label": "Đánh đầu uy lực",
+      "desc": "Đánh đầu mạnh và chính xác"
+    },
+    "PressResistant": {
+      "label": "Kháng áp sát",
+      "desc": "Giữ bóng tốt khi bị áp sát"
+    },
+    "TikiTaka": {
+      "label": "Phối hợp ngắn",
+      "desc": "Giỏi phối hợp chuyền ngắn nhanh"
     },
     "Wonderkid": {
       "label": "Thần đồng",
       "desc": "Tuyển trạch viên của bạn đánh giá cầu thủ trẻ này có tiềm năng vượt trội",
       "scoutedPotential": "Tiềm năng ước tính"
+    },
+    "ShootsFromDistance": {
+      "label": "Hay sút xa",
+      "desc": "Sút xa nhiều hơn hầu hết cầu thủ khác"
     }
   },
   "date": {

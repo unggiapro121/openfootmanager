@@ -6,6 +6,7 @@ mod ai_math;
 mod ai_roles;
 pub mod ai_tactics;
 pub mod ai_training;
+pub mod assigned_traits;
 pub mod attribute_split;
 pub mod board_objectives;
 pub mod career;

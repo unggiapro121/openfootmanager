@@ -3906,14 +3906,46 @@
       "label": "Motor",
       "desc": "İki ceza sahası arasında bitmeyen güç"
     },
-    "SetPieceSpecialist": {
+    "DeadBallSpecialist": {
       "label": "Duran Top Ustası",
-      "desc": "Duran toplarda ölümcül"
+      "desc": "Serbest vuruş ve kornerlerde ölümcül"
+    },
+    "LongPasser": {
+      "label": "Uzun Pasör",
+      "desc": "İsabetli uzun toplarla oyunu değiştirir"
+    },
+    "Crosser": {
+      "label": "Orta Ustası",
+      "desc": "Tehlikeli ortalar açar"
+    },
+    "Curler": {
+      "label": "Falso Ustası",
+      "desc": "Falsolu şutlarla kaleciyi avlar"
+    },
+    "LongShooter": {
+      "label": "Uzaktan Şutör",
+      "desc": "Ceza sahası dışından tehlikeli"
+    },
+    "PowerHeader": {
+      "label": "Kafa Vuruşu Ustası",
+      "desc": "Kafa vuruşlarında çok güçlüdür"
+    },
+    "PressResistant": {
+      "label": "Baskıya Dayanıklı",
+      "desc": "Baskı altında topu kaptırmaz"
+    },
+    "TikiTaka": {
+      "label": "Kısa Pas Ustası",
+      "desc": "Hızlı kısa pas oyununda parlar"
     },
     "Wonderkid": {
       "label": "Harika Çocuk",
       "desc": "Gözlemcileriniz bu genç oyuncunun olağanüstü bir potansiyeli olduğunu düşünüyor",
       "scoutedPotential": "Tahmini potansiyel"
+    },
+    "ShootsFromDistance": {
+      "label": "Uzaktan Dener",
+      "desc": "Çoğu oyuncudan daha sık uzaktan şut çeker"
     }
   },
   "date": {
