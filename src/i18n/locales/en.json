@@ -2512,6 +2512,13 @@
             "0": "{{player}} rises highest and heads it in for {{team}}!",
             "1": "A powerful header from {{player}} — {{team}} score!"
           }
+        },
+        "freeKick": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} curls the free kick into the top corner for {{team}}!",
+            "1": "Unstoppable! {{player}} scores straight from the free kick!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Corners",
     "headerGoals": "Headers",
     "headedGoal": "header",
+    "directFreeKickGoal": "free kick",
     "freekickGoals": "Free Kicks",
     "penaltyGoals": "Penalties",
     "changeRole": "Change Role",

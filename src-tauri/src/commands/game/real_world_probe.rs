@@ -301,6 +301,8 @@ struct MatchShares {
     cross_goals: u64,
     fouls_final_third: u64,
     fouls_in_box: u64,
+    direct_free_kicks: u64,
+    direct_free_kick_goals: u64,
 }
 
 impl MatchShares {
@@ -320,6 +322,25 @@ impl MatchShares {
             .events
             .iter()
             .filter(|event| event.event_type == engine::EventType::PenaltyAwarded)
+            .count() as u64;
+        self.direct_free_kicks += report
+            .events
+            .iter()
+            .filter(|event| {
+                event.shot_kind == Some(engine::ShotKind::DirectFreeKick)
+                    && matches!(
+                        event.event_type,
+                        engine::EventType::Goal
+                            | engine::EventType::ShotSaved
+                            | engine::EventType::ShotOffTarget
+                            | engine::EventType::ShotBlocked
+                    )
+            })
+            .count() as u64;
+        self.direct_free_kick_goals += report
+            .goals
+            .iter()
+            .filter(|goal| goal.goal_source == engine::GoalSource::DirectFreeKick)
             .count() as u64;
         let tally = engine::EventTally::of(&report.events);
         self.aerial_won += tally.aerial_won;
@@ -405,6 +426,12 @@ fn real_world_match_probe() {
         "  fouls/game in the final third {:.2} · in the box {:.2}",
         shares.per_match(shares.fouls_final_third),
         shares.per_match(shares.fouls_in_box)
+    );
+    println!(
+        "  direct free kicks/game {:.2} · scored {:.1}% · {:.1}% of goals",
+        shares.per_match(shares.direct_free_kicks),
+        MatchShares::pct(shares.direct_free_kick_goals, shares.direct_free_kicks),
+        MatchShares::pct(shares.direct_free_kick_goals, u64::from(shares.goals))
     );
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
         let json = serde_json::to_string_pretty(&shares).expect("match shares serialize");

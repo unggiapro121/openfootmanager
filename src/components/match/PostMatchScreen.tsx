@@ -72,7 +72,10 @@ export function computeGoalSources(events: MatchEvent[], side: "Home" | "Away"):
       case "Corner":
         sources.corners++;
         break;
+      // A shot straight from a free kick and a goal from a free kick's
+      // delivery share the free-kick row.
       case "FreeKick":
+      case "DirectFreeKick":
         sources.freekicks++;
         break;
       case "Penalty":

@@ -615,7 +615,44 @@ function celebrate(cue: Cue, spot: PitchPoint, scorer: string | null, spin: numb
   ];
 }
 
+/** How far out a direct free kick is struck from: about 25 m from goal. */
+const FREE_KICK_DEPTH = 80;
+/** How far either side of the middle a direct free kick is placed, at most. */
+const FREE_KICK_LANE_SPREAD = 14;
+
+/**
+ * A shot straight from a free kick: the ball placed outside the box where the
+ * foul gave it, the taker behind it, then the strike. Not carried in like a
+ * shot from open play.
+ */
+function stageDirectFreeKick(cue: Cue): Staging {
+  const side = cue.event.side;
+  const taker = cue.event.player_id;
+  const lane = clamp(
+    fromPitch(side, cue.scene.ball).lane,
+    CENTRE_LANE - FREE_KICK_LANE_SPREAD,
+    CENTRE_LANE + FREE_KICK_LANE_SPREAD,
+  );
+  const spot = toPitch(side, FREE_KICK_DEPTH, lane);
+  return {
+    important: cue.event.event_type === "Goal",
+    steps: [
+      {
+        overlay: null,
+        ball: { at: spot },
+        movers: only(taker, toPitch(side, FREE_KICK_DEPTH - 2.5, lane)),
+        highlight: cast(taker),
+        possession: side,
+        pace: "place",
+        action: placed(cue, spot),
+      },
+      ...stageShotFinish(cue, spot, taker),
+    ],
+  };
+}
+
 function stageShot(cue: Cue): Staging {
+  if (cue.event.shot_kind === "DirectFreeKick") return stageDirectFreeKick(cue);
   const shooter = cue.event.player_id;
   const { steps, spot } = shotApproach(cue, shooter);
   const isGoal = cue.event.event_type === "Goal";

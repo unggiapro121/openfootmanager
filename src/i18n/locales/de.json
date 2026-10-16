@@ -2478,6 +2478,13 @@
             "0": "{{player}} steigt am höchsten und köpft für {{team}} ein!",
             "1": "Wuchtiger Kopfball von {{player}} — Tor für {{team}}!"
           }
+        },
+        "freeKick": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{player}} zirkelt den Freistoß für {{team}} in den Winkel!",
+            "1": "Unhaltbar! {{player}} trifft direkt per Freistoß!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Ecken",
     "headerGoals": "Kopfbälle",
     "headedGoal": "Kopfball",
+    "directFreeKickGoal": "Freistoß",
     "freekickGoals": "Freistöße",
     "penaltyGoals": "Elfmeter",
     "changeRole": "Rolle ändern",

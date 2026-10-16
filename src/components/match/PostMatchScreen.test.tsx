@@ -701,6 +701,14 @@ describe("computeGoalSources", (): void => {
     });
   });
 
+  it("counts a goal straight from a free kick on the free-kick row", (): void => {
+    const events: MatchEvent[] = [
+      makeEvent("Goal", "Home", "DirectFreeKick"),
+      makeEvent("Goal", "Home", "FreeKick"),
+    ];
+    expect(computeGoalSources(events, "Home")).toEqual({ ...NONE, freekicks: 2 });
+  });
+
   it("counts only the asked side's goals", (): void => {
     const events: MatchEvent[] = [
       makeEvent("Corner", "Away"),

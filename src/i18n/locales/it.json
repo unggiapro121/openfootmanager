@@ -2497,6 +2497,13 @@
             "0": "{{player}} salta più in alto di tutti e la mette di testa per il {{team}}!",
             "1": "Potente colpo di testa di {{player}}, gol del {{team}}!"
           }
+        },
+        "freeKick": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} mette la punizione all'incrocio per il {{team}}!",
+            "1": "Imparabile! {{player}} segna direttamente su punizione!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2717,6 +2724,7 @@
     "cornersGoals": "Calci d'angolo",
     "headerGoals": "Colpi di testa",
     "headedGoal": "di testa",
+    "directFreeKickGoal": "su punizione",
     "freekickGoals": "Calci di punizione",
     "penaltyGoals": "Rigori",
     "changeRole": "Cambia ruolo",

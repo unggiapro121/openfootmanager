@@ -125,6 +125,18 @@ and the midfielders (0.5), never the taker; the aerial duel's odds are multiplie
 Every event of a corner carries `set_piece = Corner`. A corner is worth about 3% of a goal, as in
 real football (it had been worth 5.7%).
 
+### Direct free kicks
+
+A foul in the attacking third becomes a shot straight at goal 10% of the time (phase 2 P2.4, in
+`live_match/set_pieces.rs`); otherwise the fouled side keeps the ball there as before. The club's
+`free_kick_taker` takes it while on the pitch, otherwise the outfielder with the best
+`0.65·free_kick + 0.35·curve`. With `FK` that blend × condition (×1.08 for `DeadBallSpecialist`), the
+wall stops 25% (half cleared, half behind for a corner), then the shot is on target
+`clamp(0.35 + (FK − 50)/180, 0.15, 0.75)` and beats the keeper
+`clamp(0.18 + (FK − keeper)/200, 0.04, 0.40)`, the keeper rated `(reflexes + positioning)/2`. That makes
+about 0.9 direct free kicks a match, about 6% of them scored, as in the Premier League. Every event
+carries `set_piece = FreeKick` and `shot_kind = DirectFreeKick`; a goal's source is `DirectFreeKick`.
+
 ### Shot Resolution
 
 When the ball reaches the attacking box other than from a won header, a shot is taken:
@@ -539,7 +551,8 @@ Every change that can move results is measured with `sim-bench` (`src-tauri/crat
   `--stage gd5` for the calibration target. It exits 1 on a FAIL. Build it with `--release`;
   in a debug build the timing row is reported but not judged. Rows that compare sampled rates
   allow for sampling noise: the win curve may dip only within 2σ, and the gap-0 mirror split may
-  differ by more than 3 points only within 2σ (about 3.9 points over 2,000 matches).
+  differ by more than 3 points only within 3σ (about 5.8 points over 2,000 matches; 2σ still failed
+  a fair engine one run in twenty, and every change to results reshuffles the random stream).
 
 ```bash
 cargo run --release -p sim-bench -- --guardrails --stage lan-can --out guardrails.json

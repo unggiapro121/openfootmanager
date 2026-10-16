@@ -84,6 +84,13 @@ describe("getCommentary", () => {
     expect(result!.line).toContain("Haaland");
   });
 
+  it("uses the free-kick variant for a goal straight from a free kick", () => {
+    const evt: MatchEvent = { ...goal(10, "p1"), goal_source: "DirectFreeKick" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/free kick/);
+    expect(result!.line).toContain("Haaland");
+  });
+
   it("keeps the brace variant over the header one", () => {
     const g1 = goal(10, "p1");
     const g2: MatchEvent = { ...goal(40, "p1"), goal_source: "Header" };

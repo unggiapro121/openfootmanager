@@ -2478,6 +2478,13 @@
             "0": "{{player}} s'élève plus haut que tout le monde et marque de la tête pour {{team}} !",
             "1": "Une tête puissante de {{player}}, but pour {{team}} !"
           }
+        },
+        "freeKick": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} enroule le coup franc en pleine lucarne pour {{team}} !",
+            "1": "Imparable ! {{player}} marque directement sur coup franc !"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Corners",
     "headerGoals": "Têtes",
     "headedGoal": "de la tête",
+    "directFreeKickGoal": "coup franc",
     "freekickGoals": "Coups francs",
     "penaltyGoals": "Pénaltis",
     "changeRole": "Changer le rôle",

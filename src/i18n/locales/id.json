@@ -2512,6 +2512,13 @@
             "0": "{{player}} melompat paling tinggi dan menyundul bola masuk untuk {{team}}!",
             "1": "Sundulan keras {{player}}, gol untuk {{team}}!"
           }
+        },
+        "freeKick": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} melengkungkan tendangan bebas ke pojok atas gawang untuk {{team}}!",
+            "1": "Tak terbendung! {{player}} mencetak gol langsung dari tendangan bebas!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Tendangan Sudut",
     "headerGoals": "Sundulan",
     "headedGoal": "sundulan",
+    "directFreeKickGoal": "tendangan bebas",
     "freekickGoals": "Tendangan Bebas",
     "penaltyGoals": "Penalti",
     "changeRole": "Ubah Peran",

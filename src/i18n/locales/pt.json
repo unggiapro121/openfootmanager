@@ -2478,6 +2478,13 @@
             "0": "{{player}} sobe mais alto do que todos e marca de cabeça para o {{team}}!",
             "1": "Cabeceamento potente de {{player}}, golo do {{team}}!"
           }
+        },
+        "freeKick": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} coloca o livre no ângulo para o {{team}}!",
+            "1": "Indefensável! {{player}} marca de livre direto!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2698,6 +2705,7 @@
     "cornersGoals": "Cantos",
     "headerGoals": "Cabeceamentos",
     "headedGoal": "de cabeça",
+    "directFreeKickGoal": "de livre",
     "freekickGoals": "Livres",
     "penaltyGoals": "Grandes penalidades",
     "changeRole": "Mudar papel",

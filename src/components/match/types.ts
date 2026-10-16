@@ -16,10 +16,16 @@ export type EventDetail =
   | { Goal: { context: GoalContext } };
 
 /** What kind of attempt a shot, goal or penalty was (event protocol 2). */
-export type ShotKind = "Open" | "Header" | "Penalty";
+export type ShotKind = "Open" | "Header" | "Penalty" | "DirectFreeKick";
 export type SetPiece = "Corner" | "FreeKick";
 /** How a goal was made, as the engine decided when it was scored. */
-export type GoalSource = "OpenPlay" | "Corner" | "FreeKick" | "Penalty" | "Header";
+export type GoalSource =
+  | "OpenPlay"
+  | "Corner"
+  | "FreeKick"
+  | "Penalty"
+  | "Header"
+  | "DirectFreeKick";
 /** A third of the pitch's width, seen from the acting side's attack. */
 export type Lane = "Left" | "Centre" | "Right";
 

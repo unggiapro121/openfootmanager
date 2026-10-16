@@ -1,6 +1,7 @@
 use rand::Rng;
 
 use crate::event::{DangerBand, FoulSeverity, GoalContext, Lane, MatchEvent, SaveQuality};
+use crate::pitch_position::PitchPosition;
 use crate::report::GoalSource;
 use crate::shared::{
     PlayStylePhase, PlayerSnap, home_mod, play_style_modifier, tactics_pressing_fatigue,
@@ -117,17 +118,21 @@ impl LiveMatchState {
         out.push(event);
     }
 
-    /// The lane of the formation slot `player_id` stands in for `side`, or
-    /// `None` for a player not in that XI or an XI that does not fill the
-    /// formation.
-    fn lane_of(&self, side: Side, player_id: &str) -> Option<Lane> {
+    /// The formation slot `player_id` stands in for `side`, or `None` for a
+    /// player not in that XI or an XI that does not fill the formation.
+    pub(super) fn slot_of(&self, side: Side, player_id: &str) -> Option<PitchPosition> {
         let team = self.team_ref(side);
         let index = team.players.iter().position(|p| p.id == player_id)?;
         let slots = crate::pitch_position::formation_slots(&team.formation);
         if slots.len() != team.players.len() {
             return None;
         }
-        Some(slots[index].lane())
+        Some(slots[index])
+    }
+
+    /// The lane of the formation slot `player_id` stands in for `side`.
+    fn lane_of(&self, side: Side, player_id: &str) -> Option<Lane> {
+        self.slot_of(side, player_id).map(PitchPosition::lane)
     }
 
     /// Adjust a skill value based on the player's current in-match condition

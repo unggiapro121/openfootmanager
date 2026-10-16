@@ -1,5 +1,5 @@
-//! Corners (phase 2, P2.3; `pass-cure-heading-freekick-enhancement.md` §6.2,
-//! decision X37).
+//! Set pieces: corners (phase 2, P2.3; `pass-cure-heading-freekick-enhancement.md`
+//! §6.2, decision X37) and direct free kicks (P2.4; §6.1, X38).
 //!
 //! A corner used to be a 30% chance of the ball landing in the box for an
 //! ordinary shot by any forward: nobody took it, nobody headed it. Now it has a
@@ -15,19 +15,36 @@
 //!   lost: cleared
 //! ```
 //!
-//! The two centre-backs who head the ball best go up for it: the man meeting it
-//! is drawn from the forwards (weight 1.0), those two (0.9) and the midfielders
-//! (0.5), never the taker or a keeper. `REACH_BASE` is set so a corner is worth
+//! The two centre-backs (by formation slot) who head the ball best go up for
+//! it: the man meeting it is drawn from the forwards (weight 1.0), those two
+//! (0.9) and the midfielders (0.5), never the taker or a keeper. Full-backs and
+//! wing-backs stay back, however well they head. `REACH_BASE` is set so a corner is worth
 //! about 3% of a goal, as in real football (2.5–3%); it had been worth 5.7%.
+//!
+//! A foul in the attacking third becomes a shot at goal `DIRECT_FREE_KICK_SHARE`
+//! of the time, from the club's `free_kick_taker` or the best striker of a dead
+//! ball on the pitch; otherwise the attack goes on as before:
+//!
+//! ```text
+//! FK        = (0.65·free_kick + 0.35·curve) × condition × 1.08 for DeadBallSpecialist
+//! wall      = 25% blocked: half cleared, half behind for a corner
+//! on target = clamp(0.35 + (FK − 50)/180, 0.15, 0.75)
+//! goal      = clamp(0.18 + (FK − keeper)/200, 0.04, 0.40),  keeper = (reflexes + positioning)/2
+//! ```
+//!
+//! An average taker scores about 6% of them, as in real football (5.6%); the
+//! wall is what brings the design's formula down to that.
 
 use rand::{Rng, RngExt};
 
 use crate::duel;
-use crate::event::{EventType, MatchEvent, SetPiece};
-use crate::shared::PlayerSnap;
+use crate::event::{EventDetail, EventType, MatchEvent, SetPiece, ShotKind};
+use crate::pitch_position::PitchPosition;
+use crate::shared::{PlayerSnap, TraitContext, trait_bonus};
 use crate::types::{PlayerData, Position, Side, Zone};
 
 use super::LiveMatchState;
+use super::helpers::{danger_band, save_quality};
 use super::zone_resolution::scale_odds;
 
 const DELIVERY_CROSSING: f64 = 0.70;
@@ -55,6 +72,26 @@ const MIDFIELDER_WEIGHT: f64 = 0.5;
 /// How many centre-backs join the attack for a corner.
 const CENTRE_BACKS_UP: usize = 2;
 
+/// The share of fouls in the attacking third that become a shot at goal.
+/// Calibrated for 0.8–1.0 a match, as in the Premier League (0.79–0.89).
+pub(super) const DIRECT_FREE_KICK_SHARE: f64 = 0.10;
+const FREE_KICK_STRIKE: f64 = 0.65;
+const FREE_KICK_CURVE: f64 = 0.35;
+/// `DeadBallSpecialist` strikes a free kick better.
+const DEAD_BALL_SPECIALIST_STRIKE: f64 = 1.08;
+/// The share of direct free kicks the wall stops.
+const WALL_BLOCK: f64 = 0.25;
+/// Of the free kicks the wall stops, the share deflected behind for a corner.
+const WALL_TO_CORNER: f64 = 0.50;
+const FREE_KICK_ON_TARGET_BASE: f64 = 0.35;
+const FREE_KICK_ON_TARGET_SPREAD: f64 = 180.0;
+const FREE_KICK_ON_TARGET_MIN: f64 = 0.15;
+const FREE_KICK_ON_TARGET_MAX: f64 = 0.75;
+const FREE_KICK_GOAL_BASE: f64 = 0.18;
+const FREE_KICK_GOAL_SPREAD: f64 = 200.0;
+const FREE_KICK_GOAL_MIN: f64 = 0.04;
+const FREE_KICK_GOAL_MAX: f64 = 0.40;
+
 /// A player's delivery from a corner, before condition and traits.
 fn delivery_skill(crossing: u8, curve: u8) -> f64 {
     DELIVERY_CROSSING * f64::from(crossing) + DELIVERY_CURVE * f64::from(curve)
@@ -65,18 +102,40 @@ fn reach_chance(q: f64) -> f64 {
     (REACH_BASE + (q - DELIVERY_REFERENCE) / REACH_SPREAD).clamp(REACH_MIN, REACH_MAX)
 }
 
+/// A player's strike of a dead ball, before condition and traits.
+fn free_kick_skill(free_kick: u8, curve: u8) -> f64 {
+    FREE_KICK_STRIKE * f64::from(free_kick) + FREE_KICK_CURVE * f64::from(curve)
+}
+
+/// The chance a free kick of quality `fk` that clears the wall is on target.
+fn free_kick_on_target(fk: f64) -> f64 {
+    (FREE_KICK_ON_TARGET_BASE + (fk - 50.0) / FREE_KICK_ON_TARGET_SPREAD)
+        .clamp(FREE_KICK_ON_TARGET_MIN, FREE_KICK_ON_TARGET_MAX)
+}
+
+/// The chance an on-target free kick of quality `fk` beats a keeper of `keeper`.
+fn free_kick_goal(fk: f64, keeper: f64) -> f64 {
+    (FREE_KICK_GOAL_BASE + (fk - keeper) / FREE_KICK_GOAL_SPREAD)
+        .clamp(FREE_KICK_GOAL_MIN, FREE_KICK_GOAL_MAX)
+}
+
 /// How much a delivery of quality `q` helps the man meeting it, as an odds ratio.
 fn contest_help(q: f64) -> f64 {
     (1.0 + (q - DELIVERY_REFERENCE) / CONTEST_SPREAD).clamp(CONTEST_MIN, CONTEST_MAX)
 }
 
 impl LiveMatchState {
-    /// The corner's taker: the club's designated one if he is still playing,
-    /// otherwise the outfielder with the best delivery.
-    fn pick_corner_taker(&self, side: Side) -> Option<PlayerSnap> {
+    /// A set piece's taker: `designated` if he is still playing, otherwise
+    /// the outfielder who scores highest on `skill`.
+    fn pick_set_piece_taker(
+        &self,
+        side: Side,
+        designated: Option<&String>,
+        skill: impl Fn(&PlayerData) -> f64,
+    ) -> Option<PlayerSnap> {
         let team = self.team_ref(side);
         let available = |p: &&PlayerData| !self.out_of_play(&p.id);
-        if let Some(id) = &self.set_pieces_ref(side).corner_taker
+        if let Some(id) = designated
             && let Some(taker) = team.players.iter().filter(available).find(|p| &p.id == id)
         {
             return Some(PlayerSnap::from(taker));
@@ -85,10 +144,25 @@ impl LiveMatchState {
             .iter()
             .filter(available)
             .filter(|p| p.position != Position::Goalkeeper)
-            .max_by(|a, b| {
-                delivery_skill(a.crossing, a.curve).total_cmp(&delivery_skill(b.crossing, b.curve))
-            })
+            .max_by(|a, b| skill(a).total_cmp(&skill(b)))
             .map(PlayerSnap::from)
+    }
+
+    /// The corner's taker: the club's designated one, or the best deliverer.
+    fn pick_corner_taker(&self, side: Side) -> Option<PlayerSnap> {
+        self.pick_set_piece_taker(side, self.set_pieces_ref(side).corner_taker.as_ref(), |p| {
+            delivery_skill(p.crossing, p.curve)
+        })
+    }
+
+    /// The free kick's taker: the club's designated one, or the best striker
+    /// of a dead ball.
+    fn pick_free_kick_taker(&self, side: Side) -> Option<PlayerSnap> {
+        self.pick_set_piece_taker(
+            side,
+            self.set_pieces_ref(side).free_kick_taker.as_ref(),
+            |p| free_kick_skill(p.free_kick, p.curve),
+        )
     }
 
     /// Who meets a corner from `taker_id`: drawn by weight from the forwards,
@@ -102,11 +176,23 @@ impl LiveMatchState {
                 p.id != taker_id && p.position != Position::Goalkeeper && !self.out_of_play(&p.id)
             })
             .collect();
-        let mut defenders: Vec<&PlayerData> = eligible
-            .iter()
-            .copied()
-            .filter(|p| p.position == Position::Defender)
-            .collect();
+        // The centre-backs go up, whoever else heads the ball well: a full-back
+        // or wing-back stays to guard the counter. A back line with no
+        // centre-back slot (an XI that does not fill its formation) sends its
+        // best-heading defenders instead.
+        let at_centre_back =
+            |p: &&PlayerData| self.slot_of(side, &p.id) == Some(PitchPosition::CenterBack);
+        let centre_backs: Vec<&PlayerData> =
+            eligible.iter().copied().filter(at_centre_back).collect();
+        let mut defenders: Vec<&PlayerData> = if centre_backs.is_empty() {
+            eligible
+                .iter()
+                .copied()
+                .filter(|p| p.position == Position::Defender)
+                .collect()
+        } else {
+            centre_backs
+        };
         let heads_it = |p: &PlayerData| f64::from(p.heading) * duel::height_factor(p.height_cm);
         defenders.sort_by(|a, b| heads_it(b).total_cmp(&heads_it(a)));
         defenders.truncate(CENTRE_BACKS_UP);
@@ -213,6 +299,88 @@ impl LiveMatchState {
             self.emit(&mut events, clearance);
             self.possession = def_side;
             self.ball_zone = Zone::defensive_third(att_side);
+        }
+        self.active_set_piece = outer_set_piece;
+        events
+    }
+
+    /// A shot at goal from a free kick to `att_side` in its attacking third,
+    /// played out from the strike to the save, the goal or the wall. Every
+    /// event it produces is part of the free kick.
+    pub(super) fn resolve_direct_free_kick<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
+        let mut events = Vec::new();
+        let def_side = att_side.opposite();
+        let zone = Zone::attacking_third(att_side);
+        let Some(taker) = self.pick_free_kick_taker(att_side) else {
+            return events;
+        };
+        let outer_set_piece = self.active_set_piece.replace(SetPiece::FreeKick);
+        let goalkeeper = self.snap_player(def_side, Position::Goalkeeper, rng);
+
+        let dead_ball = if taker.has_trait("DeadBallSpecialist") {
+            DEAD_BALL_SPECIALIST_STRIKE
+        } else {
+            1.0
+        };
+        let strike = self
+            .condition_adjusted_skill(&taker.id, free_kick_skill(taker.free_kick, taker.curve))
+            * dead_ball;
+        let keeper = self.condition_adjusted_skill(
+            &goalkeeper.id,
+            (f64::from(goalkeeper.reflexes) + f64::from(goalkeeper.positioning)) / 2.0,
+        ) * trait_bonus(&goalkeeper, TraitContext::Goalkeeping);
+        let attempt = |event_type: EventType| {
+            MatchEvent::new(minute, event_type, att_side, zone)
+                .with_shot_kind(ShotKind::DirectFreeKick)
+                .with_player(&taker.id)
+        };
+
+        if rng.random_range(0.0..1.0f64) < WALL_BLOCK {
+            let blocked = attempt(EventType::ShotBlocked).with_detail(EventDetail::Shot {
+                danger: danger_band(strike),
+            });
+            self.emit(&mut events, blocked);
+            if rng.random_range(0.0..1.0f64) < WALL_TO_CORNER {
+                let corner_events = self.resolve_corner(minute, att_side, rng);
+                events.extend(corner_events);
+            } else {
+                self.possession = def_side;
+                self.ball_zone = Zone::defensive_third(att_side);
+            }
+        } else if rng.random_range(0.0..1.0f64) >= free_kick_on_target(strike) {
+            let miss = attempt(EventType::ShotOffTarget).with_detail(EventDetail::Shot {
+                danger: danger_band(strike),
+            });
+            self.emit(&mut events, miss);
+            let goal_kick = MatchEvent::new(
+                minute,
+                EventType::GoalKick,
+                def_side,
+                Zone::attacking_box(att_side),
+            );
+            self.emit(&mut events, goal_kick);
+            self.possession = def_side;
+            self.ball_zone = Zone::defensive_third(def_side);
+        } else if rng.random_range(0.0..1.0f64) < free_kick_goal(strike, keeper) {
+            let context = self.goal_context(att_side);
+            let goal = attempt(EventType::Goal).with_detail(EventDetail::Goal { context });
+            self.emit(&mut events, goal);
+            self.add_goal(att_side);
+            self.possession = def_side;
+            self.ball_zone = Zone::Midfield;
+        } else {
+            let save = attempt(EventType::ShotSaved)
+                .with_secondary(&goalkeeper.id)
+                .with_detail(EventDetail::Save {
+                    quality: save_quality(keeper),
+                });
+            self.emit(&mut events, save);
+            self.after_save(minute, att_side, &mut events, rng);
         }
         self.active_set_piece = outer_set_piece;
         events
@@ -333,6 +501,29 @@ mod tests {
         assert!(goals > 0);
     }
 
+    /// Given a 4-4-2 whose full-backs head the ball far better than its
+    /// centre-backs,
+    /// when it takes corners,
+    /// then the centre-backs still go up and the full-backs stay back: it is
+    /// the slot that sends a defender forward, not his heading.
+    #[test]
+    fn full_backs_stay_back_however_well_they_head() {
+        let mut home = make_team("home");
+        home.players[1].heading = 95;
+        home.players[4].heading = 95;
+        home.players[2].heading = 40;
+        home.players[3].heading = 40;
+        let mut state = corner_match(home);
+        let mut targets = std::collections::HashSet::new();
+        for events in corners(&mut state, 3_000, 9) {
+            for event in events.iter().filter(|e| e.event_type == EventType::Cross) {
+                targets.insert(event.secondary_player_id.clone().expect("a target"));
+            }
+        }
+        assert!(targets.contains("home_d2") && targets.contains("home_d3"));
+        assert!(!targets.contains("home_d1") && !targets.contains("home_d4"));
+    }
+
     /// Given the reach chance and the help a delivery gives,
     /// when they are read at the extremes and at an average delivery,
     /// then they stay in their bands and an average delivery is neutral help.
@@ -344,5 +535,131 @@ mod tests {
         assert_eq!(contest_help(DELIVERY_REFERENCE), 1.0);
         assert_eq!(contest_help(0.0), CONTEST_MIN);
         assert_eq!(contest_help(200.0), CONTEST_MAX);
+    }
+
+    /// Plays `count` direct free kicks for the home side, the score reset
+    /// after each.
+    fn free_kicks(state: &mut LiveMatchState, count: u32, seed: u64) -> Vec<Vec<MatchEvent>> {
+        let mut rng = StdRng::seed_from_u64(seed);
+        (0..count)
+            .map(|_| {
+                let events = state.resolve_direct_free_kick(30, Side::Home, &mut rng);
+                state.home_score = 0;
+                events
+            })
+            .collect()
+    }
+
+    fn free_kick_taker_of(events: &[MatchEvent]) -> Option<&str> {
+        events
+            .iter()
+            .find(|e| e.shot_kind == Some(ShotKind::DirectFreeKick))
+            .and_then(|e| e.player_id.as_deref())
+    }
+
+    /// Given a club whose designated free-kick taker is a defender, and then
+    /// the same club with him sent off and one midfielder a specialist,
+    /// when it shoots from free kicks,
+    /// then he takes them while he plays, and the specialist after.
+    #[test]
+    fn the_designated_free_kick_taker_shoots_until_he_is_off() {
+        let mut home = make_team("home");
+        home.players[7].free_kick = 92;
+        home.players[7].curve = 90;
+        let mut state = corner_match(home);
+        state.home_set_pieces.free_kick_taker = Some("home_d3".to_string());
+        assert_eq!(
+            free_kick_taker_of(&free_kicks(&mut state, 1, 1)[0]),
+            Some("home_d3")
+        );
+        state.sent_off.insert("home_d3".to_string());
+        assert_eq!(
+            free_kick_taker_of(&free_kicks(&mut state, 1, 1)[0]),
+            Some("home_m3")
+        );
+    }
+
+    /// Given a specialist (free kick and curve 90) and a poor taker (45),
+    /// when each takes 6,000 direct free kicks,
+    /// then the specialist scores clearly more, and an average taker lands in
+    /// the real 5–7% band once the wall has had its share.
+    #[test]
+    fn a_better_free_kick_taker_scores_more() {
+        let goals = |skill: u8| {
+            let mut home = make_team("home");
+            home.players[7].free_kick = skill;
+            home.players[7].curve = skill;
+            let mut state = corner_match(home);
+            state.home_set_pieces.free_kick_taker = Some("home_m3".to_string());
+            free_kicks(&mut state, 6_000, 4)
+                .iter()
+                .filter(|events| {
+                    events.iter().any(|e| {
+                        e.event_type == EventType::Goal
+                            && e.shot_kind == Some(ShotKind::DirectFreeKick)
+                    })
+                })
+                .count()
+        };
+        let (good, poor, average) = (goals(90), goals(45), goals(70));
+        assert!(good > poor * 2, "goals {good} vs {poor}");
+        let rate = average as f64 / 6_000.0;
+        assert!(
+            (0.05..=0.07).contains(&rate),
+            "an average taker scores {rate}"
+        );
+    }
+
+    /// Given many direct free kicks,
+    /// when they are played,
+    /// then every attempt is a direct free kick and part of the free kick, a
+    /// goal is a direct-free-kick goal with no assist, and a wall that sends
+    /// it behind gives a corner, which is the corner's own.
+    #[test]
+    fn what_a_direct_free_kick_is_made_of() {
+        let mut state = corner_match(make_team("home"));
+        let (mut goals, mut corners) = (0, 0);
+        for events in free_kicks(&mut state, 3_000, 6) {
+            let mut in_corner = false;
+            for event in &events {
+                if event.event_type == EventType::Corner {
+                    in_corner = true;
+                    corners += 1;
+                }
+                if in_corner {
+                    assert_eq!(event.set_piece, Some(SetPiece::Corner), "{event:?}");
+                    continue;
+                }
+                assert_eq!(event.set_piece, Some(SetPiece::FreeKick), "{event:?}");
+                if matches!(
+                    event.event_type,
+                    EventType::Goal
+                        | EventType::ShotSaved
+                        | EventType::ShotOffTarget
+                        | EventType::ShotBlocked
+                ) {
+                    assert_eq!(event.shot_kind, Some(ShotKind::DirectFreeKick));
+                    assert_eq!(event.zone, Zone::attacking_third(Side::Home));
+                }
+                if event.event_type == EventType::Goal {
+                    goals += 1;
+                    assert_eq!(event.goal_source, Some(GoalSource::DirectFreeKick));
+                    assert_eq!(event.secondary_player_id, None);
+                }
+            }
+        }
+        assert!(goals > 0 && corners > 0, "goals {goals}, corners {corners}");
+    }
+
+    /// Given the on-target and goal chances of a free kick,
+    /// when they are read at the extremes,
+    /// then they stay in their bands.
+    #[test]
+    fn free_kick_chances_stay_in_their_bands() {
+        assert_eq!(free_kick_on_target(0.0), FREE_KICK_ON_TARGET_MIN);
+        assert_eq!(free_kick_on_target(200.0), FREE_KICK_ON_TARGET_MAX);
+        assert_eq!(free_kick_goal(0.0, 99.0), FREE_KICK_GOAL_MIN);
+        assert_eq!(free_kick_goal(200.0, 1.0), FREE_KICK_GOAL_MAX);
+        assert_eq!(free_kick_goal(70.0, 70.0), FREE_KICK_GOAL_BASE);
     }
 }
