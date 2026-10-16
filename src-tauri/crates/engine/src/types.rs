@@ -190,6 +190,44 @@ impl PlayerData {
     pub fn effective_overall(&self) -> f64 {
         self.overall() * (self.condition as f64 / 100.0)
     }
+
+    /// Give each of the seven split attributes still at 0 (not declared) a
+    /// value read off the field it was split from, shifted by how far the
+    /// two sit apart on average for the position group.
+    ///
+    /// A player from a game always arrives with all seven: `ofm_core` splits
+    /// them before the bridge. This is for synthetic players (sim-bench,
+    /// SimLab, the golden fixtures, unit tests), which set only the old
+    /// fields, so a mechanism that reads `heading` does not meet a forward who
+    /// cannot head the ball at all. The offsets are the group means measured on
+    /// the real-world package (`fm-document/comon/sim-bench/reference/
+    /// gd1-split-offsets.txt`, "d theo nhóm thô"). No random draw is made, so
+    /// a match plays out the same whether or not it ran.
+    pub fn declare_split_attributes(&mut self) {
+        // long_passing, crossing, curve, free_kick, long_shots, first_touch, heading
+        let offsets: [i16; 7] = match self.position {
+            Position::Goalkeeper => [37, -11, -11, -11, 2, 3, -47],
+            Position::Defender => [-1, -6, -11, -18, 2, 2, -5],
+            Position::Midfielder => [-1, -5, -5, -10, 2, 0, -5],
+            Position::Forward => [-6, -5, -1, -7, -2, 0, -4],
+        };
+        let (passing, shooting, dribbling, aerial) =
+            (self.passing, self.shooting, self.dribbling, self.aerial);
+        let fields = [
+            (&mut self.long_passing, passing),
+            (&mut self.crossing, passing),
+            (&mut self.curve, passing),
+            (&mut self.free_kick, passing),
+            (&mut self.long_shots, shooting),
+            (&mut self.first_touch, dribbling),
+            (&mut self.heading, aerial),
+        ];
+        for ((field, parent), offset) in fields.into_iter().zip(offsets) {
+            if *field == 0 {
+                *field = (i16::from(parent) + offset).clamp(1, 99) as u8;
+            }
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------

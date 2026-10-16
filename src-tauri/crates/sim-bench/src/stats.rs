@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use engine::{EventType, GoalSource, MatchEvent, MatchReport, Zone};
+use engine::{EventTally, EventType, GoalSource, MatchEvent, MatchReport, Zone};
 use serde::Serialize;
 
 /// Aggregated statistics across N simulated matches.
@@ -233,6 +233,12 @@ impl BenchStats {
     pub fn fouls_pg(&self) -> f64 {
         self.per_game_u64(self.fouls)
     }
+    pub fn fouls_final_third_pg(&self) -> f64 {
+        self.per_game_u64(self.duels.tally.fouls_final_third)
+    }
+    pub fn fouls_in_box_pg(&self) -> f64 {
+        self.per_game_u64(self.duels.tally.fouls_in_box)
+    }
     pub fn corners_pg(&self) -> f64 {
         self.per_game_u64(self.corners)
     }
@@ -328,6 +334,8 @@ impl BenchStats {
                 yellow_cards_per_game: self.yellows_pg(),
                 red_cards_per_game: self.reds_pg(),
                 fouls_per_game: self.fouls_pg(),
+                fouls_final_third_per_game: self.fouls_final_third_pg(),
+                fouls_in_box_per_game: self.fouls_in_box_pg(),
                 penalties_per_game: self.penalties_pg(),
                 penalty_conversion_pct: self.penalty_conversion_pct(),
                 injuries_per_game: self.injuries_pg(),
@@ -406,6 +414,8 @@ pub struct DisciplineJson {
     pub yellow_cards_per_game: f64,
     pub red_cards_per_game: f64,
     pub fouls_per_game: f64,
+    pub fouls_final_third_per_game: f64,
+    pub fouls_in_box_per_game: f64,
     pub penalties_per_game: f64,
     pub penalty_conversion_pct: f64,
     pub injuries_per_game: f64,
@@ -453,10 +463,8 @@ pub struct DuelCounts {
     pub midfield_lost: u64,
     pub one_v_one_won: u64,
     pub one_v_one_lost: u64,
-    pub aerial_won: u64,
-    pub aerial_lost: u64,
-    /// Goals scored from the shot an aerial duel won.
-    pub cross_goals: u64,
+    /// Aerial duels, cross goals and foul zones: `engine::EventTally`.
+    pub tally: EventTally,
 }
 
 impl DuelCounts {
@@ -473,32 +481,10 @@ impl DuelCounts {
                 EventType::Clearance if previous != Some(&EventType::Cross) => {
                     self.one_v_one_lost += 1
                 }
-                EventType::Cross => self.add_cross(&events[index + 1..]),
                 _ => {}
             }
         }
-    }
-
-    fn add_cross(&mut self, after: &[MatchEvent]) {
-        if after.first().map(|e| &e.event_type) == Some(&EventType::Clearance) {
-            self.aerial_lost += 1;
-            return;
-        }
-        self.aerial_won += 1;
-        // The shot that follows ends at the first goal, save, miss or penalty.
-        let ending = after.iter().find(|e| {
-            matches!(
-                e.event_type,
-                EventType::Goal
-                    | EventType::ShotSaved
-                    | EventType::ShotOffTarget
-                    | EventType::ShotBlocked
-                    | EventType::PenaltyAwarded
-            )
-        });
-        if ending.map(|e| &e.event_type) == Some(&EventType::Goal) {
-            self.cross_goals += 1;
-        }
+        self.tally.add(&EventTally::of(events));
     }
 
     fn share(won: u64, lost: u64) -> f64 {
@@ -518,7 +504,7 @@ impl DuelCounts {
     }
 
     pub fn aerial_win_pct(&self) -> f64 {
-        Self::share(self.aerial_won, self.aerial_lost)
+        Self::share(self.tally.aerial_won, self.tally.aerial_lost)
     }
 
     pub fn to_json(&self, games: u32) -> DuelsJson {
@@ -534,9 +520,9 @@ impl DuelCounts {
             midfield_attacker_win_pct: self.midfield_win_pct(),
             one_v_one_per_game: per_game(self.one_v_one_won + self.one_v_one_lost),
             one_v_one_attacker_win_pct: self.one_v_one_win_pct(),
-            aerial_per_game: per_game(self.aerial_won + self.aerial_lost),
+            aerial_per_game: per_game(self.tally.aerial_won + self.tally.aerial_lost),
             aerial_attacker_win_pct: self.aerial_win_pct(),
-            cross_goals_per_game: per_game(self.cross_goals),
+            cross_goals_per_game: per_game(self.tally.cross_goals),
         }
     }
 }
@@ -596,7 +582,7 @@ mod tests {
 
         assert_eq!((duels.midfield_won, duels.midfield_lost), (1, 1));
         assert_eq!((duels.one_v_one_won, duels.one_v_one_lost), (2, 1));
-        assert_eq!((duels.aerial_won, duels.aerial_lost), (1, 1));
-        assert_eq!(duels.cross_goals, 1);
+        assert_eq!((duels.tally.aerial_won, duels.tally.aerial_lost), (1, 1));
+        assert_eq!(duels.tally.cross_goals, 1);
     }
 }

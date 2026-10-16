@@ -436,8 +436,8 @@ impl LiveMatchState {
     // Foul / card / penalty
     // -----------------------------------------------------------------------
 
-    // Mirrors `engine::fouls::maybe_foul` — foul resolution needs the full context
-    // (who, whom, where, when, tactics, RNG), so the argument count is inherent.
+    // Foul resolution needs the full context (who, whom, where, when, tactics,
+    // RNG), so the argument count is inherent.
     #[allow(clippy::too_many_arguments)]
     pub(super) fn maybe_foul<R: Rng>(
         &mut self,
@@ -631,6 +631,43 @@ mod event_detail_tests {
                 make_player(&format!("{id}_f2"), Position::Forward),
             ],
         }
+    }
+
+    /// Given synthetic players who set only the old attributes, and one forward
+    /// who declared his heading,
+    /// when the match is created,
+    /// then the undeclared six are read off their parent fields with the group
+    /// offsets, and the declared one is kept.
+    #[test]
+    fn undeclared_split_attributes_are_filled_at_kick_off() {
+        let mut home = make_team("home");
+        home.players[10].heading = 55;
+        let mut bench_gk = make_player("home_sub_gk", Position::Goalkeeper);
+        bench_gk.passing = 40;
+        let state = LiveMatchState::new(
+            home,
+            make_team("away"),
+            MatchConfig::default(),
+            vec![bench_gk],
+            vec![],
+            false,
+        );
+        let forward = &state.home.players[9];
+        assert_eq!(
+            [
+                forward.long_passing,
+                forward.crossing,
+                forward.curve,
+                forward.free_kick,
+                forward.long_shots,
+                forward.first_touch,
+                forward.heading,
+            ],
+            [64, 65, 69, 63, 68, 70, 66]
+        );
+        assert_eq!(state.home.players[10].heading, 55);
+        assert_eq!(state.home_bench[0].long_passing, 77);
+        assert_eq!(state.home_bench[0].heading, 23);
     }
 
     /// The first goal of any match must be classified as `Opener` because both

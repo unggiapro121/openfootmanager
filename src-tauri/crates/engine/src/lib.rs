@@ -7,6 +7,7 @@ pub mod pitch_position;
 pub mod rating;
 pub mod report;
 pub(crate) mod shared;
+pub mod tally;
 pub mod types;
 
 // Re-export key types for convenience
@@ -31,6 +32,7 @@ pub use live_match::{
 };
 pub use pitch_position::{PitchPosition, PositionFit, PositionRating, formation_slots};
 pub use report::{GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet, TeamStats};
+pub use tally::EventTally;
 pub use types::{
     BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle,
     MatchConfig, PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side,
