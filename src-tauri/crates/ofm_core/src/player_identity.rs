@@ -850,13 +850,15 @@ mod tests {
             handling: 27,
             reflexes: 46,
             aerial: 76,
-            long_passing: 0,
-            crossing: 0,
-            curve: 0,
-            free_kick: 0,
-            long_shots: 0,
-            first_touch: 0,
-            heading: 0,
+            // Each split attribute at its family's value, so the blends read
+            // exactly as the attributes this fixture was written with.
+            long_passing: 41,
+            crossing: 41,
+            curve: 41,
+            free_kick: 41,
+            long_shots: 92,
+            first_touch: 41,
+            heading: 76,
         }
     }
 

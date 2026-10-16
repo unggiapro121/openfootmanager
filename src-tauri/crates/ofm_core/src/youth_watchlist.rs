@@ -979,8 +979,9 @@ mod tests {
         keeper.position = Position::Goalkeeper;
 
         let order = reveal_order(&midfielder);
-        assert_eq!(order[0], "passing");
-        assert!(order[1..3].contains(&"vision") && order[1..3].contains(&"decisions"));
+        // Vision and decisions weigh 16 each; passing, split, weighs 11.
+        assert!(order[..2].contains(&"vision") && order[..2].contains(&"decisions"));
+        assert_eq!(order[2], "stamina");
         // 26 attributes less the keeper's two.
         assert_eq!(order.len(), 24);
         assert!(!order.contains(&"handling") && !order.contains(&"reflexes"));

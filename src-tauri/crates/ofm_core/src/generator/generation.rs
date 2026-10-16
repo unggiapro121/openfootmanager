@@ -842,7 +842,7 @@ pub(super) fn attributes_for_overall(
     let links = BodyLinks::for_position(position);
     let (z_height, z_weight) = (body.z_height, body.z_weight);
 
-    PlayerAttributes {
+    let mut attributes = PlayerAttributes {
         pace: correlated_jitter(base, 8, (30, 97), z_height, links.pace, rng),
         stamina: jitter(base, 8, 30, 97, rng),
         strength: correlated_jitter(base, 8, (30, 97), z_weight, links.strength, rng),
@@ -894,7 +894,7 @@ pub(super) fn attributes_for_overall(
         } else {
             correlated_jitter(base - 10, 10, (30, 80), z_height, links.aerial, rng)
         },
-        // Split out of the blends above by the caller (`attribute_split`).
+        // Split out of the blends above, below.
         long_passing: 0,
         crossing: 0,
         curve: 0,
@@ -902,7 +902,9 @@ pub(super) fn attributes_for_overall(
         long_shots: 0,
         first_touch: 0,
         heading: 0,
-    }
+    };
+    crate::attribute_split::split_legacy_attributes(&mut attributes, position);
+    attributes
 }
 
 fn resolve_def_name(
@@ -1062,12 +1064,12 @@ pub(super) fn generate_player_from_def(
     // Only a spread this function invented, and only when a ceiling was authored.
     // Bounding it here rather than after `Player::new` keeps market value and
     // wage sized from the attributes the player actually ends up with.
+    // A package from before the 26-attribute split carries the seven split
+    // attributes as 0: derive them before anything rates the player.
+    crate::attribute_split::split_legacy_attributes(&mut attributes, &def.position);
     if let (Some(ceiling), None) = (def.potential, def.attributes.as_ref()) {
         bound_attributes_by_ceiling(&mut attributes, &def.position, ceiling);
     }
-    // A package from before the 26-attribute split, and the spread invented
-    // above, carry the seven split attributes as 0: derive them.
-    crate::attribute_split::split_legacy_attributes(&mut attributes, &def.position);
 
     // Rolled whether or not a contract was authored, so a package that authors none
     // draws exactly the random numbers it always did and generates the same players.

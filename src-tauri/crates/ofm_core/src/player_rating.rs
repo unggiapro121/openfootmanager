@@ -333,11 +333,15 @@ fn footedness_penalty(player: &Player, slot_position: &Position) -> f64 {
 /// field name. The one table behind every position-weighted rating, and the
 /// order a following scout reads a youngster's attributes in.
 pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] {
+    // Phase 2 table B (GĐ1-tech-spec.md §5): the pre-split table with each
+    // blend's weight shared among the attributes split out of it, inside the
+    // same training focus, so every position develops at the speed it did.
     match canonical_position(position) {
         Position::Goalkeeper => &[
             ("handling", 28),
             ("reflexes", 28),
-            ("aerial", 14),
+            ("aerial", 8),
+            ("long_passing", 6),
             ("positioning", 10),
             ("decisions", 10),
             ("composure", 5),
@@ -349,7 +353,8 @@ pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] 
             ("tackling", 17),
             ("defending", 16),
             ("positioning", 12),
-            ("passing", 10),
+            ("passing", 4),
+            ("crossing", 6),
             ("dribbling", 6),
             ("decisions", 5),
         ],
@@ -358,16 +363,20 @@ pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] 
             ("tackling", 18),
             ("positioning", 18),
             ("strength", 14),
-            ("aerial", 12),
+            ("aerial", 6),
+            ("heading", 6),
             ("decisions", 8),
-            ("composure", 6),
+            ("composure", 4),
+            ("long_passing", 2),
         ],
         Position::RightWingBack | Position::LeftWingBack => &[
             ("pace", 18),
             ("stamina", 18),
             ("tackling", 14),
+            ("passing", 5),
+            ("crossing", 6),
+            ("curve", 2),
             ("defending", 12),
-            ("passing", 13),
             ("dribbling", 11),
             ("vision", 7),
             ("decisions", 7),
@@ -376,28 +385,36 @@ pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] 
             ("tackling", 18),
             ("positioning", 18),
             ("decisions", 16),
-            ("passing", 14),
+            ("passing", 8),
+            ("long_passing", 6),
             ("defending", 12),
             ("stamina", 10),
             ("vision", 7),
             ("strength", 5),
         ],
         Position::CentralMidfielder => &[
-            ("passing", 20),
+            ("passing", 11),
+            ("long_passing", 7),
+            ("free_kick", 2),
             ("vision", 16),
             ("decisions", 16),
             ("stamina", 12),
-            ("dribbling", 10),
+            ("dribbling", 6),
+            ("first_touch", 4),
             ("positioning", 9),
             ("teamwork", 9),
             ("tackling", 8),
         ],
         Position::AttackingMidfielder => &[
             ("vision", 20),
-            ("passing", 18),
-            ("dribbling", 16),
+            ("passing", 13),
+            ("curve", 3),
+            ("free_kick", 2),
+            ("dribbling", 10),
+            ("first_touch", 6),
             ("decisions", 14),
-            ("shooting", 10),
+            ("shooting", 7),
+            ("long_shots", 3),
             ("positioning", 8),
             ("composure", 8),
             ("pace", 6),
@@ -405,8 +422,11 @@ pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] 
         Position::RightMidfielder | Position::LeftMidfielder => &[
             ("pace", 17),
             ("stamina", 16),
-            ("passing", 15),
-            ("dribbling", 14),
+            ("passing", 6),
+            ("crossing", 7),
+            ("curve", 2),
+            ("dribbling", 9),
+            ("first_touch", 5),
             ("vision", 10),
             ("decisions", 10),
             ("positioning", 10),
@@ -414,23 +434,30 @@ pub fn attribute_weights(position: &Position) -> &'static [(&'static str, i32)] 
         ],
         Position::RightWinger | Position::LeftWinger => &[
             ("pace", 22),
-            ("dribbling", 22),
-            ("passing", 14),
-            ("shooting", 12),
+            ("dribbling", 15),
+            ("first_touch", 7),
+            ("passing", 6),
+            ("crossing", 5),
+            ("curve", 3),
+            ("shooting", 8),
+            ("long_shots", 4),
             ("vision", 10),
             ("decisions", 8),
             ("positioning", 6),
             ("stamina", 6),
         ],
         Position::Striker => &[
-            ("shooting", 26),
+            ("shooting", 24),
+            ("long_shots", 2),
             ("positioning", 18),
             ("decisions", 14),
             ("pace", 12),
-            ("dribbling", 10),
+            ("dribbling", 6),
+            ("first_touch", 4),
             ("strength", 8),
             ("composure", 8),
-            ("aerial", 4),
+            ("aerial", 2),
+            ("heading", 2),
         ],
         Position::Defender | Position::Midfielder | Position::Forward => unreachable!(),
     }
@@ -469,21 +496,6 @@ pub fn attribute_value(attrs: &PlayerAttributes, key: &str) -> u8 {
     }
 }
 
-/// The value the OVR table weighs for `key`. The table in `attribute_weights`
-/// was tuned on the pre-split blends, so `passing`, `shooting`, `dribbling` and
-/// `aerial` read their legacy blends; every other key reads the field. When the
-/// table moves onto the split attributes (phase 2, P1.4) this reads fields only.
-fn rated_value(attrs: &PlayerAttributes, key: &str, position: &Position) -> u8 {
-    let blends = attrs.legacy_blends(matches!(position, Position::Goalkeeper));
-    match key {
-        "passing" => blends.passing,
-        "shooting" => blends.shooting,
-        "dribbling" => blends.dribbling,
-        "aerial" => blends.aerial,
-        _ => attribute_value(attrs, key),
-    }
-}
-
 /// Every attribute a player has, by field name, in the profile's order.
 pub const ATTRIBUTE_KEYS: [&str; 26] = [
     "pace",
@@ -517,14 +529,13 @@ pub const ATTRIBUTE_KEYS: [&str; 26] = [
 fn weighted_score(attrs: &PlayerAttributes, position: &Position) -> f64 {
     let values: Vec<(u8, i32)> = attribute_weights(position)
         .iter()
-        .map(|(key, weight)| (rated_value(attrs, key, position), *weight))
+        .map(|(key, weight)| (attribute_value(attrs, key), *weight))
         .collect();
     weighted_average(&values)
 }
 
 fn critical_penalty(attrs: &PlayerAttributes, position: &Position) -> f64 {
-    let rated = |key: &str| rated_value(attrs, key, position);
-    let (passing, dribbling, shooting) = (rated("passing"), rated("dribbling"), rated("shooting"));
+    let (passing, dribbling, shooting) = (attrs.passing, attrs.dribbling, attrs.shooting);
     let critical_min = match position {
         Position::Goalkeeper => attrs.handling.min(attrs.reflexes).min(attrs.positioning),
         Position::RightBack | Position::LeftBack => {
@@ -598,6 +609,243 @@ pub fn likely_xi_average_ovr(ovrs: impl IntoIterator<Item = u8>) -> Option<f64> 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const CANONICAL: [Position; 10] = [
+        Position::Goalkeeper,
+        Position::RightBack,
+        Position::CenterBack,
+        Position::RightWingBack,
+        Position::DefensiveMidfielder,
+        Position::CentralMidfielder,
+        Position::AttackingMidfielder,
+        Position::RightMidfielder,
+        Position::RightWinger,
+        Position::Striker,
+    ];
+
+    /// The OVR table before the 26-attribute split, kept to pin rule R1: a
+    /// position's OVR must grow at the speed it did under each training focus.
+    fn pre_split_weights(position: &Position) -> &'static [(&'static str, i32)] {
+        match position {
+            Position::Goalkeeper => &[
+                ("handling", 28),
+                ("reflexes", 28),
+                ("aerial", 14),
+                ("positioning", 10),
+                ("decisions", 10),
+                ("composure", 5),
+                ("strength", 5),
+            ],
+            Position::RightBack => &[
+                ("pace", 18),
+                ("stamina", 16),
+                ("tackling", 17),
+                ("defending", 16),
+                ("positioning", 12),
+                ("passing", 10),
+                ("dribbling", 6),
+                ("decisions", 5),
+            ],
+            Position::CenterBack => &[
+                ("defending", 24),
+                ("tackling", 18),
+                ("positioning", 18),
+                ("strength", 14),
+                ("aerial", 12),
+                ("decisions", 8),
+                ("composure", 6),
+            ],
+            Position::RightWingBack => &[
+                ("pace", 18),
+                ("stamina", 18),
+                ("tackling", 14),
+                ("passing", 13),
+                ("defending", 12),
+                ("dribbling", 11),
+                ("vision", 7),
+                ("decisions", 7),
+            ],
+            Position::DefensiveMidfielder => &[
+                ("tackling", 18),
+                ("positioning", 18),
+                ("decisions", 16),
+                ("passing", 14),
+                ("defending", 12),
+                ("stamina", 10),
+                ("vision", 7),
+                ("strength", 5),
+            ],
+            Position::CentralMidfielder => &[
+                ("passing", 20),
+                ("vision", 16),
+                ("decisions", 16),
+                ("stamina", 12),
+                ("dribbling", 10),
+                ("positioning", 9),
+                ("teamwork", 9),
+                ("tackling", 8),
+            ],
+            Position::AttackingMidfielder => &[
+                ("vision", 20),
+                ("passing", 18),
+                ("dribbling", 16),
+                ("decisions", 14),
+                ("shooting", 10),
+                ("positioning", 8),
+                ("composure", 8),
+                ("pace", 6),
+            ],
+            Position::RightMidfielder => &[
+                ("pace", 17),
+                ("stamina", 16),
+                ("passing", 15),
+                ("dribbling", 14),
+                ("vision", 10),
+                ("decisions", 10),
+                ("positioning", 10),
+                ("tackling", 8),
+            ],
+            Position::RightWinger => &[
+                ("pace", 22),
+                ("dribbling", 22),
+                ("passing", 14),
+                ("shooting", 12),
+                ("vision", 10),
+                ("decisions", 8),
+                ("positioning", 6),
+                ("stamina", 6),
+            ],
+            _ => &[
+                ("shooting", 26),
+                ("positioning", 18),
+                ("decisions", 14),
+                ("pace", 12),
+                ("dribbling", 10),
+                ("strength", 8),
+                ("composure", 8),
+                ("aerial", 4),
+            ],
+        }
+    }
+
+    /// What each training focus trains, and at what share of the gain, as
+    /// `training::apply_focus_gains` does it.
+    const FOCUS_GROUPS: [(&str, &[(&str, f64)]); 5] = [
+        (
+            "Physical",
+            &[
+                ("pace", 1.0),
+                ("stamina", 1.0),
+                ("strength", 1.0),
+                ("agility", 1.0),
+            ],
+        ),
+        (
+            "Technical",
+            &[
+                ("passing", 1.0),
+                ("long_passing", 1.0),
+                ("crossing", 1.0),
+                ("curve", 1.0),
+                ("free_kick", 1.0),
+                ("shooting", 1.0),
+                ("long_shots", 1.0),
+                ("dribbling", 1.0),
+                ("first_touch", 1.0),
+            ],
+        ),
+        (
+            "Tactical",
+            &[
+                ("positioning", 1.0),
+                ("vision", 1.0),
+                ("decisions", 1.0),
+                ("composure", 1.0),
+            ],
+        ),
+        (
+            "Defending",
+            &[
+                ("tackling", 1.0),
+                ("defending", 1.0),
+                ("strength", 0.5),
+                ("positioning", 0.5),
+                ("heading", 0.5),
+            ],
+        ),
+        (
+            "Attacking",
+            &[
+                ("shooting", 1.0),
+                ("long_shots", 1.0),
+                ("dribbling", 1.0),
+                ("first_touch", 1.0),
+                ("pace", 0.5),
+                ("heading", 0.5),
+            ],
+        ),
+    ];
+
+    fn coverage(weights: &[(&str, i32)], group: &[(&str, f64)]) -> f64 {
+        weights
+            .iter()
+            .map(|(key, weight)| {
+                group
+                    .iter()
+                    .find(|(trained, _)| trained == key)
+                    .map_or(0.0, |(_, share)| share * f64::from(*weight))
+            })
+            .sum()
+    }
+
+    /// Given the OVR table of every position,
+    /// when its weights are added up,
+    /// then each comes to exactly 100 and names only real attributes.
+    #[test]
+    fn every_ovr_table_sums_to_100_over_real_attributes() {
+        for position in &CANONICAL {
+            let weights = attribute_weights(position);
+            assert_eq!(
+                weights.iter().map(|(_, w)| w).sum::<i32>(),
+                100,
+                "{position:?}"
+            );
+            for (key, _) in weights {
+                assert!(ATTRIBUTE_KEYS.contains(key), "{position:?}: {key}");
+            }
+        }
+    }
+
+    /// Given every position and training focus,
+    /// when the share of its OVR the focus trains is compared with the
+    /// pre-split table,
+    /// then it is within 10%: the split did not speed up or slow down any
+    /// position's development (rule R1 of the phase-2 design).
+    #[test]
+    fn each_focus_trains_the_same_share_of_ovr_as_before_the_split() {
+        for position in &CANONICAL {
+            for (focus, group) in FOCUS_GROUPS {
+                let before = coverage(pre_split_weights(position), group);
+                let after = coverage(attribute_weights(position), group);
+                if before == 0.0 {
+                    assert!(after <= 6.0, "{position:?} {focus}: {after} from nothing");
+                } else {
+                    let change = (after / before - 1.0).abs();
+                    assert!(change <= 0.10, "{position:?} {focus}: {before} -> {after}");
+                }
+            }
+        }
+    }
+
+    /// Given the keeper's table,
+    /// when it is read,
+    /// then his kicking counts (long passing 6) and free kicks do not (X3).
+    #[test]
+    fn a_keepers_ovr_counts_his_kicking_not_free_kicks() {
+        let weights = attribute_weights(&Position::Goalkeeper);
+        assert!(weights.contains(&("long_passing", 6)));
+        assert!(!weights.iter().any(|(key, _)| *key == "free_kick"));
+    }
 
     /// Given more than eleven players, then only the eleven best count.
     #[test]
