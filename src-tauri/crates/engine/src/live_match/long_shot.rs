@@ -41,15 +41,11 @@ use super::LiveMatchState;
 use super::helpers::{danger_band, save_quality};
 
 /// The level of the chance to shoot from distance, against a striker at his
-/// position's usual long shots. Calibrated on the real-world probe for 30–35%
-/// of shots from outside the box (30.9%), not on the lan-can sweep: its
-/// synthetic forwards shoot 18 points above their side, so their long shots
-/// sit far above any real striker's and their chance runs into the cap.
-const BASE: f64 = -2.30;
-/// `BASE` under `Grid15` (phase 2, P3.4, X56): a shot from a flank is worth
-/// `FLANK_PENALTY` less, so the level rises to keep 30–35% of shots outside the
-/// box. Calibrated at P3.4.
-const BASE_GRID: f64 = -1.80;
+/// position's usual long shots. P2.5 set it at −2.30 on the real-world probe
+/// for 30–35% of shots from outside the box; GĐ3 (P3.4, X56) made a shot from
+/// a flank `FLANK_PENALTY` less likely and raised the level to −1.80, which
+/// keeps that share (34% on the guardrail sweep, 33.5% on the probe).
+const BASE: f64 = -1.80;
 /// Shooting from out wide, at a narrow angle, is rare (X56).
 const FLANK_PENALTY: f64 = -1.0;
 /// A wide player who has cut inside onto his stronger foot shoots more
@@ -115,7 +111,7 @@ fn default_slot(group: Position) -> PitchPosition {
 }
 
 /// The chance a player at `slot` tries a shot from distance this action, at
-/// level `level` (`BASE`, or `BASE_GRID` under `Grid15`) plus `extra` (the
+/// level `level` (`BASE`) plus `extra` (the
 /// flank's penalty, a cut inside's bonus).
 fn trigger_chance(
     slot: PitchPosition,
@@ -183,15 +179,13 @@ impl LiveMatchState {
         } else {
             attacker.clone()
         };
-        // From a flank under `Grid15`, the angle is narrow (P3.4).
-        let (level, extra) = if !self.plays_grid15() {
-            (BASE, 0.0)
-        } else if self.lane_for(att_side) == crate::event::Lane::Centre {
-            (BASE_GRID, 0.0)
+        // From a flank, the angle is narrow (P3.4).
+        let extra = if self.lane_for(att_side) == crate::event::Lane::Centre {
+            0.0
         } else {
-            (BASE_GRID, FLANK_PENALTY)
+            FLANK_PENALTY
         };
-        let chance = self.long_shot_chance(att_side, &shooter, level, extra);
+        let chance = self.long_shot_chance(att_side, &shooter, BASE, extra);
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
@@ -199,16 +193,14 @@ impl LiveMatchState {
         Some(self.resolve_long_shot(minute, att_side, shooter, assister, rng))
     }
 
-    /// The midfielder arriving from behind to shoot. `Zones5`: any
-    /// midfielder. `Grid15`: drawn by midfield presence in the ball's lane.
+    /// The midfielder arriving from behind to shoot, drawn by midfield
+    /// presence in the ball's lane.
     fn arriving_midfielder<R: Rng>(&self, side: Side, rng: &mut R) -> PlayerSnap {
-        if self.plays_grid15() {
-            let lane = self.lane_for(side);
-            if let Some(picked) =
-                self.pick_by_presence(side, super::presence::Column::MidfieldAttack, lane, rng)
-            {
-                return picked.player;
-            }
+        let lane = self.lane_for(side);
+        if let Some(picked) =
+            self.pick_by_presence(side, super::presence::Column::MidfieldAttack, lane, rng)
+        {
+            return picked.player;
         }
         self.snap_player(side, Position::Midfielder, rng)
     }
@@ -246,7 +238,7 @@ impl LiveMatchState {
         cutter: &PlayerSnap,
         rng: &mut R,
     ) -> Option<Vec<MatchEvent>> {
-        let chance = self.long_shot_chance(att_side, cutter, BASE_GRID, CUT_INSIDE_BONUS);
+        let chance = self.long_shot_chance(att_side, cutter, BASE, CUT_INSIDE_BONUS);
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
@@ -386,7 +378,7 @@ mod tests {
         assert!(trigger_chance(cm, 60, true, false, BASE, 0.0) > plain);
         assert!(trigger_chance(cm, 60, false, true, BASE, 0.0) > plain);
         assert_eq!(trigger_chance(cm, 99, true, true, BASE, 0.0), MAX_CHANCE);
-        // From a flank (Grid15, P3.4) the same man shoots less often.
+        // From a flank (P3.4) the same man shoots less often.
         assert!(trigger_chance(cm, 60, false, false, BASE, FLANK_PENALTY) < plain);
     }
 

@@ -1,7 +1,7 @@
 //! Who takes part where the ball is: presence weights by slot and lane
 //! (phase 2, GĐ3, P3.2; GĐ3-tech-spec §6, decisions X48–X50).
 //!
-//! Under `Grid15` the one-on-one in the attacking third is no longer a forward
+//! The one-on-one in the attacking third is no longer a forward
 //! drawn at random against a defender drawn at random. Each outfielder is
 //! weighted by how present his slot is in the ball's lane — a 4-4-2 attacking
 //! down its left mostly sends its left midfielder or left back, and meets the
@@ -361,7 +361,7 @@ pub(super) fn out_of_lane_factor(slot: PitchPosition, lane: Lane) -> f64 {
 mod tests {
     use super::*;
     use crate::live_match::test_support::make_team;
-    use crate::types::{EngineModel, MatchConfig};
+    use crate::types::MatchConfig;
     use rand::SeedableRng;
     use rand::rngs::StdRng;
 
@@ -384,10 +384,7 @@ mod tests {
         LiveMatchState::new(
             home,
             away,
-            MatchConfig {
-                engine_model: EngineModel::Grid15,
-                ..MatchConfig::default()
-            },
+            MatchConfig::default(),
             Vec::new(),
             Vec::new(),
             false,

@@ -352,7 +352,7 @@ pub struct TacticsConfig {
     pub counter_press_duration: CounterPressDuration,
     #[serde(default)]
     pub break_speed: BreakSpeed,
-    /// Read only under `EngineModel::Grid15` (P3.4).
+    /// Phase 2, P3.4.
     #[serde(default)]
     pub cross_style: CrossStyle,
 }
@@ -541,32 +541,6 @@ pub struct MatchConfig {
     pub stoppage_time_max: u8,
     /// Probability of an injury per foul event.
     pub injury_probability: f64,
-    /// Which match model plays the game (phase 2, GĐ3, X47). Every rule GĐ3
-    /// adds runs only under `Grid15`; `Zones5` plays exactly as before GĐ3.
-    #[serde(default)]
-    pub engine_model: EngineModel,
-}
-
-/// The match model: the five zones of GĐ2, or the 5×3 grid of GĐ3 in which
-/// the ball also has a lane. `Zones5` goes once `Grid15` passes the GĐ3 gate
-/// (P3.8); until then the two run side by side for A/B comparison.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
-pub enum EngineModel {
-    #[default]
-    Zones5,
-    Grid15,
-}
-
-impl EngineModel {
-    /// Reads `"zones5"` / `"grid15"` (any case), as the bench flag and the
-    /// probe's `OFM_ENGINE_MODEL` spell it.
-    pub fn parse(name: &str) -> Option<Self> {
-        match name.to_ascii_lowercase().as_str() {
-            "zones5" => Some(Self::Zones5),
-            "grid15" => Some(Self::Grid15),
-            _ => None,
-        }
-    }
 }
 
 impl Default for MatchConfig {
@@ -582,7 +556,6 @@ impl Default for MatchConfig {
             penalty_probability: 0.50,
             stoppage_time_max: 4,
             injury_probability: 0.03,
-            engine_model: EngineModel::default(),
         }
     }
 }

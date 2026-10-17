@@ -21,9 +21,9 @@
 //! wing-backs stay back, however well they head. `REACH_BASE` is set so a corner is worth
 //! about 3% of a goal, as in real football (2.5–3%); it had been worth 5.7%.
 //!
-//! A foul in the attacking third becomes a shot at goal `DIRECT_FREE_KICK_SHARE`
-//! of the time, from the club's `free_kick_taker` or the best striker of a dead
-//! ball on the pitch; otherwise the attack goes on as before:
+//! A foul in the attacking third's centre lane becomes a shot at goal
+//! `P_DFK_CENTRE` of the time (`wing_play`, GĐ3), from the club's
+//! `free_kick_taker` or the best striker of a dead ball on the pitch:
 //!
 //! ```text
 //! FK        = (0.65·free_kick + 0.35·curve) × condition × 1.08 for DeadBallSpecialist
@@ -72,11 +72,6 @@ const MIDFIELDER_WEIGHT: f64 = 0.5;
 /// How many centre-backs join the attack for a corner.
 const CENTRE_BACKS_UP: usize = 2;
 
-/// The share of fouls in the attacking third that become a shot at goal.
-/// Calibrated for 0.8–1.0 a match, as in the Premier League (0.79–0.89):
-/// 0.10 at P2.4, raised at P2.5 because shots from distance take the place
-/// of one-on-ones, and with them of the fouls a lost one-on-one draws.
-pub(super) const DIRECT_FREE_KICK_SHARE: f64 = 0.125;
 const FREE_KICK_STRIKE: f64 = 0.65;
 const FREE_KICK_CURVE: f64 = 0.35;
 /// `DeadBallSpecialist` strikes a free kick better.

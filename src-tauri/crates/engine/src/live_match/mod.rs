@@ -173,8 +173,8 @@ pub struct MatchSnapshot {
     pub away_score: u8,
     pub possession: Side,
     pub ball_zone: Zone,
-    /// The ball's lane as the side in possession sees it, under `Grid15`
-    /// (phase 2, P3.7); `None` under `Zones5`, which has no lanes.
+    /// The ball's lane as the side in possession sees it (phase 2, P3.7);
+    /// `None` in a snapshot saved before lanes existed.
     #[serde(default)]
     pub ball_lane: Option<crate::event::Lane>,
     pub home_team: TeamData,
@@ -330,7 +330,7 @@ pub struct LiveMatchState {
     active_context: Option<crate::event::TacticalContext>,
 
     // Phase 2, GĐ3: the ball's lane and what the grid's rules read
-    // (`lane_state`). Kept under `Zones5` too, but only `Grid15` writes them.
+    // (`lane_state`).
     /// The ball's lane, stored from the home side's direction; read it with
     /// `lane_for`.
     ball_side: lane_state::BallSide,
@@ -552,9 +552,6 @@ impl LiveMatchState {
         if let Some((home_sheet, away_sheet)) = self.kickoff_sheets {
             report.home_sheet = Some(home_sheet);
             report.away_sheet = Some(away_sheet);
-        }
-        if self.config.engine_model == crate::types::EngineModel::Grid15 {
-            report.protocol_version = lane_state::GRID_EVENT_PROTOCOL_VERSION;
         }
         report
     }

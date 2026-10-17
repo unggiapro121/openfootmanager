@@ -19,8 +19,6 @@ export interface SimBatchConfig {
   away_formation: string;
   home_rating: number;
   away_rating: number;
-  /** The match model (phase 2, GĐ3): a dev switch, gone once grid15 is the only one. */
-  engine_model: "zones5" | "grid15";
   home_advantage: number | null;
   shot_accuracy_base: number | null;
   goal_conversion_base: number | null;

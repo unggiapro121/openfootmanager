@@ -40,7 +40,7 @@ pub use report::{
 pub use tally::EventTally;
 pub use types::{
     BreakSpeed, CoachMastery, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape,
-    EngineModel, Foot, MarkingStyle, MatchConfig, PlayStyle, PlayerData, PlayerRole, Position,
+    Foot, MarkingStyle, MatchConfig, PlayStyle, PlayerData, PlayerRole, Position,
     PressingIntensity, Side, TacticalDial, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth,
     TeamData, Tempo, Zone,
 };

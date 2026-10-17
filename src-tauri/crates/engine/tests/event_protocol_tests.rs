@@ -147,16 +147,21 @@ fn every_attempt_has_a_kind_and_every_goal_a_source() {
 }
 
 /// Given a hundred seeded matches,
-/// when the attempts after a cross are read,
+/// when the attempts after a cross in the air are read,
 /// then the shot that a won header leads to is a header, and a header goal
-/// outside a corner counts as a header goal.
+/// outside a corner counts as a header goal. A low cross (phase 2, P3.4) is
+/// met with the feet, and its events say so.
 #[test]
 fn the_shot_after_a_won_header_is_a_header() {
     let mut headers = 0;
     for report in reports(100) {
         for pair in report.events.windows(2) {
             let (cross, next) = (&pair[0], &pair[1]);
-            if cross.event_type != EventType::Cross || !SHOT_EVENTS[..4].contains(&next.event_type)
+            let low = |e: &MatchEvent| e.tactical_context == Some(TacticalContext::LowCross);
+            if cross.event_type != EventType::Cross
+                || !SHOT_EVENTS[..4].contains(&next.event_type)
+                || low(cross)
+                || low(next)
             {
                 continue;
             }
@@ -249,39 +254,37 @@ fn direct_free_kicks_come_only_from_the_attacking_third() {
     );
 }
 
-/// Given a 4-4-2 whose left-back, right midfielder and strikers are known,
-/// when a hundred matches are played,
-/// then each of them is placed in his slot's lane on every event he leads.
+/// Given a hundred seeded matches,
+/// when a one-on-one lost to a tackle is read,
+/// then the tackler's event carries the mirror of the attacker's lane: an
+/// event's lane is the ball's as its own side sees it (protocol 3), so the
+/// same grass reads left for one side and right for the other.
 #[test]
-fn an_events_lane_is_its_players_slot() {
-    let lanes = [
-        ("home_Defender0", Lane::Left),
-        ("home_Defender1", Lane::Centre),
-        ("home_Defender3", Lane::Right),
-        ("home_Midfielder3", Lane::Right),
-        ("home_Forward0", Lane::Centre),
-        ("away_Midfielder0", Lane::Left),
-    ];
+fn an_events_lane_is_the_balls_seen_from_its_side() {
     let mut checked = 0;
     for report in reports(100) {
-        for event in &report.events {
-            let Some(player) = event.player_id.as_deref() else {
+        assert_eq!(report.protocol_version, 3);
+        for pair in report.events.windows(2) {
+            let (duel, tackle) = (&pair[0], &pair[1]);
+            if duel.event_type != EventType::DribbleTackled
+                || tackle.event_type != EventType::Tackle
+            {
                 continue;
-            };
-            if let Some((_, lane)) = lanes.iter().find(|(id, _)| *id == player) {
-                assert_eq!(event.lane, Some(*lane), "{event:?}");
-                checked += 1;
             }
+            let lane = duel.lane.expect("a one-on-one carries a lane");
+            assert_eq!(tackle.lane, Some(lane.mirrored()), "{duel:?} {tackle:?}");
+            checked += 1;
         }
     }
-    assert!(checked > 500, "only {checked} events checked");
+    assert!(checked > 200, "only {checked} tackles checked");
 }
 
 /// Spec 2.2 (phase 2, P2.7): given a 3-4-2-1 whose fifth and eighth men are
 /// defenders at the wing-back slots,
 /// when it plays a hundred full matches,
 /// then every match runs to the end with eleven men in their slots, and the
-/// wing-backs' events are on their flanks.
+/// wing-backs' play is mostly down their own flanks (protocol 3: the lane is
+/// the ball's, so a wing-back passing out of defence can be anywhere).
 #[test]
 fn a_three_four_two_one_plays_with_its_wing_backs_on_the_flanks() {
     use Position::*;
@@ -297,7 +300,9 @@ fn a_three_four_two_one_plays_with_its_wing_backs_on_the_flanks() {
     home.players[4].id = "home_lwb".to_string();
     home.players[7].id = "home_rwb".to_string();
     let away = make_team("away");
-    let mut seen = (0, 0);
+    // [own flank, elsewhere] for each wing-back.
+    let mut left = [0u32; 2];
+    let mut right = [0u32; 2];
     for seed in 0..100 {
         let report = simulate_with_rng(
             &home,
@@ -308,19 +313,19 @@ fn a_three_four_two_one_plays_with_its_wing_backs_on_the_flanks() {
         assert!(report.total_minutes >= 90, "seed {seed}");
         for event in &report.events {
             match event.player_id.as_deref() {
-                Some("home_lwb") => {
-                    assert_eq!(event.lane, Some(Lane::Left), "{event:?}");
-                    seen.0 += 1;
-                }
-                Some("home_rwb") => {
-                    assert_eq!(event.lane, Some(Lane::Right), "{event:?}");
-                    seen.1 += 1;
-                }
+                Some("home_lwb") => left[usize::from(event.lane != Some(Lane::Left))] += 1,
+                Some("home_rwb") => right[usize::from(event.lane != Some(Lane::Right))] += 1,
                 _ => {}
             }
         }
     }
-    assert!(seen.0 > 50 && seen.1 > 50, "{seen:?}");
+    for (wing_back, [own, elsewhere]) in [("left", left), ("right", right)] {
+        assert!(own > 50, "{wing_back}: {own} on his flank");
+        assert!(
+            own > 2 * elsewhere,
+            "{wing_back}: {own} on his flank, {elsewhere} elsewhere"
+        );
+    }
 }
 
 /// Given an event saved before protocol 2, and a report saved before it,

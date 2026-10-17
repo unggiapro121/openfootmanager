@@ -170,8 +170,10 @@ pub struct MatchReport {
 
 /// The event protocol the engine writes. Protocol 2 (phase 2, P2.1) adds
 /// `shot_kind`, `set_piece`, `goal_source` and `lane` to every event that has
-/// one; protocol 1 events carry none of them.
-pub const EVENT_PROTOCOL_VERSION: u8 = 2;
+/// one; protocol 1 events carry none of them. Protocol 3 (phase 2, GĐ3, X59)
+/// makes `lane` the ball's lane as the event's side sees it, where protocol 2
+/// put the lane of the actor's slot.
+pub const EVENT_PROTOCOL_VERSION: u8 = 3;
 
 pub(crate) fn first_event_protocol() -> u8 {
     1

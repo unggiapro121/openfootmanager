@@ -46,27 +46,19 @@ pub(crate) const GAMMA_MIDFIELD: f64 = 1.0;
 /// do in real football, where they had won 48%. Measured on the lan-can sweep
 /// (`ofm-sim-bench --guardrails`): 57.5–57.8% over four seeds.
 pub(crate) const ANCHOR_AERIAL: f64 = 0.64;
-/// The open-play cross's aerial anchor under `Grid15` (phase 2, P3.5).
-/// `Grid15` sends the attacker best placed to meet the cross (ω × aerial
-/// rating) against a centre back instead of any defender, which tilts the
-/// duel towards the defence; this holds the defenders' share where it was.
-/// Corners keep `ANCHOR_AERIAL`: their picks did not change.
-pub(crate) const ANCHOR_AERIAL_CROSS_GRID: f64 = 0.80;
-pub(crate) const ANCHOR_ONE_V_ONE: f64 = 1.14;
-/// The one-on-one's anchor under `Grid15` (phase 2, P3.2, X49): the
-/// attacker wins as often on average as under `Zones5` (56.9% against 56.4%
-/// on the guardrail sweep's nine formations). Picking by presence puts quicker
-/// attackers against weaker tacklers on the flanks and some defenders out of
-/// lane, which a bare 1.14 would turn into far more wins.
-///
-/// Goals still move, for two reasons the anchor is not meant to undo: the
-/// carrier is more often a wide player, who shoots from distance less, and in
-/// a one-striker shape the striker is no longer the one crossing, so the
-/// cross finds him instead of a midfielder. Real-world matches (mostly
-/// 4-4-2) stay level; the nine-formation sweep gains about 0.2 a match
-/// (GĐ3-tech-spec, P3.2 notes). 0.70 would hold that sweep level but cost
-/// the real world 0.26.
-pub(crate) const ANCHOR_ONE_V_ONE_GRID: f64 = 0.94;
+/// The open-play cross's aerial anchor (phase 2, P3.5). The cross is met by
+/// the attacker best placed for it (ω × aerial rating) and contested by a
+/// centre back, not any defender, which tilts the duel towards the defence;
+/// this holds the defenders' share at about 59%. Corners keep
+/// `ANCHOR_AERIAL`: their picks did not change.
+pub(crate) const ANCHOR_AERIAL_OPEN_PLAY_CROSS: f64 = 0.80;
+/// The one-on-one's anchor. Phase 2 GĐ3 (P3.2, X49) moved it from 1.14 to
+/// 0.94: picking the duel's players by presence in the ball's lane puts
+/// quicker attackers against weaker tacklers on the flanks and some
+/// defenders out of lane, and 0.94 keeps the attacker's average win rate
+/// where it was (56.9% against 56.4% on the guardrail sweep's nine
+/// formations).
+pub(crate) const ANCHOR_ONE_V_ONE: f64 = 0.94;
 pub(crate) const ANCHOR_MIDFIELD: f64 = 1.015;
 
 /// The average height of a professional footballer, the neutral point of the
@@ -187,7 +179,7 @@ pub(crate) fn aerial_win_probability(att: &PlayerSnap, def: &PlayerSnap) -> f64 
     aerial_win_probability_anchored(att, def, ANCHOR_AERIAL)
 }
 
-/// [`aerial_win_probability`] at another anchor: `Grid15`'s open-play cross.
+/// [`aerial_win_probability`] at another anchor: the open-play cross's.
 pub(crate) fn aerial_win_probability_anchored(
     att: &PlayerSnap,
     def: &PlayerSnap,
@@ -210,16 +202,6 @@ pub(crate) fn one_v_one_win_probability(
     def: &PlayerSnap,
     modifier_ratio: f64,
 ) -> f64 {
-    one_v_one_win_probability_anchored(att, def, modifier_ratio, ANCHOR_ONE_V_ONE)
-}
-
-/// [`one_v_one_win_probability`] at another anchor: `Grid15`'s.
-pub(crate) fn one_v_one_win_probability_anchored(
-    att: &PlayerSnap,
-    def: &PlayerSnap,
-    modifier_ratio: f64,
-    anchor: f64,
-) -> f64 {
     let [technique_att, technique_def, physique_att, physique_def] = one_v_one_ratings(att, def);
     duel_probability(
         &[
@@ -235,7 +217,7 @@ pub(crate) fn one_v_one_win_probability_anchored(
             },
         ],
         modifier_ratio,
-        anchor,
+        ANCHOR_ONE_V_ONE,
     )
 }
 

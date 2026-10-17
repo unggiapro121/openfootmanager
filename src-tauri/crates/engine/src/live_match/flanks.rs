@@ -1,5 +1,5 @@
 //! Flanks left open, and the break into them (phase 2, GĐ3, P3.6;
-//! GĐ3-tech-spec §10, S1 §4.3, decision X58). `Grid15` only.
+//! GĐ3-tech-spec §10, S1 §4.3, decision X58).
 //!
 //! A full back who joins an attack down his flank leaves it behind him. The
 //! flank stays open for two minutes: when he is the one carrying, crossing or
@@ -166,9 +166,6 @@ impl LiveMatchState {
         passer: Option<&PlayerSnap>,
         rng: &mut R,
     ) {
-        if !self.plays_grid15() {
-            return;
-        }
         let caught = side.opposite();
         if let Some(flank) = self.open_flank(caught) {
             let exploit = if self.team_ref(side).tactics.break_speed == BreakSpeed::Fast {
@@ -211,7 +208,7 @@ impl LiveMatchState {
 mod tests {
     use super::*;
     use crate::live_match::test_support::make_team;
-    use crate::types::{EngineModel, MatchConfig};
+    use crate::types::MatchConfig;
     use rand::SeedableRng;
     use rand::rngs::StdRng;
 
@@ -221,10 +218,7 @@ mod tests {
         LiveMatchState::new(
             home,
             make_team("away"),
-            MatchConfig {
-                engine_model: EngineModel::Grid15,
-                ..MatchConfig::default()
-            },
+            MatchConfig::default(),
             Vec::new(),
             Vec::new(),
             false,

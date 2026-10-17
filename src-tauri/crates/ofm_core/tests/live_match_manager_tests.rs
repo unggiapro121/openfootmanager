@@ -558,8 +558,12 @@ fn step_many_stops_at_half_time() {
         live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
 
     // Far more minutes than a half. Fast-forward must still surrender at the interval, or the
-    // half-time team talk is silently skipped for anyone playing at instant speed.
-    let results = session.step_many(500);
+    // half-time team talk is silently skipped for anyone playing at instant speed. An injury to
+    // one of the manager's own players stops it too, so step on through those.
+    let mut results = session.step_many(500);
+    while results.last().unwrap().phase == MatchPhase::FirstHalf {
+        results = session.step_many(500);
+    }
     let last = results.last().unwrap();
     assert_eq!(
         last.phase,

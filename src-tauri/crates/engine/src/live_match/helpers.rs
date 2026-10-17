@@ -1,7 +1,7 @@
 use rand::Rng;
 
 use crate::event::{
-    DangerBand, FoulSeverity, GoalContext, Lane, MatchEvent, SaveQuality, TacticalContext,
+    DangerBand, FoulSeverity, GoalContext, MatchEvent, SaveQuality, TacticalContext,
 };
 use crate::pitch_position::PitchPosition;
 use crate::report::GoalSource;
@@ -99,10 +99,9 @@ impl LiveMatchState {
     }
 
     /// Record `event` in the match log and in `out`, the events of the action
-    /// being resolved, after filling in what event protocol 2 adds: the set
-    /// piece the action belongs to, the actor's lane, and a goal's source.
-    /// Under `Grid15` the lane is the ball's instead (protocol 3, see
-    /// `lane_state`).
+    /// being resolved, after filling in what the event protocol adds: the set
+    /// piece the action belongs to, the context of the action, the ball's lane
+    /// (protocol 3, see `lane_state`), and a goal's source.
     /// Every event an action produces goes through here, so a tag cannot be
     /// on the copy the report keeps and missing from the one the UI is sent.
     pub(super) fn emit(&mut self, out: &mut Vec<MatchEvent>, mut event: MatchEvent) {
@@ -115,14 +114,7 @@ impl LiveMatchState {
         if event.tactical_context.is_none() {
             event.tactical_context = self.active_context;
         }
-        if self.plays_grid15() {
-            self.track_lane(&mut event);
-        } else if event.lane.is_none() {
-            event.lane = event
-                .player_id
-                .as_deref()
-                .and_then(|id| self.lane_of(event.side, id));
-        }
+        self.track_lane(&mut event);
         if event.is_goal() {
             event.goal_source = Some(GoalSource::of(event.shot_kind, event.set_piece));
         }
@@ -140,11 +132,6 @@ impl LiveMatchState {
             return None;
         }
         Some(slots[index])
-    }
-
-    /// The lane of the formation slot `player_id` stands in for `side`.
-    fn lane_of(&self, side: Side, player_id: &str) -> Option<Lane> {
-        self.slot_of(side, player_id).map(PitchPosition::lane)
     }
 
     /// Adjust a skill value based on the player's current in-match condition

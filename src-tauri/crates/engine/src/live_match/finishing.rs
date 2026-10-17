@@ -1,8 +1,8 @@
-//! Who finishes in the box under `Grid15` (phase 2, GĐ3, P3.5; GĐ3-tech-spec
-//! §8, decisions D8, X57).
+//! Who finishes in the box (phase 2, GĐ3, P3.5; GĐ3-tech-spec §8, decisions
+//! D8, X57).
 //!
-//! `Zones5` hands every shot in the box to a forward drawn at random and every
-//! cross to a forward other than the crosser. Here each outfielder is weighted
+//! Before GĐ3 every shot in the box went to a forward drawn at random and
+//! every cross to a forward other than the crosser. Here each outfielder is weighted
 //! by ω — how much his slot and role get on the end of things in the box —
 //! times his positioning (for a shot) or his aerial rating (for a cross), and
 //! the man who has just carried the ball in counts double. A cross is
@@ -109,19 +109,13 @@ impl LiveMatchState {
         draw(&candidates, rng).map(PlayerSnap::from)
     }
 
-    /// The shot in the box, and who set it up. `Zones5`: a forward and a
-    /// midfielder drawn at random. `Grid15`: the shooter by ω, and the
+    /// The shot in the box, and who set it up: the shooter by ω, and the
     /// assist to whoever carried the ball in if that was someone else.
     pub(super) fn box_shooter_and_assister<R: Rng>(
         &self,
         side: Side,
         rng: &mut R,
     ) -> (PlayerSnap, String) {
-        if !self.plays_grid15() {
-            let shooter = self.snap_player(side, Position::Forward, rng);
-            let assister = self.snap_player(side, Position::Midfielder, rng).id;
-            return (shooter, assister);
-        }
         let shooter = self
             .pick_shooter(side, rng)
             .unwrap_or_else(|| self.snap_player(side, Position::Forward, rng));
@@ -132,17 +126,14 @@ impl LiveMatchState {
         (shooter, assister)
     }
 
-    /// Who meets a cross from `crosser_id`. `Zones5`: a forward other than
-    /// the crosser. `Grid15`: anyone but the crosser, `P ∝ ω × aerial / 70`.
+    /// Who meets a cross from `crosser_id`: anyone but the crosser,
+    /// `P ∝ ω × aerial / 70`.
     pub(super) fn cross_target<R: Rng>(
         &self,
         side: Side,
         crosser_id: &str,
         rng: &mut R,
     ) -> PlayerSnap {
-        if !self.plays_grid15() {
-            return self.snap_header_target(side, crosser_id, rng);
-        }
         let candidates: Vec<(&PlayerData, f64)> = self
             .outfield_by_slot(side)
             .into_iter()
@@ -180,13 +171,10 @@ impl LiveMatchState {
             .unwrap_or_else(|| self.cross_target(side, crosser_id, rng))
     }
 
-    /// Who contests a cross for the defence. `Zones5`: any defender.
-    /// `Grid15`: a centre back — a ball into the middle of the box is his —
-    /// or any defender when the side has no centre-back slot.
+    /// Who contests a cross for the defence: a centre back — a ball into the
+    /// middle of the box is his — or any defender when the side has no
+    /// centre-back slot.
     pub(super) fn cross_defender<R: Rng>(&self, side: Side, rng: &mut R) -> PlayerSnap {
-        if !self.plays_grid15() {
-            return self.snap_player(side, Position::Defender, rng);
-        }
         let centre_backs: Vec<(&PlayerData, f64)> = self
             .outfield_by_slot(side)
             .into_iter()
@@ -203,7 +191,7 @@ impl LiveMatchState {
 mod tests {
     use super::*;
     use crate::live_match::test_support::make_team;
-    use crate::types::{EngineModel, MatchConfig};
+    use crate::types::MatchConfig;
     use rand::SeedableRng;
     use rand::rngs::StdRng;
 
@@ -213,10 +201,7 @@ mod tests {
         LiveMatchState::new(
             home,
             make_team("away"),
-            MatchConfig {
-                engine_model: EngineModel::Grid15,
-                ..MatchConfig::default()
-            },
+            MatchConfig::default(),
             Vec::new(),
             Vec::new(),
             false,

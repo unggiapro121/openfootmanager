@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use engine::{
-    simulate_with_rng, EngineModel, EventType, GoalSource, MatchConfig, MatchReport, PlayStyle,
-    PlayerData, PlayerRole, Position, TeamData,
+    simulate_with_rng, EventType, GoalSource, MatchConfig, MatchReport, PlayStyle, PlayerData,
+    PlayerRole, Position, TeamData,
 };
 use rand::rngs::StdRng;
 use rand::{RngExt, SeedableRng};
@@ -24,10 +24,6 @@ pub struct SimBatchConfig {
     pub away_formation: String,
     pub home_rating: u8,
     pub away_rating: u8,
-    /// The match model (phase 2, GĐ3, X47): a dev switch to watch `Zones5` and
-    /// `Grid15` side by side. Goes with `Zones5` at P3.8.
-    #[serde(default)]
-    pub engine_model: EngineModelDto,
 
     // MatchConfig overrides (all optional)
     pub home_advantage: Option<f64>,
@@ -38,23 +34,6 @@ pub struct SimBatchConfig {
     pub red_card_probability: Option<f64>,
     pub penalty_probability: Option<f64>,
     pub injury_probability: Option<f64>,
-}
-
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum EngineModelDto {
-    #[default]
-    Zones5,
-    Grid15,
-}
-
-impl From<EngineModelDto> for EngineModel {
-    fn from(dto: EngineModelDto) -> Self {
-        match dto {
-            EngineModelDto::Zones5 => EngineModel::Zones5,
-            EngineModelDto::Grid15 => EngineModel::Grid15,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize)]
@@ -485,10 +464,7 @@ impl Aggregator {
 // ---------------------------------------------------------------------------
 
 fn build_match_config(cfg: &SimBatchConfig) -> MatchConfig {
-    let mut mc = MatchConfig {
-        engine_model: cfg.engine_model.into(),
-        ..MatchConfig::default()
-    };
+    let mut mc = MatchConfig::default();
     if let Some(v) = cfg.home_advantage {
         mc.home_advantage = v;
     }

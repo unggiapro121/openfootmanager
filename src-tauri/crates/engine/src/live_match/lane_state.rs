@@ -7,18 +7,13 @@
 //! the ball has not moved — and none of the many places that hand the ball
 //! over has to remember to flip it (GĐ3-tech-spec §5, decision X46).
 //!
-//! Every rule here runs only under `EngineModel::Grid15` and draws nothing
-//! from the match's random stream, so `Zones5` plays exactly as before.
+//! Nothing here draws from the match's random stream; where the ball goes
+//! when it is moved on is the lane matrix's (`lanes`).
 
 use crate::event::{EventType, Lane, MatchEvent};
-use crate::types::{EngineModel, Side};
+use crate::types::Side;
 
 use super::LiveMatchState;
-
-/// The event protocol a `Grid15` match writes: an event's `lane` is the lane
-/// of the ball as `event.side` sees it, where protocol 2 put the lane of the
-/// actor's slot (decision X59).
-pub const GRID_EVENT_PROTOCOL_VERSION: u8 = 3;
 
 /// The ball's lane from the home side's attacking direction. The field is
 /// private to this module, so nothing can read it without saying whose
@@ -45,10 +40,6 @@ impl Lane {
 }
 
 impl LiveMatchState {
-    pub(super) fn plays_grid15(&self) -> bool {
-        self.config.engine_model == EngineModel::Grid15
-    }
-
     /// The ball's lane seen from `side`'s attacking direction.
     pub(super) fn lane_for(&self, side: Side) -> Lane {
         match side {
@@ -70,7 +61,7 @@ impl LiveMatchState {
         self.ball_side = BallSide::centre();
     }
 
-    /// The `Grid15` bookkeeping `emit` does for each event: move the ball's
+    /// The bookkeeping `emit` does for each event: move the ball's
     /// lane as the event moves it, tag the event with the lane as its side
     /// sees it, and remember who acted.
     ///
@@ -126,10 +117,7 @@ mod tests {
         LiveMatchState::new(
             make_team("home"),
             make_team("away"),
-            MatchConfig {
-                engine_model: EngineModel::Grid15,
-                ..MatchConfig::default()
-            },
+            MatchConfig::default(),
             Vec::new(),
             Vec::new(),
             false,
