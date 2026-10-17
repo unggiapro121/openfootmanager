@@ -73,6 +73,7 @@ fn mk(id: &str, pos: Position) -> PlayerData {
         first_touch: 0,
         heading: 0,
         height_cm: 0,
+        footedness: Default::default(),
         traits: vec![],
         role: PlayerRole::Standard,
         position_ratings: Vec::new(),

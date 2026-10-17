@@ -15,13 +15,19 @@
 //! a seven-man bench and `ai_decide` on both touchlines, as unwatched fixtures
 //! do in the game. The RNG is ChaCha12 because its output is fixed by its
 //! specification; `StdRng` may change algorithm between `rand` releases.
+//!
+//! Phase 2, GĐ3 runs two match models side by side (X47). `GOLDEN` pins
+//! `Zones5`, the model every GĐ3 package must leave exactly as it was.
+//! `golden_grid15.txt` pins the same fixtures under `Grid15`; a GĐ3 package
+//! that changes `Grid15` blesses it once with
+//! `OFM_BLESS_GOLDEN_GRID15=1 cargo test -p engine --test golden_tests`.
 
 use engine::ai::{AiPersonality, AiProfile, ai_decide};
 use engine::{
-    BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, LiveMatchState,
-    MatchConfig, MatchEvent, MatchReport, PlayStyle, PlayerData, PlayerRole, Position,
-    PressingIntensity, Side, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, TeamData,
-    Tempo,
+    BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, EngineModel,
+    LiveMatchState, MatchConfig, MatchEvent, MatchReport, PlayStyle, PlayerData, PlayerRole,
+    Position, PressingIntensity, Side, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth,
+    TeamData, Tempo,
 };
 use rand::{Rng, RngExt, SeedableRng};
 use rand_chacha::ChaCha12Rng;
@@ -345,6 +351,7 @@ fn make_player(rng: &mut ChaCha12Rng, id: String, position: Position, rating: u8
         first_touch: 0,
         heading: 0,
         height_cm: rng.random_range(168..=196),
+        footedness: Default::default(),
         traits: Vec::new(),
         role: PlayerRole::Standard,
         position_ratings: Vec::new(),
@@ -442,6 +449,10 @@ fn make_squad(
 // ---------------------------------------------------------------------------
 
 fn play(fixture: &Fixture) -> MatchReport {
+    play_on(fixture, EngineModel::Zones5)
+}
+
+fn play_on(fixture: &Fixture, engine_model: EngineModel) -> MatchReport {
     // Teams and the match draw from separate streams, so a change in how teams
     // are built cannot hide inside a change in how the match is played.
     let mut team_rng = ChaCha12Rng::seed_from_u64(fixture.seed ^ 0x7EA4_5EED);
@@ -453,7 +464,10 @@ fn play(fixture: &Fixture) -> MatchReport {
     let mut state = LiveMatchState::new(
         home,
         away,
-        MatchConfig::default(),
+        MatchConfig {
+            engine_model,
+            ..MatchConfig::default()
+        },
         home_bench,
         away_bench,
         false,
@@ -528,6 +542,47 @@ fn fingerprint(report: &MatchReport) -> u64 {
     })
 }
 
+fn played_on(engine_model: EngineModel) -> Vec<(&'static str, u8, u8, u64)> {
+    FIXTURES
+        .iter()
+        .map(|f| {
+            let r = play_on(f, engine_model);
+            (f.name, r.home_goals, r.away_goals, fingerprint(&r))
+        })
+        .collect()
+}
+
+const GOLDEN_GRID15_FILE: &str = "tests/golden_grid15.txt";
+
+/// `golden_grid15.txt`: one fixture a line, `name home away fingerprint`.
+fn golden_grid15() -> Vec<(String, u8, u8, u64)> {
+    include_str!("golden_grid15.txt")
+        .lines()
+        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
+        .map(|line| {
+            let fields: Vec<&str> = line.split_whitespace().collect();
+            let fingerprint = u64::from_str_radix(fields[3].trim_start_matches("0x"), 16)
+                .expect("a hex fingerprint");
+            (
+                fields[0].to_string(),
+                fields[1].parse().expect("home goals"),
+                fields[2].parse().expect("away goals"),
+                fingerprint,
+            )
+        })
+        .collect()
+}
+
+fn grid15_file(actual: &[(&str, u8, u8, u64)]) -> String {
+    let rows: String = actual
+        .iter()
+        .map(|(name, h, a, fp)| format!("{name} {h} {a} 0x{fp:016X}\n"))
+        .collect();
+    format!(
+        "# Golden fixtures under EngineModel::Grid15 (phase 2, GĐ3). See golden_tests.rs.\n{rows}"
+    )
+}
+
 fn regenerated_table(actual: &[(&str, u8, u8, u64)]) -> String {
     let rows: String = actual
         .iter()
@@ -545,13 +600,7 @@ fn regenerated_table(actual: &[(&str, u8, u8, u64)]) -> String {
 /// then its score and event fingerprint match the pinned table.
 #[test]
 fn golden_fixtures_play_exactly_as_pinned() {
-    let actual: Vec<(&str, u8, u8, u64)> = FIXTURES
-        .iter()
-        .map(|f| {
-            let r = play(f);
-            (f.name, r.home_goals, r.away_goals, fingerprint(&r))
-        })
-        .collect();
+    let actual = played_on(EngineModel::Zones5);
     let mismatched: Vec<&str> = actual
         .iter()
         .zip(GOLDEN.iter())
@@ -563,6 +612,47 @@ fn golden_fixtures_play_exactly_as_pinned() {
         "golden fixtures changed: {mismatched:?}\n\
          If the change is intended, replace GOLDEN with:\n{}",
         regenerated_table(&actual)
+    );
+}
+
+/// Given the twenty golden fixtures,
+/// when each is played on its seed under `Grid15`,
+/// then its score and event fingerprint match `golden_grid15.txt`.
+/// `OFM_BLESS_GOLDEN_GRID15=1` rewrites the file instead.
+#[test]
+fn golden_fixtures_play_exactly_as_pinned_on_grid15() {
+    let actual = played_on(EngineModel::Grid15);
+    if std::env::var_os("OFM_BLESS_GOLDEN_GRID15").is_some() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(GOLDEN_GRID15_FILE);
+        std::fs::write(&path, grid15_file(&actual)).expect("write golden_grid15.txt");
+        return;
+    }
+    let pinned = golden_grid15();
+    let names: Vec<&str> = pinned.iter().map(|g| g.0.as_str()).collect();
+    let fixtures: Vec<&str> = FIXTURES.iter().map(|f| f.name).collect();
+    assert_eq!(names, fixtures, "golden_grid15.txt lists other fixtures");
+    let mismatched: Vec<&str> = actual
+        .iter()
+        .zip(pinned.iter())
+        .filter(|(a, g)| (a.1, a.2, a.3) != (g.1, g.2, g.3))
+        .map(|(a, _)| a.0)
+        .collect();
+    assert!(
+        mismatched.is_empty(),
+        "Grid15 golden fixtures changed: {mismatched:?}\n\
+         If the change is intended, bless with OFM_BLESS_GOLDEN_GRID15=1."
+    );
+}
+
+/// Given the twenty golden fixtures,
+/// when each is played under `Grid15`,
+/// then it plays exactly as under `Zones5`: until P3.1 the flag changes
+/// nothing (phase 2, P3.0). Goes when `Grid15` starts to draw (P3.3).
+#[test]
+fn grid15_is_zones5_until_p3_1() {
+    assert_eq!(
+        played_on(EngineModel::Grid15),
+        played_on(EngineModel::Zones5)
     );
 }
 

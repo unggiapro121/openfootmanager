@@ -777,6 +777,11 @@ fn to_engine_player(
         first_touch: p.attributes.first_touch,
         heading: p.attributes.heading,
         height_cm: p.height_cm,
+        footedness: match p.footedness {
+            domain::player::Footedness::Left => engine::Foot::Left,
+            domain::player::Footedness::Right => engine::Foot::Right,
+            domain::player::Footedness::Both => engine::Foot::Both,
+        },
         // Live-match snapshots reach the client, and Wonderkid would give the
         // ceiling away; the engine has no use for it.
         traits: p

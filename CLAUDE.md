@@ -166,7 +166,8 @@ frontend files 500).
 
 ### Layering and dependency direction
 - Rust crate graph, all dependency kinds: `engine: []`, `domain: []`, `ofm_core: [domain, engine]`,
-  `db: [domain, ofm_core]`, `ofm-cli: [ofm_core]`, `sim-bench: [engine]`, root app composes all.
+  `db: [domain, ofm_core]`, `ofm-cli: [ofm_core]`, `sim-bench: [engine]` (dev-only `domain`, `ofm_core`:
+  the builder's tests rate synthetic players with the game's own OVR tables), root app composes all.
   New workspace member must be classified. test for leaf isolation today
   (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
 - `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only under

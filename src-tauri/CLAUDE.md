@@ -18,7 +18,7 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
   domain           pure data types           → nothing in this workspace
 
   ofm-cli          standalone CLI binary     → ofm_core
-  sim-bench        balance benchmark harness → engine
+  sim-bench        balance benchmark harness → engine (dev-only: domain, ofm_core)
 ```
 
 - **`domain`** — data, constructors, `Default`, and pure value semantics. Outcome-deciding game

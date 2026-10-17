@@ -1,3 +1,4 @@
+mod balance;
 mod builder;
 mod guardrails;
 mod html;
@@ -117,6 +118,21 @@ struct Cli {
     #[arg(long, value_enum, default_value_t = guardrails::Stage::LanCan)]
     stage: guardrails::Stage,
 
+    /// The match model every mode plays (phase 2, GĐ3, X47).
+    #[arg(long, value_enum, default_value_t = ModelArg::Zones5)]
+    engine_model: ModelArg,
+
+    /// Each squad of the rating-gap sweep and the guardrails draws its formation
+    /// from the nine; with --guardrails the formation-balance table (each
+    /// formation against 4-4-2, 4,000 matches) is played and judged too.
+    #[arg(long)]
+    formation_mix: bool,
+
+    /// Play only the formation-balance table: each formation against 4-4-2 at
+    /// gap 0, `--games` matches a formation (default 1,000; the gate uses 4,000).
+    #[arg(long)]
+    formation_balance: bool,
+
     // ── MatchConfig overrides ────────────────────────────────────────────────
     #[arg(long, help = "Home advantage multiplier (default 1.08)")]
     home_advantage: Option<f64>,
@@ -141,6 +157,21 @@ struct Cli {
 
     #[arg(long, help = "Injury probability per foul (default 0.03)")]
     injury_probability: Option<f64>,
+}
+
+#[derive(Clone, Copy, ValueEnum, Debug)]
+enum ModelArg {
+    Zones5,
+    Grid15,
+}
+
+impl ModelArg {
+    fn to_engine_model(self) -> engine::EngineModel {
+        match self {
+            ModelArg::Zones5 => engine::EngineModel::Zones5,
+            ModelArg::Grid15 => engine::EngineModel::Grid15,
+        }
+    }
 }
 
 #[derive(Clone, Copy, ValueEnum, Debug)]
@@ -181,7 +212,11 @@ impl StyleArg {
 fn main() {
     let cli = Cli::parse();
 
-    let mut config = MatchConfig::default();
+    let mut config = MatchConfig {
+        engine_model: cli.engine_model.to_engine_model(),
+        ..MatchConfig::default()
+    };
+    eprintln!("engine model: {:?}", config.engine_model);
     if let Some(v) = cli.home_advantage {
         config.home_advantage = v;
     }
@@ -219,6 +254,12 @@ fn main() {
 
     if cli.guardrails {
         run_guardrails(&config, &cli);
+        return;
+    }
+
+    if cli.formation_balance {
+        let rows = balance::run(&config, cli.seed.unwrap_or(42), cli.games);
+        balance::print_table(&rows);
         return;
     }
 
@@ -328,6 +369,7 @@ fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
         games_per_gap: cli.games,
         managed: cli.managed,
         formation: &cli.home_formation,
+        formation_mix: cli.formation_mix,
         seed: cli.seed.unwrap_or(42),
     };
     let result = sweep::run(config, &spec);
@@ -338,8 +380,11 @@ fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
 /// as JSON when given, and a FAIL sets the exit code so a script can gate on it.
 fn run_guardrails(config: &MatchConfig, cli: &Cli) {
     let seed = cli.seed.unwrap_or(42);
-    let (result, checks) = guardrails::run(config, cli.stage, seed);
-    sweep::print_table(&result, &guardrails::spec(seed));
+    let (result, balance, checks) = guardrails::run(config, cli.stage, seed, cli.formation_mix);
+    sweep::print_table(&result, &guardrails::spec(seed, cli.formation_mix));
+    if let Some(rows) = &balance {
+        balance::print_table(rows);
+    }
     guardrails::print_checks(&checks, cli.stage);
     if let Some(ref out_path) = cli.out {
         let json = serde_json::to_string_pretty(&checks).expect("JSON serialization failed");

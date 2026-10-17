@@ -15,10 +15,16 @@ use engine::{
     TeamData,
 };
 use rand::rngs::StdRng;
-use rand::{Rng, SeedableRng};
+use rand::{Rng, RngExt, SeedableRng};
 
 use crate::builder::{build_bench, build_team, mirror};
 use crate::stats::BenchStats;
+
+/// The nine formations a side can line up in: the eight the game has always
+/// had and 3-4-2-1 (phase 2, P2.7). `--formation-mix` draws from them.
+pub const FORMATIONS: [&str; 9] = [
+    "4-4-2", "4-3-3", "3-5-2", "4-5-1", "4-2-3-1", "3-4-3", "5-3-2", "4-1-4-1", "3-4-2-1",
+];
 
 /// How much weaker each bench player is than the XI.
 const BENCH_PENALTY: u8 = 8;
@@ -39,6 +45,10 @@ pub struct SweepSpec<'a> {
     /// fixture in the game is played. Without it the XIs play ninety minutes alone.
     pub managed: bool,
     pub formation: &'a str,
+    /// Each squad draws its formation from [`FORMATIONS`] instead of playing
+    /// `formation` (phase 2, GĐ3, X60). A squad and its mirror at gap 0 still
+    /// share one.
+    pub formation_mix: bool,
     pub seed: u64,
 }
 
@@ -160,12 +170,20 @@ fn draw_pair(
     gap: u8,
     rng: &mut StdRng,
 ) -> Pair {
+    let formation = |rng: &mut StdRng| {
+        if spec.formation_mix {
+            FORMATIONS[rng.random_range(0..FORMATIONS.len())]
+        } else {
+            spec.formation
+        }
+    };
+    let strong_formation = formation(rng);
     let strong = build_team(
         "strong",
         "Strong FC",
         strong_rating,
         PlayStyle::Balanced,
-        spec.formation,
+        strong_formation,
         rng,
     );
     let strong_bench = build_bench("strong", strong_rating, BENCH_PENALTY, rng);
@@ -188,12 +206,13 @@ fn draw_pair(
             weak_bench,
         };
     }
+    let weak_formation = formation(rng);
     let weak = build_team(
         "weak",
         "Weak FC",
         weak_rating,
         PlayStyle::Balanced,
-        spec.formation,
+        weak_formation,
         rng,
     );
     let weak_bench = build_bench("weak", weak_rating, BENCH_PENALTY, rng);
@@ -290,7 +309,7 @@ fn tally(row: &mut GapRow, report: &MatchReport, strong_home: bool) {
 /// Print the sweep table.
 pub fn print_table(result: &SweepResult, spec: &SweepSpec<'_>) {
     println!(
-        "Rating-gap sweep · {} pairs × {} games per gap · centre OVR {} · {}",
+        "Rating-gap sweep · {} pairs × {} games per gap · centre OVR {} · {} · {}",
         spec.pairs,
         (spec.games_per_gap / spec.pairs.max(1)).max(2),
         spec.centre,
@@ -298,6 +317,11 @@ pub fn print_table(result: &SweepResult, spec: &SweepSpec<'_>) {
             "benches + AI managers"
         } else {
             "headless XIs"
+        },
+        if spec.formation_mix {
+            "formations drawn from all nine".to_string()
+        } else {
+            spec.formation.to_string()
         }
     );
     println!("  gap  strong  weak   win%  ±se   draw%  loss%  goals/game");
@@ -333,6 +357,7 @@ mod tests {
             games_per_gap: 40,
             managed,
             formation: "4-4-2",
+            formation_mix: false,
             seed: 7,
         }
     }
@@ -370,6 +395,25 @@ mod tests {
             assert_ne!(a.id, b.id);
             assert_eq!(a.passing, b.passing);
         }
+    }
+
+    /// Given a sweep with the formation mix,
+    /// when pairs are drawn,
+    /// then sides line up in several of the nine formations, and a squad and
+    /// its gap-0 mirror always share one.
+    #[test]
+    fn the_formation_mix_draws_from_all_nine() {
+        let mut s = spec(vec![0, 10], false);
+        s.formation_mix = true;
+        let mut seen = std::collections::HashSet::new();
+        for seed in 0..60 {
+            let mirror = draw_pair(&s, 70, 70, 0, &mut StdRng::seed_from_u64(seed));
+            assert_eq!(mirror.strong.formation, mirror.weak.formation);
+            let pair = draw_pair(&s, 75, 65, 10, &mut StdRng::seed_from_u64(seed));
+            seen.insert(pair.strong.formation);
+            seen.insert(pair.weak.formation);
+        }
+        assert_eq!(seen.len(), FORMATIONS.len());
     }
 
     /// Given a managed sweep,

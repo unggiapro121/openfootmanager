@@ -1,9 +1,9 @@
 use rand::{Rng, RngExt};
 
 use crate::types::{
-    BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle, MatchConfig,
-    PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side, TacticsBuildUpStyle,
-    TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
+    BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, Foot, MarkingStyle,
+    MatchConfig, PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side,
+    TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
 };
 
 // ---------------------------------------------------------------------------
@@ -43,6 +43,8 @@ pub(crate) struct PlayerSnap {
     /// Shooting from outside the box (phase 2, P2.5).
     pub long_shots: u8,
     pub height_cm: u16,
+    /// His stronger foot (phase 2, P3.0); read by the wing play of P3.4.
+    pub footedness: Foot,
     pub traits: Vec<String>,
     pub role: PlayerRole,
 }
@@ -83,6 +85,7 @@ impl PlayerSnap {
             free_kick: 0,
             long_shots: 0,
             height_cm: 0,
+            footedness: Foot::Right,
             traits: Vec::new(),
             role: PlayerRole::Standard,
         }
@@ -116,6 +119,7 @@ impl PlayerSnap {
             free_kick: p.free_kick,
             long_shots: p.long_shots,
             height_cm: p.height_cm,
+            footedness: p.footedness,
             traits: p.traits.clone(),
             role: p.role,
         }
