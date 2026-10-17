@@ -46,6 +46,12 @@ pub(crate) const GAMMA_MIDFIELD: f64 = 1.0;
 /// do in real football, where they had won 48%. Measured on the lan-can sweep
 /// (`ofm-sim-bench --guardrails`): 57.5–57.8% over four seeds.
 pub(crate) const ANCHOR_AERIAL: f64 = 0.64;
+/// The open-play cross's aerial anchor under `Grid15` (phase 2, P3.5).
+/// `Grid15` sends the attacker best placed to meet the cross (ω × aerial
+/// rating) against a centre back instead of any defender, which tilts the
+/// duel towards the defence; this holds the defenders' share where it was.
+/// Corners keep `ANCHOR_AERIAL`: their picks did not change.
+pub(crate) const ANCHOR_AERIAL_CROSS_GRID: f64 = 0.80;
 pub(crate) const ANCHOR_ONE_V_ONE: f64 = 1.14;
 /// The one-on-one's anchor under `Grid15` (phase 2, P3.2, X49): the
 /// attacker wins as often on average as under `Zones5` (56.9% against 56.4%
@@ -160,6 +166,15 @@ pub(crate) fn midfield_ratings(att: &PlayerSnap, def: &PlayerSnap) -> (f64, f64)
 
 /// The aerial duel after a cross.
 pub(crate) fn aerial_win_probability(att: &PlayerSnap, def: &PlayerSnap) -> f64 {
+    aerial_win_probability_anchored(att, def, ANCHOR_AERIAL)
+}
+
+/// [`aerial_win_probability`] at another anchor: `Grid15`'s open-play cross.
+pub(crate) fn aerial_win_probability_anchored(
+    att: &PlayerSnap,
+    def: &PlayerSnap,
+    anchor: f64,
+) -> f64 {
     duel_probability(
         &[DuelTerm {
             gamma: GAMMA_AERIAL,
@@ -167,7 +182,7 @@ pub(crate) fn aerial_win_probability(att: &PlayerSnap, def: &PlayerSnap) -> f64 
             defender: aerial_rating(def),
         }],
         1.0,
-        ANCHOR_AERIAL,
+        anchor,
     )
 }
 
