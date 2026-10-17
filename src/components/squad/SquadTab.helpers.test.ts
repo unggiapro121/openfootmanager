@@ -738,6 +738,20 @@ describe("SquadTab helpers", () => {
     ]);
   });
 
+  // Given 4-1-4-1 (phase 2, GĐ3, X51), then the four in front of the holding
+  // midfielder are a flat midfield with a wide man on each flank, as the
+  // Rust layouts have them, not four attacking midfielders.
+  it("lines 4-1-4-1 up with a wide midfielder on each flank", () => {
+    const rows = buildPitchRows("4-1-4-1");
+    expect(rows.map((row) => row.label)).toEqual(["GK", "DEF", "DM", "MID", "FWD"]);
+    expect(rows[3].positions).toEqual([
+      "LeftMidfielder",
+      "CentralMidfielder",
+      "CentralMidfielder",
+      "RightMidfielder",
+    ]);
+  });
+
   it("summarises role coverage for the active shape", () => {
     const players = [
       makePlayer("gk", "Goalkeeper"),

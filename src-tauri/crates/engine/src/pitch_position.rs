@@ -118,7 +118,14 @@ pub fn formation_slots(formation: &str) -> Vec<PitchPosition> {
             } else {
                 slots.extend(deep_midfield_line(*deep));
             }
-            slots.extend(attacking_midfield_line(*attacking));
+            // 4-1-4-1: one holding midfielder behind a flat four with a wide
+            // man on each flank, not four attacking midfielders (phase 2,
+            // GĐ3, X51). The same layout as `ofm_core::player_rating`'s.
+            if *deep == 1 && *attacking == 4 {
+                slots.extend(midfield_line(4));
+            } else {
+                slots.extend(attacking_midfield_line(*attacking));
+            }
             slots.extend(forward_line(*forwards));
         }
         _ => return formation_slots("4-4-2"),

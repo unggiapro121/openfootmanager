@@ -127,7 +127,14 @@ fn formation_slot_rows(formation: &str) -> Vec<Vec<Position>> {
             } else {
                 deep_midfield_line(*deep_midfielders)
             },
-            attacking_midfield_line(*attacking_midfielders),
+            // 4-1-4-1: a flat four with a wide man on each flank in front of
+            // the holding midfielder, not four attacking midfielders (phase 2,
+            // GĐ3, X51).
+            if *deep_midfielders == 1 && *attacking_midfielders == 4 {
+                midfield_line(4)
+            } else {
+                attacking_midfield_line(*attacking_midfielders)
+            },
             forward_line(*forwards),
         ],
         _ => formation_slot_rows("4-4-2"),
@@ -1327,14 +1334,14 @@ mod tests {
         );
         // 1 deep midfielder
         assert_eq!(slots[5], Position::DefensiveMidfielder);
-        // 4 attacking midfielders (attacking_midfield_line wildcard arm: all AM)
+        // a flat four with a wide man on each flank (phase 2, GĐ3, X51)
         assert_eq!(
             &slots[6..10],
             &[
-                Position::AttackingMidfielder,
-                Position::AttackingMidfielder,
-                Position::AttackingMidfielder,
-                Position::AttackingMidfielder,
+                Position::LeftMidfielder,
+                Position::CentralMidfielder,
+                Position::CentralMidfielder,
+                Position::RightMidfielder,
             ]
         );
         // 1 forward
