@@ -240,26 +240,26 @@ const FIXTURES: [Fixture; 20] = [
 
 /// (fixture name, home goals, away goals, event fingerprint), in `FIXTURES` order.
 const GOLDEN: [(&str, u8, u8, u64); 20] = [
-    ("even_442", 6, 1, 0x7A57049B5C77FB50),
-    ("even_433", 1, 0, 0x1313E007A8AEF83A),
-    ("gap_5", 0, 1, 0xB429048C9F26AB67),
-    ("gap_10", 4, 0, 0x853BF173CE089E59),
-    ("gap_20_away_strong", 1, 3, 0x4CC2A588B876B764),
-    ("three_at_back", 1, 2, 0xBC8F828475917BAA),
-    ("one_four_one", 2, 1, 0xF173A2A721C1D072),
-    ("press_vs_block", 1, 0, 0x761A85B94C412819),
-    ("direct_wide", 1, 3, 0xD5AA3B1B83621CD9),
-    ("specialists_433", 1, 1, 0xA864F7BCBEBDC5D6),
-    ("low_league", 2, 0, 0x29C1B13F2080B7C6),
-    ("elite", 3, 1, 0xFA4C8EDC12B8BB13),
-    ("managed_even", 1, 2, 0x3C25FBC29014E716),
-    ("managed_gap_10", 4, 0, 0x1084326904DC8EB2),
-    ("managed_specialists", 2, 2, 0x364F3CF4CFC2FA4B),
-    ("managed_press", 3, 1, 0x7F4C6C726FAD6BA8),
-    ("managed_block", 0, 2, 0x6D0ECE664491234A),
-    ("managed_three_back", 0, 1, 0xD2B874F526008DC7),
-    ("managed_low_league", 5, 1, 0xD50148131B32A95D),
-    ("managed_elite", 0, 0, 0xEABFAFD7FE0778EE),
+    ("even_442", 6, 1, 0xF2F94F0B5AA10D90),
+    ("even_433", 1, 0, 0x4566260E86B94D68),
+    ("gap_5", 0, 1, 0xB1DCFBB996B2B065),
+    ("gap_10", 4, 0, 0xFCB0A56C35C0C451),
+    ("gap_20_away_strong", 1, 3, 0xB1E3AE754017406C),
+    ("three_at_back", 1, 2, 0x2F746949C0B9617C),
+    ("one_four_one", 2, 1, 0xF64EB70F9B4C2D3E),
+    ("press_vs_block", 1, 0, 0xB8396BF5C347708C),
+    ("direct_wide", 1, 3, 0x7608A0A2AA3A3A88),
+    ("specialists_433", 1, 1, 0x2B0E31F42941ADC4),
+    ("low_league", 2, 0, 0x7B03325D592226A2),
+    ("elite", 3, 1, 0x49433E8F1B64C097),
+    ("managed_even", 1, 2, 0x26AB9BC7552AC366),
+    ("managed_gap_10", 4, 0, 0x3B97EE4F5C6ABD34),
+    ("managed_specialists", 2, 1, 0xEB556C1F772458DB),
+    ("managed_press", 3, 1, 0x327440775B0B9299),
+    ("managed_block", 0, 2, 0xD7A4568FFBD5EFE6),
+    ("managed_three_back", 0, 1, 0xFF4AC01915D078BD),
+    ("managed_low_league", 5, 1, 0x53093FD571D8FA05),
+    ("managed_elite", 1, 0, 0xC3BE97D41F9E0256),
 ];
 
 // ---------------------------------------------------------------------------
@@ -506,7 +506,7 @@ fn fnv1a(hash: u64, bytes: &[u8]) -> u64 {
 /// to the match.
 fn event_line(e: &MatchEvent) -> String {
     format!(
-        "{}|{:?}|{:?}|{:?}|{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}\n",
+        "{}|{:?}|{:?}|{:?}|{}|{}|{:?}|{:?}|{:?}|{:?}|{:?}|{:?}\n",
         e.minute,
         e.event_type,
         e.side,
@@ -518,6 +518,7 @@ fn event_line(e: &MatchEvent) -> String {
         e.set_piece,
         e.goal_source,
         e.lane,
+        e.tactical_context,
     )
 }
 

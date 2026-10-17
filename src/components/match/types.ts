@@ -29,6 +29,8 @@ export type GoalSource =
   | "LongShot";
 /** A third of the pitch's width, seen from the acting side's attack. */
 export type Lane = "Left" | "Centre" | "Right";
+/** What the event type alone cannot say (phase 2, P2.6). */
+export type TacticalContext = "Counter" | "SweeperKeeperInterception" | "KeeperOffHisLine";
 
 export interface MatchEvent {
   minute: number;
@@ -43,6 +45,7 @@ export interface MatchEvent {
   set_piece?: SetPiece | null;
   goal_source?: GoalSource | null;
   lane?: Lane | null;
+  tactical_context?: TacticalContext | null;
 }
 
 export interface EnginePlayerData {

@@ -239,6 +239,63 @@ pub(crate) fn role_for_position(
     best
 }
 
+/// How well `player` fits `role`: the mean of the role's profile.
+fn role_fit(player: &Player, role: &PlayerRole) -> f64 {
+    let attributes = blended_attributes(player);
+    mean_u8(
+        role_profile(role)
+            .iter()
+            .map(|attribute| attribute(&attributes)),
+    )
+}
+
+/// Whether `player` earns `role` at centre-back on his own profile, by the
+/// same margin [`role_for_position`] asks of him.
+fn earns_at_centre_back(player: &Player, role: &PlayerRole) -> bool {
+    let candidates = Position::CenterBack.valid_roles().len().saturating_sub(1);
+    role_fit(player, role) > player_baseline(player) + specialist_margin(candidates)
+}
+
+/// For an AI club's starting centre-backs and their roles: the change that
+/// keeps two of one kind apart, as `(index, role he plays instead)`, or `None`
+/// when no two share Stopper or Cover CB without the other beside them.
+///
+/// Two Stoppers both step out and leave the space behind them; two Cover CBs
+/// both drop and leave the edge of the box; the match engine makes either
+/// pair pay for it (phase 2, P2.6, decision X42). Roles are chosen player by
+/// player, so a club can end up with either. The one weaker at the shared
+/// role switches to the other if he earns it, else plays as a plain
+/// centre-back. Call again until `None`: with three of a kind one change may
+/// not be enough.
+pub(crate) fn split_matching_centre_backs(
+    centre_backs: &[(&Player, PlayerRole)],
+) -> Option<(usize, PlayerRole)> {
+    let holding = |role: PlayerRole| -> Vec<usize> {
+        centre_backs
+            .iter()
+            .enumerate()
+            .filter(|(_, (_, held))| *held == role)
+            .map(|(index, _)| index)
+            .collect()
+    };
+    let (stoppers, covers) = (holding(PlayerRole::Stopper), holding(PlayerRole::CoverCB));
+    let (shared, shared_role, other) = match (stoppers.len(), covers.len()) {
+        (2.., 0) => (stoppers, PlayerRole::Stopper, PlayerRole::CoverCB),
+        (0, 2..) => (covers, PlayerRole::CoverCB, PlayerRole::Stopper),
+        _ => return None,
+    };
+    let weaker = shared.into_iter().min_by(|&a, &b| {
+        role_fit(centre_backs[a].0, &shared_role)
+            .total_cmp(&role_fit(centre_backs[b].0, &shared_role))
+    })?;
+    let instead = if earns_at_centre_back(centre_backs[weaker].0, &other) {
+        other
+    } else {
+        PlayerRole::Standard
+    };
+    Some((weaker, instead))
+}
+
 /// Give every player in the squad the job his attributes and his club's style
 /// argue for, replacing whatever was there.
 ///
@@ -308,6 +365,65 @@ mod tests {
             position,
             attributes,
         )
+    }
+
+    fn centre_back(id: &str, stopper: u8, cover: u8) -> Player {
+        let mut attributes = flat_attrs(60);
+        attributes.tackling = stopper;
+        attributes.aggression = stopper;
+        attributes.strength = stopper;
+        attributes.pace = cover;
+        attributes.positioning = cover;
+        attributes.decisions = cover;
+        player(id, Position::CenterBack, attributes)
+    }
+
+    /// Given two Stoppers at centre-back, the second of them also quick and a
+    /// good reader of the game,
+    /// when the AI keeps them apart,
+    /// then the weaker Stopper becomes the Cover CB beside the other.
+    #[test]
+    fn of_two_stoppers_the_weaker_covers_if_he_can() {
+        let (strong, rounded) = (centre_back("a", 90, 55), centre_back("b", 80, 88));
+        let pair = [
+            (&strong, PlayerRole::Stopper),
+            (&rounded, PlayerRole::Stopper),
+        ];
+        assert_eq!(
+            split_matching_centre_backs(&pair),
+            Some((1, PlayerRole::CoverCB))
+        );
+    }
+
+    /// Given two Stoppers, the weaker no reader of the game, and then two Cover
+    /// CBs, and then a Stopper beside a Cover CB,
+    /// when the AI keeps them apart,
+    /// then the weaker Stopper plays as a plain centre-back, the weaker Cover
+    /// CB as a Stopper if he earns it, and the mixed pair is left alone.
+    #[test]
+    fn a_pair_of_one_kind_is_split_and_a_mixed_pair_left_alone() {
+        let (strong, plain) = (centre_back("a", 90, 55), centre_back("b", 80, 55));
+        let stoppers = [
+            (&strong, PlayerRole::Stopper),
+            (&plain, PlayerRole::Stopper),
+        ];
+        assert_eq!(
+            split_matching_centre_backs(&stoppers),
+            Some((1, PlayerRole::Standard))
+        );
+
+        let (reader, hard) = (centre_back("c", 55, 90), centre_back("d", 88, 80));
+        let covers = [(&reader, PlayerRole::CoverCB), (&hard, PlayerRole::CoverCB)];
+        assert_eq!(
+            split_matching_centre_backs(&covers),
+            Some((1, PlayerRole::Stopper))
+        );
+
+        let mixed = [
+            (&strong, PlayerRole::Stopper),
+            (&reader, PlayerRole::CoverCB),
+        ];
+        assert_eq!(split_matching_centre_backs(&mixed), None);
     }
 
     /// Given the two roles that arrive with phase 2,

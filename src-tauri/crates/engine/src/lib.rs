@@ -24,7 +24,7 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
     }
 }
 
-pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind};
+pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind, TacticalContext};
 pub use headless::{simulate, simulate_with_rng};
 pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,

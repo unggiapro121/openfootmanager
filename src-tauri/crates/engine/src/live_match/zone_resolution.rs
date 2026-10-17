@@ -39,8 +39,13 @@ impl LiveMatchState {
         let att_side = self.possession;
         let def_side = att_side.opposite();
         let zone = self.ball_zone;
+        // A break carries into the next action only if the side that broke
+        // still has the ball in its attacking third, or has carried it on
+        // into the box.
+        self.active_break = self.on_the_break.take() == Some(att_side)
+            && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side));
 
-        if zone.is_box_for(att_side) {
+        let events = if zone.is_box_for(att_side) {
             self.resolve_shot(minute, att_side, rng)
         } else if zone == Zone::attacking_third(att_side) {
             self.resolve_attacking_third(minute, att_side, def_side, rng)
@@ -48,7 +53,9 @@ impl LiveMatchState {
             self.resolve_midfield(minute, att_side, def_side, rng)
         } else {
             self.resolve_buildup(minute, att_side, def_side, rng)
-        }
+        };
+        self.active_break = false;
+        events
     }
 
     fn resolve_buildup<R: Rng>(
@@ -202,6 +209,7 @@ impl LiveMatchState {
             * def_mod
             * crate::shared::home_mod(def_side, &self.config)
             * self.line_strength(def_side, Position::Defender)
+            * self.centre_back_pair_factor(def_side, self.active_break)
             * tactics_shape_modifier(&self.team_ref(def_side).tactics)
             * tactics_width_versus_shape(
                 &self.team_ref(att_side).tactics,
@@ -215,6 +223,14 @@ impl LiveMatchState {
             let evt = MatchEvent::new(minute, EventType::Dribble, att_side, zone)
                 .with_player(&attacker.id);
             self.emit(&mut events, evt);
+            // Through on the break: a sweeper keeper comes for it first.
+            if self.active_break
+                && let Some(sweeper_events) =
+                    self.try_sweeper_keeper(minute, att_side, &attacker, rng)
+            {
+                events.extend(sweeper_events);
+                return events;
+            }
             if rng.random_range(0.0..1.0f64) < cross_prob {
                 let winger_id = attacker.id.clone();
                 // Pick who the cross is aimed at before announcing it, so the
@@ -249,6 +265,11 @@ impl LiveMatchState {
                 }
             } else {
                 self.ball_zone = Zone::attacking_box(att_side);
+                // Through on goal on the break: the shot that follows is
+                // still part of it.
+                if self.active_break {
+                    self.on_the_break = Some(att_side);
+                }
             }
         } else {
             let is_tackle = rng.random_range(0.0..1.0f64) < 0.5;

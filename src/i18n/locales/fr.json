@@ -930,7 +930,11 @@
       "good": "Bon match",
       "risky": "Adaptation risquée"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Deux stoppeurs en défense centrale : les deux sortent, et l'espace dans leur dos est ouvert en contre.",
+      "covers": "Deux défenseurs de couverture : les deux reculent, et l'entrée de la surface reste libre."
+    }
   },
   "training": {
     "weeklySchedule": "Calendrier Hebdomadaire",

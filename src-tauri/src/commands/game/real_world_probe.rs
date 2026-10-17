@@ -305,6 +305,8 @@ struct MatchShares {
     direct_free_kick_goals: u64,
     long_shots: u64,
     long_shot_goals: u64,
+    counter_one_v_ones_won: u64,
+    counter_goals: u64,
 }
 
 impl MatchShares {
@@ -363,6 +365,15 @@ impl MatchShares {
             .iter()
             .filter(|goal| goal.goal_source == engine::GoalSource::LongShot)
             .count() as u64;
+        for event in &report.events {
+            if event.tactical_context == Some(engine::TacticalContext::Counter) {
+                match event.event_type {
+                    engine::EventType::Dribble => self.counter_one_v_ones_won += 1,
+                    engine::EventType::Goal => self.counter_goals += 1,
+                    _ => {}
+                }
+            }
+        }
         let tally = engine::EventTally::of(&report.events);
         self.aerial_won += tally.aerial_won;
         self.aerial_lost += tally.aerial_lost;
@@ -453,6 +464,11 @@ fn real_world_match_probe() {
         MatchShares::pct(shares.long_shots, shares.shots),
         MatchShares::pct(shares.long_shot_goals, shares.long_shots),
         MatchShares::pct(shares.long_shot_goals, u64::from(shares.goals))
+    );
+    println!(
+        "  one-on-ones won on the break/game {:.2} · g (goals per one) {:.3}",
+        shares.per_match(shares.counter_one_v_ones_won),
+        shares.counter_goals as f64 / shares.counter_one_v_ones_won.max(1) as f64
     );
     println!(
         "  direct free kicks/game {:.2} · scored {:.1}% · {:.1}% of goals",

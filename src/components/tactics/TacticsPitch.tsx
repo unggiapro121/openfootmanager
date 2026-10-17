@@ -17,7 +17,7 @@ import type { TacticsPitchSlot } from "./TacticsTab.helpers";
 import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers";
 import type { PlayerRole, PositionRating, TacticsPhaseSettings } from "../../store/types";
 import { ratingAtPosition } from "../../lib/positionRatings";
-import { getRoleOptions } from "../../lib/playerRoles";
+import { centreBackPairGap, getRoleOptions } from "../../lib/playerRoles";
 
 interface TacticsPitchProps {
   benchPlayers?: PlayerData[];
@@ -225,6 +225,10 @@ export default function TacticsPitch({
 }: TacticsPitchProps): JSX.Element {
   const { t } = useTranslation();
   const draggedPlayerId = dragState?.playerId ?? null;
+  const pairGap = centreBackPairGap(
+    pitchSlots.map((slot) => ({ position: slot.position, playerId: slot.player?.id ?? null })),
+    playerRoles ?? {},
+  );
 
   return (
     <Card className="overflow-hidden">
@@ -235,6 +239,11 @@ export default function TacticsPitch({
             {t("preMatch.startingXI")} - {formation}
           </h3>
           <p className="mt-0.5 text-xs text-gray-400">{t("tactics.pitchInteractionHint")}</p>
+          {pairGap ? (
+            <p role="status" className="mt-1 text-xs text-accent-300">
+              {t(`tactics.centreBackPair.${pairGap}`)}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Badge variant={outOfPositionCount > 0 ? "danger" : "success"} size="sm">

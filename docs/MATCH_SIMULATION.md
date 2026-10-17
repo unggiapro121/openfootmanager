@@ -125,6 +125,26 @@ and the midfielders (0.5), never the taker; the aerial duel's odds are multiplie
 Every event of a corner carries `set_piece = Corner`. A corner is worth about 3% of a goal, as in
 real football (it had been worth 5.7%).
 
+### Roles that act on their own
+
+Three roles change no duel's rating; each acts at its own moment (phase 2 P2.6, `live_match/roles.rs`):
+
+- **Sweeper keeper.** On the break (a side that broke fast, or beat a counter-press, still has the ball
+  in its attacking third or has carried it into the box), once the forward has won his one-on-one, a
+  `SweeperKeeper` comes for the ball: he wins it with `σ(2·ln(((pace + positioning + decisions)/3) /
+  forward's pace) + ln 1.05)`, else the forward shoots at the goal he has left and scores 14%. A one-on-one
+  won on the break is worth about 0.08 of a goal without him (real-world probe), so he pays his way from
+  about a 40% chance.
+- **Inverted full-back.** At the end-of-minute possession contest, the side on the ball has its
+  midfield multiplied by `1 + 0.08·Δ` for one `InvertedFB` in a full-back or wing-back slot, `1 + 0.08·max Δ +
+  0.03·min Δ` for two, with `Δ = clamp(((passing + vision)/2 − the midfielders' mean)/20, −0.25, 1)`.
+- **Centre-back pair.** Counting the `Stopper`s and `CoverCB`s in centre-back slots: one of each multiplies
+  the defender in every attacking-third one-on-one by 1.08; two Stoppers and no Cover CB by 0.85 on the
+  break; two Cover CBs and no Stopper by 0.85 otherwise. AI clubs split a same-kind pair when they pick
+  their side (`ofm_core` `split_ai_centre_back_pair`); the tactics screen warns the user.
+
+The old `InvertedFB` midfield and `SweeperKeeper` defence multipliers, which no duel ever applied, are gone.
+
 ### Shots from distance
 
 Each action in the attacking third may be a shot from distance instead of the one-on-one (phase 2
@@ -374,6 +394,7 @@ the one place every action's events pass through:
 | `set_piece` | a `Corner` or `FreeKick` event, and everything the action a corner leads to produces | `Corner` or `FreeKick` |
 | `goal_source` | `Goal`, `PenaltyGoal` | decided once, when the goal is scored (`GoalSource::of`): a penalty is a penalty, then a corner beats a header, then the rest is open play. The report, the match history (`CompactMatchEvent.goal_source`) and the UI only read it |
 | `lane` | events led by a player in the XI | `Left`, `Centre` or `Right`, from his formation slot as his side attacks. Display only; the engine does not read it |
+| `tactical_context` | events of an action on the break, and a sweeper keeper's | `Counter`, `SweeperKeeperInterception` or `KeeperOffHisLine` (P2.6) |
 
 Before protocol 2 a goal's source was inferred from the events before it, which counted a goal
 scored several actions after a free kick as a free-kick goal.

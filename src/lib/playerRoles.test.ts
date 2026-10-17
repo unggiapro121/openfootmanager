@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getRoleOptions, getRolesForPosition } from "./playerRoles";
+import { centreBackPairGap, getRoleOptions, getRolesForPosition } from "./playerRoles";
 import type { PlayerRole } from "../store/types";
 
 // Canonical position -> valid-role table. This MUST stay in lock-step with the
@@ -100,5 +100,23 @@ describe("playerRoles position->roles parity", () => {
     const options = getRoleOptions("RightBack", "Poacher");
     expect(options[0]).toBe("Poacher");
     expect(options).toContain("DefensiveFB");
+  });
+});
+
+describe("centreBackPairGap", () => {
+  const backFour = ["LeftBack", "CenterBack", "CenterBack", "RightBack"];
+  const slots = (ids: string[]) =>
+    backFour.map((position, index) => ({ position, playerId: ids[index] ?? null }));
+
+  // Given two Stoppers, or two Cover CBs, side by side at centre-back, then
+  // the pair is named; a Stopper beside a Cover CB, or a role on a full-back,
+  // names nothing (the engine's centre-back pair, phase 2 P2.6).
+  it("names a pair of one kind at centre-back and nothing else", () => {
+    const ids = ["lb", "cb1", "cb2", "rb"];
+    expect(centreBackPairGap(slots(ids), { cb1: "Stopper", cb2: "Stopper" })).toBe("stoppers");
+    expect(centreBackPairGap(slots(ids), { cb1: "CoverCB", cb2: "CoverCB" })).toBe("covers");
+    expect(centreBackPairGap(slots(ids), { cb1: "Stopper", cb2: "CoverCB" })).toBeNull();
+    expect(centreBackPairGap(slots(ids), { lb: "Stopper", cb1: "Stopper" })).toBeNull();
+    expect(centreBackPairGap(slots(ids), {})).toBeNull();
   });
 });

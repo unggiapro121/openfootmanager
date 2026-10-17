@@ -92,7 +92,22 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         direct_free_kicks(result),
         defender_aerial_win(result, stage),
         goals_per_corner(result),
+        break_value(result),
     ]
+}
+
+/// `g`, the goals a one-on-one won on the break goes on to score: what a
+/// sweeper keeper must beat to be worth his risk (phase 2, P2.6, decision
+/// X41). Measured; only sides that break fast (or beat a counter-press) play
+/// any.
+fn break_value(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    Check {
+        name: "g: bàn mỗi 1v1 thắng khi phản công",
+        value: Some(stats.goals_per_counter_one_v_one()),
+        band: format!("đo ({:.2} pha/trận)", stats.counter_one_v_ones_pg()),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// What a corner is worth, measured at every stage (phase 2, P2.3): real

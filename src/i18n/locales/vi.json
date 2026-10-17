@@ -930,7 +930,11 @@
       "adjusted": "Đã điều chỉnh",
       "risk": "Rủi ro"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Hai trung vệ dâng (Stopper): cả hai cùng dâng lên, khoảng trống sau lưng bị bỏ ngỏ khi đối phương phản công.",
+      "covers": "Hai trung vệ bọc lót (Cover CB): cả hai cùng lùi sâu, khu vực trước vòng cấm bị bỏ ngỏ."
+    }
   },
   "training": {
     "weeklySchedule": "Lịch tập hằng tuần",

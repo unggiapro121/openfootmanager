@@ -930,7 +930,11 @@
       "good": "Gute Übereinstimmung",
       "risky": "Riskante Passung"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Zwei Stopper in der Innenverteidigung: Beide rücken heraus, und der Raum hinter ihnen ist beim Konter offen.",
+      "covers": "Zwei absichernde Innenverteidiger: Beide lassen sich fallen, und die Strafraumgrenze bleibt offen."
+    }
   },
   "training": {
     "weeklySchedule": "Wochenplan",
