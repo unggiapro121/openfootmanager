@@ -10,7 +10,7 @@ The one-call entry is used by the tools: `sim-bench` (including its `--phase-swe
 
 The original OFM simulation (documented in `docs/legacy/simulation.rst`) used a detailed event model with 15 pitch zones, transition matrices, and event chains (pass → intercept → foul → free kick). That system tracked possession through a fine-grained state machine.
 
-The current implementation simplifies this to a **5-zone, action-based** model. Rather than modelling individual ball movements across 15 regions with transition matrices, the engine resolves 1–3 **actions per minute** in the current zone, with zone progression driven by action outcomes. This keeps the simulation fast (a full headless match in about 0.3 ms) while still producing realistic statistics and event feeds.
+The current implementation is an **action-based** model on a coarse grid: five zones along the pitch and, since phase 2 GĐ3, three lanes across it. Rather than modelling individual ball movements, the engine resolves 1–3 **actions per minute** in the current zone, with zone progression driven by action outcomes and the lane by a small transition matrix. Who takes part in an action depends on the lane the ball is in. This keeps the simulation fast (a full headless match in under a millisecond) while still producing realistic statistics and event feeds.
 
 ---
 
@@ -52,6 +52,25 @@ The pitch is divided into 5 logical zones, viewed from a neutral perspective:
 
 Zone progression is directional: the ball advances toward the attacking team's target box one zone at a time on successful actions, and retreats on failures.
 
+### Lanes
+
+Since phase 2 GĐ3 the ball also has a **lane**: left, centre or right, a third of the pitch's width
+each (`live_match/lane_state.rs`, `lanes.rs`). The lane is stored from the home side's attacking
+direction, like the zone, and read for a side through `lane_for(side)`: the left of the side
+attacking one way is the right of the side attacking the other, so a change of possession leaves
+the stored lane alone and nothing that hands the ball over has to flip it.
+
+The ball changes lane through the **lane matrix**. Each time a side moves the ball up a zone (a pass
+completed out of defence or through midfield), and when a defence wins it in its own third and the
+ball goes to the other end, the next lane is drawn from the current one: from the centre it stays
+with `c` or goes out to either flank; from a flank it stays with `s`, comes inside with `a`, or
+switches to the far flank with `w`. Width sets the numbers (`Normal`: c 0.15, s 0.78, a 0.10,
+w 0.12, so about 22% of the final third's play goes down the centre, as in real football;
+`Narrow` more, `Wide` less). The switch scales with the passer's `long_passing` (×0.5 at 25 or
+below, ×1.5 at 75 or above), and a flank the side has little presence on is chosen up to three times
+less often. Kick-offs, goal kicks, penalties and goals put the ball back in the centre, a corner
+goes to its flank, and any entry into the box puts it in the centre: the box is one cell.
+
 ---
 
 ## Minute-by-Minute Flow
@@ -67,9 +86,9 @@ Each simulated minute follows this sequence:
 | Current Zone | Resolution Function | Key Players | Outcome on Success | Outcome on Failure |
 |---|---|---|---|---|
 | Own defense (buildup) | `resolve_buildup` | Defenders pass | Ball → Midfield | Interception, possession flips |
-| Midfield | `resolve_midfield` | Midfielder vs Midfielder | Ball → Attacking third | Tackle/Interception, may trigger foul |
-| Attacking third | `resolve_attacking_third` | Forward vs Defender | Ball → Attacking box | Tackle/Clearance, possible corner (25%, played out at once), may trigger foul |
-| Attacking box | `resolve_shot` | Forward shoots vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
+| Midfield | `resolve_midfield` | Midfielder vs Midfielder, each by presence in the ball's lane | Ball → Attacking third | Tackle/Interception, may trigger foul |
+| Attacking third | `resolve_attacking_third` (`wing_play.rs`) | Carrier vs defender, any outfielders, by presence in the lane | Into the box, a cut inside, or a cross | Tackle/Clearance, possible corner (25%, played out at once), may trigger foul |
+| Attacking box | `resolve_shot` | Shooter by ω vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
 
 ### Duel Resolution
 
@@ -92,9 +111,61 @@ league-wide share of duels the attacker wins where it was before the formulas ch
 | One-on-one | technique: dribbling + composure vs tackling + defending + positioning; physique: pace + agility + strength on both sides (the forward's weighted to pace, the defender's to strength) | 2 and 2 |
 | Aerial (after a cross) | `0.55·aerial + 0.20·positioning + 0.25·strength`, times a height factor (±8% across ±20 cm of 182 cm; an unknown height of 0 is neutral) and ×1.08 for `AerialDominance` | 2 |
 
-The aerial anchor is the one that moved: since phase 2 (P2.2) it is 0.64, so defenders win about 58%
-of the duels after a cross, as they do in real football (they had won 48%). `ofm-sim-bench
---guardrails` gates the share at 54–62%.
+Three anchors have moved in phase 2. The aerial anchor is 0.64 at corners (P2.2), so defenders win
+about 58% of the duels after a cross, as they do in real football (they had won 48%); an open-play
+cross uses 0.80 (P3.5), because it is met by the attacker best placed for it and contested by a
+centre back. The one-on-one anchor is 0.94 (1.14 before GĐ3): picking the duel's players by lane
+puts quicker attackers against weaker tacklers on the flanks, and 0.94 keeps the attacker's average
+win rate where it was (about 57%). `ofm-sim-bench --guardrails` gates the aerial share at 54–62%.
+
+### Who takes part: presence by lane
+
+In the attacking third the carrier and the defender are drawn from **every outfielder**, not from
+one group (`live_match/presence.rs`, P3.2). Each is weighted by how present his slot is in the ball's
+lane, from the side's own view, times `0.6 + 0.4·condition/100` and a small role layer (an
+`AttackingFB` ×1.30 on his flank, an `InsideForward` ×0.85 there and +0.35 in the centre, a `False9`
+×0.75 in the centre…). A 4-4-2 attacking down its left mostly sends its left midfielder or left
+back, and meets the other side's right back. Central slots standing side by side lean apart: of two
+centre backs one is the left one, so it is the right-sided one who steps across to the right. A
+defender drawn onto a flank his slot is not on plays it at **κ = 0.82**: the flank was empty and he
+had to come over. In midfield the pick stays within the midfield group, weighted the same way by
+its own table.
+
+### Wing play
+
+`live_match/wing_play.rs` (P3.4). A one-on-one won down the centre goes into the box. On a flank the
+winner **cuts inside** with a chance set by his role and foot (an `InsideForward` or
+`InvertedWinger` on his weaker side most: `0.50 + 0.35·skill`, skill from curve + dribbling), then
+curls one from distance (his long-shot chance + 0.8 on the logit) or carries on into the box;
+otherwise he **crosses** (93%) or goes to the byline and into the box. Crosses come only from the
+flanks. A cross must first reach the contest, `clamp(0.60 + (Q − 65)/200, 0.35, 0.85)` with `Q` its
+delivery as a corner's; one that does not names nobody and is cleared. The side's `cross_style`
+decides the cross: `Mixed` (default) two in three in the air, `High` always, `Low` never, `Early` as
+`Mixed` and, 40% of the time on a flank, crossed straight away before the full back is taken on,
+15% worse, against a defence short of `positioning` by the gap behind its line (0 deep, 8% at a
+medium line, 15% high, 20% on the break). In the air it is the two-stage header; along the ground
+the man meeting it (`0.60·positioning + 0.40·first_touch`) contests a centre back
+(`0.50·positioning + 0.50·tackling`), about 40% between equals, and a won ball is a first-time shot
+at ×0.95. About 23 open-play crosses a match, as in real football.
+
+### Finishing in the box
+
+`live_match/finishing.rs` (P3.5). The man who shoots in the box is drawn from every outfielder,
+`P ∝ ω × positioning/70 × 2.0 for whoever carried the ball in`; ω is 2.0 for a striker, 1.0 for wide
+and attacking midfielders and wingers, 0.05 elsewhere, or set by role (`Poacher` 3.5 …
+`BoxToBox` 0.8). The assist goes to whoever carried the ball in. A cross is met by
+`P ∝ ω × aerial rating/70` (by positioning along the ground), never the crosser, and contested by a
+centre back. About half the shots in the box are forwards', three in ten midfielders'.
+
+### Open flanks and the break into them
+
+`live_match/flanks.rs` (P3.6). A full back who carries, crosses or cuts in down his flank — or who
+goes up when someone else does, as often as his role sends him (`DefensiveFB` 5% … `WingBack` 60%,
+more at wing-back) — leaves the flank open for two minutes. If the other side wins the ball in that
+time it goes into the open flank 6% of the time (8% breaking fast): the full back is left out of the
+defence, whoever comes across plays out of lane (κ), and the attacker has the space behind (his
+effort ×2.0), so he wins about 72% against 57% down a covered flank; won, he is straight into the
+box. Only the duel's events carry `FlankExposed`.
 
 ### Headers
 
@@ -148,18 +219,19 @@ The old `InvertedFB` midfield and `SweeperKeeper` defence multipliers, which no 
 ### Shots from distance
 
 Each action in the attacking third may be a shot from distance instead of the one-on-one (phase 2
-P2.5, `live_match/long_shot.rs`). The man who might shoot is a midfielder (55%) or the man on the
-ball, and he tries it with
+P2.5, `live_match/long_shot.rs`). The man who might shoot is a midfielder (55%, drawn by presence in
+the ball's lane) or the man on the ball, and he tries it with
 
 ```text
 logit = BASE + (a[slot] − a[ST]) + 1.35·(long_shots − μ[slot])/10 + 0.90 ShootsFromDistance + 0.25 vs Compact
+        − 1.0 from a flank
 P     = min(σ(logit), 0.45)
 ```
 
 `a` and `μ` are the position table `ShootsFromDistance` is assigned by (`ofm_core/assigned_traits.rs`,
 pinned to the engine's copy `live_match::long_shot_norm` by a test), read by his formation slot;
-`BASE = −2.30` is calibrated on the real-world probe, where 31% of shots come from outside the box,
-as in real football. The shot, rated `0.60·long_shots + 0.25·curve + 0.15·composure`, is blocked
+`BASE = −1.80` (−2.30 before GĐ3 added the flank's −1.0) is calibrated on the real-world probe,
+where about a third of shots come from outside the box, as in real football. The shot, rated `0.60·long_shots + 0.25·curve + 0.15·composure`, is blocked
 `clamp(0.31 × the defence's shape, 0.18, 0.45)` (40% of blocks go to the defence, the rest run loose
 to the attack), on target `clamp(0.32 + (R − 50)/220, 0.12, 0.70)` ×1.08 for `LongShooter` and for
 `Curler` (×1.12 at most), and in `clamp(0.14 + (R − keeper)/250, 0.02, 0.35)`; a save goes behind for
@@ -171,9 +243,10 @@ blended with `long_shots`.
 
 ### Direct free kicks
 
-A foul in the attacking third becomes a shot straight at goal 12.5% of the time (phase 2 P2.4, raised
-from 10% at P2.5, which left fewer such fouls; in
-`live_match/set_pieces.rs`); otherwise the fouled side keeps the ball there as before. The club's
+A foul in the attacking third goes by lane (phase 2 P3.4, `live_match/wing_play.rs`): from the centre
+lane it becomes a shot straight at goal 60% of the time; from a flank it is crossed in 20% of the
+time, through the corner's delivery with the centre backs up (`set_piece = FreeKick`, a goal's source
+`FreeKick`); otherwise the fouled side keeps the ball there. The club's
 `free_kick_taker` takes it while on the pitch, otherwise the outfielder with the best
 `0.65·free_kick + 0.35·curve`. With `FK` that blend × condition (×1.08 for `DeadBallSpecialist`), the
 wall stops 25% (half cleared, half behind for a corner), then the shot is on target
@@ -184,7 +257,8 @@ carries `set_piece = FreeKick` and `shot_kind = DirectFreeKick`; a goal's source
 
 ### Shot Resolution
 
-When the ball reaches the attacking box other than from a won header, a shot is taken:
+When the ball reaches the attacking box other than from a won header, a shot is taken by the man ω
+picks (see *Finishing in the box*):
 
 1. **Accuracy check** — base accuracy (configurable, default 45%) adjusted by the shooter's `shooting + composure + decisions` rating. Clamped to 15%–85%.
    - **Miss**: 40% chance the shot is blocked, 60% chance off target.
@@ -292,7 +366,7 @@ coach's mastery of the new style at once.
 ## Phase Blueprint (TacticsConfig)
 
 On top of the play style, each team carries a `TacticsConfig` (mapped from the
-domain `TacticsPhaseSettings`) of nine dials. Every dial defaults to a neutral
+domain `TacticsPhaseSettings`) of ten dials. Every dial defaults to a neutral
 option that multiplies by ×1.0 — and the transition dials roll nothing — so a
 team on its defaults simulates **byte-identically** to the pre-dial engine.
 
@@ -304,7 +378,7 @@ per-minute possession contest.
 | Dial | Hook | Effect |
 |---|---|---|
 | build_up | build-up pass success | Short retains, Long is riskier |
-| width | cross probability (attacking third) | Wide crosses more |
+| width | the lane matrix (`c, s, a, w`) | Wide plays more down the flanks, where crosses come from |
 | def_line | shot conversion conceded | High concedes better chances in behind |
 | marking | foul probability | Man-to-man fouls more |
 | pressing | possession contest (def) + build-up press + **in-match stamina** | Aggressive wins the ball back more, tires faster |
@@ -312,12 +386,17 @@ per-minute possession contest.
 | defensive_shape | attacking-third defence (def) | Compact concedes fewer chances |
 | counter_press | possession flip: losing side may re-win the ball | Long regains possession more |
 | break_speed | possession flip: winner may counter into the final third | Fast turns turnovers into chances |
+| cross_style | crosses from the flank (`wing_play`) | Mixed / High / Low / Early, see *Wing play* |
 
-The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 3.2
-goals conceded per game as leaky and at most 1.4 scored as blunt. Those cutoffs
-were calibrated when the generated-world probe measured about **2.29 goals per
-club per game** after #605 changed the selected eleven. A scoring change needs
-a fresh run of `tactical_adaptation_probe` before those cutoffs can be trusted.
+The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.6
+goals conceded per game as leaky and at most 1.2 scored as blunt. Those cutoffs
+were read in phase 2 (P3.9), when the generated-world probe measured about
+**1.81 goals per club per game**. A scoring change needs a fresh run of
+`tactical_adaptation_probe` before those cutoffs can be trusted. AI blueprints
+also pick a cross style (High for Attacking and Defensive, Low for Possession,
+Early for Counter, Mixed otherwise), and a side whose two likeliest finishers
+rate below 68 in the air crosses Low instead of High when they can finish along
+the ground, else Mixed.
 
 The live engine consumes every dial, including the stamina cost of pressing,
 which needs per-minute condition and so is charged in every match the game
@@ -371,7 +450,7 @@ All probabilities and multipliers are tuneable via `MatchConfig`:
 | `stoppage_time_max` | 4 | Max stoppage time minutes per half |
 | `injury_probability` | 0.03 | Chance of injury per foul, before the fitness factor |
 
-`PlayerData` also carries `footedness` (`Foot::{Left, Right, Both}`, from the domain player's footedness) since P3.0. Nothing reads it yet; GĐ3's wing play (P3.4) will.
+`PlayerData` also carries `footedness` (`Foot::{Left, Right, Both}`, from the domain player's footedness) since P3.0. Wing play reads it (P3.4): a winger on his weaker side cuts inside more, and the benches' left-foot share follows real squads.
 
 ---
 
@@ -409,19 +488,10 @@ emits. The ball's lane is stored from the home side's attacking direction and re
 `lane_for(side)`, so a tackle by the defending side carries the mirror of the lane the attacker
 had it in, and a change of possession does not move it.
 
-Where the ball goes is the **lane matrix** (`live_match/lanes.rs`, P3.3). Each time a side moves
-the ball up a zone (a pass completed out of defence or through midfield), and when the defence
-wins it in its own third and the ball jumps to the other end, the next lane is drawn from the
-current one: from the centre it stays with `c` or goes out to either flank; from a flank it stays
-with `s`, comes inside with `a`, or switches to the far flank with `w`. Width sets the four numbers
-(`Normal`: c 0.15, s 0.78, a 0.10, w 0.12, set so that about 22% of the final third's one-on-ones
-go down the centre, as in real football). The switch scales with the passer's `long_passing`
-(×0.5 at 25 or below, ×1.5 at 75 or above, the difference staying on the flank), and a flank the
-side has nobody on is chosen three times less often. A corner goes to the flank it was on (or,
-from the centre, left on even minutes and right on odd ones); a cross, and any entry into the box,
-puts the ball in the centre, because the box is one cell; kick-offs, goal kicks, penalties and
-goals bring it back to the centre. Nothing reads the lane yet: it changes only who is picked once
-the presence table arrives (P3.2).
+`tactical_context` adds `CutInside`, `LowCross`, `EarlyCross` (on every event of that action) and
+`FlankExposed` (on the duel of a break into an open flank only). A cross that never reaches the
+contest names no target. Snapshots carry `ball_lane`, the ball's lane as the side in possession sees
+it. The radar draws each play in its event's lane.
 
 Minutes are counted from when a player came on: a substitute who is himself taken off is credited
 with the time between the two substitutions, not with every minute up to his exit.
@@ -433,7 +503,7 @@ player taken off is rated for the time he played. `LiveMatchState::into_report` 
 headless match from `simulate_with_rng` is rated the same way.
 
 ```
-rating = 6.0 − 0.5 (an ordinary game's work)
+rating = 6.0 − an ordinary game's work at his slot (0.27–1.00, below)
        + what he did:  goal +1.2 · penalty goal +0.7 · assist +0.7 · penalty miss −0.6
                        shot saved +0.1 · shot off target −0.05 · shot blocked −0.03
                        pass completed +0.01 (at most +0.5) · pass intercepted −0.03
@@ -453,9 +523,14 @@ clamped to 3.0–10.0, rounded to 0.1
 ```
 
 The scale centres on 6.0, an ordinary game: `ratings_centre_on_six_across_many_matches` pins the
-mean of forty evenly matched games to 5.85–6.15. Ninety anonymous minutes land at 5.5. The 0.5
-baseline is the average contribution the engine produces per player; if the engine starts producing
-more or fewer actions, that test fails and the baseline moves with it.
+mean of forty evenly matched games to 5.85–6.15. The baseline is the average contribution the engine
+produces at each slot the player ended in (phase 2, P3.9): keeper 0.39, centre back 0.29, full or
+wing-back 0.27, defensive midfielder 0.60, central 0.69, attacking 0.64, wide midfielder 1.00,
+winger 0.66, striker 0.68; a player off the pitch by the end takes his group's. Since GĐ3 a wide
+midfielder carries, crosses and sets up far more than a centre back, so one baseline for everybody
+rated them 6.44 and 5.77 on the real-world probe; per slot, every position averages 5.8–6.1.
+Ninety anonymous minutes land well below 6.0. If the engine starts producing more or fewer actions,
+the test fails and the baselines move with it.
 
 A rating of 0.0 means "not rated" everywhere it is read: season averages
 (`PlayerSeasonStats::avg_rating` is averaged over `rated_appearances`), post-match morale, awards,
@@ -625,8 +700,13 @@ Every change that can move results is measured with `sim-bench` (`src-tauri/crat
   differ by more than 3 points only within 3σ (about 5.8 points over 2,000 matches; 2σ still failed
   a fair engine one run in twenty, and every change to results reshuffles the random stream).
 
+- `--formation-mix` draws each squad's formation from the nine; with `--guardrails` it also plays
+  the formation-balance table (each formation against 4-4-2, 4,000 matches). `--formation-balance`
+  plays only that table, plus a mirror of all-`AttackingFB` against all-`DefensiveFB` full backs.
+  `--dial-balance` plays every dial option against the neutral setup in a mirror match.
+
 ```bash
-cargo run --release -p sim-bench -- --guardrails --stage lan-can --out guardrails.json
+cargo run --release -p sim-bench -- --guardrails --stage lan-can --formation-mix --out guardrails.json
 ```
 
 The bands and the reasons for them are in the phase-2 plan
