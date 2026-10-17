@@ -44,6 +44,8 @@ export interface MatchEvent {
   shot_kind?: ShotKind | null;
   set_piece?: SetPiece | null;
   goal_source?: GoalSource | null;
+  /** Protocol 2: the lane of the actor's slot. Protocol 3 (the GĐ3 grid): the
+   * lane of the ball as `side` sees it. */
   lane?: Lane | null;
   tactical_context?: TacticalContext | null;
 }

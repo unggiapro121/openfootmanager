@@ -1,5 +1,6 @@
 mod header;
 mod helpers;
+mod lane_state;
 mod long_shot;
 mod observation;
 mod penalty;
@@ -305,6 +306,19 @@ pub struct LiveMatchState {
     /// The set piece being played out (a corner, from the kick to the header
     /// or the clearance). `emit` tags every event with it.
     active_set_piece: Option<SetPiece>,
+
+    // Phase 2, GĐ3: the ball's lane and what the grid's rules read
+    // (`lane_state`). Kept under `Zones5` too, but only `Grid15` writes them.
+    /// The ball's lane, stored from the home side's direction; read it with
+    /// `lane_for`.
+    ball_side: lane_state::BallSide,
+    /// The lane, as the attacking side saw it, the ball last came into the
+    /// box from. Written from P3.1; the shooter's weight reads it at P3.5.
+    entry_lane: Option<crate::event::Lane>,
+    /// Who acted last, with his side: only ever read for the side that has
+    /// the ball, so no change of possession has to clear it. Written from
+    /// P3.1; `LastActor` reads it at P3.5.
+    last_actor: Option<(Side, String)>,
 }
 
 impl LiveMatchState {
@@ -371,6 +385,9 @@ impl LiveMatchState {
             active_set_piece: None,
             on_the_break: None,
             active_break: false,
+            ball_side: lane_state::BallSide::centre(),
+            entry_lane: None,
+            last_actor: None,
         }
     }
 
@@ -509,6 +526,9 @@ impl LiveMatchState {
         if let Some((home_sheet, away_sheet)) = self.kickoff_sheets {
             report.home_sheet = Some(home_sheet);
             report.away_sheet = Some(away_sheet);
+        }
+        if self.config.engine_model == crate::types::EngineModel::Grid15 {
+            report.protocol_version = lane_state::GRID_EVENT_PROTOCOL_VERSION;
         }
         report
     }
