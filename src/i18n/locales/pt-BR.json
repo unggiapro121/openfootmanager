@@ -2457,6 +2457,13 @@
             "0": "{{player}} ataca a falta lateral e marca para o {{team}}!",
             "1": "A falta é levantada na área e {{player}} dá o toque decisivo!"
           }
+        },
+        "flankExposed": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "O {{team}} ataca o espaço nas costas do lateral e {{player}} marca!",
+            "1": "Pegos no ataque! {{player}} castiga o lado aberto para o {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

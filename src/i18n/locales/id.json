@@ -2563,6 +2563,13 @@
             "0": "{{player}} menyambut tendangan bebas dan mencetak gol untuk {{team}}!",
             "1": "Tendangan bebas dikirim ke kotak penalti dan {{player}} memberi sentuhan penentu!"
           }
+        },
+        "flankExposed": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{team}} menyerang ruang di belakang bek sayap dan {{player}} mencetak gol!",
+            "1": "Bek sayap terlambat turun! {{player}} menghukum sisi yang terbuka untuk {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

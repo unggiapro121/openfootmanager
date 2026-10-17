@@ -2563,6 +2563,13 @@
             "0": "{{player}} băng vào đón quả đá phạt và ghi bàn cho {{team}}!",
             "1": "Quả đá phạt được treo vào và {{player}} chạm bóng quyết định!"
           }
+        },
+        "flankExposed": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{team}} phản công vào khoảng trống sau lưng hậu vệ biên và {{player}} ghi bàn!",
+            "1": "Hậu vệ biên dâng quá cao! {{player}} trừng phạt cánh bị bỏ trống, ghi bàn cho {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

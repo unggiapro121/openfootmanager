@@ -258,7 +258,12 @@ fn main() {
     }
 
     if cli.formation_balance {
-        let rows = balance::run(&config, cli.seed.unwrap_or(42), cli.games);
+        let mut rows = balance::run(&config, cli.seed.unwrap_or(42), cli.games);
+        rows.push(balance::full_back_tradeoff(
+            &config,
+            cli.seed.unwrap_or(42),
+            cli.games,
+        ));
         balance::print_table(&rows);
         return;
     }

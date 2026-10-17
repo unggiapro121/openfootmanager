@@ -120,6 +120,71 @@ pub fn run(config: &MatchConfig, seed: u64, games: u32) -> Vec<BalanceRow> {
         .collect()
 }
 
+/// The full-back trade-off (GĐ3-tech-spec §10.2, from P3.6): a 4-4-2 whose
+/// full backs all bomb on (`AttackingFB`) against its own mirror whose full
+/// backs stay home (`DefensiveFB`), headless, home alternating. Neither role
+/// may win for free: |wins − losses| ≤ 6 points. The row is from the
+/// attacking side.
+pub fn full_back_tradeoff(config: &MatchConfig, seed: u64, games: u32) -> BalanceRow {
+    use engine::{PitchPosition, PlayerRole};
+    let pairs = games.div_ceil(GAMES_PER_PAIR).max(1);
+    let mut row = BalanceRow {
+        formation: "AttFB v DefFB",
+        games: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        scored: 0,
+        conceded: 0,
+    };
+    let full_back_slots: Vec<usize> = engine::formation_slots(BASELINE)
+        .iter()
+        .enumerate()
+        .filter(|(_, slot)| matches!(slot, PitchPosition::LeftBack | PitchPosition::RightBack))
+        .map(|(i, _)| i)
+        .collect();
+    for pair in 0..pairs {
+        let pair_seed = seed ^ (0xFB << 40) ^ u64::from(pair).wrapping_mul(0x9E37_79B9);
+        let mut team_rng = StdRng::seed_from_u64(pair_seed);
+        let mut attacking = build_team(
+            "side",
+            "Side FC",
+            RATING,
+            PlayStyle::Balanced,
+            BASELINE,
+            &mut team_rng,
+        );
+        let mut defensive = crate::builder::mirror(&attacking, "base", "Base FC");
+        for &i in &full_back_slots {
+            attacking.players[i].role = PlayerRole::AttackingFB;
+            defensive.players[i].role = PlayerRole::DefensiveFB;
+        }
+        for g in 0..GAMES_PER_PAIR {
+            let mut rng = StdRng::seed_from_u64(pair_seed.wrapping_add(u64::from(g)));
+            let attacking_home = g % 2 == 0;
+            let report = if attacking_home {
+                simulate_with_rng(&attacking, &defensive, config, &mut rng)
+            } else {
+                simulate_with_rng(&defensive, &attacking, config, &mut rng)
+            };
+            let (scored, conceded) = if attacking_home {
+                (report.home_goals, report.away_goals)
+            } else {
+                (report.away_goals, report.home_goals)
+            };
+            row.games += 1;
+            row.scored += u32::from(scored);
+            row.conceded += u32::from(conceded);
+            match scored.cmp(&conceded) {
+                std::cmp::Ordering::Greater => row.wins += 1,
+                std::cmp::Ordering::Equal => row.draws += 1,
+                std::cmp::Ordering::Less => row.losses += 1,
+            }
+        }
+    }
+    row
+}
+
 pub fn print_table(rows: &[BalanceRow]) {
     println!();
     println!(

@@ -1,4 +1,5 @@
 mod finishing;
+mod flanks;
 mod header;
 mod helpers;
 mod lane_state;
@@ -311,6 +312,14 @@ pub struct LiveMatchState {
     /// The set piece being played out (a corner, from the kick to the header
     /// or the clearance). `emit` tags every event with it.
     active_set_piece: Option<SetPiece>,
+    /// The minute each side's full back left each flank open, from that
+    /// side's own view: [side][left, right] (P3.6).
+    flank_exposed: [[Option<u8>; 2]; 2],
+    /// The side that had the last action, so a side regaining the ball gets
+    /// its full backs back in place (P3.6).
+    last_on_the_ball: Option<Side>,
+    /// A break into an open flank, waiting for its one-on-one (P3.6).
+    pending_exploit: Option<flanks::PendingExploit>,
     /// What the action being played out is (a cut inside, an early cross;
     /// phase 2, P3.4): `emit` tags each event that carries no context of its
     /// own, after a break's `Counter`.
@@ -393,6 +402,9 @@ impl LiveMatchState {
             recent_zones: VecDeque::with_capacity(10),
             active_set_piece: None,
             active_context: None,
+            flank_exposed: [[None, None], [None, None]],
+            last_on_the_ball: None,
+            pending_exploit: None,
             on_the_break: None,
             active_break: false,
             ball_side: lane_state::BallSide::centre(),

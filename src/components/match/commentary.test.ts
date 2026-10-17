@@ -132,6 +132,21 @@ describe("getCommentary", () => {
     expect(result!.line.toLowerCase()).toMatch(/free kick/);
   });
 
+  it("uses the open-flank variant for a goal from a break into an open flank", () => {
+    const duel: MatchEvent = {
+      minute: 10,
+      event_type: "Dribble",
+      side: "Home",
+      zone: "AwayDefense",
+      player_id: "p1",
+      secondary_player_id: null,
+      tactical_context: "FlankExposed",
+    };
+    const evt = goal(10, "p1");
+    const result = getCommentary(evt, snapshot([duel, evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/full back|space/);
+  });
+
   it("keeps the brace variant over the header one", () => {
     const g1 = goal(10, "p1");
     const g2: MatchEvent = { ...goal(40, "p1"), goal_source: "Header" };

@@ -59,6 +59,10 @@ pub enum TacticalContext {
     /// A cross played early from the flank, before taking the full back on
     /// (P3.4).
     EarlyCross,
+    /// A one-on-one in the space a full back left behind him when he went
+    /// up (P3.6). Only the duel's events carry it; the rest of a break keeps
+    /// `Counter`.
+    FlankExposed,
 }
 
 /// What kind of attempt on goal an event records.

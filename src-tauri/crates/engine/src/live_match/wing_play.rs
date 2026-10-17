@@ -124,6 +124,9 @@ impl LiveMatchState {
         def_side: Side,
         rng: &mut R,
     ) -> Vec<MatchEvent> {
+        if let Some(exploit) = self.take_exploit(att_side) {
+            return self.exploit_open_flank(minute, att_side, def_side, &exploit, rng);
+        }
         let lane = self.lane_for(att_side);
         let on_flank = lane != Lane::Centre;
         if on_flank
@@ -136,17 +139,23 @@ impl LiveMatchState {
                     || self.snap_player(att_side, Position::Forward, rng),
                     |picked| picked.player,
                 );
+            self.note_full_back_push(att_side, lane, &crosser.id, rng);
             return self.resolve_open_cross(minute, att_side, crosser, true, rng);
         }
 
         let (attacker, defender, out_of_lane) =
             self.attacking_third_duelists(att_side, def_side, rng);
+        if on_flank {
+            self.note_full_back_push(att_side, lane, &attacker.id, rng);
+        }
         if let Some(long_shot) = self.try_long_shot(minute, att_side, &attacker, rng) {
             return long_shot;
         }
-        let success = self.one_v_one_success(att_side, def_side, &attacker, &defender, out_of_lane);
+        let success =
+            self.one_v_one_success(att_side, def_side, &attacker, &defender, out_of_lane, 1.0);
         if rng.random_range(0.0..1.0f64) >= success {
-            return self.one_v_one_lost(minute, att_side, def_side, &attacker, &defender, rng);
+            return self
+                .one_v_one_lost(minute, att_side, def_side, &attacker, &defender, None, rng);
         }
 
         let cuts_inside = on_flank
@@ -188,6 +197,79 @@ impl LiveMatchState {
             }
         } else if on_flank && rng.random_range(0.0..1.0f64) < P_CROSS_FLANK {
             events.extend(self.resolve_open_cross(minute, att_side, attacker, false, rng));
+            return events;
+        }
+        self.carry_into_box(att_side);
+        events
+    }
+
+    /// A break into the flank `exploit.flank` the other side left open
+    /// (P3.6): the one-on-one is down it, the full back who went up is not
+    /// there, whoever comes across plays out of lane (κ), and the attacker has
+    /// the space behind (`S_SPACE`). Won, he is straight into the box. Only
+    /// the duel's events carry `FlankExposed`.
+    fn exploit_open_flank<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        def_side: Side,
+        exploit: &super::flanks::PendingExploit,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
+        let lane = self.lane_for(att_side);
+        let attacker = self
+            .pick_by_presence(att_side, Column::Attack, lane, rng)
+            .map_or_else(
+                || self.snap_player(att_side, Position::Forward, rng),
+                |picked| picked.player,
+            );
+        let def_lane = self.lane_for(def_side);
+        let (defender, out_of_lane) = match self.pick_by_presence_without(
+            def_side,
+            Column::Defence,
+            def_lane,
+            Some(&exploit.absent),
+            rng,
+        ) {
+            Some(picked) => (
+                picked.player,
+                super::presence::out_of_lane_factor(picked.slot, def_lane),
+            ),
+            None => (self.snap_player(def_side, Position::Defender, rng), 1.0),
+        };
+        let success = self.one_v_one_success(
+            att_side,
+            def_side,
+            &attacker,
+            &defender,
+            out_of_lane,
+            super::flanks::S_SPACE,
+        );
+        if rng.random_range(0.0..1.0f64) >= success {
+            return self.one_v_one_lost(
+                minute,
+                att_side,
+                def_side,
+                &attacker,
+                &defender,
+                Some(TacticalContext::FlankExposed),
+                rng,
+            );
+        }
+        let mut events = Vec::new();
+        let dribble = MatchEvent::new(
+            minute,
+            EventType::Dribble,
+            att_side,
+            Zone::attacking_third(att_side),
+        )
+        .with_player(&attacker.id)
+        .with_tactical_context(TacticalContext::FlankExposed);
+        self.emit(&mut events, dribble);
+        if self.active_break
+            && let Some(sweeper_events) = self.try_sweeper_keeper(minute, att_side, &attacker, rng)
+        {
+            events.extend(sweeper_events);
             return events;
         }
         self.carry_into_box(att_side);
@@ -295,7 +377,7 @@ impl LiveMatchState {
             self.emit(&mut events, clearance);
             self.possession = def_side;
             self.ball_zone = Zone::defensive_third(att_side);
-            self.advance_lane(def_side, &defender, rng);
+            self.regain_lane(def_side, Some(&defender), rng);
             return events;
         }
         self.ball_zone = Zone::attacking_box(att_side);
@@ -391,6 +473,70 @@ mod tests {
             .collect();
         assert!(crosses.len() > 100, "only {} crosses", crosses.len());
         assert!(crosses.iter().all(|e| e.lane != Some(Lane::Centre)));
+    }
+
+    /// Given eighty Grid15 matches between sides whose full backs bomb on,
+    /// when their breaks into an open flank are read,
+    /// then there are some; `FlankExposed` sits only on the duel's events
+    /// (the carrier's one-on-one and the clearance that may end it), and a
+    /// duel won goes straight on to a shot, never a cross (P3.6).
+    #[test]
+    fn a_break_into_an_open_flank_goes_straight_for_goal() {
+        let events: Vec<MatchEvent> = (0..80)
+            .flat_map(|seed| {
+                let attacking_full_backs = |id: &str| {
+                    let mut team = make_team(id);
+                    for player in &mut team.players {
+                        if player.position == crate::types::Position::Defender {
+                            player.role = PlayerRole::AttackingFB;
+                        }
+                    }
+                    team
+                };
+                let mut state = LiveMatchState::new(
+                    attacking_full_backs("home"),
+                    attacking_full_backs("away"),
+                    MatchConfig {
+                        engine_model: crate::types::EngineModel::Grid15,
+                        ..MatchConfig::default()
+                    },
+                    Vec::new(),
+                    Vec::new(),
+                    false,
+                );
+                let mut rng = StdRng::seed_from_u64(seed);
+                for _ in 0..200 {
+                    if state.is_finished() {
+                        break;
+                    }
+                    state.step_minute(&mut rng);
+                }
+                state.into_report().events
+            })
+            .collect();
+        let mut won = 0;
+        for (i, e) in events.iter().enumerate() {
+            if e.tactical_context != Some(TacticalContext::FlankExposed) {
+                continue;
+            }
+            assert!(
+                matches!(
+                    e.event_type,
+                    EventType::Dribble | EventType::DribbleTackled | EventType::Clearance
+                ),
+                "FlankExposed on a {:?}",
+                e.event_type
+            );
+            if e.event_type == EventType::Dribble {
+                won += 1;
+                let next = events[i + 1..].iter().find(|n| n.side == e.side);
+                assert!(
+                    next.is_none_or(|n| n.event_type != EventType::Cross),
+                    "a break into an open flank was crossed"
+                );
+            }
+        }
+        assert!(won > 10, "only {won} breaks won");
     }
 
     /// Given a side crossing early over forty Grid15 matches,

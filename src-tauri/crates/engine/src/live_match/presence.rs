@@ -287,9 +287,23 @@ impl LiveMatchState {
         lane: Lane,
         rng: &mut R,
     ) -> Option<Picked> {
+        self.pick_by_presence_without(side, column, lane, None, rng)
+    }
+
+    /// [`LiveMatchState::pick_by_presence`] with one player left out: a full
+    /// back caught upfield is not there to defend his flank (P3.6).
+    pub(super) fn pick_by_presence_without<R: Rng>(
+        &self,
+        side: Side,
+        column: Column,
+        lane: Lane,
+        absent: Option<&str>,
+        rng: &mut R,
+    ) -> Option<Picked> {
         let weighted: Vec<(usize, PitchPosition, f64)> = self
             .weighted_outfield(side, column)
             .into_iter()
+            .filter(|(i, _, _)| Some(self.team_ref(side).players[*i].id.as_str()) != absent)
             .map(|(i, slot, weights)| {
                 let id = &self.team_ref(side).players[i].id;
                 let condition = self.player_conditions.get(id).copied().unwrap_or(50.0);

@@ -105,6 +105,31 @@ function goalTally(evt: MatchEvent, snapshot: MatchSnapshot): number {
 }
 
 /**
+ * Whether `goal` finished a break into a flank the other side's full back
+ * left open (phase 2, GĐ3): the scoring side won a `FlankExposed` one-on-one
+ * and kept the ball until the goal. Only the duel carries that context; the
+ * goal itself does not.
+ */
+function brokeIntoOpenFlank(goal: MatchEvent, snapshot: MatchSnapshot): boolean {
+  let breaking: MatchEvent["side"] | null = null;
+  for (const e of snapshot.events) {
+    if (
+      e.minute === goal.minute &&
+      e.event_type === goal.event_type &&
+      e.player_id === goal.player_id
+    ) {
+      return breaking === goal.side;
+    }
+    if (e.event_type === "Dribble" && e.tactical_context === "FlankExposed") {
+      breaking = e.side;
+    } else if (e.side !== breaking) {
+      breaking = null;
+    }
+  }
+  return false;
+}
+
+/**
  * Resolve the variant sub-key: the goal tally (hat-trick/brace) first, then
  * how the move was made (a cut inside, a low or early cross, a free kick
  * crossed in), then how the goal was made (a header, a direct free kick, a
@@ -116,6 +141,7 @@ function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
     if (tally === 3) return "hattrick";
     if (tally === 2) return "brace";
     // How the move was made (phase 2, GĐ3) comes before what finished it.
+    if (brokeIntoOpenFlank(evt, snapshot)) return "flankExposed";
     if (evt.tactical_context === "CutInside") return "cutInside";
     if (evt.tactical_context === "LowCross") return "lowCross";
     if (evt.tactical_context === "EarlyCross") return "earlyCross";

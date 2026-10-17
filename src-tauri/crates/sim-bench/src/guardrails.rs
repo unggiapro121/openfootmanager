@@ -152,7 +152,30 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         one_v_one_win(result),
         final_third_carriers(result),
         free_kick_goal_share(result),
+        open_flank_breaks(result),
     ]
+}
+
+/// Breaks into a flank a full back left open (phase 2, P3.6): how many a
+/// match, and how much more often the attacker wins that one-on-one than
+/// down a covered flank — the space behind is meant to be worth +20–30%.
+fn open_flank_breaks(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let tally = &stats.duels.tally;
+    let breaks = tally.exploit_won + tally.exploit_lost;
+    let per_match = breaks as f64 / f64::from(stats.games.max(1));
+    let rate = |won: u64, lost: u64| won as f64 / (won + lost).max(1) as f64 * 100.0;
+    Check {
+        name: "khai thác cánh hở: lợi thế 1v1 (% tương đối)",
+        value: Some(tally.exploit_advantage_pct()),
+        band: format!(
+            "đo, đích +20–30 (thắng {:.1}% so với {:.1}% ở biên thường; {per_match:.2} pha/trận, {:.3} bàn mỗi pha)",
+            rate(tally.exploit_won, tally.exploit_lost),
+            rate(tally.flank_won, tally.flank_lost),
+            tally.exploit_goals as f64 / breaks.max(1) as f64
+        ),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// Goals from free kicks, struck at goal or crossed in (decision X39, option

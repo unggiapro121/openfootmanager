@@ -2563,6 +2563,13 @@
             "0": "{{player}} attacks the free kick and scores for {{team}}!",
             "1": "Whipped in from the free kick, and {{player}} gets the decisive touch!"
           }
+        },
+        "flankExposed": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{team}} break into the space behind the full back and {{player}} scores!",
+            "1": "Caught upfield! {{player}} punishes the open flank for {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {
