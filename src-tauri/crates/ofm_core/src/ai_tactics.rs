@@ -53,11 +53,15 @@ use crate::stable_hash::stable_hash;
 use domain::league::FixtureStatus;
 use domain::player::{Player, Position};
 use domain::team::{
-    BreakSpeed, BuildUpStyle, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle,
-    PitchWidth, PlayStyle, PressingIntensity, TacticsPhaseSettings, Tempo,
+    BreakSpeed, BuildUpStyle, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape,
+    MarkingStyle, PitchWidth, PlayStyle, PressingIntensity, TacticsPhaseSettings, Tempo,
 };
 
-/// The nine-dial blueprint a club of this play style takes the field with.
+/// The blueprint a club of this play style takes the field with. Its cross
+/// style follows S2 §3.2 (phase 2, P3.4): a side that attacks or sits deep
+/// goes in the air, a possession side along the ground, a counter-attacking
+/// side early; `match_plan` brings `High` down when the side has nobody to
+/// win the ball in the air.
 ///
 /// Balanced is the neutral blueprint, deliberately: it is the style that has no
 /// argument to make, and it is the control every other identity is measured
@@ -79,6 +83,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             marking_style: MarkingStyle::Zonal,
             counter_press_duration: CounterPressDuration::Short,
             break_speed: BreakSpeed::Fast,
+            cross_style: CrossStyle::High,
         },
 
         // Deep, compact, man-oriented, and in no hurry. Concedes the ball and
@@ -93,6 +98,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             marking_style: MarkingStyle::ManToMan,
             counter_press_duration: CounterPressDuration::None,
             break_speed: BreakSpeed::Slow,
+            cross_style: CrossStyle::High,
         },
 
         // Keep it, circulate it, and win it back immediately when it goes. The
@@ -108,6 +114,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             marking_style: MarkingStyle::Zonal,
             counter_press_duration: CounterPressDuration::Long,
             break_speed: BreakSpeed::Slow,
+            cross_style: CrossStyle::Low,
         },
 
         // Sit off, let them come, and go the moment the ball turns over. No
@@ -123,6 +130,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             marking_style: MarkingStyle::Zonal,
             counter_press_duration: CounterPressDuration::None,
             break_speed: BreakSpeed::Fast,
+            cross_style: CrossStyle::Early,
         },
 
         // Hunt the ball high up the pitch and squeeze the space behind. The
@@ -138,6 +146,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             marking_style: MarkingStyle::ManToMan,
             counter_press_duration: CounterPressDuration::Long,
             break_speed: BreakSpeed::Fast,
+            cross_style: CrossStyle::Mixed,
         },
     }
 }
@@ -223,6 +232,17 @@ const LEGS_FOR_A_PRESS: f64 = 64.0;
 /// p10 and 66.0 at the median — it is far more spread than stamina, which is
 /// why the same percentile lands on a much lower number.
 const PACE_FOR_A_HIGH_LINE: f64 = 59.0;
+/// Below this, the two players a side's crosses are aimed at cannot win
+/// enough of them in the air to make every cross a high one (phase 2, P3.4,
+/// S2 §3.2): the engine's aerial rating at the 25th percentile of the two
+/// leading strikers of every club in the real-world package (68.0; median
+/// 74.2). Measured once rather than read off the league each week.
+const AIR_THRESHOLD: f64 = 68.0;
+/// A side that cannot win it in the air but can get on the end of it along
+/// the ground crosses low instead (S2 §3.2).
+const GROUND_FOR_LOW: f64 = 70.0;
+/// How many of the side's likeliest finishers its crosses are judged for.
+const FINISHERS: usize = 2;
 
 /// What the squad can be asked to do, as opposed to what the badge says.
 struct SquadReading {
@@ -230,6 +250,10 @@ struct SquadReading {
     legs: f64,
     /// Mean pace of the four best defenders.
     defensive_pace: f64,
+    /// Mean aerial rating, and mean `0.6·positioning + 0.4·first_touch`, of
+    /// the two players in the likely eleven the box favours most (ω).
+    aerial_threat: f64,
+    ground_threat: f64,
 }
 
 fn read_squad(squad: &[&Player]) -> Option<SquadReading> {
@@ -270,10 +294,63 @@ fn read_squad(squad: &[&Player]) -> Option<SquadReading> {
         )
     };
 
+    let (aerial_threat, ground_threat) = read_finishers(eleven);
     Some(SquadReading {
         legs,
         defensive_pace,
+        aerial_threat,
+        ground_threat,
     })
+}
+
+/// How the two likeliest finishers in `eleven` meet a cross: in the air (the
+/// engine's aerial rating) and along the ground. Likeliest by the engine's
+/// ω at their natural position (a striker over a wide or attacking
+/// midfielder), then by standing.
+fn read_finishers(eleven: &[&&Player]) -> (f64, f64) {
+    let omega = |p: &Player| {
+        crate::turn::squad::PITCH_POSITIONS
+            .iter()
+            .find(|(position, _)| *position == p.natural_position)
+            .map_or(0.0, |(_, slot)| {
+                engine::shot_weight(*slot, engine::PlayerRole::Standard)
+            })
+    };
+    let mut finishers: Vec<&&Player> = eleven.to_vec();
+    finishers.sort_by(|a, b| {
+        omega(b)
+            .total_cmp(&omega(a))
+            .then_with(|| b.ovr.cmp(&a.ovr))
+            .then_with(|| a.id.cmp(&b.id))
+    });
+    finishers.truncate(FINISHERS);
+    if finishers.is_empty() {
+        return (0.0, 0.0);
+    }
+    let n = finishers.len() as f64;
+    let aerial = finishers
+        .iter()
+        .map(|p| {
+            let a = &p.attributes;
+            engine::aerial_rating_of(
+                a.aerial,
+                a.positioning,
+                a.strength,
+                p.height_cm,
+                p.traits
+                    .contains(&domain::player::PlayerTrait::AerialDominance),
+            )
+        })
+        .sum::<f64>()
+        / n;
+    let ground = finishers
+        .iter()
+        .map(|p| {
+            0.60 * f64::from(p.attributes.positioning) + 0.40 * f64::from(p.attributes.first_touch)
+        })
+        .sum::<f64>()
+        / n;
+    (aerial, ground)
 }
 
 /// How many recent matches the manager judges the plan on.
@@ -504,6 +581,14 @@ fn match_plan(
         {
             settings.defensive_line = DefensiveLine::Medium;
         }
+        // Nobody to head it: keep it on the ground if they can finish there.
+        if settings.cross_style == CrossStyle::High && squad.aerial_threat < AIR_THRESHOLD {
+            settings.cross_style = if squad.ground_threat >= GROUND_FOR_LOW {
+                CrossStyle::Low
+            } else {
+                CrossStyle::Mixed
+            };
+        }
     }
 
     settings
@@ -731,6 +816,8 @@ mod tests {
         SquadReading {
             legs: 75.0,
             defensive_pace: 75.0,
+            aerial_threat: 75.0,
+            ground_threat: 70.0,
         }
     }
 
@@ -738,6 +825,8 @@ mod tests {
         SquadReading {
             legs: 40.0,
             defensive_pace: 75.0,
+            aerial_threat: 75.0,
+            ground_threat: 70.0,
         }
     }
 
@@ -745,7 +834,43 @@ mod tests {
         SquadReading {
             legs: 75.0,
             defensive_pace: 40.0,
+            aerial_threat: 75.0,
+            ground_threat: 70.0,
         }
+    }
+
+    /// Given an attacking side, which crosses high, with small, sharp forwards,
+    /// and one with small forwards who are no sharper on the ground,
+    /// when its plan is made,
+    /// then the first crosses low and the second mixes it; with forwards who
+    /// win it in the air it keeps crossing high (phase 2, P3.4).
+    #[test]
+    fn a_side_with_nobody_to_head_it_stops_crossing_high() {
+        let style = PlayStyle::Attacking;
+        assert_eq!(blueprint_for(&style).cross_style, CrossStyle::High);
+        let reading = |aerial_threat, ground_threat| SquadReading {
+            aerial_threat,
+            ground_threat,
+            ..a_squad_that_can_run()
+        };
+        let plan = |r: SquadReading| match_plan(&style, Some(&r), None).cross_style;
+        assert_eq!(plan(reading(60.0, 75.0)), CrossStyle::Low);
+        assert_eq!(plan(reading(60.0, 65.0)), CrossStyle::Mixed);
+        assert_eq!(plan(reading(80.0, 75.0)), CrossStyle::High);
+    }
+
+    /// Given each play style,
+    /// when its blueprint is read,
+    /// then its cross style follows S2 §3.2.
+    #[test]
+    fn each_style_crosses_its_own_way() {
+        let cross = |style| blueprint_for(&style).cross_style;
+        assert_eq!(cross(PlayStyle::Balanced), CrossStyle::Mixed);
+        assert_eq!(cross(PlayStyle::HighPress), CrossStyle::Mixed);
+        assert_eq!(cross(PlayStyle::Attacking), CrossStyle::High);
+        assert_eq!(cross(PlayStyle::Defensive), CrossStyle::High);
+        assert_eq!(cross(PlayStyle::Possession), CrossStyle::Low);
+        assert_eq!(cross(PlayStyle::Counter), CrossStyle::Early);
     }
 
     /// Conceding at exactly the rate that says the plan is not holding, and

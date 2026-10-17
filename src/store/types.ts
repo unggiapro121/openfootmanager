@@ -99,6 +99,8 @@ export type DefensiveShape = "Stretched" | "Normal" | "Compact";
 export type MarkingStyle = "Zonal" | "Mixed" | "ManToMan";
 export type CounterPressDuration = "None" | "Short" | "Long";
 export type BreakSpeed = "Slow" | "Medium" | "Fast";
+/** How a side crosses from the flank (phase 2, GĐ3). */
+export type CrossStyle = "Mixed" | "High" | "Low" | "Early";
 
 export interface TacticsPhaseSettings {
   build_up_style: BuildUpStyle;
@@ -110,6 +112,7 @@ export interface TacticsPhaseSettings {
   marking_style: MarkingStyle;
   counter_press_duration: CounterPressDuration;
   break_speed: BreakSpeed;
+  cross_style: CrossStyle;
 }
 
 export interface TeamMatchRolesData {

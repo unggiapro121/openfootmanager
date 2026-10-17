@@ -119,13 +119,31 @@ const AERIAL_DOMINANCE_REACH: f64 = 1.08;
 /// the ball drops (`positioning`), holding his ground (`strength`), then his
 /// height and `AerialDominance`. The same for attacker and defender.
 pub(crate) fn aerial_rating(p: &PlayerSnap) -> f64 {
-    let dominance = if p.has_trait("AerialDominance") {
+    aerial_rating_of(
+        p.aerial,
+        p.positioning,
+        p.strength,
+        p.height_cm,
+        p.has_trait("AerialDominance"),
+    )
+}
+
+/// A player's rating in the air from the attributes it reads. Public so the
+/// AI judges its forwards with the engine's own yardstick (phase 2, P3.4).
+pub fn aerial_rating_of(
+    aerial: u8,
+    positioning: u8,
+    strength: u8,
+    height_cm: u16,
+    aerial_dominance: bool,
+) -> f64 {
+    let dominance = if aerial_dominance {
         AERIAL_DOMINANCE_REACH
     } else {
         1.0
     };
-    (0.55 * f64::from(p.aerial) + 0.20 * f64::from(p.positioning) + 0.25 * f64::from(p.strength))
-        * height_factor(p.height_cm)
+    (0.55 * f64::from(aerial) + 0.20 * f64::from(positioning) + 0.25 * f64::from(strength))
+        * height_factor(height_cm)
         * dominance
 }
 

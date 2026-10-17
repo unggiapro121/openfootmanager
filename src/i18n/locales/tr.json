@@ -800,7 +800,12 @@
       "breakSpeed": "Çıkış Hızı",
       "breakSpeed_Slow": "Yavaş",
       "breakSpeed_Medium": "Orta",
-      "breakSpeed_Fast": "Hızlı"
+      "breakSpeed_Fast": "Hızlı",
+      "crossStyle": "Ortalar",
+      "crossStyle_Mixed": "Karışık",
+      "crossStyle_High": "Havadan",
+      "crossStyle_Low": "Yerden",
+      "crossStyle_Early": "Erken"
     },
     "customTacticDescription": "Herhangi bir dizilişi kadronuza uyan oyun tarzıyla birleştirerek özel bir düzen oluşturun.",
     "customTacticNumber": "Özel taktik {{count}}",
@@ -2529,6 +2534,34 @@
           "lines": {
             "0": "{{player}} uzaktan şansını deniyor — {{team}} için harika bir gol!",
             "1": "Ceza sahası dışından füze! {{player}} gol atıyor!"
+          }
+        },
+        "cutInside": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} güçlü ayağına içeri kat edip topu kıvırıyor, gol {{team}} için!",
+            "1": "Kanattan içeri, {{player}} topu uzak köşeye kıvırıyor!"
+          }
+        },
+        "lowCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} yerden ortayı tek vuruşta tamamlıyor, {{team}} golü buluyor!",
+            "1": "Altıpas önüne yerden orta ve {{player}} topu ağlara gönderiyor!"
+          }
+        },
+        "earlyCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Savunmanın arkasına erken bir orta ve {{player}} orada!",
+            "1": "{{team}} erken ortalıyor ve {{player}} savunmadan önce davranıyor!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} serbest vuruşa yükseliyor ve {{team}} için gol atıyor!",
+            "1": "Serbest vuruş ceza sahasına gönderiliyor ve {{player}} son dokunuşu yapıyor!"
           }
         }
       },

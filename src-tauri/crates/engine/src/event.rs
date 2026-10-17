@@ -51,6 +51,14 @@ pub enum TacticalContext {
     /// A sweeper keeper came off his line and was beaten to it: the shot
     /// that follows is at a goal he has left.
     KeeperOffHisLine,
+    /// A wide player beat his man and came inside onto his stronger foot
+    /// instead of crossing (phase 2, P3.4).
+    CutInside,
+    /// A cross along the ground, met by a first-time shot (P3.4).
+    LowCross,
+    /// A cross played early from the flank, before taking the full back on
+    /// (P3.4).
+    EarlyCross,
 }
 
 /// What kind of attempt on goal an event records.

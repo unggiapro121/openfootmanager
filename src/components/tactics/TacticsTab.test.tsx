@@ -346,6 +346,7 @@ describe("TacticsTab", () => {
     marking_style: "ManToMan",
     counter_press_duration: "Long",
     break_speed: "Fast",
+    cross_style: "High",
   };
 
   /**

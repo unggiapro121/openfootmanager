@@ -669,11 +669,11 @@ mod tests {
             event(EventType::Interception, Zone::Midfield),
             event(EventType::PassCompleted, Zone::HomeDefense),
             event(EventType::Dribble, third),
-            event(EventType::Cross, third),
+            event(EventType::Cross, third).with_secondary("target"),
             event(EventType::Clearance, third),
             event(EventType::Clearance, third),
             event(EventType::Dribble, third),
-            event(EventType::Cross, third),
+            event(EventType::Cross, third).with_secondary("target"),
             event(EventType::Goal, Zone::AwayBox),
         ];
         let mut duels = DuelCounts::default();

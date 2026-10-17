@@ -848,7 +848,12 @@
       "breakSpeed": "反击速度",
       "breakSpeed_Slow": "慢",
       "breakSpeed_Medium": "中等",
-      "breakSpeed_Fast": "快"
+      "breakSpeed_Fast": "快",
+      "crossStyle": "传中方式",
+      "crossStyle_Mixed": "混合",
+      "crossStyle_High": "高球",
+      "crossStyle_Low": "低平球",
+      "crossStyle_Early": "提前传中"
     },
     "customTacticDescription": "将任意阵型与最适合你阵容的比赛风格组合，打造自定义战术。",
     "customTacticNumber": "自定义战术 {{count}}",
@@ -2495,6 +2500,34 @@
           "lines": {
             "0": "{{player}} 远射破门，{{team}}进球了！",
             "1": "禁区外一脚世界波！{{player}} 破门！"
+          }
+        },
+        "cutInside": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}}内切到强势脚一脚弧线球破门，{{team}}进球！",
+            "1": "从边路内切，{{player}}把球兜向远角！"
+          }
+        },
+        "lowCross": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}}一脚垫射低平球传中，{{team}}破门！",
+            "1": "低平球横扫小禁区，{{player}}推射入网！"
+          }
+        },
+        "earlyCross": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "一脚提前传中打到防线身后，{{player}}抢点成功！",
+            "1": "{{team}}提前传中，{{player}}抢在后卫之前破门！"
+          }
+        },
+        "freeKickCross": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}}抢点任意球传中，为{{team}}进球！",
+            "1": "任意球传入禁区，{{player}}完成关键一触！"
           }
         }
       },

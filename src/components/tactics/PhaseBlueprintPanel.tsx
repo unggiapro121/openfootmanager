@@ -7,6 +7,7 @@ const WITH_BALL_FIELDS = [
   ["build_up_style", "buildUpStyle", ["Short", "Mixed", "Long"]] as const,
   ["width", "width", ["Narrow", "Normal", "Wide"]] as const,
   ["tempo", "tempo", ["Patient", "Direct"]] as const,
+  ["cross_style", "crossStyle", ["Mixed", "High", "Low", "Early"]] as const,
 ];
 
 const WITHOUT_BALL_FIELDS = [

@@ -848,7 +848,12 @@
       "breakSpeed": "Umschaltgeschwindigkeit",
       "breakSpeed_Slow": "Langsam",
       "breakSpeed_Medium": "Mittel",
-      "breakSpeed_Fast": "Schnell"
+      "breakSpeed_Fast": "Schnell",
+      "crossStyle": "Flanken",
+      "crossStyle_Mixed": "Gemischt",
+      "crossStyle_High": "Hoch",
+      "crossStyle_Low": "Flach",
+      "crossStyle_Early": "Früh"
     },
     "customTacticDescription": "Erstelle eine eigene Ausrichtung, indem du jede Formation mit der Spielweise kombinierst, die zu deinem Kader passt.",
     "customTacticNumber": "Benutzerdefinierte Taktik {{count}}",
@@ -2495,6 +2500,34 @@
           "lines": {
             "0": "{{player}} zieht aus der Distanz ab — was für ein Treffer für {{team}}!",
             "1": "Ein Hammer von außerhalb des Strafraums! {{player}} trifft!"
+          }
+        },
+        "cutInside": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{player}} zieht nach innen auf seinen starken Fuß und schlenzt ihn rein – Tor für {{team}}!",
+            "1": "Von der Seite nach innen, {{player}} zirkelt ihn ins lange Eck!"
+          }
+        },
+        "lowCross": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{player}} nimmt die flache Hereingabe direkt – {{team}} trifft!",
+            "1": "Scharf durch den Fünfer und {{player}} drückt ihn über die Linie!"
+          }
+        },
+        "earlyCross": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "Eine frühe Flanke hinter die Abwehr und {{player}} ist zur Stelle!",
+            "1": "{{team}} flankt früh und {{player}} ist vor der Abwehr da!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{player}} geht zum Freistoß und trifft für {{team}}!",
+            "1": "Der Freistoß wird hereingeschlagen und {{player}} setzt den entscheidenden Kontakt!"
           }
         }
       },

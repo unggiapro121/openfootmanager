@@ -867,7 +867,12 @@
       "breakSpeed": "Velocità di ripartenza",
       "breakSpeed_Slow": "Lenta",
       "breakSpeed_Medium": "Media",
-      "breakSpeed_Fast": "Veloce"
+      "breakSpeed_Fast": "Veloce",
+      "crossStyle": "Cross",
+      "crossStyle_Mixed": "Misti",
+      "crossStyle_High": "Alti",
+      "crossStyle_Low": "Bassi",
+      "crossStyle_Early": "Anticipati"
     },
     "customTacticDescription": "Crea un assetto personalizzato combinando qualsiasi formazione con lo stile di gioco più adatto alla tua rosa.",
     "customTacticNumber": "Tattica personalizzata {{count}}",
@@ -2514,6 +2519,34 @@
           "lines": {
             "0": "{{player}} ci prova da lontano — che gol per il {{team}}!",
             "1": "Una bordata da fuori area! Segna {{player}}!"
+          }
+        },
+        "cutInside": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} rientra sul piede forte e la piazza per il {{team}}!",
+            "1": "Dalla fascia verso il centro, {{player}} la mette sul secondo palo!"
+          }
+        },
+        "lowCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} colpisce di prima sul cross basso, segna il {{team}}!",
+            "1": "Palla tesa nell'area piccola e {{player}} la spinge dentro!"
+          }
+        },
+        "earlyCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Un cross anticipato alle spalle della difesa e {{player}} arriva!",
+            "1": "Il {{team}} crossa presto e {{player}} anticipa la difesa!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} attacca la punizione e segna per il {{team}}!",
+            "1": "La punizione viene messa in mezzo e {{player}} trova il tocco decisivo!"
           }
         }
       },

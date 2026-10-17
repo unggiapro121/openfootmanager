@@ -711,6 +711,12 @@ pub(crate) fn domain_to_engine_tactics(t: &domain::team::TacticsPhaseSettings) -
             domain::team::BreakSpeed::Medium => BreakSpeed::Medium,
             domain::team::BreakSpeed::Fast => BreakSpeed::Fast,
         },
+        cross_style: match t.cross_style {
+            domain::team::CrossStyle::Mixed => engine::CrossStyle::Mixed,
+            domain::team::CrossStyle::High => engine::CrossStyle::High,
+            domain::team::CrossStyle::Low => engine::CrossStyle::Low,
+            domain::team::CrossStyle::Early => engine::CrossStyle::Early,
+        },
     }
 }
 

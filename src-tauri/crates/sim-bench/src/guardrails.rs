@@ -151,7 +151,23 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         box_shot_groups(result),
         one_v_one_win(result),
         final_third_carriers(result),
+        free_kick_goal_share(result),
     ]
+}
+
+/// Goals from free kicks, struck at goal or crossed in (decision X39, option
+/// b; measurable from P3.4, when a wide free kick is crossed).
+fn free_kick_goal_share(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let goals = f64::from(stats.total_goals.max(1));
+    let direct = stats.direct_free_kick_goals as f64 / goals * 100.0;
+    let crossed = stats.free_kick_goals as f64 / goals * 100.0;
+    Check {
+        name: "bàn từ đá phạt, trực tiếp + tạt (%)",
+        value: Some(direct + crossed),
+        band: format!("đo (trực tiếp {direct:.2} · tạt {crossed:.2})"),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// How often the attacker wins the attacking third's one-on-one. `Grid15`
@@ -197,14 +213,22 @@ fn centre_lane_share(result: &SweepResult) -> Check {
     }
 }
 
-/// Crosses a match, both sides, and how they split by lane (phase 2, GĐ3).
+/// Open-play crosses a match, both sides, against real football's 22, with
+/// those that never reached the contest and those along the ground (phase 2,
+/// GĐ3, P3.4).
 fn crosses_per_match(result: &SweepResult) -> Check {
     let stats = &result.stats;
-    let [left, centre, right] = stats.duels.tally.crosses_by_lane;
+    let tally = &stats.duels.tally;
+    let [left, centre, right] = tally.crosses_by_lane;
+    let per_match = |n: u64| n as f64 / f64::from(stats.games.max(1));
     Check {
-        name: "quả tạt/trận",
-        value: Some(stats.crosses_pg()),
-        band: format!("đo (trái/giữa/phải {left}/{centre}/{right})"),
+        name: "quả tạt bóng sống/trận",
+        value: Some(per_match(tally.open_play_crosses)),
+        band: format!(
+            "đo (thật 22,2; không tới {:.1}, sệt {:.1}/trận; mọi quả tạt trái/giữa/phải {left}/{centre}/{right})",
+            per_match(tally.unreached_crosses),
+            per_match(tally.low_crosses)
+        ),
         verdict: Verdict::Measure,
     }
 }

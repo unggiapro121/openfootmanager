@@ -24,8 +24,10 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
     }
 }
 
+pub use duel::aerial_rating_of;
 pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind, TacticalContext};
 pub use headless::{simulate, simulate_with_rng};
+pub use live_match::shot_weight;
 pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,
     SetPieceTakers, SubstitutionRecord,
@@ -37,8 +39,8 @@ pub use report::{
 };
 pub use tally::EventTally;
 pub use types::{
-    BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, EngineModel,
-    Foot, MarkingStyle, MatchConfig, PlayStyle, PlayerData, PlayerRole, Position,
+    BreakSpeed, CoachMastery, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape,
+    EngineModel, Foot, MarkingStyle, MatchConfig, PlayStyle, PlayerData, PlayerRole, Position,
     PressingIntensity, Side, TacticalDial, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth,
     TeamData, Tempo, Zone,
 };

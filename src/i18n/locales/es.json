@@ -848,7 +848,12 @@
       "breakSpeed": "Velocidad de ruptura",
       "breakSpeed_Slow": "Lenta",
       "breakSpeed_Medium": "Media",
-      "breakSpeed_Fast": "Rápida"
+      "breakSpeed_Fast": "Rápida",
+      "crossStyle": "Centros",
+      "crossStyle_Mixed": "Mixtos",
+      "crossStyle_High": "Altos",
+      "crossStyle_Low": "Rasos",
+      "crossStyle_Early": "Tempranos"
     },
     "customTacticDescription": "Crea una propuesta personalizada combinando cualquier formación con el estilo de juego que mejor encaje con tu plantilla.",
     "customTacticNumber": "Táctica personalizada {{count}}",
@@ -2495,6 +2500,34 @@
           "lines": {
             "0": "¡{{player}} prueba desde lejos y vaya golazo para el {{team}}!",
             "1": "¡Un cañonazo desde fuera del área! ¡Marca {{player}}!"
+          }
+        },
+        "cutInside": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡{{player}} recorta hacia dentro a su pierna buena y la coloca para el {{team}}!",
+            "1": "¡Desde la banda hacia dentro, {{player}} la mete al palo largo!"
+          }
+        },
+        "lowCross": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡{{player}} remata de primeras el centro raso y marca el {{team}}!",
+            "1": "¡Centro raso por el área pequeña y {{player}} la empuja!"
+          }
+        },
+        "earlyCross": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡Un centro temprano a la espalda de la defensa y {{player}} llega!",
+            "1": "¡El {{team}} centra pronto y {{player}} se adelanta a la defensa!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡{{player}} ataca la falta lateral y marca para el {{team}}!",
+            "1": "¡La falta se pone al área y {{player}} da el toque decisivo!"
           }
         }
       },

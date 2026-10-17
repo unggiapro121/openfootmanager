@@ -320,6 +320,20 @@ pub enum BreakSpeed {
     Fast,
 }
 
+/// How a side crosses from the flank (phase 2, P3.4, decisions X6, X55).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum CrossStyle {
+    /// Two crosses in three in the air, the third along the ground.
+    #[default]
+    Mixed,
+    /// Every cross in the air.
+    High,
+    /// Every cross along the ground.
+    Low,
+    /// As `Mixed`, and often early, before the full back is taken on.
+    Early,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TacticsConfig {
     pub pressing_intensity: PressingIntensity,
@@ -338,11 +352,14 @@ pub struct TacticsConfig {
     pub counter_press_duration: CounterPressDuration,
     #[serde(default)]
     pub break_speed: BreakSpeed,
+    /// Read only under `EngineModel::Grid15` (P3.4).
+    #[serde(default)]
+    pub cross_style: CrossStyle,
 }
 
 /// One dial of a side's tactical plan, and the setting to put it on.
 ///
-/// A play style is a label for a whole approach; these are the nine settings
+/// A play style is a label for a whole approach; these are the ten settings
 /// underneath it. Until now the only thing a manager could change during a match
 /// was the label, which is a blunt instrument — "push the line up" and "start
 /// the whole side attacking" are not the same instruction, and a side that is
@@ -358,10 +375,11 @@ pub enum TacticalDial {
     DefensiveShape(DefensiveShape),
     CounterPressDuration(CounterPressDuration),
     BreakSpeed(BreakSpeed),
+    CrossStyle(CrossStyle),
 }
 
 impl TacticalDial {
-    /// Turn this one dial, leaving the other eight where they are.
+    /// Turn this one dial, leaving the other nine where they are.
     pub fn set_on(self, tactics: &mut TacticsConfig) {
         match self {
             Self::PressingIntensity(value) => tactics.pressing_intensity = value,
@@ -373,6 +391,7 @@ impl TacticalDial {
             Self::DefensiveShape(value) => tactics.defensive_shape = value,
             Self::CounterPressDuration(value) => tactics.counter_press_duration = value,
             Self::BreakSpeed(value) => tactics.break_speed = value,
+            Self::CrossStyle(value) => tactics.cross_style = value,
         }
     }
 }

@@ -45,6 +45,8 @@ pub(crate) struct PlayerSnap {
     /// A long ball: how often play is switched to the far flank (phase 2,
     /// P3.3).
     pub long_passing: u8,
+    /// Meeting a low cross first time (phase 2, P3.4).
+    pub first_touch: u8,
     pub height_cm: u16,
     /// His stronger foot (phase 2, P3.0); read by the wing play of P3.4.
     pub footedness: Foot,
@@ -88,6 +90,7 @@ impl PlayerSnap {
             free_kick: 0,
             long_shots: 0,
             long_passing: 0,
+            first_touch: 0,
             height_cm: 0,
             footedness: Foot::Right,
             traits: Vec::new(),
@@ -123,6 +126,7 @@ impl PlayerSnap {
             free_kick: p.free_kick,
             long_shots: p.long_shots,
             long_passing: p.long_passing,
+            first_touch: p.first_touch,
             height_cm: p.height_cm,
             footedness: p.footedness,
             traits: p.traits.clone(),

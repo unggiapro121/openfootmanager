@@ -456,7 +456,7 @@ fn run_bench(config: &MatchConfig, games: u32, seed: Option<u64>) {
 /// that dial moves the game — the data used to tune `engine::shared`.
 fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
     use engine::{
-        BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle,
+        BreakSpeed, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape, MarkingStyle,
         PressingIntensity, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, Tempo,
     };
 
@@ -618,6 +618,31 @@ fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
             "Fast",
             TacticsConfig {
                 break_speed: BreakSpeed::Fast,
+                ..n.clone()
+            },
+        ),
+        // Grid15 only (phase 2, P3.4); under Zones5 these play as the baseline.
+        (
+            "cross_style",
+            "High",
+            TacticsConfig {
+                cross_style: CrossStyle::High,
+                ..n.clone()
+            },
+        ),
+        (
+            "cross_style",
+            "Low",
+            TacticsConfig {
+                cross_style: CrossStyle::Low,
+                ..n.clone()
+            },
+        ),
+        (
+            "cross_style",
+            "Early",
+            TacticsConfig {
+                cross_style: CrossStyle::Early,
                 ..n.clone()
             },
         ),

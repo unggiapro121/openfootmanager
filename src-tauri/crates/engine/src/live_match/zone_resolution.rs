@@ -1,7 +1,7 @@
 use rand::{Rng, RngExt};
 
 use crate::duel;
-use crate::event::{EventDetail, EventType, MatchEvent, SetPiece, ShotKind};
+use crate::event::{EventDetail, EventType, MatchEvent, SetPiece, ShotKind, TacticalContext};
 use crate::shared::{
     PlayStylePhase, PlayerSnap, TraitContext, play_style_modifier, role_attribute_modifier,
     tactics_buildup_mod, tactics_cross_probability, tactics_defensive_conversion_mod,
@@ -189,6 +189,9 @@ impl LiveMatchState {
         def_side: Side,
         rng: &mut R,
     ) -> Vec<MatchEvent> {
+        if self.plays_grid15() {
+            return self.resolve_attacking_third_grid(minute, att_side, def_side, rng);
+        }
         let mut events = Vec::new();
         let (attacker, defender, out_of_lane) =
             self.attacking_third_duelists(att_side, def_side, rng);
@@ -198,41 +201,7 @@ impl LiveMatchState {
             return long_shot;
         }
 
-        // As in midfield: ratings in `duel`, every existing modifier here.
-        let att_rating = self.condition_adjusted_skill(&attacker.id, 1.0)
-            * trait_bonus(&attacker, TraitContext::Dribbling);
-        let def_rating = self.condition_adjusted_skill(&defender.id, 1.0)
-            * trait_bonus(&defender, TraitContext::Tackling);
-
-        let att_mod = play_style_modifier(self.team_ref(att_side), PlayStylePhase::Attack)
-            * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
-        let def_mod = play_style_modifier(self.team_ref(def_side), PlayStylePhase::Defense)
-            * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
-        let att_eff = att_rating
-            * att_mod
-            * crate::shared::home_mod(att_side, &self.config)
-            * self.line_strength(att_side, Position::Forward);
-        let def_eff = def_rating
-            * def_mod
-            * crate::shared::home_mod(def_side, &self.config)
-            * self.line_strength(def_side, Position::Defender)
-            * self.centre_back_pair_factor(def_side, self.active_break)
-            * tactics_shape_modifier(&self.team_ref(def_side).tactics)
-            * tactics_width_versus_shape(
-                &self.team_ref(att_side).tactics,
-                &self.team_ref(def_side).tactics,
-            )
-            * out_of_lane;
-        let success = if self.plays_grid15() {
-            duel::one_v_one_win_probability_anchored(
-                &attacker,
-                &defender,
-                att_eff / def_eff,
-                duel::ANCHOR_ONE_V_ONE_GRID,
-            )
-        } else {
-            duel::one_v_one_win_probability(&attacker, &defender, att_eff / def_eff)
-        };
+        let success = self.one_v_one_success(att_side, def_side, &attacker, &defender, out_of_lane);
         let zone = Zone::attacking_third(att_side);
         let cross_prob = tactics_cross_probability(&self.team_ref(att_side).tactics);
 
@@ -298,55 +267,137 @@ impl LiveMatchState {
                 }
             }
         } else {
-            let is_tackle = rng.random_range(0.0..1.0f64) < 0.5;
-            let fouled = if is_tackle {
-                let evt1 = MatchEvent::new(minute, EventType::DribbleTackled, att_side, zone)
-                    .with_player(&attacker.id)
-                    .with_secondary(&defender.id);
-                let evt2 = MatchEvent::new(minute, EventType::Tackle, def_side, zone)
-                    .with_player(&defender.id);
-                self.emit(&mut events, evt1);
-                self.emit(&mut events, evt2);
-                let foul_mod = tactics_foul_modifier(&self.team_ref(def_side).tactics);
-                let foul_events =
-                    self.maybe_foul(minute, def_side, &attacker, &defender, zone, rng, foul_mod);
-                let was_fouled = foul_events.iter().any(|e| e.event_type == EventType::Foul);
-                events.extend(foul_events);
-                was_fouled
-            } else {
-                let evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
-                    .with_player(&defender.id);
-                self.emit(&mut events, evt);
-                false
-            };
-            if fouled {
-                // The fouled side keeps the ball for the free kick in its
-                // attacking third, and now and then shoots straight from it.
-                self.possession = att_side;
-                self.ball_zone = zone;
-                if rng.random_range(0.0..1.0f64) < DIRECT_FREE_KICK_SHARE {
-                    let free_kick_events = self.resolve_direct_free_kick(minute, att_side, rng);
-                    events.extend(free_kick_events);
-                }
-                return events;
-            }
-            if rng.random_range(0.0..1.0f64) < 0.25 {
-                let corner_events = self.resolve_corner(minute, att_side, rng);
-                events.extend(corner_events);
-                return events;
-            }
-            self.possession = def_side;
-            self.ball_zone = Zone::defensive_third(att_side);
-            self.advance_lane(def_side, &defender, rng);
+            let lost = self.one_v_one_lost(minute, att_side, def_side, &attacker, &defender, rng);
+            events.extend(lost);
         }
         events
+    }
+
+    /// The chance `attacker` beats `defender` in the attacking third's
+    /// one-on-one, with every modifier the duel has: ratings in `duel`, the
+    /// rest here. `out_of_lane` is κ for a defender off his flank (P3.2).
+    pub(super) fn one_v_one_success(
+        &self,
+        att_side: Side,
+        def_side: Side,
+        attacker: &PlayerSnap,
+        defender: &PlayerSnap,
+        out_of_lane: f64,
+    ) -> f64 {
+        let att_rating = self.condition_adjusted_skill(&attacker.id, 1.0)
+            * trait_bonus(attacker, TraitContext::Dribbling);
+        let def_rating = self.condition_adjusted_skill(&defender.id, 1.0)
+            * trait_bonus(defender, TraitContext::Tackling);
+
+        let att_mod = play_style_modifier(self.team_ref(att_side), PlayStylePhase::Attack)
+            * role_attribute_modifier(attacker.role, PlayStylePhase::Attack);
+        let def_mod = play_style_modifier(self.team_ref(def_side), PlayStylePhase::Defense)
+            * role_attribute_modifier(defender.role, PlayStylePhase::Defense);
+        let att_eff = att_rating
+            * att_mod
+            * crate::shared::home_mod(att_side, &self.config)
+            * self.line_strength(att_side, Position::Forward);
+        let def_eff = def_rating
+            * def_mod
+            * crate::shared::home_mod(def_side, &self.config)
+            * self.line_strength(def_side, Position::Defender)
+            * self.centre_back_pair_factor(def_side, self.active_break)
+            * tactics_shape_modifier(&self.team_ref(def_side).tactics)
+            * tactics_width_versus_shape(
+                &self.team_ref(att_side).tactics,
+                &self.team_ref(def_side).tactics,
+            )
+            * out_of_lane;
+        if self.plays_grid15() {
+            duel::one_v_one_win_probability_anchored(
+                attacker,
+                defender,
+                att_eff / def_eff,
+                duel::ANCHOR_ONE_V_ONE_GRID,
+            )
+        } else {
+            duel::one_v_one_win_probability(attacker, defender, att_eff / def_eff)
+        }
+    }
+
+    /// The attacker lost the one-on-one: tackled (perhaps fouled) or
+    /// cleared, and a cleared ball goes behind for a corner a quarter of the
+    /// time.
+    pub(super) fn one_v_one_lost<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        def_side: Side,
+        attacker: &PlayerSnap,
+        defender: &PlayerSnap,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
+        let mut events = Vec::new();
+        let zone = Zone::attacking_third(att_side);
+        let is_tackle = rng.random_range(0.0..1.0f64) < 0.5;
+        let fouled = if is_tackle {
+            let evt1 = MatchEvent::new(minute, EventType::DribbleTackled, att_side, zone)
+                .with_player(&attacker.id)
+                .with_secondary(&defender.id);
+            let evt2 = MatchEvent::new(minute, EventType::Tackle, def_side, zone)
+                .with_player(&defender.id);
+            self.emit(&mut events, evt1);
+            self.emit(&mut events, evt2);
+            let foul_mod = tactics_foul_modifier(&self.team_ref(def_side).tactics);
+            let foul_events =
+                self.maybe_foul(minute, def_side, attacker, defender, zone, rng, foul_mod);
+            let was_fouled = foul_events.iter().any(|e| e.event_type == EventType::Foul);
+            events.extend(foul_events);
+            was_fouled
+        } else {
+            let evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
+                .with_player(&defender.id);
+            self.emit(&mut events, evt);
+            false
+        };
+        if fouled {
+            // The fouled side keeps the ball for the free kick in its
+            // attacking third, and now and then shoots straight from it.
+            self.possession = att_side;
+            self.ball_zone = zone;
+            let free_kick_events = self.final_third_free_kick(minute, att_side, rng);
+            events.extend(free_kick_events);
+            return events;
+        }
+        if rng.random_range(0.0..1.0f64) < 0.25 {
+            let corner_events = self.resolve_corner(minute, att_side, rng);
+            events.extend(corner_events);
+            return events;
+        }
+        self.possession = def_side;
+        self.ball_zone = Zone::defensive_third(att_side);
+        self.advance_lane(def_side, defender, rng);
+        events
+    }
+
+    /// A free kick to `att_side` in its attacking third, the fouled side
+    /// keeping the ball. `Zones5`: a shot at goal `DIRECT_FREE_KICK_SHARE` of
+    /// the time. `Grid15`: by lane (P3.4, X56), see `wing_play`.
+    fn final_third_free_kick<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
+        if self.plays_grid15() {
+            return self.lane_free_kick(minute, att_side, rng);
+        }
+        if rng.random_range(0.0..1.0f64) < DIRECT_FREE_KICK_SHARE {
+            return self.resolve_direct_free_kick(minute, att_side, rng);
+        }
+        Vec::new()
     }
 
     /// Who meets in the attacking third's one-on-one, and κ for the defender.
     /// `Zones5`: a forward and a defender drawn at random. `Grid15`: each drawn
     /// by presence in the ball's lane (P3.2); a defender drawn onto a flank his
     /// slot is not on plays it at κ.
-    fn attacking_third_duelists<R: Rng>(
+    pub(super) fn attacking_third_duelists<R: Rng>(
         &self,
         att_side: Side,
         def_side: Side,
@@ -437,14 +488,44 @@ impl LiveMatchState {
             // Foul but no penalty: advantage played, shot continues
         }
 
-        let kind = ShotKind::Open;
         let (shooter, assister_id) = self.box_shooter_and_assister(att_side, rng);
+        let strike = self.strike_in_box(minute, att_side, &shooter, &assister_id, 1.0, None, rng);
+        events.extend(strike);
+        events
+    }
+
+    /// `shooter`'s shot in the box with his feet, from the keeper's side of
+    /// it: on target, saved or scored. `rating_mod` scales his finishing (a
+    /// first-time shot from a low cross, P3.4), `context` tags the attempt.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "a shot names its side, shooter, assister, rating and context; owner=GĐ3"
+    )]
+    pub(super) fn strike_in_box<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        shooter: &PlayerSnap,
+        assister_id: &str,
+        rating_mod: f64,
+        tactical_context: Option<TacticalContext>,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
+        let mut events = Vec::new();
+        let def_side = att_side.opposite();
+        let zone = Zone::attacking_box(att_side);
+        let kind = ShotKind::Open;
+        let tag = |event: MatchEvent| match tactical_context {
+            Some(c) => event.with_tactical_context(c),
+            None => event,
+        };
         let goalkeeper = self.snap_player(def_side, Position::Goalkeeper, rng);
 
         let shoot_raw =
             (shooter.shooting as f64 + shooter.composure as f64 + shooter.decisions as f64) / 3.0;
         let shoot_rating = self.condition_adjusted_skill(&shooter.id, shoot_raw)
-            * trait_bonus(&shooter, TraitContext::Shooting);
+            * trait_bonus(shooter, TraitContext::Shooting)
+            * rating_mod;
         let gk_raw = (goalkeeper.handling as f64
             + goalkeeper.reflexes as f64
             + goalkeeper.positioning as f64)
@@ -464,7 +545,7 @@ impl LiveMatchState {
                     .with_shot_kind(kind)
                     .with_player(&shooter.id)
                     .with_detail(detail);
-                self.emit(&mut events, evt);
+                self.emit(&mut events, tag(evt));
                 self.ball_zone = Zone::Midfield;
                 self.possession = def_side;
             } else {
@@ -472,7 +553,7 @@ impl LiveMatchState {
                     .with_shot_kind(kind)
                     .with_player(&shooter.id)
                     .with_detail(detail);
-                self.emit(&mut events, evt);
+                self.emit(&mut events, tag(evt));
                 let gk_evt = MatchEvent::new(minute, EventType::GoalKick, def_side, zone);
                 self.emit(&mut events, gk_evt);
                 self.ball_zone = Zone::defensive_third(def_side);
@@ -491,9 +572,9 @@ impl LiveMatchState {
             let evt = MatchEvent::new(minute, EventType::Goal, att_side, zone)
                 .with_shot_kind(kind)
                 .with_player(&shooter.id)
-                .with_secondary(&assister_id)
+                .with_secondary(assister_id)
                 .with_detail(EventDetail::Goal { context });
-            self.emit(&mut events, evt);
+            self.emit(&mut events, tag(evt));
             self.add_goal(att_side);
             self.ball_zone = Zone::Midfield;
             self.possession = def_side;
@@ -505,7 +586,7 @@ impl LiveMatchState {
                 .with_detail(EventDetail::Save {
                     quality: save_quality(gk_rating),
                 });
-            self.emit(&mut events, evt);
+            self.emit(&mut events, tag(evt));
             self.after_save(minute, att_side, &mut events, rng);
         }
 

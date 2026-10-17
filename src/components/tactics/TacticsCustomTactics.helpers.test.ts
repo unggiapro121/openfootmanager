@@ -14,6 +14,7 @@ const blueprint: TacticsPhaseSettings = {
   marking_style: "Zonal",
   counter_press_duration: "Short",
   break_speed: "Medium",
+  cross_style: "Mixed",
 };
 
 describe("isSamePhaseBlueprint", () => {
