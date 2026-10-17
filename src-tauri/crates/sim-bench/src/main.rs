@@ -130,6 +130,12 @@ struct Cli {
     #[arg(long)]
     dial_balance: bool,
 
+    /// Every role each kind of slot offers against `Standard` in that slot,
+    /// between a squad and its own mirror, `--games` matches each (phase 2,
+    /// GĐ4, P4.0; from P4.4 no role may beat `Standard` by more than 5 points).
+    #[arg(long)]
+    role_balance: bool,
+
     /// Play only the formation-balance table: each formation against 4-4-2 at
     /// gap 0, `--games` matches a formation (default 1,000; the gate uses 4,000).
     #[arg(long)]
@@ -255,6 +261,17 @@ fn main() {
             })
             .collect();
         balance::print_table(&rows);
+        return;
+    }
+
+    if cli.role_balance {
+        let rows: Vec<balance::BalanceRow> = balance::role_cases()
+            .iter()
+            .map(|case| {
+                balance::role_against_standard(&config, cli.seed.unwrap_or(42), cli.games, case)
+            })
+            .collect();
+        balance::print_role_table(&rows);
         return;
     }
 

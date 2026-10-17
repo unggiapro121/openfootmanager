@@ -145,7 +145,7 @@ pub fn aerial_rating_of(
 /// The physical weights lean apart on purpose: the forward goes past on pace
 /// and a change of direction, the defender stands him up with his body.
 pub(crate) fn one_v_one_ratings(att: &PlayerSnap, def: &PlayerSnap) -> [f64; 4] {
-    let technique_att = 0.70 * f64::from(att.dribbling) + 0.30 * f64::from(att.composure);
+    let technique_att = 0.70 * f64::from(att.legacy_dribbling()) + 0.30 * f64::from(att.composure);
     let technique_def = 0.45 * f64::from(def.tackling)
         + 0.35 * f64::from(def.defending)
         + 0.20 * f64::from(def.positioning);
@@ -159,8 +159,8 @@ pub(crate) fn one_v_one_ratings(att: &PlayerSnap, def: &PlayerSnap) -> [f64; 4] 
 /// The midfield duel, a third of it physical: strength to shield and to
 /// win the ball, agility to slip a press, pace to close one down.
 pub(crate) fn midfield_ratings(att: &PlayerSnap, def: &PlayerSnap) -> (f64, f64) {
-    let attacker = 0.25 * f64::from(att.passing)
-        + 0.20 * f64::from(att.dribbling)
+    let attacker = 0.25 * f64::from(att.legacy_passing())
+        + 0.20 * f64::from(att.legacy_dribbling())
         + 0.15 * f64::from(att.vision)
         + 0.10 * f64::from(att.teamwork)
         + 0.15 * f64::from(att.agility)

@@ -295,10 +295,13 @@ Players carry 26 attributes, grouped into categories:
 **Mental**: positioning, vision, decisions, composure, aggression, teamwork, leadership
 **Goalkeeper**: handling, reflexes, aerial (jumping and contesting a high ball)
 
-The seven split attributes came out of four older blends. The phases not yet moved onto them are
-tuned on those blends, so the bridge (`ofm_core/turn/squad.rs`) hands the engine `passing` and
-`dribbling` rebuilt by the pre-split formulas (`PlayerAttributes::legacy_blends`); `shooting` moved
-at P2.5.
+The seven split attributes came out of four older blends. The bridge (`ofm_core/turn/squad.rs`)
+hands the engine every attribute raw (phase 2, P4.0). The rules still tuned on the old blends of
+`passing` and `dribbling` — the build-up pass, the midfield duel, the one-on-one's technique, the
+cut inside, the inverted full back's lift and `PlayerData::overall` — rebuild them by name with
+`engine::legacy_passing` and `legacy_dribbling` (the arithmetic of
+`PlayerAttributes::legacy_blends`), so a rule that reads `long_passing` or `first_touch` on its own
+never counts it twice. `shooting` moved at P2.5.
 `aerial` and `heading` moved in phase 2's P2.2: the aerial duel reads `aerial` (jumping and
 strength) and the header reads `heading`. A synthetic player who leaves any of the seven at 0 has
 it filled at kick-off from the field it split from (`PlayerData::declare_split_attributes`).

@@ -2,6 +2,7 @@ pub mod ai;
 pub(crate) mod duel;
 pub mod event;
 mod headless;
+mod legacy_blend;
 pub mod live_match;
 pub mod pitch_position;
 pub mod rating;
@@ -27,6 +28,7 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
 pub use duel::aerial_rating_of;
 pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind, TacticalContext};
 pub use headless::{simulate, simulate_with_rng};
+pub use legacy_blend::{legacy_dribbling, legacy_passing};
 pub use live_match::shot_weight;
 pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,

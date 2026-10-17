@@ -184,15 +184,31 @@ fn default_fitness() -> u8 {
 }
 
 impl PlayerData {
-    /// Overall rating (simple mean of core 11 attributes).
+    /// The pre-split blend of `passing` (see `legacy_blend`).
+    pub fn legacy_passing(&self) -> u8 {
+        crate::legacy_blend::legacy_passing(
+            self.passing,
+            self.long_passing,
+            self.crossing,
+            self.curve,
+        )
+    }
+
+    /// The pre-split blend of `dribbling` (see `legacy_blend`).
+    pub fn legacy_dribbling(&self) -> u8 {
+        crate::legacy_blend::legacy_dribbling(self.dribbling, self.first_touch)
+    }
+
+    /// Overall rating (simple mean of core 11 attributes, passing and
+    /// dribbling as their pre-split blends).
     pub fn overall(&self) -> f64 {
         (self.pace as f64
             + self.stamina as f64
             + self.strength as f64
-            + self.passing as f64
+            + self.legacy_passing() as f64
             + self.shooting as f64
             + self.tackling as f64
-            + self.dribbling as f64
+            + self.legacy_dribbling() as f64
             + self.defending as f64
             + self.positioning as f64
             + self.vision as f64
@@ -489,18 +505,22 @@ impl TeamData {
     /// Composite midfield rating.
     pub fn midfield_rating(&self) -> f64 {
         self.position_attr_avg(Position::Midfielder, |p| {
-            ((p.passing as u16 + p.vision as u16 + p.decisions as u16 + p.stamina as u16) / 4) as u8
+            ((p.legacy_passing() as u16 + p.vision as u16 + p.decisions as u16 + p.stamina as u16)
+                / 4) as u8
         })
     }
 
     /// Composite attack rating (from forwards + midfielders).
     pub fn attack_rating(&self) -> f64 {
         let fwd_avg = self.position_attr_avg(Position::Forward, |p| {
-            ((p.shooting as u16 + p.dribbling as u16 + p.pace as u16 + p.positioning as u16) / 4)
-                as u8
+            ((p.shooting as u16
+                + p.legacy_dribbling() as u16
+                + p.pace as u16
+                + p.positioning as u16)
+                / 4) as u8
         });
         let mid_contrib = self.position_attr_avg(Position::Midfielder, |p| {
-            ((p.shooting as u16 + p.passing as u16 + p.vision as u16) / 3) as u8
+            ((p.shooting as u16 + p.legacy_passing() as u16 + p.vision as u16) / 3) as u8
         });
         fwd_avg * 0.75 + mid_contrib * 0.25
     }

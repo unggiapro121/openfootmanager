@@ -153,7 +153,61 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         final_third_carriers(result),
         free_kick_goal_share(result),
         open_flank_breaks(result),
+        build_ups(result),
+        high_turnovers(result),
+        midfield_duels(result),
     ]
+}
+
+/// Build-ups from a side's own third (phase 2, GĐ4, P4.0): how many a side
+/// plays a match and how many reach midfield. GĐ4 lifts the count (X77,
+/// target ≈ 15–25) and anchors the success rate at P4.0's (X66).
+fn build_ups(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let tally = &stats.duels.tally;
+    let per_side = tally.build_ups as f64 / f64::from(stats.games.max(1) * 2);
+    Check {
+        name: "phát động thành công (%)",
+        value: Some(tally.build_up_success_pct()),
+        band: format!("đo ({per_side:.1} pha/đội/trận; GĐ4 đích ≈ 15–25)"),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Build-ups lost in the own third, and what the side that won the ball made
+/// of them before the other side touched it again (P4.0; X67 labels them).
+fn high_turnovers(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let tally = &stats.duels.tally;
+    let turnovers = tally.high_turnovers.max(1) as f64;
+    Check {
+        name: "mất bóng ở 1/3 sân nhà/trận",
+        value: Some(tally.high_turnovers as f64 / f64::from(stats.games.max(1))),
+        band: format!(
+            "đo ({:.3} cú sút, {:.3} bàn mỗi lần mất bóng)",
+            tally.high_turnover_shots as f64 / turnovers,
+            tally.high_turnover_goals as f64 / turnovers
+        ),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Midfield duels: how often the side on the ball wins one, and the winner's
+/// group (P4.0). P4.3 re-anchors the first and opens the second to players
+/// outside the midfield.
+fn midfield_duels(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let tally = &stats.duels.tally;
+    let [def, mid, fwd, subs] = tally.midfield_winner_group_pct();
+    Check {
+        name: "giữa sân, đội công thắng (%)",
+        value: Some(tally.midfield_attack_won_pct()),
+        band: format!(
+            "đo ({:.1} tranh chấp/trận; người thắng MID {mid:.1} · DEF {def:.1} · FWD {fwd:.1} · dự bị {subs:.1})",
+            tally.midfield_duels as f64 / f64::from(stats.games.max(1))
+        ),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// Breaks into a flank a full back left open (phase 2, P3.6): how many a

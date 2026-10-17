@@ -237,6 +237,17 @@ impl MatchEvent {
     pub fn is_goal(&self) -> bool {
         matches!(self.event_type, EventType::Goal | EventType::PenaltyGoal)
     }
+
+    /// A shot from open play or a set piece, whatever became of it.
+    pub fn is_shot(&self) -> bool {
+        matches!(
+            self.event_type,
+            EventType::Goal
+                | EventType::ShotSaved
+                | EventType::ShotOffTarget
+                | EventType::ShotBlocked
+        )
+    }
 }
 
 #[cfg(test)]
