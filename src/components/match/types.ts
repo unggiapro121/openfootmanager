@@ -153,6 +153,8 @@ export interface MatchSnapshot {
   away_score: number;
   possession: "Home" | "Away";
   ball_zone: string;
+  /** The ball's lane as the side in possession sees it; GĐ3 grid matches only. */
+  ball_lane?: Lane | null;
   home_team: EngineTeamData;
   away_team: EngineTeamData;
   home_bench: EnginePlayerData[];

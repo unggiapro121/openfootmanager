@@ -85,6 +85,31 @@ function attackingBoxX(side: Side): number {
   return toPitch(side, 97, CENTRE_LANE).x;
 }
 
+/**
+ * A lane's band across the pitch, in the acting side's view: thirds of its
+ * width (phase 2, GĐ3). An event's `lane` is the ball's (protocol 3) or the
+ * actor's slot (protocol 2), so either way the play is drawn in it.
+ */
+const LANE_BANDS: Record<NonNullable<MatchEvent["lane"]>, readonly [number, number]> = {
+  Left: [3, 22.7],
+  Centre: [22.7, 45.3],
+  Right: [45.3, 65],
+};
+
+/** `lane` held inside the band of the event's lane, when it has one. */
+function inLaneOf(event: MatchEvent, lane: number): number {
+  if (!event.lane) return lane;
+  const [low, high] = LANE_BANDS[event.lane];
+  return clamp(lane, low, high);
+}
+
+/** The touchline a cross is struck from: its lane's, else the nearer one. */
+function crossingFlank(event: MatchEvent, lane: number): number {
+  if (event.lane === "Left") return 6;
+  if (event.lane === "Right") return 62;
+  return lane < CENTRE_LANE ? 6 : 62;
+}
+
 /** How far a player goes to a loose ball himself rather than having it come to him. */
 const FETCH_METRES = 15;
 
@@ -295,6 +320,14 @@ const DRIBBLE_MIN_TOUCHES = 3;
 const DRIBBLE_BEND = 2.5;
 /** How far goal-side the defender holds off the dribbler: a few metres, never on top of him. */
 const JOCKEY_GAP = 6;
+/** How far from the middle a wide man who cuts inside ends: the edge of the box. */
+const CUT_INSIDE_LANE = 12;
+/** How deep a break into an open flank carries the ball: into the box. */
+const OPEN_FLANK_END_DEPTH = 90;
+/** Where an early cross is struck from: well short of the byline. */
+const EARLY_CROSS_DEPTH = 70;
+/** Where a low cross is aimed: around the penalty spot. */
+const LOW_CROSS_DEPTH = 93.5;
 
 /**
  * A dribble, touch by touch: each touch pushes the ball a stride ahead and the
@@ -308,13 +341,23 @@ function stageDribble(cue: Cue): Staging {
   const runner = event.player_id;
   const take = takeBall(cue, runner);
   const start = take.at;
-  const { depth, lane } = fromPitch(side, start);
-  // Wide men run down the line; the rest straight at goal. Never back towards halfway.
-  const endLane = clamp(lane + (lane < 24 ? -4 : lane > 44 ? 4 : 0), 3, 65);
-  const endDepth = Math.max(
-    depth,
-    clamp(depth + DRIBBLE_METRES, DRIBBLE_END_DEPTH, DRIBBLE_MAX_DEPTH),
-  );
+  const taken = fromPitch(side, start);
+  const depth = taken.depth;
+  const lane = inLaneOf(event, taken.lane);
+  const towardsMiddle = lane < CENTRE_LANE ? 1 : -1;
+  // A wide man who cuts inside comes in to the edge of the box; one breaking
+  // into a flank left open runs on into it (phase 2, GĐ3). Otherwise wide men
+  // run down the line and the rest straight at goal, never back towards halfway.
+  const endLane =
+    event.tactical_context === "CutInside"
+      ? CENTRE_LANE - towardsMiddle * CUT_INSIDE_LANE
+      : event.tactical_context === "FlankExposed"
+        ? CENTRE_LANE - towardsMiddle * BOX_HALF_WIDTH * 0.6
+        : clamp(lane + (lane < 24 ? -4 : lane > 44 ? 4 : 0), 3, 65);
+  const endDepth =
+    event.tactical_context === "FlankExposed"
+      ? Math.max(depth, OPEN_FLANK_END_DEPTH)
+      : Math.max(depth, clamp(depth + DRIBBLE_METRES, DRIBBLE_END_DEPTH, DRIBBLE_MAX_DEPTH));
   const touchCount = Math.max(
     DRIBBLE_MIN_TOUCHES,
     Math.ceil(Math.hypot(endDepth - depth, endLane - lane) / DRIBBLE_TOUCH_METRES),
@@ -374,7 +417,9 @@ function stageTackledDribble(cue: Cue): Staging {
   const pairedTackle = next?.event_type === "Tackle";
   const defender = event.secondary_player_id ?? (pairedTackle ? next?.player_id : null);
   const take = takeBall(cue, attacker);
-  const { depth, lane } = fromPitch(side, take.at);
+  const taken = fromPitch(side, take.at);
+  const depth = taken.depth;
+  const lane = inLaneOf(event, taken.lane);
   return {
     consumed: pairedTackle ? 2 : 1,
     steps: [
@@ -406,17 +451,26 @@ function stageCross(cue: Cue): Staging {
   const target =
     event.secondary_player_id ?? standIn(stage, side, "Forward", `${event.minute}x`, winger);
   const take = takeBall(cue, winger);
-  const flank = fromPitch(side, take.at).lane < CENTRE_LANE ? 6 : 62;
-  const wingSpot = toPitch(side, 94, flank);
+  const flank = crossingFlank(event, fromPitch(side, take.at).lane);
+  // An early cross goes in from further back; a low one is driven along the
+  // ground towards the penalty spot (phase 2, GĐ3).
+  const early = event.tactical_context === "EarlyCross";
+  const low = event.tactical_context === "LowCross";
+  const flight = low ? "pass" : "air";
+  const wingSpot = toPitch(side, early ? EARLY_CROSS_DEPTH : 94, flank);
   const carry = paceSeconds("carry", distance(take.at, wingSpot));
   // The man it is aimed at sets off as the winger heads for the line, and the
   // ball is put where he will be.
-  const want = toPitch(side, 95, CENTRE_LANE + (flank < CENTRE_LANE ? 3 : -3));
+  const want = toPitch(
+    side,
+    low ? LOW_CROSS_DEPTH : 95,
+    CENTRE_LANE + (flank < CENTRE_LANE ? 3 : -3),
+  );
   const landing = target
     ? meetingPoint(
         where(cue, target),
         want,
-        (point) => distance(wingSpot, point) / PACE_SPEED.air,
+        (point) => distance(wingSpot, point) / PACE_SPEED[flight],
         take.seconds + carry,
       )
     : want;
@@ -443,9 +497,16 @@ function stageCross(cue: Cue): Staging {
         action: winger ? { kind: "carry", by: winger } : undefined,
       },
       {
-        pace: "air",
+        pace: flight,
         ball: { at: landing, lift: 0 },
-        action: { kind: "kick", by: winger, to: landing, receiver: target, pace: "air", peak: 7 },
+        action: {
+          kind: "kick",
+          by: winger,
+          to: landing,
+          receiver: target,
+          pace: flight,
+          peak: low ? 0 : 7,
+        },
       },
     ],
   };

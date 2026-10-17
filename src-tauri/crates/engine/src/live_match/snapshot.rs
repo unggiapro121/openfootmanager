@@ -84,6 +84,7 @@ impl LiveMatchState {
             away_score: self.away_score,
             possession: self.possession,
             ball_zone: self.ball_zone,
+            ball_lane: self.plays_grid15().then(|| self.lane_for(self.possession)),
             home_team,
             away_team,
             home_bench: self.home_bench.clone(),
