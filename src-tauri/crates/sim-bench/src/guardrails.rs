@@ -193,13 +193,13 @@ fn free_kick_goal_share(result: &SweepResult) -> Check {
     }
 }
 
-/// How often the attacker wins the attacking third's one-on-one. `Grid15`
-/// anchors it back to `Zones5`'s (P3.2, X49), so goals do not drift.
+/// How often the attacker wins the attacking third's one-on-one: GĐ3 anchored
+/// it where it stood before lanes (P3.2, X49), about 56–57%.
 fn one_v_one_win(result: &SweepResult) -> Check {
     Check {
         name: "1v1 ở 1/3 cuối, đội công thắng (%)",
         value: Some(result.stats.duels.one_v_one_win_pct()),
-        band: "đo (Grid15 neo về Zones5)".to_string(),
+        band: "đo (neo ở mức trước GĐ3, ≈ 56–57)".to_string(),
         verdict: Verdict::Measure,
     }
 }

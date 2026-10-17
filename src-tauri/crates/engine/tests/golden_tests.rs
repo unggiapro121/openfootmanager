@@ -15,19 +15,13 @@
 //! a seven-man bench and `ai_decide` on both touchlines, as unwatched fixtures
 //! do in the game. The RNG is ChaCha12 because its output is fixed by its
 //! specification; `StdRng` may change algorithm between `rand` releases.
-//!
-//! Phase 2, GĐ3 runs two match models side by side (X47). `GOLDEN` pins
-//! `Zones5`, the model every GĐ3 package must leave exactly as it was.
-//! `golden_grid15.txt` pins the same fixtures under `Grid15`; a GĐ3 package
-//! that changes `Grid15` blesses it once with
-//! `OFM_BLESS_GOLDEN_GRID15=1 cargo test -p engine --test golden_tests`.
 
 use engine::ai::{AiPersonality, AiProfile, ai_decide};
 use engine::{
-    BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, EngineModel,
-    LiveMatchState, MatchConfig, MatchEvent, MatchReport, PlayStyle, PlayerData, PlayerRole,
-    Position, PressingIntensity, Side, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth,
-    TeamData, Tempo,
+    BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, LiveMatchState,
+    MatchConfig, MatchEvent, MatchReport, PlayStyle, PlayerData, PlayerRole, Position,
+    PressingIntensity, Side, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, TeamData,
+    Tempo,
 };
 use rand::{Rng, RngExt, SeedableRng};
 use rand_chacha::ChaCha12Rng;
@@ -246,26 +240,26 @@ const FIXTURES: [Fixture; 20] = [
 
 /// (fixture name, home goals, away goals, event fingerprint), in `FIXTURES` order.
 const GOLDEN: [(&str, u8, u8, u64); 20] = [
-    ("even_442", 6, 1, 0xF2F94F0B5AA10D90),
-    ("even_433", 1, 0, 0x4566260E86B94D68),
-    ("gap_5", 0, 1, 0xB1DCFBB996B2B065),
-    ("gap_10", 4, 0, 0xFCB0A56C35C0C451),
-    ("gap_20_away_strong", 1, 3, 0xB1E3AE754017406C),
-    ("three_at_back", 1, 2, 0x2F746949C0B9617C),
-    ("one_four_one", 2, 1, 0x70196BC087E8BA69),
-    ("press_vs_block", 1, 0, 0xB8396BF5C347708C),
-    ("direct_wide", 1, 3, 0x7608A0A2AA3A3A88),
-    ("specialists_433", 1, 1, 0x2B0E31F42941ADC4),
-    ("low_league", 2, 0, 0x7B03325D592226A2),
-    ("elite", 3, 1, 0x49433E8F1B64C097),
-    ("managed_even", 1, 2, 0x26AB9BC7552AC366),
-    ("managed_gap_10", 4, 0, 0x3B97EE4F5C6ABD34),
-    ("managed_specialists", 2, 1, 0xEB556C1F772458DB),
-    ("managed_press", 3, 1, 0x327440775B0B9299),
-    ("managed_block", 0, 2, 0xD7A4568FFBD5EFE6),
-    ("managed_three_back", 0, 1, 0xFF4AC01915D078BD),
-    ("managed_low_league", 5, 1, 0x53093FD571D8FA05),
-    ("managed_elite", 1, 0, 0xC3BE97D41F9E0256),
+    ("even_442", 0, 2, 0x6CBCE53A37921A19),
+    ("even_433", 1, 1, 0xDBC5569EBF677EE7),
+    ("gap_5", 1, 2, 0x42D3EB6A9B27B3B5),
+    ("gap_10", 5, 2, 0xA264F03328CE31CE),
+    ("gap_20_away_strong", 1, 4, 0xDBAE3242CD38C08D),
+    ("three_at_back", 2, 1, 0x3FCDEAE74AF97325),
+    ("one_four_one", 1, 1, 0xAA5282519C77F2AC),
+    ("press_vs_block", 2, 2, 0x8C52C9B90A2CF25B),
+    ("direct_wide", 1, 2, 0x1E438BFC2109C74D),
+    ("specialists_433", 2, 0, 0xA56229E9BCF69AB8),
+    ("low_league", 1, 1, 0xE297971EE0E79563),
+    ("elite", 2, 1, 0xFE4D9DC829EF4E6A),
+    ("managed_even", 1, 1, 0x2EE1570E7A7DF6FB),
+    ("managed_gap_10", 5, 0, 0x9CAC05E4D7F41413),
+    ("managed_specialists", 3, 1, 0x8E1542EFA55B30E4),
+    ("managed_press", 2, 3, 0xAFE252848A6034A2),
+    ("managed_block", 1, 0, 0x772CFEF9FC795164),
+    ("managed_three_back", 1, 1, 0x67E76A6BFDA6AE08),
+    ("managed_low_league", 3, 2, 0x18DCE29017FCFCF2),
+    ("managed_elite", 4, 1, 0x25C5CBE064B6E0E0),
 ];
 
 // ---------------------------------------------------------------------------
@@ -449,10 +443,6 @@ fn make_squad(
 // ---------------------------------------------------------------------------
 
 fn play(fixture: &Fixture) -> MatchReport {
-    play_on(fixture, EngineModel::Zones5)
-}
-
-fn play_on(fixture: &Fixture, engine_model: EngineModel) -> MatchReport {
     // Teams and the match draw from separate streams, so a change in how teams
     // are built cannot hide inside a change in how the match is played.
     let mut team_rng = ChaCha12Rng::seed_from_u64(fixture.seed ^ 0x7EA4_5EED);
@@ -464,10 +454,7 @@ fn play_on(fixture: &Fixture, engine_model: EngineModel) -> MatchReport {
     let mut state = LiveMatchState::new(
         home,
         away,
-        MatchConfig {
-            engine_model,
-            ..MatchConfig::default()
-        },
+        MatchConfig::default(),
         home_bench,
         away_bench,
         false,
@@ -542,47 +529,6 @@ fn fingerprint(report: &MatchReport) -> u64 {
     })
 }
 
-fn played_on(engine_model: EngineModel) -> Vec<(&'static str, u8, u8, u64)> {
-    FIXTURES
-        .iter()
-        .map(|f| {
-            let r = play_on(f, engine_model);
-            (f.name, r.home_goals, r.away_goals, fingerprint(&r))
-        })
-        .collect()
-}
-
-const GOLDEN_GRID15_FILE: &str = "tests/golden_grid15.txt";
-
-/// `golden_grid15.txt`: one fixture a line, `name home away fingerprint`.
-fn golden_grid15() -> Vec<(String, u8, u8, u64)> {
-    include_str!("golden_grid15.txt")
-        .lines()
-        .filter(|line| !line.trim().is_empty() && !line.starts_with('#'))
-        .map(|line| {
-            let fields: Vec<&str> = line.split_whitespace().collect();
-            let fingerprint = u64::from_str_radix(fields[3].trim_start_matches("0x"), 16)
-                .expect("a hex fingerprint");
-            (
-                fields[0].to_string(),
-                fields[1].parse().expect("home goals"),
-                fields[2].parse().expect("away goals"),
-                fingerprint,
-            )
-        })
-        .collect()
-}
-
-fn grid15_file(actual: &[(&str, u8, u8, u64)]) -> String {
-    let rows: String = actual
-        .iter()
-        .map(|(name, h, a, fp)| format!("{name} {h} {a} 0x{fp:016X}\n"))
-        .collect();
-    format!(
-        "# Golden fixtures under EngineModel::Grid15 (phase 2, GĐ3). See golden_tests.rs.\n{rows}"
-    )
-}
-
 fn regenerated_table(actual: &[(&str, u8, u8, u64)]) -> String {
     let rows: String = actual
         .iter()
@@ -600,7 +546,13 @@ fn regenerated_table(actual: &[(&str, u8, u8, u64)]) -> String {
 /// then its score and event fingerprint match the pinned table.
 #[test]
 fn golden_fixtures_play_exactly_as_pinned() {
-    let actual = played_on(EngineModel::Zones5);
+    let actual: Vec<(&str, u8, u8, u64)> = FIXTURES
+        .iter()
+        .map(|f| {
+            let r = play(f);
+            (f.name, r.home_goals, r.away_goals, fingerprint(&r))
+        })
+        .collect();
     let mismatched: Vec<&str> = actual
         .iter()
         .zip(GOLDEN.iter())
@@ -612,35 +564,6 @@ fn golden_fixtures_play_exactly_as_pinned() {
         "golden fixtures changed: {mismatched:?}\n\
          If the change is intended, replace GOLDEN with:\n{}",
         regenerated_table(&actual)
-    );
-}
-
-/// Given the twenty golden fixtures,
-/// when each is played on its seed under `Grid15`,
-/// then its score and event fingerprint match `golden_grid15.txt`.
-/// `OFM_BLESS_GOLDEN_GRID15=1` rewrites the file instead.
-#[test]
-fn golden_fixtures_play_exactly_as_pinned_on_grid15() {
-    let actual = played_on(EngineModel::Grid15);
-    if std::env::var_os("OFM_BLESS_GOLDEN_GRID15").is_some() {
-        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(GOLDEN_GRID15_FILE);
-        std::fs::write(&path, grid15_file(&actual)).expect("write golden_grid15.txt");
-        return;
-    }
-    let pinned = golden_grid15();
-    let names: Vec<&str> = pinned.iter().map(|g| g.0.as_str()).collect();
-    let fixtures: Vec<&str> = FIXTURES.iter().map(|f| f.name).collect();
-    assert_eq!(names, fixtures, "golden_grid15.txt lists other fixtures");
-    let mismatched: Vec<&str> = actual
-        .iter()
-        .zip(pinned.iter())
-        .filter(|(a, g)| (a.1, a.2, a.3) != (g.1, g.2, g.3))
-        .map(|(a, _)| a.0)
-        .collect();
-    assert!(
-        mismatched.is_empty(),
-        "Grid15 golden fixtures changed: {mismatched:?}\n\
-         If the change is intended, bless with OFM_BLESS_GOLDEN_GRID15=1."
     );
 }
 

@@ -1,4 +1,4 @@
-//! Play in the attacking third under `Grid15` (phase 2, GĐ3, P3.4;
+//! Play in the attacking third (phase 2, GĐ3, P3.4;
 //! GĐ3-tech-spec §9, decisions X54–X56).
 //!
 //! ```text
@@ -116,8 +116,8 @@ fn low_cross_win(att: &PlayerSnap, def: &PlayerSnap) -> f64 {
 }
 
 impl LiveMatchState {
-    /// The attacking third under `Grid15`; see the module docs.
-    pub(super) fn resolve_attacking_third_grid<R: Rng>(
+    /// The attacking third; see the module docs.
+    pub(super) fn resolve_attacking_third<R: Rng>(
         &mut self,
         minute: u8,
         att_side: Side,
@@ -357,7 +357,7 @@ impl LiveMatchState {
                     duel::aerial_win_probability_anchored(
                         &target,
                         &marker,
-                        duel::ANCHOR_AERIAL_CROSS_GRID,
+                        duel::ANCHOR_AERIAL_OPEN_PLAY_CROSS,
                     ),
                     contest_help(delivery) * around,
                 )
@@ -432,7 +432,7 @@ mod tests {
     use rand::SeedableRng;
     use rand::rngs::StdRng;
 
-    /// Every event of `matches` Grid15 matches, the home side crossing `style`.
+    /// Every event of `matches` matches, the home side crossing `style`.
     fn grid_events(style: CrossStyle, matches: u64) -> Vec<MatchEvent> {
         (0..matches)
             .flat_map(|seed| {
@@ -441,10 +441,7 @@ mod tests {
                 let mut state = LiveMatchState::new(
                     home,
                     make_team("away"),
-                    MatchConfig {
-                        engine_model: crate::types::EngineModel::Grid15,
-                        ..MatchConfig::default()
-                    },
+                    MatchConfig::default(),
                     Vec::new(),
                     Vec::new(),
                     false,
@@ -461,7 +458,7 @@ mod tests {
             .collect()
     }
 
-    /// Given forty Grid15 matches,
+    /// Given forty matches,
     /// when their open-play crosses are read,
     /// then every one comes from a flank, and there are crosses at all.
     #[test]
@@ -475,7 +472,7 @@ mod tests {
         assert!(crosses.iter().all(|e| e.lane != Some(Lane::Centre)));
     }
 
-    /// Given eighty Grid15 matches between sides whose full backs bomb on,
+    /// Given eighty matches between sides whose full backs bomb on,
     /// when their breaks into an open flank are read,
     /// then there are some; `FlankExposed` sits only on the duel's events
     /// (the carrier's one-on-one and the clearance that may end it), and a
@@ -496,10 +493,7 @@ mod tests {
                 let mut state = LiveMatchState::new(
                     attacking_full_backs("home"),
                     attacking_full_backs("away"),
-                    MatchConfig {
-                        engine_model: crate::types::EngineModel::Grid15,
-                        ..MatchConfig::default()
-                    },
+                    MatchConfig::default(),
                     Vec::new(),
                     Vec::new(),
                     false,
@@ -539,7 +533,7 @@ mod tests {
         assert!(won > 10, "only {won} breaks won");
     }
 
-    /// Given a side crossing early over forty Grid15 matches,
+    /// Given a side crossing early over forty matches,
     /// when its early crosses are read,
     /// then there are some, and none follows a one-on-one it won: an early
     /// cross skips the duel.

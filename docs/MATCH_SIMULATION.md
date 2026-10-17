@@ -370,7 +370,6 @@ All probabilities and multipliers are tuneable via `MatchConfig`:
 | `penalty_probability` | 0.08 | Chance a box foul is a penalty |
 | `stoppage_time_max` | 4 | Max stoppage time minutes per half |
 | `injury_probability` | 0.03 | Chance of injury per foul, before the fitness factor |
-| `engine_model` | `Zones5` | The match model. `Grid15` is the 5×3 grid of phase 2 GĐ3, built beside `Zones5` package by package; every GĐ3 rule runs only under it, so `Zones5` plays exactly as before. The game always plays `Zones5`; sim-bench (`--engine-model`), SimLab and the real-world probes (`OFM_ENGINE_MODEL`) can pick `Grid15`. `Zones5` goes once `Grid15` passes the GĐ3 gate (P3.8) |
 
 `PlayerData` also carries `footedness` (`Foot::{Left, Right, Both}`, from the domain player's footedness) since P3.0. Nothing reads it yet; GĐ3's wing play (P3.4) will.
 
@@ -404,8 +403,8 @@ scored several actions after a free kick as a free-kick goal.
 
 ### Event protocol 3 (the GĐ3 grid)
 
-A match played under `EngineModel::Grid15` writes protocol 3 (phase 2, P3.1). The only change so far
-is `lane`: it is the lane of the **ball**, as the event's side sees it, on every event the engine
+Every match writes protocol 3 since phase 2 GĐ3 (P3.1; the only model since P3.8). It changes
+`lane`: it is the lane of the **ball**, as the event's side sees it, on every event the engine
 emits. The ball's lane is stored from the home side's attacking direction and read through
 `lane_for(side)`, so a tackle by the defending side carries the mirror of the lane the attacker
 had it in, and a change of possession does not move it.

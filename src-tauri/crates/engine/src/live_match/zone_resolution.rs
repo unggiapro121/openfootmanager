@@ -4,16 +4,14 @@ use crate::duel;
 use crate::event::{EventDetail, EventType, MatchEvent, SetPiece, ShotKind, TacticalContext};
 use crate::shared::{
     PlayStylePhase, PlayerSnap, TraitContext, play_style_modifier, role_attribute_modifier,
-    tactics_buildup_mod, tactics_cross_probability, tactics_defensive_conversion_mod,
-    tactics_foul_modifier, tactics_shape_modifier, tactics_tempo_progression,
-    tactics_width_versus_shape, trait_bonus,
+    tactics_buildup_mod, tactics_defensive_conversion_mod, tactics_foul_modifier,
+    tactics_shape_modifier, tactics_tempo_progression, tactics_width_versus_shape, trait_bonus,
 };
 use crate::types::{Position, Side, Zone};
 
 use super::LiveMatchState;
 use super::helpers::{danger_band, foul_severity, save_quality};
 use super::presence::{Column, out_of_lane_factor};
-use super::set_pieces::DIRECT_FREE_KICK_SHARE;
 
 // ---------------------------------------------------------------------------
 // Action resolution
@@ -46,20 +44,16 @@ impl LiveMatchState {
         self.active_break = self.on_the_break.take() == Some(att_side)
             && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side));
 
-        if self.plays_grid15() {
-            self.close_flanks_on_regain(att_side);
-            // A break into an open flank is only good for the next action in
-            // the attacking third.
-            if zone != Zone::attacking_third(att_side) {
-                self.pending_exploit = None;
-            }
+        self.close_flanks_on_regain(att_side);
+        // A break into an open flank is only good for the next action in the
+        // attacking third.
+        if zone != Zone::attacking_third(att_side) {
+            self.pending_exploit = None;
         }
         let events = if zone.is_box_for(att_side) {
             // The box is one cell: whatever lane the ball came in from, it is
             // now in the middle of it (GĐ3-tech-spec §7.1).
-            if self.plays_grid15() {
-                self.centre_the_ball();
-            }
+            self.centre_the_ball();
             self.resolve_shot(minute, att_side, rng)
         } else if zone == Zone::attacking_third(att_side) {
             self.resolve_attacking_third(minute, att_side, def_side, rng)
@@ -190,99 +184,6 @@ impl LiveMatchState {
         events
     }
 
-    fn resolve_attacking_third<R: Rng>(
-        &mut self,
-        minute: u8,
-        att_side: Side,
-        def_side: Side,
-        rng: &mut R,
-    ) -> Vec<MatchEvent> {
-        if self.plays_grid15() {
-            return self.resolve_attacking_third_grid(minute, att_side, def_side, rng);
-        }
-        let mut events = Vec::new();
-        let (attacker, defender, out_of_lane) =
-            self.attacking_third_duelists(att_side, def_side, rng);
-        // A shot from distance takes the place of the one-on-one, never adds
-        // to it (phase 2, P2.5).
-        if let Some(long_shot) = self.try_long_shot(minute, att_side, &attacker, rng) {
-            return long_shot;
-        }
-
-        let success =
-            self.one_v_one_success(att_side, def_side, &attacker, &defender, out_of_lane, 1.0);
-        let zone = Zone::attacking_third(att_side);
-        let cross_prob = tactics_cross_probability(&self.team_ref(att_side).tactics);
-
-        if rng.random_range(0.0..1.0f64) < success {
-            let evt = MatchEvent::new(minute, EventType::Dribble, att_side, zone)
-                .with_player(&attacker.id);
-            self.emit(&mut events, evt);
-            // Through on the break: a sweeper keeper comes for it first.
-            if self.active_break
-                && let Some(sweeper_events) =
-                    self.try_sweeper_keeper(minute, att_side, &attacker, rng)
-            {
-                events.extend(sweeper_events);
-                return events;
-            }
-            if rng.random_range(0.0..1.0f64) < cross_prob {
-                let winger_id = attacker.id.clone();
-                // Pick who the cross is aimed at before announcing it, so the
-                // event can name him. Emitting draws nothing from `rng`, so the
-                // draws happen in the same order as ever and no result changes.
-                let header = self.cross_target(att_side, &winger_id, rng);
-                let def_header = self.cross_defender(def_side, rng);
-                let cross_evt = MatchEvent::new(minute, EventType::Cross, att_side, zone)
-                    .with_player(&winger_id)
-                    .with_secondary(&header.id);
-                self.emit(&mut events, cross_evt);
-                let aerial_win = scale_odds(
-                    if self.plays_grid15() {
-                        duel::aerial_win_probability_anchored(
-                            &header,
-                            &def_header,
-                            duel::ANCHOR_AERIAL_CROSS_GRID,
-                        )
-                    } else {
-                        duel::aerial_win_probability(&header, &def_header)
-                    },
-                    (self.line_strength(att_side, Position::Forward)
-                        * self.slot_effectiveness(&header.id))
-                        / (self.line_strength(def_side, Position::Defender)
-                            * self.slot_effectiveness(&def_header.id)),
-                );
-                if rng.random_range(0.0..1.0f64) < aerial_win {
-                    self.ball_zone = Zone::attacking_box(att_side);
-                    // He won the ball in the air, so the header is his; the
-                    // cross is the assist.
-                    let header_events =
-                        self.resolve_header(minute, att_side, header, winger_id, rng);
-                    events.extend(header_events);
-                } else {
-                    let clear_evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
-                        .with_player(&def_header.id);
-                    self.emit(&mut events, clear_evt);
-                    self.possession = def_side;
-                    self.ball_zone = Zone::defensive_third(att_side);
-                    self.advance_lane(def_side, &def_header, rng);
-                }
-            } else {
-                self.ball_zone = Zone::attacking_box(att_side);
-                // Through on goal on the break: the shot that follows is
-                // still part of it.
-                if self.active_break {
-                    self.on_the_break = Some(att_side);
-                }
-            }
-        } else {
-            let lost =
-                self.one_v_one_lost(minute, att_side, def_side, &attacker, &defender, None, rng);
-            events.extend(lost);
-        }
-        events
-    }
-
     /// The chance `attacker` beats `defender` in the attacking third's
     /// one-on-one, with every modifier the duel has: ratings in `duel`, the
     /// rest here. `out_of_lane` is κ for a defender off his flank (P3.2),
@@ -321,16 +222,7 @@ impl LiveMatchState {
                 &self.team_ref(def_side).tactics,
             )
             * out_of_lane;
-        if self.plays_grid15() {
-            duel::one_v_one_win_probability_anchored(
-                attacker,
-                defender,
-                att_eff / def_eff,
-                duel::ANCHOR_ONE_V_ONE_GRID,
-            )
-        } else {
-            duel::one_v_one_win_probability(attacker, defender, att_eff / def_eff)
-        }
+        duel::one_v_one_win_probability(attacker, defender, att_eff / def_eff)
     }
 
     /// The attacker lost the one-on-one: tackled (perhaps fouled) or
@@ -385,7 +277,7 @@ impl LiveMatchState {
             // attacking third, and now and then shoots straight from it.
             self.possession = att_side;
             self.ball_zone = zone;
-            let free_kick_events = self.final_third_free_kick(minute, att_side, rng);
+            let free_kick_events = self.lane_free_kick(minute, att_side, rng);
             events.extend(free_kick_events);
             return events;
         }
@@ -400,39 +292,15 @@ impl LiveMatchState {
         events
     }
 
-    /// A free kick to `att_side` in its attacking third, the fouled side
-    /// keeping the ball. `Zones5`: a shot at goal `DIRECT_FREE_KICK_SHARE` of
-    /// the time. `Grid15`: by lane (P3.4, X56), see `wing_play`.
-    fn final_third_free_kick<R: Rng>(
-        &mut self,
-        minute: u8,
-        att_side: Side,
-        rng: &mut R,
-    ) -> Vec<MatchEvent> {
-        if self.plays_grid15() {
-            return self.lane_free_kick(minute, att_side, rng);
-        }
-        if rng.random_range(0.0..1.0f64) < DIRECT_FREE_KICK_SHARE {
-            return self.resolve_direct_free_kick(minute, att_side, rng);
-        }
-        Vec::new()
-    }
-
-    /// Who meets in the attacking third's one-on-one, and κ for the defender.
-    /// `Zones5`: a forward and a defender drawn at random. `Grid15`: each drawn
-    /// by presence in the ball's lane (P3.2); a defender drawn onto a flank his
-    /// slot is not on plays it at κ.
+    /// Who meets in the attacking third's one-on-one, and κ for the defender:
+    /// each drawn by presence in the ball's lane (P3.2); a defender drawn onto
+    /// a flank his slot is not on plays it at κ.
     pub(super) fn attacking_third_duelists<R: Rng>(
         &self,
         att_side: Side,
         def_side: Side,
         rng: &mut R,
     ) -> (PlayerSnap, PlayerSnap, f64) {
-        if !self.plays_grid15() {
-            let attacker = self.snap_player(att_side, Position::Forward, rng);
-            let defender = self.snap_player(def_side, Position::Defender, rng);
-            return (attacker, defender, 1.0);
-        }
         let attacker = self
             .pick_by_presence(att_side, Column::Attack, self.lane_for(att_side), rng)
             .map_or_else(
@@ -453,20 +321,14 @@ impl LiveMatchState {
         }
     }
 
-    /// Who contests midfield. `Zones5`: two midfielders drawn at random.
-    /// `Grid15`: midfielders still, each drawn by presence in the ball's lane
-    /// (P3.2, X48).
+    /// Who contests midfield: two midfielders, each drawn by presence in the
+    /// ball's lane (P3.2, X48).
     fn midfield_duelists<R: Rng>(
         &self,
         att_side: Side,
         def_side: Side,
         rng: &mut R,
     ) -> (PlayerSnap, PlayerSnap) {
-        if !self.plays_grid15() {
-            let attacker = self.snap_player(att_side, Position::Midfielder, rng);
-            let defender = self.snap_player(def_side, Position::Midfielder, rng);
-            return (attacker, defender);
-        }
         let pick = |side: Side, column: Column, rng: &mut R| {
             self.pick_by_presence(side, column, self.lane_for(side), rng)
                 .map_or_else(

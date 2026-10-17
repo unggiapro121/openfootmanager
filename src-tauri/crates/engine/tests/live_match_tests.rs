@@ -2408,7 +2408,8 @@ fn the_header_winner_shoots_and_the_crosser_assists() {
 /// Given many watched matches,
 /// When a winger crosses,
 /// Then the cross names the team-mate it is aimed at — never the crosser — and
-/// when that man wins the header, the shot that follows is his.
+/// when that man wins the ball, the shot that follows is his. A cross that
+/// never reaches the contest names nobody (phase 2, P3.4) and is cleared.
 #[test]
 fn a_cross_names_the_team_mate_it_is_aimed_at() {
     let mut crosses = 0;
@@ -2424,10 +2425,14 @@ fn a_cross_names_the_team_mate_it_is_aimed_at() {
                 continue;
             }
             crosses += 1;
-            let target = cross
-                .secondary_player_id
-                .as_deref()
-                .unwrap_or_else(|| panic!("seed {seed}: a cross with no target"));
+            let Some(target) = cross.secondary_player_id.as_deref() else {
+                assert_eq!(
+                    events.get(index + 1).map(|e| &e.event_type),
+                    Some(&EventType::Clearance),
+                    "seed {seed}: a cross that reached nobody was not cleared"
+                );
+                continue;
+            };
             assert_ne!(Some(target), cross.player_id.as_deref(), "seed {seed}");
             let attackers = match cross.side {
                 Side::Home => &snapshot.home_team,

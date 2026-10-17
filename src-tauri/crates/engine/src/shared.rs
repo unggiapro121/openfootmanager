@@ -443,15 +443,6 @@ pub(crate) fn tactics_foul_modifier(tactics: &TacticsConfig) -> f64 {
     press * marking
 }
 
-/// Cross attempt probability based on the attacking team's pitch width setting.
-pub(crate) fn tactics_cross_probability(tactics: &TacticsConfig) -> f64 {
-    match tactics.width {
-        TacticsPitchWidth::Wide => 0.72,
-        TacticsPitchWidth::Narrow => 0.45,
-        TacticsPitchWidth::Normal => 0.60,
-    }
-}
-
 /// Shot conversion multiplier from the defending team's defensive line depth.
 /// High line = more space in behind = easier for attackers to score.
 pub(crate) fn tactics_defensive_conversion_mod(tactics: &TacticsConfig) -> f64 {

@@ -19,31 +19,11 @@ use domain::manager::Manager;
 use domain::team::MatchRoles;
 use engine::ai::{self, AiPersonality, AiProfile};
 use engine::{
-    EngineModel, LiveMatchState, MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot,
+    LiveMatchState, MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot,
     MinuteResult, Side,
 };
-use std::sync::atomic::{AtomicBool, Ordering};
 
 const LIVE_MATCH_NO_LEAGUE_ERROR: &str = "be.error.liveMatch.noLeague";
-
-/// Whether the matches this process starts play `Grid15` (phase 2, GĐ3, X47).
-/// The game always plays `Zones5`; the real-world probes switch it to measure
-/// both models on the same world. Goes at P3.8, when `Grid15` becomes the only
-/// model.
-static PLAYS_GRID15: AtomicBool = AtomicBool::new(false);
-
-/// The match model every match started from here on plays.
-pub fn set_engine_model(model: EngineModel) {
-    PLAYS_GRID15.store(model == EngineModel::Grid15, Ordering::Relaxed);
-}
-
-fn engine_model() -> EngineModel {
-    if PLAYS_GRID15.load(Ordering::Relaxed) {
-        EngineModel::Grid15
-    } else {
-        EngineModel::Zones5
-    }
-}
 
 /// Upper bound on minutes a single match can run: 120 of extra time plus generous stoppage.
 /// Used only to keep a caller-supplied step count from over-reserving.
@@ -512,10 +492,7 @@ pub fn create_live_match(
         return Err(LIVE_MATCH_EMPTY_SQUAD_ERROR.to_string());
     }
 
-    let config = MatchConfig {
-        engine_model: engine_model(),
-        ..MatchConfig::default()
-    };
+    let config = MatchConfig::default();
 
     let mut match_state = LiveMatchState::new(
         home_xi,

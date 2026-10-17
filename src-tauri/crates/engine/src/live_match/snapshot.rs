@@ -84,7 +84,7 @@ impl LiveMatchState {
             away_score: self.away_score,
             possession: self.possession,
             ball_zone: self.ball_zone,
-            ball_lane: self.plays_grid15().then(|| self.lane_for(self.possession)),
+            ball_lane: Some(self.lane_for(self.possession)),
             home_team,
             away_team,
             home_bench: self.home_bench.clone(),
@@ -104,11 +104,7 @@ impl LiveMatchState {
             sent_off: self.sent_off.clone(),
             injured: self.injured.clone(),
             penalty_shootout,
-            protocol_version: if self.plays_grid15() {
-                super::lane_state::GRID_EVENT_PROTOCOL_VERSION
-            } else {
-                crate::report::EVENT_PROTOCOL_VERSION
-            },
+            protocol_version: crate::report::EVENT_PROTOCOL_VERSION,
         }
     }
 }

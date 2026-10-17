@@ -11,8 +11,7 @@
 //!
 //! Width sets the four numbers. A switch of play is a long ball, so `w` scales
 //! with the passer's `long_passing`, the difference going to staying. A flank
-//! the attacking side has nobody on is seldom chosen. Runs only under
-//! `Grid15`.
+//! the attacking side has nobody on is seldom chosen.
 
 use rand::{Rng, RngExt};
 
@@ -132,11 +131,8 @@ pub(super) fn next_lane<R: Rng>(
 
 impl LiveMatchState {
     /// `side` has moved the ball up a zone, `passer` playing it on: draw the
-    /// lane it goes down (`Grid15` only).
+    /// lane it goes down.
     pub(super) fn advance_lane<R: Rng>(&mut self, side: Side, passer: &PlayerSnap, rng: &mut R) {
-        if !self.plays_grid15() {
-            return;
-        }
         let odds = lane_odds(self.team_ref(side).tactics.width);
         let lane = next_lane(
             self.lane_for(side),

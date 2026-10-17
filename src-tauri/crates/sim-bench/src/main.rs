@@ -118,10 +118,6 @@ struct Cli {
     #[arg(long, value_enum, default_value_t = guardrails::Stage::LanCan)]
     stage: guardrails::Stage,
 
-    /// The match model every mode plays (phase 2, GĐ3, X47).
-    #[arg(long, value_enum, default_value_t = ModelArg::Zones5)]
-    engine_model: ModelArg,
-
     /// Each squad of the rating-gap sweep and the guardrails draws its formation
     /// from the nine; with --guardrails the formation-balance table (each
     /// formation against 4-4-2, 4,000 matches) is played and judged too.
@@ -157,21 +153,6 @@ struct Cli {
 
     #[arg(long, help = "Injury probability per foul (default 0.03)")]
     injury_probability: Option<f64>,
-}
-
-#[derive(Clone, Copy, ValueEnum, Debug)]
-enum ModelArg {
-    Zones5,
-    Grid15,
-}
-
-impl ModelArg {
-    fn to_engine_model(self) -> engine::EngineModel {
-        match self {
-            ModelArg::Zones5 => engine::EngineModel::Zones5,
-            ModelArg::Grid15 => engine::EngineModel::Grid15,
-        }
-    }
 }
 
 #[derive(Clone, Copy, ValueEnum, Debug)]
@@ -212,11 +193,7 @@ impl StyleArg {
 fn main() {
     let cli = Cli::parse();
 
-    let mut config = MatchConfig {
-        engine_model: cli.engine_model.to_engine_model(),
-        ..MatchConfig::default()
-    };
-    eprintln!("engine model: {:?}", config.engine_model);
+    let mut config = MatchConfig::default();
     if let Some(v) = cli.home_advantage {
         config.home_advantage = v;
     }
@@ -626,7 +603,7 @@ fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
                 ..n.clone()
             },
         ),
-        // Grid15 only (phase 2, P3.4); under Zones5 these play as the baseline.
+        // Phase 2, P3.4.
         (
             "cross_style",
             "High",

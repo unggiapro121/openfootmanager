@@ -22,8 +22,7 @@
 //!
 //! Knobs: `OFM_PROBE_SEED`, `OFM_PROBE_RUNS` (default 3), `OFM_PROBE_DAYS` (default 150), `OFM_PROBE_CLUB`
 //! (default the first club), `OFM_PROBE_SCOPE=home` to simulate only the club's
-//! home region instead of every competition, `OFM_PROBE_OUT` for a JSON copy,
-//! `OFM_ENGINE_MODEL=grid15` to play the GĐ3 match model (default `zones5`).
+//! home region instead of every competition, `OFM_PROBE_OUT` for a JSON copy.
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -43,21 +42,6 @@ use super::world_build::build_game_from_world_data;
 use super::world_load::game_clock_for_world;
 
 const OPENING_YEAR: i32 = 2026;
-
-/// Plays every match of the probe under `OFM_ENGINE_MODEL` (`zones5` unless
-/// set; phase 2, GĐ3, X47) and says which.
-fn select_engine_model() -> engine::EngineModel {
-    let model = std::env::var("OFM_ENGINE_MODEL")
-        .ok()
-        .map(|name| {
-            engine::EngineModel::parse(&name)
-                .unwrap_or_else(|| panic!("OFM_ENGINE_MODEL={name}: expected zones5 or grid15"))
-        })
-        .unwrap_or_default();
-    ofm_core::live_match_manager::set_engine_model(model);
-    println!("engine model: {model:?}");
-    model
-}
 
 fn env_or<T: std::str::FromStr>(name: &str, default: T) -> T {
     std::env::var(name)
@@ -441,7 +425,6 @@ fn real_world_match_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
-    select_engine_model();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     // A world's league season takes seconds, so this one plays more of them.
     let run_count = env_or("OFM_MATCH_PROBE_RUNS", 10_u64).max(1);
@@ -548,7 +531,6 @@ fn real_world_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
-    select_engine_model();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     let run_count = env_or("OFM_PROBE_RUNS", 3_u64).max(1);
     let days = env_or("OFM_PROBE_DAYS", 150_u32);
