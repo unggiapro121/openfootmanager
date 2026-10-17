@@ -74,25 +74,13 @@ impl LiveMatchState {
     /// lane as the event moves it, tag the event with the lane as its side
     /// sees it, and remember who acted.
     ///
-    /// Until the lane matrix (P3.3) the ball follows its carrier: when a side
-    /// moves the ball up a zone — a completed pass out of defence or through
-    /// midfield, a one-on-one won in the attacking third — it goes down the
-    /// lane of the slot the player stands in (GĐ3-tech-spec §5.4). A corner is
+    /// Where the ball goes when a side moves it up a zone is the lane matrix's
+    /// (`lanes`, P3.3), drawn where the move is resolved. Here: a corner is
     /// taken from the flank the ball was on, or, when it went out from the
-    /// centre, the left on even minutes and the right on odd ones; nothing is
-    /// drawn, so the match plays out as under `Zones5`.
+    /// centre, the left on even minutes and the right on odd ones; a cross
+    /// puts the ball in the box, which is one cell, so in the centre.
     pub(super) fn track_lane(&mut self, event: &mut MatchEvent) {
         match event.event_type {
-            EventType::PassCompleted | EventType::Dribble => {
-                if let Some(lane) = event
-                    .player_id
-                    .as_deref()
-                    .and_then(|id| self.slot_of(event.side, id))
-                    .map(crate::pitch_position::PitchPosition::lane)
-                {
-                    self.set_lane_for(event.side, lane);
-                }
-            }
             EventType::Corner if self.lane_for(event.side) == Lane::Centre => {
                 let flank = if event.minute.is_multiple_of(2) {
                     Lane::Left
@@ -115,7 +103,7 @@ impl LiveMatchState {
         if let Some(id) = &event.player_id {
             self.last_actor = Some((event.side, id.clone()));
         }
-        if event.is_goal() {
+        if event.is_goal() || event.event_type == EventType::Cross {
             self.centre_the_ball();
         }
     }
@@ -169,30 +157,35 @@ mod tests {
         assert_eq!(s.lane_for(Side::Away), Lane::Right);
     }
 
-    /// Given the home side's left back completing a pass out of defence,
-    /// when the event is tracked,
-    /// then the ball goes down his lane, and a tackle by the away side in the
-    /// same spot carries the mirrored lane — the same grass, seen from the
-    /// other end.
+    /// Given the ball down the home side's left,
+    /// when a home pass and an away tackle there are tracked,
+    /// then the pass carries the left and the tackle the right — the same
+    /// grass, seen from the other end.
     #[test]
     fn the_defending_sides_event_carries_the_mirrored_lane() {
         let mut s = state();
-        let left_back = s
-            .home
-            .players
-            .iter()
-            .find(|p| {
-                s.slot_of(Side::Home, &p.id) == Some(crate::pitch_position::PitchPosition::LeftBack)
-            })
-            .map(|p| p.id.clone())
-            .expect("4-4-2 has a left back");
-        let mut pass = MatchEvent::new(5, EventType::PassCompleted, Side::Home, Zone::HomeDefense)
-            .with_player(&left_back);
+        s.set_lane_for(Side::Home, Lane::Left);
+        let mut pass = MatchEvent::new(5, EventType::PassCompleted, Side::Home, Zone::Midfield);
         s.track_lane(&mut pass);
         let mut tackle = MatchEvent::new(5, EventType::Tackle, Side::Away, Zone::Midfield);
         s.track_lane(&mut tackle);
         assert_eq!(pass.lane, Some(Lane::Left));
         assert_eq!(tackle.lane, Some(Lane::Right));
+    }
+
+    /// Given the ball down a flank in the attacking third,
+    /// when a cross is tracked,
+    /// then the cross carries the flank, the box is entered from it, and the
+    /// ball is in the centre of the box afterwards.
+    #[test]
+    fn a_cross_comes_from_the_flank_and_lands_in_the_centre() {
+        let mut s = state();
+        s.set_lane_for(Side::Home, Lane::Right);
+        let mut cross = MatchEvent::new(20, EventType::Cross, Side::Home, Zone::AwayDefense);
+        s.track_lane(&mut cross);
+        assert_eq!(cross.lane, Some(Lane::Right));
+        assert_eq!(s.entry_lane, Some(Lane::Right));
+        assert_eq!(s.lane_for(Side::Home), Lane::Centre);
     }
 
     /// Given the ball down a flank,

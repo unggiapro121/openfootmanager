@@ -46,6 +46,11 @@ impl LiveMatchState {
             && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side));
 
         let events = if zone.is_box_for(att_side) {
+            // The box is one cell: whatever lane the ball came in from, it is
+            // now in the middle of it (GĐ3-tech-spec §7.1).
+            if self.plays_grid15() {
+                self.centre_the_ball();
+            }
             self.resolve_shot(minute, att_side, rng)
         } else if zone == Zone::attacking_third(att_side) {
             self.resolve_attacking_third(minute, att_side, def_side, rng)
@@ -89,6 +94,7 @@ impl LiveMatchState {
                 .with_player(&passer.id);
             self.emit(&mut events, evt);
             self.ball_zone = Zone::Midfield;
+            self.advance_lane(att_side, &passer, rng);
         } else {
             let interceptor = self.snap_player(def_side, Position::Midfielder, rng);
             let evt1 = MatchEvent::new(minute, EventType::PassIntercepted, att_side, ball_zone)
@@ -140,6 +146,7 @@ impl LiveMatchState {
                 .with_player(&attacker.id);
             self.emit(&mut events, evt);
             self.ball_zone = Zone::attacking_third(att_side);
+            self.advance_lane(att_side, &attacker, rng);
         } else {
             if rng.random_range(0.0..1.0f64) < 0.6 {
                 let evt = MatchEvent::new(minute, EventType::Tackle, def_side, Zone::Midfield)
@@ -262,6 +269,7 @@ impl LiveMatchState {
                     self.emit(&mut events, clear_evt);
                     self.possession = def_side;
                     self.ball_zone = Zone::defensive_third(att_side);
+                    self.advance_lane(def_side, &def_header, rng);
                 }
             } else {
                 self.ball_zone = Zone::attacking_box(att_side);
@@ -311,6 +319,7 @@ impl LiveMatchState {
             }
             self.possession = def_side;
             self.ball_zone = Zone::defensive_third(att_side);
+            self.advance_lane(def_side, &defender, rng);
         }
         events
     }

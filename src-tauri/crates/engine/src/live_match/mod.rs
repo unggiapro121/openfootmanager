@@ -1,6 +1,7 @@
 mod header;
 mod helpers;
 mod lane_state;
+mod lanes;
 mod long_shot;
 mod observation;
 mod penalty;
