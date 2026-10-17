@@ -1,5 +1,9 @@
 import type { TFunction } from "i18next";
 
+import nationRegions from "./nationRegions.generated.json";
+
+const NATION_REGIONS: Readonly<Record<string, string>> = nationRegions;
+
 /**
  * Localized region label, falling back to a humanized form of the region id
  * (or an explicit fallback name) when no translation exists.
@@ -15,42 +19,10 @@ export function buildRegionLabel(t: TFunction, regionId: string, fallbackName?: 
   });
 }
 
-/** Coarse confederation bucket for a country, used when no competition pins a
- * team to an authored region. */
+/** Confederation bucket for a country, used when no competition pins a team
+ * to an authored region. Read from the backend nation catalog (see
+ * `NATION_REGIONS_FIXTURE` in `nations.rs`), with the same Europe fallback as
+ * its `region_for_code`. */
 export function inferRegionId(countryCode: string): string {
-  switch (countryCode) {
-    case "BR":
-    case "AR":
-    case "UY":
-    case "CL":
-    case "CO":
-    case "PE":
-    case "EC":
-    case "VE":
-    case "PY":
-    case "BO":
-      return "south-america";
-    case "US":
-    case "CA":
-    case "MX":
-      return "north-america";
-    case "CR":
-    case "PA":
-    case "HN":
-    case "GT":
-    case "SV":
-    case "NI":
-      return "central-america";
-    case "AU":
-    case "NZ":
-      return "oceania";
-    case "JP":
-    case "KR":
-    case "CN":
-    case "SA":
-    case "QA":
-      return "asia";
-    default:
-      return "europe";
-  }
+  return NATION_REGIONS[countryCode] ?? "europe";
 }

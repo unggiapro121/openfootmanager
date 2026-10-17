@@ -1136,6 +1136,15 @@ pub fn region_for_code(code: &str) -> &'static str {
         .unwrap_or("europe")
 }
 
+/// The frontend's copy of [`region_for_code`], one entry per catalogued nation.
+///
+/// Club selection groups countries by region before any backend call can
+/// answer, so the UI needs the table itself. A hand-written TypeScript switch
+/// knew five Asian nations and filed Vietnam and India under Europe; this file
+/// is generated from the catalog instead and checked by
+/// `the_frontend_region_table_matches_the_catalog`.
+pub const NATION_REGIONS_FIXTURE: &str = "src/lib/nationRegions.generated.json";
+
 /// The FIFA confederation a region belongs to. The catalog splits the Americas
 /// into three size-based regions; World Cup qualifying and berth quotas reason
 /// in terms of the six real confederations, so North and Central America fold
@@ -1362,6 +1371,41 @@ mod tests {
                 nation.code
             );
         }
+    }
+
+    #[test]
+    fn the_frontend_region_table_matches_the_catalog() {
+        // Regenerate with:
+        //   OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm_core --lib the_frontend_region_table
+        let table: std::collections::BTreeMap<&str, &str> = all_nations()
+            .map(|nation| (nation.code, nation.region_id))
+            .collect();
+        let rendered = format!(
+            "{}\n",
+            serde_json::to_string_pretty(&table).expect("the table serializes")
+        );
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../")
+            .join(NATION_REGIONS_FIXTURE);
+
+        if std::env::var("OFM_UPDATE_NATION_REGIONS").is_ok() {
+            std::fs::write(&path, &rendered).expect("the fixture is writable");
+            return;
+        }
+
+        let on_disk = std::fs::read_to_string(&path).unwrap_or_else(|e| {
+            panic!(
+                "cannot read {} ({e}). Regenerate with \
+                 OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm_core --lib the_frontend_region_table",
+                path.display()
+            )
+        });
+        assert_eq!(
+            on_disk.trim(),
+            rendered.trim(),
+            "the nation catalog changed but {NATION_REGIONS_FIXTURE} is stale. Regenerate with \
+             OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm_core --lib the_frontend_region_table",
+        );
     }
 
     #[test]
