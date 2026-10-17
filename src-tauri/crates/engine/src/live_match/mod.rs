@@ -173,6 +173,10 @@ pub struct MatchSnapshot {
     pub away_score: u8,
     pub possession: Side,
     pub ball_zone: Zone,
+    /// The ball's lane as the side in possession sees it, under `Grid15`
+    /// (phase 2, P3.7); `None` under `Zones5`, which has no lanes.
+    #[serde(default)]
+    pub ball_lane: Option<crate::event::Lane>,
     pub home_team: TeamData,
     pub away_team: TeamData,
     pub home_bench: Vec<PlayerData>,

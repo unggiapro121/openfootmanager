@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
+import type { MatchEvent } from "../types";
+
 import { choreographBatch } from "./radarChoreography";
 import {
   CENTRE_LANE,
   HALFWAY,
   PITCH_LENGTH,
   distance,
+  fromPitch,
   lerp as lerpPoint,
   zoneSpan,
 } from "./radarGeometry";
@@ -78,6 +81,77 @@ describe("choreographBatch — passing", () => {
     expect(scene.overlay?.kind).toBe("cut");
     expect(scene.movers.a_cm1).toEqual(scene.ball);
     expect(scene.possession).toBe("Away");
+  });
+});
+
+describe("choreographBatch — lanes (phase 2, GĐ3)", () => {
+  const withLane = (
+    event: ReturnType<typeof radarEvent>,
+    lane: "Left" | "Centre" | "Right",
+    tactical_context: MatchEvent["tactical_context"] = null,
+  ): MatchEvent => ({ ...event, lane, tactical_context });
+
+  // Given a home dribble down its left in the attacking third, whoever is on
+  // the ball, then it starts in the left band of the pitch.
+  it("draws an event in the band of its lane", () => {
+    for (const lane of ["Left", "Centre", "Right"] as const) {
+      const event = withLane(radarEvent("Dribble", "Home", "AwayDefense", "h_st1"), lane);
+      const [beat] = choreographBatch([event], stage, start).beats;
+      const carry = beat.steps.find((step) => step.action?.kind === "carry");
+      const at = fromPitch("Home", carry?.ball?.at ?? start.ball).lane;
+      const band = { Left: [0, 26], Centre: [19, 49], Right: [42, 68] }[lane];
+      expect(at).toBeGreaterThanOrEqual(band[0]);
+      expect(at).toBeLessThanOrEqual(band[1]);
+    }
+  });
+
+  // Given an away cross from its left, then it is struck from the away side's
+  // left touchline: the mirror of the home side's left on the pitch.
+  it("crosses from the touchline of the cross's lane, mirrored for the away side", () => {
+    const event = withLane(radarEvent("Cross", "Away", "HomeDefense", "a_cm1", "a_st1"), "Left");
+    const [beat] = choreographBatch([event], stage, start).beats;
+    const kick = beat.steps.findIndex((step) => step.action?.kind === "kick");
+    const struck = play([{ ...beat, steps: beat.steps.slice(0, kick) }]);
+    expect(fromPitch("Away", struck.ball).lane).toBeLessThan(10);
+    expect(struck.ball.y).toBeGreaterThan(CENTRE_LANE);
+  });
+
+  // Given a low cross and an early one, then the low one is driven along the
+  // ground and the early one is struck well short of the byline.
+  it("drives a low cross along the ground and plays an early one from deep", () => {
+    const low = withLane(
+      radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1"),
+      "Right",
+      "LowCross",
+    );
+    const lowKick = choreographBatch([low], stage, start).beats[0].steps.find(
+      (step) => step.action?.kind === "kick",
+    )?.action;
+    expect(lowKick?.kind === "kick" && lowKick.peak === 0).toBe(true);
+    const early = withLane(
+      radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1"),
+      "Right",
+      "EarlyCross",
+    );
+    const [beat] = choreographBatch([early], stage, start).beats;
+    const kick = beat.steps.findIndex((step) => step.action?.kind === "kick");
+    const struck = play([{ ...beat, steps: beat.steps.slice(0, kick) }]);
+    expect(fromPitch("Home", struck.ball).depth).toBeLessThan(80);
+  });
+
+  // Given a wide man cutting inside from the left, then his run ends nearer
+  // the middle than it starts.
+  it("brings a man who cuts inside towards the middle", () => {
+    const event = withLane(
+      radarEvent("Dribble", "Home", "AwayDefense", "h_lm"),
+      "Left",
+      "CutInside",
+    );
+    const [beat] = choreographBatch([event], stage, start).beats;
+    const carries = beat.steps.filter((step) => step.action?.kind === "carry");
+    const first = fromPitch("Home", carries[0].ball?.at ?? start.ball).lane;
+    const last = fromPitch("Home", carries[carries.length - 1].ball?.at ?? start.ball).lane;
+    expect(last).toBeGreaterThan(first);
   });
 });
 
