@@ -645,15 +645,37 @@ fn golden_fixtures_play_exactly_as_pinned_on_grid15() {
 }
 
 /// Given the twenty golden fixtures,
-/// when each is played under `Grid15`,
-/// then it plays exactly as under `Zones5`: until P3.1 the flag changes
-/// nothing (phase 2, P3.0). Goes when `Grid15` starts to draw (P3.3).
+/// when each is played under `Grid15` and under `Zones5`,
+/// then every event is the same but for its lane: until the lane matrix
+/// (P3.3) the grid only tracks where the ball is and draws nothing, so the
+/// matches play out alike (phase 2, P3.1). Goes when `Grid15` starts to draw.
 #[test]
-fn grid15_is_zones5_until_p3_1() {
-    assert_eq!(
-        played_on(EngineModel::Grid15),
-        played_on(EngineModel::Zones5)
-    );
+fn grid15_plays_as_zones5_but_for_the_lane_until_p3_3() {
+    let without_lane = |e: &MatchEvent| {
+        let mut e = e.clone();
+        e.lane = None;
+        event_line(&e)
+    };
+    for f in &FIXTURES {
+        let grid = play_on(f, EngineModel::Grid15);
+        let zones = play_on(f, EngineModel::Zones5);
+        assert_eq!(
+            (grid.home_goals, grid.away_goals),
+            (zones.home_goals, zones.away_goals),
+            "{}",
+            f.name
+        );
+        assert!(
+            grid.events
+                .iter()
+                .map(without_lane)
+                .eq(zones.events.iter().map(without_lane)),
+            "{}: the events differ beyond their lanes",
+            f.name
+        );
+        assert_eq!(grid.protocol_version, 3);
+        assert_eq!(zones.protocol_version, 2);
+    }
 }
 
 /// Given one golden fixture,

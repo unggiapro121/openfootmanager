@@ -402,6 +402,19 @@ the one place every action's events pass through:
 Before protocol 2 a goal's source was inferred from the events before it, which counted a goal
 scored several actions after a free kick as a free-kick goal.
 
+### Event protocol 3 (the GĐ3 grid)
+
+A match played under `EngineModel::Grid15` writes protocol 3 (phase 2, P3.1). The only change so far
+is `lane`: it is the lane of the **ball**, as the event's side sees it, on every event the engine
+emits. The ball's lane is stored from the home side's attacking direction and read through
+`lane_for(side)`, so a tackle by the defending side carries the mirror of the lane the attacker
+had it in, and a change of possession does not move it. Until the lane matrix (P3.3) the ball
+follows its carrier: a pass completed out of defence or through midfield, or a one-on-one won in
+the attacking third, puts it in the lane of the player's slot; a corner goes to the flank it was
+on (or, from the centre, left on even minutes and right on odd ones); kick-offs, goal kicks,
+penalties and goals bring it back to the centre. Nothing is drawn, so the match plays out exactly
+as under `Zones5`.
+
 Minutes are counted from when a player came on: a substitute who is himself taken off is credited
 with the time between the two substitutions, not with every minute up to his exit.
 

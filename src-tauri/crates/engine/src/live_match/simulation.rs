@@ -25,6 +25,7 @@ impl LiveMatchState {
         self.current_minute = 0;
         self.period_started_at = 0;
         self.ball_zone = Zone::Midfield;
+        self.centre_the_ball();
         self.possession = Side::Home;
         self.first_half_stoppage = rng.random_range(0..=self.config.stoppage_time_max);
 
@@ -49,6 +50,7 @@ impl LiveMatchState {
         // half's stoppage ended — the clock runs on and no minute is played twice.
         let start_min = self.period_kicks_off_at(46);
         self.ball_zone = Zone::Midfield;
+        self.centre_the_ball();
         self.possession = Side::Away;
         self.second_half_stoppage = rng.random_range(0..=self.config.stoppage_time_max);
 
@@ -76,6 +78,7 @@ impl LiveMatchState {
         self.phase = MatchPhase::ExtraTimeSecondHalf;
         let start_min = self.period_kicks_off_at(106);
         self.ball_zone = Zone::Midfield;
+        self.centre_the_ball();
         self.possession = Side::Home;
         self.et_second_half_stoppage = rng.random_range(0..=2); // short stoppage in ET
 
@@ -107,6 +110,7 @@ impl LiveMatchState {
             self.phase = MatchPhase::ExtraTimeFirstHalf;
             let start_min = self.period_kicks_off_at(91);
             self.ball_zone = Zone::Midfield;
+            self.centre_the_ball();
             self.possession = Side::Home;
             self.et_first_half_stoppage = rng.random_range(0..=2);
 

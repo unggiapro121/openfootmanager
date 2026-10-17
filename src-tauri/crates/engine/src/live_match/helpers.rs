@@ -101,6 +101,8 @@ impl LiveMatchState {
     /// Record `event` in the match log and in `out`, the events of the action
     /// being resolved, after filling in what event protocol 2 adds: the set
     /// piece the action belongs to, the actor's lane, and a goal's source.
+    /// Under `Grid15` the lane is the ball's instead (protocol 3, see
+    /// `lane_state`).
     /// Every event an action produces goes through here, so a tag cannot be
     /// on the copy the report keeps and missing from the one the UI is sent.
     pub(super) fn emit(&mut self, out: &mut Vec<MatchEvent>, mut event: MatchEvent) {
@@ -110,7 +112,9 @@ impl LiveMatchState {
         if self.active_break && event.tactical_context.is_none() {
             event.tactical_context = Some(TacticalContext::Counter);
         }
-        if event.lane.is_none() {
+        if self.plays_grid15() {
+            self.track_lane(&mut event);
+        } else if event.lane.is_none() {
             event.lane = event
                 .player_id
                 .as_deref()
