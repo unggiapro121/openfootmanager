@@ -109,6 +109,23 @@ impl LiveMatchState {
             .collect()
     }
 
+    /// The flanks (`side`'s own view: left, centre, right) where it plays an
+    /// inverted full-back or wing-back, who leaves that flank without width
+    /// (P4.4, §8.3).
+    pub(super) fn inverted_flanks(&self, side: Side) -> [bool; 3] {
+        let mut flanks = [false; 3];
+        for (player, slot) in self.on_pitch_by_slot(side) {
+            if player.role == PlayerRole::InvertedFB && is_full_back_slot(slot) {
+                match slot.lane() {
+                    crate::event::Lane::Left => flanks[0] = true,
+                    crate::event::Lane::Right => flanks[2] = true,
+                    crate::event::Lane::Centre => {}
+                }
+            }
+        }
+        flanks
+    }
+
     /// The lift `side`'s inverted full-backs give its hold on the ball.
     pub(super) fn inverted_full_back_factor(&self, side: Side) -> f64 {
         let on_pitch = self.on_pitch_by_slot(side);

@@ -249,17 +249,17 @@ const GOLDEN: [(&str, u8, u8, u64); 20] = [
     ("one_four_one", 3, 1, 0xACE400A47BD1996A),
     ("press_vs_block", 1, 0, 0x279EDE20CB5C00D1),
     ("direct_wide", 0, 2, 0xBE1C72D24480583E),
-    ("specialists_433", 1, 0, 0xCA5817E00D3BB58C),
+    ("specialists_433", 1, 0, 0xAE84F45CE1AB6E99),
     ("low_league", 2, 1, 0xCE9B1F5C2DBD2546),
-    ("elite", 2, 0, 0xC343F14F0F52FD8E),
+    ("elite", 2, 3, 0x33D2149A81D32C41),
     ("managed_even", 0, 1, 0x454D199F1097AFF2),
     ("managed_gap_10", 2, 1, 0x85979456A7F7C7DD),
-    ("managed_specialists", 3, 1, 0xB6A2623296FE42C6),
+    ("managed_specialists", 2, 1, 0xAC61B1B510F3FFDB),
     ("managed_press", 2, 2, 0xE24D98225CA1F510),
     ("managed_block", 1, 2, 0x9BA111E43724BEA6),
     ("managed_three_back", 2, 0, 0x421C8885B883BF33),
     ("managed_low_league", 1, 0, 0x194C40BD2EC14A33),
-    ("managed_elite", 2, 1, 0x2F635F55E3B07CAE),
+    ("managed_elite", 1, 0, 0xC850297DA80142D8),
 ];
 
 // ---------------------------------------------------------------------------

@@ -754,6 +754,8 @@
       "WideForward": "Extremo",
       "InsideForward": "Ala Interior",
       "InvertedWinger": "Extremo Invertido",
+      "HalfBack": "Médio que recua entre os centrais",
+      "DefensiveWinger": "Extremo defensivo",
       "Poacher": "Ponta Oportunista",
       "TargetMan": "Avançado Referência",
       "DeepLyingForward": "Avançado de Suporte",

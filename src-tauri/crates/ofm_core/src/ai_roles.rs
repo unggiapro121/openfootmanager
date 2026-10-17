@@ -134,13 +134,20 @@ fn style_preferences(play_style: &PlayStyle) -> &'static [PlayerRole] {
             R::InsideForward,
             R::CompleteForward,
         ],
-        PlayStyle::Defensive => &[R::DefensiveFB, R::AnchorMan, R::Stopper, R::TargetMan],
+        PlayStyle::Defensive => &[
+            R::DefensiveFB,
+            R::AnchorMan,
+            R::Stopper,
+            R::TargetMan,
+            R::DefensiveWinger,
+        ],
         PlayStyle::Possession => &[
             R::BallPlayingCB,
             R::InvertedFB,
             R::DeepLyingPlaymaker,
             R::AdvancedPlaymaker,
             R::False9,
+            R::HalfBack,
         ],
         PlayStyle::Counter => &[R::CoverCB, R::AnchorMan, R::WideForward, R::Poacher],
         PlayStyle::HighPress => &[R::Stopper, R::BallWinner, R::WingBack, R::PressingForward],
@@ -429,19 +436,30 @@ mod tests {
     /// Given the two roles that arrive with phase 2,
     /// when their names are parsed, each position's choices are read, and the
     /// AI picks a role for a player built to fit them,
-    /// then they parse, no position offers them and the AI never gives them:
-    /// they wait for the lane mechanics that make them mean something (P4.4).
+    /// then they parse, a defensive midfielder is offered the half-back and
+    /// every wide slot the defensive winger, no other slot offers them, and
+    /// the AI gives each to a player built for it at a club whose style
+    /// prefers it (phase 2, P4.4).
     #[test]
-    fn the_two_new_roles_exist_but_are_not_yet_offered() {
+    fn the_two_new_roles_are_offered_where_they_belong() {
         assert_eq!("HalfBack".parse::<PlayerRole>(), Ok(PlayerRole::HalfBack));
         assert_eq!(
             "DefensiveWinger".parse::<PlayerRole>(),
             Ok(PlayerRole::DefensiveWinger)
         );
-        let positions = [
+        let half_back = [Position::DefensiveMidfielder, Position::Midfielder];
+        let defensive_winger = [
+            Position::RightMidfielder,
+            Position::LeftMidfielder,
+            Position::RightWinger,
+            Position::LeftWinger,
+            Position::Midfielder,
+            Position::Forward,
+        ];
+        for position in [
             Position::Goalkeeper,
-            Position::RightBack,
             Position::CenterBack,
+            Position::RightBack,
             Position::LeftBack,
             Position::RightWingBack,
             Position::LeftWingBack,
@@ -456,41 +474,45 @@ mod tests {
             Position::Defender,
             Position::Midfielder,
             Position::Forward,
-        ];
-        for position in &positions {
-            for role in [PlayerRole::HalfBack, PlayerRole::DefensiveWinger] {
-                assert!(
-                    !position.valid_roles().contains(&role),
-                    "{position:?} offers {role:?}"
-                );
-            }
-        }
-        let mut attrs = flat_attrs(50);
-        (
-            attrs.positioning,
-            attrs.passing,
-            attrs.tackling,
-            attrs.stamina,
-            attrs.crossing,
-        ) = (95, 95, 95, 95, 95);
-        for position in [
-            Position::DefensiveMidfielder,
-            Position::RightMidfielder,
-            Position::LeftWinger,
         ] {
-            let built_for_it = player("p", position.clone(), attrs.clone());
-            for style in [
-                PlayStyle::Balanced,
-                PlayStyle::Defensive,
-                PlayStyle::Counter,
-            ] {
-                let role = role_for_position(&built_for_it, &position, &style);
-                assert!(!matches!(
-                    role,
-                    PlayerRole::HalfBack | PlayerRole::DefensiveWinger
-                ));
-            }
+            let roles = position.valid_roles();
+            assert_eq!(
+                roles.contains(&PlayerRole::HalfBack),
+                half_back.contains(&position),
+                "{position:?}"
+            );
+            assert_eq!(
+                roles.contains(&PlayerRole::DefensiveWinger),
+                defensive_winger.contains(&position),
+                "{position:?}"
+            );
         }
+        let mut half_back_attrs = flat_attrs(50);
+        (
+            half_back_attrs.positioning,
+            half_back_attrs.passing,
+            half_back_attrs.tackling,
+        ) = (95, 95, 95);
+        let built = player("hb", Position::DefensiveMidfielder, half_back_attrs);
+        assert_eq!(
+            role_for_position(
+                &built,
+                &Position::DefensiveMidfielder,
+                &PlayStyle::Possession
+            ),
+            PlayerRole::HalfBack
+        );
+        let mut winger_attrs = flat_attrs(50);
+        (
+            winger_attrs.stamina,
+            winger_attrs.tackling,
+            winger_attrs.crossing,
+        ) = (95, 95, 95);
+        let built = player("dw", Position::LeftMidfielder, winger_attrs);
+        assert_eq!(
+            role_for_position(&built, &Position::LeftMidfielder, &PlayStyle::Defensive),
+            PlayerRole::DefensiveWinger
+        );
     }
 
     fn club(play_style: PlayStyle) -> Team {

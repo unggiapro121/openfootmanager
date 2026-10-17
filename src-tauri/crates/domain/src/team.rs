@@ -117,8 +117,8 @@ pub enum PlayerRole {
     // Defensive Midfielder
     AnchorMan,
     BallWinner,
-    /// Drops between the centre-backs in build-up (phase 2). Not offered at
-    /// any position yet: its lane mechanics arrive in P4.4.
+    /// Drops between the centre-backs in build-up (phase 2, offered from
+    /// P4.4 at defensive midfield).
     HalfBack,
     DeepLyingPlaymaker,
     // Central Midfielder
@@ -130,7 +130,8 @@ pub enum PlayerRole {
     ShadowStriker,
     // Wide
     WideForward,
-    /// A wide man who tracks back first (phase 2). Not offered yet; see HalfBack.
+    /// A wide man who tracks back first (phase 2, offered from P4.4 on the
+    /// wings).
     DefensiveWinger,
     InsideForward,
     InvertedWinger,

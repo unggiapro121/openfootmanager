@@ -233,54 +233,91 @@ fn unreachable_right(_slot: PitchPosition) -> [f64; 3] {
     [0.0, 0.0, 0.0]
 }
 
-/// The role layer (GĐ3-tech-spec §6.3), attacking third only: a full back
-/// who bombs on is there more on his flank, an inside forward drifts in, a
-/// false nine drops off. `own` is the slot's flank, if it has one.
+/// The flanks a central slot's lean points to: its own side, or both for a
+/// slot that leans neither way.
+fn lean_flanks(lean: Lean) -> &'static [Lane] {
+    match lean {
+        Lean::Left => &[Lane::Left],
+        Lean::Right => &[Lane::Right],
+        Lean::Centre => &[Lane::Left, Lane::Right],
+    }
+}
+
+/// The role layer: where a role puts a player beyond his slot. In the
+/// attacking third (GĐ3-tech-spec §6.3) a full back who bombs on is there
+/// more on his flank, an inside forward drifts in, a false nine drops off.
+/// Since P4.4 (GĐ4-tech-spec §8.2, X74) every column has one: a Mezzala
+/// pushes up the half-space and is slow back, a Carrilero covers the full
+/// back behind him, a half-back drops between the centre backs, a
+/// defensive winger tracks the full back, a pressing forward leads the
+/// press. Each gain costs something elsewhere. `own` is the slot's flank, if
+/// it has one; `lean` the side a central slot leans to.
 fn with_role(
     mut weights: [f64; 3],
     role: PlayerRole,
     own: Option<Lane>,
+    lean: Lean,
     column: Column,
 ) -> [f64; 3] {
+    use PlayerRole as R;
     let centre = index(Lane::Centre);
-    match column {
-        Column::Attack => {
-            if let Some(flank) = own {
-                let flank = index(flank);
-                match role {
-                    PlayerRole::AttackingFB => weights[flank] *= 1.30,
-                    PlayerRole::WingBack => weights[flank] *= 1.40,
-                    PlayerRole::DefensiveFB => weights[flank] *= 0.60,
-                    PlayerRole::InvertedFB => {
-                        weights[flank] *= 0.50;
-                        weights[centre] += 0.15;
-                    }
-                    PlayerRole::InsideForward | PlayerRole::InvertedWinger => {
-                        weights[flank] *= 0.85;
-                        weights[centre] += 0.35;
-                    }
-                    PlayerRole::WideForward => weights[flank] *= 1.10,
-                    _ => {}
-                }
-            }
-            match role {
-                PlayerRole::False9 | PlayerRole::DeepLyingForward => weights[centre] *= 0.75,
-                PlayerRole::ShadowStriker => weights[centre] *= 1.20,
-                _ => {}
-            }
+    let scale_flank = |weights: &mut [f64; 3], by: f64| {
+        if let Some(flank) = own {
+            weights[index(flank)] *= by;
         }
-        Column::Defence => {
-            if let Some(flank) = own {
-                let flank = index(flank);
-                match role {
-                    PlayerRole::AttackingFB => weights[flank] *= 0.95,
-                    PlayerRole::WingBack => weights[flank] *= 0.90,
-                    PlayerRole::DefensiveFB => weights[flank] *= 1.05,
-                    _ => {}
-                }
-            }
+    };
+    let scale_lean = |weights: &mut [f64; 3], by: f64| {
+        for flank in lean_flanks(lean) {
+            weights[index(*flank)] *= by;
         }
-        Column::MidfieldAttack | Column::MidfieldDefence | Column::BuildUp | Column::Press => {}
+    };
+    match (column, role) {
+        (Column::Attack, R::AttackingFB) => scale_flank(&mut weights, 1.30),
+        (Column::Attack, R::WingBack) => scale_flank(&mut weights, 1.40),
+        (Column::Attack, R::DefensiveFB) => scale_flank(&mut weights, 0.60),
+        (Column::Attack, R::InvertedFB) if own.is_some() => {
+            scale_flank(&mut weights, 0.50);
+            weights[centre] += 0.15;
+        }
+        (Column::Attack, R::InsideForward | R::InvertedWinger) if own.is_some() => {
+            scale_flank(&mut weights, 0.85);
+            weights[centre] += 0.35;
+        }
+        (Column::Attack, R::WideForward) => scale_flank(&mut weights, 1.10),
+        (Column::Attack, R::DefensiveWinger) => scale_flank(&mut weights, 0.85),
+        (Column::Attack, R::False9 | R::DeepLyingForward) => weights[centre] *= 0.75,
+        (Column::Attack, R::ShadowStriker) => weights[centre] *= 1.20,
+        (Column::Attack, R::Mezzala) => {
+            for flank in lean_flanks(lean) {
+                weights[index(*flank)] += 0.25;
+            }
+            weights[centre] += 0.10;
+        }
+        (Column::Defence, R::AttackingFB) => scale_flank(&mut weights, 0.95),
+        (Column::Defence, R::WingBack) => scale_flank(&mut weights, 0.90),
+        (Column::Defence, R::DefensiveFB) => scale_flank(&mut weights, 1.05),
+        (Column::Defence, R::DefensiveWinger) => scale_flank(&mut weights, 1.60),
+        (Column::Defence, R::HalfBack) => weights[centre] += 0.30,
+        (Column::MidfieldAttack, R::Mezzala) => scale_lean(&mut weights, 1.8),
+        (Column::MidfieldAttack, R::Carrilero) => weights.iter_mut().for_each(|w| *w *= 0.85),
+        (Column::MidfieldAttack, R::InvertedFB) if own.is_some() => weights[centre] += 0.35,
+        (Column::MidfieldAttack, R::AttackingFB | R::WingBack) => scale_flank(&mut weights, 1.3),
+        (Column::MidfieldAttack, R::DefensiveFB) => scale_flank(&mut weights, 0.6),
+        (Column::MidfieldAttack, R::False9 | R::DeepLyingForward) => weights[centre] *= 3.0,
+        (Column::MidfieldDefence, R::Mezzala) => weights.iter_mut().for_each(|w| *w *= 0.85),
+        (Column::MidfieldDefence, R::Carrilero) => scale_lean(&mut weights, 1.5),
+        (Column::MidfieldDefence, R::HalfBack) => weights.iter_mut().for_each(|w| *w *= 0.70),
+        (Column::MidfieldDefence, R::AttackingFB | R::WingBack) => scale_flank(&mut weights, 0.9),
+        (Column::MidfieldDefence, R::DefensiveFB) => scale_flank(&mut weights, 1.1),
+        (Column::BuildUp, R::InvertedFB) if own.is_some() => weights[centre] += 0.20,
+        (Column::BuildUp, R::HalfBack) => weights.iter_mut().for_each(|w| *w *= 1.6),
+        (Column::Press, R::DefensiveWinger) => scale_flank(&mut weights, 1.3),
+        (Column::Press, R::PressingForward) => weights.iter_mut().for_each(|w| *w *= 1.4),
+        (Column::Press, R::False9 | R::DeepLyingForward) => {
+            weights.iter_mut().for_each(|w| *w *= 0.7)
+        }
+        (Column::Press, R::Poacher) => weights.iter_mut().for_each(|w| *w *= 0.6),
+        _ => {}
     }
     weights
 }
@@ -318,6 +355,7 @@ impl LiveMatchState {
                     presence(slots[i], leans[i], column),
                     player.role,
                     own,
+                    leans[i],
                     column,
                 );
                 (i, slots[i], weights)
@@ -797,5 +835,137 @@ mod tests {
         s.test_send_off(&striker);
         let without = s.press_rating(Side::Away, Lane::Centre).expect("a press");
         assert!(without < with_him, "{with_him:.2} → {without:.2}");
+    }
+
+    /// How often the home slot at `index` is picked in `column` and `lane`
+    /// when it plays `role`, out of 20,000 draws.
+    fn share_with_role(
+        formation: &str,
+        index: usize,
+        role: PlayerRole,
+        column: Column,
+        lane: Lane,
+    ) -> u32 {
+        let mut s = state(formation, formation);
+        s.home.players[index].role = role;
+        let mut rng = StdRng::seed_from_u64(9);
+        let id = s.home.players[index].id.clone();
+        (0..20_000)
+            .filter(|_| {
+                s.pick_by_presence(Side::Home, column, lane, &mut rng)
+                    .is_some_and(|p| p.player.id == id)
+            })
+            .count() as u32
+    }
+
+    /// Given each role of §8.2 in its slot against `Standard` there,
+    /// when the column it changes is drawn in the lane it changes,
+    /// then the role is picked more often where it gains and less where it
+    /// pays (phase 2, P4.4, X74).
+    #[test]
+    fn every_lane_role_moves_its_player_the_way_it_says() {
+        use PlayerRole as R;
+        // 4-4-2: 1 LB, 2–3 CB, 5 LM, 6–7 CM (6 leans left), 9–10 ST.
+        // 4-3-3: 5 DM, 6 CM, 7 AM, 8 LW.
+        let cases: [(&str, usize, R, Column, Lane, bool); 12] = [
+            (
+                "4-4-2",
+                6,
+                R::Mezzala,
+                Column::MidfieldAttack,
+                Lane::Left,
+                true,
+            ),
+            (
+                "4-4-2",
+                6,
+                R::Mezzala,
+                Column::MidfieldDefence,
+                Lane::Centre,
+                false,
+            ),
+            (
+                "4-4-2",
+                6,
+                R::Carrilero,
+                Column::MidfieldDefence,
+                Lane::Left,
+                true,
+            ),
+            (
+                "4-4-2",
+                6,
+                R::Carrilero,
+                Column::MidfieldAttack,
+                Lane::Centre,
+                false,
+            ),
+            (
+                "4-4-2",
+                1,
+                R::InvertedFB,
+                Column::MidfieldAttack,
+                Lane::Centre,
+                true,
+            ),
+            (
+                "4-4-2",
+                1,
+                R::InvertedFB,
+                Column::BuildUp,
+                Lane::Centre,
+                true,
+            ),
+            ("4-3-3", 5, R::HalfBack, Column::BuildUp, Lane::Centre, true),
+            (
+                "4-3-3",
+                5,
+                R::HalfBack,
+                Column::MidfieldDefence,
+                Lane::Centre,
+                false,
+            ),
+            (
+                "4-4-2",
+                5,
+                R::DefensiveWinger,
+                Column::Defence,
+                Lane::Left,
+                true,
+            ),
+            (
+                "4-4-2",
+                5,
+                R::DefensiveWinger,
+                Column::Attack,
+                Lane::Left,
+                false,
+            ),
+            (
+                "4-4-2",
+                9,
+                R::PressingForward,
+                Column::Press,
+                Lane::Centre,
+                true,
+            ),
+            (
+                "4-4-2",
+                9,
+                R::False9,
+                Column::MidfieldAttack,
+                Lane::Centre,
+                true,
+            ),
+        ];
+        for (formation, index, role, column, lane, gains) in cases {
+            let with = share_with_role(formation, index, role, column, lane);
+            let standard = share_with_role(formation, index, R::Standard, column, lane);
+            assert_eq!(
+                with > standard,
+                gains,
+                "{role:?} in {column:?} {lane:?}: {with} vs {standard}"
+            );
+        }
     }
 }

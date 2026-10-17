@@ -48,7 +48,8 @@ pub enum PlayerRole {
     WingBack,
     // Defensive Midfielder
     AnchorMan,
-    // Phase 2: carried, but no role modifier yet and no position admits them.
+    // Phase 2, P4.4: they change where the player is, not a duel's odds
+    // (`live_match/presence.rs`).
     HalfBack,
     DefensiveWinger,
     BallWinner,

@@ -39,6 +39,12 @@ const P_EXPLOIT_FAST: f64 = 0.135;
 /// started at 1.45, which measured +15% once the defender left out and κ
 /// were counted on real duels. Calibrated at P3.6.
 pub(super) const S_SPACE: f64 = 2.0;
+/// A half-back dropping between the centre backs sends the full backs up
+/// this much more often (phase 2, P4.4, GĐ4-tech-spec §8.2).
+const HALF_BACK_PUSH: f64 = 0.10;
+/// A Carrilero on the flank a full back left covers it: a break goes into it
+/// half as often (P4.4).
+const CARRILERO_COVER: f64 = 0.5;
 /// How long an open flank stays open: open while `now − minute ≤ this`.
 const OPEN_FOR: u8 = 1;
 
@@ -128,8 +134,14 @@ impl LiveMatchState {
         let Some((full_back, wing_back)) = self.full_back_on(side, lane) else {
             return;
         };
+        let half_back = if self.has_on_pitch(side, PlayerRole::HalfBack) {
+            HALF_BACK_PUSH
+        } else {
+            0.0
+        };
         let goes_up = full_back.id == actor_id
-            || rng.random_range(0.0..1.0f64) < push_up_chance(full_back.role, wing_back);
+            || rng.random_range(0.0..1.0f64)
+                < push_up_chance(full_back.role, wing_back) + half_back;
         if goes_up {
             self.flank_exposed[side_index(side)][flank] = Some(self.current_minute);
         }
@@ -148,6 +160,40 @@ impl LiveMatchState {
             (None, Some(_)) => Some(Lane::Right),
             (None, None) => None,
         }
+    }
+
+    /// Whether `side` has a player of `role` still on the pitch.
+    fn has_on_pitch(&self, side: Side, role: PlayerRole) -> bool {
+        self.team_ref(side)
+            .players
+            .iter()
+            .any(|p| p.role == role && !self.out_of_play(&p.id))
+    }
+
+    /// Whether `side` has a Carrilero still playing on the side of `flank`
+    /// (its own view): a central midfielder leaning that way, or the only
+    /// one, who slides across behind the full back.
+    fn carrilero_covers(&self, side: Side, flank: Lane) -> bool {
+        let team = self.team_ref(side);
+        let slots = formation_slots(&team.formation);
+        if slots.len() != team.players.len() {
+            return false;
+        }
+        let leans = super::presence::slot_leans(&slots);
+        team.players
+            .iter()
+            .zip(slots.iter().zip(leans))
+            .any(|(p, (slot, lean))| {
+                p.role == PlayerRole::Carrilero
+                    && *slot == PitchPosition::CentralMidfielder
+                    && !self.out_of_play(&p.id)
+                    && matches!(
+                        (lean, flank),
+                        (super::presence::Lean::Centre, _)
+                            | (super::presence::Lean::Left, Lane::Left)
+                            | (super::presence::Lean::Right, Lane::Right)
+                    )
+            })
     }
 
     /// `side` has the ball for an action: its full backs are back in place
@@ -175,6 +221,10 @@ impl LiveMatchState {
                 P_EXPLOIT_FAST
             } else {
                 P_EXPLOIT
+            } * if self.carrilero_covers(caught, flank) {
+                CARRILERO_COVER
+            } else {
+                1.0
             };
             if rng.random_range(0.0..1.0f64) < exploit
                 && let Some((full_back, _)) = self.full_back_on(caught, flank)
@@ -302,5 +352,59 @@ mod tests {
         for role in order {
             assert!(push_up_chance(role, true) > push_up_chance(role, false));
         }
+    }
+
+    /// Breaks into the home side's open left flank out of 6,000, with the
+    /// home 4-4-2's two central midfielders playing `cm_roles`.
+    fn breaks_into_left(cm_roles: [PlayerRole; 2]) -> u32 {
+        let mut rng = StdRng::seed_from_u64(12);
+        let mut breaks = 0;
+        for _ in 0..6_000 {
+            let mut s = state("4-4-2");
+            s.home.players[6].role = cm_roles[0];
+            s.home.players[7].role = cm_roles[1];
+            s.current_minute = 50;
+            let id = left_back_id(&s);
+            s.note_full_back_push(Side::Home, Lane::Left, &id, &mut rng);
+            s.regain_lane(Side::Away, None, &mut rng);
+            if s.take_exploit(Side::Away).is_some() {
+                breaks += 1;
+            }
+        }
+        breaks
+    }
+
+    /// Given a 4-4-2 whose left back has gone up,
+    /// when its left-sided central midfielder is a Carrilero,
+    /// then the other side breaks into that flank about half as often
+    /// (phase 2, P4.4).
+    #[test]
+    fn a_carrilero_covers_the_flank_behind_him() {
+        let covered = breaks_into_left([PlayerRole::Carrilero, PlayerRole::Standard]);
+        let open = breaks_into_left([PlayerRole::Standard, PlayerRole::Standard]);
+        assert!(
+            f64::from(covered) < 0.7 * f64::from(open),
+            "{covered} vs {open}"
+        );
+    }
+
+    /// Given a 4-3-3 whose defensive midfielder is a half-back,
+    /// when the attack goes down the left without its left back many times,
+    /// then the left back goes up more often than beside a standard one.
+    #[test]
+    fn a_half_back_sends_the_full_backs_up() {
+        let pushes = |role: PlayerRole| {
+            let mut rng = StdRng::seed_from_u64(13);
+            (0..6_000)
+                .filter(|_| {
+                    let mut s = state("4-3-3");
+                    s.home.players[5].role = role;
+                    s.current_minute = 30;
+                    s.note_full_back_push(Side::Home, Lane::Left, "someone", &mut rng);
+                    s.open_flank(Side::Home).is_some()
+                })
+                .count()
+        };
+        assert!(pushes(PlayerRole::HalfBack) > pushes(PlayerRole::Standard) + 300);
     }
 }
