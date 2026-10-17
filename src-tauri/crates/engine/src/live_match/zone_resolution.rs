@@ -253,14 +253,22 @@ impl LiveMatchState {
                 // Pick who the cross is aimed at before announcing it, so the
                 // event can name him. Emitting draws nothing from `rng`, so the
                 // draws happen in the same order as ever and no result changes.
-                let header = self.snap_header_target(att_side, &winger_id, rng);
-                let def_header = self.snap_player(def_side, Position::Defender, rng);
+                let header = self.cross_target(att_side, &winger_id, rng);
+                let def_header = self.cross_defender(def_side, rng);
                 let cross_evt = MatchEvent::new(minute, EventType::Cross, att_side, zone)
                     .with_player(&winger_id)
                     .with_secondary(&header.id);
                 self.emit(&mut events, cross_evt);
                 let aerial_win = scale_odds(
-                    duel::aerial_win_probability(&header, &def_header),
+                    if self.plays_grid15() {
+                        duel::aerial_win_probability_anchored(
+                            &header,
+                            &def_header,
+                            duel::ANCHOR_AERIAL_CROSS_GRID,
+                        )
+                    } else {
+                        duel::aerial_win_probability(&header, &def_header)
+                    },
                     (self.line_strength(att_side, Position::Forward)
                         * self.slot_effectiveness(&header.id))
                         / (self.line_strength(def_side, Position::Defender)
@@ -430,8 +438,7 @@ impl LiveMatchState {
         }
 
         let kind = ShotKind::Open;
-        let shooter = self.snap_player(att_side, Position::Forward, rng);
-        let assister_id = self.snap_player(att_side, Position::Midfielder, rng).id;
+        let (shooter, assister_id) = self.box_shooter_and_assister(att_side, rng);
         let goalkeeper = self.snap_player(def_side, Position::Goalkeeper, rng);
 
         let shoot_raw =

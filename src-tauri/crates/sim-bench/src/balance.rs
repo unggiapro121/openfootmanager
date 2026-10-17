@@ -30,6 +30,9 @@ pub struct BalanceRow {
     pub wins: u32,
     pub draws: u32,
     pub losses: u32,
+    /// Goals the formation scored and conceded.
+    pub scored: u32,
+    pub conceded: u32,
 }
 
 impl BalanceRow {
@@ -66,6 +69,8 @@ pub fn run(config: &MatchConfig, seed: u64, games: u32) -> Vec<BalanceRow> {
                 wins: 0,
                 draws: 0,
                 losses: 0,
+                scored: 0,
+                conceded: 0,
             };
             for pair in 0..pairs {
                 let pair_seed =
@@ -101,6 +106,8 @@ pub fn run(config: &MatchConfig, seed: u64, games: u32) -> Vec<BalanceRow> {
                         (report.away_goals, report.home_goals)
                     };
                     row.games += 1;
+                    row.scored += u32::from(scored);
+                    row.conceded += u32::from(conceded);
                     match scored.cmp(&conceded) {
                         std::cmp::Ordering::Greater => row.wins += 1,
                         std::cmp::Ordering::Equal => row.draws += 1,
@@ -119,16 +126,18 @@ pub fn print_table(rows: &[BalanceRow]) {
         "Formation balance · each against {BASELINE} · OVR {RATING} both · headless · {} games a formation",
         rows.first().map_or(0, |r| r.games)
     );
-    println!("  formation   win%  draw%  loss%   win−loss  ±se");
+    println!("  formation   win%  draw%  loss%   win−loss  ±se   for  against");
     for row in rows {
         println!(
-            "  {:<9}  {:>5.1}  {:>5.1}  {:>5.1}   {:>+8.1}  {:>3.1}",
+            "  {:<9}  {:>5.1}  {:>5.1}  {:>5.1}   {:>+8.1}  {:>3.1}  {:>4.2}  {:>4.2}",
             row.formation,
             row.pct(row.wins),
             row.pct(row.draws),
             row.pct(row.losses),
             row.edge(),
-            row.edge_se()
+            row.edge_se(),
+            f64::from(row.scored) / f64::from(row.games.max(1)),
+            f64::from(row.conceded) / f64::from(row.games.max(1))
         );
     }
 }
