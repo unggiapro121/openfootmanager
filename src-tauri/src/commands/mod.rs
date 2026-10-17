@@ -7,6 +7,7 @@ pub mod live_match;
 pub mod messages;
 pub mod package_csv;
 pub mod package_editor;
+mod package_layout;
 pub mod portraits;
 pub mod profiles;
 pub mod report;

@@ -30,7 +30,7 @@ export async function createWorldProject(slug: string, meta: WorldMetaDef): Prom
   return invoke<string>("create_world_project", { slug, meta });
 }
 
-/** Write the whole project to its folder, replacing what is there. */
+/** Write the whole project back to its folder, each entity to the file it came from. */
 export async function savePackageProject(project: PackageProjectContents): Promise<void> {
   return invoke<void>("save_package_project", {
     dir: project.dir,
