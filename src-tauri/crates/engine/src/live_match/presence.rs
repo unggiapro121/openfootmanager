@@ -47,6 +47,12 @@ pub(super) enum Column {
     MidfieldAttack,
     /// The side without it, midfielders only.
     MidfieldDefence,
+    /// The side on the ball, in its own third: who plays it out (phase 2,
+    /// GĐ4, P4.1, X65).
+    BuildUp,
+    /// The side without it, in its attacking third: who presses a build-up
+    /// (P4.1, X65).
+    Press,
 }
 
 /// Each slot's lean. Slots come left to right within a row; a central slot
@@ -167,6 +173,38 @@ pub(super) fn presence(slot: PitchPosition, lean: Lean, column: Column) -> [f64;
             P::LeftMidfielder => [0.90, 0.20, 0.0],
             _ => [0.0, 0.0, 0.0],
         },
+        // GĐ4-tech-spec §5.1, calibrated at P4.1 on who plays out of real
+        // own thirds, keepers left out (`gd4-real-reference.txt`, item 7: CB
+        // 46 · FB 22 · DM 16 · CM 6 · others 10%). The spec's table gave
+        // CB 54 · FB 8 · CM 17%: the ball sits in the centre more in the
+        // engine than in real football (kick-offs and goal kicks put it
+        // there), so full backs came in from the middle too and central
+        // midfielders, whom a real side does not drop that deep, came down.
+        // This gives 50 · 17 · 16 · 9 · 8. The keeper never plays a short
+        // build-up: real keepers' passing and first touch sit near 28 and
+        // 19 (§3.5).
+        Column::BuildUp => match twin {
+            P::CenterBack => central(lean, 0.65, 0.50, 0.25, 0.10),
+            P::LeftBack => [1.30, 0.40, 0.0],
+            P::LeftWingBack => [1.15, 0.30, 0.0],
+            P::DefensiveMidfielder => [0.30, 0.90, 0.30],
+            P::CentralMidfielder => central(lean, 0.20, 0.20, 0.15, 0.05),
+            P::AttackingMidfielder => [0.05, 0.10, 0.05],
+            P::LeftMidfielder => [0.40, 0.0, 0.0],
+            _ => [0.0, 0.0, 0.0],
+        },
+        // §5.2: the front of the side that presses, from its own view.
+        Column::Press => match twin {
+            P::Striker => central(lean, 1.00, 0.60, 0.45, 0.25),
+            P::LeftWinger => [0.90, 0.30, 0.0],
+            P::LeftMidfielder => [0.70, 0.20, 0.0],
+            P::AttackingMidfielder => [0.30, 0.80, 0.30],
+            P::CentralMidfielder => central(lean, 0.50, 0.35, 0.225, 0.10),
+            P::DefensiveMidfielder => [0.05, 0.15, 0.05],
+            P::LeftBack => [0.10, 0.0, 0.0],
+            P::LeftWingBack => [0.20, 0.0, 0.0],
+            _ => [0.0, 0.0, 0.0],
+        },
     };
     if mirrored {
         [weights[2], weights[1], weights[0]]
@@ -227,7 +265,7 @@ fn with_role(
                 }
             }
         }
-        Column::MidfieldAttack | Column::MidfieldDefence => {}
+        Column::MidfieldAttack | Column::MidfieldDefence | Column::BuildUp | Column::Press => {}
     }
     weights
 }
@@ -331,6 +369,36 @@ impl LiveMatchState {
             roll -= w;
         }
         None
+    }
+
+    /// How hard `side` presses a build-up in `lane` (its own view; GĐ4-tech-spec
+    /// §5.2, X65): the mean of `0.40·tackling + 0.35·stamina + 0.25·pace` over
+    /// the players near the ball, each weighted by his presence there, his
+    /// condition and his role's press (`PressingForward`), and worn down by his
+    /// condition as any rating is. A press is the whole group closing in, so
+    /// nobody is drawn. `None` when nobody of the side is there.
+    pub(super) fn press_rating(&self, side: Side, lane: Lane) -> Option<f64> {
+        let (mut sum, mut weight) = (0.0, 0.0);
+        for (i, _, weights) in self.weighted_outfield(side, Column::Press) {
+            let player = &self.team_ref(side).players[i];
+            let condition = self
+                .player_conditions
+                .get(&player.id)
+                .copied()
+                .unwrap_or(50.0);
+            let w = weights[index(lane)] * (0.6 + 0.4 * condition / 100.0);
+            if w <= 0.0 {
+                continue;
+            }
+            let rating = crate::duel::press_rating(&PlayerSnap::from(player))
+                * crate::shared::role_attribute_modifier(
+                    player.role,
+                    crate::shared::PlayStylePhase::Press,
+                );
+            sum += w * self.condition_adjusted_skill(&player.id, rating);
+            weight += w;
+        }
+        (weight > 0.0).then(|| sum / weight)
     }
 
     /// How much of `side`'s attack is on each lane: the sum of the attacking
@@ -589,5 +657,69 @@ mod tests {
             out_of_lane_factor(PitchPosition::RightBack, Lane::Centre),
             1.0
         );
+    }
+
+    /// Given a 4-4-2 playing out down its left,
+    /// when the build-up's passer is drawn,
+    /// then the left back plays it most often and the keeper never does
+    /// (phase 2, P4.1, X65).
+    #[test]
+    fn a_build_up_down_the_left_starts_with_the_left_back() {
+        let s = state("4-4-2", "4-4-2");
+        let passers = picks(&s, Side::Home, Column::BuildUp, Lane::Left);
+        assert_eq!(passers[0].0, PitchPosition::LeftBack, "{passers:?}");
+        for lane in LANES {
+            let passers = picks(&s, Side::Home, Column::BuildUp, lane);
+            assert!(
+                passers
+                    .iter()
+                    .all(|(slot, _)| *slot != PitchPosition::Goalkeeper),
+                "{passers:?}"
+            );
+        }
+    }
+
+    /// Given a 4-4-2 pressing a build-up in the middle,
+    /// when its strikers are made better pressers,
+    /// then its press rating rises.
+    #[test]
+    fn the_press_is_read_off_the_front() {
+        let mut s = state("4-4-2", "4-4-2");
+        let before = s.press_rating(Side::Away, Lane::Centre).expect("a press");
+        for player in &mut s.away.players[9..11] {
+            player.tackling = 95;
+            player.stamina = 95;
+            player.pace = 95;
+        }
+        let after = s.press_rating(Side::Away, Lane::Centre).expect("a press");
+        assert!(after > before + 5.0, "{before:.1} → {after:.1}");
+    }
+
+    /// Given a 4-4-2 pressing in the middle,
+    /// when one striker is a `PressingForward`,
+    /// then the press is harder than with him `Standard`.
+    #[test]
+    fn a_pressing_forward_presses_harder() {
+        let mut s = state("4-4-2", "4-4-2");
+        let standard = s.press_rating(Side::Away, Lane::Centre).expect("a press");
+        s.away.players[9].role = PlayerRole::PressingForward;
+        let pressing = s.press_rating(Side::Away, Lane::Centre).expect("a press");
+        assert!(pressing > standard, "{standard:.2} → {pressing:.2}");
+    }
+
+    /// Given a 4-4-2 whose best presser is sent off,
+    /// when it presses,
+    /// then he no longer counts.
+    #[test]
+    fn a_player_sent_off_does_not_press() {
+        let mut s = state("4-4-2", "4-4-2");
+        let striker = s.away.players[9].id.clone();
+        s.away.players[9].tackling = 99;
+        s.away.players[9].stamina = 99;
+        s.away.players[9].pace = 99;
+        let with_him = s.press_rating(Side::Away, Lane::Centre).expect("a press");
+        s.test_send_off(&striker);
+        let without = s.press_rating(Side::Away, Lane::Centre).expect("a press");
+        assert!(without < with_him, "{with_him:.2} → {without:.2}");
     }
 }

@@ -272,8 +272,7 @@ impl LiveMatchState {
 
         let Some(taker) = self.pick_delivery_taker(att_side, kind) else {
             // Nobody left to take it: the defence has the ball.
-            self.possession = def_side;
-            self.ball_zone = Zone::defensive_third(att_side);
+            self.after_defensive_win(def_side, None, rng);
             self.active_set_piece = outer_set_piece;
             return events;
         };
@@ -301,8 +300,7 @@ impl LiveMatchState {
                 let clearance = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
                     .with_player(&clearer.id);
                 self.emit(&mut events, clearance);
-                self.possession = def_side;
-                self.ball_zone = Zone::defensive_third(att_side);
+                self.after_defensive_win(def_side, None, rng);
             } else {
                 // Played short or knocked back out: the attack goes on.
                 self.possession = att_side;
@@ -336,8 +334,7 @@ impl LiveMatchState {
             let clearance = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
                 .with_player(&marker.id);
             self.emit(&mut events, clearance);
-            self.possession = def_side;
-            self.ball_zone = Zone::defensive_third(att_side);
+            self.after_defensive_win(def_side, None, rng);
         }
         self.active_set_piece = outer_set_piece;
         events
@@ -388,8 +385,7 @@ impl LiveMatchState {
                 let corner_events = self.resolve_corner(minute, att_side, rng);
                 events.extend(corner_events);
             } else {
-                self.possession = def_side;
-                self.ball_zone = Zone::defensive_third(att_side);
+                self.after_defensive_win(def_side, None, rng);
             }
         } else if rng.random_range(0.0..1.0f64) >= free_kick_on_target(strike) {
             let miss = attempt(EventType::ShotOffTarget).with_detail(EventDetail::Shot {

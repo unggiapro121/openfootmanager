@@ -375,9 +375,7 @@ impl LiveMatchState {
                 clearance = clearance.with_tactical_context(TacticalContext::LowCross);
             }
             self.emit(&mut events, clearance);
-            self.possession = def_side;
-            self.ball_zone = Zone::defensive_third(att_side);
-            self.regain_lane(def_side, Some(&defender), rng);
+            self.after_defensive_win(def_side, Some(&defender), rng);
             return events;
         }
         self.ball_zone = Zone::attacking_box(att_side);
