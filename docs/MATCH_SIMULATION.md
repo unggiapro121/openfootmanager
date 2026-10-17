@@ -408,12 +408,21 @@ A match played under `EngineModel::Grid15` writes protocol 3 (phase 2, P3.1). Th
 is `lane`: it is the lane of the **ball**, as the event's side sees it, on every event the engine
 emits. The ball's lane is stored from the home side's attacking direction and read through
 `lane_for(side)`, so a tackle by the defending side carries the mirror of the lane the attacker
-had it in, and a change of possession does not move it. Until the lane matrix (P3.3) the ball
-follows its carrier: a pass completed out of defence or through midfield, or a one-on-one won in
-the attacking third, puts it in the lane of the player's slot; a corner goes to the flank it was
-on (or, from the centre, left on even minutes and right on odd ones); kick-offs, goal kicks,
-penalties and goals bring it back to the centre. Nothing is drawn, so the match plays out exactly
-as under `Zones5`.
+had it in, and a change of possession does not move it.
+
+Where the ball goes is the **lane matrix** (`live_match/lanes.rs`, P3.3). Each time a side moves
+the ball up a zone (a pass completed out of defence or through midfield), and when the defence
+wins it in its own third and the ball jumps to the other end, the next lane is drawn from the
+current one: from the centre it stays with `c` or goes out to either flank; from a flank it stays
+with `s`, comes inside with `a`, or switches to the far flank with `w`. Width sets the four numbers
+(`Normal`: c 0.15, s 0.78, a 0.10, w 0.12, set so that about 22% of the final third's one-on-ones
+go down the centre, as in real football). The switch scales with the passer's `long_passing`
+(×0.5 at 25 or below, ×1.5 at 75 or above, the difference staying on the flank), and a flank the
+side has nobody on is chosen three times less often. A corner goes to the flank it was on (or,
+from the centre, left on even minutes and right on odd ones); a cross, and any entry into the box,
+puts the ball in the centre, because the box is one cell; kick-offs, goal kicks, penalties and
+goals bring it back to the centre. Nothing reads the lane yet: it changes only who is picked once
+the presence table arrives (P3.2).
 
 Minutes are counted from when a player came on: a substitute who is himself taken off is credited
 with the time between the two substitutions, not with every minute up to his exit.
