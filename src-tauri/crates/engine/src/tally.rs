@@ -78,6 +78,18 @@ pub struct EventTally {
     /// wing-back, defensive midfielder, central midfielder, anyone else
     /// (substitutes included). Only [`EventTally::of_report`] fills it.
     pub build_up_passers: [u64; 5],
+    /// Long balls out of the own third (phase 2, P4.2): all of them, those
+    /// that cleared the midfield, and those whose side still had the ball
+    /// after it (brought down, run onto, or the second ball won).
+    pub long_balls: u64,
+    pub long_balls_over: u64,
+    pub long_balls_kept: u64,
+    /// Races onto a long ball behind a high line, and those won.
+    pub races: u64,
+    pub races_won: u64,
+    /// Loose balls after a long ball, and those the side that kicked it won.
+    pub second_balls: u64,
+    pub second_balls_kicker_won: u64,
 }
 
 fn lane_index(lane: Lane) -> usize {
@@ -94,11 +106,14 @@ impl EventTally {
         let mut tally = Self::default();
         // The side whose break into an open flank is still going.
         let mut exploiting: Option<crate::types::Side> = None;
+        // The side whose long ball it was, while its loose balls are played.
+        let mut kicker: Option<crate::types::Side> = None;
         for (index, event) in events.iter().enumerate() {
             let previous = index.checked_sub(1).map(|i| &events[i]);
             tally.add_flank_duel(event, previous, &mut exploiting);
             tally.add_build_up(event, &events[index + 1..]);
             tally.add_defensive_win(event, events.get(index + 1));
+            tally.add_long_ball(event, events.get(index + 1), &mut kicker);
             if is_midfield_duel(event) {
                 tally.midfield_duels += 1;
                 if event.event_type == EventType::PassCompleted {
@@ -201,6 +216,13 @@ impl EventTally {
         self.midfield_duels += other.midfield_duels;
         self.midfield_attack_won += other.midfield_attack_won;
         self.direct_wins += other.direct_wins;
+        self.long_balls += other.long_balls;
+        self.long_balls_over += other.long_balls_over;
+        self.long_balls_kept += other.long_balls_kept;
+        self.races += other.races;
+        self.races_won += other.races_won;
+        self.second_balls += other.second_balls;
+        self.second_balls_kicker_won += other.second_balls_kicker_won;
         self.played_out_wins += other.played_out_wins;
         for i in 0..5 {
             self.build_up_passers[i] += other.build_up_passers[i];
@@ -396,6 +418,60 @@ impl EventTally {
         } else if next.zone == Zone::attacking_third(winner) || next.zone.is_box_for(winner) {
             self.direct_wins += 1;
         }
+    }
+
+    /// A long ball and what its next event says of it: a loose ball in
+    /// midfield (it fell short), a run behind won (`BallInBehind`) or lost
+    /// (the defence's interception), a header clear, a loose ball where it
+    /// was met; anything else is a ball brought down. Every loose ball counts
+    /// for or against the side that kicked it.
+    fn add_long_ball(
+        &mut self,
+        event: &MatchEvent,
+        next: Option<&MatchEvent>,
+        kicker: &mut Option<crate::types::Side>,
+    ) {
+        if event.event_type == EventType::BallRecovery {
+            self.second_balls += 1;
+            if *kicker == Some(event.side) {
+                self.second_balls_kicker_won += 1;
+                self.long_balls_kept += 1;
+            }
+            return;
+        }
+        if event.event_type != EventType::LongBall {
+            return;
+        }
+        let side = event.side;
+        *kicker = Some(side);
+        self.long_balls += 1;
+        let Some(next) = next else {
+            return;
+        };
+        let short = next.event_type == EventType::BallRecovery && next.zone == Zone::Midfield;
+        if short {
+            return;
+        }
+        self.long_balls_over += 1;
+        match next.event_type {
+            EventType::Dribble if next.tactical_context == Some(TacticalContext::BallInBehind) => {
+                self.races += 1;
+                self.races_won += 1;
+                self.long_balls_kept += 1;
+            }
+            EventType::Interception if next.side != side => self.races += 1,
+            EventType::Clearance | EventType::BallRecovery => {}
+            _ => self.long_balls_kept += 1,
+        }
+    }
+
+    /// Share of long balls that cleared the midfield, and of those kept by
+    /// the side that kicked them, in percent.
+    pub fn long_ball_pct(&self) -> (f64, f64) {
+        (
+            percent(self.long_balls_over, self.long_balls),
+            percent(self.long_balls_kept, self.long_balls),
+        )
     }
 
     /// Share of build-ups by passer slot: CB, FB, DM, CM and anyone else, in
@@ -620,6 +696,39 @@ mod tests {
             event(EventType::Clearance, Zone::HomeDefense),
         ]);
         assert_eq!((tally.direct_wins, tally.played_out_wins), (2, 1));
+    }
+
+    /// Given five home long balls: one dropping short to a second ball the
+    /// away side wins, one run onto behind, one the away side wins in the
+    /// race, one headed clear and won back by the home side, and one brought
+    /// down,
+    /// when they are tallied,
+    /// then five long balls, four over the midfield, two races (one won), two
+    /// second balls (one to the home side) and three kept by the home side
+    /// (phase 2, P4.2).
+    #[test]
+    fn long_balls_are_read_from_what_follows_them() {
+        let long = |e: MatchEvent| e.with_tactical_context(TacticalContext::LongBall);
+        let tally = EventTally::of(&[
+            long(event(EventType::LongBall, Zone::HomeDefense)),
+            away(EventType::BallRecovery, Zone::Midfield)
+                .with_tactical_context(TacticalContext::SecondBall),
+            long(event(EventType::LongBall, Zone::HomeDefense)),
+            event(EventType::Dribble, Zone::AwayDefense)
+                .with_tactical_context(TacticalContext::BallInBehind),
+            long(event(EventType::LongBall, Zone::HomeDefense)),
+            long(away(EventType::Interception, Zone::AwayDefense)),
+            long(event(EventType::LongBall, Zone::HomeDefense)),
+            long(away(EventType::Clearance, Zone::AwayDefense)),
+            event(EventType::BallRecovery, Zone::Midfield)
+                .with_tactical_context(TacticalContext::SecondBall),
+            long(event(EventType::LongBall, Zone::HomeDefense)),
+            long(event(EventType::Dribble, Zone::AwayDefense)),
+        ]);
+        assert_eq!((tally.long_balls, tally.long_balls_over), (5, 4));
+        assert_eq!((tally.races, tally.races_won), (2, 1));
+        assert_eq!((tally.second_balls, tally.second_balls_kicker_won), (2, 1));
+        assert_eq!(tally.long_balls_kept, 3);
     }
 
     /// Given a midfield pass completed by the home side, a home pass in

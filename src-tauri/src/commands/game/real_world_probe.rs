@@ -324,6 +324,10 @@ struct MatchShares {
     high_turnover_goals: u64,
     midfield_duels: u64,
     midfield_attack_won: u64,
+    /// Phase 2, P4.2: long balls out of the own third, and those over the
+    /// midfield.
+    long_balls: u64,
+    long_balls_over: u64,
 }
 
 /// Who scores, who sets them up and how players rate, by natural position
@@ -504,6 +508,8 @@ impl MatchShares {
         self.high_turnover_goals += tally.high_turnover_goals;
         self.midfield_duels += tally.midfield_duels;
         self.midfield_attack_won += tally.midfield_attack_won;
+        self.long_balls += tally.long_balls;
+        self.long_balls_over += tally.long_balls_over;
         self.headed_goals += report
             .events
             .iter()
@@ -634,8 +640,10 @@ fn real_world_match_probe() {
         MatchShares::pct(subs, box_shots)
     );
     println!(
-        "  build-ups/side/game {:.1} · reached midfield {:.1}% · lost in the own third/game {:.2} ({:.3} shots, {:.3} goals each) · midfield duels/game {:.1}, won by the side on the ball {:.1}%",
-        shares.per_match(shares.build_ups) / 2.0,
+        "  build-ups/side/game {:.1} ({:.1}% long, {:.1}% of those over the midfield) · short ones reached midfield {:.1}% · lost in the own third/game {:.2} ({:.3} shots, {:.3} goals each) · midfield duels/game {:.1}, won by the side on the ball {:.1}%",
+        shares.per_match(shares.build_ups + shares.long_balls) / 2.0,
+        MatchShares::pct(shares.long_balls, shares.build_ups + shares.long_balls),
+        MatchShares::pct(shares.long_balls_over, shares.long_balls),
         MatchShares::pct(shares.build_ups_completed, shares.build_ups),
         shares.per_match(shares.high_turnovers),
         shares.high_turnover_shots as f64 / shares.high_turnovers.max(1) as f64,

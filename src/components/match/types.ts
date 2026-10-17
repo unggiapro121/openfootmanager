@@ -39,7 +39,13 @@ export type TacticalContext =
   | "EarlyCross"
   | "FlankExposed"
   /** A build-up lost in the own third, and the next action of the side that won it (phase 2, GĐ4). */
-  | "HighTurnover";
+  | "HighTurnover"
+  /** A long ball out of the own third, and the action after it if it was brought down (GĐ4). */
+  | "LongBall"
+  /** A loose ball won after a long ball (GĐ4). */
+  | "SecondBall"
+  /** A long ball run onto behind a high line (GĐ4). */
+  | "BallInBehind";
 
 export interface MatchEvent {
   minute: number;

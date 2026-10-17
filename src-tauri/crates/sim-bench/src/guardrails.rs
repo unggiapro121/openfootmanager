@@ -155,6 +155,7 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         open_flank_breaks(result),
         build_ups(result),
         build_up_passers(result),
+        long_balls(result),
         direct_wins(result),
         high_turnovers(result),
         midfield_duels(result),
@@ -167,11 +168,34 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
 fn build_ups(result: &SweepResult) -> Check {
     let stats = &result.stats;
     let tally = &stats.duels.tally;
-    let per_side = tally.build_ups as f64 / f64::from(stats.games.max(1) * 2);
+    let per_side = (tally.build_ups + tally.long_balls) as f64 / f64::from(stats.games.max(1) * 2);
     Check {
         name: "phát động thành công (%)",
         value: Some(tally.build_up_success_pct()),
         band: format!("đo ({per_side:.1} pha/đội/trận; GĐ4 đích ≈ 15–25)"),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Long balls out of the own third and the loose balls after them (P4.2).
+/// Real football (`gd4-real-reference.txt`): a third of the passes out of
+/// the own third go long, 13% reach the final third, 60% leave the side
+/// still on the ball, and the side that kicked it wins 33% of the loose balls.
+fn long_balls(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let tally = &stats.duels.tally;
+    let (over, kept) = tally.long_ball_pct();
+    let share =
+        tally.long_balls as f64 / (tally.long_balls + tally.build_ups).max(1) as f64 * 100.0;
+    Check {
+        name: "phát động bằng bóng dài (%)",
+        value: Some(share),
+        band: format!(
+            "đo (qua tuyến {over:.1}% · còn giữ bóng {kept:.1}% · đua tốc độ {:.2}/trận, thắng {:.1}% · bóng hai đội phất thắng {:.1}%; thật 33/13/60, bóng hai 33)",
+            tally.races as f64 / f64::from(stats.games.max(1)),
+            tally.races_won as f64 / tally.races.max(1) as f64 * 100.0,
+            tally.second_balls_kicker_won as f64 / tally.second_balls.max(1) as f64 * 100.0
+        ),
         verdict: Verdict::Measure,
     }
 }

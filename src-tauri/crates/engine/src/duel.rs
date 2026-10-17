@@ -262,6 +262,39 @@ pub(crate) fn build_up_win_probability(resistance: f64, press: f64, modifier_rat
     )
 }
 
+/// A second ball has no attacker and no defender: two sides of equal
+/// strength win it half the time each (phase 2, P4.2, X71).
+pub(crate) const ANCHOR_SECOND_BALL: f64 = 1.0;
+/// Sensitivity of the second ball: a contest played many times a match,
+/// like the build-up and the midfield duel.
+const GAMMA_SECOND_BALL: f64 = 1.0;
+
+/// Getting to a loose ball first (X71): reading where it drops, deciding to
+/// go, getting there, holding the man off.
+pub(crate) fn second_ball_rating(p: &PlayerSnap) -> f64 {
+    0.35 * f64::from(p.positioning)
+        + 0.25 * f64::from(p.decisions)
+        + 0.20 * f64::from(p.pace)
+        + 0.20 * f64::from(p.strength)
+}
+
+/// The chance the side whose long ball it was wins the loose ball.
+pub(crate) fn second_ball_win_probability(
+    kicker: &PlayerSnap,
+    other: &PlayerSnap,
+    modifier_ratio: f64,
+) -> f64 {
+    duel_probability(
+        &[DuelTerm {
+            gamma: GAMMA_SECOND_BALL,
+            attacker: second_ball_rating(kicker),
+            defender: second_ball_rating(other),
+        }],
+        modifier_ratio,
+        ANCHOR_SECOND_BALL,
+    )
+}
+
 /// The midfield duel, given every existing modifier.
 pub(crate) fn midfield_win_probability(
     att: &PlayerSnap,

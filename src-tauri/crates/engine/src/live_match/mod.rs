@@ -4,11 +4,13 @@ mod header;
 mod helpers;
 mod lane_state;
 mod lanes;
+mod long_ball;
 mod long_shot;
 mod observation;
 mod penalty;
 mod presence;
 mod roles;
+mod second_ball;
 mod set_pieces;
 mod simulation;
 mod snapshot;
@@ -346,10 +348,10 @@ pub struct LiveMatchState {
     /// play, having just lost the ball in its attack (phase 2, GĐ4, P4.1,
     /// X77). Only that first build-up feels it.
     counter_pressing: Option<Side>,
-    /// The side that has just won the ball in the other side's build-up: its
-    /// next action, if still in its attacking third, is a high turnover
-    /// (P4.1, X67).
-    high_turnover: Option<Side>,
+    /// What the next action of a side still in its attacking third is: a
+    /// high turnover after winning the ball in the other side's build-up
+    /// (P4.1, X67), a long ball brought down (P4.2).
+    pending_context: Option<(Side, crate::event::TacticalContext)>,
 }
 
 impl LiveMatchState {
@@ -424,7 +426,7 @@ impl LiveMatchState {
             entry_lane: None,
             last_actor: None,
             counter_pressing: None,
-            high_turnover: None,
+            pending_context: None,
         }
     }
 
