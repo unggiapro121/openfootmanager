@@ -930,7 +930,11 @@
       "good": "Bom encaixe",
       "risky": "Encaixe arriscado"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Dois zagueiros de combate: os dois saem e o espaço às costas fica livre no contra-ataque.",
+      "covers": "Dois zagueiros de cobertura: os dois recuam e a entrada da área fica livre."
+    }
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",

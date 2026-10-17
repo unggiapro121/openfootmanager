@@ -36,6 +36,21 @@ pub struct MatchEvent {
     /// read it.
     #[serde(default)]
     pub lane: Option<Lane>,
+    /// What the event type alone cannot say: that it came on the break, or
+    /// that a sweeper keeper was involved (phase 2, P2.6).
+    #[serde(default)]
+    pub tactical_context: Option<TacticalContext>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TacticalContext {
+    /// Part of an attack on the break, straight after the ball was won.
+    Counter,
+    /// A sweeper keeper came off his line and won the ball first.
+    SweeperKeeperInterception,
+    /// A sweeper keeper came off his line and was beaten to it: the shot
+    /// that follows is at a goal he has left.
+    KeeperOffHisLine,
 }
 
 /// What kind of attempt on goal an event records.
@@ -173,6 +188,7 @@ impl MatchEvent {
             set_piece: None,
             goal_source: None,
             lane: None,
+            tactical_context: None,
         }
     }
 
@@ -193,6 +209,11 @@ impl MatchEvent {
 
     pub fn with_shot_kind(mut self, kind: ShotKind) -> Self {
         self.shot_kind = Some(kind);
+        self
+    }
+
+    pub fn with_tactical_context(mut self, context: TacticalContext) -> Self {
+        self.tactical_context = Some(context);
         self
     }
 

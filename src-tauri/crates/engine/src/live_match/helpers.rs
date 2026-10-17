@@ -1,6 +1,8 @@
 use rand::Rng;
 
-use crate::event::{DangerBand, FoulSeverity, GoalContext, Lane, MatchEvent, SaveQuality};
+use crate::event::{
+    DangerBand, FoulSeverity, GoalContext, Lane, MatchEvent, SaveQuality, TacticalContext,
+};
 use crate::pitch_position::PitchPosition;
 use crate::report::GoalSource;
 use crate::shared::{
@@ -104,6 +106,9 @@ impl LiveMatchState {
     pub(super) fn emit(&mut self, out: &mut Vec<MatchEvent>, mut event: MatchEvent) {
         if event.set_piece.is_none() {
             event.set_piece = self.active_set_piece;
+        }
+        if self.active_break && event.tactical_context.is_none() {
+            event.tactical_context = Some(TacticalContext::Counter);
         }
         if event.lane.is_none() {
             event.lane = event

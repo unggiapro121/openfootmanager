@@ -930,7 +930,11 @@
       "adjusted": "Upraveno",
       "risk": "Riziko"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Dva stopperi ve středu obrany: oba vystupují a prostor za nimi zůstává při brejku volný.",
+      "covers": "Dva krycí stopeři ve středu obrany: oba ustupují a hrana vápna zůstává volná."
+    }
   },
   "training": {
     "weeklySchedule": "Týdenní plán",

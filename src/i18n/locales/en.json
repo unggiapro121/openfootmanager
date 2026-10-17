@@ -930,7 +930,11 @@
       "adjusted": "Adjusted",
       "risk": "Risk"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Two Stoppers at centre-back: both step out, and the space behind them is left open on the break.",
+      "covers": "Two Cover CBs at centre-back: both drop off, and the edge of the box is left open."
+    }
   },
   "training": {
     "weeklySchedule": "Weekly Schedule",

@@ -930,7 +930,11 @@
       "adjusted": "Uyarlanmış",
       "risk": "Riskli"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Stoperde iki baskıcı stoper: ikisi de öne çıkar, kontrada arkalarındaki alan boş kalır.",
+      "covers": "Stoperde iki kollayan stoper: ikisi de geri çekilir, ceza sahası önü boş kalır."
+    }
   },
   "training": {
     "weeklySchedule": "Haftalık Program",

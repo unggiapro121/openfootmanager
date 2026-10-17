@@ -930,7 +930,11 @@
       "good": "Buen encaje",
       "risky": "Encaje arriesgado"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Dos stoppers en el centro de la defensa: los dos salen y el espacio a su espalda queda libre al contragolpe.",
+      "covers": "Dos centrales de cobertura: los dos retroceden y el borde del área queda libre."
+    }
   },
   "training": {
     "weeklySchedule": "Calendario Semanal",

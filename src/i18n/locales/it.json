@@ -949,7 +949,11 @@
       "good": "Buon incastro",
       "risky": "Incastro rischioso"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Due stopper al centro della difesa: escono entrambi e lo spazio alle loro spalle resta libero in contropiede.",
+      "covers": "Due centrali di copertura: arretrano entrambi e il limite dell'area resta libero."
+    }
   },
   "training": {
     "weeklySchedule": "Programma settimanale",

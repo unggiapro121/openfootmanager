@@ -930,7 +930,11 @@
       "adjusted": "Disesuaikan",
       "risk": "Berisiko"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Dua stopper di bek tengah: keduanya maju, dan ruang di belakang mereka terbuka saat serangan balik.",
+      "covers": "Dua bek penyapu di tengah: keduanya mundur, dan tepi kotak penalti dibiarkan terbuka."
+    }
   },
   "training": {
     "weeklySchedule": "Jadwal Mingguan",

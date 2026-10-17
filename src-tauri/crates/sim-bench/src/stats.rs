@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use engine::{EventTally, EventType, GoalSource, MatchEvent, MatchReport, ShotKind, Zone};
+use engine::{
+    EventTally, EventType, GoalSource, MatchEvent, MatchReport, ShotKind, TacticalContext, Zone,
+};
 use serde::Serialize;
 
 /// Aggregated statistics across N simulated matches.
@@ -61,6 +63,10 @@ pub struct BenchStats {
     pub long_shot_goals: u64,
     /// Shots from outside the box in open play (phase 2, P2.5).
     pub long_shots: u64,
+    /// One-on-ones won on the break, and the goals those breaks went on to
+    /// score: `g`, what a break past the defender is worth (phase 2, P2.6).
+    pub counter_one_v_ones_won: u64,
+    pub counter_goals: u64,
     /// Shots taken straight from a free kick (phase 2, P2.4).
     pub direct_free_kicks: u64,
 
@@ -199,6 +205,12 @@ impl BenchStats {
                 {
                     self.long_shots += 1
                 }
+                EventType::Dribble if event.tactical_context == Some(TacticalContext::Counter) => {
+                    self.counter_one_v_ones_won += 1
+                }
+                EventType::Goal if event.tactical_context == Some(TacticalContext::Counter) => {
+                    self.counter_goals += 1
+                }
                 _ => {}
             }
         }
@@ -322,6 +334,13 @@ impl BenchStats {
         self.header_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
     /// Goals a corner leads to, per corner, in percent (real football: 2.5–3).
+    pub fn counter_one_v_ones_pg(&self) -> f64 {
+        self.per_game_u64(self.counter_one_v_ones_won)
+    }
+    /// Goals per one-on-one won on the break (`g`).
+    pub fn goals_per_counter_one_v_one(&self) -> f64 {
+        self.counter_goals as f64 / self.counter_one_v_ones_won.max(1) as f64
+    }
     pub fn long_shot_goal_pct(&self) -> f64 {
         self.long_shot_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }

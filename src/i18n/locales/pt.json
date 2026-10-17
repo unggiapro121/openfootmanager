@@ -930,7 +930,11 @@
       "good": "Bom encaixe",
       "risky": "Encaixe arriscado"
     },
-    "playStyleWithMastery": "{{style}} · {{value}}"
+    "playStyleWithMastery": "{{style}} · {{value}}",
+    "centreBackPair": {
+      "stoppers": "Dois centrais de choque: os dois saem e o espaço nas costas fica livre no contra-ataque.",
+      "covers": "Dois centrais de cobertura: os dois recuam e a entrada da área fica livre."
+    }
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",

@@ -95,11 +95,14 @@ pub(crate) fn build_team_with_bench(game: &Game, team_id: &str) -> (TeamData, Ve
         .iter()
         .map(|player| player.id.clone())
         .collect();
-    let starting_xi = starting_players
-        .into_iter()
+    let mut starting_xi: Vec<PlayerData> = starting_players
+        .iter()
         .enumerate()
         .map(|(slot_index, p)| convert_player(p, slots.get(slot_index)))
         .collect();
+    if !is_user_team {
+        split_ai_centre_back_pair(&mut starting_xi, &starting_players, &slots);
+    }
 
     let mut bench_domain: Vec<&domain::player::Player> = available_players
         .into_iter()
@@ -784,6 +787,42 @@ fn to_engine_player(
             .collect(),
         role,
         position_ratings: position_ratings(p),
+    }
+}
+
+/// An AI club does not field two Stoppers, or two Cover CBs, side by side:
+/// the engine makes either pair pay for the gap it leaves (phase 2, P2.6).
+/// The change is to the side the engine plays; the club's stored roles stay.
+fn split_ai_centre_back_pair(
+    xi: &mut [PlayerData],
+    starters: &[&domain::player::Player],
+    slots: &[DomainPosition],
+) {
+    let mut centre_backs: Vec<(usize, &domain::player::Player, domain::team::PlayerRole)> = slots
+        .iter()
+        .enumerate()
+        .filter(|(_, slot)| **slot == DomainPosition::CenterBack)
+        .filter_map(|(index, _)| {
+            let role = match xi.get(index)?.role {
+                EnginePlayerRole::Stopper => domain::team::PlayerRole::Stopper,
+                EnginePlayerRole::CoverCB => domain::team::PlayerRole::CoverCB,
+                _ => domain::team::PlayerRole::Standard,
+            };
+            Some((index, *starters.get(index)?, role))
+        })
+        .collect();
+    // Each change takes one player out of the shared role, so this ends.
+    loop {
+        let pairs: Vec<(&domain::player::Player, domain::team::PlayerRole)> = centre_backs
+            .iter()
+            .map(|(_, player, role)| (*player, role.clone()))
+            .collect();
+        let Some((at, instead)) = crate::ai_roles::split_matching_centre_backs(&pairs) else {
+            break;
+        };
+        let slot_index = centre_backs[at].0;
+        xi[slot_index].role = domain_to_engine_role(&instead);
+        centre_backs[at].2 = instead;
     }
 }
 

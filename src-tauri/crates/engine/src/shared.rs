@@ -366,7 +366,6 @@ fn style_table(style: PlayStyle, phase: PlayStylePhase) -> f64 {
 pub(crate) fn role_attribute_modifier(role: PlayerRole, phase: PlayStylePhase) -> f64 {
     match (role, phase) {
         // Goalkeepers
-        (PlayerRole::SweeperKeeper, PlayStylePhase::Defense) => 1.06,
         (PlayerRole::BallPlayingKeeper, PlayStylePhase::Midfield) => 1.06,
         // Center Backs
         (PlayerRole::Stopper, PlayStylePhase::Defense) => 1.08,
@@ -379,7 +378,6 @@ pub(crate) fn role_attribute_modifier(role: PlayerRole, phase: PlayStylePhase) -
         (PlayerRole::DefensiveFB, PlayStylePhase::Attack) => 0.93,
         (PlayerRole::WingBack, PlayStylePhase::Attack) => 1.10,
         (PlayerRole::WingBack, PlayStylePhase::Defense) => 0.97,
-        (PlayerRole::InvertedFB, PlayStylePhase::Midfield) => 1.06,
         // Defensive Midfielders
         (PlayerRole::AnchorMan, PlayStylePhase::Defense) => 1.10,
         (PlayerRole::AnchorMan, PlayStylePhase::Attack) => 0.90,

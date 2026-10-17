@@ -3,6 +3,7 @@ mod helpers;
 mod long_shot;
 mod observation;
 mod penalty;
+mod roles;
 mod set_pieces;
 mod simulation;
 mod snapshot;
@@ -295,6 +296,12 @@ pub struct LiveMatchState {
     // Rolling window of the last 10 ball_zone values (oldest first)
     recent_zones: VecDeque<Zone>,
 
+    /// The side that has just broken away with the ball: its next action, if
+    /// it still has the ball in its attacking third, is on the break.
+    on_the_break: Option<Side>,
+    /// Whether the action being resolved is on the break. `emit` tags every
+    /// event of it as a counter.
+    active_break: bool,
     /// The set piece being played out (a corner, from the kick to the header
     /// or the clearance). `emit` tags every event with it.
     active_set_piece: Option<SetPiece>,
@@ -362,6 +369,8 @@ impl LiveMatchState {
             penalty_state: PenaltyShootoutState::default(),
             recent_zones: VecDeque::with_capacity(10),
             active_set_piece: None,
+            on_the_break: None,
+            active_break: false,
         }
     }
 

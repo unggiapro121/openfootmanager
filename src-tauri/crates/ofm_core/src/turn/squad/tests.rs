@@ -812,6 +812,78 @@ mod coach_mastery {
         assert_eq!(team_data.coach.counter, 30);
     }
 
+    /// A 4-4-2 of 70s for `club`, both centre-backs given the Stopper role.
+    fn two_stoppers(game: &mut Game, club: &str) {
+        let shape = [
+            DomainPos::Goalkeeper,
+            DomainPos::LeftBack,
+            DomainPos::CenterBack,
+            DomainPos::CenterBack,
+            DomainPos::RightBack,
+            DomainPos::LeftMidfielder,
+            DomainPos::CentralMidfielder,
+            DomainPos::CentralMidfielder,
+            DomainPos::RightMidfielder,
+            DomainPos::Striker,
+            DomainPos::Striker,
+        ];
+        for (index, position) in shape.into_iter().enumerate() {
+            let mut player = mk_pos(&format!("{club}-{index}"), position, 70, 95);
+            player.team_id = Some(club.to_string());
+            game.players.push(player);
+        }
+        let team = game
+            .teams
+            .iter_mut()
+            .find(|team| team.id == club)
+            .expect("the club");
+        team.formation = "4-4-2".to_string();
+        for index in [2, 3] {
+            team.player_roles
+                .insert(format!("{club}-{index}"), domain::team::PlayerRole::Stopper);
+        }
+    }
+
+    fn centre_back_roles(team: &engine::TeamData) -> Vec<engine::PlayerRole> {
+        team.players
+            .iter()
+            .filter(|player| player.id.ends_with("-2") || player.id.ends_with("-3"))
+            .map(|player| player.role)
+            .collect()
+    }
+
+    /// Given an AI club and the user's club, each with two Stoppers at
+    /// centre-back,
+    /// When their sides are built for a match,
+    /// Then the AI club plays one of them as a plain centre-back, its own
+    /// choice for a pair that leaves no cover, and the user's pair is the
+    /// user's to keep.
+    #[test]
+    fn an_ai_club_does_not_field_two_stoppers_side_by_side() {
+        let mut game = coached_world();
+        two_stoppers(&mut game, "ai");
+        two_stoppers(&mut game, "user");
+        game.teams
+            .iter_mut()
+            .find(|team| team.id == "user")
+            .expect("the user's club")
+            .starting_xi_ids = (0..11).map(|index| format!("user-{index}")).collect();
+
+        let (ai, _) = build_team_with_bench(&game, "ai");
+        let (user, _) = build_team_with_bench(&game, "user");
+
+        let mut ai_roles = centre_back_roles(&ai);
+        ai_roles.sort_by_key(|role| format!("{role:?}"));
+        assert_eq!(
+            ai_roles,
+            vec![engine::PlayerRole::Standard, engine::PlayerRole::Stopper]
+        );
+        assert_eq!(
+            centre_back_roles(&user),
+            vec![engine::PlayerRole::Stopper, engine::PlayerRole::Stopper]
+        );
+    }
+
     /// Given a club with nobody in the dugout,
     /// When its side is built for a match,
     /// Then it plays its style as the table prices it: a neutral coach.

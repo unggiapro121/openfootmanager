@@ -119,3 +119,24 @@ export function getRoleOptions(position: string, currentRole?: string | null): P
   }
   return base;
 }
+
+/**
+ * Two Stoppers, or two Cover CBs, side by side at centre-back with none of the
+ * other kind beside them: the pair the match engine makes pay (two Stoppers
+ * leave the space behind them on the break, two Cover CBs the edge of the box;
+ * `engine/src/live_match/roles.rs`, phase 2 P2.6). `null` for any other back
+ * line. A hint for the manager picking roles, not the rule itself.
+ */
+export function centreBackPairGap(
+  slots: { position: string; playerId: string | null }[],
+  roles: Record<string, PlayerRole | undefined>,
+): "stoppers" | "covers" | null {
+  const atCentreBack = slots
+    .filter((slot) => slot.position === "CenterBack" && slot.playerId)
+    .map((slot) => roles[slot.playerId ?? ""] ?? "Standard");
+  const stoppers = atCentreBack.filter((role) => role === "Stopper").length;
+  const covers = atCentreBack.filter((role) => role === "CoverCB").length;
+  if (stoppers >= 2 && covers === 0) return "stoppers";
+  if (covers >= 2 && stoppers === 0) return "covers";
+  return null;
+}

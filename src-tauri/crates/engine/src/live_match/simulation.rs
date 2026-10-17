@@ -193,7 +193,9 @@ impl LiveMatchState {
         let def_side = poss_side.opposite();
         let poss_tactics = self.team_ref(poss_side).tactics.clone();
         let def_tactics = self.team_ref(def_side).tactics.clone();
-        let mid_att = self.effective_midfield(poss_side) * tactics_tempo_retention(&poss_tactics);
+        let mid_att = self.effective_midfield(poss_side)
+            * tactics_tempo_retention(&poss_tactics)
+            * self.inverted_full_back_factor(poss_side);
         let mid_def = self.effective_midfield(def_side)
             * tactics_pressing_contest(&def_tactics)
             * tactics_defensive_line_recovery(&def_tactics);
@@ -213,6 +215,7 @@ impl LiveMatchState {
                     + tactics_counter_press_exposure(&poss_tactics);
                 if breakaway > 0.0 && rng.random_range(0.0..1.0f64) < breakaway {
                     self.ball_zone = Zone::attacking_third(def_side);
+                    self.on_the_break = Some(def_side);
                 } else {
                     self.ball_zone = Zone::Midfield;
                 }
