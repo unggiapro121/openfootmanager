@@ -47,6 +47,20 @@ pub(crate) const GAMMA_MIDFIELD: f64 = 1.0;
 /// (`ofm-sim-bench --guardrails`): 57.5–57.8% over four seeds.
 pub(crate) const ANCHOR_AERIAL: f64 = 0.64;
 pub(crate) const ANCHOR_ONE_V_ONE: f64 = 1.14;
+/// The one-on-one's anchor under `Grid15` (phase 2, P3.2, X49): the
+/// attacker wins as often on average as under `Zones5` (56.9% against 56.4%
+/// on the guardrail sweep's nine formations). Picking by presence puts quicker
+/// attackers against weaker tacklers on the flanks and some defenders out of
+/// lane, which a bare 1.14 would turn into far more wins.
+///
+/// Goals still move, for two reasons the anchor is not meant to undo: the
+/// carrier is more often a wide player, who shoots from distance less, and in
+/// a one-striker shape the striker is no longer the one crossing, so the
+/// cross finds him instead of a midfielder. Real-world matches (mostly
+/// 4-4-2) stay level; the nine-formation sweep gains about 0.2 a match
+/// (GĐ3-tech-spec, P3.2 notes). 0.70 would hold that sweep level but cost
+/// the real world 0.26.
+pub(crate) const ANCHOR_ONE_V_ONE_GRID: f64 = 0.94;
 pub(crate) const ANCHOR_MIDFIELD: f64 = 1.015;
 
 /// The average height of a professional footballer, the neutral point of the
@@ -163,6 +177,16 @@ pub(crate) fn one_v_one_win_probability(
     def: &PlayerSnap,
     modifier_ratio: f64,
 ) -> f64 {
+    one_v_one_win_probability_anchored(att, def, modifier_ratio, ANCHOR_ONE_V_ONE)
+}
+
+/// [`one_v_one_win_probability`] at another anchor: `Grid15`'s.
+pub(crate) fn one_v_one_win_probability_anchored(
+    att: &PlayerSnap,
+    def: &PlayerSnap,
+    modifier_ratio: f64,
+    anchor: f64,
+) -> f64 {
     let [technique_att, technique_def, physique_att, physique_def] = one_v_one_ratings(att, def);
     duel_probability(
         &[
@@ -178,7 +202,7 @@ pub(crate) fn one_v_one_win_probability(
             },
         ],
         modifier_ratio,
-        ANCHOR_ONE_V_ONE,
+        anchor,
     )
 }
 

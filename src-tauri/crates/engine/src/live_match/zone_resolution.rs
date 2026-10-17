@@ -12,6 +12,7 @@ use crate::types::{Position, Side, Zone};
 
 use super::LiveMatchState;
 use super::helpers::{danger_band, foul_severity, save_quality};
+use super::presence::{Column, out_of_lane_factor};
 use super::set_pieces::DIRECT_FREE_KICK_SHARE;
 
 // ---------------------------------------------------------------------------
@@ -116,8 +117,7 @@ impl LiveMatchState {
         rng: &mut R,
     ) -> Vec<MatchEvent> {
         let mut events = Vec::new();
-        let attacker = self.snap_player(att_side, Position::Midfielder, rng);
-        let defender = self.snap_player(def_side, Position::Midfielder, rng);
+        let (attacker, defender) = self.midfield_duelists(att_side, def_side, rng);
 
         // The players' ratings live in `duel`; what is left here is every
         // modifier the duel always had, applied exactly as strongly.
@@ -190,8 +190,8 @@ impl LiveMatchState {
         rng: &mut R,
     ) -> Vec<MatchEvent> {
         let mut events = Vec::new();
-        let attacker = self.snap_player(att_side, Position::Forward, rng);
-        let defender = self.snap_player(def_side, Position::Defender, rng);
+        let (attacker, defender, out_of_lane) =
+            self.attacking_third_duelists(att_side, def_side, rng);
         // A shot from distance takes the place of the one-on-one, never adds
         // to it (phase 2, P2.5).
         if let Some(long_shot) = self.try_long_shot(minute, att_side, &attacker, rng) {
@@ -221,8 +221,18 @@ impl LiveMatchState {
             * tactics_width_versus_shape(
                 &self.team_ref(att_side).tactics,
                 &self.team_ref(def_side).tactics,
-            );
-        let success = duel::one_v_one_win_probability(&attacker, &defender, att_eff / def_eff);
+            )
+            * out_of_lane;
+        let success = if self.plays_grid15() {
+            duel::one_v_one_win_probability_anchored(
+                &attacker,
+                &defender,
+                att_eff / def_eff,
+                duel::ANCHOR_ONE_V_ONE_GRID,
+            )
+        } else {
+            duel::one_v_one_win_probability(&attacker, &defender, att_eff / def_eff)
+        };
         let zone = Zone::attacking_third(att_side);
         let cross_prob = tactics_cross_probability(&self.team_ref(att_side).tactics);
 
@@ -322,6 +332,67 @@ impl LiveMatchState {
             self.advance_lane(def_side, &defender, rng);
         }
         events
+    }
+
+    /// Who meets in the attacking third's one-on-one, and κ for the defender.
+    /// `Zones5`: a forward and a defender drawn at random. `Grid15`: each drawn
+    /// by presence in the ball's lane (P3.2); a defender drawn onto a flank his
+    /// slot is not on plays it at κ.
+    fn attacking_third_duelists<R: Rng>(
+        &self,
+        att_side: Side,
+        def_side: Side,
+        rng: &mut R,
+    ) -> (PlayerSnap, PlayerSnap, f64) {
+        if !self.plays_grid15() {
+            let attacker = self.snap_player(att_side, Position::Forward, rng);
+            let defender = self.snap_player(def_side, Position::Defender, rng);
+            return (attacker, defender, 1.0);
+        }
+        let attacker = self
+            .pick_by_presence(att_side, Column::Attack, self.lane_for(att_side), rng)
+            .map_or_else(
+                || self.snap_player(att_side, Position::Forward, rng),
+                |picked| picked.player,
+            );
+        let def_lane = self.lane_for(def_side);
+        match self.pick_by_presence(def_side, Column::Defence, def_lane, rng) {
+            Some(picked) => {
+                let kappa = out_of_lane_factor(picked.slot, def_lane);
+                (attacker, picked.player, kappa)
+            }
+            None => (
+                attacker,
+                self.snap_player(def_side, Position::Defender, rng),
+                1.0,
+            ),
+        }
+    }
+
+    /// Who contests midfield. `Zones5`: two midfielders drawn at random.
+    /// `Grid15`: midfielders still, each drawn by presence in the ball's lane
+    /// (P3.2, X48).
+    fn midfield_duelists<R: Rng>(
+        &self,
+        att_side: Side,
+        def_side: Side,
+        rng: &mut R,
+    ) -> (PlayerSnap, PlayerSnap) {
+        if !self.plays_grid15() {
+            let attacker = self.snap_player(att_side, Position::Midfielder, rng);
+            let defender = self.snap_player(def_side, Position::Midfielder, rng);
+            return (attacker, defender);
+        }
+        let pick = |side: Side, column: Column, rng: &mut R| {
+            self.pick_by_presence(side, column, self.lane_for(side), rng)
+                .map_or_else(
+                    || self.snap_player(side, Position::Midfielder, rng),
+                    |picked| picked.player,
+                )
+        };
+        let attacker = pick(att_side, Column::MidfieldAttack, rng);
+        let defender = pick(def_side, Column::MidfieldDefence, rng);
+        (attacker, defender)
     }
 
     /// A shot worked inside the box. A header from a cross is not one of

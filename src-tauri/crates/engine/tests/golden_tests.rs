@@ -252,7 +252,7 @@ const GOLDEN: [(&str, u8, u8, u64); 20] = [
     ("gap_10", 4, 0, 0xFCB0A56C35C0C451),
     ("gap_20_away_strong", 1, 3, 0xB1E3AE754017406C),
     ("three_at_back", 1, 2, 0x2F746949C0B9617C),
-    ("one_four_one", 2, 1, 0xF64EB70F9B4C2D3E),
+    ("one_four_one", 2, 1, 0x70196BC087E8BA69),
     ("press_vs_block", 1, 0, 0xB8396BF5C347708C),
     ("direct_wide", 1, 3, 0x7608A0A2AA3A3A88),
     ("specialists_433", 1, 1, 0x2B0E31F42941ADC4),

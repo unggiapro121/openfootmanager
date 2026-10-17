@@ -149,7 +149,33 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         centre_lane_share(result),
         crosses_per_match(result),
         box_shot_groups(result),
+        one_v_one_win(result),
+        final_third_carriers(result),
     ]
+}
+
+/// How often the attacker wins the attacking third's one-on-one. `Grid15`
+/// anchors it back to `Zones5`'s (P3.2, X49), so goals do not drift.
+fn one_v_one_win(result: &SweepResult) -> Check {
+    Check {
+        name: "1v1 ở 1/3 cuối, đội công thắng (%)",
+        value: Some(result.stats.duels.one_v_one_win_pct()),
+        band: "đo (Grid15 neo về Zones5)".to_string(),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Who carries the ball in the attacking third's one-on-one, by the group of
+/// his slot (phase 2, P3.2). Real football: FWD 45.6 · MID 37.8 · DEF 16.6%
+/// of final-third take-ons (StatsBomb 2015/16).
+fn final_third_carriers(result: &SweepResult) -> Check {
+    let [def, mid, fwd, subs] = result.stats.duels.tally.final_third_group_pct();
+    Check {
+        name: "người đi bóng 1v1 ở 1/3 cuối là FWD (%)",
+        value: Some(fwd),
+        band: format!("đo (MID {mid:.1} · DEF {def:.1} · dự bị {subs:.1}; thật 45,6/37,8/16,6)"),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// Share of the attacking third's one-on-ones played down the centre

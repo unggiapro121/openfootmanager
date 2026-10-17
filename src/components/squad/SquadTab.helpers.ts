@@ -247,7 +247,11 @@ export function buildPitchRows(formation: string): PitchRow[] {
             positions: ["LeftWingBack", "CentralMidfielder", "CentralMidfielder", "RightWingBack"],
           }
         : { label: "DM", y: "54%", positions: deepMidfieldLine(parts[1]) },
-      { label: "AM", y: attackingMidY, positions: attackingMidfieldLine(parts[2]) },
+      // 4-1-4-1: a flat four with a wide man on each flank in front of the
+      // holding midfielder (phase 2, GĐ3, X51).
+      parts[1] === 1 && parts[2] === 4
+        ? { label: "MID", y: attackingMidY, positions: midfieldLine(4) }
+        : { label: "AM", y: attackingMidY, positions: attackingMidfieldLine(parts[2]) },
       { label: "FWD", y: forwardY, positions: forwardLine(parts[3]) },
     ];
   }
