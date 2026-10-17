@@ -21,6 +21,14 @@ use super::set_pieces::DIRECT_FREE_KICK_SHARE;
 /// `probability` with its odds multiplied by `ratio`: the same scaling a duel
 /// gets from multiplying one side's effective rating, for a duel that only
 /// hands back a probability.
+/// The chance a shot worked inside the box is fouled first, independent of
+/// `foul_probability` (which tunes fouls elsewhere). Every penalty comes from
+/// here. 3.6% until phase 2; raised to 6% at P2.5, because fewer shots are
+/// worked inside the box since headers (P2.2) and shots from distance (P2.5)
+/// stopped going through it, and penalties had fallen to 0.17 a match on the
+/// real-world probe against about 0.28 in real football.
+const BOX_FOUL_CHANCE: f64 = 0.06;
+
 pub(super) fn scale_odds(probability: f64, ratio: f64) -> f64 {
     let scaled = probability * ratio;
     scaled / (scaled + (1.0 - probability))
@@ -170,6 +178,11 @@ impl LiveMatchState {
         let mut events = Vec::new();
         let attacker = self.snap_player(att_side, Position::Forward, rng);
         let defender = self.snap_player(def_side, Position::Defender, rng);
+        // A shot from distance takes the place of the one-on-one, never adds
+        // to it (phase 2, P2.5).
+        if let Some(long_shot) = self.try_long_shot(minute, att_side, &attacker, rng) {
+            return long_shot;
+        }
 
         // As in midfield: ratings in `duel`, every existing modifier here.
         let att_rating = self.condition_adjusted_skill(&attacker.id, 1.0)
@@ -288,8 +301,7 @@ impl LiveMatchState {
         let def_side = att_side.opposite();
         let zone = Zone::attacking_box(att_side);
 
-        // Box foul rate fixed at 3.6% per shot — independent of foul_probability (which tunes outfield fouls)
-        if rng.random_range(0.0..1.0f64) < 0.036 {
+        if rng.random_range(0.0..1.0f64) < BOX_FOUL_CHANCE {
             let fouler = self.snap_player(def_side, Position::Defender, rng);
             let fouled = self.snap_player(att_side, Position::Forward, rng);
             let foul_evt = MatchEvent::new(minute, EventType::Foul, def_side, zone)
@@ -401,9 +413,22 @@ impl LiveMatchState {
         events: &mut Vec<MatchEvent>,
         rng: &mut R,
     ) {
+        self.after_save_with(minute, att_side, events, 0.40, rng);
+    }
+
+    /// What a save leaves, with `to_corner` the share the keeper pushes
+    /// behind: a corner, or the defending side's restart.
+    pub(super) fn after_save_with<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        events: &mut Vec<MatchEvent>,
+        to_corner: f64,
+        rng: &mut R,
+    ) {
         let def_side = att_side.opposite();
         let zone = Zone::attacking_box(att_side);
-        if rng.random_range(0.0..1.0f64) < 0.40 {
+        if rng.random_range(0.0..1.0f64) < to_corner {
             let corner_events = self.resolve_corner(minute, att_side, rng);
             events.extend(corner_events);
         } else {

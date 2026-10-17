@@ -2519,6 +2519,13 @@
             "0": "{{player}} đá phạt cứa lòng vào góc cao, ghi bàn cho {{team}}!",
             "1": "Không thể cản phá! {{player}} ghi bàn trực tiếp từ quả đá phạt!"
           }
+        },
+        "longShot": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} tung cú sút xa, một bàn thắng tuyệt đẹp cho {{team}}!",
+            "1": "Một cú nã đại bác từ ngoài vòng cấm! {{player}} ghi bàn!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Tình huống bóng sống",
     "cornersGoals": "Phạt góc",
     "headerGoals": "Đánh đầu",
+    "longShotGoals": "Sút xa",
     "headedGoal": "đánh đầu",
     "directFreeKickGoal": "đá phạt",
+    "longShotGoal": "sút xa",
     "freekickGoals": "Đá phạt",
     "penaltyGoals": "Phạt đền",
     "changeRole": "Đổi vai trò",

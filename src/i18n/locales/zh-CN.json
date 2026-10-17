@@ -2485,6 +2485,13 @@
             "0": "{{player}} 任意球兜入死角，为{{team}}破门！",
             "1": "无法阻挡！{{player}} 直接任意球破门！"
           }
+        },
+        "longShot": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}} 远射破门，{{team}}进球了！",
+            "1": "禁区外一脚世界波！{{player}} 破门！"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "进攻中的进球",
     "cornersGoals": "角球",
     "headerGoals": "头球",
+    "longShotGoals": "远射",
     "headedGoal": "头球",
     "directFreeKickGoal": "任意球",
+    "longShotGoal": "远射",
     "freekickGoals": "任意球",
     "penaltyGoals": "点球",
     "changeRole": "更改角色",

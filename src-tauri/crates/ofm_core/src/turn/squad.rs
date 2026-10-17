@@ -734,7 +734,8 @@ fn to_engine_player(
     // tuned on the pre-split blends, so those fields carry the blends; each
     // goes over to its own value as its phase moves (phase 2, GĐ2–GĐ4).
     // `aerial` moved at P2.2: the duel reads jumping and strength, the header
-    // reads `heading`.
+    // reads `heading`. `shooting` moved at P2.5: it is finishing inside the
+    // box, and shots from distance read `long_shots`.
     let blends = p
         .attributes
         .legacy_blends(p.natural_position.to_group_position() == DomainPosition::Goalkeeper);
@@ -751,7 +752,7 @@ fn to_engine_player(
         strength: p.attributes.strength,
         agility: p.attributes.agility,
         passing: blends.passing,
-        shooting: blends.shooting,
+        shooting: p.attributes.shooting,
         tackling: p.attributes.tackling,
         dribbling: blends.dribbling,
         defending: p.attributes.defending,
@@ -787,7 +788,7 @@ fn to_engine_player(
 }
 
 /// The engine's pitch position for each granular domain position.
-const PITCH_POSITIONS: [(DomainPosition, PitchPosition); 14] = [
+pub(crate) const PITCH_POSITIONS: [(DomainPosition, PitchPosition); 14] = [
     (DomainPosition::Goalkeeper, PitchPosition::Goalkeeper),
     (DomainPosition::RightBack, PitchPosition::RightBack),
     (DomainPosition::CenterBack, PitchPosition::CenterBack),

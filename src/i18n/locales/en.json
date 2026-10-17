@@ -2519,6 +2519,13 @@
             "0": "{{player}} curls the free kick into the top corner for {{team}}!",
             "1": "Unstoppable! {{player}} scores straight from the free kick!"
           }
+        },
+        "longShot": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} lets fly from distance — what a strike for {{team}}!",
+            "1": "A thunderbolt from outside the box! {{player}} scores!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Open Play",
     "cornersGoals": "Corners",
     "headerGoals": "Headers",
+    "longShotGoals": "Long shots",
     "headedGoal": "header",
     "directFreeKickGoal": "free kick",
+    "longShotGoal": "from distance",
     "freekickGoals": "Free Kicks",
     "penaltyGoals": "Penalties",
     "changeRole": "Change Role",

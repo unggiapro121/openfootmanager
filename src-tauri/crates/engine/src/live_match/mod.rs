@@ -1,5 +1,6 @@
 mod header;
 mod helpers;
+mod long_shot;
 mod observation;
 mod penalty;
 mod set_pieces;
@@ -9,6 +10,8 @@ mod substitution;
 #[cfg(test)]
 mod test_support;
 mod zone_resolution;
+
+pub use long_shot::long_shot_norm;
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};

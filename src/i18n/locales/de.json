@@ -2485,6 +2485,13 @@
             "0": "{{player}} zirkelt den Freistoß für {{team}} in den Winkel!",
             "1": "Unhaltbar! {{player}} trifft direkt per Freistoß!"
           }
+        },
+        "longShot": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{player}} zieht aus der Distanz ab — was für ein Treffer für {{team}}!",
+            "1": "Ein Hammer von außerhalb des Strafraums! {{player}} trifft!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Aus dem Spiel heraus",
     "cornersGoals": "Ecken",
     "headerGoals": "Kopfbälle",
+    "longShotGoals": "Fernschüsse",
     "headedGoal": "Kopfball",
     "directFreeKickGoal": "Freistoß",
+    "longShotGoal": "aus der Distanz",
     "freekickGoals": "Freistöße",
     "penaltyGoals": "Elfmeter",
     "changeRole": "Rolle ändern",

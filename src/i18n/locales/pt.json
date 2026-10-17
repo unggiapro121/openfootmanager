@@ -2485,6 +2485,13 @@
             "0": "{{player}} coloca o livre no ângulo para o {{team}}!",
             "1": "Indefensável! {{player}} marca de livre direto!"
           }
+        },
+        "longShot": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} arrisca de longe — que golo para o {{team}}!",
+            "1": "Um petardo de fora da área! {{player}} marca!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Jogo aberto",
     "cornersGoals": "Cantos",
     "headerGoals": "Cabeceamentos",
+    "longShotGoals": "Remates de longe",
     "headedGoal": "de cabeça",
     "directFreeKickGoal": "de livre",
+    "longShotGoal": "de longe",
     "freekickGoals": "Livres",
     "penaltyGoals": "Grandes penalidades",
     "changeRole": "Mudar papel",

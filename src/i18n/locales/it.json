@@ -2504,6 +2504,13 @@
             "0": "{{player}} mette la punizione all'incrocio per il {{team}}!",
             "1": "Imparabile! {{player}} segna direttamente su punizione!"
           }
+        },
+        "longShot": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} ci prova da lontano — che gol per il {{team}}!",
+            "1": "Una bordata da fuori area! Segna {{player}}!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2723,8 +2730,10 @@
     "openPlay": "Azione da gioco",
     "cornersGoals": "Calci d'angolo",
     "headerGoals": "Colpi di testa",
+    "longShotGoals": "Tiri da fuori",
     "headedGoal": "di testa",
     "directFreeKickGoal": "su punizione",
+    "longShotGoal": "da fuori",
     "freekickGoals": "Calci di punizione",
     "penaltyGoals": "Rigori",
     "changeRole": "Cambia ruolo",

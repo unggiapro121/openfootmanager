@@ -205,6 +205,16 @@ pub fn print_report(stats: &BenchStats, cfg: &RunConfig) {
             .to_string()
     };
     println!("  Goals vs xG           {diff_label}");
+    let ls = stats.long_shot_share_pct();
+    metric("  From distance %  ", ls, 1, "30–35", check(ls, 30.0, 35.0));
+    let lsc = stats.long_shot_conversion_pct();
+    metric(
+        "  ... scored %     ",
+        lsc,
+        1,
+        "2.5–4.5",
+        check(lsc, 2.5, 4.5),
+    );
     println!();
 
     // ── Discipline ───────────────────────────────────────────────────────────

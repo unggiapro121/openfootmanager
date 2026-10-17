@@ -2519,6 +2519,13 @@
             "0": "{{player}} serbest vuruşu doksana gönderiyor, {{team}} golü buldu!",
             "1": "Durdurulamaz! {{player}} doğrudan serbest vuruştan gol atıyor!"
           }
+        },
+        "longShot": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} uzaktan şansını deniyor — {{team}} için harika bir gol!",
+            "1": "Ceza sahası dışından füze! {{player}} gol atıyor!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Akan Oyun",
     "cornersGoals": "Kornerler",
     "headerGoals": "Kafa golleri",
+    "longShotGoals": "Uzaktan şutlar",
     "headedGoal": "kafa",
     "directFreeKickGoal": "serbest vuruş",
+    "longShotGoal": "uzaktan",
     "freekickGoals": "Serbest Vuruşlar",
     "penaltyGoals": "Penaltılar",
     "changeRole": "Rol Değiştir",

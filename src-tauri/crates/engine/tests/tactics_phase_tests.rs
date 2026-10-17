@@ -10,7 +10,8 @@
 use engine::live_match::LiveMatchState;
 use engine::{
     BreakSpeed, CounterPressDuration, DefensiveShape, EventType, MatchConfig, PlayStyle,
-    PlayerData, PlayerRole, Position, PressingIntensity, Side, TacticsConfig, TeamData, Tempo,
+    PlayerData, PlayerRole, Position, PressingIntensity, ShotKind, Side, TacticsConfig, TeamData,
+    Tempo,
 };
 use rand::SeedableRng;
 use rand::rngs::StdRng;
@@ -32,6 +33,9 @@ struct Totals {
     home_possession: usize,
     home_shots: usize,
     away_shots: usize,
+    /// The away side's shots struck inside the box, and from outside it.
+    away_box_shots: usize,
+    away_long_shots: usize,
 }
 
 fn mk(id: &str, pos: Position) -> PlayerData {
@@ -117,6 +121,13 @@ fn play(home: TacticsConfig, seed: u64) -> Totals {
                 match e.side {
                     Side::Home => t.home_shots += 1,
                     Side::Away => t.away_shots += 1,
+                }
+                if e.side == Side::Away {
+                    if e.zone.is_box_for(Side::Away) {
+                        t.away_box_shots += 1;
+                    } else if e.shot_kind == Some(ShotKind::LongRange) {
+                        t.away_long_shots += 1;
+                    }
                 }
             }
         }
@@ -211,18 +222,27 @@ fn direct_tempo_shoots_more_than_patient() {
     );
 }
 
+/// Given a compact defence and a stretched one,
+/// when each plays 1,000 matches,
+/// then the compact one concedes fewer shots inside the box. Since P2.5 it
+/// concedes more from distance instead: a side facing a packed block tries
+/// its luck from outside it (S2 §5.1). Counting every shot as a chance, as
+/// this test did before, now reads the trade as a weakness.
 #[test]
 fn compact_shape_concedes_fewer_chances_than_stretched() {
-    let compact = band(with(|c| c.defensive_shape = DefensiveShape::Compact), |t| {
-        t.away_shots
-    });
-    let stretched = band(
-        with(|c| c.defensive_shape = DefensiveShape::Stretched),
-        |t| t.away_shots,
-    );
+    let compact_shape = with(|c| c.defensive_shape = DefensiveShape::Compact);
+    let stretched_shape = with(|c| c.defensive_shape = DefensiveShape::Stretched);
+    let compact = band(compact_shape.clone(), |t| t.away_box_shots);
+    let stretched = band(stretched_shape.clone(), |t| t.away_box_shots);
     assert!(
         compact < stretched,
-        "Compact should concede fewer chances than Stretched: {compact} vs {stretched}"
+        "Compact should concede fewer chances in the box than Stretched: {compact} vs {stretched}"
+    );
+    let compact_far = band(compact_shape, |t| t.away_long_shots);
+    let stretched_far = band(stretched_shape, |t| t.away_long_shots);
+    assert!(
+        compact_far > stretched_far,
+        "a compact block should draw more shots from distance: {compact_far} vs {stretched_far}"
     );
 }
 

@@ -106,7 +106,8 @@ function goalTally(evt: MatchEvent, snapshot: MatchSnapshot): number {
 
 /**
  * Resolve the variant sub-key: the goal tally (hat-trick/brace) first, then
- * how the goal was made (a header, a direct free kick), then the goal's context.
+ * how the goal was made (a header, a direct free kick, a shot from distance),
+ * then the goal's context.
  */
 function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
   if (evt.event_type === "Goal" || evt.event_type === "PenaltyGoal") {
@@ -115,6 +116,7 @@ function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
     if (tally === 2) return "brace";
     if (evt.goal_source === "Header") return "header";
     if (evt.goal_source === "DirectFreeKick") return "freeKick";
+    if (evt.goal_source === "LongShot") return "longShot";
   }
   return detailVariant(evt.detail);
 }

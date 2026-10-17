@@ -720,6 +720,13 @@ fn the_player_taken_off_is_the_one_with_least_left_to_give() {
                 ref player_off_id, ..
             } = cmd
             {
+                // A player hurt in a foul is replaced at once, whoever is
+                // tired: that is the injury rule, not the choice this test is
+                // about. Make the change and wait for the manager's own.
+                if state.snapshot().injured.contains(player_off_id) {
+                    state.apply_command(cmd).expect("the injury substitution");
+                    continue;
+                }
                 assert_eq!(
                     player_off_id, "home_mid0",
                     "the manager took off {player_off_id}, who was as fresh as \

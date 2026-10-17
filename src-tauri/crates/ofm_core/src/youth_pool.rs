@@ -106,8 +106,10 @@ pub fn open_season(game: &mut Game, date: NaiveDate) {
                         &mut rng,
                     );
                     // Named by nation, day and draw rather than a random id, so a
-                    // replayed season signs the same youngsters under the same ids.
-                    player.id = format!("youth-pool-{nation}-{date_text}-{}", players.len());
+                    // replayed season signs the same youngsters under the same ids,
+                    // with the same habits (drawn by id).
+                    let id = format!("youth-pool-{nation}-{date_text}-{}", players.len());
+                    crate::assigned_traits::rename_player(&mut player, id, date.year() as u32);
                     players.push(player);
                 }
             }
@@ -585,6 +587,7 @@ mod tests {
                         player.ovr,
                         player.potential,
                         player.full_name.clone(),
+                        format!("{:?}", player.traits),
                     )
                 })
                 .collect::<Vec<_>>()

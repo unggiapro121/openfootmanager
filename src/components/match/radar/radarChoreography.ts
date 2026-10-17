@@ -651,8 +651,46 @@ function stageDirectFreeKick(cue: Cue): Staging {
   };
 }
 
+/** The band a shot from distance is struck from: 20–30 m from goal. */
+const LONG_SHOT_NEAREST = 79;
+const LONG_SHOT_FARTHEST = 85;
+/** How far either side of the middle a shot from distance is struck from, at most. */
+const LONG_SHOT_LANE_SPREAD = 16;
+
+/**
+ * A shot from distance (phase 2, P2.5): the shooter takes it in his stride
+ * where he meets the ball, 20–30 m out. Not carried into the box, and not
+ * pulled back out of it either: a ball already in the box is struck from the
+ * edge.
+ */
+function stageLongShot(cue: Cue): Staging {
+  const side = cue.event.side;
+  const shooter = cue.event.player_id;
+  const from = fromPitch(side, shooter ? where(cue, shooter) : cue.scene.ball);
+  const spot = toPitch(
+    side,
+    clamp(from.depth, LONG_SHOT_NEAREST, LONG_SHOT_FARTHEST),
+    clamp(from.lane, CENTRE_LANE - LONG_SHOT_LANE_SPREAD, CENTRE_LANE + LONG_SHOT_LANE_SPREAD),
+  );
+  return {
+    important: cue.event.event_type === "Goal",
+    steps: [
+      {
+        ball: { at: spot, ease: "linear" },
+        movers: only(shooter, spot),
+        highlight: cast(shooter),
+        possession: side,
+        overlay: null,
+        action: shooter ? { kind: "take", by: shooter } : undefined,
+      },
+      ...stageShotFinish(cue, spot, shooter),
+    ],
+  };
+}
+
 function stageShot(cue: Cue): Staging {
   if (cue.event.shot_kind === "DirectFreeKick") return stageDirectFreeKick(cue);
+  if (cue.event.shot_kind === "LongRange") return stageLongShot(cue);
   const shooter = cue.event.player_id;
   const { steps, spot } = shotApproach(cue, shooter);
   const isGoal = cue.event.event_type === "Goal";

@@ -125,9 +125,34 @@ and the midfielders (0.5), never the taker; the aerial duel's odds are multiplie
 Every event of a corner carries `set_piece = Corner`. A corner is worth about 3% of a goal, as in
 real football (it had been worth 5.7%).
 
+### Shots from distance
+
+Each action in the attacking third may be a shot from distance instead of the one-on-one (phase 2
+P2.5, `live_match/long_shot.rs`). The man who might shoot is a midfielder (55%) or the man on the
+ball, and he tries it with
+
+```text
+logit = BASE + (a[slot] − a[ST]) + 1.35·(long_shots − μ[slot])/10 + 0.90 ShootsFromDistance + 0.25 vs Compact
+P     = min(σ(logit), 0.45)
+```
+
+`a` and `μ` are the position table `ShootsFromDistance` is assigned by (`ofm_core/assigned_traits.rs`,
+pinned to the engine's copy `live_match::long_shot_norm` by a test), read by his formation slot;
+`BASE = −2.30` is calibrated on the real-world probe, where 31% of shots come from outside the box,
+as in real football. The shot, rated `0.60·long_shots + 0.25·curve + 0.15·composure`, is blocked
+`clamp(0.31 × the defence's shape, 0.18, 0.45)` (40% of blocks go to the defence, the rest run loose
+to the attack), on target `clamp(0.32 + (R − 50)/220, 0.12, 0.70)` ×1.08 for `LongShooter` and for
+`Curler` (×1.12 at most), and in `clamp(0.14 + (R − keeper)/250, 0.02, 0.35)`; a save goes behind for
+a corner 30% of the time. About 3.4% are scored. Events carry `shot_kind = LongRange` and the zone of
+the attacking third; a goal's source is `LongShot`.
+
+Since P2.5 the bridge hands the engine `shooting` as it is (finishing inside the box), no longer
+blended with `long_shots`.
+
 ### Direct free kicks
 
-A foul in the attacking third becomes a shot straight at goal 10% of the time (phase 2 P2.4, in
+A foul in the attacking third becomes a shot straight at goal 12.5% of the time (phase 2 P2.4, raised
+from 10% at P2.5, which left fewer such fouls; in
 `live_match/set_pieces.rs`); otherwise the fouled side keeps the ball there as before. The club's
 `free_kick_taker` takes it while on the pitch, otherwise the outfielder with the best
 `0.65·free_kick + 0.35·curve`. With `FK` that blend × condition (×1.08 for `DeadBallSpecialist`), the
@@ -177,8 +202,9 @@ Players carry 26 attributes, grouped into categories:
 **Goalkeeper**: handling, reflexes, aerial (jumping and contesting a high ball)
 
 The seven split attributes came out of four older blends. The phases not yet moved onto them are
-tuned on those blends, so the bridge (`ofm_core/turn/squad.rs`) hands the engine `passing`,
-`shooting` and `dribbling` rebuilt by the pre-split formulas (`PlayerAttributes::legacy_blends`).
+tuned on those blends, so the bridge (`ofm_core/turn/squad.rs`) hands the engine `passing` and
+`dribbling` rebuilt by the pre-split formulas (`PlayerAttributes::legacy_blends`); `shooting` moved
+at P2.5.
 `aerial` and `heading` moved in phase 2's P2.2: the aerial duel reads `aerial` (jumping and
 strength) and the header reads `heading`. A synthetic player who leaves any of the seven at 0 has
 it filled at kick-off from the field it split from (`PlayerData::declare_split_attributes`).

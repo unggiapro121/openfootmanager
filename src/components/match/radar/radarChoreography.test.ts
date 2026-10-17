@@ -458,6 +458,25 @@ describe("choreographBatch — shooting from distance", () => {
     point.x < zoneSpan("AwayBox")[0] && point.x > zoneSpan("AwayDefense")[0];
 
   for (const shot of ["Goal", "ShotSaved", "ShotOffTarget", "ShotBlocked"]) {
+    // Given a shot from distance (phase 2, P2.5), from a man on the ball in
+    // the box and from one in midfield, then it is struck outside the box in
+    // his stride: never carried in, never pulled back from the box either.
+    it(`strikes a shot from distance ${shot} from outside the box`, () => {
+      const longShot = {
+        ...radarEvent(shot, "Home", "AwayDefense", "h_cm1", "a_gk"),
+        shot_kind: "LongRange" as const,
+      };
+      for (const from of [
+        start,
+        { ...start, ball: { x: 95, y: 34 }, possession: "Home" as const },
+      ]) {
+        const origins = shotOrigins([longShot], from);
+        expect(origins.length).toBeGreaterThan(0);
+        for (const origin of origins)
+          expect(outsideTheBox(origin), JSON.stringify(origin)).toBe(true);
+      }
+    });
+
     // Given a direct free kick (event protocol 2), then it is struck from where
     // the foul gave it, outside the box: it is not carried in like a shot from
     // open play.
@@ -468,7 +487,8 @@ describe("choreographBatch — shooting from distance", () => {
       };
       const origins = shotOrigins([kick], start);
       expect(origins.length).toBeGreaterThan(0);
-      for (const origin of origins) expect(outsideTheBox(origin), JSON.stringify(origin)).toBe(true);
+      for (const origin of origins)
+        expect(outsideTheBox(origin), JSON.stringify(origin)).toBe(true);
     });
   }
 });

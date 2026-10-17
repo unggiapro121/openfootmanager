@@ -2485,6 +2485,13 @@
             "0": "{{player}} enroule le coup franc en pleine lucarne pour {{team}} !",
             "1": "Imparable ! {{player}} marque directement sur coup franc !"
           }
+        },
+        "longShot": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} tente sa chance de loin — quelle frappe pour {{team}} !",
+            "1": "Un boulet hors de la surface ! {{player}} marque !"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Jeu ouvert",
     "cornersGoals": "Corners",
     "headerGoals": "Têtes",
+    "longShotGoals": "Frappes lointaines",
     "headedGoal": "de la tête",
     "directFreeKickGoal": "coup franc",
+    "longShotGoal": "de loin",
     "freekickGoals": "Coups francs",
     "penaltyGoals": "Pénaltis",
     "changeRole": "Changer le rôle",

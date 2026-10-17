@@ -74,6 +74,8 @@ pub enum GoalSource {
     Header,
     /// Scored straight from a free kick (phase 2, P2.4).
     DirectFreeKick,
+    /// A shot from outside the box in open play (phase 2, P2.5).
+    LongShot,
 }
 
 impl GoalSource {
@@ -87,6 +89,7 @@ impl GoalSource {
             (_, Some(SetPiece::Corner)) => Self::Corner,
             (_, Some(SetPiece::FreeKick)) => Self::FreeKick,
             (Some(ShotKind::Header), None) => Self::Header,
+            (Some(ShotKind::LongRange), None) => Self::LongShot,
             _ => Self::OpenPlay,
         }
     }
