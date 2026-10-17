@@ -18,6 +18,7 @@ const config: SimBatchConfig = {
   away_formation: "5-3-2",
   home_rating: 75,
   away_rating: 68,
+  engine_model: "grid15",
   home_advantage: null,
   shot_accuracy_base: null,
   goal_conversion_base: null,

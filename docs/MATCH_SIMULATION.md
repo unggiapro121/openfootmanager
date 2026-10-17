@@ -370,6 +370,9 @@ All probabilities and multipliers are tuneable via `MatchConfig`:
 | `penalty_probability` | 0.08 | Chance a box foul is a penalty |
 | `stoppage_time_max` | 4 | Max stoppage time minutes per half |
 | `injury_probability` | 0.03 | Chance of injury per foul, before the fitness factor |
+| `engine_model` | `Zones5` | The match model. `Grid15` is the 5×3 grid of phase 2 GĐ3, built beside `Zones5` package by package; every GĐ3 rule runs only under it, so `Zones5` plays exactly as before. The game always plays `Zones5`; sim-bench (`--engine-model`), SimLab and the real-world probes (`OFM_ENGINE_MODEL`) can pick `Grid15`. `Zones5` goes once `Grid15` passes the GĐ3 gate (P3.8) |
+
+`PlayerData` also carries `footedness` (`Foot::{Left, Right, Both}`, from the domain player's footedness) since P3.0. Nothing reads it yet; GĐ3's wing play (P3.4) will.
 
 ---
 

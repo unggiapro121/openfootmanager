@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use engine::{
-    EventTally, EventType, GoalSource, MatchEvent, MatchReport, ShotKind, TacticalContext, Zone,
-};
+use engine::{EventTally, EventType, GoalSource, MatchReport, ShotKind, TacticalContext, Zone};
 use serde::Serialize;
 
 /// Aggregated statistics across N simulated matches.
@@ -59,6 +57,8 @@ pub struct BenchStats {
     pub free_kick_goals: u64,
     /// Headers from open play; a header from a corner is a corner goal.
     pub header_goals: u64,
+    /// Goals scored with the head, whatever set them up (corners included).
+    pub headed_goals: u64,
     pub direct_free_kick_goals: u64,
     pub long_shot_goals: u64,
     /// Shots from outside the box in open play (phase 2, P2.5).
@@ -179,7 +179,7 @@ impl BenchStats {
             }
         }
 
-        self.duels.add(&report.events);
+        self.duels.add(report);
 
         for event in &report.events {
             if event.is_goal() {
@@ -210,6 +210,9 @@ impl BenchStats {
                 }
                 EventType::Goal if event.tactical_context == Some(TacticalContext::Counter) => {
                     self.counter_goals += 1
+                }
+                EventType::Goal if event.shot_kind == Some(ShotKind::Header) => {
+                    self.headed_goals += 1
                 }
                 _ => {}
             }
@@ -559,7 +562,8 @@ pub struct DuelCounts {
 }
 
 impl DuelCounts {
-    pub fn add(&mut self, events: &[MatchEvent]) {
+    pub fn add(&mut self, report: &MatchReport) {
+        let events = &report.events;
         for (index, event) in events.iter().enumerate() {
             let previous = index.checked_sub(1).map(|i| &events[i].event_type);
             match event.event_type {
@@ -579,7 +583,7 @@ impl DuelCounts {
                 _ => {}
             }
         }
-        self.tally.add(&EventTally::of(events));
+        self.tally.add(&EventTally::of_report(report));
     }
 
     fn share(won: u64, lost: u64) -> f64 {
@@ -648,7 +652,7 @@ fn goal_bucket(minute: u8) -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use engine::Side;
+    use engine::{MatchEvent, Side};
 
     fn event(event_type: EventType, zone: Zone) -> MatchEvent {
         MatchEvent::new(10, event_type, Side::Home, zone)
@@ -673,7 +677,7 @@ mod tests {
             event(EventType::Goal, Zone::AwayBox),
         ];
         let mut duels = DuelCounts::default();
-        duels.add(&events);
+        duels.add(&MatchReport::from_events(events, 1, 1, 90));
 
         assert_eq!((duels.midfield_won, duels.midfield_lost), (1, 1));
         assert_eq!((duels.one_v_one_won, duels.one_v_one_lost), (2, 1));

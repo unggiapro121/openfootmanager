@@ -272,6 +272,7 @@ mod tests {
             first_touch: 0,
             heading: 0,
             height_cm: 0,
+            footedness: Default::default(),
             traits: vec![],
             role: PlayerRole::Standard,
             position_ratings: ratings,

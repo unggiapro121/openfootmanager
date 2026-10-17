@@ -22,7 +22,8 @@
 //!
 //! Knobs: `OFM_PROBE_SEED`, `OFM_PROBE_RUNS` (default 3), `OFM_PROBE_DAYS` (default 150), `OFM_PROBE_CLUB`
 //! (default the first club), `OFM_PROBE_SCOPE=home` to simulate only the club's
-//! home region instead of every competition, `OFM_PROBE_OUT` for a JSON copy.
+//! home region instead of every competition, `OFM_PROBE_OUT` for a JSON copy,
+//! `OFM_ENGINE_MODEL=grid15` to play the GĐ3 match model (default `zones5`).
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -42,6 +43,21 @@ use super::world_build::build_game_from_world_data;
 use super::world_load::game_clock_for_world;
 
 const OPENING_YEAR: i32 = 2026;
+
+/// Plays every match of the probe under `OFM_ENGINE_MODEL` (`zones5` unless
+/// set; phase 2, GĐ3, X47) and says which.
+fn select_engine_model() -> engine::EngineModel {
+    let model = std::env::var("OFM_ENGINE_MODEL")
+        .ok()
+        .map(|name| {
+            engine::EngineModel::parse(&name)
+                .unwrap_or_else(|| panic!("OFM_ENGINE_MODEL={name}: expected zones5 or grid15"))
+        })
+        .unwrap_or_default();
+    ofm_core::live_match_manager::set_engine_model(model);
+    println!("engine model: {model:?}");
+    model
+}
 
 fn env_or<T: std::str::FromStr>(name: &str, default: T) -> T {
     std::env::var(name)
@@ -307,6 +323,13 @@ struct MatchShares {
     long_shot_goals: u64,
     counter_one_v_ones_won: u64,
     counter_goals: u64,
+    /// Phase 2, GĐ3 (P3.0): one-on-ones in the attacking third and crosses by
+    /// lane (left, centre, right), box shots by the shooter's group (DEF, MID,
+    /// FWD, substitutes), and goals with the head, corners included.
+    final_third_lanes: [u64; 3],
+    crosses_by_lane: [u64; 3],
+    box_shots_by_group: [u64; 4],
+    headed_goals: u64,
 }
 
 impl MatchShares {
@@ -374,12 +397,27 @@ impl MatchShares {
                 }
             }
         }
-        let tally = engine::EventTally::of(&report.events);
+        let tally = engine::EventTally::of_report(report);
         self.aerial_won += tally.aerial_won;
         self.aerial_lost += tally.aerial_lost;
         self.cross_goals += tally.cross_goals;
         self.fouls_final_third += tally.fouls_final_third;
         self.fouls_in_box += tally.fouls_in_box;
+        for lane in 0..3 {
+            self.final_third_lanes[lane] += tally.final_third_lanes[lane];
+            self.crosses_by_lane[lane] += tally.crosses_by_lane[lane];
+        }
+        for group in 0..4 {
+            self.box_shots_by_group[group] += tally.box_shots_by_group[group];
+        }
+        self.headed_goals += report
+            .events
+            .iter()
+            .filter(|event| {
+                event.event_type == engine::EventType::Goal
+                    && event.shot_kind == Some(engine::ShotKind::Header)
+            })
+            .count() as u64;
     }
 
     fn per_match(&self, count: u64) -> f64 {
@@ -403,6 +441,7 @@ fn real_world_match_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
+    select_engine_model();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     // A world's league season takes seconds, so this one plays more of them.
     let run_count = env_or("OFM_MATCH_PROBE_RUNS", 10_u64).max(1);
@@ -476,6 +515,24 @@ fn real_world_match_probe() {
         MatchShares::pct(shares.direct_free_kick_goals, shares.direct_free_kicks),
         MatchShares::pct(shares.direct_free_kick_goals, u64::from(shares.goals))
     );
+    let lanes: u64 = shares.final_third_lanes.iter().sum();
+    let box_shots: u64 = shares.box_shots_by_group.iter().sum();
+    let [def, mid, fwd, subs] = shares.box_shots_by_group;
+    println!(
+        "  final-third one-on-ones left/centre/right {:.1}/{:.1}/{:.1}% · crosses/game {:.2} · headed goals {:.1}% of goals",
+        MatchShares::pct(shares.final_third_lanes[0], lanes),
+        MatchShares::pct(shares.final_third_lanes[1], lanes),
+        MatchShares::pct(shares.final_third_lanes[2], lanes),
+        shares.per_match(shares.crosses_by_lane.iter().sum()),
+        MatchShares::pct(shares.headed_goals, u64::from(shares.goals))
+    );
+    println!(
+        "  box shots by group FWD/MID/DEF/subs {:.1}/{:.1}/{:.1}/{:.1}%",
+        MatchShares::pct(fwd, box_shots),
+        MatchShares::pct(mid, box_shots),
+        MatchShares::pct(def, box_shots),
+        MatchShares::pct(subs, box_shots)
+    );
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
         let json = serde_json::to_string_pretty(&shares).expect("match shares serialize");
         std::fs::write(&out, json).expect("match shares written");
@@ -491,6 +548,7 @@ fn real_world_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
+    select_engine_model();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     let run_count = env_or("OFM_PROBE_RUNS", 3_u64).max(1);
     let days = env_or("OFM_PROBE_DAYS", 150_u32);

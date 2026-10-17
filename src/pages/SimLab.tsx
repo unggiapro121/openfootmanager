@@ -61,6 +61,7 @@ const defaultConfig = (): SimBatchConfig => ({
   away_formation: "4-4-2",
   home_rating: 70,
   away_rating: 70,
+  engine_model: "zones5",
   home_advantage: null,
   shot_accuracy_base: null,
   goal_conversion_base: null,
@@ -165,6 +166,18 @@ export default function SimLab() {
               }
               className={inputCls}
             />
+            <Label htmlFor="engine-model">Match model (dev)</Label>
+            <select
+              id="engine-model"
+              value={cfg.engine_model}
+              onChange={(e) =>
+                update("engine_model", e.target.value as SimBatchConfig["engine_model"])
+              }
+              className={inputCls}
+            >
+              <option value="zones5">Zones5 — five zones (GĐ2)</option>
+              <option value="grid15">Grid15 — 5×3 grid with lanes (GĐ3)</option>
+            </select>
           </Section>
 
           <Section title="Engine Parameters">

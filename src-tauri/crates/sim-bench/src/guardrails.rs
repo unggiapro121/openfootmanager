@@ -14,6 +14,7 @@ use clap::ValueEnum;
 use engine::MatchConfig;
 use serde::Serialize;
 
+use crate::balance::{self, BalanceRow};
 use crate::sweep::{self, SweepResult, SweepSpec};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
@@ -44,7 +45,14 @@ const CENTRE: u8 = 70;
 const PAIRS: u32 = 60;
 const GAMES_PER_GAP: u32 = 2_000;
 
-pub fn spec(seed: u64) -> SweepSpec<'static> {
+/// Matches per formation in the formation-balance table (decision X60).
+const BALANCE_GAMES: u32 = 4_000;
+
+/// Whether the formation-balance row is a gate yet. It becomes one at P3.2,
+/// when the ball's lane starts to decide who plays (GĐ3-tech-spec §12.2).
+const FORMATION_BALANCE_GATED: bool = false;
+
+pub fn spec(seed: u64, formation_mix: bool) -> SweepSpec<'static> {
     SweepSpec {
         centre: CENTRE,
         gaps: (0..=20).step_by(2).collect(),
@@ -52,15 +60,60 @@ pub fn spec(seed: u64) -> SweepSpec<'static> {
         games_per_gap: GAMES_PER_GAP,
         managed: true,
         formation: "4-4-2",
+        formation_mix,
         seed,
     }
 }
 
-/// Play the guardrail sweep and judge it. Returns the sweep too, for printing.
-pub fn run(config: &MatchConfig, stage: Stage, seed: u64) -> (SweepResult, Vec<Check>) {
-    let result = sweep::run(config, &spec(seed));
-    let checks = judge(&result, stage);
-    (result, checks)
+/// Play the guardrail sweep and judge it. Returns the sweep and, with the
+/// formation mix, the formation-balance table too, for printing.
+pub fn run(
+    config: &MatchConfig,
+    stage: Stage,
+    seed: u64,
+    formation_mix: bool,
+) -> (SweepResult, Option<Vec<BalanceRow>>, Vec<Check>) {
+    let result = sweep::run(config, &spec(seed, formation_mix));
+    let mut checks = judge(&result, stage);
+    let balance = formation_mix.then(|| balance::run(config, seed, BALANCE_GAMES));
+    if let Some(rows) = &balance {
+        checks.push(formation_balance(rows));
+    }
+    (result, balance, checks)
+}
+
+/// The formation-balance table (phase 2, GĐ3, X60): at gap 0 no formation may
+/// beat 4-4-2 by more than 5 points of wins over losses, about 3.8σ over
+/// 4,000 matches and about 6 points over a 38-match season. Measured until
+/// P3.2, a gate from then on.
+fn formation_balance(rows: &[BalanceRow]) -> Check {
+    let worst = rows
+        .iter()
+        .max_by(|a, b| a.edge().abs().total_cmp(&b.edge().abs()))
+        .expect("the balance table has rows");
+    let value = worst.edge().abs();
+    let band = format!(
+        "≤ 5 ({} {:+.1} ± {:.1})",
+        worst.formation,
+        worst.edge(),
+        worst.edge_se()
+    );
+    Check {
+        name: "cân bằng sơ đồ: max |thắng − thua| khi gặp 4-4-2 (điểm %)",
+        value: Some(value),
+        band: if FORMATION_BALANCE_GATED {
+            band
+        } else {
+            format!("đo, chặn từ P3.2: {band}")
+        },
+        verdict: if !FORMATION_BALANCE_GATED {
+            Verdict::Measure
+        } else if value <= 5.0 {
+            Verdict::Pass
+        } else {
+            Verdict::Fail
+        },
+    }
 }
 
 fn in_band(value: f64, lo: f64, hi: f64) -> Verdict {
@@ -93,7 +146,53 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         defender_aerial_win(result, stage),
         goals_per_corner(result),
         break_value(result),
+        centre_lane_share(result),
+        crosses_per_match(result),
+        box_shot_groups(result),
     ]
+}
+
+/// Share of the attacking third's one-on-ones played down the centre
+/// (phase 2, GĐ3). Before P3.1 the lane is the attacker's slot, so this reads
+/// the formation; from P3.3 it reads where the ball went.
+fn centre_lane_share(result: &SweepResult) -> Check {
+    let tally = &result.stats.duels.tally;
+    let [left, centre, right] = tally.final_third_lanes;
+    let total = (left + centre + right).max(1) as f64;
+    Check {
+        name: "1v1 ở 1/3 cuối theo làn giữa (%)",
+        value: Some(tally.centre_lane_pct()),
+        band: format!(
+            "đo (trái {:.1} / phải {:.1}; đích theo số thật §4.3)",
+            left as f64 / total * 100.0,
+            right as f64 / total * 100.0
+        ),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Crosses a match, both sides, and how they split by lane (phase 2, GĐ3).
+fn crosses_per_match(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    let [left, centre, right] = stats.duels.tally.crosses_by_lane;
+    Check {
+        name: "quả tạt/trận",
+        value: Some(stats.crosses_pg()),
+        band: format!("đo (trái/giữa/phải {left}/{centre}/{right})"),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Who shoots in the box: forwards' share, with midfielders', defenders' and
+/// substitutes' alongside (phase 2, GĐ3; the check on ω in P3.5).
+fn box_shot_groups(result: &SweepResult) -> Check {
+    let [def, mid, fwd, subs] = result.stats.duels.tally.box_shot_group_pct();
+    Check {
+        name: "cú sút trong vòng cấm của FWD (%)",
+        value: Some(fwd),
+        band: format!("đo (MID {mid:.1} · DEF {def:.1} · dự bị {subs:.1})"),
+        verdict: Verdict::Measure,
+    }
 }
 
 /// `g`, the goals a one-on-one won on the break goes on to score: what a
@@ -243,12 +342,16 @@ fn match_time(result: &SweepResult, stage: Stage) -> Check {
     }
 }
 
+/// Goals scored with the head, from open play and corners alike: the shot's
+/// kind, not the goal's source, which credits a header from a corner to the
+/// corner. Read this way from GĐ3 (GĐ3-tech-spec §12.2), so GĐ3 and GĐ5
+/// compare; until P3.0 it counted goals after a won cross duel in open play.
 fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
     let goals = result.stats.total_goals.max(1);
-    let value = result.stats.duels.tally.cross_goals as f64 / f64::from(goals) * 100.0;
+    let value = result.stats.headed_goals as f64 / f64::from(goals) * 100.0;
     let (verdict, band) = judged_at_gd5(stage, value, 16.0, 22.0);
     Check {
-        name: "bàn từ tạt + đánh đầu (%)",
+        name: "bàn đánh đầu, cả phạt góc (%)",
         value: Some(value),
         band,
         verdict,
@@ -375,7 +478,7 @@ mod tests {
             total_goals: 300,
             ..Default::default()
         };
-        stats.duels.tally.cross_goals = 60;
+        stats.headed_goals = 60;
         stats.duels.tally.aerial_won = 42;
         stats.duels.tally.aerial_lost = 58;
         SweepResult {
@@ -487,7 +590,7 @@ mod tests {
         assert_eq!(zero_gap_symmetry(&real, Stage::Gd5).verdict, Verdict::Pass);
     }
 
-    /// Given a cross-goal share of 20%,
+    /// Given headed goals making 20% of goals,
     /// when it is judged at each stage,
     /// then the loose band only measures it and GĐ5 passes it.
     #[test]

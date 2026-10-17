@@ -17,5 +17,10 @@ clap = { version = "4", features = ["derive"] }
 comfy-table = "7"
 colored = "2"
 
+[dev-dependencies]
+# The builder's tests rate its players with the game's own OVR tables.
+domain = { path = "../domain" }
+ofm_core = { path = "../ofm_core" }
+
 [lints]
 workspace = true
