@@ -6,8 +6,10 @@
 //! weighted by how present his slot is in the ball's lane — a 4-4-2 attacking
 //! down its left mostly sends its left midfielder or left back, and meets the
 //! other side's right back — times his condition and a small lift or cut for
-//! his role. In midfield the pick stays within the midfield group, weighted
-//! the same way.
+//! his role. In midfield the midfielders are drawn the same way by their own
+//! table; since GĐ4 (P4.3) full backs, wingers and strikers come in too, with
+//! small weights. The own third's build-up and the press on it have tables
+//! of their own (P4.1).
 //!
 //! A central slot standing in a row of the same slots leans to one side
 //! (`slot_lean`): of a 4-4-2's two centre backs one is the left one, so when
@@ -20,7 +22,7 @@ use rand::{Rng, RngExt};
 use crate::event::Lane;
 use crate::pitch_position::{PitchPosition, formation_slots};
 use crate::shared::PlayerSnap;
-use crate::types::{PlayerRole, Position, Side};
+use crate::types::{PlayerRole, Side};
 
 use super::LiveMatchState;
 
@@ -159,11 +161,20 @@ pub(super) fn presence(slot: PitchPosition, lean: Lean, column: Column) -> [f64;
             P::Striker => [0.0, 0.02, 0.0],
             _ => unreachable_right(twin),
         },
+        // Midfield, GĐ3-tech-spec §6.7; since P4.3 (GĐ4-tech-spec §7.2, X72)
+        // full backs, wing-backs, wingers and strikers come in with small
+        // weights: a 4-3-3 is no longer three men in midfield. Centre backs
+        // and the keeper never do.
         Column::MidfieldAttack => match twin {
             P::DefensiveMidfielder => [0.25, 0.80, 0.25],
             P::CentralMidfielder => central(lean, 1.00, 0.45, 0.30, 0.15),
             P::AttackingMidfielder => [0.25, 1.00, 0.25],
             P::LeftMidfielder => [1.00, 0.30, 0.0],
+            P::LeftBack => [0.30, 0.05, 0.0],
+            P::LeftWingBack => [0.50, 0.05, 0.0],
+            P::LeftWinger => [0.45, 0.10, 0.0],
+            P::Striker if lean == Lean::Centre => [0.05, 0.25, 0.05],
+            P::Striker => central(lean, 0.20, 0.05, 0.05, 0.0),
             _ => [0.0, 0.0, 0.0],
         },
         Column::MidfieldDefence => match twin {
@@ -171,6 +182,10 @@ pub(super) fn presence(slot: PitchPosition, lean: Lean, column: Column) -> [f64;
             P::CentralMidfielder => central(lean, 1.00, 0.40, 0.275, 0.15),
             P::AttackingMidfielder => [0.15, 0.60, 0.15],
             P::LeftMidfielder => [0.90, 0.20, 0.0],
+            P::LeftBack => [0.25, 0.02, 0.0],
+            P::LeftWingBack => [0.40, 0.02, 0.0],
+            P::LeftWinger => [0.20, 0.0, 0.0],
+            P::Striker => [0.02, 0.10, 0.02],
             _ => [0.0, 0.0, 0.0],
         },
         // GĐ4-tech-spec §5.1, calibrated at P4.1 on who plays out of real
@@ -279,7 +294,7 @@ pub(super) struct Picked {
 impl LiveMatchState {
     /// Each outfielder of `side` still playing, with his slot, lean and
     /// weight in `column` (all three lanes). Empty when the XI does not fill
-    /// the formation; midfield columns keep midfielders only.
+    /// the formation.
     fn weighted_outfield(
         &self,
         side: Side,
@@ -291,14 +306,11 @@ impl LiveMatchState {
             return Vec::new();
         }
         let leans = slot_leans(&slots);
-        let midfield_only = matches!(column, Column::MidfieldAttack | Column::MidfieldDefence);
         team.players
             .iter()
             .enumerate()
             .filter(|(i, player)| {
-                slots[*i] != PitchPosition::Goalkeeper
-                    && !self.out_of_play(&player.id)
-                    && (!midfield_only || slots[*i].group() == Position::Midfielder)
+                slots[*i] != PitchPosition::Goalkeeper && !self.out_of_play(&player.id)
             })
             .map(|(i, player)| {
                 let own = Some(slots[i].lane()).filter(|lane| *lane != Lane::Centre);
@@ -666,8 +678,7 @@ mod tests {
 
     /// Given a 4-4-2 with the ball down its left in midfield,
     /// when the midfield duel's players are drawn,
-    /// then the left midfielder is picked most often and every pick is a
-    /// midfielder.
+    /// then the left midfielder is picked most often.
     #[test]
     fn in_midfield_the_wide_man_on_the_ball_side_is_picked() {
         let s = state("4-4-2", "4-4-2");
@@ -677,11 +688,31 @@ mod tests {
             PitchPosition::LeftMidfielder,
             "{attackers:?}"
         );
-        assert!(
-            attackers
-                .iter()
-                .all(|(slot, _)| slot.group() == Position::Midfielder)
-        );
+    }
+
+    /// Given a 4-3-3 with the ball down its left in midfield,
+    /// when the midfield duel's players are drawn in every lane,
+    /// then its left winger and left back take part on the left, and no
+    /// centre back or keeper ever does (phase 2, P4.3, X72).
+    #[test]
+    fn wide_men_come_into_midfield_and_centre_backs_never_do() {
+        let s = state("4-3-3", "4-3-3");
+        let left = picks(&s, Side::Home, Column::MidfieldAttack, Lane::Left);
+        for slot in [PitchPosition::LeftWinger, PitchPosition::LeftBack] {
+            assert!(left.iter().any(|(s, _)| *s == slot), "{left:?}");
+        }
+        for column in [Column::MidfieldAttack, Column::MidfieldDefence] {
+            for lane in LANES {
+                let picked = picks(&s, Side::Home, column, lane);
+                assert!(
+                    picked.iter().all(|(slot, _)| !matches!(
+                        slot,
+                        PitchPosition::CenterBack | PitchPosition::Goalkeeper
+                    )),
+                    "{picked:?}"
+                );
+            }
+        }
     }
 
     /// Given a defender picked on a flank from the slot there, from a centre

@@ -20,6 +20,7 @@
 //! `fm-document/game-engine/player-physique-duel-formulas.md` (§6–8).
 
 use crate::shared::PlayerSnap;
+use crate::types::Tempo;
 
 /// Sensitivity of the aerial duel after a cross.
 pub(crate) const GAMMA_AERIAL: f64 = 2.0;
@@ -59,7 +60,11 @@ pub(crate) const ANCHOR_AERIAL_OPEN_PLAY_CROSS: f64 = 0.80;
 /// where it was (56.9% against 56.4% on the guardrail sweep's nine
 /// formations).
 pub(crate) const ANCHOR_ONE_V_ONE: f64 = 0.94;
-pub(crate) const ANCHOR_MIDFIELD: f64 = 1.015;
+/// The midfield duel's anchor: 1.015 until GĐ4; re-anchored at P4.3, when
+/// the duel began to read passing by tempo (X72) and full backs, wingers and
+/// strikers joined it, to hold the side on the ball's share where it was
+/// (51.99% on the guardrail sweep's nine formations before, 52.0% after).
+pub(crate) const ANCHOR_MIDFIELD: f64 = 1.022;
 /// Sensitivity of the build-up against a press (phase 2, GĐ4, P4.1, X66):
 /// 1, not S2's 2. A side plays out dozens of times a match, and, as with the
 /// midfield duel, a higher sensitivity would compound small differences into
@@ -167,11 +172,24 @@ pub(crate) fn one_v_one_ratings(att: &PlayerSnap, def: &PlayerSnap) -> [f64; 4] 
     [technique_att, technique_def, physique_att, physique_def]
 }
 
+/// The passing the midfield duel reads, by the side's tempo (phase 2, P4.3,
+/// X72; S1 §5.3): a patient side its short passing, a direct one half short
+/// and half long. S1 had `Direct` read long passing alone; as the default,
+/// that would have weakened every wide player in midfield by 4–6 points.
+fn pass_dial(p: &PlayerSnap, tempo: Tempo) -> f64 {
+    match tempo {
+        Tempo::Patient => f64::from(p.passing),
+        Tempo::Direct => 0.5 * f64::from(p.passing) + 0.5 * f64::from(p.long_passing),
+    }
+}
+
 /// The midfield duel, a third of it physical: strength to shield and to
-/// win the ball, agility to slip a press, pace to close one down.
-pub(crate) fn midfield_ratings(att: &PlayerSnap, def: &PlayerSnap) -> (f64, f64) {
-    let attacker = 0.25 * f64::from(att.legacy_passing())
-        + 0.20 * f64::from(att.legacy_dribbling())
+/// win the ball, agility to slip a press, pace to close one down. The side
+/// on the ball passes as its tempo plays (`pass_dial`) and carries it with
+/// its running and first touch.
+pub(crate) fn midfield_ratings(att: &PlayerSnap, def: &PlayerSnap, tempo: Tempo) -> (f64, f64) {
+    let attacker = 0.25 * pass_dial(att, tempo)
+        + 0.20 * (0.5 * f64::from(att.dribbling) + 0.5 * f64::from(att.first_touch))
         + 0.15 * f64::from(att.vision)
         + 0.10 * f64::from(att.teamwork)
         + 0.15 * f64::from(att.agility)
@@ -299,9 +317,10 @@ pub(crate) fn second_ball_win_probability(
 pub(crate) fn midfield_win_probability(
     att: &PlayerSnap,
     def: &PlayerSnap,
+    tempo: Tempo,
     modifier_ratio: f64,
 ) -> f64 {
-    let (attacker, defender) = midfield_ratings(att, def);
+    let (attacker, defender) = midfield_ratings(att, def, tempo);
     duel_probability(
         &[DuelTerm {
             gamma: GAMMA_MIDFIELD,
@@ -333,6 +352,8 @@ mod tests {
         snap.vision = value;
         snap.decisions = value;
         snap.composure = value;
+        snap.long_passing = value;
+        snap.first_touch = value;
         snap.teamwork = value;
         snap.aerial = value;
         snap
@@ -367,7 +388,33 @@ mod tests {
             one_v_one_win_probability(&a, &d, 1.0),
             ANCHOR_ONE_V_ONE
         ));
-        assert!(even(midfield_win_probability(&a, &d, 1.0), ANCHOR_MIDFIELD));
+        assert!(even(
+            midfield_win_probability(&a, &d, Tempo::Direct, 1.0),
+            ANCHOR_MIDFIELD
+        ));
+    }
+
+    /// Given a midfielder whose short and long passing differ,
+    /// when his side plays `Patient` and then `Direct`,
+    /// then `Patient` reads his short passing alone and `Direct` half of each
+    /// (phase 2, P4.3, X72).
+    #[test]
+    fn the_tempo_decides_which_passing_the_midfield_duel_reads() {
+        let mut att = player(70);
+        att.passing = 80;
+        att.long_passing = 50;
+        let def = player(70);
+        let patient = midfield_ratings(&att, &def, Tempo::Patient).0;
+        let direct = midfield_ratings(&att, &def, Tempo::Direct).0;
+        let mut flat = att.clone();
+        flat.passing = 70;
+        flat.long_passing = 70;
+        let base = midfield_ratings(&flat, &def, Tempo::Patient).0;
+        assert!(
+            (patient - (base + 0.25 * 10.0)).abs() < 1e-9,
+            "{patient} {base}"
+        );
+        assert!((direct - (base + 0.25 * (0.5 * 80.0 + 0.5 * 50.0 - 70.0))).abs() < 1e-9);
     }
 
     /// Given a side reduced to nobody, when a duel is decided, then the chance

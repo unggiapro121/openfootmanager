@@ -186,7 +186,9 @@ impl LiveMatchState {
             * def_mod
             * crate::shared::home_mod(def_side, &self.config)
             * self.line_strength(def_side, Position::Midfielder);
-        let success = duel::midfield_win_probability(&attacker, &defender, att_eff / def_eff);
+        let tempo = self.team_ref(att_side).tactics.tempo;
+        let success =
+            duel::midfield_win_probability(&attacker, &defender, tempo, att_eff / def_eff);
 
         if rng.random_range(0.0..1.0f64) < success {
             let evt = MatchEvent::new(minute, EventType::PassCompleted, att_side, Zone::Midfield)

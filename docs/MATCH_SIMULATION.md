@@ -86,7 +86,7 @@ Each simulated minute follows this sequence:
 | Current Zone | Resolution Function | Key Players | Outcome on Success | Outcome on Failure |
 |---|---|---|---|---|
 | Own defense (buildup) | `resolve_buildup` | Passer by presence in the lane (`BuildUp`) vs the other side's press there (`Press`) | Ball → Midfield | Interception: the other side has the ball in its attacking third (`HighTurnover`) |
-| Midfield | `resolve_midfield` | Midfielder vs Midfielder, each by presence in the ball's lane | Ball → Attacking third | Tackle/Interception, may trigger foul |
+| Midfield | `resolve_midfield` | Midfielders, and with small weights full backs, wingers and strikers, each by presence in the ball's lane | Ball → Attacking third | Tackle/Interception, may trigger foul |
 | Attacking third | `resolve_attacking_third` (`wing_play.rs`) | Carrier vs defender, any outfielders, by presence in the lane | Into the box, a cut inside, or a cross | Tackle/Clearance, possible corner (25%, played out at once), may trigger foul |
 | Attacking box | `resolve_shot` | Shooter by ω vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
 
@@ -183,6 +183,15 @@ anchor 0.98, which holds 48% of build-ups reaching midfield, as before. The pres
 style's press, the pressing dial, the side's line (`VeryLow` 0.80, `Low` 0.90, `Medium` 1.0, `High`
 1.08) and home advantage. A build-up lost is a high turnover: the other side has the ball where it is,
 in its attacking third, and its next action carries `HighTurnover`.
+
+### Midfield
+
+Since phase 2 P4.3 the midfield duel reads the side on the ball's passing by its tempo: `Patient`
+its short `passing`, `Direct` (the default) half short and half `long_passing`; and its carrying as
+`0.5·dribbling + 0.5·first_touch`. Full backs (0.30 on their flank), wing-backs (0.50), wingers
+(0.45) and strikers (0.20 in the centre) join the midfielders in the draw, so a `False9`'s or an
+`InvertedWinger`'s midfield lift finally applies; centre backs and keepers never do. The anchor,
+1.022, holds the side on the ball's share at 52%.
 
 ### The long ball and the second ball
 
@@ -432,7 +441,7 @@ per-minute possession contest.
 | def_line | shot conversion conceded + the press on the other side's build-up | High concedes better chances in behind and presses higher |
 | marking | foul probability | Man-to-man fouls more |
 | pressing | possession contest (def) + build-up press + **in-match stamina** | Aggressive wins the ball back more, tires faster |
-| tempo | midfield progression (att) + possession contest retention (att) | Direct shoots more / Patient holds the ball |
+| tempo | midfield progression (att) + possession contest retention (att) + which passing the midfield duel reads (P4.3: Patient short, Direct half short half long) | Direct shoots more / Patient holds the ball and rewards short passers |
 | defensive_shape | attacking-third defence (def) | Compact concedes fewer chances |
 | counter_press | possession flip: losing side may re-win the ball; after an attack lost in the other side's third, the quick ball forward and the first build-up | Long regains possession more and smothers the quick ball |
 | break_speed | possession flip: winner may counter into the final third; how often a ball won in the own third goes direct | Fast turns turnovers into chances |
