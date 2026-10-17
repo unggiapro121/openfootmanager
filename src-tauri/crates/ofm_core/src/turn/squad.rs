@@ -874,7 +874,11 @@ pub(crate) fn position_ratings(p: &domain::player::Player) -> Vec<PositionRating
                 .clamp(1.0, 99.0) as u8,
             fit: match slot_familiarity(p, domain_position) {
                 SlotFamiliarity::Natural => PositionFit::Natural,
-                SlotFamiliarity::Alternate | SlotFamiliarity::SameGroup => PositionFit::Adapted,
+                // A wing-back conversion costs nothing but is not his natural
+                // slot: one natural slot each, the engine's reference.
+                SlotFamiliarity::WingBackConversion
+                | SlotFamiliarity::Alternate
+                | SlotFamiliarity::SameGroup => PositionFit::Adapted,
                 SlotFamiliarity::OtherGroup => PositionFit::Unfamiliar,
             },
         })

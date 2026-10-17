@@ -1,5 +1,5 @@
 import { ratingAtPosition } from "../../lib/positionRatings";
-import { buildPitchRows } from "../squad/SquadTab.helpers";
+import { buildPitchRows, isWingBackConversion } from "../squad/SquadTab.helpers";
 import type { EnginePlayerData, PositionFit, PositionRating } from "./types";
 
 /**
@@ -20,6 +20,16 @@ export function ratingAt(player: EnginePlayerData, position: string): PositionRa
 /** The position `player` is rated Natural at. */
 export function naturalPositionOf(player: EnginePlayerData): string | undefined {
   return player.position_ratings?.find((rating) => rating.fit === "Natural")?.position;
+}
+
+/**
+ * Whether `player` plays `slot` as a wing-back converted from his own flank's
+ * full-back or wide-midfield position, which costs him no rating (phase 2,
+ * P2.7): the slot shows as adapted, and says why it costs nothing.
+ */
+export function convertsToWingBackAt(player: EnginePlayerData, slot: string): boolean {
+  const natural = naturalPositionOf(player);
+  return natural !== undefined && isWingBackConversion(natural, slot);
 }
 
 const FIT_TONE: Record<PositionFit, string> = {

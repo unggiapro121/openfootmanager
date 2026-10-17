@@ -32,20 +32,32 @@ pub fn build_team_with_tactics(
     tactics: TacticsConfig,
     rng: &mut impl Rng,
 ) -> TeamData {
-    let (n_def, n_mid, n_fwd, used_fallback) = parse_formation(formation);
+    let (formation, outfield) = outfield_groups(formation);
     TeamData {
         id: id.to_string(),
         name: name.to_string(),
-        formation: if used_fallback {
-            "4-4-2".to_string()
-        } else {
-            formation.to_string()
-        },
+        formation,
         play_style,
         coach: engine::CoachMastery::default(),
         tactics,
-        players: build_group(id, "", avg_ovr, (n_def, n_mid, n_fwd), rng),
+        players: build_group(id, "", avg_ovr, &outfield, rng),
     }
+}
+
+/// The formation the side plays (4-4-2 for one that does not lay out eleven)
+/// and the group of each outfield slot, in slot order. Groups come from the
+/// slots, not from counting the formation's rows, so 3-4-2-1's wing-backs are
+/// defenders standing in its second row (phase 2, P2.7, X44); for every
+/// formation whose groups run back to front the result is what counting gave.
+fn outfield_groups(formation: &str) -> (String, Vec<Position>) {
+    let slots = engine::formation_slots(formation);
+    let (formation, slots) = if slots.len() == 11 {
+        (formation.to_string(), slots)
+    } else {
+        ("4-4-2".to_string(), engine::formation_slots("4-4-2"))
+    };
+    let groups = slots.iter().skip(1).map(|slot| slot.group()).collect();
+    (formation, groups)
 }
 
 /// A seven-man bench: a keeper and two of each outfield group, `bench_penalty`
@@ -57,11 +69,12 @@ pub fn build_bench(
     bench_penalty: u8,
     rng: &mut impl Rng,
 ) -> Vec<PlayerData> {
+    use Position::{Defender, Forward, Midfielder};
     build_group(
         team_id,
         "sub",
         avg_ovr.saturating_sub(bench_penalty),
-        (2, 2, 2),
+        &[Defender, Defender, Midfielder, Midfielder, Forward, Forward],
         rng,
     )
 }
@@ -86,12 +99,10 @@ fn build_group(
     team_id: &str,
     tag: &str,
     avg_ovr: u8,
-    shape: (u8, u8, u8),
+    outfield: &[Position],
     rng: &mut impl Rng,
 ) -> Vec<PlayerData> {
-    let (n_def, n_mid, n_fwd) = shape;
-    let mut players = Vec::with_capacity(11);
-
+    let mut players = Vec::with_capacity(outfield.len() + 1);
     players.push(make_player(
         team_id,
         &format!("{tag}GK"),
@@ -101,35 +112,23 @@ fn build_group(
         avg_ovr,
         rng,
     ));
-    for i in 1..=n_def {
+    // Each player is numbered within his group (DEF1, DEF2, …), as the
+    // row-by-row builder numbered them, so seeded benchmarks keep their ids.
+    let mut numbered = [0u8; 3];
+    for &group in outfield {
+        let (label, slot) = match group {
+            Position::Defender => ("DEF", 0),
+            Position::Midfielder => ("MID", 1),
+            _ => ("FWD", 2),
+        };
+        numbered[slot] += 1;
+        let total = outfield.iter().filter(|g| **g == group).count() as u8;
         players.push(make_player(
             team_id,
-            &format!("{tag}DEF"),
-            i,
-            n_def,
-            Position::Defender,
-            avg_ovr,
-            rng,
-        ));
-    }
-    for i in 1..=n_mid {
-        players.push(make_player(
-            team_id,
-            &format!("{tag}MID"),
-            i,
-            n_mid,
-            Position::Midfielder,
-            avg_ovr,
-            rng,
-        ));
-    }
-    for i in 1..=n_fwd {
-        players.push(make_player(
-            team_id,
-            &format!("{tag}FWD"),
-            i,
-            n_fwd,
-            Position::Forward,
+            &format!("{tag}{label}"),
+            numbered[slot],
+            total,
+            group,
             avg_ovr,
             rng,
         ));
@@ -208,26 +207,6 @@ fn sample_role(
             ROLES[rng.random_range(0usize..6)]
         }
     }
-}
-
-fn parse_formation(formation: &str) -> (u8, u8, u8, bool) {
-    let parts: Vec<u8> = formation
-        .split('-')
-        .filter_map(|s| s.parse::<u8>().ok())
-        .collect();
-
-    let result = match parts.len() {
-        2 => (parts[0], 0, parts[1]),
-        3 => (parts[0], parts[1], parts[2]),
-        4 => (parts[0], parts[1] + parts[2], parts[3]),
-        _ => return (4, 4, 2, true),
-    };
-
-    // Ensure exactly 10 outfield players; fall back to 4-4-2 if not
-    if result.0 + result.1 + result.2 != 10 {
-        return (4, 4, 2, true);
-    }
-    (result.0, result.1, result.2, false)
 }
 
 /// A height (cm) around the real average for the position group, with roughly
@@ -309,5 +288,55 @@ fn make_player(
         traits: vec![],
         role,
         position_ratings: Vec::new(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rand::rngs::StdRng;
+    use rand::SeedableRng;
+
+    /// Given a 3-4-2-1,
+    /// when a synthetic side is built for it,
+    /// then its wing-back slots (5th and 8th) hold defenders and its central
+    /// midfielders midfielders: the groups follow the slots (phase 2, P2.7).
+    #[test]
+    fn a_three_four_two_one_side_puts_defenders_at_wing_back() {
+        let team = build_team(
+            "t",
+            "T",
+            70,
+            PlayStyle::Balanced,
+            "3-4-2-1",
+            &mut StdRng::seed_from_u64(1),
+        );
+        let groups: Vec<Position> = team.players.iter().map(|p| p.position).collect();
+        use Position::*;
+        assert_eq!(
+            groups,
+            vec![
+                Goalkeeper, Defender, Defender, Defender, Defender, Midfielder, Midfielder,
+                Defender, Midfielder, Midfielder, Forward,
+            ]
+        );
+        assert_eq!(team.formation, "3-4-2-1");
+    }
+
+    /// Given a formation that does not lay out eleven,
+    /// when a side is built for it,
+    /// then it plays 4-4-2.
+    #[test]
+    fn a_formation_without_eleven_falls_back_to_four_four_two() {
+        let team = build_team(
+            "t",
+            "T",
+            70,
+            PlayStyle::Balanced,
+            "3-4-2",
+            &mut StdRng::seed_from_u64(1),
+        );
+        assert_eq!(team.formation, "4-4-2");
+        assert_eq!(team.players.len(), 11);
     }
 }

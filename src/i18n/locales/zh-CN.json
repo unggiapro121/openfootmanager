@@ -2736,7 +2736,8 @@
       "hide": "隐藏雷达",
       "show": "显示雷达",
       "speedHint": "雷达按自己的节奏展示危险时刻。隐藏雷达即可选择速度。"
-    }
+    },
+    "wingBackConversion": "踢翼卫不扣分"
   },
   "endOfSeason": {
     "seasonComplete": "赛季结束",

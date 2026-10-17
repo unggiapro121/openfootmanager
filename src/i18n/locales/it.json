@@ -2755,7 +2755,8 @@
       "hide": "Nascondi radar",
       "show": "Mostra radar",
       "speedHint": "Il radar mostra le azioni pericolose al suo ritmo. Nascondilo per scegliere la velocità."
-    }
+    },
+    "wingBackConversion": "Gioca da quinto senza penalità"
   },
   "notifications": {
     "attentionRequired": "Attenzione Richiesta",

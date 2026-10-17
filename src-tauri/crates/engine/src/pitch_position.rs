@@ -113,7 +113,11 @@ pub fn formation_slots(formation: &str) -> Vec<PitchPosition> {
         }
         [defenders, deep, attacking, forwards] => {
             slots.extend(defender_line(*defenders));
-            slots.extend(deep_midfield_line(*deep));
+            if *defenders == 3 && *deep == 4 {
+                slots.extend(wing_back_line());
+            } else {
+                slots.extend(deep_midfield_line(*deep));
+            }
             slots.extend(attacking_midfield_line(*attacking));
             slots.extend(forward_line(*forwards));
         }
@@ -158,6 +162,19 @@ fn midfield_line(count: usize) -> Vec<PitchPosition> {
         ],
         _ => vec![CentralMidfielder; count],
     }
+}
+
+/// The second row of 3-4-2-1: wing-backs either side of two central
+/// midfielders, where three centre-backs leave them the flanks (phase 2,
+/// P2.7). The same layout as `ofm_core::player_rating`'s.
+fn wing_back_line() -> Vec<PitchPosition> {
+    use PitchPosition::*;
+    vec![
+        LeftWingBack,
+        CentralMidfielder,
+        CentralMidfielder,
+        RightWingBack,
+    ]
 }
 
 fn deep_midfield_line(count: usize) -> Vec<PitchPosition> {
@@ -287,7 +304,7 @@ mod tests {
             ]
         );
         for formation in [
-            "4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3",
+            "4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3", "3-4-2-1",
         ] {
             assert_eq!(formation_slots(formation).len(), 11, "{formation}");
         }

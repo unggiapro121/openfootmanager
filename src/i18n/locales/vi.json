@@ -2736,7 +2736,8 @@
       "hide": "Ẩn radar",
       "show": "Hiện radar",
       "speedHint": "Radar diễn các pha nguy hiểm theo nhịp riêng. Ẩn radar để chọn tốc độ."
-    }
+    },
+    "wingBackConversion": "Đá wing-back không mất điểm"
   },
   "endOfSeason": {
     "seasonComplete": "Mùa giải kết thúc",

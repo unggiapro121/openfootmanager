@@ -2736,7 +2736,8 @@
       "hide": "Masquer le radar",
       "show": "Afficher le radar",
       "speedHint": "Le radar montre les occasions dangereuses à son propre rythme. Masquez-le pour choisir la vitesse."
-    }
+    },
+    "wingBackConversion": "Joue piston sans pénalité"
   },
   "endOfSeason": {
     "seasonComplete": "Saison Terminée",

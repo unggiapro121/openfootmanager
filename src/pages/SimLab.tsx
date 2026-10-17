@@ -17,7 +17,17 @@ const STYLES: { value: PlayStyleDto; label: string }[] = [
   { value: "high_press", label: "High Press" },
 ];
 
-const FORMATIONS = ["4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3"];
+const FORMATIONS = [
+  "4-4-2",
+  "4-3-3",
+  "4-5-1",
+  "3-5-2",
+  "5-3-2",
+  "4-2-3-1",
+  "3-4-3",
+  "4-1-4-1",
+  "3-4-2-1",
+];
 
 const BUCKET_LABELS = ["1–15", "16–30", "31–45", "46–60", "61–75", "76–90", "90+"];
 

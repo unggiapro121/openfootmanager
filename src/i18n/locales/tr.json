@@ -2736,7 +2736,8 @@
       "hide": "Radarı gizle",
       "show": "Radarı göster",
       "speedHint": "Radar tehlikeli anları kendi temposunda gösterir. Hız seçmek için radarı gizleyin."
-    }
+    },
+    "wingBackConversion": "Kanat bek oynar, puan kaybı yok"
   },
   "endOfSeason": {
     "seasonComplete": "Sezon Tamamlandı",

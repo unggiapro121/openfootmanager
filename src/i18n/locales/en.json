@@ -2736,7 +2736,8 @@
       "hide": "Hide radar",
       "show": "Show radar",
       "speedHint": "The radar plays the dangerous moments at its own pace. Hide it to choose a speed."
-    }
+    },
+    "wingBackConversion": "Plays wing-back at no cost"
   },
   "endOfSeason": {
     "seasonComplete": "Season Complete",

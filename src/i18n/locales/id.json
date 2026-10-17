@@ -2736,7 +2736,8 @@
       "hide": "Sembunyikan radar",
       "show": "Tampilkan radar",
       "speedHint": "Radar menampilkan peluang berbahaya dengan temponya sendiri. Sembunyikan radar untuk memilih kecepatan."
-    }
+    },
+    "wingBackConversion": "Bermain sebagai wing-back tanpa penalti"
   },
   "endOfSeason": {
     "seasonComplete": "Musim Selesai",

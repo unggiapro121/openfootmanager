@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import type { EnginePlayerData } from "./types";
-import { fitToneClass, naturalPositionOf, ratingAt, slotPositionsOf } from "./slotRatings";
+import {
+  convertsToWingBackAt,
+  fitToneClass,
+  naturalPositionOf,
+  ratingAt,
+  slotPositionsOf,
+} from "./slotRatings";
 
 function player(ratings: EnginePlayerData["position_ratings"]): EnginePlayerData {
   return {
@@ -65,5 +71,21 @@ describe("slot ratings", () => {
     for (const fit of ["Natural", "Adapted", "Unfamiliar"] as const) {
       expect(fitToneClass(fit)).toContain("dark:");
     }
+  });
+});
+
+describe("convertsToWingBackAt", () => {
+  const rated = (natural: string) =>
+    ({
+      position_ratings: [{ position: natural, ovr: 70, fit: "Natural" }],
+    }) as unknown as EnginePlayerData;
+
+  // Given a left midfielder and a left winger at left wing-back (phase 2,
+  // P2.7), then only the midfielder converts at no cost.
+  it("names a wide midfielder or full-back at wing-back on his flank", () => {
+    expect(convertsToWingBackAt(rated("LeftMidfielder"), "LeftWingBack")).toBe(true);
+    expect(convertsToWingBackAt(rated("LeftBack"), "LeftWingBack")).toBe(true);
+    expect(convertsToWingBackAt(rated("LeftWinger"), "LeftWingBack")).toBe(false);
+    expect(convertsToWingBackAt(rated("LeftMidfielder"), "RightWingBack")).toBe(false);
   });
 });

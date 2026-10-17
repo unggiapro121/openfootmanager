@@ -2736,7 +2736,8 @@
       "hide": "Ocultar radar",
       "show": "Mostrar radar",
       "speedHint": "El radar muestra las ocasiones de peligro a su propio ritmo. Ocúltalo para elegir la velocidad."
-    }
+    },
+    "wingBackConversion": "Juega de carrilero sin penalización"
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Completa",

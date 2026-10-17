@@ -232,11 +232,21 @@ export function buildPitchRows(formation: string): PitchRow[] {
   if (parts.length === 4) {
     const forwardY = parts[3] === 1 ? "16%" : "20%";
     const attackingMidY = parts[3] === 1 ? "40%" : "38%";
+    // 3-4-2-1: with three centre-backs, the four-man second row is a wing-back
+    // either side of two central midfielders, a midfield row rather than a
+    // defensive-midfield one. Mirrors the Rust layouts (phase 2, P2.7, X43).
+    const wingBackRow = parts[0] === 3 && parts[1] === 4;
 
     return [
       { label: "GK", y: "88%", positions: ["Goalkeeper"] },
       { label: "DEF", y: "70%", positions: defenderLine(parts[0]) },
-      { label: "DM", y: "54%", positions: deepMidfieldLine(parts[1]) },
+      wingBackRow
+        ? {
+            label: "MID",
+            y: "54%",
+            positions: ["LeftWingBack", "CentralMidfielder", "CentralMidfielder", "RightWingBack"],
+          }
+        : { label: "DM", y: "54%", positions: deepMidfieldLine(parts[1]) },
       { label: "AM", y: attackingMidY, positions: attackingMidfieldLine(parts[2]) },
       { label: "FWD", y: forwardY, positions: forwardLine(parts[3]) },
     ];
@@ -388,7 +398,25 @@ export function buildActivePositionMap(pitchSlotRows: PitchSlotRow[]): Map<strin
   return map;
 }
 
+/**
+ * A full-back or wide midfielder at the wing-back slot on his own flank: the
+ * position wing-backs are made from, which costs him no rating (phase 2, P2.7,
+ * X45; the backend's `SlotFamiliarity::WingBackConversion`). Wingers and the
+ * other flank keep the old rules.
+ */
+export function isWingBackConversion(naturalPosition: string, slot: string): boolean {
+  const natural = canonicalPosition(naturalPosition);
+  const at = canonicalPosition(slot);
+  return (
+    (at === "LeftWingBack" && (natural === "LeftBack" || natural === "LeftMidfielder")) ||
+    (at === "RightWingBack" && (natural === "RightBack" || natural === "RightMidfielder"))
+  );
+}
+
 export function isPlayerOutOfPosition(player: PlayerData, currentPos: string): boolean {
+  if (isWingBackConversion(player.natural_position || player.position, currentPos)) {
+    return false;
+  }
   const canonicalCurrentPos = canonicalPosition(currentPos);
   const normalizedCurrentPos = normalisePosition(currentPos);
   return !getPreferredPositions(player).some(

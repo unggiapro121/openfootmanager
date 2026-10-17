@@ -122,7 +122,11 @@ fn formation_slot_rows(formation: &str) -> Vec<Vec<Position>> {
         [defenders, deep_midfielders, attacking_midfielders, forwards] => vec![
             vec![Position::Goalkeeper],
             defender_line(*defenders),
-            deep_midfield_line(*deep_midfielders),
+            if *defenders == 3 && *deep_midfielders == 4 {
+                wing_back_line()
+            } else {
+                deep_midfield_line(*deep_midfielders)
+            },
             attacking_midfield_line(*attacking_midfielders),
             forward_line(*forwards),
         ],
@@ -222,6 +226,19 @@ fn midfield_line(count: usize) -> Vec<Position> {
     }
 }
 
+/// The second row of 3-4-2-1: with three centre-backs the flanks are the
+/// wing-backs', either side of two central midfielders (phase 2, P2.7, X43).
+/// The engine (`pitch_position.rs`) and the squad screen (`buildPitchRows`)
+/// keep copies.
+fn wing_back_line() -> Vec<Position> {
+    vec![
+        Position::LeftWingBack,
+        Position::CentralMidfielder,
+        Position::CentralMidfielder,
+        Position::RightWingBack,
+    ]
+}
+
 fn deep_midfield_line(count: usize) -> Vec<Position> {
     match count {
         1 => vec![Position::DefensiveMidfielder],
@@ -281,6 +298,12 @@ fn canonical_position(position: &Position) -> Position {
 pub enum SlotFamiliarity {
     /// His natural position.
     Natural,
+    /// A full-back or wide midfielder at the wing-back slot on his own flank:
+    /// the position wing-backs are made from, so it costs nothing on top of
+    /// what the wing-back weights already ask of him (phase 2, P2.7, X45).
+    /// Not `Natural`: each player keeps exactly one natural slot, which the
+    /// engine measures every other slot against.
+    WingBackConversion,
     /// One of his alternate positions.
     Alternate,
     /// Another position in his natural group.
@@ -296,6 +319,9 @@ pub fn slot_familiarity(player: &Player, slot_position: &Position) -> SlotFamili
     if primary == slot {
         return SlotFamiliarity::Natural;
     }
+    if is_wing_back_conversion(&primary, &slot) {
+        return SlotFamiliarity::WingBackConversion;
+    }
     if player
         .alternate_positions
         .iter()
@@ -309,9 +335,25 @@ pub fn slot_familiarity(player: &Player, slot_position: &Position) -> SlotFamili
     }
 }
 
+/// Whether a player whose natural position is `primary` becomes a wing-back at
+/// `slot` without penalty: a full-back or wide midfielder on his own flank.
+/// Wingers and the other flank keep the old rules (Q2, Q6).
+fn is_wing_back_conversion(primary: &Position, slot: &Position) -> bool {
+    matches!(
+        (primary, slot),
+        (
+            Position::LeftBack | Position::LeftMidfielder,
+            Position::LeftWingBack
+        ) | (
+            Position::RightBack | Position::RightMidfielder,
+            Position::RightWingBack
+        )
+    )
+}
+
 fn compatibility_penalty(player: &Player, slot_position: &Position) -> f64 {
     match slot_familiarity(player, slot_position) {
-        SlotFamiliarity::Natural => 0.0,
+        SlotFamiliarity::Natural | SlotFamiliarity::WingBackConversion => 0.0,
         SlotFamiliarity::Alternate => 4.0,
         SlotFamiliarity::SameGroup => 8.0,
         SlotFamiliarity::OtherGroup => 14.0,
@@ -1064,6 +1106,82 @@ mod tests {
         assert!(same_side > wrong_side);
     }
 
+    /// A player whose natural position is `natural`, with the given foot.
+    fn wide_player(natural: Position, foot: Footedness, weak_foot: u8) -> Player {
+        let mut player = make_player(natural.clone());
+        player.natural_position = natural;
+        player.footedness = foot;
+        player.weak_foot = weak_foot;
+        player
+    }
+
+    /// Spec 1.1, 1.2: given a left-footed left-back and a left-footed left
+    /// midfielder at left wing-back,
+    /// when they are rated there,
+    /// then neither pays a compatibility penalty: wing-backs are made from
+    /// them (phase 2, P2.7, X45). The wing-back weights still apply.
+    #[test]
+    fn a_full_back_or_wide_midfielder_converts_to_wing_back_on_his_flank() {
+        for natural in [Position::LeftBack, Position::LeftMidfielder] {
+            let player = wide_player(natural.clone(), Footedness::Left, 3);
+            assert_eq!(
+                slot_familiarity(&player, &Position::LeftWingBack),
+                SlotFamiliarity::WingBackConversion,
+                "{natural:?}"
+            );
+            assert_eq!(
+                positional_fit_for_assignment(&player, &Position::LeftWingBack),
+                ovr_for_position(&player, &Position::LeftWingBack).max(1.0),
+                "{natural:?}"
+            );
+        }
+    }
+
+    /// Spec 1.3, 1.6: given a right-footed right-back (weak foot 2) at left
+    /// wing-back, and a right-footed left-back (weak foot 1) there,
+    /// when they are rated,
+    /// then the right-back pays the old same-group 8 and his foot (6), and the
+    /// left-back his foot alone (8): the conversion is for the own flank only,
+    /// and the foot is never waived.
+    #[test]
+    fn the_wrong_flank_and_the_wrong_foot_still_cost() {
+        let right_back = wide_player(Position::RightBack, Footedness::Right, 2);
+        assert_eq!(
+            slot_familiarity(&right_back, &Position::LeftWingBack),
+            SlotFamiliarity::SameGroup
+        );
+        let base = ovr_for_position(&right_back, &Position::LeftWingBack);
+        assert_eq!(
+            positional_fit_for_assignment(&right_back, &Position::LeftWingBack),
+            (base - 8.0 - 6.0).max(1.0)
+        );
+
+        let left_back = wide_player(Position::LeftBack, Footedness::Right, 1);
+        let base = ovr_for_position(&left_back, &Position::LeftWingBack);
+        assert_eq!(
+            positional_fit_for_assignment(&left_back, &Position::LeftWingBack),
+            (base - 8.0).max(1.0)
+        );
+    }
+
+    /// Spec 1.4, 1.5: given a centre-back and a left winger at left wing-back,
+    /// when they are rated,
+    /// then the old rules hold: same group for the centre-back, another group
+    /// for the winger (Q2).
+    #[test]
+    fn a_centre_back_or_a_winger_is_no_wing_back_conversion() {
+        let centre_back = wide_player(Position::CenterBack, Footedness::Left, 3);
+        assert_eq!(
+            slot_familiarity(&centre_back, &Position::LeftWingBack),
+            SlotFamiliarity::SameGroup
+        );
+        let winger = wide_player(Position::LeftWinger, Footedness::Left, 3);
+        assert_eq!(
+            slot_familiarity(&winger, &Position::LeftWingBack),
+            SlotFamiliarity::OtherGroup
+        );
+    }
+
     fn right_footed_left_winger() -> Player {
         let mut player = make_player(Position::LeftWinger);
         player.natural_position = Position::LeftWinger;
@@ -1130,6 +1248,37 @@ mod tests {
         let out_of_group_role = effective_rating_for_assignment(&player, &Position::RightBack);
 
         assert!(alternate_role > out_of_group_role);
+    }
+
+    /// Spec 2.1 (phase 2, P2.7, X43): given 3-4-2-1, and a 4-4-1-1 that has a
+    /// four-man second row behind a back four,
+    /// when their slots are laid out,
+    /// then 3-4-2-1's second row is a wing-back either side of two central
+    /// midfielders, and 4-4-1-1's stays the defensive-midfield row it was:
+    /// wing-backs only where three centre-backs leave the flanks to them.
+    #[test]
+    fn three_four_two_one_puts_wing_backs_in_its_second_row() {
+        use Position::*;
+        assert_eq!(
+            formation_slots("3-4-2-1"),
+            vec![
+                Goalkeeper,
+                CenterBack,
+                CenterBack,
+                CenterBack,
+                LeftWingBack,
+                CentralMidfielder,
+                CentralMidfielder,
+                RightWingBack,
+                AttackingMidfielder,
+                AttackingMidfielder,
+                Striker,
+            ]
+        );
+        assert_eq!(
+            formation_slots("4-4-1-1")[5..9].to_vec(),
+            vec![DefensiveMidfielder; 4]
+        );
     }
 
     #[test]
