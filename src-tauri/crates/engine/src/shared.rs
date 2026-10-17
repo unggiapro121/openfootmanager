@@ -55,16 +55,6 @@ pub(crate) struct PlayerSnap {
 }
 
 impl PlayerSnap {
-    /// The pre-split blend of `passing` (see `legacy_blend`).
-    pub fn legacy_passing(&self) -> u8 {
-        crate::legacy_blend::legacy_passing(
-            self.passing,
-            self.long_passing,
-            self.crossing,
-            self.curve,
-        )
-    }
-
     /// The pre-split blend of `dribbling` (see `legacy_blend`).
     pub fn legacy_dribbling(&self) -> u8 {
         crate::legacy_blend::legacy_dribbling(self.dribbling, self.first_touch)
