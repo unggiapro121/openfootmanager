@@ -124,6 +124,12 @@ struct Cli {
     #[arg(long)]
     formation_mix: bool,
 
+    /// Every option of every tactical dial against the neutral setup, between
+    /// a squad and its own mirror, `--games` matches each (phase 2, P3.9: no
+    /// option may beat the default by more than 5 points of wins over losses).
+    #[arg(long)]
+    dial_balance: bool,
+
     /// Play only the formation-balance table: each formation against 4-4-2 at
     /// gap 0, `--games` matches a formation (default 1,000; the gate uses 4,000).
     #[arg(long)]
@@ -231,6 +237,24 @@ fn main() {
 
     if cli.guardrails {
         run_guardrails(&config, &cli);
+        return;
+    }
+
+    if cli.dial_balance {
+        let rows: Vec<balance::BalanceRow> = dial_options()
+            .into_iter()
+            .skip(1)
+            .map(|(dial, option, tactics)| {
+                balance::dial_against_default(
+                    &config,
+                    cli.seed.unwrap_or(42),
+                    cli.games,
+                    format!("{dial} {option}"),
+                    tactics,
+                )
+            })
+            .collect();
+        balance::print_table(&rows);
         return;
     }
 
@@ -436,20 +460,15 @@ fn run_bench(config: &MatchConfig, games: u32, seed: Option<u64>) {
 /// side, and report the home side's average possession %, shots for/against and
 /// goals. Read the `Neutral` row as baseline; each option's row shows how far
 /// that dial moves the game — the data used to tune `engine::shared`.
-fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
+/// Every option of every tactical dial, each on top of the neutral setup:
+/// (dial, option, tactics). The first is the neutral baseline itself.
+fn dial_options() -> Vec<(&'static str, &'static str, engine::TacticsConfig)> {
     use engine::{
         BreakSpeed, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape, MarkingStyle,
         PressingIntensity, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, Tempo,
     };
-
-    let games = cli.games;
-    let base = cli.seed.unwrap_or(42);
-    // Respect the team-shape CLI knobs: the sweep applies each dial on top of the
-    // home side the caller asked for, against the requested away side.
-    let home_style = cli.home_style.to_play_style();
-    let away_style = cli.away_style.to_play_style();
     let n = TacticsConfig::default();
-    let variants: Vec<(&str, &str, TacticsConfig)> = vec![
+    vec![
         ("baseline", "Neutral", n.clone()),
         (
             "build_up",
@@ -628,7 +647,17 @@ fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
                 ..n.clone()
             },
         ),
-    ];
+    ]
+}
+
+fn run_phase_sweep(config: &MatchConfig, cli: &Cli) {
+    let games = cli.games;
+    let base = cli.seed.unwrap_or(42);
+    // Respect the team-shape CLI knobs: the sweep applies each dial on top of the
+    // home side the caller asked for, against the requested away side.
+    let home_style = cli.home_style.to_play_style();
+    let away_style = cli.away_style.to_play_style();
+    let variants = dial_options();
 
     eprintln!("Phase sweep: {games} games per option (seed: {base})…");
     let sep = "─".repeat(64);

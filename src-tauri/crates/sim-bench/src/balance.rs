@@ -25,7 +25,7 @@ const GAMES_PER_PAIR: u32 = 10;
 
 /// One formation's record against 4-4-2, from the formation's side.
 pub struct BalanceRow {
-    pub formation: &'static str,
+    pub formation: String,
     pub games: u32,
     pub wins: u32,
     pub draws: u32,
@@ -64,7 +64,7 @@ pub fn run(config: &MatchConfig, seed: u64, games: u32) -> Vec<BalanceRow> {
         .enumerate()
         .map(|(index, formation)| {
             let mut row = BalanceRow {
-                formation,
+                formation: formation.to_string(),
                 games: 0,
                 wins: 0,
                 draws: 0,
@@ -129,7 +129,7 @@ pub fn full_back_tradeoff(config: &MatchConfig, seed: u64, games: u32) -> Balanc
     use engine::{PitchPosition, PlayerRole};
     let pairs = games.div_ceil(GAMES_PER_PAIR).max(1);
     let mut row = BalanceRow {
-        formation: "AttFB v DefFB",
+        formation: "AttFB v DefFB".to_string(),
         games: 0,
         wins: 0,
         draws: 0,
@@ -185,16 +185,78 @@ pub fn full_back_tradeoff(config: &MatchConfig, seed: u64, games: u32) -> Balanc
     row
 }
 
+/// One dial option against the neutral setup (phase 2, P3.9): a 4-4-2 with
+/// the option against its own mirror with none, headless, home alternating,
+/// `games` matches. The row is from the option's side.
+pub fn dial_against_default(
+    config: &MatchConfig,
+    seed: u64,
+    games: u32,
+    label: String,
+    tactics: engine::TacticsConfig,
+) -> BalanceRow {
+    let pairs = games.div_ceil(GAMES_PER_PAIR).max(1);
+    let mut row = BalanceRow {
+        formation: label,
+        games: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        scored: 0,
+        conceded: 0,
+    };
+    for pair in 0..pairs {
+        let pair_seed = seed ^ (0xD1A1 << 40) ^ u64::from(pair).wrapping_mul(0x9E37_79B9);
+        let mut team_rng = StdRng::seed_from_u64(pair_seed);
+        let neutral = build_team(
+            "base",
+            "Base FC",
+            RATING,
+            PlayStyle::Balanced,
+            BASELINE,
+            &mut team_rng,
+        );
+        let mut option = crate::builder::mirror(&neutral, "side", "Side FC");
+        option.tactics = tactics.clone();
+        for g in 0..GAMES_PER_PAIR {
+            let mut rng = StdRng::seed_from_u64(pair_seed.wrapping_add(u64::from(g)));
+            let option_home = g % 2 == 0;
+            let report = if option_home {
+                simulate_with_rng(&option, &neutral, config, &mut rng)
+            } else {
+                simulate_with_rng(&neutral, &option, config, &mut rng)
+            };
+            let (scored, conceded) = if option_home {
+                (report.home_goals, report.away_goals)
+            } else {
+                (report.away_goals, report.home_goals)
+            };
+            row.games += 1;
+            row.scored += u32::from(scored);
+            row.conceded += u32::from(conceded);
+            match scored.cmp(&conceded) {
+                std::cmp::Ordering::Greater => row.wins += 1,
+                std::cmp::Ordering::Equal => row.draws += 1,
+                std::cmp::Ordering::Less => row.losses += 1,
+            }
+        }
+    }
+    row
+}
+
 pub fn print_table(rows: &[BalanceRow]) {
     println!();
     println!(
         "Formation balance · each against {BASELINE} · OVR {RATING} both · headless · {} games a formation",
         rows.first().map_or(0, |r| r.games)
     );
-    println!("  formation   win%  draw%  loss%   win−loss  ±se   for  against");
+    println!(
+        "  {:<22}  win%  draw%  loss%   win−loss  ±se   for  against",
+        "side"
+    );
     for row in rows {
         println!(
-            "  {:<9}  {:>5.1}  {:>5.1}  {:>5.1}   {:>+8.1}  {:>3.1}  {:>4.2}  {:>4.2}",
+            "  {:<22}  {:>5.1}  {:>5.1}  {:>5.1}   {:>+8.1}  {:>3.1}  {:>4.2}  {:>4.2}",
             row.formation,
             row.pct(row.wins),
             row.pct(row.draws),

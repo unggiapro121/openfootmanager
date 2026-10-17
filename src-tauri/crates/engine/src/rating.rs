@@ -11,6 +11,7 @@
 use std::collections::HashMap;
 
 use crate::event::EventType;
+use crate::pitch_position::PitchPosition;
 use crate::report::MatchReport;
 use crate::types::{PlayerData, Position, Side};
 
@@ -20,6 +21,8 @@ pub struct RosterEntry<'a> {
     pub id: &'a str,
     pub side: Side,
     pub position: Position,
+    /// The slot he ended the match in, if he was still on the pitch.
+    pub slot: Option<PitchPosition>,
 }
 
 impl<'a> RosterEntry<'a> {
@@ -28,7 +31,14 @@ impl<'a> RosterEntry<'a> {
             id: &player.id,
             side,
             position: player.position,
+            slot: None,
         }
+    }
+
+    /// The same entry, standing in `slot`.
+    pub(crate) fn at(mut self, slot: Option<PitchPosition>) -> Self {
+        self.slot = slot;
+        self
     }
 }
 
@@ -66,7 +76,7 @@ pub(crate) fn rate_players(report: &mut MatchReport, roster: &[RosterEntry<'_>])
             continue;
         }
         let share_of_match = f32::from(minutes) / f32::from(total_minutes);
-        let mut rating = NEUTRAL_RATING - AVERAGE_CONTRIBUTION
+        let mut rating = NEUTRAL_RATING - ordinary_contribution(player)
             + contributions
                 .get(player.id)
                 .map_or(0.0, Contribution::value)
@@ -97,13 +107,40 @@ const FULL_WEIGHT_MINUTES: u8 = 30;
 /// A keeper or defender must have been on for this long to share in a clean sheet.
 const CLEAN_SHEET_MINUTES: u8 = 60;
 
-/// What an ordinary player's ninety minutes add up to under the values below,
-/// taken off so that an ordinary game rates 6.0. Measured from the engine's
-/// own output: about two tackles, one interception, one or two dribbles and a
-/// clearance a player, a goal or assist every few games, and a back line that
-/// concedes about two. If the engine starts producing more or fewer actions,
-/// `ratings_centre_on_six_across_many_matches` fails and this moves with it.
-const AVERAGE_CONTRIBUTION: f32 = 0.5;
+/// What an ordinary ninety minutes at a position adds up to under the values
+/// below, taken off so that an ordinary game rates 6.0 wherever it is played.
+/// Measured from the engine's own output; if it starts producing more or
+/// fewer actions, `ratings_centre_on_six_across_many_matches` fails and these
+/// move with it.
+///
+/// One figure (0.5) served every position until phase 2, P3.9. Since GĐ3 the
+/// ball goes to whoever is in its lane, so a wide midfielder carries, crosses
+/// and sets up far more than a centre back, who pays for every goal conceded:
+/// 0.5 rated wide midfielders 6.44 and full backs 5.77 on the real-world
+/// probe. Each figure is 0.5 moved by how far that position's mean sat from
+/// 6.0 there (20 league seasons, left and right pooled), then the wide,
+/// winger and attacking-midfield ones once more after a second reading.
+fn ordinary_contribution(player: &RosterEntry<'_>) -> f32 {
+    use PitchPosition as P;
+    match player.slot {
+        Some(P::Goalkeeper) => 0.39,
+        Some(P::CenterBack) => 0.29,
+        Some(P::LeftBack | P::RightBack | P::LeftWingBack | P::RightWingBack) => 0.27,
+        Some(P::DefensiveMidfielder) => 0.60,
+        Some(P::CentralMidfielder) => 0.69,
+        Some(P::AttackingMidfielder) => 0.64,
+        Some(P::LeftMidfielder | P::RightMidfielder) => 1.00,
+        Some(P::LeftWinger | P::RightWinger) => 0.66,
+        Some(P::Striker) => 0.68,
+        // Off the pitch by the end (substituted, sent off): his group's.
+        None => match player.position {
+            Position::Goalkeeper => 0.39,
+            Position::Defender => 0.28,
+            Position::Midfielder => 0.70,
+            Position::Forward => 0.69,
+        },
+    }
+}
 
 /// A long afternoon of simple passes is worth something, but not a goal's worth.
 const PASSING_CAP: f32 = 0.5;
@@ -262,46 +299,55 @@ mod tests {
                 id: "h_gk",
                 side: Side::Home,
                 position: Position::Goalkeeper,
+                slot: None,
             },
             RosterEntry {
                 id: "h_def",
                 side: Side::Home,
                 position: Position::Defender,
+                slot: None,
             },
             RosterEntry {
                 id: "h_mid",
                 side: Side::Home,
                 position: Position::Midfielder,
+                slot: None,
             },
             RosterEntry {
                 id: "h_fwd",
                 side: Side::Home,
                 position: Position::Forward,
+                slot: None,
             },
             RosterEntry {
                 id: "h_sub",
                 side: Side::Home,
                 position: Position::Forward,
+                slot: None,
             },
             RosterEntry {
                 id: "a_gk",
                 side: Side::Away,
                 position: Position::Goalkeeper,
+                slot: None,
             },
             RosterEntry {
                 id: "a_def",
                 side: Side::Away,
                 position: Position::Defender,
+                slot: None,
             },
             RosterEntry {
                 id: "a_mid",
                 side: Side::Away,
                 position: Position::Midfielder,
+                slot: None,
             },
             RosterEntry {
                 id: "a_fwd",
                 side: Side::Away,
                 position: Position::Forward,
+                slot: None,
             },
         ]
     }
@@ -334,11 +380,13 @@ mod tests {
     fn ninety_anonymous_minutes_rate_below_six() {
         let report = rated(vec![]);
 
+        let first = rating_of(&report, "h_mid");
         for id in ["h_mid", "h_fwd", "a_mid", "a_fwd"] {
+            let rating = rating_of(&report, id);
+            assert!(rating < 6.0 && rating > 5.0, "{id}: {rating}");
             assert!(
-                (rating_of(&report, id) - 5.5).abs() < 0.05,
-                "{id}: {}",
-                rating_of(&report, id)
+                (rating - first).abs() <= 0.1,
+                "{id}: {rating} against {first}"
             );
         }
     }
@@ -354,7 +402,7 @@ mod tests {
         ]);
 
         assert!(
-            rating_of(&report, "h_fwd") >= 7.0,
+            rating_of(&report, "h_fwd") >= 6.7,
             "scorer {}",
             rating_of(&report, "h_fwd")
         );

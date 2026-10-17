@@ -316,6 +316,99 @@ struct MatchShares {
     headed_goals: u64,
 }
 
+/// Who scores, who sets them up and how players rate, by natural position
+/// (phase 2, P3.9: GĐ3 moved the finishing around, so the stats the game shows
+/// about players moved with it).
+#[derive(Default, Serialize)]
+struct PlayerShares {
+    /// Goals (penalties included) and assists by the scorer's or provider's
+    /// natural position group.
+    goals_by_group: BTreeMap<String, u32>,
+    assists_by_group: BTreeMap<String, u32>,
+    /// Sum and count of match ratings by natural position, for players who
+    /// played 45 minutes or more.
+    rating_sum: BTreeMap<String, f64>,
+    rating_count: BTreeMap<String, u32>,
+    /// The most goals any one player scored in each run's league season.
+    top_scorer_goals: Vec<u32>,
+}
+
+impl PlayerShares {
+    fn add(
+        &mut self,
+        game: &Game,
+        report: &engine::MatchReport,
+        season: &mut BTreeMap<String, u32>,
+    ) {
+        let position = |id: &str| {
+            game.players
+                .iter()
+                .find(|p| p.id == id)
+                .map(|p| p.natural_position.clone())
+        };
+        let group = |id: &str| {
+            position(id).map_or_else(
+                || "?".to_string(),
+                |p| format!("{:?}", p.to_group_position()),
+            )
+        };
+        for goal in &report.goals {
+            *self
+                .goals_by_group
+                .entry(group(&goal.scorer_id))
+                .or_default() += 1;
+            *season.entry(goal.scorer_id.clone()).or_default() += 1;
+            if let Some(assist) = &goal.assist_id {
+                *self.assists_by_group.entry(group(assist)).or_default() += 1;
+            }
+        }
+        for (id, stats) in &report.player_stats {
+            if stats.minutes_played < 45 {
+                continue;
+            }
+            if let Some(p) = position(id) {
+                let key = format!("{p:?}");
+                *self.rating_sum.entry(key.clone()).or_default() += f64::from(stats.rating);
+                *self.rating_count.entry(key).or_default() += 1;
+            }
+        }
+    }
+
+    fn print(&self) {
+        let share = |map: &BTreeMap<String, u32>| {
+            let total: u32 = map.values().sum();
+            map.iter()
+                .map(|(k, v)| {
+                    format!(
+                        "{k} {:.1}%",
+                        f64::from(*v) / f64::from(total.max(1)) * 100.0
+                    )
+                })
+                .collect::<Vec<_>>()
+                .join(" · ")
+        };
+        println!("  goals by natural group: {}", share(&self.goals_by_group));
+        println!(
+            "  assists by natural group: {}",
+            share(&self.assists_by_group)
+        );
+        let ratings = self
+            .rating_sum
+            .iter()
+            .map(|(k, sum)| {
+                let n = self.rating_count.get(k).copied().unwrap_or(1).max(1);
+                format!("{k} {:.2}", sum / f64::from(n))
+            })
+            .collect::<Vec<_>>()
+            .join(" · ");
+        println!("  mean match rating (45+ min) by natural position: {ratings}");
+        println!(
+            "  top scorer's goals per league season: {:?}",
+            self.top_scorer_goals
+        );
+    }
+}
+
 impl MatchShares {
     fn add(&mut self, report: &engine::MatchReport) {
         let goals = u32::from(report.home_goals) + u32::from(report.away_goals);
@@ -430,8 +523,10 @@ fn real_world_match_probe() {
     let run_count = env_or("OFM_MATCH_PROBE_RUNS", 10_u64).max(1);
     let started = std::time::Instant::now();
     let mut shares = MatchShares::default();
+    let mut players = PlayerShares::default();
     for seed in first_seed..first_seed + run_count {
         let game = build_game(Path::new(&package), seed);
+        let mut season: BTreeMap<String, u32> = BTreeMap::new();
         let fixture_count = game
             .league
             .as_ref()
@@ -447,8 +542,13 @@ fn real_world_match_probe() {
             };
             session.user_side = None;
             session.run_to_completion();
-            shares.add(&session.match_state.into_report());
+            let report = session.match_state.into_report();
+            players.add(&game, &report, &mut season);
+            shares.add(&report);
         }
+        players
+            .top_scorer_goals
+            .push(season.values().copied().max().unwrap_or(0));
     }
     let n = f64::from(shares.matches.max(1));
     let mean = f64::from(shares.goals) / n;
@@ -516,6 +616,7 @@ fn real_world_match_probe() {
         MatchShares::pct(def, box_shots),
         MatchShares::pct(subs, box_shots)
     );
+    players.print();
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
         let json = serde_json::to_string_pretty(&shares).expect("match shares serialize");
         std::fs::write(&out, json).expect("match shares written");

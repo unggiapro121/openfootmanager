@@ -521,6 +521,20 @@ impl LiveMatchState {
             .map(|player| player.id.clone())
             .collect();
 
+        // Where each man in either XI ended the match, for the rating's sense
+        // of an ordinary game at his position.
+        let slots: HashMap<String, crate::pitch_position::PitchPosition> = [&self.home, &self.away]
+            .into_iter()
+            .flat_map(|team| {
+                let layout = crate::pitch_position::formation_slots(&team.formation);
+                let filled = layout.len() == team.players.len();
+                team.players
+                    .iter()
+                    .zip(layout)
+                    .filter(move |_| filled)
+                    .map(|(player, slot)| (player.id.clone(), slot))
+            })
+            .collect();
         let mut report = MatchReport::from_events_with_players(
             self.events,
             self.home_possession_ticks,
@@ -535,13 +549,15 @@ impl LiveMatchState {
             .players
             .iter()
             .chain(self.home_bench.iter())
-            .map(|player| RosterEntry::new(player, Side::Home))
+            .map(|player| RosterEntry::new(player, Side::Home).at(slots.get(&player.id).copied()))
             .chain(
                 self.away
                     .players
                     .iter()
                     .chain(self.away_bench.iter())
-                    .map(|player| RosterEntry::new(player, Side::Away)),
+                    .map(|player| {
+                        RosterEntry::new(player, Side::Away).at(slots.get(&player.id).copied())
+                    }),
             )
             .collect();
         rate_players(&mut report, &roster);
