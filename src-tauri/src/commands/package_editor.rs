@@ -1,9 +1,8 @@
+use super::package_layout::ProjectLayout;
 use ofm_core::generator::{
-    export_directory_to_ofm, extract_ofm_to_dir, load_world_package, parse_definition_str,
-    CompetitionDefinition, ConfederationDef, CountryDef, NamesDefinition, PlayerDef, StaffDef,
-    TeamDef, WorldMetaDef,
+    export_directory_to_ofm, extract_ofm_to_dir, load_world_package, CompetitionDefinition,
+    ConfederationDef, CountryDef, NamesDefinition, PlayerDef, StaffDef, TeamDef, WorldMetaDef,
 };
-use serde_json::json;
 use std::path::{Path, PathBuf};
 use tauri::Manager as _;
 
@@ -37,19 +36,22 @@ pub struct PackageProjectData {
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn write_json_atomic(path: &Path, value: &serde_json::Value) -> Result<(), String> {
+fn write_json_atomic(path: &Path, value: &impl serde::Serialize) -> Result<(), String> {
     // A package opened from an archive keeps whatever layout it was built with,
     // and one with no confederations or name pools has no folder for them.
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
-    let content = serde_json::to_string_pretty(value).map_err(|e| e.to_string())?;
+    // Ends in a newline, as the files a package build writes do, so an unchanged
+    // entity file is written back byte for byte.
+    let content = serde_json::to_string_pretty(value).map_err(|e| e.to_string())? + "\n";
     let tmp = path.with_extension("json.tmp");
     std::fs::write(&tmp, &content).map_err(|e| e.to_string())?;
     std::fs::rename(&tmp, path).map_err(|e| e.to_string())
 }
 
-/// The schemas `save_package_project` writes in full, one file each.
+/// The schemas `save_package_project` writes. Every file holding one of them is
+/// rewritten in place or, left with no entities, removed.
 const SAVED_SCHEMAS: &[&str] = &[
     "world",
     "confederation",
@@ -61,7 +63,7 @@ const SAVED_SCHEMAS: &[&str] = &[
     "competition",
 ];
 
-fn collect_definition_files(dir: &Path, out: &mut Vec<PathBuf>) {
+pub(crate) fn collect_definition_files(dir: &Path, out: &mut Vec<PathBuf>) {
     let Ok(entries) = std::fs::read_dir(dir) else {
         return;
     };
@@ -81,27 +83,10 @@ fn collect_definition_files(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// Entity files other than the ones a save writes. Save sends every entity of
-/// every saved schema, so a package that splits them — one file per club, say,
-/// as a generated real-world package does — would otherwise keep its old files
-/// beside the new combined one, and every player would load twice.
-fn superseded_entity_files(pkg_dir: &Path, written: &[PathBuf]) -> Vec<PathBuf> {
-    let mut files = Vec::new();
-    collect_definition_files(pkg_dir, &mut files);
-    files
-        .into_iter()
-        .filter(|path| !written.contains(path))
-        .filter(|path| {
-            let Ok(text) = std::fs::read_to_string(path) else {
-                return false;
-            };
-            // Translation files and anything unparseable carry no schema and
-            // are left alone.
-            parse_definition_str::<serde_json::Value>(&text)
-                .ok()
-                .and_then(|value| value.get("schema")?.as_str().map(str::to_string))
-                .is_some_and(|schema| SAVED_SCHEMAS.contains(&schema.as_str()))
-        })
+fn entity_values<T: serde::Serialize>(entities: &[T]) -> Result<Vec<serde_json::Value>, String> {
+    entities
+        .iter()
+        .map(|entity| serde_json::to_value(entity).map_err(|e| e.to_string()))
         .collect()
 }
 
@@ -230,7 +215,9 @@ pub fn read_package_project(dir: String) -> Result<PackageProjectData, String> {
     })
 }
 
-/// Persist in-memory edits, overwriting every package entity file.
+/// Persist in-memory edits, writing every entity back to the file it was read
+/// from (see [`ProjectLayout`]), so a package split one file per club or league
+/// keeps its layout.
 ///
 /// Each file is written atomically — `write_json_atomic` writes a `.tmp` sibling
 /// and renames over the target — so no single file can be left half-written.
@@ -255,63 +242,45 @@ pub fn save_package_project(
     competitions: Vec<CompetitionDefinition>,
 ) -> Result<(), String> {
     let pkg_dir = Path::new(&dir);
+    let layout = ProjectLayout::scan(pkg_dir, SAVED_SCHEMAS);
 
     let manifest_path = pkg_dir.join("package.json");
-    let confederations_path = pkg_dir.join("confederations").join("confederations.json");
-    let countries_path = pkg_dir.join("countries").join("countries.json");
-    let teams_path = pkg_dir.join("teams").join("teams.json");
-    let players_path = pkg_dir.join("players").join("players.json");
-    let staff_path = pkg_dir.join("staff").join("staff.json");
-    let names_path = pkg_dir.join("names").join("names.json");
-    let competitions_path = pkg_dir.join("competitions").join("competitions.json");
-    let superseded = superseded_entity_files(
-        pkg_dir,
-        &[
-            manifest_path.clone(),
-            confederations_path.clone(),
-            countries_path.clone(),
-            teams_path.clone(),
-            players_path.clone(),
-            staff_path.clone(),
-            names_path.clone(),
-            competitions_path.clone(),
-        ],
-    );
+    let names_path = layout
+        .first_file("names")
+        .unwrap_or_else(|| pkg_dir.join("names").join("names.json"));
+    let mut removed = layout.other_files("world", &manifest_path);
+    removed.extend(layout.other_files("names", &names_path));
 
     write_json_atomic(&manifest_path, &ofm_core::generator::manifest_json(&meta)?)?;
 
-    let confs = serde_json::to_value(&confederations).map_err(|e| e.to_string())?;
-    write_json_atomic(
-        &confederations_path,
-        &json!({"schema": "confederation", "items": confs}),
-    )?;
+    let entity_sets = [
+        (
+            "confederation",
+            "confederations",
+            entity_values(&confederations)?,
+        ),
+        ("country", "countries", entity_values(&countries)?),
+        ("team", "teams", entity_values(&teams)?),
+        ("player", "players", entity_values(&players)?),
+        ("staff", "staff", entity_values(&staff)?),
+        ("competition", "competitions", entity_values(&competitions)?),
+    ];
+    for (schema, folder, entities) in entity_sets {
+        let default_path = pkg_dir.join(folder).join(format!("{folder}.json"));
+        let plan = layout.plan(schema, &default_path, entities);
+        for (path, body) in &plan.writes {
+            write_json_atomic(path, body)?;
+        }
+        removed.extend(plan.emptied);
+    }
 
-    let ctrs = serde_json::to_value(&countries).map_err(|e| e.to_string())?;
-    write_json_atomic(
-        &countries_path,
-        &json!({"schema": "country", "items": ctrs}),
-    )?;
+    if names_path.exists() || !names.pools.is_empty() {
+        write_json_atomic(&names_path, &ofm_core::generator::names_json(&names)?)?;
+    }
 
-    let tms = serde_json::to_value(&teams).map_err(|e| e.to_string())?;
-    write_json_atomic(&teams_path, &json!({"schema": "team", "items": tms}))?;
-
-    let pls = serde_json::to_value(&players).map_err(|e| e.to_string())?;
-    write_json_atomic(&players_path, &json!({"schema": "player", "items": pls}))?;
-
-    let stf = serde_json::to_value(&staff).map_err(|e| e.to_string())?;
-    write_json_atomic(&staff_path, &json!({"schema": "staff", "items": stf}))?;
-
-    write_json_atomic(&names_path, &ofm_core::generator::names_json(&names)?)?;
-
-    let comps = serde_json::to_value(&competitions).map_err(|e| e.to_string())?;
-    write_json_atomic(
-        &competitions_path,
-        &json!({"schema": "competition", "items": comps}),
-    )?;
-
-    // Only once every combined file is down: removed earlier, a failed write
-    // would lose entities rather than leave them duplicated.
-    for path in superseded {
+    // Only once every file is down: removed earlier, a failed write would lose
+    // entities rather than leave them where they were.
+    for path in removed {
         std::fs::remove_file(&path).map_err(|e| e.to_string())?;
     }
 
@@ -362,54 +331,213 @@ mod tests {
         (archive, project, legacy)
     }
 
-    #[test]
-    fn saving_a_split_package_creates_missing_folders_and_does_not_duplicate() {
-        // The shape a generated real-world package has: one player file per
-        // club, and no confederations, countries or names folders at all.
-        let dir = temp_project(
-            "save-split",
+    const SPLIT_WORLD: &str =
+        r#"{"schema":"world","id":"split","name":"Split","version":"1.0.0","license":"MIT"}"#;
+    const SPLIT_TEAMS: &str = r##"{"schema":"team","items":[
+        {"id":"arsenal","name":"Arsenal","shortName":"ARS","city":"London","country":"ENG","colors":{"primary":"#ff0000","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Emirates Stadium"},
+        {"id":"chelsea","name":"Chelsea","shortName":"CHE","city":"London","country":"ENG","colors":{"primary":"#0000ff","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Stamford Bridge"}]}"##;
+    const SPLIT_LEAGUE: &str = r#"{"schema":"competition","id":"eng-premier-league","name":"Premier League","type":"League","scope":"Domestic","countryId":"ENG","format":{"kind":"LeagueTable"},"participants":{"explicit":["arsenal","chelsea"]},"berths":[]}"#;
+    const SPLIT_ARSENAL: &str = r#"{"schema":"player","items":[{"id":"saka","firstName":"Bukayo","lastName":"Saka","club":"arsenal","nationality":"ENG","position":"RightWinger","dateOfBirth":"2001-09-05"},{"id":"rice","firstName":"Declan","lastName":"Rice","club":"arsenal","nationality":"ENG","position":"CentralMidfielder","dateOfBirth":"1999-01-14"}]}"#;
+    const SPLIT_CHELSEA: &str = r#"{"schema":"player","items":[{"id":"palmer","firstName":"Cole","lastName":"Palmer","club":"chelsea","nationality":"ENG","position":"AttackingMidfielder","dateOfBirth":"2002-05-06"}]}"#;
+
+    /// The shape a generated real-world package has: teams per league, one
+    /// player file per club, one file per competition, and no confederations,
+    /// countries, staff or names folders at all.
+    fn split_project(tag: &str) -> std::path::PathBuf {
+        temp_project(
+            tag,
             &[
-                (
-                    "package.json",
-                    r#"{"schema":"world","id":"split","name":"Split","version":"1.0.0","license":"MIT"}"#,
-                ),
-                (
-                    "teams/arsenal.json",
-                    r##"{"schema":"team","id":"arsenal","name":"Arsenal","shortName":"ARS","city":"London","country":"ENG","colors":{"primary":"#ff0000","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Emirates Stadium"}"##,
-                ),
-                (
-                    "players/arsenal.json",
-                    r#"{"schema":"player","items":[{"id":"saka","firstName":"Bukayo","lastName":"Saka","club":"arsenal","nationality":"ENG","position":"RightWinger","overall":85}]}"#,
-                ),
+                ("package.json", SPLIT_WORLD),
+                ("teams/eng-premier-league.json", SPLIT_TEAMS),
+                ("competitions/eng-premier-league.json", SPLIT_LEAGUE),
+                ("players/arsenal.json", SPLIT_ARSENAL),
+                ("players/chelsea.json", SPLIT_CHELSEA),
                 ("translations.vi.json", r#"{"hello":"xin chào"}"#),
             ],
-        );
-        let path = dir.to_str().unwrap().to_string();
-        let loaded = read_package_project(path.clone()).unwrap();
-        assert_eq!((loaded.teams.len(), loaded.players.len()), (1, 1));
+        )
+    }
 
+    /// Load `dir`, let `edit` change the project, and save it back, as the editor does.
+    fn resave(dir: &Path, edit: impl FnOnce(&mut PackageProjectData)) {
+        let path = dir.to_str().unwrap().to_string();
+        let mut project = read_package_project(path.clone()).unwrap();
+        edit(&mut project);
         save_package_project(
-            path.clone(),
-            loaded.meta,
-            loaded.confederations,
-            loaded.countries,
-            loaded.teams,
-            loaded.players,
-            loaded.staff,
-            loaded.names.unwrap_or(NamesDefinition {
+            path,
+            project.meta,
+            project.confederations,
+            project.countries,
+            project.teams,
+            project.players,
+            project.staff,
+            project.names.unwrap_or(NamesDefinition {
                 version: 1,
                 description: String::new(),
                 pools: HashMap::new(),
             }),
-            loaded.competitions,
+            project.competitions,
         )
         .unwrap();
+    }
 
-        let reloaded = read_package_project(path).unwrap();
-        assert_eq!((reloaded.teams.len(), reloaded.players.len()), (1, 1));
-        assert!(!dir.join("players/arsenal.json").exists());
-        assert!(!dir.join("teams/arsenal.json").exists());
-        assert!(dir.join("translations.vi.json").exists());
+    fn json_at(dir: &Path, file: &str) -> serde_json::Value {
+        serde_json::from_str(&std::fs::read_to_string(dir.join(file)).unwrap()).unwrap()
+    }
+
+    fn item_ids(dir: &Path, file: &str) -> Vec<String> {
+        json_at(dir, file)["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|item| item["id"].as_str().unwrap().to_string())
+            .collect()
+    }
+
+    /// Given a package split into one file per club, league and competition,
+    /// When a player is edited and the project saved,
+    /// Then every entity is written back to the file it came from, and no
+    /// combined or empty per-schema file appears beside them.
+    #[test]
+    fn saving_a_split_package_keeps_each_entity_in_its_own_file() {
+        let dir = split_project("save-split-layout");
+
+        resave(&dir, |project| {
+            let saka = project.players.iter_mut().find(|p| p.id == "saka").unwrap();
+            saka.potential = Some(93);
+        });
+
+        let mut files = Vec::new();
+        collect_definition_files(&dir, &mut files);
+        let mut names: Vec<String> = files
+            .iter()
+            .map(|f| {
+                f.strip_prefix(&dir)
+                    .unwrap()
+                    .to_string_lossy()
+                    .replace('\\', "/")
+            })
+            .collect();
+        names.sort();
+        assert_eq!(
+            names,
+            [
+                "competitions/eng-premier-league.json",
+                "package.json",
+                "players/arsenal.json",
+                "players/chelsea.json",
+                "teams/eng-premier-league.json",
+                "translations.vi.json",
+            ]
+        );
+        assert_eq!(item_ids(&dir, "players/arsenal.json"), ["saka", "rice"]);
+        assert_eq!(item_ids(&dir, "players/chelsea.json"), ["palmer"]);
+        assert_eq!(
+            json_at(&dir, "players/arsenal.json")["items"][0]["potential"],
+            93
+        );
+        let league = json_at(&dir, "competitions/eng-premier-league.json");
+        assert_eq!(
+            league["schema"], "competition",
+            "a one-entity file stays one entity"
+        );
+        assert_eq!(league["id"], "eng-premier-league");
+        let reloaded = read_package_project(dir.to_str().unwrap().to_string()).unwrap();
+        assert_eq!((reloaded.teams.len(), reloaded.players.len()), (2, 3));
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given a package with one player file per club,
+    /// When a player is added to Chelsea in the editor,
+    /// Then he is written to Chelsea's file.
+    #[test]
+    fn a_new_player_is_saved_beside_his_clubmates() {
+        let dir = split_project("save-split-new-player");
+
+        resave(&dir, |project| {
+            let mut james = project
+                .players
+                .iter()
+                .find(|p| p.id == "palmer")
+                .unwrap()
+                .clone();
+            james.id = "james".to_string();
+            james.first_name = "Reece".to_string();
+            james.last_name = "James".to_string();
+            project.players.push(james);
+        });
+
+        assert_eq!(item_ids(&dir, "players/chelsea.json"), ["palmer", "james"]);
+        assert_eq!(item_ids(&dir, "players/arsenal.json"), ["saka", "rice"]);
+        assert!(!dir.join("players/players.json").exists());
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given a package with one player file per club,
+    /// When one Arsenal player and Chelsea's only player are deleted,
+    /// Then they leave their files, and the file left with nobody is removed.
+    #[test]
+    fn deleted_entities_leave_their_files_and_an_emptied_file_goes() {
+        let dir = split_project("save-split-delete");
+
+        resave(&dir, |project| {
+            project.players.retain(|p| p.id == "saka");
+        });
+
+        assert_eq!(item_ids(&dir, "players/arsenal.json"), ["saka"]);
+        assert!(!dir.join("players/chelsea.json").exists());
+        let reloaded = read_package_project(dir.to_str().unwrap().to_string()).unwrap();
+        assert_eq!(reloaded.players.len(), 1);
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given entity files whose fields are not in alphabetical order,
+    /// When the project is saved,
+    /// Then each file keeps its keys in the order they were written, and a
+    /// second save leaves an unchanged file exactly as it was.
+    #[test]
+    fn saving_keeps_the_key_order_of_each_file() {
+        let dir = split_project("save-split-order");
+
+        resave(&dir, |_| {});
+
+        let text = std::fs::read_to_string(dir.join("players/chelsea.json")).unwrap();
+        let at = |key: &str| text.find(&format!("\"{key}\"")).unwrap();
+        assert!(at("schema") < at("items"));
+        assert!(at("id") < at("firstName") && at("firstName") < at("lastName"));
+        assert!(at("lastName") < at("club") && at("club") < at("dateOfBirth"));
+        let league =
+            std::fs::read_to_string(dir.join("competitions/eng-premier-league.json")).unwrap();
+        assert!(league.find("\"schema\"").unwrap() < league.find("\"id\"").unwrap());
+        resave(&dir, |_| {});
+        let again = std::fs::read_to_string(dir.join("players/chelsea.json")).unwrap();
+        assert_eq!(again, text, "a second save changed an unchanged file");
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given entity files that leave optional fields out,
+    /// When the project is saved unchanged,
+    /// Then no empty field the file did not have is written into it, and an
+    /// empty field the file did have stays.
+    #[test]
+    fn saving_unchanged_entities_adds_no_empty_fields() {
+        let dir = split_project("save-split-shape");
+
+        resave(&dir, |_| {});
+
+        let saka = &json_at(&dir, "players/arsenal.json")["items"][0];
+        for key in ["name", "age", "overall"] {
+            assert!(saka.get(key).is_none(), "player gained an empty {key}");
+        }
+        let arsenal = &json_at(&dir, "teams/eng-premier-league.json")["items"][0];
+        for key in ["logo", "financeRange", "foundedYear"] {
+            assert!(arsenal.get(key).is_none(), "team gained an empty {key}");
+        }
+        let league = json_at(&dir, "competitions/eng-premier-league.json");
+        assert_eq!(league["berths"], serde_json::json!([]));
 
         std::fs::remove_dir_all(&dir).ok();
     }

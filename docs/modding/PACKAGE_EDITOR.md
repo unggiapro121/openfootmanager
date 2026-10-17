@@ -279,6 +279,7 @@ These actions appear at the bottom of the edit view:
 
 **Save** (top-right corner)
 Writes all current entities and metadata to disk. No validation is performed.
+Each entity goes back to the file it was read from, so a package split into several files per type (one player file per club, one file per competition) keeps that layout, and an unchanged file is written back as it was. A new player is saved in the file that holds most of his club's players; any other new entity goes to the type's default file (`players/players.json`, `teams/teams.json`, …). A file left with no entities is removed.
 
 **Validate**
 Saves the current state first, then runs the same validation the CLI uses. Results appear as a red error list below the tabs. A green success message is shown when there are no errors.
