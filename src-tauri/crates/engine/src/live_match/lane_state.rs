@@ -98,7 +98,14 @@ impl LiveMatchState {
         if matches!(event.event_type, EventType::Dribble | EventType::Cross)
             && event.zone == crate::types::Zone::attacking_third(event.side)
         {
-            self.entry_lane = Some(self.lane_for(event.side));
+            // A wide man who cuts inside takes the ball in down the middle.
+            self.entry_lane = Some(
+                if event.tactical_context == Some(crate::event::TacticalContext::CutInside) {
+                    Lane::Centre
+                } else {
+                    self.lane_for(event.side)
+                },
+            );
         }
         if let Some(id) = &event.player_id {
             self.last_actor = Some((event.side, id.clone()));

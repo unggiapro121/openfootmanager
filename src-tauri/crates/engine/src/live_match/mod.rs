@@ -14,6 +14,7 @@ mod snapshot;
 mod substitution;
 #[cfg(test)]
 mod test_support;
+mod wing_play;
 mod zone_resolution;
 
 pub use long_shot::long_shot_norm;
@@ -24,6 +25,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::rating::{RosterEntry, rate_players};
 
+pub use finishing::shot_weight;
 pub(crate) use observation::AiObservation;
 
 use crate::event::{MatchEvent, SetPiece};
@@ -309,6 +311,10 @@ pub struct LiveMatchState {
     /// The set piece being played out (a corner, from the kick to the header
     /// or the clearance). `emit` tags every event with it.
     active_set_piece: Option<SetPiece>,
+    /// What the action being played out is (a cut inside, an early cross;
+    /// phase 2, P3.4): `emit` tags each event that carries no context of its
+    /// own, after a break's `Counter`.
+    active_context: Option<crate::event::TacticalContext>,
 
     // Phase 2, GĐ3: the ball's lane and what the grid's rules read
     // (`lane_state`). Kept under `Zones5` too, but only `Grid15` writes them.
@@ -386,6 +392,7 @@ impl LiveMatchState {
             penalty_state: PenaltyShootoutState::default(),
             recent_zones: VecDeque::with_capacity(10),
             active_set_piece: None,
+            active_context: None,
             on_the_break: None,
             active_break: false,
             ball_side: lane_state::BallSide::centre(),

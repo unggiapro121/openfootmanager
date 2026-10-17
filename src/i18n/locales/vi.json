@@ -800,7 +800,12 @@
       "breakSpeed": "Tốc độ phản công",
       "breakSpeed_Slow": "Chậm",
       "breakSpeed_Medium": "Trung bình",
-      "breakSpeed_Fast": "Nhanh"
+      "breakSpeed_Fast": "Nhanh",
+      "crossStyle": "Kiểu tạt",
+      "crossStyle_Mixed": "Kết hợp",
+      "crossStyle_High": "Bổng",
+      "crossStyle_Low": "Sệt",
+      "crossStyle_Early": "Tạt sớm"
     },
     "customTacticDescription": "Tự xây dựng thiết lập bằng cách kết hợp bất kỳ sơ đồ nào với lối chơi phù hợp với đội hình.",
     "customTacticNumber": "Chiến thuật tùy chỉnh {{count}}",
@@ -2529,6 +2534,34 @@
           "lines": {
             "0": "{{player}} tung cú sút xa, một bàn thắng tuyệt đẹp cho {{team}}!",
             "1": "Một cú nã đại bác từ ngoài vòng cấm! {{player}} ghi bàn!"
+          }
+        },
+        "cutInside": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} cắt vào trong bằng chân thuận và cứa lòng ghi bàn cho {{team}}!",
+            "1": "Từ cánh xộc vào, {{player}} cứa bóng vào góc xa!"
+          }
+        },
+        "lowCross": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} dứt điểm một chạm từ quả tạt sệt, {{team}} có bàn thắng!",
+            "1": "Quả tạt sệt chạy ngang khung thành và {{player}} đệm bóng vào lưới!"
+          }
+        },
+        "earlyCross": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "Một quả tạt sớm ra sau hàng thủ và {{player}} băng vào dứt điểm!",
+            "1": "{{team}} tạt sớm và {{player}} nhanh chân hơn hàng thủ!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} băng vào đón quả đá phạt và ghi bàn cho {{team}}!",
+            "1": "Quả đá phạt được treo vào và {{player}} chạm bóng quyết định!"
           }
         }
       },

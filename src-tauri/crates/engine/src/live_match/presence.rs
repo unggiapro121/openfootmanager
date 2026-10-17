@@ -131,7 +131,10 @@ pub(super) fn presence(slot: PitchPosition, lean: Lean, column: Column) -> [f64;
             P::LeftWingBack => [0.65, 0.05, 0.0],
             P::DefensiveMidfielder => [0.05, 0.15, 0.05],
             P::CentralMidfielder => central(lean, 0.45, 0.15, 0.10, 0.05),
-            P::AttackingMidfielder => [0.15, 0.80, 0.15],
+            // Two attacking midfielders side by side (3-4-2-1) work the
+            // half-spaces either side (wing-back-3-4-2-1.md §3.4); a lone
+            // one stays central (P3.4).
+            P::AttackingMidfielder => central(lean, 0.80, 0.35, 0.15, 0.05),
             P::LeftMidfielder => [0.80, 0.20, 0.0],
             P::LeftWinger => [0.95, 0.35, 0.02],
             P::Striker => central(lean, 1.00, 0.30, 0.20, 0.10),

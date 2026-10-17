@@ -848,7 +848,12 @@
       "breakSpeed": "Velocidade de transição",
       "breakSpeed_Slow": "Lenta",
       "breakSpeed_Medium": "Média",
-      "breakSpeed_Fast": "Rápida"
+      "breakSpeed_Fast": "Rápida",
+      "crossStyle": "Cruzamentos",
+      "crossStyle_Mixed": "Mistos",
+      "crossStyle_High": "Altos",
+      "crossStyle_Low": "Rasteiros",
+      "crossStyle_Early": "Antecipados"
     },
     "customTacticDescription": "Cria uma configuração personalizada combinando qualquer formação com o estilo de jogo que melhor se adapta ao teu plantel.",
     "customTacticNumber": "Tática personalizada {{count}}",
@@ -2495,6 +2500,34 @@
           "lines": {
             "0": "{{player}} arrisca de longe — que golo para o {{team}}!",
             "1": "Um petardo de fora da área! {{player}} marca!"
+          }
+        },
+        "cutInside": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} flete para dentro para o pé forte e coloca-a para o {{team}}!",
+            "1": "Da ala para dentro, {{player}} coloca-a no segundo poste!"
+          }
+        },
+        "lowCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} remata de primeira o cruzamento rasteiro e marca para o {{team}}!",
+            "1": "Bola rasteira na pequena área e {{player}} empurra para golo!"
+          }
+        },
+        "earlyCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Um cruzamento antecipado nas costas da defesa e {{player}} aparece!",
+            "1": "O {{team}} cruza cedo e {{player}} antecipa-se à defesa!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} ataca o livre lateral e marca para o {{team}}!",
+            "1": "O livre é colocado na área e {{player}} dá o toque decisivo!"
           }
         }
       },

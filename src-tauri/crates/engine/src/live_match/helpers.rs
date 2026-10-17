@@ -112,6 +112,9 @@ impl LiveMatchState {
         if self.active_break && event.tactical_context.is_none() {
             event.tactical_context = Some(TacticalContext::Counter);
         }
+        if event.tactical_context.is_none() {
+            event.tactical_context = self.active_context;
+        }
         if self.plays_grid15() {
             self.track_lane(&mut event);
         } else if event.lane.is_none() {

@@ -46,6 +46,15 @@ use super::helpers::{danger_band, save_quality};
 /// synthetic forwards shoot 18 points above their side, so their long shots
 /// sit far above any real striker's and their chance runs into the cap.
 const BASE: f64 = -2.30;
+/// `BASE` under `Grid15` (phase 2, P3.4, X56): a shot from a flank is worth
+/// `FLANK_PENALTY` less, so the level rises to keep 30–35% of shots outside the
+/// box. Calibrated at P3.4.
+const BASE_GRID: f64 = -1.80;
+/// Shooting from out wide, at a narrow angle, is rare (X56).
+const FLANK_PENALTY: f64 = -1.0;
+/// A wide player who has cut inside onto his stronger foot shoots more
+/// readily (S2 §3.3).
+const CUT_INSIDE_BONUS: f64 = 0.8;
 /// How often the man who might shoot from distance is a midfielder arriving
 /// from behind rather than the man on the ball.
 const MIDFIELDER_SHARE: f64 = 0.55;
@@ -105,17 +114,22 @@ fn default_slot(group: Position) -> PitchPosition {
     }
 }
 
-/// The chance a player at `slot` tries a shot from distance this action.
+/// The chance a player at `slot` tries a shot from distance this action, at
+/// level `level` (`BASE`, or `BASE_GRID` under `Grid15`) plus `extra` (the
+/// flank's penalty, a cut inside's bonus).
 fn trigger_chance(
     slot: PitchPosition,
     long_shots: u8,
     shoots_from_distance: bool,
     against_compact: bool,
+    level: f64,
+    extra: f64,
 ) -> f64 {
     let Some((base, mean)) = long_shot_norm(slot) else {
         return 0.0;
     };
-    let logit = BASE
+    let logit = level
+        + extra
         + (base - STRIKER_BASE)
         + LONG_SHOTS_SLOPE * (f64::from(long_shots) - mean) / 10.0
         + if shoots_from_distance {
@@ -165,32 +179,78 @@ impl LiveMatchState {
         rng: &mut R,
     ) -> Option<Vec<MatchEvent>> {
         let shooter = if rng.random_range(0.0..1.0f64) < MIDFIELDER_SHARE {
-            self.snap_player(att_side, Position::Midfielder, rng)
+            self.arriving_midfielder(att_side, rng)
         } else {
             attacker.clone()
         };
-        let group = self
-            .team_ref(att_side)
-            .players
-            .iter()
-            .find(|p| p.id == shooter.id)
-            .map_or(Position::Midfielder, |p| p.position);
-        let slot = self
-            .slot_of(att_side, &shooter.id)
-            .unwrap_or_else(|| default_slot(group));
-        let compact =
-            self.team_ref(att_side.opposite()).tactics.defensive_shape == DefensiveShape::Compact;
-        let chance = trigger_chance(
-            slot,
-            shooter.long_shots,
-            shooter.has_trait("ShootsFromDistance"),
-            compact,
-        );
+        // From a flank under `Grid15`, the angle is narrow (P3.4).
+        let (level, extra) = if !self.plays_grid15() {
+            (BASE, 0.0)
+        } else if self.lane_for(att_side) == crate::event::Lane::Centre {
+            (BASE_GRID, 0.0)
+        } else {
+            (BASE_GRID, FLANK_PENALTY)
+        };
+        let chance = self.long_shot_chance(att_side, &shooter, level, extra);
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
         let assister = (shooter.id != attacker.id).then(|| attacker.id.clone());
         Some(self.resolve_long_shot(minute, att_side, shooter, assister, rng))
+    }
+
+    /// The midfielder arriving from behind to shoot. `Zones5`: any
+    /// midfielder. `Grid15`: drawn by midfield presence in the ball's lane.
+    fn arriving_midfielder<R: Rng>(&self, side: Side, rng: &mut R) -> PlayerSnap {
+        if self.plays_grid15() {
+            let lane = self.lane_for(side);
+            if let Some(picked) =
+                self.pick_by_presence(side, super::presence::Column::MidfieldAttack, lane, rng)
+            {
+                return picked.player;
+            }
+        }
+        self.snap_player(side, Position::Midfielder, rng)
+    }
+
+    /// `shooter`'s chance to shoot from distance, at `level` plus `extra`.
+    fn long_shot_chance(&self, side: Side, shooter: &PlayerSnap, level: f64, extra: f64) -> f64 {
+        let group = self
+            .team_ref(side)
+            .players
+            .iter()
+            .find(|p| p.id == shooter.id)
+            .map_or(Position::Midfielder, |p| p.position);
+        let slot = self
+            .slot_of(side, &shooter.id)
+            .unwrap_or_else(|| default_slot(group));
+        let compact =
+            self.team_ref(side.opposite()).tactics.defensive_shape == DefensiveShape::Compact;
+        trigger_chance(
+            slot,
+            shooter.long_shots,
+            shooter.has_trait("ShootsFromDistance"),
+            compact,
+            level,
+            extra,
+        )
+    }
+
+    /// A wide player has cut inside onto his stronger foot (P3.4): he curls
+    /// one at goal at his chance to shoot from distance plus
+    /// `CUT_INSIDE_BONUS`, the shot's events if he does.
+    pub(super) fn try_cut_inside_shot<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        cutter: &PlayerSnap,
+        rng: &mut R,
+    ) -> Option<Vec<MatchEvent>> {
+        let chance = self.long_shot_chance(att_side, cutter, BASE_GRID, CUT_INSIDE_BONUS);
+        if rng.random_range(0.0..1.0f64) >= chance {
+            return None;
+        }
+        Some(self.resolve_long_shot(minute, att_side, cutter.clone(), None, rng))
     }
 
     /// A shot from distance by `shooter`, from the block to the goal or the
@@ -303,13 +363,13 @@ mod tests {
     /// one time in ten (20 times as often).
     #[test]
     fn the_chance_follows_the_slot() {
-        let cb = trigger_chance(PitchPosition::CenterBack, 38, false, false);
-        let st = trigger_chance(PitchPosition::Striker, 64, false, false);
+        let cb = trigger_chance(PitchPosition::CenterBack, 38, false, false, BASE, 0.0);
+        let st = trigger_chance(PitchPosition::Striker, 64, false, false, BASE, 0.0);
         assert!(cb < 0.01, "cb {cb}");
         assert!(st > 0.05, "st {st}");
         assert!(st > 20.0 * cb, "st {st}, cb {cb}");
         assert_eq!(
-            trigger_chance(PitchPosition::Goalkeeper, 99, true, true),
+            trigger_chance(PitchPosition::Goalkeeper, 99, true, true, BASE, 0.0),
             0.0
         );
     }
@@ -321,11 +381,13 @@ mod tests {
     #[test]
     fn long_shots_habit_and_a_compact_defence_raise_the_chance_to_a_cap() {
         let cm = PitchPosition::CentralMidfielder;
-        let plain = trigger_chance(cm, 60, false, false);
-        assert!(trigger_chance(cm, 80, false, false) > plain);
-        assert!(trigger_chance(cm, 60, true, false) > plain);
-        assert!(trigger_chance(cm, 60, false, true) > plain);
-        assert_eq!(trigger_chance(cm, 99, true, true), MAX_CHANCE);
+        let plain = trigger_chance(cm, 60, false, false, BASE, 0.0);
+        assert!(trigger_chance(cm, 80, false, false, BASE, 0.0) > plain);
+        assert!(trigger_chance(cm, 60, true, false, BASE, 0.0) > plain);
+        assert!(trigger_chance(cm, 60, false, true, BASE, 0.0) > plain);
+        assert_eq!(trigger_chance(cm, 99, true, true, BASE, 0.0), MAX_CHANCE);
+        // From a flank (Grid15, P3.4) the same man shoots less often.
+        assert!(trigger_chance(cm, 60, false, false, BASE, FLANK_PENALTY) < plain);
     }
 
     /// Given the shot's chances at the extremes,

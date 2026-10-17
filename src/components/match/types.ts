@@ -30,7 +30,13 @@ export type GoalSource =
 /** A third of the pitch's width, seen from the acting side's attack. */
 export type Lane = "Left" | "Centre" | "Right";
 /** What the event type alone cannot say (phase 2, P2.6). */
-export type TacticalContext = "Counter" | "SweeperKeeperInterception" | "KeeperOffHisLine";
+export type TacticalContext =
+  | "Counter"
+  | "SweeperKeeperInterception"
+  | "KeeperOffHisLine"
+  | "CutInside"
+  | "LowCross"
+  | "EarlyCross";
 
 export interface MatchEvent {
   minute: number;

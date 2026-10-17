@@ -28,6 +28,7 @@ const PHASE_FIELDS: readonly (keyof TacticsPhaseSettings)[] = [
   "marking_style",
   "counter_press_duration",
   "break_speed",
+  "cross_style",
 ];
 
 /** Whether two phase blueprints set every phase the same way. */

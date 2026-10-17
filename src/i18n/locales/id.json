@@ -800,7 +800,12 @@
       "breakSpeed": "Kecepatan Transisi",
       "breakSpeed_Slow": "Lambat",
       "breakSpeed_Medium": "Sedang",
-      "breakSpeed_Fast": "Cepat"
+      "breakSpeed_Fast": "Cepat",
+      "crossStyle": "Umpan silang",
+      "crossStyle_Mixed": "Campuran",
+      "crossStyle_High": "Tinggi",
+      "crossStyle_Low": "Rendah",
+      "crossStyle_Early": "Awal"
     },
     "customTacticDescription": "Bangun pengaturan kustom dengan menggabungkan formasi apa pun dengan gaya bermain yang cocok untuk skuad kamu.",
     "customTacticNumber": "Taktik kustom {{count}}",
@@ -2529,6 +2534,34 @@
           "lines": {
             "0": "{{player}} melepaskan tembakan jarak jauh — gol indah untuk {{team}}!",
             "1": "Geledek dari luar kotak penalti! {{player}} mencetak gol!"
+          }
+        },
+        "cutInside": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} menusuk ke dalam ke kaki terkuatnya dan melengkungkan bola untuk {{team}}!",
+            "1": "Dari sayap ke tengah, {{player}} melengkungkan bola ke tiang jauh!"
+          }
+        },
+        "lowCross": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} menyambar umpan silang rendah dengan sekali sentuh, gol untuk {{team}}!",
+            "1": "Umpan mendatar di depan gawang dan {{player}} menceploskannya!"
+          }
+        },
+        "earlyCross": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "Umpan silang awal ke belakang pertahanan dan {{player}} menyambutnya!",
+            "1": "{{team}} mengirim umpan silang lebih awal dan {{player}} mendahului bek!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} menyambut tendangan bebas dan mencetak gol untuk {{team}}!",
+            "1": "Tendangan bebas dikirim ke kotak penalti dan {{player}} memberi sentuhan penentu!"
           }
         }
       },

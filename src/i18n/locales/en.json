@@ -800,7 +800,12 @@
       "breakSpeed": "Break Speed",
       "breakSpeed_Slow": "Slow",
       "breakSpeed_Medium": "Medium",
-      "breakSpeed_Fast": "Fast"
+      "breakSpeed_Fast": "Fast",
+      "crossStyle": "Crosses",
+      "crossStyle_Mixed": "Mixed",
+      "crossStyle_High": "High",
+      "crossStyle_Low": "Low",
+      "crossStyle_Early": "Early"
     },
     "customTacticDescription": "Build a custom setup by combining any formation with the play style that fits your squad.",
     "customTacticNumber": "Custom tactic {{count}}",
@@ -2529,6 +2534,34 @@
           "lines": {
             "0": "{{player}} lets fly from distance — what a strike for {{team}}!",
             "1": "A thunderbolt from outside the box! {{player}} scores!"
+          }
+        },
+        "cutInside": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} cuts inside onto his stronger foot and curls it in for {{team}}!",
+            "1": "In off the flank, {{player}} bends it into the far corner!"
+          }
+        },
+        "lowCross": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} meets the low cross first time — {{team}} score!",
+            "1": "Driven across the six-yard box and {{player}} turns it in!"
+          }
+        },
+        "earlyCross": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "An early ball in behind the defence and {{player}} gets on the end of it!",
+            "1": "{{team}} cross early and {{player}} is there before the defence!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} attacks the free kick and scores for {{team}}!",
+            "1": "Whipped in from the free kick, and {{player}} gets the decisive touch!"
           }
         }
       },

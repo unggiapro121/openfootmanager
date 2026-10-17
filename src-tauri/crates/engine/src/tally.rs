@@ -5,7 +5,7 @@
 //! sim-bench and the real-world probe both measure these, so the rule for
 //! reading them lives here, once, next to the events it reads.
 
-use crate::event::{EventType, Lane, MatchEvent, ShotKind};
+use crate::event::{EventType, Lane, MatchEvent, ShotKind, TacticalContext};
 use crate::pitch_position::formation_slots;
 use crate::report::{MatchReport, TeamSheet};
 use crate::types::{Position, Zone};
@@ -29,6 +29,13 @@ pub struct EventTally {
     pub final_third_lanes: [u64; 3],
     /// Crosses by the lane their event carries: left, centre, right.
     pub crosses_by_lane: [u64; 3],
+    /// Crosses in open play (not from a corner or free kick), the number real
+    /// football's 22 a match counts (phase 2, P3.4).
+    pub open_play_crosses: u64,
+    /// Open-play crosses along the ground, and crosses that never reached
+    /// the contest (P3.4): neither is an aerial duel.
+    pub low_crosses: u64,
+    pub unreached_crosses: u64,
     /// Shots in the box with the feet or the head, by the group of the slot
     /// the shooter kicked off in: DEF, MID, FWD, and a fourth for players who
     /// came off the bench. Only [`EventTally::of_report`] fills it.
@@ -54,7 +61,10 @@ impl EventTally {
         for (index, event) in events.iter().enumerate() {
             match event.event_type {
                 EventType::Cross => {
-                    tally.add_cross(&events[index + 1..]);
+                    if event.set_piece.is_none() {
+                        tally.open_play_crosses += 1;
+                    }
+                    tally.add_cross(event, &events[index + 1..]);
                     if let Some(lane) = event.lane {
                         tally.crosses_by_lane[lane_index(lane)] += 1;
                     }
@@ -122,6 +132,9 @@ impl EventTally {
         self.cross_goals += other.cross_goals;
         self.fouls_final_third += other.fouls_final_third;
         self.fouls_in_box += other.fouls_in_box;
+        self.open_play_crosses += other.open_play_crosses;
+        self.low_crosses += other.low_crosses;
+        self.unreached_crosses += other.unreached_crosses;
         for i in 0..3 {
             self.final_third_lanes[i] += other.final_third_lanes[i];
             self.crosses_by_lane[i] += other.crosses_by_lane[i];
@@ -163,8 +176,19 @@ impl EventTally {
 
     /// The duel after a cross is lost when a clearance comes straight after
     /// it; otherwise it was won, and the shot that follows ends at the first
-    /// goal, save, miss or penalty.
-    fn add_cross(&mut self, after: &[MatchEvent]) {
+    /// goal, save, miss or penalty. A cross naming nobody never reached the
+    /// contest, and one met along the ground (`LowCross`) is no aerial duel:
+    /// neither counts (phase 2, P3.4).
+    fn add_cross(&mut self, cross: &MatchEvent, after: &[MatchEvent]) {
+        if cross.secondary_player_id.is_none() {
+            self.unreached_crosses += 1;
+            return;
+        }
+        let low = |e: &MatchEvent| e.tactical_context == Some(TacticalContext::LowCross);
+        if low(cross) || after.first().is_some_and(low) {
+            self.low_crosses += 1;
+            return;
+        }
         if after.first().map(|e| &e.event_type) == Some(&EventType::Clearance) {
             self.aerial_lost += 1;
             return;
@@ -232,9 +256,9 @@ mod tests {
     fn a_cross_is_lost_when_cleared_and_won_otherwise() {
         let third = Zone::AwayDefense;
         let tally = EventTally::of(&[
-            event(EventType::Cross, third),
+            event(EventType::Cross, third).with_secondary("target"),
             event(EventType::Clearance, third),
-            event(EventType::Cross, third),
+            event(EventType::Cross, third).with_secondary("target"),
             event(EventType::Goal, Zone::AwayBox),
         ]);
         assert_eq!((tally.aerial_won, tally.aerial_lost), (1, 1));
@@ -266,6 +290,28 @@ mod tests {
         let mut e = event(event_type, zone);
         e.lane = Some(lane);
         e
+    }
+
+    /// Given a cross that never reached the contest, one met along the
+    /// ground and then cleared, and one won in the air,
+    /// when they are tallied,
+    /// then only the last is an aerial duel, and all three are open-play
+    /// crosses (phase 2, P3.4).
+    #[test]
+    fn only_a_cross_contested_in_the_air_is_an_aerial_duel() {
+        let third = Zone::AwayDefense;
+        let low = |e: MatchEvent| e.with_tactical_context(TacticalContext::LowCross);
+        let tally = EventTally::of(&[
+            event(EventType::Cross, third),
+            event(EventType::Clearance, third),
+            event(EventType::Cross, third).with_secondary("target"),
+            low(event(EventType::Clearance, third)),
+            event(EventType::Cross, third).with_secondary("target"),
+            event(EventType::Goal, Zone::AwayBox),
+        ]);
+        assert_eq!((tally.aerial_won, tally.aerial_lost), (1, 0));
+        assert_eq!((tally.unreached_crosses, tally.low_crosses), (1, 1));
+        assert_eq!(tally.open_play_crosses, 3);
     }
 
     /// Given one-on-ones in the attacking third down the left and the centre,

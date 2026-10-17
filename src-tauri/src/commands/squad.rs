@@ -580,6 +580,7 @@ pub fn set_tactics_phase(
     marking_style: Option<String>,
     counter_press_duration: Option<String>,
     break_speed: Option<String>,
+    cross_style: Option<String>,
 ) -> Result<Game, String> {
     use domain::team::*;
     info!("[cmd] set_tactics_phase");
@@ -647,6 +648,14 @@ pub fn set_tactics_phase(
                 "Slow" => BreakSpeed::Slow,
                 "Fast" => BreakSpeed::Fast,
                 _ => BreakSpeed::Medium,
+            };
+        }
+        if let Some(v) = cross_style {
+            p.cross_style = match v.as_str() {
+                "High" => CrossStyle::High,
+                "Low" => CrossStyle::Low,
+                "Early" => CrossStyle::Early,
+                _ => CrossStyle::Mixed,
             };
         }
 

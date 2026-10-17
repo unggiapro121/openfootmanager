@@ -92,5 +92,6 @@ export async function setTacticsPhase(
     markingStyle: patch.marking_style,
     counterPressDuration: patch.counter_press_duration,
     breakSpeed: patch.break_speed,
+    crossStyle: patch.cross_style,
   });
 }

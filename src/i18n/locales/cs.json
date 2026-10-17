@@ -800,7 +800,12 @@
       "breakSpeed": "Rychlost protiútoku",
       "breakSpeed_Slow": "Pomalá",
       "breakSpeed_Medium": "Střední",
-      "breakSpeed_Fast": "Rychlá"
+      "breakSpeed_Fast": "Rychlá",
+      "crossStyle": "Centry",
+      "crossStyle_Mixed": "Smíšené",
+      "crossStyle_High": "Vysoké",
+      "crossStyle_Low": "Přízemní",
+      "crossStyle_Early": "Brzké"
     },
     "customTacticDescription": "Vybudujte si vlastní nastavení kombinací libovolného rozestavení s herním stylem, který vyhovuje vaší soupisce.",
     "customTacticNumber": "Vlastní taktika {{count}}",
@@ -2529,6 +2534,34 @@
           "lines": {
             "0": "{{player}} to zkusil z dálky — jaká rána pro tým {{team}}!",
             "1": "Bomba zpoza vápna! {{player}} skóruje!"
+          }
+        },
+        "cutInside": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} si to stáhne dovnitř na silnější nohu a zakroutí míč do sítě – gól {{team}}!",
+            "1": "Z křídla dovnitř, {{player}} to zakroutí k zadní tyči!"
+          }
+        },
+        "lowCross": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} usměrní přízemní centr z první – {{team}} skóruje!",
+            "1": "Přízemní centr přes malé vápno a {{player}} to dotlačí do sítě!"
+          }
+        },
+        "earlyCross": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "Brzký centr za obranu a {{player}} je u toho!",
+            "1": "{{team}} centruje brzy a {{player}} předběhne obranu!"
+          }
+        },
+        "freeKickCross": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} si naběhne na standardku a skóruje za {{team}}!",
+            "1": "Volný kop je poslán do vápna a {{player}} přidá rozhodující dotek!"
           }
         }
       },

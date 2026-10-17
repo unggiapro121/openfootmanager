@@ -95,7 +95,7 @@ const FREE_KICK_GOAL_MIN: f64 = 0.04;
 const FREE_KICK_GOAL_MAX: f64 = 0.40;
 
 /// A player's delivery from a corner, before condition and traits.
-fn delivery_skill(crossing: u8, curve: u8) -> f64 {
+pub(super) fn delivery_skill(crossing: u8, curve: u8) -> f64 {
     DELIVERY_CROSSING * f64::from(crossing) + DELIVERY_CURVE * f64::from(curve)
 }
 
@@ -122,7 +122,7 @@ fn free_kick_goal(fk: f64, keeper: f64) -> f64 {
 }
 
 /// How much a delivery of quality `q` helps the man meeting it, as an odds ratio.
-fn contest_help(q: f64) -> f64 {
+pub(super) fn contest_help(q: f64) -> f64 {
     (1.0 + (q - DELIVERY_REFERENCE) / CONTEST_SPREAD).clamp(CONTEST_MIN, CONTEST_MAX)
 }
 
@@ -232,22 +232,64 @@ impl LiveMatchState {
         att_side: Side,
         rng: &mut R,
     ) -> Vec<MatchEvent> {
+        self.resolve_delivery(minute, att_side, SetPiece::Corner, rng)
+    }
+
+    /// A free kick to `att_side` out wide in its attacking third, crossed into
+    /// the box (phase 2, P3.4, X56): the corner's delivery from the club's
+    /// free-kick taker, or the best deliverer, with the centre backs up.
+    pub(super) fn resolve_crossed_free_kick<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
+        self.resolve_delivery(minute, att_side, SetPiece::FreeKick, rng)
+    }
+
+    /// The taker of a crossed set piece: the corner taker for a corner, the
+    /// free-kick taker for a free kick, else whoever delivers best.
+    fn pick_delivery_taker(&self, side: Side, kind: SetPiece) -> Option<PlayerSnap> {
+        match kind {
+            SetPiece::Corner => self.pick_corner_taker(side),
+            SetPiece::FreeKick => self.pick_set_piece_taker(
+                side,
+                self.set_pieces_ref(side).free_kick_taker.as_ref(),
+                |p| delivery_skill(p.crossing, p.curve),
+            ),
+        }
+    }
+
+    /// A ball delivered into the box from a corner or a wide free kick, from
+    /// the kick to the header or the clearance. Every event it produces is
+    /// part of the set piece.
+    fn resolve_delivery<R: Rng>(
+        &mut self,
+        minute: u8,
+        att_side: Side,
+        kind: SetPiece,
+        rng: &mut R,
+    ) -> Vec<MatchEvent> {
         let mut events = Vec::new();
         let def_side = att_side.opposite();
         let zone = Zone::attacking_third(att_side);
-        let outer_set_piece = self.active_set_piece.replace(SetPiece::Corner);
+        let outer_set_piece = self.active_set_piece.replace(kind);
 
-        let Some(taker) = self.pick_corner_taker(att_side) else {
+        let Some(taker) = self.pick_delivery_taker(att_side, kind) else {
             // Nobody left to take it: the defence has the ball.
             self.possession = def_side;
             self.ball_zone = Zone::defensive_third(att_side);
             self.active_set_piece = outer_set_piece;
             return events;
         };
-        let corner = MatchEvent::new(minute, EventType::Corner, att_side, zone)
+        let event_type = match kind {
+            SetPiece::Corner => EventType::Corner,
+            SetPiece::FreeKick => EventType::FreeKick,
+        };
+        let restart = MatchEvent::new(minute, event_type, att_side, zone)
             .with_player(&taker.id)
-            .with_set_piece(SetPiece::Corner);
-        self.emit(&mut events, corner);
+            .with_set_piece(kind);
+        self.emit(&mut events, restart);
 
         let dead_ball = if taker.has_trait("DeadBallSpecialist") {
             DEAD_BALL_SPECIALIST_DELIVERY

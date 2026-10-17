@@ -98,6 +98,40 @@ describe("getCommentary", () => {
     expect(result!.line).toContain("Haaland");
   });
 
+  // Phase 2, GĐ3 (P3.4): how the move was made comes before what finished it.
+  it("uses the cut-inside variant for a curler after cutting in from the flank", () => {
+    const evt: MatchEvent = {
+      ...goal(10, "p1"),
+      goal_source: "LongShot",
+      tactical_context: "CutInside",
+    };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/inside/);
+    expect(result!.line).toContain("Haaland");
+  });
+
+  it("uses the low-cross variant for a first-time finish from a low cross", () => {
+    const evt: MatchEvent = { ...goal(10, "p1"), tactical_context: "LowCross" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/low cross|driven across/);
+  });
+
+  it("uses the early-cross variant for a header from an early cross", () => {
+    const evt: MatchEvent = {
+      ...goal(10, "p1"),
+      goal_source: "Header",
+      tactical_context: "EarlyCross",
+    };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/early/);
+  });
+
+  it("uses the free-kick-cross variant for a goal from a free kick crossed in", () => {
+    const evt: MatchEvent = { ...goal(10, "p1"), goal_source: "FreeKick" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/free kick/);
+  });
+
   it("keeps the brace variant over the header one", () => {
     const g1 = goal(10, "p1");
     const g2: MatchEvent = { ...goal(40, "p1"), goal_source: "Header" };

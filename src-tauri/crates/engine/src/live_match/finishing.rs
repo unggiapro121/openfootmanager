@@ -23,7 +23,7 @@ pub(super) const LAST_ACTOR_WEIGHT: f64 = 2.0;
 
 /// ω, a slot's share of the finishing (GĐ3-tech-spec §8.2, S1 §3.2A): a
 /// role in the table replaces the slot's default.
-pub(super) fn shot_weight(slot: PitchPosition, role: PlayerRole) -> f64 {
+pub fn shot_weight(slot: PitchPosition, role: PlayerRole) -> f64 {
     use PitchPosition as P;
     let by_role = match role {
         PlayerRole::Poacher => Some(3.5),
@@ -155,6 +155,29 @@ impl LiveMatchState {
         draw(&candidates, rng)
             .map(PlayerSnap::from)
             .unwrap_or_else(|| self.snap_header_target(side, crosser_id, rng))
+    }
+
+    /// Who meets a low cross from `crosser_id` (P3.4): anyone but the
+    /// crosser, `P ∝ ω × positioning / 70`, first to the ball along the
+    /// ground. Falls back on the high cross's pick.
+    pub(super) fn low_cross_target<R: Rng>(
+        &self,
+        side: Side,
+        crosser_id: &str,
+        rng: &mut R,
+    ) -> PlayerSnap {
+        let candidates: Vec<(&PlayerData, f64)> = self
+            .outfield_by_slot(side)
+            .into_iter()
+            .filter(|(player, _)| player.id != crosser_id)
+            .map(|(player, slot)| {
+                let weight = shot_weight(slot, player.role) * f64::from(player.positioning) / 70.0;
+                (player, weight)
+            })
+            .collect();
+        draw(&candidates, rng)
+            .map(PlayerSnap::from)
+            .unwrap_or_else(|| self.cross_target(side, crosser_id, rng))
     }
 
     /// Who contests a cross for the defence. `Zones5`: any defender.

@@ -197,6 +197,8 @@ pub struct TacticsPhaseSettings {
     // Transitions
     pub counter_press_duration: CounterPressDuration,
     pub break_speed: BreakSpeed,
+    // Attacking from wide (phase 2, P3.4)
+    pub cross_style: CrossStyle,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
@@ -261,6 +263,17 @@ pub enum CounterPressDuration {
     None,
     Short,
     Long,
+}
+
+/// How a side crosses from the flank (phase 2, P3.4). Read by the GĐ3 match
+/// model only.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub enum CrossStyle {
+    #[default]
+    Mixed,
+    High,
+    Low,
+    Early,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]

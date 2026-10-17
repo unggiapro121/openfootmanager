@@ -246,6 +246,10 @@ fn row_to_team(row: &rusqlite::Row) -> rusqlite::Result<Team> {
                     raw.get("break_speed").cloned().unwrap_or_default(),
                 )
                 .unwrap_or_default(),
+                cross_style: serde_json::from_value(
+                    raw.get("cross_style").cloned().unwrap_or_default(),
+                )
+                .unwrap_or_default(),
             }
         },
         form: serde_json::from_str(&form_json).unwrap_or_default(),

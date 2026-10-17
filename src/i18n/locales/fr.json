@@ -848,7 +848,12 @@
       "breakSpeed": "Vitesse de contre",
       "breakSpeed_Slow": "Lente",
       "breakSpeed_Medium": "Moyenne",
-      "breakSpeed_Fast": "Rapide"
+      "breakSpeed_Fast": "Rapide",
+      "crossStyle": "Centres",
+      "crossStyle_Mixed": "Mixtes",
+      "crossStyle_High": "Aériens",
+      "crossStyle_Low": "À ras de terre",
+      "crossStyle_Early": "Précoces"
     },
     "customTacticDescription": "Créez une organisation personnalisée en combinant n'importe quelle formation avec le style de jeu qui convient à votre effectif.",
     "customTacticNumber": "Tactique personnalisée {{count}}",
@@ -2495,6 +2500,34 @@
           "lines": {
             "0": "{{player}} tente sa chance de loin — quelle frappe pour {{team}} !",
             "1": "Un boulet hors de la surface ! {{player}} marque !"
+          }
+        },
+        "cutInside": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} repique sur son bon pied et l'enroule pour {{team}} !",
+            "1": "Rentré depuis le côté, {{player}} la place au second poteau !"
+          }
+        },
+        "lowCross": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} reprend le centre à ras de terre en une touche, but pour {{team}} !",
+            "1": "Centre tendu dans les six mètres et {{player}} la pousse au fond !"
+          }
+        },
+        "earlyCross": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "Un centre précoce dans le dos de la défense et {{player}} est au rendez-vous !",
+            "1": "{{team}} centre tôt et {{player}} devance la défense !"
+          }
+        },
+        "freeKickCross": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} attaque le coup franc et marque pour {{team}} !",
+            "1": "Le coup franc est brossé dans la surface et {{player}} trouve la faille !"
           }
         }
       },
