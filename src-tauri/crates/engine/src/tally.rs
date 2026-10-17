@@ -33,6 +33,10 @@ pub struct EventTally {
     /// the shooter kicked off in: DEF, MID, FWD, and a fourth for players who
     /// came off the bench. Only [`EventTally::of_report`] fills it.
     pub box_shots_by_group: [u64; 4],
+    /// One-on-ones in the attacking third by the group of the slot the
+    /// attacker kicked off in: DEF, MID, FWD, substitutes. Only
+    /// [`EventTally::of_report`] fills it.
+    pub final_third_by_group: [u64; 4],
 }
 
 fn lane_index(lane: Lane) -> usize {
@@ -101,6 +105,13 @@ impl EventTally {
             if let (true, true, Some(id)) = (is_shot, in_box, event.player_id.as_deref()) {
                 tally.box_shots_by_group[group_of(id)] += 1;
             }
+            let one_v_one = matches!(
+                event.event_type,
+                EventType::Dribble | EventType::DribbleTackled
+            ) && event.zone == Zone::attacking_third(event.side);
+            if let (true, Some(id)) = (one_v_one, event.player_id.as_deref()) {
+                tally.final_third_by_group[group_of(id)] += 1;
+            }
         }
         tally
     }
@@ -117,6 +128,7 @@ impl EventTally {
         }
         for i in 0..4 {
             self.box_shots_by_group[i] += other.box_shots_by_group[i];
+            self.final_third_by_group[i] += other.final_third_by_group[i];
         }
     }
 
@@ -131,14 +143,13 @@ impl EventTally {
 
     /// Shares of box shots by DEF, MID, FWD and substitutes, in percent.
     pub fn box_shot_group_pct(&self) -> [f64; 4] {
-        let total: u64 = self.box_shots_by_group.iter().sum();
-        self.box_shots_by_group.map(|n| {
-            if total == 0 {
-                0.0
-            } else {
-                n as f64 / total as f64 * 100.0
-            }
-        })
+        shares(self.box_shots_by_group)
+    }
+
+    /// Shares of the attacking third's one-on-ones by DEF, MID, FWD and
+    /// substitutes, in percent.
+    pub fn final_third_group_pct(&self) -> [f64; 4] {
+        shares(self.final_third_by_group)
     }
 
     /// Share of aerial duels the defending side won, in percent.
@@ -184,6 +195,17 @@ impl EventTally {
             self.fouls_final_third += 1;
         }
     }
+}
+
+fn shares(counts: [u64; 4]) -> [f64; 4] {
+    let total: u64 = counts.iter().sum();
+    counts.map(|n| {
+        if total == 0 {
+            0.0
+        } else {
+            n as f64 / total as f64 * 100.0
+        }
+    })
 }
 
 /// The group of the slot `id` kicked off in, if he started for this sheet.

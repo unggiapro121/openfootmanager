@@ -142,27 +142,10 @@ impl LiveMatchState {
             self.lane_for(side),
             odds,
             long_pass_mod(passer.long_passing),
-            self.lane_cover(side),
+            self.attacking_presence(side),
             rng,
         );
         self.set_lane_for(side, lane);
-    }
-
-    /// How well `side` covers each lane, as its own attack sees it: one for a
-    /// lane with a player standing in it, less for one left empty (a winger
-    /// sent off, a lopsided XI). Until the presence table (P3.2) it counts the
-    /// slots in each lane.
-    fn lane_cover(&self, side: Side) -> [f64; 3] {
-        let mut cover = [0.0f64; 3];
-        for player in &self.team_ref(side).players {
-            if self.sent_off.contains(&player.id) {
-                continue;
-            }
-            if let Some(slot) = self.slot_of(side, &player.id) {
-                cover[index(slot.lane())] += 1.0;
-            }
-        }
-        cover
     }
 }
 
