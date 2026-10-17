@@ -542,6 +542,77 @@ mod tests {
         std::fs::remove_dir_all(&dir).ok();
     }
 
+    /// Given a package written by a newer build — fields this build does not
+    /// model on the manifest, a team, a competition, a player and inside the
+    /// player's attributes — when it is opened, edited and saved here,
+    /// then every one of those fields is still on disk, the edit is applied,
+    /// and a modelled field the author cleared stays cleared.
+    #[test]
+    fn saving_keeps_the_fields_this_build_does_not_model() {
+        let dir = temp_project(
+            "save-keeps-unmodelled",
+            &[
+                (
+                    "package.json",
+                    r#"{"schema":"world","id":"future","name":"Future","version":"1.0.0","license":"MIT","futureManifestFlag":true}"#,
+                ),
+                (
+                    "teams/arsenal.json",
+                    r##"{"schema":"team","id":"arsenal","name":"Arsenal","shortName":"ARS","city":"London","country":"ENG","colors":{"primary":"#ff0000","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Emirates Stadium","logo":"assets/ars.png","futureKit":{"home":"red"}}"##,
+                ),
+                (
+                    "competitions/premier.json",
+                    r#"{"schema":"competition","id":"premier","name":"Premier","type":"League","scope":"Domestic","countryId":"ENG","format":{"kind":"League","futureFormatKnob":3},"participants":{"selector":{"kind":"allInCountry","country":"ENG"}},"futureVar":"on"}"#,
+                ),
+                (
+                    "players/arsenal.json",
+                    r#"{"schema":"player","items":[{"id":"saka","firstName":"Bukayo","lastName":"Saka","club":"arsenal","nationality":"ENG","position":"RightWinger","attributes":{"pace":86,"stamina":80,"strength":65,"passing":80,"shooting":79,"tackling":50,"dribbling":87,"defending":45,"positioning":82,"vision":81,"decisions":80,"futureCurve":81},"futureMorale":"high"}]}"#,
+                ),
+            ],
+        );
+        let path = dir.to_str().unwrap().to_string();
+        let mut loaded = read_package_project(path.clone()).unwrap();
+        loaded.players[0].first_name = "Bukayo Ayoyinka".to_string();
+        loaded.teams[0].logo = None;
+
+        save_package_project(
+            path,
+            loaded.meta,
+            loaded.confederations,
+            loaded.countries,
+            loaded.teams,
+            loaded.players,
+            loaded.staff,
+            loaded.names.unwrap_or(NamesDefinition {
+                version: 1,
+                description: String::new(),
+                pools: HashMap::new(),
+            }),
+            loaded.competitions,
+        )
+        .unwrap();
+
+        let read = |file: &str| -> serde_json::Value {
+            serde_json::from_str(&std::fs::read_to_string(dir.join(file)).unwrap()).unwrap()
+        };
+        let manifest = read("package.json");
+        assert_eq!(manifest["futureManifestFlag"], json!(true));
+        let team = &read("teams/teams.json")["items"][0];
+        assert_eq!(team["futureKit"], json!({"home": "red"}));
+        assert!(team.get("logo").is_none_or(serde_json::Value::is_null));
+        let competition = &read("competitions/competitions.json")["items"][0];
+        assert_eq!(competition["futureVar"], json!("on"));
+        assert_eq!(competition["format"]["futureFormatKnob"], json!(3));
+        assert!(competition.get("schema").is_none());
+        let player = &read("players/players.json")["items"][0];
+        assert_eq!(player["firstName"], json!("Bukayo Ayoyinka"));
+        assert_eq!(player["futureMorale"], json!("high"));
+        assert_eq!(player["attributes"]["futureCurve"], json!(81));
+        assert_eq!(player["attributes"]["pace"], json!(86));
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
     /// Rebuild `archive` in place from `files`, as a re-export does.
     fn rebuild(archive: &Path, tag: &str, files: &[(&str, &str)]) {
         let source = temp_project(&format!("{tag}-rebuild"), files);
@@ -1843,3 +1914,4 @@ pub fn read_file_as_data_url(path: String, base_dir: String) -> Result<String, S
     let encoded = base64::engine::general_purpose::STANDARD.encode(&bytes);
     Ok(format!("data:{};base64,{}", mime, encoded))
 }
+
