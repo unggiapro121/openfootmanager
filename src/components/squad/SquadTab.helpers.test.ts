@@ -15,6 +15,7 @@ import {
   buildPromoteToStartingXi,
   buildStartingXIIds,
   getSquadTacticalFit,
+  isWingBackConversion,
   getPitchSlotWidth,
   getPreferredPositions,
   isPlayerOutOfPosition,
@@ -437,6 +438,20 @@ describe("SquadTab helpers", () => {
     ).toBe("out");
   });
 
+  // Spec 1.8 (phase 2, P2.7, X45): a full-back or wide midfielder at the
+  // wing-back slot on his own flank is adapted, never out; on the other flank
+  // the old rules hold.
+  it("treats a full-back or wide midfielder at wing-back on his flank as adapted", () => {
+    const at = (natural: string, slot: string) =>
+      getSquadTacticalFit(makePlayer("p", natural, { natural_position: natural }), slot);
+    expect(at("LeftMidfielder", "LeftWingBack")).toBe("adapted");
+    expect(at("LeftBack", "LeftWingBack")).toBe("adapted");
+    expect(at("RightMidfielder", "RightWingBack")).toBe("adapted");
+    expect(at("RightMidfielder", "LeftWingBack")).toBe("out");
+    expect(isWingBackConversion("LeftMidfielder", "LeftWingBack")).toBe(true);
+    expect(isWingBackConversion("LeftWinger", "LeftWingBack")).toBe(false);
+  });
+
   it("promotes a bench player into the slot that fits them best", () => {
     const players = [
       makePlayer("gk", "Goalkeeper"),
@@ -694,6 +709,32 @@ describe("SquadTab helpers", () => {
       "AttackingMidfielder",
       "Striker",
       "Striker",
+    ]);
+
+    expect(slots("3-4-2-1")).toEqual([
+      "Goalkeeper",
+      "CenterBack",
+      "CenterBack",
+      "CenterBack",
+      "LeftWingBack",
+      "CentralMidfielder",
+      "CentralMidfielder",
+      "RightWingBack",
+      "AttackingMidfielder",
+      "AttackingMidfielder",
+      "Striker",
+    ]);
+  });
+
+  // Given 3-4-2-1 (phase 2, P2.7), then its second row is labelled a midfield
+  // row, not a defensive-midfield one: it holds the wing-backs.
+  it("labels 3-4-2-1's wing-back row as midfield", () => {
+    expect(buildPitchRows("3-4-2-1").map((row) => row.label)).toEqual([
+      "GK",
+      "DEF",
+      "MID",
+      "AM",
+      "FWD",
     ]);
   });
 

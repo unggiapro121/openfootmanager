@@ -919,7 +919,7 @@ fn the_engine_never_learns_who_is_a_wonderkid() {
 #[test]
 fn the_engine_lays_out_formation_slots_like_the_lineup_picker() {
     for formation in [
-        "4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3", "4-1-4-1",
+        "4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3", "4-1-4-1", "3-4-2-1",
     ] {
         let picker: Vec<PitchPosition> = formation_slots(formation)
             .iter()
@@ -959,5 +959,33 @@ fn a_player_is_rated_at_every_pitch_position_by_the_lineup_rule() {
     assert_eq!(
         at(PitchPosition::Striker).ovr,
         positional_fit_for_assignment(&centre_back, &DomainPos::Striker).round() as u8
+    );
+}
+
+/// Spec 1.7 (phase 2, P2.7, X45): given a left midfielder,
+/// When his rating at every pitch position is worked out for the engine,
+/// Then he has exactly one natural slot, his own; left wing-back, which costs
+/// him nothing, is only adapted; and no slot rates him above his own, so the
+/// engine never makes him better out of position than in it.
+#[test]
+fn a_wide_midfielder_has_one_natural_slot_and_is_no_better_at_wing_back() {
+    let mut player = mk_pos("lm", DomainPos::LeftMidfielder, 70, 95);
+    player.natural_position = DomainPos::LeftMidfielder;
+    let ratings = position_ratings(&player);
+
+    let natural: Vec<_> = ratings
+        .iter()
+        .filter(|rating| rating.fit == engine::PositionFit::Natural)
+        .collect();
+    assert_eq!(natural.len(), 1);
+    assert_eq!(natural[0].position, engine::PitchPosition::LeftMidfielder);
+    let wing_back = ratings
+        .iter()
+        .find(|rating| rating.position == engine::PitchPosition::LeftWingBack)
+        .expect("a rating at left wing-back");
+    assert_eq!(wing_back.fit, engine::PositionFit::Adapted);
+    assert!(
+        ratings.iter().all(|rating| rating.ovr <= natural[0].ovr),
+        "{ratings:?}"
     );
 }

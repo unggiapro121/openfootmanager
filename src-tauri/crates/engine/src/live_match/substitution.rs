@@ -236,19 +236,6 @@ impl LiveMatchState {
     // Formation mechanics
     // -----------------------------------------------------------------------
 
-    /// Parse a formation string like "4-4-2" into (defenders, midfielders, forwards).
-    pub(super) fn parse_formation(formation: &str) -> (usize, usize, usize) {
-        let parts: Vec<usize> = formation
-            .split('-')
-            .filter_map(|s| s.parse().ok())
-            .collect();
-        match parts.len() {
-            3 => (parts[0], parts[1], parts[2]),
-            4 => (parts[0], parts[1] + parts[2], parts[3]), // e.g. 4-2-3-1
-            _ => (4, 4, 2),                                 // fallback
-        }
-    }
-
     /// Apply a formation change: set the formation string and lay the XI out in
     /// its slots, keeping the XI slot-aligned (entry i plays slot i: the keeper,
     /// then the back line, the midfield and the front line, as the pitch draws
@@ -262,10 +249,15 @@ impl LiveMatchState {
     /// - Everyone else still playing fills the remaining slots, most defensive
     ///   first (defending + tackling + strength), from the back line forward.
     ///
-    /// Each slot gives its occupant its position; a role the new position does
-    /// not admit falls back to `Standard`.
+    /// Each slot gives its occupant its group (`formation_slots(..)[i].group()`):
+    /// read from the slot, not from counting the formation's rows, which would
+    /// put 3-4-2-1's wing-backs in midfield (phase 2, P2.7, X44). A role the
+    /// new group does not admit falls back to `Standard`.
     pub(super) fn apply_formation(&mut self, side: Side, formation: &str) {
-        let (num_def, num_mid, _) = Self::parse_formation(formation);
+        let slot_groups: Vec<Position> = crate::pitch_position::formation_slots(formation)
+            .into_iter()
+            .map(crate::pitch_position::PitchPosition::group)
+            .collect();
         let sent_off = self.sent_off.clone();
         let team = self.team_mut(side);
         team.formation = formation.to_string();
@@ -309,13 +301,9 @@ impl LiveMatchState {
 
         team.players = slots.into_iter().flatten().collect();
         for (idx, player) in team.players.iter_mut().enumerate().skip(1) {
-            player.position = if idx <= num_def {
-                Position::Defender
-            } else if idx <= num_def + num_mid {
-                Position::Midfielder
-            } else {
-                Position::Forward
-            };
+            // A slot past the formation's eleven (never, for a full XI) plays
+            // up front, as counting the rows used to put it.
+            player.position = slot_groups.get(idx).copied().unwrap_or(Position::Forward);
             if !is_role_valid_for_position(player.role, player.position) {
                 player.role = PlayerRole::Standard;
             }

@@ -2736,7 +2736,8 @@
       "hide": "Ocultar radar",
       "show": "Mostrar radar",
       "speedHint": "O radar mostra as jogadas de perigo ao seu próprio ritmo. Esconda-o para escolher a velocidade."
-    }
+    },
+    "wingBackConversion": "Joga como ala sem penalização"
   },
   "endOfSeason": {
     "seasonComplete": "Época Completa",

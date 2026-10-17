@@ -276,6 +276,52 @@ fn an_events_lane_is_its_players_slot() {
     assert!(checked > 500, "only {checked} events checked");
 }
 
+/// Spec 2.2 (phase 2, P2.7): given a 3-4-2-1 whose fifth and eighth men are
+/// defenders at the wing-back slots,
+/// when it plays a hundred full matches,
+/// then every match runs to the end with eleven men in their slots, and the
+/// wing-backs' events are on their flanks.
+#[test]
+fn a_three_four_two_one_plays_with_its_wing_backs_on_the_flanks() {
+    use Position::*;
+    let groups = [
+        Goalkeeper, Defender, Defender, Defender, Defender, Midfielder, Midfielder, Defender,
+        Midfielder, Midfielder, Forward,
+    ];
+    let mut home = make_team("home");
+    home.formation = "3-4-2-1".to_string();
+    for (player, group) in home.players.iter_mut().zip(groups) {
+        player.position = group;
+    }
+    home.players[4].id = "home_lwb".to_string();
+    home.players[7].id = "home_rwb".to_string();
+    let away = make_team("away");
+    let mut seen = (0, 0);
+    for seed in 0..100 {
+        let report = simulate_with_rng(
+            &home,
+            &away,
+            &MatchConfig::default(),
+            &mut StdRng::seed_from_u64(seed),
+        );
+        assert!(report.total_minutes >= 90, "seed {seed}");
+        for event in &report.events {
+            match event.player_id.as_deref() {
+                Some("home_lwb") => {
+                    assert_eq!(event.lane, Some(Lane::Left), "{event:?}");
+                    seen.0 += 1;
+                }
+                Some("home_rwb") => {
+                    assert_eq!(event.lane, Some(Lane::Right), "{event:?}");
+                    seen.1 += 1;
+                }
+                _ => {}
+            }
+        }
+    }
+    assert!(seen.0 > 50 && seen.1 > 50, "{seen:?}");
+}
+
 /// Given an event saved before protocol 2, and a report saved before it,
 /// when they are read back,
 /// then they load with none of the new fields, and the report as protocol 1.

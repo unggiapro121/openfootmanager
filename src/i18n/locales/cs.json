@@ -2736,7 +2736,8 @@
       "hide": "Skrýt radar",
       "show": "Zobrazit radar",
       "speedHint": "Radar ukazuje nebezpečné situace vlastním tempem. Skryjte ho, chcete-li zvolit rychlost."
-    }
+    },
+    "wingBackConversion": "Na pozici wingbeka bez ztráty hodnocení"
   },
   "endOfSeason": {
     "seasonComplete": "Sezóna dokončena",

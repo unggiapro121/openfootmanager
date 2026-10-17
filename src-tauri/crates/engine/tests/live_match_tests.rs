@@ -1280,6 +1280,94 @@ fn formation_change_redistributes_positions() {
     assert_eq!(fwds, 2, "Should have 2 forwards");
 }
 
+/// Spec 2.3 (phase 2, P2.7, X44): given every outfielder set as a wing-back,
+/// when the side changes to 3-4-2-1 mid-match,
+/// then the two who take the wing-back slots are defenders and keep the role,
+/// and the central midfielders beside them lose it: a player's group comes
+/// from the slot he stands in, not from counting the formation's rows (which
+/// made 3-4-2-1 six midfielders and its wing-backs midfielders).
+#[test]
+fn a_change_to_three_four_two_one_keeps_its_wing_backs_defenders() {
+    let mut home = make_team("home", "Home FC", 70, PlayStyle::Balanced);
+    for player in home.players.iter_mut().skip(1) {
+        player.role = PlayerRole::WingBack;
+    }
+    let away = make_team("away", "Away FC", 70, PlayStyle::Balanced);
+    let mut state = LiveMatchState::new(home, away, MatchConfig::default(), vec![], vec![], false);
+    let mut rng = seeded_rng(42);
+    state.step_minute(&mut rng);
+
+    state
+        .apply_command(MatchCommand::ChangeFormation {
+            side: Side::Home,
+            formation: "3-4-2-1".to_string(),
+        })
+        .unwrap();
+
+    let players = &state.snapshot().home_team.players;
+    let groups: Vec<Position> = players.iter().map(|p| p.position).collect();
+    use Position::*;
+    assert_eq!(
+        groups,
+        vec![
+            Goalkeeper, Defender, Defender, Defender, Defender, Midfielder, Midfielder, Defender,
+            Midfielder, Midfielder, Forward,
+        ]
+    );
+    assert_eq!(
+        (players[4].role, players[7].role),
+        (PlayerRole::WingBack, PlayerRole::WingBack)
+    );
+    assert_eq!(
+        (players[5].role, players[6].role),
+        (PlayerRole::Standard, PlayerRole::Standard)
+    );
+}
+
+/// Spec 2.4: given each of the eight formations the game offered before
+/// 3-4-2-1,
+/// when the side changes to it mid-match,
+/// then every slot's group is what counting the rows gave: reading groups
+/// from the slots changes nothing for them.
+#[test]
+fn reading_groups_from_slots_leaves_the_old_formations_as_they_were() {
+    for formation in [
+        "4-4-2", "4-3-3", "4-5-1", "3-5-2", "5-3-2", "4-2-3-1", "3-4-3", "4-1-4-1",
+    ] {
+        let mut state = make_live_match(false);
+        let mut rng = seeded_rng(42);
+        state.step_minute(&mut rng);
+        state
+            .apply_command(MatchCommand::ChangeFormation {
+                side: Side::Home,
+                formation: formation.to_string(),
+            })
+            .unwrap();
+        let rows: Vec<usize> = formation.split('-').map(|n| n.parse().unwrap()).collect();
+        let (defenders, midfielders) = match rows.as_slice() {
+            [d, m, _] => (*d, *m),
+            [d, a, b, _] => (*d, a + b),
+            _ => unreachable!(),
+        };
+        let counted: Vec<Position> = (0..11)
+            .map(|idx| match idx {
+                0 => Position::Goalkeeper,
+                i if i <= defenders => Position::Defender,
+                i if i <= defenders + midfielders => Position::Midfielder,
+                _ => Position::Forward,
+            })
+            .collect();
+        let groups: Vec<Position> = state
+            .snapshot()
+            .home_team
+            .players
+            .iter()
+            .map(|p| p.position)
+            .collect();
+        assert_eq!(groups, counted, "{formation}");
+    }
+}
+
 #[test]
 fn formation_change_four_part() {
     let mut state = make_live_match(false);
