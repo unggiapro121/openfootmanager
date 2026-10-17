@@ -15,6 +15,7 @@ mod snapshot;
 mod substitution;
 #[cfg(test)]
 mod test_support;
+mod transition;
 mod wing_play;
 mod zone_resolution;
 
@@ -341,6 +342,14 @@ pub struct LiveMatchState {
     /// the ball, so no change of possession has to clear it. Written from
     /// P3.1; `LastActor` reads it at P3.5.
     last_actor: Option<(Side, String)>,
+    /// The side counter-pressing the build-up the other side is about to
+    /// play, having just lost the ball in its attack (phase 2, GĐ4, P4.1,
+    /// X77). Only that first build-up feels it.
+    counter_pressing: Option<Side>,
+    /// The side that has just won the ball in the other side's build-up: its
+    /// next action, if still in its attacking third, is a high turnover
+    /// (P4.1, X67).
+    high_turnover: Option<Side>,
 }
 
 impl LiveMatchState {
@@ -414,6 +423,8 @@ impl LiveMatchState {
             ball_side: lane_state::BallSide::centre(),
             entry_lane: None,
             last_actor: None,
+            counter_pressing: None,
+            high_turnover: None,
         }
     }
 

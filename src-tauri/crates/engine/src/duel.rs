@@ -60,6 +60,17 @@ pub(crate) const ANCHOR_AERIAL_OPEN_PLAY_CROSS: f64 = 0.80;
 /// formations).
 pub(crate) const ANCHOR_ONE_V_ONE: f64 = 0.94;
 pub(crate) const ANCHOR_MIDFIELD: f64 = 1.015;
+/// Sensitivity of the build-up against a press (phase 2, GĐ4, P4.1, X66):
+/// 1, not S2's 2. A side plays out dozens of times a match, and, as with the
+/// midfield duel, a higher sensitivity would compound small differences into
+/// large ones in possession.
+pub(crate) const GAMMA_BUILD_UP: f64 = 1.0;
+/// The build-up's anchor (X66): holds the share of build-ups that reach
+/// midfield where it was before P4.1 — 48.3% on the guardrail sweep's nine
+/// formations at P4.0, 48.2% with this anchor at P4.1. The spec's starting
+/// point was 1.2 (53.5%): the front that presses now is weaker than the old
+/// midfield, as §3.5 expected, but less so.
+pub(crate) const ANCHOR_BUILD_UP: f64 = 0.98;
 
 /// The average height of a professional footballer, the neutral point of the
 /// height factor.
@@ -218,6 +229,36 @@ pub(crate) fn one_v_one_win_probability(
         ],
         modifier_ratio,
         ANCHOR_ONE_V_ONE,
+    )
+}
+
+/// Playing out under a press (S2 §2.1): short passing, first touch, vision
+/// and composure.
+pub(crate) fn press_resistance(p: &PlayerSnap) -> f64 {
+    0.35 * f64::from(p.passing)
+        + 0.35 * f64::from(p.first_touch)
+        + 0.15 * f64::from(p.vision)
+        + 0.15 * f64::from(p.composure)
+}
+
+/// One presser's effort (S2 §2.1): tackling, stamina to keep closing down,
+/// pace to get there.
+pub(crate) fn press_rating(p: &PlayerSnap) -> f64 {
+    0.40 * f64::from(p.tackling) + 0.35 * f64::from(p.stamina) + 0.25 * f64::from(p.pace)
+}
+
+/// The chance a build-up reaches midfield: the passer's press resistance,
+/// already worn by his condition, against the press's weighted rating, with
+/// every other modifier in `modifier_ratio` (P4.1, X66).
+pub(crate) fn build_up_win_probability(resistance: f64, press: f64, modifier_ratio: f64) -> f64 {
+    duel_probability(
+        &[DuelTerm {
+            gamma: GAMMA_BUILD_UP,
+            attacker: resistance,
+            defender: press,
+        }],
+        modifier_ratio,
+        ANCHOR_BUILD_UP,
     )
 }
 

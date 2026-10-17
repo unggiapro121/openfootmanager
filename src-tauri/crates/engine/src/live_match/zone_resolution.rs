@@ -4,8 +4,9 @@ use crate::duel;
 use crate::event::{EventDetail, EventType, MatchEvent, SetPiece, ShotKind, TacticalContext};
 use crate::shared::{
     PlayStylePhase, PlayerSnap, TraitContext, play_style_modifier, role_attribute_modifier,
-    tactics_buildup_mod, tactics_defensive_conversion_mod, tactics_foul_modifier,
-    tactics_shape_modifier, tactics_tempo_progression, tactics_width_versus_shape, trait_bonus,
+    tactics_defensive_conversion_mod, tactics_foul_modifier, tactics_line_press,
+    tactics_pressing_press, tactics_shape_modifier, tactics_tempo_progression,
+    tactics_width_versus_shape, trait_bonus,
 };
 use crate::types::{Position, Side, Zone};
 
@@ -50,6 +51,16 @@ impl LiveMatchState {
         if zone != Zone::attacking_third(att_side) {
             self.pending_exploit = None;
         }
+        // A counter-press weighs on the first build-up after the ball was
+        // lost, and a ball won in the other side's build-up on the action
+        // that follows; whatever happens first ends both (P4.1).
+        let counter_pressed = self.counter_pressing.take() == Some(def_side);
+        let turnover = self.high_turnover.take() == Some(att_side)
+            && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side));
+        let outer_context = self.active_context;
+        if turnover {
+            self.active_context = Some(TacticalContext::HighTurnover);
+        }
         let events = if zone.is_box_for(att_side) {
             // The box is one cell: whatever lane the ball came in from, it is
             // now in the middle of it (GĐ3-tech-spec §7.1).
@@ -60,55 +71,83 @@ impl LiveMatchState {
         } else if zone == Zone::Midfield {
             self.resolve_midfield(minute, att_side, def_side, rng)
         } else {
-            self.resolve_buildup(minute, att_side, def_side, rng)
+            self.resolve_buildup(minute, att_side, def_side, counter_pressed, rng)
         };
         self.active_break = false;
+        self.active_context = outer_context;
         events
     }
 
+    /// Playing out from the own third against the other side's press (phase 2,
+    /// GĐ4, P4.1; GĐ4-tech-spec §5): the passer is drawn by his presence in
+    /// the ball's lane, the press is the weighted rating of the other side's
+    /// front there, and the passer's press resistance meets it in a duel with
+    /// its own anchor (X66). Lost, the ball is the other side's where it is,
+    /// in its attacking third (X67).
     fn resolve_buildup<R: Rng>(
         &mut self,
         minute: u8,
         att_side: Side,
         def_side: Side,
+        counter_pressed: bool,
         rng: &mut R,
     ) -> Vec<MatchEvent> {
         let mut events = Vec::new();
-        let passer = self.snap_player(att_side, Position::Defender, rng);
-        let pass_skill = self.condition_adjusted_skill(
-            &passer.id,
-            (passer.legacy_passing() as f64
-                + passer.vision as f64
-                + passer.composure as f64
-                + passer.teamwork as f64)
-                / 4.0,
-        ) * trait_bonus(&passer, TraitContext::Passing)
-            * self.line_strength(att_side, Position::Defender);
-        // The press comes from the midfield: a midfield a man short presses less.
-        let press =
-            self.effective_press(def_side) * self.line_strength(def_side, Position::Midfielder);
+        let lane = self.lane_for(att_side);
+        let passer = self
+            .pick_by_presence(att_side, Column::BuildUp, lane, rng)
+            .map(|picked| picked.player)
+            .unwrap_or_else(|| self.snap_player(att_side, Position::Defender, rng));
+        let resistance = duel::press_resistance(&passer);
+        let press = self
+            .press_rating(def_side, self.lane_for(def_side))
+            .unwrap_or_else(|| self.midfield_press(def_side));
+        let counter_press = if counter_pressed {
+            super::transition::counter_press_mod(
+                self.team_ref(def_side).tactics.counter_press_duration,
+            )
+        } else {
+            1.0
+        };
+        let att_mod = self.condition_adjusted_skill(&passer.id, 1.0)
+            * trait_bonus(&passer, TraitContext::Passing);
+        let def_mod = self.press_modifiers(def_side) * counter_press;
+        let success = duel::build_up_win_probability(resistance, press, att_mod / def_mod);
         let ball_zone = self.ball_zone;
-
-        let buildup_mod = tactics_buildup_mod(&self.team_ref(att_side).tactics);
-        let success_chance =
-            (pass_skill * 1.3 * buildup_mod) / (pass_skill * 1.3 * buildup_mod + press);
-        if rng.random_range(0.0..1.0f64) < success_chance {
+        if rng.random_range(0.0..1.0f64) < success {
             let evt = MatchEvent::new(minute, EventType::PassCompleted, att_side, ball_zone)
                 .with_player(&passer.id);
             self.emit(&mut events, evt);
             self.ball_zone = Zone::Midfield;
             self.advance_lane(att_side, &passer, rng);
         } else {
-            let interceptor = self.snap_player(def_side, Position::Midfielder, rng);
+            let interceptor = self
+                .pick_by_presence(def_side, Column::Press, self.lane_for(def_side), rng)
+                .map(|picked| picked.player)
+                .unwrap_or_else(|| self.snap_player(def_side, Position::Midfielder, rng));
             let evt1 = MatchEvent::new(minute, EventType::PassIntercepted, att_side, ball_zone)
-                .with_player(&passer.id);
+                .with_player(&passer.id)
+                .with_tactical_context(TacticalContext::HighTurnover);
             let evt2 = MatchEvent::new(minute, EventType::Interception, def_side, ball_zone)
-                .with_player(&interceptor.id);
+                .with_player(&interceptor.id)
+                .with_tactical_context(TacticalContext::HighTurnover);
             self.emit(&mut events, evt1);
             self.emit(&mut events, evt2);
             self.possession = def_side;
+            self.high_turnover = Some(def_side);
         }
         events
+    }
+
+    /// Everything that makes `side`'s press harder beyond its players: its
+    /// style's press, its pressing dial, how high its line stands (X68) and
+    /// home advantage.
+    fn press_modifiers(&self, side: Side) -> f64 {
+        let team = self.team_ref(side);
+        play_style_modifier(team, PlayStylePhase::Press)
+            * tactics_pressing_press(&team.tactics)
+            * tactics_line_press(&team.tactics)
+            * crate::shared::home_mod(side, &self.config)
     }
 
     fn resolve_midfield<R: Rng>(
@@ -286,9 +325,7 @@ impl LiveMatchState {
             events.extend(corner_events);
             return events;
         }
-        self.possession = def_side;
-        self.ball_zone = Zone::defensive_third(att_side);
-        self.regain_lane(def_side, Some(defender), rng);
+        self.after_defensive_win(def_side, Some(defender), rng);
         events
     }
 
@@ -738,5 +775,114 @@ mod event_detail_tests {
             saw_any_goal,
             "No goal was scored in 500 seeds; increase seed range or check engine config"
         );
+    }
+}
+
+#[cfg(test)]
+mod build_up_tests {
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
+
+    use crate::event::{EventType, TacticalContext};
+    use crate::live_match::LiveMatchState;
+    use crate::live_match::test_support::make_team;
+    use crate::types::{CounterPressDuration, DefensiveLine, MatchConfig, Side, Zone};
+
+    fn state(away_line: DefensiveLine, away_counter_press: CounterPressDuration) -> LiveMatchState {
+        let mut away = make_team("away");
+        away.tactics.defensive_line = away_line;
+        away.tactics.counter_press_duration = away_counter_press;
+        LiveMatchState::new(
+            make_team("home"),
+            away,
+            MatchConfig::default(),
+            Vec::new(),
+            Vec::new(),
+            false,
+        )
+    }
+
+    /// The share of 4,000 home build-ups that reach midfield against an away
+    /// side with `line` and `counter_press`, the counter-press felt or not.
+    fn success(
+        line: DefensiveLine,
+        counter_press: CounterPressDuration,
+        counter_pressed: bool,
+    ) -> f64 {
+        let mut rng = StdRng::seed_from_u64(11);
+        let mut made = 0;
+        for _ in 0..4_000 {
+            let mut s = state(line, counter_press);
+            s.possession = Side::Home;
+            s.ball_zone = Zone::defensive_third(Side::Home);
+            s.resolve_buildup(1, Side::Home, Side::Away, counter_pressed, &mut rng);
+            if s.ball_zone == Zone::Midfield {
+                made += 1;
+            }
+        }
+        f64::from(made) / 4_000.0
+    }
+
+    /// Given an away side whose line sits very low, and one whose line is high,
+    /// when the home side plays out against each,
+    /// then it gets through the low block's press more often (X68).
+    #[test]
+    fn a_deep_line_presses_less() {
+        let none = CounterPressDuration::None;
+        let deep = success(DefensiveLine::VeryLow, none, false);
+        let high = success(DefensiveLine::High, none, false);
+        assert!(deep > high + 0.04, "{deep:.3} vs {high:.3}");
+    }
+
+    /// Given an away side that has just lost the ball and counter-presses long,
+    /// when the home side plays its first build-up,
+    /// then it gets through less often than against no counter-press, and the
+    /// counter-press weighs nothing on a build-up it is not pressing.
+    #[test]
+    fn a_counter_press_makes_the_first_build_up_harder() {
+        let medium = DefensiveLine::Medium;
+        let long = success(medium, CounterPressDuration::Long, true);
+        let none = success(medium, CounterPressDuration::None, true);
+        let not_pressed = success(medium, CounterPressDuration::Long, false);
+        assert!(long < none - 0.012, "{long:.3} vs {none:.3}");
+        assert!(
+            (not_pressed - none).abs() < 0.03,
+            "{not_pressed:.3} vs {none:.3}"
+        );
+    }
+
+    /// Given a home build-up intercepted,
+    /// when the away side then plays its next action in its attacking third,
+    /// then the pass, the interception and every event of that action carry
+    /// `HighTurnover` (X67).
+    #[test]
+    fn a_ball_won_in_the_build_up_is_a_high_turnover() {
+        let mut rng = StdRng::seed_from_u64(3);
+        for _ in 0..200 {
+            let mut s = state(DefensiveLine::High, CounterPressDuration::None);
+            s.possession = Side::Home;
+            s.ball_zone = Zone::defensive_third(Side::Home);
+            let lost = s.resolve_action(1, &mut rng);
+            if s.possession != Side::Away {
+                continue;
+            }
+            assert!(lost.iter().all(|e| matches!(
+                e.event_type,
+                EventType::PassIntercepted | EventType::Interception
+            ) && e.tactical_context
+                == Some(TacticalContext::HighTurnover)));
+            let next = s.resolve_action(1, &mut rng);
+            assert!(!next.is_empty());
+            assert!(
+                next.iter().all(|e| e.tactical_context.is_some()),
+                "{next:?}"
+            );
+            assert!(
+                next.iter()
+                    .any(|e| e.tactical_context == Some(TacticalContext::HighTurnover))
+            );
+            return;
+        }
+        panic!("no build-up was lost in 200 tries");
     }
 }

@@ -63,6 +63,9 @@ pub enum TacticalContext {
     /// up (P3.6). Only the duel's events carry it; the rest of a break keeps
     /// `Counter`.
     FlankExposed,
+    /// A build-up lost in the own third: the pass, the interception and the
+    /// next action of the side that won the ball (phase 2, GĐ4, P4.1, X67).
+    HighTurnover,
 }
 
 /// What kind of attempt on goal an event records.

@@ -7,7 +7,6 @@ use crate::pitch_position::PitchPosition;
 use crate::report::GoalSource;
 use crate::shared::{
     PlayStylePhase, PlayerSnap, home_mod, play_style_modifier, tactics_pressing_fatigue,
-    tactics_pressing_press,
 };
 use crate::types::{PlayerData, Position, Side, TeamData};
 
@@ -260,15 +259,14 @@ impl LiveMatchState {
         base * modifier * home_mod(side, &self.config)
     }
 
-    pub(super) fn effective_press(&self, pressing_side: Side) -> f64 {
-        let team = self.team_ref(pressing_side);
-        let base = team.position_attr_avg(Position::Midfielder, |p| {
-            ((p.stamina as u16 + p.tackling as u16 + p.pace as u16) / 3) as u8
-        });
-        let modifier = play_style_modifier(team, PlayStylePhase::Press);
-        base * modifier
-            * tactics_pressing_press(&team.tactics)
-            * home_mod(pressing_side, &self.config)
+    /// The press as it was before GĐ4: the midfield group's mean of
+    /// stamina, tackling and pace. Since P4.1 only a side with nobody at all
+    /// in the build-up's lane presses this way.
+    pub(super) fn midfield_press(&self, pressing_side: Side) -> f64 {
+        self.team_ref(pressing_side)
+            .position_attr_avg(Position::Midfielder, |p| {
+                ((p.stamina as u16 + p.tackling as u16 + p.pace as u16) / 3) as u8
+            })
     }
 
     // -----------------------------------------------------------------------

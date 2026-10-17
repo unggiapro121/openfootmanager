@@ -154,6 +154,8 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         free_kick_goal_share(result),
         open_flank_breaks(result),
         build_ups(result),
+        build_up_passers(result),
+        direct_wins(result),
         high_turnovers(result),
         midfield_duels(result),
     ]
@@ -170,6 +172,37 @@ fn build_ups(result: &SweepResult) -> Check {
         name: "phát động thành công (%)",
         value: Some(tally.build_up_success_pct()),
         band: format!("đo ({per_side:.1} pha/đội/trận; GĐ4 đích ≈ 15–25)"),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// Who plays a build-up out, by the slot he kicked off in (P4.1, X65). Real
+/// football, keepers left out (they never play a short build-up here): CB 46
+/// · FB 22 · DM 16 · CM 6 · others 10% (`gd4-real-reference.txt`, item 7).
+fn build_up_passers(result: &SweepResult) -> Check {
+    let [cb, fb, dm, cm, other] = result.stats.duels.tally.build_up_passer_pct();
+    Check {
+        name: "người phát động là CB (%)",
+        value: Some(cb),
+        band: format!(
+            "đo (FB {fb:.1} · DM {dm:.1} · CM {cm:.1} · khác {other:.1}; thật 46/22/16/6/10)"
+        ),
+        verdict: Verdict::Measure,
+    }
+}
+
+/// How often a defence that wins the ball in its own third goes straight up
+/// the pitch rather than playing out (X77). Real football reaches the final
+/// third within 10 s of such a win 9% of the time, later 41%.
+fn direct_wins(result: &SweepResult) -> Check {
+    let tally = &result.stats.duels.tally;
+    Check {
+        name: "thắng bóng ở sân nhà, đi thẳng (%)",
+        value: Some(tally.direct_win_pct()),
+        band: format!(
+            "đo ({} đi thẳng · {} phát động; thật 9% trong 10 s, 41% sau đó)",
+            tally.direct_wins, tally.played_out_wins
+        ),
         verdict: Verdict::Measure,
     }
 }

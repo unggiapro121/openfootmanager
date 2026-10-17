@@ -37,7 +37,9 @@ export type TacticalContext =
   | "CutInside"
   | "LowCross"
   | "EarlyCross"
-  | "FlankExposed";
+  | "FlankExposed"
+  /** A build-up lost in the own third, and the next action of the side that won it (phase 2, GĐ4). */
+  | "HighTurnover";
 
 export interface MatchEvent {
   minute: number;

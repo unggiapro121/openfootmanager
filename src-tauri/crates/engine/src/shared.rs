@@ -3,7 +3,7 @@ use rand::{Rng, RngExt};
 use crate::types::{
     BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, Foot, MarkingStyle,
     MatchConfig, PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side,
-    TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
+    TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
 };
 
 // ---------------------------------------------------------------------------
@@ -469,16 +469,6 @@ pub(crate) fn tactics_defensive_conversion_mod(tactics: &TacticsConfig) -> f64 {
     }
 }
 
-/// Build-up pass success modifier based on the attacking team's build-up style.
-/// Short passing = safer in own half; Long ball = riskier.
-pub(crate) fn tactics_buildup_mod(tactics: &TacticsConfig) -> f64 {
-    match tactics.build_up_style {
-        TacticsBuildUpStyle::Short => 1.08,
-        TacticsBuildUpStyle::Long => 0.88,
-        TacticsBuildUpStyle::Mixed => 1.0,
-    }
-}
-
 // --- Extended phase dials (tempo / shape / pressing-possession / transitions) ---
 //
 // These cover dimensions the original five dials don't touch. Each neutral
@@ -522,6 +512,22 @@ pub(crate) fn tactics_pressing_press(tactics: &TacticsConfig) -> f64 {
         PressingIntensity::Passive => 0.96,
         PressingIntensity::Medium => 1.0,
         PressingIntensity::Aggressive => 1.06,
+    }
+}
+
+/// How high a side's press stands, by its defensive line (phase 2, GĐ4,
+/// P4.1, X68): a block that sits deep leaves its front low too, and the other
+/// side plays out unhurried. The price of a low block the engine lacked (P3.9
+/// measured `VeryLow` 5.6 points above the default). `VeryLow` sits at the
+/// bottom of the spec's 0.75–0.85: it moves that edge by less than a point,
+/// because a deep block's gain is in the goals it does not concede, not in
+/// its press (P4.1); the rest is GĐ5's.
+pub(crate) fn tactics_line_press(tactics: &TacticsConfig) -> f64 {
+    match tactics.defensive_line {
+        DefensiveLine::VeryLow => 0.75,
+        DefensiveLine::Low => 0.90,
+        DefensiveLine::Medium => 1.0,
+        DefensiveLine::High => 1.08,
     }
 }
 

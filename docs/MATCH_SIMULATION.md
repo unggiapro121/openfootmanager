@@ -85,7 +85,7 @@ Each simulated minute follows this sequence:
 
 | Current Zone | Resolution Function | Key Players | Outcome on Success | Outcome on Failure |
 |---|---|---|---|---|
-| Own defense (buildup) | `resolve_buildup` | Defenders pass | Ball → Midfield | Interception, possession flips |
+| Own defense (buildup) | `resolve_buildup` | Passer by presence in the lane (`BuildUp`) vs the other side's press there (`Press`) | Ball → Midfield | Interception: the other side has the ball in its attacking third (`HighTurnover`) |
 | Midfield | `resolve_midfield` | Midfielder vs Midfielder, each by presence in the ball's lane | Ball → Attacking third | Tackle/Interception, may trigger foul |
 | Attacking third | `resolve_attacking_third` (`wing_play.rs`) | Carrier vs defender, any outfielders, by presence in the lane | Into the box, a cut inside, or a cross | Tackle/Clearance, possible corner (25%, played out at once), may trigger foul |
 | Attacking box | `resolve_shot` | Shooter by ω vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
@@ -165,7 +165,35 @@ more at wing-back) — leaves the flank open for two minutes. If the other side 
 time it goes into the open flank 6% of the time (8% breaking fast): the full back is left out of the
 defence, whoever comes across plays out of lane (κ), and the attacker has the space behind (his
 effort ×2.0), so he wins about 72% against 57% down a covered flank; won, he is straight into the
-box. Only the duel's events carry `FlankExposed`.
+box. Only the duel's events carry `FlankExposed`. Since a defence that wins the ball only goes
+straight up the pitch `p_direct` of the time (P4.1), the chance is 10% (13.5% breaking fast), which
+keeps about 0.56 such breaks a match.
+
+### Build-up and the press
+
+`zone_resolution.rs::resolve_buildup` (phase 2, GĐ4, P4.1). The passer is drawn by his presence in
+the ball's lane (`Column::BuildUp`: a centre back leaning that way and the full back on a flank, the
+centre backs and the defensive midfielder in the middle; never the keeper), calibrated on who plays
+out of real own thirds (CB 50 · FB 17 · DM 16 · CM 9%, real 46 · 22 · 16 · 6). The press is not
+drawn: it is the mean of `0.40·tackling + 0.35·stamina + 0.25·pace` over the other side's front near
+the ball (`Column::Press`: strikers, wingers, wide and attacking midfielders), weighted by presence and
+condition, ×1.15 for a `PressingForward`. The passer's press resistance,
+`0.35·passing + 0.35·first_touch + 0.15·vision + 0.15·composure`, meets it in a duel with γ = 1 and
+anchor 0.98, which holds 48% of build-ups reaching midfield, as before. The press is multiplied by the
+style's press, the pressing dial, the side's line (`VeryLow` 0.80, `Low` 0.90, `Medium` 1.0, `High`
+1.08) and home advantage. A build-up lost is a high turnover: the other side has the ball where it is,
+in its attacking third, and its next action carries `HighTurnover`.
+
+### A ball won in the own third
+
+`live_match/transition.rs` (P4.1, X77). When a defence wins the ball in its own third — a one-on-one
+tackled or cleared, a cross or a set piece cleared — it goes straight up the pitch, as it always did,
+`p_direct = clamp(0.70 × break × counter-press, 0.10, 0.80)` of the time (break speed Slow 0.7,
+Medium 1.0, Fast 1.4; the other side's counter-press None 1.0, Short 0.85, Long 0.70); otherwise it
+plays out from the back, and that first build-up is pressed harder by the side that has just lost the
+ball (counter-press Short ×1.10, Long ×1.20). Real football gets into the final third within ten
+seconds of such a win only 9% of the time; 0.70 is set by the goal budget (each 0.1 less costs about
+0.075 goals a match), and GĐ5 can lower it.
 
 ### Headers
 
@@ -380,15 +408,15 @@ per-minute possession contest.
 
 | Dial | Hook | Effect |
 |---|---|---|
-| build_up | build-up pass success | Short retains, Long is riskier |
+| build_up | none from P4.1 to P4.2 (P4.2 makes it the choice of route) | — |
 | width | the lane matrix (`c, s, a, w`) | Wide plays more down the flanks, where crosses come from |
-| def_line | shot conversion conceded | High concedes better chances in behind |
+| def_line | shot conversion conceded + the press on the other side's build-up | High concedes better chances in behind and presses higher |
 | marking | foul probability | Man-to-man fouls more |
 | pressing | possession contest (def) + build-up press + **in-match stamina** | Aggressive wins the ball back more, tires faster |
 | tempo | midfield progression (att) + possession contest retention (att) | Direct shoots more / Patient holds the ball |
 | defensive_shape | attacking-third defence (def) | Compact concedes fewer chances |
-| counter_press | possession flip: losing side may re-win the ball | Long regains possession more |
-| break_speed | possession flip: winner may counter into the final third | Fast turns turnovers into chances |
+| counter_press | possession flip: losing side may re-win the ball; after an attack lost in the other side's third, the quick ball forward and the first build-up | Long regains possession more and smothers the quick ball |
+| break_speed | possession flip: winner may counter into the final third; how often a ball won in the own third goes direct | Fast turns turnovers into chances |
 | cross_style | crosses from the flank (`wing_play`) | Mixed / High / Low / Early, see *Wing play* |
 
 The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.6

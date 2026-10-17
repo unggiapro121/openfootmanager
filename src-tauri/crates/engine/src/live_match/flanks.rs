@@ -25,10 +25,13 @@ use super::LiveMatchState;
 /// How often a side that wins the ball breaks into an open flank. The spec
 /// started at 0.6 (0.8 breaking fast); at 0.6 a match saw 5 such breaks and
 /// goals rose 0.19 on the guardrail sweep, against a budget of 0.05, and the
-/// spec cuts this before the space (§10.3). Calibrated at P3.6.
-const P_EXPLOIT: f64 = 0.06;
+/// spec cuts this before the space (§10.3). Calibrated at P3.6 to 0.06 (0.08
+/// fast); raised at P4.1, where a defence that wins the ball only goes
+/// straight up the pitch `p_direct` of the time (X77), to keep about 0.56
+/// such breaks a match (0.58 on the guardrail sweep).
+const P_EXPLOIT: f64 = 0.10;
 /// … when it breaks fast.
-const P_EXPLOIT_FAST: f64 = 0.08;
+const P_EXPLOIT_FAST: f64 = 0.135;
 /// The space behind a full back who went up: the attacker's effort is worth
 /// this much more in the one-on-one that exploits it. Set so the attacker
 /// wins about a quarter more often than down a flank that is covered

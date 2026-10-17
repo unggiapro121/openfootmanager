@@ -69,6 +69,15 @@ pub struct EventTally {
     /// Midfield duels by the group of the slot the winner kicked off in:
     /// DEF, MID, FWD, substitutes. Only [`EventTally::of_report`] fills it.
     pub midfield_winners_by_group: [u64; 4],
+    /// Balls a defence won in its own third with a tackle or a clearance and
+    /// then took straight up the pitch, or played out from the back (phase 2,
+    /// P4.1, X77): read off the winners' next event, when it is theirs.
+    pub direct_wins: u64,
+    pub played_out_wins: u64,
+    /// Build-ups by the slot the passer kicked off in: centre back, full or
+    /// wing-back, defensive midfielder, central midfielder, anyone else
+    /// (substitutes included). Only [`EventTally::of_report`] fills it.
+    pub build_up_passers: [u64; 5],
 }
 
 fn lane_index(lane: Lane) -> usize {
@@ -89,6 +98,7 @@ impl EventTally {
             let previous = index.checked_sub(1).map(|i| &events[i]);
             tally.add_flank_duel(event, previous, &mut exploiting);
             tally.add_build_up(event, &events[index + 1..]);
+            tally.add_defensive_win(event, events.get(index + 1));
             if is_midfield_duel(event) {
                 tally.midfield_duels += 1;
                 if event.event_type == EventType::PassCompleted {
@@ -155,6 +165,16 @@ impl EventTally {
             if let (true, Some(id)) = (is_midfield_duel(event), event.player_id.as_deref()) {
                 tally.midfield_winners_by_group[group_of(id)] += 1;
             }
+            let build_up = matches!(
+                event.event_type,
+                EventType::PassCompleted | EventType::PassIntercepted
+            ) && event.zone == Zone::defensive_third(event.side);
+            if let (true, Some(id)) = (build_up, event.player_id.as_deref()) {
+                let slot = [home, away]
+                    .into_iter()
+                    .find_map(|sheet| starting_slot(sheet, id));
+                tally.build_up_passers[build_up_slot_index(slot)] += 1;
+            }
         }
         tally
     }
@@ -180,6 +200,11 @@ impl EventTally {
         self.high_turnover_goals += other.high_turnover_goals;
         self.midfield_duels += other.midfield_duels;
         self.midfield_attack_won += other.midfield_attack_won;
+        self.direct_wins += other.direct_wins;
+        self.played_out_wins += other.played_out_wins;
+        for i in 0..5 {
+            self.build_up_passers[i] += other.build_up_passers[i];
+        }
         for i in 0..3 {
             self.final_third_lanes[i] += other.final_third_lanes[i];
             self.crosses_by_lane[i] += other.crosses_by_lane[i];
@@ -354,6 +379,38 @@ impl EventTally {
         }
     }
 
+    /// A tackle or clearance in the winner's own third, and where play goes
+    /// next: the winners' attacking third or box, whoever has the next event
+    /// there (the other side may clear at once), is direct; the winners'
+    /// own build-up is played out. A foul straight after, a corner, or the
+    /// ball lost before the next action, and the win is not counted.
+    fn add_defensive_win(&mut self, event: &MatchEvent, next: Option<&MatchEvent>) {
+        let won = matches!(event.event_type, EventType::Tackle | EventType::Clearance)
+            && event.zone == Zone::defensive_third(event.side);
+        let Some(next) = next.filter(|n| won && n.event_type != EventType::Foul) else {
+            return;
+        };
+        let winner = event.side;
+        if next.side == winner && next.zone == Zone::defensive_third(winner) {
+            self.played_out_wins += 1;
+        } else if next.zone == Zone::attacking_third(winner) || next.zone.is_box_for(winner) {
+            self.direct_wins += 1;
+        }
+    }
+
+    /// Share of build-ups by passer slot: CB, FB, DM, CM and anyone else, in
+    /// percent.
+    pub fn build_up_passer_pct(&self) -> [f64; 5] {
+        let total: u64 = self.build_up_passers.iter().sum();
+        self.build_up_passers.map(|n| percent(n, total))
+    }
+
+    /// Share of balls won in the own third that went straight up the pitch,
+    /// in percent.
+    pub fn direct_win_pct(&self) -> f64 {
+        percent(self.direct_wins, self.direct_wins + self.played_out_wins)
+    }
+
     /// A foul's event carries the side that fouled; where it happened counts
     /// from the side that was fouled, the one attacking.
     fn add_foul(&mut self, foul: &MatchEvent) {
@@ -393,6 +450,24 @@ fn shares(counts: [u64; 4]) -> [f64; 4] {
             n as f64 / total as f64 * 100.0
         }
     })
+}
+
+/// The slot `id` kicked off in, if he started for this sheet.
+fn starting_slot(sheet: &TeamSheet, id: &str) -> Option<crate::pitch_position::PitchPosition> {
+    let index = sheet.starters.iter().position(|s| s == id)?;
+    formation_slots(&sheet.formation).get(index).copied()
+}
+
+/// Where a build-up's passer counts: CB, FB (wing-backs too), DM, CM, else.
+fn build_up_slot_index(slot: Option<crate::pitch_position::PitchPosition>) -> usize {
+    use crate::pitch_position::PitchPosition as P;
+    match slot {
+        Some(P::CenterBack) => 0,
+        Some(P::LeftBack | P::RightBack | P::LeftWingBack | P::RightWingBack) => 1,
+        Some(P::DefensiveMidfielder) => 2,
+        Some(P::CentralMidfielder) => 3,
+        _ => 4,
+    }
 }
 
 /// The group of the slot `id` kicked off in, if he started for this sheet.
@@ -523,6 +598,28 @@ mod tests {
             (tally.high_turnover_shots, tally.high_turnover_goals),
             (1, 1)
         );
+    }
+
+    /// Given an away tackle in its own third followed by the away side in its
+    /// attacking third, an away clearance followed by an away build-up, and
+    /// an away tackle followed by a home free kick, and an away clearance
+    /// the home side clears straight back out of its own third,
+    /// when they are tallied,
+    /// then two wins went direct, one was played out, and the free kick counts
+    /// as neither (phase 2, P4.1, X77).
+    #[test]
+    fn a_ball_won_in_the_own_third_goes_direct_or_is_played_out() {
+        let tally = EventTally::of(&[
+            away(EventType::Tackle, Zone::AwayDefense),
+            away(EventType::Dribble, Zone::HomeDefense),
+            away(EventType::Clearance, Zone::AwayDefense),
+            away(EventType::PassCompleted, Zone::AwayDefense),
+            away(EventType::Tackle, Zone::AwayDefense),
+            event(EventType::FreeKick, Zone::AwayDefense),
+            away(EventType::Clearance, Zone::AwayDefense),
+            event(EventType::Clearance, Zone::HomeDefense),
+        ]);
+        assert_eq!((tally.direct_wins, tally.played_out_wins), (2, 1));
     }
 
     /// Given a midfield pass completed by the home side, a home pass in
