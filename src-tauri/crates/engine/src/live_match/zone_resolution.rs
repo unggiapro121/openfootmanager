@@ -34,6 +34,16 @@ pub(super) fn scale_odds(probability: f64, ratio: f64) -> f64 {
     scaled / (scaled + (1.0 - probability))
 }
 
+/// The roles that play out from the back best (phase 2, P4.4, §8.2): a
+/// ball-playing centre back and a half-back.
+fn build_up_role(role: crate::types::PlayerRole) -> f64 {
+    use crate::types::PlayerRole as R;
+    match role {
+        R::BallPlayingCB | R::HalfBack => 1.05,
+        _ => 1.0,
+    }
+}
+
 impl LiveMatchState {
     pub(super) fn resolve_action<R: Rng>(&mut self, minute: u8, rng: &mut R) -> Vec<MatchEvent> {
         let att_side = self.possession;
@@ -116,7 +126,8 @@ impl LiveMatchState {
             1.0
         };
         let att_mod = self.condition_adjusted_skill(&passer.id, 1.0)
-            * trait_bonus(&passer, TraitContext::Passing);
+            * trait_bonus(&passer, TraitContext::Passing)
+            * build_up_role(passer.role);
         let def_mod = self.press_modifiers(def_side) * counter_press;
         let success = duel::build_up_win_probability(resistance, press, att_mod / def_mod);
         let ball_zone = self.ball_zone;

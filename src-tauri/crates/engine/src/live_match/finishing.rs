@@ -35,6 +35,9 @@ pub fn shot_weight(slot: PitchPosition, role: PlayerRole) -> f64 {
             Some(1.2)
         }
         PlayerRole::BoxToBox => Some(0.8),
+        // Phase 2, P4.4: a Mezzala gets into the box from the half-space; a
+        // defensive winger tracks back instead of attacking the far post.
+        PlayerRole::Mezzala | PlayerRole::DefensiveWinger => Some(0.6),
         _ => None,
     };
     by_role.unwrap_or(match slot {

@@ -378,16 +378,16 @@ fn style_table(style: PlayStyle, phase: PlayStylePhase) -> f64 {
 // Role attribute modifier — applied per-player during zone resolution
 // ---------------------------------------------------------------------------
 
-/// Returns a multiplier (0.88–1.20) applied to the player's effective skill
+/// Returns a multiplier (0.85–1.15) applied to the player's effective skill
 /// calculation based on their assigned tactical role. Values reflect the
 /// attribute biases described in domain::team::PlayerRole documentation.
+/// The ball-playing keeper and centre back lost their midfield lifts at
+/// P4.4: neither ever plays in midfield; they play out from the back
+/// instead (`build_up_role`, `long_ball_role`).
 pub(crate) fn role_attribute_modifier(role: PlayerRole, phase: PlayStylePhase) -> f64 {
     match (role, phase) {
-        // Goalkeepers
-        (PlayerRole::BallPlayingKeeper, PlayStylePhase::Midfield) => 1.06,
         // Center Backs
         (PlayerRole::Stopper, PlayStylePhase::Defense) => 1.08,
-        (PlayerRole::BallPlayingCB, PlayStylePhase::Midfield) => 1.05,
         (PlayerRole::CoverCB, PlayStylePhase::Defense) => 1.05,
         // Full Backs
         (PlayerRole::AttackingFB, PlayStylePhase::Attack) => 1.08,

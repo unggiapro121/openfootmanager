@@ -75,6 +75,12 @@ pub(super) fn long_pass_mod(long_passing: u8) -> f64 {
     (0.5 + (f64::from(long_passing) - 50.0) / 50.0).clamp(0.5, 1.5)
 }
 
+/// An inverted full back takes the width from his flank (phase 2, P4.4,
+/// GĐ4-tech-spec §8.3): from his flank the ball comes inside 1.3 times as
+/// often, and it goes out to his flank 0.9 times as often.
+const IFB_INSIDE: f64 = 1.30;
+const IFB_INTO_FLANK: f64 = 0.90;
+
 /// The floor of a flank's cover: a flank with nobody on it is still chosen
 /// now and then, three times less often than a covered one.
 const MIN_COVER: f64 = 0.3;
@@ -97,6 +103,7 @@ pub(super) fn next_lane<R: Rng>(
     odds: LaneOdds,
     switch_mod: f64,
     cover: [f64; 3],
+    inverted: [bool; 3],
     rng: &mut R,
 ) -> Lane {
     let mut weights = [0.0f64; 3];
@@ -108,14 +115,23 @@ pub(super) fn next_lane<R: Rng>(
             weights[index(Lane::Right)] = out;
         }
         flank => {
-            let switches = (odds.switches * switch_mod).min(1.0 - odds.comes_inside);
-            weights[index(flank)] = odds.flank_stays + odds.switches - switches;
-            weights[index(Lane::Centre)] = odds.comes_inside;
+            let comes_inside = if inverted[index(flank)] {
+                odds.comes_inside * IFB_INSIDE
+            } else {
+                odds.comes_inside
+            };
+            let switches = (odds.switches * switch_mod).min(1.0 - comes_inside);
+            weights[index(flank)] =
+                odds.flank_stays + odds.switches - switches - (comes_inside - odds.comes_inside);
+            weights[index(Lane::Centre)] = comes_inside;
             weights[index(flank.mirrored())] = switches;
         }
     }
     for lane in [Lane::Left, Lane::Right] {
         weights[index(lane)] *= cover[index(lane)].clamp(MIN_COVER, 1.0);
+        if inverted[index(lane)] && lane != from {
+            weights[index(lane)] *= IFB_INTO_FLANK;
+        }
     }
     let total: f64 = weights.iter().sum();
     let mut roll = rng.random_range(0.0..total);
@@ -139,6 +155,7 @@ impl LiveMatchState {
             odds,
             long_pass_mod(passer.long_passing),
             self.attacking_presence(side),
+            self.inverted_flanks(side),
             rng,
         );
         self.set_lane_for(side, lane);
@@ -176,7 +193,7 @@ mod tests {
             let n = 100_000;
             let mut centre = 0;
             for _ in 0..n {
-                lane = next_lane(lane, odds, 1.0, FULL, &mut rng);
+                lane = next_lane(lane, odds, 1.0, FULL, [false; 3], &mut rng);
                 centre += usize::from(lane == Lane::Centre);
             }
             let share = centre as f64 / f64::from(n);
@@ -203,6 +220,7 @@ mod tests {
                         odds,
                         long_pass_mod(long_passing),
                         FULL,
+                        [false; 3],
                         &mut rng,
                     ) == Lane::Right
                 })
@@ -225,7 +243,14 @@ mod tests {
         let mut rng = StdRng::seed_from_u64(3);
         let (mut left, mut right) = (0u32, 0u32);
         for _ in 0..60_000 {
-            match next_lane(Lane::Centre, odds, 1.0, [0.0, 1.0, 1.0], &mut rng) {
+            match next_lane(
+                Lane::Centre,
+                odds,
+                1.0,
+                [0.0, 1.0, 1.0],
+                [false; 3],
+                &mut rng,
+            ) {
                 Lane::Left => left += 1,
                 Lane::Right => right += 1,
                 Lane::Centre => {}
@@ -258,5 +283,25 @@ mod tests {
             let o = lane_odds(width);
             assert!((o.flank_stays + o.comes_inside + o.switches - 1.0).abs() < 1e-9);
         }
+    }
+
+    /// Given a side with an inverted full back on its left,
+    /// when the ball is played on from the left and from the centre many
+    /// times,
+    /// then from the left it comes inside more often, and from the centre it
+    /// goes out to the left less often (phase 2, P4.4).
+    #[test]
+    fn an_inverted_full_back_takes_the_width_from_his_flank() {
+        let odds = lane_odds(TacticsPitchWidth::Normal);
+        let count = |from: Lane, to: Lane, inverted: [bool; 3]| {
+            let mut rng = StdRng::seed_from_u64(6);
+            (0..40_000)
+                .filter(|_| next_lane(from, odds, 1.0, FULL, inverted, &mut rng) == to)
+                .count()
+        };
+        let ifb = [true, false, false];
+        let none = [false; 3];
+        assert!(count(Lane::Left, Lane::Centre, ifb) > count(Lane::Left, Lane::Centre, none) + 800);
+        assert!(count(Lane::Centre, Lane::Left, ifb) + 500 < count(Lane::Centre, Lane::Left, none));
     }
 }

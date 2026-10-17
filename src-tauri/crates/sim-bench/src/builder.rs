@@ -287,6 +287,7 @@ pub(crate) fn valid_roles(slot: PitchPosition) -> &'static [PlayerRole] {
             R::AnchorMan,
             R::BallWinner,
             R::DeepLyingPlaymaker,
+            R::HalfBack,
         ],
         P::CentralMidfielder => &[R::Standard, R::BoxToBox, R::Carrilero, R::Mezzala],
         P::AttackingMidfielder => &[R::Standard, R::AdvancedPlaymaker, R::ShadowStriker],
@@ -295,6 +296,7 @@ pub(crate) fn valid_roles(slot: PitchPosition) -> &'static [PlayerRole] {
             R::WideForward,
             R::InsideForward,
             R::InvertedWinger,
+            R::DefensiveWinger,
         ],
         P::Striker => &[
             R::Standard,

@@ -754,6 +754,8 @@
       "WideForward": "Ponta",
       "InsideForward": "Ala Interior",
       "InvertedWinger": "Ponta Invertido",
+      "HalfBack": "Volante que recua entre os zagueiros",
+      "DefensiveWinger": "Ponta defensivo",
       "Poacher": "Atacante Oportunista",
       "TargetMan": "Centroavante Referência",
       "DeepLyingForward": "Atacante de Apoio",

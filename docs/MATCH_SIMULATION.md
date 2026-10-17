@@ -193,6 +193,22 @@ its short `passing`, `Direct` (the default) half short and half `long_passing`; 
 `InvertedWinger`'s midfield lift finally applies; centre backs and keepers never do. The anchor,
 1.022, holds the side on the ball's share at 52%.
 
+### Roles that move a player (P4.4)
+
+Since phase 2 P4.4 a role mostly changes *where* a player is, through the presence tables, at a
+price elsewhere (`presence.rs::with_role`, GĐ4-tech-spec §8.2): a `Mezzala` is in midfield on his
+half-space ×1.8 and in the attacking third, but slow back (×0.85); a `Carrilero` covers behind his
+full back (midfield defence ×1.5 on his side, and a break into the flank his full back left goes in
+half as often) and goes forward less; an `InvertedFB` comes into midfield and the build-up in the
+centre and takes the width from his flank (from it the ball comes inside ×1.3, into it ×0.9); a
+`HalfBack` (defensive midfield) drops into the build-up (×1.6) and the defence's centre, is not in
+midfield when the ball is lost (×0.70), and sends the full backs up 10 points more often; a
+`DefensiveWinger` (a wide slot) tracks back (defence ×1.6 on his flank, press ×1.3) and attacks and
+shoots less; a `PressingForward` leads the press (×1.4); a `False9` or `DeepLyingForward` drops into
+midfield (×3 in the centre) and presses less; a `Poacher` hardly presses. A ball-playing centre back
+or half-back plays out ×1.05. `HalfBack` and `DefensiveWinger` are offered from P4.4, in the UI and to
+the AI (Possession and Defensive clubs).
+
 ### The long ball and the second ball
 
 `live_match/long_ball.rs`, `second_ball.rs` (P4.2). In its own third a side plays it long `p_long` of
