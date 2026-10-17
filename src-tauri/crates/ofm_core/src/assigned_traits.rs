@@ -89,6 +89,20 @@ pub fn assign_traits(player: &mut Player, current_year: u32) {
     }
 }
 
+/// Give `player` the id `id` and draw his habits again under it.
+///
+/// A habit's draw is keyed by the player's id, so one drawn under an id he is
+/// then given up for belongs to the id he lost: two games that give him the
+/// same final id would disagree on whether he has it. That happened to the
+/// youth pool, which draws youngsters under random ids and names them after:
+/// from P2.5, when the match engine started reading `ShootsFromDistance`, the
+/// same seed no longer gave the same scores.
+pub fn rename_player(player: &mut Player, id: String, current_year: u32) {
+    player.id = id;
+    player.traits.retain(|t| !t.is_assigned());
+    assign_traits(player, current_year);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -110,6 +124,56 @@ mod tests {
         p.ovr = ovr;
         p.potential = ovr;
         p
+    }
+
+    /// Given a player very likely to shoot from distance (60%), and two ids
+    /// whose draws fall either side of that chance,
+    /// when he is renamed from one to the other and back,
+    /// then his habit follows the id he ends with: the draw is keyed by id, so
+    /// a habit drawn under an id he no longer has would differ between two
+    /// games that gave him the same final id.
+    #[test]
+    fn a_renamed_player_draws_his_habit_again_under_his_new_id() {
+        let mut player = player("tmp", Position::AttackingMidfielder, 99, 85);
+        let chance = shoots_from_distance_chance(&player, 2026);
+        assert_eq!(chance, MAX_PROBABILITY);
+        let ids: Vec<String> = (0..200).map(|i| format!("id-{i}")).collect();
+        let draw_of = |id: &str| {
+            let mut p = player.clone();
+            p.id = id.to_string();
+            draw(&p)
+        };
+        let with = ids
+            .iter()
+            .find(|id| draw_of(id) < chance)
+            .expect("an id that draws it");
+        let without = ids
+            .iter()
+            .find(|id| draw_of(id) >= chance)
+            .expect("an id that does not");
+
+        rename_player(&mut player, with.clone(), 2026);
+        assert!(player.traits.contains(&PlayerTrait::ShootsFromDistance));
+        rename_player(&mut player, without.clone(), 2026);
+        assert!(!player.traits.contains(&PlayerTrait::ShootsFromDistance));
+        rename_player(&mut player, with.clone(), 2026);
+        assert!(player.traits.contains(&PlayerTrait::ShootsFromDistance));
+    }
+
+    /// Given the engine's copy of the position table, which it reads to decide
+    /// how often a player shoots from distance in a match (phase 2, P2.5),
+    /// when it is read for every pitch position,
+    /// then it is this table, slot for slot: the engine may not depend on this
+    /// crate, so the two copies are pinned here.
+    #[test]
+    fn the_engines_long_shot_table_is_this_one() {
+        for (position, slot) in crate::turn::squad::PITCH_POSITIONS {
+            assert_eq!(
+                base_for(&position),
+                engine::live_match::long_shot_norm(slot),
+                "{position:?} at {slot:?}"
+            );
+        }
     }
 
     /// Given a keeper with outstanding long shots,

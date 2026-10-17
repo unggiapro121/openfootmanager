@@ -2413,6 +2413,13 @@
             "0": "{{player}} acerta a falta no ângulo para o {{team}}!",
             "1": "Indefensável! {{player}} marca direto de falta!"
           }
+        },
+        "longShot": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} arrisca de longe — que golaço para o {{team}}!",
+            "1": "Uma bomba de fora da área! {{player}} marca!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2632,8 +2639,10 @@
     "openPlay": "Jogo aberto",
     "cornersGoals": "Escanteios",
     "headerGoals": "Cabeçadas",
+    "longShotGoals": "Chutes de longe",
     "headedGoal": "de cabeça",
     "directFreeKickGoal": "de falta",
+    "longShotGoal": "de longe",
     "freekickGoals": "Faltas",
     "penaltyGoals": "Pênaltis",
     "changeRole": "Mudar papel",

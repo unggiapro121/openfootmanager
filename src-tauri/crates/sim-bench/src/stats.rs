@@ -58,6 +58,9 @@ pub struct BenchStats {
     /// Headers from open play; a header from a corner is a corner goal.
     pub header_goals: u64,
     pub direct_free_kick_goals: u64,
+    pub long_shot_goals: u64,
+    /// Shots from outside the box in open play (phase 2, P2.5).
+    pub long_shots: u64,
     /// Shots taken straight from a free kick (phase 2, P2.4).
     pub direct_free_kicks: u64,
 
@@ -165,6 +168,7 @@ impl BenchStats {
                 GoalSource::FreeKick => self.free_kick_goals += 1,
                 GoalSource::Header => self.header_goals += 1,
                 GoalSource::DirectFreeKick => self.direct_free_kick_goals += 1,
+                GoalSource::LongShot => self.long_shot_goals += 1,
                 GoalSource::Penalty => {} // already counted in penalty_goals
             }
         }
@@ -186,6 +190,14 @@ impl BenchStats {
                     if event.shot_kind == Some(ShotKind::DirectFreeKick) =>
                 {
                     self.direct_free_kicks += 1
+                }
+                EventType::Goal
+                | EventType::ShotSaved
+                | EventType::ShotOffTarget
+                | EventType::ShotBlocked
+                    if event.shot_kind == Some(ShotKind::LongRange) =>
+                {
+                    self.long_shots += 1
                 }
                 _ => {}
             }
@@ -310,6 +322,18 @@ impl BenchStats {
         self.header_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
     /// Goals a corner leads to, per corner, in percent (real football: 2.5–3).
+    pub fn long_shot_goal_pct(&self) -> f64 {
+        self.long_shot_goals as f64 / self.total_goals.max(1) as f64 * 100.0
+    }
+    /// Shots from outside the box (in open play) out of all shots, in percent
+    /// (real football: about 32–35).
+    pub fn long_shot_share_pct(&self) -> f64 {
+        self.long_shots as f64 / self.total_shots.max(1) as f64 * 100.0
+    }
+    /// Shots from distance that went in, in percent (real football: about 3.7).
+    pub fn long_shot_conversion_pct(&self) -> f64 {
+        self.long_shot_goals as f64 / self.long_shots.max(1) as f64 * 100.0
+    }
     pub fn direct_free_kick_goal_pct(&self) -> f64 {
         self.direct_free_kick_goals as f64 / self.total_goals.max(1) as f64 * 100.0
     }
@@ -361,6 +385,8 @@ impl BenchStats {
                 goal_conversion_pct: self.goal_conversion_pct(),
                 xg_proxy_per_game: self.xg_proxy_pg(goal_conversion_base),
                 goals_vs_xg: self.gpg() - self.xg_proxy_pg(goal_conversion_base),
+                long_shot_share_pct: self.long_shot_share_pct(),
+                long_shot_conversion_pct: self.long_shot_conversion_pct(),
             },
             discipline: DisciplineJson {
                 yellow_cards_per_game: self.yellows_pg(),
@@ -387,6 +413,7 @@ impl BenchStats {
                 free_kick_pct: self.free_kick_goal_pct(),
                 header_pct: self.header_goal_pct(),
                 direct_free_kick_pct: self.direct_free_kick_goal_pct(),
+                long_shot_pct: self.long_shot_goal_pct(),
                 penalty_pct: self.penalty_goal_pct(),
             },
             duels: self.duels.to_json(self.games),
@@ -444,6 +471,8 @@ pub struct ShootingJson {
     pub goal_conversion_pct: f64,
     pub xg_proxy_per_game: f64,
     pub goals_vs_xg: f64,
+    pub long_shot_share_pct: f64,
+    pub long_shot_conversion_pct: f64,
 }
 
 #[derive(Serialize)]
@@ -476,6 +505,7 @@ pub struct GoalSourcesJson {
     pub free_kick_pct: f64,
     pub header_pct: f64,
     pub direct_free_kick_pct: f64,
+    pub long_shot_pct: f64,
     pub penalty_pct: f64,
 }
 

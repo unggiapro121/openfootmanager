@@ -43,6 +43,7 @@ type PostMatchTab = "teamTalk" | "matchReport" | "playerRatings" | "tactics";
 export interface GoalSourceCounts {
   openPlay: number;
   headers: number;
+  longShots: number;
   corners: number;
   freekicks: number;
   penalties: number;
@@ -57,6 +58,7 @@ export function computeGoalSources(events: MatchEvent[], side: "Home" | "Away"):
   const sources: GoalSourceCounts = {
     openPlay: 0,
     headers: 0,
+    longShots: 0,
     corners: 0,
     freekicks: 0,
     penalties: 0,
@@ -68,6 +70,9 @@ export function computeGoalSources(events: MatchEvent[], side: "Home" | "Away"):
     switch (source) {
       case "Header":
         sources.headers++;
+        break;
+      case "LongShot":
+        sources.longShots++;
         break;
       case "Corner":
         sources.corners++;
@@ -687,12 +692,18 @@ export default function PostMatchScreen({
               const homeSrc = computeGoalSources(snapshot.events, "Home");
               const awaySrc = computeGoalSources(snapshot.events, "Away");
               const sum = (src: GoalSourceCounts): number =>
-                src.openPlay + src.headers + src.corners + src.freekicks + src.penalties;
+                src.openPlay +
+                src.headers +
+                src.longShots +
+                src.corners +
+                src.freekicks +
+                src.penalties;
               const homeTotal = sum(homeSrc) || 1;
               const awayTotal = sum(awaySrc) || 1;
               const sourceKeys: { key: keyof GoalSourceCounts; label: string }[] = [
                 { key: "openPlay", label: t("match.openPlay") },
                 { key: "headers", label: t("match.headerGoals") },
+                { key: "longShots", label: t("match.longShotGoals") },
                 { key: "corners", label: t("match.cornersGoals") },
                 { key: "freekicks", label: t("match.freekickGoals") },
                 { key: "penalties", label: t("match.penaltyGoals") },

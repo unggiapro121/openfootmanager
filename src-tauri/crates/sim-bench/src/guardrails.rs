@@ -30,8 +30,6 @@ pub enum Verdict {
     Fail,
     /// Reported, not judged at this stage.
     Measure,
-    /// The engine does not produce this yet.
-    NotAvailable,
 }
 
 #[derive(Debug, Serialize)]
@@ -88,12 +86,8 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         zero_gap_symmetry(result, stage),
         match_time(result, stage),
         cross_goal_share(result, stage),
-        Check {
-            name: "bàn từ sút xa (%)",
-            value: None,
-            band: "chưa có cơ chế (P2.5)".to_string(),
-            verdict: not_yet(stage),
-        },
+        long_shot_goal_share(result, stage),
+        long_shot_share(result),
         direct_free_kick_share(result, stage),
         direct_free_kicks(result),
         defender_aerial_win(result, stage),
@@ -110,14 +104,6 @@ fn goals_per_corner(result: &SweepResult) -> Check {
         value: Some(result.stats.goals_per_corner_pct()),
         band: "đo (thực tế 2,5–3)".to_string(),
         verdict: Verdict::Measure,
-    }
-}
-
-/// A share the engine cannot produce yet: information before GĐ5, a failure at it.
-fn not_yet(stage: Stage) -> Verdict {
-    match stage {
-        Stage::LanCan => Verdict::NotAvailable,
-        Stage::Gd5 => Verdict::Fail,
     }
 }
 
@@ -254,6 +240,34 @@ fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
     }
 }
 
+/// Goals from shots outside the box in open play, measured until GĐ5 and
+/// judged at 10–14% there (decision X7).
+fn long_shot_goal_share(result: &SweepResult, stage: Stage) -> Check {
+    let value = result.stats.long_shot_goal_pct();
+    let (verdict, band) = judged_at_gd5(stage, value, 10.0, 14.0);
+    Check {
+        name: "bàn từ sút xa (%)",
+        value: Some(value),
+        band,
+        verdict,
+    }
+}
+
+/// The share of shots struck from outside the box, which P2.5 calibrated to
+/// the Premier League's 30–35%, and how many of them go in. Measured.
+fn long_shot_share(result: &SweepResult) -> Check {
+    let stats = &result.stats;
+    Check {
+        name: "cú sút ngoài vòng cấm (%)",
+        value: Some(stats.long_shot_share_pct()),
+        band: format!(
+            "đo (thực tế 30–35; thành bàn {:.1}%, thực tế ≈ 3,7)",
+            stats.long_shot_conversion_pct()
+        ),
+        verdict: Verdict::Measure,
+    }
+}
+
 /// Goals scored straight from a free kick, measured until GĐ5 and judged at
 /// 1.5–3% there (decision X39: the Premier League scores 1.6–1.8% this way).
 fn direct_free_kick_share(result: &SweepResult, stage: Stage) -> Check {
@@ -315,7 +329,6 @@ pub fn print_checks(checks: &[Check], stage: Stage) {
             Verdict::Pass => "PASS",
             Verdict::Fail => "FAIL",
             Verdict::Measure => "đo",
-            Verdict::NotAvailable => "n/a",
         };
         println!("  {verdict:<5} {:<58} {value:>8}   {}", c.name, c.band);
     }
@@ -472,16 +485,27 @@ mod tests {
         assert_eq!(cross_goal_share(&r, Stage::Gd5).verdict, Verdict::Pass);
     }
 
-    /// Given an engine without long shots or direct free kicks,
+    /// Given long shots that make 12% of goals and direct free kicks 2%, and
+    /// then 5% and 4%,
     /// when the shares are judged,
-    /// then they are "not available" in the loose band and failures at GĐ5.
+    /// then the loose band only measures them, GĐ5 passes the first pair
+    /// (10–14%, X7; 1.5–3%, X39) and fails the second.
     #[test]
-    fn missing_mechanisms_fail_only_at_gd5() {
-        let r = result(vec![row(0, 800, 400, 800)]);
+    fn long_shot_and_free_kick_shares_are_judged_at_gd5() {
+        let mut r = result(vec![row(0, 800, 400, 800)]);
+        r.stats.long_shot_goals = 36;
+        r.stats.direct_free_kick_goals = 6;
         let loose = judge(&r, Stage::LanCan);
-        assert_eq!(verdict(&loose, "bàn từ sút xa"), Verdict::NotAvailable);
+        assert_eq!(verdict(&loose, "bàn từ sút xa"), Verdict::Measure);
+        assert_eq!(verdict(&loose, "bàn từ đá phạt"), Verdict::Measure);
+        let gd5 = judge(&r, Stage::Gd5);
+        assert_eq!(verdict(&gd5, "bàn từ sút xa"), Verdict::Pass);
+        assert_eq!(verdict(&gd5, "bàn từ đá phạt"), Verdict::Pass);
+        r.stats.long_shot_goals = 15;
+        r.stats.direct_free_kick_goals = 12;
         let gd5 = judge(&r, Stage::Gd5);
         assert_eq!(verdict(&gd5, "bàn từ sút xa"), Verdict::Fail);
+        assert_eq!(verdict(&gd5, "bàn từ đá phạt"), Verdict::Fail);
     }
 
     /// Given three goals a game,

@@ -121,6 +121,25 @@ describe("MatchDetail helpers", () => {
     expect(label).toBe("Striker (match.directFreeKickGoal)");
   });
 
+  // Given a goal from distance with an assist, then the label says so before
+  // the assist.
+  it("labels a goal from distance", () => {
+    const nameOf = playerNameOf(detail());
+    const label = eventLabel(
+      {
+        minute: 30,
+        event_type: "Goal",
+        side: "Home",
+        player_id: "st",
+        secondary_player_id: "sub",
+        goal_source: "LongShot",
+      },
+      nameOf,
+      t,
+    );
+    expect(label).toBe('Striker (match.longShotGoal, match.assist:{"name":"Sub"})');
+  });
+
   // Given a lineup and a substitute who came on, then the side's players list
   // the starters in slot order first and the substitute after them.
   it("lists starters in lineup order, then substitutes who played", () => {

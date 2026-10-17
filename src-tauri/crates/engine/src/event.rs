@@ -49,6 +49,8 @@ pub enum ShotKind {
     Penalty,
     /// A shot straight at goal from a free kick (phase 2, P2.4).
     DirectFreeKick,
+    /// A shot from outside the box in open play (phase 2, P2.5).
+    LongRange,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

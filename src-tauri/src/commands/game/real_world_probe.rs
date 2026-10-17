@@ -303,6 +303,8 @@ struct MatchShares {
     fouls_in_box: u64,
     direct_free_kicks: u64,
     direct_free_kick_goals: u64,
+    long_shots: u64,
+    long_shot_goals: u64,
 }
 
 impl MatchShares {
@@ -341,6 +343,25 @@ impl MatchShares {
             .goals
             .iter()
             .filter(|goal| goal.goal_source == engine::GoalSource::DirectFreeKick)
+            .count() as u64;
+        self.long_shots += report
+            .events
+            .iter()
+            .filter(|event| {
+                event.shot_kind == Some(engine::ShotKind::LongRange)
+                    && matches!(
+                        event.event_type,
+                        engine::EventType::Goal
+                            | engine::EventType::ShotSaved
+                            | engine::EventType::ShotOffTarget
+                            | engine::EventType::ShotBlocked
+                    )
+            })
+            .count() as u64;
+        self.long_shot_goals += report
+            .goals
+            .iter()
+            .filter(|goal| goal.goal_source == engine::GoalSource::LongShot)
             .count() as u64;
         let tally = engine::EventTally::of(&report.events);
         self.aerial_won += tally.aerial_won;
@@ -426,6 +447,12 @@ fn real_world_match_probe() {
         "  fouls/game in the final third {:.2} · in the box {:.2}",
         shares.per_match(shares.fouls_final_third),
         shares.per_match(shares.fouls_in_box)
+    );
+    println!(
+        "  shots from distance {:.1}% of shots · scored {:.1}% · {:.1}% of goals",
+        MatchShares::pct(shares.long_shots, shares.shots),
+        MatchShares::pct(shares.long_shot_goals, shares.long_shots),
+        MatchShares::pct(shares.long_shot_goals, u64::from(shares.goals))
     );
     println!(
         "  direct free kicks/game {:.2} · scored {:.1}% · {:.1}% of goals",

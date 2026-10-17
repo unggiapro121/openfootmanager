@@ -2519,6 +2519,13 @@
             "0": "{{player}} melengkungkan tendangan bebas ke pojok atas gawang untuk {{team}}!",
             "1": "Tak terbendung! {{player}} mencetak gol langsung dari tendangan bebas!"
           }
+        },
+        "longShot": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} melepaskan tembakan jarak jauh — gol indah untuk {{team}}!",
+            "1": "Geledek dari luar kotak penalti! {{player}} mencetak gol!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Permainan Terbuka",
     "cornersGoals": "Tendangan Sudut",
     "headerGoals": "Sundulan",
+    "longShotGoals": "Tembakan jarak jauh",
     "headedGoal": "sundulan",
     "directFreeKickGoal": "tendangan bebas",
+    "longShotGoal": "jarak jauh",
     "freekickGoals": "Tendangan Bebas",
     "penaltyGoals": "Penalti",
     "changeRole": "Ubah Peran",

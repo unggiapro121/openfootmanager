@@ -681,13 +681,14 @@ function makeEvent(
   };
 }
 
-const NONE = { openPlay: 0, headers: 0, corners: 0, freekicks: 0, penalties: 0 };
+const NONE = { openPlay: 0, headers: 0, longShots: 0, corners: 0, freekicks: 0, penalties: 0 };
 
 describe("computeGoalSources", (): void => {
   it("counts each goal under the source the engine stamped on it", (): void => {
     const events: MatchEvent[] = [
       makeEvent("Goal", "Home", "OpenPlay"),
       makeEvent("Goal", "Home", "Header"),
+      makeEvent("Goal", "Home", "LongShot"),
       makeEvent("Goal", "Home", "Corner"),
       makeEvent("Goal", "Home", "FreeKick"),
       makeEvent("PenaltyGoal", "Home", "Penalty"),
@@ -695,6 +696,7 @@ describe("computeGoalSources", (): void => {
     expect(computeGoalSources(events, "Home")).toEqual({
       openPlay: 1,
       headers: 1,
+      longShots: 1,
       corners: 1,
       freekicks: 1,
       penalties: 1,

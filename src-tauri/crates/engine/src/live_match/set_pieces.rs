@@ -73,8 +73,10 @@ const MIDFIELDER_WEIGHT: f64 = 0.5;
 const CENTRE_BACKS_UP: usize = 2;
 
 /// The share of fouls in the attacking third that become a shot at goal.
-/// Calibrated for 0.8–1.0 a match, as in the Premier League (0.79–0.89).
-pub(super) const DIRECT_FREE_KICK_SHARE: f64 = 0.10;
+/// Calibrated for 0.8–1.0 a match, as in the Premier League (0.79–0.89):
+/// 0.10 at P2.4, raised at P2.5 because shots from distance take the place
+/// of one-on-ones, and with them of the fouls a lost one-on-one draws.
+pub(super) const DIRECT_FREE_KICK_SHARE: f64 = 0.125;
 const FREE_KICK_STRIKE: f64 = 0.65;
 const FREE_KICK_CURVE: f64 = 0.35;
 /// `DeadBallSpecialist` strikes a free kick better.

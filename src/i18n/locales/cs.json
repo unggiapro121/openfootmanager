@@ -2519,6 +2519,13 @@
             "0": "{{player}} zakroutil přímý kop do šibenice za tým {{team}}!",
             "1": "Nechytatelné! {{player}} skóruje přímo z přímého kopu!"
           }
+        },
+        "longShot": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} to zkusil z dálky — jaká rána pro tým {{team}}!",
+            "1": "Bomba zpoza vápna! {{player}} skóruje!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2704,8 +2711,10 @@
     "openPlay": "Ze hry",
     "cornersGoals": "Rohové kopy",
     "headerGoals": "Hlavičky",
+    "longShotGoals": "Střely z dálky",
     "headedGoal": "hlavou",
     "directFreeKickGoal": "přímý kop",
+    "longShotGoal": "z dálky",
     "freekickGoals": "Přímé kopy",
     "penaltyGoals": "Penalty",
     "changeRole": "Změnit roli",

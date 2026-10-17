@@ -127,7 +127,7 @@ pub struct PlayerData {
     // The seven attributes `ofm_core` splits out of passing, shooting, dribbling
     // and aerial. Until each mechanism moves over, the field it splits from
     // keeps the old blended meaning (the bridge rebuilds it). Moved so far:
-    // `aerial` and `heading` (P2.2).
+    // `aerial` and `heading` (P2.2), `shooting` and `long_shots` (P2.5).
     #[serde(default)]
     pub long_passing: u8,
     #[serde(default)]
