@@ -739,15 +739,10 @@ fn to_engine_player(
         DomainPosition::Forward => Position::Forward,
         _ => Position::Midfielder,
     };
-    // The engine's phases that have not moved to the split attributes yet are
-    // tuned on the pre-split blends, so those fields carry the blends; each
-    // goes over to its own value as its phase moves (phase 2, GĐ2–GĐ4).
-    // `aerial` moved at P2.2: the duel reads jumping and strength, the header
-    // reads `heading`. `shooting` moved at P2.5: it is finishing inside the
-    // box, and shots from distance read `long_shots`.
-    let blends = p
-        .attributes
-        .legacy_blends(p.natural_position.to_group_position() == DomainPosition::Goalkeeper);
+    // Every attribute goes over raw (phase 2, P4.0, X64). The rules still
+    // tuned on the pre-split blends of `passing` and `dribbling` rebuild them
+    // in the engine (`engine::legacy_passing`, `legacy_dribbling`), so that
+    // reading `long_passing` or `first_touch` on its own never counts it twice.
 
     PlayerData {
         id: p.id.clone(),
@@ -760,10 +755,10 @@ fn to_engine_player(
         stamina: p.attributes.stamina,
         strength: p.attributes.strength,
         agility: p.attributes.agility,
-        passing: blends.passing,
+        passing: p.attributes.passing,
         shooting: p.attributes.shooting,
         tackling: p.attributes.tackling,
-        dribbling: blends.dribbling,
+        dribbling: p.attributes.dribbling,
         defending: p.attributes.defending,
         positioning: p.attributes.positioning,
         vision: p.attributes.vision,

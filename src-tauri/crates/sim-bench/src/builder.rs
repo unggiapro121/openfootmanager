@@ -269,7 +269,7 @@ fn left_footed_share(slot: PitchPosition) -> f64 {
 
 /// The roles a player may take at the slot: `domain::Position::valid_roles`,
 /// which the engine does not see, copied here.
-fn valid_roles(slot: PitchPosition) -> &'static [PlayerRole] {
+pub(crate) fn valid_roles(slot: PitchPosition) -> &'static [PlayerRole] {
     use PitchPosition as P;
     use PlayerRole as R;
     match slot {
@@ -327,13 +327,6 @@ fn synthetic_height(slot: PitchPosition, rng: &mut impl Rng) -> u16 {
     (mean + 2.0 * sd * spread).clamp(160.0, 205.0).round() as u16
 }
 
-/// `round(Σ value · weight)`, the bridge's rebuild of a pre-split attribute
-/// (`domain::PlayerAttributes::legacy_blends`).
-fn blend(parts: &[(u8, f64)]) -> u8 {
-    let value: f64 = parts.iter().map(|&(v, w)| f64::from(v) * w).sum();
-    value.round().clamp(1.0, 99.0) as u8
-}
-
 /// `label` is the player's group label, already carrying any tag — `"GK"` for
 /// a starter, `"subGK"` for his deputy.
 fn make_player(
@@ -370,17 +363,11 @@ fn make_player(
         stamina: at("stamina"),
         strength: at("strength"),
         agility: at("agility"),
-        // As the bridge hands them to the engine: `passing` and `dribbling`
-        // still mean the pre-split blends (`turn/squad.rs`, `legacy_blends`).
-        passing: blend(&[
-            (at("passing"), 0.45),
-            (at("long_passing"), 0.30),
-            (at("crossing"), 0.15),
-            (at("curve"), 0.10),
-        ]),
+        // Raw, as the bridge hands them over since P4.0 (X64).
+        passing: at("passing"),
         shooting: at("shooting"),
         tackling: at("tackling"),
-        dribbling: blend(&[(at("dribbling"), 0.5), (at("first_touch"), 0.5)]),
+        dribbling: at("dribbling"),
         defending: at("defending"),
         positioning: at("positioning"),
         vision: at("vision"),

@@ -77,7 +77,7 @@ impl LiveMatchState {
         let passer = self.snap_player(att_side, Position::Defender, rng);
         let pass_skill = self.condition_adjusted_skill(
             &passer.id,
-            (passer.passing as f64
+            (passer.legacy_passing() as f64
                 + passer.vision as f64
                 + passer.composure as f64
                 + passer.teamwork as f64)

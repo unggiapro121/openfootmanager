@@ -195,6 +195,108 @@ pub fn dial_against_default(
     label: String,
     tactics: engine::TacticsConfig,
 ) -> BalanceRow {
+    against_mirror(
+        config,
+        seed ^ (0xD1A1 << 40),
+        games,
+        label,
+        BASELINE,
+        |_, option| {
+            option.tactics = tactics.clone();
+        },
+    )
+}
+
+/// A role measured against `Standard` in one slot (phase 2, GĐ4, P4.0; the
+/// gate of X74 from P4.4).
+pub struct RoleCase {
+    pub formation: &'static str,
+    /// The slot's index in the formation, and the slot.
+    pub index: usize,
+    pub slot: engine::PitchPosition,
+    pub role: engine::PlayerRole,
+}
+
+impl RoleCase {
+    /// The row's name: the slot and the role.
+    pub fn label(&self) -> String {
+        format!("{:?} {:?}", self.slot, self.role)
+    }
+}
+
+/// Every role each kind of slot offers, but `Standard`, each in a formation
+/// that has the slot: the first such slot (the left one of a pair) carries it.
+pub fn role_cases() -> Vec<RoleCase> {
+    use engine::PitchPosition as P;
+    let slots = [
+        (P::Goalkeeper, "4-4-2"),
+        (P::CenterBack, "4-4-2"),
+        (P::LeftBack, "4-4-2"),
+        (P::LeftWingBack, "5-3-2"),
+        (P::DefensiveMidfielder, "4-3-3"),
+        (P::CentralMidfielder, "4-4-2"),
+        (P::AttackingMidfielder, "4-3-3"),
+        (P::LeftMidfielder, "4-4-2"),
+        (P::LeftWinger, "4-3-3"),
+        (P::Striker, "4-4-2"),
+    ];
+    let mut cases = Vec::new();
+    for (slot, formation) in slots {
+        let Some(index) = engine::formation_slots(formation)
+            .iter()
+            .position(|s| *s == slot)
+        else {
+            continue;
+        };
+        for &role in crate::builder::valid_roles(slot) {
+            if role == engine::PlayerRole::Standard {
+                continue;
+            }
+            cases.push(RoleCase {
+                formation,
+                index,
+                slot,
+                role,
+            });
+        }
+    }
+    cases
+}
+
+/// One role in one slot against the same side with `Standard` there: a squad
+/// against its own mirror, headless, home alternating, `games` matches. The
+/// row is from the role's side.
+pub fn role_against_standard(
+    config: &MatchConfig,
+    seed: u64,
+    games: u32,
+    case: &RoleCase,
+) -> BalanceRow {
+    let salt = (case.index as u64) << 32 ^ (case.role as u64) << 24;
+    against_mirror(
+        config,
+        seed ^ (0x201E << 40) ^ salt,
+        games,
+        case.label(),
+        case.formation,
+        |standard, option| {
+            standard.players[case.index].role = engine::PlayerRole::Standard;
+            option.players[case.index].role = case.role;
+        },
+    )
+}
+
+/// A squad in `formation` against its own mirror, which `setup` changes
+/// (`setup(base, option)`), headless, home alternating, `games` matches
+/// rounded up to whole pairs. The row is from the changed side.
+fn against_mirror(
+    config: &MatchConfig,
+    seed: u64,
+    games: u32,
+    label: String,
+    formation: &str,
+    setup: impl Fn(&mut engine::TeamData, &mut engine::TeamData),
+) -> BalanceRow {
     let pairs = games.div_ceil(GAMES_PER_PAIR).max(1);
     let mut row = BalanceRow {
         formation: label,
@@ -206,25 +308,25 @@ pub fn dial_against_default(
         conceded: 0,
     };
     for pair in 0..pairs {
-        let pair_seed = seed ^ (0xD1A1 << 40) ^ u64::from(pair).wrapping_mul(0x9E37_79B9);
+        let pair_seed = seed ^ u64::from(pair).wrapping_mul(0x9E37_79B9);
         let mut team_rng = StdRng::seed_from_u64(pair_seed);
-        let neutral = build_team(
+        let mut base = build_team(
             "base",
             "Base FC",
             RATING,
             PlayStyle::Balanced,
-            BASELINE,
+            formation,
             &mut team_rng,
         );
-        let mut option = crate::builder::mirror(&neutral, "side", "Side FC");
-        option.tactics = tactics.clone();
+        let mut option = crate::builder::mirror(&base, "side", "Side FC");
+        setup(&mut base, &mut option);
         for g in 0..GAMES_PER_PAIR {
             let mut rng = StdRng::seed_from_u64(pair_seed.wrapping_add(u64::from(g)));
             let option_home = g % 2 == 0;
             let report = if option_home {
-                simulate_with_rng(&option, &neutral, config, &mut rng)
+                simulate_with_rng(&option, &base, config, &mut rng)
             } else {
-                simulate_with_rng(&neutral, &option, config, &mut rng)
+                simulate_with_rng(&base, &option, config, &mut rng)
             };
             let (scored, conceded) = if option_home {
                 (report.home_goals, report.away_goals)
@@ -245,18 +347,35 @@ pub fn dial_against_default(
 }
 
 pub fn print_table(rows: &[BalanceRow]) {
+    print_titled(
+        &format!("Formation balance · each against {BASELINE}"),
+        "a formation",
+        rows,
+    );
+}
+
+/// Each role against `Standard` in its slot (P4.0).
+pub fn print_role_table(rows: &[BalanceRow]) {
+    print_titled(
+        "Role balance · each role against Standard in its slot",
+        "a role",
+        rows,
+    );
+}
+
+fn print_titled(title: &str, unit: &str, rows: &[BalanceRow]) {
     println!();
     println!(
-        "Formation balance · each against {BASELINE} · OVR {RATING} both · headless · {} games a formation",
+        "{title} · OVR {RATING} both · headless · {} games {unit}",
         rows.first().map_or(0, |r| r.games)
     );
     println!(
-        "  {:<22}  win%  draw%  loss%   win−loss  ±se   for  against",
+        "  {:<32}  win%  draw%  loss%   win−loss  ±se   for  against",
         "side"
     );
     for row in rows {
         println!(
-            "  {:<22}  {:>5.1}  {:>5.1}  {:>5.1}   {:>+8.1}  {:>3.1}  {:>4.2}  {:>4.2}",
+            "  {:<32}  {:>5.1}  {:>5.1}  {:>5.1}   {:>+8.1}  {:>3.1}  {:>4.2}  {:>4.2}",
             row.formation,
             row.pct(row.wins),
             row.pct(row.draws),
@@ -286,5 +405,38 @@ mod tests {
             assert_eq!(row.games, 20);
             assert_eq!(row.wins + row.draws + row.losses, row.games);
         }
+    }
+
+    /// Given the role table (phase 2, P4.0),
+    /// when its rows are listed,
+    /// then every role a slot offers but `Standard` has one row, each in a
+    /// formation that has the slot.
+    #[test]
+    fn every_role_but_standard_is_measured_in_a_slot_that_offers_it() {
+        let cases = role_cases();
+        assert!(cases.iter().all(|c| c.role != engine::PlayerRole::Standard));
+        assert!(cases.iter().any(|c| c.role == engine::PlayerRole::Mezzala));
+        assert!(cases
+            .iter()
+            .any(|c| c.role == engine::PlayerRole::SweeperKeeper));
+        for case in &cases {
+            assert_eq!(
+                engine::formation_slots(case.formation)[case.index],
+                case.slot,
+                "{}",
+                case.label()
+            );
+        }
+    }
+
+    /// Given a short role run for one role,
+    /// when it is played,
+    /// then the row has its whole pairs of games and the results add up.
+    #[test]
+    fn a_role_row_plays_its_games() {
+        let case = role_cases().remove(0);
+        let row = role_against_standard(&MatchConfig::default(), 5, 20, &case);
+        assert_eq!(row.games, 20);
+        assert_eq!(row.wins + row.draws + row.losses, row.games);
     }
 }

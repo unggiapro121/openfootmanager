@@ -53,6 +53,22 @@ pub struct EventTally {
     /// attacker kicked off in: DEF, MID, FWD, substitutes. Only
     /// [`EventTally::of_report`] fills it.
     pub final_third_by_group: [u64; 4],
+    /// Build-ups from a side's own third (phase 2, P4.0): every pass played
+    /// out of it, the ones that reached midfield, and the ones intercepted
+    /// there (a high turnover), with the shots and goals the side that won
+    /// the ball had before the other side touched it again.
+    pub build_ups: u64,
+    pub build_ups_completed: u64,
+    pub high_turnovers: u64,
+    pub high_turnover_shots: u64,
+    pub high_turnover_goals: u64,
+    /// Midfield duels (P4.0): the side on the ball passing into the final
+    /// third, or losing it to a tackle or an interception in midfield.
+    pub midfield_duels: u64,
+    pub midfield_attack_won: u64,
+    /// Midfield duels by the group of the slot the winner kicked off in:
+    /// DEF, MID, FWD, substitutes. Only [`EventTally::of_report`] fills it.
+    pub midfield_winners_by_group: [u64; 4],
 }
 
 fn lane_index(lane: Lane) -> usize {
@@ -72,6 +88,13 @@ impl EventTally {
         for (index, event) in events.iter().enumerate() {
             let previous = index.checked_sub(1).map(|i| &events[i]);
             tally.add_flank_duel(event, previous, &mut exploiting);
+            tally.add_build_up(event, &events[index + 1..]);
+            if is_midfield_duel(event) {
+                tally.midfield_duels += 1;
+                if event.event_type == EventType::PassCompleted {
+                    tally.midfield_attack_won += 1;
+                }
+            }
             match event.event_type {
                 EventType::Cross => {
                     if event.set_piece.is_none() {
@@ -117,13 +140,7 @@ impl EventTally {
             3
         };
         for event in &report.events {
-            let is_shot = matches!(
-                event.event_type,
-                EventType::Goal
-                    | EventType::ShotSaved
-                    | EventType::ShotOffTarget
-                    | EventType::ShotBlocked
-            );
+            let is_shot = event.is_shot();
             let in_box = matches!(event.shot_kind, Some(ShotKind::Open | ShotKind::Header));
             if let (true, true, Some(id)) = (is_shot, in_box, event.player_id.as_deref()) {
                 tally.box_shots_by_group[group_of(id)] += 1;
@@ -134,6 +151,9 @@ impl EventTally {
             ) && event.zone == Zone::attacking_third(event.side);
             if let (true, Some(id)) = (one_v_one, event.player_id.as_deref()) {
                 tally.final_third_by_group[group_of(id)] += 1;
+            }
+            if let (true, Some(id)) = (is_midfield_duel(event), event.player_id.as_deref()) {
+                tally.midfield_winners_by_group[group_of(id)] += 1;
             }
         }
         tally
@@ -153,6 +173,13 @@ impl EventTally {
         self.exploit_won += other.exploit_won;
         self.exploit_lost += other.exploit_lost;
         self.exploit_goals += other.exploit_goals;
+        self.build_ups += other.build_ups;
+        self.build_ups_completed += other.build_ups_completed;
+        self.high_turnovers += other.high_turnovers;
+        self.high_turnover_shots += other.high_turnover_shots;
+        self.high_turnover_goals += other.high_turnover_goals;
+        self.midfield_duels += other.midfield_duels;
+        self.midfield_attack_won += other.midfield_attack_won;
         for i in 0..3 {
             self.final_third_lanes[i] += other.final_third_lanes[i];
             self.crosses_by_lane[i] += other.crosses_by_lane[i];
@@ -160,6 +187,7 @@ impl EventTally {
         for i in 0..4 {
             self.box_shots_by_group[i] += other.box_shots_by_group[i];
             self.final_third_by_group[i] += other.final_third_by_group[i];
+            self.midfield_winners_by_group[i] += other.midfield_winners_by_group[i];
         }
     }
 
@@ -181,6 +209,22 @@ impl EventTally {
     /// substitutes, in percent.
     pub fn final_third_group_pct(&self) -> [f64; 4] {
         shares(self.final_third_by_group)
+    }
+
+    /// Shares of midfield duels by the winner's group: DEF, MID, FWD and
+    /// substitutes, in percent.
+    pub fn midfield_winner_group_pct(&self) -> [f64; 4] {
+        shares(self.midfield_winners_by_group)
+    }
+
+    /// Share of build-ups that reached midfield, in percent.
+    pub fn build_up_success_pct(&self) -> f64 {
+        percent(self.build_ups_completed, self.build_ups)
+    }
+
+    /// Share of midfield duels the side on the ball won, in percent.
+    pub fn midfield_attack_won_pct(&self) -> f64 {
+        percent(self.midfield_attack_won, self.midfield_duels)
     }
 
     /// Share of aerial duels the defending side won, in percent.
@@ -281,6 +325,35 @@ impl EventTally {
         (rate(self.exploit_won, self.exploit_lost) / ordinary - 1.0) * 100.0
     }
 
+    /// A pass played out of a side's own third, made or intercepted there.
+    /// After an interception, the shots and goals of the side that won the
+    /// ball count until the side that lost it has an event of its own.
+    fn add_build_up(&mut self, event: &MatchEvent, after: &[MatchEvent]) {
+        if event.zone != Zone::defensive_third(event.side) {
+            return;
+        }
+        match event.event_type {
+            EventType::PassCompleted => {
+                self.build_ups += 1;
+                self.build_ups_completed += 1;
+            }
+            EventType::PassIntercepted => {
+                self.build_ups += 1;
+                self.high_turnovers += 1;
+                let winner = event.side.opposite();
+                for next in after.iter().take_while(|e| e.side == winner) {
+                    if next.is_shot() {
+                        self.high_turnover_shots += 1;
+                    }
+                    if next.is_goal() {
+                        self.high_turnover_goals += 1;
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
     /// A foul's event carries the side that fouled; where it happened counts
     /// from the side that was fouled, the one attacking.
     fn add_foul(&mut self, foul: &MatchEvent) {
@@ -290,6 +363,24 @@ impl EventTally {
         } else if foul.zone == Zone::attacking_third(fouled_side) {
             self.fouls_final_third += 1;
         }
+    }
+}
+
+/// A midfield duel's deciding event: the side on the ball passing on, or the
+/// other side winning it with a tackle or an interception.
+fn is_midfield_duel(event: &MatchEvent) -> bool {
+    event.zone == Zone::Midfield
+        && matches!(
+            event.event_type,
+            EventType::PassCompleted | EventType::Tackle | EventType::Interception
+        )
+}
+
+fn percent(part: u64, whole: u64) -> f64 {
+    if whole == 0 {
+        0.0
+    } else {
+        part as f64 / whole as f64 * 100.0
     }
 }
 
@@ -403,5 +494,50 @@ mod tests {
         assert_eq!(tally.final_third_lanes, [1, 1, 0]);
         assert_eq!(tally.crosses_by_lane, [0, 0, 1]);
         assert_eq!(tally.centre_lane_pct(), 50.0);
+    }
+
+    fn away(event_type: EventType, zone: Zone) -> MatchEvent {
+        MatchEvent::new(10, event_type, Side::Away, zone)
+    }
+
+    /// Given a home build-up that reaches midfield and one intercepted in the
+    /// home third, after which the away side shoots and scores, then the home
+    /// side has the ball again,
+    /// when they are tallied,
+    /// then there are two build-ups, one completed, one high turnover, and
+    /// one shot and one goal from it (phase 2, P4.0).
+    #[test]
+    fn a_build_up_lost_in_the_own_third_is_a_high_turnover() {
+        let tally = EventTally::of(&[
+            event(EventType::PassCompleted, Zone::HomeDefense),
+            event(EventType::PassIntercepted, Zone::HomeDefense),
+            away(EventType::Interception, Zone::HomeDefense),
+            away(EventType::Dribble, Zone::HomeDefense),
+            away(EventType::Goal, Zone::HomeBox),
+            event(EventType::PassCompleted, Zone::Midfield),
+            away(EventType::ShotSaved, Zone::HomeBox),
+        ]);
+        assert_eq!((tally.build_ups, tally.build_ups_completed), (2, 1));
+        assert_eq!(tally.high_turnovers, 1);
+        assert_eq!(
+            (tally.high_turnover_shots, tally.high_turnover_goals),
+            (1, 1)
+        );
+    }
+
+    /// Given a midfield pass completed by the home side, a home pass in
+    /// midfield lost to a tackle and one to an interception,
+    /// when they are tallied,
+    /// then there are three midfield duels and the attacker won one.
+    #[test]
+    fn midfield_duels_are_counted_from_both_outcomes() {
+        let tally = EventTally::of(&[
+            event(EventType::PassCompleted, Zone::Midfield),
+            away(EventType::Tackle, Zone::Midfield),
+            away(EventType::Interception, Zone::Midfield),
+            away(EventType::Tackle, Zone::HomeDefense),
+        ]);
+        assert_eq!((tally.midfield_duels, tally.midfield_attack_won), (3, 1));
+        assert!((tally.midfield_attack_won_pct() - 100.0 / 3.0).abs() < 1e-9);
     }
 }

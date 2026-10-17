@@ -989,3 +989,50 @@ fn a_wide_midfielder_has_one_natural_slot_and_is_no_better_at_wing_back() {
         "{ratings:?}"
     );
 }
+
+/// A player with every split attribute declared, each its own value.
+fn split_player(passing: u8, long_passing: u8, crossing: u8, curve: u8) -> Player {
+    let mut player = mk_pos("cm", DomainPos::CentralMidfielder, 70, 95);
+    player.attributes.passing = passing;
+    player.attributes.long_passing = long_passing;
+    player.attributes.crossing = crossing;
+    player.attributes.curve = curve;
+    player.attributes.dribbling = 81;
+    player.attributes.first_touch = 64;
+    player
+}
+
+/// Phase 2, P4.0 (X64): given a player whose passing and dribbling were split,
+/// when he is handed to the engine,
+/// then `passing` and `dribbling` go over raw, not as their pre-split blends.
+#[test]
+fn the_bridge_hands_the_engine_raw_passing_and_dribbling() {
+    let player = split_player(78, 52, 61, 47);
+    let engine = to_engine_player(&player, EnginePlayerRole::Standard, None);
+    assert_eq!(engine.passing, 78);
+    assert_eq!(engine.dribbling, 81);
+    assert_eq!(engine.long_passing, 52);
+    assert_eq!(engine.first_touch, 64);
+}
+
+/// Phase 2, P4.0 (X64): given players across the range of every split
+/// attribute,
+/// when the engine rebuilds the old blends of passing and dribbling,
+/// then they are exactly the domain's, so a real player plays as before.
+#[test]
+fn the_engine_rebuilds_the_domains_blends_to_the_point() {
+    for (passing, long_passing, crossing, curve) in [
+        (78, 52, 61, 47),
+        (35, 90, 12, 99),
+        (60, 60, 60, 60),
+        (71, 60, 50, 40),
+        (99, 1, 99, 1),
+        (45, 0, 70, 70),
+    ] {
+        let player = split_player(passing, long_passing, crossing, curve);
+        let blends = player.attributes.legacy_blends(false);
+        let engine = to_engine_player(&player, EnginePlayerRole::Standard, None);
+        assert_eq!(engine.legacy_passing(), blends.passing);
+        assert_eq!(engine.legacy_dribbling(), blends.dribbling);
+    }
+}

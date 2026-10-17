@@ -90,7 +90,7 @@ fn is_full_back_slot(slot: PitchPosition) -> bool {
 }
 
 fn passing_and_vision(player: &PlayerData) -> f64 {
-    (f64::from(player.passing) + f64::from(player.vision)) / 2.0
+    (f64::from(player.legacy_passing()) + f64::from(player.vision)) / 2.0
 }
 
 impl LiveMatchState {

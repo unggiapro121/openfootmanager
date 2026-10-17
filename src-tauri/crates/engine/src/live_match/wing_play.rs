@@ -165,7 +165,7 @@ impl LiveMatchState {
                     lane,
                     attacker.role,
                     attacker.curve,
-                    attacker.dribbling,
+                    attacker.legacy_dribbling(),
                 );
         let mut events = Vec::new();
         let mut dribble = MatchEvent::new(

@@ -314,6 +314,16 @@ struct MatchShares {
     crosses_by_lane: [u64; 3],
     box_shots_by_group: [u64; 4],
     headed_goals: u64,
+    /// Phase 2, GĐ4 (P4.0): build-ups from the own third, those that reached
+    /// midfield, those lost there and the shots and goals that followed, and
+    /// midfield duels with the ones the side on the ball won.
+    build_ups: u64,
+    build_ups_completed: u64,
+    high_turnovers: u64,
+    high_turnover_shots: u64,
+    high_turnover_goals: u64,
+    midfield_duels: u64,
+    midfield_attack_won: u64,
 }
 
 /// Who scores, who sets them up and how players rate, by natural position
@@ -487,6 +497,13 @@ impl MatchShares {
         for group in 0..4 {
             self.box_shots_by_group[group] += tally.box_shots_by_group[group];
         }
+        self.build_ups += tally.build_ups;
+        self.build_ups_completed += tally.build_ups_completed;
+        self.high_turnovers += tally.high_turnovers;
+        self.high_turnover_shots += tally.high_turnover_shots;
+        self.high_turnover_goals += tally.high_turnover_goals;
+        self.midfield_duels += tally.midfield_duels;
+        self.midfield_attack_won += tally.midfield_attack_won;
         self.headed_goals += report
             .events
             .iter()
@@ -615,6 +632,16 @@ fn real_world_match_probe() {
         MatchShares::pct(mid, box_shots),
         MatchShares::pct(def, box_shots),
         MatchShares::pct(subs, box_shots)
+    );
+    println!(
+        "  build-ups/side/game {:.1} · reached midfield {:.1}% · lost in the own third/game {:.2} ({:.3} shots, {:.3} goals each) · midfield duels/game {:.1}, won by the side on the ball {:.1}%",
+        shares.per_match(shares.build_ups) / 2.0,
+        MatchShares::pct(shares.build_ups_completed, shares.build_ups),
+        shares.per_match(shares.high_turnovers),
+        shares.high_turnover_shots as f64 / shares.high_turnovers.max(1) as f64,
+        shares.high_turnover_goals as f64 / shares.high_turnovers.max(1) as f64,
+        shares.per_match(shares.midfield_duels),
+        MatchShares::pct(shares.midfield_attack_won, shares.midfield_duels)
     );
     players.print();
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
