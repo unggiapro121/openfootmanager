@@ -184,6 +184,25 @@ style's press, the pressing dial, the side's line (`VeryLow` 0.80, `Low` 0.90, `
 1.08) and home advantage. A build-up lost is a high turnover: the other side has the ball where it is,
 in its attacking third, and its next action carries `HighTurnover`.
 
+### The long ball and the second ball
+
+`live_match/long_ball.rs`, `second_ball.rs` (P4.2). In its own third a side plays it long `p_long` of
+the time by its build-up dial — open play `Short` 0, `Mixed` 0.20, `Long` 0.60; a goal kick 0.15,
+0.55, 0.85 (×0.6 for a `BallPlayingKeeper`) — which makes `Mixed` play about a third of its build-ups
+long, as real sides do. The best long passer near the ball hits it (the keeper at a goal kick):
+`Q_long = 0.65·long_passing + 0.25·vision + 0.10·composure`, ×1.10 for a ball-playing centre back,
+deep-lying playmaker or ball-playing keeper. It clears the midfield `0.35·σ((Q_long − 60)/6)` of the
+time (about 18% of long balls, real football 13%); otherwise it drops in midfield for nobody. Over
+the top it is met by the attacker the lane and his role favour (`TargetMan` ×2.0, `CompleteForward`
+×1.5) against a defender of the lane: against a high line it is a race (`p_race`: `VeryLow` 0 · `Low`
+0.10 · `Medium` 0.25 · `High` 0.55; `ln(pace/pace) + ln 0.85`, two `Stopper`s ×0.85, a
+`Stopper` and a `CoverCB` ×1.08), won straight through (`BallInBehind`; a sweeper keeper may come),
+lost to the defence's build-up; otherwise a header at the corner's anchor, lost cleared into
+midfield, won then brought down `0.85·σ((first_touch − 65)/6)` of the time. A ball nobody controls
+is a second ball: one man of each side by midfield presence,
+`0.35·positioning + 0.25·decisions + 0.20·pace + 0.20·strength`, γ 1, anchor 1 (equal sides split
+them), and the winner (`BallRecovery`, +0.05 on his rating) has the ball where it fell.
+
 ### A ball won in the own third
 
 `live_match/transition.rs` (P4.1, X77). When a defence wins the ball in its own third — a one-on-one
@@ -408,7 +427,7 @@ per-minute possession contest.
 
 | Dial | Hook | Effect |
 |---|---|---|
-| build_up | none from P4.1 to P4.2 (P4.2 makes it the choice of route) | — |
+| build_up | how often a side plays it long from its own third (P4.2) | Short keeps it on the ground and risks a high turnover; Long clears the press but rarely keeps the ball |
 | width | the lane matrix (`c, s, a, w`) | Wide plays more down the flanks, where crosses come from |
 | def_line | shot conversion conceded + the press on the other side's build-up | High concedes better chances in behind and presses higher |
 | marking | foul probability | Man-to-man fouls more |

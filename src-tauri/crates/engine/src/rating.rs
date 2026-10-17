@@ -180,6 +180,8 @@ impl Contribution {
             EventType::Tackle => 0.07,
             EventType::Interception => 0.08,
             EventType::Clearance => 0.04,
+            // Between a clearance and a tackle (phase 2, P4.2).
+            EventType::BallRecovery => 0.05,
             EventType::Foul => -0.05,
             EventType::YellowCard => -0.3,
             EventType::SecondYellow | EventType::RedCard => -1.5,

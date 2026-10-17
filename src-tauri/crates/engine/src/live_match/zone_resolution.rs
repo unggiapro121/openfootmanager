@@ -52,14 +52,17 @@ impl LiveMatchState {
             self.pending_exploit = None;
         }
         // A counter-press weighs on the first build-up after the ball was
-        // lost, and a ball won in the other side's build-up on the action
-        // that follows; whatever happens first ends both (P4.1).
+        // lost, and what led to an attack (a ball won in the other side's
+        // build-up, a long ball brought down) labels the action that follows;
+        // whatever happens first ends both (P4.1, P4.2).
         let counter_pressed = self.counter_pressing.take() == Some(def_side);
-        let turnover = self.high_turnover.take() == Some(att_side)
-            && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side));
+        let pending = self.pending_context.take().filter(|(side, _)| {
+            *side == att_side
+                && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side))
+        });
         let outer_context = self.active_context;
-        if turnover {
-            self.active_context = Some(TacticalContext::HighTurnover);
+        if let Some((_, context)) = pending {
+            self.active_context = Some(context);
         }
         let events = if zone.is_box_for(att_side) {
             // The box is one cell: whatever lane the ball came in from, it is
@@ -92,6 +95,9 @@ impl LiveMatchState {
         counter_pressed: bool,
         rng: &mut R,
     ) -> Vec<MatchEvent> {
+        if self.plays_long(att_side, rng) {
+            return self.resolve_long_ball(minute, att_side, def_side, rng);
+        }
         let mut events = Vec::new();
         let lane = self.lane_for(att_side);
         let passer = self
@@ -134,7 +140,7 @@ impl LiveMatchState {
             self.emit(&mut events, evt1);
             self.emit(&mut events, evt2);
             self.possession = def_side;
-            self.high_turnover = Some(def_side);
+            self.pending_context = Some((def_side, TacticalContext::HighTurnover));
         }
         events
     }

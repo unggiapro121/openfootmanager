@@ -263,7 +263,7 @@ fn direct_free_kicks_come_only_from_the_attacking_third() {
 fn an_events_lane_is_the_balls_seen_from_its_side() {
     let mut checked = 0;
     for report in reports(100) {
-        assert_eq!(report.protocol_version, 3);
+        assert_eq!(report.protocol_version, engine::EVENT_PROTOCOL_VERSION);
         for pair in report.events.windows(2) {
             let (duel, tackle) = (&pair[0], &pair[1]);
             if duel.event_type != EventType::DribbleTackled

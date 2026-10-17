@@ -66,6 +66,13 @@ pub enum TacticalContext {
     /// A build-up lost in the own third: the pass, the interception and the
     /// next action of the side that won the ball (phase 2, GĐ4, P4.1, X67).
     HighTurnover,
+    /// A long ball out of the own third: every event of it up to the next
+    /// action, and that action if the ball was brought down (P4.2, X75).
+    LongBall,
+    /// A loose ball won after a long ball (P4.2).
+    SecondBall,
+    /// A long ball run onto behind a high line (P4.2).
+    BallInBehind,
 }
 
 /// What kind of attempt on goal an event records.
@@ -108,6 +115,12 @@ pub enum EventType {
     // --- Possession & passing ---
     PassCompleted,
     PassIntercepted,
+    /// A long ball out of the own third (phase 2, GĐ4, P4.2): the passer,
+    /// and the man it was meant for as the secondary player.
+    LongBall,
+    /// A loose ball won after a long ball (P4.2): the winner, and the man he
+    /// beat to it as the secondary player.
+    BallRecovery,
 
     // --- Attacking ---
     Dribble,

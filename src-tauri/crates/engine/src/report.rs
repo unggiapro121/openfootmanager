@@ -172,8 +172,10 @@ pub struct MatchReport {
 /// `shot_kind`, `set_piece`, `goal_source` and `lane` to every event that has
 /// one; protocol 1 events carry none of them. Protocol 3 (phase 2, GĐ3, X59)
 /// makes `lane` the ball's lane as the event's side sees it, where protocol 2
-/// put the lane of the actor's slot.
-pub const EVENT_PROTOCOL_VERSION: u8 = 3;
+/// put the lane of the actor's slot. Protocol 4 (phase 2, GĐ4, X75) adds the
+/// `LongBall` and `BallRecovery` events and the `HighTurnover`, `LongBall`,
+/// `SecondBall` and `BallInBehind` contexts.
+pub const EVENT_PROTOCOL_VERSION: u8 = 4;
 
 pub(crate) fn first_event_protocol() -> u8 {
     1

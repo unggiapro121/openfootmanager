@@ -338,17 +338,62 @@ impl LiveMatchState {
         absent: Option<&str>,
         rng: &mut R,
     ) -> Option<Picked> {
+        self.pick_weighted(side, column, lane, absent, |_, _| 1.0, rng)
+    }
+
+    /// [`LiveMatchState::pick_by_presence`] with each player's weight also
+    /// multiplied by `factor` of him and his slot: who a long ball is aimed at
+    /// (P4.2).
+    pub(super) fn pick_by_presence_with<R: Rng>(
+        &self,
+        side: Side,
+        column: Column,
+        lane: Lane,
+        factor: impl Fn(&crate::types::PlayerData, PitchPosition) -> f64,
+        rng: &mut R,
+    ) -> Option<Picked> {
+        self.pick_weighted(side, column, lane, None, factor, rng)
+    }
+
+    /// `side`'s outfielders with any presence in `lane` of `column`, each
+    /// with that presence: who can take part in an action there.
+    pub(super) fn present_in(
+        &self,
+        side: Side,
+        column: Column,
+        lane: Lane,
+    ) -> Vec<(&crate::types::PlayerData, PitchPosition)> {
+        self.weighted_outfield(side, column)
+            .into_iter()
+            .filter(|(_, _, weights)| weights[index(lane)] > 0.0)
+            .map(|(i, slot, _)| (&self.team_ref(side).players[i], slot))
+            .collect()
+    }
+
+    fn pick_weighted<R: Rng>(
+        &self,
+        side: Side,
+        column: Column,
+        lane: Lane,
+        absent: Option<&str>,
+        factor: impl Fn(&crate::types::PlayerData, PitchPosition) -> f64,
+        rng: &mut R,
+    ) -> Option<Picked> {
         let weighted: Vec<(usize, PitchPosition, f64)> = self
             .weighted_outfield(side, column)
             .into_iter()
             .filter(|(i, _, _)| Some(self.team_ref(side).players[*i].id.as_str()) != absent)
             .map(|(i, slot, weights)| {
-                let id = &self.team_ref(side).players[i].id;
-                let condition = self.player_conditions.get(id).copied().unwrap_or(50.0);
+                let player = &self.team_ref(side).players[i];
+                let condition = self
+                    .player_conditions
+                    .get(&player.id)
+                    .copied()
+                    .unwrap_or(50.0);
                 (
                     i,
                     slot,
-                    weights[index(lane)] * (0.6 + 0.4 * condition / 100.0),
+                    weights[index(lane)] * (0.6 + 0.4 * condition / 100.0) * factor(player, slot),
                 )
             })
             .filter(|(_, _, w)| *w > 0.0)
