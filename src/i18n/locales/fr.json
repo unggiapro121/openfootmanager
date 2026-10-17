@@ -2529,6 +2529,13 @@
             "0": "{{player}} attaque le coup franc et marque pour {{team}} !",
             "1": "Le coup franc est brossé dans la surface et {{player}} trouve la faille !"
           }
+        },
+        "flankExposed": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{team}} attaque l'espace dans le dos du latéral et {{player}} marque !",
+            "1": "Pris trop haut ! {{player}} punit le côté laissé ouvert pour {{team}} !"
+          }
         }
       },
       "PenaltyGoal": {

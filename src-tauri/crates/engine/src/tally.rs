@@ -36,6 +36,15 @@ pub struct EventTally {
     /// the contest (P3.4): neither is an aerial duel.
     pub low_crosses: u64,
     pub unreached_crosses: u64,
+    /// One-on-ones down a flank in the attacking third, won and lost: the
+    /// ordinary ones, and those into a flank a full back left open
+    /// (`FlankExposed`, P3.6), with the goals the latter led to before the
+    /// other side touched the ball.
+    pub flank_won: u64,
+    pub flank_lost: u64,
+    pub exploit_won: u64,
+    pub exploit_lost: u64,
+    pub exploit_goals: u64,
     /// Shots in the box with the feet or the head, by the group of the slot
     /// the shooter kicked off in: DEF, MID, FWD, and a fourth for players who
     /// came off the bench. Only [`EventTally::of_report`] fills it.
@@ -58,7 +67,11 @@ impl EventTally {
     /// The tally of one match's events, in the order they happened.
     pub fn of(events: &[MatchEvent]) -> Self {
         let mut tally = Self::default();
+        // The side whose break into an open flank is still going.
+        let mut exploiting: Option<crate::types::Side> = None;
         for (index, event) in events.iter().enumerate() {
+            let previous = index.checked_sub(1).map(|i| &events[i]);
+            tally.add_flank_duel(event, previous, &mut exploiting);
             match event.event_type {
                 EventType::Cross => {
                     if event.set_piece.is_none() {
@@ -135,6 +148,11 @@ impl EventTally {
         self.open_play_crosses += other.open_play_crosses;
         self.low_crosses += other.low_crosses;
         self.unreached_crosses += other.unreached_crosses;
+        self.flank_won += other.flank_won;
+        self.flank_lost += other.flank_lost;
+        self.exploit_won += other.exploit_won;
+        self.exploit_lost += other.exploit_lost;
+        self.exploit_goals += other.exploit_goals;
         for i in 0..3 {
             self.final_third_lanes[i] += other.final_third_lanes[i];
             self.crosses_by_lane[i] += other.crosses_by_lane[i];
@@ -207,6 +225,60 @@ impl EventTally {
         if ending.map(|e| &e.event_type) == Some(&EventType::Goal) {
             self.cross_goals += 1;
         }
+    }
+
+    /// One-on-ones down a flank, ordinary and into an open flank, and the
+    /// goals a break into an open flank leads to.
+    ///
+    /// A one-on-one lost to a clearance leaves only the defence's
+    /// `Clearance`, in its own third, straight after no cross and outside a
+    /// set piece (as `DuelCounts` reads it); it counts as lost.
+    fn add_flank_duel(
+        &mut self,
+        event: &MatchEvent,
+        previous: Option<&MatchEvent>,
+        exploiting: &mut Option<crate::types::Side>,
+    ) {
+        let exploit = event.tactical_context == Some(TacticalContext::FlankExposed);
+        let flank = matches!(event.lane, Some(Lane::Left | Lane::Right));
+        let in_third = event.zone == Zone::attacking_third(event.side);
+        let duel_cleared = event.event_type == EventType::Clearance
+            && event.zone == Zone::attacking_third(event.side.opposite())
+            && event.set_piece.is_none()
+            && previous.is_none_or(|p| p.event_type != EventType::Cross);
+        if duel_cleared {
+            if exploit {
+                self.exploit_lost += 1;
+            } else if flank {
+                self.flank_lost += 1;
+            }
+        }
+        match event.event_type {
+            EventType::Dribble if exploit => {
+                self.exploit_won += 1;
+                *exploiting = Some(event.side);
+                return;
+            }
+            EventType::DribbleTackled if exploit => self.exploit_lost += 1,
+            EventType::Dribble if flank && in_third => self.flank_won += 1,
+            EventType::DribbleTackled if flank && in_third => self.flank_lost += 1,
+            EventType::Goal if *exploiting == Some(event.side) => self.exploit_goals += 1,
+            _ => {}
+        }
+        if *exploiting != Some(event.side) || event.is_goal() {
+            *exploiting = None;
+        }
+    }
+
+    /// How much more often the attacker wins a one-on-one into an open flank
+    /// than down a covered one, relative, in percent.
+    pub fn exploit_advantage_pct(&self) -> f64 {
+        let rate = |won: u64, lost: u64| won as f64 / (won + lost).max(1) as f64;
+        let ordinary = rate(self.flank_won, self.flank_lost);
+        if ordinary == 0.0 {
+            return 0.0;
+        }
+        (rate(self.exploit_won, self.exploit_lost) / ordinary - 1.0) * 100.0
     }
 
     /// A foul's event carries the side that fouled; where it happened counts

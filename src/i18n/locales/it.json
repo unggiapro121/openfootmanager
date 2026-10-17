@@ -2548,6 +2548,13 @@
             "0": "{{player}} attacca la punizione e segna per il {{team}}!",
             "1": "La punizione viene messa in mezzo e {{player}} trova il tocco decisivo!"
           }
+        },
+        "flankExposed": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Il {{team}} attacca lo spazio alle spalle del terzino e {{player}} segna!",
+            "1": "Sorpresi in avanti! {{player}} punisce la fascia scoperta per il {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

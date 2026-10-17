@@ -2529,6 +2529,13 @@
             "0": "{{player}} geht zum Freistoß und trifft für {{team}}!",
             "1": "Der Freistoß wird hereingeschlagen und {{player}} setzt den entscheidenden Kontakt!"
           }
+        },
+        "flankExposed": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{team}} kontert in den Raum hinter dem Außenverteidiger und {{player}} trifft!",
+            "1": "Zu weit aufgerückt! {{player}} bestraft die offene Seite für {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

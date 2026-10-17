@@ -46,6 +46,14 @@ impl LiveMatchState {
         self.active_break = self.on_the_break.take() == Some(att_side)
             && (zone == Zone::attacking_third(att_side) || zone.is_box_for(att_side));
 
+        if self.plays_grid15() {
+            self.close_flanks_on_regain(att_side);
+            // A break into an open flank is only good for the next action in
+            // the attacking third.
+            if zone != Zone::attacking_third(att_side) {
+                self.pending_exploit = None;
+            }
+        }
         let events = if zone.is_box_for(att_side) {
             // The box is one cell: whatever lane the ball came in from, it is
             // now in the middle of it (GĐ3-tech-spec §7.1).
@@ -201,7 +209,8 @@ impl LiveMatchState {
             return long_shot;
         }
 
-        let success = self.one_v_one_success(att_side, def_side, &attacker, &defender, out_of_lane);
+        let success =
+            self.one_v_one_success(att_side, def_side, &attacker, &defender, out_of_lane, 1.0);
         let zone = Zone::attacking_third(att_side);
         let cross_prob = tactics_cross_probability(&self.team_ref(att_side).tactics);
 
@@ -267,7 +276,8 @@ impl LiveMatchState {
                 }
             }
         } else {
-            let lost = self.one_v_one_lost(minute, att_side, def_side, &attacker, &defender, rng);
+            let lost =
+                self.one_v_one_lost(minute, att_side, def_side, &attacker, &defender, None, rng);
             events.extend(lost);
         }
         events
@@ -275,7 +285,8 @@ impl LiveMatchState {
 
     /// The chance `attacker` beats `defender` in the attacking third's
     /// one-on-one, with every modifier the duel has: ratings in `duel`, the
-    /// rest here. `out_of_lane` is κ for a defender off his flank (P3.2).
+    /// rest here. `out_of_lane` is κ for a defender off his flank (P3.2),
+    /// `space` the room behind a full back who went up (P3.6; 1 otherwise).
     pub(super) fn one_v_one_success(
         &self,
         att_side: Side,
@@ -283,6 +294,7 @@ impl LiveMatchState {
         attacker: &PlayerSnap,
         defender: &PlayerSnap,
         out_of_lane: f64,
+        space: f64,
     ) -> f64 {
         let att_rating = self.condition_adjusted_skill(&attacker.id, 1.0)
             * trait_bonus(attacker, TraitContext::Dribbling);
@@ -296,7 +308,8 @@ impl LiveMatchState {
         let att_eff = att_rating
             * att_mod
             * crate::shared::home_mod(att_side, &self.config)
-            * self.line_strength(att_side, Position::Forward);
+            * self.line_strength(att_side, Position::Forward)
+            * space;
         let def_eff = def_rating
             * def_mod
             * crate::shared::home_mod(def_side, &self.config)
@@ -323,6 +336,10 @@ impl LiveMatchState {
     /// The attacker lost the one-on-one: tackled (perhaps fouled) or
     /// cleared, and a cleared ball goes behind for a corner a quarter of the
     /// time.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "a duel names both sides, both players and how it came about; owner=GĐ3"
+    )]
     pub(super) fn one_v_one_lost<R: Rng>(
         &mut self,
         minute: u8,
@@ -330,15 +347,19 @@ impl LiveMatchState {
         def_side: Side,
         attacker: &PlayerSnap,
         defender: &PlayerSnap,
+        duel_context: Option<TacticalContext>,
         rng: &mut R,
     ) -> Vec<MatchEvent> {
         let mut events = Vec::new();
         let zone = Zone::attacking_third(att_side);
         let is_tackle = rng.random_range(0.0..1.0f64) < 0.5;
         let fouled = if is_tackle {
-            let evt1 = MatchEvent::new(minute, EventType::DribbleTackled, att_side, zone)
+            let mut evt1 = MatchEvent::new(minute, EventType::DribbleTackled, att_side, zone)
                 .with_player(&attacker.id)
                 .with_secondary(&defender.id);
+            if let Some(context) = duel_context {
+                evt1 = evt1.with_tactical_context(context);
+            }
             let evt2 = MatchEvent::new(minute, EventType::Tackle, def_side, zone)
                 .with_player(&defender.id);
             self.emit(&mut events, evt1);
@@ -350,8 +371,12 @@ impl LiveMatchState {
             events.extend(foul_events);
             was_fouled
         } else {
-            let evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
+            // The clearance ends the duel, so it carries the duel's context.
+            let mut evt = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
                 .with_player(&defender.id);
+            if let Some(context) = duel_context {
+                evt = evt.with_tactical_context(context);
+            }
             self.emit(&mut events, evt);
             false
         };
@@ -371,7 +396,7 @@ impl LiveMatchState {
         }
         self.possession = def_side;
         self.ball_zone = Zone::defensive_third(att_side);
-        self.advance_lane(def_side, defender, rng);
+        self.regain_lane(def_side, Some(defender), rng);
         events
     }
 

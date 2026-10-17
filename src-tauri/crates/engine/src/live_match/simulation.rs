@@ -220,6 +220,8 @@ impl LiveMatchState {
                 if breakaway > 0.0 && rng.random_range(0.0..1.0f64) < breakaway {
                     self.ball_zone = Zone::attacking_third(def_side);
                     self.on_the_break = Some(def_side);
+                    // Into the flank the other side left open, if it did (P3.6).
+                    self.regain_lane(def_side, None, rng);
                 } else {
                     self.ball_zone = Zone::Midfield;
                 }

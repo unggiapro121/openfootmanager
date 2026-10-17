@@ -2563,6 +2563,13 @@
             "0": "{{player}} si naběhne na standardku a skóruje za {{team}}!",
             "1": "Volný kop je poslán do vápna a {{player}} přidá rozhodující dotek!"
           }
+        },
+        "flankExposed": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{team}} vyrazí do prostoru za krajním obráncem a {{player}} skóruje!",
+            "1": "Obránce zůstal vpředu! {{player}} trestá otevřenou stranu za {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

@@ -2563,6 +2563,13 @@
             "0": "{{player}} serbest vuruşa yükseliyor ve {{team}} için gol atıyor!",
             "1": "Serbest vuruş ceza sahasına gönderiliyor ve {{player}} son dokunuşu yapıyor!"
           }
+        },
+        "flankExposed": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{team}} bek oyuncusunun arkasındaki boşluğa koşuyor ve {{player}} golü atıyor!",
+            "1": "Bek önde yakalandı! {{player}} boş kanadı cezalandırıyor, gol {{team}} için!"
+          }
         }
       },
       "PenaltyGoal": {

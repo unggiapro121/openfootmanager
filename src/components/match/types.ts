@@ -36,7 +36,8 @@ export type TacticalContext =
   | "KeeperOffHisLine"
   | "CutInside"
   | "LowCross"
-  | "EarlyCross";
+  | "EarlyCross"
+  | "FlankExposed";
 
 export interface MatchEvent {
   minute: number;
