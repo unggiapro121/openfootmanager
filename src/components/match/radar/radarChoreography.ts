@@ -240,6 +240,10 @@ function stagePass(cue: Cue): Staging {
       take.seconds,
     );
   }
+  // A build-up or midfield pass stays in the lane the engine played it in
+  // (phase 2, GĐ4).
+  const aim = fromPitch(side, to);
+  to = toPitch(side, aim.depth, inLaneOf(event, aim.lane));
   return {
     steps: [
       {
@@ -274,6 +278,11 @@ function stageInterceptedPass(cue: Cue): Staging {
   );
   const take = takeBall(cue, passer);
   const from = take.at;
+  // Lost to a high press (phase 2, GĐ4): the pressers are on him as he plays it.
+  const pressers =
+    event.tactical_context === "HighTurnover"
+      ? closers(cue, opposite(side), from, interceptor)
+      : {};
   const aim = target ? (shapeSpot(cue, target, zoneCentreX(destination), side) ?? from) : from;
   // He reads it and gets across the ball's line where he can.
   const cut = interceptor
@@ -286,7 +295,7 @@ function stageInterceptedPass(cue: Cue): Staging {
         ...take.step,
         resetMovers: true,
         overlay: null,
-        movers: { ...take.step.movers, ...only(interceptor, cut) },
+        movers: { ...take.step.movers, ...pressers, ...only(interceptor, cut) },
         highlight: cast(passer),
         possession: side,
       },
@@ -296,6 +305,90 @@ function stageInterceptedPass(cue: Cue): Staging {
         action: { kind: "kick", by: passer, to: cut, receiver: interceptor, pace: "pass", peak: 0 },
       },
       { overlay: { kind: "cut", from, at: cut }, possession: opposite(side) },
+    ],
+  };
+}
+
+/** Where a long ball that drops short comes down, and where one over the midfield does. */
+const LONG_BALL_SHORT_DEPTH = 55;
+const LONG_BALL_OVER_DEPTH = 80;
+/** How high a long ball flies at its peak, in metres. */
+const LONG_BALL_PEAK = 12;
+
+/**
+ * A long ball out of the back (phase 2, GĐ4): the passer hits it high into
+ * the lane the engine sent it down — into midfield when a loose ball follows
+ * there, over it otherwise — and the man it is meant for runs onto it.
+ */
+function stageLongBall(cue: Cue): Staging {
+  const { event, next } = cue;
+  const side = event.side;
+  const passer = event.player_id;
+  const target = event.secondary_player_id;
+  const take = takeBall(cue, passer);
+  const short = next?.event_type === "BallRecovery" && next.zone === "Midfield";
+  const depth = short ? LONG_BALL_SHORT_DEPTH : LONG_BALL_OVER_DEPTH;
+  const landing = toPitch(side, depth, inLaneOf(event, fromPitch(side, take.at).lane));
+  return {
+    steps: [
+      {
+        ...take.step,
+        resetMovers: true,
+        overlay: null,
+        movers: { ...take.step.movers, ...only(short ? null : target, landing) },
+        highlight: cast(passer),
+        possession: side,
+      },
+      {
+        pace: "air",
+        ball: { at: landing, lift: 0 },
+        highlight: cast(passer, target),
+        action: {
+          kind: "kick",
+          by: passer,
+          to: landing,
+          receiver: short ? null : target,
+          pace: "air",
+          peak: LONG_BALL_PEAK,
+        },
+      },
+    ],
+  };
+}
+
+/** How far a loose ball runs on before someone gets to it. */
+const LOOSE_BALL_METRES = 4;
+
+/**
+ * A loose ball (phase 2, GĐ4): it runs on a few metres, the two men the engine
+ * names go for it, and the winner comes away with it.
+ */
+function stageBallRecovery(cue: Cue): Staging {
+  const { event, scene } = cue;
+  const winner = event.player_id;
+  const loser = event.secondary_player_id;
+  const spin = jitter(`${event.minute}r${winner}`);
+  const spot = onPitch({
+    x: scene.ball.x + spin * LOOSE_BALL_METRES,
+    y: scene.ball.y + (1 - Math.abs(spin)) * LOOSE_BALL_METRES * 0.5,
+  });
+  const beaten = lerp(spot, where(cue, loser), 0.15);
+  return {
+    steps: [
+      {
+        ball: { at: spot },
+        movers: { ...only(loser, beaten), ...only(winner, spot) },
+        waitFor: cast(winner),
+        highlight: cast(winner, loser),
+        overlay: null,
+        action: { kind: "roll", to: spot, chaser: winner },
+      },
+      {
+        ball: { at: spot },
+        possession: event.side,
+        highlight: cast(winner, loser),
+        action: winner ? { kind: "take", by: winner } : undefined,
+      },
     ],
   };
 }
@@ -841,6 +934,10 @@ function stageEvent(cue: Cue): Staging | null {
       return stagePass(cue);
     case "PassIntercepted":
       return stageInterceptedPass(cue);
+    case "LongBall":
+      return stageLongBall(cue);
+    case "BallRecovery":
+      return stageBallRecovery(cue);
     case "Interception":
     case "Tackle":
       return stageWinBack(cue);

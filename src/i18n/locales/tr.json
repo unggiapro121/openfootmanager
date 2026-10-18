@@ -2572,6 +2572,27 @@
             "0": "{{team}} bek oyuncusunun arkasındaki boşluğa koşuyor ve {{player}} golü atıyor!",
             "1": "Bek önde yakalandı! {{player}} boş kanadı cezalandırıyor, gol {{team}} için!"
           }
+        },
+        "highTurnover": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{team}} topu önde kaptı ve {{player}} cezayı kesti!",
+            "1": "Pres altında oyun kurarken hata, {{player}} affetmiyor!"
+          }
+        },
+        "longBall": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Tek bir uzun top, {{player}} kontrol ediyor ve gol!",
+            "1": "Uzun topla doğrudan, {{player}} {{team}} için bitiriyor!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} önde duran savunmanın arkasına koşup golü atıyor!",
+            "1": "Savunmanın arkasında yalnız kalan {{player}} {{team}} için soğukkanlı!"
+          }
         }
       },
       "PenaltyGoal": {

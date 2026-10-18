@@ -2466,6 +2466,27 @@
             "0": "O {{team}} ataca o espaço nas costas do lateral e {{player}} marca!",
             "1": "Pegos no ataque! {{player}} castiga o lado aberto para o {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{team}} rouba no campo de ataque e {{player}} castiga!",
+            "1": "Pressionados até o erro na saída de bola, e {{player}} não perdoa!"
+          }
+        },
+        "longBall": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Uma bola longa, {{player}} domina e é gol!",
+            "1": "Direto por cima numa bola longa, e {{player}} finaliza para o {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} corre nas costas da linha alta e manda para a rede!",
+            "1": "Sozinho nas costas da defesa, {{player}} tem frieza para o {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

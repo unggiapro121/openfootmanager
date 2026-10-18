@@ -2557,6 +2557,27 @@
             "0": "Il {{team}} attacca lo spazio alle spalle del terzino e {{player}} segna!",
             "1": "Sorpresi in avanti! {{player}} punisce la fascia scoperta per il {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{team}} recupera alto e {{player}} punisce!",
+            "1": "Pressati fino all'errore in impostazione, e {{player}} glielo fa pagare!"
+          }
+        },
+        "longBall": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Un lancio lungo, {{player}} lo addomestica ed è gol!",
+            "1": "Direttamente con un lancio lungo, e {{player}} finalizza per {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} si infila alle spalle della linea alta e segna!",
+            "1": "Solo alle spalle della difesa, {{player}} resta freddo per {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

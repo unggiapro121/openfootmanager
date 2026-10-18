@@ -2572,6 +2572,27 @@
             "0": "{{team}} break into the space behind the full back and {{player}} scores!",
             "1": "Caught upfield! {{player}} punishes the open flank for {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{team}} won it high and {{player}} punished them!",
+            "1": "Pressed into a mistake at the back, and {{player}} makes them pay!"
+          }
+        },
+        "longBall": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "One long ball, brought down by {{player}}, and it's in!",
+            "1": "Straight over the top with a long ball, and {{player}} finishes it for {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "GOOAL!",
+          "lines": {
+            "0": "{{player}} runs in behind the high line and slots it home!",
+            "1": "Through on goal in behind, {{player}} keeps his head for {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {
