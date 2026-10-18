@@ -2572,6 +2572,27 @@
             "0": "{{team}} phản công vào khoảng trống sau lưng hậu vệ biên và {{player}} ghi bàn!",
             "1": "Hậu vệ biên dâng quá cao! {{player}} trừng phạt cánh bị bỏ trống, ghi bàn cho {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{team}} đoạt bóng ngay trên phần sân đối phương và {{player}} trừng phạt họ!",
+            "1": "Bị ép sai lầm ngay trong khâu phát động, và {{player}} không bỏ lỡ!"
+          }
+        },
+        "longBall": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "Một đường chuyền dài, {{player}} khống chế gọn và ghi bàn!",
+            "1": "Phất thẳng lên, {{player}} dứt điểm thành công cho {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} băng xuống sau lưng hàng thủ dâng cao và đệm bóng vào lưới!",
+            "1": "Thoát xuống sau lưng hàng thủ, {{player}} bình tĩnh ghi bàn cho {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

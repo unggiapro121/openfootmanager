@@ -131,8 +131,9 @@ function brokeIntoOpenFlank(goal: MatchEvent, snapshot: MatchSnapshot): boolean 
 
 /**
  * Resolve the variant sub-key: the goal tally (hat-trick/brace) first, then
- * how the move was made (a cut inside, a low or early cross, a free kick
- * crossed in), then how the goal was made (a header, a direct free kick, a
+ * how the move was made (a break into an open flank, a ball won high, a run in
+ * behind, a long ball, a cut inside, a low or early cross, a free kick crossed
+ * in), then how the goal was made (a header, a direct free kick, a
  * shot from distance), then the goal's context.
  */
 function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
@@ -142,6 +143,10 @@ function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
     if (tally === 2) return "brace";
     // How the move was made (phase 2, GĐ3) comes before what finished it.
     if (brokeIntoOpenFlank(evt, snapshot)) return "flankExposed";
+    // How the ball was won or played up (phase 2, GĐ4).
+    if (evt.tactical_context === "HighTurnover") return "highTurnover";
+    if (evt.tactical_context === "BallInBehind") return "ballInBehind";
+    if (evt.tactical_context === "LongBall") return "longBall";
     if (evt.tactical_context === "CutInside") return "cutInside";
     if (evt.tactical_context === "LowCross") return "lowCross";
     if (evt.tactical_context === "EarlyCross") return "earlyCross";

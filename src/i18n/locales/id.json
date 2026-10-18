@@ -2572,6 +2572,27 @@
             "0": "{{team}} menyerang ruang di belakang bek sayap dan {{player}} mencetak gol!",
             "1": "Bek sayap terlambat turun! {{player}} menghukum sisi yang terbuka untuk {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{team}} merebut bola tinggi dan {{player}} menghukum mereka!",
+            "1": "Ditekan hingga salah di lini belakang, dan {{player}} memanfaatkannya!"
+          }
+        },
+        "longBall": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "Satu umpan panjang, dikontrol {{player}}, dan gol!",
+            "1": "Langsung lewat umpan panjang, dan {{player}} menuntaskannya untuk {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} berlari ke belakang garis pertahanan tinggi dan mencetak gol!",
+            "1": "Lolos ke belakang pertahanan, {{player}} tenang menuntaskan untuk {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

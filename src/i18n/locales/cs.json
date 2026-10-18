@@ -2572,6 +2572,27 @@
             "0": "{{team}} vyrazí do prostoru za krajním obráncem a {{player}} skóruje!",
             "1": "Obránce zůstal vpředu! {{player}} trestá otevřenou stranu za {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{team}} získali míč vysoko a {{player}} je potrestal!",
+            "1": "Chyba v rozehrávce pod tlakem a {{player}} ji trestá!"
+          }
+        },
+        "longBall": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "Jeden dlouhý míč, {{player}} ho zpracoval a je to gól!",
+            "1": "Dlouhým míčem přes obranu a {{player}} skóruje za {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} naběhl za vysoko postavenou obranu a skóruje!",
+            "1": "Sám za obranou, {{player}} zachoval chladnou hlavu pro {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

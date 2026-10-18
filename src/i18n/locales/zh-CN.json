@@ -2538,6 +2538,27 @@
             "0": "{{team}}打边后卫身后的空当，{{player}}破门！",
             "1": "边后卫压上太高！{{player}}惩罚了空出的边路，为{{team}}进球！"
           }
+        },
+        "highTurnover": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{team}}高位抢断，{{player}}一击致命！",
+            "1": "对手后场出球被逼出失误，{{player}}抓住机会破门！"
+          }
+        },
+        "longBall": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "一脚长传，{{player}}停球后破门！",
+            "1": "长传直接打身后，{{player}}为{{team}}完成破门！"
+          }
+        },
+        "ballInBehind": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}}插到高位防线身后，推射得分！",
+            "1": "{{player}}单刀突入防线身后，冷静为{{team}}破门！"
+          }
         }
       },
       "PenaltyGoal": {

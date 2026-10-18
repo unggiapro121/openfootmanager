@@ -249,6 +249,8 @@ impl LiveMatchState {
             }
             self.possession = att_side;
             self.ball_zone = Zone::attacking_box(att_side);
+            // The shot he gets away is part of the run in behind.
+            self.pending_context = Some((att_side, TacticalContext::BallInBehind));
             return events;
         }
         let recovered = MatchEvent::new(minute, EventType::Interception, def_side, zone)

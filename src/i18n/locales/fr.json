@@ -2538,6 +2538,27 @@
             "0": "{{team}} attaque l'espace dans le dos du latéral et {{player}} marque !",
             "1": "Pris trop haut ! {{player}} punit le côté laissé ouvert pour {{team}} !"
           }
+        },
+        "highTurnover": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{team}} récupère haut et {{player}} punit l'adversaire !",
+            "1": "Pressés jusqu'à l'erreur à la relance, et {{player}} le leur fait payer !"
+          }
+        },
+        "longBall": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "Un long ballon, contrôlé par {{player}}, et c'est au fond !",
+            "1": "Directement par-dessus sur un long ballon, et {{player}} conclut pour {{team}} !"
+          }
+        },
+        "ballInBehind": {
+          "headline": "BUUUT !",
+          "lines": {
+            "0": "{{player}} file dans le dos de la défense haute et marque !",
+            "1": "Seul dans le dos de la défense, {{player}} garde son sang-froid pour {{team}} !"
+          }
         }
       },
       "PenaltyGoal": {

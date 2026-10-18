@@ -2538,6 +2538,27 @@
             "0": "{{team}} kontert in den Raum hinter dem Außenverteidiger und {{player}} trifft!",
             "1": "Zu weit aufgerückt! {{player}} bestraft die offene Seite für {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{team}} erobert den Ball hoch und {{player}} bestraft es!",
+            "1": "Unter Druck ein Fehler im Spielaufbau, und {{player}} lässt sie bezahlen!"
+          }
+        },
+        "longBall": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "Ein langer Ball, von {{player}} verarbeitet, und drin ist er!",
+            "1": "Mit einem langen Ball über die Abwehr, und {{player}} vollendet für {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "TOOOR!",
+          "lines": {
+            "0": "{{player}} läuft hinter die hohe Kette und schiebt ein!",
+            "1": "Allein hinter der Abwehr bleibt {{player}} cool für {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {

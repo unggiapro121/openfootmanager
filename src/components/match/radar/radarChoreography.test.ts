@@ -155,6 +155,83 @@ describe("choreographBatch — lanes (phase 2, GĐ3)", () => {
   });
 });
 
+describe("choreographBatch — build-up and long balls (phase 2, GĐ4)", () => {
+  const kickOf = (beat: RadarBeat) =>
+    beat.steps.find((step) => step.action?.kind === "kick")?.action;
+
+  // Given a pass out of the home third down its left, then it is played to a
+  // spot in the left band.
+  it("plays a build-up pass inside the band of its lane", () => {
+    const event: MatchEvent = {
+      ...radarEvent("PassCompleted", "Home", "HomeDefense", "h_lb"),
+      lane: "Left",
+    };
+    const kick = kickOf(choreographBatch([event], stage, start).beats[0]);
+    expect(kick?.kind).toBe("kick");
+    const to = kick?.kind === "kick" ? kick.to : start.ball;
+    expect(fromPitch("Home", to).lane).toBeLessThanOrEqual(26);
+  });
+
+  // Given a long ball that drops in midfield for a loose ball, and one met in
+  // the attacking third, then each is lofted, the first coming down in
+  // midfield and the second in the final third.
+  it("lofts a long ball to where it comes down", () => {
+    const long = radarEvent("LongBall", "Home", "HomeDefense", "h_cb1", "h_st1");
+    const short = choreographBatch(
+      [long, radarEvent("BallRecovery", "Away", "Midfield", "a_cm1", "h_cm1")],
+      stage,
+      start,
+    ).beats[0];
+    const shortKick = kickOf(short);
+    expect(shortKick?.kind === "kick" && shortKick.peak > 0).toBe(true);
+    const shortDepth = fromPitch(
+      "Home",
+      shortKick?.kind === "kick" ? shortKick.to : start.ball,
+    ).depth;
+    expect(shortDepth).toBeGreaterThan(38);
+    expect(shortDepth).toBeLessThan(67);
+    const over = choreographBatch(
+      [long, radarEvent("Dribble", "Home", "AwayDefense", "h_st1")],
+      stage,
+      start,
+    ).beats[0];
+    const overKick = kickOf(over);
+    expect(
+      fromPitch("Home", overKick?.kind === "kick" ? overKick.to : start.ball).depth,
+    ).toBeGreaterThan(70);
+  });
+
+  // Given a loose ball won by an away midfielder over a home one, then both go
+  // for it and the winner ends with it, the ball his side's.
+  it("sends both men to a loose ball and gives it to the winner", () => {
+    const event = radarEvent("BallRecovery", "Away", "Midfield", "a_cm1", "h_cm1");
+    const scene = play(choreographBatch([event], stage, start).beats);
+    expect(scene.possession).toBe("Away");
+    expect(distance(scene.ball, standingIn(scene, "a_cm1"))).toBeLessThan(2.5);
+    expect(scene.highlight).toEqual(expect.arrayContaining(["a_cm1", "h_cm1"]));
+  });
+
+  // Given a home build-up lost to a high press, then away players close the
+  // passer down before the ball is cut out.
+  it("closes the passer down before a high turnover", () => {
+    const events: MatchEvent[] = [
+      {
+        ...radarEvent("PassIntercepted", "Home", "HomeDefense", "h_cb2"),
+        tactical_context: "HighTurnover",
+      },
+      {
+        ...radarEvent("Interception", "Away", "HomeDefense", "a_st1"),
+        tactical_context: "HighTurnover",
+      },
+    ];
+    const [beat] = choreographBatch(events, stage, start).beats;
+    const pressers = Object.keys(beat.steps[0].movers ?? {}).filter(
+      (id) => id.startsWith("a_") && id !== "a_st1",
+    );
+    expect(pressers.length).toBeGreaterThan(0);
+  });
+});
+
 describe("choreographBatch — attacking", () => {
   // Given a cross aimed at a striker, then the ball rises in flight and comes
   // down where the striker meets it.

@@ -110,6 +110,24 @@ describe("getCommentary", () => {
     expect(result!.line).toContain("Haaland");
   });
 
+  it("uses the high-turnover variant for a goal after winning the ball in their build-up", () => {
+    const evt: MatchEvent = { ...goal(10, "p1"), tactical_context: "HighTurnover" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/won it high|pressed/);
+  });
+
+  it("uses the long-ball variant for a goal from a long ball brought down", () => {
+    const evt: MatchEvent = { ...goal(10, "p1"), tactical_context: "LongBall" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/long ball/);
+  });
+
+  it("uses the in-behind variant for a goal from a run in behind a high line", () => {
+    const evt: MatchEvent = { ...goal(10, "p1"), tactical_context: "BallInBehind" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result!.line.toLowerCase()).toMatch(/in behind/);
+  });
+
   it("uses the low-cross variant for a first-time finish from a low cross", () => {
     const evt: MatchEvent = { ...goal(10, "p1"), tactical_context: "LowCross" };
     const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));

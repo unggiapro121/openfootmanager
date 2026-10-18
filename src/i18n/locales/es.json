@@ -2538,6 +2538,27 @@
             "0": "¡El {{team}} ataca el espacio a la espalda del lateral y marca {{player}}!",
             "1": "¡Pillado arriba! {{player}} castiga la banda abierta para el {{team}}!"
           }
+        },
+        "highTurnover": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡{{team}} roba arriba y {{player}} lo castiga!",
+            "1": "¡Presionados al error en la salida, y {{player}} se lo hace pagar!"
+          }
+        },
+        "longBall": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡Un balón largo, {{player}} lo controla y adentro!",
+            "1": "¡Directo por encima con un balón largo, y {{player}} define para {{team}}!"
+          }
+        },
+        "ballInBehind": {
+          "headline": "¡GOOOL!",
+          "lines": {
+            "0": "¡{{player}} corre a la espalda de la línea adelantada y la empuja!",
+            "1": "¡Solo a la espalda de la defensa, {{player}} no falla para {{team}}!"
+          }
         }
       },
       "PenaltyGoal": {
