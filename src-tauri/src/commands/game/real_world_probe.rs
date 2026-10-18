@@ -75,6 +75,13 @@ struct LeagueTotals {
     /// Results by the shape each club ended the run in (phase 2, GĐ5 P5.1,
     /// X83, X88): the first look at formation balance on real players.
     by_formation: BTreeMap<String, FormationRecord>,
+    /// Matches by their total goals, 0 to 5 and over (GĐ5 P5.4: draws depend
+    /// on how goals spread, not only on their mean), and goalless draws.
+    by_total_goals: [u32; 6],
+    goalless: u32,
+    /// Of those, the draws (1-1 of the 2-goal matches, 2-2 of the 4-goal
+    /// ones): how evenly the goals split between the two sides.
+    draws_by_total_goals: [u32; 6],
 }
 
 /// One shape's league results, from the side of the club playing it.
@@ -289,6 +296,17 @@ impl LeagueTotals {
         self.draws += other.draws;
         self.away_wins += other.away_wins;
         self.substitutions += other.substitutions;
+        for (mine, theirs) in self.by_total_goals.iter_mut().zip(other.by_total_goals) {
+            *mine += theirs;
+        }
+        self.goalless += other.goalless;
+        for (mine, theirs) in self
+            .draws_by_total_goals
+            .iter_mut()
+            .zip(other.draws_by_total_goals)
+        {
+            *mine += theirs;
+        }
         for (mine, theirs) in self.by_gap.iter_mut().zip(other.by_gap.iter()) {
             mine.matches += theirs.matches;
             mine.strong_wins += theirs.strong_wins;
@@ -524,6 +542,10 @@ fn league_totals(
         totals.matches += 1;
         totals.goals += goals;
         totals.goals_squared += u64::from(goals * goals);
+        totals.by_total_goals[(goals as usize).min(5)] += 1;
+        totals.goalless += u32::from(goals == 0);
+        totals.draws_by_total_goals[(goals as usize).min(5)] +=
+            u32::from(result.home_goals == result.away_goals);
         if let (Some(home), Some(away)) = (
             strength.get(&fixture.home_team_id),
             strength.get(&fixture.away_team_id),
@@ -1594,6 +1616,23 @@ fn real_world_probe() {
             gap.pct(gap.strong_at_home)
         );
     }
+    println!(
+        "  matches by total goals 0/1/2/3/4/5+ (%): {} · goalless {:.1}% (real 7.2/18.1/23.6/22.2/14.9/14.0 · 7.2)",
+        l.by_total_goals
+            .iter()
+            .map(|&n| format!("{:.1}", l.pct(n)))
+            .collect::<Vec<_>>()
+            .join("/"),
+        l.pct(l.goalless)
+    );
+    let draw_share = |total: usize| {
+        f64::from(l.draws_by_total_goals[total]) / f64::from(l.by_total_goals[total].max(1)) * 100.0
+    };
+    println!(
+        "  draws among 2-goal matches {:.1}% (real 51.2) · among 4-goal matches {:.1}% (real 39.6)",
+        draw_share(2),
+        draw_share(4)
+    );
     println!(
         "  formations (league clubs, last run): {} · {} clubs changed shape during the run",
         shares_line(&report.formations),

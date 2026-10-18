@@ -23,9 +23,11 @@ use super::LiveMatchState;
 /// later 41% (`gd4-real-reference.txt`, item 10). Set at P4.1 by the goal
 /// budget, not by that: each 0.1 less costs about 0.075 goals a match on the
 /// guardrail sweep, and 0.70 keeps the real-world league probe at 2.93, just
-/// above GĐ4's soft floor of 2.9 (X77). Lowering it towards real football is
-/// one of GĐ5's ways to the 2.6–2.9 target.
-pub(crate) const P_DIRECT_BASE: f64 = 0.70;
+/// above GĐ4's soft floor of 2.9 (X77). GĐ5 P5.4 lowered it to 0.55, towards
+/// real football: on the Premier League probe it took the shots a match from
+/// 27.1 to 25.5 (real 25.9), the attacks fewer and the box's conversion up to
+/// keep the goals.
+pub(crate) const P_DIRECT_BASE: f64 = 0.55;
 const P_DIRECT_MIN: f64 = 0.10;
 const P_DIRECT_MAX: f64 = 0.80;
 

@@ -79,7 +79,7 @@ Each simulated minute follows this sequence:
 
 1. **Possession tick** — the possessing side's counter increments (used for possession % stats).
 2. **1–3 actions** — a random number of actions are resolved in the current zone.
-3. **Midfield contest** — after actions, a possession contest occurs. The possessing side's midfield rating is compared against the defending side's. If the defender wins, possession flips and the ball resets to midfield.
+3. **Midfield contest** — after actions, a possession contest occurs. The possessing side keeps the ball with `a^k / (a^k + d^k)`, `a` and `d` the two midfields' weights and `k` = 1.6 (`possession_contest_sharpness`, GĐ5 P5.4: a side's possession now spreads 10.1 points across matches, real football 10.6; it was 7.8 at `k` = 1). If the defender wins, possession flips and the ball resets to midfield.
 
 ### Action Resolution by Zone
 
@@ -232,13 +232,14 @@ them), and the winner (`BallRecovery`, +0.05 on his rating) has the ball where i
 
 `live_match/transition.rs` (P4.1, X77). When a defence wins the ball in its own third — a one-on-one
 tackled or cleared, a cross or a set piece cleared — it goes straight up the pitch, as it always did,
-`p_direct = clamp(0.70 × break × counter-press, 0.10, 0.80)` of the time (break speed Slow 0.93,
+`p_direct = clamp(0.55 × break × counter-press, 0.10, 0.80)` of the time (break speed Slow 0.93,
 Medium and Fast 1.0; the other side's counter-press None 1.0, Short 0.95, Long 0.90); otherwise it
 plays out from the back, and that first build-up is pressed harder by the side that has just lost the
 ball (counter-press Short ×1.05, Long ×1.10). The design's wider multipliers made these two dials win
 or lose by up to ten points; they were narrowed at P4.1 and P4.6. Real football gets into the final third within ten
-seconds of such a win only 9% of the time; 0.70 is set by the goal budget (each 0.1 less costs about
-0.075 goals a match), and GĐ5 can lower it.
+seconds of such a win only 9% of the time. P4.1 set 0.70 by the goal budget; GĐ5 P5.4 lowered it to
+0.55, which brought the shots a match to the real 25.5, with the box's conversion raised to keep the
+goals.
 
 ### Headers
 
@@ -487,7 +488,7 @@ measurement taken on the path the game actually plays.
 
 ## Home Advantage
 
-The home team receives a configurable multiplier (default **1.08**, i.e. 8% boost) applied to all their ratings during action resolution. This models the effect of playing at home — crowd support, familiarity with the pitch, etc.
+The home team receives a configurable multiplier (default **1.10**, i.e. 10% boost; 1.08 until GĐ5 P5.4) applied to all their ratings during action resolution. This models the effect of playing at home — crowd support, familiarity with the pitch, etc.
 
 ---
 
@@ -515,14 +516,14 @@ All probabilities and multipliers are tuneable via `MatchConfig`:
 
 | Parameter | Default | Description |
 |---|---|---|
-| `home_advantage` | 1.08 | Multiplier for home team ratings |
-| `shot_accuracy_base` | 0.45 | Base chance a shot is on target |
-| `goal_conversion_base` | 0.30 | Base chance an on-target shot scores |
-| `fatigue_per_minute` | 0.15 | Condition loss per minute (live mode) |
-| `foul_probability` | 0.12 | Base chance a tackle results in a foul |
-| `yellow_card_probability` | 0.30 | Chance a foul produces a yellow |
+| `home_advantage` | 1.10 | Multiplier for home team ratings |
+| `shot_accuracy_base` | 0.35 | Base chance a shot is on target |
+| `goal_conversion_base` | 0.38 | Base chance an on-target shot scores |
+| `fatigue_per_minute` | 0.20 | Condition loss per minute (live mode) |
+| `foul_probability` | 0.40 | Base chance a tackle results in a foul |
+| `yellow_card_probability` | 0.11 | Chance a foul produces a yellow |
 | `red_card_probability` | 0.04 | Chance a card is direct red |
-| `penalty_probability` | 0.08 | Chance a box foul is a penalty |
+| `penalty_probability` | 0.50 | Chance a box foul is a penalty |
 | `stoppage_time_max` | 4 | Max stoppage time minutes per half |
 | `injury_probability` | 0.03 | Chance of injury per foul, before the fitness factor |
 
@@ -699,8 +700,10 @@ starter crosses the line.
    forwards first. He keeps `Position::Goalkeeper` rather than inheriting the vacated slot.
 2. Any starter below the fatigue threshold (55 − experience×10 from 75', 45 − experience×8 from
    60', otherwise 35) — replaced in kind.
-3. Chasing — two goals down at any checkpoint, one goal down from 60'. A forward comes on for the
-   most spent defender or midfielder, never breaking up a back four below three.
+3. Chasing — two goals down from 60', one goal down from 70'. One forward comes on for the most spent
+   midfielder, once a match; the back line stays. A substitute takes the slot he replaces, so the
+   old rule (a forward for every defender or midfielder, from the interval) put forwards in the back
+   line and the chasing side conceded more than it won back (GĐ5 P5.4).
 4. Protecting a lead from 80' — a defender comes on for the most spent forward, always leaving one
    up front.
 
@@ -710,9 +713,9 @@ identical from the touchline, and a manager takes the wrong one off with probabi
 *whether* he acts.
 
 **Tactical changes** (one per evaluation):
-- A `Visionary` who is losing after 60' changes shape first: 4-4-2 → 4-3-3 → 4-2-3-1. The chain
+- A `Visionary` who is losing after 70' changes shape first: 4-4-2 → 4-3-3 → 4-2-3-1. The chain
   ends, so this fires at most twice.
-- Otherwise a target play style: Attacking two goals down, or one goal down from 60' unless already
+- Otherwise a target play style: Attacking two goals down from 60', or one goal down from 70' unless already
   HighPress; Defensive with a lead from 80', or pinned in one's own half for 7 of the last 10
   minutes with nothing to chase.
 - If the style is already right, one dial underneath it (`ChangeTacticalDial`). Chasing: a higher

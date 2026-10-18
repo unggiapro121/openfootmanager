@@ -150,6 +150,11 @@ pub struct SubstitutionRecord {
     pub side: Side,
     pub player_off_id: String,
     pub player_on_id: String,
+    /// What the substitute was on the bench. He takes the vacated slot's
+    /// position on the pitch, so this is the only record that a forward came
+    /// on for a midfielder (phase 2, GĐ5 P5.4).
+    #[serde(default)]
+    pub came_on_as: Option<crate::types::Position>,
 }
 
 // ---------------------------------------------------------------------------
