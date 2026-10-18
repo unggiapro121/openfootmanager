@@ -24,8 +24,13 @@ pub(crate) const LAST_ACTOR_WEIGHT: f64 = 2.0;
 
 /// How much of ω above 1 the box keeps (GĐ5 P5.3b); the default of
 /// `CalibrationKnobs::shot_weight_spread`. At 1 the table below is used as
-/// written.
-pub(crate) const SHOT_WEIGHT_SPREAD: f64 = 1.0;
+/// written. Calibrated to 0 on the match probe (Premier League): with the
+/// table as written the league's top scorer averaged 56 goals a season and
+/// 59% of his club's goals (real 25–36, about 30–40%), because a lone
+/// striker took most of the box's shots and headers. At 0 every forward,
+/// attacking midfielder and wide man is alike in the box (34 goals, 39%);
+/// a finishing role still pays in the one-on-one (`shared.rs`).
+pub(crate) const SHOT_WEIGHT_SPREAD: f64 = 0.0;
 
 /// ω as the box uses it: the part above 1 scaled by `spread`, so forwards
 /// and finishing roles can be pulled towards each other without lifting
@@ -255,12 +260,14 @@ mod tests {
             .count() as u32
     }
 
-    /// Given two strikers alike in every way, one a poacher,
+    /// Given two strikers alike in every way, one a poacher, and the ω table
+    /// used as written (spread 1; the game plays it at 0 since GĐ5 P5.3b),
     /// when the shooter is drawn many times,
     /// then the poacher shoots more often.
     #[test]
-    fn a_poacher_shoots_more_than_a_standard_striker() {
+    fn a_poacher_shoots_more_than_a_standard_striker_on_the_table_as_written() {
         let mut s = state("4-4-2");
+        s.config.knobs.shot_weight_spread = 1.0;
         let first = slot_index(&s, PitchPosition::Striker);
         s.home.players[first].role = PlayerRole::Poacher;
         let poacher = s.home.players[first].id.clone();
