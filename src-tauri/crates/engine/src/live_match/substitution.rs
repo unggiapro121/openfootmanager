@@ -1,4 +1,5 @@
 use crate::event::{EventType, MatchEvent};
+use crate::pitch_position::{PitchPosition, formation_slots};
 use crate::types::{PlayerData, PlayerRole, Position, Side, Zone};
 
 use super::{LiveMatchState, SubstitutionRecord, is_role_valid_for_position};
@@ -248,18 +249,20 @@ impl LiveMatchState {
     ///   manager moves the gap with [`Self::swap_slots`] if he wants it elsewhere.
     ///   A sent-off keeper whose slot the keeper on the pitch needs takes that
     ///   keeper's old slot instead.
-    /// - Everyone else still playing fills the remaining slots, most defensive
-    ///   first (defending + tackling + strength), from the back line forward.
+    /// - Everyone else still playing keeps his place where the new shape
+    ///   allows: first a slot at the position he stood in, then a slot in the
+    ///   same line, each going to whoever fits it best (`fit_for_slot`); the
+    ///   slots left go to the best fit of whoever is left. Until GĐ5 P5.4b
+    ///   every slot was refilled by defending + tackling + strength, which put
+    ///   strong forwards at centre back and lost a chasing side the match.
     ///
     /// Each slot gives its occupant its group (`formation_slots(..)[i].group()`):
     /// read from the slot, not from counting the formation's rows, which would
     /// put 3-4-2-1's wing-backs in midfield (phase 2, P2.7, X44). A role the
     /// new group does not admit falls back to `Standard`.
     pub(super) fn apply_formation(&mut self, side: Side, formation: &str) {
-        let slot_groups: Vec<Position> = crate::pitch_position::formation_slots(formation)
-            .into_iter()
-            .map(crate::pitch_position::PitchPosition::group)
-            .collect();
+        let old_slots = formation_slots(&self.team_ref(side).formation);
+        let new_slots = formation_slots(formation);
         let sent_off = self.sent_off.clone();
         let team = self.team_mut(side);
         team.formation = formation.to_string();
@@ -271,7 +274,8 @@ impl LiveMatchState {
             .position(|p| p.position == Position::Goalkeeper && !is_off(p));
 
         let mut slots: Vec<Option<PlayerData>> = vec![None; players.len()];
-        let mut outfield = Vec::new();
+        // Each outfielder still playing, with the slot he stood in.
+        let mut outfield: Vec<(Option<PitchPosition>, PlayerData)> = Vec::new();
         for (idx, player) in players.into_iter().enumerate() {
             if Some(idx) == keeper_idx {
                 slots[0] = Some(player);
@@ -285,19 +289,40 @@ impl LiveMatchState {
                 // Nobody in goal: whoever stands in slot 0 stays there.
                 slots[0] = Some(player);
             } else {
-                outfield.push(player);
+                outfield.push((old_slots.get(idx).copied(), player));
             }
         }
 
-        outfield.sort_by_key(|p| {
-            std::cmp::Reverse(
-                u16::from(p.defending) + u16::from(p.tackling) + u16::from(p.strength),
-            )
-        });
-        let mut outfield = outfield.into_iter();
-        for slot in slots.iter_mut().skip(1) {
-            if slot.is_none() {
-                *slot = outfield.next();
+        let slot_at = |idx: usize| {
+            new_slots
+                .get(idx)
+                .copied()
+                .unwrap_or(PitchPosition::Striker)
+        };
+        // First the same position, then the same line, then whoever is left:
+        // a change of shape moves only the players it has to (GĐ5 P5.4b).
+        let same_position = |was: Option<PitchPosition>, slot: PitchPosition| was == Some(slot);
+        let same_line = |was: Option<PitchPosition>, slot: PitchPosition| {
+            was.map(PitchPosition::group) == Some(slot.group())
+        };
+        let anyone = |_: Option<PitchPosition>, _: PitchPosition| true;
+        for keeps in [&same_position as &dyn Fn(_, _) -> bool, &same_line, &anyone] {
+            for (idx, place) in slots.iter_mut().enumerate().skip(1) {
+                if place.is_some() {
+                    continue;
+                }
+                let slot = slot_at(idx);
+                let best = outfield
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, (was, _))| keeps(*was, slot))
+                    .max_by(|(_, (_, a)), (_, (_, b))| {
+                        fit_for_slot(a, slot).total_cmp(&fit_for_slot(b, slot))
+                    })
+                    .map(|(i, _)| i);
+                if let Some(i) = best {
+                    *place = Some(outfield.swap_remove(i).1);
+                }
             }
         }
 
@@ -305,10 +330,27 @@ impl LiveMatchState {
         for (idx, player) in team.players.iter_mut().enumerate().skip(1) {
             // A slot past the formation's eleven (never, for a full XI) plays
             // up front, as counting the rows used to put it.
-            player.position = slot_groups.get(idx).copied().unwrap_or(Position::Forward);
+            player.position = new_slots
+                .get(idx)
+                .map_or(Position::Forward, |slot| slot.group());
             if !is_role_valid_for_position(player.role, player.position) {
                 player.role = PlayerRole::Standard;
             }
         }
+    }
+}
+
+/// How well `player` fits `slot`: his rating there when `ofm_core` rated him,
+/// else (a synthetic player) the attributes the slot's line asks most of.
+fn fit_for_slot(player: &PlayerData, slot: PitchPosition) -> f64 {
+    if let Some(rating) = player.rating_at(slot) {
+        return f64::from(rating.ovr);
+    }
+    let mean = |values: [u8; 3]| values.iter().map(|&v| f64::from(v)).sum::<f64>() / 3.0;
+    match slot.group() {
+        Position::Goalkeeper => f64::from(player.handling),
+        Position::Defender => mean([player.defending, player.tackling, player.strength]),
+        Position::Midfielder => mean([player.passing, player.vision, player.stamina]),
+        Position::Forward => mean([player.shooting, player.pace, player.dribbling]),
     }
 }

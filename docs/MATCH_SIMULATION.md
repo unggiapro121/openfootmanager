@@ -636,7 +636,7 @@ PreKickOff → FirstHalf → HalfTime → SecondHalf → FullTime
 Users (and AI) can inject commands between minutes:
 
 - **Substitute** — swap a player on the pitch with a bench player (max 5 subs per match)
-- **ChangeFormation** — change the team's formation (e.g. "4-3-3" → "3-5-2"), which reassigns player positions — each player takes the group of the slot he stands in (`formation_slots`), so 3-4-2-1's wing-backs (second row: LWB, CM, CM, RWB; phase 2 P2.7) are defenders and keep a wing-back role
+- **ChangeFormation** — change the team's formation (e.g. "4-3-3" → "3-5-2"), which reassigns player positions. Only the players the new shape displaces move: each keeps a slot at the position he stood in, else one in his line, the best-rated taking it; the slots left go to the best fit of whoever is left (GĐ5 P5.4b; until then every slot was refilled by defending, tackling and strength, which sent strong forwards to centre back). Each player takes the group of the slot he stands in — each player takes the group of the slot he stands in (`formation_slots`), so 3-4-2-1's wing-backs (second row: LWB, CM, CM, RWB; phase 2 P2.7) are defenders and keep a wing-back role
 - **ChangePlayStyle** — switch between the 6 play styles
 - **SetFreeKickTaker / SetCornerTaker / SetPenaltyTaker / SetCaptain** — assign set piece roles
 
