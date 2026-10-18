@@ -319,6 +319,9 @@ pub struct TeamDef {
     /// drawn between 10,000 and 80,000 when omitted, as before the field existed.
     #[serde(default, alias = "stadium_capacity")]
     pub stadium_capacity: Option<u32>,
+    /// The tactics and default line-up the club opens with (`team_tactics`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tactics: Option<super::team_tactics::TeamTacticsDef>,
 }
 
 fn default_play_style() -> String {

@@ -11,6 +11,7 @@ import type {
   TeamDef,
   WorldMetaDef,
 } from "../components/menu/PackageEditor/types";
+import type { TacticsPhaseSettings } from "../store/types";
 
 /** Everything the editor writes back to a package project folder. */
 export interface PackageProjectContents {
@@ -43,6 +44,14 @@ export async function savePackageProject(project: PackageProjectContents): Promi
     names: project.names,
     competitions: project.competitions,
   });
+}
+
+/**
+ * The phase settings a club of `playStyle` opens with when its package names
+ * none — what a custom set of tactics starts from.
+ */
+export async function fetchTacticsBlueprint(playStyle: string): Promise<TacticsPhaseSettings> {
+  return invoke<TacticsPhaseSettings>("package_tactics_blueprint", { playStyle });
 }
 
 /** Read a project folder, with the validation issues found in it. */

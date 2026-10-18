@@ -3297,7 +3297,10 @@
         "alternatePositionInvalid": "\"{{entity}}\" oyuncusu için {{position}} alternatif pozisyon olarak listelenmiş. Alternatif, belirli bir pozisyon olmalı, oyuncunun kendi pozisyonundan farklı olmalı ve yalnızca bir kez listelenmelidir.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" oyuncusunda zayıf ayak veya alternatif pozisyonlar var, ancak {{position}} genel bir gruptur; bu yüzden oyun bunları oyuncunun özelliklerinden yeniden hesaplar ve yazdığınızı atar. Oyuncuya CentralMidfielder veya Striker gibi belirli bir pozisyon verin.",
         "careerEntryNeedsClub": "\"{{entity}}\" oyuncusunun kariyer kaydında (satır {{row}}) kulüp adı yok.",
-        "unsupportedFormatVersion": "Bu paket oyunun daha yeni bir sürümüyle oluşturuldu (biçim {{version}}; bu sürüm {{supported}} destekliyor). Açmak için oyunu güncelleyin."
+        "unsupportedFormatVersion": "Bu paket oyunun daha yeni bir sürümüyle oluşturuldu (biçim {{version}}; bu sürüm {{supported}} destekliyor). Açmak için oyunu güncelleyin.",
+        "unknownFormation": "\"{{team}}\" takımı oyunda olmayan \"{{formation}}\" dizilişini kullanıyor.",
+        "tacticsPlayerNotInClub": "\"{{team}}\" taktiği, takımın oyuncusu olmayan \"{{player}}\" adını içeriyor.",
+        "duplicateStarter": "\"{{team}}\" ilk on birinde \"{{player}}\" birden fazla kez yer alıyor."
       },
       "conflict": {
         "duplicateId": "\"{{packages}}\" paketlerinin ikisi de {{entityKind}} \"{{entityId}}\" kaydını farklı içerikle tanımlıyor. Son paket geçerli olur.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{scaleMax}} üzerinden {{min}}–{{max}} · {{band}}",
     "repReadoutSpan": "{{scaleMax}} üzerinden {{min}}–{{max}} · {{minBand}} ile {{maxBand}} arası",
-    "budgetReadout": "Aylık {{min}}–{{max}} · transfer bütçesi {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "Aylık {{min}}–{{max}} · transfer bütçesi {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Taktik ve varsayılan kadro",
+      "intro": "Kulübün dünyaya başladığı ayarlar. Yapay zekâ kulübü bunları sonra kendisi değiştirir; kulübü devralan teknik direktör buradan başlar.",
+      "formationAuto": "Otomatik (kulüp kadrosuna ve oyun tarzına göre seçer)",
+      "needFormation": "İlk on biri ve oyuncu rollerini belirlemek için bir diziliş seçin.",
+      "startingXi": "İlk on bir",
+      "elevenProgress": "{{count}}/{{total}} seçildi",
+      "elevenIncomplete": "Oyun bu on biri ancak tüm mevkiler dolduğunda kullanır; o zamana kadar kadroyu kendisi kurar.",
+      "noPlayers": "Bu kulübün pakette henüz oyuncusu yok. Dizmek için kulübe oyuncu ekleyin.",
+      "nobody": "— Yok —",
+      "notInClub": "{{player}} (bu kulüpten değil)",
+      "slotPlayer": "{{position}} mevkisindeki oyuncu",
+      "slotRole": "{{position}} mevkisindeki rol",
+      "matchRoles": "Kaptan ve duran toplar",
+      "customPhase": "Özel aşama ayarları",
+      "phaseFromStyle": "Kapalı: kulüp oyun tarzının kendi ayarlarını kullanır."
+    }
   },
   "packageBuild": {
     "title": "Dünyanızı Oluşturun",

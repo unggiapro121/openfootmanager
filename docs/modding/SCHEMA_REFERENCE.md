@@ -151,6 +151,7 @@ Defines a football club.
 | `logo` | string or null | no | `null` | Relative path to the team's logo image inside the package. Example: `"assets/logos/manchester-city.png"`. |
 | `kitPattern` | string or null | no | `null` | Jersey pattern used when drawing the club's kit. One of: `"Solid"`, `"Stripes"`, `"Hoops"`, `"HalfAndHalf"`, `"Diagonal"`. |
 | `foundedYear` | integer or null | no | `null` | Year the team was founded. If omitted or `null`, the game draws a random year between 1880 and 1959 at world generation. Example: `2005`. |
+| `tactics` | object or null | no | `null` | The tactics and default line-up the club opens the world with. See [`tactics`](#tactics--opening-tactics-and-line-up) below. |
 
 **Example:**
 ```json
@@ -170,6 +171,26 @@ Defines a football club.
   "foundedYear": 2005
 }
 ```
+
+### `tactics` — opening tactics and line-up
+
+What the club opens the world with, not a standing order. An AI club reviews its
+shape, phase settings and roles every week and picks its own side for each match,
+exactly as a club without `tactics` does; a manager who takes the club over starts
+from these settings and changes them by hand. Every field is optional, and anything
+left out is chosen the way it is for a club with no `tactics`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `formation` | string | One of `"4-4-2"`, `"4-3-3"`, `"3-5-2"`, `"4-5-1"`, `"4-2-3-1"`, `"3-4-3"`, `"5-3-2"`, `"4-1-4-1"`, `"3-4-2-1"`. Any other value is a validation error. |
+| `startingXi` | string[] | Player IDs of this club, one per slot of `formation`, in slot order (goalkeeper first, then each line from left to right). Used only when it names a different player for every slot; otherwise the game picks the side. |
+| `playerRoles` | object | Player ID → role, e.g. `{ "rice": "BoxToBox" }`. A role only counts where the player's slot admits it. |
+| `matchRoles` | object | `captain`, `vice_captain`, `penalty_taker`, `free_kick_taker`, `corner_taker`: player IDs of this club, or `null`. |
+| `phase` | object | Phase settings, with the same names as the in-game Tactics screen: `build_up_style`, `width`, `tempo`, `cross_style`, `defensive_line`, `pressing_intensity`, `defensive_shape`, `marking_style`, `counter_press_duration`, `break_speed`. Omitted keys take their defaults; an omitted `phase` takes the play style's own settings. |
+
+Every player named must be one of the club's own authored players (`club` equal
+to this team's `id`); validation reports any other, and any player named for two
+slots of `startingXi`.
 
 ---
 

@@ -8,6 +8,7 @@ mod generation;
 pub mod package;
 mod physique;
 pub mod scaffold;
+pub mod team_tactics;
 pub mod world_io;
 mod youth;
 
@@ -28,6 +29,7 @@ pub use scaffold::{
     EntityKind, entity_template, manifest_json, names_json, new_package_meta, scaffold_package,
     slugify,
 };
+pub use team_tactics::TeamTacticsDef;
 pub use world_io::*;
 pub(crate) use youth::generate_youth_intake_recruit;
 pub(crate) use youth::generate_youth_pool_member;
@@ -1092,6 +1094,7 @@ fn build_package_club(
     let (mut team, mut players, staff) =
         build_club(tdef, country_codes, opening_year, names_def, rng);
     if authored.is_empty() {
+        apply_package_tactics(&mut team, &players, tdef);
         return (team, players, staff, HashSet::new());
     }
 
@@ -1145,7 +1148,16 @@ fn build_package_club(
         &authored_ids,
         &authored_squad_ids,
     );
+    apply_package_tactics(&mut team, &players, tdef);
     (team, players, staff, authored_squad_ids)
+}
+
+/// Last of all, so what the author wrote wins over the shape and roles the
+/// club just chose for itself; anything left out keeps that choice.
+fn apply_package_tactics(team: &mut domain::team::Team, players: &[Player], tdef: &TeamDef) {
+    if let Some(tactics) = &tdef.tactics {
+        team_tactics::apply_authored_tactics(team, players, tactics);
+    }
 }
 
 /// Human-readable name for the built-in confederations, falling back to the id.
@@ -1826,6 +1838,98 @@ mod tests {
             .iter()
             .find(|player| player.id == id)
             .and_then(|player| player.jersey_number)
+    }
+
+    /// Given a package club whose `tactics` name a shape, a full eleven, roles,
+    /// set-piece takers and phase settings, when the club is built,
+    /// then it opens in exactly those, over what the AI would have chosen.
+    #[test]
+    fn a_package_club_opens_in_its_authored_tactics() {
+        let authored = authored_squad(2, 8, 8, 4);
+        let ids: Vec<String> = authored.iter().map(|def| def.id.clone()).collect();
+        // authored-0..1 keepers, 2..9 defenders, 10..17 midfielders, 18..21 forwards.
+        let eleven: Vec<String> = [0, 2, 3, 4, 5, 10, 11, 12, 18, 19, 20]
+            .iter()
+            .map(|&index| ids[index].clone())
+            .collect();
+        let mut tdef = test_team_def();
+        tdef.play_style = "Defensive".to_string();
+        tdef.tactics = Some(team_tactics::TeamTacticsDef {
+            formation: Some("4-3-3".to_string()),
+            starting_xi: eleven.clone(),
+            player_roles: [(
+                ids[10].clone(),
+                domain::team::PlayerRole::DeepLyingPlaymaker,
+            )]
+            .into_iter()
+            .collect(),
+            match_roles: Some(domain::team::MatchRoles {
+                captain: Some(ids[3].clone()),
+                penalty_taker: Some(ids[18].clone()),
+                ..Default::default()
+            }),
+            phase: Some(domain::team::TacticsPhaseSettings {
+                pressing_intensity: domain::team::PressingIntensity::Aggressive,
+                ..Default::default()
+            }),
+        });
+        let names_def = default_names_definition();
+        let mut rng = StdRng::seed_from_u64(42);
+        let refs: Vec<&package::PlayerDef> = authored.iter().collect();
+
+        let (team, _players, _staff, _) = build_package_club(
+            &tdef,
+            &refs,
+            generation::nationality_distribution(),
+            TEST_OPENING_YEAR,
+            &names_def,
+            &mut rng,
+        );
+
+        assert_eq!(team.formation, "4-3-3");
+        assert_eq!(team.starting_xi_ids, eleven);
+        assert_eq!(
+            team.player_roles.get(&ids[10]),
+            Some(&domain::team::PlayerRole::DeepLyingPlaymaker)
+        );
+        assert_eq!(team.match_roles.captain.as_deref(), Some(ids[3].as_str()));
+        assert_eq!(
+            team.match_roles.penalty_taker.as_deref(),
+            Some(ids[18].as_str())
+        );
+        assert_eq!(
+            team.tactics_phase.pressing_intensity,
+            domain::team::PressingIntensity::Aggressive
+        );
+    }
+
+    /// Given authored tactics with half an eleven and a starter from another
+    /// club, when the club is built, then it keeps the authored shape but
+    /// leaves the side to the game rather than opening with a broken eleven.
+    #[test]
+    fn a_partial_authored_eleven_is_left_to_the_game() {
+        let authored = authored_squad(2, 8, 8, 4);
+        let mut tdef = test_team_def();
+        tdef.tactics = Some(team_tactics::TeamTacticsDef {
+            formation: Some("3-5-2".to_string()),
+            starting_xi: vec!["authored-0".to_string(), "someone-else".to_string()],
+            ..Default::default()
+        });
+        let names_def = default_names_definition();
+        let mut rng = StdRng::seed_from_u64(42);
+        let refs: Vec<&package::PlayerDef> = authored.iter().collect();
+
+        let (team, _players, _staff, _) = build_package_club(
+            &tdef,
+            &refs,
+            generation::nationality_distribution(),
+            TEST_OPENING_YEAR,
+            &names_def,
+            &mut rng,
+        );
+
+        assert_eq!(team.formation, "3-5-2");
+        assert!(team.starting_xi_ids.is_empty());
     }
 
     /// Given a package club whose authored players carry their real shirt numbers,

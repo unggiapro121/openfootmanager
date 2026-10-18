@@ -3297,7 +3297,10 @@
         "alternatePositionInvalid": "\"{{entity}}\" lists {{position}} as an alternate position. An alternate must be a specific position, different from the player's own, and listed only once.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" has a weak foot or alternate positions, but {{position}} is a general group, so the game would re-work them from the player's attributes and discard what you wrote. Give the player a specific position, such as CentralMidfielder or Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" has a career entry (row {{row}}) with no club name.",
-        "unsupportedFormatVersion": "This package was made with a newer version of the game (format {{version}}; this build supports {{supported}}). Update the game to open it."
+        "unsupportedFormatVersion": "This package was made with a newer version of the game (format {{version}}; this build supports {{supported}}). Update the game to open it.",
+        "unknownFormation": "Team \"{{team}}\" uses formation \"{{formation}}\", which the game does not offer.",
+        "tacticsPlayerNotInClub": "The tactics of \"{{team}}\" name \"{{player}}\", who is not one of its players.",
+        "duplicateStarter": "The starting eleven of \"{{team}}\" names \"{{player}}\" more than once."
       },
       "conflict": {
         "duplicateId": "Packages \"{{packages}}\" both define {{entityKind}} \"{{entityId}}\" with different content. The last package wins.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}} of {{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}} of {{scaleMax}} · {{minBand}} to {{maxBand}}",
-    "budgetReadout": "{{min}}–{{max}} per month · transfer budget {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "{{min}}–{{max}} per month · transfer budget {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Tactics & default line-up",
+      "intro": "What the club opens the world with. An AI club adjusts it from then on; a manager who takes the club over starts from it.",
+      "formationAuto": "Automatic (the club picks for its squad and play style)",
+      "needFormation": "Choose a formation to set the starting eleven and player roles.",
+      "startingXi": "Starting eleven",
+      "elevenProgress": "{{count}}/{{total}} picked",
+      "elevenIncomplete": "The game only uses this eleven once every slot is filled; until then it picks the side itself.",
+      "noPlayers": "This club has no players in the package yet. Add players to this club to line them up.",
+      "nobody": "— None —",
+      "notInClub": "{{player}} (not in this club)",
+      "slotPlayer": "Player at {{position}}",
+      "slotRole": "Role at {{position}}",
+      "matchRoles": "Captain and set pieces",
+      "customPhase": "Custom phase settings",
+      "phaseFromStyle": "Off: the club uses its play style's own settings."
+    }
   },
   "packageBuild": {
     "title": "Build Your World",

@@ -77,6 +77,7 @@ function renderPanel(formPanel: FormPanel, playerId: string, youthId: string) {
       compEditor={stub as never}
       confederations={[]}
       teams={[]}
+      players={[]}
       editingPoolKey=""
       editingPool={{ first_names: [], last_names: [] }}
       isNewPool={false}

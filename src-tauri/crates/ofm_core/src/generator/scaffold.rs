@@ -223,6 +223,10 @@ pub fn entity_template(kind: EntityKind, name: Option<&str>) -> Value {
                 "foundedYear": 1900,
                 "kitPattern": "Solid",
                 "logo": null,
+                // Null rather than a sample shape: a template club has no
+                // players yet to line up, and a shape would override the one
+                // the club picks for its squad.
+                "tactics": null,
             })
         }
         EntityKind::Player => {
@@ -522,6 +526,16 @@ mod tests {
             kit_pattern: Some("Solid".into()),
             founded_year: Some(1900),
             stadium_capacity: Some(30_000),
+            tactics: Some(crate::generator::TeamTacticsDef {
+                formation: Some("4-3-3".into()),
+                starting_xi: vec!["sample".into()],
+                player_roles: std::collections::BTreeMap::from([(
+                    "sample".into(),
+                    domain::team::PlayerRole::Standard,
+                )]),
+                match_roles: Some(domain::team::MatchRoles::default()),
+                phase: Some(domain::team::TacticsPhaseSettings::default()),
+            }),
         };
 
         let player = PlayerDef {

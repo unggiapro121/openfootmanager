@@ -1,4 +1,5 @@
 use super::package_layout::ProjectLayout;
+use super::package_unmodelled::UnmodelledFields;
 use ofm_core::generator::{
     export_directory_to_ofm, extract_ofm_to_dir, load_world_package, CompetitionDefinition,
     ConfederationDef, CountryDef, NamesDefinition, PlayerDef, StaffDef, TeamDef, WorldMetaDef,
@@ -143,6 +144,13 @@ pub fn create_world_project(
         .ok_or_else(|| "be.error.invalidPath".to_string())
 }
 
+/// The phase settings a club of `play_style` opens with when its package names
+/// none, so the editor can start a custom set from the play style's own.
+#[tauri::command]
+pub fn package_tactics_blueprint(play_style: String) -> domain::team::TacticsPhaseSettings {
+    ofm_core::generator::team_tactics::opening_phase(&play_style)
+}
+
 /// Load an existing package directory for editing.
 #[tauri::command]
 pub fn read_package_project(dir: String) -> Result<PackageProjectData, String> {
@@ -217,7 +225,9 @@ pub fn read_package_project(dir: String) -> Result<PackageProjectData, String> {
 
 /// Persist in-memory edits, writing every entity back to the file it was read
 /// from (see [`ProjectLayout`]), so a package split one file per club or league
-/// keeps its layout.
+/// keeps its layout. Fields this build does not model are carried over from
+/// those files (see `package_unmodelled`), so an app older than its package
+/// does not erase them.
 ///
 /// Each file is written atomically — `write_json_atomic` writes a `.tmp` sibling
 /// and renames over the target — so no single file can be left half-written.
@@ -251,7 +261,13 @@ pub fn save_package_project(
     let mut removed = layout.other_files("world", &manifest_path);
     removed.extend(layout.other_files("names", &names_path));
 
-    write_json_atomic(&manifest_path, &ofm_core::generator::manifest_json(&meta)?)?;
+    // Read before anything is written: the files on disk are the only copy of
+    // what this build cannot represent.
+    let unmodelled = UnmodelledFields::read(pkg_dir);
+
+    let mut manifest = ofm_core::generator::manifest_json(&meta)?;
+    unmodelled.restore_world(&mut manifest);
+    write_json_atomic(&manifest_path, &manifest)?;
 
     let entity_sets = [
         (
@@ -265,7 +281,8 @@ pub fn save_package_project(
         ("staff", "staff", entity_values(&staff)?),
         ("competition", "competitions", entity_values(&competitions)?),
     ];
-    for (schema, folder, entities) in entity_sets {
+    for (schema, folder, mut entities) in entity_sets {
+        unmodelled.restore_items(schema, &mut entities);
         let default_path = pkg_dir.join(folder).join(format!("{folder}.json"));
         let plan = layout.plan(schema, &default_path, entities);
         for (path, body) in &plan.writes {
@@ -275,7 +292,9 @@ pub fn save_package_project(
     }
 
     if names_path.exists() || !names.pools.is_empty() {
-        write_json_atomic(&names_path, &ofm_core::generator::names_json(&names)?)?;
+        let mut names_document = ofm_core::generator::names_json(&names)?;
+        unmodelled.restore_names(&mut names_document);
+        write_json_atomic(&names_path, &names_document)?;
     }
 
     // Only once every file is down: removed earlier, a failed write would lose
@@ -538,6 +557,141 @@ mod tests {
         }
         let league = json_at(&dir, "competitions/eng-premier-league.json");
         assert_eq!(league["berths"], serde_json::json!([]));
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given a package written by a newer build — fields this build does not
+    /// model on the manifest, a team, a competition, a player and inside the
+    /// player's attributes — when it is opened, edited and saved here,
+    /// then every one of those fields is still on disk, the edit is applied,
+    /// and a modelled field the author cleared stays cleared.
+    #[test]
+    fn saving_keeps_the_fields_this_build_does_not_model() {
+        let dir = temp_project(
+            "save-keeps-unmodelled",
+            &[
+                (
+                    "package.json",
+                    r#"{"schema":"world","id":"future","name":"Future","version":"1.0.0","license":"MIT","futureManifestFlag":true}"#,
+                ),
+                (
+                    "teams/arsenal.json",
+                    r##"{"schema":"team","id":"arsenal","name":"Arsenal","shortName":"ARS","city":"London","country":"ENG","colors":{"primary":"#ff0000","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Emirates Stadium","logo":"assets/ars.png","futureKit":{"home":"red"}}"##,
+                ),
+                (
+                    "competitions/premier.json",
+                    r#"{"schema":"competition","id":"premier","name":"Premier","type":"League","scope":"Domestic","countryId":"ENG","format":{"kind":"LeagueTable","futureFormatKnob":3},"participants":{"selector":{"kind":"allInCountry","country":"ENG"}},"futureVar":"on"}"#,
+                ),
+                (
+                    "players/arsenal.json",
+                    r#"{"schema":"player","items":[{"id":"saka","firstName":"Bukayo","lastName":"Saka","club":"arsenal","nationality":"ENG","position":"RightWinger","attributes":{"pace":86,"stamina":80,"strength":65,"passing":80,"shooting":79,"tackling":50,"dribbling":87,"defending":45,"positioning":82,"vision":81,"decisions":80,"futureCurve":81},"futureMorale":"high"}]}"#,
+                ),
+            ],
+        );
+        let path = dir.to_str().unwrap().to_string();
+        let mut loaded = read_package_project(path.clone()).unwrap();
+        loaded.players[0].first_name = "Bukayo Ayoyinka".to_string();
+        loaded.teams[0].logo = None;
+
+        save_package_project(
+            path,
+            loaded.meta,
+            loaded.confederations,
+            loaded.countries,
+            loaded.teams,
+            loaded.players,
+            loaded.staff,
+            loaded.names.unwrap_or(NamesDefinition {
+                version: 1,
+                description: String::new(),
+                pools: HashMap::new(),
+            }),
+            loaded.competitions,
+        )
+        .unwrap();
+
+        // Each entity is written back to the file it came from, in that file's
+        // shape: an `items` collection or a single entity.
+        let entity = |file: &str| -> serde_json::Value {
+            let document: serde_json::Value =
+                serde_json::from_str(&std::fs::read_to_string(dir.join(file)).unwrap()).unwrap();
+            match document.get("items") {
+                Some(items) => items[0].clone(),
+                None => document,
+            }
+        };
+        let manifest = entity("package.json");
+        assert_eq!(manifest["futureManifestFlag"], serde_json::json!(true));
+        let team = entity("teams/arsenal.json");
+        assert_eq!(team["futureKit"], serde_json::json!({"home": "red"}));
+        assert!(team.get("logo").is_none_or(serde_json::Value::is_null));
+        let competition = entity("competitions/premier.json");
+        assert_eq!(competition["futureVar"], serde_json::json!("on"));
+        assert_eq!(
+            competition["format"]["futureFormatKnob"],
+            serde_json::json!(3)
+        );
+        let player = entity("players/arsenal.json");
+        assert_eq!(player["firstName"], serde_json::json!("Bukayo Ayoyinka"));
+        assert_eq!(player["futureMorale"], serde_json::json!("high"));
+        assert_eq!(player["attributes"]["futureCurve"], serde_json::json!(81));
+        assert_eq!(player["attributes"]["pace"], serde_json::json!(86));
+
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
+    /// Given a package with a competition this build cannot read — a format a
+    /// newer build added — when the project is opened and saved here,
+    /// then that competition is still on disk as it was: the editor never
+    /// showed it, so the author cannot have deleted it.
+    #[test]
+    fn saving_keeps_entities_this_build_cannot_read() {
+        let future_cup = r#"{"schema":"competition","id":"future-cup","name":"Future Cup","type":"Cup","scope":"Domestic","countryId":"ENG","format":{"kind":"SwissLeague"},"participants":{"explicit":["arsenal"]}}"#;
+        let dir = temp_project(
+            "save-keeps-unreadable",
+            &[
+                (
+                    "package.json",
+                    r#"{"schema":"world","id":"future","name":"Future","version":"1.0.0","license":"MIT"}"#,
+                ),
+                (
+                    "teams/arsenal.json",
+                    r##"{"schema":"team","id":"arsenal","name":"Arsenal","shortName":"ARS","city":"London","country":"ENG","colors":{"primary":"#ff0000","secondary":"#ffffff"},"playStyle":"Balanced","stadiumName":"Emirates Stadium"}"##,
+                ),
+                ("competitions/future-cup.json", future_cup),
+            ],
+        );
+        let path = dir.to_str().unwrap().to_string();
+        let loaded = read_package_project(path.clone()).unwrap();
+        assert!(loaded.competitions.is_empty());
+
+        save_package_project(
+            path,
+            loaded.meta,
+            loaded.confederations,
+            loaded.countries,
+            loaded.teams,
+            loaded.players,
+            loaded.staff,
+            loaded.names.unwrap_or(NamesDefinition {
+                version: 1,
+                description: String::new(),
+                pools: HashMap::new(),
+            }),
+            loaded.competitions,
+        )
+        .unwrap();
+
+        let saved: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(dir.join("competitions/future-cup.json")).unwrap(),
+        )
+        .unwrap();
+        let saved = saved
+            .get("items")
+            .map_or(saved.clone(), |items| items[0].clone());
+        assert_eq!(saved["format"]["kind"], serde_json::json!("SwissLeague"));
+        assert_eq!(saved["name"], serde_json::json!("Future Cup"));
 
         std::fs::remove_dir_all(&dir).ok();
     }
@@ -1220,6 +1374,10 @@ mod tests {
             kit_pattern: None,
             founded_year: None,
             stadium_capacity: None,
+            tactics: Some(ofm_core::generator::TeamTacticsDef {
+                formation: Some("4-3-3".to_string()),
+                ..Default::default()
+            }),
         }];
 
         // Player WITH explicit attributes — exercises camelCase serde mapping and Position round-trip

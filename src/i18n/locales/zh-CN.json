@@ -3280,7 +3280,10 @@
         "alternatePositionInvalid": "“{{entity}}”将 {{position}} 列为备选位置。备选位置必须是具体位置，不能与球员自身位置相同，且只能列出一次。",
         "identityNeedsSpecificPosition": "“{{entity}}”设置了非惯用脚或备选位置，但 {{position}} 是一个笼统的分组，游戏会根据球员属性重新计算并丢弃你写下的内容。请为球员指定具体位置，例如 CentralMidfielder 或 Striker。",
         "careerEntryNeedsClub": "“{{entity}}”有一条生涯记录（第 {{row}} 行）没有填写俱乐部名称。",
-        "unsupportedFormatVersion": "此扩展包由更新版本的游戏创建（格式 {{version}}，本版本支持 {{supported}}）。请更新游戏后再打开。"
+        "unsupportedFormatVersion": "此扩展包由更新版本的游戏创建（格式 {{version}}，本版本支持 {{supported}}）。请更新游戏后再打开。",
+        "unknownFormation": "球队“{{team}}”使用的阵型“{{formation}}”在游戏中不存在。",
+        "tacticsPlayerNotInClub": "“{{team}}”的战术中包含“{{player}}”，该球员不属于这支球队。",
+        "duplicateStarter": "“{{team}}”的首发阵容中“{{player}}”出现了不止一次。"
       },
       "competitionDef": {
         "invalidEmbedded": "该世界的赛事定义无效，无法加载。",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}}／{{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}}／{{scaleMax}} · {{minBand}}至{{maxBand}}",
-    "budgetReadout": "每月 {{min}}–{{max}} · 转会预算 {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "每月 {{min}}–{{max}} · 转会预算 {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "战术与默认阵容",
+      "intro": "俱乐部开启世界时的设置。AI 俱乐部之后会自行调整；接手该俱乐部的主教练将从这里开始。",
+      "formationAuto": "自动（俱乐部根据阵容和打法选择）",
+      "needFormation": "选择阵型以设置首发十一人和球员角色。",
+      "startingXi": "首发十一人",
+      "elevenProgress": "已选 {{count}}/{{total}}",
+      "elevenIncomplete": "只有所有位置都填满时游戏才会使用这套首发；在此之前由游戏自行排阵。",
+      "noPlayers": "该俱乐部在数据包中还没有球员。为该俱乐部添加球员后才能排阵。",
+      "nobody": "— 无 —",
+      "notInClub": "{{player}}（不属于该俱乐部）",
+      "slotPlayer": "{{position}} 位置的球员",
+      "slotRole": "{{position}} 位置的角色",
+      "matchRoles": "队长与定位球",
+      "customPhase": "自定义阶段设置",
+      "phaseFromStyle": "关闭：俱乐部使用其打法的默认设置。"
+    }
   },
   "packageBuild": {
     "title": "构建您的世界",
