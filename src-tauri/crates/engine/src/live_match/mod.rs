@@ -35,6 +35,7 @@ pub(crate) use observation::AiObservation;
 /// The named constants the calibration knobs default to (`crate::knobs`),
 /// kept beside the mechanisms they tune with their calibration history.
 pub(crate) mod knob_defaults {
+    pub(crate) use super::finishing::{LAST_ACTOR_WEIGHT, SHOT_WEIGHT_SPREAD};
     pub(crate) use super::header::CONVERSION_BASE as HEADER_CONVERSION_BASE;
     pub(crate) use super::long_shot::{
         BASE as LONG_SHOT_BASE, FLANK_PENALTY as LONG_SHOT_FLANK_PENALTY,

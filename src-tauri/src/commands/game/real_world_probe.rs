@@ -861,15 +861,24 @@ struct PlayerShares {
     rating_count: BTreeMap<String, u32>,
     /// The most goals any one player scored in each run's league season.
     top_scorer_goals: Vec<u32>,
+    /// That player's share of his club's league goals, % (GĐ5 P5.3b: real
+    /// leading scorers carry about 30–40% of their side's goals).
+    top_scorer_team_share: Vec<f64>,
+    /// How many of that player's goals were penalties.
+    top_scorer_penalties: Vec<u32>,
+}
+
+/// One league season's goals in the match probe: by scorer, by the
+/// scorer's club, and the penalties among each scorer's goals.
+#[derive(Default)]
+struct SeasonGoals {
+    by_player: BTreeMap<String, u32>,
+    by_club: BTreeMap<String, u32>,
+    penalties: BTreeMap<String, u32>,
 }
 
 impl PlayerShares {
-    fn add(
-        &mut self,
-        game: &Game,
-        report: &engine::MatchReport,
-        season: &mut BTreeMap<String, u32>,
-    ) {
+    fn add(&mut self, game: &Game, report: &engine::MatchReport, season: &mut SeasonGoals) {
         let position = |id: &str| {
             game.players
                 .iter()
@@ -887,7 +896,18 @@ impl PlayerShares {
                 .goals_by_group
                 .entry(group(&goal.scorer_id))
                 .or_default() += 1;
-            *season.entry(goal.scorer_id.clone()).or_default() += 1;
+            *season.by_player.entry(goal.scorer_id.clone()).or_default() += 1;
+            if goal.goal_source == engine::GoalSource::Penalty {
+                *season.penalties.entry(goal.scorer_id.clone()).or_default() += 1;
+            }
+            if let Some(club) = game
+                .players
+                .iter()
+                .find(|p| p.id == goal.scorer_id)
+                .and_then(|p| p.team_id.clone())
+            {
+                *season.by_club.entry(club).or_default() += 1;
+            }
             if let Some(assist) = &goal.assist_id {
                 *self.assists_by_group.entry(group(assist)).or_default() += 1;
             }
@@ -922,6 +942,34 @@ impl PlayerShares {
         } else {
             high - low
         }
+    }
+
+    /// The season's leading scorer: his goals, his club's share of them and
+    /// his penalties.
+    fn close_season(&mut self, game: &Game, season: &SeasonGoals) {
+        let Some((id, goals)) = season
+            .by_player
+            .iter()
+            .max_by_key(|(_, goals)| **goals)
+            .map(|(id, goals)| (id.clone(), *goals))
+        else {
+            self.top_scorer_goals.push(0);
+            return;
+        };
+        let club_goals = game
+            .players
+            .iter()
+            .find(|p| p.id == id)
+            .and_then(|p| p.team_id.as_ref())
+            .and_then(|club| season.by_club.get(club))
+            .copied()
+            .unwrap_or(goals)
+            .max(1);
+        self.top_scorer_goals.push(goals);
+        self.top_scorer_team_share
+            .push(f64::from(goals) / f64::from(club_goals) * 100.0);
+        self.top_scorer_penalties
+            .push(season.penalties.get(&id).copied().unwrap_or(0));
     }
 
     fn top_scorer_mean(&self) -> f64 {
@@ -960,6 +1008,18 @@ impl PlayerShares {
         println!(
             "  top scorer's goals per league season: {:?}",
             self.top_scorer_goals
+        );
+        let mean = |values: &[f64]| values.iter().sum::<f64>() / values.len().max(1) as f64;
+        println!(
+            "  top scorer's share of his club's goals: mean {:.1}% · his penalties a season: mean {:.1}",
+            mean(&self.top_scorer_team_share),
+            mean(
+                &self
+                    .top_scorer_penalties
+                    .iter()
+                    .map(|&n| f64::from(n))
+                    .collect::<Vec<_>>()
+            )
         );
     }
 }
@@ -1225,7 +1285,7 @@ fn real_world_match_probe() {
                 );
             }
         }
-        let mut season: BTreeMap<String, u32> = BTreeMap::new();
+        let mut season = SeasonGoals::default();
         let fixture_count = game
             .league
             .as_ref()
@@ -1252,9 +1312,7 @@ fn real_world_match_probe() {
             players.add(&game, &report, &mut season);
             shares.add(&report);
         }
-        players
-            .top_scorer_goals
-            .push(season.values().copied().max().unwrap_or(0));
+        players.close_season(&game, &season);
     }
     let n = f64::from(shares.matches.max(1));
     let mean = f64::from(shares.goals) / n;
