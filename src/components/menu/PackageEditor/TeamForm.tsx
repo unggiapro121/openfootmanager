@@ -405,6 +405,7 @@ export function TeamForm({
           team={editingTeam}
           clubPlayers={clubPlayers}
           baseYear={baseYear}
+          projectDir={projectDir}
           onChange={(tactics) => updateField("tactics", tactics)}
           onPlayStyleChange={(playStyle) => updateField("playStyle", playStyle)}
           onError={onAssetError}

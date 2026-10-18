@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Loader2, RotateCcw, Target } from "lucide-react";
+import { ProjectAssetDirContext } from "../../../hooks/usePackageAssetSrc";
 import TacticsBoard from "../../tactics/TacticsBoard";
 import { Badge, Button } from "../../ui";
 import { useEditorTacticsSource } from "./useEditorTacticsSource";
@@ -12,6 +13,8 @@ interface TeamTacticsEditorProps {
   /** The authored players whose `club` is this team. */
   clubPlayers: PlayerDef[];
   baseYear: number | null;
+  /** The project folder the players' photos are read from. */
+  projectDir?: string;
   onChange: (tactics: TeamTacticsDef | null) => void;
   onPlayStyleChange: (playStyle: string) => void;
   onError: (err: unknown) => void;
@@ -101,6 +104,7 @@ function TacticsBoardDialog({
   team,
   clubPlayers,
   baseYear,
+  projectDir,
   onChange,
   onPlayStyleChange,
   onError,
@@ -153,7 +157,9 @@ function TacticsBoardDialog({
         </div>
       </div>
       {source ? (
-        <TacticsBoard source={source} libraryGame={null} coach={null} />
+        <ProjectAssetDirContext.Provider value={projectDir ?? null}>
+          <TacticsBoard source={source} libraryGame={null} coach={null} />
+        </ProjectAssetDirContext.Provider>
       ) : (
         <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
