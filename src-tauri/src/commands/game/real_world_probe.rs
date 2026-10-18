@@ -72,6 +72,55 @@ struct LeagueTotals {
     /// Results by the gap in strength `S` between the two clubs at the start
     /// of the run (phase 2, GĐ5 P5.0, X81): buckets 0–2, 2–4, … 8–10, 10+.
     by_gap: [GapTotals; GAP_BUCKETS],
+    /// Results by the shape each club ended the run in (phase 2, GĐ5 P5.1,
+    /// X83, X88): the first look at formation balance on real players.
+    by_formation: BTreeMap<String, FormationRecord>,
+}
+
+/// One shape's league results, from the side of the club playing it.
+#[derive(Default, Clone, Copy, Serialize)]
+struct FormationRecord {
+    matches: u32,
+    wins: u32,
+    draws: u32,
+    losses: u32,
+    goals_for: u32,
+    goals_against: u32,
+    /// Points the real line expects over the same matches, from the gap in
+    /// `S` and the venue (`OFM_STRENGTH_BRIDGE`); 0 without a bridge.
+    expected_points: f64,
+}
+
+impl FormationRecord {
+    fn add_result(&mut self, scored: u8, conceded: u8, expected_points: f64) {
+        self.matches += 1;
+        self.goals_for += u32::from(scored);
+        self.goals_against += u32::from(conceded);
+        self.expected_points += expected_points;
+        match scored.cmp(&conceded) {
+            std::cmp::Ordering::Greater => self.wins += 1,
+            std::cmp::Ordering::Equal => self.draws += 1,
+            std::cmp::Ordering::Less => self.losses += 1,
+        }
+    }
+
+    fn merge(&mut self, other: &FormationRecord) {
+        self.matches += other.matches;
+        self.wins += other.wins;
+        self.draws += other.draws;
+        self.losses += other.losses;
+        self.goals_for += other.goals_for;
+        self.goals_against += other.goals_against;
+        self.expected_points += other.expected_points;
+    }
+
+    fn points(&self) -> f64 {
+        f64::from(3 * self.wins + self.draws)
+    }
+
+    fn pct(&self, n: u32) -> f64 {
+        f64::from(n) / f64::from(self.matches.max(1)) * 100.0
+    }
 }
 
 /// How many 2-point buckets of strength gap the probe reports; the last is
@@ -132,6 +181,15 @@ impl StrengthBridge {
 
     /// The chance that the stronger club wins, `gap` points of `S` ahead, at
     /// home or away.
+    /// Home win, draw and away win the real line expects at a strength gap
+    /// of `home_minus_away`, home advantage included.
+    fn outcome(&self, home_minus_away: f64) -> (f64, f64, f64) {
+        let latent = self.beta * home_minus_away + self.eta;
+        let home = 1.0 - normal_cdf(self.c - latent);
+        let away = normal_cdf(-self.c - latent);
+        (home, 1.0 - home - away, away)
+    }
+
     fn strong_win(&self, gap: f64, at_home: bool) -> f64 {
         if at_home {
             1.0 - normal_cdf(self.c - (self.beta * gap + self.eta))
@@ -239,6 +297,12 @@ impl LeagueTotals {
             mine.strong_at_home += theirs.strong_at_home;
             mine.expected_strong_wins += theirs.expected_strong_wins;
         }
+        for (formation, record) in &other.by_formation {
+            self.by_formation
+                .entry(formation.clone())
+                .or_default()
+                .merge(record);
+        }
     }
 }
 
@@ -271,6 +335,24 @@ struct ProbeReport {
     shoots_from_distance_by_position: BTreeMap<String, (u32, f64)>,
     /// The league clubs' formations at the end of the last run, % (T21).
     formations: BTreeMap<String, f64>,
+    /// League clubs whose shape at the end of the last run is not the one
+    /// they opened in (phase 2, GĐ5 P5.1: the weekly review's hysteresis).
+    formation_changes: u32,
+    /// Emergency squad top-ups per season, pooled over the runs (X83
+    /// condition 1: a shape drives what a club thinks it is short of).
+    top_ups_per_season: f64,
+    /// The league clubs' squads at the end of the last run (X83 condition 1).
+    squad_shape: SquadShape,
+}
+
+/// How the league clubs' squads are made up, by the engine's position group.
+#[derive(Default, Serialize)]
+struct SquadShape {
+    clubs: u32,
+    /// Mean players per club in each group, injured included.
+    mean_by_group: BTreeMap<String, f64>,
+    /// Clubs with fewer fit players in a group than their shape has slots for.
+    short_clubs: u32,
 }
 
 /// The leagues of the football-data 2024-25 reference table (P0.5,
@@ -388,6 +470,11 @@ fn league_totals(
 ) -> LeagueTotals {
     let mut totals = LeagueTotals::default();
     let europe = europe_scope();
+    let formation_of: std::collections::HashMap<&str, &str> = game
+        .teams
+        .iter()
+        .map(|team| (team.id.as_str(), team.formation.as_str()))
+        .collect();
     let fixtures = game
         .competitions
         .iter()
@@ -404,6 +491,36 @@ fn league_totals(
             continue;
         };
         let goals = u32::from(result.home_goals) + u32::from(result.away_goals);
+        let expected = match (
+            bridge,
+            strength.get(&fixture.home_team_id),
+            strength.get(&fixture.away_team_id),
+        ) {
+            (Some(bridge), Some(home), Some(away)) => bridge.outcome(home - away),
+            _ => (0.0, 0.0, 0.0),
+        };
+        for (team_id, scored, conceded, points) in [
+            (
+                &fixture.home_team_id,
+                result.home_goals,
+                result.away_goals,
+                3.0 * expected.0 + expected.1,
+            ),
+            (
+                &fixture.away_team_id,
+                result.away_goals,
+                result.home_goals,
+                3.0 * expected.2 + expected.1,
+            ),
+        ] {
+            if let Some(formation) = formation_of.get(team_id.as_str()) {
+                totals
+                    .by_formation
+                    .entry((*formation).to_string())
+                    .or_default()
+                    .add_result(scored, conceded, points);
+            }
+        }
         totals.matches += 1;
         totals.goals += goals;
         totals.goals_squared += u64::from(goals * goals);
@@ -446,22 +563,107 @@ fn league_totals(
     totals
 }
 
-/// The formations the clubs of the reference leagues (all leagues outside the
-/// European scope) line up in, % of clubs (T21, X83).
-fn formation_shares(game: &Game) -> BTreeMap<String, f64> {
+/// League results by shape, pooled: W/D/L, goals and, with a bridge, points
+/// per game against what the gap in `S` predicts (phase 2, GĐ5 P5.1, X88).
+fn print_formation_results(by_formation: &BTreeMap<String, FormationRecord>, bridged: bool) {
+    println!("  by formation (club's side; points per game, and the S line's expectation):");
+    for (formation, record) in by_formation {
+        let games = f64::from(record.matches.max(1));
+        let expected = if bridged {
+            format!(
+                " · expected {:.2} · residual {:+.2}",
+                record.expected_points / games,
+                (record.points() - record.expected_points) / games
+            )
+        } else {
+            String::new()
+        };
+        println!(
+            "    {:>7}: {:>5} matches · {:.1}/{:.1}/{:.1} · {:.2}–{:.2} · ppg {:.2}{expected}",
+            formation,
+            record.matches,
+            record.pct(record.wins),
+            record.pct(record.draws),
+            record.pct(record.losses),
+            f64::from(record.goals_for) / games,
+            f64::from(record.goals_against) / games,
+            record.points() / games
+        );
+    }
+}
+
+/// The clubs of the reference leagues (all leagues outside the European
+/// scope).
+fn league_club_ids(game: &Game) -> Vec<&String> {
     let europe = europe_scope();
-    let clubs: Vec<&String> = game
-        .competitions
+    game.competitions
         .iter()
         .filter(|c| {
             c.kind == domain::league::CompetitionType::League
                 && (!europe || REFERENCE_LEAGUES.contains(&c.id.as_str()))
         })
         .flat_map(|c| c.participant_ids.iter())
+        .collect()
+}
+
+/// League clubs whose shape now differs from `opening` (club id → shape).
+fn formation_changes(game: &Game, opening: &std::collections::HashMap<String, String>) -> u32 {
+    league_club_ids(game)
+        .into_iter()
+        .filter_map(|id| game.teams.iter().find(|team| &team.id == id))
+        .filter(|team| opening.get(&team.id) != Some(&team.formation))
+        .count() as u32
+}
+
+/// The league clubs' squads by position group, and how many cannot fill
+/// their shape's slots in some group with fit players.
+fn squad_shape(game: &Game) -> SquadShape {
+    use domain::player::Position;
+    let mut shape = SquadShape::default();
+    let mut totals: BTreeMap<String, u32> = BTreeMap::new();
+    for id in league_club_ids(game) {
+        let Some(team) = game.teams.iter().find(|team| &team.id == id) else {
+            continue;
+        };
+        shape.clubs += 1;
+        let mut fit: BTreeMap<String, u32> = BTreeMap::new();
+        for player in game
+            .players
+            .iter()
+            .filter(|player| player.team_id.as_deref() == Some(id.as_str()))
+        {
+            let group = format!("{:?}", player.position.to_group_position());
+            *totals.entry(group.clone()).or_default() += 1;
+            if player.injury.is_none() {
+                *fit.entry(group).or_default() += 1;
+            }
+        }
+        let mut needed: BTreeMap<String, u32> = BTreeMap::new();
+        for slot in ofm_core::player_rating::formation_slots(&team.formation) {
+            let group: Position = slot.to_group_position();
+            *needed.entry(format!("{group:?}")).or_default() += 1;
+        }
+        if needed
+            .iter()
+            .any(|(group, slots)| fit.get(group).copied().unwrap_or(0) < *slots)
+        {
+            shape.short_clubs += 1;
+        }
+    }
+    let clubs = f64::from(shape.clubs.max(1));
+    shape.mean_by_group = totals
+        .into_iter()
+        .map(|(group, n)| (group, f64::from(n) / clubs))
         .collect();
+    shape
+}
+
+/// The formations the clubs of the reference leagues (all leagues outside the
+/// European scope) line up in, % of clubs (T21, X83).
+fn formation_shares(game: &Game) -> BTreeMap<String, f64> {
     let mut counts: BTreeMap<String, u32> = BTreeMap::new();
-    for id in &clubs {
-        if let Some(team) = game.teams.iter().find(|team| &&team.id == id) {
+    for id in league_club_ids(game) {
+        if let Some(team) = game.teams.iter().find(|team| &team.id == id) {
             *counts.entry(team.formation.clone()).or_default() += 1;
         }
     }
@@ -1227,13 +1429,21 @@ fn real_world_probe() {
     let mut runs = Vec::new();
     let mut pooled = LeagueTotals::default();
     let mut last_game = None;
+    let mut top_ups = 0usize;
+    let mut opening_formations = std::collections::HashMap::new();
     for &seed in &seeds {
         let mut game = build_game(Path::new(&package), seed);
         let opening = game.clock.current_date.format("%Y-%m-%d").to_string();
         let opening_strength = strengths(&game);
+        opening_formations = game
+            .teams
+            .iter()
+            .map(|team| (team.id.clone(), team.formation.clone()))
+            .collect();
         for _ in 0..days {
             ofm_core::turn::process_day(&mut game);
         }
+        top_ups += game.squad_floor_top_ups.len();
         let totals = league_totals(&game, &opening, &opening_strength, bridge);
         println!(
             "  run seed {seed}: {} matches · goals/game {:.3} · home/draw/away {:.1}/{:.1}/{:.1}",
@@ -1260,6 +1470,11 @@ fn real_world_probe() {
         trait_counts: trait_counts(&game),
         shoots_from_distance_by_position: shoots_from_distance_by_position(&game),
         formations: formation_shares(&game),
+        formation_changes: formation_changes(&game, &opening_formations),
+        top_ups_per_season: top_ups as f64
+            / run_count.max(1) as f64
+            / (f64::from(days) / 365.0).max(f64::EPSILON),
+        squad_shape: squad_shape(&game),
     };
     let l = &report.league;
     println!(
@@ -1305,8 +1520,22 @@ fn real_world_probe() {
         );
     }
     println!(
-        "  formations (league clubs, last run): {}",
-        shares_line(&report.formations)
+        "  formations (league clubs, last run): {} · {} clubs changed shape during the run",
+        shares_line(&report.formations),
+        report.formation_changes
+    );
+    print_formation_results(&l.by_formation, bridge.is_some());
+    println!(
+        "  squads (league clubs, last run): {} clubs · per club {:?} · {} short of fit players for their shape · emergency top-ups/season {:.1}",
+        report.squad_shape.clubs,
+        report
+            .squad_shape
+            .mean_by_group
+            .iter()
+            .map(|(group, n)| format!("{group} {n:.1}"))
+            .collect::<Vec<_>>(),
+        report.squad_shape.short_clubs,
+        report.top_ups_per_season
     );
     println!(
         "  mean OVR by group (last run): {:?}",
