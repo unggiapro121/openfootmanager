@@ -2945,3 +2945,100 @@ fn a_side_playing_defenders_up_front_scores_less() {
         "scored {rated} out of position against {unrated} unrated"
     );
 }
+
+/// Given a 4-4-2 whose second striker defends better than anyone at the back,
+/// when the side changes to 4-3-3 mid-match,
+/// then every defender keeps a defender's slot and both strikers stay up
+/// front: a change of shape moves only the players it has to (phase 2, GĐ5
+/// P5.4b). It used to refill every slot by defending, tackling and strength,
+/// so the strongest-tackling forward went to centre back.
+#[test]
+fn a_formation_change_keeps_each_player_in_his_line() {
+    let mut home = make_team("home", "Home FC", 70, PlayStyle::Balanced);
+    let striker = home
+        .players
+        .iter_mut()
+        .find(|p| p.id == "home_fwd2")
+        .expect("the second striker");
+    striker.defending = 99;
+    striker.tackling = 99;
+    striker.strength = 99;
+    let away = make_team("away", "Away FC", 70, PlayStyle::Balanced);
+    let mut state = LiveMatchState::new(home, away, MatchConfig::default(), vec![], vec![], false);
+    state.step_minute(&mut seeded_rng(42));
+
+    state
+        .apply_command(MatchCommand::ChangeFormation {
+            side: Side::Home,
+            formation: "4-3-3".to_string(),
+        })
+        .unwrap();
+
+    let snap = state.snapshot();
+    let group_of = |id: &str| {
+        snap.home_team
+            .players
+            .iter()
+            .find(|p| p.id == id)
+            .map(|p| p.position)
+    };
+    for defender in ["home_def1", "home_def2", "home_def3", "home_def4"] {
+        assert_eq!(group_of(defender), Some(Position::Defender), "{defender}");
+    }
+    for forward in ["home_fwd1", "home_fwd2"] {
+        assert_eq!(group_of(forward), Some(Position::Forward), "{forward}");
+    }
+    let midfielders_up_front = ["home_mid1", "home_mid2", "home_mid3", "home_mid4"]
+        .iter()
+        .filter(|id| group_of(id) == Some(Position::Forward))
+        .count();
+    assert_eq!(
+        midfielders_up_front, 1,
+        "one midfielder steps up to the third forward slot"
+    );
+}
+
+/// Given a 4-4-2 whose right midfielder is rated best of the midfield as an
+/// attacking midfielder,
+/// when the side changes to 4-3-3 (DM, CM, AM in midfield),
+/// then he takes the attacking midfielder's slot: a slot no one stood at goes
+/// to whoever in the line is rated best there.
+#[test]
+fn a_formation_change_fills_a_new_slot_with_the_best_rated_player_for_it() {
+    use engine::pitch_position::{PitchPosition, PositionFit, PositionRating};
+    let rating = |position, ovr, fit| PositionRating { position, ovr, fit };
+    let mut home = make_team("home", "Home FC", 70, PlayStyle::Balanced);
+    for player in home
+        .players
+        .iter_mut()
+        .filter(|p| p.position == Position::Midfielder)
+    {
+        let favourite = player.id == "home_mid4";
+        player.position_ratings = vec![
+            rating(PitchPosition::CentralMidfielder, 70, PositionFit::Natural),
+            rating(
+                PitchPosition::DefensiveMidfielder,
+                if favourite { 50 } else { 65 },
+                PositionFit::Adapted,
+            ),
+            rating(
+                PitchPosition::AttackingMidfielder,
+                if favourite { 80 } else { 60 },
+                PositionFit::Adapted,
+            ),
+        ];
+    }
+    let away = make_team("away", "Away FC", 70, PlayStyle::Balanced);
+    let mut state = LiveMatchState::new(home, away, MatchConfig::default(), vec![], vec![], false);
+    state.step_minute(&mut seeded_rng(42));
+
+    state
+        .apply_command(MatchCommand::ChangeFormation {
+            side: Side::Home,
+            formation: "4-3-3".to_string(),
+        })
+        .unwrap();
+
+    // 4-3-3: keeper, four defenders, then DM, CM, AM.
+    assert_eq!(state.snapshot().home_team.players[7].id, "home_mid4");
+}
