@@ -144,11 +144,16 @@ pub fn create_world_project(
         .ok_or_else(|| "be.error.invalidPath".to_string())
 }
 
-/// The phase settings a club of `play_style` opens with when its package names
-/// none, so the editor can start a custom set from the play style's own.
+/// `team` as a world opening in `base_year` would build it from its players
+/// among `players`, before its own tactics: what the editor's tactics board
+/// shows and lays the authored tactics over.
 #[tauri::command]
-pub fn package_tactics_blueprint(play_style: String) -> domain::team::TacticsPhaseSettings {
-    ofm_core::generator::team_tactics::opening_phase(&play_style)
+pub fn preview_package_club(
+    team: TeamDef,
+    players: Vec<PlayerDef>,
+    base_year: Option<u32>,
+) -> ofm_core::generator::club_preview::PackageClubPreview {
+    ofm_core::generator::club_preview::preview_package_club(&team, &players, base_year)
 }
 
 /// Load an existing package directory for editing.

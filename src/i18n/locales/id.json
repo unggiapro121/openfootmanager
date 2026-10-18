@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Taktik & susunan bawaan",
       "intro": "Pengaturan klub saat dunia dimulai. Klub AI akan menyesuaikannya sendiri; manajer yang mengambil alih klub memulai dari sini.",
-      "formationAuto": "Otomatis (klub memilih sesuai skuad dan gaya bermain)",
-      "needFormation": "Pilih formasi untuk menyusun sebelas pemain utama dan peran pemain.",
-      "startingXi": "Sebelas pemain utama",
-      "elevenProgress": "{{count}}/{{total}} dipilih",
-      "elevenIncomplete": "Game hanya memakai susunan ini setelah semua posisi terisi; sampai saat itu game menyusun tim sendiri.",
       "noPlayers": "Klub ini belum punya pemain di paket. Tambahkan pemain ke klub ini untuk menyusunnya.",
-      "nobody": "— Tidak ada —",
-      "notInClub": "{{player}} (bukan pemain klub ini)",
-      "slotPlayer": "Pemain di posisi {{position}}",
-      "slotRole": "Peran di posisi {{position}}",
-      "matchRoles": "Kapten dan bola mati",
-      "customPhase": "Pengaturan fase kustom",
-      "phaseFromStyle": "Mati: klub memakai pengaturan gaya bermainnya sendiri."
+      "summaryAuto": "Belum diatur: klub memilih formasi, susunan, dan taktiknya sendiri saat dunia dimulai.",
+      "setFormation": "Formasi {{formation}}",
+      "setEleven": "Sebelas pemain utama",
+      "setRoles": "Peran pemain",
+      "setMatchRoles": "Kapten & bola mati",
+      "setPhase": "Pengaturan fase",
+      "openBoard": "Buka papan taktik",
+      "boardTitle": "Taktik – {{team}}",
+      "resetToAuto": "Kembalikan ke otomatis",
+      "done": "Selesai"
     }
   },
   "packageBuild": {

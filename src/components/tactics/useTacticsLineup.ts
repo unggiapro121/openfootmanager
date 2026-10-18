@@ -1,19 +1,7 @@
 import type { DragEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { GameStateData, PlayerData, TeamMatchRolesData } from "../../store/gameStore";
-import { useGameStore } from "../../store/gameStore";
-import {
-  getSquad,
-  getSquadPositionRatings,
-  setFormation,
-  setPlayStyle,
-  setStartingXi,
-  setTacticsPhase as setTacticsPhaseService,
-  setTeamMatchRoles,
-} from "../../services/squadService";
-import type { PositionRating } from "../../store/types";
-import type { TacticsPhaseSettings } from "../../store/types";
+import type { PlayerData, TacticsPhaseSettings, TeamMatchRolesData } from "../../store/types";
 
 import {
   applyLineupDrop,
@@ -40,26 +28,18 @@ import {
   buildUpdatedMatchRolesForAssignment,
   resolveEffectiveMatchRoles,
 } from "./TacticsRoles.helpers";
-
-interface UseTacticsLineupArgs {
-  gameState: GameStateData | null;
-  onGameUpdate: (g: GameStateData) => void;
-}
+import type { TacticsBoardSource } from "./tacticsBoardSource";
 
 function isPlayerEligibleForLineup(player: PlayerData | null | undefined): boolean {
   return Boolean(player && !player.injury);
 }
 
-export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupArgs) {
-  const { sessionState } = useGameStore();
-  const [fetchedSquad, setFetchedSquad] = useState<PlayerData[] | null>(null);
-  const teamId = sessionState?.manager?.team_id ?? gameState?.manager?.team_id ?? null;
-  const initialTeam = sessionState?.team ?? gameState?.teams?.find((t) => t.id === teamId) ?? null;
-  const initialPreset = initialTeam
-    ? findTacticsPresetBySetup(
-        initialTeam.formation || "4-4-2",
-        initialTeam.play_style || "Balanced",
-      )
+/** The board's line-up, selection and drag state over `source`'s club. */
+export function useTacticsLineup({ source }: { source: TacticsBoardSource }) {
+  const team = source.team;
+  const positionRatings = source.positionRatings;
+  const initialPreset = team
+    ? findTacticsPresetBySetup(team.formation || "4-4-2", team.play_style || "Balanced")
     : null;
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
@@ -72,28 +52,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
   const hoveredSlotRef = useRef<number | null>(null);
   const dragPreviewRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!teamId) return;
-    void getSquad(teamId)
-      .then(setFetchedSquad)
-      .catch(() => {});
-  }, [teamId]);
-
-  // Each player's rating at every position, from the backend: the board shows
-  // a player out of position at the rating he would play there.
-  const [positionRatings, setPositionRatings] = useState<Record<string, PositionRating[]>>({});
-  useEffect(() => {
-    if (!teamId) return;
-    void getSquadPositionRatings(teamId)
-      .then(setPositionRatings)
-      .catch((err: unknown) => {
-        console.error("Failed to load position ratings:", err);
-      });
-  }, [teamId]);
-
-  const team = sessionState?.team ?? gameState?.teams?.find((t) => t.id === teamId) ?? null;
-  const players = fetchedSquad ?? gameState?.players ?? [];
-  const roster = team ? buildTacticsRoster(players, team.id) : [];
+  const roster = team ? buildTacticsRoster(source.roster, team.id) : [];
 
   const formation = team?.formation || "4-4-2";
   const activePlayStyle = team?.play_style || "Balanced";
@@ -211,8 +170,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
   async function persistStartingXI(playerIds: string[]): Promise<void> {
     setPendingStartingXiIds(playerIds);
     try {
-      const updated = await setStartingXi(playerIds);
-      onGameUpdate(updated);
+      await source.setStartingXi(playerIds);
     } catch (error) {
       setPendingStartingXiIds(null);
       console.error("Failed to set starting XI:", error);
@@ -221,8 +179,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
 
   async function handleFormationChange(nextFormation: string): Promise<boolean> {
     try {
-      const updated = await setFormation(nextFormation);
-      onGameUpdate(updated);
+      await source.setFormation(nextFormation);
       return true;
     } catch (error) {
       console.error("Failed to set formation:", error);
@@ -232,8 +189,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
 
   async function handlePlayStyleChange(playStyle: string): Promise<boolean> {
     try {
-      const updated = await setPlayStyle(playStyle);
-      onGameUpdate(updated);
+      await source.setPlayStyle(playStyle);
       return true;
     } catch (error) {
       console.error("Failed to set play style:", error);
@@ -436,8 +392,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
 
   async function persistMatchRoles(nextRoles: TeamMatchRolesData): Promise<void> {
     try {
-      const updated = await setTeamMatchRoles(nextRoles);
-      onGameUpdate(updated);
+      await source.setMatchRoles(nextRoles);
     } catch (error) {
       console.error("Failed to set team match roles:", error);
     }
@@ -454,8 +409,7 @@ export function useTacticsLineup({ gameState, onGameUpdate }: UseTacticsLineupAr
 
   async function handleTacticsPhaseChange(patch: Partial<TacticsPhaseSettings>): Promise<void> {
     try {
-      const updated = await setTacticsPhaseService(patch);
-      onGameUpdate(updated);
+      await source.setTacticsPhase(patch);
     } catch (error) {
       console.error("Failed to set tactics phase:", error);
     }

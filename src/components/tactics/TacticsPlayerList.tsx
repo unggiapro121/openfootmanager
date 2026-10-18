@@ -26,7 +26,7 @@ interface TacticsPlayerListProps {
     from: SquadSection,
     slotIndex: number | null,
   ) => void;
-  onOpenPlayerProfile: (playerId: string) => void;
+  onOpenPlayerProfile?: (playerId: string) => void;
   onPlayerSearchChange: (search: string) => void;
   onPositionFilterChange: (position: string) => void;
   onPromoteBench: (playerId: string) => void;
@@ -94,7 +94,7 @@ function PlayerRow({
     from: SquadSection,
     slotIndex: number | null,
   ) => void;
-  onOpenPlayerProfile: (playerId: string) => void;
+  onOpenPlayerProfile?: (playerId: string) => void;
   onPromoteBench?: (playerId: string) => void;
   onTacticalSelect: (playerId: string, section: SquadSection) => void;
   player: PlayerData;

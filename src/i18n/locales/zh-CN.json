@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "战术与默认阵容",
       "intro": "俱乐部开启世界时的设置。AI 俱乐部之后会自行调整；接手该俱乐部的主教练将从这里开始。",
-      "formationAuto": "自动（俱乐部根据阵容和打法选择）",
-      "needFormation": "选择阵型以设置首发十一人和球员角色。",
-      "startingXi": "首发十一人",
-      "elevenProgress": "已选 {{count}}/{{total}}",
-      "elevenIncomplete": "只有所有位置都填满时游戏才会使用这套首发；在此之前由游戏自行排阵。",
       "noPlayers": "该俱乐部在数据包中还没有球员。为该俱乐部添加球员后才能排阵。",
-      "nobody": "— 无 —",
-      "notInClub": "{{player}}（不属于该俱乐部）",
-      "slotPlayer": "{{position}} 位置的球员",
-      "slotRole": "{{position}} 位置的角色",
-      "matchRoles": "队长与定位球",
-      "customPhase": "自定义阶段设置",
-      "phaseFromStyle": "关闭：俱乐部使用其打法的默认设置。"
+      "summaryAuto": "未设置：世界开启时由俱乐部自行选择阵型、阵容和战术。",
+      "setFormation": "阵型 {{formation}}",
+      "setEleven": "首发十一人",
+      "setRoles": "球员角色",
+      "setMatchRoles": "队长与定位球",
+      "setPhase": "阶段设置",
+      "openBoard": "打开战术板",
+      "boardTitle": "战术 – {{team}}",
+      "resetToAuto": "恢复为自动",
+      "done": "完成"
     }
   },
   "packageBuild": {

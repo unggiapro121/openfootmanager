@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Tática e escalação padrão",
       "intro": "Com o que o clube começa o mundo. Um clube da IA ajusta depois; um técnico que assuma o clube parte daqui.",
-      "formationAuto": "Automática (o clube escolhe pelo elenco e estilo)",
-      "needFormation": "Escolha uma formação para definir o time titular e as funções.",
-      "startingXi": "Time titular",
-      "elevenProgress": "{{count}}/{{total}} escolhidos",
-      "elevenIncomplete": "O jogo só usa esta escalação quando todas as posições estão preenchidas; até lá ele escala o time sozinho.",
       "noPlayers": "Este clube ainda não tem jogadores no pacote. Adicione jogadores ao clube para escalá-los.",
-      "nobody": "— Nenhum —",
-      "notInClub": "{{player}} (não é deste clube)",
-      "slotPlayer": "Jogador em {{position}}",
-      "slotRole": "Função em {{position}}",
-      "matchRoles": "Capitão e bolas paradas",
-      "customPhase": "Configurações por fase personalizadas",
-      "phaseFromStyle": "Desligado: o clube usa as configurações do seu estilo de jogo."
+      "summaryAuto": "Não definido: o clube escolhe formação, escalação e tática ao começar o mundo.",
+      "setFormation": "Formação {{formation}}",
+      "setEleven": "Time titular",
+      "setRoles": "Funções dos jogadores",
+      "setMatchRoles": "Capitão e bolas paradas",
+      "setPhase": "Configurações por fase",
+      "openBoard": "Abrir prancheta tática",
+      "boardTitle": "Tática – {{team}}",
+      "resetToAuto": "Voltar ao automático",
+      "done": "Concluir"
     }
   },
   "packageBuild": {

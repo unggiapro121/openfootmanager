@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Tactique et composition par défaut",
       "intro": "Ce avec quoi le club commence le monde. Un club de l'IA l'ajuste ensuite ; un entraîneur qui reprend le club part de là.",
-      "formationAuto": "Automatique (le club choisit selon son effectif et son style)",
-      "needFormation": "Choisissez un schéma pour fixer le onze de départ et les rôles.",
-      "startingXi": "Onze de départ",
-      "elevenProgress": "{{count}}/{{total}} choisis",
-      "elevenIncomplete": "Le jeu n'utilise ce onze que lorsque tous les postes sont pourvus ; d'ici là, il compose l'équipe lui-même.",
       "noPlayers": "Ce club n'a encore aucun joueur dans le paquet. Ajoutez des joueurs à ce club pour les aligner.",
-      "nobody": "— Aucun —",
-      "notInClub": "{{player}} (pas dans ce club)",
-      "slotPlayer": "Joueur au poste {{position}}",
-      "slotRole": "Rôle au poste {{position}}",
-      "matchRoles": "Capitaine et coups de pied arrêtés",
-      "customPhase": "Réglages par phase personnalisés",
-      "phaseFromStyle": "Désactivé : le club utilise les réglages de son style de jeu."
+      "summaryAuto": "Non défini : le club choisit son schéma, sa composition et sa tactique au début du monde.",
+      "setFormation": "Schéma {{formation}}",
+      "setEleven": "Onze de départ",
+      "setRoles": "Rôles des joueurs",
+      "setMatchRoles": "Capitaine et coups de pied arrêtés",
+      "setPhase": "Réglages par phase",
+      "openBoard": "Ouvrir le tableau tactique",
+      "boardTitle": "Tactique – {{team}}",
+      "resetToAuto": "Revenir en automatique",
+      "done": "Terminé"
     }
   },
   "packageBuild": {

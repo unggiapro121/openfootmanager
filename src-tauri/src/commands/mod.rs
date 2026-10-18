@@ -35,8 +35,8 @@ pub use messages::*;
 pub use package_csv::{export_players_csv, export_teams_csv};
 pub use package_editor::{
     build_ofm, copy_package_asset, create_package_project, create_world_project,
-    extract_ofm_for_editing, package_tactics_blueprint, read_file_as_data_url,
-    read_package_project, save_package_project,
+    extract_ofm_for_editing, preview_package_club, read_file_as_data_url, read_package_project,
+    save_package_project,
 };
 pub use portraits::*;
 pub use profiles::*;

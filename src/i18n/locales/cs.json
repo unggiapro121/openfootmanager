@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Taktika a výchozí sestava",
       "intro": "S čím klub začíná svět. Klub řízený AI to poté sám upravuje; trenér, který klub převezme, začne odtud.",
-      "formationAuto": "Automaticky (klub vybírá podle kádru a stylu)",
-      "needFormation": "Vyberte rozestavení, abyste nastavili základní sestavu a role.",
-      "startingXi": "Základní sestava",
-      "elevenProgress": "Vybráno {{count}}/{{total}}",
-      "elevenIncomplete": "Hra použije tuto sestavu, až budou obsazeny všechny pozice; do té doby sestavuje tým sama.",
       "noPlayers": "Tento klub zatím nemá v balíčku žádné hráče. Přidejte klubu hráče, abyste je mohli postavit.",
-      "nobody": "— Nikdo —",
-      "notInClub": "{{player}} (není v tomto klubu)",
-      "slotPlayer": "Hráč na pozici {{position}}",
-      "slotRole": "Role na pozici {{position}}",
-      "matchRoles": "Kapitán a standardní situace",
-      "customPhase": "Vlastní nastavení fází",
-      "phaseFromStyle": "Vypnuto: klub používá nastavení svého herního stylu."
+      "summaryAuto": "Nenastaveno: klub si při startu světa sám vybere rozestavení, sestavu a taktiku.",
+      "setFormation": "Rozestavení {{formation}}",
+      "setEleven": "Základní sestava",
+      "setRoles": "Role hráčů",
+      "setMatchRoles": "Kapitán a standardní situace",
+      "setPhase": "Nastavení fází",
+      "openBoard": "Otevřít taktickou tabuli",
+      "boardTitle": "Taktika – {{team}}",
+      "resetToAuto": "Vrátit na automatické",
+      "done": "Hotovo"
     }
   },
   "packageBuild": {

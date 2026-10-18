@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Táctica y alineación por defecto",
       "intro": "Con lo que el club empieza el mundo. Un club de la IA lo ajusta después; un entrenador que tome el club parte de aquí.",
-      "formationAuto": "Automática (el club elige según su plantilla y estilo)",
-      "needFormation": "Elige una formación para fijar el once inicial y los roles.",
-      "startingXi": "Once inicial",
-      "elevenProgress": "{{count}}/{{total}} elegidos",
-      "elevenIncomplete": "El juego solo usa este once cuando todas las posiciones están cubiertas; hasta entonces elige el equipo él mismo.",
       "noPlayers": "Este club aún no tiene jugadores en el paquete. Añade jugadores al club para alinearlos.",
-      "nobody": "— Ninguno —",
-      "notInClub": "{{player}} (no es de este club)",
-      "slotPlayer": "Jugador en {{position}}",
-      "slotRole": "Rol en {{position}}",
-      "matchRoles": "Capitán y balón parado",
-      "customPhase": "Ajustes por fase personalizados",
-      "phaseFromStyle": "Desactivado: el club usa los ajustes de su estilo de juego."
+      "summaryAuto": "Sin definir: el club elige su formación, alineación y táctica al empezar el mundo.",
+      "setFormation": "Formación {{formation}}",
+      "setEleven": "Once inicial",
+      "setRoles": "Roles de jugadores",
+      "setMatchRoles": "Capitán y balón parado",
+      "setPhase": "Ajustes por fase",
+      "openBoard": "Abrir pizarra táctica",
+      "boardTitle": "Táctica – {{team}}",
+      "resetToAuto": "Volver a automático",
+      "done": "Hecho"
     }
   },
   "packageBuild": {

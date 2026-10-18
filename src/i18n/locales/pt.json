@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Tática e onze padrão",
       "intro": "Aquilo com que o clube começa o mundo. Um clube da IA ajusta-o depois; um treinador que assuma o clube parte daqui.",
-      "formationAuto": "Automática (o clube escolhe pelo plantel e estilo)",
-      "needFormation": "Escolhe uma formação para definir o onze inicial e as funções.",
-      "startingXi": "Onze inicial",
-      "elevenProgress": "{{count}}/{{total}} escolhidos",
-      "elevenIncomplete": "O jogo só usa este onze quando todas as posições estão preenchidas; até lá escolhe a equipa sozinho.",
       "noPlayers": "Este clube ainda não tem jogadores no pacote. Adiciona jogadores ao clube para os escalar.",
-      "nobody": "— Nenhum —",
-      "notInClub": "{{player}} (não é deste clube)",
-      "slotPlayer": "Jogador em {{position}}",
-      "slotRole": "Função em {{position}}",
-      "matchRoles": "Capitão e bolas paradas",
-      "customPhase": "Definições por fase personalizadas",
-      "phaseFromStyle": "Desligado: o clube usa as definições do seu estilo de jogo."
+      "summaryAuto": "Por definir: o clube escolhe a formação, o onze e a tática ao começar o mundo.",
+      "setFormation": "Formação {{formation}}",
+      "setEleven": "Onze inicial",
+      "setRoles": "Funções dos jogadores",
+      "setMatchRoles": "Capitão e bolas paradas",
+      "setPhase": "Definições por fase",
+      "openBoard": "Abrir quadro tático",
+      "boardTitle": "Tática – {{team}}",
+      "resetToAuto": "Repor automático",
+      "done": "Concluído"
     }
   },
   "packageBuild": {
