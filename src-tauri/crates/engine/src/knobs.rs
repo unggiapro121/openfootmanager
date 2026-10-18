@@ -79,6 +79,11 @@ pub struct CalibrationKnobs {
     /// 1 is the plain ratio; above 1 the stronger midfield holds the ball
     /// more, which widens possession's spread across matches (GĐ5 P5.4, T16).
     pub possession_contest_sharpness: f64,
+    /// How often an `Early` side crosses straight away from a flank, and how
+    /// much of a delivery a cross from that far out keeps (GĐ3 P3.4; knobs
+    /// from GĐ5 P5.5, for the dial's balance).
+    pub p_early_cross: f64,
+    pub early_cross_delivery: f64,
     /// A defensive line's effect on the chances it concedes (GĐ2,
     /// `shared.rs::tactics_defensive_conversion_mod`): high and very low.
     pub conversion_high_line: f64,
@@ -121,7 +126,12 @@ impl Default for CalibrationKnobs {
             // matches, real football 10.6; 1.6 gives 10.1, the stronger
             // midfield holding the ball more.
             possession_contest_sharpness: 1.6,
-            conversion_high_line: 1.12,
+            p_early_cross: live::P_EARLY,
+            early_cross_delivery: live::EARLY_DELIVERY,
+            // 1.12 until GĐ5 P5.5 (X88): GĐ4's `BallInBehind` already plays
+            // the space behind a high line, which this stood for; the dial
+            // lost 3–5.5 points to the default. 1.05 puts it level (+0.2).
+            conversion_high_line: 1.05,
             conversion_very_low_line: 0.85,
         }
     }
