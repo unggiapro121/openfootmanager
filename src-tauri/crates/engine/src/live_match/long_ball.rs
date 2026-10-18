@@ -276,7 +276,14 @@ impl LiveMatchState {
         let def_side = att_side.opposite();
         let mut events = Vec::new();
         let zone = Zone::attacking_third(att_side);
-        let won = scale_odds(duel::aerial_win_probability(target, defender), condition);
+        let won = scale_odds(
+            duel::aerial_win_probability_anchored(
+                target,
+                defender,
+                self.config.knobs.anchor_aerial,
+            ),
+            condition,
+        );
         if rng.random_range(0.0..1.0f64) >= won {
             let cleared = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
                 .with_player(&defender.id);

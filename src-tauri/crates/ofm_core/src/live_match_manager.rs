@@ -46,6 +46,29 @@ const LIVE_MATCH_FIXTURE_NOT_SCHEDULED_ERROR: &str = "be.error.liveMatch.fixture
 /// the engine, which has no way to resolve a pass, a shot or a goalkeeper.
 const LIVE_MATCH_EMPTY_SQUAD_ERROR: &str = "be.error.liveMatch.emptySquad";
 
+/// The match config the real-world probes play, when one sets it (phase 2,
+/// GĐ5 P5.0, X82): calibration knobs from `OFM_KNOBS`. The game never sets
+/// it, so every match it plays uses `MatchConfig::default()`.
+static PROBE_MATCH_CONFIG: std::sync::RwLock<Option<MatchConfig>> = std::sync::RwLock::new(None);
+
+/// Set (or clear) the match config every match of this process plays. For
+/// the real-world probes only.
+pub fn set_probe_match_config(config: Option<MatchConfig>) {
+    if let Ok(mut slot) = PROBE_MATCH_CONFIG.write() {
+        *slot = config;
+    }
+}
+
+/// The match config a match plays: the probe's if one was set, else the
+/// game's default.
+fn match_config() -> MatchConfig {
+    PROBE_MATCH_CONFIG
+        .read()
+        .ok()
+        .and_then(|slot| slot.clone())
+        .unwrap_or_default()
+}
+
 fn resolve_match_role_assignment(
     assigned_id: &Option<String>,
     starter_ids: &HashSet<String>,
@@ -492,7 +515,7 @@ pub fn create_live_match(
         return Err(LIVE_MATCH_EMPTY_SQUAD_ERROR.to_string());
     }
 
-    let config = MatchConfig::default();
+    let config = match_config();
 
     let mut match_state = LiveMatchState::new(
         home_xi,
@@ -701,7 +724,7 @@ fn derive_personality(rep: u32, manager: Option<&Manager>) -> AiPersonality {
 
 #[cfg(test)]
 mod tests {
-    use super::{MatchMode, create_live_match};
+    use super::{MatchMode, create_live_match, match_config};
     use crate::clock::GameClock;
     use crate::game::Game;
     use chrono::{TimeZone, Utc};
@@ -735,5 +758,20 @@ mod tests {
             .err()
             .expect("the core entry point must reject a completed fixture");
         assert_eq!(error, "be.error.liveMatch.fixtureNotScheduled");
+    }
+
+    /// Given no probe has set a match config,
+    /// when a match's config is read,
+    /// then it is the game's default: every calibration knob at its tuned
+    /// constant, whatever `OFM_KNOBS` says (GĐ5 X82).
+    #[test]
+    fn a_match_plays_the_default_config_unless_a_probe_sets_one() {
+        let config = match_config();
+        let default = engine::MatchConfig::default();
+        assert_eq!(config.knobs, engine::CalibrationKnobs::default());
+        assert_eq!(
+            serde_json::to_value(&config).expect("config serializes"),
+            serde_json::to_value(&default).expect("config serializes")
+        );
     }
 }

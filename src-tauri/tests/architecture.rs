@@ -174,3 +174,38 @@ fn the_isolated_crates_still_exist() {
         );
     }
 }
+
+/// Given the workspace's sources,
+/// when they are searched for a read of the calibration knob file,
+/// then only sim-bench and the real-world probes read `OFM_KNOBS`: the game
+/// plays the tuned constants and never a file (phase 2, GĐ5 X82).
+#[test]
+fn only_the_measuring_tools_read_the_knob_file() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let needle = concat!("\"OFM_", "KNOBS\"");
+    let mut readers = BTreeSet::new();
+    let mut stack = vec![root.join("src"), root.join("crates")];
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).expect("a readable source directory") {
+            let path = entry.expect("a directory entry").path();
+            if path.is_dir() {
+                if path.file_name().is_some_and(|name| name != "target") {
+                    stack.push(path);
+                }
+            } else if path.extension().is_some_and(|ext| ext == "rs")
+                && std::fs::read_to_string(&path).is_ok_and(|text| text.contains(needle))
+            {
+                let relative = path.strip_prefix(root).expect("under the root");
+                readers.insert(relative.to_string_lossy().replace('\\', "/"));
+            }
+        }
+    }
+    let expected: BTreeSet<String> = [
+        "crates/sim-bench/src/main.rs",
+        "src/commands/game/real_world_probe.rs",
+    ]
+    .into_iter()
+    .map(String::from)
+    .collect();
+    assert_eq!(readers, expected);
+}

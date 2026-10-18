@@ -55,7 +55,7 @@ const DEAD_BALL_SPECIALIST_DELIVERY: f64 = 1.04;
 const DELIVERY_REFERENCE: f64 = 65.0;
 /// How often an average delivery reaches the aerial contest. Calibrated on the
 /// lan-can sweep for about 3% of a goal per corner.
-const REACH_BASE: f64 = 0.70;
+pub(crate) const REACH_BASE: f64 = 0.70;
 const REACH_SPREAD: f64 = 200.0;
 const REACH_MIN: f64 = 0.40;
 const REACH_MAX: f64 = 0.85;
@@ -77,7 +77,7 @@ const FREE_KICK_CURVE: f64 = 0.35;
 /// `DeadBallSpecialist` strikes a free kick better.
 const DEAD_BALL_SPECIALIST_STRIKE: f64 = 1.08;
 /// The share of direct free kicks the wall stops.
-const WALL_BLOCK: f64 = 0.25;
+pub(crate) const WALL_BLOCK: f64 = 0.25;
 /// Of the free kicks the wall stops, the share deflected behind for a corner.
 const WALL_TO_CORNER: f64 = 0.50;
 const FREE_KICK_ON_TARGET_BASE: f64 = 0.35;
@@ -95,8 +95,8 @@ pub(super) fn delivery_skill(crossing: u8, curve: u8) -> f64 {
 }
 
 /// The chance a delivery of quality `q` reaches the aerial contest.
-fn reach_chance(q: f64) -> f64 {
-    (REACH_BASE + (q - DELIVERY_REFERENCE) / REACH_SPREAD).clamp(REACH_MIN, REACH_MAX)
+fn reach_chance(q: f64, base: f64) -> f64 {
+    (base + (q - DELIVERY_REFERENCE) / REACH_SPREAD).clamp(REACH_MIN, REACH_MAX)
 }
 
 /// A player's strike of a dead ball, before condition and traits.
@@ -294,7 +294,9 @@ impl LiveMatchState {
             .condition_adjusted_skill(&taker.id, delivery_skill(taker.crossing, taker.curve))
             * dead_ball;
 
-        if rng.random_range(0.0..1.0f64) >= reach_chance(delivery) {
+        if rng.random_range(0.0..1.0f64)
+            >= reach_chance(delivery, self.config.knobs.set_piece_reach)
+        {
             if rng.random_range(0.0..1.0f64) < UNREACHED_CLEARED {
                 let clearer = self.snap_player(def_side, Position::Defender, rng);
                 let clearance = MatchEvent::new(minute, EventType::Clearance, def_side, zone)
@@ -319,7 +321,11 @@ impl LiveMatchState {
         // The same modifiers as the duel after an open-play cross, plus the
         // delivery's help.
         let won = scale_odds(
-            duel::aerial_win_probability(&target, &marker),
+            duel::aerial_win_probability_anchored(
+                &target,
+                &marker,
+                self.config.knobs.anchor_aerial,
+            ),
             contest_help(delivery)
                 * (self.line_strength(att_side, Position::Forward)
                     * self.slot_effectiveness(&target.id))
@@ -376,7 +382,7 @@ impl LiveMatchState {
                 .with_player(&taker.id)
         };
 
-        if rng.random_range(0.0..1.0f64) < WALL_BLOCK {
+        if rng.random_range(0.0..1.0f64) < self.config.knobs.wall_block {
             let blocked = attempt(EventType::ShotBlocked).with_detail(EventDetail::Shot {
                 danger: danger_band(strike),
             });
@@ -564,9 +570,9 @@ mod tests {
     /// then they stay in their bands and an average delivery is neutral help.
     #[test]
     fn delivery_quality_stays_in_its_bands() {
-        assert_eq!(reach_chance(DELIVERY_REFERENCE), REACH_BASE);
-        assert_eq!(reach_chance(0.0), REACH_MIN);
-        assert_eq!(reach_chance(200.0), REACH_MAX);
+        assert_eq!(reach_chance(DELIVERY_REFERENCE, REACH_BASE), REACH_BASE);
+        assert_eq!(reach_chance(0.0, REACH_BASE), REACH_MIN);
+        assert_eq!(reach_chance(200.0, REACH_BASE), REACH_MAX);
         assert_eq!(contest_help(DELIVERY_REFERENCE), 1.0);
         assert_eq!(contest_help(0.0), CONTEST_MIN);
         assert_eq!(contest_help(200.0), CONTEST_MAX);

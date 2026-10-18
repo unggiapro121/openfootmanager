@@ -45,9 +45,9 @@ use super::helpers::{danger_band, save_quality};
 /// for 30–35% of shots from outside the box; GĐ3 (P3.4, X56) made a shot from
 /// a flank `FLANK_PENALTY` less likely and raised the level to −1.80, which
 /// keeps that share (34% on the guardrail sweep, 33.5% on the probe).
-const BASE: f64 = -1.80;
+pub(crate) const BASE: f64 = -1.80;
 /// Shooting from out wide, at a narrow angle, is rare (X56).
-const FLANK_PENALTY: f64 = -1.0;
+pub(crate) const FLANK_PENALTY: f64 = -1.0;
 /// A wide player who has cut inside onto his stronger foot shoots more
 /// readily (S2 §3.3).
 const CUT_INSIDE_BONUS: f64 = 0.8;
@@ -66,14 +66,14 @@ const BLOCK_MIN: f64 = 0.18;
 const BLOCK_MAX: f64 = 0.45;
 /// Of the blocked shots, the share the defence comes away with.
 const BLOCK_DEFENCE_KEEPS: f64 = 0.40;
-const ON_TARGET_BASE: f64 = 0.32;
+pub(crate) const ON_TARGET_BASE: f64 = 0.32;
 const ON_TARGET_SPREAD: f64 = 220.0;
 const ON_TARGET_MIN: f64 = 0.12;
 const ON_TARGET_MAX: f64 = 0.70;
 const LONG_SHOOTER_ACCURACY: f64 = 1.08;
 const CURLER_ACCURACY: f64 = 1.08;
 const TRAIT_ACCURACY_CAP: f64 = 1.12;
-const GOAL_BASE: f64 = 0.14;
+pub(crate) const GOAL_BASE: f64 = 0.14;
 const GOAL_SPREAD: f64 = 250.0;
 const GOAL_MIN: f64 = 0.02;
 const GOAL_MAX: f64 = 0.35;
@@ -147,7 +147,7 @@ fn block_chance(shape: f64) -> f64 {
     (BLOCK_BASE * shape).clamp(BLOCK_MIN, BLOCK_MAX)
 }
 
-fn on_target_chance(rating: f64, long_shooter: bool, curler: bool) -> f64 {
+fn on_target_chance(rating: f64, long_shooter: bool, curler: bool, base: f64) -> f64 {
     let mut traits = 1.0;
     if long_shooter {
         traits *= LONG_SHOOTER_ACCURACY;
@@ -155,12 +155,12 @@ fn on_target_chance(rating: f64, long_shooter: bool, curler: bool) -> f64 {
     if curler {
         traits *= CURLER_ACCURACY;
     }
-    (ON_TARGET_BASE + (rating - 50.0) / ON_TARGET_SPREAD).clamp(ON_TARGET_MIN, ON_TARGET_MAX)
+    (base + (rating - 50.0) / ON_TARGET_SPREAD).clamp(ON_TARGET_MIN, ON_TARGET_MAX)
         * traits.min(TRAIT_ACCURACY_CAP)
 }
 
-fn goal_chance(rating: f64, keeper: f64) -> f64 {
-    (GOAL_BASE + (rating - keeper) / GOAL_SPREAD).clamp(GOAL_MIN, GOAL_MAX)
+fn goal_chance(rating: f64, keeper: f64, base: f64) -> f64 {
+    (base + (rating - keeper) / GOAL_SPREAD).clamp(GOAL_MIN, GOAL_MAX)
 }
 
 impl LiveMatchState {
@@ -183,9 +183,10 @@ impl LiveMatchState {
         let extra = if self.lane_for(att_side) == crate::event::Lane::Centre {
             0.0
         } else {
-            FLANK_PENALTY
+            self.config.knobs.long_shot_flank_penalty
         };
-        let chance = self.long_shot_chance(att_side, &shooter, BASE, extra);
+        let chance =
+            self.long_shot_chance(att_side, &shooter, self.config.knobs.long_shot_base, extra);
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
@@ -238,7 +239,12 @@ impl LiveMatchState {
         cutter: &PlayerSnap,
         rng: &mut R,
     ) -> Option<Vec<MatchEvent>> {
-        let chance = self.long_shot_chance(att_side, cutter, BASE, CUT_INSIDE_BONUS);
+        let chance = self.long_shot_chance(
+            att_side,
+            cutter,
+            self.config.knobs.long_shot_base,
+            CUT_INSIDE_BONUS,
+        );
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
@@ -297,6 +303,7 @@ impl LiveMatchState {
             rating,
             shooter.has_trait("LongShooter"),
             shooter.has_trait("Curler"),
+            self.config.knobs.long_shot_on_target_base,
         );
         if rng.random_range(0.0..1.0f64) >= on_target {
             self.emit(
@@ -315,7 +322,9 @@ impl LiveMatchState {
             return events;
         }
 
-        if rng.random_range(0.0..1.0f64) < goal_chance(rating, keeper) {
+        if rng.random_range(0.0..1.0f64)
+            < goal_chance(rating, keeper, self.config.knobs.long_shot_goal_base)
+        {
             let context = self.goal_context(att_side);
             let mut goal = attempt(EventType::Goal).with_detail(EventDetail::Goal { context });
             if let Some(id) = &assister {
@@ -391,11 +400,17 @@ mod tests {
         assert!(block_chance(1.07) > block_chance(1.0));
         assert_eq!(block_chance(0.1), BLOCK_MIN);
         assert_eq!(block_chance(9.0), BLOCK_MAX);
-        assert_eq!(on_target_chance(0.0, false, false), ON_TARGET_MIN);
-        let plain = on_target_chance(60.0, false, false);
-        assert!((on_target_chance(60.0, true, true) - plain * TRAIT_ACCURACY_CAP).abs() < 1e-12);
-        assert_eq!(goal_chance(10.0, 99.0), GOAL_MIN);
-        assert_eq!(goal_chance(99.0, 10.0), GOAL_MAX);
+        assert_eq!(
+            on_target_chance(0.0, false, false, ON_TARGET_BASE),
+            ON_TARGET_MIN
+        );
+        let plain = on_target_chance(60.0, false, false, ON_TARGET_BASE);
+        assert!(
+            (on_target_chance(60.0, true, true, ON_TARGET_BASE) - plain * TRAIT_ACCURACY_CAP).abs()
+                < 1e-12
+        );
+        assert_eq!(goal_chance(10.0, 99.0, GOAL_BASE), GOAL_MIN);
+        assert_eq!(goal_chance(99.0, 10.0, GOAL_BASE), GOAL_MAX);
     }
 
     /// Given a midfielder who shoots from distance and plenty of chances,

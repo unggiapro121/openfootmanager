@@ -22,13 +22,22 @@
 //!
 //! Knobs: `OFM_PROBE_SEED`, `OFM_PROBE_RUNS` (default 3), `OFM_PROBE_DAYS` (default 150), `OFM_PROBE_CLUB`
 //! (default the first club), `OFM_PROBE_SCOPE=home` to simulate only the club's
-//! home region instead of every competition, `OFM_PROBE_OUT` for a JSON copy.
+//! home region instead of every competition, `OFM_PROBE_SCOPE=europe` to play the
+//! European competitions and count only the 17 leagues of the football-data
+//! reference table (phase 2, GĐ5 P5.0, X80; the club then defaults to the
+//! first of the Premier League), `OFM_PROBE_OUT` for a JSON copy, `OFM_KNOBS`
+//! for a calibration knob file (X82), `OFM_STRENGTH_BRIDGE` for the market's
+//! line over the strength gap (`gd5-strength-bridge.json`, X81).
+//!
+//! Both probes end with GĐ5's verdict: their rows of `engine::targets`, PASS
+//! or FAIL (GĐ5-tech-spec §11.2).
 
 use std::collections::BTreeMap;
 use std::path::Path;
 
 use domain::league::{FixtureCompetition, FixtureStatus};
 use domain::manager::Manager;
+use engine::targets::{self, Band};
 use ofm_core::career::{begin_career, CareerScope};
 use ofm_core::game::Game;
 use ofm_core::generator::{
@@ -60,6 +69,132 @@ struct LeagueTotals {
     draws: u32,
     away_wins: u32,
     substitutions: u32,
+    /// Results by the gap in strength `S` between the two clubs at the start
+    /// of the run (phase 2, GĐ5 P5.0, X81): buckets 0–2, 2–4, … 8–10, 10+.
+    by_gap: [GapTotals; GAP_BUCKETS],
+}
+
+/// How many 2-point buckets of strength gap the probe reports; the last is
+/// everything from 10 up.
+const GAP_BUCKETS: usize = 6;
+
+/// Results in one bucket of strength gap, from the stronger club's side.
+#[derive(Default, Clone, Copy, Serialize)]
+struct GapTotals {
+    matches: u32,
+    strong_wins: u32,
+    draws: u32,
+    strong_losses: u32,
+    /// Of those, the matches the stronger club played at home.
+    strong_at_home: u32,
+    /// The stronger club's wins the market's line expects over the same
+    /// matches, home and gap as played (`OFM_STRENGTH_BRIDGE`).
+    expected_strong_wins: f64,
+}
+
+impl GapTotals {
+    fn pct(&self, n: u32) -> f64 {
+        f64::from(n) / f64::from(self.matches.max(1)) * 100.0
+    }
+}
+
+/// The market's line over the strength gap: the ordered probit
+/// `gd5-strength-bridge.py` fits to the 2024-25 closing odds (`fit_on_market`).
+#[derive(Clone, Copy)]
+struct StrengthBridge {
+    beta: f64,
+    eta: f64,
+    c: f64,
+}
+
+impl StrengthBridge {
+    fn from_env() -> Option<Self> {
+        let path = std::env::var("OFM_STRENGTH_BRIDGE").ok()?;
+        let json: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(&path).expect("OFM_STRENGTH_BRIDGE names a readable file"),
+        )
+        .expect("a JSON strength bridge");
+        let fit = &json["fit_on_market"];
+        let read = |key: &str| {
+            fit[key]
+                .as_f64()
+                .expect("the bridge carries beta, eta and c")
+        };
+        Some(Self {
+            beta: read("beta"),
+            eta: read("eta"),
+            c: read("c"),
+        })
+    }
+
+    /// The market's chance that the stronger club wins, `gap` points of `S`
+    /// ahead, at home or away.
+    fn strong_win(&self, gap: f64, at_home: bool) -> f64 {
+        if at_home {
+            1.0 - normal_cdf(self.c - (self.beta * gap + self.eta))
+        } else {
+            normal_cdf(-self.c - (-self.beta * gap + self.eta))
+        }
+    }
+}
+
+/// Φ, the standard normal distribution, through erf (Abramowitz and Stegun
+/// 7.1.26, error below 1.5e-7).
+fn normal_cdf(x: f64) -> f64 {
+    let z = x.abs() / std::f64::consts::SQRT_2;
+    let t = 1.0 / (1.0 + 0.327_591_1 * z);
+    let poly = t
+        * (0.254_829_592
+            + t * (-0.284_496_736
+                + t * (1.421_413_741 + t * (-1.453_152_027 + t * 1.061_405_429))));
+    let erf = 1.0 - poly * (-z * z).exp();
+    0.5 * (1.0 + erf.copysign(x))
+}
+
+/// One row of GĐ5's verdict (GĐ5-tech-spec §5): a target, what the probe
+/// measured and whether it lands in the band of `engine::targets`.
+struct Gd5Row {
+    target: &'static str,
+    name: String,
+    value: f64,
+    band: String,
+    pass: bool,
+}
+
+impl Gd5Row {
+    fn banded(target: &'static str, name: &str, value: f64, band: Band) -> Self {
+        Self {
+            target,
+            name: name.to_string(),
+            value,
+            band: band.to_string(),
+            pass: band.contains(value),
+        }
+    }
+}
+
+/// Print GĐ5's verdict: each row PASS or FAIL, then the whole.
+fn gd5_verdict(rows: &[Gd5Row]) {
+    println!("  GĐ5 verdict (engine::targets):");
+    for row in rows {
+        println!(
+            "    {:<4} {:<4} {:<52} {:>8.3}   {}",
+            if row.pass { "PASS" } else { "FAIL" },
+            row.target,
+            row.name,
+            row.value,
+            row.band
+        );
+    }
+    let failed = rows.iter().filter(|row| !row.pass).count();
+    println!(
+        "    → {}",
+        if failed == 0 {
+            "PASS".to_string()
+        } else {
+            format!("FAIL ({failed} of {})", rows.len())
+        }
+    );
 }
 
 impl LeagueTotals {
@@ -93,7 +228,26 @@ impl LeagueTotals {
         self.draws += other.draws;
         self.away_wins += other.away_wins;
         self.substitutions += other.substitutions;
+        for (mine, theirs) in self.by_gap.iter_mut().zip(other.by_gap.iter()) {
+            mine.matches += theirs.matches;
+            mine.strong_wins += theirs.strong_wins;
+            mine.draws += theirs.draws;
+            mine.strong_losses += theirs.strong_losses;
+            mine.strong_at_home += theirs.strong_at_home;
+            mine.expected_strong_wins += theirs.expected_strong_wins;
+        }
     }
+}
+
+/// Every club's strength `S` in `game` (phase 2, GĐ5 P5.0, X81).
+fn strengths(game: &Game) -> std::collections::HashMap<String, f64> {
+    game.teams
+        .iter()
+        .filter_map(|team| {
+            ofm_core::team_strength::club_strength(game, &team.id)
+                .map(|s| (team.id.clone(), s.strength))
+        })
+        .collect()
 }
 
 #[derive(Serialize)]
@@ -112,6 +266,51 @@ struct ProbeReport {
     /// Share of players at each natural position who shoot from distance by
     /// habit (phase 2, P1.5): (players, share in %).
     shoots_from_distance_by_position: BTreeMap<String, (u32, f64)>,
+    /// The league clubs' formations at the end of the last run, % (T21).
+    formations: BTreeMap<String, f64>,
+}
+
+/// The leagues of the football-data 2024-25 reference table (P0.5,
+/// `fm-document/comon/sim-bench/reference/`) the package has: all of its 18
+/// but Greece's.
+const REFERENCE_LEAGUES: [&str; 17] = [
+    "eng-premier-league",
+    "eng-championship",
+    "eng-league-one",
+    "eng-league-two",
+    "sco-premiership",
+    "ger-bundesliga",
+    "ger-2-bundesliga",
+    "ita-serie-a",
+    "ita-serie-b",
+    "esp-la-liga",
+    "esp-la-liga-2",
+    "fra-ligue-1",
+    "fra-ligue-2",
+    "nld-eredivisie",
+    "bel-pro-league",
+    "por-liga-portugal",
+    "tur-super-lig",
+];
+
+/// The countries of the reference leagues: a European probe plays their
+/// leagues and cups, and the European competitions.
+const EUROPE_COUNTRIES: [&str; 10] = ["ENG", "SCO", "DE", "IT", "ES", "FR", "NL", "BE", "PT", "TR"];
+
+fn europe_scope() -> bool {
+    std::env::var("OFM_PROBE_SCOPE").as_deref() == Ok("europe")
+}
+
+/// Calibration knobs from `OFM_KNOBS`, for every match this process plays
+/// (phase 2, GĐ5 P5.0, X82). The game never reads the variable.
+fn apply_knobs_from_env() {
+    if let Ok(path) = std::env::var("OFM_KNOBS") {
+        let json = std::fs::read_to_string(&path).expect("OFM_KNOBS names a readable file");
+        let mut config = engine::MatchConfig::default();
+        engine::apply_knob_file(&mut config, &json).expect("a valid knob file");
+        ofm_core::live_match_manager::set_probe_match_config(Some(config));
+        println!("  knobs from {path}");
+    }
 }
 
 fn build_game(package: &Path, seed: u64) -> Game {
@@ -135,12 +334,31 @@ fn build_game(package: &Path, seed: u64) -> Game {
     );
     let (mut game, stats) = build_game_from_world_data(clock, manager, &options, world);
 
+    let premier_league_club = || {
+        game.competitions
+            .iter()
+            .find(|c| c.id == REFERENCE_LEAGUES[0])
+            .and_then(|c| c.participant_ids.first().cloned())
+    };
     let club = std::env::var("OFM_PROBE_CLUB")
         .ok()
         .filter(|id| game.teams.iter().any(|team| &team.id == id))
+        .or_else(|| europe_scope().then(premier_league_club).flatten())
         .unwrap_or_else(|| game.teams[0].id.clone());
     let competitions = match std::env::var("OFM_PROBE_SCOPE").as_deref() {
         Ok("home") => None,
+        Ok("europe") => Some(
+            game.competitions
+                .iter()
+                .filter(|c| {
+                    c.country_id
+                        .as_deref()
+                        .is_some_and(|country| EUROPE_COUNTRIES.contains(&country))
+                        || c.region_id.as_deref() == Some("europe")
+                })
+                .map(|c| c.id.clone())
+                .collect(),
+        ),
         _ => Some(game.competitions.iter().map(|c| c.id.clone()).collect()),
     };
     begin_career(
@@ -159,11 +377,18 @@ fn build_game(package: &Path, seed: u64) -> Game {
 /// League matches played on or after `since` (ISO date). Fixtures a world is
 /// built with mid-season are caught up by a cheaper model before kick-off, so
 /// they are left out: they are not the engine this probe measures.
-fn league_totals(game: &Game, since: &str) -> LeagueTotals {
+fn league_totals(
+    game: &Game,
+    since: &str,
+    strength: &std::collections::HashMap<String, f64>,
+    bridge: Option<StrengthBridge>,
+) -> LeagueTotals {
     let mut totals = LeagueTotals::default();
+    let europe = europe_scope();
     let fixtures = game
         .competitions
         .iter()
+        .filter(|competition| !europe || REFERENCE_LEAGUES.contains(&competition.id.as_str()))
         .flat_map(|competition| competition.fixtures.iter());
     for fixture in fixtures {
         if fixture.competition != FixtureCompetition::League
@@ -179,6 +404,29 @@ fn league_totals(game: &Game, since: &str) -> LeagueTotals {
         totals.matches += 1;
         totals.goals += goals;
         totals.goals_squared += u64::from(goals * goals);
+        if let (Some(home), Some(away)) = (
+            strength.get(&fixture.home_team_id),
+            strength.get(&fixture.away_team_id),
+        ) {
+            let bucket = (((home - away).abs() / 2.0) as usize).min(GAP_BUCKETS - 1);
+            let gap = &mut totals.by_gap[bucket];
+            let strong_home = home >= away;
+            let (strong, weak) = if strong_home {
+                (result.home_goals, result.away_goals)
+            } else {
+                (result.away_goals, result.home_goals)
+            };
+            gap.matches += 1;
+            gap.strong_at_home += u32::from(strong_home);
+            if let Some(bridge) = bridge {
+                gap.expected_strong_wins += bridge.strong_win((home - away).abs(), strong_home);
+            }
+            match strong.cmp(&weak) {
+                std::cmp::Ordering::Greater => gap.strong_wins += 1,
+                std::cmp::Ordering::Equal => gap.draws += 1,
+                std::cmp::Ordering::Less => gap.strong_losses += 1,
+            }
+        }
         match result.home_goals.cmp(&result.away_goals) {
             std::cmp::Ordering::Greater => totals.home_wins += 1,
             std::cmp::Ordering::Equal => totals.draws += 1,
@@ -193,6 +441,32 @@ fn league_totals(game: &Game, since: &str) -> LeagueTotals {
         }
     }
     totals
+}
+
+/// The formations the clubs of the reference leagues (all leagues outside the
+/// European scope) line up in, % of clubs (T21, X83).
+fn formation_shares(game: &Game) -> BTreeMap<String, f64> {
+    let europe = europe_scope();
+    let clubs: Vec<&String> = game
+        .competitions
+        .iter()
+        .filter(|c| {
+            c.kind == domain::league::CompetitionType::League
+                && (!europe || REFERENCE_LEAGUES.contains(&c.id.as_str()))
+        })
+        .flat_map(|c| c.participant_ids.iter())
+        .collect();
+    let mut counts: BTreeMap<String, u32> = BTreeMap::new();
+    for id in &clubs {
+        if let Some(team) = game.teams.iter().find(|team| &&team.id == id) {
+            *counts.entry(team.formation.clone()).or_default() += 1;
+        }
+    }
+    let total = f64::from(counts.values().sum::<u32>().max(1));
+    counts
+        .into_iter()
+        .map(|(formation, n)| (formation, f64::from(n) / total * 100.0))
+        .collect()
 }
 
 fn mean_ovr_by_group(game: &Game) -> BTreeMap<String, f64> {
@@ -239,6 +513,35 @@ fn trait_counts(game: &Game) -> BTreeMap<String, u32> {
         }
     }
     counts
+}
+
+/// Given the standard normal distribution,
+/// when it is read at 0 and ±1.96,
+/// then it gives a half and the two-sided 95% points.
+#[test]
+fn the_normal_distribution_matches_its_table() {
+    assert!((normal_cdf(0.0) - 0.5).abs() < 1e-7);
+    assert!((normal_cdf(1.96) - 0.975).abs() < 1e-4);
+    assert!((normal_cdf(-1.96) - 0.025).abs() < 1e-4);
+}
+
+/// Given the market's line fitted on 2024-25,
+/// when the stronger club's chance is read across gaps, at home and away,
+/// then it rises with the gap, home is worth more than away, and at gap 0
+/// the two are the home and away sides' chances of one even match.
+#[test]
+fn the_markets_line_rises_with_the_gap_and_favours_home() {
+    let bridge = StrengthBridge {
+        beta: 0.0858,
+        eta: 0.1938,
+        c: 0.3559,
+    };
+    assert!(bridge.strong_win(6.0, true) > bridge.strong_win(2.0, true));
+    assert!(bridge.strong_win(6.0, false) > bridge.strong_win(2.0, false));
+    assert!(bridge.strong_win(4.0, true) > bridge.strong_win(4.0, false));
+    // gd5-strength-bridge.py prints 43.6 and 29.1 at gap 0.
+    assert!((bridge.strong_win(0.0, true) - 0.436).abs() < 0.001);
+    assert!((bridge.strong_win(0.0, false) - 0.291).abs() < 0.001);
 }
 
 /// Given the real-world package and a fixed seed,
@@ -328,6 +631,11 @@ struct MatchShares {
     /// midfield.
     long_balls: u64,
     long_balls_over: u64,
+    /// Phase 2, GĐ5 (P5.0): every goal by its source, and the spread of a
+    /// side's possession: the sum of squared distances from 50 over every
+    /// side of every match (T16).
+    goal_sources: BTreeMap<String, u64>,
+    possession_squares: f64,
 }
 
 /// Who scores, who sets them up and how players rate, by natural position
@@ -386,6 +694,31 @@ impl PlayerShares {
                 *self.rating_count.entry(key).or_default() += 1;
             }
         }
+    }
+
+    /// The widest gap between two natural positions' mean match rating, over
+    /// positions with at least 100 ratings (T19).
+    fn rating_spread(&self) -> f64 {
+        let means: Vec<f64> = self
+            .rating_sum
+            .iter()
+            .filter_map(|(k, sum)| {
+                let n = self.rating_count.get(k).copied().unwrap_or(0);
+                (n >= 100).then(|| sum / f64::from(n))
+            })
+            .collect();
+        let high = means.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+        let low = means.iter().copied().fold(f64::INFINITY, f64::min);
+        if means.is_empty() {
+            0.0
+        } else {
+            high - low
+        }
+    }
+
+    fn top_scorer_mean(&self) -> f64 {
+        let n = self.top_scorer_goals.len().max(1) as f64;
+        f64::from(self.top_scorer_goals.iter().sum::<u32>()) / n
     }
 
     fn print(&self) {
@@ -518,6 +851,29 @@ impl MatchShares {
                     && event.shot_kind == Some(engine::ShotKind::Header)
             })
             .count() as u64;
+        for goal in &report.goals {
+            *self
+                .goal_sources
+                .entry(format!("{:?}", goal.goal_source))
+                .or_default() += 1;
+        }
+        // Both sides sit the same distance from 50.
+        self.possession_squares += 2.0 * (report.home_possession - 50.0).powi(2);
+    }
+
+    /// The standard deviation of a side's possession across matches, in
+    /// points (T16).
+    fn possession_sd(&self) -> f64 {
+        (self.possession_squares / f64::from(self.matches.max(1) * 2)).sqrt()
+    }
+
+    fn goal_source_pct(&self, source: engine::GoalSource) -> f64 {
+        let n = self
+            .goal_sources
+            .get(&format!("{source:?}"))
+            .copied()
+            .unwrap_or(0);
+        Self::pct(n, u64::from(self.goals))
     }
 
     fn per_match(&self, count: u64) -> f64 {
@@ -529,8 +885,80 @@ impl MatchShares {
     }
 }
 
+/// The match probe's rows of GĐ5's verdict: T8–T14, T16, T19, T20, with T9a
+/// and T9c as measures.
+fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
+    let goals = u64::from(shares.goals);
+    let outside_box = MatchShares::pct(
+        shares.long_shot_goals + shares.direct_free_kick_goals,
+        goals,
+    );
+    vec![
+        Gd5Row::banded(
+            "T8",
+            "headed goals, corners included (% of goals)",
+            MatchShares::pct(shares.headed_goals, goals),
+            targets::HEADED_GOALS,
+        ),
+        Gd5Row::banded(
+            "T9b",
+            "goals from outside the box with DFK (% of goals)",
+            outside_box,
+            targets::OUTSIDE_BOX_GOALS,
+        ),
+        Gd5Row::banded(
+            "T10",
+            "direct free-kick goals (% of goals)",
+            shares.goal_source_pct(engine::GoalSource::DirectFreeKick),
+            targets::DIRECT_FREE_KICK_GOALS,
+        ),
+        Gd5Row::banded(
+            "T11",
+            "corners/game",
+            shares.per_match(shares.corners),
+            targets::CORNERS_PER_GAME,
+        ),
+        Gd5Row::banded(
+            "T12",
+            "defender aerial win (%)",
+            MatchShares::pct(shares.aerial_lost, shares.aerial_won + shares.aerial_lost),
+            targets::DEFENDER_AERIAL_WIN,
+        ),
+        Gd5Row::banded(
+            "T13",
+            "shots/game",
+            shares.per_match(shares.shots),
+            targets::SHOTS_PER_GAME,
+        ),
+        Gd5Row::banded(
+            "T14",
+            "shots per ball lost in the own third",
+            shares.high_turnover_shots as f64 / shares.high_turnovers.max(1) as f64,
+            targets::SHOTS_PER_HIGH_TURNOVER,
+        ),
+        Gd5Row::banded(
+            "T16",
+            "possession standard deviation (points)",
+            shares.possession_sd(),
+            targets::POSSESSION_SD,
+        ),
+        Gd5Row::banded(
+            "T19",
+            "match rating spread by natural position",
+            players.rating_spread(),
+            targets::RATING_SPREAD,
+        ),
+        Gd5Row::banded(
+            "T20",
+            "top scorer's goals a season (mean)",
+            players.top_scorer_mean(),
+            targets::TOP_SCORER_GOALS,
+        ),
+    ]
+}
+
 /// Given the real-world package,
-/// when every scheduled fixture of the probe club's league is played once in
+/// when every scheduled league fixture (friendlies left out) of the probe club's league is played once in
 /// each of `OFM_MATCH_PROBE_RUNS` worlds (default 10) (the world itself is left as it was),
 /// then the shares only a full report shows are printed: defenders' aerial
 /// wins, goals per corner, penalties and fouls by zone (phase 2, P2.0).
@@ -541,6 +969,7 @@ fn real_world_match_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
+    apply_knobs_from_env();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     // A world's league season takes seconds, so this one plays more of them.
     let run_count = env_or("OFM_MATCH_PROBE_RUNS", 10_u64).max(1);
@@ -549,12 +978,33 @@ fn real_world_match_probe() {
     let mut players = PlayerShares::default();
     for seed in first_seed..first_seed + run_count {
         let game = build_game(Path::new(&package), seed);
+        if seed == first_seed {
+            if let Some(league) = &game.league {
+                println!(
+                    "  league {} · {} clubs · {} league fixtures",
+                    league.id,
+                    league.participant_ids.len(),
+                    league
+                        .fixtures
+                        .iter()
+                        .filter(|f| f.competition == FixtureCompetition::League)
+                        .count()
+                );
+            }
+        }
         let mut season: BTreeMap<String, u32> = BTreeMap::new();
         let fixture_count = game
             .league
             .as_ref()
             .map_or(0, |league| league.fixtures.len());
         for index in 0..fixture_count {
+            // The league's list also holds the pre-season friendlies.
+            let is_league_match = game.league.as_ref().is_some_and(|league| {
+                league.fixtures[index].competition == FixtureCompetition::League
+            });
+            if !is_league_match {
+                continue;
+            }
             let Ok(mut session) = ofm_core::live_match_manager::create_live_match(
                 &game,
                 index,
@@ -651,13 +1101,98 @@ fn real_world_match_probe() {
         shares.per_match(shares.midfield_duels),
         MatchShares::pct(shares.midfield_attack_won, shares.midfield_duels)
     );
+    let sources: BTreeMap<String, f64> = shares
+        .goal_sources
+        .iter()
+        .map(|(k, n)| (k.clone(), MatchShares::pct(*n, u64::from(shares.goals))))
+        .collect();
+    println!("  goal sources: {}", shares_line(&sources));
+    println!(
+        "  possession: a side's standard deviation {:.1} points",
+        shares.possession_sd()
+    );
     players.print();
+    gd5_verdict(&match_verdict(&shares, &players));
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
         let json = serde_json::to_string_pretty(&shares).expect("match shares serialize");
         std::fs::write(&out, json).expect("match shares written");
         println!("  → {out}");
     }
     assert!(shares.matches > 0, "the probe played no matches");
+}
+
+fn gap_label(bucket: usize) -> String {
+    if bucket + 1 == GAP_BUCKETS {
+        format!("{}+", bucket * 2)
+    } else {
+        format!("{}–{}", bucket * 2, bucket * 2 + 2)
+    }
+}
+
+fn shares_line(shares: &BTreeMap<String, f64>) -> String {
+    let mut sorted: Vec<_> = shares.iter().collect();
+    sorted.sort_by(|a, b| b.1.total_cmp(a.1));
+    sorted
+        .iter()
+        .map(|(k, v)| format!("{k} {v:.1}%"))
+        .collect::<Vec<_>>()
+        .join(" · ")
+}
+
+/// The league probe's rows of GĐ5's verdict: T1–T3, T5 (one row per bucket
+/// of strength gap 0–10, when a bridge is given) and T21.
+fn league_verdict(
+    l: &LeagueTotals,
+    bridge: Option<StrengthBridge>,
+    formations: &BTreeMap<String, f64>,
+) -> Vec<Gd5Row> {
+    let mut rows = vec![
+        Gd5Row::banded(
+            "T1",
+            "goals/game",
+            l.goals_per_game(),
+            targets::GOALS_PER_GAME,
+        ),
+        Gd5Row::banded(
+            "T2",
+            "home − away wins (points)",
+            l.pct(l.home_wins) - l.pct(l.away_wins),
+            targets::HOME_EDGE,
+        ),
+        Gd5Row::banded("T3", "draws (%)", l.pct(l.draws), targets::DRAWS),
+    ];
+    if bridge.is_some() {
+        let tolerance = targets::STRENGTH_GAP_TOLERANCE;
+        for (bucket, gap) in l.by_gap.iter().enumerate().take(GAP_BUCKETS - 1) {
+            let market = gap.expected_strong_wins / f64::from(gap.matches.max(1)) * 100.0;
+            let off = gap.pct(gap.strong_wins) - market;
+            rows.push(Gd5Row {
+                target: "T5",
+                name: format!(
+                    "gap S {}: stronger wins − market (points)",
+                    gap_label(bucket)
+                ),
+                value: off,
+                band: format!("±{tolerance} (market {market:.1})"),
+                pass: off.abs() <= tolerance,
+            });
+        }
+    }
+    let largest = formations.values().copied().fold(0.0, f64::max);
+    rows.push(Gd5Row {
+        target: "T21",
+        name: "largest formation share (%)".to_string(),
+        value: largest,
+        band: format!(
+            "≤ {}, ≥ {} formations (now {})",
+            targets::FORMATION_SHARE_MAX,
+            targets::FORMATIONS_IN_USE_MIN,
+            formations.len()
+        ),
+        pass: largest <= targets::FORMATION_SHARE_MAX
+            && formations.len() >= targets::FORMATIONS_IN_USE_MIN,
+    });
+    rows
 }
 
 #[test]
@@ -667,10 +1202,12 @@ fn real_world_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
+    apply_knobs_from_env();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     let run_count = env_or("OFM_PROBE_RUNS", 3_u64).max(1);
     let days = env_or("OFM_PROBE_DAYS", 150_u32);
 
+    let bridge = StrengthBridge::from_env();
     let started = std::time::Instant::now();
     let seeds: Vec<u64> = (0..run_count).map(|i| first_seed + i).collect();
     let mut runs = Vec::new();
@@ -679,10 +1216,11 @@ fn real_world_probe() {
     for &seed in &seeds {
         let mut game = build_game(Path::new(&package), seed);
         let opening = game.clock.current_date.format("%Y-%m-%d").to_string();
+        let opening_strength = strengths(&game);
         for _ in 0..days {
             ofm_core::turn::process_day(&mut game);
         }
-        let totals = league_totals(&game, &opening);
+        let totals = league_totals(&game, &opening, &opening_strength, bridge);
         println!(
             "  run seed {seed}: {} matches · goals/game {:.3} · home/draw/away {:.1}/{:.1}/{:.1}",
             totals.matches,
@@ -707,6 +1245,7 @@ fn real_world_probe() {
         mean_ovr_by_group: mean_ovr_by_group(&game),
         trait_counts: trait_counts(&game),
         shoots_from_distance_by_position: shoots_from_distance_by_position(&game),
+        formations: formation_shares(&game),
     };
     let l = &report.league;
     println!(
@@ -730,6 +1269,32 @@ fn real_world_probe() {
         f64::from(l.substitutions) / f64::from(l.matches.max(1))
     );
     println!(
+        "  by strength gap S (stronger club's win/draw/loss %, share of those at home, the market's win %):"
+    );
+    for (bucket, gap) in l.by_gap.iter().enumerate() {
+        let market = if bridge.is_some() {
+            format!(
+                " · market {:.1}",
+                gap.expected_strong_wins / f64::from(gap.matches.max(1)) * 100.0
+            )
+        } else {
+            String::new()
+        };
+        println!(
+            "    {:>6}: {:>5} matches · {:.1}/{:.1}/{:.1} · {:.0}% at home{market}",
+            gap_label(bucket),
+            gap.matches,
+            gap.pct(gap.strong_wins),
+            gap.pct(gap.draws),
+            gap.pct(gap.strong_losses),
+            gap.pct(gap.strong_at_home)
+        );
+    }
+    println!(
+        "  formations (league clubs, last run): {}",
+        shares_line(&report.formations)
+    );
+    println!(
         "  mean OVR by group (last run): {:?}",
         report.mean_ovr_by_group
     );
@@ -738,10 +1303,61 @@ fn real_world_probe() {
         "  shoots from distance by natural position (players, %): {:?}",
         report.shoots_from_distance_by_position
     );
+    gd5_verdict(&league_verdict(l, bridge, &report.formations));
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
         let json = serde_json::to_string_pretty(&report).expect("probe report serializes");
         std::fs::write(&out, json).expect("probe report written");
         println!("  → {out}");
     }
     assert!(l.matches > 0, "the probe played no league matches");
+}
+
+/// Every club's strength `S` (phase 2, GĐ5 P5.0, X81) with its league, as JSON
+/// to `OFM_PROBE_OUT`, for `gd5-strength-bridge.py` to match against the
+/// betting market. The world is built as the probes build it; formations are
+/// the clubs' own.
+#[test]
+#[ignore = "builds the real-world package; run explicitly with OFM_REAL_WORLD_PACKAGE"]
+fn real_world_strengths() {
+    let Ok(package) = std::env::var("OFM_REAL_WORLD_PACKAGE") else {
+        eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to export.");
+        return;
+    };
+    let game = build_game(
+        Path::new(&package),
+        env_or("OFM_PROBE_SEED", 20_260_601_u64),
+    );
+    let rows: Vec<serde_json::Value> = game
+        .teams
+        .iter()
+        .filter_map(|team| {
+            let s = ofm_core::team_strength::club_strength(&game, &team.id)?;
+            let league = game
+                .competitions
+                .iter()
+                .find(|c| {
+                    c.kind == domain::league::CompetitionType::League
+                        && c.participant_ids.contains(&team.id)
+                })
+                .map(|c| c.id.clone());
+            Some(serde_json::json!({
+                "team_id": team.id,
+                "name": team.name,
+                "league": league,
+                "formation": team.formation,
+                "xi": s.xi,
+                "bench": s.bench,
+                "strength": s.strength,
+            }))
+        })
+        .collect();
+    println!("  {} clubs with a strength", rows.len());
+    if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
+        std::fs::write(
+            &out,
+            serde_json::to_string_pretty(&rows).expect("rows serialize"),
+        )
+        .expect("strengths written");
+        println!("  → {out}");
+    }
 }

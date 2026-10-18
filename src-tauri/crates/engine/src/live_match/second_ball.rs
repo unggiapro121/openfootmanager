@@ -38,7 +38,12 @@ impl LiveMatchState {
             / (self.condition_adjusted_skill(&theirs.id, 1.0)
                 * play_style_modifier(self.team_ref(other), PlayStylePhase::Midfield));
         let kicker_wins = rng.random_range(0.0..1.0f64)
-            < duel::second_ball_win_probability(&ours, &theirs, ratio);
+            < duel::second_ball_win_probability(
+                &ours,
+                &theirs,
+                ratio,
+                self.config.knobs.anchor_second_ball,
+            );
         let (side, winner, loser) = if kicker_wins {
             (kicker, &ours, &theirs)
         } else {

@@ -8,9 +8,13 @@
 //!
 //! Two stages. `lan-can` is the loose band every PR of GĐ1–GĐ4 must stay in;
 //! goal-source shares are only measured there, because the mechanisms that
-//! produce them arrive during those stages. `gd5` is the calibration target.
+//! produce them arrive during those stages. `gd5` is the calibration target:
+//! its bands come from `engine::targets`, the table the real-world probes
+//! read too. Rows the probes judge (goals, goal sources) are only measured
+//! here, at either stage (GĐ5-tech-spec §11.2).
 
 use clap::ValueEnum;
+use engine::targets::{self, Band};
 use engine::MatchConfig;
 use serde::Serialize;
 
@@ -108,7 +112,7 @@ fn formation_balance(rows: &[BalanceRow]) -> Check {
         },
         verdict: if !FORMATION_BALANCE_GATED {
             Verdict::Measure
-        } else if value <= 5.0 {
+        } else if value <= targets::BALANCE_MAX {
             Verdict::Pass
         } else {
             Verdict::Fail
@@ -116,20 +120,18 @@ fn formation_balance(rows: &[BalanceRow]) -> Check {
     }
 }
 
-fn in_band(value: f64, lo: f64, hi: f64) -> Verdict {
-    if (lo..=hi).contains(&value) {
+fn in_band(value: f64, band: Band) -> Verdict {
+    if band.contains(value) {
         Verdict::Pass
     } else {
         Verdict::Fail
     }
 }
 
-/// A band check that is only judged at GĐ5 and merely measured before it.
-fn judged_at_gd5(stage: Stage, value: f64, lo: f64, hi: f64) -> (Verdict, String) {
-    match stage {
-        Stage::LanCan => (Verdict::Measure, format!("đo (GĐ5: {lo}–{hi})")),
-        Stage::Gd5 => (in_band(value, lo, hi), format!("{lo}–{hi}")),
-    }
+/// A row the real-world probes judge: measured here at both stages, with the
+/// probe's band beside it.
+fn judged_by_probe(band: Band) -> (Verdict, String) {
+    (Verdict::Measure, format!("đo (đích probe GĐ5: {band})"))
 }
 
 pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
@@ -138,12 +140,13 @@ pub fn judge(result: &SweepResult, stage: Stage) -> Vec<Check> {
         monotone_gap_curve(result),
         zero_gap_symmetry(result, stage),
         match_time(result, stage),
-        cross_goal_share(result, stage),
-        long_shot_goal_share(result, stage),
+        cross_goal_share(result),
+        long_shot_goal_share(result),
         long_shot_share(result),
-        direct_free_kick_share(result, stage),
+        direct_free_kick_share(result),
         direct_free_kicks(result),
         defender_aerial_win(result, stage),
+        second_balls(result, stage),
         goals_per_corner(result),
         break_value(result),
         centre_lane_share(result),
@@ -405,19 +408,23 @@ fn goals_per_corner(result: &SweepResult) -> Check {
     }
 }
 
+/// Goals a game: the loose band gates it at every stage; GĐ5's target is the
+/// European probe's (T1), real players in real leagues.
 fn goals_per_game(result: &SweepResult, stage: Stage) -> Check {
+    const LOOSE: Band = Band::new(1.5, 4.5);
     let value = result.stats.gpg();
-    let (lo, hi) = match stage {
-        Stage::LanCan => (1.5, 4.5),
-        // Where the 2024-25 leagues sit: 2.69 across 18, 2.83 in the top five
-        // (fm-document/comon/sim-bench/reference/).
-        Stage::Gd5 => (2.6, 2.9),
+    let (verdict, band) = match stage {
+        Stage::LanCan => (in_band(value, LOOSE), LOOSE.to_string()),
+        Stage::Gd5 => (
+            in_band(value, LOOSE),
+            format!("{LOOSE} (đích probe GĐ5: {})", targets::GOALS_PER_GAME),
+        ),
     };
     Check {
         name: "bàn/trận",
         value: Some(value),
-        band: format!("{lo}–{hi}"),
-        verdict: in_band(value, lo, hi),
+        band,
+        verdict,
     }
 }
 
@@ -483,12 +490,16 @@ fn zero_gap_symmetry(result: &SweepResult, stage: Stage) -> Check {
             format!("≤ 3 hoặc ≤ 3σ = {noise:.1} (đang {win:.1}/{draw:.1}/{loss:.1})"),
         ),
         Stage::Gd5 => {
-            let near = |v: f64, target: f64| (v - target).abs() <= 3.0;
-            let ok = symmetric && near(win, 35.0) && near(draw, 30.0) && near(loss, 35.0);
+            let ok = symmetric
+                && targets::MIRROR_WIN.contains(win)
+                && targets::MIRROR_DRAW.contains(draw)
+                && targets::MIRROR_WIN.contains(loss);
             (
                 if ok { Verdict::Pass } else { Verdict::Fail },
                 format!(
-                    "≤ 3 hoặc ≤ 3σ = {noise:.1}, và 35/30/35 ±3 (đang {win:.1}/{draw:.1}/{loss:.1})"
+                    "≤ 3 hoặc ≤ 3σ = {noise:.1}, thắng/thua {} và hoà {} (đang {win:.1}/{draw:.1}/{loss:.1})",
+                    targets::MIRROR_WIN,
+                    targets::MIRROR_DRAW
                 ),
             )
         }
@@ -505,7 +516,7 @@ fn match_time(result: &SweepResult, stage: Stage) -> Check {
     let p50_ms = result.micros_quantile(0.5) as f64 / 1000.0;
     let limit = match stage {
         Stage::LanCan => 3.5,
-        Stage::Gd5 => 2.5,
+        Stage::Gd5 => targets::MATCH_MS_P50.hi,
     };
     let build = if cfg!(debug_assertions) {
         " · bản DEBUG, số đo không có giá trị"
@@ -530,10 +541,11 @@ fn match_time(result: &SweepResult, stage: Stage) -> Check {
 /// kind, not the goal's source, which credits a header from a corner to the
 /// corner. Read this way from GĐ3 (GĐ3-tech-spec §12.2), so GĐ3 and GĐ5
 /// compare; until P3.0 it counted goals after a won cross duel in open play.
-fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
+/// The match probe judges it (T8).
+fn cross_goal_share(result: &SweepResult) -> Check {
     let goals = result.stats.total_goals.max(1);
     let value = result.stats.headed_goals as f64 / f64::from(goals) * 100.0;
-    let (verdict, band) = judged_at_gd5(stage, value, 16.0, 22.0);
+    let (verdict, band) = judged_by_probe(targets::HEADED_GOALS);
     Check {
         name: "bàn đánh đầu, cả phạt góc (%)",
         value: Some(value),
@@ -542,11 +554,11 @@ fn cross_goal_share(result: &SweepResult, stage: Stage) -> Check {
     }
 }
 
-/// Goals from shots outside the box in open play, measured until GĐ5 and
-/// judged at 10–14% there (decision X7).
-fn long_shot_goal_share(result: &SweepResult, stage: Stage) -> Check {
+/// Goals from shots outside the box in open play. The match probe judges
+/// them with direct free kicks added (T9b, X79).
+fn long_shot_goal_share(result: &SweepResult) -> Check {
     let value = result.stats.long_shot_goal_pct();
-    let (verdict, band) = judged_at_gd5(stage, value, 10.0, 14.0);
+    let (verdict, band) = judged_by_probe(targets::OUTSIDE_BOX_GOALS);
     Check {
         name: "bàn từ sút xa (%)",
         value: Some(value),
@@ -570,11 +582,11 @@ fn long_shot_share(result: &SweepResult) -> Check {
     }
 }
 
-/// Goals scored straight from a free kick, measured until GĐ5 and judged at
-/// 1.5–3% there (decision X39: the Premier League scores 1.6–1.8% this way).
-fn direct_free_kick_share(result: &SweepResult, stage: Stage) -> Check {
+/// Goals scored straight from a free kick (decision X39). The match probe
+/// judges them (T10).
+fn direct_free_kick_share(result: &SweepResult) -> Check {
     let value = result.stats.direct_free_kick_goal_pct();
-    let (verdict, band) = judged_at_gd5(stage, value, 1.5, 3.0);
+    let (verdict, band) = judged_by_probe(targets::DIRECT_FREE_KICK_GOALS);
     Check {
         name: "bàn từ đá phạt trực tiếp (%)",
         value: Some(value),
@@ -604,14 +616,33 @@ fn defender_aerial_win(result: &SweepResult, stage: Stage) -> Check {
     let value = duels.tally.defender_aerial_win_pct();
     // Gated in the loose band since P2.2, the two-stage aerial duel, which set
     // the duel's anchor for defenders to win 58% (decision X22).
-    let (verdict, band) = match stage {
-        Stage::LanCan => (in_band(value, 54.0, 62.0), "54–62".to_string()),
-        Stage::Gd5 => (in_band(value, 56.0, 59.0), "56–59".to_string()),
+    let band = match stage {
+        Stage::LanCan => Band::new(54.0, 62.0),
+        Stage::Gd5 => targets::DEFENDER_AERIAL_WIN,
     };
     Check {
         name: "hậu vệ thắng không chiến (%)",
         value: Some(value),
-        band,
+        band: band.to_string(),
+        verdict: in_band(value, band),
+    }
+}
+
+/// The loose balls after a long ball, won by the side that kicked it: GĐ4
+/// anchored the duel evenly (X71, about 48%); real football gives the kicker
+/// 33%, and GĐ5 brings it to 35–40% (X84, T15).
+fn second_balls(result: &SweepResult, stage: Stage) -> Check {
+    let tally = &result.stats.duels.tally;
+    let value = tally.second_balls_kicker_won as f64 / tally.second_balls.max(1) as f64 * 100.0;
+    let band = targets::SECOND_BALL_KICKER_WIN;
+    let (verdict, shown) = match stage {
+        Stage::LanCan => (Verdict::Measure, format!("đo (GĐ5: {band}; thật 33)")),
+        Stage::Gd5 => (in_band(value, band), band.to_string()),
+    };
+    Check {
+        name: "bóng hai sau phất dài, đội phất thắng (%)",
+        value: Some(value),
+        band: shown,
         verdict,
     }
 }
@@ -774,53 +805,56 @@ mod tests {
         assert_eq!(zero_gap_symmetry(&real, Stage::Gd5).verdict, Verdict::Pass);
     }
 
-    /// Given headed goals making 20% of goals,
-    /// when it is judged at each stage,
-    /// then the loose band only measures it and GĐ5 passes it.
+    /// Given goal shares far outside GĐ5's bands (headers 20%, long shots 5%,
+    /// direct free kicks 4%),
+    /// when they are judged at either stage,
+    /// then they are only measured: the match probe judges them, on real
+    /// players (GĐ5-tech-spec §11.2).
     #[test]
-    fn goal_shares_are_only_judged_at_gd5() {
-        let r = result(vec![row(0, 800, 400, 800)]);
-        assert_eq!(
-            cross_goal_share(&r, Stage::LanCan).verdict,
-            Verdict::Measure
-        );
-        assert_eq!(cross_goal_share(&r, Stage::Gd5).verdict, Verdict::Pass);
-    }
-
-    /// Given long shots that make 12% of goals and direct free kicks 2%, and
-    /// then 5% and 4%,
-    /// when the shares are judged,
-    /// then the loose band only measures them, GĐ5 passes the first pair
-    /// (10–14%, X7; 1.5–3%, X39) and fails the second.
-    #[test]
-    fn long_shot_and_free_kick_shares_are_judged_at_gd5() {
+    fn goal_shares_are_left_to_the_probe() {
         let mut r = result(vec![row(0, 800, 400, 800)]);
-        r.stats.long_shot_goals = 36;
-        r.stats.direct_free_kick_goals = 6;
-        let loose = judge(&r, Stage::LanCan);
-        assert_eq!(verdict(&loose, "bàn từ sút xa"), Verdict::Measure);
-        assert_eq!(verdict(&loose, "bàn từ đá phạt"), Verdict::Measure);
-        let gd5 = judge(&r, Stage::Gd5);
-        assert_eq!(verdict(&gd5, "bàn từ sút xa"), Verdict::Pass);
-        assert_eq!(verdict(&gd5, "bàn từ đá phạt"), Verdict::Pass);
         r.stats.long_shot_goals = 15;
         r.stats.direct_free_kick_goals = 12;
-        let gd5 = judge(&r, Stage::Gd5);
-        assert_eq!(verdict(&gd5, "bàn từ sút xa"), Verdict::Fail);
-        assert_eq!(verdict(&gd5, "bàn từ đá phạt"), Verdict::Fail);
+        for stage in [Stage::LanCan, Stage::Gd5] {
+            let checks = judge(&r, stage);
+            assert_eq!(verdict(&checks, "bàn đánh đầu"), Verdict::Measure);
+            assert_eq!(verdict(&checks, "bàn từ sút xa"), Verdict::Measure);
+            assert_eq!(
+                verdict(&checks, "bàn từ đá phạt trực tiếp"),
+                Verdict::Measure
+            );
+        }
     }
 
-    /// Given three goals a game,
+    /// Given three goals a game, and then five,
     /// when they are judged,
-    /// then they pass the loose band and fail GĐ5's 2.6–2.9, which is where the
-    /// 2024-25 leagues sit (2.69 across 18, 2.83 in the top five).
+    /// then both stages gate only the loose 1.5–4.5: GĐ5's 2.6–2.9 is the
+    /// European probe's, since mirror squads of synthetic players are not a
+    /// league.
     #[test]
-    fn goals_are_judged_against_their_bands() {
+    fn goals_are_judged_against_the_loose_band() {
         let mut r = result(vec![row(0, 800, 400, 800)]);
         assert_eq!(goals_per_game(&r, Stage::LanCan).verdict, Verdict::Pass);
-        assert_eq!(goals_per_game(&r, Stage::Gd5).verdict, Verdict::Fail);
-        r.stats.total_goals = 275;
         assert_eq!(goals_per_game(&r, Stage::Gd5).verdict, Verdict::Pass);
+        r.stats.total_goals = 500;
+        assert_eq!(goals_per_game(&r, Stage::LanCan).verdict, Verdict::Fail);
+        assert_eq!(goals_per_game(&r, Stage::Gd5).verdict, Verdict::Fail);
+    }
+
+    /// Given the kicker winning 48% of second balls, as GĐ4 left it, and then
+    /// 37%,
+    /// when the row is judged,
+    /// then the loose band only measures it and GĐ5 fails 48 and passes 37
+    /// (35–40%, X84).
+    #[test]
+    fn second_balls_are_gated_at_gd5() {
+        let mut r = result(vec![row(0, 800, 400, 800)]);
+        r.stats.duels.tally.second_balls = 100;
+        r.stats.duels.tally.second_balls_kicker_won = 48;
+        assert_eq!(second_balls(&r, Stage::LanCan).verdict, Verdict::Measure);
+        assert_eq!(second_balls(&r, Stage::Gd5).verdict, Verdict::Fail);
+        r.stats.duels.tally.second_balls_kicker_won = 37;
+        assert_eq!(second_balls(&r, Stage::Gd5).verdict, Verdict::Pass);
     }
 
     /// Given defenders winning 48% in the air, as before P2.2, and then 58%,
