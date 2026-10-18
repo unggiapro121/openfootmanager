@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import { resolveLocalMediaPath } from "../lib/mediaAssets";
+import { useAssetDataUrl } from "./useAssetDataUrl";
 import { isPackageQualifiedAsset, joinAssetRoot } from "../lib/packageAssets";
 import { appDataDirectory, localFileUrl } from "../services/platformService";
 
@@ -29,6 +30,15 @@ export function resetPackageAssetRoot(): void {
 }
 
 /**
+ * The package project folder whose assets the screens inside show, in the
+ * world editor. A project's paths are package-relative (`assets/players/…`),
+ * which reads as an asset bundled with the app, and the folder lies outside
+ * what the asset protocol may serve, so inside this context every path is
+ * read from the project instead. Null (the default) is the running game.
+ */
+export const ProjectAssetDirContext = createContext<string | null>(null);
+
+/**
  * Turn a stored media path into something an `<img>` can load.
  *
  * Assets bundled with the app resolve synchronously against the frontend root.
@@ -37,6 +47,8 @@ export function resetPackageAssetRoot(): void {
  * so those resolve on a later tick and the hook re-renders.
  */
 export function usePackageAssetSrc(path: string | null | undefined): string | null {
+  const projectDir = useContext(ProjectAssetDirContext);
+  const projectSrc = useAssetDataUrl(projectDir ? path : null, projectDir ?? undefined);
   const bundled = isPackageQualifiedAsset(path) ? null : resolveLocalMediaPath(path);
   const [packageSrc, setPackageSrc] = useState<string | null>(null);
 
@@ -63,5 +75,6 @@ export function usePackageAssetSrc(path: string | null | undefined): string | nu
     };
   }, [path]);
 
+  if (projectDir) return projectSrc;
   return bundled ?? packageSrc;
 }

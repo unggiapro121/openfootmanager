@@ -1,5 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { useContext } from "react";
 import { describe, expect, it, vi } from "vitest";
+
+import { ProjectAssetDirContext } from "../../../hooks/usePackageAssetSrc";
 
 import type { TacticsBoardSource } from "../../tactics/tacticsBoardSource";
 import { TeamTacticsEditor } from "./TeamTacticsEditor";
@@ -13,11 +16,13 @@ vi.mock("../../../services/worldEditorService", () => ({
 
 // The board itself is the game's, tested with the Tactics tab; here it only has
 // to receive the club the editor built.
-vi.mock("../../tactics/TacticsBoard", () => ({
-  default: ({ source }: { source: TacticsBoardSource }) => (
-    <p>{`board ${source.team?.formation} with ${source.roster.length} players`}</p>
-  ),
-}));
+function BoardStub({ source }: { source: TacticsBoardSource }) {
+  const projectDir = useContext(ProjectAssetDirContext);
+  return (
+    <p>{`board ${source.team?.formation} with ${source.roster.length} players from ${projectDir}`}</p>
+  );
+}
+vi.mock("../../tactics/TacticsBoard", () => ({ default: BoardStub }));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -33,6 +38,7 @@ function renderEditor(team: Partial<TeamDef>, onChange = vi.fn()) {
       team={{ ...emptyTeam(), id: "arsenal", name: "Arsenal", ...team }}
       clubPlayers={[]}
       baseYear={2026}
+      projectDir="/projects/world"
       onChange={onChange}
       onPlayStyleChange={vi.fn()}
       onError={vi.fn()}
@@ -67,8 +73,8 @@ describe("TeamTacticsEditor", () => {
   });
 
   // Given the board is opened, then the club is previewed by the backend and
-  // the board shows it with the authored shape over the club's own; Done
-  // closes it.
+  // the board shows it with the authored shape over the club's own, its
+  // photos read from the project; Done closes it.
   it("opens the game's tactics board on the previewed club", async () => {
     previewPackageClub.mockResolvedValueOnce({
       team: { id: "arsenal", formation: "4-2-3-1", player_roles: {}, tactics_phase: {} },
@@ -79,7 +85,9 @@ describe("TeamTacticsEditor", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "worldEditor.tactics.openBoard" }));
 
-    expect(await screen.findByText("board 3-5-2 with 2 players")).toBeInTheDocument();
+    expect(
+      await screen.findByText("board 3-5-2 with 2 players from /projects/world"),
+    ).toBeInTheDocument();
     expect(previewPackageClub).toHaveBeenCalledWith(
       expect.objectContaining({ id: "arsenal" }),
       [],
