@@ -85,7 +85,8 @@
     "reputationRange",
     "shortName",
     "stadiumCapacity",
-    "stadiumName"
+    "stadiumName",
+    "tactics"
   ],
   "world": [
     "author",

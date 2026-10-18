@@ -3280,7 +3280,10 @@
         "alternatePositionInvalid": "\"{{entity}}\" incluye {{position}} como posición alternativa. Una alternativa debe ser una posición concreta, distinta de la del propio jugador y aparecer una sola vez.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" indica pierna mala o posiciones alternativas, pero {{position}} es un grupo general, así que el juego las recalcularía a partir de los atributos del jugador y descartaría lo que escribiste. Dale una posición concreta, como CentralMidfielder o Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" tiene una entrada de carrera (fila {{row}}) sin nombre de club.",
-        "unsupportedFormatVersion": "Este paquete se creó con una versión más reciente del juego (formato {{version}}; esta versión admite {{supported}}). Actualiza el juego para abrirlo."
+        "unsupportedFormatVersion": "Este paquete se creó con una versión más reciente del juego (formato {{version}}; esta versión admite {{supported}}). Actualiza el juego para abrirlo.",
+        "unknownFormation": "El equipo \"{{team}}\" usa la formación \"{{formation}}\", que el juego no ofrece.",
+        "tacticsPlayerNotInClub": "La táctica de \"{{team}}\" nombra a \"{{player}}\", que no es uno de sus jugadores.",
+        "duplicateStarter": "El once inicial de \"{{team}}\" nombra a \"{{player}}\" más de una vez."
       },
       "competitionDef": {
         "invalidEmbedded": "Las definiciones de competiciones de este mundo no son válidas y no se pudieron cargar.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}} de {{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}} de {{scaleMax}} · de {{minBand}} a {{maxBand}}",
-    "budgetReadout": "{{min}}–{{max}} al mes · presupuesto de fichajes {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "{{min}}–{{max}} al mes · presupuesto de fichajes {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Táctica y alineación por defecto",
+      "intro": "Con lo que el club empieza el mundo. Un club de la IA lo ajusta después; un entrenador que tome el club parte de aquí.",
+      "formationAuto": "Automática (el club elige según su plantilla y estilo)",
+      "needFormation": "Elige una formación para fijar el once inicial y los roles.",
+      "startingXi": "Once inicial",
+      "elevenProgress": "{{count}}/{{total}} elegidos",
+      "elevenIncomplete": "El juego solo usa este once cuando todas las posiciones están cubiertas; hasta entonces elige el equipo él mismo.",
+      "noPlayers": "Este club aún no tiene jugadores en el paquete. Añade jugadores al club para alinearlos.",
+      "nobody": "— Ninguno —",
+      "notInClub": "{{player}} (no es de este club)",
+      "slotPlayer": "Jugador en {{position}}",
+      "slotRole": "Rol en {{position}}",
+      "matchRoles": "Capitán y balón parado",
+      "customPhase": "Ajustes por fase personalizados",
+      "phaseFromStyle": "Desactivado: el club usa los ajustes de su estilo de juego."
+    }
   },
   "packageBuild": {
     "title": "Construye tu mundo",

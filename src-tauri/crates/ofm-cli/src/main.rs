@@ -183,7 +183,21 @@ const SCHEMA_TEAM: &str = r##"// Team entity — place inside teams/*.json in th
   "financeRange": [500000, 10000000], // optional: [min, max] budget in euros
   "kitPattern": "Solid",      // optional: "Solid" | "Stripes" | "Hoops" | "HalfAndHalf" | "Diagonal"
   "foundedYear": 1900,        // optional: year founded (randomly generated if omitted)
-  "logo": null                // optional: relative path to logo image asset
+  "logo": null,               // optional: relative path to logo image asset
+  "tactics": {                // optional: what the club opens the world with;
+                              //   an AI club reviews it like any other from then on
+    "formation": "4-3-3",     // optional: "4-4-2" | "4-3-3" | "3-5-2" | "4-5-1" | "4-2-3-1"
+                              //   | "3-4-3" | "5-3-2" | "4-1-4-1" | "3-4-2-1"
+    "startingXi": [],         // optional: player IDs of this club, one per slot of
+                              //   `formation` in slot order; used only when complete
+    "playerRoles": {},        // optional: { "player-id": "DeepLyingPlaymaker", ... }
+    "matchRoles": {           // optional: player IDs of this club
+      "captain": null, "vice_captain": null, "penalty_taker": null,
+      "free_kick_taker": null, "corner_taker": null
+    },
+    "phase": {}               // optional: phase settings, e.g. { "pressing_intensity":
+                              //   "Aggressive" }; omitted keys use the defaults
+  }
 }"##;
 
 const SCHEMA_PLAYER: &str = r##"// Player entity — place inside players/*.json in the "items" array.

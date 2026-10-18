@@ -3280,7 +3280,10 @@
         "alternatePositionInvalid": "\"{{entity}}\" lista {{position}} como posição alternativa. Uma alternativa precisa ser uma posição específica, diferente da do próprio jogador e listada uma única vez.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" informa pé ruim ou posições alternativas, mas {{position}} é um grupo geral, então o jogo recalcularia tudo a partir dos atributos do jogador e descartaria o que você escreveu. Dê ao jogador uma posição específica, como CentralMidfielder ou Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" tem uma entrada de carreira (linha {{row}}) sem nome de clube.",
-        "unsupportedFormatVersion": "Este pacote foi criado com uma versão mais nova do jogo (formato {{version}}; esta versão suporta {{supported}}). Atualize o jogo para abri-lo."
+        "unsupportedFormatVersion": "Este pacote foi criado com uma versão mais nova do jogo (formato {{version}}; esta versão suporta {{supported}}). Atualize o jogo para abri-lo.",
+        "unknownFormation": "O time \"{{team}}\" usa a formação \"{{formation}}\", que o jogo não oferece.",
+        "tacticsPlayerNotInClub": "A tática de \"{{team}}\" inclui \"{{player}}\", que não é um dos seus jogadores.",
+        "duplicateStarter": "O time titular de \"{{team}}\" inclui \"{{player}}\" mais de uma vez."
       },
       "competitionDef": {
         "invalidEmbedded": "As definições de competições deste mundo são inválidas e não foi possível carregá-las.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}} de {{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}} de {{scaleMax}} · de {{minBand}} a {{maxBand}}",
-    "budgetReadout": "{{min}}–{{max}} por mês · verba de transferências {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "{{min}}–{{max}} por mês · verba de transferências {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Tática e escalação padrão",
+      "intro": "Com o que o clube começa o mundo. Um clube da IA ajusta depois; um técnico que assuma o clube parte daqui.",
+      "formationAuto": "Automática (o clube escolhe pelo elenco e estilo)",
+      "needFormation": "Escolha uma formação para definir o time titular e as funções.",
+      "startingXi": "Time titular",
+      "elevenProgress": "{{count}}/{{total}} escolhidos",
+      "elevenIncomplete": "O jogo só usa esta escalação quando todas as posições estão preenchidas; até lá ele escala o time sozinho.",
+      "noPlayers": "Este clube ainda não tem jogadores no pacote. Adicione jogadores ao clube para escalá-los.",
+      "nobody": "— Nenhum —",
+      "notInClub": "{{player}} (não é deste clube)",
+      "slotPlayer": "Jogador em {{position}}",
+      "slotRole": "Função em {{position}}",
+      "matchRoles": "Capitão e bolas paradas",
+      "customPhase": "Configurações por fase personalizadas",
+      "phaseFromStyle": "Desligado: o clube usa as configurações do seu estilo de jogo."
+    }
   },
   "packageBuild": {
     "title": "Monte seu mundo",

@@ -1300,6 +1300,23 @@ pub fn validate_references(package: &WorldPackage) -> Vec<PackageError> {
         }
     }
 
+    let mut club_players: HashMap<&str, HashSet<&str>> = HashMap::new();
+    for player in &package.players {
+        club_players
+            .entry(player.club.as_str())
+            .or_default()
+            .insert(player.id.as_str());
+    }
+    for team in &package.teams {
+        if let Some(tactics) = &team.tactics {
+            let empty = HashSet::new();
+            let players = club_players.get(team.id.as_str()).unwrap_or(&empty);
+            errors.extend(super::team_tactics::validate_team_tactics(
+                &team.id, tactics, players,
+            ));
+        }
+    }
+
     // Check team reputation / finance ranges for reversed (min > max) and
     // out-of-bounds endpoints (reputation 0..=1000, finance >= 0).
     for team in &package.teams {

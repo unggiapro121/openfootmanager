@@ -144,6 +144,13 @@ pub fn create_world_project(
         .ok_or_else(|| "be.error.invalidPath".to_string())
 }
 
+/// The phase settings a club of `play_style` opens with when its package names
+/// none, so the editor can start a custom set from the play style's own.
+#[tauri::command]
+pub fn package_tactics_blueprint(play_style: String) -> domain::team::TacticsPhaseSettings {
+    ofm_core::generator::team_tactics::opening_phase(&play_style)
+}
+
 /// Load an existing package directory for editing.
 #[tauri::command]
 pub fn read_package_project(dir: String) -> Result<PackageProjectData, String> {
@@ -1367,6 +1374,10 @@ mod tests {
             kit_pattern: None,
             founded_year: None,
             stadium_capacity: None,
+            tactics: Some(ofm_core::generator::TeamTacticsDef {
+                formation: Some("4-3-3".to_string()),
+                ..Default::default()
+            }),
         }];
 
         // Player WITH explicit attributes — exercises camelCase serde mapping and Position round-trip

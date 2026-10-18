@@ -8,6 +8,7 @@ import {
   exportPlayersCsv,
   exportTeamsCsv,
   extractOfmForEditing,
+  fetchTacticsBlueprint,
   readFileAsDataUrl,
   readPackageProject,
   savePackageProject,
@@ -36,6 +37,18 @@ describe("worldEditorService", () => {
 
     await expect(createWorldProject("my-world", meta)).resolves.toBe("/projects/my-world");
     expect(mockedInvoke).toHaveBeenCalledWith("create_world_project", { slug: "my-world", meta });
+  });
+
+  // Given a play style, when the editor asks for its opening tactics, then the
+  // backend is asked by that style and its settings come back.
+  it("fetches a play style's opening phase settings", async () => {
+    const blueprint = { build_up_style: "Short", width: "Wide" };
+    mockedInvoke.mockResolvedValueOnce(blueprint);
+
+    await expect(fetchTacticsBlueprint("Possession")).resolves.toBe(blueprint);
+    expect(mockedInvoke).toHaveBeenCalledWith("package_tactics_blueprint", {
+      playStyle: "Possession",
+    });
   });
 
   // Given the editor's state, when the project is saved, then the backend gets

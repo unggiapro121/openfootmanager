@@ -3297,7 +3297,10 @@
         "alternatePositionInvalid": "\"{{entity}}\" khai {{position}} là vị trí phụ. Vị trí phụ phải là một vị trí cụ thể, khác với vị trí chính của cầu thủ, và chỉ được khai một lần.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" có chân không thuận hoặc vị trí phụ, nhưng {{position}} chỉ là một nhóm vị trí chung, nên game sẽ tính lại chúng từ chỉ số của cầu thủ và bỏ đi những gì bạn đã nhập. Hãy cho cầu thủ một vị trí cụ thể, chẳng hạn CentralMidfielder hoặc Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" có một mục sự nghiệp (dòng {{row}}) không có tên câu lạc bộ.",
-        "unsupportedFormatVersion": "Gói này được tạo bằng phiên bản game mới hơn (định dạng {{version}}; bản này hỗ trợ {{supported}}). Hãy cập nhật game để mở."
+        "unsupportedFormatVersion": "Gói này được tạo bằng phiên bản game mới hơn (định dạng {{version}}; bản này hỗ trợ {{supported}}). Hãy cập nhật game để mở.",
+        "unknownFormation": "Đội \"{{team}}\" dùng sơ đồ \"{{formation}}\", sơ đồ này không có trong game.",
+        "tacticsPlayerNotInClub": "Chiến thuật của \"{{team}}\" có \"{{player}}\", cầu thủ này không thuộc CLB.",
+        "duplicateStarter": "Đội hình chính của \"{{team}}\" xếp \"{{player}}\" nhiều hơn một lần."
       },
       "conflict": {
         "duplicateId": "Các gói \"{{packages}}\" cùng định nghĩa {{entityKind}} \"{{entityId}}\" với nội dung khác nhau. Gói nằm cuối sẽ được dùng.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}} trên {{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}} trên {{scaleMax}} · {{minBand}} đến {{maxBand}}",
-    "budgetReadout": "{{min}}–{{max}} mỗi tháng · ngân sách chuyển nhượng {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "{{min}}–{{max}} mỗi tháng · ngân sách chuyển nhượng {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Chiến thuật & đội hình mặc định",
+      "intro": "Thiết lập CLB có khi mở thế giới. CLB do AI dẫn dắt sẽ tự điều chỉnh sau đó; người chơi nhận CLB sẽ bắt đầu từ thiết lập này.",
+      "formationAuto": "Tự động (CLB tự chọn theo đội hình và lối chơi)",
+      "needFormation": "Chọn sơ đồ để xếp đội hình chính và vai trò cầu thủ.",
+      "startingXi": "Đội hình chính",
+      "elevenProgress": "Đã xếp {{count}}/{{total}}",
+      "elevenIncomplete": "Game chỉ dùng đội hình này khi đã xếp đủ mọi vị trí; chưa đủ thì game tự xếp.",
+      "noPlayers": "CLB này chưa có cầu thủ nào trong gói. Thêm cầu thủ cho CLB để xếp đội hình.",
+      "nobody": "— Không chọn —",
+      "notInClub": "{{player}} (không thuộc CLB này)",
+      "slotPlayer": "Cầu thủ ở vị trí {{position}}",
+      "slotRole": "Vai trò ở vị trí {{position}}",
+      "matchRoles": "Đội trưởng và đá phạt",
+      "customPhase": "Tùy chỉnh chiến thuật theo giai đoạn",
+      "phaseFromStyle": "Tắt: CLB dùng chiến thuật mặc định của lối chơi."
+    }
   },
   "packageBuild": {
     "title": "Xây dựng thế giới",

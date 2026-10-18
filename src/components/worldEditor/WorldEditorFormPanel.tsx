@@ -75,6 +75,7 @@ interface WorldEditorFormPanelProps {
   // Cross-entity data
   confederations: ConfederationDef[];
   teams: TeamDef[];
+  players: PlayerDef[];
   // Names pool
   editingPoolKey: string;
   editingPool: NamePool;
@@ -106,6 +107,7 @@ export function WorldEditorFormPanel({
   compEditor,
   confederations,
   teams,
+  players,
   editingPoolKey,
   editingPool,
   isNewPool,
@@ -173,6 +175,7 @@ export function WorldEditorFormPanel({
           updateField={teamEditor.updateField}
           commitField={teamEditor.commitField}
           onAssetError={onAssetError}
+          clubPlayers={players.filter((player) => player.club === teamEditor.editing.id)}
         />
       </div>
     );

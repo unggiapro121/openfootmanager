@@ -3297,7 +3297,10 @@
         "alternatePositionInvalid": "\"{{entity}}\" mencantumkan {{position}} sebagai posisi alternatif. Posisi alternatif harus posisi spesifik, berbeda dari posisi pemain itu sendiri, dan hanya dicantumkan sekali.",
         "identityNeedsSpecificPosition": "\"{{entity}}\" memiliki kaki lemah atau posisi alternatif, tetapi {{position}} adalah kelompok umum, sehingga permainan akan menghitung ulang dari atribut pemain dan membuang yang Anda tulis. Beri pemain posisi spesifik, seperti CentralMidfielder atau Striker.",
         "careerEntryNeedsClub": "\"{{entity}}\" memiliki entri karier (baris {{row}}) tanpa nama klub.",
-        "unsupportedFormatVersion": "Paket ini dibuat dengan versi permainan yang lebih baru (format {{version}}; build ini mendukung {{supported}}). Perbarui permainan untuk membukanya."
+        "unsupportedFormatVersion": "Paket ini dibuat dengan versi permainan yang lebih baru (format {{version}}; build ini mendukung {{supported}}). Perbarui permainan untuk membukanya.",
+        "unknownFormation": "Tim \"{{team}}\" memakai formasi \"{{formation}}\", yang tidak tersedia di game.",
+        "tacticsPlayerNotInClub": "Taktik \"{{team}}\" menyebut \"{{player}}\", yang bukan pemainnya.",
+        "duplicateStarter": "Sebelas pemain utama \"{{team}}\" menyebut \"{{player}}\" lebih dari sekali."
       },
       "conflict": {
         "duplicateId": "Paket \"{{packages}}\" sama-sama mendefinisikan {{entityKind}} \"{{entityId}}\" dengan konten berbeda. Paket terakhir yang menang.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}} dari {{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}} dari {{scaleMax}} · {{minBand}} sampai {{maxBand}}",
-    "budgetReadout": "{{min}}–{{max}} per bulan · anggaran transfer {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "{{min}}–{{max}} per bulan · anggaran transfer {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Taktik & susunan bawaan",
+      "intro": "Pengaturan klub saat dunia dimulai. Klub AI akan menyesuaikannya sendiri; manajer yang mengambil alih klub memulai dari sini.",
+      "formationAuto": "Otomatis (klub memilih sesuai skuad dan gaya bermain)",
+      "needFormation": "Pilih formasi untuk menyusun sebelas pemain utama dan peran pemain.",
+      "startingXi": "Sebelas pemain utama",
+      "elevenProgress": "{{count}}/{{total}} dipilih",
+      "elevenIncomplete": "Game hanya memakai susunan ini setelah semua posisi terisi; sampai saat itu game menyusun tim sendiri.",
+      "noPlayers": "Klub ini belum punya pemain di paket. Tambahkan pemain ke klub ini untuk menyusunnya.",
+      "nobody": "— Tidak ada —",
+      "notInClub": "{{player}} (bukan pemain klub ini)",
+      "slotPlayer": "Pemain di posisi {{position}}",
+      "slotRole": "Peran di posisi {{position}}",
+      "matchRoles": "Kapten dan bola mati",
+      "customPhase": "Pengaturan fase kustom",
+      "phaseFromStyle": "Mati: klub memakai pengaturan gaya bermainnya sendiri."
+    }
   },
   "packageBuild": {
     "title": "Bangun Dunia Kamu",

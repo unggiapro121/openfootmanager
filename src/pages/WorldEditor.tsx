@@ -766,6 +766,7 @@ export default function WorldEditor() {
             compEditor={compEditor}
             confederations={confederations}
             teams={teams}
+            players={players}
             editingPoolKey={editingPoolKey}
             editingPool={editingPool}
             isNewPool={isNewPool}

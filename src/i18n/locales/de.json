@@ -3280,7 +3280,10 @@
         "alternatePositionInvalid": "„{{entity}}“ führt {{position}} als Alternativposition auf. Eine Alternative muss eine konkrete Position sein, sich von der eigenen Position des Spielers unterscheiden und nur einmal vorkommen.",
         "identityNeedsSpecificPosition": "„{{entity}}“ hat einen schwachen Fuß oder Alternativpositionen, aber {{position}} ist eine allgemeine Gruppe, daher würde das Spiel sie aus den Attributen des Spielers neu berechnen und verwerfen, was du geschrieben hast. Gib dem Spieler eine konkrete Position, etwa CentralMidfielder oder Striker.",
         "careerEntryNeedsClub": "„{{entity}}“ hat einen Karriereeintrag (Zeile {{row}}) ohne Vereinsnamen.",
-        "unsupportedFormatVersion": "Dieses Paket wurde mit einer neueren Version des Spiels erstellt (Format {{version}}; diese Version unterstützt {{supported}}). Aktualisiere das Spiel, um es zu öffnen."
+        "unsupportedFormatVersion": "Dieses Paket wurde mit einer neueren Version des Spiels erstellt (Format {{version}}; diese Version unterstützt {{supported}}). Aktualisiere das Spiel, um es zu öffnen.",
+        "unknownFormation": "Team „{{team}}“ nutzt die Formation „{{formation}}“, die das Spiel nicht anbietet.",
+        "tacticsPlayerNotInClub": "Die Taktik von „{{team}}“ nennt „{{player}}“, der nicht zu seinen Spielern gehört.",
+        "duplicateStarter": "Die Startelf von „{{team}}“ nennt „{{player}}“ mehr als einmal."
       },
       "competitionDef": {
         "invalidEmbedded": "Die Wettbewerbsdefinitionen dieser Welt sind ungültig und konnten nicht geladen werden.",
@@ -4824,7 +4827,24 @@
     },
     "repReadoutSingle": "{{min}}–{{max}} von {{scaleMax}} · {{band}}",
     "repReadoutSpan": "{{min}}–{{max}} von {{scaleMax}} · {{minBand}} bis {{maxBand}}",
-    "budgetReadout": "{{min}}–{{max}} pro Monat · Transferbudget {{transferMin}}–{{transferMax}}"
+    "budgetReadout": "{{min}}–{{max}} pro Monat · Transferbudget {{transferMin}}–{{transferMax}}",
+    "tactics": {
+      "title": "Taktik & Standardaufstellung",
+      "intro": "Womit der Verein in die Welt startet. Ein KI-Verein passt es danach an; ein Trainer, der den Verein übernimmt, beginnt damit.",
+      "formationAuto": "Automatisch (der Verein wählt nach Kader und Spielstil)",
+      "needFormation": "Wähle eine Formation, um Startelf und Spielerrollen festzulegen.",
+      "startingXi": "Startelf",
+      "elevenProgress": "{{count}}/{{total}} gewählt",
+      "elevenIncomplete": "Das Spiel nutzt diese Startelf erst, wenn jede Position besetzt ist; bis dahin stellt es selbst auf.",
+      "noPlayers": "Dieser Verein hat im Paket noch keine Spieler. Füge dem Verein Spieler hinzu, um sie aufzustellen.",
+      "nobody": "— Keiner —",
+      "notInClub": "{{player}} (nicht in diesem Verein)",
+      "slotPlayer": "Spieler auf {{position}}",
+      "slotRole": "Rolle auf {{position}}",
+      "matchRoles": "Kapitän und Standards",
+      "customPhase": "Eigene Phaseneinstellungen",
+      "phaseFromStyle": "Aus: Der Verein nutzt die Einstellungen seines Spielstils."
+    }
   },
   "packageBuild": {
     "title": "Welt aufbauen",
