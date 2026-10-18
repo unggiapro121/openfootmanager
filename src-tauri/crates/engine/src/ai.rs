@@ -744,10 +744,68 @@ fn target_play_style(obs: &AiObservation<'_>) -> Option<PlayStyle> {
 }
 
 /// The next shape up from this one, or nothing if there is no obvious next one.
+///
+/// Since AI clubs choose their shape before a match (phase 2, GĐ5 P5.1), a
+/// chasing side can start from any of the nine, so each has a step that keeps
+/// its back line: a back three pushes its wing-backs into midfield and then a
+/// third forward on, a back four trades a midfielder for an attacker.
 fn bolder_formation(current: &str) -> Option<&'static str> {
     match current {
         "4-4-2" => Some("4-3-3"),
-        "4-3-3" | "4-5-1" => Some("4-2-3-1"),
+        "4-3-3" | "4-5-1" | "4-1-4-1" => Some("4-2-3-1"),
+        "5-3-2" => Some("3-5-2"),
+        "3-5-2" | "3-4-2-1" => Some("3-4-3"),
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Given every shape an AI club can line up in before a match (GĐ5 P5.1),
+    /// when a chasing Visionary looks for a bolder one,
+    /// then the shapes with a natural step up take it and keep their back line.
+    #[test]
+    fn every_shape_with_a_natural_step_up_takes_it_and_keeps_its_back_line() {
+        let steps = [
+            ("4-4-2", "4-3-3"),
+            ("4-3-3", "4-2-3-1"),
+            ("4-5-1", "4-2-3-1"),
+            ("4-1-4-1", "4-2-3-1"),
+            ("5-3-2", "3-5-2"),
+            ("3-5-2", "3-4-3"),
+            ("3-4-2-1", "3-4-3"),
+        ];
+        for (from, to) in steps {
+            assert_eq!(bolder_formation(from), Some(to), "from {from}");
+        }
+    }
+
+    /// Given the two boldest shapes,
+    /// when a chasing Visionary looks for a bolder one,
+    /// then there is none, so the chain ends and he changes instructions instead.
+    #[test]
+    fn the_boldest_shapes_have_nowhere_further_to_go() {
+        assert_eq!(bolder_formation("4-2-3-1"), None);
+        assert_eq!(bolder_formation("3-4-3"), None);
+    }
+
+    /// Given any shape,
+    /// when the step up is taken again and again,
+    /// then it stops within two steps.
+    #[test]
+    fn the_chain_of_bolder_shapes_ends_within_two_steps() {
+        for start in [
+            "4-4-2", "4-3-3", "3-5-2", "4-5-1", "4-2-3-1", "3-4-3", "5-3-2", "4-1-4-1", "3-4-2-1",
+        ] {
+            let mut shape = start;
+            let mut steps = 0;
+            while let Some(next) = bolder_formation(shape) {
+                shape = next;
+                steps += 1;
+                assert!(steps <= 2, "{start} keeps getting bolder");
+            }
+        }
     }
 }

@@ -37,6 +37,28 @@ fn a_generated_squad_is_given_something_to_do() {
     }
 }
 
+/// Given a generated club,
+/// when its squad has been built and normalised,
+/// then it lines up in the shape its own squad and style choose (GĐ5 P5.1),
+/// not the default every club used to keep.
+#[test]
+fn a_generated_club_lines_up_in_the_shape_its_squad_and_style_choose() {
+    let mut rng = StdRng::seed_from_u64(31);
+    let mut tdef = test_team_def();
+    tdef.play_style = "Defensive".to_string();
+    let names_def = default_names_definition();
+    let country_codes = generation::nationality_distribution();
+
+    let (team, players, _) = build_club(&tdef, country_codes, 2026, &names_def, &mut rng);
+
+    let available: Vec<&domain::player::Player> =
+        players.iter().filter(|p| p.injury.is_none()).collect();
+    assert_eq!(
+        team.formation,
+        crate::ai_formation::best_formation(&available, &team.play_style)
+    );
+}
+
 /// Every club the world builds — procedural, package-authored or filler —
 /// comes through `build_team`, which is why the blueprint is applied here
 /// and not at one of the several call sites above it.
