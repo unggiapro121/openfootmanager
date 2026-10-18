@@ -61,6 +61,7 @@ impl LiveMatchState {
         let goes_in_goal = nobody_in_goal && bench[on_idx].position == Position::Goalkeeper;
 
         let mut player_on = bench.remove(on_idx);
+        let came_on_as = player_on.position;
         let player_off = self.team_mut(side).players.remove(off_idx);
 
         // The XI is slot-aligned (entry i plays formation slot i), so the sub
@@ -133,6 +134,7 @@ impl LiveMatchState {
             side,
             player_off_id: player_off_id.to_string(),
             player_on_id: player_on_id.to_string(),
+            came_on_as: Some(came_on_as),
         });
 
         Ok(())

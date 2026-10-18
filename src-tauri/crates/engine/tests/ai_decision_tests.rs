@@ -274,14 +274,21 @@ fn a_first_half_stuck_at(home_goals: u8, away_goals: u8, profile: &AiProfile) ->
     did
 }
 
+/// Given a side two goals down through the first half and the interval,
+/// when any manager looks at it,
+/// then none chases it yet, by style or by shape: two down is chased from the
+/// hour (phase 2, GĐ5 P5.4). Chasing from the interval stripped the side for
+/// forty-five minutes and lost it more than it won back, so the engine drew
+/// too seldom. A player hurt in the first half is still replaced.
 #[test]
-fn two_goals_down_at_half_time_every_manager_uses_the_interval() {
+fn two_goals_down_at_half_time_a_manager_waits_for_the_hour() {
     for (who, profile) in every_manager() {
         let did = a_first_half_stuck_at(0, 2, &profile);
-        assert!(
-            did.any(),
-            "{who} went in two goals down at half time and came back out with the \
-             same eleven, the same shape and the same instructions."
+        assert_eq!(
+            (did.style_changes, did.formation_changes),
+            (0, 0),
+            "{who} went in two goals down at half time and changed style or shape \
+             before the hour"
         );
     }
 }
@@ -401,27 +408,34 @@ fn deep_bench(prefix: &str, skill: u8) -> Vec<PlayerData> {
     all
 }
 
-/// The laws allow five; the tactical branches counted to three.
-///
-/// `max_subs` has been 5 on `LiveMatchState` all along, and the fatigue branch
-/// respected it — but the two branches that exist for exactly this situation,
-/// chasing a game and protecting a lead, were both written `subs_made < 3`. A
-/// side two goals down spent the last half hour with substitutions in its
-/// pocket that the laws of the game said it could use.
+/// Given a side two goals down for the whole match with a bench of eight,
+/// when its manager chases the game,
+/// then he brings on one forward, for a midfielder, and keeps his back line:
+/// a forward for every defender and midfielder left the side open and lost
+/// more than it won back (phase 2, GĐ5 P5.4).
 #[test]
-fn a_side_chasing_the_game_uses_more_than_three_substitutions() {
+fn a_side_chasing_the_game_brings_on_one_forward_for_a_midfielder() {
+    let starters = eleven("home", 60, 100);
+    let reserves = deep_bench("home", 55);
+    let position = |id: &str| {
+        starters
+            .iter()
+            .chain(reserves.iter())
+            .find(|p| p.id == id)
+            .map(|p| p.position)
+    };
     let mut state = LiveMatchState::new(
-        team("home", eleven("home", 60, 100)),
+        team("home", starters.clone()),
         team("away", eleven("away", 60, 100)),
         MatchConfig::default(),
-        deep_bench("home", 55),
+        reserves.clone(),
         deep_bench("away", 55),
         false,
     );
 
     let mut rng = StdRng::seed_from_u64(3);
     let manager = profile(90, AiPersonality::Pragmatist);
-    let mut made = 0usize;
+    let mut attacking_changes = Vec::new();
 
     loop {
         if state.step_minute(&mut rng).is_finished {
@@ -429,17 +443,27 @@ fn a_side_chasing_the_game_uses_more_than_three_substitutions() {
         }
         state.test_set_score(0, 2);
         for cmd in ai_decide(&state, Side::Home, &manager, &mut rng) {
-            let is_substitution = matches!(cmd, MatchCommand::Substitute { .. });
-            if state.apply_command(cmd).is_ok() && is_substitution {
-                made += 1;
+            let change = match &cmd {
+                MatchCommand::Substitute {
+                    player_off_id,
+                    player_on_id,
+                    ..
+                } => Some((position(player_off_id), position(player_on_id))),
+                _ => None,
+            };
+            if state.apply_command(cmd).is_ok()
+                && let Some((off, Some(Position::Forward))) = change
+                && off != Some(Position::Forward)
+            {
+                attacking_changes.push(off);
             }
         }
     }
 
-    assert!(
-        made > 3,
-        "two goals down for the whole match with a bench of eight, the manager \
-         made {made} substitutions out of the five he is allowed"
+    assert_eq!(
+        attacking_changes,
+        vec![Some(Position::Midfielder)],
+        "two goals down for the whole match, the manager's forward-for-a-man changes"
     );
 }
 

@@ -197,15 +197,20 @@ pub fn ai_decide<R: Rng>(
 // Substitution logic
 // ---------------------------------------------------------------------------
 
-/// One goal down is a position; two goals down is a problem. The first is worth
-/// changing something for once the hour has gone, the second at any point a
-/// manager looks up, the interval included.
-const CHASE_ONE_GOAL_FROM: u8 = 60;
+/// One goal down is a position; two goals down is a problem. The second is
+/// worth chasing once the hour has come, the first with twenty minutes left.
+///
+/// Until phase 2's GĐ5 (P5.4) a side two down chased from the interval and one
+/// down from the hour, stripping its back line for forwards as it went. It
+/// conceded more than it pulled back: the engine drew 23% against real
+/// football's 26%, two-goal matches ended 1-1 44% of the time against 51%, and
+/// four-goal ones 2-2 28% against 40%. Waiting, and changing one man, gives
+/// the trailing side its push without handing over the match.
+const CHASE_ONE_GOAL_FROM: u8 = 70;
+const CHASE_TWO_GOALS_FROM: u8 = 60;
 /// A lead is worth protecting once there is little enough left of the match for
 /// protecting it to be the whole job.
 const SEE_OUT_A_LEAD_FROM: u8 = 80;
-/// However badly the game is going, somebody has to hold the line together.
-const A_BACK_LINE_WORTH_KEEPING: usize = 3;
 /// However well it is going, somebody has to chase the clearances.
 const A_FORWARD_TO_CHASE_CLEARANCES: usize = 1;
 /// Two players this close in condition are, to the eye, the same player. Inside
@@ -274,7 +279,8 @@ fn replace_the_injured(obs: &AiObservation<'_>) -> Option<MatchCommand> {
 
 /// Is this side behind in a way that calls for something to be done?
 fn chasing(obs: &AiObservation<'_>) -> bool {
-    obs.goal_diff <= -2 || (obs.goal_diff == -1 && obs.minute >= CHASE_ONE_GOAL_FROM)
+    (obs.goal_diff <= -2 && obs.minute >= CHASE_TWO_GOALS_FROM)
+        || (obs.goal_diff == -1 && obs.minute >= CHASE_ONE_GOAL_FROM)
 }
 
 /// The goalkeeper has been sent off. Somebody has to go in.
@@ -449,23 +455,15 @@ fn chase_the_game<R: Rng>(
     profile: &AiProfile,
     rng: &mut R,
 ) -> Option<MatchCommand> {
-    let defenders = obs
-        .team
-        .players
-        .iter()
-        .filter(|p| p.position == Position::Defender && obs.available(p))
-        .count();
-
+    // One forward more, for a midfielder: the back line stays (P5.4).
+    if obs.added_a_forward() {
+        return None;
+    }
     let candidates: Vec<&PlayerData> = obs
         .team
         .players
         .iter()
-        .filter(|p| obs.available(p))
-        .filter(|p| match p.position {
-            Position::Defender => defenders > A_BACK_LINE_WORTH_KEEPING,
-            Position::Midfielder => true,
-            _ => false,
-        })
+        .filter(|p| obs.available(p) && p.position == Position::Midfielder)
         .collect();
 
     let player_off = least_missed(&candidates, obs, profile, rng)?;
@@ -719,8 +717,8 @@ fn turn_a_dial(obs: &AiObservation<'_>) -> Option<MatchCommand> {
 /// mind every time it looks up — see the note on hysteresis at the top of the
 /// file.
 fn target_play_style(obs: &AiObservation<'_>) -> Option<PlayStyle> {
-    // Two down is two down. At the interval or at eighty, the answer is the same.
-    if obs.goal_diff <= -2 {
+    // Two down is two down once the hour has come, at sixty or at eighty.
+    if obs.goal_diff <= -2 && obs.minute >= CHASE_TWO_GOALS_FROM {
         return Some(PlayStyle::Attacking);
     }
 

@@ -27,7 +27,7 @@ use std::collections::HashSet;
 
 use super::{LiveMatchState, MatchPhase, SubstitutionRecord};
 use crate::event::EventType;
-use crate::types::{PlayerData, Side, TeamData, Zone};
+use crate::types::{PlayerData, Position, Side, TeamData, Zone};
 
 /// Everything one AI manager can see, resolved for that manager's side.
 pub(crate) struct AiObservation<'a> {
@@ -78,6 +78,22 @@ impl AiObservation<'_> {
             .players
             .iter()
             .find(|player| self.injured.contains(&player.id))
+    }
+
+    /// Has this side already brought a forward on for a defender or a
+    /// midfielder? Injuries and tired legs are replaced position for
+    /// position, so only chasing the game makes that change; a side makes it
+    /// once (phase 2, GĐ5 P5.4).
+    pub(crate) fn added_a_forward(&self) -> bool {
+        // The man taken off is on the bench now, with the slot he left.
+        let slot_left = |id: &str| self.bench.iter().find(|p| p.id == id).map(|p| p.position);
+        self.substitutions
+            .iter()
+            .filter(|sub| sub.side == self.side)
+            .any(|sub| {
+                sub.came_on_as == Some(Position::Forward)
+                    && slot_left(&sub.player_off_id).is_some_and(|p| p != Position::Forward)
+            })
     }
 
     pub(crate) fn available(&self, player: &PlayerData) -> bool {

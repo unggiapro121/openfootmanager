@@ -571,12 +571,18 @@ pub struct MatchConfig {
 impl Default for MatchConfig {
     fn default() -> Self {
         Self {
-            home_advantage: 1.08,
+            // 1.08 until GĐ5 P5.4: home sides won 7 points more often than
+            // away ones on the European probe, real leagues 9 (top five) to
+            // 13 (all 18). 1.10 gives 11.5.
+            home_advantage: 1.10,
             shot_accuracy_base: 0.35,
             // 0.36 until GĐ5 P5.3b: keepers stop a little more, which with
             // the box's shots spread wider keeps the leading scorers at a
             // real tally (34 goals a season on the Premier League probe).
-            goal_conversion_base: 0.35,
+            // 0.38 from P5.4, which cut the shots a match to the real 25.5
+            // (`P_DIRECT_BASE`) and kept the goals: real sides score from
+            // 11% of their shots, the engine scored from 9.6%.
+            goal_conversion_base: 0.38,
             fatigue_per_minute: 0.20,
             foul_probability: 0.40,
             yellow_card_probability: 0.11,

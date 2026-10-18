@@ -203,7 +203,11 @@ impl LiveMatchState {
         let mid_def = self.effective_midfield(def_side)
             * tactics_pressing_contest(&def_tactics)
             * tactics_defensive_line_recovery(&def_tactics);
-        let retain = mid_att / (mid_att + mid_def);
+        let retain = possession_retained(
+            mid_att,
+            mid_def,
+            self.config.knobs.possession_contest_sharpness,
+        );
         if rng.random_range(0.0..1.0f64) > retain {
             // Counter-press: the side losing the ball may win it straight back.
             let rewin = tactics_counter_press_rewin(&poss_tactics);
@@ -310,5 +314,36 @@ impl LiveMatchState {
             ball_zone: self.ball_zone,
             is_finished: true,
         }
+    }
+}
+
+/// The side on the ball's chance to keep it through the end-of-minute
+/// contest, from the two midfields' weights and the contest's sharpness `k`
+/// (`a^k / (a^k + d^k)`). At `k` = 1 it is the plain ratio, computed as it
+/// always was.
+fn possession_retained(attack: f64, defence: f64, sharpness: f64) -> f64 {
+    if sharpness == 1.0 {
+        attack / (attack + defence)
+    } else {
+        let (a, d) = (attack.powf(sharpness), defence.powf(sharpness));
+        a / (a + d)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::possession_retained;
+
+    /// Given a midfield weighing 60 against 40,
+    /// when the contest for the ball is read at sharpness 1 and 2,
+    /// then 1 is the plain ratio and 2 lets the stronger side keep more, the
+    /// weaker less, with equal midfields still even.
+    #[test]
+    fn a_sharper_contest_favours_the_stronger_midfield() {
+        assert_eq!(possession_retained(60.0, 40.0, 1.0), 0.6);
+        let sharp = possession_retained(60.0, 40.0, 2.0);
+        assert!((sharp - 36.0 / 52.0).abs() < 1e-12, "{sharp}");
+        assert!(possession_retained(40.0, 60.0, 2.0) < 0.4);
+        assert_eq!(possession_retained(50.0, 50.0, 2.0), 0.5);
     }
 }
