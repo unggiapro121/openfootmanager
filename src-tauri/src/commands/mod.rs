@@ -8,6 +8,7 @@ pub mod messages;
 pub mod package_csv;
 pub mod package_editor;
 mod package_layout;
+mod package_unmodelled;
 pub mod portraits;
 pub mod profiles;
 pub mod report;
