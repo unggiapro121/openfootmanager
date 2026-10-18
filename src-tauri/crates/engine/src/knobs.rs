@@ -60,6 +60,12 @@ pub struct CalibrationKnobs {
     /// follow a league's quality.
     pub long_shot_slope: f64,
     pub long_shot_habit_bonus: f64,
+    /// Who finishes in the box (GĐ5 P5.3b, approved 2026-10-18): how far ω
+    /// above 1 is kept (1 = the table as written, 0 = every forward alike;
+    /// ω at or below 1 never moves), and the weight of the man who carried
+    /// the ball in (`live_match/finishing.rs`).
+    pub shot_weight_spread: f64,
+    pub last_actor_weight: f64,
     /// The one-on-one in the attacking third: its two sensitivities and its
     /// anchor (GĐ0, GĐ3 X49; X12 / X85).
     pub gamma_one_v_one_technical: f64,
@@ -99,6 +105,8 @@ impl Default for CalibrationKnobs {
             long_shot_goal_base: live::LONG_SHOT_GOAL_BASE,
             long_shot_slope: live::LONG_SHOT_SLOPE,
             long_shot_habit_bonus: live::LONG_SHOT_HABIT_BONUS,
+            shot_weight_spread: live::SHOT_WEIGHT_SPREAD,
+            last_actor_weight: live::LAST_ACTOR_WEIGHT,
             gamma_one_v_one_technical: duel::GAMMA_ONE_V_ONE_TECHNICAL,
             gamma_one_v_one_physical: duel::GAMMA_ONE_V_ONE_PHYSICAL,
             anchor_one_v_one: duel::ANCHOR_ONE_V_ONE,

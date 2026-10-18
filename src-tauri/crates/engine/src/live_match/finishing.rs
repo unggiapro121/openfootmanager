@@ -18,8 +18,25 @@ use crate::types::{PlayerData, PlayerRole, Position, Side};
 use super::LiveMatchState;
 
 /// How much more likely the player who has just carried the ball into the box
-/// is to be the one who shoots (`LastActor`, X57).
-pub(super) const LAST_ACTOR_WEIGHT: f64 = 2.0;
+/// is to be the one who shoots (`LastActor`, X57); the default of
+/// `CalibrationKnobs::last_actor_weight`.
+pub(crate) const LAST_ACTOR_WEIGHT: f64 = 2.0;
+
+/// How much of ω above 1 the box keeps (GĐ5 P5.3b); the default of
+/// `CalibrationKnobs::shot_weight_spread`. At 1 the table below is used as
+/// written.
+pub(crate) const SHOT_WEIGHT_SPREAD: f64 = 1.0;
+
+/// ω as the box uses it: the part above 1 scaled by `spread`, so forwards
+/// and finishing roles can be pulled towards each other without lifting
+/// the midfielders and defenders below them.
+fn spread_weight(omega: f64, spread: f64) -> f64 {
+    if omega > 1.0 {
+        1.0 + (omega - 1.0) * spread
+    } else {
+        omega
+    }
+}
 
 /// ω, a slot's share of the finishing (GĐ3-tech-spec §8.2, S1 §3.2A): a
 /// role in the table replaces the slot's default.
@@ -95,6 +112,14 @@ impl LiveMatchState {
         matches!(&self.last_actor, Some((s, last)) if *s == side && last == id)
     }
 
+    /// ω of a player in `slot` with `role`, as the box uses it.
+    fn box_weight(&self, slot: PitchPosition, role: PlayerRole) -> f64 {
+        spread_weight(
+            shot_weight(slot, role),
+            self.config.knobs.shot_weight_spread,
+        )
+    }
+
     /// Who shoots in the box: `P ∝ ω × positioning / 70 × LastActor`.
     fn pick_shooter<R: Rng>(&self, side: Side, rng: &mut R) -> Option<PlayerSnap> {
         let candidates: Vec<(&PlayerData, f64)> = self
@@ -102,11 +127,11 @@ impl LiveMatchState {
             .into_iter()
             .map(|(player, slot)| {
                 let carried = if self.carried_it_in(side, &player.id) {
-                    LAST_ACTOR_WEIGHT
+                    self.config.knobs.last_actor_weight
                 } else {
                     1.0
                 };
-                let weight = shot_weight(slot, player.role)
+                let weight = self.box_weight(slot, player.role)
                     * (f64::from(player.positioning) / 70.0)
                     * carried;
                 (player, weight)
@@ -146,7 +171,7 @@ impl LiveMatchState {
             .filter(|(player, _)| player.id != crosser_id)
             .map(|(player, slot)| {
                 let aerial = duel::aerial_rating(&PlayerSnap::from(player)) / 70.0;
-                (player, shot_weight(slot, player.role) * aerial)
+                (player, self.box_weight(slot, player.role) * aerial)
             })
             .collect();
         draw(&candidates, rng)
@@ -168,7 +193,8 @@ impl LiveMatchState {
             .into_iter()
             .filter(|(player, _)| player.id != crosser_id)
             .map(|(player, slot)| {
-                let weight = shot_weight(slot, player.role) * f64::from(player.positioning) / 70.0;
+                let weight =
+                    self.box_weight(slot, player.role) * f64::from(player.positioning) / 70.0;
                 (player, weight)
             })
             .collect();
@@ -267,6 +293,46 @@ mod tests {
         s.last_actor = Some((Side::Home, left.clone()));
         let ratio = f64::from(shots_by(&s, &left)) / f64::from(shots_by(&s, &right));
         assert!((ratio - LAST_ACTOR_WEIGHT).abs() < 0.2, "{ratio:.2}");
+    }
+
+    /// Given a poacher and a standard striker, and the spread of ω pulled
+    /// all the way in,
+    /// when the shooter is drawn many times,
+    /// then the two shoot about as often, and a central midfielder still
+    /// hardly ever does (GĐ5 P5.3b: the spread only narrows ω above 1).
+    #[test]
+    fn the_spread_knob_narrows_the_forwards_lead_and_leaves_midfield_alone() {
+        let mut s = state("4-4-2");
+        s.config.knobs.shot_weight_spread = 0.0;
+        let first = slot_index(&s, PitchPosition::Striker);
+        s.home.players[first].role = PlayerRole::Poacher;
+        let poacher = s.home.players[first].id.clone();
+        let other = s.home.players[first + 1].id.clone();
+        let midfielder = s.home.players[slot_index(&s, PitchPosition::CentralMidfielder)]
+            .id
+            .clone();
+        let ratio = f64::from(shots_by(&s, &poacher)) / f64::from(shots_by(&s, &other));
+        assert!((ratio - 1.0).abs() < 0.1, "{ratio:.2}");
+        assert!(shots_by(&s, &midfielder) * 10 < shots_by(&s, &other));
+    }
+
+    /// Given a left midfielder who has just carried the ball in, and the
+    /// carrier's weight set to 1,
+    /// when the shooter is drawn,
+    /// then he shoots as often as the other wide midfielder.
+    #[test]
+    fn the_carriers_weight_is_a_knob() {
+        let mut s = state("4-4-2");
+        s.config.knobs.last_actor_weight = 1.0;
+        let left = s.home.players[slot_index(&s, PitchPosition::LeftMidfielder)]
+            .id
+            .clone();
+        let right = s.home.players[slot_index(&s, PitchPosition::RightMidfielder)]
+            .id
+            .clone();
+        s.last_actor = Some((Side::Home, left.clone()));
+        let ratio = f64::from(shots_by(&s, &left)) / f64::from(shots_by(&s, &right));
+        assert!((ratio - 1.0).abs() < 0.1, "{ratio:.2}");
     }
 
     /// Given an away player as the last actor,
