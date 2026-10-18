@@ -48,14 +48,16 @@ pub(crate) const GAMMA_MIDFIELD: f64 = 1.0;
 /// do in real football, where they had won 48%. Measured on the lan-can sweep
 /// (`ofm-sim-bench --guardrails`): 57.5–57.8% over four seeds.
 // Was 0.64; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): defenders won 59.7% of aerials, StatsBomb 51.8%.
-pub(crate) const ANCHOR_AERIAL: f64 = 0.85;
+// 0.85 → 0.90 in P5.4, whose fewer direct breaks left defenders at 54.6%.
+pub(crate) const ANCHOR_AERIAL: f64 = 0.90;
 /// The open-play cross's aerial anchor (phase 2, P3.5). The cross is met by
 /// the attacker best placed for it (ω × aerial rating) and contested by a
 /// centre back, not any defender, which tilts the duel towards the defence;
 /// this holds the defenders' share at about 59%. Corners keep
 /// `ANCHOR_AERIAL`: their picks did not change.
 // Was 0.80; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): as `ANCHOR_AERIAL` (T12, 50–54%).
-pub(crate) const ANCHOR_AERIAL_OPEN_PLAY_CROSS: f64 = 1.05;
+// 1.05 → 1.12 in P5.4, with `ANCHOR_AERIAL`.
+pub(crate) const ANCHOR_AERIAL_OPEN_PLAY_CROSS: f64 = 1.12;
 /// The one-on-one's anchor. Phase 2 GĐ3 (P3.2, X49) moved it from 1.14 to
 /// 0.94: picking the duel's players by presence in the ball's lane puts
 /// quicker attackers against weaker tacklers on the flanks and some

@@ -74,6 +74,11 @@ pub struct CalibrationKnobs {
     /// A patient side's hold on the ball in the end-of-minute contest
     /// (GĐ0, `shared.rs::tactics_tempo_retention`).
     pub tempo_retention_patient: f64,
+    /// How sharply the end-of-minute contest for the ball follows the two
+    /// midfields: the side on the ball keeps it with `a^k / (a^k + d^k)`.
+    /// 1 is the plain ratio; above 1 the stronger midfield holds the ball
+    /// more, which widens possession's spread across matches (GĐ5 P5.4, T16).
+    pub possession_contest_sharpness: f64,
     /// A defensive line's effect on the chances it concedes (GĐ2,
     /// `shared.rs::tactics_defensive_conversion_mod`): high and very low.
     pub conversion_high_line: f64,
@@ -112,6 +117,10 @@ impl Default for CalibrationKnobs {
             anchor_one_v_one: duel::ANCHOR_ONE_V_ONE,
             // GĐ0's values, which lived only as literals in `shared.rs`.
             tempo_retention_patient: 1.03,
+            // 1.6 from GĐ5 P5.4: a side's possession spread 7.8 points across
+            // matches, real football 10.6; 1.6 gives 10.1, the stronger
+            // midfield holding the ball more.
+            possession_contest_sharpness: 1.6,
             conversion_high_line: 1.12,
             conversion_very_low_line: 0.85,
         }

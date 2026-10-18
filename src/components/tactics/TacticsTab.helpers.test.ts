@@ -157,4 +157,27 @@ describe("resolveStartingXiIds", () => {
 
     expect(ids[1]).toBe("lb");
   });
+
+  // Given a pending side naming a player who has left the squad, when it is
+  // resolved, then his slot is filled for its position and the players after
+  // him stay in their own slots.
+  it("fills a vanished pending starter's slot in place", () => {
+    const availablePlayers = [
+      makePlayer("gk", "Goalkeeper"),
+      makePlayer("cb", "CenterBack"),
+      makePlayer("st", "Striker"),
+      makePlayer("lb", "LeftBack"),
+    ];
+    const playersById = new Map(availablePlayers.map((player) => [player.id, player]));
+
+    const ids = resolveStartingXiIds({
+      availablePlayers,
+      formation: "4-4-2",
+      pendingStartingXiIds: ["gk", "sold-lb", "cb"],
+      playersById,
+      savedStartingXiIds: [],
+    });
+
+    expect(ids.slice(0, 3)).toEqual(["gk", "lb", "cb"]);
+  });
 });
