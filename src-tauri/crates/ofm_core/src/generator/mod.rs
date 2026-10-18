@@ -369,8 +369,16 @@ fn normalize_generated_team(
     seed_opening_youth_academy(players, opening_year, authored_squad_ids);
     normalize_opening_contracts(players, opening_year, authored_contract_ids);
     // Last, and here rather than in `build_club`: the package path calls this
-    // again after swapping generated players for authored ones, and a role
-    // belongs to the squad that finished rather than the one that was built.
+    // again after swapping generated players for authored ones, and a role —
+    // or a shape (GĐ5 P5.1) — belongs to the squad that finished rather than
+    // the one that was built. The player's own club gets one too, as the shape
+    // it opens in; from then on the player chooses.
+    let available: Vec<&Player> = players
+        .iter()
+        .filter(|player| player.injury.is_none())
+        .collect();
+    team.formation =
+        crate::ai_formation::opening_formation(&team.formation, &available, &team.play_style);
     crate::ai_roles::assign_squad_roles(team, players.iter());
 
     let weekly_wage_bill: i64 = players.iter().map(|player| player.wage() as i64).sum();

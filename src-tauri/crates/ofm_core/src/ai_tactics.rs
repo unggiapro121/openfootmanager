@@ -598,7 +598,8 @@ fn match_plan(
     settings
 }
 
-/// Every club the player does not manage looks at how it plays, once a week.
+/// Every club the player does not manage looks at how it plays, once a week:
+/// its dials, its shape (GĐ5 P5.1) and its players' roles.
 ///
 /// This is what pays for slices 6 and 7 shipping without a backfill. A save made
 /// before them carries the neutral blueprint and an empty role map on every AI
@@ -628,8 +629,18 @@ pub fn apply_ai_tactical_reviews(game: &mut Game, weekday_num: u32) {
             .collect();
         let reading = read_squad(&squad);
 
+        // The shape is judged on who can play this week, like the eleven it
+        // is chosen to suit (GĐ5 P5.1, X83).
+        let available: Vec<&Player> = squad
+            .iter()
+            .copied()
+            .filter(|player| player.injury.is_none())
+            .collect();
+
         let team = &mut game.teams[team_index];
         team.tactics_phase = match_plan(&team.play_style, reading.as_ref(), form.get(&team_id));
+        team.formation =
+            crate::ai_formation::reviewed_formation(&team.formation, &available, &team.play_style);
         crate::ai_roles::assign_squad_roles(team, squad.iter().copied());
     }
 }
@@ -987,6 +998,82 @@ mod tests {
         apply_ai_tactical_reviews(&mut game, review_weekday("home"));
         let home = game.teams.iter().find(|team| team.id == "home").unwrap();
         assert_eq!(home.tactics_phase.defensive_shape, DefensiveShape::Compact);
+    }
+
+    /// A squad built for three centre backs and wing-backs, on `team_id`.
+    fn back_three_squad(team_id: &str) -> Vec<Player> {
+        use domain::player::Footedness;
+        [
+            (Position::Goalkeeper, 70),
+            (Position::LeftWingBack, 72),
+            (Position::RightWingBack, 72),
+            (Position::CenterBack, 74),
+            (Position::CenterBack, 74),
+            (Position::CenterBack, 74),
+            (Position::DefensiveMidfielder, 70),
+            (Position::CentralMidfielder, 70),
+            (Position::CentralMidfielder, 70),
+            (Position::AttackingMidfielder, 70),
+            (Position::Striker, 70),
+            (Position::Striker, 70),
+            (Position::CentralMidfielder, 62),
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(i, (position, value))| {
+            let mut player = Player::new(
+                format!("{team_id}-{i:02}"),
+                "Test".into(),
+                format!("Test {i}"),
+                "1998-01-01".into(),
+                "England".into(),
+                position,
+                crate::test_support::uniform_attributes(value),
+            );
+            player.team_id = Some(team_id.into());
+            player.footedness = Footedness::Both;
+            player
+        })
+        .collect()
+    }
+
+    /// Given an AI club and the player's club, both with a squad built for a
+    /// back three and both still on the default 4-4-2,
+    /// when every club's weekly review has run,
+    /// then the AI club plays a back three and the player's club keeps the
+    /// shape the player chose.
+    #[test]
+    fn an_ai_club_moves_to_the_shape_its_squad_is_built_for_and_the_players_club_does_not() {
+        let mut game = form_game();
+        game.players = [back_three_squad("away"), back_three_squad("user")].concat();
+        for weekday in 0..7 {
+            apply_ai_tactical_reviews(&mut game, weekday);
+        }
+        let shape = |id: &str| {
+            game.teams
+                .iter()
+                .find(|team| team.id == id)
+                .unwrap()
+                .formation
+                .clone()
+        };
+        assert!(
+            ["5-3-2", "3-4-2-1"].contains(&shape("away").as_str()),
+            "the AI club plays {}",
+            shape("away")
+        );
+        assert_eq!(shape("user"), "4-4-2");
+    }
+
+    /// Given an AI club with no players to judge a shape by,
+    /// when its weekly review runs,
+    /// then it keeps the shape it has.
+    #[test]
+    fn a_club_with_too_few_players_to_judge_keeps_its_shape() {
+        let mut game = form_game();
+        apply_ai_tactical_reviews(&mut game, review_weekday("home"));
+        let home = game.teams.iter().find(|team| team.id == "home").unwrap();
+        assert_eq!(home.formation, "4-4-2");
     }
 
     #[test]

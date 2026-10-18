@@ -19,8 +19,8 @@ use crate::game::Game;
 /// Synthetic competition id used to tag national-team friendly fixtures.
 pub const INTERNATIONAL_FRIENDLY_COMPETITION_ID: &str = "international-friendlies";
 
-/// Shape a national XI is picked against. National teams carry no tactics of their own,
-/// so they line up in the same default a new club does (`Team::new`).
+/// Shape a national XI is picked against when the squad is too thin to choose one: the
+/// same default a new club starts from (`Team::new`).
 const NATIONAL_TEAM_FORMATION: &str = "4-4-2";
 
 /// International break dates for a season. FIFA-style: autumn windows in
@@ -200,13 +200,20 @@ pub(crate) fn squad_ids_for(game: &Game, national_team_id: &str) -> Vec<String> 
 }
 
 /// The best XI ids from a squad, one per formation slot: a flat `ovr` ranking could field
-/// three goalkeepers and no defender. Picked the way club first-choice XIs are.
+/// three goalkeepers and no defender. Picked the way club first-choice XIs are, in the shape
+/// the squad suits best (GĐ5 P5.1). National teams carry no style of their own, so the
+/// squad alone decides.
 fn match_day_xi(squad_player_ids: &[String], players: &[Player]) -> Vec<String> {
     let squad: Vec<&Player> = squad_player_ids
         .iter()
         .filter_map(|pid| players.iter().find(|p| &p.id == pid))
         .collect();
-    crate::turn::squad::first_choice_eleven(&squad, NATIONAL_TEAM_FORMATION)
+    let formation = crate::ai_formation::opening_formation(
+        NATIONAL_TEAM_FORMATION,
+        &squad,
+        &domain::team::PlayStyle::Balanced,
+    );
+    crate::turn::squad::first_choice_eleven(&squad, &formation)
         .into_iter()
         .map(|player| player.id.clone())
         .collect()
@@ -533,6 +540,45 @@ mod tests {
         player.position = position.clone();
         player.natural_position = position;
         player
+    }
+
+    /// Given a national squad of three centre backs, two wing-backs, a
+    /// central midfield and two strikers,
+    /// when its match-day eleven is picked,
+    /// then all five defenders start: the side lines up in the shape its
+    /// squad suits (GĐ5 P5.1), not a fixed 4-4-2 with room for four.
+    #[test]
+    fn match_day_xi_lines_up_in_the_shape_the_squad_suits() {
+        let positions = [
+            Position::Goalkeeper,
+            Position::CenterBack,
+            Position::CenterBack,
+            Position::CenterBack,
+            Position::LeftWingBack,
+            Position::RightWingBack,
+            Position::DefensiveMidfielder,
+            Position::CentralMidfielder,
+            Position::CentralMidfielder,
+            Position::AttackingMidfielder,
+            Position::Striker,
+            Position::Striker,
+        ];
+        let players: Vec<Player> = positions
+            .into_iter()
+            .enumerate()
+            .map(|(index, position)| make_positioned_player(&format!("p-{index:02}"), position, 70))
+            .collect();
+        let squad: Vec<String> = players.iter().map(|player| player.id.clone()).collect();
+
+        let xi = match_day_xi(&squad, &players);
+
+        let defenders = ["p-01", "p-02", "p-03", "p-04", "p-05"];
+        for id in defenders {
+            assert!(
+                xi.iter().any(|picked| picked == id),
+                "{id} left out of {xi:?}"
+            );
+        }
     }
 
     #[test]
