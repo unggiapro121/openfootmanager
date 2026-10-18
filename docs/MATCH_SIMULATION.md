@@ -167,7 +167,7 @@ defence, whoever comes across plays out of lane (κ), and the attacker has the s
 effort ×2.0), so he wins about 72% against 57% down a covered flank; won, he is straight into the
 box. Only the duel's events carry `FlankExposed`. Since a defence that wins the ball only goes
 straight up the pitch `p_direct` of the time (P4.1), the chance is 10% (13.5% breaking fast), which
-keeps about 0.56 such breaks a match.
+keeps about 0.56 such breaks a match; breaking fast no longer raises it (P4.6).
 
 ### Build-up and the press
 
@@ -232,10 +232,11 @@ them), and the winner (`BallRecovery`, +0.05 on his rating) has the ball where i
 
 `live_match/transition.rs` (P4.1, X77). When a defence wins the ball in its own third — a one-on-one
 tackled or cleared, a cross or a set piece cleared — it goes straight up the pitch, as it always did,
-`p_direct = clamp(0.70 × break × counter-press, 0.10, 0.80)` of the time (break speed Slow 0.7,
-Medium 1.0, Fast 1.4; the other side's counter-press None 1.0, Short 0.85, Long 0.70); otherwise it
+`p_direct = clamp(0.70 × break × counter-press, 0.10, 0.80)` of the time (break speed Slow 0.93,
+Medium and Fast 1.0; the other side's counter-press None 1.0, Short 0.95, Long 0.90); otherwise it
 plays out from the back, and that first build-up is pressed harder by the side that has just lost the
-ball (counter-press Short ×1.10, Long ×1.20). Real football gets into the final third within ten
+ball (counter-press Short ×1.05, Long ×1.10). The design's wider multipliers made these two dials win
+or lose by up to ten points; they were narrowed at P4.1 and P4.6. Real football gets into the final third within ten
 seconds of such a win only 9% of the time; 0.70 is set by the goal budget (each 0.1 less costs about
 0.075 goals a match), and GĐ5 can lower it.
 
@@ -460,13 +461,13 @@ per-minute possession contest.
 | tempo | midfield progression (att) + possession contest retention (att) + which passing the midfield duel reads (P4.3: Patient short, Direct half short half long) | Direct shoots more / Patient holds the ball and rewards short passers |
 | defensive_shape | attacking-third defence (def) | Compact concedes fewer chances |
 | counter_press | possession flip: losing side may re-win the ball; after an attack lost in the other side's third, the quick ball forward and the first build-up | Long regains possession more and smothers the quick ball |
-| break_speed | possession flip: winner may counter into the final third; how often a ball won in the own third goes direct | Fast turns turnovers into chances |
+| break_speed | possession flip: winner may counter into the final third (Fast 8% × the line's distance; 10% until P4.6); how often a ball won in the own third goes direct (Slow ×0.93) | Fast turns turnovers into chances |
 | cross_style | crosses from the flank (`wing_play`) | Mixed / High / Low / Early, see *Wing play* |
 
-The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.6
-goals conceded per game as leaky and at most 1.2 scored as blunt. Those cutoffs
-were read in phase 2 (P3.9), when the generated-world probe measured about
-**1.81 goals per club per game**. A scoring change needs a fresh run of
+The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.2
+goals conceded per game as leaky and at most 1.0 scored as blunt. Those cutoffs
+were read in phase 2 (P4.6), when the generated-world probe measured about
+**1.53 goals per club per game**. A scoring change needs a fresh run of
 `tactical_adaptation_probe` before those cutoffs can be trusted. AI blueprints
 also pick a cross style (High for Attacking and Defensive, Low for Possession,
 Early for Counter, Mixed otherwise), and a side whose two likeliest finishers
@@ -578,7 +579,7 @@ player taken off is rated for the time he played. `LiveMatchState::into_report` 
 headless match from `simulate_with_rng` is rated the same way.
 
 ```
-rating = 6.0 − an ordinary game's work at his slot (0.27–1.00, below)
+rating = 6.0 − an ordinary game's work at his slot (0.28–0.94, below)
        + what he did:  goal +1.2 · penalty goal +0.7 · assist +0.7 · penalty miss −0.6
                        shot saved +0.1 · shot off target −0.05 · shot blocked −0.03
                        pass completed +0.01 (at most +0.5) · pass intercepted −0.03
@@ -599,11 +600,12 @@ clamped to 3.0–10.0, rounded to 0.1
 
 The scale centres on 6.0, an ordinary game: `ratings_centre_on_six_across_many_matches` pins the
 mean of forty evenly matched games to 5.85–6.15. The baseline is the average contribution the engine
-produces at each slot the player ended in (phase 2, P3.9): keeper 0.39, centre back 0.29, full or
-wing-back 0.27, defensive midfielder 0.60, central 0.69, attacking 0.64, wide midfielder 1.00,
-winger 0.66, striker 0.68; a player off the pitch by the end takes his group's. Since GĐ3 a wide
-midfielder carries, crosses and sets up far more than a centre back, so one baseline for everybody
-rated them 6.44 and 5.77 on the real-world probe; per slot, every position averages 5.8–6.1.
+produces at each slot the player ended in (phase 2, P3.9, re-read at P4.6): keeper 0.38, centre
+back 0.28, full or wing-back 0.34, defensive midfielder 0.44, central 0.57, attacking 0.42, wide
+midfielder 0.94, winger 0.46, striker 0.67; a player off the pitch by the end takes his group's.
+Since GĐ3 a wide midfielder carries, crosses and sets up far more than a centre back, so one baseline
+for everybody rated them 6.44 and 5.77 on the real-world probe; per slot, every position averages
+5.78–6.06 (P4.6). A long ball counts nothing; a loose ball won (`BallRecovery`) +0.05.
 Ninety anonymous minutes land well below 6.0. If the engine starts producing more or fewer actions,
 the test fails and the baselines move with it.
 

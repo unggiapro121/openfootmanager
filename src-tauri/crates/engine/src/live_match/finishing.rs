@@ -30,7 +30,10 @@ pub fn shot_weight(slot: PitchPosition, role: PlayerRole) -> f64 {
         PlayerRole::CompleteForward | PlayerRole::TargetMan => Some(2.5),
         PlayerRole::ShadowStriker | PlayerRole::PressingForward => Some(2.0),
         PlayerRole::DeepLyingForward => Some(1.6),
-        PlayerRole::InsideForward | PlayerRole::False9 => Some(1.5),
+        PlayerRole::False9 => Some(1.5),
+        // 1.5 (as a false nine) until P4.6: at left wing he beat `Standard`
+        // by 5.5 points (`role-balance-p44.txt`).
+        PlayerRole::InsideForward => Some(1.3),
         PlayerRole::WideForward | PlayerRole::InvertedWinger | PlayerRole::AdvancedPlaymaker => {
             Some(1.2)
         }

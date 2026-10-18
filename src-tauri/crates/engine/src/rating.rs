@@ -120,24 +120,28 @@ const CLEAN_SHEET_MINUTES: u8 = 60;
 /// probe. Each figure is 0.5 moved by how far that position's mean sat from
 /// 6.0 there (20 league seasons, left and right pooled), then the wide,
 /// winger and attacking-midfield ones once more after a second reading.
+/// GĐ4 moved them again (P4.6): full backs now play out from the back and
+/// win loose balls, and midfield duels went to full backs, wingers and
+/// strikers too, so full backs rated 6.07 and attacking midfielders and
+/// wingers 5.74–5.85. Each moved once more by the same rule.
 fn ordinary_contribution(player: &RosterEntry<'_>) -> f32 {
     use PitchPosition as P;
     match player.slot {
-        Some(P::Goalkeeper) => 0.39,
-        Some(P::CenterBack) => 0.29,
-        Some(P::LeftBack | P::RightBack | P::LeftWingBack | P::RightWingBack) => 0.27,
-        Some(P::DefensiveMidfielder) => 0.60,
-        Some(P::CentralMidfielder) => 0.69,
-        Some(P::AttackingMidfielder) => 0.64,
-        Some(P::LeftMidfielder | P::RightMidfielder) => 1.00,
-        Some(P::LeftWinger | P::RightWinger) => 0.66,
-        Some(P::Striker) => 0.68,
+        Some(P::Goalkeeper) => 0.38,
+        Some(P::CenterBack) => 0.28,
+        Some(P::LeftBack | P::RightBack | P::LeftWingBack | P::RightWingBack) => 0.34,
+        Some(P::DefensiveMidfielder) => 0.44,
+        Some(P::CentralMidfielder) => 0.57,
+        Some(P::AttackingMidfielder) => 0.42,
+        Some(P::LeftMidfielder | P::RightMidfielder) => 0.94,
+        Some(P::LeftWinger | P::RightWinger) => 0.46,
+        Some(P::Striker) => 0.67,
         // Off the pitch by the end (substituted, sent off): his group's.
         None => match player.position {
-            Position::Goalkeeper => 0.39,
-            Position::Defender => 0.28,
-            Position::Midfielder => 0.70,
-            Position::Forward => 0.69,
+            Position::Goalkeeper => 0.38,
+            Position::Defender => 0.31,
+            Position::Midfielder => 0.59,
+            Position::Forward => 0.57,
         },
     }
 }

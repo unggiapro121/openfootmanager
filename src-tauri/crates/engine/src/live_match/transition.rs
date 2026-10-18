@@ -29,16 +29,18 @@ pub(super) const P_DIRECT_BASE: f64 = 0.70;
 const P_DIRECT_MIN: f64 = 0.10;
 const P_DIRECT_MAX: f64 = 0.80;
 
-/// A side that breaks fast goes direct more often. The spec started at 0.7 /
-/// 1.4; each 0.1 of `p_direct` is worth about four points of wins over
+/// A side that breaks slowly goes direct less often. The spec started at 0.7
+/// / 1.4; each 0.1 of `p_direct` is worth about four points of wins over
 /// losses between equal sides, so that made `Slow` cost ten points and `Fast`
-/// win five over the default. Narrowed at P4.1 to keep both within five
-/// (`dial-balance-p41.txt`: Slow −1.8, Fast +4.1 against the default).
+/// win five over the default. Narrowed at P4.1 (0.93 / 1.07); at P4.6 `Fast`
+/// went to 1.0: its own break after the ball is won in open play already
+/// made it win by more than five once GĐ4's other packages were in
+/// (`dial-balance-p46.txt`).
 fn break_mod(speed: BreakSpeed) -> f64 {
     match speed {
         BreakSpeed::Slow => 0.93,
         BreakSpeed::Medium => 1.0,
-        BreakSpeed::Fast => 1.07,
+        BreakSpeed::Fast => 1.0,
     }
 }
 
@@ -117,13 +119,14 @@ mod tests {
 
     /// Given sides that break slow, at medium pace and fast,
     /// when they win the ball against a side that does not counter-press,
-    /// then the faster they break the more often they go direct.
+    /// then a slow side goes direct least, and a fast one no less than a
+    /// medium one.
     #[test]
     fn breaking_fast_goes_direct_more_often() {
         let loser = tactics(BreakSpeed::Medium, CounterPressDuration::None);
         let chance = |speed| direct_chance(&tactics(speed, CounterPressDuration::None), &loser);
         assert!(chance(BreakSpeed::Slow) < chance(BreakSpeed::Medium));
-        assert!(chance(BreakSpeed::Medium) < chance(BreakSpeed::Fast));
+        assert!(chance(BreakSpeed::Medium) <= chance(BreakSpeed::Fast));
         assert_eq!(chance(BreakSpeed::Medium), P_DIRECT_BASE);
     }
 

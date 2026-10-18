@@ -413,7 +413,8 @@ pub(crate) fn role_attribute_modifier(role: PlayerRole, phase: PlayStylePhase) -
         (PlayerRole::ShadowStriker, PlayStylePhase::Defense) => 0.92,
         // Wide
         (PlayerRole::WideForward, PlayStylePhase::Attack) => 1.08,
-        (PlayerRole::InsideForward, PlayStylePhase::Attack) => 1.10,
+        // 1.10 until P4.6: at left wing it beat `Standard` by 5.5 points.
+        (PlayerRole::InsideForward, PlayStylePhase::Attack) => 1.07,
         (PlayerRole::InvertedWinger, PlayStylePhase::Midfield) => 1.08,
         // Strikers
         (PlayerRole::Poacher, PlayStylePhase::Attack) => 1.12,
@@ -554,11 +555,13 @@ pub(crate) fn tactics_counter_press_rewin(tactics: &TacticsConfig) -> f64 {
 /// Break speed: chance for the side that just won the ball to spring a fast
 /// counter into its attacking third instead of resetting to midfield. Neutral
 /// (Medium/Slow) ⇒ no roll; only Fast enables counters.
+/// `Fast` was 0.10 until P4.6, when it won by more than five points over the
+/// default (`dial-balance-p46.txt`).
 pub(crate) fn tactics_break_speed_counter(tactics: &TacticsConfig) -> f64 {
     match tactics.break_speed {
         BreakSpeed::Slow => 0.0,
         BreakSpeed::Medium => 0.0,
-        BreakSpeed::Fast => 0.10,
+        BreakSpeed::Fast => 0.08,
     }
 }
 

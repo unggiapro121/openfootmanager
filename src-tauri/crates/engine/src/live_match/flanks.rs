@@ -30,8 +30,9 @@ use super::LiveMatchState;
 /// straight up the pitch `p_direct` of the time (X77), to keep about 0.56
 /// such breaks a match (0.58 on the guardrail sweep).
 const P_EXPLOIT: f64 = 0.10;
-/// … when it breaks fast.
-const P_EXPLOIT_FAST: f64 = 0.135;
+/// … when it breaks fast: the same since P4.6, which found `Fast` winning
+/// by more than five points over the default.
+const P_EXPLOIT_FAST: f64 = 0.10;
 /// The space behind a full back who went up: the attacker's effort is worth
 /// this much more in the one-on-one that exploits it. Set so the attacker
 /// wins about a quarter more often than down a flank that is covered

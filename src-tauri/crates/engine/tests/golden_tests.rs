@@ -259,7 +259,7 @@ const GOLDEN: [(&str, u8, u8, u64); 20] = [
     ("managed_block", 1, 2, 0x9BA111E43724BEA6),
     ("managed_three_back", 2, 0, 0x421C8885B883BF33),
     ("managed_low_league", 1, 0, 0x194C40BD2EC14A33),
-    ("managed_elite", 1, 0, 0xC850297DA80142D8),
+    ("managed_elite", 1, 0, 0xE680EDD0FEDA0490),
 ];
 
 // ---------------------------------------------------------------------------
