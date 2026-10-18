@@ -52,9 +52,12 @@ const GAMES_PER_GAP: u32 = 2_000;
 /// Matches per formation in the formation-balance table (decision X60).
 const BALANCE_GAMES: u32 = 4_000;
 
-/// Whether the formation-balance row is a gate yet. It becomes one at P3.2,
-/// when the ball's lane starts to decide who plays (GĐ3-tech-spec §12.2).
-const FORMATION_BALANCE_GATED: bool = false;
+/// Whether the formation-balance row is a gate. Measured from P3.2; a gate
+/// from GĐ5 P5.5, which closed tech debt NKT-GĐ3-1: the worst formation sat
+/// within 1.9–2.6 points on seeds 42–45, and on real players (the European
+/// probe) the wing-back shapes scored within 0.04 points a game of their
+/// strength.
+const FORMATION_BALANCE_GATED: bool = true;
 
 pub fn spec(seed: u64, formation_mix: bool) -> SweepSpec<'static> {
     SweepSpec {
@@ -108,7 +111,7 @@ fn formation_balance(rows: &[BalanceRow]) -> Check {
         band: if FORMATION_BALANCE_GATED {
             band
         } else {
-            format!("đo, chặn từ P3.2: {band}")
+            format!("đo: {band}")
         },
         verdict: if !FORMATION_BALANCE_GATED {
             Verdict::Measure

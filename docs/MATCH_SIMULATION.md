@@ -141,7 +141,7 @@ otherwise he **crosses** (93%) or goes to the byline and into the box. Crosses c
 flanks. A cross must first reach the contest, `clamp(0.60 + (Q − 65)/200, 0.35, 0.85)` with `Q` its
 delivery as a corner's; one that does not names nobody and is cleared. The side's `cross_style`
 decides the cross: `Mixed` (default) two in three in the air, `High` always, `Low` never, `Early` as
-`Mixed` and, 40% of the time on a flank, crossed straight away before the full back is taken on,
+`Mixed` and, 25% of the time on a flank (40% until GĐ5 P5.5), crossed straight away before the full back is taken on,
 15% worse, against a defence short of `positioning` by the gap behind its line (0 deep, 8% at a
 medium line, 15% high, 20% on the break). In the air it is the two-stage header; along the ground
 the man meeting it (`0.60·positioning + 0.40·first_touch`) contests a centre back
@@ -456,7 +456,7 @@ per-minute possession contest.
 |---|---|---|
 | build_up | how often a side plays it long from its own third (P4.2) | Short keeps it on the ground and risks a high turnover; Long clears the press but rarely keeps the ball |
 | width | the lane matrix (`c, s, a, w`) | Wide plays more down the flanks, where crosses come from |
-| def_line | shot conversion conceded + the press on the other side's build-up | High concedes better chances in behind and presses higher |
+| def_line | shot conversion conceded (High ×1.05, ×1.12 until GĐ5 P5.5; VeryLow ×0.85) + the press on the other side's build-up | High concedes better chances in behind and presses higher |
 | marking | foul probability | Man-to-man fouls more |
 | pressing | possession contest (def) + build-up press + **in-match stamina** | Aggressive wins the ball back more, tires faster |
 | tempo | midfield progression (att) + possession contest retention (att) + which passing the midfield duel reads (P4.3: Patient short, Direct half short half long) | Direct shoots more / Patient holds the ball and rewards short passers |

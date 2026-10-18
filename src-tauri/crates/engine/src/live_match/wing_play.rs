@@ -51,10 +51,12 @@ const HIGH_SHARE: f64 = 0.65;
 const K_LOW: f64 = 0.667;
 /// A first-time shot from a low cross, with no touch to set it.
 const LOW_CROSS_FINISH: f64 = 0.95;
-/// How often an `Early` side crosses straight away from a flank.
-const P_EARLY: f64 = 0.40;
+/// How often an `Early` side crosses straight away from a flank. 0.40 until
+/// GĐ5 P5.5: the dial lost 5.4 points to the default (wins over losses at
+/// 4,000 matches); 0.25 leaves it −2.0 and still the crossing side.
+pub(crate) const P_EARLY: f64 = 0.25;
 /// An early cross comes from further out.
-const EARLY_DELIVERY: f64 = 0.85;
+pub(crate) const EARLY_DELIVERY: f64 = 0.85;
 /// A free kick in the attacking third's centre lane: a shot at goal this
 /// often (X56). Calibrated for 0.8–1.0 a match.
 // Was 0.60; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): 0.46 direct free kicks a match, 0.8% of goals
@@ -135,7 +137,7 @@ impl LiveMatchState {
         let on_flank = lane != Lane::Centre;
         if on_flank
             && self.team_ref(att_side).tactics.cross_style == CrossStyle::Early
-            && rng.random_range(0.0..1.0f64) < P_EARLY
+            && rng.random_range(0.0..1.0f64) < self.config.knobs.p_early_cross
         {
             let crosser = self
                 .pick_by_presence(att_side, Column::Attack, lane, rng)
@@ -314,7 +316,11 @@ impl LiveMatchState {
         let delivery = self
             .condition_adjusted_skill(&crosser.id, delivery_skill(crosser.crossing, crosser.curve))
             * crosser_trait
-            * if early { EARLY_DELIVERY } else { 1.0 };
+            * if early {
+                self.config.knobs.early_cross_delivery
+            } else {
+                1.0
+            };
         let target = if in_the_air {
             self.cross_target(att_side, &crosser.id, rng)
         } else {
