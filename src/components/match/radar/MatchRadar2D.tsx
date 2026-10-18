@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Radar, Tags } from "lucide-react";
 
@@ -8,6 +8,8 @@ import type { MatchSnapshot } from "../types";
 import { type DrawnPlayer, RADAR_VIEW, type RadarPicture, drawRadar } from "./radarDraw";
 import type { RadarKits, Side } from "./radarGeometry";
 import { FONT_CLASSES, PALETTE_CLASSES, readPalette } from "./radarPalette";
+import { type CaptionMark, type RadarCaption, captionsDue } from "./radarCaptions";
+import { type CaptionSink, RadarCommentary } from "./RadarCommentary";
 import { type RadarRun, advanceRun, startRun } from "./radarRun";
 import type { RadarScene } from "./radarScene";
 import type { RadarStage } from "./radarStage";
@@ -26,6 +28,8 @@ interface MatchRadar2DProps {
    * many of the snapshot's events that is, so the next minute can be asked for.
    */
   onCaughtUp?: (staged: number) => void;
+  /** Whether the commentator's line shows over the radar (the "match commentary" setting). */
+  showCommentary?: boolean;
 }
 
 /** With motion reduced, how long each minute stays on the radar before the next is asked for. */
@@ -59,6 +63,7 @@ interface RadarCast {
   goalLabel: string;
   paused: boolean;
   onCaughtUp?: (staged: number) => void;
+  onCaption?: (caption: RadarCaption) => void;
 }
 
 /** The goal being celebrated: its serial, and when its celebration started (ms, the frame clock). */
@@ -165,6 +170,8 @@ interface RadarFieldProps {
   onCaughtUp?: (staged: number) => void;
   showAllNames: boolean;
   reducedMotion: boolean;
+  /** Where the radar says its commentary, as each step of play starts. */
+  onCaption?: (caption: RadarCaption) => void;
 }
 
 /** Whether the radar has nothing left to play: no step on screen, none queued, the ball in play. */
@@ -179,10 +186,16 @@ function RadarField({
   onCaughtUp,
   showAllNames,
   reducedMotion,
+  onCaption,
 }: RadarFieldProps) {
   const { t } = useTranslation();
   const isAnimated = !reducedMotion;
-  const { stage, playback, staged } = useRadarDirector(snapshot, RADAR_PACING, reducedMotion);
+  const { stage, playback, staged } = useRadarDirector(
+    snapshot,
+    RADAR_PACING,
+    reducedMotion,
+    onCaption,
+  );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const swatchesRef = useRef<HTMLDivElement>(null);
   const shakeRef = useRef<HTMLDivElement>(null);
@@ -198,8 +211,10 @@ function RadarField({
     goalLabel: t("match.eventTypes.Goal"),
     paused,
     onCaughtUp,
+    onCaption,
   };
   const runRef = useRef<RadarRun | null>(null);
+  const captionMarkRef = useRef<CaptionMark>({ beat: null, upTo: -1 });
   const celebrationRef = useRef<Celebration>({
     serial: playback.current.scene.goal?.serial ?? 0,
     side: null,
@@ -232,6 +247,9 @@ function RadarField({
       );
       runRef.current = run;
       playback.current = run.playback;
+      const said = captionsDue(run.acting, captionMarkRef.current);
+      captionMarkRef.current = said.mark;
+      for (const caption of said.due) cast.onCaption?.(caption);
       if (!cast.paused && isPlayedOut(run)) cast.onCaughtUp?.(staged.current);
       if (!context) {
         handle = requestAnimationFrame(tick);
@@ -319,11 +337,14 @@ export function MatchRadar2D({
   onToggle,
   paused,
   onCaughtUp,
+  showCommentary = false,
 }: MatchRadar2DProps) {
   const { t } = useTranslation();
   const reducedMotion = usePrefersReducedMotion();
   const [showAllNames, setShowAllNames] = useState(false);
   const titleId = useId();
+  const captionSink = useRef<CaptionSink | null>(null);
+  const sayCaption = useCallback((caption: RadarCaption) => captionSink.current?.(caption), []);
 
   return (
     <section
@@ -338,6 +359,7 @@ export function MatchRadar2D({
           <Radar className="h-4 w-4" aria-hidden="true" />
           {t("match.radar.title")}
         </h3>
+        {isOpen && showCommentary && <RadarCommentary snapshot={snapshot} sinkRef={captionSink} />}
         <div className="flex items-center gap-1">
           {isOpen && (
             <button
@@ -377,6 +399,7 @@ export function MatchRadar2D({
           onCaughtUp={onCaughtUp}
           showAllNames={showAllNames}
           reducedMotion={reducedMotion}
+          onCaption={sayCaption}
         />
       )}
     </section>

@@ -2593,6 +2593,20 @@
             "0": "{{player}} băng xuống sau lưng hàng thủ dâng cao và đệm bóng vào lưới!",
             "1": "Thoát xuống sau lưng hàng thủ, {{player}} bình tĩnh ghi bàn cho {{team}}!"
           }
+        },
+        "keeperOffHisLine": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "{{player}} đưa bóng vào khung thành bỏ trống!",
+            "1": "Thủ môn đã bị bỏ qua, {{player}} ghi bàn vào lưới trống cho {{team}}!"
+          }
+        },
+        "counter": {
+          "headline": "VÀOOO!",
+          "lines": {
+            "0": "Một pha phản công mẫu mực, {{player}} kết thúc gọn gàng!",
+            "1": "{{team}} trừng phạt đối thủ bằng một đòn phản công, {{player}} ghi bàn!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2606,7 +2620,7 @@
         "headline": "ĐÁ HỎNG PHẠT ĐỀN!",
         "lines": {
           "0": "{{player}} đá hỏng quả phạt đền! {{opponent}} thoát hiểm!",
-          "1": "Cản phá! {{player}} hẳn sẽ ám ảnh mãi quả phạt đền đó."
+          "1": "Hỏng ăn! {{player}} hẳn sẽ ám ảnh mãi quả phạt đền đó."
         }
       },
       "PenaltyAwarded": {
@@ -2798,7 +2812,335 @@
       "allNames": "Hiện tất cả tên",
       "hide": "Ẩn radar",
       "show": "Hiện radar",
-      "speedHint": "Radar diễn các pha nguy hiểm theo nhịp riêng. Ẩn radar để chọn tốc độ."
+      "speedHint": "Radar diễn các pha nguy hiểm theo nhịp riêng. Ẩn radar để chọn tốc độ.",
+      "commentary": {
+        "flank": {
+          "Left": "bên cánh trái",
+          "Centre": "ở trung lộ",
+          "Right": "bên cánh phải"
+        },
+        "tackle": {
+          "lines": {
+            "0": "{{player}} vào bóng dứt khoát, đoạt lại bóng cho {{team}}.",
+            "1": "Pha tắc bóng gọn gàng của {{player}}, {{team}} có lại bóng."
+          }
+        },
+        "interception": {
+          "lines": {
+            "0": "{{other}} chuyền hỏng, {{player}} đọc tình huống và cắt bóng.",
+            "1": "{{player}} nhanh chân cắt đường chuyền của {{other}}."
+          },
+          "noPasser": {
+            "lines": {
+              "0": "{{player}} đọc tình huống và cắt bóng.",
+              "1": "{{player}} nhanh chân chặn đường chuyền."
+            }
+          }
+        },
+        "highTurnover": {
+          "lines": {
+            "0": "{{team}} pressing tầm cao! {{player}} cướp bóng ngay trên phần sân {{opponent}}.",
+            "1": "{{opponent}} bị ép sai lầm ngay trong khâu phát động, {{player}} đoạt bóng!"
+          }
+        },
+        "sweeper": {
+          "lines": {
+            "0": "{{player}} lao hẳn ra khỏi vòng cấm, phá bóng trước mũi {{other}}!",
+            "1": "{{player}} băng ra rất đúng lúc, nhanh hơn {{other}} một bước!"
+          },
+          "noForward": {
+            "lines": {
+              "0": "{{player}} băng ra khỏi khung thành rất đúng lúc!"
+            }
+          }
+        },
+        "recovered": {
+          "lines": {
+            "0": "{{player}} đọc được đường chuyền dài, thu hồi bóng an toàn.",
+            "1": "{{player}} thắng cuộc đua và giữ bóng lại cho {{team}}."
+          }
+        },
+        "secondBall": {
+          "lines": {
+            "0": "Bóng hai rơi xuống, {{player}} nhanh chân hơn {{other}}.",
+            "1": "{{player}} thắng pha tranh bóng bật ra trước {{other}}."
+          }
+        },
+        "pass": {
+          "buildUp": {
+            "lines": {
+              "0": "{{player}} phát động từ phần sân nhà, chuyền lên cho {{receiver}}.",
+              "1": "{{player}} bình tĩnh triển khai bóng cho {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} bình tĩnh triển khai bóng từ tuyến dưới."
+              }
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{player}} chuyền vượt tuyến cho {{receiver}}.",
+              "1": "{{receiver}} nhận đường chuyền của {{player}}, {{team}} đã vào phần sân {{opponent}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} đưa bóng lên phía trên."
+              }
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{player}} chuyền vào cho {{receiver}} ở 1/3 cuối sân.",
+              "1": "{{player}} tìm thấy {{receiver}} gần vòng cấm."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} tìm đường chuyền vào vòng cấm."
+              }
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Phản công nhanh! {{player}} đẩy bóng lên cho {{receiver}}.",
+              "1": "{{team}} chuyển trạng thái rất nhanh, {{player}} tìm ngay {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "Phản công nhanh! {{player}} đẩy bóng lên phía trên."
+              }
+            }
+          }
+        },
+        "longBall": {
+          "lines": {
+            "0": "{{player}} phất bóng dài tìm {{receiver}}.",
+            "1": "Một đường chuyền dài từ {{player}} về phía {{receiver}}."
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} phất bóng dài lên phía trên."
+            }
+          }
+        },
+        "dribble": {
+          "lines": {
+            "0": "{{player}} đi bóng qua người {{flank}}.",
+            "1": "{{player}} loại bỏ hậu vệ, tiến vào 1/3 cuối sân."
+          },
+          "counter": {
+            "lines": {
+              "0": "Phản công! {{player}} tăng tốc {{flank}}!",
+              "1": "{{player}} dốc bóng trong pha phản công!"
+            }
+          },
+          "cutInside": {
+            "lines": {
+              "0": "{{player}} ngoặt vào trong bằng chân thuận!",
+              "1": "{{player}} bỏ biên, cắt vào trung lộ!"
+            }
+          },
+          "flankExposed": {
+            "lines": {
+              "0": "Hậu vệ cánh {{opponent}} dâng quá cao, {{player}} xộc vào khoảng trống!",
+              "1": "{{player}} khai thác khoảng trống sau lưng hậu vệ cánh {{opponent}}!"
+            }
+          },
+          "ballInBehind": {
+            "lines": {
+              "0": "{{player}} thoát xuống sau lưng {{other}}!",
+              "1": "{{player}} thắng {{other}} về tốc độ, đang lao vào vòng cấm!"
+            },
+            "alone": {
+              "lines": {
+                "0": "{{player}} thoát xuống sau lưng hàng thủ!"
+              }
+            }
+          }
+        },
+        "dribbleTackled": {
+          "lines": {
+            "0": "{{other}} chặn đứng pha đi bóng của {{player}}.",
+            "1": "{{player}} bị {{other}} lấy bóng."
+          },
+          "noDefender": {
+            "lines": {
+              "0": "{{player}} bị chặn lại khi đang đi bóng."
+            }
+          }
+        },
+        "cross": {
+          "lines": {
+            "0": "{{player}} tạt bóng vào cấm địa tìm {{receiver}}!",
+            "1": "Quả tạt {{flank}} của {{player}}, {{receiver}} đang chờ trong vòng cấm!"
+          },
+          "early": {
+            "lines": {
+              "0": "{{player}} tạt sớm ra sau lưng hàng thủ, {{receiver}} băng vào!",
+              "1": "Không cần qua người, {{player}} treo bóng sớm cho {{receiver}}!"
+            }
+          },
+          "low": {
+            "lines": {
+              "0": "{{player}} căng ngang sệt vào vòng cấm cho {{receiver}}!",
+              "1": "Đường căng ngang chạy sát mặt cỏ từ chân {{player}}!"
+            }
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} tạt bóng nhưng quá tầm tất cả.",
+              "1": "Quả tạt của {{player}} không tìm được đồng đội."
+            }
+          },
+          "corner": {
+            "lines": {
+              "0": "{{player}} treo bóng vào, {{receiver}} lao lên!",
+              "1": "Quả phạt góc của {{player}} tìm tới {{receiver}}!"
+            }
+          },
+          "freeKick": {
+            "lines": {
+              "0": "{{player}} treo bóng từ quả đá phạt, {{receiver}} băng vào!",
+              "1": "Quả đá phạt của {{player}} được treo vào cho {{receiver}}!"
+            }
+          }
+        },
+        "clearance": {
+          "lines": {
+            "0": "{{player}} kịp phá bóng giải nguy.",
+            "1": "{{player}} đá bóng ra xa, {{team}} tạm thoát."
+          },
+          "cross": {
+            "lines": {
+              "0": "{{player}} bật cao đánh đầu phá bóng.",
+              "1": "{{player}} chiến thắng trong pha không chiến, bóng được phá ra."
+            }
+          },
+          "lowCross": {
+            "lines": {
+              "0": "{{player}} kịp chặn quả căng ngang."
+            }
+          },
+          "longBall": {
+            "lines": {
+              "0": "{{player}} đánh đầu phá đường chuyền dài."
+            }
+          }
+        },
+        "corner": {
+          "lines": {
+            "0": "Phạt góc cho {{team}}, {{player}} tới đặt bóng.",
+            "1": "{{player}} chuẩn bị đá phạt góc."
+          },
+          "noTaker": {
+            "lines": {
+              "0": "Phạt góc cho {{team}}."
+            }
+          }
+        },
+        "freeKick": {
+          "awarded": {
+            "lines": {
+              "0": "Đá phạt cho {{team}}."
+            }
+          },
+          "awardedDanger": {
+            "lines": {
+              "0": "{{team}} có quả đá phạt ở vị trí khá nguy hiểm."
+            }
+          },
+          "taken": {
+            "lines": {
+              "0": "{{player}} đặt bóng chuẩn bị đá phạt."
+            }
+          }
+        },
+        "goalKick": {
+          "lines": {
+            "0": "Phát bóng lên cho {{team}}."
+          }
+        },
+        "shot": {
+          "open": {
+            "lines": {
+              "0": "{{player}} dứt điểm!",
+              "1": "{{player}} xoay người sút ngay!"
+            }
+          },
+          "header": {
+            "lines": {
+              "0": "{{player}} bật cao đánh đầu!",
+              "1": "{{player}} đánh đầu cận thành!"
+            }
+          },
+          "longRange": {
+            "lines": {
+              "0": "{{player}} thử vận may từ ngoài vòng cấm!",
+              "1": "{{player}} nã đại bác từ xa!"
+            }
+          },
+          "keeperOff": {
+            "lines": {
+              "0": "Khung thành bỏ trống, {{player}} dứt điểm!"
+            }
+          },
+          "directFreeKick": {
+            "lines": {
+              "0": "{{player}} sút phạt trực tiếp!",
+              "1": "{{player}} lấy đà… và sút phạt!"
+            }
+          },
+          "penalty": {
+            "lines": {
+              "0": "{{player}} đặt bóng lên chấm 11 mét… lấy đà…"
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Kết thúc pha phản công, {{player}} dứt điểm!"
+            }
+          }
+        },
+        "assist": {
+          "lines": {
+            "0": "{{player}} là người dọn cỗ.",
+            "1": "Đường kiến tạo của {{player}}.",
+            "2": "Công đầu thuộc về {{player}}."
+          }
+        },
+        "summary": {
+          "ownHalf": {
+            "lines": {
+              "0": "{{team}} cầm bóng bên phần sân nhà, chưa vội dâng lên.",
+              "1": "{{team}} luân chuyển bóng ở tuyến dưới."
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{team}} kiên nhẫn đẩy bóng qua lại ở giữa sân.",
+              "1": "Hai đội giằng co ở khu trung tuyến."
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{team}} đang ép sân, bóng lăn quanh vòng cấm {{opponent}}.",
+              "1": "{{opponent}} lùi sâu chống đỡ sức ép của {{team}}."
+            }
+          },
+          "lateTrailing": {
+            "lines": {
+              "0": "Phút {{minute}}, {{team}} vẫn đang bị dẫn {{score}}.",
+              "1": "Thời gian không còn nhiều, {{team}} vẫn đang bị dẫn {{score}}."
+            }
+          },
+          "lateLevel": {
+            "lines": {
+              "0": "Phút {{minute}}, tỷ số vẫn là {{score}}.",
+              "1": "Bước vào những phút cuối, hai đội vẫn hòa {{score}}."
+            }
+          }
+        }
+      }
     },
     "wingBackConversion": "Đá wing-back không mất điểm"
   },

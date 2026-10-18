@@ -41,6 +41,7 @@ import {
   only,
   standIn,
 } from "./radarCasting";
+import { captionsFor } from "./radarCaptions";
 import { highlightsOf, isAttackingPlay } from "./radarHighlights";
 import { type RadarSettle, quietSteps, settleStepsFor } from "./radarSettle";
 
@@ -65,6 +66,8 @@ interface Cue {
 
 interface Staging {
   steps: RadarStep[];
+  /** Who the radar has receive the ball, for a beat that passes it: the commentary names him. */
+  receiver?: string | null;
   /** Events used up, counting this one: an interception stages with its pass. */
   consumed?: number;
   important?: boolean;
@@ -245,6 +248,7 @@ function stagePass(cue: Cue): Staging {
   const aim = fromPitch(side, to);
   to = toPitch(side, aim.depth, inLaneOf(event, aim.lane));
   return {
+    receiver,
     steps: [
       {
         ...take.step,
@@ -290,6 +294,7 @@ function stageInterceptedPass(cue: Cue): Staging {
     : lerp(from, aim, 0.55);
   return {
     consumed: next?.event_type === "Interception" ? 2 : 1,
+    receiver: interceptor,
     steps: [
       {
         ...take.step,
@@ -330,6 +335,7 @@ function stageLongBall(cue: Cue): Staging {
   const depth = short ? LONG_BALL_SHORT_DEPTH : LONG_BALL_OVER_DEPTH;
   const landing = toPitch(side, depth, inLaneOf(event, fromPitch(side, take.at).lane));
   return {
+    receiver: target,
     steps: [
       {
         ...take.step,
@@ -569,6 +575,7 @@ function stageCross(cue: Cue): Staging {
     : want;
   const marker = nearestOpponent(stage, side, landing, boxFocus);
   return {
+    receiver: target,
     steps: [
       {
         ...take.step,
@@ -1037,18 +1044,27 @@ function isFinalThirdPlay(event: MatchEvent): boolean {
   return false;
 }
 
+/** Everyone the beat shows on the ball: its actor, the man it names, and the receiver it casts. */
+function onTheBall(event: MatchEvent, staging: Staging): string[] {
+  return cast(event.player_id, event.secondary_player_id, staging.receiver);
+}
+
 /**
  * Stage a batch of events — the events of one tick of the live match — from
  * `start`. Pass `settle` to end where the engine left the ball: possession can
- * change hands between events without an event of its own.
+ * change hands between events without an event of its own. `minute` is every
+ * event of the minute when `events` are only the ones acted out, so the
+ * commentary can still say what came before each.
  */
 export function choreographBatch(
   events: MatchEvent[],
   stage: RadarStage,
   start: RadarScene,
   settle?: RadarSettle,
+  minute: MatchEvent[] = events,
 ): { beats: RadarBeat[]; end: RadarScene } {
   const beats: RadarBeat[] = [];
+  const seen = new Set<string>();
   let scene = start;
   let index = 0;
   while (index < events.length) {
@@ -1064,7 +1080,15 @@ export function choreographBatch(
         runMs: timed.runMs,
         important: staging.important ?? false,
         prefer: isFinalThirdPlay(event),
+        captions: captionsFor({
+          event,
+          previous: minute[minute.indexOf(event) - 1],
+          receiver: staging.receiver ?? null,
+          steps: staging.steps.length,
+          seen,
+        }),
       });
+      for (const id of onTheBall(event, staging)) seen.add(id);
       scene = timed.end;
     }
     index += staging?.consumed ?? 1;
@@ -1130,7 +1154,7 @@ export function choreographHighlights(
   const starter = isAttackingPlay(first) ? first.player_id : null;
   const starterAt = starter ? standingIn(stage, start, starter) : null;
   if (!starter || !starterAt || distance(starterAt, start.ball) <= FETCH_METRES) {
-    return choreographBatch(highlights, stage, start, settle);
+    return choreographBatch(highlights, stage, start, settle, events);
   }
   const leadIn = beatOf(stage, start, `lead-in-${first.minute}`, [
     {
@@ -1143,6 +1167,6 @@ export function choreographHighlights(
       action: { kind: "dead", spot: starterAt, quick: true, holder: starter },
     },
   ]);
-  const rest = choreographBatch(highlights, stage, leadIn.end, settle);
+  const rest = choreographBatch(highlights, stage, leadIn.end, settle, events);
   return { beats: [leadIn.beat, ...rest.beats], end: rest.end };
 }
