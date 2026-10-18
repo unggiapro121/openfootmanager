@@ -375,7 +375,8 @@ const FORM_MINIMUM: usize = 3;
 // (aerial duels, set pieces and shots from distance in GĐ2, the lanes of GĐ3)
 // brought a club down to about 1.81 a game; three probe seasons (seeds 1–3)
 // put p85 conceded at 2.4 / 2.6 / 2.6 and p15 scored at 1.2 in each, so
-// 2.6 and 1.2 (phase 2, P3.9). Anything that changes how many goals are
+// 2.6 and 1.2 (phase 2, P3.9), and 2.2 and 1.0 after GĐ4 brought clubs down
+// to about 1.53 goals a game (P4.6). Anything that changes how many goals are
 // scored should re-read that table before trusting these.
 //
 // The first pass used 2.2 and 0.8, which read like a matched pair and were
@@ -385,9 +386,9 @@ const FORM_MINIMUM: usize = 3;
 // and the reaction table came out as one column of compact blocks.
 
 /// Conceding at this rate says the plan is not holding, whatever the badge says.
-const LEAKY: f64 = 2.6;
+const LEAKY: f64 = 2.2;
 /// Scoring at this rate says the same about the other end.
-const BLUNT: f64 = 1.2;
+const BLUNT: f64 = 1.0;
 
 struct FormReading {
     conceded_per_game: f64,
