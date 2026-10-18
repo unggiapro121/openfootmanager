@@ -8,7 +8,7 @@ use crate::shared::{
     tactics_pressing_press, tactics_shape_modifier, tactics_tempo_progression,
     tactics_width_versus_shape, trait_bonus,
 };
-use crate::types::{Position, Side, Zone};
+use crate::types::{PlayStyle, Position, PressingIntensity, Side, TeamData, Zone};
 
 use super::LiveMatchState;
 use super::helpers::{danger_band, foul_severity, save_quality};
@@ -32,6 +32,36 @@ const BOX_FOUL_CHANCE: f64 = 0.06;
 /// How often a one-on-one cleared goes behind for a corner (GĐ2); the
 /// default of `CalibrationKnobs::corner_from_cleared_duel`.
 pub(crate) const CORNER_FROM_CLEARED_DUEL: f64 = 0.25;
+
+/// How often a ball won from the other side's short build-up stays in their
+/// third for the winner, before the winner's press scales it (GĐ5 P5.2,
+/// X84); the default of `CalibrationKnobs::p_high_turnover`. Until P5.2 every
+/// one did, and a ball lost in the own third was a chance about five times
+/// as dangerous as in real football (0.32–0.37 shots each, real 0.069). The
+/// rest is played in midfield: the passer lost it, but his side was still
+/// between the ball and its goal. Start 0.30, the share of own-third losses
+/// made under pressure in StatsBomb; calibrated to 0.15 (P5.2). Shots per
+/// ball lost (T14) stop falling near 0.13 on the match probe even at 0, the
+/// shots a ball won in midfield brings within two actions; 0.15 keeps a real
+/// reward for pressing (0.18 aggressive, 0.20 with the high-press style) at
+/// T14 ≈ 0.18, against 0.44 before.
+pub(crate) const P_HIGH_TURNOVER: f64 = 0.15;
+
+/// How much more often a ball won from a build-up stays high for a side that
+/// presses harder (X84): its pressing dial, and the high-press style on top.
+fn high_turnover_press_mod(team: &TeamData) -> f64 {
+    let dial = match team.tactics.pressing_intensity {
+        PressingIntensity::Passive => 0.8,
+        PressingIntensity::Medium => 1.0,
+        PressingIntensity::Aggressive => 1.2,
+    };
+    let style = if team.play_style == PlayStyle::HighPress {
+        1.1
+    } else {
+        1.0
+    };
+    dial * style
+}
 
 pub(super) fn scale_odds(probability: f64, ratio: f64) -> f64 {
     let scaled = probability * ratio;
@@ -146,16 +176,24 @@ impl LiveMatchState {
                 .pick_by_presence(def_side, Column::Press, self.lane_for(def_side), rng)
                 .map(|picked| picked.player)
                 .unwrap_or_else(|| self.snap_player(def_side, Position::Midfielder, rng));
-            let evt1 = MatchEvent::new(minute, EventType::PassIntercepted, att_side, ball_zone)
-                .with_player(&passer.id)
-                .with_tactical_context(TacticalContext::HighTurnover);
-            let evt2 = MatchEvent::new(minute, EventType::Interception, def_side, ball_zone)
-                .with_player(&interceptor.id)
-                .with_tactical_context(TacticalContext::HighTurnover);
+            let stays_high = self.config.knobs.p_high_turnover
+                * high_turnover_press_mod(self.team_ref(def_side));
+            let mut evt1 = MatchEvent::new(minute, EventType::PassIntercepted, att_side, ball_zone)
+                .with_player(&passer.id);
+            let mut evt2 = MatchEvent::new(minute, EventType::Interception, def_side, ball_zone)
+                .with_player(&interceptor.id);
+            self.possession = def_side;
+            if rng.random_range(0.0..1.0f64) < stays_high {
+                evt1 = evt1.with_tactical_context(TacticalContext::HighTurnover);
+                evt2 = evt2.with_tactical_context(TacticalContext::HighTurnover);
+                self.pending_context = Some((def_side, TacticalContext::HighTurnover));
+            } else {
+                // Won, but not high enough to be a chance: the winner plays it
+                // from midfield (X84).
+                self.ball_zone = Zone::Midfield;
+            }
             self.emit(&mut events, evt1);
             self.emit(&mut events, evt2);
-            self.possession = def_side;
-            self.pending_context = Some((def_side, TacticalContext::HighTurnover));
         }
         events
     }
@@ -810,7 +848,9 @@ mod build_up_tests {
     use crate::event::{EventType, TacticalContext};
     use crate::live_match::LiveMatchState;
     use crate::live_match::test_support::make_team;
-    use crate::types::{CounterPressDuration, DefensiveLine, MatchConfig, Side, Zone};
+    use crate::types::{
+        CounterPressDuration, DefensiveLine, MatchConfig, PressingIntensity, Side, Zone,
+    };
 
     fn state(away_line: DefensiveLine, away_counter_press: CounterPressDuration) -> LiveMatchState {
         let mut away = make_team("away");
@@ -840,7 +880,9 @@ mod build_up_tests {
             s.possession = Side::Home;
             s.ball_zone = Zone::defensive_third(Side::Home);
             s.resolve_buildup(1, Side::Home, Side::Away, counter_pressed, &mut rng);
-            if s.ball_zone == Zone::Midfield {
+            // Reaching midfield with the ball: a ball lost can end there too
+            // since GĐ5 P5.2.
+            if s.ball_zone == Zone::Midfield && s.possession == Side::Home {
                 made += 1;
             }
         }
@@ -875,6 +917,66 @@ mod build_up_tests {
         );
     }
 
+    /// Where the ball is, and whether it is labelled, after `n` home build-ups
+    /// lost to an away side pressing at `intensity`, with `p_high_turnover`:
+    /// (lost, kept high, every one in midfield untagged).
+    fn lost_build_ups(
+        intensity: PressingIntensity,
+        p_high_turnover: f64,
+        n: usize,
+    ) -> (usize, usize, bool) {
+        let mut rng = StdRng::seed_from_u64(17);
+        let (mut lost, mut high, mut midfield_untagged) = (0, 0, true);
+        for _ in 0..n {
+            let mut s = state(DefensiveLine::Medium, CounterPressDuration::None);
+            s.team_mut(Side::Away).tactics.pressing_intensity = intensity;
+            s.config.knobs.p_high_turnover = p_high_turnover;
+            s.possession = Side::Home;
+            s.ball_zone = Zone::defensive_third(Side::Home);
+            // Short build-ups only: a long ball is P4.2's, not a turnover.
+            s.team_mut(Side::Home).tactics.build_up_style =
+                crate::types::TacticsBuildUpStyle::Short;
+            let events = s.resolve_buildup(1, Side::Home, Side::Away, false, &mut rng);
+            if s.possession != Side::Away {
+                continue;
+            }
+            lost += 1;
+            if s.ball_zone == Zone::defensive_third(Side::Home) {
+                high += 1;
+            } else {
+                midfield_untagged &= s.ball_zone == Zone::Midfield
+                    && s.pending_context.is_none()
+                    && events.iter().all(|e| e.tactical_context.is_none());
+            }
+        }
+        (lost, high, midfield_untagged)
+    }
+
+    /// Given home build-ups lost with no ball allowed to stay high,
+    /// when the away side wins them,
+    /// then each is the away side's in midfield, with no `HighTurnover` label
+    /// (GĐ5 P5.2, X84).
+    #[test]
+    fn a_ball_won_in_the_build_up_that_does_not_stay_high_is_played_in_midfield() {
+        let (lost, high, midfield_untagged) = lost_build_ups(PressingIntensity::Medium, 0.0, 2_000);
+        assert!(lost > 100, "{lost}");
+        assert_eq!(high, 0);
+        assert!(midfield_untagged);
+    }
+
+    /// Given home build-ups lost to an aggressive press and to a passive one,
+    /// with the same share of balls allowed to stay high,
+    /// when the away side wins them,
+    /// then the aggressive press keeps more of them in the home third.
+    #[test]
+    fn a_harder_press_keeps_more_of_the_balls_it_wins_high() {
+        let (lost_hard, high_hard, _) = lost_build_ups(PressingIntensity::Aggressive, 0.4, 8_000);
+        let (lost_soft, high_soft, _) = lost_build_ups(PressingIntensity::Passive, 0.4, 8_000);
+        let hard = high_hard as f64 / lost_hard as f64;
+        let soft = high_soft as f64 / lost_soft as f64;
+        assert!(hard > soft + 0.1, "{hard:.3} vs {soft:.3}");
+    }
+
     /// Given a home build-up intercepted,
     /// when the away side then plays its next action in its attacking third,
     /// then the pass, the interception and every event of that action carry
@@ -884,6 +986,9 @@ mod build_up_tests {
         let mut rng = StdRng::seed_from_u64(3);
         for _ in 0..200 {
             let mut s = state(DefensiveLine::High, CounterPressDuration::None);
+            // Every ball won stays high (GĐ5 P5.2): the old behaviour, so the
+            // labelling can be tested on its own.
+            s.config.knobs.p_high_turnover = 1.0;
             s.possession = Side::Home;
             s.ball_zone = Zone::defensive_third(Side::Home);
             let lost = s.resolve_action(1, &mut rng);

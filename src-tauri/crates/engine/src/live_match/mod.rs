@@ -43,7 +43,7 @@ pub(crate) mod knob_defaults {
     pub(crate) use super::set_pieces::{REACH_BASE as SET_PIECE_REACH, WALL_BLOCK};
     pub(crate) use super::transition::P_DIRECT_BASE;
     pub(crate) use super::wing_play::{P_CROSS_FLANK, P_DFK_CENTRE, P0_CROSS};
-    pub(crate) use super::zone_resolution::CORNER_FROM_CLEARED_DUEL;
+    pub(crate) use super::zone_resolution::{CORNER_FROM_CLEARED_DUEL, P_HIGH_TURNOVER};
 }
 
 use crate::event::{MatchEvent, SetPiece};

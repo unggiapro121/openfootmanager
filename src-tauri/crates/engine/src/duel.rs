@@ -283,9 +283,12 @@ pub(crate) fn build_up_win_probability(resistance: f64, press: f64, modifier_rat
     )
 }
 
-/// A second ball has no attacker and no defender: two sides of equal
-/// strength win it half the time each (phase 2, P4.2, X71).
-pub(crate) const ANCHOR_SECOND_BALL: f64 = 1.0;
+/// A second ball has no attacker and no defender, but it is not a coin toss:
+/// the side that did not kick it is already standing where it drops. Two
+/// equal sides: the kicker wins σ(ln 0.58) ≈ 37% (phase 2, P4.2 X71 set 1.0;
+/// GĐ5 P5.2, X84, calibrated to T15, StatsBomb 30–36%; the lan can reads
+/// about 35% on real squads' mix of strengths).
+pub(crate) const ANCHOR_SECOND_BALL: f64 = 0.58;
 /// Sensitivity of the second ball: a contest played many times a match,
 /// like the build-up and the midfield duel.
 const GAMMA_SECOND_BALL: f64 = 1.0;
