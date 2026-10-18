@@ -22,6 +22,10 @@ pub struct CalibrationKnobs {
     /// How often a defence that wins the ball in its own third goes direct
     /// (GĐ4 X77, `live_match/transition.rs`).
     pub p_direct_base: f64,
+    /// How often a ball won from the other side's build-up stays in their
+    /// third for the winner, before the winner's press scales it (GĐ5 P5.2,
+    /// X84, `live_match/zone_resolution.rs`): the rest is played in midfield.
+    pub p_high_turnover: f64,
     /// The second ball's anchor: 1 splits it evenly between equal sides
     /// (GĐ4 X71, `duel.rs`).
     pub anchor_second_ball: f64,
@@ -73,6 +77,7 @@ impl Default for CalibrationKnobs {
         use crate::live_match::knob_defaults as live;
         Self {
             p_direct_base: live::P_DIRECT_BASE,
+            p_high_turnover: live::P_HIGH_TURNOVER,
             anchor_second_ball: duel::ANCHOR_SECOND_BALL,
             anchor_aerial: duel::ANCHOR_AERIAL,
             anchor_aerial_open_play_cross: duel::ANCHOR_AERIAL_OPEN_PLAY_CROSS,

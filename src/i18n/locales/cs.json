@@ -2593,6 +2593,20 @@
             "0": "{{player}} naběhl za vysoko postavenou obranu a skóruje!",
             "1": "Sám za obranou, {{player}} zachoval chladnou hlavu pro {{team}}!"
           }
+        },
+        "keeperOffHisLine": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "{{player}} posílá míč do prázdné branky!",
+            "1": "Brankář je mimo a {{player}} skóruje do prázdné branky za tým {{team}}!"
+          }
+        },
+        "counter": {
+          "headline": "GÓÓÓL!",
+          "lines": {
+            "0": "Učebnicový brejk, který zakončuje {{player}}!",
+            "1": "Tým {{team}} trestá z brejku a {{player}} skóruje!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2606,7 +2620,7 @@
         "headline": "NEPROMĚNĚNÁ PENALTA!",
         "lines": {
           "0": "{{player}} to z penalty zvoral! Obrovská úleva pro tým {{opponent}}!",
-          "1": "Chyceno! O tlesknuté penaltě se bude hráči {{player}} ještě dlouho zdát."
+          "1": "Zahozeno! O téhle penaltě se bude hráči {{player}} ještě dlouho zdát."
         }
       },
       "PenaltyAwarded": {
@@ -2798,7 +2812,335 @@
       "allNames": "Všechna jména",
       "hide": "Skrýt radar",
       "show": "Zobrazit radar",
-      "speedHint": "Radar ukazuje nebezpečné situace vlastním tempem. Skryjte ho, chcete-li zvolit rychlost."
+      "speedHint": "Radar ukazuje nebezpečné situace vlastním tempem. Skryjte ho, chcete-li zvolit rychlost.",
+      "commentary": {
+        "flank": {
+          "Left": "po levém křídle",
+          "Centre": "středem",
+          "Right": "po pravém křídle"
+        },
+        "tackle": {
+          "lines": {
+            "0": "{{player}} tvrdě atakuje a získává míč zpět pro tým {{team}}.",
+            "1": "Čistý zákrok, {{player}} bere míč a tým {{team}} je znovu v držení."
+          }
+        },
+        "interception": {
+          "lines": {
+            "0": "{{other}} ztrácí míč, {{player}} to přečte a zachytí.",
+            "1": "{{player}} vystartuje a zachytí přihrávku, kterou posílá {{other}}."
+          },
+          "noPasser": {
+            "lines": {
+              "0": "{{player}} to přečte a přihrávku zachytí.",
+              "1": "{{player}} bleskově vystartuje a zachytí míč."
+            }
+          }
+        },
+        "highTurnover": {
+          "lines": {
+            "0": "Tým {{team}} napadá vysoko! {{player}} získává míč na polovině týmu {{opponent}}.",
+            "1": "Tým {{opponent}} chybuje v rozehrávce pod tlakem a {{player}} je u toho!"
+          }
+        },
+        "sweeper": {
+          "lines": {
+            "0": "{{player}} vybíhá z vápna a odkopává míč před hráčem {{other}}!",
+            "1": "Perfektní načasování! {{player}} vybíhá a je u míče dřív než {{other}}!"
+          },
+          "noForward": {
+            "lines": {
+              "0": "{{player}} bleskově vybíhá a uklízí míč!"
+            }
+          }
+        },
+        "recovered": {
+          "lines": {
+            "0": "{{player}} čte dlouhý míč a bezpečně ho sbírá.",
+            "1": "{{player}} vyhrává souboj o míč a tým {{team}} zůstává v držení."
+          }
+        },
+        "secondBall": {
+          "lines": {
+            "0": "Odražený míč padá a {{player}} je u něj dřív než {{other}}.",
+            "1": "{{player}} předbíhá hráče {{other}} a získává volný míč."
+          }
+        },
+        "pass": {
+          "buildUp": {
+            "lines": {
+              "0": "{{player}} rozehrává zezadu, míč dostává {{receiver}}.",
+              "1": "{{player}} v klidu rozehrává na hráče {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} v klidu rozehrává zezadu."
+              }
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{player}} prořízne linii přihrávkou na hráče {{receiver}}.",
+              "1": "{{player}} posílá míč na hráče {{receiver}} a tým {{team}} je na polovině týmu {{opponent}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} posouvá míč dopředu."
+              }
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{player}} propouští hráče {{receiver}} do finální třetiny.",
+              "1": "{{player}} nachází hráče {{receiver}} na hranici vápna."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} hledá cestu do vápna."
+              }
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Rychlý brejk! {{player}} posílá míč dál na hráče {{receiver}}.",
+              "1": "Tým {{team}} bleskově přepíná a {{player}} okamžitě hledá hráče {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "Rychlý brejk! {{player}} žene míč dopředu."
+              }
+            }
+          }
+        },
+        "longBall": {
+          "lines": {
+            "0": "{{player}} hraje dlouhý míč na hráče {{receiver}}.",
+            "1": "{{player}} nakopává dlouhý míč, cíl: {{receiver}}."
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} to nakopává dlouze dopředu."
+            }
+          }
+        },
+        "dribble": {
+          "lines": {
+            "0": "{{player}} obchází soupeře {{flank}}.",
+            "1": "{{player}} obchází obránce a vniká do finální třetiny."
+          },
+          "counter": {
+            "lines": {
+              "0": "Brejk! {{player}} se řítí {{flank}}!",
+              "1": "{{player}} žene míč dopředu v protiútoku!"
+            }
+          },
+          "cutInside": {
+            "lines": {
+              "0": "{{player}} si to stahuje dovnitř na silnější nohu!",
+              "1": "{{player}} se stahuje z křídla do středu!"
+            }
+          },
+          "flankExposed": {
+            "lines": {
+              "0": "Krajní obránce týmu {{opponent}} je daleko vpředu a {{player}} se řítí do volného prostoru!",
+              "1": "{{player}} útočí do prostoru za krajním obráncem týmu {{opponent}}!"
+            }
+          },
+          "ballInBehind": {
+            "lines": {
+              "0": "{{player}} je za zády hráče {{other}}!",
+              "1": "{{player}} utíká hráči {{other}} a řítí se na bránu!"
+            },
+            "alone": {
+              "lines": {
+                "0": "{{player}} se dostává za obranu!"
+              }
+            }
+          }
+        },
+        "dribbleTackled": {
+          "lines": {
+            "0": "{{other}} zastavuje průnik hráče {{player}}.",
+            "1": "{{player}} přichází o míč, bere ho {{other}}."
+          },
+          "noDefender": {
+            "lines": {
+              "0": "Průnik hráče {{player}} je zastaven."
+            }
+          }
+        },
+        "cross": {
+          "lines": {
+            "0": "{{player}} centruje do vápna na hráče {{receiver}}!",
+            "1": "Útok {{flank}}: {{player}} centruje a ve vápně čeká {{receiver}}!"
+          },
+          "early": {
+            "lines": {
+              "0": "{{player}} posílá brzký centr za obranu na hráče {{receiver}}!",
+              "1": "Není třeba obcházet soupeře: {{player}} centruje brzy na hráče {{receiver}}!"
+            }
+          },
+          "low": {
+            "lines": {
+              "0": "{{player}} pálí přízemní centr přes vápno na hráče {{receiver}}!",
+              "1": "{{player}} posílá přízemní centr, který klouže přes vápno!"
+            }
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} centruje, ale míč letí za všechny.",
+              "1": "Centr, který posílá {{player}}, nikoho nenajde."
+            }
+          },
+          "corner": {
+            "lines": {
+              "0": "{{player}} kope roh a {{receiver}} jde do hlavičky!",
+              "1": "{{player}} zahrává roh přesně na hráče {{receiver}}!"
+            }
+          },
+          "freeKick": {
+            "lines": {
+              "0": "{{player}} posílá volný kop do vápna a {{receiver}} si na něj nabíhá!",
+              "1": "{{player}} centruje z volného kopu směrem k hráči {{receiver}}!"
+            }
+          }
+        },
+        "clearance": {
+          "lines": {
+            "0": "{{player}} je u toho a odvrací nebezpečí.",
+            "1": "{{player}} to odkopává pryč a tým {{team}} zatím přežívá."
+          },
+          "cross": {
+            "lines": {
+              "0": "{{player}} vyskakuje a odhlavičkovává míč.",
+              "1": "{{player}} vyhrává hlavičkový souboj a odvrací míč."
+            }
+          },
+          "lowCross": {
+            "lines": {
+              "0": "{{player}} zachytává přízemní centr."
+            }
+          },
+          "longBall": {
+            "lines": {
+              "0": "{{player}} odhlavičkovává dlouhý míč."
+            }
+          }
+        },
+        "corner": {
+          "lines": {
+            "0": "Roh pro tým {{team}}, k míči jde {{player}}.",
+            "1": "{{player}} se chystá zahrát roh."
+          },
+          "noTaker": {
+            "lines": {
+              "0": "Roh pro tým {{team}}."
+            }
+          }
+        },
+        "freeKick": {
+          "awarded": {
+            "lines": {
+              "0": "Volný kop pro tým {{team}}."
+            }
+          },
+          "awardedDanger": {
+            "lines": {
+              "0": "Tým {{team}} má volný kop z nebezpečné pozice."
+            }
+          },
+          "taken": {
+            "lines": {
+              "0": "{{player}} stojí nad míčem a chystá se k volnému kopu."
+            }
+          }
+        },
+        "goalKick": {
+          "lines": {
+            "0": "Kop od branky pro tým {{team}}."
+          }
+        },
+        "shot": {
+          "open": {
+            "lines": {
+              "0": "{{player}} střílí!",
+              "1": "{{player}} se otáčí a pálí!"
+            }
+          },
+          "header": {
+            "lines": {
+              "0": "{{player}} vyskakuje k hlavičce!",
+              "1": "{{player}} to zkouší hlavou!"
+            }
+          },
+          "longRange": {
+            "lines": {
+              "0": "{{player}} to zkouší z dálky!",
+              "1": "{{player}} vypaluje z velké dálky!"
+            }
+          },
+          "keeperOff": {
+            "lines": {
+              "0": "Branka je prázdná a {{player}} střílí!"
+            }
+          },
+          "directFreeKick": {
+            "lines": {
+              "0": "{{player}} jde z volného kopu přímo na bránu!",
+              "1": "{{player}} se rozbíhá… a pálí volný kop!"
+            }
+          },
+          "penalty": {
+            "lines": {
+              "0": "{{player}} si pokládá míč na penaltu… rozbíhá se…"
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Na konci brejku střílí {{player}}!"
+            }
+          }
+        },
+        "assist": {
+          "lines": {
+            "0": "Gólovou přihrávku má na kontě {{player}}.",
+            "1": "Asistenci si připisuje {{player}}.",
+            "2": "Skvělá práce hráče {{player}} při přípravě gólu."
+          }
+        },
+        "summary": {
+          "ownHalf": {
+            "lines": {
+              "0": "Tým {{team}} drží míč na vlastní polovině a nikam nespěchá.",
+              "1": "Tým {{team}} si přihrává v obraně."
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "Tým {{team}} trpělivě kombinuje ve středu hřiště.",
+              "1": "Oba týmy svádějí ve středu hřiště tuhou bitvu."
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "Tým {{team}} obléhá vápno týmu {{opponent}}.",
+              "1": "Tým {{opponent}} se pod tlakem týmu {{team}} stahuje hluboko."
+            }
+          },
+          "lateTrailing": {
+            "lines": {
+              "0": "Je {{minute}}. minuta a tým {{team}} stále prohrává {{score}}.",
+              "1": "Čas běží a tým {{team}} stále ztrácí, {{score}}."
+            }
+          },
+          "lateLevel": {
+            "lines": {
+              "0": "Je {{minute}}. minuta a stále je to {{score}}.",
+              "1": "Závěrečné minuty a skóre je vyrovnané, {{score}}."
+            }
+          }
+        }
+      }
     },
     "wingBackConversion": "Na pozici wingbeka bez ztráty hodnocení"
   },

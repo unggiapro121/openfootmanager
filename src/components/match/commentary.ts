@@ -36,14 +36,17 @@ export interface Commentary {
   line: string;
 }
 
-/** Stable, RNG-free hash so a given event always renders the same variant. */
-function hashEvent(evt: MatchEvent): number {
-  const key = `${evt.minute}|${evt.event_type}|${evt.player_id ?? ""}`;
+/** Stable, RNG-free hash of `key`, so the same moment always renders the same line. */
+export function stableHash(key: string): number {
   let h = 5381;
   for (let i = 0; i < key.length; i++) {
     h = ((h << 5) + h + key.charCodeAt(i)) | 0;
   }
   return Math.abs(h);
+}
+
+function hashEvent(evt: MatchEvent): number {
+  return stableHash(`${evt.minute}|${evt.event_type}|${evt.player_id ?? ""}`);
 }
 
 /**
@@ -131,9 +134,10 @@ function brokeIntoOpenFlank(goal: MatchEvent, snapshot: MatchSnapshot): boolean 
 
 /**
  * Resolve the variant sub-key: the goal tally (hat-trick/brace) first, then
- * how the move was made (a break into an open flank, a ball won high, a run in
- * behind, a long ball, a cut inside, a low or early cross, a free kick crossed
- * in), then how the goal was made (a header, a direct free kick, a
+ * how the move was made (a break into an open flank, a ball won high, a keeper
+ * caught off his line, a run in behind, a long ball, a cut inside, a low or
+ * early cross, any other break, a free kick crossed in), then how the goal was
+ * made (a header, a direct free kick, a
  * shot from distance), then the goal's context.
  */
 function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
@@ -145,11 +149,13 @@ function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
     if (brokeIntoOpenFlank(evt, snapshot)) return "flankExposed";
     // How the ball was won or played up (phase 2, GĐ4).
     if (evt.tactical_context === "HighTurnover") return "highTurnover";
+    if (evt.tactical_context === "KeeperOffHisLine") return "keeperOffHisLine";
     if (evt.tactical_context === "BallInBehind") return "ballInBehind";
     if (evt.tactical_context === "LongBall") return "longBall";
     if (evt.tactical_context === "CutInside") return "cutInside";
     if (evt.tactical_context === "LowCross") return "lowCross";
     if (evt.tactical_context === "EarlyCross") return "earlyCross";
+    if (evt.tactical_context === "Counter") return "counter";
     if (evt.goal_source === "FreeKick") return "freeKickCross";
     if (evt.goal_source === "Header") return "header";
     if (evt.goal_source === "DirectFreeKick") return "freeKick";
@@ -159,7 +165,7 @@ function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
 }
 
 /** Manual interpolation since the variant string is a value, not a key. */
-function interpolate(template: string, tokens: Record<string, string>): string {
+export function interpolate(template: string, tokens: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, name: string) => tokens[name] ?? "");
 }
 
@@ -185,18 +191,23 @@ function pickLine(
   return null;
 }
 
+/**
+ * The commentary for `evt`. `nameOf` names its players; the event feed uses
+ * their full names, the radar the names it draws them by.
+ */
 export function getCommentary(
   evt: MatchEvent,
   snapshot: MatchSnapshot,
   t: TFunction,
+  nameOf: (playerId: string | null) => string = (id) => getPlayerName(snapshot, id),
 ): Commentary | null {
   if (!COMMENTARY_EVENTS.has(evt.event_type)) return null;
 
   const isHome = evt.side === "Home";
   const team = isHome ? snapshot.home_team.name : snapshot.away_team.name;
   const opponent = isHome ? snapshot.away_team.name : snapshot.home_team.name;
-  const player = getPlayerName(snapshot, evt.player_id);
-  const victim = getPlayerName(snapshot, evt.secondary_player_id);
+  const player = nameOf(evt.player_id);
+  const victim = nameOf(evt.secondary_player_id);
 
   const tokens: Record<string, string> = { team, opponent, player, victim };
   const baseKey = `match.commentary.${evt.event_type}`;

@@ -238,3 +238,44 @@ describe("getCommentary", () => {
     expect(result!.line).not.toMatch(/\{\{.*?\}\}/);
   });
 });
+
+describe("getCommentary — the radar's commentary", () => {
+  /** Given a goal into a goal its keeper had left, then the line says the goal was empty. */
+  it("tells a goal past a keeper off his line", () => {
+    const evt: MatchEvent = { ...goal(30, "p1"), tactical_context: "KeeperOffHisLine" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result?.line.toLowerCase()).toMatch(/empty|unguarded/);
+  });
+
+  /** Given a goal on the break, then the line says it came on the counter. */
+  it("tells a goal on the break", () => {
+    const evt: MatchEvent = { ...goal(30, "p1"), tactical_context: "Counter" };
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+    expect(result?.line.toLowerCase()).toMatch(/counter|break/);
+  });
+
+  /** Given a way of naming players, then the line uses it: the radar names players as it draws them. */
+  it("names players the way it is told to", () => {
+    const evt = goal(10, "p1");
+    const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n), (id) =>
+      id === "p1" ? "E. Haaland" : "",
+    );
+    expect(result?.line).toContain("E. Haaland");
+  });
+
+  /** Given a missed penalty, then no line claims the keeper saved it: the engine does not say how it was missed. */
+  it("never claims a missed penalty was saved", () => {
+    for (let minute = 1; minute <= 30; minute++) {
+      const evt: MatchEvent = {
+        minute,
+        event_type: "PenaltyMiss",
+        side: "Home",
+        zone: "AwayBox",
+        player_id: "p1",
+        secondary_player_id: null,
+      };
+      const result = getCommentary(evt, snapshot([evt]), i18n.t.bind(i18n));
+      expect(result?.line.toLowerCase()).not.toMatch(/saved/);
+    }
+  });
+});

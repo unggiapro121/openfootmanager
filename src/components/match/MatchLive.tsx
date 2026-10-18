@@ -480,6 +480,7 @@ export default function MatchLive({
             onToggle={toggleRadar}
             paused={!isRunning || speed === "paused"}
             onCaughtUp={handleRadarCaughtUp}
+            showCommentary={settings.show_match_commentary}
           />
           <div className="flex bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 transition-colors duration-300">
             {[
