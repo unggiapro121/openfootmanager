@@ -74,6 +74,13 @@ pub const HEADED_GOALS: Band = Band::new(15.0, 18.0);
 /// T9b: goals from outside the box, open play and direct free kicks together,
 /// % of goals.
 pub const OUTSIDE_BOX_GOALS: Band = Band::new(10.0, 14.0);
+/// T9c: open-play shots from outside the box that go in, %. StatsBomb
+/// 2015/16: 3.0; recent seasons shoot less from distance and better (Đ5).
+pub const LONG_SHOT_CONVERSION: Band = Band::new(2.6, 3.6);
+/// T9d: open-play shots from outside the box, % of every shot. StatsBomb
+/// 2015/16: 37.1; internationals 2022–24: 34.3; the Premier League 2024-25
+/// about 29 (Opta, 31.7 with free kicks), the lowest on record (Đ5 bản 2).
+pub const LONG_SHOT_SHARE: Band = Band::new(30.0, 36.0);
 /// T10: goals straight from a free kick, % of goals (X39).
 pub const DIRECT_FREE_KICK_GOALS: Band = Band::new(1.5, 3.0);
 /// T11: corners a match.

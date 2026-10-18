@@ -888,8 +888,7 @@ impl MatchShares {
     }
 }
 
-/// The match probe's rows of GĐ5's verdict: T8–T14, T16, T19, T20, with T9a
-/// and T9c as measures.
+/// The match probe's rows of GĐ5's verdict: T8–T14, T16, T19, T20.
 fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
     let goals = u64::from(shares.goals);
     let outside_box = MatchShares::pct(
@@ -908,6 +907,18 @@ fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
             "goals from outside the box with DFK (% of goals)",
             outside_box,
             targets::OUTSIDE_BOX_GOALS,
+        ),
+        Gd5Row::banded(
+            "T9c",
+            "long shots scored (%)",
+            MatchShares::pct(shares.long_shot_goals, shares.long_shots),
+            targets::LONG_SHOT_CONVERSION,
+        ),
+        Gd5Row::banded(
+            "T9d",
+            "long shots (% of shots)",
+            MatchShares::pct(shares.long_shots, shares.shots),
+            targets::LONG_SHOT_SHARE,
         ),
         Gd5Row::banded(
             "T10",
