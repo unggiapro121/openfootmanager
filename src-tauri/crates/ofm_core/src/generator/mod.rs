@@ -1,5 +1,6 @@
 mod authored_player;
 mod calibration;
+pub mod club_preview;
 pub mod clubs;
 pub mod competition_def;
 pub mod definitions;

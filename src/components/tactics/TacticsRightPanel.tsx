@@ -2,8 +2,7 @@ import type { JSX } from "react";
 import { useMemo, useState } from "react";
 import { Award, ChevronDown, CircleDot, CornerDownRight, Crown, Footprints } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { setTeamMatchRoles } from "../../services/squadService";
-import type { GameStateData, PlayerData, TeamMatchRolesData } from "../../store/gameStore";
+import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
 import type { TacticsPhaseSettings } from "../../store/types";
 import SetPieceSelector from "../match/SetPieceSelector";
 import { PhaseBlueprintPanel } from "./PhaseBlueprintPanel";
@@ -15,7 +14,8 @@ import {
 interface TacticsRightPanelProps {
   allSquad: PlayerData[];
   matchRoles?: TeamMatchRolesData;
-  onGameUpdate: (g: GameStateData) => void;
+  /** Writes the club's match roles; resolves once they are in `matchRoles`. */
+  onMatchRolesChange: (roles: TeamMatchRolesData) => Promise<void>;
   onTacticsPhaseChange: (patch: Partial<TacticsPhaseSettings>) => void;
   startingPlayers: PlayerData[];
   tacticsPhase?: TacticsPhaseSettings;
@@ -24,7 +24,7 @@ interface TacticsRightPanelProps {
 export default function TacticsRightPanel({
   allSquad,
   matchRoles,
-  onGameUpdate,
+  onMatchRolesChange,
   onTacticsPhaseChange,
   startingPlayers,
   tacticsPhase,
@@ -48,8 +48,7 @@ export default function TacticsRightPanel({
 
   async function persistMatchRoles(nextRoles: TeamMatchRolesData): Promise<void> {
     try {
-      const updated = await setTeamMatchRoles(nextRoles);
-      onGameUpdate(updated);
+      await onMatchRolesChange(nextRoles);
     } catch (error) {
       console.error("Failed to set team match roles:", error);
     }

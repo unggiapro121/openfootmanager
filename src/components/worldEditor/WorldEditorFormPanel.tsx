@@ -176,6 +176,7 @@ export function WorldEditorFormPanel({
           commitField={teamEditor.commitField}
           onAssetError={onAssetError}
           clubPlayers={players.filter((player) => player.club === teamEditor.editing.id)}
+          baseYear={meta.baseYear}
         />
       </div>
     );

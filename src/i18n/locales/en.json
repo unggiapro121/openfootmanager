@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Tactics & default line-up",
       "intro": "What the club opens the world with. An AI club adjusts it from then on; a manager who takes the club over starts from it.",
-      "formationAuto": "Automatic (the club picks for its squad and play style)",
-      "needFormation": "Choose a formation to set the starting eleven and player roles.",
-      "startingXi": "Starting eleven",
-      "elevenProgress": "{{count}}/{{total}} picked",
-      "elevenIncomplete": "The game only uses this eleven once every slot is filled; until then it picks the side itself.",
       "noPlayers": "This club has no players in the package yet. Add players to this club to line them up.",
-      "nobody": "— None —",
-      "notInClub": "{{player}} (not in this club)",
-      "slotPlayer": "Player at {{position}}",
-      "slotRole": "Role at {{position}}",
-      "matchRoles": "Captain and set pieces",
-      "customPhase": "Custom phase settings",
-      "phaseFromStyle": "Off: the club uses its play style's own settings."
+      "summaryAuto": "Not set: the club picks its own shape, line-up and tactics when the world opens.",
+      "setFormation": "Formation {{formation}}",
+      "setEleven": "Starting eleven",
+      "setRoles": "Player roles",
+      "setMatchRoles": "Captain & set pieces",
+      "setPhase": "Phase settings",
+      "openBoard": "Open tactics board",
+      "boardTitle": "Tactics – {{team}}",
+      "resetToAuto": "Reset to automatic",
+      "done": "Done"
     }
   },
   "packageBuild": {

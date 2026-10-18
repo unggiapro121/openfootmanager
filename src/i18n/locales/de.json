@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Taktik & Standardaufstellung",
       "intro": "Womit der Verein in die Welt startet. Ein KI-Verein passt es danach an; ein Trainer, der den Verein übernimmt, beginnt damit.",
-      "formationAuto": "Automatisch (der Verein wählt nach Kader und Spielstil)",
-      "needFormation": "Wähle eine Formation, um Startelf und Spielerrollen festzulegen.",
-      "startingXi": "Startelf",
-      "elevenProgress": "{{count}}/{{total}} gewählt",
-      "elevenIncomplete": "Das Spiel nutzt diese Startelf erst, wenn jede Position besetzt ist; bis dahin stellt es selbst auf.",
       "noPlayers": "Dieser Verein hat im Paket noch keine Spieler. Füge dem Verein Spieler hinzu, um sie aufzustellen.",
-      "nobody": "— Keiner —",
-      "notInClub": "{{player}} (nicht in diesem Verein)",
-      "slotPlayer": "Spieler auf {{position}}",
-      "slotRole": "Rolle auf {{position}}",
-      "matchRoles": "Kapitän und Standards",
-      "customPhase": "Eigene Phaseneinstellungen",
-      "phaseFromStyle": "Aus: Der Verein nutzt die Einstellungen seines Spielstils."
+      "summaryAuto": "Nicht festgelegt: Der Verein wählt Formation, Aufstellung und Taktik beim Weltstart selbst.",
+      "setFormation": "Formation {{formation}}",
+      "setEleven": "Startelf",
+      "setRoles": "Spielerrollen",
+      "setMatchRoles": "Kapitän & Standards",
+      "setPhase": "Phaseneinstellungen",
+      "openBoard": "Taktiktafel öffnen",
+      "boardTitle": "Taktik – {{team}}",
+      "resetToAuto": "Auf automatisch zurücksetzen",
+      "done": "Fertig"
     }
   },
   "packageBuild": {

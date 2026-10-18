@@ -23,7 +23,8 @@ interface TacticsContextMenuCallbacks {
   onAssignMatchRole?: (role: keyof TeamMatchRolesData, playerId: string) => void;
   onClearSelection?: () => void;
   onDemoteStarter?: (playerId: string) => void;
-  onOpenProfile: (playerId: string) => void;
+  /** Absent where there is no profile to open, as in the world editor. */
+  onOpenProfile?: (playerId: string) => void;
   onPromoteBench?: (playerId: string) => void;
   onTacticalSelect?: (playerId: string, section: SquadSection) => void;
 }
@@ -145,12 +146,14 @@ export function buildTacticsPlayerContextMenuItems({
     }
   }
 
-  items.push(buildDividerMenuItem());
-  items.push({
-    label: t("squad.viewProfile"),
-    icon: <UserRound className="h-4 w-4" />,
-    onClick: () => onOpenProfile(player.id),
-  });
+  if (onOpenProfile) {
+    items.push(buildDividerMenuItem());
+    items.push({
+      label: t("squad.viewProfile"),
+      icon: <UserRound className="h-4 w-4" />,
+      onClick: () => onOpenProfile(player.id),
+    });
+  }
 
   return items;
 }

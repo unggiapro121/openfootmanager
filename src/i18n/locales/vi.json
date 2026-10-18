@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Chiến thuật & đội hình mặc định",
       "intro": "Thiết lập CLB có khi mở thế giới. CLB do AI dẫn dắt sẽ tự điều chỉnh sau đó; người chơi nhận CLB sẽ bắt đầu từ thiết lập này.",
-      "formationAuto": "Tự động (CLB tự chọn theo đội hình và lối chơi)",
-      "needFormation": "Chọn sơ đồ để xếp đội hình chính và vai trò cầu thủ.",
-      "startingXi": "Đội hình chính",
-      "elevenProgress": "Đã xếp {{count}}/{{total}}",
-      "elevenIncomplete": "Game chỉ dùng đội hình này khi đã xếp đủ mọi vị trí; chưa đủ thì game tự xếp.",
       "noPlayers": "CLB này chưa có cầu thủ nào trong gói. Thêm cầu thủ cho CLB để xếp đội hình.",
-      "nobody": "— Không chọn —",
-      "notInClub": "{{player}} (không thuộc CLB này)",
-      "slotPlayer": "Cầu thủ ở vị trí {{position}}",
-      "slotRole": "Vai trò ở vị trí {{position}}",
-      "matchRoles": "Đội trưởng và đá phạt",
-      "customPhase": "Tùy chỉnh chiến thuật theo giai đoạn",
-      "phaseFromStyle": "Tắt: CLB dùng chiến thuật mặc định của lối chơi."
+      "summaryAuto": "Chưa đặt: CLB tự chọn sơ đồ, đội hình và chiến thuật khi mở thế giới.",
+      "setFormation": "Sơ đồ {{formation}}",
+      "setEleven": "Đội hình chính",
+      "setRoles": "Vai trò cầu thủ",
+      "setMatchRoles": "Đội trưởng & đá phạt",
+      "setPhase": "Chiến thuật theo giai đoạn",
+      "openBoard": "Mở bảng chiến thuật",
+      "boardTitle": "Chiến thuật – {{team}}",
+      "resetToAuto": "Đặt lại về tự động",
+      "done": "Xong"
     }
   },
   "packageBuild": {

@@ -4831,19 +4831,17 @@
     "tactics": {
       "title": "Tattica e formazione predefinita",
       "intro": "Ciò con cui il club inizia il mondo. Un club dell'IA lo modifica in seguito; un allenatore che prende il club parte da qui.",
-      "formationAuto": "Automatico (il club sceglie in base a rosa e stile)",
-      "needFormation": "Scegli un modulo per impostare l'undici titolare e i ruoli.",
-      "startingXi": "Undici titolare",
-      "elevenProgress": "{{count}}/{{total}} scelti",
-      "elevenIncomplete": "Il gioco usa questo undici solo quando ogni posizione è coperta; fino ad allora sceglie la squadra da sé.",
       "noPlayers": "Questo club non ha ancora giocatori nel pacchetto. Aggiungi giocatori al club per schierarli.",
-      "nobody": "— Nessuno —",
-      "notInClub": "{{player}} (non è di questo club)",
-      "slotPlayer": "Giocatore in {{position}}",
-      "slotRole": "Ruolo in {{position}}",
-      "matchRoles": "Capitano e calci piazzati",
-      "customPhase": "Impostazioni per fase personalizzate",
-      "phaseFromStyle": "Disattivato: il club usa le impostazioni del suo stile di gioco."
+      "summaryAuto": "Non impostato: il club sceglie modulo, formazione e tattica all'inizio del mondo.",
+      "setFormation": "Modulo {{formation}}",
+      "setEleven": "Undici titolare",
+      "setRoles": "Ruoli dei giocatori",
+      "setMatchRoles": "Capitano e calci piazzati",
+      "setPhase": "Impostazioni per fase",
+      "openBoard": "Apri lavagna tattica",
+      "boardTitle": "Tattica – {{team}}",
+      "resetToAuto": "Torna ad automatico",
+      "done": "Fatto"
     }
   },
   "packageBuild": {

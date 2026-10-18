@@ -110,12 +110,6 @@ pub(super) fn validate_team_tactics(
     errors
 }
 
-/// The phase settings a club of `play_style` opens with when its package names
-/// none: what the world editor starts a custom set from.
-pub fn opening_phase(play_style: &str) -> TacticsPhaseSettings {
-    crate::ai_tactics::blueprint_for(&super::generation::play_style_from_str(play_style))
-}
-
 /// Open `team` in its authored tactics. `players` is the finished squad; a
 /// player the tactics name who is not in it is skipped rather than trusted, so
 /// a package that failed validation still builds a playable club.
@@ -217,20 +211,6 @@ mod tests {
             })
             .map(|error| (error.code, error.params))
             .collect()
-    }
-
-    /// Given a play style, when the editor asks what a club of it opens with,
-    /// then it gets the same settings a built club of that style has.
-    #[test]
-    fn the_opening_phase_is_the_play_styles_blueprint() {
-        assert_eq!(
-            opening_phase("HighPress"),
-            crate::ai_tactics::blueprint_for(&domain::team::PlayStyle::HighPress)
-        );
-        assert_eq!(
-            opening_phase("not a style"),
-            crate::ai_tactics::blueprint_for(&domain::team::PlayStyle::Balanced)
-        );
     }
 
     /// Given tactics that name only the club's own players in a shape the

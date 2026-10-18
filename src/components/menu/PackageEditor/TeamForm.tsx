@@ -35,6 +35,8 @@ interface TeamFormProps {
   onAssetError: (err: unknown) => void;
   /** The authored players of this club, for its line-up and set-piece takers. */
   clubPlayers?: PlayerDef[];
+  /** The package's opening year, which the tactics board builds the players in. */
+  baseYear?: number | null;
 }
 
 export function TeamForm({
@@ -48,6 +50,7 @@ export function TeamForm({
   commitField,
   onAssetError,
   clubPlayers = [],
+  baseYear = null,
 }: TeamFormProps) {
   const { t, i18n } = useTranslation();
   const [idAutoMode, setIdAutoMode] = useState(editingTeamIndex === null && !editingTeam.id);
@@ -399,10 +402,11 @@ export function TeamForm({
         </div>
 
         <TeamTacticsEditor
-          tactics={editingTeam.tactics}
+          team={editingTeam}
           clubPlayers={clubPlayers}
-          playStyle={editingTeam.playStyle}
+          baseYear={baseYear}
           onChange={(tactics) => updateField("tactics", tactics)}
+          onPlayStyleChange={(playStyle) => updateField("playStyle", playStyle)}
           onError={onAssetError}
         />
 

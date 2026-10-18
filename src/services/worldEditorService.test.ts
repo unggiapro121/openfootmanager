@@ -8,7 +8,7 @@ import {
   exportPlayersCsv,
   exportTeamsCsv,
   extractOfmForEditing,
-  fetchTacticsBlueprint,
+  previewPackageClub,
   readFileAsDataUrl,
   readPackageProject,
   savePackageProject,
@@ -39,15 +39,17 @@ describe("worldEditorService", () => {
     expect(mockedInvoke).toHaveBeenCalledWith("create_world_project", { slug: "my-world", meta });
   });
 
-  // Given a play style, when the editor asks for its opening tactics, then the
-  // backend is asked by that style and its settings come back.
-  it("fetches a play style's opening phase settings", async () => {
-    const blueprint = { build_up_style: "Short", width: "Wide" };
-    mockedInvoke.mockResolvedValueOnce(blueprint);
+  // Given a club and the project's players, when the board asks for a preview,
+  // then the backend gets both and the opening year, and the preview comes back.
+  it("previews a package club for the tactics board", async () => {
+    const preview = { team: { id: "team-1" }, players: [], position_ratings: {} };
+    mockedInvoke.mockResolvedValueOnce(preview);
 
-    await expect(fetchTacticsBlueprint("Possession")).resolves.toBe(blueprint);
-    expect(mockedInvoke).toHaveBeenCalledWith("package_tactics_blueprint", {
-      playStyle: "Possession",
+    await expect(previewPackageClub(teams[0], players, 2026)).resolves.toBe(preview);
+    expect(mockedInvoke).toHaveBeenCalledWith("preview_package_club", {
+      team: teams[0],
+      players,
+      baseYear: 2026,
     });
   });
 
