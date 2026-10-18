@@ -830,6 +830,9 @@ struct MatchShares {
     high_turnovers: u64,
     high_turnover_shots: u64,
     high_turnover_goals: u64,
+    high_turnovers_with_shot: u64,
+    midfield_turnovers: u64,
+    midfield_turnovers_with_shot: u64,
     midfield_duels: u64,
     midfield_attack_won: u64,
     /// Phase 2, P4.2: long balls out of the own third, and those over the
@@ -858,15 +861,24 @@ struct PlayerShares {
     rating_count: BTreeMap<String, u32>,
     /// The most goals any one player scored in each run's league season.
     top_scorer_goals: Vec<u32>,
+    /// That player's share of his club's league goals, % (GĐ5 P5.3b: real
+    /// leading scorers carry about 30–40% of their side's goals).
+    top_scorer_team_share: Vec<f64>,
+    /// How many of that player's goals were penalties.
+    top_scorer_penalties: Vec<u32>,
+}
+
+/// One league season's goals in the match probe: by scorer, by the
+/// scorer's club, and the penalties among each scorer's goals.
+#[derive(Default)]
+struct SeasonGoals {
+    by_player: BTreeMap<String, u32>,
+    by_club: BTreeMap<String, u32>,
+    penalties: BTreeMap<String, u32>,
 }
 
 impl PlayerShares {
-    fn add(
-        &mut self,
-        game: &Game,
-        report: &engine::MatchReport,
-        season: &mut BTreeMap<String, u32>,
-    ) {
+    fn add(&mut self, game: &Game, report: &engine::MatchReport, season: &mut SeasonGoals) {
         let position = |id: &str| {
             game.players
                 .iter()
@@ -884,7 +896,18 @@ impl PlayerShares {
                 .goals_by_group
                 .entry(group(&goal.scorer_id))
                 .or_default() += 1;
-            *season.entry(goal.scorer_id.clone()).or_default() += 1;
+            *season.by_player.entry(goal.scorer_id.clone()).or_default() += 1;
+            if goal.goal_source == engine::GoalSource::Penalty {
+                *season.penalties.entry(goal.scorer_id.clone()).or_default() += 1;
+            }
+            if let Some(club) = game
+                .players
+                .iter()
+                .find(|p| p.id == goal.scorer_id)
+                .and_then(|p| p.team_id.clone())
+            {
+                *season.by_club.entry(club).or_default() += 1;
+            }
             if let Some(assist) = &goal.assist_id {
                 *self.assists_by_group.entry(group(assist)).or_default() += 1;
             }
@@ -919,6 +942,34 @@ impl PlayerShares {
         } else {
             high - low
         }
+    }
+
+    /// The season's leading scorer: his goals, his club's share of them and
+    /// his penalties.
+    fn close_season(&mut self, game: &Game, season: &SeasonGoals) {
+        let Some((id, goals)) = season
+            .by_player
+            .iter()
+            .max_by_key(|(_, goals)| **goals)
+            .map(|(id, goals)| (id.clone(), *goals))
+        else {
+            self.top_scorer_goals.push(0);
+            return;
+        };
+        let club_goals = game
+            .players
+            .iter()
+            .find(|p| p.id == id)
+            .and_then(|p| p.team_id.as_ref())
+            .and_then(|club| season.by_club.get(club))
+            .copied()
+            .unwrap_or(goals)
+            .max(1);
+        self.top_scorer_goals.push(goals);
+        self.top_scorer_team_share
+            .push(f64::from(goals) / f64::from(club_goals) * 100.0);
+        self.top_scorer_penalties
+            .push(season.penalties.get(&id).copied().unwrap_or(0));
     }
 
     fn top_scorer_mean(&self) -> f64 {
@@ -957,6 +1008,18 @@ impl PlayerShares {
         println!(
             "  top scorer's goals per league season: {:?}",
             self.top_scorer_goals
+        );
+        let mean = |values: &[f64]| values.iter().sum::<f64>() / values.len().max(1) as f64;
+        println!(
+            "  top scorer's share of his club's goals: mean {:.1}% · his penalties a season: mean {:.1}",
+            mean(&self.top_scorer_team_share),
+            mean(
+                &self
+                    .top_scorer_penalties
+                    .iter()
+                    .map(|&n| f64::from(n))
+                    .collect::<Vec<_>>()
+            )
         );
     }
 }
@@ -1044,6 +1107,9 @@ impl MatchShares {
         self.high_turnovers += tally.high_turnovers;
         self.high_turnover_shots += tally.high_turnover_shots;
         self.high_turnover_goals += tally.high_turnover_goals;
+        self.high_turnovers_with_shot += tally.high_turnovers_with_shot;
+        self.midfield_turnovers += tally.midfield_turnovers;
+        self.midfield_turnovers_with_shot += tally.midfield_turnovers_with_shot;
         self.midfield_duels += tally.midfield_duels;
         self.midfield_attack_won += tally.midfield_attack_won;
         self.long_balls += tally.long_balls;
@@ -1079,6 +1145,17 @@ impl MatchShares {
             .copied()
             .unwrap_or(0);
         Self::pct(n, u64::from(self.goals))
+    }
+
+    /// T14: the share of balls lost in the own third the winner had a shot
+    /// after, over the same share for balls lost in midfield.
+    fn turnover_danger_ratio(&self) -> f64 {
+        let rate = |with_shot: u64, all: u64| with_shot as f64 / all.max(1) as f64;
+        let midfield = rate(self.midfield_turnovers_with_shot, self.midfield_turnovers);
+        if midfield == 0.0 {
+            return 0.0;
+        }
+        rate(self.high_turnovers_with_shot, self.high_turnovers) / midfield
     }
 
     fn per_match(&self, count: u64) -> f64 {
@@ -1148,9 +1225,9 @@ fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
         ),
         Gd5Row::banded(
             "T14",
-            "shots per ball lost in the own third",
-            shares.high_turnover_shots as f64 / shares.high_turnovers.max(1) as f64,
-            targets::SHOTS_PER_HIGH_TURNOVER,
+            "shot after a ball lost: own third / midfield",
+            shares.turnover_danger_ratio(),
+            targets::TURNOVER_DANGER_RATIO,
         ),
         Gd5Row::banded(
             "T16",
@@ -1208,7 +1285,7 @@ fn real_world_match_probe() {
                 );
             }
         }
-        let mut season: BTreeMap<String, u32> = BTreeMap::new();
+        let mut season = SeasonGoals::default();
         let fixture_count = game
             .league
             .as_ref()
@@ -1235,9 +1312,7 @@ fn real_world_match_probe() {
             players.add(&game, &report, &mut season);
             shares.add(&report);
         }
-        players
-            .top_scorer_goals
-            .push(season.values().copied().max().unwrap_or(0));
+        players.close_season(&game, &season);
     }
     let n = f64::from(shares.matches.max(1));
     let mean = f64::from(shares.goals) / n;

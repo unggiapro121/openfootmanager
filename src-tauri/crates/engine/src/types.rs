@@ -573,7 +573,10 @@ impl Default for MatchConfig {
         Self {
             home_advantage: 1.08,
             shot_accuracy_base: 0.35,
-            goal_conversion_base: 0.36,
+            // 0.36 until GĐ5 P5.3b: keepers stop a little more, which with
+            // the box's shots spread wider keeps the leading scorers at a
+            // real tally (34 goals a season on the Premier League probe).
+            goal_conversion_base: 0.35,
             fatigue_per_minute: 0.20,
             foul_probability: 0.40,
             yellow_card_probability: 0.11,
