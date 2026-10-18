@@ -1,6 +1,9 @@
 //! The calibration targets of phase 2's GĐ5 (GĐ5-tech-spec §5, §11.2): one
 //! table read by both measures, so a band lives in one place.
 //!
+//! The bands are the final table approved at the end of P5.0 (2026-10-18,
+//! `gd5-p50-report.md` Đ1–Đ6).
+//!
 //! Some targets need synthetic mirror squads and are judged by sim-bench's
 //! guardrails (`--stage gd5`); the rest need a real world and are judged by
 //! the real-world probes. Each side only *measures* the other's rows.
@@ -52,8 +55,11 @@ pub const GOALS_PER_GAME: Band = Band::new(2.6, 2.9);
 pub const HOME_EDGE: Band = Band::new(9.0, 13.0);
 /// T3: draws, %.
 pub const DRAWS: Band = Band::new(25.0, 27.0);
-/// T5: how far the stronger club's win rate may sit from the market's line in
-/// each 2-point bucket of strength gap from 0 to 10 (X81), in points.
+/// T5: how far the stronger club's win rate may sit from the line fitted on
+/// real results in each 2-point bucket of strength gap from 0 to 10 (X81),
+/// in points. Results, not the market (Đ6): `S` is built after the season it
+/// is matched against, so real results by `S` run 3–4 points steeper than
+/// the market's line.
 pub const STRENGTH_GAP_TOLERANCE: f64 = 3.0;
 /// T21: the AI's formations (X83): at least this many in use, none above
 /// this share (%).
@@ -62,8 +68,9 @@ pub const FORMATION_SHARE_MAX: f64 = 40.0;
 
 // --- Judged by the match probe -------------------------------------------
 
-/// T8: goals scored with the head, corners included, % of goals.
-pub const HEADED_GOALS: Band = Band::new(16.0, 22.0);
+/// T8: goals scored with the head, corners included, % of goals. StatsBomb
+/// 2015/16: 16.3 ± 0.6, four leagues 15.3–17.5 (Đ1).
+pub const HEADED_GOALS: Band = Band::new(15.0, 18.0);
 /// T9b: goals from outside the box, open play and direct free kicks together,
 /// % of goals.
 pub const OUTSIDE_BOX_GOALS: Band = Band::new(10.0, 14.0);
@@ -73,8 +80,9 @@ pub const DIRECT_FREE_KICK_GOALS: Band = Band::new(1.5, 3.0);
 pub const CORNERS_PER_GAME: Band = Band::new(9.0, 10.5);
 /// T13: shots a match.
 pub const SHOTS_PER_GAME: Band = Band::new(23.0, 26.0);
-/// T14: shots after each ball lost in the own third (X84).
-pub const SHOTS_PER_HIGH_TURNOVER: Band = Band::new(0.07, 0.12);
+/// T14: shots after each ball lost in the own third (X84). StatsBomb: 0.069
+/// (Đ1).
+pub const SHOTS_PER_HIGH_TURNOVER: Band = Band::new(0.06, 0.12);
 /// T16: standard deviation of a side's possession across matches, points
 /// (X87).
 pub const POSSESSION_SD: Band = Band::new(8.4, 12.4);
@@ -86,7 +94,9 @@ pub const TOP_SCORER_GOALS: Band = Band::new(25.0, 36.0);
 // --- Judged by both: the guardrails and the match probe -------------------
 
 /// T12: defenders' share of aerial duels after a cross or a set piece.
-pub const DEFENDER_AERIAL_WIN: Band = Band::new(56.0, 59.0);
+/// StatsBomb 2015/16: 51.8 ± 0.5 within 3 s of a cross or corner, four
+/// leagues 49.7–53.0 (Đ2; the old 56–59 came from all aerial duels).
+pub const DEFENDER_AERIAL_WIN: Band = Band::new(50.0, 54.0);
 
 // --- Judged by the guardrails ---------------------------------------------
 
@@ -96,8 +106,8 @@ pub const MIRROR_DRAW: Band = Band::new(27.0, 33.0);
 /// T7: median milliseconds a match.
 pub const MATCH_MS_P50: Band = Band::at_most(2.5);
 /// T15: loose balls after a long ball won by the side that kicked it, %
-/// (X84).
-pub const SECOND_BALL_KICKER_WIN: Band = Band::new(35.0, 40.0);
+/// (X84). StatsBomb: 30.4, leagues 29.1–33.2 (Đ3).
+pub const SECOND_BALL_KICKER_WIN: Band = Band::new(30.0, 36.0);
 /// T17, T18: formation, role, dial and blueprint balance, points of wins over
 /// losses either way.
 pub const BALANCE_MAX: f64 = 5.0;

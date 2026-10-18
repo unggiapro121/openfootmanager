@@ -615,9 +615,10 @@ fn defender_aerial_win(result: &SweepResult, stage: Stage) -> Check {
     let duels = &result.stats.duels;
     let value = duels.tally.defender_aerial_win_pct();
     // Gated in the loose band since P2.2, the two-stage aerial duel, which set
-    // the duel's anchor for defenders to win 58% (decision X22).
+    // the duel's anchor for defenders to win 58% (decision X22). Widened down
+    // to 48 at GĐ5 P5.0, when real crosses showed 51.8% (Đ2).
     let band = match stage {
-        Stage::LanCan => Band::new(54.0, 62.0),
+        Stage::LanCan => Band::new(48.0, 62.0),
         Stage::Gd5 => targets::DEFENDER_AERIAL_WIN,
     };
     Check {
@@ -630,13 +631,13 @@ fn defender_aerial_win(result: &SweepResult, stage: Stage) -> Check {
 
 /// The loose balls after a long ball, won by the side that kicked it: GĐ4
 /// anchored the duel evenly (X71, about 48%); real football gives the kicker
-/// 33%, and GĐ5 brings it to 35–40% (X84, T15).
+/// 30.4%, and GĐ5 brings it to 30–36% (X84, T15).
 fn second_balls(result: &SweepResult, stage: Stage) -> Check {
     let tally = &result.stats.duels.tally;
     let value = tally.second_balls_kicker_won as f64 / tally.second_balls.max(1) as f64 * 100.0;
     let band = targets::SECOND_BALL_KICKER_WIN;
     let (verdict, shown) = match stage {
-        Stage::LanCan => (Verdict::Measure, format!("đo (GĐ5: {band}; thật 33)")),
+        Stage::LanCan => (Verdict::Measure, format!("đo (GĐ5: {band}; thật 30,4)")),
         Stage::Gd5 => (in_band(value, band), band.to_string()),
     };
     Check {
@@ -842,10 +843,10 @@ mod tests {
     }
 
     /// Given the kicker winning 48% of second balls, as GĐ4 left it, and then
-    /// 37%,
+    /// 33%,
     /// when the row is judged,
-    /// then the loose band only measures it and GĐ5 fails 48 and passes 37
-    /// (35–40%, X84).
+    /// then the loose band only measures it and GĐ5 fails 48 and passes 33
+    /// (30–36%, X84).
     #[test]
     fn second_balls_are_gated_at_gd5() {
         let mut r = result(vec![row(0, 800, 400, 800)]);
@@ -853,30 +854,28 @@ mod tests {
         r.stats.duels.tally.second_balls_kicker_won = 48;
         assert_eq!(second_balls(&r, Stage::LanCan).verdict, Verdict::Measure);
         assert_eq!(second_balls(&r, Stage::Gd5).verdict, Verdict::Fail);
-        r.stats.duels.tally.second_balls_kicker_won = 37;
+        r.stats.duels.tally.second_balls_kicker_won = 33;
         assert_eq!(second_balls(&r, Stage::Gd5).verdict, Verdict::Pass);
     }
 
-    /// Given defenders winning 48% in the air, as before P2.2, and then 58%,
+    /// Given defenders winning 45% in the air, then 52% as real crosses show,
+    /// then 58% as GĐ2 anchored it,
     /// when the aerial row is judged,
-    /// then since the two-stage aerial duel both stages gate it: 48% fails
-    /// both, 58% passes the loose 54–62 band and GĐ5's 56–59.
+    /// then both stages gate it: 45% fails both, 52% passes both, and 58%
+    /// passes the loose 48–62 band but fails GĐ5's 50–54 (Đ2).
     #[test]
     fn aerial_duels_are_gated_since_the_two_stage_aerial_duel() {
         let mut r = result(vec![row(0, 800, 400, 800)]);
-        r.stats.duels.tally.aerial_won = 52;
-        r.stats.duels.tally.aerial_lost = 48;
-        assert_eq!(
-            defender_aerial_win(&r, Stage::LanCan).verdict,
-            Verdict::Fail
-        );
-        assert_eq!(defender_aerial_win(&r, Stage::Gd5).verdict, Verdict::Fail);
-        r.stats.duels.tally.aerial_won = 42;
-        r.stats.duels.tally.aerial_lost = 58;
-        assert_eq!(
-            defender_aerial_win(&r, Stage::LanCan).verdict,
-            Verdict::Pass
-        );
-        assert_eq!(defender_aerial_win(&r, Stage::Gd5).verdict, Verdict::Pass);
+        let mut defenders_win = |won: u32| {
+            r.stats.duels.tally.aerial_won = u64::from(100 - won);
+            r.stats.duels.tally.aerial_lost = u64::from(won);
+            (
+                defender_aerial_win(&r, Stage::LanCan).verdict,
+                defender_aerial_win(&r, Stage::Gd5).verdict,
+            )
+        };
+        assert_eq!(defenders_win(45), (Verdict::Fail, Verdict::Fail));
+        assert_eq!(defenders_win(52), (Verdict::Pass, Verdict::Pass));
+        assert_eq!(defenders_win(58), (Verdict::Pass, Verdict::Fail));
     }
 }
