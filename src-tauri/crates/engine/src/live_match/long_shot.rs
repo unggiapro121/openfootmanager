@@ -45,7 +45,9 @@ use super::helpers::{danger_band, save_quality};
 /// for 30–35% of shots from outside the box; GĐ3 (P3.4, X56) made a shot from
 /// a flank `FLANK_PENALTY` less likely and raised the level to −1.80, which
 /// keeps that share (34% on the guardrail sweep, 33.5% on the probe).
-pub(crate) const BASE: f64 = -1.80;
+// Was −1.80; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): with the slope at 0.25, 30.2% of shots from
+// distance (T9d, 30–36%; it was 48.6%).
+pub(crate) const BASE: f64 = -1.30;
 /// Shooting from out wide, at a narrow angle, is rare (X56).
 pub(crate) const FLANK_PENALTY: f64 = -1.0;
 /// A wide player who has cut inside onto his stronger foot shoots more
@@ -59,7 +61,9 @@ const MIDFIELDER_SHARE: f64 = 0.55;
 /// level `μ` is fixed over the whole package, so in a league of good players
 /// the slope lifts everyone and the share of shots from distance follows the
 /// league's quality (Premier League 50%, 2. Bundesliga 32%; real 28–41%).
-pub(crate) const LONG_SHOTS_SLOPE: f64 = 1.35;
+// Was 1.35; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): the Premier League shot 48.6% from distance
+// and the 2. Bundesliga 28.8%; at 0.25 it is 30.2% and about 21%.
+pub(crate) const LONG_SHOTS_SLOPE: f64 = 0.25;
 /// What the `ShootsFromDistance` habit adds to the logit (P1.5); a knob since
 /// GĐ5 P5.3.
 pub(crate) const HABIT_BONUS: f64 = 0.90;
@@ -450,15 +454,19 @@ mod tests {
     #[test]
     fn the_slope_and_the_habit_bonus_are_knobs() {
         let cm = PitchPosition::CentralMidfielder;
+        let steep = TriggerScale {
+            slope: 1.35,
+            ..TriggerScale::DEFAULT
+        };
         let flat = TriggerScale {
-            slope: 0.5,
+            slope: 0.25,
             ..TriggerScale::DEFAULT
         };
         let gap = |scale: TriggerScale| {
             trigger_chance(cm, 80, false, false, scale, 0.0)
                 - trigger_chance(cm, 50, false, false, scale, 0.0)
         };
-        assert!(gap(flat) < gap(TriggerScale::DEFAULT));
+        assert!(gap(flat) < gap(steep));
         let no_habit = TriggerScale {
             habit: 0.0,
             ..TriggerScale::DEFAULT

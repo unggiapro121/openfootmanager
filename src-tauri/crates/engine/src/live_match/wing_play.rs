@@ -33,7 +33,9 @@ use super::zone_resolution::scale_odds;
 /// How often a one-on-one won on a flank, and not cut inside, ends in a
 /// cross; the rest go to the byline and into the box. Calibrated at P3.4 for
 /// the crosses a real match sees (22 a match, StatsBomb 2015/16).
-pub(crate) const P_CROSS_FLANK: f64 = 0.93;
+// Was 0.93; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): with more corners and defenders winning fewer
+// aerials, headed goals ran at 25%, real 16.3% (T8).
+pub(crate) const P_CROSS_FLANK: f64 = 0.80;
 /// How often an average open-play cross reaches the contest (X54).
 pub(crate) const P0_CROSS: f64 = 0.60;
 const REACH_SPREAD: f64 = 200.0;
@@ -55,7 +57,9 @@ const P_EARLY: f64 = 0.40;
 const EARLY_DELIVERY: f64 = 0.85;
 /// A free kick in the attacking third's centre lane: a shot at goal this
 /// often (X56). Calibrated for 0.8–1.0 a match.
-pub(crate) const P_DFK_CENTRE: f64 = 0.60;
+// Was 0.60; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): 0.46 direct free kicks a match, 0.8% of goals
+// (T10, 1.5–3%). Every central foul in range is now shot at goal.
+pub(crate) const P_DFK_CENTRE: f64 = 1.0;
 /// A free kick out wide: crossed in this often, as a corner (X56).
 const P_IFK: f64 = 0.20;
 
