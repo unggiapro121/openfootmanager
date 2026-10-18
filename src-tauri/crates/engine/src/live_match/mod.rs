@@ -32,6 +32,20 @@ use crate::rating::{RosterEntry, rate_players};
 pub use finishing::shot_weight;
 pub(crate) use observation::AiObservation;
 
+/// The named constants the calibration knobs default to (`crate::knobs`),
+/// kept beside the mechanisms they tune with their calibration history.
+pub(crate) mod knob_defaults {
+    pub(crate) use super::header::CONVERSION_BASE as HEADER_CONVERSION_BASE;
+    pub(crate) use super::long_shot::{
+        BASE as LONG_SHOT_BASE, FLANK_PENALTY as LONG_SHOT_FLANK_PENALTY,
+        GOAL_BASE as LONG_SHOT_GOAL_BASE, ON_TARGET_BASE as LONG_SHOT_ON_TARGET_BASE,
+    };
+    pub(crate) use super::set_pieces::{REACH_BASE as SET_PIECE_REACH, WALL_BLOCK};
+    pub(crate) use super::transition::P_DIRECT_BASE;
+    pub(crate) use super::wing_play::{P_CROSS_FLANK, P_DFK_CENTRE, P0_CROSS};
+    pub(crate) use super::zone_resolution::CORNER_FROM_CLEARED_DUEL;
+}
+
 use crate::event::{MatchEvent, SetPiece};
 use crate::report::{MatchReport, TeamSheet};
 use crate::types::{

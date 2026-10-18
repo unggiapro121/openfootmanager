@@ -33,9 +33,9 @@ use super::zone_resolution::scale_odds;
 /// How often a one-on-one won on a flank, and not cut inside, ends in a
 /// cross; the rest go to the byline and into the box. Calibrated at P3.4 for
 /// the crosses a real match sees (22 a match, StatsBomb 2015/16).
-const P_CROSS_FLANK: f64 = 0.93;
+pub(crate) const P_CROSS_FLANK: f64 = 0.93;
 /// How often an average open-play cross reaches the contest (X54).
-const P0_CROSS: f64 = 0.60;
+pub(crate) const P0_CROSS: f64 = 0.60;
 const REACH_SPREAD: f64 = 200.0;
 const REACH_MIN: f64 = 0.35;
 const REACH_MAX: f64 = 0.85;
@@ -55,13 +55,13 @@ const P_EARLY: f64 = 0.40;
 const EARLY_DELIVERY: f64 = 0.85;
 /// A free kick in the attacking third's centre lane: a shot at goal this
 /// often (X56). Calibrated for 0.8–1.0 a match.
-const P_DFK_CENTRE: f64 = 0.60;
+pub(crate) const P_DFK_CENTRE: f64 = 0.60;
 /// A free kick out wide: crossed in this often, as a corner (X56).
 const P_IFK: f64 = 0.20;
 
 /// The chance an open-play cross of quality `q` reaches the contest.
-fn cross_reach(q: f64) -> f64 {
-    (P0_CROSS + (q - DELIVERY_REFERENCE) / REACH_SPREAD).clamp(REACH_MIN, REACH_MAX)
+fn cross_reach(q: f64, base: f64) -> f64 {
+    (base + (q - DELIVERY_REFERENCE) / REACH_SPREAD).clamp(REACH_MIN, REACH_MAX)
 }
 
 /// The share of the defence's positioning an early cross takes away: the
@@ -195,7 +195,7 @@ impl LiveMatchState {
                 events.extend(shot);
                 return events;
             }
-        } else if on_flank && rng.random_range(0.0..1.0f64) < P_CROSS_FLANK {
+        } else if on_flank && rng.random_range(0.0..1.0f64) < self.config.knobs.p_cross_flank {
             events.extend(self.resolve_open_cross(minute, att_side, attacker, false, rng));
             return events;
         }
@@ -326,7 +326,8 @@ impl LiveMatchState {
         };
         // A cross that never reaches the contest names nobody it was for, so
         // a reader can tell it from a duel lost (`EventTally`).
-        let reached = rng.random_range(0.0..1.0f64) < cross_reach(delivery);
+        let reached = rng.random_range(0.0..1.0f64)
+            < cross_reach(delivery, self.config.knobs.open_play_cross_reach);
         let mut cross =
             MatchEvent::new(minute, EventType::Cross, att_side, zone).with_player(&crosser.id);
         if reached {
@@ -357,7 +358,7 @@ impl LiveMatchState {
                     duel::aerial_win_probability_anchored(
                         &target,
                         &marker,
-                        duel::ANCHOR_AERIAL_OPEN_PLAY_CROSS,
+                        self.config.knobs.anchor_aerial_open_play_cross,
                     ),
                     contest_help(delivery) * around,
                 )
@@ -412,7 +413,7 @@ impl LiveMatchState {
         rng: &mut R,
     ) -> Vec<MatchEvent> {
         if self.lane_for(att_side) == Lane::Centre {
-            if rng.random_range(0.0..1.0f64) < P_DFK_CENTRE {
+            if rng.random_range(0.0..1.0f64) < self.config.knobs.p_dfk_centre {
                 return self.resolve_direct_free_kick(minute, att_side, rng);
             }
         } else if rng.random_range(0.0..1.0f64) < P_IFK {
@@ -614,8 +615,8 @@ mod tests {
     /// then it rises with the delivery, within 35–85%.
     #[test]
     fn a_better_cross_reaches_the_contest_more_often() {
-        assert!(cross_reach(80.0) > cross_reach(60.0));
-        assert_eq!(cross_reach(0.0), REACH_MIN);
-        assert_eq!(cross_reach(200.0), REACH_MAX);
+        assert!(cross_reach(80.0, P0_CROSS) > cross_reach(60.0, P0_CROSS));
+        assert_eq!(cross_reach(0.0, P0_CROSS), REACH_MIN);
+        assert_eq!(cross_reach(200.0, P0_CROSS), REACH_MAX);
     }
 }

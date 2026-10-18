@@ -451,11 +451,14 @@ pub(crate) fn tactics_foul_modifier(tactics: &TacticsConfig) -> f64 {
 
 /// Shot conversion multiplier from the defending team's defensive line depth.
 /// High line = more space in behind = easier for attackers to score.
-pub(crate) fn tactics_defensive_conversion_mod(tactics: &TacticsConfig) -> f64 {
+pub(crate) fn tactics_defensive_conversion_mod(
+    tactics: &TacticsConfig,
+    knobs: &crate::knobs::CalibrationKnobs,
+) -> f64 {
     match tactics.defensive_line {
-        DefensiveLine::High => 1.12,
+        DefensiveLine::High => knobs.conversion_high_line,
         DefensiveLine::Low => 0.92,
-        DefensiveLine::VeryLow => 0.85,
+        DefensiveLine::VeryLow => knobs.conversion_very_low_line,
         DefensiveLine::Medium => 1.0,
     }
 }
@@ -479,9 +482,12 @@ pub(crate) fn tactics_tempo_progression(tactics: &TacticsConfig) -> f64 {
 
 /// Tempo's retention side: Patient circulates and holds possession longer.
 /// Applied to the possessing side's weight in the per-minute possession contest.
-pub(crate) fn tactics_tempo_retention(tactics: &TacticsConfig) -> f64 {
+pub(crate) fn tactics_tempo_retention(
+    tactics: &TacticsConfig,
+    knobs: &crate::knobs::CalibrationKnobs,
+) -> f64 {
     match tactics.tempo {
-        Tempo::Patient => 1.03,
+        Tempo::Patient => knobs.tempo_retention_patient,
         Tempo::Direct => 1.0,
     }
 }
@@ -737,7 +743,10 @@ mod phase_modifier_tests {
     fn default_config_is_fully_neutral() {
         let d = TacticsConfig::default();
         assert_eq!(tactics_tempo_progression(&d), 1.0);
-        assert_eq!(tactics_tempo_retention(&d), 1.0);
+        assert_eq!(
+            tactics_tempo_retention(&d, &crate::knobs::CalibrationKnobs::default()),
+            1.0
+        );
         assert_eq!(tactics_pressing_contest(&d), 1.0);
         assert_eq!(tactics_pressing_press(&d), 1.0);
         assert_eq!(tactics_pressing_fatigue(&d), 1.0);
@@ -754,9 +763,17 @@ mod phase_modifier_tests {
             tactics_tempo_progression(&cfg(|c| c.tempo = Tempo::Direct)),
             1.0
         );
-        assert!(tactics_tempo_retention(&cfg(|c| c.tempo = Tempo::Patient)) > 1.0);
+        assert!(
+            tactics_tempo_retention(
+                &cfg(|c| c.tempo = Tempo::Patient),
+                &crate::knobs::CalibrationKnobs::default()
+            ) > 1.0
+        );
         assert_eq!(
-            tactics_tempo_retention(&cfg(|c| c.tempo = Tempo::Direct)),
+            tactics_tempo_retention(
+                &cfg(|c| c.tempo = Tempo::Direct),
+                &crate::knobs::CalibrationKnobs::default()
+            ),
             1.0
         );
     }
@@ -795,7 +812,11 @@ mod phase_modifier_tests {
         let very_low = cfg(|c| c.defensive_line = DefensiveLine::VeryLow);
         let high = cfg(|c| c.defensive_line = DefensiveLine::High);
         assert!(
-            tactics_defensive_conversion_mod(&very_low) < tactics_defensive_conversion_mod(&high),
+            tactics_defensive_conversion_mod(&very_low, &crate::knobs::CalibrationKnobs::default())
+                < tactics_defensive_conversion_mod(
+                    &high,
+                    &crate::knobs::CalibrationKnobs::default()
+                ),
             "a deep line must be the safer one to defend with"
         );
         assert!(

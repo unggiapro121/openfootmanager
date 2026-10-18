@@ -19,6 +19,7 @@
 //! The figures and how they were chosen:
 //! `fm-document/game-engine/player-physique-duel-formulas.md` (§6–8).
 
+use crate::knobs::CalibrationKnobs;
 use crate::shared::PlayerSnap;
 use crate::types::Tempo;
 
@@ -204,6 +205,7 @@ pub(crate) fn midfield_ratings(att: &PlayerSnap, def: &PlayerSnap, tempo: Tempo)
 }
 
 /// The aerial duel after a cross.
+#[cfg(test)]
 pub(crate) fn aerial_win_probability(att: &PlayerSnap, def: &PlayerSnap) -> f64 {
     aerial_win_probability_anchored(att, def, ANCHOR_AERIAL)
 }
@@ -230,23 +232,24 @@ pub(crate) fn one_v_one_win_probability(
     att: &PlayerSnap,
     def: &PlayerSnap,
     modifier_ratio: f64,
+    knobs: &CalibrationKnobs,
 ) -> f64 {
     let [technique_att, technique_def, physique_att, physique_def] = one_v_one_ratings(att, def);
     duel_probability(
         &[
             DuelTerm {
-                gamma: GAMMA_ONE_V_ONE_TECHNICAL,
+                gamma: knobs.gamma_one_v_one_technical,
                 attacker: technique_att,
                 defender: technique_def,
             },
             DuelTerm {
-                gamma: GAMMA_ONE_V_ONE_PHYSICAL,
+                gamma: knobs.gamma_one_v_one_physical,
                 attacker: physique_att,
                 defender: physique_def,
             },
         ],
         modifier_ratio,
-        ANCHOR_ONE_V_ONE,
+        knobs.anchor_one_v_one,
     )
 }
 
@@ -301,6 +304,7 @@ pub(crate) fn second_ball_win_probability(
     kicker: &PlayerSnap,
     other: &PlayerSnap,
     modifier_ratio: f64,
+    anchor: f64,
 ) -> f64 {
     duel_probability(
         &[DuelTerm {
@@ -309,7 +313,7 @@ pub(crate) fn second_ball_win_probability(
             defender: second_ball_rating(other),
         }],
         modifier_ratio,
-        ANCHOR_SECOND_BALL,
+        anchor,
     )
 }
 
@@ -385,7 +389,7 @@ mod tests {
         let even = |p: f64, k: f64| (p - k / (1.0 + k)).abs() < 1e-12;
         assert!(even(aerial_win_probability(&a, &d), ANCHOR_AERIAL));
         assert!(even(
-            one_v_one_win_probability(&a, &d, 1.0),
+            one_v_one_win_probability(&a, &d, 1.0, &CalibrationKnobs::default()),
             ANCHOR_ONE_V_ONE
         ));
         assert!(even(
@@ -422,7 +426,7 @@ mod tests {
     #[test]
     fn a_side_of_nobody_still_gives_a_probability() {
         let nobody = PlayerSnap::nobody();
-        let p = one_v_one_win_probability(&nobody, &player(80), 1.0);
+        let p = one_v_one_win_probability(&nobody, &player(80), 1.0, &CalibrationKnobs::default());
         assert!(p.is_finite() && (0.0..=1.0).contains(&p));
         let p = aerial_win_probability(&player(80), &nobody);
         assert!(p.is_finite() && p > 0.5);
@@ -452,7 +456,7 @@ mod tests {
         defender.pace = 58;
         defender.agility = 60;
         defender.strength = 85;
-        let p = one_v_one_win_probability(&forward, &defender, 1.0);
+        let p = one_v_one_win_probability(&forward, &defender, 1.0, &CalibrationKnobs::default());
         assert!(p > 0.55, "p = {p}");
     }
 

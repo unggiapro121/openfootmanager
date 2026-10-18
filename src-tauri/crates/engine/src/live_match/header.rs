@@ -33,7 +33,7 @@ const ACCURACY_MIN: f64 = 0.15;
 const ACCURACY_MAX: f64 = 0.85;
 /// `PowerHeader` puts more of his headers on target.
 const POWER_HEADER_ACCURACY: f64 = 1.08;
-const CONVERSION_BASE: f64 = 0.28;
+pub(crate) const CONVERSION_BASE: f64 = 0.28;
 const CONVERSION_SPREAD: f64 = 160.0;
 const CONVERSION_MIN: f64 = 0.08;
 const CONVERSION_MAX: f64 = 0.65;
@@ -65,8 +65,8 @@ fn header_accuracy(rating: f64, power_header: bool) -> f64 {
 }
 
 /// The chance an on-target header beats the keeper.
-fn header_conversion(rating: f64, keeper: f64, defensive_line: f64) -> f64 {
-    (CONVERSION_BASE * defensive_line + (rating - keeper) / CONVERSION_SPREAD)
+fn header_conversion(rating: f64, keeper: f64, defensive_line: f64, base: f64) -> f64 {
+    (base * defensive_line + (rating - keeper) / CONVERSION_SPREAD)
         .clamp(CONVERSION_MIN, CONVERSION_MAX)
 }
 
@@ -107,8 +107,10 @@ impl LiveMatchState {
             return events;
         }
 
-        let defensive_line = tactics_defensive_conversion_mod(&self.team_ref(def_side).tactics);
-        if rng.random_range(0.0..1.0f64) < header_conversion(rating, keeper, defensive_line) {
+        let defensive_line =
+            tactics_defensive_conversion_mod(&self.team_ref(def_side).tactics, &self.config.knobs);
+        let base = self.config.knobs.header_conversion_base;
+        if rng.random_range(0.0..1.0f64) < header_conversion(rating, keeper, defensive_line, base) {
             let context = self.goal_context(att_side);
             let goal = MatchEvent::new(minute, EventType::Goal, att_side, zone)
                 .with_shot_kind(ShotKind::Header)
@@ -254,9 +256,15 @@ mod tests {
     /// then it is the base 28%, rising with the header and the line height.
     #[test]
     fn conversion_rises_with_the_header_and_a_high_line() {
-        assert_eq!(header_conversion(70.0, 70.0, 1.0), CONVERSION_BASE);
-        assert!(header_conversion(80.0, 70.0, 1.0) > CONVERSION_BASE);
-        assert!(header_conversion(70.0, 70.0, 1.12) > CONVERSION_BASE);
-        assert_eq!(header_conversion(10.0, 99.0, 0.85), CONVERSION_MIN);
+        assert_eq!(
+            header_conversion(70.0, 70.0, 1.0, CONVERSION_BASE),
+            CONVERSION_BASE
+        );
+        assert!(header_conversion(80.0, 70.0, 1.0, CONVERSION_BASE) > CONVERSION_BASE);
+        assert!(header_conversion(70.0, 70.0, 1.12, CONVERSION_BASE) > CONVERSION_BASE);
+        assert_eq!(
+            header_conversion(10.0, 99.0, 0.85, CONVERSION_BASE),
+            CONVERSION_MIN
+        );
     }
 }

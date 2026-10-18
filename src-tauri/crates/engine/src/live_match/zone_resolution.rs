@@ -29,6 +29,10 @@ use super::presence::{Column, out_of_lane_factor};
 /// real-world probe against about 0.28 in real football.
 const BOX_FOUL_CHANCE: f64 = 0.06;
 
+/// How often a one-on-one cleared goes behind for a corner (GĐ2); the
+/// default of `CalibrationKnobs::corner_from_cleared_duel`.
+pub(crate) const CORNER_FROM_CLEARED_DUEL: f64 = 0.25;
+
 pub(super) fn scale_odds(probability: f64, ratio: f64) -> f64 {
     let scaled = probability * ratio;
     scaled / (scaled + (1.0 - probability))
@@ -280,7 +284,7 @@ impl LiveMatchState {
                 &self.team_ref(def_side).tactics,
             )
             * out_of_lane;
-        duel::one_v_one_win_probability(attacker, defender, att_eff / def_eff)
+        duel::one_v_one_win_probability(attacker, defender, att_eff / def_eff, &self.config.knobs)
     }
 
     /// The attacker lost the one-on-one: tackled (perhaps fouled) or
@@ -339,7 +343,7 @@ impl LiveMatchState {
             events.extend(free_kick_events);
             return events;
         }
-        if rng.random_range(0.0..1.0f64) < 0.25 {
+        if rng.random_range(0.0..1.0f64) < self.config.knobs.corner_from_cleared_duel {
             let corner_events = self.resolve_corner(minute, att_side, rng);
             events.extend(corner_events);
             return events;
@@ -505,7 +509,8 @@ impl LiveMatchState {
             return events;
         }
 
-        let def_line_mod = tactics_defensive_conversion_mod(&self.team_ref(def_side).tactics);
+        let def_line_mod =
+            tactics_defensive_conversion_mod(&self.team_ref(def_side).tactics, &self.config.knobs);
         let conversion = (self.config.goal_conversion_base * def_line_mod
             + (shoot_rating - gk_rating) / 150.0)
             .clamp(0.10, 0.70);

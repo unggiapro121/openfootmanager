@@ -25,7 +25,7 @@ use super::LiveMatchState;
 /// guardrail sweep, and 0.70 keeps the real-world league probe at 2.93, just
 /// above GĐ4's soft floor of 2.9 (X77). Lowering it towards real football is
 /// one of GĐ5's ways to the 2.6–2.9 target.
-pub(super) const P_DIRECT_BASE: f64 = 0.70;
+pub(crate) const P_DIRECT_BASE: f64 = 0.70;
 const P_DIRECT_MIN: f64 = 0.10;
 const P_DIRECT_MAX: f64 = 0.80;
 
@@ -66,8 +66,8 @@ pub(super) fn counter_press_mod(counter_press: CounterPressDuration) -> f64 {
 
 /// `p_direct`: the chance the side that won the ball (`winner`) goes straight
 /// up the pitch, against the side that lost it (`loser`).
-pub(super) fn direct_chance(winner: &TacticsConfig, loser: &TacticsConfig) -> f64 {
-    (P_DIRECT_BASE * break_mod(winner.break_speed) * press_mod(loser.counter_press_duration))
+pub(super) fn direct_chance(base: f64, winner: &TacticsConfig, loser: &TacticsConfig) -> f64 {
+    (base * break_mod(winner.break_speed) * press_mod(loser.counter_press_duration))
         .clamp(P_DIRECT_MIN, P_DIRECT_MAX)
 }
 
@@ -86,6 +86,7 @@ impl LiveMatchState {
         let loser = winner.opposite();
         self.possession = winner;
         let p_direct = direct_chance(
+            self.config.knobs.p_direct_base,
             &self.team_ref(winner).tactics,
             &self.team_ref(loser).tactics,
         );
@@ -124,7 +125,13 @@ mod tests {
     #[test]
     fn breaking_fast_goes_direct_more_often() {
         let loser = tactics(BreakSpeed::Medium, CounterPressDuration::None);
-        let chance = |speed| direct_chance(&tactics(speed, CounterPressDuration::None), &loser);
+        let chance = |speed| {
+            direct_chance(
+                P_DIRECT_BASE,
+                &tactics(speed, CounterPressDuration::None),
+                &loser,
+            )
+        };
         assert!(chance(BreakSpeed::Slow) < chance(BreakSpeed::Medium));
         assert!(chance(BreakSpeed::Medium) <= chance(BreakSpeed::Fast));
         assert_eq!(chance(BreakSpeed::Medium), P_DIRECT_BASE);
@@ -136,7 +143,8 @@ mod tests {
     #[test]
     fn a_counter_press_smothers_the_quick_ball_forward() {
         let winner = tactics(BreakSpeed::Medium, CounterPressDuration::None);
-        let chance = |press| direct_chance(&winner, &tactics(BreakSpeed::Medium, press));
+        let chance =
+            |press| direct_chance(P_DIRECT_BASE, &winner, &tactics(BreakSpeed::Medium, press));
         assert!(chance(CounterPressDuration::Long) < chance(CounterPressDuration::Short));
         assert!(chance(CounterPressDuration::Short) < chance(CounterPressDuration::None));
     }
@@ -200,5 +208,35 @@ mod tests {
             }
         }
         assert!(exploits > 0);
+    }
+
+    /// Given a match whose knobs set `p_direct_base` low, and one at the
+    /// default,
+    /// when a defence wins the ball many times,
+    /// then it goes direct far less often: the engine reads the knob, not the
+    /// constant (phase 2, GĐ5 P5.0).
+    #[test]
+    fn the_direct_share_follows_its_knob() {
+        let share = |base: f64| {
+            let mut rng = StdRng::seed_from_u64(9);
+            let mut config = MatchConfig::default();
+            config.knobs.p_direct_base = base;
+            let direct = (0..2_000)
+                .filter(|_| {
+                    let mut s = LiveMatchState::new(
+                        make_team("home"),
+                        make_team("away"),
+                        config.clone(),
+                        Vec::new(),
+                        Vec::new(),
+                        false,
+                    );
+                    s.after_defensive_win(Side::Away, None, &mut rng);
+                    s.ball_zone == Zone::attacking_third(Side::Away)
+                })
+                .count();
+            direct as f64 / 2_000.0
+        };
+        assert!(share(0.2) < share(P_DIRECT_BASE) - 0.3);
     }
 }

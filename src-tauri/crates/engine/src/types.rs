@@ -562,6 +562,10 @@ pub struct MatchConfig {
     pub stoppage_time_max: u8,
     /// Probability of an injury per foul event.
     pub injury_probability: f64,
+    /// The constants phase 2's GĐ5 tunes (`knobs.rs`). Their defaults are the
+    /// game's; only sim-bench and the probes change them.
+    #[serde(default)]
+    pub knobs: crate::knobs::CalibrationKnobs,
 }
 
 impl Default for MatchConfig {
@@ -577,6 +581,7 @@ impl Default for MatchConfig {
             penalty_probability: 0.50,
             stoppage_time_max: 4,
             injury_probability: 0.03,
+            knobs: crate::knobs::CalibrationKnobs::default(),
         }
     }
 }

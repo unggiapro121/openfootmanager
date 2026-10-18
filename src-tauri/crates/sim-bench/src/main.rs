@@ -136,6 +136,13 @@ struct Cli {
     #[arg(long)]
     role_balance: bool,
 
+    /// Sweep one calibration knob over values on the guardrail sweep:
+    /// `--knob-sweep p_direct_base=0.5,0.6,0.7` (phase 2, GĐ5 P5.0, X82).
+    /// Prints every check's value for each, with `--formation-mix` honoured
+    /// and the formation-balance table skipped.
+    #[arg(long)]
+    knob_sweep: Option<String>,
+
     /// Play only the formation-balance table: each formation against 4-4-2 at
     /// gap 0, `--games` matches a formation (default 1,000; the gate uses 4,000).
     #[arg(long)]
@@ -229,6 +236,17 @@ fn main() {
     }
     if let Some(v) = cli.injury_probability {
         config.injury_probability = v;
+    }
+    // Calibration knobs from a file (phase 2, GĐ5, X82); the game never reads it.
+    if let Ok(path) = std::env::var("OFM_KNOBS") {
+        let json = std::fs::read_to_string(&path).expect("OFM_KNOBS names a readable file");
+        engine::apply_knob_file(&mut config, &json).expect("a valid knob file");
+        eprintln!("knobs from {path}");
+    }
+
+    if let Some(sweep) = &cli.knob_sweep {
+        run_knob_sweep(&config, &cli, sweep);
+        return;
     }
 
     if cli.bench {
@@ -401,6 +419,42 @@ fn run_rating_gap_sweep(config: &MatchConfig, cli: &Cli) {
 
 /// The phase-2 guardrail run. The table goes to stdout, the checks to `--out`
 /// as JSON when given, and a FAIL sets the exit code so a script can gate on it.
+/// `--knob-sweep name=v1,v2,…`: the guardrail sweep once per value, every
+/// check's value side by side.
+fn run_knob_sweep(config: &MatchConfig, cli: &Cli, sweep: &str) {
+    let (name, values) = sweep
+        .split_once('=')
+        .expect("--knob-sweep takes name=value,value,…");
+    let seed = cli.seed.unwrap_or(42);
+    let spec = guardrails::spec(seed, cli.formation_mix);
+    let mut columns: Vec<(String, Vec<guardrails::Check>)> = Vec::new();
+    for value in values.split(',') {
+        let mut swept = config.clone();
+        engine::apply_knob_file(&mut swept, &format!("{{\"{name}\": {value}}}"))
+            .expect("a known knob and a number");
+        eprintln!("{name} = {value} …");
+        let result = sweep::run(&swept, &spec);
+        columns.push((value.to_string(), guardrails::judge(&result, cli.stage)));
+    }
+    println!();
+    print!("{:<60}", format!("{name} →"));
+    for (value, _) in &columns {
+        print!(" {value:>10}");
+    }
+    println!();
+    let rows = columns.first().map_or(0, |(_, checks)| checks.len());
+    for row in 0..rows {
+        print!("{:<60}", columns[0].1[row].name);
+        for (_, checks) in &columns {
+            match checks[row].value {
+                Some(v) => print!(" {v:>10.2}"),
+                None => print!(" {:>10}", "—"),
+            }
+        }
+        println!();
+    }
+}
+
 fn run_guardrails(config: &MatchConfig, cli: &Cli) {
     let seed = cli.seed.unwrap_or(42);
     let (result, balance, checks) = guardrails::run(config, cli.stage, seed, cli.formation_mix);

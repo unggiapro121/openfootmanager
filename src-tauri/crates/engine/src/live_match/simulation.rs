@@ -198,7 +198,7 @@ impl LiveMatchState {
         let poss_tactics = self.team_ref(poss_side).tactics.clone();
         let def_tactics = self.team_ref(def_side).tactics.clone();
         let mid_att = self.effective_midfield(poss_side)
-            * tactics_tempo_retention(&poss_tactics)
+            * tactics_tempo_retention(&poss_tactics, &self.config.knobs)
             * self.inverted_full_back_factor(poss_side);
         let mid_def = self.effective_midfield(def_side)
             * tactics_pressing_contest(&def_tactics)

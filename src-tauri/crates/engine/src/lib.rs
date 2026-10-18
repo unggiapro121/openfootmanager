@@ -2,6 +2,7 @@ pub mod ai;
 pub(crate) mod duel;
 pub mod event;
 mod headless;
+pub mod knobs;
 mod legacy_blend;
 pub mod live_match;
 pub mod pitch_position;
@@ -9,6 +10,7 @@ pub mod rating;
 pub mod report;
 pub(crate) mod shared;
 pub mod tally;
+pub mod targets;
 pub mod types;
 
 // Re-export key types for convenience
@@ -28,6 +30,7 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
 pub use duel::aerial_rating_of;
 pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind, TacticalContext};
 pub use headless::{simulate, simulate_with_rng};
+pub use knobs::{CalibrationKnobs, apply_knob_file};
 pub use legacy_blend::{legacy_dribbling, legacy_passing};
 pub use live_match::shot_weight;
 pub use live_match::{
