@@ -33,7 +33,8 @@ const ACCURACY_MIN: f64 = 0.15;
 const ACCURACY_MAX: f64 = 0.85;
 /// `PowerHeader` puts more of his headers on target.
 const POWER_HEADER_ACCURACY: f64 = 1.08;
-pub(crate) const CONVERSION_BASE: f64 = 0.28;
+// Was 0.28; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): headed goals 16.9% of goals (T8, real 16.3%).
+pub(crate) const CONVERSION_BASE: f64 = 0.18;
 const CONVERSION_SPREAD: f64 = 160.0;
 const CONVERSION_MIN: f64 = 0.08;
 const CONVERSION_MAX: f64 = 0.65;

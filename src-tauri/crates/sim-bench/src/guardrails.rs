@@ -244,9 +244,10 @@ fn high_turnovers(result: &SweepResult) -> Check {
         name: "mất bóng ở 1/3 sân nhà/trận",
         value: Some(tally.high_turnovers as f64 / f64::from(stats.games.max(1))),
         band: format!(
-            "đo ({:.3} cú sút, {:.3} bàn mỗi lần mất bóng)",
+            "đo ({:.3} cú sút, {:.3} bàn mỗi lần mất bóng; T14 nguy hiểm so với mất bóng giữa sân {:.2}, thật 1,44)",
             tally.high_turnover_shots as f64 / turnovers,
-            tally.high_turnover_goals as f64 / turnovers
+            tally.high_turnover_goals as f64 / turnovers,
+            tally.turnover_danger_ratio()
         ),
         verdict: Verdict::Measure,
     }

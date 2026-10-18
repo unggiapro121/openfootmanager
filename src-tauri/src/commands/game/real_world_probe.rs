@@ -830,6 +830,9 @@ struct MatchShares {
     high_turnovers: u64,
     high_turnover_shots: u64,
     high_turnover_goals: u64,
+    high_turnovers_with_shot: u64,
+    midfield_turnovers: u64,
+    midfield_turnovers_with_shot: u64,
     midfield_duels: u64,
     midfield_attack_won: u64,
     /// Phase 2, P4.2: long balls out of the own third, and those over the
@@ -1044,6 +1047,9 @@ impl MatchShares {
         self.high_turnovers += tally.high_turnovers;
         self.high_turnover_shots += tally.high_turnover_shots;
         self.high_turnover_goals += tally.high_turnover_goals;
+        self.high_turnovers_with_shot += tally.high_turnovers_with_shot;
+        self.midfield_turnovers += tally.midfield_turnovers;
+        self.midfield_turnovers_with_shot += tally.midfield_turnovers_with_shot;
         self.midfield_duels += tally.midfield_duels;
         self.midfield_attack_won += tally.midfield_attack_won;
         self.long_balls += tally.long_balls;
@@ -1079,6 +1085,17 @@ impl MatchShares {
             .copied()
             .unwrap_or(0);
         Self::pct(n, u64::from(self.goals))
+    }
+
+    /// T14: the share of balls lost in the own third the winner had a shot
+    /// after, over the same share for balls lost in midfield.
+    fn turnover_danger_ratio(&self) -> f64 {
+        let rate = |with_shot: u64, all: u64| with_shot as f64 / all.max(1) as f64;
+        let midfield = rate(self.midfield_turnovers_with_shot, self.midfield_turnovers);
+        if midfield == 0.0 {
+            return 0.0;
+        }
+        rate(self.high_turnovers_with_shot, self.high_turnovers) / midfield
     }
 
     fn per_match(&self, count: u64) -> f64 {
@@ -1148,9 +1165,9 @@ fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
         ),
         Gd5Row::banded(
             "T14",
-            "shots per ball lost in the own third",
-            shares.high_turnover_shots as f64 / shares.high_turnovers.max(1) as f64,
-            targets::SHOTS_PER_HIGH_TURNOVER,
+            "shot after a ball lost: own third / midfield",
+            shares.turnover_danger_ratio(),
+            targets::TURNOVER_DANGER_RATIO,
         ),
         Gd5Row::banded(
             "T16",

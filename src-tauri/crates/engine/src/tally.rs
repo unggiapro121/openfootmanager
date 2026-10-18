@@ -62,6 +62,16 @@ pub struct EventTally {
     pub high_turnovers: u64,
     pub high_turnover_shots: u64,
     pub high_turnover_goals: u64,
+    /// Of the high turnovers, the ones after which the side that won the ball
+    /// had at least one shot before the other side touched it again (GĐ5
+    /// P5.3, T14).
+    pub high_turnovers_with_shot: u64,
+    /// Balls lost in midfield, to a tackle or an interception that is not a
+    /// foul, and the ones the winner had a shot after, counted like a high
+    /// turnover (GĐ5 P5.3, T14): the yardstick a high turnover's danger is
+    /// read against.
+    pub midfield_turnovers: u64,
+    pub midfield_turnovers_with_shot: u64,
     /// Midfield duels (P4.0): the side on the ball passing into the final
     /// third, or losing it to a tackle or an interception in midfield.
     pub midfield_duels: u64,
@@ -112,6 +122,7 @@ impl EventTally {
             let previous = index.checked_sub(1).map(|i| &events[i]);
             tally.add_flank_duel(event, previous, &mut exploiting);
             tally.add_build_up(event, &events[index + 1..]);
+            tally.add_midfield_loss(event, &events[index + 1..]);
             tally.add_defensive_win(event, events.get(index + 1));
             tally.add_long_ball(event, events.get(index + 1), &mut kicker);
             if is_midfield_duel(event) {
@@ -213,6 +224,9 @@ impl EventTally {
         self.high_turnovers += other.high_turnovers;
         self.high_turnover_shots += other.high_turnover_shots;
         self.high_turnover_goals += other.high_turnover_goals;
+        self.high_turnovers_with_shot += other.high_turnovers_with_shot;
+        self.midfield_turnovers += other.midfield_turnovers;
+        self.midfield_turnovers_with_shot += other.midfield_turnovers_with_shot;
         self.midfield_duels += other.midfield_duels;
         self.midfield_attack_won += other.midfield_attack_won;
         self.direct_wins += other.direct_wins;
@@ -388,17 +402,58 @@ impl EventTally {
                 self.build_ups += 1;
                 self.high_turnovers += 1;
                 let winner = event.side.opposite();
+                let mut shot = false;
                 for next in after.iter().take_while(|e| e.side == winner) {
                     if next.is_shot() {
                         self.high_turnover_shots += 1;
+                        shot = true;
                     }
                     if next.is_goal() {
                         self.high_turnover_goals += 1;
                     }
                 }
+                self.high_turnovers_with_shot += u64::from(shot);
             }
             _ => {}
         }
+    }
+
+    /// A ball won in midfield by a tackle or an interception, unless the
+    /// tackle was a foul (the side on the ball keeps it), and whether the
+    /// winner had a shot before the other side touched it again.
+    fn add_midfield_loss(&mut self, event: &MatchEvent, after: &[MatchEvent]) {
+        let won_in_midfield = event.zone == Zone::Midfield
+            && matches!(
+                event.event_type,
+                EventType::Tackle | EventType::Interception
+            );
+        if !won_in_midfield
+            || after
+                .first()
+                .is_some_and(|n| n.event_type == EventType::Foul)
+        {
+            return;
+        }
+        let winner = event.side;
+        self.midfield_turnovers += 1;
+        let shot = after
+            .iter()
+            .take_while(|e| e.side == winner)
+            .any(MatchEvent::is_shot);
+        self.midfield_turnovers_with_shot += u64::from(shot);
+    }
+
+    /// How much likelier a shot is after a ball lost in the own third than
+    /// after one lost in midfield (GĐ5 P5.3, T14; StatsBomb 1.44): the share
+    /// of each that the winner had a shot after. Zero without a midfield loss
+    /// to compare with.
+    pub fn turnover_danger_ratio(&self) -> f64 {
+        let rate = |with_shot: u64, all: u64| with_shot as f64 / all.max(1) as f64;
+        let midfield = rate(self.midfield_turnovers_with_shot, self.midfield_turnovers);
+        if midfield == 0.0 {
+            return 0.0;
+        }
+        rate(self.high_turnovers_with_shot, self.high_turnovers) / midfield
     }
 
     /// A tackle or clearance in the winner's own third, and where play goes
@@ -674,6 +729,41 @@ mod tests {
             (tally.high_turnover_shots, tally.high_turnover_goals),
             (1, 1)
         );
+    }
+
+    /// Given an away tackle in midfield after which the away side shoots
+    /// twice, an away interception in midfield after which the home side has
+    /// the ball back without a shot, an away tackle in midfield that is a
+    /// foul, and a home build-up lost after which the away side shoots twice,
+    /// when they are tallied,
+    /// then two balls were lost in midfield, one of them led to a shot, the
+    /// foul is not a loss, and the danger ratio counts each lost ball once
+    /// however many shots followed (GĐ5 P5.3, T14).
+    #[test]
+    fn a_ball_lost_in_midfield_is_counted_with_whether_a_shot_followed() {
+        let tally = EventTally::of(&[
+            away(EventType::Tackle, Zone::Midfield),
+            away(EventType::ShotBlocked, Zone::HomeBox),
+            away(EventType::ShotSaved, Zone::HomeBox),
+            event(EventType::PassCompleted, Zone::Midfield),
+            away(EventType::Interception, Zone::Midfield),
+            event(EventType::PassCompleted, Zone::Midfield),
+            away(EventType::Tackle, Zone::Midfield),
+            away(EventType::Foul, Zone::Midfield),
+            event(EventType::PassIntercepted, Zone::HomeDefense),
+            away(EventType::Interception, Zone::HomeDefense),
+            away(EventType::ShotOffTarget, Zone::HomeBox),
+            away(EventType::ShotSaved, Zone::HomeBox),
+        ]);
+        assert_eq!(
+            (tally.midfield_turnovers, tally.midfield_turnovers_with_shot),
+            (2, 1)
+        );
+        assert_eq!(
+            (tally.high_turnovers, tally.high_turnovers_with_shot),
+            (1, 1)
+        );
+        assert!((tally.turnover_danger_ratio() - 2.0).abs() < 1e-9);
     }
 
     /// Given an away tackle in its own third followed by the away side in its

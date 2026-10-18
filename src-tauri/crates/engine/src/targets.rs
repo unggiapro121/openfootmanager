@@ -87,9 +87,13 @@ pub const DIRECT_FREE_KICK_GOALS: Band = Band::new(1.5, 3.0);
 pub const CORNERS_PER_GAME: Band = Band::new(9.0, 10.5);
 /// T13: shots a match.
 pub const SHOTS_PER_GAME: Band = Band::new(23.0, 26.0);
-/// T14: shots after each ball lost in the own third (X84). StatsBomb: 0.069
-/// (Đ1).
-pub const SHOTS_PER_HIGH_TURNOVER: Band = Band::new(0.06, 0.12);
+/// T14: how much likelier a shot is after a ball lost in the own third than
+/// after one lost in midfield, the shot counted in the winner's possession
+/// that follows (X84; redefined in P5.3, approved 2026-10-18). StatsBomb
+/// 2015/16: 0.138 / 0.096 = 1.44 ± 0.08 (`gd5-turnover-ratio.py`). The first
+/// definition, shots within 15 s per ball lost (0.069), could not be read off
+/// an engine whose actions last longer than that.
+pub const TURNOVER_DANGER_RATIO: Band = Band::new(1.3, 1.6);
 /// T16: standard deviation of a side's possession across matches, points
 /// (X87).
 pub const POSSESSION_SD: Band = Band::new(8.4, 12.4);

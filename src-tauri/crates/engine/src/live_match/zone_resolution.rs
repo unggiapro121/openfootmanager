@@ -31,7 +31,8 @@ const BOX_FOUL_CHANCE: f64 = 0.06;
 
 /// How often a one-on-one cleared goes behind for a corner (GĐ2); the
 /// default of `CalibrationKnobs::corner_from_cleared_duel`.
-pub(crate) const CORNER_FROM_CLEARED_DUEL: f64 = 0.25;
+// Was 0.25; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): 6.9 corners a match, real 9.6–9.7 (T11).
+pub(crate) const CORNER_FROM_CLEARED_DUEL: f64 = 0.36;
 
 /// How often a ball won from the other side's short build-up stays in their
 /// third for the winner, before the winner's press scales it (GĐ5 P5.2,

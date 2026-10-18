@@ -543,7 +543,10 @@ fn goals_conceded_away(away_style: PlayStyle, trials: u64) -> u32 {
 /// Then the defensive side concedes clearly fewer goals: its style counts when it defends.
 #[test]
 fn a_defensive_side_concedes_fewer_than_a_balanced_one() {
-    let trials = 4000;
+    // 12,000, not 4,000: the 2–3% effect sat inside one run's noise, and a
+    // change elsewhere that only shifted the random stream (GĐ5 P5.3) read
+    // 0.3%. sim-bench over 40,000 matches still measures 2.5% fewer.
+    let trials = 12_000;
     let against_defensive = goals_conceded_away(PlayStyle::Defensive, trials);
     let against_balanced = goals_conceded_away(PlayStyle::Balanced, trials);
 
