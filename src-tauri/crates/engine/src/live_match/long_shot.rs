@@ -54,8 +54,41 @@ const CUT_INSIDE_BONUS: f64 = 0.8;
 /// How often the man who might shoot from distance is a midfielder arriving
 /// from behind rather than the man on the ball.
 const MIDFIELDER_SHARE: f64 = 0.55;
-const LONG_SHOTS_SLOPE: f64 = 1.35;
-const HABIT_BONUS: f64 = 0.90;
+/// How much each ten points of `long_shots` above the slot's usual level
+/// raises the trigger's logit; a knob since GĐ5 P5.3: the slot's usual
+/// level `μ` is fixed over the whole package, so in a league of good players
+/// the slope lifts everyone and the share of shots from distance follows the
+/// league's quality (Premier League 50%, 2. Bundesliga 32%; real 28–41%).
+pub(crate) const LONG_SHOTS_SLOPE: f64 = 1.35;
+/// What the `ShootsFromDistance` habit adds to the logit (P1.5); a knob since
+/// GĐ5 P5.3.
+pub(crate) const HABIT_BONUS: f64 = 0.90;
+
+/// The trigger's level, its slope in `long_shots` and the habit's bonus: the
+/// three calibration knobs of the chance to shoot from distance.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct TriggerScale {
+    pub(crate) level: f64,
+    pub(crate) slope: f64,
+    pub(crate) habit: f64,
+}
+
+impl TriggerScale {
+    #[cfg(test)]
+    const DEFAULT: Self = Self {
+        level: BASE,
+        slope: LONG_SHOTS_SLOPE,
+        habit: HABIT_BONUS,
+    };
+
+    fn from_knobs(knobs: &crate::knobs::CalibrationKnobs) -> Self {
+        Self {
+            level: knobs.long_shot_base,
+            slope: knobs.long_shot_slope,
+            habit: knobs.long_shot_habit_bonus,
+        }
+    }
+}
 const COMPACT_BONUS: f64 = 0.25;
 const MAX_CHANCE: f64 = 0.45;
 /// The striker's base, the reference the other positions are read against.
@@ -110,26 +143,26 @@ fn default_slot(group: Position) -> PitchPosition {
     }
 }
 
-/// The chance a player at `slot` tries a shot from distance this action, at
-/// level `level` (`BASE`) plus `extra` (the
-/// flank's penalty, a cut inside's bonus).
+/// The chance a player at `slot` tries a shot from distance this action, on
+/// `scale` (level `BASE`, slope, habit bonus) plus `extra` (the flank's
+/// penalty, a cut inside's bonus).
 fn trigger_chance(
     slot: PitchPosition,
     long_shots: u8,
     shoots_from_distance: bool,
     against_compact: bool,
-    level: f64,
+    scale: TriggerScale,
     extra: f64,
 ) -> f64 {
     let Some((base, mean)) = long_shot_norm(slot) else {
         return 0.0;
     };
-    let logit = level
+    let logit = scale.level
         + extra
         + (base - STRIKER_BASE)
-        + LONG_SHOTS_SLOPE * (f64::from(long_shots) - mean) / 10.0
+        + scale.slope * (f64::from(long_shots) - mean) / 10.0
         + if shoots_from_distance {
-            HABIT_BONUS
+            scale.habit
         } else {
             0.0
         }
@@ -185,8 +218,7 @@ impl LiveMatchState {
         } else {
             self.config.knobs.long_shot_flank_penalty
         };
-        let chance =
-            self.long_shot_chance(att_side, &shooter, self.config.knobs.long_shot_base, extra);
+        let chance = self.long_shot_chance(att_side, &shooter, extra);
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
@@ -207,7 +239,7 @@ impl LiveMatchState {
     }
 
     /// `shooter`'s chance to shoot from distance, at `level` plus `extra`.
-    fn long_shot_chance(&self, side: Side, shooter: &PlayerSnap, level: f64, extra: f64) -> f64 {
+    fn long_shot_chance(&self, side: Side, shooter: &PlayerSnap, extra: f64) -> f64 {
         let group = self
             .team_ref(side)
             .players
@@ -224,7 +256,7 @@ impl LiveMatchState {
             shooter.long_shots,
             shooter.has_trait("ShootsFromDistance"),
             compact,
-            level,
+            TriggerScale::from_knobs(&self.config.knobs),
             extra,
         )
     }
@@ -239,12 +271,7 @@ impl LiveMatchState {
         cutter: &PlayerSnap,
         rng: &mut R,
     ) -> Option<Vec<MatchEvent>> {
-        let chance = self.long_shot_chance(
-            att_side,
-            cutter,
-            self.config.knobs.long_shot_base,
-            CUT_INSIDE_BONUS,
-        );
+        let chance = self.long_shot_chance(att_side, cutter, CUT_INSIDE_BONUS);
         if rng.random_range(0.0..1.0f64) >= chance {
             return None;
         }
@@ -364,13 +391,34 @@ mod tests {
     /// one time in ten (20 times as often).
     #[test]
     fn the_chance_follows_the_slot() {
-        let cb = trigger_chance(PitchPosition::CenterBack, 38, false, false, BASE, 0.0);
-        let st = trigger_chance(PitchPosition::Striker, 64, false, false, BASE, 0.0);
+        let cb = trigger_chance(
+            PitchPosition::CenterBack,
+            38,
+            false,
+            false,
+            TriggerScale::DEFAULT,
+            0.0,
+        );
+        let st = trigger_chance(
+            PitchPosition::Striker,
+            64,
+            false,
+            false,
+            TriggerScale::DEFAULT,
+            0.0,
+        );
         assert!(cb < 0.01, "cb {cb}");
         assert!(st > 0.05, "st {st}");
         assert!(st > 20.0 * cb, "st {st}, cb {cb}");
         assert_eq!(
-            trigger_chance(PitchPosition::Goalkeeper, 99, true, true, BASE, 0.0),
+            trigger_chance(
+                PitchPosition::Goalkeeper,
+                99,
+                true,
+                true,
+                TriggerScale::DEFAULT,
+                0.0
+            ),
             0.0
         );
     }
@@ -382,13 +430,43 @@ mod tests {
     #[test]
     fn long_shots_habit_and_a_compact_defence_raise_the_chance_to_a_cap() {
         let cm = PitchPosition::CentralMidfielder;
-        let plain = trigger_chance(cm, 60, false, false, BASE, 0.0);
-        assert!(trigger_chance(cm, 80, false, false, BASE, 0.0) > plain);
-        assert!(trigger_chance(cm, 60, true, false, BASE, 0.0) > plain);
-        assert!(trigger_chance(cm, 60, false, true, BASE, 0.0) > plain);
-        assert_eq!(trigger_chance(cm, 99, true, true, BASE, 0.0), MAX_CHANCE);
+        let plain = trigger_chance(cm, 60, false, false, TriggerScale::DEFAULT, 0.0);
+        assert!(trigger_chance(cm, 80, false, false, TriggerScale::DEFAULT, 0.0) > plain);
+        assert!(trigger_chance(cm, 60, true, false, TriggerScale::DEFAULT, 0.0) > plain);
+        assert!(trigger_chance(cm, 60, false, true, TriggerScale::DEFAULT, 0.0) > plain);
+        assert_eq!(
+            trigger_chance(cm, 99, true, true, TriggerScale::DEFAULT, 0.0),
+            MAX_CHANCE
+        );
         // From a flank (P3.4) the same man shoots less often.
-        assert!(trigger_chance(cm, 60, false, false, BASE, FLANK_PENALTY) < plain);
+        assert!(trigger_chance(cm, 60, false, false, TriggerScale::DEFAULT, FLANK_PENALTY) < plain);
+    }
+
+    /// Given a central midfielder with poor and with good long shots,
+    /// when their chances are read at the default slope and at a flatter one,
+    /// then the flatter slope narrows the gap between them, and a zero habit
+    /// bonus takes the habit's effect away (GĐ5 P5.3: the share of shots from
+    /// distance should not follow a league's quality as much as it did).
+    #[test]
+    fn the_slope_and_the_habit_bonus_are_knobs() {
+        let cm = PitchPosition::CentralMidfielder;
+        let flat = TriggerScale {
+            slope: 0.5,
+            ..TriggerScale::DEFAULT
+        };
+        let gap = |scale: TriggerScale| {
+            trigger_chance(cm, 80, false, false, scale, 0.0)
+                - trigger_chance(cm, 50, false, false, scale, 0.0)
+        };
+        assert!(gap(flat) < gap(TriggerScale::DEFAULT));
+        let no_habit = TriggerScale {
+            habit: 0.0,
+            ..TriggerScale::DEFAULT
+        };
+        assert_eq!(
+            trigger_chance(cm, 60, true, false, no_habit, 0.0),
+            trigger_chance(cm, 60, false, false, no_habit, 0.0)
+        );
     }
 
     /// Given the shot's chances at the extremes,
