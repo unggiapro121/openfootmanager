@@ -415,9 +415,10 @@ mod tests {
 
     /// Given two equal sides,
     /// when a loose ball after a home long ball is played many times,
-    /// then each side wins half of them.
+    /// then the side that kicked it wins about three in eight: the other side
+    /// is already standing where it drops (GĐ5 P5.2, X84; StatsBomb 30–36%).
     #[test]
-    fn equal_sides_win_half_the_second_balls() {
+    fn the_side_that_kicked_it_wins_fewer_second_balls() {
         let mut rng = StdRng::seed_from_u64(8);
         let mut home = 0;
         for _ in 0..20_000 {
@@ -429,7 +430,8 @@ mod tests {
             }
         }
         let share = f64::from(home) / 20_000.0;
-        assert!((share - 0.5).abs() < 0.01, "{share:.3}");
+        // σ(ln 0.58) = 0.58 / 1.58.
+        assert!((share - 0.367).abs() < 0.01, "{share:.3}");
     }
 
     /// Given a home long ball dropping loose in the home side's attacking
