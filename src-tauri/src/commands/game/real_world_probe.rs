@@ -26,8 +26,8 @@
 //! European competitions and count only the 17 leagues of the football-data
 //! reference table (phase 2, GĐ5 P5.0, X80; the club then defaults to the
 //! first of the Premier League), `OFM_PROBE_OUT` for a JSON copy, `OFM_KNOBS`
-//! for a calibration knob file (X82), `OFM_STRENGTH_BRIDGE` for the market's
-//! line over the strength gap (`gd5-strength-bridge.json`, X81).
+//! for a calibration knob file (X82), `OFM_STRENGTH_BRIDGE` for the line
+//! real results drew over the strength gap (`gd5-strength-bridge.json`, X81).
 //!
 //! Both probes end with GĐ5's verdict: their rows of `engine::targets`, PASS
 //! or FAIL (GĐ5-tech-spec §11.2).
@@ -87,8 +87,8 @@ struct GapTotals {
     strong_losses: u32,
     /// Of those, the matches the stronger club played at home.
     strong_at_home: u32,
-    /// The stronger club's wins the market's line expects over the same
-    /// matches, home and gap as played (`OFM_STRENGTH_BRIDGE`).
+    /// The stronger club's wins the real line expects over the same matches,
+    /// home and gap as played (`OFM_STRENGTH_BRIDGE`).
     expected_strong_wins: f64,
 }
 
@@ -98,8 +98,11 @@ impl GapTotals {
     }
 }
 
-/// The market's line over the strength gap: the ordered probit
-/// `gd5-strength-bridge.py` fits to the 2024-25 closing odds (`fit_on_market`).
+/// The real line over the strength gap: the ordered probit
+/// `gd5-strength-bridge.py` fits to the 2024-25 results by `S`
+/// (`fit_on_results`). Results rather than the closing odds (`fit_on_market`)
+/// because `S` is built after that season and so reads 3–4 points steeper
+/// than the market did (GĐ5 P5.0, Đ6).
 #[derive(Clone, Copy)]
 struct StrengthBridge {
     beta: f64,
@@ -114,7 +117,7 @@ impl StrengthBridge {
             &std::fs::read_to_string(&path).expect("OFM_STRENGTH_BRIDGE names a readable file"),
         )
         .expect("a JSON strength bridge");
-        let fit = &json["fit_on_market"];
+        let fit = &json["fit_on_results"];
         let read = |key: &str| {
             fit[key]
                 .as_f64()
@@ -127,8 +130,8 @@ impl StrengthBridge {
         })
     }
 
-    /// The market's chance that the stronger club wins, `gap` points of `S`
-    /// ahead, at home or away.
+    /// The chance that the stronger club wins, `gap` points of `S` ahead, at
+    /// home or away.
     fn strong_win(&self, gap: f64, at_home: bool) -> f64 {
         if at_home {
             1.0 - normal_cdf(self.c - (self.beta * gap + self.eta))
@@ -525,12 +528,12 @@ fn the_normal_distribution_matches_its_table() {
     assert!((normal_cdf(-1.96) - 0.025).abs() < 1e-4);
 }
 
-/// Given the market's line fitted on 2024-25,
+/// Given a strength line (the one fitted on the 2024-25 market),
 /// when the stronger club's chance is read across gaps, at home and away,
 /// then it rises with the gap, home is worth more than away, and at gap 0
 /// the two are the home and away sides' chances of one even match.
 #[test]
-fn the_markets_line_rises_with_the_gap_and_favours_home() {
+fn the_strength_line_rises_with_the_gap_and_favours_home() {
     let bridge = StrengthBridge {
         beta: 0.0858,
         eta: 0.1938,
@@ -885,8 +888,7 @@ impl MatchShares {
     }
 }
 
-/// The match probe's rows of GĐ5's verdict: T8–T14, T16, T19, T20, with T9a
-/// and T9c as measures.
+/// The match probe's rows of GĐ5's verdict: T8–T14, T16, T19, T20.
 fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
     let goals = u64::from(shares.goals);
     let outside_box = MatchShares::pct(
@@ -905,6 +907,18 @@ fn match_verdict(shares: &MatchShares, players: &PlayerShares) -> Vec<Gd5Row> {
             "goals from outside the box with DFK (% of goals)",
             outside_box,
             targets::OUTSIDE_BOX_GOALS,
+        ),
+        Gd5Row::banded(
+            "T9c",
+            "long shots scored (%)",
+            MatchShares::pct(shares.long_shot_goals, shares.long_shots),
+            targets::LONG_SHOT_CONVERSION,
+        ),
+        Gd5Row::banded(
+            "T9d",
+            "long shots (% of shots)",
+            MatchShares::pct(shares.long_shots, shares.shots),
+            targets::LONG_SHOT_SHARE,
         ),
         Gd5Row::banded(
             "T10",
@@ -1164,16 +1178,16 @@ fn league_verdict(
     if bridge.is_some() {
         let tolerance = targets::STRENGTH_GAP_TOLERANCE;
         for (bucket, gap) in l.by_gap.iter().enumerate().take(GAP_BUCKETS - 1) {
-            let market = gap.expected_strong_wins / f64::from(gap.matches.max(1)) * 100.0;
-            let off = gap.pct(gap.strong_wins) - market;
+            let real = gap.expected_strong_wins / f64::from(gap.matches.max(1)) * 100.0;
+            let off = gap.pct(gap.strong_wins) - real;
             rows.push(Gd5Row {
                 target: "T5",
                 name: format!(
-                    "gap S {}: stronger wins − market (points)",
+                    "gap S {}: stronger wins − real line (points)",
                     gap_label(bucket)
                 ),
                 value: off,
-                band: format!("±{tolerance} (market {market:.1})"),
+                band: format!("±{tolerance} (real {real:.1})"),
                 pass: off.abs() <= tolerance,
             });
         }
@@ -1269,19 +1283,19 @@ fn real_world_probe() {
         f64::from(l.substitutions) / f64::from(l.matches.max(1))
     );
     println!(
-        "  by strength gap S (stronger club's win/draw/loss %, share of those at home, the market's win %):"
+        "  by strength gap S (stronger club's win/draw/loss %, share of those at home, the real line's win %):"
     );
     for (bucket, gap) in l.by_gap.iter().enumerate() {
-        let market = if bridge.is_some() {
+        let line = if bridge.is_some() {
             format!(
-                " · market {:.1}",
+                " · real line {:.1}",
                 gap.expected_strong_wins / f64::from(gap.matches.max(1)) * 100.0
             )
         } else {
             String::new()
         };
         println!(
-            "    {:>6}: {:>5} matches · {:.1}/{:.1}/{:.1} · {:.0}% at home{market}",
+            "    {:>6}: {:>5} matches · {:.1}/{:.1}/{:.1} · {:.0}% at home{line}",
             gap_label(bucket),
             gap.matches,
             gap.pct(gap.strong_wins),
