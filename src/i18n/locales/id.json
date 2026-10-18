@@ -2593,6 +2593,20 @@
             "0": "{{player}} berlari ke belakang garis pertahanan tinggi dan mencetak gol!",
             "1": "Lolos ke belakang pertahanan, {{player}} tenang menuntaskan untuk {{team}}!"
           }
+        },
+        "keeperOffHisLine": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "{{player}} menggulirkan bola ke gawang kosong!",
+            "1": "Kiper terlanjur keluar, dan {{player}} menjebol gawang kosong untuk {{team}}!"
+          }
+        },
+        "counter": {
+          "headline": "GOL!",
+          "lines": {
+            "0": "Serangan balik sempurna, dituntaskan oleh {{player}}!",
+            "1": "{{team}} menghukum lewat serangan balik, dan {{player}} mencetak gol!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2606,7 +2620,7 @@
         "headline": "PENALTI GAGAL!",
         "lines": {
           "0": "{{player}} gagal dari titik putih! Kelegaan besar bagi {{opponent}}!",
-          "1": "Diselamatkan! {{player}} akan mimpi buruk dengan penalti itu."
+          "1": "Gagal! {{player}} bakal mimpi buruk karena penalti itu."
         }
       },
       "PenaltyAwarded": {
@@ -2798,7 +2812,335 @@
       "allNames": "Semua nama",
       "hide": "Sembunyikan radar",
       "show": "Tampilkan radar",
-      "speedHint": "Radar menampilkan peluang berbahaya dengan temponya sendiri. Sembunyikan radar untuk memilih kecepatan."
+      "speedHint": "Radar menampilkan peluang berbahaya dengan temponya sendiri. Sembunyikan radar untuk memilih kecepatan.",
+      "commentary": {
+        "flank": {
+          "Left": "lewat sisi kiri",
+          "Centre": "lewat jalur tengah",
+          "Right": "lewat sisi kanan"
+        },
+        "tackle": {
+          "lines": {
+            "0": "{{player}} menekel keras dan merebut bola kembali untuk {{team}}.",
+            "1": "Tekel bersih dari {{player}}, dan {{team}} kembali menguasai bola."
+          }
+        },
+        "interception": {
+          "lines": {
+            "0": "{{other}} kehilangan bola, dan {{player}} membaca arahnya untuk memotong.",
+            "1": "{{player}} maju dan memotong umpan {{other}}."
+          },
+          "noPasser": {
+            "lines": {
+              "0": "{{player}} membaca arah bola dan memotong umpan itu.",
+              "1": "{{player}} sigap maju untuk mengintersep."
+            }
+          }
+        },
+        "highTurnover": {
+          "lines": {
+            "0": "{{team}} menekan tinggi! {{player}} merebut bola di separuh lapangan {{opponent}}.",
+            "1": "{{opponent}} dipaksa salah di lini belakang, dan {{player}} langsung menyambar!"
+          }
+        },
+        "sweeper": {
+          "lines": {
+            "0": "{{player}} berlari keluar kotak penalti dan menyapu bola sebelum {{other}} sampai!",
+            "1": "Timing sempurna dari {{player}}, keluar dan mendahului {{other}}!"
+          },
+          "noForward": {
+            "lines": {
+              "0": "{{player}} berlari keluar untuk menyapu bola!"
+            }
+          }
+        },
+        "recovered": {
+          "lines": {
+            "0": "{{player}} membaca umpan panjang dan mengamankannya.",
+            "1": "{{player}} menang adu lari dan menjaga bola untuk {{team}}."
+          }
+        },
+        "secondBall": {
+          "lines": {
+            "0": "Bola kedua jatuh, dan {{player}} lebih dulu tiba daripada {{other}}.",
+            "1": "{{player}} mendahului {{other}} merebut bola liar."
+          }
+        },
+        "pass": {
+          "buildUp": {
+            "lines": {
+              "0": "{{player}} memulai serangan dari belakang, mengalirkan bola ke {{receiver}}.",
+              "1": "{{player}} dengan tenang mengalirkan bola ke {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} dengan tenang membangun serangan dari belakang."
+              }
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{player}} membelah lini lawan dengan umpan ke {{receiver}}.",
+              "1": "{{receiver}} menerima umpan {{player}}, dan {{team}} masuk ke separuh lapangan {{opponent}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} membawa bola ke depan."
+              }
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{player}} menyodorkan bola ke {{receiver}} di sepertiga akhir.",
+              "1": "{{player}} menemukan {{receiver}} di tepi kotak penalti."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} mencari celah masuk ke kotak penalti."
+              }
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Serangan balik cepat! {{player}} meneruskan bola ke {{receiver}}.",
+              "1": "{{team}} berganti fase dalam sekejap, dan {{player}} langsung menemukan {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "Serangan balik cepat! {{player}} menggiring bola ke depan."
+              }
+            }
+          }
+        },
+        "longBall": {
+          "lines": {
+            "0": "{{player}} mengirim umpan panjang untuk {{receiver}}.",
+            "1": "Umpan panjang dari {{player}}, mengarah ke {{receiver}}."
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} melepaskan umpan panjang jauh ke depan."
+            }
+          }
+        },
+        "dribble": {
+          "lines": {
+            "0": "{{player}} mengecoh satu lawan {{flank}}.",
+            "1": "{{player}} melewati bek dan masuk ke sepertiga akhir."
+          },
+          "counter": {
+            "lines": {
+              "0": "Serangan balik! {{player}} melaju kencang {{flank}}!",
+              "1": "{{player}} membawa bola ke depan dalam serangan balik!"
+            }
+          },
+          "cutInside": {
+            "lines": {
+              "0": "{{player}} menusuk ke dalam ke kaki terkuat!",
+              "1": "{{player}} masuk ke tengah dari sayap!"
+            }
+          },
+          "flankExposed": {
+            "lines": {
+              "0": "Bek sayap {{opponent}} terlambat turun, dan {{player}} melesat ke ruang kosong!",
+              "1": "{{player}} menyerang ruang di belakang bek sayap {{opponent}}!"
+            }
+          },
+          "ballInBehind": {
+            "lines": {
+              "0": "{{player}} lolos ke belakang {{other}}!",
+              "1": "{{player}} meninggalkan {{other}} dan menusuk ke arah gawang!"
+            },
+            "alone": {
+              "lines": {
+                "0": "{{player}} lolos ke belakang pertahanan!"
+              }
+            }
+          }
+        },
+        "dribbleTackled": {
+          "lines": {
+            "0": "{{other}} menghentikan laju {{player}}.",
+            "1": "Bola {{player}} direbut oleh {{other}}."
+          },
+          "noDefender": {
+            "lines": {
+              "0": "Laju {{player}} terhenti."
+            }
+          }
+        },
+        "cross": {
+          "lines": {
+            "0": "{{player}} mengirim umpan silang ke kotak penalti untuk {{receiver}}!",
+            "1": "Umpan silang {{flank}} dari {{player}}, dan {{receiver}} sudah menunggu di kotak penalti!"
+          },
+          "early": {
+            "lines": {
+              "0": "{{player}} melepas umpan silang awal ke belakang pertahanan untuk {{receiver}}!",
+              "1": "Tak perlu melewati lawan: {{player}} langsung melambungkan bola untuk {{receiver}}!"
+            }
+          },
+          "low": {
+            "lines": {
+              "0": "{{player}} mengirim umpan mendatar keras melintasi kotak penalti untuk {{receiver}}!",
+              "1": "Umpan silang rendah dari {{player}} meluncur melintasi kotak penalti!"
+            }
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} mengirim umpan silang, tapi terlalu jauh untuk semua orang.",
+              "1": "Umpan silang {{player}} tak menemukan siapa pun."
+            }
+          },
+          "corner": {
+            "lines": {
+              "0": "{{player}} mengirim bola melengkung, dan {{receiver}} melompat menyambutnya!",
+              "1": "Sepak pojok {{player}} menemukan {{receiver}}!"
+            }
+          },
+          "freeKick": {
+            "lines": {
+              "0": "{{player}} melambungkan tendangan bebas, dan {{receiver}} menyerbu bola!",
+              "1": "{{player}} mengirim tendangan bebas ke arah {{receiver}}!"
+            }
+          }
+        },
+        "clearance": {
+          "lines": {
+            "0": "{{player}} datang tepat waktu untuk menghalau bahaya.",
+            "1": "{{player}} membuang bola sekuat tenaga, dan {{team}} selamat untuk sementara."
+          },
+          "cross": {
+            "lines": {
+              "0": "{{player}} melompat dan menyundul bola menjauh.",
+              "1": "{{player}} menang duel udara dan menghalau bola."
+            }
+          },
+          "lowCross": {
+            "lines": {
+              "0": "{{player}} memotong umpan silang rendah itu."
+            }
+          },
+          "longBall": {
+            "lines": {
+              "0": "{{player}} menyundul jauh umpan panjang itu."
+            }
+          }
+        },
+        "corner": {
+          "lines": {
+            "0": "Sepak pojok untuk {{team}}, dan {{player}} bersiap mengambilnya.",
+            "1": "{{player}} bersiap mengambil sepak pojok."
+          },
+          "noTaker": {
+            "lines": {
+              "0": "Sepak pojok untuk {{team}}."
+            }
+          }
+        },
+        "freeKick": {
+          "awarded": {
+            "lines": {
+              "0": "Tendangan bebas untuk {{team}}."
+            }
+          },
+          "awardedDanger": {
+            "lines": {
+              "0": "{{team}} mendapat tendangan bebas di posisi berbahaya!"
+            }
+          },
+          "taken": {
+            "lines": {
+              "0": "{{player}} berdiri di depan bola, siap mengeksekusi tendangan bebas."
+            }
+          }
+        },
+        "goalKick": {
+          "lines": {
+            "0": "Tendangan gawang untuk {{team}}."
+          }
+        },
+        "shot": {
+          "open": {
+            "lines": {
+              "0": "{{player}} menembak!",
+              "1": "{{player}} berbalik dan melepaskan tembakan!"
+            }
+          },
+          "header": {
+            "lines": {
+              "0": "{{player}} melompat untuk menyundul!",
+              "1": "{{player}} menyundul bola!"
+            }
+          },
+          "longRange": {
+            "lines": {
+              "0": "{{player}} mencoba dari jarak jauh!",
+              "1": "{{player}} melepaskan geledek dari jauh!"
+            }
+          },
+          "keeperOff": {
+            "lines": {
+              "0": "Gawang tak terkawal, dan {{player}} menembak!"
+            }
+          },
+          "directFreeKick": {
+            "lines": {
+              "0": "{{player}} langsung mengincar gawang dari tendangan bebas!",
+              "1": "{{player}} mengambil ancang-ancang… dan menendang bola mati itu!"
+            }
+          },
+          "penalty": {
+            "lines": {
+              "0": "{{player}} meletakkan bola di titik putih… mengambil ancang-ancang…"
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Di ujung serangan balik, {{player}} menembak!"
+            }
+          }
+        },
+        "assist": {
+          "lines": {
+            "0": "{{player}} yang menyiapkannya.",
+            "1": "Assist untuk {{player}}.",
+            "2": "Kerja apik {{player}} yang menciptakan peluang itu."
+          }
+        },
+        "summary": {
+          "ownHalf": {
+            "lines": {
+              "0": "{{team}} menahan bola di separuh lapangan sendiri, tak terburu-buru maju.",
+              "1": "{{team}} memutar bola di lini belakang."
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{team}} sabar memutar bola di lini tengah.",
+              "1": "Kedua tim saling jual-beli di lini tengah."
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{team}} terus mengepung kotak penalti {{opponent}}.",
+              "1": "{{opponent}} bertahan dalam di bawah tekanan {{team}}."
+            }
+          },
+          "lateTrailing": {
+            "lines": {
+              "0": "Sudah {{minute}} menit berjalan, dan {{team}} masih tertinggal {{score}}.",
+              "1": "Waktu terus menipis, dan {{team}} masih tertinggal {{score}}."
+            }
+          },
+          "lateLevel": {
+            "lines": {
+              "0": "Sudah {{minute}} menit berjalan, dan skor masih {{score}}.",
+              "1": "Memasuki menit-menit akhir, skor masih imbang {{score}}."
+            }
+          }
+        }
+      }
     },
     "wingBackConversion": "Bermain sebagai wing-back tanpa penalti"
   },

@@ -2593,6 +2593,20 @@
             "0": "{{player}} önde duran savunmanın arkasına koşup golü atıyor!",
             "1": "Savunmanın arkasında yalnız kalan {{player}} {{team}} için soğukkanlı!"
           }
+        },
+        "keeperOffHisLine": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} topu boş kaleye yuvarlıyor!",
+            "1": "Kaleci kalesinden uzakta kaldı, {{player}} boş kaleye {{team}} adına golü atıyor!"
+          }
+        },
+        "counter": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Ders niteliğinde bir kontra atak, son noktayı {{player}} koyuyor!",
+            "1": "{{team}} hızlı hücumla cezayı kesiyor, {{player}} golü atıyor!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2606,7 +2620,7 @@
         "headline": "PENALTI KAÇTI!",
         "lines": {
           "0": "{{player}} penaltı noktasından harcıyor! {{opponent}} için ne büyük şans!",
-          "1": "Kurtardı! {{player}} bu penaltıyı kabuslarında görecek."
+          "1": "Kaçtı! {{player}} bu penaltıyı kabuslarında görecek."
         }
       },
       "PenaltyAwarded": {
@@ -2798,7 +2812,335 @@
       "allNames": "Tüm isimler",
       "hide": "Radarı gizle",
       "show": "Radarı göster",
-      "speedHint": "Radar tehlikeli anları kendi temposunda gösterir. Hız seçmek için radarı gizleyin."
+      "speedHint": "Radar tehlikeli anları kendi temposunda gösterir. Hız seçmek için radarı gizleyin.",
+      "commentary": {
+        "flank": {
+          "Left": "sol kanattan",
+          "Centre": "merkezden",
+          "Right": "sağ kanattan"
+        },
+        "tackle": {
+          "lines": {
+            "0": "{{player}} sert giriyor ve topu {{team}} için geri kazanıyor.",
+            "1": "{{player}} temiz bir müdahaleyle topu alıyor, {{team}} yeniden topa sahip."
+          }
+        },
+        "interception": {
+          "lines": {
+            "0": "{{other}} topu kaptırıyor, {{player}} pozisyonu okuyup araya giriyor.",
+            "1": "{{other}} pas veriyor ama {{player}} araya girip topu kesiyor."
+          },
+          "noPasser": {
+            "lines": {
+              "0": "{{player}} pozisyonu okuyor ve pası kesiyor.",
+              "1": "{{player}} çabuk davranıp araya giriyor."
+            }
+          }
+        },
+        "highTurnover": {
+          "lines": {
+            "0": "{{team}} önde basıyor! {{player}} topu {{opponent}} yarı sahasında kazanıyor.",
+            "1": "{{opponent}} geride hataya zorlanıyor ve {{player}} fırsatı kaçırmıyor!"
+          }
+        },
+        "sweeper": {
+          "lines": {
+            "0": "{{player}} ceza sahasından fırlıyor ve {{other}} yetişmeden topu uzaklaştırıyor!",
+            "1": "Kusursuz zamanlama! {{player}} kalesinden çıkıyor, {{other}} topa yetişemiyor!"
+          },
+          "noForward": {
+            "lines": {
+              "0": "{{player}} hızla kalesinden çıkıp topu süpürüyor!"
+            }
+          }
+        },
+        "recovered": {
+          "lines": {
+            "0": "{{player}} uzun topu okuyor ve güvenle topluyor.",
+            "1": "{{player}} topa ilk ulaşan oluyor, top {{team}} kontrolünde kalıyor."
+          }
+        },
+        "secondBall": {
+          "lines": {
+            "0": "İkinci top düşüyor ve {{player}}, {{other}} yetişmeden topa ulaşıyor.",
+            "1": "Boştaki topa {{player}} uzanıyor, {{other}} geç kalıyor."
+          }
+        },
+        "pass": {
+          "buildUp": {
+            "lines": {
+              "0": "{{player}} oyunu geriden kuruyor, top {{receiver}} ile buluşuyor.",
+              "1": "{{player}} soğukkanlı bir şekilde topu {{receiver}} ile buluşturuyor."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} topu geriden sakince çıkarıyor."
+              }
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{player}} hattı kıran bir pas atıyor, top {{receiver}} ile buluşuyor.",
+              "1": "{{player}} pası veriyor, {{receiver}} alıyor ve {{team}} artık {{opponent}} yarı sahasında."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} topu ileri taşıyor."
+              }
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{player}} son bölgede topu {{receiver}} ile buluşturuyor.",
+              "1": "{{player}} ceza sahası önünde bekleyen {{receiver}} için pası çıkarıyor."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} ceza sahasına girmenin yolunu arıyor."
+              }
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Hızlı atak! {{player}} topu {{receiver}} için ileri gönderiyor.",
+              "1": "{{team}} göz açıp kapayıncaya kadar hücuma geçiyor, {{player}} topu anında {{receiver}} ile buluşturuyor."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "Hızlı atak! {{player}} topu ileri sürüyor."
+              }
+            }
+          }
+        },
+        "longBall": {
+          "lines": {
+            "0": "{{player}} uzun oynuyor, hedefte {{receiver}} var.",
+            "1": "{{player}} uzun topu gönderiyor, hedef {{receiver}}."
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} topu ileriye uzun şişiriyor."
+            }
+          }
+        },
+        "dribble": {
+          "lines": {
+            "0": "{{player}} {{flank}} rakibini geçiyor.",
+            "1": "{{player}} savunmacıyı geçip son bölgeye giriyor."
+          },
+          "counter": {
+            "lines": {
+              "0": "Kontra atak! {{player}} {{flank}} depar atıyor!",
+              "1": "{{player}} kontra atakta topu ileri taşıyor!"
+            }
+          },
+          "cutInside": {
+            "lines": {
+              "0": "{{player}} güçlü ayağına içeri kat ediyor!",
+              "1": "{{player}} kanattan içeri giriyor!"
+            }
+          },
+          "flankExposed": {
+            "lines": {
+              "0": "{{opponent}} beki önde yakalandı, {{player}} boşluğa koşuyor!",
+              "1": "{{player}}, {{opponent}} bekinin arkasındaki boşluğa saldırıyor!"
+            }
+          },
+          "ballInBehind": {
+            "lines": {
+              "0": "{{player}} arkaya sarktı, {{other}} geride kaldı!",
+              "1": "{{player}} hızla sıyrılıyor, {{other}} yetişemiyor, kaleye gidiyor!"
+            },
+            "alone": {
+              "lines": {
+                "0": "{{player}} savunmanın arkasına sarktı!"
+              }
+            }
+          }
+        },
+        "dribbleTackled": {
+          "lines": {
+            "0": "{{player}} çalımla ilerlerken {{other}} engel oluyor.",
+            "1": "{{player}} topu kaptırıyor, topu {{other}} kapıyor."
+          },
+          "noDefender": {
+            "lines": {
+              "0": "{{player}} ilerlerken durduruluyor."
+            }
+          }
+        },
+        "cross": {
+          "lines": {
+            "0": "{{player}} ceza sahasına {{receiver}} için ortalıyor!",
+            "1": "{{player}} {{flank}} ortalıyor, {{receiver}} ceza sahasında bekliyor!"
+          },
+          "early": {
+            "lines": {
+              "0": "{{player}} savunmanın arkasına {{receiver}} için erken orta açıyor!",
+              "1": "Adam geçmeye gerek yok: {{player}} erkenden {{receiver}} için ortalıyor!"
+            }
+          },
+          "low": {
+            "lines": {
+              "0": "{{player}} ceza sahasına yerden sert ortalıyor, {{receiver}} orada!",
+              "1": "{{player}} yerden ortalıyor, top ceza sahasında kayıyor!"
+            }
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} ortalıyor ama top herkesin üzerinden geçiyor.",
+              "1": "{{player}} ortalıyor ama orada kimse yok."
+            }
+          },
+          "corner": {
+            "lines": {
+              "0": "{{player}} kornerden ortalıyor, {{receiver}} topa yükseliyor!",
+              "1": "{{player}} korneri kullanıyor, top {{receiver}} ile buluşuyor!"
+            }
+          },
+          "freeKick": {
+            "lines": {
+              "0": "{{player}} serbest vuruşu havalandırıyor, {{receiver}} topa saldırıyor!",
+              "1": "{{player}} serbest vuruşu {{receiver}} için ortalıyor!"
+            }
+          }
+        },
+        "clearance": {
+          "lines": {
+            "0": "{{player}} yetişip tehlikeyi uzaklaştırıyor.",
+            "1": "{{player}} topu gelişine uzaklaştırıyor, {{team}} şimdilik nefes alıyor."
+          },
+          "cross": {
+            "lines": {
+              "0": "{{player}} yükselip kafayla uzaklaştırıyor.",
+              "1": "{{player}} hava topunu kazanıp uzaklaştırıyor."
+            }
+          },
+          "lowCross": {
+            "lines": {
+              "0": "{{player}} yerden ortayı kesiyor."
+            }
+          },
+          "longBall": {
+            "lines": {
+              "0": "{{player}} uzun topu kafayla uzaklaştırıyor."
+            }
+          }
+        },
+        "corner": {
+          "lines": {
+            "0": "{{team}} korner kazandı, {{player}} topun başına geçiyor.",
+            "1": "{{player}} korneri kullanmaya hazırlanıyor."
+          },
+          "noTaker": {
+            "lines": {
+              "0": "{{team}} korner kazandı."
+            }
+          }
+        },
+        "freeKick": {
+          "awarded": {
+            "lines": {
+              "0": "Serbest vuruş {{team}} lehine."
+            }
+          },
+          "awardedDanger": {
+            "lines": {
+              "0": "{{team}} tehlikeli bir noktada serbest vuruş kazandı."
+            }
+          },
+          "taken": {
+            "lines": {
+              "0": "{{player}} serbest vuruşun başında."
+            }
+          }
+        },
+        "goalKick": {
+          "lines": {
+            "0": "Kale vuruşu {{team}} lehine."
+          }
+        },
+        "shot": {
+          "open": {
+            "lines": {
+              "0": "{{player}} şutunu çekiyor!",
+              "1": "{{player}} dönüp şutunu çekiyor!"
+            }
+          },
+          "header": {
+            "lines": {
+              "0": "{{player}} kafa vuruşu için yükseliyor!",
+              "1": "{{player}} kafayı uzatıyor!"
+            }
+          },
+          "longRange": {
+            "lines": {
+              "0": "{{player}} uzaktan şansını deniyor!",
+              "1": "{{player}} uzak mesafeden bombalıyor!"
+            }
+          },
+          "keeperOff": {
+            "lines": {
+              "0": "Kale bomboş ve {{player}} vuruyor!"
+            }
+          },
+          "directFreeKick": {
+            "lines": {
+              "0": "{{player}} serbest vuruşta doğrudan kaleyi deniyor!",
+              "1": "{{player}} topun başına geçiyor… ve serbest vuruşu çekiyor!"
+            }
+          },
+          "penalty": {
+            "lines": {
+              "0": "{{player}} topu beyaz noktaya koyuyor… koşuya başlıyor…"
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Hızlı atağın sonunda {{player}} vuruyor!"
+            }
+          }
+        },
+        "assist": {
+          "lines": {
+            "0": "Golün pasını {{player}} verdi.",
+            "1": "Asist {{player}} imzalı.",
+            "2": "{{player}} pozisyonu harika hazırladı."
+          }
+        },
+        "summary": {
+          "ownHalf": {
+            "lines": {
+              "0": "{{team}} topu kendi yarı sahasında tutuyor, ileri çıkmak için acelesi yok.",
+              "1": "{{team}} topu geride çeviriyor."
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{team}} sabırlı, topu orta sahada dolaştırıyor.",
+              "1": "İki takım orta sahada kıyasıya mücadele ediyor."
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{team}}, {{opponent}} ceza sahası çevresine yerleşmiş durumda.",
+              "1": "{{opponent}}, {{team}} baskısı altında geriye yaslanıyor."
+            }
+          },
+          "lateTrailing": {
+            "lines": {
+              "0": "Maçta {{minute}}. dakika, {{team}} hâlâ {{score}} geride.",
+              "1": "Zaman daralıyor, {{team}} hâlâ {{score}} geride."
+            }
+          },
+          "lateLevel": {
+            "lines": {
+              "0": "Maçta {{minute}}. dakika ve skor hâlâ {{score}}.",
+              "1": "Son dakikalara giriliyor, skor {{score}} eşit."
+            }
+          }
+        }
+      }
     },
     "wingBackConversion": "Kanat bek oynar, puan kaybı yok"
   },

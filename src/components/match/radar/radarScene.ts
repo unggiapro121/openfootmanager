@@ -1,4 +1,5 @@
 import type { MatchSnapshot } from "../types";
+import type { BeatCaption } from "./radarCaptions";
 import {
   CENTRE_LANE,
   type PitchPoint,
@@ -131,6 +132,8 @@ export interface RadarBeat {
   important: boolean;
   /** Final-third play, kept over routine play when the radar has to catch up. */
   prefer: boolean;
+  /** What the commentary bar says as the beat plays, and on which of its steps. */
+  captions?: BeatCaption[];
 }
 
 const TRAIL_LENGTH = 4;

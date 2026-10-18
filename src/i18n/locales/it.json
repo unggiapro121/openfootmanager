@@ -2578,6 +2578,20 @@
             "0": "{{player}} si infila alle spalle della linea alta e segna!",
             "1": "Solo alle spalle della difesa, {{player}} resta freddo per {{team}}!"
           }
+        },
+        "keeperOffHisLine": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "{{player}} la deposita nella porta vuota!",
+            "1": "Il portiere è fuori posizione, e {{player}} segna a porta vuota per il {{team}}!"
+          }
+        },
+        "counter": {
+          "headline": "GOOOL!",
+          "lines": {
+            "0": "Un contropiede da manuale, finalizzato da {{player}}!",
+            "1": "Il {{team}} punisce in ripartenza, e segna {{player}}!"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2591,7 +2605,7 @@
         "headline": "RIGORE SBAGLIATO!",
         "lines": {
           "0": "{{player}} fallisce dal dischetto! Che sollievo per il {{opponent}}!",
-          "1": "Parato! {{player}} avrà degli incubi per questo rigore."
+          "1": "Sbagliato! {{player}} avrà gli incubi per questo rigore."
         }
       },
       "PenaltyAwarded": {
@@ -2817,7 +2831,335 @@
       "allNames": "Tutti i nomi",
       "hide": "Nascondi radar",
       "show": "Mostra radar",
-      "speedHint": "Il radar mostra le azioni pericolose al suo ritmo. Nascondilo per scegliere la velocità."
+      "speedHint": "Il radar mostra le azioni pericolose al suo ritmo. Nascondilo per scegliere la velocità.",
+      "commentary": {
+        "flank": {
+          "Left": "sulla sinistra",
+          "Centre": "per vie centrali",
+          "Right": "sulla destra"
+        },
+        "tackle": {
+          "lines": {
+            "0": "{{player}} entra deciso e riconquista palla per il {{team}}.",
+            "1": "Contrasto pulito di {{player}}, e il {{team}} torna in possesso."
+          }
+        },
+        "interception": {
+          "lines": {
+            "0": "{{other}} perde palla, e {{player}} legge bene l'azione e intercetta.",
+            "1": "{{player}} si inserisce e intercetta il passaggio di {{other}}."
+          },
+          "noPasser": {
+            "lines": {
+              "0": "{{player}} legge l'azione e intercetta il passaggio.",
+              "1": "{{player}} è rapido a inserirsi e intercettare."
+            }
+          }
+        },
+        "highTurnover": {
+          "lines": {
+            "0": "Il {{team}} pressa alto! {{player}} recupera palla nella metà campo del {{opponent}}.",
+            "1": "Il {{opponent}} sbaglia in impostazione sotto pressione, e {{player}} ne approfitta!"
+          }
+        },
+        "sweeper": {
+          "lines": {
+            "0": "{{player}} esce di corsa dall'area e spazza anticipando {{other}}!",
+            "1": "Tempismo perfetto di {{player}}, in uscita ad anticipare {{other}}!"
+          },
+          "noForward": {
+            "lines": {
+              "0": "{{player}} esce a tutta velocità e spazza via!"
+            }
+          }
+        },
+        "recovered": {
+          "lines": {
+            "0": "{{player}} legge il lancio lungo e lo controlla in sicurezza.",
+            "1": "{{player}} vince la corsa e tiene palla per il {{team}}."
+          }
+        },
+        "secondBall": {
+          "lines": {
+            "0": "Cade la seconda palla, e {{player}} arriva prima di {{other}}.",
+            "1": "{{player}} anticipa {{other}} sulla palla vagante."
+          }
+        },
+        "pass": {
+          "buildUp": {
+            "lines": {
+              "0": "{{player}} imposta dal basso e trova {{receiver}}.",
+              "1": "{{player}} gioca con calma su {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} imposta con calma dal basso."
+              }
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{player}} rompe le linee con un passaggio per {{receiver}}.",
+              "1": "{{receiver}} riceve da {{player}}, e il {{team}} entra nella metà campo del {{opponent}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} porta avanti l'azione."
+              }
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{player}} la allunga a {{receiver}} negli ultimi trenta metri.",
+              "1": "{{player}} trova {{receiver}} al limite dell'area."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}} cerca un varco verso l'area."
+              }
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "Ripartenza veloce! {{player}} la allunga a {{receiver}}.",
+              "1": "Il {{team}} riparte in un lampo, e {{player}} trova subito {{receiver}}."
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "Ripartenza veloce! {{player}} spinge in avanti."
+              }
+            }
+          }
+        },
+        "longBall": {
+          "lines": {
+            "0": "{{player}} lancia lungo per {{receiver}}.",
+            "1": "Lancio lungo di {{player}}, a cercare {{receiver}}."
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} la butta lunga."
+            }
+          }
+        },
+        "dribble": {
+          "lines": {
+            "0": "{{player}} salta l'uomo {{flank}}.",
+            "1": "{{player}} supera il difensore ed entra negli ultimi trenta metri."
+          },
+          "counter": {
+            "lines": {
+              "0": "In contropiede! {{player}} si invola {{flank}}!",
+              "1": "{{player}} conduce palla in contropiede!"
+            }
+          },
+          "cutInside": {
+            "lines": {
+              "0": "{{player}} rientra sul piede forte!",
+              "1": "{{player}} si accentra dalla fascia!"
+            }
+          },
+          "flankExposed": {
+            "lines": {
+              "0": "Il terzino del {{opponent}} è rimasto alto, e {{player}} si fionda nello spazio!",
+              "1": "{{player}} attacca lo spazio alle spalle del terzino del {{opponent}}!"
+            }
+          },
+          "ballInBehind": {
+            "lines": {
+              "0": "{{player}} è alle spalle di {{other}}!",
+              "1": "{{player}} brucia {{other}} in velocità e punta la porta!"
+            },
+            "alone": {
+              "lines": {
+                "0": "{{player}} è alle spalle della difesa!"
+              }
+            }
+          }
+        },
+        "dribbleTackled": {
+          "lines": {
+            "0": "{{other}} ferma la corsa di {{player}}.",
+            "1": "{{player}} si fa soffiare palla da {{other}}."
+          },
+          "noDefender": {
+            "lines": {
+              "0": "La corsa di {{player}} viene fermata."
+            }
+          }
+        },
+        "cross": {
+          "lines": {
+            "0": "{{player}} crossa in area per {{receiver}}!",
+            "1": "{{player}} lavora palla {{flank}} e crossa, con {{receiver}} che aspetta in area!"
+          },
+          "early": {
+            "lines": {
+              "0": "{{player}} pennella un cross anticipato alle spalle della difesa per {{receiver}}!",
+              "1": "Niente dribbling: {{player}} la mette subito in mezzo per {{receiver}}!"
+            }
+          },
+          "low": {
+            "lines": {
+              "0": "{{player}} mette un cross basso e teso in area per {{receiver}}!",
+              "1": "Un cross rasoterra di {{player}} attraversa l'area!"
+            }
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}} crossa, ma è troppo lungo per tutti.",
+              "1": "Il cross di {{player}} non trova nessuno."
+            }
+          },
+          "corner": {
+            "lines": {
+              "0": "{{player}} la mette in mezzo, e {{receiver}} sale a prenderla!",
+              "1": "Il calcio d'angolo di {{player}} trova {{receiver}}!"
+            }
+          },
+          "freeKick": {
+            "lines": {
+              "0": "{{player}} pennella la punizione in area, e {{receiver}} la attacca!",
+              "1": "{{player}} calcia la punizione verso {{receiver}}!"
+            }
+          }
+        },
+        "clearance": {
+          "lines": {
+            "0": "{{player}} arriva a sventare il pericolo.",
+            "1": "{{player}} spazza via alla meglio, e il {{team}} si salva per ora."
+          },
+          "cross": {
+            "lines": {
+              "0": "{{player}} sale a respingere di testa.",
+              "1": "{{player}} vince il duello aereo e allontana."
+            }
+          },
+          "lowCross": {
+            "lines": {
+              "0": "{{player}} intercetta il cross basso."
+            }
+          },
+          "longBall": {
+            "lines": {
+              "0": "{{player}} respinge di testa il lancio lungo."
+            }
+          }
+        },
+        "corner": {
+          "lines": {
+            "0": "Calcio d'angolo per il {{team}}, e {{player}} va a batterlo.",
+            "1": "{{player}} si prepara a battere il calcio d'angolo."
+          },
+          "noTaker": {
+            "lines": {
+              "0": "Calcio d'angolo per il {{team}}."
+            }
+          }
+        },
+        "freeKick": {
+          "awarded": {
+            "lines": {
+              "0": "Calcio di punizione per il {{team}}."
+            }
+          },
+          "awardedDanger": {
+            "lines": {
+              "0": "Il {{team}} ha una punizione in posizione pericolosa."
+            }
+          },
+          "taken": {
+            "lines": {
+              "0": "{{player}} si prepara a battere la punizione."
+            }
+          }
+        },
+        "goalKick": {
+          "lines": {
+            "0": "Rimessa dal fondo per il {{team}}."
+          }
+        },
+        "shot": {
+          "open": {
+            "lines": {
+              "0": "{{player}} tira!",
+              "1": "{{player}} si gira e calcia!"
+            }
+          },
+          "header": {
+            "lines": {
+              "0": "{{player}} sale per il colpo di testa!",
+              "1": "{{player}} ci arriva di testa!"
+            }
+          },
+          "longRange": {
+            "lines": {
+              "0": "{{player}} ci prova da lontano!",
+              "1": "{{player}} lascia partire una conclusione dalla distanza!"
+            }
+          },
+          "keeperOff": {
+            "lines": {
+              "0": "La porta è sguarnita, e {{player}} tira!"
+            }
+          },
+          "directFreeKick": {
+            "lines": {
+              "0": "{{player}} tenta direttamente su punizione!",
+              "1": "{{player}} prende la rincorsa… e calcia la punizione!"
+            }
+          },
+          "penalty": {
+            "lines": {
+              "0": "{{player}} sistema il pallone sul dischetto… prende la rincorsa…"
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "A conclusione del contropiede, {{player}} tira!"
+            }
+          }
+        },
+        "assist": {
+          "lines": {
+            "0": "L'azione l'ha costruita {{player}}.",
+            "1": "L'assist è di {{player}}.",
+            "2": "Gran lavoro di {{player}} per costruirla."
+          }
+        },
+        "summary": {
+          "ownHalf": {
+            "lines": {
+              "0": "Il {{team}} tiene palla nella propria metà campo, senza fretta di avanzare.",
+              "1": "Il {{team}} fa girare palla in difesa."
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "Il {{team}} è paziente e fa girare palla a centrocampo.",
+              "1": "Le due squadre si danno battaglia a centrocampo."
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "Il {{team}} staziona attorno all'area del {{opponent}}.",
+              "1": "Il {{opponent}} si chiude dietro sotto la pressione del {{team}}."
+            }
+          },
+          "lateTrailing": {
+            "lines": {
+              "0": "{{minute}} minuti giocati, e il {{team}} è ancora sotto per {{score}}.",
+              "1": "Il tempo stringe, e il {{team}} è ancora in svantaggio sul {{score}}."
+            }
+          },
+          "lateLevel": {
+            "lines": {
+              "0": "{{minute}} minuti giocati, ed è ancora {{score}}.",
+              "1": "Si entra nelle battute finali, ed è parità sul {{score}}."
+            }
+          }
+        }
+      }
     },
     "wingBackConversion": "Gioca da quinto senza penalità"
   },

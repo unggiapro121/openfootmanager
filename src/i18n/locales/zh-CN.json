@@ -2559,6 +2559,20 @@
             "0": "{{player}}插到高位防线身后，推射得分！",
             "1": "{{player}}单刀突入防线身后，冷静为{{team}}破门！"
           }
+        },
+        "keeperOffHisLine": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "{{player}}轻松推射空门得手！",
+            "1": "门将出击扑空，{{player}}为{{team}}打进空门！"
+          }
+        },
+        "counter": {
+          "headline": "进球啦！",
+          "lines": {
+            "0": "教科书般的反击，{{player}}完成致命一击！",
+            "1": "{{team}}反击得手，{{player}}破门！"
+          }
         }
       },
       "PenaltyGoal": {
@@ -2572,7 +2586,7 @@
         "headline": "点球未进！",
         "lines": {
           "0": "{{player}} 点球没踢进！{{opponent}}如释重负！",
-          "1": "被扑出！{{player}}今晚将梦见这粒点球。"
+          "1": "罚丢了！{{player}}恐怕要为这粒点球做噩梦了。"
         }
       },
       "PenaltyAwarded": {
@@ -2798,7 +2812,335 @@
       "allNames": "显示全部姓名",
       "hide": "隐藏雷达",
       "show": "显示雷达",
-      "speedHint": "雷达按自己的节奏展示危险时刻。隐藏雷达即可选择速度。"
+      "speedHint": "雷达按自己的节奏展示危险时刻。隐藏雷达即可选择速度。",
+      "commentary": {
+        "flank": {
+          "Left": "沿左路",
+          "Centre": "从中路",
+          "Right": "沿右路"
+        },
+        "tackle": {
+          "lines": {
+            "0": "{{player}}凶狠上抢，为{{team}}夺回球权。",
+            "1": "{{player}}干净利落的抢断，{{team}}重新控球。"
+          }
+        },
+        "interception": {
+          "lines": {
+            "0": "{{other}}传球失误，{{player}}预判到位，将球断下。",
+            "1": "{{player}}果断上前，截下{{other}}的传球。"
+          },
+          "noPasser": {
+            "lines": {
+              "0": "{{player}}预判准确，把这脚传球断下。",
+              "1": "{{player}}反应神速，上前完成拦截。"
+            }
+          }
+        },
+        "highTurnover": {
+          "lines": {
+            "0": "{{team}}高位逼抢！{{player}}在{{opponent}}半场断球！",
+            "1": "{{opponent}}后场被逼出失误，{{player}}立刻扑上！"
+          }
+        },
+        "sweeper": {
+          "lines": {
+            "0": "{{player}}冲出禁区，抢在{{other}}之前把球解围！",
+            "1": "{{player}}出击时机完美，抢先{{other}}一步触球！"
+          },
+          "noForward": {
+            "lines": {
+              "0": "{{player}}果断弃门出击，把球清走！"
+            }
+          }
+        },
+        "recovered": {
+          "lines": {
+            "0": "{{player}}判断准长传落点，稳稳把球收下。",
+            "1": "{{player}}抢先拿到球，{{team}}保住了球权。"
+          }
+        },
+        "secondBall": {
+          "lines": {
+            "0": "第二点球落下，{{player}}抢在{{other}}之前拿到！",
+            "1": "{{player}}抢先{{other}}一步，拿下这个无主球。"
+          }
+        },
+        "pass": {
+          "buildUp": {
+            "lines": {
+              "0": "{{player}}后场发起进攻，找到{{receiver}}。",
+              "1": "{{player}}从容出球，交给{{receiver}}。"
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}}从后场从容出球。"
+              }
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{player}}一脚穿透防线的传球，找到{{receiver}}。",
+              "1": "{{receiver}}接到{{player}}的传球，{{team}}推进到{{opponent}}半场。"
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}}把球向前推进。"
+              }
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{player}}在进攻三区把球塞给{{receiver}}。",
+              "1": "{{player}}找到禁区前沿的{{receiver}}。"
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "{{player}}寻找打进禁区的线路。"
+              }
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "快速反击！{{player}}把球送给{{receiver}}！",
+              "1": "{{team}}瞬间攻守转换，{{player}}第一时间找到{{receiver}}！"
+            },
+            "noReceiver": {
+              "lines": {
+                "0": "快速反击！{{player}}带球向前！"
+              }
+            }
+          }
+        },
+        "longBall": {
+          "lines": {
+            "0": "{{player}}长传找{{receiver}}。",
+            "1": "{{player}}一脚长传，目标是{{receiver}}。"
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}}大脚长传向前。"
+            }
+          }
+        },
+        "dribble": {
+          "lines": {
+            "0": "{{player}}{{flank}}突破，过掉一人！",
+            "1": "{{player}}过掉防守球员，杀入进攻三区。"
+          },
+          "counter": {
+            "lines": {
+              "0": "反击！{{player}}{{flank}}高速推进！",
+              "1": "{{player}}带球打反击，一路向前！"
+            }
+          },
+          "cutInside": {
+            "lines": {
+              "0": "{{player}}内切到强势脚！",
+              "1": "{{player}}从边路内切！"
+            }
+          },
+          "flankExposed": {
+            "lines": {
+              "0": "{{opponent}}的边后卫压上太高，{{player}}冲进身后空当！",
+              "1": "{{player}}直插{{opponent}}边后卫身后的空当！"
+            }
+          },
+          "ballInBehind": {
+            "lines": {
+              "0": "{{player}}甩开{{other}}，插到身后了！",
+              "1": "{{player}}速度碾压{{other}}，直扑球门！"
+            },
+            "alone": {
+              "lines": {
+                "0": "{{player}}打穿了防线身后！"
+              }
+            }
+          }
+        },
+        "dribbleTackled": {
+          "lines": {
+            "0": "{{other}}断掉了{{player}}的突破。",
+            "1": "{{player}}被{{other}}抢走了球。"
+          },
+          "noDefender": {
+            "lines": {
+              "0": "{{player}}的带球突破被拦下。"
+            }
+          }
+        },
+        "cross": {
+          "lines": {
+            "0": "{{player}}传中禁区，找{{receiver}}！",
+            "1": "{{player}}{{flank}}送出传中，{{receiver}}已在禁区里等着！"
+          },
+          "early": {
+            "lines": {
+              "0": "{{player}}提前传中，把球送到防线身后找{{receiver}}！",
+              "1": "不必过人，{{player}}提前起球找{{receiver}}！"
+            }
+          },
+          "low": {
+            "lines": {
+              "0": "{{player}}一脚低平球横扫禁区，找{{receiver}}！",
+              "1": "{{player}}送出贴地传中，球横穿禁区！"
+            }
+          },
+          "noTarget": {
+            "lines": {
+              "0": "{{player}}传中，但球飞得太远，无人能够到。",
+              "1": "{{player}}的传中无人接应。"
+            }
+          },
+          "corner": {
+            "lines": {
+              "0": "{{player}}把球开进禁区，{{receiver}}高高跃起争顶！",
+              "1": "{{player}}的角球找到了{{receiver}}！"
+            }
+          },
+          "freeKick": {
+            "lines": {
+              "0": "{{player}}任意球吊入禁区，{{receiver}}冲上抢点！",
+              "1": "{{player}}主罚任意球，传向{{receiver}}！"
+            }
+          }
+        },
+        "clearance": {
+          "lines": {
+            "0": "{{player}}及时赶到，化解险情。",
+            "1": "{{player}}一脚大力解围，{{team}}暂时躲过一劫。"
+          },
+          "cross": {
+            "lines": {
+              "0": "{{player}}高高跃起，头球解围。",
+              "1": "{{player}}争顶成功，把球解围出去。"
+            }
+          },
+          "lowCross": {
+            "lines": {
+              "0": "{{player}}断掉了这脚低平球传中。"
+            }
+          },
+          "longBall": {
+            "lines": {
+              "0": "{{player}}把长传球顶了出去。"
+            }
+          }
+        },
+        "corner": {
+          "lines": {
+            "0": "{{team}}获得角球，{{player}}走过去准备主罚。",
+            "1": "{{player}}准备主罚角球。"
+          },
+          "noTaker": {
+            "lines": {
+              "0": "{{team}}获得角球。"
+            }
+          }
+        },
+        "freeKick": {
+          "awarded": {
+            "lines": {
+              "0": "{{team}}获得任意球。"
+            }
+          },
+          "awardedDanger": {
+            "lines": {
+              "0": "{{team}}在危险区域获得任意球！"
+            }
+          },
+          "taken": {
+            "lines": {
+              "0": "{{player}}站在球前，准备主罚任意球。"
+            }
+          }
+        },
+        "goalKick": {
+          "lines": {
+            "0": "{{team}}获得球门球。"
+          }
+        },
+        "shot": {
+          "open": {
+            "lines": {
+              "0": "{{player}}射门！",
+              "1": "{{player}}转身打门！"
+            }
+          },
+          "header": {
+            "lines": {
+              "0": "{{player}}高高跃起头球攻门！",
+              "1": "{{player}}头球一蹭！"
+            }
+          },
+          "longRange": {
+            "lines": {
+              "0": "{{player}}远射一试！",
+              "1": "{{player}}远距离一脚怒射！"
+            }
+          },
+          "keeperOff": {
+            "lines": {
+              "0": "球门空了，{{player}}射门！"
+            }
+          },
+          "directFreeKick": {
+            "lines": {
+              "0": "{{player}}任意球直接打门！",
+              "1": "{{player}}助跑……任意球直接攻门！"
+            }
+          },
+          "penalty": {
+            "lines": {
+              "0": "{{player}}把球摆上点球点……开始助跑……"
+            }
+          },
+          "counter": {
+            "lines": {
+              "0": "反击打到最后一环，{{player}}起脚射门！"
+            }
+          }
+        },
+        "assist": {
+          "lines": {
+            "0": "{{player}}送出助攻。",
+            "1": "助攻记在{{player}}名下。",
+            "2": "{{player}}的精彩策应创造了这次机会。"
+          }
+        },
+        "summary": {
+          "ownHalf": {
+            "lines": {
+              "0": "{{team}}在本方半场控球，不急于向前推进。",
+              "1": "{{team}}在后场来回倒脚。"
+            }
+          },
+          "midfield": {
+            "lines": {
+              "0": "{{team}}很有耐心，在中场来回传导。",
+              "1": "双方在中场展开激烈争夺。"
+            }
+          },
+          "attacking": {
+            "lines": {
+              "0": "{{team}}围着{{opponent}}的禁区狂轰滥炸。",
+              "1": "{{opponent}}在{{team}}的压迫下全线退守。"
+            }
+          },
+          "lateTrailing": {
+            "lines": {
+              "0": "比赛已进行{{minute}}分钟，{{team}}仍以{{score}}落后。",
+              "1": "时间所剩无几，{{team}}仍以{{score}}落后。"
+            }
+          },
+          "lateLevel": {
+            "lines": {
+              "0": "比赛已进行{{minute}}分钟，比分仍是{{score}}。",
+              "1": "比赛进入尾声，双方仍以{{score}}战平。"
+            }
+          }
+        }
+      }
     },
     "wingBackConversion": "踢翼卫不扣分"
   },
