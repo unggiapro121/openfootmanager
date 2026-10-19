@@ -131,13 +131,15 @@ export default function TransferCounterOfferModal({
         <TransferNegotiationHistory offer={activeCounterOffer} mode="incoming" />
         {counterResult ? (
           <div
-            className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${counterResult === "accepted" ? "text-green-500" : counterResult === "rejected" ? "text-red-500" : "text-amber-500"}`}
+            className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${counterResult === "accepted" ? "text-green-500" : counterResult === "rejected" ? "text-red-500" : counterResult === "awaiting_reply" ? "text-gray-600 dark:text-gray-300" : "text-amber-500"}`}
           >
             {counterResult === "accepted"
               ? t("transfers.counterAccepted")
               : counterResult === "rejected"
                 ? t("transfers.counterRejected")
-                : t("transfers.counterCountered")}
+                : counterResult === "awaiting_reply"
+                  ? t("transfers.offerAwaitingReply")
+                  : t("transfers.counterCountered")}
           </div>
         ) : null}
         {counterError ? (

@@ -500,6 +500,7 @@ mod tests {
                 youth_watchlist_json: "[]".to_string(),
                 youth_pool_json: "null".to_string(),
                 staff_market_refreshes_json: "{}".to_string(),
+                awaited_replies_json: "[]".to_string(),
             },
         )
         .unwrap();
@@ -631,6 +632,7 @@ mod tests {
                 youth_watchlist_json: "[]".to_string(),
                 youth_pool_json: "null".to_string(),
                 staff_market_refreshes_json: "{}".to_string(),
+                awaited_replies_json: "[]".to_string(),
             },
         )
         .unwrap();

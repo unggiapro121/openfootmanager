@@ -565,6 +565,20 @@ export interface AttributeRead {
   band?: number;
 }
 
+/**
+ * Mirrors `ofm_core::transfers::AwaitedReply`: an offer the user sent that the
+ * other side answers by mail on `reply_on`.
+ */
+export interface AwaitedReplyData {
+  id: string;
+  proposal: {
+    kind: "transfer_bid" | "loan_bid" | "sale_counter" | "loan_counter" | "free_agent_contract";
+    player_id: string;
+  };
+  sent_on: string;
+  reply_on: string;
+}
+
 /** Mirrors `ofm_core::youth_watchlist::WatchedProspect`. */
 export interface WatchedProspect {
   /** A pool youngster, or a player of another club watched from his report. */
@@ -963,6 +977,8 @@ export interface GameStateData {
   scouting_assignments: ScoutingAssignment[];
   youth_scouting_assignments?: YouthScoutingAssignment[];
   youth_watchlist?: WatchedProspect[];
+  /** The user's offers still waiting for their answer. */
+  awaited_replies?: AwaitedReplyData[];
   board_objectives: BoardObjective[];
   season_context?: SeasonContextData;
   available_staff_market_last_activity_date?: string | null;

@@ -13,6 +13,7 @@ use ofm_core::game::Game;
 use ofm_core::squad_safety::SquadSafetyReport;
 use ofm_core::state::StateManager;
 
+use crate::commands::offer_replies::{awaiting_feedback, send, OfferDecision};
 use crate::commands::util::mutate_active_game;
 
 #[derive(Debug, Clone, Serialize)]
@@ -40,7 +41,9 @@ pub struct RenewalFinancialProjectionCommandResponse {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct FreeAgentContractCommandResponse {
-    pub outcome: RenewalDecision,
+    pub outcome: OfferDecision,
+    /// When the offer waits for the player's answer: the day it comes, by mail.
+    pub reply_on: Option<String>,
     pub game: Game,
     pub suggested_wage: Option<u32>,
     pub suggested_years: Option<u32>,
@@ -269,6 +272,24 @@ pub fn offer_free_agent_contract_internal(
     // offer_free_agent_contract validates (team/player/free-agent) before mutating.
     state
         .update_game(|game| {
+            let proposal = ofm_core::transfers::UserProposal::FreeAgentContract {
+                player_id: player_id.to_string(),
+                weekly_wage,
+                contract_years,
+            };
+            if let Some(reply_on) = send(game, proposal)? {
+                return Ok(FreeAgentContractCommandResponse {
+                    outcome: OfferDecision::AwaitingReply,
+                    game: game.clone(),
+                    suggested_wage: None,
+                    suggested_years: None,
+                    session_status: serialize_session_status(RenewalSessionStatus::Open),
+                    is_terminal: false,
+                    cooled_off: false,
+                    feedback: Some(awaiting_feedback(&reply_on)),
+                    reply_on: Some(reply_on),
+                });
+            }
             let outcome = ofm_core::contracts::offer_free_agent_contract(
                 game,
                 player_id,
@@ -278,7 +299,8 @@ pub fn offer_free_agent_contract_internal(
                 },
             )?;
             Ok(FreeAgentContractCommandResponse {
-                outcome: outcome.decision,
+                outcome: outcome.decision.into(),
+                reply_on: None,
                 game: game.clone(),
                 suggested_wage: outcome.suggested_wage,
                 suggested_years: outcome.suggested_years,
@@ -572,6 +594,10 @@ mod tests {
         player.stage_wage(0);
         player.market_value = 600_000;
         game.season_context.transfer_window.status = TransferWindowStatus::Open;
+        // Deadline day: clubs answer at once, so these tests read the answer
+        // straight off the command. Offers that wait are tested on their own.
+        game.season_context.transfer_window.closes_on =
+            Some(game.clock.current_date.format("%Y-%m-%d").to_string());
         game
     }
 
@@ -773,7 +799,10 @@ mod tests {
         let response =
             offer_free_agent_contract_internal(&state, "player-1", 4_000, 3).expect("response");
 
-        assert!(matches!(response.outcome, RenewalDecision::Accepted));
+        assert_eq!(
+            response.outcome,
+            crate::commands::offer_replies::OfferDecision::Accepted
+        );
         assert_eq!(response.session_status, "agreed");
         assert_eq!(response.game.players[0].team_id.as_deref(), Some("team-1"));
         assert_eq!(response.game.players[0].contract_end(), Some("2029-08-01"));
