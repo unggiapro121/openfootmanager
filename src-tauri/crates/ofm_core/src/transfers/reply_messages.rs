@@ -10,7 +10,7 @@ use domain::message::{
     ActionType, InboxMessage, MessageAction, MessageCategory, MessageContext, MessagePriority,
 };
 
-use super::replies::{AwaitedReply, ProposalOutcome, ReplyNames};
+use super::replies::{AwaitedReply, ProposalOutcome, ReplyNames, UserProposal};
 use super::{LoanOfferDecision, TransferNegotiationDecision};
 use crate::contracts::RenewalDecision;
 
@@ -41,13 +41,24 @@ impl Answer {
     }
 }
 
-fn answer(outcome: Option<ProposalOutcome>) -> Answer {
+/// The fee the manager put to the other side: his bid, or what he asked of a
+/// club bidding for his player. An agreed deal is agreed at it.
+fn proposed_fee(proposal: &UserProposal) -> Option<u64> {
+    match proposal {
+        UserProposal::TransferBid { fee, .. } => Some(*fee),
+        UserProposal::SaleCounter { requested_fee, .. } => Some(*requested_fee),
+        _ => None,
+    }
+}
+
+fn answer(proposal: &UserProposal, outcome: Option<ProposalOutcome>) -> Answer {
     match outcome {
         None => Answer::new("lapsed", "lapsed"),
         Some(ProposalOutcome::Transfer(outcome)) => match outcome.decision {
             TransferNegotiationDecision::Accepted => match outcome.registration_date {
                 Some(date) => Answer::new("accepted", "dealScheduled").with("date", date),
-                None => Answer::new("accepted", "dealAccepted"),
+                None => Answer::new("accepted", "dealAccepted")
+                    .with("fee", money(proposed_fee(proposal).unwrap_or_default())),
             },
             TransferNegotiationDecision::CounterOffer => Answer::new("counter", "dealCounter")
                 .with("fee", money(outcome.suggested_fee.unwrap_or_default())),
@@ -89,7 +100,7 @@ pub(super) fn reply_message(
     outcome: Option<ProposalOutcome>,
     date: &str,
 ) -> InboxMessage {
-    let answer = answer(outcome);
+    let answer = answer(&reply.proposal, outcome);
     let mut params = HashMap::from([
         ("player".to_string(), names.player.clone()),
         ("club".to_string(), names.club.clone()),
