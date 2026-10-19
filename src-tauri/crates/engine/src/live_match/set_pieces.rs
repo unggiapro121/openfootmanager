@@ -27,7 +27,7 @@
 //!
 //! ```text
 //! FK        = (0.65·free_kick + 0.35·curve) × condition × 1.08 for DeadBallSpecialist
-//! wall      = 25% blocked: half cleared, half behind for a corner
+//! wall      = 12% blocked: half cleared, half behind for a corner
 //! on target = clamp(0.35 + (FK − 50)/180, 0.15, 0.75)
 //! goal      = clamp(0.18 + (FK − keeper)/200, 0.04, 0.40),  keeper = (reflexes + positioning)/2
 //! ```

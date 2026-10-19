@@ -12,7 +12,7 @@
 //! rating    = 0.60·heading + 0.20·composure + 0.20·decisions        (× condition)
 //! on target = clamp(0.40 + (rating − 50)/200, 0.15, 0.85) × 1.08 if PowerHeader
 //! keeper    = 0.50·reflexes + 0.35·handling + 0.15·positioning      (× condition, traits)
-//! goal      = clamp(0.28·DefLine + (rating − keeper)/160, 0.08, 0.65)
+//! goal      = clamp(0.18·DefLine + (rating − keeper)/160, 0.08, 0.65)
 //! ```
 //!
 //! A header is never fouled into a penalty: the 3.6% box foul belongs to a shot

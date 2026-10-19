@@ -376,19 +376,20 @@ const FORM_MINIMUM: usize = 3;
 // brought a club down to about 1.81 a game; three probe seasons (seeds 1–3)
 // put p85 conceded at 2.4 / 2.6 / 2.6 and p15 scored at 1.2 in each, so
 // 2.6 and 1.2 (phase 2, P3.9), and 2.2 and 1.0 after GĐ4 brought clubs down
-// to about 1.53 goals a game (P4.6). Anything that changes how many goals are
-// scored should re-read that table before trusting these.
+// to about 1.53 goals a game (P4.6). GĐ5 (P5.7) brought them to 1.42, and the
+// table put p85 conceded at 2.0 and p15 scored at 0.8. Anything that changes
+// how many goals are scored should re-read that table before trusting these.
 //
-// The first pass used 2.2 and 0.8, which read like a matched pair and were
-// nothing of the kind: 2.2 sat just above the median and fired for two clubs in
+// The first pass (at 2.26 goals a game) used 2.2 and 0.8, which read like a
+// matched pair and were nothing of the kind: 2.2 sat just above the median and fired for two clubs in
 // five, while 0.8 sat below the fifth percentile and fired for almost nobody.
 // Every club in the world was permanently "leaking" and none was ever blunt,
 // and the reaction table came out as one column of compact blocks.
 
 /// Conceding at this rate says the plan is not holding, whatever the badge says.
-const LEAKY: f64 = 2.2;
+const LEAKY: f64 = 2.0;
 /// Scoring at this rate says the same about the other end.
-const BLUNT: f64 = 1.0;
+const BLUNT: f64 = 0.8;
 
 struct FormReading {
     conceded_per_game: f64,

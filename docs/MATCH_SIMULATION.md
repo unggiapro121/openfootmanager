@@ -21,6 +21,9 @@ The simulation lives in the `engine` crate (`src-tauri/crates/engine/`), which i
 ```
 engine/
 ├── types.rs      — PlayerData, TeamData, MatchConfig, Zone, Side, PlayStyle
+├── knobs.rs      — CalibrationKnobs: the constants GĐ5 tunes, in MatchConfig.knobs
+├── targets.rs    — the GĐ5 target bands both measuring tools judge against
+├── rating.rs     — match ratings
 ├── event.rs      — MatchEvent struct + EventType enum (22 event variants)
 ├── headless.rs   — simulate / simulate_with_rng: a whole match in one call, on the live engine
 ├── report.rs     — MatchReport, TeamStats, PlayerMatchStats, GoalDetail
@@ -85,9 +88,9 @@ Each simulated minute follows this sequence:
 
 | Current Zone | Resolution Function | Key Players | Outcome on Success | Outcome on Failure |
 |---|---|---|---|---|
-| Own defense (buildup) | `resolve_buildup` | Passer by presence in the lane (`BuildUp`) vs the other side's press there (`Press`) | Ball → Midfield | Interception: the other side has the ball in its attacking third (`HighTurnover`) |
+| Own defense (buildup) | `resolve_buildup` | Passer by presence in the lane (`BuildUp`) vs the other side's press there (`Press`) | Ball → Midfield | Interception: the other side has the ball in its attacking third (`HighTurnover`) 15% of the time, scaled by its press; otherwise in midfield |
 | Midfield | `resolve_midfield` | Midfielders, and with small weights full backs, wingers and strikers, each by presence in the ball's lane | Ball → Attacking third | Tackle/Interception, may trigger foul |
-| Attacking third | `resolve_attacking_third` (`wing_play.rs`) | Carrier vs defender, any outfielders, by presence in the lane | Into the box, a cut inside, or a cross | Tackle/Clearance, possible corner (25%, played out at once), may trigger foul |
+| Attacking third | `resolve_attacking_third` (`wing_play.rs`) | Carrier vs defender, any outfielders, by presence in the lane | Into the box, a cut inside, or a cross | Tackle/Clearance, possible corner (38% of clearances, played out at once), may trigger foul |
 | Attacking box | `resolve_shot` | Shooter by ω vs GK | Goal or save | Shot off/blocked/saved, ball resets to midfield |
 
 ### Duel Resolution
@@ -108,15 +111,22 @@ league-wide share of duels the attacker wins where it was before the formulas ch
 | Duel | Components | γ |
 |---|---|---|
 | Midfield | attacker: passing, dribbling, vision, teamwork, agility, strength; defender: tackling, positioning, decisions, teamwork, pace, strength | 1 (higher compounds over ~90 duels a match into runaway favourites) |
-| One-on-one | technique: dribbling + composure vs tackling + defending + positioning; physique: pace + agility + strength on both sides (the forward's weighted to pace, the defender's to strength) | 2 and 2 |
+| One-on-one | technique: dribbling + composure vs tackling + defending + positioning; physique: pace + agility + strength on both sides (the forward's weighted to pace, the defender's to strength) | 1.65 and 1.75 (2 and 2 until GĐ5 P5.7) |
 | Aerial (after a cross) | `0.55·aerial + 0.20·positioning + 0.25·strength`, times a height factor (±8% across ±20 cm of 182 cm; an unknown height of 0 is neutral) and ×1.08 for `AerialDominance` | 2 |
 
-Three anchors have moved in phase 2. The aerial anchor is 0.64 at corners (P2.2), so defenders win
-about 58% of the duels after a cross, as they do in real football (they had won 48%); an open-play
-cross uses 0.80 (P3.5), because it is met by the attacker best placed for it and contested by a
-centre back. The one-on-one anchor is 0.94 (1.14 before GĐ3): picking the duel's players by lane
-puts quicker attackers against weaker tacklers on the flanks, and 0.94 keeps the attacker's average
-win rate where it was (about 57%). `ofm-sim-bench --guardrails` gates the aerial share at 54–62%.
+Three anchors have moved in phase 2. The aerial anchor at corners and long balls is 0.90, and an
+open-play cross uses 1.12, because it is met by the attacker best placed for it and contested by a
+centre back. P2.2 had set 0.64 (and P3.5 0.80 for the open-play cross) for defenders to win 58% of
+the duels after a cross; GĐ5 measured real crosses and corners at 51.8% (StatsBomb, within 3 s of
+the ball) and moved them to 0.85 / 1.05 at P5.3 and 0.90 / 1.12 at P5.4, when fewer direct breaks
+had left defenders at 54.6%. The one-on-one anchor is 0.94 (1.14 before GĐ3): picking the duel's
+players by lane puts quicker attackers against weaker tacklers on the flanks, and 0.94 keeps the
+attacker's average win rate where it was (about 57%). The one-on-one's two sensitivities came down
+to 1.65 and 1.75 at GĐ5 P5.7: at 2 the stronger club won 4–4.5 points more often than the real line
+at strength gaps of 6–10 on the European probe. The physical half's valid band is 1.75–2.2 — below
+it a fast forward barely beats a slow defender, above it pace outweighs dribbling by more than 1.5×
+— so 1.75 is its floor. `ofm-sim-bench --guardrails` gates the defenders' aerial share at 48–62%
+(`--stage lan-can`) or 50–54% (`--stage gd5`).
 
 ### Who takes part: presence by lane
 
@@ -137,7 +147,9 @@ its own table.
 winner **cuts inside** with a chance set by his role and foot (an `InsideForward` or
 `InvertedWinger` on his weaker side most: `0.50 + 0.35·skill`, skill from curve + dribbling), then
 curls one from distance (his long-shot chance + 0.8 on the logit) or carries on into the box;
-otherwise he **crosses** (93%) or goes to the byline and into the box. Crosses come only from the
+otherwise he **crosses** (80%; 93% until GĐ5 P5.3, when with more corners and defenders winning
+fewer aerials headed goals ran at 25% of goals against real football's 16.3%) or goes to the byline
+and into the box. Crosses come only from the
 flanks. A cross must first reach the contest, `clamp(0.60 + (Q − 65)/200, 0.35, 0.85)` with `Q` its
 delivery as a corner's; one that does not names nobody and is cleared. The side's `cross_style`
 decides the cross: `Mixed` (default) two in three in the air, `High` always, `Low` never, `Early` as
@@ -146,16 +158,21 @@ decides the cross: `Mixed` (default) two in three in the air, `High` always, `Lo
 medium line, 15% high, 20% on the break). In the air it is the two-stage header; along the ground
 the man meeting it (`0.60·positioning + 0.40·first_touch`) contests a centre back
 (`0.50·positioning + 0.50·tackling`), about 40% between equals, and a won ball is a first-time shot
-at ×0.95. About 23 open-play crosses a match, as in real football.
+at ×0.95. The 93% of P3.4 was set for about 23 open-play crosses a match, as in real football.
 
 ### Finishing in the box
 
 `live_match/finishing.rs` (P3.5). The man who shoots in the box is drawn from every outfielder,
-`P ∝ ω × positioning/70 × 2.0 for whoever carried the ball in`; ω is 2.0 for a striker, 1.0 for wide
-and attacking midfielders and wingers, 0.05 elsewhere, or set by role (`Poacher` 3.5 …
-`BoxToBox` 0.8). The assist goes to whoever carried the ball in. A cross is met by
-`P ∝ ω × aerial rating/70` (by positioning along the ground), never the crosser, and contested by a
-centre back. About half the shots in the box are forwards', three in ten midfielders'.
+`P ∝ ω′ × positioning/70 × 2.0 for whoever carried the ball in` (`last_actor_weight`); ω is 2.0
+for a striker, 1.0 for wide and attacking midfielders and wingers, 0.05 elsewhere, or set by role
+(`Poacher` 3.5 … `BoxToBox` 0.8). The box reads it as `ω′ = 1 + (ω − 1) × shot_weight_spread` above
+1 and ω as it is at or below 1. The spread is **0** since GĐ5 P5.3b: with the table as written the
+league's top scorer averaged 56 goals a season and 59% of his club's goals on the Premier League
+probe (real 25–36, about 30–40%), because a lone striker took most of the box's shots and headers.
+Now every forward, attacking midfielder and wide man is alike in the box (34 goals, 39%); a
+finishing role still pays in the one-on-one. The assist goes to whoever carried the ball in. A
+cross is met by `P ∝ ω′ × aerial rating/70` (by positioning along the ground), never the crosser,
+and contested by a centre back.
 
 ### Open flanks and the break into them
 
@@ -181,8 +198,14 @@ condition, ×1.15 for a `PressingForward`. The passer's press resistance,
 `0.35·passing + 0.35·first_touch + 0.15·vision + 0.15·composure`, meets it in a duel with γ = 1 and
 anchor 0.98, which holds 48% of build-ups reaching midfield, as before. The press is multiplied by the
 style's press, the pressing dial, the side's line (`VeryLow` 0.80, `Low` 0.90, `Medium` 1.0, `High`
-1.08) and home advantage. A build-up lost is a high turnover: the other side has the ball where it is,
-in its attacking third, and its next action carries `HighTurnover`.
+1.08) and home advantage. A build-up lost is a high turnover only `p_high_turnover` = 0.15 of the
+time, times the winner's press (pressing `Passive` 0.8, `Medium` 1.0, `Aggressive` 1.2, ×1.1 more
+for the `HighPress` style): then the other side has the ball where it is, in its attacking third,
+and its next action carries `HighTurnover`. Otherwise it has won the ball in midfield — the passer
+lost it, but his side was still between the ball and its goal. Until GĐ5 P5.2 every lost build-up
+stayed high, and a ball lost in the own third was about five times as dangerous a chance as in real
+football. The target (T14) is now how much likelier a shot is after a ball lost in the own third
+than after one lost in midfield: 1.3–1.6, real football 1.44 (StatsBomb 2015/16).
 
 ### Midfield
 
@@ -225,8 +248,10 @@ the top it is met by the attacker the lane and his role favour (`TargetMan` ×2.
 lost to the defence's build-up; otherwise a header at the corner's anchor, lost cleared into
 midfield, won then brought down `0.85·σ((first_touch − 65)/6)` of the time. A ball nobody controls
 is a second ball: one man of each side by midfield presence,
-`0.35·positioning + 0.25·decisions + 0.20·pace + 0.20·strength`, γ 1, anchor 1 (equal sides split
-them), and the winner (`BallRecovery`, +0.05 on his rating) has the ball where it fell.
+`0.35·positioning + 0.25·decisions + 0.20·pace + 0.20·strength`, γ 1, anchor 0.58: the side that
+did not kick it is already standing where it drops, so between equal sides the kicker wins about 37%
+(anchor 1 and an even split until GĐ5 P5.2; real football gives the kicker 30.4%, target 30–36%),
+and the winner (`BallRecovery`, +0.05 on his rating) has the ball where it fell.
 
 ### A ball won in the own third
 
@@ -251,15 +276,19 @@ assist; the header taker is never the crosser. A header is its own attempt
 rating    = 0.60·heading + 0.20·composure + 0.20·decisions            (× condition)
 on target = clamp(0.40 + (rating − 50)/200, 0.15, 0.85), × 1.08 for PowerHeader
 keeper    = 0.50·reflexes + 0.35·handling + 0.15·positioning          (× condition, keeper traits)
-goal      = clamp(0.28·defensive line + (rating − keeper)/160, 0.08, 0.65)
+goal      = clamp(0.18·defensive line + (rating − keeper)/160, 0.08, 0.65)
 ```
+
+The base was 0.28 until GĐ5 P5.3 (`header_conversion_base`), which brought headed goals to 16.9%
+of goals on the Premier League probe (real 16.3%, target 15–18%).
 
 A miss is off target (a won header is never blocked); a save is parried for a corner 40% of the
 time, as any save. A header is never fouled into a penalty.
 
 ### Corners
 
-A corner (25% of the one-on-ones the defence wins, 40% of saves) is played out in the same action
+A corner (38% of the one-on-ones the defence clears — 25% until GĐ5 P5.3, which had 6.9 corners
+a match against real football's 9.6–9.7; 0.36 at P5.3, 0.38 at P5.4 — and 40% of saves) is played out in the same action
 (`live_match/set_pieces.rs`, phase 2 P2.3). The club's `corner_taker` takes it while he is on the
 pitch, otherwise the outfielder with the best `0.70·crossing + 0.30·curve`. His delivery `Q` (that
 blend, × condition, ×1.04 for `DeadBallSpecialist`) decides how often the ball reaches the aerial
@@ -297,19 +326,24 @@ P2.5, `live_match/long_shot.rs`). The man who might shoot is a midfielder (55%, 
 the ball's lane) or the man on the ball, and he tries it with
 
 ```text
-logit = BASE + (a[slot] − a[ST]) + 1.35·(long_shots − μ[slot])/10 + 0.90 ShootsFromDistance + 0.25 vs Compact
+logit = BASE + (a[slot] − a[ST]) + 0.25·(long_shots − μ[slot])/10 + 0.90 ShootsFromDistance + 0.25 vs Compact
         − 1.0 from a flank
 P     = min(σ(logit), 0.45)
 ```
 
 `a` and `μ` are the position table `ShootsFromDistance` is assigned by (`ofm_core/assigned_traits.rs`,
 pinned to the engine's copy `live_match::long_shot_norm` by a test), read by his formation slot;
-`BASE = −1.80` (−2.30 before GĐ3 added the flank's −1.0) is calibrated on the real-world probe,
-where about a third of shots come from outside the box, as in real football. The shot, rated `0.60·long_shots + 0.25·curve + 0.15·composure`, is blocked
+`BASE = −1.30` (`long_shot_base`). The slope in `long_shots` (`long_shot_slope`) was 1.35 and `BASE`
+−1.80 (−2.30 before GĐ3 added the flank's −1.0) until GĐ5 P5.3: `μ` is fixed for the whole
+package, so in a league of good players the slope lifted everyone and the share of shots from
+distance followed the league's quality — 48.6% in the Premier League, 28.8% in the 2. Bundesliga,
+real leagues 28–41%. At 0.25 and −1.30 the Premier League probe shoots 30.2% of its shots from
+distance (target 30–36%). The habit's 0.90 is `long_shot_habit_bonus`. The shot, rated
+`0.60·long_shots + 0.25·curve + 0.15·composure`, is blocked
 `clamp(0.31 × the defence's shape, 0.18, 0.45)` (40% of blocks go to the defence, the rest run loose
 to the attack), on target `clamp(0.32 + (R − 50)/220, 0.12, 0.70)` ×1.08 for `LongShooter` and for
 `Curler` (×1.12 at most), and in `clamp(0.14 + (R − keeper)/250, 0.02, 0.35)`; a save goes behind for
-a corner 30% of the time. About 3.4% are scored. Events carry `shot_kind = LongRange` and the zone of
+a corner 30% of the time. About 3% are scored (target 2.6–3.6%). Events carry `shot_kind = LongRange` and the zone of
 the attacking third; a goal's source is `LongShot`.
 
 Since P2.5 the bridge hands the engine `shooting` as it is (finishing inside the box), no longer
@@ -318,15 +352,16 @@ blended with `long_shots`.
 ### Direct free kicks
 
 A foul in the attacking third goes by lane (phase 2 P3.4, `live_match/wing_play.rs`): from the centre
-lane it becomes a shot straight at goal 60% of the time; from a flank it is crossed in 20% of the
+lane it is shot straight at goal every time (60% until GĐ5 P5.3, which counted 0.46 direct free
+kicks a match and 0.8% of goals from them, target 1.5–3%); from a flank it is crossed in 20% of the
 time, through the corner's delivery with the centre backs up (`set_piece = FreeKick`, a goal's source
 `FreeKick`); otherwise the fouled side keeps the ball there. The club's
 `free_kick_taker` takes it while on the pitch, otherwise the outfielder with the best
 `0.65·free_kick + 0.35·curve`. With `FK` that blend × condition (×1.08 for `DeadBallSpecialist`), the
-wall stops 25% (half cleared, half behind for a corner), then the shot is on target
+wall stops 12% (half cleared, half behind for a corner; 25% until GĐ5 P5.3, when a direct free
+kick went in 4.8% of the time against real football's 5–7%), then the shot is on target
 `clamp(0.35 + (FK − 50)/180, 0.15, 0.75)` and beats the keeper
-`clamp(0.18 + (FK − keeper)/200, 0.04, 0.40)`, the keeper rated `(reflexes + positioning)/2`. That makes
-about 0.9 direct free kicks a match, about 6% of them scored, as in the Premier League. Every event
+`clamp(0.18 + (FK − keeper)/200, 0.04, 0.40)`, the keeper rated `(reflexes + positioning)/2`. Every event
 carries `set_piece = FreeKick` and `shot_kind = DirectFreeKick`; a goal's source is `DirectFreeKick`.
 
 ### Shot Resolution
@@ -334,9 +369,16 @@ carries `set_piece = FreeKick` and `shot_kind = DirectFreeKick`; a goal's source
 When the ball reaches the attacking box other than from a won header, a shot is taken by the man ω
 picks (see *Finishing in the box*):
 
-1. **Accuracy check** — base accuracy (configurable, default 45%) adjusted by the shooter's `shooting + composure + decisions` rating. Clamped to 15%–85%.
+1. **Accuracy check** — `shot_accuracy_base` (default 0.35) + `(shooter_rating − 50) / 200`, the
+   rating the mean of `shooting + composure + decisions` (× condition, shooting traits). Clamped to 15%–85%.
    - **Miss**: 40% chance the shot is blocked, 60% chance off target.
-2. **Conversion check** — base conversion (default 30%) adjusted by `(shooter_rating - goalkeeper_rating) / 150`. Clamped to 10%–70%.
+2. **Conversion check** — `goal_conversion_base` (default 0.39) × the defending side's line
+   (`High` ×1.05, `Low` ×0.92, `VeryLow` ×0.88) + `(shooter_rating − goalkeeper_rating) / 150`,
+   the keeper rated on handling, reflexes and positioning. Clamped to 10%–70%. The base was 0.36
+   until GĐ5 P5.3b (0.35 there, so keepers stop a little more once the box's shots are spread wider),
+   0.38 from P5.4, which cut the shots a match to the real 25.5 and kept the goals (real sides score
+   from 11% of their shots, the engine had scored from 9.6%), and 0.39 from P5.7, which flattened the
+   one-on-one and cost 0.04 goals a match.
    - **Score**: Goal event emitted with scorer + assister.
    - **Save**: Shot saved event.
 
@@ -344,9 +386,16 @@ picks (see *Finishing in the box*):
 
 Fouls can occur after tackles in midfield and the attacking third:
 
-1. **Foul probability** — base 12%, modified by the fouler's `aggression` attribute and the `HotHead` / `CoolHead` traits.
-2. **If foul occurs in the box** → 8% chance of a **penalty** being awarded.
-3. **Card probability** — 30% chance of a yellow, modified by aggression. 4% chance a card is upgraded to red.
+1. **Foul probability** — `foul_probability` (0.40) × `(0.6 + 0.8 × aggression/100)` × `HotHead`
+   ×1.25 / `CoolHead` ×0.70 × the marking and pressing dials.
+2. **In the box** — a shot worked inside the box is fouled first 6% of the time (`BOX_FOUL_CHANCE`,
+   apart from `foul_probability`), and a box foul is a **penalty** with `penalty_probability` (0.50).
+3. **Card probability** — `yellow_card_probability` (0.20) × `(0.5 + aggression/100)`, times
+   `booked_card_factor` (0.10) for a player already booked, who holds back from the challenge that
+   would be his second. Of the cards shown, `red_card_probability` (0.018) are straight reds. Until
+   GĐ5 P5.7 the two were 0.11 and 0.04 with no caution for a booked player: 2.35 yellow cards and
+   0.33 sendings-off a match on the Premier League probe, against real football's 4.07 and 0.18; now
+   4.00 and 0.16, half of them straight reds and half second yellows.
 4. **Second yellow** → automatic red card and sending off.
 5. **Injury** — 3% chance per foul that the fouled player is injured, scaled by his match fitness
    (`injury_fitness_multiplier`: ×3 under 30, ×2 under 50, ×1.5 under 70, ×0.7 at 90 and over), at
@@ -456,7 +505,7 @@ per-minute possession contest.
 |---|---|---|
 | build_up | how often a side plays it long from its own third (P4.2) | Short keeps it on the ground and risks a high turnover; Long clears the press but rarely keeps the ball |
 | width | the lane matrix (`c, s, a, w`) | Wide plays more down the flanks, where crosses come from |
-| def_line | shot conversion conceded (High ×1.05, ×1.12 until GĐ5 P5.5; VeryLow ×0.85) + the press on the other side's build-up | High concedes better chances in behind and presses higher |
+| def_line | shot conversion conceded (High ×1.05, ×1.12 until GĐ5 P5.5; Low ×0.92; VeryLow ×0.88, ×0.85 until GĐ5 P5.7, when it sat 5.1 points above the default) + the press on the other side's build-up | High concedes better chances in behind and presses higher |
 | marking | foul probability | Man-to-man fouls more |
 | pressing | possession contest (def) + build-up press + **in-match stamina** | Aggressive wins the ball back more, tires faster |
 | tempo | midfield progression (att) + possession contest retention (att) + which passing the midfield duel reads (P4.3: Patient short, Direct half short half long) | Direct shoots more / Patient holds the ball and rewards short passers |
@@ -465,11 +514,14 @@ per-minute possession contest.
 | break_speed | possession flip: winner may counter into the final third (Fast 8% × the line's distance; 10% until P4.6); how often a ball won in the own third goes direct (Slow ×0.93) | Fast turns turnovers into chances |
 | cross_style | crosses from the flank (`wing_play`) | Mixed / High / Low / Early, see *Wing play* |
 
-The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.2
-goals conceded per game as leaky and at most 1.0 scored as blunt. Those cutoffs
-were read in phase 2 (P4.6), when the generated-world probe measured about
-**1.53 goals per club per game**. A scoring change needs a fresh run of
-`tactical_adaptation_probe` before those cutoffs can be trusted. AI blueprints
+The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.0
+goals conceded per game (`LEAKY`) as leaky and at most 0.8 scored (`BLUNT`) as
+blunt, over the last five matches: p85 conceded and p15 scored of the probe's
+five-match windows. Those cutoffs were read at GĐ5 P5.7, when the probe
+measured about **1.42 goals per club per game** (2.2 and 1.0 at P4.6, at 1.53).
+A scoring change needs a fresh run of `tactical_adaptation_probe` before those
+cutoffs can be trusted. The same review also picks the club's formation (GĐ5
+P5.1, see [GAME_SYSTEMS.md](GAME_SYSTEMS.md#ai-clubs-shape-and-plan)). AI blueprints
 also pick a cross style (High for Attacking and Defensive, Low for Possession,
 Early for Counter, Mixed otherwise), and a side whose two likeliest finishers
 rate below 68 in the air crosses Low instead of High when they can finish along
@@ -517,15 +569,60 @@ All probabilities and multipliers are tuneable via `MatchConfig`:
 | Parameter | Default | Description |
 |---|---|---|
 | `home_advantage` | 1.10 | Multiplier for home team ratings |
-| `shot_accuracy_base` | 0.35 | Base chance a shot is on target |
-| `goal_conversion_base` | 0.38 | Base chance an on-target shot scores |
+| `shot_accuracy_base` | 0.35 | Base chance a shot in the box is on target |
+| `goal_conversion_base` | 0.39 | Base chance an on-target shot in the box scores |
 | `fatigue_per_minute` | 0.20 | Condition loss per minute (live mode) |
 | `foul_probability` | 0.40 | Base chance a tackle results in a foul |
-| `yellow_card_probability` | 0.11 | Chance a foul produces a yellow |
-| `red_card_probability` | 0.04 | Chance a card is direct red |
+| `yellow_card_probability` | 0.20 | Base chance a foul produces a card |
+| `red_card_probability` | 0.018 | Chance a card is a straight red |
 | `penalty_probability` | 0.50 | Chance a box foul is a penalty |
 | `stoppage_time_max` | 4 | Max stoppage time minutes per half |
 | `injury_probability` | 0.03 | Chance of injury per foul, before the fitness factor |
+| `knobs` | `CalibrationKnobs::default()` | The calibration knobs, below |
+
+### Calibration knobs
+
+`engine/src/knobs.rs` (phase 2, GĐ5 P5.0) holds every constant GĐ5 is allowed to tune, as
+`CalibrationKnobs` in `MatchConfig.knobs` (`#[serde(default)]`). Each default is the named constant
+beside its mechanism, where its calibration history is kept; a value chosen at the end of a package
+is written back there. The game never changes them: it plays `MatchConfig::default()`.
+
+`sim-bench` and the real-world probes (`src-tauri/src/commands/game/real_world_probe.rs`) read a JSON
+knob file named by the `OFM_KNOBS` environment variable (`engine::apply_knob_file`): any knob it
+names replaces the default and the rest stay, a misspelt one is refused. A knob file may also set
+six of `MatchConfig`'s own fields — `home_advantage`, `shot_accuracy_base`, `goal_conversion_base`,
+`foul_probability`, `yellow_card_probability`, `red_card_probability`. `sim-bench --knob-sweep
+name=v1,v2,…` plays the guardrail sweep once per value. `tests/architecture.rs` checks that only
+those tools read `OFM_KNOBS`.
+
+| Knob | Default | Where |
+|---|---|---|
+| `p_direct_base` | 0.55 | a ball won in the own third goes direct (`transition.rs`) |
+| `p_high_turnover` | 0.15 | a ball won from a build-up stays high (`zone_resolution.rs`) |
+| `anchor_second_ball` | 0.58 | the second ball's anchor (`duel.rs`) |
+| `anchor_aerial` / `anchor_aerial_open_play_cross` | 0.90 / 1.12 | aerial duels at corners and long balls / after an open-play cross |
+| `corner_from_cleared_duel` | 0.38 | a cleared one-on-one goes behind for a corner |
+| `header_conversion_base` | 0.18 | a header's base chance of beating the keeper |
+| `p_cross_flank` | 0.80 | a flank one-on-one won, not cut inside, ends in a cross |
+| `open_play_cross_reach` / `set_piece_reach` | 0.60 / 0.70 | an average delivery reaches the contest |
+| `p_dfk_centre` / `wall_block` | 1.0 / 0.12 | a central free kick is shot at goal / the wall stops it |
+| `long_shot_base` / `long_shot_flank_penalty` | −1.30 / −1.0 | the long-shot trigger's level and its penalty from a flank |
+| `long_shot_on_target_base` / `long_shot_goal_base` | 0.32 / 0.14 | a long shot on target / in |
+| `long_shot_slope` / `long_shot_habit_bonus` | 0.25 / 0.90 | the trigger's slope in `long_shots` / `ShootsFromDistance` |
+| `shot_weight_spread` / `last_actor_weight` | 0 / 2.0 | who finishes in the box (`finishing.rs`) |
+| `gamma_one_v_one_technical` / `gamma_one_v_one_physical` / `anchor_one_v_one` | 1.65 / 1.75 / 0.94 | the attacking third's one-on-one |
+| `tempo_retention_patient` | 1.03 | a `Patient` side's hold on the ball |
+| `possession_contest_sharpness` | 1.6 | the end-of-minute contest's `k` |
+| `p_early_cross` / `early_cross_delivery` | 0.25 / 0.85 | the `Early` cross style |
+| `booked_card_factor` | 0.10 | a booked player's chance of another card, as a share of the usual |
+| `conversion_high_line` / `conversion_very_low_line` | 1.05 / 0.88 | the defensive line's effect on the chances it concedes |
+
+`engine::targets` holds the GĐ5 target bands (goals a game 2.6–2.9, home edge 9–13 points, draws
+25–27%, shots a match 23–26, corners 9–10.5, headed goals 15–18% of goals, defenders' aerial share
+50–54%, possession spread 8.4–12.4 points, top scorer 25–36 goals, at least five AI formations in
+use and none above 40%, and the rest), one table read by both measures: `sim-bench --guardrails
+--stage gd5` judges the rows that need synthetic mirror squads, the real-world probes the rows that
+need a real world.
 
 `PlayerData` also carries `footedness` (`Foot::{Left, Right, Both}`, from the domain player's footedness) since P3.0. Wing play reads it (P3.4): a winger on his weaker side cuts inside more, and the benches' left-foot share follows real squads.
 
@@ -580,7 +677,7 @@ player taken off is rated for the time he played. `LiveMatchState::into_report` 
 headless match from `simulate_with_rng` is rated the same way.
 
 ```
-rating = 6.0 − an ordinary game's work at his slot (0.28–0.94, below)
+rating = 6.0 − an ordinary game's work at his slot (0.14–0.95, below)
        + what he did:  goal +1.2 · penalty goal +0.7 · assist +0.7 · penalty miss −0.6
                        shot saved +0.1 · shot off target −0.05 · shot blocked −0.03
                        pass completed +0.01 (at most +0.5) · pass intercepted −0.03
@@ -601,12 +698,16 @@ clamped to 3.0–10.0, rounded to 0.1
 
 The scale centres on 6.0, an ordinary game: `ratings_centre_on_six_across_many_matches` pins the
 mean of forty evenly matched games to 5.85–6.15. The baseline is the average contribution the engine
-produces at each slot the player ended in (phase 2, P3.9, re-read at P4.6): keeper 0.38, centre
-back 0.28, full or wing-back 0.34, defensive midfielder 0.44, central 0.57, attacking 0.42, wide
-midfielder 0.94, winger 0.46, striker 0.67; a player off the pitch by the end takes his group's.
-Since GĐ3 a wide midfielder carries, crosses and sets up far more than a centre back, so one baseline
-for everybody rated them 6.44 and 5.77 on the real-world probe; per slot, every position averages
-5.78–6.06 (P4.6). A long ball counts nothing; a loose ball won (`BallRecovery`) +0.05.
+produces at each slot the player ended in (`rating.rs::ordinary_contribution`; phase 2, P3.9,
+re-read at P4.6 and GĐ5 P5.7): keeper 0.47, centre back 0.14, full or wing-back 0.29, defensive
+midfielder 0.48, central 0.58, attacking 0.95, wide midfielder 0.86, winger 0.76, striker 0.76. A
+player off the pitch by the end takes his group's: keeper 0.47, defender 0.22, midfielder 0.67,
+forward 0.72. Since GĐ3 a wide midfielder carries, crosses and sets up far more than a centre back,
+so one baseline for everybody rated them 6.44 and 5.77 on the real-world probe. P5.7 moved them
+again: the box's shots spread over every attacker (P5.3b) and AI clubs play nine shapes (P5.1), so
+attacking midfielders rated 6.41, wingers 6.22 and centre backs 5.86 on the Premier League probe (20
+seasons). Each figure moves by how far its position's mean sat from 6.0; GĐ5's target (T19) is at
+most 0.3 between two natural positions' mean rating. A long ball counts nothing; a loose ball won (`BallRecovery`) +0.05.
 Ninety anonymous minutes land well below 6.0. If the engine starts producing more or fewer actions,
 the test fails and the baselines move with it.
 
@@ -636,7 +737,7 @@ PreKickOff → FirstHalf → HalfTime → SecondHalf → FullTime
 Users (and AI) can inject commands between minutes:
 
 - **Substitute** — swap a player on the pitch with a bench player (max 5 subs per match)
-- **ChangeFormation** — change the team's formation (e.g. "4-3-3" → "3-5-2"), which reassigns player positions. Only the players the new shape displaces move: each keeps a slot at the position he stood in, else one in his line, the best-rated taking it; the slots left go to the best fit of whoever is left (GĐ5 P5.4b; until then every slot was refilled by defending, tackling and strength, which sent strong forwards to centre back). Each player takes the group of the slot he stands in — each player takes the group of the slot he stands in (`formation_slots`), so 3-4-2-1's wing-backs (second row: LWB, CM, CM, RWB; phase 2 P2.7) are defenders and keep a wing-back role
+- **ChangeFormation** — change the team's formation (e.g. "4-3-3" → "3-5-2"), which reassigns player positions. Only the players the new shape displaces move: each keeps a slot at the position he stood in, else one in his line, the best-rated taking it; the slots left go to the best fit of whoever is left (GĐ5 P5.4b; until then every slot was refilled by defending, tackling and strength, which sent strong forwards to centre back, and lost a chasing side the match). Each player takes the group of the slot he stands in (`formation_slots`), so 3-4-2-1's wing-backs (second row: LWB, CM, CM, RWB; phase 2 P2.7) are defenders and keep a wing-back role
 - **ChangePlayStyle** — switch between the 6 play styles
 - **SetFreeKickTaker / SetCornerTaker / SetPenaltyTaker / SetCaptain** — assign set piece roles
 
@@ -703,7 +804,9 @@ starter crosses the line.
 3. Chasing — two goals down from 60', one goal down from 70'. One forward comes on for the most spent
    midfielder, once a match; the back line stays. A substitute takes the slot he replaces, so the
    old rule (a forward for every defender or midfielder, from the interval) put forwards in the back
-   line and the chasing side conceded more than it won back (GĐ5 P5.4).
+   line and the chasing side conceded more than it won back (GĐ5 P5.4). The forward takes the
+   midfielder's slot, so `SubstitutionRecord.came_on_as` (what the substitute was on the bench) is
+   what tells the manager he has already made this change.
 4. Protecting a lead from 80' — a defender comes on for the most spent forward, always leaving one
    up front.
 
@@ -713,8 +816,10 @@ identical from the touchline, and a manager takes the wrong one off with probabi
 *whether* he acts.
 
 **Tactical changes** (one per evaluation):
-- A `Visionary` who is losing after 70' changes shape first: 4-4-2 → 4-3-3 → 4-2-3-1. The chain
-  ends, so this fires at most twice.
+- A `Visionary` who is losing after 70' changes shape first (`bolder_formation`). Since AI clubs
+  start from any of the nine shapes (GĐ5 P5.1), each has a step that keeps its back line: 4-4-2 →
+  4-3-3; 4-3-3, 4-5-1 and 4-1-4-1 → 4-2-3-1; 5-3-2 → 3-5-2; 3-5-2 and 3-4-2-1 → 3-4-3. 4-2-3-1 and
+  3-4-3 have no next step, so this fires at most twice.
 - Otherwise a target play style: Attacking two goals down from 60', or one goal down from 70' unless already
   HighPress; Defensive with a lead from 80', or pinned in one's own half for 7 of the last 10
   minutes with nothing to chase.
@@ -781,7 +886,9 @@ Every change that can move results is measured with `sim-bench` (`src-tauri/crat
   a fair engine one run in twenty, and every change to results reshuffles the random stream).
 
 - `--formation-mix` draws each squad's formation from the nine; with `--guardrails` it also plays
-  the formation-balance table (each formation against 4-4-2, 4,000 matches). `--formation-balance`
+  the formation-balance table (each formation against 4-4-2, 4,000 matches), a gate since GĐ5 P5.5
+  (which closed tech debt NKT-GĐ3-1): no formation may beat or lose to 4-4-2 by more than 5 points
+  of wins over losses. `--formation-balance`
   plays only that table, plus a mirror of all-`AttackingFB` against all-`DefensiveFB` full backs.
   `--dial-balance` plays every dial option against the neutral setup in a mirror match.
 

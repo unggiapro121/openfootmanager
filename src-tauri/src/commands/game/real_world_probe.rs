@@ -866,6 +866,11 @@ struct MatchShares {
     /// side of every match (T16).
     goal_sources: BTreeMap<String, u64>,
     possession_squares: f64,
+    /// Phase 2, GĐ5 (P5.7): cards and fouls, both sides.
+    fouls: u64,
+    yellow_cards: u64,
+    red_cards: u64,
+    second_yellows: u64,
 }
 
 /// Who scores, who sets them up and how players rate, by natural position
@@ -1150,6 +1155,15 @@ impl MatchShares {
                 .entry(format!("{:?}", goal.goal_source))
                 .or_default() += 1;
         }
+        for event in &report.events {
+            match event.event_type {
+                engine::EventType::Foul => self.fouls += 1,
+                engine::EventType::YellowCard => self.yellow_cards += 1,
+                engine::EventType::RedCard => self.red_cards += 1,
+                engine::EventType::SecondYellow => self.second_yellows += 1,
+                _ => {}
+            }
+        }
         // Both sides sit the same distance from 50.
         self.possession_squares += 2.0 * (report.home_possession - 50.0).powi(2);
     }
@@ -1424,6 +1438,14 @@ fn real_world_match_probe() {
         "  possession: a side's standard deviation {:.1} points",
         shares.possession_sd()
     );
+    println!(
+        "  fouls/game {:.1} · yellow cards/game {:.2} · sent off/game {:.3} ({:.3} straight red, {:.3} second yellow; real 24.1 · 4.07 · 0.18)",
+        shares.per_match(shares.fouls),
+        shares.per_match(shares.yellow_cards),
+        shares.per_match(shares.red_cards + shares.second_yellows),
+        shares.per_match(shares.red_cards),
+        shares.per_match(shares.second_yellows)
+    );
     players.print();
     gd5_verdict(&match_verdict(&shares, &players));
     if let Ok(out) = std::env::var("OFM_PROBE_OUT") {
@@ -1528,10 +1550,17 @@ fn real_world_probe() {
     let mut last_game = None;
     let mut top_ups = 0usize;
     let mut opening_formations = std::collections::HashMap::new();
+    // Market value by natural position, start and end of each run (P5.7).
+    let mut values: BTreeMap<String, (f64, f64, u32)> = BTreeMap::new();
     for &seed in &seeds {
         let mut game = build_game(Path::new(&package), seed);
         let opening = game.clock.current_date.format("%Y-%m-%d").to_string();
         let opening_strength = strengths(&game);
+        let opening_values: std::collections::HashMap<String, u64> = game
+            .players
+            .iter()
+            .map(|p| (p.id.clone(), p.market_value))
+            .collect();
         opening_formations = game
             .teams
             .iter()
@@ -1541,6 +1570,16 @@ fn real_world_probe() {
             ofm_core::turn::process_day(&mut game);
         }
         top_ups += game.squad_floor_top_ups.len();
+        for player in &game.players {
+            if let Some(&before) = opening_values.get(&player.id) {
+                let entry = values
+                    .entry(format!("{:?}", player.natural_position))
+                    .or_default();
+                entry.0 += before as f64;
+                entry.1 += player.market_value as f64;
+                entry.2 += 1;
+            }
+        }
         let totals = league_totals(&game, &opening, &opening_strength, bridge);
         println!(
             "  run seed {seed}: {} matches · goals/game {:.3} · home/draw/away {:.1}/{:.1}/{:.1}",
@@ -1555,6 +1594,18 @@ fn real_world_probe() {
         last_game = Some(game);
     }
     let game = last_game.expect("at least one run");
+    println!(
+        "  market value by natural position, end over start of the run (players there at both): {}",
+        values
+            .iter()
+            .filter(|(_, (_, _, n))| *n >= 100)
+            .map(|(position, (before, after, _))| format!(
+                "{position} {:+.1}%",
+                (after / before.max(1.0) - 1.0) * 100.0
+            ))
+            .collect::<Vec<_>>()
+            .join(" · ")
+    );
 
     let report = ProbeReport {
         seeds,

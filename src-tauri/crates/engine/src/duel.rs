@@ -26,11 +26,15 @@ use crate::types::Tempo;
 /// Sensitivity of the aerial duel after a cross.
 pub(crate) const GAMMA_AERIAL: f64 = 2.0;
 /// Sensitivity of the technical half of a one-on-one in the attacking third.
-pub(crate) const GAMMA_ONE_V_ONE_TECHNICAL: f64 = 2.0;
+/// 2.0 until GĐ5 P5.7 (X85): the stronger club won 4–4.5 points more often
+/// than the real line at strength gaps of 6–10 on the European probe; the
+/// two halves at 1.65 / 1.75 bring it within 2.
+pub(crate) const GAMMA_ONE_V_ONE_TECHNICAL: f64 = 1.65;
 /// Sensitivity of the physical half. Its valid band is 1.75–2.2: below it a
 /// fast forward barely beats a slow defender, above it pace outweighs
 /// dribbling by more than 1.5×, the "pace is king" the design rules out.
-pub(crate) const GAMMA_ONE_V_ONE_PHYSICAL: f64 = 2.0;
+/// 1.75 from GĐ5 P5.7, the floor of that band (with the technical half).
+pub(crate) const GAMMA_ONE_V_ONE_PHYSICAL: f64 = 1.75;
 /// Sensitivity of the midfield duel, left where it always was. About ninety of
 /// these are played a match, so any sensitivity above 1 compounds into the
 /// result: at 2 a side four to seven OVR stronger won 69% of real-world

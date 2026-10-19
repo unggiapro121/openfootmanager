@@ -123,25 +123,30 @@ const CLEAN_SHEET_MINUTES: u8 = 60;
 /// GĐ4 moved them again (P4.6): full backs now play out from the back and
 /// win loose balls, and midfield duels went to full backs, wingers and
 /// strikers too, so full backs rated 6.07 and attacking midfielders and
-/// wingers 5.74–5.85. Each moved once more by the same rule.
+/// wingers 5.74–5.85. Each moved once more by the same rule. GĐ5 moved them
+/// again (P5.7): the box's shots spread over every attacker (P5.3b) and AI
+/// clubs play nine shapes (P5.1), so attacking midfielders rated 6.41,
+/// wingers 6.22 and centre backs 5.86 on the Premier League probe (20
+/// seasons). Each moved by the same rule, then the attacking-midfield, wide and
+/// winger ones once more after a second reading.
 fn ordinary_contribution(player: &RosterEntry<'_>) -> f32 {
     use PitchPosition as P;
     match player.slot {
-        Some(P::Goalkeeper) => 0.38,
-        Some(P::CenterBack) => 0.28,
-        Some(P::LeftBack | P::RightBack | P::LeftWingBack | P::RightWingBack) => 0.34,
-        Some(P::DefensiveMidfielder) => 0.44,
-        Some(P::CentralMidfielder) => 0.57,
-        Some(P::AttackingMidfielder) => 0.42,
-        Some(P::LeftMidfielder | P::RightMidfielder) => 0.94,
-        Some(P::LeftWinger | P::RightWinger) => 0.46,
-        Some(P::Striker) => 0.67,
+        Some(P::Goalkeeper) => 0.47,
+        Some(P::CenterBack) => 0.14,
+        Some(P::LeftBack | P::RightBack | P::LeftWingBack | P::RightWingBack) => 0.29,
+        Some(P::DefensiveMidfielder) => 0.48,
+        Some(P::CentralMidfielder) => 0.58,
+        Some(P::AttackingMidfielder) => 0.95,
+        Some(P::LeftMidfielder | P::RightMidfielder) => 0.86,
+        Some(P::LeftWinger | P::RightWinger) => 0.76,
+        Some(P::Striker) => 0.76,
         // Off the pitch by the end (substituted, sent off): his group's.
         None => match player.position {
-            Position::Goalkeeper => 0.38,
-            Position::Defender => 0.31,
-            Position::Midfielder => 0.59,
-            Position::Forward => 0.57,
+            Position::Goalkeeper => 0.47,
+            Position::Defender => 0.22,
+            Position::Midfielder => 0.67,
+            Position::Forward => 0.72,
         },
     }
 }
