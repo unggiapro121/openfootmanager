@@ -153,6 +153,28 @@ describe("choreographBatch — lanes (phase 2, GĐ3)", () => {
     const last = fromPitch("Home", carries[carries.length - 1].ball?.at ?? start.ball).lane;
     expect(last).toBeGreaterThan(first);
   });
+
+  // Given a home break down its left into a flank the away side left open,
+  // then the away full back on that flank starts caught upfield of the runner
+  // and runs back after him without catching him (phase 2, GĐ5 P5.6).
+  it("shows the full back caught upfield chasing back on a break into an open flank", () => {
+    const event = withLane(
+      radarEvent("Dribble", "Home", "AwayDefense", "h_lm"),
+      "Left",
+      "FlankExposed",
+    );
+    const [beat] = choreographBatch([event], stage, start).beats;
+    const carries = beat.steps.filter((step) => step.action?.kind === "carry");
+    const depthOf = (point: { x: number; y: number } | undefined) =>
+      point ? fromPitch("Home", point).depth : Number.NaN;
+    const caught = depthOf(beat.steps[0].movers?.a_rb);
+    const runnerStart = depthOf(carries[0].movers?.h_lm);
+    const chasing = depthOf(carries[carries.length - 1].movers?.a_rb);
+    const runnerEnd = depthOf(carries[carries.length - 1].movers?.h_lm);
+    expect(caught).toBeLessThan(runnerStart);
+    expect(chasing).toBeGreaterThan(caught);
+    expect(chasing).toBeLessThan(runnerEnd);
+  });
 });
 
 describe("choreographBatch — build-up and long balls (phase 2, GĐ4)", () => {

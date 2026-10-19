@@ -5,6 +5,7 @@ import {
   GOAL_HALF_WIDTH,
   HALFWAY,
   PITCH_LENGTH,
+  PITCH_WIDTH,
   type PitchPoint,
   type ShapeFocus,
   type Side,
@@ -415,6 +416,14 @@ const JOCKEY_GAP = 6;
 const CUT_INSIDE_LANE = 12;
 /** How deep a break into an open flank carries the ball: into the box. */
 const OPEN_FLANK_END_DEPTH = 90;
+/**
+ * On a break into an open flank, how far upfield of the runner the full back
+ * who went up is caught, how far behind he still is when the run ends, and how
+ * far in from the touchline he starts (phase 2, GĐ5 P5.6).
+ */
+const CAUGHT_UPFIELD = 15;
+const STILL_CHASING = 3;
+const FULL_BACK_TOUCHLINE = 8;
 /** Where an early cross is struck from: well short of the byline. */
 const EARLY_CROSS_DEPTH = 70;
 /** Where a low cross is aimed: around the penalty spot. */
@@ -455,7 +464,22 @@ function stageDribble(cue: Cue): Staging {
   );
   // A defender or midfielder steps up to him — not a forward caught upfield.
   const focus: ShapeFocus = { x: start.x, y: start.y, possession: side };
-  const defender = nearestOpponent(stage, side, start, focus, ["Defender", "Midfielder"]);
+  // Into a flank left open, the full back who went up is caught upfield and
+  // chases back; someone else steps up to the runner (phase 2, GĐ5 P5.6).
+  const isOpenFlank = event.tactical_context === "FlankExposed";
+  const flankLane = lane < CENTRE_LANE ? FULL_BACK_TOUCHLINE : PITCH_WIDTH - FULL_BACK_TOUCHLINE;
+  const chaser = isOpenFlank
+    ? nearestOpponent(stage, side, toPitch(side, depth, flankLane), focus, ["Defender"])
+    : null;
+  const defender = nearestOpponent(stage, side, start, focus, ["Defender", "Midfielder"], chaser);
+  const chasing = (runDepth: number, progress: number) =>
+    onPitch(
+      toPitch(
+        side,
+        runDepth - STILL_CHASING - (CAUGHT_UPFIELD - STILL_CHASING) * (1 - progress),
+        flankLane + (lane - flankLane) * progress * 0.5,
+      ),
+    );
   const defenderLane = defender ? fromPitch(side, where(cue, defender)).lane : lane + 1;
   // Bend away from the defender, but never towards a touchline he is already near.
   const awayFromDefender = defenderLane >= lane ? -1 : 1;
@@ -477,7 +501,11 @@ function stageDribble(cue: Cue): Staging {
     touches.push({
       pace: "carry",
       ball: { at: onPitch(toPitch(side, runDepth + TOUCH_AHEAD, runLane)), ease: "push" },
-      movers: { ...only(runner, feet), ...only(defender, onPitch(jockey)) },
+      movers: {
+        ...only(runner, feet),
+        ...only(defender, onPitch(jockey)),
+        ...only(chaser, chasing(runDepth, progress)),
+      },
       highlight: cast(runner, defender),
       action: runner ? { kind: "carry", by: runner } : undefined,
     });
@@ -492,6 +520,7 @@ function stageDribble(cue: Cue): Staging {
         movers: {
           ...take.step.movers,
           ...only(defender, onPitch(toPitch(side, depth + JOCKEY_GAP + 1, lane - bend * 1.2))),
+          ...only(chaser, chasing(depth, 0)),
         },
         highlight: cast(runner, defender),
         possession: side,
