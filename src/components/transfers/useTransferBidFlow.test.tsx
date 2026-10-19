@@ -186,8 +186,14 @@ function HookHarness({
   gameState: GameStateData;
   target: PlayerData;
 }): JSX.Element {
-  const { bidAmount, bidResult, setBidAmount, openBidNegotiation, handleMakeBid } =
-    useTransferBidFlow({ gameState });
+  const {
+    bidAmount,
+    bidResult,
+    bidSubmitDisabled,
+    setBidAmount,
+    openBidNegotiation,
+    handleMakeBid,
+  } = useTransferBidFlow({ gameState });
 
   return (
     <div>
@@ -204,6 +210,7 @@ function HookHarness({
         Submit
       </button>
       <output aria-label="bid-result">{bidResult ?? "idle"}</output>
+      <output aria-label="submit-state">{bidSubmitDisabled ? "locked" : "open"}</output>
     </div>
   );
 }
@@ -323,5 +330,71 @@ describe("useTransferBidFlow", (): void => {
     });
 
     expect(screen.getByLabelText("Bid amount")).toHaveValue("0.65");
+  });
+
+  // Given a bid the selling club will answer in a few days, when it is sent,
+  // then the panel shows it waiting and no second bid can go.
+  it("shows a sent bid waiting for its answer and locks the next one", async (): Promise<void> => {
+    const target = createPlayer();
+    const gameState = createGameState([target]);
+    const waitingGame = {
+      ...gameState,
+      awaited_replies: [
+        {
+          id: "reply-1",
+          proposal: { kind: "transfer_bid" as const, player_id: target.id },
+          sent_on: "2026-08-01",
+          reply_on: "2026-08-03",
+        },
+      ],
+    };
+    mockedMakeTransferBid.mockResolvedValue({
+      decision: "awaiting_reply",
+      suggested_fee: null,
+      is_terminal: false,
+      reply_on: "2026-08-03",
+      feedback: {
+        mood: "calm",
+        headline_key: "transfers.awaitingReplyHeadline",
+        detail_key: "transfers.awaitingReplyDetail",
+        tension: 50,
+        patience: 50,
+        round: 1,
+        params: { date: "2026-08-03" },
+      },
+      game: waitingGame,
+    });
+
+    render(<HookHarness gameState={gameState} target={target} />);
+    fireEvent.click(screen.getByRole("button", { name: "Open" }));
+    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
+
+    await waitFor((): void => {
+      expect(screen.getByLabelText("bid-result")).toHaveTextContent("awaiting_reply");
+    });
+    expect(screen.getByLabelText("submit-state")).toHaveTextContent("locked");
+  });
+
+  // Given a bid already waiting for its answer, when the player's negotiation
+  // is opened again, then it shows the bid waiting, with sending locked.
+  it("reopens a player with a bid waiting as waiting", (): void => {
+    const target = createPlayer();
+    const gameState = {
+      ...createGameState([target]),
+      awaited_replies: [
+        {
+          id: "reply-1",
+          proposal: { kind: "transfer_bid" as const, player_id: target.id },
+          sent_on: "2026-08-01",
+          reply_on: "2026-08-03",
+        },
+      ],
+    };
+
+    render(<HookHarness gameState={gameState} target={target} />);
+    fireEvent.click(screen.getByRole("button", { name: "Open" }));
+
+    expect(screen.getByLabelText("bid-result")).toHaveTextContent("awaiting_reply");
+    expect(screen.getByLabelText("submit-state")).toHaveTextContent("locked");
   });
 });

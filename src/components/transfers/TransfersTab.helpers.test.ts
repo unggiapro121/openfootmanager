@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { formatMatchDate } from "../../lib/dateFormatting";
+
 import type { PlayerData, TransferOfferData } from "../../store/gameStore";
 import {
   buildLoanPeriodOptions,
@@ -12,6 +14,8 @@ import {
   getTransferOfferBadgeVariant,
   getTransferOfferStatusLabel,
   mapTransferNegotiationError,
+  awaitedReplyFor,
+  buildAwaitingReplyFeedback,
   normalizeTransferNegotiationFeedback,
   parseTransferFeeInput,
 } from "./TransfersTab.helpers";
@@ -209,5 +213,34 @@ describe("TransfersTab.helpers", () => {
       "transfers.negotiationExpiredError",
     );
     expect(mapTransferNegotiationError(t, "other error")).toBe("other error");
+  });
+});
+
+describe("awaited replies", () => {
+  const reply = {
+    id: "reply-1",
+    proposal: { kind: "transfer_bid" as const, player_id: "player-9" },
+    sent_on: "2026-08-01",
+    reply_on: "2026-08-03",
+  };
+
+  // Given an offer waiting for its answer, then it is found by its player and
+  // by no one else.
+  it("finds the offer a player is waiting on", () => {
+    const game = { awaited_replies: [reply] };
+
+    expect(awaitedReplyFor(game, "player-9")).toBe(reply);
+    expect(awaitedReplyFor(game, "player-1")).toBeNull();
+    expect(awaitedReplyFor({}, "player-9")).toBeNull();
+  });
+
+  // Given an offer waiting for its answer, then the panel says when the answer
+  // comes, with the day written as the rest of the game writes dates.
+  it("says when the answer comes", () => {
+    const feedback = buildAwaitingReplyFeedback(reply);
+
+    expect(feedback.headline_key).toBe("transfers.awaitingReplyHeadline");
+    expect(feedback.detail_key).toBe("transfers.awaitingReplyDetail");
+    expect(feedback.params?.date).toBe(formatMatchDate("2026-08-03"));
   });
 });

@@ -199,6 +199,9 @@ fn process_day_common(game: &mut Game, today: &str) {
     crate::youth_watchlist::process_youth_watchlist(game);
     transfers::process_pending_transfer_registrations(game);
     transfers::process_pending_loan_registrations(game);
+    // The answers to the user's offers come before the AI market moves, so a
+    // reply due today is decided on the squads as they stood when it was due.
+    transfers::deliver_due_replies(game);
     transfers::generate_incoming_transfer_offers(game);
     // The AI clubs' own selling and buying, each on its weekly review day.
     transfers::run_ai_transfer_reviews(game, weekday_num);

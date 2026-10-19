@@ -13,11 +13,13 @@ export interface TransferNegotiationFeedbackData {
 }
 
 export interface TransferNegotiationResponseData {
-  decision: "accepted" | "rejected" | "counter_offer";
+  /** `awaiting_reply`: the offer was sent and the answer comes by mail on `reply_on`. */
+  decision: "accepted" | "rejected" | "counter_offer" | "awaiting_reply";
   suggested_fee: number | null;
   is_terminal: boolean;
   registration_date?: string | null;
   feedback: TransferNegotiationFeedbackData;
+  reply_on?: string | null;
   game: GameStateData;
 }
 
@@ -45,12 +47,14 @@ export interface TransferBidProjectionData {
 }
 
 export interface LoanOfferResponseData {
-  decision: "accepted" | "rejected" | "counter_offer";
+  /** `awaiting_reply`: the offer was sent and the answer comes by mail on `reply_on`. */
+  decision: "accepted" | "rejected" | "counter_offer" | "awaiting_reply";
   offer_id: string;
   suggested_wage_contribution_pct: number | null;
   suggested_end_date: string | null;
   suggested_buy_option_fee: number | null;
   is_terminal: boolean;
+  reply_on?: string | null;
   game: GameStateData;
 }
 

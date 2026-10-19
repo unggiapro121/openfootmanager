@@ -1517,7 +1517,12 @@
     "transferFeedbackCounterHeadline": "Mereka menginginkan lebih sebelum berjabat tangan.",
     "transferFeedbackCounterDetail": "Tawaran cukup dekat untuk terus bernegosiasi, tetapi pihak mereka mengisyaratkan harga yang mendekati {{fee}}.",
     "transferFeedbackRejectedHeadline": "Mereka menghentikan putaran ini.",
-    "transferFeedbackRejectedDetail": "Proposal tidak cukup menggugah mereka. Kamu membutuhkan nominal yang lebih kuat, mendekati {{fee}}, untuk membuka negosiasi serius lagi."
+    "transferFeedbackRejectedDetail": "Proposal tidak cukup menggugah mereka. Kamu membutuhkan nominal yang lebih kuat, mendekati {{fee}}, untuk membuka negosiasi serius lagi.",
+    "awaitingReplyHeadline": "Tawaran terkirim",
+    "awaitingReplyDetail": "Mereka akan membalas lewat surat pada {{date}}.",
+    "offerAwaitingReply": "Tawaran terkirim — menunggu balasan",
+    "offerAwaitingReplyOn": "Tawaran terkirim — balasan lewat surat pada {{date}}",
+    "awaitingReplyBadge": "Menunggu balasan"
   },
   "transferCentreWorld": {
     "title": "Pusat Transfer",
@@ -3422,7 +3427,8 @@
         "loanBuyOptionNotAvailable": "Tidak ada opsi pembelian pinjaman yang dapat digunakan untuk pemain ini",
         "invalidYouthScoutingRegion": "Wilayah scouting pemuda tidak didukung.",
         "invalidYouthScoutingObjective": "Sasaran scouting pemuda tidak didukung.",
-        "invalidYouthScoutingTargetPosition": "Posisi target scouting pemuda tidak didukung."
+        "invalidYouthScoutingTargetPosition": "Posisi target scouting pemuda tidak didukung.",
+        "awaitingReply": "Sudah ada tawaran untuk pemain ini yang menunggu balasan."
       },
       "contracts": {
         "playerNotOwnedByClub": "Pemain tidak termasuk dalam klub kamu",
@@ -4094,6 +4100,33 @@
         "effect": {
           "following": "{{scout}} akan memantau {{player}} dan melapor setiap Senin sampai mengenalnya sepenuhnya.",
           "scoutFull": "{{player}} sudah masuk daftar pantauan, tetapi {{scout}} sudah memantau pemain sebanyak yang ia mampu. Serahkan {{player}} ke pemandu bakat lain di layar Pemanduan Bakat."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: tawaran diterima"
+        },
+        "counter": {
+          "subject": "{{player}}: tawaran balik"
+        },
+        "rejected": {
+          "subject": "{{player}}: tawaran ditolak"
+        },
+        "lapsed": {
+          "subject": "{{player}}: tawaran tidak berlaku"
+        },
+        "body": {
+          "dealAccepted": "{{club}} setuju {{fee}} untuk {{player}}.",
+          "dealScheduled": "{{club}} menyetujui kesepakatan {{player}}. Didaftarkan pada {{date}}, saat bursa transfer dibuka.",
+          "dealCounter": "{{club}} membalas soal {{player}}: mereka meminta {{fee}}. Buka tab Transfer untuk membalas.",
+          "dealRejected": "{{club}} menolak kesepakatan {{player}}.",
+          "loanAccepted": "{{club}} menerima syarat peminjaman {{player}}.",
+          "loanCounter": "{{club}} mengusulkan syarat peminjaman lain untuk {{player}}: {{wage}}% gajinya hingga {{date}}. Buka tab Transfer untuk membalas.",
+          "loanRejected": "{{club}} menolak syarat peminjaman {{player}}.",
+          "freeAgentAccepted": "{{player}} menerima tawaran kontrak Anda dan bergabung dengan klub.",
+          "freeAgentCounter": "{{player}} meminta {{wage}} per minggu selama {{years}} tahun. Buka tab Transfer untuk membalas.",
+          "freeAgentRejected": "{{player}} menolak tawaran kontrak Anda.",
+          "lapsed": "Tawaran Anda untuk {{player}} tidak berlaku lagi: situasi berubah sebelum balasan datang."
         }
       }
     },

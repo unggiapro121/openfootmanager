@@ -1517,7 +1517,12 @@
     "transferFeedbackCounterHeadline": "They want more before shaking hands.",
     "transferFeedbackCounterDetail": "The bid was close enough to keep talking, but their side are signalling a price nearer {{fee}}.",
     "transferFeedbackRejectedHeadline": "They shut this round down.",
-    "transferFeedbackRejectedDetail": "The proposal did not move them enough. You would need a stronger fee, closer to {{fee}}, to reopen serious talks."
+    "transferFeedbackRejectedDetail": "The proposal did not move them enough. You would need a stronger fee, closer to {{fee}}, to reopen serious talks.",
+    "awaitingReplyHeadline": "Offer sent",
+    "awaitingReplyDetail": "They will reply by mail on {{date}}.",
+    "offerAwaitingReply": "Offer sent — awaiting reply",
+    "offerAwaitingReplyOn": "Offer sent — reply by mail on {{date}}",
+    "awaitingReplyBadge": "Awaiting reply"
   },
   "transferCentreWorld": {
     "title": "Transfer Centre",
@@ -3422,7 +3427,8 @@
         "loanBuyOptionNotAvailable": "No exercisable loan buy option is available for this player",
         "invalidYouthScoutingRegion": "Unsupported youth scouting region.",
         "invalidYouthScoutingObjective": "Unsupported youth scouting objective.",
-        "invalidYouthScoutingTargetPosition": "Unsupported youth scouting target position."
+        "invalidYouthScoutingTargetPosition": "Unsupported youth scouting target position.",
+        "awaitingReply": "An offer for this player is already waiting for a reply."
       },
       "contracts": {
         "playerNotOwnedByClub": "Player does not belong to your club",
@@ -4094,6 +4100,33 @@
         "effect": {
           "following": "{{scout}} will follow {{player}} and report every Monday until he knows him fully.",
           "scoutFull": "{{player}} is on your watchlist, but {{scout}} already follows as many players as he can. Hand {{player}} to another scout on the Scouting screen."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: offer accepted"
+        },
+        "counter": {
+          "subject": "{{player}}: counter-offer"
+        },
+        "rejected": {
+          "subject": "{{player}}: offer rejected"
+        },
+        "lapsed": {
+          "subject": "{{player}}: offer lapsed"
+        },
+        "body": {
+          "dealAccepted": "{{club}} agreed to {{fee}} for {{player}}.",
+          "dealScheduled": "{{club}} agreed to the deal for {{player}}. It registers on {{date}}, when the window opens.",
+          "dealCounter": "{{club}} came back on {{player}}: they want {{fee}}. Open the Transfers tab to reply.",
+          "dealRejected": "{{club}} turned down the deal for {{player}}.",
+          "loanAccepted": "{{club}} accepted the loan terms for {{player}}.",
+          "loanCounter": "{{club}} proposes other loan terms for {{player}}: {{wage}}% of his wages until {{date}}. Open the Transfers tab to reply.",
+          "loanRejected": "{{club}} turned down the loan terms for {{player}}.",
+          "freeAgentAccepted": "{{player}} accepted your contract offer and joins the club.",
+          "freeAgentCounter": "{{player}} wants {{wage}} a week over {{years}} years. Open the Transfers tab to reply.",
+          "freeAgentRejected": "{{player}} turned down your contract offer.",
+          "lapsed": "Your offer for {{player}} no longer stands: things changed before the answer came."
         }
       }
     },

@@ -11,6 +11,8 @@ import {
 } from "../../services/transfersService";
 import { getErrorMessage, resolveTranslatedErrorMessage } from "../../utils/errorMessage";
 import {
+  awaitedReplyFor,
+  buildAwaitingReplyFeedback,
   buildResumedBidFeedback,
   getOutgoingNegotiationOffer,
   normalizeTransferNegotiationFeedback,
@@ -65,6 +67,9 @@ export function useTransferBidFlow({
   >(null);
 
   const activeBidOffer = bidTarget ? getOutgoingNegotiationOffer(bidTarget, userTeamId) : null;
+  // An offer already sent for this player waits for its answer; another cannot
+  // go until it comes.
+  const awaitedReply = bidTarget ? awaitedReplyFor(gameState, bidTarget.id) : null;
   const bidAmountMillions = Number.parseFloat(bidAmount);
   const bidFee = Number.isFinite(bidAmountMillions)
     ? Math.round(bidAmountMillions * 1_000_000)
@@ -101,6 +106,7 @@ export function useTransferBidFlow({
 
   const openBidNegotiation = (player: PlayerData): void => {
     const existingOffer = getOutgoingNegotiationOffer(player, userTeamId);
+    const waiting = awaitedReplyFor(gameState, player.id);
 
     setBidTarget(player);
     setBidAmount(
@@ -109,9 +115,11 @@ export function useTransferBidFlow({
         1_000_000
       ).toFixed(existingOffer ? 2 : 1),
     );
-    setBidResult(null);
+    setBidResult(waiting ? "awaiting_reply" : null);
     setBidError(null);
-    setBidFeedback(buildResumedBidFeedback(existingOffer));
+    setBidFeedback(
+      waiting ? buildAwaitingReplyFeedback(waiting) : buildResumedBidFeedback(existingOffer),
+    );
     setBidProjection(null);
   };
 
@@ -172,6 +180,8 @@ export function useTransferBidFlow({
     bidSubmitDisabled:
       bidLoading ||
       bidResult === "accepted" ||
+      bidResult === "awaiting_reply" ||
+      awaitedReply !== null ||
       bidFee === null ||
       bidFee <= 0 ||
       bidProjection === null ||

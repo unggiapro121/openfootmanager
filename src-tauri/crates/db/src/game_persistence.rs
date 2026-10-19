@@ -95,6 +95,8 @@ fn write_game_to_connection(
         .map_err(|_| game_persistence_write_error())?;
     let staff_market_refreshes_json = serde_json::to_string(&game.staff_market_refreshes)
         .map_err(|_| game_persistence_write_error())?;
+    let awaited_replies_json =
+        serde_json::to_string(&game.awaited_replies).map_err(|_| game_persistence_write_error())?;
     let extra_translations_json = serde_json::to_string(&game.extra_translations)
         .map_err(|_| game_persistence_write_error())?;
     let package_lockfile_json = serde_json::to_string(&game.package_lockfile)
@@ -132,6 +134,7 @@ fn write_game_to_connection(
             youth_watchlist_json,
             youth_pool_json,
             staff_market_refreshes_json,
+            awaited_replies_json,
             available_staff_market_last_activity_date: game
                 .available_staff_market_last_activity_date
                 .clone(),
@@ -372,6 +375,7 @@ impl GamePersistenceReader {
             youth_pool: serde_json::from_str(&meta.youth_pool_json).unwrap_or_default(),
             staff_market_refreshes: serde_json::from_str(&meta.staff_market_refreshes_json)
                 .unwrap_or_default(),
+            awaited_replies: serde_json::from_str(&meta.awaited_replies_json).unwrap_or_default(),
             emitted_events: serde_json::from_str(&meta.emitted_events_json).unwrap_or_else(|_| {
                 log::warn!(
                     "[load] sent-ledger JSON is malformed; reseeding it from the inbox. \
@@ -523,6 +527,7 @@ mod tests {
             youth_watchlist_json: "[]".to_string(),
             youth_pool_json: "null".to_string(),
             staff_market_refreshes_json: "{}".to_string(),
+            awaited_replies_json: "[]".to_string(),
         }
     }
 
@@ -950,6 +955,29 @@ mod tests {
 
         let loaded = GamePersistenceReader::read_game(&db).unwrap();
         assert_eq!(loaded.staff_market_refreshes, game.staff_market_refreshes);
+    }
+
+    /// Given a bid sent and waiting for its answer, when the career is saved
+    /// and loaded, then the bid still waits, with its terms and reply day.
+    #[test]
+    fn write_and_read_game_preserves_offers_awaiting_a_reply() {
+        let db = GameDatabase::open_in_memory().unwrap();
+        let mut game = sample_game_with_clock(2032, 18);
+        game.awaited_replies
+            .push(ofm_core::transfers::AwaitedReply {
+                id: "reply-1".to_string(),
+                proposal: ofm_core::transfers::UserProposal::TransferBid {
+                    player_id: "player-9".to_string(),
+                    fee: 12_500_000,
+                },
+                sent_on: "2032-01-18".to_string(),
+                reply_on: "2032-01-20".to_string(),
+            });
+
+        GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+
+        let loaded = GamePersistenceReader::read_game(&db).unwrap();
+        assert_eq!(loaded.awaited_replies, game.awaited_replies);
     }
 
     /// Given a career whose season youth pool has been drawn, when it is saved

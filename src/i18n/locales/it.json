@@ -1536,7 +1536,12 @@
     "transferFeedbackCounterHeadline": "Vogliono di più prima di stringersi la mano.",
     "transferFeedbackCounterDetail": "L'offerta era abbastanza vicina per continuare a parlare, ma la controparte segnala un prezzo più vicino a {{fee}}.",
     "transferFeedbackRejectedHeadline": "Hanno chiuso questo round.",
-    "transferFeedbackRejectedDetail": "La proposta non li ha smossi abbastanza. Servirebbe una cifra più forte, più vicina a {{fee}}, per riaprire una trattativa seria."
+    "transferFeedbackRejectedDetail": "La proposta non li ha smossi abbastanza. Servirebbe una cifra più forte, più vicina a {{fee}}, per riaprire una trattativa seria.",
+    "awaitingReplyHeadline": "Offerta inviata",
+    "awaitingReplyDetail": "Risponderanno per posta il {{date}}.",
+    "offerAwaitingReply": "Offerta inviata — in attesa di risposta",
+    "offerAwaitingReplyOn": "Offerta inviata — risposta per posta il {{date}}",
+    "awaitingReplyBadge": "In attesa di risposta"
   },
   "transferCentreWorld": {
     "title": "Centro trasferimenti",
@@ -3414,7 +3419,8 @@
         "loanBuyOptionNotAvailable": "Non è disponibile alcuna opzione di riscatto esercitabile per questo giocatore",
         "invalidYouthScoutingRegion": "Regione di osservazione giovanile non supportata.",
         "invalidYouthScoutingObjective": "Obiettivo di osservazione giovanile non supportato.",
-        "invalidYouthScoutingTargetPosition": "Posizione obiettivo di osservazione giovanile non supportata."
+        "invalidYouthScoutingTargetPosition": "Posizione obiettivo di osservazione giovanile non supportata.",
+        "awaitingReply": "C'è già un'offerta per questo giocatore in attesa di risposta."
       },
       "contracts": {
         "playerNotOwnedByClub": "Il giocatore non appartiene al tuo club",
@@ -4094,6 +4100,33 @@
         "effect": {
           "following": "{{scout}} seguirà {{player}} e farà rapporto ogni lunedì finché non lo conoscerà a fondo.",
           "scoutFull": "{{player}} è nella tua lista di osservazione, ma {{scout}} segue già il massimo dei giocatori possibile. Affida {{player}} a un altro osservatore nella schermata Osservatori."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: offerta accettata"
+        },
+        "counter": {
+          "subject": "{{player}}: controfferta"
+        },
+        "rejected": {
+          "subject": "{{player}}: offerta rifiutata"
+        },
+        "lapsed": {
+          "subject": "{{player}}: offerta decaduta"
+        },
+        "body": {
+          "dealAccepted": "{{club}} accetta {{fee}} per {{player}}.",
+          "dealScheduled": "{{club}} accetta l'accordo per {{player}}. Sarà registrato il {{date}}, all'apertura del mercato.",
+          "dealCounter": "{{club}} ha risposto su {{player}}: vogliono {{fee}}. Apri la scheda Trasferimenti per rispondere.",
+          "dealRejected": "{{club}} rifiuta l'accordo per {{player}}.",
+          "loanAccepted": "{{club}} accetta le condizioni di prestito di {{player}}.",
+          "loanCounter": "{{club}} propone altre condizioni di prestito per {{player}}: il {{wage}}% dello stipendio fino al {{date}}. Apri la scheda Trasferimenti per rispondere.",
+          "loanRejected": "{{club}} rifiuta le condizioni di prestito di {{player}}.",
+          "freeAgentAccepted": "{{player}} accetta la tua offerta di contratto e si unisce al club.",
+          "freeAgentCounter": "{{player}} chiede {{wage}} a settimana per {{years}} anni. Apri la scheda Trasferimenti per rispondere.",
+          "freeAgentRejected": "{{player}} rifiuta la tua offerta di contratto.",
+          "lapsed": "La tua offerta per {{player}} non è più valida: la situazione è cambiata prima della risposta."
         }
       }
     },

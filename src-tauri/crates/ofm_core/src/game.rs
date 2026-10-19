@@ -108,6 +108,10 @@ pub struct Game {
     /// Youth prospects the user is following, until they sign, leave or expire.
     #[serde(default)]
     pub youth_watchlist: Vec<crate::youth_watchlist::WatchedProspect>,
+    /// The user's offers still waiting for the other side's answer, which
+    /// comes by mail on each one's reply day.
+    #[serde(default)]
+    pub awaited_replies: Vec<crate::transfers::AwaitedReply>,
     /// The season's unattached youngsters, shared by every club; drawn when a
     /// season opens.
     #[serde(default)]
@@ -219,6 +223,7 @@ impl Game {
             youth_scouting_assignments: vec![],
             scout_youth_rest_until: BTreeMap::new(),
             youth_watchlist: Vec::new(),
+            awaited_replies: Vec::new(),
             youth_pool: None,
             board_objectives: vec![],
             season_context: SeasonContext::default(),
