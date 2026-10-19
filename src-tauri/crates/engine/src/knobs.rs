@@ -8,9 +8,10 @@
 //! `MatchConfig::default()`, whose knobs are these defaults. A value chosen
 //! at the end of a package is written back here as the new default.
 //!
-//! `MatchConfig` already carries three knobs of its own (`home_advantage`,
-//! `shot_accuracy_base`, `goal_conversion_base`); a knob file may set them
-//! too.
+//! A knob file may also set six of `MatchConfig`'s own fields:
+//! `home_advantage`, `shot_accuracy_base`, `goal_conversion_base`, and (from
+//! P5.7) `foul_probability`, `yellow_card_probability`,
+//! `red_card_probability`.
 
 use serde::{Deserialize, Serialize};
 
@@ -84,6 +85,9 @@ pub struct CalibrationKnobs {
     /// from GĐ5 P5.5, for the dial's balance).
     pub p_early_cross: f64,
     pub early_cross_delivery: f64,
+    /// How much of the usual chance of a card a player already booked runs
+    /// when he fouls (GĐ5 P5.7).
+    pub booked_card_factor: f64,
     /// A defensive line's effect on the chances it concedes (GĐ2,
     /// `shared.rs::tactics_defensive_conversion_mod`): high and very low.
     pub conversion_high_line: f64,
@@ -128,6 +132,7 @@ impl Default for CalibrationKnobs {
             possession_contest_sharpness: 1.6,
             p_early_cross: live::P_EARLY,
             early_cross_delivery: live::EARLY_DELIVERY,
+            booked_card_factor: 0.10,
             // 1.12 until GĐ5 P5.5 (X88): GĐ4's `BallInBehind` already plays
             // the space behind a high line, which this stood for; the dial
             // lost 3–5.5 points to the default. 1.05 puts it level (+0.2).
@@ -137,12 +142,15 @@ impl Default for CalibrationKnobs {
     }
 }
 
-/// The three knobs `MatchConfig` carries itself, as a knob file names them.
+/// The knobs `MatchConfig` carries itself, as a knob file names them.
 #[derive(Debug, Default, Deserialize)]
 struct ConfigKnobs {
     home_advantage: Option<f64>,
     shot_accuracy_base: Option<f64>,
     goal_conversion_base: Option<f64>,
+    foul_probability: Option<f64>,
+    yellow_card_probability: Option<f64>,
+    red_card_probability: Option<f64>,
 }
 
 /// Apply a knob file's JSON to `config`: any knob it names replaces the
@@ -162,6 +170,15 @@ pub fn apply_knob_file(config: &mut MatchConfig, json: &str) -> Result<(), Strin
     if let Some(v) = own.goal_conversion_base {
         config.goal_conversion_base = v;
     }
+    if let Some(v) = own.foul_probability {
+        config.foul_probability = v;
+    }
+    if let Some(v) = own.yellow_card_probability {
+        config.yellow_card_probability = v;
+    }
+    if let Some(v) = own.red_card_probability {
+        config.red_card_probability = v;
+    }
     let mut knobs = serde_json::to_value(&config.knobs).map_err(|e| e.to_string())?;
     if let (Some(base), Some(over)) = (knobs.as_object_mut(), value.as_object_mut()) {
         for (key, v) in over.iter() {
@@ -169,7 +186,12 @@ pub fn apply_knob_file(config: &mut MatchConfig, json: &str) -> Result<(), Strin
                 base.insert(key.clone(), v.clone());
             } else if !matches!(
                 key.as_str(),
-                "home_advantage" | "shot_accuracy_base" | "goal_conversion_base"
+                "home_advantage"
+                    | "shot_accuracy_base"
+                    | "goal_conversion_base"
+                    | "foul_probability"
+                    | "yellow_card_probability"
+                    | "red_card_probability"
             ) {
                 return Err(format!("knob file: unknown knob {key}"));
             }

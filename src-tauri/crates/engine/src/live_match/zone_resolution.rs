@@ -706,7 +706,16 @@ impl LiveMatchState {
             .find(|p| p.id == fouler_id)
             .map(|p| p.aggression as f64 / 100.0)
             .unwrap_or(0.5);
-        let card_chance = self.config.yellow_card_probability * (0.5 + aggression_factor);
+        // A man already booked holds back from the challenge that would be
+        // his second (GĐ5 P5.7: second yellows ran at 0.23 a match, real
+        // football's sendings-off of every kind at 0.18).
+        let already_booked = self.yellows.get(fouler_id).copied().unwrap_or(0) > 0;
+        let caution = if already_booked {
+            self.config.knobs.booked_card_factor
+        } else {
+            1.0
+        };
+        let card_chance = self.config.yellow_card_probability * (0.5 + aggression_factor) * caution;
         if rng.random_range(0.0..1.0f64) >= card_chance {
             return events;
         }
@@ -839,6 +848,57 @@ mod event_detail_tests {
             saw_any_goal,
             "No goal was scored in 500 seeds; increase seed range or check engine config"
         );
+    }
+}
+
+#[cfg(test)]
+mod card_tests {
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
+
+    use crate::event::EventType;
+    use crate::live_match::LiveMatchState;
+    use crate::live_match::test_support::make_team;
+    use crate::types::{MatchConfig, Side, Zone};
+
+    /// Fouls by one defender, every one of which would be a yellow card, and
+    /// the cards they bring with the booked man's caution at `factor`.
+    fn cards(factor: f64) -> Vec<EventType> {
+        let mut config = MatchConfig {
+            yellow_card_probability: 1.0,
+            red_card_probability: 0.0,
+            ..MatchConfig::default()
+        };
+        config.knobs.booked_card_factor = factor;
+        let mut state = LiveMatchState::new(
+            make_team("home"),
+            make_team("away"),
+            config,
+            vec![],
+            vec![],
+            false,
+        );
+        let fouler = state.away.players[2].id.clone();
+        let mut rng = StdRng::seed_from_u64(7);
+        (0..20)
+            .flat_map(|minute| {
+                state.maybe_card(minute, Side::Away, &fouler, Zone::Midfield, &mut rng)
+            })
+            .map(|event| event.event_type)
+            .collect()
+    }
+
+    /// Given a defender who fouls again and again,
+    /// when a booked man's caution is 1 (as before GĐ5 P5.7) and then 0,
+    /// then the first time his second foul sends him off, and the second time
+    /// he is booked once and stays on: the factor scales a booked player's
+    /// chance of another card.
+    #[test]
+    fn a_booked_player_is_carded_less_often() {
+        let reckless = cards(1.0);
+        assert_eq!(reckless.first(), Some(&EventType::YellowCard));
+        assert!(reckless.contains(&EventType::SecondYellow));
+        assert_eq!(cards(0.0), vec![EventType::YellowCard]);
     }
 }
 

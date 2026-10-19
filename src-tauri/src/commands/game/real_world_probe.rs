@@ -866,6 +866,11 @@ struct MatchShares {
     /// side of every match (T16).
     goal_sources: BTreeMap<String, u64>,
     possession_squares: f64,
+    /// Phase 2, GĐ5 (P5.7): cards and fouls, both sides.
+    fouls: u64,
+    yellow_cards: u64,
+    red_cards: u64,
+    second_yellows: u64,
 }
 
 /// Who scores, who sets them up and how players rate, by natural position
@@ -1150,6 +1155,15 @@ impl MatchShares {
                 .entry(format!("{:?}", goal.goal_source))
                 .or_default() += 1;
         }
+        for event in &report.events {
+            match event.event_type {
+                engine::EventType::Foul => self.fouls += 1,
+                engine::EventType::YellowCard => self.yellow_cards += 1,
+                engine::EventType::RedCard => self.red_cards += 1,
+                engine::EventType::SecondYellow => self.second_yellows += 1,
+                _ => {}
+            }
+        }
         // Both sides sit the same distance from 50.
         self.possession_squares += 2.0 * (report.home_possession - 50.0).powi(2);
     }
@@ -1423,6 +1437,14 @@ fn real_world_match_probe() {
     println!(
         "  possession: a side's standard deviation {:.1} points",
         shares.possession_sd()
+    );
+    println!(
+        "  fouls/game {:.1} · yellow cards/game {:.2} · sent off/game {:.3} ({:.3} straight red, {:.3} second yellow; real 24.1 · 4.07 · 0.18)",
+        shares.per_match(shares.fouls),
+        shares.per_match(shares.yellow_cards),
+        shares.per_match(shares.red_cards + shares.second_yellows),
+        shares.per_match(shares.red_cards),
+        shares.per_match(shares.second_yellows)
     );
     players.print();
     gd5_verdict(&match_verdict(&shares, &players));
