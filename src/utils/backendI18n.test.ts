@@ -1201,3 +1201,24 @@ describe("staff contract messages", () => {
     expect(result.body).toContain("as our Coach ends on September 1, 2026");
   });
 });
+
+describe("offer replies", () => {
+  // The backend sends the registration day as an ISO day; the mail reads it in
+  // the player's locale, as other dated mail does.
+  it("formats the day a deal registers on", () => {
+    const result = resolveMessage(
+      makeMessage({
+        id: "offer_reply_r1",
+        subject_key: "be.msg.offerReply.accepted.subject",
+        body_key: "be.msg.offerReply.body.dealScheduled",
+        i18n_params: {
+          player: "Oualid Mhamdi",
+          club: "FC Heidenheim",
+          date: "2027-01-01",
+        },
+      }),
+    );
+
+    expect(result.body).toContain("It registers on January 1, 2027");
+  });
+});

@@ -178,9 +178,24 @@ fn the_answer_comes_by_mail_on_the_reply_day() {
 
     assert_eq!(club_of(&game, "target").as_deref(), Some("team-1"));
     assert!(game.awaited_replies.is_empty());
-    assert!(game.messages.iter().any(|message| {
-        message.subject_key.as_deref() == Some("be.msg.offerReply.accepted.subject")
-    }));
+    let reply = game
+        .messages
+        .iter()
+        .find(|message| {
+            message.subject_key.as_deref() == Some("be.msg.offerReply.accepted.subject")
+        })
+        .expect("the answer arrives by mail");
+    // The body names the agreed fee; a missing param shows as a raw `{{fee}}`.
+    assert_eq!(
+        reply.body_key.as_deref(),
+        Some("be.msg.offerReply.body.dealAccepted")
+    );
+    assert!(
+        reply
+            .i18n_params
+            .get("fee")
+            .is_some_and(|fee| !fee.is_empty())
+    );
 }
 
 /// Given a bid waiting for its answer, when the user bids again for the same
