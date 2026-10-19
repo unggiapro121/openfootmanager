@@ -1550,10 +1550,17 @@ fn real_world_probe() {
     let mut last_game = None;
     let mut top_ups = 0usize;
     let mut opening_formations = std::collections::HashMap::new();
+    // Market value by natural position, start and end of each run (P5.7).
+    let mut values: BTreeMap<String, (f64, f64, u32)> = BTreeMap::new();
     for &seed in &seeds {
         let mut game = build_game(Path::new(&package), seed);
         let opening = game.clock.current_date.format("%Y-%m-%d").to_string();
         let opening_strength = strengths(&game);
+        let opening_values: std::collections::HashMap<String, u64> = game
+            .players
+            .iter()
+            .map(|p| (p.id.clone(), p.market_value))
+            .collect();
         opening_formations = game
             .teams
             .iter()
@@ -1563,6 +1570,16 @@ fn real_world_probe() {
             ofm_core::turn::process_day(&mut game);
         }
         top_ups += game.squad_floor_top_ups.len();
+        for player in &game.players {
+            if let Some(&before) = opening_values.get(&player.id) {
+                let entry = values
+                    .entry(format!("{:?}", player.natural_position))
+                    .or_default();
+                entry.0 += before as f64;
+                entry.1 += player.market_value as f64;
+                entry.2 += 1;
+            }
+        }
         let totals = league_totals(&game, &opening, &opening_strength, bridge);
         println!(
             "  run seed {seed}: {} matches · goals/game {:.3} · home/draw/away {:.1}/{:.1}/{:.1}",
@@ -1577,6 +1594,18 @@ fn real_world_probe() {
         last_game = Some(game);
     }
     let game = last_game.expect("at least one run");
+    println!(
+        "  market value by natural position, end over start of the run (players there at both): {}",
+        values
+            .iter()
+            .filter(|(_, (_, _, n))| *n >= 100)
+            .map(|(position, (before, after, _))| format!(
+                "{position} {:+.1}%",
+                (after / before.max(1.0) - 1.0) * 100.0
+            ))
+            .collect::<Vec<_>>()
+            .join(" · ")
+    );
 
     let report = ProbeReport {
         seeds,
