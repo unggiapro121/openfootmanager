@@ -581,12 +581,17 @@ impl Default for MatchConfig {
             // real tally (34 goals a season on the Premier League probe).
             // 0.38 from P5.4, which cut the shots a match to the real 25.5
             // (`P_DIRECT_BASE`) and kept the goals: real sides score from
-            // 11% of their shots, the engine scored from 9.6%.
-            goal_conversion_base: 0.38,
+            // 11% of their shots, the engine scored from 9.6%. 0.39 from
+            // P5.7, which flattened the one-on-one (γ) and cost 0.04 goals.
+            goal_conversion_base: 0.39,
             fatigue_per_minute: 0.20,
             foul_probability: 0.40,
-            yellow_card_probability: 0.11,
-            red_card_probability: 0.04,
+            // 0.11 and 0.04 until GĐ5 P5.7: 2.35 yellow cards and 0.33
+            // sendings-off a match (Premier League probe) against real
+            // football's 4.07 and 0.18; with `booked_card_factor` 0.10 these
+            // give 4.00 and 0.16, half straight reds, half second yellows.
+            yellow_card_probability: 0.20,
+            red_card_probability: 0.018,
             penalty_probability: 0.50,
             stoppage_time_max: 4,
             injury_probability: 0.03,

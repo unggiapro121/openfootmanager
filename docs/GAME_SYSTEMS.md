@@ -332,6 +332,49 @@ The head coach is the club's `Manager` — the player's own character, or an AI 
 - **In the match**: the mastery of the style in use scales that style's edge up and its cost down (see [MATCH_SIMULATION.md](MATCH_SIMULATION.md#the-head-coach)).
 - **A new manager's style**: when an AI club appoints a newly generated manager mid-career, it switches to that manager's best style and takes the style's blueprint (`ai_tactics::blueprint_for`). A caretaker keeps the club's style and dials.
 
+### AI clubs' shape and plan
+
+Every club the player does not manage reviews how it plays once a week, on a day of its own drawn
+from a hash of its id (`ai_tactics::apply_ai_tactical_reviews`). The review sets three things:
+
+- **The plan**: the nine dials, rebuilt each time from the style's blueprint, then shaded by form over
+  the last five matches in every competition (at least three): conceding 2.0 a game or more
+  (`LEAKY`) takes the first of closing the gaps, sitting deeper or pressing less that the ration on
+  under-priced dials allows; scoring 0.8 or fewer (`BLUNT`) the first of breaking faster, stretching
+  the pitch, pressing higher or going more direct. Both cutoffs are the tails of the probe's five-match windows,
+  re-read at GĐ5 P5.7 (they were 2.2 and 1.0). What the squad can do has the last word (no
+  aggressive press without the legs, no high line without pace at the back).
+- **The shape** (GĐ5 P5.1, `ofm_core::ai_formation`): one of the nine formations the game offers.
+  Each scores `fit + STYLE_FORMATION_BONUS[style]`, the fit being the mean slot rating of the eleven
+  the club would pick for it from its uninjured players (the same first-choice eleven its matchday
+  selection starts from). The style decides most of it: shapes differ by about half an OVR point, so
+  the bonus (+1.0 / +0.5) picks the shape for most clubs, and the fit only overrules it when the
+  squad really cannot play it.
+
+  | Style | +1.0 | +0.5 |
+  |---|---|---|
+  | Balanced | — | — |
+  | Attacking | 4-3-3, 3-4-3 | 4-2-3-1 |
+  | Defensive | 5-3-2, 4-5-1 | 4-1-4-1 |
+  | Possession | 4-3-3, 4-2-3-1 | 4-1-4-1 |
+  | Counter | 4-4-2, 4-2-3-1 | 3-5-2 |
+  | HighPress | 4-3-3, 4-2-3-1 | 3-4-2-1 |
+
+  At the weekly review a club changes shape only when the best one beats its current one by at
+  least `HYSTERESIS` (0.5), so a knock to one player does not swing a shape the squad was built
+  for; a shape outside the nine (an old save, a hand-edited world) is always replaced. Ties go to
+  the earlier shape in `AI_FORMATIONS`, so the same squad always gets the same shape. A club with
+  fewer than eleven available players keeps what it has.
+- **The roles**, reassigned to the slots of that shape (`ai_roles::assign_squad_roles`).
+
+When a world is built every club, the player's own included, opens in the best shape for its squad
+and style with no hysteresis (`ai_formation::opening_formation`); from then on the player chooses
+his own. A national side picks the shape its call-ups suit best, as a `Balanced` side. Before P5.1
+every AI club played 4-4-2 all season; on the European probe AI clubs now use all nine shapes
+(5-3-2 35%, 4-3-3 20%, 4-4-2 10%, …), and GĐ5's target is at least five in use and none above 40%.
+In a match an AI manager may still step up to a bolder shape when chasing (see
+[MATCH_SIMULATION.md](MATCH_SIMULATION.md#what-he-decides)).
+
 ---
 
 ## Player Traits
