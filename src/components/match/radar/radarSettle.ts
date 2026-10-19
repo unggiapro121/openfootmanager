@@ -2,14 +2,19 @@ import {
   CENTRE_LANE,
   HALFWAY,
   PITCH_LENGTH,
+  PITCH_WIDTH,
   type PitchPoint,
   type Side,
   clamp,
   distance,
   fromPitch,
+  LANE_BANDS,
+  inLaneBand,
   opposite,
+  toPitch,
   zoneSpan,
 } from "./radarGeometry";
+import type { Lane } from "../types";
 import type { RadarScene, RadarStep } from "./radarScene";
 import type { RadarStage } from "./radarStage";
 import { TOUCH_AHEAD, ballCarrier, carryTouches, cast, nearestTo, only } from "./radarCasting";
@@ -24,6 +29,32 @@ import { TOUCH_AHEAD, ballCarrier, carryTouches, cast, nearestTo, only } from ".
 export interface RadarSettle {
   ballZone: string;
   possession: Side;
+  /**
+   * The ball's lane as the side on it sees it (`snapshot.ball_lane`): the
+   * settled ball goes into it, and both blocks slide across with it (phase 2,
+   * GĐ5 P5.6). Absent before the lane grid, and the ball keeps its line.
+   */
+  ballLane?: Lane | null;
+}
+
+/** How far in from a touchline a settled ball is put. */
+const SETTLE_TOUCHLINE = 10;
+
+/**
+ * Where across the pitch a settled ball goes, kept off the touchlines: where it
+ * is if that is in the engine's lane, else the middle of that lane, so a switch
+ * of play reads as one.
+ */
+function settledY(settle: RadarSettle, ball: PitchPoint): number {
+  const side = settle.possession;
+  const { depth, lane } = fromPitch(side, ball);
+  const isInLane = inLaneBand(lane, settle.ballLane) === lane;
+  const laned =
+    isInLane || !settle.ballLane
+      ? lane
+      : (LANE_BANDS[settle.ballLane][0] + LANE_BANDS[settle.ballLane][1]) / 2;
+  const kept = clamp(laned, SETTLE_TOUCHLINE, PITCH_WIDTH - SETTLE_TOUCHLINE);
+  return toPitch(side, depth, kept).y;
 }
 
 /** How far inside a zone's edge a settled ball is put, so it reads as in that zone. */
@@ -81,7 +112,11 @@ export function settleStepsFor(
   const ballInGoal = scene.ball.x < 0 || scene.ball.x > PITCH_LENGTH;
   const [from, to] = zoneSpan(settle.ballZone);
   const x = clamp(scene.ball.x, from + SETTLE_INSET, to - SETTLE_INSET);
-  const ballMoves = ballInGoal || Math.abs(x - scene.ball.x) > SETTLE_INSET;
+  const y = settledY(settle, scene.ball);
+  const ballMoves =
+    ballInGoal ||
+    Math.abs(x - scene.ball.x) > SETTLE_INSET ||
+    (settle.ballLane != null && Math.abs(y - scene.ball.y) > SETTLE_INSET);
   const isTurnover = settle.possession !== scene.possession;
   if (!ballMoves && !isTurnover) return null;
   // After a goal the engine restarts from the centre spot.
@@ -98,7 +133,7 @@ export function settleStepsFor(
     ];
   }
   // Otherwise the ball is only nudged back into the zone the engine left it in — a zone is a wide band.
-  const at = ballMoves ? { x, y: clamp(scene.ball.y, 10, 58) } : scene.ball;
+  const at = ballMoves ? { x, y } : scene.ball;
   if (isTurnover) return turnoverSteps(stage, scene, settle.possession, at);
   // The side keeps it: the man on it, or the nearest, takes it there himself.
   const side = settle.possession;
@@ -131,14 +166,13 @@ export function settleStepsFor(
 export function quietSteps(stage: RadarStage, scene: RadarScene, settle: RadarSettle): RadarStep[] {
   const side = settle.possession;
   const [from, to] = zoneSpan(settle.ballZone);
-  const isInZone = scene.ball.x >= from && scene.ball.x <= to;
+  const y = settledY(settle, scene.ball);
+  const isInZone =
+    scene.ball.x >= from && scene.ball.x <= to && Math.abs(y - scene.ball.y) <= SETTLE_INSET;
   if (isInZone && scene.possession === side) {
     return [{ possession: side, highlight: [], overlay: null, pace: "place" }];
   }
-  const at = {
-    x: clamp(scene.ball.x, from + SETTLE_INSET, to - SETTLE_INSET),
-    y: clamp(scene.ball.y, 10, 58),
-  };
+  const at = { x: clamp(scene.ball.x, from + SETTLE_INSET, to - SETTLE_INSET), y };
   const chaser = nearestTo(stage, scene, side, at);
   return [
     {

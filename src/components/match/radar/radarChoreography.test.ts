@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { MatchEvent } from "../types";
 
-import { choreographBatch } from "./radarChoreography";
+import { choreographBatch, choreographHighlights } from "./radarChoreography";
 import {
   CENTRE_LANE,
   HALFWAY,
@@ -152,6 +152,90 @@ describe("choreographBatch — lanes (phase 2, GĐ3)", () => {
     const first = fromPitch("Home", carries[0].ball?.at ?? start.ball).lane;
     const last = fromPitch("Home", carries[carries.length - 1].ball?.at ?? start.ball).lane;
     expect(last).toBeGreaterThan(first);
+  });
+
+  // Given a home break down its left into a flank the away side left open,
+  // then the away full back on that flank starts caught upfield of the runner
+  // and runs back after him without catching him (phase 2, GĐ5 P5.6).
+  it("shows the full back caught upfield chasing back on a break into an open flank", () => {
+    const event = withLane(
+      radarEvent("Dribble", "Home", "AwayDefense", "h_lm"),
+      "Left",
+      "FlankExposed",
+    );
+    const [beat] = choreographBatch([event], stage, start).beats;
+    const carries = beat.steps.filter((step) => step.action?.kind === "carry");
+    const depthOf = (point: { x: number; y: number } | undefined) =>
+      point ? fromPitch("Home", point).depth : Number.NaN;
+    const caught = depthOf(beat.steps[0].movers?.a_rb);
+    const runnerStart = depthOf(carries[0].movers?.h_lm);
+    const chasing = depthOf(carries[carries.length - 1].movers?.a_rb);
+    const runnerEnd = depthOf(carries[carries.length - 1].movers?.h_lm);
+    expect(caught).toBeLessThan(runnerStart);
+    expect(chasing).toBeGreaterThan(caught);
+    expect(chasing).toBeLessThan(runnerEnd);
+  });
+});
+
+describe("choreographBatch — the break and the keeper (phase 2, GĐ5 P5.6)", () => {
+  // Given a home dribble on the break from its own half, then both blocks
+  // trail behind the ball: the side that lost it is still upfield.
+  it("leaves the blocks behind a counter-attack", () => {
+    const counter: MatchEvent = {
+      ...radarEvent("Dribble", "Home", "Midfield", "h_st1"),
+      tactical_context: "Counter",
+    };
+    const plain = radarEvent("Dribble", "Home", "Midfield", "h_st1");
+    const gap = (event: MatchEvent) => {
+      const end = play(choreographBatch([event], stage, start).beats);
+      return end.ball.x - focusOf(end).x;
+    };
+    expect(gap(counter)).toBeGreaterThan(gap(plain) + 5);
+  });
+
+  // Given a goal past a keeper who came off his line, then he is well out of
+  // his goal as the shot is struck.
+  it("draws the keeper off his line before a shot past him", () => {
+    const shot: MatchEvent = {
+      ...radarEvent("Goal", "Home", "AwayBox", "h_st1"),
+      tactical_context: "KeeperOffHisLine",
+    };
+    const [beat] = choreographBatch([shot], stage, start).beats;
+    const kick = beat.steps.findIndex((step) => step.action?.kind === "kick");
+    const struck = play([{ ...beat, steps: beat.steps.slice(0, kick + 1) }]);
+    const keeper = standingIn(struck, "a_gk");
+    expect(PITCH_LENGTH - keeper.x).toBeGreaterThan(8);
+  });
+});
+
+describe("choreographHighlights — a build-up lost in midfield (phase 2, GĐ5 P5.6)", () => {
+  const minute = (context: MatchEvent["tactical_context"]): MatchEvent[] => [
+    { ...radarEvent("PassIntercepted", "Home", "HomeDefense", "h_cb2"), tactical_context: context },
+    { ...radarEvent("Interception", "Away", "HomeDefense", "a_cm1"), tactical_context: context },
+    radarEvent("Goal", "Away", "HomeBox", "a_st1"),
+  ];
+  // The home side is building up: the minute before left the ball in its third.
+  const buildingUp = initialRadarScene(radarSnapshot({ ball_zone: "HomeDefense" }));
+  const wonAt = (events: MatchEvent[]) => {
+    const { beats } = choreographHighlights(events, stage, buildingUp);
+    // A high turnover is acted out from the lost pass, the interception with it.
+    const upTo = beats.findIndex((beat) =>
+      ["Interception", "PassIntercepted"].includes(beat.eventType),
+    );
+    expect(upTo).toBeGreaterThanOrEqual(0);
+    return play(beats.slice(0, upTo + 1), buildingUp).ball.x;
+  };
+
+  // Given a home build-up cut out but not a high turnover (the engine keeps
+  // the ball in midfield since P5.2), then the ball is won in midfield; a high
+  // turnover is acted out from the lost pass, the press on the passer shown,
+  // and won well short of that.
+  it("wins an unlabelled build-up in midfield and a high turnover high up", () => {
+    const [from, to] = zoneSpan("Midfield");
+    const plain = wonAt(minute(null));
+    expect(plain).toBeGreaterThanOrEqual(from);
+    expect(plain).toBeLessThanOrEqual(to);
+    expect(wonAt(minute("HighTurnover"))).toBeLessThan(plain - 8);
   });
 });
 
