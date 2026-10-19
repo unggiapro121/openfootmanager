@@ -66,6 +66,15 @@ export function highlightsOf(events: MatchEvent[]): MatchEvent[] {
   const kept = new Set<number>();
   events.forEach((event, index) => {
     if (SENDING_OFF.has(event.event_type)) kept.add(index);
+    // A sweeper keeper cutting out a break is worth showing though no shot
+    // follows: the break he stopped, and him (phase 2, GĐ5 P5.6).
+    if (event.tactical_context === "SweeperKeeperInterception") {
+      kept.add(index);
+      const before = events[index - 1];
+      if (before && before.side !== event.side && BUILD_UP.has(before.event_type)) {
+        kept.add(index - 1);
+      }
+    }
     if (!ATTEMPTS.has(event.event_type)) return;
     for (const part of moveTo(events, index)) kept.add(part);
     // The corner a shot wins plays on from it.

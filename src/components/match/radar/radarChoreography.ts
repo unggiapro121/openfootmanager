@@ -870,13 +870,33 @@ function stageLongShot(cue: Cue): Staging {
   };
 }
 
+/**
+ * How far out towards the shooter a keeper who came off his line stands when
+ * the shot is struck past him, as a share of the way from his goal (phase 2,
+ * GĐ5 P5.6).
+ */
+const KEEPER_OFF_LINE_SHARE = 0.6;
+
 function stageShot(cue: Cue): Staging {
   if (cue.event.shot_kind === "DirectFreeKick") return stageDirectFreeKick(cue);
   if (cue.event.shot_kind === "LongRange") return stageLongShot(cue);
   const shooter = cue.event.player_id;
   const { steps, spot } = shotApproach(cue, shooter);
   const isGoal = cue.event.event_type === "Goal";
-  return { important: isGoal, steps: [...steps, ...stageShotFinish(cue, spot, shooter)] };
+  const finish = stageShotFinish(cue, spot, shooter);
+  if (cue.event.tactical_context !== "KeeperOffHisLine") {
+    return { important: isGoal, steps: [...steps, ...finish] };
+  }
+  // He came for it and did not get there: out of his goal as the ball goes past him.
+  const side = cue.event.side;
+  const keeper = cue.stage.goalkeeper(opposite(side));
+  const goal = toPitch(side, PITCH_LENGTH, CENTRE_LANE);
+  const out = lerp(goal, spot, KEEPER_OFF_LINE_SHARE);
+  const rushing = (step: RadarStep): RadarStep => ({
+    ...step,
+    movers: { ...step.movers, ...only(keeper, onPitch(out)) },
+  });
+  return { important: isGoal, steps: [...steps.map(rushing), ...finish.map(rushing)] };
 }
 
 function stagePenalty(cue: Cue): Staging {
@@ -1077,6 +1097,27 @@ function onTheBall(event: MatchEvent, staging: Staging): string[] {
  * event of the minute when `events` are only the ones acted out, so the
  * commentary can still say what came before each.
  */
+/**
+ * How much of the ball's run both blocks follow on the break: the side that
+ * lost the ball is still upfield, and the breaking side's team-mates are left
+ * behind by the runner (phase 2, GĐ5 P5.6).
+ */
+const BREAK_FOLLOW = 0.4;
+
+/** A staging played on the break: both shapes trail the ball instead of following it. */
+function onTheBreak(staging: Staging, fromX: number): Staging {
+  let focusX = fromX;
+  const steps = staging.steps.map((step): RadarStep => {
+    if (step.focusX !== undefined) {
+      focusX = step.focusX;
+      return step;
+    }
+    if (step.ball) focusX = fromX + (step.ball.at.x - fromX) * BREAK_FOLLOW;
+    return { ...step, focusX };
+  });
+  return { ...staging, steps };
+}
+
 export function choreographBatch(
   events: MatchEvent[],
   stage: RadarStage,
@@ -1090,7 +1131,9 @@ export function choreographBatch(
   let index = 0;
   while (index < events.length) {
     const event = events[index];
-    const staging = stageEvent({ event, next: events[index + 1], scene, stage });
+    const staged = stageEvent({ event, next: events[index + 1], scene, stage });
+    const staging =
+      staged && event.tactical_context === "Counter" ? onTheBreak(staged, scene.ball.x) : staged;
     if (staging) {
       const timed = timeSteps(stage, scene, staging.steps);
       beats.push({

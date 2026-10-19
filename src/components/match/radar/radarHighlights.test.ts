@@ -65,4 +65,19 @@ describe("highlightsOf", () => {
       ]),
     ).toEqual(["A:RedCard"]);
   });
+
+  // Given a break the sweeper keeper cut out, then the break and the keeper's
+  // interception are acted out though no shot follows (phase 2, GĐ5 P5.6).
+  it("keeps a sweeper keeper's interception and the break it stopped", () => {
+    expect(
+      typesOf([
+        radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+        { ...radarEvent("Dribble", "Home", "AwayDefense", "h_st1"), tactical_context: "Counter" },
+        {
+          ...radarEvent("Interception", "Away", "AwayDefense", "a_gk"),
+          tactical_context: "SweeperKeeperInterception",
+        },
+      ]),
+    ).toEqual(["H:Dribble", "A:Interception"]);
+  });
 });

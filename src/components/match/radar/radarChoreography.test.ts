@@ -177,6 +177,37 @@ describe("choreographBatch — lanes (phase 2, GĐ3)", () => {
   });
 });
 
+describe("choreographBatch — the break and the keeper (phase 2, GĐ5 P5.6)", () => {
+  // Given a home dribble on the break from its own half, then both blocks
+  // trail behind the ball: the side that lost it is still upfield.
+  it("leaves the blocks behind a counter-attack", () => {
+    const counter: MatchEvent = {
+      ...radarEvent("Dribble", "Home", "Midfield", "h_st1"),
+      tactical_context: "Counter",
+    };
+    const plain = radarEvent("Dribble", "Home", "Midfield", "h_st1");
+    const gap = (event: MatchEvent) => {
+      const end = play(choreographBatch([event], stage, start).beats);
+      return end.ball.x - focusOf(end).x;
+    };
+    expect(gap(counter)).toBeGreaterThan(gap(plain) + 5);
+  });
+
+  // Given a goal past a keeper who came off his line, then he is well out of
+  // his goal as the shot is struck.
+  it("draws the keeper off his line before a shot past him", () => {
+    const shot: MatchEvent = {
+      ...radarEvent("Goal", "Home", "AwayBox", "h_st1"),
+      tactical_context: "KeeperOffHisLine",
+    };
+    const [beat] = choreographBatch([shot], stage, start).beats;
+    const kick = beat.steps.findIndex((step) => step.action?.kind === "kick");
+    const struck = play([{ ...beat, steps: beat.steps.slice(0, kick + 1) }]);
+    const keeper = standingIn(struck, "a_gk");
+    expect(PITCH_LENGTH - keeper.x).toBeGreaterThan(8);
+  });
+});
+
 describe("choreographBatch — build-up and long balls (phase 2, GĐ4)", () => {
   const kickOf = (beat: RadarBeat) =>
     beat.steps.find((step) => step.action?.kind === "kick")?.action;
