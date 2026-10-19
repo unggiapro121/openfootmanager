@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { MatchEvent } from "../types";
 
-import { choreographBatch } from "./radarChoreography";
+import { choreographBatch, choreographHighlights } from "./radarChoreography";
 import {
   CENTRE_LANE,
   HALFWAY,
@@ -205,6 +205,37 @@ describe("choreographBatch — the break and the keeper (phase 2, GĐ5 P5.6)", (
     const struck = play([{ ...beat, steps: beat.steps.slice(0, kick + 1) }]);
     const keeper = standingIn(struck, "a_gk");
     expect(PITCH_LENGTH - keeper.x).toBeGreaterThan(8);
+  });
+});
+
+describe("choreographHighlights — a build-up lost in midfield (phase 2, GĐ5 P5.6)", () => {
+  const minute = (context: MatchEvent["tactical_context"]): MatchEvent[] => [
+    { ...radarEvent("PassIntercepted", "Home", "HomeDefense", "h_cb2"), tactical_context: context },
+    { ...radarEvent("Interception", "Away", "HomeDefense", "a_cm1"), tactical_context: context },
+    radarEvent("Goal", "Away", "HomeBox", "a_st1"),
+  ];
+  // The home side is building up: the minute before left the ball in its third.
+  const buildingUp = initialRadarScene(radarSnapshot({ ball_zone: "HomeDefense" }));
+  const wonAt = (events: MatchEvent[]) => {
+    const { beats } = choreographHighlights(events, stage, buildingUp);
+    // A high turnover is acted out from the lost pass, the interception with it.
+    const upTo = beats.findIndex((beat) =>
+      ["Interception", "PassIntercepted"].includes(beat.eventType),
+    );
+    expect(upTo).toBeGreaterThanOrEqual(0);
+    return play(beats.slice(0, upTo + 1), buildingUp).ball.x;
+  };
+
+  // Given a home build-up cut out but not a high turnover (the engine keeps
+  // the ball in midfield since P5.2), then the ball is won in midfield; a high
+  // turnover is acted out from the lost pass, the press on the passer shown,
+  // and won well short of that.
+  it("wins an unlabelled build-up in midfield and a high turnover high up", () => {
+    const [from, to] = zoneSpan("Midfield");
+    const plain = wonAt(minute(null));
+    expect(plain).toBeGreaterThanOrEqual(from);
+    expect(plain).toBeLessThanOrEqual(to);
+    expect(wonAt(minute("HighTurnover"))).toBeLessThan(plain - 8);
   });
 });
 

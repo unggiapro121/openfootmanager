@@ -55,7 +55,15 @@ function moveTo(events: MatchEvent[], shot: number): number[] {
       move.push(index);
       continue;
     }
-    if (event.side === side && BALL_WON.has(event.event_type)) move.push(index);
+    if (event.side === side && BALL_WON.has(event.event_type)) {
+      move.push(index);
+      // A build-up lost to a high press opens the move: the pressers on the
+      // passer are part of it (phase 2, GĐ4; shown from GĐ5 P5.6).
+      const lost = events[index - 1];
+      if (lost?.event_type === "PassIntercepted" && lost.tactical_context === "HighTurnover") {
+        move.push(index - 1);
+      }
+    }
     break;
   }
   return move;
