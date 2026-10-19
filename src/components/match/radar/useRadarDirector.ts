@@ -113,6 +113,7 @@ export function useRadarDirector(
     const settle: RadarSettle = {
       ballZone: snapshot.ball_zone,
       possession: snapshot.possession,
+      ballLane: snapshot.ball_lane,
     };
     const isAnimated = pacing !== null && !reducedMotion;
 

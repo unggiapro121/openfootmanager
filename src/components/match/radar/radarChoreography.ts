@@ -11,6 +11,7 @@ import {
   clamp,
   distance,
   fromPitch,
+  inLaneBand,
   inBox,
   lerp,
   onPitch,
@@ -89,21 +90,12 @@ function attackingBoxX(side: Side): number {
 }
 
 /**
- * A lane's band across the pitch, in the acting side's view: thirds of its
- * width (phase 2, GĐ3). An event's `lane` is the ball's (protocol 3) or the
- * actor's slot (protocol 2), so either way the play is drawn in it.
+ * `lane` held inside the band of the event's lane, when it has one. An event's
+ * `lane` is the ball's (protocol 3) or the actor's slot (protocol 2), so
+ * either way the play is drawn in it (`LANE_BANDS`, phase 2, GĐ3).
  */
-const LANE_BANDS: Record<NonNullable<MatchEvent["lane"]>, readonly [number, number]> = {
-  Left: [3, 22.7],
-  Centre: [22.7, 45.3],
-  Right: [45.3, 65],
-};
-
-/** `lane` held inside the band of the event's lane, when it has one. */
 function inLaneOf(event: MatchEvent, lane: number): number {
-  if (!event.lane) return lane;
-  const [low, high] = LANE_BANDS[event.lane];
-  return clamp(lane, low, high);
+  return inLaneBand(lane, event.lane);
 }
 
 /** The touchline a cross is struck from: its lane's, else the nearer one. */
