@@ -46,13 +46,14 @@ export function standIn(
   return pool.length > 0 ? pool[seedOf(seed) % pool.length] : null;
 }
 
-/** The nearest player of the side without the ball to `point`. */
+/** The nearest player of the side without the ball to `point`, `except` left out. */
 export function nearestOpponent(
   stage: RadarStage,
   side: Side,
   point: PitchPoint,
   focus: ShapeFocus,
   lines?: LineGroup[],
+  except: string | null = null,
 ): string | null {
   const defending = opposite(side);
   const eligible = lines ? new Set(lines.flatMap((group) => stage.line(defending, group))) : null;
@@ -61,6 +62,7 @@ export function nearestOpponent(
   for (const [id, at] of stage.shapeAt(focus)) {
     if (stage.sideOf(id) !== defending || id === stage.goalkeeper(defending)) continue;
     if (eligible && !eligible.has(id)) continue;
+    if (id === except) continue;
     const gap = distance(at, point);
     if (gap < best) {
       best = gap;

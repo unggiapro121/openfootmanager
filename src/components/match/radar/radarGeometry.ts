@@ -1,6 +1,6 @@
 import type { DefensiveLine, PitchWidth, TeamColors } from "../../../store/types";
 import { layoutFormationSlots } from "../FormationPitch";
-import type { EngineTeamData } from "../types";
+import type { EngineTeamData, Lane } from "../types";
 
 /**
  * Pitch geometry for the match radar: a top-down pitch in metres, the home side
@@ -78,6 +78,24 @@ export function toPitch(side: Side, depth: number, lane: number): PitchPoint {
   return side === "Home"
     ? { x: depth, y: lane }
     : { x: PITCH_LENGTH - depth, y: PITCH_WIDTH - lane };
+}
+
+/**
+ * A lane's band across the pitch, in the acting side's view: thirds of its
+ * width (phase 2, GĐ3). Both an event's `lane` and the snapshot's `ball_lane`
+ * are given in the view of the side they belong to.
+ */
+export const LANE_BANDS: Record<Lane, readonly [number, number]> = {
+  Left: [3, 22.7],
+  Centre: [22.7, 45.3],
+  Right: [45.3, 65],
+};
+
+/** `lane` (metres in from `side`'s left touchline) held inside `band`'s band; unchanged without one. */
+export function inLaneBand(lane: number, band: Lane | null | undefined): number {
+  if (!band) return lane;
+  const [low, high] = LANE_BANDS[band];
+  return clamp(lane, low, high);
 }
 
 /** The inverse of `toPitch`: the same point seen from `side`'s end. */

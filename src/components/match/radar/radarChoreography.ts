@@ -5,12 +5,14 @@ import {
   GOAL_HALF_WIDTH,
   HALFWAY,
   PITCH_LENGTH,
+  PITCH_WIDTH,
   type PitchPoint,
   type ShapeFocus,
   type Side,
   clamp,
   distance,
   fromPitch,
+  inLaneBand,
   inBox,
   lerp,
   onPitch,
@@ -89,21 +91,12 @@ function attackingBoxX(side: Side): number {
 }
 
 /**
- * A lane's band across the pitch, in the acting side's view: thirds of its
- * width (phase 2, GĐ3). An event's `lane` is the ball's (protocol 3) or the
- * actor's slot (protocol 2), so either way the play is drawn in it.
+ * `lane` held inside the band of the event's lane, when it has one. An event's
+ * `lane` is the ball's (protocol 3) or the actor's slot (protocol 2), so
+ * either way the play is drawn in it (`LANE_BANDS`, phase 2, GĐ3).
  */
-const LANE_BANDS: Record<NonNullable<MatchEvent["lane"]>, readonly [number, number]> = {
-  Left: [3, 22.7],
-  Centre: [22.7, 45.3],
-  Right: [45.3, 65],
-};
-
-/** `lane` held inside the band of the event's lane, when it has one. */
 function inLaneOf(event: MatchEvent, lane: number): number {
-  if (!event.lane) return lane;
-  const [low, high] = LANE_BANDS[event.lane];
-  return clamp(lane, low, high);
+  return inLaneBand(lane, event.lane);
 }
 
 /** The touchline a cross is struck from: its lane's, else the nearer one. */
@@ -423,6 +416,14 @@ const JOCKEY_GAP = 6;
 const CUT_INSIDE_LANE = 12;
 /** How deep a break into an open flank carries the ball: into the box. */
 const OPEN_FLANK_END_DEPTH = 90;
+/**
+ * On a break into an open flank, how far upfield of the runner the full back
+ * who went up is caught, how far behind he still is when the run ends, and how
+ * far in from the touchline he starts (phase 2, GĐ5 P5.6).
+ */
+const CAUGHT_UPFIELD = 15;
+const STILL_CHASING = 3;
+const FULL_BACK_TOUCHLINE = 8;
 /** Where an early cross is struck from: well short of the byline. */
 const EARLY_CROSS_DEPTH = 70;
 /** Where a low cross is aimed: around the penalty spot. */
@@ -463,7 +464,22 @@ function stageDribble(cue: Cue): Staging {
   );
   // A defender or midfielder steps up to him — not a forward caught upfield.
   const focus: ShapeFocus = { x: start.x, y: start.y, possession: side };
-  const defender = nearestOpponent(stage, side, start, focus, ["Defender", "Midfielder"]);
+  // Into a flank left open, the full back who went up is caught upfield and
+  // chases back; someone else steps up to the runner (phase 2, GĐ5 P5.6).
+  const isOpenFlank = event.tactical_context === "FlankExposed";
+  const flankLane = lane < CENTRE_LANE ? FULL_BACK_TOUCHLINE : PITCH_WIDTH - FULL_BACK_TOUCHLINE;
+  const chaser = isOpenFlank
+    ? nearestOpponent(stage, side, toPitch(side, depth, flankLane), focus, ["Defender"])
+    : null;
+  const defender = nearestOpponent(stage, side, start, focus, ["Defender", "Midfielder"], chaser);
+  const chasing = (runDepth: number, progress: number) =>
+    onPitch(
+      toPitch(
+        side,
+        runDepth - STILL_CHASING - (CAUGHT_UPFIELD - STILL_CHASING) * (1 - progress),
+        flankLane + (lane - flankLane) * progress * 0.5,
+      ),
+    );
   const defenderLane = defender ? fromPitch(side, where(cue, defender)).lane : lane + 1;
   // Bend away from the defender, but never towards a touchline he is already near.
   const awayFromDefender = defenderLane >= lane ? -1 : 1;
@@ -485,7 +501,11 @@ function stageDribble(cue: Cue): Staging {
     touches.push({
       pace: "carry",
       ball: { at: onPitch(toPitch(side, runDepth + TOUCH_AHEAD, runLane)), ease: "push" },
-      movers: { ...only(runner, feet), ...only(defender, onPitch(jockey)) },
+      movers: {
+        ...only(runner, feet),
+        ...only(defender, onPitch(jockey)),
+        ...only(chaser, chasing(runDepth, progress)),
+      },
       highlight: cast(runner, defender),
       action: runner ? { kind: "carry", by: runner } : undefined,
     });
@@ -500,6 +520,7 @@ function stageDribble(cue: Cue): Staging {
         movers: {
           ...take.step.movers,
           ...only(defender, onPitch(toPitch(side, depth + JOCKEY_GAP + 1, lane - bend * 1.2))),
+          ...only(chaser, chasing(depth, 0)),
         },
         highlight: cast(runner, defender),
         possession: side,
@@ -849,13 +870,33 @@ function stageLongShot(cue: Cue): Staging {
   };
 }
 
+/**
+ * How far out towards the shooter a keeper who came off his line stands when
+ * the shot is struck past him, as a share of the way from his goal (phase 2,
+ * GĐ5 P5.6).
+ */
+const KEEPER_OFF_LINE_SHARE = 0.6;
+
 function stageShot(cue: Cue): Staging {
   if (cue.event.shot_kind === "DirectFreeKick") return stageDirectFreeKick(cue);
   if (cue.event.shot_kind === "LongRange") return stageLongShot(cue);
   const shooter = cue.event.player_id;
   const { steps, spot } = shotApproach(cue, shooter);
   const isGoal = cue.event.event_type === "Goal";
-  return { important: isGoal, steps: [...steps, ...stageShotFinish(cue, spot, shooter)] };
+  const finish = stageShotFinish(cue, spot, shooter);
+  if (cue.event.tactical_context !== "KeeperOffHisLine") {
+    return { important: isGoal, steps: [...steps, ...finish] };
+  }
+  // He came for it and did not get there: out of his goal as the ball goes past him.
+  const side = cue.event.side;
+  const keeper = cue.stage.goalkeeper(opposite(side));
+  const goal = toPitch(side, PITCH_LENGTH, CENTRE_LANE);
+  const out = lerp(goal, spot, KEEPER_OFF_LINE_SHARE);
+  const rushing = (step: RadarStep): RadarStep => ({
+    ...step,
+    movers: { ...step.movers, ...only(keeper, onPitch(out)) },
+  });
+  return { important: isGoal, steps: [...steps.map(rushing), ...finish.map(rushing)] };
 }
 
 function stagePenalty(cue: Cue): Staging {
@@ -1056,6 +1097,27 @@ function onTheBall(event: MatchEvent, staging: Staging): string[] {
  * event of the minute when `events` are only the ones acted out, so the
  * commentary can still say what came before each.
  */
+/**
+ * How much of the ball's run both blocks follow on the break: the side that
+ * lost the ball is still upfield, and the breaking side's team-mates are left
+ * behind by the runner (phase 2, GĐ5 P5.6).
+ */
+const BREAK_FOLLOW = 0.4;
+
+/** A staging played on the break: both shapes trail the ball instead of following it. */
+function onTheBreak(staging: Staging, fromX: number): Staging {
+  let focusX = fromX;
+  const steps = staging.steps.map((step): RadarStep => {
+    if (step.focusX !== undefined) {
+      focusX = step.focusX;
+      return step;
+    }
+    if (step.ball) focusX = fromX + (step.ball.at.x - fromX) * BREAK_FOLLOW;
+    return { ...step, focusX };
+  });
+  return { ...staging, steps };
+}
+
 export function choreographBatch(
   events: MatchEvent[],
   stage: RadarStage,
@@ -1069,7 +1131,9 @@ export function choreographBatch(
   let index = 0;
   while (index < events.length) {
     const event = events[index];
-    const staging = stageEvent({ event, next: events[index + 1], scene, stage });
+    const staged = stageEvent({ event, next: events[index + 1], scene, stage });
+    const staging =
+      staged && event.tactical_context === "Counter" ? onTheBreak(staged, scene.ball.x) : staged;
     if (staging) {
       const timed = timeSteps(stage, scene, staging.steps);
       beats.push({
