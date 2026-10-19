@@ -137,7 +137,9 @@ impl Default for CalibrationKnobs {
             // the space behind a high line, which this stood for; the dial
             // lost 3–5.5 points to the default. 1.05 puts it level (+0.2).
             conversion_high_line: 1.05,
-            conversion_very_low_line: 0.85,
+            // 0.85 until GĐ5 P5.7: the dial sat 5.1 points above the
+            // default (4,000 matches); 0.88 puts it near 3.6.
+            conversion_very_low_line: 0.88,
         }
     }
 }
