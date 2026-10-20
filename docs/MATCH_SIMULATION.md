@@ -382,6 +382,21 @@ picks (see *Finishing in the box*):
    - **Score**: Goal event emitted with scorer + assister.
    - **Save**: Shot saved event.
 
+### Offside
+
+`live_match/offside.rs` (after GĐ5; analysis in `fm-document/comon/analysis-offside.md`). The engine plays zones, not positions, so offside is a chance at the three moments real runners are flagged: a ball played from midfield into the final third (the runner is picked by presence in the ball's lane), a ball over the top for a race (`long_ball.rs`, `race_in_behind`) and a ball played forward on the break (`simulation.rs`, the end-of-minute contest).
+
+`P = base × line × trap × runner`, at most 0.6:
+
+| Factor | Values |
+|---|---|
+| base (knobs) | `offside_pass` 0.075 · `offside_long_ball` 0.15 · `offside_break` 0.10 |
+| the defending side's line | VeryLow 0.4 · Low 0.7 · Medium 1.0 · High 1.5 |
+| the defending side's offside trap | Off 1 · On `offside_trap_factor` 1.8 |
+| the runner | `1 + (60 − (positioning + decisions)/2) / 50`, in 0.6–1.4 |
+
+A runner flagged emits `Offside` (his side, his id, the zone he was caught in): the defending side has the ball in its own third, and any break or pending context ends. A runner who beats a trap has the line behind him: his race for a ball over the top gains `offside_trap_beaten` (1.25). Real football flags 4.35 a match (StatsBomb 2015/16, 100 matches); the Premier League probe gives about 4.3. Offside is told in the commentary and acted out on the radar (the ball played to a runner a stride beyond the last defender, the whistle, the defence's free kick); it is not a match statistic. The radar's shapes never stand anyone beyond the other side's last outfield man or the ball (`radarStage.ts`, `keptOnside`).
+
 ### Foul & Discipline
 
 Fouls can occur after tackles in midfield and the attacking third:
@@ -513,6 +528,7 @@ per-minute possession contest.
 | counter_press | possession flip: losing side may re-win the ball; after an attack lost in the other side's third, the quick ball forward and the first build-up | Long regains possession more and smothers the quick ball |
 | break_speed | possession flip: winner may counter into the final third (Fast 8% × the line's distance; 10% until P4.6); how often a ball won in the own third goes direct (Slow ×0.93) | Fast turns turnovers into chances |
 | cross_style | crosses from the flank (`wing_play`) | Mixed / High / Low / Early, see *Wing play* |
+| offside_trap | the chance a runner is flagged offside (×1.8 when On) and, when the trap is beaten, the runner's race over the top (×1.25) | Off / On, see *Offside* |
 
 The weekly AI tactical review in `ofm_core::ai_tactics` treats at least 2.0
 goals conceded per game (`LEAKY`) as leaky and at most 0.8 scored (`BLUNT`) as

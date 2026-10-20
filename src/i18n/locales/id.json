@@ -805,7 +805,10 @@
       "crossStyle_Mixed": "Campuran",
       "crossStyle_High": "Tinggi",
       "crossStyle_Low": "Rendah",
-      "crossStyle_Early": "Awal"
+      "crossStyle_Early": "Awal",
+      "offsideTrap": "Jebakan offside",
+      "offsideTrap_Off": "Mati",
+      "offsideTrap_On": "Aktif"
     },
     "customTacticDescription": "Bangun pengaturan kustom dengan menggabungkan formasi apa pun dengan gaya bermain yang cocok untuk skuad kamu.",
     "customTacticNumber": "Taktik kustom {{count}}",
@@ -2465,6 +2468,7 @@
       "Corner": "Tendangan Sudut",
       "FreeKick": "Tendangan Bebas",
       "Foul": "Pelanggaran",
+      "Offside": "Offside",
       "PenaltyAwarded": "Penalti Diberikan"
     },
     "commentary": {
@@ -2740,6 +2744,14 @@
         "lines": {
           "0": "{{player}} mendapat kartu kuning kedua dan dikeluarkan!",
           "1": "Dua kartu kuning dan keluar — {{player}} membuat {{team}} bermain dengan sepuluh pemain."
+        }
+      },
+      "Offside": {
+        "headline": "OFFSIDE",
+        "lines": {
+          "0": "{{player}} terperangkap offside. Tendangan bebas untuk {{opponent}}.",
+          "1": "Bendera diangkat untuk {{player}}.",
+          "2": "{{player}} berlari terlalu cepat: offside."
         }
       },
       "Injury": {

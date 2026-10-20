@@ -5,7 +5,9 @@ import {
   type ShapeSlot,
   type Side,
   formationSlots,
+  fromPitch,
   placeShape,
+  toPitch,
 } from "./radarGeometry";
 import { type RadarScene, focusOf } from "./radarScene";
 
@@ -36,6 +38,38 @@ export function lineupsKey({ home_team, away_team, sent_off }: RadarLineups): st
 /** Recent shapes kept, so a step that asks for the same focus many times works it out once. */
 const SHAPES_KEPT = 64;
 
+/**
+ * The shapes with nobody standing offside (after GĐ5): no outfield man of
+ * either side further up than the other side's last outfield man or the
+ * ball. The dials stretch each block on its own — a high line pushes a side's
+ * forwards up, a low one drops the other back line — and the flag is only
+ * ever raised by a ball played to a runner, which the beat acts out.
+ */
+function keptOnside(
+  shape: Map<string, PitchPoint>,
+  focus: ShapeFocus,
+  sides: Map<string, Side>,
+  keepers: Set<string>,
+): Map<string, PitchPoint> {
+  const sideOf = (id: string) => sides.get(id) ?? null;
+  const kept = new Map(shape);
+  for (const attacking of ["Home", "Away"] as const) {
+    const defending = attacking === "Home" ? "Away" : "Home";
+    const backLine = Math.max(
+      ...[...shape.entries()]
+        .filter(([id]) => sideOf(id) === defending && !keepers.has(id))
+        .map(([, at]) => fromPitch(attacking, at).depth),
+    );
+    const limit = Math.max(backLine, fromPitch(attacking, focus).depth);
+    for (const [id, at] of shape) {
+      if (sideOf(id) !== attacking || keepers.has(id)) continue;
+      const { depth, lane } = fromPitch(attacking, at);
+      if (depth > limit) kept.set(id, toPitch(attacking, limit, lane));
+    }
+  }
+  return kept;
+}
+
 export function buildRadarStage(snapshot: RadarLineups): RadarStage {
   const sentOff = snapshot.sent_off ?? [];
   const teams: { side: Side; team: RadarLineups["home_team"]; slots: ShapeSlot[] }[] = [
@@ -51,13 +85,21 @@ export function buildRadarStage(snapshot: RadarLineups): RadarStage {
       groups.set(player.id, player.position);
     }
   }
+  const keepers = new Set(
+    [...groups.entries()].filter(([, group]) => group === "Goalkeeper").map(([id]) => id),
+  );
   const shapes = new Map<string, Map<string, PitchPoint>>();
   const shapeAt = (focus: ShapeFocus) => {
     const key = `${focus.x.toFixed(1)}:${focus.y.toFixed(1)}:${focus.possession}`;
     let shape = shapes.get(key);
     if (!shape) {
-      shape = new Map(
-        teams.flatMap(({ side, team, slots }) => [...placeShape(slots, team, side, focus)]),
+      shape = keptOnside(
+        new Map(
+          teams.flatMap(({ side, team, slots }) => [...placeShape(slots, team, side, focus)]),
+        ),
+        focus,
+        sides,
+        keepers,
       );
       if (shapes.size >= SHAPES_KEPT) shapes.clear();
       shapes.set(key, shape);

@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "Gemischt",
       "crossStyle_High": "Hoch",
       "crossStyle_Low": "Flach",
-      "crossStyle_Early": "Früh"
+      "crossStyle_Early": "Früh",
+      "offsideTrap": "Abseitsfalle",
+      "offsideTrap_Off": "Aus",
+      "offsideTrap_On": "An"
     },
     "customTacticDescription": "Erstelle eine eigene Ausrichtung, indem du jede Formation mit der Spielweise kombinierst, die zu deinem Kader passt.",
     "customTacticNumber": "Benutzerdefinierte Taktik {{count}}",
@@ -2431,6 +2434,7 @@
       "Corner": "Ecke",
       "FreeKick": "Freistoß",
       "Foul": "Foul",
+      "Offside": "Abseits",
       "PenaltyAwarded": "Elfmeter gegeben"
     },
     "commentary": {
@@ -2706,6 +2710,14 @@
         "lines": {
           "0": "{{player}} sieht die zweite Gelbe und wird des Feldes verwiesen!",
           "1": "Zwei Gelbe und weg — {{player}} lässt {{team}} in Unterzahl."
+        }
+      },
+      "Offside": {
+        "headline": "ABSEITS",
+        "lines": {
+          "0": "{{player}} steht im Abseits. Freistoß für {{opponent}}.",
+          "1": "Die Fahne geht hoch gegen {{player}}.",
+          "2": "{{player}} ist zu früh gestartet: Abseits."
         }
       },
       "Injury": {

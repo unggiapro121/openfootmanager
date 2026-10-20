@@ -101,6 +101,8 @@ export type CounterPressDuration = "None" | "Short" | "Long";
 export type BreakSpeed = "Slow" | "Medium" | "Fast";
 /** How a side crosses from the flank (phase 2, GĐ3). */
 export type CrossStyle = "Mixed" | "High" | "Low" | "Early";
+/** Whether the back line steps up to catch runners offside (after GĐ5). */
+export type OffsideTrap = "Off" | "On";
 
 export interface TacticsPhaseSettings {
   build_up_style: BuildUpStyle;
@@ -113,6 +115,7 @@ export interface TacticsPhaseSettings {
   counter_press_duration: CounterPressDuration;
   break_speed: BreakSpeed;
   cross_style: CrossStyle;
+  offside_trap: OffsideTrap;
 }
 
 export interface TeamMatchRolesData {

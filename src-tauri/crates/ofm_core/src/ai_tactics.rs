@@ -54,7 +54,8 @@ use domain::league::FixtureStatus;
 use domain::player::{Player, Position};
 use domain::team::{
     BreakSpeed, BuildUpStyle, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape,
-    MarkingStyle, PitchWidth, PlayStyle, PressingIntensity, TacticsPhaseSettings, Tempo,
+    MarkingStyle, OffsideTrap, PitchWidth, PlayStyle, PressingIntensity, TacticsPhaseSettings,
+    Tempo,
 };
 
 /// The blueprint a club of this play style takes the field with. Its cross
@@ -84,6 +85,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             counter_press_duration: CounterPressDuration::Short,
             break_speed: BreakSpeed::Fast,
             cross_style: CrossStyle::High,
+            offside_trap: OffsideTrap::Off,
         },
 
         // Deep, compact, man-oriented, and in no hurry. Concedes the ball and
@@ -99,6 +101,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             counter_press_duration: CounterPressDuration::None,
             break_speed: BreakSpeed::Slow,
             cross_style: CrossStyle::High,
+            offside_trap: OffsideTrap::Off,
         },
 
         // Keep it, circulate it, and win it back immediately when it goes. The
@@ -115,6 +118,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             counter_press_duration: CounterPressDuration::Long,
             break_speed: BreakSpeed::Slow,
             cross_style: CrossStyle::Low,
+            offside_trap: OffsideTrap::Off,
         },
 
         // Sit off, let them come, and go the moment the ball turns over. No
@@ -131,11 +135,13 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             counter_press_duration: CounterPressDuration::None,
             break_speed: BreakSpeed::Fast,
             cross_style: CrossStyle::Early,
+            offside_trap: OffsideTrap::Off,
         },
 
         // Hunt the ball high up the pitch and squeeze the space behind. The
         // most expensive blueprint to run: a high line, aggressive pressing and
-        // a long counter-press all at once.
+        // a long counter-press all at once, and the line steps up to catch
+        // runners offside.
         PlayStyle::HighPress => TacticsPhaseSettings {
             build_up_style: BuildUpStyle::Short,
             width: PitchWidth::Normal,
@@ -147,6 +153,7 @@ pub fn blueprint_for(play_style: &PlayStyle) -> TacticsPhaseSettings {
             counter_press_duration: CounterPressDuration::Long,
             break_speed: BreakSpeed::Fast,
             cross_style: CrossStyle::Mixed,
+            offside_trap: OffsideTrap::On,
         },
     }
 }

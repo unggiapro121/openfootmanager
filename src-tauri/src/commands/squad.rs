@@ -581,6 +581,7 @@ pub fn set_tactics_phase(
     counter_press_duration: Option<String>,
     break_speed: Option<String>,
     cross_style: Option<String>,
+    offside_trap: Option<String>,
 ) -> Result<Game, String> {
     use domain::team::*;
     info!("[cmd] set_tactics_phase");
@@ -656,6 +657,12 @@ pub fn set_tactics_phase(
                 "Low" => CrossStyle::Low,
                 "Early" => CrossStyle::Early,
                 _ => CrossStyle::Mixed,
+            };
+        }
+        if let Some(v) = offside_trap {
+            p.offside_trap = match v.as_str() {
+                "On" => OffsideTrap::On,
+                _ => OffsideTrap::Off,
             };
         }
 

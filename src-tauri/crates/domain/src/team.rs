@@ -200,6 +200,8 @@ pub struct TacticsPhaseSettings {
     pub break_speed: BreakSpeed,
     // Attacking from wide (phase 2, P3.4)
     pub cross_style: CrossStyle,
+    // The back line stepping up to catch runners offside (after GĐ5)
+    pub offside_trap: OffsideTrap,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
@@ -264,6 +266,15 @@ pub enum CounterPressDuration {
     None,
     Short,
     Long,
+}
+
+/// Whether the back line steps up together to catch runners offside (after
+/// GĐ5). Off by default.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub enum OffsideTrap {
+    #[default]
+    Off,
+    On,
 }
 
 /// How a side crosses from the flank (phase 2, P3.4). Read by the GĐ3 match

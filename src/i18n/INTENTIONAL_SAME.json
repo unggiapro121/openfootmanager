@@ -726,7 +726,9 @@
     "worldEditor.staffRole.Scout",
     "youthAcademy.ovr",
     "youthAcademy.pos",
-    "youthAcademy.traits"
+    "youthAcademy.traits",
+    "match.eventTypes.Offside",
+    "match.commentary.Offside.headline"
   ],
   "vi": [
     "youthAcademy.ovr",

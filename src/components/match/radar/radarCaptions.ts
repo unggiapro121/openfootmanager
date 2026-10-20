@@ -76,6 +76,7 @@ const ATTEMPTS = new Set([
 /** Events told as the event feed tells them. */
 const TOLD_AS_EVENTS = new Set([
   "Foul",
+  "Offside",
   "PenaltyAwarded",
   "YellowCard",
   "RedCard",

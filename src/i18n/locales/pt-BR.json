@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "Mistos",
       "crossStyle_High": "Altos",
       "crossStyle_Low": "Rasteiros",
-      "crossStyle_Early": "Antecipados"
+      "crossStyle_Early": "Antecipados",
+      "offsideTrap": "Linha de impedimento",
+      "offsideTrap_Off": "Desligada",
+      "offsideTrap_On": "Ligada"
     },
     "customTacticDescription": "Monte uma configuração personalizada combinando qualquer formação com o estilo de jogo que melhor se encaixa no seu elenco.",
     "customTacticNumber": "Tática personalizada {{count}}",
@@ -2359,6 +2362,7 @@
       "Corner": "Escanteio",
       "FreeKick": "Falta",
       "Foul": "Falta",
+      "Offside": "Impedimento",
       "PenaltyAwarded": "Pênalti Marcado"
     },
     "commentary": {
@@ -2634,6 +2638,14 @@
         "lines": {
           "0": "{{player}} recebe o segundo amarelo e é expulso!",
           "1": "Dois amarelos e fora — {{player}} deixa o {{team}} com um a menos."
+        }
+      },
+      "Offside": {
+        "headline": "IMPEDIMENTO",
+        "lines": {
+          "0": "{{player}} está impedido. Falta para {{opponent}}.",
+          "1": "A bandeira sobe contra {{player}}.",
+          "2": "{{player}} saiu cedo demais: impedimento."
         }
       },
       "Injury": {

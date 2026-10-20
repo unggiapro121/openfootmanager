@@ -93,5 +93,6 @@ export async function setTacticsPhase(
     counterPressDuration: patch.counter_press_duration,
     breakSpeed: patch.break_speed,
     crossStyle: patch.cross_style,
+    offsideTrap: patch.offside_trap,
   });
 }

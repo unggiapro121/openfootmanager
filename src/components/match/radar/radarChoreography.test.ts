@@ -208,6 +208,29 @@ describe("choreographBatch — the break and the keeper (phase 2, GĐ5 P5.6)", (
   });
 });
 
+describe("choreographHighlights — offside (after GĐ5)", () => {
+  // Given a home forward flagged offside, then the ball is played to him a
+  // stride beyond the last away defender, the whistle goes, and the away side
+  // has the free kick where he was caught.
+  it("plays the ball to a runner beyond the last defender and gives the defence the free kick", () => {
+    const flag = radarEvent("Offside", "Home", "AwayDefense", "h_st1");
+    const { beats } = choreographHighlights([flag], stage, start);
+    const beat = beats.find((b) => b.eventType === "Offside");
+    expect(beat).toBeDefined();
+    const steps = beat?.steps ?? [];
+    expect(steps.some((step) => step.overlay?.kind === "whistle")).toBe(true);
+    expect(play(beats).possession).toBe("Away");
+    const kick = steps.find((step) => step.action?.kind === "kick")?.action;
+    const caught = kick?.kind === "kick" ? fromPitch("Home", kick.to).depth : Number.NaN;
+    const lastDefender = Math.max(
+      ...["a_lb", "a_cb1", "a_cb2", "a_rb"].map(
+        (id) => fromPitch("Home", standingIn(start, id)).depth,
+      ),
+    );
+    expect(caught).toBeGreaterThan(lastDefender);
+  });
+});
+
 describe("choreographHighlights — a build-up lost in midfield (phase 2, GĐ5 P5.6)", () => {
   const minute = (context: MatchEvent["tactical_context"]): MatchEvent[] => [
     { ...radarEvent("PassIntercepted", "Home", "HomeDefense", "h_cb2"), tactical_context: context },
