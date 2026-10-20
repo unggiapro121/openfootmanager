@@ -805,7 +805,10 @@
       "crossStyle_Mixed": "Karışık",
       "crossStyle_High": "Havadan",
       "crossStyle_Low": "Yerden",
-      "crossStyle_Early": "Erken"
+      "crossStyle_Early": "Erken",
+      "offsideTrap": "Ofsayt taktiği",
+      "offsideTrap_Off": "Kapalı",
+      "offsideTrap_On": "Açık"
     },
     "customTacticDescription": "Herhangi bir dizilişi kadronuza uyan oyun tarzıyla birleştirerek özel bir düzen oluşturun.",
     "customTacticNumber": "Özel taktik {{count}}",
@@ -2465,6 +2468,7 @@
       "Corner": "Korner",
       "FreeKick": "Serbest Vuruş",
       "Foul": "Faul",
+      "Offside": "Ofsayt",
       "PenaltyAwarded": "Penaltı Kazanıldı"
     },
     "commentary": {
@@ -2740,6 +2744,14 @@
         "lines": {
           "0": "{{player}} ikinci sarı kartını görüyor ve oyun dışı kalıyor!",
           "1": "İki sarı ve dışarı — {{player}}, {{team}} takımını eksik bırakıyor."
+        }
+      },
+      "Offside": {
+        "headline": "OFSAYT",
+        "lines": {
+          "0": "{{player}} ofsayta düştü. Serbest vuruş {{opponent}} lehine.",
+          "1": "Bayrak {{player}} için kalkıyor.",
+          "2": "{{player}} koşuya erken başladı: ofsayt."
         }
       },
       "Injury": {

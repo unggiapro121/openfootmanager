@@ -250,6 +250,10 @@ fn row_to_team(row: &rusqlite::Row) -> rusqlite::Result<Team> {
                     raw.get("cross_style").cloned().unwrap_or_default(),
                 )
                 .unwrap_or_default(),
+                offside_trap: serde_json::from_value(
+                    raw.get("offside_trap").cloned().unwrap_or_default(),
+                )
+                .unwrap_or_default(),
             }
         },
         form: serde_json::from_str(&form_json).unwrap_or_default(),

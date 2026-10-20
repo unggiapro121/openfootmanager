@@ -8,6 +8,7 @@ use crate::shared::{
 };
 use crate::types::{Side, Zone};
 
+use super::offside::OffsideMoment;
 use super::{LiveMatchState, MatchPhase, MinuteResult};
 use crate::report::TeamSheet;
 
@@ -222,10 +223,20 @@ impl LiveMatchState {
                     * tactics_break_distance(&def_tactics)
                     + tactics_counter_press_exposure(&poss_tactics);
                 if breakaway > 0.0 && rng.random_range(0.0..1.0f64) < breakaway {
-                    self.ball_zone = Zone::attacking_third(def_side);
-                    self.on_the_break = Some(def_side);
-                    // Into the flank the other side left open, if it did (P3.6).
-                    self.regain_lane(def_side, None, rng);
+                    let runner = self.snap_player(def_side, crate::types::Position::Forward, rng);
+                    if !self.flag_offside(
+                        minute,
+                        def_side,
+                        &runner,
+                        OffsideMoment::OnTheBreak,
+                        &mut minute_events,
+                        rng,
+                    ) {
+                        self.ball_zone = Zone::attacking_third(def_side);
+                        self.on_the_break = Some(def_side);
+                        // Into the flank the other side left open, if it did (P3.6).
+                        self.regain_lane(def_side, None, rng);
+                    }
                 } else {
                     self.ball_zone = Zone::Midfield;
                 }

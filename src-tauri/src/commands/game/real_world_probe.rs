@@ -871,6 +871,8 @@ struct MatchShares {
     yellow_cards: u64,
     red_cards: u64,
     second_yellows: u64,
+    /// After GĐ5: runners flagged offside.
+    offsides: u64,
 }
 
 /// Who scores, who sets them up and how players rate, by natural position
@@ -1161,6 +1163,7 @@ impl MatchShares {
                 engine::EventType::YellowCard => self.yellow_cards += 1,
                 engine::EventType::RedCard => self.red_cards += 1,
                 engine::EventType::SecondYellow => self.second_yellows += 1,
+                engine::EventType::Offside => self.offsides += 1,
                 _ => {}
             }
         }
@@ -1445,6 +1448,10 @@ fn real_world_match_probe() {
         shares.per_match(shares.red_cards + shares.second_yellows),
         shares.per_match(shares.red_cards),
         shares.per_match(shares.second_yellows)
+    );
+    println!(
+        "  offsides/game {:.2} (real 4.35)",
+        shares.per_match(shares.offsides)
     );
     players.print();
     gd5_verdict(&match_verdict(&shares, &players));

@@ -874,7 +874,10 @@
       "crossStyle_Mixed": "Misti",
       "crossStyle_High": "Alti",
       "crossStyle_Low": "Bassi",
-      "crossStyle_Early": "Anticipati"
+      "crossStyle_Early": "Anticipati",
+      "offsideTrap": "Trappola del fuorigioco",
+      "offsideTrap_Off": "Disattivata",
+      "offsideTrap_On": "Attivata"
     },
     "customTacticDescription": "Crea un assetto personalizzato combinando qualsiasi formazione con lo stile di gioco più adatto alla tua rosa.",
     "customTacticNumber": "Tattica personalizzata {{count}}",
@@ -2450,6 +2453,7 @@
       "Corner": "Calcio d'angolo",
       "FreeKick": "Punizione",
       "Foul": "Fallo",
+      "Offside": "Fuorigioco",
       "PenaltyAwarded": "Rigore Assegnato"
     },
     "commentary": {
@@ -2725,6 +2729,14 @@
         "lines": {
           "0": "{{player}} riceve il secondo giallo e viene espulso!",
           "1": "Due gialli e via — {{player}} lascia il {{team}} in inferiorità numerica."
+        }
+      },
+      "Offside": {
+        "headline": "FUORIGIOCO",
+        "lines": {
+          "0": "{{player}} è in fuorigioco. Punizione per {{opponent}}.",
+          "1": "Si alza la bandierina contro {{player}}.",
+          "2": "{{player}} è partito troppo presto: fuorigioco."
         }
       },
       "Injury": {

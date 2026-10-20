@@ -53,8 +53,9 @@ const K_LOW: f64 = 0.667;
 const LOW_CROSS_FINISH: f64 = 0.95;
 /// How often an `Early` side crosses straight away from a flank. 0.40 until
 /// GĐ5 P5.5: the dial lost 5.4 points to the default (wins over losses at
-/// 4,000 matches); 0.25 leaves it −2.0 and still the crossing side.
-pub(crate) const P_EARLY: f64 = 0.25;
+/// 4,000 matches); 0.25 leaves it −2.0 and still the crossing side. 0.22
+/// since offside (after GĐ5), when it sat at −5.2.
+pub(crate) const P_EARLY: f64 = 0.22;
 /// An early cross comes from further out.
 pub(crate) const EARLY_DELIVERY: f64 = 0.85;
 /// A free kick in the attacking third's centre lane: a shot at goal this

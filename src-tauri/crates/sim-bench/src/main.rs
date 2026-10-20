@@ -536,7 +536,8 @@ fn run_bench(config: &MatchConfig, games: u32, seed: Option<u64>) {
 fn dial_options() -> Vec<(&'static str, &'static str, engine::TacticsConfig)> {
     use engine::{
         BreakSpeed, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape, MarkingStyle,
-        PressingIntensity, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, Tempo,
+        OffsideTrap, PressingIntensity, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth,
+        Tempo,
     };
     let n = TacticsConfig::default();
     vec![
@@ -715,6 +716,23 @@ fn dial_options() -> Vec<(&'static str, &'static str, engine::TacticsConfig)> {
             "Early",
             TacticsConfig {
                 cross_style: CrossStyle::Early,
+                ..n.clone()
+            },
+        ),
+        (
+            "offside_trap",
+            "On",
+            TacticsConfig {
+                offside_trap: OffsideTrap::On,
+                ..n.clone()
+            },
+        ),
+        (
+            "offside_trap",
+            "On+High",
+            TacticsConfig {
+                offside_trap: OffsideTrap::On,
+                defensive_line: DefensiveLine::High,
                 ..n.clone()
             },
         ),

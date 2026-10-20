@@ -805,7 +805,10 @@
       "crossStyle_Mixed": "Mixed",
       "crossStyle_High": "High",
       "crossStyle_Low": "Low",
-      "crossStyle_Early": "Early"
+      "crossStyle_Early": "Early",
+      "offsideTrap": "Offside Trap",
+      "offsideTrap_Off": "Off",
+      "offsideTrap_On": "On"
     },
     "customTacticDescription": "Build a custom setup by combining any formation with the play style that fits your squad.",
     "customTacticNumber": "Custom tactic {{count}}",
@@ -2465,6 +2468,7 @@
       "Corner": "Corner",
       "FreeKick": "Free Kick",
       "Foul": "Foul",
+      "Offside": "Offside",
       "PenaltyAwarded": "Penalty Awarded"
     },
     "commentary": {
@@ -2740,6 +2744,14 @@
         "lines": {
           "0": "{{player}} picks up a second yellow and is sent off!",
           "1": "Two yellows and gone — {{player}} leaves {{team}} a man short."
+        }
+      },
+      "Offside": {
+        "headline": "OFFSIDE",
+        "lines": {
+          "0": "{{player}} is caught offside. Free kick to {{opponent}}.",
+          "1": "The flag goes up against {{player}}.",
+          "2": "{{player}} goes too early: offside."
         }
       },
       "Injury": {

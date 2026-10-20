@@ -351,6 +351,16 @@ pub enum CrossStyle {
     Early,
 }
 
+/// Whether the back line steps up together to catch runners offside: an
+/// offside trap (phase 2, after GĐ5; `analysis-offside.md`). More runners
+/// flagged, and a runner who beats it is through.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub enum OffsideTrap {
+    #[default]
+    Off,
+    On,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TacticsConfig {
     pub pressing_intensity: PressingIntensity,
@@ -372,6 +382,9 @@ pub struct TacticsConfig {
     /// Phase 2, P3.4.
     #[serde(default)]
     pub cross_style: CrossStyle,
+    /// Phase 2, after GĐ5 (`analysis-offside.md`).
+    #[serde(default)]
+    pub offside_trap: OffsideTrap,
 }
 
 /// One dial of a side's tactical plan, and the setting to put it on.
@@ -393,6 +406,7 @@ pub enum TacticalDial {
     CounterPressDuration(CounterPressDuration),
     BreakSpeed(BreakSpeed),
     CrossStyle(CrossStyle),
+    OffsideTrap(OffsideTrap),
 }
 
 impl TacticalDial {
@@ -409,6 +423,7 @@ impl TacticalDial {
             Self::CounterPressDuration(value) => tactics.counter_press_duration = value,
             Self::BreakSpeed(value) => tactics.break_speed = value,
             Self::CrossStyle(value) => tactics.cross_style = value,
+            Self::OffsideTrap(value) => tactics.offside_trap = value,
         }
     }
 }
@@ -583,7 +598,10 @@ impl Default for MatchConfig {
             // (`P_DIRECT_BASE`) and kept the goals: real sides score from
             // 11% of their shots, the engine scored from 9.6%. 0.39 from
             // P5.7, which flattened the one-on-one (γ) and cost 0.04 goals.
-            goal_conversion_base: 0.39,
+            // 0.42 since offside (after GĐ5): runners flagged cost an attack
+            // in a dozen; 0.42 keeps 2.6 goals a league match, 0.43 overshoots
+            // home advantage (T2).
+            goal_conversion_base: 0.42,
             fatigue_per_minute: 0.20,
             foul_probability: 0.40,
             // 0.11 and 0.04 until GĐ5 P5.7: 2.35 yellow cards and 0.33

@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "混合",
       "crossStyle_High": "高球",
       "crossStyle_Low": "低平球",
-      "crossStyle_Early": "提前传中"
+      "crossStyle_Early": "提前传中",
+      "offsideTrap": "越位陷阱",
+      "offsideTrap_Off": "关闭",
+      "offsideTrap_On": "开启"
     },
     "customTacticDescription": "将任意阵型与最适合你阵容的比赛风格组合，打造自定义战术。",
     "customTacticNumber": "自定义战术 {{count}}",
@@ -2431,6 +2434,7 @@
       "Corner": "角球",
       "FreeKick": "任意球",
       "Foul": "犯规",
+      "Offside": "越位",
       "PenaltyAwarded": "判罚点球"
     },
     "commentary": {
@@ -2706,6 +2710,14 @@
         "lines": {
           "0": "{{player}}领到第二张黄牌被罚出场！",
           "1": "两张黄牌离场——{{player}}让{{team}}少了一人。"
+        }
+      },
+      "Offside": {
+        "headline": "越位",
+        "lines": {
+          "0": "{{player}}越位了，{{opponent}}获得任意球。",
+          "1": "边裁举旗，{{player}}越位。",
+          "2": "{{player}}启动过早，越位。"
         }
       },
       "Injury": {
