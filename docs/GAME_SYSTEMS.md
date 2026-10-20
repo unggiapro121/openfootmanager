@@ -337,7 +337,7 @@ The head coach is the club's `Manager` — the player's own character, or an AI 
 Every club the player does not manage reviews how it plays once a week, on a day of its own drawn
 from a hash of its id (`ai_tactics::apply_ai_tactical_reviews`). The review sets three things:
 
-- **The plan**: the nine dials, rebuilt each time from the style's blueprint, then shaded by form over
+- **The plan**: the eleven dials (the offside trap since after GĐ5: only the `HighPress` blueprint springs it), rebuilt each time from the style's blueprint, then shaded by form over
   the last five matches in every competition (at least three): conceding 2.0 a game or more
   (`LEAKY`) takes the first of closing the gaps, sitting deeper or pressing less that the ration on
   under-priced dials allows; scoring 0.8 or fewer (`BLUNT`) the first of breaking faster, stretching

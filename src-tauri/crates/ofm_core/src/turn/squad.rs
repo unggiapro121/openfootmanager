@@ -717,6 +717,10 @@ pub(crate) fn domain_to_engine_tactics(t: &domain::team::TacticsPhaseSettings) -
             domain::team::CrossStyle::Low => engine::CrossStyle::Low,
             domain::team::CrossStyle::Early => engine::CrossStyle::Early,
         },
+        offside_trap: match t.offside_trap {
+            domain::team::OffsideTrap::Off => engine::OffsideTrap::Off,
+            domain::team::OffsideTrap::On => engine::OffsideTrap::On,
+        },
     }
 }
 

@@ -805,7 +805,10 @@
       "crossStyle_Mixed": "Smíšené",
       "crossStyle_High": "Vysoké",
       "crossStyle_Low": "Přízemní",
-      "crossStyle_Early": "Brzké"
+      "crossStyle_Early": "Brzké",
+      "offsideTrap": "Ofsajdová past",
+      "offsideTrap_Off": "Vypnuto",
+      "offsideTrap_On": "Zapnuto"
     },
     "customTacticDescription": "Vybudujte si vlastní nastavení kombinací libovolného rozestavení s herním stylem, který vyhovuje vaší soupisce.",
     "customTacticNumber": "Vlastní taktika {{count}}",
@@ -2470,6 +2473,7 @@
       "Corner": "Rohový kop",
       "FreeKick": "Přímý kop",
       "Foul": "Faul",
+      "Offside": "Ofsajd",
       "PenaltyAwarded": "Nařízená penalta"
     },
     "commentary": {
@@ -2745,6 +2749,14 @@
         "lines": {
           "0": "{{player}} inkasuje druhou žlutou kartu a je vyloučen!",
           "1": "Dvě žluté a konec — {{player}} oslabuje tým {{team}}, který bude hrát o deseti."
+        }
+      },
+      "Offside": {
+        "headline": "OFSAJD",
+        "lines": {
+          "0": "{{player}} je v ofsajdu. Volný kop pro {{opponent}}.",
+          "1": "Praporek jde nahoru proti {{player}}.",
+          "2": "{{player}} vyběhl příliš brzy: ofsajd."
         }
       },
       "Injury": {

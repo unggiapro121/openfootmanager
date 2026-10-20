@@ -74,6 +74,8 @@ export function highlightsOf(events: MatchEvent[]): MatchEvent[] {
   const kept = new Set<number>();
   events.forEach((event, index) => {
     if (SENDING_OFF.has(event.event_type)) kept.add(index);
+    // A flag for offside is acted out, though the move ends there (after GĐ5).
+    if (event.event_type === "Offside") kept.add(index);
     // A sweeper keeper cutting out a break is worth showing though no shot
     // follows: the break he stopped, and him (phase 2, GĐ5 P5.6).
     if (event.tactical_context === "SweeperKeeperInterception") {

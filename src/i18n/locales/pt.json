@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "Mistos",
       "crossStyle_High": "Altos",
       "crossStyle_Low": "Rasteiros",
-      "crossStyle_Early": "Antecipados"
+      "crossStyle_Early": "Antecipados",
+      "offsideTrap": "Armadilha do fora de jogo",
+      "offsideTrap_Off": "Desligada",
+      "offsideTrap_On": "Ligada"
     },
     "customTacticDescription": "Cria uma configuração personalizada combinando qualquer formação com o estilo de jogo que melhor se adapta ao teu plantel.",
     "customTacticNumber": "Tática personalizada {{count}}",
@@ -2436,6 +2439,7 @@
       "Corner": "Canto",
       "FreeKick": "Livre",
       "Foul": "Falta",
+      "Offside": "Fora de jogo",
       "PenaltyAwarded": "Penálti Assinalado"
     },
     "commentary": {
@@ -2711,6 +2715,14 @@
         "lines": {
           "0": "{{player}} vê o segundo amarelo e é expulso!",
           "1": "Dois amarelos e fora — {{player}} deixa o {{team}} reduzido."
+        }
+      },
+      "Offside": {
+        "headline": "FORA DE JOGO",
+        "lines": {
+          "0": "{{player}} é apanhado em fora de jogo. Livre para {{opponent}}.",
+          "1": "A bandeirola levanta-se contra {{player}}.",
+          "2": "{{player}} arrancou cedo demais: fora de jogo."
         }
       },
       "Injury": {

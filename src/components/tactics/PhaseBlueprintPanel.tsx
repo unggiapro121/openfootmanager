@@ -15,6 +15,7 @@ const WITHOUT_BALL_FIELDS = [
   ["pressing_intensity", "pressingIntensity", ["Passive", "Medium", "Aggressive"]] as const,
   ["defensive_shape", "defensiveShape", ["Stretched", "Normal", "Compact"]] as const,
   ["marking_style", "markingStyle", ["Zonal", "Mixed", "ManToMan"]] as const,
+  ["offside_trap", "offsideTrap", ["Off", "On"]] as const,
 ];
 
 const TRANSITION_FIELDS = [

@@ -805,7 +805,10 @@
       "crossStyle_Mixed": "Kết hợp",
       "crossStyle_High": "Bổng",
       "crossStyle_Low": "Sệt",
-      "crossStyle_Early": "Tạt sớm"
+      "crossStyle_Early": "Tạt sớm",
+      "offsideTrap": "Bẫy việt vị",
+      "offsideTrap_Off": "Tắt",
+      "offsideTrap_On": "Bật"
     },
     "customTacticDescription": "Tự xây dựng thiết lập bằng cách kết hợp bất kỳ sơ đồ nào với lối chơi phù hợp với đội hình.",
     "customTacticNumber": "Chiến thuật tùy chỉnh {{count}}",
@@ -2470,6 +2473,7 @@
       "Corner": "Phạt góc",
       "FreeKick": "Đá phạt",
       "Foul": "Phạm lỗi",
+      "Offside": "Việt vị",
       "PenaltyAwarded": "Phạt đền"
     },
     "commentary": {
@@ -2745,6 +2749,14 @@
         "lines": {
           "0": "{{player}} nhận thẻ vàng thứ hai và bị đuổi khỏi sân!",
           "1": "Hai thẻ vàng và phải rời sân — {{player}} khiến {{team}} thiếu người."
+        }
+      },
+      "Offside": {
+        "headline": "VIỆT VỊ",
+        "lines": {
+          "0": "{{player}} rơi vào thế việt vị. {{opponent}} được hưởng quả đá phạt.",
+          "1": "Trợ lý trọng tài phất cờ báo {{player}} việt vị.",
+          "2": "{{player}} băng lên quá sớm, việt vị."
         }
       },
       "Injury": {

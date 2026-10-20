@@ -160,6 +160,9 @@ pub enum EventType {
     Injury,
     GoalKick,
     Substitution,
+    /// A runner flagged offside: the defending side restarts from its own
+    /// third (phase 2, after GĐ5).
+    Offside,
 }
 
 /// Truthful, engine-derived qualifiers used to colour commentary.

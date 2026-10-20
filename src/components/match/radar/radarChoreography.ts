@@ -40,6 +40,7 @@ import {
   lineFor,
   linkedReceiver,
   nearestOpponent,
+  nearestTo,
   only,
   standIn,
 } from "./radarCasting";
@@ -969,6 +970,58 @@ function stageFoul(cue: Cue): Staging {
   };
 }
 
+/** How far beyond the last defender a runner flagged offside is caught. */
+const OFFSIDE_BEYOND = 2;
+
+/**
+ * A runner flagged offside (after GĐ5): the ball is played to him, a stride
+ * beyond the last defender; the whistle goes, and the defence takes the free
+ * kick where he was caught.
+ */
+function stageOffside(cue: Cue): Staging {
+  const { event, stage } = cue;
+  const side = event.side;
+  const defending = opposite(side);
+  const runner = event.player_id;
+  const lastDefender = Math.max(
+    ...stage.line(defending, "Defender").map((id) => fromPitch(side, where(cue, id)).depth),
+    HALFWAY + 10,
+  );
+  const runnerLane = runner ? fromPitch(side, where(cue, runner)).lane : CENTRE_LANE;
+  const caught = onPitch(
+    toPitch(side, Math.min(lastDefender + OFFSIDE_BEYOND, 99), inLaneOf(event, runnerLane)),
+  );
+  const passer =
+    ballCarrier(stage, cue.scene, side) ??
+    nearestTo(stage, cue.scene, side, cue.scene.ball, "Midfielder");
+  const take = takeBall(cue, passer);
+  const taker = nearestTo(stage, cue.scene, defending, caught, "Defender");
+  return {
+    steps: [
+      {
+        ...take.step,
+        resetMovers: true,
+        overlay: null,
+        movers: { ...take.step.movers, ...only(runner, caught) },
+        highlight: cast(passer, runner),
+        possession: side,
+      },
+      {
+        ball: { at: caught, ease: "linear" },
+        highlight: cast(passer, runner),
+        action: { kind: "kick", by: passer, to: caught, receiver: runner, pace: "pass", peak: 0 },
+      },
+      {
+        overlay: { kind: "whistle", at: caught },
+        possession: defending,
+        highlight: cast(runner),
+        pace: "place",
+        action: { kind: "dead", spot: caught, holder: taker },
+      },
+    ],
+  };
+}
+
 function stageMarker(overlay: RadarOverlay, playerId: string | null, important = false): Staging {
   return { steps: [{ overlay, highlight: cast(playerId) }], important };
 }
@@ -1024,6 +1077,8 @@ function stageEvent(cue: Cue): Staging | null {
       return stageRestart(cue, centre, HALFWAY, true);
     case "Foul":
       return stageFoul(cue);
+    case "Offside":
+      return stageOffside(cue);
     case "FreeKick":
       return {
         steps: [

@@ -347,6 +347,7 @@ describe("TacticsTab", () => {
     counter_press_duration: "Long",
     break_speed: "Fast",
     cross_style: "High",
+    offside_trap: "Off",
   };
 
   /**

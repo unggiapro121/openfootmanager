@@ -20,6 +20,7 @@ const COMMENTARY_EVENTS = new Set([
   "ShotOffTarget",
   "ShotBlocked",
   "Foul",
+  "Offside",
   "YellowCard",
   "RedCard",
   "SecondYellow",

@@ -15,6 +15,7 @@ const blueprint: TacticsPhaseSettings = {
   counter_press_duration: "Short",
   break_speed: "Medium",
   cross_style: "Mixed",
+  offside_trap: "Off",
 };
 
 describe("isSamePhaseBlueprint", () => {

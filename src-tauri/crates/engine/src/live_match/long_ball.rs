@@ -12,6 +12,7 @@
 
 use rand::{Rng, RngExt};
 
+use super::offside::OffsideMoment;
 use crate::duel;
 use crate::event::{EventType, MatchEvent, TacticalContext};
 use crate::pitch_position::PitchPosition;
@@ -232,11 +233,23 @@ impl LiveMatchState {
     ) -> Vec<MatchEvent> {
         let def_side = att_side.opposite();
         let mut events = Vec::new();
+        if self.flag_offside(
+            minute,
+            att_side,
+            runner,
+            OffsideMoment::OverTheTop,
+            &mut events,
+            rng,
+        ) {
+            return events;
+        }
         let zone = Zone::attacking_third(att_side);
         let pair = self.centre_back_pair_factor(def_side, true);
+        // A runner who beat an offside trap has the line behind him.
         let logit = (f64::from(runner.pace).max(1.0) / f64::from(defender.pace).max(1.0)).ln()
             + K_RACE.ln()
-            + (condition / pair).ln();
+            + (condition / pair).ln()
+            + self.trap_beaten_factor(att_side).ln();
         if rng.random_range(0.0..1.0f64) < sigmoid(logit) {
             let through = MatchEvent::new(minute, EventType::Dribble, att_side, zone)
                 .with_player(&runner.id)

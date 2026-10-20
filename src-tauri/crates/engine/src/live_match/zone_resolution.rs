@@ -12,6 +12,7 @@ use crate::types::{PlayStyle, Position, PressingIntensity, Side, TeamData, Zone}
 
 use super::LiveMatchState;
 use super::helpers::{danger_band, foul_severity, save_quality};
+use super::offside::OffsideMoment;
 use super::presence::{Column, out_of_lane_factor};
 
 // ---------------------------------------------------------------------------
@@ -32,8 +33,9 @@ const BOX_FOUL_CHANCE: f64 = 0.06;
 /// How often a one-on-one cleared goes behind for a corner (GĐ2); the
 /// default of `CalibrationKnobs::corner_from_cleared_duel`.
 // Was 0.25; calibrated in GĐ5 P5.3 (match probe, Premier League; `gd5-p53-report.md`): 6.9 corners a match, real 9.6–9.7 (T11).
-// 0.36 → 0.38 in P5.4: fewer direct breaks, 8.8 corners a match.
-pub(crate) const CORNER_FROM_CLEARED_DUEL: f64 = 0.38;
+// 0.36 → 0.38 in P5.4: fewer direct breaks, 8.8 corners a match. 0.40
+// since offside (after GĐ5): fewer balls into the final third.
+pub(crate) const CORNER_FROM_CLEARED_DUEL: f64 = 0.40;
 
 /// How often a ball won from the other side's short build-up stays in their
 /// third for the winner, before the winner's press scales it (GĐ5 P5.2,
@@ -246,6 +248,23 @@ impl LiveMatchState {
             duel::midfield_win_probability(&attacker, &defender, tempo, att_eff / def_eff);
 
         if rng.random_range(0.0..1.0f64) < success {
+            // The ball forward is to a runner, who may be caught offside.
+            let runner = self
+                .pick_by_presence(att_side, Column::Attack, self.lane_for(att_side), rng)
+                .map_or_else(
+                    || self.snap_player(att_side, Position::Forward, rng),
+                    |picked| picked.player,
+                );
+            if self.flag_offside(
+                minute,
+                att_side,
+                &runner,
+                OffsideMoment::IntoTheFinalThird,
+                &mut events,
+                rng,
+            ) {
+                return events;
+            }
             let evt = MatchEvent::new(minute, EventType::PassCompleted, att_side, Zone::Midfield)
                 .with_player(&attacker.id);
             self.emit(&mut events, evt);

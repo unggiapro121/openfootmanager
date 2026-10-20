@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "Mixtos",
       "crossStyle_High": "Altos",
       "crossStyle_Low": "Rasos",
-      "crossStyle_Early": "Tempranos"
+      "crossStyle_Early": "Tempranos",
+      "offsideTrap": "Trampa del fuera de juego",
+      "offsideTrap_Off": "Desactivada",
+      "offsideTrap_On": "Activada"
     },
     "customTacticDescription": "Crea una propuesta personalizada combinando cualquier formación con el estilo de juego que mejor encaje con tu plantilla.",
     "customTacticNumber": "Táctica personalizada {{count}}",
@@ -2436,6 +2439,7 @@
       "Corner": "Córner",
       "FreeKick": "Tiro Libre",
       "Foul": "Falta",
+      "Offside": "Fuera de juego",
       "PenaltyAwarded": "Penalti Señalado"
     },
     "commentary": {
@@ -2711,6 +2715,14 @@
         "lines": {
           "0": "¡{{player}} ve la segunda amarilla y es expulsado!",
           "1": "Dos amarillas y se va — {{player}} deja al {{team}} en inferioridad."
+        }
+      },
+      "Offside": {
+        "headline": "FUERA DE JUEGO",
+        "lines": {
+          "0": "{{player}} cae en fuera de juego. Falta para {{opponent}}.",
+          "1": "Se levanta la bandera contra {{player}}.",
+          "2": "{{player}} se adelantó demasiado: fuera de juego."
         }
       },
       "Injury": {

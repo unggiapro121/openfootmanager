@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "Mixtes",
       "crossStyle_High": "Aériens",
       "crossStyle_Low": "À ras de terre",
-      "crossStyle_Early": "Précoces"
+      "crossStyle_Early": "Précoces",
+      "offsideTrap": "Piège du hors-jeu",
+      "offsideTrap_Off": "Désactivé",
+      "offsideTrap_On": "Activé"
     },
     "customTacticDescription": "Créez une organisation personnalisée en combinant n'importe quelle formation avec le style de jeu qui convient à votre effectif.",
     "customTacticNumber": "Tactique personnalisée {{count}}",
@@ -2436,6 +2439,7 @@
       "Corner": "Corner",
       "FreeKick": "Coup franc",
       "Foul": "Faute",
+      "Offside": "Hors-jeu",
       "PenaltyAwarded": "Penalty accordé"
     },
     "commentary": {
@@ -2711,6 +2715,14 @@
         "lines": {
           "0": "{{player}} prend un deuxième jaune et est expulsé !",
           "1": "Deux jaunes et dehors — {{player}} laisse {{team}} à dix."
+        }
+      },
+      "Offside": {
+        "headline": "HORS-JEU",
+        "lines": {
+          "0": "{{player}} est signalé hors-jeu. Coup franc pour {{opponent}}.",
+          "1": "Le drapeau se lève contre {{player}}.",
+          "2": "{{player}} est parti trop tôt : hors-jeu."
         }
       },
       "Injury": {

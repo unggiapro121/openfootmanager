@@ -42,6 +42,22 @@ afterAll(async () => {
 });
 
 describe("getCommentary", () => {
+  // Given a home forward flagged offside (after GĐ5), then the commentary
+  // names him and gives the free kick to the other side.
+  it("tells an offside flag", () => {
+    const flag: MatchEvent = {
+      minute: 30,
+      event_type: "Offside",
+      side: "Home",
+      zone: "AwayDefense",
+      player_id: "p1",
+      secondary_player_id: null,
+    };
+    const result = getCommentary(flag, snapshot([flag]), i18n.t.bind(i18n));
+    expect(result?.headline).toBe("OFFSIDE");
+    expect(result?.line).toContain("Haaland");
+  });
+
   it("returns null for non-key events", () => {
     const evt: MatchEvent = {
       minute: 5,

@@ -855,7 +855,10 @@
       "crossStyle_Mixed": "Смешанные",
       "crossStyle_High": "Верхние",
       "crossStyle_Low": "Низовые",
-      "crossStyle_Early": "Ранние"
+      "crossStyle_Early": "Ранние",
+      "offsideTrap": "Офсайдная ловушка",
+      "offsideTrap_Off": "Выкл.",
+      "offsideTrap_On": "Вкл."
     },
     "customTacticDescription": "Создай собственную настройку, сочетая любую схему со стилем игры, который лучше всего подходит твоему составу.",
     "customTacticNumber": "Пользовательская тактика {{count}}",
@@ -2436,6 +2439,7 @@
       "Corner": "Угол",
       "FreeKick": "Штрафной удар",
       "Foul": "Грязный",
+      "Offside": "Офсайд",
       "PenaltyAwarded": "Штраф назначен"
     },
     "commentary": {
@@ -2711,6 +2715,14 @@
         "lines": {
           "0": "{{player}} получает вторую жёлтую и удаляется с поля!",
           "1": "Две жёлтые — и прочь! {{player}} оставляет {{team}} в меньшинстве."
+        }
+      },
+      "Offside": {
+        "headline": "ОФСАЙД",
+        "lines": {
+          "0": "{{player}} попадает в офсайд. Штрафной для {{opponent}}.",
+          "1": "Флажок поднят против {{player}}.",
+          "2": "{{player}} рано начал рывок: офсайд."
         }
       },
       "Injury": {

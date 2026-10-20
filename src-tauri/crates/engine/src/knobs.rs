@@ -88,6 +88,16 @@ pub struct CalibrationKnobs {
     /// How much of the usual chance of a card a player already booked runs
     /// when he fouls (GĐ5 P5.7).
     pub booked_card_factor: f64,
+    /// Offside (after GĐ5, `analysis-offside.md`): the chance a runner is
+    /// flagged against a medium line when the ball is played into the final
+    /// third, over the top for a race, and on the break; how much an offside
+    /// trap multiplies it; and how much a runner who beats the trap gains in
+    /// the race for the ball.
+    pub offside_pass: f64,
+    pub offside_long_ball: f64,
+    pub offside_break: f64,
+    pub offside_trap_factor: f64,
+    pub offside_trap_beaten: f64,
     /// A defensive line's effect on the chances it concedes (GĐ2,
     /// `shared.rs::tactics_defensive_conversion_mod`): high and very low.
     pub conversion_high_line: f64,
@@ -133,6 +143,13 @@ impl Default for CalibrationKnobs {
             p_early_cross: live::P_EARLY,
             early_cross_delivery: live::EARLY_DELIVERY,
             booked_card_factor: 0.10,
+            // 0.075: 4.3 runners flagged a match on the Premier League
+            // probe, real football 4.35 (StatsBomb 2015/16).
+            offside_pass: 0.075,
+            offside_long_ball: 0.15,
+            offside_break: 0.10,
+            offside_trap_factor: 1.8,
+            offside_trap_beaten: 1.25,
             // 1.12 until GĐ5 P5.5 (X88): GĐ4's `BallInBehind` already plays
             // the space behind a high line, which this stood for; the dial
             // lost 3–5.5 points to the default. 1.05 puts it level (+0.2).

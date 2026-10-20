@@ -7,6 +7,7 @@ mod lanes;
 mod long_ball;
 mod long_shot;
 mod observation;
+mod offside;
 mod penalty;
 mod presence;
 mod roles;
