@@ -10,6 +10,7 @@ import {
   distance,
   fromPitch,
   lerp as lerpPoint,
+  toPitch,
   zoneSpan,
 } from "./radarGeometry";
 import {
@@ -114,6 +115,26 @@ describe("choreographBatch — lanes (phase 2, GĐ3)", () => {
     const struck = play([{ ...beat, steps: beat.steps.slice(0, kick) }]);
     expect(fromPitch("Away", struck.ball).lane).toBeLessThan(10);
     expect(struck.ball.y).toBeGreaterThan(CENTRE_LANE);
+  });
+
+  // Given a wide man who has dribbled into the box down his lane, then he
+  // crosses from where he has the ball: never back out to the touchline, never
+  // back towards his own goal (after GĐ5).
+  it("crosses from where a man already in the box has the ball", () => {
+    const inBoxAt = toPitch("Home", 91.4, 49.3);
+    const scene: RadarScene = {
+      ...start,
+      ball: inBoxAt,
+      focusX: inBoxAt.x,
+      movers: { h_rm: inBoxAt },
+    };
+    const event = withLane(radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1"), "Right");
+    const [beat] = choreographBatch([event], stage, scene).beats;
+    const kick = beat.steps.findIndex((step) => step.action?.kind === "kick");
+    const struckFrom = beat.steps[kick - 1]?.ball?.at ?? inBoxAt;
+    expect(distance(struckFrom, inBoxAt)).toBeLessThanOrEqual(3);
+    expect(fromPitch("Home", struckFrom).lane).toBeLessThanOrEqual(49.3 + 1);
+    expect(fromPitch("Home", struckFrom).depth).toBeGreaterThanOrEqual(91.4 - 0.5);
   });
 
   // Given a low cross and an early one, then the low one is driven along the
