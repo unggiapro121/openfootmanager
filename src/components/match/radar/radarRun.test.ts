@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { MatchEvent } from "../types";
 import { choreographBatch, choreographHighlights } from "./radarChoreography";
 import type { RadarSettle } from "./radarSettle";
-import { CENTRE_LANE, distance, toPitch, zoneSpan } from "./radarGeometry";
+import { CENTRE_LANE, distance, fromPitch, toPitch, zoneSpan } from "./radarGeometry";
 import { enqueueBeats, restingPlayback } from "./radarPlayback";
 import { type RadarRun, advanceRun, startRun } from "./radarRun";
 import { type RadarScene, type RadarStep, focusOf, initialRadarScene } from "./radarScene";
@@ -520,6 +520,49 @@ describe("radar run — a free kick (after GĐ5)", () => {
     for (let index = ready; index < struck; index++) {
       expect(distance(frames[index].ball.at, spot), `frame ${index}`).toBeLessThan(2);
     }
+  });
+});
+
+describe("radar run — a long shot (after GĐ5)", () => {
+  /** How far from the goal the shot of `events` leaves the shooter's foot, in metres. */
+  function strikeDistance(events: MatchEvent[]): number {
+    const frames = simulate(events, { highlightsOnly: true });
+    const struck = frames.findIndex(
+      (run, index) =>
+        index > 0 &&
+        run.acting?.beat.beat.eventType === "ShotOffTarget" &&
+        run.ball.kind === "flight" &&
+        frames[index - 1].ball.kind !== "flight",
+    );
+    expect(struck).toBeGreaterThan(0);
+    return 105 - fromPitch("Home", frames[struck - 1].ball.at).depth;
+  }
+  const longShot = (player: string) => ({
+    ...radarEvent("ShotOffTarget", "Home", "AwayDefense", player),
+    shot_kind: "LongRange" as const,
+  });
+
+  // Given a long shot by a man the ball is passed to in midfield, then he
+  // carries it to shooting range and strikes it from 20 to 26 metres out,
+  // never from where he got it.
+  it("strikes a long shot from range after a pass in midfield", () => {
+    const distanceOut = strikeDistance([
+      radarEvent("PassCompleted", "Home", "Midfield", "h_cb1"),
+      longShot("h_cm1"),
+    ]);
+    expect(distanceOut).toBeGreaterThanOrEqual(18);
+    expect(distanceOut).toBeLessThanOrEqual(28);
+  });
+
+  // Given a move that is a long shot alone, by a midfielder standing deep,
+  // then it opens with him already at shooting range, not in his own half.
+  it("opens a lone long shot at shooting range", () => {
+    const distanceOut = strikeDistance([
+      radarEvent("Clearance", "Away", "HomeBox", "a_cb1"),
+      longShot("h_cm2"),
+    ]);
+    expect(distanceOut).toBeGreaterThanOrEqual(18);
+    expect(distanceOut).toBeLessThanOrEqual(28);
   });
 });
 

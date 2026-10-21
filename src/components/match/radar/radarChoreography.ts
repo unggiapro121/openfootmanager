@@ -905,27 +905,57 @@ const LONG_SHOT_LANE_SPREAD = 16;
  * pulled back out of it either: a ball already in the box is struck from the
  * edge.
  */
+/** Where a long shot from `from` is struck: within range of goal, never further out (after GĐ5). */
+function longShotSpot(side: Side, from: PitchPoint): PitchPoint {
+  const { depth, lane } = fromPitch(side, from);
+  return toPitch(
+    side,
+    clamp(depth, LONG_SHOT_NEAREST, LONG_SHOT_FARTHEST),
+    clamp(lane, CENTRE_LANE - LONG_SHOT_LANE_SPREAD, CENTRE_LANE + LONG_SHOT_LANE_SPREAD),
+  );
+}
+
+/**
+ * A long shot: the shooter takes the ball and, if he has it short of range,
+ * carries it there before he strikes it — so it is never struck from where he
+ * happened to get it, half a pitch out (after GĐ5).
+ */
 function stageLongShot(cue: Cue): Staging {
   const side = cue.event.side;
   const shooter = cue.event.player_id;
-  const from = fromPitch(side, shooter ? where(cue, shooter) : cue.scene.ball);
-  const spot = toPitch(
-    side,
-    clamp(from.depth, LONG_SHOT_NEAREST, LONG_SHOT_FARTHEST),
-    clamp(from.lane, CENTRE_LANE - LONG_SHOT_LANE_SPREAD, CENTRE_LANE + LONG_SHOT_LANE_SPREAD),
-  );
+  const spot = longShotSpot(side, shooter ? where(cue, shooter) : cue.scene.ball);
+  const take = takeBall(cue, shooter);
+  const target = {
+    depth: fromPitch(side, spot).depth - TOUCH_AHEAD,
+    lane: fromPitch(side, spot).lane,
+  };
+  const touches = shooter ? carryTouches(side, shooter, fromPitch(side, take.at), target) : [];
+  // However near the script has him, he carries it to the spot himself: on
+  // screen he may still be short of it, and the carry waits for him there.
+  const carry: RadarStep[] =
+    shooter && touches.length === 0
+      ? [
+          {
+            pace: "carry",
+            ball: { at: spot },
+            movers: only(shooter, toPitch(side, target.depth, target.lane)),
+            waitFor: [shooter],
+            action: { kind: "carry", by: shooter },
+          },
+        ]
+      : touches;
+  const struckFrom = carry[carry.length - 1]?.ball?.at ?? take.at;
   return {
     important: cue.event.event_type === "Goal",
     steps: [
       {
-        ball: { at: spot, ease: "linear" },
-        movers: only(shooter, spot),
+        ...take.step,
         highlight: cast(shooter),
         possession: side,
         overlay: null,
-        action: shooter ? { kind: "take", by: shooter } : undefined,
       },
-      ...stageShotFinish(cue, spot, shooter),
+      ...carry,
+      ...stageShotFinish(cue, struckFrom, shooter),
     ],
   };
 }
@@ -1426,7 +1456,10 @@ export function choreographHighlights(
  */
 function openingOf(first: MatchEvent, stage: RadarStage, scene: RadarScene) {
   const starter = isAttackingPlay(first) ? first.player_id : null;
-  const starterAt = starter ? standingIn(stage, scene, starter) : null;
+  const standing = starter ? standingIn(stage, scene, starter) : null;
+  // A move that is a long shot alone opens with the shooter in range.
+  const starterAt =
+    standing && first.shot_kind === "LongRange" ? longShotSpot(first.side, standing) : standing;
   if (!starter || !starterAt || distance(starterAt, scene.ball) <= FETCH_METRES) {
     return blockCheck(stage, scene, first.minute);
   }
@@ -1435,6 +1468,7 @@ function openingOf(first: MatchEvent, stage: RadarStage, scene: RadarScene) {
       sceneCut: true,
       ball: { at: starterAt, lift: 0 },
       resetMovers: true,
+      ...(starterAt !== standing ? { movers: only(starter, starterAt) } : {}),
       possession: first.side,
       highlight: [],
       overlay: null,
