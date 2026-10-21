@@ -730,6 +730,81 @@ describe("radar run — a dangerous free kick cleared (after GĐ5)", () => {
   });
 });
 
+describe("radar run — no ball waiting for a lone runner (after GĐ5)", () => {
+  /** The longest the ball lies still and seen, nobody on it, with one man alone running. */
+  function longestLoneFetch(frames: RadarRun[]): number {
+    let longest = 0;
+    let since: number | null = null;
+    for (let index = 1; index < frames.length; index++) {
+      const now = frames[index];
+      const before = frames[index - 1];
+      const moving = playerIds.filter(
+        (id) => speedOf(frames, index, id) > 2.5 && now.sim.players[id] !== undefined,
+      );
+      const isLone =
+        now.ball.kind !== "held" &&
+        now.ball.kind !== "flight" &&
+        now.ball.opacity > 0.5 &&
+        distance(now.ball.at, before.ball.at) / FRAME_S < 0.5 &&
+        moving.length === 1 &&
+        !now.sceneCut;
+      if (isLone) since ??= now.sim.time;
+      else since = null;
+      if (since !== null) longest = Math.max(longest, now.sim.time - since);
+    }
+    return longest;
+  }
+
+  // Given a move that opens with a foul on a man away from where the ball
+  // lies, then the ball is at the fouled man's feet when the foul comes: it
+  // never lies elsewhere while the fouler runs alone.
+  it("opens a move that starts with a foul at the fouled man's feet", () => {
+    const deep: RadarScene = {
+      ...start,
+      ball: toPitch("Home", 20, CENTRE_LANE),
+      focusX: toPitch("Home", 20, CENTRE_LANE).x,
+    };
+    const events = [
+      radarEvent("Foul", "Away", "AwayDefense", "a_cb1", "h_st1"),
+      radarEvent("FreeKick", "Home", "AwayDefense"),
+      radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1"),
+      radarEvent("Clearance", "Away", "AwayBox", "a_cb2"),
+    ];
+    const frames = simulate(events, { highlightsOnly: true, from: deep });
+    const fouled = frames.find((run) => run.acting?.beat.beat.eventType === "Foul");
+    expect(fouled && holderOf(fouled)).toBe("h_st1");
+    expect(longestLoneFetch(frames)).toBeLessThan(0.5);
+  });
+
+  // Given a pass into space for a full back coming from deep, then it is
+  // weighted for him: he reaches it as it comes to rest, and it never lies
+  // waiting for him.
+  it("weights a pass into space for the man running onto it", () => {
+    const passerAt = toPitch("Home", 62, 20);
+    const from: RadarScene = {
+      ...start,
+      ball: passerAt,
+      focusX: passerAt.x,
+      movers: { h_cm1: passerAt },
+    };
+    const frames = simulate(
+      [
+        radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+        radarEvent("Dribble", "Home", "AwayDefense", "h_lb"),
+      ],
+      { from },
+    );
+    const landed = frames.findIndex(
+      (run, index) =>
+        index > 0 && frames[index - 1].ball.kind === "flight" && run.ball.kind !== "flight",
+    );
+    const received = frames.findIndex((run) => holderOf(run) === "h_lb");
+    expect(landed).toBeGreaterThan(0);
+    expect(received).toBeGreaterThanOrEqual(landed);
+    expect((received - landed) * FRAME_S).toBeLessThanOrEqual(0.3);
+  });
+});
+
 describe("radar run — the ball out of play", () => {
   // Given a shot wide and a goal kick, then the ball vanishes, and is back on the
   // goal-kick spot within a second and a half, never sliding there.
