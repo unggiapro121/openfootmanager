@@ -49,6 +49,28 @@ pub(crate) fn with_sponsor_uplift(amount: i64, uplift: f64) -> i64 {
     (amount as f64 * (1.0 + uplift)).round() as i64
 }
 
+/// The user's reputation perks at their current club, as percentages for the
+/// manager screen: both 0 out of work or when perks do not apply.
+#[derive(Debug, Clone, Copy, PartialEq, serde::Serialize)]
+pub struct ReputationPerksView {
+    pub wage_discount_pct: f64,
+    pub sponsor_uplift_pct: f64,
+}
+
+pub fn reputation_perks(game: &Game) -> ReputationPerksView {
+    let Some(team_id) = game.manager.team_id.as_deref() else {
+        return ReputationPerksView {
+            wage_discount_pct: 0.0,
+            sponsor_uplift_pct: 0.0,
+        };
+    };
+    let percent = |share: f64| (share * 1000.0).round() / 10.0;
+    ReputationPerksView {
+        wage_discount_pct: percent(wage_discount(game, team_id)),
+        sponsor_uplift_pct: percent(sponsor_uplift(game, team_id)),
+    }
+}
+
 fn is_users_club(game: &Game, team_id: &str) -> bool {
     game.manager.team_id.as_deref() == Some(team_id)
 }
@@ -143,5 +165,9 @@ mod tests {
         assert!(close(wage_discount(&game, "club-b"), 0.0));
         assert!(close(sponsor_uplift(&game, "club-a"), 0.10));
         assert!(close(sponsor_uplift(&game, "club-b"), 0.0));
+
+        let perks = reputation_perks(&game);
+        assert!(close(perks.wage_discount_pct, 15.0));
+        assert!(close(perks.sponsor_uplift_pct, 10.0));
     }
 }

@@ -158,6 +158,17 @@ pub fn propose_renewal(
     player_id: &str,
     offer: RenewalOffer,
 ) -> Result<RenewalOutcome, String> {
+    let wage_discount = users_wage_discount(game);
+    let mut outcome = propose_renewal_terms(game, player_id, offer)?;
+    note_reputation_discount(&mut outcome, wage_discount);
+    Ok(outcome)
+}
+
+fn propose_renewal_terms(
+    game: &mut Game,
+    player_id: &str,
+    offer: RenewalOffer,
+) -> Result<RenewalOutcome, String> {
     let manager_team_id = game
         .manager
         .team_id

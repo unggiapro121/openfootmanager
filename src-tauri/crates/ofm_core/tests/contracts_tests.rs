@@ -1685,3 +1685,59 @@ fn a_free_agent_signs_for_less_with_a_reputed_manager() {
 
     assert!(reputed < at_start, "{reputed} vs {at_start}");
 }
+
+/// Given a manager at 900 (15% off) and one at the starting reputation,
+/// When each opens renewal talks,
+/// Then the reputed manager's talks say the discount was applied, and the
+/// other's say nothing about it.
+#[test]
+fn renewal_talks_say_when_the_users_reputation_lowered_the_ask() {
+    let discount_noted_at = |reputation: u32| {
+        let mut game = make_game();
+        game.manager.reputation = reputation;
+        let outcome = propose_renewal(
+            &mut game,
+            "player-1",
+            RenewalOffer {
+                weekly_wage: 12_500,
+                contract_years: 3,
+            },
+        )
+        .expect("the renewal is heard");
+        outcome
+            .feedback
+            .expect("talks give feedback")
+            .params
+            .get("reputationDiscountPct")
+            .cloned()
+    };
+
+    assert_eq!(discount_noted_at(900).as_deref(), Some("15"));
+    assert_eq!(discount_noted_at(700).as_deref(), Some("7.5"));
+    assert_eq!(discount_noted_at(500), None);
+}
+
+/// Given a manager at 900,
+/// When they offer a free agent terms,
+/// Then the talks say the discount was applied.
+#[test]
+fn free_agent_talks_say_when_the_users_reputation_lowered_the_ask() {
+    let mut game = make_free_agent_game();
+    game.manager.reputation = 900;
+
+    let outcome = offer_free_agent_contract(
+        &mut game,
+        "free-agent-1",
+        RenewalOffer {
+            weekly_wage: 3_000,
+            contract_years: 3,
+        },
+    )
+    .expect("the offer is heard");
+
+    let params = outcome.feedback.expect("talks give feedback").params;
+    assert_eq!(
+        params.get("reputationDiscountPct").map(String::as_str),
+        Some("15")
+    );
+}

@@ -42,6 +42,17 @@ pub fn offer_free_agent_contract(
     player_id: &str,
     offer: RenewalOffer,
 ) -> Result<RenewalOutcome, String> {
+    let wage_discount = users_wage_discount(game);
+    let mut outcome = offer_free_agent_terms(game, player_id, offer)?;
+    note_reputation_discount(&mut outcome, wage_discount);
+    Ok(outcome)
+}
+
+fn offer_free_agent_terms(
+    game: &mut Game,
+    player_id: &str,
+    offer: RenewalOffer,
+) -> Result<RenewalOutcome, String> {
     let manager_team_id = game
         .manager
         .team_id

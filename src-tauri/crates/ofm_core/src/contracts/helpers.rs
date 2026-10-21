@@ -228,6 +228,29 @@ pub(crate) fn contract_days_remaining(
     Some((contract_end_date - current_date).num_days())
 }
 
+/// What the user's reputation takes off asks at their own club: 0 out of work.
+pub(crate) fn users_wage_discount(game: &crate::game::Game) -> f64 {
+    game.manager.team_id.as_deref().map_or(0.0, |team_id| {
+        crate::manager_perks::wage_discount(game, team_id)
+    })
+}
+
+/// Tell the user, through the talks' own feedback, that their reputation
+/// lowered the player's ask: `reputationDiscountPct`, e.g. "15" or "7.5".
+pub(crate) fn note_reputation_discount(outcome: &mut super::RenewalOutcome, discount: f64) {
+    if discount <= 0.0 {
+        return;
+    }
+    let Some(feedback) = outcome.feedback.as_mut() else {
+        return;
+    };
+    let percent = format!("{:.1}", discount * 100.0);
+    let percent = percent.strip_suffix(".0").unwrap_or(&percent).to_string();
+    feedback
+        .params
+        .insert("reputationDiscountPct".to_string(), percent);
+}
+
 #[cfg(test)]
 mod discount_tests {
     use super::*;
