@@ -53,6 +53,10 @@ const DEAD_TIMING = { fade: 0.2, minHidden: 0.35, maxHidden: 1.2 };
 const QUICK_TIMING = { fade: 0.15, minHidden: 0.1, maxHidden: 0.1 };
 /** Players moving slower than this are taken to be in place for a restart. */
 const IN_PLACE_SPEED = 3;
+/** A ball out of play that comes back to a man waits for him to be this close to its spot. */
+const HOLDER_READY_METRES = 3;
+/** The longest it waits for him, in seconds, so play never stalls (under `MAX_ACTION_S`). */
+const MAX_HOLDER_WAIT_S = 3.5;
 /** A step waiting on the ball is given up after this, so play never stalls. */
 const MAX_ACTION_S = 4;
 /** How fast the ball swings round the man carrying it as he turns, radians a second. */
@@ -365,7 +369,15 @@ function moveBall(ball: BallState, sim: RadarSim, time: number, dt: number): Bal
         const settled = Object.values(sim.players).every(
           (player) => lengthOf(player.velocity) < IN_PLACE_SPEED,
         );
-        const isBack = hidden >= timing.maxHidden || (hidden >= timing.minHidden && settled);
+        // A restart taken by a named man (a corner) waits for him to reach the
+        // spot, so the ball is never back at his feet away from it.
+        const isHolderReady =
+          ball.quick ||
+          !holderAt ||
+          distance(holderAt, ball.spot) <= HOLDER_READY_METRES ||
+          hidden >= MAX_HOLDER_WAIT_S;
+        const isBack =
+          isHolderReady && (hidden >= timing.maxHidden || (hidden >= timing.minHidden && settled));
         // Coming back to a man, it comes back at his feet, on the side of where it was put.
         const facing = holderAt ? unit(towards(holderAt, ball.spot), { x: 1, y: 0 }) : ball.facing;
         const at = holderAt ? add(holderAt, scale(facing, CARRY_OFFSET)) : ball.spot;
