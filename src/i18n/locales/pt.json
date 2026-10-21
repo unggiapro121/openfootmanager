@@ -2147,6 +2147,7 @@
     "player": "Jogador",
     "fitness": "Condição Física",
     "halfTime": "Intervalo",
+    "halfTimeHint": "Fala com a equipa, ajusta a tática e começa a segunda parte.",
     "ht": "INT",
     "extraTimeHalfTime": "Intervalo do Prolongamento",
     "penaltyShootout": "Grandes Penalidades",

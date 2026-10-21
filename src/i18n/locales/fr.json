@@ -2147,6 +2147,7 @@
     "player": "Joueur",
     "fitness": "Forme Physique",
     "halfTime": "Mi-Temps",
+    "halfTimeHint": "Parlez à l'équipe, ajustez la tactique, puis lancez la seconde période.",
     "ht": "MT",
     "extraTimeHalfTime": "Mi-Temps des Prolongations",
     "penaltyShootout": "Séance de Tirs au But",

@@ -206,4 +206,64 @@ describe("HalfTimeBreak substitutions", () => {
     fireEvent.click(done);
     expect(screen.queryByText("match.substitutionsTitle")).not.toBeInTheDocument();
   });
+
+  /** Renders the break for the home side; `isSpectator` when only watching. */
+  function renderBreak(isSpectator = false) {
+    render(
+      <ThemeProvider>
+        <HalfTimeBreak
+          snapshot={snapshot()}
+          gameState={{ teams: [] } as unknown as GameStateData}
+          userSide="Home"
+          isSpectator={isSpectator}
+          importantEvents={[]}
+          onResume={vi.fn()}
+          onUpdateSnapshot={vi.fn()}
+        />
+      </ThemeProvider>,
+    );
+  }
+
+  const isBefore = (a: HTMLElement, b: HTMLElement) =>
+    (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+
+  // Given the half-time break, then the header says what the break is for and
+  // holds the way back to the match, beside the score.
+  it("heads the break with its purpose and the way back to the match", () => {
+    renderBreak();
+    const header = screen.getByRole("banner");
+    expect(within(header).getByText("match.halfTimeHint")).toBeInTheDocument();
+    expect(within(header).getByRole("button", { name: "match.resumeMatch" })).toBeInTheDocument();
+  });
+
+  // Given the half-time break, then the cards read left to right: the first
+  // half and the team talk, then the lineup (with its substitutions), then
+  // the formation and the play style.
+  it("lays the cards out as review, lineup, then tactics", () => {
+    renderBreak();
+    const events = screen.getByRole("region", { name: "match.firstHalfEvents" });
+    const talk = screen.getByRole("region", { name: "match.teamTalk" });
+    const lineup = screen.getByRole("region", { name: "match.lineups" });
+    const formation = screen.getByRole("region", { name: "match.formation" });
+    const style = screen.getByRole("region", { name: "match.playStyle" });
+
+    expect(isBefore(events, talk)).toBe(true);
+    expect(isBefore(talk, lineup)).toBe(true);
+    expect(isBefore(lineup, formation)).toBe(true);
+    expect(isBefore(formation, style)).toBe(true);
+    expect(
+      within(lineup).getByRole("button", { name: "match.makeSubstitution" }),
+    ).toBeInTheDocument();
+    expect(within(lineup).getByText("0/5")).toBeInTheDocument();
+  });
+
+  // Given the break watched as a spectator, then only the first half and the
+  // spectator note are shown: nothing to change.
+  it("shows a spectator the first half and nothing to change", () => {
+    renderBreak(true);
+    expect(screen.getByRole("region", { name: "match.firstHalfEvents" })).toBeInTheDocument();
+    expect(screen.getByText("match.spectatorHT")).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "match.lineups" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "match.formation" })).not.toBeInTheDocument();
+  });
 });
