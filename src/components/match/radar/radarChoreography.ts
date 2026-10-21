@@ -1022,6 +1022,12 @@ const PENALTY_RUN_UP = 2.5;
 const PENALTY_KEEPER_DEPTH = 104.6;
 /** Everyone else waits this deep at most: outside the box and its arc. */
 const PENALTY_WAIT_DEPTH = 84;
+/**
+ * How long the taker stands over the ball before his run-up, at real pace:
+ * with the change of scene before it, long enough at the radar's pace for the
+ * award to be told before the kick, so the commentary never trails it.
+ */
+const PENALTY_STEP_UP_MS = 1900;
 
 /**
  * A penalty lined up by the laws (after GĐ5): the taker behind the spot for
@@ -1092,6 +1098,7 @@ function stagePenalty(cue: Cue): Staging {
         movers: penaltyLineUp(cue, taker),
         highlight: cast(taker),
         pace: "place",
+        minMs: PENALTY_STEP_UP_MS,
         action: placed(cue, spot),
       },
       ...stageShotFinish(cue, spot, taker),

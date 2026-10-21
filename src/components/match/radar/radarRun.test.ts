@@ -10,7 +10,9 @@ import { type RadarScene, type RadarStep, focusOf, initialRadarScene } from "./r
 import { SIM_LIMITS } from "./radarSim";
 import { buildRadarStage } from "./radarStage";
 import { radarEvent, radarSnapshot } from "./radarTestFixtures";
+import { READ_MS } from "./radarCommentaryFeed";
 import { queueBeat, timeSteps } from "./radarTiming";
+import { RADAR_PACING } from "./useRadarDirector";
 
 const snapshot = radarSnapshot();
 const stage = buildRadarStage(snapshot);
@@ -571,6 +573,41 @@ describe("radar run — a long shot (after GĐ5)", () => {
 });
 
 describe("radar run — a penalty (after GĐ5)", () => {
+  // Given a penalty played at the radar's own pace, then the taker waits on
+  // the spot long enough for the award to be told before he strikes it: the
+  // commentary never trails the kick.
+  it("strikes a penalty only once the award has been told", () => {
+    const events = [
+      radarEvent("Dribble", "Home", "AwayDefense", "h_st1"),
+      radarEvent("Foul", "Away", "AwayBox", "a_cb1", "h_st1"),
+      radarEvent("PenaltyAwarded", "Home", "AwayBox"),
+      { ...radarEvent("PenaltyGoal", "Home", "AwayBox", "h_st2"), shot_kind: "Penalty" as const },
+    ];
+    const { beats } = choreographHighlights(events, stage, start);
+    let run = startRun(
+      stage,
+      enqueueBeats(
+        restingPlayback(start),
+        beats.map((beat) => queueBeat(beat, RADAR_PACING.timeScale)),
+        Number.POSITIVE_INFINITY,
+      ),
+    );
+    let awardedAt: number | null = null;
+    let struckAt: number | null = null;
+    for (let frame = 0; frame < 60 * 20 && struckAt === null; frame++) {
+      const before = run;
+      run = advanceRun(run, stage, FRAME_MS);
+      const type = run.acting?.beat.beat.eventType;
+      if (type === "PenaltyAwarded" && awardedAt === null) awardedAt = run.sim.time;
+      if (type === "PenaltyGoal" && run.ball.kind === "flight" && before.ball.kind !== "flight") {
+        struckAt = run.sim.time;
+      }
+    }
+    expect(awardedAt).not.toBeNull();
+    expect(struckAt).not.toBeNull();
+    expect((struckAt ?? 0) - (awardedAt ?? 0)).toBeGreaterThanOrEqual(READ_MS / 1000);
+  });
+
   const spot = toPitch("Home", 94, CENTRE_LANE);
   const inTheBox = (at: { x: number; y: number }) => {
     const { depth, lane } = fromPitch("Home", at);
