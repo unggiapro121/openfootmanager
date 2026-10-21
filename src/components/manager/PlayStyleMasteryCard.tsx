@@ -120,6 +120,9 @@ function StyleTile({ style, level, detail, t }: StyleTileProps) {
 }
 
 function StyleEffects({ effects, t }: { effects: StyleEffectView[]; t: TFunction }) {
+  const { i18n } = useTranslation();
+  // The backend sends two decimals so every point of mastery shows; keep them.
+  const percentFormat = new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 2 });
   const chip =
     "inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-md px-2 text-xs font-semibold";
   if (effects.length === 0) {
@@ -145,7 +148,7 @@ function StyleEffects({ effects, t }: { effects: StyleEffectView[]; t: TFunction
             }`}
           >
             <span className="tabular-nums">
-              {`${strengthens ? "▲" : "▼"} ${Math.abs(effect.percent)}%`}
+              {`${strengthens ? "▲" : "▼"} ${percentFormat.format(Math.abs(effect.percent))}%`}
             </span>
             <span className="font-medium">{t(`manager.stylePhase.${effect.phase}`)}</span>
           </span>

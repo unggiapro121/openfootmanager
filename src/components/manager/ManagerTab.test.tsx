@@ -1,8 +1,10 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { GameStateData, TeamData } from "../../store/gameStore";
 import ManagerTab from "./ManagerTab";
+
+const i18nMock = vi.hoisted(() => ({ language: "en" }));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -59,7 +61,7 @@ vi.mock("react-i18next", () => ({
       if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
       return key;
     },
-    i18n: { language: "en" },
+    i18n: i18nMock,
   }),
 }));
 
@@ -221,7 +223,7 @@ describe("ManagerTab", () => {
     expect(screen.queryByRole("region", { name: "Reputation History" })).not.toBeInTheDocument();
   });
 
-  it("shows each style's progress toward its next point and its real effect", async () => {
+  it("shows each style's progress toward its next point and its real effect, unrounded", async () => {
     getManagerProgressionMock.mockResolvedValue({
       styles: [
         {
@@ -231,8 +233,8 @@ describe("ManagerTab", () => {
           xp_to_next: 90,
           matches: 3,
           effects: [
-            { phase: "Attack", percent: 20 },
-            { phase: "Midfield", percent: -7 },
+            { phase: "Attack", percent: 19.62 },
+            { phase: "Midfield", percent: -6.9 },
           ],
         },
         { style: "Balanced", mastery: 50, xp: 0, xp_to_next: 38, matches: 0, effects: [] },
@@ -249,9 +251,9 @@ describe("ManagerTab", () => {
     const counter = screen.getByTestId("mastery-Counter");
     expect(counter).toHaveTextContent("20/90 XP");
     expect(counter).toHaveTextContent("Matches: 3");
-    expect(within(counter).getByText("▲ 20%")).toBeInTheDocument();
+    expect(within(counter).getByText("▲ 19.62%")).toBeInTheDocument();
     expect(within(counter).getByText("Attack")).toBeInTheDocument();
-    expect(within(counter).getByText("▼ 7%")).toBeInTheDocument();
+    expect(within(counter).getByText("▼ 6.9%")).toBeInTheDocument();
     expect(within(counter).getByText("Midfield")).toBeInTheDocument();
     const counterProgress = within(counter).getByRole("progressbar");
     expect(counterProgress).toHaveAttribute("aria-valuenow", "20");
@@ -265,6 +267,43 @@ describe("ManagerTab", () => {
     expect(possessionProgress.getAttribute("aria-valuenow")).toBe(
       possessionProgress.getAttribute("aria-valuemax"),
     );
+  });
+
+  describe("in Vietnamese", () => {
+    afterEach(() => {
+      i18nMock.language = "en";
+    });
+
+    // Given a Possession style at 52 and a Vietnamese reader,
+    // When the mastery card is shown,
+    // Then each effect keeps its decimals in the reader's own number format.
+    it("shows each effect's decimals with a decimal comma", async () => {
+      i18nMock.language = "vi";
+      getManagerProgressionMock.mockResolvedValue({
+        styles: [
+          {
+            style: "Possession",
+            mastery: 52,
+            xp: 1,
+            xp_to_next: 44,
+            matches: 7,
+            effects: [
+              { phase: "Midfield", percent: 15.3 },
+              { phase: "Attack", percent: -2.94 },
+            ],
+          },
+        ],
+        xp_for_a_win: 15,
+        xp_for_a_draw: 10,
+        xp_for_a_loss: 7,
+      });
+
+      render(<ManagerTab gameState={createGameState(false)} />);
+
+      const possession = await screen.findByTestId("mastery-Possession");
+      expect(within(possession).getByText("▲ 15,3%")).toBeInTheDocument();
+      expect(within(possession).getByText("▼ 2,94%")).toBeInTheDocument();
+    });
   });
 
   it("shows what the user's reputation is worth when it is worth something", async () => {
