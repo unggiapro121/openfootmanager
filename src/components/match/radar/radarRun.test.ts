@@ -677,6 +677,59 @@ describe("radar run — a pass forward to a man behind (after GĐ5)", () => {
   });
 });
 
+describe("radar run — a dangerous free kick the engine answers silently (after GĐ5)", () => {
+  // Given a free kick in the attacking third after which the engine simply
+  // has the other side on the ball, then it is still taken: kicked into the
+  // box and won by a defender, before the scene changes.
+  it("takes a free kick the engine never says was taken", () => {
+    const frames = simulate(
+      [
+        radarEvent("Foul", "Away", "AwayDefense", "a_cb1", "h_st1"),
+        radarEvent("FreeKick", "Home", "AwayDefense"),
+        radarEvent("PassCompleted", "Away", "AwayDefense", "a_cm1"),
+      ],
+      { highlightsOnly: true },
+    );
+    const kicked = frames.findIndex(
+      (run, index) =>
+        index > 0 && run.ball.kind === "flight" && !!holderOf(frames[index - 1])?.startsWith("h_"),
+    );
+    expect(kicked).toBeGreaterThan(0);
+    const won = frames.findIndex(
+      (run, index) => index > kicked && !!holderOf(run)?.startsWith("a_"),
+    );
+    expect(won).toBeGreaterThan(kicked);
+  });
+});
+
+describe("radar run — a dangerous free kick cleared (after GĐ5)", () => {
+  // Given a free kick in the attacking third that the engine has cleared at
+  // once, then a man takes it, kicks it into the box from where it was given
+  // — never carrying it there himself — and the defender clears it.
+  it("kicks a free kick in before it is cleared", () => {
+    const frames = simulate(
+      [
+        radarEvent("Foul", "Away", "AwayDefense", "a_cb1", "h_st1"),
+        radarEvent("FreeKick", "Home", "AwayDefense"),
+        radarEvent("YellowCard", "Away", "AwayDefense", "a_cb1"),
+        radarEvent("FreeKick", "Home", "AwayDefense", "h_rm"),
+        radarEvent("Clearance", "Away", "AwayBox", "a_cb2"),
+      ],
+      { highlightsOnly: true },
+    );
+    const holding = frames.filter((run) => run.ball.kind === "held" && run.ball.holder === "h_rm");
+    expect(holding.length).toBeGreaterThan(0);
+    const spot = holding[0].ball.at;
+    for (const run of holding) expect(distance(run.ball.at, spot)).toBeLessThan(2);
+    const last = frames.lastIndexOf(holding[holding.length - 1]);
+    expect(frames[last + 1].ball.kind).toBe("flight");
+    const cleared = frames.findIndex(
+      (run, index) => index > last && run.acting?.beat.beat.eventType === "Clearance" && run.struck,
+    );
+    expect(cleared).toBeGreaterThan(last);
+  });
+});
+
 describe("radar run — the ball out of play", () => {
   // Given a shot wide and a goal kick, then the ball vanishes, and is back on the
   // goal-kick spot within a second and a half, never sliding there.
