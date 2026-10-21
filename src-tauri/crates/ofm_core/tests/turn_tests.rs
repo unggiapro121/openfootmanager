@@ -24,6 +24,8 @@ mod determinism;
 mod fixtures;
 #[path = "turn_tests/live_match_day.rs"]
 mod live_match_day;
+#[path = "turn_tests/manager_career.rs"]
+mod manager_career;
 #[path = "turn_tests/manager_progression.rs"]
 mod manager_progression;
 #[path = "turn_tests/match_form.rs"]
