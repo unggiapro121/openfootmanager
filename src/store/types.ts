@@ -716,11 +716,54 @@ export interface ReputationChange {
   league_matches_played: number;
 }
 
+/** One play style's XP toward its next mastery point. */
+export interface StyleProgress {
+  xp: number;
+  matches: number;
+}
+
 export interface ManagerProgression {
   reputation_log: ReputationChange[];
   season_honours: ManagerHonour[];
   season_league_matches_led: number;
   season_dismissal: number;
+  style_xp: Partial<Record<PlayStyleId, StyleProgress>>;
+}
+
+/** What a match the user managed did for the style it kicked off in (backend `MasteryGain`). */
+export interface MasteryGain {
+  style: PlayStyleId;
+  xp: number;
+  mastery_before: number;
+  mastery_after: number;
+}
+
+/** Mirrors the engine's `StylePhase`. */
+export type StylePhase = "Midfield" | "Attack" | "Defense" | "Press";
+
+export interface StyleEffectView {
+  phase: StylePhase;
+  /** +18 for x1.18, -8 for x0.92. */
+  percent: number;
+}
+
+/** One play style as the manager screen shows it (backend `StyleProgressView`). */
+export interface StyleProgressView {
+  style: PlayStyleId;
+  mastery: number;
+  xp: number;
+  /** null once use can take the style no further. */
+  xp_to_next: number | null;
+  matches: number;
+  effects: StyleEffectView[];
+}
+
+/** The backend's `ManagerProgressionView`. */
+export interface ManagerProgressionView {
+  styles: StyleProgressView[];
+  xp_for_a_win: number;
+  xp_for_a_draw: number;
+  xp_for_a_loss: number;
 }
 
 /** Mirrors the backend's `FixtureCompetition` enum. */

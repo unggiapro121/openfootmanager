@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Vai in campo",
-    "goToFieldDesc": "Controllo completo della partita (predefinito)",
+    "goToFieldDesc": "Controllo completo della partita (predefinito) · aumenta la padronanza dello stile",
     "watchSpectator": "Guarda da spettatore",
-    "watchSpectatorDesc": "Guarda la partita, senza controlli",
+    "watchSpectatorDesc": "Guarda la partita, senza controlli · nessun aumento della padronanza dello stile",
     "delegateAssistant": "Delega all'assistente",
-    "delegateAssistantDesc": "L'IA gestisce tutto istantaneamente",
+    "delegateAssistantDesc": "L'IA gestisce tutto istantaneamente · nessun aumento della padronanza dello stile",
     "skipToMatchDay": "Salta al giorno partita",
     "skipToMatchDayDesc": "Avanza rapidamente fino alla prossima gara",
     "matchDayTitle": "Giorno partita",
-    "delegateWarning": "Il tuo assistente gestirà la partita. Non potrai intervenire."
+    "delegateWarning": "Il tuo assistente gestirà la partita. Non potrai intervenire. Le partite delegate non aumentano la padronanza dello stile."
   },
   "exitConfirm": {
     "title": "Uscire al menu principale?",
@@ -963,7 +963,8 @@
     "centreBackPair": {
       "stoppers": "Due stopper al centro della difesa: escono entrambi e lo spazio alle loro spalle resta libero in contropiede.",
       "covers": "Due centrali di copertura: arretrano entrambi e il limite dell'area resta libero."
-    }
+    },
+    "masteryEarnedHint": "La padronanza cresce solo nelle partite che guidi tu (Vai in campo)."
   },
   "training": {
     "weeklySchedule": "Programma settimanale",
@@ -1354,7 +1355,19 @@
     "fanRestless": "I tifosi stanno diventando irrequieti.",
     "fanUnrest": "Agitazione tra i tifosi — probabili proteste.",
     "playStyleMastery": "Padronanza degli stili di gioco",
-    "playStyleMasteryHint": "Quanto riesci a trasmettere ogni stile di gioco in partita. A 50 lo stile funziona come previsto; più in alto i punti di forza si accentuano e le debolezze si attenuano, più in basso accade il contrario."
+    "playStyleMasteryHint": "Quanto riesci a trasmettere ogni stile di gioco in partita. A 50 lo stile funziona come previsto; più in alto i punti di forza si accentuano e le debolezze si attenuano, più in basso accade il contrario.",
+    "masteryEarnedHint": "La padronanza cresce solo nelle partite che guidi tu (Vai in campo): contro un avversario alla pari, una vittoria vale {{win}} XP, un pareggio {{draw}} e una sconfitta {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Massimo",
+    "masteryMatches": "Partite: {{count}}",
+    "masteryNeutralStyle": "Stile neutro: non dipende dall'allenatore",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Centrocampo",
+      "Attack": "Attacco",
+      "Defense": "Difesa",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "Allenatori",
@@ -3180,7 +3193,10 @@
         }
       }
     },
-    "wingBackConversion": "Gioca da quinto senza penalità"
+    "wingBackConversion": "Gioca da quinto senza penalità",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Padronanza {{mastery}}",
+    "masteryStartingStyle": "L'XP va allo stile con cui la tua squadra ha iniziato la partita"
   },
   "notifications": {
     "attentionRequired": "Attenzione Richiesta",
@@ -3635,6 +3651,10 @@
         "subject": "Valutazione della reputazione della stagione {{season}}",
         "body": "La tua reputazione è passata da {{before}} a {{after}} ({{delta}}) in questa stagione.\n\n• Risultati rispetto alle attese: {{performance}}\n• Trofei, promozioni e retrocessioni: {{honours}}\n• Prestigio del club che guidi: {{clubPull}}",
         "bodyPartial": "La tua reputazione è passata da {{before}} a {{after}} ({{delta}}) in questa stagione.\n\n• Risultati rispetto alle attese: {{performance}}\n• Trofei, promozioni e retrocessioni: {{honours}}\n• Prestigio del club che guidi: {{clubPull}}\n\nHai guidato {{led}} delle {{played}} partite di campionato del club, quindi conta solo la tua parte del piazzamento."
+      },
+      "styleMastery": {
+        "subject": "Padronanza dello stile: {{style}} {{mastery}}",
+        "body": "La squadra si sta abituando allo stile {{style}} sotto la tua guida: la tua padronanza ha raggiunto {{mastery}}.\n\nLa padronanza cresce solo nelle partite che guidi tu."
       },
       "worldCupChampion": {
         "subject": "{{nation}} vince il Mondiale {{year}}!",

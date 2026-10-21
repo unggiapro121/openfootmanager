@@ -366,7 +366,14 @@ mod tests {
             }],
             season_league_matches_led: 12,
             season_dismissal: -40,
+            style_xp: Default::default(),
         };
+        let counter = mgr
+            .progression
+            .style_xp
+            .for_style_mut(&domain::team::PlayStyle::Counter);
+        counter.xp = 211;
+        counter.matches = 19;
 
         upsert_manager(db.conn(), &mgr).unwrap();
         let loaded = load_manager(db.conn(), "mgr_user").unwrap().unwrap();

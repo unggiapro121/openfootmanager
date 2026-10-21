@@ -103,8 +103,17 @@ vi.mock("../components/match/HalfTimeBreak", () => ({
 }));
 
 vi.mock("../components/match/PostMatchScreen", () => ({
-  default: ({ onContinue, onFinish }: { onContinue?: () => void; onFinish?: () => void }) => (
+  default: ({
+    onContinue,
+    onFinish,
+    masteryGain,
+  }: {
+    onContinue?: () => void;
+    onFinish?: () => void;
+    masteryGain?: { xp: number } | null;
+  }) => (
     <div>
+      <span data-testid="postmatch-mastery">{masteryGain ? masteryGain.xp : "none"}</span>
       <button type="button" data-testid="postmatch-continue" onClick={onContinue}>
         Continue
       </button>
@@ -484,6 +493,31 @@ describe("MatchSimulation", (): void => {
 
     await waitFor((): void => {
       expect(navigateMock).toHaveBeenCalledWith("/dashboard");
+    });
+  });
+
+  it("passes the play style XP the finished match earned to the post-match screen", async (): Promise<void> => {
+    locationState = {
+      mode: "spectator",
+      snapshot: makeSnapshot(),
+    };
+
+    mockedInvoke.mockResolvedValueOnce(makeSnapshot()).mockResolvedValueOnce({
+      game: makeGameState(),
+      round_summary: null,
+      player_ratings: {},
+      mastery_gain: { style: "Counter", xp: 15, mastery_before: 50, mastery_after: 50 },
+    });
+
+    render(<MatchSimulation />);
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("match-live-container")).toHaveTextContent("Home FC");
+    });
+    fireEvent.click(screen.getByTestId("match-live"));
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("postmatch-mastery")).toHaveTextContent("15");
     });
   });
 

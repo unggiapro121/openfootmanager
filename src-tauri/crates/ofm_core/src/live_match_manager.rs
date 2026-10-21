@@ -253,6 +253,13 @@ impl LiveMatchSession {
         self.match_state.is_finished()
     }
 
+    /// Whether the user managed this match themselves ("go to the field"):
+    /// only such a match grows their play style mastery (phase 2 X106). One
+    /// watched as a spectator, or handed to the assistant, does not.
+    pub fn is_managed_by_user(&self) -> bool {
+        self.mode == MatchMode::Live && self.user_side.is_some()
+    }
+
     fn apply_ai_decisions(&mut self) {
         // AI for home team (if not user-controlled)
         if self.user_side != Some(Side::Home) {
@@ -453,7 +460,19 @@ pub fn best_pre_match_lineup(
     commands
 }
 
-fn domain_play_style(play_style: engine::PlayStyle) -> domain::team::PlayStyle {
+/// The engine's mirror of a club's play style.
+pub(crate) fn engine_play_style(play_style: &domain::team::PlayStyle) -> engine::PlayStyle {
+    match play_style {
+        domain::team::PlayStyle::Balanced => engine::PlayStyle::Balanced,
+        domain::team::PlayStyle::Attacking => engine::PlayStyle::Attacking,
+        domain::team::PlayStyle::Defensive => engine::PlayStyle::Defensive,
+        domain::team::PlayStyle::Possession => engine::PlayStyle::Possession,
+        domain::team::PlayStyle::Counter => engine::PlayStyle::Counter,
+        domain::team::PlayStyle::HighPress => engine::PlayStyle::HighPress,
+    }
+}
+
+pub(crate) fn domain_play_style(play_style: engine::PlayStyle) -> domain::team::PlayStyle {
     match play_style {
         engine::PlayStyle::Balanced => domain::team::PlayStyle::Balanced,
         engine::PlayStyle::Attacking => domain::team::PlayStyle::Attacking,

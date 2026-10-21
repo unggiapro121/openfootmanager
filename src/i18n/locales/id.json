@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Ke Lapangan",
-    "goToFieldDesc": "Kendali penuh pertandingan (bawaan)",
+    "goToFieldDesc": "Kendali penuh pertandingan (bawaan) · menambah penguasaan gaya bermain",
     "watchSpectator": "Tonton sebagai Penonton",
-    "watchSpectatorDesc": "Tonton pertandingan tanpa kendali",
+    "watchSpectatorDesc": "Tonton pertandingan tanpa kendali · tidak menambah penguasaan gaya bermain",
     "delegateAssistant": "Serahkan ke Asisten",
-    "delegateAssistantDesc": "AI menangani semuanya secara instan",
+    "delegateAssistantDesc": "AI menangani semuanya secara instan · tidak menambah penguasaan gaya bermain",
     "skipToMatchDay": "Lanjut ke Hari Pertandingan",
     "skipToMatchDayDesc": "Lompat ke pertandingan berikutnya",
     "matchDayTitle": "Hari Pertandingan",
-    "delegateWarning": "Asisten akan menangani pertandingan ini. Kamu tidak dapat ikut campur."
+    "delegateWarning": "Asisten akan menangani pertandingan ini. Kamu tidak dapat ikut campur. Laga yang didelegasikan tidak menambah penguasaan gaya bermain."
   },
   "exitConfirm": {
     "title": "Keluar ke Menu Utama?",
@@ -944,7 +944,8 @@
     "centreBackPair": {
       "stoppers": "Dua stopper di bek tengah: keduanya maju, dan ruang di belakang mereka terbuka saat serangan balik.",
       "covers": "Dua bek penyapu di tengah: keduanya mundur, dan tepi kotak penalti dibiarkan terbuka."
-    }
+    },
+    "masteryEarnedHint": "Penguasaan hanya bertambah di laga yang kamu pimpin sendiri (Ke Lapangan)."
   },
   "training": {
     "weeklySchedule": "Jadwal Mingguan",
@@ -1335,7 +1336,19 @@
     "fanRestless": "Suporter mulai gelisah.",
     "fanUnrest": "Kerusuhan suporter — protes mungkin terjadi.",
     "playStyleMastery": "Penguasaan gaya bermain",
-    "playStyleMasteryHint": "Seberapa baik Anda menerapkan setiap gaya bermain di pertandingan. Pada nilai 50, gaya bekerja sesuai rancangan; lebih tinggi menajamkan kekuatannya dan meredam kelemahannya, lebih rendah sebaliknya."
+    "playStyleMasteryHint": "Seberapa baik Anda menerapkan setiap gaya bermain di pertandingan. Pada nilai 50, gaya bekerja sesuai rancangan; lebih tinggi menajamkan kekuatannya dan meredam kelemahannya, lebih rendah sebaliknya.",
+    "masteryEarnedHint": "Penguasaan hanya bertambah di laga yang kamu pimpin sendiri (Ke Lapangan): melawan lawan setara, menang bernilai {{win}} XP, seri {{draw}}, kalah {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Maksimum",
+    "masteryMatches": "Laga: {{count}}",
+    "masteryNeutralStyle": "Gaya netral: tidak bergantung pada pelatih",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Lini tengah",
+      "Attack": "Serangan",
+      "Defense": "Pertahanan",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "Para Manajer",
@@ -3161,7 +3174,10 @@
         }
       }
     },
-    "wingBackConversion": "Bermain sebagai wing-back tanpa penalti"
+    "wingBackConversion": "Bermain sebagai wing-back tanpa penalti",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Penguasaan {{mastery}}",
+    "masteryStartingStyle": "XP masuk ke gaya bermain yang dipakai timmu saat sepak mula"
   },
   "endOfSeason": {
     "seasonComplete": "Musim Selesai",
@@ -3618,6 +3634,10 @@
         "subject": "Evaluasi reputasi Musim {{season}}",
         "body": "Reputasimu berubah dari {{before}} menjadi {{after}} ({{delta}}) musim ini.\n\n• Hasil dibanding ekspektasi: {{performance}}\n• Trofi, promosi, dan degradasi: {{honours}}\n• Pamor klub yang kamu latih: {{clubPull}}",
         "bodyPartial": "Reputasimu berubah dari {{before}} menjadi {{after}} ({{delta}}) musim ini.\n\n• Hasil dibanding ekspektasi: {{performance}}\n• Trofi, promosi, dan degradasi: {{honours}}\n• Pamor klub yang kamu latih: {{clubPull}}\n\nKamu memimpin {{led}} dari {{played}} laga liga klub, jadi hanya bagianmu dari posisi akhirnya yang dihitung."
+      },
+      "styleMastery": {
+        "subject": "Penguasaan gaya bermain: {{style}} {{mastery}}",
+        "body": "Tim makin terbiasa dengan gaya {{style}} di bawah arahanmu: penguasaanmu mencapai {{mastery}}.\n\nPenguasaan hanya bertambah di laga yang kamu pimpin sendiri."
       },
       "worldCupChampion": {
         "subject": "{{nation}} Memenangkan Piala Dunia {{year}}!",

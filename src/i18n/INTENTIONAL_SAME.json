@@ -28,9 +28,13 @@
     "worldEditor.playerId",
     "worldEditor.competitionId",
     "worldEditor.teamId",
-    "worldEditor.staffId"
+    "worldEditor.staffId",
+    "match.masteryGain",
+    "manager.masteryXp",
+    "manager.styleEffect"
   ],
   "de": [
+    "manager.stylePhase.Press",
     "playerFilters.position",
     "playerFilters.region",
     "scouting.watchlistStatus",
@@ -145,6 +149,7 @@
     "packageBuild.patches"
   ],
   "fr": [
+    "manager.stylePhase.Press",
     "teams.club",
     "finances.payrollStaff",
     "settings.autoSaveIntervals.5",
@@ -271,6 +276,7 @@
     "packageBuild.patches"
   ],
   "it": [
+    "manager.stylePhase.Press",
     "teams.club",
     "nations.ru",
     "nations.sn",
@@ -578,6 +584,7 @@
     "tournaments.competitions.premierDivision"
   ],
   "id": [
+    "manager.stylePhase.Press",
     "scouting.watchlistStatus",
     "awardsCeremony.rating",
     "be.news.matchReport.scorer",
@@ -731,6 +738,7 @@
     "match.commentary.Offside.headline"
   ],
   "vi": [
+    "manager.stylePhase.Press",
     "youthAcademy.ovr",
     "common.vs",
     "common.ovr",

@@ -534,6 +534,11 @@ export default function TacticsCommandBar({
                   );
                 })}
               </Select>
+              {coach && (
+                <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
+                  {t("tactics.masteryEarnedHint")}
+                </p>
+              )}
             </div>
           </div>
         </div>

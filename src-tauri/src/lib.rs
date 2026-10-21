@@ -340,6 +340,7 @@ pub fn run() {
             save_settings,
             clear_all_saves,
             get_available_jobs,
+            get_manager_progression,
             apply_for_job,
             get_manager_profiles,
             save_manager_profile,

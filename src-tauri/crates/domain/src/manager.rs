@@ -59,6 +59,55 @@ pub struct ManagerProgression {
     /// The reputation already lost to a dismissal since the last review, kept
     /// so the season's log shows it beside the end-of-season change.
     pub season_dismissal: i32,
+    /// XP toward each play style's next mastery point, and matches the user
+    /// led in it. Earned only in matches the user managed themselves.
+    pub style_xp: StyleXp,
+}
+
+/// One play style's progress toward its next mastery point.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct StyleProgress {
+    /// XP banked toward the next point; spent as each point is reached.
+    pub xp: u32,
+    /// Matches that earned XP in this style.
+    pub matches: u32,
+}
+
+/// [`StyleProgress`] for every play style, keyed like [`PlayStyleMastery`].
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "PascalCase", default)]
+pub struct StyleXp {
+    pub balanced: StyleProgress,
+    pub attacking: StyleProgress,
+    pub defensive: StyleProgress,
+    pub possession: StyleProgress,
+    pub counter: StyleProgress,
+    pub high_press: StyleProgress,
+}
+
+impl StyleXp {
+    pub fn for_style(&self, style: &PlayStyle) -> StyleProgress {
+        match style {
+            PlayStyle::Balanced => self.balanced,
+            PlayStyle::Attacking => self.attacking,
+            PlayStyle::Defensive => self.defensive,
+            PlayStyle::Possession => self.possession,
+            PlayStyle::Counter => self.counter,
+            PlayStyle::HighPress => self.high_press,
+        }
+    }
+
+    pub fn for_style_mut(&mut self, style: &PlayStyle) -> &mut StyleProgress {
+        match style {
+            PlayStyle::Balanced => &mut self.balanced,
+            PlayStyle::Attacking => &mut self.attacking,
+            PlayStyle::Defensive => &mut self.defensive,
+            PlayStyle::Possession => &mut self.possession,
+            PlayStyle::Counter => &mut self.counter,
+            PlayStyle::HighPress => &mut self.high_press,
+        }
+    }
 }
 
 /// One season's review of the user's reputation, broken into the parts the
@@ -103,7 +152,7 @@ pub enum HonourKind {
 pub const STARTING_REPUTATION: u32 = 500;
 
 /// The neutral mastery: a style plays exactly as the engine's table prices it.
-const NEUTRAL_MASTERY: u8 = 50;
+pub const NEUTRAL_MASTERY: u8 = 50;
 
 /// A manager's command of each play style, 1–100. Keys serialize as the play
 /// style names ("Balanced" … "HighPress"), the ids the frontend already uses.
@@ -419,6 +468,20 @@ mod tests {
         let loaded: Manager = serde_json::from_value(json).expect("old save should load");
 
         assert_eq!(loaded.progression, ManagerProgression::default());
+    }
+
+    /// Given a style's XP,
+    /// When it is serialized,
+    /// Then it is keyed by the play style names the frontend already uses.
+    #[test]
+    fn style_xp_is_keyed_by_play_style_name() {
+        let mut style_xp = StyleXp::default();
+        style_xp.for_style_mut(&PlayStyle::HighPress).xp = 37;
+
+        let json = serde_json::to_value(style_xp).expect("serialize");
+
+        assert_eq!(json["HighPress"]["xp"], 37);
+        assert_eq!(json["Balanced"]["matches"], 0);
     }
 
     /// Given a progression stored as an empty JSON object, as the database

@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Ir para o Campo",
-    "goToFieldDesc": "Controlo total do jogo",
+    "goToFieldDesc": "Controlo total do jogo · aumenta o domínio do estilo",
     "watchSpectator": "Ver como Espetador",
-    "watchSpectatorDesc": "Ver o jogo sem controlos",
+    "watchSpectatorDesc": "Ver o jogo sem controlos · não aumenta o domínio do estilo",
     "delegateAssistant": "Delegar ao Assistente",
-    "delegateAssistantDesc": "A IA trata de tudo",
+    "delegateAssistantDesc": "A IA trata de tudo · não aumenta o domínio do estilo",
     "skipToMatchDay": "Avançar para o Dia de Jogo",
     "skipToMatchDayDesc": "Avançar até ao próximo jogo",
     "matchDayTitle": "Dia de Jogo",
-    "delegateWarning": "O teu assistente vai gerir o jogo. Não poderás intervir."
+    "delegateWarning": "O teu assistente vai gerir o jogo. Não poderás intervir. Os jogos delegados não aumentam o domínio do estilo."
   },
   "closeConfirm": {
     "title": "Alterações não guardadas",
@@ -944,7 +944,8 @@
     "centreBackPair": {
       "stoppers": "Dois centrais de choque: os dois saem e o espaço nas costas fica livre no contra-ataque.",
       "covers": "Dois centrais de cobertura: os dois recuam e a entrada da área fica livre."
-    }
+    },
+    "masteryEarnedHint": "O domínio só cresce nos jogos que orientas tu (Ir para o Campo)."
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",
@@ -1335,7 +1336,19 @@
     "fanRestless": "Os adeptos estão a ficar impacientes.",
     "fanUnrest": "Agitação entre os adeptos — protestos prováveis.",
     "playStyleMastery": "Domínio dos estilos de jogo",
-    "playStyleMasteryHint": "Até que ponto consegues transmitir cada estilo de jogo em campo. Com 50, o estilo funciona como foi concebido; acima disso, os pontos fortes acentuam-se e os fracos atenuam-se; abaixo, acontece o contrário."
+    "playStyleMasteryHint": "Até que ponto consegues transmitir cada estilo de jogo em campo. Com 50, o estilo funciona como foi concebido; acima disso, os pontos fortes acentuam-se e os fracos atenuam-se; abaixo, acontece o contrário.",
+    "masteryEarnedHint": "O domínio só cresce nos jogos que orientas tu (Ir para o Campo): frente a um adversário equivalente, uma vitória vale {{win}} XP, um empate {{draw}} e uma derrota {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Máximo",
+    "masteryMatches": "Jogos: {{count}}",
+    "masteryNeutralStyle": "Estilo neutro: não depende do treinador",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Meio-campo",
+      "Attack": "Ataque",
+      "Defense": "Defesa",
+      "Press": "Pressão"
+    }
   },
   "managersWorld": {
     "title": "Treinadores",
@@ -3161,7 +3174,10 @@
         }
       }
     },
-    "wingBackConversion": "Joga como ala sem penalização"
+    "wingBackConversion": "Joga como ala sem penalização",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Domínio {{mastery}}",
+    "masteryStartingStyle": "A XP vai para o estilo com que a tua equipa começou o jogo"
   },
   "endOfSeason": {
     "seasonComplete": "Época Completa",
@@ -3618,6 +3634,10 @@
         "subject": "Avaliação de reputação da temporada {{season}}",
         "body": "A tua reputação passou de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados face às expectativas: {{performance}}\n• Troféus, subidas e descidas: {{honours}}\n• Prestígio do clube que orientas: {{clubPull}}",
         "bodyPartial": "A tua reputação passou de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados face às expectativas: {{performance}}\n• Troféus, subidas e descidas: {{honours}}\n• Prestígio do clube que orientas: {{clubPull}}\n\nOrientaste {{led}} dos {{played}} jogos de campeonato do clube, por isso só conta a tua parte da classificação."
+      },
+      "styleMastery": {
+        "subject": "Domínio do estilo: {{style}} {{mastery}}",
+        "body": "A equipa está a habituar-se ao estilo {{style}} contigo: o teu domínio chegou a {{mastery}}.\n\nO domínio só cresce nos jogos que orientas tu."
       },
       "worldCupChampion": {
         "subject": "{{nation}} vence o Mundial de {{year}}!",

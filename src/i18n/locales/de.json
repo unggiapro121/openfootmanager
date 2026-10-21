@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Aufs Spielfeld",
-    "goToFieldDesc": "Volle Spielkontrolle",
+    "goToFieldDesc": "Volle Spielkontrolle · steigert die Spielstil-Beherrschung",
     "watchSpectator": "Als Zuschauer",
-    "watchSpectatorDesc": "Spiel anschauen ohne Kontrolle",
+    "watchSpectatorDesc": "Spiel anschauen ohne Kontrolle · keine Steigerung der Spielstil-Beherrschung",
     "delegateAssistant": "An Assistent delegieren",
-    "delegateAssistantDesc": "KI übernimmt alles",
+    "delegateAssistantDesc": "KI übernimmt alles · keine Steigerung der Spielstil-Beherrschung",
     "skipToMatchDay": "Zum Spieltag springen",
     "skipToMatchDayDesc": "Vorspulen bis zum nächsten Spiel",
     "matchDayTitle": "Spieltag",
-    "delegateWarning": "Dein Assistent übernimmt das Spiel. Du kannst nicht eingreifen."
+    "delegateWarning": "Dein Assistent übernimmt das Spiel. Du kannst nicht eingreifen. Delegierte Spiele steigern die Spielstil-Beherrschung nicht."
   },
   "closeConfirm": {
     "title": "Nicht gespeicherte Änderungen",
@@ -944,7 +944,8 @@
     "centreBackPair": {
       "stoppers": "Zwei Stopper in der Innenverteidigung: Beide rücken heraus, und der Raum hinter ihnen ist beim Konter offen.",
       "covers": "Zwei absichernde Innenverteidiger: Beide lassen sich fallen, und die Strafraumgrenze bleibt offen."
-    }
+    },
+    "masteryEarnedHint": "Die Beherrschung wächst nur in Spielen, die du selbst coachst (Aufs Spielfeld)."
   },
   "training": {
     "weeklySchedule": "Wochenplan",
@@ -1335,7 +1336,19 @@
     "fanRestless": "Die Fans werden unruhig.",
     "fanUnrest": "Unruhe unter den Fans — Proteste sind wahrscheinlich.",
     "playStyleMastery": "Spielstil-Beherrschung",
-    "playStyleMasteryHint": "Wie gut du jeden Spielstil auf den Platz bringst. Bei 50 wirkt ein Stil genau wie vorgesehen; darüber werden seine Stärken schärfer und seine Schwächen milder, darunter umgekehrt."
+    "playStyleMasteryHint": "Wie gut du jeden Spielstil auf den Platz bringst. Bei 50 wirkt ein Stil genau wie vorgesehen; darüber werden seine Stärken schärfer und seine Schwächen milder, darunter umgekehrt.",
+    "masteryEarnedHint": "Die Beherrschung wächst nur in Spielen, die du selbst coachst (Aufs Spielfeld): Gegen einen gleich starken Gegner bringt ein Sieg {{win}} XP, ein Remis {{draw}} und eine Niederlage {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Höchstwert",
+    "masteryMatches": "Spiele: {{count}}",
+    "masteryNeutralStyle": "Neutraler Stil: hängt nicht vom Trainerteam ab",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Mittelfeld",
+      "Attack": "Angriff",
+      "Defense": "Abwehr",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "Trainer",
@@ -3161,7 +3174,10 @@
         }
       }
     },
-    "wingBackConversion": "Spielt als Schienenspieler ohne Abzug"
+    "wingBackConversion": "Spielt als Schienenspieler ohne Abzug",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Beherrschung {{mastery}}",
+    "masteryStartingStyle": "Die XP gehen an den Spielstil, mit dem deine Mannschaft angepfiffen wurde"
   },
   "endOfSeason": {
     "seasonComplete": "Saison beendet",
@@ -3618,6 +3634,10 @@
         "subject": "Rufbewertung der Saison {{season}}",
         "body": "Dein Ruf hat sich in dieser Saison von {{before}} auf {{after}} ({{delta}}) verändert.\n\n• Ergebnisse gemessen an den Erwartungen: {{performance}}\n• Titel, Auf- und Abstiege: {{honours}}\n• Ansehen deines Vereins: {{clubPull}}",
         "bodyPartial": "Dein Ruf hat sich in dieser Saison von {{before}} auf {{after}} ({{delta}}) verändert.\n\n• Ergebnisse gemessen an den Erwartungen: {{performance}}\n• Titel, Auf- und Abstiege: {{honours}}\n• Ansehen deines Vereins: {{clubPull}}\n\nDu hast {{led}} der {{played}} Ligaspiele des Vereins betreut, daher zählt nur dein Anteil an der Platzierung."
+      },
+      "styleMastery": {
+        "subject": "Spielstil-Beherrschung: {{style}} {{mastery}}",
+        "body": "Die Mannschaft gewöhnt sich unter dir an {{style}}: Deine Beherrschung hat {{mastery}} erreicht.\n\nDie Beherrschung wächst nur in Spielen, die du selbst coachst."
       },
       "worldCupChampion": {
         "subject": "{{nation}} gewinnt die WM {{year}}!",

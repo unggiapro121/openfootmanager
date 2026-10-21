@@ -301,6 +301,8 @@ describe("TacticsCommandBar", () => {
     expect(screen.getByRole("combobox", { name: "tactics.playStyle" })).toHaveTextContent(
       "Counter · 72",
     );
+    // Mastery only grows in matches the user manages, so the picker says so.
+    expect(screen.getByText("tactics.masteryEarnedHint")).toBeInTheDocument();
   });
 
   /** Without a coach, the picker names the styles alone. */
@@ -310,5 +312,6 @@ describe("TacticsCommandBar", () => {
     expect(screen.getByRole("combobox", { name: "tactics.playStyle" })).toHaveTextContent(
       /^Counter$/,
     );
+    expect(screen.queryByText("tactics.masteryEarnedHint")).not.toBeInTheDocument();
   });
 });
