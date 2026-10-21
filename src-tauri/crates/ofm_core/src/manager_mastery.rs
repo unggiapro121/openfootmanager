@@ -142,14 +142,7 @@ pub fn credit_managed_match(
     home_team_id: &str,
     away_team_id: &str,
 ) -> Option<MasteryGain> {
-    use domain::league::FixtureCompetition;
-    let earns_mastery = matches!(
-        competition,
-        FixtureCompetition::League
-            | FixtureCompetition::Cup
-            | FixtureCompetition::ContinentalClub
-            | FixtureCompetition::InternationalClub
-    );
+    let earns_mastery = crate::manager_career::is_official(competition);
     let user_team_id = game.manager.team_id.clone()?;
     if !earns_mastery {
         return None;

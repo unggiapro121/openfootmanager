@@ -2096,9 +2096,14 @@ fn player_with_zero_appearances_no_career_entry() {
 // process_end_of_season — manager career
 // ---------------------------------------------------------------------------
 
+/// Given a season whose matches were counted as they were played,
+/// When the season ends,
+/// Then the table's matches are not counted a second time (after GĐ5).
 #[test]
-fn manager_career_stats_updated() {
+fn season_end_does_not_count_the_matches_again() {
     let mut game = make_completed_season_game();
+    game.manager.career_stats.matches_managed = 2;
+    game.manager.career_stats.wins = 2;
     process_end_of_season(&mut game);
 
     assert_eq!(game.manager.career_stats.matches_managed, 2);
@@ -2143,8 +2148,8 @@ fn manager_career_history_entry_created() {
     assert_eq!(game.manager.career_history.len(), 1);
     let entry = &game.manager.career_history[0];
     assert_eq!(entry.team_id, "team1");
-    assert_eq!(entry.matches, 2);
-    assert_eq!(entry.wins, 2);
+    // The matches are counted as they are played, not from the table.
+    assert_eq!(entry.matches, 0);
     assert_eq!(entry.best_league_position, Some(1));
 }
 
@@ -2171,8 +2176,9 @@ fn manager_career_history_entry_updated_on_second_season() {
     // Should update existing entry, not create new
     assert_eq!(game.manager.career_history.len(), 1);
     let entry = &game.manager.career_history[0];
-    assert_eq!(entry.matches, 12); // 10 + 2
-    assert_eq!(entry.wins, 7); // 5 + 2
+    // Counted as they were played: the table does not add to them.
+    assert_eq!(entry.matches, 10);
+    assert_eq!(entry.wins, 5);
     assert_eq!(entry.best_league_position, Some(1)); // improved from 3 to 1
 }
 
