@@ -625,7 +625,8 @@
       "strong": "Strong",
       "moderate": "Moderate",
       "unclear": "Unclear"
-    }
+    },
+    "reputationDiscountApplied": "Your reputation took {{pct}}% off the player's demand."
   },
   "teamSelection": {
     "title": "Choose Your Club",
@@ -1311,6 +1312,9 @@
     "reputation": "Reputation",
     "reputationChange": "{{delta}} after season {{season}}",
     "reputationHistory": "Reputation History",
+    "reputationPerks": "Reputation Perks",
+    "perkWageDiscount": "Players accept wages {{pct}}% lower",
+    "perkSponsorUplift": "Sponsors pay {{pct}}% more",
     "careerStats": "Career Statistics",
     "boardStatus": "Board Status",
     "satisfaction": "Satisfaction",

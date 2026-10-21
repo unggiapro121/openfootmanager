@@ -1498,3 +1498,29 @@ fn the_seed_decides_which_random_events_happen() {
         "no seed produced a single event"
     );
 }
+
+/// Given two identical careers whose managers stand at 500 and 900,
+/// When the first unsolicited sponsor offer arrives,
+/// Then the reputed manager's club is offered 10% more (phase 2 lane M, M-5).
+#[test]
+fn a_reputed_manager_draws_a_bigger_unsolicited_sponsor_offer() {
+    let first_offer_at = |reputation: u32| -> u64 {
+        let mut game = make_game();
+        game.manager.reputation = reputation;
+        for _ in 0..2000 {
+            check_random_events(&mut game);
+            if let Some(message) = game.messages.iter().find(|m| m.id.starts_with("sponsor_")) {
+                return message.i18n_params["amount"]
+                    .parse()
+                    .expect("a whole amount");
+            }
+            game.clock.advance_days(1);
+        }
+        panic!("no sponsor offer in 2000 days");
+    };
+
+    let at_start = first_offer_at(500);
+    let reputed = first_offer_at(900);
+
+    assert_eq!(reputed, (at_start as f64 * 1.10).round() as u64);
+}

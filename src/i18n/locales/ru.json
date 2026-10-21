@@ -625,7 +625,8 @@
       "strong": "Высокий",
       "moderate": "Средний",
       "unclear": "Неясен"
-    }
+    },
+    "reputationDiscountApplied": "Ваша репутация снизила запросы игрока на {{pct}}%."
   },
   "teamSelection": {
     "title": "Выберите клуб",
@@ -1311,6 +1312,9 @@
     "reputation": "Репутация",
     "reputationChange": "{{delta}} по итогам сезона {{season}}",
     "reputationHistory": "История репутации",
+    "reputationPerks": "Преимущества репутации",
+    "perkWageDiscount": "Игроки согласны на зарплату ниже на {{pct}}%",
+    "perkSponsorUplift": "Спонсоры платят на {{pct}}% больше",
     "careerStats": "Статистика карьеры",
     "boardStatus": "Статус совета директоров",
     "satisfaction": "Удовлетворённость",

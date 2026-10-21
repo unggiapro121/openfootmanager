@@ -198,8 +198,9 @@ fn draw_recruits(game: &Game, team_index: usize, plan: &IntakePlan, date: NaiveD
                 .filter(|end| *end > date)
                 .map(|end| (recruit.wage(), end))
                 .filter(|(wage, _)| *wage > 0);
-            let (asking, end) = own_terms
-                .or_else(|| crate::contracts::standard_contract_terms(&recruit, team, date, 0))?;
+            let (asking, end) = own_terms.or_else(|| {
+                crate::contracts::standard_contract_terms(&recruit, team, date, 0, 0.0)
+            })?;
             Some(Drawn {
                 recruit,
                 asking,
@@ -260,8 +261,8 @@ pub(crate) fn sign_into_academy(
         .filter(|end| *end > date)
         .map(|end| (recruit.wage(), end))
         .filter(|(wage, _)| *wage > 0);
-    let Some((asking, end)) =
-        own_terms.or_else(|| crate::contracts::standard_contract_terms(&recruit, team, date, 0))
+    let Some((asking, end)) = own_terms
+        .or_else(|| crate::contracts::standard_contract_terms(&recruit, team, date, 0, 0.0))
     else {
         return false;
     };

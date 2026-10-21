@@ -710,8 +710,8 @@ pub(crate) fn sign_youth_prospect(game: &mut Game, prospect_id: &str) -> Result<
         .filter(|end| *end > today)
         .map(|end| (signed.wage(), end))
         .filter(|(wage, _)| *wage > 0);
-    let terms =
-        own_terms.or_else(|| crate::contracts::standard_contract_terms(&signed, team, today, 0));
+    let terms = own_terms
+        .or_else(|| crate::contracts::standard_contract_terms(&signed, team, today, 0, 0.0));
     if let Some((wage, _)) = terms
         && !crate::contract_wage_policy::joining_wage_policy_verdict(game, team, &signed, wage)
             .permits()

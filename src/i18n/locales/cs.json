@@ -625,7 +625,8 @@
       "strong": "Vysoký",
       "moderate": "Střední",
       "unclear": "Nejasný"
-    }
+    },
+    "reputationDiscountApplied": "Vaše reputace snížila požadavek hráče o {{pct}} %."
   },
   "teamSelection": {
     "title": "Vyberte si klub",
@@ -1311,6 +1312,9 @@
     "reputation": "Reputace",
     "reputationChange": "{{delta}} po sezóně {{season}}",
     "reputationHistory": "Vývoj reputace",
+    "reputationPerks": "Výhody reputace",
+    "perkWageDiscount": "Hráči přijímají platy nižší o {{pct}} %",
+    "perkSponsorUplift": "Sponzoři platí o {{pct}} % více",
     "careerStats": "Kariérní statistiky",
     "boardStatus": "Hodnocení vedení",
     "satisfaction": "Spokojenost",

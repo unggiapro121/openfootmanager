@@ -34,14 +34,17 @@ pub fn project_renewal_financial_impact(
     project_renewal_financial_impact_service(game, player_id, offered_wage)
 }
 
+/// `wage_discount` is what the manager's reputation takes off the player's ask
+/// (`manager_perks::wage_discount`): 0 for an AI club.
 pub fn evaluate_renewal_offer(
     player: &Player,
     team: &Team,
     current_date: NaiveDate,
     offer: &RenewalOffer,
+    wage_discount: f64,
 ) -> RenewalOutcome {
     let round = next_renewal_round(player, None);
-    let expected_wage = expected_wage(player, team, current_date);
+    let expected_wage = expected_wage_with_discount(player, team, current_date, wage_discount);
     let expected_years = expected_contract_years(player, current_date);
     let minimum_wage = minimum_acceptable_wage(player.wage());
 
@@ -155,6 +158,17 @@ pub fn propose_renewal(
     player_id: &str,
     offer: RenewalOffer,
 ) -> Result<RenewalOutcome, String> {
+    let wage_discount = users_wage_discount(game);
+    let mut outcome = propose_renewal_terms(game, player_id, offer)?;
+    note_reputation_discount(&mut outcome, wage_discount);
+    Ok(outcome)
+}
+
+fn propose_renewal_terms(
+    game: &mut Game,
+    player_id: &str,
+    offer: RenewalOffer,
+) -> Result<RenewalOutcome, String> {
     let manager_team_id = game
         .manager
         .team_id
@@ -181,7 +195,12 @@ pub fn propose_renewal(
     if offer.contract_years == 0 || offer.contract_years > MAX_CONTRACT_YEARS {
         let current_date = game.clock.current_date.date_naive();
         let round = next_renewal_round(&game.players[player_index], None);
-        let expected_wage = expected_wage(&game.players[player_index], &team, current_date);
+        let expected_wage = expected_wage_with_discount(
+            &game.players[player_index],
+            &team,
+            current_date,
+            crate::manager_perks::wage_discount(game, &team.id),
+        );
         return Ok(renewal_outcome(
             RenewalDecision::Rejected,
             None,
@@ -252,9 +271,20 @@ pub fn propose_renewal(
         ));
     }
 
-    let expected_wage = expected_wage(&game.players[player_index], &team, current_date);
-    let mut outcome =
-        evaluate_renewal_offer(&game.players[player_index], &team, current_date, &offer);
+    let wage_discount = crate::manager_perks::wage_discount(game, &team.id);
+    let expected_wage = expected_wage_with_discount(
+        &game.players[player_index],
+        &team,
+        current_date,
+        wage_discount,
+    );
+    let mut outcome = evaluate_renewal_offer(
+        &game.players[player_index],
+        &team,
+        current_date,
+        &offer,
+        wage_discount,
+    );
     outcome.cooled_off = cooled_off;
     let relationship_blocked = outcome.session_status != RenewalSessionStatus::Blocked
         && should_manual_renewal_fail_on_relationship(
