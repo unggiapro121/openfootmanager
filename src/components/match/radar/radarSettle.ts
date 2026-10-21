@@ -104,12 +104,17 @@ function turnoverSteps(
   ];
 }
 
+/** Whether the ball is in a net: a goal, the engine restarting from the centre spot. */
+export function isBallInGoal(scene: RadarScene): boolean {
+  return scene.ball.x < 0 || scene.ball.x > PITCH_LENGTH;
+}
+
 export function settleStepsFor(
   stage: RadarStage,
   scene: RadarScene,
   settle: RadarSettle,
 ): RadarStep[] | null {
-  const ballInGoal = scene.ball.x < 0 || scene.ball.x > PITCH_LENGTH;
+  const ballInGoal = isBallInGoal(scene);
   const [from, to] = zoneSpan(settle.ballZone);
   const x = clamp(scene.ball.x, from + SETTLE_INSET, to - SETTLE_INSET);
   const y = settledY(settle, scene.ball);
@@ -158,31 +163,12 @@ export function settleStepsFor(
 }
 
 /**
- * A minute with nothing dangerous in it: the ball goes where the engine left
- * it in a moment — out of sight and back in that zone, the nearest man of the
- * side on it going for it — while the players drift on into shape. If it is
- * there already, a short pause, long enough to read the clock.
+ * A minute with nothing dangerous in it: nothing is acted out. Its play is too
+ * quick to be worth showing, so the ball stays where it is and the players
+ * stand easy for a moment, long enough to read the clock and the commentary;
+ * the next move opens with a change of scene to wherever it starts (after
+ * GĐ5).
  */
-export function quietSteps(stage: RadarStage, scene: RadarScene, settle: RadarSettle): RadarStep[] {
-  const side = settle.possession;
-  const [from, to] = zoneSpan(settle.ballZone);
-  const y = settledY(settle, scene.ball);
-  const isInZone =
-    scene.ball.x >= from && scene.ball.x <= to && Math.abs(y - scene.ball.y) <= SETTLE_INSET;
-  if (isInZone && scene.possession === side) {
-    return [{ possession: side, highlight: [], overlay: null, pace: "place" }];
-  }
-  const at = { x: clamp(scene.ball.x, from + SETTLE_INSET, to - SETTLE_INSET), y };
-  const chaser = nearestTo(stage, scene, side, at);
-  return [
-    {
-      ball: { at, lift: 0 },
-      resetMovers: true,
-      possession: side,
-      highlight: [],
-      overlay: null,
-      pace: "place",
-      action: { kind: "dead", spot: at, quick: true, chaser },
-    },
-  ];
+export function quietSteps(): RadarStep[] {
+  return [{ highlight: [], overlay: null, pace: "place" }];
 }

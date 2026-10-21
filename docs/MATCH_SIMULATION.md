@@ -683,13 +683,17 @@ had it in, and a change of possession does not move it.
 contest names no target. Snapshots carry `ball_lane`, the ball's lane as the side in possession sees
 it. The radar draws each play in its event's lane.
 
-The radar acts out only the dangerous play, so between two moves the ball can be put down far away
-(quiet minutes in other zones, or a move started by a man away from the ball). Every move opens with
-a change of scene (`sceneCut`): the lead-in that puts the ball at the starter's feet, or a short
-look at the block when he is near it. If the players are still far from their places then (12 m on
-average, or 15 m for the man the ball comes back to), they fade out of sight (0.25 s), are put
-straight into their places, fade back in (0.35 s) and stand 0.4 s before play goes on
-(`radarSceneCut.ts`). Quiet minutes never cut; play within a move stays continuous.
+The radar acts out only the dangerous play, each move whole: from where the side won the ball to
+the attempt and the corner it may win. A build-up a minute ends on is held back and played with the
+next minute (`openMove`), so a move that spans two minutes plays in one piece; a minute's moves are
+played one at a time (`movesOf`). Everything else is too quick to be worth acting out: a quiet
+minute leaves the ball where it is for a moment, and the engine's tidy-up after a move is not shown,
+save the restart from the centre spot after a goal. Every move opens with a change of scene
+(`sceneCut`): the lead-in that puts the ball at the starter's feet, or a short look at the block
+when he is near it. If the players are still far from their places then (12 m on average, or 15 m
+for the man the ball comes back to), they fade out of sight (0.25 s), are put straight into their
+places, fade back in (0.35 s) and stand 0.4 s before play goes on (`radarSceneCut.ts`). Nothing
+inside a move cuts.
 
 Minutes are counted from when a player came on: a substitute who is himself taken off is credited
 with the time between the two substitutions, not with every minute up to his exit.

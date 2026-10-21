@@ -1,4 +1,4 @@
-import { act, renderHook } from "@testing-library/react";
+import { renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { MatchSnapshot } from "../types";
@@ -30,9 +30,8 @@ describe("useRadarDirector — commentary around the play", () => {
   afterEach(() => vi.useRealTimers());
 
   /**
-   * Given a quiet minute ending in a pass, when no next minute comes to name
-   * its receiver, then the pass plays on its own and the minute's quick change
-   * of scene carries a summary line.
+   * Given a quiet minute ending in a pass, then the pass is held back for the
+   * next minute and the minute's moment on the radar carries a summary line.
    */
   it("gives a quiet minute a summary line", () => {
     const hosted = host({ snapshot: radarSnapshot(), reducedMotion: false });
@@ -45,7 +44,6 @@ describe("useRadarDirector — commentary around the play", () => {
       }),
       reducedMotion: false,
     });
-    act(() => vi.advanceTimersByTime(RADAR_PACING.holdMs));
     expect(lastBeatCaptions(hosted)).toEqual([
       expect.objectContaining({ kind: "line", priority: "filler", keys: ["summary.ownHalf"] }),
     ]);

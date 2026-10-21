@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { applyStep, focusOf, initialRadarScene } from "./radarScene";
+import { applyStep, initialRadarScene } from "./radarScene";
 import { type RadarSettle, quietSteps, settleStepsFor } from "./radarSettle";
 import { buildRadarStage } from "./radarStage";
 import { radarSnapshot } from "./radarTestFixtures";
@@ -14,18 +14,12 @@ function after(steps: ReturnType<typeof quietSteps> | null, from = start) {
 }
 
 describe("radarSettle — the engine's lane (phase 2, GĐ5 P5.6)", () => {
-  it("puts a quiet minute's ball on the home side's left when the engine plays there", () => {
-    const settle: RadarSettle = { ballZone: "AwayDefense", possession: "Home", ballLane: "Left" };
-    const scene = after(quietSteps(stage, start, settle));
-    // The home side attacks left to right with its left touchline at y = 0.
-    expect(scene.ball.y).toBeLessThan(22.7);
-    expect(focusOf(scene).y).toBe(scene.ball.y);
-  });
-
-  it("reads the lane from the away side's end when the away side has the ball", () => {
-    const settle: RadarSettle = { ballZone: "HomeDefense", possession: "Away", ballLane: "Left" };
-    const scene = after(quietSteps(stage, start, settle));
-    expect(scene.ball.y).toBeGreaterThan(45.3);
+  // Given a quiet minute (after GĐ5), then nothing is acted out: the ball
+  // stays where it is, wherever the engine left it.
+  it("leaves a quiet minute's ball where it is", () => {
+    const scene = after(quietSteps());
+    expect(scene.ball).toEqual(start.ball);
+    expect(scene.possession).toBe(start.possession);
   });
 
   it("moves a ball already in the right zone over to the engine's lane", () => {
