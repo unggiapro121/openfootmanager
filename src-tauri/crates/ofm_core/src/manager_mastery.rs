@@ -265,11 +265,12 @@ pub struct StyleProgressView {
     pub effects: Vec<StyleEffectView>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
 pub struct StyleEffectView {
     pub phase: engine::StylePhase,
-    /// `+18` for ×1.18, `-8` for ×0.92.
-    pub percent: i32,
+    /// `+15.3` for ×1.153, `-2.94` for ×0.9706: two decimals, so every point
+    /// of mastery shows — a whole percent hides most of them.
+    pub percent: f64,
 }
 
 /// The user's mastery of every play style, with what one managed match against
@@ -295,7 +296,7 @@ pub fn manager_progression_view(manager: &Manager) -> ManagerProgressionView {
             .into_iter()
             .map(|(phase, multiplier)| StyleEffectView {
                 phase,
-                percent: ((multiplier - 1.0) * 100.0).round() as i32,
+                percent: ((multiplier - 1.0) * 10_000.0).round() / 100.0,
             })
             .collect();
             StyleProgressView {
@@ -520,11 +521,11 @@ mod tests {
             .unwrap();
         assert!(counter.effects.contains(&StyleEffectView {
             phase: engine::StylePhase::Attack,
-            percent: 18,
+            percent: 18.0,
         }));
         assert!(counter.effects.contains(&StyleEffectView {
             phase: engine::StylePhase::Midfield,
-            percent: -8,
+            percent: -8.0,
         }));
         let balanced = view
             .styles
@@ -535,6 +536,51 @@ mod tests {
         assert_eq!(
             (view.xp_for_a_win, view.xp_for_a_draw, view.xp_for_a_loss),
             (15, 10, 7)
+        );
+    }
+
+    /// Given a Possession coach at 52, then at 100,
+    /// When the progression is shown,
+    /// Then each effect is given to two decimals, not rounded to a whole
+    /// percent: +15.3% midfield and -2.94% attack, then +22.5% and -1.5%.
+    #[test]
+    fn effects_are_shown_to_two_decimals() {
+        let effects_at = |mastery: u8| {
+            let mut manager = neutral_manager();
+            manager.play_style_mastery.possession = mastery;
+            manager_progression_view(&manager)
+                .styles
+                .into_iter()
+                .find(|style| style.style == PlayStyle::Possession)
+                .unwrap()
+                .effects
+        };
+
+        assert_eq!(
+            effects_at(52),
+            vec![
+                StyleEffectView {
+                    phase: engine::StylePhase::Midfield,
+                    percent: 15.3,
+                },
+                StyleEffectView {
+                    phase: engine::StylePhase::Attack,
+                    percent: -2.94,
+                },
+            ]
+        );
+        assert_eq!(
+            effects_at(100),
+            vec![
+                StyleEffectView {
+                    phase: engine::StylePhase::Midfield,
+                    percent: 22.5,
+                },
+                StyleEffectView {
+                    phase: engine::StylePhase::Attack,
+                    percent: -1.5,
+                },
+            ]
         );
     }
 

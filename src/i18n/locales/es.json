@@ -2147,6 +2147,7 @@
     "player": "Jugador",
     "fitness": "Estado Físico",
     "halfTime": "Medio Tiempo",
+    "halfTimeHint": "Habla con el equipo, ajusta la táctica y empieza la segunda parte.",
     "ht": "MT",
     "extraTimeHalfTime": "Medio Tiempo de Prórroga",
     "penaltyShootout": "Tanda de Penaltis",

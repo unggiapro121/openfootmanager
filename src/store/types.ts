@@ -743,7 +743,7 @@ export type StylePhase = "Midfield" | "Attack" | "Defense" | "Press";
 
 export interface StyleEffectView {
   phase: StylePhase;
-  /** +18 for x1.18, -8 for x0.92. */
+  /** +15.3 for x1.153, -2.94 for x0.9706: two decimals, not rounded to whole percents. */
   percent: number;
 }
 

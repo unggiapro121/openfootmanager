@@ -2181,6 +2181,7 @@
       }
     },
     "halfTime": "Half Time",
+    "halfTimeHint": "Talk to the team, adjust your tactics, then start the second half.",
     "ht": "HT",
     "extraTimeHalfTime": "Extra Time Half Time",
     "penaltyShootout": "Penalty Shootout",

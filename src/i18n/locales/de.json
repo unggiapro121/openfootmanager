@@ -2147,6 +2147,7 @@
     "player": "Spieler",
     "fitness": "Fitness",
     "halfTime": "Halbzeit",
+    "halfTimeHint": "Sprich mit dem Team, passe die Taktik an und starte die zweite Halbzeit.",
     "ht": "HZ",
     "extraTimeHalfTime": "Verlängerung Halbzeit",
     "penaltyShootout": "Elfmeterschießen",

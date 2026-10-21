@@ -2147,6 +2147,7 @@
     "player": "球员",
     "fitness": "体能",
     "halfTime": "中场休息",
+    "halfTimeHint": "与球队谈话，调整战术，然后开始下半场。",
     "ht": "中场",
     "extraTimeHalfTime": "加时赛中场",
     "penaltyShootout": "点球大战",
