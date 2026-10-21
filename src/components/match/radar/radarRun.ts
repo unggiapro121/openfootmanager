@@ -542,7 +542,9 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
     (next.acting?.beat !== playback.beat || next.acting.index !== playback.index);
   if (step && playback.beat && isNewStep) {
     const script = stepOnScreen(playback);
-    const isCut = !!script?.sceneCut && isFarFromPlaces(next.sim, stage, playback.scene, script);
+    const isCut =
+      script?.sceneCut === "always" ||
+      (!!script?.sceneCut && isFarFromPlaces(next.sim, stage, playback.scene, script));
     next = {
       ...next,
       acting: { beat: playback.beat, index: playback.index },
