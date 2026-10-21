@@ -4,6 +4,7 @@ use crate::commands::round_summary::{build_round_summary_dto, RoundSummaryDto};
 use domain::league::FixtureStatus;
 use ofm_core::game::Game;
 use ofm_core::live_match_manager::{self, MatchMode};
+use ofm_core::manager_mastery::MasteryGain;
 use ofm_core::state::StateManager;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -15,6 +16,9 @@ pub struct FinishLiveMatchResponse {
     /// The engine's rating for each player who played long enough to be judged,
     /// keyed by player id. Unrated players are left out rather than sent as 0.
     pub player_ratings: BTreeMap<String, f32>,
+    /// What the match did for the user's play style mastery, when they managed
+    /// it themselves; `None` for a match they watched or handed to the assistant.
+    pub mastery_gain: Option<MasteryGain>,
 }
 
 pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse, String> {
@@ -32,6 +36,8 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
         session.run_to_completion();
     }
 
+    // Read before the session is consumed for its report below.
+    let managed_by_user = session.is_managed_by_user();
     let fixture_index = session.fixture_index;
     let fixture_id = session.fixture_id.clone();
     let competition_id = session.competition_id.clone();
@@ -59,8 +65,9 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
     // GUI/MCP write is never clobbered by a stale whole-game clone. Stats
     // captures are appended after the lock is released.
     let mut captures = Vec::new();
-    let (game, round_summary) = state
-        .update_game(|game| -> Result<(Game, Option<RoundSummaryDto>), String> {
+    type Finished = (Game, Option<RoundSummaryDto>, Option<MasteryGain>);
+    let (game, round_summary, mastery_gain) = state
+        .update_game(|game| -> Result<Finished, String> {
             // Check the authoritative competition before changing the legacy
             // mirror. A stale session must not replay a completed fixture or
             // leave the mirror pointing at a cup when finish is rejected.
@@ -86,6 +93,7 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
             if fixture.status != FixtureStatus::Scheduled {
                 return Err("be.error.liveMatch.fixtureNotScheduled".to_string());
             }
+            let fixture_competition = fixture.competition.clone();
 
             // `fixture_index` belongs to the session's competition (possibly
             // a cup), while game.league may mirror the domestic league. Swap
@@ -102,6 +110,17 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
                 &report,
                 &mut |capture| captures.push(capture),
             );
+            let mastery_gain = if managed_by_user {
+                ofm_core::manager_mastery::credit_managed_match(
+                    game,
+                    &report,
+                    &fixture_competition,
+                    &home_team_id,
+                    &away_team_id,
+                )
+            } else {
+                None
+            };
 
             // apply_match_report_with_capture mutates the legacy `game.league`
             // mirror (fixture status, fixture.result, standings). The modern
@@ -148,7 +167,7 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
                 build_round_summary_dto(game, matchday, &previous)
             });
 
-            Ok((game.clone(), round_summary))
+            Ok((game.clone(), round_summary, mastery_gain))
         })
         .ok_or("be.error.noActiveGameSession")??;
     for capture in captures {
@@ -159,6 +178,7 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
         game,
         round_summary,
         player_ratings,
+        mastery_gain,
     })
 }
 
