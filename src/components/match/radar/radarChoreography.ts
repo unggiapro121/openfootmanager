@@ -31,7 +31,14 @@ import {
   focusOf,
 } from "./radarScene";
 import { type RadarStage, standingIn } from "./radarStage";
-import { PACE_SPEED, crossingPoint, meetingPoint, paceSeconds, timeSteps } from "./radarTiming";
+import {
+  PACE_SPEED,
+  PASS_AHEAD_METRES,
+  crossingPoint,
+  meetingPoint,
+  paceSeconds,
+  timeSteps,
+} from "./radarTiming";
 import {
   TOUCH_AHEAD,
   ballCarrier,
@@ -269,9 +276,13 @@ function stagePass(cue: Cue): Staging {
     );
   }
   // A build-up or midfield pass stays in the lane the engine played it in
-  // (phase 2, GĐ4).
+  // (phase 2, GĐ4). Every completed pass in the engine moves the ball up a
+  // zone, so it is never played back: to a man still behind it — a full
+  // back coming up — it goes into the space ahead for him to run onto
+  // (after GĐ5).
   const aim = fromPitch(side, to);
-  to = toPitch(side, aim.depth, inLaneOf(event, aim.lane));
+  const ahead = Math.max(aim.depth, fromPitch(side, from).depth + PASS_AHEAD_METRES);
+  to = toPitch(side, ahead, inLaneOf(event, aim.lane));
   return {
     receiver,
     steps: [
@@ -286,7 +297,7 @@ function stagePass(cue: Cue): Staging {
       {
         ball: { at: to, ease: "linear" },
         highlight: cast(passer, receiver),
-        action: { kind: "kick", by: passer, to, receiver, pace: "pass", peak: 0 },
+        action: { kind: "kick", by: passer, to, receiver, pace: "pass", peak: 0, forward: true },
       },
     ],
   };
