@@ -4,6 +4,7 @@ import {
   CENTRE_LANE,
   GOAL_HALF_WIDTH,
   HALFWAY,
+  LANE_BANDS,
   PITCH_LENGTH,
   PITCH_WIDTH,
   type PitchPoint,
@@ -111,6 +112,34 @@ function crossingFlank(event: MatchEvent, lane: number): number {
 
 /** How far a player goes to a loose ball himself rather than having it come to him. */
 const FETCH_METRES = 15;
+
+/** How deep a cross down the wing is struck from, from the attacking side's end. */
+const CROSS_DEPTH = 94;
+/** A wide man this deep is close enough to the box to cross from where he is. */
+const CROSS_FROM_HERE_DEPTH = 85;
+/** A wide man this close to where he would cross from crosses from where he is. */
+const CROSS_NEAR_METRES = 3;
+
+/**
+ * Where a cross is struck from. From a corner flag or a free kick, straight
+ * in. A wide man already near the box, or past where an early cross goes in,
+ * crosses from where he has the ball. Otherwise he runs down the wing to the
+ * touchline of his lane first — but never back towards his own goal, and
+ * never back out from the box to the touchline (after GĐ5).
+ */
+function crossingSpot(cue: Cue, at: PitchPoint, flank: number, early: boolean): PitchPoint {
+  const side = cue.event.side;
+  const { depth, lane } = fromPitch(side, at);
+  const isSetPiece = depth >= CORNER_FLAG_DEPTH || cue.previous?.event_type === "FreeKick";
+  if (isSetPiece) return at;
+  const band = cue.event.lane === "Left" || cue.event.lane === "Right" ? cue.event.lane : null;
+  const [centreFrom, centreTo] = LANE_BANDS.Centre;
+  const isWide = band ? inLaneBand(lane, band) === lane : lane < centreFrom || lane > centreTo;
+  const wantDepth = early ? EARLY_CROSS_DEPTH : CROSS_DEPTH;
+  if (isWide && depth >= (early ? EARLY_CROSS_DEPTH : CROSS_FROM_HERE_DEPTH)) return at;
+  const spot = toPitch(side, Math.max(depth, wantDepth), flank);
+  return distance(spot, at) <= CROSS_NEAR_METRES ? at : spot;
+}
 
 interface Takeover {
   /** Where the actor has the ball. */
@@ -580,11 +609,7 @@ function stageCross(cue: Cue): Staging {
   const early = event.tactical_context === "EarlyCross";
   const low = event.tactical_context === "LowCross";
   const flight = low ? "pass" : "air";
-  // From a corner flag or a free kick the ball goes straight in, with no run
-  // down the wing.
-  const isSetPiece =
-    fromPitch(side, take.at).depth >= CORNER_FLAG_DEPTH || cue.previous?.event_type === "FreeKick";
-  const wingSpot = isSetPiece ? take.at : toPitch(side, early ? EARLY_CROSS_DEPTH : 94, flank);
+  const wingSpot = crossingSpot(cue, take.at, flank, early);
   const carry = paceSeconds("carry", distance(take.at, wingSpot));
   // The man it is aimed at sets off as the winger heads for the line, and the
   // ball is put where he will be.
