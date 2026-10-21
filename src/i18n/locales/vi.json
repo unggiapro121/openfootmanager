@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Không dùng được các thiết lập sự nghiệp này. Hãy quay lại màn hình thế giới và kiểm tra năm bắt đầu, thời điểm bắt đầu và lượng lịch sử cần tạo.",
     "reportBug": "Báo lỗi"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Lưu hồ sơ",
-      "body": "Bạn đã thay đổi hồ sơ của {{name}}. Bạn muốn làm gì?",
-      "update": "Cập nhật \"{{name}}\"",
-      "saveNew": "Lưu thành hồ sơ mới",
-      "skip": "Tiếp tục mà không lưu"
-    }
+  "coach": {
+    "loginTitle": "Chọn HLV của bạn",
+    "loginSubtitle": "HLV của bạn dùng chung cho mọi ván: độ thành thạo lối chơi và thành tích được cộng dồn.",
+    "newAccountTitle": "Tài khoản HLV mới",
+    "createAccount": "Tạo tài khoản",
+    "region": "Khu vực",
+    "regions": {
+      "AsiaSoutheast": "Đông Nam Á (UTC+7)",
+      "AsiaEast": "Đông Á (UTC+8)",
+      "Europe": "Châu Âu (UTC+1)",
+      "Americas": "Châu Mỹ (UTC−5)"
+    },
+    "regionHint": "Lượt nhận XP mỗi ngày được làm mới lúc 04:00 theo giờ khu vực này. Không đổi được về sau.",
+    "lastLogin": "Chơi lần cuối {{date}}",
+    "neverLoggedIn": "Chưa chơi lần nào",
+    "logInAs": "Chơi với {{name}}",
+    "deleteAccount": "Xoá {{name}}",
+    "deleteConfirm": "Xoá {{name}}? Độ thành thạo và thành tích sẽ mất; các ván vẫn được giữ.",
+    "signedInAs": "HLV",
+    "switchAccount": "Đổi tài khoản",
+    "unclaimedSave": "Chưa gắn tài khoản",
+    "claimSave": "Gắn và chơi",
+    "claimSaveConfirm": "Ván này chưa gắn tài khoản HLV. Gắn vào {{name}}? Từ nay ván dùng độ thành thạo của HLV này.",
+    "tooYoungForStart": "HLV của bạn chưa đủ {{min}} tuổi ở thời điểm này — hãy chọn năm bắt đầu muộn hơn.",
+    "tooOldForStart": "HLV của bạn quá tuổi ở thời điểm này — hãy chọn năm bắt đầu sớm hơn.",
+    "reportFailed": "Không kết nối được máy chủ tài khoản. Các trận này không cộng gì cho HLV; ván vẫn được lưu.",
+    "dailyXp": "Lượt XP hôm nay: {{count}}/{{limit}} · làm mới lúc {{time}}",
+    "dailyXpCount": "Lượt XP hôm nay: {{count}}/{{limit}}",
+    "allCareers": "Mọi ván",
+    "thisCareer": "Ván này"
   },
   "createManager": {
     "title": "Tạo HLV",
@@ -3244,11 +3266,6 @@
         "parseFailed": "Dữ liệu cài đặt không hợp lệ.",
         "saveFailed": "Không lưu được cài đặt.",
         "invalidCurrency": "Không hỗ trợ loại tiền tệ đã chọn."
-      },
-      "profiles": {
-        "loadFailed": "Không tải được hồ sơ HLV.",
-        "saveFailed": "Không lưu được hồ sơ HLV.",
-        "pathFailed": "Không xác định được đường dẫn lưu hồ sơ."
       },
       "coach": {
         "loadFailed": "Không tải được tài khoản HLV.",

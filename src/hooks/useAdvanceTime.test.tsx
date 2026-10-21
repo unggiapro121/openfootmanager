@@ -26,6 +26,8 @@ function HookHarness(props: {
   const [, setGameState] = useState<GameStateData | null>(null);
   const {
     blockerModal,
+    coachReportFailed,
+    dismissCoachReportWarning,
     handleConfirmMatch,
     handleContinue,
     handleSkipToMatchDay,
@@ -52,6 +54,10 @@ function HookHarness(props: {
       </button>
       <div data-testid="show-match-confirm">{String(showMatchConfirm)}</div>
       <div data-testid="blocker-count">{blockerModal?.blockers.length ?? 0}</div>
+      <div data-testid="coach-report-failed">{String(coachReportFailed)}</div>
+      <button type="button" onClick={dismissCoachReportWarning}>
+        Dismiss Warning
+      </button>
       <button type="button" onClick={() => blockerModal?.pendingAction?.()}>
         Continue Anyway
       </button>
@@ -192,6 +198,29 @@ describe("useAdvanceTime", (): void => {
     });
 
     expect(navigateMock).not.toHaveBeenCalled();
+  });
+
+  // Given the account store cannot be reached, when a day is advanced, then the
+  // player is warned until he dismisses it.
+  it("warns when the day's matches could not reach the coach account", async (): Promise<void> => {
+    const advancedGame = {
+      clock: { current_date: "2026-07-02", start_date: "2026-07-01" },
+    } as GameStateData;
+    mockedInvoke.mockResolvedValueOnce([]).mockResolvedValueOnce({
+      action: "advanced",
+      game: advancedGame,
+      coach_report_failed: true,
+    });
+    render(<HookHarness hasMatchToday={false} defaultMatchMode="delegate" />);
+    expect(screen.getByTestId("coach-report-failed")).toHaveTextContent("false");
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+
+    await waitFor((): void => {
+      expect(screen.getByTestId("coach-report-failed")).toHaveTextContent("true");
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss Warning" }));
+    expect(screen.getByTestId("coach-report-failed")).toHaveTextContent("false");
   });
 
   it("checks blocking actions before skipping to match day and stops when blockers exist", async (): Promise<void> => {

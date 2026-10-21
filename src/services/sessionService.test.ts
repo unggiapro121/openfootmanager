@@ -68,9 +68,9 @@ describe("sessionService", () => {
     expect(mockedInvoke).toHaveBeenCalledWith("exit_to_menu");
   });
 
-  // Given a new manager and no packages, when a career starts, then the
-  // backend gets the manager, the startup options and no package ids.
-  it("starts a new game with the manager and startup options", async () => {
+  // Given a logged-in coach and no packages, when a career starts, then the
+  // backend gets the startup options and no package ids: the manager is the account.
+  it("starts a new game with the startup options", async () => {
     const game = { manager: { id: "manager-1" } };
     mockedInvoke.mockResolvedValueOnce(game);
     const startupOptions = {
@@ -82,19 +82,11 @@ describe("sessionService", () => {
 
     await expect(
       startNewGame({
-        firstName: "Ana",
-        lastName: "Silva",
-        dob: "1980-01-01",
-        nationality: "PT",
         startupOptions,
         packageIds: undefined,
       }),
     ).resolves.toBe(game);
     expect(mockedInvoke).toHaveBeenCalledWith("start_new_game", {
-      firstName: "Ana",
-      lastName: "Silva",
-      dob: "1980-01-01",
-      nationality: "PT",
       startupOptions,
       packageIds: undefined,
     });

@@ -7,7 +7,8 @@ import { useGameStore } from "../store/gameStore";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import type { CareerStartPhase, CreateManagerFormData } from "../components/menu/CreateManagerForm";
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
-import type { ManagerProfile } from "../components/menu/types";
+import { careerStartAgeMessage } from "../components/menu/coachAccountForm.helpers";
+import CoachAccountCard from "../components/menu/CoachAccountCard";
 import { applyExtraTranslations } from "../lib/extraTranslations";
 import { initialPackageSelection } from "../lib/defaultWorldPackage";
 import { REALISTIC_DEVELOPMENT_SPEED_PERCENT } from "../lib/developmentSpeed";
@@ -15,12 +16,11 @@ import { formatAppVersion } from "../lib/appVersion";
 import { resolveBackendError } from "../utils/backendI18n";
 import { prewarmManagerSquadPortraits } from "../services/portraitService";
 import {
-  deleteManagerProfile,
-  getManagerProfiles,
-  saveManagerProfile,
-  touchManagerProfile,
-  updateManagerProfile,
-} from "../services/menuService";
+  type CoachAccount,
+  claimSaveForCoach,
+  getActiveCoachAccount,
+  logoutCoachAccount,
+} from "../services/coachService";
 import {
   installPackage,
   listInstalledPackages,
@@ -59,15 +59,11 @@ function GithubIcon({ className }: { className?: string }) {
 }
 
 const CreateManagerForm = lazy(() => import("../components/menu/CreateManagerForm"));
-const ProfileSaveConfirm = lazy(() => import("../components/menu/ProfileSaveConfirm"));
+const CoachLogin = lazy(() => import("../components/menu/CoachLogin"));
 const SavesList = lazy(() => import("../components/menu/SavesList"));
 const PackageBuildStep = lazy(() => import("../components/menu/PackageBuildStep"));
 const GenerationStep = lazy(() => import("../components/menu/WorldSelect"));
 
-/**
- * Minimum manager age (years) on create.
- */
-const MANAGER_MINIMUM_AGE = 30;
 /**
  * Earliest year a career may start. Historical world packages recreate eras
  * decades before the modern game, so the floor only keeps the clock inside a
@@ -140,92 +136,26 @@ function buildStartupOptions(
   };
 }
 
-type IsoDateParts = {
-  year: number;
-  month: number;
-  day: number;
-};
-
-function parseIsoDateParts(isoDob: string): IsoDateParts | null {
-  if (!isoDob) return null;
-
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDob);
-  if (!match) return null;
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const birthDate = new Date(Date.UTC(year, month - 1, day));
-
-  if (
-    Number.isNaN(birthDate.getTime()) ||
-    birthDate.getUTCFullYear() !== year ||
-    birthDate.getUTCMonth() !== month - 1 ||
-    birthDate.getUTCDate() !== day
-  ) {
-    return null;
-  }
-
-  return { year, month, day };
-}
-
-function careerStartReferenceDate(startYear: number, startPhase: CareerStartPhase): Date {
-  const referenceDate = new Date(Date.UTC(startYear, 6, 1));
-  if (startPhase === "midSeason") {
-    referenceDate.setUTCDate(referenceDate.getUTCDate() + 120);
-  }
-  return referenceDate;
-}
-
-function flooredAgeFromIsoDate(isoDob: string, referenceDate: Date): number | null {
-  const parts = parseIsoDateParts(isoDob);
-  if (!parts) return null;
-
-  let age = referenceDate.getUTCFullYear() - parts.year;
-  const hasHadBirthdayThisYear =
-    referenceDate.getUTCMonth() > parts.month - 1 ||
-    (referenceDate.getUTCMonth() === parts.month - 1 && referenceDate.getUTCDate() >= parts.day);
-
-  if (!hasHadBirthdayThisYear) {
-    age -= 1;
-  }
-  return Number.isNaN(age) ? null : age;
-}
-
-function dobValidationMessage(
+/** Why the coach cannot lead a career starting as `formData` says; null when he can. */
+function careerStartAgeError(
+  coach: CoachAccount,
   formData: CreateManagerFormData,
   historyDepthYears: number,
   t: (key: string, options?: Record<string, unknown>) => string,
 ): string | null {
-  if (!formData.dob) return null;
-
-  if (parseIsoDateParts(formData.dob) === null) {
-    return t("validation.invalidDate");
-  }
-
   const startupOptions = buildStartupOptions(formData, historyDepthYears);
   if (!startupOptions) return null;
-
-  const age = flooredAgeFromIsoDate(
-    formData.dob,
-    careerStartReferenceDate(startupOptions.startYear, startupOptions.startPhase),
+  return careerStartAgeMessage(
+    coach.date_of_birth,
+    startupOptions.startYear,
+    startupOptions.startPhase,
+    t,
   );
-  if (age === null) return t("validation.invalidDate");
-  if (age < MANAGER_MINIMUM_AGE) {
-    return t("validation.minAge", { min: MANAGER_MINIMUM_AGE });
-  }
-  if (age > 99) return t("validation.invalidDob");
-  return null;
 }
 
-const CREATE_MANAGER_FIELD_ORDER = [
-  "firstName",
-  "lastName",
-  "dob",
-  "startYear",
-  "startPhase",
-  "nationality",
-] as const satisfies ReadonlyArray<keyof CreateManagerFormData>;
+const CREATE_MANAGER_FIELD_ORDER = ["startYear", "startPhase"] as const satisfies ReadonlyArray<
+  keyof CreateManagerFormData
+>;
 
 function deferFocusToNextPaint(callback: () => void): void {
   requestAnimationFrame(() => {
@@ -266,7 +196,9 @@ export default function MainMenu() {
   const [menuState, setMenuState] = useState<
     "main" | "create" | "packages" | "generation" | "load"
   >("main");
-  const [showProfileConfirm, setShowProfileConfirm] = useState(false);
+  // undefined while the backend is asked; null when nobody is logged in yet.
+  const [coach, setCoach] = useState<CoachAccount | null | undefined>(undefined);
+  const [confirmClaimId, setConfirmClaimId] = useState<string | null>(null);
   const [saves, setSaves] = useState<SaveEntry[]>([]);
   const [isLoadingSaves, setIsLoadingSaves] = useState(false);
   const [loadingSaveId, setLoadingSaveId] = useState<string | null>(null);
@@ -274,16 +206,9 @@ export default function MainMenu() {
   const [isStarting, setIsStarting] = useState(false);
   const [reportingBug, setReportingBug] = useState(false);
 
-  const [profiles, setProfiles] = useState<ManagerProfile[]>([]);
-  const [loadedProfile, setLoadedProfile] = useState<ManagerProfile | null>(null);
-
   const [formData, setFormData] = useState<CreateManagerFormData>({
-    firstName: "",
-    lastName: "",
-    dob: "",
     startYear: defaultCareerStartYear(),
     startPhase: "seasonStart",
-    nationality: "",
   });
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof CreateManagerFormData, string>>
@@ -307,9 +232,12 @@ export default function MainMenu() {
   }, [historyDepthYears]);
 
   useEffect(() => {
-    getManagerProfiles()
-      .then((p) => setProfiles(p ?? []))
-      .catch((error) => console.error("Failed to load manager profiles:", error));
+    getActiveCoachAccount()
+      .then((account) => setCoach(account ?? null))
+      .catch((error) => {
+        console.error("Failed to read the logged-in coach:", error);
+        setCoach(null);
+      });
   }, []);
 
   // Check if a game is already active (e.g. loaded by MCP --mcp-auto-start before frontend mounted)
@@ -346,9 +274,12 @@ export default function MainMenu() {
     };
   }, [setGameState, setGameActive, navigate]);
 
-  /** Same messages as `validateForm` for DOB, so the age rule surfaces as the user edits. */
-  const dobLiveRuleMessage = dobValidationMessage(formData, historyDepthYears, t);
-  const dobDisplayedError = formErrors.dob || dobLiveRuleMessage;
+  /** Same message as `validateForm` for the coach's age, so it surfaces as the year is edited. */
+  const startAgeMessage = coach ? careerStartAgeError(coach, formData, historyDepthYears, t) : null;
+  const displayedFormErrors = {
+    ...formErrors,
+    startYear: formErrors.startYear || startAgeMessage || undefined,
+  };
 
   const updateFormField = (field: keyof CreateManagerFormData, value: string) => {
     setFormData((previous) => ({
@@ -369,36 +300,6 @@ export default function MainMenu() {
     errors: Partial<Record<keyof CreateManagerFormData, string>>;
   } => {
     const errors: Partial<Record<keyof CreateManagerFormData, string>> = {};
-    if (!formData.firstName.trim()) {
-      errors.firstName = t("validation.required", {
-        field: t("createManager.firstName"),
-      });
-    } else if (formData.firstName.length > 30) {
-      errors.firstName = t("validation.maxLength", {
-        field: t("createManager.firstName"),
-        max: 30,
-      });
-    }
-
-    if (!formData.lastName.trim()) {
-      errors.lastName = t("validation.required", {
-        field: t("createManager.lastName"),
-      });
-    } else if (formData.lastName.length > 30) {
-      errors.lastName = t("validation.maxLength", {
-        field: t("createManager.lastName"),
-        max: 30,
-      });
-    }
-
-    if (!formData.dob) {
-      errors.dob = t("validation.required", { field: t("createManager.dob") });
-    } else {
-      const dobError = dobValidationMessage(formData, historyDepthYears, t);
-      if (dobError) {
-        errors.dob = dobError;
-      }
-    }
     if (!formData.startYear.trim()) {
       errors.startYear = t("validation.required", {
         field: t("createManager.startYear"),
@@ -416,10 +317,10 @@ export default function MainMenu() {
         field: t("createManager.startPhase"),
       });
     }
-    if (!formData.nationality)
-      errors.nationality = t("validation.required", {
-        field: t("createManager.countryOfOrigin"),
-      });
+    const ageError = coach ? careerStartAgeError(coach, formData, historyDepthYears, t) : null;
+    if (!errors.startYear && ageError) {
+      errors.startYear = ageError;
+    }
     setFormErrors(errors);
     return {
       ok: Object.keys(errors).length === 0,
@@ -434,12 +335,7 @@ export default function MainMenu() {
       deferFocusToNextPaint(() => focusFirstCreateManagerError(validation.errors));
       return;
     }
-    if (loadedProfile && formDiffersFromProfile(formData, loadedProfile)) {
-      setShowProfileConfirm(true);
-      return;
-    }
-    void autoSaveProfile();
-    proceedToPackages();
+    setMenuState("packages");
   };
 
   const loadInstalledPackages = async () => {
@@ -526,10 +422,6 @@ export default function MainMenu() {
     setIsStarting(true);
     try {
       const game = await startNewGame({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dob: formData.dob,
-        nationality: formData.nationality,
         startupOptions,
         packageIds: activePackageIds.length > 0 ? activePackageIds : undefined,
       });
@@ -552,7 +444,9 @@ export default function MainMenu() {
     setIsLoadingSaves(true);
     try {
       const dbSaves = await listSaves();
-      setSaves(dbSaves);
+      // Another account's careers are not this coach's to see; one from before
+      // accounts is offered to him, to claim on opening.
+      setSaves(dbSaves.filter((save) => !save.account_id || save.account_id === coach?.id));
     } catch (error) {
       console.error("Failed to load saves:", error);
     } finally {
@@ -593,89 +487,32 @@ export default function MainMenu() {
     }
   };
 
-  const handleSelectProfile = (profile: ManagerProfile) => {
-    setFormData((prev) => ({
-      ...prev,
-      firstName: profile.first_name,
-      lastName: profile.last_name,
-      dob: profile.date_of_birth,
-      nationality: profile.nationality,
-    }));
-    setFormErrors({});
-    setLoadedProfile(profile);
-    void touchManagerProfile(profile.id);
-  };
-
-  const formDiffersFromProfile = (form: CreateManagerFormData, profile: ManagerProfile) =>
-    form.firstName !== profile.first_name ||
-    form.lastName !== profile.last_name ||
-    form.dob !== profile.date_of_birth ||
-    form.nationality !== profile.nationality;
-
-  const proceedToPackages = () => {
-    setShowProfileConfirm(false);
-    setMenuState("packages");
-  };
-
-  const handleUpdateProfile = async () => {
-    if (!loadedProfile) return;
+  const handleClaimSave = async (saveId: string) => {
+    setConfirmClaimId(null);
     try {
-      const updated = await updateManagerProfile(loadedProfile.id, {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        dob: formData.dob,
-        nationality: formData.nationality,
-      });
-      if (updated) {
-        setProfiles((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-        setLoadedProfile(updated);
-      }
-    } catch (error) {
-      console.error("Failed to update manager profile:", error);
-    }
-    proceedToPackages();
-  };
-
-  const handleSaveAsNewProfile = () => {
-    void autoSaveProfile(true);
-    setLoadedProfile(null);
-    proceedToPackages();
-  };
-
-  const handleDeleteProfile = async (id: string) => {
-    try {
-      await deleteManagerProfile(id);
-      setProfiles((prev) => prev.filter((p) => p.id !== id));
-      if (loadedProfile?.id === id) setLoadedProfile(null);
-    } catch (error) {
-      console.error("Failed to delete manager profile:", error);
-    }
-  };
-
-  const autoSaveProfile = async (forceNew = false) => {
-    try {
-      const saved = await saveManagerProfile(
-        {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          dob: formData.dob,
-          nationality: formData.nationality,
-        },
-        forceNew || undefined,
+      await claimSaveForCoach(saveId);
+      setSaves((previous) =>
+        previous.map((save) => (save.id === saveId ? { ...save, account_id: coach?.id } : save)),
       );
-      setProfiles((prev) => {
-        const exists = prev.some((p) => p.id === saved.id);
-        const next =
-          !forceNew && exists ? prev.map((p) => (p.id === saved.id ? saved : p)) : [...prev, saved];
-        return next.sort((a, b) => {
-          const aDate = a.last_used_at ?? a.created_at;
-          const bDate = b.last_used_at ?? b.created_at;
-          return bDate.localeCompare(aDate);
-        });
-      });
     } catch (error) {
-      console.error("Failed to auto-save manager profile:", error);
+      console.error("Failed to claim save:", error);
+      await showError(
+        t("errors.title"),
+        t("menu.loadGameFailed", { error: resolveBackendError(error) }),
+      );
+      return;
     }
+    await handleLoadGame(saveId);
+  };
+
+  const handleSwitchCoach = async () => {
+    try {
+      await logoutCoachAccount();
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
+    setMenuState("main");
+    setCoach(null);
   };
 
   const handleExitApp = async (): Promise<void> => {
@@ -715,9 +552,24 @@ export default function MainMenu() {
 
           <div className="border-t border-gray-200 dark:border-navy-600 my-8 transition-colors duration-500" />
 
+          {/* Login gate: nothing below until the player is a coach */}
+          {coach === undefined && <MenuPanelFallback />}
+          {coach === null && (
+            <Suspense fallback={<MenuPanelFallback />}>
+              <CoachLogin onLoggedIn={setCoach} />
+            </Suspense>
+          )}
+
           {/* Main Menu */}
-          {menuState === "main" && (
+          {coach && menuState === "main" && (
             <div className="flex flex-col gap-3">
+              <CoachAccountCard
+                coach={coach}
+                onSwitch={() => {
+                  void handleSwitchCoach();
+                }}
+              />
+
               <button
                 type="button"
                 onClick={() => setMenuState("create")}
@@ -792,47 +644,25 @@ export default function MainMenu() {
           )}
 
           {/* Step 1: Create Manager Form */}
-          {menuState === "create" && (
+          {coach && menuState === "create" && (
             <Suspense fallback={<MenuPanelFallback />}>
               <CreateManagerForm
                 formData={formData}
-                formErrors={formErrors}
-                dobError={dobDisplayedError}
-                profiles={profiles}
-                selectedProfileId={loadedProfile?.id}
+                formErrors={displayedFormErrors}
+                coach={coach}
                 onChange={updateFormField}
                 onClearError={clearFormError}
                 onClose={() => {
                   setMenuState("main");
                   setFormErrors({});
-                  setLoadedProfile(null);
                 }}
-                onSelectProfile={handleSelectProfile}
-                onDeleteProfile={handleDeleteProfile}
                 onSubmit={handleGoToWorldSelect}
               />
             </Suspense>
           )}
 
-          {/* Profile save confirmation modal */}
-          {showProfileConfirm && loadedProfile && (
-            <Suspense fallback={null}>
-              <ProfileSaveConfirm
-                loadedProfile={loadedProfile}
-                onUpdate={() => {
-                  void handleUpdateProfile();
-                }}
-                onSaveNew={() => {
-                  void handleSaveAsNewProfile();
-                }}
-                onSkip={proceedToPackages}
-                onClose={() => setShowProfileConfirm(false)}
-              />
-            </Suspense>
-          )}
-
           {/* Step 2a: Build Your World (package selection) */}
-          {menuState === "packages" && (
+          {coach && menuState === "packages" && (
             <Suspense fallback={<MenuPanelFallback />}>
               <PackageBuildStep
                 installedPackages={installedPackages}
@@ -850,7 +680,7 @@ export default function MainMenu() {
           )}
 
           {/* Step 2b: Generation & Completion */}
-          {menuState === "generation" && (
+          {coach && menuState === "generation" && (
             <Suspense fallback={<MenuPanelFallback />}>
               <GenerationStep
                 isStarting={isStarting}
@@ -869,14 +699,20 @@ export default function MainMenu() {
           )}
 
           {/* Load Game List */}
-          {menuState === "load" && (
+          {coach && menuState === "load" && (
             <Suspense fallback={<MenuPanelFallback />}>
               <SavesList
                 loadingSaveId={loadingSaveId}
                 saves={saves}
                 isLoading={isLoadingSaves}
                 confirmDeleteId={confirmDeleteId}
+                confirmClaimId={confirmClaimId}
+                coachName={`${coach.first_name} ${coach.last_name}`}
                 onLoad={handleLoadGame}
+                onClaim={(saveId) => {
+                  void handleClaimSave(saveId);
+                }}
+                onConfirmClaim={setConfirmClaimId}
                 onDelete={handleDeleteSave}
                 onConfirmDelete={setConfirmDeleteId}
                 onClose={() => setMenuState("main")}

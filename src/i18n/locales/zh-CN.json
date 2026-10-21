@@ -28,14 +28,36 @@
     "startupOptionsRejected": "无法使用这些生涯设置。请返回世界界面，检查起始年份、起始阶段以及要生成的历史年限。",
     "reportBug": "报告错误"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "保存档案",
-      "body": "您已修改 {{name}} 的档案。您想做什么？",
-      "update": "更新「{{name}}」",
-      "saveNew": "保存为新档案",
-      "skip": "不保存继续"
-    }
+  "coach": {
+    "loginTitle": "选择经理",
+    "loginSubtitle": "经理在所有生涯中通用：风格熟练度和战绩会累计。",
+    "newAccountTitle": "新建经理账号",
+    "createAccount": "创建账号",
+    "region": "地区",
+    "regions": {
+      "AsiaSoutheast": "东南亚 (UTC+7)",
+      "AsiaEast": "东亚 (UTC+8)",
+      "Europe": "欧洲 (UTC+1)",
+      "Americas": "美洲 (UTC−5)"
+    },
+    "regionHint": "每日经验次数在该地区时间 04:00 重置，之后无法更改。",
+    "lastLogin": "上次游玩：{{date}}",
+    "neverLoggedIn": "尚未游玩",
+    "logInAs": "以 {{name}} 进入",
+    "deleteAccount": "删除 {{name}}",
+    "deleteConfirm": "删除 {{name}}？熟练度和战绩将丢失，生涯存档保留。",
+    "signedInAs": "经理",
+    "switchAccount": "切换",
+    "unclaimedSave": "无账号",
+    "claimSave": "绑定并载入",
+    "claimSaveConfirm": "此生涯尚未绑定经理账号。绑定到 {{name}}？此后将使用该经理的熟练度。",
+    "tooYoungForStart": "在此开始时间经理还不满 {{min}} 岁——请选择更晚的开始年份。",
+    "tooOldForStart": "在此开始时间经理年龄过大——请选择更早的开始年份。",
+    "reportFailed": "无法连接账号服务器。这些比赛没有为经理带来任何收益；生涯仍已保存。",
+    "dailyXp": "今日获得经验的比赛：{{count}}/{{limit}} · {{time}} 重置",
+    "dailyXpCount": "今日获得经验的比赛：{{count}}/{{limit}}",
+    "allCareers": "所有生涯",
+    "thisCareer": "本生涯"
   },
   "createManager": {
     "title": "创建经理",
@@ -3400,11 +3422,6 @@
         "parseFailed": "设置数据无效。",
         "saveFailed": "保存设置失败。",
         "invalidCurrency": "所选货币不受支持。"
-      },
-      "profiles": {
-        "loadFailed": "无法加载经理档案。",
-        "saveFailed": "无法保存经理档案。",
-        "pathFailed": "无法解析档案存储路径。"
       },
       "coach": {
         "loadFailed": "无法加载经理账号。",

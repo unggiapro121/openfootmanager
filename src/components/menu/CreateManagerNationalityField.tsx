@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Check, ChevronDown } from "lucide-react";
 import type { CountryFlag } from "../ui/CountryFlag";
-import type { CreateManagerFormData } from "./CreateManagerForm";
 
 type NationalityOption = { code: string; name: string };
 
@@ -13,10 +12,10 @@ type CountryResources = {
 };
 
 interface CreateManagerNationalityFieldProps {
-  nationality: CreateManagerFormData["nationality"];
+  nationality: string;
   error?: string;
   locale: string;
-  onChange: (value: CreateManagerFormData["nationality"]) => void;
+  onChange: (value: string) => void;
   onClearError: () => void;
 }
 

@@ -28,14 +28,36 @@
     "startupOptionsRejected": "No se han podido usar esos ajustes de carrera. Vuelve a la pantalla del mundo y revisa el año de inicio, la fase de inicio y cuánta historia previa generar.",
     "reportBug": "Informar de un fallo"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Guardar Perfil",
-      "body": "Has modificado el perfil de {{name}}. ¿Qué deseas hacer?",
-      "update": "Actualizar \"{{name}}\"",
-      "saveNew": "Guardar como Nuevo Perfil",
-      "skip": "Continuar sin guardar"
-    }
+  "coach": {
+    "loginTitle": "Elige tu mánager",
+    "loginSubtitle": "Tu mánager es el mismo en todas las partidas: el dominio de estilos y el historial se acumulan.",
+    "newAccountTitle": "Nueva cuenta de mánager",
+    "createAccount": "Crear cuenta",
+    "region": "Región",
+    "regions": {
+      "AsiaSoutheast": "Sudeste asiático (UTC+7)",
+      "AsiaEast": "Asia oriental (UTC+8)",
+      "Europe": "Europa (UTC+1)",
+      "Americas": "América (UTC−5)"
+    },
+    "regionHint": "Tu cupo diario de XP se renueva a las 04:00 de esta región. No se puede cambiar después.",
+    "lastLogin": "Última partida: {{date}}",
+    "neverLoggedIn": "Aún sin jugar",
+    "logInAs": "Jugar como {{name}}",
+    "deleteAccount": "Eliminar a {{name}}",
+    "deleteConfirm": "¿Eliminar a {{name}}? Se pierden el dominio y el historial; las partidas se conservan.",
+    "signedInAs": "Mánager",
+    "switchAccount": "Cambiar",
+    "unclaimedSave": "Sin cuenta",
+    "claimSave": "Vincular y cargar",
+    "claimSaveConfirm": "Esta partida no tiene cuenta de mánager. ¿Vincularla a {{name}}? A partir de ahora usará el dominio de ese mánager.",
+    "tooYoungForStart": "Tu mánager tendría menos de {{min}} años en esa fecha: elige un año de inicio posterior.",
+    "tooOldForStart": "Tu mánager sería demasiado mayor en esa fecha: elige un año de inicio anterior.",
+    "reportFailed": "No se pudo conectar con el servidor de cuentas. Estos partidos no le dieron nada a tu mánager; la partida sigue guardada.",
+    "dailyXp": "Partidos con XP hoy: {{count}}/{{limit}} · se renueva a las {{time}}",
+    "dailyXpCount": "Partidos con XP hoy: {{count}}/{{limit}}",
+    "allCareers": "Todas las partidas",
+    "thisCareer": "Esta partida"
   },
   "createManager": {
     "title": "Crear Mánager",
@@ -3400,11 +3422,6 @@
         "parseFailed": "Los datos de configuración no son válidos.",
         "saveFailed": "No se pudo guardar la configuración.",
         "invalidCurrency": "La moneda seleccionada no es compatible."
-      },
-      "profiles": {
-        "loadFailed": "No se pudieron cargar los perfiles de mánager.",
-        "saveFailed": "No se pudo guardar el perfil de mánager.",
-        "pathFailed": "No se pudo resolver la ruta de almacenamiento de perfiles."
       },
       "coach": {
         "loadFailed": "No se pudieron cargar las cuentas de mánager.",

@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Bu kariyer ayarları kullanılamadı. Dünya ekranına dönüp başlangıç yılını, başlangıç aşamasını ve ne kadar geçmiş oluşturulacağını kontrol et.",
     "reportBug": "Hata bildir"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Profili Kaydet",
-      "body": "{{name}} adlı profilde değişiklikler yaptınız. Ne yapmak istersiniz?",
-      "update": "\"{{name}}\" profilini güncelle",
-      "saveNew": "Yeni Profil Olarak Kaydet",
-      "skip": "Kaydetmeden devam et"
-    }
+  "coach": {
+    "loginTitle": "Menajerinizi seçin",
+    "loginSubtitle": "Menajeriniz tüm kariyerlerde aynıdır: stil ustalığı ve başarılar birikir.",
+    "newAccountTitle": "Yeni menajer hesabı",
+    "createAccount": "Hesap oluştur",
+    "region": "Bölge",
+    "regions": {
+      "AsiaSoutheast": "Güneydoğu Asya (UTC+7)",
+      "AsiaEast": "Doğu Asya (UTC+8)",
+      "Europe": "Avrupa (UTC+1)",
+      "Americas": "Amerika (UTC−5)"
+    },
+    "regionHint": "Günlük XP hakkınız bu bölgenin saatiyle 04:00'te yenilenir. Daha sonra değiştirilemez.",
+    "lastLogin": "Son oynama: {{date}}",
+    "neverLoggedIn": "Henüz oynanmadı",
+    "logInAs": "{{name}} olarak oyna",
+    "deleteAccount": "{{name}} hesabını sil",
+    "deleteConfirm": "{{name}} silinsin mi? Ustalık ve başarılar kaybolur; kariyerler kalır.",
+    "signedInAs": "Menajer",
+    "switchAccount": "Değiştir",
+    "unclaimedSave": "Hesapsız",
+    "claimSave": "Bağla ve yükle",
+    "claimSaveConfirm": "Bu kariyerin menajer hesabı yok. {{name}} hesabına bağlansın mı? Bundan sonra bu menajerin ustalığını kullanır.",
+    "tooYoungForStart": "Menajeriniz bu tarihte {{min}} yaşından küçük olur — daha geç bir başlangıç yılı seçin.",
+    "tooOldForStart": "Menajeriniz bu tarihte çok yaşlı olur — daha erken bir başlangıç yılı seçin.",
+    "reportFailed": "Hesap sunucusuna ulaşılamadı. Bu maçlar menajerinize bir şey kazandırmadı; kariyer yine de kaydedildi.",
+    "dailyXp": "Bugün XP kazandıran maçlar: {{count}}/{{limit}} · yenilenme: {{time}}",
+    "dailyXpCount": "Bugün XP kazandıran maçlar: {{count}}/{{limit}}",
+    "allCareers": "Tüm kariyerler",
+    "thisCareer": "Bu kariyer"
   },
   "createManager": {
     "title": "Menajer Oluştur",
@@ -3244,11 +3266,6 @@
         "parseFailed": "Ayar verileri geçersiz.",
         "saveFailed": "Ayarlar kaydedilemedi.",
         "invalidCurrency": "Seçilen para birimi desteklenmiyor."
-      },
-      "profiles": {
-        "loadFailed": "Menajer profilleri yüklenemedi.",
-        "saveFailed": "Menajer profili kaydedilemedi.",
-        "pathFailed": "Profil depolama yolu çözümlenemedi."
       },
       "coach": {
         "loadFailed": "Menajer hesapları yüklenemedi.",

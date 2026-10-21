@@ -49,6 +49,7 @@ import {
   getTodayMatchFixture,
   getUnreadMessagesCount,
 } from "../components/dashboard/dashboardHelpers";
+import { CoachReportWarning } from "../components/coach/CoachReportWarning";
 import { useAdvanceTime } from "../hooks/useAdvanceTime";
 import { useAutoSave } from "../hooks/useAutoSave";
 import { Cpu, Eye, Gamepad2 } from "lucide-react";
@@ -348,6 +349,8 @@ export default function Dashboard(): JSX.Element {
     dismissDigest,
     resumeDigest,
     resumeAfterBlocker,
+    coachReportFailed,
+    dismissCoachReportWarning,
   } = useAdvanceTime(
     setGameState,
     hasMatchToday,
@@ -638,6 +641,7 @@ export default function Dashboard(): JSX.Element {
           isUnemployed={isUnemployed ?? false}
           teams={gameState.teams}
         />
+        {coachReportFailed && <CoachReportWarning onDismiss={dismissCoachReportWarning} />}
 
         <DashboardWorkspaceContent
           dashboardAlerts={dashboardAlerts}

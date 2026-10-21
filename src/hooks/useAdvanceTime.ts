@@ -40,6 +40,9 @@ export interface AdvanceTimeState {
   resumeDigest: () => void;
   /** Re-run the flow that hit a mid-advance blocker ("Continue Anyway"). */
   resumeAfterBlocker: () => void;
+  /** The last advance's matches could not reach the coach account (Y12). */
+  coachReportFailed: boolean;
+  dismissCoachReportWarning: () => void;
 }
 
 export function useAdvanceTime(
@@ -57,6 +60,7 @@ export function useAdvanceTime(
   const [showMatchConfirm, setShowMatchConfirm] = useState(false);
   const [matchMode, setMatchMode] = useState<MatchModeType>("live");
   const [blockerModal, setBlockerModal] = useState<BlockerModal | null>(null);
+  const [coachReportFailed, setCoachReportFailed] = useState(false);
   // How to carry on when the digest stops on a mid-advance blocker — depends
   // on which flow (streaming Continue vs batch Skip) hit it.
   const resumeAfterBlockerRef = useRef<() => void>(() => {});
@@ -128,6 +132,7 @@ export function useAdvanceTime(
     const sinceDate = toDatePart(useGameStore.getState().gameState?.clock?.current_date);
     try {
       const result = await advanceTimeWithMode(effectiveMode);
+      setCoachReportFailed(result.coach_report_failed === true);
       console.info("[useAdvanceTime] doAdvance:result", {
         action: result.action,
         fixtureIndex: result.fixture_index,
@@ -303,5 +308,7 @@ export function useAdvanceTime(
     dismissDigest,
     resumeDigest: () => runStreamingDigest({ resume: true }),
     resumeAfterBlocker: () => resumeAfterBlockerRef.current(),
+    coachReportFailed,
+    dismissCoachReportWarning: () => setCoachReportFailed(false),
   };
 }

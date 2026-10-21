@@ -12,7 +12,6 @@ pub mod package_csv;
 pub mod package_editor;
 mod package_layout;
 pub mod portraits;
-pub mod profiles;
 pub mod report;
 pub mod round_summary;
 pub mod season;
@@ -42,7 +41,6 @@ pub use package_editor::{
     extract_ofm_for_editing, read_file_as_data_url, read_package_project, save_package_project,
 };
 pub use portraits::*;
-pub use profiles::*;
 pub use season::*;
 pub use settings::*;
 pub use sim_lab::*;

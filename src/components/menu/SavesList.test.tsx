@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n, { i18nReady } from "../../i18n";
@@ -13,7 +13,7 @@ beforeAll(async () => {
   await i18n.changeLanguage("en");
 });
 
-function save(overrides: Partial<{ id: string; name: string }> = {}) {
+function save(overrides: Partial<{ id: string; name: string; account_id: string | null }> = {}) {
   return {
     id: "save-1",
     name: "Old Save",
@@ -23,17 +23,31 @@ function save(overrides: Partial<{ id: string; name: string }> = {}) {
     checksum: "abc",
     created_at: "2026-08-01T00:00:00Z",
     last_played_at: "2026-08-02T00:00:00Z",
+    account_id: "account-1" as string | null,
     ...overrides,
   };
 }
 
-function renderList(saves: ReturnType<typeof save>[], confirmDeleteId: string | null = null) {
+function renderList(
+  saves: ReturnType<typeof save>[],
+  confirmDeleteId: string | null = null,
+  handlers: Partial<{
+    onLoad: (id: string) => void;
+    onClaim: (id: string) => void;
+    onConfirmClaim: (id: string | null) => void;
+  }> = {},
+  confirmClaimId: string | null = null,
+) {
   render(
     <SavesList
       saves={saves}
       isLoading={false}
       confirmDeleteId={confirmDeleteId}
-      onLoad={vi.fn()}
+      confirmClaimId={confirmClaimId}
+      coachName="Dung Ung"
+      onLoad={handlers.onLoad ?? vi.fn()}
+      onClaim={handlers.onClaim ?? vi.fn()}
+      onConfirmClaim={handlers.onConfirmClaim ?? vi.fn()}
       onDelete={vi.fn()}
       onConfirmDelete={vi.fn()}
       onClose={vi.fn()}
@@ -75,7 +89,11 @@ describe("SavesList", () => {
         saves={[save({ name: '<img src=x onerror="alert(1)">' })]}
         isLoading={false}
         confirmDeleteId="save-1"
+        confirmClaimId={null}
+        coachName="Dung Ung"
         onLoad={vi.fn()}
+        onClaim={vi.fn()}
+        onConfirmClaim={vi.fn()}
         onDelete={vi.fn()}
         onConfirmDelete={vi.fn()}
         onClose={vi.fn()}
@@ -86,5 +104,41 @@ describe("SavesList", () => {
     // The <strong> the translation itself provides must still be real markup.
     expect(container.querySelector("strong")).not.toBeNull();
     expect(container.textContent).toContain('<img src=x onerror="alert(1)">');
+  });
+
+  // Given a career of the logged-in coach, when it is picked, then it loads straight away.
+  it("loads a career of the coach without asking", () => {
+    const onLoad = vi.fn();
+    const onConfirmClaim = vi.fn();
+    renderList([save()], null, { onLoad, onConfirmClaim });
+
+    fireEvent.click(screen.getByText("Old Save"));
+
+    expect(onLoad).toHaveBeenCalledWith("save-1");
+    expect(onConfirmClaim).not.toHaveBeenCalled();
+  });
+
+  // Given a career from before accounts, when it is picked, then the player is asked to attach it first.
+  it("asks before attaching a career without an account", () => {
+    const onLoad = vi.fn();
+    const onConfirmClaim = vi.fn();
+    renderList([save({ account_id: null })], null, { onLoad, onConfirmClaim });
+
+    expect(screen.getByText("No account")).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Old Save"));
+
+    expect(onConfirmClaim).toHaveBeenCalledWith("save-1");
+    expect(onLoad).not.toHaveBeenCalled();
+  });
+
+  // Given the attach question on screen, when the player agrees, then the career is claimed.
+  it("claims the career when the player agrees", () => {
+    const onClaim = vi.fn();
+    renderList([save({ account_id: null })], null, { onClaim }, "save-1");
+
+    expect(screen.getByRole("alertdialog")).toHaveTextContent("Attach it to Dung Ung?");
+    fireEvent.click(screen.getByRole("button", { name: "Attach and load" }));
+
+    expect(onClaim).toHaveBeenCalledWith("save-1");
   });
 });

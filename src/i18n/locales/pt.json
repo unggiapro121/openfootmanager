@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Não foi possível usar essas definições de carreira. Volta ao ecrã do mundo e verifica o ano de início, a fase de início e quanto histórico anterior gerar.",
     "reportBug": "Reportar um erro"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Guardar Perfil",
-      "body": "Fizeste alterações ao perfil de {{name}}. O que queres fazer?",
-      "update": "Atualizar \"{{name}}\"",
-      "saveNew": "Guardar como Novo Perfil",
-      "skip": "Continuar sem guardar"
-    }
+  "coach": {
+    "loginTitle": "Escolhe o teu treinador",
+    "loginSubtitle": "O teu treinador é o mesmo em todas as carreiras: o domínio dos estilos e o historial acumulam-se.",
+    "newAccountTitle": "Nova conta de treinador",
+    "createAccount": "Criar conta",
+    "region": "Região",
+    "regions": {
+      "AsiaSoutheast": "Sudeste Asiático (UTC+7)",
+      "AsiaEast": "Ásia Oriental (UTC+8)",
+      "Europe": "Europa (UTC+1)",
+      "Americas": "Américas (UTC−5)"
+    },
+    "regionHint": "A tua quota diária de XP renova-se às 04:00 desta região. Não pode ser alterada depois.",
+    "lastLogin": "Último jogo: {{date}}",
+    "neverLoggedIn": "Ainda sem jogos",
+    "logInAs": "Jogar como {{name}}",
+    "deleteAccount": "Eliminar {{name}}",
+    "deleteConfirm": "Eliminar {{name}}? Perdem-se o domínio e o historial; as carreiras mantêm-se.",
+    "signedInAs": "Treinador",
+    "switchAccount": "Trocar",
+    "unclaimedSave": "Sem conta",
+    "claimSave": "Associar e carregar",
+    "claimSaveConfirm": "Esta carreira não tem conta de treinador. Associá-la a {{name}}? A partir de agora usa o domínio desse treinador.",
+    "tooYoungForStart": "O teu treinador teria menos de {{min}} anos nessa data — escolhe um ano de início posterior.",
+    "tooOldForStart": "O teu treinador seria velho demais nessa data — escolhe um ano de início anterior.",
+    "reportFailed": "Não foi possível contactar o servidor de contas. Estes jogos não deram nada ao teu treinador; a carreira continua guardada.",
+    "dailyXp": "Jogos com XP hoje: {{count}}/{{limit}} · renova às {{time}}",
+    "dailyXpCount": "Jogos com XP hoje: {{count}}/{{limit}}",
+    "allCareers": "Todas as carreiras",
+    "thisCareer": "Esta carreira"
   },
   "createManager": {
     "title": "Criar Treinador",
@@ -3400,11 +3422,6 @@
         "parseFailed": "Os dados das definições são inválidos.",
         "saveFailed": "Não foi possível guardar as definições.",
         "invalidCurrency": "A moeda selecionada não é suportada."
-      },
-      "profiles": {
-        "loadFailed": "Não foi possível carregar os perfis de treinador.",
-        "saveFailed": "Não foi possível guardar o perfil de treinador.",
-        "pathFailed": "Não foi possível resolver o caminho de armazenamento dos perfis."
       },
       "coach": {
         "loadFailed": "Não foi possível carregar as contas de treinador.",
