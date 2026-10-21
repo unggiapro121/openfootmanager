@@ -30,6 +30,18 @@ vi.mock("react-i18next", () => ({
       if (key === "schedule.matchday") {
         return `Matchday ${params?.number}`;
       }
+      if (key === "match.masteryGain") {
+        return `+${params?.xp} XP · ${params?.style}`;
+      }
+      if (key === "match.masteryReached") {
+        return `now ${params?.mastery}`;
+      }
+      if (key === "match.masteryStartingStyle") {
+        return "XP goes to the style the side started in";
+      }
+      if (key.startsWith("common.playStyles.")) {
+        return key.replace("common.playStyles.", "");
+      }
       if (key === "match.otherMatches") {
         return "Other Matches";
       }
@@ -477,6 +489,48 @@ describe("PostMatchScreen", (): void => {
 
     expect(screen.getByText("match.scorers")).toBeInTheDocument();
     expect(screen.getByText("match.quickStats")).toBeInTheDocument();
+  });
+
+  it("shows the play style XP a managed match earned, for the starting style", (): void => {
+    render(
+      <ThemeProvider>
+        <PostMatchScreen
+          snapshot={makeSnapshot()}
+          playerRatings={{}}
+          gameState={makeGameState()}
+          userSide="Home"
+          isSpectator={false}
+          importantEvents={[]}
+          masteryGain={{ style: "Counter", xp: 15, mastery_before: 54, mastery_after: 55 }}
+          onContinue={() => {}}
+          onFinish={() => {}}
+        />
+      </ThemeProvider>,
+    );
+
+    const line = screen.getByTestId("post-match-mastery");
+    expect(line).toHaveTextContent("+15 XP · Counter");
+    expect(line).toHaveTextContent("now 55");
+    expect(line).toHaveTextContent("XP goes to the style the side started in");
+  });
+
+  it("shows no play style XP when the match earned none", (): void => {
+    render(
+      <ThemeProvider>
+        <PostMatchScreen
+          snapshot={makeSnapshot()}
+          playerRatings={{}}
+          gameState={makeGameState()}
+          userSide="Home"
+          isSpectator={false}
+          importantEvents={[]}
+          onContinue={() => {}}
+          onFinish={() => {}}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(screen.queryByTestId("post-match-mastery")).not.toBeInTheDocument();
   });
 
   it("renders Match Report tab by default for a spectator", (): void => {

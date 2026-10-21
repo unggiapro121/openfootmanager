@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../store/gameStore";
 import { useSettingsStore } from "../store/settingsStore";
+import type { MasteryGain } from "../store/types";
 import type {
   MatchSnapshot,
   MatchEvent,
@@ -47,6 +48,7 @@ export default function MatchSimulation() {
   const [isSpectator, setIsSpectator] = useState(matchMode === "spectator");
   const [roundSummary, setRoundSummary] = useState<RoundSummary | null>(null);
   const [playerRatings, setPlayerRatings] = useState<Record<string, number>>({});
+  const [masteryGain, setMasteryGain] = useState<MasteryGain | null>(null);
   const [hasFinalizedMatch, setHasFinalizedMatch] = useState(false);
   const [preferredSpeed, setPreferredSpeed] = useState<"slow" | "normal" | "fast">("normal");
   const [hasUserOverriddenSpeed, setHasUserOverriddenSpeed] = useState(false);
@@ -239,6 +241,7 @@ export default function MatchSimulation() {
       setGameState(response.game);
       setRoundSummary(response.round_summary ?? null);
       setPlayerRatings(response.player_ratings);
+      setMasteryGain(response.mastery_gain ?? null);
       setHasFinalizedMatch(true);
       return true;
     } catch (err) {
@@ -387,6 +390,7 @@ export default function MatchSimulation() {
         <PostMatchScreen
           snapshot={snapshot}
           playerRatings={playerRatings}
+          masteryGain={masteryGain}
           gameState={gameState}
           userSide={userSide}
           isSpectator={isSpectator}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GameStateData } from "../../store/gameStore";
+import type { MasteryGain } from "../../store/types";
 import {
   type MatchSnapshot,
   type MatchEvent,
@@ -34,6 +35,8 @@ interface PostMatchScreenProps {
   userSide: "Home" | "Away" | null;
   isSpectator: boolean;
   importantEvents: MatchEvent[];
+  /** The play style XP the match earned; only a match the user managed earns any. */
+  masteryGain?: MasteryGain | null;
   onContinue: () => void;
   onFinish: () => void;
 }
@@ -100,6 +103,7 @@ export default function PostMatchScreen({
   userSide,
   isSpectator,
   importantEvents,
+  masteryGain,
   onContinue,
   onFinish,
 }: PostMatchScreenProps) {
@@ -331,6 +335,28 @@ export default function PostMatchScreen({
           </div>
         </div>
       </header>
+
+      {masteryGain && (
+        <div
+          data-testid="post-match-mastery"
+          className="px-6 py-2 text-center text-sm bg-primary-50 dark:bg-navy-800 text-primary-700 dark:text-primary-300 border-b border-gray-200 dark:border-navy-700"
+        >
+          <span className="font-heading font-bold uppercase tracking-wider">
+            {t("match.masteryGain", {
+              xp: masteryGain.xp,
+              style: t(`common.playStyles.${masteryGain.style}`),
+            })}
+          </span>
+          {masteryGain.mastery_after > masteryGain.mastery_before && (
+            <span className="ml-2 font-semibold">
+              {t("match.masteryReached", { mastery: masteryGain.mastery_after })}
+            </span>
+          )}
+          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+            {t("match.masteryStartingStyle")}
+          </span>
+        </div>
+      )}
 
       {/* Sticky Action Bar */}
       <div className="sticky top-0 z-10 bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 shadow-sm transition-colors duration-300">

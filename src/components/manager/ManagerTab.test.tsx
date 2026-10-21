@@ -42,11 +42,24 @@ vi.mock("react-i18next", () => ({
       if (key === "manager.playStyleMasteryHint") return "Mastery hint";
       if (key === "manager.reputationChange") return `${params?.delta} in season ${params?.season}`;
       if (key === "manager.reputationHistory") return "Reputation History";
+      if (key === "manager.masteryEarnedHint")
+        return `Earned in managed matches: ${params?.win}/${params?.draw}/${params?.loss}`;
+      if (key === "manager.masteryXp") return `${params?.xp}/${params?.next} XP`;
+      if (key === "manager.masteryMax") return "Max";
+      if (key === "manager.masteryMatches") return `Matches: ${params?.count}`;
+      if (key === "manager.masteryNeutralStyle") return "Neutral style";
+      if (key === "manager.styleEffect") return `${params?.phase} ${params?.percent}%`;
+      if (key.startsWith("manager.stylePhase.")) return key.replace("manager.stylePhase.", "");
       if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
       return key;
     },
     i18n: { language: "en" },
   }),
+}));
+
+const getManagerProgressionMock = vi.fn().mockResolvedValue(null);
+vi.mock("../../services/managerProgressionService", () => ({
+  getManagerProgression: () => getManagerProgressionMock(),
 }));
 
 function createTeam(overrides: Partial<TeamData> = {}): TeamData {
@@ -200,6 +213,40 @@ describe("ManagerTab", () => {
 
     expect(screen.queryByTestId("manager-reputation-change")).not.toBeInTheDocument();
     expect(screen.queryByRole("region", { name: "Reputation History" })).not.toBeInTheDocument();
+  });
+
+  it("shows each style's progress toward its next point and its real effect", async () => {
+    getManagerProgressionMock.mockResolvedValue({
+      styles: [
+        {
+          style: "Counter",
+          mastery: 61,
+          xp: 20,
+          xp_to_next: 90,
+          matches: 3,
+          effects: [
+            { phase: "Attack", percent: 20 },
+            { phase: "Midfield", percent: -7 },
+          ],
+        },
+        { style: "Balanced", mastery: 50, xp: 0, xp_to_next: 38, matches: 0, effects: [] },
+        { style: "Possession", mastery: 99, xp: 12, xp_to_next: null, matches: 900, effects: [] },
+      ],
+      xp_for_a_win: 15,
+      xp_for_a_draw: 10,
+      xp_for_a_loss: 7,
+    });
+
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    const counter = await screen.findByTestId("mastery-detail-Counter");
+    expect(counter).toHaveTextContent("20/90 XP");
+    expect(counter).toHaveTextContent("Matches: 3");
+    expect(counter).toHaveTextContent("Attack +20%");
+    expect(counter).toHaveTextContent("Midfield -7%");
+    expect(screen.getByTestId("mastery-detail-Balanced")).toHaveTextContent("Neutral style");
+    expect(screen.getByTestId("mastery-detail-Possession")).toHaveTextContent("Max");
+    expect(screen.getByText("Earned in managed matches: 15/10/7")).toBeInTheDocument();
   });
 
   it("shows the manager's mastery of every play style", () => {

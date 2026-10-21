@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Sahaya Çık",
-    "goToFieldDesc": "Tam maç kontrolü",
+    "goToFieldDesc": "Tam maç kontrolü · oyun tarzı ustalığını artırır",
     "watchSpectator": "Seyirci Olarak İzle",
-    "watchSpectatorDesc": "Maçı izle, kontrol etme",
+    "watchSpectatorDesc": "Maçı izle, kontrol etme · oyun tarzı ustalığı artmaz",
     "delegateAssistant": "Yardımcıya Devret",
-    "delegateAssistantDesc": "YZ her şeyi anında yönetir",
+    "delegateAssistantDesc": "YZ her şeyi anında yönetir · oyun tarzı ustalığı artmaz",
     "skipToMatchDay": "Maç Gününe Atla",
     "skipToMatchDayDesc": "Bir sonraki maçına kadar hızlı ilerle",
     "matchDayTitle": "Maç Günü",
-    "delegateWarning": "Maçı yardımcınız yönetecek. Müdahale edemeyeceksiniz."
+    "delegateWarning": "Maçı yardımcınız yönetecek. Müdahale edemeyeceksiniz. Devredilen maçlar oyun tarzı ustalığını artırmaz."
   },
   "exitConfirm": {
     "title": "Ana menüye dönülsün mü?",
@@ -944,7 +944,8 @@
     "centreBackPair": {
       "stoppers": "Stoperde iki baskıcı stoper: ikisi de öne çıkar, kontrada arkalarındaki alan boş kalır.",
       "covers": "Stoperde iki kollayan stoper: ikisi de geri çekilir, ceza sahası önü boş kalır."
-    }
+    },
+    "masteryEarnedHint": "Ustalık yalnızca kendi yönettiğin maçlarda artar (Sahaya Çık)."
   },
   "training": {
     "weeklySchedule": "Haftalık Program",
@@ -1335,7 +1336,19 @@
     "fanRestless": "Taraftarlar giderek huzursuzlanıyor.",
     "fanUnrest": "Taraftar huzursuzluğu — protestolar olası.",
     "playStyleMastery": "Oyun tarzı ustalığı",
-    "playStyleMasteryHint": "Her oyun tarzını maça ne kadar iyi yansıttığın. 50'de tarz tasarlandığı gibi işler; daha yüksekte güçlü yanları belirginleşir ve zayıf yanları hafifler, daha düşükte tersi olur."
+    "playStyleMasteryHint": "Her oyun tarzını maça ne kadar iyi yansıttığın. 50'de tarz tasarlandığı gibi işler; daha yüksekte güçlü yanları belirginleşir ve zayıf yanları hafifler, daha düşükte tersi olur.",
+    "masteryEarnedHint": "Ustalık yalnızca kendi yönettiğin maçlarda artar (Sahaya Çık): denk bir rakibe karşı galibiyet {{win}} XP, beraberlik {{draw}}, yenilgi {{loss}} XP getirir.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Azami",
+    "masteryMatches": "Maç: {{count}}",
+    "masteryNeutralStyle": "Nötr tarz: teknik direktöre bağlı değil",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Orta saha",
+      "Attack": "Hücum",
+      "Defense": "Savunma",
+      "Press": "Pres"
+    }
   },
   "managersWorld": {
     "title": "Menajerler",
@@ -3161,7 +3174,10 @@
         }
       }
     },
-    "wingBackConversion": "Kanat bek oynar, puan kaybı yok"
+    "wingBackConversion": "Kanat bek oynar, puan kaybı yok",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Ustalık {{mastery}}",
+    "masteryStartingStyle": "XP, takımının maça başladığı oyun tarzına yazılır"
   },
   "endOfSeason": {
     "seasonComplete": "Sezon Tamamlandı",
@@ -3618,6 +3634,10 @@
         "subject": "Sezon {{season}} itibar değerlendirmesi",
         "body": "İtibarın bu sezon {{before}} iken {{after}} oldu ({{delta}}).\n\n• Beklentilere göre sonuçlar: {{performance}}\n• Kupalar, yükselme ve düşme: {{honours}}\n• Çalıştırdığın kulübün itibarı: {{clubPull}}",
         "bodyPartial": "İtibarın bu sezon {{before}} iken {{after}} oldu ({{delta}}).\n\n• Beklentilere göre sonuçlar: {{performance}}\n• Kupalar, yükselme ve düşme: {{honours}}\n• Çalıştırdığın kulübün itibarı: {{clubPull}}\n\nKulübün {{played}} lig maçının {{led}} tanesinde takımın başındaydın, bu yüzden sıralamadan yalnızca senin payın hesaba katılıyor."
+      },
+      "styleMastery": {
+        "subject": "Oyun tarzı ustalığı: {{style}} {{mastery}}",
+        "body": "Takım senin yönetiminde {{style}} tarzına alışıyor: bu tarzdaki ustalığın {{mastery}} oldu.\n\nUstalık yalnızca kendi yönettiğin maçlarda artar."
       },
       "worldCupChampion": {
         "subject": "{{nation}}, {{year}} Dünya Kupası'nı kazandı!",

@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Ir para o Campo",
-    "goToFieldDesc": "Controle total da partida (padrão)",
+    "goToFieldDesc": "Controle total da partida (padrão) · aumenta o domínio do estilo",
     "watchSpectator": "Assistir como Espectador",
-    "watchSpectatorDesc": "Assista ao jogo, sem controles",
+    "watchSpectatorDesc": "Assista ao jogo, sem controles · não aumenta o domínio do estilo",
     "delegateAssistant": "Delegar ao Assistente",
-    "delegateAssistantDesc": "A IA resolve tudo instantaneamente",
+    "delegateAssistantDesc": "A IA resolve tudo instantaneamente · não aumenta o domínio do estilo",
     "skipToMatchDay": "Pular para o Dia de Jogo",
     "skipToMatchDayDesc": "Avançar até a próxima partida",
     "matchDayTitle": "Dia de Jogo",
-    "delegateWarning": "Seu assistente comandará a partida. Você não poderá intervir."
+    "delegateWarning": "Seu assistente comandará a partida. Você não poderá intervir. Partidas delegadas não aumentam o domínio do estilo."
   },
   "closeConfirm": {
     "title": "Alterações não salvas",
@@ -944,7 +944,8 @@
     "centreBackPair": {
       "stoppers": "Dois zagueiros de combate: os dois saem e o espaço às costas fica livre no contra-ataque.",
       "covers": "Dois zagueiros de cobertura: os dois recuam e a entrada da área fica livre."
-    }
+    },
+    "masteryEarnedHint": "O domínio só cresce nas partidas que você mesmo comanda (Ir para o Campo)."
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",
@@ -1335,7 +1336,19 @@
     "fanRestless": "A torcida está ficando impaciente.",
     "fanUnrest": "Agitação entre os torcedores — protestos prováveis.",
     "playStyleMastery": "Domínio dos estilos de jogo",
-    "playStyleMasteryHint": "O quanto você consegue passar cada estilo de jogo para o time em campo. Com 50, o estilo funciona como foi pensado; acima disso, os pontos fortes ficam mais marcados e os fracos mais leves; abaixo, o contrário."
+    "playStyleMasteryHint": "O quanto você consegue passar cada estilo de jogo para o time em campo. Com 50, o estilo funciona como foi pensado; acima disso, os pontos fortes ficam mais marcados e os fracos mais leves; abaixo, o contrário.",
+    "masteryEarnedHint": "O domínio só cresce nas partidas que você mesmo comanda (Ir para o Campo): contra um adversário equilibrado, uma vitória vale {{win}} XP, um empate {{draw}} e uma derrota {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Máximo",
+    "masteryMatches": "Partidas: {{count}}",
+    "masteryNeutralStyle": "Estilo neutro: não depende do técnico",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Meio-campo",
+      "Attack": "Ataque",
+      "Defense": "Defesa",
+      "Press": "Pressão"
+    }
   },
   "managersWorld": {
     "title": "Técnicos",
@@ -3089,7 +3102,10 @@
         }
       }
     },
-    "wingBackConversion": "Joga de ala sem perder nota"
+    "wingBackConversion": "Joga de ala sem perder nota",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Domínio {{mastery}}",
+    "masteryStartingStyle": "O XP vai para o estilo com que seu time começou a partida"
   },
   "endOfSeason": {
     "seasonComplete": "Temporada Encerrada",
@@ -3618,6 +3634,10 @@
         "subject": "Avaliação de reputação da temporada {{season}}",
         "body": "Sua reputação foi de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados em relação às expectativas: {{performance}}\n• Títulos, acessos e rebaixamentos: {{honours}}\n• Prestígio do clube que você comanda: {{clubPull}}",
         "bodyPartial": "Sua reputação foi de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados em relação às expectativas: {{performance}}\n• Títulos, acessos e rebaixamentos: {{honours}}\n• Prestígio do clube que você comanda: {{clubPull}}\n\nVocê comandou {{led}} das {{played}} partidas do campeonato do clube, então só conta a sua parte da classificação."
+      },
+      "styleMastery": {
+        "subject": "Domínio do estilo: {{style}} {{mastery}}",
+        "body": "O elenco está se acostumando ao estilo {{style}} com você: seu domínio chegou a {{mastery}}.\n\nO domínio só cresce nas partidas que você mesmo comanda."
       },
       "worldCupChampion": {
         "subject": "{{nation}} vence a Copa do Mundo de {{year}}!",

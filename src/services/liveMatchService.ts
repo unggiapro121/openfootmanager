@@ -7,13 +7,15 @@ import type {
   TeamTalkTone,
 } from "../components/match/types";
 import type { GameStateData } from "../store/gameStore";
-import type { PlayerRole } from "../store/types";
+import type { MasteryGain, PlayerRole } from "../store/types";
 
 /** What the backend hands back once the live match is over and recorded. */
 export interface FinishLiveMatchResponse {
   game: GameStateData;
   round_summary?: RoundSummary | null;
   player_ratings: Record<string, number>;
+  /** Present when the user managed the match themselves ("go to the field"). */
+  mastery_gain?: MasteryGain | null;
 }
 
 /** One player's morale before and after a team talk. */

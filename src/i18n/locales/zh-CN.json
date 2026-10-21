@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "进入球场",
-    "goToFieldDesc": "完整比赛控制（默认）",
+    "goToFieldDesc": "完整比赛控制（默认）；提升战术风格熟练度",
     "watchSpectator": "以观众身份观看",
-    "watchSpectatorDesc": "观看比赛，无操作控制",
+    "watchSpectatorDesc": "观看比赛，无操作控制；不提升战术风格熟练度",
     "delegateAssistant": "委托助理教练",
-    "delegateAssistantDesc": "AI 即时处理一切",
+    "delegateAssistantDesc": "AI 即时处理一切；不提升战术风格熟练度",
     "skipToMatchDay": "跳至比赛日",
     "skipToMatchDayDesc": "快进到下一场赛程",
     "matchDayTitle": "比赛日",
-    "delegateWarning": "助理教练将接管比赛。您将无法介入。"
+    "delegateWarning": "助理教练将接管比赛。您将无法介入。托管的比赛不会提升战术风格熟练度。"
   },
   "exitConfirm": {
     "title": "返回主菜单？",
@@ -944,7 +944,8 @@
     "centreBackPair": {
       "stoppers": "两名盯人中卫：两人都会上抢，反击时身后空当无人照看。",
       "covers": "两名拖后中卫：两人都会回撤，禁区前沿无人防守。"
-    }
+    },
+    "masteryEarnedHint": "只有你亲自指挥的比赛（进入球场）才会提升熟练度。"
   },
   "training": {
     "weeklySchedule": "每周日程",
@@ -1335,7 +1336,19 @@
     "fanRestless": "球迷日渐不满。",
     "fanUnrest": "球迷骚动——可能出现抗议。",
     "playStyleMastery": "战术风格掌握度",
-    "playStyleMasteryHint": "你在比赛中贯彻每种战术风格的能力。数值为 50 时，风格按设计发挥；更高时优势更明显、劣势更轻；更低则相反。"
+    "playStyleMasteryHint": "你在比赛中贯彻每种战术风格的能力。数值为 50 时，风格按设计发挥；更高时优势更明显、劣势更轻；更低则相反。",
+    "masteryEarnedHint": "只有你亲自指挥的比赛（进入球场）才会提升熟练度：面对实力相当的对手，胜利得 {{win}} 经验，平局 {{draw}}，失利 {{loss}}。",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "已满",
+    "masteryMatches": "场次：{{count}}",
+    "masteryNeutralStyle": "中性风格：不受主教练影响",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "中场",
+      "Attack": "进攻",
+      "Defense": "防守",
+      "Press": "逼抢"
+    }
   },
   "managersWorld": {
     "title": "主教练",
@@ -3161,7 +3174,10 @@
         }
       }
     },
-    "wingBackConversion": "踢翼卫不扣分"
+    "wingBackConversion": "踢翼卫不扣分",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "熟练度 {{mastery}}",
+    "masteryStartingStyle": "经验计入开场时使用的战术风格"
   },
   "endOfSeason": {
     "seasonComplete": "赛季结束",
@@ -3618,6 +3634,10 @@
         "subject": "第 {{season}} 赛季声望评估",
         "body": "本赛季你的声望从 {{before}} 变为 {{after}}（{{delta}}）。\n\n• 战绩与预期对比：{{performance}}\n• 奖杯、升级与降级：{{honours}}\n• 执教俱乐部的地位：{{clubPull}}",
         "bodyPartial": "本赛季你的声望从 {{before}} 变为 {{after}}（{{delta}}）。\n\n• 战绩与预期对比：{{performance}}\n• 奖杯、升级与降级：{{honours}}\n• 执教俱乐部的地位：{{clubPull}}\n\n你执教了俱乐部 {{played}} 场联赛中的 {{led}} 场，因此只计入你那一部分的排名表现。"
+      },
+      "styleMastery": {
+        "subject": "战术风格熟练度：{{style}} {{mastery}}",
+        "body": "球队在你的带领下逐渐适应了{{style}}：你对该风格的熟练度已达到 {{mastery}}。\n\n只有你亲自指挥的比赛才会提升熟练度。"
       },
       "worldCupChampion": {
         "subject": "{{nation}}夺得{{year}}年世界杯冠军！",
