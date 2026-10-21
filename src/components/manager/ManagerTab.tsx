@@ -229,6 +229,26 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
         </section>
       </Card>
 
+      {/* Reputation perks: what the user's standing is worth off the pitch */}
+      {progression?.perks &&
+        (progression.perks.wage_discount_pct > 0 || progression.perks.sponsor_uplift_pct > 0) && (
+          <Card className="md:col-span-3">
+            <section aria-label={t("manager.reputationPerks")}>
+              <CardHeader>{t("manager.reputationPerks")}</CardHeader>
+              <CardBody>
+                <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+                  <li>
+                    {t("manager.perkWageDiscount", { pct: progression.perks.wage_discount_pct })}
+                  </li>
+                  <li>
+                    {t("manager.perkSponsorUplift", { pct: progression.perks.sponsor_uplift_pct })}
+                  </li>
+                </ul>
+              </CardBody>
+            </section>
+          </Card>
+        )}
+
       {/* Reputation history */}
       {reputationLog.length > 0 && (
         <Card className="md:col-span-3">

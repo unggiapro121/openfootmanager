@@ -758,12 +758,19 @@ export interface StyleProgressView {
   effects: StyleEffectView[];
 }
 
-/** The backend's `ManagerProgressionView`. */
+/** What the user's reputation is worth at their club, in percent (backend `ReputationPerksView`). */
+export interface ReputationPerksView {
+  wage_discount_pct: number;
+  sponsor_uplift_pct: number;
+}
+
+/** The backend's `ManagerProgressionView`, with the reputation perks `get_manager_progression` adds. */
 export interface ManagerProgressionView {
   styles: StyleProgressView[];
   xp_for_a_win: number;
   xp_for_a_draw: number;
   xp_for_a_loss: number;
+  perks?: ReputationPerksView;
 }
 
 /** Mirrors the backend's `FixtureCompetition` enum. */

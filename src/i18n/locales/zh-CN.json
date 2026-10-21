@@ -625,7 +625,8 @@
       "strong": "强",
       "moderate": "中等",
       "unclear": "不明"
-    }
+    },
+    "reputationDiscountApplied": "你的声望让球员的要价降低了 {{pct}}%。"
   },
   "teamSelection": {
     "title": "选择您的俱乐部",
@@ -1311,6 +1312,9 @@
     "reputation": "声望",
     "reputationChange": "第 {{season}} 赛季后 {{delta}}",
     "reputationHistory": "声望历史",
+    "reputationPerks": "声望福利",
+    "perkWageDiscount": "球员接受低 {{pct}}% 的薪水",
+    "perkSponsorUplift": "赞助商多付 {{pct}}%",
     "careerStats": "生涯数据",
     "boardStatus": "董事会状态",
     "satisfaction": "满意度",

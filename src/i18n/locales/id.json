@@ -625,7 +625,8 @@
       "strong": "Tinggi",
       "moderate": "Sedang",
       "unclear": "Belum jelas"
-    }
+    },
+    "reputationDiscountApplied": "Reputasimu memangkas tuntutan pemain sebesar {{pct}}%."
   },
   "teamSelection": {
     "title": "Pilih Klub",
@@ -1311,6 +1312,9 @@
     "reputation": "Reputasi",
     "reputationChange": "{{delta}} setelah Musim {{season}}",
     "reputationHistory": "Riwayat Reputasi",
+    "reputationPerks": "Keuntungan reputasi",
+    "perkWageDiscount": "Pemain mau digaji {{pct}}% lebih rendah",
+    "perkSponsorUplift": "Sponsor membayar {{pct}}% lebih banyak",
     "careerStats": "Statistik Karier",
     "boardStatus": "Status Manajemen",
     "satisfaction": "Kepuasan",

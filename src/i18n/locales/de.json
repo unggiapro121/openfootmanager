@@ -625,7 +625,8 @@
       "strong": "Stark",
       "moderate": "Mäßig",
       "unclear": "Unklar"
-    }
+    },
+    "reputationDiscountApplied": "Dein Ruf hat die Forderung des Spielers um {{pct}} % gesenkt."
   },
   "teamSelection": {
     "title": "Wähle Deinen Verein",
@@ -1311,6 +1312,9 @@
     "reputation": "Ruf",
     "reputationChange": "{{delta}} nach Saison {{season}}",
     "reputationHistory": "Rufverlauf",
+    "reputationPerks": "Vorteile durch Ruf",
+    "perkWageDiscount": "Spieler akzeptieren um {{pct}} % niedrigere Gehälter",
+    "perkSponsorUplift": "Sponsoren zahlen {{pct}} % mehr",
     "careerStats": "Karrierestatistiken",
     "boardStatus": "Vorstandsstatus",
     "satisfaction": "Zufriedenheit",

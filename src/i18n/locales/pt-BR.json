@@ -625,7 +625,8 @@
       "strong": "Alto",
       "moderate": "Moderado",
       "unclear": "Incerto"
-    }
+    },
+    "reputationDiscountApplied": "Sua reputação reduziu em {{pct}}% o que o jogador pede."
   },
   "teamSelection": {
     "title": "Escolha Seu Clube",
@@ -1311,6 +1312,9 @@
     "reputation": "Reputação",
     "reputationChange": "{{delta}} após a temporada {{season}}",
     "reputationHistory": "Histórico de Reputação",
+    "reputationPerks": "Vantagens da reputação",
+    "perkWageDiscount": "Os jogadores aceitam salários {{pct}}% menores",
+    "perkSponsorUplift": "Os patrocinadores pagam {{pct}}% a mais",
     "careerStats": "Estatísticas da Carreira",
     "boardStatus": "Status da Diretoria",
     "satisfaction": "Satisfação",

@@ -50,6 +50,9 @@ vi.mock("react-i18next", () => ({
       if (key === "manager.masteryNeutralStyle") return "Neutral style";
       if (key === "manager.styleEffect") return `${params?.phase} ${params?.percent}%`;
       if (key.startsWith("manager.stylePhase.")) return key.replace("manager.stylePhase.", "");
+      if (key === "manager.reputationPerks") return "Reputation Perks";
+      if (key === "manager.perkWageDiscount") return `Wages -${params?.pct}%`;
+      if (key === "manager.perkSponsorUplift") return `Sponsors +${params?.pct}%`;
       if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
       return key;
     },
@@ -247,6 +250,37 @@ describe("ManagerTab", () => {
     expect(screen.getByTestId("mastery-detail-Balanced")).toHaveTextContent("Neutral style");
     expect(screen.getByTestId("mastery-detail-Possession")).toHaveTextContent("Max");
     expect(screen.getByText("Earned in managed matches: 15/10/7")).toBeInTheDocument();
+  });
+
+  it("shows what the user's reputation is worth when it is worth something", async () => {
+    getManagerProgressionMock.mockResolvedValue({
+      styles: [],
+      xp_for_a_win: 15,
+      xp_for_a_draw: 10,
+      xp_for_a_loss: 7,
+      perks: { wage_discount_pct: 7.5, sponsor_uplift_pct: 5 },
+    });
+
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    const perks = await screen.findByRole("region", { name: "Reputation Perks" });
+    expect(perks).toHaveTextContent("Wages -7.5%");
+    expect(perks).toHaveTextContent("Sponsors +5%");
+  });
+
+  it("hides the reputation perks while they are worth nothing", async () => {
+    getManagerProgressionMock.mockResolvedValue({
+      styles: [],
+      xp_for_a_win: 15,
+      xp_for_a_draw: 10,
+      xp_for_a_loss: 7,
+      perks: { wage_discount_pct: 0, sponsor_uplift_pct: 0 },
+    });
+
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    await screen.findByText("Earned in managed matches: 15/10/7");
+    expect(screen.queryByRole("region", { name: "Reputation Perks" })).not.toBeInTheDocument();
   });
 
   it("shows the manager's mastery of every play style", () => {

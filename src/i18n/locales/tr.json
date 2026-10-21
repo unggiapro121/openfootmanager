@@ -625,7 +625,8 @@
       "strong": "Yüksek",
       "moderate": "Orta",
       "unclear": "Belirsiz"
-    }
+    },
+    "reputationDiscountApplied": "İtibarın, oyuncunun talebini %{{pct}} düşürdü."
   },
   "teamSelection": {
     "title": "Kulübünü Seç",
@@ -1311,6 +1312,9 @@
     "reputation": "İtibar",
     "reputationChange": "Sezon {{season}} sonrası {{delta}}",
     "reputationHistory": "İtibar Geçmişi",
+    "reputationPerks": "İtibar avantajları",
+    "perkWageDiscount": "Oyuncular %{{pct}} daha düşük maaşı kabul ediyor",
+    "perkSponsorUplift": "Sponsorlar %{{pct}} daha fazla ödüyor",
     "careerStats": "Kariyer İstatistikleri",
     "boardStatus": "Yönetim Durumu",
     "satisfaction": "Memnuniyet",

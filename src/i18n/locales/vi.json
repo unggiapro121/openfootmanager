@@ -625,7 +625,8 @@
       "strong": "Phát triển lớn",
       "moderate": "Vừa phải",
       "unclear": "Chưa rõ"
-    }
+    },
+    "reputationDiscountApplied": "Danh tiếng của bạn giúp mức lương cầu thủ đòi giảm {{pct}}%."
   },
   "teamSelection": {
     "title": "Chọn câu lạc bộ",
@@ -1311,6 +1312,9 @@
     "reputation": "Danh tiếng",
     "reputationChange": "{{delta}} sau mùa {{season}}",
     "reputationHistory": "Lịch sử danh tiếng",
+    "reputationPerks": "Ưu đãi danh tiếng",
+    "perkWageDiscount": "Cầu thủ chấp nhận lương thấp hơn {{pct}}%",
+    "perkSponsorUplift": "Nhà tài trợ trả thêm {{pct}}%",
     "careerStats": "Thống kê sự nghiệp",
     "boardStatus": "Đánh giá của ban lãnh đạo",
     "satisfaction": "Mức hài lòng",
