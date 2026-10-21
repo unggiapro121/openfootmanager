@@ -124,6 +124,8 @@ function crossingFlank(event: MatchEvent, lane: number): number {
 
 /** How far a player goes to a loose ball himself rather than having it come to him. */
 const FETCH_METRES = 15;
+/** A man fouled this close to the ball is on it already. */
+const FOULED_ON_BALL_METRES = 2.5;
 
 /** How deep a cross down the wing is struck from, from the attacking side's end. */
 const CROSS_DEPTH = 94;
@@ -1615,12 +1617,21 @@ export function choreographHighlights(
  * restart or a card places the ball itself.
  */
 function openingOf(first: MatchEvent, stage: RadarStage, scene: RadarScene) {
-  const starter = isAttackingPlay(first) ? first.player_id : null;
+  // A move that opens with a foul starts at the feet of the man fouled: he
+  // had the ball when it came (after GĐ5).
+  const starter = isAttackingPlay(first)
+    ? first.player_id
+    : first.event_type === "Foul"
+      ? first.secondary_player_id
+      : null;
   const standing = starter ? standingIn(stage, scene, starter) : null;
   // A move that is a long shot alone opens with the shooter in range.
   const starterAt =
     standing && first.shot_kind === "LongRange" ? longShotSpot(first.side, standing) : standing;
-  if (!starter || !starterAt || distance(starterAt, scene.ball) <= FETCH_METRES) {
+  // A man fouled has no step of his own to go to the ball: unless he is on it
+  // already, the ball comes to his feet.
+  const fetch = first.event_type === "Foul" ? FOULED_ON_BALL_METRES : FETCH_METRES;
+  if (!starter || !starterAt || distance(starterAt, scene.ball) <= fetch) {
     return blockCheck(stage, scene, first.minute);
   }
   return beatOf(stage, scene, `lead-in-${first.minute}`, [
@@ -1629,7 +1640,7 @@ function openingOf(first: MatchEvent, stage: RadarStage, scene: RadarScene) {
       ball: { at: starterAt, lift: 0 },
       resetMovers: true,
       ...(starterAt !== standing ? { movers: only(starter, starterAt) } : {}),
-      possession: first.side,
+      possession: stage.sideOf(starter) ?? first.side,
       highlight: [],
       overlay: null,
       pace: "place",
