@@ -1093,13 +1093,10 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     convert_retired_players_to_candidates(game);
     crate::generator::replenish_manager_and_scout_market(game);
 
-    // 6. Update manager career stats
-    if let Some(standing) = &user_standing {
-        let total_matches = standing.won + standing.drawn + standing.lost;
-        game.manager.career_stats.matches_managed += total_matches;
-        game.manager.career_stats.wins += standing.won;
-        game.manager.career_stats.draws += standing.drawn;
-        game.manager.career_stats.losses += standing.lost;
+    // 6. Update manager career stats: the matches were counted as they were
+    // played (`manager_career::record_match`), so only the honours and the
+    // best finish are added here.
+    if user_standing.is_some() {
         if user_position == 1 {
             game.manager.career_stats.trophies += 1;
             game.manager
@@ -1130,10 +1127,6 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
             .iter_mut()
             .find(|e| e.team_id == user_team_id && e.end_date.is_none());
         if let Some(entry) = existing {
-            entry.matches += total_matches;
-            entry.wins += standing.won;
-            entry.draws += standing.drawn;
-            entry.losses += standing.lost;
             let prev_best = entry.best_league_position;
             if prev_best.is_none() || prev_best.unwrap() > user_position {
                 entry.best_league_position = Some(user_position);
@@ -1146,10 +1139,10 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
                     team_name,
                     start_date: today_str,
                     end_date: None,
-                    matches: total_matches,
-                    wins: standing.won,
-                    draws: standing.drawn,
-                    losses: standing.lost,
+                    matches: 0,
+                    wins: 0,
+                    draws: 0,
+                    losses: 0,
                     best_league_position: Some(user_position),
                 });
         }

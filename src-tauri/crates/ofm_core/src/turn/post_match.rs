@@ -264,6 +264,14 @@ fn apply_present_day_consequences(
     }
 
     crate::manager_reputation::record_cup_won(game, fixture_index);
+    crate::manager_career::record_match(
+        game,
+        fixture_index,
+        home_team_id,
+        away_team_id,
+        report.home_goals,
+        report.away_goals,
+    );
 
     // Update board satisfaction based on match result
     if counts_for_standings
