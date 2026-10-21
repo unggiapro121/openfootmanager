@@ -331,6 +331,30 @@ fn a_region_the_player_asked_for_is_kept_alongside_the_clubs_own() {
     assert!(game.active_region_ids.contains(&infer_region_id("ENG")));
 }
 
+// ── Scenario: the user's manager ────────────────────────────────────────────
+
+/// Given a new user manager,
+/// When their career begins at a club,
+/// Then they start neutral in every play style and at the starting reputation:
+/// only AI managers are seeded with a style of their own (phase 2 C9), and a
+/// user earns both over their career.
+#[test]
+fn the_user_starts_their_career_neutral_and_at_the_starting_reputation() {
+    let mut game = world_awaiting_a_manager();
+
+    begin(&mut game, "eng-a").expect("the career begins");
+
+    assert_eq!(
+        game.manager.play_style_mastery,
+        domain::manager::PlayStyleMastery::default()
+    );
+    assert_eq!(
+        game.manager.reputation,
+        domain::manager::STARTING_REPUTATION
+    );
+    assert_eq!(game.manager.progression.season_league_matches_led, 0);
+}
+
 // ── Scenario: the players ───────────────────────────────────────────────────
 
 /// Given players who start with the generic positions a generated world gives them,

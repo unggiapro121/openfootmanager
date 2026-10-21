@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Aller sur le Terrain",
-    "goToFieldDesc": "Contrôle total du match",
+    "goToFieldDesc": "Contrôle total du match · fait progresser la maîtrise du style",
     "watchSpectator": "Regarder en Spectateur",
-    "watchSpectatorDesc": "Regarder le match sans contrôles",
+    "watchSpectatorDesc": "Regarder le match sans contrôles · sans progression de la maîtrise du style",
     "delegateAssistant": "Déléguer à l'Assistant",
-    "delegateAssistantDesc": "L'IA gère tout",
+    "delegateAssistantDesc": "L'IA gère tout · sans progression de la maîtrise du style",
     "skipToMatchDay": "Avancer au Jour de Match",
     "skipToMatchDayDesc": "Avancer jusqu'à votre prochain match",
     "matchDayTitle": "Jour de Match",
-    "delegateWarning": "Votre assistant gérera le match. Vous ne pourrez pas intervenir."
+    "delegateWarning": "Votre assistant gérera le match. Vous ne pourrez pas intervenir. Les matchs délégués ne font pas progresser la maîtrise du style."
   },
   "closeConfirm": {
     "title": "Modifications non sauvegardées",
@@ -625,7 +625,8 @@
       "strong": "Élevé",
       "moderate": "Modéré",
       "unclear": "Incertain"
-    }
+    },
+    "reputationDiscountApplied": "Votre réputation a réduit de {{pct}} % la demande du joueur."
   },
   "teamSelection": {
     "title": "Choisissez Votre Club",
@@ -944,7 +945,8 @@
     "centreBackPair": {
       "stoppers": "Deux stoppeurs en défense centrale : les deux sortent, et l'espace dans leur dos est ouvert en contre.",
       "covers": "Deux défenseurs de couverture : les deux reculent, et l'entrée de la surface reste libre."
-    }
+    },
+    "masteryEarnedHint": "La maîtrise ne progresse que lors des matchs que vous dirigez vous-même (Aller sur le Terrain)."
   },
   "training": {
     "weeklySchedule": "Calendrier Hebdomadaire",
@@ -1308,6 +1310,11 @@
   "manager": {
     "managerOf": "Entraîneur de {{team}}",
     "reputation": "Réputation",
+    "reputationChange": "{{delta}} après la saison {{season}}",
+    "reputationHistory": "Historique de réputation",
+    "reputationPerks": "Avantages de réputation",
+    "perkWageDiscount": "Les joueurs acceptent des salaires inférieurs de {{pct}} %",
+    "perkSponsorUplift": "Les sponsors paient {{pct}} % de plus",
     "careerStats": "Statistiques de Carrière",
     "boardStatus": "État de la Direction",
     "satisfaction": "Satisfaction",
@@ -1333,7 +1340,19 @@
     "fanRestless": "Les supporters s'impatientent.",
     "fanUnrest": "Agitation parmi les supporters — des protestations sont probables.",
     "playStyleMastery": "Maîtrise des styles de jeu",
-    "playStyleMasteryHint": "Votre capacité à faire passer chaque style de jeu sur le terrain. À 50, le style fonctionne tel qu'il est conçu ; au-dessus, ses forces s'accentuent et ses faiblesses s'atténuent ; en dessous, c'est l'inverse."
+    "playStyleMasteryHint": "Votre capacité à faire passer chaque style de jeu sur le terrain. À 50, le style fonctionne tel qu'il est conçu ; au-dessus, ses forces s'accentuent et ses faiblesses s'atténuent ; en dessous, c'est l'inverse.",
+    "masteryEarnedHint": "La maîtrise ne progresse que lors des matchs que vous dirigez vous-même (Aller sur le Terrain) : face à un adversaire de même niveau, une victoire rapporte {{win}} XP, un nul {{draw}} et une défaite {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Au maximum",
+    "masteryMatches": "Matchs : {{count}}",
+    "masteryNeutralStyle": "Style neutre : ne dépend pas de l'entraîneur",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Milieu",
+      "Attack": "Attaque",
+      "Defense": "Défense",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "Entraîneurs",
@@ -3159,7 +3178,10 @@
         }
       }
     },
-    "wingBackConversion": "Joue piston sans pénalité"
+    "wingBackConversion": "Joue piston sans pénalité",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Maîtrise {{mastery}}",
+    "masteryStartingStyle": "L'XP va au style avec lequel votre équipe a commencé le match"
   },
   "endOfSeason": {
     "seasonComplete": "Saison Terminée",
@@ -3614,6 +3636,15 @@
       "relegation": {
         "subject": "Relégation en {{division}}",
         "body": "Le club est relégué et évoluera en {{division}} pour la saison {{season}}.\n\nLe conseil d'administration est profondément déçu. Une remontée immédiate est attendue."
+      },
+      "managerReputation": {
+        "subject": "Bilan de réputation de la saison {{season}}",
+        "body": "Votre réputation est passée de {{before}} à {{after}} ({{delta}}) cette saison.\n\n• Résultats par rapport aux attentes : {{performance}}\n• Trophées, montées et descentes : {{honours}}\n• Prestige du club que vous dirigez : {{clubPull}}",
+        "bodyPartial": "Votre réputation est passée de {{before}} à {{after}} ({{delta}}) cette saison.\n\n• Résultats par rapport aux attentes : {{performance}}\n• Trophées, montées et descentes : {{honours}}\n• Prestige du club que vous dirigez : {{clubPull}}\n\nVous avez dirigé {{led}} des {{played}} matchs de championnat du club : seule votre part de son classement compte."
+      },
+      "styleMastery": {
+        "subject": "Maîtrise du style : {{style}} {{mastery}}",
+        "body": "L'effectif s'habitue au style {{style}} sous vos ordres : votre maîtrise atteint {{mastery}}.\n\nLa maîtrise ne progresse que lors des matchs que vous dirigez vous-même."
       },
       "worldCupChampion": {
         "subject": "{{nation}} remporte la Coupe du monde {{year}} !",
@@ -4467,6 +4498,7 @@
     "rejected": "Votre candidature n'a pas été retenue.",
     "noJobs": "Aucun poste disponible actuellement.",
     "leaguePosition": "Dernière saison : {{position}}",
+    "yourReputation": "Votre réputation : {{reputation}}. Les clubs cherchent un entraîneur de leur envergure.",
     "refresh": "Vérifier les nouvelles offres",
     "sameTeam": "Vous êtes déjà l'entraîneur de ce club.",
     "notBetterClub": "Vous ne pouvez postuler qu'à des clubs représentant une progression par rapport à votre club actuel.",

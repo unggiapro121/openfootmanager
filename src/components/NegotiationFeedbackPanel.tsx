@@ -63,6 +63,12 @@ export default function NegotiationFeedbackPanel({
         </p>
       ) : null}
 
+      {feedback.params?.reputationDiscountPct ? (
+        <p className="text-xs font-medium text-primary-700 dark:text-primary-300">
+          {t("common.reputationDiscountApplied", { pct: feedback.params.reputationDiscountPct })}
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
           <p className="text-[11px] font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">

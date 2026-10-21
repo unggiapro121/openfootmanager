@@ -689,6 +689,88 @@ export interface ManagerData {
   career_history: ManagerCareerEntry[];
   /** 1–100 per play style; absent in older payloads and test fixtures, read as 50. */
   play_style_mastery?: Partial<Record<PlayStyleId, number>>;
+  /** The user's career progression; absent in older payloads and for test fixtures. */
+  progression?: Partial<ManagerProgression>;
+}
+
+/** Mirrors the backend's `HonourKind`. */
+export type HonourKind = "League" | "DomesticCup" | "Continental" | "ClubWorld";
+
+export interface ManagerHonour {
+  competition_id: string;
+  kind: HonourKind;
+  team_id: string;
+}
+
+/** One season's review of the user's reputation, as the backend logged it. */
+export interface ReputationChange {
+  season: number;
+  team_id: string | null;
+  before: number;
+  after: number;
+  performance: number;
+  honours: number;
+  club_pull: number;
+  dismissal: number;
+  league_matches_led: number;
+  league_matches_played: number;
+}
+
+/** One play style's XP toward its next mastery point. */
+export interface StyleProgress {
+  xp: number;
+  matches: number;
+}
+
+export interface ManagerProgression {
+  reputation_log: ReputationChange[];
+  season_honours: ManagerHonour[];
+  season_league_matches_led: number;
+  season_dismissal: number;
+  style_xp: Partial<Record<PlayStyleId, StyleProgress>>;
+}
+
+/** What a match the user managed did for the style it kicked off in (backend `MasteryGain`). */
+export interface MasteryGain {
+  style: PlayStyleId;
+  xp: number;
+  mastery_before: number;
+  mastery_after: number;
+}
+
+/** Mirrors the engine's `StylePhase`. */
+export type StylePhase = "Midfield" | "Attack" | "Defense" | "Press";
+
+export interface StyleEffectView {
+  phase: StylePhase;
+  /** +18 for x1.18, -8 for x0.92. */
+  percent: number;
+}
+
+/** One play style as the manager screen shows it (backend `StyleProgressView`). */
+export interface StyleProgressView {
+  style: PlayStyleId;
+  mastery: number;
+  xp: number;
+  /** null once use can take the style no further. */
+  xp_to_next: number | null;
+  matches: number;
+  effects: StyleEffectView[];
+}
+
+/** What the user's reputation is worth at their club, in percent (backend `ReputationPerksView`). */
+export interface ReputationPerksView {
+  wage_discount_pct: number;
+  sponsor_uplift_pct: number;
+}
+
+/** The backend's `ManagerProgressionView`, with the reputation perks `get_manager_progression` adds. */
+export interface ManagerProgressionView {
+  styles: StyleProgressView[];
+  xp_for_a_win: number;
+  xp_for_a_draw: number;
+  xp_for_a_loss: number;
+  perks?: ReputationPerksView;
 }
 
 /** Mirrors the backend's `FixtureCompetition` enum. */

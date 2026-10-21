@@ -746,7 +746,12 @@ pub fn preview_sponsor_pitch(game: &Game, team_id: &str) -> Result<SponsorPitchP
 
     Ok(SponsorPitchPreview {
         sponsor_name: sponsor_pitch_partner(team_id, game.clock.current_date),
-        weekly_amount: sponsor_pitch_weekly_amount(team, &snapshot, current_position),
+        // Added after the pitch's own cap: a reputed manager draws more than
+        // any club's standing alone would (phase 2 lane M, M-5).
+        weekly_amount: crate::manager_perks::with_sponsor_uplift(
+            sponsor_pitch_weekly_amount(team, &snapshot, current_position),
+            crate::manager_perks::sponsor_uplift(game, team_id),
+        ),
         duration_weeks: SPONSOR_PITCH_DURATION_WEEKS,
     })
 }

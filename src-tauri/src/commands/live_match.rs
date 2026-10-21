@@ -934,6 +934,98 @@ mod tests {
         );
     }
 
+    // ── Play style mastery: only "go to the field" earns it (X106) ─────────
+
+    fn finish_in_mode(mode: MatchMode, step_first: Option<u16>) -> (Option<u32>, Game) {
+        let state = StateManager::new();
+        let game = make_game_with_round();
+        let mut session = live_match_manager::create_live_match(&game, 0, mode, false).unwrap();
+        if let Some(minutes) = step_first {
+            session.step_many(minutes);
+        }
+        state.set_game(game);
+        state.set_live_match(session);
+
+        let response = finish_live_match_internal(&state).expect("finish live match");
+        let game = state.get_game(|g| g.clone()).unwrap();
+        (response.mastery_gain.map(|gain| gain.xp), game)
+    }
+
+    /// Given the user takes their own league match to the field,
+    /// When it is finished,
+    /// Then it earns play style XP, reported in the response and banked.
+    #[test]
+    fn a_match_the_user_managed_earns_mastery() {
+        let (xp, game) = finish_in_mode(MatchMode::Live, None);
+
+        assert!(xp.is_some_and(|xp| xp > 0));
+        let style = game.teams[0].play_style.clone();
+        assert_eq!(
+            game.manager.progression.style_xp.for_style(&style).matches,
+            1
+        );
+    }
+
+    /// Given the user only watches their match as a spectator,
+    /// When it is finished,
+    /// Then it earns nothing: the user did not manage it.
+    #[test]
+    fn a_spectated_match_earns_no_mastery() {
+        let (xp, game) = finish_in_mode(MatchMode::Spectator, None);
+
+        assert_eq!(xp, None);
+        assert_eq!(game.manager.progression.style_xp, Default::default());
+    }
+
+    /// Given the user's match is played instantly, with nobody in their dugout,
+    /// When it is finished,
+    /// Then it earns nothing.
+    #[test]
+    fn a_match_played_without_the_user_earns_no_mastery() {
+        let state = StateManager::new();
+        let game = make_game_with_round();
+        let mut session =
+            live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
+        session.user_side = None;
+        state.set_game(game);
+        state.set_live_match(session);
+
+        let response = finish_live_match_internal(&state).expect("finish live match");
+
+        assert!(response.mastery_gain.is_none());
+    }
+
+    /// Given an agent managing the user's match finishes it at minute 30,
+    /// When the rest is played out,
+    /// Then the match still counts as managed.
+    #[test]
+    fn a_managed_match_finished_early_still_earns_mastery() {
+        let (xp, _) = finish_in_mode(MatchMode::Live, Some(30));
+
+        assert!(xp.is_some());
+    }
+
+    /// Given the user plays their match at the fastest speed, which still stops
+    /// for them at half time,
+    /// When it reaches full time and is finished,
+    /// Then it counts as managed.
+    #[test]
+    fn a_managed_match_at_full_speed_earns_mastery() {
+        let state = StateManager::new();
+        let game = make_game_with_round();
+        let mut session =
+            live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
+        while !session.is_finished() {
+            session.step_many(200);
+        }
+        state.set_game(game);
+        state.set_live_match(session);
+
+        let response = finish_live_match_internal(&state).expect("finish live match");
+
+        assert!(response.mastery_gain.is_some());
+    }
+
     // Regression: MCP match_finish could be called mid-match and persisted the
     // partial score (or a half-taken shootout) as the final result. The finish
     // path must run the remainder so the report describes a completed match.

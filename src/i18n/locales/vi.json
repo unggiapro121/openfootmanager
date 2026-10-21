@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Ra sân",
-    "goToFieldDesc": "Toàn quyền điều khiển trận đấu (mặc định)",
+    "goToFieldDesc": "Toàn quyền điều khiển trận đấu (mặc định) · tăng độ thành thạo lối chơi",
     "watchSpectator": "Xem như khán giả",
-    "watchSpectatorDesc": "Xem trận đấu, không điều khiển",
+    "watchSpectatorDesc": "Xem trận đấu, không điều khiển · không tăng độ thành thạo lối chơi",
     "delegateAssistant": "Giao cho trợ lý",
-    "delegateAssistantDesc": "AI xử lý mọi thứ ngay lập tức",
+    "delegateAssistantDesc": "AI xử lý mọi thứ ngay lập tức · không tăng độ thành thạo lối chơi",
     "skipToMatchDay": "Bỏ qua đến ngày thi đấu",
     "skipToMatchDayDesc": "Tua nhanh đến trận đấu tiếp theo của bạn",
     "matchDayTitle": "Ngày thi đấu",
-    "delegateWarning": "Trợ lý sẽ chỉ đạo trận đấu. Bạn sẽ không thể can thiệp."
+    "delegateWarning": "Trợ lý sẽ chỉ đạo trận đấu. Bạn sẽ không thể can thiệp. Trận giao cho trợ lý không làm tăng độ thành thạo lối chơi."
   },
   "exitConfirm": {
     "title": "Thoát ra menu chính?",
@@ -625,7 +625,8 @@
       "strong": "Phát triển lớn",
       "moderate": "Vừa phải",
       "unclear": "Chưa rõ"
-    }
+    },
+    "reputationDiscountApplied": "Danh tiếng của bạn giúp mức lương cầu thủ đòi giảm {{pct}}%."
   },
   "teamSelection": {
     "title": "Chọn câu lạc bộ",
@@ -944,7 +945,8 @@
     "centreBackPair": {
       "stoppers": "Hai trung vệ dâng (Stopper): cả hai cùng dâng lên, khoảng trống sau lưng bị bỏ ngỏ khi đối phương phản công.",
       "covers": "Hai trung vệ bọc lót (Cover CB): cả hai cùng lùi sâu, khu vực trước vòng cấm bị bỏ ngỏ."
-    }
+    },
+    "masteryEarnedHint": "Độ thành thạo chỉ tăng ở trận bạn tự chỉ đạo (Ra sân)."
   },
   "training": {
     "weeklySchedule": "Lịch tập hằng tuần",
@@ -1308,6 +1310,11 @@
   "manager": {
     "managerOf": "HLV của {{team}}",
     "reputation": "Danh tiếng",
+    "reputationChange": "{{delta}} sau mùa {{season}}",
+    "reputationHistory": "Lịch sử danh tiếng",
+    "reputationPerks": "Ưu đãi danh tiếng",
+    "perkWageDiscount": "Cầu thủ chấp nhận lương thấp hơn {{pct}}%",
+    "perkSponsorUplift": "Nhà tài trợ trả thêm {{pct}}%",
     "careerStats": "Thống kê sự nghiệp",
     "boardStatus": "Đánh giá của ban lãnh đạo",
     "satisfaction": "Mức hài lòng",
@@ -1333,7 +1340,19 @@
     "fanRestless": "Người hâm mộ đang mất kiên nhẫn.",
     "fanUnrest": "Người hâm mộ bất bình — có thể xảy ra biểu tình.",
     "playStyleMastery": "Sở trường chiến thuật",
-    "playStyleMasteryHint": "Mức độ bạn truyền tải từng lối chơi vào trận đấu. Ở mức 50, lối chơi vận hành đúng như thiết kế; cao hơn thì điểm mạnh rõ hơn và điểm yếu nhẹ hơn, thấp hơn thì ngược lại."
+    "playStyleMasteryHint": "Mức độ bạn truyền tải từng lối chơi vào trận đấu. Ở mức 50, lối chơi vận hành đúng như thiết kế; cao hơn thì điểm mạnh rõ hơn và điểm yếu nhẹ hơn, thấp hơn thì ngược lại.",
+    "masteryEarnedHint": "Độ thành thạo chỉ tăng ở trận bạn tự chỉ đạo (Ra sân): gặp đối thủ ngang sức, thắng được {{win}} XP, hoà {{draw}}, thua {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Tối đa",
+    "masteryMatches": "Số trận: {{count}}",
+    "masteryNeutralStyle": "Lối trung tính: không phụ thuộc HLV",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Giữa sân",
+      "Attack": "Tấn công",
+      "Defense": "Phòng ngự",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "HLV",
@@ -3159,7 +3178,10 @@
         }
       }
     },
-    "wingBackConversion": "Đá wing-back không mất điểm"
+    "wingBackConversion": "Đá wing-back không mất điểm",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Độ thành thạo {{mastery}}",
+    "masteryStartingStyle": "XP được tính cho lối chơi lúc giao bóng"
   },
   "endOfSeason": {
     "seasonComplete": "Mùa giải kết thúc",
@@ -3614,6 +3636,15 @@
       "relegation": {
         "subject": "Xuống hạng {{division}}",
         "body": "Câu lạc bộ đã xuống hạng và sẽ thi đấu ở {{division}} trong mùa giải {{season}}.\n\nBan lãnh đạo vô cùng thất vọng. Chúng tôi kỳ vọng đội sẽ lập tức trở lại cuộc đua thăng hạng."
+      },
+      "managerReputation": {
+        "subject": "Đánh giá danh tiếng mùa {{season}}",
+        "body": "Danh tiếng của bạn đổi từ {{before}} thành {{after}} ({{delta}}) sau mùa giải này.\n\n• Thành tích so với kỳ vọng: {{performance}}\n• Danh hiệu, thăng hạng và xuống hạng: {{honours}}\n• Tầm vóc CLB bạn dẫn dắt: {{clubPull}}",
+        "bodyPartial": "Danh tiếng của bạn đổi từ {{before}} thành {{after}} ({{delta}}) sau mùa giải này.\n\n• Thành tích so với kỳ vọng: {{performance}}\n• Danh hiệu, thăng hạng và xuống hạng: {{honours}}\n• Tầm vóc CLB bạn dẫn dắt: {{clubPull}}\n\nBạn dẫn dắt {{led}} trên {{played}} trận đấu giải của CLB, nên chỉ phần đó của thứ hạng được tính cho bạn."
+      },
+      "styleMastery": {
+        "subject": "Độ thành thạo lối chơi: {{style}} {{mastery}}",
+        "body": "Đội đang quen dần với lối {{style}} dưới sự dẫn dắt của bạn: độ thành thạo đã đạt {{mastery}}.\n\nĐộ thành thạo chỉ tăng ở những trận bạn tự chỉ đạo."
       },
       "worldCupChampion": {
         "subject": "{{nation}} vô địch World Cup {{year}}!",
@@ -4467,6 +4498,7 @@
     "rejected": "Hồ sơ ứng tuyển của bạn không thành công.",
     "noJobs": "Hiện không có vị trí nào.",
     "leaguePosition": "Mùa trước: {{position}}",
+    "yourReputation": "Danh tiếng của bạn: {{reputation}}. Các CLB tìm HLV có tầm vóc tương xứng.",
     "refresh": "Kiểm tra vị trí mới",
     "sameTeam": "Bạn đang dẫn dắt câu lạc bộ đó rồi.",
     "notBetterClub": "Bạn chỉ có thể ứng tuyển vào những câu lạc bộ lớn hơn câu lạc bộ hiện tại.",

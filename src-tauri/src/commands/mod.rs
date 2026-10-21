@@ -4,6 +4,7 @@ pub mod finances;
 pub mod game;
 pub mod jobs;
 pub mod live_match;
+pub mod manager_progression;
 pub mod messages;
 pub mod offer_replies;
 pub mod package_csv;
@@ -32,6 +33,7 @@ pub use finances::*;
 pub use game::*;
 pub use jobs::*;
 pub use live_match::*;
+pub use manager_progression::*;
 pub use messages::*;
 pub use package_csv::{export_players_csv, export_teams_csv};
 pub use package_editor::{

@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Go to the Field",
-    "goToFieldDesc": "Full match control (default)",
+    "goToFieldDesc": "Full match control (default) · grows play style mastery",
     "watchSpectator": "Watch as Spectator",
-    "watchSpectatorDesc": "Watch the match, no controls",
+    "watchSpectatorDesc": "Watch the match, no controls · no play style mastery gained",
     "delegateAssistant": "Delegate to Assistant",
-    "delegateAssistantDesc": "AI handles everything instantly",
+    "delegateAssistantDesc": "AI handles everything instantly · no play style mastery gained",
     "skipToMatchDay": "Skip to Match Day",
     "skipToMatchDayDesc": "Fast-forward to your next fixture",
     "matchDayTitle": "Match Day",
-    "delegateWarning": "Your assistant will manage the match. You won't be able to intervene."
+    "delegateWarning": "Your assistant will manage the match. You won't be able to intervene. Delegated matches do not grow play style mastery."
   },
   "exitConfirm": {
     "title": "Exit to Main Menu?",
@@ -625,7 +625,8 @@
       "strong": "Strong",
       "moderate": "Moderate",
       "unclear": "Unclear"
-    }
+    },
+    "reputationDiscountApplied": "Your reputation took {{pct}}% off the player's demand."
   },
   "teamSelection": {
     "title": "Choose Your Club",
@@ -944,7 +945,8 @@
     "centreBackPair": {
       "stoppers": "Two Stoppers at centre-back: both step out, and the space behind them is left open on the break.",
       "covers": "Two Cover CBs at centre-back: both drop off, and the edge of the box is left open."
-    }
+    },
+    "masteryEarnedHint": "Mastery grows only in matches you manage yourself (Go to the Field)."
   },
   "training": {
     "weeklySchedule": "Weekly Schedule",
@@ -1308,6 +1310,11 @@
   "manager": {
     "managerOf": "Manager of {{team}}",
     "reputation": "Reputation",
+    "reputationChange": "{{delta}} after season {{season}}",
+    "reputationHistory": "Reputation History",
+    "reputationPerks": "Reputation Perks",
+    "perkWageDiscount": "Players accept wages {{pct}}% lower",
+    "perkSponsorUplift": "Sponsors pay {{pct}}% more",
     "careerStats": "Career Statistics",
     "boardStatus": "Board Status",
     "satisfaction": "Satisfaction",
@@ -1333,7 +1340,19 @@
     "fanRestless": "Fans are growing restless.",
     "fanUnrest": "Fan unrest — protests likely.",
     "playStyleMastery": "Play Style Mastery",
-    "playStyleMasteryHint": "How well you get each play style across in a match. At 50 a style plays as designed; higher sharpens its strengths and softens its weaknesses, lower does the reverse."
+    "playStyleMasteryHint": "How well you get each play style across in a match. At 50 a style plays as designed; higher sharpens its strengths and softens its weaknesses, lower does the reverse.",
+    "masteryEarnedHint": "Mastery grows only in matches you manage yourself (Go to the Field): against an equal side a win is worth {{win}} XP, a draw {{draw}}, a defeat {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Maximum",
+    "masteryMatches": "Matches: {{count}}",
+    "masteryNeutralStyle": "Neutral style: not shaped by the manager",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Midfield",
+      "Attack": "Attack",
+      "Defense": "Defence",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "Managers",
@@ -3159,7 +3178,10 @@
         }
       }
     },
-    "wingBackConversion": "Plays wing-back at no cost"
+    "wingBackConversion": "Plays wing-back at no cost",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Mastery {{mastery}}",
+    "masteryStartingStyle": "XP goes to the play style your side kicked off in"
   },
   "endOfSeason": {
     "seasonComplete": "Season Complete",
@@ -3614,6 +3636,15 @@
       "relegation": {
         "subject": "Relegated to the {{division}}",
         "body": "The club has been relegated and will play in the {{division}} in Season {{season}}.\n\nThe board is deeply disappointed. An immediate push for promotion is expected."
+      },
+      "managerReputation": {
+        "subject": "Season {{season}} reputation review",
+        "body": "Your reputation moved from {{before}} to {{after}} ({{delta}}) this season.\n\n• Results against expectations: {{performance}}\n• Trophies, promotion and relegation: {{honours}}\n• Standing of the club you lead: {{clubPull}}",
+        "bodyPartial": "Your reputation moved from {{before}} to {{after}} ({{delta}}) this season.\n\n• Results against expectations: {{performance}}\n• Trophies, promotion and relegation: {{honours}}\n• Standing of the club you lead: {{clubPull}}\n\nYou led {{led}} of the club's {{played}} league matches, so only your share of its finish counts."
+      },
+      "styleMastery": {
+        "subject": "Play style mastery: {{style}} {{mastery}}",
+        "body": "The squad is growing used to {{style}} under you: your mastery of it has reached {{mastery}}.\n\nMastery grows only in matches you manage yourself."
       },
       "worldCupChampion": {
         "subject": "{{nation}} win the {{year}} World Cup!",
@@ -4467,6 +4498,7 @@
     "rejected": "Your application was unsuccessful.",
     "noJobs": "No positions currently available.",
     "leaguePosition": "Last Season: {{position}}",
+    "yourReputation": "Your reputation: {{reputation}}. Clubs look for a manager of their own standing.",
     "refresh": "Check for new positions",
     "sameTeam": "You are already managing that club.",
     "notBetterClub": "You can only apply for clubs that are a step up from your current one.",

@@ -65,8 +65,22 @@ pub(crate) fn backend_text_with_param(key: &str, param_name: &str, param_value: 
 /// not ask a star's wage the first time he signs again, which no club's budget
 /// could absorb in one go.
 pub(crate) fn expected_wage(player: &Player, team: &Team, current_date: NaiveDate) -> u32 {
+    expected_wage_with_discount(player, team, current_date, 0.0)
+}
+
+/// [`expected_wage`] for a club whose manager's reputation earns `discount`
+/// off (`manager_perks::wage_discount`): the club's rate is lowered before the
+/// player meets it halfway, and the floor of what he would take still holds,
+/// so a player under contract is never pushed below 85% of his wage.
+pub(crate) fn expected_wage_with_discount(
+    player: &Player,
+    team: &Team,
+    current_date: NaiveDate,
+    discount: f64,
+) -> u32 {
     const MAX_RAISE_PERCENT: i64 = 30;
-    let target = target_wage_at(player, team, current_date);
+    let undiscounted = target_wage_at(player, team, current_date);
+    let target = (f64::from(undiscounted) * (1.0 - discount.clamp(0.0, 1.0))).ceil() as u32;
     let current = player.wage();
     let asked = if current == 0 {
         target
@@ -212,4 +226,140 @@ pub(crate) fn contract_days_remaining(
 ) -> Option<i64> {
     let contract_end_date = parse_contract_date(contract_end?)?;
     Some((contract_end_date - current_date).num_days())
+}
+
+/// What the user's reputation takes off asks at their own club: 0 out of work.
+pub(crate) fn users_wage_discount(game: &crate::game::Game) -> f64 {
+    game.manager.team_id.as_deref().map_or(0.0, |team_id| {
+        crate::manager_perks::wage_discount(game, team_id)
+    })
+}
+
+/// Tell the user, through the talks' own feedback, that their reputation
+/// lowered the player's ask: `reputationDiscountPct`, e.g. "15" or "7.5".
+pub(crate) fn note_reputation_discount(outcome: &mut super::RenewalOutcome, discount: f64) {
+    if discount <= 0.0 {
+        return;
+    }
+    let Some(feedback) = outcome.feedback.as_mut() else {
+        return;
+    };
+    let percent = format!("{:.1}", discount * 100.0);
+    let percent = percent.strip_suffix(".0").unwrap_or(&percent).to_string();
+    feedback
+        .params
+        .insert("reputationDiscountPct".to_string(), percent);
+}
+
+#[cfg(test)]
+mod discount_tests {
+    use super::*;
+    use domain::player::{PlayerAttributes, Position};
+
+    fn player() -> Player {
+        let mut player = Player::new(
+            "p".to_string(),
+            "P".to_string(),
+            "Player".to_string(),
+            "2000-01-01".to_string(),
+            "England".to_string(),
+            Position::Forward,
+            PlayerAttributes {
+                pace: 70,
+                stamina: 70,
+                strength: 70,
+                agility: 70,
+                passing: 70,
+                shooting: 70,
+                tackling: 50,
+                dribbling: 70,
+                defending: 50,
+                positioning: 70,
+                vision: 70,
+                decisions: 70,
+                composure: 70,
+                aggression: 50,
+                teamwork: 70,
+                leadership: 50,
+                handling: 20,
+                reflexes: 20,
+                aerial: 60,
+                long_passing: 0,
+                crossing: 0,
+                curve: 0,
+                free_kick: 0,
+                long_shots: 0,
+                first_touch: 0,
+                heading: 0,
+            },
+        );
+        player.market_value = 20_000_000;
+        player.morale = 70;
+        player
+    }
+
+    fn club() -> Team {
+        let mut team = Team::new(
+            "club".to_string(),
+            "Club FC".to_string(),
+            "CLB".to_string(),
+            "England".to_string(),
+            "City".to_string(),
+            "Ground".to_string(),
+            40_000,
+        );
+        team.reputation = 750;
+        team
+    }
+
+    fn today() -> NaiveDate {
+        NaiveDate::from_ymd_opt(2026, 8, 1).unwrap()
+    }
+
+    /// Given a free agent,
+    /// When a club whose manager earns 15% off names his terms,
+    /// Then he asks about 15% less than he would of any other club.
+    #[test]
+    fn a_free_agent_asks_less_of_a_reputed_manager() {
+        let player = player();
+        let full = expected_wage(&player, &club(), today());
+
+        let discounted = expected_wage_with_discount(&player, &club(), today(), 0.15);
+
+        assert!(discounted < full, "{discounted} vs {full}");
+        let expected = f64::from(full) * 0.85;
+        assert!(
+            (f64::from(discounted) - expected).abs() <= 1_000.0,
+            "{discounted} vs about {expected}"
+        );
+    }
+
+    /// Given no discount,
+    /// When the terms are named,
+    /// Then they are exactly the undiscounted ones.
+    #[test]
+    fn no_discount_changes_nothing() {
+        let player = player();
+
+        assert_eq!(
+            expected_wage_with_discount(&player, &club(), today(), 0.0),
+            expected_wage(&player, &club(), today())
+        );
+    }
+
+    /// Given a player on a wage far above the club's rate,
+    /// When the reputed manager's club names his terms,
+    /// Then he still never asks less than 85% of what he is paid.
+    #[test]
+    fn a_discount_never_pushes_a_player_below_his_floor() {
+        let mut player = player();
+        player.stage_wage(400_000);
+
+        let discounted = expected_wage_with_discount(&player, &club(), today(), 0.15);
+
+        assert!(
+            discounted >= minimum_acceptable_wage(400_000),
+            "{discounted}"
+        );
+    }
 }

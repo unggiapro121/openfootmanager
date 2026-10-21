@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Vai in campo",
-    "goToFieldDesc": "Controllo completo della partita (predefinito)",
+    "goToFieldDesc": "Controllo completo della partita (predefinito) · aumenta la padronanza dello stile",
     "watchSpectator": "Guarda da spettatore",
-    "watchSpectatorDesc": "Guarda la partita, senza controlli",
+    "watchSpectatorDesc": "Guarda la partita, senza controlli · nessun aumento della padronanza dello stile",
     "delegateAssistant": "Delega all'assistente",
-    "delegateAssistantDesc": "L'IA gestisce tutto istantaneamente",
+    "delegateAssistantDesc": "L'IA gestisce tutto istantaneamente · nessun aumento della padronanza dello stile",
     "skipToMatchDay": "Salta al giorno partita",
     "skipToMatchDayDesc": "Avanza rapidamente fino alla prossima gara",
     "matchDayTitle": "Giorno partita",
-    "delegateWarning": "Il tuo assistente gestirà la partita. Non potrai intervenire."
+    "delegateWarning": "Il tuo assistente gestirà la partita. Non potrai intervenire. Le partite delegate non aumentano la padronanza dello stile."
   },
   "exitConfirm": {
     "title": "Uscire al menu principale?",
@@ -644,7 +644,8 @@
       "strong": "Elevato",
       "moderate": "Moderato",
       "unclear": "Incerto"
-    }
+    },
+    "reputationDiscountApplied": "La tua reputazione ha ridotto del {{pct}}% la richiesta del giocatore."
   },
   "teamSelection": {
     "title": "Scegli il tuo club",
@@ -963,7 +964,8 @@
     "centreBackPair": {
       "stoppers": "Due stopper al centro della difesa: escono entrambi e lo spazio alle loro spalle resta libero in contropiede.",
       "covers": "Due centrali di copertura: arretrano entrambi e il limite dell'area resta libero."
-    }
+    },
+    "masteryEarnedHint": "La padronanza cresce solo nelle partite che guidi tu (Vai in campo)."
   },
   "training": {
     "weeklySchedule": "Programma settimanale",
@@ -1327,6 +1329,11 @@
   "manager": {
     "managerOf": "Allenatore di {{team}}",
     "reputation": "Reputazione",
+    "reputationChange": "{{delta}} dopo la stagione {{season}}",
+    "reputationHistory": "Storico reputazione",
+    "reputationPerks": "Vantaggi della reputazione",
+    "perkWageDiscount": "I giocatori accettano stipendi più bassi del {{pct}}%",
+    "perkSponsorUplift": "Gli sponsor pagano il {{pct}}% in più",
     "careerStats": "Statistiche carriera",
     "boardStatus": "Stato dirigenza",
     "satisfaction": "Soddisfazione",
@@ -1352,7 +1359,19 @@
     "fanRestless": "I tifosi stanno diventando irrequieti.",
     "fanUnrest": "Agitazione tra i tifosi — probabili proteste.",
     "playStyleMastery": "Padronanza degli stili di gioco",
-    "playStyleMasteryHint": "Quanto riesci a trasmettere ogni stile di gioco in partita. A 50 lo stile funziona come previsto; più in alto i punti di forza si accentuano e le debolezze si attenuano, più in basso accade il contrario."
+    "playStyleMasteryHint": "Quanto riesci a trasmettere ogni stile di gioco in partita. A 50 lo stile funziona come previsto; più in alto i punti di forza si accentuano e le debolezze si attenuano, più in basso accade il contrario.",
+    "masteryEarnedHint": "La padronanza cresce solo nelle partite che guidi tu (Vai in campo): contro un avversario alla pari, una vittoria vale {{win}} XP, un pareggio {{draw}} e una sconfitta {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Massimo",
+    "masteryMatches": "Partite: {{count}}",
+    "masteryNeutralStyle": "Stile neutro: non dipende dall'allenatore",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Centrocampo",
+      "Attack": "Attacco",
+      "Defense": "Difesa",
+      "Press": "Pressing"
+    }
   },
   "managersWorld": {
     "title": "Allenatori",
@@ -3178,7 +3197,10 @@
         }
       }
     },
-    "wingBackConversion": "Gioca da quinto senza penalità"
+    "wingBackConversion": "Gioca da quinto senza penalità",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Padronanza {{mastery}}",
+    "masteryStartingStyle": "L'XP va allo stile con cui la tua squadra ha iniziato la partita"
   },
   "notifications": {
     "attentionRequired": "Attenzione Richiesta",
@@ -3631,6 +3653,15 @@
       "relegation": {
         "subject": "Retrocessione in {{division}}",
         "body": "Il club è retrocesso e giocherà in {{division}} nella stagione {{season}}.\n\nLa dirigenza è profondamente delusa. Ci si aspetta una risalita immediata."
+      },
+      "managerReputation": {
+        "subject": "Valutazione della reputazione della stagione {{season}}",
+        "body": "La tua reputazione è passata da {{before}} a {{after}} ({{delta}}) in questa stagione.\n\n• Risultati rispetto alle attese: {{performance}}\n• Trofei, promozioni e retrocessioni: {{honours}}\n• Prestigio del club che guidi: {{clubPull}}",
+        "bodyPartial": "La tua reputazione è passata da {{before}} a {{after}} ({{delta}}) in questa stagione.\n\n• Risultati rispetto alle attese: {{performance}}\n• Trofei, promozioni e retrocessioni: {{honours}}\n• Prestigio del club che guidi: {{clubPull}}\n\nHai guidato {{led}} delle {{played}} partite di campionato del club, quindi conta solo la tua parte del piazzamento."
+      },
+      "styleMastery": {
+        "subject": "Padronanza dello stile: {{style}} {{mastery}}",
+        "body": "La squadra si sta abituando allo stile {{style}} sotto la tua guida: la tua padronanza ha raggiunto {{mastery}}.\n\nLa padronanza cresce solo nelle partite che guidi tu."
       },
       "worldCupChampion": {
         "subject": "{{nation}} vince il Mondiale {{year}}!",
@@ -4467,6 +4498,7 @@
     "rejected": "La tua candidatura non è andata a buon fine.",
     "noJobs": "Nessuna posizione disponibile al momento.",
     "leaguePosition": "Ultima stagione: {{position}}",
+    "yourReputation": "La tua reputazione: {{reputation}}. I club cercano un allenatore del loro livello.",
     "refresh": "Cerca nuove posizioni",
     "sameTeam": "Sei già l'allenatore di quel club.",
     "notBetterClub": "Puoi candidarti solo per club che rappresentano un passo avanti rispetto al tuo attuale.",

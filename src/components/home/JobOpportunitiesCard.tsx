@@ -143,6 +143,9 @@ export default function JobOpportunitiesCard({
         </div>
       </CardHeader>
       <CardBody>
+        <p className="mb-3 text-xs text-gray-500 dark:text-gray-400">
+          {t("jobs.yourReputation", { reputation: gameState.manager?.reputation ?? 0 })}
+        </p>
         {feedback && (
           <div
             className={`mb-3 rounded-lg px-3 py-2 text-sm font-medium ${

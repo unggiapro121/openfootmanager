@@ -1,6 +1,7 @@
-//! A manager's command of each play style, rolled once when they are created.
+//! A manager's command of each play style: rolled once when an AI manager is
+//! created, and grown by the user's own matches (phase 2 lane M, M-2).
 
-use domain::manager::{ALL_PLAY_STYLES, Manager, PlayStyleMastery};
+use domain::manager::{ALL_PLAY_STYLES, Manager, NEUTRAL_MASTERY, PlayStyleMastery};
 use domain::team::PlayStyle;
 use rand::rngs::StdRng;
 use rand::{RngExt, SeedableRng};
@@ -42,6 +43,284 @@ pub(crate) fn roll_play_style_mastery(manager: &mut Manager, preferred: Option<P
         mastery.set(&style, (rating + offset).clamp(1, 100) as u8);
     }
     manager.play_style_mastery = mastery;
+}
+
+// ---------------------------------------------------------------------------
+// The user's mastery, earned by use (làn-M-tech-spec §6)
+// ---------------------------------------------------------------------------
+
+/// XP a match is worth before its result and opponent are weighed.
+const MATCH_BASE_XP: f64 = 10.0;
+const WIN_MULTIPLIER: f64 = 1.5;
+const DRAW_MULTIPLIER: f64 = 1.0;
+const LOSS_MULTIPLIER: f64 = 0.7;
+/// Strength points (`S`) of difference that move a match's XP by its whole
+/// base: beating a side 10 stronger is worth ×1.25, one 10 weaker ×0.75. At 40
+/// every club earns about the same XP a match over a season (analysis F1).
+const OPPONENT_STRENGTH_SCALE: f64 = 40.0;
+const OPPONENT_MULTIPLIER_MIN: f64 = 0.5;
+const OPPONENT_MULTIPLIER_MAX: f64 = 1.5;
+/// The two pieces of the cost curve, chosen so that at about 11 XP a match
+/// mastery reaches 60 in a season (~51 matches), 80 in ~400 and 99 in ~1,800
+/// (Q-M1). They meet at 80, where a point costs 397 XP either side.
+const XP_LOW_BASE: f64 = 37.7;
+const XP_LOW_RATE: f64 = 0.0785;
+const XP_HIGH_BASE: f64 = 397.0;
+const XP_HIGH_RATE: f64 = 0.071;
+const XP_CURVE_BREAK: u8 = 80;
+/// Use takes mastery this far; 100 is only ever rolled for an AI manager.
+const MASTERY_XP_CAP: u8 = 99;
+
+/// A match's result, from the user's side, as XP weighs it. A shootout does
+/// not count: a tie level after extra time is a draw.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MatchOutcome {
+    Won,
+    Drawn,
+    Lost,
+}
+
+/// XP it costs to raise `mastery` by one point. A mastery below neutral costs
+/// as neutral does.
+pub(crate) fn xp_to_next(mastery: u8) -> u32 {
+    let mastery = f64::from(mastery.max(NEUTRAL_MASTERY));
+    let cost = if mastery < f64::from(XP_CURVE_BREAK) {
+        XP_LOW_BASE * (XP_LOW_RATE * (mastery - f64::from(NEUTRAL_MASTERY))).exp()
+    } else {
+        XP_HIGH_BASE * (XP_HIGH_RATE * (mastery - f64::from(XP_CURVE_BREAK))).exp()
+    };
+    cost.round() as u32
+}
+
+/// XP a match the user managed is worth.
+pub(crate) fn match_xp(outcome: MatchOutcome, own_strength: f64, opponent_strength: f64) -> u32 {
+    let result = match outcome {
+        MatchOutcome::Won => WIN_MULTIPLIER,
+        MatchOutcome::Drawn => DRAW_MULTIPLIER,
+        MatchOutcome::Lost => LOSS_MULTIPLIER,
+    };
+    let opponent = (1.0 + (opponent_strength - own_strength) / OPPONENT_STRENGTH_SCALE)
+        .clamp(OPPONENT_MULTIPLIER_MIN, OPPONENT_MULTIPLIER_MAX);
+    (MATCH_BASE_XP * result * opponent).round() as u32
+}
+
+/// Bank `xp` in `style` for `manager` and raise its mastery a point at a time
+/// while the bank covers the next point, up to the cap. Returns the mastery
+/// before and after.
+pub(crate) fn add_style_xp(manager: &mut Manager, style: &PlayStyle, xp: u32) -> (u8, u8) {
+    let before = manager.play_style_mastery.for_style(style);
+    let progress = manager.progression.style_xp.for_style_mut(style);
+    progress.xp = progress.xp.saturating_add(xp);
+
+    let mut mastery = before;
+    while mastery < MASTERY_XP_CAP && progress.xp >= xp_to_next(mastery) {
+        progress.xp -= xp_to_next(mastery);
+        mastery += 1;
+    }
+    manager.play_style_mastery.set(style, mastery);
+    (before, mastery)
+}
+
+/// What a match the user managed did for their mastery of the style their
+/// side started it in.
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct MasteryGain {
+    pub style: PlayStyle,
+    pub xp: u32,
+    pub mastery_before: u8,
+    pub mastery_after: u8,
+}
+
+/// Credit a match the user managed themselves to the style their side kicked
+/// off in (X99), when it is a competitive club match their club played (X97).
+/// Only the "go to the field" path calls this (X106): a match handed to the
+/// assistant or watched as a spectator earns nothing.
+pub fn credit_managed_match(
+    game: &mut crate::game::Game,
+    report: &engine::MatchReport,
+    competition: &domain::league::FixtureCompetition,
+    home_team_id: &str,
+    away_team_id: &str,
+) -> Option<MasteryGain> {
+    use domain::league::FixtureCompetition;
+    let earns_mastery = matches!(
+        competition,
+        FixtureCompetition::League
+            | FixtureCompetition::Cup
+            | FixtureCompetition::ContinentalClub
+            | FixtureCompetition::InternationalClub
+    );
+    let user_team_id = game.manager.team_id.clone()?;
+    if !earns_mastery {
+        return None;
+    }
+    let (own_goals, opponent_goals, own_sheet, opponent_id) = if user_team_id == home_team_id {
+        (
+            report.home_goals,
+            report.away_goals,
+            report.home_sheet.as_ref(),
+            away_team_id,
+        )
+    } else if user_team_id == away_team_id {
+        (
+            report.away_goals,
+            report.home_goals,
+            report.away_sheet.as_ref(),
+            home_team_id,
+        )
+    } else {
+        return None;
+    };
+
+    let style = match own_sheet {
+        Some(sheet) => crate::live_match_manager::domain_play_style(sheet.play_style),
+        None => game
+            .teams
+            .iter()
+            .find(|team| team.id == user_team_id)?
+            .play_style
+            .clone(),
+    };
+    let outcome = match own_goals.cmp(&opponent_goals) {
+        std::cmp::Ordering::Greater => MatchOutcome::Won,
+        std::cmp::Ordering::Equal => MatchOutcome::Drawn,
+        std::cmp::Ordering::Less => MatchOutcome::Lost,
+    };
+    // A side whose strength cannot be read weighs as an equal one.
+    let own_strength = crate::team_strength::club_strength(game, &user_team_id);
+    let opponent_strength = crate::team_strength::club_strength(game, opponent_id);
+    let (own, opponent) = match (own_strength, opponent_strength) {
+        (Some(own), Some(opponent)) => (own.strength, opponent.strength),
+        _ => (0.0, 0.0),
+    };
+    let xp = match_xp(outcome, own, opponent);
+
+    let (mastery_before, mastery_after) = add_style_xp(&mut game.manager, &style, xp);
+    game.manager
+        .progression
+        .style_xp
+        .for_style_mut(&style)
+        .matches += 1;
+    announce_mastery_milestone(game, &style, mastery_before, mastery_after);
+    game.sync_user_manager_record();
+
+    Some(MasteryGain {
+        style,
+        xp,
+        mastery_before,
+        mastery_after,
+    })
+}
+
+/// Mastery milestones the user is told about: every fifth point. One match can
+/// cross several points early on, so it sends at most one message, for the
+/// highest milestone it reached.
+const MASTERY_MILESTONE: u8 = 5;
+
+fn announce_mastery_milestone(
+    game: &mut crate::game::Game,
+    style: &PlayStyle,
+    before: u8,
+    after: u8,
+) {
+    let milestone = after - after % MASTERY_MILESTONE;
+    if milestone <= before {
+        return;
+    }
+    let message_id = format!("style_mastery_{style:?}_{milestone}");
+    if crate::inbox::already_emitted(game, &message_id) {
+        return;
+    }
+    let params: std::collections::HashMap<String, String> = [
+        ("style".to_string(), format!("common.playStyles.{style:?}")),
+        ("mastery".to_string(), milestone.to_string()),
+    ]
+    .into_iter()
+    .collect();
+    let today = game.clock.current_date.format("%Y-%m-%d").to_string();
+    let message = domain::message::InboxMessage::new(
+        message_id,
+        String::new(),
+        String::new(),
+        String::new(),
+        today,
+    )
+    .with_category(domain::message::MessageCategory::Training)
+    .with_priority(domain::message::MessagePriority::Normal)
+    .with_sender_role("")
+    .with_i18n(
+        "be.msg.styleMastery.subject",
+        "be.msg.styleMastery.body",
+        params,
+    )
+    .with_sender_i18n("be.sender.assistantManager", "be.role.assistantManager");
+    crate::inbox::emit(game, message);
+}
+
+/// One play style as the manager screen shows it: where the user stands, how
+/// far the next point is, and what the style does to the side at this mastery.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct StyleProgressView {
+    pub style: PlayStyle,
+    pub mastery: u8,
+    /// XP banked toward the next point.
+    pub xp: u32,
+    /// What the next point costs; `None` once use can take it no further.
+    pub xp_to_next: Option<u32>,
+    pub matches: u32,
+    /// The style's multipliers at this mastery, as percentages off neutral.
+    pub effects: Vec<StyleEffectView>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct StyleEffectView {
+    pub phase: engine::StylePhase,
+    /// `+18` for ×1.18, `-8` for ×0.92.
+    pub percent: i32,
+}
+
+/// The user's mastery of every play style, with what one managed match against
+/// an equal side is worth for each result.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct ManagerProgressionView {
+    pub styles: Vec<StyleProgressView>,
+    pub xp_for_a_win: u32,
+    pub xp_for_a_draw: u32,
+    pub xp_for_a_loss: u32,
+}
+
+pub fn manager_progression_view(manager: &Manager) -> ManagerProgressionView {
+    let styles = ALL_PLAY_STYLES
+        .iter()
+        .map(|style| {
+            let mastery = manager.play_style_mastery.for_style(style);
+            let progress = manager.progression.style_xp.for_style(style);
+            let effects = engine::play_style_effects(
+                crate::live_match_manager::engine_play_style(style),
+                mastery,
+            )
+            .into_iter()
+            .map(|(phase, multiplier)| StyleEffectView {
+                phase,
+                percent: ((multiplier - 1.0) * 100.0).round() as i32,
+            })
+            .collect();
+            StyleProgressView {
+                style: style.clone(),
+                mastery,
+                xp: progress.xp,
+                xp_to_next: (mastery < MASTERY_XP_CAP).then(|| xp_to_next(mastery)),
+                matches: progress.matches,
+                effects,
+            }
+        })
+        .collect();
+    ManagerProgressionView {
+        styles,
+        xp_for_a_win: match_xp(MatchOutcome::Won, 0.0, 0.0),
+        xp_for_a_draw: match_xp(MatchOutcome::Drawn, 0.0, 0.0),
+        xp_for_a_loss: match_xp(MatchOutcome::Lost, 0.0, 0.0),
+    }
 }
 
 #[cfg(test)]
@@ -141,5 +420,146 @@ mod tests {
             assert!(manager.play_style_mastery.for_style(&style) <= 100);
         }
         assert_eq!(manager.play_style_mastery.possession, 100);
+    }
+
+    // ── Mastery earned by use ───────────────────────────────────────────────
+
+    fn neutral_manager() -> Manager {
+        manager("mgr_user", 500)
+    }
+
+    /// Given the cost curve,
+    /// When the price of a point is read at its anchors,
+    /// Then 50 costs 38, 79 costs 367, and 80 costs 397 (the two pieces meet).
+    #[test]
+    fn the_cost_of_a_point_follows_the_curve() {
+        assert_eq!(xp_to_next(50), 38);
+        assert_eq!(xp_to_next(79), 367);
+        assert_eq!(xp_to_next(80), 397);
+        assert_eq!(xp_to_next(30), 38, "below neutral costs as neutral");
+    }
+
+    /// Given a user at 50 earning 11 XP a match,
+    /// When matches are played,
+    /// Then mastery reaches 60 after 51 matches, 80 after 401 and 99 after
+    /// 1,800 — the milestones of Q-M1 to within the rounding of each point.
+    #[test]
+    fn mastery_reaches_the_milestones_at_eleven_xp_a_match() {
+        let mastery_after = |matches: u32| {
+            let mut manager = neutral_manager();
+            for _ in 0..matches {
+                add_style_xp(&mut manager, &PlayStyle::Counter, 11);
+            }
+            manager.play_style_mastery.counter
+        };
+
+        assert_eq!(mastery_after(50), 59);
+        assert_eq!(mastery_after(51), 60);
+        assert_eq!(mastery_after(400), 79);
+        assert_eq!(mastery_after(401), 80);
+        assert_eq!(mastery_after(1_800), 99);
+    }
+
+    /// Given a user at 99,
+    /// When they earn more XP,
+    /// Then mastery stays at 99 and the XP is still banked.
+    #[test]
+    fn use_never_takes_mastery_past_ninety_nine() {
+        let mut manager = neutral_manager();
+        manager.play_style_mastery.possession = 99;
+
+        let (before, after) = add_style_xp(&mut manager, &PlayStyle::Possession, 5_000);
+
+        assert_eq!((before, after), (99, 99));
+        assert_eq!(manager.progression.style_xp.possession.xp, 5_000);
+    }
+
+    /// Given XP banked in one style,
+    /// When it is spent,
+    /// Then only that style moves and the remainder carries over.
+    #[test]
+    fn xp_carries_over_within_its_own_style() {
+        let mut manager = neutral_manager();
+
+        let (before, after) = add_style_xp(&mut manager, &PlayStyle::Defensive, 40);
+
+        assert_eq!((before, after), (50, 51));
+        assert_eq!(manager.progression.style_xp.defensive.xp, 2);
+        assert_eq!(manager.play_style_mastery.attacking, 50);
+    }
+
+    /// Given two sides of equal strength,
+    /// When a match is won, drawn or lost,
+    /// Then it is worth 15, 10 or 7 XP.
+    #[test]
+    fn the_result_sets_a_matchs_worth() {
+        assert_eq!(match_xp(MatchOutcome::Won, 75.0, 75.0), 15);
+        assert_eq!(match_xp(MatchOutcome::Drawn, 75.0, 75.0), 10);
+        assert_eq!(match_xp(MatchOutcome::Lost, 75.0, 75.0), 7);
+    }
+
+    /// Given a win,
+    /// When the opponent is 10 stronger, 10 weaker, or far beyond either way,
+    /// Then it is worth ×1.25, ×0.75, and never more than ×1.5 or less than ×0.5.
+    #[test]
+    fn the_opponents_strength_weighs_a_win() {
+        assert_eq!(match_xp(MatchOutcome::Won, 70.0, 80.0), 19);
+        assert_eq!(match_xp(MatchOutcome::Won, 80.0, 70.0), 11);
+        assert_eq!(match_xp(MatchOutcome::Won, 50.0, 90.0), 23);
+        assert_eq!(match_xp(MatchOutcome::Won, 90.0, 50.0), 8);
+    }
+
+    /// Given a new user manager,
+    /// When their progression is shown,
+    /// Then every style is at 50 with 38 XP to the next point, Counter shows
+    /// its real effect (+18% attack, -8% midfield) and Balanced none.
+    #[test]
+    fn a_new_managers_progression_view_is_neutral() {
+        let view = manager_progression_view(&neutral_manager());
+
+        assert_eq!(view.styles.len(), 6);
+        assert!(view.styles.iter().all(|style| style.mastery == 50));
+        assert!(view.styles.iter().all(|style| style.xp_to_next == Some(38)));
+        let counter = view
+            .styles
+            .iter()
+            .find(|style| style.style == PlayStyle::Counter)
+            .unwrap();
+        assert!(counter.effects.contains(&StyleEffectView {
+            phase: engine::StylePhase::Attack,
+            percent: 18,
+        }));
+        assert!(counter.effects.contains(&StyleEffectView {
+            phase: engine::StylePhase::Midfield,
+            percent: -8,
+        }));
+        let balanced = view
+            .styles
+            .iter()
+            .find(|style| style.style == PlayStyle::Balanced)
+            .unwrap();
+        assert!(balanced.effects.is_empty());
+        assert_eq!(
+            (view.xp_for_a_win, view.xp_for_a_draw, view.xp_for_a_loss),
+            (15, 10, 7)
+        );
+    }
+
+    /// Given a style at 99,
+    /// When the progression is shown,
+    /// Then it has no next point to work toward.
+    #[test]
+    fn a_style_at_the_cap_has_no_next_point() {
+        let mut manager = neutral_manager();
+        manager.play_style_mastery.counter = 99;
+
+        let view = manager_progression_view(&manager);
+
+        let counter = view
+            .styles
+            .iter()
+            .find(|style| style.style == PlayStyle::Counter)
+            .unwrap();
+        assert_eq!(counter.xp_to_next, None);
     }
 }

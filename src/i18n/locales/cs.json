@@ -194,15 +194,15 @@
   },
   "continueMenu": {
     "goToField": "Vstoupit na hřiště",
-    "goToFieldDesc": "Plná kontrola nad zápasem (výchozí)",
+    "goToFieldDesc": "Plná kontrola nad zápasem (výchozí) · zvyšuje zvládnutí stylu",
     "watchSpectator": "Sledovat jako divák",
-    "watchSpectatorDesc": "Sledování zápasu bez možnosti zásahu",
+    "watchSpectatorDesc": "Sledování zápasu bez možnosti zásahu · zvládnutí stylu neroste",
     "delegateAssistant": "Delegovat na asistenta",
-    "delegateAssistantDesc": "Umělá inteligence vyřeší vše okamžitě",
+    "delegateAssistantDesc": "Umělá inteligence vyřeší vše okamžitě · zvládnutí stylu neroste",
     "skipToMatchDay": "Přeskočit na zápasový den",
     "skipToMatchDayDesc": "Rychlý posun k vašemu dalšímu utkání",
     "matchDayTitle": "Zápasový den",
-    "delegateWarning": "Zápas odřídí váš asistent. Nebudete moci do průběhu zasahovat."
+    "delegateWarning": "Zápas odřídí váš asistent. Nebudete moci do průběhu zasahovat. Delegované zápasy nezvyšují zvládnutí stylu."
   },
   "exitConfirm": {
     "title": "Odejít do hlavního menu?",
@@ -625,7 +625,8 @@
       "strong": "Vysoký",
       "moderate": "Střední",
       "unclear": "Nejasný"
-    }
+    },
+    "reputationDiscountApplied": "Vaše reputace snížila požadavek hráče o {{pct}} %."
   },
   "teamSelection": {
     "title": "Vyberte si klub",
@@ -944,7 +945,8 @@
     "centreBackPair": {
       "stoppers": "Dva stopperi ve středu obrany: oba vystupují a prostor za nimi zůstává při brejku volný.",
       "covers": "Dva krycí stopeři ve středu obrany: oba ustupují a hrana vápna zůstává volná."
-    }
+    },
+    "masteryEarnedHint": "Zvládnutí roste jen v zápasech, které vedete sami (Vstoupit na hřiště)."
   },
   "training": {
     "weeklySchedule": "Týdenní plán",
@@ -1308,6 +1310,11 @@
   "manager": {
     "managerOf": "Manažer týmu {{team}}",
     "reputation": "Reputace",
+    "reputationChange": "{{delta}} po sezóně {{season}}",
+    "reputationHistory": "Vývoj reputace",
+    "reputationPerks": "Výhody reputace",
+    "perkWageDiscount": "Hráči přijímají platy nižší o {{pct}} %",
+    "perkSponsorUplift": "Sponzoři platí o {{pct}} % více",
     "careerStats": "Kariérní statistiky",
     "boardStatus": "Hodnocení vedení",
     "satisfaction": "Spokojenost",
@@ -1333,7 +1340,19 @@
     "fanRestless": "Fanoušci začínají být nespokojení.",
     "fanUnrest": "Nepokoje mezi fanoušky — hrozí protesty.",
     "playStyleMastery": "Zvládnutí herních stylů",
-    "playStyleMasteryHint": "Jak dobře dokážete každý herní styl přenést do zápasu. Při hodnotě 50 funguje styl přesně podle návrhu; vyšší hodnota zvýrazní jeho silné stránky a zmírní slabiny, nižší naopak."
+    "playStyleMasteryHint": "Jak dobře dokážete každý herní styl přenést do zápasu. Při hodnotě 50 funguje styl přesně podle návrhu; vyšší hodnota zvýrazní jeho silné stránky a zmírní slabiny, nižší naopak.",
+    "masteryEarnedHint": "Zvládnutí roste jen v zápasech, které vedete sami (Vstoupit na hřiště): proti vyrovnanému soupeři přinese výhra {{win}} XP, remíza {{draw}} a prohra {{loss}}.",
+    "masteryXp": "{{xp}}/{{next}} XP",
+    "masteryMax": "Nejvyšší",
+    "masteryMatches": "Zápasy: {{count}}",
+    "masteryNeutralStyle": "Neutrální styl: nezávisí na trenérovi",
+    "styleEffect": "{{phase}} {{percent}}%",
+    "stylePhase": {
+      "Midfield": "Záloha",
+      "Attack": "Útok",
+      "Defense": "Obrana",
+      "Press": "Presink"
+    }
   },
   "managersWorld": {
     "title": "Manažeři",
@@ -3159,7 +3178,10 @@
         }
       }
     },
-    "wingBackConversion": "Na pozici wingbeka bez ztráty hodnocení"
+    "wingBackConversion": "Na pozici wingbeka bez ztráty hodnocení",
+    "masteryGain": "+{{xp}} XP · {{style}}",
+    "masteryReached": "Zvládnutí {{mastery}}",
+    "masteryStartingStyle": "XP se připisují stylu, se kterým tým zápas začal"
   },
   "endOfSeason": {
     "seasonComplete": "Sezóna dokončena",
@@ -3614,6 +3636,15 @@
       "relegation": {
         "subject": "Sestup do soutěže {{division}}",
         "body": "Klub sestoupil a v sezóně {{season}} bude hrát v soutěži {{division}}.\n\nPředstavenstvo je hluboce zklamáno. Očekává se okamžitý útok na postup zpět."
+      },
+      "managerReputation": {
+        "subject": "Hodnocení reputace za sezónu {{season}}",
+        "body": "Vaše reputace se v této sezóně změnila z {{before}} na {{after}} ({{delta}}).\n\n• Výsledky oproti očekávání: {{performance}}\n• Trofeje, postupy a sestupy: {{honours}}\n• Postavení vedeného klubu: {{clubPull}}",
+        "bodyPartial": "Vaše reputace se v této sezóně změnila z {{before}} na {{after}} ({{delta}}).\n\n• Výsledky oproti očekávání: {{performance}}\n• Trofeje, postupy a sestupy: {{honours}}\n• Postavení vedeného klubu: {{clubPull}}\n\nKlub jste vedli v {{led}} z {{played}} ligových zápasů, proto se počítá jen váš podíl na jeho umístění."
+      },
+      "styleMastery": {
+        "subject": "Zvládnutí stylu: {{style}} {{mastery}}",
+        "body": "Tým si pod vaším vedením zvyká na styl {{style}}: vaše zvládnutí dosáhlo hodnoty {{mastery}}.\n\nZvládnutí roste jen v zápasech, které vedete sami."
       },
       "worldCupChampion": {
         "subject": "{{nation}} vyhrává Mistrovství světa {{year}}!",
@@ -4467,6 +4498,7 @@
     "rejected": "Vaše žádost nebyla úspěšná.",
     "noJobs": "Momentálně nejsou k dispozici žádná volná místa.",
     "leaguePosition": "Minulá sezóna: {{position}}",
+    "yourReputation": "Vaše reputace: {{reputation}}. Kluby hledají trenéra svého formátu.",
     "refresh": "Hledat nová volná místa",
     "sameTeam": "Tento klub již trénujete.",
     "notBetterClub": "Můžete se ucházet pouze o kluby, které znamenají posun vpřed oproti vašemu současnému angažmá.",

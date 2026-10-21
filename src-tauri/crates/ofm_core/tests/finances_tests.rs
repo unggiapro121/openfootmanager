@@ -1318,3 +1318,23 @@ fn the_seed_decides_the_gate() {
 
     assert!(takings.len() > 1, "forty seeds all drew the same crowd");
 }
+
+/// Given a club in financial trouble whose manager pitches for a sponsor,
+/// When the manager's reputation is 900 rather than 500,
+/// Then the sponsor offers 10% more a week (phase 2 lane M, M-5).
+#[test]
+fn a_reputed_manager_draws_a_bigger_sponsor_offer() {
+    let weekly_at = |reputation: u32| {
+        let mut game = make_monday_game();
+        game.teams[0].wage_budget = 1_000;
+        game.manager.reputation = reputation;
+        finances::preview_sponsor_pitch(&game, "team1")
+            .expect("the pitch is open")
+            .weekly_amount
+    };
+
+    let at_start = weekly_at(500);
+    let reputed = weekly_at(900);
+
+    assert_eq!(reputed, (at_start as f64 * 1.10).round() as i64);
+}

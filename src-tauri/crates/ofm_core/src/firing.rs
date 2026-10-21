@@ -217,6 +217,15 @@ fn execute_firing(game: &mut Game) {
 
     // Close career history and unassign
     game.manager.fire(&today);
+    // A dismissal is public, so it costs reputation the day it happens. Here
+    // and not in `Manager::fire`, which a manager leaving for a better job
+    // goes through too.
+    let dismissal = crate::manager_reputation::DISMISSAL;
+    game.manager.reputation = game
+        .manager
+        .reputation
+        .saturating_sub(dismissal.unsigned_abs());
+    game.manager.progression.season_dismissal += dismissal;
 
     // Send dismissal message (unique ID so it doesn't collide with a future firing at another club)
     let msg = InboxMessage::new(
@@ -415,6 +424,22 @@ mod tests {
         // Should send the initial warning first (normal progression)
         assert_eq!(game.messages.len(), 1);
         assert!(game.messages[0].id.starts_with(WARNING_ID_PREFIX));
+    }
+
+    /// Given a user at 600 on a final warning whose board loses patience,
+    /// When they are dismissed,
+    /// Then the dismissal costs 40 reputation at once, kept for the season's
+    /// review.
+    #[test]
+    fn a_dismissal_costs_reputation() {
+        let mut game = make_game(5);
+        game.manager.warning_stage = STAGE_WARNING;
+        game.manager.reputation = 600;
+
+        assert!(check_manager_firing(&mut game));
+
+        assert_eq!(game.manager.reputation, 560);
+        assert_eq!(game.manager.progression.season_dismissal, -40);
     }
 
     #[test]

@@ -42,6 +42,7 @@ pub use report::{
     EVENT_PROTOCOL_VERSION, GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet,
     TeamStats,
 };
+pub use shared::{StylePhase, play_style_effects};
 pub use tally::EventTally;
 pub use types::{
     BreakSpeed, CoachMastery, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape,

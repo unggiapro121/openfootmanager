@@ -2,8 +2,8 @@ use crate::contract_wage_policy::{WagePolicyVerdict, wage_policy_verdict};
 use crate::contracts::{
     ContractWarningStage, DelegatedRenewalCase, DelegatedRenewalOptions, DelegatedRenewalReport,
     DelegatedRenewalResultStatus, contract_needs_renewal, contract_warning_stage,
-    expected_contract_years, expected_wage, has_active_manager_block, has_let_expire_intent,
-    round_up_to_nearest_thousand,
+    expected_contract_years, expected_wage_with_discount, has_active_manager_block,
+    has_let_expire_intent, round_up_to_nearest_thousand,
 };
 use crate::game::Game;
 use chrono::NaiveDate;
@@ -83,9 +83,11 @@ pub fn delegate_renewals(
         cases: Vec::new(),
     };
 
+    // The assistant negotiates in the user's name, reputation included.
+    let wage_discount = crate::manager_perks::wage_discount(game, &team.id);
     for player_index in candidate_indices {
         let player = &game.players[player_index];
-        let expected_wage = expected_wage(player, &team, current_date);
+        let expected_wage = expected_wage_with_discount(player, &team, current_date, wage_discount);
         let expected_years = expected_contract_years(player, current_date);
         let agreed_years = expected_years.min(max_years);
         let max_wage = round_up_to_nearest_thousand(
