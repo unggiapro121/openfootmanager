@@ -1,4 +1,4 @@
-import { type PitchPoint, type Side, distance, lerp } from "./radarGeometry";
+import { PITCH_LENGTH, type PitchPoint, type Side, clamp, distance, lerp } from "./radarGeometry";
 import { type Playback, type PlayingStep, advancePlayback } from "./radarPlayback";
 import type { QueuedBeat } from "./radarTiming";
 import type { BallAction, RadarScene, RadarStep } from "./radarScene";
@@ -21,7 +21,7 @@ import {
   isFarFromPlaces,
 } from "./radarSceneCut";
 import type { RadarStage } from "./radarStage";
-import { PACE_SPEED, meetingPoint } from "./radarTiming";
+import { PACE_SPEED, PASS_AHEAD_METRES, meetingPoint } from "./radarTiming";
 
 /**
  * The match radar run frame by frame: the script and the simulation together.
@@ -57,6 +57,8 @@ const IN_PLACE_SPEED = 3;
 const HOLDER_READY_METRES = 3;
 /** The longest it waits for him, in seconds, so play never stalls (under `MAX_ACTION_S`). */
 const MAX_HOLDER_WAIT_S = 3.5;
+/** The least share of a pass's length its receiver must reach in time to have it played to him. */
+const MIN_PASS_PROGRESS = 0.5;
 /** A step waiting on the ball is given up after this, so play never stalls. */
 const MAX_ACTION_S = 4;
 /** How fast the ball swings round the man carrying it as he turns, radians a second. */
@@ -228,6 +230,15 @@ function strike(
   let receiverMark: PitchPoint | null = null;
   if (receiver && receiverAt) {
     receiverMark = meetingPoint(receiverAt, to, (point) => distance(from, point) / speed, 0);
+    // A man too far behind to get even half way along the pass in time has it
+    // played into the space ahead to run onto, not back to where he is: the
+    // ball goes where the script sends it (after GĐ5).
+    const along =
+      to.x === from.x && to.y === from.y ? null : unit(towards(from, to), { x: 1, y: 0 });
+    const progress = along
+      ? (receiverMark.x - from.x) * along.x + (receiverMark.y - from.y) * along.y
+      : 0;
+    if (along && progress < MIN_PASS_PROGRESS * distance(from, to)) receiverMark = to;
     const way = unit(towards(from, receiverMark), { x: 1, y: 0 });
     // It comes to rest just in front of him, on the side it came from.
     target =
@@ -249,6 +260,17 @@ function strike(
     receiver,
     receiverMark,
   };
+}
+
+/**
+ * Where a completed pass goes: where the script sends it, or, if the passer
+ * has got further up than the script had him, the same line that far ahead
+ * of where he really is — never behind him (after GĐ5).
+ */
+function aheadOf(stage: RadarStage, passer: string, from: PitchPoint, to: PitchPoint): PitchPoint {
+  const attacking = stage.sideOf(passer) === "Home" ? 1 : -1;
+  const least = clamp(from.x + attacking * PASS_AHEAD_METRES, 1, PITCH_LENGTH - 1);
+  return (to.x - least) * attacking >= 0 ? to : { x: least, y: to.y };
 }
 
 /** Who must get to the ball for `action` to go on, if the ball is not already his. */
@@ -280,7 +302,7 @@ function playIt(
         ball: strike(
           ball,
           action.by,
-          action.to,
+          action.forward && action.by ? aheadOf(stage, action.by, ball.at, action.to) : action.to,
           action.pace,
           action.peak,
           action.receiver,
@@ -567,7 +589,9 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
   }
   next = playIt(next, action, stage, time);
 
-  // A still ball the man going for it cannot reach in time is rolled towards him.
+  // A still ball the man going for it cannot reach in time is rolled towards
+  // him — unless it was played into space for him to run onto: then he runs
+  // on to it, and it never rolls back to him (after GĐ5).
   const taker = takerFor(action);
   const takerAt = taker ? next.sim.players[taker]?.at : undefined;
   if (
@@ -575,6 +599,7 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
     takerAt &&
     !next.rolled &&
     next.ball.kind === "loose" &&
+    next.ball.chaser !== taker &&
     lengthOf(next.ball.velocity) < 1 &&
     time - next.since > TAKE_PATIENCE_S &&
     distance(takerAt, next.ball.at) > REACH

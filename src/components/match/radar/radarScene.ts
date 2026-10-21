@@ -77,6 +77,11 @@ export type BallAction =
       pace: "pass" | "shot" | "air";
       /** How high it rises at the top of its flight, in metres; 0 along the ground. */
       peak: number;
+      /**
+       * A completed pass: the engine only ever moves the ball up with one, so
+       * it is never played behind where the passer really is (after GĐ5).
+       */
+      forward?: boolean;
     }
   /** `by` runs with it at his feet. */
   | { kind: "carry"; by: string }

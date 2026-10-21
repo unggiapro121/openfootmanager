@@ -647,6 +647,36 @@ describe("radar run — a penalty (after GĐ5)", () => {
   }
 });
 
+describe("radar run — a pass forward to a man behind (after GĐ5)", () => {
+  // Given a midfielder on the ball and the engine's next action a run by the
+  // left back from deep, then the pass goes forward into space and the full
+  // back runs onto it: every completed pass in the engine moves the ball up a
+  // zone, so the radar never draws it played back to him.
+  it("plays the ball forward for a full back to run onto, never back to him", () => {
+    const passerAt = toPitch("Home", 62, 20);
+    const from: RadarScene = {
+      ...start,
+      ball: passerAt,
+      focusX: passerAt.x,
+      movers: { h_cm1: passerAt },
+    };
+    const events = [
+      radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+      radarEvent("Dribble", "Home", "AwayDefense", "h_lb"),
+    ];
+    const { beats } = choreographBatch(events, stage, from);
+    const pass = beats.find((beat) => beat.eventType === "PassCompleted");
+    const kick = pass?.steps.find((step) => step.action?.kind === "kick")?.action;
+    expect(kick?.kind).toBe("kick");
+    const to = kick?.kind === "kick" ? kick.to : passerAt;
+    expect(fromPitch("Home", to).depth).toBeGreaterThanOrEqual(62 + 5);
+    const frames = simulate(events, { from });
+    const received = frames.find((run) => run.ball.kind === "held" && run.ball.holder === "h_lb");
+    expect(received).toBeDefined();
+    expect(fromPitch("Home", (received as RadarRun).ball.at).depth).toBeGreaterThan(62);
+  });
+});
+
 describe("radar run — the ball out of play", () => {
   // Given a shot wide and a goal kick, then the ball vanishes, and is back on the
   // goal-kick spot within a second and a half, never sliding there.
