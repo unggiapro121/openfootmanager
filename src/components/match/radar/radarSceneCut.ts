@@ -41,9 +41,10 @@ export interface SceneCut {
   placed: boolean;
 }
 
-/** The man the ball comes back to, or who goes for it, in a step that puts it down. */
+/** The man the ball comes back to, or who goes for it or takes it (a free kick), in a change of scene. */
 function keyManOf(step: RadarStep): string | null {
   const action = step.action;
+  if (action?.kind === "take") return action.by;
   if (action?.kind !== "dead") return null;
   return action.holder ?? action.chaser ?? null;
 }

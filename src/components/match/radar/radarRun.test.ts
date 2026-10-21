@@ -436,6 +436,93 @@ describe("radar run — a corner (after GĐ5)", () => {
   });
 });
 
+describe("radar run — a corner cleared at once (after GĐ5)", () => {
+  const flags = [toPitch("Home", 104.6, 0.8), toPitch("Home", 104.6, 67.2)];
+  const fromFlag = (at: { x: number; y: number }) =>
+    Math.min(...flags.map((flag) => distance(at, flag)));
+
+  // Given a corner the engine clears with no cross, then the taker still
+  // kicks it into the box from the flag — he never carries it in himself —
+  // and the defender clears it from there.
+  it("kicks the corner in from the flag before it is cleared", () => {
+    const frames = simulate(
+      [
+        radarEvent("ShotBlocked", "Home", "AwayBox", "h_st1"),
+        radarEvent("Corner", "Home", "AwayBox", "h_rm"),
+        radarEvent("Clearance", "Away", "AwayBox", "a_cb1"),
+      ],
+      { highlightsOnly: true },
+    );
+    const holding = frames.filter((run) => run.ball.kind === "held" && run.ball.holder === "h_rm");
+    expect(holding.length).toBeGreaterThan(0);
+    for (const run of holding) expect(fromFlag(run.sim.players.h_rm.at)).toBeLessThan(3);
+    const last = frames.lastIndexOf(holding[holding.length - 1]);
+    expect(frames[last + 1].ball.kind).toBe("flight");
+    const cleared = frames.findIndex(
+      (run, index) => index > last && run.acting?.beat.beat.eventType === "Clearance" && run.struck,
+    );
+    expect(cleared).toBeGreaterThan(last);
+  });
+});
+
+describe("radar run — a free kick (after GĐ5)", () => {
+  /** Plays `events` and returns the frames from the free kick on, and where its taker has the ball. */
+  function fromTheKick(events: MatchEvent[], taker: string) {
+    const frames = simulate(events, { highlightsOnly: true });
+    const given = frames.findIndex((run) => run.acting?.beat.beat.eventType === "FreeKick");
+    const ready = frames.findIndex(
+      (run, index) => index > given && run.ball.kind === "held" && run.ball.holder === taker,
+    );
+    const struck = frames.findIndex((run, index) => index > ready && run.ball.kind === "flight");
+    return { frames, given, ready, struck };
+  }
+
+  // Given a direct free kick, then the ball comes back at the taker's feet on
+  // its spot and he strikes it from there: it never rolls or is carried to him.
+  it("strikes a direct free kick from its spot", () => {
+    const shot = {
+      ...radarEvent("ShotOffTarget", "Home", "AwayDefense", "h_cm1"),
+      shot_kind: "DirectFreeKick" as const,
+    };
+    const { frames, given, ready, struck } = fromTheKick(
+      [
+        radarEvent("Foul", "Away", "AwayDefense", "a_cb1", "h_st1"),
+        radarEvent("FreeKick", "Home", "AwayDefense"),
+        shot,
+      ],
+      "h_cm1",
+    );
+    expect(given).toBeGreaterThan(0);
+    expect(ready).toBeGreaterThan(given);
+    expect(struck).toBeGreaterThan(ready);
+    const spot = frames[ready].ball.at;
+    for (let index = ready; index < struck; index++) {
+      expect(distance(frames[index].ball.at, spot), `frame ${index}`).toBeLessThan(1);
+    }
+  });
+
+  // Given a free kick crossed in, then the taker has the ball where the foul
+  // was and crosses it from there, with no run down the wing first (the ball
+  // only swings about his feet as he turns).
+  it("crosses a free kick from where it was given", () => {
+    const { frames, ready, struck } = fromTheKick(
+      [
+        radarEvent("Foul", "Away", "AwayDefense", "a_lb", "h_rm"),
+        radarEvent("FreeKick", "Home", "AwayDefense"),
+        radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1"),
+        radarEvent("ShotSaved", "Home", "AwayBox", "h_st1", "a_gk"),
+      ],
+      "h_rm",
+    );
+    expect(ready).toBeGreaterThan(0);
+    expect(struck).toBeGreaterThan(ready);
+    const spot = frames[ready].ball.at;
+    for (let index = ready; index < struck; index++) {
+      expect(distance(frames[index].ball.at, spot), `frame ${index}`).toBeLessThan(2);
+    }
+  });
+});
+
 describe("radar run — the ball out of play", () => {
   // Given a shot wide and a goal kick, then the ball vanishes, and is back on the
   // goal-kick spot within a second and a half, never sliding there.
