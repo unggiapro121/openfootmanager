@@ -30,8 +30,7 @@
     "worldEditor.teamId",
     "worldEditor.staffId",
     "match.masteryGain",
-    "manager.masteryXp",
-    "manager.styleEffect"
+    "manager.masteryXp"
   ],
   "de": [
     "manager.stylePhase.Press",
