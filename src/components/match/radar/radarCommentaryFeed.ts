@@ -60,8 +60,10 @@ export function receiveLine<T>(
       if (holdingKey || feed.keys.length > 0) return { ...feed, play: line, filler: null };
       return show(feed, line, priority, now);
     case "key":
-      if (holdingKey) return { ...feed, keys: [...feed.keys, line] };
-      return show(feed, line, priority, now);
+      // Play still waiting has been overtaken by this moment: it is never
+      // told after it.
+      if (holdingKey) return { ...feed, keys: [...feed.keys, line], play: null };
+      return { ...show(feed, line, priority, now), play: null };
     case "filler":
       if (!isRead(feed, now) || feed.keys.length > 0 || feed.play !== null) {
         return { ...feed, filler: line };

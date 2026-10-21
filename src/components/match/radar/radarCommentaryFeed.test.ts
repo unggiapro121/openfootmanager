@@ -35,6 +35,22 @@ describe("radarCommentaryFeed", () => {
     expect(shown(feed)).toBe("kick-off pass");
   });
 
+  /**
+   * Given a penalty awarded on show and the taker's run-up waiting behind it,
+   * when the goal arrives, then the run-up is dropped: play that a later key
+   * moment has overtaken is never shown after it (after GĐ5).
+   */
+  it("drops waiting play that a later key moment overtakes", () => {
+    let feed: CommentaryFeed<string> = receiveLine(START, "penalty given", "key", 0);
+    feed = receiveLine(feed, "steps up", "play", 900);
+    feed = receiveLine(feed, "goal", "key", 1500);
+    feed = settleFeed(feed, READ_MS);
+    expect(shown(feed)).toBe("goal");
+    feed = settleFeed(feed, 2 * READ_MS);
+    expect(shown(feed)).toBe("goal");
+    expect(nextChangeAt(feed)).toBeNull();
+  });
+
   /** Given a key moment on show, when another arrives, then it queues behind it and neither is lost. */
   it("queues key moments in order", () => {
     let feed: CommentaryFeed<string> = receiveLine(START, "booking", "key", 0);

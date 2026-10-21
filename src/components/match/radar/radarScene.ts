@@ -120,6 +120,8 @@ export interface RadarStep {
    */
   waitFor?: string[];
   clearTrail?: boolean;
+  /** The least the step lasts, at real pace, in milliseconds: a pause play waits out. */
+  minMs?: number;
   overlay?: RadarOverlay | null;
   highlight?: string[];
   possession?: Side;

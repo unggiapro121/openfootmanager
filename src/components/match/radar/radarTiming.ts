@@ -142,7 +142,7 @@ function stepTiming(stage: RadarStage, scene: RadarScene, step: RadarStep): Step
   const pace = step.pace ?? inferPace(scene, step);
   const returning = returnTimes(stage, scene, step);
   if (pace === "place" || pace === "hold") {
-    const ms = pace === "place" ? PLACE_MS : HOLD_MS;
+    const ms = Math.max(pace === "place" ? PLACE_MS : HOLD_MS, step.minMs ?? 0);
     return { ms, runMs: { ...returning, ...runTimes(stage, scene, step, PACE_SPEED.run) } };
   }
   const ballTravel = step.ball ? distance(scene.ball, step.ball.at) : 0;
