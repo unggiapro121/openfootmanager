@@ -165,8 +165,7 @@ describe("radar scene cut — where a change of scene may cut (after GĐ5)", () 
   // players drift after the ball as before, and the screen never flickers
   // through a run of quiet minutes.
   it("never cuts a quiet minute", () => {
-    const moved = quietSteps(stage, start, { ballZone: "AwayDefense", possession: "Home" });
-    expect(moved.some((step) => step.sceneCut)).toBe(false);
+    expect(quietSteps().some((step) => step.sceneCut)).toBe(false);
     const { beats } = choreographHighlights([], stage, start, {
       ballZone: "AwayDefense",
       possession: "Home",

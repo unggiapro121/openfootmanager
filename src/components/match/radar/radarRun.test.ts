@@ -6,11 +6,11 @@ import type { RadarSettle } from "./radarSettle";
 import { CENTRE_LANE, distance, toPitch, zoneSpan } from "./radarGeometry";
 import { enqueueBeats, restingPlayback } from "./radarPlayback";
 import { type RadarRun, advanceRun, startRun } from "./radarRun";
-import { type RadarScene, focusOf, initialRadarScene } from "./radarScene";
+import { type RadarScene, type RadarStep, focusOf, initialRadarScene } from "./radarScene";
 import { SIM_LIMITS } from "./radarSim";
 import { buildRadarStage } from "./radarStage";
 import { radarEvent, radarSnapshot } from "./radarTestFixtures";
-import { queueBeat } from "./radarTiming";
+import { queueBeat, timeSteps } from "./radarTiming";
 
 const snapshot = radarSnapshot();
 const stage = buildRadarStage(snapshot);
@@ -309,8 +309,8 @@ describe("radar run — an unannounced turnover where the ball lies", () => {
 
 describe("radar run — the 2D mode's quick changes of scene", () => {
   // Given a minute with nothing dangerous in it, then the radar is through it in
-  // about half a second: the ball gone for a moment and back in the zone the
-  // engine left it in, a man of the side it gave it to going for it.
+  // about half a second and acts nothing out: the ball stays where it lies,
+  // however far the engine moved it (after GĐ5).
   it("passes over a quiet minute in a moment", () => {
     const frames = simulate(
       [
@@ -323,12 +323,8 @@ describe("radar run — the 2D mode's quick changes of scene", () => {
       (run, index) => index > 0 && !run.playback.step && run.playback.queue.length === 0,
     );
     expect(over * FRAME_S).toBeLessThanOrEqual(0.55);
-    const { ball } = frames[over];
-    expect(ball.kind === "loose" && ball.chaser?.startsWith("a_")).toBe(true);
-    expect(ball.at.x).toBeLessThan(38);
     for (let index = 1; index <= over; index++) {
-      const isSeen = frames[index].ball.opacity > 0 && frames[index - 1].ball.opacity > 0;
-      if (isSeen) expect(ballSpeed(frames, index)).toBeLessThanOrEqual(35);
+      expect(distance(frames[index].ball.at, start.ball)).toBeLessThan(0.5);
     }
   });
 
@@ -352,16 +348,40 @@ describe("radar run — the 2D mode's quick changes of scene", () => {
 });
 
 describe("radar run — a man left on the ball", () => {
-  // Given the 2D mode passing over a quiet minute that leaves the ball in the
-  // box, then whoever picks it up shields it where he stands while the script
-  // has no mark for him: his place in the shape never drags him, ball and all,
-  // about the box or back towards his own goal (T14).
+  // Given the ball put back at a man's feet in the box (a change of scene to
+  // the start of a move) and nothing scripted after it, then he shields it
+  // where he stands while the script has no mark for him: his place in the
+  // shape never drags him, ball and all, about the box or back towards his
+  // own goal (T14).
   it("leaves him where he stands when the script does not move him", () => {
-    const frames = simulate([radarEvent("Dribble", "Home", "AwayDefense", "h_st2")], {
-      restMs: 8000,
-      highlightsOnly: true,
-      settle: { ballZone: "AwayBox", possession: "Home" },
-    });
+    const spot = toPitch("Home", 95, CENTRE_LANE);
+    const steps: RadarStep[] = [
+      {
+        ball: { at: spot, lift: 0 },
+        resetMovers: true,
+        possession: "Home",
+        pace: "place",
+        action: { kind: "dead", spot, quick: true, holder: "h_st2" },
+      },
+    ];
+    const timed = timeSteps(stage, start, steps);
+    const beat = {
+      key: "put-back",
+      eventType: "Settle",
+      steps,
+      ...timed,
+      important: false,
+      prefer: false,
+    };
+    let run = startRun(
+      stage,
+      enqueueBeats(restingPlayback(start), [queueBeat(beat, 1)], Number.POSITIVE_INFINITY),
+    );
+    const frames: RadarRun[] = [run];
+    for (let frame = 0; frame < 60 * 8; frame++) {
+      run = advanceRun(run, stage, FRAME_MS);
+      frames.push(run);
+    }
     const { frames: held, furthest } = unscriptedHolding(frames);
     expect(held).toBeGreaterThan(60);
     expect(furthest).toBeLessThan(1e-6);

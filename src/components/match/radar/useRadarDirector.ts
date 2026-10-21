@@ -3,7 +3,7 @@ import { type RefObject, useEffect, useRef } from "react";
 import type { MatchEvent, MatchSnapshot } from "../types";
 import { type RadarCaption, minuteCaptions } from "./radarCaptions";
 import { choreographHighlights } from "./radarChoreography";
-import { highlightsOf } from "./radarHighlights";
+import { highlightsOf, openMove } from "./radarHighlights";
 import type { RadarSettle } from "./radarSettle";
 import { type Playback, enqueueBeats, jumpTo, restingPlayback } from "./radarPlayback";
 import { type RadarBeat, type RadarScene, initialRadarScene } from "./radarScene";
@@ -16,11 +16,6 @@ export interface RadarPacing {
   timeScale: number;
   /** The furthest the radar may fall behind the match before it skips ahead. */
   maxLagMs: number;
-  /**
-   * How long a pass that ends a minute waits for the next minute to name its
-   * receiver, before it plays on its own (the match paused).
-   */
-  holdMs: number;
 }
 
 /**
@@ -33,7 +28,6 @@ export interface RadarPacing {
 export const RADAR_PACING: RadarPacing = {
   timeScale: 0.7,
   maxLagMs: Number.POSITIVE_INFINITY,
-  holdMs: 1400,
 };
 
 /**
@@ -77,7 +71,10 @@ function captionsIn(beats: RadarBeat[]): RadarCaption[] {
 /**
  * Acts out the live match on the radar. Each new snapshot's dangerous play is
  * staged (`choreographHighlights`) and queued in the playback behind whatever
- * is still playing. Without animation, the playback jumps straight to the end
+ * is still playing. A build-up the minute ends on (`openMove`) is held back
+ * and staged with the next minute, so a move that spans two minutes plays in
+ * one piece, from its start to its end, and names each pass's receiver by who
+ * acts next. Without animation, the playback jumps straight to the end
  * of the minute. Events from before the radar opened are not replayed.
  * `staged` counts the snapshot's events taken in so far: the radar has played a
  * minute out once they are all taken in and the playback is empty.
@@ -97,13 +94,8 @@ export function useRadarDirector(
   /** Where everything queued ends, so the next batch is staged from there. */
   const endRef = useRef<RadarScene>(playback.current.scene);
 
-  /**
-   * A completed pass that ended the last minute. The engine names its receiver
-   * only by who acts next, so it waits for the next minute to arrive — or, if
-   * none comes (the match paused), plays on its own after a short wait.
-   */
-  const heldPassRef = useRef<MatchEvent | null>(null);
-  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The build-up the last minute ended on, not staged yet: it opens this minute's play. */
+  const openRef = useRef<MatchEvent[]>([]);
   /** What the commentary still has to say about the minute, said after the next beats staged. */
   const pendingCaptionsRef = useRef<RadarCaption[]>([]);
   const onCaptionRef = useRef(onCaption);
@@ -140,39 +132,36 @@ export function useRadarDirector(
 
     const events = snapshot.events;
     // A shorter list is a different match: start counting again.
-    if (events.length < seenRef.current) seenRef.current = 0;
+    if (events.length < seenRef.current) {
+      seenRef.current = 0;
+      openRef.current = [];
+    }
     const fresh = events.slice(seenRef.current);
     seenRef.current = events.length;
-
-    const held = heldPassRef.current;
-    if (held && fresh.length === 0 && isAnimated) return;
-    if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
-    heldPassRef.current = null;
-    const batch = held ? [held, ...fresh] : fresh;
     // Nothing has happened: nothing to show.
-    if (batch.length === 0) return;
+    if (fresh.length === 0) return;
+
+    const batch = [...openRef.current, ...fresh];
+    const open = openMove(batch);
+    openRef.current = open;
+    const held = new Set(open);
+    const toStage = batch.slice(0, batch.length - open.length);
     pendingCaptionsRef.current = [
       ...pendingCaptionsRef.current,
-      ...minuteCaptions(fresh, new Set(highlightsOf(batch)), {
-        possession: snapshot.possession,
-        ballZone: snapshot.ball_zone,
-        minute: snapshot.current_minute,
-        homeScore: snapshot.home_score,
-        awayScore: snapshot.away_score,
-      }),
+      ...minuteCaptions(
+        fresh.filter((event) => !held.has(event)),
+        new Set(highlightsOf(toStage)),
+        {
+          possession: snapshot.possession,
+          ballZone: snapshot.ball_zone,
+          minute: snapshot.current_minute,
+          homeScore: snapshot.home_score,
+          awayScore: snapshot.away_score,
+        },
+      ),
     ];
 
-    const last = batch[batch.length - 1];
-    if (isAnimated && last?.event_type === "PassCompleted") {
-      heldPassRef.current = last;
-      stageAndQueue(batch.slice(0, -1), undefined);
-      holdTimerRef.current = setTimeout(() => {
-        heldPassRef.current = null;
-        stageAndQueue([last], settle);
-      }, pacing.holdMs);
-      return;
-    }
-    stageAndQueue(batch, settle);
+    stageAndQueue(toStage, settle);
   }, [
     snapshot.events,
     snapshot.ball_zone,
@@ -184,13 +173,6 @@ export function useRadarDirector(
     pacing,
     reducedMotion,
   ]);
-
-  useEffect(
-    () => () => {
-      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
-    },
-    [],
-  );
 
   return { stage, playback, staged: seenRef };
 }

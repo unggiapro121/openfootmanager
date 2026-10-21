@@ -15,7 +15,7 @@ interface Props {
 
 const SLOW = RADAR_PACING;
 /** Real pace, so a test about what plays is not about how fast. */
-const UNHURRIED: RadarPacing = { timeScale: 1, maxLagMs: 60_000, holdMs: 1_000 };
+const UNHURRIED: RadarPacing = { timeScale: 1, maxLagMs: 60_000 };
 const FRAME_MS = 1000 / 60;
 
 function host(initial: Props) {
@@ -207,8 +207,45 @@ describe("useRadarDirector", () => {
     expect(playback.current.queue).toHaveLength(0);
   });
 
+  // Given an attack begun in one minute and ending in a shot the next, then
+  // the radar holds the first minute's build-up back and plays the whole move
+  // as one when the shot arrives: from where the ball was won to the shot,
+  // with no change of scene inside it (after GĐ5).
+  it("plays a move that spans two minutes from its start, in one piece", () => {
+    const won = radarEvent("Interception", "Home", "Midfield", "h_cm1", null, 20);
+    const pass = radarEvent("PassCompleted", "Home", "Midfield", "h_cm1", null, 20);
+    const shot = [
+      radarEvent("Dribble", "Home", "AwayDefense", "h_st1", null, 21),
+      radarEvent("ShotSaved", "Home", "AwayBox", "h_st1", "a_gk", 21),
+    ];
+    const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: [won, pass], ball_zone: "Midfield" }),
+      pacing: SLOW,
+      reducedMotion: false,
+    });
+    const before = hosted.result.current.playback.current.queue;
+    expect(before.some((beat) => beat.beat.eventType === "Interception")).toBe(false);
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: [won, pass, ...shot], ball_zone: "AwayBox" }),
+      pacing: SLOW,
+      reducedMotion: false,
+    });
+    const queued = hosted.result.current.playback.current.queue.map((entry) => entry.beat);
+    const types = queued.map((beat) => beat.eventType);
+    const from = types.indexOf("Interception");
+    expect(from).toBeGreaterThanOrEqual(0);
+    expect(types.indexOf("ShotSaved")).toBeGreaterThan(from);
+    const cuts = queued.flatMap((beat, index) =>
+      beat.steps.flatMap((step, at) => (step.sceneCut ? [{ index, at }] : [])),
+    );
+    // One change of scene, opening the move; none inside it.
+    expect(cuts).toHaveLength(1);
+    expect(cuts[0].index).toBeLessThan(from);
+  });
+
   // Given a minute with nothing dangerous in it, then the radar passes over it
-  // in a moment, the ball put where the engine left it.
+  // in a moment and acts nothing out: the ball stays where it is (after GĐ5).
   it("passes over a quiet minute in a moment", () => {
     const quiet = [
       radarEvent("PassCompleted", "Home", "HomeDefense", "h_cb1"),
@@ -224,7 +261,9 @@ describe("useRadarDirector", () => {
     const beats = hosted.result.current.playback.current.queue;
     expect(beats).toHaveLength(1);
     expect(beats[0].stepMs.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(500);
+    expect(beats[0].beat.steps.every((step) => step.ball === undefined && !step.action)).toBe(true);
     expect(sceneOf(hosted).highlight).toEqual([]);
+    expect(sceneOf(hosted).ball.x).toBe(HALFWAY);
   });
 
   // Given a minute, then the director counts its events as taken in at once,

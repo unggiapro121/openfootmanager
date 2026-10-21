@@ -45,8 +45,8 @@ import {
   standIn,
 } from "./radarCasting";
 import { captionsFor } from "./radarCaptions";
-import { highlightsOf, isAttackingPlay } from "./radarHighlights";
-import { type RadarSettle, quietSteps, settleStepsFor } from "./radarSettle";
+import { isAttackingPlay, movesOf } from "./radarHighlights";
+import { type RadarSettle, isBallInGoal, quietSteps, settleStepsFor } from "./radarSettle";
 
 /**
  * The match radar's director's script: turns the engine's events into short
@@ -1272,28 +1272,44 @@ export function choreographHighlights(
   start: RadarScene,
   settle?: RadarSettle,
 ): { beats: RadarBeat[]; end: RadarScene } {
-  const highlights = highlightsOf(events);
-  if (highlights.length === 0) {
+  const moves = movesOf(events);
+  if (moves.length === 0) {
     if (!settle) return { beats: [], end: start };
-    const quiet = beatOf(
-      stage,
-      start,
-      `quiet-${settle.ballZone}`,
-      quietSteps(stage, start, settle),
-    );
+    const quiet = beatOf(stage, start, `quiet-${settle.ballZone}`, quietSteps());
     return { beats: [quiet.beat], end: quiet.end };
   }
-  const [first] = highlights;
-  // Only a move opened by the attacking side playing the ball gets a lead-in;
-  // a restart or a card places the ball itself.
-  const starter = isAttackingPlay(first) ? first.player_id : null;
-  const starterAt = starter ? standingIn(stage, start, starter) : null;
-  if (!starter || !starterAt || distance(starterAt, start.ball) <= FETCH_METRES) {
-    const check = blockCheck(stage, start, first.minute);
-    const rest = choreographBatch(highlights, stage, check.end, settle, events);
-    return { beats: [check.beat, ...rest.beats], end: rest.end };
+  const beats: RadarBeat[] = [];
+  let scene = start;
+  for (const move of moves) {
+    const opening = openingOf(move[0], stage, scene);
+    const played = choreographBatch(move, stage, opening.end, undefined, events);
+    beats.push(opening.beat, ...played.beats);
+    scene = played.end;
   }
-  const leadIn = beatOf(stage, start, `lead-in-${first.minute}`, [
+  // The engine's tidy-up after the last move is too quick to be worth acting
+  // out; only a goal's restart from the centre spot is shown.
+  const restart = settle && isBallInGoal(scene) ? settleStepsFor(stage, scene, settle) : null;
+  if (restart) {
+    const kickOff = beatOf(stage, scene, `restart-${settle?.ballZone}`, restart);
+    beats.push(kickOff.beat);
+    scene = kickOff.end;
+  }
+  return { beats, end: scene };
+}
+
+/**
+ * How a move opens: a change of scene (`radarSceneCut`). Started by the
+ * attacking side playing the ball away from where it lies, the ball comes back
+ * at the starter's feet in a moment; otherwise a short look at the block. A
+ * restart or a card places the ball itself.
+ */
+function openingOf(first: MatchEvent, stage: RadarStage, scene: RadarScene) {
+  const starter = isAttackingPlay(first) ? first.player_id : null;
+  const starterAt = starter ? standingIn(stage, scene, starter) : null;
+  if (!starter || !starterAt || distance(starterAt, scene.ball) <= FETCH_METRES) {
+    return blockCheck(stage, scene, first.minute);
+  }
+  return beatOf(stage, scene, `lead-in-${first.minute}`, [
     {
       sceneCut: true,
       ball: { at: starterAt, lift: 0 },
@@ -1305,6 +1321,4 @@ export function choreographHighlights(
       action: { kind: "dead", spot: starterAt, quick: true, holder: starter },
     },
   ]);
-  const rest = choreographBatch(highlights, stage, leadIn.end, settle, events);
-  return { beats: [leadIn.beat, ...rest.beats], end: rest.end };
 }

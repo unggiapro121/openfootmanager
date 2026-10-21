@@ -71,6 +71,60 @@ function moveTo(events: MatchEvent[], shot: number): number[] {
 
 /** The events of a minute worth acting out on the radar, in order. */
 export function highlightsOf(events: MatchEvent[]): MatchEvent[] {
+  const kept = keptIndexes(events);
+  return events.filter((_, index) => kept.has(index));
+}
+
+/**
+ * A minute's dangerous play split into its moves, in order: runs of events
+ * that follow one another with nothing passed over between them. The radar
+ * plays each move from its start to its end, and changes scene only between
+ * moves (after GĐ5).
+ */
+export function movesOf(events: MatchEvent[]): MatchEvent[][] {
+  const kept = keptIndexes(events);
+  const moves: MatchEvent[][] = [];
+  let last = -2;
+  events.forEach((event, index) => {
+    if (!kept.has(index)) return;
+    if (index === last + 1) moves[moves.length - 1].push(event);
+    else moves.push([event]);
+    last = index;
+  });
+  return moves;
+}
+
+/**
+ * The build-up a minute ends on, not yet acted out: what the move to a shot
+ * would start with if the shot comes next minute (`moveTo` from the end). The
+ * radar holds it back and plays it with the next minute, so a move that spans
+ * two minutes is played in one piece (after GĐ5).
+ */
+export function openMove(events: MatchEvent[]): MatchEvent[] {
+  const kept = keptIndexes(events);
+  const last = events[events.length - 1];
+  if (!last || kept.has(events.length - 1)) return [];
+  // A foul at the end gives the other side the free kick it would start from.
+  const side = last.event_type === FOUL ? (last.side === "Home" ? "Away" : "Home") : last.side;
+  let start = events.length;
+  for (let index = events.length - 1; index >= 0 && !kept.has(index); index--) {
+    const event = events[index];
+    if (event.side === side && BUILD_UP.has(event.event_type)) {
+      start = index;
+      continue;
+    }
+    if (event.side !== side && event.event_type === FOUL) {
+      start = index;
+      continue;
+    }
+    if (event.side === side && BALL_WON.has(event.event_type)) start = index;
+    break;
+  }
+  return events.slice(start);
+}
+
+/** The indexes of a minute's events worth acting out on the radar. */
+function keptIndexes(events: MatchEvent[]): Set<number> {
   const kept = new Set<number>();
   events.forEach((event, index) => {
     if (SENDING_OFF.has(event.event_type)) kept.add(index);
@@ -91,5 +145,5 @@ export function highlightsOf(events: MatchEvent[]): MatchEvent[] {
     const next = events[index + 1];
     if (next?.event_type === "Corner" && next.side === event.side) kept.add(index + 1);
   });
-  return events.filter((_, index) => kept.has(index));
+  return kept;
 }
