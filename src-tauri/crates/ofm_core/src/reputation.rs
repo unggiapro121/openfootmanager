@@ -11,7 +11,10 @@ const MAX_REPUTATION: i32 = 1000;
 /// Expected finishing positions ranked by reputation, considering only the
 /// teams that actually contested these standings — so a second-division club is
 /// measured against its division, not the whole game world.
-fn expected_positions(game: &Game, final_standings: &[StandingEntry]) -> HashMap<String, usize> {
+pub(crate) fn expected_positions(
+    game: &Game,
+    final_standings: &[StandingEntry],
+) -> HashMap<String, usize> {
     let participating: std::collections::HashSet<&str> = final_standings
         .iter()
         .map(|standing| standing.team_id.as_str())

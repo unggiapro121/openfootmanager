@@ -118,6 +118,9 @@ pub fn hire_manager(game: &mut Game, team_id: &str, date: &str) -> Result<String
 
     // Reset satisfaction to neutral
     game.manager.satisfaction = 50;
+    // Only the new club's league matches are the user's from here: a club's
+    // season before they arrived is not judged as theirs at the review.
+    game.manager.progression.season_league_matches_led = 0;
     game.sync_user_manager_record();
     game.vacant_team_days.remove(team_id);
     expire_outstanding_job_offers_for_team(game, team_id);
@@ -971,6 +974,19 @@ mod tests {
         assert!(!jobs.iter().any(|j| j.team_id == "team3"));
     }
 
+    /// Given an unemployed manager whose reputation has grown from 500 to 800,
+    /// When the jobs open to them are listed,
+    /// Then the elite club (800) out of reach at 500 is now on the list.
+    #[test]
+    fn a_grown_reputation_opens_a_bigger_club() {
+        let mut game = make_game(10, false);
+        game.manager.reputation = 800;
+
+        let jobs = get_available_jobs(&game);
+
+        assert!(jobs.iter().any(|job| job.team_id == "team3"));
+    }
+
     #[test]
     fn get_available_jobs_only_returns_vacant_clubs() {
         let mut game = make_game(10, false);
@@ -1319,6 +1335,23 @@ mod tests {
         switch_manager_team(&mut game, "team3", "2026-11-01").unwrap();
         assert_eq!(game.manager.satisfaction, 50);
         assert_eq!(game.manager.warning_stage, 0);
+    }
+
+    /// Given a user who led twelve league matches at their club this season,
+    /// When they move to another club,
+    /// Then the count starts again from nothing (only the new club's matches
+    /// are theirs) and the move itself costs no reputation.
+    #[test]
+    fn a_move_restarts_the_league_matches_led_and_keeps_the_reputation() {
+        let mut game = make_game(50, true);
+        game.manager.progression.season_league_matches_led = 12;
+        game.manager.reputation = 620;
+
+        switch_manager_team(&mut game, "team3", "2026-11-01").unwrap();
+
+        assert_eq!(game.manager.progression.season_league_matches_led, 0);
+        assert_eq!(game.manager.reputation, 620);
+        assert_eq!(game.manager.progression.season_dismissal, 0);
     }
 
     #[test]

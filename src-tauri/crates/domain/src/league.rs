@@ -534,6 +534,25 @@ impl League {
             .any(|round| round.fixture_ids.iter().any(|id| id == fixture_id))
     }
 
+    /// The club that won this knockout competition, once its final is played:
+    /// every round is complete and the last one was a single tie with no byes.
+    /// Rounds are seeded one at a time as the previous one finishes, so a
+    /// complete last round of one tie is the final.
+    pub fn knockout_champion(&self) -> Option<&str> {
+        let final_round = self.knockout_rounds.last()?;
+        let bracket_is_complete = self.knockout_rounds.iter().all(|round| round.completed);
+        if !bracket_is_complete
+            || final_round.fixture_ids.len() != 1
+            || !final_round.bye_team_ids.is_empty()
+        {
+            return None;
+        }
+        self.fixtures
+            .iter()
+            .find(|fixture| fixture.id == final_round.fixture_ids[0])?
+            .advancing_team_id()
+    }
+
     pub fn sorted_standings(&self) -> Vec<StandingEntry> {
         let mut sorted = self.standings.clone();
         sorted.sort_by(|a, b| {
