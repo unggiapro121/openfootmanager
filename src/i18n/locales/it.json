@@ -3406,6 +3406,15 @@
         "saveFailed": "Impossibile salvare il profilo dell'allenatore.",
         "pathFailed": "Impossibile determinare il percorso di archiviazione dei profili."
       },
+      "coach": {
+        "loadFailed": "Impossibile caricare gli account allenatore.",
+        "saveFailed": "Impossibile salvare l'account allenatore.",
+        "accountNotFound": "Account allenatore non trovato.",
+        "notLoggedIn": "Nessun account allenatore ha effettuato l'accesso.",
+        "offline": "Impossibile raggiungere il server degli account.",
+        "saveOfAnotherAccount": "Questa carriera appartiene a un altro account allenatore.",
+        "saveWithoutAccount": "Questa carriera non ha ancora un account allenatore."
+      },
       "finance": {
         "boardSupportUnavailable": "Il supporto d'emergenza del consiglio è disponibile solo quando la liquidità è sotto pressione.",
         "boardSupportAlreadyUsed": "Il consiglio ha già approvato un supporto d'emergenza in questa stagione.",

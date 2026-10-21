@@ -134,7 +134,7 @@ pub fn match_snapshot(ctx: Arc<McpContext>) -> Result<String, String> {
 
 /// Finish the live match: generate report, update game state, clean up.
 pub fn match_finish(ctx: Arc<McpContext>) -> Result<String, String> {
-    let response = crate::application::live_match::finish_live_match(&ctx.state_manager)?;
+    let response = crate::application::live_match::finish_live_match(&ctx.state_manager, None)?;
 
     {
         use tauri::Emitter;
@@ -157,22 +157,9 @@ pub fn match_finish(ctx: Arc<McpContext>) -> Result<String, String> {
         String::new()
     };
 
-    let mastery_text = match response.mastery_gain {
-        Some(ref gain) if gain.mastery_after > gain.mastery_before => format!(
-            "\n\n**Play style mastery**: +{} XP to {:?} (starting style), now {} (was {})",
-            gain.xp, gain.style, gain.mastery_after, gain.mastery_before
-        ),
-        Some(ref gain) => format!(
-            "\n\n**Play style mastery**: +{} XP to {:?} (starting style), still {}",
-            gain.xp, gain.style, gain.mastery_after
-        ),
-        None => String::new(),
-    };
-
     Ok(format!(
-        "## Match Finished\n\n**Date**: {}{}{}",
+        "## Match Finished\n\n**Date**: {}{}",
         response.game.clock.current_date.format("%d %B %Y"),
-        mastery_text,
         round_text
     ))
 }

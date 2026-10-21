@@ -3406,6 +3406,15 @@
         "saveFailed": "Manager-Profil konnte nicht gespeichert werden.",
         "pathFailed": "Der Speicherpfad für Profile konnte nicht ermittelt werden."
       },
+      "coach": {
+        "loadFailed": "Managerkonten konnten nicht geladen werden.",
+        "saveFailed": "Managerkonto konnte nicht gespeichert werden.",
+        "accountNotFound": "Managerkonto wurde nicht gefunden.",
+        "notLoggedIn": "Kein Managerkonto ist angemeldet.",
+        "offline": "Der Kontoserver ist nicht erreichbar.",
+        "saveOfAnotherAccount": "Diese Karriere gehört zu einem anderen Managerkonto.",
+        "saveWithoutAccount": "Diese Karriere hat noch kein Managerkonto."
+      },
       "finance": {
         "boardSupportUnavailable": "Notfallhilfe des Vorstands ist nur verfügbar, wenn die Geldreserven unter Druck stehen.",
         "boardSupportAlreadyUsed": "Der Vorstand hat in dieser Saison bereits Notfallhilfe genehmigt.",

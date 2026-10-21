@@ -65,6 +65,9 @@ pub struct GameMeta {
     /// `Game::awaited_replies`, as JSON.
     #[serde(default = "default_awaited_replies_json")]
     pub awaited_replies_json: String,
+    /// `Game::account_id`.
+    #[serde(default)]
+    pub account_id: Option<String>,
 }
 
 fn default_scout_youth_rest_until_json() -> String {
@@ -145,8 +148,8 @@ fn default_package_lockfile_json() -> String {
 /// Insert or replace the singleton game_meta row.
 pub fn upsert_meta(conn: &Connection, meta: &GameMeta) -> Result<(), String> {
     conn.execute(
-        "INSERT OR REPLACE INTO game_meta (id, save_id, save_name, manager_id, start_date, game_date, created_at, last_played_at, vacant_team_days_json, world_history_json, available_staff_market_last_activity_date, save_format_version, world_format_version, app_version, source_world_id, source_world_kind, active_region_ids_json, active_competition_ids_json, extra_translations_json, package_lockfile_json, emitted_events_json, seed, legacy_world_cup_draw, development_speed_percent, scout_youth_rest_until_json, youth_watchlist_json, youth_pool_json, staff_market_refreshes_json, awaited_replies_json)
-         VALUES ('singleton', ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28)",
+        "INSERT OR REPLACE INTO game_meta (id, save_id, save_name, manager_id, start_date, game_date, created_at, last_played_at, vacant_team_days_json, world_history_json, available_staff_market_last_activity_date, save_format_version, world_format_version, app_version, source_world_id, source_world_kind, active_region_ids_json, active_competition_ids_json, extra_translations_json, package_lockfile_json, emitted_events_json, seed, legacy_world_cup_draw, development_speed_percent, scout_youth_rest_until_json, youth_watchlist_json, youth_pool_json, staff_market_refreshes_json, awaited_replies_json, account_id)
+         VALUES ('singleton', ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18, ?19, ?20, ?21, ?22, ?23, ?24, ?25, ?26, ?27, ?28, ?29)",
         params![
             meta.save_id,
             meta.save_name,
@@ -176,6 +179,7 @@ pub fn upsert_meta(conn: &Connection, meta: &GameMeta) -> Result<(), String> {
             meta.youth_pool_json,
             meta.staff_market_refreshes_json,
             meta.awaited_replies_json,
+            meta.account_id,
         ],
     )
     .map_err(|_| GAME_PERSISTENCE_WRITE_ERROR.to_string())?;
@@ -186,7 +190,7 @@ pub fn upsert_meta(conn: &Connection, meta: &GameMeta) -> Result<(), String> {
 pub fn load_meta(conn: &Connection) -> Result<Option<GameMeta>, String> {
     let mut stmt = conn
         .prepare(
-            "SELECT save_id, save_name, manager_id, start_date, game_date, created_at, last_played_at, vacant_team_days_json, world_history_json, available_staff_market_last_activity_date, save_format_version, world_format_version, app_version, source_world_id, source_world_kind, active_region_ids_json, active_competition_ids_json, extra_translations_json, package_lockfile_json, emitted_events_json, seed, legacy_world_cup_draw, development_speed_percent, scout_youth_rest_until_json, youth_watchlist_json, youth_pool_json, staff_market_refreshes_json, awaited_replies_json
+            "SELECT save_id, save_name, manager_id, start_date, game_date, created_at, last_played_at, vacant_team_days_json, world_history_json, available_staff_market_last_activity_date, save_format_version, world_format_version, app_version, source_world_id, source_world_kind, active_region_ids_json, active_competition_ids_json, extra_translations_json, package_lockfile_json, emitted_events_json, seed, legacy_world_cup_draw, development_speed_percent, scout_youth_rest_until_json, youth_watchlist_json, youth_pool_json, staff_market_refreshes_json, awaited_replies_json, account_id
              FROM game_meta WHERE id = 'singleton'",
         )
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -240,6 +244,7 @@ pub fn load_meta(conn: &Connection) -> Result<Option<GameMeta>, String> {
                 awaited_replies_json: row
                     .get(27)
                     .unwrap_or_else(|_| default_awaited_replies_json()),
+                account_id: row.get(28)?,
             })
         })
         .map_err(|_| GAME_PERSISTENCE_LOAD_ERROR.to_string())?;
@@ -292,6 +297,7 @@ mod tests {
             youth_pool_json: "null".to_string(),
             staff_market_refreshes_json: "{}".to_string(),
             awaited_replies_json: "[]".to_string(),
+            account_id: None,
         };
 
         upsert_meta(db.conn(), &meta).unwrap();
@@ -347,6 +353,7 @@ mod tests {
             youth_pool_json: "null".to_string(),
             staff_market_refreshes_json: "{}".to_string(),
             awaited_replies_json: "[]".to_string(),
+            account_id: None,
         };
         upsert_meta(db.conn(), &meta1).unwrap();
 
@@ -379,6 +386,7 @@ mod tests {
             youth_pool_json: "null".to_string(),
             staff_market_refreshes_json: "{}".to_string(),
             awaited_replies_json: "[]".to_string(),
+            account_id: None,
         };
         upsert_meta(db.conn(), &meta2).unwrap();
 
@@ -424,6 +432,7 @@ mod tests {
             youth_pool_json: "null".to_string(),
             staff_market_refreshes_json: "{}".to_string(),
             awaited_replies_json: "[]".to_string(),
+            account_id: None,
         };
 
         let result = upsert_meta(&conn, &meta);

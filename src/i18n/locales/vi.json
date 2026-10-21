@@ -3250,6 +3250,15 @@
         "saveFailed": "Không lưu được hồ sơ HLV.",
         "pathFailed": "Không xác định được đường dẫn lưu hồ sơ."
       },
+      "coach": {
+        "loadFailed": "Không tải được tài khoản HLV.",
+        "saveFailed": "Không lưu được tài khoản HLV.",
+        "accountNotFound": "Không tìm thấy tài khoản HLV.",
+        "notLoggedIn": "Chưa đăng nhập tài khoản HLV.",
+        "offline": "Không kết nối được máy chủ tài khoản.",
+        "saveOfAnotherAccount": "Ván này thuộc tài khoản HLV khác.",
+        "saveWithoutAccount": "Ván này chưa gắn tài khoản HLV."
+      },
       "teamNotFound": "Không tìm thấy đội",
       "jobOffer": {
         "teamNotVacant": "Câu lạc bộ này không còn tìm HLV nữa."

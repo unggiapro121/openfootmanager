@@ -3250,6 +3250,15 @@
         "saveFailed": "Failed to save manager profile.",
         "pathFailed": "Could not resolve the profiles storage path."
       },
+      "coach": {
+        "loadFailed": "Failed to load coach accounts.",
+        "saveFailed": "Failed to save the coach account.",
+        "accountNotFound": "Coach account not found.",
+        "notLoggedIn": "No coach account is logged in.",
+        "offline": "Could not reach the account server.",
+        "saveOfAnotherAccount": "This career belongs to another coach account.",
+        "saveWithoutAccount": "This career has no coach account yet."
+      },
       "teamNotFound": "Team not found",
       "jobOffer": {
         "teamNotVacant": "This club is no longer looking for a manager."

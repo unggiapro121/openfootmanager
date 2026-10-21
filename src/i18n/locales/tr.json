@@ -3250,6 +3250,15 @@
         "saveFailed": "Menajer profili kaydedilemedi.",
         "pathFailed": "Profil depolama yolu çözümlenemedi."
       },
+      "coach": {
+        "loadFailed": "Menajer hesapları yüklenemedi.",
+        "saveFailed": "Menajer hesabı kaydedilemedi.",
+        "accountNotFound": "Menajer hesabı bulunamadı.",
+        "notLoggedIn": "Giriş yapılmış bir menajer hesabı yok.",
+        "offline": "Hesap sunucusuna ulaşılamadı.",
+        "saveOfAnotherAccount": "Bu kariyer başka bir menajer hesabına ait.",
+        "saveWithoutAccount": "Bu kariyerin henüz bir menajer hesabı yok."
+      },
       "teamNotFound": "Takım bulunamadı",
       "jobOffer": {
         "teamNotVacant": "Bu kulüp artık menajer aramıyor."

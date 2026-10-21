@@ -3406,6 +3406,15 @@
         "saveFailed": "Impossible d'enregistrer le profil d'entraîneur.",
         "pathFailed": "Impossible de résoudre le chemin de stockage des profils."
       },
+      "coach": {
+        "loadFailed": "Impossible de charger les comptes d'entraîneur.",
+        "saveFailed": "Impossible d'enregistrer le compte d'entraîneur.",
+        "accountNotFound": "Compte d'entraîneur introuvable.",
+        "notLoggedIn": "Aucun compte d'entraîneur n'est connecté.",
+        "offline": "Le serveur des comptes est injoignable.",
+        "saveOfAnotherAccount": "Cette carrière appartient à un autre compte d'entraîneur.",
+        "saveWithoutAccount": "Cette carrière n'a pas encore de compte d'entraîneur."
+      },
       "finance": {
         "boardSupportUnavailable": "Le soutien d'urgence du conseil n'est disponible que lorsque la trésorerie est sous pression.",
         "boardSupportAlreadyUsed": "Le conseil a déjà accordé un soutien d'urgence cette saison.",

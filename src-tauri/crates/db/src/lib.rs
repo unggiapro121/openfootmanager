@@ -1,3 +1,4 @@
+pub mod coach_store;
 pub mod game_database;
 pub mod game_persistence;
 pub mod legacy_migration;

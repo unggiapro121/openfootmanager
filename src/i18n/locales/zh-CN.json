@@ -3406,6 +3406,15 @@
         "saveFailed": "无法保存经理档案。",
         "pathFailed": "无法解析档案存储路径。"
       },
+      "coach": {
+        "loadFailed": "无法加载经理账号。",
+        "saveFailed": "无法保存经理账号。",
+        "accountNotFound": "未找到经理账号。",
+        "notLoggedIn": "尚未登录经理账号。",
+        "offline": "无法连接账号服务器。",
+        "saveOfAnotherAccount": "此生涯属于另一个经理账号。",
+        "saveWithoutAccount": "此生涯尚未绑定经理账号。"
+      },
       "finance": {
         "boardSupportUnavailable": "只有当现金储备承压时，董事会紧急支持才可用。",
         "boardSupportAlreadyUsed": "董事会本赛季已经批准过一次紧急支持。",

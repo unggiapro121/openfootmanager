@@ -1107,6 +1107,12 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
                     kind: domain::manager::HonourKind::League,
                     team_id: user_team_id.clone(),
                 });
+            if game.account_id.is_some() {
+                game.pending_coach_reports
+                    .push(crate::coach_progress::CoachRecord::Honour(
+                        domain::manager::HonourKind::League,
+                    ));
+            }
         }
         let best = game.manager.career_stats.best_finish;
         if best.is_none() || best.unwrap() > user_position {

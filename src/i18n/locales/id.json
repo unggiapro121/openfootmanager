@@ -3250,6 +3250,15 @@
         "saveFailed": "Gagal menyimpan profil manajer.",
         "pathFailed": "Tidak dapat menyelesaikan jalur penyimpanan profil."
       },
+      "coach": {
+        "loadFailed": "Gagal memuat akun manajer.",
+        "saveFailed": "Gagal menyimpan akun manajer.",
+        "accountNotFound": "Akun manajer tidak ditemukan.",
+        "notLoggedIn": "Belum ada akun manajer yang masuk.",
+        "offline": "Tidak dapat menghubungi server akun.",
+        "saveOfAnotherAccount": "Karier ini milik akun manajer lain.",
+        "saveWithoutAccount": "Karier ini belum terhubung ke akun manajer."
+      },
       "teamNotFound": "Tim tidak ditemukan",
       "jobOffer": {
         "teamNotVacant": "Klub ini tidak lagi mencari manajer."

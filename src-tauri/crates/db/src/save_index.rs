@@ -21,6 +21,9 @@ pub struct SaveEntry {
     pub checksum: String,
     pub created_at: String,
     pub last_played_at: String,
+    /// The coach account the career belongs to; `None` for one with none.
+    #[serde(default)]
+    pub account_id: Option<String>,
 }
 
 /// The save index file that tracks all save sessions.
@@ -64,6 +67,7 @@ impl SaveIndex {
             existing.team_name = entry.team_name.clone();
             existing.checksum = entry.checksum.clone();
             existing.last_played_at = entry.last_played_at.clone();
+            existing.account_id = entry.account_id.clone();
             true
         } else {
             false
@@ -212,6 +216,7 @@ fn validate_db_file(path: &Path) -> Result<SaveEntry, String> {
         checksum,
         created_at: meta.created_at,
         last_played_at: meta.last_played_at,
+        account_id: meta.account_id,
     })
 }
 
@@ -254,6 +259,7 @@ mod tests {
             checksum: "abc123".to_string(),
             created_at: "2026-01-01".to_string(),
             last_played_at: "2026-01-02".to_string(),
+            account_id: None,
         };
         index.add(entry);
 
@@ -274,6 +280,7 @@ mod tests {
             checksum: "old".to_string(),
             created_at: "2026-01-01".to_string(),
             last_played_at: "2026-01-01".to_string(),
+            account_id: None,
         });
 
         let updated = index.update(&SaveEntry {
@@ -285,6 +292,7 @@ mod tests {
             checksum: "new".to_string(),
             created_at: "2026-01-01".to_string(),
             last_played_at: "2026-01-05".to_string(),
+            account_id: None,
         });
 
         assert!(updated);
@@ -304,6 +312,7 @@ mod tests {
             checksum: "x".to_string(),
             created_at: "x".to_string(),
             last_played_at: "x".to_string(),
+            account_id: None,
         });
         assert!(!result);
     }
@@ -320,6 +329,7 @@ mod tests {
             checksum: "abc".to_string(),
             created_at: "2026-01-01".to_string(),
             last_played_at: "2026-01-01".to_string(),
+            account_id: None,
         });
         assert!(index.remove("save-001"));
         assert!(index.saves.is_empty());
@@ -360,6 +370,7 @@ mod tests {
             checksum: "abc123".to_string(),
             created_at: "2026-01-01".to_string(),
             last_played_at: "2026-01-02".to_string(),
+            account_id: None,
         });
 
         write_index(&index_path, &index).unwrap();
@@ -501,6 +512,7 @@ mod tests {
                 youth_pool_json: "null".to_string(),
                 staff_market_refreshes_json: "{}".to_string(),
                 awaited_replies_json: "[]".to_string(),
+                account_id: None,
             },
         )
         .unwrap();
@@ -583,6 +595,7 @@ mod tests {
             checksum: "abc".to_string(),
             created_at: "2026-01-01".to_string(),
             last_played_at: "2026-01-01".to_string(),
+            account_id: None,
         });
         write_index(&index_path, &index).unwrap();
 
@@ -633,6 +646,7 @@ mod tests {
                 youth_pool_json: "null".to_string(),
                 staff_market_refreshes_json: "{}".to_string(),
                 awaited_replies_json: "[]".to_string(),
+                account_id: None,
             },
         )
         .unwrap();

@@ -1,4 +1,5 @@
 pub mod club;
+pub mod coach;
 pub mod contracts;
 pub mod finances;
 pub mod game;
@@ -27,6 +28,7 @@ pub mod util;
 pub mod world;
 
 pub use club::*;
+pub use coach::*;
 pub use contracts::*;
 pub use finances::*;
 pub use game::*;

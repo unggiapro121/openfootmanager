@@ -3406,6 +3406,15 @@
         "saveFailed": "Não foi possível salvar o perfil de treinador.",
         "pathFailed": "Não foi possível resolver o caminho de armazenamento dos perfis."
       },
+      "coach": {
+        "loadFailed": "Não foi possível carregar as contas de treinador.",
+        "saveFailed": "Não foi possível salvar a conta de treinador.",
+        "accountNotFound": "Conta de treinador não encontrada.",
+        "notLoggedIn": "Nenhuma conta de treinador está conectada.",
+        "offline": "Não foi possível conectar ao servidor de contas.",
+        "saveOfAnotherAccount": "Esta carreira pertence a outra conta de treinador.",
+        "saveWithoutAccount": "Esta carreira ainda não está vinculada a uma conta de treinador."
+      },
       "finance": {
         "boardSupportUnavailable": "O apoio emergencial da diretoria só está disponível quando o caixa está sob pressão.",
         "boardSupportAlreadyUsed": "A diretoria já aprovou apoio emergencial nesta temporada.",
