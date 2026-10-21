@@ -2075,6 +2075,7 @@
     "player": "Jogador",
     "fitness": "Condição",
     "halfTime": "Intervalo",
+    "halfTimeHint": "Converse com o time, ajuste a tática e comece o segundo tempo.",
     "ht": "INT",
     "extraTimeHalfTime": "Intervalo da Prorrogação",
     "penaltyShootout": "Disputa de Pênaltis",

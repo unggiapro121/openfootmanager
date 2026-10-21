@@ -2166,6 +2166,7 @@
     "player": "Giocatore",
     "fitness": "Forma",
     "halfTime": "Intervallo",
+    "halfTimeHint": "Parla alla squadra, sistema la tattica e inizia il secondo tempo.",
     "ht": "INT",
     "extraTimeHalfTime": "Intervallo dei Tempi Supplementari",
     "penaltyShootout": "Calci di Rigore",

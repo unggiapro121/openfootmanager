@@ -2181,6 +2181,7 @@
       }
     },
     "halfTime": "Devre Arası",
+    "halfTimeHint": "Takımla konuşun, taktiği düzenleyin ve ikinci yarıya başlayın.",
     "ht": "İY",
     "extraTimeHalfTime": "Uzatma Devre Arası",
     "penaltyShootout": "Penaltı Atışları",
