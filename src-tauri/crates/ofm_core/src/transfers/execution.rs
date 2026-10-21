@@ -269,9 +269,17 @@ pub(super) fn buyers_standard_terms(
         .ok_or("be.error.teamNotFound")?;
     // No bid carries a wage yet (every `wage_offered` is 0), so none is passed; when one
     // does, it is passed here.
-    let (wage, end) =
-        standard_contract_terms(player, &buyer, game.clock.current_date.date_naive(), 0)
-            .ok_or(ERR_UNABLE_TO_CALCULATE_CONTRACT_END_DATE)?;
+    // The one place a purchase's wage is set, so the preview, the check before a
+    // bid and the deal itself all carry the same reputation discount.
+    let wage_discount = crate::manager_perks::wage_discount(game, buyer_team_id);
+    let (wage, end) = standard_contract_terms(
+        player,
+        &buyer,
+        game.clock.current_date.date_naive(),
+        0,
+        wage_discount,
+    )
+    .ok_or(ERR_UNABLE_TO_CALCULATE_CONTRACT_END_DATE)?;
     Ok((buyer, wage, end))
 }
 
@@ -284,7 +292,8 @@ pub(super) fn buyer_can_pay_standard_wage(
     facts: &BuyerWageFacts,
     today: NaiveDate,
 ) -> bool {
-    standard_contract_terms(player, buyer, today, 0)
+    // Only AI clubs are swept (`ai_tactics::ai_clubs`): no reputation discount.
+    standard_contract_terms(player, buyer, today, 0, 0.0)
         .is_some_and(|(wage, _)| facts.purchase_verdict(buyer, player, wage).permits())
 }
 

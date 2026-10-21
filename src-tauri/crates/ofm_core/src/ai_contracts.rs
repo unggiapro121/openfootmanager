@@ -211,7 +211,8 @@ fn renew(game: &mut Game, team: &Team, player_index: usize, current_date: NaiveD
     if !wage_policy_verdict(game, team, player, offer.weekly_wage).permits() {
         return;
     }
-    let outcome = evaluate_renewal_offer(player, team, current_date, &offer);
+    // An AI club: no manager's reputation discount.
+    let outcome = evaluate_renewal_offer(player, team, current_date, &offer, 0.0);
     if outcome.decision != RenewalDecision::Accepted {
         return;
     }

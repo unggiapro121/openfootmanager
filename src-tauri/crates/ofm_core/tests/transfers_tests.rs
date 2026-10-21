@@ -4679,3 +4679,6 @@ fn an_ai_club_whose_board_would_refuse_the_wage_does_not_chase_the_player() {
         "an offer it could not complete reached the player's club"
     );
 }
+
+#[path = "transfers_tests/manager_perks.rs"]
+mod manager_perks;

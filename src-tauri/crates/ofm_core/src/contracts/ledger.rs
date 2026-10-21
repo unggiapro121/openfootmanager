@@ -5,7 +5,7 @@
 //! contract entry looks like. The ledger itself, and the rule that the current
 //! contract is its latest entry, live in `domain::contract_ledger`.
 
-use super::{expected_contract_years, expected_wage};
+use super::{expected_contract_years, expected_wage_with_discount};
 use chrono::{Months, NaiveDate};
 use domain::contract_ledger::{ContractRecord, ContractSource};
 use domain::player::{Player, PlayerMovementEntry, PlayerMovementKind};
@@ -64,17 +64,21 @@ pub(crate) fn record_movement(player: &mut Player, entry: PlayerMovementEntry) {
 /// model a renewal uses. A bid that named a wage keeps it; a bid that named none
 /// (every bid today) gets the wage the player would expect from that club.
 ///
+/// `wage_discount` is what the buying club's manager's reputation takes off
+/// the player's ask: the user's club only, 0 for an AI club.
+///
 /// `None` only when the end date cannot be calculated.
 pub(crate) fn standard_contract_terms(
     player: &Player,
     buying_club: &Team,
     today: NaiveDate,
     offered_wage: u32,
+    wage_discount: f64,
 ) -> Option<(u32, NaiveDate)> {
     let wage = if offered_wage > 0 {
         offered_wage
     } else {
-        expected_wage(player, buying_club, today)
+        expected_wage_with_discount(player, buying_club, today, wage_discount)
     };
     let end = today.checked_add_months(Months::new(expected_contract_years(player, today) * 12))?;
     Some((wage, end))
@@ -83,6 +87,7 @@ pub(crate) fn standard_contract_terms(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::contracts::expected_wage;
     use domain::player::{PlayerAttributes, Position};
 
     fn player(date_of_birth: &str) -> Player {
@@ -146,7 +151,7 @@ mod tests {
     #[test]
     fn a_bid_that_named_a_wage_keeps_it() {
         let (wage, _) =
-            standard_contract_terms(&player("2000-01-01"), &club(), day(2026, 8, 1), 12_345)
+            standard_contract_terms(&player("2000-01-01"), &club(), day(2026, 8, 1), 12_345, 0.0)
                 .unwrap();
         assert_eq!(wage, 12_345);
     }
@@ -154,7 +159,7 @@ mod tests {
     #[test]
     fn a_bid_that_named_no_wage_gets_the_wage_the_player_expects() {
         let player = player("2000-01-01");
-        let (wage, _) = standard_contract_terms(&player, &club(), day(2026, 8, 1), 0).unwrap();
+        let (wage, _) = standard_contract_terms(&player, &club(), day(2026, 8, 1), 0, 0.0).unwrap();
         assert_eq!(wage, expected_wage(&player, &club(), day(2026, 8, 1)));
         assert!(wage > 0, "a zero offered wage must never become his pay");
     }
@@ -167,7 +172,7 @@ mod tests {
             ("1996-01-01", day(2028, 8, 1)), // 30: two years
             ("1990-01-01", day(2027, 8, 1)), // 36: one year
         ] {
-            let (_, got) = standard_contract_terms(&player(born), &club(), today, 0).unwrap();
+            let (_, got) = standard_contract_terms(&player(born), &club(), today, 0, 0.0).unwrap();
             assert_eq!(got, end, "born {born}");
         }
     }

@@ -609,8 +609,8 @@ fn high_value_star_expects_more_than_fringe_player() {
         contract_years: 3,
     };
 
-    let star_outcome = evaluate_renewal_offer(&star, &team, current_date, &offer);
-    let fringe_outcome = evaluate_renewal_offer(&fringe, &team, current_date, &offer);
+    let star_outcome = evaluate_renewal_offer(&star, &team, current_date, &offer, 0.0);
+    let fringe_outcome = evaluate_renewal_offer(&fringe, &team, current_date, &offer, 0.0);
 
     assert!(matches!(fringe_outcome.decision, RenewalDecision::Accepted));
     assert!(matches!(
@@ -826,8 +826,8 @@ fn low_morale_player_becomes_harder_to_renew_than_content_player() {
         contract_years: 3,
     };
 
-    let content_outcome = evaluate_renewal_offer(&content_player, &team, current_date, &offer);
-    let unhappy_outcome = evaluate_renewal_offer(&unhappy_player, &team, current_date, &offer);
+    let content_outcome = evaluate_renewal_offer(&content_player, &team, current_date, &offer, 0.0);
+    let unhappy_outcome = evaluate_renewal_offer(&unhappy_player, &team, current_date, &offer, 0.0);
 
     assert!(matches!(
         content_outcome.decision,
@@ -861,8 +861,9 @@ fn shorter_remaining_term_increases_renewal_demands() {
         contract_years: 3,
     };
 
-    let secure_outcome = evaluate_renewal_offer(&secure_player, &team, current_date, &offer);
-    let expiring_outcome = evaluate_renewal_offer(&expiring_player, &team, current_date, &offer);
+    let secure_outcome = evaluate_renewal_offer(&secure_player, &team, current_date, &offer, 0.0);
+    let expiring_outcome =
+        evaluate_renewal_offer(&expiring_player, &team, current_date, &offer, 0.0);
 
     assert!(matches!(secure_outcome.decision, RenewalDecision::Accepted));
     assert!(matches!(
@@ -1598,4 +1599,89 @@ fn a_retired_player_cannot_be_signed_and_nothing_is_written() {
 
     assert!(refused.is_err());
     assert!(game.players[0].movement_history.is_empty());
+}
+
+// ── The user's reputation off the pitch (phase 2 lane M, M-5) ───────────────
+
+fn counter_ask_at(reputation: u32) -> u32 {
+    let mut game = make_game();
+    game.manager.reputation = reputation;
+    let outcome = propose_renewal(
+        &mut game,
+        "player-1",
+        RenewalOffer {
+            weekly_wage: 12_500,
+            contract_years: 3,
+        },
+    )
+    .expect("the renewal is heard");
+    assert!(matches!(outcome.decision, RenewalDecision::CounterOffer));
+    outcome.suggested_wage.expect("a counter names a wage")
+}
+
+/// Given a player who asks 14k of a manager at the starting reputation,
+/// When a manager at 900 (15% off) opens renewal talks with a low offer,
+/// Then he counters at 13k: the discounted rate, met halfway from his 12k.
+#[test]
+fn a_reputed_manager_hears_a_lower_renewal_ask() {
+    assert_eq!(counter_ask_at(500), 14_000);
+    assert_eq!(counter_ask_at(900), 13_000);
+}
+
+fn delegated_wage_at(reputation: u32) -> u32 {
+    let mut game = make_game();
+    game.manager.reputation = reputation;
+    game.staff.push(make_assistant_manager());
+    game.players[0].morale = 74;
+    let report = delegate_renewals(
+        &mut game,
+        DelegatedRenewalOptions {
+            player_ids: Some(vec!["player-1".to_string()]),
+            max_wage_increase_pct: 35,
+            max_contract_years: 3,
+        },
+    )
+    .expect("assistant delegation should return a report");
+    report.cases[0].agreed_wage.expect("the renewal is agreed")
+}
+
+/// Given the assistant renews a player on the user's behalf,
+/// When the user's reputation is 900 rather than 500,
+/// Then the agreed wage is lower: the assistant negotiates with the user's name.
+#[test]
+fn a_delegated_renewal_carries_the_users_reputation() {
+    assert!(delegated_wage_at(900) < delegated_wage_at(500));
+}
+
+fn smallest_free_agent_wage_accepted_at(reputation: u32) -> u32 {
+    let mut base = make_free_agent_game();
+    base.manager.reputation = reputation;
+    base.players[0].market_value = 3_000_000;
+    base.players[0].ovr = 76;
+    (1..=200)
+        .map(|thousands| thousands * 1_000)
+        .find(|&wage| {
+            let mut game = base.clone();
+            offer_free_agent_contract(
+                &mut game,
+                "free-agent-1",
+                RenewalOffer {
+                    weekly_wage: wage,
+                    contract_years: 3,
+                },
+            )
+            .is_ok_and(|outcome| matches!(outcome.decision, RenewalDecision::Accepted))
+        })
+        .expect("some wage signs him")
+}
+
+/// Given a free agent,
+/// When the user's reputation is 900 rather than 500,
+/// Then he signs for less.
+#[test]
+fn a_free_agent_signs_for_less_with_a_reputed_manager() {
+    let at_start = smallest_free_agent_wage_accepted_at(500);
+    let reputed = smallest_free_agent_wage_accepted_at(900);
+
+    assert!(reputed < at_start, "{reputed} vs {at_start}");
 }

@@ -69,7 +69,12 @@ pub fn offer_free_agent_contract(
     let cooled_off = cool_stale_renewal_session(&mut game.players[player_index], current_date);
     let today = current_date.format("%Y-%m-%d").to_string();
     let round = next_renewal_round(&game.players[player_index], Some(today.as_str()));
-    let expected_wage = expected_wage(&game.players[player_index], &team, current_date);
+    let expected_wage = expected_wage_with_discount(
+        &game.players[player_index],
+        &team,
+        current_date,
+        crate::manager_perks::wage_discount(game, &team.id),
+    );
     let expected_years = expected_contract_years(&game.players[player_index], current_date);
     let reference_wage = reference_player_wage(&game.players[player_index]);
     let minimum_wage = minimum_acceptable_wage(reference_wage);
