@@ -1,7 +1,7 @@
 //! A manager's command of each play style: rolled once when an AI manager is
 //! created, and grown by the user's own matches (phase 2 lane M, M-2).
 
-use domain::manager::{ALL_PLAY_STYLES, Manager, NEUTRAL_MASTERY, PlayStyleMastery};
+use domain::manager::{ALL_PLAY_STYLES, Manager, NEUTRAL_MASTERY, PlayStyleMastery, StyleXp};
 use domain::team::PlayStyle;
 use rand::rngs::StdRng;
 use rand::{RngExt, SeedableRng};
@@ -108,17 +108,33 @@ pub(crate) fn match_xp(outcome: MatchOutcome, own_strength: f64, opponent_streng
 /// while the bank covers the next point, up to the cap. Returns the mastery
 /// before and after.
 pub(crate) fn add_style_xp(manager: &mut Manager, style: &PlayStyle, xp: u32) -> (u8, u8) {
-    let before = manager.play_style_mastery.for_style(style);
-    let progress = manager.progression.style_xp.for_style_mut(style);
+    bank_style_xp(
+        &mut manager.play_style_mastery,
+        &mut manager.progression.style_xp,
+        style,
+        xp,
+    )
+}
+
+/// [`add_style_xp`] on a mastery and its XP wherever they are kept: a manager
+/// in a save, or a coach account (`coach_progress`).
+pub(crate) fn bank_style_xp(
+    mastery: &mut PlayStyleMastery,
+    style_xp: &mut StyleXp,
+    style: &PlayStyle,
+    xp: u32,
+) -> (u8, u8) {
+    let before = mastery.for_style(style);
+    let progress = style_xp.for_style_mut(style);
     progress.xp = progress.xp.saturating_add(xp);
 
-    let mut mastery = before;
-    while mastery < MASTERY_XP_CAP && progress.xp >= xp_to_next(mastery) {
-        progress.xp -= xp_to_next(mastery);
-        mastery += 1;
+    let mut level = before;
+    while level < MASTERY_XP_CAP && progress.xp >= xp_to_next(level) {
+        progress.xp -= xp_to_next(level);
+        level += 1;
     }
-    manager.play_style_mastery.set(style, mastery);
-    (before, mastery)
+    mastery.set(style, level);
+    (before, level)
 }
 
 /// What a match the user managed did for their mastery of the style their
