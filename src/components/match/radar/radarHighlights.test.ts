@@ -193,3 +193,47 @@ describe("a corner played to its end (after GĐ5)", () => {
     expect(short(open)).toEqual(["H:Dribble", "H:ShotBlocked", "H:Corner"]);
   });
 });
+
+describe("a free kick in the attacking third played to its end (after GĐ5)", () => {
+  // Given a foul in the attacking third, the booking, the free kick taken and
+  // crossed in, then cleared, then all of it is kept, to the clearance, though
+  // no shot comes of it.
+  it("keeps a dangerous free kick from the foul to the clearance", () => {
+    expect(
+      typesOf([
+        radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+        radarEvent("Foul", "Away", "AwayDefense", "a_cb1", "h_st1"),
+        radarEvent("FreeKick", "Home", "AwayDefense"),
+        radarEvent("YellowCard", "Away", "AwayDefense", "a_cb1"),
+        radarEvent("FreeKick", "Home", "AwayDefense", "h_rm"),
+        radarEvent("Cross", "Home", "AwayDefense", "h_rm", "h_st1"),
+        radarEvent("Clearance", "Away", "AwayBox", "a_cb2"),
+        radarEvent("PassCompleted", "Away", "AwayDefense", "a_cm1"),
+      ]),
+    ).toEqual(["A:Foul", "H:FreeKick", "A:YellowCard", "H:FreeKick", "H:Cross", "A:Clearance"]);
+  });
+
+  // Given a free kick in midfield with no shot from it, then nothing is kept.
+  it("passes over a free kick in midfield", () => {
+    expect(
+      typesOf([
+        radarEvent("Foul", "Away", "Midfield", "a_cm1", "h_cm1"),
+        radarEvent("FreeKick", "Home", "Midfield"),
+        radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+        radarEvent("Interception", "Away", "Midfield", "a_cm2"),
+      ]),
+    ).toEqual([]);
+  });
+
+  // Given a dangerous free kick, then it is one move: no change of scene
+  // inside it.
+  it("keeps a dangerous free kick as one move", () => {
+    const moves = movesOf([
+      radarEvent("Foul", "Away", "AwayDefense", "a_cb1", "h_st1"),
+      radarEvent("FreeKick", "Home", "AwayDefense"),
+      radarEvent("YellowCard", "Away", "AwayDefense", "a_cb1"),
+      radarEvent("Clearance", "Away", "AwayBox", "a_cb2"),
+    ]);
+    expect(moves).toHaveLength(1);
+  });
+});

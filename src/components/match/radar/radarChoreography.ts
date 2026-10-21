@@ -53,7 +53,7 @@ import {
   standIn,
 } from "./radarCasting";
 import { captionsFor } from "./radarCaptions";
-import { isAttackingPlay, movesOf } from "./radarHighlights";
+import { CARDS, isAttackingPlay, isAwaitingDelivery, movesOf } from "./radarHighlights";
 import { type RadarSettle, isBallInGoal, quietSteps, settleStepsFor } from "./radarSettle";
 
 /**
@@ -71,8 +71,13 @@ import { type RadarSettle, isBallInGoal, quietSteps, settleStepsFor } from "./ra
 interface Cue {
   event: MatchEvent;
   next: MatchEvent | undefined;
-  /** The event staged before it in the move, if any: a free kick, for the play that takes it. */
+  /**
+   * The play staged before it in the move, bookings passed over: a free kick
+   * or a corner, for the play that takes it.
+   */
   previous?: MatchEvent;
+  /** The play after it in the move, bookings passed over: who takes a free kick. */
+  after?: MatchEvent;
   scene: RadarScene;
   stage: RadarStage;
 }
@@ -710,15 +715,18 @@ const CORNER_DELIVERY_DEPTH = 96;
 const CORNER_DELIVERY_LANES = 10;
 
 /**
- * A corner the engine clears with no cross named: the taker at the flag still
- * kicks it in, to the defender who clears it, rather than carry it in himself
- * (after GĐ5). Null when the ball is not at a corner flag.
+ * A corner, or a free kick, the engine clears with no cross named: the taker
+ * still kicks it into the box, to the defender who clears it, rather than
+ * carry it in himself (after GĐ5). Null when the ball is not at a set piece.
  */
 function cornerDelivery(cue: Cue): Staging | null {
   const { event, scene, stage } = cue;
   const side = event.side;
   const attacking = opposite(side);
-  if (fromPitch(attacking, scene.ball).depth < CORNER_FLAG_DEPTH) return null;
+  const isSetPiece =
+    fromPitch(attacking, scene.ball).depth >= CORNER_FLAG_DEPTH ||
+    (cue.previous?.event_type === "FreeKick" && cue.previous.side === attacking);
+  if (!isSetPiece) return null;
   const taker = ballCarrier(stage, scene, attacking);
   const clearer = event.player_id;
   if (!taker || !clearer) return null;
@@ -1174,17 +1182,20 @@ function stageCorner(cue: Cue, spot: PitchPoint): Staging {
  * may cut (`radarSceneCut`).
  */
 function stageFreeKick(cue: Cue): Staging {
-  const { event, next, scene } = cue;
+  const { event, after, scene } = cue;
   const side = event.side;
   const whistle: RadarStep = {
     ball: ballAsStaged(cue),
     overlay: { kind: "whistle", at: scene.ball },
     possession: side,
   };
-  // A direct free kick puts the ball on its own spot for the taker.
-  if (next?.shot_kind === "DirectFreeKick") return { steps: [whistle] };
-  const playsNext = next && next.side === side && isAttackingPlay(next) ? next.player_id : null;
-  const taker = event.player_id ?? playsNext;
+  // A direct free kick puts the ball on its own spot for the taker, and a
+  // free kick the engine names as taken places it for its own taker.
+  const isTakenNext = after?.event_type === "FreeKick" && !!after.player_id && !event.player_id;
+  if (after?.shot_kind === "DirectFreeKick" || isTakenNext) return { steps: [whistle] };
+  const playsNext = after && after.side === side && isAttackingPlay(after) ? after.player_id : null;
+  // Someone always takes it: when the engine names no one, the nearest man.
+  const taker = event.player_id ?? playsNext ?? nearestTo(cue.stage, scene, side, scene.ball);
   if (!taker) return { steps: [whistle] };
   const { depth, lane } = fromPitch(side, scene.ball);
   return {
@@ -1423,6 +1434,14 @@ function onTheBreak(staging: Staging, fromX: number): Staging {
   return { ...staging, steps };
 }
 
+/** The last event before `index` that is play, not a booking. */
+function playBefore(events: MatchEvent[], index: number): MatchEvent | undefined {
+  for (let before = index - 1; before >= 0; before--) {
+    if (!CARDS.has(events[before].event_type)) return events[before];
+  }
+  return undefined;
+}
+
 export function choreographBatch(
   events: MatchEvent[],
   stage: RadarStage,
@@ -1439,7 +1458,8 @@ export function choreographBatch(
     const staged = stageEvent({
       event,
       next: events[index + 1],
-      previous: events[index - 1],
+      previous: playBefore(events, index),
+      after: events.slice(index + 1).find((later) => !CARDS.has(later.event_type)),
       scene,
       stage,
     });
@@ -1500,6 +1520,34 @@ function beatOf(stage: RadarStage, scene: RadarScene, key: string, steps: RadarS
   return { beat, end: timed.end };
 }
 
+/**
+ * A corner or free kick taken with nothing named after it: the taker kicks it
+ * into the box and the nearest defender wins it (after GĐ5). Null when no one
+ * of the taking side is on the ball.
+ */
+function unansweredSetPiece(stage: RadarStage, scene: RadarScene, move: MatchEvent[]) {
+  const taking = [...move].reverse().find((event) => !CARDS.has(event.event_type))?.side;
+  if (!taking) return null;
+  const taker = ballCarrier(stage, scene, taking) ?? nearestTo(stage, scene, taking, scene.ball);
+  if (!taker) return null;
+  const defending = opposite(taking);
+  const landing = toPitch(taking, CORNER_DELIVERY_DEPTH, CENTRE_LANE + jitter(`${taker}u`) * 6);
+  const winner =
+    nearestTo(stage, scene, defending, landing, "Defender") ??
+    nearestTo(stage, scene, defending, landing);
+  return beatOf(stage, scene, `set-piece-${taker}`, [
+    {
+      pace: "air",
+      ball: { at: landing, lift: 0 },
+      movers: only(winner, landing),
+      highlight: cast(taker, winner),
+      overlay: null,
+      possession: defending,
+      action: { kind: "kick", by: taker, to: landing, receiver: winner, pace: "air", peak: 4 },
+    },
+  ]);
+}
+
 /** How long the look at the block before a move lasts when it does not cut: a frame or two. */
 const BLOCK_CHECK_MS = 120;
 
@@ -1541,6 +1589,13 @@ export function choreographHighlights(
     const played = choreographBatch(move, stage, opening.end, undefined, events);
     beats.push(opening.beat, ...played.beats);
     scene = played.end;
+    // A set piece the engine never says was taken — the other side simply
+    // has the ball next — is still taken before the scene changes.
+    const setPiece = isAwaitingDelivery(move) ? unansweredSetPiece(stage, scene, move) : null;
+    if (setPiece) {
+      beats.push(setPiece.beat);
+      scene = setPiece.end;
+    }
   }
   // The engine's tidy-up after the last move is too quick to be worth acting
   // out; only a goal's restart from the centre spot is shown.
