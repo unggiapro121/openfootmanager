@@ -10,7 +10,7 @@ import type { RadarKits, Side } from "./radarGeometry";
 import { FONT_CLASSES, PALETTE_CLASSES, readPalette } from "./radarPalette";
 import { type CaptionMark, type RadarCaption, captionsDue } from "./radarCaptions";
 import { type CaptionSink, RadarCommentary } from "./RadarCommentary";
-import { type RadarRun, advanceRun, startRun } from "./radarRun";
+import { type RadarRun, advanceRun, sceneCutOpacity, startRun } from "./radarRun";
 import type { RadarScene } from "./radarScene";
 import type { RadarStage } from "./radarStage";
 import { RADAR_PACING, useRadarDirector } from "./useRadarDirector";
@@ -154,6 +154,7 @@ function pictureOf(
       celebration.side && progress !== null ? { side: celebration.side, progress } : null,
     pulse,
     goalLabel: cast.goalLabel,
+    playersOpacity: sceneCutOpacity(run),
   };
 }
 
