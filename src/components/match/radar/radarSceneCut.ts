@@ -9,17 +9,23 @@ import { type RadarStage, scenePositions } from "./radarStage";
  * nothing in it, or a move started by a man away from the ball). The ball
  * goes and comes back in a moment; the players, run against a top speed, would
  * need ten seconds to cross the pitch after it, and the next pass would reach
- * an empty spot. So when they are still far from their places, they fade, are
- * put there, and stand a moment for the eye to take in the new picture —
- * as a broadcast cuts between highlights. Play within a move stays continuous.
+ * an empty spot. So when a move is about to start with them still far from
+ * their places, they fade out of sight, are put there, fade back in and stand
+ * a moment for the eye to take in the new picture — as a broadcast cuts
+ * between highlights. Play within a move stays continuous, and a quiet minute
+ * never cuts: with no move to start, drifting after the ball does no harm.
+ *
+ * About a second in all, in simulation (real) seconds: half a second read as a
+ * glitch on screen, dots jumping while still faintly visible.
  */
 
-/** How long the players take to fade, in simulation seconds. */
-export const CUT_FADE_S = 0.2;
-/** How long they stand in their new places, fading back in, before play goes on. */
-export const CUT_HOLD_S = 0.3;
-/** How faint they get at the bottom of the fade. */
-const CUT_DIM = 0.2;
+/** How long the players and the ball take to fade out of sight. */
+export const CUT_FADE_OUT_S = 0.25;
+/** How long they take to fade back in, in their new places. */
+export const CUT_FADE_IN_S = 0.35;
+/** How long they then stand, in full view, before play goes on. */
+export const CUT_STAND_S = 0.4;
+const CUT_TOTAL_S = CUT_FADE_OUT_S + CUT_FADE_IN_S + CUT_STAND_S;
 /** The block is far from its places when its players are this far away on average, in metres. */
 const CUT_MEAN_LAG_M = 12;
 /**
@@ -67,21 +73,19 @@ export function isFarFromPlaces(
 
 /** Whether `cut` is still holding play at `time`. */
 export function isCutHolding(cut: SceneCut | null, time: number): boolean {
-  return !!cut && time - cut.since < CUT_FADE_S + CUT_HOLD_S;
+  return !!cut && time - cut.since < CUT_TOTAL_S;
 }
 
-/** Whether `cut` has faded out and the players are to be put in place at `time`. */
+/** Whether `cut` has faded out of sight and the players are to be put in place at `time`. */
 export function isCutDueToPlace(cut: SceneCut | null, time: number): boolean {
-  return !!cut && !cut.placed && time - cut.since >= CUT_FADE_S;
+  return !!cut && !cut.placed && time - cut.since >= CUT_FADE_OUT_S;
 }
 
-/** How visible the players and the ball are at `time`: 1 with no cut, dimmed and back through one. */
+/** How visible the players and the ball are at `time`: 1 with no cut, out of sight and back through one. */
 export function cutOpacity(cut: SceneCut | null, time: number): number {
   if (!cut) return 1;
   const gone = time - cut.since;
-  if (gone < CUT_FADE_S) return 1 - ((1 - CUT_DIM) * gone) / CUT_FADE_S;
-  if (gone < CUT_FADE_S + CUT_HOLD_S) {
-    return CUT_DIM + ((1 - CUT_DIM) * (gone - CUT_FADE_S)) / CUT_HOLD_S;
-  }
+  if (gone < CUT_FADE_OUT_S) return 1 - gone / CUT_FADE_OUT_S;
+  if (gone < CUT_FADE_OUT_S + CUT_FADE_IN_S) return (gone - CUT_FADE_OUT_S) / CUT_FADE_IN_S;
   return 1;
 }

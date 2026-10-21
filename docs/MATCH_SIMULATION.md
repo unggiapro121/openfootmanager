@@ -684,11 +684,12 @@ contest names no target. Snapshots carry `ball_lane`, the ball's lane as the sid
 it. The radar draws each play in its event's lane.
 
 The radar acts out only the dangerous play, so between two moves the ball can be put down far away
-(a quiet minute in another zone, or a move started by a man away from the ball). Those steps are a
-change of scene (`sceneCut`): if the players are still far from their places when it starts (12 m
-on average, or 15 m for the man the ball comes back to), they fade for 0.2 s, are put straight into
-their places around the new ball, and stand 0.3 s before play goes on (`radarSceneCut.ts`). Play
-within a move stays continuous, and a scene the players are already close to plays as before.
+(quiet minutes in other zones, or a move started by a man away from the ball). Every move opens with
+a change of scene (`sceneCut`): the lead-in that puts the ball at the starter's feet, or a short
+look at the block when he is near it. If the players are still far from their places then (12 m on
+average, or 15 m for the man the ball comes back to), they fade out of sight (0.25 s), are put
+straight into their places, fade back in (0.35 s) and stand 0.4 s before play goes on
+(`radarSceneCut.ts`). Quiet minutes never cut; play within a move stays continuous.
 
 Minutes are counted from when a player came on: a substitute who is himself taken off is credited
 with the time between the two substitutions, not with every minute up to his exit.
