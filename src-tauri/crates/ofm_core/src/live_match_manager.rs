@@ -460,6 +460,18 @@ pub fn best_pre_match_lineup(
     commands
 }
 
+/// The engine's mirror of a club's play style.
+pub(crate) fn engine_play_style(play_style: &domain::team::PlayStyle) -> engine::PlayStyle {
+    match play_style {
+        domain::team::PlayStyle::Balanced => engine::PlayStyle::Balanced,
+        domain::team::PlayStyle::Attacking => engine::PlayStyle::Attacking,
+        domain::team::PlayStyle::Defensive => engine::PlayStyle::Defensive,
+        domain::team::PlayStyle::Possession => engine::PlayStyle::Possession,
+        domain::team::PlayStyle::Counter => engine::PlayStyle::Counter,
+        domain::team::PlayStyle::HighPress => engine::PlayStyle::HighPress,
+    }
+}
+
 pub(crate) fn domain_play_style(play_style: engine::PlayStyle) -> domain::team::PlayStyle {
     match play_style {
         engine::PlayStyle::Balanced => domain::team::PlayStyle::Balanced,

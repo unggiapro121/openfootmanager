@@ -22,14 +22,7 @@ pub(crate) fn build_team_with_bench(game: &Game, team_id: &str) -> (TeamData, Ve
         Some(t) => (
             t.name.clone(),
             t.formation.clone(),
-            match t.play_style {
-                domain::team::PlayStyle::Attacking => PlayStyle::Attacking,
-                domain::team::PlayStyle::Defensive => PlayStyle::Defensive,
-                domain::team::PlayStyle::Possession => PlayStyle::Possession,
-                domain::team::PlayStyle::Counter => PlayStyle::Counter,
-                domain::team::PlayStyle::HighPress => PlayStyle::HighPress,
-                _ => PlayStyle::Balanced,
-            },
+            crate::live_match_manager::engine_play_style(&t.play_style),
             domain_to_engine_tactics(&t.tactics_phase),
             t.starting_xi_ids.as_slice(),
         ),

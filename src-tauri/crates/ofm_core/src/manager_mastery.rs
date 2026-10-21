@@ -257,6 +257,72 @@ fn announce_mastery_milestone(
     crate::inbox::emit(game, message);
 }
 
+/// One play style as the manager screen shows it: where the user stands, how
+/// far the next point is, and what the style does to the side at this mastery.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct StyleProgressView {
+    pub style: PlayStyle,
+    pub mastery: u8,
+    /// XP banked toward the next point.
+    pub xp: u32,
+    /// What the next point costs; `None` once use can take it no further.
+    pub xp_to_next: Option<u32>,
+    pub matches: u32,
+    /// The style's multipliers at this mastery, as percentages off neutral.
+    pub effects: Vec<StyleEffectView>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct StyleEffectView {
+    pub phase: engine::StylePhase,
+    /// `+18` for ×1.18, `-8` for ×0.92.
+    pub percent: i32,
+}
+
+/// The user's mastery of every play style, with what one managed match against
+/// an equal side is worth for each result.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+pub struct ManagerProgressionView {
+    pub styles: Vec<StyleProgressView>,
+    pub xp_for_a_win: u32,
+    pub xp_for_a_draw: u32,
+    pub xp_for_a_loss: u32,
+}
+
+pub fn manager_progression_view(manager: &Manager) -> ManagerProgressionView {
+    let styles = ALL_PLAY_STYLES
+        .iter()
+        .map(|style| {
+            let mastery = manager.play_style_mastery.for_style(style);
+            let progress = manager.progression.style_xp.for_style(style);
+            let effects = engine::play_style_effects(
+                crate::live_match_manager::engine_play_style(style),
+                mastery,
+            )
+            .into_iter()
+            .map(|(phase, multiplier)| StyleEffectView {
+                phase,
+                percent: ((multiplier - 1.0) * 100.0).round() as i32,
+            })
+            .collect();
+            StyleProgressView {
+                style: style.clone(),
+                mastery,
+                xp: progress.xp,
+                xp_to_next: (mastery < MASTERY_XP_CAP).then(|| xp_to_next(mastery)),
+                matches: progress.matches,
+                effects,
+            }
+        })
+        .collect();
+    ManagerProgressionView {
+        styles,
+        xp_for_a_win: match_xp(MatchOutcome::Won, 0.0, 0.0),
+        xp_for_a_draw: match_xp(MatchOutcome::Drawn, 0.0, 0.0),
+        xp_for_a_loss: match_xp(MatchOutcome::Lost, 0.0, 0.0),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -441,5 +507,59 @@ mod tests {
         assert_eq!(match_xp(MatchOutcome::Won, 80.0, 70.0), 11);
         assert_eq!(match_xp(MatchOutcome::Won, 50.0, 90.0), 23);
         assert_eq!(match_xp(MatchOutcome::Won, 90.0, 50.0), 8);
+    }
+
+    /// Given a new user manager,
+    /// When their progression is shown,
+    /// Then every style is at 50 with 38 XP to the next point, Counter shows
+    /// its real effect (+18% attack, -8% midfield) and Balanced none.
+    #[test]
+    fn a_new_managers_progression_view_is_neutral() {
+        let view = manager_progression_view(&neutral_manager());
+
+        assert_eq!(view.styles.len(), 6);
+        assert!(view.styles.iter().all(|style| style.mastery == 50));
+        assert!(view.styles.iter().all(|style| style.xp_to_next == Some(38)));
+        let counter = view
+            .styles
+            .iter()
+            .find(|style| style.style == PlayStyle::Counter)
+            .unwrap();
+        assert!(counter.effects.contains(&StyleEffectView {
+            phase: engine::StylePhase::Attack,
+            percent: 18,
+        }));
+        assert!(counter.effects.contains(&StyleEffectView {
+            phase: engine::StylePhase::Midfield,
+            percent: -8,
+        }));
+        let balanced = view
+            .styles
+            .iter()
+            .find(|style| style.style == PlayStyle::Balanced)
+            .unwrap();
+        assert!(balanced.effects.is_empty());
+        assert_eq!(
+            (view.xp_for_a_win, view.xp_for_a_draw, view.xp_for_a_loss),
+            (15, 10, 7)
+        );
+    }
+
+    /// Given a style at 99,
+    /// When the progression is shown,
+    /// Then it has no next point to work toward.
+    #[test]
+    fn a_style_at_the_cap_has_no_next_point() {
+        let mut manager = neutral_manager();
+        manager.play_style_mastery.counter = 99;
+
+        let view = manager_progression_view(&manager);
+
+        let counter = view
+            .styles
+            .iter()
+            .find(|style| style.style == PlayStyle::Counter)
+            .unwrap();
+        assert_eq!(counter.xp_to_next, None);
     }
 }

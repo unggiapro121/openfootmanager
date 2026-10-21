@@ -339,6 +339,33 @@ pub(crate) fn play_style_modifier(team: &TeamData, phase: PlayStylePhase) -> f64
     )
 }
 
+/// A phase of play a style can be priced in, as the outside world names it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum StylePhase {
+    Midfield,
+    Attack,
+    Defense,
+    Press,
+}
+
+/// What `style` does to its side in each phase it changes, coached at
+/// `mastery`: the very multipliers the match applies, for display. Phases the
+/// style leaves at 1.0 are left out, so Balanced has none.
+pub fn play_style_effects(style: PlayStyle, mastery: u8) -> Vec<(StylePhase, f64)> {
+    [
+        (StylePhase::Midfield, PlayStylePhase::Midfield),
+        (StylePhase::Attack, PlayStylePhase::Attack),
+        (StylePhase::Defense, PlayStylePhase::Defense),
+        (StylePhase::Press, PlayStylePhase::Press),
+    ]
+    .into_iter()
+    .filter_map(|(named, phase)| {
+        let table_value = style_table(style, phase);
+        (table_value != 1.0).then(|| (named, coached_modifier(table_value, mastery)))
+    })
+    .collect()
+}
+
 /// Scale a style by how well the coach gets it across, `k = 0.5 + mastery/100`:
 /// the style's edge (a value above 1.0) by `k`, its cost (below 1.0) by `2 − k`.
 /// A neutral coach (50) plays the table as it is; the best widens the edge by
@@ -717,6 +744,27 @@ mod play_style_modifier_tests {
     /// When Counter's edge and cost are coached,
     /// Then the weakest coach keeps about half of the edge and half again of the
     /// cost, and the best the reverse.
+    /// Given Counter coached at 50 and at 99, and Balanced,
+    /// When the style's effects are read for display,
+    /// Then they are the same multipliers the match uses, and Balanced has none.
+    #[test]
+    fn a_styles_effects_are_the_multipliers_the_match_uses() {
+        let neutral = play_style_effects(PlayStyle::Counter, 50);
+        assert_eq!(neutral.len(), 2);
+        assert!(neutral.contains(&(StylePhase::Attack, 1.18)));
+        assert!(neutral.contains(&(StylePhase::Midfield, 0.92)));
+
+        let mastered = play_style_effects(PlayStyle::Counter, 99);
+        let attack = mastered
+            .iter()
+            .find(|(phase, _)| *phase == StylePhase::Attack)
+            .unwrap()
+            .1;
+        assert!(close(attack, coached_modifier(1.18, 99)));
+
+        assert!(play_style_effects(PlayStyle::Balanced, 99).is_empty());
+    }
+
     #[test]
     fn the_coach_scales_a_style_between_half_and_one_and_a_half() {
         assert!(close(coached_modifier(1.18, 1), 1.0918));
