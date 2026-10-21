@@ -176,7 +176,6 @@ export function quietSteps(stage: RadarStage, scene: RadarScene, settle: RadarSe
   const chaser = nearestTo(stage, scene, side, at);
   return [
     {
-      sceneCut: true,
       ball: { at, lift: 0 },
       resetMovers: true,
       possession: side,

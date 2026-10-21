@@ -1244,6 +1244,22 @@ function beatOf(stage: RadarStage, scene: RadarScene, key: string, steps: RadarS
   return { beat, end: timed.end };
 }
 
+/** How long the look at the block before a move lasts when it does not cut: a frame or two. */
+const BLOCK_CHECK_MS = 120;
+
+/**
+ * The opening of a move started at the ball: nothing moves, but it is a
+ * change of scene, so a block left behind by quiet minutes is put in place
+ * before the move starts (`radarSceneCut`). Kept short, so a move that needs
+ * no cut starts as it did.
+ */
+function blockCheck(stage: RadarStage, scene: RadarScene, minute: number) {
+  const { beat, end } = beatOf(stage, scene, `block-check-${minute}`, [
+    { sceneCut: true, pace: "place" },
+  ]);
+  return { beat: { ...beat, stepMs: [BLOCK_CHECK_MS] }, end };
+}
+
 /**
  * Stage what the 2D radar shows of a minute: its dangerous play only
  * (`highlightsOf`). A minute with none is a quick change of scene to where the
@@ -1273,7 +1289,9 @@ export function choreographHighlights(
   const starter = isAttackingPlay(first) ? first.player_id : null;
   const starterAt = starter ? standingIn(stage, start, starter) : null;
   if (!starter || !starterAt || distance(starterAt, start.ball) <= FETCH_METRES) {
-    return choreographBatch(highlights, stage, start, settle, events);
+    const check = blockCheck(stage, start, first.minute);
+    const rest = choreographBatch(highlights, stage, check.end, settle, events);
+    return { beats: [check.beat, ...rest.beats], end: rest.end };
   }
   const leadIn = beatOf(stage, start, `lead-in-${first.minute}`, [
     {

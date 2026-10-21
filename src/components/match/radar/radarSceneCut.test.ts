@@ -5,7 +5,7 @@ import { CENTRE_LANE, distance } from "./radarGeometry";
 import { enqueueBeats, restingPlayback } from "./radarPlayback";
 import { type RadarRun, advanceRun, sceneCutOpacity, startRun } from "./radarRun";
 import { type RadarScene, type RadarStep, applyStep, initialRadarScene } from "./radarScene";
-import { CUT_FADE_S, CUT_HOLD_S } from "./radarSceneCut";
+import { CUT_FADE_IN_S, CUT_FADE_OUT_S, CUT_STAND_S } from "./radarSceneCut";
 import { quietSteps } from "./radarSettle";
 import { buildRadarStage, scenePositions } from "./radarStage";
 import { radarEvent, radarSnapshot } from "./radarTestFixtures";
@@ -74,25 +74,31 @@ describe("radar scene cut (after GĐ5)", () => {
 
   // Given the ball moved far away and the players still in the kick-off
   // shape, when the change of scene plays, then after the fade every player
-  // stands in his place around the new ball, still.
-  it("puts the players in their places when they are far from them", () => {
+  // stands in his place around the new ball, still, and the move to there was
+  // never seen: they were out of sight when it happened.
+  it("puts the players in their places, out of sight, when they are far from them", () => {
     const frames = playOut(runFrom(start, [changeOfScene(true)]));
     const placed = frames.find((run) => run.sceneCut?.placed);
     expect(placed).toBeDefined();
     const places = scenePositions(stage, target);
     const run = placed as RadarRun;
-    expect(run.sim.time - frames[0].sim.time).toBeGreaterThanOrEqual(CUT_FADE_S - 1e-9);
+    expect(run.sim.time - frames[0].sim.time).toBeGreaterThanOrEqual(CUT_FADE_OUT_S - 1e-9);
+    expect(sceneCutOpacity(run)).toBeLessThan(0.05);
     for (const [id, place] of places) {
       const at = run.sim.players[id]?.at;
       expect(at && distance(at, place), id).toBeLessThan(0.5);
     }
   });
 
-  // Given a cut, then the script holds until the fade and the pause are over,
+  // Given a cut, then the script holds until the fade out, the fade in and the
+  // stand are over (about a second, long enough to read as a cut),
   // and the ball comes back at the feet of the man who starts the move.
   it("holds the script through the fade and the pause, the ball at the holder's feet", () => {
     const frames = playOut(runFrom(start, [changeOfScene(true)]));
-    expect(secondsOf(frames)).toBeGreaterThanOrEqual(CUT_FADE_S + CUT_HOLD_S - 1e-9);
+    expect(secondsOf(frames)).toBeGreaterThanOrEqual(
+      CUT_FADE_OUT_S + CUT_FADE_IN_S + CUT_STAND_S - 1e-9,
+    );
+    expect(CUT_FADE_OUT_S + CUT_FADE_IN_S + CUT_STAND_S).toBeGreaterThanOrEqual(0.9);
     const last = frames[frames.length - 1];
     expect(last.ball.kind === "held" && last.ball.holder).toBe(HOLDER);
   });
@@ -112,15 +118,16 @@ describe("radar scene cut (after GĐ5)", () => {
     expect(frames.some((run) => run.sceneCut !== null)).toBe(false);
   });
 
-  // Given a cut, then the players fade to dim over the fade, and come back to
-  // full over the pause.
-  it("dims the players through the fade and brings them back over the pause", () => {
+  // Given a cut, then the players fade out of sight, come back, and stand at
+  // full strength before play goes on.
+  it("fades the players out and back in, then shows them standing", () => {
     const frames = playOut(runFrom(start, [changeOfScene(true)]));
     const began = frames.find((run) => run.sceneCut !== null) as RadarRun;
     const at = (seconds: number) =>
       frames.find((run) => run.sim.time - (began.sceneCut?.since ?? 0) >= seconds) as RadarRun;
-    expect(sceneCutOpacity(at(CUT_FADE_S * 0.99))).toBeLessThan(0.3);
-    expect(sceneCutOpacity(at(CUT_FADE_S + CUT_HOLD_S / 2))).toBeGreaterThan(0.4);
+    expect(sceneCutOpacity(at(CUT_FADE_OUT_S * 0.5))).toBeCloseTo(0.5, 1);
+    expect(sceneCutOpacity(at(CUT_FADE_OUT_S + CUT_FADE_IN_S / 2))).toBeCloseTo(0.5, 1);
+    expect(sceneCutOpacity(at(CUT_FADE_OUT_S + CUT_FADE_IN_S + CUT_STAND_S / 2))).toBe(1);
     expect(sceneCutOpacity(frames[frames.length - 1])).toBe(1);
   });
 });
@@ -139,24 +146,31 @@ describe("radar scene cut — where a change of scene may cut (after GĐ5)", () 
   });
 
   // Given a move started by the man nearest the ball, then there is no
-  // lead-in and nothing in the move may cut.
-  it("leaves a move started at the ball continuous", () => {
+  // lead-in, but the move opens with a short look at the block: a change of
+  // scene that may cut, the ball left where it is. Nothing inside the move
+  // may cut.
+  it("opens a move started at the ball with a check that may cut, and nothing else", () => {
     const shot = radarEvent("ShotSaved", "Home", "HomeDefense", "h_cb1");
     const { beats } = choreographHighlights([shot], stage, deep);
     expect(beats.some((beat) => beat.key.startsWith("lead-in"))).toBe(false);
-    expect(beats.flatMap((beat) => beat.steps).some((step) => step.sceneCut)).toBe(false);
+    const [check, ...move] = beats;
+    expect(check.steps).toHaveLength(1);
+    expect(check.steps[0].sceneCut).toBe(true);
+    expect(check.steps[0].ball).toBeUndefined();
+    expect(check.stepMs[0]).toBeLessThan(200);
+    expect(move.flatMap((beat) => beat.steps).some((step) => step.sceneCut)).toBe(false);
   });
 
-  // Given a quiet minute that leaves the ball in another zone, then putting
-  // it there is a change of scene that may cut; one that leaves it where it
-  // is only pauses.
-  it("marks a quiet minute's move of the ball, not its pause", () => {
+  // Given a quiet minute, then nothing in it cuts: with no move to start, the
+  // players drift after the ball as before, and the screen never flickers
+  // through a run of quiet minutes.
+  it("never cuts a quiet minute", () => {
     const moved = quietSteps(stage, start, { ballZone: "AwayDefense", possession: "Home" });
-    expect(moved[0].sceneCut).toBe(true);
-    const still = quietSteps(stage, start, {
-      ballZone: snapshot.ball_zone,
-      possession: start.possession,
+    expect(moved.some((step) => step.sceneCut)).toBe(false);
+    const { beats } = choreographHighlights([], stage, start, {
+      ballZone: "AwayDefense",
+      possession: "Home",
     });
-    expect(still[0].sceneCut).toBeUndefined();
+    expect(beats.flatMap((beat) => beat.steps).some((step) => step.sceneCut)).toBe(false);
   });
 });
