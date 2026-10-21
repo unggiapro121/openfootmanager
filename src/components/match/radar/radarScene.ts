@@ -108,6 +108,12 @@ export interface RadarStep {
   /** Send every player back to his place in the shape before this step's movers. */
   resetMovers?: boolean;
   /**
+   * A change of scene: if the players are still far from their places when it
+   * starts, they fade, are put there, and stand a moment before play goes on
+   * (`radarSceneCut`), rather than run the length of the pitch after the ball.
+   */
+  sceneCut?: boolean;
+  /**
    * Whose run the step lasts for when the ball does not fly: the man going to
    * the ball. Left out, every mover's. Team-mates joining in keep their own pace.
    */

@@ -1277,6 +1277,7 @@ export function choreographHighlights(
   }
   const leadIn = beatOf(stage, start, `lead-in-${first.minute}`, [
     {
+      sceneCut: true,
       ball: { at: starterAt, lift: 0 },
       resetMovers: true,
       possession: first.side,
