@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Pengaturan karier itu tidak bisa digunakan. Kembali ke layar dunia dan periksa tahun mulai, fase mulai, dan berapa banyak riwayat masa lalu yang dibuat.",
     "reportBug": "Laporkan bug"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Simpan Profil",
-      "body": "Kamu telah mengubah profil {{name}}. Apa yang ingin kamu lakukan?",
-      "update": "Perbarui \"{{name}}\"",
-      "saveNew": "Simpan sebagai Profil Baru",
-      "skip": "Lanjut tanpa menyimpan"
-    }
+  "coach": {
+    "loginTitle": "Pilih manajer Anda",
+    "loginSubtitle": "Manajer Anda sama di setiap karier: penguasaan gaya dan rekor terus bertambah.",
+    "newAccountTitle": "Akun manajer baru",
+    "createAccount": "Buat akun",
+    "region": "Wilayah",
+    "regions": {
+      "AsiaSoutheast": "Asia Tenggara (UTC+7)",
+      "AsiaEast": "Asia Timur (UTC+8)",
+      "Europe": "Eropa (UTC+1)",
+      "Americas": "Amerika (UTC−5)"
+    },
+    "regionHint": "Jatah XP harian Anda diperbarui pukul 04:00 waktu wilayah ini. Tidak bisa diubah nanti.",
+    "lastLogin": "Terakhir main: {{date}}",
+    "neverLoggedIn": "Belum pernah main",
+    "logInAs": "Main sebagai {{name}}",
+    "deleteAccount": "Hapus {{name}}",
+    "deleteConfirm": "Hapus {{name}}? Penguasaan dan rekor hilang; kariernya tetap ada.",
+    "signedInAs": "Manajer",
+    "switchAccount": "Ganti",
+    "unclaimedSave": "Tanpa akun",
+    "claimSave": "Hubungkan dan muat",
+    "claimSaveConfirm": "Karier ini belum punya akun manajer. Hubungkan ke {{name}}? Mulai sekarang karier ini memakai penguasaan manajer tersebut.",
+    "tooYoungForStart": "Manajer Anda belum berusia {{min}} tahun pada tanggal ini — pilih tahun mulai yang lebih lambat.",
+    "tooOldForStart": "Manajer Anda terlalu tua pada tanggal ini — pilih tahun mulai yang lebih awal.",
+    "reportFailed": "Server akun tidak dapat dihubungi. Pertandingan ini tidak memberi apa pun bagi manajer Anda; karier tetap tersimpan.",
+    "dailyXp": "Pertandingan ber-XP hari ini: {{count}}/{{limit}} · diperbarui pukul {{time}}",
+    "dailyXpCount": "Pertandingan ber-XP hari ini: {{count}}/{{limit}}",
+    "allCareers": "Semua karier",
+    "thisCareer": "Karier ini"
   },
   "createManager": {
     "title": "Buat Manajer",
@@ -3245,10 +3267,14 @@
         "saveFailed": "Gagal menyimpan pengaturan.",
         "invalidCurrency": "Mata uang yang dipilih tidak didukung."
       },
-      "profiles": {
-        "loadFailed": "Gagal memuat profil manajer.",
-        "saveFailed": "Gagal menyimpan profil manajer.",
-        "pathFailed": "Tidak dapat menyelesaikan jalur penyimpanan profil."
+      "coach": {
+        "loadFailed": "Gagal memuat akun manajer.",
+        "saveFailed": "Gagal menyimpan akun manajer.",
+        "accountNotFound": "Akun manajer tidak ditemukan.",
+        "notLoggedIn": "Belum ada akun manajer yang masuk.",
+        "offline": "Tidak dapat menghubungi server akun.",
+        "saveOfAnotherAccount": "Karier ini milik akun manajer lain.",
+        "saveWithoutAccount": "Karier ini belum terhubung ke akun manajer."
       },
       "teamNotFound": "Tim tidak ditemukan",
       "jobOffer": {

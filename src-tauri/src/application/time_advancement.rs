@@ -1,4 +1,6 @@
 use log::info;
+
+use crate::application::coach::{report_coach_records, CoachContext};
 use serde::{Deserialize, Serialize};
 
 use crate::commands::round_summary::{build_round_summary_dto, RoundSummaryDto};
@@ -22,6 +24,10 @@ pub struct AdvanceTimeWithModeResponse {
     /// Matches finished during this advance (user's competitions + nationals).
     #[serde(default)]
     pub results: Vec<AdvanceMatchResult>,
+    /// The account store could not take the day's matches: they count for
+    /// nothing in the coach's totals (Y12).
+    #[serde(default)]
+    pub coach_report_failed: bool,
 }
 
 /// Where the user's fixture due today is: which competition to swap into the legacy slot, and the
@@ -85,9 +91,12 @@ fn scheduled_user_fixture_index(game: &Game, today: &str) -> Option<(Option<usiz
         })
 }
 
+/// `coach` is the logged-in coach the day's matches are reported to; `None`
+/// when an MCP agent advances the day, which earns no account anything (Y14).
 pub fn advance_time_with_mode(
     state: &StateManager,
     mode: &str,
+    coach: Option<&CoachContext>,
 ) -> Result<AdvanceTimeWithModeResponse, String> {
     info!("[cmd] advance_time_with_mode: mode={}", mode);
 
@@ -98,7 +107,7 @@ pub fn advance_time_with_mode(
     // are never held at once.
     let mut captures = Vec::new();
     let mut session_out: Option<live_match_manager::LiveMatchSession> = None;
-    let response = state
+    let mut response = state
         .update_game(|game| -> Result<AdvanceTimeWithModeResponse, String> {
             let today = game.clock.current_date.format("%Y-%m-%d").to_string();
             let round_context = ofm_core::matchday::user_league_round_context(game);
@@ -183,6 +192,7 @@ pub fn advance_time_with_mode(
                         mode: Some(mode.to_string()),
                         round_summary,
                         results: Vec::new(),
+                        coach_report_failed: false,
                     })
                 }
                 ("delegate", Some((competition_index, index))) => {
@@ -219,6 +229,7 @@ pub fn advance_time_with_mode(
                         mode: None,
                         round_summary,
                         results,
+                        coach_report_failed: false,
                     })
                 }
                 _ => {
@@ -247,6 +258,7 @@ pub fn advance_time_with_mode(
                         mode: None,
                         round_summary,
                         results,
+                        coach_report_failed: false,
                     })
                 }
             }
@@ -259,6 +271,10 @@ pub fn advance_time_with_mode(
     if let Some(session) = session_out {
         state.set_live_match(session);
     }
+    // A day handed to the assistant earns no XP, so the career's mastery is as
+    // the response already carries it; only the warning has to reach the player.
+    response.coach_report_failed =
+        report_coach_records(state, coach, chrono::Utc::now().timestamp()).report_failed;
 
     Ok(response)
 }
@@ -460,7 +476,7 @@ mod tests {
         let state = StateManager::new();
         state.set_game(game);
 
-        advance_time_with_mode(&state, "live").expect("the live match starts");
+        advance_time_with_mode(&state, "live", None).expect("the live match starts");
 
         let signed = state
             .get_game(|game| {
@@ -505,7 +521,7 @@ mod tests {
         let state = StateManager::new();
         state.set_game(game);
 
-        let outcome = advance_time_with_mode(&state, "live");
+        let outcome = advance_time_with_mode(&state, "live", None);
 
         assert!(
             outcome.is_err(),

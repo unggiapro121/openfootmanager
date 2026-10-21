@@ -1,7 +1,10 @@
 //! A manager's command of each play style: rolled once when an AI manager is
 //! created, and grown by the user's own matches (phase 2 lane M, M-2).
 
+use domain::coach::CoachProgress;
 use domain::manager::{ALL_PLAY_STYLES, Manager, NEUTRAL_MASTERY, PlayStyleMastery, StyleXp};
+
+use crate::coach_progress::CoachRecord;
 use domain::team::PlayStyle;
 use rand::rngs::StdRng;
 use rand::{RngExt, SeedableRng};
@@ -104,20 +107,10 @@ pub(crate) fn match_xp(outcome: MatchOutcome, own_strength: f64, opponent_streng
     (MATCH_BASE_XP * result * opponent).round() as u32
 }
 
-/// Bank `xp` in `style` for `manager` and raise its mastery a point at a time
-/// while the bank covers the next point, up to the cap. Returns the mastery
-/// before and after.
-pub(crate) fn add_style_xp(manager: &mut Manager, style: &PlayStyle, xp: u32) -> (u8, u8) {
-    bank_style_xp(
-        &mut manager.play_style_mastery,
-        &mut manager.progression.style_xp,
-        style,
-        xp,
-    )
-}
-
-/// [`add_style_xp`] on a mastery and its XP wherever they are kept: a manager
-/// in a save, or a coach account (`coach_progress`).
+/// Bank `xp` in `style` and raise its mastery a point at a time while the bank
+/// covers the next point, up to the cap. Returns the mastery before and after.
+/// The mastery and XP are a coach account's (`coach_progress`): a career only
+/// carries a copy of them (`apply_coach_progress`).
 pub(crate) fn bank_style_xp(
     mastery: &mut PlayStyleMastery,
     style_xp: &mut StyleXp,
@@ -147,78 +140,60 @@ pub struct MasteryGain {
     pub mastery_after: u8,
 }
 
-/// Credit a match the user managed themselves to the style their side kicked
-/// off in (X99), when it is a competitive club match their club played (X97).
-/// Only the "go to the field" path calls this (X106): a match handed to the
-/// assistant or watched as a spectator earns nothing.
-pub fn credit_managed_match(
+/// Mark the record of fixture `fixture_id`, just played, as a match the user
+/// managed on the touchline (X106, Y8): it may earn the account XP, in the
+/// style the user's side kicked off in (X99). Only "go to the field" calls this;
+/// a match handed to the assistant or watched counts in the totals only.
+/// Whether a record was there to mark: a career without an account has none.
+pub fn mark_managed_match(
     game: &mut crate::game::Game,
     report: &engine::MatchReport,
-    competition: &domain::league::FixtureCompetition,
+    fixture_id: &str,
     home_team_id: &str,
     away_team_id: &str,
-) -> Option<MasteryGain> {
-    let earns_mastery = crate::manager_career::is_official(competition);
-    let user_team_id = game.manager.team_id.clone()?;
-    if !earns_mastery {
-        return None;
-    }
-    let (own_goals, opponent_goals, own_sheet, opponent_id) = if user_team_id == home_team_id {
-        (
-            report.home_goals,
-            report.away_goals,
-            report.home_sheet.as_ref(),
-            away_team_id,
-        )
+) -> bool {
+    let Some(user_team_id) = game.manager.team_id.clone() else {
+        return false;
+    };
+    let own_sheet = if user_team_id == home_team_id {
+        report.home_sheet.as_ref()
     } else if user_team_id == away_team_id {
-        (
-            report.away_goals,
-            report.home_goals,
-            report.away_sheet.as_ref(),
-            home_team_id,
-        )
+        report.away_sheet.as_ref()
     } else {
-        return None;
+        return false;
     };
+    let record = game
+        .pending_coach_reports
+        .iter_mut()
+        .rev()
+        .find_map(|record| match record {
+            CoachRecord::Match(record) if record.fixture_id == fixture_id => Some(record),
+            _ => None,
+        });
+    let Some(record) = record else {
+        return false;
+    };
+    record.earns_xp = true;
+    if let Some(sheet) = own_sheet {
+        record.style = crate::live_match_manager::domain_play_style(sheet.play_style);
+    }
+    true
+}
 
-    let style = match own_sheet {
-        Some(sheet) => crate::live_match_manager::domain_play_style(sheet.play_style),
-        None => game
-            .teams
-            .iter()
-            .find(|team| team.id == user_team_id)?
-            .play_style
-            .clone(),
-    };
-    let outcome = match own_goals.cmp(&opponent_goals) {
-        std::cmp::Ordering::Greater => MatchOutcome::Won,
-        std::cmp::Ordering::Equal => MatchOutcome::Drawn,
-        std::cmp::Ordering::Less => MatchOutcome::Lost,
-    };
-    // A side whose strength cannot be read weighs as an equal one.
-    let own_strength = crate::team_strength::club_strength(game, &user_team_id);
-    let opponent_strength = crate::team_strength::club_strength(game, opponent_id);
-    let (own, opponent) = match (own_strength, opponent_strength) {
-        (Some(own), Some(opponent)) => (own.strength, opponent.strength),
-        _ => (0.0, 0.0),
-    };
-    let xp = match_xp(outcome, own, opponent);
-
-    let (mastery_before, mastery_after) = add_style_xp(&mut game.manager, &style, xp);
-    game.manager
-        .progression
-        .style_xp
-        .for_style_mut(&style)
-        .matches += 1;
-    announce_mastery_milestone(game, &style, mastery_before, mastery_after);
+/// Carry the account's mastery and XP into the career, where the engine and
+/// the manager screen read them (Y10), and tell the user of a milestone the
+/// last match reached.
+pub fn apply_coach_progress(
+    game: &mut crate::game::Game,
+    progress: &CoachProgress,
+    gain: Option<&MasteryGain>,
+) {
+    game.manager.play_style_mastery = progress.mastery;
+    game.manager.progression.style_xp = progress.style_xp;
+    if let Some(gain) = gain {
+        announce_mastery_milestone(game, &gain.style, gain.mastery_before, gain.mastery_after);
+    }
     game.sync_user_manager_record();
-
-    Some(MasteryGain {
-        style,
-        xp,
-        mastery_before,
-        mastery_after,
-    })
 }
 
 /// Mastery milestones the user is told about: every fifth point. One match can
@@ -447,6 +422,15 @@ mod tests {
         assert_eq!(xp_to_next(79), 367);
         assert_eq!(xp_to_next(80), 397);
         assert_eq!(xp_to_next(30), 38, "below neutral costs as neutral");
+    }
+
+    fn add_style_xp(manager: &mut Manager, style: &PlayStyle, xp: u32) -> (u8, u8) {
+        bank_style_xp(
+            &mut manager.play_style_mastery,
+            &mut manager.progression.style_xp,
+            style,
+            xp,
+        )
     }
 
     /// Given a user at 50 earning 11 XP a match,

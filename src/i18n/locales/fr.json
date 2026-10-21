@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Ces paramètres de carrière n'ont pas pu être utilisés. Retournez à l'écran du monde et vérifiez l'année de début, la phase de début et la quantité d'historique à générer.",
     "reportBug": "Signaler un bug"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Enregistrer le profil",
-      "body": "Vous avez modifié le profil de {{name}}. Que souhaitez-vous faire ?",
-      "update": "Mettre à jour \"{{name}}\"",
-      "saveNew": "Enregistrer comme nouveau profil",
-      "skip": "Continuer sans enregistrer"
-    }
+  "coach": {
+    "loginTitle": "Choisissez votre entraîneur",
+    "loginSubtitle": "Votre entraîneur est le même dans toutes les carrières : maîtrise des styles et palmarès se cumulent.",
+    "newAccountTitle": "Nouveau compte d'entraîneur",
+    "createAccount": "Créer un compte",
+    "region": "Région",
+    "regions": {
+      "AsiaSoutheast": "Asie du Sud-Est (UTC+7)",
+      "AsiaEast": "Asie de l'Est (UTC+8)",
+      "Europe": "Europe (UTC+1)",
+      "Americas": "Amériques (UTC−5)"
+    },
+    "regionHint": "Votre quota quotidien d'XP se renouvelle à 04:00 dans cette région. Il ne pourra plus être changé.",
+    "lastLogin": "Dernière partie : {{date}}",
+    "neverLoggedIn": "Pas encore joué",
+    "logInAs": "Jouer en tant que {{name}}",
+    "deleteAccount": "Supprimer {{name}}",
+    "deleteConfirm": "Supprimer {{name}} ? La maîtrise et le palmarès sont perdus ; les carrières restent.",
+    "signedInAs": "Entraîneur",
+    "switchAccount": "Changer",
+    "unclaimedSave": "Sans compte",
+    "claimSave": "Associer et charger",
+    "claimSaveConfirm": "Cette carrière n'a pas de compte d'entraîneur. L'associer à {{name}} ? Elle utilisera désormais la maîtrise de cet entraîneur.",
+    "tooYoungForStart": "Votre entraîneur aurait moins de {{min}} ans à cette date — choisissez une année de début plus tardive.",
+    "tooOldForStart": "Votre entraîneur serait trop âgé à cette date — choisissez une année de début plus ancienne.",
+    "reportFailed": "Impossible de joindre le serveur des comptes. Ces matchs n'ont rien rapporté à votre entraîneur ; la carrière reste sauvegardée.",
+    "dailyXp": "Matchs avec XP aujourd'hui : {{count}}/{{limit}} · renouvelé à {{time}}",
+    "dailyXpCount": "Matchs avec XP aujourd'hui : {{count}}/{{limit}}",
+    "allCareers": "Toutes les carrières",
+    "thisCareer": "Cette carrière"
   },
   "createManager": {
     "title": "Créer un Entraîneur",
@@ -3401,10 +3423,14 @@
         "saveFailed": "Impossible d'enregistrer les paramètres.",
         "invalidCurrency": "La devise sélectionnée n'est pas prise en charge."
       },
-      "profiles": {
-        "loadFailed": "Impossible de charger les profils d'entraîneur.",
-        "saveFailed": "Impossible d'enregistrer le profil d'entraîneur.",
-        "pathFailed": "Impossible de résoudre le chemin de stockage des profils."
+      "coach": {
+        "loadFailed": "Impossible de charger les comptes d'entraîneur.",
+        "saveFailed": "Impossible d'enregistrer le compte d'entraîneur.",
+        "accountNotFound": "Compte d'entraîneur introuvable.",
+        "notLoggedIn": "Aucun compte d'entraîneur n'est connecté.",
+        "offline": "Le serveur des comptes est injoignable.",
+        "saveOfAnotherAccount": "Cette carrière appartient à un autre compte d'entraîneur.",
+        "saveWithoutAccount": "Cette carrière n'a pas encore de compte d'entraîneur."
       },
       "finance": {
         "boardSupportUnavailable": "Le soutien d'urgence du conseil n'est disponible que lorsque la trésorerie est sous pression.",

@@ -164,6 +164,10 @@ pub struct Game {
     /// A save from before it existed plays at the realistic 1×.
     #[serde(default)]
     pub development_speed: crate::development_speed::DevelopmentSpeed,
+    /// The coach account this career belongs to (Y9); `None` for one made
+    /// without an account — by an MCP agent, or before accounts existed.
+    #[serde(default)]
+    pub account_id: Option<String>,
 
     /// Append-only cash journal. `Clone` is a pointer bump; `post` copy-on-writes.
     /// Skipped on IPC serde. Persistence is incremental SQL, not Game JSON.
@@ -181,6 +185,11 @@ pub struct Game {
     /// the season harness read it to check that it does.
     #[serde(skip)]
     pub squad_floor_top_ups: Vec<crate::squad_floor::SquadFloorTopUp>,
+    /// What this career has to tell its coach account since the store last
+    /// took a report (Y11). Never saved: a record the store did not take is
+    /// dropped, as the account server would never have seen it (Y12).
+    #[serde(skip)]
+    pub pending_coach_reports: Vec<crate::coach_progress::CoachRecord>,
 }
 
 /// The manager's refreshes of the staff market in one calendar month of the
@@ -238,9 +247,11 @@ impl Game {
             seed: 0,
             legacy_world_cup_draw: false,
             development_speed: Default::default(),
+            account_id: None,
             cash_journal: CashJournal::default(),
             cash_journal_dirty_ids: Vec::new(),
             squad_floor_top_ups: Vec::new(),
+            pending_coach_reports: Vec::new(),
         };
         game.promote_legacy_league();
         crate::football_identity::upgrade_game_football_identities(&mut game);

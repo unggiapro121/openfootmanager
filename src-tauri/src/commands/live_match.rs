@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tauri::State;
 
+use crate::application::coach::CoachContext;
 pub use crate::application::live_match::FinishLiveMatchResponse;
 use crate::application::live_match::{
     apply_match_command as apply_match_command_service,
@@ -51,8 +52,11 @@ struct LocalizedPressQuote {
 // Live Match Commands
 // ---------------------------------------------------------------------------
 
-pub fn finish_live_match_internal(state: &StateManager) -> Result<FinishLiveMatchResponse, String> {
-    finish_live_match_service(state)
+pub fn finish_live_match_internal(
+    state: &StateManager,
+    coach: Option<&CoachContext>,
+) -> Result<FinishLiveMatchResponse, String> {
+    finish_live_match_service(state, coach)
 }
 
 /// The seed a team talk's morale swings are drawn from: the game's, for this tone and this
@@ -166,8 +170,9 @@ pub fn get_match_snapshot(
 #[tauri::command]
 pub fn finish_live_match(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
 ) -> Result<FinishLiveMatchResponse, String> {
-    finish_live_match_internal(&state)
+    finish_live_match_internal(&state, Some(&coach))
 }
 
 /// Apply a team talk and return per-player morale changes.
@@ -828,7 +833,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        finish_live_match_internal(&state).expect("finish live match response");
+        finish_live_match_internal(&state, None).expect("finish live match response");
 
         // Assert against the persisted state — not just the cloned response.game
         // — so a missing state.set_game() call would surface here.
@@ -897,7 +902,8 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let response = finish_live_match_internal(&state).expect("finish live match response");
+        let response =
+            finish_live_match_internal(&state, None).expect("finish live match response");
 
         let round_summary = response.round_summary.expect("round summary response");
         assert!(round_summary.is_complete);
@@ -936,9 +942,18 @@ mod tests {
 
     // ── Play style mastery: only "go to the field" earns it (X106) ─────────
 
-    fn finish_in_mode(mode: MatchMode, step_first: Option<u16>) -> (Option<u32>, Game) {
+    /// Finish the round's match in `mode`, in a career of a logged-in coach
+    /// account, reported to it unless `by_agent`. What it earned, the career
+    /// after it, and the account's progress.
+    fn finish_for_account(
+        mode: MatchMode,
+        step_first: Option<u16>,
+        by_agent: bool,
+    ) -> (Option<u32>, Game, domain::coach::CoachProgress) {
+        let (_dir, coach, account) = crate::application::coach::logged_in_test_coach(false);
         let state = StateManager::new();
-        let game = make_game_with_round();
+        let mut game = make_game_with_round();
+        game.account_id = Some(account.id.clone());
         let mut session = live_match_manager::create_live_match(&game, 0, mode, false).unwrap();
         if let Some(minutes) = step_first {
             session.step_many(minutes);
@@ -946,35 +961,57 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let response = finish_live_match_internal(&state).expect("finish live match");
+        let coach_for_call = (!by_agent).then_some(&coach);
+        let response =
+            finish_live_match_internal(&state, coach_for_call).expect("finish live match");
         let game = state.get_game(|g| g.clone()).unwrap();
-        (response.mastery_gain.map(|gain| gain.xp), game)
+        let progress = coach.progress_store().load(&account).unwrap();
+        (response.mastery_gain.map(|gain| gain.xp), game, progress)
+    }
+
+    fn finish_in_mode(mode: MatchMode, step_first: Option<u16>) -> (Option<u32>, Game) {
+        let (xp, game, _) = finish_for_account(mode, step_first, false);
+        (xp, game)
     }
 
     /// Given the user takes their own league match to the field,
     /// When it is finished,
-    /// Then it earns play style XP, reported in the response and banked.
+    /// Then it earns play style XP, reported in the response, banked by the
+    /// account and carried into the career.
     #[test]
     fn a_match_the_user_managed_earns_mastery() {
-        let (xp, game) = finish_in_mode(MatchMode::Live, None);
+        let (xp, game, progress) = finish_for_account(MatchMode::Live, None, false);
 
         assert!(xp.is_some_and(|xp| xp > 0));
         let style = game.teams[0].play_style.clone();
-        assert_eq!(
-            game.manager.progression.style_xp.for_style(&style).matches,
-            1
-        );
+        assert_eq!(progress.style_xp.for_style(&style).matches, 1);
+        assert_eq!(progress.totals.matches, 1);
+        assert_eq!(game.manager.progression.style_xp, progress.style_xp);
     }
 
     /// Given the user only watches their match as a spectator,
     /// When it is finished,
-    /// Then it earns nothing: the user did not manage it.
+    /// Then it earns nothing, but the account counts the match.
     #[test]
     fn a_spectated_match_earns_no_mastery() {
-        let (xp, game) = finish_in_mode(MatchMode::Spectator, None);
+        let (xp, game, progress) = finish_for_account(MatchMode::Spectator, None, false);
 
         assert_eq!(xp, None);
         assert_eq!(game.manager.progression.style_xp, Default::default());
+        assert_eq!(progress.style_xp, Default::default());
+        assert_eq!(progress.totals.matches, 1);
+    }
+
+    /// Given an MCP agent finishes the user's managed match,
+    /// When it is finished,
+    /// Then the account is told nothing (Y14).
+    #[test]
+    fn a_match_an_agent_finishes_earns_the_account_nothing() {
+        let (xp, game, progress) = finish_for_account(MatchMode::Live, None, true);
+
+        assert_eq!(xp, None);
+        assert_eq!(progress, domain::coach::CoachProgress::default());
+        assert!(game.pending_coach_reports.is_empty());
     }
 
     /// Given the user's match is played instantly, with nobody in their dugout,
@@ -990,7 +1027,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let response = finish_live_match_internal(&state).expect("finish live match");
+        let response = finish_live_match_internal(&state, None).expect("finish live match");
 
         assert!(response.mastery_gain.is_none());
     }
@@ -1011,8 +1048,10 @@ mod tests {
     /// Then it counts as managed.
     #[test]
     fn a_managed_match_at_full_speed_earns_mastery() {
+        let (_dir, coach, account) = crate::application::coach::logged_in_test_coach(false);
         let state = StateManager::new();
-        let game = make_game_with_round();
+        let mut game = make_game_with_round();
+        game.account_id = Some(account.id);
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
         while !session.is_finished() {
@@ -1021,7 +1060,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let response = finish_live_match_internal(&state).expect("finish live match");
+        let response = finish_live_match_internal(&state, Some(&coach)).expect("finish live match");
 
         assert!(response.mastery_gain.is_some());
     }
@@ -1044,7 +1083,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        finish_live_match_internal(&state).expect("finish live match");
+        finish_live_match_internal(&state, None).expect("finish live match");
 
         let fixture = state
             .get_game(|g| g.competitions[0].fixtures[0].clone())
@@ -1076,7 +1115,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let response = finish_live_match_internal(&state).expect("finish live match");
+        let response = finish_live_match_internal(&state, None).expect("finish live match");
 
         assert!(
             response.player_ratings.len() >= 22,
@@ -1321,7 +1360,7 @@ mod tests {
         // MCP supplies only the raw fixture index, without team IDs.
         super::start_live_match_internal(&state, 0, "instant", false, None, None)
             .expect("first start");
-        finish_live_match_internal(&state).expect("first finish");
+        finish_live_match_internal(&state, None).expect("first finish");
         let before = state.get_game(|game| game.clone()).unwrap();
 
         let error =
@@ -1456,7 +1495,7 @@ mod tests {
         state.set_live_match(session);
         let before = state.get_game(|game| game.clone()).unwrap();
 
-        let error = finish_live_match_internal(&state).unwrap_err();
+        let error = finish_live_match_internal(&state, None).unwrap_err();
         assert_eq!(error, "be.error.liveMatch.fixtureNotFound");
         let after = state.get_game(|game| game.clone()).unwrap();
         assert_eq!(after.clock.current_date, before.clock.current_date);
@@ -1480,7 +1519,7 @@ mod tests {
         state.set_live_match(session);
         let before = state.get_game(|game| game.clone()).unwrap();
 
-        let error = finish_live_match_internal(&state).unwrap_err();
+        let error = finish_live_match_internal(&state, None).unwrap_err();
         assert_eq!(error, "be.error.liveMatch.fixtureNotFound");
         let after = state.get_game(|game| game.clone()).unwrap();
         assert_eq!(after.clock.current_date, before.clock.current_date);
@@ -1504,7 +1543,7 @@ mod tests {
         state.set_live_match(session);
         let before = state.get_game(|game| game.clone()).unwrap();
 
-        let error = finish_live_match_internal(&state).unwrap_err();
+        let error = finish_live_match_internal(&state, None).unwrap_err();
         assert_eq!(error, "be.error.liveMatch.fixtureNotScheduled");
         let after = state.get_game(|game| game.clone()).unwrap();
         assert_eq!(after.clock.current_date, before.clock.current_date);
@@ -1580,7 +1619,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let response = finish_live_match_internal(&state).expect("finish live match");
+        let response = finish_live_match_internal(&state, None).expect("finish live match");
 
         let cup = response
             .game
@@ -1663,7 +1702,7 @@ mod tests {
         state.set_game(game);
         state.set_live_match(session);
 
-        let result = finish_live_match_internal(&state);
+        let result = finish_live_match_internal(&state, None);
         assert!(
             result.is_err(),
             "out-of-range fixture index must error, not panic"

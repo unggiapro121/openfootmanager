@@ -13,6 +13,7 @@ import { getTalkIcon } from "./TeamTalkIcons";
 import { giveTeamTalk } from "../../services/liveMatchService";
 import { Badge, TeamLogo, ThemeToggle } from "../ui";
 import { QuickStat, renderScorers, PlayerRatingsPanel } from "./PostMatchHelpers";
+import { CoachReportWarning } from "../coach/CoachReportWarning";
 import { PossessionDonut } from "./PostMatchCharts";
 import {
   Trophy,
@@ -37,6 +38,10 @@ interface PostMatchScreenProps {
   importantEvents: MatchEvent[];
   /** The play style XP the match earned; only a match the user managed earns any. */
   masteryGain?: MasteryGain | null;
+  /** Matches that earned XP today, counting this one, and how many can. */
+  dailyXp?: { count: number; limit: number } | null;
+  /** The match could not reach the coach account and earned it nothing. */
+  coachReportFailed?: boolean;
   onContinue: () => void;
   onFinish: () => void;
 }
@@ -104,6 +109,8 @@ export default function PostMatchScreen({
   isSpectator,
   importantEvents,
   masteryGain,
+  dailyXp,
+  coachReportFailed,
   onContinue,
   onFinish,
 }: PostMatchScreenProps) {
@@ -355,8 +362,14 @@ export default function PostMatchScreen({
           <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
             {t("match.masteryStartingStyle")}
           </span>
+          {dailyXp && (
+            <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+              {t("coach.dailyXpCount", { count: dailyXp.count, limit: dailyXp.limit })}
+            </span>
+          )}
         </div>
       )}
+      {coachReportFailed && <CoachReportWarning />}
 
       {/* Sticky Action Bar */}
       <div className="sticky top-0 z-10 bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 shadow-sm transition-colors duration-300">

@@ -9,8 +9,12 @@ use domain::manager::Manager;
 use ofm_core::game::Game;
 use ofm_core::state::StateManager;
 
+use crate::application::coach::{
+    active_coach_with_progress, give_career_to_coach, open_career_for_coach, CoachContext,
+};
 use crate::commands::util::persist_active_game;
 use crate::SaveManagerState;
+use domain::coach::CoachAccount;
 
 mod bootstrap;
 mod helpers;
@@ -43,20 +47,26 @@ pub use validation::*;
 /// Step 1: Create manager + generate world. No team assigned yet.
 /// Returns the Game object so the frontend can show team selection.
 /// world_source: "random" (default) or a file path to a JSON world database.
+/// The manager is the logged-in coach account: its identity, and the mastery
+/// it has built up in every career before this one (Y10).
 #[tauri::command]
-#[allow(clippy::too_many_arguments)]
 pub async fn start_new_game(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
     app_handle: tauri::AppHandle,
-    first_name: String,
-    last_name: String,
-    dob: String,
-    nationality: String,
     startup_options: Option<RawStartupOptions>,
     world_source: Option<String>,
     competition_definitions_json: Option<String>,
     package_ids: Option<Vec<String>>,
 ) -> Result<Game, String> {
+    let (account, progress) = active_coach_with_progress(&coach)?;
+    let CoachAccount {
+        first_name,
+        last_name,
+        date_of_birth: dob,
+        nationality,
+        ..
+    } = account.clone();
     // Before any validation can return — see `StartRequestSummary` for why, and for what it omits.
     log::info!(
         "[cmd] start_new_game {}",
@@ -169,6 +179,7 @@ pub async fn start_new_game(
         build_game_from_world_data(clock, manager, &startup_options, world);
 
     new_game.package_lockfile = package_lockfile;
+    give_career_to_coach(&mut new_game, &account, &progress);
 
     info!(
         "[cmd] start_new_game: world generated with {} teams, {} players, {} staff",
@@ -240,11 +251,13 @@ pub async fn delete_save(
 pub async fn load_game(
     state: State<'_, Arc<StateManager>>,
     sm_state: State<'_, Arc<SaveManagerState>>,
+    coach: State<'_, Arc<CoachContext>>,
     save_id: String,
 ) -> Result<String, String> {
     info!("[cmd] load_game: save_id={}", save_id);
     let mut sm = map_save_manager_lock_error(sm_state.0.lock())?;
     let mut game = sm.load_game(&save_id)?;
+    open_career_for_coach(&mut game, &coach)?;
     let stats_state = sm.load_stats_state(&save_id)?;
     ofm_core::ai_hiring::seed_ai_managers(&mut game);
     ofm_core::season_context::refresh_game_context(&mut game);
@@ -255,6 +268,19 @@ pub async fn load_game(
     state.set_game(game);
     state.set_stats_state(stats_state);
     Ok(mgr_name)
+}
+
+/// Make a save from before accounts the logged-in coach's (Q-TK3), so it can
+/// be loaded.
+#[tauri::command]
+pub async fn claim_save_for_coach(
+    sm_state: State<'_, Arc<SaveManagerState>>,
+    coach: State<'_, Arc<CoachContext>>,
+    save_id: String,
+) -> Result<(), String> {
+    info!("[cmd] claim_save_for_coach: save_id={}", save_id);
+    let mut sm = map_save_manager_lock_error(sm_state.0.lock())?;
+    crate::application::coach::claim_save_for_coach(&mut sm, &coach, &save_id)
 }
 
 #[tauri::command]

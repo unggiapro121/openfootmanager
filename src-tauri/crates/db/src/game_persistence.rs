@@ -135,6 +135,7 @@ fn write_game_to_connection(
             youth_pool_json,
             staff_market_refreshes_json,
             awaited_replies_json,
+            account_id: game.account_id.clone(),
             available_staff_market_last_activity_date: game
                 .available_staff_market_last_activity_date
                 .clone(),
@@ -337,6 +338,7 @@ impl GamePersistenceReader {
             seed: meta.seed as u64,
             legacy_world_cup_draw: meta.legacy_world_cup_draw,
             development_speed: read_development_speed(meta.development_speed_percent),
+            account_id: meta.account_id.clone(),
             clock,
             manager_id: meta.manager_id.clone(),
             managers,
@@ -396,6 +398,7 @@ impl GamePersistenceReader {
             )?),
             cash_journal_dirty_ids: Vec::new(),
             squad_floor_top_ups: Vec::new(),
+            pending_coach_reports: Vec::new(),
         };
         game.promote_legacy_league();
         // Seeding the sent-ledger for a pre-v5 save is deliberately NOT done
@@ -528,6 +531,7 @@ mod tests {
             youth_pool_json: "null".to_string(),
             staff_market_refreshes_json: "{}".to_string(),
             awaited_replies_json: "[]".to_string(),
+            account_id: None,
         }
     }
 
@@ -621,6 +625,23 @@ mod tests {
             let loaded = GamePersistenceReader::read_game(&db).unwrap();
 
             assert_eq!(loaded.legacy_world_cup_draw, legacy);
+        }
+    }
+
+    /// Given a career of a coach account, and one with none,
+    /// When each is saved and loaded,
+    /// Then each still belongs to whom it did (Y9).
+    #[test]
+    fn a_games_coach_account_survives_a_save_and_load() {
+        for account_id in [Some("account-1".to_string()), None] {
+            let db = GameDatabase::open_in_memory().unwrap();
+            let mut game = sample_game_with_clock(2026, 1);
+            game.account_id = account_id.clone();
+            GamePersistenceWriter::write_game(&db, &game, "save-1", "Career").unwrap();
+
+            let loaded = GamePersistenceReader::read_game(&db).unwrap();
+
+            assert_eq!(loaded.account_id, account_id);
         }
     }
 

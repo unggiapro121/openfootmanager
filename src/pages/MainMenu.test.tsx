@@ -1,21 +1,29 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-import { countryName } from "../lib/countries";
-import { resetCountryResourcesCache } from "../components/menu/CreateManagerNationalityField";
-import type { ManagerProfile } from "../components/menu/types";
 import MainMenu from "./MainMenu";
 
 const navigateMock = vi.fn();
 const setGameActiveMock = vi.fn();
 const setGameStateMock = vi.fn();
 const showErrorMock = vi.fn();
-let latestDatePickerOnChange: ((date: string) => void) | null = null;
 const translationState = {
   language: "en",
 };
+const COACH = {
+  id: "coach-1",
+  first_name: "Ada",
+  last_name: "Lovelace",
+  date_of_birth: "1980-01-01",
+  nationality: "GB",
+  region: "Europe",
+  created_at: "2026-01-01T00:00:00Z",
+  last_login_at: null,
+};
+/** The account the backend reports as logged in; null shows the login screen. */
+const coachState: { account: typeof COACH | null } = { account: COACH };
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
@@ -88,8 +96,6 @@ vi.mock("../components/ui", () => ({
     onChange: (date: string) => void;
     error?: boolean;
   }) => {
-    latestDatePickerOnChange = onChange;
-
     return (
       <input
         aria-label="manager-date-of-birth"
@@ -130,17 +136,33 @@ vi.mock("../components/menu/SavesList", () => ({
   default: ({
     saves,
     onLoad,
+    onClaim,
   }: {
-    saves?: Array<{ id: string; name: string }>;
+    saves?: Array<{ id: string; name: string; account_id?: string | null }>;
     onLoad?: (id: string) => void;
+    onClaim?: (id: string) => void;
   }) => (
     <div data-testid="saves-list">
-      {(saves ?? []).map((save) => (
-        <button key={save.id} type="button" onClick={() => onLoad?.(save.id)}>
-          {save.name}
-        </button>
-      ))}
+      {(saves ?? []).map((save) =>
+        save.account_id ? (
+          <button key={save.id} type="button" onClick={() => onLoad?.(save.id)}>
+            {save.name}
+          </button>
+        ) : (
+          <button key={save.id} type="button" onClick={() => onClaim?.(save.id)}>
+            {`claim-${save.name}`}
+          </button>
+        ),
+      )}
     </div>
+  ),
+}));
+
+vi.mock("../components/menu/CoachLogin", () => ({
+  default: ({ onLoggedIn }: { onLoggedIn: (account: typeof COACH) => void }) => (
+    <button type="button" onClick={() => onLoggedIn(COACH)}>
+      coach-login
+    </button>
   ),
 }));
 
@@ -202,6 +224,13 @@ vi.mock("../components/menu/WorldSelect", () => ({
 
 const mockedInvoke = vi.mocked(invoke);
 
+/** Answer `commands` as `impl` does, with the logged-in coach the menu asks for first. */
+function mockCommands(impl: (command: string, args?: unknown) => Promise<unknown>): void {
+  mockedInvoke.mockImplementation(async (command: string, args?: unknown) =>
+    command === "get_active_coach_account" ? coachState.account : impl(command, args),
+  );
+}
+
 // The packages step sits between the create form and the generation/world-select
 // step. Its internals (installed-package list, stack validation) are covered by
 // their own tests; here we shim it to a simple "advance" control so the manager-
@@ -211,20 +240,8 @@ async function advanceThroughPackages(): Promise<void> {
 }
 
 async function openCreateManagerForm(): Promise<void> {
-  fireEvent.click(screen.getByText("menu.newGame"));
-  await screen.findByPlaceholderText("createManager.placeholderFirst");
-}
-
-function fillManagerDetails(): void {
-  fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-    target: { value: "Ada" },
-  });
-  fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-    target: { value: "Lovelace" },
-  });
-  fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-    target: { value: "1980-01-01" },
-  });
+  fireEvent.click(await screen.findByText("menu.newGame"));
+  await screen.findByLabelText("createManager.startYear");
 }
 
 function fillCareerStartDetails(startYear = "2026", startPhase = "seasonStart"): void {
@@ -236,47 +253,6 @@ function fillCareerStartDetails(startYear = "2026", startPhase = "seasonStart"):
   });
 }
 
-async function getNationalityTrigger(): Promise<HTMLButtonElement> {
-  let trigger: HTMLButtonElement | null = null;
-
-  await waitFor(() => {
-    const fieldContainer = document.getElementById("create-manager-field-nationality");
-    const candidate = fieldContainer?.querySelector("div.relative > button:not([disabled])");
-
-    trigger = candidate instanceof HTMLButtonElement ? candidate : null;
-
-    expect(trigger).toBeInstanceOf(HTMLButtonElement);
-  });
-
-  if (!trigger) {
-    throw new Error("Nationality trigger button not found");
-  }
-
-  return trigger;
-}
-
-async function selectNationality(language: string, nationalityCode: string): Promise<void> {
-  const countryLabel = countryName(nationalityCode, language);
-
-  fireEvent.mouseDown(await getNationalityTrigger());
-  fireEvent.mouseDown(await screen.findByText(countryLabel));
-}
-
-async function searchAndSelectNationality(
-  language: string,
-  nationalityCode: string,
-  searchText: string,
-): Promise<void> {
-  const countryLabel = countryName(nationalityCode, language);
-
-  fireEvent.mouseDown(await getNationalityTrigger());
-  const searchInput = await screen.findByPlaceholderText("createManager.searchNationalities");
-  fireEvent.change(searchInput, {
-    target: { value: searchText },
-  });
-  fireEvent.mouseDown(await screen.findByText(countryLabel));
-}
-
 describe("MainMenu", () => {
   beforeEach(() => {
     navigateMock.mockReset();
@@ -286,36 +262,16 @@ describe("MainMenu", () => {
     openUrlMock.mockReset();
     dialogOpenResult = null;
     localStorage.clear();
-    latestDatePickerOnChange = null;
     translationState.language = "en";
+    coachState.account = COACH;
     mockedInvoke.mockReset();
-    mockedInvoke.mockImplementation(async (command: string) => {
+    mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
         return [];
       }
 
       if (command === "start_new_game") {
         return { id: "game-1" };
-      }
-
-      if (command === "get_manager_profiles") {
-        return [];
-      }
-
-      if (command === "save_manager_profile") {
-        return {
-          id: "profile-1",
-          first_name: "Test",
-          last_name: "Manager",
-          date_of_birth: "1980-01-01",
-          nationality: "GB",
-          created_at: new Date().toISOString(),
-          last_used_at: null,
-        };
-      }
-
-      if (command === "touch_manager_profile") {
-        return true;
       }
 
       return null;
@@ -334,262 +290,13 @@ describe("MainMenu", () => {
     // it doesn't silently swallow errors in later cases. Plain vi.fn() mocks are
     // unaffected and are reset in beforeEach.
     vi.restoreAllMocks();
-    resetCountryResourcesCache();
-  });
-
-  it.each(["es", "de", "fr", "it", "pt", "pt-BR"])(
-    "stores the nationality as an ISO code and continues the flow in %s",
-    async (language: string) => {
-      translationState.language = language;
-
-      render(<MainMenu />);
-
-      await openCreateManagerForm();
-      fillManagerDetails();
-      fillCareerStartDetails("2028", "midSeason");
-      await selectNationality(language, "ES");
-
-      const localizedCountryName = countryName("ES", language);
-      expect(
-        screen.getByRole("button", {
-          name: new RegExp(localizedCountryName, "i"),
-        }),
-      ).toBeInTheDocument();
-
-      fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-      await advanceThroughPackages();
-      expect(await screen.findByTestId("world-select")).toBeInTheDocument();
-
-      fireEvent.click(screen.getByText("start-world"));
-
-      await waitFor(() => {
-        expect(mockedInvoke).toHaveBeenCalledWith(
-          "start_new_game",
-          expect.objectContaining({
-            firstName: "Ada",
-            lastName: "Lovelace",
-            dob: "1980-01-01",
-            nationality: "ES",
-            startupOptions: expect.objectContaining({
-              startYear: 2028,
-              startPhase: "midSeason",
-              historyDepthYears: 12,
-            }),
-          }),
-        );
-      });
-      expect(setGameStateMock).toHaveBeenCalledWith({ id: "game-1" });
-      expect(navigateMock).toHaveBeenCalledWith("/select-team");
-    },
-  );
-
-  it("allows changing nationality after the other manager fields are filled", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fillManagerDetails();
-
-    await selectNationality("en", "ES");
-    expect(
-      screen.getByRole("button", {
-        name: /spain/i,
-      }),
-    ).toBeInTheDocument();
-
-    await selectNationality("en", "DE");
-
-    expect(
-      screen.getByRole("button", {
-        name: /germany/i,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("allows selecting England instead of legacy GB", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ENG");
-
-    expect(
-      screen.getByRole("button", {
-        name: /england/i,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("preserves nationality when a stale date picker callback fires after selection", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fillManagerDetails();
-
-    const staleDatePickerOnChange = latestDatePickerOnChange;
-
-    await selectNationality("en", "DE");
-
-    expect(
-      screen.getByRole("button", {
-        name: /germany/i,
-      }),
-    ).toBeInTheDocument();
-
-    act(() => {
-      staleDatePickerOnChange?.("1980-01-01");
-    });
-
-    expect(
-      screen.getByRole("button", {
-        name: /germany/i,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("allows searching localized countries without accents before selecting them", async () => {
-    translationState.language = "pt";
-
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fillManagerDetails();
-    await searchAndSelectNationality("pt", "AT", "austria");
-
-    expect(
-      screen.getByRole("button", {
-        name: /áustria/i,
-      }),
-    ).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-    await advanceThroughPackages();
-
-    fireEvent.click(screen.getByText("start-world"));
-
-    await waitFor(() => {
-      expect(mockedInvoke).toHaveBeenCalledWith(
-        "start_new_game",
-        expect.objectContaining({
-          nationality: "AT",
-          startupOptions: expect.objectContaining({
-            historyDepthYears: 12,
-          }),
-        }),
-      );
-    });
-  });
-
-  it("focuses the first invalid field when submitting an empty Create Manager form", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText("createManager.placeholderFirst")).toHaveFocus();
-    });
-    expect(screen.queryByTestId("package-build-step")).not.toBeInTheDocument();
-  });
-
-  it("focuses the next invalid field in order when earlier fields are valid", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-    await waitFor(() => {
-      expect(screen.getByPlaceholderText("createManager.placeholderLast")).toHaveFocus();
-    });
-  });
-
-  it("shows min-age feedback for an underage DOB, blocks progression, and focuses the DOB field on submit", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-      target: { value: "Lovelace" },
-    });
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "2010-06-15" },
-    });
-
-    expect(screen.getByText("validation.minAge")).toBeInTheDocument();
-
-    await selectNationality("en", "ES");
-    fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-    await waitFor(() => {
-      expect(screen.getByLabelText("manager-date-of-birth")).toHaveFocus();
-    });
-    expect(screen.queryByTestId("package-build-step")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("world-select")).not.toBeInTheDocument();
-  });
-
-  it("allows a manager who is 30 by the selected start year to continue", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-      target: { value: "Lovelace" },
-    });
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "2008-01-01" },
-    });
-    fillCareerStartDetails("2038", "seasonStart");
-    await selectNationality("en", "ES");
-
-    expect(screen.queryByText("validation.minAge")).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("createManager.chooseWorld"));
-
-    await advanceThroughPackages();
-    expect(await screen.findByTestId("world-select")).toBeInTheDocument();
-  });
-
-  it("uses the selected start phase when evaluating manager age", async () => {
-    render(<MainMenu />);
-
-    await openCreateManagerForm();
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-      target: { value: "Ada" },
-    });
-    fireEvent.change(screen.getByPlaceholderText("createManager.placeholderLast"), {
-      target: { value: "Lovelace" },
-    });
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "2008-08-01" },
-    });
-    fillCareerStartDetails("2038", "seasonStart");
-
-    expect(screen.getByText("validation.minAge")).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("createManager.startPhase"), {
-      target: { value: "midSeason" },
-    });
-
-    await waitFor(() => {
-      expect(screen.queryByText("validation.minAge")).not.toBeInTheDocument();
-    });
   });
 
   it("blocks progression when the start year is before the floor and focuses the year field", async () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
     fillCareerStartDetails("1899", "seasonStart");
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
@@ -601,17 +308,13 @@ describe("MainMenu", () => {
   });
 
   it("allows a historical start year so era world packages can be played", async () => {
+    coachState.account = { ...COACH, date_of_birth: "1920-01-01" };
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
     // A manager active in 1962 has to have been born in the era too — the
     // minimum-age rule is measured against the career start, not today.
-    fireEvent.change(screen.getByLabelText("manager-date-of-birth"), {
-      target: { value: "1920-01-01" },
-    });
     fillCareerStartDetails("1962", "seasonStart");
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
@@ -622,7 +325,7 @@ describe("MainMenu", () => {
   });
 
   it("passes the activated world package ids when starting a new career", async () => {
-    mockedInvoke.mockImplementation(async (command: string) => {
+    mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
         return [
           {
@@ -647,8 +350,6 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
@@ -656,7 +357,7 @@ describe("MainMenu", () => {
     fireEvent.click(await screen.findByText("toggle-premier-league"));
     await advanceThroughPackages();
 
-    fireEvent.click(screen.getByText("start-world"));
+    fireEvent.click(await screen.findByText("start-world"));
 
     await waitFor(() => {
       expect(mockedInvoke).toHaveBeenCalledWith(
@@ -671,7 +372,7 @@ describe("MainMenu", () => {
   });
 
   function mockRealWorldInstalled() {
-    mockedInvoke.mockImplementation(async (command: string) => {
+    mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
         return [
           {
@@ -699,12 +400,10 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
     await screen.findByText("toggle-real-world-2024-25");
     await advanceThroughPackages();
-    fireEvent.click(screen.getByText("start-world"));
+    fireEvent.click(await screen.findByText("start-world"));
 
     await waitFor(() => {
       expect(mockedInvoke).toHaveBeenCalledWith(
@@ -721,12 +420,10 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
     fireEvent.click(await screen.findByText("toggle-real-world-2024-25"));
     await advanceThroughPackages();
-    fireEvent.click(screen.getByText("start-world"));
+    fireEvent.click(await screen.findByText("start-world"));
 
     await waitFor(() => {
       expect(mockedInvoke).toHaveBeenCalledWith(
@@ -739,7 +436,7 @@ describe("MainMenu", () => {
   it("installs a world package from a picked .ofm file and makes it activatable", async () => {
     dialogOpenResult = "/tmp/custom-world.ofm";
     let installed = false;
-    mockedInvoke.mockImplementation(async (command: string) => {
+    mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
         return installed
           ? [
@@ -768,8 +465,6 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
     // No packages installed yet, so the file has to be imported first.
@@ -800,8 +495,6 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
     fireEvent.click(await screen.findByText("install-package"));
@@ -814,7 +507,7 @@ describe("MainMenu", () => {
   it("surfaces a message when a save fails to load", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
 
-    mockedInvoke.mockImplementation(async (command: string) => {
+    mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
         return [];
       }
@@ -824,6 +517,7 @@ describe("MainMenu", () => {
             id: "save-1",
             name: "My Save",
             manager_name: "Ada Lovelace",
+            account_id: "coach-1",
             db_filename: "save-1.db",
             checksum: "abc",
             created_at: "2026-01-01T00:00:00Z",
@@ -839,7 +533,7 @@ describe("MainMenu", () => {
 
     render(<MainMenu />);
 
-    fireEvent.click(screen.getByText("menu.loadGame"));
+    fireEvent.click(await screen.findByText("menu.loadGame"));
 
     const saveButton = await screen.findByText("My Save");
     fireEvent.click(saveButton);
@@ -856,15 +550,13 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
     await advanceThroughPackages();
 
     fireEvent.click(screen.getByText("set-history-depth-24:12"));
-    fireEvent.click(screen.getByText("start-world"));
+    fireEvent.click(await screen.findByText("start-world"));
 
     await waitFor(() => {
       expect(mockedInvoke).toHaveBeenCalledWith(
@@ -886,15 +578,13 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
     await advanceThroughPackages();
 
     fireEvent.click(screen.getByText("set-development-speed-300:100"));
-    fireEvent.click(screen.getByText("start-world"));
+    fireEvent.click(await screen.findByText("start-world"));
 
     await waitFor(() => {
       expect(mockedInvoke).toHaveBeenCalledWith(
@@ -912,8 +602,6 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
 
@@ -932,8 +620,6 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
     await advanceThroughPackages();
@@ -949,8 +635,6 @@ describe("MainMenu", () => {
     render(<MainMenu />);
 
     await openCreateManagerForm();
-    fillManagerDetails();
-    await selectNationality("en", "ES");
 
     fireEvent.click(screen.getByText("createManager.chooseWorld"));
     await advanceThroughPackages();
@@ -981,121 +665,117 @@ describe("MainMenu", () => {
     expect(openUrlMock).toHaveBeenCalledWith("https://github.com/openfootmanager/openfootmanager");
   });
 
-  describe("profile confirm modal", () => {
-    const mockProfile: ManagerProfile = {
-      id: "profile-1",
-      first_name: "Test",
-      last_name: "Manager",
-      date_of_birth: "1980-01-01",
-      nationality: "GB",
-      created_at: "2024-01-01T00:00:00.000Z",
-      last_used_at: null,
-    };
+  // ── Coach account (TK-4) ────────────────────────────────────────────────
 
-    beforeEach(() => {
-      mockedInvoke.mockImplementation(async (command: string) => {
-        if (command === "list_installed_packages") return [];
-        if (command === "get_manager_profiles") return [mockProfile];
-        if (command === "touch_manager_profile") return true;
-        if (command === "save_manager_profile") {
-          return { ...mockProfile, id: "profile-2", last_used_at: new Date().toISOString() };
-        }
-        if (command === "update_manager_profile") {
-          return { ...mockProfile, first_name: "Modified" };
-        }
-        if (command === "delete_manager_profile") return true;
-        if (command === "start_new_game") return { id: "game-1" };
-        return null;
+  // Given nobody is logged in, when the menu opens, then only the login screen shows.
+  it("shows the login screen until a coach logs in", async () => {
+    coachState.account = null;
+    render(<MainMenu />);
+
+    fireEvent.click(await screen.findByText("coach-login"));
+
+    expect(await screen.findByText("menu.newGame")).toBeInTheDocument();
+  });
+
+  // Given a logged-in coach, when he switches account, then he is logged out and back at the login screen.
+  it("logs out and returns to the login screen on switching account", async () => {
+    render(<MainMenu />);
+
+    fireEvent.click(await screen.findByText("coach.switchAccount"));
+
+    expect(await screen.findByText("coach-login")).toBeInTheDocument();
+    expect(mockedInvoke).toHaveBeenCalledWith("logout_coach_account");
+    expect(screen.queryByText("menu.newGame")).not.toBeInTheDocument();
+  });
+
+  // Given a logged-in coach, when a career starts, then the backend gets no identity: the account is the manager.
+  it("starts a new game with only the startup options", async () => {
+    render(<MainMenu />);
+
+    await openCreateManagerForm();
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+    fillCareerStartDetails("2028", "midSeason");
+    fireEvent.click(screen.getByText("createManager.chooseWorld"));
+    await advanceThroughPackages();
+    fireEvent.click(await screen.findByText("start-world"));
+
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith("start_new_game", {
+        startupOptions: expect.objectContaining({ startYear: 2028, startPhase: "midSeason" }),
+        packageIds: undefined,
       });
     });
+    expect(navigateMock).toHaveBeenCalledWith("/select-team");
+  });
 
-    async function selectAndModify(): Promise<void> {
-      render(<MainMenu />);
-      await openCreateManagerForm();
-      fireEvent.click(await screen.findByText("Test Manager"));
-      fireEvent.change(screen.getByPlaceholderText("createManager.placeholderFirst"), {
-        target: { value: "Modified" },
-      });
-    }
+  // Given a coach who turns 30 in August 2038, when a career would start in July 2038,
+  // then a later start is asked for, and a mid-season start is accepted.
+  it("asks for a later start while the coach would be under thirty", async () => {
+    coachState.account = { ...COACH, date_of_birth: "2008-08-01" };
+    render(<MainMenu />);
 
-    async function openModal(): Promise<void> {
-      await selectAndModify();
-      fireEvent.click(screen.getByText("createManager.chooseWorld"));
-      await screen.findByText("managerProfiles.saveConfirm.title");
-    }
+    await openCreateManagerForm();
+    fillCareerStartDetails("2038", "seasonStart");
+    expect(screen.getByText("coach.tooYoungForStart")).toBeInTheDocument();
 
-    it("shows the confirm modal when the form differs from the loaded profile", async () => {
-      await openModal();
-      expect(screen.getByText("managerProfiles.saveConfirm.title")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("createManager.startPhase"), {
+      target: { value: "midSeason" },
     });
 
-    it("update branch: calls update_manager_profile and proceeds to world select", async () => {
-      await openModal();
-      fireEvent.click(screen.getByText("managerProfiles.saveConfirm.update"));
-      await waitFor(() => {
-        expect(mockedInvoke).toHaveBeenCalledWith(
-          "update_manager_profile",
-          expect.objectContaining({ id: "profile-1", firstName: "Modified" }),
-        );
-      });
-      await advanceThroughPackages();
-      await waitFor(() => {
-        expect(screen.getByTestId("world-select")).toBeInTheDocument();
-      });
+    await waitFor(() => {
+      expect(screen.queryByText("coach.tooYoungForStart")).not.toBeInTheDocument();
     });
+  });
 
-    it("save-as-new branch: calls save_manager_profile with force and proceeds to world select", async () => {
-      await openModal();
-      fireEvent.click(screen.getByText("managerProfiles.saveConfirm.saveNew"));
-      await advanceThroughPackages();
-      await waitFor(() => {
-        expect(screen.getByTestId("world-select")).toBeInTheDocument();
-      });
-      await waitFor(() => {
-        expect(mockedInvoke).toHaveBeenCalledWith(
-          "save_manager_profile",
-          expect.objectContaining({ firstName: "Modified", force: true }),
-        );
-      });
+  // Given a coach too young for the default start, when the form is sent, then it stops on the start year.
+  it("blocks a start the coach is too young for and focuses the year", async () => {
+    coachState.account = { ...COACH, date_of_birth: "2010-06-15" };
+    render(<MainMenu />);
+
+    await openCreateManagerForm();
+    fireEvent.click(screen.getByText("createManager.chooseWorld"));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("createManager.startYear")).toHaveFocus();
     });
+    expect(screen.queryByTestId("package-build-step")).not.toBeInTheDocument();
+  });
 
-    it("skip branch: proceeds to world select without saving profile changes", async () => {
-      await openModal();
-      fireEvent.click(screen.getByText("managerProfiles.saveConfirm.skip"));
-      await advanceThroughPackages();
-      await waitFor(() => {
-        expect(screen.getByTestId("world-select")).toBeInTheDocument();
-      });
+  // Given saves of this coach, of another and of none, when the load list opens,
+  // then another coach's career is hidden and one with no account is offered to claim.
+  it("lists only the coach's careers and those without an account", async () => {
+    const entry = (id: string, accountId: string | null) => ({
+      id,
+      name: `Save ${id}`,
+      manager_name: "",
+      team_name: "",
+      db_filename: `${id}.db`,
+      checksum: "",
+      created_at: "2026-01-01T00:00:00Z",
+      last_played_at: "2026-02-01T00:00:00Z",
+      account_id: accountId,
     });
-
-    it("cancel: dismisses the modal without navigating away from the form", async () => {
-      await openModal();
-      fireEvent.click(screen.getByText("menu.cancel"));
-      await waitFor(() => {
-        expect(screen.queryByText("managerProfiles.saveConfirm.title")).not.toBeInTheDocument();
-      });
-      expect(screen.queryByTestId("world-select")).not.toBeInTheDocument();
+    mockCommands(async (command: string) => {
+      if (command === "get_saves") {
+        return [entry("own", "coach-1"), entry("other", "coach-2"), entry("old", null)];
+      }
+      if (command === "load_game") return "Ada Lovelace";
+      if (command === "get_active_game") throw new Error("no game");
+      return null;
     });
+    render(<MainMenu />);
 
-    it("deleting the loaded profile clears it and skips the confirm modal on submit", async () => {
-      render(<MainMenu />);
-      await openCreateManagerForm();
-      fireEvent.click(await screen.findByText("Test Manager"));
+    fireEvent.click(await screen.findByText("menu.loadGame"));
 
-      fireEvent.click(screen.getByLabelText("menu.delete"));
-      fireEvent.click(screen.getByText("menu.delete"));
+    expect(await screen.findByText("Save own")).toBeInTheDocument();
+    expect(screen.queryByText("Save other")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText("claim-Save old"));
 
-      await waitFor(() => {
-        expect(mockedInvoke).toHaveBeenCalledWith("delete_manager_profile", { id: "profile-1" });
-      });
-
-      fireEvent.click(screen.getByText("createManager.chooseWorld"));
-      await advanceThroughPackages();
-
-      await waitFor(() => {
-        expect(screen.getByTestId("world-select")).toBeInTheDocument();
-      });
-      expect(screen.queryByText("managerProfiles.saveConfirm.title")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith("claim_save_for_coach", { saveId: "old" });
+    });
+    await waitFor(() => {
+      expect(mockedInvoke).toHaveBeenCalledWith("load_game", { saveId: "old" });
     });
   });
 });

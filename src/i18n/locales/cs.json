@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Tato nastavení kariéry nebylo možné použít. Vraťte se na obrazovku světa a zkontrolujte rok začátku, fázi začátku a kolik minulé historie se má vygenerovat.",
     "reportBug": "Nahlásit chybu"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Uložit profil",
-      "body": "Provedli jste změny v profilu {{name}}. Co chcete udělat?",
-      "update": "Aktualizovat „{{name}}“",
-      "saveNew": "Uložit jako nový profil",
-      "skip": "Pokračovat bez uložení"
-    }
+  "coach": {
+    "loginTitle": "Vyberte manažera",
+    "loginSubtitle": "Váš manažer je stejný ve všech kariérách: zvládnutí stylů a bilance se sčítají.",
+    "newAccountTitle": "Nový účet manažera",
+    "createAccount": "Vytvořit účet",
+    "region": "Oblast",
+    "regions": {
+      "AsiaSoutheast": "Jihovýchodní Asie (UTC+7)",
+      "AsiaEast": "Východní Asie (UTC+8)",
+      "Europe": "Evropa (UTC+1)",
+      "Americas": "Amerika (UTC−5)"
+    },
+    "regionHint": "Denní limit zápasů se zkušenostmi se obnovuje ve 04:00 času této oblasti. Později ho nelze změnit.",
+    "lastLogin": "Naposledy hráno: {{date}}",
+    "neverLoggedIn": "Zatím nehráno",
+    "logInAs": "Hrát za účet {{name}}",
+    "deleteAccount": "Smazat účet {{name}}",
+    "deleteConfirm": "Smazat účet {{name}}? Zvládnutí stylů a bilance se ztratí, kariéry zůstanou.",
+    "signedInAs": "Manažer",
+    "switchAccount": "Přepnout",
+    "unclaimedSave": "Bez účtu",
+    "claimSave": "Připojit a načíst",
+    "claimSaveConfirm": "Tato kariéra nemá účet manažera. Připojit ji k účtu {{name}}? Od teď bude používat zvládnutí stylů tohoto manažera.",
+    "tooYoungForStart": "K tomuto datu by manažerovi nebylo {{min}} let — zvolte pozdější rok začátku.",
+    "tooOldForStart": "K tomuto datu by byl manažer příliš starý — zvolte dřívější rok začátku.",
+    "reportFailed": "Server účtů není dostupný. Tyto zápasy manažerovi nic nepřinesly; kariéra je přesto uložena.",
+    "dailyXp": "Zápasy se zkušenostmi dnes: {{count}}/{{limit}} · obnova ve {{time}}",
+    "dailyXpCount": "Zápasy se zkušenostmi dnes: {{count}}/{{limit}}",
+    "allCareers": "Všechny kariéry",
+    "thisCareer": "Tato kariéra"
   },
   "createManager": {
     "title": "Vytvořit manažera",
@@ -3245,10 +3267,14 @@
         "saveFailed": "Nepodařilo se uložit nastavení.",
         "invalidCurrency": "Vybraná měna není podporována."
       },
-      "profiles": {
-        "loadFailed": "Nepodařilo se načíst profily manažerů.",
-        "saveFailed": "Nepodařilo se uložit profil manažera.",
-        "pathFailed": "Nepodařilo se určit cestu k úložišti profilů."
+      "coach": {
+        "loadFailed": "Nepodařilo se načíst účty manažerů.",
+        "saveFailed": "Nepodařilo se uložit účet manažera.",
+        "accountNotFound": "Účet manažera nebyl nalezen.",
+        "notLoggedIn": "Není přihlášen žádný účet manažera.",
+        "offline": "Server účtů není dostupný.",
+        "saveOfAnotherAccount": "Tato kariéra patří jinému účtu manažera.",
+        "saveWithoutAccount": "Tato kariéra zatím nemá účet manažera."
       },
       "teamNotFound": "Tým nebyl nalezen",
       "jobOffer": {

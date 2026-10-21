@@ -11,6 +11,7 @@ import type {
   RoundSummary,
 } from "../components/match/types";
 import { finishLiveMatch, getMatchSnapshot, startLiveMatch } from "../services/liveMatchService";
+import { getCoachProgress } from "../services/coachService";
 import { resolveMatchFixture } from "../components/match/helpers";
 import PreMatchSetup from "../components/match/PreMatchSetup";
 import MatchLive from "../components/match/MatchLive";
@@ -49,6 +50,8 @@ export default function MatchSimulation() {
   const [roundSummary, setRoundSummary] = useState<RoundSummary | null>(null);
   const [playerRatings, setPlayerRatings] = useState<Record<string, number>>({});
   const [masteryGain, setMasteryGain] = useState<MasteryGain | null>(null);
+  const [dailyXp, setDailyXp] = useState<{ count: number; limit: number } | null>(null);
+  const [coachReportFailed, setCoachReportFailed] = useState(false);
   const [hasFinalizedMatch, setHasFinalizedMatch] = useState(false);
   const [preferredSpeed, setPreferredSpeed] = useState<"slow" | "normal" | "fast">("normal");
   const [hasUserOverriddenSpeed, setHasUserOverriddenSpeed] = useState(false);
@@ -242,6 +245,13 @@ export default function MatchSimulation() {
       setRoundSummary(response.round_summary ?? null);
       setPlayerRatings(response.player_ratings);
       setMasteryGain(response.mastery_gain ?? null);
+      setCoachReportFailed(response.coach_report_failed === true);
+      if (response.mastery_gain) {
+        // The day's count explains a reduced gain; the post-match screen does without it.
+        getCoachProgress()
+          .then((view) => setDailyXp({ count: view.counted_today, limit: view.daily_limit }))
+          .catch((err) => console.warn("Failed to read the coach's daily XP:", err));
+      }
       setHasFinalizedMatch(true);
       return true;
     } catch (err) {
@@ -391,6 +401,8 @@ export default function MatchSimulation() {
           snapshot={snapshot}
           playerRatings={playerRatings}
           masteryGain={masteryGain}
+          dailyXp={dailyXp}
+          coachReportFailed={coachReportFailed}
           gameState={gameState}
           userSide={userSide}
           isSpectator={isSpectator}

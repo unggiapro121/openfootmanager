@@ -110,6 +110,9 @@ pub fn run() {
             }
 
             app.manage(Arc::new(SaveManagerState(Mutex::new(save_manager))));
+            app.manage(Arc::new(application::coach::CoachContext::local(
+                &app_data_dir,
+            )));
 
             // Off the setup thread: validating and unpacking a full real-world package takes
             // seconds, and the main menu has no reason to wait for it — the packages screen is
@@ -342,11 +345,15 @@ pub fn run() {
             get_available_jobs,
             get_manager_progression,
             apply_for_job,
-            get_manager_profiles,
-            save_manager_profile,
-            update_manager_profile,
-            delete_manager_profile,
-            touch_manager_profile,
+            list_coach_accounts,
+            create_coach_account,
+            login_coach_account,
+            logout_coach_account,
+            get_active_coach_account,
+            update_coach_account,
+            delete_coach_account,
+            get_coach_progress,
+            claim_save_for_coach,
             run_sim_batch,
             run_single_seeded_match,
             create_package_project,

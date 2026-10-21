@@ -2119,6 +2119,36 @@ fn manager_trophy_awarded_for_first_place() {
     assert_eq!(game.manager.career_stats.trophies, 1);
 }
 
+/// Given a career of a coach account whose club tops the table,
+/// When the season ends,
+/// Then the league title is told to the account as an honour.
+#[test]
+fn a_league_title_is_an_honour_for_the_account() {
+    let mut game = make_completed_season_game();
+    game.account_id = Some("account-1".to_string());
+
+    process_end_of_season(&mut game);
+
+    assert_eq!(
+        game.pending_coach_reports,
+        vec![ofm_core::coach_progress::CoachRecord::Honour(
+            domain::manager::HonourKind::League
+        )]
+    );
+}
+
+/// Given a career without an account whose club tops the table,
+/// When the season ends,
+/// Then nothing waits for any account.
+#[test]
+fn a_league_title_without_an_account_is_told_to_no_one() {
+    let mut game = make_completed_season_game();
+
+    process_end_of_season(&mut game);
+
+    assert!(game.pending_coach_reports.is_empty());
+}
+
 #[test]
 fn manager_no_trophy_for_non_first() {
     let mut game = make_completed_season_game();

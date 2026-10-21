@@ -198,6 +198,10 @@ pub(crate) fn record_cup_won(game: &mut Game, fixture_index: usize) {
     };
     game.manager.progression.season_honours.push(honour);
     game.manager.career_stats.trophies += 1;
+    if game.account_id.is_some() {
+        game.pending_coach_reports
+            .push(crate::coach_progress::CoachRecord::Honour(kind));
+    }
 }
 
 /// Review the user's season: move their reputation, log the change, start

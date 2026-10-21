@@ -28,14 +28,36 @@
     "startupOptionsRejected": "Those career settings could not be used. Go back to the world screen and check the start year, the start phase and how much past history to generate.",
     "reportBug": "Report a bug"
   },
-  "managerProfiles": {
-    "saveConfirm": {
-      "title": "Save Profile",
-      "body": "You've made changes to {{name}}'s profile. What would you like to do?",
-      "update": "Update \"{{name}}\"",
-      "saveNew": "Save as New Profile",
-      "skip": "Continue without saving"
-    }
+  "coach": {
+    "loginTitle": "Choose your coach",
+    "loginSubtitle": "Your coach is the same in every career: style mastery and career totals carry over.",
+    "newAccountTitle": "New coach account",
+    "createAccount": "Create account",
+    "region": "Region",
+    "regions": {
+      "AsiaSoutheast": "Southeast Asia (UTC+7)",
+      "AsiaEast": "East Asia (UTC+8)",
+      "Europe": "Europe (UTC+1)",
+      "Americas": "Americas (UTC−5)"
+    },
+    "regionHint": "Your daily XP allowance starts afresh at 04:00 in this region. It cannot be changed later.",
+    "lastLogin": "Last played {{date}}",
+    "neverLoggedIn": "Not played yet",
+    "logInAs": "Play as {{name}}",
+    "deleteAccount": "Delete {{name}}",
+    "deleteConfirm": "Delete {{name}}? Mastery and totals are lost; careers stay.",
+    "signedInAs": "Coach",
+    "switchAccount": "Switch",
+    "unclaimedSave": "No account",
+    "claimSave": "Attach and load",
+    "claimSaveConfirm": "This career has no coach account. Attach it to {{name}}? From now on it uses that coach's mastery.",
+    "tooYoungForStart": "Your coach would be under {{min}} at this start — choose a later start year.",
+    "tooOldForStart": "Your coach would be too old at this start — choose an earlier start year.",
+    "reportFailed": "Couldn't reach the account server. These matches earned your coach nothing; the career is still saved.",
+    "dailyXp": "Matches earning XP today: {{count}}/{{limit}} · resets at {{time}}",
+    "dailyXpCount": "Matches earning XP today: {{count}}/{{limit}}",
+    "allCareers": "All careers",
+    "thisCareer": "This career"
   },
   "createManager": {
     "title": "Create Manager",
@@ -3245,10 +3267,14 @@
         "saveFailed": "Failed to save settings.",
         "invalidCurrency": "Selected currency is not supported."
       },
-      "profiles": {
-        "loadFailed": "Failed to load manager profiles.",
-        "saveFailed": "Failed to save manager profile.",
-        "pathFailed": "Could not resolve the profiles storage path."
+      "coach": {
+        "loadFailed": "Failed to load coach accounts.",
+        "saveFailed": "Failed to save the coach account.",
+        "accountNotFound": "Coach account not found.",
+        "notLoggedIn": "No coach account is logged in.",
+        "offline": "Could not reach the account server.",
+        "saveOfAnotherAccount": "This career belongs to another coach account.",
+        "saveWithoutAccount": "This career has no coach account yet."
       },
       "teamNotFound": "Team not found",
       "jobOffer": {

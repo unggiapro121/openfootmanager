@@ -144,9 +144,9 @@ fn manager_mastery_probe() {
             let mut days = 0;
             while !state.get_game(is_season_complete).unwrap_or(true) {
                 state.update_game(|game| game.manager.satisfaction = 100);
-                advance_time_with_mode(&state, "live").expect("the day advances");
+                advance_time_with_mode(&state, "live", None).expect("the day advances");
                 if state.with_live_match(|_| ()).is_some() {
-                    let response = finish_live_match(&state).expect("the match finishes");
+                    let response = finish_live_match(&state, None).expect("the match finishes");
                     gains.extend(response.mastery_gain);
                 }
                 days += 1;

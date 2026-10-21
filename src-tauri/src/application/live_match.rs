@@ -1,5 +1,6 @@
 use log::info;
 
+use crate::application::coach::{report_coach_records, CoachContext};
 use crate::commands::round_summary::{build_round_summary_dto, RoundSummaryDto};
 use domain::league::FixtureStatus;
 use ofm_core::game::Game;
@@ -16,12 +17,21 @@ pub struct FinishLiveMatchResponse {
     /// The engine's rating for each player who played long enough to be judged,
     /// keyed by player id. Unrated players are left out rather than sent as 0.
     pub player_ratings: BTreeMap<String, f32>,
-    /// What the match did for the user's play style mastery, when they managed
-    /// it themselves; `None` for a match they watched or handed to the assistant.
+    /// What the match did for the coach account's play style mastery, when the
+    /// user managed it themselves; `None` for a match they watched or handed to
+    /// the assistant, a career without an account, or an MCP agent's match.
     pub mastery_gain: Option<MasteryGain>,
+    /// The account store could not take the match: it earned nothing (Y12).
+    #[serde(default)]
+    pub coach_report_failed: bool,
 }
 
-pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse, String> {
+/// `coach` is the logged-in coach the match is reported to; `None` when an MCP
+/// agent finishes it, which earns no account anything (Y14).
+pub fn finish_live_match(
+    state: &StateManager,
+    coach: Option<&CoachContext>,
+) -> Result<FinishLiveMatchResponse, String> {
     info!("[cmd] finish_live_match");
     let mut session = state
         .take_live_match()
@@ -65,8 +75,8 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
     // GUI/MCP write is never clobbered by a stale whole-game clone. Stats
     // captures are appended after the lock is released.
     let mut captures = Vec::new();
-    type Finished = (Game, Option<RoundSummaryDto>, Option<MasteryGain>);
-    let (game, round_summary, mastery_gain) = state
+    type Finished = (Game, Option<RoundSummaryDto>);
+    let (game, round_summary) = state
         .update_game(|game| -> Result<Finished, String> {
             // Check the authoritative competition before changing the legacy
             // mirror. A stale session must not replay a completed fixture or
@@ -93,7 +103,6 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
             if fixture.status != FixtureStatus::Scheduled {
                 return Err("be.error.liveMatch.fixtureNotScheduled".to_string());
             }
-            let fixture_competition = fixture.competition.clone();
 
             // `fixture_index` belongs to the session's competition (possibly
             // a cup), while game.league may mirror the domestic league. Swap
@@ -110,17 +119,15 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
                 &report,
                 &mut |capture| captures.push(capture),
             );
-            let mastery_gain = if managed_by_user {
-                ofm_core::manager_mastery::credit_managed_match(
+            if managed_by_user {
+                ofm_core::manager_mastery::mark_managed_match(
                     game,
                     &report,
-                    &fixture_competition,
+                    &fixture_id,
                     &home_team_id,
                     &away_team_id,
-                )
-            } else {
-                None
-            };
+                );
+            }
 
             // apply_match_report_with_capture mutates the legacy `game.league`
             // mirror (fixture status, fixture.result, standings). The modern
@@ -167,18 +174,26 @@ pub fn finish_live_match(state: &StateManager) -> Result<FinishLiveMatchResponse
                 build_round_summary_dto(game, matchday, &previous)
             });
 
-            Ok((game.clone(), round_summary, mastery_gain))
+            Ok((game.clone(), round_summary))
         })
         .ok_or("be.error.noActiveGameSession")??;
     for capture in captures {
         state.append_stats_state(capture);
     }
 
+    let coach_report = report_coach_records(state, coach, chrono::Utc::now().timestamp());
+    // The account's new XP was carried into the career after the clone above.
+    let game = match coach_report.mastery_gain {
+        Some(_) => state.get_game(Game::clone).unwrap_or(game),
+        None => game,
+    };
+
     Ok(FinishLiveMatchResponse {
         game,
         round_summary,
         player_ratings,
-        mastery_gain,
+        mastery_gain: coach_report.mastery_gain,
+        coach_report_failed: coach_report.report_failed,
     })
 }
 

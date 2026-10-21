@@ -1,3 +1,4 @@
+pub mod coach;
 pub mod live_match;
 pub mod press_conference;
 pub mod team_talk;

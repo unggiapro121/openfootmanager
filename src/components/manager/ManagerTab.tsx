@@ -5,6 +5,7 @@ import { ManagerReputationChart } from "./ManagerReputationChart";
 import { PlayStyleMasteryCard } from "./PlayStyleMasteryCard";
 import { getLastReputationChange, getReputationLog } from "../../lib/managerReputation";
 import { getManagerProgression } from "../../services/managerProgressionService";
+import { type CoachProgressView, getCoachProgress } from "../../services/coachService";
 import type { ManagerProgressionView } from "../../store/types";
 import { useEffect, useState } from "react";
 import { formatDate } from "../../lib/helpers";
@@ -25,6 +26,22 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
   const stats = mgr.career_stats;
   const reputationLog = getReputationLog(mgr);
   const [progression, setProgression] = useState<ManagerProgressionView | null>(null);
+  // The coach account's progress; null for a career without one (an agent's game).
+  const [coachProgress, setCoachProgress] = useState<CoachProgressView | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCoachProgress()
+      .then((view) => {
+        if (!cancelled) setCoachProgress(view);
+      })
+      .catch(() => {
+        if (!cancelled) setCoachProgress(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [stats]);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,21 +126,30 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
       <Card accent="accent" className="md:col-span-2">
         <CardHeader>{t("manager.careerStats")}</CardHeader>
         <CardBody>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-            <StatBlock label={t("manager.matches")} value={stats.matches_managed} />
-            <StatBlock label={t("manager.wins")} value={stats.wins} />
-            <StatBlock label={t("manager.draws")} value={stats.draws} />
-            <StatBlock label={t("manager.losses")} value={stats.losses} />
-            <StatBlock label={t("manager.trophies")} value={stats.trophies} />
-            <StatBlock
-              label={t("manager.winPercent")}
-              value={
-                stats.matches_managed > 0
-                  ? `${((stats.wins / stats.matches_managed) * 100).toFixed(0)}%`
-                  : "—"
-              }
-            />
-          </div>
+          {coachProgress ? (
+            <div className="flex flex-col gap-4">
+              <CareerStatsRow
+                label={t("coach.allCareers")}
+                totals={coachProgress.progress.totals}
+              />
+              <CareerStatsRow
+                label={t("coach.thisCareer")}
+                totals={{ ...stats, matches: stats.matches_managed }}
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t("coach.dailyXp", {
+                  count: coachProgress.counted_today,
+                  limit: coachProgress.daily_limit,
+                  time: new Date(coachProgress.next_reset_unix * 1000).toLocaleTimeString(
+                    i18n.language,
+                    { hour: "2-digit", minute: "2-digit" },
+                  ),
+                })}
+              </p>
+            </div>
+          ) : (
+            <CareerStatsRow totals={{ ...stats, matches: stats.matches_managed }} />
+          )}
         </CardBody>
       </Card>
 
@@ -322,6 +348,41 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
         </Card>
       )}
     </div>
+  );
+}
+
+interface CareerTotals {
+  matches: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  trophies: number;
+}
+
+/** One line of career numbers, labelled when the screen shows more than one. */
+function CareerStatsRow({ label, totals }: { label?: string; totals: CareerTotals }) {
+  const { t } = useTranslation();
+  const blocks = (
+    <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+      <StatBlock label={t("manager.matches")} value={totals.matches} />
+      <StatBlock label={t("manager.wins")} value={totals.wins} />
+      <StatBlock label={t("manager.draws")} value={totals.draws} />
+      <StatBlock label={t("manager.losses")} value={totals.losses} />
+      <StatBlock label={t("manager.trophies")} value={totals.trophies} />
+      <StatBlock
+        label={t("manager.winPercent")}
+        value={totals.matches > 0 ? `${((totals.wins / totals.matches) * 100).toFixed(0)}%` : "—"}
+      />
+    </div>
+  );
+  if (!label) return blocks;
+  return (
+    <fieldset className="m-0 min-w-0 border-0 p-0">
+      <legend className="mb-2 p-0 text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+        {label}
+      </legend>
+      {blocks}
+    </fieldset>
   );
 }
 

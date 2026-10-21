@@ -22,6 +22,8 @@ pub const MIN_RESET_GAP_HOURS: i64 = 20;
 /// How much more a real-time online match is worth than an offline one (D3).
 /// Used by the server's online matches; the offline game never applies it.
 pub const ONLINE_XP_MULTIPLIER: f64 = 5.0;
+/// How many matches a day can earn XP at all (D2).
+pub const DAILY_XP_MATCH_LIMIT: u32 = 50;
 
 const SECONDS_PER_HOUR: i64 = 3_600;
 const SECONDS_PER_DAY: i64 = 86_400;
@@ -108,7 +110,7 @@ pub fn daily_factor(counted_before: u32) -> f64 {
     match counted_before {
         0..20 => 1.0,
         20..40 => 0.5,
-        40..50 => 0.25,
+        40..DAILY_XP_MATCH_LIMIT => 0.25,
         _ => 0.0,
     }
 }

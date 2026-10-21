@@ -221,6 +221,7 @@ impl SaveManager {
             checksum,
             created_at: now.clone(),
             last_played_at: now,
+            account_id: game.account_id.clone(),
         };
 
         if let Err(error) = self.save_index.record_new_save(entry) {
@@ -281,6 +282,7 @@ impl SaveManager {
             checksum,
             created_at: now.clone(),
             last_played_at: now,
+            account_id: game.account_id.clone(),
         };
         if let Err(error) = self.save_index.record_new_save(entry) {
             let _ = fs::remove_file(&db_path);
@@ -335,6 +337,7 @@ impl SaveManager {
             checksum,
             created_at: entry.created_at.clone(),
             last_played_at: now,
+            account_id: game.account_id.clone(),
         })?;
         Ok(())
     }
@@ -365,6 +368,7 @@ impl SaveManager {
             checksum,
             created_at: entry.created_at,
             last_played_at: now,
+            account_id: entry.account_id.clone(),
         })?;
 
         Ok(())
@@ -426,6 +430,7 @@ impl SaveManager {
             checksum,
             created_at: entry.created_at,
             last_played_at: now,
+            account_id: game.account_id.clone(),
         })?;
         let index_ms = index_timer.elapsed().as_millis();
 
@@ -660,6 +665,7 @@ impl SaveManager {
                 checksum,
                 created_at: entry.created_at.clone(),
                 last_played_at: now,
+                account_id: game.account_id.clone(),
             })?;
         }
 
@@ -1943,6 +1949,47 @@ mod tests {
         assert_eq!(saves[0].manager_name, "John Smith");
         assert_eq!(saves[0].team_name, "London FC");
         assert!(!saves[0].checksum.is_empty());
+    }
+
+    /// Given a career of a coach account,
+    /// When it is saved, and the save index is later rebuilt from the save files,
+    /// Then its entry names the account each time, so the load screen can filter by it.
+    #[test]
+    fn a_saves_entry_names_its_coach_account() {
+        let dir = tempfile::tempdir().unwrap();
+        let saves_dir = dir.path().join("saves");
+        let mut sm = SaveManager::init(&saves_dir).unwrap();
+        let mut game = sample_game();
+        game.account_id = Some("account-1".to_string());
+
+        sm.create_save(&game, "Career").unwrap();
+        assert_eq!(sm.list_saves()[0].account_id.as_deref(), Some("account-1"));
+
+        fs::remove_file(saves_dir.join("save_index.json")).unwrap();
+        let mut rebuilt = SaveManager::init(&saves_dir).unwrap();
+        let saves = rebuilt.load_saves().unwrap();
+        assert_eq!(saves[0].account_id.as_deref(), Some("account-1"));
+    }
+
+    /// Given a save made before accounts,
+    /// When the career is claimed by an account and saved again,
+    /// Then its entry names that account.
+    #[test]
+    fn a_claimed_save_names_its_new_account() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut sm = SaveManager::init(dir.path()).unwrap();
+        let mut game = sample_game();
+        let save_id = sm.create_save(&game, "Career").unwrap();
+        assert_eq!(sm.list_saves()[0].account_id, None);
+
+        game.account_id = Some("account-1".to_string());
+        sm.save_game(&game, &save_id).unwrap();
+
+        assert_eq!(sm.list_saves()[0].account_id.as_deref(), Some("account-1"));
+        assert_eq!(
+            sm.load_game(&save_id).unwrap().account_id.as_deref(),
+            Some("account-1")
+        );
     }
 
     #[test]
