@@ -27,6 +27,8 @@ export const PACE_SPEED: Record<"pass" | "shot" | "air" | "carry" | "run", numbe
 /** A player going back into shape once his part is played: a jog, not a sprint. */
 const JOG_SPEED = 4;
 const PLACE_MS = 450;
+/** The least a completed pass goes forward of the man who plays it, in metres (after GĐ5). */
+export const PASS_AHEAD_METRES = 6;
 /** Long enough to read a card or a whistle before the next beat clears it. */
 const HOLD_MS = 650;
 const MIN_STEP_MS = 160;
