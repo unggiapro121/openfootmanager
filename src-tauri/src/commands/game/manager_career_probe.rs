@@ -9,7 +9,10 @@
 //!
 //! The user's club is managed headlessly, as `process_day` plays it, so this is
 //! an "average manager": the reputation a player who outthinks the AI earns is
-//! higher. Knobs: `OFM_CAREER_CLUBS` (comma-separated club ids, default
+//! higher. The board is kept content (satisfaction 100 every day) so the user
+//! keeps the job: an average manager at a club that expects titles is often
+//! sacked within a season or two, and an unemployed user measures nothing about
+//! the reputation rule. Knobs: `OFM_CAREER_CLUBS` (comma-separated club ids, default
 //! Manchester City, Crystal Palace, Bristol City), `OFM_CAREER_SEASONS`
 //! (default 5), `OFM_PROBE_SEED`.
 
@@ -58,10 +61,12 @@ fn manager_career_probe() {
         for _ in 0..seasons {
             let mut days = 0;
             while !is_season_complete(&game) {
+                game.manager.satisfaction = 100;
                 ofm_core::turn::process_day(&mut game);
                 days += 1;
                 assert!(days < MAX_DAYS_PER_SEASON, "the season never completed");
             }
+            game.manager.satisfaction = 100;
             advance_to_next_season(&mut game).expect("a complete season rolls over");
             let change = game
                 .manager

@@ -299,3 +299,28 @@ fn a_partial_season_message_says_how_many_matches_were_led() {
     assert_eq!(message.i18n_params.get("led"), Some(&"1".to_string()));
     assert_eq!(message.i18n_params.get("played"), Some(&"2".to_string()));
 }
+
+/// Given a user out of work, whose last review was for season 5, in a world
+/// whose fallback competition runs on another calendar (season 1 here),
+/// When the season ends,
+/// Then the review is the season after the last one, not the fallback's.
+#[test]
+fn an_unemployed_users_review_follows_on_from_their_last() {
+    let mut game = two_division_game("top-a", [900, 500, 300, 300]);
+    game.manager.team_id = None;
+    game.manager
+        .progression
+        .reputation_log
+        .push(domain::manager::ReputationChange {
+            season: 5,
+            before: 500,
+            after: 540,
+            ..Default::default()
+        });
+
+    process_end_of_season(&mut game);
+
+    let change = game.manager.progression.reputation_log.last().unwrap();
+    assert_eq!(change.season, 6);
+    assert_eq!(change.team_id, None);
+}

@@ -210,6 +210,12 @@ pub(crate) fn review_user_season(
     date: &str,
 ) {
     let progression = &game.manager.progression;
+    // Out of work, the season handed in is the fallback competition's, which
+    // may run on another calendar; the user's own record carries on instead.
+    let season = match (review, progression.reputation_log.last()) {
+        (None, Some(last)) => last.season + 1,
+        _ => season,
+    };
     let change = season_change(
         season,
         game.manager.reputation,
