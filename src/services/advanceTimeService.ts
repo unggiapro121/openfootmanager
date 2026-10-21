@@ -35,6 +35,8 @@ export interface AdvanceTimeWithModeResponse {
   mode?: string;
   round_summary?: unknown;
   results?: AdvanceMatchResultData[];
+  /** The day's matches could not reach the coach account and counted for nothing. */
+  coach_report_failed?: boolean;
 }
 
 export interface SkipToMatchDayResponse {

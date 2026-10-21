@@ -2,6 +2,7 @@ use log::info;
 use std::sync::Arc;
 use tauri::State;
 
+use crate::application::coach::{after_reporting_to_coach, CoachContext};
 use ofm_core::state::StateManager;
 
 #[tauri::command]
@@ -15,9 +16,11 @@ pub fn check_season_complete(state: State<'_, Arc<StateManager>>) -> Result<bool
 #[tauri::command]
 pub fn advance_to_next_season(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
 ) -> Result<serde_json::Value, String> {
     info!("[cmd] advance_to_next_season");
-    advance_to_next_season_internal(&state)
+    // The league title is told to the account as the season closes.
+    after_reporting_to_coach(&state, &coach, advance_to_next_season_internal(&state))
 }
 
 /// Rolls the season over, then drops the per-match stats rows from before the

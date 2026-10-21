@@ -37,6 +37,7 @@ pub fn season_advance(ctx: Arc<McpContext>) -> Result<String, String> {
     let response = crate::application::time_advancement::advance_time_with_mode(
         &ctx.state_manager,
         "delegate",
+        None,
     )?;
 
     {

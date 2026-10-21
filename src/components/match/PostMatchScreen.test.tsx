@@ -39,6 +39,9 @@ vi.mock("react-i18next", () => ({
       if (key === "match.masteryStartingStyle") {
         return "XP goes to the style the side started in";
       }
+      if (key === "coach.dailyXpCount") {
+        return `XP matches today ${params?.count}/${params?.limit}`;
+      }
       if (key.startsWith("common.playStyles.")) {
         return key.replace("common.playStyles.", "");
       }
@@ -512,6 +515,51 @@ describe("PostMatchScreen", (): void => {
     expect(line).toHaveTextContent("+15 XP · Counter");
     expect(line).toHaveTextContent("now 55");
     expect(line).toHaveTextContent("XP goes to the style the side started in");
+  });
+
+  // Given the 21st match of the day earning XP, when the post-match screen shows,
+  // then it says how many have counted, so the reduced XP is explained.
+  it("shows the day's XP count once the full-XP matches are used", (): void => {
+    render(
+      <ThemeProvider>
+        <PostMatchScreen
+          snapshot={makeSnapshot()}
+          playerRatings={{}}
+          gameState={makeGameState()}
+          userSide="Home"
+          isSpectator={false}
+          importantEvents={[]}
+          masteryGain={{ style: "Counter", xp: 8, mastery_before: 54, mastery_after: 54 }}
+          dailyXp={{ count: 21, limit: 50 }}
+          onContinue={() => {}}
+          onFinish={() => {}}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByTestId("post-match-mastery")).toHaveTextContent("XP matches today 21/50");
+  });
+
+  // Given the account store could not take the match, when the post-match screen shows,
+  // then the player is told the match earned his coach nothing.
+  it("warns when the match could not reach the coach account", (): void => {
+    render(
+      <ThemeProvider>
+        <PostMatchScreen
+          snapshot={makeSnapshot()}
+          playerRatings={{}}
+          gameState={makeGameState()}
+          userSide="Home"
+          isSpectator={false}
+          importantEvents={[]}
+          coachReportFailed
+          onContinue={() => {}}
+          onFinish={() => {}}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("coach.reportFailed");
   });
 
   it("shows no play style XP when the match earned none", (): void => {

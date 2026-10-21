@@ -16,6 +16,8 @@ export interface FinishLiveMatchResponse {
   player_ratings: Record<string, number>;
   /** Present when the user managed the match themselves ("go to the field"). */
   mastery_gain?: MasteryGain | null;
+  /** The match could not reach the coach account and earned it nothing. */
+  coach_report_failed?: boolean;
 }
 
 /** One player's morale before and after a team talk. */

@@ -21,6 +21,7 @@ interface SaveEntry {
   checksum: string;
   created_at: string;
   last_played_at: string;
+  account_id?: string | null;
 }
 
 interface SavesListProps {
@@ -28,7 +29,12 @@ interface SavesListProps {
   isLoading: boolean;
   loadingSaveId?: string | null;
   confirmDeleteId: string | null;
+  /** The career from before accounts the player is asked to attach to his coach. */
+  confirmClaimId: string | null;
+  coachName: string;
   onLoad: (saveId: string) => void;
+  onClaim: (saveId: string) => void;
+  onConfirmClaim: (saveId: string | null) => void;
   onDelete: (saveId: string) => void;
   onConfirmDelete: (saveId: string | null) => void;
   onClose: () => void;
@@ -39,7 +45,11 @@ export default function SavesList({
   isLoading,
   loadingSaveId,
   confirmDeleteId,
+  confirmClaimId,
+  coachName,
   onLoad,
+  onClaim,
+  onConfirmClaim,
   onDelete,
   onConfirmDelete,
   onClose,
@@ -79,7 +89,33 @@ export default function SavesList({
               key={save.id}
               className="group relative flex flex-col gap-2 w-full p-4 bg-white dark:bg-navy-700 hover:bg-primary-50 dark:hover:bg-navy-600 text-left rounded-xl transition-all duration-200 border border-gray-200 dark:border-navy-600 hover:border-primary-400 dark:hover:border-primary-500 shadow-sm"
             >
-              {confirmDeleteId === save.id ? (
+              {confirmClaimId === save.id ? (
+                <div
+                  role="alertdialog"
+                  aria-label={t("coach.claimSave")}
+                  className="flex flex-col gap-2"
+                >
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    {t("coach.claimSaveConfirm", { name: coachName })}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onClaim(save.id)}
+                      className="flex-1 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-heading font-bold uppercase tracking-wider rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+                    >
+                      {t("coach.claimSave")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onConfirmClaim(null)}
+                      className="flex-1 py-2 bg-gray-200 dark:bg-navy-600 hover:bg-gray-300 dark:hover:bg-navy-500 text-gray-700 dark:text-gray-300 text-sm font-heading font-bold uppercase tracking-wider rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800"
+                    >
+                      {t("menu.cancel")}
+                    </button>
+                  </div>
+                </div>
+              ) : confirmDeleteId === save.id ? (
                 <div className="flex flex-col gap-2">
                   {/* The string carries its own <strong> markup, so it has to
                       go through the HTML parser — but the save name is player
@@ -116,7 +152,7 @@ export default function SavesList({
                 <div className="flex items-center gap-3 w-full">
                   <button
                     type="button"
-                    onClick={() => onLoad(save.id)}
+                    onClick={() => (save.account_id ? onLoad(save.id) : onConfirmClaim(save.id))}
                     className="flex flex-col gap-2 flex-1 text-left min-w-0"
                   >
                     <div className="flex justify-between items-center w-full">
@@ -130,7 +166,14 @@ export default function SavesList({
                       )}
                     </div>
                     <div className="flex justify-between items-center w-full text-sm text-gray-500 dark:text-gray-400">
-                      <span>{save.team_name.trim() || t("managersWorld.unemployed")}</span>
+                      <span className="flex items-center gap-2">
+                        {save.team_name.trim() || t("managersWorld.unemployed")}
+                        {save.account_id ? null : (
+                          <span className="rounded bg-accent-100 px-1.5 py-0.5 text-[10px] font-heading font-bold uppercase tracking-wider text-accent-800 dark:bg-accent-500/20 dark:text-accent-300">
+                            {t("coach.unclaimedSave")}
+                          </span>
+                        )}
+                      </span>
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         <span>{formatDate(save.last_played_at, i18n.language)}</span>

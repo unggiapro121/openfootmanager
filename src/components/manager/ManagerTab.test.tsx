@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { GameStateData, TeamData } from "../../store/gameStore";
@@ -59,6 +59,9 @@ vi.mock("react-i18next", () => ({
       if (key === "manager.perkWageDiscount") return `Wages -${params?.pct}%`;
       if (key === "manager.perkSponsorUplift") return `Sponsors +${params?.pct}%`;
       if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
+      if (key === "coach.allCareers") return "All careers";
+      if (key === "coach.thisCareer") return "This career";
+      if (key === "coach.dailyXp") return `XP today ${params?.count}/${params?.limit}`;
       return key;
     },
     i18n: i18nMock,
@@ -66,6 +69,10 @@ vi.mock("react-i18next", () => ({
 }));
 
 const getManagerProgressionMock = vi.fn().mockResolvedValue(null);
+const getCoachProgressMock = vi.fn().mockRejectedValue("be.error.coach.notLoggedIn");
+vi.mock("../../services/coachService", () => ({
+  getCoachProgress: () => getCoachProgressMock(),
+}));
 vi.mock("../../services/managerProgressionService", () => ({
   getManagerProgression: () => getManagerProgressionMock(),
 }));
@@ -152,6 +159,37 @@ function createGameState(withHistory: boolean): GameStateData {
 }
 
 describe("ManagerTab", () => {
+  // Given a coach account with 300 matches over every career, when the manager screen opens,
+  // then it shows the account's totals beside this career's, and today's XP matches.
+  it("shows the coach account's totals beside this career's", async () => {
+    getCoachProgressMock.mockResolvedValueOnce({
+      progress: { totals: { matches: 300, wins: 160, draws: 70, losses: 70, trophies: 5 } },
+      counted_today: 3,
+      daily_limit: 50,
+      next_reset_unix: 1_792_616_400,
+      region: "AsiaSoutheast",
+      is_offline: false,
+    });
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    const allCareers = await screen.findByRole("group", { name: "All careers" });
+    expect(within(allCareers).getByText("300")).toBeInTheDocument();
+    expect(within(allCareers).getByText("53%")).toBeInTheDocument();
+    const thisCareer = screen.getByRole("group", { name: "This career" });
+    expect(within(thisCareer).getByText("100")).toBeInTheDocument();
+    expect(screen.getByText("XP today 3/50")).toBeInTheDocument();
+  });
+
+  // Given a career without a coach account (an agent's game), when the manager screen opens,
+  // then only this career's numbers show.
+  it("shows only this career's totals without a coach account", async () => {
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    await waitFor(() => expect(getCoachProgressMock).toHaveBeenCalled());
+    expect(screen.queryByRole("group", { name: "All careers" })).not.toBeInTheDocument();
+    expect(screen.getByText("55%")).toBeInTheDocument();
+  });
+
   it("renders manager profile, win percentage, and career history", () => {
     render(<ManagerTab gameState={createGameState(true)} />);
 

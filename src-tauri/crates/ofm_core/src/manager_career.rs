@@ -8,7 +8,9 @@
 
 use domain::league::FixtureCompetition;
 use domain::manager::ManagerCareerEntry;
+use domain::team::PlayStyle;
 
+use crate::coach_progress::{CoachMatchRecord, CoachRecord};
 use crate::game::Game;
 
 /// Whether a match of `competition` is official: a friendly, a pre-season
@@ -47,19 +49,29 @@ pub(crate) fn record_match(
     if team_id != home_team_id && team_id != away_team_id {
         return;
     }
-    let is_official_match = game
+    let Some((fixture_id, competition)) = game
         .league
         .as_ref()
         .and_then(|competition| competition.fixtures.get(fixture_index))
-        .is_some_and(|fixture| is_official(&fixture.competition));
-    if !is_official_match {
+        .filter(|fixture| is_official(&fixture.competition))
+        .map(|fixture| (fixture.id.clone(), fixture.competition.clone()))
+    else {
         return;
-    }
-    let (own, conceded) = if team_id == home_team_id {
-        (home_goals, away_goals)
-    } else {
-        (away_goals, home_goals)
     };
+    let (own, conceded, opponent_id) = if team_id == home_team_id {
+        (home_goals, away_goals, away_team_id)
+    } else {
+        (away_goals, home_goals, home_team_id)
+    };
+    if game.account_id.is_some() {
+        let record = coach_match_record(game, &team_id, opponent_id, fixture_id, competition);
+        game.pending_coach_reports
+            .push(CoachRecord::Match(CoachMatchRecord {
+                own_goals: own,
+                opponent_goals: conceded,
+                ..record
+            }));
+    }
     let outcome = match own.cmp(&conceded) {
         std::cmp::Ordering::Greater => Outcome::Won,
         std::cmp::Ordering::Equal => Outcome::Drawn,
@@ -98,5 +110,41 @@ pub(crate) fn record_match(
         Outcome::Won => entry.wins += 1,
         Outcome::Drawn => entry.draws += 1,
         Outcome::Lost => entry.losses += 1,
+    }
+}
+
+/// The account's record of a match of `team_id`, the user's club, against
+/// `opponent_id`, without its score: in the club's own style, not yet allowed
+/// to earn XP — `manager_mastery::mark_managed_match` marks the matches the
+/// user managed on the touchline. A side whose strength cannot be read weighs
+/// as an equal one.
+fn coach_match_record(
+    game: &Game,
+    team_id: &str,
+    opponent_id: &str,
+    fixture_id: String,
+    competition: FixtureCompetition,
+) -> CoachMatchRecord {
+    let strength = |id: &str| crate::team_strength::club_strength(game, id).map(|s| s.strength);
+    let (own_strength, opponent_strength) = match (strength(team_id), strength(opponent_id)) {
+        (Some(own), Some(opponent)) => (own, opponent),
+        _ => (0.0, 0.0),
+    };
+    let style = game
+        .teams
+        .iter()
+        .find(|team| team.id == team_id)
+        .map(|team| team.play_style.clone())
+        .unwrap_or(PlayStyle::Balanced);
+    CoachMatchRecord {
+        save_id: String::new(),
+        fixture_id,
+        competition,
+        own_goals: 0,
+        opponent_goals: 0,
+        own_strength,
+        opponent_strength,
+        style,
+        earns_xp: false,
     }
 }

@@ -218,7 +218,7 @@ Most of these are **disabled in competition mode** — agents use `--mcp-auto-st
 
 | Tool | Description |
 |------|-------------|
-| `game_new` | Create a new manager and generate/load a world |
+| `game_new` | Create a new manager and generate/load a world. The career belongs to no coach account |
 | `game_select_team` | Pick a team to manage (creates initial save) |
 | `game_load_save` | Load an existing save |
 | `game_save` | Persist the current game |
@@ -239,7 +239,7 @@ These tools allow agents to play matches interactively instead of delegating the
 | `match_step` | Advance the live match by N minutes |
 | `match_command` | Apply a tactical command (substitution, formation change, etc.) |
 | `match_snapshot` | Get current match state without advancing time |
-| `match_finish` | Finish the match, apply results, and clean up |
+| `match_finish` | Finish the match, apply results, and clean up. Earns no coach account XP: agents' matches never count for a player's account |
 | `match_team_talk` | Apply a team talk (half-time or full-time) affecting player morale |
 | `match_press_conference` | Submit press conference answers affecting squad morale |
 

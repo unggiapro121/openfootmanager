@@ -62,6 +62,8 @@ export interface SaveEntry {
   checksum: string;
   created_at: string;
   last_played_at: string;
+  /** The coach account the career belongs to; null for one from before accounts. */
+  account_id?: string | null;
 }
 
 /** How a new career's world is set up before the first day. */
@@ -72,12 +74,8 @@ export type StartupOptionsPayload = {
   developmentSpeedPercent: number;
 };
 
-/** The manager and world a new career starts with. */
+/** The world a new career starts with; its manager is the logged-in coach account. */
 export interface NewGameRequest {
-  firstName: string;
-  lastName: string;
-  dob: string;
-  nationality: string;
   startupOptions: StartupOptionsPayload;
   /** The installed packages to build the world from; absent means the generated world. */
   packageIds: string[] | undefined;
@@ -106,10 +104,6 @@ export async function exitToMenu(): Promise<void> {
 /** Create a new career's world; the manager still has to pick a club. */
 export async function startNewGame(request: NewGameRequest): Promise<GameStateData> {
   return invoke<GameStateData>("start_new_game", {
-    firstName: request.firstName,
-    lastName: request.lastName,
-    dob: request.dob,
-    nationality: request.nationality,
     startupOptions: request.startupOptions,
     packageIds: request.packageIds,
   });

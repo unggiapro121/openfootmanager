@@ -2,6 +2,7 @@ use log::info;
 use std::sync::Arc;
 use tauri::State;
 
+use crate::application::coach::{after_reporting_to_coach, CoachContext};
 use crate::application::time_advancement::advance_time_with_mode as advance_time_with_mode_service;
 pub use crate::application::time_advancement::AdvanceTimeWithModeResponse;
 use crate::application::time_blockers::compute_blocking_actions as compute_blocking_actions_service;
@@ -37,8 +38,9 @@ pub fn advance_time_internal(state: &StateManager) -> Result<Game, String> {
 pub fn advance_time_with_mode_internal(
     state: &StateManager,
     mode: &str,
+    coach: Option<&CoachContext>,
 ) -> Result<AdvanceTimeWithModeResponse, String> {
-    advance_time_with_mode_service(state, mode)
+    advance_time_with_mode_service(state, mode, coach)
 }
 
 /// Advance time with a specific match mode.
@@ -50,16 +52,23 @@ pub fn advance_time_with_mode_internal(
 #[tauri::command]
 pub async fn advance_time_with_mode(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
     mode: String,
 ) -> Result<AdvanceTimeWithModeResponse, String> {
     let state = state.inner().clone();
-    run_off_thread(move || advance_time_with_mode_internal(&state, &mode)).await
+    let coach = coach.inner().clone();
+    run_off_thread(move || advance_time_with_mode_internal(&state, &mode, Some(&coach))).await
 }
 
 #[tauri::command]
-pub async fn advance_time(state: State<'_, Arc<StateManager>>) -> Result<Game, String> {
+pub async fn advance_time(
+    state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
+) -> Result<Game, String> {
     let state = state.inner().clone();
-    run_off_thread(move || advance_time_internal(&state)).await
+    let coach = coach.inner().clone();
+    run_off_thread(move || after_reporting_to_coach(&state, &coach, advance_time_internal(&state)))
+        .await
 }
 
 /// Run blocking simulation work on Tauri's blocking thread pool so the webview
@@ -99,9 +108,14 @@ pub fn check_blocking_actions(
 #[tauri::command]
 pub async fn skip_to_match_day(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
 ) -> Result<serde_json::Value, String> {
     let state = state.inner().clone();
-    run_off_thread(move || skip_to_match_day_internal(&state)).await
+    let coach = coach.inner().clone();
+    run_off_thread(move || {
+        after_reporting_to_coach(&state, &coach, skip_to_match_day_internal(&state))
+    })
+    .await
 }
 
 pub fn skip_to_match_day_internal(state: &StateManager) -> Result<serde_json::Value, String> {
@@ -337,11 +351,20 @@ pub fn advance_one_day_internal(
 #[tauri::command]
 pub async fn advance_one_day(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
     acknowledged_blocker_ids: Option<Vec<String>>,
 ) -> Result<serde_json::Value, String> {
     let state = state.inner().clone();
+    let coach = coach.inner().clone();
     let acknowledged = acknowledged_blocker_ids.unwrap_or_default();
-    run_off_thread(move || advance_one_day_internal(&state, &acknowledged)).await
+    run_off_thread(move || {
+        after_reporting_to_coach(
+            &state,
+            &coach,
+            advance_one_day_internal(&state, &acknowledged),
+        )
+    })
+    .await
 }
 
 fn count_high_priority_messages(game: &Game) -> usize {
@@ -369,9 +392,14 @@ fn continue_reached_attention_event(
 #[tauri::command]
 pub async fn advance_to_next_event(
     state: State<'_, Arc<StateManager>>,
+    coach: State<'_, Arc<CoachContext>>,
 ) -> Result<serde_json::Value, String> {
     let state = state.inner().clone();
-    run_off_thread(move || advance_to_next_event_internal(&state)).await
+    let coach = coach.inner().clone();
+    run_off_thread(move || {
+        after_reporting_to_coach(&state, &coach, advance_to_next_event_internal(&state))
+    })
+    .await
 }
 
 /// Roll the clock forward day by day until the next thing the user should see:
@@ -1387,7 +1415,7 @@ mod tests {
         state.set_game(make_round_summary_game());
 
         let response =
-            advance_time_with_mode_internal(&state, "live").expect("live advance response");
+            advance_time_with_mode_internal(&state, "live", None).expect("live advance response");
 
         assert_eq!(response.action, "live_match");
         assert_eq!(response.competition_id.as_deref(), Some("league1"));
@@ -1403,14 +1431,59 @@ mod tests {
         let state = StateManager::new();
         state.set_game(make_round_summary_game());
 
-        let response =
-            advance_time_with_mode_internal(&state, "delegate").expect("delegate advance response");
+        let response = advance_time_with_mode_internal(&state, "delegate", None)
+            .expect("delegate advance response");
 
         assert_eq!(response.action, "advanced");
         let round_summary = response.round_summary.expect("round summary");
         assert!(round_summary.is_complete);
         assert_eq!(round_summary.pending_fixture_count, 0);
         assert_eq!(round_summary.completed_results.len(), 2);
+    }
+
+    /// Advance the round's day handed to the assistant, in a career of a
+    /// logged-in coach account. The response and the account's progress after it.
+    fn delegate_for_account(
+        is_offline: bool,
+    ) -> (
+        super::AdvanceTimeWithModeResponse,
+        domain::coach::CoachProgress,
+    ) {
+        let (_dir, coach, account) = crate::application::coach::logged_in_test_coach(is_offline);
+        let state = StateManager::new();
+        let mut game = make_round_summary_game();
+        game.account_id = Some(account.id.clone());
+        state.set_game(game);
+
+        let response = advance_time_with_mode_internal(&state, "delegate", Some(&coach))
+            .expect("delegate advance response");
+        let progress = coach.progress_store().load(&account).unwrap();
+        (response, progress)
+    }
+
+    /// Given the user hands their match to the assistant,
+    /// When the day is advanced,
+    /// Then the account counts the match but no XP.
+    #[test]
+    fn a_delegated_match_counts_for_the_account_without_xp() {
+        let (response, progress) = delegate_for_account(false);
+
+        assert!(!response.coach_report_failed);
+        assert_eq!(progress.totals.matches, 1);
+        assert_eq!(progress.style_xp, Default::default());
+        assert_eq!(progress.daily.counted_today, 0);
+    }
+
+    /// Given the account store cannot be reached,
+    /// When a delegated match day is advanced,
+    /// Then the day still plays, the account counts nothing and the player is warned.
+    #[test]
+    fn an_unreachable_store_warns_after_a_delegated_day() {
+        let (response, progress) = delegate_for_account(true);
+
+        assert_eq!(response.action, "advanced");
+        assert!(response.coach_report_failed);
+        assert_eq!(progress, domain::coach::CoachProgress::default());
     }
 
     #[test]

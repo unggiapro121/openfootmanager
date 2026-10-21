@@ -327,7 +327,13 @@ The world generates 12 unattached free-agent staff at game start, plus 4 staff p
 
 The head coach is the club's `Manager` — the player's own character, or an AI club's manager — and is not a staff role. Training stays with the coaching staff above; the head coach acts on the match.
 
-- **Play style mastery** (`Manager::play_style_mastery`): 1–100 for each of the six play styles. The player starts at 50 in every style, which plays each style exactly as the engine's table prices it.
+- **Play style mastery** (`Manager::play_style_mastery`): 1–100 for each of the six play styles. A new coach account starts at 50 in every style, which plays each style exactly as the engine's table prices it.
+- **The player's mastery belongs to his coach account**, not to one career (`ofm_core::coach_progress`, see ARCHITECTURE.md › Coach Account State). Every career of the account opens with the account's mastery and XP, and adds to them:
+  - an official match the player manages on the touchline ("go to the field") earns XP in the style his side kicked off in, by the result and the strength gap (`manager_mastery::match_xp`);
+  - a day's XP matches are capped: the first 20 earn full XP, the next 20 half, 10 more a quarter, then none. The day is the account's region day (UTC+7, +8, +1 or −5, no summer time), turning at 04:00; it never goes back and two turns are at least 20 hours apart, so a changed clock or zone makes no extra day;
+  - a match handed to the assistant or watched counts only in the account's totals (matches, results, trophies), as does a trophy;
+  - an MCP agent's matches, and a career with no account, earn no account anything.
+- The career keeps its own record too (`career_stats`, `career_history`): the manager screen shows the account's totals beside this career's.
 - **AI managers** (`ofm_core::manager_mastery`): rolled once around `Manager::rating` from a stream seeded by their id — their preferred style 10–20 above the rating, every other −10 to +9. A club's manager at career start and an assistant stepping in prefer the club's own style; a mid-career appointment, the unemployed pool and retired players turned managers bring one of their own.
 - **In the match**: the mastery of the style in use scales that style's edge up and its cost down (see [MATCH_SIMULATION.md](MATCH_SIMULATION.md#the-head-coach)).
 - **A new manager's style**: when an AI club appoints a newly generated manager mid-career, it switches to that manager's best style and takes the style's blueprint (`ai_tactics::blueprint_for`). A caretaker keeps the club's style and dials.

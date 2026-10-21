@@ -164,6 +164,27 @@ This is registered as Tauri managed state and accessed by all commands via `Stat
 
 **Key pattern**: Commands acquire the mutex, clone the `Game` for return, and release the lock. Mutations happen inside the lock scope.
 
+### Coach Account State
+
+The player is a **coach account**, the same in every career on the machine (and, once the account
+server exists, online). `CoachContext` (`src/application/coach.rs`) is managed beside the
+`StateManager`: the account logged in, and an `Arc<dyn CoachProgressStore>` holding what each
+account has built up — play style mastery and XP, career totals, and the day's XP allowance.
+
+- **`LocalCoachProgressStore`** keeps accounts and progress as files under the app data directory
+  (`db::coach_store`: `coach/accounts.json`, `coach/<id>.json`). The account server will be a second
+  implementation of the same trait. Both run the same pure rules, `ofm_core::coach_progress`.
+- **A career carries a copy.** `Game::account_id` names its account; the account's mastery and XP
+  are copied into `game.manager` when a career is made or opened, where the engine reads them.
+- **Reporting.** `ofm_core` does no I/O: every official match of the user's club pushes a record
+  onto `Game::pending_coach_reports` (never saved), and a trophy pushes an honour.
+  `report_coach_records` takes the queue after `finish_live_match` and after every GUI time advance,
+  reports it to the store, and copies the result back. Only a match managed on the touchline earns
+  XP (`mark_managed_match`), within the daily allowance; others count in the totals only.
+- **No coach, no report.** MCP tools pass `None` for the coach: an agent's matches earn no account
+  anything. An unreachable store drops the records and sets `coach_report_failed` on the response,
+  and the career is still saved. `OFM_COACH_OFFLINE=1` simulates it.
+
 ### Frontend State
 
 Two Zustand stores:
@@ -182,15 +203,27 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | Command | Parameters | Returns | Description |
 |---------|-----------|---------|-------------|
 | `list_world_databases` | — | `Vec<WorldDatabaseInfo>` | Scan for available world databases |
-| `start_new_game` | first_name, last_name, dob, nationality, world_source? | — | Create game, generate or load world |
+| `start_new_game` | startup_options?, world_source?, package_ids? | `Game` | Create a career for the logged-in coach account; generate or load world |
 | `choose_team` | team_id | `Game` | Assign manager to a team |
 | `get_active_game` | — | `GameStateData` | Get current game state |
 | `advance_time` | — | `Game` | Advance one day |
 | `advance_time_with_mode` | mode | `{action, game?, snapshot?}` | Advance with match mode preference |
 | `skip_to_match_day` | — | `Game` | Fast-forward to next fixture |
 | `save_game` | — | — | Persist current game |
-| `load_game` | save_id | — | Load a saved game |
+| `load_game` | save_id | — | Load a saved game of the logged-in coach account |
+| `claim_save_for_coach` | save_id | — | Attach a save from before accounts to the logged-in account |
 | `exit_to_menu` | — | — | Save and clear active game |
+
+### Coach Account Commands
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `list_coach_accounts` | — | `Vec<CoachAccount>` | Accounts on this machine, latest login first (imports the old `profiles.json` once) |
+| `create_coach_account` | identity | `CoachAccount` | Make an account: name, birth date, nationality, region |
+| `login_coach_account` / `logout_coach_account` | id / — | `CoachAccount` / — | Set or clear the account in use |
+| `get_active_coach_account` | — | `Option<CoachAccount>` | The account in use, if any |
+| `update_coach_account` / `delete_coach_account` | id, identity / id | `CoachAccount` / `bool` | Edit or delete an account (its careers stay) |
+| `get_coach_progress` | — | `CoachProgressView` | Totals, today's XP matches, next reset, offline flag |
 
 ### Match Commands
 
@@ -254,9 +287,9 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 ### New Game Flow
 
 ```
-MainMenu → Create Manager → Choose World → Choose Team → Dashboard
-    │              │               │              │
-    │         form input     generate_world   choose_team
+Login → MainMenu → New career → Choose World → Choose Team → Dashboard
+  │                     │               │              │
+coach account      start year     generate_world   choose_team
     │                        or load JSON      command
     │                             │              │
     │                        ┌────┴────┐    ┌────┴────┐

@@ -50,6 +50,9 @@ CREATE TABLE game_meta (
     -- must never be pruned, because the inbox cannot serve as that record — the
     -- player deletes from it, and a generator that read it would send the event
     -- again (see the sent-ledger section in GAME_SYSTEMS.md).
+    -- V60 adds `account_id`: the coach account the career belongs to, NULL for one
+    -- with none (made by an MCP agent, or before accounts). The index entry carries
+    -- it too, so the load screen lists only the logged-in account's careers.
 );
 
 CREATE TABLE managers (
@@ -308,7 +311,7 @@ db crate (persistence layer):
 ### 5. Data Flow
 
 **New Game:**
-1. User fills form → `start_new_game` → generates world in memory → `Game` in `StateManager`
+1. User logs in as a coach account, picks the start → `start_new_game` → generates world in memory → `Game` in `StateManager`, its `account_id` set and the account's mastery copied in. The account's own progress lives outside the saves (`coach/` in the app data directory), so deleting a save never touches it.
 2. User selects team → `select_team` → updates `Game` in memory (NO DB write yet)
 3. User explicitly saves → `save_game` → `SaveManager` persistence flow:
    - Creates `saves/<uuid>.db` if new
