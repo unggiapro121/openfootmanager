@@ -44,6 +44,11 @@ fn sponsor_uplift_for(perks_apply: bool, reputation: u32) -> f64 {
     SPONSOR_UPLIFT_MAX * perk_share(reputation)
 }
 
+/// A sponsor's offer of `amount` with `uplift` added, to the nearest unit.
+pub(crate) fn with_sponsor_uplift(amount: i64, uplift: f64) -> i64 {
+    (amount as f64 * (1.0 + uplift)).round() as i64
+}
+
 fn is_users_club(game: &Game, team_id: &str) -> bool {
     game.manager.team_id.as_deref() == Some(team_id)
 }
@@ -104,6 +109,15 @@ mod tests {
     fn no_perk_applies_when_the_session_pays_none() {
         assert!(close(wage_discount_for(false, 900), 0.0));
         assert!(close(sponsor_uplift_for(false, 900), 0.0));
+    }
+
+    /// Given a sponsor offer and the uplifts of a reputation of 500 and 900,
+    /// When the uplift is added,
+    /// Then the offer is unchanged at no uplift and 10% higher at 10%.
+    #[test]
+    fn an_uplift_raises_a_sponsor_offer_by_its_share() {
+        assert_eq!(with_sponsor_uplift(400_000, 0.0), 400_000);
+        assert_eq!(with_sponsor_uplift(400_000, 0.10), 440_000);
     }
 
     /// Given a user at 900,

@@ -102,7 +102,13 @@ pub fn check_random_events(game: &mut Game) {
                 .find(|t| t.id == user_team_id)
                 .map(|t| t.name.as_str())
                 .unwrap_or(fallback_club_name());
-            let amount = rng.random_range(5..=30) * 50_000; // 250k - 1.5M a week
+            let base_amount: u64 = rng.random_range(5..=30) * 50_000; // 250k - 1.5M a week
+            let uplift = crate::manager_perks::sponsor_uplift(game, user_team_id.as_str());
+            let amount = u64::try_from(crate::manager_perks::with_sponsor_uplift(
+                i64::try_from(base_amount).unwrap_or(i64::MAX),
+                uplift,
+            ))
+            .unwrap_or(base_amount);
             let sponsor = sponsor_offer_name(rng.random_range(0..8));
 
             new_messages.push(message_builders::sponsor_offer_message(
