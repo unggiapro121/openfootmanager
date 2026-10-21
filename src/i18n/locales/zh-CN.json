@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "{{team}} 主教练",
     "reputation": "声望",
+    "reputationChange": "第 {{season}} 赛季后 {{delta}}",
+    "reputationHistory": "声望历史",
     "careerStats": "生涯数据",
     "boardStatus": "董事会状态",
     "satisfaction": "满意度",
@@ -3612,6 +3614,11 @@
         "subject": "降入{{division}}",
         "body": "俱乐部不幸降级，将在第 {{season}} 赛季征战{{division}}。\n\n董事会深感失望。球队需要立即向升级发起冲击。"
       },
+      "managerReputation": {
+        "subject": "第 {{season}} 赛季声望评估",
+        "body": "本赛季你的声望从 {{before}} 变为 {{after}}（{{delta}}）。\n\n• 战绩与预期对比：{{performance}}\n• 奖杯、升级与降级：{{honours}}\n• 执教俱乐部的地位：{{clubPull}}",
+        "bodyPartial": "本赛季你的声望从 {{before}} 变为 {{after}}（{{delta}}）。\n\n• 战绩与预期对比：{{performance}}\n• 奖杯、升级与降级：{{honours}}\n• 执教俱乐部的地位：{{clubPull}}\n\n你执教了俱乐部 {{played}} 场联赛中的 {{led}} 场，因此只计入你那一部分的排名表现。"
+      },
       "worldCupChampion": {
         "subject": "{{nation}}夺得{{year}}年世界杯冠军！",
         "body": "{{nation}}在{{year}}年世界杯上加冕世界冠军。\n\n这一代球员将因这一伟业被铭记。"
@@ -4464,6 +4471,7 @@
     "rejected": "您的申请未通过。",
     "noJobs": "目前没有空缺职位。",
     "leaguePosition": "上赛季排名：{{position}}",
+    "yourReputation": "你的声望：{{reputation}}。俱乐部会寻找与自身地位相当的主教练。",
     "refresh": "查看新职位",
     "sameTeam": "您已经是该俱乐部的主教练。",
     "notBetterClub": "您只能申请比当前俱乐部级别更高的俱乐部。",

@@ -689,6 +689,38 @@ export interface ManagerData {
   career_history: ManagerCareerEntry[];
   /** 1–100 per play style; absent in older payloads and test fixtures, read as 50. */
   play_style_mastery?: Partial<Record<PlayStyleId, number>>;
+  /** The user's career progression; absent in older payloads and for test fixtures. */
+  progression?: Partial<ManagerProgression>;
+}
+
+/** Mirrors the backend's `HonourKind`. */
+export type HonourKind = "League" | "DomesticCup" | "Continental" | "ClubWorld";
+
+export interface ManagerHonour {
+  competition_id: string;
+  kind: HonourKind;
+  team_id: string;
+}
+
+/** One season's review of the user's reputation, as the backend logged it. */
+export interface ReputationChange {
+  season: number;
+  team_id: string | null;
+  before: number;
+  after: number;
+  performance: number;
+  honours: number;
+  club_pull: number;
+  dismissal: number;
+  league_matches_led: number;
+  league_matches_played: number;
+}
+
+export interface ManagerProgression {
+  reputation_log: ReputationChange[];
+  season_honours: ManagerHonour[];
+  season_league_matches_led: number;
+  season_dismissal: number;
 }
 
 /** Mirrors the backend's `FixtureCompetition` enum. */

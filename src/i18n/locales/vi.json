@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "HLV của {{team}}",
     "reputation": "Danh tiếng",
+    "reputationChange": "{{delta}} sau mùa {{season}}",
+    "reputationHistory": "Lịch sử danh tiếng",
     "careerStats": "Thống kê sự nghiệp",
     "boardStatus": "Đánh giá của ban lãnh đạo",
     "satisfaction": "Mức hài lòng",
@@ -3612,6 +3614,11 @@
         "subject": "Xuống hạng {{division}}",
         "body": "Câu lạc bộ đã xuống hạng và sẽ thi đấu ở {{division}} trong mùa giải {{season}}.\n\nBan lãnh đạo vô cùng thất vọng. Chúng tôi kỳ vọng đội sẽ lập tức trở lại cuộc đua thăng hạng."
       },
+      "managerReputation": {
+        "subject": "Đánh giá danh tiếng mùa {{season}}",
+        "body": "Danh tiếng của bạn đổi từ {{before}} thành {{after}} ({{delta}}) sau mùa giải này.\n\n• Thành tích so với kỳ vọng: {{performance}}\n• Danh hiệu, thăng hạng và xuống hạng: {{honours}}\n• Tầm vóc CLB bạn dẫn dắt: {{clubPull}}",
+        "bodyPartial": "Danh tiếng của bạn đổi từ {{before}} thành {{after}} ({{delta}}) sau mùa giải này.\n\n• Thành tích so với kỳ vọng: {{performance}}\n• Danh hiệu, thăng hạng và xuống hạng: {{honours}}\n• Tầm vóc CLB bạn dẫn dắt: {{clubPull}}\n\nBạn dẫn dắt {{led}} trên {{played}} trận đấu giải của CLB, nên chỉ phần đó của thứ hạng được tính cho bạn."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} vô địch World Cup {{year}}!",
         "body": "{{nation}} đã lên ngôi vô địch thế giới tại World Cup {{year}}.\n\nCả một thế hệ cầu thủ sẽ được nhớ mãi nhờ chiến tích này."
@@ -4464,6 +4471,7 @@
     "rejected": "Hồ sơ ứng tuyển của bạn không thành công.",
     "noJobs": "Hiện không có vị trí nào.",
     "leaguePosition": "Mùa trước: {{position}}",
+    "yourReputation": "Danh tiếng của bạn: {{reputation}}. Các CLB tìm HLV có tầm vóc tương xứng.",
     "refresh": "Kiểm tra vị trí mới",
     "sameTeam": "Bạn đang dẫn dắt câu lạc bộ đó rồi.",
     "notBetterClub": "Bạn chỉ có thể ứng tuyển vào những câu lạc bộ lớn hơn câu lạc bộ hiện tại.",

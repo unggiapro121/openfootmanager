@@ -1,6 +1,8 @@
 import type { GameStateData } from "../../store/gameStore";
 import { Card, CardHeader, CardBody, ProgressBar, CountryFlag } from "../ui";
 import { ManagerCareerChart } from "./ManagerCareerChart";
+import { ManagerReputationChart } from "./ManagerReputationChart";
+import { getLastReputationChange, getReputationLog } from "../../lib/managerReputation";
 import { formatDate } from "../../lib/helpers";
 import { useTranslation } from "react-i18next";
 import { countryName } from "../../lib/countries";
@@ -19,6 +21,8 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
   const mgr = gameState.manager;
   const myTeam = gameState.teams.find((tm) => tm.id === mgr.team_id);
   const stats = mgr.career_stats;
+  const reputationLog = getReputationLog(mgr);
+  const lastReputationChange = getLastReputationChange(mgr);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -64,6 +68,24 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
               {t("manager.reputation")}
             </p>
             <p className="font-heading font-bold text-2xl text-accent-400">{mgr.reputation}</p>
+            {lastReputationChange && (
+              <p
+                data-testid="manager-reputation-change"
+                className={`text-xs font-semibold mt-0.5 ${
+                  lastReputationChange.delta >= 0
+                    ? "text-green-400 dark:text-green-400"
+                    : "text-red-400 dark:text-red-400"
+                }`}
+              >
+                {t("manager.reputationChange", {
+                  delta:
+                    lastReputationChange.delta > 0
+                      ? `+${lastReputationChange.delta}`
+                      : `${lastReputationChange.delta}`,
+                  season: lastReputationChange.season,
+                })}
+              </p>
+            )}
           </div>
         </div>
       </Card>
@@ -177,6 +199,21 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
           </CardBody>
         </section>
       </Card>
+
+      {/* Reputation history */}
+      {reputationLog.length > 0 && (
+        <Card className="md:col-span-3">
+          <section aria-label={t("manager.reputationHistory")}>
+            <CardHeader>{t("manager.reputationHistory")}</CardHeader>
+            <CardBody>
+              <ManagerReputationChart
+                log={reputationLog}
+                reputationLabel={t("manager.reputation")}
+              />
+            </CardBody>
+          </section>
+        </Card>
+      )}
 
       {/* Career history */}
       {mgr.career_history.length > 0 && (

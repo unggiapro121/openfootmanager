@@ -309,6 +309,9 @@ pub async fn exit_to_menu(
 mod real_world_probe;
 
 #[cfg(test)]
+mod manager_career_probe;
+
+#[cfg(test)]
 mod testkit;
 
 #[cfg(test)]

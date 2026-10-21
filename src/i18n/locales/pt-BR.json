@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Treinador do {{team}}",
     "reputation": "Reputação",
+    "reputationChange": "{{delta}} após a temporada {{season}}",
+    "reputationHistory": "Histórico de Reputação",
     "careerStats": "Estatísticas da Carreira",
     "boardStatus": "Status da Diretoria",
     "satisfaction": "Satisfação",
@@ -3612,6 +3614,11 @@
         "subject": "Rebaixamento para a {{division}}",
         "body": "O clube foi rebaixado e vai disputar a {{division}} na temporada {{season}}.\n\nA diretoria está profundamente decepcionada. Espera-se uma briga imediata pelo acesso."
       },
+      "managerReputation": {
+        "subject": "Avaliação de reputação da temporada {{season}}",
+        "body": "Sua reputação foi de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados em relação às expectativas: {{performance}}\n• Títulos, acessos e rebaixamentos: {{honours}}\n• Prestígio do clube que você comanda: {{clubPull}}",
+        "bodyPartial": "Sua reputação foi de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados em relação às expectativas: {{performance}}\n• Títulos, acessos e rebaixamentos: {{honours}}\n• Prestígio do clube que você comanda: {{clubPull}}\n\nVocê comandou {{led}} das {{played}} partidas do campeonato do clube, então só conta a sua parte da classificação."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} vence a Copa do Mundo de {{year}}!",
         "body": "{{nation}} sagrou-se campeã do mundo na Copa do Mundo de {{year}}.\n\nUma geração de jogadores será lembrada por esse triunfo."
@@ -4464,6 +4471,7 @@
     "rejected": "Sua candidatura não foi bem-sucedida.",
     "noJobs": "Nenhuma posição disponível no momento.",
     "leaguePosition": "Última temporada: {{position}}",
+    "yourReputation": "Sua reputação: {{reputation}}. Os clubes procuram um técnico do mesmo nível.",
     "refresh": "Verificar novas vagas",
     "sameTeam": "Você já é o treinador desse clube.",
     "notBetterClub": "Você só pode se candidatar a clubes que representem um avanço em relação ao seu atual.",

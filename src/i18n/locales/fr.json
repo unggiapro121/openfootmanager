@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Entraîneur de {{team}}",
     "reputation": "Réputation",
+    "reputationChange": "{{delta}} après la saison {{season}}",
+    "reputationHistory": "Historique de réputation",
     "careerStats": "Statistiques de Carrière",
     "boardStatus": "État de la Direction",
     "satisfaction": "Satisfaction",
@@ -3612,6 +3614,11 @@
         "subject": "Relégation en {{division}}",
         "body": "Le club est relégué et évoluera en {{division}} pour la saison {{season}}.\n\nLe conseil d'administration est profondément déçu. Une remontée immédiate est attendue."
       },
+      "managerReputation": {
+        "subject": "Bilan de réputation de la saison {{season}}",
+        "body": "Votre réputation est passée de {{before}} à {{after}} ({{delta}}) cette saison.\n\n• Résultats par rapport aux attentes : {{performance}}\n• Trophées, montées et descentes : {{honours}}\n• Prestige du club que vous dirigez : {{clubPull}}",
+        "bodyPartial": "Votre réputation est passée de {{before}} à {{after}} ({{delta}}) cette saison.\n\n• Résultats par rapport aux attentes : {{performance}}\n• Trophées, montées et descentes : {{honours}}\n• Prestige du club que vous dirigez : {{clubPull}}\n\nVous avez dirigé {{led}} des {{played}} matchs de championnat du club : seule votre part de son classement compte."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} remporte la Coupe du monde {{year}} !",
         "body": "{{nation}} a été sacrée championne du monde lors de la Coupe du monde {{year}}.\n\nToute une génération de joueurs restera dans les mémoires grâce à ce triomphe."
@@ -4464,6 +4471,7 @@
     "rejected": "Votre candidature n'a pas été retenue.",
     "noJobs": "Aucun poste disponible actuellement.",
     "leaguePosition": "Dernière saison : {{position}}",
+    "yourReputation": "Votre réputation : {{reputation}}. Les clubs cherchent un entraîneur de leur envergure.",
     "refresh": "Vérifier les nouvelles offres",
     "sameTeam": "Vous êtes déjà l'entraîneur de ce club.",
     "notBetterClub": "Vous ne pouvez postuler qu'à des clubs représentant une progression par rapport à votre club actuel.",

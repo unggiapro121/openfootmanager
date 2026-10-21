@@ -263,11 +263,16 @@ fn apply_present_day_consequences(
         update_team_form(game, report, home_team_id, away_team_id);
     }
 
+    crate::manager_reputation::record_cup_won(game, fixture_index);
+
     // Update board satisfaction based on match result
     if counts_for_standings
         && let Some(user_team_id) = &game.manager.team_id
         && (*user_team_id == home_team_id || *user_team_id == away_team_id)
     {
+        // A league match the user led, for their share of the season's table
+        // at the reputation review (`manager_reputation::season_change`).
+        game.manager.progression.season_league_matches_led += 1;
         let user_goals = if *user_team_id == home_team_id {
             report.home_goals
         } else {

@@ -1,4 +1,5 @@
 use crate::game::Game;
+use crate::manager_reputation::DivisionMove;
 use crate::season_awards::compute_division_season_awards;
 use crate::seed::WorldCupStream;
 use chrono::{DateTime, Datelike, Duration, Utc};
@@ -782,24 +783,19 @@ pub fn user_division<'a>(game: &'a Game, user_team_id: &str) -> Option<&'a Leagu
         .or(game.league.as_ref())
 }
 
-/// Send a board message when the user's club starts the new season in a
-/// different division of its pyramid (promoted when the new division ranks
-/// higher, relegated when it ranks lower).
-fn notify_user_division_change(
-    game: &mut Game,
-    division_before: Option<(String, u32)>,
+/// Which way the user's club moved between divisions of its pyramid at the
+/// rollover, with the name of the division it now plays in: promoted when the
+/// new division ranks higher (or was reached along a berth), relegated when it
+/// ranks lower. `None` when it stayed put or has no division.
+fn user_division_move(
+    game: &Game,
+    division_before: Option<&(String, u32)>,
     user_team_id: &str,
-    next_season: u32,
-    date: &str,
-) {
-    let Some((old_division_id, old_priority)) = division_before else {
-        return;
-    };
-    let Some(new_division) = user_division(game, user_team_id) else {
-        return;
-    };
-    if new_division.id == old_division_id {
-        return;
+) -> Option<(DivisionMove, String)> {
+    let (old_division_id, old_priority) = division_before?;
+    let new_division = user_division(game, user_team_id)?;
+    if &new_division.id == old_division_id {
+        return None;
     }
 
     // Rank decides direction, but two divisions can share a rank — a berth
@@ -810,16 +806,37 @@ fn notify_user_division_change(
     let promoted_by_berth = game
         .competitions
         .iter()
-        .find(|competition| competition.id == old_division_id)
+        .find(|competition| &competition.id == old_division_id)
         .is_some_and(|old_division| {
             old_division.berths.iter().any(|berth| {
                 berth.target == new_division_id
                     && matches!(berth.rule, domain::league::BerthRule::PositionRange { .. })
             })
         });
-    let promoted = new_division.priority < old_priority || promoted_by_berth;
-    let division_name = new_division.name.clone();
-    let kind = if promoted { "promotion" } else { "relegation" };
+    let direction = if new_division.priority < *old_priority || promoted_by_berth {
+        DivisionMove::Promoted
+    } else {
+        DivisionMove::Relegated
+    };
+    Some((direction, new_division.name.clone()))
+}
+
+/// Send a board message when the user's club starts the new season in a
+/// different division of its pyramid.
+fn notify_user_division_change(
+    game: &mut Game,
+    division_move: Option<&(DivisionMove, String)>,
+    next_season: u32,
+    date: &str,
+) {
+    let Some((direction, division_name)) = division_move else {
+        return;
+    };
+    let division_name = division_name.clone();
+    let kind = match direction {
+        DivisionMove::Promoted => "promotion",
+        DivisionMove::Relegated => "relegation",
+    };
     let msg_id = format!("{kind}_{next_season}");
     if crate::inbox::already_emitted(game, &msg_id) {
         return;
@@ -877,6 +894,7 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     };
 
     let season = league.season;
+    let league_id = league.id.clone();
     let league_name = league.name.clone();
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
     // Messages should be dated on the last match day, not on the clock date
@@ -968,6 +986,14 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
         })
         .map(|division| division.tier)
         .unwrap_or(0);
+    // Before the loop below moves club reputations: the user is judged against
+    // what their club was expected to do going in.
+    let season_review = crate::manager_reputation::capture_season_review(
+        game,
+        &user_team_id,
+        &final_standings,
+        user_division_tier,
+    );
     let mut user_prize_posted = false;
     for division in divisions {
         let (division_standings, tier, season) =
@@ -1076,6 +1102,14 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
         game.manager.career_stats.losses += standing.lost;
         if user_position == 1 {
             game.manager.career_stats.trophies += 1;
+            game.manager
+                .progression
+                .season_honours
+                .push(domain::manager::Honour {
+                    competition_id: league_id.clone(),
+                    kind: domain::manager::HonourKind::League,
+                    team_id: user_team_id.clone(),
+                });
         }
         let best = game.manager.career_stats.best_finish;
         if best.is_none() || best.unwrap() > user_position {
@@ -1145,11 +1179,18 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     let user_division_before =
         user_division(game, &user_team_id).map(|division| (division.id.clone(), division.priority));
     regenerate_competitions_for_new_season(game, next_season, rollover_anchor);
+    let division_move = user_division_move(game, user_division_before.as_ref(), &user_team_id);
     notify_user_division_change(
         game,
-        user_division_before,
-        &user_team_id,
+        division_move.as_ref(),
         next_season,
+        &last_fixture_date,
+    );
+    crate::manager_reputation::review_user_season(
+        game,
+        season,
+        season_review.as_ref(),
+        division_move.as_ref().map(|(direction, _)| *direction),
         &last_fixture_date,
     );
 

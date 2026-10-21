@@ -36,6 +36,7 @@ pub mod job_offers;
 mod lineup_assignment;
 pub mod live_match_manager;
 pub(crate) mod manager_mastery;
+pub(crate) mod manager_reputation;
 pub(crate) mod match_form;
 pub mod matchday;
 pub mod messages;

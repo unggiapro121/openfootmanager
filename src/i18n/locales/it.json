@@ -1327,6 +1327,8 @@
   "manager": {
     "managerOf": "Allenatore di {{team}}",
     "reputation": "Reputazione",
+    "reputationChange": "{{delta}} dopo la stagione {{season}}",
+    "reputationHistory": "Storico reputazione",
     "careerStats": "Statistiche carriera",
     "boardStatus": "Stato dirigenza",
     "satisfaction": "Soddisfazione",
@@ -3629,6 +3631,11 @@
         "subject": "Retrocessione in {{division}}",
         "body": "Il club è retrocesso e giocherà in {{division}} nella stagione {{season}}.\n\nLa dirigenza è profondamente delusa. Ci si aspetta una risalita immediata."
       },
+      "managerReputation": {
+        "subject": "Valutazione della reputazione della stagione {{season}}",
+        "body": "La tua reputazione è passata da {{before}} a {{after}} ({{delta}}) in questa stagione.\n\n• Risultati rispetto alle attese: {{performance}}\n• Trofei, promozioni e retrocessioni: {{honours}}\n• Prestigio del club che guidi: {{clubPull}}",
+        "bodyPartial": "La tua reputazione è passata da {{before}} a {{after}} ({{delta}}) in questa stagione.\n\n• Risultati rispetto alle attese: {{performance}}\n• Trofei, promozioni e retrocessioni: {{honours}}\n• Prestigio del club che guidi: {{clubPull}}\n\nHai guidato {{led}} delle {{played}} partite di campionato del club, quindi conta solo la tua parte del piazzamento."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} vince il Mondiale {{year}}!",
         "body": "{{nation}} si è laureata campione del mondo al Mondiale {{year}}.\n\nUna generazione di giocatori sarà ricordata per questo trionfo."
@@ -4464,6 +4471,7 @@
     "rejected": "La tua candidatura non è andata a buon fine.",
     "noJobs": "Nessuna posizione disponibile al momento.",
     "leaguePosition": "Ultima stagione: {{position}}",
+    "yourReputation": "La tua reputazione: {{reputation}}. I club cercano un allenatore del loro livello.",
     "refresh": "Cerca nuove posizioni",
     "sameTeam": "Sei già l'allenatore di quel club.",
     "notBetterClub": "Puoi candidarti solo per club che rappresentano un passo avanti rispetto al tuo attuale.",

@@ -24,6 +24,7 @@ vi.mock("react-i18next", () => ({
       if (key === "jobs.notBetterClub")
         return "You can only apply for clubs that are a step up from your current one.";
       if (key === "jobs.leaguePosition") return `Last Season: ${params?.position}`;
+      if (key === "jobs.yourReputation") return `Your reputation: ${params?.reputation}`;
       if (key === "jobs.switchConfirmTitle") return "Leave your current club?";
       if (key === "jobs.switchConfirmBody")
         return `Accepting this opportunity will end your tenure at ${params?.currentClub} and move you to ${params?.newClub}.`;
@@ -110,6 +111,16 @@ describe("JobOpportunitiesCard", () => {
     expect(screen.getByText("Job Opportunities")).toBeInTheDocument();
     // Spinner is visible (no empty-state text, no job rows)
     expect(screen.queryByText("No positions currently available.")).not.toBeInTheDocument();
+  });
+
+  it("shows the user's reputation, which decides the clubs that will talk to them", async () => {
+    getAvailableJobsMock.mockResolvedValue([]);
+    const gameState = createGameState();
+    gameState.manager.reputation = 640;
+
+    render(<JobOpportunitiesCard gameState={gameState} onGameUpdate={vi.fn()} />);
+
+    expect(await screen.findByText("Your reputation: 640")).toBeInTheDocument();
   });
 
   it("renders the empty state when no jobs are returned", async () => {

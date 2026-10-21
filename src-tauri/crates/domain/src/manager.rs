@@ -37,7 +37,70 @@ pub struct Manager {
     /// A save written before this existed loads neutral (50 in every style).
     #[serde(default)]
     pub play_style_mastery: PlayStyleMastery,
+
+    /// What the user's career has built up season by season. AI managers keep
+    /// this empty. A save written before it existed loads with no history.
+    #[serde(default)]
+    pub progression: ManagerProgression,
 }
+
+/// The user's career progression: how their reputation moved each season and
+/// the running tallies the next season's change is worked out from.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ManagerProgression {
+    /// One entry per season the reputation was reviewed, oldest first.
+    pub reputation_log: Vec<ReputationChange>,
+    /// Trophies won since the last review, whichever club they were won with.
+    pub season_honours: Vec<Honour>,
+    /// League matches led at the current club since the last review. Reset on
+    /// every appointment, so a mid-season move counts only the new club's games.
+    pub season_league_matches_led: u32,
+    /// The reputation already lost to a dismissal since the last review, kept
+    /// so the season's log shows it beside the end-of-season change.
+    pub season_dismissal: i32,
+}
+
+/// One season's review of the user's reputation, broken into the parts the
+/// season-end message shows.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ReputationChange {
+    pub season: u32,
+    /// The club the user led at the review; `None` when out of work.
+    pub team_id: Option<String>,
+    pub before: u32,
+    pub after: u32,
+    /// Finishing above or below where the club's standing said it would.
+    pub performance: i32,
+    /// Trophies, promotion and relegation.
+    pub honours: i32,
+    /// The lift of leading a club with a bigger name than the manager's own.
+    pub club_pull: i32,
+    /// Already applied when it happened; recorded here for the season's log.
+    pub dismissal: i32,
+    pub league_matches_led: u32,
+    pub league_matches_played: u32,
+}
+
+/// A trophy the user won, kept with the club they won it with.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Honour {
+    pub competition_id: String,
+    pub kind: HonourKind,
+    pub team_id: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum HonourKind {
+    League,
+    DomesticCup,
+    Continental,
+    ClubWorld,
+}
+
+/// Where every new manager's reputation starts, the user's included.
+pub const STARTING_REPUTATION: u32 = 500;
 
 /// The neutral mastery: a style plays exactly as the engine's table prices it.
 const NEUTRAL_MASTERY: u8 = 50;
@@ -172,7 +235,7 @@ impl Manager {
             nationality,
             football_nation,
             birth_country,
-            reputation: 500,
+            reputation: STARTING_REPUTATION,
             satisfaction: 100,
             fan_approval: 50,
             team_id: None,
@@ -180,6 +243,7 @@ impl Manager {
             career_stats: ManagerCareerStats::default(),
             career_history: Vec::new(),
             play_style_mastery: PlayStyleMastery::default(),
+            progression: ManagerProgression::default(),
         }
     }
 
@@ -342,5 +406,29 @@ mod tests {
         let loaded: Manager = serde_json::from_value(json).expect("old save should load");
 
         assert_eq!(loaded.play_style_mastery.for_style(&PlayStyle::Counter), 50);
+    }
+
+    /// Given a saved manager written before careers had a progression,
+    /// When it is loaded,
+    /// Then it loads with no reputation history and empty season tallies.
+    #[test]
+    fn a_manager_saved_without_progression_loads_with_none() {
+        let mut json = serde_json::to_value(manager()).expect("serialize");
+        json.as_object_mut().expect("object").remove("progression");
+
+        let loaded: Manager = serde_json::from_value(json).expect("old save should load");
+
+        assert_eq!(loaded.progression, ManagerProgression::default());
+    }
+
+    /// Given a progression stored as an empty JSON object, as the database
+    /// column defaults to,
+    /// When it is read,
+    /// Then every part takes its default.
+    #[test]
+    fn an_empty_progression_object_reads_as_the_default() {
+        let progression: ManagerProgression = serde_json::from_str("{}").expect("parse");
+
+        assert_eq!(progression, ManagerProgression::default());
     }
 }

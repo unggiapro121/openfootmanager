@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Treinador do {{team}}",
     "reputation": "Reputação",
+    "reputationChange": "{{delta}} após a temporada {{season}}",
+    "reputationHistory": "Historial de Reputação",
     "careerStats": "Estatísticas da Carreira",
     "boardStatus": "Estado da Direção",
     "satisfaction": "Satisfação",
@@ -3612,6 +3614,11 @@
         "subject": "Despromoção para a {{division}}",
         "body": "O clube foi despromovido e vai disputar a {{division}} na temporada {{season}}.\n\nA direção está profundamente desiludida. Espera-se uma luta imediata pela subida."
       },
+      "managerReputation": {
+        "subject": "Avaliação de reputação da temporada {{season}}",
+        "body": "A tua reputação passou de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados face às expectativas: {{performance}}\n• Troféus, subidas e descidas: {{honours}}\n• Prestígio do clube que orientas: {{clubPull}}",
+        "bodyPartial": "A tua reputação passou de {{before}} para {{after}} ({{delta}}) nesta temporada.\n\n• Resultados face às expectativas: {{performance}}\n• Troféus, subidas e descidas: {{honours}}\n• Prestígio do clube que orientas: {{clubPull}}\n\nOrientaste {{led}} dos {{played}} jogos de campeonato do clube, por isso só conta a tua parte da classificação."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} vence o Mundial de {{year}}!",
         "body": "{{nation}} sagrou-se campeã do mundo no Mundial de {{year}}.\n\nUma geração de jogadores será recordada por este triunfo."
@@ -4464,6 +4471,7 @@
     "rejected": "Sua candidatura não foi bem-sucedida.",
     "noJobs": "Nenhuma posição disponível no momento.",
     "leaguePosition": "Última temporada: {{position}}",
+    "yourReputation": "A tua reputação: {{reputation}}. Os clubes procuram um treinador do seu nível.",
     "refresh": "Verificar novas vagas",
     "sameTeam": "Já és o treinador desse clube.",
     "notBetterClub": "Só te podes candidatar a clubes que representem uma progressão face ao teu clube atual.",
