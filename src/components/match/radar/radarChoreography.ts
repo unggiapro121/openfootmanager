@@ -63,6 +63,8 @@ import { type RadarSettle, isBallInGoal, quietSteps, settleStepsFor } from "./ra
 interface Cue {
   event: MatchEvent;
   next: MatchEvent | undefined;
+  /** The event staged before it in the move, if any: a free kick, for the play that takes it. */
+  previous?: MatchEvent;
   scene: RadarScene;
   stage: RadarStage;
 }
@@ -578,9 +580,11 @@ function stageCross(cue: Cue): Staging {
   const early = event.tactical_context === "EarlyCross";
   const low = event.tactical_context === "LowCross";
   const flight = low ? "pass" : "air";
-  // From the corner flag the ball goes straight in, with no run down the wing.
-  const isFromCorner = fromPitch(side, take.at).depth >= CORNER_FLAG_DEPTH;
-  const wingSpot = isFromCorner ? take.at : toPitch(side, early ? EARLY_CROSS_DEPTH : 94, flank);
+  // From a corner flag or a free kick the ball goes straight in, with no run
+  // down the wing.
+  const isSetPiece =
+    fromPitch(side, take.at).depth >= CORNER_FLAG_DEPTH || cue.previous?.event_type === "FreeKick";
+  const wingSpot = isSetPiece ? take.at : toPitch(side, early ? EARLY_CROSS_DEPTH : 94, flank);
   const carry = paceSeconds("carry", distance(take.at, wingSpot));
   // The man it is aimed at sets off as the winger heads for the line, and the
   // ball is put where he will be.
@@ -637,6 +641,8 @@ function stageCross(cue: Cue): Staging {
 }
 
 function stageClearance(cue: Cue): Staging {
+  const delivered = cornerDelivery(cue);
+  if (delivered) return delivered;
   const { event } = cue;
   const side = event.side;
   const won = contestBall(cue);
@@ -657,6 +663,54 @@ function stageClearance(cue: Cue): Staging {
           pace: "air",
           peak: 5,
         },
+      },
+    ],
+  };
+}
+
+/** How deep in the box a corner the engine clears at once is played to, from the attacking side's end. */
+const CORNER_DELIVERY_DEPTH = 96;
+/** How far either side of the middle a corner played to a defender lands, at most. */
+const CORNER_DELIVERY_LANES = 10;
+
+/**
+ * A corner the engine clears with no cross named: the taker at the flag still
+ * kicks it in, to the defender who clears it, rather than carry it in himself
+ * (after GĐ5). Null when the ball is not at a corner flag.
+ */
+function cornerDelivery(cue: Cue): Staging | null {
+  const { event, scene, stage } = cue;
+  const side = event.side;
+  const attacking = opposite(side);
+  if (fromPitch(attacking, scene.ball).depth < CORNER_FLAG_DEPTH) return null;
+  const taker = ballCarrier(stage, scene, attacking);
+  const clearer = event.player_id;
+  if (!taker || !clearer) return null;
+  const lane = fromPitch(attacking, where(cue, clearer)).lane;
+  const landing = toPitch(
+    attacking,
+    CORNER_DELIVERY_DEPTH,
+    clamp(lane, CENTRE_LANE - CORNER_DELIVERY_LANES, CENTRE_LANE + CORNER_DELIVERY_LANES),
+  );
+  const out = onPitch(
+    toPitch(side, 50 + jitter(`${event.minute}c`) * 8, fromPitch(side, landing).lane),
+  );
+  return {
+    receiver: clearer,
+    steps: [
+      {
+        pace: "air",
+        ball: { at: landing, lift: 0 },
+        movers: only(clearer, landing),
+        highlight: cast(taker, clearer),
+        overlay: null,
+        action: { kind: "kick", by: taker, to: landing, receiver: clearer, pace: "air", peak: 4 },
+      },
+      {
+        pace: "air",
+        ball: { at: out, lift: 0 },
+        possession: side,
+        action: { kind: "kick", by: clearer, to: out, receiver: null, pace: "air", peak: 5 },
       },
     ],
   };
@@ -823,13 +877,16 @@ function stageDirectFreeKick(cue: Cue): Staging {
     important: cue.event.event_type === "Goal",
     steps: [
       {
+        // A new set piece: it may cut, and the ball is back at the taker's
+        // feet on its spot once he is there (after GĐ5).
+        sceneCut: true,
         overlay: null,
         ball: { at: spot },
-        movers: only(taker, toPitch(side, FREE_KICK_DEPTH - 2.5, lane)),
+        movers: only(taker, toPitch(side, FREE_KICK_DEPTH - TOUCH_AHEAD, lane)),
         highlight: cast(taker),
         possession: side,
         pace: "place",
-        action: placed(cue, spot),
+        action: taker ? { kind: "dead", spot, holder: taker } : placed(cue, spot),
       },
       ...stageShotFinish(cue, spot, taker),
     ],
@@ -972,6 +1029,41 @@ function stageCorner(cue: Cue, spot: PitchPoint): Staging {
   };
 }
 
+/**
+ * A free kick: the whistle, and the man who takes it — named by the engine,
+ * else the man who plays the ball next — goes to stand behind the ball, and
+ * it comes back at his feet once he is there, so what follows is played from
+ * where it lies rather than rolled to him (after GĐ5). A new set piece, so it
+ * may cut (`radarSceneCut`).
+ */
+function stageFreeKick(cue: Cue): Staging {
+  const { event, next, scene } = cue;
+  const side = event.side;
+  const whistle: RadarStep = {
+    ball: ballAsStaged(cue),
+    overlay: { kind: "whistle", at: scene.ball },
+    possession: side,
+  };
+  // A direct free kick puts the ball on its own spot for the taker.
+  if (next?.shot_kind === "DirectFreeKick") return { steps: [whistle] };
+  const playsNext = next && next.side === side && isAttackingPlay(next) ? next.player_id : null;
+  const taker = event.player_id ?? playsNext;
+  if (!taker) return { steps: [whistle] };
+  const { depth, lane } = fromPitch(side, scene.ball);
+  return {
+    steps: [
+      {
+        ...whistle,
+        sceneCut: true,
+        movers: only(taker, toPitch(side, depth - TOUCH_AHEAD, lane)),
+        highlight: cast(taker),
+        pace: "place",
+        action: { kind: "dead", spot: scene.ball, holder: taker },
+      },
+    ],
+  };
+}
+
 /** A ball put on its spot for a restart: out of play and back there, unless it is there already. */
 function placed(cue: Cue, spot: PitchPoint): RadarStep["action"] {
   return distance(cue.scene.ball, spot) > 1 ? { kind: "dead", spot } : undefined;
@@ -1111,15 +1203,7 @@ function stageEvent(cue: Cue): Staging | null {
     case "Offside":
       return stageOffside(cue);
     case "FreeKick":
-      return {
-        steps: [
-          {
-            ball: ballAsStaged(cue),
-            overlay: { kind: "whistle", at: cue.scene.ball },
-            possession: side,
-          },
-        ],
-      };
+      return stageFreeKick(cue);
     case "YellowCard":
       return stageMarker(
         { kind: "card", playerId: event.player_id ?? "", colour: "yellow" },
@@ -1217,7 +1301,13 @@ export function choreographBatch(
   let index = 0;
   while (index < events.length) {
     const event = events[index];
-    const staged = stageEvent({ event, next: events[index + 1], scene, stage });
+    const staged = stageEvent({
+      event,
+      next: events[index + 1],
+      previous: events[index - 1],
+      scene,
+      stage,
+    });
     const staging =
       staged && event.tactical_context === "Counter" ? onTheBreak(staged, scene.ball.x) : staged;
     if (staging) {
