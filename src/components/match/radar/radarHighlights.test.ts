@@ -45,7 +45,8 @@ describe("highlightsOf", () => {
     ).toEqual(["H:Dribble", "A:Foul", "H:PenaltyAwarded", "H:PenaltyGoal"]);
   });
 
-  // Given a saved shot that wins a corner, then the corner is kept with it.
+  // Given a saved shot that wins a corner, then the corner is kept with it,
+  // played to the clearance that ends it (after GĐ5).
   it("keeps the corner a shot wins", () => {
     expect(
       typesOf([
@@ -53,7 +54,7 @@ describe("highlightsOf", () => {
         radarEvent("Corner", "Home", "AwayBox"),
         radarEvent("Clearance", "Away", "AwayBox", "a_cb1"),
       ]),
-    ).toEqual(["H:ShotSaved", "H:Corner"]);
+    ).toEqual(["H:ShotSaved", "H:Corner", "A:Clearance"]);
   });
 
   // Given a sending-off in a quiet minute, then it is still marked on the radar.
@@ -127,9 +128,9 @@ describe("openMove (after GĐ5)", () => {
     expect(short(open)).toEqual(["H:Interception", "H:PassCompleted", "H:Dribble"]);
   });
 
-  // Given a minute that ends with a shot, or with play already acted out (the
-  // corner a shot won), then nothing is open.
-  it("is nothing after a shot or play already acted out", () => {
+  // Given a minute that ends with a shot, or with a corner played to its
+  // clearance, then nothing is open.
+  it("is nothing after a shot or a corner played out", () => {
     expect(
       openMove([
         radarEvent("Dribble", "Home", "AwayDefense", "h_st1"),
@@ -140,6 +141,7 @@ describe("openMove (after GĐ5)", () => {
       openMove([
         radarEvent("ShotBlocked", "Home", "AwayBox", "h_st1"),
         radarEvent("Corner", "Home", "AwayBox", "h_lm"),
+        radarEvent("Clearance", "Away", "AwayBox", "a_cb1"),
       ]),
     ).toEqual([]);
   });
@@ -148,5 +150,46 @@ describe("openMove (after GĐ5)", () => {
   // given), then nothing is open.
   it("is nothing when the minute ends on a restart", () => {
     expect(openMove([radarEvent("GoalKick", "Away", "AwayBox", "a_gk")])).toEqual([]);
+  });
+});
+
+describe("a corner played to its end (after GĐ5)", () => {
+  // Given a corner won by a shot and crossed in, then cleared, then the corner
+  // is played to the first touch of the defending side: the cross and the
+  // clearance are kept, and nothing after them.
+  it("keeps a corner's delivery and the clearance that ends it", () => {
+    expect(
+      typesOf([
+        radarEvent("ShotBlocked", "Home", "AwayBox", "h_st1"),
+        radarEvent("Corner", "Home", "AwayBox", "h_rm"),
+        radarEvent("Cross", "Home", "AwayBox", "h_rm", "h_st2"),
+        radarEvent("Clearance", "Away", "AwayBox", "a_cb1"),
+        radarEvent("PassCompleted", "Away", "AwayDefense", "a_cm1"),
+      ]),
+    ).toEqual(["H:ShotBlocked", "H:Corner", "H:Cross", "A:Clearance"]);
+  });
+
+  // Given a corner the engine has cleared at once, with no cross, then the
+  // clearance is kept with it.
+  it("keeps a corner cleared at once", () => {
+    expect(
+      typesOf([
+        radarEvent("ShotBlocked", "Home", "AwayBox", "h_st1"),
+        radarEvent("Corner", "Home", "AwayBox", "h_rm"),
+        radarEvent("Clearance", "Away", "AwayBox", "a_cb1"),
+      ]),
+    ).toEqual(["H:ShotBlocked", "H:Corner", "A:Clearance"]);
+  });
+
+  // Given a minute that ends on the corner a shot won, then the move is still
+  // open: it is held back whole, to be played with its delivery next minute.
+  it("holds back a move that ends on its corner", () => {
+    const open = openMove([
+      radarEvent("PassCompleted", "Away", "AwayDefense", "a_cb1"),
+      radarEvent("Dribble", "Home", "AwayDefense", "h_st1"),
+      radarEvent("ShotBlocked", "Home", "AwayBox", "h_st1"),
+      radarEvent("Corner", "Home", "AwayBox", "h_rm"),
+    ]);
+    expect(short(open)).toEqual(["H:Dribble", "H:ShotBlocked", "H:Corner"]);
   });
 });
