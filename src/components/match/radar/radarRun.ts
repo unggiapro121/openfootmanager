@@ -57,6 +57,8 @@ const IN_PLACE_SPEED = 3;
 const HOLDER_READY_METRES = 3;
 /** The longest it waits for him, in seconds, so play never stalls (under `MAX_ACTION_S`). */
 const MAX_HOLDER_WAIT_S = 3.5;
+/** The longest a pass played into space for a runner takes to arrive, so play never drags. */
+const MAX_THROUGH_BALL_S = 2.5;
 /** The least share of a pass's length its receiver must reach in time to have it played to him. */
 const MIN_PASS_PROGRESS = 0.5;
 /** A step waiting on the ball is given up after this, so play never stalls. */
@@ -228,6 +230,7 @@ function strike(
   const receiverAt = receiver ? sim.players[receiver]?.at : undefined;
   let target = to;
   let receiverMark: PitchPoint | null = null;
+  let seconds: number | null = null;
   if (receiver && receiverAt) {
     receiverMark = meetingPoint(receiverAt, to, (point) => distance(from, point) / speed, 0);
     // A man too far behind to get even half way along the pass in time has it
@@ -238,7 +241,12 @@ function strike(
     const progress = along
       ? (receiverMark.x - from.x) * along.x + (receiverMark.y - from.y) * along.y
       : 0;
-    if (along && progress < MIN_PASS_PROGRESS * distance(from, to)) receiverMark = to;
+    if (along && progress < MIN_PASS_PROGRESS * distance(from, to)) {
+      receiverMark = to;
+      // Weighted for him: it arrives as he does, never to lie waiting.
+      const run = distance(receiverAt, to) / SIM_LIMITS.sprint;
+      seconds = Math.min(Math.max(distance(from, to) / speed, run), MAX_THROUGH_BALL_S);
+    }
     const way = unit(towards(from, receiverMark), { x: 1, y: 0 });
     // It comes to rest just in front of him, on the side it came from.
     target =
@@ -255,7 +263,7 @@ function strike(
     to: target,
     peak,
     startedAt: time,
-    seconds: Math.max(distance(from, target) / speed, 0.15),
+    seconds: Math.max(seconds ?? distance(from, target) / speed, 0.15),
     kicker,
     receiver,
     receiverMark,
