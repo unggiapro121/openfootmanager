@@ -1520,7 +1520,12 @@
     "transferFeedbackCounterHeadline": "El sıkışmadan önce daha fazlasını istiyorlar.",
     "transferFeedbackCounterDetail": "Teklif görüşmeyi sürdürecek kadar yakındı, ancak karşı taraf {{fee}} civarında bir fiyata işaret ediyor.",
     "transferFeedbackRejectedHeadline": "Bu turu kapattılar.",
-    "transferFeedbackRejectedDetail": "Öneri onları yeterince etkilemedi. Ciddi görüşmeleri yeniden başlatmak için {{fee}} civarında daha güçlü bir bonservis gerekir."
+    "transferFeedbackRejectedDetail": "Öneri onları yeterince etkilemedi. Ciddi görüşmeleri yeniden başlatmak için {{fee}} civarında daha güçlü bir bonservis gerekir.",
+    "awaitingReplyHeadline": "Teklif gönderildi",
+    "awaitingReplyDetail": "Yanıt {{date}} tarihinde postayla gelecek.",
+    "offerAwaitingReply": "Teklif gönderildi — yanıt bekleniyor",
+    "offerAwaitingReplyOn": "Teklif gönderildi — yanıt {{date}} tarihinde postayla",
+    "awaitingReplyBadge": "Yanıt bekleniyor"
   },
   "transferCentreWorld": {
     "title": "Transfer Merkezi",
@@ -3431,7 +3436,8 @@
         "loanBuyOptionNotAvailable": "Bu oyuncu için kullanılabilir bir satın alma opsiyonu yok",
         "invalidYouthScoutingRegion": "Desteklenmeyen genç oyuncu gözlem bölgesi.",
         "invalidYouthScoutingObjective": "Desteklenmeyen genç oyuncu gözlem hedefi.",
-        "invalidYouthScoutingTargetPosition": "Desteklenmeyen genç oyuncu hedef pozisyonu."
+        "invalidYouthScoutingTargetPosition": "Desteklenmeyen genç oyuncu hedef pozisyonu.",
+        "awaitingReply": "Bu oyuncu için zaten yanıt bekleyen bir teklif var."
       },
       "contracts": {
         "playerNotOwnedByClub": "Oyuncu kulübünüze ait değil",
@@ -4103,6 +4109,33 @@
         "effect": {
           "following": "{{scout}}, {{player}} oyuncusunu takip edecek ve onu tamamen tanıyana kadar her pazartesi rapor verecek.",
           "scoutFull": "{{player}} takip listende, ancak {{scout}} zaten takip edebileceği en fazla oyuncuyu izliyor. {{player}} oyuncusunu Gözlem ekranında başka bir gözlemciye ver."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: teklif kabul edildi"
+        },
+        "counter": {
+          "subject": "{{player}}: karşı teklif"
+        },
+        "rejected": {
+          "subject": "{{player}}: teklif reddedildi"
+        },
+        "lapsed": {
+          "subject": "{{player}}: teklif geçersiz"
+        },
+        "body": {
+          "dealAccepted": "{{club}}, {{player}} için {{fee}} bedeli kabul etti.",
+          "dealScheduled": "{{club}}, {{player}} anlaşmasını kabul etti. Transfer dönemi açıldığında, {{date}} tarihinde tescil edilecek.",
+          "dealCounter": "{{club}}, {{player}} için yanıt verdi: {{fee}} istiyorlar. Yanıtlamak için Transferler sekmesini açın.",
+          "dealRejected": "{{club}}, {{player}} anlaşmasını reddetti.",
+          "loanAccepted": "{{club}}, {{player}} için kiralık şartlarını kabul etti.",
+          "loanCounter": "{{club}}, {{player}} için başka kiralık şartları öneriyor: {{date}} tarihine kadar maaşının %{{wage}}'i. Yanıtlamak için Transferler sekmesini açın.",
+          "loanRejected": "{{club}}, {{player}} için kiralık şartlarını reddetti.",
+          "freeAgentAccepted": "{{player}} sözleşme teklifinizi kabul etti ve kulübe katılıyor.",
+          "freeAgentCounter": "{{player}}, {{years}} yıl için haftalık {{wage}} istiyor. Yanıtlamak için Transferler sekmesini açın.",
+          "freeAgentRejected": "{{player}} sözleşme teklifinizi reddetti.",
+          "lapsed": "{{player}} için teklifiniz artık geçerli değil: yanıt gelmeden durum değişti."
         }
       }
     },

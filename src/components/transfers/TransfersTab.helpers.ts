@@ -1,5 +1,7 @@
 import type { LoanOfferData, PlayerData, TransferOfferData } from "../../store/gameStore";
+import type { AwaitedReplyData, GameStateData } from "../../store/types";
 import type { TransferNegotiationFeedbackData } from "../../services/transfersService";
+import { formatMatchDate } from "../../lib/dateFormatting";
 import { formatExactMoney } from "../../lib/helpers";
 
 type Translate = (key: string, options?: Record<string, string | number>) => string;
@@ -215,21 +217,43 @@ export function parseTransferFeeInput(value: string): number | null {
 export function normalizeTransferNegotiationFeedback(
   feedback: TransferNegotiationFeedbackData | null,
 ): TransferNegotiationFeedbackData | null {
-  if (!feedback?.params?.fee) {
+  if (!feedback?.params) {
     return feedback;
   }
 
-  const parsedFee = Number.parseInt(feedback.params.fee, 10);
-  if (!Number.isFinite(parsedFee)) {
-    return feedback;
+  const params = { ...feedback.params };
+  const parsedFee = params.fee ? Number.parseInt(params.fee, 10) : Number.NaN;
+  if (Number.isFinite(parsedFee)) {
+    params.fee = formatExactMoney(parsedFee);
   }
+  // The backend sends days as `YYYY-MM-DD`; the panel reads them as the game
+  // writes dates everywhere else.
+  if (params.date) {
+    params.date = formatMatchDate(params.date);
+  }
+  return { ...feedback, params };
+}
 
+/** The offer the user is waiting on for `playerId`, if any. */
+export function awaitedReplyFor(
+  game: Pick<GameStateData, "awaited_replies">,
+  playerId: string,
+): AwaitedReplyData | null {
+  return game.awaited_replies?.find((reply) => reply.proposal.player_id === playerId) ?? null;
+}
+
+/** The negotiation panel's note for an offer waiting for its answer. */
+export function buildAwaitingReplyFeedback(
+  reply: AwaitedReplyData,
+): TransferNegotiationFeedbackData {
   return {
-    ...feedback,
-    params: {
-      ...feedback.params,
-      fee: formatExactMoney(parsedFee),
-    },
+    mood: "calm",
+    headline_key: "transfers.awaitingReplyHeadline",
+    detail_key: "transfers.awaitingReplyDetail",
+    tension: 50,
+    patience: 50,
+    round: 1,
+    params: { date: formatMatchDate(reply.reply_on) },
   };
 }
 

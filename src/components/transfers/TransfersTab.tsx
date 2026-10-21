@@ -56,6 +56,8 @@ import {
 import { sendScout } from "../../services/scoutingService";
 import {
   buildLoanPeriodOptions,
+  awaitedReplyFor,
+  buildAwaitingReplyFeedback,
   buildResumedCounterFeedback,
   formatTransferFeeInput,
   getDefaultLoanPeriodId,
@@ -254,7 +256,8 @@ export default function TransfersTab({
     setLoanBuyOptionEnabled(false);
     setLoanBuyOptionFee("");
     setLoanError(null);
-    setLoanResult(null);
+    // An offer already sent for this player still waits for its answer.
+    setLoanResult(awaitedReplyFor(gameState, player.id) ? "awaiting_reply" : null);
     setLoanSuggestedTerms(null);
   };
 
@@ -291,7 +294,7 @@ export default function TransfersTab({
     setLoanCounterBuyOptionEnabled(Boolean(buyOptionFee));
     setLoanCounterBuyOptionFee(buyOptionFee ? formatTransferFeeInput(buyOptionFee) : "");
     setLoanCounterError(null);
-    setLoanCounterResult(null);
+    setLoanCounterResult(awaitedReplyFor(gameState, player.id) ? "awaiting_reply" : null);
     setLoanCounterSuggestedTerms(null);
   };
 
@@ -315,8 +318,11 @@ export default function TransfersTab({
     });
     setCounterAmount(formatTransferFeeInput(offer.suggested_counter_fee ?? offer.fee));
     setCounterError(null);
-    setCounterResult(null);
-    setCounterFeedback(buildResumedCounterFeedback(offer));
+    const waiting = awaitedReplyFor(gameState, player.id);
+    setCounterResult(waiting ? "awaiting_reply" : null);
+    setCounterFeedback(
+      waiting ? buildAwaitingReplyFeedback(waiting) : buildResumedCounterFeedback(offer),
+    );
   };
 
   const handleRespondOffer = async (playerId: string, offerId: string, accept: boolean) => {
@@ -580,6 +586,7 @@ export default function TransfersTab({
     loanLoading ||
     !selectedLoanPeriodOption ||
     loanResult === "accepted" ||
+    loanResult === "awaiting_reply" ||
     transferWindowBlocksRegistration ||
     (loanBuyOptionEnabled && (parsedLoanBuyOptionFee === null || parsedLoanBuyOptionFee <= 0));
   const loanCounterReferenceEndDate =
@@ -602,6 +609,7 @@ export default function TransfersTab({
     loanCounterLoading ||
     !selectedLoanCounterPeriodOption ||
     loanCounterResult === "accepted" ||
+    loanCounterResult === "awaiting_reply" ||
     transferWindowBlocksRegistration ||
     (loanCounterBuyOptionEnabled &&
       (parsedLoanCounterBuyOptionFee === null || parsedLoanCounterBuyOptionFee <= 0));
@@ -1278,6 +1286,11 @@ export default function TransfersTab({
                                 {t("common.freeAgent")}
                               </Badge>
                             )}
+                            {awaitedReplyFor(gameState, player.id) && (
+                              <Badge variant="neutral" size="sm">
+                                {t("transfers.awaitingReplyBadge")}
+                              </Badge>
+                            )}
                           </div>
                         </td>
                         {view === "offers" && (
@@ -1585,6 +1598,7 @@ export default function TransfersTab({
                   onBuyOptionEnabledChange={setLoanBuyOptionEnabled}
                   onBuyOptionFeeChange={setLoanBuyOptionFee}
                   result={loanResult}
+                  replyOn={awaitedReplyFor(gameState, loanTarget.id)?.reply_on ?? null}
                   suggestedTerms={loanSuggestedTerms}
                   error={loanError}
                   loading={loanLoading}
@@ -1669,7 +1683,7 @@ export default function TransfersTab({
           counterResult={counterResult}
           counterError={counterError}
           counterLoading={counterLoading}
-          submitDisabled={transferWindowBlocksRegistration}
+          submitDisabled={transferWindowBlocksRegistration || counterResult === "awaiting_reply"}
           blockingTitle={transferWindowBlockingTitle}
           blockingDetail={transferWindowBlockingDetail}
           onSubmit={handleCounterOffer}
@@ -1715,6 +1729,7 @@ export default function TransfersTab({
           onBuyOptionEnabledChange={setLoanBuyOptionEnabled}
           onBuyOptionFeeChange={setLoanBuyOptionFee}
           result={loanResult}
+          replyOn={awaitedReplyFor(gameState, loanTarget.id)?.reply_on ?? null}
           suggestedTerms={loanSuggestedTerms}
           error={loanError}
           loading={loanLoading}
@@ -1747,6 +1762,7 @@ export default function TransfersTab({
           onBuyOptionEnabledChange={setLoanCounterBuyOptionEnabled}
           onBuyOptionFeeChange={setLoanCounterBuyOptionFee}
           result={loanCounterResult}
+          replyOn={awaitedReplyFor(gameState, loanCounterTarget.player.id)?.reply_on ?? null}
           titleKey="transfers.counterLoanOffer"
           submitLabelKey="transfers.submitLoanCounter"
           acceptedLabelKey="transfers.loanCounterAccepted"

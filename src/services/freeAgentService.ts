@@ -17,7 +17,9 @@ export interface FreeAgentContractProjection {
 }
 
 export interface FreeAgentContractResponseData {
-  outcome: "accepted" | "rejected" | "counter_offer";
+  /** `awaiting_reply`: the offer was sent and the player answers by mail on `reply_on`. */
+  outcome: "accepted" | "rejected" | "counter_offer" | "awaiting_reply";
+  reply_on?: string | null;
   game: GameStateData;
   suggested_wage: number | null;
   suggested_years: number | null;

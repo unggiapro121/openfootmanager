@@ -1520,7 +1520,12 @@
     "transferFeedbackCounterHeadline": "Querem mais antes de apertar a mão.",
     "transferFeedbackCounterDetail": "A proposta ficou suficientemente perto para continuarem a falar, mas do lado deles apontam para um valor mais próximo de {{fee}}.",
     "transferFeedbackRejectedHeadline": "Fecharam esta ronda.",
-    "transferFeedbackRejectedDetail": "A proposta não os mexeu o suficiente. Precisarias de um valor mais forte, mais perto de {{fee}}, para reabrir conversas sérias."
+    "transferFeedbackRejectedDetail": "A proposta não os mexeu o suficiente. Precisarias de um valor mais forte, mais perto de {{fee}}, para reabrir conversas sérias.",
+    "awaitingReplyHeadline": "Proposta enviada",
+    "awaitingReplyDetail": "Vão responder por correio a {{date}}.",
+    "offerAwaitingReply": "Proposta enviada — a aguardar resposta",
+    "offerAwaitingReplyOn": "Proposta enviada — resposta por correio a {{date}}",
+    "awaitingReplyBadge": "A aguardar resposta"
   },
   "transferCentreWorld": {
     "title": "Centro de transferências",
@@ -3423,7 +3428,8 @@
         "loanBuyOptionNotAvailable": "Não existe uma opção de compra exercível para este jogador",
         "invalidYouthScoutingRegion": "Região de prospeção jovem não suportada.",
         "invalidYouthScoutingObjective": "Objetivo de prospeção jovem não suportado.",
-        "invalidYouthScoutingTargetPosition": "Posição-alvo de prospeção jovem não suportada."
+        "invalidYouthScoutingTargetPosition": "Posição-alvo de prospeção jovem não suportada.",
+        "awaitingReply": "Já existe uma proposta por este jogador a aguardar resposta."
       },
       "contracts": {
         "playerNotOwnedByClub": "O jogador não pertence ao teu clube",
@@ -4103,6 +4109,33 @@
         "effect": {
           "following": "{{scout}} vai acompanhar {{player}} e informar todas as segundas-feiras até o conhecer por completo.",
           "scoutFull": "{{player}} está na tua lista de observação, mas {{scout}} já acompanha o máximo de jogadores que pode. Entrega {{player}} a outro olheiro no ecrã de Observação."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: proposta aceite"
+        },
+        "counter": {
+          "subject": "{{player}}: contraproposta"
+        },
+        "rejected": {
+          "subject": "{{player}}: proposta recusada"
+        },
+        "lapsed": {
+          "subject": "{{player}}: proposta caducada"
+        },
+        "body": {
+          "dealAccepted": "{{club}} aceitou {{fee}} por {{player}}.",
+          "dealScheduled": "{{club}} aceitou o negócio por {{player}}. Fica registado a {{date}}, quando o mercado abrir.",
+          "dealCounter": "{{club}} respondeu sobre {{player}}: querem {{fee}}. Abre o separador Transferências para responder.",
+          "dealRejected": "{{club}} recusou o negócio por {{player}}.",
+          "loanAccepted": "{{club}} aceitou as condições de empréstimo de {{player}}.",
+          "loanCounter": "{{club}} propõe outras condições de empréstimo para {{player}}: {{wage}}% do salário até {{date}}. Abre o separador Transferências para responder.",
+          "loanRejected": "{{club}} recusou as condições de empréstimo de {{player}}.",
+          "freeAgentAccepted": "{{player}} aceitou a tua proposta de contrato e junta-se ao clube.",
+          "freeAgentCounter": "{{player}} quer {{wage}} por semana durante {{years}} anos. Abre o separador Transferências para responder.",
+          "freeAgentRejected": "{{player}} recusou a tua proposta de contrato.",
+          "lapsed": "A tua proposta por {{player}} já não é válida: a situação mudou antes da resposta."
         }
       }
     },

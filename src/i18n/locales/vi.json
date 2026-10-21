@@ -1520,7 +1520,12 @@
     "transferFeedbackCounterHeadline": "Họ muốn nhiều hơn trước khi bắt tay.",
     "transferFeedbackCounterDetail": "Mức giá đủ gần để tiếp tục trao đổi, nhưng phía họ đang ra tín hiệu muốn mức giá gần {{fee}} hơn.",
     "transferFeedbackRejectedHeadline": "Họ đã khép lại vòng này.",
-    "transferFeedbackRejectedDetail": "Đề nghị chưa đủ sức thuyết phục họ. Bạn sẽ cần mức phí cao hơn, gần {{fee}}, để mở lại đàm phán nghiêm túc."
+    "transferFeedbackRejectedDetail": "Đề nghị chưa đủ sức thuyết phục họ. Bạn sẽ cần mức phí cao hơn, gần {{fee}}, để mở lại đàm phán nghiêm túc.",
+    "awaitingReplyHeadline": "Đã gửi đề nghị",
+    "awaitingReplyDetail": "Sẽ có thư trả lời vào {{date}}.",
+    "offerAwaitingReply": "Đã gửi — đang chờ trả lời",
+    "offerAwaitingReplyOn": "Đã gửi — thư trả lời vào {{date}}",
+    "awaitingReplyBadge": "Chờ trả lời"
   },
   "transferCentreWorld": {
     "title": "Trung tâm chuyển nhượng",
@@ -3431,7 +3436,8 @@
         "loanBuyOptionNotAvailable": "Không có điều khoản mua đứt nào có thể kích hoạt cho cầu thủ này",
         "invalidYouthScoutingRegion": "Khu vực tuyển trạch trẻ không được hỗ trợ.",
         "invalidYouthScoutingObjective": "Mục tiêu tuyển trạch trẻ không được hỗ trợ.",
-        "invalidYouthScoutingTargetPosition": "Vị trí mục tiêu tuyển trạch trẻ không được hỗ trợ."
+        "invalidYouthScoutingTargetPosition": "Vị trí mục tiêu tuyển trạch trẻ không được hỗ trợ.",
+        "awaitingReply": "Đã có một đề nghị cho cầu thủ này đang chờ trả lời."
       },
       "contracts": {
         "playerNotOwnedByClub": "Cầu thủ không thuộc câu lạc bộ của bạn",
@@ -4103,6 +4109,33 @@
         "effect": {
           "following": "{{scout}} sẽ theo dõi {{player}} và báo cáo mỗi thứ Hai cho tới khi nắm rõ cậu ấy.",
           "scoutFull": "{{player}} đã vào danh sách theo dõi, nhưng {{scout}} đã theo dõi đủ số cầu thủ tối đa. Hãy giao {{player}} cho tuyển trạch viên khác ở màn Tuyển trạch."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: đề nghị được chấp nhận"
+        },
+        "counter": {
+          "subject": "{{player}}: bị trả giá"
+        },
+        "rejected": {
+          "subject": "{{player}}: đề nghị bị từ chối"
+        },
+        "lapsed": {
+          "subject": "{{player}}: đề nghị hết hiệu lực"
+        },
+        "body": {
+          "dealAccepted": "{{club}} đồng ý mức {{fee}} cho {{player}}.",
+          "dealScheduled": "{{club}} đồng ý thương vụ {{player}}. Thương vụ được đăng ký vào {{date}}, khi kỳ chuyển nhượng mở.",
+          "dealCounter": "{{club}} phản hồi về {{player}}: họ muốn {{fee}}. Mở thẻ Chuyển nhượng để trả lời.",
+          "dealRejected": "{{club}} từ chối thương vụ {{player}}.",
+          "loanAccepted": "{{club}} chấp nhận điều khoản cho mượn {{player}}.",
+          "loanCounter": "{{club}} đề xuất điều khoản mượn khác cho {{player}}: trả {{wage}}% lương đến {{date}}. Mở thẻ Chuyển nhượng để trả lời.",
+          "loanRejected": "{{club}} từ chối điều khoản cho mượn {{player}}.",
+          "freeAgentAccepted": "{{player}} chấp nhận hợp đồng và gia nhập CLB.",
+          "freeAgentCounter": "{{player}} muốn {{wage}} mỗi tuần trong {{years}} năm. Mở thẻ Chuyển nhượng để trả lời.",
+          "freeAgentRejected": "{{player}} từ chối đề nghị hợp đồng.",
+          "lapsed": "Đề nghị của bạn cho {{player}} không còn hiệu lực: tình hình đã thay đổi trước khi có trả lời."
         }
       }
     },

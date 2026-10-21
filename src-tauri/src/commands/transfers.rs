@@ -8,10 +8,10 @@ use ofm_core::game::Game;
 use ofm_core::game::{YouthScoutingObjective, YouthScoutingRegion};
 use ofm_core::state::StateManager;
 use ofm_core::transfers::{
-    LoanOfferDecision, LoanOfferOutcome, TransferBidFinancialProjection,
-    TransferNegotiationDecision, TransferNegotiationOutcome,
+    LoanOfferOutcome, TransferBidFinancialProjection, TransferNegotiationOutcome, UserProposal,
 };
 
+use crate::commands::offer_replies::{awaiting_feedback, send, OfferDecision};
 use crate::commands::util::mutate_active_game;
 
 const INVALID_YOUTH_SCOUTING_REGION_ERROR: &str = "be.error.transfers.invalidYouthScoutingRegion";
@@ -32,11 +32,13 @@ fn player_has_active_or_pending_loan(player: &domain::player::Player) -> bool {
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct TransferNegotiationCommandResponse {
-    pub decision: TransferNegotiationDecision,
+    pub decision: OfferDecision,
     pub suggested_fee: Option<u64>,
     pub is_terminal: bool,
     pub registration_date: Option<String>,
     pub feedback: NegotiationFeedback,
+    /// When the offer waits for its answer: the day it comes, by mail.
+    pub reply_on: Option<String>,
     pub game: Game,
 }
 
@@ -47,12 +49,15 @@ pub struct TransferBidFinancialProjectionCommandResponse {
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct LoanOfferCommandResponse {
-    pub decision: LoanOfferDecision,
+    pub decision: OfferDecision,
+    /// Empty while the offer waits for its answer.
     pub offer_id: String,
     pub suggested_wage_contribution_pct: Option<u8>,
     pub suggested_end_date: Option<String>,
     pub suggested_buy_option_fee: Option<u64>,
     pub is_terminal: bool,
+    /// When the offer waits for its answer: the day it comes, by mail.
+    pub reply_on: Option<String>,
     pub game: Game,
 }
 
@@ -146,6 +151,13 @@ pub fn make_transfer_bid_internal(
     // unreachable here, so in-place mutation is safe.
     state
         .update_game(|game| {
+            let proposal = UserProposal::TransferBid {
+                player_id: player_id.to_string(),
+                fee,
+            };
+            if let Some(reply_on) = send(game, proposal)? {
+                return Ok(awaiting_transfer_response(reply_on, game.clone()));
+            }
             let result = ofm_core::transfers::make_transfer_bid(game, player_id, fee)?;
             Ok(map_transfer_negotiation_response(result, game.clone()))
         })
@@ -183,6 +195,17 @@ pub fn make_loan_offer_internal(
     let mut game = state
         .get_game(|g| g.clone())
         .ok_or("be.error.noActiveGameSession".to_string())?;
+
+    let proposal = UserProposal::LoanBid {
+        player_id: player_id.to_string(),
+        end_date: end_date.to_string(),
+        wage_contribution_pct,
+        buy_option_fee,
+    };
+    if let Some(reply_on) = send(&mut game, proposal)? {
+        state.set_game(game.clone());
+        return Ok(awaiting_loan_response(reply_on, game));
+    }
 
     let result = ofm_core::transfers::make_loan_offer(
         &mut game,
@@ -328,6 +351,18 @@ pub fn counter_loan_offer_internal(
         .get_game(|g| g.clone())
         .ok_or("be.error.noActiveGameSession".to_string())?;
 
+    let proposal = UserProposal::LoanCounter {
+        player_id: player_id.to_string(),
+        offer_id: offer_id.to_string(),
+        end_date: end_date.to_string(),
+        wage_contribution_pct,
+        buy_option_fee,
+    };
+    if let Some(reply_on) = send(&mut game, proposal)? {
+        state.set_game(game.clone());
+        return Ok(awaiting_loan_response(reply_on, game));
+    }
+
     let result = ofm_core::transfers::counter_loan_offer(
         &mut game,
         player_id,
@@ -364,6 +399,14 @@ pub fn counter_offer_internal(
     // Same shape as make_transfer_bid: full validation precedes mutation.
     state
         .update_game(|game| {
+            let proposal = UserProposal::SaleCounter {
+                player_id: player_id.to_string(),
+                offer_id: offer_id.to_string(),
+                requested_fee,
+            };
+            if let Some(reply_on) = send(game, proposal)? {
+                return Ok(awaiting_transfer_response(reply_on, game.clone()));
+            }
             let result =
                 ofm_core::transfers::counter_offer(game, player_id, offer_id, requested_fee)?;
             Ok(map_transfer_negotiation_response(result, game.clone()))
@@ -376,23 +419,52 @@ fn map_transfer_negotiation_response(
     game: Game,
 ) -> TransferNegotiationCommandResponse {
     TransferNegotiationCommandResponse {
-        decision: outcome.decision,
+        decision: outcome.decision.into(),
         suggested_fee: outcome.suggested_fee,
         is_terminal: outcome.is_terminal,
         registration_date: outcome.registration_date,
         feedback: outcome.feedback,
+        reply_on: None,
+        game,
+    }
+}
+
+/// An offer sent and waiting for its answer, due on `reply_on`.
+fn awaiting_transfer_response(reply_on: String, game: Game) -> TransferNegotiationCommandResponse {
+    TransferNegotiationCommandResponse {
+        decision: OfferDecision::AwaitingReply,
+        suggested_fee: None,
+        is_terminal: false,
+        registration_date: None,
+        feedback: awaiting_feedback(&reply_on),
+        reply_on: Some(reply_on),
+        game,
+    }
+}
+
+/// A loan offer sent and waiting for its answer, due on `reply_on`.
+fn awaiting_loan_response(reply_on: String, game: Game) -> LoanOfferCommandResponse {
+    LoanOfferCommandResponse {
+        decision: OfferDecision::AwaitingReply,
+        offer_id: String::new(),
+        suggested_wage_contribution_pct: None,
+        suggested_end_date: None,
+        suggested_buy_option_fee: None,
+        is_terminal: false,
+        reply_on: Some(reply_on),
         game,
     }
 }
 
 fn map_loan_offer_response(outcome: LoanOfferOutcome, game: Game) -> LoanOfferCommandResponse {
     LoanOfferCommandResponse {
-        decision: outcome.decision,
+        decision: outcome.decision.into(),
         offer_id: outcome.offer_id,
         suggested_wage_contribution_pct: outcome.suggested_wage_contribution_pct,
         suggested_end_date: outcome.suggested_end_date,
         suggested_buy_option_fee: outcome.suggested_buy_option_fee,
         is_terminal: outcome.is_terminal,
+        reply_on: None,
         game,
     }
 }
@@ -621,6 +693,7 @@ mod tests {
         respond_to_loan_offer_internal, respond_to_offer_internal, toggle_loan_list_internal,
         toggle_transfer_list_internal, unwatch_prospect_internal,
     };
+    use crate::commands::offer_replies::OfferDecision;
     use chrono::{TimeZone, Utc};
     use domain::manager::Manager;
     use domain::player::{
@@ -632,7 +705,6 @@ mod tests {
     use ofm_core::clock::GameClock;
     use ofm_core::game::Game;
     use ofm_core::state::StateManager;
-    use ofm_core::transfers::{LoanOfferDecision, TransferNegotiationDecision};
 
     fn default_attrs() -> PlayerAttributes {
         PlayerAttributes {
@@ -775,6 +847,10 @@ mod tests {
             vec![],
         );
         game.season_context.transfer_window.status = TransferWindowStatus::Open;
+        // Deadline day: clubs answer at once, so these tests read the answer
+        // straight off the command. Offers that wait are tested on their own.
+        game.season_context.transfer_window.closes_on =
+            Some(game.clock.current_date.format("%Y-%m-%d").to_string());
         give_both_clubs_squad_depth(&mut game);
         game
     }
@@ -820,6 +896,10 @@ mod tests {
             vec![],
         );
         game.season_context.transfer_window.status = TransferWindowStatus::Open;
+        // Deadline day: clubs answer at once, so these tests read the answer
+        // straight off the command. Offers that wait are tested on their own.
+        game.season_context.transfer_window.closes_on =
+            Some(game.clock.current_date.format("%Y-%m-%d").to_string());
         game.teams[0].reputation = 700;
         game.teams[1].reputation = 350;
         give_both_clubs_squad_depth(&mut game);
@@ -834,7 +914,7 @@ mod tests {
         let response =
             counter_offer_internal(&state, "player-1", "offer-1", 1_050_000).expect("response");
 
-        assert_eq!(response.decision, TransferNegotiationDecision::Accepted);
+        assert_eq!(response.decision, OfferDecision::Accepted);
         assert_eq!(response.game.players[0].team_id.as_deref(), Some("team-2"));
         assert_eq!(
             response.game.players[0].transfer_offers[0].status,
@@ -860,7 +940,7 @@ mod tests {
 
         let response = make_transfer_bid_internal(&state, "player-2", 1_050_000).expect("response");
 
-        assert_eq!(response.decision, TransferNegotiationDecision::Accepted);
+        assert_eq!(response.decision, OfferDecision::Accepted);
         assert_eq!(response.game.players[0].team_id.as_deref(), Some("team-1"));
         assert_eq!(
             response.game.players[0].transfer_offers[0].status,
@@ -879,8 +959,11 @@ mod tests {
         );
     }
 
+    /// Given the window shut, when the user bids, then the bid waits for its
+    /// answer; when the answer comes, the agreed move is scheduled for the day
+    /// the window opens.
     #[test]
-    fn make_transfer_bid_internal_preserves_scheduled_registration_date() {
+    fn a_bid_made_with_the_window_shut_waits_then_schedules_its_registration() {
         let state = StateManager::new();
         let mut game = make_bid_game();
         game.clock.current_date = Utc.with_ymd_and_hms(2026, 12, 20, 12, 0, 0).unwrap();
@@ -890,19 +973,22 @@ mod tests {
 
         let response = make_transfer_bid_internal(&state, "player-2", 1_050_000).expect("response");
 
-        assert_eq!(response.decision, TransferNegotiationDecision::Accepted);
-        assert_eq!(response.registration_date.as_deref(), Some("2027-01-01"));
-        assert_eq!(response.game.players[0].team_id.as_deref(), Some("team-2"));
-        assert_eq!(
-            response.game.players[0].transfer_offers[0].status,
-            TransferOfferStatus::PendingRegistration
-        );
-        assert_eq!(
-            response.game.players[0].transfer_offers[0]
-                .registration_date
-                .as_deref(),
-            Some("2027-01-01")
-        );
+        assert_eq!(response.decision, OfferDecision::AwaitingReply);
+        let reply_on = response.reply_on.clone().expect("a reply day");
+        assert_eq!(response.game.awaited_replies.len(), 1);
+
+        let mut game = response.game;
+        game.clock.current_date = chrono::NaiveDate::parse_from_str(&reply_on, "%Y-%m-%d")
+            .unwrap()
+            .and_hms_opt(12, 0, 0)
+            .unwrap()
+            .and_utc();
+        ofm_core::transfers::deliver_due_replies(&mut game);
+
+        assert_eq!(game.players[0].team_id.as_deref(), Some("team-2"));
+        let offer = &game.players[0].transfer_offers[0];
+        assert_eq!(offer.status, TransferOfferStatus::PendingRegistration);
+        assert_eq!(offer.registration_date.as_deref(), Some("2027-01-01"));
     }
 
     #[test]
@@ -915,7 +1001,7 @@ mod tests {
         let response = make_loan_offer_internal(&state, "player-2", "2027-01-01", 100, None)
             .expect("response");
 
-        assert_eq!(response.decision, LoanOfferDecision::Accepted);
+        assert_eq!(response.decision, OfferDecision::Accepted);
         assert_eq!(response.game.players[0].team_id.as_deref(), Some("team-1"));
         assert!(response.game.players[0].active_loan.is_some());
         assert_eq!(
@@ -976,7 +1062,7 @@ mod tests {
 
         let response = make_transfer_bid_internal(&state, "player-2", 900_000).expect("response");
 
-        assert_eq!(response.decision, TransferNegotiationDecision::CounterOffer);
+        assert_eq!(response.decision, OfferDecision::CounterOffer);
         assert_eq!(response.suggested_fee, Some(950_000));
         assert!(!response.is_terminal);
         assert_eq!(response.feedback.round, 1);
@@ -1002,12 +1088,12 @@ mod tests {
         state.set_game(make_bid_game());
 
         let first = make_transfer_bid_internal(&state, "player-2", 900_000).expect("first bid");
-        assert_eq!(first.decision, TransferNegotiationDecision::CounterOffer);
+        assert_eq!(first.decision, OfferDecision::CounterOffer);
         assert_eq!(first.feedback.round, 1);
 
         let second = make_transfer_bid_internal(&state, "player-2", 950_000).expect("second bid");
 
-        assert_eq!(second.decision, TransferNegotiationDecision::Accepted);
+        assert_eq!(second.decision, OfferDecision::Accepted);
         assert_eq!(second.feedback.round, 2);
         assert_eq!(second.game.players[0].team_id.as_deref(), Some("team-1"));
     }
@@ -1132,7 +1218,7 @@ mod tests {
         )
         .expect("response");
 
-        assert_eq!(response.decision, LoanOfferDecision::Accepted);
+        assert_eq!(response.decision, OfferDecision::Accepted);
         assert_eq!(response.game.players[0].team_id.as_deref(), Some("team-2"));
         assert_eq!(
             response.game.players[0].loan_offers[0].last_manager_wage_contribution_pct,

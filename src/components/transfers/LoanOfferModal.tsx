@@ -2,8 +2,9 @@ import { BadgeEuro, CalendarClock, CalendarDays, Percent } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { PlayerData, TeamData } from "../../store/gameStore";
+import type { LoanOfferResponseData } from "../../services/transfersService";
 import { formatExactMoney, formatVal, getTeamName, positionBadgeVariant } from "../../lib/helpers";
-import { formatDate } from "../../lib/dateFormatting";
+import { formatDate, formatMatchDate } from "../../lib/dateFormatting";
 import { Badge } from "../ui";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import type { LoanPeriodOption, LoanPeriodOptionId } from "./TransfersTab.helpers";
@@ -21,7 +22,9 @@ export interface LoanOfferFormProps {
   buyOptionFee: string;
   onBuyOptionEnabledChange: (value: boolean) => void;
   onBuyOptionFeeChange: (value: string) => void;
-  result: "accepted" | "rejected" | "counter_offer" | "error" | null;
+  result: LoanOfferResponseData["decision"] | "error" | null;
+  /** The day the answer comes, for an offer waiting for it. */
+  replyOn?: string | null;
   titleKey?: string;
   submitLabelKey?: string;
   acceptedLabelKey?: string;
@@ -71,6 +74,7 @@ export function LoanOfferForm({
   noticeTitle = null,
   noticeDetail = null,
   acceptedMessage = null,
+  replyOn = null,
   showPlayerSummary = true,
   onSubmit,
   onClose,
@@ -255,7 +259,7 @@ export function LoanOfferForm({
 
       {result ? (
         <div
-          className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${result === "accepted" ? "text-green-500" : result === "counter_offer" ? "text-amber-500" : "text-red-600 dark:text-red-300"}`}
+          className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${result === "accepted" ? "text-green-500" : result === "counter_offer" ? "text-amber-500" : result === "awaiting_reply" ? "text-gray-600 dark:text-gray-300" : "text-red-600 dark:text-red-300"}`}
         >
           {result === "accepted"
             ? (acceptedMessage ?? t(acceptedLabelKey))
@@ -263,7 +267,11 @@ export function LoanOfferForm({
               ? t(rejectedLabelKey)
               : result === "counter_offer"
                 ? t(counteredLabelKey)
-                : error}
+                : result === "awaiting_reply"
+                  ? replyOn
+                    ? t("transfers.offerAwaitingReplyOn", { date: formatMatchDate(replyOn) })
+                    : t("transfers.offerAwaitingReply")
+                  : error}
         </div>
       ) : null}
 

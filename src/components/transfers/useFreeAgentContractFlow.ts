@@ -14,6 +14,8 @@ import {
   type FreeAgentContractResponseData,
 } from "../../services/freeAgentService";
 import { calcAgeOnDate } from "../../lib/valueFormatting";
+import { formatMatchDate } from "../../lib/dateFormatting";
+import { awaitedReplyFor } from "./TransfersTab.helpers";
 import { resolveBackendError } from "../../utils/backendI18n";
 
 interface UseFreeAgentContractFlowArgs {
@@ -87,6 +89,10 @@ export function useFreeAgentContractFlow({
   const [contractSuggestedWage, setContractSuggestedWage] = useState<number | null>(null);
   const [contractSuggestedYears, setContractSuggestedYears] = useState<number | null>(null);
   const [contractIsTerminal, setContractIsTerminal] = useState(false);
+  // An offer sent and waiting for the player's answer: the day it comes. Kept
+  // apart from `contractStatus`, which the renewal screens share and which only
+  // ever holds an answer.
+  const [contractReplyOn, setContractReplyOn] = useState<string | null>(null);
 
   const offeredWage = Number(contractWage);
   const offeredYears = Number(contractLength);
@@ -137,6 +143,7 @@ export function useFreeAgentContractFlow({
     setContractSuggestedWage(null);
     setContractSuggestedYears(null);
     setContractIsTerminal(false);
+    setContractReplyOn(awaitedReplyFor(gameState, player.id)?.reply_on ?? null);
   };
 
   const closeFreeAgentContract = (): void => {
@@ -155,6 +162,7 @@ export function useFreeAgentContractFlow({
     setContractSuggestedWage(null);
     setContractSuggestedYears(null);
     setContractIsTerminal(false);
+    setContractReplyOn(null);
   };
 
   const submitFreeAgentContract = async (): Promise<void> => {
@@ -170,6 +178,12 @@ export function useFreeAgentContractFlow({
       const result = await offerFreeAgentContract(freeAgentTarget.id, offeredWage, offeredYears);
 
       onGameUpdate?.(result.game);
+      if (result.outcome === "awaiting_reply") {
+        setContractStatus("idle");
+        setContractReplyOn(result.reply_on ?? null);
+        setContractFeedback(result.feedback ?? null);
+        return;
+      }
       setContractStatus(result.outcome);
       setContractFeedback(result.feedback ?? null);
       setContractSessionStatus(result.session_status);
@@ -205,24 +219,28 @@ export function useFreeAgentContractFlow({
     contractFeedback,
     contractProjection,
     contractSubmitting,
-    contractSubmitDisabled: shouldDisableRenewalSubmit({
-      renewalSubmitting: contractSubmitting,
-      renewalIsTerminal: contractIsTerminal,
-      isRenewalWageValid: isContractWageValid,
-      isRenewalLengthValid: isContractLengthValid,
-      renewalViolatesSoftCap: contractViolatesSoftCap,
-    }),
+    contractSubmitDisabled:
+      contractReplyOn !== null ||
+      shouldDisableRenewalSubmit({
+        renewalSubmitting: contractSubmitting,
+        renewalIsTerminal: contractIsTerminal,
+        isRenewalWageValid: isContractWageValid,
+        isRenewalLengthValid: isContractLengthValid,
+        renewalViolatesSoftCap: contractViolatesSoftCap,
+      }),
     contractStatusMessage: (t: TranslateFn) =>
-      getRenewalStatusMessage(
-        {
-          renewalSessionStatus: contractSessionStatus,
-          renewalStatus: contractStatus,
-          renewalSuggestedWage: contractSuggestedWage,
-          renewalSuggestedYears: contractSuggestedYears,
-          renewalError: contractError,
-        },
-        t,
-      ),
+      contractReplyOn
+        ? t("transfers.offerAwaitingReplyOn", { date: formatMatchDate(contractReplyOn) })
+        : getRenewalStatusMessage(
+            {
+              renewalSessionStatus: contractSessionStatus,
+              renewalStatus: contractStatus,
+              renewalSuggestedWage: contractSuggestedWage,
+              renewalSuggestedYears: contractSuggestedYears,
+              renewalError: contractError,
+            },
+            t,
+          ),
     contractStatusClassName: getRenewalStatusClassName(contractStatus),
     myTeam,
     openFreeAgentContract,

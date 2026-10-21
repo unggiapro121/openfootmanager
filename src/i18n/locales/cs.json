@@ -1520,7 +1520,12 @@
     "transferFeedbackCounterHeadline": "Před stvrzením dohody požadují více.",
     "transferFeedbackCounterDetail": "Nabídka byla dostatečně vysoká na to, aby se pokračovalo v jednání, ale druhá strana dává najevo, že si představuje cenu bližší k {{fee}}.",
     "transferFeedbackRejectedHeadline": "Tato fáze vyjednávání byla ukončena.",
-    "transferFeedbackRejectedDetail": "Návrh je nepřesvědčil. Pro opětovné zahájení vážných rozhovorů budete muset nabídnout vyšší částku, bližší k {{fee}}."
+    "transferFeedbackRejectedDetail": "Návrh je nepřesvědčil. Pro opětovné zahájení vážných rozhovorů budete muset nabídnout vyšší částku, bližší k {{fee}}.",
+    "awaitingReplyHeadline": "Nabídka odeslána",
+    "awaitingReplyDetail": "Odpověď přijde poštou {{date}}.",
+    "offerAwaitingReply": "Nabídka odeslána — čeká na odpověď",
+    "offerAwaitingReplyOn": "Nabídka odeslána — odpověď poštou {{date}}",
+    "awaitingReplyBadge": "Čeká na odpověď"
   },
   "transferCentreWorld": {
     "title": "Přestupové centrum",
@@ -3431,7 +3436,8 @@
         "loanBuyOptionNotAvailable": "Pro tohoto hráče není k dispozici žádná uplatnitelná opce na odkup",
         "invalidYouthScoutingRegion": "Nepodporovaný region pro skauting mládeže.",
         "invalidYouthScoutingObjective": "Nepodporovaný cíl skautingu mládeže.",
-        "invalidYouthScoutingTargetPosition": "Nepodporovaná cílová pozice pro skauting mládeže."
+        "invalidYouthScoutingTargetPosition": "Nepodporovaná cílová pozice pro skauting mládeže.",
+        "awaitingReply": "Nabídka na tohoto hráče už čeká na odpověď."
       },
       "contracts": {
         "playerNotOwnedByClub": "Hráč nepatří do vašeho klubu",
@@ -4103,6 +4109,33 @@
         "effect": {
           "following": "{{scout}} bude sledovat hráče {{player}} a každé pondělí podá zprávu, dokud ho plně nepozná.",
           "scoutFull": "{{player}} je na tvém seznamu sledovaných, ale {{scout}} už sleduje maximální počet hráčů. Přiděl hráče {{player}} jinému skautovi na obrazovce Skauting."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: nabídka přijata"
+        },
+        "counter": {
+          "subject": "{{player}}: protinabídka"
+        },
+        "rejected": {
+          "subject": "{{player}}: nabídka odmítnuta"
+        },
+        "lapsed": {
+          "subject": "{{player}}: nabídka propadla"
+        },
+        "body": {
+          "dealAccepted": "{{club}} souhlasí s částkou {{fee}} za hráče {{player}}.",
+          "dealScheduled": "{{club}} souhlasí s přestupem hráče {{player}}. Bude registrován {{date}}, až se otevře přestupní okno.",
+          "dealCounter": "{{club}} odpověděl ohledně hráče {{player}}: chtějí {{fee}}. Otevřete kartu Přestupy a odpovězte.",
+          "dealRejected": "{{club}} odmítl přestup hráče {{player}}.",
+          "loanAccepted": "{{club}} přijal podmínky hostování hráče {{player}}.",
+          "loanCounter": "{{club}} navrhuje jiné podmínky hostování hráče {{player}}: {{wage}} % platu do {{date}}. Otevřete kartu Přestupy a odpovězte.",
+          "loanRejected": "{{club}} odmítl podmínky hostování hráče {{player}}.",
+          "freeAgentAccepted": "{{player}} přijal vaši nabídku smlouvy a přichází do klubu.",
+          "freeAgentCounter": "{{player}} chce {{wage}} týdně na {{years}} let. Otevřete kartu Přestupy a odpovězte.",
+          "freeAgentRejected": "{{player}} odmítl vaši nabídku smlouvy.",
+          "lapsed": "Vaše nabídka na hráče {{player}} už neplatí: situace se před odpovědí změnila."
         }
       }
     },

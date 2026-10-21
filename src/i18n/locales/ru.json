@@ -1520,7 +1520,12 @@
     "transferFeedbackCounterHeadline": "Они хотят больше перед рукопожатием.",
     "transferFeedbackCounterDetail": "Предложение было достаточно близким, чтобы продолжать разговор, но их сторона намекает на сумму ближе к {{fee}}.",
     "transferFeedbackRejectedHeadline": "Они закрыли этот раунд.",
-    "transferFeedbackRejectedDetail": "Предложение не произвело должного эффекта. Чтобы вновь открыть серьёзные переговоры, нужна сумма ближе к {{fee}}."
+    "transferFeedbackRejectedDetail": "Предложение не произвело должного эффекта. Чтобы вновь открыть серьёзные переговоры, нужна сумма ближе к {{fee}}.",
+    "awaitingReplyHeadline": "Предложение отправлено",
+    "awaitingReplyDetail": "Ответ придёт письмом {{date}}.",
+    "offerAwaitingReply": "Предложение отправлено — ждём ответа",
+    "offerAwaitingReplyOn": "Предложение отправлено — ответ письмом {{date}}",
+    "awaitingReplyBadge": "Ждём ответа"
   },
   "transferCentreWorld": {
     "title": "Трансферный центр",
@@ -3423,7 +3428,8 @@
         "loanBuyOptionNotAvailable": "Для этого игрока нет доступной опции выкупа",
         "invalidYouthScoutingRegion": "Неподдерживаемый молодежный скаутский регион.",
         "invalidYouthScoutingObjective": "Неподдерживаемая цель молодежного скаутинга.",
-        "invalidYouthScoutingTargetPosition": "Неподдерживаемая молодежь ищет целевую позицию."
+        "invalidYouthScoutingTargetPosition": "Неподдерживаемая молодежь ищет целевую позицию.",
+        "awaitingReply": "Предложение по этому игроку уже ждёт ответа."
       },
       "contracts": {
         "playerNotOwnedByClub": "Игрок не принадлежит к вашему клубу",
@@ -4103,6 +4109,33 @@
         "effect": {
           "following": "{{scout}} будет следить за игроком {{player}} и докладывать каждый понедельник, пока не узнает его полностью.",
           "scoutFull": "{{player}} в вашем списке наблюдения, но {{scout}} уже следит за максимальным числом игроков. Передайте игрока {{player}} другому скауту на экране скаутинга."
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}: предложение принято"
+        },
+        "counter": {
+          "subject": "{{player}}: встречное предложение"
+        },
+        "rejected": {
+          "subject": "{{player}}: предложение отклонено"
+        },
+        "lapsed": {
+          "subject": "{{player}}: предложение утратило силу"
+        },
+        "body": {
+          "dealAccepted": "{{club}} согласен на {{fee}} за {{player}}.",
+          "dealScheduled": "{{club}} согласен на сделку по {{player}}. Она будет оформлена {{date}}, когда откроется трансферное окно.",
+          "dealCounter": "{{club}} ответил по {{player}}: они хотят {{fee}}. Откройте вкладку «Трансферы», чтобы ответить.",
+          "dealRejected": "{{club}} отклонил сделку по {{player}}.",
+          "loanAccepted": "{{club}} принял условия аренды {{player}}.",
+          "loanCounter": "{{club}} предлагает другие условия аренды {{player}}: {{wage}}% зарплаты до {{date}}. Откройте вкладку «Трансферы», чтобы ответить.",
+          "loanRejected": "{{club}} отклонил условия аренды {{player}}.",
+          "freeAgentAccepted": "{{player}} принял ваше предложение контракта и переходит в клуб.",
+          "freeAgentCounter": "{{player}} хочет {{wage}} в неделю на {{years}} лет. Откройте вкладку «Трансферы», чтобы ответить.",
+          "freeAgentRejected": "{{player}} отклонил ваше предложение контракта.",
+          "lapsed": "Ваше предложение по {{player}} больше не действует: ситуация изменилась до ответа."
         }
       }
     },

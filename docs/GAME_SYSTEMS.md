@@ -745,6 +745,22 @@ Each player has:
 - `loan_listed: bool` — Whether the player is available for loan
 - `transfer_offers: Vec<TransferOffer>` — Pending offers
 
+### Answers Take Days
+
+An offer the user makes — a bid, a loan offer, a counter to a club bidding for one of his players,
+a contract for a free agent — is not decided when it is sent (`ofm_core::transfers::replies`). It
+is checked at once, so an offer the other side could not even consider (no money, no window, no
+such player) is still refused on the spot, and then waits as an `AwaitedReply` on
+`Game::awaited_replies` (saved in `game_meta.awaited_replies_json`). The answer comes one or two
+days later, a day more when the player is worth €20M or more, and in the last two days of an open
+window the same day, as on deadline day.
+
+On the reply day `deliver_due_replies` (in the daily turn, before the AI market moves) decides the
+offer with the same negotiation rules that used to answer at once, against the world as it is
+then, and mails the answer: accepted, a counter with the asking terms, rejected — or lapsed, when
+something changed in between (the player moved, the money went). One offer per player waits at a
+time; the negotiation screens show it waiting and lock sending until the answer arrives.
+
 ### Transfer Views (Frontend)
 
 The `TransfersTab` provides 4 views:

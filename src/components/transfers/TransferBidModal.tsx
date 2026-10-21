@@ -216,7 +216,7 @@ export function TransferBidForm({
       <TransferNegotiationHistory offer={activeBidOffer} mode="outgoing" />
       {bidResult ? (
         <div
-          className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${bidResult === "accepted" ? "text-green-500" : bidResult === "rejected" ? "text-red-600 dark:text-red-300" : "text-amber-500"}`}
+          className={`text-xs font-heading font-bold uppercase tracking-wider mb-3 ${bidResult === "accepted" ? "text-green-500" : bidResult === "rejected" ? "text-red-600 dark:text-red-300" : bidResult === "awaiting_reply" ? "text-gray-600 dark:text-gray-300" : "text-amber-500"}`}
         >
           {bidResult === "accepted"
             ? t("transfers.bidAccepted")
@@ -224,7 +224,9 @@ export function TransferBidForm({
               ? t("transfers.bidRejected")
               : bidResult === "counter_offer"
                 ? t("transfers.bidCountered")
-                : bidError}
+                : bidResult === "awaiting_reply"
+                  ? t("transfers.offerAwaitingReply")
+                  : bidError}
         </div>
       ) : null}
       <div className="flex gap-2">

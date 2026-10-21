@@ -30,6 +30,8 @@ mod lifecycle;
 mod loans;
 mod market;
 mod registration;
+mod replies;
+mod reply_messages;
 
 pub use ai_market::run_ai_transfer_reviews;
 pub(crate) use ai_market::{
@@ -42,6 +44,7 @@ use lifecycle::*;
 pub use loans::*;
 pub use market::*;
 use registration::*;
+pub use replies::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]

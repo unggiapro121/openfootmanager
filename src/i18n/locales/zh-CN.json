@@ -1520,7 +1520,12 @@
     "transferFeedbackCounterHeadline": "他们希望得到更多才肯握手。",
     "transferFeedbackCounterDetail": "出价已足够接近,谈判仍在继续,但对方暗示的价位更接近 {{fee}}。",
     "transferFeedbackRejectedHeadline": "他们这一轮直接关闭了谈判。",
-    "transferFeedbackRejectedDetail": "该报价未能打动他们。你需要更有力的报价,接近 {{fee}},才能重启正式谈判。"
+    "transferFeedbackRejectedDetail": "该报价未能打动他们。你需要更有力的报价,接近 {{fee}},才能重启正式谈判。",
+    "awaitingReplyHeadline": "报价已发出",
+    "awaitingReplyDetail": "对方将于 {{date}} 通过邮件答复。",
+    "offerAwaitingReply": "报价已发出 — 等待答复",
+    "offerAwaitingReplyOn": "报价已发出 — {{date}} 邮件答复",
+    "awaitingReplyBadge": "等待答复"
   },
   "transferCentreWorld": {
     "title": "转会中心",
@@ -3423,7 +3428,8 @@
         "loanBuyOptionNotAvailable": "该球员目前没有可执行的租借买断选项",
         "invalidYouthScoutingRegion": "不支持的青年球探区域。",
         "invalidYouthScoutingObjective": "不支持的青年球探目标。",
-        "invalidYouthScoutingTargetPosition": "不支持的青年球探目标位置。"
+        "invalidYouthScoutingTargetPosition": "不支持的青年球探目标位置。",
+        "awaitingReply": "该球员已有一份报价在等待答复。"
       },
       "contracts": {
         "playerNotOwnedByClub": "该球员不属于你的俱乐部",
@@ -4103,6 +4109,33 @@
         "effect": {
           "following": "{{scout}} 将持续考察 {{player}}，每周一汇报，直到完全掌握他的情况。",
           "scoutFull": "{{player}} 已加入关注名单，但 {{scout}} 考察的球员已达上限。请在球探界面把 {{player}} 交给其他球探。"
+        }
+      },
+      "offerReply": {
+        "accepted": {
+          "subject": "{{player}}：报价被接受"
+        },
+        "counter": {
+          "subject": "{{player}}：对方还价"
+        },
+        "rejected": {
+          "subject": "{{player}}：报价被拒绝"
+        },
+        "lapsed": {
+          "subject": "{{player}}：报价已失效"
+        },
+        "body": {
+          "dealAccepted": "{{club}} 同意以 {{fee}} 出售 {{player}}。",
+          "dealScheduled": "{{club}} 同意了 {{player}} 的交易，将于 {{date}} 转会窗口开启时注册。",
+          "dealCounter": "{{club}} 就 {{player}} 作出答复：他们要价 {{fee}}。打开转会页面进行回复。",
+          "dealRejected": "{{club}} 拒绝了 {{player}} 的交易。",
+          "loanAccepted": "{{club}} 接受了 {{player}} 的租借条款。",
+          "loanCounter": "{{club}} 对 {{player}} 提出其他租借条款：承担其 {{wage}}% 的工资至 {{date}}。打开转会页面进行回复。",
+          "loanRejected": "{{club}} 拒绝了 {{player}} 的租借条款。",
+          "freeAgentAccepted": "{{player}} 接受了你的合同报价并加盟球队。",
+          "freeAgentCounter": "{{player}} 要求每周 {{wage}}，合同 {{years}} 年。打开转会页面进行回复。",
+          "freeAgentRejected": "{{player}} 拒绝了你的合同报价。",
+          "lapsed": "你对 {{player}} 的报价已失效：在答复前情况已发生变化。"
         }
       }
     },

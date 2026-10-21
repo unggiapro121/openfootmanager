@@ -5,6 +5,7 @@ pub mod game;
 pub mod jobs;
 pub mod live_match;
 pub mod messages;
+pub mod offer_replies;
 pub mod package_csv;
 pub mod package_editor;
 mod package_layout;
