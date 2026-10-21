@@ -720,6 +720,10 @@ impl SaveManager {
         game.manager.fan_approval = 50;
         game.manager.career_stats = Default::default();
         game.manager.career_history.clear();
+        // Earned over a career, so a new career starts them afresh.
+        game.manager.reputation = domain::manager::STARTING_REPUTATION;
+        game.manager.play_style_mastery = Default::default();
+        game.manager.progression = Default::default();
         game.sync_user_manager_record();
 
         // Reset team season data
@@ -2578,6 +2582,8 @@ mod tests {
         // Advance the game
         game.clock.advance_days(7);
         game.manager.reputation = 999;
+        game.manager.progression.season_league_matches_led = 17;
+        game.manager.progression.season_dismissal = -40;
 
         sm.save_game(&game, &save_id).unwrap();
 
@@ -2589,6 +2595,7 @@ mod tests {
         // Reload and verify
         let loaded = sm.load_game(&save_id).unwrap();
         assert_eq!(loaded.manager.reputation, 999);
+        assert_eq!(loaded.manager.progression, game.manager.progression);
     }
 
     #[test]
@@ -3265,6 +3272,8 @@ mod tests {
                 days_remaining: 6,
             });
         game.manager.reputation = 999;
+        game.manager.play_style_mastery.counter = 77;
+        game.manager.progression.season_league_matches_led = 17;
         game.emitted_events.insert("board_objectives_1".to_string());
 
         let save_id = sm.create_save(&game, "Source Save").unwrap();
@@ -3295,6 +3304,20 @@ mod tests {
         // Manager should be reset
         assert_eq!(new_game.manager.satisfaction, 100);
         assert_eq!(new_game.manager.fan_approval, 50);
+        // A new career earns its own standing: the source save's reputation, play
+        // style mastery and progression stay with the career that built them.
+        assert_eq!(
+            new_game.manager.reputation,
+            domain::manager::STARTING_REPUTATION
+        );
+        assert_eq!(
+            new_game.manager.play_style_mastery,
+            domain::manager::PlayStyleMastery::default()
+        );
+        assert_eq!(
+            new_game.manager.progression,
+            domain::manager::ManagerProgression::default()
+        );
 
         // Player stats should be reset
         assert!(!new_game.players[0].transfer_listed);
