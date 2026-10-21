@@ -578,7 +578,9 @@ function stageCross(cue: Cue): Staging {
   const early = event.tactical_context === "EarlyCross";
   const low = event.tactical_context === "LowCross";
   const flight = low ? "pass" : "air";
-  const wingSpot = toPitch(side, early ? EARLY_CROSS_DEPTH : 94, flank);
+  // From the corner flag the ball goes straight in, with no run down the wing.
+  const isFromCorner = fromPitch(side, take.at).depth >= CORNER_FLAG_DEPTH;
+  const wingSpot = isFromCorner ? take.at : toPitch(side, early ? EARLY_CROSS_DEPTH : 94, flank);
   const carry = paceSeconds("carry", distance(take.at, wingSpot));
   // The man it is aimed at sets off as the winger heads for the line, and the
   // ball is put where he will be.
@@ -941,6 +943,35 @@ function stageRestart(cue: Cue, at: PitchPoint, focusX: number, whistle = false)
   };
 }
 
+/** A ball this deep, from the side's own goal line, lies at a corner flag. */
+const CORNER_FLAG_DEPTH = 104;
+/** Where the corner taker stands: just behind the ball, off the pitch, as deep as this. */
+const CORNER_TAKER_DEPTH = 106;
+
+/**
+ * A corner: the ball out of play and back at the flag, at the feet of the man
+ * who takes it, who goes there for it — so the cross that follows leaves from
+ * his feet rather than off the flag on its own (after GĐ5).
+ */
+function stageCorner(cue: Cue, spot: PitchPoint): Staging {
+  const { event } = cue;
+  const restart = stageRestart(cue, spot, attackingBoxX(event.side));
+  const taker = event.player_id;
+  if (!taker) return restart;
+  const behind = toPitch(event.side, CORNER_TAKER_DEPTH, fromPitch(event.side, spot).lane);
+  return {
+    steps: restart.steps.map((step) => ({
+      ...step,
+      // A new set piece: the players may be put in place for it rather than
+      // run the length of the pitch to it (`radarSceneCut`).
+      sceneCut: true,
+      movers: only(taker, behind),
+      highlight: cast(taker),
+      action: { kind: "dead", spot, holder: taker },
+    })),
+  };
+}
+
 /** A ball put on its spot for a restart: out of play and back there, unless it is there already. */
 function placed(cue: Cue, spot: PitchPoint): RadarStep["action"] {
   return distance(cue.scene.ball, spot) > 1 ? { kind: "dead", spot } : undefined;
@@ -1065,7 +1096,7 @@ function stageEvent(cue: Cue): Staging | null {
     }
     case "Corner": {
       const flank = seedOf(`${event.minute}k`) % 2 === 0 ? 0.8 : 67.2;
-      return stageRestart(cue, toPitch(side, 104.6, flank), attackingBoxX(side));
+      return stageCorner(cue, toPitch(side, 104.6, flank));
     }
     case "GoalKick":
       return stageRestart(cue, toPitch(side, 5.5, CENTRE_LANE + 9), toPitch(side, 25, 0).x);
