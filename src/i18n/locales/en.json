@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Manager of {{team}}",
     "reputation": "Reputation",
+    "reputationChange": "{{delta}} after season {{season}}",
+    "reputationHistory": "Reputation History",
     "careerStats": "Career Statistics",
     "boardStatus": "Board Status",
     "satisfaction": "Satisfaction",
@@ -3612,6 +3614,11 @@
         "subject": "Relegated to the {{division}}",
         "body": "The club has been relegated and will play in the {{division}} in Season {{season}}.\n\nThe board is deeply disappointed. An immediate push for promotion is expected."
       },
+      "managerReputation": {
+        "subject": "Season {{season}} reputation review",
+        "body": "Your reputation moved from {{before}} to {{after}} ({{delta}}) this season.\n\n• Results against expectations: {{performance}}\n• Trophies, promotion and relegation: {{honours}}\n• Standing of the club you lead: {{clubPull}}",
+        "bodyPartial": "Your reputation moved from {{before}} to {{after}} ({{delta}}) this season.\n\n• Results against expectations: {{performance}}\n• Trophies, promotion and relegation: {{honours}}\n• Standing of the club you lead: {{clubPull}}\n\nYou led {{led}} of the club's {{played}} league matches, so only your share of its finish counts."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} win the {{year}} World Cup!",
         "body": "{{nation}} have been crowned world champions at the {{year}} World Cup.\n\nA generation of players will be remembered for this triumph."
@@ -4464,6 +4471,7 @@
     "rejected": "Your application was unsuccessful.",
     "noJobs": "No positions currently available.",
     "leaguePosition": "Last Season: {{position}}",
+    "yourReputation": "Your reputation: {{reputation}}. Clubs look for a manager of their own standing.",
     "refresh": "Check for new positions",
     "sameTeam": "You are already managing that club.",
     "notBetterClub": "You can only apply for clubs that are a step up from your current one.",

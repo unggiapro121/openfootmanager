@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "{{team}} menajeri",
     "reputation": "İtibar",
+    "reputationChange": "Sezon {{season}} sonrası {{delta}}",
+    "reputationHistory": "İtibar Geçmişi",
     "careerStats": "Kariyer İstatistikleri",
     "boardStatus": "Yönetim Durumu",
     "satisfaction": "Memnuniyet",
@@ -3612,6 +3614,11 @@
         "subject": "{{division}} kademesine düştünüz",
         "body": "Kulüp küme düştü ve Sezon {{season}}'da {{division}} kademesinde oynayacak.\n\nYönetim derin bir hayal kırıklığı içinde. Derhal yeniden yükselme mücadelesi bekleniyor."
       },
+      "managerReputation": {
+        "subject": "Sezon {{season}} itibar değerlendirmesi",
+        "body": "İtibarın bu sezon {{before}} iken {{after}} oldu ({{delta}}).\n\n• Beklentilere göre sonuçlar: {{performance}}\n• Kupalar, yükselme ve düşme: {{honours}}\n• Çalıştırdığın kulübün itibarı: {{clubPull}}",
+        "bodyPartial": "İtibarın bu sezon {{before}} iken {{after}} oldu ({{delta}}).\n\n• Beklentilere göre sonuçlar: {{performance}}\n• Kupalar, yükselme ve düşme: {{honours}}\n• Çalıştırdığın kulübün itibarı: {{clubPull}}\n\nKulübün {{played}} lig maçının {{led}} tanesinde takımın başındaydın, bu yüzden sıralamadan yalnızca senin payın hesaba katılıyor."
+      },
       "worldCupChampion": {
         "subject": "{{nation}}, {{year}} Dünya Kupası'nı kazandı!",
         "body": "{{nation}}, {{year}} Dünya Kupası'nda dünya şampiyonu oldu.\n\nBir nesil oyuncu bu zaferle hatırlanacak."
@@ -4464,6 +4471,7 @@
     "rejected": "Başvurunuz başarısız oldu.",
     "noJobs": "Şu anda açık pozisyon yok.",
     "leaguePosition": "Geçen Sezon: {{position}}",
+    "yourReputation": "İtibarın: {{reputation}}. Kulüpler kendi seviyesinde bir teknik direktör arar.",
     "refresh": "Yeni pozisyonları kontrol et",
     "sameTeam": "Bu kulübü zaten yönetiyorsunuz.",
     "notBetterClub": "Yalnızca mevcut kulübünüzden bir üst seviyedeki kulüplere başvurabilirsiniz.",

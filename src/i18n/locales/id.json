@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Manajer {{team}}",
     "reputation": "Reputasi",
+    "reputationChange": "{{delta}} setelah Musim {{season}}",
+    "reputationHistory": "Riwayat Reputasi",
     "careerStats": "Statistik Karier",
     "boardStatus": "Status Manajemen",
     "satisfaction": "Kepuasan",
@@ -3612,6 +3614,11 @@
         "subject": "Degradasi ke {{division}}",
         "body": "Klub telah terdegradasi dan akan bermain di {{division}} pada Musim {{season}}.\n\nManajemen sangat kecewa. Dorongan segera untuk promosi sangat diharapkan."
       },
+      "managerReputation": {
+        "subject": "Evaluasi reputasi Musim {{season}}",
+        "body": "Reputasimu berubah dari {{before}} menjadi {{after}} ({{delta}}) musim ini.\n\n• Hasil dibanding ekspektasi: {{performance}}\n• Trofi, promosi, dan degradasi: {{honours}}\n• Pamor klub yang kamu latih: {{clubPull}}",
+        "bodyPartial": "Reputasimu berubah dari {{before}} menjadi {{after}} ({{delta}}) musim ini.\n\n• Hasil dibanding ekspektasi: {{performance}}\n• Trofi, promosi, dan degradasi: {{honours}}\n• Pamor klub yang kamu latih: {{clubPull}}\n\nKamu memimpin {{led}} dari {{played}} laga liga klub, jadi hanya bagianmu dari posisi akhirnya yang dihitung."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} Memenangkan Piala Dunia {{year}}!",
         "body": "{{nation}} dinobatkan sebagai juara dunia di Piala Dunia {{year}}.\n\nSatu generasi pemain akan dikenang atas kemenangan ini."
@@ -4464,6 +4471,7 @@
     "rejected": "Lamaran kamu tidak berhasil.",
     "noJobs": "Belum ada posisi yang tersedia.",
     "leaguePosition": "Musim Lalu: {{position}}",
+    "yourReputation": "Reputasimu: {{reputation}}. Klub mencari pelatih yang setara dengan pamor mereka.",
     "refresh": "Cek posisi baru",
     "sameTeam": "Kamu sudah mengelola klub itu.",
     "notBetterClub": "Kamu hanya dapat melamar ke klub yang satu tingkat lebih baik dari klub saat ini.",

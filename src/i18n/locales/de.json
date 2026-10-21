@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Trainer von {{team}}",
     "reputation": "Ruf",
+    "reputationChange": "{{delta}} nach Saison {{season}}",
+    "reputationHistory": "Rufverlauf",
     "careerStats": "Karrierestatistiken",
     "boardStatus": "Vorstandsstatus",
     "satisfaction": "Zufriedenheit",
@@ -3612,6 +3614,11 @@
         "subject": "Abstieg in die {{division}}",
         "body": "Der Verein ist abgestiegen und spielt in Saison {{season}} in der {{division}}.\n\nDer Vorstand ist zutiefst enttäuscht. Es wird erwartet, dass wir sofort den Wiederaufstieg anstreben."
       },
+      "managerReputation": {
+        "subject": "Rufbewertung der Saison {{season}}",
+        "body": "Dein Ruf hat sich in dieser Saison von {{before}} auf {{after}} ({{delta}}) verändert.\n\n• Ergebnisse gemessen an den Erwartungen: {{performance}}\n• Titel, Auf- und Abstiege: {{honours}}\n• Ansehen deines Vereins: {{clubPull}}",
+        "bodyPartial": "Dein Ruf hat sich in dieser Saison von {{before}} auf {{after}} ({{delta}}) verändert.\n\n• Ergebnisse gemessen an den Erwartungen: {{performance}}\n• Titel, Auf- und Abstiege: {{honours}}\n• Ansehen deines Vereins: {{clubPull}}\n\nDu hast {{led}} der {{played}} Ligaspiele des Vereins betreut, daher zählt nur dein Anteil an der Platzierung."
+      },
       "worldCupChampion": {
         "subject": "{{nation}} gewinnt die WM {{year}}!",
         "body": "{{nation}} hat sich bei der Weltmeisterschaft {{year}} zum Weltmeister gekrönt.\n\nEine ganze Generation von Spielern wird für diesen Triumph in Erinnerung bleiben."
@@ -4464,6 +4471,7 @@
     "rejected": "Ihre Bewerbung war leider nicht erfolgreich.",
     "noJobs": "Derzeit keine Stellen verfügbar.",
     "leaguePosition": "Letzte Saison: {{position}}",
+    "yourReputation": "Dein Ruf: {{reputation}}. Vereine suchen eine Trainerin oder einen Trainer ihres Formats.",
     "refresh": "Nach neuen Stellen suchen",
     "sameTeam": "Sie sind bereits Trainer dieses Vereins.",
     "notBetterClub": "Sie können sich nur bei Vereinen bewerben, die einen Aufstieg gegenüber Ihrem aktuellen Verein darstellen.",

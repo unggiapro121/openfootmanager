@@ -417,6 +417,12 @@ fn apply_knobs_from_env() {
 }
 
 fn build_game(package: &Path, seed: u64) -> Game {
+    build_game_for_club(package, seed, None)
+}
+
+/// [`build_game`], with the user at `club` when given (otherwise as
+/// `OFM_PROBE_CLUB` and `OFM_PROBE_SCOPE` choose).
+pub(super) fn build_game_for_club(package: &Path, seed: u64, club: Option<&str>) -> Game {
     let (pkg, errors) = load_world_package_from_ofm(package);
     assert!(errors.is_empty(), "package errors: {errors:?}");
     let sources = DefinitionSources::embedded_only();
@@ -443,8 +449,9 @@ fn build_game(package: &Path, seed: u64) -> Game {
             .find(|c| c.id == REFERENCE_LEAGUES[0])
             .and_then(|c| c.participant_ids.first().cloned())
     };
-    let club = std::env::var("OFM_PROBE_CLUB")
-        .ok()
+    let club = club
+        .map(str::to_string)
+        .or_else(|| std::env::var("OFM_PROBE_CLUB").ok())
         .filter(|id| game.teams.iter().any(|team| &team.id == id))
         .or_else(|| europe_scope().then(premier_league_club).flatten())
         .unwrap_or_else(|| game.teams[0].id.clone());

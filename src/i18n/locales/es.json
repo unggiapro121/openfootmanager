@@ -1308,6 +1308,8 @@
   "manager": {
     "managerOf": "Entrenador del {{team}}",
     "reputation": "Reputación",
+    "reputationChange": "{{delta}} tras la temporada {{season}}",
+    "reputationHistory": "Historial de Reputación",
     "careerStats": "Estadísticas de Carrera",
     "boardStatus": "Estado de la Directiva",
     "satisfaction": "Satisfacción",
@@ -3612,6 +3614,11 @@
         "subject": "Descenso a {{division}}",
         "body": "El club ha descendido y jugará en {{division}} en la temporada {{season}}.\n\nLa directiva está profundamente decepcionada. Se espera que luchemos por el ascenso de inmediato."
       },
+      "managerReputation": {
+        "subject": "Revisión de reputación de la temporada {{season}}",
+        "body": "Tu reputación ha pasado de {{before}} a {{after}} ({{delta}}) esta temporada.\n\n• Resultados frente a las expectativas: {{performance}}\n• Títulos, ascensos y descensos: {{honours}}\n• Prestigio del club que diriges: {{clubPull}}",
+        "bodyPartial": "Tu reputación ha pasado de {{before}} a {{after}} ({{delta}}) esta temporada.\n\n• Resultados frente a las expectativas: {{performance}}\n• Títulos, ascensos y descensos: {{honours}}\n• Prestigio del club que diriges: {{clubPull}}\n\nDirigiste {{led}} de los {{played}} partidos de liga del club, así que solo cuenta tu parte de su clasificación."
+      },
       "worldCupChampion": {
         "subject": "¡{{nation}} gana el Mundial de {{year}}!",
         "body": "{{nation}} se ha proclamado campeona del mundo en el Mundial de {{year}}.\n\nUna generación de jugadores será recordada por este triunfo."
@@ -4464,6 +4471,7 @@
     "rejected": "Tu solicitud no fue exitosa.",
     "noJobs": "No hay puestos disponibles actualmente.",
     "leaguePosition": "Última temporada: {{position}}",
+    "yourReputation": "Tu reputación: {{reputation}}. Los clubes buscan un entrenador de su mismo nivel.",
     "refresh": "Buscar nuevas ofertas",
     "sameTeam": "Ya eres el entrenador de ese club.",
     "notBetterClub": "Solo puedes solicitar puestos en clubes que supongan un paso adelante respecto al actual.",

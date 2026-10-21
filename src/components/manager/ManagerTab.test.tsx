@@ -40,6 +40,8 @@ vi.mock("react-i18next", () => ({
       if (key === "common.present") return "Present";
       if (key === "manager.playStyleMastery") return "Play Style Mastery";
       if (key === "manager.playStyleMasteryHint") return "Mastery hint";
+      if (key === "manager.reputationChange") return `${params?.delta} in season ${params?.season}`;
+      if (key === "manager.reputationHistory") return "Reputation History";
       if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
       return key;
     },
@@ -153,6 +155,51 @@ describe("ManagerTab", () => {
     fireEvent.click(screen.getByRole("menuitem", { name: "View team" }));
 
     expect(onSelectTeam).toHaveBeenCalledWith("team-0");
+  });
+
+  it("shows how far the last season's review moved the reputation", () => {
+    const gameState = createGameState(false);
+    gameState.manager.reputation = 470;
+    gameState.manager.progression = {
+      reputation_log: [
+        {
+          season: 2026,
+          team_id: "team-1",
+          before: 500,
+          after: 545,
+          performance: 45,
+          honours: 0,
+          club_pull: 0,
+          dismissal: 0,
+          league_matches_led: 38,
+          league_matches_played: 38,
+        },
+        {
+          season: 2027,
+          team_id: "team-1",
+          before: 545,
+          after: 470,
+          performance: -45,
+          honours: -30,
+          club_pull: 0,
+          dismissal: 0,
+          league_matches_led: 38,
+          league_matches_played: 38,
+        },
+      ],
+    };
+
+    render(<ManagerTab gameState={gameState} />);
+
+    expect(screen.getByTestId("manager-reputation-change")).toHaveTextContent("-75 in season 2027");
+    expect(screen.getByRole("region", { name: "Reputation History" })).toBeInTheDocument();
+  });
+
+  it("shows no reputation change or history before the first review", () => {
+    render(<ManagerTab gameState={createGameState(false)} />);
+
+    expect(screen.queryByTestId("manager-reputation-change")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Reputation History" })).not.toBeInTheDocument();
   });
 
   it("shows the manager's mastery of every play style", () => {
