@@ -2,18 +2,16 @@ import type { GameStateData } from "../../store/gameStore";
 import { Card, CardHeader, CardBody, ProgressBar, CountryFlag } from "../ui";
 import { ManagerCareerChart } from "./ManagerCareerChart";
 import { ManagerReputationChart } from "./ManagerReputationChart";
+import { PlayStyleMasteryCard } from "./PlayStyleMasteryCard";
 import { getLastReputationChange, getReputationLog } from "../../lib/managerReputation";
 import { getManagerProgression } from "../../services/managerProgressionService";
-import type { ManagerProgressionView, StyleProgressView } from "../../store/types";
+import type { ManagerProgressionView } from "../../store/types";
 import { useEffect, useState } from "react";
-import type { TFunction } from "i18next";
 import { formatDate } from "../../lib/helpers";
 import { useTranslation } from "react-i18next";
 import { countryName } from "../../lib/countries";
 import ContextMenu from "../ContextMenu";
 import { buildViewTeamMenuItem } from "../playerActions/playerContextMenuItems";
-import { getPlayStyleMastery, PLAY_STYLE_IDS } from "../../lib/managerMastery";
-import { getAttributeColors } from "../../lib/playerAttributeDisplay";
 
 interface ManagerTabProps {
   gameState: GameStateData;
@@ -183,51 +181,7 @@ export default function ManagerTab({ gameState, onSelectTeam }: ManagerTabProps)
       </Card>
 
       {/* Play style mastery */}
-      <Card className="md:col-span-3">
-        <section aria-label={t("manager.playStyleMastery")}>
-          <CardHeader>{t("manager.playStyleMastery")}</CardHeader>
-          <CardBody>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-              {t("manager.playStyleMasteryHint")}
-            </p>
-            {progression && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                {t("manager.masteryEarnedHint", {
-                  win: progression.xp_for_a_win,
-                  draw: progression.xp_for_a_draw,
-                  loss: progression.xp_for_a_loss,
-                })}
-              </p>
-            )}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
-              {PLAY_STYLE_IDS.map((style) => {
-                const value = getPlayStyleMastery(mgr, style);
-                const colors = getAttributeColors(value);
-                const detail = progression?.styles.find((entry) => entry.style === style);
-                return (
-                  <div key={style}>
-                    <div
-                      data-testid={`mastery-${style}`}
-                      className="grid grid-cols-[minmax(0,7rem)_1fr_2rem] items-center gap-3"
-                    >
-                      <span className="text-sm text-gray-600 dark:text-gray-300 truncate">
-                        {t(`common.playStyles.${style}`, style)}
-                      </span>
-                      <ProgressBar value={value} variant={colors.barVariant} size="sm" />
-                      <span
-                        className={`text-sm font-heading font-bold tabular-nums text-right ${colors.textClass}`}
-                      >
-                        {value}
-                      </span>
-                    </div>
-                    {detail && <StyleProgressDetail detail={detail} t={t} />}
-                  </div>
-                );
-              })}
-            </div>
-          </CardBody>
-        </section>
-      </Card>
+      <PlayStyleMasteryCard manager={mgr} progression={progression} />
 
       {/* Reputation perks: what the user's standing is worth off the pitch */}
       {progression?.perks &&
@@ -381,34 +335,5 @@ function StatBlock({ label, value }: { label: string; value: number | string }) 
         {label}
       </p>
     </div>
-  );
-}
-
-/** One style's XP toward its next point, matches earned in it, and what it does at this mastery. */
-function StyleProgressDetail({ detail, t }: { detail: StyleProgressView; t: TFunction }) {
-  const effects =
-    detail.effects.length === 0
-      ? t("manager.masteryNeutralStyle")
-      : detail.effects
-          .map((effect) =>
-            t("manager.styleEffect", {
-              phase: t(`manager.stylePhase.${effect.phase}`),
-              percent: effect.percent > 0 ? `+${effect.percent}` : `${effect.percent}`,
-            }),
-          )
-          .join(" · ");
-  return (
-    <p
-      data-testid={`mastery-detail-${detail.style}`}
-      className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 tabular-nums"
-    >
-      {detail.xp_to_next === null
-        ? t("manager.masteryMax")
-        : t("manager.masteryXp", { xp: detail.xp, next: detail.xp_to_next })}
-      {" · "}
-      {t("manager.masteryMatches", { count: detail.matches })}
-      {" · "}
-      {effects}
-    </p>
   );
 }

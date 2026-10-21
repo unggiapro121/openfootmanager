@@ -51,6 +51,9 @@ vi.mock("react-i18next", () => ({
       if (key === "manager.styleEffect") return `${params?.phase} ${params?.percent}%`;
       if (key.startsWith("manager.stylePhase.")) return key.replace("manager.stylePhase.", "");
       if (key === "manager.reputationPerks") return "Reputation Perks";
+      if (key === "manager.masteryNeutralLevel") return "Neutral level";
+      if (key === "manager.masteryLevel") return "Level";
+      if (key === "manager.masteryProgress") return "Progress";
       if (key === "manager.perkWageDiscount") return `Wages -${params?.pct}%`;
       if (key === "manager.perkSponsorUplift") return `Sponsors +${params?.pct}%`;
       if (key.startsWith("common.playStyles.")) return key.replace("common.playStyles.", "");
@@ -242,14 +245,26 @@ describe("ManagerTab", () => {
 
     render(<ManagerTab gameState={createGameState(false)} />);
 
-    const counter = await screen.findByTestId("mastery-detail-Counter");
+    await screen.findByText("Earned in managed matches: 15/10/7");
+    const counter = screen.getByTestId("mastery-Counter");
     expect(counter).toHaveTextContent("20/90 XP");
     expect(counter).toHaveTextContent("Matches: 3");
-    expect(counter).toHaveTextContent("Attack +20%");
-    expect(counter).toHaveTextContent("Midfield -7%");
-    expect(screen.getByTestId("mastery-detail-Balanced")).toHaveTextContent("Neutral style");
-    expect(screen.getByTestId("mastery-detail-Possession")).toHaveTextContent("Max");
-    expect(screen.getByText("Earned in managed matches: 15/10/7")).toBeInTheDocument();
+    expect(within(counter).getByText("▲ 20%")).toBeInTheDocument();
+    expect(within(counter).getByText("Attack")).toBeInTheDocument();
+    expect(within(counter).getByText("▼ 7%")).toBeInTheDocument();
+    expect(within(counter).getByText("Midfield")).toBeInTheDocument();
+    const counterProgress = within(counter).getByRole("progressbar");
+    expect(counterProgress).toHaveAttribute("aria-valuenow", "20");
+    expect(counterProgress).toHaveAttribute("aria-valuemax", "90");
+
+    expect(screen.getByTestId("mastery-Balanced")).toHaveTextContent("Neutral style");
+
+    const possession = screen.getByTestId("mastery-Possession");
+    expect(possession).toHaveTextContent("Max");
+    const possessionProgress = within(possession).getByRole("progressbar");
+    expect(possessionProgress.getAttribute("aria-valuenow")).toBe(
+      possessionProgress.getAttribute("aria-valuemax"),
+    );
   });
 
   it("shows what the user's reputation is worth when it is worth something", async () => {
@@ -297,9 +312,12 @@ describe("ManagerTab", () => {
     render(<ManagerTab gameState={gameState} />);
 
     const card = screen.getByRole("region", { name: "Play Style Mastery" });
-    expect(within(card).getByTestId("mastery-Counter")).toHaveTextContent("Counter74");
-    expect(within(card).getByTestId("mastery-HighPress")).toHaveTextContent("HighPress29");
-    expect(within(card).getAllByTestId(/^mastery-/)).toHaveLength(6);
+    expect(within(card).getAllByRole("listitem")).toHaveLength(6);
+    expect(within(card).getByTestId("mastery-Counter")).toHaveTextContent("Counter");
+    expect(within(card).getByTestId("mastery-level-Counter")).toHaveTextContent("74");
+    expect(within(card).getByTestId("mastery-level-HighPress")).toHaveTextContent("29");
+    // The level every style is measured against sits in the card's header.
+    expect(within(card).getByTestId("mastery-neutral-level")).toHaveTextContent("Neutral level50");
   });
 
   it("shows a manager without mastery data as neutral in every style", () => {
@@ -314,7 +332,7 @@ describe("ManagerTab", () => {
       "Counter",
       "HighPress",
     ]) {
-      expect(within(card).getByTestId(`mastery-${style}`)).toHaveTextContent(`${style}50`);
+      expect(within(card).getByTestId(`mastery-level-${style}`)).toHaveTextContent("50");
     }
   });
 });

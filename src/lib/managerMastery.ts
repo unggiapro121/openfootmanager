@@ -11,7 +11,7 @@ export const PLAY_STYLE_IDS: readonly PlayStyleId[] = [
 ];
 
 /** Mastery the backend gives a manager it has nothing else for: the style as designed. */
-const NEUTRAL_MASTERY = 50;
+export const NEUTRAL_MASTERY = 50;
 
 /** How well `manager` gets `style` across, 1–100. Display only: the engine applies it. */
 export function getPlayStyleMastery(manager: ManagerData, style: PlayStyleId): number {
