@@ -35,11 +35,40 @@ function picture(overrides: Partial<RadarPicture> = {}): RadarPicture {
     celebration: null,
     pulse: null,
     goalLabel: "Goal",
+    playersOpacity: 1,
     ...overrides,
   };
 }
 
 describe("drawRadar", () => {
+  // Given a change of scene dimming the players (after GĐ5), then they and the
+  // ball are drawn faint, the pitch at full strength, and the canvas is left
+  // at full strength after.
+  it("dims the players and the ball through a change of scene, never the pitch", () => {
+    const { context, calls } = recordingContext();
+    const alphas: { method: string; alpha: number }[] = [];
+    const note = (method: string) => () => {
+      alphas.push({ method, alpha: context.globalAlpha });
+    };
+    Object.assign(context, {
+      globalAlpha: 1,
+      fillRect: note("fillRect"),
+      fillText: note("fillText"),
+      ellipse: note("ellipse"),
+    });
+    drawRadar(
+      context,
+      picture({ players: [player("a")], ballOpacity: 0.5, playersOpacity: 0.25 }),
+      palette,
+      6,
+    );
+    expect(alphas.find((entry) => entry.method === "fillRect")?.alpha).toBe(1);
+    expect(alphas.find((entry) => entry.method === "fillText")?.alpha).toBeCloseTo(0.25);
+    expect(alphas.find((entry) => entry.method === "ellipse")?.alpha).toBeCloseTo(0.125);
+    expect(calls.length).toBeGreaterThan(0);
+    expect(context.globalAlpha).toBe(1);
+  });
+
   // Given players on the radar, then each is a dot with his shirt number, and
   // only those whose names are to be shown get a name.
   it("draws each player with his number, and names only those asked for", () => {

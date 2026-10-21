@@ -46,6 +46,8 @@ export interface RadarPicture {
   /** A repeating 0…1 for the whistle's ring; null when motion is reduced. */
   pulse: number | null;
   goalLabel: string;
+  /** How visible the players and the ball are: below 1 only through a change of scene. */
+  playersOpacity: number;
 }
 
 /** Pitch markings in metres, to the laws of the game. */
@@ -352,9 +354,11 @@ export function drawRadar(
   drawTrail(ctx, palette, picture.trail);
   drawOverlay(ctx, palette, picture.overlay, picture.pulse);
   for (const player of picture.players) {
+    ctx.globalAlpha = picture.playersOpacity;
     drawPlayer(ctx, palette, player);
     drawPlayerMark(ctx, palette, picture.overlay, player);
   }
-  drawBall(ctx, palette, picture.ball, picture.lift, picture.ballOpacity);
+  ctx.globalAlpha = 1;
+  drawBall(ctx, palette, picture.ball, picture.lift, picture.ballOpacity * picture.playersOpacity);
   if (celebration) drawCelebration(ctx, palette, picture.goalLabel, celebration.progress);
 }

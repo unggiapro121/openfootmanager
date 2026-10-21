@@ -80,14 +80,33 @@ function reactionTimes(stage: RadarStage, ids: string[]): Record<string, number>
 
 /** Everyone standing still where `scene` puts them. */
 export function restingSim(stage: RadarStage, scene: RadarScene): RadarSim {
-  const positions = scenePositions(stage, scene);
-  const players: Record<string, SimPlayer> = {};
-  for (const [id, at] of positions) players[id] = { at, velocity: { x: 0, y: 0 } };
+  const players = playersInPlace(stage, scene);
   return {
     time: 0,
     track: [{ time: 0, at: scene.ball, possession: scene.possession }],
     players,
-    reactions: reactionTimes(stage, [...positions.keys()]),
+    reactions: reactionTimes(stage, Object.keys(players)),
+  };
+}
+
+/** Everyone standing still in his place in `scene`. */
+function playersInPlace(stage: RadarStage, scene: RadarScene): Record<string, SimPlayer> {
+  const players: Record<string, SimPlayer> = {};
+  for (const [id, at] of scenePositions(stage, scene))
+    players[id] = { at, velocity: { x: 0, y: 0 } };
+  return players;
+}
+
+/**
+ * `sim` with everyone put straight into his place in `scene`, still: a change
+ * of scene (`radarSceneCut`). The clock and the reaction times carry on; what
+ * the players saw of the ball before the cut is forgotten.
+ */
+export function placedSim(sim: RadarSim, stage: RadarStage, scene: RadarScene): RadarSim {
+  return {
+    ...sim,
+    track: [{ time: sim.time, at: scene.ball, possession: scene.possession }],
+    players: playersInPlace(stage, scene),
   };
 }
 

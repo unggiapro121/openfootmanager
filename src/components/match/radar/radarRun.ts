@@ -8,10 +8,18 @@ import {
   SIM_LIMITS,
   add,
   lengthOf,
+  placedSim,
   restingSim,
   scale,
   stepPlayers,
 } from "./radarSim";
+import {
+  type SceneCut,
+  cutOpacity,
+  isCutDueToPlace,
+  isCutHolding,
+  isFarFromPlaces,
+} from "./radarSceneCut";
 import type { RadarStage } from "./radarStage";
 import { PACE_SPEED, meetingPoint } from "./radarTiming";
 
@@ -105,6 +113,8 @@ export interface RadarRun {
   rolled: boolean;
   /** The script's marks, each with when its man must be on it. */
   marks: Record<string, Mark>;
+  /** A change of scene under way (`radarSceneCut`), or null. */
+  sceneCut: SceneCut | null;
 }
 
 function looseAt(at: PitchPoint): BallState {
@@ -122,7 +132,13 @@ export function startRun(stage: RadarStage, playback: Playback): RadarRun {
     struck: false,
     rolled: false,
     marks: {},
+    sceneCut: null,
   };
+}
+
+/** How visible the players and the ball are now: below 1 only through a change of scene. */
+export function sceneCutOpacity(run: RadarRun): number {
+  return cutOpacity(run.sceneCut, run.sim.time);
 }
 
 /** The script step on screen, if any. */
@@ -513,6 +529,8 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
     !!playback.beat &&
     (next.acting?.beat !== playback.beat || next.acting.index !== playback.index);
   if (step && playback.beat && isNewStep) {
+    const script = stepOnScreen(playback);
+    const isCut = !!script?.sceneCut && isFarFromPlaces(next.sim, stage, playback.scene, script);
     next = {
       ...next,
       acting: { beat: playback.beat, index: playback.index },
@@ -521,6 +539,16 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
       rolled: false,
       marks: scriptMarks(next.marks, step, time),
       ball: beginAction(next.ball, action, next.sim, stage, playback.scene, time),
+      sceneCut: isCut ? { since: time, placed: false } : null,
+    };
+  }
+  // Faded out: everyone is put straight into his place in the new scene.
+  if (next.sceneCut && isCutDueToPlace(next.sceneCut, time)) {
+    next = {
+      ...next,
+      sim: placedSim(next.sim, stage, playback.scene),
+      marks: {},
+      sceneCut: { ...next.sceneCut, placed: true },
     };
   }
   next = playIt(next, action, stage, time);
@@ -557,6 +585,11 @@ function advanceSlice(run: RadarRun, stage: RadarStage, dt: number, idle: boolea
   next = { ...next, sim, ball };
 
   if (!step) return next;
+  // A change of scene holds the script until the players have stood a moment.
+  if (isCutHolding(next.sceneCut, time)) {
+    const elapsed = Math.min(step.elapsed + dt * 1000, step.ms * 0.999);
+    return { ...next, playback: { ...next.playback, step: { ...step, elapsed } } };
+  }
   const isDoneOrGivenUp = !!action && (isDone(action, next) || time - next.since > MAX_ACTION_S);
   // A carry plays at its own pace, but holds at its end for a carrier left behind.
   const waitsForCarrier = action?.kind === "carry" && !isDoneOrGivenUp;
