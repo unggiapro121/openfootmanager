@@ -1014,18 +1014,82 @@ function stageShot(cue: Cue): Staging {
   return { important: isGoal, steps: [...steps.map(rushing), ...finish.map(rushing)] };
 }
 
+/** The penalty spot, from the attacking side's end. */
+const PENALTY_SPOT_DEPTH = 94;
+/** How far behind the spot the taker stands for his run-up. */
+const PENALTY_RUN_UP = 2.5;
+/** Where the keeper stands for a penalty: on his line. */
+const PENALTY_KEEPER_DEPTH = 104.6;
+/** Everyone else waits this deep at most: outside the box and its arc. */
+const PENALTY_WAIT_DEPTH = 84;
+
+/**
+ * A penalty lined up by the laws (after GĐ5): the taker behind the spot for
+ * his run-up, the defending keeper on his line, and every other player out of
+ * the box and its arc, waiting on its edge where his place in the shape would
+ * have had him inside it.
+ */
+function penaltyLineUp(cue: Cue, taker: string | null): Record<string, PitchPoint> {
+  const { stage } = cue;
+  const side = cue.event.side;
+  const keeper = stage.goalkeeper(opposite(side));
+  const shape = stage.shapeAt({ x: attackingBoxX(side), y: CENTRE_LANE, possession: side });
+  const movers: Record<string, PitchPoint> = {};
+  for (const [id, at] of shape) {
+    if (id === taker || id === keeper) continue;
+    const { depth, lane } = fromPitch(side, at);
+    const isByTheBox = Math.abs(lane - CENTRE_LANE) <= BOX_HALF_WIDTH + 1;
+    if (!isByTheBox || depth <= PENALTY_WAIT_DEPTH) continue;
+    movers[id] = toPitch(side, PENALTY_WAIT_DEPTH - (seedOf(id) % 4), lane);
+  }
+  return {
+    ...movers,
+    ...only(taker, toPitch(side, PENALTY_SPOT_DEPTH - PENALTY_RUN_UP, CENTRE_LANE)),
+    ...only(keeper, toPitch(side, PENALTY_KEEPER_DEPTH, CENTRE_LANE)),
+  };
+}
+
+/** The taker of the penalty `event` gives: the man who takes the kick that follows it. */
+function penaltyTaker(cue: Cue): string | null {
+  const { event, next } = cue;
+  const isKick = next?.event_type === "PenaltyGoal" || next?.event_type === "PenaltyMiss";
+  return isKick && next.side === event.side ? next.player_id : null;
+}
+
+/**
+ * A penalty given: the whistle, and a change of scene to the penalty lined up
+ * — always, as a broadcast cuts to the spot — the ball on it (after GĐ5).
+ */
+function stagePenaltyAwarded(cue: Cue): Staging {
+  const side = cue.event.side;
+  const spot = toPitch(side, PENALTY_SPOT_DEPTH, CENTRE_LANE);
+  const taker = penaltyTaker(cue);
+  const restart = stageRestart(cue, spot, attackingBoxX(side), true);
+  return {
+    steps: restart.steps.map((step) => ({
+      ...step,
+      sceneCut: "always" as const,
+      movers: penaltyLineUp(cue, taker),
+      highlight: cast(taker),
+    })),
+  };
+}
+
 function stagePenalty(cue: Cue): Staging {
   const side = cue.event.side;
   const taker = cue.event.player_id;
-  const spot = toPitch(side, 94, CENTRE_LANE);
+  const spot = toPitch(side, PENALTY_SPOT_DEPTH, CENTRE_LANE);
   return {
     important: cue.event.event_type === "PenaltyGoal",
     steps: [
       {
+        // Lined up already when the award was staged; a penalty staged on its
+        // own (a shoot-out kick) is put in line here.
+        sceneCut: cue.previous?.event_type === "PenaltyAwarded" ? undefined : ("always" as const),
         resetMovers: true,
         overlay: null,
         ball: { at: spot },
-        movers: only(taker, toPitch(side, 91, CENTRE_LANE)),
+        movers: penaltyLineUp(cue, taker),
         highlight: cast(taker),
         pace: "place",
         action: placed(cue, spot),
@@ -1237,10 +1301,8 @@ function stageEvent(cue: Cue): Staging | null {
     case "PenaltyGoal":
     case "PenaltyMiss":
       return stagePenalty(cue);
-    case "PenaltyAwarded": {
-      const spot = toPitch(side, 94, CENTRE_LANE);
-      return stageRestart(cue, spot, attackingBoxX(side), true);
-    }
+    case "PenaltyAwarded":
+      return stagePenaltyAwarded(cue);
     case "Corner": {
       const flank = seedOf(`${event.minute}k`) % 2 === 0 ? 0.8 : 67.2;
       return stageCorner(cue, toPitch(side, 104.6, flank));

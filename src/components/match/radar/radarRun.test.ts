@@ -117,10 +117,14 @@ const turnover: RadarSettle = { ballZone: "Midfield", possession: "Away" };
 describe("radar run — a busy minute", () => {
   const frames = simulate(busyMinute, { restMs: 3000, settle: turnover });
 
-  // Given a busy minute, then no one ever runs faster than a footballer can (T5).
+  // Given a busy minute, then no one ever runs faster than a footballer can
+  // (T5). The one frame a change of scene puts everyone in place, out of
+  // sight, is not running (after GĐ5).
   it("never moves a player faster than a sprint", () => {
     let fastest = 0;
     for (let index = 1; index < frames.length; index++) {
+      const isPutInPlace = !!frames[index].sceneCut?.placed && !frames[index - 1].sceneCut?.placed;
+      if (isPutInPlace) continue;
       for (const id of playerIds) fastest = Math.max(fastest, speedOf(frames, index, id));
     }
     expect(fastest).toBeLessThanOrEqual(SIM_LIMITS.sprint + 0.01);
@@ -564,6 +568,46 @@ describe("radar run — a long shot (after GĐ5)", () => {
     expect(distanceOut).toBeGreaterThanOrEqual(18);
     expect(distanceOut).toBeLessThanOrEqual(28);
   });
+});
+
+describe("radar run — a penalty (after GĐ5)", () => {
+  const spot = toPitch("Home", 94, CENTRE_LANE);
+  const inTheBox = (at: { x: number; y: number }) => {
+    const { depth, lane } = fromPitch("Home", at);
+    return depth > 88.5 && Math.abs(lane - CENTRE_LANE) < 20.16;
+  };
+
+  // Given a penalty given for a foul in the box, then when it is struck the
+  // ball is on the spot, the keeper on his line, and nobody but the taker and
+  // the keeper is in the box.
+  for (const kick of ["PenaltyGoal", "PenaltyMiss"] as const) {
+    it(`lines a penalty up by the laws before it is struck (${kick})`, () => {
+      const frames = simulate(
+        [
+          radarEvent("Dribble", "Home", "AwayDefense", "h_st1"),
+          radarEvent("Foul", "Away", "AwayBox", "a_cb1", "h_st1"),
+          radarEvent("PenaltyAwarded", "Home", "AwayBox"),
+          { ...radarEvent(kick, "Home", "AwayBox", "h_st2"), shot_kind: "Penalty" as const },
+        ],
+        { highlightsOnly: true },
+      );
+      const struck = frames.findIndex(
+        (run, index) =>
+          index > 0 &&
+          run.acting?.beat.beat.eventType === kick &&
+          run.ball.kind === "flight" &&
+          frames[index - 1].ball.kind !== "flight",
+      );
+      expect(struck).toBeGreaterThan(0);
+      const before = frames[struck - 1];
+      expect(distance(before.ball.at, spot)).toBeLessThan(1);
+      expect(fromPitch("Home", before.sim.players.a_gk.at).depth).toBeGreaterThan(103.5);
+      const inside = Object.entries(before.sim.players)
+        .filter(([id, player]) => id !== "h_st2" && id !== "a_gk" && inTheBox(player.at))
+        .map(([id]) => id);
+      expect(inside).toEqual([]);
+    });
+  }
 });
 
 describe("radar run — the ball out of play", () => {

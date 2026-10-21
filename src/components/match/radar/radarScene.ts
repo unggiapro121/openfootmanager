@@ -111,8 +111,9 @@ export interface RadarStep {
    * A change of scene: if the players are still far from their places when it
    * starts, they fade, are put there, and stand a moment before play goes on
    * (`radarSceneCut`), rather than run the length of the pitch after the ball.
+   * `"always"` cuts however near they are: a penalty, lined up by the laws.
    */
-  sceneCut?: boolean;
+  sceneCut?: boolean | "always";
   /**
    * Whose run the step lasts for when the ball does not fly: the man going to
    * the ball. Left out, every mover's. Team-mates joining in keep their own pace.
