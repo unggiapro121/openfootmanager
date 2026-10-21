@@ -14,6 +14,7 @@ pub mod career;
 pub mod catchup;
 pub mod clock;
 pub mod club;
+pub mod coach_progress;
 pub mod contract_wage_policy;
 pub mod contracts;
 pub(crate) mod cup_calendar;

@@ -1,3 +1,4 @@
+pub mod coach;
 pub mod contract_ledger;
 pub mod finance;
 pub mod identity;
