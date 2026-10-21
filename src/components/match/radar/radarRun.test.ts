@@ -388,6 +388,54 @@ describe("radar run — a man left on the ball", () => {
   });
 });
 
+describe("radar run — a corner (after GĐ5)", () => {
+  /** A blocked shot, the corner it wins, and the corner crossed in for a header saved. */
+  const cornerMove = [
+    radarEvent("ShotBlocked", "Home", "AwayBox", "h_st1"),
+    radarEvent("Corner", "Home", "AwayBox", "h_rm"),
+    radarEvent("Cross", "Home", "AwayBox", "h_rm", "h_st2"),
+    radarEvent("ShotSaved", "Home", "AwayBox", "h_st2", "a_gk"),
+  ];
+  const flags = [toPitch("Home", 104.6, 0.8), toPitch("Home", 104.6, 67.2)];
+  const fromFlag = (at: { x: number; y: number }) =>
+    Math.min(...flags.map((flag) => distance(at, flag)));
+
+  // Given a corner, then the man who takes it goes to the flag, the ball comes
+  // back at his feet there, and the cross leaves from his feet: the ball never
+  // flies off the flag on its own.
+  it("crosses the corner from the taker's feet at the flag", () => {
+    const frames = simulate(cornerMove, { highlightsOnly: true });
+    const cornerShown = frames.findIndex(
+      (run) => run.ball.kind === "held" && run.ball.holder === "h_rm",
+    );
+    expect(cornerShown).toBeGreaterThan(0);
+    expect(fromFlag(frames[cornerShown].ball.at)).toBeLessThan(3);
+    const struck = frames.findIndex(
+      (run, index) => index > cornerShown && run.ball.kind === "flight",
+    );
+    expect(struck).toBeGreaterThan(cornerShown);
+    const before = frames[struck - 1];
+    expect(before.ball.kind === "held" && before.ball.holder).toBe("h_rm");
+    expect(fromFlag(before.sim.players.h_rm.at)).toBeLessThan(3);
+  });
+
+  // Given a corner taken by a man far from the flag, then the corner is a
+  // change of scene: the players are put in place for it rather than the
+  // taker running the length of the pitch, and the cross goes in within a
+  // couple of seconds of the corner being given.
+  it("cuts to a corner taken by a man far from the flag", () => {
+    const frames = simulate(cornerMove, { highlightsOnly: true });
+    const given = frames.findIndex((run) => run.acting?.beat.beat.eventType === "Corner");
+    expect(given).toBeGreaterThan(0);
+    expect(frames.slice(given).some((run) => run.sceneCut !== null)).toBe(true);
+    const struck = frames.findIndex(
+      (run, index) =>
+        index > given && run.acting?.beat.beat.eventType === "Cross" && run.ball.kind === "flight",
+    );
+    expect((struck - given) * FRAME_S).toBeLessThan(3);
+  });
+});
+
 describe("radar run — the ball out of play", () => {
   // Given a shot wide and a goal kick, then the ball vanishes, and is back on the
   // goal-kick spot within a second and a half, never sliding there.
