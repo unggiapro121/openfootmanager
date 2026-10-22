@@ -41,7 +41,7 @@ use crate::types::{
 // AiPersonality — determines decision-making style
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum AiPersonality {
     /// Safe play: works to the scheduled checkpoints and changes the personnel.
     Pragmatist,
@@ -56,7 +56,7 @@ pub enum AiPersonality {
 // AI Manager profile — drives decision-making style
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct AiProfile {
     /// Team reputation 0–1000. Higher = more sophisticated decisions.
     pub reputation: u32,

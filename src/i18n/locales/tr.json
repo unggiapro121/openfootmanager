@@ -3351,7 +3351,11 @@
         "playerNotOnBench": "Oyuncu yedek kulübesinde değil",
         "playerNotInStartingXi": "Oyuncu ilk 11'de değil",
         "pressConferenceAlreadyHeld": "Bugün zaten bir basın toplantısı düzenlediniz",
-        "noCompletedMatch": "Takımınız için tamamlanmış bir maç bulunamadı"
+        "noCompletedMatch": "Takımınız için tamamlanmış bir maç bulunamadı",
+        "notYourSide": "Yalnızca kendi takımına talimat verebilirsin.",
+        "commandsClosed": "Maçın bu aşamasında artık değişiklik yapılamaz.",
+        "unknownFormation": "Bu diziliş kullanılamıyor.",
+        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir."
       },
       "csv": {
         "writeFailed": "CSV dosyası yazılamadı."

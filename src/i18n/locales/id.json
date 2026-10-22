@@ -3351,7 +3351,11 @@
         "playerNotOnBench": "Pemain tidak berada di bangku cadangan",
         "playerNotInStartingXi": "Pemain tidak berada di Starting XI",
         "pressConferenceAlreadyHeld": "Kamu sudah menggelar konferensi pers hari ini",
-        "noCompletedMatch": "Tidak ada pertandingan selesai yang ditemukan untuk tim kamu"
+        "noCompletedMatch": "Tidak ada pertandingan selesai yang ditemukan untuk tim kamu",
+        "notYourSide": "Kamu hanya bisa memberi instruksi kepada timmu sendiri.",
+        "commandsClosed": "Tidak ada perubahan lagi yang bisa dilakukan pada tahap pertandingan ini.",
+        "unknownFormation": "Formasi ini tidak tersedia.",
+        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu."
       },
       "csv": {
         "writeFailed": "Gagal menulis berkas CSV."

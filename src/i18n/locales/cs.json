@@ -3351,7 +3351,11 @@
         "playerNotOnBench": "Hráč není na lavički",
         "playerNotInStartingXi": "Hráč není v základní sestavě",
         "pressConferenceAlreadyHeld": "Tisková konference dnes už proběhla",
-        "noCompletedMatch": "Pro váš tým nebyl nalezen žádný odehraný zápas"
+        "noCompletedMatch": "Pro váš tým nebyl nalezen žádný odehraný zápas",
+        "notYourSide": "Pokyny můžete dávat jen svému týmu.",
+        "commandsClosed": "V této fázi zápasu už nelze nic měnit.",
+        "unknownFormation": "Tato formace není k dispozici.",
+        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte."
       },
       "csv": {
         "writeFailed": "Nepodařilo se zapsat soubor CSV."

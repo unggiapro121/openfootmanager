@@ -8,7 +8,7 @@ publish = false
 chrono = { version = "0.4.44", features = ["serde"] }
 log = "0.4"
 domain = { version = "0.3.0", path = "../domain" }
-engine = { version = "0.3.0", path = "../engine" }
+engine = { version = "0.4.0", path = "../engine" }
 ofm-rules = { version = "0.3.0", path = "../ofm-rules" }
 rand = "0.10"
 # Named, not `rand::rngs::StdRng`: rand reserves the right to change what StdRng is, and a saved

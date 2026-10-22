@@ -3351,7 +3351,11 @@
         "playerNotOnBench": "Player not on bench",
         "playerNotInStartingXi": "Player not in starting XI",
         "pressConferenceAlreadyHeld": "You have already held a press conference today",
-        "noCompletedMatch": "No completed match found for your team"
+        "noCompletedMatch": "No completed match found for your team",
+        "notYourSide": "You can only give orders to your own team.",
+        "commandsClosed": "No more changes can be made at this stage of the match.",
+        "unknownFormation": "This formation is not available.",
+        "tooManyUnderPricedDials": "Your team already uses two of the cautious settings (deep line, compact shape, narrow width, long counter-press). Change one of them first."
       },
       "csv": {
         "writeFailed": "Failed to write the CSV file."

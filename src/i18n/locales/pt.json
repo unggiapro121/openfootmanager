@@ -3327,7 +3327,11 @@
         "playerNotOnBench": "O jogador não está no banco",
         "playerNotInStartingXi": "O jogador não está no onze inicial",
         "pressConferenceAlreadyHeld": "Já deste uma conferência de imprensa hoje",
-        "noCompletedMatch": "Não foi encontrado nenhum jogo disputado pela tua equipa"
+        "noCompletedMatch": "Não foi encontrado nenhum jogo disputado pela tua equipa",
+        "notYourSide": "Só pode dar ordens à sua própria equipa.",
+        "commandsClosed": "Não é possível fazer mais alterações nesta fase do jogo.",
+        "unknownFormation": "Esta tática não está disponível.",
+        "tooManyUnderPricedDials": "A sua equipa já usa duas das definições cautelosas (linha baixa, bloco compacto, pouca largura, contrapressão longa). Altere uma delas primeiro."
       },
       "csv": {
         "writeFailed": "Falha ao escrever o ficheiro CSV."

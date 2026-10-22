@@ -3327,7 +3327,11 @@
         "playerNotOnBench": "El jugador no está en el banquillo",
         "playerNotInStartingXi": "El jugador no está en el once inicial",
         "pressConferenceAlreadyHeld": "Ya has ofrecido una rueda de prensa hoy",
-        "noCompletedMatch": "No se ha encontrado ningún partido disputado por tu equipo"
+        "noCompletedMatch": "No se ha encontrado ningún partido disputado por tu equipo",
+        "notYourSide": "Solo puedes dar órdenes a tu propio equipo.",
+        "commandsClosed": "No se pueden hacer más cambios en esta fase del partido.",
+        "unknownFormation": "Esta formación no está disponible.",
+        "tooManyUnderPricedDials": "Tu equipo ya usa dos de los ajustes prudentes (línea baja, bloque compacto, poca amplitud, contrapresión larga). Cambia uno de ellos antes."
       },
       "csv": {
         "writeFailed": "No se pudo escribir el archivo CSV."

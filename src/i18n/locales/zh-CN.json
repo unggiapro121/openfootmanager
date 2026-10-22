@@ -3327,7 +3327,11 @@
         "playerNotOnBench": "球员不在替补席上",
         "playerNotInStartingXi": "球员不在首发阵容中",
         "pressConferenceAlreadyHeld": "今天你已经召开过新闻发布会了",
-        "noCompletedMatch": "未找到你的球队已完成的比赛"
+        "noCompletedMatch": "未找到你的球队已完成的比赛",
+        "notYourSide": "你只能对自己的球队下达指令。",
+        "commandsClosed": "比赛进行到这个阶段已无法再做调整。",
+        "unknownFormation": "该阵型不可用。",
+        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。"
       },
       "csv": {
         "writeFailed": "无法写入 CSV 文件。"

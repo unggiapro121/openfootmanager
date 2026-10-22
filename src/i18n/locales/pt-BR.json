@@ -3327,7 +3327,11 @@
         "playerNotOnBench": "O jogador não está no banco",
         "playerNotInStartingXi": "O jogador não está no time titular",
         "pressConferenceAlreadyHeld": "Você já deu uma coletiva de imprensa hoje",
-        "noCompletedMatch": "Nenhuma partida disputada foi encontrada para o seu time"
+        "noCompletedMatch": "Nenhuma partida disputada foi encontrada para o seu time",
+        "notYourSide": "Você só pode dar ordens ao seu próprio time.",
+        "commandsClosed": "Não é possível fazer mais mudanças nesta fase da partida.",
+        "unknownFormation": "Este esquema não está disponível.",
+        "tooManyUnderPricedDials": "Seu time já usa duas das configurações cautelosas (linha baixa, bloco compacto, pouca amplitude, contrapressão longa). Mude uma delas primeiro."
       },
       "csv": {
         "writeFailed": "Falha ao gravar o arquivo CSV."

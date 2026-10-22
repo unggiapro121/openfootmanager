@@ -80,7 +80,7 @@ pub enum MatchPhase {
 // MatchCommand — actions injected by user or AI between minutes
 // ---------------------------------------------------------------------------
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum MatchCommand {
     Substitute {
         side: Side,
@@ -141,6 +141,26 @@ pub enum MatchCommand {
         side: Side,
         dial: TacticalDial,
     },
+}
+
+impl MatchCommand {
+    /// The side the command is for: the one whose manager must have given it.
+    pub fn side(&self) -> Side {
+        match self {
+            Self::Substitute { side, .. }
+            | Self::ChangeFormation { side, .. }
+            | Self::ChangePlayStyle { side, .. }
+            | Self::SetFreeKickTaker { side, .. }
+            | Self::SetCornerTaker { side, .. }
+            | Self::SetPenaltyTaker { side, .. }
+            | Self::SetCaptain { side, .. }
+            | Self::PreMatchSwap { side, .. }
+            | Self::PreMatchSwapPositions { side, .. }
+            | Self::SwapPositions { side, .. }
+            | Self::ChangePlayerRole { side, .. }
+            | Self::ChangeTacticalDial { side, .. } => *side,
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -624,6 +644,21 @@ impl LiveMatchState {
         self.current_minute
     }
 
+    /// A side as it stands now: its XI in slot order, formation, style and dials.
+    pub fn team(&self, side: Side) -> &TeamData {
+        self.team_ref(side)
+    }
+
+    /// Whether `player_id` has been sent off: he stays in the XI, but is off the pitch.
+    pub fn is_sent_off(&self, player_id: &str) -> bool {
+        self.sent_off.contains(player_id)
+    }
+
+    /// The score, home first.
+    pub fn score(&self) -> (u8, u8) {
+        (self.home_score, self.away_score)
+    }
+
     /// Get the bench for a side
     pub fn bench(&self, side: Side) -> &[PlayerData] {
         match side {
@@ -657,7 +692,9 @@ impl LiveMatchState {
     }
 }
 
-fn is_role_valid_for_position(role: PlayerRole, position: crate::types::Position) -> bool {
+/// Whether a player of `position` can take `role`. The engine ignores a role that does not fit;
+/// the shared command check refuses it (phase 3, E3-3).
+pub fn is_role_valid_for_position(role: PlayerRole, position: crate::types::Position) -> bool {
     use crate::types::Position;
     match position {
         Position::Goalkeeper => matches!(
