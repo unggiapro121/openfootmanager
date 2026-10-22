@@ -345,7 +345,9 @@
     "worldEditor.staffClub",
     "worldEditor.staffRole.Scout",
     "worldEditor.staffSpecialization.Fitness",
-    "teamSelect.regionLabels.africa"
+    "teamSelect.regionLabels.africa",
+    "coachServer.email",
+    "coachServer.password"
   ],
   "es": [
     "teams.club",
@@ -736,7 +738,8 @@
     "youthAcademy.pos",
     "youthAcademy.traits",
     "match.eventTypes.Offside",
-    "match.commentary.Offside.headline"
+    "match.commentary.Offside.headline",
+    "coachServer.email"
   ],
   "vi": [
     "manager.stylePhase.Press",
@@ -795,6 +798,7 @@
     "nations.qa",
     "nations.uz",
     "nations.iq",
-    "nations.nz"
+    "nations.nz",
+    "coachServer.email"
   ]
 }

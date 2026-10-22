@@ -73,7 +73,7 @@ pub async fn advance_time(
 
 /// Run blocking simulation work on Tauri's blocking thread pool so the webview
 /// (main) thread stays responsive while a turn is processed.
-async fn run_off_thread<T, F>(work: F) -> Result<T, String>
+pub(crate) async fn run_off_thread<T, F>(work: F) -> Result<T, String>
 where
     F: FnOnce() -> Result<T, String> + Send + 'static,
     T: Send + 'static,

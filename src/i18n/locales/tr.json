@@ -59,6 +59,39 @@
     "allCareers": "Tüm kariyerler",
     "thisCareer": "Bu kariyer"
   },
+  "coachServer": {
+    "loginTitle": "OFM Online'a giriş yap",
+    "loginSubtitle": "Teknik direktör hesabın sunucuda: oyun tarzı ustalığı ve kariyer toplamları her kariyerde seninle gelir.",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi onayla",
+    "newPassword": "Yeni şifre",
+    "code": "E-postadaki kod",
+    "logIn": "Giriş yap",
+    "forgotPassword": "Şifreni mi unuttun?",
+    "haveCode": "Kodum var",
+    "noAccount": "Henüz hesabın yok mu?",
+    "registerTitle": "Teknik direktör hesabını oluştur",
+    "backToLogin": "Girişe dön",
+    "verifyTitle": "E-postanı doğrula",
+    "verifyHint": "E-postana gönderdiğimiz kodu gir. Kod 24 saat sonra geçersiz olur.",
+    "verify": "Doğrula",
+    "resendCode": "Yeni kod gönder",
+    "codeSent": "{{email}} adresine bir kod gönderdik.",
+    "verified": "E-posta doğrulandı. Artık giriş yapabilirsin.",
+    "verifyFirst": "Giriş yapmadan önce e-postanı doğrula. Sana gönderdiğimiz kodu gir.",
+    "forgotTitle": "Şifreni sıfırla",
+    "forgotHint": "Hesabının e-postasını gir. Şifreyi sıfırlamak için bir kod göndereceğiz; kod 1 saat sonra geçersiz olur.",
+    "sendResetCode": "Sıfırlama kodu gönder",
+    "resetCodeSent": "{{email}} adresini kullanan bir hesap varsa kod yolda.",
+    "resetTitle": "Yeni şifre belirle",
+    "resetPassword": "Şifreyi kaydet",
+    "passwordChanged": "Şifre değişti. Yeni şifrenle giriş yap.",
+    "invalidEmail": "Geçerli bir e-posta adresi gir.",
+    "passwordLength": "{{min}} ile {{max}} karakter arasında kullan.",
+    "passwordMismatch": "Şifreler eşleşmiyor.",
+    "codeRequired": "E-postadaki kodu gir."
+  },
   "createManager": {
     "title": "Menajer Oluştur",
     "firstName": "Ad",
@@ -3274,7 +3307,10 @@
         "notLoggedIn": "Giriş yapılmış bir menajer hesabı yok.",
         "offline": "Hesap sunucusuna ulaşılamadı.",
         "saveOfAnotherAccount": "Bu kariyer başka bir menajer hesabına ait.",
-        "saveWithoutAccount": "Bu kariyerin henüz bir menajer hesabı yok."
+        "saveWithoutAccount": "Bu kariyerin henüz bir menajer hesabı yok.",
+        "managedByServer": "Teknik direktör hesaplarını hesap sunucusu yönetir.",
+        "serverNotConfigured": "Bu oyun için bir hesap sunucusu ayarlanmamış.",
+        "serverUnexpected": "Hesap sunucusu oyunun okuyamadığı bir yanıt gönderdi."
       },
       "teamNotFound": "Takım bulunamadı",
       "jobOffer": {
@@ -3532,7 +3568,24 @@
         "noAssessor": "Kulüpte potansiyeli değerlendirebilecek kimse yok."
       },
       "budgetRebalanceOutOfRange": "Bu maaş bütçesi aralığın dışında: mevcut maaş yükünün altına inemez ve transfer bütçesinin karşılayabileceğinden fazlasına mal olamaz.",
-      "budgetRebalanceStep": "Maaş bütçesini haftalık 1.000'lik adımlarla değiştir."
+      "budgetRebalanceStep": "Maaş bütçesini haftalık 1.000'lik adımlarla değiştir.",
+      "auth": {
+        "invalidCredentials": "E-posta veya şifre yanlış.",
+        "emailNotVerified": "Giriş yapmadan önce e-postanı doğrula.",
+        "emailTaken": "Bu e-postayla zaten bir hesap var.",
+        "accountLocked": "Bu hesap kilitli.",
+        "tokenInvalid": "Kod yanlış ya da süresi dolmuş.",
+        "refreshInvalid": "Oturumun sona erdi. Yeniden giriş yap.",
+        "unauthorized": "Oturumun sona erdi. Yeniden giriş yap.",
+        "forbidden": "Bunu yapma iznin yok."
+      },
+      "validation": {
+        "invalid": "Bazı bilgiler kabul edilmedi. Formu kontrol edip yeniden dene."
+      },
+      "rateLimited": "Çok fazla deneme. Biraz bekleyip yeniden dene.",
+      "unavailable": "Hesap sunucusuna şu anda ulaşılamıyor. Daha sonra yeniden dene.",
+      "timeout": "Hesap sunucusu çok geç yanıt verdi.",
+      "internal": "Hesap sunucusunda bir hata oluştu."
     },
     "sender": {
       "boardOfDirectors": "Yönetim Kurulu",
