@@ -245,6 +245,35 @@ jobs:
       - name: Run Tauri smoke build
         run: npx tauri build --debug --no-bundle --ci
 
+  # The core crates are the ones the online server (phase 3) compiles as well as the game. This
+  # job installs no webkit or other desktop packages on purpose: if a core crate ever pulls in the
+  # Tauri side of the graph, it stops building here, on the same Linux the server will run on.
+  # `src-tauri/tests/architecture.rs` checks the manifests; this checks that they really build.
+  core-crates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Keep this version equal to `rust-toolchain.toml`'s channel; scripts/check-toolchain-pin.sh
+      # fails the build if they drift.
+      - name: Install Rust 1.95.0
+        uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: clippy, rustfmt
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Build the core crates without desktop packages
+        run: cargo build --locked --manifest-path src-tauri/Cargo.toml -p engine -p domain
+
+      - name: Test the core crates
+        run: cargo test --locked --manifest-path src-tauri/Cargo.toml -p engine -p domain
+
   backend:
     runs-on: ubuntu-latest
 
