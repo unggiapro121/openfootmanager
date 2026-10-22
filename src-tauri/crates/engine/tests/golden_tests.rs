@@ -17,6 +17,7 @@
 //! do in the game. The RNG is ChaCha12 because its output is fixed by its
 //! specification; `StdRng` may change algorithm between `rand` releases.
 
+use engine::ENGINE_VERSION;
 use engine::ai::{AiPersonality, AiProfile, ai_decide};
 use engine::{
     BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, LiveMatchState,
@@ -42,7 +43,7 @@ struct Club {
     specialists: bool,
 }
 
-/// Named tactic presets, so the table below reads as football rather than as nine dials.
+/// Named tactic presets, so the table below reads as football rather than as eleven dials.
 #[derive(Clone, Copy)]
 enum Tactics {
     Neutral,
@@ -711,6 +712,21 @@ const GOLDEN_SCRIPTED: [(&str, u8, u8, u64); 6] = [
     ("scripted_chasing", 0, 2, 0xDA39A053038CB62E),
 ];
 
+/// The engine version the golden tables were pinned under, and a digest of both tables. A change
+/// that moves a golden match changes the digest, and is a new engine version: bump `version` in
+/// `crates/engine/Cargo.toml` and set this pair to what the failing test prints.
+const ENGINE_VERSION_PIN: (&str, u64) = ("0.3.0", 0x8350358139C2AC79);
+
+/// FNV-1a over every row of `GOLDEN` and `GOLDEN_SCRIPTED`, in order.
+fn golden_tables_digest() -> u64 {
+    GOLDEN.iter().chain(GOLDEN_SCRIPTED.iter()).fold(
+        0xCBF2_9CE4_8422_2325,
+        |h, (name, home, away, fp)| {
+            fnv1a(h, format!("{name}|{home}|{away}|{fp:016X}\n").as_bytes())
+        },
+    )
+}
+
 /// A scripted match and what each of its commands returned, in script order.
 struct ScriptedPlay {
     report: MatchReport,
@@ -959,4 +975,20 @@ fn scripted_golden_table_lists_every_fixture_in_order() {
     let fixtures: Vec<&str> = SCRIPTED.iter().map(|s| s.fixture.name).collect();
     let golden: Vec<&str> = GOLDEN_SCRIPTED.iter().map(|g| g.0).collect();
     assert_eq!(fixtures, golden);
+}
+
+/// Given the pinned golden tables and the engine's version,
+/// when the tables' digest is taken,
+/// then the pair matches the pin, so a change that moves a golden match cannot ship under the
+/// version the online server already pinned for a season.
+#[test]
+fn engine_version_moves_with_the_golden_tables() {
+    let actual = (ENGINE_VERSION, golden_tables_digest());
+    assert_eq!(
+        actual, ENGINE_VERSION_PIN,
+        "the golden tables or the engine version changed.\n\
+         If a golden match moved on purpose, bump `version` in crates/engine/Cargo.toml, then set\n\
+         ENGINE_VERSION_PIN to (\"<new version>\", 0x{:016X}).",
+        actual.1
+    );
 }

@@ -1,5 +1,7 @@
 use rand::{Rng, RngExt};
 
+use crate::knobs::CalibrationKnobs;
+
 use crate::types::{
     BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, Foot, MarkingStyle,
     MatchConfig, PlayStyle, PlayerData, PlayerRole, Position, PressingIntensity, Side,
@@ -332,10 +334,15 @@ pub(crate) enum PlayStylePhase {
 /// head coach gets the style across.
 ///
 /// Applied to whichever side the phase belongs to, attacking or defending.
-pub(crate) fn play_style_modifier(team: &TeamData, phase: PlayStylePhase) -> f64 {
+pub(crate) fn play_style_modifier(
+    team: &TeamData,
+    phase: PlayStylePhase,
+    knobs: &CalibrationKnobs,
+) -> f64 {
     coached_modifier(
         style_table(team.play_style, phase),
         team.coach.for_style(team.play_style),
+        knobs,
     )
 }
 
@@ -349,9 +356,11 @@ pub enum StylePhase {
 }
 
 /// What `style` does to its side in each phase it changes, coached at
-/// `mastery`: the very multipliers the match applies, for display. Phases the
-/// style leaves at 1.0 are left out, so Balanced has none.
+/// `mastery`: the very multipliers the match applies with the game's default
+/// knobs, for display. Phases the style leaves at 1.0 are left out, so
+/// Balanced has none.
 pub fn play_style_effects(style: PlayStyle, mastery: u8) -> Vec<(StylePhase, f64)> {
+    let knobs = CalibrationKnobs::default();
     [
         (StylePhase::Midfield, PlayStylePhase::Midfield),
         (StylePhase::Attack, PlayStylePhase::Attack),
@@ -361,12 +370,18 @@ pub fn play_style_effects(style: PlayStyle, mastery: u8) -> Vec<(StylePhase, f64
     .into_iter()
     .filter_map(|(named, phase)| {
         let table_value = style_table(style, phase);
-        (table_value != 1.0).then(|| (named, coached_modifier(table_value, mastery)))
+        (table_value != 1.0).then(|| (named, coached_modifier(table_value, mastery, &knobs)))
     })
     .collect()
 }
 
-/// Scale a style by how well the coach gets it across, `k = 0.5 + mastery/100`:
+/// The mastery curve's defaults, `k = MASTERY_K_BASE + mastery / MASTERY_K_SPAN`.
+/// The knobs carry the values a match uses (`CalibrationKnobs::mastery_k_*`).
+pub(crate) const MASTERY_K_BASE: f64 = 0.5;
+pub(crate) const MASTERY_K_SPAN: f64 = 100.0;
+
+/// Scale a style by how well the coach gets it across, `k = 0.5 + mastery/100`
+/// with the default knobs:
 /// the style's edge (a value above 1.0) by `k`, its cost (below 1.0) by `2 − k`.
 /// A neutral coach (50) plays the table as it is; the best widens the edge by
 /// half and halves the cost, the weakest the reverse.
@@ -374,8 +389,8 @@ pub fn play_style_effects(style: PlayStyle, mastery: u8) -> Vec<(StylePhase, f64
 /// Edge and cost move in opposite directions on purpose. Scaling both by `k`
 /// was measured to make a better Counter, Defensive or HighPress coach *lose*
 /// more: their cost lands on every possession, their edge on a single phase.
-fn coached_modifier(table_value: f64, mastery: u8) -> f64 {
-    let k = 0.5 + f64::from(mastery.min(100)) / 100.0;
+fn coached_modifier(table_value: f64, mastery: u8, knobs: &CalibrationKnobs) -> f64 {
+    let k = knobs.mastery_k_base + f64::from(mastery.min(100)) / knobs.mastery_k_span;
     let scale = if table_value >= 1.0 { k } else { 2.0 - k };
     1.0 + (table_value - 1.0) * scale
 }
@@ -718,13 +733,37 @@ mod play_style_modifier_tests {
         (actual - expected).abs() < 0.0005
     }
 
+    /// Given knobs that move the curve's base and span,
+    /// When a style is coached,
+    /// Then `k = base + mastery / span` follows them, and the defaults give the
+    /// game's curve bit for bit.
+    #[test]
+    fn the_mastery_curve_follows_its_knobs() {
+        let mut knobs = CalibrationKnobs::default();
+        assert_eq!(
+            coached_modifier(1.18, 77, &knobs),
+            1.0 + 0.18 * (0.5 + 77.0 / 100.0)
+        );
+        knobs.mastery_k_span = 200.0;
+        assert!(close(coached_modifier(1.18, 100, &knobs), 1.18));
+        knobs.mastery_k_base = 0.3;
+        knobs.mastery_k_span = 100.0;
+        assert!(close(coached_modifier(1.18, 50, &knobs), 1.144));
+    }
+
     /// Given a coach of neutral mastery (50),
     /// When any style's value is coached,
     /// Then it is the table's value unchanged.
     #[test]
     fn a_neutral_coach_plays_the_style_as_the_table_prices_it() {
         for value in [1.18, 0.92, 1.12, 0.93, 1.0] {
-            assert!(close(coached_modifier(value, 50), value), "{value}");
+            assert!(
+                close(
+                    coached_modifier(value, 50, &CalibrationKnobs::default()),
+                    value
+                ),
+                "{value}"
+            );
         }
     }
 
@@ -734,10 +773,22 @@ mod play_style_modifier_tests {
     /// one the reverse: a better coach makes every style better.
     #[test]
     fn a_better_coach_widens_the_edge_and_softens_the_cost() {
-        assert!(close(coached_modifier(1.18, 90), 1.252));
-        assert!(close(coached_modifier(1.18, 20), 1.126));
-        assert!(close(coached_modifier(0.92, 90), 0.952));
-        assert!(close(coached_modifier(0.92, 20), 0.896));
+        assert!(close(
+            coached_modifier(1.18, 90, &CalibrationKnobs::default()),
+            1.252
+        ));
+        assert!(close(
+            coached_modifier(1.18, 20, &CalibrationKnobs::default()),
+            1.126
+        ));
+        assert!(close(
+            coached_modifier(0.92, 90, &CalibrationKnobs::default()),
+            0.952
+        ));
+        assert!(close(
+            coached_modifier(0.92, 20, &CalibrationKnobs::default()),
+            0.896
+        ));
     }
 
     /// Given the extremes of the mastery scale,
@@ -760,17 +811,32 @@ mod play_style_modifier_tests {
             .find(|(phase, _)| *phase == StylePhase::Attack)
             .unwrap()
             .1;
-        assert!(close(attack, coached_modifier(1.18, 99)));
+        assert!(close(
+            attack,
+            coached_modifier(1.18, 99, &CalibrationKnobs::default())
+        ));
 
         assert!(play_style_effects(PlayStyle::Balanced, 99).is_empty());
     }
 
     #[test]
     fn the_coach_scales_a_style_between_half_and_one_and_a_half() {
-        assert!(close(coached_modifier(1.18, 1), 1.0918));
-        assert!(close(coached_modifier(1.18, 100), 1.27));
-        assert!(close(coached_modifier(0.92, 1), 0.8808));
-        assert!(close(coached_modifier(0.92, 100), 0.96));
+        assert!(close(
+            coached_modifier(1.18, 1, &CalibrationKnobs::default()),
+            1.0918
+        ));
+        assert!(close(
+            coached_modifier(1.18, 100, &CalibrationKnobs::default()),
+            1.27
+        ));
+        assert!(close(
+            coached_modifier(0.92, 1, &CalibrationKnobs::default()),
+            0.8808
+        ));
+        assert!(close(
+            coached_modifier(0.92, 100, &CalibrationKnobs::default()),
+            0.96
+        ));
     }
 }
 

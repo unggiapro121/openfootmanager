@@ -190,6 +190,10 @@ pub struct Game {
     /// dropped, as the account server would never have seen it (Y12).
     #[serde(skip)]
     pub pending_coach_reports: Vec<crate::coach_progress::CoachRecord>,
+    /// The match config this game's matches play instead of the default. Only the real-world
+    /// probes set it (calibration knobs from `OFM_KNOBS`); the game never does. Never saved.
+    #[serde(skip)]
+    pub match_config_override: Option<engine::MatchConfig>,
 }
 
 /// The manager's refreshes of the staff market in one calendar month of the
@@ -252,6 +256,7 @@ impl Game {
             cash_journal_dirty_ids: Vec::new(),
             squad_floor_top_ups: Vec::new(),
             pending_coach_reports: Vec::new(),
+            match_config_override: None,
         };
         game.promote_legacy_league();
         crate::football_identity::upgrade_game_football_identities(&mut game);
