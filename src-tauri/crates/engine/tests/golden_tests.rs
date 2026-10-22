@@ -715,7 +715,10 @@ const GOLDEN_SCRIPTED: [(&str, u8, u8, u64); 6] = [
 /// The engine version the golden tables were pinned under, and a digest of both tables. A change
 /// that moves a golden match changes the digest, and is a new engine version: bump `version` in
 /// `crates/engine/Cargo.toml` and set this pair to what the failing test prints.
-const ENGINE_VERSION_PIN: (&str, u64) = ("0.3.0", 0x8350358139C2AC79);
+///
+/// 0.4.0 (phase 3, E3-3) moved no row of these tables: the bump is for the match session, whose
+/// own golden table (`ofm-rules/tests/match_session/golden.rs`) is pinned to the same version.
+const ENGINE_VERSION_PIN: (&str, u64) = ("0.4.0", 0x8350358139C2AC79);
 
 /// FNV-1a over every row of `GOLDEN` and `GOLDEN_SCRIPTED`, in order.
 fn golden_tables_digest() -> u64 {

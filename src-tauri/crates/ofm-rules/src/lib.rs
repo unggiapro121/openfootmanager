@@ -15,6 +15,7 @@ pub mod facilities;
 pub mod lineup_assignment;
 pub mod mastery_xp;
 pub mod match_form;
+pub mod match_session;
 pub mod player_rating;
 pub mod player_wear;
 pub mod playing_time;

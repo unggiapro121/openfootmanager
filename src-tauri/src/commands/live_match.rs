@@ -73,7 +73,7 @@ pub(crate) fn team_talk_seed_in_phase(game: &Game, tone: &str, context: &str, ph
 /// is no live match.
 pub(crate) fn live_phase_tag(state: &ofm_core::state::StateManager) -> String {
     state
-        .with_live_match(|session| format!("{:?}", session.match_state.phase()))
+        .with_live_match(|session| format!("{:?}", session.phase()))
         .unwrap_or_default()
 }
 
@@ -827,7 +827,7 @@ mod tests {
 
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         session.run_to_completion();
 
         state.set_game(game);
@@ -896,7 +896,7 @@ mod tests {
 
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         session.run_to_completion();
 
         state.set_game(game);
@@ -1023,7 +1023,7 @@ mod tests {
         let game = make_game_with_round();
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         state.set_game(game);
         state.set_live_match(session);
 
@@ -1075,7 +1075,7 @@ mod tests {
 
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         // Step only a few minutes — nowhere near full time.
         session.step_many(5);
         assert!(!session.is_finished());
@@ -1111,7 +1111,7 @@ mod tests {
         let game = make_game_with_round();
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         state.set_game(game);
         state.set_live_match(session);
 
@@ -1607,7 +1607,7 @@ mod tests {
         game.league = Some(cup);
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, true).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         session.run_to_completion();
         assert_eq!(session.competition_id, "cup1");
 
@@ -1694,7 +1694,7 @@ mod tests {
         game.competitions = Vec::new();
         let mut session =
             live_match_manager::create_live_match(&game, 1, MatchMode::Instant, false).unwrap();
-        session.user_side = None;
+        session.hand_to_ai();
         session.run_to_completion();
 
         // The stored index no longer exists.

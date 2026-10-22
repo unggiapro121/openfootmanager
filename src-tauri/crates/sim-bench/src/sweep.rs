@@ -22,9 +22,7 @@ use crate::stats::BenchStats;
 
 /// The nine formations a side can line up in: the eight the game has always
 /// had and 3-4-2-1 (phase 2, P2.7). `--formation-mix` draws from them.
-pub const FORMATIONS: [&str; 9] = [
-    "4-4-2", "4-3-3", "3-5-2", "4-5-1", "4-2-3-1", "3-4-3", "5-3-2", "4-1-4-1", "3-4-2-1",
-];
+pub const FORMATIONS: [&str; 9] = engine::FORMATIONS;
 
 /// How much weaker each bench player is than the XI.
 const BENCH_PENALTY: u8 = 8;

@@ -165,15 +165,17 @@ frontend files 500).
   naming the scenario. Review (`ofm-test-reviewer`).
 
 ### Layering and dependency direction
-- Rust crate graph, all dependency kinds: `engine: []`, `domain: []`, `ofm-rules: [domain]`,
+- Rust crate graph, all dependency kinds: `engine: []`, `domain: []`, `ofm-rules: [domain, engine]`,
   `ofm_core: [domain, engine, ofm-rules]`, `db: [domain, ofm_core]`, `ofm-cli: [ofm_core]`,
   `sim-bench: [engine]` (dev-only `domain`, `ofm_core`: the builder's tests rate synthetic players
   with the game's own OVR tables), root app composes all.
   New workspace member must be classified. test for the core crates' allowed deps and for no
   platform crate in them (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
 - `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only under
-  `ofm_core/src/turn/`, except for synthetic inputs in `src-tauri/crates/sim-bench/src/builder.rs`
-  and `src-tauri/src/commands/sim_lab.rs` because they need synthetic teams, not a game.
+  `ofm_core/src/turn/`, except for synthetic inputs in `src-tauri/crates/sim-bench/src/builder.rs`,
+  `src-tauri/src/commands/sim_lab.rs` and the match session's tests
+  (`src-tauri/crates/ofm-rules/tests/match_session/support.rs`) because they need synthetic teams,
+  not a game.
   Other modules may drive the engine, never build its input. review until PR 4
 - `src-tauri/src/application/` never imports `commands` or `mcp_server`. Commands and MCP tools adapt
   the same `_internal` function. review until PR 4 (imports) + review (duplication)

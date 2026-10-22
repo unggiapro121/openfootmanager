@@ -461,7 +461,7 @@ fn pre_match_position_swap_gives_each_player_the_role_his_new_slot_suits() {
 fn create_live_match_user_side_home() {
     let game = make_game_with_fixture();
     let session = live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
-    assert_eq!(session.user_side, Some(engine::Side::Home));
+    assert_eq!(session.user_side(), Some(engine::Side::Home));
 }
 
 #[test]
@@ -469,7 +469,7 @@ fn create_live_match_user_side_away() {
     let mut game = make_game_with_fixture();
     game.manager.team_id = Some("team2".to_string());
     let session = live_match_manager::create_live_match(&game, 0, MatchMode::Live, false).unwrap();
-    assert_eq!(session.user_side, Some(engine::Side::Away));
+    assert_eq!(session.user_side(), Some(engine::Side::Away));
 }
 
 #[test]
@@ -478,7 +478,7 @@ fn create_live_match_user_side_none_neutral() {
     game.manager.team_id = Some("team3".to_string());
     let session =
         live_match_manager::create_live_match(&game, 0, MatchMode::Spectator, false).unwrap();
-    assert_eq!(session.user_side, None);
+    assert_eq!(session.user_side(), None);
 }
 
 #[test]
@@ -597,7 +597,7 @@ fn step_many_stops_at_every_phase_that_needs_the_manager() {
             // unless one of the manager's own players was hurt that minute.
             let own_injury = last.events.iter().any(|event| {
                 event.event_type == engine::EventType::Injury
-                    && Some(event.side) == session.user_side
+                    && Some(event.side) == session.user_side()
             });
             assert!(
                 own_injury
@@ -630,7 +630,7 @@ fn step_many_stops_when_the_managers_player_is_hurt() {
         game.seed = seed;
         let mut session =
             live_match_manager::create_live_match(&game, 0, MatchMode::Instant, false).unwrap();
-        let user_side = session.user_side.expect("the manager's club plays");
+        let user_side = session.user_side().expect("the manager's club plays");
         for _ in 0..40 {
             let results = session.step_many(500);
             let last = results.last().unwrap();

@@ -31,9 +31,7 @@ use crate::turn::squad::first_choice_eleven;
 
 /// The shapes an AI club chooses between: the nine the game offers
 /// (`ui/components/match/types.ts`), in the order ties are broken.
-pub(crate) const AI_FORMATIONS: [&str; 9] = [
-    "4-4-2", "4-3-3", "3-5-2", "4-5-1", "4-2-3-1", "3-4-3", "5-3-2", "4-1-4-1", "3-4-2-1",
-];
+pub(crate) const AI_FORMATIONS: [&str; 9] = engine::FORMATIONS;
 
 /// How far, in OVR points, a new shape must beat the one a club already plays
 /// before it changes. The weekly review is already a hysteresis against

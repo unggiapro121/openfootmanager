@@ -3351,7 +3351,11 @@
         "playerNotOnBench": "Cầu thủ không có trên ghế dự bị",
         "playerNotInStartingXi": "Cầu thủ không có trong đội hình xuất phát",
         "pressConferenceAlreadyHeld": "Hôm nay bạn đã họp báo rồi",
-        "noCompletedMatch": "Không tìm thấy trận đấu đã hoàn tất nào của đội bạn"
+        "noCompletedMatch": "Không tìm thấy trận đấu đã hoàn tất nào của đội bạn",
+        "notYourSide": "Bạn chỉ được ra lệnh cho đội của mình.",
+        "commandsClosed": "Không thể thay đổi gì nữa ở giai đoạn này của trận.",
+        "unknownFormation": "Sơ đồ này không có sẵn.",
+        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước."
       },
       "csv": {
         "writeFailed": "Không ghi được file CSV."

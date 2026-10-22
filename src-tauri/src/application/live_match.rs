@@ -55,7 +55,7 @@ pub fn finish_live_match(
     let home_team_id = session.home_team_id.clone();
     let away_team_id = session.away_team_id.clone();
 
-    let report = session.match_state.into_report();
+    let report = session.into_report();
     let player_ratings: BTreeMap<String, f32> = report
         .player_stats
         .iter()
