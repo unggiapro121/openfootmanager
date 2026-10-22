@@ -9,7 +9,9 @@ use crate::game::Game;
 use domain::staff::Staff;
 use domain::team::TrainingFocus;
 pub(crate) use ofm_rules::training::age_factor;
-use ofm_rules::training::{Taper, TeamCoachingBonus, TeamTrainingPlan, TrainingDay, train_player};
+use ofm_rules::training::{
+    Taper, TeamCoachingBonus, TeamTrainingPlan, TrainingDay, session_rng, train_player,
+};
 
 /// What a team's coaches and assistant managers multiply training gains by:
 /// 0.8 with none, otherwise 0.85 (coaching 0) to 1.35 (coaching 100) on their
@@ -180,13 +182,14 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
         date: game.clock.current_date.format("%Y-%m-%d").to_string(),
         development_multiplier: game.development_speed.multiplier(),
     };
-    // One stream for the day's session: players are visited in the order of `game.players`,
-    // which is stable, and `process_training` runs once a day.
-    let mut rng = game.rng_today("training");
+    // Each player's dice are his own stream for the day (`session_rng`), not a turn in one
+    // stream shared by the list: signing or releasing a player moves nobody else's session.
+    let seed = game.seed;
     for player in game.players.iter_mut() {
         let Some(plan) = player.team_id.as_deref().and_then(|id| plans.get(id)) else {
             continue;
         };
+        let mut rng = session_rng(seed, &player.id, &day.date);
         train_player(player, plan, &day, &mut rng);
     }
 }

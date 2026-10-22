@@ -196,6 +196,23 @@ pub(crate) fn trainee(id: &str, playing_time: u8) -> Player {
     player
 }
 
+/// `count` identical trainees, `<prefix>-0` …: a cohort, so a statistical test of development
+/// reads many players' dice rather than one trajectory (each player rolls his own, phase 3 E5).
+pub(crate) fn trainees(prefix: &str, count: usize, playing_time: u8) -> Vec<Player> {
+    (0..count)
+        .map(|index| trainee(&format!("{prefix}-{index}"), playing_time))
+        .collect()
+}
+
+/// [`physical_total`] summed over the cohort `prefix` made by [`trainees`].
+pub(crate) fn cohort_physical_total(game: &Game, prefix: &str) -> u32 {
+    game.players
+        .iter()
+        .filter(|player| player.id.starts_with(&format!("{prefix}-")))
+        .map(|player| physical_total(game, &player.id))
+        .sum()
+}
+
 /// Sum of the four attributes Physical training works on.
 pub(crate) fn physical_total(game: &Game, player_id: &str) -> u32 {
     let attributes = &game

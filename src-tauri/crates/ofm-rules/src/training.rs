@@ -174,6 +174,13 @@ pub struct TeamTrainingPlan {
     pub taper: Option<Taper>,
 }
 
+/// The dice of `player_id`'s session on `date` ("YYYY-MM-DD") in a world of `seed`: his own
+/// stream, so what he gets from a session never depends on who else trained that day or in which
+/// order (E3-5b, E5) — the online server trains clubs in no particular order.
+pub fn session_rng(seed: u64, player_id: &str, date: &str) -> rand_chacha::ChaCha12Rng {
+    crate::seed::rng_for_seed(seed, &format!("training/{player_id}"), date)
+}
+
 /// One session (or rest day) of `player` under `plan` on `day`, drawing from `rng`.
 pub fn train_player(
     player: &mut Player,

@@ -186,3 +186,96 @@ fn measure_e6_stable_aging_rolls() {
         );
     }
 }
+
+fn trainee(index: usize) -> domain::player::Player {
+    let mut player = veteran(&format!("trainee-{index}"));
+    player.date_of_birth = "2006-03-15".into();
+    for value in [
+        &mut player.attributes.pace,
+        &mut player.attributes.stamina,
+        &mut player.attributes.strength,
+        &mut player.attributes.agility,
+    ] {
+        *value = 40;
+    }
+    player.potential = 99;
+    player.playing_time = 100;
+    player
+}
+
+/// Given 400 identical 19-year-olds on a Physical, Medium programme for 300 days,
+/// when they train with one stream for the whole squad per day (the old way) and with a stream
+/// of their own per day (E5),
+/// then the mean and spread of their physical gains are printed side by side.
+#[test]
+#[ignore = "a measurement, run by hand"]
+fn measure_e5_a_stream_per_player() {
+    use domain::team::{TrainingFocus, TrainingIntensity, TrainingSchedule};
+    use ofm_rules::seed::rng_for_seed;
+    use ofm_rules::training::{
+        TeamCoachingBonus, TeamTrainingPlan, TrainingDay, session_rng, train_player,
+    };
+
+    const PLAYERS: usize = 400;
+    const DAYS: u32 = 300;
+    let plan = TeamTrainingPlan {
+        default_focus: TrainingFocus::Physical,
+        intensity: TrainingIntensity::Medium,
+        schedule: TrainingSchedule::Intense,
+        bonus: TeamCoachingBonus {
+            coaching_mult: 1.2,
+            specialization_mult: 1.0,
+            physio_mult: 1.2,
+        },
+        medical_facility_mult: 1.0,
+        training_facility_mult: 1.0,
+        group_overrides: Default::default(),
+        taper: None,
+    };
+    let physical = |p: &domain::player::Player| {
+        u32::from(p.attributes.pace)
+            + u32::from(p.attributes.stamina)
+            + u32::from(p.attributes.strength)
+            + u32::from(p.attributes.agility)
+    };
+    let mut results = Vec::new();
+    for per_player in [false, true] {
+        let mut squad: Vec<_> = (0..PLAYERS).map(trainee).collect();
+        let before: Vec<u32> = squad.iter().map(physical).collect();
+        for offset in 0..DAYS {
+            let date = format!("2026-{:02}-{:02}", 1 + offset / 28 % 12, 1 + offset % 28);
+            let day = TrainingDay {
+                weekday_num: offset % 7,
+                year: 2026,
+                date: date.clone(),
+                development_multiplier: 1.0,
+            };
+            let mut shared = rng_for_seed(7, "training", &date);
+            for player in &mut squad {
+                player.condition = 90;
+                if per_player {
+                    let mut own = session_rng(7, &player.id, &date);
+                    train_player(player, &plan, &day, &mut own);
+                } else {
+                    train_player(player, &plan, &day, &mut shared);
+                }
+            }
+        }
+        let gains: Vec<f64> = squad
+            .iter()
+            .zip(&before)
+            .map(|(player, before)| f64::from(physical(player) - before))
+            .collect();
+        let mean = gains.iter().sum::<f64>() / gains.len() as f64;
+        let spread =
+            (gains.iter().map(|g| (g - mean).powi(2)).sum::<f64>() / gains.len() as f64).sqrt();
+        results.push((mean, spread));
+    }
+    println!(
+        "E5 — luồng ngẫu nhiên riêng mỗi cầu thủ (400 cầu thủ 19 tuổi, Physical/Medium, 300 ngày)"
+    );
+    println!(
+        "tăng thể chất mỗi cầu thủ: trung bình {:.2} → {:.2} | độ lệch chuẩn {:.2} → {:.2}",
+        results[0].0, results[1].0, results[0].1, results[1].1
+    );
+}
