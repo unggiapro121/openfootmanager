@@ -151,18 +151,21 @@ pub fn build_side(selection: &SideSelection<'_>) -> (TeamData, Vec<PlayerData>) 
 /// plays its style as the table prices it.
 pub fn coach_mastery_of(manager: Option<&domain::manager::Manager>) -> engine::CoachMastery {
     manager
-        .map(|manager| {
-            let mastery = &manager.play_style_mastery;
-            engine::CoachMastery {
-                balanced: mastery.balanced,
-                attacking: mastery.attacking,
-                defensive: mastery.defensive,
-                possession: mastery.possession,
-                counter: mastery.counter,
-                high_press: mastery.high_press,
-            }
-        })
+        .map(|manager| coach_mastery_from(&manager.play_style_mastery))
         .unwrap_or_default()
+}
+
+/// The engine's view of a mastery held anywhere: a manager's, or an online coach's progress
+/// (`CoachProgress::mastery`), which is the same type.
+pub fn coach_mastery_from(mastery: &domain::manager::PlayStyleMastery) -> engine::CoachMastery {
+    engine::CoachMastery {
+        balanced: mastery.balanced,
+        attacking: mastery.attacking,
+        defensive: mastery.defensive,
+        possession: mastery.possession,
+        counter: mastery.counter,
+        high_press: mastery.high_press,
+    }
 }
 
 /// Make a short XI up to the number of slots the formation asks for, drawing on
