@@ -21,8 +21,11 @@ fn club(generator: &Generator<'_>, region: &str, ordinal: u64) -> GeneratedClub 
 }
 
 fn as_json(club: &GeneratedClub) -> serde_json::Value {
+    // Players through `Persisted`, so their potential and traits are compared too.
     serde_json::json!({
-        "team": club.team, "players": club.players, "staff": club.staff, "coach": club.coach,
+        "team": club.team,
+        "players": serde_json::to_value(domain::persisted::Persisted(&club.players)).expect("json"),
+        "staff": club.staff, "coach": club.coach,
         "bot": club.bot_account_id, "nation": club.nation, "slot": club.name_slot,
     })
 }
