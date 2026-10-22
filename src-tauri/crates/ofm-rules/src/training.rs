@@ -282,14 +282,13 @@ pub fn train_player(
 
     // On rest days: only recovery, no attribute gains
     if !is_training_day {
-        let stamina_factor = player.attributes.stamina as f64 / 100.0;
-        let recovery = (recovery_base
-            * (0.5 + stamina_factor * 0.5)
-            * age_rec
-            * morale_rec
-            * condition_rec
-            * fitness_rec) as u8;
-        player.condition = (player.condition + recovery).min(100);
+        player.condition = rest_day_condition(
+            player,
+            player.condition,
+            age,
+            plan.bonus.physio_mult,
+            plan.medical_facility_mult,
+        );
         return;
     }
 
@@ -331,6 +330,49 @@ pub fn train_player(
         * condition_rec
         * fitness_rec) as u8;
     player.condition = (player.condition + recovery).min(100);
+}
+
+/// `player`'s condition after one rest day that started at `condition`: the day off's recovery,
+/// scaled by his stamina, age, morale, condition and fitness, and by the club's physio bonus and
+/// its medical facility's recovery multiplier.
+pub fn rest_day_condition(
+    player: &Player,
+    condition: u8,
+    age: u32,
+    physio_mult: f64,
+    medical_mult: f64,
+) -> u8 {
+    // In this order, to the bit, as the game's rest day has always multiplied it.
+    let recovery_base = 10.0 * physio_mult * medical_mult;
+    let stamina_factor = player.attributes.stamina as f64 / 100.0;
+    let recovery = (recovery_base
+        * (0.5 + stamina_factor * 0.5)
+        * recovery_factor_from_age(age)
+        * recovery_factor_from_morale(player.morale)
+        * recovery_factor_from_condition(condition)
+        * recovery_factor_from_fitness(player.fitness)) as u8;
+    (condition + recovery).min(100)
+}
+
+/// `player`'s condition after resting `hours` from `condition`, with the club's physio and medical
+/// multipliers as for [`rest_day_condition`] (Q6: the online server works it out
+/// when it is read, with no job ticking it up). Whole days recover exactly as the game's rest
+/// days do, one after another; the hours left over give their share of the next day's recovery.
+pub fn condition_after_rest(
+    player: &Player,
+    condition: u8,
+    age: u32,
+    (physio_mult, medical_mult): (f64, f64),
+    hours: u32,
+) -> u8 {
+    let mut condition = condition;
+    for _ in 0..hours / 24 {
+        condition = rest_day_condition(player, condition, age, physio_mult, medical_mult);
+    }
+    let next_day =
+        rest_day_condition(player, condition, age, physio_mult, medical_mult) - condition;
+    let share = u32::from(next_day) * (hours % 24) / 24;
+    condition + share as u8
 }
 
 /// Apply fitness changes based on training focus.
@@ -501,4 +543,61 @@ fn recovery_factor_from_fitness(fitness: u8) -> f64 {
 /// Clamp a fitness value to 0–100.
 fn clamp_fitness(val: i16) -> u8 {
     val.clamp(0, 100) as u8
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_support::uniform_attributes;
+    use domain::player::Position;
+
+    fn tired_player() -> Player {
+        let mut player = Player::new(
+            "p".into(),
+            "P".into(),
+            "P".into(),
+            "1999-05-01".into(),
+            "England".into(),
+            Position::Midfielder,
+            uniform_attributes(70),
+        );
+        player.condition = 35;
+        player.morale = 60;
+        player.fitness = 75;
+        player
+    }
+
+    /// Given a tired player,
+    /// when he rests three whole days by the hour and by three rest days in a row,
+    /// then both reach the same condition: a whole day by the hour is the game's rest day.
+    #[test]
+    fn whole_days_of_rest_recover_as_rest_days_do() {
+        let player = tired_player();
+        let mut by_days = player.condition;
+        for _ in 0..3 {
+            by_days = rest_day_condition(&player, by_days, 27, 1.2, 1.0);
+        }
+        assert_eq!(
+            condition_after_rest(&player, 35, 27, (1.2, 1.0), 72),
+            by_days
+        );
+        assert!(by_days > 35);
+    }
+
+    /// Given a tired player,
+    /// when he rests half a day, a whole day, and a long holiday,
+    /// then half a day gives about half a day's recovery, nothing exceeds 100, and no rest
+    /// leaves him as he was.
+    #[test]
+    fn rest_by_the_hour_is_proportional_and_capped() {
+        let player = tired_player();
+        let day = condition_after_rest(&player, 35, 27, (1.0, 1.0), 24) - 35;
+        let half = condition_after_rest(&player, 35, 27, (1.0, 1.0), 12) - 35;
+        assert_eq!(half, day / 2);
+        assert_eq!(condition_after_rest(&player, 35, 27, (1.0, 1.0), 0), 35);
+        assert_eq!(
+            condition_after_rest(&player, 35, 27, (1.0, 1.0), 24 * 60),
+            100
+        );
+    }
 }
