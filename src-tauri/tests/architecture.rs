@@ -39,7 +39,8 @@ const CORE: &[(&str, &[&str], &str)] = &[
         &[],
         "The match engine defines its own mirror types (PlayerData, TeamData, Position, PlayStyle) \
          so it can be tested with synthetic data and evolved independently of the game's domain \
-         model. `ofm_core/turn/` is the only place the conversion between them is allowed to live.",
+         model. The squad bridge (`ofm-rules/src/squad.rs`) is the only place the conversion between \
+         them is allowed to live.",
     ),
     (
         "domain",
@@ -183,7 +184,7 @@ fn core_crates_depend_only_on_their_allowed_workspace_crates() {
              {rationale}\n\n\
              Adding this dependency \"to avoid duplication\" is the single most damaging change \
              available in this codebase. If `engine` needs a new field, add it to the engine's own \
-             type and extend the bridge in `ofm_core/turn/`.\n\
+             type and extend the bridge in `ofm-rules/src/squad.rs`.\n\
              See docs/ARCHITECTURE.md \"Engine Isolation\" and src-tauri/CLAUDE.md §1.",
             violations.join("\n  "),
         );

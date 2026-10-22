@@ -6,11 +6,10 @@
 //! selection), and the manager who takes the club over changes them by hand.
 //! Anything left out is chosen the way it is for a club with no `tactics`.
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::HashSet;
 
 use domain::player::Player;
-use domain::team::{MatchRoles, PlayerRole, TacticsPhaseSettings, Team};
-use serde::{Deserialize, Serialize};
+use domain::team::{MatchRoles, Team};
 
 use super::package::PackageError;
 use crate::ai_formation::AI_FORMATIONS;
@@ -24,50 +23,32 @@ pub(super) const TACTICS_PLAYER_NOT_IN_CLUB: &str = "be.error.package.tacticsPla
 /// One player named for two slots of the starting eleven, named by `player`.
 pub(super) const DUPLICATE_STARTER: &str = "be.error.package.duplicateStarter";
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct TeamTacticsDef {
-    /// One of the shapes the game offers. Absent: the club picks its own.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub formation: Option<String>,
-    /// Slot-aligned with `formation`: entry `i` plays slot `i`, the same rule
-    /// as a team's starting eleven everywhere else. Only used when it fills
-    /// every slot of an authored formation; otherwise the game picks the side.
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub starting_xi: Vec<String>,
-    /// Player id → role. A `BTreeMap` so a save writes them in a stable order.
-    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
-    pub player_roles: BTreeMap<String, PlayerRole>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub match_roles: Option<MatchRoles>,
-    /// The phase settings. Absent: the play style's own blueprint.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub phase: Option<TacticsPhaseSettings>,
-}
+/// The data type lives with `TeamDef` in `ofm_rules::worldgen::definitions` (phase 3, E3-5c);
+/// validating and applying it reads the package, so it stays here.
+pub use ofm_rules::worldgen::definitions::TeamTacticsDef;
 
-impl TeamTacticsDef {
-    /// Every player the tactics name, with no duplicates.
-    fn named_players(&self) -> Vec<&str> {
-        let roles = &self.match_roles;
-        let takers = roles.iter().flat_map(|roles| {
-            [
-                &roles.captain,
-                &roles.vice_captain,
-                &roles.penalty_taker,
-                &roles.free_kick_taker,
-                &roles.corner_taker,
-            ]
-        });
-        let mut seen = HashSet::new();
-        self.starting_xi
-            .iter()
-            .filter(|id| !id.is_empty())
-            .map(String::as_str)
-            .chain(self.player_roles.keys().map(String::as_str))
-            .chain(takers.flatten().map(String::as_str))
-            .filter(|id| seen.insert(*id))
-            .collect()
-    }
+/// Every player the tactics name, with no duplicates.
+fn named_players(tactics: &TeamTacticsDef) -> Vec<&str> {
+    let roles = &tactics.match_roles;
+    let takers = roles.iter().flat_map(|roles| {
+        [
+            &roles.captain,
+            &roles.vice_captain,
+            &roles.penalty_taker,
+            &roles.free_kick_taker,
+            &roles.corner_taker,
+        ]
+    });
+    let mut seen = HashSet::new();
+    tactics
+        .starting_xi
+        .iter()
+        .filter(|id| !id.is_empty())
+        .map(String::as_str)
+        .chain(tactics.player_roles.keys().map(String::as_str))
+        .chain(takers.flatten().map(String::as_str))
+        .filter(|id| seen.insert(*id))
+        .collect()
 }
 
 /// The problems with `tactics` on the team `team_id`, whose authored players
@@ -87,7 +68,7 @@ pub(super) fn validate_team_tactics(
                 .with("formation", formation),
         );
     }
-    for player in tactics.named_players() {
+    for player in named_players(tactics) {
         if !club_players.contains(player) {
             errors.push(
                 PackageError::new(TACTICS_PLAYER_NOT_IN_CLUB, "")

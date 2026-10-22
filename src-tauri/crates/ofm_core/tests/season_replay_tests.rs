@@ -545,13 +545,16 @@ fn a_side_with_nobody_to_field_is_settled_by_scoreline_without_signings() {
 #[ignore = "a timing probe over the full world; run by hand in release"]
 fn a_mid_season_career_opens_in_reasonable_time_in_the_full_world() {
     use ofm_core::generator::{
-        DefinitionSources, WorldGenConfig, default_opening_year, generate_world_data_seeded_with,
+        DefinitionSources, default_opening_year, generate_world_data_seeded_with,
     };
     use ofm_core::world::start_date_for_year;
 
     let sources = DefinitionSources::embedded_only();
-    let data =
-        generate_world_data_seeded_with(11, &WorldGenConfig::standard_from(&sources), &sources);
+    let data = generate_world_data_seeded_with(
+        11,
+        &ofm_core::generator::standard_world_config(&sources),
+        &sources,
+    );
     let manager = Manager::new(
         "probe".to_string(),
         "Probe".to_string(),

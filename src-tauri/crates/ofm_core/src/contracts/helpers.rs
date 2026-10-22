@@ -187,15 +187,14 @@ pub(crate) fn is_insulting_wage_offer(
 }
 
 pub(crate) fn player_age_on(current_date: NaiveDate, date_of_birth: &str) -> i32 {
-    let Ok(dob) = NaiveDate::parse_from_str(date_of_birth, "%Y-%m-%d") else {
-        return 30;
-    };
-
-    let mut age = current_date.year() - dob.year();
-    if current_date.ordinal() < dob.ordinal() {
-        age -= 1;
-    }
-    age
+    // The one age rule (`ofm_rules::age`); 30 when the date of birth cannot be read.
+    ofm_rules::age::age_on_day(
+        date_of_birth,
+        current_date.year(),
+        current_date.month(),
+        current_date.day(),
+    )
+    .unwrap_or(30)
 }
 
 pub(crate) fn remaining_contract_days(player: &Player, current_date: NaiveDate) -> i64 {

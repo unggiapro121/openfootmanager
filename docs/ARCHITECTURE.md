@@ -417,7 +417,7 @@ The UI follows a **"Matchday" broadcast-quality** design language:
 The `engine` crate has **no dependency on `domain`**. It defines its own `PlayerData`, `TeamData`, etc. This means:
 - The engine can be tested with synthetic data (no need to generate full game worlds)
 - Engine types can evolve independently (e.g., adding engine-only fields)
-- The `turn.rs` bridge in `ofm_core` handles all type conversion
+- The squad bridge, `ofm-rules/src/squad.rs`, handles all type conversion (phase 3, E3-5a: shared with the online server; `ofm_core/turn/squad.rs` reads the save for it)
 
 ### 2. `#[serde(default)]` for Backward Compatibility
 

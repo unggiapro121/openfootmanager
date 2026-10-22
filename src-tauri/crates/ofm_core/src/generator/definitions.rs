@@ -1,6 +1,5 @@
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
@@ -14,8 +13,7 @@ use uuid::Uuid;
 /// copy in the repository, delivered two ways. That is what makes drift
 /// impossible: there is no second, hand-maintained Rust table to fall out of
 /// step with the JSON, which is exactly what #454 was about.
-const EMBEDDED_NAMES: &str = include_str!("../../data/default_names.json");
-const EMBEDDED_NATIONS: &str = include_str!("../../data/default_nations.json");
+use ofm_rules::worldgen::definitions::{EMBEDDED_NAMES, EMBEDDED_NATIONS};
 
 /// Directories searched for definition files, highest priority first.
 ///
@@ -229,110 +227,9 @@ fn find_definition_file(dir: &Path, stem: &str) -> Option<PathBuf> {
 // Definition file types (JSON-serialisable)
 // ---------------------------------------------------------------------------
 
-/// Name pools definition file format.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct NamesDefinition {
-    #[serde(default)]
-    pub version: u32,
-    #[serde(default)]
-    pub description: String,
-    /// Keyed by ISO 3166-1 alpha-2 country code.
-    pub pools: HashMap<String, NamePool>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct NamePool {
-    pub first_names: Vec<String>,
-    pub last_names: Vec<String>,
-}
-
-/// Per-nation inputs to procedural club generation.
-///
-/// This is the seed the generator grows a world from — which nations exist,
-/// what their cities are called, how deep their league pyramid runs, and how
-/// strong they are. It is deliberately *not* a list of clubs: a curated club
-/// list is hand-authored content and belongs in a `.ofm` package, where it
-/// stacks and merges. Adding a nation here used to mean editing Rust and
-/// recompiling.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NationsDefinition {
-    #[serde(default)]
-    pub version: u32,
-    #[serde(default)]
-    pub description: String,
-    /// Clubs generated per division. 20 unless a file says otherwise.
-    #[serde(default = "default_clubs_per_division")]
-    pub clubs_per_division: usize,
-    /// Kit colour pairs drawn from at random.
-    #[serde(default)]
-    pub color_palette: Vec<ColorPairDef>,
-    /// City names used for clubs in a country with no curated pool of its own.
-    #[serde(default)]
-    pub generic_cities: Vec<String>,
-    pub nations: Vec<super::clubs::NationGen>,
-}
-
-fn default_clubs_per_division() -> usize {
-    20
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct ColorPairDef {
-    pub primary: String,
-    pub secondary: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct TeamDef {
-    /// Stable id used to reference this club (e.g. from player or competition
-    /// files). Empty for procedurally generated clubs, which get a UUID.
-    #[serde(default)]
-    pub id: String,
-    pub name: String,
-    #[serde(default, alias = "short_name")]
-    pub short_name: String,
-    pub city: String,
-    /// ISO 3166-1 alpha-2 / football country code.
-    pub country: String,
-    pub colors: TeamColorsDef,
-    #[serde(default = "default_play_style", alias = "play_style")]
-    pub play_style: String,
-    #[serde(default, alias = "stadium_name")]
-    pub stadium_name: String,
-    #[serde(default, alias = "reputation_range")]
-    pub reputation_range: Option<[u32; 2]>,
-    #[serde(default, alias = "finance_range")]
-    pub finance_range: Option<[i64; 2]>,
-    /// Optional path to a logo/crest image, relative to the package root.
-    /// Populated with an absolute path after the package is extracted.
-    #[serde(default)]
-    pub logo: Option<String>,
-    /// Kit jersey pattern (Solid, Stripes, Hoops, HalfAndHalf, Diagonal).
-    #[serde(default, alias = "kit_pattern")]
-    pub kit_pattern: Option<String>,
-    /// Year the team was founded. If not provided, will be randomly generated.
-    #[serde(default)]
-    pub founded_year: Option<u32>,
-    /// Seats in the home ground. Caps matchday attendance and so gate income;
-    /// drawn between 10,000 and 80,000 when omitted, as before the field existed.
-    #[serde(default, alias = "stadium_capacity")]
-    pub stadium_capacity: Option<u32>,
-    /// The tactics and default line-up the club opens with (`team_tactics`).
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tactics: Option<super::team_tactics::TeamTacticsDef>,
-}
-
-fn default_play_style() -> String {
-    "Balanced".to_string()
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct TeamColorsDef {
-    pub primary: String,
-    pub secondary: String,
-}
+pub use ofm_rules::worldgen::definitions::{
+    ColorPairDef, NamePool, NamesDefinition, NationsDefinition, TeamColorsDef, TeamDef,
+};
 
 /// Try to load a names definition from a JSON or YAML file, returning None on
 /// any error.
@@ -351,17 +248,14 @@ pub(super) fn nations_definition(sources: &DefinitionSources) -> NationsDefiniti
     sources.load("default_nations", EMBEDDED_NATIONS)
 }
 
-/// The shipped name pools, ignoring any player override.
+/// The shipped name pools, ignoring any player override, for tests.
 ///
-/// Used by the paths that generate a person *after* the world exists — a youth
-/// intake recruit, a synthesised national-team player, the free-agent staff
-/// market — none of which have a search path in scope, because nothing threads
-/// the player's data directory through mid-game turn processing.
-///
-/// So an override currently shapes the names a world *opens* with but not the
-/// ones generated later in a career. Closing that means carrying the resolved
-/// definitions on the game rather than re-reading them, which is follow-up work
-/// tracked with the rest of the data-driven epic.
+/// The paths that generate a person *after* the world exists — a youth intake
+/// recruit, a synthesised national-team player, the free-agent staff market — use
+/// the same shipped pools (`ofm_rules::worldgen::definitions::embedded_names`): nothing
+/// threads the player's data directory through mid-game turn processing, so an
+/// override shapes the names a world *opens* with but not the ones generated later.
+#[cfg(test)]
 pub(super) fn default_names_definition() -> NamesDefinition {
     names_definition(&DefinitionSources::embedded_only())
 }
@@ -477,9 +371,9 @@ pub struct WorldData {
     /// league creation). Not persisted to save files; cleared on load.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub build_notices: Vec<String>,
-    /// The seed this world was generated from, when it was generated here. Runtime
-    /// only — never written into a world file, which describes a world and not how
-    /// it came about — and absent for an imported world, which is given a fresh seed
+    /// The seed this world was generated or built from a package with. Runtime only —
+    /// never written into a world file, which describes a world and not how it came
+    /// about — and absent for a world loaded from a file, which is given a fresh seed
     /// when a game is built from it. [`crate::game::Game::seed`] starts from this.
     #[serde(skip)]
     pub generation_seed: Option<u64>,

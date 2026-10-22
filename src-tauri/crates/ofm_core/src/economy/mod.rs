@@ -6,7 +6,22 @@
 //! again each week from the player as he is.
 
 pub mod revenue;
-pub mod valuation;
+/// What a player is worth and earns: the rule lives in `ofm_rules::valuation` (phase 3, E3-5c);
+/// the game asks it on a calendar date.
+pub mod valuation {
+    pub use ofm_rules::valuation::*;
+
+    /// What the player is worth on `date`, playing for a club of `club_reputation`
+    /// (`None` for a free agent).
+    pub fn market_value(
+        player: &domain::player::Player,
+        club_reputation: Option<u32>,
+        date: chrono::NaiveDate,
+    ) -> u64 {
+        let age = crate::contracts::player_age_on(date, &player.date_of_birth);
+        market_value_at_age(player, club_reputation, age)
+    }
+}
 
 use std::collections::HashMap;
 

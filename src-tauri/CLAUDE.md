@@ -26,14 +26,20 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
   rules belong in `ofm_core`. It depends on nothing in this workspace.
 - **`engine`** — the match simulation. It **does not depend on `domain`**. It defines its own
   mirror types (`PlayerData`, `TeamData`, `Position`, `PlayStyle`) so it can be tested with
-  synthetic data and evolved independently. `ofm_core/turn/` performs the conversion, and it is
-  the *only* place that conversion is allowed to live.
+  synthetic data and evolved independently. The squad bridge, `ofm-rules/src/squad.rs`, performs
+  the conversion, and it is the *only* place that conversion is allowed to live; it moved there
+  from `ofm_core/turn/` in phase 3 (E3-5a) so the online server builds a club's side by the same
+  rule. `ofm_core/turn/squad.rs` gathers what it needs from the save.
 - **`ofm-rules`** — the pure rules the online server (phase 3) runs exactly as the game does:
   ratings, wear, form, playing time, facilities, coach progress, mastery XP, and the match session
   (`match_session`: three seeded streams, a controller per side, the shared command check, the
   input log and the minute hash; phase 3, E3-3). Depends on `domain` and `engine` only; no `Game`,
-  calendar, I/O, wall clock or unseeded randomness (its `clippy.toml`). It drives the engine but
-  never builds the engine's teams from `domain`: that bridge stays in `ofm_core/turn/`.
+  calendar, I/O, wall clock or unseeded randomness (its `clippy.toml`). Since E3-5a it also holds
+  the squad bridge (`squad`), the AI's tactics and shape (`ai_tactics`, `ai_formation`); since
+  E3-5c the world generator's core (`worldgen`: clubs, generated people, calibration, physique,
+  youth recruits, the shipped name and nation definitions in `ofm-rules/data/`), the nation
+  catalog (`nations`), player valuation (`valuation`) and assigned traits. Reading definition
+  files and packages, and the clock, stays in `ofm_core::generator`.
   `ofm_core` re-exports each module under its old path, so `crate::player_rating` still works.
 - **`ofm_core`** — game logic and the `StateManager`. Depends on `domain`, `engine` and
   `ofm-rules`.
@@ -51,7 +57,7 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
 Adding `domain = { path = "../domain" }` to `crates/engine/Cargo.toml` "to avoid duplication"
 looks like a cleanup and is actually the single most damaging change you can make to this
 codebase. If the engine needs a new field, add it to the engine's own type and extend the bridge
-in `ofm_core/turn/`.
+in `ofm-rules/src/squad.rs`.
 
 The `ofm-cli` binary statically links `ofm_core`, which is why CLI package validation is
 guaranteed to match in-game validation — same code, no duplicate validator.

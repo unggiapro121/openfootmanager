@@ -31,19 +31,24 @@ fn at_the_realistic_pace_a_regular_gains_about_fifteen_points_an_attribute_in_a_
 }
 
 /// Given two identical careers, one at 1× and one at 2×,
-/// When the same player trains through the same 150 days in each,
-/// Then the player in the 2× career gains about twice as much.
+/// When the same twenty-five players train through the same 150 days in each,
+/// Then the players in the 2× career gain about twice as much.
 #[test]
 fn at_two_times_a_player_develops_about_twice_as_fast() {
-    let mut realistic = game_with_regular_trainee(100);
-    let mut doubled = game_with_regular_trainee(200);
-    let before = physical_total(&realistic, "regular");
+    let cohort = |speed_percent: u16| {
+        let mut game = game_with_regular_trainee(speed_percent);
+        game.players = trainees("regular", 25, 100);
+        game
+    };
+    let mut realistic = cohort(100);
+    let mut doubled = cohort(200);
+    let before = cohort_physical_total(&realistic, "regular");
 
     train_for_days(&mut realistic, 150);
     train_for_days(&mut doubled, 150);
 
-    let realistic_gain = f64::from(physical_total(&realistic, "regular") - before);
-    let doubled_gain = f64::from(physical_total(&doubled, "regular") - before);
+    let realistic_gain = f64::from(cohort_physical_total(&realistic, "regular") - before);
+    let doubled_gain = f64::from(cohort_physical_total(&doubled, "regular") - before);
     let ratio = doubled_gain / realistic_gain;
     assert!(
         (1.6..=2.4).contains(&ratio),

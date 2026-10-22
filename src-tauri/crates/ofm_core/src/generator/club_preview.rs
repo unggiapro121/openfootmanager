@@ -41,13 +41,13 @@ pub fn preview_package_club(
         .clamp(super::MIN_OPENING_YEAR, super::MAX_OPENING_YEAR);
     // Seeded by the club so the preview does not change between two looks.
     let mut rng = StdRng::seed_from_u64(stable_hash(team.id.as_bytes(), 0));
-    let names = super::definitions::default_names_definition();
+    let names = ofm_rules::worldgen::definitions::embedded_names();
     let mut club = super::build_team(team, &mut rng);
     let squad: Vec<Player> = players
         .iter()
         .filter(|player| player.club == team.id)
         .map(|player| {
-            super::generation::generate_player_from_def(
+            super::authored_generation::generate_player_from_def(
                 player,
                 &club.id,
                 opening_year,

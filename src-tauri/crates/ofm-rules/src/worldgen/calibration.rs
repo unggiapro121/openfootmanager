@@ -10,18 +10,10 @@
 //! a generated world reads like the real one and a package's real stars are
 //! never outshone by the players generated around them.
 
-use std::collections::{HashMap, HashSet};
-
-use domain::league::CompetitionType;
-use domain::player::{Player, PlayerAttributes, SquadRole};
+use domain::player::{Player, PlayerAttributes};
 use rand::{Rng, RngExt};
 
-use super::competition_def::CompetitionDefinition;
 use super::generation::reprice_generated_player;
-
-/// Real players a league needs before its own percentiles replace the
-/// reputation table: fewer, and a handful of outliers would set its level.
-const MIN_REAL_LEAGUE_PLAYERS: usize = 150;
 
 /// Real players a nation needs before its own pool sets the level of the
 /// players generated to fill it.
@@ -206,14 +198,14 @@ const UNLISTED_NATION_OVR: f64 = 50.0;
 /// The OVR band a generated player's level is drawn from: the 25th and 50th
 /// percentile of the squads he joins.
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub(super) struct FillerLevel {
+pub struct FillerLevel {
     lower: f64,
     upper: f64,
 }
 
 impl FillerLevel {
     /// The level of a club of `reputation`, from [`OVR_BY_REPUTATION`].
-    pub(super) fn for_reputation(reputation: u32) -> Self {
+    pub fn for_reputation(reputation: u32) -> Self {
         let reputation = f64::from(reputation);
         let first = OVR_BY_REPUTATION[0];
         let last = OVR_BY_REPUTATION[OVR_BY_REPUTATION.len() - 1];
@@ -242,7 +234,7 @@ impl FillerLevel {
     }
 
     /// The 25th and 50th percentile of real players' OVRs. `None` for an empty pool.
-    fn from_real_ovrs(ovrs: &[u8]) -> Option<Self> {
+    pub fn from_real_ovrs(ovrs: &[u8]) -> Option<Self> {
         if ovrs.is_empty() {
             return None;
         }
@@ -257,7 +249,7 @@ impl FillerLevel {
 
     /// The level of the players generated to fill nation `code`'s pool: its own
     /// players' when the world holds enough of them, its ranking tier's otherwise.
-    pub(super) fn for_nation(code: &str, pool_ovrs: &[u8]) -> Self {
+    pub fn for_nation(code: &str, pool_ovrs: &[u8]) -> Self {
         if pool_ovrs.len() >= MIN_REAL_NATION_PLAYERS
             && let Some(level) = Self::from_real_ovrs(pool_ovrs)
         {
@@ -281,7 +273,7 @@ impl FillerLevel {
 }
 
 /// A senior player's age, drawn as real squads are spread.
-pub(super) fn draw_senior_age(rng: &mut impl Rng) -> u32 {
+pub fn draw_senior_age(rng: &mut impl Rng) -> u32 {
     let total: u32 = SENIOR_AGE_WEIGHTS.iter().map(|(_, weight)| weight).sum();
     let mut pick = rng.random_range(0..total);
     for (age, weight) in SENIOR_AGE_WEIGHTS {
@@ -370,7 +362,7 @@ fn trained_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 21] {
 }
 
 /// Scale every attribute by `factor`, keeping each within 1–99.
-pub(super) fn scale_attributes(attributes: &mut PlayerAttributes, factor: f64) {
+pub fn scale_attributes(attributes: &mut PlayerAttributes, factor: f64) {
     scale_each(body_attributes(attributes), factor);
     scale_each(trained_attributes(attributes), factor);
 }
@@ -384,7 +376,7 @@ pub(super) fn scale_attributes(attributes: &mut PlayerAttributes, factor: f64) {
 /// Scaling everything by the player's own raw OVR would undo the body's link: a
 /// tall player's aerial ability lifts his raw OVR, so he would be scaled down
 /// the hardest, and height would stop predicting it.
-pub(super) fn calibrate_generated_player(
+pub fn calibrate_generated_player(
     player: &mut Player,
     level: FillerLevel,
     current_year: u32,
@@ -415,65 +407,6 @@ pub(super) fn calibrate_generated_player(
     reprice_generated_player(player, current_year);
 }
 
-/// Re-level a package's generated backfill to the real players of its league.
-///
-/// The backfill is first drawn at its club's reputation. Wherever a league holds
-/// at least [`MIN_REAL_LEAGUE_PLAYERS`] authored seniors, their own 25th and 50th
-/// percentile is the truer level — a package's reputations are an author's
-/// estimate, its players are the league itself — so the backfill of that
-/// league's clubs is drawn again from it. Only explicitly listed participants
-/// are read: a selector resolves against a built world, which does not exist yet.
-pub(super) fn calibrate_backfill_to_leagues(
-    players: &mut [Player],
-    competitions: &[CompetitionDefinition],
-    authored_ids: &HashSet<String>,
-    current_year: u32,
-    rng: &mut impl Rng,
-) {
-    let mut league_of: HashMap<&str, &str> = HashMap::new();
-    for competition in competitions
-        .iter()
-        .filter(|competition| competition.r#type == CompetitionType::League)
-    {
-        for team_id in competition.participants.explicit.iter().flatten() {
-            league_of.insert(team_id.as_str(), competition.id.as_str());
-        }
-    }
-
-    let mut real_ovrs: HashMap<&str, Vec<u8>> = HashMap::new();
-    for player in players.iter().filter(|player| {
-        authored_ids.contains(&player.id) && player.squad_role == SquadRole::Senior
-    }) {
-        if let Some(league) = player
-            .team_id
-            .as_deref()
-            .and_then(|team_id| league_of.get(team_id))
-        {
-            real_ovrs.entry(league).or_default().push(player.ovr);
-        }
-    }
-    let levels: HashMap<&str, FillerLevel> = real_ovrs
-        .into_iter()
-        .filter(|(_, ovrs)| ovrs.len() >= MIN_REAL_LEAGUE_PLAYERS)
-        .filter_map(|(league, ovrs)| Some((league, FillerLevel::from_real_ovrs(&ovrs)?)))
-        .collect();
-
-    for player in players
-        .iter_mut()
-        .filter(|player| !authored_ids.contains(&player.id))
-    {
-        let level = player
-            .team_id
-            .as_deref()
-            .and_then(|team_id| league_of.get(team_id))
-            .and_then(|league| levels.get(league))
-            .copied();
-        if let Some(level) = level {
-            calibrate_generated_player(player, level, current_year, rng);
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::super::*;
@@ -486,14 +419,19 @@ mod tests {
         values[values.len() / 2]
     }
 
+    const OPENING_YEAR: u32 = 2026;
+
     fn seeded_world() -> (Vec<Team>, Vec<Player>) {
-        let (teams, players, _) =
-            generate_world_seeded(7, &definitions::DefinitionSources::embedded_only());
+        let (teams, players, _) = generate_world(
+            crate::seed::rng_from_u64(7),
+            &clubs::WorldGenConfig::standard(OPENING_YEAR),
+            &definitions::embedded_names(),
+        );
         (teams, players)
     }
 
     fn age_of(player: &Player) -> u32 {
-        crate::player_rating::player_age(&player.date_of_birth, default_opening_year())
+        crate::player_rating::player_age(&player.date_of_birth, OPENING_YEAR)
     }
 
     /// Given a generated world,
@@ -564,8 +502,9 @@ mod tests {
     }
 
     fn pool_median(code: &str, pool_ovrs: &[u8]) -> u8 {
+        let mut rng = crate::seed::rng_from_u64(19);
         let mut ovrs: Vec<u8> = (0..40)
-            .map(|slot| generate_national_team_player(code, slot, 2026, pool_ovrs).ovr)
+            .map(|slot| generate_national_team_player(code, slot, 2026, pool_ovrs, &mut rng).ovr)
             .collect();
         median(&mut ovrs)
     }
@@ -660,98 +599,6 @@ mod tests {
         assert_eq!(
             FillerLevel::for_reputation(2_000),
             FillerLevel::for_reputation(950)
-        );
-    }
-
-    fn package_team(id: &str) -> TeamDef {
-        serde_json::from_value(serde_json::json!({
-            "id": id, "name": id, "shortName": id[..3].to_uppercase(), "city": "Town",
-            "country": "ENG", "colors": {"primary": "#ffffff", "secondary": "#000000"},
-            "playStyle": "Balanced", "stadiumName": "Ground",
-            "reputationRange": [700, 700]
-        }))
-        .expect("a team definition")
-    }
-
-    fn package_player(club: &str, index: usize, position: Position) -> package::PlayerDef {
-        let mut def: package::PlayerDef =
-            serde_json::from_str("{}").expect("PlayerDef should default");
-        def.id = format!("{club}-{index}");
-        def.first_name = "Real".to_string();
-        def.last_name = format!("Player{index}");
-        def.club = club.to_string();
-        def.nationality = "ENG".to_string();
-        def.position = position;
-        def.date_of_birth = Some("1998-01-01".to_string());
-        def.overall = Some(60);
-        def
-    }
-
-    fn squad_for(club: &str, size: usize) -> Vec<package::PlayerDef> {
-        const LAYOUT: [Position; 10] = [
-            Position::Goalkeeper,
-            Position::Defender,
-            Position::Defender,
-            Position::Defender,
-            Position::Midfielder,
-            Position::Midfielder,
-            Position::Midfielder,
-            Position::Forward,
-            Position::Forward,
-            Position::Defender,
-        ];
-        (0..size)
-            .map(|index| package_player(club, index, LAYOUT[index % LAYOUT.len()].clone()))
-            .collect()
-    }
-
-    /// Given a package league of real players rated about 60, one of whose clubs
-    /// is thin, and clubs whose reputation would suggest a stronger league,
-    /// when the world is built,
-    /// then the players generated to fill the thin club play at that league's level.
-    #[test]
-    fn backfill_in_a_package_league_plays_at_the_leagues_real_level() {
-        let mut package = WorldPackage::default();
-        let mut club_ids = Vec::new();
-        for index in 0..9 {
-            let id = format!("club-{index}");
-            package.teams.push(package_team(&id));
-            let size = if index == 8 { 5 } else { 22 };
-            package.players.extend(squad_for(&id, size));
-            club_ids.push(id);
-        }
-        package.competitions.push(
-            serde_json::from_value(serde_json::json!({
-                "id": "test-league", "name": "Test League", "type": "League",
-                "scope": "Domestic", "countryId": "ENG",
-                "format": {"kind": "LeagueTable", "legs": 2},
-                "participants": {"explicit": club_ids}
-            }))
-            .expect("a competition definition"),
-        );
-
-        let world = build_world_data_from_package(
-            &package,
-            Some(2026),
-            &definitions::DefinitionSources::embedded_only(),
-        );
-        let mut backfill: Vec<u8> = world
-            .players
-            .iter()
-            .filter(|player| player.team_id.as_deref() == Some("club-8"))
-            .filter(|player| !player.id.starts_with("club-8-"))
-            .filter(|player| player.squad_role == SquadRole::Senior)
-            .map(|player| player.ovr)
-            .collect();
-        assert!(
-            backfill.len() >= 10,
-            "thin club was topped up: {}",
-            backfill.len()
-        );
-        let backfill_median = median(&mut backfill);
-        assert!(
-            (52..=62).contains(&backfill_median),
-            "backfill median {backfill_median} against a league rated about 60"
         );
     }
 }

@@ -24,7 +24,7 @@ const SEEDS: [u64; 5] = [3, 7, 19, 42, 77];
 fn seeded_world(seed: u64) -> Game {
     let world = generate_world_data_seeded_with(
         seed,
-        &WorldGenConfig::compact(),
+        &WorldGenConfig::compact(ofm_core::generator::default_opening_year()),
         &DefinitionSources::embedded_only(),
     );
     let start = Utc.with_ymd_and_hms(2026, 7, 1, 0, 0, 0).unwrap();

@@ -37,7 +37,8 @@ pub(super) fn load_world_data_from_package(
     if !errors.is_empty() {
         return Err(first_package_error_message(&errors));
     }
-    ofm_core::generator::build_world_from_package(&package, None, sources)
+    // A new career's randomness starts here, drawn once and kept on the world as its seed.
+    ofm_core::generator::build_world_from_package(&package, None, sources, rand::random())
 }
 
 /// Where the generator looks for definition files, in priority order.
@@ -138,7 +139,13 @@ pub(super) fn load_world_data_from_package_ids(
     if !errors.is_empty() {
         return Err(first_package_error_message(&errors));
     }
-    let world = ofm_core::generator::build_world_from_package(&merged, opening_year, sources)?;
+    // A new career's randomness starts here, drawn once and kept on the world as its seed.
+    let world = ofm_core::generator::build_world_from_package(
+        &merged,
+        opening_year,
+        sources,
+        rand::random(),
+    )?;
     if world.teams.is_empty() {
         return Err("be.error.package.noDatabasePackage".to_string());
     }

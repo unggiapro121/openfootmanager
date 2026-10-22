@@ -14,11 +14,11 @@
 //! `begin_career`), plays a span of days and prints what the league matches
 //! came to.
 //!
-//! The run is not exactly repeatable even on a pinned seed: building a world
-//! from a package mints UUIDs for the staff and squad top-ups it generates, and
-//! some draws are keyed by id. So it plays `OFM_PROBE_RUNS` worlds (seed, seed+1,
-//! …) and reports the pooled figures with their standard errors. Two code
-//! versions differ only when they differ by more than about two of those.
+//! One seed builds one world (its generated staff and squad top-ups, and their
+//! ids, are drawn from it), so a run on a pinned seed repeats. One world is still
+//! one sample: it plays `OFM_PROBE_RUNS` worlds (seed, seed+1, …) and reports the
+//! pooled figures with their standard errors. Two code versions differ only when
+//! they differ by more than about two of those.
 //!
 //! Knobs: `OFM_PROBE_SEED`, `OFM_PROBE_RUNS` (default 3), `OFM_PROBE_DAYS` (default 150), `OFM_PROBE_CLUB`
 //! (default the first club), `OFM_PROBE_SCOPE=home` to simulate only the club's
@@ -429,10 +429,8 @@ pub(super) fn build_game_for_club(package: &Path, seed: u64, club: Option<&str>)
     let sources = DefinitionSources::embedded_only();
     let mut options = normalize_startup_options(None).expect("default startup options");
     options.start_year = OPENING_YEAR;
-    let mut world = build_world_from_package(&pkg, Some(OPENING_YEAR as u32), &sources)
+    let mut world = build_world_from_package(&pkg, Some(OPENING_YEAR as u32), &sources, seed)
         .expect("the package builds a world");
-    // A package carries no seed, so "New game" draws one; the probe pins it.
-    world.generation_seed = Some(seed);
     let clock = game_clock_for_world(&options, &world.metadata).expect("a clock for the world");
     normalize_imported_world_for_career_start(&mut world, OPENING_YEAR as u32);
     let manager = Manager::new(

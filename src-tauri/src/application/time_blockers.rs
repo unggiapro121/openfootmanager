@@ -2,7 +2,7 @@ use log::info;
 
 use ofm_core::contracts::{contract_needs_renewal, has_let_expire_intent};
 use ofm_core::game::Game;
-use ofm_core::player_rating::{effective_rating_for_assignment, formation_slots, natural_ovr};
+use ofm_core::player_rating::natural_ovr;
 use ofm_core::squad_safety::{project_user_team_planned_exit_safety, user_team_squad_safety};
 
 fn user_team_context(game: &Game) -> Option<(&domain::team::Team, Vec<&domain::player::Player>)> {
@@ -33,6 +33,8 @@ fn build_blocker(
     })
 }
 
+/// The XI the match will field from the healthy squad: the same rule as kick-off
+/// (`ofm_rules::squad::select_starting_xi`), so a blocker never judges a side that will not play.
 fn build_effective_healthy_starting_xi_ids(
     saved_xi_ids: &[String],
     roster: &[&domain::player::Player],
@@ -43,88 +45,10 @@ fn build_effective_healthy_starting_xi_ids(
         .copied()
         .filter(|player| player.injury.is_none())
         .collect();
-    let by_id: std::collections::HashMap<&str, &domain::player::Player> = healthy_roster
-        .iter()
-        .map(|player| (player.id.as_str(), *player))
-        .collect();
-    let mut used = std::collections::HashSet::new();
-    let mut valid_saved_ids = Vec::new();
-
-    for id in saved_xi_ids {
-        if by_id.contains_key(id.as_str()) && used.insert(id.clone()) {
-            valid_saved_ids.push(id.clone());
-        }
-    }
-
-    let mut remaining_players: Vec<&domain::player::Player> = healthy_roster
-        .iter()
-        .copied()
-        .filter(|player| !used.contains(&player.id))
-        .collect();
-    remaining_players.sort_by(|left, right| {
-        natural_ovr(right)
-            .partial_cmp(&natural_ovr(left))
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
-
-    let slots = formation_slots(formation);
-
-    if valid_saved_ids.len() >= 8 {
-        let mut xi_ids = valid_saved_ids;
-        while xi_ids.len() < 11 {
-            let slot = slots.get(xi_ids.len());
-            let best_index = remaining_players
-                .iter()
-                .enumerate()
-                .max_by(|(_, left), (_, right)| {
-                    let left_rating = slot.map_or_else(
-                        || natural_ovr(left),
-                        |slot| effective_rating_for_assignment(left, slot),
-                    );
-                    let right_rating = slot.map_or_else(
-                        || natural_ovr(right),
-                        |slot| effective_rating_for_assignment(right, slot),
-                    );
-                    left_rating
-                        .partial_cmp(&right_rating)
-                        .unwrap_or(std::cmp::Ordering::Equal)
-                })
-                .map(|(index, _)| index);
-
-            let Some(best_index) = best_index else {
-                break;
-            };
-
-            let player = remaining_players.remove(best_index);
-            xi_ids.push(player.id.clone());
-        }
-        xi_ids.truncate(11);
-        return xi_ids;
-    }
-
-    let mut xi_ids = Vec::new();
-
-    for slot in slots.iter().take(11) {
-        let best_player = healthy_roster
-            .iter()
-            .copied()
-            .filter(|player| !used.contains(&player.id))
-            .max_by(|left, right| {
-                effective_rating_for_assignment(left, slot)
-                    .partial_cmp(&effective_rating_for_assignment(right, slot))
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            });
-
-        let Some(player) = best_player else {
-            break;
-        };
-
-        if used.insert(player.id.clone()) {
-            xi_ids.push(player.id.clone());
-        }
-    }
-
-    xi_ids
+    ofm_core::squad::select_starting_xi(saved_xi_ids, &healthy_roster, formation)
+        .into_iter()
+        .map(|player| player.id.clone())
+        .collect()
 }
 
 fn injured_starting_xi_blocker(

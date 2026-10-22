@@ -265,6 +265,8 @@ fn physical_focus_can_improve_physical_attrs() {
         for p in game.players.iter_mut() {
             p.condition = 90; // Keep condition high so training continues
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0); // Monday = training day
     }
 
@@ -300,6 +302,8 @@ fn technical_focus_can_improve_technical_attrs() {
         for p in game.players.iter_mut() {
             p.condition = 90;
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 
@@ -327,6 +331,8 @@ fn recovery_focus_no_attribute_gains() {
         for p in game.players.iter_mut() {
             p.condition = 90;
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 
@@ -374,6 +380,8 @@ fn no_coaching_staff_reduces_gains() {
     let initial_pace = game.players[0].attributes.pace;
     for _ in 0..200 {
         game.players[0].condition = 90;
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 
@@ -565,6 +573,8 @@ fn young_player_gains_more_than_old() {
         for p in game.players.iter_mut() {
             p.condition = 90;
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 
@@ -612,6 +622,8 @@ fn all_focuses_run_without_panic() {
     for focus in &focuses {
         let mut game = make_game();
         game.teams[0].training_focus = focus.clone();
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
         // Just verify no panics
     }
@@ -673,6 +685,8 @@ fn each_team_trains_under_its_own_focus() {
         for p in game.players.iter_mut() {
             p.condition = 90;
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 
@@ -774,6 +788,8 @@ fn players_without_a_real_team_are_not_trained() {
 
     // When: training runs for several sessions
     for _ in 0..50 {
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 
@@ -801,6 +817,8 @@ fn all_intensities_run_without_panic() {
     for intensity in &intensities {
         let mut game = make_game();
         game.teams[0].training_intensity = intensity.clone();
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0);
     }
 }
@@ -868,6 +886,8 @@ fn physical_training_can_increase_fitness() {
         for p in game.players.iter_mut() {
             p.condition = 90;
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0); // Monday = training day
     }
 
@@ -967,6 +987,8 @@ fn peaked_player_does_not_gain_from_training() {
         for p in game.players.iter_mut() {
             p.condition = 90;
         }
+        // A fresh day each time, so each session draws its own dice.
+        game.clock.advance_days(1);
         training::process_training(&mut game, 0); // Monday, Intense trains Mon
     }
 

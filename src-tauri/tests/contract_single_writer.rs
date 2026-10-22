@@ -27,7 +27,11 @@ const STAGERS: &[&str] = &[
 /// Where a contract may be staged: the ledger's own module, and world generation.
 const STAGING_ALLOWED: &[&str] = &[
     "crates/domain/src/contract_ledger.rs",
-    "crates/ofm_core/src/generator/generation.rs",
+    // World generation: its core is shared with the online server (phase 3, E3-5c), the
+    // package-authored people and the package builder stay in the game.
+    "crates/ofm-rules/src/worldgen/generation.rs",
+    "crates/ofm-rules/src/worldgen/mod.rs",
+    "crates/ofm_core/src/generator/authored_generation.rs",
     "crates/ofm_core/src/generator/mod.rs",
 ];
 

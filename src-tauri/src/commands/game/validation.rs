@@ -130,6 +130,8 @@ pub fn inspect_world_package(
         &package,
         None,
         &definition_sources(&app_handle),
+        // Inspection only counts what the package holds, so any fixed seed will do.
+        0,
     )?;
     let name = if world.name.trim().is_empty() {
         fallback_name

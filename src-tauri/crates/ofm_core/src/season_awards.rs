@@ -59,15 +59,9 @@ fn free_agent_team_name() -> String {
 }
 
 fn player_age_on(today: &NaiveDate, date_of_birth: &str) -> i32 {
-    if let Ok(dob) = NaiveDate::parse_from_str(date_of_birth, "%Y-%m-%d") {
-        let mut age = today.year() - dob.year();
-        if today.ordinal() < dob.ordinal() {
-            age -= 1;
-        }
-        age
-    } else {
-        30
-    }
+    // The one age rule (`ofm_rules::age`); 30 when the date of birth cannot be read.
+    ofm_rules::age::age_on_day(date_of_birth, today.year(), today.month(), today.day())
+        .unwrap_or(30)
 }
 
 fn resolve_team_info(game: &Game, player: &Player) -> (String, String) {

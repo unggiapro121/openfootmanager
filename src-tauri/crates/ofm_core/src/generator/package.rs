@@ -1128,7 +1128,7 @@ fn effective_authored_ability(player: &PlayerDef) -> (u8, &'static str) {
     match player.overall {
         Some(overall) => (overall, POTENTIAL_BELOW_OVERALL),
         None => (
-            crate::generator::generation::DEFAULT_AUTHORED_OVERALL,
+            crate::generator::authored_generation::DEFAULT_AUTHORED_OVERALL,
             POTENTIAL_BELOW_DEFAULT,
         ),
     }
@@ -1382,10 +1382,12 @@ fn validate_competition_references(package: &WorldPackage) -> Vec<PackageError> 
 
     // Reuse production construction for country and regional membership;
     // project reputation below for a stable authoring check.
+    // A fixed seed: an authoring verdict must not change from one run to the next.
     let mut world = super::build_world_data_from_package(
         package,
         None,
         &super::DefinitionSources::embedded_only(),
+        0,
     );
     // Only selector inputs need a fixed projection here. Game construction
     // keeps sampling ranges, but a package's authoring verdict must not roll
@@ -2304,7 +2306,7 @@ mod tests {
         assert!(errors.is_empty(), "fixture should be valid: {errors:?}");
 
         let sources = crate::generator::DefinitionSources::searching([data_dir.clone()]);
-        let world = crate::generator::build_world_data_from_package(&package, None, &sources);
+        let world = crate::generator::build_world_data_from_package(&package, None, &sources, 1);
 
         let filler: Vec<&str> = world
             .teams
@@ -2876,7 +2878,7 @@ mod tests {
 
         // No opening year: this asserts badge resolution, not era ageing, so let
         // the package's own `baseYear` (absent here) pick the default.
-        let world = crate::generator::build_world_from_package(&package, None, &embedded())
+        let world = crate::generator::build_world_from_package(&package, None, &embedded(), 1)
             .expect("world builds");
         let logo = world
             .teams
@@ -4007,6 +4009,37 @@ colors:
             .expect("world should have players with parseable birth years")
     }
 
+    /// Given one package and one seed,
+    /// when its world is built and opened for a career twice,
+    /// then the generated squads, staff and ids are the same both times, and another seed
+    /// generates other people.
+    #[test]
+    fn a_package_world_rebuilds_identically_from_its_seed() {
+        let dir = temp_package();
+        write_era_package(&dir, 2026);
+        let (package, errors) = load_world_package(&dir);
+        assert!(errors.is_empty(), "package should be valid: {errors:?}");
+        let opened = |seed: u64| {
+            let mut world =
+                crate::generator::build_world_data_from_package(&package, None, &embedded(), seed);
+            crate::generator::normalize_imported_world_for_career_start(&mut world, 2026);
+            world
+        };
+
+        let (first, second, other) = (opened(9), opened(9), opened(10));
+
+        assert!(!first.players.is_empty() && !first.staff.is_empty());
+        assert_eq!(first.generation_seed, Some(9));
+        assert_eq!(first.metadata.world_id, second.metadata.world_id);
+        assert!(
+            serde_json::to_value(&first).unwrap() == serde_json::to_value(&second).unwrap(),
+            "the two builds differ"
+        );
+        assert_ne!(first.players[0].id, other.players[0].id);
+        assert_ne!(first.metadata.world_id, other.metadata.world_id);
+        std::fs::remove_dir_all(&dir).ok();
+    }
+
     #[test]
     fn package_base_year_ages_squads_when_no_career_year_is_given() {
         let dir = temp_package();
@@ -4014,7 +4047,7 @@ colors:
 
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "package should be valid: {errors:?}");
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
 
         assert!(
             newest_birth_year(&world) < 1962,
@@ -4034,7 +4067,7 @@ colors:
 
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "package should be valid: {errors:?}");
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
 
         // `baseYear: 5` resolves to the clamped floor, so every player must be
         // born at or before it. A loose range here would let a regression that
@@ -4064,7 +4097,7 @@ colors:
 
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "package should be valid: {errors:?}");
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
 
         let floor = crate::generator::MIN_OPENING_YEAR as i32;
         assert!(
@@ -4084,7 +4117,7 @@ colors:
 
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "package should be valid: {errors:?}");
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
 
         let ceiling = crate::generator::MAX_OPENING_YEAR as i32;
         for player in &world.players {
@@ -4110,7 +4143,7 @@ colors:
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "package should be valid: {errors:?}");
         let world =
-            crate::generator::build_world_data_from_package(&package, Some(1985), &embedded());
+            crate::generator::build_world_data_from_package(&package, Some(1985), &embedded(), 1);
 
         let newest = newest_birth_year(&world);
         assert!(
@@ -4156,7 +4189,7 @@ colors:
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "package should be valid: {errors:?}");
 
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
         assert_eq!(world.name, "Zed World");
         let team_ids: Vec<&str> = world.teams.iter().map(|t| t.id.as_str()).collect();
         assert_eq!(
@@ -4212,7 +4245,7 @@ colors:
             "a player with no club is valid: {errors:?}"
         );
 
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
         let agent = world
             .players
             .iter()
@@ -4269,7 +4302,7 @@ colors:
         let (package, errors) = load_world_package(&dir);
         assert!(errors.is_empty(), "{errors:?}");
 
-        let world = crate::generator::build_world_data_from_package(&package, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&package, None, &embedded(), 1);
 
         let star = world
             .players
@@ -4416,7 +4449,7 @@ colors:
                 "a declared country is known even without clubs: {errors:?}"
             );
             let world =
-                crate::generator::build_world_from_package(&package, Some(2031), &embedded())
+                crate::generator::build_world_from_package(&package, Some(2031), &embedded(), 1)
                     .expect("the package builds");
             let json = crate::generator::export_world_to_json(&world).unwrap();
             let loaded = crate::generator::load_world_from_json(&json)
@@ -4990,7 +5023,7 @@ colors:
             ),
         ]);
         assert!(errors.is_empty());
-        let world = crate::generator::build_world_data_from_package(&pkg, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&pkg, None, &embedded(), 1);
         assert_eq!(world.teams.len(), 4);
         // Fallback league must be generated.
         let defs = world
@@ -5023,7 +5056,7 @@ colors:
         // totalling 8 teams, and a fallback league covering all of them.
         let (pkg, errors, dir) = package_from_files(&[("a.yaml", TEAM_A)]);
         assert!(errors.is_empty());
-        let world = crate::generator::build_world_data_from_package(&pkg, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&pkg, None, &embedded(), 1);
         assert_eq!(
             world.teams.len(),
             8,
@@ -5293,7 +5326,7 @@ colors:
             "schema: world\nid: empty\nname: Empty World\n",
         );
         let (pkg, _) = load_world_package(&dir);
-        let world = crate::generator::build_world_data_from_package(&pkg, None, &embedded());
+        let world = crate::generator::build_world_data_from_package(&pkg, None, &embedded(), 1);
         // The world builds but has no teams; game.rs rejects this as noDatabasePackage.
         assert!(world.teams.is_empty(), "OK: correctly produces 0 teams");
         std::fs::remove_dir_all(&dir).ok();
