@@ -8,6 +8,7 @@ pub mod calibration;
 pub mod clubs;
 pub mod definitions;
 pub mod generation;
+pub mod online;
 pub mod physique;
 pub mod youth;
 

@@ -736,16 +736,36 @@ mod tests {
         assert!(!game.players.iter().any(|player| player.id == "cheap"));
     }
 
-    /// Given the player's club and an AI club on the same tight budget, they take
-    /// the same number of youngsters: one wage rule for every club.
+    /// Given the player's club and an AI club on the same tight budget, each offered the same
+    /// three recruits, they take the same number of them: one wage rule for every club.
+    ///
+    /// The recruits are fixed rather than drawn, so the clubs face the same asks: drawn from
+    /// each club's own stream, two intakes differ by luck, not by rule.
     #[test]
     fn the_board_judges_the_players_club_as_it_judges_an_ai_club() {
-        let before = world_on_a_budget(1_000, 500);
-        let after = intake(&before);
-        assert_eq!(
-            newcomers(&before, &after, "user").len(),
-            newcomers(&before, &after, "rival").len()
-        );
+        // A budget of 1,000 lets the bill reach 1,100. An academy recruit costs the club half
+        // his wage: the first, asking 1,000 (500), takes the bill from 500 to 1,000; the second
+        // is over at his ask (1,500) and at the minimum (1,250), which ends the intake.
+        let mut game = world_on_a_budget(1_000, 500);
+        let end = season_end() + chrono::Months::new(36);
+        let offered = |club: &str| -> Vec<Drawn> {
+            (0..3)
+                .map(|index| Drawn {
+                    recruit: youngster(&format!("{club}-recruit-{index}"), club, Position::Forward),
+                    asking: 1_000,
+                    end,
+                })
+                .collect()
+        };
+        let index_of = |game: &Game, id: &str| game.teams.iter().position(|team| team.id == id);
+        let user = index_of(&game, "user").unwrap();
+        let rival = index_of(&game, "rival").unwrap();
+
+        let user_intake = sign_until_refused(&mut game, user, offered("user"), season_end());
+        let rival_intake = sign_until_refused(&mut game, rival, offered("rival"), season_end());
+
+        assert_eq!(user_intake.joined.len(), 1, "{:?}", user_intake.joined);
+        assert_eq!(user_intake.joined.len(), rival_intake.joined.len());
     }
 
     /// Given clubs whose boards refuse every recruit, when the season ends, then
@@ -770,19 +790,32 @@ mod tests {
         told[0]
     }
 
-    /// Given the player's club whose board turns some of its intake away, the
+    /// Given the player's club whose board turned some of its intake away, the
     /// message names who joined and says the board would not take on the rest.
+    ///
+    /// The intake is given, not drawn: whether a drawn intake is partly refused depends on the
+    /// asks the club's stream happens to produce.
     #[test]
     fn the_player_is_told_when_the_board_turns_some_of_the_intake_away() {
-        let before = world_on_a_budget(1_000, 500);
-        let after = intake(&before);
-        let message = intake_message(&after);
+        let mut game = world_on_a_budget(1_000, 500);
+        let user = game
+            .teams
+            .iter()
+            .position(|team| team.id == "user")
+            .unwrap();
+        let intake = Intake {
+            joined: vec!["Joined Youngster".to_string()],
+            refused: 2,
+        };
+
+        tell_the_player(&mut game, user, &intake, season_end(), SEASON);
+
+        let message = intake_message(&game);
         assert_eq!(
             message.body_key.as_deref(),
             Some("be.msg.youthIntake.bodyPartlyRefused")
         );
-        let joined = &newcomers(&before, &after, "user")[0].full_name;
-        assert!(message.i18n_params["players"].contains(joined.as_str()));
+        assert!(message.i18n_params["players"].contains("Joined Youngster"));
     }
 
     /// Given the player's club whose board turns all of its intake away, the

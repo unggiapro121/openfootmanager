@@ -1,0 +1,506 @@
+# Professional clubs whose names the generator never gives a fictional club (E3-5q F6), as
+# `<nation code>|<name>`. Interim hand-made list for E3-5q1; E3-5q2 adds Wikidata (CC0).
+# A generated name is refused when it equals one folded, or when what is left of it after the
+# common affixes (FC, United, City, Real, CLB…) equals what is left of one of the same nation.
+ENG|Manchester United
+ENG|Manchester City
+ENG|Liverpool
+ENG|Arsenal
+ENG|Chelsea
+ENG|Tottenham Hotspur
+ENG|Newcastle United
+ENG|Aston Villa
+ENG|West Ham United
+ENG|Everton
+ENG|Leeds United
+ENG|Leicester City
+ENG|Southampton
+ENG|Sheffield United
+ENG|Sheffield Wednesday
+ENG|Nottingham Forest
+ENG|Wolverhampton Wanderers
+ENG|Brighton & Hove Albion
+ENG|Crystal Palace
+ENG|Fulham
+ENG|Brentford
+ENG|Bournemouth
+ENG|Burnley
+ENG|Sunderland
+ENG|Middlesbrough
+ENG|Hull City
+ENG|Coventry City
+ENG|Bristol City
+ENG|Bristol Rovers
+ENG|Norwich City
+ENG|Ipswich Town
+ENG|Derby County
+ENG|Stoke City
+ENG|West Bromwich Albion
+ENG|Blackburn Rovers
+ENG|Bolton Wanderers
+ENG|Wigan Athletic
+ENG|Charlton Athletic
+ENG|Queens Park Rangers
+ENG|Watford
+ENG|Reading
+ENG|Birmingham City
+ENG|Plymouth Argyle
+ENG|Portsmouth
+ENG|Millwall
+ENG|Preston North End
+ENG|Oxford United
+ENG|Cambridge United
+ENG|Luton Town
+ES|Real Madrid
+ES|Atlético Madrid
+ES|FC Barcelona
+ES|Espanyol
+ES|Sevilla FC
+ES|Real Betis
+ES|Valencia CF
+ES|Villarreal CF
+ES|Athletic Club
+ES|Real Sociedad
+ES|Celta de Vigo
+ES|Deportivo La Coruña
+ES|Real Zaragoza
+ES|Málaga CF
+ES|Granada CF
+ES|Getafe CF
+ES|Rayo Vallecano
+ES|Osasuna
+ES|Real Valladolid
+ES|Cádiz CF
+ES|Elche CF
+ES|Levante UD
+ES|RCD Mallorca
+ES|UD Las Palmas
+ES|Córdoba CF
+ES|Sporting Gijón
+ES|Real Oviedo
+ES|Deportivo Alavés
+ES|Girona FC
+ES|UD Almería
+DE|Bayern München
+DE|Borussia Dortmund
+DE|RB Leipzig
+DE|Bayer Leverkusen
+DE|VfB Stuttgart
+DE|Eintracht Frankfurt
+DE|VfL Wolfsburg
+DE|Borussia Mönchengladbach
+DE|SC Freiburg
+DE|FC Augsburg
+DE|Werder Bremen
+DE|Hamburger SV
+DE|Schalke 04
+DE|1. FC Köln
+DE|Hertha BSC
+DE|Union Berlin
+DE|Mainz 05
+DE|TSG Hoffenheim
+DE|Hannover 96
+DE|1. FC Nürnberg
+DE|Fortuna Düsseldorf
+DE|VfL Bochum
+DE|FC St. Pauli
+DE|1. FC Heidenheim
+DE|SV Darmstadt 98
+DE|1. FC Kaiserslautern
+DE|Karlsruher SC
+IT|Juventus
+IT|AC Milan
+IT|Inter Milan
+IT|AS Roma
+IT|Lazio
+IT|Napoli
+IT|Fiorentina
+IT|Atalanta
+IT|Torino
+IT|Bologna
+IT|Genoa
+IT|Sampdoria
+IT|Udinese
+IT|Cagliari
+IT|Parma
+IT|Palermo
+IT|Sassuolo
+IT|Lecce
+IT|Como
+IT|Monza
+IT|Hellas Verona
+IT|Empoli
+IT|Venezia
+IT|Bari
+IT|Salernitana
+IT|Spezia
+IT|Cremonese
+IT|Frosinone
+FR|Paris Saint-Germain
+FR|Paris FC
+FR|Olympique de Marseille
+FR|Olympique Lyonnais
+FR|AS Monaco
+FR|LOSC Lille
+FR|OGC Nice
+FR|Stade Rennais
+FR|RC Lens
+FR|FC Nantes
+FR|Girondins de Bordeaux
+FR|AS Saint-Étienne
+FR|Montpellier HSC
+FR|RC Strasbourg
+FR|Stade de Reims
+FR|Toulouse FC
+FR|FC Metz
+FR|Stade Brestois
+FR|Le Havre AC
+FR|AJ Auxerre
+FR|Angers SCO
+FR|FC Lorient
+PT|Benfica
+PT|FC Porto
+PT|Sporting CP
+PT|Sporting Braga
+PT|Vitória Guimarães
+PT|Boavista
+PT|Rio Ave
+PT|Famalicão
+PT|Gil Vicente
+PT|Estoril
+PT|Marítimo
+PT|CD Nacional
+PT|Moreirense
+PT|Arouca
+NL|Ajax
+NL|PSV Eindhoven
+NL|Feyenoord
+NL|AZ Alkmaar
+NL|FC Twente
+NL|FC Utrecht
+NL|Vitesse
+NL|FC Groningen
+NL|SC Heerenveen
+NL|Sparta Rotterdam
+NL|NEC Nijmegen
+NL|Go Ahead Eagles
+NL|Willem II
+NL|Heracles Almelo
+BE|Club Brugge
+BE|RSC Anderlecht
+BE|Standard Liège
+BE|KRC Genk
+BE|KAA Gent
+BE|Royal Antwerp
+BE|Union Saint-Gilloise
+BE|Sporting Charleroi
+BE|Cercle Brugge
+BE|KV Mechelen
+BE|OH Leuven
+BE|KVC Westerlo
+SCO|Celtic
+SCO|Rangers
+SCO|Aberdeen
+SCO|Heart of Midlothian
+SCO|Hibernian
+SCO|Dundee United
+SCO|Dundee
+SCO|Motherwell
+SCO|St Mirren
+SCO|Kilmarnock
+SCO|St Johnstone
+SCO|Ross County
+SCO|Livingston
+HR|Dinamo Zagreb
+HR|Hajduk Split
+HR|HNK Rijeka
+HR|NK Osijek
+HR|Lokomotiva Zagreb
+SE|Malmö FF
+SE|AIK
+SE|Djurgården
+SE|IFK Göteborg
+SE|Hammarby
+SE|BK Häcken
+SE|IF Elfsborg
+SE|IFK Norrköping
+IE|Shamrock Rovers
+IE|Bohemians
+IE|Shelbourne
+IE|St Patrick's Athletic
+IE|Derry City
+IE|Dundalk
+IE|Sligo Rovers
+IE|Cork City
+WAL|Cardiff City
+WAL|Swansea City
+WAL|Wrexham
+WAL|Newport County
+WAL|The New Saints
+NIR|Linfield
+NIR|Glentoran
+NIR|Cliftonville
+NIR|Crusaders
+NIR|Larne
+NIR|Coleraine
+BR|Flamengo
+BR|Palmeiras
+BR|Corinthians
+BR|São Paulo
+BR|Santos
+BR|Fluminense
+BR|Vasco da Gama
+BR|Botafogo
+BR|Grêmio
+BR|Internacional
+BR|Cruzeiro
+BR|Atlético Mineiro
+BR|Athletico Paranaense
+BR|Bahia
+BR|Fortaleza
+BR|Sport Recife
+AR|Boca Juniors
+AR|River Plate
+AR|Racing Club
+AR|Independiente
+AR|San Lorenzo
+AR|Estudiantes
+AR|Vélez Sarsfield
+AR|Newell's Old Boys
+AR|Rosario Central
+AR|Talleres
+AR|Lanús
+AR|Huracán
+TH|Buriram United
+TH|Bangkok United
+TH|BG Pathum United
+TH|Port FC
+TH|Muangthong United
+TH|Chonburi FC
+TH|Ratchaburi FC
+TH|Chiangrai United
+TH|Police Tero
+TH|Nakhon Ratchasima FC
+TH|Khon Kaen United
+TH|Sukhothai FC
+TH|Lamphun Warriors
+TH|Uthai Thani FC
+TH|PT Prachuap
+TH|Nongbua Pitchaya
+ID|Persija Jakarta
+ID|Persib Bandung
+ID|Persebaya Surabaya
+ID|Arema FC
+ID|Bali United
+ID|PSM Makassar
+ID|PSIS Semarang
+ID|Persik Kediri
+ID|Borneo FC
+ID|Madura United
+ID|PSS Sleman
+ID|Persita Tangerang
+ID|Dewa United
+ID|Bhayangkara FC
+ID|Persis Solo
+ID|Semen Padang
+ID|Malut United
+ID|Barito Putera
+MY|Johor Darul Ta'zim
+MY|Selangor FC
+MY|Kuala Lumpur City
+MY|Terengganu FC
+MY|Sabah FC
+MY|Kedah Darul Aman
+MY|Penang FC
+MY|Perak FC
+MY|Sri Pahang
+MY|Negeri Sembilan
+MY|Kelantan FC
+MY|Kuching City
+MY|Melaka United
+SG|Lion City Sailors
+SG|Tampines Rovers
+SG|Geylang International
+SG|Balestier Khalsa
+SG|Hougang United
+SG|Tanjong Pagar United
+SG|Young Lions
+SG|Albirex Niigata Singapore
+PH|Kaya FC
+PH|United City
+PH|Ceres-Negros
+PH|Stallion Laguna
+PH|Dynamic Herb Cebu
+PH|Mendiola FC
+PH|Manila Digger
+PH|Davao Aguilas
+PH|Loyola Meralco Sparks
+CN|Shanghai Port
+CN|Shanghai Shenhua
+CN|Beijing Guoan
+CN|Shandong Taishan
+CN|Guangzhou FC
+CN|Guangzhou Evergrande
+CN|Wuhan Three Towns
+CN|Chengdu Rongcheng
+CN|Tianjin Jinmen Tiger
+CN|Zhejiang FC
+CN|Changchun Yatai
+CN|Henan FC
+CN|Dalian Pro
+CN|Shenzhen FC
+CN|Qingdao Hainiu
+CN|Meizhou Hakka
+CN|Cangzhou Mighty Lions
+CN|Nantong Zhiyun
+JP|Kashima Antlers
+JP|Urawa Red Diamonds
+JP|Gamba Osaka
+JP|Cerezo Osaka
+JP|Yokohama F. Marinos
+JP|Kawasaki Frontale
+JP|Vissel Kobe
+JP|Nagoya Grampus
+JP|FC Tokyo
+JP|Tokyo Verdy
+JP|Sanfrecce Hiroshima
+JP|Kashiwa Reysol
+JP|Shimizu S-Pulse
+JP|Júbilo Iwata
+JP|Albirex Niigata
+JP|Consadole Sapporo
+JP|Avispa Fukuoka
+JP|Sagan Tosu
+JP|Kyoto Sanga
+JP|Shonan Bellmare
+JP|Machida Zelvia
+JP|Vegalta Sendai
+JP|Omiya Ardija
+JP|JEF United Chiba
+JP|V-Varen Nagasaki
+JP|Oita Trinita
+JP|Ventforet Kofu
+JP|Fagiano Okayama
+JP|Roasso Kumamoto
+KR|Ulsan HD
+KR|Jeonbuk Hyundai Motors
+KR|Pohang Steelers
+KR|FC Seoul
+KR|Suwon Samsung Bluewings
+KR|Suwon FC
+KR|Incheon United
+KR|Daegu FC
+KR|Daejeon Hana Citizen
+KR|Gwangju FC
+KR|Gangwon FC
+KR|Jeju United
+KR|Gimcheon Sangmu
+KR|Seongnam FC
+KR|Busan IPark
+KR|Jeonnam Dragons
+KR|Gyeongnam FC
+KR|Bucheon FC 1995
+KR|FC Anyang
+KR|Chungnam Asan
+US|LA Galaxy
+US|Los Angeles FC
+US|Inter Miami
+US|New York City FC
+US|New York Red Bulls
+US|Seattle Sounders
+US|Portland Timbers
+US|Atlanta United
+US|Orlando City
+US|Columbus Crew
+US|FC Cincinnati
+US|Philadelphia Union
+US|New England Revolution
+US|Chicago Fire
+US|Houston Dynamo
+US|FC Dallas
+US|Austin FC
+US|Sporting Kansas City
+US|Real Salt Lake
+US|Colorado Rapids
+US|San Jose Earthquakes
+US|Minnesota United
+US|Nashville SC
+US|Charlotte FC
+US|St. Louis City
+US|D.C. United
+US|San Diego FC
+MX|Club América
+MX|Chivas Guadalajara
+MX|Cruz Azul
+MX|Pumas UNAM
+MX|Tigres UANL
+MX|CF Monterrey
+MX|Club León
+MX|Toluca
+MX|Pachuca
+MX|Santos Laguna
+MX|Atlas
+MX|Club Puebla
+MX|Querétaro FC
+MX|Necaxa
+MX|Club Tijuana
+MX|Mazatlán FC
+MX|FC Juárez
+MX|Atlético San Luis
+CO|Atlético Nacional
+CO|Millonarios
+CO|América de Cali
+CO|Deportivo Cali
+CO|Junior
+CO|Independiente Medellín
+CO|Independiente Santa Fe
+CO|Once Caldas
+CO|Deportes Tolima
+CO|Atlético Bucaramanga
+CO|Deportivo Pereira
+CO|Envigado FC
+CO|Unión Magdalena
+CO|Cúcuta Deportivo
+CO|Deportivo Pasto
+VN|Hà Nội FC
+VN|Công an Hà Nội
+VN|Thể Công Viettel
+VN|Viettel
+VN|Hoàng Anh Gia Lai
+VN|Becamex Bình Dương
+VN|Becamex Hồ Chí Minh
+VN|Thép Xanh Nam Định
+VN|Nam Định
+VN|Sông Lam Nghệ An
+VN|SHB Đà Nẵng
+VN|Đà Nẵng
+VN|Hải Phòng
+VN|Hồng Lĩnh Hà Tĩnh
+VN|Thanh Hóa
+VN|Đông Á Thanh Hóa
+VN|Quảng Nam
+VN|Bình Định
+VN|Topenland Bình Định
+VN|Hồ Chí Minh City
+VN|Sài Gòn FC
+VN|Khánh Hòa
+VN|Than Quảng Ninh
+VN|PVF-CAND
+VN|Ninh Bình
+VN|Long An
+VN|Đồng Tháp
+VN|An Giang
+VN|Cần Thơ
+VN|Phù Đổng
+VN|Bà Rịa Vũng Tàu
+VN|Huế
+VN|Đồng Nai
+VN|Bình Phước
+VN|Phố Hiến
+VN|Trường Tươi Bình Phước
+VN|Hòa Bình
+VN|Quy Nhơn Bình Định
+VN|Đồng Tâm Long An
+VN|Xuân Thành Sài Gòn
+VN|Thép Miền Nam Cảng Sài Gòn
+VN|Hoàng Anh Gia Lai FC

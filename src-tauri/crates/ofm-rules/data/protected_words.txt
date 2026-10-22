@@ -1,0 +1,43 @@
+# Words a generated club or stadium name must never contain: sponsors and brands (E3-5q F6).
+# Interim hand-made list for E3-5q1, launch region first. Compared folded, as whole words.
+Thép Xanh
+Becamex
+Viettel
+SHB
+Hoàng Anh
+Topenland
+PVF
+CAND
+Thể Công
+Công an
+Đông Á
+Xuân Thành
+Trường Tươi
+Hồng Lĩnh
+Than Quảng Ninh
+Hòa Phát
+Vingroup
+VinFast
+Vinamilk
+Vietjet
+PetroVietnam
+Sabeco
+Red Bull
+Emirates
+Etihad
+Nike
+Adidas
+Puma
+Coca-Cola
+Pepsi
+Samsung
+Hyundai
+Toyota
+Honda
+Yamaha
+Heineken
+Chang
+Singha
+Leo
+AIA
+Evergrande

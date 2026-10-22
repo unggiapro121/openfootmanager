@@ -1,0 +1,364 @@
+# Famous footballers and coaches whose exact names the generator never gives a fictional person
+# (E3-5q F6). Interim hand-made list for E3-5q1; E3-5q2 rebuilds it from Wikidata (CC0).
+# One name per line; compared folded (lower case, no diacritics, hyphens, apostrophes or spaces)
+# and in any rotation of its words, so "Son Heung-min" also blocks "Heung-min Son".
+Lionel Messi
+Cristiano Ronaldo
+Kylian Mbappé
+Erling Haaland
+Mohamed Salah
+Kevin De Bruyne
+Harry Kane
+Jude Bellingham
+Vinícius Júnior
+Robert Lewandowski
+Luka Modrić
+Virgil van Dijk
+Bukayo Saka
+Phil Foden
+Lamine Yamal
+Antoine Griezmann
+Karim Benzema
+Zinedine Zidane
+Thierry Henry
+David Beckham
+Wayne Rooney
+Steven Gerrard
+Frank Lampard
+Andrés Iniesta
+Xavi Hernández
+Sergio Ramos
+Gerard Piqué
+Iker Casillas
+Gianluigi Buffon
+Andrea Pirlo
+Francesco Totti
+Paolo Maldini
+Alessandro Del Piero
+Fabio Cannavaro
+Diego Maradona
+Johan Cruyff
+Franz Beckenbauer
+Manuel Neuer
+Thomas Müller
+Toni Kroos
+Bastian Schweinsteiger
+Miroslav Klose
+Philipp Lahm
+Zlatan Ibrahimović
+Eden Hazard
+Thibaut Courtois
+Romelu Lukaku
+Bruno Fernandes
+Bernardo Silva
+João Félix
+Rúben Dias
+Diogo Costa
+Nuno Mendes
+João Neves
+Pedro Gonçalves
+Fábio Silva
+Leandro Santos
+Julián Álvarez
+Lautaro Martínez
+Enzo Fernández
+Alexis Mac Allister
+Emiliano Martínez
+Ángel Di María
+Paulo Dybala
+Sergio Agüero
+Cristian Romero
+Conor Gallagher
+Declan Rice
+Raheem Sterling
+Marcus Rashford
+Jordan Henderson
+Trent Alexander-Arnold
+Diego López
+Luis Suárez
+Edinson Cavani
+Federico Valverde
+Darwin Núñez
+Sadio Mané
+Riyad Mahrez
+Achraf Hakimi
+Victor Osimhen
+Didier Drogba
+Samuel Eto'o
+George Weah
+Yaya Touré
+Gareth Bale
+Ryan Giggs
+Ivan Rakitić
+Mateo Kovačić
+Joško Gvardiol
+Martin Ødegaard
+Kai Havertz
+Jamal Musiala
+Florian Wirtz
+Leroy Sané
+İlkay Gündoğan
+Hakan Çalhanoğlu
+Arda Güler
+Dušan Vlahović
+Khvicha Kvaratskhelia
+Rafael Leão
+Theo Hernández
+Mike Maignan
+Ousmane Dembélé
+Aurélien Tchouaméni
+Eduardo Camavinga
+William Saliba
+N'Golo Kanté
+Paul Pogba
+Olivier Giroud
+Hugo Lloris
+Alisson Becker
+Ederson Moraes
+Marquinhos
+Thiago Silva
+Rodrygo Goes
+Gabriel Jesus
+Gabriel Martinelli
+Lucas Paquetá
+Bruno Guimarães
+Estêvão Willian
+Gonçalo Ramos
+Ronaldo Nazário
+Roberto Carlos
+Luis Díaz
+James Rodríguez
+Radamel Falcao
+Juan Cuadrado
+Carlos Valderrama
+René Higuita
+David Ospina
+Davinson Sánchez
+Yerry Mina
+Jhon Arias
+Jhon Durán
+Jhon Córdoba
+Richard Ríos
+Daniel Muñoz
+Jefferson Lerma
+Wilmar Barrios
+Freddy Rincón
+Faustino Asprilla
+Luis Sinisterra
+Hirving Lozano
+Raúl Jiménez
+Guillermo Ochoa
+Edson Álvarez
+Javier Hernández
+Andrés Guardado
+Héctor Herrera
+Rafael Márquez
+Hugo Sánchez
+Cuauhtémoc Blanco
+Jesús Corona
+Santiago Giménez
+Carlos Vela
+Luis Chávez
+César Montes
+Johan Vásquez
+Jorge Sánchez
+Henry Martín
+Alexis Vega
+Orbelín Pineda
+Christian Pulisic
+Weston McKennie
+Tyler Adams
+Gio Reyna
+Landon Donovan
+Clint Dempsey
+Tim Howard
+Michael Bradley
+Matt Turner
+Antonee Robinson
+Yunus Musah
+Tim Weah
+Folarin Balogun
+Ricardo Pepi
+Brenden Aaronson
+Josh Sargent
+Chris Richards
+Walker Zimmerman
+Jozy Altidore
+DeAndre Yedlin
+Claudio Reyna
+Son Heung-min
+Kim Min-jae
+Lee Kang-in
+Hwang Hee-chan
+Hwang In-beom
+Cho Gue-sung
+Lee Jae-sung
+Jeong Woo-yeong
+Park Ji-sung
+Ki Sung-yueng
+Lee Chung-yong
+Cha Bum-kun
+Hong Myung-bo
+Ahn Jung-hwan
+Park Chu-young
+Kim Young-gwon
+Kim Seung-gyu
+Jo Hyeon-woo
+Hwang Ui-jo
+Seol Young-woo
+Park Hang-seo
+Kim Sang-sik
+Takumi Minamino
+Kaoru Mitoma
+Wataru Endo
+Takefusa Kubo
+Daichi Kamada
+Takehiro Tomiyasu
+Ritsu Doan
+Junya Ito
+Hidetoshi Nakata
+Shinji Kagawa
+Keisuke Honda
+Maya Yoshida
+Yuto Nagatomo
+Shinji Okazaki
+Ao Tanaka
+Hiroki Ito
+Ko Itakura
+Kyogo Furuhashi
+Ayase Ueda
+Zion Suzuki
+Shuichi Gonda
+Hiroki Sakai
+Yuya Osako
+Genki Haraguchi
+Wu Lei
+Zhang Linpeng
+Wu Xi
+Zheng Zhi
+Sun Jihai
+Hao Junmin
+Wei Shihao
+Zhang Yuning
+Yan Junling
+Li Tie
+Fan Zhiyi
+Gao Lin
+Chanathip Songkrasin
+Teerasil Dangda
+Theerathon Bunmathan
+Supachok Sarachat
+Kawin Thamsatchanan
+Suphanat Mueanta
+Sarach Yooyen
+Ekanit Panya
+Thitipan Puangchan
+Kiatisuk Senamuang
+Tanaboon Kesarat
+Pansa Hemviboon
+Peerapat Notchaiya
+Bordin Phala
+Weerathep Pomphan
+Egy Maulana Vikri
+Witan Sulaeman
+Asnawi Mangkualam
+Pratama Arhan
+Marselino Ferdinan
+Rizky Ridho
+Bambang Pamungkas
+Boaz Solossa
+Evan Dimas
+Irfan Bachdim
+Stefano Lilipaly
+Jordi Amat
+Sandy Walsh
+Justin Hubner
+Ernando Ari
+Rafael Struick
+Thom Haye
+Nadeo Argawinata
+Ramadhan Sananta
+Dimas Drajad
+Safawi Rasid
+Faisal Halim
+Arif Aiman
+Syafiq Ahmad
+Akhyar Rashid
+Safiq Rahim
+Norshahrul Idlan
+Aidil Zafuan
+Dominic Tan
+Shahrul Saad
+Brendan Gan
+Matthew Davies
+Syahmi Safari
+Hariss Harun
+Ikhsan Fandi
+Shahdan Sulaiman
+Hassan Sunny
+Baihakki Khaizan
+Fandi Ahmad
+Safuwan Baharudin
+Faris Ramli
+Irfan Fandi
+Phil Younghusband
+James Younghusband
+Neil Etheridge
+Stephan Schröck
+Javier Patiño
+Patrick Reichelt
+Sandro Reyes
+Bienvenido Marañón
+Kevin Ingreso
+Amani Aguinaldo
+Martin Steuble
+Mike Ott
+Nguyễn Quang Hải
+Nguyễn Công Phượng
+Đặng Văn Lâm
+Nguyễn Văn Quyết
+Nguyễn Tiến Linh
+Quế Ngọc Hải
+Đỗ Hùng Dũng
+Nguyễn Hoàng Đức
+Lương Xuân Trường
+Bùi Tiến Dũng
+Đoàn Văn Hậu
+Nguyễn Văn Toàn
+Phạm Tuấn Hải
+Nguyễn Filip
+Nguyễn Xuân Son
+Đỗ Duy Mạnh
+Nguyễn Thành Chung
+Vũ Văn Thanh
+Hồ Tấn Tài
+Nguyễn Văn Vĩ
+Khuất Văn Khang
+Nguyễn Thái Sơn
+Trần Đình Trọng
+Bùi Hoàng Việt Anh
+Phan Văn Đức
+Nguyễn Trọng Hoàng
+Lê Công Vinh
+Phạm Thành Lương
+Nguyễn Hồng Sơn
+Lê Huỳnh Đức
+Nguyễn Anh Đức
+Nguyễn Văn Công
+Nguyễn Tuấn Anh
+Nguyễn Hai Long
+Nguyễn Đình Bắc
+Trần Nguyên Mạnh
+Đặng Văn Tới
+Lê Văn Xuân
+Nguyễn Trọng Đại
+Nguyễn Phong Hồng Duy
+Châu Ngọc Quang
+Nguyễn Văn Toản
+Nguyễn Hữu Thắng
+Mai Đức Chung
+Nguyễn Văn Trường
+Nguyễn Văn Thanh
+Bùi Tiến Dụng
+Trần Văn Công
+Hồ Văn Ý
