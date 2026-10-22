@@ -175,6 +175,11 @@ impl MatchSession {
         self.next_order += 1;
     }
 
+    /// How many inputs the gap under way holds: the place the next one takes.
+    pub(super) fn gap_len(&self) -> usize {
+        self.log.len() - self.gap_start
+    }
+
     pub fn controller(&self, side: Side) -> Controller {
         self.controllers[index(side)]
     }
