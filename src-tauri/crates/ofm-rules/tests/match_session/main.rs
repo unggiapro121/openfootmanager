@@ -5,5 +5,6 @@
 mod balance;
 mod check;
 mod golden;
+mod replay;
 mod session;
 mod support;
