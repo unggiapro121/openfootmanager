@@ -8,6 +8,12 @@
 //! A rule belongs here when it decides an outcome from data the server will also hold. A rule
 //! that walks the world day by day, reads the save or talks to the player stays in `ofm_core`.
 
+/// The version of the rules a world is grown and run by — the generator, its data and
+/// blocklists, training and aging — apart from the match (`engine::ENGINE_VERSION`). Every
+/// generated entity records it; a change that moves a generated world must bump it, which
+/// `tests/world_rules_version.rs` enforces (E3-5q F12).
+pub const WORLD_RULES_VERSION: &str = "1";
+
 pub mod age;
 pub mod aging;
 pub mod ai_formation;
