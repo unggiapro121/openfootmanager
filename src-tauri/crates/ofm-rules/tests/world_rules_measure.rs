@@ -96,3 +96,93 @@ fn measure_e7_one_age_rule() {
         );
     }
 }
+
+/// The roll E6 replaced: std's `DefaultHasher` over the player, the season and the purpose.
+fn old_seeded_value(player_id: &str, season: u32, salt: &str) -> u32 {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+    let mut hasher = DefaultHasher::new();
+    player_id.hash(&mut hasher);
+    season.hash(&mut hasher);
+    salt.hash(&mut hasher);
+    (hasher.finish() % u32::MAX as u64) as u32
+}
+
+fn veteran(id: &str) -> domain::player::Player {
+    let mut player = domain::player::Player::new(
+        id.into(),
+        id.into(),
+        id.into(),
+        "1990-01-01".into(),
+        "England".into(),
+        domain::player::Position::Midfielder,
+        domain::player::PlayerAttributes {
+            pace: 60,
+            stamina: 60,
+            strength: 60,
+            agility: 60,
+            passing: 60,
+            shooting: 60,
+            tackling: 60,
+            dribbling: 60,
+            defending: 60,
+            positioning: 60,
+            vision: 60,
+            decisions: 60,
+            composure: 60,
+            aggression: 60,
+            teamwork: 60,
+            leadership: 60,
+            handling: 20,
+            reflexes: 20,
+            aerial: 60,
+            long_passing: 60,
+            crossing: 60,
+            curve: 60,
+            free_kick: 60,
+            long_shots: 60,
+            first_touch: 60,
+            heading: 60,
+        },
+    );
+    player.team_id = Some("club".into());
+    player.stats.appearances = 25;
+    player.stats.avg_rating = 6.8;
+    player.ovr = 70;
+    player
+}
+
+/// Given 50,000 veterans of each age from 33 to 37, regular starters with no contract on file,
+/// when the retirement roll and the veteran's pace loss are drawn with the old hash and the new,
+/// then the shares retiring and the mean pace lost are printed side by side.
+#[test]
+#[ignore = "a measurement, run by hand"]
+fn measure_e6_stable_aging_rolls() {
+    use ofm_rules::aging::{retirement_chance, should_retire, veteran_pace_loss};
+
+    println!(
+        "E6 — DefaultHasher → stable_hash (50.000 cầu thủ mỗi tuổi, đá chính, chưa ghi hợp đồng)"
+    );
+    const N: u32 = 50_000;
+    for age in 33..=37 {
+        let (mut old_retired, mut new_retired) = (0u32, 0u32);
+        let (mut old_pace, mut new_pace) = (0u32, 0u32);
+        let mut chance = 0;
+        for index in 0..N {
+            let id = format!("veteran-{age}-{index}");
+            let player = veteran(&id);
+            chance = retirement_chance(&player, age, false);
+            old_retired += u32::from(old_seeded_value(&id, 2030, "retirement-roll") % 100 < chance);
+            new_retired += u32::from(should_retire(&player, age, false, 2030));
+            old_pace += 1 + old_seeded_value(&id, 2030, "pace-loss") % 3;
+            new_pace += u32::from(veteran_pace_loss(&id, age, 2030));
+        }
+        println!(
+            "tuổi {age} (xác suất {chance}%): giải nghệ {:.2}% → {:.2}% | mất tốc độ trung bình {:.3} → {:.3}",
+            f64::from(old_retired) / f64::from(N) * 100.0,
+            f64::from(new_retired) / f64::from(N) * 100.0,
+            f64::from(old_pace) / f64::from(N),
+            f64::from(new_pace) / f64::from(N),
+        );
+    }
+}

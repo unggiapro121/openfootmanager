@@ -1,3 +1,4 @@
+use crate::stable_hash::stable_hash;
 use crate::{game::Game, season_awards::SeasonAwards};
 use chrono::{TimeZone, Utc};
 use domain::{
@@ -10,23 +11,21 @@ use domain::{
     },
 };
 use std::collections::HashMap;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
 const DEFAULT_HISTORY_LEAGUE_ID: &str = "history-league";
 const DEFAULT_HISTORY_LEAGUE_NAME: &str = "Historical League";
 
-fn deterministic_value(parts: impl Hash) -> u64 {
-    let mut hasher = DefaultHasher::new();
-    parts.hash(&mut hasher);
-    hasher.finish()
-}
+/// Keeps the made-up history apart from every other use of `stable_hash`.
+const HISTORY_SALT: u64 = 0x6869_7374_6f72_7901; // "history"
 
-fn deterministic_u32(parts: impl Hash, modulo: u32) -> u32 {
+/// A number below `modulo` fixed by `id`, the season and what it is for. `stable_hash`, not std's
+/// `DefaultHasher`, which promises nothing across Rust releases (E3-5b, E6).
+fn deterministic_u32(id: &str, season: u32, tag: &str, modulo: u32) -> u32 {
     if modulo == 0 {
         0
     } else {
-        (deterministic_value(parts) % modulo as u64) as u32
+        let key = format!("{id}/{season}/{tag}");
+        (stable_hash(key.as_bytes(), HISTORY_SALT) % modulo as u64) as u32
     }
 }
 
@@ -111,7 +110,7 @@ fn build_league_season_standings(
         .filter_map(|id| game.teams.iter().find(|team| &team.id == id))
         .map(|team| {
             let score = team.reputation.saturating_mul(10)
-                + deterministic_u32((&team.id, season, "ranking"), 250);
+                + deterministic_u32(&team.id, season, "ranking", 250);
             (team.id.clone(), score)
         })
         .collect();
@@ -122,8 +121,7 @@ fn build_league_season_standings(
         .enumerate()
         .map(|(index, (team_id, _))| {
             let strength = num_teams.saturating_sub(index as u32);
-            let max_draws =
-                matches_played.min(4 + deterministic_u32((&team_id, season, "draws"), 5));
+            let max_draws = matches_played.min(4 + deterministic_u32(&team_id, season, "draws", 5));
             let target_wins = ((matches_played * strength) / (num_teams + 1))
                 .saturating_add(2)
                 .min(matches_played.saturating_sub(max_draws));
@@ -133,10 +131,10 @@ fn build_league_season_standings(
             let goals_for = 18
                 + wins.saturating_mul(2)
                 + draws
-                + deterministic_u32((&team_id, season, "goals_for"), 12);
+                + deterministic_u32(&team_id, season, "goals_for", 12);
             let goals_against = 10
                 + losses.saturating_mul(2)
-                + deterministic_u32((&team_id, season, "goals_against"), 10)
+                + deterministic_u32(&team_id, season, "goals_against", 10)
                 + index as u32;
 
             StandingEntry {
@@ -288,7 +286,7 @@ fn upsert_manager_history(game: &mut Game, standings: &[StandingEntry]) {
 
 fn base_rating(player: &Player, position_bonus: f32, season: u32) -> f32 {
     let ovr_bonus = (player.ovr.saturating_sub(55) as f32) / 18.0;
-    let variation = deterministic_u32((&player.id, season, "rating"), 30) as f32 / 100.0;
+    let variation = deterministic_u32(&player.id, season, "rating", 30) as f32 / 100.0;
     (6.1 + position_bonus + ovr_bonus + variation).clamp(6.0, 9.6)
 }
 
@@ -297,7 +295,7 @@ fn synthesize_player_season(
     matches_played: u32,
     season: u32,
 ) -> PlayerSeasonStats {
-    let missed_matches = deterministic_u32((&player.id, season, "missed"), 8);
+    let missed_matches = deterministic_u32(&player.id, season, "missed", 8);
     let appearances = matches_played.saturating_sub(missed_matches).max(8);
     let minutes_played = appearances.saturating_mul(90);
     let group_position = player.position.to_group_position();
@@ -306,7 +304,7 @@ fn synthesize_player_season(
         match group_position {
             Position::Goalkeeper => {
                 let clean_sheets =
-                    appearances / 3 + deterministic_u32((&player.id, season, "clean_sheets"), 4);
+                    appearances / 3 + deterministic_u32(&player.id, season, "clean_sheets", 4);
                 (
                     0,
                     0,
@@ -320,10 +318,10 @@ fn synthesize_player_season(
             }
             Position::Defender => {
                 let clean_sheets =
-                    appearances / 4 + deterministic_u32((&player.id, season, "clean_sheets"), 3);
+                    appearances / 4 + deterministic_u32(&player.id, season, "clean_sheets", 3);
                 (
-                    appearances / 12 + deterministic_u32((&player.id, season, "goals"), 3),
-                    appearances / 10 + deterministic_u32((&player.id, season, "assists"), 3),
+                    appearances / 12 + deterministic_u32(&player.id, season, "goals", 3),
+                    appearances / 10 + deterministic_u32(&player.id, season, "assists", 3),
                     clean_sheets,
                     appearances.saturating_mul(1),
                     appearances.saturating_mul(26),
@@ -333,8 +331,8 @@ fn synthesize_player_season(
                 )
             }
             Position::Midfielder => (
-                appearances / 6 + deterministic_u32((&player.id, season, "goals"), 5),
-                appearances / 5 + deterministic_u32((&player.id, season, "assists"), 4),
+                appearances / 6 + deterministic_u32(&player.id, season, "goals", 5),
+                appearances / 5 + deterministic_u32(&player.id, season, "assists", 4),
                 0,
                 appearances.saturating_mul(2),
                 appearances.saturating_mul(32),
@@ -343,8 +341,8 @@ fn synthesize_player_season(
                 base_rating(player, 0.25, season),
             ),
             Position::Forward => (
-                appearances / 3 + deterministic_u32((&player.id, season, "goals"), 8),
-                appearances / 7 + deterministic_u32((&player.id, season, "assists"), 3),
+                appearances / 3 + deterministic_u32(&player.id, season, "goals", 8),
+                appearances / 7 + deterministic_u32(&player.id, season, "assists", 3),
                 0,
                 appearances.saturating_mul(3),
                 appearances.saturating_mul(18),
@@ -357,15 +355,15 @@ fn synthesize_player_season(
 
     let shots_on_target = shots.saturating_sub(shots / 3);
     let passes_attempted = passes_completed.saturating_add(appearances.saturating_mul(4));
-    let fouls_committed = deterministic_u32((&player.id, season, "fouls"), appearances.max(1));
+    let fouls_committed = deterministic_u32(&player.id, season, "fouls", appearances.max(1));
 
     PlayerSeasonStats {
         appearances,
         goals,
         assists,
         clean_sheets,
-        yellow_cards: deterministic_u32((&player.id, season, "yellow"), 5),
-        red_cards: deterministic_u32((&player.id, season, "red"), 2),
+        yellow_cards: deterministic_u32(&player.id, season, "yellow", 5),
+        red_cards: deterministic_u32(&player.id, season, "red", 2),
         avg_rating: rating,
         // Every synthesized appearance is a full ninety, so every one is rated.
         rated_appearances: appearances,
@@ -490,10 +488,9 @@ fn update_historical_rivalries(game: &mut Game, season: u32, standings: &[Standi
             .and_then(|rivalry| rivalry.started_season)
             .map(|existing_start| existing_start.min(season))
             .or(Some(season));
-        let intensity = existing
-            .map(|rivalry| rivalry.intensity)
-            .unwrap_or(55)
-            .max(55 + deterministic_u32((team_a, team_b, season, "rivalry"), 36) as u8);
+        let intensity = existing.map(|rivalry| rivalry.intensity).unwrap_or(55).max(
+            55 + deterministic_u32(&format!("{team_a}/{team_b}"), season, "rivalry", 36) as u8,
+        );
         game.world_history.upsert_rivalry(
             team_a.clone(),
             team_b.clone(),

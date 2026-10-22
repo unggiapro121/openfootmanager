@@ -3,19 +3,21 @@
 //! save. Ages and contract expiry are worked out by the caller.
 
 use crate::attribute_split::Blend;
+use crate::stable_hash::stable_hash;
 use domain::player::{Player, Position};
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 
 const MIN_ATTRIBUTE: u8 = 1;
 const MAX_ATTRIBUTE: u8 = 99;
 
+/// Keeps the aging rolls apart from every other use of `stable_hash`.
+const AGING_SALT: u64 = 0x6167_696e_6700_0001; // "aging"
+
+/// A number fixed by the player, the season and what it is for. `stable_hash`, not std's
+/// `DefaultHasher`, which promises nothing across Rust releases: the game and the online server,
+/// built apart, must retire the same players (E3-5b, E6).
 fn seeded_value(player_id: &str, season: u32, salt: &str) -> u32 {
-    let mut hasher = DefaultHasher::new();
-    player_id.hash(&mut hasher);
-    season.hash(&mut hasher);
-    salt.hash(&mut hasher);
-    (hasher.finish() % u32::MAX as u64) as u32
+    let key = format!("{player_id}/{season}/{salt}");
+    (stable_hash(key.as_bytes(), AGING_SALT) % u32::MAX as u64) as u32
 }
 
 pub fn veteran_pace_loss(player_id: &str, age: i32, season: u32) -> u8 {
