@@ -55,13 +55,14 @@ openfootmanager/
 
 ## Crate Architecture
 
-The Rust workspace holds seven packages — four library crates, two binaries, and the Tauri
+The Rust workspace holds eight packages — five library crates, two binaries, and the Tauri
 application itself — with these dependency boundaries:
 
 Listed rather than drawn, because the previous box diagram put `engine` on top of `domain` — the
 one edge this codebase forbids — and put `db` below `ofm_core`, which is backwards. Each arrow
 below is a `path` dependency in that crate's own `Cargo.toml`, and
-`src-tauri/tests/architecture.rs` fails the build if the two leaves ever gain one.
+`src-tauri/tests/architecture.rs` fails the build if a core crate (`engine`, `domain`, `ofm-rules`)
+ever gains one outside its allowed list, or any platform crate (Tauri, SQLite, a runtime, a clock).
 
 ```text
   Tauri commands          src/commands/, src/application/, src/mcp_server/
@@ -71,8 +72,10 @@ below is a `path` dependency in that crate's own `Cargo.toml`, and
                           → domain, ofm_core
 
   ofm_core                game logic, state, turn processing
-                          → domain, engine
+                          → domain, engine, ofm-rules
 
+  ofm-rules               pure rules the online server shares (ratings, wear, form,
+                          coach progress, facilities)  → domain
   engine                  match simulation          → nothing in this workspace
   domain                  pure data types           → nothing in this workspace
 
@@ -84,7 +87,7 @@ Two things about this graph are worth stating plainly, because both have been do
 before:
 
 - **`engine` and `domain` are independent leaves.** Neither depends on anything else in the
-  workspace — `engine`'s only dependencies are `log`, `rand` and `serde`. `engine` in particular
+  workspace — `engine`'s only dependencies are `rand`, `serde` and `serde_json`. `engine` in particular
   does *not* sit on `domain`; see "Engine Isolation" below for why that is deliberate.
 - **`db` depends on `ofm_core`, not the other way round.** Persistence sits *above* game logic
   here. That is a layering inversion against how the crates are usually described, and it is

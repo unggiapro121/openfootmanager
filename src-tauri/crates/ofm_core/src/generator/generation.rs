@@ -8,7 +8,7 @@ use super::authored_player::resolve_authored_contract;
 use super::definitions::{NamePool, NamesDefinition};
 use super::physique::{BodyLinks, Physique, correlated_jitter, correlated_range, sample_physique};
 use crate::nations;
-use crate::player_rating::{generate_potential, refresh_player_derived};
+use crate::player_rating::{generate_potential_for, refresh_player_derived};
 
 // ---------------------------------------------------------------------------
 // Helper functions for world generation
@@ -1178,7 +1178,7 @@ pub(super) fn generate_player_from_def(
     // floored at current ovr — so nothing further is needed to make it stick.
     player.potential = def
         .potential
-        .unwrap_or_else(|| generate_potential(temp_ovr, age));
+        .unwrap_or_else(|| generate_potential_for(&player.id, temp_ovr, age));
     refresh_player_derived(&mut player, current_year);
     // A habit, drawn once from the player's id (see `assigned_traits`).
     crate::assigned_traits::assign_traits(&mut player, current_year);
@@ -1342,7 +1342,7 @@ mod tests {
             2026,
         );
 
-        // `generate_potential` gives an under-18 a 15..=30 bonus over ovr,
+        // `generate_potential_for` gives an under-18 a 15..=30 bonus over ovr,
         // capped at 99.
         let floor = player.ovr.saturating_add(15).min(99);
         let ceiling = player.ovr.saturating_add(30).min(99);

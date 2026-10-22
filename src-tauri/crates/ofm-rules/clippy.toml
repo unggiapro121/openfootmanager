@@ -1,0 +1,10 @@
+# These rules are pure functions of their inputs: the online server (phase 3) runs them as the game
+# does and must reach the same answer. Anything that reads the operating
+# system's entropy or the wall clock breaks that, so it is a lint error in this crate, tests
+# included. Take an `&mut impl Rng` from the caller instead, seeded by name (ChaCha12).
+disallowed-methods = [
+    { path = "rand::rng", reason = "OS entropy is not replayable; take a seeded `&mut impl Rng` from the caller" },
+    { path = "rand::random", reason = "OS entropy is not replayable; take a seeded `&mut impl Rng` from the caller" },
+    { path = "std::time::SystemTime::now", reason = "the wall clock is not an input of a rule" },
+    { path = "std::time::Instant::now", reason = "the wall clock is not an input of a rule" },
+]

@@ -205,7 +205,7 @@ fn role_for(player: &Player, play_style: &PlayStyle) -> PlayerRole {
 
 /// [`role_for`] at a position the player is fielded in rather than his own:
 /// the same scoring, choosing only among the roles `position` admits.
-pub(crate) fn role_for_position(
+pub fn role_for_position(
     player: &Player,
     position: &Position,
     play_style: &PlayStyle,
@@ -274,7 +274,7 @@ fn earns_at_centre_back(player: &Player, role: &PlayerRole) -> bool {
 /// role switches to the other if he earns it, else plays as a plain
 /// centre-back. Call again until `None`: with three of a kind one change may
 /// not be enough.
-pub(crate) fn split_matching_centre_backs(
+pub fn split_matching_centre_backs(
     centre_backs: &[(&Player, PlayerRole)],
 ) -> Option<(usize, PlayerRole)> {
     let holding = |role: PlayerRole| -> Vec<usize> {
@@ -313,10 +313,7 @@ pub(crate) fn split_matching_centre_backs(
 /// Takes an iterator rather than a slice because its two callers hold the squad
 /// differently: the generator has it as an owned block, the weekly review has it
 /// as a filtered borrow out of the whole world's player list.
-pub(crate) fn assign_squad_roles<'a>(
-    team: &mut Team,
-    players: impl IntoIterator<Item = &'a Player>,
-) {
+pub fn assign_squad_roles<'a>(team: &mut Team, players: impl IntoIterator<Item = &'a Player>) {
     team.player_roles.clear();
     for player in players {
         let role = role_for(player, &team.play_style);

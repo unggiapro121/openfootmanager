@@ -3024,6 +3024,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ofm-rules"
+version = "0.3.0"
+dependencies = [
+ "domain",
+ "rand",
+ "rand_chacha",
+ "serde",
+]
+
+[[package]]
 name = "ofm_core"
 version = "0.3.0"
 dependencies = [
@@ -3033,6 +3043,7 @@ dependencies = [
  "engine",
  "hex",
  "log",
+ "ofm-rules",
  "rand",
  "rand_chacha",
  "serde",
