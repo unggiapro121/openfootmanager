@@ -13,7 +13,7 @@ use ofm_core::player_identity::upgrade_game_player_identities;
 fn generated_players(seed: u64) -> Vec<Player> {
     generate_world_data_seeded_with(
         seed,
-        &WorldGenConfig::compact(),
+        &WorldGenConfig::compact(ofm_core::generator::default_opening_year()),
         &DefinitionSources::embedded_only(),
     )
     .players
@@ -136,7 +136,7 @@ fn the_attributes_a_body_shapes_follow_it() {
 fn centre_backs_come_out_taller_than_full_backs() {
     let world = generate_world_data_seeded_with(
         29,
-        &WorldGenConfig::compact(),
+        &WorldGenConfig::compact(ofm_core::generator::default_opening_year()),
         &DefinitionSources::embedded_only(),
     );
     let start = Utc.with_ymd_and_hms(2026, 7, 1, 0, 0, 0).unwrap();

@@ -26,8 +26,8 @@ pub(super) fn build_game_from_world_data(
     // foundation competitions.
     let game_start = clock.start_date;
     // The game's seed, settled first because the catch-up of an in-progress season below
-    // draws from it: the world's own when it was generated from one, a fresh draw for a
-    // world nothing seeded (an import, a package).
+    // draws from it: the world's own when it was generated or built from a package with one,
+    // a fresh draw for a world nothing seeded (one loaded from a file).
     let seed = world.generation_seed.unwrap_or_else(rand::random);
     let defined_competitions: Vec<League> = world
         .competition_definitions

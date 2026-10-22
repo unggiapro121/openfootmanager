@@ -38,7 +38,7 @@ fn make_scenario_game(seed: u64) -> Game {
     // invariants under test hold for any world size.
     let world = generate_world_data_seeded_with(
         seed,
-        &WorldGenConfig::compact(),
+        &WorldGenConfig::compact(ofm_core::generator::default_opening_year()),
         &DefinitionSources::embedded_only(),
     );
 

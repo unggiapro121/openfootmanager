@@ -139,9 +139,8 @@ pub fn generate_world_data_seeded_with(
     config: &super::WorldGenConfig,
     sources: &super::DefinitionSources,
 ) -> WorldData {
-    use rand::SeedableRng;
     world_data_from_parts(
-        super::generate_world_with_rng(rand::rngs::StdRng::seed_from_u64(seed), config, sources),
+        super::generate_world_with_rng(super::world_rng(seed), config, sources),
         Some(seed),
     )
 }
@@ -181,7 +180,12 @@ fn world_data_from_parts(
         news: vec![],
         stats: domain::stats::StatsState::default(),
         world_history: domain::world_history::WorldHistoryArchive::default(),
-        metadata: super::definitions::WorldDataMetadata::default(),
+        metadata: super::definitions::WorldDataMetadata {
+            world_id: generation_seed
+                .map(super::seeded_world_id)
+                .unwrap_or_default(),
+            ..super::definitions::WorldDataMetadata::default()
+        },
         extra_translations: std::collections::HashMap::new(),
         build_notices: Vec::new(),
         generation_seed,
@@ -217,11 +221,13 @@ pub fn build_world_from_package(
     package: &super::package::WorldPackage,
     opening_year: Option<u32>,
     sources: &super::DefinitionSources,
+    seed: u64,
 ) -> Result<WorldData, String> {
     let world = normalize_world(super::build_world_data_from_package(
         package,
         opening_year,
         sources,
+        seed,
     ));
     validate_embedded_definitions(&world)?;
     Ok(world)
@@ -1082,7 +1088,7 @@ mod tests {
         );
         let sources = DefinitionSources::embedded_only();
         assert!(
-            matches!(build_world_from_package(&layer, Some(2031), &sources),
+            matches!(build_world_from_package(&layer, Some(2031), &sources, 1),
             Err(key) if key == COMPETITION_DEFINITIONS_INVALID_ERROR)
         );
 
@@ -1093,7 +1099,7 @@ mod tests {
             errors.is_empty(),
             "the composed package is valid: {errors:?}"
         );
-        let world = build_world_from_package(&merged, Some(2031), &sources).unwrap();
+        let world = build_world_from_package(&merged, Some(2031), &sources, 1).unwrap();
         let errors = crate::generator::validate_definitions_for_world(
             world.competition_definitions.as_ref().unwrap(),
             &world,

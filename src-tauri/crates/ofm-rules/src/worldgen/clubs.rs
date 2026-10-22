@@ -198,26 +198,18 @@ pub struct WorldGenConfig {
     pub color_palette: Vec<(String, String)>,
     /// Fallback city names for a country with no curated pool.
     pub generic_cities: Vec<String>,
+    /// The year the world opens in. Ages, contracts and values are measured from it, so it is
+    /// part of what a seed regenerates: the generator never reads the clock itself.
+    pub opening_year: u32,
 }
 
 impl WorldGenConfig {
-    /// The full shipped world, from the embedded definition.
+    /// A world grown from a nations definition, opening in `opening_year`.
     ///
-    /// Prefer [`standard_from`] anywhere a player override could apply — this
-    /// one deliberately ignores the search path, which is what tests want.
-    pub fn standard() -> Self {
-        Self::standard_from(&super::definitions::DefinitionSources::embedded_only())
-    }
-
-    /// The full shipped world, honouring a player-supplied `default_nations`
-    /// file when one is present.
-    ///
-    /// The config has to be built *from* the search path rather than before it,
-    /// because `generate_world` used to pass `WorldGenConfig::standard()` as an
-    /// argument — evaluated before the override was ever looked at, so a
-    /// `default_nations.json` override could never have taken effect.
-    pub fn standard_from(sources: &super::definitions::DefinitionSources) -> Self {
-        let def = super::definitions::nations_definition(sources);
+    /// The game builds it from the definition a player may override
+    /// (`ofm_core::generator::standard_world_config`), not from the embedded copy: a
+    /// `default_nations.json` override has to be read before the config exists to take effect.
+    pub fn from_nations(def: super::definitions::NationsDefinition, opening_year: u32) -> Self {
         Self {
             clubs_per_division: def.clubs_per_division,
             nations: def.nations,
@@ -227,18 +219,23 @@ impl WorldGenConfig {
                 .map(|pair| (pair.primary, pair.secondary))
                 .collect(),
             generic_cities: def.generic_cities,
+            opening_year,
         }
+    }
+
+    /// The full shipped world, from the embedded definition, ignoring any override.
+    pub fn standard(opening_year: u32) -> Self {
+        Self::from_nations(super::definitions::embedded_nations(), opening_year)
     }
 
     /// A tiny world for fast tests: the first two shipped nations, four clubs
     /// per division.
     ///
-    /// Deliberately built from [`standard`] rather than `standard_from`, so it
-    /// is always the *shipped* nations regardless of any override on disk. A
+    /// Always the *shipped* nations regardless of any override on disk. A
     /// test's fixture should not change because the machine running it happens
     /// to have a `default_nations.json` in its app data directory.
-    pub fn compact() -> Self {
-        let mut config = Self::standard();
+    pub fn compact(opening_year: u32) -> Self {
+        let mut config = Self::standard(opening_year);
         config.clubs_per_division = 4;
         config.nations.truncate(2);
         config
@@ -247,13 +244,12 @@ impl WorldGenConfig {
     /// Total clubs this config will generate.
     ///
     /// Saturating rather than wrapping: a definition file cannot reach here with
-    /// factors this large ([`DefinitionSources`] bounds both), but a
+    /// factors this large (the game's `DefinitionSources` bounds both), but a
     /// `WorldGenConfig` assembled in code can, and the two build profiles
     /// disagree about what `*` then means — debug panics on overflow, release
     /// wraps, so `Vec::with_capacity` would be handed a small nonsense number
     /// while the loop that fills it still ran to the real count.
     ///
-    /// [`DefinitionSources`]: super::definitions::DefinitionSources
     pub fn total_clubs(&self) -> usize {
         self.nations
             .iter()
@@ -469,11 +465,10 @@ fn reputation_center(strength: u8, index: usize, total: usize) -> u32 {
 ///
 /// If `color_palette` is empty, or any nation has no cities — both are indexed
 /// per club (the latter as `index % cities.len()`). A definition file cannot
-/// reach here in that state: [`DefinitionSources`] rejects it and falls back to
+/// reach here in that state: the game's `DefinitionSources` rejects it and falls back to
 /// the shipped copy. A `WorldGenConfig` assembled in code can, so these are
 /// named rather than left to surface as an opaque index panic.
 ///
-/// [`DefinitionSources`]: super::definitions::DefinitionSources
 pub fn generate_club_defs(config: &WorldGenConfig, rng: &mut impl Rng) -> Vec<TeamDef> {
     assert!(
         !config.color_palette.is_empty(),
@@ -534,10 +529,10 @@ mod tests {
 
     #[test]
     fn standard_config_gives_every_nation_a_full_pyramid() {
-        let config = WorldGenConfig::standard();
+        let config = WorldGenConfig::standard(2026);
         for nation in &config.nations {
             let expected = config.clubs_per_division * nation.tiers;
-            let mut rng = rand::rng();
+            let mut rng = crate::seed::rng_from_u64(7);
             let defs = generate_club_defs(
                 &WorldGenConfig {
                     nations: vec![nation.clone()],
@@ -557,9 +552,9 @@ mod tests {
 
     #[test]
     fn club_names_are_unique_within_a_nation() {
-        let mut rng = rand::rng();
-        let defs = generate_club_defs(&WorldGenConfig::standard(), &mut rng);
-        for nation in WorldGenConfig::standard().nations {
+        let mut rng = crate::seed::rng_from_u64(14);
+        let defs = generate_club_defs(&WorldGenConfig::standard(2026), &mut rng);
+        for nation in WorldGenConfig::standard(2026).nations {
             let names: Vec<&str> = defs
                 .iter()
                 .filter(|def| def.country == nation.code)
@@ -577,7 +572,7 @@ mod tests {
 
     #[test]
     fn majors_get_two_divisions_worth_of_clubs() {
-        let config = WorldGenConfig::standard();
+        let config = WorldGenConfig::standard(2026);
         let eng = config.nations.iter().find(|n| n.code == "ENG").unwrap();
         assert_eq!(eng.tiers, 2);
         assert!(
@@ -588,7 +583,7 @@ mod tests {
 
     #[test]
     fn every_standard_nation_is_in_the_catalog_with_a_region() {
-        for nation in &WorldGenConfig::standard().nations {
+        for nation in &WorldGenConfig::standard(2026).nations {
             let region = nations::region_for_code(&nation.code);
             assert!(!region.is_empty(), "{} has no region mapping", nation.code);
             // Not merely non-empty: an uncatalogued code silently answers
@@ -613,8 +608,8 @@ mod tests {
 
     #[test]
     fn short_codes_are_three_uppercase_letters() {
-        let mut rng = rand::rng();
-        let defs = generate_club_defs(&WorldGenConfig::compact(), &mut rng);
+        let mut rng = crate::seed::rng_from_u64(21);
+        let defs = generate_club_defs(&WorldGenConfig::compact(2026), &mut rng);
         for def in &defs {
             assert_eq!(def.short_name.chars().count(), 3, "{}", def.name);
             assert!(
@@ -641,14 +636,14 @@ mod tests {
 
     #[test]
     fn brazilian_pyramid_uses_varied_local_names_and_unique_codes() {
-        let standard = WorldGenConfig::standard();
+        let standard = WorldGenConfig::standard(2026);
         let brazil = standard
             .nations
             .iter()
             .find(|nation| nation.code == "BR")
             .expect("BR is a generation nation")
             .clone();
-        let mut rng = rand::rng();
+        let mut rng = crate::seed::rng_from_u64(28);
         let defs = generate_club_defs(
             &WorldGenConfig {
                 clubs_per_division: 20,

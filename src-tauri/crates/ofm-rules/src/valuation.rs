@@ -5,10 +5,11 @@
 //! because value climbs exponentially with ability. The quadratic it replaces
 //! made a 90-rated player barely twice the price of a 60-rated one.
 
-use chrono::NaiveDate;
 use domain::player::{Player, Position};
 
-use crate::contracts::{MINIMUM_DEFAULT_WAGE, player_age_on};
+/// The least any player in the game is paid a week: the floor under every
+/// generated, derived and offered wage.
+pub const MINIMUM_DEFAULT_WAGE: u64 = 500;
 
 /// Value of a player rated [`VALUE_ANCHOR_OVR`], at his peak, at a club of
 /// ordinary standing.
@@ -33,22 +34,21 @@ const WEEKS_PER_YEAR: f64 = 52.0;
 
 /// Reputation at which a club counts as the top of the game. Reputation runs
 /// to about 950 in a generated world.
-pub(crate) const TOP_REPUTATION: f64 = 900.0;
+pub const TOP_REPUTATION: f64 = 900.0;
 /// Standing of a player with no club: he is priced as if he were at a modest one.
 const FREE_AGENT_STANDING_FACTOR: f64 = 0.85;
 
 /// Market-value bands that decide how important, newsworthy or expensive to keep
 /// a player is. They replace thresholds that were written for the old scale, on
 /// which nearly every professional counted as a star.
-pub(crate) const STAR_VALUE: u64 = 30_000_000;
-pub(crate) const NOTABLE_VALUE: u64 = 10_000_000;
-pub(crate) const REGULAR_VALUE: u64 = 3_000_000;
-pub(crate) const LOW_VALUE: u64 = 500_000;
+pub const STAR_VALUE: u64 = 30_000_000;
+pub const NOTABLE_VALUE: u64 = 10_000_000;
+pub const REGULAR_VALUE: u64 = 3_000_000;
+pub const LOW_VALUE: u64 = 500_000;
 
-/// What the player is worth on `date`, playing for a club of `club_reputation`
-/// (`None` for a free agent).
-pub fn market_value(player: &Player, club_reputation: Option<u32>, date: NaiveDate) -> u64 {
-    let age = player_age_on(date, &player.date_of_birth);
+/// What the player is worth at `age`, playing for a club of `club_reputation`
+/// (`None` for a free agent). The game asks it on a date (`ofm_core`'s `market_value`).
+pub fn market_value_at_age(player: &Player, club_reputation: Option<u32>, age: i32) -> u64 {
     let value = ability_value(effective_rating(player, age))
         * age_factor(age)
         * position_factor(&crate::player_rating::primary_position(player))
@@ -62,7 +62,7 @@ pub fn market_value(player: &Player, club_reputation: Option<u32>, date: NaiveDa
 ///
 /// Age and potential are left out on purpose. An ageing star still earns like a
 /// star, and a prospect is paid for what he can do today.
-pub(crate) fn market_wage(player: &Player, club_reputation: Option<u32>) -> u32 {
+pub fn market_wage(player: &Player, club_reputation: Option<u32>) -> u32 {
     let weekly = ability_value(f64::from(current_rating(player)))
         * position_factor(&crate::player_rating::primary_position(player))
         * standing_factor(club_reputation)
@@ -78,7 +78,7 @@ fn weekly_wage_from(weekly: f64) -> u32 {
 
 /// Move a stored value part of the way toward a freshly computed one. A week of
 /// good form or a growth spurt nudges the price instead of jumping it.
-pub(crate) fn drift_toward(current: u64, target: u64) -> u64 {
+pub fn drift_toward(current: u64, target: u64) -> u64 {
     const SHARE_OF_GAP_CLOSED: f64 = 0.4;
     if current == 0 {
         return target;
@@ -198,8 +198,10 @@ fn round_value(value: u64) -> u64 {
 mod tests {
     use super::*;
 
-    fn date() -> NaiveDate {
-        NaiveDate::from_ymd_opt(2026, 8, 1).expect("valid date")
+    /// The value on 1 August 2026.
+    fn value(player: &Player, club_reputation: Option<u32>) -> u64 {
+        let age = crate::age::age_on(&player.date_of_birth, "2026-08-01").expect("a dated birth");
+        market_value_at_age(player, club_reputation, age)
     }
 
     fn player(position: Position, born: &str, ovr: u8, potential: u8) -> Player {
@@ -226,8 +228,8 @@ mod tests {
         let squad_player = player(Position::CentralMidfielder, "2001-01-01", 70, 70);
         let star = player(Position::CentralMidfielder, "2001-01-01", 85, 85);
 
-        let squad_value = market_value(&squad_player, Some(500), date());
-        let star_value = market_value(&star, Some(500), date());
+        let squad_value = value(&squad_player, Some(500));
+        let star_value = value(&star, Some(500));
 
         assert!(
             star_value > squad_value * 10,
@@ -242,7 +244,7 @@ mod tests {
     fn a_star_is_priced_on_the_real_world_scale() {
         let striker = player(Position::Striker, "2001-01-01", 85, 85);
 
-        let value = market_value(&striker, Some(850), date());
+        let value = value(&striker, Some(850));
 
         assert!((60_000_000..=150_000_000).contains(&value), "{value}");
     }
@@ -255,10 +257,7 @@ mod tests {
         let limited = player(Position::LeftWinger, "2008-01-01", 70, 72);
         let prospect = player(Position::LeftWinger, "2008-01-01", 70, 90);
 
-        assert!(
-            market_value(&prospect, Some(500), date())
-                > market_value(&limited, Some(500), date()) * 5 / 2
-        );
+        assert!(value(&prospect, Some(500)) > value(&limited, Some(500)) * 5 / 2);
     }
 
     /// Given two 18-year-olds of the same ability, one with a ceiling twelve
@@ -270,10 +269,7 @@ mod tests {
         let promising = player(Position::LeftWinger, "2008-01-01", 70, 82);
         let dreamer = player(Position::LeftWinger, "2008-01-01", 70, 99);
 
-        assert_eq!(
-            market_value(&dreamer, Some(500), date()),
-            market_value(&promising, Some(500), date())
-        );
+        assert_eq!(value(&dreamer, Some(500)), value(&promising, Some(500)));
     }
 
     /// Given a 33-year-old and a 25-year-old of the same ability,
@@ -284,9 +280,7 @@ mod tests {
         let veteran = player(Position::Striker, "1993-01-01", 78, 78);
         let peak = player(Position::Striker, "2001-01-01", 78, 78);
 
-        assert!(
-            market_value(&veteran, Some(500), date()) * 2 < market_value(&peak, Some(500), date())
-        );
+        assert!(value(&veteran, Some(500)) * 2 < value(&peak, Some(500)));
     }
 
     /// Given a keeper and a striker of the same age and ability,
@@ -297,9 +291,7 @@ mod tests {
         let keeper = player(Position::Goalkeeper, "2001-01-01", 80, 80);
         let striker = player(Position::Striker, "2001-01-01", 80, 80);
 
-        assert!(
-            market_value(&keeper, Some(500), date()) < market_value(&striker, Some(500), date())
-        );
+        assert!(value(&keeper, Some(500)) < value(&striker, Some(500)));
     }
 
     /// Given the same player in excellent form and in a poor run,
@@ -312,10 +304,7 @@ mod tests {
         let mut out_of_form = in_form.clone();
         out_of_form.match_form = 50;
 
-        assert!(
-            market_value(&in_form, Some(500), date())
-                > market_value(&out_of_form, Some(500), date())
-        );
+        assert!(value(&in_form, Some(500)) > value(&out_of_form, Some(500)));
     }
 
     /// Given a player who has improved since he was last priced,

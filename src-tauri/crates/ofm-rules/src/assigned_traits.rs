@@ -167,7 +167,7 @@ mod tests {
     /// crate, so the two copies are pinned here.
     #[test]
     fn the_engines_long_shot_table_is_this_one() {
-        for (position, slot) in crate::turn::squad::PITCH_POSITIONS {
+        for (position, slot) in crate::squad::PITCH_POSITIONS {
             assert_eq!(
                 base_for(&position),
                 engine::live_match::long_shot_norm(slot),

@@ -7,8 +7,7 @@ pub use journal::{
     post_all, validate_posts,
 };
 
-/// Weeks of committed wages a club must be able to cover after the weekly unit lock.
-pub const MIN_OPENING_RUNWAY_WEEKS: i64 = 16;
+pub use ofm_rules::worldgen::MIN_OPENING_RUNWAY_WEEKS;
 
 use crate::game::Game;
 use chrono::{Datelike, NaiveDate};
