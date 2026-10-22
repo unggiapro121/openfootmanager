@@ -15,7 +15,7 @@
 use rand::SeedableRng;
 use rand_chacha::ChaCha12Rng;
 
-pub use ofm_rules::seed::{rng_for_seed, rng_from_key, rng_from_u64, variant_for};
+pub use ofm_rules::seed::{rng_for_seed, rng_from_key, rng_from_u64, uuid_from, variant_for};
 
 use crate::game::Game;
 use crate::stable_hash::stable_hash;
@@ -39,10 +39,10 @@ impl Game {
     /// stops being true.
     ///
     /// What this makes repeatable is *a save*: the same save, played with the same
-    /// inputs, gives the same days. It does not make a *seed* regenerate a game,
-    /// because world generation still mints ids with `Uuid::new_v4`, and tags carry
-    /// ids — two worlds generated from one seed have different ids and so different
-    /// streams.
+    /// inputs, gives the same days. Since phase 3 (E3-5c) a *seed* also regenerates the
+    /// world it opens on, ids included, because world generation draws its ids from the
+    /// world's seed; ids minted later on the day path (fixtures, offers, messages) still
+    /// come from `Uuid::new_v4`.
     pub fn rng_for(&self, tag: &str, date: &str) -> ChaCha12Rng {
         rng_for_seed(self.seed, tag, date)
     }

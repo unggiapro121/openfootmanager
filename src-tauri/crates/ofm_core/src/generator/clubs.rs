@@ -198,6 +198,9 @@ pub struct WorldGenConfig {
     pub color_palette: Vec<(String, String)>,
     /// Fallback city names for a country with no curated pool.
     pub generic_cities: Vec<String>,
+    /// The year the world opens in. Ages, contracts and values are measured from it, so it is
+    /// part of what a seed regenerates: the generator never reads the clock itself.
+    pub opening_year: u32,
 }
 
 impl WorldGenConfig {
@@ -227,6 +230,9 @@ impl WorldGenConfig {
                 .map(|pair| (pair.primary, pair.secondary))
                 .collect(),
             generic_cities: def.generic_cities,
+            // A procedurally generated world is contemporary: it opens in the real calendar year.
+            // Read here, at the edge, so a caller that needs a fixed year sets the field instead.
+            opening_year: super::default_opening_year(),
         }
     }
 

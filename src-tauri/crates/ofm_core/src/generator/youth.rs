@@ -17,8 +17,9 @@ pub fn generate_youth_academy_recruit(
     team: &Team,
     target_position: Option<&Position>,
     current_year: u32,
+    rng: &mut impl rand::Rng,
 ) -> Player {
-    generate_youth_academy_recruit_with_nationality(team, target_position, None, current_year)
+    generate_youth_academy_recruit_with_nationality(team, target_position, None, current_year, rng)
 }
 
 /// As [`generate_youth_academy_recruit`], with the prospect's nationality forced
@@ -28,6 +29,7 @@ pub fn generate_youth_academy_recruit_with_nationality(
     target_position: Option<&Position>,
     nationality_override: Option<&str>,
     current_year: u32,
+    rng: &mut impl rand::Rng,
 ) -> Player {
     youth_recruit(
         team,
@@ -36,7 +38,7 @@ pub fn generate_youth_academy_recruit_with_nationality(
         current_year,
         None,
         IntakeLift::none(),
-        &mut rand::rng(),
+        rng,
     )
 }
 

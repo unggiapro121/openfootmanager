@@ -63,3 +63,51 @@ pub fn variant_for(key: &str, count: usize) -> usize {
 /// Keeps a phrasing pick from being the same number as any other use of `stable_hash`
 /// on the same string.
 const VARIANT_SALT: u64 = 0x7a51_0000_7a51_0001;
+
+/// A random-format (version 4) UUID drawn from `rng`: the id of something a seeded generator makes
+/// (a player, a club, a member of staff), so the same seed makes the same ids — which the online
+/// server's world and a replayed career both need. Same shape as `uuid::Uuid::new_v4`, without the
+/// crate or the operating system's entropy.
+pub fn uuid_from(rng: &mut impl rand::Rng) -> String {
+    let mut bytes = [0u8; 16];
+    rng.fill_bytes(&mut bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80; // RFC 4122 variant
+    let hex: String = bytes.iter().map(|byte| format!("{byte:02x}")).collect();
+    format!(
+        "{}-{}-{}-{}-{}",
+        &hex[0..8],
+        &hex[8..12],
+        &hex[12..16],
+        &hex[16..20],
+        &hex[20..32]
+    )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Given a seeded generator,
+    /// when ids are drawn from it twice over,
+    /// then the same seed gives the same ids, each a well-formed version-4 UUID, and two draws
+    /// differ.
+    #[test]
+    fn ids_from_a_seed_are_repeatable_version_four_uuids() {
+        let first = uuid_from(&mut rng_from_u64(7));
+        let again = uuid_from(&mut rng_from_u64(7));
+        let mut rng = rng_from_u64(7);
+        let (one, two) = (uuid_from(&mut rng), uuid_from(&mut rng));
+
+        assert_eq!(first, again);
+        assert_ne!(one, two);
+        assert_eq!(first.len(), 36);
+        let parts: Vec<&str> = first.split('-').collect();
+        assert_eq!(
+            parts.iter().map(|p| p.len()).collect::<Vec<_>>(),
+            [8, 4, 4, 4, 12]
+        );
+        assert!(parts[2].starts_with('4'));
+        assert!(matches!(&parts[3][..1], "8" | "9" | "a" | "b"));
+    }
+}

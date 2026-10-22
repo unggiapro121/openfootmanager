@@ -41,7 +41,6 @@ use domain::team::TeamColors;
 use log::info;
 use rand::RngExt;
 use std::collections::HashSet;
-use uuid::Uuid;
 
 use crate::finances::MIN_OPENING_RUNWAY_WEEKS;
 use crate::stable_hash::stable_hash;
@@ -307,8 +306,8 @@ pub fn generate_national_team_player(
     squad_slot: usize,
     opening_year: u32,
     pool_ovrs: &[u8],
+    rng: &mut impl rand::Rng,
 ) -> Player {
-    let mut rng = rand::rng();
     let names_def = default_names_definition();
     let nationality = generation::canonicalize_generated_nationality(nationality);
     // Avoid the youth-reserved slots so the player generates at a senior age.
@@ -320,13 +319,13 @@ pub fn generate_national_team_player(
         opening_year,
         None,
         &names_def,
-        &mut rng,
+        rng,
     );
     calibration::calibrate_generated_player(
         &mut player,
         calibration::FillerLevel::for_nation(&nationality, pool_ovrs),
         opening_year,
-        &mut rng,
+        rng,
     );
     as_free_agent(player)
 }
@@ -407,8 +406,11 @@ fn create_staff_generator_context() -> (definitions::NamesDefinition, Vec<String
     (names_def, generation::nationality_distribution().clone())
 }
 
-fn generate_missing_team_staff(world: &mut WorldData, opening_year: u32) -> bool {
-    let mut rng = rand::rng();
+fn generate_missing_team_staff(
+    world: &mut WorldData,
+    opening_year: u32,
+    rng: &mut impl rand::Rng,
+) -> bool {
     let (names_def, country_codes) = create_staff_generator_context();
     let mut generated_staff = Vec::new();
     let roles = [
@@ -429,14 +431,14 @@ fn generate_missing_team_staff(world: &mut WorldData, opening_year: u32) -> bool
             }
 
             let nationality =
-                pick_nationality_from_def(team_local_nationality(team), &country_codes, &mut rng);
+                pick_nationality_from_def(team_local_nationality(team), &country_codes, rng);
             generated_staff.push(generate_random_staff_from_def(
                 &team.id,
                 role.clone(),
                 &nationality,
                 opening_year,
                 &names_def,
-                &mut rng,
+                rng,
             ));
         }
     }
@@ -474,16 +476,18 @@ pub(crate) fn generated_manager_for(
     // matches `generate_past_world_history` simulates — so seeding a manager
     // would silently change the world's history. Keying on the appointment also
     // makes the same world produce the same managers twice running.
-    use rand::SeedableRng;
-    let mut rng = rand::rngs::StdRng::seed_from_u64(stable_hash(manager_id.as_bytes(), 0));
+    let mut rng = crate::seed::rng_from_u64(stable_hash(manager_id.as_bytes(), 0));
 
     let nationality =
         pick_nationality_from_def(team_local_nationality(team), country_codes, &mut rng);
     generate_random_unemployed_manager(&nationality, names_def, opening_year, &mut rng)
 }
 
-fn generate_standard_available_staff_for_teams(teams: &[Team], opening_year: u32) -> Vec<Staff> {
-    let mut rng = rand::rng();
+fn generate_standard_available_staff_for_teams(
+    teams: &[Team],
+    opening_year: u32,
+    rng: &mut impl rand::Rng,
+) -> Vec<Staff> {
     let (names_def, country_codes) = create_staff_generator_context();
     let fallback_seed = teams
         .first()
@@ -500,14 +504,14 @@ fn generate_standard_available_staff_for_teams(teams: &[Team], opening_year: u32
                     .get(rng.random_range(0..teams.len().max(1)))
                     .map(team_local_nationality)
                     .unwrap_or(fallback_seed);
-                pick_nationality_from_def(seed_country, &country_codes, &mut rng)
+                pick_nationality_from_def(seed_country, &country_codes, rng)
             };
             generate_random_staff_unattached_from_def(
                 role,
                 &nationality,
                 opening_year,
                 &names_def,
-                &mut rng,
+                rng,
             )
         })
         .collect()
@@ -520,11 +524,17 @@ fn available_staff_count(staff: &[Staff]) -> usize {
         .count()
 }
 
-fn replace_available_staff_market(staff: &mut Vec<Staff>, teams: &[Team], opening_year: u32) {
+fn replace_available_staff_market(
+    staff: &mut Vec<Staff>,
+    teams: &[Team],
+    opening_year: u32,
+    rng: &mut impl rand::Rng,
+) {
     staff.retain(|staff_member| staff_member.team_id.is_some());
     staff.extend(generate_standard_available_staff_for_teams(
         teams,
         opening_year,
+        rng,
     ));
 }
 
@@ -532,20 +542,32 @@ pub fn replenish_available_staff_market(
     staff: &mut Vec<Staff>,
     teams: &[Team],
     opening_year: u32,
+    rng: &mut impl rand::Rng,
 ) -> bool {
     if available_staff_count(staff) > 0 {
         return false;
     }
 
-    replace_available_staff_market(staff, teams, opening_year);
+    replace_available_staff_market(staff, teams, opening_year, rng);
     true
 }
 
+/// Fill what an imported world lacks before a career opens on it. Seeded from the world's own
+/// seed, so the same world opens with the same staff; a world loaded from a file carries none and
+/// falls back to one derived from its id.
 pub fn normalize_imported_world_for_career_start(world: &mut WorldData, opening_year: u32) {
-    generate_missing_team_staff(world, opening_year);
-    let _ = replenish_available_staff_market(&mut world.staff, &world.teams, opening_year);
+    let seed = world.generation_seed.unwrap_or_else(|| {
+        stable_hash(world.metadata.world_id.as_bytes(), IMPORTED_WORLD_SEED_SALT)
+    });
+    let mut rng = crate::seed::rng_for_seed(seed, "career-start/staff", "");
+    generate_missing_team_staff(world, opening_year, &mut rng);
+    let _ =
+        replenish_available_staff_market(&mut world.staff, &world.teams, opening_year, &mut rng);
     floor_imported_world_opening_cash(world);
 }
+
+/// Mixed into a seedless world's id for its career-start seed.
+const IMPORTED_WORLD_SEED_SALT: u64 = 0x5eed_0f1d_0000_0001;
 
 /// A contract that generation staged and the career has not opened yet. Only
 /// these can be repriced: an opened one is a recorded agreement.
@@ -626,7 +648,8 @@ fn rotate_available_staff_market(game: &mut crate::game::Game) -> bool {
     if !due {
         return false;
     }
-    replace_available_staff_market(&mut game.staff, &game.teams, current_year);
+    let mut rng = game.rng_for("staff-market/rotate", &today);
+    replace_available_staff_market(&mut game.staff, &game.teams, current_year, &mut rng);
     game.available_staff_market_last_activity_date = Some(today);
     true
 }
@@ -670,7 +693,9 @@ pub fn refresh_available_staff_market(game: &mut crate::game::Game) -> Result<()
         used: used + 1,
     };
     let current_year = game.clock.current_date.year() as u32;
-    replace_available_staff_market(&mut game.staff, &game.teams, current_year);
+    // The refresh count is in the tag: two refreshes on one day draw two different markets.
+    let mut rng = game.rng_today(&format!("staff-market/refresh/{}", used + 1));
+    replace_available_staff_market(&mut game.staff, &game.teams, current_year, &mut rng);
     game.available_staff_market_last_activity_date =
         Some(game.clock.current_date.format("%Y-%m-%d").to_string());
     crate::staff_contracts::price_unattached_staff(game);
@@ -705,7 +730,7 @@ pub fn replenish_manager_and_scout_market(game: &mut crate::game::Game) {
     if unemployed_mgr_count < floor {
         let needed = floor - unemployed_mgr_count;
         let (names_def, country_codes) = create_staff_generator_context();
-        let mut rng = rand::rng();
+        let mut rng = game.rng_today("market/managers");
         for _ in 0..needed {
             let nationality = if country_codes.is_empty() {
                 "ENG".to_string()
@@ -734,7 +759,7 @@ pub fn replenish_manager_and_scout_market(game: &mut crate::game::Game) {
     if unemployed_scout_count < floor {
         let needed = floor - unemployed_scout_count;
         let (names_def, country_codes) = create_staff_generator_context();
-        let mut rng = rand::rng();
+        let mut rng = game.rng_today("market/scouts");
         for _ in 0..needed {
             let nationality = if country_codes.is_empty() {
                 "ENG".to_string()
@@ -775,7 +800,7 @@ pub fn generate_world(
 /// stable `id` when set (world packages); otherwise a fresh UUID.
 fn build_team(tdef: &TeamDef, rng: &mut impl rand::Rng) -> domain::team::Team {
     let team_id = if tdef.id.is_empty() {
-        Uuid::new_v4().to_string()
+        crate::seed::uuid_from(rng)
     } else {
         tdef.id.clone()
     };
@@ -1250,6 +1275,7 @@ fn filler_club_defs(
         nations: vec![nation],
         color_palette: standard.color_palette.clone(),
         generic_cities: standard.generic_cities.clone(),
+        opening_year: standard.opening_year,
     };
     let mut defs = clubs::generate_club_defs(&config, rng);
     // When the authored team's country isn't a generation nation, the generator
@@ -1329,10 +1355,15 @@ fn build_fallback_competition(
 /// has no opinion (inspection, tooling), and failing both, the real calendar
 /// year. Ages, contracts and market values are all measured from it, so this is
 /// what keeps a 1962 database from generating players born in the 1990s.
+///
+/// `seed` drives every random choice the build makes (generated players, staff, filler clubs,
+/// ids): the same package, year and seed build the same world. The caller draws it at its edge
+/// and it is kept on the world as [`WorldData::generation_seed`].
 pub fn build_world_data_from_package(
     package: &package::WorldPackage,
     opening_year: Option<u32>,
     sources: &definitions::DefinitionSources,
+    seed: u64,
 ) -> WorldData {
     #[cfg(test)]
     PACKAGE_WORLD_BUILDS.with(|count| count.set(count.get() + 1));
@@ -1351,7 +1382,7 @@ pub fn build_world_data_from_package(
         })
         .unwrap_or_else(default_opening_year)
         .clamp(MIN_OPENING_YEAR, MAX_OPENING_YEAR);
-    let mut rng = rand::rng();
+    let mut rng = world_rng(seed);
     let names_def = {
         // From `sources`, so a package's own pools layer on top of whatever the
         // player resolved rather than on top of the embedded copy — the same
@@ -1553,7 +1584,15 @@ pub fn build_world_data_from_package(
     if let Some(base_year) = meta.base_year {
         world.metadata.base_year = Some(base_year);
     }
+    world.metadata.world_id = seeded_world_id(seed);
+    world.generation_seed = Some(seed);
     world
+}
+
+/// A world's id from its seed, so a seed regenerates the id as well as the content. Its own
+/// stream: drawing it from the build's generator would shift every choice after it.
+pub(crate) fn seeded_world_id(seed: u64) -> String {
+    crate::seed::uuid_from(&mut crate::seed::rng_for_seed(seed, "world-id", ""))
 }
 
 /// Generate a world from an explicit generation config (entropy-seeded). The
@@ -1566,18 +1605,23 @@ pub fn generate_world_with(
     generate_world_with_rng(rand::rng(), config, sources)
 }
 
-/// Generate a world deterministically from `seed`. The same seed always
-/// produces an identical world. Intended for reproducible tests/scenarios.
+/// Generate a world deterministically from `seed`. The same seed and opening year always
+/// produce an identical world, ids included. Intended for reproducible tests/scenarios.
 pub fn generate_world_seeded(
     seed: u64,
     sources: &definitions::DefinitionSources,
 ) -> (Vec<domain::team::Team>, Vec<Player>, Vec<Staff>) {
-    use rand::SeedableRng;
     generate_world_with_rng(
-        rand::rngs::StdRng::seed_from_u64(seed),
+        world_rng(seed),
         &clubs::WorldGenConfig::standard_from(sources),
         sources,
     )
+}
+
+/// The generator a world is built from: ChaCha12 by name, keyed by the world's seed, so the same
+/// seed builds the same world after a dependency bump (`StdRng` may change algorithm).
+pub(crate) fn world_rng(seed: u64) -> rand_chacha::ChaCha12Rng {
+    crate::seed::rng_from_u64(seed)
 }
 
 /// Core world generation from an explicit rng and config.
@@ -1586,9 +1630,9 @@ fn generate_world_with_rng(
     config: &clubs::WorldGenConfig,
     sources: &definitions::DefinitionSources,
 ) -> (Vec<domain::team::Team>, Vec<Player>, Vec<Staff>) {
-    // A procedurally generated world is contemporary, so it opens in the real
-    // calendar year rather than a year baked in at build time.
-    let opening_year = default_opening_year();
+    let opening_year = config
+        .opening_year
+        .clamp(MIN_OPENING_YEAR, MAX_OPENING_YEAR);
     let mut teams_out = Vec::new();
     let mut players = Vec::new();
     let mut staff = Vec::new();
@@ -2408,7 +2452,13 @@ mod tests {
 
     #[test]
     fn generate_national_team_player_is_a_senior_free_agent() {
-        let player = generate_national_team_player("JP", 5, TEST_OPENING_YEAR, &[]);
+        let player = generate_national_team_player(
+            "JP",
+            5,
+            TEST_OPENING_YEAR,
+            &[],
+            &mut crate::seed::rng_from_u64(5),
+        );
 
         assert_eq!(player.nationality, "JP");
         assert_eq!(
@@ -2874,6 +2924,7 @@ mod tests {
         );
         team.football_nation = "WAL".to_string();
 
+        let mut rng = crate::seed::rng_from_u64(7);
         let drawn: Vec<String> = (0..200)
             .map(|_| {
                 generate_youth_academy_recruit_with_nationality(
@@ -2881,6 +2932,7 @@ mod tests {
                     None,
                     None,
                     TEST_OPENING_YEAR,
+                    &mut rng,
                 )
                 .nationality
             })
@@ -2913,6 +2965,7 @@ mod tests {
             None,
             Some("GB"),
             TEST_OPENING_YEAR,
+            &mut crate::seed::rng_from_u64(3),
         );
 
         assert_eq!(player.nationality, "ENG");
@@ -2931,12 +2984,14 @@ mod tests {
             20000,
         );
 
+        let mut rng = crate::seed::rng_from_u64(16);
         for _ in 0..16 {
             let player = generate_youth_academy_recruit_with_nationality(
                 &team,
                 Some(&Position::Goalkeeper),
                 None,
                 TEST_OPENING_YEAR,
+                &mut rng,
             );
             assert_eq!(
                 player.position,
@@ -2958,8 +3013,9 @@ mod tests {
         // drawing from the senior age range, so over many draws the ages must reach
         // past the youth cap (the youth-reserved slot would cap every player at it).
         let mut saw_senior_age = false;
+        let mut rng = crate::seed::rng_from_u64(64);
         for _ in 0..64 {
-            let player = generate_national_team_player("GB", 1, TEST_OPENING_YEAR, &[]);
+            let player = generate_national_team_player("GB", 1, TEST_OPENING_YEAR, &[], &mut rng);
             assert_eq!(
                 player.position,
                 Position::Goalkeeper,
@@ -3017,7 +3073,7 @@ mod tests {
     /// where it belongs, on the nations that drive generation.
     #[test]
     fn a_player_supplied_nations_file_overrides_the_shipped_one() {
-        let dir = std::env::temp_dir().join(format!("ofm-world-yaml-{}", Uuid::new_v4()));
+        let dir = std::env::temp_dir().join(format!("ofm-world-yaml-{}", uuid::Uuid::new_v4()));
         std::fs::create_dir_all(&dir).unwrap();
         std::fs::write(
             dir.join("default_nations.yaml"),

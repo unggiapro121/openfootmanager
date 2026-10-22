@@ -2,7 +2,6 @@ use domain::player::{Player, PlayerAttributes, Position};
 use domain::staff::{Staff, StaffAttributes, StaffRole};
 use domain::team::PlayStyle;
 use rand::{Rng, RngExt};
-use uuid::Uuid;
 
 use super::authored_player::resolve_authored_contract;
 use super::definitions::{NamePool, NamesDefinition};
@@ -468,7 +467,7 @@ pub(super) fn generate_random_player_from_def(
 
     let position = position_for_slot(index);
 
-    let p_id = Uuid::new_v4().to_string();
+    let p_id = crate::seed::uuid_from(rng);
     let nationality = nationality.to_string();
 
     // Reserve one slot per position group (GK + back line + midfield + attack) as
@@ -709,7 +708,7 @@ pub(super) fn generate_random_staff_from_def(
     };
 
     let mut s = Staff::new(
-        Uuid::new_v4().to_string(),
+        crate::seed::uuid_from(rng),
         first_name,
         last_name,
         dob,
@@ -746,7 +745,7 @@ pub(super) fn generate_random_staff_unattached_from_def(
     };
 
     let mut s = Staff::new(
-        Uuid::new_v4().to_string(),
+        crate::seed::uuid_from(rng),
         first_name,
         last_name,
         dob,
@@ -817,7 +816,7 @@ pub(super) fn generate_staff_from_authored_def(
     });
 
     let id = if def.id.is_empty() {
-        Uuid::new_v4().to_string()
+        crate::seed::uuid_from(rng)
     } else {
         def.id.clone()
     };
@@ -1102,7 +1101,7 @@ pub(super) fn generate_player_from_def(
     let contract_date = |date: chrono::NaiveDate| date.format("%Y-%m-%d").to_string();
 
     let id = if def.id.is_empty() {
-        Uuid::new_v4().to_string()
+        crate::seed::uuid_from(rng)
     } else {
         def.id.clone()
     };
@@ -1231,7 +1230,7 @@ pub(super) fn generate_random_unemployed_manager(
     let reputation = rng.random_range(200u32..=700u32);
 
     let mut mgr = domain::manager::Manager::new(
-        Uuid::new_v4().to_string(),
+        crate::seed::uuid_from(rng),
         first_name,
         last_name,
         dob,

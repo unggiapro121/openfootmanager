@@ -564,8 +564,9 @@ mod tests {
     }
 
     fn pool_median(code: &str, pool_ovrs: &[u8]) -> u8 {
+        let mut rng = crate::seed::rng_from_u64(19);
         let mut ovrs: Vec<u8> = (0..40)
-            .map(|slot| generate_national_team_player(code, slot, 2026, pool_ovrs).ovr)
+            .map(|slot| generate_national_team_player(code, slot, 2026, pool_ovrs, &mut rng).ovr)
             .collect();
         median(&mut ovrs)
     }
@@ -734,6 +735,7 @@ mod tests {
             &package,
             Some(2026),
             &definitions::DefinitionSources::embedded_only(),
+            1,
         );
         let mut backfill: Vec<u8> = world
             .players

@@ -449,6 +449,7 @@ fn prepare_national_squads(game: &mut Game, field: &[String]) {
     let pools = national_pools(game);
     for code in field {
         let pool_ovrs = pools.get(code).map(Vec::as_slice).unwrap_or_default();
+        let mut rng = game.rng_today(&format!("national-pool/{code}"));
         for slot in pool_ovrs.len()..TOPPED_UP_POOL {
             game.players
                 .push(crate::generator::generate_national_team_player(
@@ -456,6 +457,7 @@ fn prepare_national_squads(game: &mut Game, field: &[String]) {
                     slot,
                     current_year,
                     pool_ovrs,
+                    &mut rng,
                 ));
         }
     }

@@ -601,6 +601,7 @@ fn transfer_market_probe() {
         &package,
         None,
         &ofm_core::generator::DefinitionSources::embedded_only(),
+        1,
     )
     .expect("the package builds a world");
 
