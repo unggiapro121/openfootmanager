@@ -107,6 +107,8 @@ pub fn coaching_bonus(staff: &[&Staff], focus: &TrainingFocus) -> TeamCoachingBo
 pub struct TrainingDay {
     pub weekday_num: u32,
     pub year: u32,
+    /// The session's date, "YYYY-MM-DD": players' ages are taken on it.
+    pub date: String,
     /// The pace players develop at: the career's development speed (1× to 5×) offline, the
     /// season ruleset's multiplier online (Q5).
     pub development_multiplier: f64,
@@ -254,7 +256,9 @@ pub fn train_player(
     // Age, morale, and current condition all affect recovery rate.
     // Older players recover more slowly; high morale aids recovery;
     // severely fatigued players have a harder time bouncing back.
-    let age = estimate_age(&player.date_of_birth, day.year);
+    // A date of birth that cannot be read counts as 25, the middle of every age band.
+    let age =
+        crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32);
     let age_rec = recovery_factor_from_age(age);
     let morale_rec = recovery_factor_from_morale(player.morale);
     let condition_rec = recovery_factor_from_condition(player.condition);
@@ -433,16 +437,6 @@ fn apply_focus_gains(
             // No attribute gains on recovery days
         }
     }
-}
-
-/// Estimate player age from date_of_birth string ("YYYY-MM-DD").
-fn estimate_age(dob: &str, as_of_year: u32) -> u32 {
-    let parts: Vec<&str> = dob.split('-').collect();
-    if parts.is_empty() {
-        return 25; // fallback
-    }
-    let birth_year: u32 = parts[0].parse().unwrap_or(2000);
-    as_of_year.saturating_sub(birth_year)
 }
 
 /// Recovery multiplier from age: younger players bounce back faster.

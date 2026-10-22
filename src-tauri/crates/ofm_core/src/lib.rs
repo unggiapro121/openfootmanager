@@ -7,6 +7,7 @@ use ofm_rules::ai_roles;
 pub mod ai_tactics;
 pub mod ai_training;
 pub mod assigned_traits;
+pub use ofm_rules::age;
 pub use ofm_rules::attribute_split;
 pub mod board_objectives;
 pub mod career;

@@ -177,6 +177,7 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
     let day = TrainingDay {
         weekday_num,
         year: current_year,
+        date: game.clock.current_date.format("%Y-%m-%d").to_string(),
         development_multiplier: game.development_speed.multiplier(),
     };
     // One stream for the day's session: players are visited in the order of `game.players`,

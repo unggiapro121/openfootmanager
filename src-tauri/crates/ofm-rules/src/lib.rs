@@ -8,6 +8,7 @@
 //! A rule belongs here when it decides an outcome from data the server will also hold. A rule
 //! that walks the world day by day, reads the save or talks to the player stays in `ofm_core`.
 
+pub mod age;
 pub mod aging;
 pub mod ai_formation;
 pub mod ai_math;
