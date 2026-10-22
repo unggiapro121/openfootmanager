@@ -1,9 +1,8 @@
 pub mod advance_results;
 pub mod aging;
 pub mod ai_contracts;
-mod ai_formation;
+use ofm_rules::ai_formation;
 pub mod ai_hiring;
-use ofm_rules::ai_math;
 use ofm_rules::ai_roles;
 pub mod ai_tactics;
 pub mod ai_training;
@@ -52,6 +51,7 @@ pub mod player_identity;
 pub use ofm_rules::player_rating;
 pub use ofm_rules::player_wear;
 pub(crate) use ofm_rules::playing_time;
+pub use ofm_rules::squad;
 pub mod potential_projection;
 pub mod promotion;
 pub mod random_events;

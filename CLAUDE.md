@@ -106,7 +106,9 @@ Six rules. CI checks some mechanically; the review requirements and evidence are
    no player will ever see still costs thirteen translations and a row in every locale file.
 
 3. **`engine` never imports `domain`.** The match engine defines its own mirror types on purpose
-   so it can be tested and evolved independently; `ofm_core/turn/` is the only bridge. This is
+   so it can be tested and evolved independently; `ofm-rules/src/squad.rs` is the only bridge
+   (since phase 3, E3-5a, so the online server shares it; `ofm_core/turn/squad.rs` reads the save
+   for it). This is
    the project's central architectural decision — see `docs/ARCHITECTURE.md` §"Engine Isolation".
    → checked by the `ofm-architecture-reviewer` agent.
 
@@ -171,11 +173,11 @@ frontend files 500).
   with the game's own OVR tables), root app composes all.
   New workspace member must be classified. test for the core crates' allowed deps and for no
   platform crate in them (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
-- `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only under
-  `ofm_core/src/turn/`, except for synthetic inputs in `src-tauri/crates/sim-bench/src/builder.rs`,
-  `src-tauri/src/commands/sim_lab.rs` and the match session's tests
-  (`src-tauri/crates/ofm-rules/tests/match_session/support.rs`) because they need synthetic teams,
-  not a game.
+- `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only in the squad
+  bridge, `src-tauri/crates/ofm-rules/src/squad.rs`, except for synthetic inputs in
+  `src-tauri/crates/sim-bench/src/builder.rs`, `src-tauri/src/commands/sim_lab.rs` and the match
+  session's tests (`src-tauri/crates/ofm-rules/tests/match_session/support.rs`) because they need
+  synthetic teams, not a game.
   Other modules may drive the engine, never build its input. review until PR 4
 - `src-tauri/src/application/` never imports `commands` or `mcp_server`. Commands and MCP tools adapt
   the same `_internal` function. review until PR 4 (imports) + review (duplication)

@@ -1036,6 +1036,32 @@ mod tests {
         assert!(blocker_by_id(&blockers, "incomplete_xi").is_none());
     }
 
+    /// Given a squad of fifteen whose saved XI lost four starters to injury (seven left, fewer
+    /// than the eight that keep a saved XI) and four healthy players on the bench,
+    /// when the blockers are computed,
+    /// then the injured starters are reported but the XI is not called incomplete: the match
+    /// rebuilds the side from all eleven healthy players, the seven saved ones included.
+    #[test]
+    fn a_rebuilt_xi_counts_the_saved_starters_still_fit() {
+        let mut game = make_game(15);
+        for player_id in ["p3", "p6", "p8", "p10"] {
+            let player = game
+                .players
+                .iter_mut()
+                .find(|player| player.id == player_id)
+                .unwrap();
+            player.injury = Some(Injury {
+                name: "Ankle".to_string(),
+                days_remaining: 10,
+            });
+        }
+
+        let blockers = compute_blocking_actions(&game);
+
+        assert!(blocker_by_id(&blockers, "injured_xi").is_some());
+        assert!(blocker_by_id(&blockers, "incomplete_xi").is_none());
+    }
+
     #[test]
     fn only_unread_urgent_messages_produce_message_blockers() {
         let mut game = make_game(11);

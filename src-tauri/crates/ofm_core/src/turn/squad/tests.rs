@@ -1,5 +1,8 @@
 use super::*;
+use crate::player_rating::{formation_slots, positional_fit_for_assignment};
 use domain::player::{Player, PlayerAttributes, Position as DomainPos};
+use engine::{PitchPosition, PlayerRole as EnginePlayerRole, Position, PositionFit};
+use std::collections::HashSet;
 
 /// Uniform attributes: `weighted_score` averages attributes, so setting them
 /// all to `v` makes the condition-free positional fit ≈ `v` for any slot, with

@@ -3,10 +3,8 @@
 // of `domain`, and `ofm_core/turn/` is the single bridge between the two. The
 // watched and unwatched paths both build their sides from there, so there is
 // one answer to "who is playing" rather than one per code path.
-use crate::ai_roles::role_for_position;
-use crate::player_rating::{effective_rating_for_assignment, formation_slots};
 pub use crate::turn::squad::auto_select_set_pieces;
-use crate::turn::squad::{build_team_with_bench, domain_to_engine_role};
+use crate::turn::squad::build_team_with_bench;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
@@ -304,170 +302,51 @@ pub fn kick_off_live_match(
     create_live_match(game, fixture_index, mode, allows_extra_time)
 }
 
+/// The players of a match a pre-match rule may move: both sides' XI and bench, from the save.
+fn match_players<'a>(game: &'a Game, snapshot: &MatchSnapshot) -> Vec<&'a domain::player::Player> {
+    let in_match: HashSet<&str> = [
+        &snapshot.home_team.players,
+        &snapshot.away_team.players,
+        &snapshot.home_bench,
+        &snapshot.away_bench,
+    ]
+    .into_iter()
+    .flatten()
+    .map(|player| player.id.as_str())
+    .collect();
+    game.players
+        .iter()
+        .filter(|player| in_match.contains(player.id.as_str()))
+        .collect()
+}
+
 /// The roles two starters take after trading slots before kick-off
-/// ([`MatchCommand::PreMatchSwapPositions`]), as commands to apply on top of it.
-///
-/// Each player gets the job his attributes argue for in the slot he moved
-/// into, by the same rule AI squads are given roles. The commands touch this
-/// match only: the club's saved roles, like its saved XI, are left alone.
+/// (`ofm_rules::squad::pre_match_swap_roles`), as commands to apply on top of it.
 pub fn pre_match_position_swap_roles(
     game: &Game,
     snapshot: &MatchSnapshot,
     side: Side,
     player_ids: [&str; 2],
 ) -> Vec<MatchCommand> {
-    let team = match side {
-        Side::Home => &snapshot.home_team,
-        Side::Away => &snapshot.away_team,
-    };
-    // The XI is slot-aligned only when every slot is filled.
-    let slots = formation_slots(&team.formation);
-    if slots.len() != team.players.len() {
-        return Vec::new();
-    }
-    let play_style = domain_play_style(team.play_style);
-
-    player_ids
-        .into_iter()
-        .filter_map(|player_id| {
-            let slot_index = team.players.iter().position(|p| p.id == player_id)?;
-            let player = game.players.iter().find(|p| p.id == player_id)?;
-            let role = role_for_position(player, &slots[slot_index], &play_style);
-            Some(MatchCommand::ChangePlayerRole {
-                side,
-                player_id: player_id.to_string(),
-                role: domain_to_engine_role(&role),
-            })
-        })
-        .collect()
+    ofm_rules::squad::pre_match_swap_roles(
+        &match_players(game, snapshot),
+        snapshot,
+        side,
+        player_ids,
+    )
 }
 
-/// The commands that turn `side`'s XI, before kick-off, into the strongest
-/// lineup for its formation from the players in the match (XI and bench).
-///
-/// Players are seated so the XI's summed rating is highest, each rated in his
-/// slot by the AI lineup rule (`effective_rating_for_assignment`: fit for the
-/// slot, weighed by condition); on a tie the player already standing in a slot
-/// keeps it, so an XI that is already the best is left alone. Starters who
-/// trade slots do so with `PreMatchSwapPositions`, a bench player comes on with
-/// `PreMatchSwap`; neither is a substitution. Every player who moves or comes on
-/// then takes the role his new slot suits, as after a manual slot trade.
+/// The commands that turn `side`'s XI, before kick-off, into the strongest lineup for its
+/// formation from the players in the match (`ofm_rules::squad::strongest_pre_match_lineup`).
 pub fn best_pre_match_lineup(
     game: &Game,
     snapshot: &MatchSnapshot,
     side: Side,
 ) -> Vec<MatchCommand> {
-    let (team, bench) = match side {
-        Side::Home => (&snapshot.home_team, &snapshot.home_bench),
-        Side::Away => (&snapshot.away_team, &snapshot.away_bench),
-    };
-    let slots = formation_slots(&team.formation);
-    if slots.len() != team.players.len() {
-        return Vec::new();
-    }
-    let candidates: Vec<&domain::player::Player> = team
-        .players
-        .iter()
-        .chain(bench.iter())
-        .filter_map(|engine_player| game.players.iter().find(|p| p.id == engine_player.id))
-        .filter(|player| player.injury.is_none())
-        .collect();
-
-    let mut current: Vec<String> = team.players.iter().map(|p| p.id.clone()).collect();
-    // The whole XI at once, not slot by slot (see `lineup_assignment`). A hair
-    // of weight for the player already in a slot keeps him there on a tie.
-    const KEEP_ON_TIE: f64 = 1e-6;
-    let weights: Vec<Vec<f64>> = slots
-        .iter()
-        .enumerate()
-        .map(|(index, slot)| {
-            candidates
-                .iter()
-                .map(|player| {
-                    let keep = if player.id == current[index] {
-                        KEEP_ON_TIE
-                    } else {
-                        0.0
-                    };
-                    effective_rating_for_assignment(player, slot) + keep
-                })
-                .collect()
-        })
-        .collect();
-    let assignment = crate::lineup_assignment::best_assignment(&weights);
-    if assignment.len() != slots.len() {
-        return Vec::new();
-    }
-
-    let mut commands = Vec::new();
-    let mut moved = Vec::new();
-    for (index, candidate) in assignment.into_iter().enumerate() {
-        let best = candidates[candidate];
-        if best.id == current[index] {
-            continue;
-        }
-        let occupant = current[index].clone();
-        match current.iter().position(|id| *id == best.id) {
-            Some(other) => {
-                commands.push(MatchCommand::PreMatchSwapPositions {
-                    side,
-                    player_a_id: occupant.clone(),
-                    player_b_id: best.id.clone(),
-                });
-                current.swap(index, other);
-                moved.push(occupant);
-            }
-            None => {
-                commands.push(MatchCommand::PreMatchSwap {
-                    side,
-                    player_off_id: occupant,
-                    player_on_id: best.id.clone(),
-                });
-                current[index] = best.id.clone();
-            }
-        }
-        moved.push(best.id.clone());
-    }
-
-    let play_style = domain_play_style(team.play_style);
-    for player_id in moved {
-        let Some(index) = current.iter().position(|id| *id == player_id) else {
-            continue;
-        };
-        if let Some(player) = game.players.iter().find(|p| p.id == player_id) {
-            let role = role_for_position(player, &slots[index], &play_style);
-            commands.push(MatchCommand::ChangePlayerRole {
-                side,
-                player_id,
-                role: domain_to_engine_role(&role),
-            });
-        }
-    }
-    commands
+    ofm_rules::squad::strongest_pre_match_lineup(&match_players(game, snapshot), snapshot, side)
 }
 
-/// The engine's mirror of a club's play style.
-pub(crate) fn engine_play_style(play_style: &domain::team::PlayStyle) -> engine::PlayStyle {
-    match play_style {
-        domain::team::PlayStyle::Balanced => engine::PlayStyle::Balanced,
-        domain::team::PlayStyle::Attacking => engine::PlayStyle::Attacking,
-        domain::team::PlayStyle::Defensive => engine::PlayStyle::Defensive,
-        domain::team::PlayStyle::Possession => engine::PlayStyle::Possession,
-        domain::team::PlayStyle::Counter => engine::PlayStyle::Counter,
-        domain::team::PlayStyle::HighPress => engine::PlayStyle::HighPress,
-    }
-}
-
-pub(crate) fn domain_play_style(play_style: engine::PlayStyle) -> domain::team::PlayStyle {
-    match play_style {
-        engine::PlayStyle::Balanced => domain::team::PlayStyle::Balanced,
-        engine::PlayStyle::Attacking => domain::team::PlayStyle::Attacking,
-        engine::PlayStyle::Defensive => domain::team::PlayStyle::Defensive,
-        engine::PlayStyle::Possession => domain::team::PlayStyle::Possession,
-        engine::PlayStyle::Counter => domain::team::PlayStyle::Counter,
-        engine::PlayStyle::HighPress => domain::team::PlayStyle::HighPress,
-    }
-}
+pub(crate) use ofm_rules::squad::{domain_play_style, engine_play_style};
 
 /// Create a live match session for a specific fixture, on today's seed for its two clubs.
 pub fn create_live_match(

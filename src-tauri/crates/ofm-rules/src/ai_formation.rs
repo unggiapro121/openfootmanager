@@ -27,17 +27,17 @@ use domain::player::Player;
 use domain::team::PlayStyle;
 
 use crate::player_rating::{formation_slots, positional_fit_for_assignment};
-use crate::turn::squad::first_choice_eleven;
+use crate::squad::first_choice_eleven;
 
 /// The shapes an AI club chooses between: the nine the game offers
 /// (`ui/components/match/types.ts`), in the order ties are broken.
-pub(crate) const AI_FORMATIONS: [&str; 9] = engine::FORMATIONS;
+pub const AI_FORMATIONS: [&str; 9] = engine::FORMATIONS;
 
 /// How far, in OVR points, a new shape must beat the one a club already plays
 /// before it changes. The weekly review is already a hysteresis against
 /// day-to-day noise; this one is against a knock to one player swinging a
 /// shape the squad was built for (X83).
-pub(crate) const HYSTERESIS: f64 = 0.5;
+pub const HYSTERESIS: f64 = 0.5;
 
 /// What a style adds to a shape's fit, in OVR points (X83).
 ///
@@ -70,7 +70,7 @@ fn style_formation_bonus(style: &PlayStyle, formation: &str) -> f64 {
 /// from `available`: the same eleven its matchday selection starts from, so
 /// the shape and the side that takes the field never disagree. An empty slot
 /// counts as zero, which is what a squad that cannot fill a shape deserves.
-pub(crate) fn formation_fit(available: &[&Player], formation: &str) -> f64 {
+pub fn formation_fit(available: &[&Player], formation: &str) -> f64 {
     let slots = formation_slots(formation);
     if slots.is_empty() {
         return 0.0;
@@ -90,7 +90,7 @@ fn score(available: &[&Player], style: &PlayStyle, formation: &str) -> f64 {
 
 /// The shape a club with these players and this style would choose with no
 /// shape of its own yet: at world creation, and for a national side.
-pub(crate) fn best_formation(available: &[&Player], style: &PlayStyle) -> &'static str {
+pub fn best_formation(available: &[&Player], style: &PlayStyle) -> &'static str {
     let mut best = AI_FORMATIONS[0];
     let mut best_score = f64::NEG_INFINITY;
     for formation in AI_FORMATIONS {
@@ -112,7 +112,7 @@ const ENOUGH_TO_JUDGE: usize = 11;
 /// The shape a club opens a world in: the best one for its squad and style,
 /// with no hysteresis, because the default it was built with is nobody's
 /// choice. A club that cannot field eleven keeps the default.
-pub(crate) fn opening_formation(current: &str, available: &[&Player], style: &PlayStyle) -> String {
+pub fn opening_formation(current: &str, available: &[&Player], style: &PlayStyle) -> String {
     if available.len() < ENOUGH_TO_JUDGE {
         return current.to_string();
     }
@@ -123,11 +123,7 @@ pub(crate) fn opening_formation(current: &str, available: &[&Player], style: &Pl
 /// shape if it beats the current one by [`HYSTERESIS`], otherwise the current
 /// one. A shape outside [`AI_FORMATIONS`] (an old save, a hand-edited world)
 /// is always replaced. A club that cannot field eleven keeps its shape.
-pub(crate) fn reviewed_formation(
-    current: &str,
-    available: &[&Player],
-    style: &PlayStyle,
-) -> String {
+pub fn reviewed_formation(current: &str, available: &[&Player], style: &PlayStyle) -> String {
     if available.len() < ENOUGH_TO_JUDGE {
         return current.to_string();
     }
