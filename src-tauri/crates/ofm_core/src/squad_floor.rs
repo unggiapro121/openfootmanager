@@ -19,15 +19,8 @@ use domain::team::Team;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-/// Players a club must keep registered in each position group, in
-/// `[GK, DEF, MID, FWD]` order: an eleven and a second keeper, because a club
-/// whose only keeper is injured still has to put one in goal.
-pub const MIN_PLAYERS_PER_GROUP: [(Position, usize); 4] = [
-    (Position::Goalkeeper, 2),
-    (Position::Defender, 4),
-    (Position::Midfielder, 4),
-    (Position::Forward, 2),
-];
+pub use ofm_rules::squad::MIN_PLAYERS_PER_GROUP;
+pub(crate) use ofm_rules::squad::{group_index, thinnest_first};
 
 /// Senior players a club must keep registered in all. The maintainer's rule: a
 /// club cannot keep itself sound with fewer than fifteen — an eleven, a keeper
@@ -49,16 +42,6 @@ pub(crate) fn group_floor(group: &Position) -> usize {
         .find(|(position, _)| position == group)
         .map(|(_, floor)| *floor)
         .unwrap_or(0)
-}
-
-/// Where a position's group sits in [`MIN_PLAYERS_PER_GROUP`]: 0 GK, 1 DEF,
-/// 2 MID, 3 FWD. The one place that order is written down.
-pub(crate) fn group_index(position: &Position) -> usize {
-    let group = position.to_group_position();
-    MIN_PLAYERS_PER_GROUP
-        .iter()
-        .position(|(floor_group, _)| *floor_group == group)
-        .expect("every position belongs to one of the four groups")
 }
 
 /// One way a club can fall short of the floor.
@@ -562,21 +545,6 @@ pub(crate) fn groups_thinnest_first(game: &Game, team_id: &str) -> Vec<Position>
         senior_counts(game, team_id),
         MIN_PLAYERS_PER_GROUP.map(|(_, floor)| floor),
     )
-}
-
-/// The four position groups ordered by how far `have` stands above `target`,
-/// per group in [`MIN_PLAYERS_PER_GROUP`] order: the furthest below first,
-/// then the least to spare. Ties keep that order. The one statement of
-/// "thinnest first" — the floor asks it against its minimum, the youth intake
-/// against the academy it aims for.
-pub(crate) fn thinnest_first(have: [usize; 4], target: [usize; 4]) -> Vec<Position> {
-    let mut groups: Vec<(i64, Position)> = MIN_PLAYERS_PER_GROUP
-        .iter()
-        .enumerate()
-        .map(|(index, (group, _))| (have[index] as i64 - target[index] as i64, group.clone()))
-        .collect();
-    groups.sort_by_key(|(margin, _)| *margin);
-    groups.into_iter().map(|(_, group)| group).collect()
 }
 
 /// How one player came into a club's senior squad.

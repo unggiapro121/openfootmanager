@@ -1,13 +1,13 @@
-use crate::attribute_split::Blend;
+//! The season's aging over a save: every player's age worked out on the day, the attribute curve
+//! and the retirement roll applied (`ofm_rules::aging`), retirees taken off their clubs.
+
 use crate::contracts::{iso, record_movement};
 use crate::game::Game;
 use chrono::{Datelike, NaiveDate};
-use domain::player::{Player, PlayerMovementEntry, PlayerMovementKind, Position};
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-
-const MIN_ATTRIBUTE: u8 = 1;
-const MAX_ATTRIBUTE: u8 = 99;
+use domain::player::{Player, PlayerMovementEntry, PlayerMovementKind};
+use ofm_rules::aging::apply_attribute_curve;
+#[cfg(test)]
+use ofm_rules::aging::{technical_growth, veteran_pace_loss};
 
 pub(crate) fn player_age_on(current_date: NaiveDate, date_of_birth: &str) -> i32 {
     let Ok(dob) = NaiveDate::parse_from_str(date_of_birth, "%Y-%m-%d") else {
@@ -21,60 +21,6 @@ pub(crate) fn player_age_on(current_date: NaiveDate, date_of_birth: &str) -> i32
     age
 }
 
-fn seeded_value(player_id: &str, season: u32, salt: &str) -> u32 {
-    let mut hasher = DefaultHasher::new();
-    player_id.hash(&mut hasher);
-    season.hash(&mut hasher);
-    salt.hash(&mut hasher);
-    (hasher.finish() % u32::MAX as u64) as u32
-}
-
-fn veteran_pace_loss(player_id: &str, age: i32, season: u32) -> u8 {
-    if age < 30 {
-        return 0;
-    }
-
-    1 + (seeded_value(player_id, season, "pace-loss") % 3) as u8
-}
-
-fn technical_growth(player_id: &str, age: i32, season: u32) -> u8 {
-    if age > 32 {
-        return 0;
-    }
-
-    (seeded_value(player_id, season, "technical-growth") % 2) as u8
-}
-
-fn increase_attribute(value: &mut u8, delta: u8) {
-    *value = value.saturating_add(delta).min(MAX_ATTRIBUTE);
-}
-
-fn decrease_attribute(value: &mut u8, delta: u8) {
-    *value = value.saturating_sub(delta).max(MIN_ATTRIBUTE);
-}
-
-fn apply_attribute_curve(player: &mut Player, age: i32, season: u32) {
-    let pace_loss = veteran_pace_loss(&player.id, age, season);
-    if pace_loss > 0 {
-        decrease_attribute(&mut player.attributes.pace, pace_loss);
-    }
-
-    let growth = technical_growth(&player.id, age, season);
-    if growth > 0 {
-        // Passing grows with age as a family (short and long passing, crossing,
-        // curve), so the pre-split blend grows exactly as it did; free kicks,
-        // the other late-maturing technique, grow with it.
-        let is_gk = player.natural_position.to_group_position() == Position::Goalkeeper;
-        crate::attribute_split::raise_blend(&mut player.attributes, Blend::Passing, growth, is_gk);
-        if player.attributes.free_kick != 0 {
-            increase_attribute(&mut player.attributes.free_kick, growth);
-        }
-        increase_attribute(&mut player.attributes.vision, growth);
-        increase_attribute(&mut player.attributes.decisions, growth);
-        increase_attribute(&mut player.attributes.composure, growth);
-    }
-}
-
 fn has_expired_contract(player: &Player, current_date: NaiveDate) -> bool {
     player
         .contract_end()
@@ -82,50 +28,13 @@ fn has_expired_contract(player: &Player, current_date: NaiveDate) -> bool {
         .is_some_and(|contract_end| contract_end < current_date)
 }
 
-fn retirement_chance(player: &Player, age: i32, current_date: NaiveDate) -> u32 {
-    if player.retired || age < 33 {
-        return 0;
-    }
-
-    let mut chance: u32 = match age {
-        33 => 12,
-        34 => 24,
-        35 => 42,
-        36 => 60,
-        37 => 78,
-        _ => 100,
-    };
-
-    if player.contract_end().is_none() || has_expired_contract(player, current_date) {
-        chance += 18;
-    }
-    if player.team_id.is_none() {
-        chance += 10;
-    }
-    if player.stats.appearances < 10 {
-        chance += 8;
-    }
-    if player.stats.avg_rating <= 6.4 {
-        chance += 8;
-    }
-    if player.stats.avg_rating >= 7.4 {
-        chance = chance.saturating_sub(10);
-    }
-    if player.ovr >= 80 {
-        chance = chance.saturating_sub(15);
-    }
-
-    chance.min(100)
-}
-
 fn should_retire(player: &Player, age: i32, current_date: NaiveDate, season: u32) -> bool {
-    let chance = retirement_chance(player, age, current_date);
-    if chance == 0 {
-        return false;
-    }
-
-    let roll = seeded_value(&player.id, season, "retirement-roll") % 100;
-    roll < chance
+    ofm_rules::aging::should_retire(
+        player,
+        age,
+        has_expired_contract(player, current_date),
+        season,
+    )
 }
 
 fn retire_player(player: &mut Player, current_date: NaiveDate) {

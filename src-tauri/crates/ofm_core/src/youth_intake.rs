@@ -13,77 +13,25 @@
 //! brings the planned youngsters in.
 
 use crate::game::Game;
-use crate::squad_floor::{group_index, thinnest_first};
+#[cfg(test)]
+use crate::squad_floor::group_index;
 use chrono::{Datelike, NaiveDate};
 use domain::contract_ledger::ContractSource;
 use domain::message::{InboxMessage, MessageCategory, MessagePriority};
-use domain::player::{Player, PlayerMovementKind, Position, SquadRole};
+#[cfg(test)]
+use domain::player::Position;
+use domain::player::{Player, PlayerMovementKind, SquadRole};
 use domain::team::Team;
+use ofm_rules::youth::top_talent_index;
+#[cfg(test)]
+use ofm_rules::youth::*;
+pub use ofm_rules::youth::{IntakePlan, plan_for};
 use rand::RngExt;
 use std::collections::HashMap;
-
-/// Academy players a club aims to hold in each position group, in the squad
-/// floor's `[GK, DEF, MID, FWD]` order. Shaped like a squad, a keeper included,
-/// so the players who graduate from it can replace the ones who retire.
-const ACADEMY_TARGET_PER_GROUP: [usize; 4] = [1, 2, 2, 1];
-
-/// Youngsters every club takes in a season, however full its academy is. A
-/// club always renews itself a little; the minimum is what keeps one whose
-/// academy is full from going a whole season without a newcomer.
-const MIN_INTAKE: usize = 1;
-
-/// Youngsters a club takes in a season at most, however empty its academy is.
-/// A club rebuilding an academy does it over a few seasons, not in one summer.
-const MAX_INTAKE: usize = 3;
 
 /// The ages a youngster joins an academy at. Younger than a youth scout's
 /// recruit, who is found ready to play: an intake joins to be brought on.
 const INTAKE_AGES: std::ops::RangeInclusive<u32> = 15..=17;
-
-/// Which youngsters a club takes in this season: one position group per
-/// recruit, a keeper first when the academy has none.
-///
-/// Pure and free: what the finance epic will attach an academy cost to.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct IntakePlan {
-    pub groups: Vec<Position>,
-}
-
-/// The intake a club with `academy` takes: as many youngsters as it is short of
-/// [`ACADEMY_TARGET_PER_GROUP`], between [`MIN_INTAKE`] and [`MAX_INTAKE`]; a
-/// keeper first when it has none, then its thinnest groups.
-pub fn plan_for<'a>(academy: impl IntoIterator<Item = &'a Player>) -> IntakePlan {
-    let mut have = [0usize; 4];
-    for player in academy {
-        have[group_index(&player.position)] += 1;
-    }
-    let size = intake_size(have);
-
-    let keeper = group_index(&Position::Goalkeeper);
-    let mut groups = Vec::with_capacity(size);
-    if have[keeper] == 0 {
-        groups.push(Position::Goalkeeper);
-        have[keeper] += 1;
-    }
-    while groups.len() < size {
-        let thinnest = thinnest_first(have, ACADEMY_TARGET_PER_GROUP).remove(0);
-        have[group_index(&thinnest)] += 1;
-        groups.push(thinnest);
-    }
-    IntakePlan { groups }
-}
-
-/// How many youngsters a club whose academy holds `have` per group takes: what
-/// it lacks of [`ACADEMY_TARGET_PER_GROUP`], between [`MIN_INTAKE`] and
-/// [`MAX_INTAKE`]. The one place an intake's size is decided.
-fn intake_size(have: [usize; 4]) -> usize {
-    let lacking: usize = ACADEMY_TARGET_PER_GROUP
-        .iter()
-        .zip(have)
-        .map(|(target, have)| target.saturating_sub(have))
-        .sum();
-    lacking.clamp(MIN_INTAKE, MAX_INTAKE)
-}
 
 /// The player's club takes its season's intake into its academy on `date`, the
 /// end of `season`. AI clubs take none: they sign their youngsters from the
@@ -208,14 +156,6 @@ fn draw_recruits(game: &Game, team_index: usize, plan: &IntakePlan, date: NaiveD
             })
         })
         .collect()
-}
-
-/// Which of `plan`'s recruits, if any, is the intake's top talent: once an
-/// intake, at the chance `team`'s scouting department gives.
-fn top_talent_index(team: &Team, plan: &IntakePlan, rng: &mut impl rand::Rng) -> Option<usize> {
-    let chance = crate::facilities::intake_top_talent_per_mille(team.facilities.scouting);
-    (!plan.groups.is_empty() && rng.random_range(0..1000) < chance)
-        .then(|| rng.random_range(0..plan.groups.len()))
 }
 
 /// Sign `recruits` into the academy of the club at `team_index`, in order, each
