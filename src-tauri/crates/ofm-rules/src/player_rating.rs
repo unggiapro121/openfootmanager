@@ -106,7 +106,9 @@ pub fn generate_potential_from(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u
     (ovr.saturating_add(bonus)).min(99).max(ovr.max(1))
 }
 
-/// Parse birth year from a "YYYY-MM-DD" date string and return approximate age.
+/// The age a player reaches in `current_year`: the year of `date_of_birth` subtracted, as youth
+/// categories count it. Deliberately not his age on a day — that is [`crate::age::age_on`]; the
+/// derived ratings (potential, wonderkid, traits) are a season's, so they read the season's year.
 pub fn player_age(date_of_birth: &str, current_year: u32) -> u32 {
     let birth_year: u32 = date_of_birth
         .split('-')

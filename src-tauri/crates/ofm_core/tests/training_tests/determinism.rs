@@ -54,3 +54,29 @@ fn the_seed_decides_what_a_session_does() {
         "forty seeds all trained the squad alike"
     );
 }
+
+/// Given a squad on a training day, and the same squad with a newcomer signed and stored first,
+/// When each trains from the same seed, over forty seeds,
+/// Then every original player comes out of the session exactly as before: each player's dice are
+/// his own, not a turn in a stream shared by the list (phase 3, E5) — the online server trains
+/// clubs in no particular order.
+#[test]
+fn a_players_session_does_not_depend_on_who_is_listed_before_him() {
+    let save = make_game();
+    let mut with_newcomer = save.clone();
+    let mut newcomer = with_newcomer.players[0].clone();
+    newcomer.id = "newcomer".into();
+    with_newcomer.players.insert(0, newcomer);
+
+    // One session rarely moves an attribute, so forty seeds: a stream shared by the list would
+    // show on some of them.
+    for seed in 0..40 {
+        let before = squad_after_training(&save, seed);
+        let after: Vec<String> = squad_after_training(&with_newcomer, seed)
+            .into_iter()
+            .filter(|line| !line.starts_with("newcomer "))
+            .collect();
+
+        assert_eq!(after, before, "seed {seed}");
+    }
+}

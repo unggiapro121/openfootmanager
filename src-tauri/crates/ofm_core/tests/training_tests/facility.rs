@@ -11,19 +11,24 @@ fn game_with_trainee_at(training_level: u8) -> Game {
 
 /// Given two identical clubs, one with a level-1 and one with a level-10
 /// training facility,
-/// When the same player trains through the same year at each,
-/// Then he gains about 18% more at the level-10 club.
+/// When the same twenty-five players train through the same year at each,
+/// Then they gain about 18% more at the level-10 club.
 #[test]
 fn a_top_training_facility_speeds_development_by_about_a_fifth() {
-    let mut basic = game_with_trainee_at(1);
-    let mut top = game_with_trainee_at(10);
-    let before = physical_total(&basic, "regular");
+    let cohort = |level: u8| {
+        let mut game = game_with_trainee_at(level);
+        game.players = trainees("regular", 25, 100);
+        game
+    };
+    let mut basic = cohort(1);
+    let mut top = cohort(10);
+    let before = cohort_physical_total(&basic, "regular");
 
     train_for_days(&mut basic, 365);
     train_for_days(&mut top, 365);
 
-    let basic_gain = f64::from(physical_total(&basic, "regular") - before);
-    let top_gain = f64::from(physical_total(&top, "regular") - before);
+    let basic_gain = f64::from(cohort_physical_total(&basic, "regular") - before);
+    let top_gain = f64::from(cohort_physical_total(&top, "regular") - before);
     let ratio = top_gain / basic_gain;
     assert!(
         (1.08..=1.30).contains(&ratio),

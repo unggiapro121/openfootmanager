@@ -22,126 +22,17 @@
 //! 9. V1 safety rule: Physical + High → downgrade intensity to Medium.
 
 use crate::game::Game;
-use domain::team::{PlayStyle, TrainingFocus, TrainingIntensity};
-
-// ---------------------------------------------------------------------------
-// Thresholds
-// ---------------------------------------------------------------------------
-
-// All three are read against `likely_starters_condition`, not the squad mean.
-//
-// `HIGH_INTENSITY_MIN` is, in effect, where a club settles: above it the planner
-// works the squad hard, below it eases off, so the eleven hover at the band's
-// edge. It used to be 70, and a club's best eleven arrived at matches at about
-// 73 on a normal week. That was worse than the number suggests, because the
-// taper before a match only steps a session down one level: from Medium it
-// reaches Low, which is a Recovery session and gives condition back, but from
-// High it only reaches Medium, which still costs. A club that lives in the High
-// band never gets a real run-in to a match.
-//
-// 85 is the lowest edge at which every settled week of a one-fixture season
-// clears 80 (readiness probe, physio 60: worst week 86.9, against 70.8 at 70
-// and 79.9 at 80). The cost is development: High is where a session builds
-// the most, and a club at this setpoint spends more of its week on Medium —
-// which is where the player's own club sits by default.
-
-/// Below this starters' condition: full recovery day (no cycle advance).
-const RECOVERY_CRISIS_THRESHOLD: f64 = 10.0;
-/// Below this starters' condition: Low intensity band.
-const LOW_INTENSITY_MAX: f64 = 40.0;
-/// Above this starters' condition: High intensity band (40–85 inclusive is Medium).
-const HIGH_INTENSITY_MIN: f64 = 85.0;
-
-// ---------------------------------------------------------------------------
-// Style-biased weekly cycle
-// ---------------------------------------------------------------------------
-
-/// Returns a 5-slot weekly focus cycle for the given play style.
-///
-/// Indexed by `weekday_num % 5`:
-///   0 = Mon slot, 1 = Tue slot, 2 = Wed slot, 3 = Thu slot, 4 = Fri slot.
-///   With modulo-5 indexing, Saturday (`weekday_num = 5`) wraps to slot 0
-///   (the Monday slot), so the 5-slot cycle repeats Monday-Friday.
-///
-/// Balanced uses one of each focus.
-/// Every other style has 3 slots for its biased focus (2 extras vs the base).
-fn style_weekly_cycle(play_style: &PlayStyle) -> [TrainingFocus; 5] {
-    match play_style {
-        PlayStyle::Balanced => [
-            TrainingFocus::Physical,
-            TrainingFocus::Technical,
-            TrainingFocus::Tactical,
-            TrainingFocus::Defending,
-            TrainingFocus::Attacking,
-        ],
-        PlayStyle::Attacking => [
-            TrainingFocus::Physical,
-            TrainingFocus::Technical,
-            TrainingFocus::Attacking,
-            TrainingFocus::Attacking,
-            TrainingFocus::Attacking,
-        ],
-        PlayStyle::Defensive => [
-            TrainingFocus::Physical,
-            TrainingFocus::Technical,
-            TrainingFocus::Defending,
-            TrainingFocus::Defending,
-            TrainingFocus::Defending,
-        ],
-        PlayStyle::Possession => [
-            TrainingFocus::Physical,
-            TrainingFocus::Technical,
-            TrainingFocus::Tactical,
-            TrainingFocus::Tactical,
-            TrainingFocus::Tactical,
-        ],
-        PlayStyle::HighPress => [
-            TrainingFocus::Physical,
-            TrainingFocus::Physical,
-            TrainingFocus::Physical,
-            TrainingFocus::Technical,
-            TrainingFocus::Tactical,
-        ],
-        PlayStyle::Counter => [
-            TrainingFocus::Physical,
-            TrainingFocus::Technical,
-            TrainingFocus::Technical,
-            TrainingFocus::Technical,
-            TrainingFocus::Tactical,
-        ],
-    }
-}
+use domain::team::PlayStyle;
+use ofm_rules::ai_training::session_plan;
+#[cfg(test)]
+use ofm_rules::ai_training::*;
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-/// Average condition of the eleven this club would pick if nobody were tired.
-///
-/// This is the number the intensity bands are computed from, and it is
-/// deliberately *not* the squad average. A squad average is dominated by
-/// whoever is not playing: a first eleven ground down to 50 sitting behind
-/// eleven untouched reserves reads as a comfortable 75, so the planner sees
-/// room to work and puts the same exhausted eleven through a High session. The
-/// gap between the two numbers is not small — over a simulated season an AI
-/// squad averages around 71 while its best eleven arrive at matches in the
-/// high 40s.
-///
-/// It is also deliberately not the side the lineup picker would actually name.
-/// That side is rotation-adjusted: the tired stars have been left out of it, so
-/// reading it would launder the fatigue back out of the signal exactly the way
-/// a fresh bench launders it out of the squad mean. The question worth asking
-/// is "what condition are this club's best players in", and the answer has to
-/// stay uncomfortable while they are tired.
-///
-/// Injured players are excluded — they are not candidates for anything, and
-/// their condition is being managed by the treatment room rather than by the
-/// training ground. The eleven is the selector's own condition-free first choice
-/// through the club's formation, not "the eleven best-rated": a generated squad
-/// carries two keepers, a keeper's rating ignores every outfield attribute, and
-/// the spare one — who never plays, so is always fresh — would otherwise count
-/// as a starter. A club with nothing to read is reported fully fit rather than
-/// in crisis: there is nobody for a lighter session to protect.
+/// Average condition of the eleven this club would pick if nobody were tired
+/// (`ofm_rules::ai_training::likely_starters_condition`).
 fn likely_starters_condition(game: &Game, team_id: &str) -> f64 {
     let available: Vec<&domain::player::Player> = game
         .players
@@ -153,12 +44,7 @@ fn likely_starters_condition(game: &Game, team_id: &str) -> f64 {
         .iter()
         .find(|t| t.id == team_id)
         .map_or("4-4-2", |t| t.formation.as_str());
-
-    let eleven = crate::turn::squad::first_choice_eleven(&available, formation);
-    if eleven.is_empty() {
-        return 100.0;
-    }
-    eleven.iter().map(|p| f64::from(p.condition)).sum::<f64>() / eleven.len() as f64
+    ofm_rules::ai_training::likely_starters_condition(&available, formation)
 }
 
 // ---------------------------------------------------------------------------
@@ -227,51 +113,8 @@ pub fn apply_ai_training_policies(game: &mut Game, weekday_num: u32) {
             continue;
         }
 
-        // Recovery crisis: full recovery day, cycle does NOT advance.
-        if snap.starters_condition < RECOVERY_CRISIS_THRESHOLD {
-            if let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) {
-                team.training_focus = TrainingFocus::Recovery;
-                team.training_intensity = TrainingIntensity::Low;
-            }
-            continue;
-        }
-
-        // Base intensity from condition band.
-        let base_intensity = if snap.starters_condition < LOW_INTENSITY_MAX {
-            TrainingIntensity::Low
-        } else if snap.starters_condition <= HIGH_INTENSITY_MIN {
-            TrainingIntensity::Medium
-        } else {
-            TrainingIntensity::High
-        };
-
-        // The near-match / congestion taper used to live here. It now lives in
-        // `training::tapering_teams`, which applies it to every club — the human's
-        // included — because reducing load before a game is a property of
-        // training, not a manager's insight. What stays here is what a manager
-        // genuinely decides: how hard to work when there is room to, and on what.
-        let intensity = base_intensity;
-
-        // Style-biased weekly cycle; slot is based on weekday mod 5.
-        let cycle = style_weekly_cycle(&snap.play_style);
-        let slot = (weekday_num as usize) % 5;
-        let rotation_focus = cycle[slot].clone();
-
-        // Focus override based on effective intensity.
-        let focus = match &intensity {
-            // Low intensity band (a tired squad) → recovery-first.
-            TrainingIntensity::Low => TrainingFocus::Recovery,
-            // Healthy band → follow style-biased rotation.
-            _ => rotation_focus,
-        };
-
-        // V1 safety rule: Physical + High is the most punishing combination.
-        let intensity = if focus == TrainingFocus::Physical && intensity == TrainingIntensity::High
-        {
-            TrainingIntensity::Medium
-        } else {
-            intensity
-        };
+        let (focus, intensity) =
+            session_plan(&snap.play_style, snap.starters_condition, weekday_num);
 
         if let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) {
             team.training_focus = focus;

@@ -1088,3 +1088,40 @@ pub fn domain_play_style(play_style: engine::PlayStyle) -> domain::team::PlaySty
         engine::PlayStyle::HighPress => domain::team::PlayStyle::HighPress,
     }
 }
+
+// --- DomainPosition groups (the squad floor's) ------------------------------------
+
+/// Players a club must keep registered in each position group, in
+/// `[GK, DEF, MID, FWD]` order: an eleven and a second keeper, because a club
+/// whose only keeper is injured still has to put one in goal.
+pub const MIN_PLAYERS_PER_GROUP: [(DomainPosition, usize); 4] = [
+    (DomainPosition::Goalkeeper, 2),
+    (DomainPosition::Defender, 4),
+    (DomainPosition::Midfielder, 4),
+    (DomainPosition::Forward, 2),
+];
+
+/// Where a position's group sits in [`MIN_PLAYERS_PER_GROUP`]: 0 GK, 1 DEF,
+/// 2 MID, 3 FWD. The one place that order is written down.
+pub fn group_index(position: &DomainPosition) -> usize {
+    let group = position.to_group_position();
+    MIN_PLAYERS_PER_GROUP
+        .iter()
+        .position(|(floor_group, _)| *floor_group == group)
+        .expect("every position belongs to one of the four groups")
+}
+
+/// The four position groups ordered by how far `have` stands above `target`,
+/// per group in [`MIN_PLAYERS_PER_GROUP`] order: the furthest below first,
+/// then the least to spare. Ties keep that order. The one statement of
+/// "thinnest first" — the floor asks it against its minimum, the youth intake
+/// against the academy it aims for.
+pub fn thinnest_first(have: [usize; 4], target: [usize; 4]) -> Vec<DomainPosition> {
+    let mut groups: Vec<(i64, DomainPosition)> = MIN_PLAYERS_PER_GROUP
+        .iter()
+        .enumerate()
+        .map(|(index, (group, _))| (have[index] as i64 - target[index] as i64, group.clone()))
+        .collect();
+    groups.sort_by_key(|(margin, _)| *margin);
+    groups.into_iter().map(|(_, group)| group).collect()
+}

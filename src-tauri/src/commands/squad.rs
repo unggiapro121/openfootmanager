@@ -17,14 +17,13 @@ fn parse_squad_role(squad_role: &str) -> Option<domain::player::SquadRole> {
 }
 
 fn player_age_on(current_date: chrono::NaiveDate, date_of_birth: &str) -> Option<i32> {
-    let dob = chrono::NaiveDate::parse_from_str(date_of_birth, "%Y-%m-%d").ok()?;
-    let mut age = current_date.year() - dob.year();
-
-    if (current_date.month(), current_date.day()) < (dob.month(), dob.day()) {
-        age -= 1;
-    }
-
-    Some(age)
+    // The one age rule, as the backend counts it everywhere.
+    ofm_core::age::age_on_day(
+        date_of_birth,
+        current_date.year(),
+        current_date.month(),
+        current_date.day(),
+    )
 }
 
 pub fn set_formation_internal(state: &StateManager, formation: &str) -> Result<Game, String> {
