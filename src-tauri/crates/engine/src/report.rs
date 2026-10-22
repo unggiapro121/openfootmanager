@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use crate::event::{EventType, MatchEvent, SetPiece, ShotKind};
 use crate::types::{PlayStyle, Side, TeamData};
@@ -145,7 +145,7 @@ pub struct MatchReport {
     pub away_stats: TeamStats,
     pub events: Vec<MatchEvent>,
     pub goals: Vec<GoalDetail>,
-    pub player_stats: HashMap<String, PlayerMatchStats>,
+    pub player_stats: BTreeMap<String, PlayerMatchStats>,
     /// Possession percentage for the home team (0–100).
     pub home_possession: f64,
     /// Total simulated minutes (90 + stoppage).
@@ -209,7 +209,7 @@ impl MatchReport {
         let mut home_stats = TeamStats::default();
         let mut away_stats = TeamStats::default();
         let mut goals = Vec::new();
-        let mut player_stats: HashMap<String, PlayerMatchStats> = HashMap::new();
+        let mut player_stats: BTreeMap<String, PlayerMatchStats> = BTreeMap::new();
 
         home_stats.possession_ticks = home_possession_ticks;
         away_stats.possession_ticks = away_possession_ticks;
@@ -405,7 +405,7 @@ fn populate_minutes_played(
     events: &[MatchEvent],
     total_minutes: u8,
     tracked_player_ids: &[String],
-    player_stats: &mut HashMap<String, PlayerMatchStats>,
+    player_stats: &mut BTreeMap<String, PlayerMatchStats>,
 ) {
     let mut minutes_by_player: HashMap<String, u8> = tracked_player_ids
         .iter()

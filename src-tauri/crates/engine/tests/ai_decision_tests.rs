@@ -468,7 +468,7 @@ fn a_side_chasing_the_game_brings_on_one_forward_for_a_midfielder() {
 }
 
 // ---------------------------------------------------------------------------
-// The nine dials underneath the play style
+// The eleven dials underneath the play style
 // ---------------------------------------------------------------------------
 
 /// The rule the ration counts by is the engine's own, `ai::under_priced_dials`:

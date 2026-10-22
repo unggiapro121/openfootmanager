@@ -34,9 +34,17 @@ impl LiveMatchState {
             .map(|picked| picked.player)
             .unwrap_or_else(|| self.snap_player(other, Position::Midfielder, rng));
         let ratio = (self.condition_adjusted_skill(&ours.id, 1.0)
-            * play_style_modifier(self.team_ref(kicker), PlayStylePhase::Midfield))
+            * play_style_modifier(
+                self.team_ref(kicker),
+                PlayStylePhase::Midfield,
+                &self.config.knobs,
+            ))
             / (self.condition_adjusted_skill(&theirs.id, 1.0)
-                * play_style_modifier(self.team_ref(other), PlayStylePhase::Midfield));
+                * play_style_modifier(
+                    self.team_ref(other),
+                    PlayStylePhase::Midfield,
+                    &self.config.knobs,
+                ));
         let kicker_wins = rng.random_range(0.0..1.0f64)
             < duel::second_ball_win_probability(
                 &ours,
