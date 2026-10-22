@@ -444,56 +444,17 @@ pub fn set_team_kit_pattern(
     set_team_kit_pattern_internal(&state, kit_pattern)
 }
 
-/// Drop any assigned player function (role) that is no longer valid for the
-/// granular field position the player now occupies in the starting XI.
-///
-/// The backend only tracks coarse position buckets on `player.position`, so the
-/// granular slot is derived from the team's formation + starting XI order (the
-/// same mapping the UI uses). This keeps player functions dependent on the
-/// player's *current* field position: e.g. a striker's `Poacher` is cleared
-/// when they are moved into a defensive slot.
+/// Drop the roles the team's players can no longer play where they now stand
+/// (`ofm_rules::squad::reconcile_roles`).
 fn reconcile_player_roles(game: &mut Game, team_id: &str) {
-    // Natural position of every player on the team, for validating roles of
-    // players who are not in the starting XI (bench players have no slot).
     let natural_positions: std::collections::HashMap<String, domain::player::Position> = game
         .players
         .iter()
         .filter(|p| p.team_id.as_deref() == Some(team_id))
         .map(|p| (p.id.clone(), p.natural_position.clone()))
         .collect();
-
-    let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) else {
-        return;
-    };
-    if team.player_roles.is_empty() {
-        return;
-    }
-
-    let slots = ofm_core::player_rating::formation_slots(&team.formation);
-    // Validate EVERY assigned role, not just starters: a role that was valid in
-    // a player's slot must be cleared once they are benched (validated against
-    // their natural position there), otherwise the stale assignment persists and
-    // leaks back into match simulation.
-    let invalid: Vec<String> = team
-        .player_roles
-        .iter()
-        .filter_map(|(player_id, role)| {
-            let position = team
-                .starting_xi_ids
-                .iter()
-                .position(|id| id == player_id)
-                .and_then(|slot_index| slots.get(slot_index).cloned())
-                .or_else(|| natural_positions.get(player_id).cloned())?;
-            if role_valid_for_position(role, &position) {
-                None
-            } else {
-                Some(player_id.clone())
-            }
-        })
-        .collect();
-
-    for player_id in invalid {
-        team.player_roles.remove(&player_id);
+    if let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) {
+        ofm_core::squad::reconcile_roles(team, &natural_positions);
     }
 }
 

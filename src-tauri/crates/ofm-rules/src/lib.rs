@@ -8,8 +8,10 @@
 //! A rule belongs here when it decides an outcome from data the server will also hold. A rule
 //! that walks the world day by day, reads the save or talks to the player stays in `ofm_core`.
 
+pub mod ai_formation;
 pub mod ai_math;
 pub mod ai_roles;
+pub mod ai_tactics;
 pub mod coach_progress;
 pub mod facilities;
 pub mod lineup_assignment;
@@ -19,4 +21,7 @@ pub mod match_session;
 pub mod player_rating;
 pub mod player_wear;
 pub mod playing_time;
+pub mod squad;
 pub mod stable_hash;
+#[cfg(test)]
+mod test_support;
