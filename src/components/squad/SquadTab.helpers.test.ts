@@ -663,7 +663,7 @@ describe("SquadTab helpers", () => {
   });
 
   // Parity guard: the TS pitch layout MUST match the Rust formation_slots layout
-  // (src-tauri/crates/ofm_core/src/player_rating.rs tests). The backend role
+  // (src-tauri/crates/ofm-rules/src/player_rating.rs tests). The backend role
   // validator and match engine resolve a player's slot from that ordering, so a
   // divergence here reintroduces the issue-#257 desync.
   it("buildPitchRows slot order matches the Rust formation_slots layout", () => {

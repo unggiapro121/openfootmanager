@@ -11,7 +11,7 @@
 ///
 /// `seed` is folded into the offset basis, so nesting calls — hashing a player
 /// id under a club-and-date seed, say — keeps the streams independent.
-pub(crate) fn stable_hash(bytes: &[u8], seed: u64) -> u64 {
+pub fn stable_hash(bytes: &[u8], seed: u64) -> u64 {
     let mut hash = 0xcbf2_9ce4_8422_2325 ^ seed;
     for byte in bytes {
         hash ^= u64::from(*byte);

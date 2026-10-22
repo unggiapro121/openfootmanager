@@ -1,0 +1,17 @@
+[package]
+name = "ofm-rules"
+version = "0.3.0"
+edition = "2024"
+publish = false
+description = "Pure game rules shared by the OpenFoot Manager game and its online server"
+
+[dependencies]
+domain = { version = "0.3.0", path = "../domain" }
+rand = "0.10"
+# Named, not `rand::rngs::StdRng`: rand reserves the right to change what StdRng is, and a rule
+# keyed on an id must give the same answer after a dependency bump.
+rand_chacha = "0.10"
+serde = { version = "1.0.228", features = ["derive"] }
+
+[lints]
+workspace = true
