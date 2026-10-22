@@ -9,7 +9,7 @@ use ofm_core::generator::{
 fn config(opening_year: u32) -> WorldGenConfig {
     WorldGenConfig {
         opening_year,
-        ..WorldGenConfig::compact()
+        ..WorldGenConfig::compact(ofm_core::generator::default_opening_year())
     }
 }
 

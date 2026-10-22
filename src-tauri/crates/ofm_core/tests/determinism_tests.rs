@@ -34,7 +34,7 @@ fn managed_world(world_seed: u64, game_seed: u64) -> Game {
 
 fn world(world_seed: u64, game_seed: u64) -> Game {
     let sources = DefinitionSources::embedded_only();
-    let config = WorldGenConfig::compact();
+    let config = WorldGenConfig::compact(ofm_core::generator::default_opening_year());
     let data = generate_world_data_seeded_with(world_seed, &config, &sources);
     let manager = domain::manager::Manager::new(
         "determinism-manager".to_string(),
@@ -247,7 +247,11 @@ fn a_rollover_schedules_the_same_international_windows() {
 #[test]
 fn the_opening_seasons_international_friendlies_follow_the_seed() {
     let sources = DefinitionSources::embedded_only();
-    let data = generate_world_data_seeded_with(1, &WorldGenConfig::compact(), &sources);
+    let data = generate_world_data_seeded_with(
+        1,
+        &WorldGenConfig::compact(ofm_core::generator::default_opening_year()),
+        &sources,
+    );
     let manager = domain::manager::Manager::new(
         "m".to_string(),
         "D".to_string(),

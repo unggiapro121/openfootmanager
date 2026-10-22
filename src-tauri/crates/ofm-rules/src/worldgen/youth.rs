@@ -46,7 +46,7 @@ pub fn generate_youth_academy_recruit_with_nationality(
 /// `age`, drawn from `rng`. The same recruit a youth scout finds, at the age a
 /// club takes one in rather than the age it scouts one, lifted by the club's
 /// scouting department; `top_talent` makes him the intake's rare 90–95 ceiling.
-pub(crate) fn generate_youth_intake_recruit(
+pub fn generate_youth_intake_recruit(
     team: &Team,
     group: &Position,
     age: u32,
@@ -88,7 +88,7 @@ impl IntakeLift {
 /// A youngster for a nation's season youth pool: of `group`, aged `age`, of
 /// `nation`. `template` is a club of that nation, which the shared generator
 /// draws names and squad slots for; he joins no club here.
-pub(crate) fn generate_youth_pool_member(
+pub fn generate_youth_pool_member(
     template: &Team,
     group: &Position,
     nation: &str,
@@ -120,7 +120,7 @@ fn youth_recruit(
 ) -> Player {
     use domain::player::SquadRole;
 
-    let names_def = default_names_definition();
+    let names_def = super::definitions::embedded_names();
     let country_codes = generation::nationality_distribution();
     let nationality = nationality_override
         .map(generation::canonicalize_generated_nationality)

@@ -7,6 +7,12 @@ use domain::player::{Player, Position};
 use domain::team::Team;
 use rand::RngExt;
 
+/// The oldest a player may be and still play in a club's youth academy. A
+/// manager cannot put an older player there; an AI club promotes its academy
+/// players out of it once they pass it; the generator seeds opening academies
+/// from players no older.
+pub const YOUTH_ACADEMY_MAX_AGE: i32 = 21;
+
 /// Academy players a club aims to hold in each position group, in the squad
 /// floor's `[GK, DEF, MID, FWD]` order. Shaped like a squad, a keeper included,
 /// so the players who graduate from it can replace the ones who retire.

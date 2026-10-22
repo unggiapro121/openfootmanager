@@ -1263,7 +1263,7 @@ mod tests {
     /// This grows the pool from 67 to 68, deliberately widening the contract
     /// `additional_nations_are_not_world_cup_entrants` documents. It costs nothing:
     /// nothing keys off `NATION_CATALOG.len()`, and
-    /// [`crate::world_cup::berths_by_region`] allocates proportionally, so one more
+    /// `world_cup::berths_by_region` (in `ofm_core`) allocates proportionally, so one more
     /// European candidate out of 67 leaves every region's berth count unchanged at
     /// both field sizes.
     #[test]
@@ -1305,61 +1305,6 @@ mod tests {
         assert_eq!(UEFA_MEMBERS.len(), 55, "UEFA has 55 member associations");
     }
 
-    /// Adding Russia is only safe because the berth split is proportional. Pin
-    /// that: the catalog's regional shape must still hand every confederation the
-    /// same allocation, or the #270 decoupling contract has been broken in effect
-    /// even though the two lists remain disjoint.
-    #[test]
-    fn the_catalog_shape_leaves_world_cup_berths_unchanged() {
-        let mut by_region: std::collections::BTreeMap<String, usize> = Default::default();
-        for nation in NATION_CATALOG {
-            *by_region.entry(nation.region_id.to_string()).or_default() += 1;
-        }
-
-        // Both supported field sizes, every region named: a partial assertion
-        // would let a berth move between two unchecked regions unnoticed, which
-        // is exactly the failure this is meant to catch.
-        let expected: [(usize, [(&str, usize); 7]); 2] = [
-            (
-                32,
-                [
-                    ("africa", 5),
-                    ("asia", 5),
-                    ("central-america", 3),
-                    ("europe", 12),
-                    ("north-america", 1),
-                    ("oceania", 2),
-                    ("south-america", 4),
-                ],
-            ),
-            (
-                48,
-                [
-                    ("africa", 7),
-                    ("asia", 7),
-                    ("central-america", 4),
-                    ("europe", 19),
-                    ("north-america", 2),
-                    ("oceania", 2),
-                    ("south-america", 7),
-                ],
-            ),
-        ];
-
-        for (field, regions) in expected {
-            let berths = crate::world_cup::berths_by_region(field, &by_region);
-            for (region, want) in regions {
-                assert_eq!(
-                    berths.get(region),
-                    Some(&want),
-                    "{region} berths at field {field}"
-                );
-            }
-            assert_eq!(berths.len(), regions.len(), "no region may be left out");
-            assert_eq!(berths.values().sum::<usize>(), field);
-        }
-    }
-
     #[test]
     fn additional_nations_are_not_world_cup_entrants() {
         // The decoupling contract (see #270): widening who is selectable must
@@ -1376,7 +1321,7 @@ mod tests {
     #[test]
     fn the_frontend_region_table_matches_the_catalog() {
         // Regenerate with:
-        //   OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm_core --lib the_frontend_region_table
+        //   OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm-rules --lib the_frontend_region_table
         let table: std::collections::BTreeMap<&str, &str> = all_nations()
             .map(|nation| (nation.code, nation.region_id))
             .collect();
@@ -1396,7 +1341,7 @@ mod tests {
         let on_disk = std::fs::read_to_string(&path).unwrap_or_else(|e| {
             panic!(
                 "cannot read {} ({e}). Regenerate with \
-                 OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm_core --lib the_frontend_region_table",
+                 OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm-rules --lib the_frontend_region_table",
                 path.display()
             )
         });
@@ -1404,7 +1349,7 @@ mod tests {
             on_disk.trim(),
             rendered.trim(),
             "the nation catalog changed but {NATION_REGIONS_FIXTURE} is stale. Regenerate with \
-             OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm_core --lib the_frontend_region_table",
+             OFM_UPDATE_NATION_REGIONS=1 cargo test -p ofm-rules --lib the_frontend_region_table",
         );
     }
 

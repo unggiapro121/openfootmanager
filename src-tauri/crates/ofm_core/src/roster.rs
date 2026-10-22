@@ -9,11 +9,7 @@ use crate::game::Game;
 use domain::player::Player;
 use domain::team::Team;
 
-/// The oldest a player may be and still play in a club's youth academy. A
-/// manager cannot put an older player there; an AI club promotes its academy
-/// players out of it once they pass it; the generator seeds opening academies
-/// from players no older.
-pub const YOUTH_ACADEMY_MAX_AGE: i32 = 21;
+pub use ofm_rules::youth::YOUTH_ACADEMY_MAX_AGE;
 
 /// Decide which jersey number `player` should wear at `team`.
 ///
@@ -39,20 +35,7 @@ pub fn resolve_jersey_for(game: &Game, player: &Player, team: &Team) -> Option<u
     jersey_among(occupied, player.jersey_number)
 }
 
-/// The shirt number a player takes among `occupied` numbers: his own when it
-/// is free, else the lowest free one in `1..=99`, or `None` when all are taken.
-/// The rule [`resolve_jersey_for`] applies to a game, for callers — the world
-/// generator — that have the squad in hand before there is one.
-pub(crate) fn jersey_among(
-    occupied: impl IntoIterator<Item = u8>,
-    current: Option<u8>,
-) -> Option<u8> {
-    let occupied: std::collections::HashSet<u8> = occupied.into_iter().collect();
-    match current {
-        Some(current) if !occupied.contains(&current) => Some(current),
-        _ => (1u8..=99).find(|number| !occupied.contains(number)),
-    }
-}
+pub(crate) use ofm_rules::worldgen::jersey_among;
 
 /// Give a club's opening squad one shirt each, no two alike.
 ///

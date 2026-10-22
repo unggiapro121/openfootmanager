@@ -35,7 +35,11 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
   (`match_session`: three seeded streams, a controller per side, the shared command check, the
   input log and the minute hash; phase 3, E3-3). Depends on `domain` and `engine` only; no `Game`,
   calendar, I/O, wall clock or unseeded randomness (its `clippy.toml`). Since E3-5a it also holds
-  the squad bridge (`squad`), the AI's tactics and shape (`ai_tactics`, `ai_formation`).
+  the squad bridge (`squad`), the AI's tactics and shape (`ai_tactics`, `ai_formation`); since
+  E3-5c the world generator's core (`worldgen`: clubs, generated people, calibration, physique,
+  youth recruits, the shipped name and nation definitions in `ofm-rules/data/`), the nation
+  catalog (`nations`), player valuation (`valuation`) and assigned traits. Reading definition
+  files and packages, and the clock, stays in `ofm_core::generator`.
   `ofm_core` re-exports each module under its old path, so `crate::player_rating` still works.
 - **`ofm_core`** — game logic and the `StateManager`. Depends on `domain`, `engine` and
   `ofm-rules`.

@@ -22,7 +22,7 @@ use ofm_core::clock::GameClock;
 use ofm_core::end_of_season;
 use ofm_core::game::Game;
 use ofm_core::generator::{
-    DefinitionSources, WorldGenConfig, default_opening_year, generate_world_data_seeded_with,
+    DefinitionSources, default_opening_year, generate_world_data_seeded_with,
     repair_opening_youth_academies,
 };
 use ofm_core::world::start_date_for_year;
@@ -33,7 +33,7 @@ const SEASONS: u32 = 5;
 
 fn pyramid_world(seed: u64) -> Game {
     let sources = DefinitionSources::embedded_only();
-    let mut config = WorldGenConfig::standard_from(&sources);
+    let mut config = ofm_core::generator::standard_world_config(&sources);
     config
         .nations
         .retain(|nation| NATIONS.contains(&nation.code.as_str()));

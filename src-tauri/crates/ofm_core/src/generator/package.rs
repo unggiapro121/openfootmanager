@@ -1128,7 +1128,7 @@ fn effective_authored_ability(player: &PlayerDef) -> (u8, &'static str) {
     match player.overall {
         Some(overall) => (overall, POTENTIAL_BELOW_OVERALL),
         None => (
-            crate::generator::generation::DEFAULT_AUTHORED_OVERALL,
+            crate::generator::authored_generation::DEFAULT_AUTHORED_OVERALL,
             POTENTIAL_BELOW_DEFAULT,
         ),
     }

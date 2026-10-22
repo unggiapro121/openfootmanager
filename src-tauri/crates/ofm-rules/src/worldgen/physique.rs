@@ -30,7 +30,7 @@ const BMI_MAX: f64 = 26.2;
 /// A player's body as generated, with how far it sits from his position's
 /// average in standard deviations — the input the correlated draws read.
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub(crate) struct Physique {
+pub struct Physique {
     pub height_cm: u16,
     pub weight_kg: u8,
     pub z_height: f64,
@@ -41,7 +41,7 @@ pub(crate) struct Physique {
 /// of normal scores within a position. Measured on real players of the same
 /// position; zero means "independent of the body".
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub(crate) struct BodyLinks {
+pub struct BodyLinks {
     /// Follows height.
     pub aerial: f64,
     /// Follows weight.
@@ -53,7 +53,7 @@ pub(crate) struct BodyLinks {
 }
 
 impl BodyLinks {
-    pub(crate) fn for_position(position: &Position) -> Self {
+    pub fn for_position(position: &Position) -> Self {
         if matches!(position.to_group_position(), Position::Goalkeeper) {
             // A keeper's height barely predicts his handling or reflexes
             // (r ≈ 0.11–0.13), so only the air and the strength follow it.
@@ -101,7 +101,7 @@ fn height_params(position: &Position) -> (f64, f64) {
 ///
 /// Both normals are drawn whether or not they are used, so an authored height
 /// does not shift the random numbers every later draw sees.
-pub(crate) fn sample_physique(
+pub fn sample_physique(
     position: &Position,
     authored_height_cm: Option<u16>,
     authored_weight_kg: Option<u8>,
@@ -138,7 +138,7 @@ pub(crate) fn sample_physique(
 
 /// A uniform number in (0, 1) that follows `z` with normal-score correlation
 /// `r`: `Φ(r·z + √(1−r²)·Φ⁻¹(u))`. With `r = 0` it is the plain uniform draw.
-pub(crate) fn correlated_unit(z: f64, r: f64, rng: &mut impl Rng) -> f64 {
+pub fn correlated_unit(z: f64, r: f64, rng: &mut impl Rng) -> f64 {
     let u = open_unit(rng);
     if r == 0.0 {
         return u;
@@ -149,7 +149,7 @@ pub(crate) fn correlated_unit(z: f64, r: f64, rng: &mut impl Rng) -> f64 {
 
 /// `rng.random_range(lo..hi)` with the draw tied to the body: every value in
 /// `lo..hi` stays equally likely, but which player lands where follows `z`.
-pub(crate) fn correlated_range(lo: u8, hi: u8, z: f64, r: f64, rng: &mut impl Rng) -> u8 {
+pub fn correlated_range(lo: u8, hi: u8, z: f64, r: f64, rng: &mut impl Rng) -> u8 {
     let span = f64::from(hi.saturating_sub(lo));
     let step = (correlated_unit(z, r, rng) * span).floor();
     lo.saturating_add(step.min(span - 1.0).max(0.0) as u8)
@@ -157,7 +157,7 @@ pub(crate) fn correlated_range(lo: u8, hi: u8, z: f64, r: f64, rng: &mut impl Rn
 
 /// The generator's `jitter` (`base ± spread`, clamped to `lo..=hi`) with the
 /// offset tied to the body the same way.
-pub(crate) fn correlated_jitter(
+pub fn correlated_jitter(
     base: i32,
     spread: i32,
     bounds: (u8, u8),
@@ -180,7 +180,7 @@ fn open_unit(rng: &mut impl Rng) -> f64 {
 
 /// A standard normal draw (Box–Muller). The project carries no distribution
 /// crate, and two uniforms per draw is cheap next to everything else a player costs.
-pub(crate) fn standard_normal(rng: &mut impl Rng) -> f64 {
+pub fn standard_normal(rng: &mut impl Rng) -> f64 {
     let u1 = open_unit(rng);
     let u2 = open_unit(rng);
     (-2.0 * u1.ln()).sqrt() * (std::f64::consts::TAU * u2).cos()
@@ -188,7 +188,7 @@ pub(crate) fn standard_normal(rng: &mut impl Rng) -> f64 {
 
 /// Standard normal CDF Φ, from the Abramowitz–Stegun 7.1.26 error function
 /// (absolute error below 1.5e-7, far finer than an integer attribute).
-pub(crate) fn norm_cdf(x: f64) -> f64 {
+pub fn norm_cdf(x: f64) -> f64 {
     0.5 * (1.0 + erf(x / std::f64::consts::SQRT_2))
 }
 
@@ -208,7 +208,7 @@ fn erf(x: f64) -> f64 {
 
 /// Inverse standard normal CDF Φ⁻¹ (Acklam's rational approximation, relative
 /// error below 1.2e-9). `p` must lie in (0, 1).
-pub(crate) fn norm_inv(p: f64) -> f64 {
+pub fn norm_inv(p: f64) -> f64 {
     const A: [f64; 6] = [
         -3.969_683_028_665_376e1,
         2.209_460_984_245_205e2,
