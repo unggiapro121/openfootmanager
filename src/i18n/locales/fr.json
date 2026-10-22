@@ -59,6 +59,39 @@
     "allCareers": "Toutes les carrières",
     "thisCareer": "Cette carrière"
   },
+  "coachServer": {
+    "loginTitle": "Connexion à OFM Online",
+    "loginSubtitle": "Votre compte d'entraîneur est sur le serveur : la maîtrise des styles et les totaux vous suivent dans chaque carrière.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "code": "Code reçu par e-mail",
+    "logIn": "Se connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "haveCode": "J'ai un code",
+    "noAccount": "Pas encore de compte ?",
+    "registerTitle": "Créez votre compte d'entraîneur",
+    "backToLogin": "Retour à la connexion",
+    "verifyTitle": "Vérifiez votre e-mail",
+    "verifyHint": "Saisissez le code envoyé à votre adresse. Il expire au bout de 24 heures.",
+    "verify": "Vérifier",
+    "resendCode": "Envoyer un nouveau code",
+    "codeSent": "Un code a été envoyé à {{email}}.",
+    "verified": "E-mail vérifié. Vous pouvez vous connecter.",
+    "verifyFirst": "Vérifiez votre e-mail avant de vous connecter. Saisissez le code que nous vous avons envoyé.",
+    "forgotTitle": "Réinitialiser le mot de passe",
+    "forgotHint": "Saisissez l'e-mail de votre compte. Nous enverrons un code pour réinitialiser le mot de passe ; il expire au bout d'1 heure.",
+    "sendResetCode": "Envoyer le code",
+    "resetCodeSent": "Si un compte utilise {{email}}, un code est en route.",
+    "resetTitle": "Choisissez un nouveau mot de passe",
+    "resetPassword": "Enregistrer le mot de passe",
+    "passwordChanged": "Mot de passe modifié. Connectez-vous avec le nouveau.",
+    "invalidEmail": "Saisissez une adresse e-mail valide.",
+    "passwordLength": "Utilisez de {{min}} à {{max}} caractères.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "codeRequired": "Saisissez le code reçu par e-mail."
+  },
   "createManager": {
     "title": "Créer un Entraîneur",
     "firstName": "Prénom",
@@ -3433,7 +3466,10 @@
         "notLoggedIn": "Aucun compte d'entraîneur n'est connecté.",
         "offline": "Le serveur des comptes est injoignable.",
         "saveOfAnotherAccount": "Cette carrière appartient à un autre compte d'entraîneur.",
-        "saveWithoutAccount": "Cette carrière n'a pas encore de compte d'entraîneur."
+        "saveWithoutAccount": "Cette carrière n'a pas encore de compte d'entraîneur.",
+        "managedByServer": "Les comptes d'entraîneur sont gérés par le serveur de comptes.",
+        "serverNotConfigured": "Aucun serveur de comptes n'est configuré pour ce jeu.",
+        "serverUnexpected": "Le serveur de comptes a envoyé une réponse illisible pour le jeu."
       },
       "finance": {
         "boardSupportUnavailable": "Le soutien d'urgence du conseil n'est disponible que lorsque la trésorerie est sous pression.",
@@ -3535,7 +3571,24 @@
         "noAssessor": "Personne au club ne peut évaluer le potentiel."
       },
       "budgetRebalanceOutOfRange": "Ce budget salarial est hors limites : il ne peut pas descendre sous la masse salariale actuelle ni coûter plus que le budget transferts.",
-      "budgetRebalanceStep": "Modifiez le budget salarial par paliers de 1 000 par semaine."
+      "budgetRebalanceStep": "Modifiez le budget salarial par paliers de 1 000 par semaine.",
+      "auth": {
+        "invalidCredentials": "E-mail ou mot de passe incorrect.",
+        "emailNotVerified": "Vérifiez votre e-mail avant de vous connecter.",
+        "emailTaken": "Un compte utilise déjà cet e-mail.",
+        "accountLocked": "Ce compte est verrouillé.",
+        "tokenInvalid": "Ce code est erroné ou a expiré.",
+        "refreshInvalid": "Votre session a pris fin. Reconnectez-vous.",
+        "unauthorized": "Votre session a pris fin. Reconnectez-vous.",
+        "forbidden": "Vous n'êtes pas autorisé à faire cela."
+      },
+      "validation": {
+        "invalid": "Certaines informations ont été refusées. Vérifiez le formulaire et réessayez."
+      },
+      "rateLimited": "Trop de tentatives. Patientez un instant et réessayez.",
+      "unavailable": "Le serveur de comptes est indisponible. Réessayez plus tard.",
+      "timeout": "Le serveur de comptes a mis trop de temps à répondre.",
+      "internal": "Le serveur de comptes a rencontré une erreur."
     },
     "sender": {
       "boardOfDirectors": "Conseil d'Administration",

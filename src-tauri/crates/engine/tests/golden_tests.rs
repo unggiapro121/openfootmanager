@@ -1,4 +1,5 @@
-//! Golden matches: twenty seeded fixtures whose every event is pinned.
+//! Golden matches: twenty seeded fixtures whose every event is pinned, and six
+//! more (`SCRIPTED`) in which a home manager's commands land at fixed steps.
 //!
 //! The statistical tests elsewhere ask "does the dial move the game the right
 //! way over many seeds"; they cannot see a refactor that quietly changes what
@@ -16,12 +17,13 @@
 //! do in the game. The RNG is ChaCha12 because its output is fixed by its
 //! specification; `StdRng` may change algorithm between `rand` releases.
 
+use engine::ENGINE_VERSION;
 use engine::ai::{AiPersonality, AiProfile, ai_decide};
 use engine::{
     BreakSpeed, CoachMastery, CounterPressDuration, DefensiveLine, DefensiveShape, LiveMatchState,
-    MatchConfig, MatchEvent, MatchReport, PlayStyle, PlayerData, PlayerRole, Position,
-    PressingIntensity, Side, TacticsBuildUpStyle, TacticsConfig, TacticsPitchWidth, TeamData,
-    Tempo,
+    MatchCommand, MatchConfig, MatchEvent, MatchPhase, MatchReport, PlayStyle, PlayerData,
+    PlayerRole, Position, PressingIntensity, Side, TacticalDial, TacticsBuildUpStyle,
+    TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
 };
 use rand::{Rng, RngExt, SeedableRng};
 use rand_chacha::ChaCha12Rng;
@@ -41,7 +43,7 @@ struct Club {
     specialists: bool,
 }
 
-/// Named tactic presets, so the table below reads as football rather than as nine dials.
+/// Named tactic presets, so the table below reads as football rather than as eleven dials.
 #[derive(Clone, Copy)]
 enum Tactics {
     Neutral,
@@ -529,12 +531,261 @@ fn fingerprint(report: &MatchReport) -> u64 {
     })
 }
 
-fn regenerated_table(actual: &[(&str, u8, u8, u64)]) -> String {
+/// The pinned table `table` (`GOLDEN` or `GOLDEN_SCRIPTED`) as it should read for `actual`.
+fn regenerated_table(table: &str, actual: &[(&str, u8, u8, u64)]) -> String {
     let rows: String = actual
         .iter()
         .map(|(name, h, a, fp)| format!("    (\"{name}\", {h}, {a}, 0x{fp:016X}),\n"))
         .collect();
-    format!("const GOLDEN: [(&str, u8, u8, u64); 20] = [\n{rows}];")
+    format!(
+        "const {table}: [(&str, u8, u8, u64); {}] = [\n{rows}];",
+        actual.len()
+    )
+}
+
+// ---------------------------------------------------------------------------
+// Scripted fixtures: a manager's commands at fixed steps (phase 3, E3-0)
+// ---------------------------------------------------------------------------
+//
+// The online server replays a match from its seed and the log of commands applied to it, keyed by
+// the step after which each was applied. These fixtures pin that path: the home side is a manager
+// whose commands arrive at fixed steps, the away side is `ai_decide`. A change to how a command
+// lands, or to what a step after it draws, moves a fingerprint here.
+
+/// When a scripted command is applied: after a given step (0-based count of steps played), or
+/// after the step that brings the match to half-time.
+#[derive(Clone, Copy)]
+enum When {
+    AfterStep(usize),
+    HalfTime,
+}
+
+/// A home manager's command, in the fixture's own ids (`h00`… the XI, `hs0`… the bench).
+#[derive(Clone, Copy)]
+enum Order {
+    Substitute(&'static str, &'static str),
+    Formation(&'static str),
+    Style(PlayStyle),
+    Dial(TacticalDial),
+    Swap(&'static str, &'static str),
+    Role(&'static str, PlayerRole),
+}
+
+impl Order {
+    fn command(self) -> MatchCommand {
+        let side = Side::Home;
+        match self {
+            Order::Substitute(off, on) => MatchCommand::Substitute {
+                side,
+                player_off_id: off.to_string(),
+                player_on_id: on.to_string(),
+            },
+            Order::Formation(formation) => MatchCommand::ChangeFormation {
+                side,
+                formation: formation.to_string(),
+            },
+            Order::Style(play_style) => MatchCommand::ChangePlayStyle { side, play_style },
+            Order::Dial(dial) => MatchCommand::ChangeTacticalDial { side, dial },
+            Order::Swap(a, b) => MatchCommand::SwapPositions {
+                side,
+                player_a_id: a.to_string(),
+                player_b_id: b.to_string(),
+            },
+            Order::Role(player, role) => MatchCommand::ChangePlayerRole {
+                side,
+                player_id: player.to_string(),
+                role,
+            },
+        }
+    }
+}
+
+struct ScriptedFixture {
+    fixture: Fixture,
+    script: &'static [(When, Order)],
+}
+
+const SCRIPTED: [ScriptedFixture; 6] = [
+    ScriptedFixture {
+        fixture: fixture(
+            "scripted_dial_then_sub",
+            101,
+            club(70, PlayStyle::Balanced, "4-4-2"),
+            club(70, PlayStyle::Balanced, "4-4-2"),
+            true,
+        ),
+        script: &[
+            (
+                When::AfterStep(30),
+                Order::Dial(TacticalDial::PressingIntensity(
+                    PressingIntensity::Aggressive,
+                )),
+            ),
+            (When::AfterStep(60), Order::Substitute("h10", "hs5")),
+        ],
+    },
+    ScriptedFixture {
+        fixture: fixture(
+            "scripted_formation_change",
+            102,
+            club(72, PlayStyle::Possession, "4-2-3-1"),
+            club(74, PlayStyle::Counter, "4-4-2"),
+            true,
+        ),
+        script: &[
+            (When::AfterStep(55), Order::Formation("4-3-3")),
+            (When::AfterStep(70), Order::Substitute("h07", "hs3")),
+        ],
+    },
+    ScriptedFixture {
+        fixture: fixture(
+            "scripted_half_time_style",
+            103,
+            club(68, PlayStyle::Defensive, "5-3-2"),
+            club(75, PlayStyle::Attacking, "4-3-3"),
+            true,
+        ),
+        script: &[
+            (When::HalfTime, Order::Style(PlayStyle::Attacking)),
+            (
+                When::AfterStep(65),
+                Order::Dial(TacticalDial::DefensiveLine(DefensiveLine::High)),
+            ),
+        ],
+    },
+    ScriptedFixture {
+        fixture: fixture(
+            "scripted_swap_and_role",
+            104,
+            with_specialists(club(71, PlayStyle::Balanced, "4-3-3")),
+            club(71, PlayStyle::Balanced, "4-3-3"),
+            true,
+        ),
+        script: &[
+            (When::AfterStep(20), Order::Swap("h02", "h03")),
+            (
+                When::AfterStep(25),
+                Order::Role("h05", PlayerRole::BoxToBox),
+            ),
+        ],
+    },
+    ScriptedFixture {
+        fixture: fixture(
+            "scripted_three_subs",
+            105,
+            club(69, PlayStyle::HighPress, "4-3-3"),
+            club(70, PlayStyle::Possession, "4-2-3-1"),
+            true,
+        ),
+        script: &[
+            (When::AfterStep(58), Order::Substitute("h09", "hs5")),
+            (When::AfterStep(58), Order::Substitute("h06", "hs3")),
+            (When::AfterStep(75), Order::Substitute("h02", "hs1")),
+        ],
+    },
+    ScriptedFixture {
+        fixture: fixture(
+            "scripted_chasing",
+            106,
+            club(66, PlayStyle::Balanced, "4-4-2"),
+            club(78, PlayStyle::Balanced, "4-4-2"),
+            true,
+        ),
+        script: &[
+            (When::HalfTime, Order::Formation("4-3-3")),
+            (When::AfterStep(70), Order::Style(PlayStyle::Attacking)),
+            (
+                When::AfterStep(80),
+                Order::Dial(TacticalDial::Tempo(Tempo::Patient)),
+            ),
+        ],
+    },
+];
+
+/// (fixture name, home goals, away goals, event fingerprint), in `SCRIPTED` order.
+const GOLDEN_SCRIPTED: [(&str, u8, u8, u64); 6] = [
+    ("scripted_dial_then_sub", 0, 0, 0x1AF8E5282183C4BE),
+    ("scripted_formation_change", 0, 1, 0x3D4606E3E6E20F2F),
+    ("scripted_half_time_style", 0, 1, 0x396BF4FD6C765D51),
+    ("scripted_swap_and_role", 3, 0, 0x02C0F9114179EC12),
+    ("scripted_three_subs", 0, 3, 0xA0A88612793DE49E),
+    ("scripted_chasing", 0, 2, 0xDA39A053038CB62E),
+];
+
+/// The engine version the golden tables were pinned under, and a digest of both tables. A change
+/// that moves a golden match changes the digest, and is a new engine version: bump `version` in
+/// `crates/engine/Cargo.toml` and set this pair to what the failing test prints.
+const ENGINE_VERSION_PIN: (&str, u64) = ("0.3.0", 0x8350358139C2AC79);
+
+/// FNV-1a over every row of `GOLDEN` and `GOLDEN_SCRIPTED`, in order.
+fn golden_tables_digest() -> u64 {
+    GOLDEN.iter().chain(GOLDEN_SCRIPTED.iter()).fold(
+        0xCBF2_9CE4_8422_2325,
+        |h, (name, home, away, fp)| {
+            fnv1a(h, format!("{name}|{home}|{away}|{fp:016X}\n").as_bytes())
+        },
+    )
+}
+
+/// A scripted match and what each of its commands returned, in script order.
+struct ScriptedPlay {
+    report: MatchReport,
+    outcomes: Vec<Result<(), String>>,
+}
+
+/// Play a scripted fixture: after each step the home manager's commands for that step land, in
+/// script order, then the away side's AI takes its turn — the order the online runner fixes.
+fn play_scripted(scripted: &ScriptedFixture) -> ScriptedPlay {
+    let fixture = &scripted.fixture;
+    let mut team_rng = ChaCha12Rng::seed_from_u64(fixture.seed ^ 0x7EA4_5EED);
+    let (home, home_bench) = make_squad(&mut team_rng, "h", fixture.home, 7);
+    let (away, away_bench) = make_squad(&mut team_rng, "a", fixture.away, 7);
+
+    let mut rng = ChaCha12Rng::seed_from_u64(fixture.seed);
+    let mut state = LiveMatchState::new(
+        home,
+        away,
+        MatchConfig::default(),
+        home_bench,
+        away_bench,
+        false,
+    );
+    let manager = AiProfile {
+        reputation: 600,
+        experience: 60,
+        personality: AiPersonality::Pragmatist,
+    };
+    let mut outcomes = Vec::new();
+    let mut half_time_seen = false;
+    for step in 0..MAX_STEPS {
+        if state.is_finished() {
+            break;
+        }
+        state.step_minute(&mut rng);
+        let at_half_time = !half_time_seen && state.phase() == MatchPhase::HalfTime;
+        half_time_seen |= at_half_time;
+        for (when, order) in scripted.script {
+            let due = match when {
+                When::AfterStep(n) => *n == step,
+                When::HalfTime => at_half_time,
+            };
+            if due {
+                outcomes.push(state.apply_command(order.command()));
+            }
+        }
+        for command in ai_decide(&state, Side::Away, &manager, &mut rng) {
+            let _ = state.apply_command(command);
+        }
+    }
+    assert!(
+        state.is_finished(),
+        "{} did not finish in {MAX_STEPS} steps",
+        fixture.name
+    );
+    ScriptedPlay {
+        report: state.into_report(),
+        outcomes,
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -563,7 +814,7 @@ fn golden_fixtures_play_exactly_as_pinned() {
         mismatched.is_empty(),
         "golden fixtures changed: {mismatched:?}\n\
          If the change is intended, replace GOLDEN with:\n{}",
-        regenerated_table(&actual)
+        regenerated_table("GOLDEN", &actual)
     );
 }
 
@@ -634,4 +885,110 @@ fn the_fingerprint_sees_a_single_changed_event() {
     let before = fingerprint(&report);
     report.events[1].minute = report.events[1].minute.wrapping_add(1);
     assert_ne!(before, fingerprint(&report));
+}
+
+/// Given the six scripted fixtures,
+/// when each is played on its seed with its manager's commands at their steps,
+/// then its score and event fingerprint match the pinned table.
+#[test]
+fn scripted_fixtures_play_exactly_as_pinned() {
+    let actual: Vec<(&str, u8, u8, u64)> = SCRIPTED
+        .iter()
+        .map(|s| {
+            let r = play_scripted(s).report;
+            (s.fixture.name, r.home_goals, r.away_goals, fingerprint(&r))
+        })
+        .collect();
+    let mismatched: Vec<&str> = actual
+        .iter()
+        .zip(GOLDEN_SCRIPTED.iter())
+        .filter(|(a, g)| a != g)
+        .map(|(a, _)| a.0)
+        .collect();
+    assert!(
+        mismatched.is_empty(),
+        "scripted golden fixtures changed: {mismatched:?}\n\
+         If the change is intended, replace GOLDEN_SCRIPTED with:\n{}",
+        regenerated_table("GOLDEN_SCRIPTED", &actual)
+    );
+}
+
+/// Given one scripted fixture,
+/// when it is played twice,
+/// then both runs produce the same events, so seed plus command log decides the match.
+#[test]
+fn a_scripted_fixture_replays_identically() {
+    for s in [&SCRIPTED[0], &SCRIPTED[5]] {
+        assert_eq!(
+            fingerprint(&play_scripted(s).report),
+            fingerprint(&play_scripted(s).report),
+            "{} is not reproducible",
+            s.fixture.name
+        );
+    }
+}
+
+/// Given the scripted fixtures,
+/// when they are played,
+/// then every scripted command was accepted and every scripted substitution is in the events,
+/// so the table pins matches that really took the manager's orders.
+#[test]
+fn every_scripted_command_lands() {
+    for s in &SCRIPTED {
+        let played = play_scripted(s);
+        assert_eq!(
+            played.outcomes.len(),
+            s.script.len(),
+            "{}: a scripted command never came due",
+            s.fixture.name
+        );
+        for (outcome, (_, order)) in played.outcomes.iter().zip(s.script) {
+            assert!(
+                outcome.is_ok(),
+                "{}: a scripted command was refused: {outcome:?}",
+                s.fixture.name
+            );
+            if let Order::Substitute(off, on) = order {
+                let made = played.report.events.iter().any(|e| {
+                    e.event_type == engine::EventType::Substitution
+                        && e.side == Side::Home
+                        && [e.player_id.as_deref(), e.secondary_player_id.as_deref()]
+                            .contains(&Some(*on))
+                        && [e.player_id.as_deref(), e.secondary_player_id.as_deref()]
+                            .contains(&Some(*off))
+                });
+                assert!(
+                    made,
+                    "{}: {off} → {on} is not in the events",
+                    s.fixture.name
+                );
+            }
+        }
+    }
+}
+
+/// Given the scripted golden table,
+/// when it is compared with the scripted fixture list,
+/// then they name the same fixtures in the same order.
+#[test]
+fn scripted_golden_table_lists_every_fixture_in_order() {
+    let fixtures: Vec<&str> = SCRIPTED.iter().map(|s| s.fixture.name).collect();
+    let golden: Vec<&str> = GOLDEN_SCRIPTED.iter().map(|g| g.0).collect();
+    assert_eq!(fixtures, golden);
+}
+
+/// Given the pinned golden tables and the engine's version,
+/// when the tables' digest is taken,
+/// then the pair matches the pin, so a change that moves a golden match cannot ship under the
+/// version the online server already pinned for a season.
+#[test]
+fn engine_version_moves_with_the_golden_tables() {
+    let actual = (ENGINE_VERSION, golden_tables_digest());
+    assert_eq!(
+        actual, ENGINE_VERSION_PIN,
+        "the golden tables or the engine version changed.\n\
+         If a golden match moved on purpose, bump `version` in crates/engine/Cargo.toml, then set\n\
+         ENGINE_VERSION_PIN to (\"<new version>\", 0x{:016X}).",
+        actual.1
+    );
 }

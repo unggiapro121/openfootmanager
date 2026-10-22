@@ -410,7 +410,7 @@ pub enum TacticalDial {
 }
 
 impl TacticalDial {
-    /// Turn this one dial, leaving the other nine where they are.
+    /// Turn this one dial, leaving the other ten where they are.
     pub fn set_on(self, tactics: &mut TacticsConfig) {
         match self {
             Self::PressingIntensity(value) => tactics.pressing_intensity = value,

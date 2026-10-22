@@ -59,6 +59,39 @@
     "allCareers": "Semua karier",
     "thisCareer": "Karier ini"
   },
+  "coachServer": {
+    "loginTitle": "Masuk ke OFM Online",
+    "loginSubtitle": "Akun pelatihmu ada di server: penguasaan gaya bermain dan total karier ikut ke setiap karier.",
+    "email": "Email",
+    "password": "Kata sandi",
+    "confirmPassword": "Konfirmasi kata sandi",
+    "newPassword": "Kata sandi baru",
+    "code": "Kode dari email",
+    "logIn": "Masuk",
+    "forgotPassword": "Lupa kata sandi?",
+    "haveCode": "Saya punya kode",
+    "noAccount": "Belum punya akun?",
+    "registerTitle": "Buat akun pelatih",
+    "backToLogin": "Kembali ke halaman masuk",
+    "verifyTitle": "Verifikasi email",
+    "verifyHint": "Masukkan kode yang kami kirim ke emailmu. Kode berlaku 24 jam.",
+    "verify": "Verifikasi",
+    "resendCode": "Kirim kode baru",
+    "codeSent": "Kami telah mengirim kode ke {{email}}.",
+    "verified": "Email terverifikasi. Sekarang kamu bisa masuk.",
+    "verifyFirst": "Verifikasi emailmu sebelum masuk. Masukkan kode yang kami kirim.",
+    "forgotTitle": "Atur ulang kata sandi",
+    "forgotHint": "Masukkan email akunmu. Kami akan mengirim kode untuk mengatur ulang kata sandi; kode berlaku 1 jam.",
+    "sendResetCode": "Kirim kode",
+    "resetCodeSent": "Jika ada akun yang memakai {{email}}, kodenya sedang dikirim.",
+    "resetTitle": "Pilih kata sandi baru",
+    "resetPassword": "Simpan kata sandi",
+    "passwordChanged": "Kata sandi diubah. Masuk dengan kata sandi baru.",
+    "invalidEmail": "Masukkan alamat email yang valid.",
+    "passwordLength": "Gunakan {{min}} sampai {{max}} karakter.",
+    "passwordMismatch": "Kata sandi tidak cocok.",
+    "codeRequired": "Masukkan kode dari email."
+  },
   "createManager": {
     "title": "Buat Manajer",
     "firstName": "Nama Depan",
@@ -3274,7 +3307,10 @@
         "notLoggedIn": "Belum ada akun manajer yang masuk.",
         "offline": "Tidak dapat menghubungi server akun.",
         "saveOfAnotherAccount": "Karier ini milik akun manajer lain.",
-        "saveWithoutAccount": "Karier ini belum terhubung ke akun manajer."
+        "saveWithoutAccount": "Karier ini belum terhubung ke akun manajer.",
+        "managedByServer": "Akun pelatih dikelola oleh server akun.",
+        "serverNotConfigured": "Game ini belum diatur dengan server akun.",
+        "serverUnexpected": "Server akun mengirim jawaban yang tidak bisa dibaca game."
       },
       "teamNotFound": "Tim tidak ditemukan",
       "jobOffer": {
@@ -3535,7 +3571,24 @@
         "noAssessor": "Tidak ada staf klub yang bisa menilai potensi."
       },
       "budgetRebalanceOutOfRange": "Anggaran gaji itu di luar batas: tidak boleh di bawah beban gaji saat ini dan tidak boleh melebihi yang bisa ditanggung anggaran transfer.",
-      "budgetRebalanceStep": "Ubah anggaran gaji dengan kelipatan 1.000 per minggu."
+      "budgetRebalanceStep": "Ubah anggaran gaji dengan kelipatan 1.000 per minggu.",
+      "auth": {
+        "invalidCredentials": "Email atau kata sandi salah.",
+        "emailNotVerified": "Verifikasi emailmu sebelum masuk.",
+        "emailTaken": "Email ini sudah dipakai akun lain.",
+        "accountLocked": "Akun ini dikunci.",
+        "tokenInvalid": "Kode salah atau sudah kedaluwarsa.",
+        "refreshInvalid": "Sesimu telah berakhir. Silakan masuk lagi.",
+        "unauthorized": "Sesimu telah berakhir. Silakan masuk lagi.",
+        "forbidden": "Kamu tidak diizinkan melakukan itu."
+      },
+      "validation": {
+        "invalid": "Beberapa data tidak diterima. Periksa formulir dan coba lagi."
+      },
+      "rateLimited": "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.",
+      "unavailable": "Server akun sedang tidak tersedia. Coba lagi nanti.",
+      "timeout": "Server akun terlalu lama menjawab.",
+      "internal": "Server akun mengalami kesalahan."
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",

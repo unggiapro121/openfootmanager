@@ -59,6 +59,39 @@
     "allCareers": "Tutte le carriere",
     "thisCareer": "Questa carriera"
   },
+  "coachServer": {
+    "loginTitle": "Accedi a OFM Online",
+    "loginSubtitle": "Il tuo account allenatore è sul server: la padronanza degli stili e i totali ti seguono in ogni carriera.",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Conferma password",
+    "newPassword": "Nuova password",
+    "code": "Codice dell'email",
+    "logIn": "Accedi",
+    "forgotPassword": "Password dimenticata?",
+    "haveCode": "Ho un codice",
+    "noAccount": "Non hai ancora un account?",
+    "registerTitle": "Crea il tuo account allenatore",
+    "backToLogin": "Torna all'accesso",
+    "verifyTitle": "Verifica la tua email",
+    "verifyHint": "Inserisci il codice che abbiamo inviato alla tua email. Scade dopo 24 ore.",
+    "verify": "Verifica",
+    "resendCode": "Invia un nuovo codice",
+    "codeSent": "Abbiamo inviato un codice a {{email}}.",
+    "verified": "Email verificata. Ora puoi accedere.",
+    "verifyFirst": "Verifica la tua email prima di accedere. Inserisci il codice che ti abbiamo inviato.",
+    "forgotTitle": "Reimposta la password",
+    "forgotHint": "Inserisci l'email del tuo account. Invieremo un codice per reimpostare la password; scade dopo 1 ora.",
+    "sendResetCode": "Invia codice",
+    "resetCodeSent": "Se un account usa {{email}}, il codice è in arrivo.",
+    "resetTitle": "Scegli una nuova password",
+    "resetPassword": "Salva password",
+    "passwordChanged": "Password cambiata. Accedi con la nuova password.",
+    "invalidEmail": "Inserisci un indirizzo email valido.",
+    "passwordLength": "Usa da {{min}} a {{max}} caratteri.",
+    "passwordMismatch": "Le password non coincidono.",
+    "codeRequired": "Inserisci il codice dell'email."
+  },
   "createManager": {
     "title": "Crea allenatore",
     "firstName": "Nome",
@@ -3433,7 +3466,10 @@
         "notLoggedIn": "Nessun account allenatore ha effettuato l'accesso.",
         "offline": "Impossibile raggiungere il server degli account.",
         "saveOfAnotherAccount": "Questa carriera appartiene a un altro account allenatore.",
-        "saveWithoutAccount": "Questa carriera non ha ancora un account allenatore."
+        "saveWithoutAccount": "Questa carriera non ha ancora un account allenatore.",
+        "managedByServer": "Gli account allenatore sono gestiti dal server degli account.",
+        "serverNotConfigured": "Per questo gioco non è configurato un server degli account.",
+        "serverUnexpected": "Il server degli account ha inviato una risposta che il gioco non riesce a leggere."
       },
       "finance": {
         "boardSupportUnavailable": "Il supporto d'emergenza del consiglio è disponibile solo quando la liquidità è sotto pressione.",
@@ -3535,7 +3571,24 @@
         "noAssessor": "Nessuno nel club può valutare il potenziale."
       },
       "budgetRebalanceOutOfRange": "Questo budget stipendi è fuori intervallo: non può scendere sotto il monte ingaggi attuale né costare più del budget trasferimenti.",
-      "budgetRebalanceStep": "Modifica il budget stipendi a passi di 1.000 a settimana."
+      "budgetRebalanceStep": "Modifica il budget stipendi a passi di 1.000 a settimana.",
+      "auth": {
+        "invalidCredentials": "Email o password errate.",
+        "emailNotVerified": "Verifica la tua email prima di accedere.",
+        "emailTaken": "Esiste già un account con questa email.",
+        "accountLocked": "Questo account è bloccato.",
+        "tokenInvalid": "Il codice è errato o scaduto.",
+        "refreshInvalid": "La sessione è terminata. Accedi di nuovo.",
+        "unauthorized": "La sessione è terminata. Accedi di nuovo.",
+        "forbidden": "Non hai il permesso di farlo."
+      },
+      "validation": {
+        "invalid": "Alcuni dati non sono stati accettati. Controlla il modulo e riprova."
+      },
+      "rateLimited": "Troppi tentativi. Attendi un momento e riprova.",
+      "unavailable": "Il server degli account non è disponibile. Riprova più tardi.",
+      "timeout": "Il server degli account ha impiegato troppo a rispondere.",
+      "internal": "Il server degli account ha riscontrato un errore."
     },
     "sender": {
       "boardOfDirectors": "Consiglio di amministrazione",

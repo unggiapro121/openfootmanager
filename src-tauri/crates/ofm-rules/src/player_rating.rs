@@ -1,7 +1,7 @@
 use domain::player::{
     Footedness, Player, PlayerAttributes, PlayerTrait, Position, WEAK_FOOT_MAX, WEAK_FOOT_MIN,
 };
-use rand::RngExt;
+use rand::{RngExt, SeedableRng};
 
 const WONDERKID_MAX_AGE: u32 = 20;
 const WONDERKID_MIN_POTENTIAL: u8 = 90;
@@ -46,7 +46,7 @@ pub fn refresh_player_derived(player: &mut Player, current_year: u32) {
     // 2. Compute potential if not yet set (initial generation or legacy saves)
     let age = player_age(&player.date_of_birth, current_year);
     let potential = if player.potential == 0 {
-        generate_potential(ovr, age)
+        generate_potential_for(&player.id, ovr, age)
     } else {
         // Keep existing potential; clamp so it is always >= ovr
         player.potential.max(ovr)
@@ -77,14 +77,24 @@ pub fn qualifies_for_wonderkid(age: u32, potential: u8, ovr: u8) -> bool {
         && potential.saturating_sub(ovr) >= WONDERKID_MIN_GROWTH_ROOM
 }
 
+/// Keeps the potential stream apart from every other draw keyed on a player's id.
+const POTENTIAL_SEED: u64 = 0x504f_5445_4e54_4931;
+
 /// Generate a potential rating for a newly-created player based on current OVR and age.
 /// Returns a value in [1, 99] that is always >= `ovr`.
 /// The lower bound of 1 (via `ovr.max(1)`) ensures potential is never 0 even when `ovr` is 0.
-pub fn generate_potential(ovr: u8, age: u32) -> u8 {
-    generate_potential_from(ovr, age, &mut rand::rng())
+///
+/// Drawn from a stream keyed on `player_id`, so the same player always gets the same ceiling: a
+/// world rebuilt from the same data, or the online server generating it, agrees with the game.
+pub fn generate_potential_for(player_id: &str, ovr: u8, age: u32) -> u8 {
+    let mut rng = rand_chacha::ChaCha12Rng::seed_from_u64(crate::stable_hash::stable_hash(
+        player_id.as_bytes(),
+        POTENTIAL_SEED,
+    ));
+    generate_potential_from(ovr, age, &mut rng)
 }
 
-/// As [`generate_potential`], drawn from `rng` so a seeded generation replays.
+/// As [`generate_potential_for`], drawn from `rng` so a seeded generation replays.
 pub fn generate_potential_from(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u8 {
     let bonus: u8 = match age {
         ..=18 => rng.random_range(15u8..=30),
@@ -97,7 +107,7 @@ pub fn generate_potential_from(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u
 }
 
 /// Parse birth year from a "YYYY-MM-DD" date string and return approximate age.
-pub(crate) fn player_age(date_of_birth: &str, current_year: u32) -> u32 {
+pub fn player_age(date_of_birth: &str, current_year: u32) -> u32 {
     let birth_year: u32 = date_of_birth
         .split('-')
         .next()
@@ -280,7 +290,7 @@ fn forward_line(count: usize) -> Vec<Position> {
     }
 }
 
-pub(crate) fn primary_position(player: &Player) -> Position {
+pub fn primary_position(player: &Player) -> Position {
     let preferred = if player.natural_position.is_legacy_bucket() {
         player.position.clone()
     } else {

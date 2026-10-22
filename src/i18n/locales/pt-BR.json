@@ -59,6 +59,39 @@
     "allCareers": "Todas as carreiras",
     "thisCareer": "Esta carreira"
   },
+  "coachServer": {
+    "loginTitle": "Entre no OFM Online",
+    "loginSubtitle": "Sua conta de técnico fica no servidor: o domínio dos estilos e os totais acompanham você em cada carreira.",
+    "email": "E-mail",
+    "password": "Senha",
+    "confirmPassword": "Confirmar senha",
+    "newPassword": "Nova senha",
+    "code": "Código do e-mail",
+    "logIn": "Entrar",
+    "forgotPassword": "Esqueceu a senha?",
+    "haveCode": "Tenho um código",
+    "noAccount": "Ainda não tem conta?",
+    "registerTitle": "Crie sua conta de técnico",
+    "backToLogin": "Voltar para o login",
+    "verifyTitle": "Verifique seu e-mail",
+    "verifyHint": "Digite o código que enviamos para seu e-mail. Ele expira em 24 horas.",
+    "verify": "Verificar",
+    "resendCode": "Enviar novo código",
+    "codeSent": "Enviamos um código para {{email}}.",
+    "verified": "E-mail verificado. Você já pode entrar.",
+    "verifyFirst": "Verifique seu e-mail antes de entrar. Digite o código que enviamos.",
+    "forgotTitle": "Redefinir senha",
+    "forgotHint": "Digite o e-mail da sua conta. Enviaremos um código para redefinir a senha; ele expira em 1 hora.",
+    "sendResetCode": "Enviar código",
+    "resetCodeSent": "Se houver uma conta com {{email}}, o código está a caminho.",
+    "resetTitle": "Escolha uma nova senha",
+    "resetPassword": "Salvar senha",
+    "passwordChanged": "Senha alterada. Entre com a nova senha.",
+    "invalidEmail": "Digite um e-mail válido.",
+    "passwordLength": "Use de {{min}} a {{max}} caracteres.",
+    "passwordMismatch": "As senhas não coincidem.",
+    "codeRequired": "Digite o código do e-mail."
+  },
   "createManager": {
     "title": "Criar Treinador",
     "firstName": "Nome",
@@ -3433,7 +3466,10 @@
         "notLoggedIn": "Nenhuma conta de treinador está conectada.",
         "offline": "Não foi possível conectar ao servidor de contas.",
         "saveOfAnotherAccount": "Esta carreira pertence a outra conta de treinador.",
-        "saveWithoutAccount": "Esta carreira ainda não está vinculada a uma conta de treinador."
+        "saveWithoutAccount": "Esta carreira ainda não está vinculada a uma conta de treinador.",
+        "managedByServer": "As contas de técnico são gerenciadas pelo servidor de contas.",
+        "serverNotConfigured": "Este jogo não tem um servidor de contas configurado.",
+        "serverUnexpected": "O servidor de contas enviou uma resposta que o jogo não consegue ler."
       },
       "finance": {
         "boardSupportUnavailable": "O apoio emergencial da diretoria só está disponível quando o caixa está sob pressão.",
@@ -3535,7 +3571,24 @@
         "noAssessor": "Ninguém no clube consegue avaliar o potencial."
       },
       "budgetRebalanceOutOfRange": "Esse teto salarial está fora dos limites: não pode ficar abaixo da folha salarial atual nem custar mais que a verba de transferências.",
-      "budgetRebalanceStep": "Altere o teto salarial em passos de 1.000 por semana."
+      "budgetRebalanceStep": "Altere o teto salarial em passos de 1.000 por semana.",
+      "auth": {
+        "invalidCredentials": "E-mail ou senha incorretos.",
+        "emailNotVerified": "Verifique seu e-mail antes de entrar.",
+        "emailTaken": "Já existe uma conta com este e-mail.",
+        "accountLocked": "Esta conta está bloqueada.",
+        "tokenInvalid": "O código está errado ou expirou.",
+        "refreshInvalid": "Sua sessão terminou. Entre novamente.",
+        "unauthorized": "Sua sessão terminou. Entre novamente.",
+        "forbidden": "Você não tem permissão para fazer isso."
+      },
+      "validation": {
+        "invalid": "Alguns dados não foram aceitos. Revise o formulário e tente de novo."
+      },
+      "rateLimited": "Tentativas demais. Aguarde um momento e tente de novo.",
+      "unavailable": "O servidor de contas está indisponível. Tente mais tarde.",
+      "timeout": "O servidor de contas demorou demais para responder.",
+      "internal": "O servidor de contas teve um erro."
     },
     "sender": {
       "boardOfDirectors": "Diretoria",

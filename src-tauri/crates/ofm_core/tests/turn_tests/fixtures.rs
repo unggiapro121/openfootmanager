@@ -331,7 +331,7 @@ pub(crate) fn empty_report(home_goals: u8, away_goals: u8) -> MatchReport {
         away_stats: TeamStats::default(),
         events: vec![],
         goals: vec![],
-        player_stats: HashMap::new(),
+        player_stats: BTreeMap::new(),
         home_possession: 50.0,
         total_minutes: 90,
         home_penalties: None,
@@ -348,7 +348,7 @@ pub(crate) fn report_with_scorer(
     scorer_id: &str,
     side: Side,
 ) -> MatchReport {
-    let mut player_stats = HashMap::new();
+    let mut player_stats = BTreeMap::new();
     player_stats.insert(
         scorer_id.to_string(),
         PlayerMatchStats {
@@ -418,7 +418,7 @@ pub(crate) fn report_with_scorer(
 /// Use this for stamina depletion tests.
 pub(crate) fn full_squad_report(home_goals: u8, away_goals: u8) -> MatchReport {
     let prefixes = ["t1_gk", "t2_gk"];
-    let mut player_stats: HashMap<String, PlayerMatchStats> = HashMap::new();
+    let mut player_stats: BTreeMap<String, PlayerMatchStats> = BTreeMap::new();
     // Add GKs
     for prefix in &prefixes {
         player_stats.insert(

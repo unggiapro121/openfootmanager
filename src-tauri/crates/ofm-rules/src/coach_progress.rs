@@ -11,7 +11,7 @@ use domain::manager::HonourKind;
 use domain::team::PlayStyle;
 use serde::{Deserialize, Serialize};
 
-use crate::manager_mastery::{MasteryGain, MatchOutcome, bank_style_xp, match_xp};
+use crate::mastery_xp::{MasteryGain, MatchOutcome, bank_style_xp, match_xp};
 
 /// The hour of the region's day at which the allowance starts afresh: late
 /// enough that a match played around midnight is not cut in two (K1, O1).

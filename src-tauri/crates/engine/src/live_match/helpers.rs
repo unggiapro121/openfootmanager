@@ -255,7 +255,11 @@ impl LiveMatchState {
 
     pub(super) fn effective_midfield(&self, side: Side) -> f64 {
         let base = self.team_ref(side).midfield_rating();
-        let modifier = play_style_modifier(self.team_ref(side), PlayStylePhase::Midfield);
+        let modifier = play_style_modifier(
+            self.team_ref(side),
+            PlayStylePhase::Midfield,
+            &self.config.knobs,
+        );
         base * modifier * home_mod(side, &self.config)
     }
 

@@ -1,8 +1,8 @@
 //! The coach the player is logged in as, and the store his progress lives in
 //! (tài-khoản-HLV-tech-spec Y1–Y6). The game reaches that progress only through
-//! `CoachProgressStore`: today a file on this machine, later the account server
-//! (G-2), which runs the same rules (`ofm_core::coach_progress`) on its own
-//! clock.
+//! `CoachProgressStore`: a file on this machine, or the account server (G-2,
+//! `coach_server`), which runs the same rules (`ofm_rules::coach_progress`) on
+//! its own clock.
 
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
@@ -16,6 +16,10 @@ use ofm_core::manager_mastery::{apply_coach_progress, MasteryGain};
 use ofm_core::state::StateManager;
 use serde::{Deserialize, Serialize};
 
+use super::coach_server::{
+    configured_server_url, ApiClient, KeyringVault, RemoteCoachProgressStore, ServerSession,
+};
+
 /// Set to `1` to play as if the account server could not be reached: matches
 /// still play and save, but earn the account nothing (Y12). For trying the
 /// warning by hand until the real server exists.
@@ -24,6 +28,8 @@ const NOT_LOGGED_IN: &str = "be.error.coach.notLoggedIn";
 const OFFLINE: &str = "be.error.coach.offline";
 const SAVE_OF_ANOTHER_ACCOUNT: &str = "be.error.coach.saveOfAnotherAccount";
 const SAVE_WITHOUT_ACCOUNT: &str = "be.error.coach.saveWithoutAccount";
+/// What the screens for accounts on this machine get when the accounts are on the server.
+const MANAGED_BY_SERVER: &str = "be.error.coach.managedByServer";
 
 /// Why the store could not take a report.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -131,6 +137,8 @@ pub struct CoachContext {
     /// The menu's old profiles, turned into accounts the first time the list is read.
     legacy_profiles: PathBuf,
     active: Mutex<Option<CoachAccount>>,
+    /// The session with the account server, when the accounts live there.
+    server: Option<Arc<ServerSession>>,
 }
 
 impl CoachContext {
@@ -144,6 +152,43 @@ impl CoachContext {
             progress,
             legacy_profiles,
             active: Mutex::new(None),
+            server: None,
+        }
+    }
+
+    /// The account server when one is configured (`OFM_SERVER_URL`), the store on this machine
+    /// otherwise.
+    pub fn from_environment(app_data_dir: &Path) -> Self {
+        match configured_server_url() {
+            Some(url) => {
+                log::info!("[coach] accounts on the server at {url}");
+                let session = ServerSession::new(
+                    ApiClient::new(&url),
+                    Box::new(KeyringVault::for_server(&url)),
+                );
+                Self::with_server(app_data_dir, Arc::new(session))
+            }
+            None => Self::local(app_data_dir),
+        }
+    }
+
+    /// Accounts and progress on the server behind `session`. The accounts made on this machine
+    /// are not carried over and are deleted (Z7, Q-L5); their careers stay on disk.
+    pub fn with_server(app_data_dir: &Path, session: Arc<ServerSession>) -> Self {
+        let accounts_dir = app_data_dir.join("coach");
+        if accounts_dir.exists() {
+            if let Err(error) = std::fs::remove_dir_all(&accounts_dir) {
+                log::warn!("[coach] accounts on this machine not removed: {error}");
+            }
+        }
+        let progress = Arc::new(RemoteCoachProgressStore::new(Arc::clone(&session)));
+        Self {
+            server: Some(session),
+            ..Self::new(
+                CoachStore::new(accounts_dir),
+                progress,
+                app_data_dir.join("profiles.json"),
+            )
         }
     }
 
@@ -161,6 +206,22 @@ impl CoachContext {
 
     pub fn progress_store(&self) -> &dyn CoachProgressStore {
         self.progress.as_ref()
+    }
+
+    pub fn server_session(&self) -> Option<&ServerSession> {
+        self.server.as_deref()
+    }
+
+    pub(crate) fn set_active_account(&self, account: Option<CoachAccount>) {
+        *lock(&self.active) = account;
+    }
+
+    /// The accounts on this machine, or the error that they are on the server.
+    fn local_accounts(&self) -> Result<&CoachStore, String> {
+        match self.server {
+            Some(_) => Err(MANAGED_BY_SERVER.to_string()),
+            None => Ok(&self.accounts),
+        }
     }
 }
 
@@ -188,13 +249,11 @@ pub struct CoachProgressView {
 /// here the first time; a file that cannot be read is left for next time
 /// rather than keeping the player out.
 pub fn list_coach_accounts(coach: &CoachContext) -> Result<Vec<CoachAccount>, String> {
-    if let Err(error) = coach
-        .accounts
-        .import_legacy_profiles(&coach.legacy_profiles)
-    {
+    let accounts = coach.local_accounts()?;
+    if let Err(error) = accounts.import_legacy_profiles(&coach.legacy_profiles) {
         log::warn!("[coach] old manager profiles not imported: {error}");
     }
-    coach.accounts.accounts()
+    accounts.accounts()
 }
 
 pub fn create_coach_account(
@@ -202,7 +261,9 @@ pub fn create_coach_account(
     identity: CoachIdentity,
     now: &str,
 ) -> Result<CoachAccount, String> {
-    coach.accounts.create(validated(identity)?, now)
+    coach
+        .local_accounts()?
+        .create(validated_identity(identity)?, now)
 }
 
 pub fn login_coach_account(
@@ -210,13 +271,17 @@ pub fn login_coach_account(
     id: &str,
     now: &str,
 ) -> Result<CoachAccount, String> {
-    let account = coach.accounts.record_login(id, now)?;
+    let account = coach.local_accounts()?.record_login(id, now)?;
     *lock(&coach.active) = Some(account.clone());
     Ok(account)
 }
 
+/// Log out here, and end the session on the server when the account is there.
 pub fn logout_coach_account(coach: &CoachContext) {
     *lock(&coach.active) = None;
+    if let Some(session) = coach.server_session() {
+        session.logout();
+    }
 }
 
 pub fn update_coach_account(
@@ -224,7 +289,9 @@ pub fn update_coach_account(
     id: &str,
     identity: CoachIdentity,
 ) -> Result<CoachAccount, String> {
-    let account = coach.accounts.update(id, validated(identity)?)?;
+    let account = coach
+        .local_accounts()?
+        .update(id, validated_identity(identity)?)?;
     let mut active = lock(&coach.active);
     if active.as_ref().is_some_and(|a| a.id == id) {
         *active = Some(account.clone());
@@ -235,7 +302,7 @@ pub fn update_coach_account(
 /// Delete the account and its progress, logging it out if it is in use. Its
 /// careers stay on disk (Q-TK2), playable again once claimed by an account.
 pub fn delete_coach_account(coach: &CoachContext, id: &str) -> Result<bool, String> {
-    let removed = coach.accounts.delete(id)?;
+    let removed = coach.local_accounts()?.delete(id)?;
     let mut active = lock(&coach.active);
     if active.as_ref().is_some_and(|a| a.id == id) {
         *active = None;
@@ -423,7 +490,7 @@ pub fn claim_save_for_coach(
 }
 
 /// `identity` trimmed, or the error the new-career form already shows for it.
-fn validated(identity: CoachIdentity) -> Result<CoachIdentity, String> {
+pub(crate) fn validated_identity(identity: CoachIdentity) -> Result<CoachIdentity, String> {
     let first_name = identity.first_name.trim().to_string();
     let last_name = identity.last_name.trim().to_string();
     if first_name.is_empty() || last_name.is_empty() {

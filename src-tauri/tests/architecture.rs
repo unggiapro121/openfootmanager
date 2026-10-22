@@ -31,19 +31,37 @@ use std::process::Command;
 
 use serde_json::Value;
 
-/// The isolated crates, and the reason each one is isolated.
-const ISOLATED: &[(&str, &str)] = &[
+/// The core crates: the ones the online server (phase 3) compiles as well as the game. Each names
+/// the workspace crates it may depend on, and the reason for the boundary.
+const CORE: &[(&str, &[&str], &str)] = &[
     (
         "engine",
+        &[],
         "The match engine defines its own mirror types (PlayerData, TeamData, Position, PlayStyle) \
          so it can be tested with synthetic data and evolved independently of the game's domain \
          model. `ofm_core/turn/` is the only place the conversion between them is allowed to live.",
     ),
     (
         "domain",
+        &[],
         "`domain` is the bottom of the graph: plain structs and enums that everything else may \
          depend on. If it gains a dependency, it has stopped being data and started being logic.",
     ),
+    (
+        "ofm-rules",
+        &["domain"],
+        "`ofm-rules` holds the pure rules the online server runs exactly as the game does. It \
+         reads `domain` data and nothing above it: a rule that needs `Game`, the calendar or the \
+         save belongs in `ofm_core`, which re-exports these modules under their old paths.",
+    ),
+];
+
+/// What a core crate must never pull in, by direct dependency: a desktop shell, a database, an
+/// async runtime, a web server, the wall clock's calendar, random ids, archives, logging. The
+/// server runs the core crates headless and replays a match from its inputs, so none of these may
+/// reach a rule (phase 3, E3-0).
+const PLATFORM_CRATES: &[&str] = &[
+    "tauri", "rusqlite", "tokio", "axum", "chrono", "uuid", "zip", "log",
 ];
 
 fn metadata() -> Value {
@@ -121,33 +139,45 @@ fn describe(dep: &Value) -> String {
     description
 }
 
-/// Workspace dependencies of `crate_name`, across **all** dependency kinds.
-fn workspace_dependencies_of(meta: &Value, crate_name: &str) -> Vec<String> {
-    let workspace = workspace_crate_names(meta);
-
+/// Every dependency of `crate_name`, across **all** dependency kinds, with the resolved name.
+fn dependencies_of<'a>(meta: &'a Value, crate_name: &str) -> impl Iterator<Item = &'a Value> {
     package(meta, crate_name)["dependencies"]
         .as_array()
         .expect("package has no dependencies array")
         .iter()
+}
+
+/// Workspace dependencies of `crate_name` that are not in `allowed`, across all dependency kinds.
+fn forbidden_workspace_dependencies_of(
+    meta: &Value,
+    crate_name: &str,
+    allowed: &[&str],
+) -> Vec<String> {
+    let workspace = workspace_crate_names(meta);
+
+    dependencies_of(meta, crate_name)
         .filter(|dep| {
             dep["name"]
                 .as_str()
-                .is_some_and(|name| workspace.contains(name))
+                .is_some_and(|name| workspace.contains(name) && !allowed.contains(&name))
         })
         .map(describe)
         .collect()
 }
 
+/// Given the workspace manifests,
+/// when each core crate's dependencies are resolved,
+/// then it depends on no workspace crate outside its allowed list.
 #[test]
-fn isolated_crates_declare_no_workspace_dependencies() {
+fn core_crates_depend_only_on_their_allowed_workspace_crates() {
     let meta = metadata();
 
-    for (crate_name, rationale) in ISOLATED {
-        let violations = workspace_dependencies_of(&meta, crate_name);
+    for (crate_name, allowed, rationale) in CORE {
+        let violations = forbidden_workspace_dependencies_of(&meta, crate_name, allowed);
 
         assert!(
             violations.is_empty(),
-            "`{crate_name}` must not depend on any other crate in this workspace, but declares:\n\
+            "`{crate_name}` may depend only on {allowed:?} in this workspace, but declares:\n\
              \n  {}\n\n\
              {rationale}\n\n\
              Adding this dependency \"to avoid duplication\" is the single most damaging change \
@@ -159,17 +189,48 @@ fn isolated_crates_declare_no_workspace_dependencies() {
     }
 }
 
+/// Given the workspace manifests,
+/// when each core crate's dependencies are resolved,
+/// then none of them is a platform crate (desktop shell, database, runtime, clock, ids, logging),
+/// so the server can build the core crates headless.
 #[test]
-fn the_isolated_crates_still_exist() {
-    // Guards the assertion above against silently passing if a crate is renamed or removed: an
+fn core_crates_use_no_platform_dependencies() {
+    let meta = metadata();
+
+    for (crate_name, _, _) in CORE {
+        let violations: Vec<String> = dependencies_of(&meta, crate_name)
+            .filter(|dep| {
+                dep["name"].as_str().is_some_and(|name| {
+                    PLATFORM_CRATES
+                        .iter()
+                        .any(|platform| name == *platform || name.starts_with("tauri"))
+                })
+            })
+            .map(describe)
+            .collect();
+
+        assert!(
+            violations.is_empty(),
+            "`{crate_name}` is a core crate and must not depend on a platform crate, but declares:\n\
+             \n  {}\n\n\
+             The online server compiles the core crates and replays matches from their inputs. \
+             Keep I/O, clocks, random ids and logging in `ofm_core` or the app.",
+            violations.join("\n  "),
+        );
+    }
+}
+
+#[test]
+fn the_core_crates_still_exist() {
+    // Guards the assertions above against silently passing if a crate is renamed or removed: an
     // empty violation list is also what "this crate is gone" looks like.
     let names = workspace_crate_names(&metadata());
 
-    for (crate_name, _) in ISOLATED {
+    for (crate_name, _, _) in CORE {
         assert!(
             names.contains(*crate_name),
-            "`{crate_name}` is no longer a workspace member, so the boundary test above is \
-             vacuously passing. Either restore the crate or update ISOLATED to match the new \
+            "`{crate_name}` is no longer a workspace member, so the boundary tests above are \
+             vacuously passing. Either restore the crate or update CORE to match the new \
              architecture — deliberately, not by deleting the test.",
         );
     }

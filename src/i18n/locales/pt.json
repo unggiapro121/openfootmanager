@@ -59,6 +59,39 @@
     "allCareers": "Todas as carreiras",
     "thisCareer": "Esta carreira"
   },
+  "coachServer": {
+    "loginTitle": "Inicie sessão no OFM Online",
+    "loginSubtitle": "A sua conta de treinador está no servidor: o domínio dos estilos e os totais acompanham-no em cada carreira.",
+    "email": "E-mail",
+    "password": "Palavra-passe",
+    "confirmPassword": "Confirmar palavra-passe",
+    "newPassword": "Nova palavra-passe",
+    "code": "Código do e-mail",
+    "logIn": "Iniciar sessão",
+    "forgotPassword": "Esqueceu a palavra-passe?",
+    "haveCode": "Tenho um código",
+    "noAccount": "Ainda não tem conta?",
+    "registerTitle": "Crie a sua conta de treinador",
+    "backToLogin": "Voltar ao início de sessão",
+    "verifyTitle": "Verifique o seu e-mail",
+    "verifyHint": "Introduza o código que enviámos para o seu e-mail. Expira ao fim de 24 horas.",
+    "verify": "Verificar",
+    "resendCode": "Enviar novo código",
+    "codeSent": "Enviámos um código para {{email}}.",
+    "verified": "E-mail verificado. Já pode iniciar sessão.",
+    "verifyFirst": "Verifique o seu e-mail antes de iniciar sessão. Introduza o código que lhe enviámos.",
+    "forgotTitle": "Redefinir a palavra-passe",
+    "forgotHint": "Introduza o e-mail da sua conta. Enviaremos um código para redefinir a palavra-passe; expira ao fim de 1 hora.",
+    "sendResetCode": "Enviar código",
+    "resetCodeSent": "Se existir uma conta com {{email}}, o código está a caminho.",
+    "resetTitle": "Escolha uma nova palavra-passe",
+    "resetPassword": "Guardar palavra-passe",
+    "passwordChanged": "Palavra-passe alterada. Inicie sessão com a nova.",
+    "invalidEmail": "Introduza um e-mail válido.",
+    "passwordLength": "Use entre {{min}} e {{max}} caracteres.",
+    "passwordMismatch": "As palavras-passe não coincidem.",
+    "codeRequired": "Introduza o código do e-mail."
+  },
   "createManager": {
     "title": "Criar Treinador",
     "firstName": "Nome",
@@ -3433,7 +3466,10 @@
         "notLoggedIn": "Nenhuma conta de treinador tem sessão iniciada.",
         "offline": "Não foi possível contactar o servidor de contas.",
         "saveOfAnotherAccount": "Esta carreira pertence a outra conta de treinador.",
-        "saveWithoutAccount": "Esta carreira ainda não tem conta de treinador."
+        "saveWithoutAccount": "Esta carreira ainda não tem conta de treinador.",
+        "managedByServer": "As contas de treinador são geridas pelo servidor de contas.",
+        "serverNotConfigured": "Este jogo não tem um servidor de contas configurado.",
+        "serverUnexpected": "O servidor de contas enviou uma resposta que o jogo não consegue ler."
       },
       "finance": {
         "boardSupportUnavailable": "O apoio de emergência da direção só está disponível quando a tesouraria está sob pressão.",
@@ -3535,7 +3571,24 @@
         "noAssessor": "Ninguém no clube consegue avaliar o potencial."
       },
       "budgetRebalanceOutOfRange": "Esse teto salarial está fora dos limites: não pode ficar abaixo da massa salarial atual nem custar mais do que o orçamento de transferências.",
-      "budgetRebalanceStep": "Altere o teto salarial em passos de 1.000 por semana."
+      "budgetRebalanceStep": "Altere o teto salarial em passos de 1.000 por semana.",
+      "auth": {
+        "invalidCredentials": "E-mail ou palavra-passe incorretos.",
+        "emailNotVerified": "Verifique o seu e-mail antes de iniciar sessão.",
+        "emailTaken": "Já existe uma conta com este e-mail.",
+        "accountLocked": "Esta conta está bloqueada.",
+        "tokenInvalid": "O código está errado ou expirou.",
+        "refreshInvalid": "A sua sessão terminou. Inicie sessão novamente.",
+        "unauthorized": "A sua sessão terminou. Inicie sessão novamente.",
+        "forbidden": "Não tem permissão para fazer isso."
+      },
+      "validation": {
+        "invalid": "Alguns dados não foram aceites. Reveja o formulário e tente novamente."
+      },
+      "rateLimited": "Demasiadas tentativas. Aguarde um momento e tente novamente.",
+      "unavailable": "O servidor de contas está indisponível. Tente mais tarde.",
+      "timeout": "O servidor de contas demorou demasiado a responder.",
+      "internal": "O servidor de contas teve um erro."
     },
     "sender": {
       "boardOfDirectors": "Conselho de Administração",

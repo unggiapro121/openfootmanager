@@ -635,7 +635,7 @@ fn consider_tactic_change(obs: &AiObservation<'_>, profile: &AiProfile) -> Optio
         });
     }
 
-    // Already wearing the right shirt. There are still nine dials underneath it.
+    // Already wearing the right shirt. There are still eleven dials underneath it.
     turn_a_dial(obs)
 }
 

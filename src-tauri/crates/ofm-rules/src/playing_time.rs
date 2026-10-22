@@ -29,7 +29,7 @@ const UNUSED_DEVELOPMENT_SHARE: f64 = 0.4;
 /// get on: an unused player's zero is exactly the information this records.
 /// Extra time counts as a full match, not more — a 120-minute cup tie does not
 /// make anyone more of a regular than a league game does.
-pub(crate) fn record_club_match(player: &mut Player, minutes_played: u8) {
+pub fn record_club_match(player: &mut Player, minutes_played: u8) {
     let this_match = (f64::from(minutes_played) / FULL_MATCH_MINUTES).min(1.0) * 100.0;
     let updated = f64::from(player.playing_time) * (1.0 - LATEST_MATCH_WEIGHT)
         + this_match * LATEST_MATCH_WEIGHT;
@@ -38,7 +38,7 @@ pub(crate) fn record_club_match(player: &mut Player, minutes_played: u8) {
 
 /// The multiplier playing time puts on a player's training gains, from
 /// `UNUSED_DEVELOPMENT_SHARE` for a player who never plays up to 1.0 for a regular.
-pub(crate) fn development_factor(playing_time: u8) -> f64 {
+pub fn development_factor(playing_time: u8) -> f64 {
     let regularity =
         f64::from(playing_time.min(REGULAR_PLAYING_TIME)) / f64::from(REGULAR_PLAYING_TIME);
     UNUSED_DEVELOPMENT_SHARE + (1.0 - UNUSED_DEVELOPMENT_SHARE) * regularity

@@ -1,6 +1,6 @@
 use domain::player::{Player, PlayerAttributes, PlayerTrait, Position};
 use ofm_core::player_rating::{
-    generate_potential, qualifies_for_wonderkid, refresh_player_derived,
+    generate_potential_for, qualifies_for_wonderkid, refresh_player_derived,
 };
 
 // ---------------------------------------------------------------------------
@@ -208,14 +208,29 @@ fn wonderkid_qualification_rejects_growth_room_below_boundary() {
 // generate_potential
 // ---------------------------------------------------------------------------
 
+/// Given a player id,
+/// when its potential is generated twice, and once more for another id,
+/// then the same id gets the same ceiling every time and the ids do not all share one: a
+/// potential is a function of the player, so a world (or the online server) rebuilds it the
+/// same way (phase 3, E3-2).
+#[test]
+fn a_players_potential_is_the_same_every_time_it_is_generated() {
+    let first = generate_potential_for("player-42", 60, 17);
+    assert_eq!(first, generate_potential_for("player-42", 60, 17));
+    let ceilings: std::collections::BTreeSet<u8> = (0..40)
+        .map(|i| generate_potential_for(&format!("player-{i}"), 60, 17))
+        .collect();
+    assert!(ceilings.len() > 1, "every id rolled the same ceiling");
+}
+
 #[test]
 fn generate_potential_always_ge_ovr() {
     for ovr in [40u8, 60, 75, 90] {
         for age in [16u32, 19, 21, 23, 25, 30] {
-            let potential = generate_potential(ovr, age);
+            let potential = generate_potential_for(&format!("p{ovr}-{age}"), ovr, age);
             assert!(
                 potential >= ovr,
-                "generate_potential({}, age {}) = {} should be >= ovr",
+                "generate_potential_for(_, {}, age {}) = {} should be >= ovr",
                 ovr,
                 age,
                 potential
@@ -227,7 +242,7 @@ fn generate_potential_always_ge_ovr() {
 #[test]
 fn generate_potential_returns_ovr_for_old_players() {
     let ovr = 72u8;
-    let potential = generate_potential(ovr, 32);
+    let potential = generate_potential_for("veteran", ovr, 32);
     assert_eq!(
         potential, ovr,
         "Players aged 32+ should have potential == ovr"
@@ -237,7 +252,7 @@ fn generate_potential_returns_ovr_for_old_players() {
 #[test]
 fn generate_potential_capped_at_99() {
     // Very high OVR for a teenager
-    let potential = generate_potential(95, 16);
+    let potential = generate_potential_for("prodigy", 95, 16);
     assert!(potential <= 99, "Potential should never exceed 99");
 }
 
@@ -247,8 +262,8 @@ fn generate_potential_young_player_has_higher_ceiling() {
     // produce potential >= ovr (and usually higher for teens).
     let ovr = 60u8;
     let mut any_higher = false;
-    for _ in 0..50 {
-        let p = generate_potential(ovr, 17);
+    for i in 0..50 {
+        let p = generate_potential_for(&format!("teen-{i}"), ovr, 17);
         assert!(p >= ovr);
         if p > ovr {
             any_higher = true;

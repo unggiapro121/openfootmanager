@@ -26,7 +26,7 @@ pub use long_shot::long_shot_norm;
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 
 use crate::rating::{RosterEntry, rate_players};
 
@@ -136,7 +136,7 @@ pub enum MatchCommand {
         player_id: String,
         role: PlayerRole,
     },
-    /// Turn one of the nine tactical dials, leaving the other eight alone.
+    /// Turn one of the eleven tactical dials, leaving the other ten alone.
     ChangeTacticalDial {
         side: Side,
         dial: TacticalDial,
@@ -218,13 +218,13 @@ pub struct MatchSnapshot {
     pub away_set_pieces: SetPieceTakers,
     pub substitutions: Vec<SubstitutionRecord>,
     pub allows_extra_time: bool,
-    pub home_yellows: HashMap<String, u8>,
-    pub away_yellows: HashMap<String, u8>,
-    pub sent_off: HashSet<String>,
+    pub home_yellows: BTreeMap<String, u8>,
+    pub away_yellows: BTreeMap<String, u8>,
+    pub sent_off: BTreeSet<String>,
     /// Players hurt this match and still on the pitch: they take no further
     /// part, but unlike the sent-off they can be replaced.
     #[serde(default)]
-    pub injured: HashSet<String>,
+    pub injured: BTreeSet<String>,
     pub penalty_shootout: Option<PenaltyShootoutSnapshot>,
     /// The event protocol `events` follow (`report::EVENT_PROTOCOL_VERSION`).
     #[serde(default = "crate::report::first_event_protocol")]

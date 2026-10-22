@@ -825,7 +825,7 @@ mod tests {
     use domain::player::{Player, PlayerAttributes, Position};
     use domain::team::Team;
     use engine::{GoalDetail, MatchReport, Side, TeamStats};
-    use std::collections::HashMap;
+    use std::collections::BTreeMap;
 
     fn make_team(id: &str, name: &str) -> Team {
         Team::new(
@@ -934,7 +934,7 @@ mod tests {
             away_stats: TeamStats::default(),
             events: vec![],
             goals,
-            player_stats: HashMap::new(),
+            player_stats: BTreeMap::new(),
             home_possession: 50.0,
             total_minutes: 90,
             home_penalties: None,

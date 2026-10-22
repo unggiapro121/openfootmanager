@@ -16,7 +16,7 @@ use engine::report::{GoalDetail, MatchReport, PlayerMatchStats, TeamStats};
 use ofm_core::clock::GameClock;
 use ofm_core::game::Game;
 use ofm_core::turn;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 #[path = "turn_tests/coach_records.rs"]
 mod coach_records;
@@ -559,7 +559,7 @@ fn apply_match_report_updates_player_stats() {
 fn apply_match_report_gk_clean_sheet() {
     let mut game = make_game_with_match();
     // Home team wins 1-0, so home GK gets a clean sheet
-    let mut player_stats = HashMap::new();
+    let mut player_stats = BTreeMap::new();
     player_stats.insert(
         "t1_gk".to_string(),
         PlayerMatchStats {
@@ -583,7 +583,7 @@ fn apply_match_report_gk_clean_sheet() {
 #[test]
 fn apply_match_report_gk_no_clean_sheet_on_conceding() {
     let mut game = make_game_with_match();
-    let mut player_stats = HashMap::new();
+    let mut player_stats = BTreeMap::new();
     player_stats.insert(
         "t1_gk".to_string(),
         PlayerMatchStats {
@@ -796,7 +796,7 @@ fn apply_match_report_running_avg_rating() {
     let mut game = make_game_with_match();
 
     // First match: player gets 8.0 rating
-    let mut ps1 = HashMap::new();
+    let mut ps1 = BTreeMap::new();
     ps1.insert(
         "t1_mid0".to_string(),
         PlayerMatchStats {
@@ -819,7 +819,7 @@ fn apply_match_report_running_avg_rating() {
     game.league.as_mut().unwrap().fixtures[0].result = None;
 
     // Second match: player gets 6.0 rating
-    let mut ps2 = HashMap::new();
+    let mut ps2 = BTreeMap::new();
     ps2.insert(
         "t1_mid0".to_string(),
         PlayerMatchStats {
@@ -850,7 +850,7 @@ fn apply_match_report_running_avg_rating() {
 fn an_unrated_cameo_does_not_drag_down_the_average_rating() {
     let mut game = make_game_with_match();
     let rated_match = MatchReport {
-        player_stats: HashMap::from([(
+        player_stats: BTreeMap::from([(
             "t1_mid0".to_string(),
             PlayerMatchStats {
                 minutes_played: 90,
@@ -864,7 +864,7 @@ fn an_unrated_cameo_does_not_drag_down_the_average_rating() {
     game.league.as_mut().unwrap().fixtures[0].status = FixtureStatus::Scheduled;
     game.league.as_mut().unwrap().fixtures[0].result = None;
     let cameo = MatchReport {
-        player_stats: HashMap::from([(
+        player_stats: BTreeMap::from([(
             "t1_mid0".to_string(),
             PlayerMatchStats {
                 minutes_played: 5,
@@ -895,7 +895,7 @@ fn an_unrated_cameo_is_not_punished_as_a_poor_performance() {
     let morale_after = |rating: f32| {
         let mut game = make_game_with_match();
         let report = MatchReport {
-            player_stats: HashMap::from([(
+            player_stats: BTreeMap::from([(
                 "t1_mid0".to_string(),
                 PlayerMatchStats {
                     minutes_played: 5,
@@ -919,7 +919,7 @@ fn an_unrated_cameo_is_not_punished_as_a_poor_performance() {
 #[test]
 fn apply_match_report_yellow_and_red_cards() {
     let mut game = make_game_with_match();
-    let mut player_stats = HashMap::new();
+    let mut player_stats = BTreeMap::new();
     player_stats.insert(
         "t1_mid0".to_string(),
         PlayerMatchStats {
@@ -1051,7 +1051,7 @@ fn apply_match_report_morale_drop_from_red_card() {
     for p in &mut game.players {
         p.morale = 70;
     }
-    let mut player_stats = HashMap::new();
+    let mut player_stats = BTreeMap::new();
     player_stats.insert(
         "t1_mid0".to_string(),
         PlayerMatchStats {

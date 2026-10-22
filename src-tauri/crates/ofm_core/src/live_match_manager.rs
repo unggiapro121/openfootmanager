@@ -46,27 +46,11 @@ const LIVE_MATCH_FIXTURE_NOT_SCHEDULED_ERROR: &str = "be.error.liveMatch.fixture
 /// the engine, which has no way to resolve a pass, a shot or a goalkeeper.
 const LIVE_MATCH_EMPTY_SQUAD_ERROR: &str = "be.error.liveMatch.emptySquad";
 
-/// The match config the real-world probes play, when one sets it (phase 2,
-/// GĐ5 P5.0, X82): calibration knobs from `OFM_KNOBS`. The game never sets
-/// it, so every match it plays uses `MatchConfig::default()`.
-static PROBE_MATCH_CONFIG: std::sync::RwLock<Option<MatchConfig>> = std::sync::RwLock::new(None);
-
-/// Set (or clear) the match config every match of this process plays. For
-/// the real-world probes only.
-pub fn set_probe_match_config(config: Option<MatchConfig>) {
-    if let Ok(mut slot) = PROBE_MATCH_CONFIG.write() {
-        *slot = config;
-    }
-}
-
-/// The match config a match plays: the probe's if one was set, else the
-/// game's default.
-fn match_config() -> MatchConfig {
-    PROBE_MATCH_CONFIG
-        .read()
-        .ok()
-        .and_then(|slot| slot.clone())
-        .unwrap_or_default()
+/// The match config `game`'s matches play: the one a real-world probe set on it (phase 2, GĐ5
+/// P5.0, X82: calibration knobs from `OFM_KNOBS`), else the game's default. It belongs to the
+/// game, not to the process, so a server running many matches never shares one (phase 3, E3-1).
+fn match_config_of(game: &Game) -> MatchConfig {
+    game.match_config_override.clone().unwrap_or_default()
 }
 
 fn resolve_match_role_assignment(
@@ -534,7 +518,7 @@ pub fn create_live_match(
         return Err(LIVE_MATCH_EMPTY_SQUAD_ERROR.to_string());
     }
 
-    let config = match_config();
+    let config = match_config_of(game);
 
     let mut match_state = LiveMatchState::new(
         home_xi,
@@ -743,7 +727,7 @@ fn derive_personality(rep: u32, manager: Option<&Manager>) -> AiPersonality {
 
 #[cfg(test)]
 mod tests {
-    use super::{MatchMode, create_live_match, match_config};
+    use super::{MatchMode, create_live_match, match_config_of};
     use crate::clock::GameClock;
     use crate::game::Game;
     use chrono::{TimeZone, Utc};
@@ -779,18 +763,48 @@ mod tests {
         assert_eq!(error, "be.error.liveMatch.fixtureNotScheduled");
     }
 
-    /// Given no probe has set a match config,
+    fn bare_game() -> Game {
+        let clock = GameClock::new(Utc.with_ymd_and_hms(2025, 6, 15, 12, 0, 0).unwrap());
+        let manager = Manager::new(
+            "manager".to_string(),
+            "Test".to_string(),
+            "Manager".to_string(),
+            "1980-01-01".to_string(),
+            "England".to_string(),
+        );
+        Game::new(clock, manager, vec![], vec![], vec![], vec![])
+    }
+
+    /// Given a game nobody has set a match config on,
     /// when a match's config is read,
     /// then it is the game's default: every calibration knob at its tuned
     /// constant, whatever `OFM_KNOBS` says (GĐ5 X82).
     #[test]
-    fn a_match_plays_the_default_config_unless_a_probe_sets_one() {
-        let config = match_config();
+    fn a_match_plays_the_default_config_unless_its_game_sets_one() {
+        let config = match_config_of(&bare_game());
         let default = engine::MatchConfig::default();
         assert_eq!(config.knobs, engine::CalibrationKnobs::default());
         assert_eq!(
             serde_json::to_value(&config).expect("config serializes"),
             serde_json::to_value(&default).expect("config serializes")
+        );
+    }
+
+    /// Given a game a probe has set a match config on,
+    /// when a match's config is read for it and for another game,
+    /// then the first plays the probe's config and the second the default:
+    /// the config belongs to the game, not to the process (phase 3, E3-1).
+    #[test]
+    fn a_match_config_set_on_one_game_stays_with_that_game() {
+        let mut probed = bare_game();
+        probed.match_config_override = Some(engine::MatchConfig {
+            home_advantage: 1.25,
+            ..engine::MatchConfig::default()
+        });
+        assert_eq!(match_config_of(&probed).home_advantage, 1.25);
+        assert_eq!(
+            match_config_of(&bare_game()).home_advantage,
+            engine::MatchConfig::default().home_advantage
         );
     }
 }

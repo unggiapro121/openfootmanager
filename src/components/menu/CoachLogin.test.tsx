@@ -86,6 +86,7 @@ const existingAccount = {
 
 function mockAccounts(accounts: unknown[]) {
   mockedInvoke.mockImplementation(async (command: string, args?: unknown) => {
+    if (command === "get_coach_account_mode") return "local";
     if (command === "list_coach_accounts") return accounts;
     if (command === "create_coach_account") {
       const { identity } = args as { identity: Record<string, string> };

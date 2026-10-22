@@ -9,7 +9,7 @@ explained in `docs/` is linked from here, never restated, so the two cannot drif
 
 ## What this project is
 
-A desktop football management simulation: **Tauri v2** shell, **Rust** backend (4 library crates
+A desktop football management simulation: **Tauri v2** shell, **Rust** backend (5 library crates
 plus a CLI), **React 19 + TypeScript + Tailwind v4** frontend. GPLv3.
 
 Read [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) before your first non-trivial change.
@@ -165,11 +165,12 @@ frontend files 500).
   naming the scenario. Review (`ofm-test-reviewer`).
 
 ### Layering and dependency direction
-- Rust crate graph, all dependency kinds: `engine: []`, `domain: []`, `ofm_core: [domain, engine]`,
-  `db: [domain, ofm_core]`, `ofm-cli: [ofm_core]`, `sim-bench: [engine]` (dev-only `domain`, `ofm_core`:
-  the builder's tests rate synthetic players with the game's own OVR tables), root app composes all.
-  New workspace member must be classified. test for leaf isolation today
-  (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
+- Rust crate graph, all dependency kinds: `engine: []`, `domain: []`, `ofm-rules: [domain]`,
+  `ofm_core: [domain, engine, ofm-rules]`, `db: [domain, ofm_core]`, `ofm-cli: [ofm_core]`,
+  `sim-bench: [engine]` (dev-only `domain`, `ofm_core`: the builder's tests rate synthetic players
+  with the game's own OVR tables), root app composes all.
+  New workspace member must be classified. test for the core crates' allowed deps and for no
+  platform crate in them (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
 - `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only under
   `ofm_core/src/turn/`, except for synthetic inputs in `src-tauri/crates/sim-bench/src/builder.rs`
   and `src-tauri/src/commands/sim_lab.rs` because they need synthetic teams, not a game.

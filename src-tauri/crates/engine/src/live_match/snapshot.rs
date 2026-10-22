@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use super::{LiveMatchState, MatchPhase, MatchSnapshot, PenaltyShootoutSnapshot};
 
@@ -38,8 +38,8 @@ impl LiveMatchState {
         };
 
         // Separate yellows by side
-        let mut home_yellows = HashMap::new();
-        let mut away_yellows = HashMap::new();
+        let mut home_yellows = BTreeMap::new();
+        let mut away_yellows = BTreeMap::new();
         for (pid, count) in &self.yellows {
             if self.home.players.iter().any(|p| p.id == *pid) {
                 home_yellows.insert(pid.clone(), *count);
@@ -101,8 +101,8 @@ impl LiveMatchState {
             allows_extra_time: self.allows_extra_time,
             home_yellows,
             away_yellows,
-            sent_off: self.sent_off.clone(),
-            injured: self.injured.clone(),
+            sent_off: self.sent_off.iter().cloned().collect(),
+            injured: self.injured.iter().cloned().collect(),
             penalty_shootout,
             protocol_version: crate::report::EVENT_PROTOCOL_VERSION,
         }

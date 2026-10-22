@@ -131,7 +131,7 @@ A player whose `ovr` has reached his `potential` gains nothing.
 `playing_time` says whether a player is getting games; `match_form` says what he is doing with
 them. Each player carries `match_form`, a moving average of his match ratings in tenths of a point
 (60 = 6.0, an ordinary game — ratings centre on 6.0, see `docs/MATCH_SIMULATION.md`), kept by
-`ofm_core/src/match_form.rs`:
+`ofm-rules/src/match_form.rs`:
 
 ```
 after each match in which the engine rated him (unrated cameos leave it alone):
@@ -155,7 +155,7 @@ profile shows it as "Recent Form".
 ### Playing Time Factor
 
 Training builds a player; matches finish the job. Each player carries `playing_time` (0–100), his
-recent share of his club's minutes, kept by `ofm_core/src/playing_time.rs`:
+recent share of his club's minutes, kept by `ofm-rules/src/playing_time.rs`:
 
 ```
 after each of his club's matches (every player on the club's books, used or not):

@@ -27,9 +27,15 @@ pub fn injury_fitness_multiplier(fitness: u8) -> f64 {
     }
 }
 
+/// The version of the match rules, as the online server pins it per season (phase 3, Z1: the fork
+/// tags `engine-v<this>`). It is the engine crate's own version, and
+/// `tests/golden_tests.rs::engine_version_moves_with_the_golden_tables` fails until it is bumped
+/// whenever a change moves a pinned golden match.
+pub const ENGINE_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub use duel::aerial_rating_of;
 pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind, TacticalContext};
-pub use headless::{simulate, simulate_with_rng};
+pub use headless::simulate_with_rng;
 pub use knobs::{CalibrationKnobs, apply_knob_file};
 pub use legacy_blend::{legacy_dribbling, legacy_passing};
 pub use live_match::shot_weight;

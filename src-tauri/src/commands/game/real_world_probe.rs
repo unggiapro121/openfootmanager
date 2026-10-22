@@ -404,16 +404,17 @@ fn europe_scope() -> bool {
     std::env::var("OFM_PROBE_SCOPE").as_deref() == Ok("europe")
 }
 
-/// Calibration knobs from `OFM_KNOBS`, for every match this process plays
-/// (phase 2, GĐ5 P5.0, X82). The game never reads the variable.
-fn apply_knobs_from_env() {
-    if let Ok(path) = std::env::var("OFM_KNOBS") {
-        let json = std::fs::read_to_string(&path).expect("OFM_KNOBS names a readable file");
-        let mut config = engine::MatchConfig::default();
-        engine::apply_knob_file(&mut config, &json).expect("a valid knob file");
-        ofm_core::live_match_manager::set_probe_match_config(Some(config));
-        println!("  knobs from {path}");
-    }
+/// Calibration knobs from `OFM_KNOBS`, for every game this probe builds (phase 2, GĐ5 P5.0,
+/// X82). The game never reads the variable. Set on each game rather than on the process, so
+/// probes running side by side in one test binary cannot leak knobs into each other (phase 3,
+/// E3-1).
+fn knobs_from_env() -> Option<engine::MatchConfig> {
+    let path = std::env::var("OFM_KNOBS").ok()?;
+    let json = std::fs::read_to_string(&path).expect("OFM_KNOBS names a readable file");
+    let mut config = engine::MatchConfig::default();
+    engine::apply_knob_file(&mut config, &json).expect("a valid knob file");
+    println!("  knobs from {path}");
+    Some(config)
 }
 
 fn build_game(package: &Path, seed: u64) -> Game {
@@ -1308,7 +1309,7 @@ fn real_world_match_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
-    apply_knobs_from_env();
+    let knobs = knobs_from_env();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     // A world's league season takes seconds, so this one plays more of them.
     let run_count = env_or("OFM_MATCH_PROBE_RUNS", 10_u64).max(1);
@@ -1316,7 +1317,8 @@ fn real_world_match_probe() {
     let mut shares = MatchShares::default();
     let mut players = PlayerShares::default();
     for seed in first_seed..first_seed + run_count {
-        let game = build_game(Path::new(&package), seed);
+        let mut game = build_game(Path::new(&package), seed);
+        game.match_config_override = knobs.clone();
         if seed == first_seed {
             if let Some(league) = &game.league {
                 println!(
@@ -1551,7 +1553,7 @@ fn real_world_probe() {
         eprintln!("OFM_REAL_WORLD_PACKAGE is not set; nothing to probe.");
         return;
     };
-    apply_knobs_from_env();
+    let knobs = knobs_from_env();
     let first_seed = env_or("OFM_PROBE_SEED", 20_260_601_u64);
     let run_count = env_or("OFM_PROBE_RUNS", 3_u64).max(1);
     let days = env_or("OFM_PROBE_DAYS", 150_u32);
@@ -1568,6 +1570,7 @@ fn real_world_probe() {
     let mut values: BTreeMap<String, (f64, f64, u32)> = BTreeMap::new();
     for &seed in &seeds {
         let mut game = build_game(Path::new(&package), seed);
+        game.match_config_override = knobs.clone();
         let opening = game.clock.current_date.format("%Y-%m-%d").to_string();
         let opening_strength = strengths(&game);
         let opening_values: std::collections::HashMap<String, u64> = game

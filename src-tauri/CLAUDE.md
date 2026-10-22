@@ -1,6 +1,6 @@
 # Backend guidance — `src-tauri/`
 
-Rust: four library crates, a CLI, a benchmark harness, and the Tauri command layer.
+Rust: five library crates, a CLI, a benchmark harness, and the Tauri command layer.
 Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
 [`../docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) for the full picture.
 
@@ -13,7 +13,8 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
                    → domain, engine, ofm_core, db
 
   db               SQLite persistence        → domain, ofm_core
-  ofm_core         game logic, state, turn   → domain, engine
+  ofm_core         game logic, state, turn   → domain, engine, ofm-rules
+  ofm-rules        pure shared rules         → domain
   engine           match simulation          → nothing in this workspace
   domain           pure data types           → nothing in this workspace
 
@@ -27,16 +28,22 @@ Read [`../CLAUDE.md`](../CLAUDE.md) first for the project-wide rules, and
   mirror types (`PlayerData`, `TeamData`, `Position`, `PlayStyle`) so it can be tested with
   synthetic data and evolved independently. `ofm_core/turn/` performs the conversion, and it is
   the *only* place that conversion is allowed to live.
-- **`ofm_core`** — game logic and the `StateManager`. Depends on `domain` and `engine`.
+- **`ofm-rules`** — the pure rules the online server (phase 3) runs exactly as the game does:
+  ratings, wear, form, playing time, facilities, coach progress and mastery XP. Depends only on
+  `domain`; no `Game`, calendar, I/O, wall clock or unseeded randomness (its `clippy.toml`).
+  `ofm_core` re-exports each module under its old path, so `crate::player_rating` still works.
+- **`ofm_core`** — game logic and the `StateManager`. Depends on `domain`, `engine` and
+  `ofm-rules`.
 - **`db`** — SQLite persistence. Depends on `domain` **and `ofm_core`** — this is the approved
   dependency direction to protect, not an edge to remove in a cleanup.
 
 > This section used to say `ofm_core` depends on `db`, and drew `engine` sitting on `domain`. Both
 > were wrong, and survived because the only thing checking the crate graph was a reviewer reading
-> this file. `src-tauri/tests/architecture.rs` now asserts the two leaf boundaries mechanically:
-> `engine` and `domain` declare no workspace dependency of any kind, so the edge that matters most
-> can no longer be added quietly. That is the whole of what the test defends — every other edge
-> above is still prose, and an edit that misstates `db → ofm_core` will fail nothing.
+> this file. `src-tauri/tests/architecture.rs` now asserts the core boundaries mechanically:
+> `engine` and `domain` declare no workspace dependency of any kind, `ofm-rules` only `domain`, and
+> none of the three a platform crate, so the edge that matters most can no longer be added quietly.
+> That is the whole of what the test defends — every other edge above is still prose, and an edit
+> that misstates `db → ofm_core` will fail nothing.
 
 Adding `domain = { path = "../domain" }` to `crates/engine/Cargo.toml` "to avoid duplication"
 looks like a cleanup and is actually the single most damaging change you can make to this

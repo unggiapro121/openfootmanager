@@ -9,7 +9,7 @@
 /// For each row (slot), the column (player) it takes, maximising the summed
 /// `weights[row][column]`. Every row gets a distinct column; needs at least as
 /// many columns as rows, and returns an empty assignment otherwise.
-pub(crate) fn best_assignment(weights: &[Vec<f64>]) -> Vec<usize> {
+pub fn best_assignment(weights: &[Vec<f64>]) -> Vec<usize> {
     let rows = weights.len();
     let columns = weights.first().map_or(0, Vec::len);
     if rows == 0 || columns < rows || weights.iter().any(|row| row.len() != columns) {

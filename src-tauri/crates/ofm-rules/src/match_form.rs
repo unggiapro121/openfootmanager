@@ -26,7 +26,7 @@ const FASTEST_FORM_FACTOR: f64 = 1.3;
 
 /// Fold one rated match into a player's form. A rating of 0.0 means he was not
 /// rated (too few minutes) and leaves his form alone.
-pub(crate) fn record_rated_match(player: &mut Player, rating: f32) {
+pub fn record_rated_match(player: &mut Player, rating: f32) {
     if rating <= 0.0 {
         return;
     }
@@ -38,7 +38,7 @@ pub(crate) fn record_rated_match(player: &mut Player, rating: f32) {
 
 /// The multiplier form puts on a player's training gains: 1.0 in ordinary form,
 /// down to 0.9 in a poor run and up to 1.3 in excellent form.
-pub(crate) fn development_factor(match_form: u8) -> f64 {
+pub fn development_factor(match_form: u8) -> f64 {
     let points_from_ordinary = (f64::from(match_form) - ORDINARY_FORM) / 10.0;
     (1.0 + DEVELOPMENT_PER_POINT_OF_FORM * points_from_ordinary)
         .clamp(SLOWEST_FORM_FACTOR, FASTEST_FORM_FACTOR)

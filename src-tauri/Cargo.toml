@@ -16,7 +16,7 @@ name = "openfootmanager_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [workspace]
-members = ["crates/ofm_core", "crates/db", "crates/domain", "crates/engine", "crates/sim-bench", "crates/ofm-cli"]
+members = ["crates/ofm_core", "crates/ofm-rules", "crates/db", "crates/domain", "crates/engine", "crates/sim-bench", "crates/ofm-cli"]
 
 # Lint levels live here so a plain `cargo clippy` applies the levels CI enforces, instead of only
 # doing so when someone remembers to append `-- -D warnings`. Every member opts in with
@@ -87,6 +87,8 @@ csv = "1"
 # will hand to someone else — so it uses the same writer.
 zip = { version = "2", features = ["deflate"] }
 tempfile = "3"
+ureq = "3"
+keyring = { version = "3", features = ["apple-native", "windows-native", "linux-native"] }
 
 # Dev builds (`tauri dev`) otherwise run the whole simulation unoptimized, which
 # is the dominant cause of the in-app sluggishness. Lightly optimizing our own

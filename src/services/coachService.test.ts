@@ -6,11 +6,19 @@ import {
   createCoachAccount,
   deleteCoachAccount,
   getActiveCoachAccount,
+  getCoachAccountMode,
   getCoachProgress,
   listCoachAccounts,
   loginCoachAccount,
+  loginCoachWithEmail,
   logoutCoachAccount,
+  registerCoachAccount,
+  requestCoachPasswordReset,
+  resendCoachVerification,
+  resetCoachPassword,
+  resumeCoachSession,
   updateCoachAccount,
+  verifyCoachEmail,
   type CoachIdentity,
 } from "./coachService";
 
@@ -90,5 +98,44 @@ describe("coachService", () => {
     await claimSaveForCoach("save-1");
 
     expect(mockedInvoke).toHaveBeenCalledWith("claim_save_for_coach", { saveId: "save-1" });
+  });
+
+  // Given the game starts, when the login screen opens, then it asks where the accounts live.
+  it("reads the account mode", async () => {
+    mockedInvoke.mockResolvedValueOnce("server");
+
+    await expect(getCoachAccountMode()).resolves.toBe("server");
+    expect(mockedInvoke).toHaveBeenCalledWith("get_coach_account_mode");
+  });
+
+  // Given the registration form, when it is sent, then the backend gets email, password and identity as one object.
+  it("registers an account on the server", async () => {
+    mockedInvoke.mockResolvedValueOnce(undefined);
+    const registration = { email: "coach@example.test", password: "mot mat khau dai", identity };
+
+    await registerCoachAccount(registration);
+
+    expect(mockedInvoke).toHaveBeenCalledWith("register_coach_account", { registration });
+  });
+
+  // Given the server flows, when each is used, then the backend gets its command and arguments.
+  it("sends codes, logins and password resets to the backend", async () => {
+    mockedInvoke.mockResolvedValue(undefined);
+
+    await verifyCoachEmail("ABC123");
+    await resendCoachVerification("coach@example.test");
+    await loginCoachWithEmail("coach@example.test", "mot mat khau dai");
+    await resumeCoachSession();
+    await requestCoachPasswordReset("coach@example.test");
+    await resetCoachPassword("XYZ789", "mot mat khau moi");
+
+    expect(mockedInvoke.mock.calls).toEqual([
+      ["verify_coach_email", { code: "ABC123" }],
+      ["resend_coach_verification", { email: "coach@example.test" }],
+      ["login_coach_with_email", { email: "coach@example.test", password: "mot mat khau dai" }],
+      ["resume_coach_session"],
+      ["request_coach_password_reset", { email: "coach@example.test" }],
+      ["reset_coach_password", { code: "XYZ789", newPassword: "mot mat khau moi" }],
+    ]);
   });
 });

@@ -102,6 +102,12 @@ pub struct CalibrationKnobs {
     /// `shared.rs::tactics_defensive_conversion_mod`): high and very low.
     pub conversion_high_line: f64,
     pub conversion_very_low_line: f64,
+    /// The play-style mastery curve, `k = base + mastery / span`
+    /// (`shared.rs::coached_modifier`). Part of the engine version the online
+    /// server pins, and free to differ between offline and online (phase 3,
+    /// E3-1).
+    pub mastery_k_base: f64,
+    pub mastery_k_span: f64,
 }
 
 impl Default for CalibrationKnobs {
@@ -157,6 +163,8 @@ impl Default for CalibrationKnobs {
             // 0.85 until GĐ5 P5.7: the dial sat 5.1 points above the
             // default (4,000 matches); 0.88 puts it near 3.6.
             conversion_very_low_line: 0.88,
+            mastery_k_base: crate::shared::MASTERY_K_BASE,
+            mastery_k_span: crate::shared::MASTERY_K_SPAN,
         }
     }
 }
@@ -250,6 +258,22 @@ mod tests {
             config.knobs.wall_block,
             CalibrationKnobs::default().wall_block
         );
+    }
+
+    /// Given a knob file naming the mastery curve's two constants,
+    /// when it is applied,
+    /// then the curve takes them, so offline and online can coach a style
+    /// differently without a rebuild (phase 3, E3-1).
+    #[test]
+    fn a_knob_file_can_reshape_the_mastery_curve() {
+        let mut config = MatchConfig::default();
+        apply_knob_file(
+            &mut config,
+            r#"{"mastery_k_base": 0.3, "mastery_k_span": 200.0}"#,
+        )
+        .expect("a valid file");
+        assert_eq!(config.knobs.mastery_k_base, 0.3);
+        assert_eq!(config.knobs.mastery_k_span, 200.0);
     }
 
     /// Given a knob file with a misspelt knob,
