@@ -8,19 +8,20 @@ use crate::player_rating::{effective_rating_for_assignment, formation_slots};
 pub use crate::turn::squad::auto_select_set_pieces;
 use crate::turn::squad::{build_team_with_bench, domain_to_engine_role};
 
-use rand_chacha::ChaCha12Rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
 use crate::game::Game;
+use crate::match_session::{
+    Controller, InputSource, MatchSeed, MatchSession, MatchSetup, StepRecord,
+};
 
 use domain::league::{FixtureStatus, StandingEntry};
 use domain::manager::Manager;
 use domain::team::MatchRoles;
-use engine::ai::{self, AiPersonality, AiProfile};
+use engine::ai::{AiPersonality, AiProfile};
 use engine::{
-    LiveMatchState, MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot,
-    MinuteResult, Side,
+    MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot, MinuteResult, Side, TeamData,
 };
 
 const LIVE_MATCH_NO_LEAGUE_ERROR: &str = "be.error.liveMatch.noLeague";
@@ -68,7 +69,7 @@ fn resolve_match_role_assignment(
 }
 
 fn apply_saved_match_roles(
-    match_state: &mut LiveMatchState,
+    session: &mut MatchSession,
     side: Side,
     match_roles: &MatchRoles,
     starter_ids: &[String],
@@ -81,31 +82,33 @@ fn apply_saved_match_roles(
 ) {
     let starter_id_set = starter_ids.iter().cloned().collect::<HashSet<_>>();
     let (auto_captain, auto_penalty, auto_free_kick, auto_corner) = auto_selection;
-
-    if let Some(player_id) =
-        resolve_match_role_assignment(&match_roles.captain, &starter_id_set, auto_captain)
-    {
-        let _ = match_state.apply_command(MatchCommand::SetCaptain { side, player_id });
-    }
-
-    if let Some(player_id) =
-        resolve_match_role_assignment(&match_roles.penalty_taker, &starter_id_set, auto_penalty)
-    {
-        let _ = match_state.apply_command(MatchCommand::SetPenaltyTaker { side, player_id });
-    }
-
-    if let Some(player_id) = resolve_match_role_assignment(
-        &match_roles.free_kick_taker,
-        &starter_id_set,
-        auto_free_kick,
-    ) {
-        let _ = match_state.apply_command(MatchCommand::SetFreeKickTaker { side, player_id });
-    }
-
-    if let Some(player_id) =
-        resolve_match_role_assignment(&match_roles.corner_taker, &starter_id_set, auto_corner)
-    {
-        let _ = match_state.apply_command(MatchCommand::SetCornerTaker { side, player_id });
+    type Duty = fn(Side, String) -> MatchCommand;
+    let duties: [(&Option<String>, Option<String>, Duty); 4] = [
+        (&match_roles.captain, auto_captain, |side, player_id| {
+            MatchCommand::SetCaptain { side, player_id }
+        }),
+        (
+            &match_roles.penalty_taker,
+            auto_penalty,
+            |side, player_id| MatchCommand::SetPenaltyTaker { side, player_id },
+        ),
+        (
+            &match_roles.free_kick_taker,
+            auto_free_kick,
+            |side, player_id| MatchCommand::SetFreeKickTaker { side, player_id },
+        ),
+        (&match_roles.corner_taker, auto_corner, |side, player_id| {
+            MatchCommand::SetCornerTaker { side, player_id }
+        }),
+    ];
+    for (saved, auto, duty) in duties {
+        let Some(player_id) = resolve_match_role_assignment(saved, &starter_id_set, auto) else {
+            continue;
+        };
+        let command = duty(side, player_id);
+        // Every name here is a starter, so the check takes it; one it refused would leave the
+        // duty to the engine's own choice, as an unset one always has.
+        if let Err(_refused) = session.command(side, InputSource::System, command) {}
     }
 }
 
@@ -124,12 +127,13 @@ pub enum MatchMode {
 }
 
 // ---------------------------------------------------------------------------
-// LiveMatchSession — wraps LiveMatchState + metadata for Tauri layer
+// LiveMatchSession — the shared match session + the game's metadata for the Tauri layer
 // ---------------------------------------------------------------------------
 
+/// A fixture of the game being played: the shared [`MatchSession`] (generators, controllers,
+/// command check, input log, phase 3 E3-3) and what the game needs to file the result.
 pub struct LiveMatchSession {
-    pub match_state: LiveMatchState,
-    pub rng: ChaCha12Rng,
+    pub session: MatchSession,
     pub mode: MatchMode,
     /// Index into the fixtures of the competition identified by
     /// `competition_id` — NOT necessarily into `game.league`, which
@@ -158,22 +162,12 @@ pub struct LiveMatchSession {
     pub league_round_context: Option<(u32, Vec<StandingEntry>)>,
     pub home_team_id: String,
     pub away_team_id: String,
-    pub user_side: Option<Side>,
-    pub ai_home: AiProfile,
-    pub ai_away: AiProfile,
 }
 
 impl LiveMatchSession {
-    /// Step one minute and apply AI decisions for computer-controlled sides.
+    /// Step one minute; the AI then gives the commands of every side it holds.
     pub fn step(&mut self) -> MinuteResult {
-        let result = self.match_state.step_minute(&mut self.rng);
-
-        // Apply AI decisions for non-user sides (only during playing phases)
-        if !result.is_finished {
-            self.apply_ai_decisions();
-        }
-
-        result
+        self.session.step().result
     }
 
     /// Step multiple minutes at once (for fast-forward / instant sim).
@@ -191,14 +185,15 @@ impl LiveMatchSession {
         // Reserving for the request rather than for a plausible match would let `match_step(65535)`
         // allocate ~65k slots to return about 45.
         let mut results = Vec::with_capacity((count as usize).min(MAX_MATCH_MINUTES));
-        let starting_phase = self.match_state.phase();
+        let starting_phase = self.session.phase();
+        let user_side = self.user_side();
         for _ in 0..count {
             let result = self.step();
             let finished = result.is_finished;
             let needs_manager = result.phase != starting_phase && phase_needs_manager(result.phase);
             // One of the manager's own players hurt this minute: he chooses who
             // comes on, or plays on a man short.
-            let own_injury = self.user_side.is_some_and(|side| {
+            let own_injury = user_side.is_some_and(|side| {
                 result.events.iter().any(|event| {
                     event.event_type == engine::EventType::Injury && event.side == side
                 })
@@ -215,7 +210,7 @@ impl LiveMatchSession {
     pub fn run_to_completion(&mut self) -> Vec<MinuteResult> {
         let mut results = Vec::with_capacity(100);
         loop {
-            let result = self.step();
+            let StepRecord { result, .. } = self.session.step();
             let finished = result.is_finished;
             results.push(result);
             if finished {
@@ -226,40 +221,47 @@ impl LiveMatchSession {
     }
 
     pub fn snapshot(&self) -> MatchSnapshot {
-        self.match_state.snapshot()
+        self.session.snapshot()
     }
 
+    /// A command from the player (the screen or an MCP agent acting for him). It is given as the
+    /// manager of the side he holds, so the shared check refuses an order for the other side; with
+    /// no side of his (a match he only watches) it is given for the side it names.
     pub fn apply_command(&mut self, cmd: MatchCommand) -> Result<(), String> {
-        self.match_state.apply_command(cmd)
+        let issuer = self.user_side().unwrap_or_else(|| cmd.side());
+        self.session.command(issuer, InputSource::Manager, cmd)
     }
 
     pub fn is_finished(&self) -> bool {
-        self.match_state.is_finished()
+        self.session.is_finished()
+    }
+
+    pub fn phase(&self) -> MatchPhase {
+        self.session.phase()
+    }
+
+    /// The side the player holds, if any: the one a manager controls.
+    pub fn user_side(&self) -> Option<Side> {
+        [Side::Home, Side::Away]
+            .into_iter()
+            .find(|side| self.session.controller(*side) == Controller::Manager)
+    }
+
+    /// Hand both sides to the AI: a match the player no longer sits through.
+    pub fn hand_to_ai(&mut self) {
+        self.session.set_controller(Side::Home, Controller::Ai);
+        self.session.set_controller(Side::Away, Controller::Ai);
     }
 
     /// Whether the user managed this match themselves ("go to the field"):
     /// only such a match grows their play style mastery (phase 2 X106). One
     /// watched as a spectator, or handed to the assistant, does not.
     pub fn is_managed_by_user(&self) -> bool {
-        self.mode == MatchMode::Live && self.user_side.is_some()
+        self.mode == MatchMode::Live && self.user_side().is_some()
     }
 
-    fn apply_ai_decisions(&mut self) {
-        // AI for home team (if not user-controlled)
-        if self.user_side != Some(Side::Home) {
-            let cmds = ai::ai_decide(&self.match_state, Side::Home, &self.ai_home, &mut self.rng);
-            for cmd in cmds {
-                let _ = self.match_state.apply_command(cmd);
-            }
-        }
-
-        // AI for away team (if not user-controlled)
-        if self.user_side != Some(Side::Away) {
-            let cmds = ai::ai_decide(&self.match_state, Side::Away, &self.ai_away, &mut self.rng);
-            for cmd in cmds {
-                let _ = self.match_state.apply_command(cmd);
-            }
-        }
+    pub fn into_report(self) -> MatchReport {
+        self.session.into_report()
     }
 }
 
@@ -467,12 +469,34 @@ pub(crate) fn domain_play_style(play_style: engine::PlayStyle) -> domain::team::
     }
 }
 
-/// Create a live match session for a specific fixture.
+/// Create a live match session for a specific fixture, on today's seed for its two clubs.
 pub fn create_live_match(
     game: &Game,
     fixture_index: usize,
     mode: MatchMode,
     allows_extra_time: bool,
+) -> Result<LiveMatchSession, String> {
+    create_seeded_live_match(game, fixture_index, mode, allows_extra_time, None)
+}
+
+/// The seed of a match between two clubs on the game's day: the key of the generator the game
+/// has always drawn the match from, so the engine's stream (stream 0 of the key) reads as it did
+/// before the session split the AI off (phase 3, E3-3).
+fn match_seed_today(game: &Game, home_team_id: &str, away_team_id: &str) -> MatchSeed {
+    // The clubs tell this match from any other played today, as for a batch match.
+    MatchSeed(
+        game.rng_today(&format!("match/{home_team_id}/{away_team_id}"))
+            .get_seed(),
+    )
+}
+
+/// [`create_live_match`] on `seed`, or today's seed for the two clubs when `None`.
+fn create_seeded_live_match(
+    game: &Game,
+    fixture_index: usize,
+    mode: MatchMode,
+    allows_extra_time: bool,
+    seed: Option<MatchSeed>,
 ) -> Result<LiveMatchSession, String> {
     let league = game.league.as_ref().ok_or(LIVE_MATCH_NO_LEAGUE_ERROR)?;
     let fixture = league
@@ -489,100 +513,50 @@ pub fn create_live_match(
     // Build engine TeamData (starting XI = first 11 players by position)
     let (home_xi, home_bench) = build_team_with_bench(game, &home_team_id);
     let (away_xi, away_bench) = build_team_with_bench(game, &away_team_id);
-    let home_starter_ids = home_xi
-        .players
-        .iter()
-        .map(|player| player.id.clone())
-        .collect::<Vec<_>>();
-    let away_starter_ids = away_xi
-        .players
-        .iter()
-        .map(|player| player.id.clone())
-        .collect::<Vec<_>>();
-    let home_match_roles = game
-        .teams
-        .iter()
-        .find(|team| team.id == home_team_id)
-        .map(|team| team.match_roles.clone())
-        .unwrap_or_default();
-    let away_match_roles = game
-        .teams
-        .iter()
-        .find(|team| team.id == away_team_id)
-        .map(|team| team.match_roles.clone())
-        .unwrap_or_default();
-    let home_auto_selection = auto_select_set_pieces(game, &home_starter_ids);
-    let away_auto_selection = auto_select_set_pieces(game, &away_starter_ids);
-
     if home_xi.players.is_empty() || away_xi.players.is_empty() {
         return Err(LIVE_MATCH_EMPTY_SQUAD_ERROR.to_string());
     }
+    let home_starter_ids = starter_ids(&home_xi);
+    let away_starter_ids = starter_ids(&away_xi);
 
-    let config = match_config_of(game);
-
-    let mut match_state = LiveMatchState::new(
-        home_xi,
-        away_xi,
-        config,
+    // The player's club is held by its manager; every other side by the AI.
+    let controller_of = |team_id: &str| {
+        if game.manager.team_id.as_deref() == Some(team_id) {
+            Controller::Manager
+        } else {
+            Controller::Ai
+        }
+    };
+    let home_controller = controller_of(&home_team_id);
+    let away_controller = controller_of(&away_team_id);
+    let setup = MatchSetup {
+        seed: seed.unwrap_or_else(|| match_seed_today(game, &home_team_id, &away_team_id)),
+        ai_home: ai_profile_for(game, &home_team_id),
+        ai_away: ai_profile_for(game, &away_team_id),
+        home: home_xi,
+        away: away_xi,
         home_bench,
         away_bench,
+        config: match_config_of(game),
         allows_extra_time,
-    );
-    apply_saved_match_roles(
-        &mut match_state,
-        Side::Home,
-        &home_match_roles,
-        &home_starter_ids,
-        home_auto_selection,
-    );
-    apply_saved_match_roles(
-        &mut match_state,
-        Side::Away,
-        &away_match_roles,
-        &away_starter_ids,
-        away_auto_selection,
-    );
-
-    // Determine user side
-    let user_side = game.manager.team_id.as_ref().and_then(|tid| {
-        if *tid == home_team_id {
-            Some(Side::Home)
-        } else if *tid == away_team_id {
-            Some(Side::Away)
-        } else {
-            None
-        }
-    });
-
-    // Build AI profiles from team reputation
-    let home_rep = game
-        .teams
-        .iter()
-        .find(|t| t.id == home_team_id)
-        .map(|t| t.reputation)
-        .unwrap_or(500);
-    let away_rep = game
-        .teams
-        .iter()
-        .find(|t| t.id == away_team_id)
-        .map(|t| t.reputation)
-        .unwrap_or(500);
-
-    let ai_home = AiProfile {
-        reputation: home_rep,
-        experience: (home_rep / 10).min(100) as u8,
-        personality: derive_personality(home_rep, manager_for_team(game, &home_team_id)),
     };
-    let ai_away = AiProfile {
-        reputation: away_rep,
-        experience: (away_rep / 10).min(100) as u8,
-        personality: derive_personality(away_rep, manager_for_team(game, &away_team_id)),
-    };
+    let mut session = MatchSession::new(setup, home_controller, away_controller);
+    for (side, team_id, starters) in [
+        (Side::Home, &home_team_id, &home_starter_ids),
+        (Side::Away, &away_team_id, &away_starter_ids),
+    ] {
+        let match_roles = game
+            .teams
+            .iter()
+            .find(|team| team.id == *team_id)
+            .map(|team| team.match_roles.clone())
+            .unwrap_or_default();
+        let auto_selection = auto_select_set_pieces(game, starters);
+        apply_saved_match_roles(&mut session, side, &match_roles, starters, auto_selection);
+    }
 
     Ok(LiveMatchSession {
-        match_state,
-        // The clubs tell this match from any other played today, as for a batch match.
-        rng: game.rng_today(&format!("match/{home_team_id}/{away_team_id}")),
+        session,
         mode,
         fixture_index,
         fixture_id: fixture.id.clone(),
@@ -592,10 +566,29 @@ pub fn create_live_match(
         league_round_context: crate::matchday::user_league_round_context(game),
         home_team_id,
         away_team_id,
-        user_side,
-        ai_home,
-        ai_away,
     })
+}
+
+fn starter_ids(team: &TeamData) -> Vec<String> {
+    team.players
+        .iter()
+        .map(|player| player.id.clone())
+        .collect()
+}
+
+/// How a club's AI manages a match, from its reputation and its manager's record.
+fn ai_profile_for(game: &Game, team_id: &str) -> AiProfile {
+    let reputation = game
+        .teams
+        .iter()
+        .find(|team| team.id == team_id)
+        .map(|team| team.reputation)
+        .unwrap_or(500);
+    AiProfile {
+        reputation,
+        experience: (reputation / 10).min(100) as u8,
+        personality: derive_personality(reputation, manager_for_team(game, team_id)),
+    }
 }
 
 /// What a fixture nobody watched produced, with the two clubs it belongs to so
@@ -633,14 +626,14 @@ pub fn play_unwatched_fixture(
     let allows_extra_time = crate::matchday::fixture_allows_extra_time(game, fixture_index);
     let mut session =
         kick_off_live_match(game, fixture_index, MatchMode::Instant, allows_extra_time)?;
-    session.user_side = None;
+    session.hand_to_ai();
     let league_round_context = session.league_round_context.clone();
     session.run_to_completion();
 
     Ok(UnwatchedFixture {
         home_team_id: session.home_team_id.clone(),
         away_team_id: session.away_team_id.clone(),
-        report: session.match_state.into_report(),
+        report: session.into_report(),
         league_round_context,
     })
 }
@@ -659,29 +652,40 @@ pub(crate) fn play_past_fixture(
     fixture_index: usize,
 ) -> Result<UnwatchedFixture, String> {
     let allows_extra_time = crate::matchday::fixture_allows_extra_time(game, fixture_index);
-    let mut session =
-        create_live_match(game, fixture_index, MatchMode::Instant, allows_extra_time)?;
-    session.user_side = None;
-    let date = game
+    let (home_team_id, away_team_id, date) = game
         .league
         .as_ref()
         .and_then(|league| league.fixtures.get(fixture_index))
-        .map(|fixture| fixture.date.clone())
+        .map(|fixture| {
+            (
+                fixture.home_team_id.clone(),
+                fixture.away_team_id.clone(),
+                fixture.date.clone(),
+            )
+        })
         .unwrap_or_default();
-    session.rng = game.rng_for(
-        &format!(
-            "season-replay/match/{}/{}",
-            session.home_team_id, session.away_team_id
-        ),
-        &date,
+    let seed = MatchSeed(
+        game.rng_for(
+            &format!("season-replay/match/{home_team_id}/{away_team_id}"),
+            &date,
+        )
+        .get_seed(),
     );
+    let mut session = create_seeded_live_match(
+        game,
+        fixture_index,
+        MatchMode::Instant,
+        allows_extra_time,
+        Some(seed),
+    )?;
+    session.hand_to_ai();
     let league_round_context = session.league_round_context.clone();
     session.run_to_completion();
 
     Ok(UnwatchedFixture {
         home_team_id: session.home_team_id.clone(),
         away_team_id: session.away_team_id.clone(),
-        report: session.match_state.into_report(),
+        report: session.into_report(),
         league_round_context,
     })
 }

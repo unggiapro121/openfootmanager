@@ -7,11 +7,15 @@ description = "Pure game rules shared by the OpenFoot Manager game and its onlin
 
 [dependencies]
 domain = { version = "0.3.0", path = "../domain" }
+# The match session (E3-3) drives the engine; the engine still knows nothing of `domain`.
+engine = { version = "0.4.0", path = "../engine" }
 rand = "0.10"
 # Named, not `rand::rngs::StdRng`: rand reserves the right to change what StdRng is, and a rule
 # keyed on an id must give the same answer after a dependency bump.
 rand_chacha = "0.10"
 serde = { version = "1.0.228", features = ["derive"] }
+# The minute hash is taken over a canonical serialisation of each step's summary.
+serde_json = "1.0"
 
 [lints]
 workspace = true

@@ -75,7 +75,8 @@ ever gains one outside its allowed list, or any platform crate (Tauri, SQLite, a
                           → domain, engine, ofm-rules
 
   ofm-rules               pure rules the online server shares (ratings, wear, form,
-                          coach progress, facilities)  → domain
+                          coach progress, facilities, the match session)
+                          → domain, engine
   engine                  match simulation          → nothing in this workspace
   domain                  pure data types           → nothing in this workspace
 
@@ -131,7 +132,7 @@ The core game loop — ties domain, engine, and all game systems together.
 - **`training.rs`** — Training system: attribute gains, condition management, staff bonuses, fitness warnings
 - **`schedule.rs`** — Round-robin league schedule generation (circle method)
 - **`generator.rs`** — World generation: name/team definition loading, player/staff/team creation
-- **`live_match_manager.rs`** — `LiveMatchSession` wrapping the engine's `LiveMatchState` with RNG, AI profiles
+- **`live_match_manager.rs`** — `LiveMatchSession`: the shared `ofm_rules::match_session::MatchSession` (the engine's `LiveMatchState`, three seeded streams, a controller per side, the command check, the input log) plus the fixture's metadata
 - **`messages.rs`** — Inbox message generation (welcome, match previews/results, board directives, etc.)
 - **`job_offers.rs`** — Vacancy-backed job opportunities, direct applications, offer responses, and offer expiry
 - **`firing.rs`** — Board warning/firing flow and managerial-change dismissal news

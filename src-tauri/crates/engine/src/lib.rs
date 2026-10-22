@@ -38,12 +38,12 @@ pub use event::{EventType, Lane, MatchEvent, SetPiece, ShotKind, TacticalContext
 pub use headless::simulate_with_rng;
 pub use knobs::{CalibrationKnobs, apply_knob_file};
 pub use legacy_blend::{legacy_dribbling, legacy_passing};
-pub use live_match::shot_weight;
 pub use live_match::{
     LiveMatchState, MatchCommand, MatchPhase, MatchSnapshot, MinuteResult, PenaltyShootoutSnapshot,
     SetPieceTakers, SubstitutionRecord,
 };
-pub use pitch_position::{PitchPosition, PositionFit, PositionRating, formation_slots};
+pub use live_match::{is_role_valid_for_position, shot_weight};
+pub use pitch_position::{FORMATIONS, PitchPosition, PositionFit, PositionRating, formation_slots};
 pub use report::{
     EVENT_PROTOCOL_VERSION, GoalDetail, GoalSource, MatchReport, PlayerMatchStats, TeamSheet,
     TeamStats,

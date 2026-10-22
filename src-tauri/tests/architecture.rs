@@ -49,10 +49,11 @@ const CORE: &[(&str, &[&str], &str)] = &[
     ),
     (
         "ofm-rules",
-        &["domain"],
+        &["domain", "engine"],
         "`ofm-rules` holds the pure rules the online server runs exactly as the game does. It \
-         reads `domain` data and nothing above it: a rule that needs `Game`, the calendar or the \
-         save belongs in `ofm_core`, which re-exports these modules under their old paths.",
+         reads `domain` data and drives the `engine` (the match session, phase 3 E3-3), and \
+         nothing above them: a rule that needs `Game`, the calendar or the save belongs in \
+         `ofm_core`, which re-exports these modules under their old paths.",
     ),
 ];
 

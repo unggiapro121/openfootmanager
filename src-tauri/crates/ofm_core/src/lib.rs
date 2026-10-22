@@ -41,6 +41,7 @@ pub mod manager_mastery;
 pub mod manager_perks;
 pub(crate) mod manager_reputation;
 pub(crate) use ofm_rules::match_form;
+pub use ofm_rules::match_session;
 pub mod matchday;
 pub mod messages;
 pub mod national_team;

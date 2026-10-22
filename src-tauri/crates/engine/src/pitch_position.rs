@@ -99,6 +99,13 @@ pub struct PositionRating {
 /// The same layout as `ofm_core::player_rating::formation_slots` and the
 /// front end's `buildPitchRows`; `ofm_core` pins the two Rust copies together
 /// in a test, since the engine may not depend on it.
+/// The nine shapes the game offers (`ui/components/match/types.ts`), in the order an AI club
+/// breaks ties between them. A match command may only pick one of these (phase 3, E3-3); the
+/// engine itself still lays out anything else as 4-4-2.
+pub const FORMATIONS: [&str; 9] = [
+    "4-4-2", "4-3-3", "3-5-2", "4-5-1", "4-2-3-1", "3-4-3", "5-3-2", "4-1-4-1", "3-4-2-1",
+];
+
 pub fn formation_slots(formation: &str) -> Vec<PitchPosition> {
     let parts: Vec<usize> = formation
         .split('-')

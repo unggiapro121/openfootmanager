@@ -3327,7 +3327,11 @@
         "playerNotOnBench": "Spieler ist nicht auf der Bank",
         "playerNotInStartingXi": "Spieler ist nicht in der Startelf",
         "pressConferenceAlreadyHeld": "Du hast heute bereits eine Pressekonferenz gegeben",
-        "noCompletedMatch": "Für dein Team wurde kein abgeschlossenes Spiel gefunden"
+        "noCompletedMatch": "Für dein Team wurde kein abgeschlossenes Spiel gefunden",
+        "notYourSide": "Du kannst nur deinem eigenen Team Anweisungen geben.",
+        "commandsClosed": "In dieser Phase des Spiels sind keine Änderungen mehr möglich.",
+        "unknownFormation": "Diese Formation ist nicht verfügbar.",
+        "tooManyUnderPricedDials": "Dein Team nutzt bereits zwei der vorsichtigen Einstellungen (tiefe Linie, kompakte Formation, schmale Breite, langes Gegenpressing). Ändere zuerst eine davon."
       },
       "csv": {
         "writeFailed": "Die CSV-Datei konnte nicht geschrieben werden."

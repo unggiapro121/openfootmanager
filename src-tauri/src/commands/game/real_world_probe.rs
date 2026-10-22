@@ -1354,9 +1354,9 @@ fn real_world_match_probe() {
             ) else {
                 continue;
             };
-            session.user_side = None;
+            session.hand_to_ai();
             session.run_to_completion();
-            let report = session.match_state.into_report();
+            let report = session.into_report();
             players.add(&game, &report, &mut season);
             shares.add(&report);
         }
