@@ -1,0 +1,6 @@
+# `domain` is data the online server (phase 3) shares with the game, so nothing in it may read the
+# wall clock. It has no random-number dependency to guard.
+disallowed-methods = [
+    { path = "std::time::SystemTime::now", reason = "data does not read the wall clock; pass the time in" },
+    { path = "std::time::Instant::now", reason = "data does not read the wall clock; pass the time in" },
+]

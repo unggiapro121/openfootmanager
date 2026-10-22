@@ -17,6 +17,10 @@ use crate::types::{MatchConfig, TeamData};
 const MAX_STEPS: usize = 200;
 
 /// Simulate a full match between two teams and return a detailed report.
+#[expect(
+    clippy::disallowed_methods,
+    reason = "unseeded by design and called by nothing; removed in phase 3 E3-1"
+)]
 pub fn simulate(home: &TeamData, away: &TeamData, config: &MatchConfig) -> MatchReport {
     let mut rng = rand::rng();
     simulate_with_rng(home, away, config, &mut rng)
