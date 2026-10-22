@@ -92,3 +92,47 @@ export async function getCoachProgress(): Promise<CoachProgressView> {
 export async function claimSaveForCoach(saveId: string): Promise<void> {
   return invoke<void>("claim_save_for_coach", { saveId });
 }
+
+/** Where the accounts live: on this machine, or on the account server. */
+export type CoachAccountMode = "local" | "server";
+
+/** What the server's registration form sends. */
+export interface CoachRegistration {
+  email: string;
+  password: string;
+  identity: CoachIdentity;
+}
+
+export async function getCoachAccountMode(): Promise<CoachAccountMode> {
+  return invoke<CoachAccountMode>("get_coach_account_mode");
+}
+
+/** Make the account on the server; a code to verify the email is sent there. */
+export async function registerCoachAccount(registration: CoachRegistration): Promise<void> {
+  return invoke<void>("register_coach_account", { registration });
+}
+
+export async function verifyCoachEmail(code: string): Promise<void> {
+  return invoke<void>("verify_coach_email", { code });
+}
+
+export async function resendCoachVerification(email: string): Promise<void> {
+  return invoke<void>("resend_coach_verification", { email });
+}
+
+export async function loginCoachWithEmail(email: string, password: string): Promise<CoachAccount> {
+  return invoke<CoachAccount>("login_coach_with_email", { email, password });
+}
+
+/** The account of the session kept from the last run, or null when the player has to log in. */
+export async function resumeCoachSession(): Promise<CoachAccount | null> {
+  return invoke<CoachAccount | null>("resume_coach_session");
+}
+
+export async function requestCoachPasswordReset(email: string): Promise<void> {
+  return invoke<void>("request_coach_password_reset", { email });
+}
+
+export async function resetCoachPassword(code: string, newPassword: string): Promise<void> {
+  return invoke<void>("reset_coach_password", { code, newPassword });
+}

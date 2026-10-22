@@ -1,8 +1,9 @@
-import { Suspense, lazy, useId } from "react";
+import { type ReactNode, Suspense, lazy, useId } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, ChevronRight, X } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { Button, DatePicker, Select } from "../ui";
 import { COACH_REGIONS, type CoachRegion } from "../../services/coachService";
+import { FieldError, LABEL_CLASS, inputClass } from "./coachFormFields";
 import type {
   CoachAccountErrors,
   CoachAccountField,
@@ -18,27 +19,12 @@ interface CoachAccountFormProps {
   onChange: (field: CoachAccountField, value: string) => void;
   onClose: (() => void) | null;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-}
-
-const LABEL_CLASS =
-  "mb-1.5 block text-xs font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
-
-function inputClass(hasError: boolean): string {
-  return `w-full rounded-lg border bg-gray-50 p-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:ring-2 dark:bg-navy-900 dark:text-white dark:placeholder:text-gray-500 ${
-    hasError
-      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500"
-      : "border-gray-300 focus:border-primary-500 focus:ring-primary-500/20 dark:border-navy-600"
-  }`;
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return (
-    <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
-      <AlertCircle className="h-3 w-3 shrink-0" />
-      {message}
-    </p>
-  );
+  /** Heading; the local account form's by default. */
+  title?: string;
+  /** Fields above the identity, such as the server account's email and password. */
+  leadingFields?: ReactNode;
+  /** Shown above the submit button, such as the server's answer. */
+  feedback?: ReactNode;
 }
 
 function NameField({
@@ -83,6 +69,9 @@ export default function CoachAccountForm({
   onChange,
   onClose,
   onSubmit,
+  title,
+  leadingFields,
+  feedback,
 }: CoachAccountFormProps) {
   const { t, i18n } = useTranslation();
   const dobLabelId = useId();
@@ -93,7 +82,7 @@ export default function CoachAccountForm({
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-xl font-heading font-bold uppercase tracking-wide text-gray-900 transition-colors dark:text-white">
-          {t("coach.newAccountTitle")}
+          {title ?? t("coach.newAccountTitle")}
         </h2>
         {onClose ? (
           <button
@@ -106,6 +95,8 @@ export default function CoachAccountForm({
           </button>
         ) : null}
       </div>
+
+      {leadingFields}
 
       <div className="flex gap-3">
         <NameField
@@ -170,6 +161,8 @@ export default function CoachAccountForm({
           {t("coach.regionHint")}
         </p>
       </div>
+
+      {feedback}
 
       <Button
         type="submit"

@@ -59,6 +59,39 @@
     "allCareers": "Todas las partidas",
     "thisCareer": "Esta partida"
   },
+  "coachServer": {
+    "loginTitle": "Inicia sesión en OFM Online",
+    "loginSubtitle": "Tu cuenta de entrenador está en el servidor: el dominio de estilos y los totales te acompañan en cada carrera.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "newPassword": "Nueva contraseña",
+    "code": "Código del correo",
+    "logIn": "Iniciar sesión",
+    "forgotPassword": "¿Olvidaste la contraseña?",
+    "haveCode": "Tengo un código",
+    "noAccount": "¿Aún no tienes cuenta?",
+    "registerTitle": "Crea tu cuenta de entrenador",
+    "backToLogin": "Volver al inicio de sesión",
+    "verifyTitle": "Verifica tu correo",
+    "verifyHint": "Introduce el código que enviamos a tu correo. Caduca a las 24 horas.",
+    "verify": "Verificar",
+    "resendCode": "Enviar un código nuevo",
+    "codeSent": "Enviamos un código a {{email}}.",
+    "verified": "Correo verificado. Ya puedes iniciar sesión.",
+    "verifyFirst": "Verifica tu correo antes de iniciar sesión. Introduce el código que te enviamos.",
+    "forgotTitle": "Restablece tu contraseña",
+    "forgotHint": "Introduce el correo de tu cuenta. Te enviaremos un código para restablecer la contraseña; caduca en 1 hora.",
+    "sendResetCode": "Enviar código",
+    "resetCodeSent": "Si una cuenta usa {{email}}, el código va de camino.",
+    "resetTitle": "Elige una nueva contraseña",
+    "resetPassword": "Guardar contraseña",
+    "passwordChanged": "Contraseña cambiada. Inicia sesión con la nueva.",
+    "invalidEmail": "Introduce un correo válido.",
+    "passwordLength": "Usa entre {{min}} y {{max}} caracteres.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "codeRequired": "Introduce el código del correo."
+  },
   "createManager": {
     "title": "Crear Mánager",
     "firstName": "Nombre",
@@ -3430,7 +3463,10 @@
         "notLoggedIn": "No hay ninguna cuenta de mánager conectada.",
         "offline": "No se pudo conectar con el servidor de cuentas.",
         "saveOfAnotherAccount": "Esta partida pertenece a otra cuenta de mánager.",
-        "saveWithoutAccount": "Esta partida aún no tiene cuenta de mánager."
+        "saveWithoutAccount": "Esta partida aún no tiene cuenta de mánager.",
+        "managedByServer": "Las cuentas de entrenador las gestiona el servidor de cuentas.",
+        "serverNotConfigured": "Este juego no tiene configurado un servidor de cuentas.",
+        "serverUnexpected": "El servidor de cuentas envió una respuesta que el juego no puede leer."
       },
       "finance": {
         "boardSupportUnavailable": "El apoyo de emergencia de la directiva solo está disponible cuando la tesorería está bajo presión.",
@@ -3532,7 +3568,24 @@
         "noAssessor": "Nadie en el club puede evaluar el potencial."
       },
       "budgetRebalanceOutOfRange": "Ese presupuesto salarial está fuera de rango: no puede quedar por debajo de la masa salarial actual ni costar más que el presupuesto de fichajes.",
-      "budgetRebalanceStep": "Cambia el presupuesto salarial en pasos de 1.000 por semana."
+      "budgetRebalanceStep": "Cambia el presupuesto salarial en pasos de 1.000 por semana.",
+      "auth": {
+        "invalidCredentials": "Correo o contraseña incorrectos.",
+        "emailNotVerified": "Verifica tu correo antes de iniciar sesión.",
+        "emailTaken": "Ya existe una cuenta con este correo.",
+        "accountLocked": "Esta cuenta está bloqueada.",
+        "tokenInvalid": "El código es incorrecto o ha caducado.",
+        "refreshInvalid": "Tu sesión ha terminado. Inicia sesión de nuevo.",
+        "unauthorized": "Tu sesión ha terminado. Inicia sesión de nuevo.",
+        "forbidden": "No tienes permiso para hacer eso."
+      },
+      "validation": {
+        "invalid": "Algunos datos no se aceptaron. Revisa el formulario e inténtalo de nuevo."
+      },
+      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
+      "unavailable": "El servidor de cuentas no está disponible. Inténtalo más tarde.",
+      "timeout": "El servidor de cuentas tardó demasiado en responder.",
+      "internal": "El servidor de cuentas tuvo un error."
     },
     "sender": {
       "boardOfDirectors": "Junta Directiva",

@@ -59,6 +59,39 @@
     "allCareers": "所有生涯",
     "thisCareer": "本生涯"
   },
+  "coachServer": {
+    "loginTitle": "登录 OFM Online",
+    "loginSubtitle": "你的教练账号保存在服务器上：战术风格熟练度和生涯总计会带到每一段生涯。",
+    "email": "邮箱",
+    "password": "密码",
+    "confirmPassword": "确认密码",
+    "newPassword": "新密码",
+    "code": "邮件中的验证码",
+    "logIn": "登录",
+    "forgotPassword": "忘记密码？",
+    "haveCode": "我已有验证码",
+    "noAccount": "还没有账号？",
+    "registerTitle": "创建教练账号",
+    "backToLogin": "返回登录",
+    "verifyTitle": "验证邮箱",
+    "verifyHint": "请输入我们发送到你邮箱的验证码，24 小时后失效。",
+    "verify": "验证",
+    "resendCode": "重新发送验证码",
+    "codeSent": "验证码已发送至 {{email}}。",
+    "verified": "邮箱已验证，现在可以登录。",
+    "verifyFirst": "登录前请先验证邮箱。请输入我们发给你的验证码。",
+    "forgotTitle": "重置密码",
+    "forgotHint": "请输入账号邮箱。我们会发送重置密码的验证码，1 小时后失效。",
+    "sendResetCode": "发送重置验证码",
+    "resetCodeSent": "如果有账号使用 {{email}}，验证码正在发送。",
+    "resetTitle": "设置新密码",
+    "resetPassword": "保存新密码",
+    "passwordChanged": "密码已修改，请用新密码登录。",
+    "invalidEmail": "请输入有效的邮箱地址。",
+    "passwordLength": "请使用 {{min}} 到 {{max}} 个字符。",
+    "passwordMismatch": "两次输入的密码不一致。",
+    "codeRequired": "请输入邮件中的验证码。"
+  },
   "createManager": {
     "title": "创建经理",
     "firstName": "名",
@@ -3430,7 +3463,10 @@
         "notLoggedIn": "尚未登录经理账号。",
         "offline": "无法连接账号服务器。",
         "saveOfAnotherAccount": "此生涯属于另一个经理账号。",
-        "saveWithoutAccount": "此生涯尚未绑定经理账号。"
+        "saveWithoutAccount": "此生涯尚未绑定经理账号。",
+        "managedByServer": "教练账号由账号服务器管理。",
+        "serverNotConfigured": "本游戏未配置账号服务器。",
+        "serverUnexpected": "账号服务器返回了游戏无法读取的响应。"
       },
       "finance": {
         "boardSupportUnavailable": "只有当现金储备承压时，董事会紧急支持才可用。",
@@ -3532,7 +3568,24 @@
         "noAssessor": "俱乐部里没有人能评估潜力。"
       },
       "budgetRebalanceOutOfRange": "该工资预算超出范围：不能低于当前工资总额，也不能超过转会预算所能承担的金额。",
-      "budgetRebalanceStep": "请以每周 1,000 为单位调整工资预算。"
+      "budgetRebalanceStep": "请以每周 1,000 为单位调整工资预算。",
+      "auth": {
+        "invalidCredentials": "邮箱或密码错误。",
+        "emailNotVerified": "登录前请先验证邮箱。",
+        "emailTaken": "该邮箱已注册账号。",
+        "accountLocked": "该账号已被锁定。",
+        "tokenInvalid": "验证码错误或已过期。",
+        "refreshInvalid": "登录已过期，请重新登录。",
+        "unauthorized": "登录已过期，请重新登录。",
+        "forbidden": "你没有执行此操作的权限。"
+      },
+      "validation": {
+        "invalid": "部分信息未被接受，请检查表单后重试。"
+      },
+      "rateLimited": "尝试次数过多，请稍后再试。",
+      "unavailable": "账号服务器暂不可用，请稍后再试。",
+      "timeout": "账号服务器响应超时。",
+      "internal": "账号服务器出错。"
     },
     "sender": {
       "boardOfDirectors": "董事会",

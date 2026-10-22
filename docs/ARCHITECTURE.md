@@ -169,14 +169,22 @@ This is registered as Tauri managed state and accessed by all commands via `Stat
 
 ### Coach Account State
 
-The player is a **coach account**, the same in every career on the machine (and, once the account
-server exists, online). `CoachContext` (`src/application/coach.rs`) is managed beside the
+The player is a **coach account**, the same in every career on the machine, or on every machine
+when the accounts live on the account server (`ofm-server`). `CoachContext` (`src/application/coach.rs`) is managed beside the
 `StateManager`: the account logged in, and an `Arc<dyn CoachProgressStore>` holding what each
 account has built up — play style mastery and XP, career totals, and the day's XP allowance.
 
 - **`LocalCoachProgressStore`** keeps accounts and progress as files under the app data directory
-  (`db::coach_store`: `coach/accounts.json`, `coach/<id>.json`). The account server will be a second
-  implementation of the same trait. Both run the same pure rules, `ofm_core::coach_progress`.
+  (`db::coach_store`: `coach/accounts.json`, `coach/<id>.json`).
+- **`RemoteCoachProgressStore`** (`src/application/coach_server/`) is the same trait over the account
+  server, used when `OFM_SERVER_URL` names one (at run time, or when the game was built). The
+  server counts on its own clock and the account's region; both stores run the same pure rules,
+  `ofm_rules::coach_progress`. Each report carries a fresh `Idempotency-Key`, is sent once more
+  under the same key if no answer came, and goes in parts of at most 100 records. The login screen
+  then asks for email and password, with registration, the emailed verification code, and a
+  password reset by code. The access token stays in memory; the rotating refresh token is kept in
+  the OS keychain (`keyring`), so the next run resumes the session. Accounts made on this machine
+  are deleted when the game starts with a server, and the local-account commands are refused.
 - **A career carries a copy.** `Game::account_id` names its account; the account's mastery and XP
   are copied into `game.manager` when a career is made or opened, where the engine reads them.
 - **Reporting.** `ofm_core` does no I/O: every official match of the user's club pushes a record
@@ -186,7 +194,8 @@ account has built up — play style mastery and XP, career totals, and the day's
   XP (`mark_managed_match`), within the daily allowance; others count in the totals only.
 - **No coach, no report.** MCP tools pass `None` for the coach: an agent's matches earn no account
   anything. An unreachable store drops the records and sets `coach_report_failed` on the response,
-  and the career is still saved. `OFM_COACH_OFFLINE=1` simulates it.
+  and the career is still saved. `OFM_COACH_OFFLINE=1` simulates it for the local store; for the
+  server, stopping it does.
 
 ### Frontend State
 
@@ -227,6 +236,12 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `get_active_coach_account` | — | `Option<CoachAccount>` | The account in use, if any |
 | `update_coach_account` / `delete_coach_account` | id, identity / id | `CoachAccount` / `bool` | Edit or delete an account (its careers stay) |
 | `get_coach_progress` | — | `CoachProgressView` | Totals, today's XP matches, next reset, offline flag |
+| `get_coach_account_mode` | — | `"local"` \| `"server"` | Whether accounts are on this machine or on the account server |
+| `register_coach_account` | registration (email, password, identity) | — | Make an account on the server; it emails a verification code |
+| `verify_coach_email` / `resend_coach_verification` | code / email | — | Verify the email with the code, or ask for a new one |
+| `login_coach_with_email` | email, password | `CoachAccount` | Log in on the server; keeps the session |
+| `resume_coach_session` | — | `Option<CoachAccount>` | Log back in with the refresh token kept from the last run |
+| `request_coach_password_reset` / `reset_coach_password` | email / code, newPassword | — | Email a reset code, then set a new password with it |
 
 ### Match Commands
 

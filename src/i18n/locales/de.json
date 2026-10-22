@@ -59,6 +59,39 @@
     "allCareers": "Alle Karrieren",
     "thisCareer": "Diese Karriere"
   },
+  "coachServer": {
+    "loginTitle": "Bei OFM Online anmelden",
+    "loginSubtitle": "Dein Trainerkonto liegt auf dem Server: Stil-Meisterschaft und Karrierebilanz begleiten dich in jede Karriere.",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "newPassword": "Neues Passwort",
+    "code": "Code aus der E-Mail",
+    "logIn": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "haveCode": "Ich habe einen Code",
+    "noAccount": "Noch kein Konto?",
+    "registerTitle": "Trainerkonto erstellen",
+    "backToLogin": "Zurück zur Anmeldung",
+    "verifyTitle": "E-Mail bestätigen",
+    "verifyHint": "Gib den Code ein, den wir an deine E-Mail geschickt haben. Er läuft nach 24 Stunden ab.",
+    "verify": "Bestätigen",
+    "resendCode": "Neuen Code senden",
+    "codeSent": "Wir haben einen Code an {{email}} geschickt.",
+    "verified": "E-Mail bestätigt. Du kannst dich jetzt anmelden.",
+    "verifyFirst": "Bestätige deine E-Mail, bevor du dich anmeldest. Gib den Code ein, den wir dir geschickt haben.",
+    "forgotTitle": "Passwort zurücksetzen",
+    "forgotHint": "Gib die E-Mail deines Kontos ein. Wir schicken einen Code zum Zurücksetzen; er läuft nach 1 Stunde ab.",
+    "sendResetCode": "Code senden",
+    "resetCodeSent": "Falls ein Konto {{email}} nutzt, ist ein Code unterwegs.",
+    "resetTitle": "Neues Passwort wählen",
+    "resetPassword": "Passwort speichern",
+    "passwordChanged": "Passwort geändert. Melde dich mit dem neuen Passwort an.",
+    "invalidEmail": "Gib eine gültige E-Mail-Adresse ein.",
+    "passwordLength": "Verwende {{min}} bis {{max}} Zeichen.",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+    "codeRequired": "Gib den Code aus der E-Mail ein."
+  },
   "createManager": {
     "title": "Manager erstellen",
     "firstName": "Vorname",
@@ -3430,7 +3463,10 @@
         "notLoggedIn": "Kein Managerkonto ist angemeldet.",
         "offline": "Der Kontoserver ist nicht erreichbar.",
         "saveOfAnotherAccount": "Diese Karriere gehört zu einem anderen Managerkonto.",
-        "saveWithoutAccount": "Diese Karriere hat noch kein Managerkonto."
+        "saveWithoutAccount": "Diese Karriere hat noch kein Managerkonto.",
+        "managedByServer": "Trainerkonten werden vom Kontoserver verwaltet.",
+        "serverNotConfigured": "Für dieses Spiel ist kein Kontoserver eingerichtet.",
+        "serverUnexpected": "Der Kontoserver hat eine Antwort geschickt, die das Spiel nicht lesen kann."
       },
       "finance": {
         "boardSupportUnavailable": "Notfallhilfe des Vorstands ist nur verfügbar, wenn die Geldreserven unter Druck stehen.",
@@ -3532,7 +3568,24 @@
         "noAssessor": "Niemand im Verein kann Potenzial einschätzen."
       },
       "budgetRebalanceOutOfRange": "Dieses Gehaltsbudget liegt außerhalb des Rahmens: Es darf nicht unter den aktuellen Gehaltskosten liegen und nicht mehr kosten als das Transferbudget.",
-      "budgetRebalanceStep": "Ändere das Gehaltsbudget in Schritten von 1.000 pro Woche."
+      "budgetRebalanceStep": "Ändere das Gehaltsbudget in Schritten von 1.000 pro Woche.",
+      "auth": {
+        "invalidCredentials": "E-Mail oder Passwort falsch.",
+        "emailNotVerified": "Bestätige deine E-Mail, bevor du dich anmeldest.",
+        "emailTaken": "Für diese E-Mail gibt es bereits ein Konto.",
+        "accountLocked": "Dieses Konto ist gesperrt.",
+        "tokenInvalid": "Dieser Code ist falsch oder abgelaufen.",
+        "refreshInvalid": "Deine Sitzung ist beendet. Melde dich erneut an.",
+        "unauthorized": "Deine Sitzung ist beendet. Melde dich erneut an.",
+        "forbidden": "Dazu bist du nicht berechtigt."
+      },
+      "validation": {
+        "invalid": "Einige Angaben wurden nicht akzeptiert. Prüfe das Formular und versuche es erneut."
+      },
+      "rateLimited": "Zu viele Versuche. Warte einen Moment und versuche es erneut.",
+      "unavailable": "Der Kontoserver ist nicht verfügbar. Versuche es später erneut.",
+      "timeout": "Der Kontoserver hat zu lange gebraucht.",
+      "internal": "Beim Kontoserver ist ein Fehler aufgetreten."
     },
     "sender": {
       "boardOfDirectors": "Vorstand",

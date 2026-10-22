@@ -59,6 +59,39 @@
     "allCareers": "All careers",
     "thisCareer": "This career"
   },
+  "coachServer": {
+    "loginTitle": "Log in to OFM Online",
+    "loginSubtitle": "Your coach account lives on the server: style mastery and career totals follow you to every career.",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "newPassword": "New password",
+    "code": "Code from the email",
+    "logIn": "Log in",
+    "forgotPassword": "Forgot password?",
+    "haveCode": "I have a code",
+    "noAccount": "No account yet?",
+    "registerTitle": "Create your coach account",
+    "backToLogin": "Back to login",
+    "verifyTitle": "Verify your email",
+    "verifyHint": "Enter the code we sent to your email. It expires after 24 hours.",
+    "verify": "Verify",
+    "resendCode": "Send a new code",
+    "codeSent": "We sent a code to {{email}}.",
+    "verified": "Email verified. You can log in now.",
+    "verifyFirst": "Verify your email before logging in. Enter the code we sent you.",
+    "forgotTitle": "Reset your password",
+    "forgotHint": "Enter your account's email. We will send a code to reset the password; it expires after 1 hour.",
+    "sendResetCode": "Send reset code",
+    "resetCodeSent": "If an account uses {{email}}, a code is on its way.",
+    "resetTitle": "Choose a new password",
+    "resetPassword": "Set new password",
+    "passwordChanged": "Password changed. Log in with your new password.",
+    "invalidEmail": "Enter a valid email address.",
+    "passwordLength": "Use {{min}} to {{max}} characters.",
+    "passwordMismatch": "The passwords do not match.",
+    "codeRequired": "Enter the code from the email."
+  },
   "createManager": {
     "title": "Create Manager",
     "firstName": "First Name",
@@ -3274,7 +3307,10 @@
         "notLoggedIn": "No coach account is logged in.",
         "offline": "Could not reach the account server.",
         "saveOfAnotherAccount": "This career belongs to another coach account.",
-        "saveWithoutAccount": "This career has no coach account yet."
+        "saveWithoutAccount": "This career has no coach account yet.",
+        "managedByServer": "Coach accounts are managed by the account server.",
+        "serverNotConfigured": "No account server is set up for this game.",
+        "serverUnexpected": "The account server sent an answer the game could not read."
       },
       "teamNotFound": "Team not found",
       "jobOffer": {
@@ -3532,7 +3568,24 @@
         "noAssessor": "Nobody at the club can judge potential."
       },
       "budgetRebalanceOutOfRange": "That wage budget is out of range: it cannot go below the current wage bill or cost more than the transfer budget.",
-      "budgetRebalanceStep": "Change the wage budget in steps of 1,000 a week."
+      "budgetRebalanceStep": "Change the wage budget in steps of 1,000 a week.",
+      "auth": {
+        "invalidCredentials": "Wrong email or password.",
+        "emailNotVerified": "Verify your email before logging in.",
+        "emailTaken": "An account already uses this email.",
+        "accountLocked": "This account is locked.",
+        "tokenInvalid": "This code is wrong or has expired.",
+        "refreshInvalid": "Your session has ended. Log in again.",
+        "unauthorized": "Your session has ended. Log in again.",
+        "forbidden": "You are not allowed to do that."
+      },
+      "validation": {
+        "invalid": "Some details were not accepted. Check the form and try again."
+      },
+      "rateLimited": "Too many attempts. Wait a moment and try again.",
+      "unavailable": "The account server is unavailable. Try again later.",
+      "timeout": "The account server took too long to answer.",
+      "internal": "The account server ran into an error."
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",

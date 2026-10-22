@@ -59,6 +59,39 @@
     "allCareers": "Všechny kariéry",
     "thisCareer": "Tato kariéra"
   },
+  "coachServer": {
+    "loginTitle": "Přihlášení do OFM Online",
+    "loginSubtitle": "Váš trenérský účet je na serveru: mistrovství stylů a celkové výsledky vás provázejí v každé kariéře.",
+    "email": "E-mail",
+    "password": "Heslo",
+    "confirmPassword": "Potvrzení hesla",
+    "newPassword": "Nové heslo",
+    "code": "Kód z e-mailu",
+    "logIn": "Přihlásit se",
+    "forgotPassword": "Zapomenuté heslo?",
+    "haveCode": "Mám kód",
+    "noAccount": "Ještě nemáte účet?",
+    "registerTitle": "Vytvořte si trenérský účet",
+    "backToLogin": "Zpět na přihlášení",
+    "verifyTitle": "Ověřte e-mail",
+    "verifyHint": "Zadejte kód, který jsme poslali na váš e-mail. Platí 24 hodin.",
+    "verify": "Ověřit",
+    "resendCode": "Poslat nový kód",
+    "codeSent": "Poslali jsme kód na {{email}}.",
+    "verified": "E-mail ověřen. Nyní se můžete přihlásit.",
+    "verifyFirst": "Před přihlášením ověřte e-mail. Zadejte kód, který jsme vám poslali.",
+    "forgotTitle": "Obnovení hesla",
+    "forgotHint": "Zadejte e-mail svého účtu. Pošleme kód pro obnovení hesla; platí 1 hodinu.",
+    "sendResetCode": "Poslat kód",
+    "resetCodeSent": "Pokud účet používá {{email}}, kód je na cestě.",
+    "resetTitle": "Zvolte nové heslo",
+    "resetPassword": "Uložit heslo",
+    "passwordChanged": "Heslo změněno. Přihlaste se novým heslem.",
+    "invalidEmail": "Zadejte platnou e-mailovou adresu.",
+    "passwordLength": "Použijte {{min}} až {{max}} znaků.",
+    "passwordMismatch": "Hesla se neshodují.",
+    "codeRequired": "Zadejte kód z e-mailu."
+  },
   "createManager": {
     "title": "Vytvořit manažera",
     "firstName": "Jméno",
@@ -3274,7 +3307,10 @@
         "notLoggedIn": "Není přihlášen žádný účet manažera.",
         "offline": "Server účtů není dostupný.",
         "saveOfAnotherAccount": "Tato kariéra patří jinému účtu manažera.",
-        "saveWithoutAccount": "Tato kariéra zatím nemá účet manažera."
+        "saveWithoutAccount": "Tato kariéra zatím nemá účet manažera.",
+        "managedByServer": "Trenérské účty spravuje server účtů.",
+        "serverNotConfigured": "Pro tuto hru není nastaven žádný server účtů.",
+        "serverUnexpected": "Server účtů poslal odpověď, kterou hra neumí přečíst."
       },
       "teamNotFound": "Tým nebyl nalezen",
       "jobOffer": {
@@ -3532,7 +3568,24 @@
         "noAssessor": "Nikdo v klubu neumí posoudit potenciál."
       },
       "budgetRebalanceOutOfRange": "Tento platový rozpočet je mimo rozsah: nesmí klesnout pod současné mzdové náklady ani stát víc, než pokryje přestupový rozpočet.",
-      "budgetRebalanceStep": "Měňte platový rozpočet po krocích 1 000 týdně."
+      "budgetRebalanceStep": "Měňte platový rozpočet po krocích 1 000 týdně.",
+      "auth": {
+        "invalidCredentials": "Špatný e-mail nebo heslo.",
+        "emailNotVerified": "Před přihlášením ověřte e-mail.",
+        "emailTaken": "Účet s tímto e-mailem už existuje.",
+        "accountLocked": "Tento účet je zablokovaný.",
+        "tokenInvalid": "Kód je špatný nebo vypršel.",
+        "refreshInvalid": "Relace skončila. Přihlaste se znovu.",
+        "unauthorized": "Relace skončila. Přihlaste se znovu.",
+        "forbidden": "K této akci nemáte oprávnění."
+      },
+      "validation": {
+        "invalid": "Některé údaje nebyly přijaty. Zkontrolujte formulář a zkuste to znovu."
+      },
+      "rateLimited": "Příliš mnoho pokusů. Chvíli počkejte a zkuste to znovu.",
+      "unavailable": "Server účtů je nedostupný. Zkuste to později.",
+      "timeout": "Server účtů odpovídal příliš dlouho.",
+      "internal": "Na serveru účtů došlo k chybě."
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",

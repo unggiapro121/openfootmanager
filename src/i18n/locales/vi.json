@@ -59,6 +59,39 @@
     "allCareers": "Mọi ván",
     "thisCareer": "Ván này"
   },
+  "coachServer": {
+    "loginTitle": "Đăng nhập OFM Online",
+    "loginSubtitle": "Tài khoản HLV của bạn nằm trên máy chủ: độ thành thạo lối chơi và thành tích theo bạn qua mọi sự nghiệp.",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Nhập lại mật khẩu",
+    "newPassword": "Mật khẩu mới",
+    "code": "Mã trong email",
+    "logIn": "Đăng nhập",
+    "forgotPassword": "Quên mật khẩu?",
+    "haveCode": "Tôi đã có mã",
+    "noAccount": "Chưa có tài khoản?",
+    "registerTitle": "Tạo tài khoản HLV",
+    "backToLogin": "Quay lại đăng nhập",
+    "verifyTitle": "Xác minh email",
+    "verifyHint": "Nhập mã chúng tôi đã gửi tới email của bạn. Mã hết hạn sau 24 giờ.",
+    "verify": "Xác minh",
+    "resendCode": "Gửi mã mới",
+    "codeSent": "Đã gửi mã tới {{email}}.",
+    "verified": "Email đã được xác minh. Bạn có thể đăng nhập.",
+    "verifyFirst": "Hãy xác minh email trước khi đăng nhập. Nhập mã chúng tôi đã gửi cho bạn.",
+    "forgotTitle": "Đặt lại mật khẩu",
+    "forgotHint": "Nhập email của tài khoản. Chúng tôi sẽ gửi mã để đặt lại mật khẩu; mã hết hạn sau 1 giờ.",
+    "sendResetCode": "Gửi mã đặt lại",
+    "resetCodeSent": "Nếu có tài khoản dùng {{email}}, mã đang được gửi tới.",
+    "resetTitle": "Chọn mật khẩu mới",
+    "resetPassword": "Đặt mật khẩu mới",
+    "passwordChanged": "Đã đổi mật khẩu. Hãy đăng nhập bằng mật khẩu mới.",
+    "invalidEmail": "Hãy nhập địa chỉ email hợp lệ.",
+    "passwordLength": "Mật khẩu dài từ {{min}} đến {{max}} ký tự.",
+    "passwordMismatch": "Hai mật khẩu không khớp.",
+    "codeRequired": "Hãy nhập mã trong email."
+  },
   "createManager": {
     "title": "Tạo HLV",
     "firstName": "Tên",
@@ -3274,7 +3307,10 @@
         "notLoggedIn": "Chưa đăng nhập tài khoản HLV.",
         "offline": "Không kết nối được máy chủ tài khoản.",
         "saveOfAnotherAccount": "Ván này thuộc tài khoản HLV khác.",
-        "saveWithoutAccount": "Ván này chưa gắn tài khoản HLV."
+        "saveWithoutAccount": "Ván này chưa gắn tài khoản HLV.",
+        "managedByServer": "Tài khoản HLV do máy chủ tài khoản quản lý.",
+        "serverNotConfigured": "Game chưa được cấu hình máy chủ tài khoản.",
+        "serverUnexpected": "Máy chủ tài khoản trả về câu trả lời mà game không đọc được."
       },
       "teamNotFound": "Không tìm thấy đội",
       "jobOffer": {
@@ -3532,7 +3568,24 @@
         "noAssessor": "CLB không có ai đánh giá được tiềm năng."
       },
       "budgetRebalanceOutOfRange": "Ngân sách lương này nằm ngoài giới hạn: không được thấp hơn quỹ lương hiện tại và không được tốn quá ngân sách chuyển nhượng.",
-      "budgetRebalanceStep": "Thay đổi ngân sách lương theo từng bước 1.000 mỗi tuần."
+      "budgetRebalanceStep": "Thay đổi ngân sách lương theo từng bước 1.000 mỗi tuần.",
+      "auth": {
+        "invalidCredentials": "Sai email hoặc mật khẩu.",
+        "emailNotVerified": "Hãy xác minh email trước khi đăng nhập.",
+        "emailTaken": "Email này đã có tài khoản.",
+        "accountLocked": "Tài khoản này đã bị khoá.",
+        "tokenInvalid": "Mã sai hoặc đã hết hạn.",
+        "refreshInvalid": "Phiên đăng nhập đã hết. Hãy đăng nhập lại.",
+        "unauthorized": "Phiên đăng nhập đã hết. Hãy đăng nhập lại.",
+        "forbidden": "Bạn không có quyền làm việc này."
+      },
+      "validation": {
+        "invalid": "Một số thông tin không được chấp nhận. Hãy kiểm tra lại biểu mẫu."
+      },
+      "rateLimited": "Thử quá nhiều lần. Hãy đợi một lát rồi thử lại.",
+      "unavailable": "Máy chủ tài khoản đang không hoạt động. Hãy thử lại sau.",
+      "timeout": "Máy chủ tài khoản phản hồi quá lâu.",
+      "internal": "Máy chủ tài khoản gặp lỗi."
     },
     "sender": {
       "boardOfDirectors": "Hội đồng quản trị",
