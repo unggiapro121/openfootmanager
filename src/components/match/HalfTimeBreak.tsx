@@ -1,5 +1,6 @@
-import { useId, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { type RadarRoster, radarRosterOf } from "./radar/radarMatch";
 import type { GameStateData } from "../../store/gameStore";
 import type { PlayerRole } from "../../store/types";
 import {
@@ -63,6 +64,7 @@ export default function HalfTimeBreak({
 
   const homeFullTeam = gameState.teams.find((t) => t.id === snapshot.home_team.id);
   const awayFullTeam = gameState.teams.find((t) => t.id === snapshot.away_team.id);
+  const roster = useMemo(() => radarRosterOf(gameState.players), [gameState.players]);
   const homeTeamColor = homeFullTeam?.colors?.primary || "#10b981";
   const awayTeamColor = awayFullTeam?.colors?.primary || "#6366f1";
 
@@ -177,6 +179,7 @@ export default function HalfTimeBreak({
           {!isSpectator && (
             <LineupCard
               snapshot={snapshot}
+              roster={roster}
               userSide={userSide}
               onOpenSubstitutions={() => setShowSubPanel(true)}
               onSwapPositions={handleSwapPositions}
@@ -198,6 +201,7 @@ export default function HalfTimeBreak({
       {/* Substitution Modal — reuses the full SubPanel from MatchLive */}
       {showSubPanel && (
         <SubPanel
+          roster={roster}
           snapshot={snapshot}
           side={userSide}
           onSubstitute={handleSubstitution}
@@ -225,6 +229,7 @@ const OPTION_OFF =
 
 interface LineupCardProps {
   snapshot: MatchSnapshot;
+  roster: RadarRoster;
   userSide: "Home" | "Away";
   onOpenSubstitutions: () => void;
   onSwapPositions: (playerAId: string, playerBId: string) => void;
@@ -234,6 +239,7 @@ interface LineupCardProps {
 /** The user's lineup on the pitch: drag to swap, a role on each token, and the substitutions. */
 function LineupCard({
   snapshot,
+  roster,
   userSide,
   onOpenSubstitutions,
   onSwapPositions,
@@ -277,6 +283,7 @@ function LineupCard({
         </div>
       </div>
       <FormationPitch
+        roster={roster}
         formation={userTeam.formation}
         players={userTeam.players}
         sentOff={snapshot.sent_off}

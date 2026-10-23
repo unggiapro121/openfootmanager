@@ -367,6 +367,39 @@ pub fn scale_attributes(attributes: &mut PlayerAttributes, factor: f64) {
     scale_each(trained_attributes(attributes), factor);
 }
 
+/// Bring a raw generated profile to an OVR of `target`: the attributes the body shapes scaled by
+/// the target against an average raw profile, the rest by whatever then lands the OVR (see
+/// [`calibrate_generated_player`] for why).
+pub fn calibrate_to_ovr(player: &mut Player, target: f64) {
+    scale_each(
+        body_attributes(&mut player.attributes),
+        target / RAW_PROFILE_OVR,
+    );
+    scale_to_ovr(player, target);
+}
+
+/// Move an already calibrated player's OVR to `target` with the trained attributes alone, so the
+/// body's link to them is kept.
+pub fn scale_to_ovr(player: &mut Player, target: f64) {
+    use crate::player_rating::natural_ovr;
+    // Only part of the OVR moves with the trained attributes, and rounding and
+    // attributes pinned at 1 or 99 keep any pass from landing exactly; a few
+    // passes settle it.
+    for _ in 0..10 {
+        let ovr = natural_ovr(player);
+        if ovr <= 0.0 || (ovr - target).abs() < 0.5 {
+            break;
+        }
+        scale_each(trained_attributes(&mut player.attributes), target / ovr);
+    }
+}
+
+/// The least room to grow a player of `age` is given: half the 10th percentile of real players'
+/// headroom at that age.
+pub fn min_headroom(age: u32) -> u8 {
+    (headroom_percentiles(age)[0] * 0.5).ceil() as u8
+}
+
 /// Bring a generated player to `level`: his OVR drawn for his age, then a
 /// potential drawn for that OVR and age, and his traits, value and wage settled
 /// on the result.
@@ -386,20 +419,7 @@ pub fn calibrate_generated_player(
 
     let age = crate::player_rating::player_age(&player.date_of_birth, current_year);
     let target = level.draw_ovr(age, rng);
-    scale_each(
-        body_attributes(&mut player.attributes),
-        target / RAW_PROFILE_OVR,
-    );
-    // Only part of the OVR moves with the trained attributes, and rounding and
-    // attributes pinned at 1 or 99 keep any pass from landing exactly; a few
-    // passes settle it.
-    for _ in 0..10 {
-        let ovr = natural_ovr(player);
-        if ovr <= 0.0 || (ovr - target).abs() < 0.5 {
-            break;
-        }
-        scale_each(trained_attributes(&mut player.attributes), target / ovr);
-    }
+    calibrate_to_ovr(player, target);
     let ovr = natural_ovr(player).round() as u8;
     player.potential = draw_potential(ovr, age, rng);
     crate::player_rating::refresh_player_derived(player, current_year);

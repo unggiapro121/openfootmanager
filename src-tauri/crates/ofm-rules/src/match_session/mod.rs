@@ -6,9 +6,11 @@
 //! - one check every command passes, whoever gives it (`check`);
 //! - a log of every input, the AI's included, keyed by step (`input`);
 //! - a hash of the match after every step, chained (`minute_hash`);
-//! - a replay from the setup and the log, with no AI run (`replay`, E3-4).
+//! - a replay from the setup and the log, with no AI run (`replay`, E3-4);
+//! - who held each side over the match (`control`, S-8).
 
 mod check;
+mod control;
 mod input;
 mod minute_hash;
 mod replay;
@@ -19,6 +21,7 @@ pub use check::{
     COMMANDS_CLOSED, NOT_ON_PITCH, NOT_YOUR_SIDE, ROLE_NOT_FOR_POSITION,
     TOO_MANY_UNDER_PRICED_DIALS, UNKNOWN_FORMATION, check_command,
 };
+pub use control::control_share;
 pub use input::{Controller, InputRecord, InputSource, MatchInput};
 pub use replay::{ReplayError, verify};
 pub use seed::MatchSeed;

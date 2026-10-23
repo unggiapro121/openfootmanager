@@ -6,19 +6,23 @@
 mod client;
 #[cfg(test)]
 mod live_tests;
+#[cfg(test)]
+mod race_tests;
 mod remote_store;
 mod session;
 #[cfg(test)]
-mod test_server;
+pub(crate) mod test_server;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+pub(crate) use vault::MemoryVault;
 mod vault;
 
 use db::coach_store::CoachIdentity;
 use domain::coach::CoachAccount;
 use serde::{Deserialize, Serialize};
 
-pub use client::ApiClient;
+pub use client::{ApiClient, ApiError, RawRequest, RawResponse};
 pub use remote_store::RemoteCoachProgressStore;
 pub use session::ServerSession;
 pub use vault::{KeyringVault, RefreshTokenVault};

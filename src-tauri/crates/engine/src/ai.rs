@@ -264,17 +264,37 @@ fn consider_substitution<R: Rng>(
 /// A player hurt on the pitch makes way for the bench player best suited to
 /// his position.
 fn replace_the_injured(obs: &AiObservation<'_>) -> Option<MatchCommand> {
-    // With no substitutions left the side plays on a man short.
+    replacement_of(obs, obs.injured_on_pitch()?)
+}
+
+/// The substitution for `hurt`, a player of the observed side hurt on the pitch: the bench
+/// player best suited to his position. With no substitutions left the side plays on a man short.
+fn replacement_of(obs: &AiObservation<'_>, hurt: &PlayerData) -> Option<MatchCommand> {
     if obs.subs_made >= obs.max_subs {
         return None;
     }
-    let hurt = obs.injured_on_pitch()?;
     let on = find_best_bench_replacement(obs.bench, hurt.position, obs, None)?;
     Some(MatchCommand::Substitute {
         side: obs.side,
         player_off_id: hurt.id.clone(),
         player_on_id: on.id.clone(),
     })
+}
+
+/// The substitution the AI would make for `player_id`, a player of `side` hurt on the pitch, by
+/// the same choice it makes for a side it holds. `None` when he is not hurt on the pitch, or the
+/// side has no substitution or bench player left. The online injury window gives it to a side a
+/// manager holds once the manager has let the window run out (phase 3, S-8 S8-9).
+pub fn replacement_for_injured(
+    match_state: &LiveMatchState,
+    side: Side,
+    player_id: &str,
+) -> Option<MatchCommand> {
+    let obs = match_state.observe(side);
+    let hurt = obs.team.players.iter().find(|player| {
+        player.id == player_id && match_state.injured_on_pitch(side).contains(&player.id)
+    })?;
+    replacement_of(&obs, hurt)
 }
 
 /// Is this side behind in a way that calls for something to be done?

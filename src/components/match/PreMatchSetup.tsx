@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { radarRosterOf } from "./radar/radarMatch";
 import { useTranslation } from "react-i18next";
 import type { FixtureData, GameStateData } from "../../store/gameStore";
 import { getFixtureCompetitionName, getFixtureDisplayLabel } from "../../lib/helpers";
@@ -52,6 +53,7 @@ export default function PreMatchSetup({
   onUpdateSnapshot,
 }: PreMatchSetupProps) {
   const { t } = useTranslation();
+  const roster = useMemo(() => radarRosterOf(gameState.players), [gameState.players]);
   const [selectedStarterId, setSelectedStarterId] = useState<string | null>(null);
   const [isAutoSelecting, setIsAutoSelecting] = useState(false);
   const [activeTab, setActiveTab] = useState<"team" | "opponent">("team");
@@ -307,6 +309,7 @@ export default function PreMatchSetup({
           column height without squishing, capped by available width. */}
       <div className="flex min-h-0 justify-center overflow-y-auto">
         <FormationPitch
+          roster={roster}
           formation={userTeam.formation}
           players={userTeam.players}
           selectedId={selectedStarterId}
@@ -347,6 +350,7 @@ export default function PreMatchSetup({
         </div>
         <div className="flex min-h-0 flex-1 justify-center overflow-y-auto">
           <FormationPitch
+            roster={roster}
             formation={oppTeam.formation}
             players={oppTeam.players}
             roles={userSide === "Home" ? snapshot.away_set_pieces : snapshot.home_set_pieces}

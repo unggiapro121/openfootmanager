@@ -1,0 +1,168 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { Button, Card, CardBody, CardHeader } from "../../components/ui";
+import { resolveBackendError } from "../../utils/backendI18n";
+import type { AccountView } from "../api";
+import type { CoachRegion } from "../api/domain";
+import { online } from "../client";
+import { ONLINE_REGIONS } from "../format";
+import {
+  refreshClub,
+  refreshLeague,
+  refreshSeason,
+  tracked,
+  useOnlineStore,
+} from "../store/onlineStore";
+import { useActionKey } from "./useActionKey";
+
+/**
+ * The coach's online profile (C-2 §3.3, Qc2-6): who they are and their region. Changing region
+ * gives the club back to its bot at once, so it is confirmed first.
+ */
+export default function OnlineProfile() {
+  const { t } = useTranslation();
+  const [account, setAccount] = useState<AccountView | null>(null);
+  const [error, setError] = useState<unknown>(null);
+
+  useEffect(() => {
+    tracked(() => online.me.get())
+      .then(setAccount)
+      .catch(setError);
+  }, []);
+
+  return (
+    <Card className="max-w-2xl">
+      <CardHeader>{t("online.profile.title")}</CardHeader>
+      <CardBody className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
+        {error !== null && (
+          <p role="alert" className="text-red-600 dark:text-red-400">
+            {resolveBackendError(error)}
+          </p>
+        )}
+        {account ? (
+          <>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+              <dt className="font-semibold">{t("online.profile.name")}</dt>
+              <dd>{`${account.firstName} ${account.lastName}`}</dd>
+              <dt className="font-semibold">{t("online.profile.email")}</dt>
+              <dd>{account.email}</dd>
+              <dt className="font-semibold">{t("online.profile.region")}</dt>
+              <dd>{t(`coach.regions.${account.region}`)}</dd>
+            </dl>
+            <RegionChange account={account} onChanged={setAccount} />
+          </>
+        ) : (
+          error === null && <p>{t("online.loading")}</p>
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
+function RegionChange({
+  account,
+  onChanged,
+}: {
+  account: AccountView;
+  onChanged: (account: AccountView) => void;
+}) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const offline = useOnlineStore((state) => state.network === "offline");
+  const hasClub = useOnlineStore((state) => state.club !== null);
+  const [region, setRegion] = useState<CoachRegion>(account.region);
+  const [confirming, setConfirming] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<unknown>(null);
+  const [changed, setChanged] = useState(false);
+  const key = useActionKey();
+
+  const change = async () => {
+    setSending(true);
+    setError(null);
+    try {
+      const updated = await key.run(
+        (idempotencyKey) => tracked(() => online.me.update({ region }, idempotencyKey)),
+        region,
+      );
+      onChanged(updated);
+      setConfirming(false);
+      setChanged(true);
+      // The club went back to its bot: the shared views change with it.
+      await Promise.allSettled([refreshClub(), refreshLeague(), refreshSeason()]);
+    } catch (failure) {
+      setError(failure);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3 border-t border-gray-100 pt-4 dark:border-navy-600">
+      <label htmlFor="online-region" className="block text-xs font-semibold uppercase">
+        {t("online.profile.changeRegion")}
+      </label>
+      <select
+        id="online-region"
+        value={region}
+        onChange={(event) => {
+          setRegion(event.target.value as CoachRegion);
+          setConfirming(false);
+          setChanged(false);
+        }}
+        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100"
+      >
+        {ONLINE_REGIONS.map((option) => (
+          <option key={option} value={option}>
+            {t(`coach.regions.${option}`)}
+          </option>
+        ))}
+      </select>
+      {error !== null && (
+        <p role="alert" className="text-red-600 dark:text-red-400">
+          {resolveBackendError(error)}
+        </p>
+      )}
+      {confirming ? (
+        <div
+          role="alertdialog"
+          aria-labelledby="online-region-confirm"
+          className="space-y-3 rounded-lg border border-accent-400/50 bg-accent-50 p-4 dark:bg-accent-500/10"
+        >
+          <p id="online-region-confirm" className="font-semibold text-gray-900 dark:text-gray-100">
+            {t("online.profile.confirmTitle")}
+          </p>
+          <p>{t("online.profile.confirmBody")}</p>
+          <div className="flex gap-2">
+            <Button size="sm" onClick={change} disabled={sending || offline}>
+              {t("online.profile.confirm")}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>
+              {t("online.cancel")}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setConfirming(true)}
+          disabled={region === account.region || offline}
+        >
+          {t("online.profile.changeRegion")}
+        </Button>
+      )}
+      {changed && (
+        <div role="status" className="space-y-2">
+          <p>{t("online.profile.changed")}</p>
+          {!hasClub && (
+            <Button size="sm" onClick={() => navigate("/online/takeover")}>
+              {t("online.takeover.button")}
+            </Button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

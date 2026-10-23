@@ -174,6 +174,33 @@ pub struct TeamTrainingPlan {
     pub taper: Option<Taper>,
 }
 
+/// `team`'s plan for the day, with its staff `staff` (phase 3, E3-7): the standing focus,
+/// intensity and schedule, the coaches' bonus, what its medical and training facilities add, each
+/// training group's focus, and the taper the caller decided (the game from its fixture list; the
+/// online server passes none, S-7 S7-9).
+pub fn team_training_plan(
+    team: &domain::team::Team,
+    staff: &[&Staff],
+    taper: Option<Taper>,
+) -> TeamTrainingPlan {
+    let mut group_overrides = std::collections::HashMap::new();
+    for group in &team.training_groups {
+        for player_id in &group.player_ids {
+            group_overrides.insert(player_id.clone(), group.focus.clone());
+        }
+    }
+    TeamTrainingPlan {
+        default_focus: team.training_focus.clone(),
+        intensity: team.training_intensity.clone(),
+        schedule: team.training_schedule.clone(),
+        bonus: coaching_bonus(staff, &team.training_focus),
+        medical_facility_mult: crate::facilities::condition_recovery_mult(team.facilities.medical),
+        training_facility_mult: crate::facilities::development_mult(team.facilities.training),
+        group_overrides,
+        taper,
+    }
+}
+
 /// The dice of `player_id`'s session on `date` ("YYYY-MM-DD") in a world of `seed`: his own
 /// stream, so what he gets from a session never depends on who else trained that day or in which
 /// order (E3-5b, E5) — the online server trains clubs in no particular order.
@@ -330,6 +357,29 @@ pub fn train_player(
         * condition_rec
         * fitness_rec) as u8;
     player.condition = (player.condition + recovery).min(100);
+}
+
+/// One online day of `player` (phase 3, E3-7, S-7 Qs7-11): the day's session or rest under
+/// `plan`, then `rest_days` days more of recovery. An online season is a football year in 28
+/// days, so one online day is about thirteen football days; development is compressed by the
+/// season's multiplier, and this compresses recovery, or a match a day would wear every squad
+/// down (an XI at 15 condition by the last round). `rest_days` is the season ruleset's.
+pub fn train_online_day(
+    player: &mut Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    rest_days: u32,
+    rng: &mut impl Rng,
+) {
+    train_player(player, plan, day, rng);
+    if rest_days == 0 {
+        return;
+    }
+    let age =
+        crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32);
+    let recovery = (plan.bonus.physio_mult, plan.medical_facility_mult);
+    player.condition =
+        condition_after_rest(player, player.condition, age, recovery, rest_days * 24);
 }
 
 /// `player`'s condition after one rest day that started at `condition`: the day off's recovery,
@@ -599,5 +649,78 @@ mod tests {
             condition_after_rest(&player, 35, 27, (1.0, 1.0), 24 * 60),
             100
         );
+    }
+
+    /// Given a club with a training group, a medical level of 4, no staff and a taper,
+    /// when its plan for the day is built,
+    /// then the group's players train on the group's focus, the facilities' multipliers and the
+    /// taper are the club's, and a club without coaches gets the bare coaching multiplier.
+    #[test]
+    fn a_club_s_plan_comes_from_its_settings_staff_and_facilities() {
+        let mut team = domain::team::Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        team.training_focus = TrainingFocus::Technical;
+        team.facilities.medical = 4;
+        team.training_groups = vec![domain::team::TrainingGroup {
+            id: "g".into(),
+            name: "Backs".into(),
+            focus: TrainingFocus::Defending,
+            player_ids: vec!["back".into()],
+        }];
+        let plan = team_training_plan(&team, &[], Some(Taper::NearMatch));
+        assert_eq!(plan.default_focus, TrainingFocus::Technical);
+        assert_eq!(
+            plan.group_overrides.get("back"),
+            Some(&TrainingFocus::Defending)
+        );
+        assert_eq!(plan.taper, Some(Taper::NearMatch));
+        assert_eq!(
+            plan.medical_facility_mult,
+            crate::facilities::condition_recovery_mult(4)
+        );
+        assert_eq!(plan.bonus.coaching_mult, coaching_mult(&[]));
+        assert!(team_training_plan(&team, &[], None).taper.is_none());
+    }
+
+    /// Given a tired player on a rest day,
+    /// when his online day gives two more rest days,
+    /// then he ends where the day and two rest days one after another leave him.
+    #[test]
+    fn an_online_day_adds_its_rest_days_to_the_session() {
+        let team = domain::team::Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        let plan = team_training_plan(&team, &[], None);
+        let day = TrainingDay {
+            weekday_num: 6,
+            year: 2026,
+            date: "2026-07-01".into(),
+            development_multiplier: 10.0,
+        };
+        let mut online = tired_player();
+        train_online_day(&mut online, &plan, &day, 2, &mut session_rng(1, "p", "d"));
+        let mut by_hand = tired_player();
+        train_player(&mut by_hand, &plan, &day, &mut session_rng(1, "p", "d"));
+        let age = crate::age::age_on(&by_hand.date_of_birth, &day.date).unwrap() as u32;
+        let recovery = (plan.bonus.physio_mult, plan.medical_facility_mult);
+        for _ in 0..2 {
+            by_hand.condition =
+                rest_day_condition(&by_hand, by_hand.condition, age, recovery.0, recovery.1);
+        }
+        assert_eq!(online.condition, by_hand.condition);
+        assert!(online.condition > tired_player().condition);
     }
 }

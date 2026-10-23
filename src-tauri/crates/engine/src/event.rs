@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// A single event that occurred during the match.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct MatchEvent {
     pub minute: u8,
     pub event_type: EventType,
@@ -43,6 +44,7 @@ pub struct MatchEvent {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum TacticalContext {
     /// Part of an attack on the break, straight after the ball was won.
     Counter,
@@ -77,6 +79,7 @@ pub enum TacticalContext {
 
 /// What kind of attempt on goal an event records.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum ShotKind {
     /// A shot with the feet from inside the box.
     #[default]
@@ -91,6 +94,7 @@ pub enum ShotKind {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum SetPiece {
     Corner,
     FreeKick,
@@ -98,6 +102,7 @@ pub enum SetPiece {
 
 /// A third of the pitch's width, from the attacking side's point of view.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum Lane {
     Left,
     Centre,
@@ -105,6 +110,7 @@ pub enum Lane {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum EventType {
     // --- Structural events ---
     KickOff,
@@ -169,6 +175,7 @@ pub enum EventType {
 /// Every variant carries only values the engine already computes, so prose
 /// built from it never claims something that was not simulated.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum EventDetail {
     Shot { danger: DangerBand },
     Save { quality: SaveQuality },
@@ -177,6 +184,7 @@ pub enum EventDetail {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum DangerBand {
     Speculative,
     Decent,
@@ -184,6 +192,7 @@ pub enum DangerBand {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum SaveQuality {
     Routine,
     Strong,
@@ -191,6 +200,7 @@ pub enum SaveQuality {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum FoulSeverity {
     Soft,
     Hard,
@@ -198,6 +208,7 @@ pub enum FoulSeverity {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum GoalContext {
     Opener,
     Equaliser,

@@ -26,6 +26,7 @@ function Radar({ snapshot, paused = false, onCaughtUp }: RadarProps) {
   const [isOpen, setIsOpen] = useState(true);
   return (
     <MatchRadar2D
+      roster={new Map()}
       snapshot={snapshot}
       kits={kits}
       isOpen={isOpen}

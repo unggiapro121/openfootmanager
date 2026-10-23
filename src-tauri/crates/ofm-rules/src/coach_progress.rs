@@ -20,7 +20,7 @@ pub const RESET_HOUR: i64 = 4;
 /// no change of zone or offset can make a second day inside one.
 pub const MIN_RESET_GAP_HOURS: i64 = 20;
 /// How much more a real-time online match is worth than an offline one (D3).
-/// Used by the server's online matches; the offline game never applies it.
+/// The server's online matches pass it to [`apply_online`]; the offline game never applies it.
 pub const ONLINE_XP_MULTIPLIER: f64 = 5.0;
 /// How many matches a day can earn XP at all (D2).
 pub const DAILY_XP_MATCH_LIMIT: u32 = 50;
@@ -30,6 +30,7 @@ const SECONDS_PER_DAY: i64 = 86_400;
 
 /// One official match of a club the coach led, as his account counts it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub struct CoachMatchRecord {
     pub save_id: String,
     pub fixture_id: String,
@@ -48,6 +49,7 @@ pub struct CoachMatchRecord {
 
 /// What a career tells the coach's account.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub enum CoachRecord {
     Match(CoachMatchRecord),
     Honour(HonourKind),
@@ -123,6 +125,19 @@ pub fn apply(
     now_unix: i64,
     region: CoachRegion,
 ) -> (CoachProgress, Option<MasteryGain>) {
+    apply_online(progress, record, now_unix, region, 1.0)
+}
+
+/// [`apply`] for a match worth `multiplier` times an offline one: an online match is worth
+/// [`ONLINE_XP_MULTIPLIER`], from the season ruleset (§2.7). The day's allowance scales the
+/// multiplied XP, and a match that earns no XP earns none at any multiplier.
+pub fn apply_online(
+    progress: &CoachProgress,
+    record: &CoachRecord,
+    now_unix: i64,
+    region: CoachRegion,
+    multiplier: f64,
+) -> (CoachProgress, Option<MasteryGain>) {
     let mut next = progress.clone();
     let game = match record {
         CoachRecord::Honour(_) => {
@@ -150,7 +165,7 @@ pub fn apply(
     let factor = daily_factor(next.daily.counted_today);
     next.daily.counted_today += 1;
     let full = match_xp(outcome, game.own_strength, game.opponent_strength);
-    let xp = (f64::from(full) * factor).round() as u32;
+    let xp = (f64::from(full) * multiplier * factor).round() as u32;
     let (before, after) = bank_style_xp(&mut next.mastery, &mut next.style_xp, &game.style, xp);
     next.style_xp.for_style_mut(&game.style).matches += 1;
     let gain = MasteryGain {
@@ -311,6 +326,53 @@ mod tests {
         assert_eq!((next.totals.matches, next.totals.losses), (1, 1));
         assert_eq!(next.daily.counted_today, 0);
         assert_eq!(next.style_xp.counter.xp, 0);
+    }
+
+    /// Given the same win offline and online,
+    /// when each is applied, and when the 21st win of a day is applied online,
+    /// then the online one earns five times the XP, and the day's allowance halves the
+    /// multiplied XP; an online match without the right to XP still earns none.
+    #[test]
+    fn an_online_match_is_worth_five_offline_ones() {
+        let progress = CoachProgress::default();
+        let win = record(1, 0, true);
+        let offline = apply(&progress, &win, MIDNIGHT_UTC, CoachRegion::AsiaSoutheast).1;
+        let online = apply_online(
+            &progress,
+            &win,
+            MIDNIGHT_UTC,
+            CoachRegion::AsiaSoutheast,
+            ONLINE_XP_MULTIPLIER,
+        )
+        .1;
+        let (offline, online) = (offline.map(|g| g.xp), online.map(|g| g.xp));
+        assert_eq!(online, offline.map(|xp| xp * 5));
+
+        let (mut tired, _) = play_wins(20, MIDNIGHT_UTC);
+        tired.daily.counted_today = 20;
+        let halved = apply_online(
+            &tired,
+            &win,
+            MIDNIGHT_UTC + 30 * 60,
+            CoachRegion::AsiaSoutheast,
+            ONLINE_XP_MULTIPLIER,
+        )
+        .1
+        .map(|g| g.xp);
+        let full = offline
+            .map(|xp| xp * 5)
+            .map(|xp| (f64::from(xp) * 0.5).round() as u32);
+        assert_eq!(halved, full);
+
+        let none = apply_online(
+            &progress,
+            &record(1, 0, false),
+            MIDNIGHT_UTC,
+            CoachRegion::AsiaSoutheast,
+            ONLINE_XP_MULTIPLIER,
+        );
+        assert_eq!(none.1, None);
+        assert_eq!(none.0.totals.wins, 1);
     }
 
     /// Given a trophy, then the account's trophies go up and nothing else.

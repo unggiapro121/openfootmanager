@@ -1,14 +1,20 @@
 import type { TFunction } from "i18next";
 import type {
   MatchEvent,
-  MatchSnapshot,
   EventDetail,
   DangerBand,
   SaveQuality,
   FoulSeverity,
   GoalContext,
 } from "./types";
-import { getPlayerName } from "./helpers";
+import { getPlayerName, type PlayerNameSource } from "./helpers";
+
+/** What commentary reads of a match: the sides' names, their players' names and the events. */
+export type CommentarySource = PlayerNameSource & {
+  home_team: { name: string };
+  away_team: { name: string };
+  events: MatchEvent[];
+};
 
 /** Event types that get the full headline + prose treatment. */
 const COMMENTARY_EVENTS = new Set([
@@ -94,7 +100,7 @@ function detailVariant(detail: EventDetail | null | undefined): string | null {
 }
 
 /** Count goals scored by a player up to and including this event. */
-function goalTally(evt: MatchEvent, snapshot: MatchSnapshot): number {
+function goalTally(evt: MatchEvent, snapshot: CommentarySource): number {
   if (!evt.player_id) return 0;
   // `minute <=` (not an index/identity comparison) is intentional: the rendered
   // event is not always reference-identical to the entry in snapshot.events, so
@@ -114,7 +120,7 @@ function goalTally(evt: MatchEvent, snapshot: MatchSnapshot): number {
  * and kept the ball until the goal. Only the duel carries that context; the
  * goal itself does not.
  */
-function brokeIntoOpenFlank(goal: MatchEvent, snapshot: MatchSnapshot): boolean {
+function brokeIntoOpenFlank(goal: MatchEvent, snapshot: CommentarySource): boolean {
   let breaking: MatchEvent["side"] | null = null;
   for (const e of snapshot.events) {
     if (
@@ -141,7 +147,7 @@ function brokeIntoOpenFlank(goal: MatchEvent, snapshot: MatchSnapshot): boolean 
  * made (a header, a direct free kick, a
  * shot from distance), then the goal's context.
  */
-function variantKey(evt: MatchEvent, snapshot: MatchSnapshot): string | null {
+function variantKey(evt: MatchEvent, snapshot: CommentarySource): string | null {
   if (evt.event_type === "Goal" || evt.event_type === "PenaltyGoal") {
     const tally = goalTally(evt, snapshot);
     if (tally === 3) return "hattrick";
@@ -198,7 +204,7 @@ function pickLine(
  */
 export function getCommentary(
   evt: MatchEvent,
-  snapshot: MatchSnapshot,
+  snapshot: CommentarySource,
   t: TFunction,
   nameOf: (playerId: string | null) => string = (id) => getPlayerName(snapshot, id),
 ): Commentary | null {

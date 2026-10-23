@@ -274,9 +274,9 @@ describe("league and club filters", () => {
   it("reads a league's clubs from its explicit list or its country selector", () => {
     const teams = [team("arsenal", "ENG"), team("chelsea", "ENG"), team("real-madrid", "ESP")];
 
-    expect(
-      competitionClubIds(league({ participants: { explicit: ["arsenal"] } }), teams),
-    ).toEqual(new Set(["arsenal"]));
+    expect(competitionClubIds(league({ participants: { explicit: ["arsenal"] } }), teams)).toEqual(
+      new Set(["arsenal"]),
+    );
     expect(
       competitionClubIds(
         league({

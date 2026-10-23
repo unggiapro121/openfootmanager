@@ -1,7 +1,8 @@
 import type { PositionRating } from "../../store/types";
 import type { DragEvent, JSX } from "react";
 import { useTranslation } from "react-i18next";
-import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
+import type { TeamMatchRolesData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import type { DragState, SquadSection } from "../squad/SquadTab.helpers";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { getPlayerOvr } from "../../lib/helpers";
@@ -12,7 +13,7 @@ import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers
 import TacticsFilters from "./TacticsFilters";
 
 interface TacticsPlayerListProps {
-  bench: PlayerData[];
+  bench: TacticsRosterPlayer[];
   comparePlayerId: string | null;
   dragState: DragState | null;
   matchRoles?: TeamMatchRolesData;
@@ -34,7 +35,7 @@ interface TacticsPlayerListProps {
   playerSearch: string;
   positionFilter: string;
   selectedPlayerId: string | null;
-  starters: PlayerData[];
+  starters: TacticsRosterPlayer[];
   xiActivePosition: Map<string, string>;
   /** Each player's rating at every position, by id (backend). */
   positionRatings?: Record<string, PositionRating[]>;
@@ -97,7 +98,7 @@ function PlayerRow({
   onOpenPlayerProfile?: (playerId: string) => void;
   onPromoteBench?: (playerId: string) => void;
   onTacticalSelect: (playerId: string, section: SquadSection) => void;
-  player: PlayerData;
+  player: TacticsRosterPlayer;
   section: SquadSection;
   selectedPlayerId: string | null;
 }): JSX.Element {

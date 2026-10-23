@@ -1,4 +1,4 @@
-import type { MatchSnapshot } from "../types";
+import type { RadarMatch } from "./radarMatch";
 import type { BeatCaption } from "./radarCaptions";
 import {
   CENTRE_LANE,
@@ -152,7 +152,7 @@ export interface RadarBeat {
 
 const TRAIL_LENGTH = 4;
 
-export function initialRadarScene(snapshot: MatchSnapshot): RadarScene {
+export function initialRadarScene(snapshot: RadarMatch): RadarScene {
   const x = zoneCentreX(snapshot.ball_zone);
   return {
     ball: { x, y: CENTRE_LANE },

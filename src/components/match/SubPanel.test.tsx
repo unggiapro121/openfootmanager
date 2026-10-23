@@ -166,7 +166,7 @@ describe("SubPanel", () => {
     const props = createProps();
     props.snapshot.injured = ["starter-2"];
 
-    render(<SubPanel {...props} initialOff="starter-2" />);
+    render(<SubPanel roster={new Map()} {...props} initialOff="starter-2" />);
 
     expect(screen.getByText("match.injuredPrompt")).toBeInTheDocument();
     expect(screen.getByLabelText("match.injuredBadge")).toBeInTheDocument();
@@ -180,7 +180,7 @@ describe("SubPanel", () => {
   it("shows a disabled bench context menu action until a player is selected to come off", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.contextMenu(screen.getByTestId("sub-panel-bench-bench-1"));
 
@@ -192,7 +192,7 @@ describe("SubPanel", () => {
   it("supports the substitution selection flow through context menus", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.contextMenu(screen.getByTestId("sub-panel-off-starter-1"));
     fireEvent.click(screen.getByRole("menuitem", { name: "Select to take off" }));
@@ -210,7 +210,7 @@ describe("SubPanel", () => {
   it("stays open and ready for the next change after a substitution", async () => {
     const props = { ...createProps(), onSubstitute: vi.fn().mockResolvedValue(true) };
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.contextMenu(screen.getByTestId("sub-panel-off-starter-1"));
     fireEvent.click(screen.getByRole("menuitem", { name: "Select to take off" }));
@@ -229,7 +229,7 @@ describe("SubPanel", () => {
   it("keeps the choice when the substitution is refused", async () => {
     const props = { ...createProps(), onSubstitute: vi.fn().mockResolvedValue(false) };
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.contextMenu(screen.getByTestId("sub-panel-off-starter-1"));
     fireEvent.click(screen.getByRole("menuitem", { name: "Select to take off" }));
@@ -245,7 +245,7 @@ describe("SubPanel", () => {
   it("closes from the Done button once the changes are made", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
 
     expect(props.onClose).toHaveBeenCalled();
@@ -254,7 +254,7 @@ describe("SubPanel", () => {
   it("allows clearing the selected off-player through the context menu", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.contextMenu(screen.getByTestId("sub-panel-off-starter-1"));
     fireEvent.click(screen.getByRole("menuitem", { name: "Select to take off" }));
@@ -270,7 +270,7 @@ describe("SubPanel", () => {
   it("surfaces recommendations and applies the recommended play style", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     expect(screen.getByTestId("recommended-sub-starter-1-bench-1")).toBeInTheDocument();
 
@@ -282,7 +282,7 @@ describe("SubPanel", () => {
   it("applies formation from quick tactical tweaks", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.click(screen.getByRole("combobox", { name: "tactics.formation" }));
     fireEvent.click(screen.getByRole("option", { name: "4-3-3" }));
@@ -293,7 +293,7 @@ describe("SubPanel", () => {
   it("lets a recommendation prefill the swap flow", () => {
     const props = createProps();
 
-    render(<SubPanel {...props} />);
+    render(<SubPanel roster={new Map()} {...props} />);
 
     fireEvent.click(screen.getByTestId("recommended-sub-starter-1-bench-1"));
 
@@ -355,7 +355,7 @@ describe("SubPanel position swaps", () => {
   // pitch, then the panel asks for the two to trade positions.
   it("swaps a player into a sent-off player's slot by dragging", () => {
     const p = props(elevenASide({ sent_off: ["p2"] }));
-    render(<SubPanel {...p} />);
+    render(<SubPanel roster={new Map()} {...p} />);
 
     drag("p9", "p2");
 
@@ -366,7 +366,7 @@ describe("SubPanel position swaps", () => {
   // positions costs no substitution.
   it("keeps the pitch for position swaps once every substitution is used", () => {
     const p = props(elevenASide({ home_subs_made: 5 }));
-    render(<SubPanel {...p} />);
+    render(<SubPanel roster={new Map()} {...p} />);
 
     expect(screen.getByText("match.allSubsUsed")).toBeInTheDocument();
     drag("p1", "p10");
@@ -381,7 +381,7 @@ describe("SubPanel position swaps", () => {
     const snapshot = elevenASide();
     const p = props({ ...snapshot, home_subs_made: snapshot.max_subs });
 
-    render(<SubPanel {...p} />);
+    render(<SubPanel roster={new Map()} {...p} />);
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
 
     expect(p.onClose).toHaveBeenCalled();
@@ -389,7 +389,7 @@ describe("SubPanel position swaps", () => {
 
   it("lists the sent-off player without letting him be taken off", () => {
     const p = props(elevenASide({ sent_off: ["p2"] }));
-    render(<SubPanel {...p} />);
+    render(<SubPanel roster={new Map()} {...p} />);
 
     const row = screen.getByTestId("sub-panel-off-p2");
     expect(row).toHaveAttribute("aria-disabled", "true");
@@ -411,7 +411,7 @@ describe("SubPanel position swaps", () => {
         { position: "Striker", ovr: 52, fit: "Unfamiliar" },
       ],
     });
-    render(<SubPanel {...props(snapshot)} />);
+    render(<SubPanel roster={new Map()} {...props(snapshot)} />);
 
     const row = screen.getByTestId("sub-panel-off-p9");
     expect(within(row).getByText("common.posAbbr.Striker")).toBeInTheDocument();
@@ -434,7 +434,7 @@ describe("SubPanel position swaps", () => {
         }),
       ],
     });
-    render(<SubPanel {...props(snapshot)} />);
+    render(<SubPanel roster={new Map()} {...props(snapshot)} />);
 
     fireEvent.click(screen.getByTestId("sub-panel-off-p9"));
 
@@ -447,7 +447,7 @@ describe("SubPanel position swaps", () => {
   // then the panel asks for the change with the role the slot admits.
   it("changes a player's role during the match", () => {
     const p = props(elevenASide());
-    render(<SubPanel {...p} />);
+    render(<SubPanel roster={new Map()} {...p} />);
 
     const row = screen.getByTestId("sub-panel-off-p9");
     fireEvent.click(within(row).getByRole("combobox", { name: "tactics.playerRoleLabel" }));
@@ -459,7 +459,7 @@ describe("SubPanel position swaps", () => {
   // Given the substitution panel, then its pitch uses the compact token so the
   // whole shape fits the dialog.
   it("draws the pitch with compact tokens", () => {
-    render(<SubPanel {...props(elevenASide())} />);
+    render(<SubPanel roster={new Map()} {...props(elevenASide())} />);
 
     const token = screen.getByTestId("pitch-token-p9");
     expect(within(token).getByTestId("pitch-token-avatar")).toHaveClass("h-8");

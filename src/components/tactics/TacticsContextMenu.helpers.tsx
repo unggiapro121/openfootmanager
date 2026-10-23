@@ -15,7 +15,8 @@ import type { TFunction } from "i18next";
 
 import type { ContextMenuItem } from "../ContextMenu";
 import { buildDividerMenuItem } from "../playerActions/playerContextMenuItems";
-import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
+import type { TeamMatchRolesData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import type { SquadSection } from "../squad/SquadTab.helpers";
 
 interface TacticsContextMenuCallbacks {
@@ -32,7 +33,7 @@ interface TacticsContextMenuCallbacks {
 interface BuildTacticsPlayerContextMenuItemsOptions extends TacticsContextMenuCallbacks {
   isSelected: boolean;
   matchRoles?: TeamMatchRolesData;
-  player: PlayerData;
+  player: TacticsRosterPlayer;
   section: SquadSection;
   selectedPlayerId: string | null;
   t: TFunction;

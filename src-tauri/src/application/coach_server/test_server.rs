@@ -15,7 +15,10 @@ pub struct Recorded {
     pub body: serde_json::Value,
 }
 
-type Handler = dyn Fn(&Recorded) -> (u16, serde_json::Value) + Send + Sync;
+/// A status, a body, and headers to add to the answer.
+pub type Answer = (u16, serde_json::Value, Vec<(String, String)>);
+
+type Handler = dyn Fn(&Recorded) -> Answer + Send + Sync;
 
 pub struct TestServer {
     pub url: String,
@@ -26,6 +29,16 @@ impl TestServer {
     /// Serve on a free local port until the test process ends.
     pub fn start(
         handler: impl Fn(&Recorded) -> (u16, serde_json::Value) + Send + Sync + 'static,
+    ) -> Self {
+        Self::start_with_headers(move |request| {
+            let (status, body) = handler(request);
+            (status, body, Vec::new())
+        })
+    }
+
+    /// As [`TestServer::start`], with headers on the answers.
+    pub fn start_with_headers(
+        handler: impl Fn(&Recorded) -> Answer + Send + Sync + 'static,
     ) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").expect("a free port");
         let url = format!("http://{}", listener.local_addr().expect("an address"));
@@ -90,7 +103,15 @@ fn serve(stream: TcpStream, kept: &Mutex<Vec<Recorded>>, handler: &Handler) {
     };
     // Kept before it is answered, so a request still being answered is already seen.
     kept.lock().expect("requests").push(request.clone());
-    let (status, answer) = handler(&request);
+    let (status, answer, extra) = handler(&request);
+    if status == 0 {
+        // A status of 0 drops the connection unanswered: to the game, the server is unreachable.
+        return;
+    }
+    let extra: String = extra
+        .iter()
+        .map(|(name, value)| format!("{name}: {value}\r\n"))
+        .collect();
     // `null` stands for no body at all, as a 204 sends.
     let answer = if answer.is_null() {
         String::new()
@@ -100,7 +121,7 @@ fn serve(stream: TcpStream, kept: &Mutex<Vec<Recorded>>, handler: &Handler) {
     let mut stream = stream;
     let written = write!(
         stream,
-        "HTTP/1.1 {status} X\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{answer}",
+        "HTTP/1.1 {status} X\r\nContent-Type: application/json\r\n{extra}Content-Length: {}\r\nConnection: close\r\n\r\n{answer}",
         answer.len()
     );
     if written.is_err() {

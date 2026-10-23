@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { Badge, Card, CardBody, CardHeader } from "../ui";
 
-interface LeagueStandingSnapshot {
+export interface LeagueStandingSnapshot {
   team_id: string;
   played: number;
   won: number;

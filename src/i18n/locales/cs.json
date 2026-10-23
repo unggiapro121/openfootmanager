@@ -28,6 +28,223 @@
     "startupOptionsRejected": "Tato nastavení kariéry nebylo možné použít. Vraťte se na obrazovku světa a zkontrolujte rok začátku, fázi začátku a kolik minulé historie se má vygenerovat.",
     "reportBug": "Nahlásit chybu"
   },
+  "online": {
+    "title": "Online režim",
+    "menuButton": "Hrát online",
+    "loading": "Načítání…",
+    "retry": "Zkusit znovu",
+    "cancel": "Zrušit",
+    "offlineBanner": "Online server není dostupný. Zobrazené údaje mohou být zastaralé a změny jsou vypnuté, dokud znovu neodpoví.",
+    "nav": {
+      "label": "Navigace online režimu",
+      "overview": "Přehled",
+      "profile": "Profil trenéra",
+      "mainMenu": "Hlavní nabídka",
+      "squad": "Kádr",
+      "tactics": "Taktika",
+      "training": "Trénink",
+      "league": "Liga",
+      "schedule": "Rozpis"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Je potřeba aktualizace",
+      "serverOutdatedTitle": "Server se aktualizuje"
+    },
+    "header": {
+      "season": "Sezóna {{number}}",
+      "seasonDay": "Sezóna {{number}} · Den {{day}}/{{total}}",
+      "nextKickoff": "Další zápas za {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} d {{clock}}"
+    },
+    "season": {
+      "title": "Sezóna",
+      "none": "Neprobíhá žádná online sezóna. Vraťte se později.",
+      "day": "Den {{day}} z {{total}}",
+      "footballYear": "Fotbalový rok {{year}}",
+      "nextDay": "Další den začne za {{time}}",
+      "status": {
+        "scheduled": "Naplánovaná",
+        "preseason": "Příprava",
+        "running": "Probíhá",
+        "closing": "Končí",
+        "closed": "Skončená"
+      }
+    },
+    "club": {
+      "title": "Váš klub",
+      "rename": "Přejmenovat",
+      "renameLabel": "Nový název klubu",
+      "renameHint": "Klub můžete přejmenovat jednou za sezónu.",
+      "save": "Uložit",
+      "stadium": "{{name}} ({{capacity}} míst)"
+    },
+    "fixture": {
+      "title": "Další zápas",
+      "none": "Zatím není naplánován žádný zápas.",
+      "versus": "proti {{club}}",
+      "home": "Doma",
+      "away": "Venku",
+      "round": "Kolo {{round}}",
+      "kickoff": "Výkop: {{time}}",
+      "regionTime": "{{time}} podle času regionu {{region}}",
+      "countdown": "Výkop za {{time}}",
+      "prepared": "Zápas se připravuje: sestava je uzamčena.",
+      "openResult": "Výsledek zápasu {{home}} proti {{away}}",
+      "void": "Anulováno",
+      "noLines": "K tomuto zápasu se neuložily údaje o hráčích.",
+      "minutes": "Min",
+      "assists": "As",
+      "cards": "Karty",
+      "rating": "Známka",
+      "redCard": "Červená",
+      "yellowCards": "Žlutých: {{cards}}",
+      "watchMatch": "Sledovat živě {{home}} – {{away}}",
+      "watchLive": "Živě · Sledovat",
+      "enterLive": "Váš zápas běží — sledovat",
+      "enterMatch": "Přejít na zápas"
+    },
+    "league": {
+      "title": "Liga",
+      "none": "Váš klub v této sezóně nehraje žádnou ligu. Zapojí se do lig příští sezóny.",
+      "heading": "{{name}} · Úroveň {{level}}",
+      "progress": "Odehráno {{done}} z {{total}} zápasů",
+      "rankedPerMatch": "Jeden zápas této ligy byl anulován, tabulka proto řadí podle bodů na zápas.",
+      "coach": "Trenér",
+      "bot": "AI",
+      "previousRound": "Předchozí kolo",
+      "nextRound": "Další kolo"
+    },
+    "takeover": {
+      "title": "Převzít klub",
+      "intro": "Abyste mohli hrát online, vedete klub ve sdíleném světě. Co dostanete, závisí na vaší historii:",
+      "returning": "Návrat: dostanete zpět svůj dřívější klub v současném stavu, pokud ho nikdo nepřevzal.",
+      "newcomer": "Poprvé: převezmete místo bota v lize své úrovně s novým základním kádrem. Nový kádr dostane každý účet jen jednou.",
+      "other": "Jinak: převezmete klub bota v současném stavu, v lize své úrovně.",
+      "button": "Převzít klub",
+      "working": "Přebírání…",
+      "retryIn": "Znovu to můžete zkusit za {{seconds}} s.",
+      "result": {
+        "fresh": "Nyní vedete {{club}} s novým základním kádrem.",
+        "return": "Vítejte zpět v klubu {{club}}.",
+        "asIs": "Nyní vedete {{club}} v současném stavu."
+      },
+      "makingSquad": "Váš kádr se vytváří…",
+      "squadSlow": "Vytvoření kádru trvá déle než obvykle. Otevřete klub i tak, hráči se brzy objeví.",
+      "enter": "Přejít do mého klubu"
+    },
+    "profile": {
+      "title": "Profil trenéra",
+      "name": "Celé jméno",
+      "email": "E-mail",
+      "region": "Region",
+      "changeRegion": "Změnit region",
+      "confirmTitle": "Změnit region?",
+      "confirmBody": "Váš současný klub se okamžitě vrátí svému botovi. Poté převezmete klub v současném stavu v novém regionu, nejvýše jednou za sezónu.",
+      "confirm": "Ano, změnit region",
+      "changed": "Region změněn. Převezměte klub ve svém novém regionu."
+    },
+    "tactics": {
+      "locked": "Sestava je uzamčena pro zápas v {{time}}. Změnit ji můžete po skončení zápasu.",
+      "lockedNow": "Sestava na další zápas je uzamčena.",
+      "stale": "Vaše sestava byla změněna jinde. Tabule teď ukazuje uloženou verzi; proveďte změnu znovu.",
+      "invalid": "Server tuto sestavu nepřijal:",
+      "unknownPlayer": "hráč, který už není v kádru",
+      "issue": {
+        "unknownFormation": "Tuto rozestavu hra nezná.",
+        "startingElevenSize": "Základní sestava musí mít přesně 11 hráčů.",
+        "duplicateStarter": "{{player}} je v základní sestavě dvakrát.",
+        "notInSquad": "{{player}} není ve vašem kádru."
+      }
+    },
+    "squad": {
+      "empty": "Váš kádr zatím nemá žádné hráče.",
+      "title": "Kádr ({{players}})",
+      "potential": "Potenciál",
+      "potentialStars": "Potenciál: {{stars}} z 5 hvězd",
+      "apps": "Záp.",
+      "goals": "Góly",
+      "fitness": "Herní forma",
+      "seasonLine": "Tato sezóna: {{apps}} zápasů, {{goals}} gólů, {{assists}} asistencí, průměrná známka {{rating}}"
+    },
+    "training": {
+      "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."
+    },
+    "schedule": {
+      "title": "Rozpis sezóny",
+      "outcome": {
+        "W": "Výhra",
+        "D": "Remíza",
+        "L": "Prohra"
+      },
+      "outcomeShort": {
+        "W": "V",
+        "D": "R",
+        "L": "P"
+      }
+    },
+    "publicClub": {
+      "formation": "Rozestavení: {{formation}}",
+      "coach": "Trenér: {{name}}",
+      "botCoach": "Vede ho AI"
+    },
+    "overview": {
+      "lastResult": "Poslední výsledek",
+      "noResult": "V této sezóně zatím žádný výsledek."
+    },
+    "match": {
+      "byCoach": "{{team}}: řídí trenér",
+      "byAi": "{{team}}: řídí AI",
+      "youCoach": "Řídíte svůj tým.",
+      "aiCoaches": "Váš tým řídí AI, protože jste byli pryč.",
+      "takingCharge": "Přebíráte vedení týmu…",
+      "orderTakesCharge": "Odesláním pokynu získáte vedení zpět.",
+      "seeResult": "Zobrazit výsledek",
+      "reconnecting": "Spojení ztraceno — připojuji znovu…",
+      "halfTime": "Poločas — druhý poločas začne asi za {{seconds}} s.",
+      "hurt": "{{player}} je zraněný. Vystřídejte ho do {{seconds}} s, jinak to udělá AI.",
+      "hurtNow": "{{player}} je zraněný. AI ho právě střídá.",
+      "replace": "Vystřídat",
+      "leaveWarning": "Opustíte-li tuto obrazovku asi na 20 sekund, tým převezme AI.",
+      "scoreLine": "Skóre: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Panely zápasu",
+      "adjusted": "{{team}} upravil taktiku",
+      "touchline": "Postranní čára",
+      "playerOff": "Střídaný hráč",
+      "playerOn": "Střídající hráč",
+      "swapTitle": "Prohodit pozice",
+      "swapFirst": "První hráč",
+      "swapSecond": "Druhý hráč",
+      "swap": "Prohodit",
+      "order": {
+        "substitute": "{{on}} střídá {{off}}",
+        "swap": "{{a}} a {{b}} si prohodí pozice",
+        "formation": "Přejít na {{formation}}",
+        "playStyle": "Herní styl: {{style}}",
+        "other": "Pokyn"
+      },
+      "sent": {
+        "title": "Odeslané pokyny",
+        "pending": "— uplatní se v příští minutě…",
+        "applied": "— uplatněno",
+        "refused": "— odmítnuto",
+        "refusedWhy": "— odmítnuto: {{reason}}"
+      }
+    },
+    "replay": {
+      "title": "Záznam",
+      "controls": "Ovládání záznamu",
+      "play": "Přehrát",
+      "pause": "Pozastavit",
+      "restart": "Sledovat od výkopu",
+      "speed": "Rychlost záznamu",
+      "times": "{{speed}}×",
+      "jump": "Přejít na minutu",
+      "watch": "Přehrát záznam",
+      "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek."
+    }
+  },
   "coach": {
     "loginTitle": "Vyberte manažera",
     "loginSubtitle": "Váš manažer je stejný ve všech kariérách: zvládnutí stylů a bilance se sčítají.",
@@ -3310,7 +3527,8 @@
         "saveWithoutAccount": "Tato kariéra zatím nemá účet manažera.",
         "managedByServer": "Trenérské účty spravuje server účtů.",
         "serverNotConfigured": "Pro tuto hru není nastaven žádný server účtů.",
-        "serverUnexpected": "Server účtů poslal odpověď, kterou hra neumí přečíst."
+        "serverUnexpected": "Server účtů poslal odpověď, kterou hra neumí přečíst.",
+        "reportInvalid": "Zápis o zápase nelze přijmout."
       },
       "teamNotFound": "Tým nebyl nalezen",
       "jobOffer": {
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "Kód je špatný nebo vypršel.",
         "refreshInvalid": "Relace skončila. Přihlaste se znovu.",
         "unauthorized": "Relace skončila. Přihlaste se znovu.",
-        "forbidden": "K této akci nemáte oprávnění."
+        "forbidden": "K této akci nemáte oprávnění.",
+        "refreshRaced": "Jiná kopie hry právě obnovuje vaši relaci. Zkuste to znovu."
       },
       "validation": {
         "invalid": "Některé údaje nebyly přijaty. Zkontrolujte formulář a zkuste to znovu."
@@ -3592,7 +3811,50 @@
       "rateLimited": "Příliš mnoho pokusů. Chvíli počkejte a zkuste to znovu.",
       "unavailable": "Server účtů je nedostupný. Zkuste to později.",
       "timeout": "Server účtů odpovídal příliš dlouho.",
-      "internal": "Na serveru účtů došlo k chybě."
+      "internal": "Na serveru účtů došlo k chybě.",
+      "notFound": "Nenalezeno.",
+      "methodNotAllowed": "Tato akce není dostupná.",
+      "payloadTooLarge": "Požadavek je příliš velký.",
+      "idempotency": {
+        "keyRequired": "Požadavek byl neúplný. Zkuste to znovu.",
+        "keyInvalid": "Požadavek je neplatný. Zkuste to znovu.",
+        "mismatch": "Tato akce už byla odeslána s jinými údaji. Začněte ji znovu."
+      },
+      "account": {
+        "regionChangeTooSoon": "Region jste nedávno změnili. Znovu jej můžete změnit od {{availableAt}}."
+      },
+      "club": {
+        "none": "Zatím nevedete žádný klub.",
+        "alreadyOwned": "Už vedete klub.",
+        "noneFree": "Ve vašem regionu teď není žádný volný klub. Zkuste to za chvíli znovu.",
+        "matchUnderway": "Tento klub právě hraje zápas (výkop {{kickoffAt}}). Zkuste to po jeho skončení.",
+        "takeoverLimit": "V této sezóně jste už klub převzali.",
+        "setupInvalid": "Tuto sestavu nelze použít. Zkontrolujte označené hráče.",
+        "versionStale": "Váš klub se od otevření změnil. Načtěte jej znovu a zkuste to znovu.",
+        "nameTaken": "Tento název už má jiný klub.",
+        "nameBlocked": "Tento název není povolen.",
+        "renameLimit": "Klub můžete přejmenovat jednou za sezónu.",
+        "lineupLocked": "Sestava je uzamčena pro zápas s výkopem v {{kickoffAt}}. Změnit ji můžete po skončení zápasu."
+      },
+      "match": {
+        "notLive": "Zápas se právě nehraje.",
+        "notYourSide": "Pokyny můžete dávat jen svému týmu.",
+        "tooManyCommands": "Čeká příliš mnoho pokynů. Počkejte, až se použijí ty předchozí."
+      },
+      "realtime": {
+        "badMessage": "Hra poslala živému serveru zprávu, kterou nedokázal přečíst.",
+        "unknownChannel": "Tento zápas nebo soutěž nelze sledovat živě.",
+        "tooManyChannels": "Sledujete příliš mnoho zápasů a soutěží najednou. Jeden zavřete a zkuste to znovu.",
+        "tokenRefused": "Živé připojení nedokázalo obnovit vaše přihlášení. Pokud se to opakuje, přihlaste se znovu."
+      },
+      "online": {
+        "notSignedIn": "Pro hru online se přihlaste ke svému online účtu.",
+        "unreachable": "Online server je nedostupný. Zkontrolujte připojení a zkuste to znovu.",
+        "serverUnexpected": "Online server poslal odpověď, kterou hra nedokáže přečíst. Zkuste to později.",
+        "routeNotAllowed": "Tato online akce není v této verzi hry dostupná.",
+        "clientOutdated": "Pro hru online je potřeba novější verze hry. Aktualizujte hru.",
+        "serverOutdated": "Online server se právě aktualizuje. Zkuste to později."
+      }
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",

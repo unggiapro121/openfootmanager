@@ -16,6 +16,12 @@ rand_chacha = "0.10"
 serde = { version = "1.0.228", features = ["derive"] }
 # The minute hash is taken over a canonical serialisation of each step's summary.
 serde_json = "1.0"
+# TypeScript declarations for the types that cross to a client (phase 3, E3-6a). Off by default:
+# only the test-only crate `ofm-bindings` turns it on, so a game or server build never compiles ts-rs.
+ts-rs = { version = "12.0.1", optional = true }
+
+[features]
+ts = ["dep:ts-rs", "domain/ts", "engine/ts"]
 
 [lints]
 workspace = true

@@ -28,6 +28,223 @@
     "startupOptionsRejected": "无法使用这些生涯设置。请返回世界界面，检查起始年份、起始阶段以及要生成的历史年限。",
     "reportBug": "报告错误"
   },
+  "online": {
+    "title": "在线模式",
+    "menuButton": "在线游戏",
+    "loading": "加载中…",
+    "retry": "重试",
+    "cancel": "取消",
+    "offlineBanner": "无法连接在线服务器。当前显示的内容可能已过时，在服务器恢复响应前无法进行更改。",
+    "nav": {
+      "label": "在线模式导航",
+      "overview": "概览",
+      "profile": "主教练资料",
+      "mainMenu": "主菜单",
+      "squad": "阵容",
+      "tactics": "战术",
+      "training": "训练",
+      "league": "联赛",
+      "schedule": "赛程"
+    },
+    "gate": {
+      "clientOutdatedTitle": "需要更新",
+      "serverOutdatedTitle": "服务器正在更新"
+    },
+    "header": {
+      "season": "第 {{number}} 赛季",
+      "seasonDay": "第 {{number}} 赛季 · 第 {{day}}/{{total}} 天",
+      "nextKickoff": "距下一场比赛 {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} 天 {{clock}}"
+    },
+    "season": {
+      "title": "赛季",
+      "none": "目前没有进行中的在线赛季，请稍后再来。",
+      "day": "第 {{day}} 天，共 {{total}} 天",
+      "footballYear": "足球年份 {{year}}",
+      "nextDay": "距下一天开始 {{time}}",
+      "status": {
+        "scheduled": "已安排",
+        "preseason": "季前",
+        "running": "进行中",
+        "closing": "收尾中",
+        "closed": "已结束"
+      }
+    },
+    "club": {
+      "title": "你的俱乐部",
+      "rename": "改名",
+      "renameLabel": "俱乐部新名称",
+      "renameHint": "每个赛季可以给俱乐部改名一次。",
+      "save": "保存",
+      "stadium": "{{name}}（{{capacity}} 个座位）"
+    },
+    "fixture": {
+      "title": "下一场比赛",
+      "none": "还没有安排比赛。",
+      "versus": "对阵 {{club}}",
+      "home": "主场",
+      "away": "客场",
+      "round": "第 {{round}} 轮",
+      "kickoff": "开球：{{time}}",
+      "regionTime": "{{region}} 时间 {{time}}",
+      "countdown": "距开球 {{time}}",
+      "prepared": "比赛准备中：首发阵容已锁定。",
+      "openResult": "{{home}} 对 {{away}} 的比赛结果",
+      "void": "作废",
+      "noLines": "这场比赛没有保存球员数据。",
+      "minutes": "分钟",
+      "assists": "助攻",
+      "cards": "牌",
+      "rating": "评分",
+      "redCard": "红牌",
+      "yellowCards": "{{cards}} 张黄牌",
+      "watchMatch": "观看 {{home}} – {{away}} 直播",
+      "watchLive": "直播中 · 观看",
+      "enterLive": "你的比赛正在进行——进入观看",
+      "enterMatch": "进入比赛"
+    },
+    "league": {
+      "title": "联赛",
+      "none": "本赛季你的俱乐部不参加任何联赛，将从下个赛季加入联赛。",
+      "heading": "{{name}} · 第 {{level}} 级",
+      "progress": "已赛 {{done}}/{{total}} 场",
+      "rankedPerMatch": "本联赛有一场比赛结果作废，因此积分榜按场均积分排名。",
+      "coach": "主教练",
+      "bot": "AI",
+      "previousRound": "上一轮",
+      "nextRound": "下一轮"
+    },
+    "takeover": {
+      "title": "接手俱乐部",
+      "intro": "在线模式中，你在共享世界里执掌一家俱乐部。你会得到哪家俱乐部取决于你的经历：",
+      "returning": "回归：如果没有人接手，你将按原样取回之前的俱乐部。",
+      "newcomer": "首次：你在与你等级相同的联赛中接替一个机器人席位，并获得一套全新的初始阵容。每个账号只能获得一次全新阵容。",
+      "other": "其他情况：你按原样接手一家机器人俱乐部，所在联赛与你等级相同。",
+      "button": "接手俱乐部",
+      "working": "正在接手…",
+      "retryIn": "{{seconds}} 秒后可以重试。",
+      "result": {
+        "fresh": "你现在执掌 {{club}}，拥有全新的初始阵容。",
+        "return": "欢迎回到 {{club}}。",
+        "asIs": "你现在按原样执掌 {{club}}。"
+      },
+      "makingSquad": "正在生成你的阵容…",
+      "squadSlow": "生成阵容的时间比平常长。你可以先进入俱乐部，球员很快就会出现。",
+      "enter": "进入我的俱乐部"
+    },
+    "profile": {
+      "title": "主教练资料",
+      "name": "姓名",
+      "email": "电子邮箱",
+      "region": "地区",
+      "changeRegion": "更换地区",
+      "confirmTitle": "更换地区？",
+      "confirmBody": "你当前的俱乐部会立即交还给它的机器人。之后你将在新地区按原样接手一家俱乐部，每个赛季最多一次。",
+      "confirm": "确定更换地区",
+      "changed": "地区已更换。请在新地区接手一家俱乐部。"
+    },
+    "tactics": {
+      "locked": "{{time}} 开始的比赛首发阵容已锁定，比赛结束后才能再修改。",
+      "lockedNow": "下一场比赛的首发阵容已锁定。",
+      "stale": "你的阵容已在别处被修改。战术板现在显示已保存的阵容，请重新做一次修改。",
+      "invalid": "服务器没有接受这个阵容：",
+      "unknownPlayer": "一名已不在阵中的球员",
+      "issue": {
+        "unknownFormation": "游戏中没有这个阵型。",
+        "startingElevenSize": "首发阵容必须正好 11 人。",
+        "duplicateStarter": "{{player}} 在首发阵容中出现了两次。",
+        "notInSquad": "{{player}} 不在你的阵中。"
+      }
+    },
+    "squad": {
+      "empty": "你的阵中还没有球员。",
+      "title": "阵容（{{players}}）",
+      "potential": "潜力",
+      "potentialStars": "潜力：{{stars}}/5 星",
+      "apps": "出场",
+      "goals": "进球",
+      "fitness": "比赛状态",
+      "seasonLine": "本赛季：出场 {{apps}} 次，进球 {{goals}} 个，助攻 {{assists}} 次，平均评分 {{rating}}"
+    },
+    "training": {
+      "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。"
+    },
+    "schedule": {
+      "title": "本赛季赛程",
+      "outcome": {
+        "W": "胜",
+        "D": "平",
+        "L": "负"
+      },
+      "outcomeShort": {
+        "W": "胜",
+        "D": "平",
+        "L": "负"
+      }
+    },
+    "publicClub": {
+      "formation": "阵型：{{formation}}",
+      "coach": "主教练：{{name}}",
+      "botCoach": "由 AI 执教"
+    },
+    "overview": {
+      "lastResult": "最近一场结果",
+      "noResult": "本赛季还没有比赛结果。"
+    },
+    "match": {
+      "byCoach": "{{team}}：教练指挥",
+      "byAi": "{{team}}：AI 指挥",
+      "youCoach": "你正在指挥本队。",
+      "aiCoaches": "你离开期间由 AI 代为指挥本队。",
+      "takingCharge": "正在接管本队指挥…",
+      "orderTakesCharge": "发出指令即可收回指挥权。",
+      "seeResult": "查看结果",
+      "reconnecting": "连接中断——正在重连…",
+      "halfTime": "中场休息——约 {{seconds}} 秒后开始下半场。",
+      "hurt": "{{player}} 受伤了。请在 {{seconds}} 秒内换下他，否则 AI 将代为换人。",
+      "hurtNow": "{{player}} 受伤了。AI 正在换下他。",
+      "replace": "换人",
+      "leaveWarning": "离开此界面约 20 秒后，AI 将代为指挥本队。",
+      "scoreLine": "比分：{{home}} {{homeScore}}，{{away}} {{awayScore}}",
+      "panels": "比赛面板",
+      "adjusted": "{{team}} 调整了战术",
+      "touchline": "场边指挥",
+      "playerOff": "换下球员",
+      "playerOn": "换上球员",
+      "swapTitle": "交换位置",
+      "swapFirst": "第一名球员",
+      "swapSecond": "第二名球员",
+      "swap": "交换",
+      "order": {
+        "substitute": "{{on}} 换下 {{off}}",
+        "swap": "{{a}} 与 {{b}} 交换位置",
+        "formation": "改为 {{formation}} 阵型",
+        "playStyle": "打法：{{style}}",
+        "other": "指令"
+      },
+      "sent": {
+        "title": "已发出的指令",
+        "pending": "——将在下一分钟生效…",
+        "applied": "——已生效",
+        "refused": "——被拒绝",
+        "refusedWhy": "——被拒绝：{{reason}}"
+      }
+    },
+    "replay": {
+      "title": "回放",
+      "controls": "回放控制",
+      "play": "播放",
+      "pause": "暂停",
+      "restart": "从开球开始观看",
+      "speed": "回放速度",
+      "times": "{{speed}}×",
+      "jump": "跳到分钟",
+      "watch": "观看回放",
+      "gone": "这场比赛时间太久，无法回放；只保留了比分。"
+    }
+  },
   "coach": {
     "loginTitle": "选择经理",
     "loginSubtitle": "经理在所有生涯中通用：风格熟练度和战绩会累计。",
@@ -3473,7 +3690,8 @@
         "saveWithoutAccount": "此生涯尚未绑定经理账号。",
         "managedByServer": "教练账号由账号服务器管理。",
         "serverNotConfigured": "本游戏未配置账号服务器。",
-        "serverUnexpected": "账号服务器返回了游戏无法读取的响应。"
+        "serverUnexpected": "账号服务器返回了游戏无法读取的响应。",
+        "reportInvalid": "无法接受比赛报告。"
       },
       "finance": {
         "boardSupportUnavailable": "只有当现金储备承压时，董事会紧急支持才可用。",
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "验证码错误或已过期。",
         "refreshInvalid": "登录已过期，请重新登录。",
         "unauthorized": "登录已过期，请重新登录。",
-        "forbidden": "你没有执行此操作的权限。"
+        "forbidden": "你没有执行此操作的权限。",
+        "refreshRaced": "另一个游戏副本正在续期你的会话，请重试。"
       },
       "validation": {
         "invalid": "部分信息未被接受，请检查表单后重试。"
@@ -3592,7 +3811,50 @@
       "rateLimited": "尝试次数过多，请稍后再试。",
       "unavailable": "账号服务器暂不可用，请稍后再试。",
       "timeout": "账号服务器响应超时。",
-      "internal": "账号服务器出错。"
+      "internal": "账号服务器出错。",
+      "notFound": "未找到。",
+      "methodNotAllowed": "该操作不可用。",
+      "payloadTooLarge": "请求过大。",
+      "idempotency": {
+        "keyRequired": "请求不完整，请重试。",
+        "keyInvalid": "请求无效，请重试。",
+        "mismatch": "此操作已以不同的内容发送过，请重新开始。"
+      },
+      "account": {
+        "regionChangeTooSoon": "你最近更改过地区，可在 {{availableAt}} 之后再次更改。"
+      },
+      "club": {
+        "none": "你还没有执教任何俱乐部。",
+        "alreadyOwned": "你已经在执教一家俱乐部。",
+        "noneFree": "你所在地区目前没有空闲的俱乐部，请稍后再试。",
+        "matchUnderway": "该俱乐部正在进行比赛（开球时间 {{kickoffAt}}），请在比赛结束后再试。",
+        "takeoverLimit": "本赛季你已经接手过一家俱乐部。",
+        "setupInvalid": "该阵容无法使用，请检查被标记的球员。",
+        "versionStale": "自你打开后俱乐部已发生变化，请刷新后重试。",
+        "nameTaken": "已有其他俱乐部使用该名称。",
+        "nameBlocked": "该名称不被允许。",
+        "renameLimit": "每个赛季只能为俱乐部改名一次。",
+        "lineupLocked": "开球时间为 {{kickoffAt}} 的比赛首发阵容已锁定，比赛结束后才能再修改。"
+      },
+      "match": {
+        "notLive": "比赛当前未在进行。",
+        "notYourSide": "你只能给自己的球队下达指令。",
+        "tooManyCommands": "等待中的指令太多，请等之前的指令生效。"
+      },
+      "realtime": {
+        "badMessage": "游戏向直播服务器发送了一条它无法读取的消息。",
+        "unknownChannel": "无法实时关注该比赛或联赛。",
+        "tooManyChannels": "同时关注的比赛和联赛过多。请关闭一个后重试。",
+        "tokenRefused": "实时连接无法续期你的登录。如果问题持续，请重新登录。"
+      },
+      "online": {
+        "notSignedIn": "请登录在线账户以进行在线游戏。",
+        "unreachable": "无法连接在线服务器，请检查网络后重试。",
+        "serverUnexpected": "在线服务器返回了游戏无法读取的内容，请稍后再试。",
+        "routeNotAllowed": "此版本的游戏不支持该在线操作。",
+        "clientOutdated": "在线游戏需要更新版本的游戏，请更新游戏。",
+        "serverOutdated": "在线服务器正在更新，请稍后再试。"
+      }
     },
     "sender": {
       "boardOfDirectors": "董事会",

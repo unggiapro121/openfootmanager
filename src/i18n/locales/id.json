@@ -28,6 +28,223 @@
     "startupOptionsRejected": "Pengaturan karier itu tidak bisa digunakan. Kembali ke layar dunia dan periksa tahun mulai, fase mulai, dan berapa banyak riwayat masa lalu yang dibuat.",
     "reportBug": "Laporkan bug"
   },
+  "online": {
+    "title": "Mode daring",
+    "menuButton": "Main daring",
+    "loading": "Memuat…",
+    "retry": "Coba lagi",
+    "cancel": "Batal",
+    "offlineBanner": "Server daring tidak dapat dihubungi. Yang kamu lihat mungkin sudah usang, dan perubahan dinonaktifkan sampai server menjawab lagi.",
+    "nav": {
+      "label": "Navigasi mode daring",
+      "overview": "Ringkasan",
+      "profile": "Profil pelatih",
+      "mainMenu": "Menu utama",
+      "squad": "Skuad",
+      "tactics": "Taktik",
+      "training": "Latihan",
+      "league": "Liga",
+      "schedule": "Jadwal"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Perlu pembaruan",
+      "serverOutdatedTitle": "Server sedang diperbarui"
+    },
+    "header": {
+      "season": "Musim {{number}}",
+      "seasonDay": "Musim {{number}} · Hari {{day}}/{{total}}",
+      "nextKickoff": "Laga berikutnya dalam {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} h {{clock}}"
+    },
+    "season": {
+      "title": "Musim",
+      "none": "Belum ada musim daring yang berjalan. Kembali lagi nanti.",
+      "day": "Hari {{day}} dari {{total}}",
+      "footballYear": "Tahun sepak bola {{year}}",
+      "nextDay": "Hari berikutnya mulai dalam {{time}}",
+      "status": {
+        "scheduled": "Terjadwal",
+        "preseason": "Pramusim",
+        "running": "Berjalan",
+        "closing": "Ditutup",
+        "closed": "Selesai"
+      }
+    },
+    "club": {
+      "title": "Klubmu",
+      "rename": "Ganti nama",
+      "renameLabel": "Nama klub baru",
+      "renameHint": "Kamu bisa mengganti nama klub sekali per musim.",
+      "save": "Simpan",
+      "stadium": "{{name}} ({{capacity}} kursi)"
+    },
+    "fixture": {
+      "title": "Laga berikutnya",
+      "none": "Belum ada laga yang dijadwalkan.",
+      "versus": "melawan {{club}}",
+      "home": "Kandang",
+      "away": "Tandang",
+      "round": "Pekan {{round}}",
+      "kickoff": "Sepak mula: {{time}}",
+      "regionTime": "{{time}} waktu {{region}}",
+      "countdown": "Sepak mula dalam {{time}}",
+      "prepared": "Laga sedang disiapkan: susunan pemain sudah dikunci.",
+      "openResult": "Hasil laga {{home}} melawan {{away}}",
+      "void": "Dibatalkan",
+      "noLines": "Tidak ada rincian pemain yang disimpan untuk laga ini.",
+      "minutes": "Mnt",
+      "assists": "Ast",
+      "cards": "Kartu",
+      "rating": "Nilai",
+      "redCard": "Merah",
+      "yellowCards": "{{cards}} kuning",
+      "watchMatch": "Tonton langsung {{home}} – {{away}}",
+      "watchLive": "Langsung · Tonton",
+      "enterLive": "Pertandingan Anda berlangsung — tonton",
+      "enterMatch": "Buka pertandingan"
+    },
+    "league": {
+      "title": "Liga",
+      "none": "Musim ini klubmu tidak bermain di liga mana pun. Klubmu akan masuk liga musim depan.",
+      "heading": "{{name}} · Tingkat {{level}}",
+      "progress": "{{done}} dari {{total}} laga sudah dimainkan",
+      "rankedPerMatch": "Satu laga di liga ini dibatalkan, jadi klasemen diurutkan menurut poin per laga.",
+      "coach": "Pelatih",
+      "bot": "AI",
+      "previousRound": "Pekan sebelumnya",
+      "nextRound": "Pekan berikutnya"
+    },
+    "takeover": {
+      "title": "Ambil alih klub",
+      "intro": "Untuk bermain daring, kamu memimpin sebuah klub di dunia bersama. Klub yang kamu dapat bergantung pada riwayatmu:",
+      "returning": "Jika kembali: kamu mendapatkan klub lamamu apa adanya, jika belum diambil orang lain.",
+      "newcomer": "Pertama kali: kamu mengambil kursi bot di liga sesuai levelmu, dengan skuad awal yang baru. Skuad baru hanya diberikan sekali per akun.",
+      "other": "Selain itu: kamu mengambil alih klub bot apa adanya, di liga sesuai levelmu.",
+      "button": "Ambil alih klub",
+      "working": "Mengambil alih…",
+      "retryIn": "Kamu bisa mencoba lagi dalam {{seconds}} dtk.",
+      "result": {
+        "fresh": "Kini kamu memimpin {{club}}, dengan skuad awal yang baru.",
+        "return": "Selamat datang kembali di {{club}}.",
+        "asIs": "Kini kamu memimpin {{club}}, apa adanya."
+      },
+      "makingSquad": "Skuadmu sedang dibuat…",
+      "squadSlow": "Pembuatan skuad lebih lama dari biasanya. Buka saja klubnya; para pemain akan segera muncul.",
+      "enter": "Ke klubku"
+    },
+    "profile": {
+      "title": "Profil pelatih",
+      "name": "Nama lengkap",
+      "email": "Alamat email",
+      "region": "Wilayah",
+      "changeRegion": "Ganti wilayah",
+      "confirmTitle": "Ganti wilayah?",
+      "confirmBody": "Klubmu saat ini langsung kembali ke bot-nya. Lalu kamu mengambil alih klub apa adanya di wilayah baru, paling banyak sekali per musim.",
+      "confirm": "Ya, ganti wilayah",
+      "changed": "Wilayah sudah diganti. Ambil alih klub di wilayah barumu."
+    },
+    "tactics": {
+      "locked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa mengubahnya lagi setelah laga selesai.",
+      "lockedNow": "Susunan pemain untuk laga berikutnya sudah dikunci.",
+      "stale": "Susunan pemainmu diubah di tempat lain. Papan kini menampilkan versi yang tersimpan; ulangi perubahanmu.",
+      "invalid": "Server tidak menerima susunan pemain itu:",
+      "unknownPlayer": "pemain yang sudah tidak ada di skuad",
+      "issue": {
+        "unknownFormation": "Formasi itu tidak dikenal permainan.",
+        "startingElevenSize": "Starting eleven harus berisi tepat 11 pemain.",
+        "duplicateStarter": "{{player}} tercantum dua kali di starting eleven.",
+        "notInSquad": "{{player}} tidak ada di skuadmu."
+      }
+    },
+    "squad": {
+      "empty": "Skuadmu belum punya pemain.",
+      "title": "Skuad ({{players}})",
+      "potential": "Potensi",
+      "potentialStars": "Potensi: {{stars}} dari 5 bintang",
+      "apps": "Main",
+      "goals": "Gol",
+      "fitness": "Kebugaran laga",
+      "seasonLine": "Musim ini: {{apps}} laga, {{goals}} gol, {{assists}} assist, rata-rata nilai {{rating}}"
+    },
+    "training": {
+      "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
+    },
+    "schedule": {
+      "title": "Jadwal musim",
+      "outcome": {
+        "W": "Menang",
+        "D": "Seri",
+        "L": "Kalah"
+      },
+      "outcomeShort": {
+        "W": "M",
+        "D": "S",
+        "L": "K"
+      }
+    },
+    "publicClub": {
+      "formation": "Formasi: {{formation}}",
+      "coach": "Pelatih: {{name}}",
+      "botCoach": "Dipimpin AI"
+    },
+    "overview": {
+      "lastResult": "Hasil terakhir",
+      "noResult": "Belum ada hasil musim ini."
+    },
+    "match": {
+      "byCoach": "{{team}}: dipimpin pelatih",
+      "byAi": "{{team}}: dipimpin AI",
+      "youCoach": "Anda memimpin tim Anda.",
+      "aiCoaches": "AI memimpin tim Anda selama Anda pergi.",
+      "takingCharge": "Mengambil alih tim Anda…",
+      "orderTakesCharge": "Mengirim perintah akan mengambil alih kembali.",
+      "seeResult": "Lihat hasil",
+      "reconnecting": "Koneksi terputus — menyambung ulang…",
+      "halfTime": "Turun minum — babak kedua dimulai sekitar {{seconds}} dtk lagi.",
+      "hurt": "{{player}} cedera. Ganti dia dalam {{seconds}} dtk, atau AI yang akan menggantinya.",
+      "hurtNow": "{{player}} cedera. AI sedang menggantinya.",
+      "replace": "Ganti",
+      "leaveWarning": "Tinggalkan layar ini sekitar 20 detik dan AI akan memimpin tim Anda.",
+      "scoreLine": "Skor: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Panel pertandingan",
+      "adjusted": "{{team}} mengubah taktiknya",
+      "touchline": "Pinggir lapangan",
+      "playerOff": "Pemain keluar",
+      "playerOn": "Pemain masuk",
+      "swapTitle": "Tukar posisi",
+      "swapFirst": "Pemain pertama",
+      "swapSecond": "Pemain kedua",
+      "swap": "Tukar",
+      "order": {
+        "substitute": "{{on}} masuk menggantikan {{off}}",
+        "swap": "{{a}} dan {{b}} bertukar posisi",
+        "formation": "Ganti ke {{formation}}",
+        "playStyle": "Gaya bermain: {{style}}",
+        "other": "Perintah"
+      },
+      "sent": {
+        "title": "Perintah terkirim",
+        "pending": "— berlaku di menit berikutnya…",
+        "applied": "— diterapkan",
+        "refused": "— ditolak",
+        "refusedWhy": "— ditolak: {{reason}}"
+      }
+    },
+    "replay": {
+      "title": "Tayangan ulang",
+      "controls": "Kontrol tayangan ulang",
+      "play": "Putar",
+      "pause": "Jeda",
+      "restart": "Tonton dari sepak mula",
+      "speed": "Kecepatan tayangan ulang",
+      "times": "{{speed}}×",
+      "jump": "Lompat ke menit",
+      "watch": "Tonton tayangan ulang",
+      "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan."
+    }
+  },
   "coach": {
     "loginTitle": "Pilih manajer Anda",
     "loginSubtitle": "Manajer Anda sama di setiap karier: penguasaan gaya dan rekor terus bertambah.",
@@ -3310,7 +3527,8 @@
         "saveWithoutAccount": "Karier ini belum terhubung ke akun manajer.",
         "managedByServer": "Akun pelatih dikelola oleh server akun.",
         "serverNotConfigured": "Game ini belum diatur dengan server akun.",
-        "serverUnexpected": "Server akun mengirim jawaban yang tidak bisa dibaca game."
+        "serverUnexpected": "Server akun mengirim jawaban yang tidak bisa dibaca game.",
+        "reportInvalid": "Laporan pertandingan tidak dapat diterima."
       },
       "teamNotFound": "Tim tidak ditemukan",
       "jobOffer": {
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "Kode salah atau sudah kedaluwarsa.",
         "refreshInvalid": "Sesimu telah berakhir. Silakan masuk lagi.",
         "unauthorized": "Sesimu telah berakhir. Silakan masuk lagi.",
-        "forbidden": "Kamu tidak diizinkan melakukan itu."
+        "forbidden": "Kamu tidak diizinkan melakukan itu.",
+        "refreshRaced": "Salinan lain dari game sedang memperbarui sesimu. Silakan coba lagi."
       },
       "validation": {
         "invalid": "Beberapa data tidak diterima. Periksa formulir dan coba lagi."
@@ -3592,7 +3811,50 @@
       "rateLimited": "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.",
       "unavailable": "Server akun sedang tidak tersedia. Coba lagi nanti.",
       "timeout": "Server akun terlalu lama menjawab.",
-      "internal": "Server akun mengalami kesalahan."
+      "internal": "Server akun mengalami kesalahan.",
+      "notFound": "Tidak ditemukan.",
+      "methodNotAllowed": "Tindakan ini tidak tersedia.",
+      "payloadTooLarge": "Permintaan terlalu besar.",
+      "idempotency": {
+        "keyRequired": "Permintaan tidak lengkap. Silakan coba lagi.",
+        "keyInvalid": "Permintaan tidak valid. Silakan coba lagi.",
+        "mismatch": "Tindakan ini sudah dikirim dengan data berbeda. Silakan mulai lagi."
+      },
+      "account": {
+        "regionChangeTooSoon": "Kamu baru saja mengganti wilayah. Kamu bisa menggantinya lagi mulai {{availableAt}}."
+      },
+      "club": {
+        "none": "Kamu belum menangani klub mana pun.",
+        "alreadyOwned": "Kamu sudah menangani sebuah klub.",
+        "noneFree": "Saat ini tidak ada klub yang kosong di wilayahmu. Silakan coba lagi sebentar lagi.",
+        "matchUnderway": "Klub itu sedang bertanding (kick-off {{kickoffAt}}). Coba lagi setelah pertandingan selesai.",
+        "takeoverLimit": "Kamu sudah mengambil sebuah klub musim ini.",
+        "setupInvalid": "Susunan pemain itu tidak bisa dipakai. Periksa pemain yang ditandai.",
+        "versionStale": "Klubmu berubah sejak kamu membukanya. Muat ulang lalu coba lagi.",
+        "nameTaken": "Nama itu sudah dipakai klub lain.",
+        "nameBlocked": "Nama itu tidak diizinkan.",
+        "renameLimit": "Kamu bisa mengganti nama klub sekali per musim.",
+        "lineupLocked": "Susunan pemain dikunci untuk laga yang dimulai pukul {{kickoffAt}}. Kamu bisa mengubahnya lagi setelah laga selesai."
+      },
+      "match": {
+        "notLive": "Laga sedang tidak dimainkan.",
+        "notYourSide": "Kamu hanya bisa memberi instruksi untuk timmu sendiri.",
+        "tooManyCommands": "Terlalu banyak instruksi yang menunggu. Tunggu yang sebelumnya diterapkan."
+      },
+      "realtime": {
+        "badMessage": "Game mengirim pesan ke server langsung yang tidak dapat dibacanya.",
+        "unknownChannel": "Pertandingan atau liga itu tidak dapat diikuti secara langsung.",
+        "tooManyChannels": "Terlalu banyak pertandingan dan liga diikuti sekaligus. Tutup salah satunya lalu coba lagi.",
+        "tokenRefused": "Koneksi langsung tidak dapat memperbarui sesi masuk Anda. Masuk lagi jika ini terus terjadi."
+      },
+      "online": {
+        "notSignedIn": "Masuk ke akun online untuk bermain online.",
+        "unreachable": "Server online tidak dapat dijangkau. Periksa koneksimu lalu coba lagi.",
+        "serverUnexpected": "Server online mengirim jawaban yang tidak bisa dibaca game. Silakan coba lagi nanti.",
+        "routeNotAllowed": "Tindakan online itu tidak tersedia di versi game ini.",
+        "clientOutdated": "Diperlukan versi game yang lebih baru untuk bermain online. Silakan perbarui game.",
+        "serverOutdated": "Server online sedang diperbarui. Silakan coba lagi nanti."
+      }
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",

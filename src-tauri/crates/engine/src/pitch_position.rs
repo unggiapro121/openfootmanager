@@ -16,6 +16,7 @@ use crate::types::{PlayerData, Position};
 /// The fourteen positions a formation slot can be. Mirrors the granular half of
 /// `domain::player::Position`, kept independent like every engine type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum PitchPosition {
     Goalkeeper,
     RightBack,
@@ -74,6 +75,7 @@ impl PitchPosition {
 
 /// How familiar a position is to a player.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum PositionFit {
     /// His natural position.
     Natural,
@@ -86,6 +88,7 @@ pub enum PositionFit {
 /// A player's rating at one pitch position: his attributes weighted for it,
 /// less what playing out of his natural position costs him.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct PositionRating {
     pub position: PitchPosition,
     pub ovr: u8,

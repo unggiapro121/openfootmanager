@@ -2,7 +2,8 @@ import type { JSX } from "react";
 import { useMemo, useState } from "react";
 import { Award, ChevronDown, CircleDot, CornerDownRight, Crown, Footprints } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
+import type { TeamMatchRolesData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import type { TacticsPhaseSettings } from "../../store/types";
 import SetPieceSelector from "../match/SetPieceSelector";
 import { PhaseBlueprintPanel } from "./PhaseBlueprintPanel";
@@ -12,12 +13,12 @@ import {
 } from "./TacticsRoles.helpers";
 
 interface TacticsRightPanelProps {
-  allSquad: PlayerData[];
+  allSquad: TacticsRosterPlayer[];
   matchRoles?: TeamMatchRolesData;
   /** Writes the club's match roles; resolves once they are in `matchRoles`. */
   onMatchRolesChange: (roles: TeamMatchRolesData) => Promise<void>;
   onTacticsPhaseChange: (patch: Partial<TacticsPhaseSettings>) => void;
-  startingPlayers: PlayerData[];
+  startingPlayers: TacticsRosterPlayer[];
   tacticsPhase?: TacticsPhaseSettings;
 }
 

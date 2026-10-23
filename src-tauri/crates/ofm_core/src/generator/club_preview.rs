@@ -62,7 +62,7 @@ pub fn preview_package_club(
         .collect();
     club.formation =
         crate::ai_formation::opening_formation(&club.formation, &available, &club.play_style);
-    crate::ai_roles::assign_squad_roles(&mut club, squad.iter());
+    ofm_rules::ai_roles::assign_squad_roles(&mut club, squad.iter());
     let position_ratings = squad
         .iter()
         .map(|player| {

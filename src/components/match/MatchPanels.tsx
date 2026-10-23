@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { MatchSnapshot, MatchEvent, EnginePlayerData } from "./types";
 import { getEventDisplay, getEventTypeLabel, getPlayerName } from "./helpers";
-import { getCommentary } from "./commentary";
+import { type CommentarySource, getCommentary } from "./commentary";
 import { naturalPositionOf, slotPositionsOf } from "./slotRatings";
 import { SlotOvr } from "./SlotOvr";
 import { Badge } from "../ui";
@@ -14,7 +14,8 @@ export function EventFeed({
   playerJerseyMap,
 }: {
   events: MatchEvent[];
-  snapshot: MatchSnapshot;
+  /** The match the names and the commentary are read from. */
+  snapshot: CommentarySource;
   feedRef: React.RefObject<HTMLDivElement | null>;
   playerJerseyMap?: Map<string, number>;
 }) {
@@ -106,7 +107,13 @@ export function EventFeed({
   );
 }
 
-export function MatchStats({ snapshot }: { snapshot: MatchSnapshot }) {
+/** What the stats panel reads of a match: its events, the ball's share and the bookings. */
+export type MatchStatsSource = Pick<
+  MatchSnapshot,
+  "events" | "home_possession_pct" | "away_possession_pct" | "home_yellows" | "away_yellows"
+>;
+
+export function MatchStats({ snapshot }: { snapshot: MatchStatsSource }) {
   const { t } = useTranslation();
   const homeEvents = snapshot.events.filter((e) => e.side === "Home");
   const awayEvents = snapshot.events.filter((e) => e.side === "Away");

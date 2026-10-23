@@ -28,6 +28,223 @@
     "startupOptionsRejected": "Ces paramètres de carrière n'ont pas pu être utilisés. Retournez à l'écran du monde et vérifiez l'année de début, la phase de début et la quantité d'historique à générer.",
     "reportBug": "Signaler un bug"
   },
+  "online": {
+    "title": "Mode en ligne",
+    "menuButton": "Jouer en ligne",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "offlineBanner": "Impossible de joindre le serveur en ligne. Ce que vous voyez peut être périmé, et les modifications sont désactivées jusqu'à ce qu'il réponde de nouveau.",
+    "nav": {
+      "label": "Navigation du mode en ligne",
+      "overview": "Vue d'ensemble",
+      "profile": "Profil de l'entraîneur",
+      "mainMenu": "Menu principal",
+      "squad": "Effectif",
+      "tactics": "Tactique",
+      "training": "Entraînement",
+      "league": "Championnat",
+      "schedule": "Calendrier"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Mise à jour nécessaire",
+      "serverOutdatedTitle": "Serveur en cours de mise à jour"
+    },
+    "header": {
+      "season": "Saison {{number}}",
+      "seasonDay": "Saison {{number}} · Jour {{day}}/{{total}}",
+      "nextKickoff": "Prochain match dans {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} j {{clock}}"
+    },
+    "season": {
+      "title": "Saison",
+      "none": "Aucune saison en ligne n'est en cours. Revenez plus tard.",
+      "day": "Jour {{day}} sur {{total}}",
+      "footballYear": "Année footballistique {{year}}",
+      "nextDay": "Le jour suivant commence dans {{time}}",
+      "status": {
+        "scheduled": "Programmée",
+        "preseason": "Avant-saison",
+        "running": "En cours",
+        "closing": "En clôture",
+        "closed": "Terminée"
+      }
+    },
+    "club": {
+      "title": "Votre club",
+      "rename": "Renommer",
+      "renameLabel": "Nouveau nom du club",
+      "renameHint": "Vous pouvez renommer votre club une fois par saison.",
+      "save": "Enregistrer",
+      "stadium": "{{name}} ({{capacity}} places)"
+    },
+    "fixture": {
+      "title": "Prochain match",
+      "none": "Aucun match n'est encore programmé.",
+      "versus": "contre {{club}}",
+      "home": "Domicile",
+      "away": "Extérieur",
+      "round": "Journée {{round}}",
+      "kickoff": "Coup d'envoi : {{time}}",
+      "regionTime": "{{time}} à l'heure de {{region}}",
+      "countdown": "Coup d'envoi dans {{time}}",
+      "prepared": "En préparation : la composition est verrouillée.",
+      "openResult": "Résultat de {{home}} contre {{away}}",
+      "void": "Annulé",
+      "noLines": "Aucun détail des joueurs n'a été conservé pour ce match.",
+      "minutes": "Min",
+      "assists": "PD",
+      "cards": "Cartons",
+      "rating": "Note",
+      "redCard": "Rouge",
+      "yellowCards": "{{cards}} jaune(s)",
+      "watchMatch": "Regarder en direct {{home}} – {{away}}",
+      "watchLive": "En direct · Regarder",
+      "enterLive": "Votre match a commencé — y aller",
+      "enterMatch": "Aller au match"
+    },
+    "league": {
+      "title": "Championnat",
+      "none": "Votre club ne dispute aucun championnat cette saison. Il rejoindra les championnats de la saison prochaine.",
+      "heading": "{{name}} · Niveau {{level}}",
+      "progress": "{{done}} matchs joués sur {{total}}",
+      "rankedPerMatch": "Un match de ce championnat a été annulé : le classement se fait aux points par match.",
+      "coach": "Entraîneur",
+      "bot": "IA",
+      "previousRound": "Journée précédente",
+      "nextRound": "Journée suivante"
+    },
+    "takeover": {
+      "title": "Reprendre un club",
+      "intro": "Pour jouer en ligne, vous dirigez un club dans le monde partagé. Ce que vous obtenez dépend de votre historique :",
+      "returning": "Si vous revenez : vous récupérez votre ancien club, tel quel, si personne ne l'a repris.",
+      "newcomer": "Première fois : vous prenez la place d'un bot dans un championnat de votre niveau, avec un nouvel effectif de départ. Un nouvel effectif n'est accordé qu'une fois par compte.",
+      "other": "Sinon : vous reprenez le club d'un bot tel quel, dans un championnat de votre niveau.",
+      "button": "Reprendre un club",
+      "working": "Reprise en cours…",
+      "retryIn": "Vous pourrez réessayer dans {{seconds}} s.",
+      "result": {
+        "fresh": "Vous dirigez maintenant {{club}}, avec un nouvel effectif de départ.",
+        "return": "Bon retour à {{club}}.",
+        "asIs": "Vous dirigez maintenant {{club}}, tel qu'il était."
+      },
+      "makingSquad": "Votre effectif est en cours de création…",
+      "squadSlow": "L'effectif prend plus de temps que d'habitude. Ouvrez quand même le club ; les joueurs apparaîtront sous peu.",
+      "enter": "Aller à mon club"
+    },
+    "profile": {
+      "title": "Profil de l'entraîneur",
+      "name": "Nom complet",
+      "email": "E-mail",
+      "region": "Région",
+      "changeRegion": "Changer de région",
+      "confirmTitle": "Changer de région ?",
+      "confirmBody": "Votre club actuel retourne immédiatement à son bot. Vous reprenez ensuite un club tel quel dans la nouvelle région, au plus une fois par saison.",
+      "confirm": "Oui, changer de région",
+      "changed": "Région changée. Reprenez un club dans votre nouvelle région."
+    },
+    "tactics": {
+      "locked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez la modifier une fois le match terminé.",
+      "lockedNow": "La composition est verrouillée pour le prochain match.",
+      "stale": "Votre composition a été modifiée ailleurs. Le tableau affiche maintenant la version enregistrée ; refaites votre modification.",
+      "invalid": "Le serveur n'a pas accepté cette composition :",
+      "unknownPlayer": "un joueur qui n'est plus dans l'effectif",
+      "issue": {
+        "unknownFormation": "Le jeu ne connaît pas ce schéma.",
+        "startingElevenSize": "Le onze de départ doit compter exactement 11 joueurs.",
+        "duplicateStarter": "{{player}} figure deux fois dans le onze de départ.",
+        "notInSquad": "{{player}} ne fait pas partie de votre effectif."
+      }
+    },
+    "squad": {
+      "empty": "Votre effectif n'a encore aucun joueur.",
+      "title": "Effectif ({{players}})",
+      "potential": "Potentiel",
+      "potentialStars": "Potentiel : {{stars}} étoiles sur 5",
+      "apps": "MJ",
+      "goals": "Buts",
+      "fitness": "Forme physique",
+      "seasonLine": "Cette saison : {{apps}} matchs, {{goals}} buts, {{assists}} passes décisives, note moyenne {{rating}}"
+    },
+    "training": {
+      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."
+    },
+    "schedule": {
+      "title": "Calendrier de la saison",
+      "outcome": {
+        "W": "Victoire",
+        "D": "Nul",
+        "L": "Défaite"
+      },
+      "outcomeShort": {
+        "W": "V",
+        "D": "N",
+        "L": "D"
+      }
+    },
+    "publicClub": {
+      "formation": "Schéma : {{formation}}",
+      "coach": "Entraîneur : {{name}}",
+      "botCoach": "Dirigé par l'IA"
+    },
+    "overview": {
+      "lastResult": "Dernier résultat",
+      "noResult": "Aucun résultat cette saison pour l'instant."
+    },
+    "match": {
+      "byCoach": "{{team}} : l'entraîneur dirige",
+      "byAi": "{{team}} : l'IA dirige",
+      "youCoach": "Vous dirigez votre équipe.",
+      "aiCoaches": "L'IA dirige votre équipe pendant votre absence.",
+      "takingCharge": "Prise en main de votre équipe…",
+      "orderTakesCharge": "Envoyer un ordre vous rend la main.",
+      "seeResult": "Voir le résultat",
+      "reconnecting": "Connexion perdue — reconnexion…",
+      "halfTime": "Mi-temps : la seconde période reprend dans environ {{seconds}} s.",
+      "hurt": "{{player}} est blessé. Remplacez-le dans les {{seconds}} s, sinon l'IA le fera.",
+      "hurtNow": "{{player}} est blessé. L'IA le remplace maintenant.",
+      "replace": "Remplacer",
+      "leaveWarning": "Quittez cet écran environ 20 secondes et l'IA dirigera votre équipe.",
+      "scoreLine": "Score : {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Panneaux du match",
+      "adjusted": "{{team}} a ajusté sa tactique",
+      "touchline": "Bord du terrain",
+      "playerOff": "Joueur sortant",
+      "playerOn": "Joueur entrant",
+      "swapTitle": "Échanger les postes",
+      "swapFirst": "Premier joueur",
+      "swapSecond": "Second joueur",
+      "swap": "Échanger",
+      "order": {
+        "substitute": "{{on}} remplace {{off}}",
+        "swap": "{{a}} et {{b}} échangent leurs postes",
+        "formation": "Passer en {{formation}}",
+        "playStyle": "Style de jeu : {{style}}",
+        "other": "Consigne"
+      },
+      "sent": {
+        "title": "Consignes envoyées",
+        "pending": "— appliquée à la prochaine minute…",
+        "applied": "— appliquée",
+        "refused": "— refusée",
+        "refusedWhy": "— refusée : {{reason}}"
+      }
+    },
+    "replay": {
+      "title": "Revoir",
+      "controls": "Commandes de lecture",
+      "play": "Lecture",
+      "pause": "Mettre en pause",
+      "restart": "Revoir depuis le coup d'envoi",
+      "speed": "Vitesse de lecture",
+      "times": "{{speed}}×",
+      "jump": "Aller à la minute",
+      "watch": "Revoir le match",
+      "gone": "Ce match est trop ancien pour être revu ; seul son résultat est conservé."
+    }
+  },
   "coach": {
     "loginTitle": "Choisissez votre entraîneur",
     "loginSubtitle": "Votre entraîneur est le même dans toutes les carrières : maîtrise des styles et palmarès se cumulent.",
@@ -3473,7 +3690,8 @@
         "saveWithoutAccount": "Cette carrière n'a pas encore de compte d'entraîneur.",
         "managedByServer": "Les comptes d'entraîneur sont gérés par le serveur de comptes.",
         "serverNotConfigured": "Aucun serveur de comptes n'est configuré pour ce jeu.",
-        "serverUnexpected": "Le serveur de comptes a envoyé une réponse illisible pour le jeu."
+        "serverUnexpected": "Le serveur de comptes a envoyé une réponse illisible pour le jeu.",
+        "reportInvalid": "Le rapport de match n'a pas pu être accepté."
       },
       "finance": {
         "boardSupportUnavailable": "Le soutien d'urgence du conseil n'est disponible que lorsque la trésorerie est sous pression.",
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "Ce code est erroné ou a expiré.",
         "refreshInvalid": "Votre session a pris fin. Reconnectez-vous.",
         "unauthorized": "Votre session a pris fin. Reconnectez-vous.",
-        "forbidden": "Vous n'êtes pas autorisé à faire cela."
+        "forbidden": "Vous n'êtes pas autorisé à faire cela.",
+        "refreshRaced": "Une autre copie du jeu renouvelle votre session. Veuillez réessayer."
       },
       "validation": {
         "invalid": "Certaines informations ont été refusées. Vérifiez le formulaire et réessayez."
@@ -3592,7 +3811,50 @@
       "rateLimited": "Trop de tentatives. Patientez un instant et réessayez.",
       "unavailable": "Le serveur de comptes est indisponible. Réessayez plus tard.",
       "timeout": "Le serveur de comptes a mis trop de temps à répondre.",
-      "internal": "Le serveur de comptes a rencontré une erreur."
+      "internal": "Le serveur de comptes a rencontré une erreur.",
+      "notFound": "Introuvable.",
+      "methodNotAllowed": "Cette action n'est pas disponible.",
+      "payloadTooLarge": "La requête est trop volumineuse.",
+      "idempotency": {
+        "keyRequired": "La requête était incomplète. Veuillez réessayer.",
+        "keyInvalid": "La requête est invalide. Veuillez réessayer.",
+        "mismatch": "Cette action a déjà été envoyée avec d'autres données. Recommencez-la."
+      },
+      "account": {
+        "regionChangeTooSoon": "Vous avez changé de région récemment. Vous pourrez la changer à nouveau à partir du {{availableAt}}."
+      },
+      "club": {
+        "none": "Vous ne dirigez encore aucun club.",
+        "alreadyOwned": "Vous dirigez déjà un club.",
+        "noneFree": "Aucun club n'est libre dans votre région pour le moment. Réessayez dans un instant.",
+        "matchUnderway": "Ce club a un match en cours (coup d'envoi {{kickoffAt}}). Réessayez une fois le match terminé.",
+        "takeoverLimit": "Vous avez déjà pris un club cette saison.",
+        "setupInvalid": "Cette composition ne peut pas être utilisée. Vérifiez les joueurs signalés.",
+        "versionStale": "Votre club a changé depuis que vous l'avez ouvert. Rechargez-le et réessayez.",
+        "nameTaken": "Un autre club porte déjà ce nom.",
+        "nameBlocked": "Ce nom n'est pas autorisé.",
+        "renameLimit": "Vous pouvez renommer votre club une fois par saison.",
+        "lineupLocked": "La composition est verrouillée pour le match qui commence à {{kickoffAt}}. Vous pourrez la modifier une fois le match terminé."
+      },
+      "match": {
+        "notLive": "Le match n'est pas en cours.",
+        "notYourSide": "Vous ne pouvez donner des consignes qu'à votre propre équipe.",
+        "tooManyCommands": "Trop de consignes sont en attente. Attendez que les précédentes soient appliquées."
+      },
+      "realtime": {
+        "badMessage": "Le jeu a envoyé au serveur en direct un message qu'il n'a pas pu lire.",
+        "unknownChannel": "Ce match ou ce championnat ne peut pas être suivi en direct.",
+        "tooManyChannels": "Trop de matchs et de championnats sont suivis en même temps. Fermez-en un et réessayez.",
+        "tokenRefused": "La connexion en direct n'a pas pu renouveler votre session. Reconnectez-vous si cela se reproduit."
+      },
+      "online": {
+        "notSignedIn": "Connectez-vous à votre compte en ligne pour jouer en ligne.",
+        "unreachable": "Impossible de joindre le serveur en ligne. Vérifiez votre connexion et réessayez.",
+        "serverUnexpected": "Le serveur en ligne a envoyé une réponse que le jeu ne peut pas lire. Réessayez plus tard.",
+        "routeNotAllowed": "Cette action en ligne n'est pas disponible dans cette version du jeu.",
+        "clientOutdated": "Une version plus récente du jeu est nécessaire pour jouer en ligne. Mettez le jeu à jour.",
+        "serverOutdated": "Le serveur en ligne est en cours de mise à jour. Réessayez plus tard."
+      }
     },
     "sender": {
       "boardOfDirectors": "Conseil d'Administration",

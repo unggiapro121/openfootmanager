@@ -1592,10 +1592,39 @@ mod tests {
             heading: 0,
         });
 
-        // A striker of comparable standing, same age.
+        // A striker of comparable standing, same age. Written out rather than drawn around an
+        // `overall`, so his rating does not move with the generator's stream.
         let mut striker = authored_player(1, Position::Striker);
         striker.date_of_birth = Some("1994-01-01".to_string());
-        striker.overall = Some(86);
+        striker.overall = None;
+        striker.attributes = Some(domain::player::PlayerAttributes {
+            pace: 86,
+            stamina: 80,
+            strength: 78,
+            agility: 84,
+            passing: 78,
+            shooting: 88,
+            tackling: 35,
+            dribbling: 86,
+            defending: 35,
+            positioning: 88,
+            vision: 80,
+            decisions: 84,
+            composure: 86,
+            aggression: 60,
+            teamwork: 76,
+            leadership: 70,
+            handling: 15,
+            reflexes: 15,
+            aerial: 76,
+            long_passing: 0,
+            crossing: 0,
+            curve: 0,
+            free_kick: 0,
+            long_shots: 0,
+            first_touch: 0,
+            heading: 0,
+        });
 
         let players = build_test_package_club(&[keeper, striker]);
         let keeper = players
@@ -1611,6 +1640,12 @@ mod tests {
             keeper.ovr >= 80,
             "the keeper should rate as elite, got {}",
             keeper.ovr,
+        );
+        assert!(
+            keeper.ovr.abs_diff(striker.ovr) <= 3,
+            "the two must be of comparable standing: keeper {}, striker {}",
+            keeper.ovr,
+            striker.ovr
         );
         assert!(
             keeper.market_value * 2 >= striker.market_value,

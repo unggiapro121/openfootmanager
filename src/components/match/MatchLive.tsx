@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { radarRosterOf } from "./radar/radarMatch";
 import type { GameStateData } from "../../store/gameStore";
 import {
   type MatchSnapshot,
@@ -111,6 +112,7 @@ export default function MatchLive({
 
   const homeFullTeam = gameState.teams.find((t) => t.id === snapshot.home_team.id);
   const awayFullTeam = gameState.teams.find((t) => t.id === snapshot.away_team.id);
+  const roster = useMemo(() => radarRosterOf(gameState.players), [gameState.players]);
   const homeTeamColor = homeFullTeam?.colors?.primary || "#10b981";
   const awayTeamColor = awayFullTeam?.colors?.primary || "#6366f1";
   const radarKits = useMemo(
@@ -474,6 +476,7 @@ export default function MatchLive({
         {/* Left Panel: Radar, then Event Feed + Stats */}
         <div className="flex-1 flex flex-col min-w-0">
           <MatchRadar2D
+            roster={roster}
             snapshot={radarSnapshot ?? snapshot}
             kits={radarKits}
             isOpen={is2D}
@@ -767,6 +770,7 @@ export default function MatchLive({
       {/* Substitution Modal */}
       {showSubPanel && userSide && (
         <SubPanel
+          roster={roster}
           snapshot={snapshot}
           side={userSide}
           onSubstitute={handleSubstitution}

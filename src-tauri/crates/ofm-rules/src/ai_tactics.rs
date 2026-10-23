@@ -564,3 +564,90 @@ pub fn match_plan(
 
     settings
 }
+
+/// A club's weekly look at how it plays (phase 3, E3-7: the game's AI clubs and the online world's
+/// bot clubs review alike): its dials from its style, squad and form ([`match_plan`]), its shape
+/// from who can play this week (`ai_formation::reviewed_formation`, GĐ5 P5.1), and its players'
+/// roles (`ai_roles::assign_squad_roles`). `squad` is the whole squad; the injured do not count
+/// towards the shape. Running it twice in a day changes nothing.
+pub fn weekly_review(team: &mut domain::team::Team, squad: &[&Player], form: Option<&FormReading>) {
+    let reading = read_squad(squad);
+    let available: Vec<&Player> = squad
+        .iter()
+        .copied()
+        .filter(|player| player.injury.is_none())
+        .collect();
+    team.tactics_phase = match_plan(&team.play_style, reading.as_ref(), form);
+    team.formation =
+        crate::ai_formation::reviewed_formation(&team.formation, &available, &team.play_style);
+    crate::ai_roles::assign_squad_roles(team, squad.iter().copied());
+}
+
+#[cfg(test)]
+mod weekly_review_tests {
+    use domain::player::Position;
+    use domain::team::{PlayStyle, Team};
+
+    use super::*;
+    use crate::test_support::uniform_attributes;
+
+    fn squad() -> Vec<Player> {
+        let positions = [
+            (Position::Goalkeeper, 2),
+            (Position::Defender, 6),
+            (Position::Midfielder, 6),
+            (Position::Forward, 4),
+        ];
+        positions
+            .into_iter()
+            .flat_map(|(position, count)| std::iter::repeat_n(position, count))
+            .enumerate()
+            .map(|(i, position)| {
+                Player::new(
+                    format!("p{i:02}"),
+                    format!("P{i}"),
+                    format!("P{i}"),
+                    "2000-01-01".into(),
+                    "England".into(),
+                    position,
+                    uniform_attributes(55 + (i % 20) as u8),
+                )
+            })
+            .collect()
+    }
+
+    /// Given a counter-attacking club with no plan and a squad of 18,
+    /// when it reviews its week twice,
+    /// then its dials are the counter plan for that squad, its shape one the AI plays, and a
+    /// second review the same day changes nothing.
+    #[test]
+    fn a_club_reviews_its_dials_shape_and_roles() {
+        let players = squad();
+        let squad: Vec<&Player> = players.iter().collect();
+        let mut team = Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        team.play_style = PlayStyle::Counter;
+        weekly_review(&mut team, &squad, None);
+        assert_eq!(
+            team.tactics_phase,
+            match_plan(&PlayStyle::Counter, read_squad(&squad).as_ref(), None)
+        );
+        assert!(
+            engine::FORMATIONS.contains(&team.formation.as_str()),
+            "{}",
+            team.formation
+        );
+        let once = team.clone();
+        weekly_review(&mut team, &squad, None);
+        assert_eq!(team.tactics_phase, once.tactics_phase);
+        assert_eq!(team.formation, once.formation);
+        assert_eq!(team.player_roles, once.player_roles);
+    }
+}

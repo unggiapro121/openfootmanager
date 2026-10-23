@@ -166,3 +166,224 @@ fn live_keychain_keeps_and_forgets_a_token() {
     assert_eq!(read.as_deref(), Some("a-refresh-token"));
     assert_eq!(vault.load(), None);
 }
+
+/// Given a running `ofm-server` with its world, and a new coach logged in,
+/// when the online proxy takes a club, reads the club, the season and the league at once, and
+/// sets the training plan twice under one key,
+/// then every answer names contract revision 1, the club is the coach's, and the retried plan
+/// gets the first answer back (phase 3 E3-6c).
+#[test]
+#[ignore = "needs a running ofm-server (api + worker), its world, and Mailpit"]
+fn live_online_proxy_against_the_local_server() {
+    use crate::application::online::{send, OnlineRequest};
+
+    let url = configured_server_url().expect("OFM_SERVER_URL names the server");
+    let dir = tempfile::tempdir().expect("a directory");
+    let session = Arc::new(ServerSession::new(
+        ApiClient::new(&url),
+        Box::new(MemoryVault::default()),
+    ));
+    let coach = CoachContext::with_server(dir.path(), Arc::clone(&session));
+    let email = format!(
+        "e36c-live-{}@example.test",
+        chrono::Utc::now().timestamp_millis()
+    );
+    let registration = CoachRegistration {
+        email: email.clone(),
+        password: "mot mat khau dai".into(),
+        identity: CoachIdentity {
+            first_name: "Online".into(),
+            last_name: "Coach".into(),
+            date_of_birth: "1988-08-08".into(),
+            nationality: "VN".into(),
+            region: CoachRegion::AsiaSoutheast,
+        },
+    };
+    register_coach(&coach, registration).expect("registered");
+    verify_coach_email(&coach, &emailed_code(&email, "Verify")).expect("verified");
+    login_coach(&coach, &email, "mot mat khau dai", "t").expect("logged in");
+
+    let request =
+        |method: &str, segments: &[&str], key: Option<&str>, body: Option<Value>| OnlineRequest {
+            method: method.to_string(),
+            segments: segments.iter().map(|s| s.to_string()).collect(),
+            query: Vec::new(),
+            body,
+            if_match: None,
+            idempotency_key: key.map(str::to_string),
+        };
+    let now = chrono::Utc::now().timestamp();
+    let taken = send(
+        &session,
+        &request(
+            "POST",
+            &["v1", "clubs", "takeover"],
+            Some("live-takeover"),
+            None,
+        ),
+        now,
+    )
+    .expect("a club taken");
+    assert_eq!(taken.contract_revision, Some(1));
+    std::thread::sleep(Duration::from_secs(3)); // the worker makes the fresh squad
+
+    let reads: Vec<_> = [
+        vec!["v1", "clubs", "mine"],
+        vec!["v1", "season"],
+        vec!["v1", "leagues", "mine"],
+    ]
+    .into_iter()
+    .map(|segments| {
+        let session = Arc::clone(&session);
+        let read = request("GET", &segments, None, None);
+        std::thread::spawn(move || send(&session, &read, now))
+    })
+    .collect();
+    let answers: Vec<_> = reads
+        .into_iter()
+        .map(|read| read.join().expect("a read"))
+        .collect();
+    let club = answers[0].as_ref().expect("the coach's club");
+    assert_eq!(club.body["club"]["id"], taken.body["club"]["id"]);
+    for answer in &answers {
+        // The season and the league may not exist yet (404); every answer still names revision 1.
+        let revision = match answer {
+            Ok(answer) => answer.contract_revision,
+            Err(error) => error.contract_revision,
+        };
+        assert_eq!(revision, Some(1), "{answer:?}");
+    }
+
+    let plan =
+        serde_json::json!({"focus": "Physical", "intensity": "Medium", "schedule": "Balanced"});
+    let set = request(
+        "PUT",
+        &["v1", "clubs", "mine", "training"],
+        Some("live-plan"),
+        Some(plan),
+    );
+    let first = send(&session, &set, now).expect("the plan is set");
+    let again = send(&session, &set, now).expect("the retry is answered");
+    assert_eq!(again.body, first.body);
+    eprintln!(
+        "live online proxy: club {} taken ({}), plan kept",
+        taken.body["club"]["name"], taken.body["kind"]
+    );
+}
+
+/// Given a running `ofm-server` with its gateway (`server-run.sh gateway`), Mailpit, and a
+/// match it has played (`ofm-server schedule-test-matches`, its id in `OFM_LIVE_MATCH_ID`),
+/// when a fresh coach reads the match through the proxy and follows it from kick-off through the
+/// realtime client (`OFM_REALTIME_URL`, `ws://localhost:8090/v1/realtime` locally), and sends an
+/// order for it,
+/// then the view names its last step, the client hands over every frame from 1 to that step once
+/// and in order, and the order reaches the server, which refuses it for a match of no fixture
+/// (404) — the routes and the gateway of S-8 end to end. Run:
+/// `OFM_SERVER_URL=http://localhost:8080 OFM_REALTIME_URL=ws://localhost:8090/v1/realtime
+/// OFM_LIVE_MATCH_ID=<id> cargo test --lib live_realtime -- --ignored --nocapture`.
+#[test]
+#[ignore = "needs a running ofm-server (api, worker, gateway), a played match, and Mailpit"]
+fn live_realtime_against_the_local_server() {
+    use crate::application::online::{send, OnlineRequest};
+    use crate::application::realtime::{
+        configured_realtime_url, Realtime, RealtimeMessage, Settings, TokenSource,
+    };
+
+    let url = configured_server_url().expect("OFM_SERVER_URL names the server");
+    let match_id = std::env::var("OFM_LIVE_MATCH_ID").expect("OFM_LIVE_MATCH_ID names a match");
+    let dir = tempfile::tempdir().expect("a directory");
+    let session = Arc::new(ServerSession::new(
+        ApiClient::new(&url),
+        Box::new(MemoryVault::default()),
+    ));
+    let coach = Arc::new(CoachContext::with_server(dir.path(), Arc::clone(&session)));
+    let email = format!(
+        "s8e-live-{}@example.test",
+        chrono::Utc::now().timestamp_millis()
+    );
+    let registration = CoachRegistration {
+        email: email.clone(),
+        password: "mot mat khau dai".into(),
+        identity: CoachIdentity {
+            first_name: "Live".into(),
+            last_name: "Watcher".into(),
+            date_of_birth: "1988-08-08".into(),
+            nationality: "VN".into(),
+            region: CoachRegion::AsiaSoutheast,
+        },
+    };
+    register_coach(&coach, registration).expect("registered");
+    verify_coach_email(&coach, &emailed_code(&email, "Verify")).expect("verified");
+    login_coach(&coach, &email, "mot mat khau dai", "t").expect("logged in");
+    let request =
+        |method: &str, segments: &[&str], key: Option<&str>, body: Option<Value>| OnlineRequest {
+            method: method.to_string(),
+            segments: segments.iter().map(|s| s.to_string()).collect(),
+            query: Vec::new(),
+            body,
+            if_match: None,
+            idempotency_key: key.map(str::to_string),
+        };
+    let now = chrono::Utc::now().timestamp();
+
+    let view = send(
+        &session,
+        &request("GET", &["v1", "matches", &match_id], None, None),
+        now,
+    )
+    .expect("the match");
+    let last = u32::try_from(view.body["lastSeq"].as_u64().expect("a last step")).expect("a step");
+    assert!(
+        last > 0,
+        "the match has been played: {}",
+        view.body["status"]
+    );
+
+    let realtime = Arc::new(Realtime::new(
+        configured_realtime_url(),
+        Arc::clone(&coach) as Arc<dyn TokenSource>,
+        Settings::default(),
+    ));
+    let (tx, rx) = std::sync::mpsc::channel();
+    let watch = realtime
+        .watch(
+            &format!("match:{match_id}"),
+            Some(0),
+            Arc::new(move |message| {
+                let _ = tx.send(message);
+            }),
+        )
+        .expect("a watch");
+    let mut seqs = Vec::new();
+    while seqs.last().copied() != Some(last) {
+        match rx
+            .recv_timeout(Duration::from_secs(10))
+            .expect("a message in time")
+        {
+            RealtimeMessage::Frame { seq, .. } => seqs.push(seq),
+            RealtimeMessage::Status { state, code } => eprintln!("realtime: {state:?} {code:?}"),
+            other => panic!("{other:?}"),
+        }
+    }
+    realtime.unwatch(watch);
+    assert_eq!(seqs, (1..=last).collect::<Vec<_>>());
+
+    let order =
+        serde_json::json!({"command": {"ChangeFormation": {"side": "Home", "formation": "4-3-3"}}});
+    let refused = send(
+        &session,
+        &request(
+            "POST",
+            &["v1", "matches", &match_id, "commands"],
+            Some("s8e-live-order"),
+            Some(order),
+        ),
+        now,
+    )
+    .expect_err("a match of no fixture takes no order");
+    assert_eq!(
+        (refused.status, refused.code.as_str()),
+        (404, "be.error.notFound")
+    );
+    eprintln!("live realtime: {last} frames of match {match_id}, in order, once");
+}

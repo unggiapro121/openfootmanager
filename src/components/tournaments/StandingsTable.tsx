@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import ContextMenu from "../ContextMenu";
@@ -17,6 +18,8 @@ interface StandingsTableProps {
   /** Rows get `${testIdPrefix}-${team_id}`, so the two tables stay tellable apart. */
   testIdPrefix: string;
   zones?: { promotionSlots: number; relegationSlots: number };
+  /** One more column after the team's name, as the online table shows who runs each club. */
+  extraColumn?: { label: string; value: (teamId: string) => ReactNode };
 }
 
 /** Already sorted by the caller — this only decides how a table looks. */
@@ -26,6 +29,7 @@ export default function StandingsTable({
   teams,
   testIdPrefix,
   zones,
+  extraColumn,
 }: StandingsTableProps) {
   const { t } = useTranslation();
   const { userTeamId, isClubTeam, resolveTeamName, onSelectTeam } = teams;
@@ -70,6 +74,11 @@ export default function StandingsTable({
           <th scope="col" className={headClass}>
             {t("common.team")}
           </th>
+          {extraColumn && (
+            <th scope="col" className={headClass}>
+              {extraColumn.label}
+            </th>
+          )}
           {statColumns.map((column) => (
             <th key={column.key} scope="col" className={`${headClass} text-center`}>
               {column.label}
@@ -143,6 +152,11 @@ export default function StandingsTable({
                     resolveTeamName(entry.team_id)
                   )}
                 </td>
+                {extraColumn && (
+                  <td className={`${pad} text-sm text-gray-600 dark:text-gray-400`}>
+                    {extraColumn.value(entry.team_id)}
+                  </td>
+                )}
                 {statColumns.map((column) => (
                   <td key={column.key} className={statClass}>
                     {column.value(entry)}

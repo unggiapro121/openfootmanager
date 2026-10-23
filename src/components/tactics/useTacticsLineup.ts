@@ -1,7 +1,8 @@
 import type { DragEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { PlayerData, TacticsPhaseSettings, TeamMatchRolesData } from "../../store/types";
+import type { TacticsPhaseSettings, TeamMatchRolesData } from "../../store/types";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 
 import {
   applyLineupDrop,
@@ -30,7 +31,7 @@ import {
 } from "./TacticsRoles.helpers";
 import type { TacticsBoardSource } from "./tacticsBoardSource";
 
-function isPlayerEligibleForLineup(player: PlayerData | null | undefined): boolean {
+function isPlayerEligibleForLineup(player: TacticsRosterPlayer | null | undefined): boolean {
   return Boolean(player && !player.injury);
 }
 
@@ -83,7 +84,7 @@ export function useTacticsLineup({ source }: { source: TacticsBoardSource }) {
     () =>
       startingXiIds
         .map((id) => playersById.get(id))
-        .filter((player): player is PlayerData => player != null),
+        .filter((player): player is TacticsRosterPlayer => player != null),
     [playersById, startingXiIds],
   );
 
@@ -115,7 +116,7 @@ export function useTacticsLineup({ source }: { source: TacticsBoardSource }) {
     void persistStartingXI(startingXiIds);
   }, [pendingStartingXiIds, savedXiHasUnavailablePlayer, savedStartingXiKey, startingXiIds]);
 
-  const pitchSlotRows = useMemo<PitchSlotRow[]>(
+  const pitchSlotRows = useMemo<PitchSlotRow<TacticsRosterPlayer>[]>(
     () => buildPitchSlotRows(pitchRows, startingXiIds, playersById),
     [pitchRows, playersById, startingXiIds],
   );

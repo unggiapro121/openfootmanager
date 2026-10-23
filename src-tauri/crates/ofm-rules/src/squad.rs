@@ -43,6 +43,48 @@ pub struct SideSelection<'a> {
     pub load: FixtureLoad,
 }
 
+/// How far below the AI's own pick the side `fielded` is, in mean overall rating of the starting
+/// eleven: positive when the fielded XI is weaker. The AI's pick is the one it would make for
+/// this club on this day, with the same fit players, rotation rules and load
+/// ([`ai_select_starting_xi`]), so resting tired players is not counted against a manager in a
+/// season of a match a day (phase 3, S-8 S8-11: a deliberate-losing signal, never a sanction).
+pub fn lineup_shortfall(selection: &SideSelection<'_>, fielded: &TeamData) -> f64 {
+    let formation = selection
+        .team
+        .map_or("4-4-2", |team| team.formation.as_str());
+    let pick = ai_select_starting_xi(
+        selection.available,
+        formation,
+        selection.management_quality,
+        selection.selection_seed,
+        selection.load,
+    );
+    let rating_of = |id: &str| {
+        selection
+            .available
+            .iter()
+            .chain(selection.injured)
+            .find(|player| player.id == id)
+            .map(|player| f64::from(player.ovr))
+    };
+    let mean = |ratings: Vec<f64>| {
+        if ratings.is_empty() {
+            0.0
+        } else {
+            ratings.iter().sum::<f64>() / ratings.len() as f64
+        }
+    };
+    let picked = mean(pick.iter().map(|player| f64::from(player.ovr)).collect());
+    let fielded = mean(
+        fielded
+            .players
+            .iter()
+            .filter_map(|player| rating_of(&player.id))
+            .collect(),
+    );
+    picked - fielded
+}
+
 /// The side a club puts out: its XI as the engine plays it, slot-aligned, and its bench, best
 /// first.
 pub fn build_side(selection: &SideSelection<'_>) -> (TeamData, Vec<PlayerData>) {
@@ -151,18 +193,21 @@ pub fn build_side(selection: &SideSelection<'_>) -> (TeamData, Vec<PlayerData>) 
 /// plays its style as the table prices it.
 pub fn coach_mastery_of(manager: Option<&domain::manager::Manager>) -> engine::CoachMastery {
     manager
-        .map(|manager| {
-            let mastery = &manager.play_style_mastery;
-            engine::CoachMastery {
-                balanced: mastery.balanced,
-                attacking: mastery.attacking,
-                defensive: mastery.defensive,
-                possession: mastery.possession,
-                counter: mastery.counter,
-                high_press: mastery.high_press,
-            }
-        })
+        .map(|manager| coach_mastery_from(&manager.play_style_mastery))
         .unwrap_or_default()
+}
+
+/// The engine's view of a mastery held anywhere: a manager's, or an online coach's progress
+/// (`CoachProgress::mastery`), which is the same type.
+pub fn coach_mastery_from(mastery: &domain::manager::PlayStyleMastery) -> engine::CoachMastery {
+    engine::CoachMastery {
+        balanced: mastery.balanced,
+        attacking: mastery.attacking,
+        defensive: mastery.defensive,
+        possession: mastery.possession,
+        counter: mastery.counter,
+        high_press: mastery.high_press,
+    }
 }
 
 /// Make a short XI up to the number of slots the formation asks for, drawing on

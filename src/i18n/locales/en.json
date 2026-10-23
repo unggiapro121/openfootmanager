@@ -28,6 +28,223 @@
     "startupOptionsRejected": "Those career settings could not be used. Go back to the world screen and check the start year, the start phase and how much past history to generate.",
     "reportBug": "Report a bug"
   },
+  "online": {
+    "title": "Online mode",
+    "menuButton": "Play Online",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "offlineBanner": "The online server cannot be reached. What you see may be out of date, and changes are off until it answers again.",
+    "nav": {
+      "label": "Online navigation",
+      "overview": "Overview",
+      "profile": "Coach profile",
+      "mainMenu": "Main menu",
+      "squad": "Squad",
+      "tactics": "Tactics",
+      "training": "Training",
+      "league": "League",
+      "schedule": "Fixtures"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Update needed",
+      "serverOutdatedTitle": "Server update in progress"
+    },
+    "header": {
+      "season": "Season {{number}}",
+      "seasonDay": "Season {{number}} · Day {{day}}/{{total}}",
+      "nextKickoff": "Next kick-off in {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}}d {{clock}}"
+    },
+    "season": {
+      "title": "Season",
+      "none": "No online season is under way. Check back later.",
+      "day": "Day {{day}} of {{total}}",
+      "footballYear": "Football year {{year}}",
+      "nextDay": "Next day starts in {{time}}",
+      "status": {
+        "scheduled": "Scheduled",
+        "preseason": "Pre-season",
+        "running": "Under way",
+        "closing": "Closing",
+        "closed": "Closed"
+      }
+    },
+    "club": {
+      "title": "Your club",
+      "rename": "Rename",
+      "renameLabel": "New club name",
+      "renameHint": "You can rename your club once a season.",
+      "save": "Save",
+      "stadium": "{{name}} ({{capacity}} seats)"
+    },
+    "fixture": {
+      "title": "Next match",
+      "none": "No match is scheduled yet.",
+      "versus": "vs {{club}}",
+      "home": "Home",
+      "away": "Away",
+      "round": "Round {{round}}",
+      "kickoff": "Kick-off: {{time}}",
+      "regionTime": "{{time}} on the {{region}} clock",
+      "countdown": "Kick-off in {{time}}",
+      "prepared": "Being prepared: the line-up is locked.",
+      "openResult": "Result of {{home}} against {{away}}",
+      "void": "Void",
+      "noLines": "No player details were kept for this match.",
+      "minutes": "Min",
+      "assists": "Ast",
+      "cards": "Cards",
+      "rating": "Rating",
+      "redCard": "Red",
+      "yellowCards": "{{cards}} yellow",
+      "watchMatch": "Watch {{home}} – {{away}} live",
+      "watchLive": "Live · Watch",
+      "enterLive": "Your match is on — watch it",
+      "enterMatch": "Go to the match"
+    },
+    "league": {
+      "title": "League",
+      "none": "Your club plays in no league this season. It joins the leagues of the next season.",
+      "heading": "{{name}} · Level {{level}}",
+      "progress": "{{done}} of {{total}} matches played",
+      "rankedPerMatch": "A match of this league was void, so the table ranks clubs by points per match.",
+      "coach": "Coach",
+      "bot": "AI",
+      "previousRound": "Previous round",
+      "nextRound": "Next round"
+    },
+    "takeover": {
+      "title": "Take over a club",
+      "intro": "To play online you run a club in the shared world. What you get depends on your history:",
+      "returning": "Coming back: you get your previous club back, as it is, if nobody else has taken it.",
+      "newcomer": "First time: you take a bot's seat in a league of your level, with a fresh starter squad. A fresh squad is given only once per account.",
+      "other": "Otherwise: you take a bot's club as it is, in a league of your level.",
+      "button": "Take over a club",
+      "working": "Taking over…",
+      "retryIn": "You can try again in {{seconds}} s.",
+      "result": {
+        "fresh": "You now run {{club}}, with a fresh starter squad.",
+        "return": "Welcome back to {{club}}.",
+        "asIs": "You now run {{club}}, as it was."
+      },
+      "makingSquad": "Your squad is being made…",
+      "squadSlow": "The squad is taking longer than usual. Open the club anyway; the players will appear shortly.",
+      "enter": "Go to my club"
+    },
+    "profile": {
+      "title": "Coach profile",
+      "name": "Full name",
+      "email": "Email",
+      "region": "Region",
+      "changeRegion": "Change region",
+      "confirmTitle": "Change region?",
+      "confirmBody": "Your current club goes back to its bot at once. You then take a club as it is in the new region, at most once a season.",
+      "confirm": "Yes, change region",
+      "changed": "Region changed. Take over a club in your new region."
+    },
+    "tactics": {
+      "locked": "The line-up is locked for the match at {{time}}. You can change it again once the match is over.",
+      "lockedNow": "The line-up is locked for the next match.",
+      "stale": "Your line-up was changed somewhere else. The board now shows it as saved; make your change again.",
+      "invalid": "The server did not accept that line-up:",
+      "unknownPlayer": "a player no longer in the squad",
+      "issue": {
+        "unknownFormation": "The formation is not one the game knows.",
+        "startingElevenSize": "The starting eleven must have exactly 11 players.",
+        "duplicateStarter": "{{player}} is in the starting eleven twice.",
+        "notInSquad": "{{player}} is not in your squad."
+      }
+    },
+    "squad": {
+      "empty": "Your squad has no players yet.",
+      "title": "Squad ({{players}})",
+      "potential": "Potential",
+      "potentialStars": "Potential: {{stars}} of 5 stars",
+      "apps": "Apps",
+      "goals": "Goals",
+      "fitness": "Match fitness",
+      "seasonLine": "This season: {{apps}} apps, {{goals}} goals, {{assists}} assists, average rating {{rating}}"
+    },
+    "training": {
+      "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own."
+    },
+    "schedule": {
+      "title": "Season fixtures",
+      "outcome": {
+        "W": "Won",
+        "D": "Drawn",
+        "L": "Lost"
+      },
+      "outcomeShort": {
+        "W": "W",
+        "D": "D",
+        "L": "L"
+      }
+    },
+    "publicClub": {
+      "formation": "Formation: {{formation}}",
+      "coach": "Coach: {{name}}",
+      "botCoach": "Run by the AI"
+    },
+    "overview": {
+      "lastResult": "Latest result",
+      "noResult": "No result yet this season."
+    },
+    "match": {
+      "byCoach": "{{team}}: coach in charge",
+      "byAi": "{{team}}: AI in charge",
+      "youCoach": "You are in charge of your side.",
+      "aiCoaches": "The AI is in charge of your side while you were away.",
+      "takingCharge": "Taking charge of your side…",
+      "orderTakesCharge": "Sending an order takes charge back.",
+      "seeResult": "See the result",
+      "reconnecting": "Connection lost — reconnecting…",
+      "halfTime": "Half time — the second half starts in about {{seconds}} s.",
+      "hurt": "{{player}} is hurt. Replace him within {{seconds}} s, or the AI will.",
+      "hurtNow": "{{player}} is hurt. The AI is replacing him now.",
+      "replace": "Replace",
+      "leaveWarning": "Leave this screen for about 20 seconds and the AI takes charge of your side.",
+      "scoreLine": "Score: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Match panels",
+      "adjusted": "{{team}} adjusted their tactics",
+      "touchline": "Touchline",
+      "playerOff": "Player off",
+      "playerOn": "Player on",
+      "swapTitle": "Swap positions",
+      "swapFirst": "First player",
+      "swapSecond": "Second player",
+      "swap": "Swap",
+      "order": {
+        "substitute": "{{on}} on for {{off}}",
+        "swap": "{{a}} and {{b}} swap positions",
+        "formation": "Switch to {{formation}}",
+        "playStyle": "Play style: {{style}}",
+        "other": "Order"
+      },
+      "sent": {
+        "title": "Orders sent",
+        "pending": "— applies in the next minute…",
+        "applied": "— applied",
+        "refused": "— refused",
+        "refusedWhy": "— refused: {{reason}}"
+      }
+    },
+    "replay": {
+      "title": "Replay",
+      "controls": "Replay controls",
+      "play": "Play",
+      "pause": "Pause",
+      "restart": "Watch from kick-off",
+      "speed": "Replay speed",
+      "times": "{{speed}}×",
+      "jump": "Go to minute",
+      "watch": "Watch the replay",
+      "gone": "This match is too old to replay; only its result is kept."
+    }
+  },
   "coach": {
     "loginTitle": "Choose your coach",
     "loginSubtitle": "Your coach is the same in every career: style mastery and career totals carry over.",
@@ -3310,7 +3527,8 @@
         "saveWithoutAccount": "This career has no coach account yet.",
         "managedByServer": "Coach accounts are managed by the account server.",
         "serverNotConfigured": "No account server is set up for this game.",
-        "serverUnexpected": "The account server sent an answer the game could not read."
+        "serverUnexpected": "The account server sent an answer the game could not read.",
+        "reportInvalid": "The match report could not be accepted."
       },
       "teamNotFound": "Team not found",
       "jobOffer": {
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "This code is wrong or has expired.",
         "refreshInvalid": "Your session has ended. Log in again.",
         "unauthorized": "Your session has ended. Log in again.",
-        "forbidden": "You are not allowed to do that."
+        "forbidden": "You are not allowed to do that.",
+        "refreshRaced": "Another copy of the game is renewing your session. Please try again."
       },
       "validation": {
         "invalid": "Some details were not accepted. Check the form and try again."
@@ -3592,7 +3811,50 @@
       "rateLimited": "Too many attempts. Wait a moment and try again.",
       "unavailable": "The account server is unavailable. Try again later.",
       "timeout": "The account server took too long to answer.",
-      "internal": "The account server ran into an error."
+      "internal": "The account server ran into an error.",
+      "notFound": "That could not be found.",
+      "methodNotAllowed": "That action is not available.",
+      "payloadTooLarge": "That request is too large.",
+      "idempotency": {
+        "keyRequired": "The request was incomplete. Please try again.",
+        "keyInvalid": "The request was malformed. Please try again.",
+        "mismatch": "This action was already sent with different details. Please start it again."
+      },
+      "account": {
+        "regionChangeTooSoon": "You changed your region recently. You can change it again from {{availableAt}}."
+      },
+      "club": {
+        "none": "You are not running a club yet.",
+        "alreadyOwned": "You already run a club.",
+        "noneFree": "No club is free in your region right now. Please try again in a moment.",
+        "matchUnderway": "That club has a match under way (kick-off {{kickoffAt}}). Try again once it is over.",
+        "takeoverLimit": "You have already taken a club this season.",
+        "setupInvalid": "That line-up cannot be used. Check the players marked.",
+        "versionStale": "Your club changed since you opened it. Reload it and try again.",
+        "nameTaken": "Another club already has that name.",
+        "nameBlocked": "That name is not allowed.",
+        "renameLimit": "You can rename your club once a season.",
+        "lineupLocked": "The line-up is locked for the match kicking off at {{kickoffAt}}. You can change it again once the match is over."
+      },
+      "match": {
+        "notLive": "The match is not being played right now.",
+        "notYourSide": "You can only give orders to your own side.",
+        "tooManyCommands": "Too many orders are waiting. Wait for the earlier ones to be applied."
+      },
+      "realtime": {
+        "badMessage": "The game sent the live server a message it could not read.",
+        "unknownChannel": "That match or league cannot be followed live.",
+        "tooManyChannels": "Too many matches and leagues are being followed at once. Close one and try again.",
+        "tokenRefused": "The live connection could not renew your sign-in. Sign in again if this keeps happening."
+      },
+      "online": {
+        "notSignedIn": "Sign in to your online account to play online.",
+        "unreachable": "The online server cannot be reached. Check your connection and try again.",
+        "serverUnexpected": "The online server sent an answer the game could not read. Please try again later.",
+        "routeNotAllowed": "That online action is not available in this version of the game.",
+        "clientOutdated": "A newer version of the game is needed to play online. Please update the game.",
+        "serverOutdated": "The online server is being updated. Please try again later."
+      }
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",

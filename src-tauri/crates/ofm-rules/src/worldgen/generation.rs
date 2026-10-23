@@ -118,6 +118,18 @@ pub fn canonicalize_generated_nationality(value: &str) -> String {
     }
 }
 
+/// Mixed into a person's id for the stream their name is drawn from.
+const NAME_SALT: u64 = 0x4e41_4d45_0000_0001;
+
+/// The stream a generated person's name is drawn from, keyed by their id (E3-5q F13).
+///
+/// A name has its own stream so the name pools and the blocklists can change without moving any
+/// attribute drawn after the name: a new pool renames people, it never re-rolls them. The id is
+/// drawn first from the person's own stream, so this one is as deterministic as the rest.
+pub fn name_rng(person_id: &str) -> rand_chacha::ChaCha12Rng {
+    crate::seed::rng_from_key(&format!("{NAME_SALT:x}/{person_id}"))
+}
+
 /// Pick a name from the NamesDefinition for a given nationality code.
 pub fn pick_name_from_def(
     nationality: &str,
@@ -464,13 +476,13 @@ pub fn generate_random_player_from_def(
     names_def: &NamesDefinition,
     rng: &mut impl Rng,
 ) -> Player {
-    let (first_name, last_name) = pick_name_from_def(nationality, names_def, rng);
+    let p_id = crate::seed::uuid_from(rng);
+    let (first_name, last_name) = pick_name_from_def(nationality, names_def, &mut name_rng(&p_id));
     let full_name = format!("{} {}", first_name, last_name);
     let match_name = last_name.clone();
 
     let position = position_for_slot(index);
 
-    let p_id = crate::seed::uuid_from(rng);
     let nationality = nationality.to_string();
 
     // Reserve one slot per position group (GK + back line + midfield + attack) as
@@ -673,7 +685,8 @@ pub fn generate_random_staff_from_def(
     names_def: &NamesDefinition,
     rng: &mut impl Rng,
 ) -> Staff {
-    let (first_name, last_name) = pick_name_from_def(nationality, names_def, rng);
+    let id = crate::seed::uuid_from(rng);
+    let (first_name, last_name) = pick_name_from_def(nationality, names_def, &mut name_rng(&id));
     let age = rng.random_range(30..60);
     let birth_year = opening_year.saturating_sub(age);
     let dob = format!(
@@ -710,14 +723,7 @@ pub fn generate_random_staff_from_def(
         },
     };
 
-    let mut s = Staff::new(
-        crate::seed::uuid_from(rng),
-        first_name,
-        last_name,
-        dob,
-        role,
-        attributes,
-    );
+    let mut s = Staff::new(id, first_name, last_name, dob, role, attributes);
     s.nationality = nationality.to_string();
     s.team_id = Some(team_id.to_string());
     s
@@ -730,7 +736,8 @@ pub fn generate_random_staff_unattached_from_def(
     names_def: &NamesDefinition,
     rng: &mut impl Rng,
 ) -> Staff {
-    let (first_name, last_name) = pick_name_from_def(nationality, names_def, rng);
+    let id = crate::seed::uuid_from(rng);
+    let (first_name, last_name) = pick_name_from_def(nationality, names_def, &mut name_rng(&id));
     let age = rng.random_range(28..55);
     let birth_year = opening_year.saturating_sub(age);
     let dob = format!(
@@ -747,14 +754,7 @@ pub fn generate_random_staff_unattached_from_def(
         physiotherapy: rng.random_range(25..75),
     };
 
-    let mut s = Staff::new(
-        crate::seed::uuid_from(rng),
-        first_name,
-        last_name,
-        dob,
-        role,
-        attributes,
-    );
+    let mut s = Staff::new(id, first_name, last_name, dob, role, attributes);
     s.nationality = nationality.to_string();
     s
 }
@@ -880,7 +880,8 @@ pub fn generate_random_unemployed_manager(
     current_year: u32,
     rng: &mut impl Rng,
 ) -> domain::manager::Manager {
-    let (first_name, last_name) = pick_name_from_def(nationality, names_def, rng);
+    let id = crate::seed::uuid_from(rng);
+    let (first_name, last_name) = pick_name_from_def(nationality, names_def, &mut name_rng(&id));
     let age: u32 = rng.random_range(35..65);
     let birth_year = current_year.saturating_sub(age);
     let dob = format!(
@@ -891,13 +892,8 @@ pub fn generate_random_unemployed_manager(
     );
     let reputation = rng.random_range(200u32..=700u32);
 
-    let mut mgr = domain::manager::Manager::new(
-        crate::seed::uuid_from(rng),
-        first_name,
-        last_name,
-        dob,
-        nationality.to_string(),
-    );
+    let mut mgr =
+        domain::manager::Manager::new(id, first_name, last_name, dob, nationality.to_string());
     mgr.reputation = reputation;
     mgr.satisfaction = 50;
     mgr.fan_approval = 50;

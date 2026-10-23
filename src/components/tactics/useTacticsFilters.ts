@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 
-import type { PlayerData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import { filterAndSortTacticsPlayers, type SortKey } from "./TacticsTab.helpers";
 
 interface UseTacticsFiltersArgs {
-  startingXI: PlayerData[];
-  bench: PlayerData[];
+  startingXI: TacticsRosterPlayer[];
+  bench: TacticsRosterPlayer[];
   xiActivePosition: Map<string, string>;
 }
 

@@ -65,6 +65,7 @@ pub struct PlayerMatchStats {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum GoalSource {
     OpenPlay,
     Corner,

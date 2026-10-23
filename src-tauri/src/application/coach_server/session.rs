@@ -1,17 +1,35 @@
 //! The player's session with the account server: the auth routes of its ARCHITECTURE.md §7.2, the
 //! short access token kept in memory, and the rotating refresh token kept in the keychain (Z3).
+//!
+//! The refresh token lives **only** in the keychain (E3-6 E6-20): read just before each refresh,
+//! written the moment a new one arrives. A copy in memory could go stale while another copy of the
+//! app rotated the token, and presenting it later would end the session everywhere.
 
 use std::sync::{Mutex, MutexGuard, PoisonError};
+use std::time::Duration;
 
 use domain::coach::{CoachAccount, CoachRegion};
 use serde::de::{DeserializeOwned, IgnoredAny};
 use serde::{Deserialize, Serialize};
 
-use super::client::{ApiClient, ApiError, Headers};
+use super::client::{ApiClient, ApiError, Headers, RawResponse};
 use super::vault::RefreshTokenVault;
 
 /// An access token this close to its end is refreshed first rather than sent to be refused.
 const EXPIRY_MARGIN_SECONDS: i64 = 30;
+/// The server's answer to a refresh token presented again just after its rotation, most likely
+/// by a second copy of the app: the session is kept, and the token that replaced it is in the
+/// keychain, or about to be.
+const REFRESH_RACED: &str = "be.error.auth.refreshRaced";
+
+/// How long to wait after a raced refresh before reading the keychain again: long enough for the
+/// other copy to have written its new token, a little different each time (300–500 ms).
+fn race_pause() -> Duration {
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |since| since.subsec_nanos());
+    Duration::from_millis(300 + u64::from(nanos % 201))
+}
 
 /// The account as the server returns it with a login (`AccountView`). Its status and
 /// capabilities do not concern the game.
@@ -98,17 +116,18 @@ struct ResetBody<'a> {
     new_password: &'a str,
 }
 
+/// The access token; the refresh token is never kept here (see the module comment).
 struct Tokens {
     access: String,
     access_expires_unix: i64,
-    refresh: String,
 }
 
 pub struct ServerSession {
     client: ApiClient,
     vault: Box<dyn RefreshTokenVault>,
     /// Held across a refresh. The server rotates the refresh token and takes a second use of one
-    /// as theft, logging the account out everywhere (Z3), so two refreshes must never race.
+    /// as theft, logging the account out everywhere (Z3), so two refreshes in this process must
+    /// never race: a call that waited for the lock finds the new access token and uses it.
     tokens: Mutex<Option<Tokens>>,
 }
 
@@ -124,6 +143,16 @@ impl ServerSession {
             vault,
             tokens: Mutex::new(None),
         }
+    }
+
+    /// The HTTP client, for the online proxy's requests.
+    pub fn client(&self) -> &ApiClient {
+        &self.client
+    }
+
+    /// The server's base URL.
+    pub fn base_url(&self) -> &str {
+        self.client.base_url()
     }
 
     /// Make the account. It cannot log in until its email is verified with the code sent there.
@@ -179,10 +208,8 @@ impl ServerSession {
     /// that this machine has already forgotten until it expires.
     pub fn logout(&self) {
         let mut tokens = lock(&self.tokens);
-        let refresh = tokens
-            .take()
-            .map(|tokens| tokens.refresh)
-            .or_else(|| self.vault.load());
+        tokens.take();
+        let refresh = self.vault.load();
         self.vault.clear();
         if let Some(refresh) = refresh {
             let body = RefreshBody {
@@ -229,6 +256,21 @@ impl ServerSession {
         })
     }
 
+    /// `send` with a live access token, once more with a fresh one if the answer is 401; the
+    /// answer is returned whatever its status (the online proxy, E3-6c).
+    pub fn send_authorized(
+        &self,
+        now_unix: i64,
+        send: impl Fn(&str) -> Result<RawResponse, ApiError>,
+    ) -> Result<RawResponse, ApiError> {
+        let bearer = self.access_token(now_unix)?;
+        let first = send(&bearer)?;
+        if first.status != 401 {
+            return Ok(first);
+        }
+        send(&self.access_token_after(&bearer)?)
+    }
+
     fn post_public<B: Serialize, T: DeserializeOwned>(
         &self,
         path: &str,
@@ -249,6 +291,27 @@ impl ServerSession {
             Err(error) if error.is_unauthorized() => call(&self.access_token_after(&bearer)?),
             outcome => outcome,
         }
+    }
+
+    /// An access token good for at least `seconds` more, and when it expires (unix seconds): what
+    /// the realtime client opens and keeps its connection on (phase 3 S-8e). The one held is
+    /// refreshed when it runs out sooner, under the same lock as every refresh.
+    pub fn access_token_lasting(
+        &self,
+        now_unix: i64,
+        seconds: i64,
+    ) -> Result<(String, i64), ApiError> {
+        let mut tokens = lock(&self.tokens);
+        if let Some(live) = tokens.as_ref() {
+            if live.access_expires_unix.saturating_sub(seconds) > now_unix {
+                return Ok((live.access.clone(), live.access_expires_unix));
+            }
+        }
+        self.refresh(&mut tokens)?;
+        tokens
+            .as_ref()
+            .map(|tokens| (tokens.access.clone(), tokens.access_expires_unix))
+            .ok_or(ApiError::NoSession)
     }
 
     fn access_token(&self, now_unix: i64) -> Result<String, ApiError> {
@@ -284,19 +347,35 @@ impl ServerSession {
             .ok_or(ApiError::NoSession)
     }
 
+    /// A fresh pair. A refresh refused as a race (another copy of the app rotated the token a
+    /// moment ago) is tried once more with what the keychain holds after a short wait; refused
+    /// again, this copy is logged out but the keychain is left to the other one.
     fn refresh(&self, tokens: &mut Option<Tokens>) -> Result<ServerAccount, ApiError> {
-        let refresh = tokens
-            .as_ref()
-            .map(|tokens| tokens.refresh.clone())
-            .or_else(|| self.vault.load())
-            .ok_or(ApiError::NoSession)?;
+        match self.refresh_once(tokens) {
+            Err(error) if is_raced(&error) => {
+                std::thread::sleep(race_pause());
+                match self.refresh_once(tokens) {
+                    Err(error) if is_raced(&error) => {
+                        log::warn!("[coach-server] refresh raced twice; logged out here");
+                        *tokens = None;
+                        Err(ApiError::NoSession)
+                    }
+                    outcome => outcome,
+                }
+            }
+            outcome => outcome,
+        }
+    }
+
+    fn refresh_once(&self, tokens: &mut Option<Tokens>) -> Result<ServerAccount, ApiError> {
+        let refresh = self.vault.load().ok_or(ApiError::NoSession)?;
         let body = RefreshBody {
             refresh_token: &refresh,
         };
         match self.post_public::<_, TokenPair>("/v1/auth/refresh", &body) {
             Ok(pair) => Ok(self.keep(tokens, pair)),
             Err(error) => {
-                if error.is_unauthorized() {
+                if error.is_unauthorized() && !is_raced(&error) {
                     // Expired, revoked, or reused: the session is over and the player logs in again.
                     *tokens = None;
                     self.vault.clear();
@@ -316,8 +395,11 @@ impl ServerSession {
         *tokens = Some(Tokens {
             access: pair.access_token,
             access_expires_unix,
-            refresh: pair.refresh_token,
         });
         pair.account
     }
+}
+
+fn is_raced(error: &ApiError) -> bool {
+    matches!(error, ApiError::Rejected { status: 401, code } if code == REFRESH_RACED)
 }

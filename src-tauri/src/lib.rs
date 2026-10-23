@@ -17,6 +17,19 @@ const SAVE_MANAGER_UNAVAILABLE_ERROR: &str = "be.error.saveManagerUnavailable";
 /// Tauri-managed wrapper around SaveManager.
 pub struct SaveManagerState(pub Mutex<SaveManager>);
 
+/// Show the running window above the others, for a second launch of the game.
+fn bring_forward(app: &tauri::AppHandle) {
+    use tauri::Manager;
+    let Some(window) = app.get_webview_window("main") else {
+        return;
+    };
+    for outcome in [window.unminimize(), window.show(), window.set_focus()] {
+        if let Err(error) = outcome {
+            log::warn!("[app] the running window was not brought forward: {error}");
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // First of all, so that everything below is covered — including plugin registration and the
@@ -33,6 +46,10 @@ pub fn run() {
     let state_manager = Arc::new(StateManager::new());
 
     let result = tauri::Builder::default()
+        // First, as the plugin asks: a second launch ends here and brings this window forward.
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            bring_forward(app);
+        }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(
@@ -110,9 +127,16 @@ pub fn run() {
             }
 
             app.manage(Arc::new(SaveManagerState(Mutex::new(save_manager))));
-            app.manage(Arc::new(
-                application::coach::CoachContext::from_environment(&app_data_dir),
+            let coach = Arc::new(application::coach::CoachContext::from_environment(
+                &app_data_dir,
             ));
+            // The realtime client reads the session's tokens; one connection for the app (S-8e).
+            app.manage(Arc::new(application::realtime::Realtime::new(
+                application::realtime::configured_realtime_url(),
+                Arc::clone(&coach) as Arc<dyn application::realtime::TokenSource>,
+                application::realtime::Settings::default(),
+            )));
+            app.manage(coach);
 
             // Off the setup thread: validating and unpacking a full real-world package takes
             // seconds, and the main menu has no reason to wait for it — the packages screen is
@@ -362,6 +386,9 @@ pub fn run() {
             request_coach_password_reset,
             reset_coach_password,
             claim_save_for_coach,
+            online_request,
+            online_watch,
+            online_unwatch,
             run_sim_batch,
             run_single_seeded_match,
             create_package_project,

@@ -28,6 +28,223 @@
     "startupOptionsRejected": "Bu kariyer ayarları kullanılamadı. Dünya ekranına dönüp başlangıç yılını, başlangıç aşamasını ve ne kadar geçmiş oluşturulacağını kontrol et.",
     "reportBug": "Hata bildir"
   },
+  "online": {
+    "title": "Çevrimiçi mod",
+    "menuButton": "Çevrimiçi oyna",
+    "loading": "Yükleniyor…",
+    "retry": "Tekrar dene",
+    "cancel": "İptal",
+    "offlineBanner": "Çevrimiçi sunucuya ulaşılamıyor. Gördüklerin güncel olmayabilir ve sunucu yeniden yanıt verene kadar değişiklikler kapalı.",
+    "nav": {
+      "label": "Çevrimiçi mod gezinmesi",
+      "overview": "Genel bakış",
+      "profile": "Teknik direktör profili",
+      "mainMenu": "Ana menü",
+      "squad": "Kadro",
+      "tactics": "Taktik",
+      "training": "Antrenman",
+      "league": "Lig",
+      "schedule": "Fikstür"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Güncelleme gerekli",
+      "serverOutdatedTitle": "Sunucu güncelleniyor"
+    },
+    "header": {
+      "season": "Sezon {{number}}",
+      "seasonDay": "Sezon {{number}} · Gün {{day}}/{{total}}",
+      "nextKickoff": "Sonraki maç {{time}} sonra"
+    },
+    "countdown": {
+      "withDays": "{{days}} g {{clock}}"
+    },
+    "season": {
+      "title": "Sezon",
+      "none": "Şu anda süren bir çevrimiçi sezon yok. Daha sonra tekrar bak.",
+      "day": "Gün {{day}}/{{total}}",
+      "footballYear": "Futbol yılı {{year}}",
+      "nextDay": "Sonraki gün {{time}} sonra başlıyor",
+      "status": {
+        "scheduled": "Planlandı",
+        "preseason": "Sezon öncesi",
+        "running": "Sürüyor",
+        "closing": "Kapanıyor",
+        "closed": "Bitti"
+      }
+    },
+    "club": {
+      "title": "Kulübün",
+      "rename": "Yeniden adlandır",
+      "renameLabel": "Kulübün yeni adı",
+      "renameHint": "Kulübünün adını her sezon bir kez değiştirebilirsin.",
+      "save": "Kaydet",
+      "stadium": "{{name}} ({{capacity}} koltuk)"
+    },
+    "fixture": {
+      "title": "Sonraki maç",
+      "none": "Henüz planlanmış bir maç yok.",
+      "versus": "rakip: {{club}}",
+      "home": "İç saha",
+      "away": "Deplasman",
+      "round": "{{round}}. hafta",
+      "kickoff": "Başlama: {{time}}",
+      "regionTime": "{{region}} saatiyle {{time}}",
+      "countdown": "Başlamaya {{time}}",
+      "prepared": "Maç hazırlanıyor: kadro kilitlendi.",
+      "openResult": "{{home}} - {{away}} maç sonucu",
+      "void": "Geçersiz",
+      "noLines": "Bu maç için oyuncu ayrıntısı kaydedilmedi.",
+      "minutes": "Dk",
+      "assists": "Asist",
+      "cards": "Kartlar",
+      "rating": "Puan",
+      "redCard": "Kırmızı",
+      "yellowCards": "{{cards}} sarı",
+      "watchMatch": "{{home}} – {{away}} maçını canlı izle",
+      "watchLive": "Canlı · İzle",
+      "enterLive": "Maçın başladı — izle",
+      "enterMatch": "Maça git"
+    },
+    "league": {
+      "title": "Lig",
+      "none": "Kulübün bu sezon hiçbir ligde oynamıyor. Gelecek sezonun liglerine katılacak.",
+      "heading": "{{name}} · Seviye {{level}}",
+      "progress": "{{total}} maçtan {{done}} tanesi oynandı",
+      "rankedPerMatch": "Bu ligde bir maç geçersiz sayıldı, bu yüzden puan tablosu maç başına puana göre sıralanıyor.",
+      "coach": "Teknik direktör",
+      "bot": "YZ",
+      "previousRound": "Önceki hafta",
+      "nextRound": "Sonraki hafta"
+    },
+    "takeover": {
+      "title": "Bir kulübü devral",
+      "intro": "Çevrimiçi oynamak için ortak dünyada bir kulübü yönetirsin. Ne alacağın geçmişine bağlı:",
+      "returning": "Geri dönüyorsan: başka biri almadıysa eski kulübünü olduğu gibi geri alırsın.",
+      "newcomer": "İlk kez: kendi seviyendeki bir ligde bir botun yerini, yepyeni bir başlangıç kadrosuyla alırsın. Yeni kadro her hesaba yalnızca bir kez verilir.",
+      "other": "Diğer durumlarda: kendi seviyendeki bir ligde bir botun kulübünü olduğu gibi devralırsın.",
+      "button": "Bir kulübü devral",
+      "working": "Devralınıyor…",
+      "retryIn": "{{seconds}} sn sonra tekrar deneyebilirsin.",
+      "result": {
+        "fresh": "Artık {{club}} kulübünü yeni bir başlangıç kadrosuyla yönetiyorsun.",
+        "return": "{{club}} kulübüne tekrar hoş geldin.",
+        "asIs": "Artık {{club}} kulübünü olduğu gibi yönetiyorsun."
+      },
+      "makingSquad": "Kadron oluşturuluyor…",
+      "squadSlow": "Kadro her zamankinden uzun sürüyor. Yine de kulübü aç; oyuncular birazdan görünecek.",
+      "enter": "Kulübüme git"
+    },
+    "profile": {
+      "title": "Teknik direktör profili",
+      "name": "Ad soyad",
+      "email": "E-posta",
+      "region": "Bölge",
+      "changeRegion": "Bölge değiştir",
+      "confirmTitle": "Bölge değiştirilsin mi?",
+      "confirmBody": "Şu anki kulübün hemen kendi botuna geri döner. Ardından yeni bölgede bir kulübü olduğu gibi devralırsın; bu en fazla sezonda bir kez olur.",
+      "confirm": "Evet, bölgeyi değiştir",
+      "changed": "Bölge değiştirildi. Yeni bölgende bir kulübü devral."
+    },
+    "tactics": {
+      "locked": "{{time}} maçı için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin.",
+      "lockedNow": "Sonraki maçın kadrosu kilitlendi.",
+      "stale": "Kadron başka bir yerde değiştirildi. Tahta artık kayıtlı hâlini gösteriyor; değişikliğini yeniden yap.",
+      "invalid": "Sunucu bu kadroyu kabul etmedi:",
+      "unknownPlayer": "artık kadroda olmayan bir oyuncu",
+      "issue": {
+        "unknownFormation": "Oyun bu dizilişi tanımıyor.",
+        "startingElevenSize": "İlk on birde tam 11 oyuncu olmalı.",
+        "duplicateStarter": "{{player}} ilk on birde iki kez yer alıyor.",
+        "notInSquad": "{{player}} kadronda değil."
+      }
+    },
+    "squad": {
+      "empty": "Kadronda henüz oyuncu yok.",
+      "title": "Kadro ({{players}})",
+      "potential": "Potansiyel",
+      "potentialStars": "Potansiyel: 5 üzerinden {{stars}} yıldız",
+      "apps": "Maç",
+      "goals": "Gol",
+      "fitness": "Maç formu",
+      "seasonLine": "Bu sezon: {{apps}} maç, {{goals}} gol, {{assists}} asist, ortalama puan {{rating}}"
+    },
+    "training": {
+      "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."
+    },
+    "schedule": {
+      "title": "Sezon fikstürü",
+      "outcome": {
+        "W": "Galibiyet",
+        "D": "Beraberlik",
+        "L": "Mağlubiyet"
+      },
+      "outcomeShort": {
+        "W": "G",
+        "D": "B",
+        "L": "M"
+      }
+    },
+    "publicClub": {
+      "formation": "Diziliş: {{formation}}",
+      "coach": "Teknik direktör: {{name}}",
+      "botCoach": "Yapay zekâ yönetiyor"
+    },
+    "overview": {
+      "lastResult": "Son sonuç",
+      "noResult": "Bu sezon henüz sonuç yok."
+    },
+    "match": {
+      "byCoach": "{{team}}: teknik direktör yönetiyor",
+      "byAi": "{{team}}: yapay zekâ yönetiyor",
+      "youCoach": "Takımını sen yönetiyorsun.",
+      "aiCoaches": "Sen yokken takımını yapay zekâ yönetiyor.",
+      "takingCharge": "Takımın yönetimi devralınıyor…",
+      "orderTakesCharge": "Bir talimat göndermek yönetimi geri alır.",
+      "seeResult": "Sonucu gör",
+      "reconnecting": "Bağlantı koptu — yeniden bağlanılıyor…",
+      "halfTime": "Devre arası — ikinci yarı yaklaşık {{seconds}} sn sonra başlıyor.",
+      "hurt": "{{player}} sakatlandı. {{seconds}} sn içinde değiştir, yoksa yapay zekâ değiştirecek.",
+      "hurtNow": "{{player}} sakatlandı. Yapay zekâ onu şimdi değiştiriyor.",
+      "replace": "Değiştir",
+      "leaveWarning": "Bu ekrandan yaklaşık 20 saniye ayrılırsan takımını yapay zekâ yönetir.",
+      "scoreLine": "Skor: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Maç panelleri",
+      "adjusted": "{{team}} taktiğini değiştirdi",
+      "touchline": "Teknik alan",
+      "playerOff": "Çıkan oyuncu",
+      "playerOn": "Giren oyuncu",
+      "swapTitle": "Pozisyon değiştir",
+      "swapFirst": "Birinci oyuncu",
+      "swapSecond": "İkinci oyuncu",
+      "swap": "Değiştir",
+      "order": {
+        "substitute": "{{on}}, {{off}} yerine oyuna giriyor",
+        "swap": "{{a}} ile {{b}} yer değiştiriyor",
+        "formation": "{{formation}} dizilişine geç",
+        "playStyle": "Oyun tarzı: {{style}}",
+        "other": "Talimat"
+      },
+      "sent": {
+        "title": "Gönderilen talimatlar",
+        "pending": "— bir sonraki dakikada uygulanacak…",
+        "applied": "— uygulandı",
+        "refused": "— reddedildi",
+        "refusedWhy": "— reddedildi: {{reason}}"
+      }
+    },
+    "replay": {
+      "title": "Tekrar",
+      "controls": "Tekrar kontrolleri",
+      "play": "Oynat",
+      "pause": "Duraklat",
+      "restart": "Başlama vuruşundan izle",
+      "speed": "Tekrar hızı",
+      "times": "{{speed}}×",
+      "jump": "Dakikaya git",
+      "watch": "Tekrarı izle",
+      "gone": "Bu maç tekrar izlemek için çok eski; yalnızca sonucu saklanıyor."
+    }
+  },
   "coach": {
     "loginTitle": "Menajerinizi seçin",
     "loginSubtitle": "Menajeriniz tüm kariyerlerde aynıdır: stil ustalığı ve başarılar birikir.",
@@ -3310,7 +3527,8 @@
         "saveWithoutAccount": "Bu kariyerin henüz bir menajer hesabı yok.",
         "managedByServer": "Teknik direktör hesaplarını hesap sunucusu yönetir.",
         "serverNotConfigured": "Bu oyun için bir hesap sunucusu ayarlanmamış.",
-        "serverUnexpected": "Hesap sunucusu oyunun okuyamadığı bir yanıt gönderdi."
+        "serverUnexpected": "Hesap sunucusu oyunun okuyamadığı bir yanıt gönderdi.",
+        "reportInvalid": "Maç raporu kabul edilemedi."
       },
       "teamNotFound": "Takım bulunamadı",
       "jobOffer": {
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "Kod yanlış ya da süresi dolmuş.",
         "refreshInvalid": "Oturumun sona erdi. Yeniden giriş yap.",
         "unauthorized": "Oturumun sona erdi. Yeniden giriş yap.",
-        "forbidden": "Bunu yapma iznin yok."
+        "forbidden": "Bunu yapma iznin yok.",
+        "refreshRaced": "Oyunun başka bir kopyası oturumunu yeniliyor. Lütfen tekrar dene."
       },
       "validation": {
         "invalid": "Bazı bilgiler kabul edilmedi. Formu kontrol edip yeniden dene."
@@ -3592,7 +3811,50 @@
       "rateLimited": "Çok fazla deneme. Biraz bekleyip yeniden dene.",
       "unavailable": "Hesap sunucusuna şu anda ulaşılamıyor. Daha sonra yeniden dene.",
       "timeout": "Hesap sunucusu çok geç yanıt verdi.",
-      "internal": "Hesap sunucusunda bir hata oluştu."
+      "internal": "Hesap sunucusunda bir hata oluştu.",
+      "notFound": "Bulunamadı.",
+      "methodNotAllowed": "Bu işlem kullanılamıyor.",
+      "payloadTooLarge": "İstek çok büyük.",
+      "idempotency": {
+        "keyRequired": "İstek eksikti. Lütfen tekrar dene.",
+        "keyInvalid": "İstek geçersiz. Lütfen tekrar dene.",
+        "mismatch": "Bu işlem farklı bilgilerle zaten gönderildi. Lütfen baştan başla."
+      },
+      "account": {
+        "regionChangeTooSoon": "Bölgeni kısa süre önce değiştirdin. {{availableAt}} tarihinden itibaren yeniden değiştirebilirsin."
+      },
+      "club": {
+        "none": "Henüz bir kulüp yönetmiyorsun.",
+        "alreadyOwned": "Zaten bir kulüp yönetiyorsun.",
+        "noneFree": "Şu anda bölgende boş kulüp yok. Lütfen biraz sonra tekrar dene.",
+        "matchUnderway": "Bu kulübün devam eden bir maçı var (başlama {{kickoffAt}}). Maç bitince tekrar dene.",
+        "takeoverLimit": "Bu sezon zaten bir kulüp aldın.",
+        "setupInvalid": "Bu kadro kullanılamaz. İşaretli oyuncuları kontrol et.",
+        "versionStale": "Kulübün sen açtığından beri değişti. Yenileyip tekrar dene.",
+        "nameTaken": "Bu ad başka bir kulübe ait.",
+        "nameBlocked": "Bu ada izin verilmiyor.",
+        "renameLimit": "Kulübünün adını sezonda bir kez değiştirebilirsin.",
+        "lineupLocked": "{{kickoffAt}} saatinde başlayan maç için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin."
+      },
+      "match": {
+        "notLive": "Maç şu anda oynanmıyor.",
+        "notYourSide": "Yalnızca kendi takımına talimat verebilirsin.",
+        "tooManyCommands": "Bekleyen çok fazla talimat var. Öncekilerin uygulanmasını bekle."
+      },
+      "realtime": {
+        "badMessage": "Oyun, canlı sunucuya okuyamadığı bir mesaj gönderdi.",
+        "unknownChannel": "Bu maç veya lig canlı takip edilemez.",
+        "tooManyChannels": "Aynı anda çok fazla maç ve lig takip ediliyor. Birini kapatıp tekrar deneyin.",
+        "tokenRefused": "Canlı bağlantı oturumunuzu yenileyemedi. Bu devam ederse yeniden giriş yapın."
+      },
+      "online": {
+        "notSignedIn": "Çevrim içi oynamak için çevrim içi hesabına giriş yap.",
+        "unreachable": "Çevrim içi sunucuya ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",
+        "serverUnexpected": "Çevrim içi sunucu, oyunun okuyamadığı bir yanıt gönderdi. Lütfen daha sonra tekrar dene.",
+        "routeNotAllowed": "Bu çevrim içi işlem oyunun bu sürümünde yok.",
+        "clientOutdated": "Çevrim içi oynamak için oyunun daha yeni bir sürümü gerekiyor. Lütfen oyunu güncelle.",
+        "serverOutdated": "Çevrim içi sunucu güncelleniyor. Lütfen daha sonra tekrar dene."
+      }
     },
     "sender": {
       "boardOfDirectors": "Yönetim Kurulu",

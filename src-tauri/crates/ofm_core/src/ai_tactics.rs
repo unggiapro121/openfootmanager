@@ -6,10 +6,10 @@
 use crate::game::Game;
 use domain::league::FixtureStatus;
 use domain::player::Player;
+use ofm_rules::ai_tactics::FormReading;
 pub(crate) use ofm_rules::ai_tactics::review_weekday;
 #[cfg(test)]
 use ofm_rules::ai_tactics::*;
-use ofm_rules::ai_tactics::{FormReading, match_plan, read_squad};
 pub use ofm_rules::ai_tactics::{blueprint_for, under_priced_dials};
 
 /// The AI clubs whose weekly review falls on this weekday: every club but the
@@ -97,21 +97,11 @@ pub fn apply_ai_tactical_reviews(game: &mut Game, weekday_num: u32) {
             .iter()
             .filter(|player| player.team_id.as_deref() == Some(team_id.as_str()))
             .collect();
-        let reading = read_squad(&squad);
-
-        // The shape is judged on who can play this week, like the eleven it
-        // is chosen to suit (GĐ5 P5.1, X83).
-        let available: Vec<&Player> = squad
-            .iter()
-            .copied()
-            .filter(|player| player.injury.is_none())
-            .collect();
-
-        let team = &mut game.teams[team_index];
-        team.tactics_phase = match_plan(&team.play_style, reading.as_ref(), form.get(&team_id));
-        team.formation =
-            crate::ai_formation::reviewed_formation(&team.formation, &available, &team.play_style);
-        crate::ai_roles::assign_squad_roles(team, squad.iter().copied());
+        ofm_rules::ai_tactics::weekly_review(
+            &mut game.teams[team_index],
+            &squad,
+            form.get(&team_id),
+        );
     }
 }
 

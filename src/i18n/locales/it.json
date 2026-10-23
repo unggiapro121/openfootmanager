@@ -28,6 +28,223 @@
     "startupOptionsRejected": "Non è stato possibile usare quelle impostazioni di carriera. Torna alla schermata del mondo e controlla l'anno di inizio, la fase di inizio e quanta storia passata generare.",
     "reportBug": "Segnala un bug"
   },
+  "online": {
+    "title": "Modalità online",
+    "menuButton": "Gioca online",
+    "loading": "Caricamento…",
+    "retry": "Riprova",
+    "cancel": "Annulla",
+    "offlineBanner": "Impossibile raggiungere il server online. Ciò che vedi potrebbe non essere aggiornato e le modifiche sono disattivate finché non risponde di nuovo.",
+    "nav": {
+      "label": "Navigazione della modalità online",
+      "overview": "Panoramica",
+      "profile": "Profilo dell'allenatore",
+      "mainMenu": "Menu principale",
+      "squad": "Rosa",
+      "tactics": "Tattica",
+      "training": "Allenamento",
+      "league": "Campionato",
+      "schedule": "Calendario"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Aggiornamento necessario",
+      "serverOutdatedTitle": "Server in aggiornamento"
+    },
+    "header": {
+      "season": "Stagione {{number}}",
+      "seasonDay": "Stagione {{number}} · Giorno {{day}}/{{total}}",
+      "nextKickoff": "Prossima partita tra {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} g {{clock}}"
+    },
+    "season": {
+      "title": "Stagione",
+      "none": "Nessuna stagione online in corso. Torna più tardi.",
+      "day": "Giorno {{day}} di {{total}}",
+      "footballYear": "Anno calcistico {{year}}",
+      "nextDay": "Il giorno successivo inizia tra {{time}}",
+      "status": {
+        "scheduled": "In programma",
+        "preseason": "Precampionato",
+        "running": "In corso",
+        "closing": "In chiusura",
+        "closed": "Conclusa"
+      }
+    },
+    "club": {
+      "title": "Il tuo club",
+      "rename": "Rinomina",
+      "renameLabel": "Nuovo nome del club",
+      "renameHint": "Puoi rinominare il club una volta a stagione.",
+      "save": "Salva",
+      "stadium": "{{name}} ({{capacity}} posti)"
+    },
+    "fixture": {
+      "title": "Prossima partita",
+      "none": "Nessuna partita ancora in programma.",
+      "versus": "contro {{club}}",
+      "home": "In casa",
+      "away": "In trasferta",
+      "round": "Giornata {{round}}",
+      "kickoff": "Calcio d'inizio: {{time}}",
+      "regionTime": "{{time}} secondo l'orario di {{region}}",
+      "countdown": "Calcio d'inizio tra {{time}}",
+      "prepared": "In preparazione: la formazione è bloccata.",
+      "openResult": "Risultato di {{home}} contro {{away}}",
+      "void": "Annullata",
+      "noLines": "Per questa partita non sono stati salvati dati dei giocatori.",
+      "minutes": "Min",
+      "assists": "Assist",
+      "cards": "Cartellini",
+      "rating": "Voto",
+      "redCard": "Rosso",
+      "yellowCards": "{{cards}} giallo/i",
+      "watchMatch": "Guarda in diretta {{home}} – {{away}}",
+      "watchLive": "In diretta · Guarda",
+      "enterLive": "La tua partita è in corso — entra",
+      "enterMatch": "Vai alla partita"
+    },
+    "league": {
+      "title": "Campionato",
+      "none": "Il tuo club non gioca alcun campionato in questa stagione. Entrerà nei campionati della prossima stagione.",
+      "heading": "{{name}} · Livello {{level}}",
+      "progress": "{{done}} partite giocate su {{total}}",
+      "rankedPerMatch": "Una partita di questo campionato è stata annullata, quindi la classifica conta i punti per partita.",
+      "coach": "Allenatore",
+      "bot": "IA",
+      "previousRound": "Giornata precedente",
+      "nextRound": "Giornata successiva"
+    },
+    "takeover": {
+      "title": "Prendi un club",
+      "intro": "Per giocare online guidi un club nel mondo condiviso. Ciò che ottieni dipende dalla tua storia:",
+      "returning": "Se torni: riprendi il tuo club precedente così com'è, se nessun altro l'ha preso.",
+      "newcomer": "Prima volta: prendi il posto di un bot in un campionato del tuo livello, con una nuova rosa iniziale. Una nuova rosa viene data una sola volta per account.",
+      "other": "Altrimenti: prendi il club di un bot così com'è, in un campionato del tuo livello.",
+      "button": "Prendi un club",
+      "working": "Presa in corso…",
+      "retryIn": "Potrai riprovare tra {{seconds}} s.",
+      "result": {
+        "fresh": "Ora guidi {{club}}, con una nuova rosa iniziale.",
+        "return": "Bentornato al {{club}}.",
+        "asIs": "Ora guidi {{club}}, così com'era."
+      },
+      "makingSquad": "La tua rosa è in creazione…",
+      "squadSlow": "La rosa richiede più tempo del solito. Apri comunque il club; i giocatori compariranno a breve.",
+      "enter": "Vai al mio club"
+    },
+    "profile": {
+      "title": "Profilo dell'allenatore",
+      "name": "Nome completo",
+      "email": "Indirizzo email",
+      "region": "Regione",
+      "changeRegion": "Cambia regione",
+      "confirmTitle": "Cambiare regione?",
+      "confirmBody": "Il tuo club attuale torna subito al suo bot. Poi prendi un club così com'è nella nuova regione, al massimo una volta a stagione.",
+      "confirm": "Sì, cambia regione",
+      "changed": "Regione cambiata. Prendi un club nella tua nuova regione."
+    },
+    "tactics": {
+      "locked": "La formazione è bloccata per la partita delle {{time}}. Potrai cambiarla a partita finita.",
+      "lockedNow": "La formazione è bloccata per la prossima partita.",
+      "stale": "La tua formazione è stata cambiata altrove. La lavagna mostra ora quella salvata; rifai la tua modifica.",
+      "invalid": "Il server non ha accettato questa formazione:",
+      "unknownPlayer": "un giocatore non più in rosa",
+      "issue": {
+        "unknownFormation": "Il gioco non conosce questo modulo.",
+        "startingElevenSize": "L'undici titolare deve avere esattamente 11 giocatori.",
+        "duplicateStarter": "{{player}} è due volte nell'undici titolare.",
+        "notInSquad": "{{player}} non fa parte della tua rosa."
+      }
+    },
+    "squad": {
+      "empty": "La tua rosa non ha ancora giocatori.",
+      "title": "Rosa ({{players}})",
+      "potential": "Potenziale",
+      "potentialStars": "Potenziale: {{stars}} stelle su 5",
+      "apps": "Pres.",
+      "goals": "Gol",
+      "fitness": "Forma fisica",
+      "seasonLine": "Questa stagione: {{apps}} presenze, {{goals}} gol, {{assists}} assist, voto medio {{rating}}"
+    },
+    "training": {
+      "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo."
+    },
+    "schedule": {
+      "title": "Calendario della stagione",
+      "outcome": {
+        "W": "Vittoria",
+        "D": "Pareggio",
+        "L": "Sconfitta"
+      },
+      "outcomeShort": {
+        "W": "V",
+        "D": "P",
+        "L": "S"
+      }
+    },
+    "publicClub": {
+      "formation": "Modulo: {{formation}}",
+      "coach": "Allenatore: {{name}}",
+      "botCoach": "Guidato dall'IA"
+    },
+    "overview": {
+      "lastResult": "Ultimo risultato",
+      "noResult": "Nessun risultato ancora in questa stagione."
+    },
+    "match": {
+      "byCoach": "{{team}}: guida l'allenatore",
+      "byAi": "{{team}}: guida l'IA",
+      "youCoach": "Stai guidando la tua squadra.",
+      "aiCoaches": "L'IA guida la tua squadra perché eri assente.",
+      "takingCharge": "Prendendo il comando della squadra…",
+      "orderTakesCharge": "Inviare un ordine ti restituisce il comando.",
+      "seeResult": "Vedi il risultato",
+      "reconnecting": "Connessione persa — riconnessione…",
+      "halfTime": "Intervallo: il secondo tempo inizia tra circa {{seconds}} s.",
+      "hurt": "{{player}} è infortunato. Sostituiscilo entro {{seconds}} s, o lo farà l'IA.",
+      "hurtNow": "{{player}} è infortunato. L'IA lo sta sostituendo.",
+      "replace": "Sostituisci",
+      "leaveWarning": "Se lasci questa schermata per circa 20 secondi, l'IA guiderà la tua squadra.",
+      "scoreLine": "Punteggio: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Pannelli della partita",
+      "adjusted": "{{team}} ha modificato la tattica",
+      "touchline": "Panchina",
+      "playerOff": "Giocatore in uscita",
+      "playerOn": "Giocatore in entrata",
+      "swapTitle": "Scambia posizioni",
+      "swapFirst": "Primo giocatore",
+      "swapSecond": "Secondo giocatore",
+      "swap": "Scambia",
+      "order": {
+        "substitute": "{{on}} entra al posto di {{off}}",
+        "swap": "{{a}} e {{b}} si scambiano la posizione",
+        "formation": "Passa al {{formation}}",
+        "playStyle": "Stile di gioco: {{style}}",
+        "other": "Ordine"
+      },
+      "sent": {
+        "title": "Ordini inviati",
+        "pending": "— si applica al prossimo minuto…",
+        "applied": "— applicato",
+        "refused": "— rifiutato",
+        "refusedWhy": "— rifiutato: {{reason}}"
+      }
+    },
+    "replay": {
+      "title": "Rivedi",
+      "controls": "Comandi del replay",
+      "play": "Riproduci",
+      "pause": "Pausa",
+      "restart": "Guarda dal calcio d'inizio",
+      "speed": "Velocità del replay",
+      "times": "{{speed}}×",
+      "jump": "Vai al minuto",
+      "watch": "Guarda il replay",
+      "gone": "Questa partita è troppo vecchia per il replay; resta solo il risultato."
+    }
+  },
   "coach": {
     "loginTitle": "Scegli il tuo allenatore",
     "loginSubtitle": "Il tuo allenatore è lo stesso in ogni carriera: padronanza degli stili e palmarès si sommano.",
@@ -3473,7 +3690,8 @@
         "saveWithoutAccount": "Questa carriera non ha ancora un account allenatore.",
         "managedByServer": "Gli account allenatore sono gestiti dal server degli account.",
         "serverNotConfigured": "Per questo gioco non è configurato un server degli account.",
-        "serverUnexpected": "Il server degli account ha inviato una risposta che il gioco non riesce a leggere."
+        "serverUnexpected": "Il server degli account ha inviato una risposta che il gioco non riesce a leggere.",
+        "reportInvalid": "Non è stato possibile accettare il rapporto della partita."
       },
       "finance": {
         "boardSupportUnavailable": "Il supporto d'emergenza del consiglio è disponibile solo quando la liquidità è sotto pressione.",
@@ -3584,7 +3802,8 @@
         "tokenInvalid": "Il codice è errato o scaduto.",
         "refreshInvalid": "La sessione è terminata. Accedi di nuovo.",
         "unauthorized": "La sessione è terminata. Accedi di nuovo.",
-        "forbidden": "Non hai il permesso di farlo."
+        "forbidden": "Non hai il permesso di farlo.",
+        "refreshRaced": "Un'altra copia del gioco sta rinnovando la tua sessione. Riprova."
       },
       "validation": {
         "invalid": "Alcuni dati non sono stati accettati. Controlla il modulo e riprova."
@@ -3592,7 +3811,50 @@
       "rateLimited": "Troppi tentativi. Attendi un momento e riprova.",
       "unavailable": "Il server degli account non è disponibile. Riprova più tardi.",
       "timeout": "Il server degli account ha impiegato troppo a rispondere.",
-      "internal": "Il server degli account ha riscontrato un errore."
+      "internal": "Il server degli account ha riscontrato un errore.",
+      "notFound": "Non trovato.",
+      "methodNotAllowed": "Questa azione non è disponibile.",
+      "payloadTooLarge": "La richiesta è troppo grande.",
+      "idempotency": {
+        "keyRequired": "La richiesta era incompleta. Riprova.",
+        "keyInvalid": "La richiesta non è valida. Riprova.",
+        "mismatch": "Questa azione è già stata inviata con dati diversi. Ricominciala."
+      },
+      "account": {
+        "regionChangeTooSoon": "Hai cambiato regione da poco. Potrai cambiarla di nuovo dal {{availableAt}}."
+      },
+      "club": {
+        "none": "Non alleni ancora nessun club.",
+        "alreadyOwned": "Alleni già un club.",
+        "noneFree": "Al momento non c'è nessun club libero nella tua regione. Riprova tra poco.",
+        "matchUnderway": "Quel club ha una partita in corso (calcio d'inizio {{kickoffAt}}). Riprova quando sarà finita.",
+        "takeoverLimit": "Hai già preso un club in questa stagione.",
+        "setupInvalid": "Questa formazione non si può usare. Controlla i giocatori segnalati.",
+        "versionStale": "Il tuo club è cambiato da quando l'hai aperto. Ricaricalo e riprova.",
+        "nameTaken": "Un altro club ha già questo nome.",
+        "nameBlocked": "Questo nome non è consentito.",
+        "renameLimit": "Puoi rinominare il tuo club una volta a stagione.",
+        "lineupLocked": "La formazione è bloccata per la partita che inizia alle {{kickoffAt}}. Potrai cambiarla a partita finita."
+      },
+      "match": {
+        "notLive": "La partita non è in corso in questo momento.",
+        "notYourSide": "Puoi dare ordini solo alla tua squadra.",
+        "tooManyCommands": "Troppi ordini in attesa. Aspetta che i precedenti vengano applicati."
+      },
+      "realtime": {
+        "badMessage": "Il gioco ha inviato al server in diretta un messaggio che non è riuscito a leggere.",
+        "unknownChannel": "Questa partita o questo campionato non può essere seguito in diretta.",
+        "tooManyChannels": "Stai seguendo troppe partite e campionati insieme. Chiudine uno e riprova.",
+        "tokenRefused": "La connessione in diretta non è riuscita a rinnovare l'accesso. Accedi di nuovo se succede ancora."
+      },
+      "online": {
+        "notSignedIn": "Accedi al tuo account online per giocare online.",
+        "unreachable": "Impossibile raggiungere il server online. Controlla la connessione e riprova.",
+        "serverUnexpected": "Il server online ha inviato una risposta che il gioco non riesce a leggere. Riprova più tardi.",
+        "routeNotAllowed": "Questa azione online non è disponibile in questa versione del gioco.",
+        "clientOutdated": "Per giocare online serve una versione più recente del gioco. Aggiorna il gioco.",
+        "serverOutdated": "Il server online è in aggiornamento. Riprova più tardi."
+      }
     },
     "sender": {
       "boardOfDirectors": "Consiglio di amministrazione",

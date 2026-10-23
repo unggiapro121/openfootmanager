@@ -2,8 +2,9 @@
 //! (phase 2 lane M, làn-M-tech-spec §6). Pure: a coach account's rules, run the same by the game
 //! and by the online server (phase 3).
 
-use domain::manager::{NEUTRAL_MASTERY, PlayStyleMastery, StyleXp};
+use domain::manager::{ALL_PLAY_STYLES, Manager, NEUTRAL_MASTERY, PlayStyleMastery, StyleXp};
 use domain::team::PlayStyle;
+use rand::RngExt;
 
 /// XP a match is worth before its result and opponent are weighed.
 const MATCH_BASE_XP: f64 = 10.0;
@@ -86,9 +87,50 @@ pub fn bank_style_xp(
 /// What a match the user managed did for their mastery of the style their
 /// side started it in.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub struct MasteryGain {
     pub style: PlayStyle,
     pub xp: u32,
     pub mastery_before: u8,
     pub mastery_after: u8,
+}
+
+/// Keeps this stream apart from every other draw keyed on a manager's id —
+/// `generated_manager_for` seeds the person from the same id, and sharing its
+/// stream would change who gets generated.
+const MASTERY_SEED: u64 = 0x4d41_5354_4552_5931;
+
+/// How far above the manager's rating their preferred style lands.
+const PREFERRED_ABOVE_RATING: std::ops::RangeInclusive<i16> = 10..=20;
+/// Where every other style lands around the rating. Its top stays below the
+/// preferred style's bottom, so the preferred style is always strictly the best
+/// and `best_style` names it — short of a rating above 90, where clamping at 100
+/// can level them and `best_style` falls back to list order.
+const OTHER_AROUND_RATING: std::ops::RangeInclusive<i16> = -10..=9;
+
+/// Give `manager` a play style mastery around their overall rating
+/// (`Manager::rating`), strongest in `preferred` — or, when `None`, in a style
+/// of their own, drawn at random.
+///
+/// Seeded by the manager's id, so the same manager always rolls the same.
+pub fn roll_play_style_mastery(manager: &mut Manager, preferred: Option<PlayStyle>) {
+    // ChaCha12 by name; `StdRng` is ChaCha12 today, so the rolls are the ones they always were.
+    let mut rng = crate::seed::rng_from_u64(crate::stable_hash::stable_hash(
+        manager.id.as_bytes(),
+        MASTERY_SEED,
+    ));
+    let preferred = preferred
+        .unwrap_or_else(|| ALL_PLAY_STYLES[rng.random_range(0..ALL_PLAY_STYLES.len())].clone());
+    let rating = i16::from(manager.rating());
+
+    let mut mastery = PlayStyleMastery::default();
+    for style in ALL_PLAY_STYLES {
+        let offset = if style == preferred {
+            rng.random_range(PREFERRED_ABOVE_RATING)
+        } else {
+            rng.random_range(OTHER_AROUND_RATING)
+        };
+        mastery.set(&style, (rating + offset).clamp(1, 100) as u8);
+    }
+    manager.play_style_mastery = mastery;
 }

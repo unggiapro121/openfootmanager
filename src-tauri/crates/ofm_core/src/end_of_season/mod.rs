@@ -8,7 +8,6 @@ use domain::league::{
 };
 use domain::manager::Manager;
 use domain::message::*;
-use domain::player::PlayerSeasonStats;
 use domain::staff::{Staff, StaffAttributes, StaffRole};
 use domain::team::{FinancialTransaction, FinancialTransactionKind, TeamSeasonRecord};
 
@@ -1065,15 +1064,7 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
                 .map(|t| t.name.clone())
                 .unwrap_or_else(free_agent_team_name);
             let team_id = player.team_id.clone().unwrap_or_default();
-
-            player.career.push(domain::player::CareerEntry {
-                season,
-                team_id,
-                team_name,
-                appearances: player.stats.appearances,
-                goals: player.stats.goals,
-                assists: player.stats.assists,
-            });
+            ofm_rules::season_stats::archive_season(player, season, &team_id, &team_name);
         }
     }
 
@@ -1084,8 +1075,7 @@ pub fn process_end_of_season(game: &mut Game) -> EndOfSeasonSummary {
     crate::economy::set_season_budgets(game);
 
     for player in game.players.iter_mut() {
-        // Reset stats for next season
-        player.stats = PlayerSeasonStats::default();
+        ofm_rules::season_stats::reset_season(player);
     }
 
     // 5b. Convert retired players to unemployed manager/scout candidates, then

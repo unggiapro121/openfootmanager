@@ -258,7 +258,7 @@ impl WorldGenConfig {
     }
 }
 
-const PLAY_STYLES: &[&str] = &[
+pub const PLAY_STYLES: &[&str] = &[
     "Possession",
     "Attacking",
     "HighPress",
@@ -269,7 +269,7 @@ const PLAY_STYLES: &[&str] = &[
 
 /// Build a short 3-letter club code from a name, skipping common prefixes/
 /// suffixes so "Real Madrid CF" → "MAD" rather than "RMC".
-fn short_code(name: &str) -> String {
+pub fn short_code(name: &str) -> String {
     const SKIP: &[&str] = &[
         "FC",
         "AC",

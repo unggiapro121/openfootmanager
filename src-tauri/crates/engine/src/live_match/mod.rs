@@ -62,6 +62,7 @@ use crate::types::{
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum MatchPhase {
     PreKickOff,
     FirstHalf,
@@ -81,6 +82,7 @@ pub enum MatchPhase {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum MatchCommand {
     Substitute {
         side: Side,
@@ -168,6 +170,7 @@ impl MatchCommand {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct SubstitutionRecord {
     pub minute: u8,
     pub side: Side,
@@ -185,6 +188,7 @@ pub struct SubstitutionRecord {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct SetPieceTakers {
     pub free_kick_taker: Option<String>,
     pub corner_taker: Option<String>,
@@ -197,6 +201,7 @@ pub struct SetPieceTakers {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct MinuteResult {
     pub minute: u8,
     pub phase: MatchPhase,
@@ -213,6 +218,7 @@ pub struct MinuteResult {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct MatchSnapshot {
     pub phase: MatchPhase,
     pub current_minute: u8,
@@ -256,6 +262,7 @@ pub struct MatchSnapshot {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct PenaltyShootoutSnapshot {
     pub home_taken: u8,
     pub away_taken: u8,
@@ -652,6 +659,22 @@ impl LiveMatchState {
     /// Whether `player_id` has been sent off: he stays in the XI, but is off the pitch.
     pub fn is_sent_off(&self, player_id: &str) -> bool {
         self.sent_off.contains(player_id)
+    }
+
+    /// The players of `side` hurt on the pitch and waiting to be replaced, in slot order.
+    pub fn injured_on_pitch(&self, side: Side) -> Vec<String> {
+        self.team_ref(side)
+            .players
+            .iter()
+            .filter(|player| self.injured.contains(&player.id))
+            .map(|player| player.id.clone())
+            .collect()
+    }
+
+    /// Every event of the match so far, in order: the steps' and those the commands between
+    /// them pushed (a substitution's), which no `MinuteResult` carries.
+    pub fn events(&self) -> &[MatchEvent] {
+        &self.events
     }
 
     /// The score, home first.
