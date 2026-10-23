@@ -108,6 +108,12 @@ ureq = "3"
 # Builds the online proxy's URLs from checked segments, never by joining strings (E3-6c).
 url = "2"
 keyring = { version = "3", features = ["apple-native", "windows-native", "linux-native"] }
+# The realtime client (phase 3 S-8e): one WebSocket to the gateway, on Tauri's tokio runtime
+# (tokio itself is below, shared with the MCP server).
+# rustls with the ring provider and webpki roots, as ureq already uses: no C toolchain, so the
+# Windows cross build is unchanged.
+tokio-tungstenite = { version = "0.29", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
+futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
 
 # Dev builds (`tauri dev`) otherwise run the whole simulation unoptimized, which
 # is the dominant cause of the in-app sluggishness. Lightly optimizing our own
@@ -144,7 +150,7 @@ inherits = "test"
 debug = "none"
 
 [features]
-mcp = ["dep:rmcp", "dep:axum", "dep:tokio"]
+mcp = ["dep:rmcp", "dep:axum"]
 # Forwards to `db/save-snapshots`. Enable with `tauri dev -f save-snapshots`
 # (or via the `ofm-dev-snap` alias from shell.nix) to write a date-stamped
 # copy of each save's `.db` before every overwrite. Dev-only.
@@ -159,7 +165,7 @@ optional = true
 version = "0.8"
 optional = true
 
+# The MCP server's runtime, and the realtime client's timers and queues (S-8e).
 [dependencies.tokio]
 version = "1"
-features = ["net", "rt-multi-thread", "macros", "signal"]
-optional = true
+features = ["net", "rt-multi-thread", "macros", "signal", "sync", "time"]

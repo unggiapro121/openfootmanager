@@ -3783,6 +3783,12 @@
         "notYourSide": "Yalnızca kendi takımına talimat verebilirsin.",
         "tooManyCommands": "Bekleyen çok fazla talimat var. Öncekilerin uygulanmasını bekle."
       },
+      "realtime": {
+        "badMessage": "Oyun, canlı sunucuya okuyamadığı bir mesaj gönderdi.",
+        "unknownChannel": "Bu maç veya lig canlı takip edilemez.",
+        "tooManyChannels": "Aynı anda çok fazla maç ve lig takip ediliyor. Birini kapatıp tekrar deneyin.",
+        "tokenRefused": "Canlı bağlantı oturumunuzu yenileyemedi. Bu devam ederse yeniden giriş yapın."
+      },
       "online": {
         "notSignedIn": "Çevrim içi oynamak için çevrim içi hesabına giriş yap.",
         "unreachable": "Çevrim içi sunucuya ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",

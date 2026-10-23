@@ -73,6 +73,42 @@ describe("online client", () => {
     ]);
   });
 
+  // Given a live match (S-8e),
+  // when it is read, the coach's own side, its frames after step 30 (and by fifty), and an order
+  // is sent,
+  // then each goes out on the match's route, the frames with their query, the order with a key.
+  it("reads a live match and sends an order on its routes", async () => {
+    const formation = { ChangeFormation: { side: "Home", formation: "4-3-3" } } as const;
+    await online.matches.byId(LEAGUE);
+    await online.matches.mine(LEAGUE);
+    await online.matches.frames(LEAGUE, 30);
+    await online.matches.frames(LEAGUE, 30, 50);
+    await online.matches.command(LEAGUE, formation, "order-1");
+    expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "matches", LEAGUE] },
+      { method: "GET", segments: ["v1", "matches", LEAGUE, "mine"] },
+      {
+        method: "GET",
+        segments: ["v1", "matches", LEAGUE, "frames"],
+        query: [["afterSeq", "30"]],
+      },
+      {
+        method: "GET",
+        segments: ["v1", "matches", LEAGUE, "frames"],
+        query: [
+          ["afterSeq", "30"],
+          ["limit", "50"],
+        ],
+      },
+      {
+        method: "POST",
+        segments: ["v1", "matches", LEAGUE, "commands"],
+        idempotencyKey: "order-1",
+        body: { command: formation },
+      },
+    ]);
+  });
+
   // Given a coach who sets his eleven, then sends the same action again with its key,
   // when the requests go out,
   // then the setup carries If-Match and a key, and the retry carries the same key; a new action
