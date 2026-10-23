@@ -244,6 +244,8 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `resume_coach_session` | — | `Option<CoachAccount>` | Log back in with the refresh token kept from the last run |
 | `request_coach_password_reset` / `reset_coach_password` | email / code, newPassword | — | Email a reset code, then set a new password with it |
 | `online_request` | request (method, segments, query, body, ifMatch, idempotencyKey) | `{ status, body, retryAfterSeconds?, contractRevision? }`; rejects with `{ status, code, detail?, details?, … }` | The webview's only way to the online API (phase 3 E3-6c): sends a request of the route table in `application/online/routes.rs` with the session's tokens, which never reach the webview. Called through `src/online/` |
+| `online_watch` | channel (`match:<id>` or `league:<id>`), lastSeq, onMessage (`Channel<RealtimeMessage>`) | watch id | Follow a live channel (phase 3 S-8e): `application/realtime` holds one WebSocket to the gateway (`OFM_REALTIME_URL`, else the account server's host at `/v1/realtime`) with the session's token, remembers each watch's last step, reconnects (1, 2, 4 … 30 s) and subscribes again from there, renews the token on the open connection, and stops with `be.error.online.notSignedIn` when the account is locked. Messages: `frame`, `notice`, `status`, `error`. Called through `src/online/live.ts` |
+| `online_unwatch` | id | — | Stop a watch; the last one closes the connection |
 
 ### Match Commands
 

@@ -64,6 +64,15 @@ pub const ROUTES: &[Route] = &[
         &["round"],
     ),
     route("GET", &[L("v1"), L("fixtures"), Id], &[]),
+    // A live match (S-8e): its view, the coach's own side, its frames, the coach's orders.
+    route("GET", &[L("v1"), L("matches"), Id], &[]),
+    route("GET", &[L("v1"), L("matches"), Id, L("mine")], &[]),
+    route(
+        "GET",
+        &[L("v1"), L("matches"), Id, L("frames")],
+        &["afterSeq", "limit"],
+    ),
+    route("POST", &[L("v1"), L("matches"), Id, L("commands")], &[]),
 ];
 
 const fn route(

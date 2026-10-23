@@ -3783,6 +3783,12 @@
         "notYourSide": "Puoi dare ordini solo alla tua squadra.",
         "tooManyCommands": "Troppi ordini in attesa. Aspetta che i precedenti vengano applicati."
       },
+      "realtime": {
+        "badMessage": "Il gioco ha inviato al server in diretta un messaggio che non è riuscito a leggere.",
+        "unknownChannel": "Questa partita o questo campionato non può essere seguito in diretta.",
+        "tooManyChannels": "Stai seguendo troppe partite e campionati insieme. Chiudine uno e riprova.",
+        "tokenRefused": "La connessione in diretta non è riuscita a rinnovare l'accesso. Accedi di nuovo se succede ancora."
+      },
       "online": {
         "notSignedIn": "Accedi al tuo account online per giocare online.",
         "unreachable": "Impossibile raggiungere il server online. Controlla la connessione e riprova.",
@@ -3790,12 +3796,6 @@
         "routeNotAllowed": "Questa azione online non è disponibile in questa versione del gioco.",
         "clientOutdated": "Per giocare online serve una versione più recente del gioco. Aggiorna il gioco.",
         "serverOutdated": "Il server online è in aggiornamento. Riprova più tardi."
-      },
-      "realtime": {
-        "badMessage": "La connessione in diretta ha ricevuto un messaggio illeggibile.",
-        "unknownChannel": "Questa diretta non esiste.",
-        "tooManyChannels": "Troppe dirette aperte contemporaneamente. Chiudine una e riprova.",
-        "tokenRefused": "La connessione in diretta ha rifiutato il tuo accesso. Accedi di nuovo."
       }
     },
     "sender": {

@@ -3783,6 +3783,12 @@
         "notYourSide": "你只能给自己的球队下达指令。",
         "tooManyCommands": "等待中的指令太多，请等之前的指令生效。"
       },
+      "realtime": {
+        "badMessage": "游戏向直播服务器发送了一条它无法读取的消息。",
+        "unknownChannel": "无法实时关注该比赛或联赛。",
+        "tooManyChannels": "同时关注的比赛和联赛过多。请关闭一个后重试。",
+        "tokenRefused": "实时连接无法续期你的登录。如果问题持续，请重新登录。"
+      },
       "online": {
         "notSignedIn": "请登录在线账户以进行在线游戏。",
         "unreachable": "无法连接在线服务器，请检查网络后重试。",
@@ -3790,12 +3796,6 @@
         "routeNotAllowed": "此版本的游戏不支持该在线操作。",
         "clientOutdated": "在线游戏需要更新版本的游戏，请更新游戏。",
         "serverOutdated": "在线服务器正在更新，请稍后再试。"
-      },
-      "realtime": {
-        "badMessage": "实时连接收到了一条无法读取的消息。",
-        "unknownChannel": "该实时频道不存在。",
-        "tooManyChannels": "同时打开的实时频道过多。请关闭一个后重试。",
-        "tokenRefused": "实时连接拒绝了你的登录。请重新登录。"
       }
     },
     "sender": {

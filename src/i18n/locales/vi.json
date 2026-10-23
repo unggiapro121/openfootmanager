@@ -3783,6 +3783,12 @@
         "notYourSide": "Bạn chỉ ra lệnh được cho đội của mình.",
         "tooManyCommands": "Có quá nhiều lệnh đang chờ. Hãy đợi các lệnh trước được áp dụng."
       },
+      "realtime": {
+        "badMessage": "Trò chơi đã gửi tới máy chủ trực tiếp một tin nhắn mà máy chủ không đọc được.",
+        "unknownChannel": "Không thể theo dõi trực tiếp trận đấu hoặc giải đấu này.",
+        "tooManyChannels": "Bạn đang theo dõi quá nhiều trận và giải cùng lúc. Hãy đóng bớt một mục rồi thử lại.",
+        "tokenRefused": "Kết nối trực tiếp không gia hạn được phiên đăng nhập. Hãy đăng nhập lại nếu lỗi này còn tiếp diễn."
+      },
       "online": {
         "notSignedIn": "Hãy đăng nhập tài khoản online để chơi online.",
         "unreachable": "Không kết nối được máy chủ online. Hãy kiểm tra kết nối rồi thử lại.",
@@ -3790,12 +3796,6 @@
         "routeNotAllowed": "Thao tác online này không có trong phiên bản game hiện tại.",
         "clientOutdated": "Cần phiên bản game mới hơn để chơi online. Vui lòng cập nhật game.",
         "serverOutdated": "Máy chủ online đang được cập nhật. Vui lòng thử lại sau."
-      },
-      "realtime": {
-        "badMessage": "Kết nối trực tiếp nhận được tin nhắn không đọc được.",
-        "unknownChannel": "Luồng trực tiếp này không tồn tại.",
-        "tooManyChannels": "Đang mở quá nhiều luồng trực tiếp cùng lúc. Hãy đóng bớt một luồng rồi thử lại.",
-        "tokenRefused": "Kết nối trực tiếp từ chối phiên đăng nhập của bạn. Hãy đăng nhập lại."
       }
     },
     "sender": {

@@ -127,9 +127,16 @@ pub fn run() {
             }
 
             app.manage(Arc::new(SaveManagerState(Mutex::new(save_manager))));
-            app.manage(Arc::new(
-                application::coach::CoachContext::from_environment(&app_data_dir),
+            let coach = Arc::new(application::coach::CoachContext::from_environment(
+                &app_data_dir,
             ));
+            // The realtime client reads the session's tokens; one connection for the app (S-8e).
+            app.manage(Arc::new(application::realtime::Realtime::new(
+                application::realtime::configured_realtime_url(),
+                Arc::clone(&coach) as Arc<dyn application::realtime::TokenSource>,
+                application::realtime::Settings::default(),
+            )));
+            app.manage(coach);
 
             // Off the setup thread: validating and unpacking a full real-world package takes
             // seconds, and the main menu has no reason to wait for it — the packages screen is
@@ -380,6 +387,8 @@ pub fn run() {
             reset_coach_password,
             claim_save_for_coach,
             online_request,
+            online_watch,
+            online_unwatch,
             run_sim_batch,
             run_single_seeded_match,
             create_package_project,

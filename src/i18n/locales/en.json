@@ -3783,6 +3783,12 @@
         "notYourSide": "You can only give orders to your own side.",
         "tooManyCommands": "Too many orders are waiting. Wait for the earlier ones to be applied."
       },
+      "realtime": {
+        "badMessage": "The game sent the live server a message it could not read.",
+        "unknownChannel": "That match or league cannot be followed live.",
+        "tooManyChannels": "Too many matches and leagues are being followed at once. Close one and try again.",
+        "tokenRefused": "The live connection could not renew your sign-in. Sign in again if this keeps happening."
+      },
       "online": {
         "notSignedIn": "Sign in to your online account to play online.",
         "unreachable": "The online server cannot be reached. Check your connection and try again.",
@@ -3790,12 +3796,6 @@
         "routeNotAllowed": "That online action is not available in this version of the game.",
         "clientOutdated": "A newer version of the game is needed to play online. Please update the game.",
         "serverOutdated": "The online server is being updated. Please try again later."
-      },
-      "realtime": {
-        "badMessage": "The live connection received a message it could not read.",
-        "unknownChannel": "That live feed does not exist.",
-        "tooManyChannels": "Too many live feeds are open at once. Close one and try again.",
-        "tokenRefused": "The live connection refused your sign-in. Sign in again."
       }
     },
     "sender": {

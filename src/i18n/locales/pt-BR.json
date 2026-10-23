@@ -3783,6 +3783,12 @@
         "notYourSide": "Você só pode dar ordens ao seu próprio time.",
         "tooManyCommands": "Há ordens demais esperando. Aguarde as anteriores serem aplicadas."
       },
+      "realtime": {
+        "badMessage": "O jogo enviou ao servidor ao vivo uma mensagem que ele não conseguiu ler.",
+        "unknownChannel": "Essa partida ou liga não pode ser acompanhada ao vivo.",
+        "tooManyChannels": "Você está acompanhando partidas e ligas demais ao mesmo tempo. Feche uma e tente novamente.",
+        "tokenRefused": "A conexão ao vivo não conseguiu renovar seu login. Entre novamente se isso continuar acontecendo."
+      },
       "online": {
         "notSignedIn": "Entre na sua conta online para jogar online.",
         "unreachable": "Não foi possível conectar ao servidor online. Verifique sua conexão e tente novamente.",
@@ -3790,12 +3796,6 @@
         "routeNotAllowed": "Essa ação online não está disponível nesta versão do jogo.",
         "clientOutdated": "É preciso uma versão mais nova do jogo para jogar online. Atualize o jogo.",
         "serverOutdated": "O servidor online está sendo atualizado. Tente mais tarde."
-      },
-      "realtime": {
-        "badMessage": "A conexão ao vivo recebeu uma mensagem que não conseguiu ler.",
-        "unknownChannel": "Essa transmissão ao vivo não existe.",
-        "tooManyChannels": "Há transmissões ao vivo demais abertas ao mesmo tempo. Feche uma e tente de novo.",
-        "tokenRefused": "A conexão ao vivo recusou seu login. Entre novamente."
       }
     },
     "sender": {

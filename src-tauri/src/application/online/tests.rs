@@ -325,3 +325,48 @@ fn without_a_session_the_webview_is_told_to_sign_in() {
     assert_eq!(code, "be.error.online.notSignedIn");
     assert!(server.requests().is_empty());
 }
+
+/// Given a coach watching a live match (S-8e),
+/// when they read it, their own side, its frames after step 30 by fifty, and send an order with
+/// a key, and then ask for the frames with a key the route does not take,
+/// then the four go out as the server's match routes, and the last is refused unsent.
+#[test]
+fn the_match_routes_go_out_and_the_frames_take_their_own_keys() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let match_path = ["v1", "matches", CLUB];
+    send(&session, &request("GET", &match_path), 0).expect("the match");
+    send(
+        &session,
+        &request("GET", &[&match_path[..], &["mine"]].concat()),
+        0,
+    )
+    .expect("mine");
+    let mut frames = request("GET", &[&match_path[..], &["frames"]].concat());
+    frames.query = vec![
+        (String::from("afterSeq"), String::from("30")),
+        (String::from("limit"), String::from("50")),
+    ];
+    send(&session, &frames, 0).expect("the frames");
+    let mut order = request("POST", &[&match_path[..], &["commands"]].concat());
+    order.idempotency_key = Some(String::from("0192f0c4-0000-7000-8000-0000000000bb"));
+    order.body =
+        Some(json!({"command": {"ChangeFormation": {"side": "Home", "formation": "4-3-3"}}}));
+    send(&session, &order, 0).expect("the order");
+    let mut wrong = frames.clone();
+    wrong.query = vec![(String::from("round"), String::from("1"))];
+    assert_eq!(
+        refused(send(&session, &wrong, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+
+    let paths: Vec<String> = sent(&server).into_iter().map(|r| r.path).collect();
+    assert_eq!(
+        paths,
+        vec![
+            format!("/v1/matches/{CLUB}"),
+            format!("/v1/matches/{CLUB}/mine"),
+            format!("/v1/matches/{CLUB}/frames?afterSeq=30&limit=50"),
+            format!("/v1/matches/{CLUB}/commands"),
+        ]
+    );
+}
