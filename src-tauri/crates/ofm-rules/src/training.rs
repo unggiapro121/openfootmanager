@@ -359,6 +359,29 @@ pub fn train_player(
     player.condition = (player.condition + recovery).min(100);
 }
 
+/// One online day of `player` (phase 3, E3-7, S-7 Qs7-11): the day's session or rest under
+/// `plan`, then `rest_days` days more of recovery. An online season is a football year in 28
+/// days, so one online day is about thirteen football days; development is compressed by the
+/// season's multiplier, and this compresses recovery, or a match a day would wear every squad
+/// down (an XI at 15 condition by the last round). `rest_days` is the season ruleset's.
+pub fn train_online_day(
+    player: &mut Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    rest_days: u32,
+    rng: &mut impl Rng,
+) {
+    train_player(player, plan, day, rng);
+    if rest_days == 0 {
+        return;
+    }
+    let age =
+        crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32);
+    let recovery = (plan.bonus.physio_mult, plan.medical_facility_mult);
+    player.condition =
+        condition_after_rest(player, player.condition, age, recovery, rest_days * 24);
+}
+
 /// `player`'s condition after one rest day that started at `condition`: the day off's recovery,
 /// scaled by his stamina, age, morale, condition and fitness, and by the club's physio bonus and
 /// its medical facility's recovery multiplier.
@@ -664,5 +687,40 @@ mod tests {
         );
         assert_eq!(plan.bonus.coaching_mult, coaching_mult(&[]));
         assert!(team_training_plan(&team, &[], None).taper.is_none());
+    }
+
+    /// Given a tired player on a rest day,
+    /// when his online day gives two more rest days,
+    /// then he ends where the day and two rest days one after another leave him.
+    #[test]
+    fn an_online_day_adds_its_rest_days_to_the_session() {
+        let team = domain::team::Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        let plan = team_training_plan(&team, &[], None);
+        let day = TrainingDay {
+            weekday_num: 6,
+            year: 2026,
+            date: "2026-07-01".into(),
+            development_multiplier: 10.0,
+        };
+        let mut online = tired_player();
+        train_online_day(&mut online, &plan, &day, 2, &mut session_rng(1, "p", "d"));
+        let mut by_hand = tired_player();
+        train_player(&mut by_hand, &plan, &day, &mut session_rng(1, "p", "d"));
+        let age = crate::age::age_on(&by_hand.date_of_birth, &day.date).unwrap() as u32;
+        let recovery = (plan.bonus.physio_mult, plan.medical_facility_mult);
+        for _ in 0..2 {
+            by_hand.condition =
+                rest_day_condition(&by_hand, by_hand.condition, age, recovery.0, recovery.1);
+        }
+        assert_eq!(online.condition, by_hand.condition);
+        assert!(online.condition > tired_player().condition);
     }
 }

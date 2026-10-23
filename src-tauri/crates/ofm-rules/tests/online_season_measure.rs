@@ -22,9 +22,7 @@ use ofm_rules::squad::{
     FixtureLoad, SideSelection, build_side, coach_mastery_from, management_quality_from_rating,
     selection_seed,
 };
-use ofm_rules::training::{
-    TrainingDay, condition_after_rest, session_rng, team_training_plan, train_player,
-};
+use ofm_rules::training::{TrainingDay, session_rng, team_training_plan, train_online_day};
 use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 use ofm_rules::{age, aging, ai_training, match_form, player_wear, playing_time, season};
 use ofm_rules::{season_stats, seed};
@@ -39,16 +37,14 @@ const START_WEEKDAY: u32 = 5;
 /// A season's minutes: 26 matches of 90.
 const SEASON_MINUTES: u32 = 26 * 90;
 
-/// One way to play an online season: the rules as they stand are `{ multiplier, wear_share: 1,
-/// rest_days: 0, injury_scale: 1 }`; the others are candidate online rules, measured here only.
+/// One way to play an online season: the development multiplier, and the season ruleset's online
+/// recovery (S-7 Qs7-11). `rest_days: 0, injury_scale: 1` is the game's own day.
 #[derive(Clone, Copy)]
 struct Variant {
     multiplier: f64,
-    /// The share of a match's condition loss it takes.
-    wear_share: f64,
-    /// Extra rest days of recovery a day gives on top of its session (`condition_after_rest`).
+    /// Rest days of recovery an online day adds to its session (`train_online_day`).
     rest_days: u32,
-    /// Injury length divided by this (at least one day).
+    /// Injuries out for this many times fewer days (`assign_online_match_injury`).
     injury_scale: u32,
 }
 
@@ -123,16 +119,9 @@ fn train(club: &mut Club, season_number: u32, day: u32, football_year: u32, v: V
         development_multiplier: v.multiplier,
     };
     let key = season::day_key(season_number, day);
-    let recovery = (plan.bonus.physio_mult, plan.medical_facility_mult);
     for player in &mut club.players {
         let mut rng = session_rng(SEED, &player.id, &key);
-        train_player(player, &plan, &training_day, &mut rng);
-        if v.rest_days > 0 {
-            let age = age::age_on(&player.date_of_birth, &training_day.date).unwrap_or(25);
-            let age = u32::try_from(age).unwrap_or(25);
-            player.condition =
-                condition_after_rest(player, player.condition, age, recovery, v.rest_days * 24);
-        }
+        train_online_day(player, &plan, &training_day, v.rest_days, &mut rng);
     }
 }
 
@@ -186,24 +175,18 @@ fn settle(
         let (minutes, rating) = stats.map_or((0, 0.0), |s| (s.minutes_played, s.rating));
         playing_time::record_club_match(player, minutes);
         match_form::record_rated_match(player, rating);
-        let before = player.condition;
         player_wear::apply_match_wear(player, minutes, &mut wear);
-        // A candidate online rule, measured here only: a match takes this share of its wear.
-        let lost = f64::from(before.saturating_sub(player.condition)) * v.wear_share;
-        player.condition = before.saturating_sub(lost.round() as u8);
         if let Some(stats) = stats {
             season_stats::record_match(player, stats, conceded);
         }
         if summary.injured.contains(&player.id) {
             let mut rng =
                 seed::rng_for_seed(SEED, &format!("post-match/injury/{}", player.id), fixture);
-            if let Some(injury) = player_wear::assign_match_injury(player, medical, &mut rng) {
-                let days = (injury.days_remaining / v.injury_scale).max(1);
-                if let Some(held) = player.injury.as_mut() {
-                    held.days_remaining = days;
-                }
+            if let Some(injury) =
+                player_wear::assign_online_match_injury(player, medical, v.injury_scale, &mut rng)
+            {
                 measure.injuries += 1;
-                measure.injury_days += days;
+                measure.injury_days += injury.days_remaining;
             }
         }
     }
@@ -345,11 +328,8 @@ fn run(v: Variant) -> Measure {
 
 fn report(v: Variant, m: &Measure) {
     println!(
-        "\n== {}×, wear {:.0}%, +{} rest days a day, injuries ÷{} ({SEASONS} seasons, {CLUBS} clubs) ==",
-        v.multiplier,
-        v.wear_share * 100.0,
-        v.rest_days,
-        v.injury_scale
+        "\n== {}×, +{} rest days a day, injuries ÷{} ({SEASONS} seasons, {CLUBS} clubs) ==",
+        v.multiplier, v.rest_days, v.injury_scale
     );
     let line = |rows: &BTreeMap<&'static str, (f64, u32)>| {
         ["≤19", "20–22", "23–26", "27–30", "31+"]
@@ -406,8 +386,8 @@ fn report(v: Variant, m: &Measure) {
 }
 
 /// Given 56 generated clubs in four leagues,
-/// when three online seasons are played at each development multiplier, and at 10× with a match
-/// taking only part of its wear,
+/// when three online seasons are played by the game's own day and by the online day at several
+/// development multipliers,
 /// then growth by age, condition at kick-off, injuries and retirements are printed.
 #[test]
 #[ignore = "a measurement, run by hand"]
@@ -417,31 +397,23 @@ fn report(v: Variant, m: &Measure) {
 )]
 fn measure_online_seasons() {
     // The rules as they stand, at four multipliers; then candidate online wear at 10×.
-    let now = |multiplier| Variant {
-        multiplier,
-        wear_share: 1.0,
+    let today = Variant {
+        multiplier: 10.0,
         rest_days: 0,
         injury_scale: 1,
     };
-    let compressed = |multiplier, wear_share, rest_days| Variant {
+    let online = |multiplier| Variant {
         multiplier,
-        wear_share,
-        rest_days,
+        rest_days: 2,
         injury_scale: 13,
     };
     let variants = [
-        now(6.0),
-        now(10.0),
-        now(12.0),
-        Variant {
-            wear_share: 0.4,
-            ..now(10.0)
-        },
-        compressed(10.0, 1.0, 2),
-        compressed(10.0, 1.0, 3),
-        compressed(6.0, 1.0, 3),
-        compressed(8.0, 1.0, 3),
-        compressed(10.0, 0.6, 2),
+        today,
+        online(10.0),
+        online(12.0),
+        online(14.0),
+        online(16.0),
+        online(18.0),
     ];
     for v in variants {
         let started = std::time::Instant::now();

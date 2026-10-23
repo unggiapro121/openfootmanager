@@ -141,6 +141,21 @@ pub fn assign_match_injury(
     Some(injury)
 }
 
+/// [`assign_match_injury`] in the online world (phase 3, E3-7, S-7 Qs7-11): the same injury,
+/// out for `days_scale` times fewer days, rounded up, since one online day is about thirteen
+/// football days; a knock of a few football days is a day. `days_scale` is the season ruleset's.
+pub fn assign_online_match_injury(
+    player: &mut Player,
+    medical_level: u8,
+    days_scale: u32,
+    rng: &mut impl Rng,
+) -> Option<Injury> {
+    let mut injury = assign_match_injury(player, medical_level, rng)?;
+    injury.days_remaining = injury.days_remaining.div_ceil(days_scale.max(1));
+    player.injury = Some(injury.clone());
+    Some(injury)
+}
+
 /// `player` after `days` days of recovery: an injury with more days left than that has them
 /// taken off; one with no more is over (phase 3, E3-7: the game's daily recovery, which the online
 /// server applies for the days since it last looked). A player on his last day is fit the next.
@@ -414,6 +429,32 @@ mod tests {
                 at_once.injury.as_ref().map(|i| i.days_remaining),
                 daily.injury.as_ref().map(|i| i.days_remaining),
                 "{days} days"
+            );
+        }
+    }
+
+    /// Given the same player hurt with the same dice offline and online at a scale of 13,
+    /// when the injuries are assigned,
+    /// then it is the same injury, out for the offline days divided by 13 and rounded up; an
+    /// already injured player is left alone.
+    #[test]
+    fn an_online_injury_is_the_offline_one_in_online_days() {
+        for seed in 0..40 {
+            let mut offline = make_player(70);
+            let mut online = make_player(70);
+            let a = assign_match_injury(&mut offline, 0, &mut StdRng::seed_from_u64(seed)).unwrap();
+            let b =
+                assign_online_match_injury(&mut online, 0, 13, &mut StdRng::seed_from_u64(seed))
+                    .unwrap();
+            assert_eq!(a.name, b.name);
+            assert_eq!(b.days_remaining, a.days_remaining.div_ceil(13));
+            assert_eq!(
+                online.injury.as_ref().map(|i| i.days_remaining),
+                Some(b.days_remaining)
+            );
+            assert!(
+                assign_online_match_injury(&mut online, 0, 13, &mut StdRng::seed_from_u64(seed))
+                    .is_none()
             );
         }
     }
