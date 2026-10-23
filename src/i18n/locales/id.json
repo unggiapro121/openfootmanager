@@ -165,7 +165,7 @@
       "seasonLine": "Musim ini: {{apps}} laga, {{goals}} gol, {{assists}} assist, rata-rata nilai {{rating}}"
     },
     "training": {
-      "noPlan": "Kamu belum menetapkan rencana latihan: AI yang menyusun sesi klubmu. Yang terlihat adalah bawaan permainan; pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
+      "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
     },
     "schedule": {
       "title": "Jadwal musim",

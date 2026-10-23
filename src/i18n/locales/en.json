@@ -165,7 +165,7 @@
       "seasonLine": "This season: {{apps}} apps, {{goals}} goals, {{assists}} assists, average rating {{rating}}"
     },
     "training": {
-      "noPlan": "You have not set a training plan yet: the AI plans your club's sessions. What you see are the game's defaults; your first choice saves a plan of your own."
+      "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own."
     },
     "schedule": {
       "title": "Season fixtures",

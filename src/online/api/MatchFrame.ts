@@ -2,6 +2,8 @@
 import type { CommandOutcome } from "./CommandOutcome";
 import type { Controllers } from "./Controllers";
 import type { InputView } from "./InputView";
+import type { PossessionShare } from "./PossessionShare";
+import type { Lane } from "./engine/Lane";
 import type { MatchEvent } from "./engine/MatchEvent";
 import type { MinuteResult } from "./engine/MinuteResult";
 
@@ -10,4 +12,12 @@ import type { MinuteResult } from "./engine/MinuteResult";
  * events its commands pushed, the coaches' commands decided in it, who held each side after it)
  * and the step's result. `seq` is the step's number, the order frames are resumed by.
  */
-export type MatchFrame = { seq: number, gapInputs: Array<InputView>, gapEvents: Array<MatchEvent>, commands: Array<CommandOutcome>, controllers: Controllers, result: MinuteResult, };
+export type MatchFrame = { seq: number, gapInputs: Array<InputView>, gapEvents: Array<MatchEvent>, commands: Array<CommandOutcome>, controllers: Controllers, result: MinuteResult, 
+/**
+ * The ball's lane after the step, as the side on it sees it; none before kick-off (C-2s).
+ */
+ballLane?: Lane, 
+/**
+ * Each side's share of the ball so far, in percent (C-2s).
+ */
+possessionPct: PossessionShare, };

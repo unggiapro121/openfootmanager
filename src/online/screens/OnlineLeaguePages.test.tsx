@@ -50,7 +50,7 @@ const TABLE_LEAGUE: LeagueView = {
       position: 3,
       club: { id: "club-3", name: "Sao Mai" },
       seat: "human",
-      coach: { firstName: "Lan", lastName: "Trần" },
+      coach: { firstName: "Lan", lastName: "Trần", fullName: "Trần Lan" },
       points: 3,
     },
   ],
@@ -104,7 +104,7 @@ describe("the league page", () => {
       "Sao Mai",
     ]);
     expect(within(rows[0]).getByText("online.league.bot")).toBeInTheDocument();
-    expect(within(rows[2]).getByText("Lan Trần")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("Trần Lan")).toBeInTheDocument();
 
     fireEvent.click(within(rows[2]).getByRole("button", { name: "Sao Mai" }));
     expect(await screen.findByText("online.publicClub.formation:4-3-3")).toBeInTheDocument();
@@ -128,18 +128,17 @@ describe("the club's season", () => {
   // when the schedule opens,
   // then every round is listed, played ones with their result.
   it("lists every round with the results so far", async () => {
-    stage({
-      "GET v1/leagues/league-1/fixtures": (request) => {
-        const round = roundOf(request);
-        const settled =
-          round === 1
-            ? { status: "settled", homeGoals: 2, awayGoals: 0 }
-            : round === 2
-              ? { status: "settled", homeGoals: 0, awayGoals: 1 }
-              : {};
-        return ok({ round, fixtures: [fixture(round, settled)] });
-      },
+    const season = Array.from({ length: 26 }, (_, index) => {
+      const round = index + 1;
+      const settled =
+        round === 1
+          ? { status: "settled", homeGoals: 2, awayGoals: 0 }
+          : round === 2
+            ? { status: "settled", homeGoals: 0, awayGoals: 1 }
+            : {};
+      return fixture(round, settled);
     });
+    stage({ "GET v1/clubs/mine/fixtures": ok({ fixtures: season }) });
     renderOnline("/online/schedule");
 
     const list = await screen.findByRole("list", { name: "online.schedule.title" });
@@ -148,12 +147,11 @@ describe("the club's season", () => {
         .getAllByRole("listitem")
         .filter((item) => item.parentElement === list),
     ).toHaveLength(26);
+    expect(within(list).getByRole("img", { name: "online.schedule.outcome.W" })).toBeInTheDocument();
+    expect(within(list).getByRole("img", { name: "online.schedule.outcome.L" })).toBeInTheDocument();
     expect(
-      within(list).getByRole("img", { name: "online.schedule.outcome.W" }),
-    ).toBeInTheDocument();
-    expect(
-      within(list).getByRole("img", { name: "online.schedule.outcome.L" }),
-    ).toBeInTheDocument();
+      server.requests.filter((request) => request.segments.join("/") === "v1/clubs/mine/fixtures"),
+    ).toHaveLength(1);
   });
 });
 

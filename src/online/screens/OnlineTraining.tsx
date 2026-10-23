@@ -8,6 +8,7 @@ import {
   SCHEDULE_COLORS,
   SCHEDULE_ICONS,
   SCHEDULE_IDS,
+  SCHEDULE_TRAINING_DAYS,
   TRAINING_FOCUS_ATTRS,
   TRAINING_FOCUS_ICONS,
   TRAINING_FOCUS_IDS,
@@ -19,24 +20,13 @@ import { online } from "../client";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useActionKey } from "./useActionKey";
 
-/**
- * The game's own defaults for a club's training (`domain::team`): what the screen starts from
- * when the coach has not set a plan yet. Until then the club trains as its AI plans it.
- */
-export const DEFAULT_PLAN: TrainingPlan = {
-  focus: "Physical",
-  intensity: "Medium",
-  schedule: "Balanced",
-  groups: [],
-};
-
 const pick = <T extends string>(ids: readonly string[], value: string): T | null =>
   ids.includes(value) ? (value as T) : null;
 
 /**
  * The coach's weekly training plan (C-2 §3.4): the game's training settings panel, writing the
- * whole plan to the server on each choice. Training groups keep what the plan has; they are not
- * edited online yet.
+ * whole plan to the server on each choice. Until the coach sets one, the panel shows the plan the
+ * club's AI keeps. Training groups keep what the plan has; they are not edited online yet.
  */
 export default function OnlineTraining() {
   const club = useOnlineStore((state) => state.club);
@@ -47,7 +37,8 @@ export default function OnlineTraining() {
 function TrainingScreen({ club }: { club: MyClubView }) {
   const { t } = useTranslation();
   const offline = useOnlineStore((state) => state.network === "offline");
-  const plan = club.trainingPlan ?? DEFAULT_PLAN;
+  const plan = club.trainingPlan;
+  const weekday = useOnlineStore((state) => state.season?.weekday ?? null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const key = useActionKey();
@@ -61,7 +52,11 @@ function TrainingScreen({ club }: { club: MyClubView }) {
         JSON.stringify(next),
       );
       const current = useOnlineStore.getState().club;
-      if (current) useOnlineStore.getState().setClub({ ...current, trainingPlan: saved });
+      if (current) {
+        useOnlineStore
+          .getState()
+          .setClub({ ...current, trainingPlan: saved, trainingPlanIsOwn: true });
+      }
     } catch (failure) {
       setError(failure);
     } finally {
@@ -84,7 +79,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
 
   return (
     <div className="space-y-4">
-      {!club.trainingPlan && (
+      {!club.trainingPlanIsOwn && (
         <p role="status" className="text-sm text-gray-600 dark:text-gray-300">
           {t("online.training.noPlan")}
         </p>
@@ -99,8 +94,10 @@ function TrainingScreen({ club }: { club: MyClubView }) {
         currentIntensity={plan.intensity}
         currentSchedule={plan.schedule}
         isSaving={saving || offline}
-        todayWeekday={null}
-        isTodayTraining={false}
+        todayWeekday={weekday}
+        isTodayTraining={
+          weekday !== null && (SCHEDULE_TRAINING_DAYS[plan.schedule] ?? []).includes(weekday)
+        }
         activeFocusAttrs={TRAINING_FOCUS_ATTRS[plan.focus] ?? []}
         onSetTraining={setTraining}
         onSetSchedule={setSchedule}

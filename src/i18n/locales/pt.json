@@ -165,7 +165,7 @@
       "seasonLine": "Esta época: {{apps}} jogos, {{goals}} golos, {{assists}} assistências, nota média {{rating}}"
     },
     "training": {
-      "noPlan": "Ainda não definiste um plano de treino: a IA planeia as sessões do teu clube. O que vês são os valores predefinidos do jogo; a tua primeira escolha guarda um plano teu."
+      "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu."
     },
     "schedule": {
       "title": "Calendário da época",

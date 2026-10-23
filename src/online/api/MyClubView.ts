@@ -13,4 +13,13 @@ export type MyClubView = { club: ClubProfileView,
 /**
  * For `If-Match` when the setup is changed.
  */
-version: number, squadRefreshing: boolean, players: Array<SquadPlayerView>, staff: Array<StaffLineView>, setup: ClubSetup, trainingPlan?: TrainingPlan, leagueId?: string, nextFixture?: FixtureView, };
+version: number, squadRefreshing: boolean, players: Array<SquadPlayerView>, staff: Array<StaffLineView>, setup: ClubSetup, 
+/**
+ * The plan the club trains to: the coach's own, or, until he sets one, the one its AI
+ * keeps (C-2s).
+ */
+trainingPlan: TrainingPlan, 
+/**
+ * Whether `training_plan` is one the coach set.
+ */
+trainingPlanIsOwn: boolean, leagueId?: string, nextFixture?: FixtureView, };

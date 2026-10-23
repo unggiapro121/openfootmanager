@@ -27,9 +27,8 @@ export function toBoardTeam(club: MyClubView): TacticsBoardTeam {
 }
 
 /**
- * A player of the coach's own club as the tactics board reads him. The online squad does not
- * say which other positions he can play, so he has none here; it tells his age, not his date of
- * birth, and has no traits or photo.
+ * A player of the coach's own club as the tactics board reads him. The online squad tells his
+ * age, not his date of birth, and has no traits or photo.
  */
 export function toRosterPlayer(player: SquadPlayerView, clubId: string): TacticsRosterPlayer {
   return {
@@ -39,7 +38,7 @@ export function toRosterPlayer(player: SquadPlayerView, clubId: string): Tactics
     nationality: player.nationality,
     position: player.position,
     natural_position: player.position,
-    alternate_positions: [],
+    alternate_positions: player.alternatePositions,
     attributes: player.attributes,
     condition: player.condition,
     morale: player.morale,
@@ -48,19 +47,23 @@ export function toRosterPlayer(player: SquadPlayerView, clubId: string): Tactics
       : null,
     team_id: clubId,
     ovr: player.ovr,
+    jersey_number: player.shirtNumber ?? null,
     age: player.age,
   };
 }
 
-/** Each player's rating at every position, where the server sends one (C-2s); none until then. */
+/** Each player's rating at every pitch position, by the rule the server picks lineups with. */
 export function toPositionRatings(players: SquadPlayerView[]): Record<string, PositionRating[]> {
-  const ratings: Record<string, PositionRating[]> = {};
-  for (const player of players) {
-    const sent = (player as SquadPlayerView & { positionRatings?: PositionRating[] })
-      .positionRatings;
-    if (sent) ratings[player.id] = sent;
-  }
-  return ratings;
+  return Object.fromEntries(
+    players.map((player) => [
+      player.id,
+      player.positionRatings.map((rating) => ({
+        position: rating.position,
+        ovr: rating.ovr,
+        fit: rating.fit,
+      })),
+    ]),
+  );
 }
 
 const PLAY_STYLES: readonly PlayStyle[] = [

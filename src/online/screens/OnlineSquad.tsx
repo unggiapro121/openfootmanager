@@ -54,6 +54,9 @@ export default function OnlineSquad() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-navy-600 dark:text-gray-400">
               <tr>
+                <th scope="col" className="px-2 py-2 text-right">
+                  {t("squad.jerseyNumber")}
+                </th>
                 <th scope="col" className="px-4 py-2">
                   {t("common.name")}
                 </th>
@@ -115,6 +118,9 @@ function SquadRow({
         selected ? "bg-primary-50 dark:bg-primary-500/10" : ""
       }`}
     >
+      <td className="px-2 py-2 text-right tabular-nums text-gray-500 dark:text-gray-400">
+        {player.shirtNumber ?? "–"}
+      </td>
       <td className="px-4 py-2">
         <button
           type="button"

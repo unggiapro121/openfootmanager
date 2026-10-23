@@ -165,7 +165,7 @@
       "seasonLine": "Cette saison : {{apps}} matchs, {{goals}} buts, {{assists}} passes décisives, note moyenne {{rating}}"
     },
     "training": {
-      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : l'IA planifie les séances de votre club. Vous voyez les réglages par défaut du jeu ; votre premier choix enregistre votre propre plan."
+      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."
     },
     "schedule": {
       "title": "Calendrier de la saison",

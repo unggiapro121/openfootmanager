@@ -165,7 +165,7 @@
       "seasonLine": "Mùa này: {{apps}} trận, {{goals}} bàn, {{assists}} kiến tạo, điểm trung bình {{rating}}"
     },
     "training": {
-      "noPlan": "Bạn chưa đặt kế hoạch tập: AI đang lên buổi tập cho CLB. Các lựa chọn đang hiện là mặc định của game; lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
+      "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
     },
     "schedule": {
       "title": "Lịch thi đấu mùa giải",

@@ -165,7 +165,7 @@
       "seasonLine": "Bu sezon: {{apps}} maç, {{goals}} gol, {{assists}} asist, ortalama puan {{rating}}"
     },
     "training": {
-      "noPlan": "Henüz bir antrenman planı belirlemedin: kulübünün seanslarını yapay zekâ planlıyor. Gördüklerin oyunun varsayılanları; ilk seçimin kendi planın olarak kaydedilir."
+      "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."
     },
     "schedule": {
       "title": "Sezon fikstürü",

@@ -165,7 +165,7 @@
       "seasonLine": "Tato sezóna: {{apps}} zápasů, {{goals}} gólů, {{assists}} asistencí, průměrná známka {{rating}}"
     },
     "training": {
-      "noPlan": "Zatím jste nenastavili tréninkový plán: tréninky klubu plánuje AI. Vidíte výchozí nastavení hry; vaše první volba uloží vlastní plán."
+      "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."
     },
     "schedule": {
       "title": "Rozpis sezóny",

@@ -165,7 +165,7 @@
       "seasonLine": "Questa stagione: {{apps}} presenze, {{goals}} gol, {{assists}} assist, voto medio {{rating}}"
     },
     "training": {
-      "noPlan": "Non hai ancora impostato un piano di allenamento: l'IA pianifica le sedute del tuo club. Vedi i valori predefiniti del gioco; la tua prima scelta salva un piano tuo."
+      "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo."
     },
     "schedule": {
       "title": "Calendario della stagione",

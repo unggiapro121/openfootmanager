@@ -15,4 +15,9 @@ day?: number,
 /**
  * When the next day begins in the caller's region (04:00 there).
  */
-nextDayAt?: string, footballYear: number, };
+nextDayAt?: string, footballYear: number, 
+/**
+ * Today's weekday in the season's calendar, 0 = Monday: the day the club's training plan
+ * reads (`ofm_rules::season::season_weekday`); absent before day 0 (C-2s).
+ */
+weekday?: number, };

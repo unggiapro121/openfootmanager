@@ -13,13 +13,14 @@ import {
 } from "./useOnlineTacticsSource";
 
 /**
- * When the next match's line-up locks, if the server says (`lineupLocksAt`, package C-2s).
- * Until it does, a prepared fixture is known to be locked: preparation comes after the lock.
+ * Whether the next match's line-up is locked: from the moment the server gives
+ * (`lineupLocksAt`), and in any case once the fixture is prepared, which comes after the lock.
  */
-function lockOf(club: MyClubView, nowMs: number): { locked: boolean; kickoffAt: string | null } {
-  const fixture = club.nextFixture as
-    | (NonNullable<MyClubView["nextFixture"]> & { lineupLocksAt?: string })
-    | undefined;
+export function lockOf(
+  club: MyClubView,
+  nowMs: number,
+): { locked: boolean; kickoffAt: string | null } {
+  const fixture = club.nextFixture;
   if (!fixture) return { locked: false, kickoffAt: null };
   const locksAt = fixture.lineupLocksAt ? Date.parse(fixture.lineupLocksAt) : Number.NaN;
   const locked = fixture.status === "prepared" || (!Number.isNaN(locksAt) && nowMs >= locksAt);

@@ -3,4 +3,4 @@
 /**
  * A player as anyone sees him on a club's public page.
  */
-export type PublicPlayerView = { id: string, fullName: string, position: string, age: number, ovr: number, };
+export type PublicPlayerView = { id: string, fullName: string, position: string, age: number, ovr: number, shirtNumber?: number, };

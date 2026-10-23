@@ -49,9 +49,7 @@ function PublicClub({ club }: { club: PublicClubView }) {
           <p>{t("online.publicClub.formation", { formation: club.formation })}</p>
           <p>
             {club.coach
-              ? t("online.publicClub.coach", {
-                  name: `${club.coach.firstName} ${club.coach.lastName}`,
-                })
+              ? t("online.publicClub.coach", { name: club.coach.fullName })
               : t("online.publicClub.botCoach")}
           </p>
         </CardBody>
