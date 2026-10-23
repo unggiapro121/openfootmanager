@@ -39,7 +39,10 @@
       "label": "Navegación del modo en línea",
       "overview": "Resumen",
       "profile": "Perfil del entrenador",
-      "mainMenu": "Menú principal"
+      "mainMenu": "Menú principal",
+      "squad": "Plantilla",
+      "tactics": "Tácticas",
+      "training": "Entrenamiento"
     },
     "gate": {
       "clientOutdatedTitle": "Actualización necesaria",
@@ -119,6 +122,32 @@
       "confirmBody": "Tu club actual vuelve a su bot de inmediato. Después tomas un club tal como está en la nueva región, como mucho una vez por temporada.",
       "confirm": "Sí, cambiar de región",
       "changed": "Región cambiada. Hazte cargo de un club en tu nueva región."
+    },
+    "tactics": {
+      "locked": "La alineación está bloqueada para el partido de las {{time}}. Podrás cambiarla cuando termine.",
+      "lockedNow": "La alineación está bloqueada para el próximo partido.",
+      "stale": "Tu alineación se cambió en otro lugar. El tablero muestra ahora la guardada; vuelve a hacer tu cambio.",
+      "invalid": "El servidor no aceptó esa alineación:",
+      "unknownPlayer": "un jugador que ya no está en la plantilla",
+      "issue": {
+        "unknownFormation": "El juego no conoce esa formación.",
+        "startingElevenSize": "El once inicial debe tener exactamente 11 jugadores.",
+        "duplicateStarter": "{{player}} está dos veces en el once inicial.",
+        "notInSquad": "{{player}} no está en tu plantilla."
+      }
+    },
+    "squad": {
+      "empty": "Tu plantilla aún no tiene jugadores.",
+      "title": "Plantilla ({{players}})",
+      "potential": "Potencial",
+      "potentialStars": "Potencial: {{stars}} de 5 estrellas",
+      "apps": "PJ",
+      "goals": "Goles",
+      "fitness": "Forma física",
+      "seasonLine": "Esta temporada: {{apps}} partidos, {{goals}} goles, {{assists}} asistencias, nota media {{rating}}"
+    },
+    "training": {
+      "noPlan": "Aún no has fijado un plan de entrenamiento: la IA planifica las sesiones de tu club. Lo que ves son los valores por defecto del juego; tu primera elección guarda un plan propio."
     }
   },
   "coach": {
@@ -3706,7 +3735,13 @@
         "versionStale": "Tu club ha cambiado desde que lo abriste. Recárgalo e inténtalo de nuevo.",
         "nameTaken": "Otro club ya tiene ese nombre.",
         "nameBlocked": "Ese nombre no está permitido.",
-        "renameLimit": "Puedes cambiar el nombre de tu club una vez por temporada."
+        "renameLimit": "Puedes cambiar el nombre de tu club una vez por temporada.",
+        "lineupLocked": "La alineación está bloqueada para el partido que empieza a las {{kickoffAt}}. Podrás cambiarla cuando termine."
+      },
+      "match": {
+        "notLive": "El partido no se está jugando ahora mismo.",
+        "notYourSide": "Solo puedes dar órdenes a tu propio equipo.",
+        "tooManyCommands": "Hay demasiadas órdenes en espera. Espera a que se apliquen las anteriores."
       },
       "online": {
         "notSignedIn": "Inicia sesión en tu cuenta online para jugar online.",

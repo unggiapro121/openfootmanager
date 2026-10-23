@@ -39,7 +39,10 @@
       "label": "Điều hướng chế độ online",
       "overview": "Tổng quan",
       "profile": "Hồ sơ HLV",
-      "mainMenu": "Menu chính"
+      "mainMenu": "Menu chính",
+      "squad": "Đội hình",
+      "tactics": "Chiến thuật",
+      "training": "Tập luyện"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -119,6 +122,32 @@
       "confirmBody": "CLB hiện tại sẽ trả về bot ngay lập tức. Sau đó bạn nhận một CLB nguyên trạng ở khu vực mới, tối đa một lần mỗi mùa.",
       "confirm": "Đồng ý đổi khu vực",
       "changed": "Đã đổi khu vực. Hãy nhận một CLB ở khu vực mới."
+    },
+    "tactics": {
+      "locked": "Đội hình đã khoá cho trận lúc {{time}}. Bạn sửa lại được khi trận kết thúc.",
+      "lockedNow": "Đội hình đã khoá cho trận kế tiếp.",
+      "stale": "Đội hình vừa được đổi ở nơi khác. Bảng đang hiện bản đã lưu; hãy làm lại thay đổi của bạn.",
+      "invalid": "Máy chủ không nhận đội hình này:",
+      "unknownPlayer": "một cầu thủ không còn trong đội",
+      "issue": {
+        "unknownFormation": "Sơ đồ này không có trong game.",
+        "startingElevenSize": "Đội hình chính phải có đúng 11 cầu thủ.",
+        "duplicateStarter": "{{player}} có mặt hai lần trong đội hình chính.",
+        "notInSquad": "{{player}} không thuộc đội của bạn."
+      }
+    },
+    "squad": {
+      "empty": "Đội của bạn chưa có cầu thủ nào.",
+      "title": "Đội hình ({{players}})",
+      "potential": "Tiềm năng",
+      "potentialStars": "Tiềm năng: {{stars}}/5 sao",
+      "apps": "Trận",
+      "goals": "Bàn",
+      "fitness": "Độ sung sức",
+      "seasonLine": "Mùa này: {{apps}} trận, {{goals}} bàn, {{assists}} kiến tạo, điểm trung bình {{rating}}"
+    },
+    "training": {
+      "noPlan": "Bạn chưa đặt kế hoạch tập: AI đang lên buổi tập cho CLB. Các lựa chọn đang hiện là mặc định của game; lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
     }
   },
   "coach": {
@@ -3706,7 +3735,13 @@
         "versionStale": "CLB của bạn đã thay đổi từ lúc bạn mở. Hãy tải lại rồi thử lại.",
         "nameTaken": "Đã có CLB khác dùng tên này.",
         "nameBlocked": "Tên này không được phép.",
-        "renameLimit": "Mỗi mùa bạn chỉ được đổi tên CLB một lần."
+        "renameLimit": "Mỗi mùa bạn chỉ được đổi tên CLB một lần.",
+        "lineupLocked": "Đội hình đã khoá cho trận bắt đầu lúc {{kickoffAt}}. Bạn sửa lại được khi trận kết thúc."
+      },
+      "match": {
+        "notLive": "Trận đấu hiện không diễn ra.",
+        "notYourSide": "Bạn chỉ ra lệnh được cho đội của mình.",
+        "tooManyCommands": "Có quá nhiều lệnh đang chờ. Hãy đợi các lệnh trước được áp dụng."
       },
       "online": {
         "notSignedIn": "Hãy đăng nhập tài khoản online để chơi online.",

@@ -39,7 +39,10 @@
       "label": "在线模式导航",
       "overview": "概览",
       "profile": "主教练资料",
-      "mainMenu": "主菜单"
+      "mainMenu": "主菜单",
+      "squad": "阵容",
+      "tactics": "战术",
+      "training": "训练"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -119,6 +122,32 @@
       "confirmBody": "你当前的俱乐部会立即交还给它的机器人。之后你将在新地区按原样接手一家俱乐部，每个赛季最多一次。",
       "confirm": "确定更换地区",
       "changed": "地区已更换。请在新地区接手一家俱乐部。"
+    },
+    "tactics": {
+      "locked": "{{time}} 开始的比赛首发阵容已锁定，比赛结束后才能再修改。",
+      "lockedNow": "下一场比赛的首发阵容已锁定。",
+      "stale": "你的阵容已在别处被修改。战术板现在显示已保存的阵容，请重新做一次修改。",
+      "invalid": "服务器没有接受这个阵容：",
+      "unknownPlayer": "一名已不在阵中的球员",
+      "issue": {
+        "unknownFormation": "游戏中没有这个阵型。",
+        "startingElevenSize": "首发阵容必须正好 11 人。",
+        "duplicateStarter": "{{player}} 在首发阵容中出现了两次。",
+        "notInSquad": "{{player}} 不在你的阵中。"
+      }
+    },
+    "squad": {
+      "empty": "你的阵中还没有球员。",
+      "title": "阵容（{{players}}）",
+      "potential": "潜力",
+      "potentialStars": "潜力：{{stars}}/5 星",
+      "apps": "出场",
+      "goals": "进球",
+      "fitness": "比赛状态",
+      "seasonLine": "本赛季：出场 {{apps}} 次，进球 {{goals}} 个，助攻 {{assists}} 次，平均评分 {{rating}}"
+    },
+    "training": {
+      "noPlan": "你还没有设定训练计划：俱乐部的训练由 AI 安排。当前显示的是游戏默认设置；你的第一次选择会保存为你自己的计划。"
     }
   },
   "coach": {
@@ -3706,7 +3735,13 @@
         "versionStale": "自你打开后俱乐部已发生变化，请刷新后重试。",
         "nameTaken": "已有其他俱乐部使用该名称。",
         "nameBlocked": "该名称不被允许。",
-        "renameLimit": "每个赛季只能为俱乐部改名一次。"
+        "renameLimit": "每个赛季只能为俱乐部改名一次。",
+        "lineupLocked": "开球时间为 {{kickoffAt}} 的比赛首发阵容已锁定，比赛结束后才能再修改。"
+      },
+      "match": {
+        "notLive": "比赛当前未在进行。",
+        "notYourSide": "你只能给自己的球队下达指令。",
+        "tooManyCommands": "等待中的指令太多，请等之前的指令生效。"
       },
       "online": {
         "notSignedIn": "请登录在线账户以进行在线游戏。",

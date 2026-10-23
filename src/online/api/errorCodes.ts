@@ -39,10 +39,14 @@ export const ERROR_CODES = [
   "be.error.club.matchUnderway",
   "be.error.club.takeoverLimit",
   "be.error.club.setupInvalid",
+  "be.error.club.lineupLocked",
   "be.error.club.versionStale",
   "be.error.club.nameTaken",
   "be.error.club.nameBlocked",
   "be.error.club.renameLimit",
+  "be.error.match.notLive",
+  "be.error.match.notYourSide",
+  "be.error.match.tooManyCommands",
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -51,10 +55,12 @@ export type ErrorCode = (typeof ERROR_CODES)[number];
 export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.account.regionChangeTooSoon": ["availableAt"],
   "be.error.club.matchUnderway": ["kickoffAt"],
+  "be.error.club.lineupLocked": ["kickoffAt"],
 };
 
 /** The translation parameters a code comes with, in `details.params`. */
 export type ErrorParams = {
   "be.error.account.regionChangeTooSoon": { availableAt: string | number };
   "be.error.club.matchUnderway": { kickoffAt: string | number };
+  "be.error.club.lineupLocked": { kickoffAt: string | number };
 };

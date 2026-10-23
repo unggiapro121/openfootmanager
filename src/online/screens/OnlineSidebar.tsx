@@ -1,8 +1,23 @@
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Globe2, LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import {
+  Crosshair,
+  Dumbbell,
+  Globe2,
+  LayoutDashboard,
+  LogOut,
+  UserRound,
+  Users,
+} from "lucide-react";
 import NavItem from "../../components/dashboard/SidebarNavItem";
 import { useOnlineStore } from "../store/onlineStore";
+
+/** The club's pages, shown once the coach runs a club. */
+const CLUB_PAGES = [
+  { path: "/online/squad", label: "online.nav.squad", icon: <Users /> },
+  { path: "/online/tactics", label: "online.nav.tactics", icon: <Crosshair /> },
+  { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
+];
 
 /** The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. */
 export default function OnlineSidebar() {
@@ -10,6 +25,7 @@ export default function OnlineSidebar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const clubName = useOnlineStore((state) => state.club?.club.name);
+  const hasClub = clubName !== undefined;
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-navy-700 bg-navy-800 text-white">
@@ -36,6 +52,25 @@ export default function OnlineSidebar() {
           collapsed={false}
           onClick={() => navigate("/online")}
         />
+        {hasClub && (
+          <>
+            <hr className="my-2 border-navy-700" />
+            <p className="px-3 pb-1 pt-1 font-heading text-[10px] uppercase tracking-widest text-gray-500">
+              {t("dashboard.sectionClub")}
+            </p>
+            {CLUB_PAGES.map((page) => (
+              <NavItem
+                key={page.path}
+                icon={page.icon}
+                label={t(page.label)}
+                active={pathname === page.path}
+                collapsed={false}
+                onClick={() => navigate(page.path)}
+              />
+            ))}
+            <hr className="my-2 border-navy-700" />
+          </>
+        )}
         <NavItem
           icon={<UserRound />}
           label={t("online.nav.profile")}

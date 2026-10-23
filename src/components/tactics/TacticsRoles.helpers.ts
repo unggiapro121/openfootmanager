@@ -1,4 +1,5 @@
-import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
+import type { TeamMatchRolesData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import { getSetPieceStats } from "../match/SetPieceSelector";
 
 export const EMPTY_MATCH_ROLES: TeamMatchRolesData = {
@@ -14,7 +15,7 @@ function roleAllowsGoalkeeper(role: string): boolean {
 }
 
 function pickBestCandidate(
-  players: PlayerData[],
+  players: TacticsRosterPlayer[],
   role: string,
   excludedIds: string[] = [],
 ): string | null {
@@ -54,7 +55,7 @@ function resolveAssignedRole(
 }
 
 export function resolveEffectiveMatchRoles(
-  startingPlayers: PlayerData[],
+  startingPlayers: TacticsRosterPlayer[],
   matchRoles?: TeamMatchRolesData,
 ): TeamMatchRolesData {
   const availableIds = new Set(startingPlayers.map((player) => player.id));
@@ -93,7 +94,7 @@ export function resolveEffectiveMatchRoles(
 
 export function buildUpdatedMatchRolesForAssignment(
   effectiveRoles: TeamMatchRolesData,
-  startingPlayers: PlayerData[],
+  startingPlayers: TacticsRosterPlayer[],
   role: keyof TeamMatchRolesData,
   playerId: string,
 ): TeamMatchRolesData {

@@ -21,7 +21,7 @@ export function placeholderWidth(name: string): number {
 
 interface PlayerProfileAttributesCardProps {
   attrGroups: PlayerAttributeGroup[];
-  player: PlayerData;
+  player: Pick<PlayerData, "attributes">;
   isOwnClub: boolean;
   isGk?: boolean;
   title: string;

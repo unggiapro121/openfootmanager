@@ -39,7 +39,10 @@
       "label": "Çevrimiçi mod gezinmesi",
       "overview": "Genel bakış",
       "profile": "Teknik direktör profili",
-      "mainMenu": "Ana menü"
+      "mainMenu": "Ana menü",
+      "squad": "Kadro",
+      "tactics": "Taktik",
+      "training": "Antrenman"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -119,6 +122,32 @@
       "confirmBody": "Şu anki kulübün hemen kendi botuna geri döner. Ardından yeni bölgede bir kulübü olduğu gibi devralırsın; bu en fazla sezonda bir kez olur.",
       "confirm": "Evet, bölgeyi değiştir",
       "changed": "Bölge değiştirildi. Yeni bölgende bir kulübü devral."
+    },
+    "tactics": {
+      "locked": "{{time}} maçı için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin.",
+      "lockedNow": "Sonraki maçın kadrosu kilitlendi.",
+      "stale": "Kadron başka bir yerde değiştirildi. Tahta artık kayıtlı hâlini gösteriyor; değişikliğini yeniden yap.",
+      "invalid": "Sunucu bu kadroyu kabul etmedi:",
+      "unknownPlayer": "artık kadroda olmayan bir oyuncu",
+      "issue": {
+        "unknownFormation": "Oyun bu dizilişi tanımıyor.",
+        "startingElevenSize": "İlk on birde tam 11 oyuncu olmalı.",
+        "duplicateStarter": "{{player}} ilk on birde iki kez yer alıyor.",
+        "notInSquad": "{{player}} kadronda değil."
+      }
+    },
+    "squad": {
+      "empty": "Kadronda henüz oyuncu yok.",
+      "title": "Kadro ({{players}})",
+      "potential": "Potansiyel",
+      "potentialStars": "Potansiyel: 5 üzerinden {{stars}} yıldız",
+      "apps": "Maç",
+      "goals": "Gol",
+      "fitness": "Maç formu",
+      "seasonLine": "Bu sezon: {{apps}} maç, {{goals}} gol, {{assists}} asist, ortalama puan {{rating}}"
+    },
+    "training": {
+      "noPlan": "Henüz bir antrenman planı belirlemedin: kulübünün seanslarını yapay zekâ planlıyor. Gördüklerin oyunun varsayılanları; ilk seçimin kendi planın olarak kaydedilir."
     }
   },
   "coach": {
@@ -3706,7 +3735,13 @@
         "versionStale": "Kulübün sen açtığından beri değişti. Yenileyip tekrar dene.",
         "nameTaken": "Bu ad başka bir kulübe ait.",
         "nameBlocked": "Bu ada izin verilmiyor.",
-        "renameLimit": "Kulübünün adını sezonda bir kez değiştirebilirsin."
+        "renameLimit": "Kulübünün adını sezonda bir kez değiştirebilirsin.",
+        "lineupLocked": "{{kickoffAt}} saatinde başlayan maç için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin."
+      },
+      "match": {
+        "notLive": "Maç şu anda oynanmıyor.",
+        "notYourSide": "Yalnızca kendi takımına talimat verebilirsin.",
+        "tooManyCommands": "Bekleyen çok fazla talimat var. Öncekilerin uygulanmasını bekle."
       },
       "online": {
         "notSignedIn": "Çevrim içi oynamak için çevrim içi hesabına giriş yap.",

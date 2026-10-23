@@ -39,7 +39,10 @@
       "label": "Navegação do modo online",
       "overview": "Resumo",
       "profile": "Perfil do treinador",
-      "mainMenu": "Menu principal"
+      "mainMenu": "Menu principal",
+      "squad": "Plantel",
+      "tactics": "Táticas",
+      "training": "Treino"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -119,6 +122,32 @@
       "confirmBody": "O teu clube atual volta de imediato ao seu bot. Depois assumes um clube tal como está na nova região, no máximo uma vez por época.",
       "confirm": "Sim, mudar de região",
       "changed": "Região alterada. Assume um clube na tua nova região."
+    },
+    "tactics": {
+      "locked": "A equipa titular está bloqueada para o jogo das {{time}}. Podes alterá-la quando o jogo terminar.",
+      "lockedNow": "A equipa titular está bloqueada para o próximo jogo.",
+      "stale": "A tua equipa foi alterada noutro sítio. O quadro mostra agora a guardada; volta a fazer a tua alteração.",
+      "invalid": "O servidor não aceitou essa equipa:",
+      "unknownPlayer": "um jogador que já não está no plantel",
+      "issue": {
+        "unknownFormation": "O jogo não conhece essa tática.",
+        "startingElevenSize": "O onze inicial tem de ter exatamente 11 jogadores.",
+        "duplicateStarter": "{{player}} está duas vezes no onze inicial.",
+        "notInSquad": "{{player}} não está no teu plantel."
+      }
+    },
+    "squad": {
+      "empty": "O teu plantel ainda não tem jogadores.",
+      "title": "Plantel ({{players}})",
+      "potential": "Potencial",
+      "potentialStars": "Potencial: {{stars}} de 5 estrelas",
+      "apps": "Jogos",
+      "goals": "Golos",
+      "fitness": "Forma física",
+      "seasonLine": "Esta época: {{apps}} jogos, {{goals}} golos, {{assists}} assistências, nota média {{rating}}"
+    },
+    "training": {
+      "noPlan": "Ainda não definiste um plano de treino: a IA planeia as sessões do teu clube. O que vês são os valores predefinidos do jogo; a tua primeira escolha guarda um plano teu."
     }
   },
   "coach": {
@@ -3706,7 +3735,13 @@
         "versionStale": "O teu clube mudou desde que o abriste. Recarrega-o e tenta novamente.",
         "nameTaken": "Outro clube já tem esse nome.",
         "nameBlocked": "Esse nome não é permitido.",
-        "renameLimit": "Podes mudar o nome do teu clube uma vez por época."
+        "renameLimit": "Podes mudar o nome do teu clube uma vez por época.",
+        "lineupLocked": "A equipa titular está bloqueada para o jogo que começa às {{kickoffAt}}. Podes alterá-la quando o jogo terminar."
+      },
+      "match": {
+        "notLive": "O jogo não está a decorrer neste momento.",
+        "notYourSide": "Só podes dar ordens à tua própria equipa.",
+        "tooManyCommands": "Há demasiadas ordens em espera. Espera que as anteriores sejam aplicadas."
       },
       "online": {
         "notSignedIn": "Inicia sessão na tua conta online para jogar online.",

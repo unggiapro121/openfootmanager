@@ -39,7 +39,10 @@
       "label": "Navigace online režimu",
       "overview": "Přehled",
       "profile": "Profil trenéra",
-      "mainMenu": "Hlavní nabídka"
+      "mainMenu": "Hlavní nabídka",
+      "squad": "Kádr",
+      "tactics": "Taktika",
+      "training": "Trénink"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -119,6 +122,32 @@
       "confirmBody": "Váš současný klub se okamžitě vrátí svému botovi. Poté převezmete klub v současném stavu v novém regionu, nejvýše jednou za sezónu.",
       "confirm": "Ano, změnit region",
       "changed": "Region změněn. Převezměte klub ve svém novém regionu."
+    },
+    "tactics": {
+      "locked": "Sestava je uzamčena pro zápas v {{time}}. Změnit ji můžete po skončení zápasu.",
+      "lockedNow": "Sestava na další zápas je uzamčena.",
+      "stale": "Vaše sestava byla změněna jinde. Tabule teď ukazuje uloženou verzi; proveďte změnu znovu.",
+      "invalid": "Server tuto sestavu nepřijal:",
+      "unknownPlayer": "hráč, který už není v kádru",
+      "issue": {
+        "unknownFormation": "Tuto rozestavu hra nezná.",
+        "startingElevenSize": "Základní sestava musí mít přesně 11 hráčů.",
+        "duplicateStarter": "{{player}} je v základní sestavě dvakrát.",
+        "notInSquad": "{{player}} není ve vašem kádru."
+      }
+    },
+    "squad": {
+      "empty": "Váš kádr zatím nemá žádné hráče.",
+      "title": "Kádr ({{players}})",
+      "potential": "Potenciál",
+      "potentialStars": "Potenciál: {{stars}} z 5 hvězd",
+      "apps": "Záp.",
+      "goals": "Góly",
+      "fitness": "Herní forma",
+      "seasonLine": "Tato sezóna: {{apps}} zápasů, {{goals}} gólů, {{assists}} asistencí, průměrná známka {{rating}}"
+    },
+    "training": {
+      "noPlan": "Zatím jste nenastavili tréninkový plán: tréninky klubu plánuje AI. Vidíte výchozí nastavení hry; vaše první volba uloží vlastní plán."
     }
   },
   "coach": {
@@ -3706,7 +3735,13 @@
         "versionStale": "Váš klub se od otevření změnil. Načtěte jej znovu a zkuste to znovu.",
         "nameTaken": "Tento název už má jiný klub.",
         "nameBlocked": "Tento název není povolen.",
-        "renameLimit": "Klub můžete přejmenovat jednou za sezónu."
+        "renameLimit": "Klub můžete přejmenovat jednou za sezónu.",
+        "lineupLocked": "Sestava je uzamčena pro zápas s výkopem v {{kickoffAt}}. Změnit ji můžete po skončení zápasu."
+      },
+      "match": {
+        "notLive": "Zápas se právě nehraje.",
+        "notYourSide": "Pokyny můžete dávat jen svému týmu.",
+        "tooManyCommands": "Čeká příliš mnoho pokynů. Počkejte, až se použijí ty předchozí."
       },
       "online": {
         "notSignedIn": "Pro hru online se přihlaste ke svému online účtu.",

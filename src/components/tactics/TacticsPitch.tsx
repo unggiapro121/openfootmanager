@@ -3,7 +3,8 @@ import { Star } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { getPlayerOvr } from "../../lib/helpers";
-import type { PlayerData, TeamMatchRolesData } from "../../store/gameStore";
+import type { TeamMatchRolesData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import ContextMenu from "../ContextMenu";
 import { Badge, Card, PitchSurface, PitchToken, Select, fitToneOf, pitchRoleMarkers } from "../ui";
 import {
@@ -20,7 +21,7 @@ import { ratingAtPosition } from "../../lib/positionRatings";
 import { centreBackPairGap, getRoleOptions } from "../../lib/playerRoles";
 
 interface TacticsPitchProps {
-  benchPlayers?: PlayerData[];
+  benchPlayers?: TacticsRosterPlayer[];
   dragState: DragState | null;
   formation: string;
   matchRoles?: TeamMatchRolesData;
@@ -50,13 +51,13 @@ interface TacticsPitchProps {
   pitchSlots: TacticsPitchSlot[];
   /** Each player's rating at every position, by id (backend). */
   positionRatings?: Record<string, PositionRating[]>;
-  selectedPlayer: PlayerData | null;
+  selectedPlayer: TacticsRosterPlayer | null;
   selectedPlayerId: string | null;
 }
 
 type FitTone = "exact" | "adapted" | "out" | "empty";
 
-function getFitTone(player: PlayerData | null, slotPosition: string): FitTone {
+function getFitTone(player: TacticsRosterPlayer | null, slotPosition: string): FitTone {
   if (!player) {
     return "empty";
   }
@@ -76,7 +77,7 @@ function getPitchMarkerClassName(options: {
   comparePlayerId: string | null;
   draggedPlayerId: string | null;
   hoveredSlot: number | null;
-  player: PlayerData;
+  player: TacticsRosterPlayer;
   selectedPlayerId: string | null;
   slot: TacticsPitchSlot;
 }): string {
@@ -120,7 +121,7 @@ function getSlotTargetClassName(isHovered: boolean, hasPlayer: boolean): string 
   return "absolute z-10 h-[4.5rem] w-[4.5rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-white/25 bg-black/10";
 }
 
-function getPitchDisplayName(player: PlayerData): string {
+function getPitchDisplayName(player: TacticsRosterPlayer): string {
   return (player.match_name || player.full_name).toUpperCase();
 }
 

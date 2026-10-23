@@ -1,7 +1,7 @@
 import { getPlayerOvr } from "../../lib/helpers";
 import { isSeniorSquadPlayer } from "../../lib/playerSquad";
 import { normalisePosition, positionGroupRank } from "../../lib/positions";
-import type { PlayerData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import {
   buildPitchRows,
   buildStartingXIIds,
@@ -26,7 +26,7 @@ export interface TacticsPresetDefinition {
 
 export interface TacticsPitchSlot {
   index: number;
-  player: PlayerData | null;
+  player: TacticsRosterPlayer | null;
   position: string;
   rowLabel: string;
   x: number;
@@ -81,14 +81,17 @@ interface TacticsPlayerFilterContext {
 }
 
 interface ResolveStartingXiIdsOptions {
-  availablePlayers: PlayerData[];
+  availablePlayers: TacticsRosterPlayer[];
   formation: string;
   pendingStartingXiIds: string[] | null;
-  playersById: Map<string, PlayerData>;
+  playersById: Map<string, TacticsRosterPlayer>;
   savedStartingXiIds: string[];
 }
 
-export function buildTacticsRoster(players: PlayerData[], teamId: string): PlayerData[] {
+export function buildTacticsRoster(
+  players: TacticsRosterPlayer[],
+  teamId: string,
+): TacticsRosterPlayer[] {
   return players
     .filter((player) => player.team_id === teamId && isSeniorSquadPlayer(player))
     .sort((leftPlayer, rightPlayer) => {
@@ -134,7 +137,7 @@ export function resolveStartingXiIds({
 }
 
 export function getSectionPlayerPosition(
-  player: PlayerData,
+  player: TacticsRosterPlayer,
   section: SquadSection,
   xiActivePosition: Map<string, string>,
 ): string {
@@ -146,9 +149,9 @@ export function getSectionPlayerPosition(
 }
 
 export function sortTacticsPlayers(
-  players: PlayerData[],
+  players: TacticsRosterPlayer[],
   context: TacticsPlayerSortContext,
-): PlayerData[] {
+): TacticsRosterPlayer[] {
   const { section, sortDir, sortKey, xiActivePosition } = context;
   const sortedPlayers = [...players].sort((leftPlayer, rightPlayer) => {
     const leftPosition = getSectionPlayerPosition(leftPlayer, section, xiActivePosition);
@@ -181,7 +184,7 @@ export function sortTacticsPlayers(
 }
 
 export function matchesTacticsPlayerFilters(
-  player: PlayerData,
+  player: TacticsRosterPlayer,
   context: TacticsPlayerFilterContext,
 ): boolean {
   const { playerSearch, positionFilter, section, xiActivePosition } = context;
@@ -219,10 +222,10 @@ export function matchesTacticsPlayerFilters(
 }
 
 export function filterAndSortTacticsPlayers(
-  players: PlayerData[],
+  players: TacticsRosterPlayer[],
   filterContext: TacticsPlayerFilterContext,
   sortContext: TacticsPlayerSortContext,
-): PlayerData[] {
+): TacticsRosterPlayer[] {
   return sortTacticsPlayers(
     players.filter((player) => matchesTacticsPlayerFilters(player, filterContext)),
     sortContext,
@@ -230,7 +233,7 @@ export function filterAndSortTacticsPlayers(
 }
 
 export function countOutOfPositionPlayers(
-  startingPlayers: PlayerData[],
+  startingPlayers: TacticsRosterPlayer[],
   xiActivePosition: Map<string, string>,
 ): number {
   return startingPlayers.filter((player) => {
@@ -242,11 +245,11 @@ export function countOutOfPositionPlayers(
 
 export function getSelectedAndComparePlayers(
   comparePlayerId: string | null,
-  playersById: Map<string, PlayerData>,
+  playersById: Map<string, TacticsRosterPlayer>,
   selectedPlayerId: string | null,
 ): {
-  comparePlayer: PlayerData | null;
-  selectedPlayer: PlayerData | null;
+  comparePlayer: TacticsRosterPlayer | null;
+  selectedPlayer: TacticsRosterPlayer | null;
 } {
   const selectedPlayer = selectedPlayerId ? (playersById.get(selectedPlayerId) ?? null) : null;
 
@@ -283,7 +286,9 @@ export function getSlotXCoordinates(slotCount: number): number[] {
   );
 }
 
-export function buildTacticsPitchSlots(rows: PitchSlotRow[]): TacticsPitchSlot[] {
+export function buildTacticsPitchSlots(
+  rows: PitchSlotRow<TacticsRosterPlayer>[],
+): TacticsPitchSlot[] {
   return rows.flatMap((row) => {
     const rowY = parseCoordinateValue(row.y);
     const rowXCoordinates = getSlotXCoordinates(row.slots.length);
