@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Radar, Tags } from "lucide-react";
 
 import { usePrefersReducedMotion } from "../../../hooks/usePrefersReducedMotion";
-import { useGameStore } from "../../../store/gameStore";
-import type { MatchSnapshot } from "../types";
+import type { RadarMatch, RadarRoster } from "./radarMatch";
 import { type DrawnPlayer, RADAR_VIEW, type RadarPicture, drawRadar } from "./radarDraw";
 import type { RadarKits, Side } from "./radarGeometry";
 import { FONT_CLASSES, PALETTE_CLASSES, readPalette } from "./radarPalette";
@@ -16,7 +15,9 @@ import type { RadarStage } from "./radarStage";
 import { RADAR_PACING, useRadarDirector } from "./useRadarDirector";
 
 interface MatchRadar2DProps {
-  snapshot: MatchSnapshot;
+  snapshot: RadarMatch;
+  /** The players' shirt numbers and short names, by id. */
+  roster: RadarRoster;
   kits: RadarKits;
   /** Whether the radar is shown. Showing it is the 2D mode: the match waits for the radar. */
   isOpen: boolean;
@@ -55,9 +56,9 @@ const TOGGLE_CLASS =
 
 /** Everything the frame loop draws from, kept current on every render without restarting it. */
 interface RadarCast {
-  snapshot: MatchSnapshot;
+  snapshot: RadarMatch;
   kits: RadarKits;
-  squadById: Map<string, { jersey_number?: number | null; match_name?: string | null }>;
+  squadById: RadarRoster;
   showAllNames: boolean;
   stage: RadarStage;
   goalLabel: string;
@@ -165,7 +166,8 @@ function shake(element: HTMLElement | null): void {
 }
 
 interface RadarFieldProps {
-  snapshot: MatchSnapshot;
+  snapshot: RadarMatch;
+  roster: RadarRoster;
   kits: RadarKits;
   paused: boolean;
   onCaughtUp?: (staged: number) => void;
@@ -182,6 +184,7 @@ function isPlayedOut(run: RadarRun): boolean {
 
 function RadarField({
   snapshot,
+  roster,
   kits,
   paused,
   onCaughtUp,
@@ -200,8 +203,7 @@ function RadarField({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const swatchesRef = useRef<HTMLDivElement>(null);
   const shakeRef = useRef<HTMLDivElement>(null);
-  const squad = useGameStore((state) => state.gameState?.players);
-  const squadById = useMemo(() => new Map((squad ?? []).map((p) => [p.id, p])), [squad]);
+  const squadById = roster;
   const castRef = useRef<RadarCast | null>(null);
   castRef.current = {
     snapshot,
@@ -333,6 +335,7 @@ function RadarField({
  */
 export function MatchRadar2D({
   snapshot,
+  roster,
   kits,
   isOpen,
   onToggle,
@@ -360,7 +363,7 @@ export function MatchRadar2D({
           <Radar className="h-4 w-4" aria-hidden="true" />
           {t("match.radar.title")}
         </h3>
-        {isOpen && showCommentary && <RadarCommentary snapshot={snapshot} sinkRef={captionSink} />}
+        {isOpen && showCommentary && <RadarCommentary snapshot={snapshot} roster={roster} sinkRef={captionSink} />}
         <div className="flex items-center gap-1">
           {isOpen && (
             <button
@@ -395,6 +398,7 @@ export function MatchRadar2D({
       {isOpen && (
         <RadarField
           snapshot={snapshot}
+          roster={roster}
           kits={kits}
           paused={paused}
           onCaughtUp={onCaughtUp}

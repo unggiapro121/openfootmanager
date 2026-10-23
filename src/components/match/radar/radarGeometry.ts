@@ -1,6 +1,7 @@
 import type { DefensiveLine, PitchWidth, TeamColors } from "../../../store/types";
 import { layoutFormationSlots } from "../FormationPitch";
-import type { EngineTeamData, Lane } from "../types";
+import type { Lane } from "../types";
+import type { RadarTeam } from "./radarMatch";
 
 /**
  * Pitch geometry for the match radar: a top-down pitch in metres, the home side
@@ -219,7 +220,7 @@ export interface ShapeSlot {
  * of a shape and changes only with the line-up, so a caller drawing many shapes
  * works it out once.
  */
-export function formationSlots(team: EngineTeamData, sentOff: string[]): ShapeSlot[] {
+export function formationSlots(team: RadarTeam, sentOff: string[]): ShapeSlot[] {
   return layoutFormationSlots(team.formation, team.players, sentOff)
     .filter((slot) => !slot.isSentOff && !sentOff.includes(slot.player.id))
     .map((slot) => ({ id: slot.player.id, x: slot.x, y: slot.y }));
@@ -235,7 +236,7 @@ export function formationSlots(team: EngineTeamData, sentOff: string[]): ShapeSl
  */
 export function placeShape(
   slots: ShapeSlot[],
-  team: EngineTeamData,
+  team: RadarTeam,
   side: Side,
   focus: ShapeFocus,
 ): Map<string, PitchPoint> {
@@ -271,7 +272,7 @@ export function placeShape(
 
 /** `placeShape` for one side, working its slots out afresh. Sent-off players get no position. */
 export function shapePositions(
-  team: EngineTeamData,
+  team: RadarTeam,
   side: Side,
   sentOff: string[],
   focus: ShapeFocus,

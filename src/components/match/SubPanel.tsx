@@ -26,6 +26,7 @@ import {
 import { naturalPositionOf, slotPositionsOf } from "./slotRatings";
 import { SlotOvr } from "./SlotOvr";
 import { MatchRolePicker } from "./MatchRolePicker";
+import type { RadarRoster } from "./radar/radarMatch";
 import type { PlayerRole } from "../../store/types";
 
 const CompareBar = ({ label, valA, valB }: { label: string; valA: number; valB: number }) => {
@@ -61,8 +62,11 @@ export function SubPanel({
   onPlayStyleChange,
   onClose,
   initialOff,
+  roster,
 }: {
   snapshot: MatchSnapshot;
+  /** The players' faces and short names, by id, for the pitch. */
+  roster: RadarRoster;
   side: "Home" | "Away";
   /** Resolves true once the match has made the change; false when it refused. */
   onSubstitute: (offId: string, onId: string) => Promise<boolean>;
@@ -223,6 +227,7 @@ export function SubPanel({
               {t("match.dragToSwapPositions")}
             </p>
             <FormationPitch
+              roster={roster}
               formation={team.formation}
               players={team.players}
               sentOff={snapshot.sent_off}
@@ -329,6 +334,7 @@ export function SubPanel({
 
                 {/* Formation pitch */}
                 <FormationPitch
+                  roster={roster}
                   formation={team.formation}
                   players={team.players}
                   sentOff={snapshot.sent_off}

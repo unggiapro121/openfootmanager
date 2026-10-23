@@ -139,7 +139,7 @@ describe("SubPanel bench order", () => {
     ];
 
     render(
-      <SubPanel
+      <SubPanel roster={new Map()}
         snapshot={snapshotWithBench(bench)}
         side="Home"
         onSubstitute={vi.fn()}

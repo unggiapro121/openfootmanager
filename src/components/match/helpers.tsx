@@ -192,7 +192,15 @@ export function firstNewInjury(
   );
 }
 
-export function getPlayerName(snapshot: MatchSnapshot, playerId: string | null): string {
+/** Where a player's name is looked up: both sides' players, and their benches when known. */
+export interface PlayerNameSource {
+  home_team: { players: ReadonlyArray<{ id: string; name: string }> };
+  away_team: { players: ReadonlyArray<{ id: string; name: string }> };
+  home_bench?: ReadonlyArray<{ id: string; name: string }>;
+  away_bench?: ReadonlyArray<{ id: string; name: string }>;
+}
+
+export function getPlayerName(snapshot: PlayerNameSource, playerId: string | null): string {
   if (!playerId) return "";
   for (const p of snapshot.home_team.players) {
     if (p.id === playerId) return p.name;
