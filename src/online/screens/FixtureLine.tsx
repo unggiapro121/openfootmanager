@@ -18,8 +18,8 @@ function ClubLink({ club, mine }: { club: ClubRef; mine: boolean }) {
 }
 
 /**
- * One fixture of an online league: the clubs, then the score once settled (opening the result)
- * or the kick-off time before (C-2 §3.5).
+ * One fixture of an online league: the clubs, then the score once settled (opening the result),
+ * a way into the match while it is played (C-2 §3.6), or the kick-off time before (C-2 §3.5).
  */
 export default function FixtureLine({
   fixture,
@@ -47,6 +47,17 @@ export default function FixtureLine({
           className={`${LINK_CLASS} font-heading font-bold tabular-nums text-gray-900 dark:text-gray-100`}
         >
           {fixture.homeGoals} – {fixture.awayGoals}
+        </Link>
+      ) : fixture.matchId && fixture.matchStatus === "live" ? (
+        <Link
+          to={`/online/match/${fixture.matchId}`}
+          aria-label={t("online.fixture.watchMatch", {
+            home: fixture.home.name,
+            away: fixture.away.name,
+          })}
+          className={`${LINK_CLASS} text-xs font-semibold text-red-600 dark:text-red-400`}
+        >
+          {t("online.fixture.watchLive")}
         </Link>
       ) : (
         <span className="text-xs text-gray-500 dark:text-gray-400">

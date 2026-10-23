@@ -57,7 +57,9 @@ describe("FormationPitch with a sent-off player", () => {
   // Given a defender sent off, then his slot stays on the pitch, marked with a
   // red card, instead of leaving a hole with nothing to drop onto.
   it("keeps the sent-off player's slot, marked with a red card", () => {
-    render(<FormationPitch roster={new Map()} formation="4-4-2" players={eleven()} sentOff={["p2"]} />);
+    render(
+      <FormationPitch roster={new Map()} formation="4-4-2" players={eleven()} sentOff={["p2"]} />,
+    );
 
     expect(screen.getByTestId("pitch-token-p2")).toHaveAttribute(
       "aria-label",
@@ -70,7 +72,8 @@ describe("FormationPitch with a sent-off player", () => {
   it("accepts a player dropped onto the sent-off player's slot", () => {
     const onPlayerDrop = vi.fn();
     render(
-      <FormationPitch roster={new Map()}
+      <FormationPitch
+        roster={new Map()}
         formation="4-4-2"
         players={eleven()}
         sentOff={["p2"]}
@@ -89,7 +92,8 @@ describe("FormationPitch with a sent-off player", () => {
     const onPlayerDrop = vi.fn();
     const onPlayerClick = vi.fn();
     render(
-      <FormationPitch roster={new Map()}
+      <FormationPitch
+        roster={new Map()}
         formation="4-4-2"
         players={eleven()}
         sentOff={["p2"]}

@@ -99,7 +99,11 @@
       "cards": "牌",
       "rating": "评分",
       "redCard": "红牌",
-      "yellowCards": "{{cards}} 张黄牌"
+      "yellowCards": "{{cards}} 张黄牌",
+      "watchMatch": "观看 {{home}} – {{away}} 直播",
+      "watchLive": "直播中 · 观看",
+      "enterLive": "你的比赛正在进行——进入观看",
+      "enterMatch": "进入比赛"
     },
     "league": {
       "title": "联赛",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "最近一场结果",
       "noResult": "本赛季还没有比赛结果。"
+    },
+    "match": {
+      "byCoach": "{{team}}：教练指挥",
+      "byAi": "{{team}}：AI 指挥",
+      "youCoach": "你正在指挥本队。",
+      "aiCoaches": "你离开期间由 AI 代为指挥本队。",
+      "takingCharge": "正在接管本队指挥…",
+      "orderTakesCharge": "发出指令即可收回指挥权。",
+      "seeResult": "查看结果",
+      "reconnecting": "连接中断——正在重连…",
+      "halfTime": "中场休息——约 {{seconds}} 秒后开始下半场。",
+      "hurt": "{{player}} 受伤了。请在 {{seconds}} 秒内换下他，否则 AI 将代为换人。",
+      "hurtNow": "{{player}} 受伤了。AI 正在换下他。",
+      "replace": "换人",
+      "leaveWarning": "离开此界面约 20 秒后，AI 将代为指挥本队。",
+      "scoreLine": "比分：{{home}} {{homeScore}}，{{away}} {{awayScore}}",
+      "panels": "比赛面板",
+      "adjusted": "{{team}} 调整了战术",
+      "touchline": "场边指挥",
+      "playerOff": "换下球员",
+      "playerOn": "换上球员",
+      "swapTitle": "交换位置",
+      "swapFirst": "第一名球员",
+      "swapSecond": "第二名球员",
+      "swap": "交换",
+      "order": {
+        "substitute": "{{on}} 换下 {{off}}",
+        "swap": "{{a}} 与 {{b}} 交换位置",
+        "formation": "改为 {{formation}} 阵型",
+        "playStyle": "打法：{{style}}",
+        "other": "指令"
+      },
+      "sent": {
+        "title": "已发出的指令",
+        "pending": "——将在下一分钟生效…",
+        "applied": "——已生效",
+        "refused": "——被拒绝",
+        "refusedWhy": "——被拒绝：{{reason}}"
+      }
     }
   },
   "coach": {

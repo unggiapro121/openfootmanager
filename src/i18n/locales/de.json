@@ -99,7 +99,11 @@
       "cards": "Karten",
       "rating": "Note",
       "redCard": "Rot",
-      "yellowCards": "{{cards}}× Gelb"
+      "yellowCards": "{{cards}}× Gelb",
+      "watchMatch": "{{home}} – {{away}} live ansehen",
+      "watchLive": "Live · Ansehen",
+      "enterLive": "Dein Spiel läuft — zuschauen",
+      "enterMatch": "Zum Spiel"
     },
     "league": {
       "title": "Liga",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Letztes Ergebnis",
       "noResult": "Diese Saison noch kein Ergebnis."
+    },
+    "match": {
+      "byCoach": "{{team}}: Trainer an der Seitenlinie",
+      "byAi": "{{team}}: KI an der Seitenlinie",
+      "youCoach": "Du coachst deine Mannschaft.",
+      "aiCoaches": "Die KI coacht deine Mannschaft, weil du weg warst.",
+      "takingCharge": "Übernehme deine Mannschaft…",
+      "orderTakesCharge": "Eine Anweisung holt dir das Kommando zurück.",
+      "seeResult": "Ergebnis ansehen",
+      "reconnecting": "Verbindung verloren — verbinde neu…",
+      "halfTime": "Halbzeit — die zweite Hälfte beginnt in etwa {{seconds}} s.",
+      "hurt": "{{player}} ist verletzt. Wechsle ihn binnen {{seconds}} s aus, sonst tut es die KI.",
+      "hurtNow": "{{player}} ist verletzt. Die KI wechselt ihn jetzt aus.",
+      "replace": "Auswechseln",
+      "leaveWarning": "Verlässt du diesen Bildschirm für etwa 20 Sekunden, übernimmt die KI.",
+      "scoreLine": "Spielstand: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Spielansichten",
+      "adjusted": "{{team}} hat die Taktik angepasst",
+      "touchline": "Seitenlinie",
+      "playerOff": "Spieler raus",
+      "playerOn": "Spieler rein",
+      "swapTitle": "Positionen tauschen",
+      "swapFirst": "Erster Spieler",
+      "swapSecond": "Zweiter Spieler",
+      "swap": "Tauschen",
+      "order": {
+        "substitute": "{{on}} kommt für {{off}}",
+        "swap": "{{a}} und {{b}} tauschen die Positionen",
+        "formation": "Umstellen auf {{formation}}",
+        "playStyle": "Spielstil: {{style}}",
+        "other": "Anweisung"
+      },
+      "sent": {
+        "title": "Gesendete Anweisungen",
+        "pending": "— gilt ab der nächsten Minute…",
+        "applied": "— umgesetzt",
+        "refused": "— abgelehnt",
+        "refusedWhy": "— abgelehnt: {{reason}}"
+      }
     }
   },
   "coach": {

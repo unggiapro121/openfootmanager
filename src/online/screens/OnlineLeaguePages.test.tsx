@@ -147,11 +147,29 @@ describe("the club's season", () => {
         .getAllByRole("listitem")
         .filter((item) => item.parentElement === list),
     ).toHaveLength(26);
-    expect(within(list).getByRole("img", { name: "online.schedule.outcome.W" })).toBeInTheDocument();
-    expect(within(list).getByRole("img", { name: "online.schedule.outcome.L" })).toBeInTheDocument();
+    expect(
+      within(list).getByRole("img", { name: "online.schedule.outcome.W" }),
+    ).toBeInTheDocument();
+    expect(
+      within(list).getByRole("img", { name: "online.schedule.outcome.L" }),
+    ).toBeInTheDocument();
     expect(
       server.requests.filter((request) => request.segments.join("/") === "v1/clubs/mine/fixtures"),
     ).toHaveLength(1);
+  });
+});
+
+describe("a match being played", () => {
+  // Given a round whose fixture is being played,
+  // when the league's round is listed,
+  // then the fixture offers its match to watch instead of a kick-off time.
+  it("offers a live fixture's match to watch", async () => {
+    const live = fixture(3, { status: "prepared", matchId: "match-9", matchStatus: "live" });
+    stage({ "GET v1/clubs/mine/fixtures": ok({ fixtures: [live] }) });
+    renderOnline("/online/schedule");
+    const link = await screen.findByRole("link", { name: /online\.fixture\.watchMatch/ });
+    expect(link).toHaveAttribute("href", "/online/match/match-9");
+    expect(link).toHaveTextContent("online.fixture.watchLive");
   });
 });
 

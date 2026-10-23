@@ -12,8 +12,8 @@ import OnlineSidebar from "./OnlineSidebar";
 
 /** Routes a coach without a club may still open; every other one sends them to take a club. */
 const OPEN_WITHOUT_CLUB = ["/online/takeover", "/online/profile"];
-/** Public pages of the world, open to anyone signed in: other clubs, settled fixtures. */
-const PUBLIC_PREFIXES = ["/online/clubs/", "/online/fixtures/"];
+/** Public pages of the world, open to anyone signed in: other clubs, fixtures, any match. */
+const PUBLIC_PREFIXES = ["/online/clubs/", "/online/fixtures/", "/online/match/"];
 
 function openWithoutClub(pathname: string): boolean {
   return (

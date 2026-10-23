@@ -99,7 +99,11 @@
       "cards": "Thẻ",
       "rating": "Điểm",
       "redCard": "Đỏ",
-      "yellowCards": "{{cards}} vàng"
+      "yellowCards": "{{cards}} vàng",
+      "watchMatch": "Xem trực tiếp {{home}} – {{away}}",
+      "watchLive": "Đang đá · Xem",
+      "enterLive": "Trận của bạn đang đá — Vào xem",
+      "enterMatch": "Vào trận"
     },
     "league": {
       "title": "Giải đấu",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Kết quả gần nhất",
       "noResult": "Mùa này chưa có kết quả nào."
+    },
+    "match": {
+      "byCoach": "{{team}}: HLV chỉ đạo",
+      "byAi": "{{team}}: AI chỉ đạo",
+      "youCoach": "Bạn đang chỉ đạo đội mình.",
+      "aiCoaches": "AI đang chỉ đạo thay bạn vì bạn đã vắng mặt.",
+      "takingCharge": "Đang nhận quyền chỉ đạo…",
+      "orderTakesCharge": "Gửi một lệnh sẽ lấy lại quyền chỉ đạo.",
+      "seeResult": "Xem kết quả",
+      "reconnecting": "Mất kết nối — đang nối lại…",
+      "halfTime": "Nghỉ giữa hiệp — hiệp 2 bắt đầu sau khoảng {{seconds}} giây.",
+      "hurt": "{{player}} bị chấn thương. Hãy thay trong {{seconds}} giây, nếu không AI sẽ thay.",
+      "hurtNow": "{{player}} bị chấn thương. AI đang thay anh ấy.",
+      "replace": "Thay người",
+      "leaveWarning": "Rời màn hình này khoảng 20 giây thì AI sẽ chỉ đạo thay bạn.",
+      "scoreLine": "Tỉ số: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Bảng thông tin trận",
+      "adjusted": "{{team}} vừa điều chỉnh chiến thuật",
+      "touchline": "Khu chỉ đạo",
+      "playerOff": "Cầu thủ ra sân",
+      "playerOn": "Cầu thủ vào sân",
+      "swapTitle": "Đổi vị trí",
+      "swapFirst": "Cầu thủ thứ nhất",
+      "swapSecond": "Cầu thủ thứ hai",
+      "swap": "Đổi chỗ",
+      "order": {
+        "substitute": "{{on}} vào thay {{off}}",
+        "swap": "{{a}} và {{b}} đổi vị trí",
+        "formation": "Đổi sang sơ đồ {{formation}}",
+        "playStyle": "Lối chơi: {{style}}",
+        "other": "Lệnh"
+      },
+      "sent": {
+        "title": "Lệnh đã gửi",
+        "pending": "— áp ở phút kế tiếp…",
+        "applied": "— đã áp",
+        "refused": "— bị từ chối",
+        "refusedWhy": "— bị từ chối: {{reason}}"
+      }
     }
   },
   "coach": {
