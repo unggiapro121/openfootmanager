@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Không dùng được các thiết lập sự nghiệp này. Hãy quay lại màn hình thế giới và kiểm tra năm bắt đầu, thời điểm bắt đầu và lượng lịch sử cần tạo.",
     "reportBug": "Báo lỗi"
   },
+  "online": {
+    "title": "Chế độ online",
+    "menuButton": "Chơi online",
+    "loading": "Đang tải…",
+    "retry": "Thử lại",
+    "cancel": "Huỷ",
+    "offlineBanner": "Không kết nối được máy chủ online. Thông tin có thể đã cũ, và các thay đổi tạm khoá cho tới khi máy chủ trả lời lại.",
+    "nav": {
+      "label": "Điều hướng chế độ online",
+      "overview": "Tổng quan",
+      "profile": "Hồ sơ HLV",
+      "mainMenu": "Menu chính"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Cần cập nhật game",
+      "serverOutdatedTitle": "Máy chủ đang cập nhật"
+    },
+    "header": {
+      "season": "Mùa {{number}}",
+      "seasonDay": "Mùa {{number}} · Ngày {{day}}/{{total}}",
+      "nextKickoff": "Trận kế bắt đầu sau {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} ngày {{clock}}"
+    },
+    "season": {
+      "title": "Mùa giải",
+      "none": "Hiện chưa có mùa online nào. Hãy quay lại sau.",
+      "day": "Ngày {{day}}/{{total}}",
+      "footballYear": "Năm bóng đá {{year}}",
+      "nextDay": "Sang ngày mới sau {{time}}",
+      "status": {
+        "scheduled": "Sắp mở",
+        "preseason": "Tiền mùa giải",
+        "running": "Đang diễn ra",
+        "closing": "Đang kết thúc",
+        "closed": "Đã kết thúc"
+      }
+    },
+    "club": {
+      "title": "CLB của bạn",
+      "rename": "Đổi tên",
+      "renameLabel": "Tên CLB mới",
+      "renameHint": "Mỗi mùa bạn được đổi tên CLB một lần.",
+      "save": "Lưu",
+      "stadium": "{{name}} ({{capacity}} chỗ)"
+    },
+    "fixture": {
+      "title": "Trận kế tiếp",
+      "none": "Chưa có trận nào được xếp lịch.",
+      "versus": "gặp {{club}}",
+      "home": "Sân nhà",
+      "away": "Sân khách",
+      "round": "Vòng {{round}}",
+      "kickoff": "Bóng lăn: {{time}}",
+      "regionTime": "{{time}} theo giờ {{region}}",
+      "countdown": "Bóng lăn sau {{time}}",
+      "prepared": "Đang chuẩn bị trận: đội hình đã khoá."
+    },
+    "league": {
+      "title": "Giải đấu",
+      "none": "Mùa này CLB của bạn không đá giải nào. CLB sẽ vào giải từ mùa sau."
+    },
+    "takeover": {
+      "title": "Nhận CLB",
+      "intro": "Để chơi online, bạn dẫn dắt một CLB trong thế giới chung. Bạn nhận CLB nào tuỳ vào lịch sử của bạn:",
+      "returning": "Quay lại: bạn lấy lại CLB cũ, giữ nguyên hiện trạng, nếu chưa ai nhận.",
+      "newcomer": "Lần đầu: bạn nhận một ghế bot ở giải đúng cấp của bạn, với đội hình khởi đầu mới. Mỗi tài khoản chỉ được nhận đội hình mới một lần.",
+      "other": "Các trường hợp khác: bạn nhận một CLB của bot nguyên trạng, ở giải đúng cấp của bạn.",
+      "button": "Nhận CLB",
+      "working": "Đang nhận CLB…",
+      "retryIn": "Bạn có thể thử lại sau {{seconds}} giây.",
+      "result": {
+        "fresh": "Bạn đang dẫn dắt {{club}}, với đội hình khởi đầu mới.",
+        "return": "Chào mừng bạn trở lại {{club}}.",
+        "asIs": "Bạn đang dẫn dắt {{club}}, giữ nguyên hiện trạng."
+      },
+      "makingSquad": "Đang tạo đội hình…",
+      "squadSlow": "Việc tạo đội đang lâu hơn bình thường. Bạn cứ vào CLB, cầu thủ sẽ xuất hiện sau ít phút.",
+      "enter": "Vào CLB của tôi"
+    },
+    "profile": {
+      "title": "Hồ sơ HLV",
+      "name": "Họ tên",
+      "email": "Email",
+      "region": "Khu vực",
+      "changeRegion": "Đổi khu vực",
+      "confirmTitle": "Đổi khu vực?",
+      "confirmBody": "CLB hiện tại sẽ trả về bot ngay lập tức. Sau đó bạn nhận một CLB nguyên trạng ở khu vực mới, tối đa một lần mỗi mùa.",
+      "confirm": "Đồng ý đổi khu vực",
+      "changed": "Đã đổi khu vực. Hãy nhận một CLB ở khu vực mới."
+    }
+  },
   "coach": {
     "loginTitle": "Chọn HLV của bạn",
     "loginSubtitle": "HLV của bạn dùng chung cho mọi ván: độ thành thạo lối chơi và thành tích được cộng dồn.",

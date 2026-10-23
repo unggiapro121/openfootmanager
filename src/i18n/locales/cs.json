@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Tato nastavení kariéry nebylo možné použít. Vraťte se na obrazovku světa a zkontrolujte rok začátku, fázi začátku a kolik minulé historie se má vygenerovat.",
     "reportBug": "Nahlásit chybu"
   },
+  "online": {
+    "title": "Online režim",
+    "menuButton": "Hrát online",
+    "loading": "Načítání…",
+    "retry": "Zkusit znovu",
+    "cancel": "Zrušit",
+    "offlineBanner": "Online server není dostupný. Zobrazené údaje mohou být zastaralé a změny jsou vypnuté, dokud znovu neodpoví.",
+    "nav": {
+      "label": "Navigace online režimu",
+      "overview": "Přehled",
+      "profile": "Profil trenéra",
+      "mainMenu": "Hlavní nabídka"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Je potřeba aktualizace",
+      "serverOutdatedTitle": "Server se aktualizuje"
+    },
+    "header": {
+      "season": "Sezóna {{number}}",
+      "seasonDay": "Sezóna {{number}} · Den {{day}}/{{total}}",
+      "nextKickoff": "Další zápas za {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} d {{clock}}"
+    },
+    "season": {
+      "title": "Sezóna",
+      "none": "Neprobíhá žádná online sezóna. Vraťte se později.",
+      "day": "Den {{day}} z {{total}}",
+      "footballYear": "Fotbalový rok {{year}}",
+      "nextDay": "Další den začne za {{time}}",
+      "status": {
+        "scheduled": "Naplánovaná",
+        "preseason": "Příprava",
+        "running": "Probíhá",
+        "closing": "Končí",
+        "closed": "Skončená"
+      }
+    },
+    "club": {
+      "title": "Váš klub",
+      "rename": "Přejmenovat",
+      "renameLabel": "Nový název klubu",
+      "renameHint": "Klub můžete přejmenovat jednou za sezónu.",
+      "save": "Uložit",
+      "stadium": "{{name}} ({{capacity}} míst)"
+    },
+    "fixture": {
+      "title": "Další zápas",
+      "none": "Zatím není naplánován žádný zápas.",
+      "versus": "proti {{club}}",
+      "home": "Doma",
+      "away": "Venku",
+      "round": "Kolo {{round}}",
+      "kickoff": "Výkop: {{time}}",
+      "regionTime": "{{time}} podle času regionu {{region}}",
+      "countdown": "Výkop za {{time}}",
+      "prepared": "Zápas se připravuje: sestava je uzamčena."
+    },
+    "league": {
+      "title": "Liga",
+      "none": "Váš klub v této sezóně nehraje žádnou ligu. Zapojí se do lig příští sezóny."
+    },
+    "takeover": {
+      "title": "Převzít klub",
+      "intro": "Abyste mohli hrát online, vedete klub ve sdíleném světě. Co dostanete, závisí na vaší historii:",
+      "returning": "Návrat: dostanete zpět svůj dřívější klub v současném stavu, pokud ho nikdo nepřevzal.",
+      "newcomer": "Poprvé: převezmete místo bota v lize své úrovně s novým základním kádrem. Nový kádr dostane každý účet jen jednou.",
+      "other": "Jinak: převezmete klub bota v současném stavu, v lize své úrovně.",
+      "button": "Převzít klub",
+      "working": "Přebírání…",
+      "retryIn": "Znovu to můžete zkusit za {{seconds}} s.",
+      "result": {
+        "fresh": "Nyní vedete {{club}} s novým základním kádrem.",
+        "return": "Vítejte zpět v klubu {{club}}.",
+        "asIs": "Nyní vedete {{club}} v současném stavu."
+      },
+      "makingSquad": "Váš kádr se vytváří…",
+      "squadSlow": "Vytvoření kádru trvá déle než obvykle. Otevřete klub i tak, hráči se brzy objeví.",
+      "enter": "Přejít do mého klubu"
+    },
+    "profile": {
+      "title": "Profil trenéra",
+      "name": "Celé jméno",
+      "email": "E-mail",
+      "region": "Region",
+      "changeRegion": "Změnit region",
+      "confirmTitle": "Změnit region?",
+      "confirmBody": "Váš současný klub se okamžitě vrátí svému botovi. Poté převezmete klub v současném stavu v novém regionu, nejvýše jednou za sezónu.",
+      "confirm": "Ano, změnit region",
+      "changed": "Region změněn. Převezměte klub ve svém novém regionu."
+    }
+  },
   "coach": {
     "loginTitle": "Vyberte manažera",
     "loginSubtitle": "Váš manažer je stejný ve všech kariérách: zvládnutí stylů a bilance se sčítají.",

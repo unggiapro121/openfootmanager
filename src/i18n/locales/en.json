@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Those career settings could not be used. Go back to the world screen and check the start year, the start phase and how much past history to generate.",
     "reportBug": "Report a bug"
   },
+  "online": {
+    "title": "Online mode",
+    "menuButton": "Play Online",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "offlineBanner": "The online server cannot be reached. What you see may be out of date, and changes are off until it answers again.",
+    "nav": {
+      "label": "Online navigation",
+      "overview": "Overview",
+      "profile": "Coach profile",
+      "mainMenu": "Main menu"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Update needed",
+      "serverOutdatedTitle": "Server update in progress"
+    },
+    "header": {
+      "season": "Season {{number}}",
+      "seasonDay": "Season {{number}} · Day {{day}}/{{total}}",
+      "nextKickoff": "Next kick-off in {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}}d {{clock}}"
+    },
+    "season": {
+      "title": "Season",
+      "none": "No online season is under way. Check back later.",
+      "day": "Day {{day}} of {{total}}",
+      "footballYear": "Football year {{year}}",
+      "nextDay": "Next day starts in {{time}}",
+      "status": {
+        "scheduled": "Scheduled",
+        "preseason": "Pre-season",
+        "running": "Under way",
+        "closing": "Closing",
+        "closed": "Closed"
+      }
+    },
+    "club": {
+      "title": "Your club",
+      "rename": "Rename",
+      "renameLabel": "New club name",
+      "renameHint": "You can rename your club once a season.",
+      "save": "Save",
+      "stadium": "{{name}} ({{capacity}} seats)"
+    },
+    "fixture": {
+      "title": "Next match",
+      "none": "No match is scheduled yet.",
+      "versus": "vs {{club}}",
+      "home": "Home",
+      "away": "Away",
+      "round": "Round {{round}}",
+      "kickoff": "Kick-off: {{time}}",
+      "regionTime": "{{time}} on the {{region}} clock",
+      "countdown": "Kick-off in {{time}}",
+      "prepared": "Being prepared: the line-up is locked."
+    },
+    "league": {
+      "title": "League",
+      "none": "Your club plays in no league this season. It joins the leagues of the next season."
+    },
+    "takeover": {
+      "title": "Take over a club",
+      "intro": "To play online you run a club in the shared world. What you get depends on your history:",
+      "returning": "Coming back: you get your previous club back, as it is, if nobody else has taken it.",
+      "newcomer": "First time: you take a bot's seat in a league of your level, with a fresh starter squad. A fresh squad is given only once per account.",
+      "other": "Otherwise: you take a bot's club as it is, in a league of your level.",
+      "button": "Take over a club",
+      "working": "Taking over…",
+      "retryIn": "You can try again in {{seconds}} s.",
+      "result": {
+        "fresh": "You now run {{club}}, with a fresh starter squad.",
+        "return": "Welcome back to {{club}}.",
+        "asIs": "You now run {{club}}, as it was."
+      },
+      "makingSquad": "Your squad is being made…",
+      "squadSlow": "The squad is taking longer than usual. Open the club anyway; the players will appear shortly.",
+      "enter": "Go to my club"
+    },
+    "profile": {
+      "title": "Coach profile",
+      "name": "Full name",
+      "email": "Email",
+      "region": "Region",
+      "changeRegion": "Change region",
+      "confirmTitle": "Change region?",
+      "confirmBody": "Your current club goes back to its bot at once. You then take a club as it is in the new region, at most once a season.",
+      "confirm": "Yes, change region",
+      "changed": "Region changed. Take over a club in your new region."
+    }
+  },
   "coach": {
     "loginTitle": "Choose your coach",
     "loginSubtitle": "Your coach is the same in every career: style mastery and career totals carry over.",

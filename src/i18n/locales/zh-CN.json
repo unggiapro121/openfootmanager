@@ -28,6 +28,99 @@
     "startupOptionsRejected": "无法使用这些生涯设置。请返回世界界面，检查起始年份、起始阶段以及要生成的历史年限。",
     "reportBug": "报告错误"
   },
+  "online": {
+    "title": "在线模式",
+    "menuButton": "在线游戏",
+    "loading": "加载中…",
+    "retry": "重试",
+    "cancel": "取消",
+    "offlineBanner": "无法连接在线服务器。当前显示的内容可能已过时，在服务器恢复响应前无法进行更改。",
+    "nav": {
+      "label": "在线模式导航",
+      "overview": "概览",
+      "profile": "主教练资料",
+      "mainMenu": "主菜单"
+    },
+    "gate": {
+      "clientOutdatedTitle": "需要更新",
+      "serverOutdatedTitle": "服务器正在更新"
+    },
+    "header": {
+      "season": "第 {{number}} 赛季",
+      "seasonDay": "第 {{number}} 赛季 · 第 {{day}}/{{total}} 天",
+      "nextKickoff": "距下一场比赛 {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} 天 {{clock}}"
+    },
+    "season": {
+      "title": "赛季",
+      "none": "目前没有进行中的在线赛季，请稍后再来。",
+      "day": "第 {{day}} 天，共 {{total}} 天",
+      "footballYear": "足球年份 {{year}}",
+      "nextDay": "距下一天开始 {{time}}",
+      "status": {
+        "scheduled": "已安排",
+        "preseason": "季前",
+        "running": "进行中",
+        "closing": "收尾中",
+        "closed": "已结束"
+      }
+    },
+    "club": {
+      "title": "你的俱乐部",
+      "rename": "改名",
+      "renameLabel": "俱乐部新名称",
+      "renameHint": "每个赛季可以给俱乐部改名一次。",
+      "save": "保存",
+      "stadium": "{{name}}（{{capacity}} 个座位）"
+    },
+    "fixture": {
+      "title": "下一场比赛",
+      "none": "还没有安排比赛。",
+      "versus": "对阵 {{club}}",
+      "home": "主场",
+      "away": "客场",
+      "round": "第 {{round}} 轮",
+      "kickoff": "开球：{{time}}",
+      "regionTime": "{{region}} 时间 {{time}}",
+      "countdown": "距开球 {{time}}",
+      "prepared": "比赛准备中：首发阵容已锁定。"
+    },
+    "league": {
+      "title": "联赛",
+      "none": "本赛季你的俱乐部不参加任何联赛，将从下个赛季加入联赛。"
+    },
+    "takeover": {
+      "title": "接手俱乐部",
+      "intro": "在线模式中，你在共享世界里执掌一家俱乐部。你会得到哪家俱乐部取决于你的经历：",
+      "returning": "回归：如果没有人接手，你将按原样取回之前的俱乐部。",
+      "newcomer": "首次：你在与你等级相同的联赛中接替一个机器人席位，并获得一套全新的初始阵容。每个账号只能获得一次全新阵容。",
+      "other": "其他情况：你按原样接手一家机器人俱乐部，所在联赛与你等级相同。",
+      "button": "接手俱乐部",
+      "working": "正在接手…",
+      "retryIn": "{{seconds}} 秒后可以重试。",
+      "result": {
+        "fresh": "你现在执掌 {{club}}，拥有全新的初始阵容。",
+        "return": "欢迎回到 {{club}}。",
+        "asIs": "你现在按原样执掌 {{club}}。"
+      },
+      "makingSquad": "正在生成你的阵容…",
+      "squadSlow": "生成阵容的时间比平常长。你可以先进入俱乐部，球员很快就会出现。",
+      "enter": "进入我的俱乐部"
+    },
+    "profile": {
+      "title": "主教练资料",
+      "name": "姓名",
+      "email": "电子邮箱",
+      "region": "地区",
+      "changeRegion": "更换地区",
+      "confirmTitle": "更换地区？",
+      "confirmBody": "你当前的俱乐部会立即交还给它的机器人。之后你将在新地区按原样接手一家俱乐部，每个赛季最多一次。",
+      "confirm": "确定更换地区",
+      "changed": "地区已更换。请在新地区接手一家俱乐部。"
+    }
+  },
   "coach": {
     "loginTitle": "选择经理",
     "loginSubtitle": "经理在所有生涯中通用：风格熟练度和战绩会累计。",

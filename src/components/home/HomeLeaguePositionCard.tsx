@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { Badge, Card, CardBody, CardHeader } from "../ui";
 
-interface LeagueStandingSnapshot {
+export interface LeagueStandingSnapshot {
   team_id: string;
   played: number;
   won: number;
@@ -22,6 +22,8 @@ interface HomeLeaguePositionCardProps {
   myStandingData: LeagueStandingSnapshot | null;
   teamForm: string[];
   onNavigate?: (tab: string) => void;
+  /** The header's link to the standings; off where there is no standings screen to open. */
+  showStandingsLink?: boolean;
 }
 
 export default function HomeLeaguePositionCard({
@@ -32,6 +34,7 @@ export default function HomeLeaguePositionCard({
   myStandingData,
   teamForm,
   onNavigate,
+  showStandingsLink = true,
 }: HomeLeaguePositionCardProps) {
   const { t } = useTranslation();
 
@@ -46,13 +49,15 @@ export default function HomeLeaguePositionCard({
     <Card accent="accent">
       <CardHeader
         action={
-          <button
-            type="button"
-            onClick={() => onNavigate?.("Schedule")}
-            className="text-primary-500 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
-          >
-            {t("home.standings")}
-          </button>
+          showStandingsLink && (
+            <button
+              type="button"
+              onClick={() => onNavigate?.("Schedule")}
+              className="text-primary-500 dark:text-primary-400 text-xs font-heading font-bold uppercase tracking-wider hover:text-primary-600 dark:hover:text-primary-300 transition-colors"
+            >
+              {t("home.standings")}
+            </button>
+          )
         }
       >
         {t("home.leaguePosition")}

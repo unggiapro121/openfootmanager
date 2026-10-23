@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Não foi possível usar essas definições de carreira. Volta ao ecrã do mundo e verifica o ano de início, a fase de início e quanto histórico anterior gerar.",
     "reportBug": "Reportar um erro"
   },
+  "online": {
+    "title": "Modo online",
+    "menuButton": "Jogar online",
+    "loading": "A carregar…",
+    "retry": "Tentar novamente",
+    "cancel": "Cancelar",
+    "offlineBanner": "Não é possível ligar ao servidor online. O que vês pode estar desatualizado, e as alterações ficam desativadas até ele voltar a responder.",
+    "nav": {
+      "label": "Navegação do modo online",
+      "overview": "Resumo",
+      "profile": "Perfil do treinador",
+      "mainMenu": "Menu principal"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Atualização necessária",
+      "serverOutdatedTitle": "Servidor em atualização"
+    },
+    "header": {
+      "season": "Época {{number}}",
+      "seasonDay": "Época {{number}} · Dia {{day}}/{{total}}",
+      "nextKickoff": "Próximo jogo daqui a {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} d {{clock}}"
+    },
+    "season": {
+      "title": "Época",
+      "none": "Não há nenhuma época online a decorrer. Volta mais tarde.",
+      "day": "Dia {{day}} de {{total}}",
+      "footballYear": "Ano futebolístico {{year}}",
+      "nextDay": "O dia seguinte começa daqui a {{time}}",
+      "status": {
+        "scheduled": "Agendada",
+        "preseason": "Pré-época",
+        "running": "A decorrer",
+        "closing": "A terminar",
+        "closed": "Terminada"
+      }
+    },
+    "club": {
+      "title": "O teu clube",
+      "rename": "Mudar o nome",
+      "renameLabel": "Novo nome do clube",
+      "renameHint": "Podes mudar o nome do clube uma vez por época.",
+      "save": "Guardar",
+      "stadium": "{{name}} ({{capacity}} lugares)"
+    },
+    "fixture": {
+      "title": "Próximo jogo",
+      "none": "Ainda não há nenhum jogo agendado.",
+      "versus": "contra {{club}}",
+      "home": "Em casa",
+      "away": "Fora",
+      "round": "Jornada {{round}}",
+      "kickoff": "Início: {{time}}",
+      "regionTime": "{{time}} no horário de {{region}}",
+      "countdown": "Começa daqui a {{time}}",
+      "prepared": "Em preparação: a equipa titular está bloqueada."
+    },
+    "league": {
+      "title": "Liga",
+      "none": "O teu clube não joga nenhuma liga nesta época. Entra nas ligas da próxima época."
+    },
+    "takeover": {
+      "title": "Assumir um clube",
+      "intro": "Para jogar online orientas um clube no mundo partilhado. O que recebes depende do teu historial:",
+      "returning": "Se regressas: recuperas o teu clube anterior, tal como está, se ninguém o tiver assumido.",
+      "newcomer": "Primeira vez: ocupas o lugar de um bot numa liga do teu nível, com um plantel inicial novo. O plantel novo só é dado uma vez por conta.",
+      "other": "Nos outros casos: assumes o clube de um bot tal como está, numa liga do teu nível.",
+      "button": "Assumir um clube",
+      "working": "A assumir…",
+      "retryIn": "Podes tentar novamente daqui a {{seconds}} s.",
+      "result": {
+        "fresh": "Orientas agora o {{club}}, com um plantel inicial novo.",
+        "return": "Bem-vindo de volta ao {{club}}.",
+        "asIs": "Orientas agora o {{club}}, tal como estava."
+      },
+      "makingSquad": "O teu plantel está a ser criado…",
+      "squadSlow": "O plantel está a demorar mais do que o habitual. Entra no clube na mesma; os jogadores aparecem em breve.",
+      "enter": "Ir para o meu clube"
+    },
+    "profile": {
+      "title": "Perfil do treinador",
+      "name": "Nome completo",
+      "email": "E-mail",
+      "region": "Região",
+      "changeRegion": "Mudar de região",
+      "confirmTitle": "Mudar de região?",
+      "confirmBody": "O teu clube atual volta de imediato ao seu bot. Depois assumes um clube tal como está na nova região, no máximo uma vez por época.",
+      "confirm": "Sim, mudar de região",
+      "changed": "Região alterada. Assume um clube na tua nova região."
+    }
+  },
   "coach": {
     "loginTitle": "Escolhe o teu treinador",
     "loginSubtitle": "O teu treinador é o mesmo em todas as carreiras: o domínio dos estilos e o historial acumulam-se.",

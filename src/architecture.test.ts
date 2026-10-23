@@ -65,6 +65,37 @@ describe("frontend architecture", () => {
     expect(offenders).toEqual([]);
   });
 
+  // Given the online mode's files,
+  // when their imports are read,
+  // then none reaches an offline service or the offline game store: an online screen never
+  // writes a save, and reads only what the server sent (C-2 C2-15).
+  it("keeps the online mode off the offline services and game store", () => {
+    const offline = /from\s+["'][^"']*(services\/(?!online)\w+Service|store\/gameStore)["']/;
+    const offenders = Object.entries(sources)
+      .filter(([path, text]) => path.startsWith("./online/") && offline.test(text))
+      .map(([path]) => path)
+      .sort();
+
+    expect(offenders).toEqual([]);
+  });
+
+  // Given every file outside the online mode,
+  // when its imports are read,
+  // then only the app's router reaches into `src/online/`: a component both modes share takes
+  // view-model props and never knows the online client (C-2 C2-15).
+  it("keeps shared components unaware of the online mode", () => {
+    const online = /from\s+["'][^"']*\/online\/[^"']*["']/;
+    const offenders = Object.entries(sources)
+      .filter(
+        ([path, text]) =>
+          !path.startsWith("./online/") && path !== "./App.tsx" && online.test(text),
+      )
+      .map(([path]) => path)
+      .sort();
+
+    expect(offenders).toEqual([]);
+  });
+
   // Given the online client's files,
   // when they are searched,
   // then none silences Biome's rule against raw HTML: online text comes from other players

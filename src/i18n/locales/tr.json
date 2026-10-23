@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Bu kariyer ayarları kullanılamadı. Dünya ekranına dönüp başlangıç yılını, başlangıç aşamasını ve ne kadar geçmiş oluşturulacağını kontrol et.",
     "reportBug": "Hata bildir"
   },
+  "online": {
+    "title": "Çevrimiçi mod",
+    "menuButton": "Çevrimiçi oyna",
+    "loading": "Yükleniyor…",
+    "retry": "Tekrar dene",
+    "cancel": "İptal",
+    "offlineBanner": "Çevrimiçi sunucuya ulaşılamıyor. Gördüklerin güncel olmayabilir ve sunucu yeniden yanıt verene kadar değişiklikler kapalı.",
+    "nav": {
+      "label": "Çevrimiçi mod gezinmesi",
+      "overview": "Genel bakış",
+      "profile": "Teknik direktör profili",
+      "mainMenu": "Ana menü"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Güncelleme gerekli",
+      "serverOutdatedTitle": "Sunucu güncelleniyor"
+    },
+    "header": {
+      "season": "Sezon {{number}}",
+      "seasonDay": "Sezon {{number}} · Gün {{day}}/{{total}}",
+      "nextKickoff": "Sonraki maç {{time}} sonra"
+    },
+    "countdown": {
+      "withDays": "{{days}} g {{clock}}"
+    },
+    "season": {
+      "title": "Sezon",
+      "none": "Şu anda süren bir çevrimiçi sezon yok. Daha sonra tekrar bak.",
+      "day": "Gün {{day}}/{{total}}",
+      "footballYear": "Futbol yılı {{year}}",
+      "nextDay": "Sonraki gün {{time}} sonra başlıyor",
+      "status": {
+        "scheduled": "Planlandı",
+        "preseason": "Sezon öncesi",
+        "running": "Sürüyor",
+        "closing": "Kapanıyor",
+        "closed": "Bitti"
+      }
+    },
+    "club": {
+      "title": "Kulübün",
+      "rename": "Yeniden adlandır",
+      "renameLabel": "Kulübün yeni adı",
+      "renameHint": "Kulübünün adını her sezon bir kez değiştirebilirsin.",
+      "save": "Kaydet",
+      "stadium": "{{name}} ({{capacity}} koltuk)"
+    },
+    "fixture": {
+      "title": "Sonraki maç",
+      "none": "Henüz planlanmış bir maç yok.",
+      "versus": "rakip: {{club}}",
+      "home": "İç saha",
+      "away": "Deplasman",
+      "round": "{{round}}. hafta",
+      "kickoff": "Başlama: {{time}}",
+      "regionTime": "{{region}} saatiyle {{time}}",
+      "countdown": "Başlamaya {{time}}",
+      "prepared": "Maç hazırlanıyor: kadro kilitlendi."
+    },
+    "league": {
+      "title": "Lig",
+      "none": "Kulübün bu sezon hiçbir ligde oynamıyor. Gelecek sezonun liglerine katılacak."
+    },
+    "takeover": {
+      "title": "Bir kulübü devral",
+      "intro": "Çevrimiçi oynamak için ortak dünyada bir kulübü yönetirsin. Ne alacağın geçmişine bağlı:",
+      "returning": "Geri dönüyorsan: başka biri almadıysa eski kulübünü olduğu gibi geri alırsın.",
+      "newcomer": "İlk kez: kendi seviyendeki bir ligde bir botun yerini, yepyeni bir başlangıç kadrosuyla alırsın. Yeni kadro her hesaba yalnızca bir kez verilir.",
+      "other": "Diğer durumlarda: kendi seviyendeki bir ligde bir botun kulübünü olduğu gibi devralırsın.",
+      "button": "Bir kulübü devral",
+      "working": "Devralınıyor…",
+      "retryIn": "{{seconds}} sn sonra tekrar deneyebilirsin.",
+      "result": {
+        "fresh": "Artık {{club}} kulübünü yeni bir başlangıç kadrosuyla yönetiyorsun.",
+        "return": "{{club}} kulübüne tekrar hoş geldin.",
+        "asIs": "Artık {{club}} kulübünü olduğu gibi yönetiyorsun."
+      },
+      "makingSquad": "Kadron oluşturuluyor…",
+      "squadSlow": "Kadro her zamankinden uzun sürüyor. Yine de kulübü aç; oyuncular birazdan görünecek.",
+      "enter": "Kulübüme git"
+    },
+    "profile": {
+      "title": "Teknik direktör profili",
+      "name": "Ad soyad",
+      "email": "E-posta",
+      "region": "Bölge",
+      "changeRegion": "Bölge değiştir",
+      "confirmTitle": "Bölge değiştirilsin mi?",
+      "confirmBody": "Şu anki kulübün hemen kendi botuna geri döner. Ardından yeni bölgede bir kulübü olduğu gibi devralırsın; bu en fazla sezonda bir kez olur.",
+      "confirm": "Evet, bölgeyi değiştir",
+      "changed": "Bölge değiştirildi. Yeni bölgende bir kulübü devral."
+    }
+  },
   "coach": {
     "loginTitle": "Menajerinizi seçin",
     "loginSubtitle": "Menajeriniz tüm kariyerlerde aynıdır: stil ustalığı ve başarılar birikir.",
