@@ -74,18 +74,21 @@ describe("online client", () => {
   });
 
   // Given a live match (S-8e),
-  // when it is read, the coach's own side, its frames after step 30 (and by fifty), and an order
-  // is sent,
-  // then each goes out on the match's route, the frames with their query, the order with a key.
+  // when it is read, then read at kick-off for a replay (C-2e), the coach's own side, its frames
+  // after step 30 (and by fifty), and an order is sent,
+  // then each goes out on the match's route, the step and the frames with their query, the
+  // order with a key.
   it("reads a live match and sends an order on its routes", async () => {
     const formation = { ChangeFormation: { side: "Home", formation: "4-3-3" } } as const;
     await online.matches.byId(LEAGUE);
+    await online.matches.byId(LEAGUE, 0);
     await online.matches.mine(LEAGUE);
     await online.matches.frames(LEAGUE, 30);
     await online.matches.frames(LEAGUE, 30, 50);
     await online.matches.command(LEAGUE, formation, "order-1");
     expect(server.sent).toEqual([
       { method: "GET", segments: ["v1", "matches", LEAGUE] },
+      { method: "GET", segments: ["v1", "matches", LEAGUE], query: [["atSeq", "0"]] },
       { method: "GET", segments: ["v1", "matches", LEAGUE, "mine"] },
       {
         method: "GET",

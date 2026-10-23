@@ -231,6 +231,18 @@
         "refused": "— recusada",
         "refusedWhy": "— recusada: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Rever",
+      "controls": "Controles do replay",
+      "play": "Reproduzir",
+      "pause": "Pausar",
+      "restart": "Assistir desde o início",
+      "speed": "Velocidade do replay",
+      "times": "{{speed}}×",
+      "jump": "Ir para o minuto",
+      "watch": "Ver o replay",
+      "gone": "Esta partida é antiga demais para rever; só o resultado foi mantido."
     }
   },
   "coach": {

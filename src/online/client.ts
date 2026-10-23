@@ -105,8 +105,7 @@ export const online = {
       call<TakeoverView>(write("POST", ["v1", "clubs", "takeover"], idempotencyKey)),
     mine: () => call<MyClubView>(read(["v1", "clubs", "mine"])),
     /** The caller's club's season, every fixture by round (C-2s). */
-    mineFixtures: () =>
-      call<ClubFixturesView>(read(["v1", "clubs", "mine", "fixtures"])),
+    mineFixtures: () => call<ClubFixturesView>(read(["v1", "clubs", "mine", "fixtures"])),
     /** `version` is the club's version as read: a stale one is refused (`versionStale`). */
     setSetup: (setup: ClubSetup, version: number, idempotencyKey = newKey()) =>
       call<MyClubView>({
@@ -130,7 +129,14 @@ export const online = {
   },
   /** A live match (S-8): follow it with `watchMatch` from the view's `lastSeq` (`./live`). */
   matches: {
-    byId: (matchId: string) => call<MatchView>(read(["v1", "matches", matchId])),
+    /** The match as it stands, or after step `atSeq` (0: as it kicked off), for a replay. */
+    byId: (matchId: string, atSeq?: number) =>
+      call<MatchView>(
+        read(
+          ["v1", "matches", matchId],
+          atSeq === undefined ? undefined : [["atSeq", String(atSeq)]],
+        ),
+      ),
     /** The caller's own side: its dials, roles, takers, and the orders they sent. */
     mine: (matchId: string) => call<MineView>(read(["v1", "matches", matchId, "mine"])),
     /** Frames after step `afterSeq`, up to `limit` (120 at most). */

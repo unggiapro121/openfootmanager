@@ -231,6 +231,18 @@
         "refused": "——被拒绝",
         "refusedWhy": "——被拒绝：{{reason}}"
       }
+    },
+    "replay": {
+      "title": "回放",
+      "controls": "回放控制",
+      "play": "播放",
+      "pause": "暂停",
+      "restart": "从开球开始观看",
+      "speed": "回放速度",
+      "times": "{{speed}}×",
+      "jump": "跳到分钟",
+      "watch": "观看回放",
+      "gone": "这场比赛时间太久，无法回放；只保留了比分。"
     }
   },
   "coach": {

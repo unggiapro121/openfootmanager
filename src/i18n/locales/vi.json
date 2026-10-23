@@ -231,6 +231,18 @@
         "refused": "— bị từ chối",
         "refusedWhy": "— bị từ chối: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Xem lại",
+      "controls": "Điều khiển xem lại",
+      "play": "Phát",
+      "pause": "Tạm dừng",
+      "restart": "Xem lại từ đầu",
+      "speed": "Tốc độ xem lại",
+      "times": "{{speed}}×",
+      "jump": "Tua tới phút",
+      "watch": "Xem lại trận",
+      "gone": "Trận này đã quá cũ để xem lại; chỉ còn giữ kết quả."
     }
   },
   "coach": {

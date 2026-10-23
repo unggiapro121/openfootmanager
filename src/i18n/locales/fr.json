@@ -231,6 +231,18 @@
         "refused": "— refusée",
         "refusedWhy": "— refusée : {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Revoir",
+      "controls": "Commandes de lecture",
+      "play": "Lecture",
+      "pause": "Mettre en pause",
+      "restart": "Revoir depuis le coup d'envoi",
+      "speed": "Vitesse de lecture",
+      "times": "{{speed}}×",
+      "jump": "Aller à la minute",
+      "watch": "Revoir le match",
+      "gone": "Ce match est trop ancien pour être revu ; seul son résultat est conservé."
     }
   },
   "coach": {

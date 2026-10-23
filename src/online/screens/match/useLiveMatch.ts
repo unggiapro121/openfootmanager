@@ -9,13 +9,11 @@ import {
   withHistory,
   withSides,
 } from "../../convert/matchState";
-import { OnlineApiError } from "../../errors";
+import type { OnlineApiError } from "../../errors";
 import { type StopWatching, watchMatch } from "../../live";
 import { tracked } from "../../store/onlineStore";
 import { useActionKey } from "../useActionKey";
-
-/** Frames read per page of a match's history (the server's ceiling). */
-const FRAME_PAGE = 120;
+import { readFrames, readMine } from "./matchReads";
 
 export type Connection = "connecting" | "open" | "reconnecting" | "closed";
 
@@ -37,29 +35,6 @@ export type LiveMatch =
   | { status: "loading" }
   | { status: "failed"; error: unknown }
   | { status: "ready"; data: LiveMatchData };
-
-async function readFrames(matchId: string, afterSeq: number, upTo?: number) {
-  const frames: MatchFrame[] = [];
-  let after = afterSeq;
-  for (;;) {
-    const page = await online.matches.frames(matchId, after, FRAME_PAGE);
-    frames.push(...page.frames);
-    const next = page.nextAfterSeq;
-    if (next === undefined || page.frames.length === 0) return frames;
-    if (upTo !== undefined && next >= upTo) return frames;
-    after = next;
-  }
-}
-
-async function readMine(matchId: string): Promise<MineView | null> {
-  try {
-    return await online.matches.mine(matchId);
-  } catch (error) {
-    // Not a side's coach: a spectator, with no side of their own to see (Qs8-6).
-    if (error instanceof OnlineApiError && error.status === 404) return null;
-    throw error;
-  }
-}
 
 const coaches = (data: Pick<LiveMatchData, "mine" | "state">) =>
   data.mine !== null &&

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
+import { History } from "lucide-react";
 import { Card, CardBody, CardHeader } from "../../components/ui";
 import type { ClubRef, FixtureDetailView, PlayerLine } from "../api";
 import { online } from "../client";
@@ -10,7 +11,7 @@ import ResourceState from "./ResourceState";
 
 /**
  * A settled fixture (C-2 §3.5): the score and every player's part, from the match summary the
- * server kept (`GET /v1/fixtures/{id}`). The desktop's match-detail dialog shows shots, passes
+ * server kept (`GET /v1/fixtures/{id}`), and a way into its replay (C-2 §3.7). The desktop's match-detail dialog shows shots, passes
  * and a report the online summary does not have, so this page shows what it has and nothing
  * made up.
  */
@@ -59,6 +60,15 @@ function FixtureResult({ detail }: { detail: FixtureDetailView }) {
             <p className="text-sm text-accent-700 dark:text-accent-400">
               {t("online.fixture.void")}
             </p>
+          )}
+          {fixture.matchId && (fixture.matchStatus === "finished" || settled) && (
+            <Link
+              to={`/online/match/${fixture.matchId}`}
+              className="inline-flex items-center gap-1 rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+            >
+              <History className="h-4 w-4" />
+              {t("online.replay.watch")}
+            </Link>
           )}
         </CardBody>
       </Card>

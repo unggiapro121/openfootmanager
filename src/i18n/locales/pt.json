@@ -231,6 +231,18 @@
         "refused": "— recusada",
         "refusedWhy": "— recusada: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Repetição",
+      "controls": "Controlos da repetição",
+      "play": "Reproduzir",
+      "pause": "Pausa",
+      "restart": "Ver desde o pontapé de saída",
+      "speed": "Velocidade da repetição",
+      "times": "{{speed}}×",
+      "jump": "Ir para o minuto",
+      "watch": "Ver a repetição",
+      "gone": "Este jogo é demasiado antigo para rever; só se guarda o resultado."
     }
   },
   "coach": {
