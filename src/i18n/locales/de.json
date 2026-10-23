@@ -39,7 +39,10 @@
       "label": "Navigation des Online-Modus",
       "overview": "Übersicht",
       "profile": "Trainerprofil",
-      "mainMenu": "Hauptmenü"
+      "mainMenu": "Hauptmenü",
+      "squad": "Kader",
+      "tactics": "Taktik",
+      "training": "Training"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -119,6 +122,32 @@
       "confirmBody": "Dein aktueller Verein geht sofort an seinen Bot zurück. Danach übernimmst du einen Verein unverändert in der neuen Region, höchstens einmal pro Saison.",
       "confirm": "Ja, Region wechseln",
       "changed": "Region gewechselt. Übernimm einen Verein in deiner neuen Region."
+    },
+    "tactics": {
+      "locked": "Die Aufstellung ist für das Spiel um {{time}} gesperrt. Nach dem Spiel kannst du sie wieder ändern.",
+      "lockedNow": "Die Aufstellung ist für das nächste Spiel gesperrt.",
+      "stale": "Deine Aufstellung wurde an anderer Stelle geändert. Die Tafel zeigt jetzt den gespeicherten Stand; nimm deine Änderung erneut vor.",
+      "invalid": "Der Server hat diese Aufstellung nicht angenommen:",
+      "unknownPlayer": "ein Spieler, der nicht mehr im Kader ist",
+      "issue": {
+        "unknownFormation": "Diese Formation kennt das Spiel nicht.",
+        "startingElevenSize": "Die Startelf muss genau 11 Spieler haben.",
+        "duplicateStarter": "{{player}} steht zweimal in der Startelf.",
+        "notInSquad": "{{player}} gehört nicht zu deinem Kader."
+      }
+    },
+    "squad": {
+      "empty": "Dein Kader hat noch keine Spieler.",
+      "title": "Kader ({{players}})",
+      "potential": "Potenzial",
+      "potentialStars": "Potenzial: {{stars}} von 5 Sternen",
+      "apps": "Sp.",
+      "goals": "Tore",
+      "fitness": "Spielfitness",
+      "seasonLine": "Diese Saison: {{apps}} Spiele, {{goals}} Tore, {{assists}} Vorlagen, Durchschnittsnote {{rating}}"
+    },
+    "training": {
+      "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Die KI plant die Einheiten deines Vereins. Du siehst die Standardwerte des Spiels; deine erste Wahl speichert einen eigenen Plan."
     }
   },
   "coach": {

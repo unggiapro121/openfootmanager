@@ -13,7 +13,7 @@ import type { PlayerData } from "../../store/gameStore";
 import { getPlayerAttributeEntry, type PlayerAttributeKey } from "./PlayerProfile.attributes";
 
 interface PlayerAttributeRadarChartProps {
-  player: PlayerData;
+  player: Pick<PlayerData, "attributes">;
   isGk: boolean;
 }
 
@@ -57,7 +57,7 @@ const BLENDED_AXES: Partial<Record<PlayerAttributeKey, PlayerAttributeKey>> = {
 };
 
 export function buildRadarData(
-  player: PlayerData,
+  player: Pick<PlayerData, "attributes">,
   keys: readonly PlayerAttributeKey[],
   translate: (key: string) => string,
 ): RadarEntry[] {

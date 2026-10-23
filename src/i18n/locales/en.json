@@ -39,7 +39,10 @@
       "label": "Online navigation",
       "overview": "Overview",
       "profile": "Coach profile",
-      "mainMenu": "Main menu"
+      "mainMenu": "Main menu",
+      "squad": "Squad",
+      "tactics": "Tactics",
+      "training": "Training"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -119,6 +122,32 @@
       "confirmBody": "Your current club goes back to its bot at once. You then take a club as it is in the new region, at most once a season.",
       "confirm": "Yes, change region",
       "changed": "Region changed. Take over a club in your new region."
+    },
+    "tactics": {
+      "locked": "The line-up is locked for the match at {{time}}. You can change it again once the match is over.",
+      "lockedNow": "The line-up is locked for the next match.",
+      "stale": "Your line-up was changed somewhere else. The board now shows it as saved; make your change again.",
+      "invalid": "The server did not accept that line-up:",
+      "unknownPlayer": "a player no longer in the squad",
+      "issue": {
+        "unknownFormation": "The formation is not one the game knows.",
+        "startingElevenSize": "The starting eleven must have exactly 11 players.",
+        "duplicateStarter": "{{player}} is in the starting eleven twice.",
+        "notInSquad": "{{player}} is not in your squad."
+      }
+    },
+    "squad": {
+      "empty": "Your squad has no players yet.",
+      "title": "Squad ({{players}})",
+      "potential": "Potential",
+      "potentialStars": "Potential: {{stars}} of 5 stars",
+      "apps": "Apps",
+      "goals": "Goals",
+      "fitness": "Match fitness",
+      "seasonLine": "This season: {{apps}} apps, {{goals}} goals, {{assists}} assists, average rating {{rating}}"
+    },
+    "training": {
+      "noPlan": "You have not set a training plan yet: the AI plans your club's sessions. What you see are the game's defaults; your first choice saves a plan of your own."
     }
   },
   "coach": {

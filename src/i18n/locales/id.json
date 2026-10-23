@@ -39,7 +39,10 @@
       "label": "Navigasi mode daring",
       "overview": "Ringkasan",
       "profile": "Profil pelatih",
-      "mainMenu": "Menu utama"
+      "mainMenu": "Menu utama",
+      "squad": "Skuad",
+      "tactics": "Taktik",
+      "training": "Latihan"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -119,6 +122,32 @@
       "confirmBody": "Klubmu saat ini langsung kembali ke bot-nya. Lalu kamu mengambil alih klub apa adanya di wilayah baru, paling banyak sekali per musim.",
       "confirm": "Ya, ganti wilayah",
       "changed": "Wilayah sudah diganti. Ambil alih klub di wilayah barumu."
+    },
+    "tactics": {
+      "locked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa mengubahnya lagi setelah laga selesai.",
+      "lockedNow": "Susunan pemain untuk laga berikutnya sudah dikunci.",
+      "stale": "Susunan pemainmu diubah di tempat lain. Papan kini menampilkan versi yang tersimpan; ulangi perubahanmu.",
+      "invalid": "Server tidak menerima susunan pemain itu:",
+      "unknownPlayer": "pemain yang sudah tidak ada di skuad",
+      "issue": {
+        "unknownFormation": "Formasi itu tidak dikenal permainan.",
+        "startingElevenSize": "Starting eleven harus berisi tepat 11 pemain.",
+        "duplicateStarter": "{{player}} tercantum dua kali di starting eleven.",
+        "notInSquad": "{{player}} tidak ada di skuadmu."
+      }
+    },
+    "squad": {
+      "empty": "Skuadmu belum punya pemain.",
+      "title": "Skuad ({{players}})",
+      "potential": "Potensi",
+      "potentialStars": "Potensi: {{stars}} dari 5 bintang",
+      "apps": "Main",
+      "goals": "Gol",
+      "fitness": "Kebugaran laga",
+      "seasonLine": "Musim ini: {{apps}} laga, {{goals}} gol, {{assists}} assist, rata-rata nilai {{rating}}"
+    },
+    "training": {
+      "noPlan": "Kamu belum menetapkan rencana latihan: AI yang menyusun sesi klubmu. Yang terlihat adalah bawaan permainan; pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
     }
   },
   "coach": {

@@ -39,7 +39,10 @@
       "label": "Navigation du mode en ligne",
       "overview": "Vue d'ensemble",
       "profile": "Profil de l'entraîneur",
-      "mainMenu": "Menu principal"
+      "mainMenu": "Menu principal",
+      "squad": "Effectif",
+      "tactics": "Tactique",
+      "training": "Entraînement"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -119,6 +122,32 @@
       "confirmBody": "Votre club actuel retourne immédiatement à son bot. Vous reprenez ensuite un club tel quel dans la nouvelle région, au plus une fois par saison.",
       "confirm": "Oui, changer de région",
       "changed": "Région changée. Reprenez un club dans votre nouvelle région."
+    },
+    "tactics": {
+      "locked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez la modifier une fois le match terminé.",
+      "lockedNow": "La composition est verrouillée pour le prochain match.",
+      "stale": "Votre composition a été modifiée ailleurs. Le tableau affiche maintenant la version enregistrée ; refaites votre modification.",
+      "invalid": "Le serveur n'a pas accepté cette composition :",
+      "unknownPlayer": "un joueur qui n'est plus dans l'effectif",
+      "issue": {
+        "unknownFormation": "Le jeu ne connaît pas ce schéma.",
+        "startingElevenSize": "Le onze de départ doit compter exactement 11 joueurs.",
+        "duplicateStarter": "{{player}} figure deux fois dans le onze de départ.",
+        "notInSquad": "{{player}} ne fait pas partie de votre effectif."
+      }
+    },
+    "squad": {
+      "empty": "Votre effectif n'a encore aucun joueur.",
+      "title": "Effectif ({{players}})",
+      "potential": "Potentiel",
+      "potentialStars": "Potentiel : {{stars}} étoiles sur 5",
+      "apps": "MJ",
+      "goals": "Buts",
+      "fitness": "Forme physique",
+      "seasonLine": "Cette saison : {{apps}} matchs, {{goals}} buts, {{assists}} passes décisives, note moyenne {{rating}}"
+    },
+    "training": {
+      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : l'IA planifie les séances de votre club. Vous voyez les réglages par défaut du jeu ; votre premier choix enregistre votre propre plan."
     }
   },
   "coach": {

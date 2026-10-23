@@ -5,7 +5,7 @@ import {
   type OnlineResponse,
   setOnlineTransport,
 } from "../services/onlineTransport";
-import type { LeagueView, MyClubView, SeasonNowView } from "../online/api";
+import type { LeagueView, MyClubView, SeasonNowView, SquadPlayerView } from "../online/api";
 import { CONTRACT_REVISION } from "../online/api/contract";
 import { reopenOnlineGate } from "../online/client";
 import { useOnlineStore } from "../online/store/onlineStore";
@@ -93,7 +93,32 @@ export function myClub(overrides: Partial<MyClubView> = {}): MyClubView {
     squadRefreshing: false,
     players: [],
     staff: [],
-    setup: {} as MyClubView["setup"],
+    setup: {
+      formation: "4-4-2",
+      playStyle: "Balanced",
+      startingXiIds: [],
+      playerRoles: {},
+      tacticsPhase: {
+        build_up_style: "Mixed",
+        width: "Normal",
+        tempo: "Patient",
+        defensive_line: "Medium",
+        pressing_intensity: "Medium",
+        defensive_shape: "Normal",
+        marking_style: "Zonal",
+        counter_press_duration: "Short",
+        break_speed: "Medium",
+        cross_style: "Mixed",
+        offside_trap: "Off",
+      },
+      matchRoles: {
+        captain: null,
+        vice_captain: null,
+        penalty_taker: null,
+        free_kick_taker: null,
+        corner_taker: null,
+      },
+    },
     leagueId: "league-1",
     nextFixture: {
       id: "fixture-9",
@@ -133,3 +158,51 @@ export const LEAGUE: LeagueView = {
     },
   ],
 };
+
+const ATTRIBUTES: SquadPlayerView["attributes"] = {
+  pace: 60,
+  stamina: 60,
+  strength: 60,
+  agility: 60,
+  passing: 60,
+  shooting: 60,
+  tackling: 60,
+  dribbling: 60,
+  defending: 60,
+  positioning: 60,
+  vision: 60,
+  decisions: 60,
+  composure: 60,
+  aggression: 60,
+  teamwork: 60,
+  leadership: 60,
+  handling: 20,
+  reflexes: 20,
+  aerial: 60,
+  long_passing: 60,
+  crossing: 60,
+  curve: 60,
+  free_kick: 60,
+  long_shots: 60,
+  heading: 60,
+  first_touch: 60,
+};
+
+export function squadPlayer(overrides: Partial<SquadPlayerView> = {}): SquadPlayerView {
+  return {
+    id: "p1",
+    fullName: "Nguyễn Văn An",
+    matchName: "V. An",
+    position: "Striker",
+    nationality: "VN",
+    age: 23,
+    ovr: 64,
+    potentialStars: 3,
+    condition: 90,
+    fitness: 80,
+    morale: 70,
+    attributes: ATTRIBUTES,
+    season: { appearances: 3, goals: 2, assists: 1, avgRating: 6.8 },
+    ...overrides,
+  };
+}

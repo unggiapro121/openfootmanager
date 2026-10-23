@@ -1,17 +1,5 @@
-import { useState, type ReactNode } from "react";
-import {
-  AlertTriangle,
-  BedDouble,
-  Brain,
-  Crosshair,
-  Feather,
-  Flame,
-  HeartPulse,
-  Info,
-  Scale,
-  Shield,
-  Zap,
-} from "lucide-react";
+import { useState } from "react";
+import { AlertTriangle, Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type { GameStateData } from "../../store/gameStore";
@@ -29,77 +17,19 @@ interface TrainingTabProps {
   onGameUpdate?: (state: GameStateData) => void;
 }
 
-const TRAINING_FOCUS_IDS = [
-  "Physical",
-  "Technical",
-  "Tactical",
-  "Defending",
-  "Attacking",
-  "Recovery",
-] as const;
-
-const TRAINING_FOCUS_ICONS: Record<string, ReactNode> = {
-  Physical: <HeartPulse className="w-6 h-6" />,
-  Technical: <Crosshair className="w-6 h-6" />,
-  Tactical: <Brain className="w-6 h-6" />,
-  Defending: <Shield className="w-6 h-6" />,
-  Attacking: <Zap className="w-6 h-6" />,
-  Recovery: <BedDouble className="w-6 h-6" />,
-};
-
-const TRAINING_FOCUS_ATTRS: Record<string, string[]> = {
-  Physical: ["pace", "stamina", "strength", "agility"],
-  Technical: [
-    "passing",
-    "long_passing",
-    "crossing",
-    "curve",
-    "free_kick",
-    "shooting",
-    "long_shots",
-    "dribbling",
-    "first_touch",
-  ],
-  Tactical: ["positioning", "vision", "decisions", "composure"],
-  Defending: ["tackling", "defending", "strength", "positioning", "heading"],
-  Attacking: ["shooting", "long_shots", "dribbling", "first_touch", "heading", "pace"],
-  Recovery: [],
-};
-
-const INTENSITY_IDS = ["Low", "Medium", "High"] as const;
-
-const INTENSITY_COLORS: Record<string, string> = {
-  Low: "text-blue-500",
-  Medium: "text-accent-500",
-  High: "text-red-500",
-};
-
-const SCHEDULE_IDS = ["Intense", "Balanced", "Light"] as const;
-
-const SCHEDULE_ICONS: Record<string, ReactNode> = {
-  Intense: <Flame className="w-5 h-5" />,
-  Balanced: <Scale className="w-5 h-5" />,
-  Light: <Feather className="w-5 h-5" />,
-};
-
-const SCHEDULE_COLORS: Record<string, string> = {
-  Intense: "text-red-500",
-  Balanced: "text-primary-500",
-  Light: "text-blue-500",
-};
-
-const SCHEDULE_TRAINING_DAYS: Record<string, number[]> = {
-  Intense: [0, 1, 2, 3, 4, 5],
-  Balanced: [0, 1, 3, 4],
-  Light: [1, 3],
-};
-
-const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
-
-function getWeekdayFromDate(dateStr: string): number {
-  const date = new Date(dateStr);
-  return (date.getUTCDay() + 6) % 7;
-}
+import {
+  DAY_KEYS,
+  getWeekdayFromDate,
+  INTENSITY_COLORS,
+  INTENSITY_IDS,
+  SCHEDULE_COLORS,
+  SCHEDULE_ICONS,
+  SCHEDULE_IDS,
+  SCHEDULE_TRAINING_DAYS,
+  TRAINING_FOCUS_ATTRS,
+  TRAINING_FOCUS_ICONS,
+  TRAINING_FOCUS_IDS,
+} from "./trainingOptions";
 
 export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProps) {
   const { t } = useTranslation();
