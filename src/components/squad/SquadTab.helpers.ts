@@ -17,12 +17,31 @@ export type DragState = {
 };
 
 export type PitchRow = { label: string; y: string; positions: string[] };
-export type PitchSlot = {
+/**
+ * What the lineup rules read of a player: where he plays, how good and how fresh he is. The
+ * game's `PlayerData` has all of it, and so has the online squad (C-2 C2-6), which has no
+ * contract or transfer data.
+ */
+export type LineupPlayer = Pick<
+  PlayerData,
+  | "id"
+  | "full_name"
+  | "position"
+  | "natural_position"
+  | "alternate_positions"
+  | "condition"
+  | "ovr"
+  | "attributes"
+  | "injury"
+>;
+export type PitchSlot<P extends LineupPlayer = PlayerData> = {
   index: number;
   position: string;
-  player: PlayerData | null;
+  player: P | null;
 };
-export type PitchSlotRow = PitchRow & { slots: PitchSlot[] };
+export type PitchSlotRow<P extends LineupPlayer = PlayerData> = PitchRow & {
+  slots: PitchSlot<P>[];
+};
 export type SquadTacticalFit = "natural" | "adapted" | "out";
 export type SquadStyleFit = "strong" | "good" | "risky";
 export type SquadRoleCoverageStatus = "covered" | "thin" | "uncovered";
@@ -136,13 +155,13 @@ export function translatePositionAbbreviation(
  * legacy saves it can still hold a coarse bucket.
  */
 export function getCurrentPosition(
-  player: PlayerData,
+  player: LineupPlayer,
   xiActivePosition: Map<string, string>,
 ): string {
   return xiActivePosition.get(player.id) || player.natural_position || player.position;
 }
 
-export function getPreferredPositions(player: PlayerData): string[] {
+export function getPreferredPositions(player: LineupPlayer): string[] {
   return [
     ...new Set(
       [player.natural_position || player.position, ...(player.alternate_positions || [])]
@@ -291,8 +310,8 @@ export function getPitchSlotWidth(slotCount: number): number {
  * deliberately, or not at all.
  */
 export function comparePlayersForSlot(
-  leftPlayer: PlayerData,
-  rightPlayer: PlayerData,
+  leftPlayer: LineupPlayer,
+  rightPlayer: LineupPlayer,
   slotPosition: string,
 ): number {
   return (
@@ -307,7 +326,7 @@ export function comparePlayersForSlot(
 }
 
 export function buildStartingXIIds(
-  available: PlayerData[],
+  available: LineupPlayer[],
   savedIds: string[],
   formation: string,
 ): string[] {
@@ -353,16 +372,16 @@ export function buildStartingXIIds(
   return xi;
 }
 
-export function buildPitchSlotRows(
+export function buildPitchSlotRows<P extends LineupPlayer>(
   rows: PitchRow[],
   xiIds: string[],
-  playersById: Map<string, PlayerData>,
-): PitchSlotRow[] {
+  playersById: Map<string, P>,
+): PitchSlotRow<P>[] {
   let slotIndex = 0;
   return rows.map((row) => ({
     ...row,
     slots: row.positions.map((position) => {
-      const slot: PitchSlot = {
+      const slot: PitchSlot<P> = {
         index: slotIndex,
         position,
         player: playersById.get(xiIds[slotIndex]) ?? null,
@@ -390,7 +409,9 @@ export function getDeployedPosition(
   return slots[slotIndex] ?? null;
 }
 
-export function buildActivePositionMap(pitchSlotRows: PitchSlotRow[]): Map<string, string> {
+export function buildActivePositionMap(
+  pitchSlotRows: PitchSlotRow<LineupPlayer>[],
+): Map<string, string> {
   const map = new Map<string, string>();
   pitchSlotRows.forEach((row) => {
     row.slots.forEach((slot) => {
@@ -417,7 +438,7 @@ export function isWingBackConversion(naturalPosition: string, slot: string): boo
   );
 }
 
-export function isPlayerOutOfPosition(player: PlayerData, currentPos: string): boolean {
+export function isPlayerOutOfPosition(player: LineupPlayer, currentPos: string): boolean {
   if (isWingBackConversion(player.natural_position || player.position, currentPos)) {
     return false;
   }
@@ -429,13 +450,13 @@ export function isPlayerOutOfPosition(player: PlayerData, currentPos: string): b
   );
 }
 
-export function isPlayerExactForSlot(player: PlayerData, currentPos: string): boolean {
+export function isPlayerExactForSlot(player: LineupPlayer, currentPos: string): boolean {
   return (
     canonicalPosition(player.natural_position || player.position) === canonicalPosition(currentPos)
   );
 }
 
-export function getSquadTacticalFit(player: PlayerData, currentPos: string): SquadTacticalFit {
+export function getSquadTacticalFit(player: LineupPlayer, currentPos: string): SquadTacticalFit {
   if (isPlayerExactForSlot(player, currentPos)) {
     return "natural";
   }
@@ -448,7 +469,7 @@ export function getSquadTacticalFit(player: PlayerData, currentPos: string): Squ
 }
 
 function averageAttributes(
-  player: PlayerData,
+  player: LineupPlayer,
   attributeKeys: Array<keyof PlayerData["attributes"]>,
 ): number {
   return (
@@ -456,7 +477,7 @@ function averageAttributes(
   );
 }
 
-export function getBestRoleForFormation(player: PlayerData, formation: string): string {
+export function getBestRoleForFormation(player: LineupPlayer, formation: string): string {
   const formationSlots = buildPitchRows(formation).flatMap((row) => row.positions);
   // Best role is an ability recommendation, so it is driven by the player's
   // natural position (not player.position, which is only a coarse bucket).
@@ -505,7 +526,7 @@ const STYLE_FIT_POSITION_PENALTY: Record<SquadTacticalFit, number> = {
 };
 
 export function getPlayStyleFit(
-  player: PlayerData,
+  player: LineupPlayer,
   playStyle: string,
   currentPos?: string,
 ): SquadStyleFit {
@@ -562,7 +583,7 @@ export function getPlayStyleFit(
 }
 
 export function buildRoleCoverageSummary(
-  availablePlayers: PlayerData[],
+  availablePlayers: LineupPlayer[],
   currentXiIds: string[],
   formation: string,
 ): SquadRoleCoverage[] {
@@ -634,7 +655,7 @@ export function buildRoleCoverageSummary(
     });
 }
 
-function getFitScore(player: PlayerData, currentPos: string): number {
+function getFitScore(player: LineupPlayer, currentPos: string): number {
   const fit = getSquadTacticalFit(player, currentPos);
 
   if (fit === "natural") return 2;
@@ -644,7 +665,7 @@ function getFitScore(player: PlayerData, currentPos: string): number {
 
 export function buildPromoteToStartingXi(
   currentXiIds: string[],
-  playersById: Map<string, PlayerData>,
+  playersById: Map<string, LineupPlayer>,
   formation: string,
   playerId: string,
 ): string[] | null {
@@ -741,7 +762,7 @@ export function buildAssignStartingXiSlot(
 
 export function buildAssignBestFitSlot(
   currentXiIds: string[],
-  playersById: Map<string, PlayerData>,
+  playersById: Map<string, LineupPlayer>,
   formation: string,
   playerId: string,
 ): string[] | null {
@@ -776,7 +797,7 @@ export function buildAssignBestFitSlot(
 
 export function buildDemoteFromStartingXi(
   currentXiIds: string[],
-  availablePlayers: PlayerData[],
+  availablePlayers: LineupPlayer[],
   formation: string,
   playerId: string,
 ): string[] | null {

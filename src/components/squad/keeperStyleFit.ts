@@ -49,13 +49,16 @@ const LEAN_SCALE = 0.5;
 const LEAN_CAP = 8;
 
 /** Handling, reflexes and positioning averaged: the keeper rating the match engine uses. */
-export function getKeeperShotStopping(player: PlayerData): number {
+export function getKeeperShotStopping(player: Pick<PlayerData, "attributes">): number {
   const { handling, reflexes, positioning } = player.attributes;
   return (handling + reflexes + positioning) / 3;
 }
 
 /** How far a keeper's secondary attributes suit `playStyle`, against keepers of his level. */
-export function getKeeperStyleLean(player: PlayerData, playStyle: string): number {
+export function getKeeperStyleLean(
+  player: Pick<PlayerData, "attributes">,
+  playStyle: string,
+): number {
   const weights = Object.entries(KEEPER_STYLE_LEAN[playStyle] ?? BALANCED_LEAN) as Array<
     [KeeperSecondaryAttribute, number]
   >;
@@ -75,7 +78,10 @@ export function getKeeperStyleLean(player: PlayerData, playStyle: string): numbe
  * Whether the keeper formula scores this player: he stands in goal, or, with no deployed slot,
  * he is a keeper by trade.
  */
-export function isKeeperStyleFitSlot(player: PlayerData, currentPos?: string): boolean {
+export function isKeeperStyleFitSlot(
+  player: Pick<PlayerData, "natural_position">,
+  currentPos?: string,
+): boolean {
   return normalisePosition(currentPos ?? player.natural_position) === "Goalkeeper";
 }
 

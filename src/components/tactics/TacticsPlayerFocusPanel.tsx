@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { PlayerData } from "../../store/gameStore";
+import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import { Button, Card, CountryFlag } from "../ui";
 import { Eye, GitCompareArrows, X } from "lucide-react";
 import { calcAge, getPlayerOvr } from "../../lib/helpers";
@@ -53,10 +54,10 @@ const ATTRIBUTE_GROUPS: {
 
 interface TacticsPlayerFocusPanelProps {
   canConfirmSwap: boolean;
-  comparePlayer: PlayerData | null;
+  comparePlayer: TacticsRosterPlayer | null;
   onClose?: () => void;
   onConfirmSwap: () => void;
-  selectedPlayer: PlayerData | null;
+  selectedPlayer: TacticsRosterPlayer | null;
   /** Players the club's scouts read as wonderkids; the badge shows for them only. */
   scoutedWonderkids?: ReadonlySet<string>;
 }
@@ -75,7 +76,7 @@ function valueBarTone(value: number): string {
   return "bg-gray-300 dark:bg-navy-600";
 }
 
-function getNormalizedPlayerPosition(player: PlayerData): string {
+function getNormalizedPlayerPosition(player: TacticsRosterPlayer): string {
   return normalisePosition(player.natural_position || player.position);
 }
 
@@ -85,7 +86,7 @@ function PlayerSummary({
   scoutedWonderkids,
 }: {
   label: string;
-  player: PlayerData;
+  player: TacticsRosterPlayer;
   scoutedWonderkids?: ReadonlySet<string>;
 }) {
   const { t } = useTranslation();
@@ -135,7 +136,7 @@ function PlayerSummary({
   );
 }
 
-function SinglePlayerAttributes({ player }: { player: PlayerData }) {
+function SinglePlayerAttributes({ player }: { player: TacticsRosterPlayer }) {
   const { t } = useTranslation();
   const isGoalkeeper = getNormalizedPlayerPosition(player) === "Goalkeeper";
 
@@ -245,9 +246,9 @@ function CompareAttributes({
   scoutedWonderkids,
 }: {
   canConfirmSwap: boolean;
-  comparePlayer: PlayerData;
+  comparePlayer: TacticsRosterPlayer;
   onConfirmSwap: () => void;
-  selectedPlayer: PlayerData;
+  selectedPlayer: TacticsRosterPlayer;
   scoutedWonderkids?: ReadonlySet<string>;
 }) {
   const { t } = useTranslation();

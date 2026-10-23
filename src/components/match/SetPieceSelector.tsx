@@ -29,7 +29,7 @@ function getStatAttributeKey(label: string): string | null {
 
 export function getSetPieceStats(
   role: string,
-  p: PlayerData,
+  p: Pick<PlayerData, "attributes">,
 ): { score: number; stats: { label: string; value: number }[] } {
   const a = p.attributes;
   switch (role) {
@@ -94,7 +94,7 @@ export default function SetPieceSelector({
   assignment: string;
   currentId: string | null;
   players: { id: string; name: string; position: string }[];
-  allSquad: PlayerData[];
+  allSquad: Pick<PlayerData, "id" | "attributes">[];
   onSelect: (id: string) => void;
 }) {
   const { t } = useTranslation();
