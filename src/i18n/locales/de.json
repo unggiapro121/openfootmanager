@@ -3706,7 +3706,13 @@
         "versionStale": "Dein Verein hat sich seit dem Öffnen geändert. Lade ihn neu und versuche es erneut.",
         "nameTaken": "Ein anderer Verein trägt diesen Namen bereits.",
         "nameBlocked": "Dieser Name ist nicht erlaubt.",
-        "renameLimit": "Du kannst deinen Verein einmal pro Saison umbenennen."
+        "renameLimit": "Du kannst deinen Verein einmal pro Saison umbenennen.",
+        "lineupLocked": "Die Aufstellung ist für das Spiel mit Anstoß um {{kickoffAt}} gesperrt. Nach dem Spiel kannst du sie wieder ändern."
+      },
+      "match": {
+        "notLive": "Das Spiel läuft gerade nicht.",
+        "notYourSide": "Du kannst nur deiner eigenen Mannschaft Anweisungen geben.",
+        "tooManyCommands": "Zu viele Anweisungen warten. Warte, bis die vorherigen umgesetzt sind."
       },
       "online": {
         "notSignedIn": "Melde dich bei deinem Online-Konto an, um online zu spielen.",

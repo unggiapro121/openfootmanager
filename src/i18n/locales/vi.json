@@ -3706,7 +3706,13 @@
         "versionStale": "CLB của bạn đã thay đổi từ lúc bạn mở. Hãy tải lại rồi thử lại.",
         "nameTaken": "Đã có CLB khác dùng tên này.",
         "nameBlocked": "Tên này không được phép.",
-        "renameLimit": "Mỗi mùa bạn chỉ được đổi tên CLB một lần."
+        "renameLimit": "Mỗi mùa bạn chỉ được đổi tên CLB một lần.",
+        "lineupLocked": "Đội hình đã khoá cho trận bắt đầu lúc {{kickoffAt}}. Bạn sửa lại được khi trận kết thúc."
+      },
+      "match": {
+        "notLive": "Trận đấu hiện không diễn ra.",
+        "notYourSide": "Bạn chỉ ra lệnh được cho đội của mình.",
+        "tooManyCommands": "Có quá nhiều lệnh đang chờ. Hãy đợi các lệnh trước được áp dụng."
       },
       "online": {
         "notSignedIn": "Hãy đăng nhập tài khoản online để chơi online.",

@@ -6,6 +6,8 @@ export type { Capability } from "./Capability";
 export type { ClubProfileView } from "./ClubProfileView";
 export type { ClubRef } from "./ClubRef";
 export type { CoachName } from "./CoachName";
+export type { CommandAccepted } from "./CommandAccepted";
+export type { CommandRequest } from "./CommandRequest";
 export type { EmailRequest } from "./EmailRequest";
 export type { ErrorBody } from "./ErrorBody";
 export type { FixtureDetailView } from "./FixtureDetailView";

@@ -3706,7 +3706,13 @@
         "versionStale": "Il tuo club è cambiato da quando l'hai aperto. Ricaricalo e riprova.",
         "nameTaken": "Un altro club ha già questo nome.",
         "nameBlocked": "Questo nome non è consentito.",
-        "renameLimit": "Puoi rinominare il tuo club una volta a stagione."
+        "renameLimit": "Puoi rinominare il tuo club una volta a stagione.",
+        "lineupLocked": "La formazione è bloccata per la partita che inizia alle {{kickoffAt}}. Potrai cambiarla a partita finita."
+      },
+      "match": {
+        "notLive": "La partita non è in corso in questo momento.",
+        "notYourSide": "Puoi dare ordini solo alla tua squadra.",
+        "tooManyCommands": "Troppi ordini in attesa. Aspetta che i precedenti vengano applicati."
       },
       "online": {
         "notSignedIn": "Accedi al tuo account online per giocare online.",

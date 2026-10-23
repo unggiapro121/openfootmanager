@@ -3706,7 +3706,13 @@
         "versionStale": "Klubmu berubah sejak kamu membukanya. Muat ulang lalu coba lagi.",
         "nameTaken": "Nama itu sudah dipakai klub lain.",
         "nameBlocked": "Nama itu tidak diizinkan.",
-        "renameLimit": "Kamu bisa mengganti nama klub sekali per musim."
+        "renameLimit": "Kamu bisa mengganti nama klub sekali per musim.",
+        "lineupLocked": "Susunan pemain dikunci untuk laga yang dimulai pukul {{kickoffAt}}. Kamu bisa mengubahnya lagi setelah laga selesai."
+      },
+      "match": {
+        "notLive": "Laga sedang tidak dimainkan.",
+        "notYourSide": "Kamu hanya bisa memberi instruksi untuk timmu sendiri.",
+        "tooManyCommands": "Terlalu banyak instruksi yang menunggu. Tunggu yang sebelumnya diterapkan."
       },
       "online": {
         "notSignedIn": "Masuk ke akun online untuk bermain online.",

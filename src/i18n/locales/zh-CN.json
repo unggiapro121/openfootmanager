@@ -3706,7 +3706,13 @@
         "versionStale": "自你打开后俱乐部已发生变化，请刷新后重试。",
         "nameTaken": "已有其他俱乐部使用该名称。",
         "nameBlocked": "该名称不被允许。",
-        "renameLimit": "每个赛季只能为俱乐部改名一次。"
+        "renameLimit": "每个赛季只能为俱乐部改名一次。",
+        "lineupLocked": "开球时间为 {{kickoffAt}} 的比赛首发阵容已锁定，比赛结束后才能再修改。"
+      },
+      "match": {
+        "notLive": "比赛当前未在进行。",
+        "notYourSide": "你只能给自己的球队下达指令。",
+        "tooManyCommands": "等待中的指令太多，请等之前的指令生效。"
       },
       "online": {
         "notSignedIn": "请登录在线账户以进行在线游戏。",

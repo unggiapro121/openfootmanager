@@ -3706,7 +3706,13 @@
         "versionStale": "Váš klub se od otevření změnil. Načtěte jej znovu a zkuste to znovu.",
         "nameTaken": "Tento název už má jiný klub.",
         "nameBlocked": "Tento název není povolen.",
-        "renameLimit": "Klub můžete přejmenovat jednou za sezónu."
+        "renameLimit": "Klub můžete přejmenovat jednou za sezónu.",
+        "lineupLocked": "Sestava je uzamčena pro zápas s výkopem v {{kickoffAt}}. Změnit ji můžete po skončení zápasu."
+      },
+      "match": {
+        "notLive": "Zápas se právě nehraje.",
+        "notYourSide": "Pokyny můžete dávat jen svému týmu.",
+        "tooManyCommands": "Čeká příliš mnoho pokynů. Počkejte, až se použijí ty předchozí."
       },
       "online": {
         "notSignedIn": "Pro hru online se přihlaste ke svému online účtu.",

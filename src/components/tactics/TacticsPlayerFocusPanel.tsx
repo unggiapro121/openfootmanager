@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { PlayerData } from "../../store/gameStore";
-import type { TacticsRosterPlayer } from "./tacticsBoardSource";
+import { rosterPlayerAge, type TacticsRosterPlayer } from "./tacticsBoardSource";
 import { Button, Card, CountryFlag } from "../ui";
 import { Eye, GitCompareArrows, X } from "lucide-react";
 import { calcAge, getPlayerOvr } from "../../lib/helpers";
@@ -90,7 +90,7 @@ function PlayerSummary({
   scoutedWonderkids?: ReadonlySet<string>;
 }) {
   const { t } = useTranslation();
-  const traits = withScoutedWonderkid(player.traits, scoutedWonderkids?.has(player.id));
+  const traits = withScoutedWonderkid(player.traits ?? [], scoutedWonderkids?.has(player.id));
   const displayPosition = player.natural_position || player.position;
   const overallRating = getPlayerOvr(player);
 
@@ -120,7 +120,7 @@ function PlayerSummary({
           ) : null}
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
             <CountryFlag code={player.nationality} className="text-xs leading-none mr-1" />
-            {t("common.age")} {calcAge(player.date_of_birth)}
+            {t("common.age")} {rosterPlayerAge(player, calcAge) ?? "–"}
           </p>
         </div>
         <div className="text-right shrink-0">

@@ -17,7 +17,6 @@ export type TacticsRosterPlayer = Pick<
   | "id"
   | "match_name"
   | "full_name"
-  | "date_of_birth"
   | "nationality"
   | "position"
   | "natural_position"
@@ -27,13 +26,23 @@ export type TacticsRosterPlayer = Pick<
   | "morale"
   | "injury"
   | "team_id"
-  | "retired"
-  | "traits"
   | "ovr"
   | "jersey_number"
-  | "media"
   | "squad_role"
->;
+> &
+  Partial<Pick<PlayerData, "date_of_birth" | "traits" | "media">> & {
+    /** His age, where the source knows it but not his date of birth (an online squad). */
+    age?: number;
+  };
+
+/** A roster player's age: as the source gave it, or from his date of birth. */
+export function rosterPlayerAge(
+  player: Pick<TacticsRosterPlayer, "age" | "date_of_birth">,
+  calcAge: (dateOfBirth: string) => number,
+): number | null {
+  if (player.age !== undefined) return player.age;
+  return player.date_of_birth ? calcAge(player.date_of_birth) : null;
+}
 
 /**
  * Where the tactics board reads a club from and writes its changes to.
@@ -44,8 +53,20 @@ export type TacticsRosterPlayer = Pick<
  * `useEditorTacticsSource`). Each write resolves once the change is in
  * `team`; a rejected one leaves the board as it was.
  */
+/** The club as the tactics board reads it: its shape, XI, roles and phase settings. */
+export type TacticsBoardTeam = Pick<
+  TeamData,
+  | "id"
+  | "formation"
+  | "play_style"
+  | "starting_xi_ids"
+  | "match_roles"
+  | "tactics_phase"
+  | "player_roles"
+>;
+
 export interface TacticsBoardSource {
-  team: TeamData | null;
+  team: TacticsBoardTeam | null;
   /** The club's players. */
   roster: TacticsRosterPlayer[];
   /** Each player's rating at every pitch position, by player id. */
