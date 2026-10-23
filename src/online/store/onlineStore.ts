@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { LeagueView, MyClubView, SeasonNowView } from "../api";
+import type { FriendlyMineView, LeagueView, MyClubView, SeasonNowView } from "../api";
 import { online } from "../client";
 import { type OnlineApiError, toOnlineApiError } from "../errors";
 
@@ -18,6 +18,11 @@ interface OnlineState {
   season: SeasonNowView | null | undefined;
   club: MyClubView | null | undefined;
   league: LeagueView | null | undefined;
+  /** The coach's friendly (S-12): read when the shell opens and whenever their account rings. */
+  friendly: FriendlyMineView | undefined;
+  /** The signed-in coach's account, once read: what their account channel is named by. */
+  accountId: string | undefined;
+  setFriendly: (friendly: FriendlyMineView) => void;
   setClub: (club: MyClubView | null) => void;
   noteAnswered: () => void;
   noteFailure: (error: OnlineApiError) => void;
@@ -30,6 +35,8 @@ const INITIAL = {
   season: undefined,
   club: undefined,
   league: undefined,
+  friendly: undefined,
+  accountId: undefined,
 };
 
 const CLIENT_OUTDATED = "be.error.online.clientOutdated";
@@ -39,6 +46,7 @@ const UNREACHABLE = "be.error.online.unreachable";
 export const useOnlineStore = create<OnlineState>((set) => ({
   ...INITIAL,
   setClub: (club) => set({ club }),
+  setFriendly: (friendly) => set({ friendly }),
   noteAnswered: () => set({ network: "ok" }),
   noteFailure: (error) => {
     if (error.code === CLIENT_OUTDATED) set({ gate: "clientOutdated" });
@@ -89,4 +97,9 @@ export async function refreshClub(): Promise<void> {
 export async function refreshLeague(): Promise<void> {
   const league = await orNone(() => online.leagues.mine());
   useOnlineStore.setState({ league });
+}
+
+export async function refreshFriendly(): Promise<void> {
+  const friendly = await tracked(() => online.friendlies.mine());
+  useOnlineStore.setState({ friendly });
 }

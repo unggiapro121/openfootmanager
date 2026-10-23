@@ -390,8 +390,10 @@ async fn watches_share_a_subscription_and_the_last_one_closes_it() {
 }
 
 /// Given a client with no gateway, and one with a gateway,
-/// when a screen watches, and watches a channel that is not one,
-/// then the first is told there is no server, the second that the channel is not allowed.
+/// when a screen watches, watches a channel that is not one, and watches an account's own channel
+/// (S-12),
+/// then the first is told there is no server, the second that the channel is not allowed, and the
+/// account's channel is taken.
 #[tokio::test]
 async fn a_watch_needs_a_gateway_and_a_channel() {
     let none = Arc::new(Realtime::new(
@@ -412,6 +414,8 @@ async fn a_watch_needs_a_gateway_and_a_channel() {
         "club:0192f0c4-0000-7000-8000-0000000000aa",
         "match:../admin",
         "match:",
+        "account:",
+        "account:me",
     ] {
         assert_eq!(
             some.watch(channel, None, Arc::clone(&sink)),
@@ -419,6 +423,13 @@ async fn a_watch_needs_a_gateway_and_a_channel() {
             "{channel}"
         );
     }
+    assert!(some
+        .watch(
+            "account:0192f0c4-0000-7000-8000-0000000000aa",
+            None,
+            Arc::clone(&sink)
+        )
+        .is_ok());
 }
 
 /// Given an account server's base URL,

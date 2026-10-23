@@ -47,6 +47,17 @@ export const ERROR_CODES = [
   "be.error.match.notLive",
   "be.error.match.notYourSide",
   "be.error.match.tooManyCommands",
+  "be.error.friendly.noClub",
+  "be.error.friendly.alreadyInRoom",
+  "be.error.friendly.roomNotFound",
+  "be.error.friendly.notInRoom",
+  "be.error.friendly.leagueMatchSoon",
+  "be.error.friendly.busy",
+  "be.error.friendly.matchUnderway",
+  "be.error.friendly.roomNotFull",
+  "be.error.friendly.notFinished",
+  "be.error.friendly.roomClosed",
+  "be.error.friendly.conflict",
   "be.error.realtime.badMessage",
   "be.error.realtime.unknownChannel",
   "be.error.realtime.tooManyChannels",
@@ -60,6 +71,7 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.account.regionChangeTooSoon": ["availableAt"],
   "be.error.club.matchUnderway": ["kickoffAt"],
   "be.error.club.lineupLocked": ["kickoffAt"],
+  "be.error.friendly.leagueMatchSoon": ["kickoffAt"],
 };
 
 /** The translation parameters a code comes with, in `details.params`. */
@@ -67,4 +79,5 @@ export type ErrorParams = {
   "be.error.account.regionChangeTooSoon": { availableAt: string | number };
   "be.error.club.matchUnderway": { kickoffAt: string | number };
   "be.error.club.lineupLocked": { kickoffAt: string | number };
+  "be.error.friendly.leagueMatchSoon": { kickoffAt: string | number };
 };

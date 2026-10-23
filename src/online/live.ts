@@ -3,7 +3,8 @@ import type { LeagueNotice, MatchFrame } from "./api";
 import { OnlineApiError } from "./errors";
 
 /**
- * Following a live match or a league (phase 3 S-8e, S-8-tech-spec.md §3.10). Open a match with
+ * Following a live match, a league or the coach's own account (phase 3 S-8e, S-8-tech-spec.md
+ * §3.10; S-12). Open a match with
  * `online.matches.byId`, then watch it from that view's `lastSeq`: every frame after it comes once
  * and in order, across reconnections (the Rust client remembers where each watch is).
  */
@@ -76,6 +77,26 @@ export function watchLeague(
       message,
       (data) => {
         if (data.kind === "notice") onNotice(data.data as LeagueNotice);
+      },
+      handlers,
+    ),
+  );
+}
+
+/**
+ * Follow the coach's own account (S-12): `onRing` is told their friendly changed; read
+ * `online.friendlies.mine` again. Holding it is what keeps a queued coach present.
+ */
+export function watchAccount(
+  accountId: string,
+  onRing: (ring: unknown) => void,
+  handlers: WatchHandlers = {},
+): Promise<StopWatching> {
+  return watchChannel(`account:${accountId}`, undefined, (message) =>
+    dispatch(
+      message,
+      (data) => {
+        if (data.kind === "notice") onRing(data.data);
       },
       handlers,
     ),

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useOnlineStore } from "../store/onlineStore";
+import { FriendlyChip } from "./friendly/FriendlyChip";
 import { useCountdownText } from "./useCountdownText";
 
 /** Days of an online season: 2 of pre-season, 26 league days (ARCHITECTURE §2.2). */
@@ -30,11 +31,14 @@ export default function OnlineHeader() {
             : t("online.season.none")}
         </p>
       </div>
-      {kickoff && (
-        <p className="font-heading text-sm font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">
-          {t("online.header.nextKickoff", { time: kickoff })}
-        </p>
-      )}
+      <div className="flex flex-wrap items-center gap-3">
+        <FriendlyChip />
+        {kickoff && (
+          <p className="font-heading text-sm font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">
+            {t("online.header.nextKickoff", { time: kickoff })}
+          </p>
+        )}
+      </div>
     </header>
   );
 }

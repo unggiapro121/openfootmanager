@@ -6,6 +6,7 @@ import { Button } from "../../components/ui";
 import { resolveBackendError } from "../../utils/backendI18n";
 import { OnlineClockProvider, useOnlineNow } from "../clock";
 import { refreshClub, refreshLeague, refreshSeason, useOnlineStore } from "../store/onlineStore";
+import { FriendlyWatcher } from "./friendly/FriendlyWatcher";
 import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
 import OnlineSidebar from "./OnlineSidebar";
@@ -61,6 +62,7 @@ export default function OnlineShell() {
   return (
     <OnlineClockProvider>
       <DayTurnWatcher />
+      <FriendlyWatcher />
       <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
         <OnlineSidebar />
         <div className="flex min-w-0 flex-1 flex-col">

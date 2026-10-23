@@ -5,6 +5,7 @@ import {
   Crosshair,
   Dumbbell,
   Globe2,
+  Handshake,
   LayoutDashboard,
   LogOut,
   Trophy,
@@ -21,6 +22,7 @@ const CLUB_PAGES = [
   { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
   { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
   { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
+  { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
 ];
 
 /** The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. */

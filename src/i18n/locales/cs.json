@@ -44,7 +44,8 @@
       "tactics": "Taktika",
       "training": "Trénink",
       "league": "Liga",
-      "schedule": "Rozpis"
+      "schedule": "Rozpis",
+      "friendly": "Přátelská utkání"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -243,6 +244,75 @@
       "jump": "Přejít na minutu",
       "watch": "Přehrát záznam",
       "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek."
+    },
+    "friendly": {
+      "title": "Přátelská utkání",
+      "intro": "Zahrajte si přátelské utkání proti jinému trenérovi. Mimo zápas se nic nepočítá: kondice, zranění, forma ani zkušenosti.",
+      "dismiss": "Zavřít",
+      "create": {
+        "title": "Vytvořit místnost",
+        "text": "Získejte kód, který pošlete příteli.",
+        "button": "Vytvořit místnost"
+      },
+      "join": {
+        "title": "Připojit se k místnosti",
+        "label": "Kód místnosti",
+        "button": "Připojit"
+      },
+      "queue": {
+        "title": "Najít soupeře",
+        "text": "Hrajte s trenérem, jehož klub je zhruba stejně silný jako váš.",
+        "button": "Najít soupeře"
+      },
+      "queued": {
+        "searching": "Hledám soupeře… {{time}}",
+        "text": "Mezitím můžete změnit sestavu; místo si držíte, dokud je hra v online režimu.",
+        "cancel": "Přestat hledat"
+      },
+      "room": {
+        "title": "Místnost přátelského utkání · zápas {{leg}}",
+        "code": "Kód místnosti:",
+        "copy": "Zkopírovat kód",
+        "copied": "Zkopírováno",
+        "waitingGuest": "Čeká se, až se přítel připojí s kódem.",
+        "strength": "Síla {{value}}",
+        "home": "Doma",
+        "isReady": "Připraven",
+        "notYet": "Nepřipraven",
+        "you": "Vy",
+        "readyBy": "Zbývá {{time}} na přípravu",
+        "starting": "Oba trenéři jsou připraveni. Zápas se připravuje…",
+        "playing": "Zápas se hraje.",
+        "finished": "Zápas skončil.",
+        "ready": "Jsem připraven",
+        "notReady": "Ještě nejsem připraven",
+        "editTactics": "Změnit sestavu",
+        "watch": "Přejít na zápas",
+        "rematch": "Odveta",
+        "replay": "Přehrát záznam",
+        "leave": "Opustit místnost"
+      },
+      "reason": {
+        "opponentLeft": "Druhý trenér opustil místnost.",
+        "expired": "Místnost čekala příliš dlouho a byla zavřena.",
+        "readyTimeout": "Oba trenéři nebyli včas připraveni.",
+        "leagueMatchSoon": "Klub z přátelského utkání hraje ligový zápas teď nebo brzy.",
+        "busy": "Server hraje tolik přátelských utkání, kolik zvládne. Zkuste to za chvíli.",
+        "failed": "Zápas se nepodařilo připravit ani odehrát.",
+        "unclaimed": "Žádný zápasový server zápas nepřevzal.",
+        "clubLost": "Klub z přátelského utkání změnil majitele.",
+        "absent": "Byli jste mimo online režim příliš dlouho a ztratili jste místo ve frontě.",
+        "other": "Přátelské utkání skončilo."
+      },
+      "chip": {
+        "searching": "Hledám soupeře {{time}}",
+        "playing": "Vaše přátelské utkání se hraje",
+        "room": "Místnost utkání: připravte se"
+      },
+      "after": {
+        "title": "Přátelské utkání",
+        "back": "Zpět do místnosti"
+      }
     }
   },
   "coach": {
@@ -3851,6 +3921,19 @@
         "routeNotAllowed": "Tato online akce není v této verzi hry dostupná.",
         "clientOutdated": "Pro hru online je potřeba novější verze hry. Aktualizujte hru.",
         "serverOutdated": "Online server se právě aktualizuje. Zkuste to později."
+      },
+      "friendly": {
+        "noClub": "K přátelským utkáním potřebujete online klub.",
+        "alreadyInRoom": "Už jste v místnosti přátelského utkání. Nejprve ji opusťte.",
+        "roomNotFound": "Žádná otevřená místnost nemá tento kód.",
+        "notInRoom": "Nejste v žádné místnosti přátelského utkání.",
+        "leagueMatchSoon": "Váš klub hraje ligový zápas teď nebo brzy (výkop {{kickoffAt}}). Zahrajte si přátelák až po něm.",
+        "busy": "Server hraje tolik přátelských utkání, kolik zvládne. Zkuste to za chvíli.",
+        "matchUnderway": "Zápas této místnosti začíná nebo se hraje.",
+        "roomNotFull": "Místnost nečeká, až budou oba trenéři připraveni.",
+        "notFinished": "Zápas této místnosti ještě neskončil.",
+        "roomClosed": "V této místnosti už nelze hrát, proto byla zavřena.",
+        "conflict": "Místnost se mezitím změnila. Podívejte se znovu."
       }
     },
     "sender": {

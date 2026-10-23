@@ -44,7 +44,8 @@
       "tactics": "Tattica",
       "training": "Allenamento",
       "league": "Campionato",
-      "schedule": "Calendario"
+      "schedule": "Calendario",
+      "friendly": "Amichevoli"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -243,6 +244,75 @@
       "jump": "Vai al minuto",
       "watch": "Guarda il replay",
       "gone": "Questa partita è troppo vecchia per il replay; resta solo il risultato."
+    },
+    "friendly": {
+      "title": "Amichevoli",
+      "intro": "Gioca un'amichevole contro un altro allenatore. Nulla conta fuori dalla partita: né condizione fisica, né infortuni, né forma, né esperienza.",
+      "dismiss": "Chiudi",
+      "create": {
+        "title": "Crea una stanza",
+        "text": "Ottieni un codice da inviare a un amico.",
+        "button": "Crea una stanza"
+      },
+      "join": {
+        "title": "Entra in una stanza",
+        "label": "Codice della stanza",
+        "button": "Entra"
+      },
+      "queue": {
+        "title": "Trova un avversario",
+        "text": "Gioca contro un allenatore il cui club è forte più o meno come il tuo.",
+        "button": "Trova un avversario"
+      },
+      "queued": {
+        "searching": "Ricerca di un avversario… {{time}}",
+        "text": "Nel frattempo puoi cambiare la formazione; mantieni il posto finché il gioco resta in modalità online.",
+        "cancel": "Smetti di cercare"
+      },
+      "room": {
+        "title": "Stanza amichevole · partita {{leg}}",
+        "code": "Codice della stanza:",
+        "copy": "Copia il codice",
+        "copied": "Copiato",
+        "waitingGuest": "In attesa che un amico entri con il codice.",
+        "strength": "Forza {{value}}",
+        "home": "Casa",
+        "isReady": "Pronto",
+        "notYet": "Non pronto",
+        "you": "Tu",
+        "readyBy": "Mancano {{time}} per essere pronti",
+        "starting": "Entrambi gli allenatori sono pronti. La partita è in preparazione…",
+        "playing": "La partita è in corso.",
+        "finished": "La partita è finita.",
+        "ready": "Sono pronto",
+        "notReady": "Non ancora pronto",
+        "editTactics": "Cambia la formazione",
+        "watch": "Vai alla partita",
+        "rematch": "Rivincita",
+        "replay": "Guarda il replay",
+        "leave": "Lascia la stanza"
+      },
+      "reason": {
+        "opponentLeft": "L'altro allenatore ha lasciato la stanza.",
+        "expired": "La stanza ha atteso troppo ed è stata chiusa.",
+        "readyTimeout": "I due allenatori non sono stati pronti in tempo.",
+        "leagueMatchSoon": "Un club dell'amichevole gioca una partita di campionato ora o a breve.",
+        "busy": "Il server sta giocando tutte le amichevoli che può. Riprova tra poco.",
+        "failed": "Non è stato possibile preparare o giocare la partita.",
+        "unclaimed": "Nessun server delle partite ha preso la partita.",
+        "clubLost": "Un club dell'amichevole ha cambiato proprietario.",
+        "absent": "Sei stato fuori dalla modalità online troppo a lungo e hai perso il posto in coda.",
+        "other": "L'amichevole è finita."
+      },
+      "chip": {
+        "searching": "Ricerca avversario {{time}}",
+        "playing": "La tua amichevole è in corso",
+        "room": "Stanza amichevole: preparati"
+      },
+      "after": {
+        "title": "Amichevole",
+        "back": "Torna alla stanza amichevole"
+      }
     }
   },
   "coach": {
@@ -3851,6 +3921,19 @@
         "routeNotAllowed": "Questa azione online non è disponibile in questa versione del gioco.",
         "clientOutdated": "Per giocare online serve una versione più recente del gioco. Aggiorna il gioco.",
         "serverOutdated": "Il server online è in aggiornamento. Riprova più tardi."
+      },
+      "friendly": {
+        "noClub": "Ti serve un club online per giocare amichevoli.",
+        "alreadyInRoom": "Sei già in una stanza amichevole. Lasciala prima.",
+        "roomNotFound": "Nessuna stanza aperta ha questo codice.",
+        "notInRoom": "Non sei in nessuna stanza amichevole.",
+        "leagueMatchSoon": "Il tuo club gioca una partita di campionato ora o a breve (calcio d'inizio {{kickoffAt}}). Gioca un'amichevole dopo.",
+        "busy": "Il server sta giocando tutte le amichevoli che può. Riprova tra poco.",
+        "matchUnderway": "La partita di questa stanza sta iniziando o è in corso.",
+        "roomNotFull": "La stanza non è in attesa che entrambi gli allenatori siano pronti.",
+        "notFinished": "La partita di questa stanza non è ancora finita.",
+        "roomClosed": "In questa stanza non si può più giocare, quindi è stata chiusa.",
+        "conflict": "La stanza è cambiata nel frattempo. Guardala di nuovo."
       }
     },
     "sender": {

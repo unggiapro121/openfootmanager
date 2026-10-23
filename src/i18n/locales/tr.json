@@ -44,7 +44,8 @@
       "tactics": "Taktik",
       "training": "Antrenman",
       "league": "Lig",
-      "schedule": "Fikstür"
+      "schedule": "Fikstür",
+      "friendly": "Hazırlık maçları"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -243,6 +244,75 @@
       "jump": "Dakikaya git",
       "watch": "Tekrarı izle",
       "gone": "Bu maç tekrar izlemek için çok eski; yalnızca sonucu saklanıyor."
+    },
+    "friendly": {
+      "title": "Hazırlık maçları",
+      "intro": "Başka bir teknik direktöre karşı hazırlık maçı oyna. Maç dışında hiçbir şey sayılmaz: kondisyon, sakatlık, form veya deneyim.",
+      "dismiss": "Kapat",
+      "create": {
+        "title": "Oda oluştur",
+        "text": "Bir arkadaşına göndermek için kod al.",
+        "button": "Oda oluştur"
+      },
+      "join": {
+        "title": "Odaya katıl",
+        "label": "Oda kodu",
+        "button": "Katıl"
+      },
+      "queue": {
+        "title": "Rakip bul",
+        "text": "Kulübü seninkine yakın güçte olan bir teknik direktörle oyna.",
+        "button": "Rakip bul"
+      },
+      "queued": {
+        "searching": "Rakip aranıyor… {{time}}",
+        "text": "Bu arada kadronu değiştirebilirsin; oyun çevrim içi moddayken yerini korursun.",
+        "cancel": "Aramayı durdur"
+      },
+      "room": {
+        "title": "Hazırlık maçı odası · maç {{leg}}",
+        "code": "Oda kodu:",
+        "copy": "Kodu kopyala",
+        "copied": "Kopyalandı",
+        "waitingGuest": "Bir arkadaşın kodla katılması bekleniyor.",
+        "strength": "Güç {{value}}",
+        "home": "Ev sahibi",
+        "isReady": "Hazır",
+        "notYet": "Hazır değil",
+        "you": "Sen",
+        "readyBy": "Hazır olmak için {{time}} kaldı",
+        "starting": "İki teknik direktör de hazır. Maç hazırlanıyor…",
+        "playing": "Maç oynanıyor.",
+        "finished": "Maç bitti.",
+        "ready": "Hazırım",
+        "notReady": "Henüz hazır değilim",
+        "editTactics": "Kadroyu değiştir",
+        "watch": "Maça git",
+        "rematch": "Rövanş",
+        "replay": "Tekrarı izle",
+        "leave": "Odadan çık"
+      },
+      "reason": {
+        "opponentLeft": "Diğer teknik direktör odadan çıktı.",
+        "expired": "Oda çok uzun bekledi ve kapatıldı.",
+        "readyTimeout": "İki teknik direktör zamanında hazır olmadı.",
+        "leagueMatchSoon": "Hazırlık maçının bir kulübü şimdi ya da yakında lig maçı oynuyor.",
+        "busy": "Sunucu oynatabildiği kadar hazırlık maçı oynatıyor. Birazdan tekrar dene.",
+        "failed": "Maç hazırlanamadı veya oynanamadı.",
+        "unclaimed": "Hiçbir maç sunucusu maçı almadı.",
+        "clubLost": "Hazırlık maçının bir kulübünün sahibi değişti.",
+        "absent": "Çevrim içi moddan çok uzun süre ayrı kaldın ve sıradaki yerini kaybettin.",
+        "other": "Hazırlık maçı sona erdi."
+      },
+      "chip": {
+        "searching": "Rakip aranıyor {{time}}",
+        "playing": "Hazırlık maçın oynanıyor",
+        "room": "Hazırlık odası: hazır ol"
+      },
+      "after": {
+        "title": "Hazırlık maçı",
+        "back": "Hazırlık odasına dön"
+      }
     }
   },
   "coach": {
@@ -3851,6 +3921,19 @@
         "routeNotAllowed": "Bu çevrim içi işlem oyunun bu sürümünde yok.",
         "clientOutdated": "Çevrim içi oynamak için oyunun daha yeni bir sürümü gerekiyor. Lütfen oyunu güncelle.",
         "serverOutdated": "Çevrim içi sunucu güncelleniyor. Lütfen daha sonra tekrar dene."
+      },
+      "friendly": {
+        "noClub": "Hazırlık maçı oynamak için çevrim içi bir kulübe ihtiyacın var.",
+        "alreadyInRoom": "Zaten bir hazırlık odasındasın. Önce oradan çık.",
+        "roomNotFound": "Bu koda sahip açık bir oda yok.",
+        "notInRoom": "Hiçbir hazırlık odasında değilsin.",
+        "leagueMatchSoon": "Kulübün şimdi ya da yakında lig maçı oynuyor (başlama {{kickoffAt}}). Hazırlık maçını ondan sonra oyna.",
+        "busy": "Sunucu oynatabildiği kadar hazırlık maçı oynatıyor. Birazdan tekrar dene.",
+        "matchUnderway": "Bu odanın maçı başlıyor ya da oynanıyor.",
+        "roomNotFull": "Oda iki teknik direktörün de hazır olmasını beklemiyor.",
+        "notFinished": "Bu odanın maçı henüz bitmedi.",
+        "roomClosed": "Bu odada artık oynanamıyor, bu yüzden kapatıldı.",
+        "conflict": "Oda bu arada değişti. Yeniden bak."
       }
     },
     "sender": {

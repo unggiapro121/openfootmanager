@@ -74,6 +74,38 @@ pub const ROUTES: &[Route] = &[
         &["afterSeq", "limit"],
     ),
     route("POST", &[L("v1"), L("matches"), Id, L("commands")], &[]),
+    // Friendlies (S-12): the coach's seat and room, the room's actions, the queue. The room's code
+    // goes in the body of a join, never in the path.
+    route("GET", &[L("v1"), L("friendlies"), L("mine")], &[]),
+    route("POST", &[L("v1"), L("friendlies"), L("rooms")], &[]),
+    route(
+        "POST",
+        &[L("v1"), L("friendlies"), L("rooms"), L("join")],
+        &[],
+    ),
+    route(
+        "POST",
+        &[L("v1"), L("friendlies"), L("rooms"), L("mine"), L("ready")],
+        &[],
+    ),
+    route(
+        "POST",
+        &[L("v1"), L("friendlies"), L("rooms"), L("mine"), L("leave")],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("friendlies"),
+            L("rooms"),
+            L("mine"),
+            L("rematch"),
+        ],
+        &[],
+    ),
+    route("POST", &[L("v1"), L("friendlies"), L("queue")], &[]),
+    route("DELETE", &[L("v1"), L("friendlies"), L("queue")], &[]),
 ];
 
 const fn route(
