@@ -2,5 +2,9 @@
 export type { ClubSetup } from "./ClubSetup";
 export type { CoachMatchRecord } from "./CoachMatchRecord";
 export type { CoachRecord } from "./CoachRecord";
+export type { Controller } from "./Controller";
+export type { InputRecord } from "./InputRecord";
+export type { InputSource } from "./InputSource";
 export type { MasteryGain } from "./MasteryGain";
+export type { MatchInput } from "./MatchInput";
 export type { SetupIssue } from "./SetupIssue";

@@ -43,6 +43,48 @@ pub struct SideSelection<'a> {
     pub load: FixtureLoad,
 }
 
+/// How far below the AI's own pick the side `fielded` is, in mean overall rating of the starting
+/// eleven: positive when the fielded XI is weaker. The AI's pick is the one it would make for
+/// this club on this day, with the same fit players, rotation rules and load
+/// ([`ai_select_starting_xi`]), so resting tired players is not counted against a manager in a
+/// season of a match a day (phase 3, S-8 S8-11: a deliberate-losing signal, never a sanction).
+pub fn lineup_shortfall(selection: &SideSelection<'_>, fielded: &TeamData) -> f64 {
+    let formation = selection
+        .team
+        .map_or("4-4-2", |team| team.formation.as_str());
+    let pick = ai_select_starting_xi(
+        selection.available,
+        formation,
+        selection.management_quality,
+        selection.selection_seed,
+        selection.load,
+    );
+    let rating_of = |id: &str| {
+        selection
+            .available
+            .iter()
+            .chain(selection.injured)
+            .find(|player| player.id == id)
+            .map(|player| f64::from(player.ovr))
+    };
+    let mean = |ratings: Vec<f64>| {
+        if ratings.is_empty() {
+            0.0
+        } else {
+            ratings.iter().sum::<f64>() / ratings.len() as f64
+        }
+    };
+    let picked = mean(pick.iter().map(|player| f64::from(player.ovr)).collect());
+    let fielded = mean(
+        fielded
+            .players
+            .iter()
+            .filter_map(|player| rating_of(&player.id))
+            .collect(),
+    );
+    picked - fielded
+}
+
 /// The side a club puts out: its XI as the engine plays it, slot-aligned, and its bench, best
 /// first.
 pub fn build_side(selection: &SideSelection<'_>) -> (TeamData, Vec<PlayerData>) {

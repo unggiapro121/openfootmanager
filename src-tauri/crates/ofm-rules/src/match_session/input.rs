@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 /// Who gave an input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub enum InputSource {
     /// The side's manager, a person.
     Manager,
@@ -18,12 +19,14 @@ pub enum InputSource {
 
 /// Who holds a side: issues its commands between steps.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub enum Controller {
     Manager,
     Ai,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub enum MatchInput {
     Command(MatchCommand),
     /// The side passed to this controller. Shown and checked; it never moves a replay, which
@@ -33,6 +36,7 @@ pub enum MatchInput {
 
 /// One line of the log.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub struct InputRecord {
     /// The step the input came after; 0 is before the first step (the kick-off).
     pub step_seq: u32,

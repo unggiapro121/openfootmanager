@@ -412,6 +412,8 @@ fn create_seeded_live_match(
         seed: seed.unwrap_or_else(|| match_seed_today(game, &home_team_id, &away_team_id)),
         ai_home: ai_profile_for(game, &home_team_id),
         ai_away: ai_profile_for(game, &away_team_id),
+        // The desktop pauses for the manager instead (`phase_needs_manager`).
+        injury_window_steps: None,
         home: home_xi,
         away: away_xi,
         home_bench,

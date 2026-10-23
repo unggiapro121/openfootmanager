@@ -155,6 +155,7 @@ pub fn setup(number: u64, home: (u8, PlayStyle, &str), away: (u8, PlayStyle, &st
         seed: seed(number),
         ai_home: manager(),
         ai_away: manager(),
+        injury_window_steps: None,
     }
 }
 

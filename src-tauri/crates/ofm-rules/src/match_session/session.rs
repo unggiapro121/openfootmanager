@@ -2,9 +2,11 @@
 //! of every input, stepped the way online-match-engine-formulas.md §5.2 fixes. It reads no `Game`:
 //! the desktop builds its two sides from the save, the online server from its tables.
 
+use std::collections::BTreeMap;
+
 use engine::ai::{self, AiProfile};
 use engine::{
-    LiveMatchState, MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot,
+    LiveMatchState, MatchCommand, MatchConfig, MatchEvent, MatchPhase, MatchReport, MatchSnapshot,
     MinuteResult, PlayerData, Side, TeamData,
 };
 use rand_chacha::ChaCha12Rng;
@@ -29,6 +31,11 @@ pub struct MatchSetup {
     pub seed: MatchSeed,
     pub ai_home: AiProfile,
     pub ai_away: AiProfile,
+    /// Steps a manager has to replace a player of theirs hurt on the pitch before the AI replaces
+    /// him (the online injury window, phase 3 S-8 S8-9). `None`, the desktop's, waits for the
+    /// manager as long as it takes: the desktop pauses the match.
+    #[serde(default)]
+    pub injury_window_steps: Option<u32>,
 }
 
 /// One step as it happened: the engine's result, and the minute hash of the match after it.
@@ -54,6 +61,13 @@ pub struct MatchSession {
     log: Vec<InputRecord>,
     /// Where the inputs of the gap under way start in `log`: they go into the next step's hash.
     gap_start: usize,
+    injury_window: Option<u32>,
+    /// Each player hurt on the pitch, by side index and id, with the step he was first seen hurt
+    /// after. Kept by the engine's part of a step, so a replay rebuilds it.
+    hurt_since: BTreeMap<(usize, String), u32>,
+    /// How many events the match had after the engine's part of the last step: the events after
+    /// it are the ones the gap's commands pushed.
+    events_after_step: usize,
 }
 
 fn index(side: Side) -> usize {
@@ -94,15 +108,20 @@ impl MatchSession {
             last_hash: KICK_OFF_HASH,
             log: Vec::new(),
             gap_start: 0,
+            injury_window: setup.injury_window_steps,
+            hurt_since: BTreeMap::new(),
+            events_after_step: 0,
         }
     }
 
-    /// One step: the engine, then the commands of each side the AI holds, home first. A manager's
+    /// One step: the engine, then the commands of each side the AI holds, home first, then the
+    /// AI's replacement of a player a manager left hurt past the injury window. A manager's
     /// commands for the gap that follows come after these.
     pub fn step(&mut self) -> StepRecord {
         let record = self.step_engine();
         if !record.result.is_finished {
             self.run_ai();
+            self.close_injury_windows();
         }
         record
     }
@@ -115,6 +134,8 @@ impl MatchSession {
         let inputs_before = &self.log[self.gap_start..];
         self.last_hash = minute_hash(self.last_hash, self.step_seq, inputs_before, &result);
         self.gap_start = self.log.len();
+        self.events_after_step = self.state.events().len();
+        self.note_the_hurt();
         StepRecord {
             step_seq: self.step_seq,
             minute_hash: self.last_hash,
@@ -135,6 +156,59 @@ impl MatchSession {
                 if let Err(_refused) = self.command(side, InputSource::Ai, command) {}
             }
         }
+    }
+
+    /// Who is hurt on the pitch now, and since when: a player still hurt keeps his first step.
+    fn note_the_hurt(&mut self) {
+        let mut hurt = BTreeMap::new();
+        for side in [Side::Home, Side::Away] {
+            for id in self.state.injured_on_pitch(side) {
+                let key = (index(side), id);
+                let since = self.hurt_since.get(&key).copied().unwrap_or(self.step_seq);
+                hurt.insert(key, since);
+            }
+        }
+        self.hurt_since = hurt;
+    }
+
+    /// For each side a manager holds, the AI replaces a player hurt on the pitch for the injury
+    /// window or longer, as it would for a side it held. Logged as the AI's.
+    fn close_injury_windows(&mut self) {
+        let Some(window) = self.injury_window else {
+            return;
+        };
+        let playing = matches!(
+            self.state.phase(),
+            MatchPhase::FirstHalf
+                | MatchPhase::SecondHalf
+                | MatchPhase::ExtraTimeFirstHalf
+                | MatchPhase::ExtraTimeSecondHalf
+                | MatchPhase::HalfTime
+                | MatchPhase::ExtraTimeHalfTime
+        );
+        if !playing {
+            return;
+        }
+        let overdue: Vec<(Side, String)> = self
+            .hurt_since
+            .iter()
+            .filter(|(_, since)| self.step_seq.saturating_sub(**since) >= window)
+            .map(|((side, id), _)| (if *side == 0 { Side::Home } else { Side::Away }, id.clone()))
+            .filter(|(side, _)| self.controllers[index(*side)] == Controller::Manager)
+            .collect();
+        for (side, id) in overdue {
+            if let Some(command) = ai::replacement_for_injured(&self.state, side, &id) {
+                // Refused only if the rules changed under it; the side then plays on a man short.
+                if let Err(_refused) = self.command(side, InputSource::Ai, command) {}
+            }
+        }
+    }
+
+    /// The events the commands of the gap under way pushed (a substitution's), which the next
+    /// step's `MinuteResult` will not carry: the online server sends them with that step.
+    pub fn gap_events(&self) -> &[MatchEvent] {
+        let events = self.state.events();
+        &events[self.events_after_step.min(events.len())..]
     }
 
     /// Apply `command`, given by `issuer` through `source`, if the shared check and the engine take

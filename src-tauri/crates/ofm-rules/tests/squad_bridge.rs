@@ -11,7 +11,8 @@ use engine::ai::AiProfile;
 use engine::{CoachMastery, MatchConfig};
 use ofm_rules::match_session::{Controller, MatchSeed, MatchSession, MatchSetup};
 use ofm_rules::squad::{
-    FixtureLoad, SideSelection, build_side, pick_set_piece_takers, reconcile_roles,
+    FixtureLoad, SideSelection, build_side, lineup_shortfall, pick_set_piece_takers,
+    reconcile_roles,
 };
 
 fn attributes(value: u8) -> PlayerAttributes {
@@ -235,6 +236,7 @@ fn a_match_between_two_clubs_plays_from_domain_data_alone() {
         seed: MatchSeed([3; 32]),
         ai_home: AiProfile::default(),
         ai_away: AiProfile::default(),
+        injury_window_steps: None,
     };
 
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);
@@ -289,4 +291,68 @@ fn stale_roles_are_dropped() {
     assert_eq!(dropped, 2);
     assert_eq!(team.player_roles.len(), 1);
     assert_eq!(team.player_roles.get("r06"), Some(&PlayerRole::BoxToBox));
+}
+
+/// A club whose overall ratings say what its attributes do: 70 for the eleven, `bench` for the
+/// seven others.
+fn rated_club(tag: &str, bench: u8) -> (Team, Vec<Player>) {
+    let (team, mut players) = club(tag, 70);
+    for (index, player) in players.iter_mut().enumerate() {
+        player.ovr = if index < 11 { 70 } else { bench };
+    }
+    (team, players)
+}
+
+/// Given an AI club,
+/// when the side it fields is compared with its own pick,
+/// then there is no shortfall.
+#[test]
+fn fielding_the_ais_own_pick_is_no_shortfall() {
+    let (team, players) = rated_club("n", 64);
+    let available: Vec<&Player> = players.iter().collect();
+    let chosen = selection(&team, &available, &[], false);
+    let (side, _) = build_side(&chosen);
+    assert_eq!(lineup_shortfall(&chosen, &side), 0.0);
+}
+
+/// Given a manager whose right midfielder is exhausted (condition 30), who starts a fresh,
+/// adequate midfielder from the bench in his place,
+/// when the side is compared with the AI's pick for the day,
+/// then there is no shortfall: the AI rests the same man for the same deputy, so rotating for
+/// fatigue is not read as fielding a weak side (S-8 S8-11, review point 4). Against the strongest
+/// eleven regardless of fatigue the shortfall would be (70 − 68) / 11.
+#[test]
+fn resting_a_tired_starter_is_no_shortfall() {
+    let (mut team, mut players) = rated_club("r", 64);
+    players[5].condition = 30;
+    players[13].attributes = attributes(68);
+    players[13].ovr = 68;
+    team.starting_xi_ids[5] = players[13].id.clone();
+    let available: Vec<&Player> = players.iter().collect();
+    let chosen = selection(&team, &available, &[], true);
+    let (side, _) = build_side(&chosen);
+    assert!(
+        ids(&side.players).contains(&"rb2"),
+        "{:?}",
+        ids(&side.players)
+    );
+    let shortfall = lineup_shortfall(&chosen, &side);
+    assert!(shortfall.abs() < 1e-9, "shortfall {shortfall}");
+}
+
+/// Given a manager who starts seven reserves rated 55 with four of his first eleven, all fit,
+/// when the side is compared with the AI's pick,
+/// then it falls more than 8 points short: the signal's threshold.
+#[test]
+fn a_side_of_reserves_falls_short() {
+    let (mut team, players) = rated_club("w", 55);
+    let reserves: Vec<String> = players[11..].iter().map(|p| p.id.clone()).collect();
+    for (slot, id) in reserves.into_iter().enumerate() {
+        team.starting_xi_ids[slot + 4] = id;
+    }
+    let available: Vec<&Player> = players.iter().collect();
+    let chosen = selection(&team, &available, &[], true);
+    let (side, _) = build_side(&chosen);
+    let shortfall = lineup_shortfall(&chosen, &side);
+    assert!(shortfall > 8.0, "shortfall {shortfall}");
 }
