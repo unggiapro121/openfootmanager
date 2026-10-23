@@ -42,7 +42,9 @@
       "mainMenu": "Menu chính",
       "squad": "Đội hình",
       "tactics": "Chiến thuật",
-      "training": "Tập luyện"
+      "training": "Tập luyện",
+      "league": "Giải đấu",
+      "schedule": "Lịch thi đấu"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -88,11 +90,27 @@
       "kickoff": "Bóng lăn: {{time}}",
       "regionTime": "{{time}} theo giờ {{region}}",
       "countdown": "Bóng lăn sau {{time}}",
-      "prepared": "Đang chuẩn bị trận: đội hình đã khoá."
+      "prepared": "Đang chuẩn bị trận: đội hình đã khoá.",
+      "openResult": "Kết quả trận {{home}} gặp {{away}}",
+      "void": "Huỷ kết quả",
+      "noLines": "Trận này không lưu chi tiết cầu thủ.",
+      "minutes": "Phút",
+      "assists": "KT",
+      "cards": "Thẻ",
+      "rating": "Điểm",
+      "redCard": "Đỏ",
+      "yellowCards": "{{cards}} vàng"
     },
     "league": {
       "title": "Giải đấu",
-      "none": "Mùa này CLB của bạn không đá giải nào. CLB sẽ vào giải từ mùa sau."
+      "none": "Mùa này CLB của bạn không đá giải nào. CLB sẽ vào giải từ mùa sau.",
+      "heading": "{{name}} · Cấp {{level}}",
+      "progress": "Đã đá {{done}}/{{total}} trận",
+      "rankedPerMatch": "Giải có một trận bị huỷ kết quả, nên bảng xếp hạng tính theo điểm trung bình mỗi trận.",
+      "coach": "HLV",
+      "bot": "AI",
+      "previousRound": "Vòng trước",
+      "nextRound": "Vòng sau"
     },
     "takeover": {
       "title": "Nhận CLB",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: AI đang lên buổi tập cho CLB. Các lựa chọn đang hiện là mặc định của game; lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
+    },
+    "schedule": {
+      "title": "Lịch thi đấu mùa giải",
+      "outcome": {
+        "W": "Thắng",
+        "D": "Hoà",
+        "L": "Thua"
+      },
+      "outcomeShort": {
+        "W": "T",
+        "D": "H",
+        "L": "B"
+      }
+    },
+    "publicClub": {
+      "formation": "Sơ đồ: {{formation}}",
+      "coach": "HLV: {{name}}",
+      "botCoach": "Do AI dẫn dắt"
+    },
+    "overview": {
+      "lastResult": "Kết quả gần nhất",
+      "noResult": "Mùa này chưa có kết quả nào."
     }
   },
   "coach": {

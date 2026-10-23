@@ -20,7 +20,9 @@ import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
 
 /** The squad as the coach reads it: by line, then strongest first (C-2 §3.4). */
-export function sortSquad(players: SquadPlayerView[]): SquadPlayerView[] {
+export function sortSquad<P extends Pick<SquadPlayerView, "position" | "ovr" | "fullName">>(
+  players: P[],
+): P[] {
   return [...players].sort(
     (left, right) =>
       positionGroupRank(left.position) - positionGroupRank(right.position) ||

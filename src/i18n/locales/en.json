@@ -42,7 +42,9 @@
       "mainMenu": "Main menu",
       "squad": "Squad",
       "tactics": "Tactics",
-      "training": "Training"
+      "training": "Training",
+      "league": "League",
+      "schedule": "Fixtures"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -88,11 +90,27 @@
       "kickoff": "Kick-off: {{time}}",
       "regionTime": "{{time}} on the {{region}} clock",
       "countdown": "Kick-off in {{time}}",
-      "prepared": "Being prepared: the line-up is locked."
+      "prepared": "Being prepared: the line-up is locked.",
+      "openResult": "Result of {{home}} against {{away}}",
+      "void": "Void",
+      "noLines": "No player details were kept for this match.",
+      "minutes": "Min",
+      "assists": "Ast",
+      "cards": "Cards",
+      "rating": "Rating",
+      "redCard": "Red",
+      "yellowCards": "{{cards}} yellow"
     },
     "league": {
       "title": "League",
-      "none": "Your club plays in no league this season. It joins the leagues of the next season."
+      "none": "Your club plays in no league this season. It joins the leagues of the next season.",
+      "heading": "{{name}} · Level {{level}}",
+      "progress": "{{done}} of {{total}} matches played",
+      "rankedPerMatch": "A match of this league was void, so the table ranks clubs by points per match.",
+      "coach": "Coach",
+      "bot": "AI",
+      "previousRound": "Previous round",
+      "nextRound": "Next round"
     },
     "takeover": {
       "title": "Take over a club",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the AI plans your club's sessions. What you see are the game's defaults; your first choice saves a plan of your own."
+    },
+    "schedule": {
+      "title": "Season fixtures",
+      "outcome": {
+        "W": "Won",
+        "D": "Drawn",
+        "L": "Lost"
+      },
+      "outcomeShort": {
+        "W": "W",
+        "D": "D",
+        "L": "L"
+      }
+    },
+    "publicClub": {
+      "formation": "Formation: {{formation}}",
+      "coach": "Coach: {{name}}",
+      "botCoach": "Run by the AI"
+    },
+    "overview": {
+      "lastResult": "Latest result",
+      "noResult": "No result yet this season."
     }
   },
   "coach": {

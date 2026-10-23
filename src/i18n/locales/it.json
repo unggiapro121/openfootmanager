@@ -42,7 +42,9 @@
       "mainMenu": "Menu principale",
       "squad": "Rosa",
       "tactics": "Tattica",
-      "training": "Allenamento"
+      "training": "Allenamento",
+      "league": "Campionato",
+      "schedule": "Calendario"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -88,11 +90,27 @@
       "kickoff": "Calcio d'inizio: {{time}}",
       "regionTime": "{{time}} secondo l'orario di {{region}}",
       "countdown": "Calcio d'inizio tra {{time}}",
-      "prepared": "In preparazione: la formazione è bloccata."
+      "prepared": "In preparazione: la formazione è bloccata.",
+      "openResult": "Risultato di {{home}} contro {{away}}",
+      "void": "Annullata",
+      "noLines": "Per questa partita non sono stati salvati dati dei giocatori.",
+      "minutes": "Min",
+      "assists": "Assist",
+      "cards": "Cartellini",
+      "rating": "Voto",
+      "redCard": "Rosso",
+      "yellowCards": "{{cards}} giallo/i"
     },
     "league": {
       "title": "Campionato",
-      "none": "Il tuo club non gioca alcun campionato in questa stagione. Entrerà nei campionati della prossima stagione."
+      "none": "Il tuo club non gioca alcun campionato in questa stagione. Entrerà nei campionati della prossima stagione.",
+      "heading": "{{name}} · Livello {{level}}",
+      "progress": "{{done}} partite giocate su {{total}}",
+      "rankedPerMatch": "Una partita di questo campionato è stata annullata, quindi la classifica conta i punti per partita.",
+      "coach": "Allenatore",
+      "bot": "IA",
+      "previousRound": "Giornata precedente",
+      "nextRound": "Giornata successiva"
     },
     "takeover": {
       "title": "Prendi un club",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Non hai ancora impostato un piano di allenamento: l'IA pianifica le sedute del tuo club. Vedi i valori predefiniti del gioco; la tua prima scelta salva un piano tuo."
+    },
+    "schedule": {
+      "title": "Calendario della stagione",
+      "outcome": {
+        "W": "Vittoria",
+        "D": "Pareggio",
+        "L": "Sconfitta"
+      },
+      "outcomeShort": {
+        "W": "V",
+        "D": "P",
+        "L": "S"
+      }
+    },
+    "publicClub": {
+      "formation": "Modulo: {{formation}}",
+      "coach": "Allenatore: {{name}}",
+      "botCoach": "Guidato dall'IA"
+    },
+    "overview": {
+      "lastResult": "Ultimo risultato",
+      "noResult": "Nessun risultato ancora in questa stagione."
     }
   },
   "coach": {

@@ -42,7 +42,9 @@
       "mainMenu": "Ana menü",
       "squad": "Kadro",
       "tactics": "Taktik",
-      "training": "Antrenman"
+      "training": "Antrenman",
+      "league": "Lig",
+      "schedule": "Fikstür"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -88,11 +90,27 @@
       "kickoff": "Başlama: {{time}}",
       "regionTime": "{{region}} saatiyle {{time}}",
       "countdown": "Başlamaya {{time}}",
-      "prepared": "Maç hazırlanıyor: kadro kilitlendi."
+      "prepared": "Maç hazırlanıyor: kadro kilitlendi.",
+      "openResult": "{{home}} - {{away}} maç sonucu",
+      "void": "Geçersiz",
+      "noLines": "Bu maç için oyuncu ayrıntısı kaydedilmedi.",
+      "minutes": "Dk",
+      "assists": "Asist",
+      "cards": "Kartlar",
+      "rating": "Puan",
+      "redCard": "Kırmızı",
+      "yellowCards": "{{cards}} sarı"
     },
     "league": {
       "title": "Lig",
-      "none": "Kulübün bu sezon hiçbir ligde oynamıyor. Gelecek sezonun liglerine katılacak."
+      "none": "Kulübün bu sezon hiçbir ligde oynamıyor. Gelecek sezonun liglerine katılacak.",
+      "heading": "{{name}} · Seviye {{level}}",
+      "progress": "{{total}} maçtan {{done}} tanesi oynandı",
+      "rankedPerMatch": "Bu ligde bir maç geçersiz sayıldı, bu yüzden puan tablosu maç başına puana göre sıralanıyor.",
+      "coach": "Teknik direktör",
+      "bot": "YZ",
+      "previousRound": "Önceki hafta",
+      "nextRound": "Sonraki hafta"
     },
     "takeover": {
       "title": "Bir kulübü devral",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulübünün seanslarını yapay zekâ planlıyor. Gördüklerin oyunun varsayılanları; ilk seçimin kendi planın olarak kaydedilir."
+    },
+    "schedule": {
+      "title": "Sezon fikstürü",
+      "outcome": {
+        "W": "Galibiyet",
+        "D": "Beraberlik",
+        "L": "Mağlubiyet"
+      },
+      "outcomeShort": {
+        "W": "G",
+        "D": "B",
+        "L": "M"
+      }
+    },
+    "publicClub": {
+      "formation": "Diziliş: {{formation}}",
+      "coach": "Teknik direktör: {{name}}",
+      "botCoach": "Yapay zekâ yönetiyor"
+    },
+    "overview": {
+      "lastResult": "Son sonuç",
+      "noResult": "Bu sezon henüz sonuç yok."
     }
   },
   "coach": {

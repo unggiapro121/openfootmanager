@@ -42,7 +42,9 @@
       "mainMenu": "Hlavní nabídka",
       "squad": "Kádr",
       "tactics": "Taktika",
-      "training": "Trénink"
+      "training": "Trénink",
+      "league": "Liga",
+      "schedule": "Rozpis"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -88,11 +90,27 @@
       "kickoff": "Výkop: {{time}}",
       "regionTime": "{{time}} podle času regionu {{region}}",
       "countdown": "Výkop za {{time}}",
-      "prepared": "Zápas se připravuje: sestava je uzamčena."
+      "prepared": "Zápas se připravuje: sestava je uzamčena.",
+      "openResult": "Výsledek zápasu {{home}} proti {{away}}",
+      "void": "Anulováno",
+      "noLines": "K tomuto zápasu se neuložily údaje o hráčích.",
+      "minutes": "Min",
+      "assists": "As",
+      "cards": "Karty",
+      "rating": "Známka",
+      "redCard": "Červená",
+      "yellowCards": "Žlutých: {{cards}}"
     },
     "league": {
       "title": "Liga",
-      "none": "Váš klub v této sezóně nehraje žádnou ligu. Zapojí se do lig příští sezóny."
+      "none": "Váš klub v této sezóně nehraje žádnou ligu. Zapojí se do lig příští sezóny.",
+      "heading": "{{name}} · Úroveň {{level}}",
+      "progress": "Odehráno {{done}} z {{total}} zápasů",
+      "rankedPerMatch": "Jeden zápas této ligy byl anulován, tabulka proto řadí podle bodů na zápas.",
+      "coach": "Trenér",
+      "bot": "AI",
+      "previousRound": "Předchozí kolo",
+      "nextRound": "Další kolo"
     },
     "takeover": {
       "title": "Převzít klub",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: tréninky klubu plánuje AI. Vidíte výchozí nastavení hry; vaše první volba uloží vlastní plán."
+    },
+    "schedule": {
+      "title": "Rozpis sezóny",
+      "outcome": {
+        "W": "Výhra",
+        "D": "Remíza",
+        "L": "Prohra"
+      },
+      "outcomeShort": {
+        "W": "V",
+        "D": "R",
+        "L": "P"
+      }
+    },
+    "publicClub": {
+      "formation": "Rozestavení: {{formation}}",
+      "coach": "Trenér: {{name}}",
+      "botCoach": "Vede ho AI"
+    },
+    "overview": {
+      "lastResult": "Poslední výsledek",
+      "noResult": "V této sezóně zatím žádný výsledek."
     }
   },
   "coach": {
