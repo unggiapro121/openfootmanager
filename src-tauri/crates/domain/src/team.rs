@@ -88,6 +88,7 @@ pub struct Team {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct MatchRoles {
     pub captain: Option<String>,
     pub vice_captain: Option<String>,
@@ -99,6 +100,7 @@ pub struct MatchRoles {
 /// Tactical role for a player within the team's formation.
 /// Each role biases attribute weighting in match resolution.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum PlayerRole {
     // Goalkeeper
     #[default]
@@ -185,6 +187,7 @@ impl std::str::FromStr for PlayerRole {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 #[serde(default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct TacticsPhaseSettings {
     // With ball
     pub build_up_style: BuildUpStyle,
@@ -205,6 +208,7 @@ pub struct TacticsPhaseSettings {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum BuildUpStyle {
     Short,
     #[default]
@@ -213,6 +217,7 @@ pub enum BuildUpStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum PitchWidth {
     Narrow,
     #[default]
@@ -221,6 +226,7 @@ pub enum PitchWidth {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum Tempo {
     Patient,
     #[default]
@@ -228,6 +234,7 @@ pub enum Tempo {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum DefensiveLine {
     VeryLow,
     Low,
@@ -237,6 +244,7 @@ pub enum DefensiveLine {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum PressingIntensity {
     Passive,
     #[default]
@@ -245,6 +253,7 @@ pub enum PressingIntensity {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum DefensiveShape {
     Stretched,
     #[default]
@@ -253,6 +262,7 @@ pub enum DefensiveShape {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum MarkingStyle {
     #[default]
     Zonal,
@@ -261,6 +271,7 @@ pub enum MarkingStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum CounterPressDuration {
     #[default]
     None,
@@ -271,6 +282,7 @@ pub enum CounterPressDuration {
 /// Whether the back line steps up together to catch runners offside (after
 /// GĐ5). Off by default.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum OffsideTrap {
     #[default]
     Off,
@@ -280,6 +292,7 @@ pub enum OffsideTrap {
 /// How a side crosses from the flank (phase 2, P3.4). Read by the GĐ3 match
 /// model only.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum CrossStyle {
     #[default]
     Mixed,
@@ -289,6 +302,7 @@ pub enum CrossStyle {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum BreakSpeed {
     Slow,
     #[default]
@@ -297,6 +311,7 @@ pub enum BreakSpeed {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum TrainingFocus {
     #[default]
     Physical,
@@ -308,6 +323,7 @@ pub enum TrainingFocus {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum TrainingIntensity {
     Low,
     #[default]
@@ -318,6 +334,7 @@ pub enum TrainingIntensity {
 /// Weekly training schedule controlling how many days per week are training vs rest.
 /// Rest days give full condition recovery with no training cost.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum TrainingSchedule {
     /// 6 training days, 1 rest (Sunday). Max growth, minimal recovery.
     Intense,
@@ -355,6 +372,7 @@ impl TrainingSchedule {
 /// A named training group with its own focus. Players in a group train
 /// with the group's focus instead of the team-wide default.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct TrainingGroup {
     pub id: String,
     pub name: String,
@@ -412,6 +430,7 @@ pub struct TeamMedia {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum PlayStyle {
     Balanced,
     Attacking,

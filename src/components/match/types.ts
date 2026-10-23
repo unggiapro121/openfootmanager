@@ -2,6 +2,7 @@ import type { DefensiveLine, PitchWidth, PositionRating } from "../../store/type
 // Shared types for match simulation components — mirrors Rust engine types
 
 import type { TFunction } from "i18next";
+import type { Position as EnginePosition } from "../../bindings/core/engine";
 
 export type DangerBand = "Speculative" | "Decent" | "BigChance";
 export type SaveQuality = "Routine" | "Strong" | "WorldClass";
@@ -144,6 +145,8 @@ export interface SubstitutionRecord {
   side: "Home" | "Away";
   player_off_id: string;
   player_on_id: string;
+  /** What the substitute was on the bench: he takes the vacated slot's position (GĐ5 P5.4). */
+  came_on_as: EnginePosition | null;
 }
 
 export interface PenaltyShootoutSnapshot {

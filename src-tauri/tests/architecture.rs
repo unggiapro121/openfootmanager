@@ -272,3 +272,122 @@ fn only_the_measuring_tools_read_the_knob_file() {
     .collect();
     assert_eq!(readers, expected);
 }
+
+/// Given the root manifest,
+/// when its `[workspace]` table is read,
+/// then it names resolver "2" or "3". The `ts` feature of the core crates is turned on only
+/// through a dev-dependency (`ofm-bindings`), and only those resolvers keep a dev-dependency's
+/// features out of a normal build. Left implicit, the resolver follows the root package's edition
+/// and is lost without notice if that changes (phase 3, E3-6a).
+#[test]
+fn the_workspace_names_a_resolver_that_keeps_dev_features_out_of_builds() {
+    let manifest = std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml"))
+        .expect("the root manifest is readable");
+    let workspace = manifest
+        .split("\n[")
+        .find(|table| table.starts_with("workspace]"))
+        .expect("the root manifest has a [workspace] table");
+    let resolver = workspace
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("resolver"))
+        .map(|rest| {
+            rest.trim_start_matches([' ', '='])
+                .trim()
+                .trim_matches('"')
+                .to_string()
+        })
+        .next();
+    assert!(
+        matches!(resolver.as_deref(), Some("2" | "3")),
+        "[workspace] must say `resolver = \"2\"` (or \"3\"), found {resolver:?}"
+    );
+}
+
+/// The targets the game is released for (`build-app.sh`).
+const RELEASE_TARGETS: &[&str] = &[
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+];
+
+/// Given the game's own package,
+/// when its dependency tree is resolved for each release target, with and without `mcp`,
+/// then ts-rs is not in it: the TypeScript declarations are rendered by tests only.
+#[test]
+fn the_released_game_does_not_compile_ts_rs() {
+    let cargo = std::env::var("CARGO").unwrap_or_else(|_| String::from("cargo"));
+    let manifest = concat!(env!("CARGO_MANIFEST_DIR"), "/Cargo.toml");
+    for target in RELEASE_TARGETS {
+        for features in [None, Some("mcp")] {
+            let mut command = Command::new(&cargo);
+            command.args([
+                "tree",
+                "--manifest-path",
+                manifest,
+                "-p",
+                "openfootmanager",
+                "-e",
+                "normal,build",
+                "--target",
+                target,
+                "--prefix",
+                "none",
+                "--format",
+                "{p}",
+            ]);
+            if let Some(features) = features {
+                command.args(["--features", features]);
+            }
+            let output = command.output().expect("could not run `cargo tree`");
+            assert!(
+                output.status.success(),
+                "`cargo tree` failed for {target}:\n{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            let tree = String::from_utf8_lossy(&output.stdout);
+            assert!(
+                !tree.lines().any(|line| line.starts_with("ts-rs ")),
+                "the game built for {target} (features {features:?}) compiles ts-rs; the `ts` \
+                 feature of a core crate must be enabled only by `ofm-bindings`' dev-dependencies"
+            );
+        }
+    }
+}
+
+/// Given the core crates' manifests,
+/// when their ts-rs dependency is read,
+/// then it is an optional, normal dependency (behind the `ts` feature) wherever it appears.
+#[test]
+fn ts_rs_is_only_an_optional_dependency_of_a_core_crate() {
+    let meta = metadata();
+    for (crate_name, _, _) in CORE {
+        let eager: Vec<String> = dependencies_of(&meta, crate_name)
+            .filter(|dep| dep["name"].as_str() == Some("ts-rs"))
+            .filter(|dep| dep["optional"].as_bool() != Some(true))
+            .map(describe)
+            .collect();
+        assert!(
+            eager.is_empty(),
+            "`{crate_name}` must take ts-rs only as an optional dependency behind its `ts` \
+             feature, but declares:\n  {}",
+            eager.join("\n  ")
+        );
+    }
+}
+
+/// Given the `ofm-bindings` manifest,
+/// when its dependencies are read,
+/// then every one is a dev-dependency, so nothing it turns on can reach a build of the game.
+#[test]
+fn ofm_bindings_has_only_dev_dependencies() {
+    let meta = metadata();
+    let not_dev: Vec<String> = dependencies_of(&meta, "ofm-bindings")
+        .filter(|dep| dep["kind"].as_str() != Some("dev"))
+        .map(describe)
+        .collect();
+    assert!(
+        not_dev.is_empty(),
+        "`ofm-bindings` exists only for its tests; it must not declare:\n  {}",
+        not_dev.join("\n  ")
+    );
+}

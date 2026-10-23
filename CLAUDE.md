@@ -170,7 +170,9 @@ frontend files 500).
 - Rust crate graph, all dependency kinds: `engine: []`, `domain: []`, `ofm-rules: [domain, engine]`,
   `ofm_core: [domain, engine, ofm-rules]`, `db: [domain, ofm_core]`, `ofm-cli: [ofm_core]`,
   `sim-bench: [engine]` (dev-only `domain`, `ofm_core`: the builder's tests rate synthetic players
-  with the game's own OVR tables), root app composes all.
+  with the game's own OVR tables), `ofm-bindings: []` (dev-only `domain`, `engine`, `ofm-rules`
+  with their `ts` feature: its tests render the TypeScript declarations in `src/bindings/core/`,
+  so the game never compiles ts-rs), root app composes all.
   New workspace member must be classified. test for the core crates' allowed deps and for no
   platform crate in them (`src-tauri/tests/architecture.rs`); review for the full matrix until PR 4
 - `engine` types (`TeamData`, `PlayerData`, `TacticsConfig`) are constructed only in the squad

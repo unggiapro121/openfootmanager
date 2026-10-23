@@ -15,6 +15,7 @@ pub const STARTING_ELEVEN: usize = 11;
 /// Everything about how a club lines up that its manager decides.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub struct ClubSetup {
     pub formation: String,
     pub play_style: PlayStyle,
@@ -29,6 +30,7 @@ pub struct ClubSetup {
 /// Why a setup cannot be kept.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "issue", content = "playerId")]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub enum SetupIssue {
     /// Not one of the shapes the engine plays (`engine::FORMATIONS`).
     UnknownFormation,

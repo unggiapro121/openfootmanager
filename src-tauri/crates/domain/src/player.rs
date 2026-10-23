@@ -132,6 +132,7 @@ pub struct PlayerMedia {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum Position {
     #[default]
     Goalkeeper,
@@ -313,6 +314,7 @@ pub enum SquadRole {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct PlayerAttributes {
     // Physical
     pub pace: u8,

@@ -30,6 +30,7 @@ const SECONDS_PER_DAY: i64 = 86_400;
 
 /// One official match of a club the coach led, as his account counts it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub struct CoachMatchRecord {
     pub save_id: String,
     pub fixture_id: String,
@@ -48,6 +49,7 @@ pub struct CoachMatchRecord {
 
 /// What a career tells the coach's account.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub enum CoachRecord {
     Match(CoachMatchRecord),
     Honour(HonourKind),

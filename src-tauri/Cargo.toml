@@ -16,7 +16,20 @@ name = "openfootmanager_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [workspace]
-members = ["crates/ofm_core", "crates/ofm-rules", "crates/db", "crates/domain", "crates/engine", "crates/sim-bench", "crates/ofm-cli"]
+members = [
+    "crates/ofm_core",
+    "crates/ofm-rules",
+    "crates/db",
+    "crates/domain",
+    "crates/engine",
+    "crates/sim-bench",
+    "crates/ofm-cli",
+    "crates/ofm-bindings",
+]
+# Written out, not left to the root package's edition: the `ts` feature is turned on only through
+# a dev-dependency (`ofm-bindings`), and resolver 2 is what keeps such a feature out of a normal
+# build. A virtual workspace or an edition change must not silently lose it (phase 3, E3-6a).
+resolver = "2"
 
 # Lint levels live here so a plain `cargo clippy` applies the levels CI enforces, instead of only
 # doing so when someone remembers to append `-- -D warnings`. Every member opts in with
