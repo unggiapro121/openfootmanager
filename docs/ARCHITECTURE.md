@@ -243,6 +243,7 @@ All frontend↔backend communication goes through Tauri's `invoke()` mechanism. 
 | `login_coach_with_email` | email, password | `CoachAccount` | Log in on the server; keeps the session |
 | `resume_coach_session` | — | `Option<CoachAccount>` | Log back in with the refresh token kept from the last run |
 | `request_coach_password_reset` / `reset_coach_password` | email / code, newPassword | — | Email a reset code, then set a new password with it |
+| `online_request` | request (method, segments, query, body, ifMatch, idempotencyKey) | `{ status, body, retryAfterSeconds?, contractRevision? }`; rejects with `{ status, code, detail?, details?, … }` | The webview's only way to the online API (phase 3 E3-6c): sends a request of the route table in `application/online/routes.rs` with the session's tokens, which never reach the webview. Called through `src/online/` |
 
 ### Match Commands
 

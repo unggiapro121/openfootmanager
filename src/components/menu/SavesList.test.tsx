@@ -6,8 +6,8 @@ import SavesList from "./SavesList";
 
 // Uses the real i18n instance rather than a mocked `t`, because two of these
 // tests are about what i18next itself does with the value: resolving a
-// backend-generated key, and escaping player text before it reaches
-// `dangerouslySetInnerHTML`.
+// backend-generated key, and escaping player text inside a translation that
+// carries its own markup.
 beforeAll(async () => {
   await i18nReady;
   await i18n.changeLanguage("en");
@@ -81,8 +81,8 @@ describe("SavesList", () => {
     expect(screen.getByText("My 1997 run")).toBeInTheDocument();
   });
 
-  // `menu.deleteConfirm` carries its own <strong> markup, so it is rendered
-  // through dangerouslySetInnerHTML. The save name inside it is player text.
+  // `menu.deleteConfirm` carries its own <strong> markup, rendered as an
+  // element by Trans. The save name inside it is player text.
   it("escapes markup in a save name instead of rendering it", () => {
     const { container } = render(
       <SavesList
@@ -104,6 +104,30 @@ describe("SavesList", () => {
     // The <strong> the translation itself provides must still be real markup.
     expect(container.querySelector("strong")).not.toBeNull();
     expect(container.textContent).toContain('<img src=x onerror="alert(1)">');
+  });
+
+  // Given a save named with markup the translation itself uses (<strong>),
+  // when its deletion is confirmed,
+  // then the name stays text: only the translation's own <strong> is an element.
+  it("does not let a save name add markup", () => {
+    const { container } = render(
+      <SavesList
+        saves={[save({ name: "<strong>Mine</strong>" })]}
+        isLoading={false}
+        confirmDeleteId="save-1"
+        confirmClaimId={null}
+        coachName="Dung Ung"
+        onLoad={vi.fn()}
+        onClaim={vi.fn()}
+        onConfirmClaim={vi.fn()}
+        onDelete={vi.fn()}
+        onConfirmDelete={vi.fn()}
+        onClose={vi.fn()}
+      />,
+    );
+
+    expect(container.querySelectorAll("strong")).toHaveLength(1);
+    expect(container.textContent).toContain("<strong>Mine</strong>");
   });
 
   // Given a career of the logged-in coach, when it is picked, then it loads straight away.

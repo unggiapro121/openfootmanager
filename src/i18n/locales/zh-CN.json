@@ -3470,7 +3470,8 @@
         "saveWithoutAccount": "此生涯尚未绑定经理账号。",
         "managedByServer": "教练账号由账号服务器管理。",
         "serverNotConfigured": "本游戏未配置账号服务器。",
-        "serverUnexpected": "账号服务器返回了游戏无法读取的响应。"
+        "serverUnexpected": "账号服务器返回了游戏无法读取的响应。",
+        "reportInvalid": "无法接受比赛报告。"
       },
       "finance": {
         "boardSupportUnavailable": "只有当现金储备承压时，董事会紧急支持才可用。",
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "验证码错误或已过期。",
         "refreshInvalid": "登录已过期，请重新登录。",
         "unauthorized": "登录已过期，请重新登录。",
-        "forbidden": "你没有执行此操作的权限。"
+        "forbidden": "你没有执行此操作的权限。",
+        "refreshRaced": "另一个游戏副本正在续期你的会话，请重试。"
       },
       "validation": {
         "invalid": "部分信息未被接受，请检查表单后重试。"
@@ -3589,7 +3591,38 @@
       "rateLimited": "尝试次数过多，请稍后再试。",
       "unavailable": "账号服务器暂不可用，请稍后再试。",
       "timeout": "账号服务器响应超时。",
-      "internal": "账号服务器出错。"
+      "internal": "账号服务器出错。",
+      "notFound": "未找到。",
+      "methodNotAllowed": "该操作不可用。",
+      "payloadTooLarge": "请求过大。",
+      "idempotency": {
+        "keyRequired": "请求不完整，请重试。",
+        "keyInvalid": "请求无效，请重试。",
+        "mismatch": "此操作已以不同的内容发送过，请重新开始。"
+      },
+      "account": {
+        "regionChangeTooSoon": "你最近更改过地区，可在 {{availableAt}} 之后再次更改。"
+      },
+      "club": {
+        "none": "你还没有执教任何俱乐部。",
+        "alreadyOwned": "你已经在执教一家俱乐部。",
+        "noneFree": "你所在地区目前没有空闲的俱乐部，请稍后再试。",
+        "matchUnderway": "该俱乐部正在进行比赛（开球时间 {{kickoffAt}}），请在比赛结束后再试。",
+        "takeoverLimit": "本赛季你已经接手过一家俱乐部。",
+        "setupInvalid": "该阵容无法使用，请检查被标记的球员。",
+        "versionStale": "自你打开后俱乐部已发生变化，请刷新后重试。",
+        "nameTaken": "已有其他俱乐部使用该名称。",
+        "nameBlocked": "该名称不被允许。",
+        "renameLimit": "每个赛季只能为俱乐部改名一次。"
+      },
+      "online": {
+        "notSignedIn": "请登录在线账户以进行在线游戏。",
+        "unreachable": "无法连接在线服务器，请检查网络后重试。",
+        "serverUnexpected": "在线服务器返回了游戏无法读取的内容，请稍后再试。",
+        "routeNotAllowed": "此版本的游戏不支持该在线操作。",
+        "clientOutdated": "在线游戏需要更新版本的游戏，请更新游戏。",
+        "serverOutdated": "在线服务器正在更新，请稍后再试。"
+      }
     },
     "sender": {
       "boardOfDirectors": "董事会",

@@ -166,3 +166,107 @@ fn live_keychain_keeps_and_forgets_a_token() {
     assert_eq!(read.as_deref(), Some("a-refresh-token"));
     assert_eq!(vault.load(), None);
 }
+
+/// Given a running `ofm-server` with its world, and a new coach logged in,
+/// when the online proxy takes a club, reads the club, the season and the league at once, and
+/// sets the training plan twice under one key,
+/// then every answer names contract revision 1, the club is the coach's, and the retried plan
+/// gets the first answer back (phase 3 E3-6c).
+#[test]
+#[ignore = "needs a running ofm-server (api + worker), its world, and Mailpit"]
+fn live_online_proxy_against_the_local_server() {
+    use crate::application::online::{send, OnlineRequest};
+
+    let url = configured_server_url().expect("OFM_SERVER_URL names the server");
+    let dir = tempfile::tempdir().expect("a directory");
+    let session = Arc::new(ServerSession::new(
+        ApiClient::new(&url),
+        Box::new(MemoryVault::default()),
+    ));
+    let coach = CoachContext::with_server(dir.path(), Arc::clone(&session));
+    let email = format!(
+        "e36c-live-{}@example.test",
+        chrono::Utc::now().timestamp_millis()
+    );
+    let registration = CoachRegistration {
+        email: email.clone(),
+        password: "mot mat khau dai".into(),
+        identity: CoachIdentity {
+            first_name: "Online".into(),
+            last_name: "Coach".into(),
+            date_of_birth: "1988-08-08".into(),
+            nationality: "VN".into(),
+            region: CoachRegion::AsiaSoutheast,
+        },
+    };
+    register_coach(&coach, registration).expect("registered");
+    verify_coach_email(&coach, &emailed_code(&email, "Verify")).expect("verified");
+    login_coach(&coach, &email, "mot mat khau dai", "t").expect("logged in");
+
+    let request =
+        |method: &str, segments: &[&str], key: Option<&str>, body: Option<Value>| OnlineRequest {
+            method: method.to_string(),
+            segments: segments.iter().map(|s| s.to_string()).collect(),
+            query: Vec::new(),
+            body,
+            if_match: None,
+            idempotency_key: key.map(str::to_string),
+        };
+    let now = chrono::Utc::now().timestamp();
+    let taken = send(
+        &session,
+        &request(
+            "POST",
+            &["v1", "clubs", "takeover"],
+            Some("live-takeover"),
+            None,
+        ),
+        now,
+    )
+    .expect("a club taken");
+    assert_eq!(taken.contract_revision, Some(1));
+    std::thread::sleep(Duration::from_secs(3)); // the worker makes the fresh squad
+
+    let reads: Vec<_> = [
+        vec!["v1", "clubs", "mine"],
+        vec!["v1", "season"],
+        vec!["v1", "leagues", "mine"],
+    ]
+    .into_iter()
+    .map(|segments| {
+        let session = Arc::clone(&session);
+        let read = request("GET", &segments, None, None);
+        std::thread::spawn(move || send(&session, &read, now))
+    })
+    .collect();
+    let answers: Vec<_> = reads
+        .into_iter()
+        .map(|read| read.join().expect("a read"))
+        .collect();
+    let club = answers[0].as_ref().expect("the coach's club");
+    assert_eq!(club.body["club"]["id"], taken.body["club"]["id"]);
+    for answer in &answers {
+        // The season and the league may not exist yet (404); every answer still names revision 1.
+        let revision = match answer {
+            Ok(answer) => answer.contract_revision,
+            Err(error) => error.contract_revision,
+        };
+        assert_eq!(revision, Some(1), "{answer:?}");
+    }
+
+    let plan =
+        serde_json::json!({"focus": "Physical", "intensity": "Medium", "schedule": "Balanced"});
+    let set = request(
+        "PUT",
+        &["v1", "clubs", "mine", "training"],
+        Some("live-plan"),
+        Some(plan),
+    );
+    let first = send(&session, &set, now).expect("the plan is set");
+    let again = send(&session, &set, now).expect("the retry is answered");
+    assert_eq!(again.body, first.body);
+    eprintln!(
+        "live online proxy: club {} taken ({}), plan kept",
+        taken.body["club"]["name"], taken.body["kind"]
+    );
+}

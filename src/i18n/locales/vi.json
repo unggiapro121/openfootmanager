@@ -3310,7 +3310,8 @@
         "saveWithoutAccount": "Ván này chưa gắn tài khoản HLV.",
         "managedByServer": "Tài khoản HLV do máy chủ tài khoản quản lý.",
         "serverNotConfigured": "Game chưa được cấu hình máy chủ tài khoản.",
-        "serverUnexpected": "Máy chủ tài khoản trả về câu trả lời mà game không đọc được."
+        "serverUnexpected": "Máy chủ tài khoản trả về câu trả lời mà game không đọc được.",
+        "reportInvalid": "Không thể nhận báo cáo trận đấu."
       },
       "teamNotFound": "Không tìm thấy đội",
       "jobOffer": {
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "Mã sai hoặc đã hết hạn.",
         "refreshInvalid": "Phiên đăng nhập đã hết. Hãy đăng nhập lại.",
         "unauthorized": "Phiên đăng nhập đã hết. Hãy đăng nhập lại.",
-        "forbidden": "Bạn không có quyền làm việc này."
+        "forbidden": "Bạn không có quyền làm việc này.",
+        "refreshRaced": "Một bản game khác đang gia hạn phiên đăng nhập của bạn. Vui lòng thử lại."
       },
       "validation": {
         "invalid": "Một số thông tin không được chấp nhận. Hãy kiểm tra lại biểu mẫu."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Thử quá nhiều lần. Hãy đợi một lát rồi thử lại.",
       "unavailable": "Máy chủ tài khoản đang không hoạt động. Hãy thử lại sau.",
       "timeout": "Máy chủ tài khoản phản hồi quá lâu.",
-      "internal": "Máy chủ tài khoản gặp lỗi."
+      "internal": "Máy chủ tài khoản gặp lỗi.",
+      "notFound": "Không tìm thấy nội dung này.",
+      "methodNotAllowed": "Thao tác này không khả dụng.",
+      "payloadTooLarge": "Yêu cầu quá lớn.",
+      "idempotency": {
+        "keyRequired": "Yêu cầu chưa đầy đủ. Vui lòng thử lại.",
+        "keyInvalid": "Yêu cầu không hợp lệ. Vui lòng thử lại.",
+        "mismatch": "Thao tác này đã được gửi với nội dung khác. Vui lòng thực hiện lại từ đầu."
+      },
+      "account": {
+        "regionChangeTooSoon": "Bạn vừa đổi khu vực. Bạn có thể đổi lại từ {{availableAt}}."
+      },
+      "club": {
+        "none": "Bạn chưa dẫn dắt CLB nào.",
+        "alreadyOwned": "Bạn đang dẫn dắt một CLB rồi.",
+        "noneFree": "Hiện chưa có CLB nào còn trống trong khu vực của bạn. Vui lòng thử lại sau ít phút.",
+        "matchUnderway": "CLB này đang có trận đấu (bắt đầu lúc {{kickoffAt}}). Hãy thử lại khi trận kết thúc.",
+        "takeoverLimit": "Bạn đã nhận một CLB trong mùa này rồi.",
+        "setupInvalid": "Đội hình này không dùng được. Hãy kiểm tra các cầu thủ được đánh dấu.",
+        "versionStale": "CLB của bạn đã thay đổi từ lúc bạn mở. Hãy tải lại rồi thử lại.",
+        "nameTaken": "Đã có CLB khác dùng tên này.",
+        "nameBlocked": "Tên này không được phép.",
+        "renameLimit": "Mỗi mùa bạn chỉ được đổi tên CLB một lần."
+      },
+      "online": {
+        "notSignedIn": "Hãy đăng nhập tài khoản online để chơi online.",
+        "unreachable": "Không kết nối được máy chủ online. Hãy kiểm tra kết nối rồi thử lại.",
+        "serverUnexpected": "Máy chủ online trả về dữ liệu game không đọc được. Vui lòng thử lại sau.",
+        "routeNotAllowed": "Thao tác online này không có trong phiên bản game hiện tại.",
+        "clientOutdated": "Cần phiên bản game mới hơn để chơi online. Vui lòng cập nhật game.",
+        "serverOutdated": "Máy chủ online đang được cập nhật. Vui lòng thử lại sau."
+      }
     },
     "sender": {
       "boardOfDirectors": "Hội đồng quản trị",

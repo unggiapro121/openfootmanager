@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { formatDate } from "../../lib/helpers";
 import { resolveBackendText } from "../../utils/backendI18n";
 import { Play, Clock, Trash2, X, Loader2 } from "lucide-react";
@@ -117,20 +117,20 @@ export default function SavesList({
                 </div>
               ) : confirmDeleteId === save.id ? (
                 <div className="flex flex-col gap-2">
-                  {/* The string carries its own <strong> markup, so it has to
-                      go through the HTML parser — but the save name is player
-                      text and must not. `escapeValue` is globally false
-                      (src/i18n/index.ts), so it is re-enabled for this one
-                      interpolation. */}
-                  <p
-                    className="text-sm text-gray-700 dark:text-gray-300"
-                    dangerouslySetInnerHTML={{
-                      __html: t("menu.deleteConfirm", {
-                        name: saveDisplayName(save.name),
-                        interpolation: { escapeValue: true },
-                      }),
-                    }}
-                  />
+                  {/* The string carries its own <strong> markup, which Trans
+                      renders as an element; the save name is player text and
+                      stays text. `escapeValue` is globally false
+                      (src/i18n/index.ts), so it is re-enabled here and the
+                      escaped name shown as written (`shouldUnescape`). */}
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    <Trans
+                      i18nKey="menu.deleteConfirm"
+                      values={{ name: saveDisplayName(save.name) }}
+                      components={{ strong: <strong /> }}
+                      tOptions={{ interpolation: { escapeValue: true } }}
+                      shouldUnescape
+                    />
+                  </p>
                   <div className="flex gap-2">
                     <button
                       type="button"

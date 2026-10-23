@@ -3470,7 +3470,8 @@
         "saveWithoutAccount": "Diese Karriere hat noch kein Managerkonto.",
         "managedByServer": "Trainerkonten werden vom Kontoserver verwaltet.",
         "serverNotConfigured": "Für dieses Spiel ist kein Kontoserver eingerichtet.",
-        "serverUnexpected": "Der Kontoserver hat eine Antwort geschickt, die das Spiel nicht lesen kann."
+        "serverUnexpected": "Der Kontoserver hat eine Antwort geschickt, die das Spiel nicht lesen kann.",
+        "reportInvalid": "Der Spielbericht konnte nicht angenommen werden."
       },
       "finance": {
         "boardSupportUnavailable": "Notfallhilfe des Vorstands ist nur verfügbar, wenn die Geldreserven unter Druck stehen.",
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "Dieser Code ist falsch oder abgelaufen.",
         "refreshInvalid": "Deine Sitzung ist beendet. Melde dich erneut an.",
         "unauthorized": "Deine Sitzung ist beendet. Melde dich erneut an.",
-        "forbidden": "Dazu bist du nicht berechtigt."
+        "forbidden": "Dazu bist du nicht berechtigt.",
+        "refreshRaced": "Eine andere Kopie des Spiels erneuert gerade deine Sitzung. Bitte versuche es erneut."
       },
       "validation": {
         "invalid": "Einige Angaben wurden nicht akzeptiert. Prüfe das Formular und versuche es erneut."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Zu viele Versuche. Warte einen Moment und versuche es erneut.",
       "unavailable": "Der Kontoserver ist nicht verfügbar. Versuche es später erneut.",
       "timeout": "Der Kontoserver hat zu lange gebraucht.",
-      "internal": "Beim Kontoserver ist ein Fehler aufgetreten."
+      "internal": "Beim Kontoserver ist ein Fehler aufgetreten.",
+      "notFound": "Nicht gefunden.",
+      "methodNotAllowed": "Diese Aktion ist nicht verfügbar.",
+      "payloadTooLarge": "Die Anfrage ist zu groß.",
+      "idempotency": {
+        "keyRequired": "Die Anfrage war unvollständig. Bitte versuche es erneut.",
+        "keyInvalid": "Die Anfrage ist ungültig. Bitte versuche es erneut.",
+        "mismatch": "Diese Aktion wurde bereits mit anderen Angaben gesendet. Bitte starte sie neu."
+      },
+      "account": {
+        "regionChangeTooSoon": "Du hast deine Region kürzlich geändert. Ab {{availableAt}} kannst du sie wieder ändern."
+      },
+      "club": {
+        "none": "Du trainierst noch keinen Verein.",
+        "alreadyOwned": "Du trainierst bereits einen Verein.",
+        "noneFree": "In deiner Region ist gerade kein Verein frei. Bitte versuche es gleich noch einmal.",
+        "matchUnderway": "Dieser Verein hat gerade ein Spiel (Anstoß {{kickoffAt}}). Versuche es nach dem Spiel erneut.",
+        "takeoverLimit": "Du hast in dieser Saison bereits einen Verein übernommen.",
+        "setupInvalid": "Diese Aufstellung ist nicht möglich. Prüfe die markierten Spieler.",
+        "versionStale": "Dein Verein hat sich seit dem Öffnen geändert. Lade ihn neu und versuche es erneut.",
+        "nameTaken": "Ein anderer Verein trägt diesen Namen bereits.",
+        "nameBlocked": "Dieser Name ist nicht erlaubt.",
+        "renameLimit": "Du kannst deinen Verein einmal pro Saison umbenennen."
+      },
+      "online": {
+        "notSignedIn": "Melde dich bei deinem Online-Konto an, um online zu spielen.",
+        "unreachable": "Der Online-Server ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+        "serverUnexpected": "Der Online-Server hat eine Antwort gesendet, die das Spiel nicht lesen kann. Bitte versuche es später erneut.",
+        "routeNotAllowed": "Diese Online-Aktion gibt es in dieser Spielversion nicht.",
+        "clientOutdated": "Für das Online-Spiel wird eine neuere Spielversion benötigt. Bitte aktualisiere das Spiel.",
+        "serverOutdated": "Der Online-Server wird gerade aktualisiert. Bitte versuche es später erneut."
+      }
     },
     "sender": {
       "boardOfDirectors": "Vorstand",

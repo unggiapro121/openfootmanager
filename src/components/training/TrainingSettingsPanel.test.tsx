@@ -3,39 +3,52 @@ import { describe, expect, it, vi } from "vitest";
 
 import TrainingSettingsPanel from "./TrainingSettingsPanel";
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, params?: Record<string, string | number>) => {
-      const scheduleText: Record<string, string> = {
-        "training.schedules.Intense.label": "Intense",
-        "training.schedules.Intense.desc": "Six training days, one rest day",
-        "training.schedules.Balanced.label": "Balanced",
-        "training.schedules.Balanced.desc": "Four training days, three rest days",
-        "training.schedules.Balanced.detail": "Training on Monday, Tuesday, Thursday, and Friday.",
-        "training.schedules.Light.label": "Light",
-        "training.schedules.Light.desc": "Two training days, five rest days",
-      };
+vi.mock("react-i18next", () => {
+  const mocked = {
+    useTranslation: () => ({
+      t: (key: string, params?: Record<string, string | number>) => {
+        const scheduleText: Record<string, string> = {
+          "training.schedules.Intense.label": "Intense",
+          "training.schedules.Intense.desc": "Six training days, one rest day",
+          "training.schedules.Balanced.label": "Balanced",
+          "training.schedules.Balanced.desc": "Four training days, three rest days",
+          "training.schedules.Balanced.detail":
+            "Training on Monday, Tuesday, Thursday, and Friday.",
+          "training.schedules.Light.label": "Light",
+          "training.schedules.Light.desc": "Two training days, five rest days",
+        };
 
-      if (key === "training.weeklySchedule") return "Weekly Schedule";
-      if (key === "training.trainingFocus") return "Training Focus";
-      if (key === "training.intensity") return "Intensity";
-      if (key === "training.trainingAppliedNote") return "Applied note";
-      if (key === "training.recoveryNote") return "Recovery note";
-      if (key === "training.currentlyTraining") {
-        return `Training ${params?.attrs} at ${params?.intensity}`;
-      }
-      if (key === "training.todayIs") return `${params?.day} is ${params?.type}`;
-      if (key === "training.aTrainingDay") return "a training day";
-      if (key === "training.aRestDay") return "a rest day";
-      if (key in scheduleText) return scheduleText[key];
-      if (key.startsWith("training.focuses.")) return key.replace("training.focuses.", "");
-      if (key.startsWith("training.intensities.")) return key.replace("training.intensities.", "");
-      if (key.startsWith("training.days.")) return key.replace("training.days.", "");
-      if (key.startsWith("common.attributes.")) return key.replace("common.attributes.", "");
-      return key;
-    },
-  }),
-}));
+        if (key === "training.weeklySchedule") return "Weekly Schedule";
+        if (key === "training.trainingFocus") return "Training Focus";
+        if (key === "training.intensity") return "Intensity";
+        if (key === "training.trainingAppliedNote") return "Applied note";
+        if (key === "training.recoveryNote") return "Recovery note";
+        if (key === "training.currentlyTraining") {
+          return `Training ${params?.attrs} at ${params?.intensity}`;
+        }
+        if (key === "training.todayIs") return `${params?.day} is ${params?.type}`;
+        if (key === "training.aTrainingDay") return "a training day";
+        if (key === "training.aRestDay") return "a rest day";
+        if (key in scheduleText) return scheduleText[key];
+        if (key.startsWith("training.focuses.")) return key.replace("training.focuses.", "");
+        if (key.startsWith("training.intensities."))
+          return key.replace("training.intensities.", "");
+        if (key.startsWith("training.days.")) return key.replace("training.days.", "");
+        if (key.startsWith("common.attributes.")) return key.replace("common.attributes.", "");
+        return key;
+      },
+    }),
+  };
+  // Trans renders the mocked `t` of its key and values, as text.
+  const Trans = ({
+    i18nKey,
+    values,
+  }: {
+    i18nKey: string;
+    values?: Record<string, string | number>;
+  }) => mocked.useTranslation().t(i18nKey, values);
+  return { ...mocked, Trans };
+});
 
 describe("TrainingSettingsPanel", () => {
   it("renders the current training schedule, focus, and applied note", () => {

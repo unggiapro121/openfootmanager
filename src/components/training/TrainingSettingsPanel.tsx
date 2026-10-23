@@ -1,5 +1,5 @@
 import { Gauge } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 
 import { Card, CardBody, CardHeader } from "../ui";
 
@@ -79,14 +79,18 @@ export default function TrainingSettingsPanel({
 
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
             {t(`training.schedules.${currentSchedule}.detail`)}{" "}
-            <span
-              dangerouslySetInnerHTML={{
-                __html: t("training.todayIs", {
+            <span>
+              <Trans
+                i18nKey="training.todayIs"
+                values={{
                   day: t(`training.days.${dayKeys[todayWeekday]}`),
                   type: isTodayTraining ? t("training.aTrainingDay") : t("training.aRestDay"),
-                }),
-              }}
-            />
+                }}
+                components={{ strong: <strong /> }}
+                tOptions={{ interpolation: { escapeValue: true } }}
+                shouldUnescape
+              />
+            </span>
           </p>
         </CardBody>
       </Card>
@@ -170,16 +174,20 @@ export default function TrainingSettingsPanel({
             {activeFocusAttrs.length > 0 && (
               <>
                 {" "}
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: t("training.currentlyTraining", {
+                <span>
+                  <Trans
+                    i18nKey="training.currentlyTraining"
+                    values={{
                       attrs: activeFocusAttrs
                         .map((attribute) => t(`common.attributes.${attribute}`))
                         .join(", "),
                       intensity: t(`training.intensities.${currentIntensity}.label`),
-                    }),
-                  }}
-                />
+                    }}
+                    components={{ strong: <strong /> }}
+                    tOptions={{ interpolation: { escapeValue: true } }}
+                    shouldUnescape
+                  />
+                </span>
               </>
             )}
             {currentFocus === "Recovery" && <> {t("training.recoveryNote")}</>}
