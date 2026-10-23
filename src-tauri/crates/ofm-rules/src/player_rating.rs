@@ -106,6 +106,20 @@ pub fn generate_potential_from(ovr: u8, age: u32, rng: &mut impl rand::Rng) -> u
     (ovr.saturating_add(bonus)).min(99).max(ovr.max(1))
 }
 
+/// What a club is told of a player's potential online (phase 3, S-7 Qs7-5): one to five stars,
+/// never the number. The bands follow the game's scouting words — 85 and above is world class,
+/// 70 and above strong — split finer: under 55 one star, 55–64 two, 65–74 three, 75–84 four,
+/// 85 and above five.
+pub fn potential_stars(potential: u8) -> u8 {
+    match potential {
+        0..=54 => 1,
+        55..=64 => 2,
+        65..=74 => 3,
+        75..=84 => 4,
+        _ => 5,
+    }
+}
+
 /// The age a player reaches in `current_year`: the year of `date_of_birth` subtracted, as youth
 /// categories count it. Deliberately not his age on a day — that is [`crate::age::age_on`]; the
 /// derived ratings (potential, wonderkid, traits) are a season's, so they read the season's year.
@@ -1379,5 +1393,17 @@ mod tests {
 
         assert!(player.potential >= player.ovr.saturating_add(10));
         assert!(!player.traits.contains(&PlayerTrait::Wonderkid));
+    }
+
+    /// Given potentials at each band's edges,
+    /// when they are told in stars,
+    /// then 54 is one, 55 two, 65 three, 75 four, 85 and 99 five.
+    #[test]
+    fn potential_is_told_in_five_bands() {
+        let told: Vec<u8> = [0, 54, 55, 64, 65, 74, 75, 84, 85, 99]
+            .into_iter()
+            .map(potential_stars)
+            .collect();
+        assert_eq!(told, vec![1, 1, 2, 2, 3, 3, 4, 4, 5, 5]);
     }
 }
