@@ -99,7 +99,11 @@
       "cards": "Cartellini",
       "rating": "Voto",
       "redCard": "Rosso",
-      "yellowCards": "{{cards}} giallo/i"
+      "yellowCards": "{{cards}} giallo/i",
+      "watchMatch": "Guarda in diretta {{home}} – {{away}}",
+      "watchLive": "In diretta · Guarda",
+      "enterLive": "La tua partita è in corso — entra",
+      "enterMatch": "Vai alla partita"
     },
     "league": {
       "title": "Campionato",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Ultimo risultato",
       "noResult": "Nessun risultato ancora in questa stagione."
+    },
+    "match": {
+      "byCoach": "{{team}}: guida l'allenatore",
+      "byAi": "{{team}}: guida l'IA",
+      "youCoach": "Stai guidando la tua squadra.",
+      "aiCoaches": "L'IA guida la tua squadra perché eri assente.",
+      "takingCharge": "Prendendo il comando della squadra…",
+      "orderTakesCharge": "Inviare un ordine ti restituisce il comando.",
+      "seeResult": "Vedi il risultato",
+      "reconnecting": "Connessione persa — riconnessione…",
+      "halfTime": "Intervallo: il secondo tempo inizia tra circa {{seconds}} s.",
+      "hurt": "{{player}} è infortunato. Sostituiscilo entro {{seconds}} s, o lo farà l'IA.",
+      "hurtNow": "{{player}} è infortunato. L'IA lo sta sostituendo.",
+      "replace": "Sostituisci",
+      "leaveWarning": "Se lasci questa schermata per circa 20 secondi, l'IA guiderà la tua squadra.",
+      "scoreLine": "Punteggio: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Pannelli della partita",
+      "adjusted": "{{team}} ha modificato la tattica",
+      "touchline": "Panchina",
+      "playerOff": "Giocatore in uscita",
+      "playerOn": "Giocatore in entrata",
+      "swapTitle": "Scambia posizioni",
+      "swapFirst": "Primo giocatore",
+      "swapSecond": "Secondo giocatore",
+      "swap": "Scambia",
+      "order": {
+        "substitute": "{{on}} entra al posto di {{off}}",
+        "swap": "{{a}} e {{b}} si scambiano la posizione",
+        "formation": "Passa al {{formation}}",
+        "playStyle": "Stile di gioco: {{style}}",
+        "other": "Ordine"
+      },
+      "sent": {
+        "title": "Ordini inviati",
+        "pending": "— si applica al prossimo minuto…",
+        "applied": "— applicato",
+        "refused": "— rifiutato",
+        "refusedWhy": "— rifiutato: {{reason}}"
+      }
     }
   },
   "coach": {

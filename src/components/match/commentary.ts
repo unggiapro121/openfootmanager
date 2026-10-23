@@ -10,7 +10,7 @@ import type {
 import { getPlayerName, type PlayerNameSource } from "./helpers";
 
 /** What commentary reads of a match: the sides' names, their players' names and the events. */
-type CommentarySource = PlayerNameSource & {
+export type CommentarySource = PlayerNameSource & {
   home_team: { name: string };
   away_team: { name: string };
   events: MatchEvent[];

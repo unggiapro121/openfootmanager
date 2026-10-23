@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader } from "../../components/ui";
 import type { FixtureView } from "../api";
 import { deviceDiffersFromRegion, formatMoment, formatRegionClock } from "../format";
@@ -63,6 +64,17 @@ function FixtureLines({ fixture, clubId, region, language, countdown }: FixtureL
           })}
         </p>
       )}
+      {fixture.matchId &&
+        (fixture.matchStatus === "live" || fixture.matchStatus === "scheduled") && (
+          <Link
+            to={`/online/match/${fixture.matchId}`}
+            className="inline-block rounded font-semibold text-red-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-red-400 dark:focus:ring-offset-navy-800"
+          >
+            {fixture.matchStatus === "live"
+              ? t("online.fixture.enterLive")
+              : t("online.fixture.enterMatch")}
+          </Link>
+        )}
       {fixture.status === "prepared" ? (
         <p className="font-semibold text-accent-600 dark:text-accent-400">
           {t("online.fixture.prepared")}

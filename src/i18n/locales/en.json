@@ -99,7 +99,11 @@
       "cards": "Cards",
       "rating": "Rating",
       "redCard": "Red",
-      "yellowCards": "{{cards}} yellow"
+      "yellowCards": "{{cards}} yellow",
+      "watchMatch": "Watch {{home}} – {{away}} live",
+      "watchLive": "Live · Watch",
+      "enterLive": "Your match is on — watch it",
+      "enterMatch": "Go to the match"
     },
     "league": {
       "title": "League",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Latest result",
       "noResult": "No result yet this season."
+    },
+    "match": {
+      "byCoach": "{{team}}: coach in charge",
+      "byAi": "{{team}}: AI in charge",
+      "youCoach": "You are in charge of your side.",
+      "aiCoaches": "The AI is in charge of your side while you were away.",
+      "takingCharge": "Taking charge of your side…",
+      "orderTakesCharge": "Sending an order takes charge back.",
+      "seeResult": "See the result",
+      "reconnecting": "Connection lost — reconnecting…",
+      "halfTime": "Half time — the second half starts in about {{seconds}} s.",
+      "hurt": "{{player}} is hurt. Replace him within {{seconds}} s, or the AI will.",
+      "hurtNow": "{{player}} is hurt. The AI is replacing him now.",
+      "replace": "Replace",
+      "leaveWarning": "Leave this screen for about 20 seconds and the AI takes charge of your side.",
+      "scoreLine": "Score: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Match panels",
+      "adjusted": "{{team}} adjusted their tactics",
+      "touchline": "Touchline",
+      "playerOff": "Player off",
+      "playerOn": "Player on",
+      "swapTitle": "Swap positions",
+      "swapFirst": "First player",
+      "swapSecond": "Second player",
+      "swap": "Swap",
+      "order": {
+        "substitute": "{{on}} on for {{off}}",
+        "swap": "{{a}} and {{b}} swap positions",
+        "formation": "Switch to {{formation}}",
+        "playStyle": "Play style: {{style}}",
+        "other": "Order"
+      },
+      "sent": {
+        "title": "Orders sent",
+        "pending": "— applies in the next minute…",
+        "applied": "— applied",
+        "refused": "— refused",
+        "refusedWhy": "— refused: {{reason}}"
+      }
     }
   },
   "coach": {

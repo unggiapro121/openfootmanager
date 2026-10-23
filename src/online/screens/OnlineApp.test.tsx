@@ -62,6 +62,31 @@ describe("a coach with a club", () => {
     expect(await screen.findByLabelText("location")).toHaveTextContent("/online/league");
   });
 
+  // Given a club whose match is being played,
+  // when the overview opens,
+  // then the next-match card takes the coach into it.
+  it("takes the coach into their match while it is played", async () => {
+    const club = myClub();
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok({
+        ...club,
+        nextFixture: club.nextFixture && {
+          ...club.nextFixture,
+          status: "prepared",
+          matchId: "match-9",
+          matchStatus: "live",
+        },
+      }),
+      "GET v1/leagues/mine": ok(LEAGUE),
+    });
+    renderOnline();
+    expect(await screen.findByRole("link", { name: "online.fixture.enterLive" })).toHaveAttribute(
+      "href",
+      "/online/match/match-9",
+    );
+  });
+
   // Given a club whose league seat waits for next season,
   // when the overview opens,
   // then it says so instead of a table place.

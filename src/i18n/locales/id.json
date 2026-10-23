@@ -99,7 +99,11 @@
       "cards": "Kartu",
       "rating": "Nilai",
       "redCard": "Merah",
-      "yellowCards": "{{cards}} kuning"
+      "yellowCards": "{{cards}} kuning",
+      "watchMatch": "Tonton langsung {{home}} – {{away}}",
+      "watchLive": "Langsung · Tonton",
+      "enterLive": "Pertandingan Anda berlangsung — tonton",
+      "enterMatch": "Buka pertandingan"
     },
     "league": {
       "title": "Liga",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Hasil terakhir",
       "noResult": "Belum ada hasil musim ini."
+    },
+    "match": {
+      "byCoach": "{{team}}: dipimpin pelatih",
+      "byAi": "{{team}}: dipimpin AI",
+      "youCoach": "Anda memimpin tim Anda.",
+      "aiCoaches": "AI memimpin tim Anda selama Anda pergi.",
+      "takingCharge": "Mengambil alih tim Anda…",
+      "orderTakesCharge": "Mengirim perintah akan mengambil alih kembali.",
+      "seeResult": "Lihat hasil",
+      "reconnecting": "Koneksi terputus — menyambung ulang…",
+      "halfTime": "Turun minum — babak kedua dimulai sekitar {{seconds}} dtk lagi.",
+      "hurt": "{{player}} cedera. Ganti dia dalam {{seconds}} dtk, atau AI yang akan menggantinya.",
+      "hurtNow": "{{player}} cedera. AI sedang menggantinya.",
+      "replace": "Ganti",
+      "leaveWarning": "Tinggalkan layar ini sekitar 20 detik dan AI akan memimpin tim Anda.",
+      "scoreLine": "Skor: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Panel pertandingan",
+      "adjusted": "{{team}} mengubah taktiknya",
+      "touchline": "Pinggir lapangan",
+      "playerOff": "Pemain keluar",
+      "playerOn": "Pemain masuk",
+      "swapTitle": "Tukar posisi",
+      "swapFirst": "Pemain pertama",
+      "swapSecond": "Pemain kedua",
+      "swap": "Tukar",
+      "order": {
+        "substitute": "{{on}} masuk menggantikan {{off}}",
+        "swap": "{{a}} dan {{b}} bertukar posisi",
+        "formation": "Ganti ke {{formation}}",
+        "playStyle": "Gaya bermain: {{style}}",
+        "other": "Perintah"
+      },
+      "sent": {
+        "title": "Perintah terkirim",
+        "pending": "— berlaku di menit berikutnya…",
+        "applied": "— diterapkan",
+        "refused": "— ditolak",
+        "refusedWhy": "— ditolak: {{reason}}"
+      }
     }
   },
   "coach": {

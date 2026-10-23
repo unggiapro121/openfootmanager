@@ -12,7 +12,7 @@ import { type CaptionSink, RadarCommentary } from "./RadarCommentary";
 import { type RadarRun, advanceRun, sceneCutOpacity, startRun } from "./radarRun";
 import type { RadarScene } from "./radarScene";
 import type { RadarStage } from "./radarStage";
-import { RADAR_PACING, useRadarDirector } from "./useRadarDirector";
+import { RADAR_PACING, type RadarPacing, useRadarDirector } from "./useRadarDirector";
 
 interface MatchRadar2DProps {
   snapshot: RadarMatch;
@@ -31,6 +31,11 @@ interface MatchRadar2DProps {
   onCaughtUp?: (staged: number) => void;
   /** Whether the commentator's line shows over the radar (the "match commentary" setting). */
   showCommentary?: boolean;
+  /**
+   * How fast the radar plays, and how far behind the match it may fall before it skips. The
+   * desktop match waits for the radar (`RADAR_PACING`); a live online match does not wait.
+   */
+  pacing?: RadarPacing;
 }
 
 /** With motion reduced, how long each minute stays on the radar before the next is asked for. */
@@ -168,6 +173,7 @@ function shake(element: HTMLElement | null): void {
 interface RadarFieldProps {
   snapshot: RadarMatch;
   roster: RadarRoster;
+  pacing: RadarPacing;
   kits: RadarKits;
   paused: boolean;
   onCaughtUp?: (staged: number) => void;
@@ -185,6 +191,7 @@ function isPlayedOut(run: RadarRun): boolean {
 function RadarField({
   snapshot,
   roster,
+  pacing,
   kits,
   paused,
   onCaughtUp,
@@ -194,12 +201,7 @@ function RadarField({
 }: RadarFieldProps) {
   const { t } = useTranslation();
   const isAnimated = !reducedMotion;
-  const { stage, playback, staged } = useRadarDirector(
-    snapshot,
-    RADAR_PACING,
-    reducedMotion,
-    onCaption,
-  );
+  const { stage, playback, staged } = useRadarDirector(snapshot, pacing, reducedMotion, onCaption);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const swatchesRef = useRef<HTMLDivElement>(null);
   const shakeRef = useRef<HTMLDivElement>(null);
@@ -336,6 +338,7 @@ function RadarField({
 export function MatchRadar2D({
   snapshot,
   roster,
+  pacing = RADAR_PACING,
   kits,
   isOpen,
   onToggle,
@@ -363,7 +366,9 @@ export function MatchRadar2D({
           <Radar className="h-4 w-4" aria-hidden="true" />
           {t("match.radar.title")}
         </h3>
-        {isOpen && showCommentary && <RadarCommentary snapshot={snapshot} roster={roster} sinkRef={captionSink} />}
+        {isOpen && showCommentary && (
+          <RadarCommentary snapshot={snapshot} roster={roster} sinkRef={captionSink} />
+        )}
         <div className="flex items-center gap-1">
           {isOpen && (
             <button
@@ -399,6 +404,7 @@ export function MatchRadar2D({
         <RadarField
           snapshot={snapshot}
           roster={roster}
+          pacing={pacing}
           kits={kits}
           paused={paused}
           onCaughtUp={onCaughtUp}

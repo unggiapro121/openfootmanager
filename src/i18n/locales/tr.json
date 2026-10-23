@@ -99,7 +99,11 @@
       "cards": "Kartlar",
       "rating": "Puan",
       "redCard": "Kırmızı",
-      "yellowCards": "{{cards}} sarı"
+      "yellowCards": "{{cards}} sarı",
+      "watchMatch": "{{home}} – {{away}} maçını canlı izle",
+      "watchLive": "Canlı · İzle",
+      "enterLive": "Maçın başladı — izle",
+      "enterMatch": "Maça git"
     },
     "league": {
       "title": "Lig",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Son sonuç",
       "noResult": "Bu sezon henüz sonuç yok."
+    },
+    "match": {
+      "byCoach": "{{team}}: teknik direktör yönetiyor",
+      "byAi": "{{team}}: yapay zekâ yönetiyor",
+      "youCoach": "Takımını sen yönetiyorsun.",
+      "aiCoaches": "Sen yokken takımını yapay zekâ yönetiyor.",
+      "takingCharge": "Takımın yönetimi devralınıyor…",
+      "orderTakesCharge": "Bir talimat göndermek yönetimi geri alır.",
+      "seeResult": "Sonucu gör",
+      "reconnecting": "Bağlantı koptu — yeniden bağlanılıyor…",
+      "halfTime": "Devre arası — ikinci yarı yaklaşık {{seconds}} sn sonra başlıyor.",
+      "hurt": "{{player}} sakatlandı. {{seconds}} sn içinde değiştir, yoksa yapay zekâ değiştirecek.",
+      "hurtNow": "{{player}} sakatlandı. Yapay zekâ onu şimdi değiştiriyor.",
+      "replace": "Değiştir",
+      "leaveWarning": "Bu ekrandan yaklaşık 20 saniye ayrılırsan takımını yapay zekâ yönetir.",
+      "scoreLine": "Skor: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Maç panelleri",
+      "adjusted": "{{team}} taktiğini değiştirdi",
+      "touchline": "Teknik alan",
+      "playerOff": "Çıkan oyuncu",
+      "playerOn": "Giren oyuncu",
+      "swapTitle": "Pozisyon değiştir",
+      "swapFirst": "Birinci oyuncu",
+      "swapSecond": "İkinci oyuncu",
+      "swap": "Değiştir",
+      "order": {
+        "substitute": "{{on}}, {{off}} yerine oyuna giriyor",
+        "swap": "{{a}} ile {{b}} yer değiştiriyor",
+        "formation": "{{formation}} dizilişine geç",
+        "playStyle": "Oyun tarzı: {{style}}",
+        "other": "Talimat"
+      },
+      "sent": {
+        "title": "Gönderilen talimatlar",
+        "pending": "— bir sonraki dakikada uygulanacak…",
+        "applied": "— uygulandı",
+        "refused": "— reddedildi",
+        "refusedWhy": "— reddedildi: {{reason}}"
+      }
     }
   },
   "coach": {

@@ -99,7 +99,11 @@
       "cards": "Karty",
       "rating": "Známka",
       "redCard": "Červená",
-      "yellowCards": "Žlutých: {{cards}}"
+      "yellowCards": "Žlutých: {{cards}}",
+      "watchMatch": "Sledovat živě {{home}} – {{away}}",
+      "watchLive": "Živě · Sledovat",
+      "enterLive": "Váš zápas běží — sledovat",
+      "enterMatch": "Přejít na zápas"
     },
     "league": {
       "title": "Liga",
@@ -188,6 +192,45 @@
     "overview": {
       "lastResult": "Poslední výsledek",
       "noResult": "V této sezóně zatím žádný výsledek."
+    },
+    "match": {
+      "byCoach": "{{team}}: řídí trenér",
+      "byAi": "{{team}}: řídí AI",
+      "youCoach": "Řídíte svůj tým.",
+      "aiCoaches": "Váš tým řídí AI, protože jste byli pryč.",
+      "takingCharge": "Přebíráte vedení týmu…",
+      "orderTakesCharge": "Odesláním pokynu získáte vedení zpět.",
+      "seeResult": "Zobrazit výsledek",
+      "reconnecting": "Spojení ztraceno — připojuji znovu…",
+      "halfTime": "Poločas — druhý poločas začne asi za {{seconds}} s.",
+      "hurt": "{{player}} je zraněný. Vystřídejte ho do {{seconds}} s, jinak to udělá AI.",
+      "hurtNow": "{{player}} je zraněný. AI ho právě střídá.",
+      "replace": "Vystřídat",
+      "leaveWarning": "Opustíte-li tuto obrazovku asi na 20 sekund, tým převezme AI.",
+      "scoreLine": "Skóre: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
+      "panels": "Panely zápasu",
+      "adjusted": "{{team}} upravil taktiku",
+      "touchline": "Postranní čára",
+      "playerOff": "Střídaný hráč",
+      "playerOn": "Střídající hráč",
+      "swapTitle": "Prohodit pozice",
+      "swapFirst": "První hráč",
+      "swapSecond": "Druhý hráč",
+      "swap": "Prohodit",
+      "order": {
+        "substitute": "{{on}} střídá {{off}}",
+        "swap": "{{a}} a {{b}} si prohodí pozice",
+        "formation": "Přejít na {{formation}}",
+        "playStyle": "Herní styl: {{style}}",
+        "other": "Pokyn"
+      },
+      "sent": {
+        "title": "Odeslané pokyny",
+        "pending": "— uplatní se v příští minutě…",
+        "applied": "— uplatněno",
+        "refused": "— odmítnuto",
+        "refusedWhy": "— odmítnuto: {{reason}}"
+      }
     }
   },
   "coach": {
