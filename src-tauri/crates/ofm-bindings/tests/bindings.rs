@@ -36,6 +36,8 @@ fn export_roots(cfg: &Config) {
         ofm_rules::setup::SetupIssue::export_all(cfg),
         ofm_rules::coach_progress::CoachRecord::export_all(cfg),
         ofm_rules::mastery_xp::MasteryGain::export_all(cfg),
+        ofm_rules::match_session::InputRecord::export_all(cfg),
+        ofm_rules::match_session::Controller::export_all(cfg),
         engine::MatchEvent::export_all(cfg),
         engine::live_match::MinuteResult::export_all(cfg),
         engine::live_match::MatchSnapshot::export_all(cfg),
@@ -68,9 +70,12 @@ fn files_under(dir: &Path) -> BTreeMap<String, String> {
     files
 }
 
-/// The declarations rendered now, in a fresh directory.
+/// The declarations rendered now, in a fresh directory. The tests run in parallel in one
+/// process, so each rendering gets a directory of its own.
 fn rendered() -> BTreeMap<String, String> {
-    let out = std::env::temp_dir().join(format!("ofm-bindings-{}", std::process::id()));
+    static RENDERINGS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+    let rendering = RENDERINGS.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+    let out = std::env::temp_dir().join(format!("ofm-bindings-{}-{rendering}", std::process::id()));
     let _ = std::fs::remove_dir_all(&out);
     export_roots(&config(&out));
     let mut files = files_under(&out);

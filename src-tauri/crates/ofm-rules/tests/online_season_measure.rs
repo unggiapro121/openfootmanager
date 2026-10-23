@@ -218,6 +218,7 @@ fn play(
         seed: MatchSeed(match_seed),
         ai_home: AiProfile::default(),
         ai_away: AiProfile::default(),
+        injury_window_steps: None,
     };
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);
     while !session.is_finished() {

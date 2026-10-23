@@ -661,6 +661,22 @@ impl LiveMatchState {
         self.sent_off.contains(player_id)
     }
 
+    /// The players of `side` hurt on the pitch and waiting to be replaced, in slot order.
+    pub fn injured_on_pitch(&self, side: Side) -> Vec<String> {
+        self.team_ref(side)
+            .players
+            .iter()
+            .filter(|player| self.injured.contains(&player.id))
+            .map(|player| player.id.clone())
+            .collect()
+    }
+
+    /// Every event of the match so far, in order: the steps' and those the commands between
+    /// them pushed (a substitution's), which no `MinuteResult` carries.
+    pub fn events(&self) -> &[MatchEvent] {
+        &self.events
+    }
+
     /// The score, home first.
     pub fn score(&self) -> (u8, u8) {
         (self.home_score, self.away_score)
