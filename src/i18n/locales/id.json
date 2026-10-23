@@ -3310,7 +3310,8 @@
         "saveWithoutAccount": "Karier ini belum terhubung ke akun manajer.",
         "managedByServer": "Akun pelatih dikelola oleh server akun.",
         "serverNotConfigured": "Game ini belum diatur dengan server akun.",
-        "serverUnexpected": "Server akun mengirim jawaban yang tidak bisa dibaca game."
+        "serverUnexpected": "Server akun mengirim jawaban yang tidak bisa dibaca game.",
+        "reportInvalid": "Laporan pertandingan tidak dapat diterima."
       },
       "teamNotFound": "Tim tidak ditemukan",
       "jobOffer": {
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "Kode salah atau sudah kedaluwarsa.",
         "refreshInvalid": "Sesimu telah berakhir. Silakan masuk lagi.",
         "unauthorized": "Sesimu telah berakhir. Silakan masuk lagi.",
-        "forbidden": "Kamu tidak diizinkan melakukan itu."
+        "forbidden": "Kamu tidak diizinkan melakukan itu.",
+        "refreshRaced": "Salinan lain dari game sedang memperbarui sesimu. Silakan coba lagi."
       },
       "validation": {
         "invalid": "Beberapa data tidak diterima. Periksa formulir dan coba lagi."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.",
       "unavailable": "Server akun sedang tidak tersedia. Coba lagi nanti.",
       "timeout": "Server akun terlalu lama menjawab.",
-      "internal": "Server akun mengalami kesalahan."
+      "internal": "Server akun mengalami kesalahan.",
+      "notFound": "Tidak ditemukan.",
+      "methodNotAllowed": "Tindakan ini tidak tersedia.",
+      "payloadTooLarge": "Permintaan terlalu besar.",
+      "idempotency": {
+        "keyRequired": "Permintaan tidak lengkap. Silakan coba lagi.",
+        "keyInvalid": "Permintaan tidak valid. Silakan coba lagi.",
+        "mismatch": "Tindakan ini sudah dikirim dengan data berbeda. Silakan mulai lagi."
+      },
+      "account": {
+        "regionChangeTooSoon": "Kamu baru saja mengganti wilayah. Kamu bisa menggantinya lagi mulai {{availableAt}}."
+      },
+      "club": {
+        "none": "Kamu belum menangani klub mana pun.",
+        "alreadyOwned": "Kamu sudah menangani sebuah klub.",
+        "noneFree": "Saat ini tidak ada klub yang kosong di wilayahmu. Silakan coba lagi sebentar lagi.",
+        "matchUnderway": "Klub itu sedang bertanding (kick-off {{kickoffAt}}). Coba lagi setelah pertandingan selesai.",
+        "takeoverLimit": "Kamu sudah mengambil sebuah klub musim ini.",
+        "setupInvalid": "Susunan pemain itu tidak bisa dipakai. Periksa pemain yang ditandai.",
+        "versionStale": "Klubmu berubah sejak kamu membukanya. Muat ulang lalu coba lagi.",
+        "nameTaken": "Nama itu sudah dipakai klub lain.",
+        "nameBlocked": "Nama itu tidak diizinkan.",
+        "renameLimit": "Kamu bisa mengganti nama klub sekali per musim."
+      },
+      "online": {
+        "notSignedIn": "Masuk ke akun online untuk bermain online.",
+        "unreachable": "Server online tidak dapat dijangkau. Periksa koneksimu lalu coba lagi.",
+        "serverUnexpected": "Server online mengirim jawaban yang tidak bisa dibaca game. Silakan coba lagi nanti.",
+        "routeNotAllowed": "Tindakan online itu tidak tersedia di versi game ini.",
+        "clientOutdated": "Diperlukan versi game yang lebih baru untuk bermain online. Silakan perbarui game.",
+        "serverOutdated": "Server online sedang diperbarui. Silakan coba lagi nanti."
+      }
     },
     "sender": {
       "boardOfDirectors": "Dewan Direksi",

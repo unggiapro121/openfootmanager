@@ -3310,7 +3310,8 @@
         "saveWithoutAccount": "Bu kariyerin henüz bir menajer hesabı yok.",
         "managedByServer": "Teknik direktör hesaplarını hesap sunucusu yönetir.",
         "serverNotConfigured": "Bu oyun için bir hesap sunucusu ayarlanmamış.",
-        "serverUnexpected": "Hesap sunucusu oyunun okuyamadığı bir yanıt gönderdi."
+        "serverUnexpected": "Hesap sunucusu oyunun okuyamadığı bir yanıt gönderdi.",
+        "reportInvalid": "Maç raporu kabul edilemedi."
       },
       "teamNotFound": "Takım bulunamadı",
       "jobOffer": {
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "Kod yanlış ya da süresi dolmuş.",
         "refreshInvalid": "Oturumun sona erdi. Yeniden giriş yap.",
         "unauthorized": "Oturumun sona erdi. Yeniden giriş yap.",
-        "forbidden": "Bunu yapma iznin yok."
+        "forbidden": "Bunu yapma iznin yok.",
+        "refreshRaced": "Oyunun başka bir kopyası oturumunu yeniliyor. Lütfen tekrar dene."
       },
       "validation": {
         "invalid": "Bazı bilgiler kabul edilmedi. Formu kontrol edip yeniden dene."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Çok fazla deneme. Biraz bekleyip yeniden dene.",
       "unavailable": "Hesap sunucusuna şu anda ulaşılamıyor. Daha sonra yeniden dene.",
       "timeout": "Hesap sunucusu çok geç yanıt verdi.",
-      "internal": "Hesap sunucusunda bir hata oluştu."
+      "internal": "Hesap sunucusunda bir hata oluştu.",
+      "notFound": "Bulunamadı.",
+      "methodNotAllowed": "Bu işlem kullanılamıyor.",
+      "payloadTooLarge": "İstek çok büyük.",
+      "idempotency": {
+        "keyRequired": "İstek eksikti. Lütfen tekrar dene.",
+        "keyInvalid": "İstek geçersiz. Lütfen tekrar dene.",
+        "mismatch": "Bu işlem farklı bilgilerle zaten gönderildi. Lütfen baştan başla."
+      },
+      "account": {
+        "regionChangeTooSoon": "Bölgeni kısa süre önce değiştirdin. {{availableAt}} tarihinden itibaren yeniden değiştirebilirsin."
+      },
+      "club": {
+        "none": "Henüz bir kulüp yönetmiyorsun.",
+        "alreadyOwned": "Zaten bir kulüp yönetiyorsun.",
+        "noneFree": "Şu anda bölgende boş kulüp yok. Lütfen biraz sonra tekrar dene.",
+        "matchUnderway": "Bu kulübün devam eden bir maçı var (başlama {{kickoffAt}}). Maç bitince tekrar dene.",
+        "takeoverLimit": "Bu sezon zaten bir kulüp aldın.",
+        "setupInvalid": "Bu kadro kullanılamaz. İşaretli oyuncuları kontrol et.",
+        "versionStale": "Kulübün sen açtığından beri değişti. Yenileyip tekrar dene.",
+        "nameTaken": "Bu ad başka bir kulübe ait.",
+        "nameBlocked": "Bu ada izin verilmiyor.",
+        "renameLimit": "Kulübünün adını sezonda bir kez değiştirebilirsin."
+      },
+      "online": {
+        "notSignedIn": "Çevrim içi oynamak için çevrim içi hesabına giriş yap.",
+        "unreachable": "Çevrim içi sunucuya ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",
+        "serverUnexpected": "Çevrim içi sunucu, oyunun okuyamadığı bir yanıt gönderdi. Lütfen daha sonra tekrar dene.",
+        "routeNotAllowed": "Bu çevrim içi işlem oyunun bu sürümünde yok.",
+        "clientOutdated": "Çevrim içi oynamak için oyunun daha yeni bir sürümü gerekiyor. Lütfen oyunu güncelle.",
+        "serverOutdated": "Çevrim içi sunucu güncelleniyor. Lütfen daha sonra tekrar dene."
+      }
     },
     "sender": {
       "boardOfDirectors": "Yönetim Kurulu",

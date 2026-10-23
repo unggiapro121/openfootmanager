@@ -10,44 +10,56 @@ vi.mock("@tauri-apps/api/core", () => ({
   invoke: (...args: unknown[]) => invokeMock(...args),
 }));
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({
-    t: (key: string, params?: Record<string, string | number>, fallback?: string) => {
-      if (key === "common.noTeam") return "No team";
-      if (key === "training.staffAlert") return "Staff alert";
-      if (key === "training.staffWarning") return "Staff warning";
-      if (key === "training.staffSuggestion") return "Staff suggestion";
-      if (key === "training.staffAdvice.critical")
-        return `Critical advice ${params?.criticalCount} ${params?.scheduleAdvice}`;
-      if (key === "training.staffAdvice.warn")
-        return `Warning advice ${params?.avgCondition} ${params?.exhaustedCount} ${params?.scheduleAdvice}`;
-      if (key === "training.staffAdvice.ok") return "Squad is in a good place";
-      if (key === "training.weeklySchedule") return "Weekly Schedule";
-      if (key === "training.trainingFocus") return "Training Focus";
-      if (key === "training.intensity") return "Intensity";
-      if (key === "training.trainingAppliedNote") return "Applied note";
-      if (key === "training.recoveryNote") return "Recovery note";
-      if (key === "training.squadFitness") return "Squad Fitness";
-      if (key === "training.playerFitness") return "Player Fitness";
-      if (key === "training.groups.trainingGroups") return "Training Groups";
-      if (key === "training.groups.noGroups") return "No groups";
-      if (key === "training.todayIs") return `${params?.day} is ${params?.type}`;
-      if (key === "training.aTrainingDay") return "a training day";
-      if (key === "training.aRestDay") return "a rest day";
-      if (key === "training.train") return "Train";
-      if (key === "training.rest") return "Rest";
-      if (key.startsWith("training.schedules.")) return key.replace("training.schedules.", "");
-      if (key.startsWith("training.staffAdvice.scheduleAdvice.")) {
-        return key.replace("training.staffAdvice.scheduleAdvice.", "");
-      }
-      if (key.startsWith("training.focuses.")) return key.replace("training.focuses.", "");
-      if (key.startsWith("training.intensities.")) return key.replace("training.intensities.", "");
-      if (key.startsWith("training.days.")) return key.replace("training.days.", "");
-      if (key.startsWith("common.attributes.")) return key.replace("common.attributes.", "");
-      return fallback ?? key;
-    },
-  }),
-}));
+vi.mock("react-i18next", () => {
+  const mocked = {
+    useTranslation: () => ({
+      t: (key: string, params?: Record<string, string | number>, fallback?: string) => {
+        if (key === "common.noTeam") return "No team";
+        if (key === "training.staffAlert") return "Staff alert";
+        if (key === "training.staffWarning") return "Staff warning";
+        if (key === "training.staffSuggestion") return "Staff suggestion";
+        if (key === "training.staffAdvice.critical")
+          return `Critical advice ${params?.criticalCount} ${params?.scheduleAdvice}`;
+        if (key === "training.staffAdvice.warn")
+          return `Warning advice ${params?.avgCondition} ${params?.exhaustedCount} ${params?.scheduleAdvice}`;
+        if (key === "training.staffAdvice.ok") return "Squad is in a good place";
+        if (key === "training.weeklySchedule") return "Weekly Schedule";
+        if (key === "training.trainingFocus") return "Training Focus";
+        if (key === "training.intensity") return "Intensity";
+        if (key === "training.trainingAppliedNote") return "Applied note";
+        if (key === "training.recoveryNote") return "Recovery note";
+        if (key === "training.squadFitness") return "Squad Fitness";
+        if (key === "training.playerFitness") return "Player Fitness";
+        if (key === "training.groups.trainingGroups") return "Training Groups";
+        if (key === "training.groups.noGroups") return "No groups";
+        if (key === "training.todayIs") return `${params?.day} is ${params?.type}`;
+        if (key === "training.aTrainingDay") return "a training day";
+        if (key === "training.aRestDay") return "a rest day";
+        if (key === "training.train") return "Train";
+        if (key === "training.rest") return "Rest";
+        if (key.startsWith("training.schedules.")) return key.replace("training.schedules.", "");
+        if (key.startsWith("training.staffAdvice.scheduleAdvice.")) {
+          return key.replace("training.staffAdvice.scheduleAdvice.", "");
+        }
+        if (key.startsWith("training.focuses.")) return key.replace("training.focuses.", "");
+        if (key.startsWith("training.intensities."))
+          return key.replace("training.intensities.", "");
+        if (key.startsWith("training.days.")) return key.replace("training.days.", "");
+        if (key.startsWith("common.attributes.")) return key.replace("common.attributes.", "");
+        return fallback ?? key;
+      },
+    }),
+  };
+  // Trans renders the mocked `t` of its key and values, as text.
+  const Trans = ({
+    i18nKey,
+    values,
+  }: {
+    i18nKey: string;
+    values?: Record<string, string | number>;
+  }) => mocked.useTranslation().t(i18nKey, values);
+  return { ...mocked, Trans };
+});
 
 function createTeam(overrides: Partial<TeamData> = {}): TeamData {
   return {

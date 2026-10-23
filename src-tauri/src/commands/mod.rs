@@ -8,6 +8,7 @@ pub mod live_match;
 pub mod manager_progression;
 pub mod messages;
 pub mod offer_replies;
+pub mod online;
 pub mod package_csv;
 pub mod package_editor;
 mod package_layout;
@@ -35,6 +36,7 @@ pub use jobs::*;
 pub use live_match::*;
 pub use manager_progression::*;
 pub use messages::*;
+pub use online::*;
 pub use package_csv::{export_players_csv, export_teams_csv};
 pub use package_editor::{
     build_ofm, copy_package_asset, create_package_project, create_world_project,

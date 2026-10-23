@@ -3310,7 +3310,8 @@
         "saveWithoutAccount": "Tato kariéra zatím nemá účet manažera.",
         "managedByServer": "Trenérské účty spravuje server účtů.",
         "serverNotConfigured": "Pro tuto hru není nastaven žádný server účtů.",
-        "serverUnexpected": "Server účtů poslal odpověď, kterou hra neumí přečíst."
+        "serverUnexpected": "Server účtů poslal odpověď, kterou hra neumí přečíst.",
+        "reportInvalid": "Zápis o zápase nelze přijmout."
       },
       "teamNotFound": "Tým nebyl nalezen",
       "jobOffer": {
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "Kód je špatný nebo vypršel.",
         "refreshInvalid": "Relace skončila. Přihlaste se znovu.",
         "unauthorized": "Relace skončila. Přihlaste se znovu.",
-        "forbidden": "K této akci nemáte oprávnění."
+        "forbidden": "K této akci nemáte oprávnění.",
+        "refreshRaced": "Jiná kopie hry právě obnovuje vaši relaci. Zkuste to znovu."
       },
       "validation": {
         "invalid": "Některé údaje nebyly přijaty. Zkontrolujte formulář a zkuste to znovu."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Příliš mnoho pokusů. Chvíli počkejte a zkuste to znovu.",
       "unavailable": "Server účtů je nedostupný. Zkuste to později.",
       "timeout": "Server účtů odpovídal příliš dlouho.",
-      "internal": "Na serveru účtů došlo k chybě."
+      "internal": "Na serveru účtů došlo k chybě.",
+      "notFound": "Nenalezeno.",
+      "methodNotAllowed": "Tato akce není dostupná.",
+      "payloadTooLarge": "Požadavek je příliš velký.",
+      "idempotency": {
+        "keyRequired": "Požadavek byl neúplný. Zkuste to znovu.",
+        "keyInvalid": "Požadavek je neplatný. Zkuste to znovu.",
+        "mismatch": "Tato akce už byla odeslána s jinými údaji. Začněte ji znovu."
+      },
+      "account": {
+        "regionChangeTooSoon": "Region jste nedávno změnili. Znovu jej můžete změnit od {{availableAt}}."
+      },
+      "club": {
+        "none": "Zatím nevedete žádný klub.",
+        "alreadyOwned": "Už vedete klub.",
+        "noneFree": "Ve vašem regionu teď není žádný volný klub. Zkuste to za chvíli znovu.",
+        "matchUnderway": "Tento klub právě hraje zápas (výkop {{kickoffAt}}). Zkuste to po jeho skončení.",
+        "takeoverLimit": "V této sezóně jste už klub převzali.",
+        "setupInvalid": "Tuto sestavu nelze použít. Zkontrolujte označené hráče.",
+        "versionStale": "Váš klub se od otevření změnil. Načtěte jej znovu a zkuste to znovu.",
+        "nameTaken": "Tento název už má jiný klub.",
+        "nameBlocked": "Tento název není povolen.",
+        "renameLimit": "Klub můžete přejmenovat jednou za sezónu."
+      },
+      "online": {
+        "notSignedIn": "Pro hru online se přihlaste ke svému online účtu.",
+        "unreachable": "Online server je nedostupný. Zkontrolujte připojení a zkuste to znovu.",
+        "serverUnexpected": "Online server poslal odpověď, kterou hra nedokáže přečíst. Zkuste to později.",
+        "routeNotAllowed": "Tato online akce není v této verzi hry dostupná.",
+        "clientOutdated": "Pro hru online je potřeba novější verze hry. Aktualizujte hru.",
+        "serverOutdated": "Online server se právě aktualizuje. Zkuste to později."
+      }
     },
     "sender": {
       "boardOfDirectors": "Představenstvo",

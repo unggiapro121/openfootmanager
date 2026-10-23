@@ -72,6 +72,31 @@ pub struct Headers<'a> {
     pub idempotency_key: Option<&'a str>,
 }
 
+/// A request the online proxy sends as it is (E3-6c): the method, the URL built from checked
+/// segments, and only the headers allowed through.
+pub struct RawRequest<'a> {
+    pub method: &'a str,
+    pub url: &'a url::Url,
+    pub body: Option<&'a serde_json::Value>,
+    pub bearer: &'a str,
+    pub if_match: Option<&'a str>,
+    pub idempotency_key: Option<&'a str>,
+    pub timeout: Duration,
+}
+
+/// Whatever the server answered, error or not, with the headers the client reads.
+#[derive(Debug, Clone, PartialEq)]
+pub struct RawResponse {
+    pub status: u16,
+    /// `null` for an empty body; the text as a string when it is not JSON.
+    pub body: serde_json::Value,
+    pub retry_after_seconds: Option<u64>,
+    pub contract_revision: Option<u32>,
+}
+
+/// The header that carries the server's contract revision (`contract::CONTRACT_REVISION_HEADER`).
+const CONTRACT_REVISION_HEADER: &str = "ofm-contract-revision";
+
 pub struct ApiClient {
     agent: ureq::Agent,
     base_url: String,
@@ -92,6 +117,72 @@ impl ApiClient {
             agent,
             base_url: base_url.trim_end_matches('/').to_string(),
         }
+    }
+
+    /// The server's base URL, which the online proxy builds its URLs on.
+    pub fn base_url(&self) -> &str {
+        &self.base_url
+    }
+
+    /// Send `request` and return the answer whatever its status; only no answer at all is an
+    /// error.
+    pub fn send_raw(&self, request: &RawRequest<'_>) -> Result<RawResponse, ApiError> {
+        let mut builder = ureq::http::Request::builder()
+            .method(request.method)
+            .uri(request.url.as_str())
+            .header("Authorization", format!("Bearer {}", request.bearer));
+        if let Some(version) = request.if_match {
+            builder = builder.header("If-Match", version);
+        }
+        if let Some(key) = request.idempotency_key {
+            builder = builder.header("Idempotency-Key", key);
+        }
+        let body = match request.body {
+            Some(value) => {
+                builder = builder.header("Content-Type", "application/json");
+                value.to_string()
+            }
+            None => String::new(),
+        };
+        let http = builder.body(body).map_err(|_| ApiError::Rejected {
+            status: 0,
+            code: UNEXPECTED.to_string(),
+        })?;
+        let http = self
+            .agent
+            .configure_request(http)
+            .timeout_global(Some(request.timeout))
+            .build();
+        let mut response = self.agent.run(http).map_err(|error| {
+            log::warn!("[online] no answer: {error}");
+            ApiError::Unreachable
+        })?;
+        let header_number = |name: &str| {
+            response
+                .headers()
+                .get(name)
+                .and_then(|value| value.to_str().ok())
+                .and_then(|value| value.trim().parse::<u64>().ok())
+        };
+        let retry_after_seconds = header_number("retry-after");
+        let contract_revision =
+            header_number(CONTRACT_REVISION_HEADER).and_then(|value| u32::try_from(value).ok());
+        let status = response.status().as_u16();
+        let text = response
+            .body_mut()
+            .read_to_string()
+            .map_err(|_| ApiError::Unreachable)?;
+        let body = if text.trim().is_empty() {
+            serde_json::Value::Null
+        } else {
+            serde_json::from_str(&text).unwrap_or(serde_json::Value::String(text))
+        };
+        Ok(RawResponse {
+            status,
+            body,
+            retry_after_seconds,
+            contract_revision,
+        })
     }
 
     pub fn get<T: DeserializeOwned>(

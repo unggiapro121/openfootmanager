@@ -13,6 +13,9 @@ const sources = import.meta.glob(["./**/*.{ts,tsx}", "!./**/*.test.{ts,tsx}", "!
 }) as Record<string, string>;
 
 const TAURI_API_IMPORT = /from\s+["']@tauri-apps\/api(\/[\w-]+)?["']/;
+const ONLINE_API_IMPORT = /from\s+["'][^"']*online\/api(\/[^"']*)?["']/;
+const CORE_BINDINGS_IMPORT = /from\s+["'][^"']*bindings\/core(\/[^"']*)?["']/;
+const RAW_HTML_IGNORE = /biome-ignore[^\n]*noDangerouslySetInnerHtml/;
 
 describe("frontend architecture", () => {
   // Given every production source file,
@@ -25,6 +28,51 @@ describe("frontend architecture", () => {
       .filter(([path, text]) => !path.startsWith("./services/") && TAURI_API_IMPORT.test(text))
       .map(([path]) => path)
       .sort();
+
+    expect(offenders).toEqual([]);
+  });
+
+  // Given every production source file,
+  // when its imports are read,
+  // then only the online client (`src/online/`) reads the server's declarations: a screen gets
+  // online data through it, never by typing the wire format itself (E3-6 E6-19).
+  it("keeps the online API's declarations inside src/online", () => {
+    const offenders = Object.entries(sources)
+      .filter(([path, text]) => !path.startsWith("./online/") && ONLINE_API_IMPORT.test(text))
+      .map(([path]) => path)
+      .sort();
+
+    expect(offenders).toEqual([]);
+  });
+
+  // Given the online client's files,
+  // when their imports are read,
+  // then the fork's own core types are reached only from `src/online/convert/`: online data
+  // becomes a core type through a typed conversion, where a difference fails `tsc`, and is never
+  // passed through as is (E6-19).
+  it("converts online data to core types only in src/online/convert", () => {
+    const offenders = Object.entries(sources)
+      .filter(
+        ([path, text]) =>
+          path.startsWith("./online/") &&
+          !path.startsWith("./online/convert/") &&
+          !path.startsWith("./online/api/") &&
+          CORE_BINDINGS_IMPORT.test(text),
+      )
+      .map(([path]) => path)
+      .sort();
+
+    expect(offenders).toEqual([]);
+  });
+
+  // Given the online client's files,
+  // when they are searched,
+  // then none silences Biome's rule against raw HTML: online text comes from other players
+  // (club names) and must never be rendered as markup (E6-17).
+  it("never lets raw HTML through in src/online", () => {
+    const offenders = Object.entries(sources)
+      .filter(([path, text]) => path.startsWith("./online/") && RAW_HTML_IGNORE.test(text))
+      .map(([path]) => path);
 
     expect(offenders).toEqual([]);
   });

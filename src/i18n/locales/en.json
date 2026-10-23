@@ -3310,7 +3310,8 @@
         "saveWithoutAccount": "This career has no coach account yet.",
         "managedByServer": "Coach accounts are managed by the account server.",
         "serverNotConfigured": "No account server is set up for this game.",
-        "serverUnexpected": "The account server sent an answer the game could not read."
+        "serverUnexpected": "The account server sent an answer the game could not read.",
+        "reportInvalid": "The match report could not be accepted."
       },
       "teamNotFound": "Team not found",
       "jobOffer": {
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "This code is wrong or has expired.",
         "refreshInvalid": "Your session has ended. Log in again.",
         "unauthorized": "Your session has ended. Log in again.",
-        "forbidden": "You are not allowed to do that."
+        "forbidden": "You are not allowed to do that.",
+        "refreshRaced": "Another copy of the game is renewing your session. Please try again."
       },
       "validation": {
         "invalid": "Some details were not accepted. Check the form and try again."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Too many attempts. Wait a moment and try again.",
       "unavailable": "The account server is unavailable. Try again later.",
       "timeout": "The account server took too long to answer.",
-      "internal": "The account server ran into an error."
+      "internal": "The account server ran into an error.",
+      "notFound": "That could not be found.",
+      "methodNotAllowed": "That action is not available.",
+      "payloadTooLarge": "That request is too large.",
+      "idempotency": {
+        "keyRequired": "The request was incomplete. Please try again.",
+        "keyInvalid": "The request was malformed. Please try again.",
+        "mismatch": "This action was already sent with different details. Please start it again."
+      },
+      "account": {
+        "regionChangeTooSoon": "You changed your region recently. You can change it again from {{availableAt}}."
+      },
+      "club": {
+        "none": "You are not running a club yet.",
+        "alreadyOwned": "You already run a club.",
+        "noneFree": "No club is free in your region right now. Please try again in a moment.",
+        "matchUnderway": "That club has a match under way (kick-off {{kickoffAt}}). Try again once it is over.",
+        "takeoverLimit": "You have already taken a club this season.",
+        "setupInvalid": "That line-up cannot be used. Check the players marked.",
+        "versionStale": "Your club changed since you opened it. Reload it and try again.",
+        "nameTaken": "Another club already has that name.",
+        "nameBlocked": "That name is not allowed.",
+        "renameLimit": "You can rename your club once a season."
+      },
+      "online": {
+        "notSignedIn": "Sign in to your online account to play online.",
+        "unreachable": "The online server cannot be reached. Check your connection and try again.",
+        "serverUnexpected": "The online server sent an answer the game could not read. Please try again later.",
+        "routeNotAllowed": "That online action is not available in this version of the game.",
+        "clientOutdated": "A newer version of the game is needed to play online. Please update the game.",
+        "serverOutdated": "The online server is being updated. Please try again later."
+      }
     },
     "sender": {
       "boardOfDirectors": "Board of Directors",

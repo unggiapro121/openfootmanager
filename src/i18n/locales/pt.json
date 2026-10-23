@@ -3470,7 +3470,8 @@
         "saveWithoutAccount": "Esta carreira ainda não tem conta de treinador.",
         "managedByServer": "As contas de treinador são geridas pelo servidor de contas.",
         "serverNotConfigured": "Este jogo não tem um servidor de contas configurado.",
-        "serverUnexpected": "O servidor de contas enviou uma resposta que o jogo não consegue ler."
+        "serverUnexpected": "O servidor de contas enviou uma resposta que o jogo não consegue ler.",
+        "reportInvalid": "Não foi possível aceitar o relatório do jogo."
       },
       "finance": {
         "boardSupportUnavailable": "O apoio de emergência da direção só está disponível quando a tesouraria está sob pressão.",
@@ -3581,7 +3582,8 @@
         "tokenInvalid": "O código está errado ou expirou.",
         "refreshInvalid": "A sua sessão terminou. Inicie sessão novamente.",
         "unauthorized": "A sua sessão terminou. Inicie sessão novamente.",
-        "forbidden": "Não tem permissão para fazer isso."
+        "forbidden": "Não tem permissão para fazer isso.",
+        "refreshRaced": "Outra cópia do jogo está a renovar a tua sessão. Tenta novamente."
       },
       "validation": {
         "invalid": "Alguns dados não foram aceites. Reveja o formulário e tente novamente."
@@ -3589,7 +3591,38 @@
       "rateLimited": "Demasiadas tentativas. Aguarde um momento e tente novamente.",
       "unavailable": "O servidor de contas está indisponível. Tente mais tarde.",
       "timeout": "O servidor de contas demorou demasiado a responder.",
-      "internal": "O servidor de contas teve um erro."
+      "internal": "O servidor de contas teve um erro.",
+      "notFound": "Não foi possível encontrar.",
+      "methodNotAllowed": "Essa ação não está disponível.",
+      "payloadTooLarge": "O pedido é demasiado grande.",
+      "idempotency": {
+        "keyRequired": "O pedido estava incompleto. Tenta novamente.",
+        "keyInvalid": "O pedido não é válido. Tenta novamente.",
+        "mismatch": "Esta ação já foi enviada com outros dados. Começa-a de novo."
+      },
+      "account": {
+        "regionChangeTooSoon": "Mudaste de região há pouco. Podes mudá-la de novo a partir de {{availableAt}}."
+      },
+      "club": {
+        "none": "Ainda não estás a treinar nenhum clube.",
+        "alreadyOwned": "Já treinas um clube.",
+        "noneFree": "Neste momento não há nenhum clube livre na tua região. Tenta novamente daqui a pouco.",
+        "matchUnderway": "Esse clube tem um jogo a decorrer (início {{kickoffAt}}). Tenta quando terminar.",
+        "takeoverLimit": "Já assumiste um clube nesta época.",
+        "setupInvalid": "Essa formação não pode ser usada. Verifica os jogadores assinalados.",
+        "versionStale": "O teu clube mudou desde que o abriste. Recarrega-o e tenta novamente.",
+        "nameTaken": "Outro clube já tem esse nome.",
+        "nameBlocked": "Esse nome não é permitido.",
+        "renameLimit": "Podes mudar o nome do teu clube uma vez por época."
+      },
+      "online": {
+        "notSignedIn": "Inicia sessão na tua conta online para jogar online.",
+        "unreachable": "Não é possível ligar ao servidor online. Verifica a tua ligação e tenta novamente.",
+        "serverUnexpected": "O servidor online enviou uma resposta que o jogo não consegue ler. Tenta mais tarde.",
+        "routeNotAllowed": "Essa ação online não está disponível nesta versão do jogo.",
+        "clientOutdated": "É necessária uma versão mais recente do jogo para jogar online. Atualiza o jogo.",
+        "serverOutdated": "O servidor online está a ser atualizado. Tenta mais tarde."
+      }
     },
     "sender": {
       "boardOfDirectors": "Conselho de Administração",

@@ -69,6 +69,10 @@ tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-opener = "2"
 tauri-plugin-log = "2"
 tauri-plugin-dialog = "2"
+# One copy of the game at a time: a second launch brings the running window forward. Two copies
+# would share the account server's refresh token in the keychain and race to rotate it (phase 3
+# E3-6c, E6-20); the server's race window is only the fallback.
+tauri-plugin-single-instance = "2"
 log = "0.4"
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
@@ -101,6 +105,8 @@ csv = "1"
 zip = { version = "2", features = ["deflate"] }
 tempfile = "3"
 ureq = "3"
+# Builds the online proxy's URLs from checked segments, never by joining strings (E3-6c).
+url = "2"
 keyring = { version = "3", features = ["apple-native", "windows-native", "linux-native"] }
 
 # Dev builds (`tauri dev`) otherwise run the whole simulation unoptimized, which
