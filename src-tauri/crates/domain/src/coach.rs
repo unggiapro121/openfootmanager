@@ -13,6 +13,7 @@ use crate::manager::{PlayStyleMastery, StyleXp};
 /// at a fixed hour of a fixed offset (no summer time), as regional servers of
 /// online games keep it: changing the machine's clock or zone moves nothing.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum CoachRegion {
     /// UTC+7.
     #[default]
@@ -43,6 +44,7 @@ pub struct CoachAccount {
 /// Official matches and trophies across every career of the account.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct CoachTotals {
     pub matches: u32,
     pub wins: u32,
@@ -54,6 +56,7 @@ pub struct CoachTotals {
 /// The day's allowance of matches that earn XP.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct DailyAllowance {
     /// The region day the count belongs to: whole days since the epoch, each
     /// starting at the region's reset hour.
@@ -68,6 +71,7 @@ pub struct DailyAllowance {
 /// What the account has built up.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct CoachProgress {
     pub mastery: PlayStyleMastery,
     pub style_xp: StyleXp,

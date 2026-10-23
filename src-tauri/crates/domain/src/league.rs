@@ -253,6 +253,7 @@ pub struct TransferRumour {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum FixtureCompetition {
     #[default]
     League,

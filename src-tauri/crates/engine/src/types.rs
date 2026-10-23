@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum Position {
     Goalkeeper,
     Defender,
@@ -17,6 +18,7 @@ pub enum Position {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum PlayStyle {
     Balanced,
     Attacking,
@@ -31,6 +33,7 @@ pub enum PlayStyle {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum PlayerRole {
     // Goalkeeper
     #[default]
@@ -79,6 +82,7 @@ pub enum PlayerRole {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct PlayerData {
     pub id: String,
     pub name: String,
@@ -169,6 +173,7 @@ pub struct PlayerData {
 
 /// A player's stronger foot — mirrors `domain::player::Footedness`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum Foot {
     Left,
     #[default]
@@ -266,6 +271,7 @@ impl PlayerData {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum PressingIntensity {
     Passive,
     #[default]
@@ -274,6 +280,7 @@ pub enum PressingIntensity {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum DefensiveLine {
     VeryLow,
     Low,
@@ -283,6 +290,7 @@ pub enum DefensiveLine {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum TacticsPitchWidth {
     Narrow,
     #[default]
@@ -291,6 +299,7 @@ pub enum TacticsPitchWidth {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum TacticsBuildUpStyle {
     Short,
     #[default]
@@ -299,6 +308,7 @@ pub enum TacticsBuildUpStyle {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum MarkingStyle {
     #[default]
     Zonal,
@@ -307,6 +317,7 @@ pub enum MarkingStyle {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum Tempo {
     Patient,
     #[default]
@@ -314,6 +325,7 @@ pub enum Tempo {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum DefensiveShape {
     Stretched,
     #[default]
@@ -322,6 +334,7 @@ pub enum DefensiveShape {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum CounterPressDuration {
     #[default]
     None,
@@ -330,6 +343,7 @@ pub enum CounterPressDuration {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum BreakSpeed {
     Slow,
     #[default]
@@ -339,6 +353,7 @@ pub enum BreakSpeed {
 
 /// How a side crosses from the flank (phase 2, P3.4, decisions X6, X55).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum CrossStyle {
     /// Two crosses in three in the air, the third along the ground.
     #[default]
@@ -355,6 +370,7 @@ pub enum CrossStyle {
 /// offside trap (phase 2, after GĐ5; `analysis-offside.md`). More runners
 /// flagged, and a runner who beats it is through.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum OffsideTrap {
     #[default]
     Off,
@@ -362,6 +378,7 @@ pub enum OffsideTrap {
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct TacticsConfig {
     pub pressing_intensity: PressingIntensity,
     pub defensive_line: DefensiveLine,
@@ -395,6 +412,7 @@ pub struct TacticsConfig {
 /// the whole side attacking" are not the same instruction, and a side that is
 /// already attacking had nothing left to say.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum TacticalDial {
     PressingIntensity(PressingIntensity),
     DefensiveLine(DefensiveLine),
@@ -433,6 +451,7 @@ impl TacticalDial {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct TeamData {
     pub id: String,
     pub name: String,
@@ -453,6 +472,7 @@ pub struct TeamData {
 /// `ofm_core::turn`; 50 is neutral.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub struct CoachMastery {
     pub balanced: u8,
     pub attacking: u8,
@@ -623,6 +643,7 @@ impl Default for MatchConfig {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum Side {
     Home,
     Away,
@@ -642,6 +663,7 @@ impl Side {
 // ---------------------------------------------------------------------------
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "engine/"))]
 pub enum Zone {
     HomeBox,
     HomeDefense,

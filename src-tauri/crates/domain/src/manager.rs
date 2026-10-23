@@ -67,6 +67,7 @@ pub struct ManagerProgression {
 /// One play style's progress toward its next mastery point.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct StyleProgress {
     /// XP banked toward the next point; spent as each point is reached.
     pub xp: u32,
@@ -77,6 +78,7 @@ pub struct StyleProgress {
 /// [`StyleProgress`] for every play style, keyed like [`PlayStyleMastery`].
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase", default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct StyleXp {
     pub balanced: StyleProgress,
     pub attacking: StyleProgress,
@@ -141,6 +143,7 @@ pub struct Honour {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub enum HonourKind {
     League,
     DomesticCup,
@@ -158,6 +161,7 @@ pub const NEUTRAL_MASTERY: u8 = 50;
 /// style names ("Balanced" … "HighPress"), the ids the frontend already uses.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase", default)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "domain/"))]
 pub struct PlayStyleMastery {
     pub balanced: u8,
     pub attacking: u8,

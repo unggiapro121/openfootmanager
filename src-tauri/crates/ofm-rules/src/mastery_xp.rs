@@ -87,6 +87,7 @@ pub fn bank_style_xp(
 /// What a match the user managed did for their mastery of the style their
 /// side started it in.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[cfg_attr(feature = "ts", derive(ts_rs::TS), ts(export_to = "rules/"))]
 pub struct MasteryGain {
     pub style: PlayStyle,
     pub xp: u32,
