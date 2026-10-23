@@ -3783,6 +3783,12 @@
         "notYourSide": "Solo puedes dar órdenes a tu propio equipo.",
         "tooManyCommands": "Hay demasiadas órdenes en espera. Espera a que se apliquen las anteriores."
       },
+      "realtime": {
+        "badMessage": "El juego envió al servidor en directo un mensaje que no pudo leer.",
+        "unknownChannel": "Ese partido o liga no se puede seguir en directo.",
+        "tooManyChannels": "Estás siguiendo demasiados partidos y ligas a la vez. Cierra uno e inténtalo de nuevo.",
+        "tokenRefused": "La conexión en directo no pudo renovar tu sesión. Vuelve a iniciar sesión si sigue ocurriendo."
+      },
       "online": {
         "notSignedIn": "Inicia sesión en tu cuenta online para jugar online.",
         "unreachable": "No se puede conectar con el servidor online. Revisa tu conexión e inténtalo de nuevo.",

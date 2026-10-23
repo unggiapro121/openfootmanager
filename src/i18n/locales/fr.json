@@ -3783,6 +3783,12 @@
         "notYourSide": "Vous ne pouvez donner des consignes qu'à votre propre équipe.",
         "tooManyCommands": "Trop de consignes sont en attente. Attendez que les précédentes soient appliquées."
       },
+      "realtime": {
+        "badMessage": "Le jeu a envoyé au serveur en direct un message qu'il n'a pas pu lire.",
+        "unknownChannel": "Ce match ou ce championnat ne peut pas être suivi en direct.",
+        "tooManyChannels": "Trop de matchs et de championnats sont suivis en même temps. Fermez-en un et réessayez.",
+        "tokenRefused": "La connexion en direct n'a pas pu renouveler votre session. Reconnectez-vous si cela se reproduit."
+      },
       "online": {
         "notSignedIn": "Connectez-vous à votre compte en ligne pour jouer en ligne.",
         "unreachable": "Impossible de joindre le serveur en ligne. Vérifiez votre connexion et réessayez.",

@@ -293,6 +293,27 @@ impl ServerSession {
         }
     }
 
+    /// An access token good for at least `seconds` more, and when it expires (unix seconds): what
+    /// the realtime client opens and keeps its connection on (phase 3 S-8e). The one held is
+    /// refreshed when it runs out sooner, under the same lock as every refresh.
+    pub fn access_token_lasting(
+        &self,
+        now_unix: i64,
+        seconds: i64,
+    ) -> Result<(String, i64), ApiError> {
+        let mut tokens = lock(&self.tokens);
+        if let Some(live) = tokens.as_ref() {
+            if live.access_expires_unix.saturating_sub(seconds) > now_unix {
+                return Ok((live.access.clone(), live.access_expires_unix));
+            }
+        }
+        self.refresh(&mut tokens)?;
+        tokens
+            .as_ref()
+            .map(|tokens| (tokens.access.clone(), tokens.access_expires_unix))
+            .ok_or(ApiError::NoSession)
+    }
+
     fn access_token(&self, now_unix: i64) -> Result<String, ApiError> {
         let mut tokens = lock(&self.tokens);
         if let Some(live) = tokens.as_ref() {

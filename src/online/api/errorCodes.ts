@@ -47,6 +47,10 @@ export const ERROR_CODES = [
   "be.error.match.notLive",
   "be.error.match.notYourSide",
   "be.error.match.tooManyCommands",
+  "be.error.realtime.badMessage",
+  "be.error.realtime.unknownChannel",
+  "be.error.realtime.tooManyChannels",
+  "be.error.realtime.tokenRefused",
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];

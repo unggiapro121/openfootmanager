@@ -3783,6 +3783,12 @@
         "notYourSide": "Pokyny můžete dávat jen svému týmu.",
         "tooManyCommands": "Čeká příliš mnoho pokynů. Počkejte, až se použijí ty předchozí."
       },
+      "realtime": {
+        "badMessage": "Hra poslala živému serveru zprávu, kterou nedokázal přečíst.",
+        "unknownChannel": "Tento zápas nebo soutěž nelze sledovat živě.",
+        "tooManyChannels": "Sledujete příliš mnoho zápasů a soutěží najednou. Jeden zavřete a zkuste to znovu.",
+        "tokenRefused": "Živé připojení nedokázalo obnovit vaše přihlášení. Pokud se to opakuje, přihlaste se znovu."
+      },
       "online": {
         "notSignedIn": "Pro hru online se přihlaste ke svému online účtu.",
         "unreachable": "Online server je nedostupný. Zkontrolujte připojení a zkuste to znovu.",

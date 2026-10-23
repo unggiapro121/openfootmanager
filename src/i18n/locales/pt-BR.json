@@ -3783,6 +3783,12 @@
         "notYourSide": "Você só pode dar ordens ao seu próprio time.",
         "tooManyCommands": "Há ordens demais esperando. Aguarde as anteriores serem aplicadas."
       },
+      "realtime": {
+        "badMessage": "O jogo enviou ao servidor ao vivo uma mensagem que ele não conseguiu ler.",
+        "unknownChannel": "Essa partida ou liga não pode ser acompanhada ao vivo.",
+        "tooManyChannels": "Você está acompanhando partidas e ligas demais ao mesmo tempo. Feche uma e tente novamente.",
+        "tokenRefused": "A conexão ao vivo não conseguiu renovar seu login. Entre novamente se isso continuar acontecendo."
+      },
       "online": {
         "notSignedIn": "Entre na sua conta online para jogar online.",
         "unreachable": "Não foi possível conectar ao servidor online. Verifique sua conexão e tente novamente.",

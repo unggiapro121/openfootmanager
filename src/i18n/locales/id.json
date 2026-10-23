@@ -3783,6 +3783,12 @@
         "notYourSide": "Kamu hanya bisa memberi instruksi untuk timmu sendiri.",
         "tooManyCommands": "Terlalu banyak instruksi yang menunggu. Tunggu yang sebelumnya diterapkan."
       },
+      "realtime": {
+        "badMessage": "Game mengirim pesan ke server langsung yang tidak dapat dibacanya.",
+        "unknownChannel": "Pertandingan atau liga itu tidak dapat diikuti secara langsung.",
+        "tooManyChannels": "Terlalu banyak pertandingan dan liga diikuti sekaligus. Tutup salah satunya lalu coba lagi.",
+        "tokenRefused": "Koneksi langsung tidak dapat memperbarui sesi masuk Anda. Masuk lagi jika ini terus terjadi."
+      },
       "online": {
         "notSignedIn": "Masuk ke akun online untuk bermain online.",
         "unreachable": "Server online tidak dapat dijangkau. Periksa koneksimu lalu coba lagi.",

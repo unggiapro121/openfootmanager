@@ -5,8 +5,12 @@ import {
 } from "../services/onlineTransport";
 import type {
   AccountView,
+  CommandAccepted,
   FixtureDetailView,
+  FramesPage,
   LeagueView,
+  MatchView,
+  MineView,
   MyClubView,
   PublicClubView,
   RoundView,
@@ -16,6 +20,7 @@ import type {
   UpdateAccount,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
+import type { MatchCommand } from "./api/engine";
 import type { ClubSetup } from "./api/rules";
 import { OnlineApiError, toOnlineApiError } from "./errors";
 
@@ -118,5 +123,29 @@ export const online = {
   },
   fixtures: {
     byId: (fixtureId: string) => call<FixtureDetailView>(read(["v1", "fixtures", fixtureId])),
+  },
+  /** A live match (S-8): follow it with `watchMatch` from the view's `lastSeq` (`./live`). */
+  matches: {
+    byId: (matchId: string) => call<MatchView>(read(["v1", "matches", matchId])),
+    /** The caller's own side: its dials, roles, takers, and the orders they sent. */
+    mine: (matchId: string) => call<MineView>(read(["v1", "matches", matchId, "mine"])),
+    /** Frames after step `afterSeq`, up to `limit` (120 at most). */
+    frames: (matchId: string, afterSeq: number, limit?: number) =>
+      call<FramesPage>(
+        read(
+          ["v1", "matches", matchId, "frames"],
+          limit === undefined
+            ? [["afterSeq", String(afterSeq)]]
+            : [
+                ["afterSeq", String(afterSeq)],
+                ["limit", String(limit)],
+              ],
+        ),
+      ),
+    /** An order for the caller's side, applied in the next gap; its outcome comes in a frame. */
+    command: (matchId: string, command: MatchCommand, idempotencyKey = newKey()) =>
+      call<CommandAccepted>(
+        write("POST", ["v1", "matches", matchId, "commands"], idempotencyKey, { command }),
+      ),
   },
 };
