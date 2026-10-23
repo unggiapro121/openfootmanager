@@ -22,8 +22,6 @@
 //! 9. V1 safety rule: Physical + High → downgrade intensity to Medium.
 
 use crate::game::Game;
-use domain::team::PlayStyle;
-use ofm_rules::ai_training::session_plan;
 #[cfg(test)]
 use ofm_rules::ai_training::*;
 
@@ -33,6 +31,7 @@ use ofm_rules::ai_training::*;
 
 /// Average condition of the eleven this club would pick if nobody were tired
 /// (`ofm_rules::ai_training::likely_starters_condition`).
+#[cfg(test)]
 fn likely_starters_condition(game: &Game, team_id: &str) -> f64 {
     let available: Vec<&domain::player::Player> = game
         .players
@@ -45,36 +44,6 @@ fn likely_starters_condition(game: &Game, team_id: &str) -> f64 {
         .find(|t| t.id == team_id)
         .map_or("4-4-2", |t| t.formation.as_str());
     ofm_rules::ai_training::likely_starters_condition(&available, formation)
-}
-
-// ---------------------------------------------------------------------------
-// Per-team snapshot (immutable read, no borrows retained)
-// ---------------------------------------------------------------------------
-
-struct TeamSnapshot {
-    /// Average condition of the eleven best available players — see
-    /// [`likely_starters_condition`] for why it is not the squad average.
-    starters_condition: f64,
-    play_style: PlayStyle,
-    is_training_day: bool,
-}
-
-fn snapshot_team(game: &Game, team_id: &str, weekday_num: u32) -> TeamSnapshot {
-    let team = game.teams.iter().find(|t| t.id == team_id);
-    let (play_style, schedule) = team
-        .map(|t| (t.play_style.clone(), t.training_schedule.clone()))
-        .unwrap_or((
-            PlayStyle::Balanced,
-            domain::team::TrainingSchedule::Balanced,
-        ));
-
-    let is_training_day = schedule.is_training_day(weekday_num);
-
-    TeamSnapshot {
-        starters_condition: likely_starters_condition(game, team_id),
-        play_style,
-        is_training_day,
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -105,20 +74,13 @@ pub fn apply_ai_training_policies(game: &mut Game, weekday_num: u32) {
         .collect();
 
     for team_id in team_ids {
-        // Snapshot reads immutably and returns owned data — no borrow retained.
-        let snap = snapshot_team(game, &team_id, weekday_num);
-
-        // Rest day: no-op.
-        if !snap.is_training_day {
-            continue;
-        }
-
-        let (focus, intensity) =
-            session_plan(&snap.play_style, snap.starters_condition, weekday_num);
-
+        let available: Vec<&domain::player::Player> = game
+            .players
+            .iter()
+            .filter(|p| p.team_id.as_deref() == Some(team_id.as_str()) && p.injury.is_none())
+            .collect();
         if let Some(team) = game.teams.iter_mut().find(|t| t.id == team_id) {
-            team.training_focus = focus;
-            team.training_intensity = intensity;
+            ofm_rules::ai_training::plan_session(team, &available, weekday_num);
         }
     }
 }
@@ -136,7 +98,7 @@ mod tests {
     use domain::league::{Fixture, FixtureCompetition, FixtureStatus, League};
     use domain::manager::Manager;
     use domain::player::{Player, PlayerAttributes, Position};
-    use domain::team::{Team, TrainingFocus, TrainingIntensity, TrainingSchedule};
+    use domain::team::{PlayStyle, Team, TrainingFocus, TrainingIntensity, TrainingSchedule};
 
     fn default_attrs() -> PlayerAttributes {
         PlayerAttributes {

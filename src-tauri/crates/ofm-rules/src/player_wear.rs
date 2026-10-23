@@ -141,6 +141,21 @@ pub fn assign_match_injury(
     Some(injury)
 }
 
+/// `player` after `days` days of recovery: an injury with more days left than that has them
+/// taken off; one with no more is over (phase 3, E3-7: the game's daily recovery, which the online
+/// server applies for the days since it last looked). A player on his last day is fit the next.
+pub fn recover_injury(player: &mut Player, days: u32) {
+    if days == 0 {
+        return;
+    }
+    if let Some(mut injury) = player.injury.take()
+        && injury.days_remaining > days
+    {
+        injury.days_remaining -= days;
+        player.injury = Some(injury);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -357,5 +372,49 @@ mod tests {
             injured,
             "a low-fitness player should be injured within 500 rolls"
         );
+    }
+
+    fn injured(days: u32) -> Player {
+        let mut player = make_player(70);
+        player.injury = Some(Injury {
+            name: "be.injury.hamstring".to_string(),
+            days_remaining: days,
+        });
+        player
+    }
+
+    /// Given a player with five days of injury left,
+    /// when one day, then three more pass,
+    /// then four and then one day are left, and the next day he is fit.
+    #[test]
+    fn an_injury_counts_down_a_day_at_a_time() {
+        let mut player = injured(5);
+        recover_injury(&mut player, 1);
+        assert_eq!(player.injury.as_ref().map(|i| i.days_remaining), Some(4));
+        recover_injury(&mut player, 3);
+        assert_eq!(player.injury.as_ref().map(|i| i.days_remaining), Some(1));
+        recover_injury(&mut player, 1);
+        assert!(player.injury.is_none());
+    }
+
+    /// Given a player with three days left,
+    /// when three days or more pass at once, or none,
+    /// then he is fit after three or more and unchanged after none: several days at once land
+    /// where the same days one by one do.
+    #[test]
+    fn several_days_at_once_land_where_one_by_one_would() {
+        for days in 0..6 {
+            let mut at_once = injured(3);
+            recover_injury(&mut at_once, days);
+            let mut daily = injured(3);
+            for _ in 0..days {
+                recover_injury(&mut daily, 1);
+            }
+            assert_eq!(
+                at_once.injury.as_ref().map(|i| i.days_remaining),
+                daily.injury.as_ref().map(|i| i.days_remaining),
+                "{days} days"
+            );
+        }
     }
 }

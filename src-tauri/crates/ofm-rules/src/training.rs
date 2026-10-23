@@ -174,6 +174,33 @@ pub struct TeamTrainingPlan {
     pub taper: Option<Taper>,
 }
 
+/// `team`'s plan for the day, with its staff `staff` (phase 3, E3-7): the standing focus,
+/// intensity and schedule, the coaches' bonus, what its medical and training facilities add, each
+/// training group's focus, and the taper the caller decided (the game from its fixture list; the
+/// online server passes none, S-7 S7-9).
+pub fn team_training_plan(
+    team: &domain::team::Team,
+    staff: &[&Staff],
+    taper: Option<Taper>,
+) -> TeamTrainingPlan {
+    let mut group_overrides = std::collections::HashMap::new();
+    for group in &team.training_groups {
+        for player_id in &group.player_ids {
+            group_overrides.insert(player_id.clone(), group.focus.clone());
+        }
+    }
+    TeamTrainingPlan {
+        default_focus: team.training_focus.clone(),
+        intensity: team.training_intensity.clone(),
+        schedule: team.training_schedule.clone(),
+        bonus: coaching_bonus(staff, &team.training_focus),
+        medical_facility_mult: crate::facilities::condition_recovery_mult(team.facilities.medical),
+        training_facility_mult: crate::facilities::development_mult(team.facilities.training),
+        group_overrides,
+        taper,
+    }
+}
+
 /// The dice of `player_id`'s session on `date` ("YYYY-MM-DD") in a world of `seed`: his own
 /// stream, so what he gets from a session never depends on who else trained that day or in which
 /// order (E3-5b, E5) — the online server trains clubs in no particular order.
@@ -599,5 +626,43 @@ mod tests {
             condition_after_rest(&player, 35, 27, (1.0, 1.0), 24 * 60),
             100
         );
+    }
+
+    /// Given a club with a training group, a medical level of 4, no staff and a taper,
+    /// when its plan for the day is built,
+    /// then the group's players train on the group's focus, the facilities' multipliers and the
+    /// taper are the club's, and a club without coaches gets the bare coaching multiplier.
+    #[test]
+    fn a_club_s_plan_comes_from_its_settings_staff_and_facilities() {
+        let mut team = domain::team::Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        team.training_focus = TrainingFocus::Technical;
+        team.facilities.medical = 4;
+        team.training_groups = vec![domain::team::TrainingGroup {
+            id: "g".into(),
+            name: "Backs".into(),
+            focus: TrainingFocus::Defending,
+            player_ids: vec!["back".into()],
+        }];
+        let plan = team_training_plan(&team, &[], Some(Taper::NearMatch));
+        assert_eq!(plan.default_focus, TrainingFocus::Technical);
+        assert_eq!(
+            plan.group_overrides.get("back"),
+            Some(&TrainingFocus::Defending)
+        );
+        assert_eq!(plan.taper, Some(Taper::NearMatch));
+        assert_eq!(
+            plan.medical_facility_mult,
+            crate::facilities::condition_recovery_mult(4)
+        );
+        assert_eq!(plan.bonus.coaching_mult, coaching_mult(&[]));
+        assert!(team_training_plan(&team, &[], None).taper.is_none());
     }
 }
