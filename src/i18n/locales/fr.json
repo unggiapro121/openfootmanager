@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Ces paramètres de carrière n'ont pas pu être utilisés. Retournez à l'écran du monde et vérifiez l'année de début, la phase de début et la quantité d'historique à générer.",
     "reportBug": "Signaler un bug"
   },
+  "online": {
+    "title": "Mode en ligne",
+    "menuButton": "Jouer en ligne",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "offlineBanner": "Impossible de joindre le serveur en ligne. Ce que vous voyez peut être périmé, et les modifications sont désactivées jusqu'à ce qu'il réponde de nouveau.",
+    "nav": {
+      "label": "Navigation du mode en ligne",
+      "overview": "Vue d'ensemble",
+      "profile": "Profil de l'entraîneur",
+      "mainMenu": "Menu principal"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Mise à jour nécessaire",
+      "serverOutdatedTitle": "Serveur en cours de mise à jour"
+    },
+    "header": {
+      "season": "Saison {{number}}",
+      "seasonDay": "Saison {{number}} · Jour {{day}}/{{total}}",
+      "nextKickoff": "Prochain match dans {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} j {{clock}}"
+    },
+    "season": {
+      "title": "Saison",
+      "none": "Aucune saison en ligne n'est en cours. Revenez plus tard.",
+      "day": "Jour {{day}} sur {{total}}",
+      "footballYear": "Année footballistique {{year}}",
+      "nextDay": "Le jour suivant commence dans {{time}}",
+      "status": {
+        "scheduled": "Programmée",
+        "preseason": "Avant-saison",
+        "running": "En cours",
+        "closing": "En clôture",
+        "closed": "Terminée"
+      }
+    },
+    "club": {
+      "title": "Votre club",
+      "rename": "Renommer",
+      "renameLabel": "Nouveau nom du club",
+      "renameHint": "Vous pouvez renommer votre club une fois par saison.",
+      "save": "Enregistrer",
+      "stadium": "{{name}} ({{capacity}} places)"
+    },
+    "fixture": {
+      "title": "Prochain match",
+      "none": "Aucun match n'est encore programmé.",
+      "versus": "contre {{club}}",
+      "home": "Domicile",
+      "away": "Extérieur",
+      "round": "Journée {{round}}",
+      "kickoff": "Coup d'envoi : {{time}}",
+      "regionTime": "{{time}} à l'heure de {{region}}",
+      "countdown": "Coup d'envoi dans {{time}}",
+      "prepared": "En préparation : la composition est verrouillée."
+    },
+    "league": {
+      "title": "Championnat",
+      "none": "Votre club ne dispute aucun championnat cette saison. Il rejoindra les championnats de la saison prochaine."
+    },
+    "takeover": {
+      "title": "Reprendre un club",
+      "intro": "Pour jouer en ligne, vous dirigez un club dans le monde partagé. Ce que vous obtenez dépend de votre historique :",
+      "returning": "Si vous revenez : vous récupérez votre ancien club, tel quel, si personne ne l'a repris.",
+      "newcomer": "Première fois : vous prenez la place d'un bot dans un championnat de votre niveau, avec un nouvel effectif de départ. Un nouvel effectif n'est accordé qu'une fois par compte.",
+      "other": "Sinon : vous reprenez le club d'un bot tel quel, dans un championnat de votre niveau.",
+      "button": "Reprendre un club",
+      "working": "Reprise en cours…",
+      "retryIn": "Vous pourrez réessayer dans {{seconds}} s.",
+      "result": {
+        "fresh": "Vous dirigez maintenant {{club}}, avec un nouvel effectif de départ.",
+        "return": "Bon retour à {{club}}.",
+        "asIs": "Vous dirigez maintenant {{club}}, tel qu'il était."
+      },
+      "makingSquad": "Votre effectif est en cours de création…",
+      "squadSlow": "L'effectif prend plus de temps que d'habitude. Ouvrez quand même le club ; les joueurs apparaîtront sous peu.",
+      "enter": "Aller à mon club"
+    },
+    "profile": {
+      "title": "Profil de l'entraîneur",
+      "name": "Nom complet",
+      "email": "E-mail",
+      "region": "Région",
+      "changeRegion": "Changer de région",
+      "confirmTitle": "Changer de région ?",
+      "confirmBody": "Votre club actuel retourne immédiatement à son bot. Vous reprenez ensuite un club tel quel dans la nouvelle région, au plus une fois par saison.",
+      "confirm": "Oui, changer de région",
+      "changed": "Région changée. Reprenez un club dans votre nouvelle région."
+    }
+  },
   "coach": {
     "loginTitle": "Choisissez votre entraîneur",
     "loginSubtitle": "Votre entraîneur est le même dans toutes les carrières : maîtrise des styles et palmarès se cumulent.",

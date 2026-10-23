@@ -778,4 +778,31 @@ describe("MainMenu", () => {
       expect(mockedInvoke).toHaveBeenCalledWith("load_game", { saveId: "old" });
     });
   });
+
+  // Given a coach whose account lives on the server,
+  // when the main menu shows,
+  // then it offers online play, which opens the online mode.
+  it("offers online play to a coach with a server account", async () => {
+    mockCommands(async (command: string) =>
+      command === "get_coach_account_mode" ? "server" : null,
+    );
+    render(<MainMenu />);
+
+    fireEvent.click(await screen.findByText("online.menuButton"));
+    expect(navigateMock).toHaveBeenCalledWith("/online");
+  });
+
+  // Given a coach with an account on this machine only,
+  // when the main menu shows,
+  // then it has no online entry: online play needs the server (C-2 C2-1).
+  it("hides online play from a local account", async () => {
+    mockCommands(async (command: string) =>
+      command === "get_coach_account_mode" ? "local" : null,
+    );
+    render(<MainMenu />);
+
+    await screen.findByText("menu.newGame");
+    await waitFor(() => expect(mockedInvoke).toHaveBeenCalledWith("get_coach_account_mode"));
+    expect(screen.queryByText("online.menuButton")).not.toBeInTheDocument();
+  });
 });

@@ -33,6 +33,7 @@
     "manager.masteryXp"
   ],
   "de": [
+    "online.profile.region",
     "manager.stylePhase.Press",
     "playerFilters.position",
     "playerFilters.region",
@@ -536,6 +537,7 @@
     "worldEditor.competitionFormat"
   ],
   "cs": [
+    "online.profile.region",
     "playerFilters.region",
     "teams.region",
     "dashboard.recapTransferLine",
@@ -742,6 +744,7 @@
     "coachServer.email"
   ],
   "vi": [
+    "online.profile.email",
     "manager.stylePhase.Press",
     "youthAcademy.ovr",
     "common.vs",

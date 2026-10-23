@@ -28,6 +28,99 @@
     "startupOptionsRejected": "Pengaturan karier itu tidak bisa digunakan. Kembali ke layar dunia dan periksa tahun mulai, fase mulai, dan berapa banyak riwayat masa lalu yang dibuat.",
     "reportBug": "Laporkan bug"
   },
+  "online": {
+    "title": "Mode daring",
+    "menuButton": "Main daring",
+    "loading": "Memuat…",
+    "retry": "Coba lagi",
+    "cancel": "Batal",
+    "offlineBanner": "Server daring tidak dapat dihubungi. Yang kamu lihat mungkin sudah usang, dan perubahan dinonaktifkan sampai server menjawab lagi.",
+    "nav": {
+      "label": "Navigasi mode daring",
+      "overview": "Ringkasan",
+      "profile": "Profil pelatih",
+      "mainMenu": "Menu utama"
+    },
+    "gate": {
+      "clientOutdatedTitle": "Perlu pembaruan",
+      "serverOutdatedTitle": "Server sedang diperbarui"
+    },
+    "header": {
+      "season": "Musim {{number}}",
+      "seasonDay": "Musim {{number}} · Hari {{day}}/{{total}}",
+      "nextKickoff": "Laga berikutnya dalam {{time}}"
+    },
+    "countdown": {
+      "withDays": "{{days}} h {{clock}}"
+    },
+    "season": {
+      "title": "Musim",
+      "none": "Belum ada musim daring yang berjalan. Kembali lagi nanti.",
+      "day": "Hari {{day}} dari {{total}}",
+      "footballYear": "Tahun sepak bola {{year}}",
+      "nextDay": "Hari berikutnya mulai dalam {{time}}",
+      "status": {
+        "scheduled": "Terjadwal",
+        "preseason": "Pramusim",
+        "running": "Berjalan",
+        "closing": "Ditutup",
+        "closed": "Selesai"
+      }
+    },
+    "club": {
+      "title": "Klubmu",
+      "rename": "Ganti nama",
+      "renameLabel": "Nama klub baru",
+      "renameHint": "Kamu bisa mengganti nama klub sekali per musim.",
+      "save": "Simpan",
+      "stadium": "{{name}} ({{capacity}} kursi)"
+    },
+    "fixture": {
+      "title": "Laga berikutnya",
+      "none": "Belum ada laga yang dijadwalkan.",
+      "versus": "melawan {{club}}",
+      "home": "Kandang",
+      "away": "Tandang",
+      "round": "Pekan {{round}}",
+      "kickoff": "Sepak mula: {{time}}",
+      "regionTime": "{{time}} waktu {{region}}",
+      "countdown": "Sepak mula dalam {{time}}",
+      "prepared": "Laga sedang disiapkan: susunan pemain sudah dikunci."
+    },
+    "league": {
+      "title": "Liga",
+      "none": "Musim ini klubmu tidak bermain di liga mana pun. Klubmu akan masuk liga musim depan."
+    },
+    "takeover": {
+      "title": "Ambil alih klub",
+      "intro": "Untuk bermain daring, kamu memimpin sebuah klub di dunia bersama. Klub yang kamu dapat bergantung pada riwayatmu:",
+      "returning": "Jika kembali: kamu mendapatkan klub lamamu apa adanya, jika belum diambil orang lain.",
+      "newcomer": "Pertama kali: kamu mengambil kursi bot di liga sesuai levelmu, dengan skuad awal yang baru. Skuad baru hanya diberikan sekali per akun.",
+      "other": "Selain itu: kamu mengambil alih klub bot apa adanya, di liga sesuai levelmu.",
+      "button": "Ambil alih klub",
+      "working": "Mengambil alih…",
+      "retryIn": "Kamu bisa mencoba lagi dalam {{seconds}} dtk.",
+      "result": {
+        "fresh": "Kini kamu memimpin {{club}}, dengan skuad awal yang baru.",
+        "return": "Selamat datang kembali di {{club}}.",
+        "asIs": "Kini kamu memimpin {{club}}, apa adanya."
+      },
+      "makingSquad": "Skuadmu sedang dibuat…",
+      "squadSlow": "Pembuatan skuad lebih lama dari biasanya. Buka saja klubnya; para pemain akan segera muncul.",
+      "enter": "Ke klubku"
+    },
+    "profile": {
+      "title": "Profil pelatih",
+      "name": "Nama lengkap",
+      "email": "Alamat email",
+      "region": "Wilayah",
+      "changeRegion": "Ganti wilayah",
+      "confirmTitle": "Ganti wilayah?",
+      "confirmBody": "Klubmu saat ini langsung kembali ke bot-nya. Lalu kamu mengambil alih klub apa adanya di wilayah baru, paling banyak sekali per musim.",
+      "confirm": "Ya, ganti wilayah",
+      "changed": "Wilayah sudah diganti. Ambil alih klub di wilayah barumu."
+    }
+  },
   "coach": {
     "loginTitle": "Pilih manajer Anda",
     "loginSubtitle": "Manajer Anda sama di setiap karier: penguasaan gaya dan rekor terus bertambah.",
