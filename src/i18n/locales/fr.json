@@ -165,7 +165,7 @@
       "seasonLine": "Cette saison : {{apps}} matchs, {{goals}} buts, {{assists}} passes décisives, note moyenne {{rating}}"
     },
     "training": {
-      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : l'IA planifie les séances de votre club. Vous voyez les réglages par défaut du jeu ; votre premier choix enregistre votre propre plan."
+      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."
     },
     "schedule": {
       "title": "Calendrier de la saison",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Cette action en ligne n'est pas disponible dans cette version du jeu.",
         "clientOutdated": "Une version plus récente du jeu est nécessaire pour jouer en ligne. Mettez le jeu à jour.",
         "serverOutdated": "Le serveur en ligne est en cours de mise à jour. Réessayez plus tard."
+      },
+      "realtime": {
+        "badMessage": "La connexion en direct a reçu un message illisible.",
+        "unknownChannel": "Ce direct n'existe pas.",
+        "tooManyChannels": "Trop de directs sont ouverts en même temps. Fermez-en un et réessayez.",
+        "tokenRefused": "La connexion en direct a refusé votre session. Reconnectez-vous."
       }
     },
     "sender": {

@@ -13,4 +13,8 @@ fixturesDone: number,
 /**
  * A void fixture ranks the league by points a match (S7-8).
  */
-rankedPerMatch: boolean, table: Array<StandingRow>, };
+rankedPerMatch: boolean, 
+/**
+ * How many clubs at the top are promoted: the season's `promotionPlaces` (C-2s).
+ */
+promotionPlaces: number, table: Array<StandingRow>, };

@@ -125,9 +125,9 @@ describe("the online tactics source", () => {
 });
 
 describe("the online club pages", () => {
-  function stage(club: MyClubView) {
+  function stage(club: MyClubView, season: typeof SEASON = SEASON) {
     server = fakeServer({
-      "GET v1/season": ok(SEASON),
+      "GET v1/season": ok(season),
       "GET v1/clubs/mine": ok(club),
       "GET v1/leagues/mine": ok(LEAGUE),
       "PUT v1/clubs/mine/training": (request) => ok(request.body),
@@ -181,7 +181,13 @@ describe("the online club pages", () => {
   // when they pick a focus,
   // then the whole plan is sent, the rest from the game's defaults, and the note goes away.
   it("saves a first training plan from one choice", async () => {
-    stage(myClub({ players: SQUAD, trainingPlan: undefined }));
+    const aiPlan = {
+      focus: "Physical" as const,
+      intensity: "High" as const,
+      schedule: "Light" as const,
+      groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+    };
+    stage(myClub({ players: SQUAD, trainingPlan: aiPlan, trainingPlanIsOwn: false }));
     renderOnline("/online/training");
 
     expect(await screen.findByText("online.training.noPlan")).toBeInTheDocument();
@@ -189,11 +195,38 @@ describe("the online club pages", () => {
 
     await waitFor(() => expect(screen.queryByText("online.training.noPlan")).toBeNull());
     const [write] = server.requests.filter((request) => request.method === "PUT");
-    expect(write.body).toEqual({
-      focus: "Tactical",
-      intensity: "Medium",
-      schedule: "Balanced",
-      groups: [],
+    expect(write.body).toEqual({ ...aiPlan, focus: "Tactical" });
+  });
+
+  // Given a season that says today's weekday, and one that does not,
+  // when the training page opens,
+  // then the "today is" line shows only when the weekday is known.
+  it("says what today is only when the season tells the weekday", async () => {
+    stage(myClub({ players: SQUAD }));
+    const { unmount } = renderOnline("/online/training");
+    await screen.findByText("online.training.noPlan");
+    expect(screen.queryByText("training.todayIs")).toBeNull();
+    unmount();
+    server.restore();
+    resetOnline();
+
+    stage(myClub({ players: SQUAD }), { ...SEASON, weekday: 0 });
+    renderOnline("/online/training");
+    expect(await screen.findByText("training.todayIs")).toBeInTheDocument();
+  });
+
+  // Given a scheduled fixture whose line-up lock time has passed,
+  // when the tactics page opens,
+  // then the board is locked even before the fixture is prepared.
+  it("locks the board from the lock time the server gives", async () => {
+    const base = myClub({ players: SQUAD });
+    stage({
+      ...base,
+      nextFixture: { ...base.nextFixture!, lineupLocksAt: "2000-01-01T00:00:00Z" },
     });
+    renderOnline("/online/tactics");
+
+    expect(await screen.findByText(/^online\.tactics\.locked:/)).toBeInTheDocument();
+    expect(document.querySelector("[inert]")).not.toBeNull();
   });
 });

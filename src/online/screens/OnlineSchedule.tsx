@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardBody, CardHeader } from "../../components/ui";
 import type { FixtureView } from "../api";
-import { outcomeFor, seasonFixturesOf } from "../fixtures";
-import { useOnlineStore } from "../store/onlineStore";
+import { online } from "../client";
+import { outcomeFor } from "../fixtures";
+import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import FixtureLine from "./FixtureLine";
 import ResourceState from "./ResourceState";
@@ -26,14 +27,14 @@ export default function OnlineSchedule() {
   if (!leagueId || !clubId) {
     return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.league.none")}</p>;
   }
-  return <SeasonList leagueId={leagueId} clubId={clubId} />;
+  return <SeasonList clubId={clubId} />;
 }
 
-function SeasonList({ leagueId, clubId }: { leagueId: string; clubId: string }) {
+function SeasonList({ clubId }: { clubId: string }) {
   const { t } = useTranslation();
   const { resource, reload } = useOnlineResource(
-    () => seasonFixturesOf(leagueId, clubId),
-    [leagueId, clubId],
+    async () => (await tracked(() => online.clubs.mineFixtures())).fixtures,
+    [clubId],
   );
 
   return (

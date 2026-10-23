@@ -165,7 +165,7 @@
       "seasonLine": "Mùa này: {{apps}} trận, {{goals}} bàn, {{assists}} kiến tạo, điểm trung bình {{rating}}"
     },
     "training": {
-      "noPlan": "Bạn chưa đặt kế hoạch tập: AI đang lên buổi tập cho CLB. Các lựa chọn đang hiện là mặc định của game; lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
+      "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
     },
     "schedule": {
       "title": "Lịch thi đấu mùa giải",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Thao tác online này không có trong phiên bản game hiện tại.",
         "clientOutdated": "Cần phiên bản game mới hơn để chơi online. Vui lòng cập nhật game.",
         "serverOutdated": "Máy chủ online đang được cập nhật. Vui lòng thử lại sau."
+      },
+      "realtime": {
+        "badMessage": "Kết nối trực tiếp nhận được tin nhắn không đọc được.",
+        "unknownChannel": "Luồng trực tiếp này không tồn tại.",
+        "tooManyChannels": "Đang mở quá nhiều luồng trực tiếp cùng lúc. Hãy đóng bớt một luồng rồi thử lại.",
+        "tokenRefused": "Kết nối trực tiếp từ chối phiên đăng nhập của bạn. Hãy đăng nhập lại."
       }
     },
     "sender": {

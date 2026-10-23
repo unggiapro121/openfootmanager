@@ -5,6 +5,7 @@ import {
 } from "../services/onlineTransport";
 import type {
   AccountView,
+  ClubFixturesView,
   FixtureDetailView,
   LeagueView,
   MyClubView,
@@ -98,6 +99,9 @@ export const online = {
     takeover: (idempotencyKey = newKey()) =>
       call<TakeoverView>(write("POST", ["v1", "clubs", "takeover"], idempotencyKey)),
     mine: () => call<MyClubView>(read(["v1", "clubs", "mine"])),
+    /** The caller's club's season, every fixture by round (C-2s). */
+    mineFixtures: () =>
+      call<ClubFixturesView>(read(["v1", "clubs", "mine", "fixtures"])),
     /** `version` is the club's version as read: a stale one is refused (`versionStale`). */
     setSetup: (setup: ClubSetup, version: number, idempotencyKey = newKey()) =>
       call<MyClubView>({

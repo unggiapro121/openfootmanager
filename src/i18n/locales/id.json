@@ -165,7 +165,7 @@
       "seasonLine": "Musim ini: {{apps}} laga, {{goals}} gol, {{assists}} assist, rata-rata nilai {{rating}}"
     },
     "training": {
-      "noPlan": "Kamu belum menetapkan rencana latihan: AI yang menyusun sesi klubmu. Yang terlihat adalah bawaan permainan; pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
+      "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
     },
     "schedule": {
       "title": "Jadwal musim",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Tindakan online itu tidak tersedia di versi game ini.",
         "clientOutdated": "Diperlukan versi game yang lebih baru untuk bermain online. Silakan perbarui game.",
         "serverOutdated": "Server online sedang diperbarui. Silakan coba lagi nanti."
+      },
+      "realtime": {
+        "badMessage": "Koneksi langsung menerima pesan yang tidak bisa dibaca.",
+        "unknownChannel": "Siaran langsung itu tidak ada.",
+        "tooManyChannels": "Terlalu banyak siaran langsung terbuka sekaligus. Tutup satu lalu coba lagi.",
+        "tokenRefused": "Koneksi langsung menolak sesi masukmu. Silakan masuk lagi."
       }
     },
     "sender": {

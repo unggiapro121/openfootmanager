@@ -165,7 +165,7 @@
       "seasonLine": "Tato sezóna: {{apps}} zápasů, {{goals}} gólů, {{assists}} asistencí, průměrná známka {{rating}}"
     },
     "training": {
-      "noPlan": "Zatím jste nenastavili tréninkový plán: tréninky klubu plánuje AI. Vidíte výchozí nastavení hry; vaše první volba uloží vlastní plán."
+      "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."
     },
     "schedule": {
       "title": "Rozpis sezóny",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Tato online akce není v této verzi hry dostupná.",
         "clientOutdated": "Pro hru online je potřeba novější verze hry. Aktualizujte hru.",
         "serverOutdated": "Online server se právě aktualizuje. Zkuste to později."
+      },
+      "realtime": {
+        "badMessage": "Živé spojení přijalo zprávu, kterou nedokázalo přečíst.",
+        "unknownChannel": "Tento živý přenos neexistuje.",
+        "tooManyChannels": "Je otevřeno příliš mnoho živých přenosů najednou. Jeden zavřete a zkuste to znovu.",
+        "tokenRefused": "Živé spojení odmítlo vaše přihlášení. Přihlaste se znovu."
       }
     },
     "sender": {

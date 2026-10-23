@@ -32,11 +32,3 @@ export function leagueTeamLookup(
     onSelectTeam: openClub,
   };
 }
-
-/**
- * How many clubs at the top of the table are promoted, when the server says (`promotionPlaces`,
- * package C-2s); none are marked until it does.
- */
-export function promotionPlacesOf(league: LeagueView): number {
-  return (league as LeagueView & { promotionPlaces?: number }).promotionPlaces ?? 0;
-}

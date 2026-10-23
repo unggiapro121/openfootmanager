@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { FixtureView } from "./api";
-import { currentRound, outcomeFor, seasonFixturesOf } from "./fixtures";
-import { fakeServer, ok, resetOnline } from "../test-utils/onlineTestKit";
+import { currentRound, outcomeFor } from "./fixtures";
 
 function fixture(round: number, home: string, away: string, extra: Partial<FixtureView> = {}) {
   return {
@@ -15,33 +14,6 @@ function fixture(round: number, home: string, away: string, extra: Partial<Fixtu
     ...extra,
   } satisfies FixtureView;
 }
-
-let server: ReturnType<typeof fakeServer>;
-beforeEach(() => resetOnline());
-afterEach(() => server?.restore());
-
-describe("seasonFixturesOf", () => {
-  // Given a league whose rounds each hold the club's fixture among others,
-  // when the club's season is read,
-  // then every round is asked for and only the club's fixtures come back, in round order.
-  it("reads every round and keeps the club's fixtures", async () => {
-    server = fakeServer({
-      "GET v1/leagues/league-1/fixtures": (request) => {
-        const round = Number(request.query?.[0]?.[1]);
-        return ok({
-          round,
-          fixtures: [fixture(round, "mine", `rival-${round}`), fixture(round, "x", "y")],
-        });
-      },
-    });
-    const season = await seasonFixturesOf("league-1", "mine");
-
-    expect(season.map((entry) => entry.round)).toEqual(
-      Array.from({ length: 26 }, (_, index) => index + 1),
-    );
-    expect(server.requests).toHaveLength(26);
-  });
-});
 
 describe("outcomeFor", () => {
   // Given settled results at home and away, and an unsettled one,

@@ -165,7 +165,7 @@
       "seasonLine": "Nesta temporada: {{apps}} jogos, {{goals}} gols, {{assists}} assistências, nota média {{rating}}"
     },
     "training": {
-      "noPlan": "Você ainda não definiu um plano de treino: a IA planeja as sessões do seu clube. O que você vê são os padrões do jogo; sua primeira escolha salva um plano seu."
+      "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu."
     },
     "schedule": {
       "title": "Jogos da temporada",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Essa ação online não está disponível nesta versão do jogo.",
         "clientOutdated": "É preciso uma versão mais nova do jogo para jogar online. Atualize o jogo.",
         "serverOutdated": "O servidor online está sendo atualizado. Tente mais tarde."
+      },
+      "realtime": {
+        "badMessage": "A conexão ao vivo recebeu uma mensagem que não conseguiu ler.",
+        "unknownChannel": "Essa transmissão ao vivo não existe.",
+        "tooManyChannels": "Há transmissões ao vivo demais abertas ao mesmo tempo. Feche uma e tente de novo.",
+        "tokenRefused": "A conexão ao vivo recusou seu login. Entre novamente."
       }
     },
     "sender": {

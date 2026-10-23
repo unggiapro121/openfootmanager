@@ -51,6 +51,7 @@ pub const ROUTES: &[Route] = &[
     route("GET", &[L("v1"), L("season")], &[]),
     route("POST", &[L("v1"), L("clubs"), L("takeover")], &[]),
     route("GET", &[L("v1"), L("clubs"), L("mine")], &[]),
+    route("GET", &[L("v1"), L("clubs"), L("mine"), L("fixtures")], &[]),
     route("PATCH", &[L("v1"), L("clubs"), L("mine")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("setup")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("training")], &[]),

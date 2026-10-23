@@ -165,7 +165,7 @@
       "seasonLine": "This season: {{apps}} apps, {{goals}} goals, {{assists}} assists, average rating {{rating}}"
     },
     "training": {
-      "noPlan": "You have not set a training plan yet: the AI plans your club's sessions. What you see are the game's defaults; your first choice saves a plan of your own."
+      "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own."
     },
     "schedule": {
       "title": "Season fixtures",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "That online action is not available in this version of the game.",
         "clientOutdated": "A newer version of the game is needed to play online. Please update the game.",
         "serverOutdated": "The online server is being updated. Please try again later."
+      },
+      "realtime": {
+        "badMessage": "The live connection received a message it could not read.",
+        "unknownChannel": "That live feed does not exist.",
+        "tooManyChannels": "Too many live feeds are open at once. Close one and try again.",
+        "tokenRefused": "The live connection refused your sign-in. Sign in again."
       }
     },
     "sender": {

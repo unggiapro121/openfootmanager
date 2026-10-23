@@ -165,7 +165,7 @@
       "seasonLine": "Bu sezon: {{apps}} maç, {{goals}} gol, {{assists}} asist, ortalama puan {{rating}}"
     },
     "training": {
-      "noPlan": "Henüz bir antrenman planı belirlemedin: kulübünün seanslarını yapay zekâ planlıyor. Gördüklerin oyunun varsayılanları; ilk seçimin kendi planın olarak kaydedilir."
+      "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."
     },
     "schedule": {
       "title": "Sezon fikstürü",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Bu çevrim içi işlem oyunun bu sürümünde yok.",
         "clientOutdated": "Çevrim içi oynamak için oyunun daha yeni bir sürümü gerekiyor. Lütfen oyunu güncelle.",
         "serverOutdated": "Çevrim içi sunucu güncelleniyor. Lütfen daha sonra tekrar dene."
+      },
+      "realtime": {
+        "badMessage": "Canlı bağlantı okunamayan bir mesaj aldı.",
+        "unknownChannel": "Böyle bir canlı yayın yok.",
+        "tooManyChannels": "Aynı anda çok fazla canlı yayın açık. Birini kapatıp yeniden dene.",
+        "tokenRefused": "Canlı bağlantı oturumunu reddetti. Yeniden giriş yap."
       }
     },
     "sender": {

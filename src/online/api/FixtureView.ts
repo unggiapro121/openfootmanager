@@ -5,4 +5,17 @@ export type FixtureView = { id: string, leagueId: string, round: number, kickoff
 /**
  * `scheduled`, `prepared`, `settled` or `void`.
  */
-status: string, home: ClubRef, away: ClubRef, homeGoals?: number, awayGoals?: number, };
+status: string, home: ClubRef, away: ClubRef, homeGoals?: number, awayGoals?: number, 
+/**
+ * The fixture's match once it is prepared: what `GET /v1/matches/{id}` reads (S-8c).
+ */
+matchId?: string, 
+/**
+ * That match's state: `scheduled`, `live`, `finished` or `failed`.
+ */
+matchStatus?: string, 
+/**
+ * When the clubs' lineups lock for it: `lineupLockSeconds` (scaled with the season's day)
+ * before the kick-off; only while it is not played yet (C-2s).
+ */
+lineupLocksAt?: string, };

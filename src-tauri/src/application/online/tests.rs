@@ -97,6 +97,21 @@ fn a_route_the_table_allows_goes_out_with_the_token() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads its club's season (C-2s),
+/// then it goes out to `/v1/clubs/mine/fixtures`, and no other method of it is let through.
+#[test]
+fn a_club_s_season_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({ "fixtures": [] })));
+    let path = ["v1", "clubs", "mine", "fixtures"];
+    send(&session, &request("GET", &path), 0).expect("an answer");
+    let refusal = refused(send(&session, &request("POST", &path), 0));
+    assert_eq!(refusal, "be.error.online.routeNotAllowed");
+    let requests = sent(&server);
+    assert_eq!(requests.len(), 1);
+    assert_eq!(requests[0].path, "/v1/clubs/mine/fixtures");
+}
+
+/// Given a signed-in coach,
 /// when a segment could name another path once decoded or joined (dots, slashes, backslashes,
 /// percent-encodings, a semicolon, a space, a full-width letter, an empty segment),
 /// then each is refused as `routeNotAllowed` and nothing at all is sent.

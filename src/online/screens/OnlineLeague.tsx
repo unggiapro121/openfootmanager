@@ -6,7 +6,7 @@ import StandingsTable from "../../components/tournaments/StandingsTable";
 import { Button, Card, CardBody, CardHeader } from "../../components/ui";
 import type { LeagueView } from "../api";
 import { online } from "../client";
-import { leagueTeamLookup, promotionPlacesOf, toStandingData } from "../convert/standings";
+import { leagueTeamLookup, toStandingData } from "../convert/standings";
 import { currentRound, LEAGUE_ROUNDS } from "../fixtures";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
@@ -54,14 +54,14 @@ function LeaguePage({ league }: { league: LeagueView }) {
               variant="full"
               teams={leagueTeamLookup(league, myClubId, (id) => navigate(`/online/clubs/${id}`))}
               testIdPrefix="online-standings"
-              zones={{ promotionSlots: promotionPlacesOf(league), relegationSlots: 0 }}
+              zones={{ promotionSlots: league.promotionPlaces, relegationSlots: 0 }}
               extraColumn={{
                 label: t("online.league.coach"),
                 value: (clubId) => {
                   const row = rows.get(clubId);
                   if (!row) return null;
                   return row.seat === "human" && row.coach
-                    ? `${row.coach.firstName} ${row.coach.lastName}`
+                    ? row.coach.fullName
                     : t("online.league.bot");
                 },
               }}

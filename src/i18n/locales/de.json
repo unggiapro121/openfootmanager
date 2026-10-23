@@ -165,7 +165,7 @@
       "seasonLine": "Diese Saison: {{apps}} Spiele, {{goals}} Tore, {{assists}} Vorlagen, Durchschnittsnote {{rating}}"
     },
     "training": {
-      "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Die KI plant die Einheiten deines Vereins. Du siehst die Standardwerte des Spiels; deine erste Wahl speichert einen eigenen Plan."
+      "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan."
     },
     "schedule": {
       "title": "Spielplan der Saison",
@@ -3790,6 +3790,12 @@
         "routeNotAllowed": "Diese Online-Aktion gibt es in dieser Spielversion nicht.",
         "clientOutdated": "Für das Online-Spiel wird eine neuere Spielversion benötigt. Bitte aktualisiere das Spiel.",
         "serverOutdated": "Der Online-Server wird gerade aktualisiert. Bitte versuche es später erneut."
+      },
+      "realtime": {
+        "badMessage": "Die Live-Verbindung hat eine unlesbare Nachricht erhalten.",
+        "unknownChannel": "Diesen Live-Kanal gibt es nicht.",
+        "tooManyChannels": "Zu viele Live-Kanäle sind gleichzeitig offen. Schließe einen und versuche es erneut.",
+        "tokenRefused": "Die Live-Verbindung hat deine Anmeldung abgelehnt. Melde dich erneut an."
       }
     },
     "sender": {

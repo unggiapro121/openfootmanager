@@ -44,16 +44,17 @@ describe("toRosterPlayer", () => {
 });
 
 describe("toPositionRatings", () => {
-  // Given a squad where only one player came with ratings by position,
+  // Given a squad, each player with his ratings by pitch position as the server sends them,
   // when the board's ratings are built,
-  // then only he has any.
-  it("keeps only the ratings the server sent", () => {
-    const rated = {
-      ...squadPlayer({ id: "p1" }),
-      positionRatings: [{ position: "Striker", ovr: 70 }],
-    };
+  // then each player keeps his own, position, rating and fit, keyed by his id.
+  it("keeps each player's ratings by his id", () => {
+    const rated = squadPlayer({
+      id: "p1",
+      positionRatings: [{ position: "Striker", ovr: 70, fit: "Natural" }],
+    });
     expect(toPositionRatings([rated, squadPlayer({ id: "p2" })])).toEqual({
-      p1: [{ position: "Striker", ovr: 70 }],
+      p1: [{ position: "Striker", ovr: 70, fit: "Natural" }],
+      p2: [],
     });
   });
 });
