@@ -42,7 +42,9 @@
       "mainMenu": "Menu principal",
       "squad": "Plantel",
       "tactics": "Táticas",
-      "training": "Treino"
+      "training": "Treino",
+      "league": "Liga",
+      "schedule": "Calendário"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -88,11 +90,27 @@
       "kickoff": "Início: {{time}}",
       "regionTime": "{{time}} no horário de {{region}}",
       "countdown": "Começa daqui a {{time}}",
-      "prepared": "Em preparação: a equipa titular está bloqueada."
+      "prepared": "Em preparação: a equipa titular está bloqueada.",
+      "openResult": "Resultado de {{home}} contra {{away}}",
+      "void": "Anulado",
+      "noLines": "Não foram guardados dados dos jogadores deste jogo.",
+      "minutes": "Min",
+      "assists": "Assist",
+      "cards": "Cartões",
+      "rating": "Nota",
+      "redCard": "Vermelho",
+      "yellowCards": "{{cards}} amarelo(s)"
     },
     "league": {
       "title": "Liga",
-      "none": "O teu clube não joga nenhuma liga nesta época. Entra nas ligas da próxima época."
+      "none": "O teu clube não joga nenhuma liga nesta época. Entra nas ligas da próxima época.",
+      "heading": "{{name}} · Nível {{level}}",
+      "progress": "{{done}} de {{total}} jogos disputados",
+      "rankedPerMatch": "Um jogo desta liga foi anulado, por isso a tabela ordena por pontos por jogo.",
+      "coach": "Treinador",
+      "bot": "IA",
+      "previousRound": "Jornada anterior",
+      "nextRound": "Jornada seguinte"
     },
     "takeover": {
       "title": "Assumir um clube",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Ainda não definiste um plano de treino: a IA planeia as sessões do teu clube. O que vês são os valores predefinidos do jogo; a tua primeira escolha guarda um plano teu."
+    },
+    "schedule": {
+      "title": "Calendário da época",
+      "outcome": {
+        "W": "Vitória",
+        "D": "Empate",
+        "L": "Derrota"
+      },
+      "outcomeShort": {
+        "W": "V",
+        "D": "E",
+        "L": "D"
+      }
+    },
+    "publicClub": {
+      "formation": "Tática: {{formation}}",
+      "coach": "Treinador: {{name}}",
+      "botCoach": "Orientado pela IA"
+    },
+    "overview": {
+      "lastResult": "Último resultado",
+      "noResult": "Ainda não há resultados nesta época."
     }
   },
   "coach": {

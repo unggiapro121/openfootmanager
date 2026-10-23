@@ -42,7 +42,9 @@
       "mainMenu": "Hauptmenü",
       "squad": "Kader",
       "tactics": "Taktik",
-      "training": "Training"
+      "training": "Training",
+      "league": "Liga",
+      "schedule": "Spielplan"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -88,11 +90,27 @@
       "kickoff": "Anstoß: {{time}}",
       "regionTime": "{{time}} nach der Uhr von {{region}}",
       "countdown": "Anstoß in {{time}}",
-      "prepared": "In Vorbereitung: Die Aufstellung ist gesperrt."
+      "prepared": "In Vorbereitung: Die Aufstellung ist gesperrt.",
+      "openResult": "Ergebnis {{home}} gegen {{away}}",
+      "void": "Annulliert",
+      "noLines": "Für dieses Spiel wurden keine Spielerdaten gespeichert.",
+      "minutes": "Min.",
+      "assists": "Vorl.",
+      "cards": "Karten",
+      "rating": "Note",
+      "redCard": "Rot",
+      "yellowCards": "{{cards}}× Gelb"
     },
     "league": {
       "title": "Liga",
-      "none": "Dein Verein spielt diese Saison in keiner Liga. Er steigt in die Ligen der nächsten Saison ein."
+      "none": "Dein Verein spielt diese Saison in keiner Liga. Er steigt in die Ligen der nächsten Saison ein.",
+      "heading": "{{name}} · Stufe {{level}}",
+      "progress": "{{done}} von {{total}} Spielen gespielt",
+      "rankedPerMatch": "Ein Spiel dieser Liga wurde annulliert, daher zählt die Tabelle Punkte pro Spiel.",
+      "coach": "Trainer",
+      "bot": "KI",
+      "previousRound": "Vorheriger Spieltag",
+      "nextRound": "Nächster Spieltag"
     },
     "takeover": {
       "title": "Einen Verein übernehmen",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Die KI plant die Einheiten deines Vereins. Du siehst die Standardwerte des Spiels; deine erste Wahl speichert einen eigenen Plan."
+    },
+    "schedule": {
+      "title": "Spielplan der Saison",
+      "outcome": {
+        "W": "Sieg",
+        "D": "Unentschieden",
+        "L": "Niederlage"
+      },
+      "outcomeShort": {
+        "W": "S",
+        "D": "U",
+        "L": "N"
+      }
+    },
+    "publicClub": {
+      "formation": "Formation: {{formation}}",
+      "coach": "Trainer: {{name}}",
+      "botCoach": "Von der KI geführt"
+    },
+    "overview": {
+      "lastResult": "Letztes Ergebnis",
+      "noResult": "Diese Saison noch kein Ergebnis."
     }
   },
   "coach": {

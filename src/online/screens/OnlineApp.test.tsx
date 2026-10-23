@@ -58,7 +58,8 @@ describe("a coach with a club", () => {
     expect(screen.getByText("online.header.seasonDay:3|5|28")).toBeInTheDocument();
     expect(screen.getByText("online.fixture.versus:Sóng Biển Đà Nẵng")).toBeInTheDocument();
     expect(screen.getByText("common.place.2")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "home.standings" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "home.standings" }));
+    expect(await screen.findByLabelText("location")).toHaveTextContent("/online/league");
   });
 
   // Given a club whose league seat waits for next season,

@@ -1,11 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+  Calendar,
   Crosshair,
   Dumbbell,
   Globe2,
   LayoutDashboard,
   LogOut,
+  Trophy,
   UserRound,
   Users,
 } from "lucide-react";
@@ -17,6 +19,8 @@ const CLUB_PAGES = [
   { path: "/online/squad", label: "online.nav.squad", icon: <Users /> },
   { path: "/online/tactics", label: "online.nav.tactics", icon: <Crosshair /> },
   { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
+  { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
+  { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
 ];
 
 /** The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. */

@@ -42,7 +42,9 @@
       "mainMenu": "Menu utama",
       "squad": "Skuad",
       "tactics": "Taktik",
-      "training": "Latihan"
+      "training": "Latihan",
+      "league": "Liga",
+      "schedule": "Jadwal"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -88,11 +90,27 @@
       "kickoff": "Sepak mula: {{time}}",
       "regionTime": "{{time}} waktu {{region}}",
       "countdown": "Sepak mula dalam {{time}}",
-      "prepared": "Laga sedang disiapkan: susunan pemain sudah dikunci."
+      "prepared": "Laga sedang disiapkan: susunan pemain sudah dikunci.",
+      "openResult": "Hasil laga {{home}} melawan {{away}}",
+      "void": "Dibatalkan",
+      "noLines": "Tidak ada rincian pemain yang disimpan untuk laga ini.",
+      "minutes": "Mnt",
+      "assists": "Ast",
+      "cards": "Kartu",
+      "rating": "Nilai",
+      "redCard": "Merah",
+      "yellowCards": "{{cards}} kuning"
     },
     "league": {
       "title": "Liga",
-      "none": "Musim ini klubmu tidak bermain di liga mana pun. Klubmu akan masuk liga musim depan."
+      "none": "Musim ini klubmu tidak bermain di liga mana pun. Klubmu akan masuk liga musim depan.",
+      "heading": "{{name}} · Tingkat {{level}}",
+      "progress": "{{done}} dari {{total}} laga sudah dimainkan",
+      "rankedPerMatch": "Satu laga di liga ini dibatalkan, jadi klasemen diurutkan menurut poin per laga.",
+      "coach": "Pelatih",
+      "bot": "AI",
+      "previousRound": "Pekan sebelumnya",
+      "nextRound": "Pekan berikutnya"
     },
     "takeover": {
       "title": "Ambil alih klub",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: AI yang menyusun sesi klubmu. Yang terlihat adalah bawaan permainan; pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
+    },
+    "schedule": {
+      "title": "Jadwal musim",
+      "outcome": {
+        "W": "Menang",
+        "D": "Seri",
+        "L": "Kalah"
+      },
+      "outcomeShort": {
+        "W": "M",
+        "D": "S",
+        "L": "K"
+      }
+    },
+    "publicClub": {
+      "formation": "Formasi: {{formation}}",
+      "coach": "Pelatih: {{name}}",
+      "botCoach": "Dipimpin AI"
+    },
+    "overview": {
+      "lastResult": "Hasil terakhir",
+      "noResult": "Belum ada hasil musim ini."
     }
   },
   "coach": {

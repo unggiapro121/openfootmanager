@@ -1,6 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import OnlineFixture from "./OnlineFixture";
+import OnlineLeague from "./OnlineLeague";
 import OnlineOverview from "./OnlineOverview";
 import OnlineProfile from "./OnlineProfile";
+import OnlinePublicClub from "./OnlinePublicClub";
+import OnlineSchedule from "./OnlineSchedule";
 import OnlineShell from "./OnlineShell";
 import OnlineSquad from "./OnlineSquad";
 import OnlineTactics from "./OnlineTactics";
@@ -17,6 +21,10 @@ export default function OnlineApp() {
         <Route path="squad" element={<OnlineSquad />} />
         <Route path="tactics" element={<OnlineTactics />} />
         <Route path="training" element={<OnlineTraining />} />
+        <Route path="league" element={<OnlineLeague />} />
+        <Route path="schedule" element={<OnlineSchedule />} />
+        <Route path="clubs/:clubId" element={<OnlinePublicClub />} />
+        <Route path="fixtures/:fixtureId" element={<OnlineFixture />} />
         <Route path="profile" element={<OnlineProfile />} />
         <Route path="*" element={<Navigate to="/online" replace />} />
       </Route>

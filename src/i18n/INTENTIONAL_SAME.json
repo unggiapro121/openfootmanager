@@ -33,6 +33,7 @@
     "manager.masteryXp"
   ],
   "de": [
+    "online.publicClub.formation",
     "online.nav.training",
     "online.profile.region",
     "manager.stylePhase.Press",
@@ -151,6 +152,7 @@
     "coach.region"
   ],
   "fr": [
+    "online.fixture.minutes",
     "manager.stylePhase.Press",
     "teams.club",
     "finances.payrollStaff",
@@ -279,6 +281,7 @@
     "coach.regions.Europe"
   ],
   "it": [
+    "online.fixture.minutes",
     "manager.stylePhase.Press",
     "teams.club",
     "nations.ru",
@@ -352,6 +355,7 @@
     "coachServer.password"
   ],
   "es": [
+    "online.fixture.minutes",
     "teams.club",
     "nations.pt",
     "nations.cn",
@@ -413,6 +417,7 @@
     "worldEditor.staffSpecialization.Fitness"
   ],
   "pt-BR": [
+    "online.fixture.minutes",
     "scouting.watchlistStatus",
     "nations.pt",
     "nations.cn",
@@ -457,6 +462,7 @@
     "packageBuild.patches"
   ],
   "pt": [
+    "online.fixture.minutes",
     "nations.pt",
     "nations.cn",
     "nations.sn",
@@ -498,7 +504,7 @@
     "packageBuild.patches"
   ],
   "ru": ["dashboard.recapTransferLine"],
-  "zh-CN": ["be.news.roundup.resultLine", "be.news.preseasonDigest.resultLine"],
+  "zh-CN": ["online.league.bot", "be.news.roundup.resultLine", "be.news.preseasonDigest.resultLine"],
   "tr": [
     "dashboard.recapTransferLine",
     "common.vs",
@@ -538,6 +544,8 @@
     "worldEditor.competitionFormat"
   ],
   "cs": [
+    "online.fixture.minutes",
+    "online.league.bot",
     "online.profile.region",
     "playerFilters.region",
     "teams.region",
@@ -590,6 +598,8 @@
     "tournaments.competitions.premierDivision"
   ],
   "id": [
+    "online.fixture.assists",
+    "online.league.bot",
     "manager.stylePhase.Press",
     "scouting.watchlistStatus",
     "awardsCeremony.rating",
@@ -745,6 +755,7 @@
     "coachServer.email"
   ],
   "vi": [
+    "online.league.bot",
     "online.profile.email",
     "manager.stylePhase.Press",
     "youthAcademy.ovr",

@@ -42,7 +42,9 @@
       "mainMenu": "主菜单",
       "squad": "阵容",
       "tactics": "战术",
-      "training": "训练"
+      "training": "训练",
+      "league": "联赛",
+      "schedule": "赛程"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -88,11 +90,27 @@
       "kickoff": "开球：{{time}}",
       "regionTime": "{{region}} 时间 {{time}}",
       "countdown": "距开球 {{time}}",
-      "prepared": "比赛准备中：首发阵容已锁定。"
+      "prepared": "比赛准备中：首发阵容已锁定。",
+      "openResult": "{{home}} 对 {{away}} 的比赛结果",
+      "void": "作废",
+      "noLines": "这场比赛没有保存球员数据。",
+      "minutes": "分钟",
+      "assists": "助攻",
+      "cards": "牌",
+      "rating": "评分",
+      "redCard": "红牌",
+      "yellowCards": "{{cards}} 张黄牌"
     },
     "league": {
       "title": "联赛",
-      "none": "本赛季你的俱乐部不参加任何联赛，将从下个赛季加入联赛。"
+      "none": "本赛季你的俱乐部不参加任何联赛，将从下个赛季加入联赛。",
+      "heading": "{{name}} · 第 {{level}} 级",
+      "progress": "已赛 {{done}}/{{total}} 场",
+      "rankedPerMatch": "本联赛有一场比赛结果作废，因此积分榜按场均积分排名。",
+      "coach": "主教练",
+      "bot": "AI",
+      "previousRound": "上一轮",
+      "nextRound": "下一轮"
     },
     "takeover": {
       "title": "接手俱乐部",
@@ -148,6 +166,28 @@
     },
     "training": {
       "noPlan": "你还没有设定训练计划：俱乐部的训练由 AI 安排。当前显示的是游戏默认设置；你的第一次选择会保存为你自己的计划。"
+    },
+    "schedule": {
+      "title": "本赛季赛程",
+      "outcome": {
+        "W": "胜",
+        "D": "平",
+        "L": "负"
+      },
+      "outcomeShort": {
+        "W": "胜",
+        "D": "平",
+        "L": "负"
+      }
+    },
+    "publicClub": {
+      "formation": "阵型：{{formation}}",
+      "coach": "主教练：{{name}}",
+      "botCoach": "由 AI 执教"
+    },
+    "overview": {
+      "lastResult": "最近一场结果",
+      "noResult": "本赛季还没有比赛结果。"
     }
   },
   "coach": {

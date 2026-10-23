@@ -12,6 +12,15 @@ import OnlineSidebar from "./OnlineSidebar";
 
 /** Routes a coach without a club may still open; every other one sends them to take a club. */
 const OPEN_WITHOUT_CLUB = ["/online/takeover", "/online/profile"];
+/** Public pages of the world, open to anyone signed in: other clubs, settled fixtures. */
+const PUBLIC_PREFIXES = ["/online/clubs/", "/online/fixtures/"];
+
+function openWithoutClub(pathname: string): boolean {
+  return (
+    OPEN_WITHOUT_CLUB.includes(pathname) ||
+    PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  );
+}
 
 async function refreshShared(): Promise<void> {
   // One by one would leave the header half-read for a moment; together they settle at once.
@@ -45,7 +54,7 @@ export default function OnlineShell() {
 
   if (gate !== "open") return <OnlineGateScreen gate={gate} />;
 
-  if (club === null && !OPEN_WITHOUT_CLUB.includes(location.pathname)) {
+  if (club === null && !openWithoutClub(location.pathname)) {
     return <Navigate to="/online/takeover" replace />;
   }
 
