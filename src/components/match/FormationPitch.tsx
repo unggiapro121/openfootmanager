@@ -1,16 +1,19 @@
-import { useMemo, useState, type DragEvent, type ReactNode } from "react";
+import { useState, type DragEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useGameStore } from "../../store/gameStore";
 import type { TeamMatchRolesData } from "../../store/types";
 import { buildPitchRows, translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { getSlotXCoordinates } from "../tactics/TacticsTab.helpers";
 import { PitchSurface, PitchToken, fitToneOf, pitchRoleMarkers } from "../ui";
 import { ratingAt } from "./slotRatings";
+import type { RadarRoster } from "./radar/radarMatch";
 import type { EnginePlayerData } from "./types";
 
-export interface FormationSlot {
-  player: EnginePlayerData;
+/** What laying a side out on the pitch reads of a player. */
+type SlotPlayer = Pick<EnginePlayerData, "id" | "position">;
+
+export interface FormationSlot<P extends SlotPlayer = EnginePlayerData> {
+  player: P;
   x: number;
   y: number;
   /** Granular formation slot (e.g. "CenterBack") — only in slot-aligned mode. */
@@ -27,18 +30,18 @@ export interface FormationSlot {
  * the invariant can't hold (player count ≠ slot count), so the caller can
  * fall back to the grouped layout.
  */
-function buildSlotAlignedSlots(
+function buildSlotAlignedSlots<P extends SlotPlayer>(
   formation: string,
-  players: EnginePlayerData[],
+  players: P[],
   sentOff: string[],
-): FormationSlot[] | null {
+): FormationSlot<P>[] | null {
   const rows = buildPitchRows(formation);
   const slotCount = rows.reduce((sum, row) => sum + row.positions.length, 0);
   if (slotCount !== players.length) {
     return null;
   }
 
-  const slots: FormationSlot[] = [];
+  const slots: FormationSlot<P>[] = [];
   let slotIndex = 0;
   for (const row of rows) {
     const y = Number.parseFloat(row.y);
@@ -61,11 +64,11 @@ function buildSlotAlignedSlots(
   return slots;
 }
 
-export function buildFormationSlots(
+export function buildFormationSlots<P extends SlotPlayer>(
   formation: string,
-  players: EnginePlayerData[],
+  players: P[],
   sentOff: string[] = [],
-): FormationSlot[] {
+): FormationSlot<P>[] {
   const active = players.filter((p) => !sentOff.includes(p.id));
   const nums = formation.split("-").map(Number);
   // A valid formation has at least three lines (def-mid-fwd). Anything shorter
@@ -85,7 +88,7 @@ export function buildFormationSlots(
   const mids = active.filter((p) => p.position === "Midfielder");
   const fwds = active.filter((p) => p.position === "Forward");
 
-  const rows: EnginePlayerData[][] = [gks];
+  const rows: P[][] = [gks];
   const n = nums.length;
   let midCursor = 0;
   for (let i = 0; i < n; i++) {
@@ -122,11 +125,11 @@ export function buildFormationSlots(
  * every pitch drawing of a live XI shares — the formation boards and the match
  * radar.
  */
-export function layoutFormationSlots(
+export function layoutFormationSlots<P extends SlotPlayer>(
   formation: string,
-  players: EnginePlayerData[],
+  players: P[],
   sentOff: string[] = [],
-): FormationSlot[] {
+): FormationSlot<P>[] {
   return (
     buildSlotAlignedSlots(formation, players, sentOff) ??
     buildFormationSlots(formation, players, sentOff)
@@ -153,6 +156,8 @@ interface FormationPitchProps {
   renderTokenExtra?: (player: EnginePlayerData, slotPosition?: string) => ReactNode;
   /** Small tokens, for a pitch that must fit a dialog. */
   compact?: boolean;
+  /** The players' faces and short names, by id: they are not in the match data. */
+  roster: RadarRoster;
 }
 
 /**
@@ -173,13 +178,13 @@ export function FormationPitch({
   roles,
   renderTokenExtra,
   compact = false,
+  roster,
 }: FormationPitchProps) {
   const { t } = useTranslation();
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
   // Faces and match names live on the full player, not the match snapshot.
-  const squad = useGameStore((state) => state.gameState?.players);
-  const squadById = useMemo(() => new Map((squad ?? []).map((p) => [p.id, p])), [squad]);
+  const squadById = roster;
   const slots = layoutFormationSlots(formation, players, sentOff);
 
   return (

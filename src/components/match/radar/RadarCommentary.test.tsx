@@ -22,7 +22,7 @@ afterAll(async () => {
 
 function mount(snapshot = radarSnapshot()) {
   const sink = createRef<CaptionSink>() as { current: CaptionSink | null };
-  render(<RadarCommentary snapshot={snapshot} sinkRef={sink} />);
+  render(<RadarCommentary roster={new Map()} snapshot={snapshot} sinkRef={sink} />);
   const say = (caption: RadarCaption) => act(() => sink.current?.(caption));
   return { say };
 }

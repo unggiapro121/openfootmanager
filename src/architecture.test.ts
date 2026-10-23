@@ -96,6 +96,28 @@ describe("frontend architecture", () => {
     expect(offenders).toEqual([]);
   });
 
+  // Given the match screens both modes share (the radar, the formation pitch, the substitution
+  // panel, the event panels),
+  // when their imports are read,
+  // then none reads the offline game store: each is handed the match and the players' roster,
+  // so the online mode can show a match it builds from the server's frames (C-2 C2-10).
+  it("keeps the shared match screens off the game store", () => {
+    const shared = [
+      "./components/match/radar/",
+      "./components/match/FormationPitch.tsx",
+      "./components/match/SubPanel.tsx",
+      "./components/match/MatchPanels.tsx",
+      "./components/match/commentary.ts",
+    ];
+    const store = /from\s+["'][^"']*store\/gameStore["']/;
+    const offenders = Object.entries(sources)
+      .filter(([path, text]) => shared.some((root) => path.startsWith(root)) && store.test(text))
+      .map(([path]) => path)
+      .sort();
+
+    expect(offenders).toEqual([]);
+  });
+
   // Given the online client's files,
   // when they are searched,
   // then none silences Biome's rule against raw HTML: online text comes from other players

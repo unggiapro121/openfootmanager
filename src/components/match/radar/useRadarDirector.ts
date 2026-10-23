@@ -1,6 +1,7 @@
 import { type RefObject, useEffect, useRef } from "react";
 
-import type { MatchEvent, MatchSnapshot } from "../types";
+import type { MatchEvent } from "../types";
+import type { RadarMatch } from "./radarMatch";
 import { type RadarCaption, minuteCaptions } from "./radarCaptions";
 import { choreographHighlights } from "./radarChoreography";
 import { highlightsOf, openMove } from "./radarHighlights";
@@ -35,7 +36,7 @@ export const RADAR_PACING: RadarPacing = {
  * the stage is rebuilt only when the line-ups really change, keeping its
  * shape cache warm between ticks.
  */
-function useStage(snapshot: MatchSnapshot): RadarStage {
+function useStage(snapshot: RadarMatch): RadarStage {
   const key = lineupsKey(snapshot);
   const cached = useRef<{ key: string; stage: RadarStage } | null>(null);
   if (cached.current?.key !== key) {
@@ -83,7 +84,7 @@ function captionsIn(beats: RadarBeat[]): RadarCaption[] {
  * React render as play moves on.
  */
 export function useRadarDirector(
-  snapshot: MatchSnapshot,
+  snapshot: RadarMatch,
   pacing: RadarPacing | null,
   reducedMotion: boolean,
   onCaption?: (caption: RadarCaption) => void,

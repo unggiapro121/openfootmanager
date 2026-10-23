@@ -1,4 +1,4 @@
-import type { MatchSnapshot } from "../types";
+import type { RadarMatch } from "./radarMatch";
 import {
   type PitchPoint,
   type ShapeFocus,
@@ -26,7 +26,7 @@ export interface RadarStage {
 }
 
 /** The parts of a snapshot that say who is on the pitch and how each side is set up. */
-export type RadarLineups = Pick<MatchSnapshot, "home_team" | "away_team" | "sent_off">;
+export type RadarLineups = Pick<RadarMatch, "home_team" | "away_team" | "sent_off">;
 
 /** A key that changes exactly when the stage would: a substitution, a formation, a dial. */
 export function lineupsKey({ home_team, away_team, sent_off }: RadarLineups): string {

@@ -1,8 +1,7 @@
-import { type RefObject, useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useGameStore } from "../../../store/gameStore";
-import type { MatchSnapshot } from "../types";
+import type { RadarMatch, RadarRoster } from "./radarMatch";
 import type { RadarCaption } from "./radarCaptions";
 import {
   type CommentaryFeed,
@@ -18,7 +17,9 @@ export type CaptionSink = (caption: RadarCaption) => void;
 
 interface RadarCommentaryProps {
   /** The match as the radar plays it: its teams, players and events name what is said. */
-  snapshot: MatchSnapshot;
+  snapshot: RadarMatch;
+  /** The players' short names, by id. */
+  roster: RadarRoster;
   sinkRef: RefObject<CaptionSink | null>;
 }
 
@@ -34,10 +35,9 @@ const HEADLINE_CLASS = {
  * card) is also announced to a screen reader; routine play is not, or it would
  * never stop talking.
  */
-export function RadarCommentary({ snapshot, sinkRef }: RadarCommentaryProps) {
+export function RadarCommentary({ snapshot, roster, sinkRef }: RadarCommentaryProps) {
   const { t } = useTranslation();
-  const squad = useGameStore((state) => state.gameState?.players);
-  const squadById = useMemo(() => new Map((squad ?? []).map((p) => [p.id, p])), [squad]);
+  const squadById = roster;
   const [feed, setFeed] = useState<CommentaryFeed<CommentaryText>>(EMPTY_FEED);
   const latest = useRef({ snapshot, t, squadById });
   latest.current = { snapshot, t, squadById };

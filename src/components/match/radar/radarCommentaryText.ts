@@ -2,7 +2,7 @@ import type { TFunction } from "i18next";
 
 import { getCommentary, interpolate, stableHash } from "../commentary";
 import { getPlayerName } from "../helpers";
-import type { MatchSnapshot } from "../types";
+import type { RadarMatch } from "./radarMatch";
 import type { RadarCaption } from "./radarCaptions";
 import type { Side } from "./radarGeometry";
 
@@ -17,7 +17,7 @@ const BASE = "match.radar.commentary";
 
 /** The player's name as the radar draws it: his match name, else his name in the snapshot. */
 export function radarNameOf(
-  snapshot: MatchSnapshot,
+  snapshot: RadarMatch,
   squadById: ReadonlyMap<string, { match_name?: string | null }>,
 ): (playerId: string | null) => string {
   return (playerId) => {
@@ -52,7 +52,7 @@ function tidy(text: string): string {
  */
 export function captionText(
   caption: RadarCaption,
-  snapshot: MatchSnapshot,
+  snapshot: RadarMatch,
   t: TFunction,
   nameOf: (playerId: string | null) => string,
 ): CommentaryText | null {
