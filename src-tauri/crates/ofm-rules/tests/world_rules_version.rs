@@ -11,11 +11,14 @@ use ofm_rules::worldgen::generate_world;
 use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 
 /// The pinned pair. Change only together with `WORLD_RULES_VERSION` (see the assertion).
-const WORLD_RULES_PIN: (&str, u64) = ("1", 0x2E5D_B60B_B7F4_3F66);
+const WORLD_RULES_PIN: (&str, u64) = ("1", 0x77C2_4E42_7A8C_D987);
 
 /// A fingerprint of what the rules grow: a desktop world and fourteen online clubs with free
-/// agents, as JSON values (sorted maps, so a `HashMap` field's order cannot move it).
+/// agents, as JSON values (sorted maps, so a `HashMap` field's order cannot move it). Through
+/// `Persisted`: a player serialised any other way hides his potential and the Wonderkid trait,
+/// and the fingerprint would not see a change to either.
 fn worlds_digest() -> u64 {
+    let persisted = |value: &dyn erased::Json| value.persisted();
     let desktop = generate_world(
         rng_from_u64(7),
         &WorldGenConfig::compact(2030),
@@ -28,13 +31,26 @@ fn worlds_digest() -> u64 {
             let club = generator
                 .club("AsiaSoutheast", ordinal, 0, 2026, None)
                 .expect("a club");
-            serde_json::json!({"team": club.team, "players": club.players, "staff": club.staff,
-                "coach": club.coach, "bot": club.bot_account_id})
+            serde_json::json!({"team": club.team, "players": persisted(&club.players),
+                "staff": club.staff, "coach": club.coach, "bot": club.bot_account_id})
         })
         .collect();
     let free = generator.free_agents(0, 20, 2026).expect("free agents");
-    let all = serde_json::json!({"desktop": desktop, "online": clubs, "free": free});
+    let all = serde_json::json!({"desktop": persisted(&desktop), "online": clubs, "free": persisted(&free)});
     stable_hash(all.to_string().as_bytes(), 0)
+}
+
+mod erased {
+    /// Anything serialisable, as a JSON value written for storage.
+    pub trait Json {
+        fn persisted(&self) -> serde_json::Value;
+    }
+
+    impl<T: serde::Serialize> Json for T {
+        fn persisted(&self) -> serde_json::Value {
+            serde_json::to_value(domain::persisted::Persisted(self)).expect("json")
+        }
+    }
 }
 
 /// Given the worlds the current rules grow and the rules' version,
