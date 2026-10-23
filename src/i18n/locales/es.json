@@ -231,6 +231,18 @@
         "refused": "— rechazada",
         "refusedWhy": "— rechazada: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Repetición",
+      "controls": "Controles de la repetición",
+      "play": "Reproducir",
+      "pause": "Pausa",
+      "restart": "Ver desde el saque inicial",
+      "speed": "Velocidad de la repetición",
+      "times": "{{speed}}×",
+      "jump": "Ir al minuto",
+      "watch": "Ver la repetición",
+      "gone": "Este partido es demasiado antiguo para verlo de nuevo; solo se conserva el resultado."
     }
   },
   "coach": {

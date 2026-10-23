@@ -231,6 +231,18 @@
         "refused": "— abgelehnt",
         "refusedWhy": "— abgelehnt: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Wiederholung",
+      "controls": "Wiedergabesteuerung",
+      "play": "Abspielen",
+      "pause": "Anhalten",
+      "restart": "Ab Anstoß ansehen",
+      "speed": "Wiedergabetempo",
+      "times": "{{speed}}×",
+      "jump": "Zur Minute springen",
+      "watch": "Wiederholung ansehen",
+      "gone": "Dieses Spiel ist zu alt für eine Wiederholung; nur das Ergebnis ist gespeichert."
     }
   },
   "coach": {

@@ -231,6 +231,18 @@
         "refused": "— odmítnuto",
         "refusedWhy": "— odmítnuto: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Záznam",
+      "controls": "Ovládání záznamu",
+      "play": "Přehrát",
+      "pause": "Pozastavit",
+      "restart": "Sledovat od výkopu",
+      "speed": "Rychlost záznamu",
+      "times": "{{speed}}×",
+      "jump": "Přejít na minutu",
+      "watch": "Přehrát záznam",
+      "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek."
     }
   },
   "coach": {

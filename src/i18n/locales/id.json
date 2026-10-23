@@ -231,6 +231,18 @@
         "refused": "— ditolak",
         "refusedWhy": "— ditolak: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Tayangan ulang",
+      "controls": "Kontrol tayangan ulang",
+      "play": "Putar",
+      "pause": "Jeda",
+      "restart": "Tonton dari sepak mula",
+      "speed": "Kecepatan tayangan ulang",
+      "times": "{{speed}}×",
+      "jump": "Lompat ke menit",
+      "watch": "Tonton tayangan ulang",
+      "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan."
     }
   },
   "coach": {

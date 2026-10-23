@@ -370,3 +370,24 @@ fn the_match_routes_go_out_and_the_frames_take_their_own_keys() {
         ]
     );
 }
+
+/// Given a coach replaying a finished match (C-2e),
+/// when they read it as it kicked off and after step 40,
+/// then both go out to the match route with their `atSeq`.
+#[test]
+fn a_match_is_read_at_a_step() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    for step in ["0", "40"] {
+        let mut view = request("GET", &["v1", "matches", CLUB]);
+        view.query = vec![(String::from("atSeq"), String::from(step))];
+        send(&session, &view, 0).expect("the match at a step");
+    }
+    let paths: Vec<String> = sent(&server).into_iter().map(|r| r.path).collect();
+    assert_eq!(
+        paths,
+        vec![
+            format!("/v1/matches/{CLUB}?atSeq=0"),
+            format!("/v1/matches/{CLUB}?atSeq=40"),
+        ]
+    );
+}

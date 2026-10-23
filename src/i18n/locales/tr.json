@@ -231,6 +231,18 @@
         "refused": "— reddedildi",
         "refusedWhy": "— reddedildi: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Tekrar",
+      "controls": "Tekrar kontrolleri",
+      "play": "Oynat",
+      "pause": "Duraklat",
+      "restart": "Başlama vuruşundan izle",
+      "speed": "Tekrar hızı",
+      "times": "{{speed}}×",
+      "jump": "Dakikaya git",
+      "watch": "Tekrarı izle",
+      "gone": "Bu maç tekrar izlemek için çok eski; yalnızca sonucu saklanıyor."
     }
   },
   "coach": {

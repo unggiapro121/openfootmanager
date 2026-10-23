@@ -27,6 +27,7 @@ export type { LoginRequest } from "./LoginRequest";
 export type { MatchFrame } from "./MatchFrame";
 export type { MatchStateView } from "./MatchStateView";
 export type { MatchView } from "./MatchView";
+export type { MatchViewQuery } from "./MatchViewQuery";
 export type { MineView } from "./MineView";
 export type { MyClubView } from "./MyClubView";
 export type { PlayerLine } from "./PlayerLine";

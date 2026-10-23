@@ -231,6 +231,18 @@
         "refused": "— refused",
         "refusedWhy": "— refused: {{reason}}"
       }
+    },
+    "replay": {
+      "title": "Replay",
+      "controls": "Replay controls",
+      "play": "Play",
+      "pause": "Pause",
+      "restart": "Watch from kick-off",
+      "speed": "Replay speed",
+      "times": "{{speed}}×",
+      "jump": "Go to minute",
+      "watch": "Watch the replay",
+      "gone": "This match is too old to replay; only its result is kept."
     }
   },
   "coach": {
