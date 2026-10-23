@@ -1,7 +1,7 @@
 //! The realtime client (phase 3 S-8e, S-8-tech-spec.md §3.10): one WebSocket to the online
 //! gateway for the whole app, opened with the session's access token, which never reaches the
-//! webview. Screens follow a channel (`match:<id>` or `league:<id>`) through `online_watch` and
-//! get its messages on a `tauri::ipc::Channel` of their own.
+//! webview. Screens follow a channel (`match:<id>`, `league:<id>`, `account:<id>`) through
+//! `online_watch` and get its messages on a `tauri::ipc::Channel` of their own.
 //!
 //! The client remembers, for every watch, the last step it handed over. When the connection
 //! drops it reconnects after 1, 2, 4 … up to 30 s and subscribes each channel again from there,
@@ -183,12 +183,13 @@ fn lock(inner: &Mutex<Inner>) -> MutexGuard<'_, Inner> {
     inner.lock().unwrap_or_else(PoisonError::into_inner)
 }
 
-/// A channel name a screen may follow: `match:<uuid>` or `league:<uuid>`.
+/// A channel name a screen may follow: `match:<uuid>`, `league:<uuid>`, or the coach's own
+/// `account:<uuid>` (S-12; the gateway refuses another account's).
 fn is_channel(name: &str) -> bool {
     let Some((kind, id)) = name.split_once(':') else {
         return false;
     };
-    matches!(kind, "match" | "league") && is_uuid(id)
+    matches!(kind, "match" | "league" | "account") && is_uuid(id)
 }
 
 fn is_uuid(text: &str) -> bool {

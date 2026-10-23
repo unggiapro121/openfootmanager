@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { type RealtimeMessage, setOnlineRealtime } from "../services/onlineRealtime";
 import type { MatchFrame } from "./api";
 import type { OnlineApiError } from "./errors";
-import { watchLeague, watchMatch } from "./live";
+import { watchAccount, watchLeague, watchMatch } from "./live";
 
 const MATCH = "0192f0c4-0000-7000-8000-0000000000aa";
 const LEAGUE = "0192f0c4-0000-7000-8000-0000000000cc";
@@ -93,5 +93,19 @@ describe("live watches", () => {
 
     expect(notices).toEqual([{ fixtureId: MATCH, status: "settled" }]);
     expect(closedWith?.code).toBe("be.error.online.notSignedIn");
+  });
+
+  // Given the online shell of a signed-in coach,
+  // when it watches the coach's own account and the client hands it a ring,
+  // then it watched `account:<id>` with no step, and the ring reaches it (S-12).
+  it("follows the coach's own account channel", async () => {
+    const rings: unknown[] = [];
+    await watchAccount(MATCH, (notice) => rings.push(notice));
+    const [watch] = realtime.watches;
+    expect(watch).toMatchObject({ channel: `account:${MATCH}`, lastSeq: undefined });
+
+    watch?.speak({ kind: "notice", channel: `account:${MATCH}`, data: { kind: "friendly" } });
+
+    expect(rings).toEqual([{ kind: "friendly" }]);
   });
 });

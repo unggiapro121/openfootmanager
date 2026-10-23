@@ -4,8 +4,10 @@ import { useParams } from "react-router-dom";
 import { RADAR_PACING } from "../../../components/match/radar/useRadarDirector";
 import type { MatchView } from "../../api";
 import { online } from "../../client";
+import { OnlineApiError } from "../../errors";
 import { useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
+import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import ResourceState from "../ResourceState";
 import { MatchBoard } from "./MatchBoard";
 import { MatchCommandPanel } from "./MatchCommandPanel";
@@ -22,19 +24,35 @@ const isOver = (view: MatchView) =>
  * is over (C-2 §3.7).
  */
 export default function OnlineMatch() {
+  const { t } = useTranslation();
   const { matchId = "" } = useParams();
-  const { resource, reload } = useOnlineResource(() => online.matches.byId(matchId), [matchId]);
+  const { resource, reload } = useOnlineResource(() => readMatch(matchId), [matchId]);
   return (
     <ResourceState resource={resource} reload={reload}>
       {(view) =>
-        isOver(view) ? (
-          <MatchReplay matchId={matchId} view={view} />
+        view === null ? (
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t("online.replay.gone")}</p>
+        ) : isOver(view) ? (
+          <div className="flex flex-col gap-4">
+            {view.kind === "friendly" && <FriendlyAfterMatch matchId={matchId} />}
+            <MatchReplay matchId={matchId} view={view} />
+          </div>
         ) : (
           <LiveMatch matchId={matchId} />
         )
       }
     </ResourceState>
   );
+}
+
+/** The match, or `null` once it is no longer kept (a friendly a week old, S12-15): a 404. */
+async function readMatch(matchId: string): Promise<MatchView | null> {
+  try {
+    return await online.matches.byId(matchId);
+  } catch (error) {
+    if (error instanceof OnlineApiError && error.status === 404) return null;
+    throw error;
+  }
 }
 
 function LiveMatch({ matchId }: { matchId: string }) {

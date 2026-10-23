@@ -112,6 +112,49 @@ fn a_club_s_season_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads and changes its friendly (S-12): its seat, a room made, joined, readied,
+/// left and rematched, the queue joined and left,
+/// then each goes out to its own route with its method, and the routes take no other method.
+#[test]
+fn a_coach_s_friendly_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes: [(&str, &[&str]); 8] = [
+        ("GET", &["v1", "friendlies", "mine"]),
+        ("POST", &["v1", "friendlies", "rooms"]),
+        ("POST", &["v1", "friendlies", "rooms", "join"]),
+        ("POST", &["v1", "friendlies", "rooms", "mine", "ready"]),
+        ("POST", &["v1", "friendlies", "rooms", "mine", "leave"]),
+        ("POST", &["v1", "friendlies", "rooms", "mine", "rematch"]),
+        ("POST", &["v1", "friendlies", "queue"]),
+        ("DELETE", &["v1", "friendlies", "queue"]),
+    ];
+    for (method, segments) in routes {
+        send(&session, &request(method, segments), 0).expect("an answer");
+    }
+    for (method, segments) in [
+        ("DELETE", &["v1", "friendlies", "rooms"][..]),
+        ("PUT", &["v1", "friendlies", "queue"][..]),
+        ("GET", &["v1", "friendlies", "rooms", "mine"][..]),
+    ] {
+        let refusal = refused(send(&session, &request(method, segments), 0));
+        assert_eq!(
+            refusal, "be.error.online.routeNotAllowed",
+            "{method} {segments:?}"
+        );
+    }
+    let requests = sent(&server);
+    let went: Vec<(String, String)> = requests
+        .iter()
+        .map(|request| (request.method.clone(), request.path.clone()))
+        .collect();
+    let expected: Vec<(String, String)> = routes
+        .iter()
+        .map(|(method, segments)| (method.to_string(), format!("/{}", segments.join("/"))))
+        .collect();
+    assert_eq!(went, expected);
+}
+
+/// Given a signed-in coach,
 /// when a segment could name another path once decoded or joined (dots, slashes, backslashes,
 /// percent-encodings, a semicolon, a space, a full-width letter, an empty segment),
 /// then each is refused as `routeNotAllowed` and nothing at all is sent.

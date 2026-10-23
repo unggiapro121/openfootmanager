@@ -6,6 +6,7 @@ import OnlineOverview from "./OnlineOverview";
 import OnlineProfile from "./OnlineProfile";
 import OnlinePublicClub from "./OnlinePublicClub";
 import OnlineSchedule from "./OnlineSchedule";
+import OnlineFriendly from "./friendly/OnlineFriendly";
 import OnlineShell from "./OnlineShell";
 import OnlineSquad from "./OnlineSquad";
 import OnlineTactics from "./OnlineTactics";
@@ -24,6 +25,7 @@ export default function OnlineApp() {
         <Route path="training" element={<OnlineTraining />} />
         <Route path="league" element={<OnlineLeague />} />
         <Route path="schedule" element={<OnlineSchedule />} />
+        <Route path="friendly" element={<OnlineFriendly />} />
         <Route path="clubs/:clubId" element={<OnlinePublicClub />} />
         <Route path="fixtures/:fixtureId" element={<OnlineFixture />} />
         <Route path="match/:matchId" element={<OnlineMatch />} />

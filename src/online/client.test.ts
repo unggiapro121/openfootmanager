@@ -112,6 +112,50 @@ describe("online client", () => {
     ]);
   });
 
+  // Given a coach's friendly (S-12),
+  // when they read it, make a room, join one, get ready, leave, ask for a rematch, queue and leave
+  // the queue,
+  // then each goes to its own route, every write but leaving the queue with a key, the code and the
+  // ready flag in the body, and leaving the queue as a DELETE.
+  it("reads and changes a friendly on its routes", async () => {
+    await online.friendlies.mine();
+    await online.friendlies.createRoom("make-1");
+    await online.friendlies.join("K7Q-2MX", "join-1");
+    await online.friendlies.ready(true, "ready-1");
+    await online.friendlies.leave("leave-1");
+    await online.friendlies.rematch("rematch-1");
+    await online.friendlies.queue("queue-1");
+    await online.friendlies.leaveQueue();
+    expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "friendlies", "mine"] },
+      { method: "POST", segments: ["v1", "friendlies", "rooms"], idempotencyKey: "make-1" },
+      {
+        method: "POST",
+        segments: ["v1", "friendlies", "rooms", "join"],
+        idempotencyKey: "join-1",
+        body: { code: "K7Q-2MX" },
+      },
+      {
+        method: "POST",
+        segments: ["v1", "friendlies", "rooms", "mine", "ready"],
+        idempotencyKey: "ready-1",
+        body: { ready: true },
+      },
+      {
+        method: "POST",
+        segments: ["v1", "friendlies", "rooms", "mine", "leave"],
+        idempotencyKey: "leave-1",
+      },
+      {
+        method: "POST",
+        segments: ["v1", "friendlies", "rooms", "mine", "rematch"],
+        idempotencyKey: "rematch-1",
+      },
+      { method: "POST", segments: ["v1", "friendlies", "queue"], idempotencyKey: "queue-1" },
+      { method: "DELETE", segments: ["v1", "friendlies", "queue"] },
+    ]);
+  });
+
   // Given a coach who sets his eleven, then sends the same action again with its key,
   // when the requests go out,
   // then the setup carries If-Match and a key, and the retry carries the same key; a new action
