@@ -71,6 +71,25 @@ pub fn apply_attribute_curve(player: &mut Player, age: i32, season: u32) {
 /// The chance, in percent, that `player`, aged `age`, retires at this season's end.
 /// `contract_expired` is whether his contract has run out by then.
 pub fn retirement_chance(player: &Player, age: i32, contract_expired: bool) -> u32 {
+    let out_of_contract = player.contract_end().is_none() || contract_expired;
+    chance_given_contract(player, age, out_of_contract)
+}
+
+/// [`retirement_chance`] in the online world (phase 3, E3-7), where no player has a contract
+/// before the economy (S-10): without one every veteran would be the +18% of a player released,
+/// and retire sooner than his twin offline only for the missing data. Everything else is the same.
+pub fn retirement_chance_online(player: &Player, age: i32) -> u32 {
+    chance_given_contract(player, age, false)
+}
+
+/// Whether `player` retires at the end of `season` online: [`retirement_chance_online`] against
+/// the same roll as [`should_retire`].
+pub fn should_retire_online(player: &Player, age: i32, season: u32) -> bool {
+    let chance = retirement_chance_online(player, age);
+    chance != 0 && seeded_value(&player.id, season, "retirement-roll") % 100 < chance
+}
+
+fn chance_given_contract(player: &Player, age: i32, out_of_contract: bool) -> u32 {
     if player.retired || age < 33 {
         return 0;
     }
@@ -84,7 +103,7 @@ pub fn retirement_chance(player: &Player, age: i32, contract_expired: bool) -> u
         _ => 100,
     };
 
-    if player.contract_end().is_none() || contract_expired {
+    if out_of_contract {
         chance += 18;
     }
     if player.team_id.is_none() {
@@ -116,4 +135,67 @@ pub fn should_retire(player: &Player, age: i32, contract_expired: bool, season: 
 
     let roll = seeded_value(&player.id, season, "retirement-roll") % 100;
     roll < chance
+}
+
+#[cfg(test)]
+mod tests {
+    use domain::player::{PlayerSeasonStats, Position};
+
+    use super::*;
+    use crate::test_support::uniform_attributes;
+
+    fn veteran(contract_end: Option<&str>) -> Player {
+        let mut player = Player::new(
+            "veteran".to_string(),
+            "A. Veteran".to_string(),
+            "Veteran".to_string(),
+            "1990-01-01".to_string(),
+            "England".to_string(),
+            Position::Defender,
+            uniform_attributes(60),
+        );
+        player.team_id = Some("club".to_string());
+        player.stage_contract_end(contract_end.map(str::to_string));
+        player.stats = PlayerSeasonStats {
+            appearances: 20,
+            avg_rating: 6.8,
+            ..PlayerSeasonStats::default()
+        };
+        player
+    }
+
+    /// Given a 34-year-old regular with no contract,
+    /// when his chance is asked offline and online,
+    /// then offline adds the 18 points of a player without a contract and online does not; with
+    /// a running contract the two agree.
+    #[test]
+    fn online_a_missing_contract_does_not_push_a_veteran_out() {
+        let without = veteran(None);
+        assert_eq!(retirement_chance(&without, 34, false), 24 + 18);
+        assert_eq!(retirement_chance_online(&without, 34), 24);
+        let contracted = veteran(Some("2040-06-30"));
+        assert_eq!(
+            retirement_chance(&contracted, 34, false),
+            retirement_chance_online(&contracted, 34)
+        );
+    }
+
+    /// Given veterans of every age from 30 to 40,
+    /// when each one's retirement is decided online,
+    /// then it matches the offline decision for a player under contract, roll for roll.
+    #[test]
+    fn online_retirement_rolls_the_offline_dice() {
+        for age in 30..=40 {
+            for season in 1..=5 {
+                let contracted = veteran(Some("2040-06-30"));
+                let mut online = veteran(None);
+                online.id = contracted.id.clone();
+                assert_eq!(
+                    should_retire_online(&online, age, season),
+                    should_retire(&contracted, age, false, season),
+                    "age {age}, season {season}"
+                );
+            }
+        }
+    }
 }

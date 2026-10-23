@@ -29,11 +29,15 @@ pub mod lineup_assignment;
 pub mod mastery_xp;
 pub mod match_form;
 pub mod match_session;
+pub mod match_summary;
 pub mod nations;
 pub mod player_rating;
 pub mod player_wear;
 pub mod playing_time;
+pub mod season;
+pub mod season_stats;
 pub mod seed;
+pub mod setup;
 pub mod squad;
 pub mod stable_hash;
 #[cfg(test)]

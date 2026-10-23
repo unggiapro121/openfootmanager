@@ -4,9 +4,7 @@ use domain::league::{
     CompactLineup, CompactMatchEvent, CompactMatchReport, CompactTeamMatchStats, FixtureStatus,
     GoalEvent, LineupSlot, MatchResult,
 };
-use domain::player::{
-    PlayerIssue, PlayerIssueCategory, PlayerPromiseKind, Position as DomainPosition,
-};
+use domain::player::{PlayerIssue, PlayerIssueCategory, PlayerPromiseKind};
 use domain::stats::{PlayerMatchStatsRecord, StatsState, TeamMatchStatsRecord};
 
 fn compact_team_stats(stats: &engine::TeamStats, possession_pct: u8) -> CompactTeamMatchStats {
@@ -513,42 +511,17 @@ fn apply_player_stats(
 ) {
     for player in game.players.iter_mut() {
         if let Some(ps) = report.player_stats.get(&player.id) {
-            player.stats.appearances += 1;
-            player.stats.goals += ps.goals as u32;
-            player.stats.assists += ps.assists as u32;
-            player.stats.yellow_cards += ps.yellow_cards as u32;
-            player.stats.red_cards += ps.red_cards as u32;
-            player.stats.minutes_played += ps.minutes_played as u32;
-            player.stats.shots += ps.shots as u32;
-            player.stats.shots_on_target += ps.shots_on_target as u32;
-            player.stats.passes_completed += ps.passes_completed as u32;
-            player.stats.passes_attempted += ps.passes_attempted as u32;
-            player.stats.tackles_won += ps.tackles_won as u32;
-            player.stats.interceptions += ps.interceptions as u32;
-            player.stats.fouls_committed += ps.fouls_committed as u32;
-
-            // A rating of 0.0 means the engine did not rate him: too few minutes
-            // to judge. Averaging it in would read a five-minute cameo as a 0/10 game.
-            if ps.rating > 0.0 {
-                player.stats.rated_appearances += 1;
-                let n = player.stats.rated_appearances as f32;
-                player.stats.avg_rating = (player.stats.avg_rating * (n - 1.0) + ps.rating) / n;
-            }
-
-            // Clean sheet for goalkeepers
-            if matches!(player.position, DomainPosition::Goalkeeper) {
-                let tid = player.team_id.as_deref().unwrap_or("");
-                let conceded_zero = if tid == home_team_id {
-                    report.away_goals == 0
-                } else if tid == away_team_id {
-                    report.home_goals == 0
-                } else {
-                    false
-                };
-                if conceded_zero {
-                    player.stats.clean_sheets += 1;
-                }
-            }
+            // What his side let in, for a goalkeeper's clean sheet; a player of neither club
+            // (there is none today) keeps none.
+            let tid = player.team_id.as_deref().unwrap_or("");
+            let conceded = if tid == home_team_id {
+                report.away_goals
+            } else if tid == away_team_id {
+                report.home_goals
+            } else {
+                u8::MAX
+            };
+            ofm_rules::season_stats::record_match(player, ps, conceded);
         }
     }
 }
@@ -787,12 +760,7 @@ fn update_team_form(
 fn apply_match_injuries(game: &mut Game, report: &engine::MatchReport) {
     let today = game.clock.current_date.format("%Y-%m-%d").to_string();
     let user_team = game.manager.team_id.clone();
-    let hurt: Vec<String> = report
-        .events
-        .iter()
-        .filter(|event| event.event_type == engine::EventType::Injury)
-        .filter_map(|event| event.player_id.clone())
-        .collect();
+    let hurt = ofm_rules::match_summary::injured_players(report);
     for player_id in hurt {
         let mut rng = game.rng_today(&format!("post-match/injury/{player_id}"));
         let Some(player) = game.players.iter_mut().find(|p| p.id == player_id) else {

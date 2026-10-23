@@ -7,11 +7,8 @@ pub use fitness_warnings::check_squad_fitness_warnings;
 
 use crate::game::Game;
 use domain::staff::Staff;
-use domain::team::TrainingFocus;
 pub(crate) use ofm_rules::training::age_factor;
-use ofm_rules::training::{
-    Taper, TeamCoachingBonus, TeamTrainingPlan, TrainingDay, session_rng, train_player,
-};
+use ofm_rules::training::{Taper, TeamTrainingPlan, TrainingDay, session_rng, train_player};
 
 /// What a team's coaches and assistant managers multiply training gains by:
 /// 0.8 with none, otherwise 0.85 (coaching 0) to 1.35 (coaching 100) on their
@@ -26,11 +23,6 @@ fn team_staff<'a>(game: &'a Game, team_id: &str) -> Vec<&'a Staff> {
         .iter()
         .filter(|s| s.team_id.as_deref() == Some(team_id))
         .collect()
-}
-
-/// Compute coaching bonuses from a team's staff.
-fn compute_coaching_bonus(game: &Game, team_id: &str, focus: &TrainingFocus) -> TeamCoachingBonus {
-    ofm_rules::training::coaching_bonus(&team_staff(game, team_id), focus)
 }
 
 /// A club within this many days of its next fixture trains at reduced load.
@@ -150,29 +142,12 @@ pub fn process_training(game: &mut Game, weekday_num: u32) {
         .iter()
         .filter(|t| !playing_today.contains(&t.id))
         .map(|t| {
-            let bonus = compute_coaching_bonus(game, &t.id, &t.training_focus);
-            let medical_facility_mult =
-                crate::facilities::condition_recovery_mult(t.facilities.medical);
-            let training_facility_mult = crate::facilities::development_mult(t.facilities.training);
-            let mut group_overrides = std::collections::HashMap::new();
-            for group in &t.training_groups {
-                for pid in &group.player_ids {
-                    group_overrides.insert(pid.clone(), group.focus.clone());
-                }
-            }
-            (
-                t.id.clone(),
-                TeamTrainingPlan {
-                    default_focus: t.training_focus.clone(),
-                    intensity: t.training_intensity.clone(),
-                    schedule: t.training_schedule.clone(),
-                    bonus,
-                    medical_facility_mult,
-                    training_facility_mult,
-                    group_overrides,
-                    taper: tapering.get(&t.id).copied(),
-                },
-            )
+            let plan = ofm_rules::training::team_training_plan(
+                t,
+                &team_staff(game, &t.id),
+                tapering.get(&t.id).copied(),
+            );
+            (t.id.clone(), plan)
         })
         .collect();
 

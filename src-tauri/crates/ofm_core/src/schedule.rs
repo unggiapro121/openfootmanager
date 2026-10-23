@@ -53,16 +53,9 @@ pub fn build_round_robin_fixtures(
     )
 }
 
-/// Matchdays a round robin of `n` teams takes over `legs` legs — the round
-/// count [`build_round_robin_fixtures_with`] emits (the circle method gives an
-/// odd field a phantom slot, so its rounds match the next even size).
-pub fn round_robin_matchdays(n: usize, legs: usize) -> usize {
-    if n < 2 {
-        return 0;
-    }
-    let slots = if n.is_multiple_of(2) { n } else { n + 1 };
-    (slots - 1) * legs
-}
+/// Matchdays a round robin of `n` teams takes over `legs` legs (`ofm_rules::season`, shared with
+/// the online server).
+pub use ofm_rules::season::round_robin_matchdays;
 
 /// Build a round-robin fixture list with a configurable number of legs (even
 /// legs reverse home and away) and days between matchdays. Uses the circle
@@ -76,46 +69,28 @@ pub fn build_round_robin_fixtures_with(
     legs: u8,
     matchday_gap_days: i64,
 ) -> Vec<Fixture> {
-    let n = team_ids.len();
-    if n < 2 || legs == 0 {
-        return Vec::new();
-    }
-    let slots = if n.is_multiple_of(2) { n } else { n + 1 };
-    let rounds = round_robin_matchdays(n, 1);
-    let half = slots / 2;
     let mut fixtures = Vec::new();
-    let mut matchday: u32 = 1;
-
-    // Even-numbered legs reverse home and away.
-    for leg in 0..legs {
-        let mut indices: Vec<usize> = (0..slots).collect();
-        for _round in 0..rounds {
-            let date_str = (start_date + Duration::days((matchday as i64 - 1) * matchday_gap_days))
-                .format("%Y-%m-%d")
-                .to_string();
-            for i in 0..half {
-                let (mut home, mut away) = (indices[i], indices[slots - 1 - i]);
-                if leg % 2 == 1 {
-                    std::mem::swap(&mut home, &mut away);
-                }
-                if home >= n || away >= n {
-                    continue; // Paired with the phantom slot: a bye.
-                }
-                fixtures.push(Fixture {
-                    id: Uuid::new_v4().to_string(),
-                    competition_id: competition_id.to_string(),
-                    matchday,
-                    date: date_str.clone(),
-                    home_team_id: team_ids[home].clone(),
-                    away_team_id: team_ids[away].clone(),
-                    competition: fixture_competition.clone(),
-                    status: FixtureStatus::Scheduled,
-                    result: None,
-                });
-            }
-            matchday += 1;
-            let last = indices.pop().unwrap();
-            indices.insert(1, last);
+    // The pairings are the shared rule (`ofm_rules::season`); this only dates and ids them.
+    for (index, round) in ofm_rules::season::round_robin_pairings(team_ids.len(), legs)
+        .into_iter()
+        .enumerate()
+    {
+        let matchday = index as u32 + 1;
+        let date_str = (start_date + Duration::days((matchday as i64 - 1) * matchday_gap_days))
+            .format("%Y-%m-%d")
+            .to_string();
+        for (home, away) in round {
+            fixtures.push(Fixture {
+                id: Uuid::new_v4().to_string(),
+                competition_id: competition_id.to_string(),
+                matchday,
+                date: date_str.clone(),
+                home_team_id: team_ids[home].clone(),
+                away_team_id: team_ids[away].clone(),
+                competition: fixture_competition.clone(),
+                status: FixtureStatus::Scheduled,
+                result: None,
+            });
         }
     }
     fixtures

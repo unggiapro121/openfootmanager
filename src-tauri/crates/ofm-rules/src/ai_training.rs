@@ -202,3 +202,54 @@ pub fn session_plan(
     };
     (focus, intensity)
 }
+
+/// `team`'s focus and intensity set for today's session by the AI's plan, when today is one of
+/// its training days (phase 3, E3-7: the game's AI clubs and the online world's bot clubs plan
+/// alike). `available` is the squad fit to play; a rest day leaves the club as it is.
+pub fn plan_session(team: &mut domain::team::Team, available: &[&Player], weekday_num: u32) {
+    if !team.training_schedule.is_training_day(weekday_num) {
+        return;
+    }
+    let starters_condition = likely_starters_condition(available, &team.formation);
+    let (focus, intensity) = session_plan(&team.play_style, starters_condition, weekday_num);
+    team.training_focus = focus;
+    team.training_intensity = intensity;
+}
+
+#[cfg(test)]
+mod tests {
+    use domain::team::{Team, TrainingSchedule};
+
+    use super::*;
+
+    fn club() -> Team {
+        let mut team = Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        team.training_schedule = TrainingSchedule::Light;
+        team.training_focus = TrainingFocus::Attacking;
+        team
+    }
+
+    /// Given a club on the light schedule (Tuesday and Thursday) and an empty squad,
+    /// when it plans Monday and Tuesday,
+    /// then Monday leaves its settings and Tuesday takes the AI's plan for the day.
+    #[test]
+    fn a_club_plans_only_its_training_days() {
+        let mut team = club();
+        plan_session(&mut team, &[], 0);
+        assert_eq!(team.training_focus, TrainingFocus::Attacking);
+        plan_session(&mut team, &[], 1);
+        let (focus, intensity) = session_plan(&team.play_style, 100.0, 1);
+        assert_eq!(
+            (team.training_focus, team.training_intensity),
+            (focus, intensity)
+        );
+    }
+}

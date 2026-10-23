@@ -26,16 +26,11 @@ pub use round_summary::{
     build_round_summary,
 };
 
-/// Progress injury recovery by one day for all currently injured players.
-/// Players with 1 day remaining are cleared (fully recovered).
+/// Progress injury recovery by one day for all currently injured players
+/// (`ofm_rules::player_wear::recover_injury`, shared with the online server).
 fn progress_injury_recovery(game: &mut Game) {
     for player in game.players.iter_mut() {
-        if let Some(mut injury) = player.injury.take()
-            && injury.days_remaining > 1
-        {
-            injury.days_remaining -= 1;
-            player.injury = Some(injury);
-        }
+        ofm_rules::player_wear::recover_injury(player, 1);
     }
 }
 
