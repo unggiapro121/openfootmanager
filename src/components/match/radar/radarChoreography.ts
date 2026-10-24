@@ -239,7 +239,8 @@ function contestBall(cue: Cue): { at: PitchPoint; step: RadarStep } {
   const at = isFar
     ? lerp(ball, from, PACE_SPEED.carry / (PACE_SPEED.carry + PACE_SPEED.run))
     : ball;
-  const carrier = isFar ? ballCarrier(stage, scene, opposite(event.side)) : null;
+  const loser = ballCarrier(stage, scene, opposite(event.side));
+  const carrier = isFar ? loser : null;
   return {
     at,
     step: {
@@ -253,6 +254,7 @@ function contestBall(cue: Cue): { at: PitchPoint; step: RadarStep } {
       waitFor: cast(winner, carrier),
       highlight: cast(winner),
       possession: event.side,
+      beaten: cast(loser),
       overlay: null,
       action: winner ? { kind: "take", by: winner } : undefined,
     },
@@ -352,7 +354,7 @@ function stageInterceptedPass(cue: Cue): Staging {
         highlight: cast(passer, interceptor),
         action: { kind: "kick", by: passer, to: cut, receiver: interceptor, pace: "pass", peak: 0 },
       },
-      { overlay: { kind: "cut", from, at: cut }, possession: opposite(side) },
+      { overlay: { kind: "cut", from, at: cut }, possession: opposite(side), beaten: cast(passer) },
     ],
   };
 }
@@ -435,6 +437,7 @@ function stageBallRecovery(cue: Cue): Staging {
       {
         ball: { at: spot },
         possession: event.side,
+        beaten: cast(loser),
         highlight: cast(winner, loser),
         action: winner ? { kind: "take", by: winner } : undefined,
       },
@@ -607,6 +610,7 @@ function stageTackledDribble(cue: Cue): Staging {
       {
         ball: { at: toPitch(side, depth - 3, lane) },
         possession: opposite(side),
+        beaten: cast(attacker),
         action: { kind: "roll", to: toPitch(side, depth - 3, lane), chaser: defender ?? null },
       },
     ],
