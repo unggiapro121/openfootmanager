@@ -400,6 +400,34 @@ fn unique_short_code(base_code: &str, used_codes: &HashSet<String>) -> String {
     panic!("three-letter club code space exhausted");
 }
 
+/// `count` distinct (club name, city) pairs for a nation (E3-5q F8, F9, F11): the online pack's
+/// patterns and words of the nation's style over the nation's own cities, every blocked name (a
+/// real club, a brand) removed first, picked by a permutation keyed by `key`, so worlds of other
+/// seeds name their clubs otherwise. A nation the pack does not style, or that runs out of valid
+/// names, falls back to the patterns of its `NamingStyle`. No randomness is drawn: a club's name
+/// never moves the stream its numbers come from.
+pub fn desktop_club_names(nation: &NationGen, count: usize, key: u64) -> Vec<(String, String)> {
+    use super::online::OnlineContentPack;
+    use super::online::naming;
+    let pack = OnlineContentPack::builtin_shared();
+    let style = pack
+        .nations
+        .get(&nation.code)
+        .and_then(|content| pack.club_styles.get(&content.club_style));
+    let Some(style) = style else {
+        return club_names(nation, count);
+    };
+    let valid = naming::valid_names_for(&nation.code, &nation.cities, style, pack);
+    let size = valid.len() as u64;
+    if (size as usize) < count {
+        return club_names(nation, count);
+    }
+    let nation_key = naming::name_key(key, &nation.code, "desktop");
+    (0..count as u64)
+        .map(|index| valid[naming::keyed_permutation(index, size, nation_key) as usize].clone())
+        .collect()
+}
+
 /// Generate `count` distinct (club name, city) pairs for a nation, spreading
 /// across cities first so a league looks geographically diverse before reusing
 /// a city with a different pattern.
@@ -445,6 +473,53 @@ fn club_names(nation: &NationGen, count: usize) -> Vec<(String, String)> {
     out
 }
 
+/// Name each nation's clubs of `teams` (in the order they were generated) by `key`, and give each
+/// a stadium of its nation's style and a kit pattern, from a stream keyed by the club's id: the
+/// stream every number came from is not touched (E3-5q F10, F11). The kit colours stay the pair
+/// the club drew; a club may wear it the other way round.
+pub fn rename_clubs(teams: &mut [domain::team::Team], config: &WorldGenConfig, key: u64) {
+    use super::online::OnlineContentPack;
+    use super::online::naming;
+    let pack = OnlineContentPack::builtin_shared();
+    for nation in &config.nations {
+        let members: Vec<usize> = (0..teams.len())
+            .filter(|&at| teams[at].country == nation.code)
+            .collect();
+        let names = desktop_club_names(nation, members.len(), key);
+        let mut used_codes = HashSet::new();
+        for (at, (name, city)) in members.into_iter().zip(names) {
+            let team = &mut teams[at];
+            let mut rng = crate::seed::rng_from_key(&format!("desktop-club/{key:x}/{}", team.id));
+            let code = unique_short_code(&short_code(&name), &used_codes);
+            used_codes.insert(code.clone());
+            team.short_name = code;
+            team.stadium_name = match pack.nations.get(&nation.code) {
+                Some(content) => naming::stadium_name(
+                    pack,
+                    &nation.code,
+                    &content.stadium_style,
+                    &city,
+                    &mut rng,
+                ),
+                None => format!("{city} Arena"),
+            };
+            if rng.random_bool(0.5) {
+                std::mem::swap(&mut team.colors.primary, &mut team.colors.secondary);
+            }
+            let patterns = [
+                domain::team::KitPattern::Solid,
+                domain::team::KitPattern::Stripes,
+                domain::team::KitPattern::Hoops,
+                domain::team::KitPattern::HalfAndHalf,
+                domain::team::KitPattern::Diagonal,
+            ];
+            team.kit_pattern = patterns[rng.random_range(0..patterns.len())].clone();
+            team.name = name;
+            team.city = city;
+        }
+    }
+}
+
 /// Reputation band centre for a club ranked `index` of `total` in its nation,
 /// strongest first. Stronger nations sit higher; within a nation reputation
 /// declines down the pyramid so divisions seed by quality.
@@ -479,7 +554,7 @@ pub fn generate_club_defs(config: &WorldGenConfig, rng: &mut impl Rng) -> Vec<Te
     for nation in &config.nations {
         let mut used_codes = HashSet::new();
         let total = config.clubs_per_division * nation.tiers;
-        let names = club_names(nation, total);
+        let names = desktop_club_names(nation, total, 0);
         for (index, (name, city)) in names.into_iter().enumerate() {
             let center = reputation_center(nation.strength, index, total);
             let rep_lo = center.saturating_sub(25).max(80);
@@ -672,7 +747,18 @@ mod tests {
                 .find(|form| club.name.contains(form))
             })
             .collect();
-        assert!(forms.len() >= 4, "expected several Brazilian naming forms");
+        let names: Vec<&str> = defs.iter().map(|club| club.name.as_str()).collect();
+        // Since E3-5q2 "<city> Esporte Clube" and the like are refused wherever the city has a
+        // real club, so most names are "<city> <word>" (Natal Condores); the forms still show.
+        assert!(
+            forms.len() >= 2,
+            "expected several Brazilian naming forms: {names:?}"
+        );
+        let places: HashSet<&str> = defs.iter().map(|club| club.city.as_str()).collect();
+        assert!(
+            places.len() >= 15,
+            "expected clubs spread over the cities: {names:?}"
+        );
         let codes: HashSet<&str> = defs.iter().map(|club| club.short_name.as_str()).collect();
         assert_eq!(codes.len(), 40);
     }

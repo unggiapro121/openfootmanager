@@ -43,10 +43,28 @@ pub struct NamesDefinition {
     pub pools: HashMap<String, NamePool>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// A nation's names. The two lists are all an old file holds, drawn evenly. Since E3-5q2 a pool
+/// may also weigh each name (`*_weights`, same length as the list, else ignored), carry middle
+/// names, flatten its weights (`flatten`, 0–1, as the online pack's), and say in which order a
+/// full name is written and what a shirt reads (E3-5q F5, F11).
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct NamePool {
     pub first_names: Vec<String>,
     pub last_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub first_name_weights: Vec<u32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub last_name_weights: Vec<u32>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub middle_names: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub middle_name_weights: Vec<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub flatten: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub order: Option<super::online::pack::NameOrder>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shirt: Option<super::online::pack::ShirtName>,
 }
 
 /// Per-nation inputs to procedural club generation.

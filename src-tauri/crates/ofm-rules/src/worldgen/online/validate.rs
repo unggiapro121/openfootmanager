@@ -415,7 +415,12 @@ mod tests {
             ),
             "{issues:?}"
         );
-        let issues = broken(|pack| pack.limits.max_world_name_share = 0.05);
+        let issues = broken(|pack| {
+            if let Some(pool) = pack.names.get_mut("VN") {
+                pool.given.truncate(5);
+                pool.middle.truncate(2);
+            }
+        });
         assert!(
             has(&issues, "be.error.contentPack.nameCapacity", "names.VN"),
             "{issues:?}"

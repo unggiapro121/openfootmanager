@@ -652,6 +652,10 @@ mod tests {
         let mut world = generate_world_data(&crate::generator::DefinitionSources::embedded_only());
         world.teams[0].country = "GB".to_string();
         world.teams[0].football_nation.clear();
+        // A legacy British club is told apart by its name (`infer_legacy_british_team_nation`);
+        // a random world names its clubs by its seed (E3-5q2), so the test names this one.
+        world.teams[0].name = "London FC".to_string();
+        world.teams[0].city = "London".to_string();
 
         if let Some(player) = world
             .players
