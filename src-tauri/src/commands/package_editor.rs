@@ -1307,6 +1307,7 @@ mod tests {
             NamePool {
                 first_names: vec!["James".to_string(), "John".to_string()],
                 last_names: vec!["Smith".to_string(), "Jones".to_string()],
+                ..NamePool::default()
             },
         );
         let names = NamesDefinition {

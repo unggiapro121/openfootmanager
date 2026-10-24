@@ -130,12 +130,68 @@ pub fn name_rng(person_id: &str) -> rand_chacha::ChaCha12Rng {
     crate::seed::rng_from_key(&format!("{NAME_SALT:x}/{person_id}"))
 }
 
-/// Pick a name from the NamesDefinition for a given nationality code.
+/// Pick a name from the NamesDefinition for a given nationality code: `(given name with any
+/// middle name, family name)`.
 pub fn pick_name_from_def(
     nationality: &str,
     names_def: &NamesDefinition,
     rng: &mut impl Rng,
 ) -> (String, String) {
+    let name = pick_person_name(nationality, names_def, rng);
+    (name.given_with_middle(), name.family)
+}
+
+/// A person's name and how it is written: `(name, order, shirt rule)`.
+pub struct DrawnName {
+    pub name: crate::worldgen::online::names::PersonName,
+    pub order: crate::worldgen::online::pack::NameOrder,
+    pub shirt: crate::worldgen::online::pack::ShirtName,
+}
+
+impl DrawnName {
+    pub fn given_with_middle(&self) -> String {
+        self.name.given_with_middle()
+    }
+
+    /// The full name in the culture's order.
+    pub fn full(&self) -> String {
+        self.name.full(self.order)
+    }
+
+    /// What the shirt reads.
+    pub fn shirt_name(&self) -> String {
+        let [first, ..] = self.name.shirt_forms(self.shirt, self.order);
+        first
+    }
+}
+
+/// A name for one person from the pool of `nationality` (or one borrowed), drawn from `rng` — the
+/// person's own name stream (F13) — and drawn again while it is a protected person's (F6).
+pub fn pick_drawn_name(
+    nationality: &str,
+    names_def: &NamesDefinition,
+    rng: &mut impl Rng,
+) -> DrawnName {
+    use crate::worldgen::online::names::is_protected_person;
+    let mut drawn = draw_from_def(nationality, names_def, rng);
+    for _ in 0..32 {
+        if !is_protected_person(&drawn.full(), &[]) {
+            break;
+        }
+        drawn = draw_from_def(nationality, names_def, rng);
+    }
+    drawn
+}
+
+fn pick_person_name(
+    nationality: &str,
+    names_def: &NamesDefinition,
+    rng: &mut impl Rng,
+) -> crate::worldgen::online::names::PersonName {
+    pick_drawn_name(nationality, names_def, rng).name
+}
+
+fn draw_from_def(nationality: &str, names_def: &NamesDefinition, rng: &mut impl Rng) -> DrawnName {
     let candidate_codes = match nationality {
         "ENG" | "SCO" | "WAL" | "NIR" => vec![nationality, "GB"],
         _ => vec![nationality],
@@ -146,23 +202,75 @@ pub fn pick_name_from_def(
             && !pool.first_names.is_empty()
             && !pool.last_names.is_empty()
         {
-            let first = pool.first_names[rng.random_range(0..pool.first_names.len())].clone();
-            let last = pool.last_names[rng.random_range(0..pool.last_names.len())].clone();
-            return (first, last);
+            return draw_name(pool, rng);
         }
     }
 
     match fallback_pool(nationality, names_def, rng) {
         Some(pool) => draw_name(pool, rng),
-        None => ("Player".to_string(), "Unknown".to_string()),
+        None => DrawnName {
+            name: crate::worldgen::online::names::PersonName {
+                given: "Player".to_string(),
+                middle: None,
+                family: "Unknown".to_string(),
+            },
+            order: crate::worldgen::online::pack::NameOrder::GivenFamily,
+            shirt: crate::worldgen::online::pack::ShirtName::Family,
+        },
     }
 }
 
-/// A random first/last pair from `pool`. Callers must have checked it is usable.
-fn draw_name(pool: &NamePool, rng: &mut impl Rng) -> (String, String) {
-    let first = pool.first_names[rng.random_range(0..pool.first_names.len())].clone();
-    let last = pool.last_names[rng.random_range(0..pool.last_names.len())].clone();
-    (first, last)
+/// One entry of `names`: evenly when the pool weighs nothing (an old file, drawn as it always
+/// was), else by `weight^flatten` as the online pack draws.
+fn draw_one(names: &[String], weights: &[u32], flatten: f64, rng: &mut impl Rng) -> String {
+    if weights.len() != names.len() {
+        return names[rng.random_range(0..names.len())].clone();
+    }
+    let flattened: Vec<u64> = weights
+        .iter()
+        .map(|weight| crate::worldgen::online::names::flattened_weight(*weight, flatten))
+        .collect();
+    let total: u64 = flattened.iter().sum();
+    let mut pick = rng.random_range(0..total.max(1));
+    for (name, weight) in names.iter().zip(&flattened) {
+        if pick < *weight {
+            return name.clone();
+        }
+        pick -= weight;
+    }
+    names[names.len() - 1].clone()
+}
+
+/// A name from `pool`. Callers must have checked it is usable. Family name first, then the
+/// middle name, then the given name, as the online pack draws.
+fn draw_name(pool: &NamePool, rng: &mut impl Rng) -> DrawnName {
+    let flatten = pool.flatten.unwrap_or(1.0).clamp(0.01, 1.0);
+    let weighted = !pool.first_name_weights.is_empty() || !pool.last_name_weights.is_empty();
+    let (family, middle, given) = if weighted {
+        let family = draw_one(&pool.last_names, &pool.last_name_weights, flatten, rng);
+        let middle = (!pool.middle_names.is_empty())
+            .then(|| draw_one(&pool.middle_names, &pool.middle_name_weights, flatten, rng));
+        let given = draw_one(&pool.first_names, &pool.first_name_weights, flatten, rng);
+        (family, middle, given)
+    } else {
+        // An old file: given then family, evenly, as before E3-5q2.
+        let given = pool.first_names[rng.random_range(0..pool.first_names.len())].clone();
+        let family = pool.last_names[rng.random_range(0..pool.last_names.len())].clone();
+        (family, None, given)
+    };
+    DrawnName {
+        name: crate::worldgen::online::names::PersonName {
+            given,
+            middle,
+            family,
+        },
+        order: pool
+            .order
+            .unwrap_or(crate::worldgen::online::pack::NameOrder::GivenFamily),
+        shirt: pool
+            .shirt
+            .unwrap_or(crate::worldgen::online::pack::ShirtName::Family),
+    }
 }
 
 /// The pool to borrow from when a nationality has none of its own — the common
@@ -477,9 +585,9 @@ pub fn generate_random_player_from_def(
     rng: &mut impl Rng,
 ) -> Player {
     let p_id = crate::seed::uuid_from(rng);
-    let (first_name, last_name) = pick_name_from_def(nationality, names_def, &mut name_rng(&p_id));
-    let full_name = format!("{} {}", first_name, last_name);
-    let match_name = last_name.clone();
+    let drawn = pick_drawn_name(nationality, names_def, &mut name_rng(&p_id));
+    let full_name = drawn.full();
+    let match_name = drawn.shirt_name();
 
     let position = position_for_slot(index);
 
@@ -903,6 +1011,82 @@ pub fn generate_random_unemployed_manager(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn names_with(code: &str, pool: NamePool) -> NamesDefinition {
+        NamesDefinition {
+            version: 1,
+            description: String::new(),
+            pools: std::collections::HashMap::from([(code.to_string(), pool)]),
+        }
+    }
+
+    /// Given a pool in the old format (two unweighted lists),
+    /// when names are drawn,
+    /// then each is the given name then the family name, both from the lists, in that order.
+    #[test]
+    fn an_old_pool_still_names_people_given_name_first() {
+        let names = names_with(
+            "TR",
+            NamePool {
+                first_names: vec!["Emre".into()],
+                last_names: vec!["Yilmaz".into()],
+                ..NamePool::default()
+            },
+        );
+        let drawn = pick_drawn_name("TR", &names, &mut name_rng("p-1"));
+        assert_eq!(
+            (drawn.full(), drawn.shirt_name()),
+            ("Emre Yilmaz".to_string(), "Yilmaz".to_string())
+        );
+    }
+
+    /// Given a Vietnamese pool with middle names, written family name first, shirt the middle and
+    /// given names,
+    /// when a name is drawn,
+    /// then the full name reads family, middle, given and the shirt reads middle and given.
+    #[test]
+    fn a_pool_with_an_order_writes_the_name_its_way() {
+        let names = names_with(
+            "VN",
+            NamePool {
+                first_names: vec!["Hải".into()],
+                last_names: vec!["Lò".into()],
+                first_name_weights: vec![1],
+                last_name_weights: vec![1],
+                middle_names: vec!["Đức".into()],
+                middle_name_weights: vec![1],
+                flatten: Some(0.5),
+                order: Some(crate::worldgen::online::pack::NameOrder::FamilyGiven),
+                shirt: Some(crate::worldgen::online::pack::ShirtName::GivenWithMiddle),
+            },
+        );
+        let drawn = pick_drawn_name("VN", &names, &mut name_rng("p-2"));
+        assert_eq!(drawn.full(), "Lò Đức Hải");
+        assert_eq!(drawn.shirt_name(), "Đức Hải");
+        assert_eq!(
+            pick_name_from_def("VN", &names, &mut name_rng("p-2")),
+            ("Đức Hải".to_string(), "Lò".to_string())
+        );
+    }
+
+    /// Given a pool whose only names make a protected person's name, and one other family name,
+    /// when names are drawn for many people,
+    /// then none is the protected person's.
+    #[test]
+    fn a_protected_name_is_drawn_again() {
+        let names = names_with(
+            "PT",
+            NamePool {
+                first_names: vec!["Bruno".into()],
+                last_names: vec!["Fernandes".into(), "Prova".into()],
+                ..NamePool::default()
+            },
+        );
+        for person in 0..200 {
+            let drawn = pick_drawn_name("PT", &names, &mut name_rng(&format!("p-{person}")));
+            assert_eq!(drawn.full(), "Bruno Prova");
+        }
+    }
 
     /// #453: `country_to_iso` recognised 17 country names and answered `"ENG"`
     /// for everything else, so a package with `"country": "Japan"` filled 60% of

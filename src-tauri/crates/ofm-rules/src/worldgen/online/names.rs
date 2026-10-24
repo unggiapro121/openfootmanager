@@ -10,6 +10,7 @@ use super::fold_table::FOLD;
 use super::pack::{NameOrder, OnlineNamePool, ShirtName};
 
 const PROTECTED_PEOPLE: &str = include_str!("../../../data/protected_people.txt");
+const PROTECTED_PEOPLE_VN: &str = include_str!("../../../data/protected_people_vn.txt");
 
 /// `text` lower-cased with diacritics folded to ASCII and everything but letters, digits and
 /// spaces dropped: "Đặng Văn-Lâm" → "dang vanlam". Hyphens and apostrophes join, they do not split.
@@ -55,6 +56,7 @@ fn protected_people() -> &'static HashSet<String> {
     SET.get_or_init(|| {
         PROTECTED_PEOPLE
             .lines()
+            .chain(PROTECTED_PEOPLE_VN.lines())
             .map(str::trim)
             .filter(|line| !line.is_empty() && !line.starts_with('#'))
             .filter_map(|line| rotations(line).into_iter().next())

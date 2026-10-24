@@ -684,6 +684,13 @@ pub fn generate_world(
         teams_out.push(team);
     }
 
+    // What the clubs are called, after every number of the world is drawn: keyed by the first
+    // club's id, which the seed decided, so each world names its clubs otherwise (E3-5q F11).
+    if let Some(first) = teams_out.first() {
+        let key = crate::stable_hash::stable_hash(first.id.as_bytes(), 0x5eed_c1b5);
+        clubs::rename_clubs(&mut teams_out, config, key);
+    }
+
     let club_reputations: Vec<u32> = teams_out.iter().map(|team| team.reputation).collect();
     players.extend(generate_opening_free_agents(
         &club_reputations,
