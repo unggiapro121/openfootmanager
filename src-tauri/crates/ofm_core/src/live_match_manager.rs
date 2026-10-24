@@ -414,6 +414,8 @@ fn create_seeded_live_match(
         ai_away: ai_profile_for(game, &away_team_id),
         // The desktop pauses for the manager instead (`phase_needs_manager`).
         injury_window_steps: None,
+        licence_home: None,
+        licence_away: None,
         home: home_xi,
         away: away_xi,
         home_bench,

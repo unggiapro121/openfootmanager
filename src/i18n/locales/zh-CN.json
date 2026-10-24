@@ -156,7 +156,12 @@
         "unknownFormation": "游戏中没有这个阵型。",
         "startingElevenSize": "首发阵容必须正好 11 人。",
         "duplicateStarter": "{{player}} 在首发阵容中出现了两次。",
-        "notInSquad": "{{player}} 不在你的阵中。"
+        "notInSquad": "{{player}} 不在你的阵中。",
+        "lockedFormation": "你的教练执照尚未开放此阵型。",
+        "lockedPlayStyle": "你的教练执照尚未开放此战术风格。",
+        "lockedRole": "你的教练执照尚未开放 {{player}} 的角色。",
+        "lockedTactics": "有一项你的执照尚未开放的指令不是默认值。",
+        "unknown": "服务器以本版本游戏未知的原因拒绝了此阵容。请更新游戏。"
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "你正在指挥自己的球队。离开约 20 秒后，AI 将接管指挥，直到你回来。",
       "stay": "留下",
       "go": "离开"
+    },
+    "licence": {
+      "title": "教练执照",
+      "held": "{{licence}} · 等级 {{level}}",
+      "next": "下一级：{{licence}}，等级 {{level}}",
+      "highest": "最高执照：所有设置均已开放",
+      "pending": "下赛季起生效",
+      "notice": {
+        "title": "第 {{season}} 赛季：你的阵容已按{{licence}}执照调整",
+        "formation": "阵型 {{from}} → {{to}}",
+        "playStyle": "战术风格 {{from}} → {{to}}",
+        "dials": "恢复为默认的指令：{{count}}",
+        "roles": "恢复为标准的角色：{{count}}",
+        "dismiss": "知道了",
+        "failed": "无法关闭此通知，请重试。"
+      }
+    },
+    "roadmap": {
+      "title": "教练进阶路线",
+      "standing": "等级 {{level}} · {{licence}}执照",
+      "level": "线上教练等级 {{level}}",
+      "record": "已踢 {{seasons}} 个赛季 · 晋级 {{promotions}} 次",
+      "howTitle": "如何升级",
+      "howTop": "赛季结束时位列 {{size}} 队联赛前 {{places}} 名：+1 级",
+      "howNewcomer": "赛季中途接手球队？至少执教 {{matches}} 场才计入",
+      "howNeverDown": "等级永不下降",
+      "noSeason": "尚无线上赛季：赛季开放后会显示升级方式。",
+      "allOpen": "本赛季未启用执照：所有战术设置均开放。",
+      "pending": "执照从下赛季起作用于比赛；你保存的阵容现在就需符合执照。",
+      "licences": "教练执照",
+      "atLevel": "{{level}} 级起",
+      "held": "当前",
+      "levelsToGo": "还差 {{levels}} 级",
+      "totals": "{{formations}} 种阵型 · {{styles}} 种风格 · {{dials}} 项指令 · {{roles}} 种角色",
+      "opensFirst": "开放内容",
+      "opensMore": "新增内容",
+      "addedFormations": "阵型：{{list}}",
+      "addedStyles": "战术风格：{{list}}",
+      "addedDials": "指令：{{list}}",
+      "addedRoles": "角色：{{list}}",
+      "addedNothing": "无新增"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "两名盯人中卫：两人都会上抢，反击时身后空当无人照看。",
       "covers": "两名拖后中卫：两人都会回撤，禁区前沿无人防守。"
     },
-    "masteryEarnedHint": "只有你亲自指挥的比赛（进入球场）才会提升熟练度。"
+    "masteryEarnedHint": "只有你亲自指挥的比赛（进入球场）才会提升熟练度。",
+    "licence": {
+      "tier_1": "入门",
+      "tier_2": "国家级",
+      "tier_3": "洲际级",
+      "tier_4": "精英",
+      "lockedOption": "{{option}}（教练等级 {{level}} 解锁）",
+      "lockedHint": "获得{{licence}}执照（教练等级 {{level}}）后解锁"
+    }
   },
   "training": {
     "weeklySchedule": "每周日程",
@@ -3634,7 +3688,8 @@
         "notYourSide": "你只能对自己的球队下达指令。",
         "commandsClosed": "比赛进行到这个阶段已无法再做调整。",
         "unknownFormation": "该阵型不可用。",
-        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。"
+        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。",
+        "lockedByLicence": "你的教练执照尚未开放此指令。"
       },
       "csv": {
         "writeFailed": "无法写入 CSV 文件。"

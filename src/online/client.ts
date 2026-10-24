@@ -5,12 +5,14 @@ import {
 } from "../services/onlineTransport";
 import type {
   AccountView,
+  CareerView,
   ClubFixturesView,
   CommandAccepted,
   FixtureDetailView,
   FramesPage,
   FriendlyMineView,
   LeagueView,
+  LicenceTableView,
   MatchView,
   MineView,
   MyClubView,
@@ -100,6 +102,8 @@ export const online = {
     get: () => call<AccountView>(read(["v1", "me"])),
     update: (change: UpdateAccount, idempotencyKey = newKey()) =>
       call<AccountView>(write("PATCH", ["v1", "me"], idempotencyKey, change)),
+    /** The coach's online level, seasons and promotions, and the road ahead (his profile). */
+    career: () => call<CareerView>(read(["v1", "me", "career"])),
   },
   clubs: {
     takeover: (idempotencyKey = newKey()) =>
@@ -118,6 +122,17 @@ export const online = {
     rename: (name: string, idempotencyKey = newKey()) =>
       call<MyClubView>(write("PATCH", ["v1", "clubs", "mine"], idempotencyKey, { name })),
     byId: (clubId: string) => call<PublicClubView>(read(["v1", "clubs", clubId])),
+    /** Dismiss what the server says it fitted to the coach's licence (S-9 S9-20). */
+    dismissLicenceNotice: (idempotencyKey = newKey()) =>
+      call<MyClubView>({
+        method: "DELETE",
+        segments: ["v1", "clubs", "mine", "licence-notice"],
+        idempotencyKey,
+      }),
+  },
+  /** The four licences and the coach levels they start at (S-9 S9-15). */
+  licences: {
+    table: () => call<LicenceTableView>(read(["v1", "licences"])),
   },
   leagues: {
     mine: () => call<LeagueView>(read(["v1", "leagues", "mine"])),

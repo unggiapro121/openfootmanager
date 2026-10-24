@@ -91,13 +91,22 @@ fn score(available: &[&Player], style: &PlayStyle, formation: &str) -> f64 {
 /// The shape a club with these players and this style would choose with no
 /// shape of its own yet: at world creation, and for a national side.
 pub fn best_formation(available: &[&Player], style: &PlayStyle) -> &'static str {
-    let mut best = AI_FORMATIONS[0];
+    best_formation_among(available, style, &AI_FORMATIONS).unwrap_or(AI_FORMATIONS[0])
+}
+
+/// The best of `shapes` for these players and this style; `None` when there is none to choose.
+fn best_formation_among<'a>(
+    available: &[&Player],
+    style: &PlayStyle,
+    shapes: &[&'a str],
+) -> Option<&'a str> {
+    let mut best = None;
     let mut best_score = f64::NEG_INFINITY;
-    for formation in AI_FORMATIONS {
+    for formation in shapes {
         let value = score(available, style, formation);
         // Strictly greater: a tie keeps the earlier shape.
         if value > best_score {
-            best = formation;
+            best = Some(*formation);
             best_score = value;
         }
     }
@@ -124,11 +133,31 @@ pub fn opening_formation(current: &str, available: &[&Player], style: &PlayStyle
 /// one. A shape outside [`AI_FORMATIONS`] (an old save, a hand-edited world)
 /// is always replaced. A club that cannot field eleven keeps its shape.
 pub fn reviewed_formation(current: &str, available: &[&Player], style: &PlayStyle) -> String {
+    reviewed_formation_within(current, available, style, &AI_FORMATIONS)
+}
+
+/// [`reviewed_formation`] choosing only among `open`, the shapes a licence opens (phase 3, S-9).
+/// A shape the licence closes is always replaced, even by a squad too thin to judge: the licence,
+/// not the squad, rules it out. With every shape open this is [`reviewed_formation`] exactly.
+pub fn reviewed_formation_within(
+    current: &str,
+    available: &[&Player],
+    style: &PlayStyle,
+    open: &[&str],
+) -> String {
+    let closed_by_licence = AI_FORMATIONS.contains(&current) && !open.contains(&current);
+    if closed_by_licence {
+        return best_formation_among(available, style, open)
+            .unwrap_or(current)
+            .to_string();
+    }
     if available.len() < ENOUGH_TO_JUDGE {
         return current.to_string();
     }
-    let best = best_formation(available, style);
-    if !AI_FORMATIONS.contains(&current) {
+    let Some(best) = best_formation_among(available, style, open) else {
+        return current.to_string();
+    };
+    if !open.contains(&current) {
         return best.to_string();
     }
     if best == current {

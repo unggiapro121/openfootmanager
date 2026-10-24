@@ -149,6 +149,24 @@ pub fn ai_decide<R: Rng>(
     profile: &AiProfile,
     rng: &mut R,
 ) -> Vec<MatchCommand> {
+    ai_decide_within(match_state, side, profile, rng, &|_| true)
+}
+
+/// [`ai_decide`] for a manager who may not give every tactical order: `allows`
+/// says which shape, style and dial changes he may give, and where the first
+/// order he reaches for is not one of them he reaches for the next. Substitutions
+/// and the gap at the back are never filtered.
+///
+/// The engine knows nothing of why an order is closed. The online game closes
+/// them by the coach's licence (phase 3, S-9); the filter is all it passes down,
+/// so the engine still never reads a coach's level.
+pub fn ai_decide_within<R: Rng>(
+    match_state: &LiveMatchState,
+    side: Side,
+    profile: &AiProfile,
+    rng: &mut R,
+    allows: &dyn Fn(&MatchCommand) -> bool,
+) -> Vec<MatchCommand> {
     let mut commands = Vec::new();
 
     // One borrowed view for the whole decision. This used to be three
@@ -186,7 +204,7 @@ pub fn ai_decide<R: Rng>(
         commands.push(sub_cmd);
     }
 
-    if taking_stock && let Some(tactic_cmd) = consider_tactic_change(&obs, profile) {
+    if taking_stock && let Some(tactic_cmd) = consider_tactic_change(&obs, profile, allows) {
         commands.push(tactic_cmd);
     }
 
@@ -631,32 +649,57 @@ fn find_best_bench_replacement<'a>(
 /// reading has to carry the decision by itself.
 const PINNED_BACK: usize = 7;
 
-fn consider_tactic_change(obs: &AiObservation<'_>, profile: &AiProfile) -> Option<MatchCommand> {
+fn consider_tactic_change(
+    obs: &AiObservation<'_>,
+    profile: &AiProfile,
+    allows: &dyn Fn(&MatchCommand) -> bool,
+) -> Option<MatchCommand> {
     // A Visionary reaches for a different shape before a different label. The
     // chain of formations ends, so this fires at most twice in a match and then
-    // he changes the instructions like everyone else.
+    // he changes the instructions like everyone else. A step he may not take is
+    // passed over for the one beyond it, so he never skips to a shape he may play
+    // only to find it is not bolder.
     if profile.personality == AiPersonality::Visionary
         && obs.goal_diff < 0
         && obs.minute >= CHASE_ONE_GOAL_FROM
-        && let Some(formation) = bolder_formation(&obs.team.formation)
+        && let Some(command) = bolder_formation_within(obs, allows)
     {
-        return Some(MatchCommand::ChangeFormation {
-            side: obs.side,
-            formation: formation.to_string(),
-        });
+        return Some(command);
     }
 
     if let Some(target) = target_play_style(obs)
         && target != obs.team.play_style
     {
-        return Some(MatchCommand::ChangePlayStyle {
+        let command = MatchCommand::ChangePlayStyle {
             side: obs.side,
             play_style: target,
-        });
+        };
+        if allows(&command) {
+            return Some(command);
+        }
     }
 
     // Already wearing the right shirt. There are still eleven dials underneath it.
-    turn_a_dial(obs)
+    turn_a_dial(obs, allows)
+}
+
+/// The first shape along the chain from the side's own that the manager may play.
+fn bolder_formation_within(
+    obs: &AiObservation<'_>,
+    allows: &dyn Fn(&MatchCommand) -> bool,
+) -> Option<MatchCommand> {
+    let mut current = obs.team.formation.as_str();
+    while let Some(formation) = bolder_formation(current) {
+        let command = MatchCommand::ChangeFormation {
+            side: obs.side,
+            formation: formation.to_string(),
+        };
+        if allows(&command) {
+            return Some(command);
+        }
+        current = formation;
+    }
+    None
 }
 
 /// The most of the four under-priced dials (see [`under_priced_dials`]) any one
@@ -694,7 +737,10 @@ pub fn under_priced_dials(tactics: &TacticsConfig) -> usize {
 ///
 /// The moves are in the order a manager would reach for them, and the first one
 /// that changes anything and stays inside the ration is the one he gives.
-fn turn_a_dial(obs: &AiObservation<'_>) -> Option<MatchCommand> {
+fn turn_a_dial(
+    obs: &AiObservation<'_>,
+    allows: &dyn Fn(&MatchCommand) -> bool,
+) -> Option<MatchCommand> {
     let reach_for: &[TacticalDial] = if chasing(obs) {
         // Squeeze the pitch from the other end: a higher line, quicker breaks,
         // and press them when the ball is lost. None of these is a dial the
@@ -719,11 +765,15 @@ fn turn_a_dial(obs: &AiObservation<'_>) -> Option<MatchCommand> {
     for dial in reach_for {
         let mut trial = obs.team.tactics.clone();
         dial.set_on(&mut trial);
-        if trial != obs.team.tactics && under_priced_dials(&trial) <= MAX_UNDER_PRICED_DIALS {
-            return Some(MatchCommand::ChangeTacticalDial {
-                side: obs.side,
-                dial: *dial,
-            });
+        let command = MatchCommand::ChangeTacticalDial {
+            side: obs.side,
+            dial: *dial,
+        };
+        if trial != obs.team.tactics
+            && under_priced_dials(&trial) <= MAX_UNDER_PRICED_DIALS
+            && allows(&command)
+        {
+            return Some(command);
         }
     }
 

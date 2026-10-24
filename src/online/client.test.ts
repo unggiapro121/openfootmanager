@@ -112,6 +112,25 @@ describe("online client", () => {
     ]);
   });
 
+  // Given a coach with a licence (S-9),
+  // when they read their career, the licence table, and dismiss the notice of what the server
+  // fitted,
+  // then the career and the table are GETs of their routes and the dismissal a DELETE with a key.
+  it("reads the licences and dismisses the licence notice", async () => {
+    await online.me.career();
+    await online.licences.table();
+    await online.clubs.dismissLicenceNotice("seen-1");
+    expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "me", "career"] },
+      { method: "GET", segments: ["v1", "licences"] },
+      {
+        method: "DELETE",
+        segments: ["v1", "clubs", "mine", "licence-notice"],
+        idempotencyKey: "seen-1",
+      },
+    ]);
+  });
+
   // Given a coach's friendly (S-12),
   // when they read it, make a room, join one, get ready, leave, ask for a rematch, queue and leave
   // the queue,

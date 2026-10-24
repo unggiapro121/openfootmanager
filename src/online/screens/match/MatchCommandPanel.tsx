@@ -5,6 +5,8 @@ import { FORMATIONS, PLAY_STYLES } from "../../../components/match/types";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import type { MineView, SentCommand } from "../../api";
 import type { MatchCommand, PlayStyle } from "../../api/engine";
+import type { LicenceControls } from "../../api/rules";
+import { openInMatch } from "../../convert/licence";
 import { type OnlineMatchState, substitutedOff } from "../../convert/matchState";
 import { playerOptions, SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
 
@@ -134,12 +136,15 @@ function ShapeSection({
   formation,
   playStyle,
   disabled,
+  licence,
   onFormation,
   onPlayStyle,
 }: {
   formation: string;
   playStyle: string;
   disabled: boolean;
+  /** What the side may set in this match (S-9); none opens everything. */
+  licence: LicenceControls | undefined;
   onFormation: (formation: string) => void;
   onPlayStyle: (style: PlayStyle) => void;
 }) {
@@ -157,7 +162,7 @@ function ShapeSection({
         onChange={(event) => onFormation(event.target.value)}
         disabled={disabled}
       >
-        {FORMATIONS.map((one) => (
+        {withCurrent(openInMatch(licence, "formation", FORMATIONS), formation).map((one) => (
           <option key={one} value={one}>
             {one}
           </option>
@@ -174,7 +179,7 @@ function ShapeSection({
         }}
         disabled={disabled}
       >
-        {PLAY_STYLES.map((style) => (
+        {withCurrent(openInMatch(licence, "playStyle", PLAY_STYLES), playStyle).map((style) => (
           <option key={style} value={style}>
             {t(`common.playStyles.${style}`)}
           </option>
@@ -185,6 +190,11 @@ function ShapeSection({
 }
 
 const optionsOf = playerOptions;
+
+/** The open options, and the side's current one even when closed, so the select can show it. */
+function withCurrent<T extends string>(open: T[], current: string): T[] {
+  return open.includes(current as T) ? open : [current as T, ...open];
+}
 
 /**
  * The coach's touchline during a live match (C-2 §3.6, C2-11): substitutions, swaps, the shape
@@ -346,6 +356,7 @@ export function MatchCommandPanel({
         formation={own.formation}
         playStyle={own.playStyle}
         disabled={blocked}
+        licence={mine.licence}
         onFormation={(formation) => void send({ ChangeFormation: { side, formation } }, () => {})}
         onPlayStyle={(play_style) => void send({ ChangePlayStyle: { side, play_style } }, () => {})}
       />

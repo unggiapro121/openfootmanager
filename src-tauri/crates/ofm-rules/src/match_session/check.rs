@@ -13,6 +13,9 @@ pub const UNKNOWN_FORMATION: &str = "be.error.liveMatch.unknownFormation";
 pub const TOO_MANY_UNDER_PRICED_DIALS: &str = "be.error.liveMatch.tooManyUnderPricedDials";
 pub const NOT_ON_PITCH: &str = "be.error.liveMatch.playerNotOnPitch";
 pub const ROLE_NOT_FOR_POSITION: &str = "be.error.roleNotValidForPosition";
+/// An order the side's licence does not open (phase 3, S-9). The match session refuses it, not
+/// [`check_command`]: the licence is the session's, not the match state's.
+pub const LOCKED_BY_LICENCE: &str = "be.error.liveMatch.lockedByLicence";
 
 /// Whether `issuer`, the side giving `command`, may give it now. `Err` is the translation key of
 /// the refusal. The online server adds only "does the caller hold `issuer` at this step".

@@ -156,7 +156,12 @@
         "unknownFormation": "Diese Formation kennt das Spiel nicht.",
         "startingElevenSize": "Die Startelf muss genau 11 Spieler haben.",
         "duplicateStarter": "{{player}} steht zweimal in der Startelf.",
-        "notInSquad": "{{player}} gehört nicht zu deinem Kader."
+        "notInSquad": "{{player}} gehört nicht zu deinem Kader.",
+        "lockedFormation": "Deine Trainerlizenz schaltet diese Formation noch nicht frei.",
+        "lockedPlayStyle": "Deine Trainerlizenz schaltet diesen Spielstil noch nicht frei.",
+        "lockedRole": "Deine Trainerlizenz schaltet die Rolle von {{player}} noch nicht frei.",
+        "lockedTactics": "Eine Anweisung, die deine Lizenz noch nicht freischaltet, weicht vom Standard ab.",
+        "unknown": "Der Server hat diese Aufstellung aus einem Grund abgelehnt, den diese Spielversion nicht kennt. Aktualisiere das Spiel."
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "Du führst deine Mannschaft. Bist du etwa 20 Sekunden weg, übernimmt die KI, bis du zurückkommst.",
       "stay": "Bleiben",
       "go": "Verlassen"
+    },
+    "licence": {
+      "title": "Trainerlizenz",
+      "held": "{{licence}} · Stufe {{level}}",
+      "next": "Nächste: {{licence}} ab Stufe {{level}}",
+      "highest": "Die höchste Lizenz: alles ist freigeschaltet",
+      "pending": "Ab der nächsten Saison",
+      "notice": {
+        "title": "Saison {{season}}: Deine Aufstellung passt jetzt zu deiner Lizenz {{licence}}",
+        "formation": "Spielsystem {{from}} → {{to}}",
+        "playStyle": "Spielstil {{from}} → {{to}}",
+        "dials": "Anweisungen auf Standard zurückgesetzt: {{count}}",
+        "roles": "Rollen auf Standard zurückgesetzt: {{count}}",
+        "dismiss": "Verstanden",
+        "failed": "Der Hinweis konnte nicht geschlossen werden. Versuche es erneut."
+      }
+    },
+    "roadmap": {
+      "title": "Trainer-Fahrplan",
+      "standing": "Stufe {{level}} · Lizenz {{licence}}",
+      "level": "Online-Trainerstufe {{level}}",
+      "record": "{{seasons}} Saisons gespielt · {{promotions}}-mal aufgestiegen",
+      "howTitle": "So steigst du eine Stufe auf",
+      "howTop": "Beende eine Saison unter den ersten {{places}} deiner Liga mit {{size}} Klubs: +1 Stufe",
+      "howNewcomer": "Klub während der Saison übernommen? Du brauchst mindestens {{matches}} Spiele an der Seitenlinie, damit es zählt",
+      "howNeverDown": "Deine Stufe sinkt nie",
+      "noSeason": "Noch keine Online-Saison: wie du aufsteigst, siehst du, sobald eine Saison beginnt.",
+      "allOpen": "Diese Saison gibt es keine Lizenzen: alle taktischen Einstellungen sind frei.",
+      "pending": "Lizenzen gelten für Spiele ab der nächsten Saison; gespeicherte Aufstellungen folgen deiner schon jetzt.",
+      "licences": "Trainerlizenzen",
+      "atLevel": "ab Stufe {{level}}",
+      "held": "Aktuell",
+      "levelsToGo": "noch {{levels}} Stufen",
+      "totals": "{{formations}} Formationen · {{styles}} Spielstile · {{dials}} Anweisungen · {{roles}} Rollen",
+      "opensFirst": "Was sie freischaltet",
+      "opensMore": "Was sie hinzufügt",
+      "addedFormations": "Formationen: {{list}}",
+      "addedStyles": "Spielstile: {{list}}",
+      "addedDials": "Anweisungen: {{list}}",
+      "addedRoles": "Rollen: {{list}}",
+      "addedNothing": "Nichts Neues"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "Zwei Stopper in der Innenverteidigung: Beide rücken heraus, und der Raum hinter ihnen ist beim Konter offen.",
       "covers": "Zwei absichernde Innenverteidiger: Beide lassen sich fallen, und die Strafraumgrenze bleibt offen."
     },
-    "masteryEarnedHint": "Die Beherrschung wächst nur in Spielen, die du selbst coachst (Aufs Spielfeld)."
+    "masteryEarnedHint": "Die Beherrschung wächst nur in Spielen, die du selbst coachst (Aufs Spielfeld).",
+    "licence": {
+      "tier_1": "Basis",
+      "tier_2": "Nationale Stufe",
+      "tier_3": "Kontinentale Stufe",
+      "tier_4": "Spitzenstufe",
+      "lockedOption": "{{option}} (Lizenz ab Stufe {{level}})",
+      "lockedHint": "Freigeschaltet mit der Lizenz {{licence}}, ab Trainerstufe {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Wochenplan",
@@ -3634,7 +3688,8 @@
         "notYourSide": "Du kannst nur deinem eigenen Team Anweisungen geben.",
         "commandsClosed": "In dieser Phase des Spiels sind keine Änderungen mehr möglich.",
         "unknownFormation": "Diese Formation ist nicht verfügbar.",
-        "tooManyUnderPricedDials": "Dein Team nutzt bereits zwei der vorsichtigen Einstellungen (tiefe Linie, kompakte Formation, schmale Breite, langes Gegenpressing). Ändere zuerst eine davon."
+        "tooManyUnderPricedDials": "Dein Team nutzt bereits zwei der vorsichtigen Einstellungen (tiefe Linie, kompakte Formation, schmale Breite, langes Gegenpressing). Ändere zuerst eine davon.",
+        "lockedByLicence": "Deine Trainerlizenz deckt diese Anweisung noch nicht ab."
       },
       "csv": {
         "writeFailed": "Die CSV-Datei konnte nicht geschrieben werden."

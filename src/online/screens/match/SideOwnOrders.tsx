@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Button, Select } from "../../../components/ui";
 import { getRoleOptions } from "../../../lib/playerRoles";
 import type { MineView, PlayerRoleLine, ProjectedPlayer } from "../../api";
+import type { LicenceControls } from "../../api/rules";
+import { openInMatch } from "../../convert/licence";
 import type { MatchCommand, PlayerRole, SetPieceTakers, Side } from "../../api/engine";
 
 /** The heading style of the touchline's sections, as `MatchCommandPanel` draws them. */
@@ -30,12 +32,15 @@ function RoleSection({
   playing,
   roles,
   side,
+  licence,
   disabled,
   send,
 }: {
   playing: ProjectedPlayer[];
   roles: PlayerRoleLine[];
   side: Side;
+  /** What the side may set in this match (S-9): its closed roles are not offered. */
+  licence: LicenceControls | undefined;
   disabled: boolean;
   send: Send;
 }) {
@@ -45,7 +50,9 @@ function RoleSection({
   const player = playing.find((one) => one.id === playerId);
   const current = roles.find((line) => line.playerId === playerId)?.role;
   const role = chosen || current || "";
-  const options = player ? getRoleOptions(player.position, current) : [];
+  const options = player
+    ? openInMatch(licence, "role", getRoleOptions(player.position, current))
+    : [];
 
   return (
     <section aria-labelledby="online-match-roles" className="flex flex-col gap-2">
@@ -193,6 +200,7 @@ export function SideOwnOrders({
         playing={playing}
         roles={mine.roles}
         side={mine.side}
+        licence={mine.licence}
         disabled={disabled}
         send={send}
       />

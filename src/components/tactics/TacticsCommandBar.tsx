@@ -23,6 +23,13 @@ import type { TacticsPhaseSettings } from "../../store/types";
 import DashboardModalFrame from "../dashboard/DashboardModalFrame";
 import { Badge, Button, Card, Select } from "../ui";
 import { FORMATIONS } from "./TacticsTab.helpers";
+import {
+  type LicenceLock,
+  type TacticsLimits,
+  licenceLock,
+  lockHint,
+  lockedOption,
+} from "./licenceLimits";
 
 export interface TacticsLibraryEntry {
   description: string;
@@ -58,6 +65,8 @@ interface TacticsCommandBarProps {
   tacticName: string;
   /** The head coach, whose mastery of each style is shown beside its name. */
   coach?: ManagerData | null;
+  /** What the coach's licence closes (online); nothing when absent. */
+  limits?: TacticsLimits;
 }
 
 const MAX_TACTIC_NAME_LENGTH = 40;
@@ -93,8 +102,15 @@ export default function TacticsCommandBar({
   tacticLibrary,
   tacticName,
   coach = null,
+  limits,
 }: TacticsCommandBarProps): JSX.Element {
   const { t } = useTranslation();
+  // A tactic is closed when its shape or its style is: choosing it would set one.
+  const entryLock = (entry: TacticsLibraryEntry): LicenceLock | null =>
+    licenceLock(limits, { kind: "formation", value: entry.formation }) ??
+    licenceLock(limits, { kind: "playStyle", value: entry.playStyle });
+  const lockTitle = (lock: LicenceLock | null): string | undefined =>
+    lock ? lockHint(t, lock) : undefined;
   const [isOpen, setIsOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<TacticsLibraryEntry | null>(null);
   const [search, setSearch] = useState("");
@@ -386,12 +402,15 @@ export default function TacticsCommandBar({
                                 type="button"
                                 role="option"
                                 aria-selected={entry.id === activeTactic.id}
+                                disabled={entryLock(entry) !== null}
+                                aria-disabled={entryLock(entry) !== null}
+                                title={lockTitle(entryLock(entry))}
                                 onClick={() => {
                                   onSelectTactic(entry.id);
                                   setIsOpen(false);
                                   setSearch("");
                                 }}
-                                className={`w-full rounded-xl border px-3 py-3 pb-9 text-left transition-colors ${
+                                className={`w-full rounded-xl border px-3 py-3 pb-9 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                                   entry.id === activeTactic.id
                                     ? "border-primary-300 bg-primary-50 dark:border-primary-400 dark:bg-primary-500/10"
                                     : "border-transparent bg-gray-50 hover:border-gray-200 hover:bg-white dark:bg-navy-700/70 dark:hover:border-navy-500 dark:hover:bg-navy-700"
@@ -405,6 +424,11 @@ export default function TacticsCommandBar({
                                     <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                       {entry.description}
                                     </div>
+                                    {entryLock(entry) ? (
+                                      <div className="mt-1 text-[11px] font-semibold text-accent-700 dark:text-accent-400">
+                                        {lockHint(t, entryLock(entry) as LicenceLock)}
+                                      </div>
+                                    ) : null}
                                   </div>
                                   <span className="shrink-0 text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
                                     {summarizeTactic(entry, t)}
@@ -457,12 +481,15 @@ export default function TacticsCommandBar({
                             type="button"
                             role="option"
                             aria-selected={entry.id === activeTactic.id}
+                            disabled={entryLock(entry) !== null}
+                            aria-disabled={entryLock(entry) !== null}
+                            title={lockTitle(entryLock(entry))}
                             onClick={() => {
                               onSelectTactic(entry.id);
                               setIsOpen(false);
                               setSearch("");
                             }}
-                            className={`w-full rounded-xl border px-3 py-3 text-left transition-colors ${
+                            className={`w-full rounded-xl border px-3 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                               entry.id === activeTactic.id
                                 ? "border-primary-300 bg-primary-50 dark:border-primary-400 dark:bg-primary-500/10"
                                 : "border-transparent bg-gray-50 hover:border-gray-200 hover:bg-white dark:bg-navy-700/70 dark:hover:border-navy-500 dark:hover:bg-navy-700"
@@ -476,6 +503,11 @@ export default function TacticsCommandBar({
                                 <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                   {entry.description}
                                 </div>
+                                {entryLock(entry) ? (
+                                  <div className="mt-1 text-[11px] font-semibold text-accent-700 dark:text-accent-400">
+                                    {lockHint(t, entryLock(entry) as LicenceLock)}
+                                  </div>
+                                ) : null}
                               </div>
                               <span className="shrink-0 text-[11px] font-heading font-bold uppercase tracking-[0.18em] text-primary-500 dark:text-primary-300">
                                 {summarizeTactic(entry, t)}
@@ -500,11 +532,14 @@ export default function TacticsCommandBar({
                 fullWidth
                 aria-label={t("tactics.formation")}
               >
-                {FORMATIONS.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
-                ))}
+                {FORMATIONS.map((f) => {
+                  const lock = licenceLock(limits, { kind: "formation", value: f });
+                  return (
+                    <option key={f} value={f} disabled={lock !== null}>
+                      {lock ? lockedOption(t, f, lock) : f}
+                    </option>
+                  );
+                })}
               </Select>
             </div>
 
@@ -520,6 +555,14 @@ export default function TacticsCommandBar({
               >
                 {PLAY_STYLES.map((style) => {
                   const styleName = t(`common.playStyles.${style.id}`, style.id);
+                  const lock = licenceLock(limits, { kind: "playStyle", value: style.id });
+                  if (lock) {
+                    return (
+                      <option key={style.id} value={style.id} disabled>
+                        {lockedOption(t, styleName, lock)}
+                      </option>
+                    );
+                  }
                   return (
                     // Native <option> renders text only — an icon/span child is
                     // stripped by the browser and warns in React, so use plain text.

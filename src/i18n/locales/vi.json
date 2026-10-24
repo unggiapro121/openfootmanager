@@ -156,7 +156,12 @@
         "unknownFormation": "Sơ đồ này không có trong game.",
         "startingElevenSize": "Đội hình chính phải có đúng 11 cầu thủ.",
         "duplicateStarter": "{{player}} có mặt hai lần trong đội hình chính.",
-        "notInSquad": "{{player}} không thuộc đội của bạn."
+        "notInSquad": "{{player}} không thuộc đội của bạn.",
+        "lockedFormation": "Bằng HLV của bạn chưa mở sơ đồ này.",
+        "lockedPlayStyle": "Bằng HLV của bạn chưa mở lối chơi này.",
+        "lockedRole": "Bằng HLV của bạn chưa mở vai trò của {{player}}.",
+        "lockedTactics": "Có chỉ đạo mà bằng HLV của bạn chưa mở đang khác mặc định.",
+        "unknown": "Máy chủ từ chối đội hình này vì một lý do mà bản game này chưa biết. Hãy cập nhật game."
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "Bạn đang chỉ đạo đội của mình. Rời trận khoảng 20 giây thì AI sẽ chỉ đạo thay cho tới khi bạn quay lại.",
       "stay": "Ở lại",
       "go": "Rời trận"
+    },
+    "licence": {
+      "title": "Bằng HLV",
+      "held": "{{licence}} · cấp {{level}}",
+      "next": "Kế tiếp: {{licence}} ở cấp {{level}}",
+      "highest": "Bằng cao nhất: mọi quyền chỉnh đều mở",
+      "pending": "Từ mùa sau",
+      "notice": {
+        "title": "Mùa {{season}}: đội của bạn đã được chỉnh theo bằng {{licence}}",
+        "formation": "Sơ đồ {{from}} → {{to}}",
+        "playStyle": "Lối chơi {{from}} → {{to}}",
+        "dials": "Chỉ đạo về mặc định: {{count}}",
+        "roles": "Vai trò về Tiêu chuẩn: {{count}}",
+        "dismiss": "Đã hiểu",
+        "failed": "Chưa tắt được thông báo này. Hãy thử lại."
+      }
+    },
+    "roadmap": {
+      "title": "Lộ trình HLV",
+      "standing": "Cấp {{level}} · bằng {{licence}}",
+      "level": "Cấp HLV online {{level}}",
+      "record": "Đã chơi {{seasons}} mùa · thăng hạng {{promotions}} lần",
+      "howTitle": "Cách lên cấp",
+      "howTop": "Kết thúc mùa trong top {{places}} của league {{size}} CLB: +1 cấp",
+      "howNewcomer": "Nhận CLB giữa mùa: cần dẫn ít nhất {{matches}} trận mới được tính",
+      "howNeverDown": "Cấp không bao giờ giảm",
+      "noSeason": "Chưa có mùa online: cách lên cấp sẽ hiện khi có mùa.",
+      "allOpen": "Mùa này chưa áp dụng bằng HLV: mọi quyền chỉnh chiến thuật đều mở.",
+      "pending": "Bằng HLV áp dụng cho trận từ mùa sau; đội hình bạn lưu đã phải theo bằng ngay từ bây giờ.",
+      "licences": "Các bằng HLV",
+      "atLevel": "từ cấp {{level}}",
+      "held": "Đang giữ",
+      "levelsToGo": "còn {{levels}} cấp",
+      "totals": "{{formations}} sơ đồ · {{styles}} lối chơi · {{dials}} chỉ đạo · {{roles}} vai trò",
+      "opensFirst": "Bằng này mở",
+      "opensMore": "Mở thêm",
+      "addedFormations": "Sơ đồ: {{list}}",
+      "addedStyles": "Lối chơi: {{list}}",
+      "addedDials": "Chỉ đạo: {{list}}",
+      "addedRoles": "Vai trò: {{list}}",
+      "addedNothing": "Không có gì mới"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "Hai trung vệ dâng (Stopper): cả hai cùng dâng lên, khoảng trống sau lưng bị bỏ ngỏ khi đối phương phản công.",
       "covers": "Hai trung vệ bọc lót (Cover CB): cả hai cùng lùi sâu, khu vực trước vòng cấm bị bỏ ngỏ."
     },
-    "masteryEarnedHint": "Độ thành thạo chỉ tăng ở trận bạn tự chỉ đạo (Ra sân)."
+    "masteryEarnedHint": "Độ thành thạo chỉ tăng ở trận bạn tự chỉ đạo (Ra sân).",
+    "licence": {
+      "tier_1": "Nhập môn",
+      "tier_2": "Cơ bản",
+      "tier_3": "Chuyên sâu",
+      "tier_4": "Bậc thầy",
+      "lockedOption": "{{option}} (mở ở cấp {{level}})",
+      "lockedHint": "Mở với bằng {{licence}}, ở cấp HLV {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Lịch tập hằng tuần",
@@ -3659,7 +3713,8 @@
         "notYourSide": "Bạn chỉ được ra lệnh cho đội của mình.",
         "commandsClosed": "Không thể thay đổi gì nữa ở giai đoạn này của trận.",
         "unknownFormation": "Sơ đồ này không có sẵn.",
-        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước."
+        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước.",
+        "lockedByLicence": "Bằng HLV của bạn chưa mở lệnh này."
       },
       "csv": {
         "writeFailed": "Không ghi được file CSV."

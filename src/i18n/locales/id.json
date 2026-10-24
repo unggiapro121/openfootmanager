@@ -156,7 +156,12 @@
         "unknownFormation": "Formasi itu tidak dikenal permainan.",
         "startingElevenSize": "Starting eleven harus berisi tepat 11 pemain.",
         "duplicateStarter": "{{player}} tercantum dua kali di starting eleven.",
-        "notInSquad": "{{player}} tidak ada di skuadmu."
+        "notInSquad": "{{player}} tidak ada di skuadmu.",
+        "lockedFormation": "Lisensi pelatihmu belum membuka formasi ini.",
+        "lockedPlayStyle": "Lisensi pelatihmu belum membuka gaya bermain ini.",
+        "lockedRole": "Lisensi pelatihmu belum membuka peran {{player}}.",
+        "lockedTactics": "Ada instruksi yang belum dibuka lisensimu dan tidak di nilai bawaannya.",
+        "unknown": "Server menolak susunan ini karena alasan yang belum dikenal versi game ini. Perbarui game."
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "Anda sedang memimpin tim Anda. Jika pergi sekitar 20 detik, AI akan memimpin sampai Anda kembali.",
       "stay": "Tetap di sini",
       "go": "Tinggalkan"
+    },
+    "licence": {
+      "title": "Lisensi pelatih",
+      "held": "{{licence}} · tingkat {{level}}",
+      "next": "Berikutnya: {{licence}} di tingkat {{level}}",
+      "highest": "Lisensi tertinggi: semua pengaturan terbuka",
+      "pending": "Mulai musim depan",
+      "notice": {
+        "title": "Musim {{season}}: susunan timmu kini sesuai lisensi {{licence}}",
+        "formation": "Formasi {{from}} → {{to}}",
+        "playStyle": "Gaya bermain {{from}} → {{to}}",
+        "dials": "Instruksi kembali ke bawaan: {{count}}",
+        "roles": "Peran kembali ke Standar: {{count}}",
+        "dismiss": "Mengerti",
+        "failed": "Pemberitahuan ini gagal ditutup. Coba lagi."
+      }
+    },
+    "roadmap": {
+      "title": "Peta jalan pelatih",
+      "standing": "Tingkat {{level}} · lisensi {{licence}}",
+      "level": "Tingkat pelatih online {{level}}",
+      "record": "{{seasons}} musim dimainkan · naik {{promotions}} kali",
+      "howTitle": "Cara naik tingkat",
+      "howTop": "Akhiri musim di {{places}} besar liga {{size}} klubmu: +1 tingkat",
+      "howNewcomer": "Mengambil klub di tengah musim? Kamu perlu memimpin minimal {{matches}} laga agar dihitung",
+      "howNeverDown": "Tingkatmu tidak pernah turun",
+      "noSeason": "Belum ada musim online: cara naik tingkat muncul saat musim dibuka.",
+      "allOpen": "Musim ini belum ada lisensi: semua pengaturan taktik terbuka.",
+      "pending": "Lisensi berlaku untuk laga mulai musim depan; susunan yang kamu simpan sudah harus mengikutinya.",
+      "licences": "Lisensi pelatih",
+      "atLevel": "mulai tingkat {{level}}",
+      "held": "Dipegang",
+      "levelsToGo": "{{levels}} tingkat lagi",
+      "totals": "{{formations}} formasi · {{styles}} gaya bermain · {{dials}} instruksi · {{roles}} peran",
+      "opensFirst": "Yang dibuka",
+      "opensMore": "Yang ditambahkan",
+      "addedFormations": "Formasi: {{list}}",
+      "addedStyles": "Gaya bermain: {{list}}",
+      "addedDials": "Instruksi: {{list}}",
+      "addedRoles": "Peran: {{list}}",
+      "addedNothing": "Tidak ada yang baru"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "Dua stopper di bek tengah: keduanya maju, dan ruang di belakang mereka terbuka saat serangan balik.",
       "covers": "Dua bek penyapu di tengah: keduanya mundur, dan tepi kotak penalti dibiarkan terbuka."
     },
-    "masteryEarnedHint": "Penguasaan hanya bertambah di laga yang kamu pimpin sendiri (Ke Lapangan)."
+    "masteryEarnedHint": "Penguasaan hanya bertambah di laga yang kamu pimpin sendiri (Ke Lapangan).",
+    "licence": {
+      "tier_1": "Dasar",
+      "tier_2": "Nasional",
+      "tier_3": "Kontinental",
+      "tier_4": "Utama",
+      "lockedOption": "{{option}} (lisensi di tingkat {{level}})",
+      "lockedHint": "Terbuka dengan lisensi {{licence}}, di tingkat pelatih {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Jadwal Mingguan",
@@ -3659,7 +3713,8 @@
         "notYourSide": "Kamu hanya bisa memberi instruksi kepada timmu sendiri.",
         "commandsClosed": "Tidak ada perubahan lagi yang bisa dilakukan pada tahap pertandingan ini.",
         "unknownFormation": "Formasi ini tidak tersedia.",
-        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu."
+        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu.",
+        "lockedByLicence": "Lisensi pelatihmu belum mencakup instruksi ini."
       },
       "csv": {
         "writeFailed": "Gagal menulis berkas CSV."

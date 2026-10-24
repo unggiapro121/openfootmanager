@@ -156,7 +156,12 @@
         "unknownFormation": "Le jeu ne connaît pas ce schéma.",
         "startingElevenSize": "Le onze de départ doit compter exactement 11 joueurs.",
         "duplicateStarter": "{{player}} figure deux fois dans le onze de départ.",
-        "notInSquad": "{{player}} ne fait pas partie de votre effectif."
+        "notInSquad": "{{player}} ne fait pas partie de votre effectif.",
+        "lockedFormation": "Votre licence d'entraîneur n'ouvre pas encore cette formation.",
+        "lockedPlayStyle": "Votre licence d'entraîneur n'ouvre pas encore ce style de jeu.",
+        "lockedRole": "Votre licence d'entraîneur n'ouvre pas encore le rôle de {{player}}.",
+        "lockedTactics": "Une consigne que votre licence n'ouvre pas encore n'est pas à sa valeur par défaut.",
+        "unknown": "Le serveur a refusé ce dispositif pour une raison que cette version du jeu ne connaît pas. Mettez le jeu à jour."
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "Vous dirigez votre équipe. Absent environ 20 secondes, l'IA la dirigera jusqu'à votre retour.",
       "stay": "Rester",
       "go": "Quitter"
+    },
+    "licence": {
+      "title": "Licence d'entraîneur",
+      "held": "{{licence}} · niveau {{level}}",
+      "next": "Suivante : {{licence}} au niveau {{level}}",
+      "highest": "La licence la plus haute : tout est ouvert",
+      "pending": "À partir de la saison prochaine",
+      "notice": {
+        "title": "Saison {{season}} : votre dispositif respecte désormais votre licence {{licence}}",
+        "formation": "Dispositif {{from}} → {{to}}",
+        "playStyle": "Style de jeu {{from}} → {{to}}",
+        "dials": "Consignes remises par défaut : {{count}}",
+        "roles": "Rôles remis en Standard : {{count}}",
+        "dismiss": "Compris",
+        "failed": "Impossible de fermer cet avis. Réessayez."
+      }
+    },
+    "roadmap": {
+      "title": "Parcours de l'entraîneur",
+      "standing": "Niveau {{level}} · licence {{licence}}",
+      "level": "Niveau d'entraîneur en ligne {{level}}",
+      "record": "{{seasons}} saisons jouées · {{promotions}} montées",
+      "howTitle": "Comment monter de niveau",
+      "howTop": "Finissez une saison parmi les {{places}} premiers de votre ligue de {{size}} clubs : +1 niveau",
+      "howNewcomer": "Club repris en cours de saison ? Il faut diriger au moins {{matches}} matchs pour que cela compte",
+      "howNeverDown": "Votre niveau ne baisse jamais",
+      "noSeason": "Pas encore de saison en ligne : la façon de monter s'affichera à l'ouverture d'une saison.",
+      "allOpen": "Pas de licences cette saison : tous les réglages tactiques sont ouverts.",
+      "pending": "Les licences s'appliquent aux matchs dès la saison prochaine ; vos dispositifs enregistrés suivent déjà la vôtre.",
+      "licences": "Licences d'entraîneur",
+      "atLevel": "dès le niveau {{level}}",
+      "held": "Détenue",
+      "levelsToGo": "encore {{levels}} niveaux",
+      "totals": "{{formations}} formations · {{styles}} styles · {{dials}} consignes · {{roles}} rôles",
+      "opensFirst": "Ce qu'elle ouvre",
+      "opensMore": "Ce qu'elle ajoute",
+      "addedFormations": "Formations : {{list}}",
+      "addedStyles": "Styles de jeu : {{list}}",
+      "addedDials": "Consignes : {{list}}",
+      "addedRoles": "Rôles : {{list}}",
+      "addedNothing": "Rien de nouveau"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "Deux stoppeurs en défense centrale : les deux sortent, et l'espace dans leur dos est ouvert en contre.",
       "covers": "Deux défenseurs de couverture : les deux reculent, et l'entrée de la surface reste libre."
     },
-    "masteryEarnedHint": "La maîtrise ne progresse que lors des matchs que vous dirigez vous-même (Aller sur le Terrain)."
+    "masteryEarnedHint": "La maîtrise ne progresse que lors des matchs que vous dirigez vous-même (Aller sur le Terrain).",
+    "licence": {
+      "tier_1": "Initiation",
+      "tier_2": "Nationale",
+      "tier_3": "Continentale",
+      "tier_4": "Élite",
+      "lockedOption": "{{option}} (licence au niveau {{level}})",
+      "lockedHint": "S'ouvre avec la licence {{licence}}, au niveau d'entraîneur {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Calendrier Hebdomadaire",
@@ -3634,7 +3688,8 @@
         "notYourSide": "Vous ne pouvez donner des consignes qu'à votre équipe.",
         "commandsClosed": "Plus aucun changement n'est possible à ce stade du match.",
         "unknownFormation": "Ce schéma n'est pas disponible.",
-        "tooManyUnderPricedDials": "Votre équipe utilise déjà deux réglages prudents (ligne basse, bloc compact, faible largeur, contre-pressing long). Modifiez-en un d'abord."
+        "tooManyUnderPricedDials": "Votre équipe utilise déjà deux réglages prudents (ligne basse, bloc compact, faible largeur, contre-pressing long). Modifiez-en un d'abord.",
+        "lockedByLicence": "Votre licence d'entraîneur ne permet pas encore cette consigne."
       },
       "csv": {
         "writeFailed": "Échec de l'écriture du fichier CSV."

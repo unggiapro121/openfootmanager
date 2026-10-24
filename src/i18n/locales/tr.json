@@ -156,7 +156,12 @@
         "unknownFormation": "Oyun bu dizilişi tanımıyor.",
         "startingElevenSize": "İlk on birde tam 11 oyuncu olmalı.",
         "duplicateStarter": "{{player}} ilk on birde iki kez yer alıyor.",
-        "notInSquad": "{{player}} kadronda değil."
+        "notInSquad": "{{player}} kadronda değil.",
+        "lockedFormation": "Antrenörlük lisansın henüz bu dizilişi açmıyor.",
+        "lockedPlayStyle": "Antrenörlük lisansın henüz bu oyun stilini açmıyor.",
+        "lockedRole": "Antrenörlük lisansın henüz {{player}} için bu rolü açmıyor.",
+        "lockedTactics": "Lisansının henüz açmadığı bir talimat varsayılan değerinde değil.",
+        "unknown": "Sunucu bu kadroyu, oyunun bu sürümünün bilmediği bir nedenle reddetti. Oyunu güncelle."
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "Takımınızı siz yönetiyorsunuz. Yaklaşık 20 saniye uzak kalırsanız, siz dönene kadar takımı yapay zekâ yönetir.",
       "stay": "Kal",
       "go": "Ayrıl"
+    },
+    "licence": {
+      "title": "Antrenörlük lisansı",
+      "held": "{{licence}} · seviye {{level}}",
+      "next": "Sıradaki: {{level}}. seviyede {{licence}}",
+      "highest": "En yüksek lisans: her ayar açık",
+      "pending": "Gelecek sezondan itibaren",
+      "notice": {
+        "title": "{{season}}. sezon: Kadron artık {{licence}} lisansına uygun",
+        "formation": "Diziliş {{from}} → {{to}}",
+        "playStyle": "Oyun stili {{from}} → {{to}}",
+        "dials": "Varsayılana dönen talimatlar: {{count}}",
+        "roles": "Standart'a dönen roller: {{count}}",
+        "dismiss": "Anladım",
+        "failed": "Bu bildirim kapatılamadı. Tekrar dene."
+      }
+    },
+    "roadmap": {
+      "title": "Teknik direktör yol haritası",
+      "standing": "Seviye {{level}} · {{licence}} lisansı",
+      "level": "Çevrim içi teknik direktör seviyesi {{level}}",
+      "record": "{{seasons}} sezon oynandı · {{promotions}} kez yükseldi",
+      "howTitle": "Nasıl seviye atlanır",
+      "howTop": "Sezonu {{size}} kulüplü liginde ilk {{places}} içinde bitir: +1 seviye",
+      "howNewcomer": "Kulübü sezon ortasında mı aldın? Sayılması için en az {{matches}} maç yönetmen gerekir",
+      "howNeverDown": "Seviyen asla düşmez",
+      "noSeason": "Henüz çevrim içi sezon yok: seviye atlama yolu bir sezon açılınca görünür.",
+      "allOpen": "Bu sezon lisans uygulanmıyor: tüm taktik ayarlar açık.",
+      "pending": "Lisanslar maçlara gelecek sezondan itibaren uygulanır; kaydettiğin kadrolar şimdiden lisansına uymalı.",
+      "licences": "Teknik direktör lisansları",
+      "atLevel": "{{level}}. seviyeden itibaren",
+      "held": "Mevcut",
+      "levelsToGo": "{{levels}} seviye kaldı",
+      "totals": "{{formations}} diziliş · {{styles}} oyun stili · {{dials}} talimat · {{roles}} rol",
+      "opensFirst": "Neleri açar",
+      "opensMore": "Neleri ekler",
+      "addedFormations": "Dizilişler: {{list}}",
+      "addedStyles": "Oyun stilleri: {{list}}",
+      "addedDials": "Talimatlar: {{list}}",
+      "addedRoles": "Roller: {{list}}",
+      "addedNothing": "Yeni bir şey yok"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "Stoperde iki baskıcı stoper: ikisi de öne çıkar, kontrada arkalarındaki alan boş kalır.",
       "covers": "Stoperde iki kollayan stoper: ikisi de geri çekilir, ceza sahası önü boş kalır."
     },
-    "masteryEarnedHint": "Ustalık yalnızca kendi yönettiğin maçlarda artar (Sahaya Çık)."
+    "masteryEarnedHint": "Ustalık yalnızca kendi yönettiğin maçlarda artar (Sahaya Çık).",
+    "licence": {
+      "tier_1": "Temel",
+      "tier_2": "Ulusal Pro",
+      "tier_3": "Kıtasal Pro",
+      "tier_4": "Elit",
+      "lockedOption": "{{option}} (lisans seviyesi {{level}})",
+      "lockedHint": "{{licence}} lisansıyla, {{level}}. teknik direktör seviyesinde açılır"
+    }
   },
   "training": {
     "weeklySchedule": "Haftalık Program",
@@ -3659,7 +3713,8 @@
         "notYourSide": "Yalnızca kendi takımına talimat verebilirsin.",
         "commandsClosed": "Maçın bu aşamasında artık değişiklik yapılamaz.",
         "unknownFormation": "Bu diziliş kullanılamıyor.",
-        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir."
+        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir.",
+        "lockedByLicence": "Antrenörlük lisansın henüz bu talimata izin vermiyor."
       },
       "csv": {
         "writeFailed": "CSV dosyası yazılamadı."

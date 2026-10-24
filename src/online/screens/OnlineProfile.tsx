@@ -14,11 +14,13 @@ import {
   tracked,
   useOnlineStore,
 } from "../store/onlineStore";
+import CoachRoadmap from "./CoachRoadmap";
 import { useActionKey } from "./useActionKey";
 
 /**
- * The coach's online profile (C-2 §3.3, Qc2-6): who they are and their region. Changing region
- * gives the club back to its bot at once, so it is confirmed first.
+ * The coach's online profile (C-2 §3.3, Qc2-6): who they are and their region, and the road ahead
+ * (`CoachRoadmap`). Changing region gives the club back to its bot at once, so it is confirmed
+ * first.
  */
 export default function OnlineProfile() {
   const { t } = useTranslation();
@@ -32,31 +34,34 @@ export default function OnlineProfile() {
   }, []);
 
   return (
-    <Card className="max-w-2xl">
-      <CardHeader>{t("online.profile.title")}</CardHeader>
-      <CardBody className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
-        {error !== null && (
-          <p role="alert" className="text-red-600 dark:text-red-400">
-            {resolveBackendError(error)}
-          </p>
-        )}
-        {account ? (
-          <>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-              <dt className="font-semibold">{t("online.profile.name")}</dt>
-              <dd>{`${account.firstName} ${account.lastName}`}</dd>
-              <dt className="font-semibold">{t("online.profile.email")}</dt>
-              <dd>{account.email}</dd>
-              <dt className="font-semibold">{t("online.profile.region")}</dt>
-              <dd>{t(`coach.regions.${account.region}`)}</dd>
-            </dl>
-            <RegionChange account={account} onChanged={setAccount} />
-          </>
-        ) : (
-          error === null && <p>{t("online.loading")}</p>
-        )}
-      </CardBody>
-    </Card>
+    <div className="space-y-6">
+      <Card className="max-w-2xl">
+        <CardHeader>{t("online.profile.title")}</CardHeader>
+        <CardBody className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
+          {error !== null && (
+            <p role="alert" className="text-red-600 dark:text-red-400">
+              {resolveBackendError(error)}
+            </p>
+          )}
+          {account ? (
+            <>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                <dt className="font-semibold">{t("online.profile.name")}</dt>
+                <dd>{`${account.firstName} ${account.lastName}`}</dd>
+                <dt className="font-semibold">{t("online.profile.email")}</dt>
+                <dd>{account.email}</dd>
+                <dt className="font-semibold">{t("online.profile.region")}</dt>
+                <dd>{t(`coach.regions.${account.region}`)}</dd>
+              </dl>
+              <RegionChange account={account} onChanged={setAccount} />
+            </>
+          ) : (
+            error === null && <p>{t("online.loading")}</p>
+          )}
+        </CardBody>
+      </Card>
+      <CoachRoadmap />
+    </div>
   );
 }
 

@@ -46,25 +46,9 @@ pub fn weekly_commercial_income(reputation: u32) -> i64 {
     (season_central_income(reputation) * (1.0 - BROADCAST_SHARE) / WEEKS_PER_SEASON as f64) as i64
 }
 
-/// Average ticket price: about €25 in the lowest tiers, near €100 at the top.
-pub fn ticket_price(reputation: u32) -> f64 {
-    15.0 + 85.0 * reputation_share(reputation).min(1.1)
-}
-
-/// How many fans want a ticket for an ordinary home game. A big club fills a
-/// big stadium; a small one does not, however large its ground.
-pub(crate) fn matchday_demand(reputation: u32) -> u32 {
-    let reputation = f64::from(reputation);
-    (3_000.0 + reputation * reputation * 0.08) as u32
-}
-
-/// Gate receipts for one home game. `turnout` scales the usual demand (1.0 is
-/// an ordinary game) and attendance is capped by the stadium.
-pub fn matchday_gate(reputation: u32, stadium_capacity: u32, turnout: f64) -> i64 {
-    let attendance =
-        (f64::from(matchday_demand(reputation)) * turnout).min(f64::from(stadium_capacity));
-    (attendance * ticket_price(reputation)) as i64
-}
+// The gate rules moved to `ofm_rules::economy` (phase 3, E3-10) so the online server takes the
+// same gate; they are re-exported here under their old path.
+pub use ofm_rules::economy::{matchday_demand, matchday_gate, ticket_price};
 
 /// A season's income from broadcast, commercial and ordinary home gates.
 /// Prize money and transfers are left out: no club can plan on them.

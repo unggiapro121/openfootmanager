@@ -156,7 +156,12 @@
         "unknownFormation": "Tuto rozestavu hra nezná.",
         "startingElevenSize": "Základní sestava musí mít přesně 11 hráčů.",
         "duplicateStarter": "{{player}} je v základní sestavě dvakrát.",
-        "notInSquad": "{{player}} není ve vašem kádru."
+        "notInSquad": "{{player}} není ve vašem kádru.",
+        "lockedFormation": "Vaše trenérská licence zatím neodemyká toto rozestavení.",
+        "lockedPlayStyle": "Vaše trenérská licence zatím neodemyká tento herní styl.",
+        "lockedRole": "Vaše trenérská licence zatím neodemyká roli hráče {{player}}.",
+        "lockedTactics": "Pokyn, který vaše licence zatím neodemyká, není na výchozí hodnotě.",
+        "unknown": "Server sestavu odmítl z důvodu, který tato verze hry nezná. Aktualizujte hru."
       }
     },
     "squad": {
@@ -329,6 +334,47 @@
       "body": "Vedete svůj tým. Když budete pryč asi 20 sekund, převezme vedení AI, dokud se nevrátíte.",
       "stay": "Zůstat",
       "go": "Odejít"
+    },
+    "licence": {
+      "title": "Trenérská licence",
+      "held": "{{licence}} · úroveň {{level}}",
+      "next": "Další: {{licence}} od úrovně {{level}}",
+      "highest": "Nejvyšší licence: vše je odemčeno",
+      "pending": "Od příští sezóny",
+      "notice": {
+        "title": "Sezóna {{season}}: vaše sestava teď odpovídá licenci {{licence}}",
+        "formation": "Rozestavení {{from}} → {{to}}",
+        "playStyle": "Herní styl {{from}} → {{to}}",
+        "dials": "Pokyny vrácené na výchozí: {{count}}",
+        "roles": "Role vrácené na Standardní: {{count}}",
+        "dismiss": "Rozumím",
+        "failed": "Oznámení se nepodařilo zavřít. Zkuste to znovu."
+      }
+    },
+    "roadmap": {
+      "title": "Trenérská cesta",
+      "standing": "Úroveň {{level}} · licence {{licence}}",
+      "level": "Online trenérská úroveň {{level}}",
+      "record": "Odehráno sezón: {{seasons}} · postupů: {{promotions}}",
+      "howTitle": "Jak postoupit o úroveň",
+      "howTop": "Dokončete sezónu mezi prvními {{places}} své ligy o {{size}} klubech: +1 úroveň",
+      "howNewcomer": "Převzali jste klub během sezóny? Musíte odkoučovat aspoň {{matches}} zápasů, aby se to počítalo",
+      "howNeverDown": "Úroveň nikdy neklesá",
+      "noSeason": "Zatím žádná online sezóna: jak postoupit se ukáže, až sezóna začne.",
+      "allOpen": "Tuto sezónu licence neplatí: všechna taktická nastavení jsou odemčená.",
+      "pending": "Licence platí pro zápasy od příští sezóny; ukládané sestavy už se jí musí řídit.",
+      "licences": "Trenérské licence",
+      "atLevel": "od úrovně {{level}}",
+      "held": "Aktuální",
+      "levelsToGo": "zbývá úrovní: {{levels}}",
+      "totals": "Rozestavení: {{formations}} · stylů: {{styles}} · pokynů: {{dials}} · rolí: {{roles}}",
+      "opensFirst": "Co odemyká",
+      "opensMore": "Co přidává",
+      "addedFormations": "Rozestavení: {{list}}",
+      "addedStyles": "Herní styly: {{list}}",
+      "addedDials": "Pokyny: {{list}}",
+      "addedRoles": "Role: {{list}}",
+      "addedNothing": "Nic nového"
     }
   },
   "coach": {
@@ -1304,7 +1350,15 @@
       "stoppers": "Dva stopperi ve středu obrany: oba vystupují a prostor za nimi zůstává při brejku volný.",
       "covers": "Dva krycí stopeři ve středu obrany: oba ustupují a hrana vápna zůstává volná."
     },
-    "masteryEarnedHint": "Zvládnutí roste jen v zápasech, které vedete sami (Vstoupit na hřiště)."
+    "masteryEarnedHint": "Zvládnutí roste jen v zápasech, které vedete sami (Vstoupit na hřiště).",
+    "licence": {
+      "tier_1": "Základní",
+      "tier_2": "Národní Pro",
+      "tier_3": "Kontinentální Pro",
+      "tier_4": "Elitní",
+      "lockedOption": "{{option}} (licence od úrovně {{level}})",
+      "lockedHint": "Odemkne licence {{licence}}, od trenérské úrovně {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Týdenní plán",
@@ -3659,7 +3713,8 @@
         "notYourSide": "Pokyny můžete dávat jen svému týmu.",
         "commandsClosed": "V této fázi zápasu už nelze nic měnit.",
         "unknownFormation": "Tato formace není k dispozici.",
-        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte."
+        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte.",
+        "lockedByLicence": "Vaše trenérská licence tento pokyn zatím neumožňuje."
       },
       "csv": {
         "writeFailed": "Nepodařilo se zapsat soubor CSV."

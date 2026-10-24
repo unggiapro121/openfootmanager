@@ -49,7 +49,9 @@
 //! whether it has become urgent either way.
 
 use crate::ai_math::mean_u8;
+use crate::licence::{LicenceControls, fit_team};
 use crate::stable_hash::stable_hash;
+use domain::manager::PlayStyleMastery;
 use domain::player::{Player, Position};
 use domain::team::{
     BreakSpeed, BuildUpStyle, CounterPressDuration, CrossStyle, DefensiveLine, DefensiveShape,
@@ -571,6 +573,35 @@ pub fn match_plan(
 /// roles (`ai_roles::assign_squad_roles`). `squad` is the whole squad; the injured do not count
 /// towards the shape. Running it twice in a day changes nothing.
 pub fn weekly_review(team: &mut domain::team::Team, squad: &[&Player], form: Option<&FormReading>) {
+    review_among(team, squad, form, &crate::ai_formation::AI_FORMATIONS);
+}
+
+/// [`weekly_review`] for an online bot club whose licence closes some controls (phase 3, S-9
+/// S9-11): it plays the open style its coach knows best (`mastery`), chooses its shape among the
+/// open ones, and its dials and roles stand where the licence allows. Running it twice in a day
+/// changes nothing.
+pub fn weekly_review_within(
+    team: &mut domain::team::Team,
+    squad: &[&Player],
+    form: Option<&FormReading>,
+    controls: &LicenceControls,
+    mastery: &PlayStyleMastery,
+) {
+    // The style first: the blueprint and the shape are both read from it.
+    fit_team(team, controls, Some(mastery));
+    let open: Vec<&str> = controls.formations.iter().map(String::as_str).collect();
+    review_among(team, squad, form, &open);
+    // The blueprint and the role assignment know nothing of licences; what they set beyond it
+    // goes back to its default.
+    fit_team(team, controls, Some(mastery));
+}
+
+fn review_among(
+    team: &mut domain::team::Team,
+    squad: &[&Player],
+    form: Option<&FormReading>,
+    shapes: &[&str],
+) {
     let reading = read_squad(squad);
     let available: Vec<&Player> = squad
         .iter()
@@ -578,15 +609,19 @@ pub fn weekly_review(team: &mut domain::team::Team, squad: &[&Player], form: Opt
         .filter(|player| player.injury.is_none())
         .collect();
     team.tactics_phase = match_plan(&team.play_style, reading.as_ref(), form);
-    team.formation =
-        crate::ai_formation::reviewed_formation(&team.formation, &available, &team.play_style);
+    team.formation = crate::ai_formation::reviewed_formation_within(
+        &team.formation,
+        &available,
+        &team.play_style,
+        shapes,
+    );
     crate::ai_roles::assign_squad_roles(team, squad.iter().copied());
 }
 
 #[cfg(test)]
 mod weekly_review_tests {
     use domain::player::Position;
-    use domain::team::{PlayStyle, Team};
+    use domain::team::{PlayStyle, TacticsPhaseSettings, Team};
 
     use super::*;
     use crate::test_support::uniform_attributes;
@@ -649,5 +684,82 @@ mod weekly_review_tests {
         assert_eq!(team.tactics_phase, once.tactics_phase);
         assert_eq!(team.formation, once.formation);
         assert_eq!(team.player_roles, once.player_roles);
+    }
+
+    /// Given a counter-attacking bot of the first licence, whose coach knows Defensive best of the
+    /// open styles, set up in a closed shape,
+    /// when it reviews its week twice,
+    /// then it plays Defensive in one of the three open shapes, every dial at its default and no
+    /// role, and the second review changes nothing.
+    #[test]
+    fn a_bot_reviews_its_week_within_its_licence() {
+        let players = squad();
+        let squad: Vec<&Player> = players.iter().collect();
+        let mut team = Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        team.play_style = PlayStyle::Counter;
+        team.formation = "4-2-3-1".into();
+        let mastery = PlayStyleMastery {
+            balanced: 40,
+            attacking: 30,
+            defensive: 75,
+            possession: 20,
+            counter: 90,
+            high_press: 10,
+        };
+        let grassroots = crate::licence::controls(1);
+        weekly_review_within(&mut team, &squad, None, &grassroots, &mastery);
+        assert_eq!(team.play_style, PlayStyle::Defensive);
+        assert!(
+            grassroots.formations.contains(&team.formation),
+            "{}",
+            team.formation
+        );
+        assert_eq!(team.tactics_phase, TacticsPhaseSettings::default());
+        assert!(team.player_roles.is_empty());
+        let once = team.clone();
+        weekly_review_within(&mut team, &squad, None, &grassroots, &mastery);
+        assert_eq!(team.play_style, once.play_style);
+        assert_eq!(team.formation, once.formation);
+        assert_eq!(team.tactics_phase, once.tactics_phase);
+    }
+
+    /// Given a bot holding every licence,
+    /// when it reviews its week through the licensed review and, separately, the plain one,
+    /// then the two come out the same.
+    #[test]
+    fn a_bot_with_every_licence_reviews_as_before() {
+        let players = squad();
+        let squad: Vec<&Player> = players.iter().collect();
+        let mut plain = Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        plain.play_style = PlayStyle::HighPress;
+        let mut licensed = plain.clone();
+        weekly_review(&mut plain, &squad, None);
+        weekly_review_within(
+            &mut licensed,
+            &squad,
+            None,
+            &crate::licence::LicenceControls::all_open(),
+            &PlayStyleMastery::default(),
+        );
+        assert_eq!(licensed.play_style, plain.play_style);
+        assert_eq!(licensed.formation, plain.formation);
+        assert_eq!(licensed.tactics_phase, plain.tactics_phase);
+        assert_eq!(licensed.player_roles, plain.player_roles);
     }
 }

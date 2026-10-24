@@ -6,6 +6,7 @@ import type {
   TeamData,
   TeamMatchRolesData,
 } from "../../store/types";
+import type { TacticsLimits } from "./licenceLimits";
 
 /**
  * A player as the tactics board reads him: who he is, where he plays, his attributes and how
@@ -78,4 +79,9 @@ export interface TacticsBoardSource {
   setMatchRoles: (roles: TeamMatchRolesData) => Promise<void>;
   setTacticsPhase: (patch: Partial<TacticsPhaseSettings>) => Promise<void>;
   setPlayerRole: (playerId: string, role: PlayerRole) => Promise<void>;
+  /**
+   * What the coach's licence closes (online, phase 3 S-9): those choices show as closed. Absent
+   * in the game, the world editor and an online season without licences: everything is open.
+   */
+  limits?: TacticsLimits;
 }

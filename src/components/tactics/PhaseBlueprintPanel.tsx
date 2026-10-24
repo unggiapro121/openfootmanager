@@ -1,7 +1,9 @@
 import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import type { TacticsPhaseSettings } from "../../store/types";
+import type { Dial } from "../../bindings/core/rules";
 import { Select } from "../ui";
+import { type TacticsLimits, licenceLock, lockHint } from "./licenceLimits";
 
 const WITH_BALL_FIELDS = [
   ["build_up_style", "buildUpStyle", ["Short", "Mixed", "Long"]] as const,
@@ -35,35 +37,48 @@ function PhaseButtonGroup({
   onTacticsPhaseChange,
   options,
   tacticsPhase,
+  limits,
 }: {
   field: keyof TacticsPhaseSettings;
   labelKey: string;
   onTacticsPhaseChange: (patch: Partial<TacticsPhaseSettings>) => void;
   options: readonly string[];
   tacticsPhase?: TacticsPhaseSettings;
+  limits?: TacticsLimits;
 }): JSX.Element {
   const { t } = useTranslation();
   const currentValue = (tacticsPhase?.[field] ?? options[0]) as string;
+  // The dial names are `TacticsPhaseSettings`' own field names.
+  const lock = licenceLock(limits, { kind: "dial", value: field as Dial });
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-20 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
-        {t(`tactics.phaseSettings.${labelKey}`)}
-      </span>
-      <Select
-        selectSize="sm"
-        variant="subtle"
-        fullWidth
-        value={currentValue}
-        onChange={(e) => {
-          onTacticsPhaseChange({ [field]: e.target.value });
-        }}
-      >
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {t(`tactics.phaseSettings.${labelKey}_${opt}`, opt)}
-          </option>
-        ))}
-      </Select>
+    <div>
+      <div className="flex items-center gap-2">
+        <span className="w-20 shrink-0 text-[11px] text-gray-500 dark:text-gray-400">
+          {t(`tactics.phaseSettings.${labelKey}`)}
+        </span>
+        <Select
+          selectSize="sm"
+          variant="subtle"
+          fullWidth
+          value={currentValue}
+          disabled={lock !== null}
+          aria-label={t(`tactics.phaseSettings.${labelKey}`)}
+          onChange={(e) => {
+            onTacticsPhaseChange({ [field]: e.target.value });
+          }}
+        >
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {t(`tactics.phaseSettings.${labelKey}_${opt}`, opt)}
+            </option>
+          ))}
+        </Select>
+      </div>
+      {lock ? (
+        <p className="mt-0.5 pl-22 text-[10px] font-semibold text-accent-700 dark:text-accent-400">
+          {lockHint(t, lock)}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -77,9 +92,12 @@ function PhaseButtonGroup({
 export function PhaseBlueprintPanel({
   tacticsPhase,
   onTacticsPhaseChange,
+  limits,
 }: {
   tacticsPhase?: TacticsPhaseSettings;
   onTacticsPhaseChange: (patch: Partial<TacticsPhaseSettings>) => void;
+  /** What the coach's licence closes (online); nothing when absent. */
+  limits?: TacticsLimits;
 }): JSX.Element {
   const { t } = useTranslation();
   return (
@@ -97,6 +115,7 @@ export function PhaseBlueprintPanel({
               onTacticsPhaseChange={onTacticsPhaseChange}
               options={options}
               tacticsPhase={tacticsPhase}
+              limits={limits}
             />
           ))}
         </div>
