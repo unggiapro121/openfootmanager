@@ -36,6 +36,13 @@ export type LiveMatch =
   | { status: "failed"; error: unknown }
   | { status: "ready"; data: LiveMatchData };
 
+/**
+ * Steps with no frame before the frames are read from the server instead: the realtime can stop
+ * bringing them while the match plays on, and the screen must not stand still on a minute the
+ * match has left. The half-time break is not counted.
+ */
+const STALL_STEPS = 3;
+
 const coaches = (data: Pick<LiveMatchData, "mine" | "state">) =>
   data.mine !== null &&
   data.state.controllers[data.mine.side === "Home" ? "home" : "away"] === "Manager";
@@ -58,6 +65,9 @@ export function useLiveMatch(matchId: string) {
     let active = true;
     let stop: StopWatching | null = null;
     let queue = Promise.resolve();
+    let watchdog: ReturnType<typeof setInterval> | undefined;
+    /** When a frame was last applied, to tell a match the realtime stopped bringing. */
+    let heardAt = Date.now();
     latest.current = null;
     setLive({ status: "loading" });
 
@@ -85,6 +95,7 @@ export function useLiveMatch(matchId: string) {
         await take(frame, true);
         return;
       }
+      heardAt = Date.now();
       let state = result.state;
       let mine = current.mine;
       let sent = current.sent;
@@ -121,7 +132,7 @@ export function useLiveMatch(matchId: string) {
         matchId,
         state.lastSeq,
         (frame) => {
-          queue = queue.then(() => take(frame)).catch(() => undefined);
+          queue = queue.then(() => take(frame)).catch(failed);
         },
         {
           onStatus: (connection) => publish({ connection }),
@@ -130,11 +141,32 @@ export function useLiveMatch(matchId: string) {
       );
       if (active) stop = stopWatching;
       else void stopWatching();
+      watchdog = setInterval(() => readOnIfStalled(view), view.stepMillis);
+    };
+
+    const failed = (error: unknown) =>
+      console.warn(`[online] match ${matchId}: a frame could not be applied`, error);
+
+    const readOnIfStalled = (view: MatchView) => {
+      const current = latest.current;
+      if (!active || !current || current.state.isFinished) return;
+      const breakMs = current.state.phase === "HalfTime" ? view.halfTimeMillis : 0;
+      const silence = STALL_STEPS * view.stepMillis + breakMs;
+      if (Date.now() - heardAt < silence) return;
+      heardAt = Date.now();
+      const after = current.state.lastSeq;
+      console.warn(`[online] match ${matchId}: no frame after step ${after} for ${silence} ms`);
+      queue = queue
+        .then(async () => {
+          for (const frame of await readFrames(matchId, after)) await take(frame);
+        })
+        .catch(failed);
     };
 
     open().catch((error: unknown) => active && setLive({ status: "failed", error }));
     return () => {
       active = false;
+      clearInterval(watchdog);
       void stop?.();
     };
   }, [matchId, attempt, reload]);

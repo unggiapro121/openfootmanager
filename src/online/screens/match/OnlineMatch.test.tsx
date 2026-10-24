@@ -59,6 +59,8 @@ vi.mock("../../../components/match/radar/MatchRadar2D", () => ({
 
 const MATCH = "match-1";
 const ROUTE = `/online/match/${MATCH}`;
+/** The length of a step in `matchView()`. */
+const STEP_MS = 2000;
 
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
@@ -413,6 +415,51 @@ describe("following a match", () => {
     await waitFor(() => expect(radar().score).toBe("1-1"));
     const reads = requestsTo(`v1/matches/${MATCH}/frames`);
     expect(reads[reads.length - 1]?.query).toContainEqual(["afterSeq", "1"]);
+  });
+
+  describe("when the frames stop coming", () => {
+    beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
+    afterEach(() => vi.useRealTimers());
+
+    // Given a match followed from kick-off whose realtime brings nothing after step 1,
+    // when three steps pass with no frame while the server has played on to step 3,
+    // then the frames are read from the server and the score moves on.
+    it("reads the frames itself when none come for a while", async () => {
+      const frames = [matchFrame(1)];
+      stage({ frames });
+      await opened();
+      push(frames[0]);
+      frames.push(
+        matchFrame(2, { result: { away_score: 1 } }),
+        matchFrame(3, { result: { away_score: 1, home_score: 1 } }),
+      );
+      await act(() => vi.advanceTimersByTimeAsync(4 * STEP_MS));
+      await waitFor(() => expect(radar().score).toBe("1-1"));
+    });
+
+    // Given a match whose frames keep coming, one a step,
+    // when several steps pass,
+    // then the frames are never read from the server.
+    it("does not read frames while they keep coming", async () => {
+      stage();
+      await opened();
+      for (let seq = 1; seq <= 5; seq++) {
+        push(matchFrame(seq));
+        await act(() => vi.advanceTimersByTimeAsync(STEP_MS));
+      }
+      expect(requestsTo(`v1/matches/${MATCH}/frames`)).toHaveLength(0);
+    });
+
+    // Given a match at half time, a one-minute break,
+    // when three steps pass with no frame,
+    // then the frames are not read: the break is not a frame missed.
+    it("waits out the half-time break", async () => {
+      stage();
+      await opened();
+      push(matchFrame(1, { result: { phase: "HalfTime" } }));
+      await act(() => vi.advanceTimersByTimeAsync(10 * STEP_MS));
+      expect(requestsTo(`v1/matches/${MATCH}/frames`)).toHaveLength(0);
+    });
   });
 
   // Given a match whose away side makes a substitution in the gap before step 1,
