@@ -134,6 +134,8 @@ pub(super) fn draw_squad(
             inputs.names,
             rng,
         );
+        // His own position before he is calibrated, so his overall is the one at it.
+        crate::player_identity::upgrade_player_identity(&mut player, None);
         let jitter = profile.ovr_jitter.max(0.0);
         let target = profile.strength.target
             + row.ovr_offset

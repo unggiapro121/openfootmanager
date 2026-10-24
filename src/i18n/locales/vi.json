@@ -223,7 +223,12 @@
         "swap": "{{a}} và {{b}} đổi vị trí",
         "formation": "Đổi sang sơ đồ {{formation}}",
         "playStyle": "Lối chơi: {{style}}",
-        "other": "Lệnh"
+        "other": "Lệnh",
+        "role": "{{player}} chơi vai trò {{role}}",
+        "captain": "{{player}} làm đội trưởng",
+        "freeKickTaker": "{{player}} đá phạt trực tiếp",
+        "cornerTaker": "{{player}} đá phạt góc",
+        "penaltyTaker": "{{player}} đá phạt đền"
       },
       "sent": {
         "title": "Lệnh đã gửi",
@@ -232,7 +237,11 @@
         "refused": "— bị từ chối",
         "refusedWhy": "— bị từ chối: {{reason}}"
       },
-      "halfTimeHint": "Hãy thay đổi ngay bây giờ: mọi thay đổi được áp dụng trước khi hiệp 2 bắt đầu."
+      "halfTimeHint": "Hãy thay đổi ngay bây giờ: mọi thay đổi được áp dụng trước khi hiệp 2 bắt đầu.",
+      "rolesTitle": "Vai trò cầu thủ",
+      "rolePlayer": "Cầu thủ",
+      "roleChoice": "Vai trò",
+      "changeRole": "Đổi vai trò"
     },
     "replay": {
       "title": "Xem lại",
@@ -314,6 +323,12 @@
         "title": "Giao hữu",
         "back": "Về phòng giao hữu"
       }
+    },
+    "leave": {
+      "title": "Rời trận đấu?",
+      "body": "Bạn đang chỉ đạo đội của mình. Rời trận khoảng 20 giây thì AI sẽ chỉ đạo thay cho tới khi bạn quay lại.",
+      "stay": "Ở lại",
+      "go": "Rời trận"
     }
   },
   "coach": {

@@ -223,7 +223,12 @@
         "swap": "{{a}} a {{b}} si prohodí pozice",
         "formation": "Přejít na {{formation}}",
         "playStyle": "Herní styl: {{style}}",
-        "other": "Pokyn"
+        "other": "Pokyn",
+        "role": "{{player}} hraje jako {{role}}",
+        "captain": "{{player}} je kapitán",
+        "freeKickTaker": "{{player}} kope přímé kopy",
+        "cornerTaker": "{{player}} kope rohy",
+        "penaltyTaker": "{{player}} kope penalty"
       },
       "sent": {
         "title": "Odeslané pokyny",
@@ -232,7 +237,11 @@
         "refused": "— odmítnuto",
         "refusedWhy": "— odmítnuto: {{reason}}"
       },
-      "halfTimeHint": "Proveďte změny teď: uplatní se před výkopem druhého poločasu."
+      "halfTimeHint": "Proveďte změny teď: uplatní se před výkopem druhého poločasu.",
+      "rolesTitle": "Role hráčů",
+      "rolePlayer": "Hráč",
+      "roleChoice": "Herní role",
+      "changeRole": "Změnit roli"
     },
     "replay": {
       "title": "Záznam",
@@ -314,6 +323,12 @@
         "title": "Přátelské utkání",
         "back": "Zpět do místnosti"
       }
+    },
+    "leave": {
+      "title": "Opustit zápas?",
+      "body": "Vedete svůj tým. Když budete pryč asi 20 sekund, převezme vedení AI, dokud se nevrátíte.",
+      "stay": "Zůstat",
+      "go": "Odejít"
     }
   },
   "coach": {

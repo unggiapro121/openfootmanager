@@ -12,7 +12,7 @@
 /// blocklists, training and aging — apart from the match (`engine::ENGINE_VERSION`). Every
 /// generated entity records it; a change that moves a generated world must bump it, which
 /// `tests/world_rules_version.rs` enforces (E3-5q F12).
-pub const WORLD_RULES_VERSION: &str = "1";
+pub const WORLD_RULES_VERSION: &str = "2";
 
 pub mod age;
 pub mod aging;
@@ -31,6 +31,7 @@ pub mod match_form;
 pub mod match_session;
 pub mod match_summary;
 pub mod nations;
+pub mod player_identity;
 pub mod player_rating;
 pub mod player_wear;
 pub mod playing_time;

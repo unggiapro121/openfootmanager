@@ -223,7 +223,12 @@
         "swap": "{{a}} e {{b}} trocam de posição",
         "formation": "Mudar para {{formation}}",
         "playStyle": "Estilo de jogo: {{style}}",
-        "other": "Ordem"
+        "other": "Ordem",
+        "role": "{{player}} joga como {{role}}",
+        "captain": "{{player}} é o capitão",
+        "freeKickTaker": "{{player}} marca os livres",
+        "cornerTaker": "{{player}} marca os cantos",
+        "penaltyTaker": "{{player}} marca os penáltis"
       },
       "sent": {
         "title": "Ordens enviadas",
@@ -232,7 +237,11 @@
         "refused": "— recusada",
         "refusedWhy": "— recusada: {{reason}}"
       },
-      "halfTimeHint": "Faz as tuas alterações agora: são aplicadas antes do início da segunda parte."
+      "halfTimeHint": "Faz as tuas alterações agora: são aplicadas antes do início da segunda parte.",
+      "rolesTitle": "Funções dos jogadores",
+      "rolePlayer": "Jogador",
+      "roleChoice": "Função",
+      "changeRole": "Mudar função"
     },
     "replay": {
       "title": "Repetição",
@@ -314,6 +323,12 @@
         "title": "Amigável",
         "back": "Voltar à sala de amigável"
       }
+    },
+    "leave": {
+      "title": "Sair do jogo?",
+      "body": "Estás a orientar a tua equipa. Se saíres cerca de 20 segundos, a IA orienta-a até voltares.",
+      "stay": "Ficar",
+      "go": "Sair"
     }
   },
   "coach": {

@@ -258,3 +258,59 @@ fn a_packs_canonical_form_ignores_spacing_and_key_order() {
     let again = OnlineContentPack::from_json(&pretty).unwrap();
     assert_eq!(pack.canonical_json(), again.canonical_json());
 }
+
+/// Whether `player` has an identity of his own: a position, not only his group (a keeper's
+/// group is one), inside that group; alternates that are positions too; an overall rated at that position.
+fn has_own_identity(player: &domain::player::Player) -> bool {
+    use domain::player::Position;
+    let natural = &player.natural_position;
+    // A keeper's group is his position.
+    (*natural == Position::Goalkeeper || !natural.is_legacy_bucket())
+        && natural.to_group_position() == player.position.to_group_position()
+        && !player
+            .alternate_positions
+            .iter()
+            .any(|alt| alt.is_legacy_bucket())
+        && player.ovr == ofm_rules::player_rating::natural_ovr(player).round() as u8
+}
+
+/// Given the clubs of a region,
+/// when they are generated,
+/// then every player has a position of his own within his group (a left back, a winger, …),
+/// rated at it, and the clubs between them field a spread of positions, as a desktop career's
+/// players do once they are upgraded.
+#[test]
+fn every_club_player_has_a_position_of_his_own() {
+    let pack = pack();
+    let generator = Generator::new(SEED, &pack).expect("a generator");
+    let mut positions = HashSet::new();
+    for ordinal in 0..12 {
+        for player in &club(&generator, "AsiaSoutheast", ordinal).players {
+            assert!(
+                has_own_identity(player),
+                "{} {:?}",
+                player.id,
+                player.natural_position
+            );
+            positions.insert(format!("{:?}", player.natural_position));
+        }
+    }
+    assert!(positions.len() >= 10, "only {positions:?}");
+}
+
+/// Given a batch of free agents,
+/// when it is generated,
+/// then each has a position of his own within his group, rated at it.
+#[test]
+fn every_free_agent_has_a_position_of_his_own() {
+    let pack = pack();
+    let generator = Generator::new(SEED, &pack).expect("a generator");
+    for player in generator.free_agents(0, 40, YEAR).expect("free agents") {
+        assert!(
+            has_own_identity(&player),
+            "{} {:?}",
+            player.id,
+            player.natural_position
+        );
+    }
+}

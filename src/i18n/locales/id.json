@@ -223,7 +223,12 @@
         "swap": "{{a}} dan {{b}} bertukar posisi",
         "formation": "Ganti ke {{formation}}",
         "playStyle": "Gaya bermain: {{style}}",
-        "other": "Perintah"
+        "other": "Perintah",
+        "role": "{{player}} bermain sebagai {{role}}",
+        "captain": "{{player}} menjadi kapten",
+        "freeKickTaker": "{{player}} mengambil tendangan bebas",
+        "cornerTaker": "{{player}} mengambil tendangan sudut",
+        "penaltyTaker": "{{player}} mengambil penalti"
       },
       "sent": {
         "title": "Perintah terkirim",
@@ -232,7 +237,11 @@
         "refused": "— ditolak",
         "refusedWhy": "— ditolak: {{reason}}"
       },
-      "halfTimeHint": "Lakukan perubahanmu sekarang: perubahan diterapkan sebelum babak kedua dimulai."
+      "halfTimeHint": "Lakukan perubahanmu sekarang: perubahan diterapkan sebelum babak kedua dimulai.",
+      "rolesTitle": "Peran pemain",
+      "rolePlayer": "Pemain",
+      "roleChoice": "Peran",
+      "changeRole": "Ubah peran"
     },
     "replay": {
       "title": "Tayangan ulang",
@@ -314,6 +323,12 @@
         "title": "Laga persahabatan",
         "back": "Kembali ke ruang persahabatan"
       }
+    },
+    "leave": {
+      "title": "Tinggalkan pertandingan?",
+      "body": "Anda sedang memimpin tim Anda. Jika pergi sekitar 20 detik, AI akan memimpin sampai Anda kembali.",
+      "stay": "Tetap di sini",
+      "go": "Tinggalkan"
     }
   },
   "coach": {

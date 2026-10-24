@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Button, Select } from "../../../components/ui";
 import { FORMATIONS, PLAY_STYLES } from "../../../components/match/types";
 import { resolveBackendError } from "../../../utils/backendI18n";
-import type { ProjectedPlayer, SentCommand } from "../../api";
-import type { MatchCommand, PlayStyle, Side } from "../../api/engine";
+import type { MineView, SentCommand } from "../../api";
+import type { MatchCommand, PlayStyle } from "../../api/engine";
 import { type OnlineMatchState, substitutedOff } from "../../convert/matchState";
+import { playerOptions, SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
@@ -32,6 +33,31 @@ function describeCommand(
   if ("ChangePlayStyle" in command) {
     const style = t(`common.playStyles.${command.ChangePlayStyle.play_style}`);
     return t("online.match.order.playStyle", { style });
+  }
+  if ("ChangePlayerRole" in command) {
+    const { player_id, role } = command.ChangePlayerRole;
+    return t("online.match.order.role", {
+      player: nameOf(player_id),
+      role: t(`tactics.playerRoles.${role}`),
+    });
+  }
+  if ("SetCaptain" in command) {
+    return t("online.match.order.captain", { player: nameOf(command.SetCaptain.player_id) });
+  }
+  if ("SetFreeKickTaker" in command) {
+    return t("online.match.order.freeKickTaker", {
+      player: nameOf(command.SetFreeKickTaker.player_id),
+    });
+  }
+  if ("SetCornerTaker" in command) {
+    return t("online.match.order.cornerTaker", {
+      player: nameOf(command.SetCornerTaker.player_id),
+    });
+  }
+  if ("SetPenaltyTaker" in command) {
+    return t("online.match.order.penaltyTaker", {
+      player: nameOf(command.SetPenaltyTaker.player_id),
+    });
   }
   return t("online.match.order.other");
 }
@@ -71,8 +97,7 @@ function SentLine({
   );
 }
 
-const HEADING =
-  "mb-2 text-xs font-heading font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400";
+const HEADING = SECTION_HEADING;
 
 /** The orders the coach sent this match, newest first, with what became of each. */
 function SentOrders({
@@ -159,30 +184,25 @@ function ShapeSection({
   );
 }
 
-const optionsOf = (players: ProjectedPlayer[]) =>
-  players.map((player) => (
-    <option key={player.id} value={player.id}>
-      {player.shirtNumber !== undefined
-        ? `${player.shirtNumber}. ${player.matchName}`
-        : player.matchName}
-    </option>
-  ));
+const optionsOf = playerOptions;
 
 /**
  * The coach's touchline during a live match (C-2 §3.6, C2-11): substitutions, swaps, the shape
- * and the style, each sent to the match and decided in its next gap. What the panel greys out is
- * a hint; the server's check is the rule. The orders sent are listed with what became of them.
+ * and the style; the roles, the captain and the set-piece takers, which only the coach sees; each
+ * sent to the match and decided in its next gap. What the panel greys out is a hint; the server's
+ * check is the rule. The orders sent are listed with what became of them.
  */
 export function MatchCommandPanel({
   state,
-  side,
+  mine,
   sent,
   onSend,
   initialOff,
   disabled,
 }: {
   state: OnlineMatchState;
-  side: Side;
+  /** The coach's own side of the match: which side, its roles and takers (S8-15). */
+  mine: MineView;
   sent: SentCommand[];
   onSend: (command: MatchCommand) => Promise<void>;
   /** A hurt player to have chosen to take off already. */
@@ -190,6 +210,7 @@ export function MatchCommandPanel({
   disabled: boolean;
 }) {
   const { t } = useTranslation();
+  const side = mine.side;
   const own = side === "Home" ? state.home : state.away;
   const [off, setOff] = useState(initialOff ?? "");
   const [on, setOn] = useState("");
@@ -327,6 +348,12 @@ export function MatchCommandPanel({
         disabled={blocked}
         onFormation={(formation) => void send({ ChangeFormation: { side, formation } }, () => {})}
         onPlayStyle={(play_style) => void send({ ChangePlayStyle: { side, play_style } }, () => {})}
+      />
+      <SideOwnOrders
+        mine={mine}
+        playing={playing}
+        disabled={blocked}
+        send={(command, after) => void send(command, after)}
       />
       {sent.length > 0 && <SentOrders sent={sent} state={state} nameOf={nameOf} />}
     </div>

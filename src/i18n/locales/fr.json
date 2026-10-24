@@ -223,7 +223,12 @@
         "swap": "{{a}} et {{b}} échangent leurs postes",
         "formation": "Passer en {{formation}}",
         "playStyle": "Style de jeu : {{style}}",
-        "other": "Consigne"
+        "other": "Consigne",
+        "role": "{{player}} joue {{role}}",
+        "captain": "{{player}} est capitaine",
+        "freeKickTaker": "{{player}} tire les coups francs",
+        "cornerTaker": "{{player}} tire les corners",
+        "penaltyTaker": "{{player}} tire les penalties"
       },
       "sent": {
         "title": "Consignes envoyées",
@@ -232,7 +237,11 @@
         "refused": "— refusée",
         "refusedWhy": "— refusée : {{reason}}"
       },
-      "halfTimeHint": "Faites vos changements maintenant : ils s'appliquent avant le coup d'envoi de la seconde période."
+      "halfTimeHint": "Faites vos changements maintenant : ils s'appliquent avant le coup d'envoi de la seconde période.",
+      "rolesTitle": "Rôles des joueurs",
+      "rolePlayer": "Joueur",
+      "roleChoice": "Rôle",
+      "changeRole": "Changer de rôle"
     },
     "replay": {
       "title": "Revoir",
@@ -314,6 +323,12 @@
         "title": "Match amical",
         "back": "Retour au salon amical"
       }
+    },
+    "leave": {
+      "title": "Quitter le match ?",
+      "body": "Vous dirigez votre équipe. Absent environ 20 secondes, l'IA la dirigera jusqu'à votre retour.",
+      "stay": "Rester",
+      "go": "Quitter"
     }
   },
   "coach": {

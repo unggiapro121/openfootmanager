@@ -38,9 +38,27 @@ beforeEach(() => resetOnline());
 afterEach(() => server?.restore());
 
 const SQUAD = [
-  squadPlayer({ id: "gk", fullName: "Thủ Môn", position: "Goalkeeper", ovr: 60 }),
-  squadPlayer({ id: "st", fullName: "Tiền Đạo", position: "Striker", ovr: 70 }),
-  squadPlayer({ id: "cb", fullName: "Trung Vệ", position: "CenterBack", ovr: 65 }),
+  squadPlayer({
+    id: "gk",
+    fullName: "Thủ Môn",
+    position: "Goalkeeper",
+    naturalPosition: "Goalkeeper",
+    ovr: 60,
+  }),
+  squadPlayer({
+    id: "st",
+    fullName: "Tiền Đạo",
+    position: "Forward",
+    naturalPosition: "LeftWinger",
+    ovr: 70,
+  }),
+  squadPlayer({
+    id: "cb",
+    fullName: "Trung Vệ",
+    position: "Defender",
+    naturalPosition: "CenterBack",
+    ovr: 65,
+  }),
 ];
 
 /** The server's setup route: answers the setup it was sent, one version on. */
@@ -161,7 +179,8 @@ describe("the online club pages", () => {
 
   // Given a squad,
   // when the squad page opens and a player is picked,
-  // then the squad is listed by line, strongest first, and his card shows his attributes.
+  // then the squad is listed by line, strongest first, each by the position he plays, and his
+  // card shows his attributes.
   it("lists the squad and shows the picked player's card", async () => {
     stage(myClub({ players: SQUAD }));
     renderOnline("/online/squad");
@@ -171,6 +190,11 @@ describe("the online club pages", () => {
       .getAllByRole("button")
       .map((button) => button.textContent);
     expect(names).toEqual(["Thủ Môn", "Trung Vệ", "Tiền Đạo"]);
+
+    // Each by the position he plays, not only his line.
+    const winger = within(table).getByRole("button", { name: "Tiền Đạo" }).closest("tr");
+    expect(winger).toHaveTextContent(":LW");
+    expect(winger).not.toHaveTextContent(":FWD");
 
     fireEvent.click(within(table).getByRole("button", { name: "Tiền Đạo" }));
     expect(await screen.findByRole("heading", { name: "Tiền Đạo" })).toBeInTheDocument();

@@ -483,6 +483,8 @@ impl<'a> Generator<'a> {
                 &self.names_def,
                 &mut rng,
             );
+            // His own position before he is calibrated, so his overall is the one at it.
+            crate::player_identity::upgrade_player_identity(&mut player, None);
             calibrate_generated_player(&mut player, level, football_year, &mut rng);
             players.push(super::as_free_agent(player));
         }
