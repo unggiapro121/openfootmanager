@@ -138,7 +138,7 @@ function SquadRow({
           </span>
         )}
       </td>
-      <td className="px-2 py-2">{translatePositionAbbreviation(t, player.position)}</td>
+      <td className="px-2 py-2">{translatePositionAbbreviation(t, player.naturalPosition)}</td>
       <td className="px-2 py-2 text-right">{player.age}</td>
       <td className="px-2 py-2 text-right font-heading font-bold">{player.ovr}</td>
       <td className="px-2 py-2">
@@ -175,7 +175,7 @@ function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
   const { t } = useTranslation();
   const profile = {
     attributes: player.attributes,
-    natural_position: player.position,
+    natural_position: player.naturalPosition,
     position: player.position,
   };
   return (
@@ -185,7 +185,8 @@ function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
         <CardBody className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
           <p className="flex items-center gap-2">
             <CountryFlag code={player.nationality} />
-            {translatePositionAbbreviation(t, player.position)} · {t("common.age")} {player.age}
+            {translatePositionAbbreviation(t, player.naturalPosition)} · {t("common.age")}{" "}
+            {player.age}
           </p>
           <PotentialStars stars={player.potentialStars} />
           <Meter label={t("common.condition")} value={player.condition} />

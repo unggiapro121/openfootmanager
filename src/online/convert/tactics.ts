@@ -37,7 +37,7 @@ export function toRosterPlayer(player: SquadPlayerView, clubId: string): Tactics
     full_name: player.fullName,
     nationality: player.nationality,
     position: player.position,
-    natural_position: player.position,
+    natural_position: player.naturalPosition,
     alternate_positions: player.alternatePositions,
     attributes: player.attributes,
     condition: player.condition,

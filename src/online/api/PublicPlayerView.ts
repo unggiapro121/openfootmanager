@@ -3,4 +3,12 @@
 /**
  * A player as anyone sees him on a club's public page.
  */
-export type PublicPlayerView = { id: string, fullName: string, position: string, age: number, ovr: number, shirtNumber?: number, };
+export type PublicPlayerView = { id: string, fullName: string, 
+/**
+ * His group: `Goalkeeper`, `Defender`, `Midfielder` or `Forward`.
+ */
+position: string, 
+/**
+ * The position he plays, within his group.
+ */
+naturalPosition: string, age: number, ovr: number, shirtNumber?: number, };
