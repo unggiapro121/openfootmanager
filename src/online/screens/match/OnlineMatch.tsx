@@ -13,6 +13,7 @@ import { MatchBoard } from "./MatchBoard";
 import { MatchCommandPanel } from "./MatchCommandPanel";
 import { MatchReplay } from "./MatchReplay";
 import { MatchStatusStrip } from "./MatchStatusStrip";
+import { OnlineHalfTime } from "./OnlineHalfTime";
 import { type LiveMatchData, useLiveMatch } from "./useLiveMatch";
 
 /** Whether a match is over: then it is replayed, not followed. */
@@ -82,6 +83,20 @@ function LiveMatchScreen({
     [view.stepMillis],
   );
 
+  const strip = <MatchStatusStrip data={data} onReplace={setReplacing} />;
+  // The break: the radar would only stand still, so the coaches get the half-time screen.
+  if (state.phase === "HalfTime" && !state.isFinished) {
+    return (
+      <OnlineHalfTime
+        data={data}
+        strip={strip}
+        send={send}
+        initialOff={replacing}
+        disabled={offline}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 xl:flex-row">
       <MatchBoard
@@ -91,7 +106,7 @@ function LiveMatchScreen({
         paused={false}
         radarOpen={radarOpen}
         onToggleRadar={() => setRadarOpen((open) => !open)}
-        strip={<MatchStatusStrip data={data} onReplace={setReplacing} />}
+        strip={strip}
       />
       {mine !== null && !state.isFinished && (
         <aside

@@ -231,7 +231,8 @@
         "applied": "——已生效",
         "refused": "——被拒绝",
         "refusedWhy": "——被拒绝：{{reason}}"
-      }
+      },
+      "halfTimeHint": "现在就做出调整：所有调整会在下半场开球前生效。"
     },
     "replay": {
       "title": "回放",

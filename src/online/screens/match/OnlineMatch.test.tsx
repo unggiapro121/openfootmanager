@@ -181,6 +181,46 @@ describe("opening a match", () => {
     expect(radar()).toMatchObject({ homeDials: null, awayDials: null });
   });
 
+  // Given a coach following their match,
+  // when the referee blows for half time, then for the second half,
+  // then the radar (frozen in the break) gives way to the half-time screen — the first half's key
+  // events and stats, the line-ups, the countdown and the touchline to make changes with — and
+  // the radar comes back when the second half starts.
+  it("opens the half-time screen in the break", async () => {
+    stage();
+    await opened();
+
+    push(matchFrame(1, { result: { phase: "HalfTime", minute: 45 } }));
+
+    expect(await screen.findByRole("heading", { name: "match.halfTime" })).toBeInTheDocument();
+    expect(screen.getByText("online.match.halfTimeHint")).toBeInTheDocument();
+    expect(await screen.findByText(/online\.match\.halfTime:/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "match.firstHalfEvents" })).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "online.match.touchline" })).toBeVisible();
+    expect(screen.getByRole("combobox", { name: "online.match.playerOff" })).toBeEnabled();
+    expect(screen.queryByRole("status", { name: "radar" })).not.toBeInTheDocument();
+
+    push(matchFrame(2, { result: { phase: "SecondHalf", minute: 46 } }));
+
+    expect(await screen.findByRole("status", { name: "radar" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "match.halfTime" })).not.toBeInTheDocument();
+  });
+
+  // Given a spectator of a match,
+  // when it reaches half time,
+  // then they see the half-time screen without a touchline.
+  it("shows a spectator the break without a touchline", async () => {
+    stage({ mine: null });
+    await opened();
+
+    push(matchFrame(1, { result: { phase: "HalfTime", minute: 45 } }));
+
+    expect(await screen.findByRole("heading", { name: "match.halfTime" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("complementary", { name: "online.match.touchline" }),
+    ).not.toBeInTheDocument();
+  });
+
   // Given a friendly (no fixture) followed live by one of its coaches,
   // when the referee blows for full time,
   // then the strip says full time and offers a rematch and the way back to the friendly room —

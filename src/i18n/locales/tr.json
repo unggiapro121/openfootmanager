@@ -231,7 +231,8 @@
         "applied": "— uygulandı",
         "refused": "— reddedildi",
         "refusedWhy": "— reddedildi: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Değişikliklerini şimdi yap: ikinci yarı başlamadan önce uygulanır."
     },
     "replay": {
       "title": "Tekrar",

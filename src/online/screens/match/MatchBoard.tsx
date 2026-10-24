@@ -21,7 +21,7 @@ import { useOnlineStore } from "../../store/onlineStore";
 
 type Panel = "events" | "stats" | "lineups";
 
-function Scoreboard({ state }: { state: OnlineMatchState }) {
+export function Scoreboard({ state }: { state: OnlineMatchState }) {
   const { t } = useTranslation();
   const team = (side: LiveSide, align: "left" | "right") => (
     <div className={align === "right" ? "text-right" : "text-left"}>
@@ -61,7 +61,7 @@ function Scoreboard({ state }: { state: OnlineMatchState }) {
   );
 }
 
-function Lineups({ state }: { state: OnlineMatchState }) {
+export function Lineups({ state }: { state: OnlineMatchState }) {
   const { t } = useTranslation();
   const column = (side: LiveSide) => (
     <div className="flex-1">
