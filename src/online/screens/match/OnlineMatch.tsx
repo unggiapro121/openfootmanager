@@ -13,6 +13,7 @@ import { MatchBoard } from "./MatchBoard";
 import { MatchCommandPanel } from "./MatchCommandPanel";
 import { MatchReplay } from "./MatchReplay";
 import { MatchStatusStrip } from "./MatchStatusStrip";
+import { OnlineFullTime } from "./OnlineFullTime";
 import { OnlineHalfTime } from "./OnlineHalfTime";
 import { type LiveMatchData, useLiveMatch } from "./useLiveMatch";
 
@@ -39,7 +40,7 @@ export default function OnlineMatch() {
             <MatchReplay matchId={matchId} view={view} />
           </div>
         ) : (
-          <LiveMatch matchId={matchId} />
+          <LiveMatch matchId={matchId} onReplay={reload} />
         )
       }
     </ResourceState>
@@ -56,12 +57,12 @@ async function readMatch(matchId: string): Promise<MatchView | null> {
   }
 }
 
-function LiveMatch({ matchId }: { matchId: string }) {
+function LiveMatch({ matchId, onReplay }: { matchId: string; onReplay: () => void }) {
   const { live, reload, send } = useLiveMatch(matchId);
   const resource = live.status === "ready" ? ({ status: "ready", data: live.data } as const) : live;
   return (
     <ResourceState resource={resource} reload={reload}>
-      {(data) => <LiveMatchScreen data={data} send={send} />}
+      {(data) => <LiveMatchScreen data={data} send={send} onReplay={onReplay} />}
     </ResourceState>
   );
 }
@@ -69,9 +70,12 @@ function LiveMatch({ matchId }: { matchId: string }) {
 function LiveMatchScreen({
   data,
   send,
+  onReplay,
 }: {
   data: LiveMatchData;
   send: ReturnType<typeof useLiveMatch>["send"];
+  /** Read the match again: over, it opens as a replay. */
+  onReplay: () => void;
 }) {
   const { t } = useTranslation();
   const offline = useOnlineStore((store) => store.network === "offline");
@@ -84,6 +88,10 @@ function LiveMatchScreen({
   );
 
   const strip = <MatchStatusStrip data={data} onReplace={setReplacing} />;
+  // Over: the players would go on standing about on the radar, so the viewer gets the report.
+  if (state.isFinished) {
+    return <OnlineFullTime state={state} mine={mine} strip={strip} onReplay={onReplay} />;
+  }
   // The break: the radar would only stand still, so the coaches get the half-time screen.
   if (state.phase === "HalfTime" && !state.isFinished) {
     return (
