@@ -44,7 +44,8 @@
       "tactics": "Tactics",
       "training": "Training",
       "league": "League",
-      "schedule": "Fixtures"
+      "schedule": "Fixtures",
+      "friendly": "Friendlies"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -243,6 +244,75 @@
       "jump": "Go to minute",
       "watch": "Watch the replay",
       "gone": "This match is too old to replay; only its result is kept."
+    },
+    "friendly": {
+      "title": "Friendlies",
+      "intro": "Play a friendly against another coach. Nothing in it counts outside the match: no fitness, injuries, form or experience.",
+      "dismiss": "Dismiss",
+      "create": {
+        "title": "Make a room",
+        "text": "Get a code to send to a friend.",
+        "button": "Make a room"
+      },
+      "join": {
+        "title": "Join a room",
+        "label": "Room code",
+        "button": "Join"
+      },
+      "queue": {
+        "title": "Find an opponent",
+        "text": "Play a coach whose club is about as strong as yours.",
+        "button": "Find an opponent"
+      },
+      "queued": {
+        "searching": "Looking for an opponent… {{time}}",
+        "text": "You can change your lineup meanwhile; you keep your place while the game is in online mode.",
+        "cancel": "Stop looking"
+      },
+      "room": {
+        "title": "Friendly room · match {{leg}}",
+        "code": "Room code:",
+        "copy": "Copy the code",
+        "copied": "Copied",
+        "waitingGuest": "Waiting for a friend to join with the code.",
+        "strength": "Strength {{value}}",
+        "home": "Home",
+        "isReady": "Ready",
+        "notYet": "Not ready",
+        "you": "You",
+        "readyBy": "{{time}} left to get ready",
+        "starting": "Both coaches are ready. The match is being set up…",
+        "playing": "The match is on.",
+        "finished": "The match is over.",
+        "ready": "I'm ready",
+        "notReady": "Not ready yet",
+        "editTactics": "Change the lineup",
+        "watch": "Go to the match",
+        "rematch": "Rematch",
+        "replay": "Watch the replay",
+        "leave": "Leave the room"
+      },
+      "reason": {
+        "opponentLeft": "The other coach left the room.",
+        "expired": "The room waited too long and was closed.",
+        "readyTimeout": "The two coaches were not both ready in time.",
+        "leagueMatchSoon": "A club of the friendly plays a league match now or soon.",
+        "busy": "The server is playing as many friendlies as it can. Try again shortly.",
+        "failed": "The match could not be set up or played.",
+        "unclaimed": "No match server took the match.",
+        "clubLost": "A club of the friendly changed hands.",
+        "absent": "You left online mode for too long and lost your place in the queue.",
+        "other": "The friendly ended."
+      },
+      "chip": {
+        "searching": "Finding an opponent {{time}}",
+        "playing": "Your friendly is on",
+        "room": "Friendly room: get ready"
+      },
+      "after": {
+        "title": "Friendly",
+        "back": "Back to the friendly room"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "That online action is not available in this version of the game.",
         "clientOutdated": "A newer version of the game is needed to play online. Please update the game.",
         "serverOutdated": "The online server is being updated. Please try again later."
+      },
+      "friendly": {
+        "noClub": "You need an online club to play friendlies.",
+        "alreadyInRoom": "You are already in a friendly room. Leave it first.",
+        "roomNotFound": "No open room has that code.",
+        "notInRoom": "You are not in a friendly room.",
+        "leagueMatchSoon": "Your club plays a league match now or soon (kick-off {{kickoffAt}}). Try a friendly after it.",
+        "busy": "The server is playing as many friendlies as it can. Try again shortly.",
+        "matchUnderway": "The match of this room is starting or being played.",
+        "roomNotFull": "The room is not waiting for both coaches to be ready.",
+        "notFinished": "The match of this room is not over yet.",
+        "roomClosed": "This room can no longer be played in, so it was closed.",
+        "conflict": "The room changed meanwhile. Look at it again."
       }
     },
     "sender": {

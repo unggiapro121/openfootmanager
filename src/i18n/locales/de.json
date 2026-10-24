@@ -44,7 +44,8 @@
       "tactics": "Taktik",
       "training": "Training",
       "league": "Liga",
-      "schedule": "Spielplan"
+      "schedule": "Spielplan",
+      "friendly": "Freundschaftsspiele"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -243,6 +244,75 @@
       "jump": "Zur Minute springen",
       "watch": "Wiederholung ansehen",
       "gone": "Dieses Spiel ist zu alt für eine Wiederholung; nur das Ergebnis ist gespeichert."
+    },
+    "friendly": {
+      "title": "Freundschaftsspiele",
+      "intro": "Spiele ein Freundschaftsspiel gegen einen anderen Trainer. Außerhalb des Spiels zählt nichts: keine Fitness, keine Verletzungen, keine Form, keine Erfahrung.",
+      "dismiss": "Schließen",
+      "create": {
+        "title": "Raum erstellen",
+        "text": "Erhalte einen Code, den du einem Freund schickst.",
+        "button": "Raum erstellen"
+      },
+      "join": {
+        "title": "Raum beitreten",
+        "label": "Raumcode",
+        "button": "Beitreten"
+      },
+      "queue": {
+        "title": "Gegner suchen",
+        "text": "Spiele gegen einen Trainer, dessen Verein etwa so stark ist wie deiner.",
+        "button": "Gegner suchen"
+      },
+      "queued": {
+        "searching": "Suche Gegner … {{time}}",
+        "text": "Währenddessen kannst du deine Aufstellung ändern; du behältst deinen Platz, solange das Spiel im Online-Modus ist.",
+        "cancel": "Suche beenden"
+      },
+      "room": {
+        "title": "Freundschaftsraum · Spiel {{leg}}",
+        "code": "Raumcode:",
+        "copy": "Code kopieren",
+        "copied": "Kopiert",
+        "waitingGuest": "Warte, bis ein Freund mit dem Code beitritt.",
+        "strength": "Stärke {{value}}",
+        "home": "Heim",
+        "isReady": "Bereit",
+        "notYet": "Nicht bereit",
+        "you": "Du",
+        "readyBy": "Noch {{time}}, um bereit zu sein",
+        "starting": "Beide Trainer sind bereit. Das Spiel wird vorbereitet …",
+        "playing": "Das Spiel läuft.",
+        "finished": "Das Spiel ist vorbei.",
+        "ready": "Ich bin bereit",
+        "notReady": "Noch nicht bereit",
+        "editTactics": "Aufstellung ändern",
+        "watch": "Zum Spiel",
+        "rematch": "Revanche",
+        "replay": "Wiederholung ansehen",
+        "leave": "Raum verlassen"
+      },
+      "reason": {
+        "opponentLeft": "Der andere Trainer hat den Raum verlassen.",
+        "expired": "Der Raum hat zu lange gewartet und wurde geschlossen.",
+        "readyTimeout": "Die beiden Trainer waren nicht rechtzeitig bereit.",
+        "leagueMatchSoon": "Ein Verein des Freundschaftsspiels spielt jetzt oder bald ein Ligaspiel.",
+        "busy": "Der Server spielt so viele Freundschaftsspiele, wie er kann. Versuche es gleich noch einmal.",
+        "failed": "Das Spiel konnte nicht vorbereitet oder gespielt werden.",
+        "unclaimed": "Kein Spielserver hat das Spiel übernommen.",
+        "clubLost": "Ein Verein des Freundschaftsspiels hat den Besitzer gewechselt.",
+        "absent": "Du warst zu lange nicht im Online-Modus und hast deinen Platz in der Warteschlange verloren.",
+        "other": "Das Freundschaftsspiel ist beendet."
+      },
+      "chip": {
+        "searching": "Suche Gegner {{time}}",
+        "playing": "Dein Freundschaftsspiel läuft",
+        "room": "Freundschaftsraum: mach dich bereit"
+      },
+      "after": {
+        "title": "Freundschaftsspiel",
+        "back": "Zurück zum Freundschaftsraum"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "Diese Online-Aktion gibt es in dieser Spielversion nicht.",
         "clientOutdated": "Für das Online-Spiel wird eine neuere Spielversion benötigt. Bitte aktualisiere das Spiel.",
         "serverOutdated": "Der Online-Server wird gerade aktualisiert. Bitte versuche es später erneut."
+      },
+      "friendly": {
+        "noClub": "Du brauchst einen Online-Verein, um Freundschaftsspiele zu spielen.",
+        "alreadyInRoom": "Du bist bereits in einem Freundschaftsraum. Verlasse ihn zuerst.",
+        "roomNotFound": "Kein offener Raum hat diesen Code.",
+        "notInRoom": "Du bist in keinem Freundschaftsraum.",
+        "leagueMatchSoon": "Dein Verein spielt jetzt oder bald ein Ligaspiel (Anstoß {{kickoffAt}}). Spiele danach ein Freundschaftsspiel.",
+        "busy": "Der Server spielt so viele Freundschaftsspiele, wie er kann. Versuche es gleich noch einmal.",
+        "matchUnderway": "Das Spiel dieses Raums beginnt gerade oder läuft.",
+        "roomNotFull": "Der Raum wartet nicht darauf, dass beide Trainer bereit sind.",
+        "notFinished": "Das Spiel dieses Raums ist noch nicht vorbei.",
+        "roomClosed": "In diesem Raum kann nicht mehr gespielt werden, daher wurde er geschlossen.",
+        "conflict": "Der Raum hat sich inzwischen geändert. Sieh ihn dir erneut an."
       }
     },
     "sender": {

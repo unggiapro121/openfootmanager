@@ -44,7 +44,8 @@
       "tactics": "Tactique",
       "training": "Entraînement",
       "league": "Championnat",
-      "schedule": "Calendrier"
+      "schedule": "Calendrier",
+      "friendly": "Matchs amicaux"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -243,6 +244,75 @@
       "jump": "Aller à la minute",
       "watch": "Revoir le match",
       "gone": "Ce match est trop ancien pour être revu ; seul son résultat est conservé."
+    },
+    "friendly": {
+      "title": "Matchs amicaux",
+      "intro": "Jouez un match amical contre un autre entraîneur. Rien ne compte en dehors du match : ni condition physique, ni blessures, ni forme, ni expérience.",
+      "dismiss": "Fermer",
+      "create": {
+        "title": "Créer un salon",
+        "text": "Obtenez un code à envoyer à un ami.",
+        "button": "Créer un salon"
+      },
+      "join": {
+        "title": "Rejoindre un salon",
+        "label": "Code du salon",
+        "button": "Rejoindre"
+      },
+      "queue": {
+        "title": "Trouver un adversaire",
+        "text": "Affrontez un entraîneur dont le club est à peu près aussi fort que le vôtre.",
+        "button": "Trouver un adversaire"
+      },
+      "queued": {
+        "searching": "Recherche d'un adversaire… {{time}}",
+        "text": "En attendant, vous pouvez modifier votre composition ; vous gardez votre place tant que le jeu reste en mode en ligne.",
+        "cancel": "Arrêter la recherche"
+      },
+      "room": {
+        "title": "Salon amical · match {{leg}}",
+        "code": "Code du salon :",
+        "copy": "Copier le code",
+        "copied": "Copié",
+        "waitingGuest": "En attente d'un ami qui rejoint avec le code.",
+        "strength": "Force {{value}}",
+        "home": "Domicile",
+        "isReady": "Prêt",
+        "notYet": "Pas prêt",
+        "you": "Vous",
+        "readyBy": "Il reste {{time}} pour être prêt",
+        "starting": "Les deux entraîneurs sont prêts. Le match se prépare…",
+        "playing": "Le match est en cours.",
+        "finished": "Le match est terminé.",
+        "ready": "Je suis prêt",
+        "notReady": "Pas encore prêt",
+        "editTactics": "Modifier la composition",
+        "watch": "Aller au match",
+        "rematch": "Revanche",
+        "replay": "Revoir le match",
+        "leave": "Quitter le salon"
+      },
+      "reason": {
+        "opponentLeft": "L'autre entraîneur a quitté le salon.",
+        "expired": "Le salon a attendu trop longtemps et a été fermé.",
+        "readyTimeout": "Les deux entraîneurs n'ont pas été prêts à temps.",
+        "leagueMatchSoon": "Un club du match amical joue un match de championnat maintenant ou bientôt.",
+        "busy": "Le serveur joue autant de matchs amicaux qu'il le peut. Réessayez bientôt.",
+        "failed": "Le match n'a pas pu être préparé ou joué.",
+        "unclaimed": "Aucun serveur de matchs n'a pris le match.",
+        "clubLost": "Un club du match amical a changé de propriétaire.",
+        "absent": "Vous avez quitté le mode en ligne trop longtemps et perdu votre place dans la file.",
+        "other": "Le match amical est terminé."
+      },
+      "chip": {
+        "searching": "Recherche d'adversaire {{time}}",
+        "playing": "Votre match amical est en cours",
+        "room": "Salon amical : soyez prêt"
+      },
+      "after": {
+        "title": "Match amical",
+        "back": "Retour au salon amical"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "Cette action en ligne n'est pas disponible dans cette version du jeu.",
         "clientOutdated": "Une version plus récente du jeu est nécessaire pour jouer en ligne. Mettez le jeu à jour.",
         "serverOutdated": "Le serveur en ligne est en cours de mise à jour. Réessayez plus tard."
+      },
+      "friendly": {
+        "noClub": "Il vous faut un club en ligne pour jouer des matchs amicaux.",
+        "alreadyInRoom": "Vous êtes déjà dans un salon amical. Quittez-le d'abord.",
+        "roomNotFound": "Aucun salon ouvert n'a ce code.",
+        "notInRoom": "Vous n'êtes dans aucun salon amical.",
+        "leagueMatchSoon": "Votre club joue un match de championnat maintenant ou bientôt (coup d'envoi {{kickoffAt}}). Jouez un amical après.",
+        "busy": "Le serveur joue autant de matchs amicaux qu'il le peut. Réessayez bientôt.",
+        "matchUnderway": "Le match de ce salon commence ou est en cours.",
+        "roomNotFull": "Le salon n'attend pas que les deux entraîneurs soient prêts.",
+        "notFinished": "Le match de ce salon n'est pas encore terminé.",
+        "roomClosed": "On ne peut plus jouer dans ce salon, il a donc été fermé.",
+        "conflict": "Le salon a changé entre-temps. Regardez-le à nouveau."
       }
     },
     "sender": {

@@ -44,7 +44,8 @@
       "tactics": "Tácticas",
       "training": "Entrenamiento",
       "league": "Liga",
-      "schedule": "Calendario"
+      "schedule": "Calendario",
+      "friendly": "Amistosos"
     },
     "gate": {
       "clientOutdatedTitle": "Actualización necesaria",
@@ -243,6 +244,75 @@
       "jump": "Ir al minuto",
       "watch": "Ver la repetición",
       "gone": "Este partido es demasiado antiguo para verlo de nuevo; solo se conserva el resultado."
+    },
+    "friendly": {
+      "title": "Amistosos",
+      "intro": "Juega un amistoso contra otro entrenador. Nada cuenta fuera del partido: ni forma física, ni lesiones, ni forma, ni experiencia.",
+      "dismiss": "Cerrar",
+      "create": {
+        "title": "Crear una sala",
+        "text": "Obtén un código para enviar a un amigo.",
+        "button": "Crear una sala"
+      },
+      "join": {
+        "title": "Unirse a una sala",
+        "label": "Código de la sala",
+        "button": "Unirse"
+      },
+      "queue": {
+        "title": "Buscar rival",
+        "text": "Juega contra un entrenador cuyo club sea más o menos igual de fuerte.",
+        "button": "Buscar rival"
+      },
+      "queued": {
+        "searching": "Buscando rival… {{time}}",
+        "text": "Mientras tanto puedes cambiar tu alineación; conservas tu puesto mientras el juego siga en modo online.",
+        "cancel": "Dejar de buscar"
+      },
+      "room": {
+        "title": "Sala amistosa · partido {{leg}}",
+        "code": "Código de la sala:",
+        "copy": "Copiar el código",
+        "copied": "Copiado",
+        "waitingGuest": "Esperando a que un amigo entre con el código.",
+        "strength": "Fuerza {{value}}",
+        "home": "Local",
+        "isReady": "Listo",
+        "notYet": "No listo",
+        "you": "Tú",
+        "readyBy": "Quedan {{time}} para estar listo",
+        "starting": "Los dos entrenadores están listos. Se está preparando el partido…",
+        "playing": "El partido está en juego.",
+        "finished": "El partido ha terminado.",
+        "ready": "Estoy listo",
+        "notReady": "Aún no estoy listo",
+        "editTactics": "Cambiar la alineación",
+        "watch": "Ir al partido",
+        "rematch": "Revancha",
+        "replay": "Ver la repetición",
+        "leave": "Salir de la sala"
+      },
+      "reason": {
+        "opponentLeft": "El otro entrenador salió de la sala.",
+        "expired": "La sala esperó demasiado y se cerró.",
+        "readyTimeout": "Los dos entrenadores no estuvieron listos a tiempo.",
+        "leagueMatchSoon": "Un club del amistoso juega un partido de liga ahora o pronto.",
+        "busy": "El servidor juega tantos amistosos como puede. Inténtalo de nuevo en breve.",
+        "failed": "No se pudo preparar o jugar el partido.",
+        "unclaimed": "Ningún servidor de partidos tomó el partido.",
+        "clubLost": "Un club del amistoso cambió de dueño.",
+        "absent": "Saliste del modo online demasiado tiempo y perdiste tu puesto en la cola.",
+        "other": "El amistoso terminó."
+      },
+      "chip": {
+        "searching": "Buscando rival {{time}}",
+        "playing": "Tu amistoso está en juego",
+        "room": "Sala amistosa: prepárate"
+      },
+      "after": {
+        "title": "Amistoso",
+        "back": "Volver a la sala amistosa"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "Esa acción online no está disponible en esta versión del juego.",
         "clientOutdated": "Necesitas una versión más reciente del juego para jugar online. Actualiza el juego.",
         "serverOutdated": "El servidor online se está actualizando. Inténtalo más tarde."
+      },
+      "friendly": {
+        "noClub": "Necesitas un club online para jugar amistosos.",
+        "alreadyInRoom": "Ya estás en una sala amistosa. Sal de ella primero.",
+        "roomNotFound": "Ninguna sala abierta tiene ese código.",
+        "notInRoom": "No estás en ninguna sala amistosa.",
+        "leagueMatchSoon": "Tu club juega un partido de liga ahora o pronto (inicio {{kickoffAt}}). Juega un amistoso después.",
+        "busy": "El servidor juega tantos amistosos como puede. Inténtalo de nuevo en breve.",
+        "matchUnderway": "El partido de esta sala está comenzando o en juego.",
+        "roomNotFull": "La sala no está esperando a que ambos entrenadores estén listos.",
+        "notFinished": "El partido de esta sala aún no ha terminado.",
+        "roomClosed": "Ya no se puede jugar en esta sala, así que se cerró.",
+        "conflict": "La sala cambió mientras tanto. Vuelve a mirarla."
       }
     },
     "sender": {

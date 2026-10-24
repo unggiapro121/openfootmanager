@@ -5,7 +5,7 @@ import { invoke } from "./transport";
  * its own: every request goes to the Rust proxy `online_request`, which holds the session's
  * tokens, checks the request against its route table and sends it. A test swaps the transport.
  */
-export type OnlineMethod = "GET" | "POST" | "PUT" | "PATCH";
+export type OnlineMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 /** One request, as the proxy takes it: unencoded path segments, never a path string. */
 export interface OnlineRequest {

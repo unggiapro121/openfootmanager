@@ -9,6 +9,7 @@ import type {
   CommandAccepted,
   FixtureDetailView,
   FramesPage,
+  FriendlyMineView,
   LeagueView,
   MatchView,
   MineView,
@@ -157,5 +158,35 @@ export const online = {
       call<CommandAccepted>(
         write("POST", ["v1", "matches", matchId, "commands"], idempotencyKey, { command }),
       ),
+  },
+  /**
+   * Friendlies (S-12): every write answers the caller's friendly as it stands after it. Follow
+   * `watchAccount` (`./live`) and read `mine` again when it rings.
+   */
+  friendlies: {
+    mine: () => call<FriendlyMineView>(read(["v1", "friendlies", "mine"])),
+    createRoom: (idempotencyKey = newKey()) =>
+      call<FriendlyMineView>(write("POST", ["v1", "friendlies", "rooms"], idempotencyKey)),
+    /** `code` as the coach typed it: the server reads it with or without its dash, in any case. */
+    join: (code: string, idempotencyKey = newKey()) =>
+      call<FriendlyMineView>(
+        write("POST", ["v1", "friendlies", "rooms", "join"], idempotencyKey, { code }),
+      ),
+    ready: (ready: boolean, idempotencyKey = newKey()) =>
+      call<FriendlyMineView>(
+        write("POST", ["v1", "friendlies", "rooms", "mine", "ready"], idempotencyKey, { ready }),
+      ),
+    leave: (idempotencyKey = newKey()) =>
+      call<FriendlyMineView>(
+        write("POST", ["v1", "friendlies", "rooms", "mine", "leave"], idempotencyKey),
+      ),
+    rematch: (idempotencyKey = newKey()) =>
+      call<FriendlyMineView>(
+        write("POST", ["v1", "friendlies", "rooms", "mine", "rematch"], idempotencyKey),
+      ),
+    queue: (idempotencyKey = newKey()) =>
+      call<FriendlyMineView>(write("POST", ["v1", "friendlies", "queue"], idempotencyKey)),
+    /** Leave the queue; nothing when not in it. A DELETE needs no key: twice is once. */
+    leaveQueue: () => call<null>({ method: "DELETE", segments: ["v1", "friendlies", "queue"] }),
   },
 };

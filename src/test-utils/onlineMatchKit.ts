@@ -44,6 +44,7 @@ export function projectedSide(prefix: string, name: string): ProjectedSide {
 export function matchView(overrides: Partial<MatchView> = {}): MatchView {
   return {
     id: "match-1",
+    kind: "league",
     fixtureId: "fx-1",
     status: "live",
     kickOffAt: "2026-10-23T12:00:00Z",

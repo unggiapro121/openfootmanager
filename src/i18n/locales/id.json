@@ -44,7 +44,8 @@
       "tactics": "Taktik",
       "training": "Latihan",
       "league": "Liga",
-      "schedule": "Jadwal"
+      "schedule": "Jadwal",
+      "friendly": "Laga persahabatan"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -243,6 +244,75 @@
       "jump": "Lompat ke menit",
       "watch": "Tonton tayangan ulang",
       "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan."
+    },
+    "friendly": {
+      "title": "Laga persahabatan",
+      "intro": "Mainkan laga persahabatan melawan pelatih lain. Tidak ada yang dihitung di luar pertandingan: kebugaran, cedera, performa, maupun pengalaman.",
+      "dismiss": "Tutup",
+      "create": {
+        "title": "Buat ruang",
+        "text": "Dapatkan kode untuk dikirim ke teman.",
+        "button": "Buat ruang"
+      },
+      "join": {
+        "title": "Masuk ke ruang",
+        "label": "Kode ruang",
+        "button": "Masuk"
+      },
+      "queue": {
+        "title": "Cari lawan",
+        "text": "Bermain melawan pelatih yang klubnya kurang lebih sekuat klubmu.",
+        "button": "Cari lawan"
+      },
+      "queued": {
+        "searching": "Mencari lawan… {{time}}",
+        "text": "Sambil menunggu, kamu bisa mengubah susunan pemain; tempatmu tetap aman selama permainan dalam mode online.",
+        "cancel": "Berhenti mencari"
+      },
+      "room": {
+        "title": "Ruang persahabatan · laga {{leg}}",
+        "code": "Kode ruang:",
+        "copy": "Salin kode",
+        "copied": "Disalin",
+        "waitingGuest": "Menunggu teman masuk dengan kode.",
+        "strength": "Kekuatan {{value}}",
+        "home": "Kandang",
+        "isReady": "Siap",
+        "notYet": "Belum siap",
+        "you": "Kamu",
+        "readyBy": "Sisa {{time}} untuk bersiap",
+        "starting": "Kedua pelatih sudah siap. Pertandingan sedang disiapkan…",
+        "playing": "Pertandingan sedang berlangsung.",
+        "finished": "Pertandingan sudah selesai.",
+        "ready": "Saya siap",
+        "notReady": "Belum siap",
+        "editTactics": "Ubah susunan pemain",
+        "watch": "Ke pertandingan",
+        "rematch": "Tanding ulang",
+        "replay": "Tonton tayangan ulang",
+        "leave": "Keluar dari ruang"
+      },
+      "reason": {
+        "opponentLeft": "Pelatih lain keluar dari ruang.",
+        "expired": "Ruang menunggu terlalu lama dan ditutup.",
+        "readyTimeout": "Kedua pelatih tidak siap tepat waktu.",
+        "leagueMatchSoon": "Salah satu klub laga persahabatan sedang atau akan segera bermain di liga.",
+        "busy": "Server sedang memainkan laga persahabatan sebanyak yang ia bisa. Coba lagi sebentar lagi.",
+        "failed": "Pertandingan tidak dapat disiapkan atau dimainkan.",
+        "unclaimed": "Tidak ada server pertandingan yang mengambil laga ini.",
+        "clubLost": "Salah satu klub laga persahabatan berganti pemilik.",
+        "absent": "Kamu keluar dari mode online terlalu lama dan kehilangan tempat di antrean.",
+        "other": "Laga persahabatan berakhir."
+      },
+      "chip": {
+        "searching": "Mencari lawan {{time}}",
+        "playing": "Laga persahabatanmu sedang berlangsung",
+        "room": "Ruang persahabatan: bersiaplah"
+      },
+      "after": {
+        "title": "Laga persahabatan",
+        "back": "Kembali ke ruang persahabatan"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "Tindakan online itu tidak tersedia di versi game ini.",
         "clientOutdated": "Diperlukan versi game yang lebih baru untuk bermain online. Silakan perbarui game.",
         "serverOutdated": "Server online sedang diperbarui. Silakan coba lagi nanti."
+      },
+      "friendly": {
+        "noClub": "Kamu perlu klub online untuk bermain laga persahabatan.",
+        "alreadyInRoom": "Kamu sudah berada di ruang persahabatan. Keluar dulu dari ruang itu.",
+        "roomNotFound": "Tidak ada ruang terbuka dengan kode itu.",
+        "notInRoom": "Kamu tidak berada di ruang persahabatan mana pun.",
+        "leagueMatchSoon": "Klubmu sedang atau akan segera bermain di liga (mulai {{kickoffAt}}). Main laga persahabatan setelahnya.",
+        "busy": "Server sedang memainkan laga persahabatan sebanyak yang ia bisa. Coba lagi sebentar lagi.",
+        "matchUnderway": "Pertandingan ruang ini sedang dimulai atau berlangsung.",
+        "roomNotFull": "Ruang ini tidak sedang menunggu kedua pelatih siap.",
+        "notFinished": "Pertandingan ruang ini belum selesai.",
+        "roomClosed": "Ruang ini tidak bisa dipakai bermain lagi, jadi ditutup.",
+        "conflict": "Ruang berubah sementara itu. Lihat lagi."
       }
     },
     "sender": {

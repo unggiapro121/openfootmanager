@@ -44,7 +44,8 @@
       "tactics": "Táticas",
       "training": "Treino",
       "league": "Liga",
-      "schedule": "Calendário"
+      "schedule": "Calendário",
+      "friendly": "Amigáveis"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -243,6 +244,75 @@
       "jump": "Ir para o minuto",
       "watch": "Ver a repetição",
       "gone": "Este jogo é demasiado antigo para rever; só se guarda o resultado."
+    },
+    "friendly": {
+      "title": "Amigáveis",
+      "intro": "Joga um amigável contra outro treinador. Nada conta fora do jogo: nem condição física, nem lesões, nem forma, nem experiência.",
+      "dismiss": "Fechar",
+      "create": {
+        "title": "Criar uma sala",
+        "text": "Recebe um código para enviar a um amigo.",
+        "button": "Criar uma sala"
+      },
+      "join": {
+        "title": "Entrar numa sala",
+        "label": "Código da sala",
+        "button": "Entrar"
+      },
+      "queue": {
+        "title": "Procurar adversário",
+        "text": "Joga contra um treinador cujo clube é mais ou menos tão forte como o teu.",
+        "button": "Procurar adversário"
+      },
+      "queued": {
+        "searching": "À procura de adversário… {{time}}",
+        "text": "Entretanto podes mudar o teu onze; manténs o lugar enquanto o jogo estiver no modo online.",
+        "cancel": "Parar de procurar"
+      },
+      "room": {
+        "title": "Sala de amigável · jogo {{leg}}",
+        "code": "Código da sala:",
+        "copy": "Copiar o código",
+        "copied": "Copiado",
+        "waitingGuest": "À espera de que um amigo entre com o código.",
+        "strength": "Força {{value}}",
+        "home": "Casa",
+        "isReady": "Pronto",
+        "notYet": "Não está pronto",
+        "you": "Tu",
+        "readyBy": "Faltam {{time}} para estar pronto",
+        "starting": "Os dois treinadores estão prontos. O jogo está a ser preparado…",
+        "playing": "O jogo está a decorrer.",
+        "finished": "O jogo terminou.",
+        "ready": "Estou pronto",
+        "notReady": "Ainda não estou pronto",
+        "editTactics": "Mudar o onze",
+        "watch": "Ir para o jogo",
+        "rematch": "Desforra",
+        "replay": "Ver a repetição",
+        "leave": "Sair da sala"
+      },
+      "reason": {
+        "opponentLeft": "O outro treinador saiu da sala.",
+        "expired": "A sala esperou demasiado e foi fechada.",
+        "readyTimeout": "Os dois treinadores não ficaram prontos a tempo.",
+        "leagueMatchSoon": "Um clube do amigável joga um jogo da liga agora ou em breve.",
+        "busy": "O servidor está a jogar o máximo de amigáveis possível. Tenta novamente daqui a pouco.",
+        "failed": "Não foi possível preparar ou jogar o jogo.",
+        "unclaimed": "Nenhum servidor de jogos aceitou o jogo.",
+        "clubLost": "Um clube do amigável mudou de dono.",
+        "absent": "Saíste do modo online demasiado tempo e perdeste o lugar na fila.",
+        "other": "O amigável terminou."
+      },
+      "chip": {
+        "searching": "À procura de adversário {{time}}",
+        "playing": "O teu amigável está a decorrer",
+        "room": "Sala de amigável: prepara-te"
+      },
+      "after": {
+        "title": "Amigável",
+        "back": "Voltar à sala de amigável"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "Essa ação online não está disponível nesta versão do jogo.",
         "clientOutdated": "É necessária uma versão mais recente do jogo para jogar online. Atualiza o jogo.",
         "serverOutdated": "O servidor online está a ser atualizado. Tenta mais tarde."
+      },
+      "friendly": {
+        "noClub": "Precisas de um clube online para jogar amigáveis.",
+        "alreadyInRoom": "Já estás numa sala de amigável. Sai dela primeiro.",
+        "roomNotFound": "Nenhuma sala aberta tem esse código.",
+        "notInRoom": "Não estás em nenhuma sala de amigável.",
+        "leagueMatchSoon": "O teu clube joga um jogo da liga agora ou em breve (início {{kickoffAt}}). Joga um amigável depois.",
+        "busy": "O servidor está a jogar o máximo de amigáveis possível. Tenta novamente daqui a pouco.",
+        "matchUnderway": "O jogo desta sala está a começar ou a decorrer.",
+        "roomNotFull": "A sala não está à espera de que os dois treinadores fiquem prontos.",
+        "notFinished": "O jogo desta sala ainda não terminou.",
+        "roomClosed": "Já não se pode jogar nesta sala, por isso foi fechada.",
+        "conflict": "A sala mudou entretanto. Volta a vê-la."
       }
     },
     "sender": {

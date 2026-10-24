@@ -44,7 +44,8 @@
       "tactics": "战术",
       "training": "训练",
       "league": "联赛",
-      "schedule": "赛程"
+      "schedule": "赛程",
+      "friendly": "友谊赛"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -243,6 +244,75 @@
       "jump": "跳到分钟",
       "watch": "观看回放",
       "gone": "这场比赛时间太久，无法回放；只保留了比分。"
+    },
+    "friendly": {
+      "title": "友谊赛",
+      "intro": "与另一位主教练踢一场友谊赛。比赛之外不计任何东西：不影响体能、伤病、状态或经验。",
+      "dismiss": "关闭",
+      "create": {
+        "title": "创建房间",
+        "text": "获取一个代码发给朋友。",
+        "button": "创建房间"
+      },
+      "join": {
+        "title": "加入房间",
+        "label": "房间代码",
+        "button": "加入"
+      },
+      "queue": {
+        "title": "寻找对手",
+        "text": "与俱乐部实力和你相近的主教练比赛。",
+        "button": "寻找对手"
+      },
+      "queued": {
+        "searching": "正在寻找对手…… {{time}}",
+        "text": "等待期间你可以调整阵容；只要游戏仍在在线模式，你就保留位置。",
+        "cancel": "停止寻找"
+      },
+      "room": {
+        "title": "友谊赛房间 · 第 {{leg}} 场",
+        "code": "房间代码：",
+        "copy": "复制代码",
+        "copied": "已复制",
+        "waitingGuest": "正在等待朋友用代码加入。",
+        "strength": "实力 {{value}}",
+        "home": "主场",
+        "isReady": "已准备",
+        "notYet": "未准备",
+        "you": "你",
+        "readyBy": "还剩 {{time}} 准备",
+        "starting": "两位主教练都已准备。比赛正在准备中……",
+        "playing": "比赛进行中。",
+        "finished": "比赛已结束。",
+        "ready": "我准备好了",
+        "notReady": "还没准备好",
+        "editTactics": "调整阵容",
+        "watch": "进入比赛",
+        "rematch": "再赛一场",
+        "replay": "观看回放",
+        "leave": "离开房间"
+      },
+      "reason": {
+        "opponentLeft": "另一位主教练离开了房间。",
+        "expired": "房间等待太久，已关闭。",
+        "readyTimeout": "两位主教练没有及时都准备好。",
+        "leagueMatchSoon": "友谊赛的一家俱乐部正在或即将进行联赛。",
+        "busy": "服务器正在进行尽可能多的友谊赛，请稍后再试。",
+        "failed": "比赛无法准备或进行。",
+        "unclaimed": "没有比赛服务器接手这场比赛。",
+        "clubLost": "友谊赛的一家俱乐部易主了。",
+        "absent": "你离开在线模式太久，失去了排队位置。",
+        "other": "友谊赛已结束。"
+      },
+      "chip": {
+        "searching": "正在寻找对手 {{time}}",
+        "playing": "你的友谊赛正在进行",
+        "room": "友谊赛房间：请准备"
+      },
+      "after": {
+        "title": "友谊赛",
+        "back": "返回友谊赛房间"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "此版本的游戏不支持该在线操作。",
         "clientOutdated": "在线游戏需要更新版本的游戏，请更新游戏。",
         "serverOutdated": "在线服务器正在更新，请稍后再试。"
+      },
+      "friendly": {
+        "noClub": "你需要一家在线俱乐部才能踢友谊赛。",
+        "alreadyInRoom": "你已经在一个友谊赛房间中，请先离开。",
+        "roomNotFound": "没有开放的房间使用这个代码。",
+        "notInRoom": "你不在任何友谊赛房间中。",
+        "leagueMatchSoon": "你的俱乐部正在或即将进行联赛（开球时间 {{kickoffAt}}），请在那之后再踢友谊赛。",
+        "busy": "服务器正在进行尽可能多的友谊赛，请稍后再试。",
+        "matchUnderway": "这个房间的比赛正在开始或进行中。",
+        "roomNotFull": "这个房间不在等待两位主教练准备。",
+        "notFinished": "这个房间的比赛尚未结束。",
+        "roomClosed": "这个房间已无法再比赛，因此已关闭。",
+        "conflict": "房间刚刚发生了变化，请重新查看。"
       }
     },
     "sender": {

@@ -44,7 +44,8 @@
       "tactics": "Chiến thuật",
       "training": "Tập luyện",
       "league": "Giải đấu",
-      "schedule": "Lịch thi đấu"
+      "schedule": "Lịch thi đấu",
+      "friendly": "Giao hữu"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -243,6 +244,75 @@
       "jump": "Tua tới phút",
       "watch": "Xem lại trận",
       "gone": "Trận này đã quá cũ để xem lại; chỉ còn giữ kết quả."
+    },
+    "friendly": {
+      "title": "Giao hữu",
+      "intro": "Đá giao hữu với HLV khác. Trận giao hữu không tính gì ngoài trận: không ảnh hưởng thể lực, chấn thương, phong độ hay kinh nghiệm.",
+      "dismiss": "Đóng",
+      "create": {
+        "title": "Tạo phòng",
+        "text": "Nhận một mã để gửi cho bạn bè.",
+        "button": "Tạo phòng"
+      },
+      "join": {
+        "title": "Vào phòng",
+        "label": "Mã phòng",
+        "button": "Vào"
+      },
+      "queue": {
+        "title": "Tìm đối thủ",
+        "text": "Đá với HLV có CLB mạnh xấp xỉ CLB của bạn.",
+        "button": "Tìm đối thủ"
+      },
+      "queued": {
+        "searching": "Đang tìm đối thủ… {{time}}",
+        "text": "Trong lúc chờ, bạn có thể sửa đội hình; bạn vẫn giữ chỗ khi còn ở chế độ online.",
+        "cancel": "Dừng tìm"
+      },
+      "room": {
+        "title": "Phòng giao hữu · trận {{leg}}",
+        "code": "Mã phòng:",
+        "copy": "Sao chép mã",
+        "copied": "Đã sao chép",
+        "waitingGuest": "Đang chờ bạn bè vào bằng mã.",
+        "strength": "Sức mạnh {{value}}",
+        "home": "Sân nhà",
+        "isReady": "Sẵn sàng",
+        "notYet": "Chưa sẵn sàng",
+        "you": "Bạn",
+        "readyBy": "Còn {{time}} để sẵn sàng",
+        "starting": "Hai HLV đã sẵn sàng. Trận đấu đang được chuẩn bị…",
+        "playing": "Trận đấu đang diễn ra.",
+        "finished": "Trận đấu đã kết thúc.",
+        "ready": "Tôi sẵn sàng",
+        "notReady": "Chưa sẵn sàng",
+        "editTactics": "Sửa đội hình",
+        "watch": "Vào trận",
+        "rematch": "Đá lại",
+        "replay": "Xem lại trận",
+        "leave": "Rời phòng"
+      },
+      "reason": {
+        "opponentLeft": "HLV kia đã rời phòng.",
+        "expired": "Phòng chờ quá lâu nên đã đóng.",
+        "readyTimeout": "Hai HLV không cùng sẵn sàng kịp.",
+        "leagueMatchSoon": "Một CLB của trận giao hữu đang hoặc sắp đá trận giải.",
+        "busy": "Máy chủ đang đá nhiều trận giao hữu nhất có thể. Hãy thử lại sau ít phút.",
+        "failed": "Không chuẩn bị hoặc không đá được trận đấu.",
+        "unclaimed": "Không máy chủ trận đấu nào nhận trận này.",
+        "clubLost": "Một CLB của trận giao hữu đã đổi chủ.",
+        "absent": "Bạn rời chế độ online quá lâu nên mất chỗ trong hàng đợi.",
+        "other": "Trận giao hữu đã kết thúc."
+      },
+      "chip": {
+        "searching": "Đang tìm đối thủ {{time}}",
+        "playing": "Trận giao hữu đang đá",
+        "room": "Phòng giao hữu: hãy sẵn sàng"
+      },
+      "after": {
+        "title": "Giao hữu",
+        "back": "Về phòng giao hữu"
+      }
     }
   },
   "coach": {
@@ -3854,6 +3924,19 @@
         "routeNotAllowed": "Thao tác online này không có trong phiên bản game hiện tại.",
         "clientOutdated": "Cần phiên bản game mới hơn để chơi online. Vui lòng cập nhật game.",
         "serverOutdated": "Máy chủ online đang được cập nhật. Vui lòng thử lại sau."
+      },
+      "friendly": {
+        "noClub": "Bạn cần có CLB online để đá giao hữu.",
+        "alreadyInRoom": "Bạn đang ở trong một phòng giao hữu. Hãy rời phòng đó trước.",
+        "roomNotFound": "Không có phòng nào đang mở với mã này.",
+        "notInRoom": "Bạn không ở trong phòng giao hữu nào.",
+        "leagueMatchSoon": "CLB của bạn đang hoặc sắp đá trận giải (bắt đầu lúc {{kickoffAt}}). Hãy đá giao hữu sau trận đó.",
+        "busy": "Máy chủ đang đá nhiều trận giao hữu nhất có thể. Hãy thử lại sau ít phút.",
+        "matchUnderway": "Trận của phòng này đang được chuẩn bị hoặc đang đá.",
+        "roomNotFull": "Phòng không ở bước chờ hai HLV sẵn sàng.",
+        "notFinished": "Trận của phòng này chưa kết thúc.",
+        "roomClosed": "Phòng này không còn đá được nữa nên đã đóng.",
+        "conflict": "Phòng vừa thay đổi. Hãy xem lại."
       }
     },
     "sender": {
