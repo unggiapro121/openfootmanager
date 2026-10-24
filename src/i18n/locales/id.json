@@ -350,6 +350,31 @@
         "dismiss": "Mengerti",
         "failed": "Pemberitahuan ini gagal ditutup. Coba lagi."
       }
+    },
+    "roadmap": {
+      "title": "Peta jalan pelatih",
+      "standing": "Tingkat {{level}} · lisensi {{licence}}",
+      "level": "Tingkat pelatih online {{level}}",
+      "record": "{{seasons}} musim dimainkan · naik {{promotions}} kali",
+      "howTitle": "Cara naik tingkat",
+      "howTop": "Akhiri musim di {{places}} besar liga {{size}} klubmu: +1 tingkat",
+      "howNewcomer": "Mengambil klub di tengah musim? Kamu perlu memimpin minimal {{matches}} laga agar dihitung",
+      "howNeverDown": "Tingkatmu tidak pernah turun",
+      "noSeason": "Belum ada musim online: cara naik tingkat muncul saat musim dibuka.",
+      "allOpen": "Musim ini belum ada lisensi: semua pengaturan taktik terbuka.",
+      "pending": "Lisensi berlaku untuk laga mulai musim depan; susunan yang kamu simpan sudah harus mengikutinya.",
+      "licences": "Lisensi pelatih",
+      "atLevel": "mulai tingkat {{level}}",
+      "held": "Dipegang",
+      "levelsToGo": "{{levels}} tingkat lagi",
+      "totals": "{{formations}} formasi · {{styles}} gaya bermain · {{dials}} instruksi · {{roles}} peran",
+      "opensFirst": "Yang dibuka",
+      "opensMore": "Yang ditambahkan",
+      "addedFormations": "Formasi: {{list}}",
+      "addedStyles": "Gaya bermain: {{list}}",
+      "addedDials": "Instruksi: {{list}}",
+      "addedRoles": "Peran: {{list}}",
+      "addedNothing": "Tidak ada yang baru"
     }
   },
   "coach": {

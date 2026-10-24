@@ -5,6 +5,7 @@ import {
 } from "../services/onlineTransport";
 import type {
   AccountView,
+  CareerView,
   ClubFixturesView,
   CommandAccepted,
   FixtureDetailView,
@@ -101,6 +102,8 @@ export const online = {
     get: () => call<AccountView>(read(["v1", "me"])),
     update: (change: UpdateAccount, idempotencyKey = newKey()) =>
       call<AccountView>(write("PATCH", ["v1", "me"], idempotencyKey, change)),
+    /** The coach's online level, seasons and promotions, and the road ahead (his profile). */
+    career: () => call<CareerView>(read(["v1", "me", "career"])),
   },
   clubs: {
     takeover: (idempotencyKey = newKey()) =>

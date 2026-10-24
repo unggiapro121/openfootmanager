@@ -350,6 +350,31 @@
         "dismiss": "Verstanden",
         "failed": "Der Hinweis konnte nicht geschlossen werden. Versuche es erneut."
       }
+    },
+    "roadmap": {
+      "title": "Trainer-Fahrplan",
+      "standing": "Stufe {{level}} · Lizenz {{licence}}",
+      "level": "Online-Trainerstufe {{level}}",
+      "record": "{{seasons}} Saisons gespielt · {{promotions}}-mal aufgestiegen",
+      "howTitle": "So steigst du eine Stufe auf",
+      "howTop": "Beende eine Saison unter den ersten {{places}} deiner Liga mit {{size}} Klubs: +1 Stufe",
+      "howNewcomer": "Klub während der Saison übernommen? Du brauchst mindestens {{matches}} Spiele an der Seitenlinie, damit es zählt",
+      "howNeverDown": "Deine Stufe sinkt nie",
+      "noSeason": "Noch keine Online-Saison: wie du aufsteigst, siehst du, sobald eine Saison beginnt.",
+      "allOpen": "Diese Saison gibt es keine Lizenzen: alle taktischen Einstellungen sind frei.",
+      "pending": "Lizenzen gelten für Spiele ab der nächsten Saison; gespeicherte Aufstellungen folgen deiner schon jetzt.",
+      "licences": "Trainerlizenzen",
+      "atLevel": "ab Stufe {{level}}",
+      "held": "Aktuell",
+      "levelsToGo": "noch {{levels}} Stufen",
+      "totals": "{{formations}} Formationen · {{styles}} Spielstile · {{dials}} Anweisungen · {{roles}} Rollen",
+      "opensFirst": "Was sie freischaltet",
+      "opensMore": "Was sie hinzufügt",
+      "addedFormations": "Formationen: {{list}}",
+      "addedStyles": "Spielstile: {{list}}",
+      "addedDials": "Anweisungen: {{list}}",
+      "addedRoles": "Rollen: {{list}}",
+      "addedNothing": "Nichts Neues"
     }
   },
   "coach": {

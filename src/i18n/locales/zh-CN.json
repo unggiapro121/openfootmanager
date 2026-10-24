@@ -350,6 +350,31 @@
         "dismiss": "知道了",
         "failed": "无法关闭此通知，请重试。"
       }
+    },
+    "roadmap": {
+      "title": "教练进阶路线",
+      "standing": "等级 {{level}} · {{licence}}执照",
+      "level": "线上教练等级 {{level}}",
+      "record": "已踢 {{seasons}} 个赛季 · 晋级 {{promotions}} 次",
+      "howTitle": "如何升级",
+      "howTop": "赛季结束时位列 {{size}} 队联赛前 {{places}} 名：+1 级",
+      "howNewcomer": "赛季中途接手球队？至少执教 {{matches}} 场才计入",
+      "howNeverDown": "等级永不下降",
+      "noSeason": "尚无线上赛季：赛季开放后会显示升级方式。",
+      "allOpen": "本赛季未启用执照：所有战术设置均开放。",
+      "pending": "执照从下赛季起作用于比赛；你保存的阵容现在就需符合执照。",
+      "licences": "教练执照",
+      "atLevel": "{{level}} 级起",
+      "held": "当前",
+      "levelsToGo": "还差 {{levels}} 级",
+      "totals": "{{formations}} 种阵型 · {{styles}} 种风格 · {{dials}} 项指令 · {{roles}} 种角色",
+      "opensFirst": "开放内容",
+      "opensMore": "新增内容",
+      "addedFormations": "阵型：{{list}}",
+      "addedStyles": "战术风格：{{list}}",
+      "addedDials": "指令：{{list}}",
+      "addedRoles": "角色：{{list}}",
+      "addedNothing": "无新增"
     }
   },
   "coach": {

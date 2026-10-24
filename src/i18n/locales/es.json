@@ -350,6 +350,31 @@
         "dismiss": "Entendido",
         "failed": "No se pudo cerrar este aviso. Inténtalo de nuevo."
       }
+    },
+    "roadmap": {
+      "title": "Hoja de ruta del entrenador",
+      "standing": "Nivel {{level}} · licencia {{licence}}",
+      "level": "Nivel de entrenador online {{level}}",
+      "record": "{{seasons}} temporadas jugadas · ascendido {{promotions}} veces",
+      "howTitle": "Cómo subir de nivel",
+      "howTop": "Termina una temporada entre los {{places}} primeros de tu liga de {{size}} clubes: +1 nivel",
+      "howNewcomer": "¿Tomaste tu club durante la temporada? Necesitas dirigir al menos {{matches}} partidos para que cuente",
+      "howNeverDown": "Tu nivel nunca baja",
+      "noSeason": "Aún no hay temporada online: cómo subir de nivel aparecerá cuando se abra una.",
+      "allOpen": "Esta temporada no hay licencias: todos los controles tácticos están abiertos.",
+      "pending": "Las licencias se aplican a los partidos desde la próxima temporada; los planteamientos que guardas ya siguen la tuya.",
+      "licences": "Licencias de entrenador",
+      "atLevel": "desde el nivel {{level}}",
+      "held": "Actual",
+      "levelsToGo": "faltan {{levels}} niveles",
+      "totals": "{{formations}} formaciones · {{styles}} estilos · {{dials}} instrucciones · {{roles}} roles",
+      "opensFirst": "Lo que abre",
+      "opensMore": "Lo que añade",
+      "addedFormations": "Formaciones: {{list}}",
+      "addedStyles": "Estilos de juego: {{list}}",
+      "addedDials": "Instrucciones: {{list}}",
+      "addedRoles": "Funciones: {{list}}",
+      "addedNothing": "Nada nuevo"
     }
   },
   "coach": {

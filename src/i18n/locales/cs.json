@@ -350,6 +350,31 @@
         "dismiss": "Rozumím",
         "failed": "Oznámení se nepodařilo zavřít. Zkuste to znovu."
       }
+    },
+    "roadmap": {
+      "title": "Trenérská cesta",
+      "standing": "Úroveň {{level}} · licence {{licence}}",
+      "level": "Online trenérská úroveň {{level}}",
+      "record": "Odehráno sezón: {{seasons}} · postupů: {{promotions}}",
+      "howTitle": "Jak postoupit o úroveň",
+      "howTop": "Dokončete sezónu mezi prvními {{places}} své ligy o {{size}} klubech: +1 úroveň",
+      "howNewcomer": "Převzali jste klub během sezóny? Musíte odkoučovat aspoň {{matches}} zápasů, aby se to počítalo",
+      "howNeverDown": "Úroveň nikdy neklesá",
+      "noSeason": "Zatím žádná online sezóna: jak postoupit se ukáže, až sezóna začne.",
+      "allOpen": "Tuto sezónu licence neplatí: všechna taktická nastavení jsou odemčená.",
+      "pending": "Licence platí pro zápasy od příští sezóny; ukládané sestavy už se jí musí řídit.",
+      "licences": "Trenérské licence",
+      "atLevel": "od úrovně {{level}}",
+      "held": "Aktuální",
+      "levelsToGo": "zbývá úrovní: {{levels}}",
+      "totals": "Rozestavení: {{formations}} · stylů: {{styles}} · pokynů: {{dials}} · rolí: {{roles}}",
+      "opensFirst": "Co odemyká",
+      "opensMore": "Co přidává",
+      "addedFormations": "Rozestavení: {{list}}",
+      "addedStyles": "Herní styly: {{list}}",
+      "addedDials": "Pokyny: {{list}}",
+      "addedRoles": "Role: {{list}}",
+      "addedNothing": "Nic nového"
     }
   },
   "coach": {
