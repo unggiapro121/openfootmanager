@@ -24,6 +24,7 @@ pub mod ai_training;
 pub mod assigned_traits;
 pub mod attribute_split;
 pub mod coach_progress;
+pub mod economy;
 pub mod facilities;
 pub mod licence;
 pub mod lineup_assignment;
