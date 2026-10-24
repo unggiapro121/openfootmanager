@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Flag, History, Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "../../../components/ui";
 import type { MatchView } from "../../api";
+import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import ResourceState from "../ResourceState";
 import { MatchBoard } from "./MatchBoard";
 import {
@@ -114,6 +115,9 @@ function ReplayScreen({ view, data }: { view: MatchView; data: ReplayData }) {
           </span>
           <ResultLink view={view} />
         </span>
+      )}
+      {view.kind === "friendly" && (
+        <FriendlyAfterMatch matchId={view.id} inline coach={data.mine !== null} />
       )}
     </section>
   );
