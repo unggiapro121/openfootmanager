@@ -181,6 +181,34 @@ describe("opening a match", () => {
     expect(radar()).toMatchObject({ homeDials: null, awayDials: null });
   });
 
+  // Given a coach following their league match, at home,
+  // when the referee blows for full time with their side 2-1 up,
+  // then the radar gives way to the match report: their verdict, the key events, the stats and
+  // the line-ups, the link to the result, and a way to watch the replay, which reads the match
+  // again (now over, it opens as a replay).
+  it("opens the match report at full time", async () => {
+    stage();
+    await opened();
+
+    push(
+      matchFrame(1, {
+        result: { is_finished: true, phase: "Finished", home_score: 2, away_score: 1 },
+      }),
+    );
+
+    expect(await screen.findByRole("heading", { name: "match.matchReport" })).toBeInTheDocument();
+    expect(screen.getByText("match.victory")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "match.keyEvents" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "online.match.seeResult" })).toBeInTheDocument();
+    expect(screen.queryByRole("status", { name: "radar" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("complementary", { name: "online.match.touchline" }),
+    ).not.toBeInTheDocument();
+    const reads = requestsTo(`v1/matches/${MATCH}`).length;
+    fireEvent.click(screen.getByRole("button", { name: "online.replay.watch" }));
+    await waitFor(() => expect(requestsTo(`v1/matches/${MATCH}`).length).toBeGreaterThan(reads));
+  });
+
   // Given a coach following their match,
   // when the referee blows for half time, then for the second half,
   // then the radar (frozen in the break) gives way to the half-time screen — the first half's key
