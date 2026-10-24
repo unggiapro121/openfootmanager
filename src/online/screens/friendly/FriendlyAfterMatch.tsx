@@ -7,16 +7,20 @@ import { useOnlineStore } from "../../store/onlineStore";
 import { useFriendlyAction } from "./useFriendlyAction";
 
 /**
- * Under a friendly that is over (S-12 §3.12), for a coach of its room: ask for a rematch, or go
- * back to the room. `inline` sits in the full-time line of the match screen, where a league match
- * links to its result.
+ * Under a friendly that is over (S-12 §3.12), for one of its coaches: go back to the friendly room
+ * to play the next one, or ask for a rematch here. `inline` sits in the full-time line of the match
+ * screen, where a league match links to its result.
  */
 export function FriendlyAfterMatch({
   matchId,
   inline = false,
+  coach = false,
 }: {
   matchId: string;
   inline?: boolean;
+  /** The viewer coaches a side of this match (the live screen knows); otherwise only a coach whose
+   * room played it is offered anything. */
+  coach?: boolean;
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -32,11 +36,17 @@ export function FriendlyAfterMatch({
     }
   };
 
-  // Only a coach of this friendly's room is offered it; a spectator who opened the match is not.
-  if (room?.matchId !== matchId) return null;
-  // The room finishes a moment after the last frame (when the match is settled); a rematch asked
-  // before it would be refused.
-  const finished = room.status === "finished";
+  const ownRoom = room?.matchId === matchId;
+  // A spectator who opened the match is offered nothing; a coach always the way back, even when
+  // the other coach already asked for a rematch (the room is full again, with no match yet) or the
+  // room has closed.
+  if (!coach && !ownRoom) return null;
+  // A rematch: once the room has finished this match — a moment after the last frame, when the
+  // match is settled; asked before, it would be refused — or when the other coach asked first,
+  // which makes it getting ready.
+  const canRematch =
+    (ownRoom && room?.status === "finished") ||
+    (room !== undefined && room.status === "full" && room.matchId === undefined);
 
   return (
     <div
@@ -51,12 +61,14 @@ export function FriendlyAfterMatch({
           {t("online.friendly.after.title")}
         </p>
       )}
-      <Button size="sm" onClick={rematch} disabled={busy || offline || !finished}>
-        {t("online.friendly.room.rematch")}
-      </Button>
+      {room !== undefined && (ownRoom || room.status === "full") && (
+        <Button size="sm" onClick={rematch} disabled={busy || offline || !canRematch}>
+          {t("online.friendly.room.rematch")}
+        </Button>
+      )}
       <Link
         to="/online/friendly"
-        className="rounded text-sm font-semibold text-primary-700 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+        className="inline-flex items-center rounded-lg border border-primary-600 px-3 py-1.5 font-heading text-sm font-bold uppercase tracking-wider text-primary-700 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-primary-500/10 dark:focus:ring-offset-navy-800"
       >
         {t("online.friendly.after.back")}
       </Link>
