@@ -640,6 +640,43 @@ describe("orders", () => {
 describe("the side's own orders", () => {
   const commands = () => requestsTo(`v1/matches/${MATCH}/commands`).map((request) => request.body);
 
+  // Given the coach of the home side holding the first licence in this match (S-9),
+  // when they open the shapes, the styles and h9's roles,
+  // then only the shapes and styles the licence opens are offered, and of a midfielder's roles
+  // only Standard.
+  it("offers only the orders the side's licence opens", async () => {
+    stage({
+      mine: mineView({
+        roles: [{ playerId: "h9", role: "Standard" }],
+        licence: {
+          tier: 1,
+          formations: ["4-4-2", "4-3-3", "3-5-2"],
+          playStyles: ["Balanced", "Attacking", "Defensive"],
+          dials: [],
+          roles: [],
+        },
+      }),
+    });
+    await opened();
+    const shape = screen.getByRole("combobox", { name: "match.formation" });
+    fireEvent.click(shape);
+    expect(screen.getByRole("option", { name: "4-3-3" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "4-2-3-1" })).toBeNull();
+    fireEvent.keyDown(shape, { key: "Escape" });
+    const style = screen.getByRole("combobox", { name: "match.playStyle" });
+    fireEvent.click(style);
+    expect(screen.getByRole("option", { name: "common.playStyles.Attacking" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "common.playStyles.Counter" })).toBeNull();
+    fireEvent.keyDown(style, { key: "Escape" });
+    fireEvent.click(screen.getByRole("combobox", { name: "online.match.rolePlayer" }));
+    fireEvent.click(screen.getByRole("option", { name: "10. P. h9" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "online.match.roleChoice" }));
+    expect(screen.queryByRole("option", { name: "tactics.playerRoles.BoxToBox" })).toBeNull();
+    expect(
+      screen.getByRole("option", { name: "tactics.playerRoles.Standard" }),
+    ).toBeInTheDocument();
+  });
+
   // Given the coach of the home side, h9 a midfielder playing as Standard and h0 the keeper,
   // when they pick h9 and look at the roles, then pick Box-to-Box and change his role,
   // then only midfield roles are offered (none of a keeper's or a striker's), his own role is

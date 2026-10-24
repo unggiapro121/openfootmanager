@@ -156,7 +156,12 @@
         "unknownFormation": "O jogo não conhece esse esquema.",
         "startingElevenSize": "O time titular precisa ter exatamente 11 jogadores.",
         "duplicateStarter": "{{player}} aparece duas vezes entre os titulares.",
-        "notInSquad": "{{player}} não está no seu elenco."
+        "notInSquad": "{{player}} não está no seu elenco.",
+        "lockedFormation": "Sua licença de treinador ainda não libera esta formação.",
+        "lockedPlayStyle": "Sua licença de treinador ainda não libera este estilo de jogo.",
+        "lockedRole": "Sua licença de treinador ainda não libera a função de {{player}}.",
+        "lockedTactics": "Uma instrução que sua licença ainda não libera está fora do padrão.",
+        "unknown": "O servidor recusou esta tática por um motivo que esta versão do jogo não conhece. Atualize o jogo."
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "Você está comandando seu time. Se sair por cerca de 20 segundos, a IA comanda até você voltar.",
       "stay": "Ficar",
       "go": "Sair"
+    },
+    "licence": {
+      "title": "Licença de treinador",
+      "held": "{{licence}} · nível {{level}}",
+      "next": "Próxima: {{licence}} no nível {{level}}",
+      "highest": "A licença mais alta: tudo está liberado",
+      "pending": "A partir da próxima temporada",
+      "notice": {
+        "title": "Temporada {{season}}: sua tática agora se ajusta à sua licença {{licence}}",
+        "formation": "Formação {{from}} → {{to}}",
+        "playStyle": "Estilo de jogo {{from}} → {{to}}",
+        "dials": "Instruções de volta ao padrão: {{count}}",
+        "roles": "Funções de volta a Padrão: {{count}}",
+        "dismiss": "Entendi",
+        "failed": "Não foi possível fechar este aviso. Tente de novo."
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "Dois zagueiros de combate: os dois saem e o espaço às costas fica livre no contra-ataque.",
       "covers": "Dois zagueiros de cobertura: os dois recuam e a entrada da área fica livre."
     },
-    "masteryEarnedHint": "O domínio só cresce nas partidas que você mesmo comanda (Ir para o Campo)."
+    "masteryEarnedHint": "O domínio só cresce nas partidas que você mesmo comanda (Ir para o Campo).",
+    "licence": {
+      "tier_1": "Base",
+      "tier_2": "Nacional",
+      "tier_3": "Continental",
+      "tier_4": "Máxima",
+      "lockedOption": "{{option}} (licença no nível {{level}})",
+      "lockedHint": "Abre com a licença {{licence}}, no nível de treinador {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",

@@ -3,5 +3,8 @@ export type { ClubSetup } from "./ClubSetup";
 export type { CoachMatchRecord } from "./CoachMatchRecord";
 export type { CoachRecord } from "./CoachRecord";
 export type { Controller } from "./Controller";
+export type { Dial } from "./Dial";
 export type { InputSource } from "./InputSource";
+export type { LicenceControls } from "./LicenceControls";
+export type { LicenceLevels } from "./LicenceLevels";
 export type { MasteryGain } from "./MasteryGain";

@@ -6,7 +6,13 @@ import type { MyClubView } from "../api";
 import { useOnlineNow } from "../clock";
 import { formatMoment } from "../format";
 import { useOnlineStore } from "../store/onlineStore";
+import { useMemo } from "react";
+import { online } from "../client";
+import { boardLimits } from "../convert/licence";
+import LicenceNotice from "./LicenceNotice";
+import { useOnlineResource } from "../useOnlineResource";
 import {
+  KNOWN_SETUP_ISSUES,
   type SetupOutcome,
   type SetupProblem,
   useOnlineTacticsSource,
@@ -37,7 +43,11 @@ export default function OnlineTactics() {
 function TacticsScreen({ club }: { club: MyClubView }) {
   const { t, i18n } = useTranslation();
   const now = useOnlineNow();
-  const { source, outcome } = useOnlineTacticsSource(club);
+  // The licence table is read once a visit: it changes only with the season (S-9).
+  const { resource } = useOnlineResource(() => online.licences.table(), []);
+  const table = resource.status === "ready" ? resource.data : null;
+  const limits = useMemo(() => boardLimits(club, table), [club, table]);
+  const { source, outcome } = useOnlineTacticsSource(club, limits);
   const known = lockOf(club, now);
   const locked = known.locked || outcome.kind === "locked";
   const kickoffAt =
@@ -56,6 +66,7 @@ function TacticsScreen({ club }: { club: MyClubView }) {
             : t("online.tactics.lockedNow")}
         </p>
       )}
+      <LicenceNotice />
       <OutcomeNotice outcome={outcome} club={club} />
       {/* A locked line-up is shown, never edited: `inert` takes the whole board out of reach. */}
       <div inert={locked} className={locked ? "opacity-70" : undefined}>
@@ -104,6 +115,8 @@ function problemText(
   names: Map<string, string>,
   t: (key: string, options?: Record<string, unknown>) => string,
 ): string {
+  // A newer server may name an issue this client does not know: say so plainly, never its key.
+  if (!KNOWN_SETUP_ISSUES.has(problem.issue)) return t("online.tactics.issue.unknown");
   if (!("playerId" in problem)) return t(`online.tactics.issue.${problem.issue}`);
   const player = names.get(problem.playerId) ?? t("online.tactics.unknownPlayer");
   return t(`online.tactics.issue.${problem.issue}`, { player });

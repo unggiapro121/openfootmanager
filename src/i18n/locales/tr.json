@@ -156,7 +156,12 @@
         "unknownFormation": "Oyun bu dizilişi tanımıyor.",
         "startingElevenSize": "İlk on birde tam 11 oyuncu olmalı.",
         "duplicateStarter": "{{player}} ilk on birde iki kez yer alıyor.",
-        "notInSquad": "{{player}} kadronda değil."
+        "notInSquad": "{{player}} kadronda değil.",
+        "lockedFormation": "Antrenörlük lisansın henüz bu dizilişi açmıyor.",
+        "lockedPlayStyle": "Antrenörlük lisansın henüz bu oyun stilini açmıyor.",
+        "lockedRole": "Antrenörlük lisansın henüz {{player}} için bu rolü açmıyor.",
+        "lockedTactics": "Lisansının henüz açmadığı bir talimat varsayılan değerinde değil.",
+        "unknown": "Sunucu bu kadroyu, oyunun bu sürümünün bilmediği bir nedenle reddetti. Oyunu güncelle."
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "Takımınızı siz yönetiyorsunuz. Yaklaşık 20 saniye uzak kalırsanız, siz dönene kadar takımı yapay zekâ yönetir.",
       "stay": "Kal",
       "go": "Ayrıl"
+    },
+    "licence": {
+      "title": "Antrenörlük lisansı",
+      "held": "{{licence}} · seviye {{level}}",
+      "next": "Sıradaki: {{level}}. seviyede {{licence}}",
+      "highest": "En yüksek lisans: her ayar açık",
+      "pending": "Gelecek sezondan itibaren",
+      "notice": {
+        "title": "{{season}}. sezon: Kadron artık {{licence}} lisansına uygun",
+        "formation": "Diziliş {{from}} → {{to}}",
+        "playStyle": "Oyun stili {{from}} → {{to}}",
+        "dials": "Varsayılana dönen talimatlar: {{count}}",
+        "roles": "Standart'a dönen roller: {{count}}",
+        "dismiss": "Anladım",
+        "failed": "Bu bildirim kapatılamadı. Tekrar dene."
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "Stoperde iki baskıcı stoper: ikisi de öne çıkar, kontrada arkalarındaki alan boş kalır.",
       "covers": "Stoperde iki kollayan stoper: ikisi de geri çekilir, ceza sahası önü boş kalır."
     },
-    "masteryEarnedHint": "Ustalık yalnızca kendi yönettiğin maçlarda artar (Sahaya Çık)."
+    "masteryEarnedHint": "Ustalık yalnızca kendi yönettiğin maçlarda artar (Sahaya Çık).",
+    "licence": {
+      "tier_1": "Temel",
+      "tier_2": "Ulusal Pro",
+      "tier_3": "Kıtasal Pro",
+      "tier_4": "Elit",
+      "lockedOption": "{{option}} (lisans seviyesi {{level}})",
+      "lockedHint": "{{licence}} lisansıyla, {{level}}. teknik direktör seviyesinde açılır"
+    }
   },
   "training": {
     "weeklySchedule": "Haftalık Program",

@@ -7,6 +7,7 @@ import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import type { TacticsPhaseSettings } from "../../store/types";
 import SetPieceSelector from "../match/SetPieceSelector";
 import { PhaseBlueprintPanel } from "./PhaseBlueprintPanel";
+import type { TacticsLimits } from "./licenceLimits";
 import {
   buildUpdatedMatchRolesForAssignment,
   resolveEffectiveMatchRoles,
@@ -20,6 +21,8 @@ interface TacticsRightPanelProps {
   onTacticsPhaseChange: (patch: Partial<TacticsPhaseSettings>) => void;
   startingPlayers: TacticsRosterPlayer[];
   tacticsPhase?: TacticsPhaseSettings;
+  /** What the coach's licence closes (online); nothing when absent. */
+  limits?: TacticsLimits;
 }
 
 export default function TacticsRightPanel({
@@ -29,6 +32,7 @@ export default function TacticsRightPanel({
   onTacticsPhaseChange,
   startingPlayers,
   tacticsPhase,
+  limits,
 }: TacticsRightPanelProps): JSX.Element {
   const { t } = useTranslation();
 
@@ -186,6 +190,7 @@ export default function TacticsRightPanel({
           <PhaseBlueprintPanel
             tacticsPhase={tacticsPhase}
             onTacticsPhaseChange={onTacticsPhaseChange}
+            limits={limits}
           />
         )}
       </div>

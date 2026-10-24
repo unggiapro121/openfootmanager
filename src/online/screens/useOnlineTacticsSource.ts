@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import type { TacticsLimits } from "../../components/tactics/licenceLimits";
 import type { TacticsBoardSource } from "../../components/tactics/tacticsBoardSource";
 import type { MyClubView } from "../api";
 import { online } from "../client";
@@ -18,7 +19,24 @@ export type SetupProblem =
   | { issue: "unknownFormation" }
   | { issue: "startingElevenSize" }
   | { issue: "duplicateStarter"; playerId: string }
-  | { issue: "notInSquad"; playerId: string };
+  | { issue: "notInSquad"; playerId: string }
+  // Closed by the coach's licence (S-9).
+  | { issue: "lockedFormation" }
+  | { issue: "lockedPlayStyle" }
+  | { issue: "lockedRole"; playerId: string }
+  | { issue: "lockedTactics" };
+
+/** Every issue the client words; a newer server's other issues read as `unknown`. */
+export const KNOWN_SETUP_ISSUES: ReadonlySet<string> = new Set([
+  "unknownFormation",
+  "startingElevenSize",
+  "duplicateStarter",
+  "notInSquad",
+  "lockedFormation",
+  "lockedPlayStyle",
+  "lockedRole",
+  "lockedTactics",
+]);
 
 /** What the last write said, beyond the club the board shows. */
 export type SetupOutcome =
@@ -52,7 +70,10 @@ function outcomeOf(error: OnlineApiError): SetupOutcome {
  * built on the club the server last confirmed, so two quick changes never undo each other. The
  * board shows a change once the server confirms it, as with the desktop backend.
  */
-export function useOnlineTacticsSource(club: MyClubView): {
+export function useOnlineTacticsSource(
+  club: MyClubView,
+  limits?: TacticsLimits,
+): {
   source: TacticsBoardSource;
   outcome: SetupOutcome;
 } {
@@ -97,9 +118,11 @@ export function useOnlineTacticsSource(club: MyClubView): {
       setMatchRoles: (roles) => write({ kind: "matchRoles", roles }),
       setTacticsPhase: (patch) => write({ kind: "tacticsPhase", patch }),
       setPlayerRole: (playerId, role) => write({ kind: "playerRole", playerId, role }),
+      limits,
     }),
-    // `write` reads the store when it runs, so the source changes only with the club.
-    [club],
+    // `write` reads the store when it runs, so the source changes only with the club and its
+    // licence.
+    [club, limits],
   );
 
   return { source, outcome };

@@ -156,7 +156,12 @@
         "unknownFormation": "O jogo não conhece essa tática.",
         "startingElevenSize": "O onze inicial tem de ter exatamente 11 jogadores.",
         "duplicateStarter": "{{player}} está duas vezes no onze inicial.",
-        "notInSquad": "{{player}} não está no teu plantel."
+        "notInSquad": "{{player}} não está no teu plantel.",
+        "lockedFormation": "A sua licença de treinador ainda não abre esta formação.",
+        "lockedPlayStyle": "A sua licença de treinador ainda não abre este estilo de jogo.",
+        "lockedRole": "A sua licença de treinador ainda não abre a função de {{player}}.",
+        "lockedTactics": "Uma instrução que a sua licença ainda não abre não está no valor por defeito.",
+        "unknown": "O servidor recusou esta tática por um motivo que esta versão do jogo não conhece. Atualize o jogo."
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "Estás a orientar a tua equipa. Se saíres cerca de 20 segundos, a IA orienta-a até voltares.",
       "stay": "Ficar",
       "go": "Sair"
+    },
+    "licence": {
+      "title": "Licença de treinador",
+      "held": "{{licence}} · nível {{level}}",
+      "next": "Seguinte: {{licence}} no nível {{level}}",
+      "highest": "A licença mais alta: está tudo aberto",
+      "pending": "A partir da próxima época",
+      "notice": {
+        "title": "Época {{season}}: a sua tática ajusta-se agora à sua licença {{licence}}",
+        "formation": "Formação {{from}} → {{to}}",
+        "playStyle": "Estilo de jogo {{from}} → {{to}}",
+        "dials": "Instruções repostas por defeito: {{count}}",
+        "roles": "Funções repostas em Padrão: {{count}}",
+        "dismiss": "Entendido",
+        "failed": "Não foi possível fechar este aviso. Tente novamente."
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "Dois centrais de choque: os dois saem e o espaço nas costas fica livre no contra-ataque.",
       "covers": "Dois centrais de cobertura: os dois recuam e a entrada da área fica livre."
     },
-    "masteryEarnedHint": "O domínio só cresce nos jogos que orientas tu (Ir para o Campo)."
+    "masteryEarnedHint": "O domínio só cresce nos jogos que orientas tu (Ir para o Campo).",
+    "licence": {
+      "tier_1": "Formação",
+      "tier_2": "Nacional",
+      "tier_3": "Continental",
+      "tier_4": "Máxima",
+      "lockedOption": "{{option}} (licença no nível {{level}})",
+      "lockedHint": "Abre com a licença {{licence}}, no nível de treinador {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Calendário Semanal",

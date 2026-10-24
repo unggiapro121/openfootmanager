@@ -19,6 +19,7 @@ import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers
 import type { PlayerRole, PositionRating, TacticsPhaseSettings } from "../../store/types";
 import { ratingAtPosition } from "../../lib/positionRatings";
 import { centreBackPairGap, getRoleOptions } from "../../lib/playerRoles";
+import { type TacticsLimits, licenceLock, lockedOption } from "./licenceLimits";
 
 interface TacticsPitchProps {
   benchPlayers?: TacticsRosterPlayer[];
@@ -27,6 +28,8 @@ interface TacticsPitchProps {
   matchRoles?: TeamMatchRolesData;
   onRoleChange?: (playerId: string, role: PlayerRole) => void;
   playerRoles?: Record<string, PlayerRole>;
+  /** What the coach's licence closes (online); nothing when absent. */
+  limits?: TacticsLimits;
   tacticsPhase?: TacticsPhaseSettings;
   comparePlayerId: string | null;
   hoveredSlot: number | null;
@@ -202,6 +205,7 @@ export default function TacticsPitch({
   formation,
   matchRoles,
   onRoleChange,
+  limits,
   playerRoles,
   tacticsPhase,
   comparePlayerId,
@@ -395,11 +399,18 @@ export default function TacticsPitch({
                                       // rejected and silently revert (#272).
                                       slot.position,
                                       playerRoles?.[player.id] ?? "Standard",
-                                    ).map((role) => (
-                                      <option key={role} value={role}>
-                                        {t(`tactics.playerRoles.${role}`, role)}
-                                      </option>
-                                    ))}
+                                    ).map((role) => {
+                                      const label = t(`tactics.playerRoles.${role}`, role);
+                                      const lock = licenceLock(limits, {
+                                        kind: "role",
+                                        value: role,
+                                      });
+                                      return (
+                                        <option key={role} value={role} disabled={lock !== null}>
+                                          {lock ? lockedOption(t, label, lock) : label}
+                                        </option>
+                                      );
+                                    })}
                                   </Select>
                                 </div>
                               )}

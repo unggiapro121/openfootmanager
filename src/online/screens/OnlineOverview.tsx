@@ -10,6 +10,8 @@ import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import ClubCard from "./ClubCard";
 import FixtureLine from "./FixtureLine";
+import LicenceCard from "./LicenceCard";
+import LicenceNotice from "./LicenceNotice";
 import NextFixtureCard from "./NextFixtureCard";
 import SeasonCard from "./SeasonCard";
 
@@ -22,12 +24,16 @@ export default function OnlineOverview() {
   if (!club) return null;
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <SeasonCard />
-      <NextFixtureCard />
-      <ClubCard club={club} />
-      <LeagueCard clubId={club.club.id} />
-      <RecentResultCard />
+    <div className="space-y-6">
+      <LicenceNotice />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SeasonCard />
+        <NextFixtureCard />
+        <ClubCard club={club} />
+        <LeagueCard clubId={club.club.id} />
+        <RecentResultCard />
+        <LicenceCard licence={club.licence} />
+      </div>
     </div>
   );
 }
