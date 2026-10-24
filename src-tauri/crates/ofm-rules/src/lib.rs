@@ -25,6 +25,7 @@ pub mod assigned_traits;
 pub mod attribute_split;
 pub mod coach_progress;
 pub mod facilities;
+pub mod licence;
 pub mod lineup_assignment;
 pub mod mastery_xp;
 pub mod match_form;

@@ -3659,7 +3659,8 @@
         "notYourSide": "Yalnızca kendi takımına talimat verebilirsin.",
         "commandsClosed": "Maçın bu aşamasında artık değişiklik yapılamaz.",
         "unknownFormation": "Bu diziliş kullanılamıyor.",
-        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir."
+        "tooManyUnderPricedDials": "Takımın zaten temkinli ayarlardan ikisini kullanıyor (geride savunma hattı, kompakt blok, dar genişlik, uzun karşı baskı). Önce birini değiştir.",
+        "lockedByLicence": "Antrenörlük lisansın henüz bu talimata izin vermiyor."
       },
       "csv": {
         "writeFailed": "CSV dosyası yazılamadı."

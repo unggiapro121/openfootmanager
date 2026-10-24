@@ -3659,7 +3659,8 @@
         "notYourSide": "Pokyny můžete dávat jen svému týmu.",
         "commandsClosed": "V této fázi zápasu už nelze nic měnit.",
         "unknownFormation": "Tato formace není k dispozici.",
-        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte."
+        "tooManyUnderPricedDials": "Váš tým už používá dvě opatrná nastavení (hluboká obrana, kompaktní blok, úzká šířka, dlouhý protipressing). Nejdřív jedno z nich změňte.",
+        "lockedByLicence": "Vaše trenérská licence tento pokyn zatím neumožňuje."
       },
       "csv": {
         "writeFailed": "Nepodařilo se zapsat soubor CSV."

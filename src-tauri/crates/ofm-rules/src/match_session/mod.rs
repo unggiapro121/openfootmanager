@@ -18,7 +18,7 @@ mod seed;
 mod session;
 
 pub use check::{
-    COMMANDS_CLOSED, NOT_ON_PITCH, NOT_YOUR_SIDE, ROLE_NOT_FOR_POSITION,
+    COMMANDS_CLOSED, LOCKED_BY_LICENCE, NOT_ON_PITCH, NOT_YOUR_SIDE, ROLE_NOT_FOR_POSITION,
     TOO_MANY_UNDER_PRICED_DIALS, UNKNOWN_FORMATION, check_command,
 };
 pub use control::control_share;

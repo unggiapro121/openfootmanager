@@ -237,6 +237,8 @@ fn a_match_between_two_clubs_plays_from_domain_data_alone() {
         ai_home: AiProfile::default(),
         ai_away: AiProfile::default(),
         injury_window_steps: None,
+        licence_home: None,
+        licence_away: None,
     };
 
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);

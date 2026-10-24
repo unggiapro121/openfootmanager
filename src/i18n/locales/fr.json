@@ -3634,7 +3634,8 @@
         "notYourSide": "Vous ne pouvez donner des consignes qu'à votre équipe.",
         "commandsClosed": "Plus aucun changement n'est possible à ce stade du match.",
         "unknownFormation": "Ce schéma n'est pas disponible.",
-        "tooManyUnderPricedDials": "Votre équipe utilise déjà deux réglages prudents (ligne basse, bloc compact, faible largeur, contre-pressing long). Modifiez-en un d'abord."
+        "tooManyUnderPricedDials": "Votre équipe utilise déjà deux réglages prudents (ligne basse, bloc compact, faible largeur, contre-pressing long). Modifiez-en un d'abord.",
+        "lockedByLicence": "Votre licence d'entraîneur ne permet pas encore cette consigne."
       },
       "csv": {
         "writeFailed": "Échec de l'écriture du fichier CSV."

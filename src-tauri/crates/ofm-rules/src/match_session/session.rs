@@ -12,10 +12,11 @@ use engine::{
 use rand_chacha::ChaCha12Rng;
 use serde::{Deserialize, Serialize};
 
-use super::check::check_command;
+use super::check::{LOCKED_BY_LICENCE, check_command};
 use super::input::{Controller, InputRecord, InputSource, MatchInput};
 use super::minute_hash::minute_hash;
 use super::seed::MatchSeed;
+use crate::licence::LicenceControls;
 
 /// Everything about a match fixed when it kicks off: the two sides with their benches, the
 /// config, the seed, and the profile each side's AI decides by. Kept as it was at kick-off, it is
@@ -36,6 +37,14 @@ pub struct MatchSetup {
     /// manager as long as it takes: the desktop pauses the match.
     #[serde(default)]
     pub injury_window_steps: Option<u32>,
+    /// What each side's coach may set (the online licence, phase 3 S-9), kept as the open lists so
+    /// a later release that opens more leaves this match as it was. `None`, the desktop's and a
+    /// season's without licences, opens everything; it is left out of the stored setup, so a
+    /// setup without licences reads and hashes as it did before.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub licence_home: Option<LicenceControls>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub licence_away: Option<LicenceControls>,
 }
 
 /// One step as it happened: the engine's result, and the minute hash of the match after it.
@@ -54,6 +63,7 @@ pub struct MatchSession {
     seed: MatchSeed,
     engine_rng: ChaCha12Rng,
     ai: [AiProfile; 2],
+    licences: [Option<LicenceControls>; 2],
     controllers: [Controller; 2],
     step_seq: u32,
     next_order: u32,
@@ -102,6 +112,7 @@ impl MatchSession {
             engine_rng: setup.seed.engine_rng(),
             seed: setup.seed,
             ai: [setup.ai_home, setup.ai_away],
+            licences: [setup.licence_home, setup.licence_away],
             controllers: [Controller::Ai, Controller::Ai],
             step_seq: 0,
             next_order: 0,
@@ -149,7 +160,12 @@ impl MatchSession {
                 continue;
             }
             let mut rng = self.seed.ai_rng(side, self.step_seq);
-            let commands = ai::ai_decide(&self.state, side, &self.ai[index(side)], &mut rng);
+            // The AI holding a side gives only the orders that side's licence opens, so it reaches
+            // for the next order instead of losing its turn to a refusal (S9-7).
+            let licence = self.licences[index(side)].as_ref();
+            let allows = |command: &MatchCommand| licence.is_none_or(|l| l.allows_command(command));
+            let commands =
+                ai::ai_decide_within(&self.state, side, &self.ai[index(side)], &mut rng, &allows);
             for command in commands {
                 // A command the rules refuse is dropped and not logged, as the engine always
                 // dropped the AI's impossible commands; the refusal is not part of the match.
@@ -220,6 +236,14 @@ impl MatchSession {
         command: MatchCommand,
     ) -> Result<(), String> {
         check_command(&self.state, issuer, &command)?;
+        // After the shared check, so an order for the other side or after the whistle is refused
+        // for that first. Every source alike: a person, the AI, the system (S9-6).
+        if self.licences[index(issuer)]
+            .as_ref()
+            .is_some_and(|licence| !licence.allows_command(&command))
+        {
+            return Err(LOCKED_BY_LICENCE.to_string());
+        }
         self.state.apply_command(command.clone())?;
         self.record(issuer, source, MatchInput::Command(command));
         Ok(())

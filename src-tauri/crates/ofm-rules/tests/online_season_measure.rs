@@ -219,6 +219,8 @@ fn play(
         ai_home: AiProfile::default(),
         ai_away: AiProfile::default(),
         injury_window_steps: None,
+        licence_home: None,
+        licence_away: None,
     };
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);
     while !session.is_finished() {
