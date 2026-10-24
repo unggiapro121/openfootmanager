@@ -78,8 +78,15 @@ function LiveMatchScreen({
   const [radarOpen, setRadarOpen] = useState(true);
   const [replacing, setReplacing] = useState<string | undefined>(undefined);
   const { view, state, mine } = data;
+  // The server plays a minute every `stepMillis` and does not wait for the radar: quiet minutes
+  // are acted out in full so the radar does not stand still, and it may fall three minutes
+  // behind before it skips play, so a long move a minute ends on is not cut short.
   const pacing = useMemo(
-    () => ({ timeScale: RADAR_PACING.timeScale, maxLagMs: 2 * view.stepMillis }),
+    () => ({
+      timeScale: RADAR_PACING.timeScale,
+      maxLagMs: 3 * view.stepMillis,
+      minuteMs: view.stepMillis,
+    }),
     [view.stepMillis],
   );
 
