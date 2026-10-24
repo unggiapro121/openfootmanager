@@ -84,12 +84,11 @@ describe("the coach's licence online", () => {
     stage(firstLicence());
     renderOnline("/online/tactics");
     const shape = await screen.findByRole("combobox", { name: "tactics.formation" });
-    await waitFor(() => {
-      fireEvent.click(shape);
-      expect(
-        screen.getByRole("option", { name: "tactics.licence.lockedOption:4-2-3-1|2" }),
-      ).toBeDisabled();
-    });
+    fireEvent.click(shape);
+    // The list re-renders when the licence table arrives: wait for the closed option, once.
+    expect(
+      await screen.findByRole("option", { name: "tactics.licence.lockedOption:4-2-3-1|2" }),
+    ).toBeDisabled();
     expect(screen.getByRole("option", { name: "4-3-3" })).toBeEnabled();
   });
 
