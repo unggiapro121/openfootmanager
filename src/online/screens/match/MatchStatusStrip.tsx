@@ -7,6 +7,7 @@ import { resolveBackendError } from "../../../utils/backendI18n";
 import type { Side } from "../../api/engine";
 import { injuryStepsLeft } from "../../convert/matchState";
 import { useOnlineNow } from "../../clock";
+import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import type { LiveMatchData } from "./useLiveMatch";
 
 const sideKey = (side: Side) => (side === "Home" ? "home" : "away");
@@ -96,6 +97,7 @@ export function MatchStatusStrip({
           <span className="font-heading font-bold uppercase tracking-wider">
             {t("match.fullTime")}
           </span>
+          {view.kind === "friendly" && <FriendlyAfterMatch matchId={view.id} inline />}
           {view.fixtureId && (
             <Link
               to={`/online/fixtures/${view.fixtureId}`}
