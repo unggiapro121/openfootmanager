@@ -350,6 +350,31 @@
         "dismiss": "Got it",
         "failed": "Could not dismiss this notice. Try again."
       }
+    },
+    "roadmap": {
+      "title": "Coaching roadmap",
+      "standing": "Level {{level}} · {{licence}} licence",
+      "level": "Online coach level {{level}}",
+      "record": "{{seasons}} seasons played · promoted {{promotions}} times",
+      "howTitle": "How to go up a level",
+      "howTop": "Finish a season in the top {{places}} of your {{size}}-club league: +1 level",
+      "howNewcomer": "Took your club during the season? You need at least {{matches}} matches in charge for it to count",
+      "howNeverDown": "Your level never goes down",
+      "noSeason": "No online season yet: how to go up a level shows once a season opens.",
+      "allOpen": "No coaching licences this season: every tactical control is open.",
+      "pending": "Licences apply to matches from next season; the setups you save already follow yours.",
+      "licences": "Coaching licences",
+      "atLevel": "from level {{level}}",
+      "held": "Held",
+      "levelsToGo": "{{levels}} levels to go",
+      "totals": "{{formations}} formations · {{styles}} play styles · {{dials}} instructions · {{roles}} roles",
+      "opensFirst": "What it opens",
+      "opensMore": "What it adds",
+      "addedFormations": "Formations: {{list}}",
+      "addedStyles": "Play styles: {{list}}",
+      "addedDials": "Instructions: {{list}}",
+      "addedRoles": "Roles: {{list}}",
+      "addedNothing": "Nothing new"
     }
   },
   "coach": {

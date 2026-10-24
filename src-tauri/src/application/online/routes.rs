@@ -48,6 +48,8 @@ use Part::{Id, Literal as L};
 pub const ROUTES: &[Route] = &[
     route("GET", &[L("v1"), L("me")], &[]),
     route("PATCH", &[L("v1"), L("me")], &[]),
+    // The coach's online career and the road ahead, for his profile.
+    route("GET", &[L("v1"), L("me"), L("career")], &[]),
     route("GET", &[L("v1"), L("season")], &[]),
     route("POST", &[L("v1"), L("clubs"), L("takeover")], &[]),
     route("GET", &[L("v1"), L("clubs"), L("mine")], &[]),

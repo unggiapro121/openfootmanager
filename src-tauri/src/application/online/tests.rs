@@ -112,13 +112,16 @@ fn a_club_s_season_is_one_route() {
 }
 
 /// Given a signed-in coach,
-/// when the webview reads the licence table and dismisses the licence notice (S-9),
+/// when the webview reads the coach's career, the licence table, and dismisses the licence notice
+/// (S-9),
 /// then each goes out to its route with its method, and no other method of them is let through.
 #[test]
 fn the_licence_routes_go_out() {
     let (server, session) = signed_in(|_| ok(json!({})));
     let table = ["v1", "licences"];
     let notice = ["v1", "clubs", "mine", "licence-notice"];
+    let career = ["v1", "me", "career"];
+    send(&session, &request("GET", &career), 0).expect("an answer");
     send(&session, &request("GET", &table), 0).expect("an answer");
     send(&session, &request("DELETE", &notice), 0).expect("an answer");
     assert_eq!(
@@ -136,6 +139,7 @@ fn the_licence_routes_go_out() {
     assert_eq!(
         paths,
         vec![
+            ("GET".to_string(), "/v1/me/career".to_string()),
             ("GET".to_string(), "/v1/licences".to_string()),
             (
                 "DELETE".to_string(),

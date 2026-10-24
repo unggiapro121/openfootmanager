@@ -113,12 +113,15 @@ describe("online client", () => {
   });
 
   // Given a coach with a licence (S-9),
-  // when they read the licence table and dismiss the notice of what the server fitted,
-  // then the table is a GET of its route and the dismissal a DELETE with a key.
+  // when they read their career, the licence table, and dismiss the notice of what the server
+  // fitted,
+  // then the career and the table are GETs of their routes and the dismissal a DELETE with a key.
   it("reads the licences and dismisses the licence notice", async () => {
+    await online.me.career();
     await online.licences.table();
     await online.clubs.dismissLicenceNotice("seen-1");
     expect(server.sent).toEqual([
+      { method: "GET", segments: ["v1", "me", "career"] },
       { method: "GET", segments: ["v1", "licences"] },
       {
         method: "DELETE",

@@ -350,6 +350,31 @@
         "dismiss": "Anladım",
         "failed": "Bu bildirim kapatılamadı. Tekrar dene."
       }
+    },
+    "roadmap": {
+      "title": "Teknik direktör yol haritası",
+      "standing": "Seviye {{level}} · {{licence}} lisansı",
+      "level": "Çevrim içi teknik direktör seviyesi {{level}}",
+      "record": "{{seasons}} sezon oynandı · {{promotions}} kez yükseldi",
+      "howTitle": "Nasıl seviye atlanır",
+      "howTop": "Sezonu {{size}} kulüplü liginde ilk {{places}} içinde bitir: +1 seviye",
+      "howNewcomer": "Kulübü sezon ortasında mı aldın? Sayılması için en az {{matches}} maç yönetmen gerekir",
+      "howNeverDown": "Seviyen asla düşmez",
+      "noSeason": "Henüz çevrim içi sezon yok: seviye atlama yolu bir sezon açılınca görünür.",
+      "allOpen": "Bu sezon lisans uygulanmıyor: tüm taktik ayarlar açık.",
+      "pending": "Lisanslar maçlara gelecek sezondan itibaren uygulanır; kaydettiğin kadrolar şimdiden lisansına uymalı.",
+      "licences": "Teknik direktör lisansları",
+      "atLevel": "{{level}}. seviyeden itibaren",
+      "held": "Mevcut",
+      "levelsToGo": "{{levels}} seviye kaldı",
+      "totals": "{{formations}} diziliş · {{styles}} oyun stili · {{dials}} talimat · {{roles}} rol",
+      "opensFirst": "Neleri açar",
+      "opensMore": "Neleri ekler",
+      "addedFormations": "Dizilişler: {{list}}",
+      "addedStyles": "Oyun stilleri: {{list}}",
+      "addedDials": "Talimatlar: {{list}}",
+      "addedRoles": "Roller: {{list}}",
+      "addedNothing": "Yeni bir şey yok"
     }
   },
   "coach": {
