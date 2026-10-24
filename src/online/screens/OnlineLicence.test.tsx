@@ -10,6 +10,7 @@ import {
   renderOnline,
   resetOnline,
   SEASON,
+  squadPlayer,
 } from "../../test-utils/onlineTestKit";
 
 // Keys stand for the text, with their values after a colon.
@@ -43,9 +44,9 @@ const TABLE: LicenceTableView = {
       dials: [],
       roles: [],
     },
-    { tier: 2, formations: ALL, playStyles: ["Balanced"], dials: [], roles: [] },
-    { tier: 3, formations: ALL, playStyles: ["Balanced"], dials: [], roles: [] },
-    { tier: 4, formations: ALL, playStyles: ["Balanced"], dials: [], roles: [] },
+    { tier: 2, formations: ALL, playStyles: ["Balanced"], dials: [], roles: ["Poacher"] },
+    { tier: 3, formations: ALL, playStyles: ["Balanced"], dials: [], roles: ["Poacher"] },
+    { tier: 4, formations: ALL, playStyles: ["Balanced"], dials: [], roles: ["Poacher"] },
   ],
 };
 
@@ -90,6 +91,47 @@ describe("the coach's licence online", () => {
       await screen.findByRole("option", { name: "tactics.licence.lockedOption:4-2-3-1|2" }),
     ).toBeDisabled();
     expect(screen.getByRole("option", { name: "4-3-3" })).toBeEnabled();
+  });
+
+  // Given a first-licence coach with a 4-4-2 of eleven on the pitch,
+  // when he opens a striker's role on the pitch,
+  // then Poacher is shown closed until level 2 and Standard stays open.
+  it("shows the roles a licence closes as closed on the pitch", async () => {
+    const lines: [string, number][] = [
+      ["Goalkeeper", 1],
+      ["Defender", 4],
+      ["Midfielder", 4],
+      ["Forward", 2],
+    ];
+    const players = lines.flatMap(([position, count]) =>
+      Array.from({ length: count }, (_, i) =>
+        squadPlayer({
+          id: `${position}-${i}`,
+          fullName: `${position} ${i}`,
+          matchName: `${position} ${i}`,
+          position,
+          naturalPosition: position === "Forward" ? "Striker" : position,
+          shirtNumber: 1,
+        }),
+      ),
+    );
+    const base = firstLicence();
+    stage({
+      ...base,
+      players,
+      setup: { ...base.setup, formation: "4-4-2", startingXiIds: players.map((p) => p.id) },
+    });
+    renderOnline("/online/tactics");
+    await waitFor(() =>
+      expect(server.requests.some((r) => r.segments.join("/") === "v1/licences")).toBe(true),
+    );
+    const roles = await screen.findAllByRole("combobox", { name: "" });
+    const striker = roles[roles.length - 1];
+    fireEvent.click(striker);
+    expect(
+      await screen.findByRole("option", { name: "tactics.licence.lockedOption:Poacher|2" }),
+    ).toBeDisabled();
+    expect(screen.getByRole("option", { name: "Standard" })).toBeEnabled();
   });
 
   // Given a season without licences (no licence on the club),

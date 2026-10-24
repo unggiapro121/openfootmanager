@@ -43,6 +43,14 @@ const balanced: TacticsLibraryEntry = {
   playStyle: "Balanced",
   type: "preset",
 };
+const shapeOnly: TacticsLibraryEntry = {
+  description: "Open style, closed shape",
+  formation: "4-2-3-1",
+  id: "preset:c",
+  name: "Shape preset",
+  playStyle: "Balanced",
+  type: "preset",
+};
 const counter: TacticsLibraryEntry = {
   description: "Needs the second licence",
   formation: "4-2-3-1",
@@ -67,7 +75,7 @@ function commandBar(limits?: TacticsLimits) {
       onSave={vi.fn()}
       onSelectTactic={vi.fn()}
       onTacticNameChange={vi.fn()}
-      tacticLibrary={[balanced, counter]}
+      tacticLibrary={[balanced, shapeOnly, counter]}
       tacticName="Open preset"
       limits={limits}
     />,
@@ -126,6 +134,8 @@ describe("the tactics board under a licence", () => {
     expect(within(library).getByRole("option", { name: /Open preset/ })).toBeEnabled();
     const closed = within(library).getByRole("option", { name: /Closed preset/ });
     expect(closed).toBeDisabled();
+    // A closed shape alone is enough.
+    expect(within(library).getByRole("option", { name: /Shape preset/ })).toBeDisabled();
     expect(within(closed).getByText(/^tactics\.licence\.lockedHint:/)).toBeInTheDocument();
   });
 
