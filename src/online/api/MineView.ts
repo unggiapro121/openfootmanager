@@ -4,6 +4,7 @@ import type { SentCommand } from "./SentCommand";
 import type { SetPieceTakers } from "./engine/SetPieceTakers";
 import type { Side } from "./engine/Side";
 import type { TacticsConfig } from "./engine/TacticsConfig";
+import type { LicenceControls } from "./rules/LicenceControls";
 
 /**
  * `GET /v1/matches/{id}/mine`: the caller's own side of a match, what the frames never show
@@ -14,4 +15,9 @@ export type MineView = { side: Side, lastSeq: number, tactics: TacticsConfig,
 /**
  * The role of each player of the side, the eleven then the bench.
  */
-roles: Array<PlayerRoleLine>, setPieces: SetPieceTakers, commands: Array<SentCommand>, };
+roles: Array<PlayerRoleLine>, setPieces: SetPieceTakers, commands: Array<SentCommand>, 
+/**
+ * What the caller's side may set in this match, as it kicked off (S-9 S9-5); none when
+ * everything is open.
+ */
+licence?: LicenceControls, };

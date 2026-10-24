@@ -156,7 +156,12 @@
         "unknownFormation": "游戏中没有这个阵型。",
         "startingElevenSize": "首发阵容必须正好 11 人。",
         "duplicateStarter": "{{player}} 在首发阵容中出现了两次。",
-        "notInSquad": "{{player}} 不在你的阵中。"
+        "notInSquad": "{{player}} 不在你的阵中。",
+        "lockedFormation": "你的教练执照尚未开放此阵型。",
+        "lockedPlayStyle": "你的教练执照尚未开放此战术风格。",
+        "lockedRole": "你的教练执照尚未开放 {{player}} 的角色。",
+        "lockedTactics": "有一项你的执照尚未开放的指令不是默认值。",
+        "unknown": "服务器以本版本游戏未知的原因拒绝了此阵容。请更新游戏。"
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "你正在指挥自己的球队。离开约 20 秒后，AI 将接管指挥，直到你回来。",
       "stay": "留下",
       "go": "离开"
+    },
+    "licence": {
+      "title": "教练执照",
+      "held": "{{licence}} · 等级 {{level}}",
+      "next": "下一级：{{licence}}，等级 {{level}}",
+      "highest": "最高执照：所有设置均已开放",
+      "pending": "下赛季起生效",
+      "notice": {
+        "title": "第 {{season}} 赛季：你的阵容已按{{licence}}执照调整",
+        "formation": "阵型 {{from}} → {{to}}",
+        "playStyle": "战术风格 {{from}} → {{to}}",
+        "dials": "恢复为默认的指令：{{count}}",
+        "roles": "恢复为标准的角色：{{count}}",
+        "dismiss": "知道了",
+        "failed": "无法关闭此通知，请重试。"
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "两名盯人中卫：两人都会上抢，反击时身后空当无人照看。",
       "covers": "两名拖后中卫：两人都会回撤，禁区前沿无人防守。"
     },
-    "masteryEarnedHint": "只有你亲自指挥的比赛（进入球场）才会提升熟练度。"
+    "masteryEarnedHint": "只有你亲自指挥的比赛（进入球场）才会提升熟练度。",
+    "licence": {
+      "tier_1": "入门",
+      "tier_2": "国家级",
+      "tier_3": "洲际级",
+      "tier_4": "精英",
+      "lockedOption": "{{option}}（教练等级 {{level}} 解锁）",
+      "lockedHint": "获得{{licence}}执照（教练等级 {{level}}）后解锁"
+    }
   },
   "training": {
     "weeklySchedule": "每周日程",

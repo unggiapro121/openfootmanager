@@ -146,6 +146,7 @@ export default function TacticsBoard({
         }}
         tacticLibrary={tacticLibrary}
         coach={coach}
+        limits={source.limits}
       />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[260px_1fr_270px] xl:items-start">
@@ -195,6 +196,7 @@ export default function TacticsBoard({
             });
           }}
           playerRoles={team?.player_roles}
+          limits={source.limits}
           tacticsPhase={team?.tactics_phase}
           onAssignBestFit={(playerId) => {
             void handleAssignBestFit(playerId);
@@ -236,6 +238,7 @@ export default function TacticsBoard({
           }}
           startingPlayers={startingXI}
           tacticsPhase={team?.tactics_phase}
+          limits={source.limits}
         />
       </div>
 

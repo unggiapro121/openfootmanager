@@ -156,7 +156,12 @@
         "unknownFormation": "Formasi itu tidak dikenal permainan.",
         "startingElevenSize": "Starting eleven harus berisi tepat 11 pemain.",
         "duplicateStarter": "{{player}} tercantum dua kali di starting eleven.",
-        "notInSquad": "{{player}} tidak ada di skuadmu."
+        "notInSquad": "{{player}} tidak ada di skuadmu.",
+        "lockedFormation": "Lisensi pelatihmu belum membuka formasi ini.",
+        "lockedPlayStyle": "Lisensi pelatihmu belum membuka gaya bermain ini.",
+        "lockedRole": "Lisensi pelatihmu belum membuka peran {{player}}.",
+        "lockedTactics": "Ada instruksi yang belum dibuka lisensimu dan tidak di nilai bawaannya.",
+        "unknown": "Server menolak susunan ini karena alasan yang belum dikenal versi game ini. Perbarui game."
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "Anda sedang memimpin tim Anda. Jika pergi sekitar 20 detik, AI akan memimpin sampai Anda kembali.",
       "stay": "Tetap di sini",
       "go": "Tinggalkan"
+    },
+    "licence": {
+      "title": "Lisensi pelatih",
+      "held": "{{licence}} · tingkat {{level}}",
+      "next": "Berikutnya: {{licence}} di tingkat {{level}}",
+      "highest": "Lisensi tertinggi: semua pengaturan terbuka",
+      "pending": "Mulai musim depan",
+      "notice": {
+        "title": "Musim {{season}}: susunan timmu kini sesuai lisensi {{licence}}",
+        "formation": "Formasi {{from}} → {{to}}",
+        "playStyle": "Gaya bermain {{from}} → {{to}}",
+        "dials": "Instruksi kembali ke bawaan: {{count}}",
+        "roles": "Peran kembali ke Standar: {{count}}",
+        "dismiss": "Mengerti",
+        "failed": "Pemberitahuan ini gagal ditutup. Coba lagi."
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "Dua stopper di bek tengah: keduanya maju, dan ruang di belakang mereka terbuka saat serangan balik.",
       "covers": "Dua bek penyapu di tengah: keduanya mundur, dan tepi kotak penalti dibiarkan terbuka."
     },
-    "masteryEarnedHint": "Penguasaan hanya bertambah di laga yang kamu pimpin sendiri (Ke Lapangan)."
+    "masteryEarnedHint": "Penguasaan hanya bertambah di laga yang kamu pimpin sendiri (Ke Lapangan).",
+    "licence": {
+      "tier_1": "Dasar",
+      "tier_2": "Nasional",
+      "tier_3": "Kontinental",
+      "tier_4": "Utama",
+      "lockedOption": "{{option}} (lisensi di tingkat {{level}})",
+      "lockedHint": "Terbuka dengan lisensi {{licence}}, di tingkat pelatih {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Jadwal Mingguan",

@@ -156,7 +156,12 @@
         "unknownFormation": "The formation is not one the game knows.",
         "startingElevenSize": "The starting eleven must have exactly 11 players.",
         "duplicateStarter": "{{player}} is in the starting eleven twice.",
-        "notInSquad": "{{player}} is not in your squad."
+        "notInSquad": "{{player}} is not in your squad.",
+        "lockedFormation": "Your coaching licence does not open this formation yet.",
+        "lockedPlayStyle": "Your coaching licence does not open this play style yet.",
+        "lockedRole": "Your coaching licence does not open {{player}}'s role yet.",
+        "lockedTactics": "An instruction your coaching licence does not open yet is set away from its default.",
+        "unknown": "The server refused this setup for a reason this version of the game does not know. Update the game."
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "You are in charge of your side. Away from the match for about 20 seconds, the AI takes charge until you come back.",
       "stay": "Stay",
       "go": "Leave"
+    },
+    "licence": {
+      "title": "Coaching licence",
+      "held": "{{licence}} · level {{level}}",
+      "next": "Next: {{licence}} at level {{level}}",
+      "highest": "The highest licence: every control is open",
+      "pending": "From next season",
+      "notice": {
+        "title": "Season {{season}}: your setup now fits your {{licence}} licence",
+        "formation": "Formation {{from}} → {{to}}",
+        "playStyle": "Play style {{from}} → {{to}}",
+        "dials": "Instructions back to default: {{count}}",
+        "roles": "Roles back to Standard: {{count}}",
+        "dismiss": "Got it",
+        "failed": "Could not dismiss this notice. Try again."
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "Two Stoppers at centre-back: both step out, and the space behind them is left open on the break.",
       "covers": "Two Cover CBs at centre-back: both drop off, and the edge of the box is left open."
     },
-    "masteryEarnedHint": "Mastery grows only in matches you manage yourself (Go to the Field)."
+    "masteryEarnedHint": "Mastery grows only in matches you manage yourself (Go to the Field).",
+    "licence": {
+      "tier_1": "Grassroots",
+      "tier_2": "National Pro",
+      "tier_3": "Continental Pro",
+      "tier_4": "Elite",
+      "lockedOption": "{{option}} (licence at level {{level}})",
+      "lockedHint": "Opens with the {{licence}} licence, at coach level {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Weekly Schedule",

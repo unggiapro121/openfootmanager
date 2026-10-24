@@ -112,6 +112,40 @@ fn a_club_s_season_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads the licence table and dismisses the licence notice (S-9),
+/// then each goes out to its route with its method, and no other method of them is let through.
+#[test]
+fn the_licence_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let table = ["v1", "licences"];
+    let notice = ["v1", "clubs", "mine", "licence-notice"];
+    send(&session, &request("GET", &table), 0).expect("an answer");
+    send(&session, &request("DELETE", &notice), 0).expect("an answer");
+    assert_eq!(
+        refused(send(&session, &request("POST", &table), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    assert_eq!(
+        refused(send(&session, &request("GET", &notice), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let paths: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    assert_eq!(
+        paths,
+        vec![
+            ("GET".to_string(), "/v1/licences".to_string()),
+            (
+                "DELETE".to_string(),
+                "/v1/clubs/mine/licence-notice".to_string()
+            ),
+        ]
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview reads and changes its friendly (S-12): its seat, a room made, joined, readied,
 /// left and rematched, the queue joined and left,
 /// then each goes out to its own route with its method, and the routes take no other method.

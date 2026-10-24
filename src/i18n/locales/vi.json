@@ -156,7 +156,12 @@
         "unknownFormation": "Sơ đồ này không có trong game.",
         "startingElevenSize": "Đội hình chính phải có đúng 11 cầu thủ.",
         "duplicateStarter": "{{player}} có mặt hai lần trong đội hình chính.",
-        "notInSquad": "{{player}} không thuộc đội của bạn."
+        "notInSquad": "{{player}} không thuộc đội của bạn.",
+        "lockedFormation": "Bằng HLV của bạn chưa mở sơ đồ này.",
+        "lockedPlayStyle": "Bằng HLV của bạn chưa mở lối chơi này.",
+        "lockedRole": "Bằng HLV của bạn chưa mở vai trò của {{player}}.",
+        "lockedTactics": "Có chỉ đạo mà bằng HLV của bạn chưa mở đang khác mặc định.",
+        "unknown": "Máy chủ từ chối đội hình này vì một lý do mà bản game này chưa biết. Hãy cập nhật game."
       }
     },
     "squad": {
@@ -329,6 +334,22 @@
       "body": "Bạn đang chỉ đạo đội của mình. Rời trận khoảng 20 giây thì AI sẽ chỉ đạo thay cho tới khi bạn quay lại.",
       "stay": "Ở lại",
       "go": "Rời trận"
+    },
+    "licence": {
+      "title": "Bằng HLV",
+      "held": "{{licence}} · cấp {{level}}",
+      "next": "Kế tiếp: {{licence}} ở cấp {{level}}",
+      "highest": "Bằng cao nhất: mọi quyền chỉnh đều mở",
+      "pending": "Từ mùa sau",
+      "notice": {
+        "title": "Mùa {{season}}: đội của bạn đã được chỉnh theo bằng {{licence}}",
+        "formation": "Sơ đồ {{from}} → {{to}}",
+        "playStyle": "Lối chơi {{from}} → {{to}}",
+        "dials": "Chỉ đạo về mặc định: {{count}}",
+        "roles": "Vai trò về Tiêu chuẩn: {{count}}",
+        "dismiss": "Đã hiểu",
+        "failed": "Chưa tắt được thông báo này. Hãy thử lại."
+      }
     }
   },
   "coach": {
@@ -1304,7 +1325,15 @@
       "stoppers": "Hai trung vệ dâng (Stopper): cả hai cùng dâng lên, khoảng trống sau lưng bị bỏ ngỏ khi đối phương phản công.",
       "covers": "Hai trung vệ bọc lót (Cover CB): cả hai cùng lùi sâu, khu vực trước vòng cấm bị bỏ ngỏ."
     },
-    "masteryEarnedHint": "Độ thành thạo chỉ tăng ở trận bạn tự chỉ đạo (Ra sân)."
+    "masteryEarnedHint": "Độ thành thạo chỉ tăng ở trận bạn tự chỉ đạo (Ra sân).",
+    "licence": {
+      "tier_1": "Nhập môn",
+      "tier_2": "Cơ bản",
+      "tier_3": "Chuyên sâu",
+      "tier_4": "Bậc thầy",
+      "lockedOption": "{{option}} (mở ở cấp {{level}})",
+      "lockedHint": "Mở với bằng {{licence}}, ở cấp HLV {{level}}"
+    }
   },
   "training": {
     "weeklySchedule": "Lịch tập hằng tuần",
