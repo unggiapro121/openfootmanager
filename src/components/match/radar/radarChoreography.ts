@@ -1450,8 +1450,10 @@ export function choreographBatch(
   start: RadarScene,
   settle?: RadarSettle,
   minute: MatchEvent[] = events,
-): { beats: RadarBeat[]; end: RadarScene } {
+): { beats: RadarBeat[]; end: RadarScene; acted: MatchEvent[] } {
   const beats: RadarBeat[] = [];
+  /** The events a beat acts out, so the commentary does not tell them a second time. */
+  const acted: MatchEvent[] = [];
   const seen = new Set<string>();
   let scene = start;
   let index = 0;
@@ -1486,6 +1488,7 @@ export function choreographBatch(
         }),
       });
       for (const id of onTheBall(event, staging)) seen.add(id);
+      acted.push(...events.slice(index, index + (staging.consumed ?? 1)));
       scene = timed.end;
     }
     index += staging?.consumed ?? 1;
@@ -1504,7 +1507,7 @@ export function choreographBatch(
     });
     scene = timed.end;
   }
-  return { beats, end: scene };
+  return { beats, end: scene, acted };
 }
 
 /** A beat of `steps` staged from `scene`, timed. */

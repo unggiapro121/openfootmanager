@@ -48,6 +48,7 @@ vi.mock("../../../components/match/radar/MatchRadar2D", () => ({
       {JSON.stringify({
         score: `${snapshot.home_score}-${snapshot.away_score}`,
         maxLagMs: pacing?.maxLagMs,
+        minuteMs: pacing?.minuteMs,
         homeDials: snapshot.home_team.tactics ?? null,
         awayDials: snapshot.away_team.tactics ?? null,
         homeEleven: snapshot.home_team.players.map((player) => player.id),
@@ -157,7 +158,8 @@ describe("opening a match", () => {
     expect(realtime.watches[0]).toMatchObject({ channel: `match:${MATCH}`, lastSeq: 2 });
     expect(radar()).toMatchObject({
       score: "1-0",
-      maxLagMs: 4000,
+      maxLagMs: 6000,
+      minuteMs: 2000,
       homeDials: { defensive_line: "High", width: "Wide" },
       awayDials: null,
     });
