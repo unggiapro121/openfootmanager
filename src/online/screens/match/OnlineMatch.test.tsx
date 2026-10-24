@@ -312,6 +312,32 @@ describe("opening a match", () => {
     ).not.toBeInTheDocument();
   });
 
+  // Given a coach of a finished friendly whose room has moved on (the other coach asked for a
+  // rematch: leg 2, no match yet),
+  // when they watch its replay,
+  // then the replay's controls carry the way back to the room.
+  it("keeps the way back in a friendly's replay", async () => {
+    const view = matchView({
+      kind: "friendly",
+      fixtureId: undefined,
+      status: "finished",
+      lastSeq: 1,
+    });
+    view.state = { ...view.state, isFinished: true, phase: "Finished" };
+    stage({ view, frames: [matchFrame(1, { result: { is_finished: true } })] });
+    const asked = inRoomOf(MATCH, "finished");
+    if (asked.seat?.state === "room") {
+      asked.seat.room = { ...asked.seat.room, status: "full", leg: 2, matchId: undefined };
+    }
+    renderOnline(ROUTE);
+    const controls = await screen.findByRole("region", { name: "online.replay.controls" });
+    act(() => useOnlineStore.setState({ friendly: asked }));
+
+    expect(
+      await within(controls).findByRole("link", { name: "online.friendly.after.back" }),
+    ).toHaveAttribute("href", "/online/friendly");
+  });
+
   // Given a friendly someone outside its room watches (anyone with its id may),
   // when it reaches full time,
   // then they are offered neither a rematch nor the room: neither is theirs.

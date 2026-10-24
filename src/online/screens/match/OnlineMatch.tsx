@@ -7,7 +7,6 @@ import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
-import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import ResourceState from "../ResourceState";
 import { MatchBoard } from "./MatchBoard";
 import { MatchCommandPanel } from "./MatchCommandPanel";
@@ -35,10 +34,7 @@ export default function OnlineMatch() {
         view === null ? (
           <p className="text-sm text-gray-600 dark:text-gray-400">{t("online.replay.gone")}</p>
         ) : isOver(view) ? (
-          <div className="flex flex-col gap-4">
-            {view.kind === "friendly" && <FriendlyAfterMatch matchId={matchId} />}
-            <MatchReplay matchId={matchId} view={view} />
-          </div>
+          <MatchReplay matchId={matchId} view={view} />
         ) : (
           <LiveMatch matchId={matchId} onReplay={reload} />
         )
