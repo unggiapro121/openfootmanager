@@ -272,6 +272,46 @@ describe("opening a match", () => {
     expect(screen.queryByRole("link", { name: "online.match.seeResult" })).not.toBeInTheDocument();
   });
 
+  // Given a coach of a friendly whose opponent already asked for a rematch (the room is full again,
+  // leg 2, no match yet),
+  // when their match reaches full time,
+  // then they still get the way back to the room and the rematch, which now means getting ready.
+  it("keeps the way back when the opponent asked for a rematch first", async () => {
+    stage({ view: matchView({ kind: "friendly", fixtureId: undefined }) });
+    await opened();
+    const asked = inRoomOf(MATCH, "finished");
+    if (asked.seat?.state === "room") {
+      asked.seat.room = { ...asked.seat.room, status: "full", leg: 2, matchId: undefined };
+    }
+    act(() => useOnlineStore.setState({ friendly: asked }));
+
+    push(matchFrame(1, { result: { is_finished: true } }));
+
+    expect(await screen.findByRole("link", { name: "online.friendly.after.back" })).toHaveAttribute(
+      "href",
+      "/online/friendly",
+    );
+    expect(screen.getByRole("button", { name: "online.friendly.room.rematch" })).toBeEnabled();
+  });
+
+  // Given a coach of a friendly whose room has already closed,
+  // when their match reaches full time,
+  // then they get the way back to the friendlies, and no rematch.
+  it("keeps the way back when the room has closed", async () => {
+    stage({ view: matchView({ kind: "friendly", fixtureId: undefined }) });
+    await opened();
+    act(() => useOnlineStore.setState({ friendly: {} }));
+
+    push(matchFrame(1, { result: { is_finished: true } }));
+
+    expect(
+      await screen.findByRole("link", { name: "online.friendly.after.back" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "online.friendly.room.rematch" }),
+    ).not.toBeInTheDocument();
+  });
+
   // Given a friendly someone outside its room watches (anyone with its id may),
   // when it reaches full time,
   // then they are offered neither a rematch nor the room: neither is theirs.
