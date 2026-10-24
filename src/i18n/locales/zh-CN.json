@@ -3634,7 +3634,8 @@
         "notYourSide": "你只能对自己的球队下达指令。",
         "commandsClosed": "比赛进行到这个阶段已无法再做调整。",
         "unknownFormation": "该阵型不可用。",
-        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。"
+        "tooManyUnderPricedDials": "你的球队已使用两项保守设置（防线后撤、紧凑阵型、收窄宽度、长时间反抢）。请先更改其中一项。",
+        "lockedByLicence": "你的教练执照尚未开放此指令。"
       },
       "csv": {
         "writeFailed": "无法写入 CSV 文件。"

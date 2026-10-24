@@ -9,6 +9,8 @@ use domain::player::Player;
 use domain::team::{MatchRoles, PlayStyle, PlayerRole, TacticsPhaseSettings, Team};
 use serde::{Deserialize, Serialize};
 
+use crate::licence::LicenceControls;
+
 /// The players starting a match.
 pub const STARTING_ELEVEN: usize = 11;
 
@@ -40,17 +42,29 @@ pub enum SetupIssue {
     DuplicateStarter(String),
     /// An id in the eleven, the roles or the match roles that is not a player of the squad.
     NotInSquad(String),
+    /// A shape the coach's licence does not open (phase 3, S-9).
+    LockedFormation,
+    /// A play style the coach's licence does not open.
+    LockedPlayStyle,
+    /// A role, given to this player, that the coach's licence does not open.
+    LockedRole(String),
+    /// At least one dial the licence does not open is set away from its default. Which ones the
+    /// client reads from the licence: the content of this enum is a player id.
+    LockedTactics,
 }
 
-/// `team` with `setup` applied, when every name and id in it is the club's. A role a player can
-/// no longer play where he now stands is dropped, as the game drops it (`squad::reconcile_roles`);
+/// `team` with `setup` applied, when every name and id in it is the club's and `controls` (the
+/// coach's licence; everything open offline) opens every choice in it. A role a player can no
+/// longer play where he now stands is dropped, as the game drops it (`squad::reconcile_roles`);
 /// returns how many were. Nothing is changed when there is an issue.
 pub fn apply_setup(
     team: &mut Team,
     squad: &[&Player],
     setup: ClubSetup,
+    controls: &LicenceControls,
 ) -> Result<usize, Vec<SetupIssue>> {
-    let issues = setup_issues(squad, &setup);
+    let mut issues = setup_issues(squad, &setup);
+    issues.extend(crate::licence::setup_issues(&setup, controls));
     if !issues.is_empty() {
         return Err(issues);
     }
@@ -188,7 +202,10 @@ mod tests {
         let mut chosen = setup(&ids.iter().map(String::as_str).collect::<Vec<_>>());
         chosen.match_roles.captain = Some("p11".into());
         let mut club = team();
-        assert_eq!(apply_setup(&mut club, &squad, chosen), Ok(0));
+        assert_eq!(
+            apply_setup(&mut club, &squad, chosen, &LicenceControls::all_open()),
+            Ok(0)
+        );
         assert_eq!(club.formation, "4-4-2");
         assert_eq!(club.play_style, PlayStyle::Counter);
         assert_eq!(club.starting_xi_ids, ids);
@@ -209,7 +226,8 @@ mod tests {
         wrong.match_roles.penalty_taker = Some("stranger".into());
         let mut club = team();
         let before = club.formation.clone();
-        let issues = apply_setup(&mut club, &squad, wrong).unwrap_err();
+        let issues =
+            apply_setup(&mut club, &squad, wrong, &LicenceControls::all_open()).unwrap_err();
         assert_eq!(
             issues,
             vec![
@@ -226,6 +244,36 @@ mod tests {
         );
     }
 
+    /// Given a first-licence coach's otherwise sound 4-4-2 that sets the offside trap,
+    /// when it is applied,
+    /// then it is refused for the closed dial and the club is left as it was; the same setup is
+    /// kept with every control open.
+    #[test]
+    fn a_setup_the_licence_closes_is_not_kept() {
+        let players = squad();
+        let squad: Vec<&Player> = players.iter().collect();
+        let ids = eleven();
+        let mut chosen = setup(&ids.iter().map(String::as_str).collect::<Vec<_>>());
+        chosen.play_style = PlayStyle::Balanced;
+        chosen.tactics_phase.offside_trap = domain::team::OffsideTrap::On;
+        let mut club = team();
+        let before = club.tactics_phase.clone();
+        assert_eq!(
+            apply_setup(
+                &mut club,
+                &squad,
+                chosen.clone(),
+                &crate::licence::controls(1)
+            ),
+            Err(vec![SetupIssue::LockedTactics])
+        );
+        assert_eq!(club.tactics_phase, before);
+        assert_eq!(
+            apply_setup(&mut club, &squad, chosen, &LicenceControls::all_open()),
+            Ok(0)
+        );
+    }
+
     /// Given a goalkeeper's role handed to a forward standing up front,
     /// when the setup is applied,
     /// then it is kept but the role is dropped, as the game drops it.
@@ -239,7 +287,10 @@ mod tests {
             .player_roles
             .insert("p10".into(), PlayerRole::SweeperKeeper);
         let mut club = team();
-        assert_eq!(apply_setup(&mut club, &squad, chosen), Ok(1));
+        assert_eq!(
+            apply_setup(&mut club, &squad, chosen, &LicenceControls::all_open()),
+            Ok(1)
+        );
         assert!(club.player_roles.is_empty());
     }
 }

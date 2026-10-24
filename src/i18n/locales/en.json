@@ -3659,7 +3659,8 @@
         "notYourSide": "You can only give orders to your own team.",
         "commandsClosed": "No more changes can be made at this stage of the match.",
         "unknownFormation": "This formation is not available.",
-        "tooManyUnderPricedDials": "Your team already uses two of the cautious settings (deep line, compact shape, narrow width, long counter-press). Change one of them first."
+        "tooManyUnderPricedDials": "Your team already uses two of the cautious settings (deep line, compact shape, narrow width, long counter-press). Change one of them first.",
+        "lockedByLicence": "Your coaching licence does not cover this order yet."
       },
       "csv": {
         "writeFailed": "Failed to write the CSV file."

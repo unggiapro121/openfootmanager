@@ -3634,7 +3634,8 @@
         "notYourSide": "Só pode dar ordens à sua própria equipa.",
         "commandsClosed": "Não é possível fazer mais alterações nesta fase do jogo.",
         "unknownFormation": "Esta tática não está disponível.",
-        "tooManyUnderPricedDials": "A sua equipa já usa duas das definições cautelosas (linha baixa, bloco compacto, pouca largura, contrapressão longa). Altere uma delas primeiro."
+        "tooManyUnderPricedDials": "A sua equipa já usa duas das definições cautelosas (linha baixa, bloco compacto, pouca largura, contrapressão longa). Altere uma delas primeiro.",
+        "lockedByLicence": "A sua licença de treinador ainda não permite esta instrução."
       },
       "csv": {
         "writeFailed": "Falha ao escrever o ficheiro CSV."

@@ -199,7 +199,7 @@ const GOLDEN_SESSION: [(&str, u8, u8, u64); 10] = [
 /// The engine version `GOLDEN_SESSION` was pinned under, with a digest of the table. A change
 /// that moves a session golden match is a new engine version (online-match-engine-formulas.md
 /// §5.3): bump `version` in `crates/engine/Cargo.toml` and set this pair to what the test prints.
-const SESSION_VERSION_PIN: (&str, u64) = ("0.4.0", 0xD5589DCF8DCA7EC4);
+const SESSION_VERSION_PIN: (&str, u64) = ("0.5.0", 0xD5589DCF8DCA7EC4);
 
 fn setup_of(fixture: &Fixture) -> MatchSetup {
     let mut setup = setup(fixture.number, fixture.home, fixture.away);

@@ -6,7 +6,8 @@
 //! unused" — and asserts the bench gets used.
 
 use ::engine::ai::{
-    AiPersonality, AiProfile, MAX_UNDER_PRICED_DIALS, ai_decide, under_priced_dials,
+    AiPersonality, AiProfile, MAX_UNDER_PRICED_DIALS, ai_decide, ai_decide_within,
+    under_priced_dials,
 };
 use ::engine::*;
 use rand::SeedableRng;
@@ -905,4 +906,212 @@ fn the_gap_goes_to_the_line_that_can_best_spare_a_man() {
 
     assert_eq!(state.line_strength(Side::Home, Position::Midfielder), 0.75);
     assert_eq!(state.line_strength(Side::Home, Position::Forward), 1.0);
+}
+
+// ---------------------------------------------------------------------------
+// A manager who may not give every order (the online coach's licence, phase 3 S-9)
+// ---------------------------------------------------------------------------
+
+/// The orders the home manager gave, minute by minute, with `allows` deciding which he may give,
+/// in a match pinned at `home_goals`–`away_goals` from `from_minute`.
+fn orders_within(
+    home: TeamData,
+    home_goals: u8,
+    away_goals: u8,
+    from_minute: u8,
+    profile: &AiProfile,
+    allows: &dyn Fn(&MatchCommand) -> bool,
+) -> Vec<MatchCommand> {
+    let mut state = LiveMatchState::new(
+        home,
+        team("away", eleven("away", 60, 100)),
+        MatchConfig::default(),
+        bench("home", 55),
+        bench("away", 55),
+        false,
+    );
+    let mut rng = StdRng::seed_from_u64(17);
+    let mut given = Vec::new();
+    loop {
+        if state.step_minute(&mut rng).is_finished {
+            break;
+        }
+        if state.minute() < from_minute {
+            continue;
+        }
+        state.test_set_score(home_goals, away_goals);
+        for cmd in ai_decide_within(&state, Side::Home, profile, &mut rng, allows) {
+            given.push(cmd.clone());
+            let _ = state.apply_command(cmd);
+        }
+    }
+    given
+}
+
+fn is_tactical(command: &MatchCommand) -> bool {
+    matches!(
+        command,
+        MatchCommand::ChangeFormation { .. }
+            | MatchCommand::ChangePlayStyle { .. }
+            | MatchCommand::ChangeTacticalDial { .. }
+    )
+}
+
+/// Given every manager the game builds, in matches lost, won and drawn from the hour,
+/// when each decides through a filter that allows every order and, from the same generator, with
+/// no filter at all,
+/// then both give the same orders every minute: the filter alone changes nothing.
+#[test]
+fn a_filter_that_allows_every_order_changes_nothing() {
+    for (name, profile) in every_manager() {
+        for (home_goals, away_goals) in [(0, 2), (0, 1), (2, 0), (1, 1)] {
+            // Two copies of one match, each on its own generator from the same seed: one decided
+            // without a filter, the other through one that allows everything.
+            let new_match = || {
+                LiveMatchState::new(
+                    team("home", eleven("home", 60, 100)),
+                    team("away", eleven("away", 60, 100)),
+                    MatchConfig::default(),
+                    bench("home", 55),
+                    bench("away", 55),
+                    false,
+                )
+            };
+            let (mut plain_state, mut within_state) = (new_match(), new_match());
+            let mut plain_rng = StdRng::seed_from_u64(19);
+            let mut within_rng = StdRng::seed_from_u64(19);
+            loop {
+                let finished = plain_state.step_minute(&mut plain_rng).is_finished;
+                within_state.step_minute(&mut within_rng);
+                if finished {
+                    break;
+                }
+                if plain_state.minute() >= 55 {
+                    plain_state.test_set_score(home_goals, away_goals);
+                    within_state.test_set_score(home_goals, away_goals);
+                }
+                let plain = ai_decide(&plain_state, Side::Home, &profile, &mut plain_rng);
+                let within = ai_decide_within(
+                    &within_state,
+                    Side::Home,
+                    &profile,
+                    &mut within_rng,
+                    &|_| true,
+                );
+                assert_eq!(plain, within, "{name} at {home_goals}-{away_goals}");
+                for cmd in plain {
+                    let _ = plain_state.apply_command(cmd);
+                }
+                for cmd in within {
+                    let _ = within_state.apply_command(cmd);
+                }
+            }
+        }
+    }
+}
+
+/// Given a Visionary one down from the hour in a 4-4-2, who may play only 4-4-2, 4-3-3 and
+/// 3-5-2,
+/// when he reaches for a bolder shape,
+/// then he takes 4-3-3 and never a shape he may not play.
+#[test]
+fn a_chasing_visionary_takes_a_bolder_shape_he_may_play() {
+    let open = ["4-4-2", "4-3-3", "3-5-2"];
+    let allows = |command: &MatchCommand| match command {
+        MatchCommand::ChangeFormation { formation, .. } => open.contains(&formation.as_str()),
+        _ => true,
+    };
+    let given = orders_within(
+        team("home", eleven("home", 60, 100)),
+        0,
+        1,
+        60,
+        &profile(90, AiPersonality::Visionary),
+        &allows,
+    );
+    let shapes: Vec<&str> = given
+        .iter()
+        .filter_map(|command| match command {
+            MatchCommand::ChangeFormation { formation, .. } => Some(formation.as_str()),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(shapes.first(), Some(&"4-3-3"), "{given:?}");
+    assert!(
+        shapes.iter().all(|shape| open.contains(shape)),
+        "{shapes:?}"
+    );
+}
+
+/// Given a Visionary one down in a 4-3-3, whose only bolder shape (4-2-3-1) he may not play,
+/// when he takes stock,
+/// then he changes how the side plays instead of giving no order at all.
+#[test]
+fn a_visionary_with_no_bolder_shape_open_changes_the_style_instead() {
+    let mut home = team("home", eleven("home", 60, 100));
+    home.formation = "4-3-3".into();
+    let allows = |command: &MatchCommand| !matches!(command, MatchCommand::ChangeFormation { .. });
+    let given = orders_within(
+        home,
+        0,
+        1,
+        60,
+        &profile(90, AiPersonality::Visionary),
+        &allows,
+    );
+    let first = given.iter().find(|command| is_tactical(command));
+    assert!(
+        matches!(
+            first,
+            Some(MatchCommand::ChangePlayStyle {
+                play_style: PlayStyle::Attacking,
+                ..
+            })
+        ),
+        "{given:?}"
+    );
+}
+
+/// Given a side already attacking, two down all match, whose manager may not move the line,
+/// when he reaches for an instruction,
+/// then he passes over the line for the next one he may give, and never touches the line.
+#[test]
+fn a_locked_dial_is_passed_over_for_the_next_one() {
+    let mut home = team("home", eleven("home", 60, 100));
+    home.play_style = PlayStyle::Attacking;
+    let allows = |command: &MatchCommand| {
+        !matches!(
+            command,
+            MatchCommand::ChangeTacticalDial {
+                dial: TacticalDial::DefensiveLine(_),
+                ..
+            }
+        )
+    };
+    let given = orders_within(
+        home,
+        0,
+        2,
+        0,
+        &profile(90, AiPersonality::Pragmatist),
+        &allows,
+    );
+    let dials: Vec<TacticalDial> = given
+        .iter()
+        .filter_map(|command| match command {
+            MatchCommand::ChangeTacticalDial { dial, .. } => Some(*dial),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(
+        dials.first(),
+        Some(&TacticalDial::BreakSpeed(BreakSpeed::Fast)),
+        "{given:?}"
+    );
+    assert!(
+        dials
+            .iter()
+            .all(|dial| !matches!(dial, TacticalDial::DefensiveLine(_))),
+        "{dials:?}"
+    );
 }

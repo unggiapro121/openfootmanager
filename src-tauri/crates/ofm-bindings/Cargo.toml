@@ -9,7 +9,7 @@ description = "Test-only: the TypeScript declarations of the core types that cro
 # crate's tests and never reaches the game's build (E3-6-tech-spec.md §3.2).
 [dev-dependencies]
 domain = { version = "0.3.0", path = "../domain", features = ["ts"] }
-engine = { version = "0.4.0", path = "../engine", features = ["ts"] }
+engine = { version = "0.5.0", path = "../engine", features = ["ts"] }
 ofm-rules = { version = "0.3.0", path = "../ofm-rules", features = ["ts"] }
 ts-rs = "12.0.1"
 

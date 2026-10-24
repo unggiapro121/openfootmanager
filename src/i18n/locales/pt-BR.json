@@ -3634,7 +3634,8 @@
         "notYourSide": "Você só pode dar ordens ao seu próprio time.",
         "commandsClosed": "Não é possível fazer mais mudanças nesta fase da partida.",
         "unknownFormation": "Este esquema não está disponível.",
-        "tooManyUnderPricedDials": "Seu time já usa duas das configurações cautelosas (linha baixa, bloco compacto, pouca amplitude, contrapressão longa). Mude uma delas primeiro."
+        "tooManyUnderPricedDials": "Seu time já usa duas das configurações cautelosas (linha baixa, bloco compacto, pouca amplitude, contrapressão longa). Mude uma delas primeiro.",
+        "lockedByLicence": "Sua licença de treinador ainda não permite esta instrução."
       },
       "csv": {
         "writeFailed": "Falha ao gravar o arquivo CSV."

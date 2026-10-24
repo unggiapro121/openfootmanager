@@ -3659,7 +3659,8 @@
         "notYourSide": "Kamu hanya bisa memberi instruksi kepada timmu sendiri.",
         "commandsClosed": "Tidak ada perubahan lagi yang bisa dilakukan pada tahap pertandingan ini.",
         "unknownFormation": "Formasi ini tidak tersedia.",
-        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu."
+        "tooManyUnderPricedDials": "Timmu sudah memakai dua pengaturan hati-hati (garis pertahanan rendah, blok rapat, lebar sempit, counter-press panjang). Ubah salah satunya dulu.",
+        "lockedByLicence": "Lisensi pelatihmu belum mencakup instruksi ini."
       },
       "csv": {
         "writeFailed": "Gagal menulis berkas CSV."

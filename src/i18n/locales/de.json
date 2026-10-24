@@ -3634,7 +3634,8 @@
         "notYourSide": "Du kannst nur deinem eigenen Team Anweisungen geben.",
         "commandsClosed": "In dieser Phase des Spiels sind keine Änderungen mehr möglich.",
         "unknownFormation": "Diese Formation ist nicht verfügbar.",
-        "tooManyUnderPricedDials": "Dein Team nutzt bereits zwei der vorsichtigen Einstellungen (tiefe Linie, kompakte Formation, schmale Breite, langes Gegenpressing). Ändere zuerst eine davon."
+        "tooManyUnderPricedDials": "Dein Team nutzt bereits zwei der vorsichtigen Einstellungen (tiefe Linie, kompakte Formation, schmale Breite, langes Gegenpressing). Ändere zuerst eine davon.",
+        "lockedByLicence": "Deine Trainerlizenz deckt diese Anweisung noch nicht ab."
       },
       "csv": {
         "writeFailed": "Die CSV-Datei konnte nicht geschrieben werden."

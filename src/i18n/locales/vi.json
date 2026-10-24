@@ -3659,7 +3659,8 @@
         "notYourSide": "Bạn chỉ được ra lệnh cho đội của mình.",
         "commandsClosed": "Không thể thay đổi gì nữa ở giai đoạn này của trận.",
         "unknownFormation": "Sơ đồ này không có sẵn.",
-        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước."
+        "tooManyUnderPricedDials": "Đội bạn đã dùng hai thiết lập phòng thủ thận trọng (hàng thủ thấp, đội hình co cụm, sân hẹp, phản pressing dài). Hãy đổi một trong số đó trước.",
+        "lockedByLicence": "Bằng HLV của bạn chưa mở lệnh này."
       },
       "csv": {
         "writeFailed": "Không ghi được file CSV."

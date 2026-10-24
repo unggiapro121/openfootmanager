@@ -718,7 +718,11 @@ const GOLDEN_SCRIPTED: [(&str, u8, u8, u64); 6] = [
 ///
 /// 0.4.0 (phase 3, E3-3) moved no row of these tables: the bump is for the match session, whose
 /// own golden table (`ofm-rules/tests/match_session/golden.rs`) is pinned to the same version.
-const ENGINE_VERSION_PIN: (&str, u64) = ("0.4.0", 0x8350358139C2AC79);
+///
+/// 0.5.0 (phase 3, S-9 S9-18) moved no row either. A match setup now carries each side's licence,
+/// which a runner built before it would silently ignore; the online runner claims only matches of
+/// its own version, so the bump is what keeps an older runner off them.
+const ENGINE_VERSION_PIN: (&str, u64) = ("0.5.0", 0x8350358139C2AC79);
 
 /// FNV-1a over every row of `GOLDEN` and `GOLDEN_SCRIPTED`, in order.
 fn golden_tables_digest() -> u64 {

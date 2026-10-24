@@ -3,4 +3,4 @@
 /**
  * Why a setup cannot be kept.
  */
-export type SetupIssue = { "issue": "unknownFormation" } | { "issue": "startingElevenSize" } | { "issue": "duplicateStarter", "playerId": string } | { "issue": "notInSquad", "playerId": string };
+export type SetupIssue = { "issue": "unknownFormation" } | { "issue": "startingElevenSize" } | { "issue": "duplicateStarter", "playerId": string } | { "issue": "notInSquad", "playerId": string } | { "issue": "lockedFormation" } | { "issue": "lockedPlayStyle" } | { "issue": "lockedRole", "playerId": string } | { "issue": "lockedTactics" };
