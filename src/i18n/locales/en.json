@@ -231,7 +231,8 @@
         "applied": "— applied",
         "refused": "— refused",
         "refusedWhy": "— refused: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Make your changes now: they are applied before the second half kicks off."
     },
     "replay": {
       "title": "Replay",
