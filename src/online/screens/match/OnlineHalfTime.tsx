@@ -58,7 +58,7 @@ export function OnlineHalfTime({
           >
             <MatchCommandPanel
               state={state}
-              side={mine.side}
+              mine={mine}
               sent={data.sent}
               onSend={send}
               initialOff={initialOff}

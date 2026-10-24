@@ -636,3 +636,138 @@ describe("orders", () => {
     expect(screen.queryByRole("region", { name: "online.match.sent.title" })).toBeNull();
   });
 });
+
+describe("the side's own orders", () => {
+  const commands = () => requestsTo(`v1/matches/${MATCH}/commands`).map((request) => request.body);
+
+  // Given the coach of the home side, h9 a midfielder playing as Standard and h0 the keeper,
+  // when they pick h9 and look at the roles, then pick Box-to-Box and change his role,
+  // then only midfield roles are offered (none of a keeper's or a striker's), his own role is
+  // the one shown, and the change is sent as an order for their side.
+  it("changes a player's role among those of his position", async () => {
+    stage({
+      mine: mineView({
+        roles: [
+          { playerId: "h9", role: "Standard" },
+          { playerId: "h0", role: "SweeperKeeper" },
+        ],
+      }),
+    });
+    await opened();
+    fireEvent.click(screen.getByRole("combobox", { name: "online.match.rolePlayer" }));
+    fireEvent.click(screen.getByRole("option", { name: "10. P. h9" }));
+    const role = screen.getByRole("combobox", { name: "online.match.roleChoice" });
+    expect(role).toHaveTextContent("tactics.playerRoles.Standard");
+    fireEvent.click(role);
+    expect(screen.queryByRole("option", { name: "tactics.playerRoles.SweeperKeeper" })).toBeNull();
+    expect(screen.queryByRole("option", { name: "tactics.playerRoles.Poacher" })).toBeNull();
+    fireEvent.click(screen.getByRole("option", { name: "tactics.playerRoles.BoxToBox" }));
+    fireEvent.click(screen.getByRole("button", { name: "online.match.changeRole" }));
+
+    await waitFor(() => expect(commands()).toHaveLength(1));
+    expect(commands()[0]).toEqual({
+      command: { ChangePlayerRole: { side: "Home", player_id: "h9", role: "BoxToBox" } },
+    });
+  });
+
+  // Given the coach of the home side, h5 the captain, h3 sent off,
+  // when they look at the captain's choices, name h9 captain and h8 the penalty taker,
+  // then the current captain is shown, only players on the pitch are offered (not h3, not the
+  // bench), and each change is sent at once as an order for their side, listed in words.
+  it("names the captain and the set-piece takers from the players on the pitch", async () => {
+    stage({
+      view: matchView({ state: { ...matchView().state, sentOff: ["h3"] } }),
+      mine: mineView({
+        setPieces: {
+          captain: "h5",
+          free_kick_taker: null,
+          corner_taker: null,
+          penalty_taker: null,
+        },
+      }),
+    });
+    await opened();
+    const captain = screen.getByRole("combobox", { name: "match.captain" });
+    expect(captain).toHaveTextContent("6. P. h5");
+    fireEvent.click(captain);
+    expect(screen.queryByRole("option", { name: "4. P. h3" })).toBeNull();
+    expect(screen.queryByRole("option", { name: "20. P. hs1" })).toBeNull();
+    fireEvent.click(screen.getByRole("option", { name: "10. P. h9" }));
+    await waitFor(() => expect(commands()).toHaveLength(1));
+    fireEvent.click(screen.getByRole("combobox", { name: "match.penaltyTaker" }));
+    fireEvent.click(screen.getByRole("option", { name: "9. P. h8" }));
+    await waitFor(() => expect(commands()).toHaveLength(2));
+
+    expect(commands()).toEqual([
+      { command: { SetCaptain: { side: "Home", player_id: "h9" } } },
+      { command: { SetPenaltyTaker: { side: "Home", player_id: "h8" } } },
+    ]);
+    const sent = await screen.findByRole("region", { name: "online.match.sent.title" });
+    expect(within(sent).getByText("online.match.order.captain:P. h9")).toBeInTheDocument();
+    expect(within(sent).getByText("online.match.order.penaltyTaker:P. h8")).toBeInTheDocument();
+  });
+
+  // Given a captain's order sent,
+  // when the frame applying it comes and the coach's side is read again,
+  // then the captain shown is the new one.
+  it("shows the new captain once the order is applied", async () => {
+    let mine = mineView({
+      setPieces: { captain: "h5", free_kick_taker: null, corner_taker: null, penalty_taker: null },
+    });
+    stage({ mine });
+    server.routes[`GET v1/matches/${MATCH}/mine`] = () => ok(mine);
+    await opened();
+    fireEvent.click(screen.getByRole("combobox", { name: "match.captain" }));
+    fireEvent.click(screen.getByRole("option", { name: "10. P. h9" }));
+    await screen.findByText("online.match.sent.pending");
+    mine = mineView({
+      setPieces: { captain: "h9", free_kick_taker: null, corner_taker: null, penalty_taker: null },
+    });
+    push(matchFrame(1, { commands: [{ commandId: "cmd-1", status: "applied" }] }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("combobox", { name: "match.captain" })).toHaveTextContent(
+        "10. P. h9",
+      ),
+    );
+  });
+});
+
+describe("leaving a match", () => {
+  // Given the coach of a side in a live match,
+  // when they click another page of the sidebar, stay, then click it again and leave,
+  // then they are asked first; staying keeps the match, leaving opens the page.
+  it("asks a coach before they leave their live match", async () => {
+    stage();
+    await opened();
+    fireEvent.click(screen.getByRole("button", { name: "online.nav.league" }));
+    const asked = await screen.findByRole("alertdialog", { name: "online.leave.title" });
+    fireEvent.click(within(asked).getByRole("button", { name: "online.leave.stay" }));
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(
+      screen.getByRole("complementary", { name: "online.match.touchline" }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "online.nav.league" }));
+    fireEvent.click(
+      within(await screen.findByRole("alertdialog")).getByRole("button", {
+        name: "online.leave.go",
+      }),
+    );
+    await waitFor(() =>
+      expect(screen.queryByRole("complementary", { name: "online.match.touchline" })).toBeNull(),
+    );
+    expect(realtime.watches[0].stopped).toBe(true);
+  });
+
+  // Given a spectator of a live match,
+  // when they click another page of the sidebar,
+  // then they leave without being asked.
+  it("lets a spectator leave without asking", async () => {
+    stage({ mine: null });
+    await opened();
+    fireEvent.click(screen.getByRole("button", { name: "online.nav.league" }));
+    await waitFor(() => expect(realtime.watches[0].stopped).toBe(true));
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+  });
+});

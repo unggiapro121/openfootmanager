@@ -223,7 +223,12 @@
         "swap": "{{a}} 与 {{b}} 交换位置",
         "formation": "改为 {{formation}} 阵型",
         "playStyle": "打法：{{style}}",
-        "other": "指令"
+        "other": "指令",
+        "role": "{{player}} 担任 {{role}}",
+        "captain": "{{player}} 担任队长",
+        "freeKickTaker": "{{player}} 主罚任意球",
+        "cornerTaker": "{{player}} 主罚角球",
+        "penaltyTaker": "{{player}} 主罚点球"
       },
       "sent": {
         "title": "已发出的指令",
@@ -232,7 +237,11 @@
         "refused": "——被拒绝",
         "refusedWhy": "——被拒绝：{{reason}}"
       },
-      "halfTimeHint": "现在就做出调整：所有调整会在下半场开球前生效。"
+      "halfTimeHint": "现在就做出调整：所有调整会在下半场开球前生效。",
+      "rolesTitle": "球员角色",
+      "rolePlayer": "球员",
+      "roleChoice": "角色",
+      "changeRole": "更改角色"
     },
     "replay": {
       "title": "回放",
@@ -314,6 +323,12 @@
         "title": "友谊赛",
         "back": "返回友谊赛房间"
       }
+    },
+    "leave": {
+      "title": "离开比赛？",
+      "body": "你正在指挥自己的球队。离开约 20 秒后，AI 将接管指挥，直到你回来。",
+      "stay": "留下",
+      "go": "离开"
     }
   },
   "coach": {

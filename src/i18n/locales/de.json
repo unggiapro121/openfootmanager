@@ -223,7 +223,12 @@
         "swap": "{{a}} und {{b}} tauschen die Positionen",
         "formation": "Umstellen auf {{formation}}",
         "playStyle": "Spielstil: {{style}}",
-        "other": "Anweisung"
+        "other": "Anweisung",
+        "role": "{{player}} spielt als {{role}}",
+        "captain": "{{player}} ist Kapitän",
+        "freeKickTaker": "{{player}} schießt Freistöße",
+        "cornerTaker": "{{player}} schießt Ecken",
+        "penaltyTaker": "{{player}} schießt Elfmeter"
       },
       "sent": {
         "title": "Gesendete Anweisungen",
@@ -232,7 +237,11 @@
         "refused": "— abgelehnt",
         "refusedWhy": "— abgelehnt: {{reason}}"
       },
-      "halfTimeHint": "Nimm deine Änderungen jetzt vor: Sie gelten vor dem Anpfiff der zweiten Halbzeit."
+      "halfTimeHint": "Nimm deine Änderungen jetzt vor: Sie gelten vor dem Anpfiff der zweiten Halbzeit.",
+      "rolesTitle": "Spielerrollen",
+      "rolePlayer": "Spieler",
+      "roleChoice": "Rolle",
+      "changeRole": "Rolle ändern"
     },
     "replay": {
       "title": "Wiederholung",
@@ -314,6 +323,12 @@
         "title": "Freundschaftsspiel",
         "back": "Zurück zum Freundschaftsraum"
       }
+    },
+    "leave": {
+      "title": "Spiel verlassen?",
+      "body": "Du führst deine Mannschaft. Bist du etwa 20 Sekunden weg, übernimmt die KI, bis du zurückkommst.",
+      "stay": "Bleiben",
+      "go": "Verlassen"
     }
   },
   "coach": {

@@ -223,7 +223,12 @@
         "swap": "{{a}} and {{b}} swap positions",
         "formation": "Switch to {{formation}}",
         "playStyle": "Play style: {{style}}",
-        "other": "Order"
+        "other": "Order",
+        "role": "{{player}} plays as {{role}}",
+        "captain": "{{player}} is captain",
+        "freeKickTaker": "{{player}} takes free kicks",
+        "cornerTaker": "{{player}} takes corners",
+        "penaltyTaker": "{{player}} takes penalties"
       },
       "sent": {
         "title": "Orders sent",
@@ -232,7 +237,11 @@
         "refused": "— refused",
         "refusedWhy": "— refused: {{reason}}"
       },
-      "halfTimeHint": "Make your changes now: they are applied before the second half kicks off."
+      "halfTimeHint": "Make your changes now: they are applied before the second half kicks off.",
+      "rolesTitle": "Player roles",
+      "rolePlayer": "Player",
+      "roleChoice": "Role",
+      "changeRole": "Change role"
     },
     "replay": {
       "title": "Replay",
@@ -314,6 +323,12 @@
         "title": "Friendly",
         "back": "Back to the friendly room"
       }
+    },
+    "leave": {
+      "title": "Leave your match?",
+      "body": "You are in charge of your side. Away from the match for about 20 seconds, the AI takes charge until you come back.",
+      "stay": "Stay",
+      "go": "Leave"
     }
   },
   "coach": {

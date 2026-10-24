@@ -7,6 +7,7 @@ import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
+import { useLeaveGuard } from "../leaveGuard";
 import ResourceState from "../ResourceState";
 import { MatchBoard } from "./MatchBoard";
 import { MatchCommandPanel } from "./MatchCommandPanel";
@@ -78,6 +79,8 @@ function LiveMatchScreen({
   const [radarOpen, setRadarOpen] = useState(true);
   const [replacing, setReplacing] = useState<string | undefined>(undefined);
   const { view, state, mine } = data;
+  // Away from the match for `absentGraceSteps` steps, the coach hands the side to the AI (C2-13).
+  useLeaveGuard(mine !== null && !state.isFinished);
   // The server plays a minute every `stepMillis` and does not wait for the radar: quiet minutes
   // are acted out in full so the radar does not stand still, and it may fall three minutes
   // behind before it skips play, so a long move a minute ends on is not cut short.
@@ -126,7 +129,7 @@ function LiveMatchScreen({
         >
           <MatchCommandPanel
             state={state}
-            side={mine.side}
+            mine={mine}
             sent={data.sent}
             onSend={send}
             initialOff={replacing}
