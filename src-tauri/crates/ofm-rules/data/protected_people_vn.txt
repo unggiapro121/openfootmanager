@@ -1,0 +1,44 @@
+# Vietnamese footballers and coaches the generator never names a person after, written by hand
+# (E3-5q F6): the launch region, which Wikidata follows late. Same comparison as
+# protected_people.txt.
+Nguyễn Quang Hải
+Nguyễn Công Phượng
+Nguyễn Tiến Linh
+Nguyễn Hoàng Đức
+Đặng Văn Lâm
+Quế Ngọc Hải
+Đỗ Hùng Dũng
+Đoàn Văn Hậu
+Bùi Tiến Dũng
+Nguyễn Văn Quyết
+Nguyễn Văn Toàn
+Phan Văn Đức
+Lương Xuân Trường
+Vũ Văn Thanh
+Hồ Tấn Tài
+Đỗ Duy Mạnh
+Bùi Hoàng Việt Anh
+Phạm Tuấn Hải
+Khuất Văn Khang
+Nguyễn Thái Sơn
+Nguyễn Văn Vĩ
+Nguyễn Filip
+Nguyễn Xuân Son
+Châu Ngọc Quang
+Nguyễn Thanh Bình
+Nguyễn Hai Long
+Lê Công Vinh
+Phạm Thành Lương
+Lê Huỳnh Đức
+Phạm Văn Quyến
+Nguyễn Hồng Sơn
+Nguyễn Minh Phương
+Phan Thanh Bình
+Nguyễn Anh Đức
+Trần Đình Trọng
+Nguyễn Trọng Hoàng
+Park Hang-seo
+Kim Sang-sik
+Mai Đức Chung
+Hoàng Anh Tuấn
+Chu Đình Nghiêm
