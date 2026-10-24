@@ -223,7 +223,12 @@
         "swap": "{{a}} ile {{b}} yer değiştiriyor",
         "formation": "{{formation}} dizilişine geç",
         "playStyle": "Oyun tarzı: {{style}}",
-        "other": "Talimat"
+        "other": "Talimat",
+        "role": "{{player}} {{role}} olarak oynuyor",
+        "captain": "{{player}} kaptan",
+        "freeKickTaker": "{{player}} serbest vuruşları kullanıyor",
+        "cornerTaker": "{{player}} kornerleri kullanıyor",
+        "penaltyTaker": "{{player}} penaltıları kullanıyor"
       },
       "sent": {
         "title": "Gönderilen talimatlar",
@@ -232,7 +237,11 @@
         "refused": "— reddedildi",
         "refusedWhy": "— reddedildi: {{reason}}"
       },
-      "halfTimeHint": "Değişikliklerini şimdi yap: ikinci yarı başlamadan önce uygulanır."
+      "halfTimeHint": "Değişikliklerini şimdi yap: ikinci yarı başlamadan önce uygulanır.",
+      "rolesTitle": "Oyuncu rolleri",
+      "rolePlayer": "Oyuncu",
+      "roleChoice": "Rol",
+      "changeRole": "Rolü değiştir"
     },
     "replay": {
       "title": "Tekrar",
@@ -314,6 +323,12 @@
         "title": "Hazırlık maçı",
         "back": "Hazırlık odasına dön"
       }
+    },
+    "leave": {
+      "title": "Maçtan ayrılıyor musunuz?",
+      "body": "Takımınızı siz yönetiyorsunuz. Yaklaşık 20 saniye uzak kalırsanız, siz dönene kadar takımı yapay zekâ yönetir.",
+      "stay": "Kal",
+      "go": "Ayrıl"
     }
   },
   "coach": {

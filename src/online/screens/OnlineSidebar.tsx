@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   Calendar,
   Crosshair,
@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import NavItem from "../../components/dashboard/SidebarNavItem";
 import { useOnlineStore } from "../store/onlineStore";
+import { useGuardedNavigate } from "./leaveGuard";
 
 /** The club's pages, shown once the coach runs a club. */
 const CLUB_PAGES = [
@@ -25,10 +26,13 @@ const CLUB_PAGES = [
   { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
 ];
 
-/** The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. */
+/**
+ * The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. Each
+ * way out asks first while the page holds the coach (their live match, C2-13).
+ */
 export default function OnlineSidebar() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
   const clubName = useOnlineStore((state) => state.club?.club.name);
   const hasClub = clubName !== undefined;

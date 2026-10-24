@@ -7,6 +7,7 @@ import { resolveBackendError } from "../../utils/backendI18n";
 import { OnlineClockProvider, useOnlineNow } from "../clock";
 import { refreshClub, refreshLeague, refreshSeason, useOnlineStore } from "../store/onlineStore";
 import { FriendlyWatcher } from "./friendly/FriendlyWatcher";
+import { LeaveGuardProvider } from "./leaveGuard";
 import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
 import OnlineSidebar from "./OnlineSidebar";
@@ -61,39 +62,41 @@ export default function OnlineShell() {
 
   return (
     <OnlineClockProvider>
-      <DayTurnWatcher />
-      <FriendlyWatcher />
-      <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
-        <OnlineSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
-          <OnlineHeader />
-          {network === "offline" && (
-            <div
-              role="status"
-              className="flex items-center gap-2 border-b border-accent-400/40 bg-accent-50 px-6 py-2 text-sm text-gray-800 dark:bg-accent-500/10 dark:text-gray-100"
-            >
-              <WifiOff className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" />
-              {t("online.offlineBanner")}
-            </div>
-          )}
-          <main className="flex-1 p-6">
-            {loadError !== null && club === undefined ? (
-              <div className="flex flex-col items-start gap-3">
-                <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-                  {resolveBackendError(loadError)}
-                </p>
-                <Button variant="outline" size="sm" onClick={load}>
-                  {t("online.retry")}
-                </Button>
+      <LeaveGuardProvider>
+        <DayTurnWatcher />
+        <FriendlyWatcher />
+        <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
+          <OnlineSidebar />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <OnlineHeader />
+            {network === "offline" && (
+              <div
+                role="status"
+                className="flex items-center gap-2 border-b border-accent-400/40 bg-accent-50 px-6 py-2 text-sm text-gray-800 dark:bg-accent-500/10 dark:text-gray-100"
+              >
+                <WifiOff className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" />
+                {t("online.offlineBanner")}
               </div>
-            ) : club === undefined ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
-            ) : (
-              <Outlet />
             )}
-          </main>
+            <main className="flex-1 p-6">
+              {loadError !== null && club === undefined ? (
+                <div className="flex flex-col items-start gap-3">
+                  <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                    {resolveBackendError(loadError)}
+                  </p>
+                  <Button variant="outline" size="sm" onClick={load}>
+                    {t("online.retry")}
+                  </Button>
+                </div>
+              ) : club === undefined ? (
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
+              ) : (
+                <Outlet />
+              )}
+            </main>
+          </div>
         </div>
-      </div>
+      </LeaveGuardProvider>
     </OnlineClockProvider>
   );
 }
