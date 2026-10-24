@@ -231,7 +231,8 @@
         "applied": "— aplicada",
         "refused": "— recusada",
         "refusedWhy": "— recusada: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Faça suas alterações agora: elas são aplicadas antes do início do segundo tempo."
     },
     "replay": {
       "title": "Rever",

@@ -231,7 +231,8 @@
         "applied": "— umgesetzt",
         "refused": "— abgelehnt",
         "refusedWhy": "— abgelehnt: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Nimm deine Änderungen jetzt vor: Sie gelten vor dem Anpfiff der zweiten Halbzeit."
     },
     "replay": {
       "title": "Wiederholung",

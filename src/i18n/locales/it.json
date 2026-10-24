@@ -231,7 +231,8 @@
         "applied": "— applicato",
         "refused": "— rifiutato",
         "refusedWhy": "— rifiutato: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Fai ora i tuoi cambi: vengono applicati prima del calcio d'inizio del secondo tempo."
     },
     "replay": {
       "title": "Rivedi",

@@ -231,7 +231,8 @@
         "applied": "— đã áp",
         "refused": "— bị từ chối",
         "refusedWhy": "— bị từ chối: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Hãy thay đổi ngay bây giờ: mọi thay đổi được áp dụng trước khi hiệp 2 bắt đầu."
     },
     "replay": {
       "title": "Xem lại",

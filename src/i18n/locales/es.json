@@ -231,7 +231,8 @@
         "applied": "— aplicada",
         "refused": "— rechazada",
         "refusedWhy": "— rechazada: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Haz tus cambios ahora: se aplican antes de que empiece la segunda parte."
     },
     "replay": {
       "title": "Repetición",

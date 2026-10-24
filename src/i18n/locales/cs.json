@@ -231,7 +231,8 @@
         "applied": "— uplatněno",
         "refused": "— odmítnuto",
         "refusedWhy": "— odmítnuto: {{reason}}"
-      }
+      },
+      "halfTimeHint": "Proveďte změny teď: uplatní se před výkopem druhého poločasu."
     },
     "replay": {
       "title": "Záznam",
