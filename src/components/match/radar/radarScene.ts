@@ -45,6 +45,8 @@ export interface RadarScene {
   focusX: number;
   /** Players acting out the beat, away from their place in the shape. */
   movers: Record<string, PitchPoint>;
+  /** Who lost the ball on the step that led here: the next step lets them go (`RadarStep.beaten`). */
+  beaten?: string[];
   /**
    * How long each run the last step started takes: the man acting out the play
    * is on his mark when it says.
@@ -113,6 +115,13 @@ export interface RadarStep {
   /** Send every player back to his place in the shape before this step's movers. */
   resetMovers?: boolean;
   /**
+   * Who loses the ball on this step. Each stays where the play left him while
+   * it plays, then is let go to take up his place in the shape again, and so
+   * gets back with his side rather than standing where he lost it while the
+   * other side attacks.
+   */
+  beaten?: string[];
+  /**
    * A change of scene: if the players are still far from their places when it
    * starts, they fade, are put there, and stand a moment before play goes on
    * (`radarSceneCut`), rather than run the length of the pitch after the ball.
@@ -174,13 +183,22 @@ export function focusOf(scene: RadarScene): ShapeFocus {
   return { x: scene.focusX, y: scene.ball.y, possession: scene.possession };
 }
 
+function withoutPlayers(
+  movers: Record<string, PitchPoint>,
+  ids: string[],
+): Record<string, PitchPoint> {
+  if (ids.length === 0) return movers;
+  return Object.fromEntries(Object.entries(movers).filter(([id]) => !ids.includes(id)));
+}
+
 /** The scene after `step`, its runs taking `runMs` (none: jump straight there). */
 export function applyStep(
   scene: RadarScene,
   step: RadarStep,
   runMs: Record<string, number> = {},
 ): RadarScene {
-  const movers = { ...(step.resetMovers ? {} : scene.movers), ...step.movers };
+  const kept = step.resetMovers ? {} : withoutPlayers(scene.movers, scene.beaten ?? []);
+  const movers = { ...kept, ...step.movers };
   const ball = step.ball?.at ?? scene.ball;
   const ballMoved = distance(ball, scene.ball) > 0.5;
   const trail = step.clearTrail
@@ -197,6 +215,7 @@ export function applyStep(
     // Both shapes follow the ball wherever it goes; only a restart sets them elsewhere.
     focusX: step.focusX ?? (step.ball ? ball.x : scene.focusX),
     movers,
+    beaten: step.beaten,
     runMs,
     possession: step.possession ?? scene.possession,
     overlay: step.overlay === undefined ? scene.overlay : step.overlay,
