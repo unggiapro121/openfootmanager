@@ -32,7 +32,7 @@ describe("toRosterPlayer", () => {
     expect(roster).toMatchObject({
       id: player.id,
       full_name: player.fullName,
-      natural_position: player.position,
+      natural_position: player.naturalPosition,
       alternate_positions: [],
       age: player.age,
       team_id: "club-1",

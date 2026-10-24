@@ -8,7 +8,16 @@ import type { PositionRating } from "./engine/PositionRating";
  * A player of the caller's own club: everything but his potential, which is told in stars
  * (Qs7-5).
  */
-export type SquadPlayerView = { id: string, fullName: string, matchName: string, position: string, 
+export type SquadPlayerView = { id: string, fullName: string, matchName: string, 
+/**
+ * His group: `Goalkeeper`, `Defender`, `Midfielder` or `Forward`.
+ */
+position: string, 
+/**
+ * The position he plays, within his group: `CenterBack`, `LeftWinger`, … (a keeper's is
+ * `Goalkeeper`).
+ */
+naturalPosition: string, 
 /**
  * The other positions he can play, as the game knows them.
  */

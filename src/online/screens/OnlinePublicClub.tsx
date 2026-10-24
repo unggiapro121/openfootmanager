@@ -80,7 +80,9 @@ function PublicClub({ club }: { club: PublicClubView }) {
                   <td className="px-4 py-2 font-semibold text-gray-900 dark:text-gray-100">
                     {player.fullName}
                   </td>
-                  <td className="px-2 py-2">{translatePositionAbbreviation(t, player.position)}</td>
+                  <td className="px-2 py-2">
+                    {translatePositionAbbreviation(t, player.naturalPosition)}
+                  </td>
                   <td className="px-2 py-2 text-right">{player.age}</td>
                   <td className="px-2 py-2 text-right font-heading font-bold">{player.ovr}</td>
                 </tr>

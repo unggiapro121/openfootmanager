@@ -227,7 +227,16 @@ describe("a settled fixture", () => {
       "GET v1/clubs/club-2": ok({
         club: { ...myClub().club, id: "club-2", name: "Sóng Biển Đà Nẵng" },
         formation: "4-4-2",
-        players: [{ id: "p", fullName: "Cường", position: "Striker", age: 21, ovr: 66 }],
+        players: [
+          {
+            id: "p",
+            fullName: "Cường",
+            position: "Forward",
+            naturalPosition: "Striker",
+            age: 21,
+            ovr: 66,
+          },
+        ],
       }),
     });
     renderOnline("/online/clubs/club-2");
