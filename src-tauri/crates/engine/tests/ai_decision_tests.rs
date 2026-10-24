@@ -1115,3 +1115,31 @@ fn a_locked_dial_is_passed_over_for_the_next_one() {
         "{dials:?}"
     );
 }
+
+/// Given a side two down from the hour whose manager may not change how it plays,
+/// when he takes stock,
+/// then he turns a dial instead, and never changes the style.
+#[test]
+fn a_closed_style_is_passed_over_for_a_dial() {
+    let allows = |command: &MatchCommand| !matches!(command, MatchCommand::ChangePlayStyle { .. });
+    let given = orders_within(
+        team("home", eleven("home", 60, 100)),
+        0,
+        2,
+        60,
+        &profile(90, AiPersonality::Pragmatist),
+        &allows,
+    );
+    assert!(
+        given
+            .iter()
+            .all(|command| !matches!(command, MatchCommand::ChangePlayStyle { .. })),
+        "{given:?}"
+    );
+    assert!(
+        given
+            .iter()
+            .any(|command| matches!(command, MatchCommand::ChangeTacticalDial { .. })),
+        "{given:?}"
+    );
+}

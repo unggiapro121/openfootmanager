@@ -140,3 +140,49 @@ fn a_setup_without_licences_reads_and_writes_as_before() {
     assert_eq!(back.licence_home, Some(controls(2)));
     assert_eq!(back.licence_away, Some(LicenceControls::all_open()));
 }
+
+/// Given 300 matches in which a Visionary's weaker side starts in a 4-4-2 it may not leave, the
+/// AI holding both sides,
+/// when they are played,
+/// then the Visionary, chasing late, still turns to attacking play: the session hands the AI its
+/// licence, so a closed shape is passed over rather than refused every time he looks up.
+#[test]
+fn the_ai_passes_a_closed_shape_over_for_the_next_order() {
+    let mut stuck = LicenceControls::all_open();
+    stuck.formations = vec!["4-4-2".to_string()];
+    let mut late_attacking = 0;
+    for number in 0..300u64 {
+        let mut licensed = setup(
+            number,
+            (62, PlayStyle::Balanced, "4-4-2"),
+            (78, PlayStyle::Balanced, "4-4-2"),
+        );
+        licensed.licence_home = Some(stuck.clone());
+        licensed.ai_home = profile(0);
+        let mut session = MatchSession::new(licensed, Controller::Ai, Controller::Ai);
+        for _ in 0..MAX_STEPS {
+            if session.is_finished() {
+                break;
+            }
+            session.step();
+        }
+        late_attacking += session
+            .log()
+            .iter()
+            .filter(|record| record.side == Side::Home && record.step_seq >= 75)
+            .filter(|record| {
+                matches!(
+                    &record.input,
+                    MatchInput::Command(MatchCommand::ChangePlayStyle {
+                        play_style: PlayStyle::Attacking,
+                        ..
+                    })
+                )
+            })
+            .count();
+    }
+    assert!(
+        late_attacking > 0,
+        "a chasing Visionary held to a 4-4-2 never turned to attacking play after the 70th minute"
+    );
+}
