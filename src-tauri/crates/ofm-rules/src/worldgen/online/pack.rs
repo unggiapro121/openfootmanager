@@ -8,7 +8,7 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 
 /// The shipped online content, compiled in so a world can be grown with no upload (W5).
-pub const BUILTIN_PACK: &str = include_str!("../../../data/online/builtin-1.json");
+pub const BUILTIN_PACK: &str = include_str!("../../../data/online/builtin-2.json");
 
 /// The only format this crate reads.
 pub const PACK_FORMAT_VERSION: u32 = 1;
@@ -200,6 +200,13 @@ impl OnlineContentPack {
         // A pack is plain data (strings, numbers, vectors, ordered maps), which cannot fail to
         // serialise; an empty result would only hash to a value no real pack has.
         serde_json::to_vec(self).unwrap_or_default()
+    }
+
+    /// The shipped pack, parsed once for the process: what the desktop's random world names its
+    /// clubs and stadiums from (E3-5q F11).
+    pub fn builtin_shared() -> &'static Self {
+        static PACK: std::sync::OnceLock<OnlineContentPack> = std::sync::OnceLock::new();
+        PACK.get_or_init(Self::builtin)
     }
 
     /// The shipped pack.

@@ -1,0 +1,13 @@
+{
+  "_note": "Additions to builtin-1's place names and naming words (E3-5q2): real place names and common words, written for the game.",
+  "nations": {
+    "BR": {
+      "cities": ["Ribeirão Preto", "Londrina", "Maringá", "Uberlândia", "Sorocaba", "Joinville", "Caxias do Sul", "Pelotas", "Campina Grande", "Feira de Santana", "Aracaju", "João Pessoa", "Teresina", "São Luís", "Campo Grande", "Porto Velho", "Macapá", "Palmas", "Petrópolis", "Volta Redonda", "Blumenau", "Chapecó", "Piracicaba", "Bauru", "Montes Claros"]
+    }
+  },
+  "clubStyles": {
+    "brazilian": {
+      "words": ["Andorinhas", "Gaviões", "Leões", "Panteras", "Raios", "Furacões", "Bandeirantes", "Navegantes"]
+    }
+  }
+}

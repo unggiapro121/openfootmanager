@@ -2262,11 +2262,11 @@ mod tests {
     /// is *not* `europe`: `region_for_code` answers `europe` for anything it does
     /// not recognise, so a European test case cannot tell a successful lookup
     /// apart from everything falling to the default. Uruguay is South American and
-    /// unpooled, and `AR`/`BR` are the only South American pools shipped.
+    /// unpooled, and `AR`/`BR`/`CO` are the only South American pools shipped.
     #[test]
     fn the_name_fallback_resolves_a_non_default_region() {
         let names_def = default_names_definition();
-        let south_american: std::collections::HashSet<&String> = ["AR", "BR"]
+        let south_american: std::collections::HashSet<&String> = ["AR", "BR", "CO"]
             .iter()
             .flat_map(|code| names_def.pools[*code].first_names.iter())
             .collect();
@@ -2293,6 +2293,7 @@ mod tests {
                 definitions::NamePool {
                     first_names: vec!["Kenji".to_string()],
                     last_names: vec!["Sato".to_string()],
+                    ..Default::default()
                 },
             ),
             (
@@ -2300,6 +2301,7 @@ mod tests {
                 definitions::NamePool {
                     first_names: vec!["Erik".to_string()],
                     last_names: vec!["Svensson".to_string()],
+                    ..Default::default()
                 },
             ),
         ]);
@@ -2330,6 +2332,7 @@ mod tests {
                 definitions::NamePool {
                     first_names: vec!["Erik".to_string()],
                     last_names: vec!["Svensson".to_string()],
+                    ..Default::default()
                 },
             ),
             (
@@ -2337,6 +2340,7 @@ mod tests {
                 definitions::NamePool {
                     first_names: vec!["Joao".to_string()],
                     last_names: vec!["Silva".to_string()],
+                    ..Default::default()
                 },
             ),
         ]);
@@ -2366,6 +2370,7 @@ mod tests {
             definitions::NamePool {
                 first_names: vec!["Erik".to_string()],
                 last_names: vec!["Svensson".to_string()],
+                ..Default::default()
             },
         )]);
         let names_def = definitions::NamesDefinition {

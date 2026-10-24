@@ -631,6 +631,7 @@ mod tests {
                 NamePool {
                     first_names: vec!["James".into()],
                     last_names: vec!["Smith".into()],
+                    ..Default::default()
                 },
             )]),
         };

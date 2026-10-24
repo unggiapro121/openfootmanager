@@ -400,6 +400,9 @@ pub struct WorldDatabaseInfo {
 mod tests {
     use super::*;
 
+    /// Pools in the shipped `default_names.json`.
+    const SHIPPED_POOLS: usize = 29;
+
     /// A scratch directory to stand in for one tier of the search path.
     fn tier(name: &str) -> PathBuf {
         let dir = std::env::temp_dir().join(format!("ofm-defs-{name}-{}", Uuid::new_v4()));
@@ -425,11 +428,8 @@ mod tests {
         let sources = DefinitionSources::embedded_only();
 
         let names = names_definition(&sources);
-        assert_eq!(
-            names.pools.len(),
-            17,
-            "the shipped name pools moved out of Rust unchanged"
-        );
+        // 28 nations of the online pack and `GB` for the home nations (E3-5q2).
+        assert_eq!(names.pools.len(), 29, "the shipped name pools");
 
         let nations = nations_definition(&sources);
         assert_eq!(nations.nations.len(), 16, "the shipped generation nations");
@@ -621,7 +621,7 @@ mod tests {
 
         let def = names_definition(&DefinitionSources::searching([dir.clone()]));
 
-        assert_eq!(def.pools.len(), 17, "the shipped pools");
+        assert_eq!(def.pools.len(), SHIPPED_POOLS, "the shipped pools");
 
         std::fs::remove_dir_all(&dir).ok();
     }
@@ -643,7 +643,7 @@ mod tests {
 
         assert_eq!(
             def.pools.len(),
-            17,
+            SHIPPED_POOLS,
             "a file with no well-formed code key falls back to the shipped pools"
         );
 
@@ -667,7 +667,7 @@ mod tests {
         assert!(def.pools.contains_key("BR"), "the usable override is kept");
         assert_ne!(
             def.pools.len(),
-            17,
+            SHIPPED_POOLS,
             "and it is the override, not the shipped set"
         );
 

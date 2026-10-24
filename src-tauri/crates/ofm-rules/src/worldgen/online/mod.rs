@@ -186,6 +186,7 @@ impl<'a> Generator<'a> {
                         NamePool {
                             first_names: names(&pool.given),
                             last_names: names(&pool.family),
+                            ..NamePool::default()
                         },
                     )
                 })
@@ -523,30 +524,7 @@ impl<'a> Generator<'a> {
         city: &str,
         rng: &mut impl Rng,
     ) -> String {
-        let fallback = format!("{city} Stadium");
-        let Some(style) = self.pack.stadium_styles.get(&content.stadium_style) else {
-            return fallback;
-        };
-        for _ in 0..8 {
-            let Some(pattern) = style
-                .patterns
-                .get(rng.random_range(0..style.patterns.len().max(1)))
-            else {
-                return fallback;
-            };
-            let word = style
-                .words
-                .get(rng.random_range(0..style.words.len().max(1)))
-                .map_or("", String::as_str);
-            if pattern.contains("{word}") && word.is_empty() {
-                continue;
-            }
-            let name = pattern.replace("{city}", city).replace("{word}", word);
-            if !naming::is_blocked_club_name(&name, nation, self.pack) {
-                return name;
-            }
-        }
-        fallback
+        naming::stadium_name(self.pack, nation, &content.stadium_style, city, rng)
     }
 
     fn coach(
