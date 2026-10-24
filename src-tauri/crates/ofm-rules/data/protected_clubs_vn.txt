@@ -1,0 +1,46 @@
+# Vietnamese clubs, past names and sponsors the generator never names a club after, written by
+# hand (E3-5q F6): V.League names change with their sponsors more often than Wikidata follows.
+# `VN|<name>`, compared as protected_clubs.txt.
+VN|Hà Nội FC
+VN|Hà Nội T&T
+VN|Thể Công
+VN|Thể Công Viettel
+VN|Viettel
+VN|Công an Hà Nội
+VN|Công an Nhân dân
+VN|Hải Phòng
+VN|Xi măng Hải Phòng
+VN|Hoàng Anh Gia Lai
+VN|Becamex Bình Dương
+VN|Becamex TP.HCM
+VN|Thép Xanh Nam Định
+VN|Nam Định
+VN|Sông Lam Nghệ An
+VN|SHB Đà Nẵng
+VN|Đà Nẵng
+VN|Đông Á Thanh Hóa
+VN|Thanh Hóa
+VN|Hồng Lĩnh Hà Tĩnh
+VN|Quảng Nam
+VN|Topenland Bình Định
+VN|Bình Định
+VN|Khánh Hòa
+VN|Sài Gòn FC
+VN|Thành phố Hồ Chí Minh
+VN|TP Hồ Chí Minh
+VN|Than Quảng Ninh
+VN|Long An
+VN|Đồng Tháp
+VN|Cần Thơ
+VN|PVF-CAND
+VN|Phố Hiến
+VN|Bà Rịa-Vũng Tàu
+VN|Trường Tươi Bình Phước
+VN|Bình Phước
+VN|Huế
+VN|Đồng Nai
+VN|An Giang
+VN|Kiên Giang
+VN|Navibank Sài Gòn
+VN|Xuân Thành Sài Gòn
+VN|Hoàng Anh Gia Lai

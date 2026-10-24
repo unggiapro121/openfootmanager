@@ -13,6 +13,7 @@ use super::pack::{NamingStyleContent, NationContent, OnlineContentPack};
 use crate::stable_hash::stable_hash;
 
 const PROTECTED_CLUBS: &str = include_str!("../../../data/protected_clubs.txt");
+const PROTECTED_CLUBS_VN: &str = include_str!("../../../data/protected_clubs_vn.txt");
 const PROTECTED_WORDS: &str = include_str!("../../../data/protected_words.txt");
 
 /// Words a club name is made of that say nothing about which club it is: dropped before two names
@@ -118,7 +119,11 @@ fn protected_clubs() -> &'static ProtectedClubs {
     SET.get_or_init(|| {
         let mut names = HashSet::new();
         let mut cores: HashMap<String, HashSet<String>> = HashMap::new();
-        for line in PROTECTED_CLUBS.lines().map(str::trim) {
+        for line in PROTECTED_CLUBS
+            .lines()
+            .chain(PROTECTED_CLUBS_VN.lines())
+            .map(str::trim)
+        {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
@@ -238,6 +243,63 @@ pub fn valid_club_names(nation_code: &str, pack: &OnlineContentPack) -> Vec<(Str
         .collect()
 }
 
+/// The valid club names `style` makes from `places` for `nation_code`, blocked ones removed, in
+/// their fixed order: the desktop's random world, which brings its own places
+/// (`default_nations.json`), names its clubs with them (E3-5q F11).
+pub fn valid_names_for(
+    nation_code: &str,
+    places: &[String],
+    style: &NamingStyleContent,
+    pack: &OnlineContentPack,
+) -> Vec<(String, String)> {
+    let nation = NationContent {
+        cities: places.to_vec(),
+        districts: Vec::new(),
+        club_style: String::new(),
+        stadium_style: String::new(),
+    };
+    combinations(&nation, style)
+        .into_iter()
+        .filter(|(name, _)| !is_blocked_club_name(name, nation_code, pack))
+        .collect()
+}
+
+/// A stadium in `city` named in `stadium_style` (pattern and word drawn from `rng`), never a
+/// blocked name; "<city> Stadium" if eight draws find none.
+pub fn stadium_name(
+    pack: &OnlineContentPack,
+    nation_code: &str,
+    stadium_style: &str,
+    city: &str,
+    rng: &mut impl rand::Rng,
+) -> String {
+    use rand::RngExt;
+    let fallback = format!("{city} Stadium");
+    let Some(style) = pack.stadium_styles.get(stadium_style) else {
+        return fallback;
+    };
+    for _ in 0..8 {
+        let Some(pattern) = style
+            .patterns
+            .get(rng.random_range(0..style.patterns.len().max(1)))
+        else {
+            return fallback;
+        };
+        let word = style
+            .words
+            .get(rng.random_range(0..style.words.len().max(1)))
+            .map_or("", String::as_str);
+        if pattern.contains("{word}") && word.is_empty() {
+            continue;
+        }
+        let name = fill(pattern, city, word);
+        if !is_blocked_club_name(&name, nation_code, pack) {
+            return name;
+        }
+    }
+    fallback
+}
+
 /// A bijection on `[0, size)`, keyed (E3-5q F9): a 4-round Feistel network on the smallest even
 /// number of bits that covers `size`, walked until it lands inside the range.
 pub fn keyed_permutation(index: u64, size: u64, key: u64) -> u64 {
@@ -245,11 +307,14 @@ pub fn keyed_permutation(index: u64, size: u64, key: u64) -> u64 {
     let bits = (64 - size.saturating_sub(1).leading_zeros()).max(2);
     let half = bits.div_ceil(2);
     let mask = (1u64 << half) - 1;
+    // FNV-1a alone carries the key and the value into its low bits too weakly: the rounds would
+    // leave small indices where they were whatever the key. Each round's hash is mixed through
+    // the splitmix64 finaliser before its low bits are taken.
     let round = |value: u64, number: u64| -> u64 {
-        stable_hash(
+        mix(stable_hash(
             &value.to_le_bytes(),
             key ^ number.wrapping_mul(0x9e37_79b9_7f4a_7c15),
-        ) & mask
+        )) & mask
     };
     let mut value = index;
     loop {
@@ -264,6 +329,13 @@ pub fn keyed_permutation(index: u64, size: u64, key: u64) -> u64 {
             return value;
         }
     }
+}
+
+/// The splitmix64 finaliser: every output bit depends on every input bit.
+fn mix(mut z: u64) -> u64 {
+    z = (z ^ (z >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+    z = (z ^ (z >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+    z ^ (z >> 31)
 }
 
 /// The key of a nation's permutation of names.
@@ -297,6 +369,25 @@ mod tests {
             })
             .collect();
         assert!(steps.len() > 40, "consecutive clubs follow a stride");
+    }
+
+    /// Given two worlds' keys,
+    /// when the first clubs of a nation are placed in a list of 400 names by each,
+    /// then the two orders share almost no place: the key decides the order, from the first club.
+    #[test]
+    fn two_keys_give_unrelated_orders() {
+        for (one, two) in [(1, 2), (name_key(111, "ES", "x"), name_key(222, "ES", "x"))] {
+            let same = (0..100)
+                .filter(|&index| {
+                    keyed_permutation(index, 400, one) == keyed_permutation(index, 400, two)
+                })
+                .count();
+            assert!(same <= 3, "{same} of 100 places the same");
+            let fixed = (0..100)
+                .filter(|&index| keyed_permutation(index, 400, one) == index)
+                .count();
+            assert!(fixed <= 3, "{fixed} of 100 clubs keep their index");
+        }
     }
 
     /// Given the builtin pack,
