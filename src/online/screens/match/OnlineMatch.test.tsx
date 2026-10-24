@@ -22,7 +22,8 @@ import {
   resetOnline,
   SEASON,
 } from "../../../test-utils/onlineTestKit";
-import type { MatchFrame, MatchView, MineView } from "../../api";
+import type { FriendlyMineView, MatchFrame, MatchView, MineView } from "../../api";
+import { useOnlineStore } from "../../store/onlineStore";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
@@ -94,6 +95,33 @@ function stage({ view = matchView(), mine = mineView(), frames = [], command }: 
   });
 }
 
+/** The viewer's friendly: in the room of match `matchId`, at `status`. */
+function inRoomOf(matchId: string, status: "playing" | "finished"): FriendlyMineView {
+  const side = {
+    club: myClub().club,
+    strengthTop18: 70,
+    coach: { firstName: "An", lastName: "Trần", fullName: "Trần An" },
+    ready: false,
+  };
+  return {
+    seat: {
+      state: "room",
+      room: {
+        id: "room-1",
+        kind: "private",
+        code: "K7Q-2MX",
+        status,
+        leg: 1,
+        me: "host",
+        host: side,
+        guest: side,
+        home: "host",
+        matchId,
+      },
+    },
+  };
+}
+
 const radar = () => JSON.parse(screen.getByRole("status", { name: "radar" }).textContent ?? "{}");
 
 async function opened() {
@@ -151,6 +179,44 @@ describe("opening a match", () => {
       screen.queryByRole("complementary", { name: "online.match.touchline" }),
     ).not.toBeInTheDocument();
     expect(radar()).toMatchObject({ homeDials: null, awayDials: null });
+  });
+
+  // Given a friendly (no fixture) followed live by one of its coaches,
+  // when the referee blows for full time,
+  // then the strip says full time and offers a rematch and the way back to the friendly room —
+  // not a league result, which a friendly has none of.
+  it("offers a way out when a friendly watched live reaches full time", async () => {
+    stage({ view: matchView({ kind: "friendly", fixtureId: undefined }) });
+    await opened();
+    act(() => useOnlineStore.setState({ friendly: inRoomOf(MATCH, "playing") }));
+
+    push(matchFrame(1, { result: { is_finished: true } }));
+
+    expect(await screen.findByText("match.fullTime")).toBeInTheDocument();
+    const rematch = screen.getByRole("button", { name: "online.friendly.room.rematch" });
+    expect(rematch).toBeDisabled();
+    act(() => useOnlineStore.setState({ friendly: inRoomOf(MATCH, "finished") }));
+    expect(rematch).toBeEnabled();
+    expect(screen.getByRole("link", { name: "online.friendly.after.back" })).toHaveAttribute(
+      "href",
+      "/online/friendly",
+    );
+    expect(screen.queryByRole("link", { name: "online.match.seeResult" })).not.toBeInTheDocument();
+  });
+
+  // Given a friendly someone outside its room watches (anyone with its id may),
+  // when it reaches full time,
+  // then they are offered neither a rematch nor the room: neither is theirs.
+  it("offers a spectator of a friendly no rematch", async () => {
+    stage({ view: matchView({ kind: "friendly", fixtureId: undefined }), mine: null });
+    await opened();
+
+    push(matchFrame(1, { result: { is_finished: true } }));
+
+    expect(await screen.findByText("match.fullTime")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "online.friendly.room.rematch" }),
+    ).not.toBeInTheDocument();
   });
 
   // Given a finished match,
