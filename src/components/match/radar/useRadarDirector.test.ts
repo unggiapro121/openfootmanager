@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { MatchSnapshot } from "../types";
+import type { MatchEvent, MatchSnapshot } from "../types";
 import { HALFWAY } from "./radarGeometry";
 import { advancePlayback } from "./radarPlayback";
 import { radarEvent, radarSnapshot } from "./radarTestFixtures";
@@ -41,6 +41,36 @@ function play(hosted: Host, ms: number, watch?: () => void) {
 }
 
 const sceneOf = (hosted: Host) => hosted.result.current.playback.current.scene;
+
+/** How long the radar has queued to play, in screen time. */
+const queuedMs = (hosted: Host) =>
+  hosted.result.current.playback.current.queue.reduce(
+    (sum, entry) => sum + entry.stepMs.reduce((a, b) => a + b, 0),
+    0,
+  );
+
+/** The online pace: a minute every five seconds, whatever the radar does. */
+const CLOCKED: RadarPacing = { ...RADAR_PACING, maxLagMs: 15_000, minuteMs: 5000 };
+
+/** A minute with nothing dangerous in it: midfield passes and a tackle. */
+const quietPlay = [
+  radarEvent("PassCompleted", "Home", "HomeDefense", "h_cb1"),
+  radarEvent("PassCompleted", "Home", "Midfield", "h_cm1"),
+  radarEvent("Tackle", "Away", "Midfield", "a_cm1"),
+];
+
+/** What the commentary will say of `events`, a minute arriving on a clocked radar with nothing queued. */
+function queuedCaptions(events: MatchEvent[]) {
+  const hosted = host({ snapshot: radarSnapshot(), pacing: CLOCKED, reducedMotion: false });
+  hosted.rerender({
+    snapshot: radarSnapshot({ events, ball_zone: "Midfield", possession: "Away" }),
+    pacing: CLOCKED,
+    reducedMotion: false,
+  });
+  return hosted.result.current.playback.current.queue.flatMap((entry) =>
+    (entry.beat.captions ?? []).map((said) => said.caption),
+  );
+}
 
 const dribble = radarEvent("Dribble", "Home", "AwayDefense", "h_st1");
 /** An attack the radar acts out: a dribble, and the shot it ends in. */
@@ -264,6 +294,69 @@ describe("useRadarDirector", () => {
     expect(beats[0].beat.steps.every((step) => step.ball === undefined && !step.action)).toBe(true);
     expect(sceneOf(hosted).highlight).toEqual([]);
     expect(sceneOf(hosted).ball.x).toBe(HALFWAY);
+  });
+
+  // Given a match that keeps its own clock (online: a minute every five seconds, whatever the
+  // radar does) and a radar with nothing queued, when a minute with nothing dangerous in it
+  // arrives, then its play is acted out in full, not passed over: the radar would otherwise stand
+  // still until the next minute.
+  it("acts a quiet minute out in full when the match keeps its own clock", () => {
+    const hosted = host({ snapshot: radarSnapshot(), pacing: CLOCKED, reducedMotion: false });
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: quietPlay, ball_zone: "Midfield", possession: "Away" }),
+      pacing: CLOCKED,
+      reducedMotion: false,
+    });
+    const beats = hosted.result.current.playback.current.queue;
+    expect(beats.map((entry) => entry.beat.eventType)).toContain("PassCompleted");
+    expect(queuedMs(hosted)).toBeGreaterThan(500);
+  });
+
+  // Given a match that keeps its own clock and a radar still a minute or more behind it, when a
+  // quiet minute arrives, then it is passed over in a moment: acting it out would only put the
+  // radar further behind.
+  it("passes over a quiet minute while the radar is a minute behind", () => {
+    const behind: RadarPacing = { ...CLOCKED, minuteMs: 1000 };
+    const hosted = host({ snapshot: radarSnapshot(), pacing: behind, reducedMotion: false });
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: attack, ball_zone: "AwayBox" }),
+      pacing: behind,
+      reducedMotion: false,
+    });
+    const before = hosted.result.current.playback.current.queue.length;
+    hosted.rerender({
+      snapshot: radarSnapshot({
+        events: [...attack, ...quietPlay],
+        ball_zone: "Midfield",
+        possession: "Away",
+      }),
+      pacing: behind,
+      reducedMotion: false,
+    });
+    const added = hosted.result.current.playback.current.queue.slice(before);
+    expect(added).toHaveLength(1);
+    expect(added[0].stepMs.reduce((a, b) => a + b, 0)).toBeLessThanOrEqual(500);
+  });
+
+  // Given a quiet minute acted out in full, then the commentary tells its play as it is acted
+  // out, and says no line about the minute as a whole.
+  it("tells a quiet minute acted out in full as it plays", () => {
+    const captions = queuedCaptions(quietPlay);
+    expect(captions.length).toBeGreaterThan(0);
+    expect(captions.some((caption) => caption.priority === "filler")).toBe(false);
+  });
+
+  // Given a quiet minute acted out in full with a booking in it, then the booking is told once.
+  it("tells a booking in a quiet minute acted out in full once", () => {
+    const captions = queuedCaptions([
+      ...quietPlay,
+      radarEvent("Foul", "Home", "Midfield", "h_cm1", "a_cm1"),
+      radarEvent("YellowCard", "Home", "Midfield", "h_cm1"),
+    ]);
+    const bookings = captions.filter(
+      (caption) => caption.kind === "event" && caption.event.event_type === "YellowCard",
+    );
+    expect(bookings).toHaveLength(1);
   });
 
   // Given a minute, then the director counts its events as taken in at once,

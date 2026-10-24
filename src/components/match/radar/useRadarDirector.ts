@@ -3,10 +3,10 @@ import { type RefObject, useEffect, useRef } from "react";
 import type { MatchEvent } from "../types";
 import type { RadarMatch } from "./radarMatch";
 import { type RadarCaption, minuteCaptions } from "./radarCaptions";
-import { choreographHighlights } from "./radarChoreography";
-import { highlightsOf, openMove } from "./radarHighlights";
+import { choreographBatch, choreographHighlights } from "./radarChoreography";
+import { highlightsOf, movesOf, openMove } from "./radarHighlights";
 import type { RadarSettle } from "./radarSettle";
-import { type Playback, enqueueBeats, jumpTo, restingPlayback } from "./radarPlayback";
+import { type Playback, enqueueBeats, jumpTo, playLeftMs, restingPlayback } from "./radarPlayback";
 import { type RadarBeat, type RadarScene, initialRadarScene } from "./radarScene";
 import { type RadarStage, buildRadarStage, lineupsKey } from "./radarStage";
 import { queueBeat } from "./radarTiming";
@@ -17,6 +17,13 @@ export interface RadarPacing {
   timeScale: number;
   /** The furthest the radar may fall behind the match before it skips ahead. */
   maxLagMs: number;
+  /**
+   * How long a minute takes when the match keeps its own clock instead of waiting for the radar
+   * (online: the server plays a minute every few seconds). A minute with nothing dangerous in it
+   * is then acted out in full while the radar has less than a minute left to play, so it does not
+   * stand still until the next one comes. Unset, such a minute is passed over in a moment.
+   */
+  minuteMs?: number;
 }
 
 /**
@@ -75,7 +82,9 @@ function captionsIn(beats: RadarBeat[]): RadarCaption[] {
  * is still playing. A build-up the minute ends on (`openMove`) is held back
  * and staged with the next minute, so a move that spans two minutes plays in
  * one piece, from its start to its end, and names each pass's receiver by who
- * acts next. Without animation, the playback jumps straight to the end
+ * acts next. On a match that keeps its own clock (`RadarPacing.minuteMs`), a
+ * minute with no dangerous play is acted out in full while the radar is less
+ * than a minute behind. Without animation, the playback jumps straight to the end
  * of the minute. Events from before the radar opened are not replayed.
  * `staged` counts the snapshot's events taken in so far: the radar has played a
  * minute out once they are all taken in and the playback is empty.
@@ -110,8 +119,7 @@ export function useRadarDirector(
     };
     const isAnimated = pacing !== null && !reducedMotion;
 
-    const stageAndQueue = (events: MatchEvent[], settleTo: RadarSettle | undefined) => {
-      const staged = choreographHighlights(events, stage, endRef.current, settleTo);
+    const queueStaged = (staged: { beats: RadarBeat[]; end: RadarScene }) => {
       const beats = withCaptions(staged.beats, pendingCaptionsRef.current);
       if (beats.length > 0) pendingCaptionsRef.current = [];
       const { end } = staged;
@@ -147,11 +155,18 @@ export function useRadarDirector(
     openRef.current = open;
     const held = new Set(open);
     const toStage = batch.slice(0, batch.length - open.length);
+    const isWhole =
+      isAnimated &&
+      pacing.minuteMs !== undefined &&
+      movesOf(toStage).length === 0 &&
+      playLeftMs(playback.current) < pacing.minuteMs;
+    const whole = isWhole ? choreographBatch(toStage, stage, endRef.current, settle) : null;
+    const staged = whole ?? choreographHighlights(toStage, stage, endRef.current, settle);
     pendingCaptionsRef.current = [
       ...pendingCaptionsRef.current,
       ...minuteCaptions(
         fresh.filter((event) => !held.has(event)),
-        new Set(highlightsOf(toStage)),
+        new Set(whole ? whole.acted : highlightsOf(toStage)),
         {
           possession: snapshot.possession,
           ballZone: snapshot.ball_zone,
@@ -162,7 +177,7 @@ export function useRadarDirector(
       ),
     ];
 
-    stageAndQueue(toStage, settle);
+    queueStaged(staged);
   }, [
     snapshot.events,
     snapshot.ball_zone,

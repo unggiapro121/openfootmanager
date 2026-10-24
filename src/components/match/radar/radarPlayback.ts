@@ -35,6 +35,15 @@ export function enqueueBeats(playback: Playback, beats: QueuedBeat[], maxLagMs: 
   return { ...playback, queue: trimBacklog([...playback.queue, ...beats], maxLagMs) };
 }
 
+/** How much play is left to show, in screen time: the rest of the step on screen and the queue. */
+export function playLeftMs(playback: Playback): number {
+  const onScreen = playback.step ? playback.step.ms - playback.step.elapsed : 0;
+  return playback.queue.reduce(
+    (sum, entry) => sum + entry.stepMs.reduce((a, b) => a + b, 0),
+    onScreen,
+  );
+}
+
 /** Drops everything queued and playing: play rests at once at `scene`. */
 export function jumpTo(scene: RadarScene): Playback {
   return restingPlayback(scene);
