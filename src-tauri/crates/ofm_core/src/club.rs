@@ -3,7 +3,7 @@ use crate::finances::{CashKind, post};
 use crate::game::Game;
 use domain::team::{FacilityType, Team};
 
-pub const BASE_FACILITY_UPGRADE_COST: i64 = 2_500_000;
+pub const BASE_FACILITY_UPGRADE_COST: i64 = ofm_rules::economy::BASE_FACILITY_UPGRADE_COST as i64;
 
 fn facility_upgrade_insufficient_funds_error(amount: i64) -> String {
     let amount = amount.to_string();
@@ -21,7 +21,8 @@ fn facility_upgrade_insufficient_funds_error(amount: i64) -> String {
 /// What the next level of `facility_type` costs, or `None` once it is at the top.
 pub fn next_upgrade_cost(team: &Team, facility_type: &FacilityType) -> Option<i64> {
     let level = level_of(&team.facilities, facility_type);
-    (level < MAX_FACILITY_LEVEL).then(|| i64::from(level) * BASE_FACILITY_UPGRADE_COST)
+    ofm_rules::economy::facility_upgrade_cost(level, ofm_rules::economy::BASE_FACILITY_UPGRADE_COST)
+        .map(|cost| cost as i64)
 }
 
 /// One line of an upgrade's before → after: what the facility does now, and
