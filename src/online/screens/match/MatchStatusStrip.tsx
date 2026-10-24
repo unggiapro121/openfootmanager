@@ -97,7 +97,9 @@ export function MatchStatusStrip({
           <span className="font-heading font-bold uppercase tracking-wider">
             {t("match.fullTime")}
           </span>
-          {view.kind === "friendly" && <FriendlyAfterMatch matchId={view.id} inline />}
+          {view.kind === "friendly" && (
+            <FriendlyAfterMatch matchId={view.id} inline coach={mine !== null} />
+          )}
           {view.fixtureId && (
             <Link
               to={`/online/fixtures/${view.fixtureId}`}
