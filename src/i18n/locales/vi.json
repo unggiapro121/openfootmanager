@@ -179,7 +179,8 @@
       "back": "← Về đội hình",
       "noMatch": "Không có cầu thủ nào khớp bộ lọc.",
       "notFound": "Cầu thủ này không có trong đội hình của bạn.",
-      "state": "Thể trạng"
+      "state": "Thể trạng",
+      "suspended": "Bị treo giò: {{count}} trận"
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."

@@ -179,7 +179,8 @@
       "back": "← Zpět na kádr",
       "noMatch": "Filtrům neodpovídá žádný hráč.",
       "notFound": "Tento hráč není ve vašem kádru.",
-      "state": "Kondice"
+      "state": "Kondice",
+      "suspended": "Vyloučen: {{count}} zápas(y)"
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."

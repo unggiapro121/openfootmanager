@@ -179,7 +179,8 @@
       "back": "← Kadroya dön",
       "noMatch": "Bu filtrelere uyan oyuncu yok.",
       "notFound": "Bu oyuncu kadronuzda değil.",
-      "state": "Durum"
+      "state": "Durum",
+      "suspended": "Cezalı: {{count}} maç"
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."

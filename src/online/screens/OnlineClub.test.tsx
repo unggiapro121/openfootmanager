@@ -205,6 +205,24 @@ describe("the online club pages", () => {
     expect(screen.getByText("playerProfile.seasonStats")).toBeInTheDocument();
   });
 
+  // Given a squad where one player is banned for a match by a red card,
+  // when the squad page and his own page open,
+  // then both say he is suspended, and the others' rows do not.
+  it("marks a player banned by a red card", async () => {
+    const [keeper, ...others] = SQUAD;
+    stage(myClub({ players: [{ ...keeper, suspendedMatches: 1 }, ...others] }));
+    renderOnline("/online/squad");
+
+    const table = await screen.findByRole("table");
+    const row = within(table).getByRole("link", { name: "Thủ Môn" }).closest("tr");
+    expect(row).toHaveTextContent("online.squad.suspended:1");
+    expect(table).not.toHaveTextContent("online.squad.suspended:undefined");
+    expect(within(table).getAllByText(/online\.squad\.suspended/)).toHaveLength(1);
+
+    fireEvent.click(within(table).getByRole("link", { name: "Thủ Môn" }));
+    expect(await screen.findByText("online.squad.suspended:1")).toBeInTheDocument();
+  });
+
   // Given a squad of three,
   // when the coach filters by a line, by the first eleven and by a name, then clears the filter,
   // then each shows the players it lets through, says when none, and clearing brings all back.

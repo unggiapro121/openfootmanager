@@ -179,7 +179,8 @@
       "back": "← Zurück zum Kader",
       "noMatch": "Kein Spieler passt zu diesen Filtern.",
       "notFound": "Dieser Spieler gehört nicht zu deinem Kader.",
-      "state": "Verfassung"
+      "state": "Verfassung",
+      "suspended": "Gesperrt: {{count}} Spiel(e)"
     },
     "training": {
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan."

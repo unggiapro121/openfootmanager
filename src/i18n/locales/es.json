@@ -179,7 +179,8 @@
       "back": "← Volver a la plantilla",
       "noMatch": "Ningún jugador coincide con estos filtros.",
       "notFound": "Este jugador no está en tu plantilla.",
-      "state": "Estado"
+      "state": "Estado",
+      "suspended": "Sancionado: {{count}} partido(s)"
     },
     "training": {
       "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio."

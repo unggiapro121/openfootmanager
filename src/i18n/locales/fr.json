@@ -179,7 +179,8 @@
       "back": "← Retour à l'effectif",
       "noMatch": "Aucun joueur ne correspond à ces filtres.",
       "notFound": "Ce joueur n'est pas dans votre effectif.",
-      "state": "Forme"
+      "state": "Forme",
+      "suspended": "Suspendu : {{count}} match(s)"
     },
     "training": {
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."

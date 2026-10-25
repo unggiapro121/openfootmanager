@@ -179,7 +179,8 @@
       "back": "← Kembali ke skuad",
       "noMatch": "Tidak ada pemain yang cocok dengan penyaring ini.",
       "notFound": "Pemain ini tidak ada di skuad Anda.",
-      "state": "Kondisi"
+      "state": "Kondisi",
+      "suspended": "Diskors: {{count}} laga"
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
