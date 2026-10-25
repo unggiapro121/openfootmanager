@@ -43,6 +43,12 @@ export type LiveMatch =
  */
 const STALL_STEPS = 3;
 
+/**
+ * Steps between two reads of the coach's own side while they coach it: what it carries changes
+ * every step (each player's condition), and the frames do not show it (S8-15).
+ */
+export const MINE_EVERY_STEPS = 5;
+
 const coaches = (data: Pick<LiveMatchData, "mine" | "state">) =>
   data.mine !== null &&
   data.state.controllers[data.mine.side === "Home" ? "home" : "away"] === "Manager";
@@ -51,8 +57,8 @@ const coaches = (data: Pick<LiveMatchData, "mine" | "state">) =>
  * A match, opened and followed (C-2 §3.6, C2-9): its view, the viewer's own side, its history
  * from the frames, then every frame after it as the server publishes it. A missed frame is read
  * again; a frame that changed a side in sight reads the sides again; a frame deciding commands
- * reads the viewer's side again, for each refusal's reason (C2-11). A finished match is read, not
- * followed.
+ * reads the viewer's side again, for each refusal's reason (C2-11), and so does every fifth step
+ * while they coach it, for their players' condition. A finished match is read, not followed.
  */
 export function useLiveMatch(matchId: string) {
   const [live, setLive] = useState<LiveMatch>({ status: "loading" });
@@ -100,7 +106,10 @@ export function useLiveMatch(matchId: string) {
       let mine = current.mine;
       let sent = current.sent;
       if (result.sidesChanged) state = withSides(state, await online.matches.byId(matchId));
-      if (mine !== null && frame.commands.length > 0) {
+      if (
+        mine !== null &&
+        (frame.commands.length > 0 || (coaches(current) && frame.seq % MINE_EVERY_STEPS === 0))
+      ) {
         mine = (await readMine(matchId)) ?? mine;
         sent = mine.commands;
       }

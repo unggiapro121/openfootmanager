@@ -13,7 +13,7 @@ import type { LicenceControls } from "./rules/LicenceControls";
  */
 export type MineView = { side: Side, lastSeq: number, tactics: TacticsConfig, 
 /**
- * The role of each player of the side, the eleven then the bench.
+ * The role and the condition of each player of the side, the eleven then the bench.
  */
 roles: Array<PlayerRoleLine>, setPieces: SetPieceTakers, commands: Array<SentCommand>, 
 /**

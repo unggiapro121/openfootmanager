@@ -628,6 +628,30 @@ describe("orders", () => {
     expect(screen.getByText("match.substitutionsTitle")).toBeInTheDocument();
   });
 
+  // Given the coach's side read at kick-off with h9 fresh, and the match then saying he is at 47,
+  // when four steps pass, then the fifth,
+  // then the coach's side is read again only at the fifth, and the substitutions panel shows h9's
+  // condition as the match now has it.
+  it("reads the coach's side every fifth step and shows each player's condition now", async () => {
+    let mine = mineView({ roles: [{ playerId: "h9", role: "Standard", condition: 100 }] });
+    stage({ mine });
+    server.routes[`GET v1/matches/${MATCH}/mine`] = () => ok(mine);
+    await opened();
+    const reads = () => requestsTo(`v1/matches/${MATCH}/mine`).length;
+    const first = reads();
+    mine = mineView({ roles: [{ playerId: "h9", role: "Standard", condition: 47 }] });
+
+    for (const seq of [1, 2, 3, 4]) push(matchFrame(seq));
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(reads()).toBe(first);
+    push(matchFrame(5));
+    await waitFor(() => expect(reads()).toBe(first + 1));
+
+    fireEvent.click(screen.getByRole("button", { name: /match\.subs/ }));
+    const row = await screen.findByTestId("sub-panel-off-h9");
+    await waitFor(() => expect(row).toHaveTextContent("47"));
+  });
+
   // Given a substitution the match refuses,
   // when the frame deciding it comes,
   // then the coach's side is read again and the order shows why it was refused.
@@ -679,7 +703,7 @@ describe("the side's own orders", () => {
   it("offers only the orders the side's licence opens", async () => {
     stage({
       mine: mineView({
-        roles: [{ playerId: "h9", role: "Standard" }],
+        roles: [{ playerId: "h9", role: "Standard", condition: 90 }],
         licence: {
           tier: 1,
           formations: ["4-4-2", "4-3-3", "3-5-2"],
@@ -711,8 +735,8 @@ describe("the side's own orders", () => {
     stage({
       mine: mineView({
         roles: [
-          { playerId: "h9", role: "Standard" },
-          { playerId: "h0", role: "SweeperKeeper" },
+          { playerId: "h9", role: "Standard", condition: 90 },
+          { playerId: "h0", role: "SweeperKeeper", condition: 90 },
         ],
       }),
     });
