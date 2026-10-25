@@ -7,13 +7,15 @@ import { toSubPanelSnapshot } from "./subPanel";
 const state = () => initialMatchState(matchView());
 
 describe("toSubPanelSnapshot", () => {
-  // Given the home coach, whose squad knows h9 as tired with his attributes and ratings,
+  // Given the home coach, whose match says h9 is at 33 now, and whose squad knows his attributes
+  // and ratings, and h4 at 58 as he kicked off (no line from the match for him),
   // when the match is made the game's substitution panel's snapshot,
-  // then the coach's own players carry what the squad knows (condition, attributes, position
-  // ratings) and his roles, the other side's players carry names and overalls only, and both sides
-  // keep their eleven in slot order with their bench.
+  // then h9's condition is the match's live one, h4's the squad's, the coach's own players carry
+  // the squad's attributes and position ratings and their roles, the other side's players carry
+  // names and overalls only, and both sides keep their eleven in slot order with their bench.
   it("gives the coach's own players what only the coach's squad knows", () => {
     const squad = [
+      squadPlayer({ id: "h4", condition: 58 }),
       squadPlayer({
         id: "h9",
         condition: 41,
@@ -21,17 +23,18 @@ describe("toSubPanelSnapshot", () => {
         positionRatings: [{ position: "Striker", ovr: 66, fit: "Natural" }],
       }),
     ];
-    const mine = mineView({ roles: [{ playerId: "h9", role: "Poacher" }] });
+    const mine = mineView({ roles: [{ playerId: "h9", role: "Poacher", condition: 33 }] });
 
     const snapshot = toSubPanelSnapshot(state(), mine, squad);
 
     const own = snapshot.home_team.players.find((player) => player.id === "h9");
     expect(own).toMatchObject({
-      condition: 41,
+      condition: 33,
       pace: 77,
       role: "Poacher",
       position_ratings: [{ position: "Striker", ovr: 66, fit: "Natural" }],
     });
+    expect(snapshot.home_team.players.find((player) => player.id === "h4")?.condition).toBe(58);
     const unknown = snapshot.home_team.players.find((player) => player.id === "h3");
     expect(unknown).toMatchObject({ condition: 100, pace: 0, role: "" });
     expect(unknown?.position_ratings).toBeUndefined();
