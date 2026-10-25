@@ -524,7 +524,9 @@
         "forcedUnnamed": "因俱乐部拖欠工资，一名球员被挂牌拍卖。",
         "changed": "{{player}} 的拍卖有了变化。",
         "changedUnnamed": "市场有了变化。"
-      }
+      },
+      "ai": "AI",
+      "aiClub": "由 AI 管理的俱乐部"
     },
     "rename": {
       "open": "改名",

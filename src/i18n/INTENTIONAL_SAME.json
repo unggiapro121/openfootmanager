@@ -511,6 +511,7 @@
   ],
   "ru": ["dashboard.recapTransferLine"],
   "zh-CN": [
+    "online.market.ai",
     "online.league.bot",
     "be.news.roundup.resultLine",
     "be.news.preseasonDigest.resultLine"
@@ -609,6 +610,7 @@
     "tournaments.competitions.premierDivision"
   ],
   "id": [
+    "online.market.ai",
     "online.finance.total",
     "online.fixture.assists",
     "online.league.bot",
@@ -767,6 +769,7 @@
     "coachServer.email"
   ],
   "vi": [
+    "online.market.ai",
     "online.league.bot",
     "online.profile.email",
     "manager.stylePhase.Press",

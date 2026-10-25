@@ -524,7 +524,9 @@
         "forcedUnnamed": "Kulüp maaş borçlu olduğu için bir oyuncu açık artırmaya çıkarıldı.",
         "changed": "{{player}} açık artırmasında bir değişiklik var.",
         "changedUnnamed": "Pazarda bir değişiklik var."
-      }
+      },
+      "ai": "YZ",
+      "aiClub": "Yapay zekânın yönettiği kulüp"
     },
     "rename": {
       "open": "Yeniden adlandır",

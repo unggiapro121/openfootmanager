@@ -524,7 +524,9 @@
         "forcedUnnamed": "Um jogador foi colocado em leilão porque o clube deve salários.",
         "changed": "Algo mudou no leilão de {{player}}.",
         "changedUnnamed": "Algo mudou no mercado."
-      }
+      },
+      "ai": "IA",
+      "aiClub": "Clube comandado pela IA"
     },
     "rename": {
       "open": "Renomear",

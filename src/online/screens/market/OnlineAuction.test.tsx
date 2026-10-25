@@ -200,6 +200,24 @@ describe("OnlineAuction", () => {
     expect(screen.queryByRole("button", { name: "online.market.withdraw" })).toBeNull();
   });
 
+  // Given an auction led by a bot club,
+  // when its page opens,
+  // then the leader is marked AI and the person's seller is not.
+  it("marks a leading club the AI runs", async () => {
+    server = serveMarket({
+      "GET v1/auctions/a-1": ok(
+        auction({ currentPrice: 650_000, leaderName: "Bot FC", leaderIsBot: true, bidsCount: 1 }),
+      ),
+    });
+    renderOnline("/online/auctions/a-1");
+
+    const leader = await screen.findByText("Bot FC");
+    expect(within(leader).getByText("online.market.aiClub")).toBeTruthy();
+    expect(
+      within(screen.getByText("Sóng Biển Đà Nẵng")).queryByText("online.market.aiClub"),
+    ).toBeNull();
+  });
+
   // Given a closed auction sold to another club,
   // when its page opens,
   // then it says who bought him for how much, with no bid box and no channel followed.
