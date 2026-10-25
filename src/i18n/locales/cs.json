@@ -524,7 +524,9 @@
         "forcedUnnamed": "Hráč byl dán do aukce, protože klub dluží mzdy.",
         "changed": "V aukci hráče {{player}} se něco změnilo.",
         "changedUnnamed": "Na trhu se něco změnilo."
-      }
+      },
+      "ai": "UI",
+      "aiClub": "Klub řízený UI"
     },
     "rename": {
       "open": "Přejmenovat",

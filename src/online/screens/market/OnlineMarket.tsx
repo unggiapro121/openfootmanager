@@ -300,6 +300,22 @@ function AuctionTable({ items }: { items: AuctionView[] }) {
   );
 }
 
+/** A club the server runs (a bot), marked "AI" beside its name (B7). */
+export function ClubName({ name, isBot }: { name: string; isBot: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {name}
+      {isBot && (
+        <Badge variant="accent" size="sm">
+          <span aria-hidden>{t("online.market.ai")}</span>
+          <span className="sr-only">{t("online.market.aiClub")}</span>
+        </Badge>
+      )}
+    </span>
+  );
+}
+
 /** What the coach's own club is to an auction: the seller, the leader, or neither. */
 export function OwnLabels({ auction }: { auction: AuctionView }) {
   const { t } = useTranslation();
@@ -347,7 +363,9 @@ function AuctionRow({ auction, offset }: { auction: AuctionView; offset: number 
       </td>
       <td className="px-2 py-2 text-right">{auction.bidsCount}</td>
       <td className="px-2 py-2 text-right tabular-nums">{text ?? t("online.market.ending")}</td>
-      <td className="px-3 py-2">{auction.sellerName}</td>
+      <td className="px-3 py-2">
+        <ClubName name={auction.sellerName} isBot={auction.sellerIsBot} />
+      </td>
     </tr>
   );
 }

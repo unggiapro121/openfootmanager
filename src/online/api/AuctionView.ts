@@ -10,6 +10,10 @@ export type AuctionView = { id: string, playerId: string,
  */
 player?: AuctionPlayerView, sellerClubId: string, sellerName: string, 
 /**
+ * The seller is a bot club, run by the server (B7: the app marks it "AI").
+ */
+sellerIsBot: boolean, 
+/**
  * Put up by the server for a club owing wages.
  */
 forced: boolean, 
@@ -21,6 +25,10 @@ status: string, startPrice: number, priceCap: number,
  * The player's value when listed, which the band is taken from.
  */
 marketValue: number, currentPrice?: number, leaderClubId?: string, leaderName?: string, 
+/**
+ * The leading club is a bot club (B7); false with no leader.
+ */
+leaderIsBot: boolean, 
 /**
  * The least the next bid may be; the cap itself once the leader holds it (a tie at the cap).
  */

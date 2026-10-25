@@ -524,7 +524,9 @@
         "forcedUnnamed": "Một cầu thủ đã bị đưa lên sàn vì nợ lương.",
         "changed": "Phiên của {{player}} vừa có thay đổi.",
         "changedUnnamed": "Chợ vừa có thay đổi."
-      }
+      },
+      "ai": "AI",
+      "aiClub": "CLB do AI điều hành"
     },
     "rename": {
       "open": "Đổi tên",

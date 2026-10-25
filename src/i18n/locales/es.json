@@ -524,7 +524,9 @@
         "forcedUnnamed": "Un jugador salió a subasta porque el club debe salarios.",
         "changed": "Algo cambió en la subasta de {{player}}.",
         "changedUnnamed": "Algo cambió en el mercado."
-      }
+      },
+      "ai": "IA",
+      "aiClub": "Club dirigido por la IA"
     },
     "rename": {
       "open": "Renombrar",

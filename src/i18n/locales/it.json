@@ -524,7 +524,9 @@
         "forcedUnnamed": "Un giocatore è stato messo all'asta perché il club deve stipendi.",
         "changed": "Qualcosa è cambiato nell'asta per {{player}}.",
         "changedUnnamed": "Qualcosa è cambiato sul mercato."
-      }
+      },
+      "ai": "IA",
+      "aiClub": "Club gestito dall'IA"
     },
     "rename": {
       "open": "Rinomina",

@@ -524,7 +524,9 @@
         "forcedUnnamed": "A player was put up for auction because the club owes wages.",
         "changed": "Something changed in the auction for {{player}}.",
         "changedUnnamed": "Something changed on the market."
-      }
+      },
+      "ai": "AI",
+      "aiClub": "Club run by the AI"
     },
     "rename": {
       "open": "Rename",
