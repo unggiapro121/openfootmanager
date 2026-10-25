@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
+import ShirtNumberPicker from "./squad/ShirtNumberPicker";
 import { PlayerPositionBadges } from "../../components/squad/PlayerPositionBadges";
 import {
   Badge,
@@ -235,6 +236,7 @@ function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boole
   const selling = useOnlineStore((state) =>
     state.market?.selling.some((auction) => auction.playerId === player.id),
   );
+  const [pickingShirt, setPickingShirt] = useState(false);
   const open = () => navigate(`/online/squad/${player.id}`);
   const border = starter
     ? "border-l-4 border-l-primary-500"
@@ -248,7 +250,26 @@ function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boole
       className={`group cursor-pointer transition-colors hover:bg-primary-500/5 dark:hover:bg-navy-700 ${border}`}
     >
       <td className="px-4 py-2.5 text-sm font-medium tabular-nums text-gray-600 dark:text-gray-400">
-        {player.shirtNumber ?? "—"}
+        <button
+          type="button"
+          title={t("squad.jerseyPickerAction")}
+          aria-label={`${t("squad.jerseyPickerAction")}: ${player.matchName}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            setPickingShirt(true);
+          }}
+          className="rounded px-1.5 py-0.5 tabular-nums hover:bg-primary-500/10 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:hover:text-primary-400"
+        >
+          {player.shirtNumber ?? "—"}
+        </button>
+        {pickingShirt && (
+          // A portal's clicks bubble through the row, which would open the player's page.
+          // biome-ignore lint/a11y/noStaticElementInteractions: only stops the click, no action
+          // biome-ignore lint/a11y/useKeyWithClickEvents: only stops the click, no action
+          <span onClick={(event) => event.stopPropagation()}>
+            <ShirtNumberPicker player={player} onClose={() => setPickingShirt(false)} />
+          </span>
+        )}
       </td>
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-3">

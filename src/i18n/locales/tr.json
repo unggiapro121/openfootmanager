@@ -4211,7 +4211,8 @@
       },
       "player": {
         "notYours": "Bu oyuncu senin kulübünde değil.",
-        "listed": "Açık artırmadaki bir oyuncu, artırma bitene kadar adını korur."
+        "listed": "Açık artırmadaki bir oyuncu, artırma bitene kadar adını korur.",
+        "shirtTaken": "Bu numarayı başka bir oyuncu zaten giyiyor."
       }
     },
     "sender": {

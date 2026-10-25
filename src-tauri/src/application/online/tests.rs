@@ -178,6 +178,25 @@ fn a_player_s_rename_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview sets a player's shirt number and tries the route with another method,
+/// then it goes out to `/v1/players/{id}/shirt` as a PATCH, and the other method is refused.
+#[test]
+fn a_player_s_shirt_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    let path = ["v1", "players", id, "shirt"];
+    send(&session, &request("PATCH", &path), 0).expect("an answer");
+    assert_eq!(
+        refused(send(&session, &request("PUT", &path), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let requests = sent(&server);
+    assert_eq!(requests.len(), 1);
+    assert_eq!(requests[0].method, "PATCH");
+    assert_eq!(requests[0].path, format!("/v1/players/{id}/shirt"));
+}
+
+/// Given a signed-in coach,
 /// when the webview reads and changes its friendly (S-12): its seat, a room made, joined, readied,
 /// left and rematched, the queue joined and left,
 /// then each goes out to its own route with its method, and the routes take no other method.

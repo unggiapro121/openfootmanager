@@ -4211,7 +4211,8 @@
       },
       "player": {
         "notYours": "Quel giocatore non è nel tuo club.",
-        "listed": "Un giocatore all'asta mantiene il suo nome fino alla fine dell'asta."
+        "listed": "Un giocatore all'asta mantiene il suo nome fino alla fine dell'asta.",
+        "shirtTaken": "Un altro giocatore indossa già quel numero."
       }
     },
     "sender": {

@@ -4211,7 +4211,8 @@
       },
       "player": {
         "notYours": "That player is not at your club.",
-        "listed": "A player up for auction keeps his name until the auction is over."
+        "listed": "A player up for auction keeps his name until the auction is over.",
+        "shirtTaken": "Another player already wears that number."
       }
     },
     "sender": {

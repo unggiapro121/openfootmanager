@@ -4211,7 +4211,8 @@
       },
       "player": {
         "notYours": "Cầu thủ này không thuộc CLB của bạn.",
-        "listed": "Cầu thủ đang được đấu giá giữ nguyên tên cho tới khi phiên kết thúc."
+        "listed": "Cầu thủ đang được đấu giá giữ nguyên tên cho tới khi phiên kết thúc.",
+        "shirtTaken": "Một cầu thủ khác đã mang số áo này."
       }
     },
     "sender": {

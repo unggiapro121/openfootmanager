@@ -4211,7 +4211,8 @@
       },
       "player": {
         "notYours": "Pemain itu tidak ada di klubmu.",
-        "listed": "Pemain yang sedang dilelang tetap memakai namanya sampai lelang selesai."
+        "listed": "Pemain yang sedang dilelang tetap memakai namanya sampai lelang selesai.",
+        "shirtTaken": "Pemain lain sudah memakai nomor itu."
       }
     },
     "sender": {
