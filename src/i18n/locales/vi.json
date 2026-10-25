@@ -249,7 +249,8 @@
       "rolesTitle": "Vai trò cầu thủ",
       "rolePlayer": "Cầu thủ",
       "roleChoice": "Vai trò",
-      "changeRole": "Đổi vai trò"
+      "changeRole": "Đổi vai trò",
+      "orderRefused": "Trận đấu không nhận lệnh này: {{reason}}"
     },
     "replay": {
       "title": "Xem lại",

@@ -249,7 +249,8 @@
       "rolesTitle": "球员角色",
       "rolePlayer": "球员",
       "roleChoice": "角色",
-      "changeRole": "更改角色"
+      "changeRole": "更改角色",
+      "orderRefused": "比赛没有接受该指令：{{reason}}"
     },
     "replay": {
       "title": "回放",

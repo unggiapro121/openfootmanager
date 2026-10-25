@@ -249,7 +249,8 @@
       "rolesTitle": "Ruoli dei giocatori",
       "rolePlayer": "Giocatore",
       "roleChoice": "Ruolo",
-      "changeRole": "Cambia ruolo"
+      "changeRole": "Cambia ruolo",
+      "orderRefused": "La partita non ha accettato quell'ordine: {{reason}}"
     },
     "replay": {
       "title": "Rivedi",

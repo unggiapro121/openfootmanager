@@ -249,7 +249,8 @@
       "rolesTitle": "Роли игроков",
       "rolePlayer": "Игрок",
       "roleChoice": "Роль",
-      "changeRole": "Сменить роль"
+      "changeRole": "Сменить роль",
+      "orderRefused": "Матч не принял этот приказ: {{reason}}"
     },
     "replay": {
       "title": "Повтор",

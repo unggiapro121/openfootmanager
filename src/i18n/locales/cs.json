@@ -249,7 +249,8 @@
       "rolesTitle": "Role hráčů",
       "rolePlayer": "Hráč",
       "roleChoice": "Herní role",
-      "changeRole": "Změnit roli"
+      "changeRole": "Změnit roli",
+      "orderRefused": "Zápas tento pokyn nepřijal: {{reason}}"
     },
     "replay": {
       "title": "Záznam",

@@ -249,7 +249,8 @@
       "rolesTitle": "Player roles",
       "rolePlayer": "Player",
       "roleChoice": "Role",
-      "changeRole": "Change role"
+      "changeRole": "Change role",
+      "orderRefused": "The match did not take that order: {{reason}}"
     },
     "replay": {
       "title": "Replay",

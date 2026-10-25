@@ -249,7 +249,8 @@
       "rolesTitle": "Rôles des joueurs",
       "rolePlayer": "Joueur",
       "roleChoice": "Rôle",
-      "changeRole": "Changer de rôle"
+      "changeRole": "Changer de rôle",
+      "orderRefused": "Le match n'a pas pris cet ordre : {{reason}}"
     },
     "replay": {
       "title": "Revoir",

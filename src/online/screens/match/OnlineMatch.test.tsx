@@ -229,7 +229,7 @@ describe("opening a match", () => {
     expect(await screen.findByText(/online\.match\.halfTime:/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "match.firstHalfEvents" })).toBeInTheDocument();
     expect(screen.getByRole("complementary", { name: "online.match.touchline" })).toBeVisible();
-    expect(screen.getByRole("combobox", { name: "online.match.playerOff" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /match\.subs/ })).toBeEnabled();
     expect(screen.queryByRole("status", { name: "radar" })).not.toBeInTheDocument();
 
     push(matchFrame(2, { result: { phase: "SecondHalf", minute: 46 } }));
@@ -531,16 +531,15 @@ describe("who holds the side", () => {
 describe("the injury window and the break", () => {
   // Given a match with a window of three steps of two seconds,
   // when the coach's player h5 is hurt in step 1,
-  // then the strip counts six seconds and its button chooses him to come off.
+  // then the strip counts six seconds and its button opens the substitutions panel with him
+  // chosen to come off.
   it("counts down the time to replace a hurt player", async () => {
     stage();
     await opened();
     push(matchFrame(1, { result: { events: [matchEvent("Injury", "Home", "h5")] } }));
     expect(await screen.findByText("online.match.hurt:P. h5|6")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "online.match.replace" }));
-    expect(screen.getByRole("combobox", { name: "online.match.playerOff" })).toHaveTextContent(
-      "6. P. h5",
-    );
+    expect(await screen.findByText("match.takingOff:P. h5")).toBeInTheDocument();
   });
 
   // Given a match of a one-minute break,
@@ -555,12 +554,12 @@ describe("the injury window and the break", () => {
 });
 
 describe("orders", () => {
+  /** Through the game's own substitutions panel: open it, choose h9 to come off and hs1 to go on. */
   async function substitute() {
-    fireEvent.click(screen.getByRole("combobox", { name: "online.match.playerOff" }));
-    fireEvent.click(screen.getByRole("option", { name: "10. P. h9" }));
-    fireEvent.click(screen.getByRole("combobox", { name: "online.match.playerOn" }));
-    fireEvent.click(screen.getByRole("option", { name: "20. P. hs1" }));
-    fireEvent.click(screen.getByRole("button", { name: "match.makeSubstitution" }));
+    fireEvent.click(screen.getByRole("button", { name: /match\.subs/ }));
+    fireEvent.click(await screen.findByTestId("sub-panel-off-h9"));
+    fireEvent.click(screen.getByTestId("sub-panel-bench-hs1"));
+    fireEvent.click(screen.getByRole("button", { name: /match\.confirmSubstitution/ }));
   }
 
   // Given the coach of the home side,
@@ -584,16 +583,49 @@ describe("orders", () => {
   it("sends a change of shape and of style", async () => {
     stage();
     await opened();
-    fireEvent.click(screen.getByRole("combobox", { name: "match.formation" }));
-    fireEvent.click(screen.getByRole("option", { name: "4-3-3" }));
+    expect(screen.getByRole("button", { name: "4-4-2" })).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByRole("button", { name: "4-3-3" }));
     await waitFor(() => expect(requestsTo(`v1/matches/${MATCH}/commands`)).toHaveLength(1));
-    fireEvent.click(screen.getByRole("combobox", { name: "match.playStyle" }));
-    fireEvent.click(screen.getByRole("option", { name: "common.playStyles.Counter" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.playStyles.Counter" }));
     await waitFor(() => expect(requestsTo(`v1/matches/${MATCH}/commands`)).toHaveLength(2));
     expect(requestsTo(`v1/matches/${MATCH}/commands`).map((request) => request.body)).toEqual([
       { command: { ChangeFormation: { side: "Home", formation: "4-3-3" } } },
       { command: { ChangePlayStyle: { side: "Home", play_style: "Counter" } } },
     ]);
+  });
+
+  // Given the substitutions panel opened from the touchline,
+  // when the coach switches the shape from inside it and closes it,
+  // then the shape is sent as an order for their side, and the panel is gone.
+  it("changes the shape from inside the substitutions panel and closes it", async () => {
+    stage();
+    await opened();
+    fireEvent.click(screen.getByRole("button", { name: /match\.subs/ }));
+    expect(await screen.findByText("match.substitutionsTitle")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("combobox", { name: "tactics.formation" }));
+    fireEvent.click(screen.getByRole("option", { name: "3-5-2" }));
+
+    await waitFor(() => expect(requestsTo(`v1/matches/${MATCH}/commands`)).toHaveLength(1));
+    expect(requestsTo(`v1/matches/${MATCH}/commands`)[0].body).toEqual({
+      command: { ChangeFormation: { side: "Home", formation: "3-5-2" } },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "✕" }));
+    expect(screen.queryByText("match.substitutionsTitle")).toBeNull();
+  });
+
+  // Given the match refusing an order sent from inside the panel,
+  // when the coach sends it,
+  // then the reason is shown over the panel, which stays open for another try.
+  it("shows a refusal over the substitutions panel and keeps it open", async () => {
+    stage({ command: fail(429, "be.error.match.tooManyCommands") });
+    await opened();
+    fireEvent.click(screen.getByRole("button", { name: /match\.subs/ }));
+    fireEvent.click(await screen.findByRole("combobox", { name: "tactics.formation" }));
+    fireEvent.click(screen.getByRole("option", { name: "3-5-2" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("online.match.orderRefused");
+    expect(screen.getByText("match.substitutionsTitle")).toBeInTheDocument();
   });
 
   // Given a substitution the match refuses,
@@ -658,16 +690,10 @@ describe("the side's own orders", () => {
       }),
     });
     await opened();
-    const shape = screen.getByRole("combobox", { name: "match.formation" });
-    fireEvent.click(shape);
-    expect(screen.getByRole("option", { name: "4-3-3" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "4-2-3-1" })).toBeNull();
-    fireEvent.keyDown(shape, { key: "Escape" });
-    const style = screen.getByRole("combobox", { name: "match.playStyle" });
-    fireEvent.click(style);
-    expect(screen.getByRole("option", { name: "common.playStyles.Attacking" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "common.playStyles.Counter" })).toBeNull();
-    fireEvent.keyDown(style, { key: "Escape" });
+    expect(screen.getByRole("button", { name: "4-3-3" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "4-2-3-1" })).toBeNull();
+    expect(screen.getByRole("button", { name: "common.playStyles.Attacking" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "common.playStyles.Counter" })).toBeNull();
     fireEvent.click(screen.getByRole("combobox", { name: "online.match.rolePlayer" }));
     fireEvent.click(screen.getByRole("option", { name: "10. P. h9" }));
     fireEvent.click(screen.getByRole("combobox", { name: "online.match.roleChoice" }));

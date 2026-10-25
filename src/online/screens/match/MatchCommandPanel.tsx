@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Select } from "../../../components/ui";
+import { Crosshair, Flag, RefreshCw, Shield, Target, Zap } from "lucide-react";
 import { FORMATIONS, PLAY_STYLES } from "../../../components/match/types";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import type { MineView, SentCommand } from "../../api";
 import type { MatchCommand, PlayStyle } from "../../api/engine";
-import type { LicenceControls } from "../../api/rules";
 import { openInMatch } from "../../convert/licence";
-import { type OnlineMatchState, substitutedOff } from "../../convert/matchState";
-import { playerOptions, SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
+import type { OnlineMatchState } from "../../convert/matchState";
+import { OnlineSubPanel } from "./OnlineSubPanel";
+import { SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
@@ -131,69 +131,121 @@ function SentOrders({
   );
 }
 
-/** The side's shape and style, each change sent as it is chosen. */
-function ShapeSection({
-  formation,
-  playStyle,
+const CHIP =
+  "rounded px-2 py-1 font-heading text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50";
+const CHIP_ON =
+  "bg-primary-500/20 text-primary-600 ring-1 ring-primary-500/50 dark:text-primary-400";
+const CHIP_OFF =
+  "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300";
+
+/** The play styles the side may set, each with the icon the game's own match screen gives it. */
+const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
+  Balanced: <Target className="h-3 w-3" />,
+  Attacking: <Zap className="h-3 w-3" />,
+  Defensive: <Shield className="h-3 w-3" />,
+  Possession: <RefreshCw className="h-3 w-3" />,
+  Counter: <Crosshair className="h-3 w-3" />,
+  HighPress: <Flag className="h-3 w-3" />,
+};
+
+/** The open options, and the side's current one even when closed, so it shows as the chosen. */
+function withCurrent<T extends string>(open: T[], current: string): T[] {
+  return open.includes(current as T) ? open : [current as T, ...open];
+}
+
+/**
+ * The team controls of the game's own match screen: the substitutions panel, and the formation and
+ * the play style as buttons, each change sent to the match as it is chosen. What the buttons grey
+ * out is a hint of the side's licence (S-9); the server's check is the rule.
+ */
+function TeamControls({
+  state,
+  mine,
   disabled,
-  licence,
-  onFormation,
-  onPlayStyle,
+  open,
+  onOpen,
+  onSend,
+  initialOff,
+  send,
 }: {
-  formation: string;
-  playStyle: string;
+  state: OnlineMatchState;
+  mine: MineView;
   disabled: boolean;
-  /** What the side may set in this match (S-9); none opens everything. */
-  licence: LicenceControls | undefined;
-  onFormation: (formation: string) => void;
-  onPlayStyle: (style: PlayStyle) => void;
+  open: boolean;
+  onOpen: (open: boolean) => void;
+  onSend: (command: MatchCommand) => Promise<void>;
+  initialOff?: string;
+  send: (command: MatchCommand, after: () => void) => Promise<void>;
 }) {
   const { t } = useTranslation();
+  const side = mine.side;
+  const own = side === "Home" ? state.home : state.away;
+  const formations = withCurrent(openInMatch(mine.licence, "formation", FORMATIONS), own.formation);
+  const styles = withCurrent(openInMatch(mine.licence, "playStyle", PLAY_STYLES), own.playStyle);
   return (
     <section aria-labelledby="online-match-shape" className="flex flex-col gap-2">
       <h3 id="online-match-shape" className={HEADING}>
         {t("match.teamControls")}
       </h3>
-      <Select
-        selectSize="sm"
-        fullWidth
-        aria-label={t("match.formation")}
-        value={formation}
-        onChange={(event) => onFormation(event.target.value)}
+      <button
+        type="button"
+        onClick={() => onOpen(!open)}
         disabled={disabled}
+        className="flex items-center gap-2 rounded-lg bg-gray-200 px-3 py-2 font-heading text-sm uppercase tracking-wider text-gray-700 transition-colors hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 dark:bg-navy-700 dark:text-gray-300 dark:hover:bg-navy-600"
       >
-        {withCurrent(openInMatch(licence, "formation", FORMATIONS), formation).map((one) => (
-          <option key={one} value={one}>
-            {one}
-          </option>
-        ))}
-      </Select>
-      <Select
-        selectSize="sm"
-        fullWidth
-        aria-label={t("match.playStyle")}
-        value={playStyle}
-        onChange={(event) => {
-          const style = PLAY_STYLES.find((one) => one === event.target.value);
-          if (style) onPlayStyle(style);
-        }}
-        disabled={disabled}
-      >
-        {withCurrent(openInMatch(licence, "playStyle", PLAY_STYLES), playStyle).map((style) => (
-          <option key={style} value={style}>
-            {t(`common.playStyles.${style}`)}
-          </option>
-        ))}
-      </Select>
+        <RefreshCw className="h-4 w-4" aria-hidden />
+        {t("match.subs")} ({own.subsMade}/{state.maxSubs})
+      </button>
+      <div>
+        <p className="mb-1 font-heading text-[10px] uppercase tracking-widest text-gray-600 dark:text-gray-500">
+          {t("match.formation")}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          {formations.map((formation) => (
+            <button
+              type="button"
+              key={formation}
+              aria-pressed={own.formation === formation}
+              disabled={disabled}
+              onClick={() => void send({ ChangeFormation: { side, formation } }, () => {})}
+              className={`${CHIP} ${own.formation === formation ? CHIP_ON : CHIP_OFF}`}
+            >
+              {formation}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p className="mb-1 font-heading text-[10px] uppercase tracking-widest text-gray-600 dark:text-gray-500">
+          {t("match.playStyle")}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          {styles.map((style) => (
+            <button
+              type="button"
+              key={style}
+              aria-pressed={own.playStyle === style}
+              disabled={disabled}
+              onClick={() => void send({ ChangePlayStyle: { side, play_style: style } }, () => {})}
+              className={`flex items-center gap-1 ${CHIP} ${own.playStyle === style ? CHIP_ON : CHIP_OFF}`}
+            >
+              {STYLE_ICONS[style]}
+              {t(`common.playStyles.${style}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+      {open && (
+        <OnlineSubPanel
+          state={state}
+          mine={mine}
+          onSend={onSend}
+          initialOff={initialOff}
+          onClose={() => onOpen(false)}
+        />
+      )}
     </section>
   );
-}
-
-const optionsOf = playerOptions;
-
-/** The open options, and the side's current one even when closed, so the select can show it. */
-function withCurrent<T extends string>(open: T[], current: string): T[] {
-  return open.includes(current as T) ? open : [current as T, ...open];
 }
 
 /**
@@ -222,22 +274,17 @@ export function MatchCommandPanel({
   const { t } = useTranslation();
   const side = mine.side;
   const own = side === "Home" ? state.home : state.away;
-  const [off, setOff] = useState(initialOff ?? "");
-  const [on, setOn] = useState("");
-  const [swapA, setSwapA] = useState("");
-  const [swapB, setSwapB] = useState("");
   const [error, setError] = useState<unknown>(null);
   const [sending, setSending] = useState(false);
+  // A hurt player to take off opens the panel with him chosen, once per player.
+  const [panelOpen, setPanelOpen] = useState(initialOff !== undefined);
   const [chosenOff, setChosenOff] = useState(initialOff);
   if (initialOff !== chosenOff) {
     setChosenOff(initialOff);
-    if (initialOff) setOff(initialOff);
+    if (initialOff) setPanelOpen(true);
   }
 
-  const gone = substitutedOff(state, side);
   const playing = own.eleven.filter((player) => !state.sentOff.includes(player.id));
-  const bench = own.bench.filter((player) => !gone.has(player.id));
-  const subsLeft = own.subsMade < state.maxSubs;
   const names = new Map(
     [...own.eleven, ...own.bench].map((player) => [player.id, player.matchName]),
   );
@@ -264,101 +311,15 @@ export function MatchCommandPanel({
           {resolveBackendError(error)}
         </p>
       )}
-      <section aria-labelledby="online-match-subs">
-        <h3 id="online-match-subs" className={HEADING}>
-          {t("match.substitutions")}{" "}
-          <span className="font-sans normal-case tracking-normal">
-            {t("match.subsUsed", { used: own.subsMade, max: state.maxSubs })}
-          </span>
-        </h3>
-        <div className="flex flex-col gap-2">
-          <Select
-            selectSize="sm"
-            fullWidth
-            aria-label={t("online.match.playerOff")}
-            value={off}
-            onChange={(event) => setOff(event.target.value)}
-            disabled={blocked || !subsLeft}
-          >
-            <option value="">{t("online.match.playerOff")}</option>
-            {optionsOf(playing)}
-          </Select>
-          <Select
-            selectSize="sm"
-            fullWidth
-            aria-label={t("online.match.playerOn")}
-            value={on}
-            onChange={(event) => setOn(event.target.value)}
-            disabled={blocked || !subsLeft}
-          >
-            <option value="">{t("online.match.playerOn")}</option>
-            {optionsOf(bench)}
-          </Select>
-          <Button
-            size="sm"
-            disabled={blocked || !subsLeft || off === "" || on === ""}
-            onClick={() =>
-              void send({ Substitute: { side, player_off_id: off, player_on_id: on } }, () => {
-                setOff("");
-                setOn("");
-              })
-            }
-          >
-            {subsLeft ? t("match.makeSubstitution") : t("match.allSubsUsed")}
-          </Button>
-        </div>
-      </section>
-
-      <section aria-labelledby="online-match-swap">
-        <h3 id="online-match-swap" className={HEADING}>
-          {t("online.match.swapTitle")}
-        </h3>
-        <div className="flex flex-col gap-2">
-          <Select
-            selectSize="sm"
-            fullWidth
-            aria-label={t("online.match.swapFirst")}
-            value={swapA}
-            onChange={(event) => setSwapA(event.target.value)}
-            disabled={blocked}
-          >
-            <option value="">{t("online.match.swapFirst")}</option>
-            {optionsOf(own.eleven)}
-          </Select>
-          <Select
-            selectSize="sm"
-            fullWidth
-            aria-label={t("online.match.swapSecond")}
-            value={swapB}
-            onChange={(event) => setSwapB(event.target.value)}
-            disabled={blocked}
-          >
-            <option value="">{t("online.match.swapSecond")}</option>
-            {optionsOf(own.eleven)}
-          </Select>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={blocked || swapA === "" || swapB === "" || swapA === swapB}
-            onClick={() =>
-              void send({ SwapPositions: { side, player_a_id: swapA, player_b_id: swapB } }, () => {
-                setSwapA("");
-                setSwapB("");
-              })
-            }
-          >
-            {t("online.match.swap")}
-          </Button>
-        </div>
-      </section>
-
-      <ShapeSection
-        formation={own.formation}
-        playStyle={own.playStyle}
+      <TeamControls
+        state={state}
+        mine={mine}
         disabled={blocked}
-        licence={mine.licence}
-        onFormation={(formation) => void send({ ChangeFormation: { side, formation } }, () => {})}
-        onPlayStyle={(play_style) => void send({ ChangePlayStyle: { side, play_style } }, () => {})}
+        open={panelOpen}
+        onOpen={setPanelOpen}
+        onSend={onSend}
+        initialOff={initialOff}
+        send={send}
       />
       <SideOwnOrders
         mine={mine}
