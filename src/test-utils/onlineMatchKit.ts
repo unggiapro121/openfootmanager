@@ -157,10 +157,13 @@ export function fakeRealtime() {
     speak: (message: RealtimeMessage) => void;
     stopped: boolean;
   }> = [];
+  // The shell follows its club's league (LeagueWatcher) on every online page; kept apart, so
+  // `watches` holds the channels a test opens on purpose (a match, an account, …).
+  const leagueWatches: typeof watches = [];
   const restore = setOnlineRealtime({
     watch: (channel, lastSeq, onMessage) => {
       const watch = { channel, lastSeq, speak: onMessage, stopped: false };
-      watches.push(watch);
+      (channel.startsWith("league:") ? leagueWatches : watches).push(watch);
       return Promise.resolve(async () => {
         watch.stopped = true;
       });
@@ -171,5 +174,5 @@ export function fakeRealtime() {
     const watch = [...watches].reverse().find((one) => one.channel === `match:${matchId}`);
     watch?.speak({ kind: "frame", channel: `match:${matchId}`, seq: frame.seq, data: frame });
   };
-  return { watches, restore, push };
+  return { watches, leagueWatches, restore, push };
 }
