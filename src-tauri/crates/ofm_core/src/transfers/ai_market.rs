@@ -14,7 +14,9 @@ use super::*;
 
 use crate::squad_floor::{can_spare_one, group_index};
 use domain::season::TransferWindowKind;
-use ofm_rules::market_ai::{Need, answers_need, club_needs};
+use ofm_rules::market_ai::{
+    Need, UNUSED_PLAYING_TIME, VETERAN_AGE, answers_need, club_needs, median_ovr as median_of,
+};
 pub(crate) use ofm_rules::market_ai::{line_is_overloaded, line_needs};
 use rand::RngExt;
 use std::collections::HashMap;
@@ -25,12 +27,9 @@ const DEALS_PER_WINDOW: std::ops::RangeInclusive<usize> = 3..=7;
 const DEALS_PER_WINTER_WINDOW: std::ops::RangeInclusive<usize> = 1..=3;
 /// How much less often an unlisted player is chased than a listed one.
 const UNLISTED_WEIGHT: f64 = 0.3;
-/// The listed-for-age rule: this old, and below the squad's median.
-const VETERAN_AGE: i32 = 31;
-/// The listed-for-unhappiness rule.
+/// The listed-for-unhappiness rule. The listed-for-age and listed-for-lack-of-football rules
+/// (`VETERAN_AGE`, `UNUSED_PLAYING_TIME`) are shared with the online market's bots.
 const UNHAPPY_MORALE: u8 = 40;
-/// The listed-for-lack-of-football rule (`playing_time`, 0–100).
-const UNUSED_PLAYING_TIME: u8 = 20;
 /// A contract this close to its end that the club would not renew is sold now.
 const SELL_BEFORE_EXPIRY_DAYS: i64 = 365;
 /// The best few candidates a club chooses among, by weight.
@@ -237,12 +236,7 @@ fn squad_of<'a>(game: &'a Game, team_id: &'a str) -> impl Iterator<Item = &'a Pl
 }
 
 fn median_ovr(game: &Game, team_id: &str) -> u8 {
-    let mut ratings: Vec<u8> = squad_of(game, team_id).map(|p| p.ovr).collect();
-    if ratings.is_empty() {
-        return 0;
-    }
-    ratings.sort_unstable();
-    ratings[ratings.len() / 2]
+    median_of(squad_of(game, team_id))
 }
 
 /// The club's needs this week, most pressing first, by the rule the online
