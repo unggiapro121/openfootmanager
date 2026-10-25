@@ -49,9 +49,9 @@ describe("OnlineMarket", () => {
     renderOnline("/online/market");
     await screen.findByText("Trần Văn Bình");
 
-    fireEvent.change(screen.getByLabelText("online.market.filter.position"), {
-      target: { value: "Defender" },
-    });
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "online.market.filter.position" }));
+    fireEvent.click(screen.getByRole("option", { name: "online.market.group.Defender" }));
     fireEvent.change(screen.getByLabelText("online.market.filter.minOvr"), {
       target: { value: "60" },
     });
@@ -92,9 +92,19 @@ describe("OnlineMarket", () => {
         ]),
       ),
     );
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.buttonActive:2" }));
     expect(
-      (screen.getByLabelText("online.market.filter.position") as HTMLSelectElement).value,
-    ).toBe("Forward");
+      screen.getByRole("combobox", { name: "online.market.filter.position" }).textContent,
+    ).toContain("online.market.group.Forward");
+
+    // when the coach clears the filters, the address and the next read drop them.
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.clear" }));
+    await waitFor(() =>
+      expect(lastAuctionsRead()?.query ?? []).not.toEqual(
+        expect.arrayContaining([["position", "Forward"]]),
+      ),
+    );
+    expect(screen.getByRole("button", { name: "playerFilters.button" })).toBeTruthy();
   });
 
   // Given three loaded auctions,
