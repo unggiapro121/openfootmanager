@@ -5,6 +5,11 @@
  */
 export type LedgerLineView = { id: number, at: string, 
 /**
+ * The football date (`YYYY-MM-DD`) the event belongs to, when it has one; `at` is the wall
+ * clock of the write.
+ */
+gameDate?: string, 
+/**
  * What happened: `opening`, `tickets`, `wage`, `reward`, `adjust`, `reversal`, ….
  */
 kind: string, 
