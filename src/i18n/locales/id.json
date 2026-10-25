@@ -45,7 +45,8 @@
       "training": "Latihan",
       "league": "Liga",
       "schedule": "Jadwal",
-      "friendly": "Laga persahabatan"
+      "friendly": "Laga persahabatan",
+      "finance": "Keuangan"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Musim {{number}}",
       "seasonDay": "Musim {{number}} · Hari {{day}}/{{total}}",
-      "nextKickoff": "Laga berikutnya dalam {{time}}"
+      "nextKickoff": "Laga berikutnya dalam {{time}}",
+      "cash": "Kas klub: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} h {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Instruksi: {{list}}",
       "addedRoles": "Peran: {{list}}",
       "addedNothing": "Tidak ada yang baru"
+    },
+    "finance": {
+      "title": "Keuangan klub",
+      "noEconomy": "Musim ini dimainkan tanpa uang: belum ada yang bisa ditampilkan.",
+      "arrears": "Klub menunggak gaji {{days}} hari (sejak {{since}}). Pemain pulih lebih lambat dan kehilangan performa setiap hari; setelah {{limit}} hari, pemain bergaji tertinggi dilelang.",
+      "cash": "Kas",
+      "held": "Ditahan untuk tawaran",
+      "wageBill": "Gaji mingguan",
+      "wagePerDay": "sekitar {{amount}} per hari musim",
+      "season": "Musim ini",
+      "seasonEmpty": "Belum ada transaksi musim ini.",
+      "total": "Total",
+      "kind": {
+        "opening": "Kas awal",
+        "tickets": "Pendapatan tiket",
+        "reward": "Hadiah liga",
+        "wage": "Gaji",
+        "facility": "Fasilitas",
+        "settle": "Transfer",
+        "bid": "Tawaran ditahan dan dikembalikan",
+        "cancel": "Lelang dibatalkan",
+        "adjust": "Penyesuaian",
+        "reversal": "Pembalikan",
+        "grantReset": "Reset kas skuad baru"
+      },
+      "ledger": "Buku besar",
+      "ledgerEmpty": "Belum ada catatan.",
+      "more": "Tampilkan lagi",
+      "account": {
+        "cash": "kas",
+        "held": "ditahan"
+      },
+      "nextCost": "Level berikutnya: {{cost}}",
+      "upgraded": "{{facility}} ditingkatkan ke level {{level}}."
     }
   },
   "coach": {
@@ -4008,6 +4044,30 @@
         "notFinished": "Pertandingan ruang ini belum selesai.",
         "roomClosed": "Ruang ini tidak bisa dipakai bermain lagi, jadi ditutup.",
         "conflict": "Ruang berubah sementara itu. Lihat lagi."
+      },
+      "economy": {
+        "disabled": "Musim ini dimainkan tanpa uang.",
+        "clubLocked": "Keuangan klub dikunci selama diperiksa: untuk sementara tidak bisa menawar, menjual, atau meningkatkan fasilitas.",
+        "insufficientFunds": "Kas klub tidak cukup untuk ini.",
+        "facilityAtTop": "Fasilitas ini sudah di level tertinggi.",
+        "wageBudgetExceeded": "Setelah tawaran ini, klub harus tetap punya kas untuk tujuh hari gaji."
+      },
+      "auction": {
+        "marketClosed": "Bursa transfer ditutup musim ini.",
+        "notFound": "Lelang ini tidak ada.",
+        "playerNotListable": "Pemain ini tidak bisa dilelang: bukan pemainmu, sudah pensiun, atau cedera.",
+        "alreadyListed": "Pemain ini sudah dilelang.",
+        "cooldownActive": "Pemain ini baru saja pindah klub; belum bisa dijual lagi sebelum {{until}}.",
+        "squadTooSmall": "Menjualnya akan membuat skuad di bawah batas minimum bursa.",
+        "squadFull": "Membelinya akan membuat skuad melebihi batas maksimum bursa.",
+        "seasonClosing": "Lelang sekarang masih akan berjalan saat musim berakhir. Jual dia musim depan.",
+        "outOfPriceBand": "Harga harus antara {{min}} dan {{max}}.",
+        "bidTooLow": "Tawaran minimal {{minimum}}.",
+        "maxActiveBidsReached": "Kamu sudah menahan uang di tiga lelang; tunggu salah satunya selesai.",
+        "selfBiddingForbidden": "Kamu tidak bisa menawar pemainmu sendiri.",
+        "listingExpired": "Lelang ini sudah berakhir.",
+        "alreadyLeading": "Kamu sudah memimpin lelang ini.",
+        "notCancellable": "Hanya penjualanmu sendiri yang belum ditawar yang bisa ditarik, dan bukan penjualan paksa."
       }
     },
     "sender": {

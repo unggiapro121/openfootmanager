@@ -45,7 +45,8 @@
       "training": "训练",
       "league": "联赛",
       "schedule": "赛程",
-      "friendly": "友谊赛"
+      "friendly": "友谊赛",
+      "finance": "财务"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -54,7 +55,8 @@
     "header": {
       "season": "第 {{number}} 赛季",
       "seasonDay": "第 {{number}} 赛季 · 第 {{day}}/{{total}} 天",
-      "nextKickoff": "距下一场比赛 {{time}}"
+      "nextKickoff": "距下一场比赛 {{time}}",
+      "cash": "俱乐部现金：{{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} 天 {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "指令：{{list}}",
       "addedRoles": "角色：{{list}}",
       "addedNothing": "无新增"
+    },
+    "finance": {
+      "title": "俱乐部财务",
+      "noEconomy": "本赛季不使用资金，暂无内容。",
+      "arrears": "俱乐部已拖欠工资 {{days}} 天（自 {{since}} 起）。球员恢复变慢且每天状态下滑；拖欠 {{limit}} 天后，薪水最高的球员会被挂牌拍卖。",
+      "cash": "现金",
+      "held": "出价冻结",
+      "wageBill": "每周工资",
+      "wagePerDay": "每个赛季日约 {{amount}}",
+      "season": "本赛季",
+      "seasonEmpty": "本赛季尚无收支。",
+      "total": "合计",
+      "kind": {
+        "opening": "初始资金",
+        "tickets": "门票收入",
+        "reward": "联赛奖金",
+        "wage": "工资",
+        "facility": "设施",
+        "settle": "转会",
+        "bid": "出价冻结与退还",
+        "cancel": "已取消的拍卖",
+        "adjust": "调整",
+        "reversal": "冲销",
+        "grantReset": "新阵容资金重置"
+      },
+      "ledger": "收支明细",
+      "ledgerEmpty": "暂无记录。",
+      "more": "显示更多",
+      "account": {
+        "cash": "现金",
+        "held": "冻结"
+      },
+      "nextCost": "下一级：{{cost}}",
+      "upgraded": "{{facility}} 已升级到 {{level}} 级。"
     }
   },
   "coach": {
@@ -4008,6 +4044,30 @@
         "notFinished": "这个房间的比赛尚未结束。",
         "roomClosed": "这个房间已无法再比赛，因此已关闭。",
         "conflict": "房间刚刚发生了变化，请重新查看。"
+      },
+      "economy": {
+        "disabled": "本赛季不使用资金。",
+        "clubLocked": "俱乐部财务正在核查中，已被锁定：暂时不能出价、挂牌或升级设施。",
+        "insufficientFunds": "俱乐部现金不足。",
+        "facilityAtTop": "该设施已达最高等级。",
+        "wageBudgetExceeded": "出价后，俱乐部仍须保留足够支付七天工资的现金。"
+      },
+      "auction": {
+        "marketClosed": "本赛季转会市场关闭。",
+        "notFound": "该拍卖不存在。",
+        "playerNotListable": "该球员无法挂牌：不是你的球员、已退役或正在受伤。",
+        "alreadyListed": "该球员已在拍卖中。",
+        "cooldownActive": "该球员刚刚转会，{{until}} 之前不能再次出售。",
+        "squadTooSmall": "出售他会使阵容人数低于市场允许的最少人数。",
+        "squadFull": "买下他会使阵容人数超过市场允许的上限。",
+        "seasonClosing": "现在开拍的拍卖在赛季结束时仍未结束。请在下赛季挂牌。",
+        "outOfPriceBand": "价格必须在 {{min}} 到 {{max}} 之间。",
+        "bidTooLow": "出价至少为 {{minimum}}。",
+        "maxActiveBidsReached": "你已在三场拍卖中冻结资金，请等待其中一场结束。",
+        "selfBiddingForbidden": "不能对自己的球员出价。",
+        "listingExpired": "该拍卖已结束。",
+        "alreadyLeading": "你已在该拍卖中领先。",
+        "notCancellable": "只能撤回你自己且尚无出价的挂牌，强制挂牌不能撤回。"
       }
     },
     "sender": {

@@ -45,7 +45,8 @@
       "training": "Antrenman",
       "league": "Lig",
       "schedule": "Fikstür",
-      "friendly": "Hazırlık maçları"
+      "friendly": "Hazırlık maçları",
+      "finance": "Finans"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Sezon {{number}}",
       "seasonDay": "Sezon {{number}} · Gün {{day}}/{{total}}",
-      "nextKickoff": "Sonraki maç {{time}} sonra"
+      "nextKickoff": "Sonraki maç {{time}} sonra",
+      "cash": "Kulüp nakdi: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} g {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Talimatlar: {{list}}",
       "addedRoles": "Roller: {{list}}",
       "addedNothing": "Yeni bir şey yok"
+    },
+    "finance": {
+      "title": "Kulüp finansı",
+      "noEconomy": "Bu sezon parasız oynanıyor: henüz gösterilecek bir şey yok.",
+      "arrears": "Kulüp {{days}} gündür ({{since}} tarihinden beri) maaş borçlu. Oyuncular daha yavaş toparlanıyor ve her gün form kaybediyor; {{limit}} günün sonunda en yüksek maaşlı oyuncu açık artırmaya çıkarılır.",
+      "cash": "Nakit",
+      "held": "Teklifler için tutulan",
+      "wageBill": "Haftalık maaşlar",
+      "wagePerDay": "sezon günü başına yaklaşık {{amount}}",
+      "season": "Bu sezon",
+      "seasonEmpty": "Bu sezon henüz hareket yok.",
+      "total": "Toplam",
+      "kind": {
+        "opening": "Başlangıç nakdi",
+        "tickets": "Bilet gelirleri",
+        "reward": "Lig ödülü",
+        "wage": "Maaşlar",
+        "facility": "Tesisler",
+        "settle": "Transferler",
+        "bid": "Tutulan ve iade edilen teklifler",
+        "cancel": "İptal edilen açık artırmalar",
+        "adjust": "Düzeltmeler",
+        "reversal": "Ters kayıtlar",
+        "grantReset": "Yeni kadroyla nakit sıfırlama"
+      },
+      "ledger": "Hesap defteri",
+      "ledgerEmpty": "Henüz kayıt yok.",
+      "more": "Daha fazla göster",
+      "account": {
+        "cash": "nakit",
+        "held": "tutulan"
+      },
+      "nextCost": "Sonraki seviye: {{cost}}",
+      "upgraded": "{{facility}} {{level}}. seviyeye yükseltildi."
     }
   },
   "coach": {
@@ -4008,6 +4044,30 @@
         "notFinished": "Bu odanın maçı henüz bitmedi.",
         "roomClosed": "Bu odada artık oynanamıyor, bu yüzden kapatıldı.",
         "conflict": "Oda bu arada değişti. Yeniden bak."
+      },
+      "economy": {
+        "disabled": "Bu sezon parasız oynanıyor.",
+        "clubLocked": "Kulübün finansı inceleme süresince kilitli: şimdilik teklif, satış veya geliştirme yapılamaz.",
+        "insufficientFunds": "Kulübün bunun için yeterli nakdi yok.",
+        "facilityAtTop": "Bu tesis zaten en üst seviyede.",
+        "wageBudgetExceeded": "Bu tekliften sonra kulübün yedi günlük maaşı karşılayacak nakdi kalmalı."
+      },
+      "auction": {
+        "marketClosed": "Transfer piyasası bu sezon kapalı.",
+        "notFound": "Böyle bir açık artırma yok.",
+        "playerNotListable": "Bu oyuncu açık artırmaya çıkarılamaz: senin değil, emekli olmuş ya da sakat.",
+        "alreadyListed": "Bu oyuncu zaten açık artırmada.",
+        "cooldownActive": "Bu oyuncu çok yakın zamanda kulüp değiştirdi; {{until}} tarihinden önce tekrar satılamaz.",
+        "squadTooSmall": "Onu satmak kadronu piyasanın izin verdiği alt sınırın altına düşürür.",
+        "squadFull": "Onu almak kadronu piyasanın izin verdiği üst sınırın üzerine çıkarır.",
+        "seasonClosing": "Şimdi açılan bir açık artırma sezon kapanırken hâlâ sürer. Onu gelecek sezon sat.",
+        "outOfPriceBand": "Fiyat {{min}} ile {{max}} arasında olmalı.",
+        "bidTooLow": "Teklif en az {{minimum}} olmalı.",
+        "maxActiveBidsReached": "Zaten üç açık artırmada paran tutuluyor; birinin bitmesini bekle.",
+        "selfBiddingForbidden": "Kendi oyuncuna teklif veremezsin.",
+        "listingExpired": "Bu açık artırma sona erdi.",
+        "alreadyLeading": "Bu açık artırmada zaten öndesin.",
+        "notCancellable": "Yalnızca henüz teklif almamış kendi satışını geri çekebilirsin, zorunlu satışı asla."
       }
     },
     "sender": {

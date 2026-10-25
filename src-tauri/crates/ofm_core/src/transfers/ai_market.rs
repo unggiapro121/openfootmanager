@@ -12,9 +12,12 @@
 
 use super::*;
 
-use crate::player_rating::{formation_slots, positional_fit_for_assignment};
 use crate::squad_floor::{can_spare_one, group_index};
 use domain::season::TransferWindowKind;
+use ofm_rules::market_ai::{
+    Need, UNUSED_PLAYING_TIME, VETERAN_AGE, answers_need, club_needs, median_ovr as median_of,
+};
+pub(crate) use ofm_rules::market_ai::{line_is_overloaded, line_needs};
 use rand::RngExt;
 use std::collections::HashMap;
 
@@ -22,22 +25,11 @@ use std::collections::HashMap;
 const DEALS_PER_WINDOW: std::ops::RangeInclusive<usize> = 3..=7;
 /// The same in a winter window, which is for filling a gap, not rebuilding.
 const DEALS_PER_WINTER_WINDOW: std::ops::RangeInclusive<usize> = 1..=3;
-/// A line needs its formation slots and this many more as cover.
-const COVER_PER_LINE: usize = 2;
-/// A line is overloaded beyond its need by more than this; no club buys there.
-const SURPLUS_MARGIN: usize = 2;
-/// An upgrade has to be at least this much better in the slot.
-const UPGRADE_MARGIN: f64 = 3.0;
-/// The oldest player a club buys as an upgrade.
-const MAX_UPGRADE_AGE: i32 = 32;
 /// How much less often an unlisted player is chased than a listed one.
 const UNLISTED_WEIGHT: f64 = 0.3;
-/// The listed-for-age rule: this old, and below the squad's median.
-const VETERAN_AGE: i32 = 31;
-/// The listed-for-unhappiness rule.
+/// The listed-for-unhappiness rule. The listed-for-age and listed-for-lack-of-football rules
+/// (`VETERAN_AGE`, `UNUSED_PLAYING_TIME`) are shared with the online market's bots.
 const UNHAPPY_MORALE: u8 = 40;
-/// The listed-for-lack-of-football rule (`playing_time`, 0–100).
-const UNUSED_PLAYING_TIME: u8 = 20;
 /// A contract this close to its end that the club would not renew is sold now.
 const SELL_BEFORE_EXPIRY_DAYS: i64 = 365;
 /// The best few candidates a club chooses among, by weight.
@@ -47,20 +39,6 @@ const SHORTLIST: usize = 8;
 const STATURE_GAP_FREE: f64 = 100.0;
 const STATURE_GAP_RANGE: f64 = 300.0;
 const STATURE_MIN_CHANCE: f64 = 0.1;
-
-/// Seniors each line needs under `formation`: its slots and two to cover them.
-pub(crate) fn line_needs(formation: &str) -> [usize; 4] {
-    let mut needs = [COVER_PER_LINE; 4];
-    for slot in formation_slots(formation) {
-        needs[group_index(&slot)] += 1;
-    }
-    needs
-}
-
-/// A line holding more than it needs and its surplus margin: no buying there.
-pub(crate) fn line_is_overloaded(seniors: usize, need: usize) -> bool {
-    seniors > need + SURPLUS_MARGIN
-}
 
 /// The chance a player talks to a club `owner_reputation - buyer_reputation`
 /// below his own: certain within 100 points, falling to one in ten across the
@@ -258,69 +236,18 @@ fn squad_of<'a>(game: &'a Game, team_id: &'a str) -> impl Iterator<Item = &'a Pl
 }
 
 fn median_ovr(game: &Game, team_id: &str) -> u8 {
-    let mut ratings: Vec<u8> = squad_of(game, team_id).map(|p| p.ovr).collect();
-    if ratings.is_empty() {
-        return 0;
-    }
-    ratings.sort_unstable();
-    ratings[ratings.len() / 2]
+    median_of(squad_of(game, team_id))
 }
 
-/// What a club is shopping for: a slot to fill, and how good a player must be
-/// there to be worth buying.
-struct Need {
-    slot: Position,
-    /// The rating in the slot a signing has to reach.
-    bar: f64,
-    /// The club is short in the slot's line, so anyone adequate will do.
-    short: bool,
-}
-
-/// How many of its weakest slots a club looks to upgrade in one review: the
-/// weakest may have no one on the market it can buy, the next may.
-const SLOTS_LOOKED_AT: usize = 3;
-
-/// The club's needs this week, most pressing first: a body for a line under
-/// its needs, otherwise upgrades on the [`SLOTS_LOOKED_AT`] weakest players of
-/// its first eleven — none in a line already overloaded.
+/// The club's needs this week, most pressing first, by the rule the online
+/// market's bots share (`ofm_rules::market_ai::club_needs`): its seniors count
+/// injured or not, its first eleven only the fit.
 fn current_needs(game: &Game, team: &Team) -> Vec<Need> {
     let seniors = crate::squad_floor::senior_counts(game, &team.id);
-    let needs = line_needs(&team.formation);
-    let slots = formation_slots(&team.formation);
-    if let Some(slot) = slots.iter().find(|slot| {
-        let line = group_index(slot);
-        seniors[line] < needs[line]
-    }) {
-        return vec![Need {
-            slot: slot.clone(),
-            bar: 0.0,
-            short: true,
-        }];
-    }
-
     let available: Vec<&Player> = squad_of(game, &team.id)
         .filter(|p| p.injury.is_none())
         .collect();
-    let eleven = crate::turn::squad::first_choice_eleven(&available, &team.formation);
-    let mut rated: Vec<(&Position, f64)> = slots
-        .iter()
-        .zip(eleven.iter())
-        .map(|(slot, starter)| (slot, positional_fit_for_assignment(starter, slot)))
-        .collect();
-    rated.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
-    rated
-        .into_iter()
-        .filter(|(slot, _)| {
-            let line = group_index(slot);
-            !line_is_overloaded(seniors[line], needs[line])
-        })
-        .take(SLOTS_LOOKED_AT)
-        .map(|(slot, rating)| Need {
-            slot: slot.clone(),
-            bar: rating + UPGRADE_MARGIN,
-            short: false,
-        })
-        .collect()
+    club_needs(&team.formation, seniors, &available)
 }
 
 /// One player a club could buy, and what he costs and is worth to it.
@@ -393,7 +320,6 @@ fn prospects_for(
     let user_team = game.manager.team_id.as_deref();
     let depths = super::squad_position_depths(game);
     let wage_facts = BuyerWageFacts::of(game, &team.id);
-    let line = group_index(&need.slot);
     let mut rng = game.rng_for(&format!("ai-transfer-talks/{}", team.id), opens_on);
     let mut prospects = Vec::new();
 
@@ -402,24 +328,15 @@ fn prospects_for(
             continue;
         };
         if owner_id == team.id
-            || player.retired
-            || player.injury.is_some()
-            || player.squad_role != domain::player::SquadRole::Senior
-            || group_index(&player.position) != line
-            || f64::from(player.ovr) + 6.0 < need.bar
             || player_has_pending_registration(player)
             || player_has_active_or_pending_loan(player)
         {
             continue;
         }
         let age = crate::aging::player_age_on(today, &player.date_of_birth);
-        if !need.short && age > MAX_UPGRADE_AGE {
+        let Some(worth) = answers_need(need, player, age) else {
             continue;
-        }
-        let rating = positional_fit_for_assignment(player, &need.slot);
-        if rating < need.bar {
-            continue;
-        }
+        };
         let Some(owner) = game.teams.iter().find(|t| t.id == owner_id) else {
             continue;
         };
@@ -456,11 +373,6 @@ fn prospects_for(
         if rng.random_range(0.0..1.0) >= approach_chance(team.reputation, owner.reputation, open) {
             continue;
         }
-        let worth = if need.short {
-            rating
-        } else {
-            rating - need.bar + UPGRADE_MARGIN
-        };
         let weight = worth.max(1.0)
             * if player.transfer_listed {
                 1.0
@@ -650,22 +562,6 @@ mod tests {
             .iter()
             .find(|p| p.id == id)
             .and_then(|p| p.team_id.as_deref())
-    }
-
-    /// Given a 4-4-2, then each line needs its slots and two to cover them;
-    /// given a 3-5-2, the midfield needs more and the back line less.
-    #[test]
-    fn each_line_needs_its_slots_and_two_more() {
-        assert_eq!(line_needs("4-4-2"), [3, 6, 6, 4]);
-        assert_eq!(line_needs("3-5-2"), [3, 5, 7, 4]);
-    }
-
-    /// Given a line two over its need, then it is not overloaded yet; three
-    /// over, then it is.
-    #[test]
-    fn a_line_is_overloaded_three_beyond_its_need() {
-        assert!(!line_is_overloaded(8, 6));
-        assert!(line_is_overloaded(9, 6));
     }
 
     /// Given a buyer well below a player's club, then he hesitates in step with

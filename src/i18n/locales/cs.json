@@ -45,7 +45,8 @@
       "training": "Trénink",
       "league": "Liga",
       "schedule": "Rozpis",
-      "friendly": "Přátelská utkání"
+      "friendly": "Přátelská utkání",
+      "finance": "Finance"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Sezóna {{number}}",
       "seasonDay": "Sezóna {{number}} · Den {{day}}/{{total}}",
-      "nextKickoff": "Další zápas za {{time}}"
+      "nextKickoff": "Další zápas za {{time}}",
+      "cash": "Hotovost klubu: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} d {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Pokyny: {{list}}",
       "addedRoles": "Role: {{list}}",
       "addedNothing": "Nic nového"
+    },
+    "finance": {
+      "title": "Finance klubu",
+      "noEconomy": "Tato sezóna se hraje bez peněz: zatím není co ukázat.",
+      "arrears": "Klub dluží mzdy už {{days}} dní (od {{since}}). Hráči se zotavují pomaleji a každý den ztrácejí formu; po {{limit}} dnech jde nejlépe placený hráč do aukce.",
+      "cash": "Hotovost",
+      "held": "Blokováno na nabídky",
+      "wageBill": "Týdenní mzdy",
+      "wagePerDay": "asi {{amount}} za den sezóny",
+      "season": "Tato sezóna",
+      "seasonEmpty": "V této sezóně se zatím nic nepohnulo.",
+      "total": "Celkem",
+      "kind": {
+        "opening": "Počáteční hotovost",
+        "tickets": "Vstupné",
+        "reward": "Odměna za umístění",
+        "wage": "Mzdy",
+        "facility": "Zařízení",
+        "settle": "Přestupy",
+        "bid": "Blokace a vrácení nabídek",
+        "cancel": "Zrušené aukce",
+        "adjust": "Úpravy",
+        "reversal": "Storna",
+        "grantReset": "Reset hotovosti s novým kádrem"
+      },
+      "ledger": "Účetní kniha",
+      "ledgerEmpty": "Zatím žádné záznamy.",
+      "more": "Zobrazit více",
+      "account": {
+        "cash": "hotovost",
+        "held": "blokováno"
+      },
+      "nextCost": "Další úroveň: {{cost}}",
+      "upgraded": "{{facility}} vylepšeno na úroveň {{level}}."
     }
   },
   "coach": {
@@ -4008,6 +4044,30 @@
         "notFinished": "Zápas této místnosti ještě neskončil.",
         "roomClosed": "V této místnosti už nelze hrát, proto byla zavřena.",
         "conflict": "Místnost se mezitím změnila. Podívejte se znovu."
+      },
+      "economy": {
+        "disabled": "Tato sezóna se hraje bez peněz.",
+        "clubLocked": "Finance klubu jsou kvůli kontrole zablokované: zatím žádné nabídky, prodeje ani vylepšení.",
+        "insufficientFunds": "Klub na to nemá dost hotovosti.",
+        "facilityAtTop": "Toto zařízení už má nejvyšší úroveň.",
+        "wageBudgetExceeded": "Po této nabídce musí klubu zůstat dost hotovosti na sedm dní mezd."
+      },
+      "auction": {
+        "marketClosed": "Přestupní trh je v této sezóně zavřený.",
+        "notFound": "Tato aukce neexistuje.",
+        "playerNotListable": "Tohoto hráče nelze dát do aukce: není váš, ukončil kariéru nebo je zraněný.",
+        "alreadyListed": "Tento hráč už je v aukci.",
+        "cooldownActive": "Tento hráč přestoupil příliš nedávno; znovu ho lze prodat až po {{until}}.",
+        "squadTooSmall": "Jeho prodej by snížil váš kádr pod minimum, které trh dovoluje.",
+        "squadFull": "Jeho koupě by zvýšila váš kádr nad maximum, které trh dovoluje.",
+        "seasonClosing": "Aukce by byla otevřená ještě při konci sezóny. Nabídněte ho v příští sezóně.",
+        "outOfPriceBand": "Cena musí být mezi {{min}} a {{max}}.",
+        "bidTooLow": "Nabídka musí být alespoň {{minimum}}.",
+        "maxActiveBidsReached": "Už máte peníze blokované ve třech aukcích; počkejte, až jedna skončí.",
+        "selfBiddingForbidden": "Nemůžete přihazovat na vlastního hráče.",
+        "listingExpired": "Tato aukce skončila.",
+        "alreadyLeading": "V této aukci už vedete.",
+        "notCancellable": "Stáhnout lze jen vlastní nabídku bez příhozů, nikdy nucenou."
       }
     },
     "sender": {

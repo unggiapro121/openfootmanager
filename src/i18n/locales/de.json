@@ -45,7 +45,8 @@
       "training": "Training",
       "league": "Liga",
       "schedule": "Spielplan",
-      "friendly": "Freundschaftsspiele"
+      "friendly": "Freundschaftsspiele",
+      "finance": "Finanzen"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Saison {{number}}",
       "seasonDay": "Saison {{number}} · Tag {{day}}/{{total}}",
-      "nextKickoff": "Nächstes Spiel in {{time}}"
+      "nextKickoff": "Nächstes Spiel in {{time}}",
+      "cash": "Vereinskasse: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} T. {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Anweisungen: {{list}}",
       "addedRoles": "Rollen: {{list}}",
       "addedNothing": "Nichts Neues"
+    },
+    "finance": {
+      "title": "Vereinsfinanzen",
+      "noEconomy": "Diese Saison wird ohne Geld gespielt: noch nichts anzuzeigen.",
+      "arrears": "Der Verein schuldet seit {{days}} Tagen Gehälter (seit {{since}}). Spieler erholen sich langsamer und verlieren täglich Form; nach {{limit}} Tagen wird der bestbezahlte Spieler versteigert.",
+      "cash": "Kasse",
+      "held": "Für Gebote reserviert",
+      "wageBill": "Wöchentliche Gehälter",
+      "wagePerDay": "etwa {{amount}} pro Saisontag",
+      "season": "Diese Saison",
+      "seasonEmpty": "In dieser Saison hat sich noch nichts bewegt.",
+      "total": "Summe",
+      "kind": {
+        "opening": "Startkapital",
+        "tickets": "Ticketeinnahmen",
+        "reward": "Ligaprämie",
+        "wage": "Gehälter",
+        "facility": "Einrichtungen",
+        "settle": "Transfers",
+        "bid": "Gebote reserviert und zurück",
+        "cancel": "Abgebrochene Auktionen",
+        "adjust": "Korrekturen",
+        "reversal": "Stornierungen",
+        "grantReset": "Kassen-Reset mit neuem Kader"
+      },
+      "ledger": "Buchungen",
+      "ledgerEmpty": "Noch keine Buchungen.",
+      "more": "Mehr anzeigen",
+      "account": {
+        "cash": "Kasse",
+        "held": "reserviert"
+      },
+      "nextCost": "Nächste Stufe: {{cost}}",
+      "upgraded": "{{facility}} auf Stufe {{level}} ausgebaut."
     }
   },
   "coach": {
@@ -4008,6 +4044,30 @@
         "notFinished": "Das Spiel dieses Raums ist noch nicht vorbei.",
         "roomClosed": "In diesem Raum kann nicht mehr gespielt werden, daher wurde er geschlossen.",
         "conflict": "Der Raum hat sich inzwischen geändert. Sieh ihn dir erneut an."
+      },
+      "economy": {
+        "disabled": "Diese Saison wird ohne Geld gespielt.",
+        "clubLocked": "Die Finanzen des Vereins sind zur Prüfung gesperrt: vorerst keine Gebote, Angebote oder Ausbauten.",
+        "insufficientFunds": "Der Verein hat dafür nicht genug Geld.",
+        "facilityAtTop": "Diese Einrichtung ist bereits auf der höchsten Stufe.",
+        "wageBudgetExceeded": "Nach diesem Gebot muss der Verein noch genug Geld für sieben Tage Gehälter haben."
+      },
+      "auction": {
+        "marketClosed": "Der Transfermarkt ist in dieser Saison geschlossen.",
+        "notFound": "Diese Auktion gibt es nicht.",
+        "playerNotListable": "Dieser Spieler kann nicht versteigert werden: Er gehört nicht dir, hat aufgehört oder ist verletzt.",
+        "alreadyListed": "Dieser Spieler wird bereits versteigert.",
+        "cooldownActive": "Dieser Spieler hat zu kürzlich den Verein gewechselt; er kann erst ab {{until}} wieder verkauft werden.",
+        "squadTooSmall": "Sein Verkauf würde deinen Kader unter das vom Markt erlaubte Minimum bringen.",
+        "squadFull": "Sein Kauf würde deinen Kader über das vom Markt erlaubte Maximum bringen.",
+        "seasonClosing": "Eine Auktion wäre bei Saisonende noch offen. Biete ihn nächste Saison an.",
+        "outOfPriceBand": "Der Preis muss zwischen {{min}} und {{max}} liegen.",
+        "bidTooLow": "Das Gebot muss mindestens {{minimum}} betragen.",
+        "maxActiveBidsReached": "Du hältst bereits Geld in drei Auktionen; warte, bis eine endet.",
+        "selfBiddingForbidden": "Du kannst nicht auf deinen eigenen Spieler bieten.",
+        "listingExpired": "Diese Auktion ist beendet.",
+        "alreadyLeading": "Du führst diese Auktion bereits an.",
+        "notCancellable": "Nur ein eigenes Angebot ohne Gebote kann zurückgezogen werden, nie ein erzwungenes."
       }
     },
     "sender": {

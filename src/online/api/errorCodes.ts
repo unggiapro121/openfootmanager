@@ -58,6 +58,29 @@ export const ERROR_CODES = [
   "be.error.friendly.notFinished",
   "be.error.friendly.roomClosed",
   "be.error.friendly.conflict",
+  "be.error.economy.disabled",
+  "be.error.economy.clubLocked",
+  "be.error.economy.insufficientFunds",
+  "be.error.economy.facilityAtTop",
+  "be.error.auction.marketClosed",
+  "be.error.auction.notFound",
+  "be.error.auction.playerNotListable",
+  "be.error.auction.alreadyListed",
+  "be.error.auction.cooldownActive",
+  "be.error.auction.squadTooSmall",
+  "be.error.auction.squadFull",
+  "be.error.auction.seasonClosing",
+  "be.error.auction.outOfPriceBand",
+  "be.error.auction.bidTooLow",
+  "be.error.auction.maxActiveBidsReached",
+  "be.error.auction.selfBiddingForbidden",
+  "be.error.auction.listingExpired",
+  "be.error.auction.alreadyLeading",
+  "be.error.auction.notCancellable",
+  "be.error.economy.wageBudgetExceeded",
+  "be.error.economy.notLocked",
+  "be.error.ledger.txnNotFound",
+  "be.error.ledger.alreadyReversed",
   "be.error.realtime.badMessage",
   "be.error.realtime.unknownChannel",
   "be.error.realtime.tooManyChannels",
@@ -72,6 +95,9 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.club.matchUnderway": ["kickoffAt"],
   "be.error.club.lineupLocked": ["kickoffAt"],
   "be.error.friendly.leagueMatchSoon": ["kickoffAt"],
+  "be.error.auction.cooldownActive": ["until"],
+  "be.error.auction.outOfPriceBand": ["min", "max"],
+  "be.error.auction.bidTooLow": ["minimum"],
 };
 
 /** The translation parameters a code comes with, in `details.params`. */
@@ -80,4 +106,7 @@ export type ErrorParams = {
   "be.error.club.matchUnderway": { kickoffAt: string | number };
   "be.error.club.lineupLocked": { kickoffAt: string | number };
   "be.error.friendly.leagueMatchSoon": { kickoffAt: string | number };
+  "be.error.auction.cooldownActive": { until: string | number };
+  "be.error.auction.outOfPriceBand": { min: string | number; max: string | number };
+  "be.error.auction.bidTooLow": { minimum: string | number };
 };

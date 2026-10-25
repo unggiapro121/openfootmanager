@@ -28,6 +28,7 @@ pub mod economy;
 pub mod facilities;
 pub mod licence;
 pub mod lineup_assignment;
+pub mod market_ai;
 pub mod mastery_xp;
 pub mod match_form;
 pub mod match_session;

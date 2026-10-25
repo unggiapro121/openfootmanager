@@ -11,6 +11,7 @@ import {
   Trophy,
   UserRound,
   Users,
+  Wallet,
 } from "lucide-react";
 import NavItem from "../../components/dashboard/SidebarNavItem";
 import { useOnlineStore } from "../store/onlineStore";
@@ -23,6 +24,7 @@ const CLUB_PAGES = [
   { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
   { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
   { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
+  { path: "/online/finance", label: "online.nav.finance", icon: <Wallet /> },
   { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
 ];
 
