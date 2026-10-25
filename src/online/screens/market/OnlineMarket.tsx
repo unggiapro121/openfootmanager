@@ -8,7 +8,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   CountryFlag,
   PlayerAvatar,
   SortHeader,
@@ -16,7 +15,7 @@ import {
 import { countryName } from "../../../lib/countries";
 import { positionBadgeVariant } from "../../../lib/playerRating";
 import { formatVal, formatWeeklyAmount } from "../../../lib/valueFormatting";
-import type { AuctionView, MarketQuery } from "../../api";
+import type { AuctionView, MarketQuery, MyMarketView } from "../../api";
 import { online } from "../../client";
 import type { OnlineApiError } from "../../errors";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
@@ -316,8 +315,21 @@ function sortValue(auction: AuctionView, column: SortColumn): number {
 const HEAD =
   "px-4 py-3 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
 
-function AuctionTable({ items }: { items: AuctionView[] }) {
+type TableMode = "open" | "mine" | "closed";
+
+/** What the club is to an auction, as the badge of its row. */
+const STANDING_VARIANT: Record<string, "accent" | "success" | "primary" | "neutral"> = {
+  selling: "accent",
+  leading: "success",
+  bought: "success",
+  sold: "primary",
+};
+
+/** The auctions as a table. `mine` and `closed` add where the club stands; a closed auction has no
+ * time left. */
+function AuctionTable({ items, mode = "open" }: { items: AuctionView[]; mode?: TableMode }) {
   const { t } = useTranslation();
+  const clubId = useOnlineStore((state) => state.club?.club.id);
   const offset = useServerOffset(items[0]?.serverNow);
   const [sort, setSort] = useState<Sort>(null);
   const sorted = useMemo(() => {
@@ -340,7 +352,7 @@ function AuctionTable({ items }: { items: AuctionView[] }) {
       <Card>
         <CardBody>
           <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-            {t("online.market.empty")}
+            {t(mode === "open" ? "online.market.empty" : "online.market.none")}
           </p>
         </CardBody>
       </Card>
@@ -377,15 +389,26 @@ function AuctionTable({ items }: { items: AuctionView[] }) {
                 <th scope="col" className={HEAD}>
                   {t("online.market.bids")}
                 </th>
-                {header("time", t("online.market.timeLeft"))}
+                {mode !== "closed" && header("time", t("online.market.timeLeft"))}
                 <th scope="col" className={HEAD}>
                   {t("online.market.seller")}
                 </th>
+                {mode !== "open" && (
+                  <th scope="col" className={HEAD}>
+                    {t("common.status")}
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
               {sorted.map((auction) => (
-                <AuctionRow key={auction.id} auction={auction} offset={offset} />
+                <AuctionRow
+                  key={auction.id}
+                  auction={auction}
+                  offset={offset}
+                  mode={mode}
+                  clubId={clubId}
+                />
               ))}
             </tbody>
           </table>
@@ -435,7 +458,17 @@ export function OwnLabels({ auction }: { auction: AuctionView }) {
   );
 }
 
-function AuctionRow({ auction, offset }: { auction: AuctionView; offset: number }) {
+function AuctionRow({
+  auction,
+  offset,
+  mode,
+  clubId,
+}: {
+  auction: AuctionView;
+  offset: number;
+  mode: TableMode;
+  clubId: string | undefined;
+}) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { text } = useServerCountdown(auction.endsAt, offset);
@@ -511,12 +544,21 @@ function AuctionRow({ auction, offset }: { auction: AuctionView; offset: number 
       <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
         {auction.bidsCount}
       </td>
-      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
-        {text ?? t("online.market.ending")}
-      </td>
+      {mode !== "closed" && (
+        <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+          {text ?? t("online.market.ending")}
+        </td>
+      )}
       <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400">
         <SellerName auction={auction} />
       </td>
+      {mode !== "open" && (
+        <td className="px-4 py-2.5">
+          <Badge variant={STANDING_VARIANT[standing(auction, clubId)] ?? "neutral"} size="sm">
+            {t(`online.market.standing.${standing(auction, clubId)}`)}
+          </Badge>
+        </td>
+      )}
     </tr>
   );
 }
@@ -571,43 +613,41 @@ function MyAuctions() {
   if (market === null) {
     return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.market.closed")}</p>;
   }
-  return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      <MyGroup title={t("online.market.selling")} items={market.selling} />
-      <MyGroup title={t("online.market.holding")} items={market.holding} />
-      <MyGroup title={t("online.market.recent")} items={market.recent} />
-    </div>
-  );
+  return <MyGroups market={market} />;
 }
 
-function MyGroup({ title, items }: { title: string; items: AuctionView[] }) {
+type Group = "selling" | "holding" | "recent";
+
+/** The club's three lists as the offline transfer centre's views: a pill each, one table at a time. */
+function MyGroups({ market }: { market: MyMarketView }) {
   const { t } = useTranslation();
-  const clubId = useOnlineStore((state) => state.club?.club.id);
+  const [group, setGroup] = useState<Group>("selling");
+  const groups: { id: Group; label: string; items: AuctionView[]; mode: TableMode }[] = [
+    { id: "selling", label: t("online.market.selling"), items: market.selling, mode: "mine" },
+    { id: "holding", label: t("online.market.holding"), items: market.holding, mode: "mine" },
+    { id: "recent", label: t("online.market.recent"), items: market.recent, mode: "closed" },
+  ];
+  const shown = groups.find((one) => one.id === group) ?? groups[0];
   return (
-    <Card>
-      <CardHeader>{title}</CardHeader>
-      <CardBody>
-        {items.length === 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.market.none")}</p>
-        ) : (
-          <ul aria-label={title} className="space-y-2">
-            {items.map((auction) => (
-              <li key={auction.id} className="flex items-center justify-between gap-2 text-sm">
-                <Link
-                  to={`/online/auctions/${auction.id}`}
-                  className="rounded font-semibold text-gray-900 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-100 dark:hover:text-primary-400 dark:focus:ring-offset-navy-800"
-                >
-                  {auction.player?.fullName ?? t("online.market.retiredPlayer")}
-                </Link>
-                <span className="text-right text-gray-600 dark:text-gray-300">
-                  <PriceText auction={auction} /> ·{" "}
-                  {t(`online.market.standing.${standing(auction, clubId)}`)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardBody>
-    </Card>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-1.5">
+        {groups.map((one) => (
+          <button
+            type="button"
+            key={one.id}
+            aria-pressed={group === one.id}
+            onClick={() => setGroup(one.id)}
+            className={`rounded-lg px-3 py-1.5 font-heading text-xs font-bold uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+              group === one.id
+                ? "bg-accent-500 text-navy-900 shadow-sm"
+                : "border border-gray-200 bg-white text-gray-500 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-400"
+            }`}
+          >
+            {one.label} ({one.items.length})
+          </button>
+        ))}
+      </div>
+      <AuctionTable items={shown.items} mode={shown.mode} />
+    </div>
   );
 }
