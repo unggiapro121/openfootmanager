@@ -4208,7 +4208,8 @@
       },
       "player": {
         "notYours": "Ce joueur n'est pas dans votre club.",
-        "listed": "Un joueur mis aux enchères garde son nom jusqu'à la fin de l'enchère."
+        "listed": "Un joueur mis aux enchères garde son nom jusqu'à la fin de l'enchère.",
+        "shirtTaken": "Un autre joueur porte déjà ce numéro."
       }
     },
     "sender": {

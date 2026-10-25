@@ -48,6 +48,7 @@ export const ERROR_CODES = [
   "be.error.name.filtered",
   "be.error.player.notYours",
   "be.error.player.listed",
+  "be.error.player.shirtTaken",
   "be.error.match.notLive",
   "be.error.match.notYourSide",
   "be.error.match.tooManyCommands",

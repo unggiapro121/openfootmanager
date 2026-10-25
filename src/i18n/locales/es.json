@@ -4208,7 +4208,8 @@
       },
       "player": {
         "notYours": "Ese jugador no está en tu club.",
-        "listed": "Un jugador en subasta conserva su nombre hasta que termine la subasta."
+        "listed": "Un jugador en subasta conserva su nombre hasta que termine la subasta.",
+        "shirtTaken": "Otro jugador ya lleva ese número."
       }
     },
     "sender": {

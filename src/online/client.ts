@@ -32,6 +32,7 @@ import type {
   TrainingPlan,
   UpdateAccount,
   RenamePlayerRequest,
+  ShirtRequest,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
 import type { MatchCommand } from "./api/engine";
@@ -213,6 +214,14 @@ export const online = {
           fullName,
           matchName,
         } satisfies RenamePlayerRequest),
+      ),
+    /** His shirt number: `null` takes it away; `swap` trades with the player who wears `number`. */
+    shirt: (playerId: string, number: number | null, swap: boolean, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PATCH", ["v1", "players", playerId, "shirt"], idempotencyKey, {
+          number,
+          swap,
+        } satisfies ShirtRequest),
       ),
   },
   /**

@@ -30,6 +30,7 @@ import { useOnlineStore } from "../../store/onlineStore";
 import ListingDialog from "../market/ListingDialog";
 import PotentialStars from "../PotentialStars";
 import RenamePlayerDialog from "../RenamePlayerDialog";
+import ShirtNumberPicker from "./ShirtNumberPicker";
 
 /**
  * One player of the club on his own page, laid out as the offline player profile is: the hero card
@@ -92,6 +93,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
             <Meter label={t("common.morale")} value={player.morale} />
             <div className="flex flex-wrap gap-2 pt-1">
               <ListingAction playerId={player.id} playerName={player.fullName} />
+              <ShirtAction player={player} />
               <RenameAction player={player} />
             </div>
           </CardBody>
@@ -306,6 +308,20 @@ function ListingAction({ playerId, playerName }: { playerId: string; playerName:
       {open && (
         <ListingDialog playerId={playerId} playerName={playerName} onClose={() => setOpen(false)} />
       )}
+    </>
+  );
+}
+
+/** The way to change the player's shirt number, as the offline squad's picker does. */
+function ShirtAction({ player }: { player: SquadPlayerView }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+        {t("squad.jerseyPickerAction")}
+      </Button>
+      {open && <ShirtNumberPicker player={player} onClose={() => setOpen(false)} />}
     </>
   );
 }

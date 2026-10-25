@@ -91,6 +91,7 @@ export type { SeasonNowView } from "./SeasonNowView";
 export type { SeasonStatsView } from "./SeasonStatsView";
 export type { SentCommand } from "./SentCommand";
 export type { ServerMessage } from "./ServerMessage";
+export type { ShirtRequest } from "./ShirtRequest";
 export type { SquadPlayerView } from "./SquadPlayerView";
 export type { StaffLineView } from "./StaffLineView";
 export type { StandingRow } from "./StandingRow";
