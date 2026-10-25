@@ -144,10 +144,8 @@ describe("OnlineFinance", () => {
     expect(screen.getByText("online.finance.held").nextSibling?.textContent).toMatch(/90,000/);
     // 49,791 a week is 92,469 a season day (52 weeks over 28 days).
     expect(screen.getByText(/online\.finance\.wagePerDay/).textContent).toMatch(/92,469/);
-    expect(
-      screen.getByRole("rowheader", { name: "online.finance.kind.somethingNew:somethingNew" }),
-    ).toBeTruthy();
-    const total = screen.getByRole("rowheader", { name: "online.finance.total" }).parentElement;
+    expect(screen.getByText("online.finance.kind.somethingNew:somethingNew")).toBeTruthy();
+    const total = screen.getByText("online.finance.total").parentElement;
     expect(total?.textContent).toMatch(/2,481,000/);
   });
 

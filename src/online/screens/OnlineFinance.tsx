@@ -39,6 +39,13 @@ function titleKeyOf(facility: string): string {
   );
 }
 
+function effectKeyOf(facility: string): string {
+  return (
+    FACILITY_DEFINITIONS.find((definition) => definition.levelKey === facility)?.effectKey ??
+    "finances.facilities"
+  );
+}
+
 /** The server's preview in the shape the desktop's upgrade dialog draws (C-5 C5-5). */
 function asPreview(view: FacilityPreviewView): FacilityUpgradePreviewData {
   return {
@@ -86,8 +93,10 @@ export default function OnlineFinance() {
     );
   }
   return (
-    <div className="flex max-w-4xl flex-col gap-4">
-      <Banners finance={finance} />
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      <div className="flex flex-col gap-4 lg:col-span-3 empty:hidden">
+        <Banners finance={finance} />
+      </div>
       <Figures finance={finance} />
       <SeasonTotals finance={finance} />
       <Facilities cash={finance.cash} locked={finance.locked} />
@@ -129,33 +138,63 @@ function Banners({ finance }: { finance: FinanceView }) {
   );
 }
 
-function Figure({ label, value, note }: { label: string; value: string; note?: string }) {
+const TILE = "rounded-xl bg-gray-50 p-4 text-center dark:bg-navy-800";
+const TILE_LABEL =
+  "mb-1 font-heading text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500";
+
+function Figure({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-navy-600 dark:bg-navy-800">
-      <p className="font-heading text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
-        {label}
-      </p>
-      <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-gray-900 dark:text-gray-100">
-        {value}
-      </p>
-      {note && <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{note}</p>}
+    <div className={TILE}>
+      <p className={TILE_LABEL}>{label}</p>
+      <p className={`font-heading text-xl font-bold tabular-nums ${color}`}>{value}</p>
     </div>
   );
 }
 
+/** What the club holds and owes, then its wage bill, as the offline overview lays them out. */
 function Figures({ finance }: { finance: FinanceView }) {
   const { t } = useTranslation();
   const perDay = Math.round((finance.weeklyWageBill * WEEKS_A_SEASON) / SEASON_DAYS);
+  const net = finance.season.reduce((sum, line) => sum + line.amount, 0);
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
-      <Figure label={t("online.finance.cash")} value={formatExactMoney(finance.cash)} />
-      <Figure label={t("online.finance.held")} value={formatExactMoney(finance.held)} />
-      <Figure
-        label={t("online.finance.wageBill")}
-        value={formatExactMoney(finance.weeklyWageBill)}
-        note={t("online.finance.wagePerDay", { amount: formatExactMoney(perDay) })}
-      />
-    </div>
+    <>
+      <Card accent="accent" className="lg:col-span-2">
+        <CardHeader>{t("finances.overview")}</CardHeader>
+        <CardBody>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            <Figure
+              label={t("online.finance.cash")}
+              value={formatExactMoney(finance.cash)}
+              color={finance.cash < 0 ? "text-red-500" : "text-primary-500"}
+            />
+            <Figure
+              label={t("online.finance.held")}
+              value={formatExactMoney(finance.held)}
+              color="text-gray-800 dark:text-gray-200"
+            />
+            <Figure
+              label={t("online.finance.season")}
+              value={formatExactMoney(net)}
+              color={signedClass(net)}
+            />
+          </div>
+        </CardBody>
+      </Card>
+      <Card>
+        <CardHeader>{t("online.finance.wageBill")}</CardHeader>
+        <CardBody>
+          <div className="text-center">
+            <p className={TILE_LABEL}>{t("finances.weeklyTotal")}</p>
+            <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-gray-800 dark:text-gray-100">
+              {formatExactMoney(finance.weeklyWageBill)}
+            </p>
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              {t("online.finance.wagePerDay", { amount: formatExactMoney(perDay) })}
+            </p>
+          </div>
+        </CardBody>
+      </Card>
+    </>
   );
 }
 
@@ -174,7 +213,7 @@ function SeasonTotals({ finance }: { finance: FinanceView }) {
   const label = useKindLabel();
   const total = finance.season.reduce((sum, line) => sum + line.amount, 0);
   return (
-    <Card>
+    <Card className="lg:col-span-3">
       <CardHeader>{t("online.finance.season")}</CardHeader>
       <CardBody>
         {finance.season.length === 0 ? (
@@ -182,34 +221,31 @@ function SeasonTotals({ finance }: { finance: FinanceView }) {
             {t("online.finance.seasonEmpty")}
           </p>
         ) : (
-          <table className="w-full text-sm">
-            <tbody>
-              {finance.season.map((line) => (
-                <tr key={line.kind} className="border-b border-gray-100 dark:border-navy-700">
-                  <th
-                    scope="row"
-                    className="py-2 text-left font-normal text-gray-700 dark:text-gray-200"
-                  >
-                    {label(line.kind)}
-                  </th>
-                  <td className={`py-2 text-right tabular-nums ${signedClass(line.amount)}`}>
-                    {formatExactMoney(line.amount)}
-                  </td>
-                </tr>
-              ))}
-              <tr>
-                <th
-                  scope="row"
-                  className="pt-2 text-left font-heading font-bold uppercase text-gray-900 dark:text-gray-100"
+          <dl className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {finance.season.map((line) => (
+              <div
+                key={line.kind}
+                className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center dark:border-navy-600 dark:bg-navy-800"
+              >
+                <dt className="mb-1 font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  {label(line.kind)}
+                </dt>
+                <dd
+                  className={`font-heading text-xl font-bold tabular-nums ${signedClass(line.amount)}`}
                 >
-                  {t("online.finance.total")}
-                </th>
-                <td className={`pt-2 text-right font-bold tabular-nums ${signedClass(total)}`}>
-                  {formatExactMoney(total)}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  {formatExactMoney(line.amount)}
+                </dd>
+              </div>
+            ))}
+            <div className="rounded-xl border border-gray-200 bg-gray-100 p-4 text-center dark:border-navy-600 dark:bg-navy-700">
+              <dt className="mb-1 font-heading text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300">
+                {t("online.finance.total")}
+              </dt>
+              <dd className={`font-heading text-xl font-bold tabular-nums ${signedClass(total)}`}>
+                {formatExactMoney(total)}
+              </dd>
+            </div>
+          </dl>
         )}
       </CardBody>
     </Card>
@@ -226,36 +262,45 @@ function Facilities({ cash, locked }: { cash: number; locked: boolean }) {
   const [done, setDone] = useState<string | null>(null);
 
   return (
-    <Card>
+    <Card className="lg:col-span-3">
       <CardHeader>{t("finances.facilities")}</CardHeader>
       <CardBody>
         <ResourceState resource={resource} reload={reload}>
           {(facilities) => (
-            <ul className="flex flex-col divide-y divide-gray-100 dark:divide-navy-700">
+            <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {facilities.map((facility) => (
-                <li key={facility.facility} className="flex flex-wrap items-center gap-3 py-2">
-                  <span className="min-w-40 flex-1 font-semibold text-gray-800 dark:text-gray-100">
-                    {t(titleKeyOf(facility.facility))}
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">
-                    {t("finances.facilityLevel", { level: facility.level })}
-                  </span>
-                  <span className="text-sm tabular-nums text-gray-600 dark:text-gray-300">
-                    {facility.cost === null
-                      ? t("finances.facilityMaxLevel")
-                      : t("online.finance.nextCost", { cost: formatExactMoney(facility.cost) })}
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={facility.cost === null || locked}
-                    onClick={() => {
-                      setDone(null);
-                      setUpgrading(facility);
-                    }}
-                  >
-                    {t("finances.upgradeFacility")}
-                  </Button>
+                <li
+                  key={facility.facility}
+                  className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-navy-600 dark:bg-navy-800"
+                >
+                  <div className="space-y-1">
+                    <h3 className="font-heading text-base font-bold uppercase tracking-wider text-gray-900 dark:text-gray-100">
+                      {t(titleKeyOf(facility.facility))}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("finances.facilityLevel", { level: facility.level })}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {t(effectKeyOf(facility.facility))}
+                    </p>
+                  </div>
+                  <div className="mt-auto space-y-2">
+                    <p className="font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      {facility.cost === null
+                        ? t("finances.facilityMaxLevel")
+                        : t("online.finance.nextCost", { cost: formatExactMoney(facility.cost) })}
+                    </p>
+                    <Button
+                      size="sm"
+                      disabled={facility.cost === null || locked}
+                      onClick={() => {
+                        setDone(null);
+                        setUpgrading(facility);
+                      }}
+                    >
+                      {t("finances.upgradeFacility")}
+                    </Button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -365,24 +410,27 @@ function Ledger() {
   };
 
   return (
-    <Card>
+    <Card className="lg:col-span-3">
       <CardHeader>{t("online.finance.ledger")}</CardHeader>
-      <CardBody>
+      <CardBody className="p-0">
         <ResourceState resource={resource} reload={reload}>
           {() =>
             lines.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
                 {t("online.finance.ledgerEmpty")}
               </p>
             ) : (
-              <ol aria-label={t("online.finance.ledger")} className="flex flex-col">
+              <ol
+                aria-label={t("online.finance.ledger")}
+                className="flex flex-col divide-y divide-gray-100 dark:divide-navy-600"
+              >
                 {lines.map((line) => {
                   const path = refPath(line);
                   const text = `${label(line.kind)} · ${t(`online.finance.account.${line.account}`, { defaultValue: line.account })}`;
                   return (
                     <li
                       key={line.id}
-                      className="flex items-center gap-3 border-b border-gray-100 py-2 text-sm dark:border-navy-700"
+                      className="flex items-center gap-3 px-5 py-2.5 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-navy-700/50"
                     >
                       <span className="w-32 shrink-0 text-xs text-gray-500 dark:text-gray-400">
                         {formatDate(line.gameDate ?? line.at, i18n.language, {
@@ -400,7 +448,7 @@ function Ledger() {
                           text
                         )}
                       </span>
-                      <span className={`tabular-nums ${signedClass(line.amount)}`}>
+                      <span className={`font-medium tabular-nums ${signedClass(line.amount)}`}>
                         {formatExactMoney(line.amount)}
                       </span>
                     </li>
@@ -411,12 +459,14 @@ function Ledger() {
           }
         </ResourceState>
         {next !== undefined && (
-          <Button className="mt-3" size="sm" variant="outline" onClick={more}>
-            {t("online.finance.more")}
-          </Button>
+          <div className="border-t border-gray-100 px-5 py-3 dark:border-navy-600">
+            <Button size="sm" variant="outline" onClick={more}>
+              {t("online.finance.more")}
+            </Button>
+          </div>
         )}
         {moreError && (
-          <p role="alert" className="mt-2 text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="px-5 pb-3 text-sm text-red-600 dark:text-red-400">
             {moreError}
           </p>
         )}
