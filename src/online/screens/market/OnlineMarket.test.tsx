@@ -266,14 +266,13 @@ describe("OnlineMarket", () => {
     });
     renderOnline("/online/market?tab=mine");
 
-    const selling = await screen.findByRole("list", { name: "online.market.selling" });
-    expect(selling.textContent).toContain("online.market.standing.selling");
-    expect(screen.getByRole("list", { name: "online.market.holding" }).textContent).toContain(
-      "online.market.standing.leading",
-    );
-    expect(screen.getByRole("list", { name: "online.market.recent" }).textContent).toContain(
-      "online.market.standing.bought",
-    );
+    // One table at a time, a pill for each group with its count.
+    expect(await screen.findByRole("table")).toHaveTextContent("online.market.standing.selling");
+    fireEvent.click(screen.getByRole("button", { name: "online.market.holding (1)" }));
+    expect(screen.getByRole("table")).toHaveTextContent("online.market.standing.leading");
+    fireEvent.click(screen.getByRole("button", { name: "online.market.recent (1)" }));
+    expect(screen.getByRole("table")).toHaveTextContent("online.market.standing.bought");
+    expect(screen.queryByRole("button", { name: "online.market.timeLeft" })).toBeNull();
   });
 });
 
