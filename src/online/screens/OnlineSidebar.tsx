@@ -83,7 +83,8 @@ export default function OnlineSidebar() {
                 }
                 active={
                   pathname === page.path ||
-                  (page.path === "/online/market" && pathname.startsWith("/online/auctions/"))
+                  (page.path === "/online/market" && pathname.startsWith("/online/auctions/")) ||
+                  (page.path === "/online/squad" && pathname.startsWith("/online/squad/"))
                 }
                 collapsed={false}
                 onClick={() => navigate(page.path)}

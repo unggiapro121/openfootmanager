@@ -175,7 +175,11 @@
       "apps": "Pres.",
       "goals": "Gol",
       "fitness": "Forma fisica",
-      "seasonLine": "Questa stagione: {{apps}} presenze, {{goals}} gol, {{assists}} assist, voto medio {{rating}}"
+      "seasonLine": "Questa stagione: {{apps}} presenze, {{goals}} gol, {{assists}} assist, voto medio {{rating}}",
+      "back": "← Torna alla rosa",
+      "noMatch": "Nessun giocatore corrisponde a questi filtri.",
+      "notFound": "Questo giocatore non è nella tua rosa.",
+      "state": "Condizione"
     },
     "training": {
       "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo."

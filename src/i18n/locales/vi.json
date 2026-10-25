@@ -175,7 +175,11 @@
       "apps": "Trận",
       "goals": "Bàn",
       "fitness": "Độ sung sức",
-      "seasonLine": "Mùa này: {{apps}} trận, {{goals}} bàn, {{assists}} kiến tạo, điểm trung bình {{rating}}"
+      "seasonLine": "Mùa này: {{apps}} trận, {{goals}} bàn, {{assists}} kiến tạo, điểm trung bình {{rating}}",
+      "back": "← Về đội hình",
+      "noMatch": "Không có cầu thủ nào khớp bộ lọc.",
+      "notFound": "Cầu thủ này không có trong đội hình của bạn.",
+      "state": "Thể trạng"
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."

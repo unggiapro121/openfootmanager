@@ -175,7 +175,11 @@
       "apps": "PJ",
       "goals": "Goles",
       "fitness": "Forma física",
-      "seasonLine": "Esta temporada: {{apps}} partidos, {{goals}} goles, {{assists}} asistencias, nota media {{rating}}"
+      "seasonLine": "Esta temporada: {{apps}} partidos, {{goals}} goles, {{assists}} asistencias, nota media {{rating}}",
+      "back": "← Volver a la plantilla",
+      "noMatch": "Ningún jugador coincide con estos filtros.",
+      "notFound": "Este jugador no está en tu plantilla.",
+      "state": "Estado"
     },
     "training": {
       "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio."

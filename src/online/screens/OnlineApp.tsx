@@ -12,6 +12,7 @@ import OnlineSchedule from "./OnlineSchedule";
 import OnlineFriendly from "./friendly/OnlineFriendly";
 import OnlineShell from "./OnlineShell";
 import OnlineSquad from "./OnlineSquad";
+import OnlinePlayer from "./squad/OnlinePlayer";
 import OnlineTactics from "./OnlineTactics";
 import OnlineTakeover from "./OnlineTakeover";
 import OnlineTraining from "./OnlineTraining";
@@ -24,6 +25,7 @@ export default function OnlineApp() {
         <Route index element={<OnlineOverview />} />
         <Route path="takeover" element={<OnlineTakeover />} />
         <Route path="squad" element={<OnlineSquad />} />
+        <Route path="squad/:playerId" element={<OnlinePlayer />} />
         <Route path="tactics" element={<OnlineTactics />} />
         <Route path="training" element={<OnlineTraining />} />
         <Route path="league" element={<OnlineLeague />} />

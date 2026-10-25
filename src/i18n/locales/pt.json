@@ -175,7 +175,11 @@
       "apps": "Jogos",
       "goals": "Golos",
       "fitness": "Forma física",
-      "seasonLine": "Esta época: {{apps}} jogos, {{goals}} golos, {{assists}} assistências, nota média {{rating}}"
+      "seasonLine": "Esta época: {{apps}} jogos, {{goals}} golos, {{assists}} assistências, nota média {{rating}}",
+      "back": "← Voltar ao plantel",
+      "noMatch": "Nenhum jogador corresponde a estes filtros.",
+      "notFound": "Este jogador não está no seu plantel.",
+      "state": "Condição"
     },
     "training": {
       "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu."

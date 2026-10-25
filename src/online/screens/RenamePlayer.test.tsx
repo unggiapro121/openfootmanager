@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   fail,
@@ -12,7 +12,7 @@ import {
 import type { MyMarketView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
 import ClubCard from "./ClubCard";
-import OnlineSquad from "./OnlineSquad";
+import OnlinePlayer from "./squad/OnlinePlayer";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
@@ -43,10 +43,13 @@ const STRIKER = squadPlayer({
   naturalPosition: "LeftWinger",
 });
 
+/** The player's own page, where the rename is (the squad list only lists). */
 function renderSquad() {
   return render(
-    <MemoryRouter>
-      <OnlineSquad />
+    <MemoryRouter initialEntries={["/online/squad/st"]}>
+      <Routes>
+        <Route path="/online/squad/:playerId" element={<OnlinePlayer />} />
+      </Routes>
     </MemoryRouter>,
   );
 }
