@@ -156,6 +156,21 @@ fn contains_words(phrase: &str, word: &str) -> bool {
     format!(" {phrase} ").contains(&format!(" {word} "))
 }
 
+/// Whether `name` is, letter for letter, the name of a real club: the world's protected clubs or
+/// the pack's extra ones, compared folded (case, accents and punctuation do not tell names apart).
+/// A player renaming his own club is refused only for this (S-14): `Arsenal` is a real club,
+/// `Arsernal FC` is not. The wider checks of [`is_blocked_club_name`] (the same club with other
+/// affixes, a brand) guard the names the generator makes, which are not the player's to choose.
+pub fn is_real_club_name(name: &str, pack: &OnlineContentPack) -> bool {
+    let folded = fold(name);
+    protected_clubs().names.contains(&folded)
+        || pack
+            .blocklist_extra
+            .clubs
+            .iter()
+            .any(|(_, club)| fold(club) == folded)
+}
+
 /// Whether a generated club or stadium name of `nation` is refused: a real club's name, a real
 /// club's name of the same nation with other affixes, or a name holding a brand.
 pub fn is_blocked_club_name(name: &str, nation: &str, pack: &OnlineContentPack) -> bool {
@@ -403,6 +418,44 @@ mod tests {
         assert!(is_blocked_club_name("Thép Xanh Hà Tĩnh", "VN", &pack));
         assert!(!is_blocked_club_name("Manchester Harriers", "ENG", &pack));
         assert!(!is_blocked_club_name("Rồng Lửa Hà Nội", "VN", &pack));
+    }
+
+    /// Given the builtin pack,
+    /// when names a player might give his club are checked,
+    /// then only a real club's own name is refused: exactly, whatever the case, accents and
+    /// punctuation; one letter off, another affix or another word is the player's to choose.
+    #[test]
+    fn only_a_real_club_s_own_name_is_a_real_club_name() {
+        let pack = OnlineContentPack::builtin();
+        for real in [
+            "Arsenal",
+            "ARSENAL",
+            "arsenal.",
+            "Manchester United",
+            "Real  Madrid",
+        ] {
+            assert!(is_real_club_name(real, &pack), "{real}");
+        }
+        for free in [
+            "Arsernal FC",
+            "Arsenal Hậu Giang",
+            "Manchester Harriers",
+            "Mặt Trời Hậu Giang",
+            "Rồng Lửa Hà Nội",
+        ] {
+            assert!(!is_real_club_name(free, &pack), "{free}");
+        }
+    }
+
+    /// Given the names the generator refuses for their affixes or brands,
+    /// when they are checked as a player's own club name,
+    /// then they are allowed: renaming is not held to the generator's wider rules.
+    #[test]
+    fn a_player_may_name_a_club_what_the_generator_may_not() {
+        let pack = OnlineContentPack::builtin();
+        for name in ["Manchester Rovers", "Thép Xanh Hà Tĩnh"] {
+            assert!(!is_real_club_name(name, &pack), "{name}");
+        }
     }
 
     /// Given nations that list the same place (Córdoba in AR and ES, Derry in IE and NIR),
