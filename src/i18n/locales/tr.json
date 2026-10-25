@@ -249,7 +249,8 @@
       "rolesTitle": "Oyuncu rolleri",
       "rolePlayer": "Oyuncu",
       "roleChoice": "Rol",
-      "changeRole": "Rolü değiştir"
+      "changeRole": "Rolü değiştir",
+      "orderRefused": "Maç bu emri kabul etmedi: {{reason}}"
     },
     "replay": {
       "title": "Tekrar",

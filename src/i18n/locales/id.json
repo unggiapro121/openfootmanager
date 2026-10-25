@@ -249,7 +249,8 @@
       "rolesTitle": "Peran pemain",
       "rolePlayer": "Pemain",
       "roleChoice": "Peran",
-      "changeRole": "Ubah peran"
+      "changeRole": "Ubah peran",
+      "orderRefused": "Pertandingan tidak menerima perintah itu: {{reason}}"
     },
     "replay": {
       "title": "Tayangan ulang",

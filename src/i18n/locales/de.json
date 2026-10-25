@@ -249,7 +249,8 @@
       "rolesTitle": "Spielerrollen",
       "rolePlayer": "Spieler",
       "roleChoice": "Rolle",
-      "changeRole": "Rolle ändern"
+      "changeRole": "Rolle ändern",
+      "orderRefused": "Das Spiel hat diese Anweisung nicht angenommen: {{reason}}"
     },
     "replay": {
       "title": "Wiederholung",
