@@ -316,6 +316,14 @@ export function ClubName({ name, isBot }: { name: string; isBot: boolean }) {
   );
 }
 
+/** Who sells an auction's player: a club (marked when the AI runs it), or the world, for a free
+ * agent (S-11f). */
+export function SellerName({ auction }: { auction: AuctionView }) {
+  const { t } = useTranslation();
+  if (auction.freeAgent) return <span>{t("online.market.freeAgent")}</span>;
+  return <ClubName name={auction.sellerName} isBot={auction.sellerIsBot} />;
+}
+
 /** What the coach's own club is to an auction: the seller, the leader, or neither. */
 export function OwnLabels({ auction }: { auction: AuctionView }) {
   const { t } = useTranslation();
@@ -364,7 +372,7 @@ function AuctionRow({ auction, offset }: { auction: AuctionView; offset: number 
       <td className="px-2 py-2 text-right">{auction.bidsCount}</td>
       <td className="px-2 py-2 text-right tabular-nums">{text ?? t("online.market.ending")}</td>
       <td className="px-3 py-2">
-        <ClubName name={auction.sellerName} isBot={auction.sellerIsBot} />
+        <SellerName auction={auction} />
       </td>
     </tr>
   );

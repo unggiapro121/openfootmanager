@@ -151,6 +151,30 @@ describe("OnlineMarket", () => {
     expect(within(rows[1] as HTMLElement).queryByText("online.market.aiClub")).toBeNull();
   });
 
+  // Given a free agent the world put up beside a club's sale (S-11f),
+  // when the market lists them,
+  // then the free agent's seller reads as a free agent, not a nameless club, and is not marked AI.
+  it("names a free agent's seller as a free agent", async () => {
+    server = serveMarket({
+      "GET v1/auctions": ok({
+        items: [
+          auction({
+            sellerClubId: "00000000-0000-0000-0000-000000000000",
+            sellerName: "",
+            freeAgent: true,
+          }),
+          auction({ id: "a-2", sellerName: "People FC" }),
+        ],
+      }),
+    });
+    renderOnline("/online/market");
+
+    const rows = (await screen.findAllByRole("row")).slice(1);
+    expect(within(rows[0] as HTMLElement).getByText("online.market.freeAgent")).toBeTruthy();
+    expect(within(rows[0] as HTMLElement).queryByText("online.market.aiClub")).toBeNull();
+    expect(within(rows[1] as HTMLElement).queryByText("online.market.freeAgent")).toBeNull();
+  });
+
   // Given the club's market with one listing, one auction it holds money in and one it won,
   // when the coach opens their own tab,
   // then each group lists its auction with where the club stands.

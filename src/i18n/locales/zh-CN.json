@@ -526,7 +526,8 @@
         "changedUnnamed": "市场有了变化。"
       },
       "ai": "AI",
-      "aiClub": "由 AI 管理的俱乐部"
+      "aiClub": "由 AI 管理的俱乐部",
+      "freeAgent": "自由球员"
     },
     "rename": {
       "open": "改名",

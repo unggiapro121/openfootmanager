@@ -47,6 +47,17 @@ describe("OnlineAuction", () => {
     expect(input.value).toBe("2,500,000");
   });
 
+  // Given a free agent's auction (S-11f),
+  // when its page opens,
+  // then the seller reads as a free agent.
+  it("names a free agent's seller as a free agent", async () => {
+    server = serveMarket({
+      "GET v1/auctions/a-1": ok(auction({ sellerName: "", freeAgent: true })),
+    });
+    renderOnline("/online/auctions/a-1");
+    expect(await screen.findByText("online.market.freeAgent")).toBeTruthy();
+  });
+
   // Given a club with 1,000,000 in cash,
   // when the coach types a bid under the least, over the cap, and over the cash,
   // then each is named before anything is sent and the bid cannot be placed.
