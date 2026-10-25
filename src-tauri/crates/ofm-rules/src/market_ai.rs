@@ -1,9 +1,11 @@
-//! What a club looks for on the transfer market, and how far an online bot bids for it.
+//! What a club looks for on the transfer market, what it can spare, and how an online bot bids
+//! and sells.
 //!
 //! The needs are the game's AI clubs' (`ofm_core::transfers::ai_market`), moved here unchanged so
-//! a bot on the online market wants what an AI club of the game wants (phase 3, E3-11). The rest
-//! is the online bot's bidding (analysis-bot-auction-bids.md B1–B6): whether it takes part in an
-//! auction, the price it goes to, and when it bids. Every roll comes from the world's seed, the
+//! a bot on the online market wants what an AI club of the game wants (phase 3, E3-11), and the
+//! sale rules share their veteran and playing-time thresholds (E3-12). The rest is the online
+//! bot's own (analysis-bot-auction-bids.md): whether it takes part in an auction, the price it
+//! goes to and when it bids (B1–B6), and which player it lists, when and at what price (B8–B10). Every roll comes from the world's seed, the
 //! auction and the club, so the same bot decides the same way each time the server asks, and no
 //! one who knows only the auction can work out its price.
 
@@ -27,6 +29,10 @@ pub const MAX_UPGRADE_AGE: i32 = 32;
 /// How many of its weakest slots a club looks to upgrade in one review: the
 /// weakest may have no one on the market it can buy, the next may.
 pub const SLOTS_LOOKED_AT: usize = 3;
+/// A player this old is sold once he is below the squad's median overall.
+pub const VETERAN_AGE: i32 = 31;
+/// A player whose playing time (0–100) is under this hardly plays and is sold.
+pub const UNUSED_PLAYING_TIME: u8 = 20;
 /// How far under the bar a player's overall may sit and his fit in the slot still be worth
 /// working out: a player's best slot rates him up to about this much above his overall.
 const OVERALL_SLACK: f64 = 6.0;
@@ -43,6 +49,16 @@ pub fn line_needs(formation: &str) -> [usize; 4] {
 /// A line holding more than it needs and its surplus margin: no buying there.
 pub fn line_is_overloaded(seniors: usize, need: usize) -> bool {
     seniors > need + SURPLUS_MARGIN
+}
+
+/// The squad's median overall, the upper one of an even squad; 0 for an empty squad.
+pub fn median_ovr<'a>(squad: impl IntoIterator<Item = &'a Player>) -> u8 {
+    let mut ratings: Vec<u8> = squad.into_iter().map(|player| player.ovr).collect();
+    if ratings.is_empty() {
+        return 0;
+    }
+    ratings.sort_unstable();
+    ratings[ratings.len() / 2]
 }
 
 /// A bot's players per line, its youth players among them (E3-11). An online starter squad keeps
@@ -348,6 +364,139 @@ impl<'a> AuctionRolls<'a> {
             &format!("{}/{club_id}", self.auction_id),
         )
     }
+}
+
+/// The values of the bots' sales, a season's ruleset (analysis-bot-auction-bids.md B8–B10).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct BotSaleRules {
+    /// The chance, in thousandths, that a bot with a player to spare lists him on a season day.
+    pub list_chance_permille: u32,
+    /// The most players a bot sells in a season, forced sales apart.
+    pub max_sales_per_season: u32,
+    /// The players a bot keeps beside its open sales. Above the season's squad floor, or a bot
+    /// selling down to it is handed free agents at the season's end.
+    pub keep_squad: u32,
+    /// The first starting price, in thousandths of the player's value.
+    pub start_permille: u32,
+    /// Taken off the starting price for each time the player went unsold this season.
+    pub unsold_step_permille: u32,
+    /// The lowest starting price, in thousandths of the player's value.
+    pub floor_permille: u32,
+    /// A player this old below the squad's median overall is sold.
+    pub veteran_age: i32,
+    /// A player whose playing time is under this is sold, from `unused_from_day` on.
+    pub unused_playing_time: u8,
+    /// The season day from which playing time has had matches enough to say who is unused.
+    pub unused_from_day: u32,
+}
+
+impl Default for BotSaleRules {
+    /// The values of analysis-bot-auction-bids.md B8–B10.
+    fn default() -> Self {
+        Self {
+            list_chance_permille: 250,
+            max_sales_per_season: 3,
+            keep_squad: 20,
+            start_permille: 1_000,
+            unsold_step_permille: 100,
+            floor_permille: 800,
+            veteran_age: VETERAN_AGE,
+            unused_playing_time: UNUSED_PLAYING_TIME,
+            unused_from_day: 8,
+        }
+    }
+}
+
+impl BotSaleRules {
+    /// Whether these values work with the season's: a bot's price never under the market's
+    /// floor, and a bot never sold down to the squad floor the season's end tops clubs up to.
+    pub fn fits_season(&self, price_band_min_permille: u32, squad_floor: u32) -> bool {
+        self.floor_permille >= price_band_min_permille
+            && self.start_permille >= self.floor_permille
+            && self.keep_squad > squad_floor
+    }
+
+    /// The starting price of a player of `value` the bot listed `unsold` times this season with
+    /// no one bidding (B10): the value, a step less for each time, never under the floor.
+    pub fn listing_price(&self, value: u64, unsold: u32) -> u64 {
+        let step = u64::from(self.unsold_step_permille) * u64::from(unsold);
+        let share = u64::from(self.start_permille)
+            .saturating_sub(step)
+            .max(u64::from(self.floor_permille));
+        permille_of(value, u32::try_from(share).unwrap_or(u32::MAX))
+    }
+}
+
+/// One of a bot's players with his age, as its sale rule reads him.
+#[derive(Debug, Clone, Copy)]
+pub struct SquadMember<'a> {
+    pub player: &'a Player,
+    pub age: i32,
+}
+
+/// The player a bot would list today, if any (B8): the lowest-rated of its players it can spare,
+/// by overall then id. A player is spared when his line holds more than it needs, or his line
+/// just took a signing that upgrades it (`upgraded_line`, a line index), or he is a veteran
+/// below the squad's median, or, from `unused_from_day`, he hardly plays.
+///
+/// Whatever the reason, the sale leaves his line its need, so a bot never sells into a shortage
+/// it would then buy for, and leaves the squad `keep_squad` players beside its `open_sales`.
+/// An injured player is not listed: the market refuses him.
+pub fn bot_surplus<'a>(
+    rules: &BotSaleRules,
+    formation: &str,
+    squad: &[SquadMember<'a>],
+    season_day: u32,
+    upgraded_line: Option<usize>,
+    open_sales: u32,
+) -> Option<&'a Player> {
+    if (squad.len() as u64) < u64::from(rules.keep_squad) + u64::from(open_sales) + 1 {
+        return None;
+    }
+    let counts = bot_line_counts(squad.iter().map(|member| member.player));
+    let needs = line_needs(formation);
+    let median = median_ovr(squad.iter().map(|member| member.player));
+    let mut candidates: Vec<&SquadMember<'a>> = squad
+        .iter()
+        .filter(|member| !member.player.retired && member.player.injury.is_none())
+        .collect();
+    candidates.sort_by(|a, b| {
+        a.player
+            .ovr
+            .cmp(&b.player.ovr)
+            .then_with(|| a.player.id.cmp(&b.player.id))
+    });
+    candidates
+        .into_iter()
+        .find(|member| {
+            let line = group_index(&member.player.position);
+            let spare = counts[line] > needs[line];
+            let reason = line_is_overloaded(counts[line], needs[line])
+                || upgraded_line == Some(line)
+                || (member.age >= rules.veteran_age && member.player.ovr < median)
+                || (season_day >= rules.unused_from_day
+                    && member.player.playing_time < rules.unused_playing_time);
+            spare && reason
+        })
+        .map(|member| member.player)
+}
+
+/// Whether a bot with a player to spare lists him on `season_day` (B9): its own roll of the
+/// world's seed, the club and the day.
+pub fn bot_lists_today(
+    rules: &BotSaleRules,
+    world_seed: u64,
+    club_id: &str,
+    season_day: u32,
+) -> bool {
+    rng_for_seed(
+        world_seed,
+        "market-bot/list",
+        &format!("{club_id}/{season_day}"),
+    )
+    .random_range(0..1000)
+        < rules.list_chance_permille
 }
 
 /// `amount × permille / 1000`, rounded down, without overflow.
@@ -755,5 +904,211 @@ mod tests {
             differ |= first != second;
         }
         assert!(differ);
+    }
+
+    /// A 4-4-2 squad of exactly its needs at 60 and `strikers` more forwards at 50, all 25.
+    fn squad_with_spare_strikers(strikers: usize) -> Vec<Player> {
+        let mut squad = full_squad(60);
+        squad.extend((0..strikers).map(|n| player(&format!("extra-{n}"), Position::Striker, 50)));
+        squad
+    }
+
+    fn members(squad: &[Player], age: impl Fn(&Player) -> i32) -> Vec<SquadMember<'_>> {
+        squad
+            .iter()
+            .map(|player| SquadMember {
+                player,
+                age: age(player),
+            })
+            .collect()
+    }
+
+    fn surplus_id(
+        squad: &[SquadMember<'_>],
+        day: u32,
+        upgraded_line: Option<usize>,
+        open_sales: u32,
+    ) -> Option<String> {
+        bot_surplus(
+            &BotSaleRules::default(),
+            "4-4-2",
+            squad,
+            day,
+            upgraded_line,
+            open_sales,
+        )
+        .map(|player| player.id.clone())
+    }
+
+    const ATTACK: usize = 3;
+
+    /// Given squads of 50, 60, 70 and 80, and an empty one,
+    /// when the median overall is asked for,
+    /// then it is the upper middle one, and nil for no one.
+    #[test]
+    fn the_median_overall_is_the_upper_middle_one() {
+        let squad: Vec<Player> = [50, 60, 70, 80]
+            .iter()
+            .map(|level| player(&format!("p{level}"), Position::CenterBack, *level))
+            .collect();
+
+        assert_eq!(median_ovr(&squad), 70);
+        assert_eq!(median_ovr(&[]), 0);
+    }
+
+    /// Given a 4-4-2 squad three forwards over its need (an overloaded attack),
+    /// when the bot looks for a player to spare,
+    /// then it lists the weakest of the attack.
+    #[test]
+    fn a_bot_spares_the_weakest_of_an_overloaded_line() {
+        let squad = squad_with_spare_strikers(3);
+
+        assert_eq!(
+            surplus_id(&members(&squad, |_| 25), 0, None, 0).as_deref(),
+            Some("extra-0")
+        );
+    }
+
+    /// Given a squad two forwards over its need, nobody old or unused,
+    /// when the bot looks for a player to spare with no signing made, and then just after
+    /// signing an upgrade into its attack,
+    /// then it spares no one, and then the weakest forward.
+    #[test]
+    fn a_bot_spares_the_weakest_of_a_line_it_just_upgraded() {
+        let squad = squad_with_spare_strikers(2);
+        let squad = members(&squad, |_| 25);
+
+        assert_eq!(surplus_id(&squad, 0, None, 0), None);
+        assert_eq!(
+            surplus_id(&squad, 0, Some(ATTACK), 0).as_deref(),
+            Some("extra-0")
+        );
+    }
+
+    /// Given a squad two forwards over its need, the spare forwards 31 and then 30 years old,
+    /// below the squad's median,
+    /// when the bot looks for a player to spare,
+    /// then the veteran is spared and the 30-year-old is not.
+    #[test]
+    fn a_bot_spares_a_veteran_below_the_median() {
+        let squad = squad_with_spare_strikers(2);
+        let age_of =
+            |years: i32| move |p: &Player| if p.id.starts_with("extra") { years } else { 25 };
+
+        assert_eq!(
+            surplus_id(&members(&squad, age_of(VETERAN_AGE)), 0, None, 0).as_deref(),
+            Some("extra-0")
+        );
+        assert_eq!(
+            surplus_id(&members(&squad, age_of(VETERAN_AGE - 1)), 0, None, 0),
+            None
+        );
+    }
+
+    /// Given a squad two forwards over its need, one of them hardly playing,
+    /// when the bot looks for a player to spare on day 7 and on day 8,
+    /// then he is spared only from day 8, once playing time has had matches to settle.
+    #[test]
+    fn a_bot_spares_an_unused_player_once_the_season_has_run_a_week() {
+        let mut squad = squad_with_spare_strikers(2);
+        squad[20].playing_time = UNUSED_PLAYING_TIME - 1;
+        let squad = members(&squad, |_| 25);
+
+        assert_eq!(surplus_id(&squad, 7, None, 0), None);
+        assert_eq!(surplus_id(&squad, 8, None, 0).as_deref(), Some("extra-1"));
+    }
+
+    /// Given an overloaded attack and the weakest player of the squad a 34-year-old goalkeeper,
+    /// and then the weakest spare forward injured,
+    /// when the bot looks for a player to spare,
+    /// then it keeps the keeper (his line holds only its need) and passes the injured forward.
+    #[test]
+    fn a_bot_never_sells_into_a_shortage_nor_lists_an_injured_player() {
+        let mut squad = squad_with_spare_strikers(3);
+        squad[0].ovr = 30;
+        let age = |p: &Player| {
+            if p.position == Position::Goalkeeper {
+                34
+            } else {
+                25
+            }
+        };
+        assert_eq!(
+            surplus_id(&members(&squad, age), 0, None, 0).as_deref(),
+            Some("extra-0")
+        );
+
+        squad[19].injury = Some(Injury {
+            name: "knock".to_string(),
+            days_remaining: 3,
+        });
+        assert_eq!(
+            surplus_id(&members(&squad, age), 0, None, 0).as_deref(),
+            Some("extra-1")
+        );
+    }
+
+    /// Given an overloaded attack in a squad of 22, with one sale already open, and then with two,
+    /// when the bot looks for a player to spare, keeping 20,
+    /// then it still lists one with one open, and none with two.
+    #[test]
+    fn a_bot_keeps_its_squad_beside_its_open_sales() {
+        let squad = squad_with_spare_strikers(3);
+        let squad = members(&squad, |_| 25);
+
+        assert!(surplus_id(&squad, 0, None, 1).is_some());
+        assert_eq!(surplus_id(&squad, 0, None, 2), None);
+    }
+
+    /// Given a player worth 1,000,000,
+    /// when a bot lists him first, after one unsold auction, after two and after five,
+    /// then it starts at his value, 10% less, 20% less, and never under 80%.
+    #[test]
+    fn a_bot_lowers_its_price_after_each_unsold_auction_down_to_its_floor() {
+        let rules = BotSaleRules::default();
+
+        assert_eq!(rules.listing_price(1_000_000, 0), 1_000_000);
+        assert_eq!(rules.listing_price(1_000_000, 1), 900_000);
+        assert_eq!(rules.listing_price(1_000_000, 2), 800_000);
+        assert_eq!(rules.listing_price(1_000_000, 5), 800_000);
+    }
+
+    /// Given the proposed sale values, a market floor of 60% and a season's squad floor of 18,
+    /// when they are checked together, then with a squad kept at the floor, then with a price
+    /// floor under the market's,
+    /// then only the first fits.
+    #[test]
+    fn a_bot_sells_above_the_market_floor_and_the_squad_floor() {
+        let rules = BotSaleRules::default();
+        assert!(rules.fits_season(600, 18));
+
+        let at_floor = BotSaleRules {
+            keep_squad: 18,
+            ..rules
+        };
+        assert!(!at_floor.fits_season(600, 18));
+        let cheap = BotSaleRules {
+            floor_permille: 500,
+            ..rules
+        };
+        assert!(!cheap.fits_season(600, 18));
+    }
+
+    /// Given a 25% chance to list a day,
+    /// when a bot rolls for a thousand days, twice, and in another world,
+    /// then it lists on about a quarter of them, the same days each time in one world.
+    #[test]
+    fn a_bot_lists_on_its_own_roll_of_the_day() {
+        let rules = BotSaleRules::default();
+        let days = |seed: u64| -> Vec<u32> {
+            (0..1000)
+                .filter(|day| bot_lists_today(&rules, seed, "bot", *day))
+                .collect()
+        };
+
+        let listed = days(1);
+        assert!((200..=300).contains(&listed.len()), "{} days", listed.len());
+        assert_eq!(days(1), listed);
+        assert_ne!(days(2), listed);
     }
 }
