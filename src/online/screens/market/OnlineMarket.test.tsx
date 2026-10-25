@@ -140,16 +140,16 @@ describe("OnlineMarket", () => {
   // when the coach sorts by OVR and then searches a name,
   // then the table orders by OVR, descending first, and only the matching player stays.
   it("sorts the loaded auctions by a column and searches them by name", async () => {
-    const withPlayer = (id: string, fullName: string, ovr: number) => {
+    const withPlayer = (id: string, fullName: string, ovr: number, potentialStars = 3) => {
       const base = auction({ id, playerId: id });
-      return { ...base, player: base.player && { ...base.player, fullName, ovr } };
+      return { ...base, player: base.player && { ...base.player, fullName, ovr, potentialStars } };
     };
     server = serveMarket({
       "GET v1/auctions": ok({
         items: [
-          withPlayer("a-1", "Alpha", 50),
-          withPlayer("a-2", "Bravo", 80),
-          withPlayer("a-3", "Cato", 65),
+          withPlayer("a-1", "Alpha", 50, 2),
+          withPlayer("a-2", "Bravo", 80, 4),
+          withPlayer("a-3", "Cato", 65, 5),
         ],
       }),
     });
@@ -165,6 +165,9 @@ describe("OnlineMarket", () => {
     expect(names()).toEqual(["Bravo", "Cato", "Alpha"]);
     fireEvent.click(screen.getByRole("button", { name: "common.ovr" }));
     expect(names()).toEqual(["Alpha", "Cato", "Bravo"]);
+
+    fireEvent.click(screen.getByRole("button", { name: "online.squad.potential" }));
+    expect(names()).toEqual(["Cato", "Bravo", "Alpha"]);
 
     fireEvent.change(screen.getByLabelText("transfers.searchByName"), { target: { value: "cat" } });
     expect(names()).toEqual(["Cato"]);

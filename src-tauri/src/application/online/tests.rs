@@ -313,6 +313,7 @@ fn the_market_routes_go_out() {
             vec!["v1", "auctions"],
             vec![
                 ("position", "Defender"),
+                ("naturalPosition", "CenterBack"),
                 ("minOvr", "55"),
                 ("maxOvr", "70"),
                 ("maxPrice", "1500000"),
