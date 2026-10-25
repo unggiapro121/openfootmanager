@@ -80,7 +80,7 @@
       "title": "Klubmu",
       "rename": "Ganti nama",
       "renameLabel": "Nama klub baru",
-      "renameHint": "Kamu bisa mengganti nama klub sekali per musim.",
+      "renameHint": "Ganti nama pertama klubmu gratis; berikutnya memerlukan kartu ganti nama klub.",
       "save": "Simpan",
       "stadium": "{{name}} ({{capacity}} kursi)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Seorang pemain dilelang karena klub menunggak gaji.",
         "changed": "Ada perubahan di lelang {{player}}.",
         "changedUnnamed": "Ada perubahan di pasar."
+      }
+    },
+    "rename": {
+      "open": "Ganti nama",
+      "title": "Ganti nama {{player}}",
+      "fullName": "Nama lengkap",
+      "matchName": "Nama di lapangan",
+      "hint": "Nama lengkap {{full}} karakter, nama di lapangan {{match}} karakter. Ganti nama pertama seorang pemain gratis; berikutnya memerlukan kartu ganti nama pemain.",
+      "save": "Simpan nama",
+      "itemRequired": {
+        "playerRename": "Pemain ini sudah memakai ganti nama gratisnya. Mengganti lagi memerlukan kartu ganti nama pemain (hadir di pembaruan berikutnya).",
+        "clubRename": "Klubmu sudah memakai ganti nama gratisnya. Mengganti lagi memerlukan kartu ganti nama klub (hadir di pembaruan berikutnya)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Lelang ini sudah berakhir.",
         "alreadyLeading": "Kamu sudah memimpin lelang ini.",
         "notCancellable": "Hanya penjualanmu sendiri yang belum ditawar yang bisa ditarik, dan bukan penjualan paksa."
+      },
+      "rename": {
+        "itemRequired": "Ganti nama ini memerlukan kartu yang belum kamu miliki ({{item}})."
+      },
+      "name": {
+        "filtered": "Nama itu mengandung kata yang tidak diizinkan."
+      },
+      "player": {
+        "notYours": "Pemain itu tidak ada di klubmu.",
+        "listed": "Pemain yang sedang dilelang tetap memakai namanya sampai lelang selesai."
       }
     },
     "sender": {

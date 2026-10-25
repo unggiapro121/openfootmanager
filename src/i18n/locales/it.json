@@ -80,7 +80,7 @@
       "title": "Il tuo club",
       "rename": "Rinomina",
       "renameLabel": "Nuovo nome del club",
-      "renameHint": "Puoi rinominare il club una volta a stagione.",
+      "renameHint": "Il primo cambio di nome del club è gratuito; i successivi richiedono una carta cambio nome club.",
       "save": "Salva",
       "stadium": "{{name}} ({{capacity}} posti)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Un giocatore è stato messo all'asta perché il club deve stipendi.",
         "changed": "Qualcosa è cambiato nell'asta per {{player}}.",
         "changedUnnamed": "Qualcosa è cambiato sul mercato."
+      }
+    },
+    "rename": {
+      "open": "Rinomina",
+      "title": "Rinomina {{player}}",
+      "fullName": "Nome completo",
+      "matchName": "Nome in campo",
+      "hint": "Nome completo di {{full}} caratteri, nome in campo di {{match}}. Il primo cambio di nome di un giocatore è gratuito; i successivi richiedono una carta cambio nome giocatore.",
+      "save": "Salva i nomi",
+      "itemRequired": {
+        "playerRename": "Questo giocatore ha già usato il cambio di nome gratuito. Per cambiarlo ancora serve una carta cambio nome giocatore (in un prossimo aggiornamento).",
+        "clubRename": "Il tuo club ha già usato il cambio di nome gratuito. Per cambiarlo ancora serve una carta cambio nome club (in un prossimo aggiornamento)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Questa asta è terminata.",
         "alreadyLeading": "Sei già in testa a questa asta.",
         "notCancellable": "Si può ritirare solo una tua vendita senza offerte, mai una forzata."
+      },
+      "rename": {
+        "itemRequired": "Questo cambio di nome richiede una carta che non hai ancora ({{item}})."
+      },
+      "name": {
+        "filtered": "Quel nome contiene una parola non consentita."
+      },
+      "player": {
+        "notYours": "Quel giocatore non è nel tuo club.",
+        "listed": "Un giocatore all'asta mantiene il suo nome fino alla fine dell'asta."
       }
     },
     "sender": {

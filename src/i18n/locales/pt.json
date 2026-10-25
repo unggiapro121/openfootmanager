@@ -80,7 +80,7 @@
       "title": "O teu clube",
       "rename": "Mudar o nome",
       "renameLabel": "Novo nome do clube",
-      "renameHint": "Podes mudar o nome do clube uma vez por época.",
+      "renameHint": "A primeira mudança de nome do clube é grátis; as seguintes exigem um cartão de mudança de nome de clube.",
       "save": "Guardar",
       "stadium": "{{name}} ({{capacity}} lugares)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Um jogador foi posto em leilão porque o clube deve salários.",
         "changed": "Algo mudou no leilão de {{player}}.",
         "changedUnnamed": "Algo mudou no mercado."
+      }
+    },
+    "rename": {
+      "open": "Mudar nome",
+      "title": "Mudar o nome de {{player}}",
+      "fullName": "Nome completo",
+      "matchName": "Nome em campo",
+      "hint": "Nome completo com {{full}} caracteres, nome em campo com {{match}}. A primeira mudança de nome de um jogador é grátis; as seguintes exigem um cartão de mudança de nome de jogador.",
+      "save": "Guardar nomes",
+      "itemRequired": {
+        "playerRename": "Este jogador já usou a mudança de nome gratuita. Para mudar outra vez é preciso um cartão de mudança de nome de jogador (chega numa próxima atualização).",
+        "clubRename": "O teu clube já usou a mudança de nome gratuita. Para mudar outra vez é preciso um cartão de mudança de nome de clube (chega numa próxima atualização)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Este leilão terminou.",
         "alreadyLeading": "Já está à frente neste leilão.",
         "notCancellable": "Só pode retirar a sua própria venda sem licitações, nunca uma forçada."
+      },
+      "rename": {
+        "itemRequired": "Esta mudança de nome exige um cartão que ainda não tens ({{item}})."
+      },
+      "name": {
+        "filtered": "Esse nome contém uma palavra não permitida."
+      },
+      "player": {
+        "notYours": "Esse jogador não está no teu clube.",
+        "listed": "Um jogador em leilão mantém o nome até o leilão terminar."
       }
     },
     "sender": {

@@ -80,7 +80,7 @@
       "title": "Tu club",
       "rename": "Cambiar nombre",
       "renameLabel": "Nuevo nombre del club",
-      "renameHint": "Puedes cambiar el nombre del club una vez por temporada.",
+      "renameHint": "El primer cambio de nombre de tu club es gratis; los siguientes requieren una tarjeta de cambio de nombre de club.",
       "save": "Guardar",
       "stadium": "{{name}} ({{capacity}} asientos)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Un jugador salió a subasta porque el club debe salarios.",
         "changed": "Algo cambió en la subasta de {{player}}.",
         "changedUnnamed": "Algo cambió en el mercado."
+      }
+    },
+    "rename": {
+      "open": "Renombrar",
+      "title": "Renombrar a {{player}}",
+      "fullName": "Nombre completo",
+      "matchName": "Nombre en el campo",
+      "hint": "Nombre completo de {{full}} caracteres, nombre en el campo de {{match}}. El primer cambio de nombre de un jugador es gratis; los siguientes requieren una tarjeta de cambio de nombre de jugador.",
+      "save": "Guardar nombres",
+      "itemRequired": {
+        "playerRename": "Este jugador ya usó su cambio de nombre gratuito. Para cambiarlo de nuevo necesitas una tarjeta de cambio de nombre de jugador (llegará en una próxima actualización).",
+        "clubRename": "Tu club ya usó su cambio de nombre gratuito. Para cambiarlo de nuevo necesitas una tarjeta de cambio de nombre de club (llegará en una próxima actualización)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Esta subasta ha terminado.",
         "alreadyLeading": "Ya vas en cabeza en esta subasta.",
         "notCancellable": "Solo se puede retirar tu propia venta sin pujas, nunca una forzosa."
+      },
+      "rename": {
+        "itemRequired": "Este cambio de nombre requiere una tarjeta que aún no tienes ({{item}})."
+      },
+      "name": {
+        "filtered": "Ese nombre contiene una palabra no permitida."
+      },
+      "player": {
+        "notYours": "Ese jugador no está en tu club.",
+        "listed": "Un jugador en subasta conserva su nombre hasta que termine la subasta."
       }
     },
     "sender": {

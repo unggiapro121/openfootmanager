@@ -80,7 +80,7 @@
       "title": "你的俱乐部",
       "rename": "改名",
       "renameLabel": "俱乐部新名称",
-      "renameHint": "每个赛季可以给俱乐部改名一次。",
+      "renameHint": "俱乐部第一次改名免费；之后需要俱乐部改名卡。",
       "save": "保存",
       "stadium": "{{name}}（{{capacity}} 个座位）"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "因俱乐部拖欠工资，一名球员被挂牌拍卖。",
         "changed": "{{player}} 的拍卖有了变化。",
         "changedUnnamed": "市场有了变化。"
+      }
+    },
+    "rename": {
+      "open": "改名",
+      "title": "为 {{player}} 改名",
+      "fullName": "全名",
+      "matchName": "场上名称",
+      "hint": "全名 {{full}} 个字符，场上名称 {{match}} 个字符。球员第一次改名免费；之后需要球员改名卡。",
+      "save": "保存名称",
+      "itemRequired": {
+        "playerRename": "该球员已用完免费改名。再次改名需要球员改名卡（将在后续更新中推出）。",
+        "clubRename": "你的俱乐部已用完免费改名。再次改名需要俱乐部改名卡（将在后续更新中推出）。"
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "该拍卖已结束。",
         "alreadyLeading": "你已在该拍卖中领先。",
         "notCancellable": "只能撤回你自己且尚无出价的挂牌，强制挂牌不能撤回。"
+      },
+      "rename": {
+        "itemRequired": "这次改名需要一张你还没有的卡（{{item}}）。"
+      },
+      "name": {
+        "filtered": "该名称包含不允许的词语。"
+      },
+      "player": {
+        "notYours": "该球员不在你的俱乐部。",
+        "listed": "正在拍卖的球员在拍卖结束前保留原名。"
       }
     },
     "sender": {

@@ -80,7 +80,7 @@
       "title": "Dein Verein",
       "rename": "Umbenennen",
       "renameLabel": "Neuer Vereinsname",
-      "renameHint": "Du kannst deinen Verein einmal pro Saison umbenennen.",
+      "renameHint": "Die erste Umbenennung deines Vereins ist kostenlos; weitere brauchen eine Vereins-Umbenennungskarte.",
       "save": "Speichern",
       "stadium": "{{name}} ({{capacity}} Plätze)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Ein Spieler wurde zur Auktion gestellt, weil der Verein Gehälter schuldet.",
         "changed": "In der Auktion für {{player}} hat sich etwas geändert.",
         "changedUnnamed": "Auf dem Markt hat sich etwas geändert."
+      }
+    },
+    "rename": {
+      "open": "Umbenennen",
+      "title": "{{player}} umbenennen",
+      "fullName": "Vollständiger Name",
+      "matchName": "Name auf dem Platz",
+      "hint": "Vollständiger Name mit {{full}} Zeichen, Name auf dem Platz mit {{match}}. Die erste Umbenennung eines Spielers ist kostenlos; weitere brauchen eine Spieler-Umbenennungskarte.",
+      "save": "Namen speichern",
+      "itemRequired": {
+        "playerRename": "Dieser Spieler hat seine kostenlose Umbenennung schon genutzt. Eine weitere braucht eine Spieler-Umbenennungskarte (kommt mit einem späteren Update).",
+        "clubRename": "Dein Verein hat seine kostenlose Umbenennung schon genutzt. Eine weitere braucht eine Vereins-Umbenennungskarte (kommt mit einem späteren Update)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Diese Auktion ist beendet.",
         "alreadyLeading": "Du führst diese Auktion bereits an.",
         "notCancellable": "Nur ein eigenes Angebot ohne Gebote kann zurückgezogen werden, nie ein erzwungenes."
+      },
+      "rename": {
+        "itemRequired": "Diese Umbenennung braucht eine Karte, die du noch nicht hast ({{item}})."
+      },
+      "name": {
+        "filtered": "Dieser Name enthält ein nicht erlaubtes Wort."
+      },
+      "player": {
+        "notYours": "Dieser Spieler ist nicht in deinem Verein.",
+        "listed": "Ein Spieler in einer Auktion behält seinen Namen, bis die Auktion endet."
       }
     },
     "sender": {

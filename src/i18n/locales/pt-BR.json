@@ -80,7 +80,7 @@
       "title": "Seu clube",
       "rename": "Renomear",
       "renameLabel": "Novo nome do clube",
-      "renameHint": "Você pode renomear o clube uma vez por temporada.",
+      "renameHint": "A primeira troca de nome do clube é grátis; as seguintes exigem um cartão de troca de nome de clube.",
       "save": "Salvar",
       "stadium": "{{name}} ({{capacity}} lugares)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Um jogador foi colocado em leilão porque o clube deve salários.",
         "changed": "Algo mudou no leilão de {{player}}.",
         "changedUnnamed": "Algo mudou no mercado."
+      }
+    },
+    "rename": {
+      "open": "Renomear",
+      "title": "Renomear {{player}}",
+      "fullName": "Nome completo",
+      "matchName": "Nome em campo",
+      "hint": "Nome completo com {{full}} caracteres, nome em campo com {{match}}. A primeira troca de nome de um jogador é grátis; as seguintes exigem um cartão de troca de nome de jogador.",
+      "save": "Salvar nomes",
+      "itemRequired": {
+        "playerRename": "Este jogador já usou a troca de nome gratuita. Para trocar de novo é preciso um cartão de troca de nome de jogador (chega em uma próxima atualização).",
+        "clubRename": "Seu clube já usou a troca de nome gratuita. Para trocar de novo é preciso um cartão de troca de nome de clube (chega em uma próxima atualização)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Este leilão terminou.",
         "alreadyLeading": "Você já está na frente neste leilão.",
         "notCancellable": "Só é possível retirar a sua própria venda sem lances, nunca uma forçada."
+      },
+      "rename": {
+        "itemRequired": "Esta troca de nome exige um cartão que você ainda não tem ({{item}})."
+      },
+      "name": {
+        "filtered": "Esse nome contém uma palavra não permitida."
+      },
+      "player": {
+        "notYours": "Esse jogador não está no seu clube.",
+        "listed": "Um jogador em leilão mantém o nome até o leilão acabar."
       }
     },
     "sender": {

@@ -80,7 +80,7 @@
       "title": "Your club",
       "rename": "Rename",
       "renameLabel": "New club name",
-      "renameHint": "You can rename your club once a season.",
+      "renameHint": "Your club's first rename is free; later ones need a club-rename card.",
       "save": "Save",
       "stadium": "{{name}} ({{capacity}} seats)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "A player was put up for auction because the club owes wages.",
         "changed": "Something changed in the auction for {{player}}.",
         "changedUnnamed": "Something changed on the market."
+      }
+    },
+    "rename": {
+      "open": "Rename",
+      "title": "Rename {{player}}",
+      "fullName": "Full name",
+      "matchName": "Name on the pitch",
+      "hint": "Full name {{full}} characters, name on the pitch {{match}}. A player's first rename is free; later ones need a player-rename card.",
+      "save": "Save names",
+      "itemRequired": {
+        "playerRename": "This player has used his free rename. Renaming him again needs a player-rename card (coming in a later update).",
+        "clubRename": "Your club has used its free rename. Renaming it again needs a club-rename card (coming in a later update)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "This auction has ended.",
         "alreadyLeading": "You are already leading this auction.",
         "notCancellable": "Only your own listing with no bid yet can be withdrawn, and never a forced one."
+      },
+      "rename": {
+        "itemRequired": "This rename needs a card you do not have yet ({{item}})."
+      },
+      "name": {
+        "filtered": "That name contains a word that is not allowed."
+      },
+      "player": {
+        "notYours": "That player is not at your club.",
+        "listed": "A player up for auction keeps his name until the auction is over."
       }
     },
     "sender": {

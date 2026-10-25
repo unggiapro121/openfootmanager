@@ -150,6 +150,34 @@ fn the_licence_routes_go_out() {
 }
 
 /// Given a signed-in coach,
+/// when the webview renames one of his players (S-14) and tries the route with another method
+/// or with a segment that is not an id,
+/// then the rename goes out to `/v1/players/{id}/name` as a PATCH, and the others are refused.
+#[test]
+fn a_player_s_rename_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    let path = ["v1", "players", id, "name"];
+    send(&session, &request("PATCH", &path), 0).expect("an answer");
+    assert_eq!(
+        refused(send(&session, &request("POST", &path), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    assert_eq!(
+        refused(send(
+            &session,
+            &request("PATCH", &["v1", "players", "mine", "name"]),
+            0
+        )),
+        "be.error.online.routeNotAllowed"
+    );
+    let requests = sent(&server);
+    assert_eq!(requests.len(), 1);
+    assert_eq!(requests[0].method, "PATCH");
+    assert_eq!(requests[0].path, format!("/v1/players/{id}/name"));
+}
+
+/// Given a signed-in coach,
 /// when the webview reads and changes its friendly (S-12): its seat, a room made, joined, readied,
 /// left and rematched, the queue joined and left,
 /// then each goes out to its own route with its method, and the routes take no other method.

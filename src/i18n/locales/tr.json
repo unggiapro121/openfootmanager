@@ -80,7 +80,7 @@
       "title": "Kulübün",
       "rename": "Yeniden adlandır",
       "renameLabel": "Kulübün yeni adı",
-      "renameHint": "Kulübünün adını her sezon bir kez değiştirebilirsin.",
+      "renameHint": "Kulübünün ilk ad değişikliği ücretsizdir; sonrakiler kulüp ad değiştirme kartı gerektirir.",
       "save": "Kaydet",
       "stadium": "{{name}} ({{capacity}} koltuk)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Kulüp maaş borçlu olduğu için bir oyuncu açık artırmaya çıkarıldı.",
         "changed": "{{player}} açık artırmasında bir değişiklik var.",
         "changedUnnamed": "Pazarda bir değişiklik var."
+      }
+    },
+    "rename": {
+      "open": "Yeniden adlandır",
+      "title": "{{player}} adını değiştir",
+      "fullName": "Tam ad",
+      "matchName": "Sahadaki ad",
+      "hint": "Tam ad {{full}} karakter, sahadaki ad {{match}} karakter. Bir oyuncunun ilk ad değişikliği ücretsizdir; sonrakiler oyuncu ad değiştirme kartı gerektirir.",
+      "save": "Adları kaydet",
+      "itemRequired": {
+        "playerRename": "Bu oyuncu ücretsiz ad değişikliğini kullandı. Tekrar değiştirmek için oyuncu ad değiştirme kartı gerekir (sonraki bir güncellemede gelecek).",
+        "clubRename": "Kulübün ücretsiz ad değişikliğini kullandı. Tekrar değiştirmek için kulüp ad değiştirme kartı gerekir (sonraki bir güncellemede gelecek)."
       }
     }
   },
@@ -4181,6 +4193,16 @@
         "listingExpired": "Bu açık artırma sona erdi.",
         "alreadyLeading": "Bu açık artırmada zaten öndesin.",
         "notCancellable": "Yalnızca henüz teklif almamış kendi satışını geri çekebilirsin, zorunlu satışı asla."
+      },
+      "rename": {
+        "itemRequired": "Bu ad değişikliği henüz sahip olmadığın bir kart gerektiriyor ({{item}})."
+      },
+      "name": {
+        "filtered": "Bu ad izin verilmeyen bir kelime içeriyor."
+      },
+      "player": {
+        "notYours": "Bu oyuncu senin kulübünde değil.",
+        "listed": "Açık artırmadaki bir oyuncu, artırma bitene kadar adını korur."
       }
     },
     "sender": {

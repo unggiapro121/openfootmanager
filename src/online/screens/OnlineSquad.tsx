@@ -21,6 +21,7 @@ import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
 import ListingDialog from "./market/ListingDialog";
 import PotentialStars from "./PotentialStars";
+import RenamePlayerDialog from "./RenamePlayerDialog";
 
 /** The squad as the coach reads it: by line, then strongest first (C-2 §3.4). */
 export function sortSquad<P extends Pick<SquadPlayerView, "position" | "ovr" | "fullName">>(
@@ -181,7 +182,10 @@ function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
               injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
             />
           )}
-          <ListingAction playerId={player.id} playerName={player.fullName} />
+          <div className="flex flex-wrap gap-2">
+            <ListingAction playerId={player.id} playerName={player.fullName} />
+            <RenameAction player={player} />
+          </div>
           <p>
             {t("online.squad.seasonLine", {
               apps: player.season.appearances,
@@ -235,6 +239,27 @@ function ListingAction({ playerId, playerName }: { playerId: string; playerName:
       {open && (
         <ListingDialog playerId={playerId} playerName={playerName} onClose={() => setOpen(false)} />
       )}
+    </>
+  );
+}
+
+/**
+ * The way to rename the player (S-14), unless he is up for auction: a listed player keeps his
+ * name until the auction is over, as the server would refuse it.
+ */
+function RenameAction({ player }: { player: SquadPlayerView }) {
+  const { t } = useTranslation();
+  const listed = useOnlineStore((state) =>
+    state.market?.selling.some((auction) => auction.playerId === player.id),
+  );
+  const [open, setOpen] = useState(false);
+  if (listed) return null;
+  return (
+    <>
+      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+        {t("online.rename.open")}
+      </Button>
+      {open && <RenamePlayerDialog player={player} onClose={() => setOpen(false)} />}
     </>
   );
 }
