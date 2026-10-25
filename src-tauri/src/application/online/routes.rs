@@ -115,7 +115,76 @@ pub const ROUTES: &[Route] = &[
     ),
     route("POST", &[L("v1"), L("friendlies"), L("queue")], &[]),
     route("DELETE", &[L("v1"), L("friendlies"), L("queue")], &[]),
+    // The club's money (S-10, C-5a): what it holds, its ledger a page at a time, its facilities
+    // and an upgrade of each of the three.
+    route("GET", &[L("v1"), L("clubs"), L("mine"), L("finance")], &[]),
+    route(
+        "GET",
+        &[L("v1"), L("clubs"), L("mine"), L("ledger")],
+        &["cursor", "limit"],
+    ),
+    route(
+        "GET",
+        &[L("v1"), L("clubs"), L("mine"), L("facilities")],
+        &[],
+    ),
+    upgrade(&FACILITY_UPGRADES[0]),
+    upgrade(&FACILITY_UPGRADES[1]),
+    upgrade(&FACILITY_UPGRADES[2]),
+    // The auction market (S-11, C-5b): the open auctions by the market's filters, one auction, a
+    // bid and a withdrawal, the club's own market, the quote and the listing of a player.
+    route(
+        "GET",
+        &[L("v1"), L("auctions")],
+        &[
+            "position", "minOvr", "maxOvr", "maxPrice", "maxAge", "cursor", "limit",
+        ],
+    ),
+    route("GET", &[L("v1"), L("auctions"), Id], &[]),
+    route("POST", &[L("v1"), L("auctions"), Id, L("bids")], &[]),
+    route("DELETE", &[L("v1"), L("auctions"), Id], &[]),
+    route("GET", &[L("v1"), L("clubs"), L("mine"), L("market")], &[]),
+    route(
+        "GET",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("players"),
+            Id,
+            L("listing-quote"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[L("v1"), L("clubs"), L("mine"), L("listings")],
+        &[],
+    ),
 ];
+
+/// The paths of the three facility upgrades (S-10b): one literal per facility, as the path takes
+/// no other.
+const FACILITY_UPGRADES: [[Part; 6]; 3] = [
+    facility_upgrade("training"),
+    facility_upgrade("medical"),
+    facility_upgrade("scouting"),
+];
+
+const fn facility_upgrade(facility: &'static str) -> [Part; 6] {
+    [
+        L("v1"),
+        L("clubs"),
+        L("mine"),
+        L("facilities"),
+        L(facility),
+        L("upgrade"),
+    ]
+}
+
+const fn upgrade(path: &'static [Part; 6]) -> Route {
+    route("POST", path, &[])
+}
 
 const fn route(
     method: &'static str,

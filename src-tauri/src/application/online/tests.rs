@@ -192,6 +192,150 @@ fn a_coach_s_friendly_routes_go_out() {
     assert_eq!(went, expected);
 }
 
+const PLAYER: &str = "0192f0c4-0000-7000-8000-0000000000bb";
+const AUCTION: &str = "0192f0c4-0000-7000-8000-0000000000cc";
+
+/// A request as a test names it: its method, its segments and its query.
+type Asked<'a> = (&'a str, Vec<&'a str>, Vec<(&'a str, &'a str)>);
+
+/// Each `(method, segments, query)` sent through `session`; the paths and queries that reached the
+/// server, in order.
+fn went_out(
+    server: &TestServer,
+    session: &ServerSession,
+    routes: &[Asked<'_>],
+) -> Vec<(String, String)> {
+    for (method, segments, query) in routes {
+        let mut asked = request(method, segments);
+        asked.query = query
+            .iter()
+            .map(|(key, value)| (key.to_string(), value.to_string()))
+            .collect();
+        send(session, &asked, 0).expect("an answer");
+    }
+    sent(server)
+        .iter()
+        .map(|request| (request.method.clone(), request.path.clone()))
+        .collect()
+}
+
+/// Given a signed-in coach,
+/// when the webview reads the club's money (C-5): its finance, a page of its ledger from a cursor,
+/// its facilities, and upgrades each of the three,
+/// then each goes out to its own route; a facility the game does not have, and a ledger key the
+/// route does not take, are refused.
+#[test]
+fn a_club_s_money_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes = vec![
+        ("GET", vec!["v1", "clubs", "mine", "finance"], vec![]),
+        (
+            "GET",
+            vec!["v1", "clubs", "mine", "ledger"],
+            vec![("cursor", "41"), ("limit", "30")],
+        ),
+        ("GET", vec!["v1", "clubs", "mine", "facilities"], vec![]),
+        (
+            "POST",
+            vec!["v1", "clubs", "mine", "facilities", "training", "upgrade"],
+            vec![],
+        ),
+        (
+            "POST",
+            vec!["v1", "clubs", "mine", "facilities", "medical", "upgrade"],
+            vec![],
+        ),
+        (
+            "POST",
+            vec!["v1", "clubs", "mine", "facilities", "scouting", "upgrade"],
+            vec![],
+        ),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(went[1].1, "/v1/clubs/mine/ledger?cursor=41&limit=30");
+
+    let stadium = request(
+        "POST",
+        &["v1", "clubs", "mine", "facilities", "stadium", "upgrade"],
+    );
+    assert_eq!(
+        refused(send(&session, &stadium, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let mut by_kind = request("GET", &["v1", "clubs", "mine", "ledger"]);
+    by_kind.query = vec![(String::from("kind"), String::from("wage"))];
+    assert_eq!(
+        refused(send(&session, &by_kind, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+}
+
+/// Given a signed-in coach,
+/// when the webview uses the market (C-5): the open auctions with every filter and a cursor, one
+/// auction, a bid, a withdrawal, the club's own market, a listing quote and a listing,
+/// then each goes out to its own route; another method on an auction, an id that is not one and a
+/// filter the route does not take are refused.
+#[test]
+fn the_market_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes = vec![
+        (
+            "GET",
+            vec!["v1", "auctions"],
+            vec![
+                ("position", "Defender"),
+                ("minOvr", "55"),
+                ("maxOvr", "70"),
+                ("maxPrice", "1500000"),
+                ("maxAge", "28"),
+                (
+                    "cursor",
+                    "1729850000000000_0192f0c4-0000-7000-8000-0000000000cc",
+                ),
+                ("limit", "50"),
+            ],
+        ),
+        ("GET", vec!["v1", "auctions", AUCTION], vec![]),
+        ("POST", vec!["v1", "auctions", AUCTION, "bids"], vec![]),
+        ("DELETE", vec!["v1", "auctions", AUCTION], vec![]),
+        ("GET", vec!["v1", "clubs", "mine", "market"], vec![]),
+        (
+            "GET",
+            vec!["v1", "clubs", "mine", "players", PLAYER, "listing-quote"],
+            vec![],
+        ),
+        ("POST", vec!["v1", "clubs", "mine", "listings"], vec![]),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(
+        went[2],
+        (String::from("POST"), format!("/v1/auctions/{AUCTION}/bids"))
+    );
+
+    for (method, segments) in [
+        ("PUT", vec!["v1", "auctions", AUCTION]),
+        ("GET", vec!["v1", "auctions", "latest"]),
+        (
+            "GET",
+            vec!["v1", "clubs", "mine", "players", "p1", "listing-quote"],
+        ),
+    ] {
+        assert_eq!(
+            refused(send(&session, &request(method, &segments), 0)),
+            "be.error.online.routeNotAllowed",
+            "{method} {segments:?}"
+        );
+    }
+    let mut by_seller = request("GET", &["v1", "auctions"]);
+    by_seller.query = vec![(String::from("seller"), String::from(CLUB))];
+    assert_eq!(
+        refused(send(&session, &by_seller, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+}
+
 /// Given a signed-in coach,
 /// when a segment could name another path once decoded or joined (dots, slashes, backslashes,
 /// percent-encodings, a semicolon, a space, a full-width letter, an empty segment),
