@@ -205,6 +205,27 @@ describe("the online club pages", () => {
     expect(screen.getByText("playerProfile.seasonStats")).toBeInTheDocument();
   });
 
+  // Given a player with his feet, build and traits told,
+  // when his page opens,
+  // then the hero shows his foot, height, weight and traits as the offline profile does.
+  it("shows a player's foot, build and traits on his page", async () => {
+    const [keeper, ...others] = SQUAD;
+    const tall = {
+      ...keeper,
+      heightCm: 191,
+      weightKg: 84,
+      footedness: "Left",
+      traits: ["Playmaker"],
+    };
+    stage(myClub({ players: [tall, ...others] }));
+    renderOnline("/online/squad/gk");
+
+    expect(await screen.findByText("common.footedness.Left")).toBeInTheDocument();
+    expect(screen.getByText(/191/)).toBeInTheDocument();
+    expect(screen.getByText(/84/)).toBeInTheDocument();
+    expect(screen.getByText("common.footednessLabel")).toBeInTheDocument();
+  });
+
   // Given a squad where one player is banned for a match by a red card,
   // when the squad page and his own page open,
   // then both say he is suspended, and the others' rows do not.
