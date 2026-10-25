@@ -175,7 +175,11 @@
       "apps": "Sp.",
       "goals": "Tore",
       "fitness": "Spielfitness",
-      "seasonLine": "Diese Saison: {{apps}} Spiele, {{goals}} Tore, {{assists}} Vorlagen, Durchschnittsnote {{rating}}"
+      "seasonLine": "Diese Saison: {{apps}} Spiele, {{goals}} Tore, {{assists}} Vorlagen, Durchschnittsnote {{rating}}",
+      "back": "← Zurück zum Kader",
+      "noMatch": "Kein Spieler passt zu diesen Filtern.",
+      "notFound": "Dieser Spieler gehört nicht zu deinem Kader.",
+      "state": "Verfassung"
     },
     "training": {
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan."

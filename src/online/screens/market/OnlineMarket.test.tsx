@@ -236,7 +236,7 @@ describe("putting a player up for auction", () => {
       "POST v1/clubs/mine/listings": ok(auction({ id: "a-7", sellerClubId: MY_CLUB })),
       "GET v1/auctions/a-7": ok(auction({ id: "a-7", sellerClubId: MY_CLUB })),
     });
-    renderOnline("/online/squad");
+    renderOnline("/online/squad/p1");
 
     fireEvent.click(await screen.findByRole("button", { name: "online.market.list" }));
     const dialog = await screen.findByRole("dialog");
@@ -270,7 +270,7 @@ describe("putting a player up for auction", () => {
         },
       }),
     });
-    renderOnline("/online/squad");
+    renderOnline("/online/squad/p1");
 
     fireEvent.click(await screen.findByRole("button", { name: "online.market.list" }));
     const dialog = await screen.findByRole("dialog");
@@ -295,7 +295,7 @@ describe("putting a player up for auction", () => {
         selling: [auction({ id: "a-5", playerId: "p1", sellerClubId: MY_CLUB })],
       }),
     });
-    renderOnline("/online/squad");
+    renderOnline("/online/squad/p1");
 
     const link = await screen.findByRole("link", { name: "online.market.listed" });
     expect(link.getAttribute("href")).toBe("/online/auctions/a-5");

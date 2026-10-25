@@ -175,7 +175,11 @@
       "apps": "MJ",
       "goals": "Buts",
       "fitness": "Forme physique",
-      "seasonLine": "Cette saison : {{apps}} matchs, {{goals}} buts, {{assists}} passes décisives, note moyenne {{rating}}"
+      "seasonLine": "Cette saison : {{apps}} matchs, {{goals}} buts, {{assists}} passes décisives, note moyenne {{rating}}",
+      "back": "← Retour à l'effectif",
+      "noMatch": "Aucun joueur ne correspond à ces filtres.",
+      "notFound": "Ce joueur n'est pas dans votre effectif.",
+      "state": "Forme"
     },
     "training": {
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."

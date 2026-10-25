@@ -175,7 +175,11 @@
       "apps": "Záp.",
       "goals": "Góly",
       "fitness": "Herní forma",
-      "seasonLine": "Tato sezóna: {{apps}} zápasů, {{goals}} gólů, {{assists}} asistencí, průměrná známka {{rating}}"
+      "seasonLine": "Tato sezóna: {{apps}} zápasů, {{goals}} gólů, {{assists}} asistencí, průměrná známka {{rating}}",
+      "back": "← Zpět na kádr",
+      "noMatch": "Filtrům neodpovídá žádný hráč.",
+      "notFound": "Tento hráč není ve vašem kádru.",
+      "state": "Kondice"
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."
