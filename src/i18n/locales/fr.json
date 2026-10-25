@@ -526,7 +526,8 @@
         "changedUnnamed": "Du nouveau sur le marché."
       },
       "ai": "IA",
-      "aiClub": "Club dirigé par l'IA"
+      "aiClub": "Club dirigé par l'IA",
+      "freeAgent": "Joueur libre"
     },
     "rename": {
       "open": "Renommer",

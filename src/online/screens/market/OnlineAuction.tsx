@@ -19,7 +19,7 @@ import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
 import { marketErrorText } from "./marketText";
 import MoneyInput from "./MoneyInput";
-import { ClubName, OwnLabels, PriceText } from "./OnlineMarket";
+import { ClubName, OwnLabels, PriceText, SellerName } from "./OnlineMarket";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
 /** Codes after which the auction is read again: what the coach saw is out of date. */
@@ -233,7 +233,7 @@ function AuctionColumn({
           <dd className="text-right">{formatExactMoney(view.priceCap)}</dd>
           <dt>{t("online.market.seller")}</dt>
           <dd className="text-right">
-            <ClubName name={view.sellerName} isBot={view.sellerIsBot} />
+            <SellerName auction={view} />
           </dd>
           {view.status === "active" && (
             <>

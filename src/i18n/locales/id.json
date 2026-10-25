@@ -526,7 +526,8 @@
         "changedUnnamed": "Ada perubahan di pasar."
       },
       "ai": "AI",
-      "aiClub": "Klub yang dijalankan AI"
+      "aiClub": "Klub yang dijalankan AI",
+      "freeAgent": "Pemain bebas"
     },
     "rename": {
       "open": "Ganti nama",

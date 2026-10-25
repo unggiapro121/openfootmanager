@@ -11,8 +11,10 @@ export type AuctionView = { id: string, playerId: string,
 player?: AuctionPlayerView, sellerClubId: string, sellerName: string, 
 /**
  * The seller is a bot club, run by the server (B7: the app marks it "AI").
+ * A free agent the world put up (S-11f): no club sells him, `sellerClubId` is the nil id
+ * and `sellerName` empty.
  */
-sellerIsBot: boolean, 
+freeAgent: boolean, sellerIsBot: boolean, 
 /**
  * Put up by the server for a club owing wages.
  */

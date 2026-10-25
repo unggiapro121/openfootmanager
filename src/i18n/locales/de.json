@@ -526,7 +526,8 @@
         "changedUnnamed": "Auf dem Markt hat sich etwas geändert."
       },
       "ai": "KI",
-      "aiClub": "Von der KI geführter Verein"
+      "aiClub": "Von der KI geführter Verein",
+      "freeAgent": "Vereinslos"
     },
     "rename": {
       "open": "Umbenennen",
