@@ -45,7 +45,8 @@
       "training": "Entraînement",
       "league": "Championnat",
       "schedule": "Calendrier",
-      "friendly": "Matchs amicaux"
+      "friendly": "Matchs amicaux",
+      "finance": "Finances"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Saison {{number}}",
       "seasonDay": "Saison {{number}} · Jour {{day}}/{{total}}",
-      "nextKickoff": "Prochain match dans {{time}}"
+      "nextKickoff": "Prochain match dans {{time}}",
+      "cash": "Trésorerie du club : {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} j {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Consignes : {{list}}",
       "addedRoles": "Rôles : {{list}}",
       "addedNothing": "Rien de nouveau"
+    },
+    "finance": {
+      "title": "Finances du club",
+      "noEconomy": "Cette saison se joue sans argent : rien à afficher pour l'instant.",
+      "arrears": "Le club doit des salaires depuis {{days}} jours (depuis le {{since}}). Les joueurs récupèrent plus lentement et perdent de la forme chaque jour ; après {{limit}} jours, le joueur le mieux payé est mis aux enchères.",
+      "cash": "Trésorerie",
+      "held": "Bloqué pour les enchères",
+      "wageBill": "Salaires hebdomadaires",
+      "wagePerDay": "environ {{amount}} par jour de saison",
+      "season": "Cette saison",
+      "seasonEmpty": "Aucun mouvement cette saison pour l'instant.",
+      "total": "Total",
+      "kind": {
+        "opening": "Trésorerie de départ",
+        "tickets": "Billetterie",
+        "reward": "Prime de classement",
+        "wage": "Salaires",
+        "facility": "Installations",
+        "settle": "Transferts",
+        "bid": "Enchères bloquées et rendues",
+        "cancel": "Enchères annulées",
+        "adjust": "Ajustements",
+        "reversal": "Annulations",
+        "grantReset": "Remise à zéro avec le nouvel effectif"
+      },
+      "ledger": "Grand livre",
+      "ledgerEmpty": "Aucune écriture pour l'instant.",
+      "more": "Afficher plus",
+      "account": {
+        "cash": "trésorerie",
+        "held": "bloqué"
+      },
+      "nextCost": "Niveau suivant : {{cost}}",
+      "upgraded": "{{facility}} amélioré au niveau {{level}}."
     }
   },
   "coach": {
@@ -4005,6 +4041,30 @@
         "notFinished": "Le match de ce salon n'est pas encore terminé.",
         "roomClosed": "On ne peut plus jouer dans ce salon, il a donc été fermé.",
         "conflict": "Le salon a changé entre-temps. Regardez-le à nouveau."
+      },
+      "economy": {
+        "disabled": "Cette saison se joue sans argent.",
+        "clubLocked": "Les finances du club sont bloquées le temps d'une vérification : ni enchère, ni mise en vente, ni amélioration pour l'instant.",
+        "insufficientFunds": "Le club n'a pas assez de trésorerie pour cela.",
+        "facilityAtTop": "Cette installation est déjà à son niveau maximal.",
+        "wageBudgetExceeded": "Après cette enchère, le club doit garder de quoi payer sept jours de salaires."
+      },
+      "auction": {
+        "marketClosed": "Le marché des transferts est fermé cette saison.",
+        "notFound": "Cette enchère n'existe pas.",
+        "playerNotListable": "Ce joueur ne peut pas être mis aux enchères : il n'est pas à vous, a pris sa retraite ou est blessé.",
+        "alreadyListed": "Ce joueur est déjà aux enchères.",
+        "cooldownActive": "Ce joueur a changé de club trop récemment ; il ne peut pas être revendu avant {{until}}.",
+        "squadTooSmall": "Le vendre ferait passer votre effectif sous le minimum autorisé par le marché.",
+        "squadFull": "L'acheter ferait dépasser à votre effectif le maximum autorisé par le marché.",
+        "seasonClosing": "Une enchère maintenant serait encore ouverte à la fin de la saison. Mettez-le en vente la saison prochaine.",
+        "outOfPriceBand": "Le prix doit être compris entre {{min}} et {{max}}.",
+        "bidTooLow": "L'enchère doit être d'au moins {{minimum}}.",
+        "maxActiveBidsReached": "Vous avez déjà de l'argent bloqué dans trois enchères ; attendez qu'une se termine.",
+        "selfBiddingForbidden": "Vous ne pouvez pas enchérir sur votre propre joueur.",
+        "listingExpired": "Cette enchère est terminée.",
+        "alreadyLeading": "Vous menez déjà cette enchère.",
+        "notCancellable": "Seule votre propre mise en vente sans enchère peut être retirée, jamais une vente forcée."
       }
     },
     "sender": {

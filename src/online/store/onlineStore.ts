@@ -1,5 +1,12 @@
 import { create } from "zustand";
-import type { FriendlyMineView, LeagueView, MyClubView, SeasonNowView } from "../api";
+import type {
+  FinanceView,
+  FriendlyMineView,
+  LeagueView,
+  MyClubView,
+  MyMarketView,
+  SeasonNowView,
+} from "../api";
 import { online } from "../client";
 import { type OnlineApiError, toOnlineApiError } from "../errors";
 
@@ -22,6 +29,12 @@ interface OnlineState {
   friendly: FriendlyMineView | undefined;
   /** The signed-in coach's account, once read: what their account channel is named by. */
   accountId: string | undefined;
+  /** The club's money (C-5): the header's cash and the finance page. */
+  finance: FinanceView | undefined;
+  /** The club on the market (C-5): `null` while the season's market is closed. */
+  market: MyMarketView | null | undefined;
+  /** Market rings not yet seen: the dot on the sidebar's market entry. */
+  marketUnseen: number;
   setFriendly: (friendly: FriendlyMineView) => void;
   setClub: (club: MyClubView | null) => void;
   noteAnswered: () => void;
@@ -37,6 +50,9 @@ const INITIAL = {
   league: undefined,
   friendly: undefined,
   accountId: undefined,
+  finance: undefined,
+  market: undefined,
+  marketUnseen: 0,
 };
 
 const CLIENT_OUTDATED = "be.error.online.clientOutdated";
@@ -102,4 +118,23 @@ export async function refreshLeague(): Promise<void> {
 export async function refreshFriendly(): Promise<void> {
   const friendly = await tracked(() => online.friendlies.mine());
   useOnlineStore.setState({ friendly });
+}
+
+export async function refreshFinance(): Promise<void> {
+  const finance = await tracked(() => online.finance.mine());
+  useOnlineStore.setState({ finance });
+}
+
+/** The club on the market; a closed market is no failure, it is `null`. */
+export async function refreshMarket(): Promise<void> {
+  try {
+    const market = await tracked(() => online.market.mine());
+    useOnlineStore.setState({ market });
+  } catch (error) {
+    if ((error as OnlineApiError).code === "be.error.auction.marketClosed") {
+      useOnlineStore.setState({ market: null });
+      return;
+    }
+    throw error;
+  }
 }

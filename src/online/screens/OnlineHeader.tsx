@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
+import { Wallet } from "lucide-react";
+import { formatVal } from "../../lib/valueFormatting";
 import { useOnlineStore } from "../store/onlineStore";
 import { FriendlyChip } from "./friendly/FriendlyChip";
+import { useGuardedNavigate } from "./leaveGuard";
 import { useCountdownText } from "./useCountdownText";
 
 /** Days of an online season: 2 of pre-season, 26 league days (ARCHITECTURE §2.2). */
@@ -12,6 +15,8 @@ export default function OnlineHeader() {
   const club = useOnlineStore((state) => state.club);
   const season = useOnlineStore((state) => state.season);
   const kickoff = useCountdownText(club?.nextFixture?.kickoffAt);
+  const finance = useOnlineStore((state) => state.finance);
+  const navigate = useGuardedNavigate();
 
   return (
     <header className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 bg-white px-6 py-4 dark:border-navy-600 dark:bg-navy-800">
@@ -33,6 +38,17 @@ export default function OnlineHeader() {
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <FriendlyChip />
+        {club && finance?.economy && (
+          <button
+            type="button"
+            onClick={() => navigate("/online/finance")}
+            aria-label={t("online.header.cash", { amount: formatVal(finance.cash) })}
+            className="flex items-center gap-1.5 rounded-md border border-gray-200 px-2.5 py-1 font-heading text-sm font-bold tabular-nums text-gray-800 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:border-navy-600 dark:text-gray-100 dark:hover:bg-navy-700"
+          >
+            <Wallet className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden="true" />
+            {formatVal(finance.cash)}
+          </button>
+        )}
         {kickoff && (
           <p className="font-heading text-sm font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">
             {t("online.header.nextKickoff", { time: kickoff })}

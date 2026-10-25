@@ -34,6 +34,7 @@
     "manager.masteryXp"
   ],
   "de": [
+    "online.finance.kind.settle",
     "online.publicClub.formation",
     "online.nav.training",
     "online.profile.region",
@@ -153,6 +154,7 @@
     "coach.region"
   ],
   "fr": [
+    "online.finance.total",
     "online.fixture.minutes",
     "manager.stylePhase.Press",
     "teams.club",
@@ -356,6 +358,7 @@
     "coachServer.password"
   ],
   "es": [
+    "online.finance.total",
     "online.fixture.minutes",
     "teams.club",
     "nations.pt",
@@ -418,6 +421,7 @@
     "worldEditor.staffSpecialization.Fitness"
   ],
   "pt-BR": [
+    "online.finance.total",
     "online.fixture.minutes",
     "scouting.watchlistStatus",
     "nations.pt",
@@ -463,6 +467,7 @@
     "packageBuild.patches"
   ],
   "pt": [
+    "online.finance.total",
     "online.fixture.minutes",
     "nations.pt",
     "nations.cn",
@@ -545,6 +550,7 @@
     "worldEditor.competitionFormat"
   ],
   "cs": [
+    "online.nav.finance",
     "online.fixture.minutes",
     "online.league.bot",
     "online.profile.region",
@@ -599,6 +605,7 @@
     "tournaments.competitions.premierDivision"
   ],
   "id": [
+    "online.finance.total",
     "online.fixture.assists",
     "online.league.bot",
     "manager.stylePhase.Press",

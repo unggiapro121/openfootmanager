@@ -1,4 +1,4 @@
-import { useEffect, useState, type JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 import { useTranslation } from "react-i18next";
 
 import DashboardModalFrame from "../dashboard/DashboardModalFrame";
@@ -23,6 +23,11 @@ interface FacilityUpgradeDialogProps {
   detailsOnly?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  /**
+   * Where the preview comes from: the game's own backend by default; the online server's for an
+   * online club (C-5 C5-5). Same numbers, same shape.
+   */
+  loadPreview?: (facility: FacilityKind) => Promise<FacilityUpgradePreviewData>;
 }
 
 /**
@@ -39,14 +44,19 @@ export default function FacilityUpgradeDialog({
   detailsOnly = false,
   onCancel,
   onConfirm,
+  loadPreview = getFacilityUpgradePreview,
 }: FacilityUpgradeDialogProps): JSX.Element {
   const { t, i18n } = useTranslation();
   const [preview, setPreview] = useState<FacilityUpgradePreviewData | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // The loader as last given: a caller passing a new function each render does not read again.
+  const loader = useRef(loadPreview);
+  loader.current = loadPreview;
 
   useEffect(() => {
     let current = true;
-    getFacilityUpgradePreview(facility)
+    loader
+      .current(facility)
       .then((loaded) => {
         if (current) setPreview(loaded);
       })

@@ -31,4 +31,8 @@ potentialStars: number, shirtNumber?: number,
  * (`ofm_rules::squad::position_ratings`), so the tactics board shows him out of position as
  * he would play there (C-2s).
  */
-positionRatings: Array<PositionRating>, condition: number, fitness: number, morale: number, injury?: InjuryView, attributes: PlayerAttributes, season: SeasonStatsView, };
+positionRatings: Array<PositionRating>, condition: number, fitness: number, morale: number, injury?: InjuryView, attributes: PlayerAttributes, season: SeasonStatsView, 
+/**
+ * The weekly wage, when the season plays with money (S-10 S10-6).
+ */
+wage?: number, };
