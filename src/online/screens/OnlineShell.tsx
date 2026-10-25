@@ -7,6 +7,7 @@ import { resolveBackendError } from "../../utils/backendI18n";
 import { OnlineClockProvider, useOnlineNow } from "../clock";
 import { refreshClub, refreshLeague, refreshSeason, useOnlineStore } from "../store/onlineStore";
 import { AccountWatcher } from "./AccountWatcher";
+import { LeagueWatcher } from "./LeagueWatcher";
 import { LeaveGuardProvider } from "./leaveGuard";
 import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
@@ -66,6 +67,7 @@ export default function OnlineShell() {
       <LeaveGuardProvider>
         <DayTurnWatcher />
         <AccountWatcher />
+        <LeagueWatcher />
         <OnlineNotices />
         <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
           <OnlineSidebar />

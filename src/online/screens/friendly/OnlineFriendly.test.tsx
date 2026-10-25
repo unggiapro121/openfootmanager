@@ -43,7 +43,8 @@ function fakeRealtime() {
   const restore = setOnlineRealtime({
     watch: (channel, _lastSeq, onMessage) => {
       const watch = { channel, speak: onMessage, stopped: false };
-      watches.push(watch);
+      // The shell's league watcher follows the club's league too; these tests watch the rest.
+      if (!channel.startsWith("league:")) watches.push(watch);
       return Promise.resolve(async () => {
         watch.stopped = true;
       });
