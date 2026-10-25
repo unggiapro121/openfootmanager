@@ -179,7 +179,8 @@
       "back": "← Voltar ao elenco",
       "noMatch": "Nenhum jogador corresponde a estes filtros.",
       "notFound": "Este jogador não está no seu elenco.",
-      "state": "Condição"
+      "state": "Condição",
+      "suspended": "Suspenso: {{count}} jogo(s)"
     },
     "training": {
       "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu."

@@ -315,6 +315,11 @@ function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boole
               injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
             />
           )}
+          {player.suspendedMatches !== undefined && (
+            <Badge variant="danger" size="sm">
+              {t("online.squad.suspended", { count: player.suspendedMatches })}
+            </Badge>
+          )}
         </div>
       </td>
     </tr>

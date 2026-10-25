@@ -72,6 +72,14 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
           t={t}
         />
       )}
+      {player.suspendedMatches !== undefined && (
+        <p
+          role="status"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
+        >
+          {t("online.squad.suspended", { count: player.suspendedMatches })}
+        </p>
+      )}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card>
           <CardHeader>{t("online.squad.state")}</CardHeader>
