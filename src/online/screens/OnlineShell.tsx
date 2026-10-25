@@ -11,6 +11,7 @@ import { LeaveGuardProvider } from "./leaveGuard";
 import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
 import OnlineSidebar from "./OnlineSidebar";
+import OnlineNotices from "./market/OnlineNotices";
 
 /** Routes a coach without a club may still open; every other one sends them to take a club. */
 const OPEN_WITHOUT_CLUB = ["/online/takeover", "/online/profile"];
@@ -65,6 +66,7 @@ export default function OnlineShell() {
       <LeaveGuardProvider>
         <DayTurnWatcher />
         <AccountWatcher />
+        <OnlineNotices />
         <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
           <OnlineSidebar />
           <div className="flex min-w-0 flex-1 flex-col">

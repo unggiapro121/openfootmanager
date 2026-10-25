@@ -4,6 +4,7 @@ import {
   Calendar,
   Crosshair,
   Dumbbell,
+  Gavel,
   Globe2,
   Handshake,
   LayoutDashboard,
@@ -25,6 +26,7 @@ const CLUB_PAGES = [
   { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
   { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
   { path: "/online/finance", label: "online.nav.finance", icon: <Wallet /> },
+  { path: "/online/market", label: "online.nav.market", icon: <Gavel /> },
   { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
 ];
 
@@ -38,6 +40,7 @@ export default function OnlineSidebar() {
   const { pathname } = useLocation();
   const clubName = useOnlineStore((state) => state.club?.club.name);
   const hasClub = clubName !== undefined;
+  const marketUnseen = useOnlineStore((state) => state.marketUnseen);
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-navy-700 bg-navy-800 text-white">
@@ -75,7 +78,13 @@ export default function OnlineSidebar() {
                 key={page.path}
                 icon={page.icon}
                 label={t(page.label)}
-                active={pathname === page.path}
+                badge={
+                  page.path === "/online/market" && marketUnseen > 0 ? marketUnseen : undefined
+                }
+                active={
+                  pathname === page.path ||
+                  (page.path === "/online/market" && pathname.startsWith("/online/auctions/"))
+                }
                 collapsed={false}
                 onClick={() => navigate(page.path)}
               />
