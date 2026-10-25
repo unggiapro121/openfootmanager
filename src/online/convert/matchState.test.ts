@@ -7,6 +7,7 @@ import {
   projectedPlayer,
   projectedSide,
 } from "../../test-utils/onlineMatchKit";
+import { squadPlayer } from "../../test-utils/onlineTestKit";
 import type { MatchFrame } from "../api";
 import {
   applyFrame,
@@ -296,10 +297,30 @@ describe("radar and panels", () => {
     const roster = toRadarRoster(initialMatchState(matchView()));
     expect(roster.size).toBe(26);
     expect(roster.get("as2")).toEqual({
+      id: "as2",
+      nationality: null,
       full_name: "P. as2",
       match_name: "P. as2",
       jersey_number: 20,
     });
+  });
+
+  // Given the coach's squad, which knows one player of the match by his full name and nationality,
+  // when the roster is built with it,
+  // then that player carries the identity his squad page draws his portrait from, and the others
+  // only their id.
+  it("gives the coach's own players the identity of their portrait", () => {
+    const roster = toRadarRoster(initialMatchState(matchView()), [
+      squadPlayer({ id: "as2", fullName: "Phạm Văn Hai", matchName: "P. as2", nationality: "VN" }),
+    ]);
+    expect(roster.get("as2")).toMatchObject({
+      id: "as2",
+      full_name: "Phạm Văn Hai",
+      nationality: "VN",
+    });
+    const other = [...roster.values()].find((entry) => entry.id !== "as2");
+    expect(other).toMatchObject({ nationality: null });
+    expect(other?.id).toBeTruthy();
   });
 
   // Given a match with a yellow card for each side and a share of the ball,

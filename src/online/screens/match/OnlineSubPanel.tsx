@@ -37,7 +37,7 @@ export function OnlineSubPanel({
     () => toSubPanelSnapshot(state, mine, squad ?? []),
     [state, mine, squad],
   );
-  const roster = useMemo(() => toRadarRoster(state), [state]);
+  const roster = useMemo(() => toRadarRoster(state, squad), [state, squad]);
 
   /** Sends `command`; false when the match refused it, with the reason shown. */
   const send = async (command: MatchCommand): Promise<boolean> => {

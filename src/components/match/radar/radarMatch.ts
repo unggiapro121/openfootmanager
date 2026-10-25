@@ -33,6 +33,9 @@ export type RadarMatch = Pick<
  * his face. The game's `PlayerData` has all of it; the online squad has what the server sends.
  */
 export interface RadarRosterEntry {
+  /** What his portrait is drawn from, with his names and nationality: the same on every screen. */
+  id?: string;
+  nationality?: string | null;
   full_name: string;
   match_name: string;
   jersey_number?: number | null;

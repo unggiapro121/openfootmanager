@@ -142,7 +142,8 @@ export function MatchBoard({
   const [panel, setPanel] = useState<Panel>("events");
   const feedRef = useRef<HTMLDivElement>(null);
   const kits = useRadarKits(mine);
-  const roster = useMemo(() => toRadarRoster(radarState), [radarState]);
+  const squad = useOnlineStore((store) => store.club?.players);
+  const roster = useMemo(() => toRadarRoster(radarState, squad), [radarState, squad]);
   const radar = useMemo(() => {
     const dials = mine
       ? { [mine.side === "Home" ? "home" : "away"]: toRadarDials(mine.tactics) }

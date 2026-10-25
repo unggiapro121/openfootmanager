@@ -2,7 +2,14 @@ import type { CommentarySource } from "../../components/match/commentary";
 import type { MatchStatsSource } from "../../components/match/MatchPanels";
 import type { RadarMatch, RadarRoster } from "../../components/match/radar/radarMatch";
 import type { EngineTacticsData, MatchEvent } from "../../components/match/types";
-import type { Controllers, MatchFrame, MatchView, ProjectedPlayer, ProjectedSide } from "../api";
+import type {
+  Controllers,
+  MatchFrame,
+  MatchView,
+  ProjectedPlayer,
+  ProjectedSide,
+  SquadPlayerView,
+} from "../api";
 import type { MatchEvent as ServerMatchEvent, Side, TacticsConfig } from "../api/engine";
 
 /**
@@ -293,17 +300,27 @@ const everyone = (state: OnlineMatchState) => [
   ...state.away.bench,
 ];
 
-/** Each player's short name and shirt number, for the radar and the pitch. */
-export function toRadarRoster(state: OnlineMatchState): RadarRoster {
+/**
+ * Each player's short name and shirt number, for the radar and the pitch. A player of the coach's
+ * own club (`squad`) carries the identity his squad page draws his portrait from, so his face is
+ * the same in the match; the others are known by what the frames say.
+ */
+export function toRadarRoster(state: OnlineMatchState, squad: SquadPlayerView[] = []): RadarRoster {
+  const own = new Map(squad.map((player) => [player.id, player]));
   return new Map(
-    everyone(state).map((player) => [
-      player.id,
-      {
-        full_name: player.matchName,
-        match_name: player.matchName,
-        jersey_number: player.shirtNumber ?? null,
-      },
-    ]),
+    everyone(state).map((player) => {
+      const known = own.get(player.id);
+      return [
+        player.id,
+        {
+          id: player.id,
+          nationality: known?.nationality ?? null,
+          full_name: known?.fullName ?? player.matchName,
+          match_name: player.matchName,
+          jersey_number: player.shirtNumber ?? null,
+        },
+      ];
+    }),
   );
 }
 
