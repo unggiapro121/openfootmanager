@@ -97,6 +97,40 @@ describe("OnlineMarket", () => {
     ).toBe("Forward");
   });
 
+  // Given three loaded auctions,
+  // when the coach sorts by OVR and then searches a name,
+  // then the table orders by OVR, descending first, and only the matching player stays.
+  it("sorts the loaded auctions by a column and searches them by name", async () => {
+    const withPlayer = (id: string, fullName: string, ovr: number) => {
+      const base = auction({ id, playerId: id });
+      return { ...base, player: base.player && { ...base.player, fullName, ovr } };
+    };
+    server = serveMarket({
+      "GET v1/auctions": ok({
+        items: [
+          withPlayer("a-1", "Alpha", 50),
+          withPlayer("a-2", "Bravo", 80),
+          withPlayer("a-3", "Cato", 65),
+        ],
+      }),
+    });
+    renderOnline("/online/market");
+    await screen.findByText("Alpha");
+    const names = () =>
+      screen
+        .getAllByRole("link")
+        .map((link) => link.textContent)
+        .filter((text) => ["Alpha", "Bravo", "Cato"].includes(text ?? ""));
+
+    fireEvent.click(screen.getByRole("button", { name: "common.ovr" }));
+    expect(names()).toEqual(["Bravo", "Cato", "Alpha"]);
+    fireEvent.click(screen.getByRole("button", { name: "common.ovr" }));
+    expect(names()).toEqual(["Alpha", "Cato", "Bravo"]);
+
+    fireEvent.change(screen.getByLabelText("transfers.searchByName"), { target: { value: "cat" } });
+    expect(names()).toEqual(["Cato"]);
+  });
+
   // Given a season whose market is closed,
   // when the market opens on either tab,
   // then it says the market is closed, not that something failed.
