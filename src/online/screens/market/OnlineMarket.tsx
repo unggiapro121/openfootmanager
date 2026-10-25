@@ -21,6 +21,7 @@ import { online } from "../../client";
 import type { OnlineApiError } from "../../errors";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
+import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
 import MarketFilterPanel, { NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
@@ -35,6 +36,10 @@ function queryOf(params: URLSearchParams): MarketQuery {
   const position = params.get("position");
   if (position && (POSITION_GROUPS as readonly string[]).includes(position)) {
     query.position = position;
+  }
+  const natural = params.get("naturalPosition");
+  if (natural && Object.values(SPECIFIC_POSITIONS_BY_GROUP).some((one) => one.includes(natural))) {
+    query.naturalPosition = natural;
   }
   for (const name of NUMBER_FILTERS) {
     const value = Number(params.get(name));
@@ -178,12 +183,14 @@ function OpenAuctions({ ring }: { ring: number }) {
       .catch(setMoreError);
   };
 
-  const setFilter = (name: string, value: string) =>
+  const setFilter = (patch: Record<string, string>) =>
     setParams(
       (current) => {
         const copy = new URLSearchParams(current);
-        if (value === "") copy.delete(name);
-        else copy.set(name, value);
+        for (const [name, value] of Object.entries(patch)) {
+          if (value === "") copy.delete(name);
+          else copy.set(name, value);
+        }
         return copy;
       },
       { replace: true },
@@ -193,7 +200,7 @@ function OpenAuctions({ ring }: { ring: number }) {
     setParams(
       (current) => {
         const copy = new URLSearchParams(current);
-        for (const name of [...NUMBER_FILTERS, "position"]) copy.delete(name);
+        for (const name of [...NUMBER_FILTERS, "position", "naturalPosition"]) copy.delete(name);
         return copy;
       },
       { replace: true },
@@ -253,7 +260,7 @@ function MarketFilters({
   onSearch,
 }: {
   params: URLSearchParams;
-  onChange: (name: string, value: string) => void;
+  onChange: (patch: Record<string, string>) => void;
   onClear: () => void;
   count: number;
   search: string;

@@ -1,6 +1,8 @@
 import { SlidersHorizontal } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
+import { translatePositionLabel } from "../../../components/squad/SquadTab.helpers";
 import { Select } from "../../../components/ui";
 
 /** The groups a coach filters by, as the server names them (`MarketQuery.position`). */
@@ -23,19 +25,28 @@ export default function MarketFilterPanel({
   onClear,
 }: {
   params: URLSearchParams;
-  onChange: (name: string, value: string) => void;
+  /** Sets some filters at once: one update to the address, so none is lost. */
+  onChange: (patch: Record<string, string>) => void;
   onClear: () => void;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
-  const activeCount = [...NUMBER_FILTERS, "position"].filter((name) => params.get(name)).length;
+  const activeCount = [...NUMBER_FILTERS, "position", "naturalPosition"].filter((name) =>
+    params.get(name),
+  ).length;
+  const group = params.get("position") ?? "";
+  const groupPositions = SPECIFIC_POSITIONS_BY_GROUP[group] ?? [];
 
   useEffect(() => {
     if (!open) return;
     const handlePointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+      const target = event.target as Node;
+      if (containerRef.current?.contains(target)) return;
+      // The pickers' menus are portaled to <body>; a press inside one belongs to the panel.
+      if ((target as Element).closest?.('[role="listbox"]')) return;
+      setOpen(false);
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
@@ -56,7 +67,7 @@ export default function MarketFilterPanel({
       aria-label={t(`online.market.filter.${name}`)}
       placeholder={placeholder}
       value={params.get(name) ?? ""}
-      onChange={(event) => onChange(name, event.target.value)}
+      onChange={(event) => onChange({ [name]: event.target.value })}
       className={fieldClass}
     />
   );
@@ -116,20 +127,39 @@ export default function MarketFilterPanel({
           </fieldset>
           <fieldset className="space-y-1.5">
             <legend className={labelClass}>{t("playerFilters.position")}</legend>
-            <Select
-              selectSize="sm"
-              fullWidth
-              aria-label={t("online.market.filter.position")}
-              value={params.get("position") ?? ""}
-              onChange={(event) => onChange("position", event.target.value)}
-            >
-              <option value="">{t("online.market.filter.anyPosition")}</option>
-              {POSITION_GROUPS.map((group) => (
-                <option key={group} value={group}>
-                  {t(`online.market.group.${group}`)}
-                </option>
-              ))}
-            </Select>
+            <div className="grid grid-cols-2 gap-2">
+              <Select
+                selectSize="sm"
+                fullWidth
+                aria-label={t("online.market.filter.position")}
+                value={group}
+                onChange={(event) => {
+                  onChange({ position: event.target.value, naturalPosition: "" });
+                }}
+              >
+                <option value="">{t("online.market.filter.anyPosition")}</option>
+                {POSITION_GROUPS.map((one) => (
+                  <option key={one} value={one}>
+                    {t(`online.market.group.${one}`)}
+                  </option>
+                ))}
+              </Select>
+              <Select
+                selectSize="sm"
+                fullWidth
+                disabled={groupPositions.length <= 1}
+                aria-label={t("playerFilters.specificPosition")}
+                value={params.get("naturalPosition") ?? ""}
+                onChange={(event) => onChange({ naturalPosition: event.target.value })}
+              >
+                <option value="">{t("playerFilters.anyPosition")}</option>
+                {groupPositions.map((position) => (
+                  <option key={position} value={position}>
+                    {t(`common.posAbbr.${position}`)} · {translatePositionLabel(t, position)}
+                  </option>
+                ))}
+              </Select>
+            </div>
           </fieldset>
           <div className="flex justify-end">
             <button
