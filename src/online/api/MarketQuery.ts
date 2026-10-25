@@ -7,7 +7,12 @@ export type MarketQuery = {
 /**
  * `Goalkeeper`, `Defender`, `Midfielder` or `Forward`.
  */
-position?: string, minOvr?: number, maxOvr?: number, 
+position?: string, 
+/**
+ * One position as the player's own club has him (`CenterBack`, `Striker`…), narrowing
+ * `position` further.
+ */
+naturalPosition?: string, minOvr?: number, maxOvr?: number, 
 /**
  * The leading price, or the starting price before any bid, at most this.
  */

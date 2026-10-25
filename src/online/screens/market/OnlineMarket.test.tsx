@@ -77,6 +77,35 @@ describe("OnlineMarket", () => {
     );
   });
 
+  // Given the open filter panel,
+  // when the coach picks a group, then one of its positions (pressing the way a mouse does),
+  // then the panel stays open, and both go to the server and into the address.
+  it("keeps the panel open while its pickers are used and filters by a specific position", async () => {
+    server = serveMarket({ "GET v1/auctions": ok({ items: [auction()] }) });
+    renderOnline("/online/market");
+    await screen.findByText("Trần Văn Bình");
+
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "online.market.filter.position" }));
+    const group = screen.getByRole("option", { name: "online.market.group.Defender" });
+    fireEvent.mouseDown(group);
+    fireEvent.click(group);
+    fireEvent.click(screen.getByRole("combobox", { name: "playerFilters.specificPosition" }));
+    const centreBack = screen.getByRole("option", { name: /CenterBack/ });
+    fireEvent.mouseDown(centreBack);
+    fireEvent.click(centreBack);
+
+    await waitFor(() =>
+      expect(lastAuctionsRead()?.query).toEqual(
+        expect.arrayContaining([
+          ["position", "Defender"],
+          ["naturalPosition", "CenterBack"],
+        ]),
+      ),
+    );
+    expect(screen.getByRole("dialog", { name: "playerFilters.title" })).toBeTruthy();
+  });
+
   // Given a market address that carries filters (as after going back),
   // when the market opens,
   // then its first read sends those filters.
