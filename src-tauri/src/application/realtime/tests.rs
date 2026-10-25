@@ -393,7 +393,7 @@ async fn watches_share_a_subscription_and_the_last_one_closes_it() {
 /// when a screen watches, watches a channel that is not one, and watches an account's own channel
 /// (S-12),
 /// then the first is told there is no server, the second that the channel is not allowed, and the
-/// account's channel is taken.
+/// account's channel and an auction's (C-5) are taken.
 #[tokio::test]
 async fn a_watch_needs_a_gateway_and_a_channel() {
     let none = Arc::new(Realtime::new(
@@ -416,6 +416,8 @@ async fn a_watch_needs_a_gateway_and_a_channel() {
         "match:",
         "account:",
         "account:me",
+        "auction:",
+        "auction:mine",
     ] {
         assert_eq!(
             some.watch(channel, None, Arc::clone(&sink)),
@@ -426,6 +428,13 @@ async fn a_watch_needs_a_gateway_and_a_channel() {
     assert!(some
         .watch(
             "account:0192f0c4-0000-7000-8000-0000000000aa",
+            None,
+            Arc::clone(&sink)
+        )
+        .is_ok());
+    assert!(some
+        .watch(
+            "auction:0192f0c4-0000-7000-8000-0000000000ab",
             None,
             Arc::clone(&sink)
         )
