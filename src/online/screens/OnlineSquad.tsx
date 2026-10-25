@@ -1,277 +1,322 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import PlayerProfileAttributesCard from "../../components/playerProfile/PlayerProfileAttributesCard";
+import { Link, useNavigate } from "react-router-dom";
+import { Users } from "lucide-react";
+import { PlayerPositionBadges } from "../../components/squad/PlayerPositionBadges";
 import {
-  buildPlayerAttributeGroups,
-  isGoalkeeper,
-} from "../../components/playerProfile/PlayerProfile.attributes";
-import { translatePositionAbbreviation } from "../../components/squad/SquadTab.helpers";
-import {
+  Badge,
   Button,
   Card,
-  CardBody,
-  CardHeader,
   CountryFlag,
   InjuryBadge,
-  ProgressBar,
+  PlayerAvatar,
+  Select,
+  SortHeader,
 } from "../../components/ui";
-import { positionGroupRank } from "../../lib/positions";
+import { condColor } from "../../lib/playerConditionDisplay";
 import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
-import ListingDialog from "./market/ListingDialog";
 import PotentialStars from "./PotentialStars";
-import RenamePlayerDialog from "./RenamePlayerDialog";
+import {
+  byLine,
+  matchesFilter,
+  NO_FILTER,
+  type SquadFilter,
+  type SquadGroup,
+  type SquadScope,
+  type SquadSort,
+  type SquadSortKey,
+  sortedBy,
+} from "./squad/squadList";
 
 /** The squad as the coach reads it: by line, then strongest first (C-2 §3.4). */
-export function sortSquad<P extends Pick<SquadPlayerView, "position" | "ovr" | "fullName">>(
-  players: P[],
-): P[] {
-  return [...players].sort(
-    (left, right) =>
-      positionGroupRank(left.position) - positionGroupRank(right.position) ||
-      right.ovr - left.ovr ||
-      left.fullName.localeCompare(right.fullName),
-  );
-}
+export const sortSquad = byLine;
+
+const GROUPS: SquadGroup[] = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
+const SCOPES: Array<{ scope: SquadScope; label: string }> = [
+  { scope: "all", label: "common.allPlayers" },
+  { scope: "xi", label: "preMatch.startingXI" },
+  { scope: "bench", label: "preMatch.substitutes" },
+  { scope: "injured", label: "common.injured" },
+];
+
+const LABEL =
+  "mb-2 block font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
+const TH =
+  "px-4 py-2.5 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
 
 /**
- * The online squad (C-2 §3.4): the players of the coach's club and a card for the one picked.
- * There is no contract or value column; a player is put up for auction from his card (C-5 C5-9).
+ * The online squad, laid out as the offline one is (C-2 §3.4): a toolbar to search and to filter by
+ * line and by status, with the count of each, then the table, each column sortable. A row opens the
+ * player's own page.
  */
 export default function OnlineSquad() {
   const { t } = useTranslation();
-  const players = useOnlineStore((state) => state.club?.players);
-  const sorted = useMemo(() => sortSquad(players ?? []), [players]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selected = sorted.find((player) => player.id === selectedId) ?? sorted[0] ?? null;
+  const club = useOnlineStore((state) => state.club);
+  const [filter, setFilter] = useState<SquadFilter>(NO_FILTER);
+  const [sort, setSort] = useState<SquadSort>({ key: null, dir: "asc" });
+  const players = club?.players;
+  const eleven = useMemo(() => new Set(club?.setup.startingXiIds ?? []), [club?.setup]);
+  const shown = useMemo(
+    () => sortedBy(players ?? [], sort).filter((player) => matchesFilter(player, filter, eleven)),
+    [players, sort, filter, eleven],
+  );
 
-  if (sorted.length === 0) {
+  if (!club || (players?.length ?? 0) === 0) {
     return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.squad.empty")}</p>;
   }
+  const all = players ?? [];
+  const starters = all.filter((player) => eleven.has(player.id)).length;
+  const hurt = all.filter((player) => player.injury !== undefined).length;
+  const filtered = filter.search !== "" || filter.group !== "All" || filter.scope !== "all";
+  const toggleSort = (key: SquadSortKey) =>
+    setSort((current) =>
+      current.key === key
+        ? { key, dir: current.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: key === "name" || key === "jersey" || key === "pos" ? "asc" : "desc" },
+    );
+  const header = (key: SquadSortKey, label: string, ariaLabel?: string) => (
+    <SortHeader
+      col={key}
+      label={label}
+      ariaLabel={ariaLabel}
+      sortKey={sort.key}
+      sortDir={sort.dir}
+      onSort={toggleSort}
+    />
+  );
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <div className="flex flex-col gap-4">
       <Card>
-        <CardHeader>{t("online.squad.title", { players: sorted.length })}</CardHeader>
+        <div className="grid grid-cols-1 items-end gap-3 p-4 lg:grid-cols-[minmax(0,1.3fr)_220px_220px_auto]">
+          <div>
+            <label htmlFor="online-squad-search" className={LABEL}>
+              {t("common.search")}
+            </label>
+            <input
+              id="online-squad-search"
+              type="text"
+              value={filter.search}
+              onChange={(event) => setFilter({ ...filter, search: event.target.value })}
+              placeholder={t("squad.filterPlayers")}
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200 dark:placeholder:text-gray-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="online-squad-group" className={LABEL}>
+              {t("squad.pos")}
+            </label>
+            <Select
+              id="online-squad-group"
+              fullWidth
+              value={filter.group}
+              onChange={(event) =>
+                setFilter({
+                  ...filter,
+                  group: GROUPS.find((group) => group === event.target.value) ?? "All",
+                })
+              }
+            >
+              <option value="All">{t("common.all")}</option>
+              {GROUPS.map((group) => (
+                <option key={group} value={group}>
+                  {t(`online.market.group.${group}`)}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <label htmlFor="online-squad-scope" className={LABEL}>
+              {t("common.status")}
+            </label>
+            <Select
+              id="online-squad-scope"
+              fullWidth
+              value={filter.scope}
+              onChange={(event) =>
+                setFilter({
+                  ...filter,
+                  scope: SCOPES.find((one) => one.scope === event.target.value)?.scope ?? "all",
+                })
+              }
+            >
+              {SCOPES.map((one) => (
+                <option key={one.scope} value={one.scope}>
+                  {t(one.label)}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={!filtered}
+            onClick={() => setFilter(NO_FILTER)}
+          >
+            {t("common.clear")}
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-2 px-4 pb-4">
+          <Badge variant="primary" size="sm">
+            {starters} {t("squad.starter")}
+          </Badge>
+          <Badge variant="neutral" size="sm">
+            {all.length - starters} {t("squad.benchOption")}
+          </Badge>
+          <Badge variant={hurt > 0 ? "danger" : "neutral"} size="sm">
+            {hurt} {t("common.injured")}
+          </Badge>
+          <Badge variant="primary" size="sm">
+            {shown.length} {t("squad.playersLabel")}
+          </Badge>
+        </div>
+      </Card>
+
+      <Card>
+        <div className="rounded-t-xl border-b border-gray-100 bg-linear-to-r from-navy-700 to-navy-800 p-4 dark:border-navy-600">
+          <h3 className="flex items-center gap-2 font-heading text-sm font-bold uppercase tracking-wide text-white">
+            <Users className="h-4 w-4 text-accent-400" aria-hidden />
+            {t("squad.title", { team: club.club.name })}
+          </h3>
+          <p className="mt-0.5 text-xs text-gray-400">
+            {shown.length} / {all.length} {t("squad.playersLabel")}
+          </p>
+          <p className="mt-1 text-xs text-gray-400">
+            {t("squad.currentPlan")}: {club.setup.formation} /{" "}
+            {t(`common.playStyles.${club.setup.playStyle}`)}
+          </p>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-navy-600 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-2 py-2 text-right">
-                  {t("squad.jerseyNumber")}
-                </th>
-                <th scope="col" className="px-4 py-2">
-                  {t("common.name")}
-                </th>
-                <th scope="col" className="px-2 py-2">
-                  {t("common.position")}
-                </th>
-                <th scope="col" className="px-2 py-2 text-right">
-                  {t("common.age")}
-                </th>
-                <th scope="col" className="px-2 py-2 text-right">
-                  {t("common.ovr")}
-                </th>
-                <th scope="col" className="px-2 py-2">
-                  {t("online.squad.potential")}
-                </th>
-                <th scope="col" className="px-2 py-2 text-right">
-                  {t("common.condition")}
-                </th>
-                <th scope="col" className="px-2 py-2 text-right">
-                  {t("online.squad.apps")}
-                </th>
-                <th scope="col" className="px-2 py-2 text-right">
-                  {t("online.squad.goals")}
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50 text-xs dark:border-navy-600 dark:bg-navy-800">
+                {header("jersey", t("squad.jerseyNumber"), t("squad.jerseyNumberFull"))}
+                {header("name", t("common.name"))}
+                {header("pos", t("squad.pos"))}
+                {header("potential", t("online.squad.potential"))}
+                {header("age", t("common.age"))}
+                {header("condition", t("common.condition"))}
+                {header("morale", t("common.morale"))}
+                {header("ovr", t("common.ovr"))}
+                {header("apps", t("online.squad.apps"))}
+                {header("goals", t("online.squad.goals"))}
+                <th scope="col" className={TH}>
+                  {t("common.status")}
                 </th>
               </tr>
             </thead>
-            <tbody>
-              {sorted.map((player) => (
-                <SquadRow
-                  key={player.id}
-                  player={player}
-                  selected={player.id === selected?.id}
-                  onSelect={() => setSelectedId(player.id)}
-                />
+            <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              {shown.map((player) => (
+                <SquadRow key={player.id} player={player} starter={eleven.has(player.id)} />
               ))}
             </tbody>
           </table>
+          {shown.length === 0 && (
+            <p className="p-8 text-center font-heading text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              {t("online.squad.noMatch")}
+            </p>
+          )}
         </div>
       </Card>
-      {selected && <OnlinePlayerCard player={selected} />}
     </div>
   );
 }
 
-function SquadRow({
-  player,
-  selected,
-  onSelect,
-}: {
-  player: SquadPlayerView;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <tr
-      aria-selected={selected}
-      className={`border-b border-gray-100 dark:border-navy-600 ${
-        selected ? "bg-primary-50 dark:bg-primary-500/10" : ""
-      }`}
-    >
-      <td className="px-2 py-2 text-right tabular-nums text-gray-500 dark:text-gray-400">
-        {player.shirtNumber ?? "–"}
-      </td>
-      <td className="px-4 py-2">
-        <button
-          type="button"
-          onClick={onSelect}
-          className="rounded text-left font-semibold text-gray-900 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-100 dark:hover:text-primary-400 dark:focus:ring-offset-navy-800"
-        >
-          {player.fullName}
-        </button>
-        {player.injury && (
-          <span className="ml-2">
-            <InjuryBadge
-              injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
-              showName={false}
-            />
-          </span>
-        )}
-      </td>
-      <td className="px-2 py-2">{translatePositionAbbreviation(t, player.naturalPosition)}</td>
-      <td className="px-2 py-2 text-right">{player.age}</td>
-      <td className="px-2 py-2 text-right font-heading font-bold">{player.ovr}</td>
-      <td className="px-2 py-2">
-        <PotentialStars stars={player.potentialStars} />
-      </td>
-      <td className="px-2 py-2 text-right">{player.condition}%</td>
-      <td className="px-2 py-2 text-right">{player.season.appearances}</td>
-      <td className="px-2 py-2 text-right">{player.season.goals}</td>
-    </tr>
-  );
+function ovrColour(ovr: number): string {
+  if (ovr >= 80) return "text-primary-500";
+  if (ovr >= 55) return "text-accent-600 dark:text-accent-400";
+  return "text-gray-500 dark:text-gray-400";
 }
 
-/** One player of the online squad: who he is, how fit, his season, his attributes. */
-function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
+function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boolean }) {
   const { t } = useTranslation();
-  const profile = {
-    attributes: player.attributes,
-    natural_position: player.naturalPosition,
-    position: player.position,
-  };
+  const navigate = useNavigate();
+  const selling = useOnlineStore((state) =>
+    state.market?.selling.some((auction) => auction.playerId === player.id),
+  );
+  const open = () => navigate(`/online/squad/${player.id}`);
+  const border = starter
+    ? "border-l-4 border-l-primary-500"
+    : player.injury
+      ? "border-l-2 border-l-amber-400"
+      : "";
   return (
-    <div className="space-y-4">
-      <Card accent="primary">
-        <CardHeader>{player.fullName}</CardHeader>
-        <CardBody className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-          <p className="flex items-center gap-2">
-            <CountryFlag code={player.nationality} />
-            {translatePositionAbbreviation(t, player.naturalPosition)} · {t("common.age")}{" "}
-            {player.age}
-          </p>
-          <PotentialStars stars={player.potentialStars} />
-          <Meter label={t("common.condition")} value={player.condition} />
-          <Meter label={t("online.squad.fitness")} value={player.fitness} />
-          <Meter label={t("common.morale")} value={player.morale} />
+    <tr
+      onClick={open}
+      title={starter ? t("squad.startingXi") : undefined}
+      className={`group cursor-pointer transition-colors hover:bg-primary-500/5 dark:hover:bg-navy-700 ${border}`}
+    >
+      <td className="px-4 py-2.5 text-sm font-medium tabular-nums text-gray-600 dark:text-gray-400">
+        {player.shirtNumber ?? "—"}
+      </td>
+      <td className="px-4 py-2.5">
+        <div className="flex items-center gap-3">
+          <PlayerAvatar
+            player={{
+              id: player.id,
+              full_name: player.fullName,
+              match_name: player.matchName,
+              nationality: player.nationality,
+            }}
+          />
+          <div className="flex min-w-0 items-center gap-1.5">
+            <Link
+              to={`/online/squad/${player.id}`}
+              onClick={(event) => event.stopPropagation()}
+              className="truncate rounded text-sm font-semibold text-gray-900 transition-colors hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-100 dark:hover:text-primary-400"
+            >
+              {player.matchName}
+            </Link>
+            <CountryFlag code={player.nationality} className="shrink-0 text-sm leading-none" />
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-2.5">
+        <div className="flex items-center gap-1">
+          <PlayerPositionBadges
+            primaryPosition={player.naturalPosition}
+            alternatePositions={player.alternatePositions}
+          />
+        </div>
+      </td>
+      <td className="px-4 py-2.5">
+        <PotentialStars stars={player.potentialStars} />
+      </td>
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+        {player.age}
+      </td>
+      <td className={`px-4 py-2.5 text-sm font-medium tabular-nums ${condColor(player.condition)}`}>
+        {player.condition}%
+      </td>
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-500 dark:text-gray-400">
+        {player.morale}
+      </td>
+      <td className="px-4 py-2.5">
+        <span className={`font-heading text-sm font-bold ${ovrColour(player.ovr)}`}>
+          {player.ovr}
+        </span>
+      </td>
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+        {player.season.appearances}
+      </td>
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+        {player.season.goals}
+      </td>
+      <td className="px-4 py-2.5">
+        <div className="flex flex-wrap gap-1">
+          {selling && (
+            <Badge variant="accent" size="sm">
+              {t("online.market.selling")}
+            </Badge>
+          )}
           {player.injury && (
             <InjuryBadge
               injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
             />
           )}
-          <div className="flex flex-wrap gap-2">
-            <ListingAction playerId={player.id} playerName={player.fullName} />
-            <RenameAction player={player} />
-          </div>
-          <p>
-            {t("online.squad.seasonLine", {
-              apps: player.season.appearances,
-              goals: player.season.goals,
-              assists: player.season.assists,
-              rating: player.season.avgRating.toFixed(1),
-            })}
-          </p>
-        </CardBody>
-      </Card>
-      <PlayerProfileAttributesCard
-        attrGroups={buildPlayerAttributeGroups(profile, t)}
-        player={profile}
-        isOwnClub
-        isGk={isGoalkeeper(profile)}
-        title={t("playerProfile.attributes")}
-        ovr={player.ovr}
-        ovrLabel={t("common.ovr")}
-        averageLabel={t("common.average")}
-        hiddenTitle={t("playerProfile.attributesHidden")}
-        hiddenBody={t("playerProfile.scoutToView")}
-        listLabel={t("common.listView")}
-        radarLabel={t("common.radarView")}
-      />
-    </div>
-  );
-}
-
-/** The player's auction, when he is up for one, or the way to put him up (C5-9). */
-function ListingAction({ playerId, playerName }: { playerId: string; playerName: string }) {
-  const { t } = useTranslation();
-  const market = useOnlineStore((state) => state.market);
-  const [open, setOpen] = useState(false);
-  if (!market) return null;
-  const listed = market.selling.find((auction) => auction.playerId === playerId);
-  if (listed) {
-    return (
-      <Link
-        to={`/online/auctions/${listed.id}`}
-        className="inline-block rounded font-semibold text-primary-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400"
-      >
-        {t("online.market.listed")}
-      </Link>
-    );
-  }
-  return (
-    <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        {t("online.market.list")}
-      </Button>
-      {open && (
-        <ListingDialog playerId={playerId} playerName={playerName} onClose={() => setOpen(false)} />
-      )}
-    </>
-  );
-}
-
-/**
- * The way to rename the player (S-14), unless he is up for auction: a listed player keeps his
- * name until the auction is over, as the server would refuse it.
- */
-function RenameAction({ player }: { player: SquadPlayerView }) {
-  const { t } = useTranslation();
-  const listed = useOnlineStore((state) =>
-    state.market?.selling.some((auction) => auction.playerId === player.id),
-  );
-  const [open, setOpen] = useState(false);
-  if (listed) return null;
-  return (
-    <>
-      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
-        {t("online.rename.open")}
-      </Button>
-      {open && <RenamePlayerDialog player={player} onClose={() => setOpen(false)} />}
-    </>
-  );
-}
-
-function Meter({ label, value }: { label: string; value: number }) {
-  return (
-    <div>
-      <div className="mb-1 flex justify-between text-xs">
-        <span>{label}</span>
-        <span className="font-semibold">{value}%</span>
-      </div>
-      <ProgressBar value={value} variant="auto" size="sm" />
-    </div>
+        </div>
+      </td>
+    </tr>
   );
 }

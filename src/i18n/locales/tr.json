@@ -175,7 +175,11 @@
       "apps": "Maç",
       "goals": "Gol",
       "fitness": "Maç formu",
-      "seasonLine": "Bu sezon: {{apps}} maç, {{goals}} gol, {{assists}} asist, ortalama puan {{rating}}"
+      "seasonLine": "Bu sezon: {{apps}} maç, {{goals}} gol, {{assists}} asist, ortalama puan {{rating}}",
+      "back": "← Kadroya dön",
+      "noMatch": "Bu filtrelere uyan oyuncu yok.",
+      "notFound": "Bu oyuncu kadronuzda değil.",
+      "state": "Durum"
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."

@@ -175,7 +175,11 @@
       "apps": "Apps",
       "goals": "Goals",
       "fitness": "Match fitness",
-      "seasonLine": "This season: {{apps}} apps, {{goals}} goals, {{assists}} assists, average rating {{rating}}"
+      "seasonLine": "This season: {{apps}} apps, {{goals}} goals, {{assists}} assists, average rating {{rating}}",
+      "back": "← Back to the squad",
+      "noMatch": "No player matches these filters.",
+      "notFound": "This player is not in your squad.",
+      "state": "Condition"
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own."

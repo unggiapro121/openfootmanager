@@ -41,6 +41,7 @@ const SQUAD = [
   squadPlayer({
     id: "gk",
     fullName: "Thủ Môn",
+    matchName: "Thủ Môn",
     position: "Goalkeeper",
     naturalPosition: "Goalkeeper",
     ovr: 60,
@@ -48,6 +49,7 @@ const SQUAD = [
   squadPlayer({
     id: "st",
     fullName: "Tiền Đạo",
+    matchName: "Tiền Đạo",
     position: "Forward",
     naturalPosition: "LeftWinger",
     ovr: 70,
@@ -55,6 +57,7 @@ const SQUAD = [
   squadPlayer({
     id: "cb",
     fullName: "Trung Vệ",
+    matchName: "Trung Vệ",
     position: "Defender",
     naturalPosition: "CenterBack",
     ovr: 65,
@@ -178,27 +181,70 @@ describe("the online club pages", () => {
   });
 
   // Given a squad,
-  // when the squad page opens and a player is picked,
-  // then the squad is listed by line, strongest first, each by the position he plays, and his
-  // card shows his attributes.
-  it("lists the squad and shows the picked player's card", async () => {
+  // when the squad page opens,
+  // then the squad is listed by line, strongest first, each by the position he plays, with the
+  // first eleven marked, and a player opens his own page.
+  it("lists the squad by line and opens a player's page", async () => {
     stage(myClub({ players: SQUAD }));
     renderOnline("/online/squad");
 
     const table = await screen.findByRole("table");
     const names = within(table)
-      .getAllByRole("button")
-      .map((button) => button.textContent);
+      .getAllByRole("link")
+      .map((link) => link.textContent);
     expect(names).toEqual(["Thủ Môn", "Trung Vệ", "Tiền Đạo"]);
 
     // Each by the position he plays, not only his line.
-    const winger = within(table).getByRole("button", { name: "Tiền Đạo" }).closest("tr");
+    const winger = within(table).getByRole("link", { name: "Tiền Đạo" }).closest("tr");
     expect(winger).toHaveTextContent(":LW");
     expect(winger).not.toHaveTextContent(":FWD");
 
-    fireEvent.click(within(table).getByRole("button", { name: "Tiền Đạo" }));
+    fireEvent.click(within(table).getByRole("link", { name: "Tiền Đạo" }));
     expect(await screen.findByRole("heading", { name: "Tiền Đạo" })).toBeInTheDocument();
     expect(screen.getByText("playerProfile.attributes")).toBeInTheDocument();
+    expect(screen.getByText("playerProfile.seasonStats")).toBeInTheDocument();
+  });
+
+  // Given a squad of three,
+  // when the coach filters by a line, by the first eleven and by a name, then clears the filter,
+  // then each shows the players it lets through, says when none, and clearing brings all back.
+  it("filters the squad and clears the filter", async () => {
+    const club = myClub({ players: SQUAD });
+    stage({ ...club, setup: { ...club.setup, startingXiIds: ["gk"] } });
+    renderOnline("/online/squad");
+    const rows = async () => (await screen.findAllByRole("row")).length - 1;
+
+    expect(await rows()).toBe(3);
+    fireEvent.click(screen.getByRole("combobox", { name: "squad.pos" }));
+    fireEvent.click(screen.getByRole("option", { name: "online.market.group.Defender" }));
+    expect(await rows()).toBe(1);
+    fireEvent.click(screen.getByRole("button", { name: "common.clear" }));
+    fireEvent.click(screen.getByRole("combobox", { name: "common.status" }));
+    fireEvent.click(screen.getByRole("option", { name: "preMatch.startingXI" }));
+    expect(await rows()).toBe(1);
+    expect(screen.getByRole("link", { name: "Thủ Môn" })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("common.search"), { target: { value: "zzz" } });
+    expect(await screen.findByText("online.squad.noMatch")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.clear" }));
+    expect(await rows()).toBe(3);
+  });
+
+  // Given a squad,
+  // when the coach sorts by overall, twice,
+  // then the strongest comes first, then the weakest.
+  it("sorts the squad by a column", async () => {
+    stage(myClub({ players: SQUAD }));
+    renderOnline("/online/squad");
+    const order = () =>
+      screen
+        .getAllByRole("link")
+        .map((link) => link.textContent)
+        .filter((text) => ["Thủ Môn", "Trung Vệ", "Tiền Đạo"].includes(text ?? ""));
+
+    fireEvent.click(await screen.findByRole("button", { name: "common.ovr" }));
+    expect(order()).toEqual(["Tiền Đạo", "Trung Vệ", "Thủ Môn"]);
+    fireEvent.click(screen.getByRole("button", { name: "common.ovr" }));
+    expect(order()).toEqual(["Thủ Môn", "Trung Vệ", "Tiền Đạo"]);
   });
 
   // Given a coach with no training plan yet,
