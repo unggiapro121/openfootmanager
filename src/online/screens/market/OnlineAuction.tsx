@@ -19,7 +19,7 @@ import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
 import { marketErrorText } from "./marketText";
 import MoneyInput from "./MoneyInput";
-import { OwnLabels, PriceText } from "./OnlineMarket";
+import { ClubName, OwnLabels, PriceText } from "./OnlineMarket";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
 /** Codes after which the auction is read again: what the coach saw is out of date. */
@@ -218,7 +218,13 @@ function AuctionColumn({
             <PriceText auction={view} />
           </dd>
           <dt>{t("online.market.leader")}</dt>
-          <dd className="text-right">{view.leaderName ?? t("online.market.noLeader")}</dd>
+          <dd className="text-right">
+            {view.leaderName ? (
+              <ClubName name={view.leaderName} isBot={view.leaderIsBot} />
+            ) : (
+              t("online.market.noLeader")
+            )}
+          </dd>
           <dt>{t("online.market.bids")}</dt>
           <dd className="text-right">{view.bidsCount}</dd>
           <dt>{t("online.market.value")}</dt>
@@ -226,7 +232,9 @@ function AuctionColumn({
           <dt>{t("online.market.cap")}</dt>
           <dd className="text-right">{formatExactMoney(view.priceCap)}</dd>
           <dt>{t("online.market.seller")}</dt>
-          <dd className="text-right">{view.sellerName}</dd>
+          <dd className="text-right">
+            <ClubName name={view.sellerName} isBot={view.sellerIsBot} />
+          </dd>
           {view.status === "active" && (
             <>
               <dt>{t("online.market.timeLeft")}</dt>

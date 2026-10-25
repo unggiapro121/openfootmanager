@@ -524,7 +524,9 @@
         "forcedUnnamed": "Un joueur a été mis aux enchères car le club doit des salaires.",
         "changed": "Du nouveau dans l'enchère pour {{player}}.",
         "changedUnnamed": "Du nouveau sur le marché."
-      }
+      },
+      "ai": "IA",
+      "aiClub": "Club dirigé par l'IA"
     },
     "rename": {
       "open": "Renommer",

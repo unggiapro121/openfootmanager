@@ -524,7 +524,9 @@
         "forcedUnnamed": "Ein Spieler wurde zur Auktion gestellt, weil der Verein Gehälter schuldet.",
         "changed": "In der Auktion für {{player}} hat sich etwas geändert.",
         "changedUnnamed": "Auf dem Markt hat sich etwas geändert."
-      }
+      },
+      "ai": "KI",
+      "aiClub": "Von der KI geführter Verein"
     },
     "rename": {
       "open": "Umbenennen",

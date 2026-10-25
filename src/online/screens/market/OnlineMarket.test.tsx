@@ -132,6 +132,25 @@ describe("OnlineMarket", () => {
     expect(within(rows[1] as HTMLElement).getByText("online.market.youLead")).toBeTruthy();
   });
 
+  // Given an auction put up by a bot club and one by a person's club,
+  // when the market lists them,
+  // then only the bot's seller is marked AI, with its meaning for a screen reader.
+  it("marks a club the AI runs", async () => {
+    server = serveMarket({
+      "GET v1/auctions": ok({
+        items: [
+          auction({ sellerName: "Bot FC", sellerIsBot: true }),
+          auction({ id: "a-2", sellerName: "People FC" }),
+        ],
+      }),
+    });
+    renderOnline("/online/market");
+
+    const rows = (await screen.findAllByRole("row")).slice(1);
+    expect(within(rows[0] as HTMLElement).getByText("online.market.aiClub")).toBeTruthy();
+    expect(within(rows[1] as HTMLElement).queryByText("online.market.aiClub")).toBeNull();
+  });
+
   // Given the club's market with one listing, one auction it holds money in and one it won,
   // when the coach opens their own tab,
   // then each group lists its auction with where the club stands.

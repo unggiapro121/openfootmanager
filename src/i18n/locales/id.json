@@ -524,7 +524,9 @@
         "forcedUnnamed": "Seorang pemain dilelang karena klub menunggak gaji.",
         "changed": "Ada perubahan di lelang {{player}}.",
         "changedUnnamed": "Ada perubahan di pasar."
-      }
+      },
+      "ai": "AI",
+      "aiClub": "Klub yang dijalankan AI"
     },
     "rename": {
       "open": "Ganti nama",
