@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Star } from "lucide-react";
 import PlayerProfileAttributesCard from "../../components/playerProfile/PlayerProfileAttributesCard";
 import {
   buildPlayerAttributeGroups,
@@ -8,6 +8,7 @@ import {
 } from "../../components/playerProfile/PlayerProfile.attributes";
 import { translatePositionAbbreviation } from "../../components/squad/SquadTab.helpers";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -18,6 +19,8 @@ import {
 import { positionGroupRank } from "../../lib/positions";
 import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
+import ListingDialog from "./market/ListingDialog";
+import PotentialStars from "./PotentialStars";
 
 /** The squad as the coach reads it: by line, then strongest first (C-2 §3.4). */
 export function sortSquad<P extends Pick<SquadPlayerView, "position" | "ovr" | "fullName">>(
@@ -33,7 +36,7 @@ export function sortSquad<P extends Pick<SquadPlayerView, "position" | "ovr" | "
 
 /**
  * The online squad (C-2 §3.4): the players of the coach's club and a card for the one picked.
- * There is no contract, value or transfer column: the online mode has none yet (S-10, S-11).
+ * There is no contract or value column; a player is put up for auction from his card (C-5 C5-9).
  */
 export default function OnlineSquad() {
   const { t } = useTranslation();
@@ -151,25 +154,6 @@ function SquadRow({
   );
 }
 
-function PotentialStars({ stars }: { stars: number }) {
-  const { t } = useTranslation();
-  return (
-    <span
-      role="img"
-      aria-label={t("online.squad.potentialStars", { stars })}
-      className="inline-flex text-accent-500 dark:text-accent-400"
-    >
-      {[1, 2, 3, 4, 5].map((at) => (
-        <Star
-          key={at}
-          aria-hidden="true"
-          className={`h-3.5 w-3.5 ${at <= stars ? "fill-current" : "opacity-30"}`}
-        />
-      ))}
-    </span>
-  );
-}
-
 /** One player of the online squad: who he is, how fit, his season, his attributes. */
 function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
   const { t } = useTranslation();
@@ -197,6 +181,7 @@ function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
               injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
             />
           )}
+          <ListingAction playerId={player.id} playerName={player.fullName} />
           <p>
             {t("online.squad.seasonLine", {
               apps: player.season.appearances,
@@ -222,6 +207,35 @@ function OnlinePlayerCard({ player }: { player: SquadPlayerView }) {
         radarLabel={t("common.radarView")}
       />
     </div>
+  );
+}
+
+/** The player's auction, when he is up for one, or the way to put him up (C5-9). */
+function ListingAction({ playerId, playerName }: { playerId: string; playerName: string }) {
+  const { t } = useTranslation();
+  const market = useOnlineStore((state) => state.market);
+  const [open, setOpen] = useState(false);
+  if (!market) return null;
+  const listed = market.selling.find((auction) => auction.playerId === playerId);
+  if (listed) {
+    return (
+      <Link
+        to={`/online/auctions/${listed.id}`}
+        className="inline-block rounded font-semibold text-primary-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400"
+      >
+        {t("online.market.listed")}
+      </Link>
+    );
+  }
+  return (
+    <>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        {t("online.market.list")}
+      </Button>
+      {open && (
+        <ListingDialog playerId={playerId} playerName={playerName} onClose={() => setOpen(false)} />
+      )}
+    </>
   );
 }
 

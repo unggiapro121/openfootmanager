@@ -1,5 +1,5 @@
 import { type RealtimeMessage, watchChannel } from "../services/onlineRealtime";
-import type { LeagueNotice, MatchFrame } from "./api";
+import type { AuctionNotice, LeagueNotice, MatchFrame } from "./api";
 import { OnlineApiError } from "./errors";
 
 /**
@@ -77,6 +77,26 @@ export function watchLeague(
       message,
       (data) => {
         if (data.kind === "notice") onNotice(data.data as LeagueNotice);
+      },
+      handlers,
+    ),
+  );
+}
+
+/**
+ * Follow auction `auctionId` (S11-11, C-5 C5-7): `onNotice` is told each bid and the close; read
+ * the auction again for the rest. A notice whose `seq` is not newer than one already seen is old.
+ */
+export function watchAuction(
+  auctionId: string,
+  onNotice: (notice: AuctionNotice) => void,
+  handlers: WatchHandlers = {},
+): Promise<StopWatching> {
+  return watchChannel(`auction:${auctionId}`, undefined, (message) =>
+    dispatch(
+      message,
+      (data) => {
+        if (data.kind === "notice") onNotice(data.data as AuctionNotice);
       },
       handlers,
     ),
