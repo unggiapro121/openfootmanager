@@ -4208,7 +4208,8 @@
       },
       "player": {
         "notYours": "Esse jogador não está no seu clube.",
-        "listed": "Um jogador em leilão mantém o nome até o leilão acabar."
+        "listed": "Um jogador em leilão mantém o nome até o leilão acabar.",
+        "shirtTaken": "Outro jogador já usa esse número."
       }
     },
     "sender": {

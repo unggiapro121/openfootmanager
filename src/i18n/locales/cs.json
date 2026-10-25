@@ -4208,7 +4208,8 @@
       },
       "player": {
         "notYours": "Tento hráč není ve vašem klubu.",
-        "listed": "Hráč v aukci si ponechá jméno až do konce aukce."
+        "listed": "Hráč v aukci si ponechá jméno až do konce aukce.",
+        "shirtTaken": "Toto číslo už nosí jiný hráč."
       }
     },
     "sender": {

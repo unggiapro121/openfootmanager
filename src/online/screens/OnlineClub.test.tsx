@@ -226,6 +226,20 @@ describe("the online club pages", () => {
     expect(screen.getByText("common.footednessLabel")).toBeInTheDocument();
   });
 
+  // Given the squad list,
+  // when the coach presses a player's shirt number,
+  // then the number picker opens over the list, and the player's page does not.
+  it("opens the shirt number picker from the list without leaving it", async () => {
+    stage(myClub({ players: SQUAD }));
+    renderOnline("/online/squad");
+
+    const table = await screen.findByRole("table");
+    fireEvent.click(within(table).getAllByRole("button", { name: /squad.jerseyPickerAction/ })[0]);
+
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "location" }).textContent).toBe("/online/squad");
+  });
+
   // Given a squad where one player is banned for a match by a red card,
   // when the squad page and his own page open,
   // then both say he is suspended, and the others' rows do not.
