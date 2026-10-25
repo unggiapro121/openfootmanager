@@ -510,7 +510,11 @@
     "packageBuild.patches"
   ],
   "ru": ["dashboard.recapTransferLine"],
-  "zh-CN": ["online.league.bot", "be.news.roundup.resultLine", "be.news.preseasonDigest.resultLine"],
+  "zh-CN": [
+    "online.league.bot",
+    "be.news.roundup.resultLine",
+    "be.news.preseasonDigest.resultLine"
+  ],
   "tr": [
     "dashboard.recapTransferLine",
     "common.vs",

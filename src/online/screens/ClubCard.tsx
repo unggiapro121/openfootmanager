@@ -1,13 +1,13 @@
 import { type FormEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Card, CardBody, CardHeader } from "../../components/ui";
-import { resolveBackendError } from "../../utils/backendI18n";
 import type { MyClubView } from "../api";
 import { online } from "../client";
 import { tracked, useOnlineStore } from "../store/onlineStore";
+import { renameErrorText } from "./renameText";
 import { useActionKey } from "./useActionKey";
 
-/** The club: where it plays, and its name, which the coach may change once a season. */
+/** The club: where it plays, and its name: the first rename is free, a later one needs a card. */
 export default function ClubCard({ club }: { club: MyClubView }) {
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
@@ -97,7 +97,7 @@ function RenameForm({ current, onDone }: { current: string; onDone: () => void }
       </p>
       {error !== null && (
         <p role="alert" className="text-xs text-red-600 dark:text-red-400">
-          {resolveBackendError(error)}
+          {renameErrorText(t, error)}
         </p>
       )}
       <div className="flex gap-2">

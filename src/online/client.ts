@@ -31,6 +31,7 @@ import type {
   TakeoverView,
   TrainingPlan,
   UpdateAccount,
+  RenamePlayerRequest,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
 import type { MatchCommand } from "./api/engine";
@@ -202,6 +203,16 @@ export const online = {
     upgradeFacility: (facility: string, idempotencyKey = newKey()) =>
       call<FacilityUpgradeView>(
         write("POST", ["v1", "clubs", "mine", "facilities", facility, "upgrade"], idempotencyKey),
+      ),
+  },
+  /** The coach's players (S-14): a player's two names, the first change of each free. */
+  players: {
+    rename: (playerId: string, fullName: string, matchName: string, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PATCH", ["v1", "players", playerId, "name"], idempotencyKey, {
+          fullName,
+          matchName,
+        } satisfies RenamePlayerRequest),
       ),
   },
   /**

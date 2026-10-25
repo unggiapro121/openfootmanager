@@ -55,6 +55,8 @@ pub const ROUTES: &[Route] = &[
     route("GET", &[L("v1"), L("clubs"), L("mine")], &[]),
     route("GET", &[L("v1"), L("clubs"), L("mine"), L("fixtures")], &[]),
     route("PATCH", &[L("v1"), L("clubs"), L("mine")], &[]),
+    // A player of the coach's club renamed (S-14).
+    route("PATCH", &[L("v1"), L("players"), Id, L("name")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("setup")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("training")], &[]),
     // The coach's licence (S-9): the notice of what the server fitted, and the table of licences.

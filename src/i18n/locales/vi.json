@@ -80,7 +80,7 @@
       "title": "CLB của bạn",
       "rename": "Đổi tên",
       "renameLabel": "Tên CLB mới",
-      "renameHint": "Mỗi mùa bạn được đổi tên CLB một lần.",
+      "renameHint": "Lần đổi tên CLB đầu tiên là miễn phí; các lần sau cần Thẻ đổi tên CLB.",
       "save": "Lưu",
       "stadium": "{{name}} ({{capacity}} chỗ)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Một cầu thủ đã bị đưa lên sàn vì nợ lương.",
         "changed": "Phiên của {{player}} vừa có thay đổi.",
         "changedUnnamed": "Chợ vừa có thay đổi."
+      }
+    },
+    "rename": {
+      "open": "Đổi tên",
+      "title": "Đổi tên {{player}}",
+      "fullName": "Tên đầy đủ",
+      "matchName": "Tên trên sân",
+      "hint": "Tên đầy đủ {{full}} ký tự, tên trên sân {{match}} ký tự. Lần đổi tên đầu tiên của cầu thủ là miễn phí; các lần sau cần Thẻ đổi tên cầu thủ.",
+      "save": "Lưu tên",
+      "itemRequired": {
+        "playerRename": "Cầu thủ này đã dùng lần đổi tên miễn phí. Đổi tiếp cần Thẻ đổi tên cầu thủ (sẽ có trong bản cập nhật sau).",
+        "clubRename": "CLB của bạn đã dùng lần đổi tên miễn phí. Đổi tiếp cần Thẻ đổi tên CLB (sẽ có trong bản cập nhật sau)."
       }
     }
   },
@@ -4178,6 +4190,16 @@
         "listingExpired": "Phiên đấu giá đã kết thúc.",
         "alreadyLeading": "Bạn đang dẫn đầu phiên này.",
         "notCancellable": "Chỉ rút được phiên của chính bạn khi chưa ai đặt giá, và không rút được phiên cưỡng chế."
+      },
+      "rename": {
+        "itemRequired": "Lần đổi tên này cần một thẻ mà bạn chưa có ({{item}})."
+      },
+      "name": {
+        "filtered": "Tên có từ không được phép."
+      },
+      "player": {
+        "notYours": "Cầu thủ này không thuộc CLB của bạn.",
+        "listed": "Cầu thủ đang được đấu giá giữ nguyên tên cho tới khi phiên kết thúc."
       }
     },
     "sender": {

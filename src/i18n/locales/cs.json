@@ -80,7 +80,7 @@
       "title": "Váš klub",
       "rename": "Přejmenovat",
       "renameLabel": "Nový název klubu",
-      "renameHint": "Klub můžete přejmenovat jednou za sezónu.",
+      "renameHint": "První přejmenování klubu je zdarma; další vyžadují kartu přejmenování klubu.",
       "save": "Uložit",
       "stadium": "{{name}} ({{capacity}} míst)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Hráč byl dán do aukce, protože klub dluží mzdy.",
         "changed": "V aukci hráče {{player}} se něco změnilo.",
         "changedUnnamed": "Na trhu se něco změnilo."
+      }
+    },
+    "rename": {
+      "open": "Přejmenovat",
+      "title": "Přejmenovat hráče {{player}}",
+      "fullName": "Celé jméno",
+      "matchName": "Jméno na hřišti",
+      "hint": "Celé jméno {{full}} znaků, jméno na hřišti {{match}}. První přejmenování hráče je zdarma; další vyžadují kartu přejmenování hráče.",
+      "save": "Uložit jména",
+      "itemRequired": {
+        "playerRename": "Tento hráč už využil přejmenování zdarma. Další přejmenování vyžaduje kartu přejmenování hráče (přijde v některé z dalších aktualizací).",
+        "clubRename": "Váš klub už využil přejmenování zdarma. Další přejmenování vyžaduje kartu přejmenování klubu (přijde v některé z dalších aktualizací)."
       }
     }
   },
@@ -4178,6 +4190,16 @@
         "listingExpired": "Tato aukce skončila.",
         "alreadyLeading": "V této aukci už vedete.",
         "notCancellable": "Stáhnout lze jen vlastní nabídku bez příhozů, nikdy nucenou."
+      },
+      "rename": {
+        "itemRequired": "Toto přejmenování vyžaduje kartu, kterou zatím nemáte ({{item}})."
+      },
+      "name": {
+        "filtered": "Toto jméno obsahuje nepovolené slovo."
+      },
+      "player": {
+        "notYours": "Tento hráč není ve vašem klubu.",
+        "listed": "Hráč v aukci si ponechá jméno až do konce aukce."
       }
     },
     "sender": {
