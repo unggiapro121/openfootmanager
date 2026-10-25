@@ -31,6 +31,8 @@ interface TextFieldProps {
   autoComplete?: string;
   error?: string;
   maxLength?: number;
+  /** Earlier values to offer in the field's dropdown. */
+  suggestions?: string[];
 }
 
 /** A labelled text input with its error under it. */
@@ -42,8 +44,10 @@ export function TextField({
   autoComplete,
   error,
   maxLength,
+  suggestions,
 }: TextFieldProps) {
   const inputId = useId();
+  const listId = useId();
   const errorId = useId();
   return (
     <div>
@@ -55,12 +59,20 @@ export function TextField({
         type={type}
         autoComplete={autoComplete}
         maxLength={maxLength}
+        list={suggestions?.length ? listId : undefined}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
         className={inputClass(Boolean(error))}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
+      {suggestions?.length ? (
+        <datalist id={listId}>
+          {suggestions.map((suggestion) => (
+            <option key={suggestion} value={suggestion} />
+          ))}
+        </datalist>
+      ) : null}
       <FieldError id={errorId} message={error} />
     </div>
   );
