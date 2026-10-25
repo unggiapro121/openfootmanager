@@ -18,6 +18,21 @@ import { type OnlineApiError, toOnlineApiError } from "../errors";
  */
 export type OnlineGate = "open" | "clientOutdated" | "serverOutdated";
 
+/** One market notice in the corner of the screen (C-5 C5-14): what happened, to which auction. */
+export interface MarketNotice {
+  id: number;
+  /** The ring's event (`outbid`, `won`, `sold`, `unsold`, `cancelled`, `forced`, or one this
+   * build does not know). */
+  event: string;
+  auctionId?: string;
+  playerName?: string;
+  price?: number;
+}
+
+/** Notices shown at once; a new one pushes the oldest out. */
+const NOTICES_SHOWN = 3;
+let nextNoticeId = 1;
+
 interface OnlineState {
   gate: OnlineGate;
   /** `offline` after a request the server never answered, until one is answered again. */
@@ -35,6 +50,10 @@ interface OnlineState {
   market: MyMarketView | null | undefined;
   /** Market rings not yet seen: the dot on the sidebar's market entry. */
   marketUnseen: number;
+  /** The market notices in the corner, oldest first. */
+  notices: MarketNotice[];
+  pushNotice: (notice: Omit<MarketNotice, "id">) => void;
+  dismissNotice: (id: number) => void;
   setFriendly: (friendly: FriendlyMineView) => void;
   setClub: (club: MyClubView | null) => void;
   noteAnswered: () => void;
@@ -53,6 +72,7 @@ const INITIAL = {
   finance: undefined,
   market: undefined,
   marketUnseen: 0,
+  notices: [] as MarketNotice[],
 };
 
 const CLIENT_OUTDATED = "be.error.online.clientOutdated";
@@ -63,6 +83,12 @@ export const useOnlineStore = create<OnlineState>((set) => ({
   ...INITIAL,
   setClub: (club) => set({ club }),
   setFriendly: (friendly) => set({ friendly }),
+  pushNotice: (notice) =>
+    set((state) => ({
+      notices: [...state.notices, { ...notice, id: nextNoticeId++ }].slice(-NOTICES_SHOWN),
+    })),
+  dismissNotice: (id) =>
+    set((state) => ({ notices: state.notices.filter((notice) => notice.id !== id) })),
   noteAnswered: () => set({ network: "ok" }),
   noteFailure: (error) => {
     if (error.code === CLIENT_OUTDATED) set({ gate: "clientOutdated" });
