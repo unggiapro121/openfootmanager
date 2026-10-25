@@ -21,7 +21,27 @@ naturalPosition: string,
 /**
  * The other positions he can play, as the game knows them.
  */
-alternatePositions: Array<string>, nationality: string, age: number, ovr: number, 
+alternatePositions: Array<string>, 
+/**
+ * `Left`, `Right` or `Both`.
+ */
+footedness: string, 
+/**
+ * His weaker foot, 1 to 5.
+ */
+weakFoot: number, 
+/**
+ * 0 when not known.
+ */
+heightCm: number, 
+/**
+ * 0 when not known.
+ */
+weightKg: number, 
+/**
+ * His traits by name, `Wonderkid` left out: his potential is told in stars.
+ */
+traits: Array<string>, nationality: string, age: number, ovr: number, 
 /**
  * 1 to 5.
  */
