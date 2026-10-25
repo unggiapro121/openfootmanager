@@ -21,12 +21,10 @@ import { online } from "../../client";
 import type { OnlineApiError } from "../../errors";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
+import MarketFilterPanel, { NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
-/** The groups a coach filters by, as the server names them (`MarketQuery.position`). */
-const POSITION_GROUPS = ["Goalkeeper", "Defender", "Midfielder", "Forward"] as const;
-const NUMBER_FILTERS = ["minOvr", "maxOvr", "maxPrice", "maxAge"] as const;
 /** The open auctions are read again this often while the page is open (C5-6). */
 const MARKET_RELOAD_MILLIS = 30_000;
 const MARKET_CLOSED = "be.error.auction.marketClosed";
@@ -191,11 +189,22 @@ function OpenAuctions({ ring }: { ring: number }) {
       { replace: true },
     );
 
+  const clearFilters = () =>
+    setParams(
+      (current) => {
+        const copy = new URLSearchParams(current);
+        for (const name of [...NUMBER_FILTERS, "position"]) copy.delete(name);
+        return copy;
+      },
+      { replace: true },
+    );
+
   return (
     <div className="space-y-4">
       <MarketFilters
         params={params}
         onChange={setFilter}
+        onClear={clearFilters}
         count={count}
         onSearch={setSearch}
         search={search}
@@ -235,27 +244,24 @@ function OpenAuctions({ ring }: { ring: number }) {
   );
 }
 
-const FIELD =
-  "w-24 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200 dark:placeholder-gray-500";
-
 function MarketFilters({
   params,
   onChange,
+  onClear,
   count,
   search,
   onSearch,
 }: {
   params: URLSearchParams;
   onChange: (name: string, value: string) => void;
+  onClear: () => void;
   count: number;
   search: string;
   onSearch: (value: string) => void;
 }) {
   const { t } = useTranslation();
-  const position = params.get("position") ?? "";
   return (
-    <fieldset className="flex flex-wrap items-center gap-3">
-      <legend className="sr-only">{t("online.market.filters")}</legend>
+    <div className="flex flex-wrap items-center gap-3">
       <div className="relative min-w-[180px] max-w-xs flex-1">
         <Search
           className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500"
@@ -270,45 +276,12 @@ function MarketFilters({
           className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200 dark:placeholder-gray-500"
         />
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        <label className="sr-only" htmlFor="market-position">
-          {t("online.market.filter.position")}
-        </label>
-        <select
-          id="market-position"
-          className={`${FIELD} w-auto`}
-          value={position}
-          onChange={(event) => onChange("position", event.target.value)}
-        >
-          <option value="">{t("online.market.filter.anyPosition")}</option>
-          {POSITION_GROUPS.map((group) => (
-            <option key={group} value={group}>
-              {t(`online.market.group.${group}`)}
-            </option>
-          ))}
-        </select>
-      </div>
-      {NUMBER_FILTERS.map((name) => (
-        <label
-          key={name}
-          className="flex items-center gap-2 font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
-        >
-          {t(`online.market.filter.${name}`)}
-          <input
-            type="number"
-            min={0}
-            inputMode="numeric"
-            className={FIELD}
-            value={params.get(name) ?? ""}
-            onChange={(event) => onChange(name, event.target.value)}
-          />
-        </label>
-      ))}
+      <MarketFilterPanel params={params} onChange={onChange} onClear={onClear} />
       <p className="font-heading text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">
         <Filter className="-mt-0.5 mr-1 inline h-3.5 w-3.5" aria-hidden="true" />
         {t("common.nResults", { count })}
       </p>
-    </fieldset>
+    </div>
   );
 }
 
