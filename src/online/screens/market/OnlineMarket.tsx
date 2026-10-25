@@ -292,7 +292,7 @@ function MarketFilters({
   );
 }
 
-type SortColumn = "age" | "ovr" | "wage" | "price" | "time";
+type SortColumn = "age" | "ovr" | "potential" | "wage" | "price" | "time";
 type Sort = { column: SortColumn; dir: "asc" | "desc" } | null;
 
 /** What a column orders by; an auction without its player (retired) sorts last. */
@@ -302,6 +302,8 @@ function sortValue(auction: AuctionView, column: SortColumn): number {
       return auction.player?.age ?? -1;
     case "ovr":
       return auction.player?.ovr ?? -1;
+    case "potential":
+      return auction.player?.potentialStars ?? -1;
     case "wage":
       return auction.player?.wage ?? -1;
     case "price":
@@ -369,9 +371,7 @@ function AuctionTable({ items }: { items: AuctionView[] }) {
                 </th>
                 {header("age", t("common.age"))}
                 {header("ovr", t("common.ovr"))}
-                <th scope="col" className={HEAD}>
-                  {t("online.squad.potential")}
-                </th>
+                {header("potential", t("online.squad.potential"))}
                 {header("wage", t("common.wage"))}
                 {header("price", t("online.market.price"))}
                 <th scope="col" className={HEAD}>
