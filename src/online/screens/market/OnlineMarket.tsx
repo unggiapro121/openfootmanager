@@ -1,8 +1,20 @@
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useSearchParams } from "react-router-dom";
+import { Filter, Search, TrendingUp } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { translatePositionAbbreviation } from "../../../components/squad/SquadTab.helpers";
-import { Badge, Button, Card, CardBody, CardHeader } from "../../../components/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CountryFlag,
+  PlayerAvatar,
+  SortHeader,
+} from "../../../components/ui";
+import { countryName } from "../../../lib/countries";
+import { positionBadgeVariant } from "../../../lib/playerRating";
 import { formatVal, formatWeeklyAmount } from "../../../lib/valueFormatting";
 import type { AuctionView, MarketQuery } from "../../api";
 import { online } from "../../client";
@@ -60,7 +72,16 @@ export default function OnlineMarket() {
 
   return (
     <div className="space-y-4">
-      <div role="tablist" aria-label={t("online.market.title")} className="flex gap-2">
+      <Card accent="primary">
+        <div className="rounded-t-xl bg-gradient-to-r from-navy-700 to-navy-800 p-5">
+          <h2 className="flex items-center gap-2 font-heading text-lg font-bold uppercase tracking-wide text-white">
+            <TrendingUp className="h-5 w-5 text-accent-400" aria-hidden="true" />
+            {t("online.market.title")}
+          </h2>
+          <p className="mt-0.5 text-xs text-gray-400">{t("online.market.openTitle")}</p>
+        </div>
+      </Card>
+      <div role="tablist" aria-label={t("online.market.title")} className="flex flex-wrap gap-2">
         <TabButton selected={tab === "open"} onClick={() => choose("open")}>
           {t("online.market.tabOpen")}
         </TabButton>
@@ -88,10 +109,10 @@ function TabButton({
       role="tab"
       aria-selected={selected}
       onClick={onClick}
-      className={`rounded-lg px-4 py-2 font-heading text-sm font-semibold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900 ${
+      className={`rounded-lg px-4 py-2 font-heading text-sm font-bold uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900 ${
         selected
-          ? "bg-primary-600 text-white dark:bg-primary-500"
-          : "bg-white text-gray-600 hover:text-primary-600 dark:bg-navy-800 dark:text-gray-300 dark:hover:text-primary-400"
+          ? "bg-primary-700 text-white shadow-md shadow-primary-700/20"
+          : "border border-gray-200 bg-white text-gray-500 hover:text-gray-700 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-400 dark:hover:text-gray-200"
       }`}
     >
       {children}
@@ -114,6 +135,15 @@ function OpenAuctions({ ring }: { ring: number }) {
   ).toString();
   const [state, setState] = useState<OpenState>({ status: "loading" });
   const [moreError, setMoreError] = useState<unknown>(null);
+  const [search, setSearch] = useState("");
+  const loaded = state.status === "ready" ? state.items : null;
+  const shown = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    if (!loaded) return [];
+    if (needle === "") return loaded;
+    return loaded.filter((auction) => auction.player?.fullName.toLowerCase().includes(needle));
+  }, [loaded, search]);
+  const count = shown.length;
 
   const load = useCallback(() => {
     const query = Object.fromEntries(new URLSearchParams(queryKey)) as Record<string, string>;
@@ -162,64 +192,92 @@ function OpenAuctions({ ring }: { ring: number }) {
     );
 
   return (
-    <Card>
-      <CardHeader>{t("online.market.openTitle")}</CardHeader>
-      <CardBody className="space-y-4">
-        <MarketFilters params={params} onChange={setFilter} />
-        {state.status === "loading" && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
-        )}
-        {state.status === "closed" && (
-          <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.market.closed")}</p>
-        )}
-        {state.status === "failed" && (
-          <div className="flex flex-col items-start gap-3">
+    <div className="space-y-4">
+      <MarketFilters
+        params={params}
+        onChange={setFilter}
+        count={count}
+        onSearch={setSearch}
+        search={search}
+      />
+      {state.status === "loading" && (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
+      )}
+      {state.status === "closed" && (
+        <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.market.closed")}</p>
+      )}
+      {state.status === "failed" && (
+        <div className="flex flex-col items-start gap-3">
+          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+            {marketErrorText(t, i18n.language, state.error)}
+          </p>
+          <Button variant="outline" size="sm" onClick={load}>
+            {t("online.retry")}
+          </Button>
+        </div>
+      )}
+      {state.status === "ready" && (
+        <>
+          <AuctionTable items={shown} />
+          {moreError !== null && (
             <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-              {marketErrorText(t, i18n.language, state.error)}
+              {marketErrorText(t, i18n.language, moreError)}
             </p>
-            <Button variant="outline" size="sm" onClick={load}>
-              {t("online.retry")}
+          )}
+          {state.cursor && (
+            <Button variant="outline" size="sm" onClick={() => more(state.cursor as string)}>
+              {t("online.market.more")}
             </Button>
-          </div>
-        )}
-        {state.status === "ready" && (
-          <>
-            <AuctionTable items={state.items} />
-            {moreError !== null && (
-              <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-                {marketErrorText(t, i18n.language, moreError)}
-              </p>
-            )}
-            {state.cursor && (
-              <Button variant="outline" size="sm" onClick={() => more(state.cursor as string)}>
-                {t("online.market.more")}
-              </Button>
-            )}
-          </>
-        )}
-      </CardBody>
-    </Card>
+          )}
+        </>
+      )}
+    </div>
   );
 }
+
+const FIELD =
+  "w-24 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200 dark:placeholder-gray-500";
 
 function MarketFilters({
   params,
   onChange,
+  count,
+  search,
+  onSearch,
 }: {
   params: URLSearchParams;
   onChange: (name: string, value: string) => void;
+  count: number;
+  search: string;
+  onSearch: (value: string) => void;
 }) {
   const { t } = useTranslation();
-  const field =
-    "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-100";
+  const position = params.get("position") ?? "";
   return (
-    <fieldset className="grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+    <fieldset className="flex flex-wrap items-center gap-3">
       <legend className="sr-only">{t("online.market.filters")}</legend>
-      <label className="text-xs text-gray-600 dark:text-gray-300">
-        {t("online.market.filter.position")}
+      <div className="relative min-w-[180px] max-w-xs flex-1">
+        <Search
+          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+          aria-hidden="true"
+        />
+        <input
+          type="search"
+          aria-label={t("transfers.searchByName")}
+          placeholder={t("transfers.searchByName")}
+          value={search}
+          onChange={(event) => onSearch(event.target.value)}
+          className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200 dark:placeholder-gray-500"
+        />
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        <label className="sr-only" htmlFor="market-position">
+          {t("online.market.filter.position")}
+        </label>
         <select
-          className={field}
-          value={params.get("position") ?? ""}
+          id="market-position"
+          className={`${FIELD} w-auto`}
+          value={position}
           onChange={(event) => onChange("position", event.target.value)}
         >
           <option value="">{t("online.market.filter.anyPosition")}</option>
@@ -229,74 +287,131 @@ function MarketFilters({
             </option>
           ))}
         </select>
-      </label>
+      </div>
       {NUMBER_FILTERS.map((name) => (
-        <label key={name} className="text-xs text-gray-600 dark:text-gray-300">
+        <label
+          key={name}
+          className="flex items-center gap-2 font-heading text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+        >
           {t(`online.market.filter.${name}`)}
           <input
             type="number"
             min={0}
             inputMode="numeric"
-            className={field}
+            className={FIELD}
             value={params.get(name) ?? ""}
             onChange={(event) => onChange(name, event.target.value)}
           />
         </label>
       ))}
+      <p className="font-heading text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">
+        <Filter className="-mt-0.5 mr-1 inline h-3.5 w-3.5" aria-hidden="true" />
+        {t("common.nResults", { count })}
+      </p>
     </fieldset>
   );
 }
 
+type SortColumn = "age" | "ovr" | "wage" | "price" | "time";
+type Sort = { column: SortColumn; dir: "asc" | "desc" } | null;
+
+/** What a column orders by; an auction without its player (retired) sorts last. */
+function sortValue(auction: AuctionView, column: SortColumn): number {
+  switch (column) {
+    case "age":
+      return auction.player?.age ?? -1;
+    case "ovr":
+      return auction.player?.ovr ?? -1;
+    case "wage":
+      return auction.player?.wage ?? -1;
+    case "price":
+      return auction.currentPrice ?? auction.startPrice;
+    case "time":
+      return Date.parse(auction.endsAt);
+  }
+}
+
+const HEAD =
+  "px-4 py-3 font-heading font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400";
+
 function AuctionTable({ items }: { items: AuctionView[] }) {
   const { t } = useTranslation();
   const offset = useServerOffset(items[0]?.serverNow);
+  const [sort, setSort] = useState<Sort>(null);
+  const sorted = useMemo(() => {
+    if (!sort) return items;
+    const sign = sort.dir === "asc" ? 1 : -1;
+    return [...items].sort(
+      (a, b) => sign * (sortValue(a, sort.column) - sortValue(b, sort.column)),
+    );
+  }, [items, sort]);
+  const sortBy = (column: SortColumn) =>
+    setSort((current) =>
+      current?.column === column
+        ? current.dir === "desc"
+          ? { column, dir: "asc" }
+          : null
+        : { column, dir: "desc" },
+    );
   if (items.length === 0) {
-    return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.market.empty")}</p>;
+    return (
+      <Card>
+        <CardBody>
+          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            {t("online.market.empty")}
+          </p>
+        </CardBody>
+      </Card>
+    );
   }
+  const header = (column: SortColumn, label: string) => (
+    <SortHeader
+      col={column}
+      label={label}
+      sortKey={sort?.column ?? null}
+      sortDir={sort?.dir ?? "desc"}
+      onSort={sortBy}
+      paddingClassName="py-3 px-4"
+    />
+  );
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
-        <thead className="border-b border-gray-200 text-xs uppercase text-gray-500 dark:border-navy-600 dark:text-gray-400">
-          <tr>
-            <th scope="col" className="px-3 py-2">
-              {t("common.name")}
-            </th>
-            <th scope="col" className="px-2 py-2">
-              {t("common.position")}
-            </th>
-            <th scope="col" className="px-2 py-2 text-right">
-              {t("common.age")}
-            </th>
-            <th scope="col" className="px-2 py-2 text-right">
-              {t("common.ovr")}
-            </th>
-            <th scope="col" className="px-2 py-2">
-              {t("online.squad.potential")}
-            </th>
-            <th scope="col" className="px-2 py-2 text-right">
-              {t("common.wage")}
-            </th>
-            <th scope="col" className="px-2 py-2 text-right">
-              {t("online.market.price")}
-            </th>
-            <th scope="col" className="px-2 py-2 text-right">
-              {t("online.market.bids")}
-            </th>
-            <th scope="col" className="px-2 py-2 text-right">
-              {t("online.market.timeLeft")}
-            </th>
-            <th scope="col" className="px-3 py-2">
-              {t("online.market.seller")}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((auction) => (
-            <AuctionRow key={auction.id} auction={auction} offset={offset} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card>
+      <CardBody className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50 text-xs dark:border-navy-600 dark:bg-navy-800">
+                <th scope="col" className={HEAD}>
+                  {t("common.position")}
+                </th>
+                <th scope="col" className={HEAD}>
+                  {t("common.player")}
+                </th>
+                {header("age", t("common.age"))}
+                {header("ovr", t("common.ovr"))}
+                <th scope="col" className={HEAD}>
+                  {t("online.squad.potential")}
+                </th>
+                {header("wage", t("common.wage"))}
+                {header("price", t("online.market.price"))}
+                <th scope="col" className={HEAD}>
+                  {t("online.market.bids")}
+                </th>
+                {header("time", t("online.market.timeLeft"))}
+                <th scope="col" className={HEAD}>
+                  {t("online.market.seller")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
+              {sorted.map((auction) => (
+                <AuctionRow key={auction.id} auction={auction} offset={offset} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardBody>
+    </Card>
   );
 }
 
@@ -341,37 +456,85 @@ export function OwnLabels({ auction }: { auction: AuctionView }) {
 }
 
 function AuctionRow({ auction, offset }: { auction: AuctionView; offset: number }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { text } = useServerCountdown(auction.endsAt, offset);
   const player = auction.player;
+  const ovr = player?.ovr ?? 0;
   return (
-    <tr className="border-b border-gray-100 dark:border-navy-600">
-      <td className="px-3 py-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to={`/online/auctions/${auction.id}`}
-            className="rounded font-semibold text-gray-900 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-100 dark:hover:text-primary-400 dark:focus:ring-offset-navy-800"
-          >
-            {player?.fullName ?? t("online.market.retiredPlayer")}
-          </Link>
-          <OwnLabels auction={auction} />
+    <tr
+      className="group cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-navy-700/50"
+      onClick={() => navigate(`/online/auctions/${auction.id}`)}
+    >
+      <td className="px-4 py-2.5">
+        {player ? (
+          <Badge variant={positionBadgeVariant(player.naturalPosition)} size="sm">
+            {translatePositionAbbreviation(t, player.naturalPosition)}
+          </Badge>
+        ) : (
+          "–"
+        )}
+      </td>
+      <td className="px-4 py-2.5">
+        <div className="flex items-center gap-3">
+          {player && (
+            <PlayerAvatar
+              player={{
+                id: auction.playerId,
+                full_name: player.fullName,
+                match_name: player.fullName,
+                nationality: player.nationality,
+              }}
+            />
+          )}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                to={`/online/auctions/${auction.id}`}
+                onClick={(event) => event.stopPropagation()}
+                className="truncate rounded text-sm font-semibold text-gray-800 transition-colors hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-200 dark:hover:text-primary-400 dark:focus:ring-offset-navy-800"
+              >
+                {player?.fullName ?? t("online.market.retiredPlayer")}
+              </Link>
+              <OwnLabels auction={auction} />
+            </div>
+            {player && (
+              <div className="mt-0.5 flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                <CountryFlag
+                  code={player.nationality}
+                  locale={i18n.language}
+                  className="text-sm leading-none"
+                />
+                <span>{countryName(player.nationality, i18n.language)}</span>
+              </div>
+            )}
+          </div>
         </div>
       </td>
-      <td className="px-2 py-2">
-        {player ? translatePositionAbbreviation(t, player.naturalPosition) : "–"}
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+        {player?.age ?? "–"}
       </td>
-      <td className="px-2 py-2 text-right">{player?.age ?? "–"}</td>
-      <td className="px-2 py-2 text-right font-heading font-bold">{player?.ovr ?? "–"}</td>
-      <td className="px-2 py-2">{player && <PotentialStars stars={player.potentialStars} />}</td>
-      <td className="px-2 py-2 text-right">
+      <td className="px-4 py-2.5">
+        <span
+          className={`font-heading text-base font-bold tabular-nums ${ovr >= 75 ? "text-primary-500" : ovr >= 55 ? "text-accent-500" : "text-gray-400"}`}
+        >
+          {player?.ovr ?? "–"}
+        </span>
+      </td>
+      <td className="px-4 py-2.5">{player && <PotentialStars stars={player.potentialStars} />}</td>
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
         {player ? formatWeeklyAmount(formatVal(player.wage), t("finances.perWeekSuffix")) : "–"}
       </td>
-      <td className="px-2 py-2 text-right font-semibold">
+      <td className="px-4 py-2.5 text-sm font-medium tabular-nums text-gray-700 dark:text-gray-300">
         <PriceText auction={auction} />
       </td>
-      <td className="px-2 py-2 text-right">{auction.bidsCount}</td>
-      <td className="px-2 py-2 text-right tabular-nums">{text ?? t("online.market.ending")}</td>
-      <td className="px-3 py-2">
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+        {auction.bidsCount}
+      </td>
+      <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+        {text ?? t("online.market.ending")}
+      </td>
+      <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400">
         <SellerName auction={auction} />
       </td>
     </tr>
