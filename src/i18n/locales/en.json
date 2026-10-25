@@ -45,7 +45,8 @@
       "training": "Training",
       "league": "League",
       "schedule": "Fixtures",
-      "friendly": "Friendlies"
+      "friendly": "Friendlies",
+      "finance": "Finance"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Season {{number}}",
       "seasonDay": "Season {{number}} · Day {{day}}/{{total}}",
-      "nextKickoff": "Next kick-off in {{time}}"
+      "nextKickoff": "Next kick-off in {{time}}",
+      "cash": "Club cash: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}}d {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Instructions: {{list}}",
       "addedRoles": "Roles: {{list}}",
       "addedNothing": "Nothing new"
+    },
+    "finance": {
+      "title": "Club finance",
+      "noEconomy": "This season is played without money: nothing to show yet.",
+      "arrears": "The club has owed wages for {{days}} days (since {{since}}). Players recover more slowly and lose form each day; after {{limit}} days the best-paid player is put up for auction.",
+      "cash": "Cash",
+      "held": "Held for bids",
+      "wageBill": "Weekly wages",
+      "wagePerDay": "about {{amount}} a season day",
+      "season": "This season",
+      "seasonEmpty": "Nothing has moved yet this season.",
+      "total": "Total",
+      "kind": {
+        "opening": "Opening cash",
+        "tickets": "Gate receipts",
+        "reward": "League prize",
+        "wage": "Wages",
+        "facility": "Facilities",
+        "settle": "Transfers",
+        "bid": "Bids held and returned",
+        "cancel": "Cancelled auctions",
+        "adjust": "Adjustments",
+        "reversal": "Reversals",
+        "grantReset": "New squad cash reset"
+      },
+      "ledger": "Ledger",
+      "ledgerEmpty": "No entries yet.",
+      "more": "Show more",
+      "account": {
+        "cash": "cash",
+        "held": "held"
+      },
+      "nextCost": "Next level: {{cost}}",
+      "upgraded": "{{facility}} upgraded to level {{level}}."
     }
   },
   "coach": {
@@ -4005,6 +4041,30 @@
         "notFinished": "The match of this room is not over yet.",
         "roomClosed": "This room can no longer be played in, so it was closed.",
         "conflict": "The room changed meanwhile. Look at it again."
+      },
+      "economy": {
+        "disabled": "This season is played without money.",
+        "clubLocked": "The club's finances are locked while they are checked: no bids, listings or upgrades for now.",
+        "insufficientFunds": "The club does not have enough cash for this.",
+        "facilityAtTop": "This facility is already at its top level.",
+        "wageBudgetExceeded": "After this bid the club must still have enough cash for seven days of wages."
+      },
+      "auction": {
+        "marketClosed": "The transfer market is closed this season.",
+        "notFound": "This auction does not exist.",
+        "playerNotListable": "This player cannot be put up for auction: he is not your player, has retired or is injured.",
+        "alreadyListed": "This player is already up for auction.",
+        "cooldownActive": "This player changed clubs too recently to be sold again before {{until}}.",
+        "squadTooSmall": "Selling him would leave your squad below the minimum the market allows.",
+        "squadFull": "Buying him would give your squad more players than the market allows.",
+        "seasonClosing": "An auction now would still be open when the season closes. List him next season.",
+        "outOfPriceBand": "The price must be between {{min}} and {{max}}.",
+        "bidTooLow": "The bid must be at least {{minimum}}.",
+        "maxActiveBidsReached": "You already hold money in three auctions; wait for one to end.",
+        "selfBiddingForbidden": "You cannot bid for your own player.",
+        "listingExpired": "This auction has ended.",
+        "alreadyLeading": "You are already leading this auction.",
+        "notCancellable": "Only your own listing with no bid yet can be withdrawn, and never a forced one."
       }
     },
     "sender": {

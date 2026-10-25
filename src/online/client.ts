@@ -5,17 +5,26 @@ import {
 } from "../services/onlineTransport";
 import type {
   AccountView,
+  AuctionPage,
+  AuctionView,
   CareerView,
   ClubFixturesView,
   CommandAccepted,
+  FacilitiesView,
+  FacilityUpgradeView,
+  FinanceView,
   FixtureDetailView,
   FramesPage,
   FriendlyMineView,
   LeagueView,
+  LedgerPage,
   LicenceTableView,
+  ListingQuoteView,
+  MarketQuery,
   MatchView,
   MineView,
   MyClubView,
+  MyMarketView,
   PublicClubView,
   RoundView,
   SeasonNowView,
@@ -172,6 +181,65 @@ export const online = {
     command: (matchId: string, command: MatchCommand, idempotencyKey = newKey()) =>
       call<CommandAccepted>(
         write("POST", ["v1", "matches", matchId, "commands"], idempotencyKey, { command }),
+      ),
+  },
+  /** The club's money (S-10, C-5): balances and the season, the ledger, the facilities. */
+  finance: {
+    mine: () => call<FinanceView>(read(["v1", "clubs", "mine", "finance"])),
+    /** The ledger newest first; `cursor` is the `nextCursor` of the page before. */
+    ledger: (cursor?: number, limit?: number) =>
+      call<LedgerPage>(
+        read(
+          ["v1", "clubs", "mine", "ledger"],
+          [
+            ...(cursor === undefined ? [] : [["cursor", String(cursor)] as [string, string]]),
+            ...(limit === undefined ? [] : [["limit", String(limit)] as [string, string]]),
+          ],
+        ),
+      ),
+    /** Each facility's level, next cost and effects now and after: the upgrade dialog's preview. */
+    facilities: () => call<FacilitiesView>(read(["v1", "clubs", "mine", "facilities"])),
+    upgradeFacility: (facility: string, idempotencyKey = newKey()) =>
+      call<FacilityUpgradeView>(
+        write("POST", ["v1", "clubs", "mine", "facilities", facility, "upgrade"], idempotencyKey),
+      ),
+  },
+  /**
+   * The auction market (S-11, C-5): open auctions, one auction, a bid, the caller's listings.
+   * Follow an auction with `watchAuction` (`./live`) and read it again when it rings.
+   */
+  market: {
+    auctions: (query: MarketQuery = {}) =>
+      call<AuctionPage>(
+        read(
+          ["v1", "auctions"],
+          Object.entries(query)
+            .filter(([, value]) => value !== undefined && value !== null && value !== "")
+            .map(([name, value]) => [name, String(value)] as [string, string]),
+        ),
+      ),
+    byId: (auctionId: string) => call<AuctionView>(read(["v1", "auctions", auctionId])),
+    bid: (auctionId: string, amount: number, idempotencyKey = newKey()) =>
+      call<AuctionView>(
+        write("POST", ["v1", "auctions", auctionId, "bids"], idempotencyKey, { amount }),
+      ),
+    /** Withdraw one of the caller's listings while nobody has bid. */
+    withdraw: (auctionId: string, idempotencyKey = newKey()) =>
+      call<AuctionView>({
+        method: "DELETE",
+        segments: ["v1", "auctions", auctionId],
+        idempotencyKey,
+      }),
+    mine: () => call<MyMarketView>(read(["v1", "clubs", "mine", "market"])),
+    /** What listing `playerId` now would be, or why it would be refused. */
+    quote: (playerId: string) =>
+      call<ListingQuoteView>(read(["v1", "clubs", "mine", "players", playerId, "listing-quote"])),
+    list: (playerId: string, startPrice: number, idempotencyKey = newKey()) =>
+      call<AuctionView>(
+        write("POST", ["v1", "clubs", "mine", "listings"], idempotencyKey, {
+          playerId,
+          startPrice,
+        }),
       ),
   },
   /**

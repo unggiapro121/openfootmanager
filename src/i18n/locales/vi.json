@@ -45,7 +45,8 @@
       "training": "Tập luyện",
       "league": "Giải đấu",
       "schedule": "Lịch thi đấu",
-      "friendly": "Giao hữu"
+      "friendly": "Giao hữu",
+      "finance": "Tài chính"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Mùa {{number}}",
       "seasonDay": "Mùa {{number}} · Ngày {{day}}/{{total}}",
-      "nextKickoff": "Trận kế bắt đầu sau {{time}}"
+      "nextKickoff": "Trận kế bắt đầu sau {{time}}",
+      "cash": "Tiền mặt của CLB: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} ngày {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Chỉ đạo: {{list}}",
       "addedRoles": "Vai trò: {{list}}",
       "addedNothing": "Không có gì mới"
+    },
+    "finance": {
+      "title": "Tài chính CLB",
+      "noEconomy": "Mùa này chơi không dùng tiền: chưa có gì để hiện.",
+      "arrears": "CLB nợ lương {{days}} ngày (từ {{since}}). Cầu thủ hồi thể lực chậm hơn và mất phong độ mỗi ngày; nợ {{limit}} ngày thì cầu thủ lương cao nhất bị đưa lên sàn.",
+      "cash": "Tiền mặt",
+      "held": "Đang giữ cho đặt giá",
+      "wageBill": "Quỹ lương tuần",
+      "wagePerDay": "khoảng {{amount}} mỗi ngày mùa",
+      "season": "Mùa này",
+      "seasonEmpty": "Mùa này chưa có khoản nào.",
+      "total": "Tổng",
+      "kind": {
+        "opening": "Tiền mở đầu",
+        "tickets": "Tiền vé",
+        "reward": "Thưởng xếp hạng",
+        "wage": "Lương",
+        "facility": "Cơ sở vật chất",
+        "settle": "Chuyển nhượng",
+        "bid": "Tiền giữ và trả khi đặt giá",
+        "cancel": "Phiên bị huỷ",
+        "adjust": "Điều chỉnh",
+        "reversal": "Bút toán đảo",
+        "grantReset": "Đặt lại tiền khi nhận đội mới"
+      },
+      "ledger": "Sổ thu chi",
+      "ledgerEmpty": "Chưa có dòng nào.",
+      "more": "Xem thêm",
+      "account": {
+        "cash": "tiền mặt",
+        "held": "đang giữ"
+      },
+      "nextCost": "Cấp tiếp theo: {{cost}}",
+      "upgraded": "Đã nâng {{facility}} lên cấp {{level}}."
     }
   },
   "coach": {
@@ -4005,6 +4041,30 @@
         "notFinished": "Trận của phòng này chưa kết thúc.",
         "roomClosed": "Phòng này không còn đá được nữa nên đã đóng.",
         "conflict": "Phòng vừa thay đổi. Hãy xem lại."
+      },
+      "economy": {
+        "disabled": "Mùa này chơi không dùng tiền.",
+        "clubLocked": "Tài chính của CLB đang bị khoá để kiểm tra: tạm thời chưa đặt giá, rao bán hay nâng cấp được.",
+        "insufficientFunds": "CLB không đủ tiền mặt cho việc này.",
+        "facilityAtTop": "Cơ sở này đã ở cấp cao nhất.",
+        "wageBudgetExceeded": "Sau lượt đặt giá này, CLB vẫn phải còn đủ tiền mặt trả 7 ngày lương."
+      },
+      "auction": {
+        "marketClosed": "Chợ chuyển nhượng đóng trong mùa này.",
+        "notFound": "Không có phiên đấu giá này.",
+        "playerNotListable": "Không rao bán được cầu thủ này: không phải cầu thủ của bạn, đã giải nghệ hoặc đang chấn thương.",
+        "alreadyListed": "Cầu thủ này đang được rao bán.",
+        "cooldownActive": "Cầu thủ này vừa đổi CLB, chưa bán lại được trước {{until}}.",
+        "squadTooSmall": "Bán cầu thủ này sẽ khiến đội hình dưới mức tối thiểu chợ cho phép.",
+        "squadFull": "Mua cầu thủ này sẽ khiến đội hình vượt số tối đa chợ cho phép.",
+        "seasonClosing": "Phiên mở lúc này sẽ còn kéo dài tới khi mùa đóng. Hãy rao bán ở mùa sau.",
+        "outOfPriceBand": "Giá phải trong khoảng {{min}} – {{max}}.",
+        "bidTooLow": "Giá đặt phải từ {{minimum}} trở lên.",
+        "maxActiveBidsReached": "Bạn đang giữ tiền ở 3 phiên; hãy chờ một phiên kết thúc.",
+        "selfBiddingForbidden": "Bạn không thể đặt giá cầu thủ của chính mình.",
+        "listingExpired": "Phiên đấu giá đã kết thúc.",
+        "alreadyLeading": "Bạn đang dẫn đầu phiên này.",
+        "notCancellable": "Chỉ rút được phiên của chính bạn khi chưa ai đặt giá, và không rút được phiên cưỡng chế."
       }
     },
     "sender": {

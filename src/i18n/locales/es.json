@@ -45,7 +45,8 @@
       "training": "Entrenamiento",
       "league": "Liga",
       "schedule": "Calendario",
-      "friendly": "Amistosos"
+      "friendly": "Amistosos",
+      "finance": "Finanzas"
     },
     "gate": {
       "clientOutdatedTitle": "Actualización necesaria",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Temporada {{number}}",
       "seasonDay": "Temporada {{number}} · Día {{day}}/{{total}}",
-      "nextKickoff": "Próximo partido en {{time}}"
+      "nextKickoff": "Próximo partido en {{time}}",
+      "cash": "Efectivo del club: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} d {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Instrucciones: {{list}}",
       "addedRoles": "Funciones: {{list}}",
       "addedNothing": "Nada nuevo"
+    },
+    "finance": {
+      "title": "Finanzas del club",
+      "noEconomy": "Esta temporada se juega sin dinero: aún no hay nada que mostrar.",
+      "arrears": "El club debe salarios desde hace {{days}} días (desde {{since}}). Los jugadores se recuperan más despacio y pierden forma cada día; tras {{limit}} días, el jugador mejor pagado sale a subasta.",
+      "cash": "Efectivo",
+      "held": "Retenido en pujas",
+      "wageBill": "Salarios semanales",
+      "wagePerDay": "unos {{amount}} por día de temporada",
+      "season": "Esta temporada",
+      "seasonEmpty": "Aún no hay movimientos esta temporada.",
+      "total": "Total",
+      "kind": {
+        "opening": "Efectivo inicial",
+        "tickets": "Taquilla",
+        "reward": "Premio de liga",
+        "wage": "Salarios",
+        "facility": "Instalaciones",
+        "settle": "Traspasos",
+        "bid": "Pujas retenidas y devueltas",
+        "cancel": "Subastas canceladas",
+        "adjust": "Ajustes",
+        "reversal": "Anulaciones",
+        "grantReset": "Reinicio de efectivo con plantilla nueva"
+      },
+      "ledger": "Movimientos",
+      "ledgerEmpty": "Aún no hay movimientos.",
+      "more": "Ver más",
+      "account": {
+        "cash": "efectivo",
+        "held": "retenido"
+      },
+      "nextCost": "Siguiente nivel: {{cost}}",
+      "upgraded": "{{facility}} mejorado al nivel {{level}}."
     }
   },
   "coach": {
@@ -4005,6 +4041,30 @@
         "notFinished": "El partido de esta sala aún no ha terminado.",
         "roomClosed": "Ya no se puede jugar en esta sala, así que se cerró.",
         "conflict": "La sala cambió mientras tanto. Vuelve a mirarla."
+      },
+      "economy": {
+        "disabled": "Esta temporada se juega sin dinero.",
+        "clubLocked": "Las finanzas del club están bloqueadas mientras se revisan: por ahora no hay pujas, ventas ni mejoras.",
+        "insufficientFunds": "El club no tiene suficiente efectivo para esto.",
+        "facilityAtTop": "Esta instalación ya está en su nivel máximo.",
+        "wageBudgetExceeded": "Tras esta puja el club debe conservar efectivo para siete días de salarios."
+      },
+      "auction": {
+        "marketClosed": "El mercado de fichajes está cerrado esta temporada.",
+        "notFound": "Esta subasta no existe.",
+        "playerNotListable": "Este jugador no se puede subastar: no es tuyo, se ha retirado o está lesionado.",
+        "alreadyListed": "Este jugador ya está en subasta.",
+        "cooldownActive": "Este jugador cambió de club hace muy poco; no se puede vender de nuevo antes de {{until}}.",
+        "squadTooSmall": "Venderlo dejaría tu plantilla por debajo del mínimo que permite el mercado.",
+        "squadFull": "Comprarlo dejaría tu plantilla por encima del máximo que permite el mercado.",
+        "seasonClosing": "Una subasta ahora seguiría abierta al cerrar la temporada. Ponlo a la venta la próxima temporada.",
+        "outOfPriceBand": "El precio debe estar entre {{min}} y {{max}}.",
+        "bidTooLow": "La puja debe ser de al menos {{minimum}}.",
+        "maxActiveBidsReached": "Ya tienes dinero retenido en tres subastas; espera a que termine una.",
+        "selfBiddingForbidden": "No puedes pujar por tu propio jugador.",
+        "listingExpired": "Esta subasta ha terminado.",
+        "alreadyLeading": "Ya vas en cabeza en esta subasta.",
+        "notCancellable": "Solo se puede retirar tu propia venta sin pujas, nunca una forzosa."
       }
     },
     "sender": {

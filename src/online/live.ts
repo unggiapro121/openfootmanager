@@ -102,3 +102,28 @@ export function watchAccount(
     ),
   );
 }
+
+/** What a ring of the coach's account says: whose news it is, and for the market which (C-5). */
+export type AccountRing =
+  | { kind: "friendly" }
+  | {
+      kind: "market";
+      event?: "outbid" | "won" | "sold" | "unsold" | "cancelled" | "forced" | string;
+      auctionId?: string;
+    }
+  | { kind: "unknown" };
+
+/** Read a ring of the account channel; a kind this build does not know is `unknown` (E6-15). */
+export function readAccountRing(data: unknown): AccountRing {
+  if (typeof data !== "object" || data === null) return { kind: "unknown" };
+  const ring = data as { kind?: unknown; event?: unknown; auctionId?: unknown };
+  if (ring.kind === "friendly") return { kind: "friendly" };
+  if (ring.kind === "market") {
+    return {
+      kind: "market",
+      event: typeof ring.event === "string" ? ring.event : undefined,
+      auctionId: typeof ring.auctionId === "string" ? ring.auctionId : undefined,
+    };
+  }
+  return { kind: "unknown" };
+}

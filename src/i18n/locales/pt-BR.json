@@ -45,7 +45,8 @@
       "training": "Treino",
       "league": "Liga",
       "schedule": "Tabela de jogos",
-      "friendly": "Amistosos"
+      "friendly": "Amistosos",
+      "finance": "Finanças"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Temporada {{number}}",
       "seasonDay": "Temporada {{number}} · Dia {{day}}/{{total}}",
-      "nextKickoff": "Próximo jogo em {{time}}"
+      "nextKickoff": "Próximo jogo em {{time}}",
+      "cash": "Caixa do clube: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} d {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Instruções: {{list}}",
       "addedRoles": "Funções: {{list}}",
       "addedNothing": "Nada de novo"
+    },
+    "finance": {
+      "title": "Finanças do clube",
+      "noEconomy": "Esta temporada é jogada sem dinheiro: ainda não há nada para mostrar.",
+      "arrears": "O clube deve salários há {{days}} dias (desde {{since}}). Os jogadores se recuperam mais devagar e perdem forma todo dia; depois de {{limit}} dias, o jogador mais bem pago vai a leilão.",
+      "cash": "Caixa",
+      "held": "Retido em lances",
+      "wageBill": "Salários semanais",
+      "wagePerDay": "cerca de {{amount}} por dia da temporada",
+      "season": "Esta temporada",
+      "seasonEmpty": "Ainda não houve movimentos nesta temporada.",
+      "total": "Total",
+      "kind": {
+        "opening": "Caixa inicial",
+        "tickets": "Bilheteria",
+        "reward": "Prêmio da liga",
+        "wage": "Salários",
+        "facility": "Instalações",
+        "settle": "Transferências",
+        "bid": "Lances retidos e devolvidos",
+        "cancel": "Leilões cancelados",
+        "adjust": "Ajustes",
+        "reversal": "Estornos",
+        "grantReset": "Reinício do caixa com elenco novo"
+      },
+      "ledger": "Movimentações",
+      "ledgerEmpty": "Ainda sem movimentações.",
+      "more": "Ver mais",
+      "account": {
+        "cash": "caixa",
+        "held": "retido"
+      },
+      "nextCost": "Próximo nível: {{cost}}",
+      "upgraded": "{{facility}} melhorado para o nível {{level}}."
     }
   },
   "coach": {
@@ -4005,6 +4041,30 @@
         "notFinished": "A partida desta sala ainda não terminou.",
         "roomClosed": "Não dá mais para jogar nesta sala, então ela foi fechada.",
         "conflict": "A sala mudou nesse meio-tempo. Veja de novo."
+      },
+      "economy": {
+        "disabled": "Esta temporada é jogada sem dinheiro.",
+        "clubLocked": "As finanças do clube estão bloqueadas enquanto são verificadas: por enquanto sem lances, vendas ou melhorias.",
+        "insufficientFunds": "O clube não tem dinheiro suficiente para isso.",
+        "facilityAtTop": "Esta instalação já está no nível máximo.",
+        "wageBudgetExceeded": "Depois deste lance o clube precisa manter dinheiro para sete dias de salários."
+      },
+      "auction": {
+        "marketClosed": "O mercado de transferências está fechado nesta temporada.",
+        "notFound": "Este leilão não existe.",
+        "playerNotListable": "Este jogador não pode ir a leilão: não é seu, se aposentou ou está lesionado.",
+        "alreadyListed": "Este jogador já está em leilão.",
+        "cooldownActive": "Este jogador mudou de clube há pouco tempo; não pode ser vendido antes de {{until}}.",
+        "squadTooSmall": "Vendê-lo deixaria o elenco abaixo do mínimo que o mercado permite.",
+        "squadFull": "Comprá-lo deixaria o elenco acima do máximo que o mercado permite.",
+        "seasonClosing": "Um leilão agora ainda estaria aberto no fim da temporada. Coloque-o à venda na próxima temporada.",
+        "outOfPriceBand": "O preço deve estar entre {{min}} e {{max}}.",
+        "bidTooLow": "O lance deve ser de pelo menos {{minimum}}.",
+        "maxActiveBidsReached": "Você já tem dinheiro retido em três leilões; espere um terminar.",
+        "selfBiddingForbidden": "Você não pode dar lance no seu próprio jogador.",
+        "listingExpired": "Este leilão terminou.",
+        "alreadyLeading": "Você já está na frente neste leilão.",
+        "notCancellable": "Só é possível retirar a sua própria venda sem lances, nunca uma forçada."
       }
     },
     "sender": {

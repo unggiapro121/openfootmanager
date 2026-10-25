@@ -45,7 +45,8 @@
       "training": "Allenamento",
       "league": "Campionato",
       "schedule": "Calendario",
-      "friendly": "Amichevoli"
+      "friendly": "Amichevoli",
+      "finance": "Finanze"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -54,7 +55,8 @@
     "header": {
       "season": "Stagione {{number}}",
       "seasonDay": "Stagione {{number}} · Giorno {{day}}/{{total}}",
-      "nextKickoff": "Prossima partita tra {{time}}"
+      "nextKickoff": "Prossima partita tra {{time}}",
+      "cash": "Liquidità del club: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} g {{clock}}"
@@ -375,6 +377,40 @@
       "addedDials": "Istruzioni: {{list}}",
       "addedRoles": "Ruoli: {{list}}",
       "addedNothing": "Niente di nuovo"
+    },
+    "finance": {
+      "title": "Finanze del club",
+      "noEconomy": "Questa stagione si gioca senza denaro: ancora niente da mostrare.",
+      "arrears": "Il club deve stipendi da {{days}} giorni (dal {{since}}). I giocatori recuperano più lentamente e perdono forma ogni giorno; dopo {{limit}} giorni il giocatore più pagato va all'asta.",
+      "cash": "Liquidità",
+      "held": "Bloccato per le offerte",
+      "wageBill": "Stipendi settimanali",
+      "wagePerDay": "circa {{amount}} per giorno di stagione",
+      "season": "Questa stagione",
+      "seasonEmpty": "Nessun movimento ancora in questa stagione.",
+      "total": "Totale",
+      "kind": {
+        "opening": "Liquidità iniziale",
+        "tickets": "Incassi da biglietti",
+        "reward": "Premio di lega",
+        "wage": "Stipendi",
+        "facility": "Strutture",
+        "settle": "Trasferimenti",
+        "bid": "Offerte bloccate e restituite",
+        "cancel": "Aste annullate",
+        "adjust": "Rettifiche",
+        "reversal": "Storni",
+        "grantReset": "Azzeramento con la nuova rosa"
+      },
+      "ledger": "Movimenti",
+      "ledgerEmpty": "Ancora nessun movimento.",
+      "more": "Mostra altro",
+      "account": {
+        "cash": "liquidità",
+        "held": "bloccato"
+      },
+      "nextCost": "Livello successivo: {{cost}}",
+      "upgraded": "{{facility}} migliorato al livello {{level}}."
     }
   },
   "coach": {
@@ -4005,6 +4041,30 @@
         "notFinished": "La partita di questa stanza non è ancora finita.",
         "roomClosed": "In questa stanza non si può più giocare, quindi è stata chiusa.",
         "conflict": "La stanza è cambiata nel frattempo. Guardala di nuovo."
+      },
+      "economy": {
+        "disabled": "Questa stagione si gioca senza denaro.",
+        "clubLocked": "Le finanze del club sono bloccate per un controllo: per ora niente offerte, vendite o miglioramenti.",
+        "insufficientFunds": "Il club non ha abbastanza liquidità per questo.",
+        "facilityAtTop": "Questa struttura è già al livello massimo.",
+        "wageBudgetExceeded": "Dopo questa offerta il club deve avere ancora liquidità per sette giorni di stipendi."
+      },
+      "auction": {
+        "marketClosed": "Il mercato dei trasferimenti è chiuso in questa stagione.",
+        "notFound": "Questa asta non esiste.",
+        "playerNotListable": "Questo giocatore non può andare all'asta: non è tuo, si è ritirato o è infortunato.",
+        "alreadyListed": "Questo giocatore è già all'asta.",
+        "cooldownActive": "Questo giocatore ha cambiato club da troppo poco; non può essere rivenduto prima di {{until}}.",
+        "squadTooSmall": "Venderlo porterebbe la rosa sotto il minimo consentito dal mercato.",
+        "squadFull": "Comprarlo porterebbe la rosa oltre il massimo consentito dal mercato.",
+        "seasonClosing": "Un'asta adesso sarebbe ancora aperta alla fine della stagione. Mettilo in vendita la prossima stagione.",
+        "outOfPriceBand": "Il prezzo deve essere tra {{min}} e {{max}}.",
+        "bidTooLow": "L'offerta deve essere almeno {{minimum}}.",
+        "maxActiveBidsReached": "Hai già denaro bloccato in tre aste; aspetta che una finisca.",
+        "selfBiddingForbidden": "Non puoi fare offerte per un tuo giocatore.",
+        "listingExpired": "Questa asta è terminata.",
+        "alreadyLeading": "Sei già in testa a questa asta.",
+        "notCancellable": "Si può ritirare solo una tua vendita senza offerte, mai una forzata."
       }
     },
     "sender": {

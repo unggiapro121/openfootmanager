@@ -13,8 +13,15 @@ const ADMIN_ONLY_PREFIXES = [
   "be.error.contentPack.",
   "be.error.world.",
   "be.error.ruleset.",
+  // A SuperAdmin's ledger adjustments and reversals (S-10 §3.9).
+  "be.error.ledger.",
 ];
-const ADMIN_ONLY = ["be.error.season.none", "be.error.season.alreadyExists"];
+const ADMIN_ONLY = [
+  "be.error.season.none",
+  "be.error.season.alreadyExists",
+  // Only the SuperAdmin's unlock of a club's economy answers it (S-10 S10-15).
+  "be.error.economy.notLocked",
+];
 
 /** The proxy's own codes (`src-tauri/src/application/online`) and the client's (`client.ts`). */
 const ONLINE_CODES = [
