@@ -1,5 +1,5 @@
 import type { EnginePlayerData, EngineTeamData, MatchSnapshot } from "../../components/match/types";
-import type { MineView, ProjectedPlayer, SquadPlayerView } from "../api";
+import type { MineView, PlayerRoleLine, ProjectedPlayer, SquadPlayerView } from "../api";
 import type { Side } from "../api/engine";
 import type { LiveSide, OnlineMatchState } from "./matchState";
 
@@ -8,10 +8,9 @@ import type { LiveSide, OnlineMatchState } from "./matchState";
  * online coach has the very panel the offline one does: the pitch with its bench, the changes, the
  * swap of two players, the roles, the shape and the style.
  *
- * The coach's side has what only the coach knows, from their squad: the attributes, his rating at
- * each position and his condition. The squad is read at the match's start, so a player's condition
- * is what he kicked off with: the server does not send it live. The other side has only what the
- * frames show (a name, a position, an overall).
+ * The coach's side has what only the coach knows: each player's condition as the match stands
+ * (`/mine`, live), and from their squad his attributes and his rating at each position. The other
+ * side has only what the frames show (a name, a position, an overall).
  */
 
 const NO_ATTRIBUTES = {
@@ -47,18 +46,20 @@ const NO_ATTRIBUTES = {
 function playerOf(
   player: ProjectedPlayer,
   squad: Map<string, SquadPlayerView>,
-  roles: Map<string, string>,
+  lines: Map<string, PlayerRoleLine>,
 ): EnginePlayerData {
   const own = squad.get(player.id);
+  const line = lines.get(player.id);
   return {
     id: player.id,
     name: player.matchName,
     position: player.position,
     ovr: player.ovr,
-    condition: own?.condition ?? 100,
+    // Live from the match; the squad's (as he kicked off) only if the match has not said.
+    condition: line?.condition ?? own?.condition ?? 100,
     ...(own ? { ...NO_ATTRIBUTES, ...own.attributes } : NO_ATTRIBUTES),
     traits: [],
-    role: roles.get(player.id) ?? "",
+    role: line?.role ?? "",
     ...(own ? { position_ratings: own.positionRatings } : {}),
   };
 }
@@ -67,14 +68,14 @@ function teamOf(
   key: "home" | "away",
   side: LiveSide,
   squad: Map<string, SquadPlayerView>,
-  roles: Map<string, string>,
+  lines: Map<string, PlayerRoleLine>,
 ): EngineTeamData {
   return {
     id: key,
     name: side.name,
     formation: side.formation,
     play_style: side.playStyle,
-    players: side.eleven.map((player) => playerOf(player, squad, roles)),
+    players: side.eleven.map((player) => playerOf(player, squad, lines)),
   };
 }
 
@@ -104,9 +105,9 @@ export function toSubPanelSnapshot(
 ): MatchSnapshot {
   const bySide = (side: Side) => (side === mine.side ? mine : null);
   const known = new Map(squad.map((player) => [player.id, player]));
-  const roles = new Map<string, string>(mine.roles.map((line) => [line.playerId, line.role]));
+  const roles = new Map(mine.roles.map((line) => [line.playerId, line]));
   const none = new Map<string, SquadPlayerView>();
-  const noRoles = new Map<string, string>();
+  const noRoles = new Map<string, PlayerRoleLine>();
   const home = bySide("Home") !== null;
   const benchOf = (side: LiveSide, own: boolean) =>
     side.bench.map((player) => playerOf(player, own ? known : none, own ? roles : noRoles));
