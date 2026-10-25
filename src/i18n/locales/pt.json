@@ -526,7 +526,8 @@
         "changedUnnamed": "Algo mudou no mercado."
       },
       "ai": "IA",
-      "aiClub": "Clube gerido pela IA"
+      "aiClub": "Clube gerido pela IA",
+      "freeAgent": "Jogador livre"
     },
     "rename": {
       "open": "Mudar nome",

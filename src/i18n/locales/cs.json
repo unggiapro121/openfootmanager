@@ -526,7 +526,8 @@
         "changedUnnamed": "Na trhu se něco změnilo."
       },
       "ai": "UI",
-      "aiClub": "Klub řízený UI"
+      "aiClub": "Klub řízený UI",
+      "freeAgent": "Volný hráč"
     },
     "rename": {
       "open": "Přejmenovat",

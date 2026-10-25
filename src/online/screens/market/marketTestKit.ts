@@ -34,6 +34,7 @@ export function auction(overrides: Partial<AuctionView> = {}): AuctionView {
     sellerClubId: "club-2",
     sellerName: "Sóng Biển Đà Nẵng",
     sellerIsBot: false,
+    freeAgent: false,
     leaderIsBot: false,
     forced: false,
     status: "active",

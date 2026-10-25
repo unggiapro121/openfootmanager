@@ -526,7 +526,8 @@
         "changedUnnamed": "Something changed on the market."
       },
       "ai": "AI",
-      "aiClub": "Club run by the AI"
+      "aiClub": "Club run by the AI",
+      "freeAgent": "Free agent"
     },
     "rename": {
       "open": "Rename",

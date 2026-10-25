@@ -526,7 +526,8 @@
         "changedUnnamed": "Pazarda bir değişiklik var."
       },
       "ai": "YZ",
-      "aiClub": "Yapay zekânın yönettiği kulüp"
+      "aiClub": "Yapay zekânın yönettiği kulüp",
+      "freeAgent": "Serbest oyuncu"
     },
     "rename": {
       "open": "Yeniden adlandır",
