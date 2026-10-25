@@ -44,6 +44,10 @@ export const ERROR_CODES = [
   "be.error.club.nameTaken",
   "be.error.club.nameBlocked",
   "be.error.club.renameLimit",
+  "be.error.rename.itemRequired",
+  "be.error.name.filtered",
+  "be.error.player.notYours",
+  "be.error.player.listed",
   "be.error.match.notLive",
   "be.error.match.notYourSide",
   "be.error.match.tooManyCommands",
@@ -94,6 +98,7 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.account.regionChangeTooSoon": ["availableAt"],
   "be.error.club.matchUnderway": ["kickoffAt"],
   "be.error.club.lineupLocked": ["kickoffAt"],
+  "be.error.rename.itemRequired": ["item"],
   "be.error.friendly.leagueMatchSoon": ["kickoffAt"],
   "be.error.auction.cooldownActive": ["until"],
   "be.error.auction.outOfPriceBand": ["min", "max"],
@@ -105,6 +110,7 @@ export type ErrorParams = {
   "be.error.account.regionChangeTooSoon": { availableAt: string | number };
   "be.error.club.matchUnderway": { kickoffAt: string | number };
   "be.error.club.lineupLocked": { kickoffAt: string | number };
+  "be.error.rename.itemRequired": { item: string | number };
   "be.error.friendly.leagueMatchSoon": { kickoffAt: string | number };
   "be.error.auction.cooldownActive": { until: string | number };
   "be.error.auction.outOfPriceBand": { min: string | number; max: string | number };

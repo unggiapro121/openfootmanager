@@ -80,7 +80,7 @@
       "title": "Votre club",
       "rename": "Renommer",
       "renameLabel": "Nouveau nom du club",
-      "renameHint": "Vous pouvez renommer votre club une fois par saison.",
+      "renameHint": "Le premier changement de nom de votre club est gratuit ; les suivants demandent une carte de changement de nom de club.",
       "save": "Enregistrer",
       "stadium": "{{name}} ({{capacity}} places)"
     },
@@ -523,6 +523,18 @@
         "forcedUnnamed": "Un joueur a été mis aux enchères car le club doit des salaires.",
         "changed": "Du nouveau dans l'enchère pour {{player}}.",
         "changedUnnamed": "Du nouveau sur le marché."
+      }
+    },
+    "rename": {
+      "open": "Renommer",
+      "title": "Renommer {{player}}",
+      "fullName": "Nom complet",
+      "matchName": "Nom sur le terrain",
+      "hint": "Nom complet de {{full}} caractères, nom sur le terrain de {{match}}. Le premier changement de nom d'un joueur est gratuit ; les suivants demandent une carte de changement de nom de joueur.",
+      "save": "Enregistrer les noms",
+      "itemRequired": {
+        "playerRename": "Ce joueur a déjà utilisé son changement de nom gratuit. Le renommer encore demande une carte de changement de nom de joueur (dans une prochaine mise à jour).",
+        "clubRename": "Votre club a déjà utilisé son changement de nom gratuit. Le renommer encore demande une carte de changement de nom de club (dans une prochaine mise à jour)."
       }
     }
   },
@@ -4178,6 +4190,16 @@
         "listingExpired": "Cette enchère est terminée.",
         "alreadyLeading": "Vous menez déjà cette enchère.",
         "notCancellable": "Seule votre propre mise en vente sans enchère peut être retirée, jamais une vente forcée."
+      },
+      "rename": {
+        "itemRequired": "Ce changement de nom demande une carte que vous n'avez pas encore ({{item}})."
+      },
+      "name": {
+        "filtered": "Ce nom contient un mot interdit."
+      },
+      "player": {
+        "notYours": "Ce joueur n'est pas dans votre club.",
+        "listed": "Un joueur mis aux enchères garde son nom jusqu'à la fin de l'enchère."
       }
     },
     "sender": {

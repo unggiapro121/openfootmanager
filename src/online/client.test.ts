@@ -175,6 +175,19 @@ describe("online client", () => {
     ]);
   });
 
+  // Given a coach who renames one of his players (S-14),
+  // when the request goes out,
+  // then it is a PATCH of the player's name with both names and a key.
+  it("renames a player with both his names", async () => {
+    await online.players.rename("p-1", "Lionel Messi", "Messi", "key-1");
+    expect(server.sent[0]).toEqual({
+      method: "PATCH",
+      segments: ["v1", "players", "p-1", "name"],
+      idempotencyKey: "key-1",
+      body: { fullName: "Lionel Messi", matchName: "Messi" },
+    });
+  });
+
   // Given a coach who sets his eleven, then sends the same action again with its key,
   // when the requests go out,
   // then the setup carries If-Match and a key, and the retry carries the same key; a new action
