@@ -41,7 +41,7 @@ interface PlayerProfileHeroCardProps {
 }
 
 /** One cell of the hero's stat strip: a small label over its value. */
-function HeroStat({ label, children }: { label: string; children: ReactNode }) {
+export function HeroStat({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="min-w-0">
       <dt className="text-[10px] font-heading font-bold uppercase tracking-widest text-gray-500">

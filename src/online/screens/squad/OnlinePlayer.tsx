@@ -2,6 +2,9 @@ import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { Shield } from "lucide-react";
+import { formatPlayerPhysique } from "../../../components/playerProfile/PlayerProfile.helpers";
+import { HeroStat, WeakFootRating } from "../../../components/playerProfile/PlayerProfileHeroCard";
+import { TraitList } from "../../../components/TraitBadge";
 import PlayerProfileAttributesCard from "../../../components/playerProfile/PlayerProfileAttributesCard";
 import PlayerProfileInjuryBanner from "../../../components/playerProfile/PlayerProfileInjuryBanner";
 import {
@@ -168,10 +171,30 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
                 {t("common.age")} {player.age}
               </span>
             </div>
+            {/* Feet and build, as the offline profile shows them. */}
+            <dl className="mt-3 grid max-w-xl grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
+              <HeroStat label={t("common.footednessLabel")}>
+                {t(`common.footedness.${player.footedness}`)}
+              </HeroStat>
+              <HeroStat label={t("common.weakFoot")}>
+                <WeakFootRating value={player.weakFoot} />
+              </HeroStat>
+              <HeroStat label={t("common.height")}>
+                {formatPlayerPhysique(player.heightCm, "centimeter", i18n.language)}
+              </HeroStat>
+              <HeroStat label={t("common.weight")}>
+                {formatPlayerPhysique(player.weightKg, "kilogram", i18n.language)}
+              </HeroStat>
+            </dl>
             <p className="mt-2 flex items-center gap-1.5 text-sm text-gray-400">
               <Shield className="h-4 w-4" aria-hidden />
               {club.club.name}
             </p>
+            {player.traits.length > 0 && (
+              <div className="mt-3">
+                <TraitList traits={player.traits} size="sm" />
+              </div>
+            )}
             <div className="mt-3">
               <PotentialStars stars={player.potentialStars} />
             </div>
