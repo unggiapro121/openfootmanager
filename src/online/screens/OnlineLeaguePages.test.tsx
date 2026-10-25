@@ -156,6 +156,9 @@ describe("the club's season", () => {
     expect(
       server.requests.filter((request) => request.segments.join("/") === "v1/clubs/mine/fixtures"),
     ).toHaveLength(1);
+    // The first round still to play is the next match, marked once; a settled one shows its score.
+    expect(within(list).getAllByText("schedule.nextMatch")).toHaveLength(1);
+    expect(within(list).getAllByText("2 - 0")).toHaveLength(1);
   });
 });
 
