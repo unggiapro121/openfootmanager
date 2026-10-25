@@ -249,7 +249,8 @@
       "rolesTitle": "Funções dos jogadores",
       "rolePlayer": "Jogador",
       "roleChoice": "Função",
-      "changeRole": "Mudar função"
+      "changeRole": "Mudar função",
+      "orderRefused": "O jogo não aceitou essa ordem: {{reason}}"
     },
     "replay": {
       "title": "Repetição",
