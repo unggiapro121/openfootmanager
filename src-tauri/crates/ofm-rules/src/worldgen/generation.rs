@@ -8,51 +8,13 @@ use domain::team::PlayStyle;
 use rand::{Rng, RngExt};
 
 use super::definitions::{NamePool, NamesDefinition};
-use super::physique::{BodyLinks, Physique, correlated_jitter, correlated_range, sample_physique};
+use super::physique::{BodyLinks, Physique, correlated_jitter, sample_physique};
 use crate::nations;
 use crate::player_rating::refresh_player_derived;
 
 // ---------------------------------------------------------------------------
 // Helper functions for world generation
 // ---------------------------------------------------------------------------
-
-/// Compute a sensible alternate position based on primary position and attributes.
-fn compute_alternate_position(primary: &Position, attrs: &PlayerAttributes) -> Option<Position> {
-    // Thresholds tuned on the pre-split blends.
-    let attrs = &attrs.with_legacy_blends(primary.to_group_position() == Position::Goalkeeper);
-    match primary.to_group_position() {
-        Position::Goalkeeper => None,
-        Position::Defender => {
-            // Defenders with good passing/vision → Midfielder
-            if attrs.passing >= 65 && attrs.vision >= 60 {
-                Some(Position::Midfielder)
-            } else {
-                None
-            }
-        }
-        Position::Midfielder => {
-            // Midfielders with strong defending/tackling → Defender
-            if attrs.defending >= 65 && attrs.tackling >= 60 {
-                Some(Position::Defender)
-            }
-            // Midfielders with good shooting/dribbling → Forward
-            else if attrs.shooting >= 65 && attrs.dribbling >= 60 {
-                Some(Position::Forward)
-            } else {
-                None
-            }
-        }
-        Position::Forward => {
-            // Forwards with good passing/vision → Midfielder
-            if attrs.passing >= 65 && attrs.vision >= 60 {
-                Some(Position::Midfielder)
-            } else {
-                None
-            }
-        }
-        _ => None,
-    }
-}
 
 /// Pick a nationality: 60% the club's own country, 40% from the wider draw.
 ///
@@ -550,11 +512,83 @@ pub fn position_for_slot(index: usize) -> Position {
     }
 }
 
-/// The first squad slot that generates a senior player of this group.
+/// The first squad slot that generates a senior player of this group at a position drawn from
+/// the real mix (a flexible slot), for callers that want "a defender" and nothing more.
 pub fn senior_slot_for(group: &Position) -> usize {
     (0..SQUAD_SLOTS)
-        .find(|slot| position_for_slot(*slot) == *group && !is_youth_reserved_slot(*slot))
+        .find(|slot| {
+            position_for_slot(*slot) == *group
+                && !is_youth_reserved_slot(*slot)
+                && is_flexible_slot(*slot)
+        })
+        .or_else(|| {
+            (0..SQUAD_SLOTS)
+                .find(|slot| position_for_slot(*slot) == *group && !is_youth_reserved_slot(*slot))
+        })
         .unwrap_or(0)
+}
+
+/// Senior slots whose detailed position is drawn from the real mix of their group rather than
+/// fixed: a squad needs its centre-backs, full-backs, holding and wide midfielders and
+/// strikers, and varies from there.
+const FLEXIBLE_SLOTS: [usize; 7] = [6, 7, 12, 13, 14, 19, 20];
+
+pub fn is_flexible_slot(slot: usize) -> bool {
+    FLEXIBLE_SLOTS.contains(&slot)
+}
+
+/// Either flank, drawn.
+fn side(left: Position, right: Position, rng: &mut impl Rng) -> Position {
+    if rng.random_range(0..2) == 0 {
+        left
+    } else {
+        right
+    }
+}
+
+/// The detailed position a squad slot generates, or `None` for a youth-reserved slot, whose
+/// player has only his group until his position settles. The fixed slots give a squad its
+/// spine (two centre-backs and a full-back each side, a holding, a central and a wide
+/// midfielder, two strikers and a winger); the flexible ones draw from the shares real squads
+/// have — defenders 54% centre-backs, midfielders 21% holding, 31% central, 17% attacking,
+/// 31% wide, forwards 76% strikers.
+pub fn detailed_position_for_slot(index: usize, rng: &mut impl Rng) -> Option<Position> {
+    if is_youth_reserved_slot(index) {
+        return None;
+    }
+    let draw = rng.random_range(0..100u32);
+    Some(match index {
+        0 => Position::Goalkeeper,
+        2 | 3 => Position::CenterBack,
+        4 => Position::LeftBack,
+        5 => Position::RightBack,
+        6 | 7 => {
+            if draw < 54 {
+                Position::CenterBack
+            } else {
+                side(Position::LeftBack, Position::RightBack, rng)
+            }
+        }
+        9 => Position::DefensiveMidfielder,
+        10 => Position::CentralMidfielder,
+        11 => side(Position::LeftMidfielder, Position::RightMidfielder, rng),
+        12..=14 => match draw {
+            0..=20 => Position::DefensiveMidfielder,
+            21..=51 => Position::CentralMidfielder,
+            52..=68 => Position::AttackingMidfielder,
+            _ => side(Position::LeftMidfielder, Position::RightMidfielder, rng),
+        },
+        16 | 17 => Position::Striker,
+        18 => side(Position::LeftWinger, Position::RightWinger, rng),
+        19 | 20 => {
+            if draw < 76 {
+                Position::Striker
+            } else {
+                side(Position::LeftWinger, Position::RightWinger, rng)
+            }
+        }
+        _ => return None,
+    })
 }
 
 /// Remap a youth-reserved slot to the adjacent senior slot (same position group)
@@ -608,93 +642,13 @@ pub fn generate_random_player_from_def(
     let birth_day = rng.random_range(1..29);
     let dob = format!("{:04}-{:02}-{:02}", birth_year, birth_month, birth_day);
 
-    let group = position.to_group_position();
-    let is_gk = matches!(group, Position::Goalkeeper);
-    let is_def = matches!(group, Position::Defender);
-    let is_fwd = matches!(group, Position::Forward);
-
-    // The body comes first: the attributes it shapes are drawn to follow it.
-    let body = sample_physique(&position, None, None, rng);
-    let links = BodyLinks::for_position(&position);
-    let mut attributes = PlayerAttributes {
-        pace: correlated_range(40, 95, body.z_height, links.pace, rng),
-        stamina: rng.random_range(40..95),
-        strength: correlated_range(40, 95, body.z_weight, links.strength, rng),
-        agility: correlated_range(40, 95, body.z_height, links.agility, rng),
-        passing: rng.random_range(40..95),
-        // Shooting, and the long shots split out of it, by group as in the EA
-        // data: a defender's well under his level (centre-backs ~30 under,
-        // full-backs ~20), and a narrower band elsewhere than the flat 40–95 it
-        // used to be, whose spread made one generated attacker in three a
-        // habitual long-range shooter (see `assigned_traits`). Calibration then
-        // scales every player to his level, so the OVR lands where it did. One
-        // draw either way, so the random stream is unchanged.
-        shooting: if is_gk {
-            rng.random_range(20..50)
-        } else if is_def {
-            rng.random_range(25..65)
-        } else if is_fwd {
-            rng.random_range(55..86)
-        } else {
-            rng.random_range(50..76)
-        },
-        tackling: if is_gk || is_fwd {
-            rng.random_range(20..60)
-        } else {
-            rng.random_range(40..95)
-        },
-        dribbling: if is_gk {
-            rng.random_range(20..50)
-        } else {
-            rng.random_range(40..95)
-        },
-        defending: if is_gk {
-            rng.random_range(25..55)
-        } else if is_def {
-            rng.random_range(55..95)
-        } else {
-            rng.random_range(40..95)
-        },
-        positioning: rng.random_range(40..95),
-        vision: rng.random_range(40..95),
-        decisions: rng.random_range(40..95),
-        composure: rng.random_range(40..95),
-        aggression: rng.random_range(30..90),
-        teamwork: rng.random_range(45..95),
-        leadership: rng.random_range(30..90),
-        handling: if is_gk {
-            rng.random_range(50..95)
-        } else {
-            rng.random_range(10..35)
-        },
-        reflexes: if is_gk {
-            rng.random_range(50..95)
-        } else {
-            rng.random_range(20..50)
-        },
-        aerial: {
-            let (lo, hi) = if is_gk {
-                (50, 95)
-            } else if is_def {
-                (45, 90)
-            } else {
-                (30, 75)
-            };
-            correlated_range(lo, hi, body.z_height, links.aerial, rng)
-        },
-        // Drawn as the old blends above, then split into these seven by
-        // `attribute_split` once the position is known. Zero means "not yet".
-        long_passing: 0,
-        crossing: 0,
-        curve: 0,
-        free_kick: 0,
-        long_shots: 0,
-        first_touch: 0,
-        heading: 0,
-    };
-    // After every draw above, so the split consumes no randomness and the
-    // generated world is the same one it always was.
-    crate::attribute_split::split_legacy_attributes(&mut attributes, &position);
+    // The body comes first: the attributes it shapes are drawn to follow it. A squad player has
+    // his detailed position from the start; a young one has only his group, which his position
+    // settles into as he develops (see `player_identity`).
+    let detailed = detailed_position_for_slot(index, rng);
+    let draw_position = detailed.clone().unwrap_or_else(|| position.clone());
+    let body = sample_physique(&draw_position, None, None, rng);
+    let attributes = super::attribute_shape::draw_attributes(&draw_position, &body, rng);
 
     let current_year: u32 = opening_year;
     let contract_years = if age <= 21 {
@@ -726,12 +680,9 @@ pub fn generate_random_player_from_def(
     player.condition = rng.random_range(75..100);
     player.morale = rng.random_range(40..76);
 
-    // ~40% of outfield players get an alternate position based on attributes
-    if !is_gk && rng.random_range(0..5) < 2 {
-        let alt = compute_alternate_position(&player.position, &player.attributes);
-        if let Some(pos) = alt {
-            player.alternate_positions.push(pos);
-        }
+    if let Some(detailed) = detailed {
+        player.natural_position = detailed;
+        crate::player_identity::settle_secondary_identity(&mut player);
     }
 
     // Set position-weighted OVR, potential, and traits (Wonderkid included if applicable)
