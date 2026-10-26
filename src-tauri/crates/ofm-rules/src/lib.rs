@@ -26,6 +26,8 @@ pub mod attribute_split;
 pub mod coach_progress;
 pub mod economy;
 pub mod facilities;
+pub mod items;
+pub mod level_caps;
 pub mod licence;
 pub mod lineup_assignment;
 pub mod market_ai;
