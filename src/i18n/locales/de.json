@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "Die Beherrschung wächst in Ligaspielen, die Sie selbst leiten, nicht in denen, die die KI für Sie spielt."
+    },
+    "player": {
+      "avatarChange": "Foto ändern",
+      "avatarTitle": "Foto von {{name}}",
+      "avatarHint": "Wähle ein Gesicht aus dem Pool von {{nation}} oder sende ein eigenes Bild. Ein gesendetes Bild siehst nur du.",
+      "avatarUploadHint": "Ein JPEG-, PNG- oder WebP-Bild, vor dem Senden quadratisch zugeschnitten und verkleinert.",
+      "nationalityChange": "Nationalität ändern",
+      "nationalityTitle": "Nationalität von {{name}}",
+      "nationalityHint": "Die angebotenen Gesichter folgen seiner Nationalität.",
+      "nationalitySave": "Nationalität ändern"
     }
   },
   "coach": {

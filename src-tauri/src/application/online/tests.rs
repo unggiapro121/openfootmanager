@@ -214,6 +214,49 @@ fn the_coach_s_picture_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview picks a player's face, sends, reads and removes his picture and changes his
+/// nationality, and tries other methods,
+/// then each goes out to its own route with its method, and the other methods are refused.
+#[test]
+fn a_player_s_look_is_five_routes() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    for (method, last) in [
+        ("PATCH", "avatar"),
+        ("GET", "avatar-image"),
+        ("PUT", "avatar-image"),
+        ("DELETE", "avatar-image"),
+        ("PATCH", "nationality"),
+    ] {
+        send(&session, &request(method, &["v1", "players", id, last]), 0).expect("an answer");
+    }
+    for (method, last) in [
+        ("PUT", "avatar"),
+        ("POST", "avatar-image"),
+        ("GET", "nationality"),
+    ] {
+        assert_eq!(
+            refused(send(
+                &session,
+                &request(method, &["v1", "players", id, last]),
+                0
+            )),
+            "be.error.online.routeNotAllowed",
+            "{method} {last}"
+        );
+    }
+    let sent: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    assert_eq!(sent.len(), 5);
+    assert_eq!(
+        sent[4],
+        ("PATCH".to_string(), format!("/v1/players/{id}/nationality"))
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview sets a player's shirt number and tries the route with another method,
 /// then it goes out to `/v1/players/{id}/shirt` as a PATCH, and the other method is refused.
 #[test]

@@ -11,6 +11,9 @@ export interface PlayerPortraitIdentity {
   match_name?: string | null;
   nationality?: string | null;
   date_of_birth?: string | null;
+  /** Another face from the same pool: the coach picked it (online); the portrait is drawn from
+   * the player's id and this together. */
+  portrait_seed?: string | null;
 }
 
 export interface GeneratedPlayerPortrait {
@@ -67,14 +70,22 @@ export function canGenerateRuntimePlayerPortraits(): boolean {
 }
 
 export function runtimePortraitIdentityKey(player: PlayerPortraitIdentity): string {
-  return [player.id, player.full_name, player.match_name, player.nationality, player.date_of_birth]
+  return [
+    player.id,
+    player.full_name,
+    player.match_name,
+    player.nationality,
+    player.date_of_birth,
+    player.portrait_seed,
+  ]
     .map((part) => part?.trim().toLowerCase() || "-")
     .join("|");
 }
 
 function toPortraitRequest(player: PlayerPortraitIdentity) {
-  const fallbackId =
+  const baseId =
     player.id || player.full_name || player.match_name || runtimePortraitIdentityKey(player);
+  const fallbackId = player.portrait_seed ? `${baseId}:${player.portrait_seed}` : baseId;
 
   return {
     playerId: fallbackId,

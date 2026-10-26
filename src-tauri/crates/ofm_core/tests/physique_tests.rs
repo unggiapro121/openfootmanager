@@ -119,7 +119,10 @@ fn the_attributes_a_body_shapes_follow_it() {
     let aerial = link(height, |p| f64::from(p.attributes.aerial));
     let strength = link(weight, |p| f64::from(p.attributes.strength));
     let agility = link(height, |p| f64::from(p.attributes.agility));
-    assert!((aerial - 0.55).abs() < 0.12, "height–aerial r = {aerial:.2}");
+    assert!(
+        (aerial - 0.55).abs() < 0.12,
+        "height–aerial r = {aerial:.2}"
+    );
     assert!(
         (strength - 0.68).abs() < 0.12,
         "weight–strength r = {strength:.2}"

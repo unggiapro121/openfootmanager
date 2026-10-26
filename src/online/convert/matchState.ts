@@ -305,7 +305,11 @@ const everyone = (state: OnlineMatchState) => [
  * own club (`squad`) carries the identity his squad page draws his portrait from, so his face is
  * the same in the match; the others are known by what the frames say.
  */
-export function toRadarRoster(state: OnlineMatchState, squad: SquadPlayerView[] = []): RadarRoster {
+export function toRadarRoster(
+  state: OnlineMatchState,
+  squad: SquadPlayerView[] = [],
+  pictures: Readonly<Record<string, string>> = {},
+): RadarRoster {
   const own = new Map(squad.map((player) => [player.id, player]));
   return new Map(
     everyone(state).map((player) => {
@@ -315,6 +319,8 @@ export function toRadarRoster(state: OnlineMatchState, squad: SquadPlayerView[] 
         {
           id: player.id,
           nationality: known?.nationality ?? null,
+          portrait_seed: known?.avatarSeed ?? null,
+          ...(pictures[player.id] ? { media: { face: pictures[player.id] } } : {}),
           full_name: known?.fullName ?? player.matchName,
           match_name: player.matchName,
           jersey_number: player.shirtNumber ?? null,

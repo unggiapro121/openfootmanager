@@ -206,6 +206,7 @@ export function squadPlayer(overrides: Partial<SquadPlayerView> = {}): SquadPlay
     heightCm: 178,
     weightKg: 72,
     traits: [],
+    hasAvatarImage: false,
     nationality: "VN",
     age: 23,
     ovr: 64,

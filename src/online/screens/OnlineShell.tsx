@@ -8,6 +8,7 @@ import { OnlineClockProvider, useOnlineNow } from "../clock";
 import { refreshClub, refreshLeague, refreshSeason, useOnlineStore } from "../store/onlineStore";
 import { AccountWatcher } from "./AccountWatcher";
 import { LeagueWatcher } from "./LeagueWatcher";
+import { PlayerPictureSync } from "./PlayerPictureSync";
 import { LeaveGuardProvider } from "./leaveGuard";
 import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
@@ -68,6 +69,7 @@ export default function OnlineShell() {
         <DayTurnWatcher />
         <AccountWatcher />
         <LeagueWatcher />
+        <PlayerPictureSync />
         <OnlineNotices />
         <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
           <OnlineSidebar />
