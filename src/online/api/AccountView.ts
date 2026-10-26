@@ -10,4 +10,8 @@ export type AccountView = { id: string, email: string, firstName: string, lastNa
 /**
  * `AsiaSoutheast`, `AsiaEast`, `Europe` or `Americas`: the fork's `CoachRegion`.
  */
-region: CoachRegion, status: AccountStatus, capabilities: Array<Capability>, };
+region: CoachRegion, status: AccountStatus, capabilities: Array<Capability>, 
+/**
+ * The seed of the coach's portrait, when he picked one.
+ */
+avatarSeed?: string, };

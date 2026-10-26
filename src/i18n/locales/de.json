@@ -149,7 +149,14 @@
       "confirmTitle": "Region wechseln?",
       "confirmBody": "Dein aktueller Verein geht sofort an seinen Bot zurück. Danach übernimmst du einen Verein unverändert in der neuen Region, höchstens einmal pro Saison.",
       "confirm": "Ja, Region wechseln",
-      "changed": "Region gewechselt. Übernimm einen Verein in deiner neuen Region."
+      "changed": "Region gewechselt. Übernimm einen Verein in deiner neuen Region.",
+      "avatarChange": "Foto ändern",
+      "avatarTitle": "Wähle dein Foto",
+      "avatarHint": "Wähle ein Gesicht oder zeige weitere an. Deine Wahl wird in deinem Konto gespeichert.",
+      "avatarOption": "Gesicht {{number}}",
+      "avatarMore": "Weitere zeigen",
+      "avatarClear": "Standard verwenden",
+      "avatarSave": "Dieses Foto verwenden"
     },
     "tactics": {
       "locked": "Die Aufstellung ist für das Spiel um {{time}} gesperrt. Nach dem Spiel kannst du sie wieder ändern.",

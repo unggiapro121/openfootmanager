@@ -149,7 +149,14 @@
       "confirmTitle": "Ganti wilayah?",
       "confirmBody": "Klubmu saat ini langsung kembali ke bot-nya. Lalu kamu mengambil alih klub apa adanya di wilayah baru, paling banyak sekali per musim.",
       "confirm": "Ya, ganti wilayah",
-      "changed": "Wilayah sudah diganti. Ambil alih klub di wilayah barumu."
+      "changed": "Wilayah sudah diganti. Ambil alih klub di wilayah barumu.",
+      "avatarChange": "Ganti foto",
+      "avatarTitle": "Pilih foto Anda",
+      "avatarHint": "Pilih wajah atau tampilkan wajah lain. Pilihan Anda disimpan di akun Anda.",
+      "avatarOption": "Wajah {{number}}",
+      "avatarMore": "Tampilkan lainnya",
+      "avatarClear": "Pakai bawaan",
+      "avatarSave": "Pakai foto ini"
     },
     "tactics": {
       "locked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa mengubahnya lagi setelah laga selesai.",

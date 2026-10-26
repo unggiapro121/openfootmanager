@@ -149,7 +149,14 @@
       "confirmTitle": "Bölge değiştirilsin mi?",
       "confirmBody": "Şu anki kulübün hemen kendi botuna geri döner. Ardından yeni bölgede bir kulübü olduğu gibi devralırsın; bu en fazla sezonda bir kez olur.",
       "confirm": "Evet, bölgeyi değiştir",
-      "changed": "Bölge değiştirildi. Yeni bölgende bir kulübü devral."
+      "changed": "Bölge değiştirildi. Yeni bölgende bir kulübü devral.",
+      "avatarChange": "Fotoğrafı değiştir",
+      "avatarTitle": "Fotoğrafınızı seçin",
+      "avatarHint": "Bir yüz seçin veya başkalarını gösterin. Seçiminiz hesabınızda saklanır.",
+      "avatarOption": "Yüz {{number}}",
+      "avatarMore": "Başkalarını göster",
+      "avatarClear": "Varsayılanı kullan",
+      "avatarSave": "Bu fotoğrafı kullan"
     },
     "tactics": {
       "locked": "{{time}} maçı için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin.",

@@ -149,7 +149,14 @@
       "confirmTitle": "Mudar de região?",
       "confirmBody": "O teu clube atual volta de imediato ao seu bot. Depois assumes um clube tal como está na nova região, no máximo uma vez por época.",
       "confirm": "Sim, mudar de região",
-      "changed": "Região alterada. Assume um clube na tua nova região."
+      "changed": "Região alterada. Assume um clube na tua nova região.",
+      "avatarChange": "Mudar foto",
+      "avatarTitle": "Escolha a sua foto",
+      "avatarHint": "Escolha um rosto ou mostre outros. A sua escolha fica guardada na sua conta.",
+      "avatarOption": "Rosto {{number}}",
+      "avatarMore": "Mostrar outros",
+      "avatarClear": "Usar a predefinida",
+      "avatarSave": "Usar esta foto"
     },
     "tactics": {
       "locked": "A equipa titular está bloqueada para o jogo das {{time}}. Podes alterá-la quando o jogo terminar.",

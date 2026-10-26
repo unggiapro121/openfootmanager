@@ -4,4 +4,8 @@ import type { CoachRegion } from "./domain/CoachRegion";
 /**
  * `PATCH /v1/me`: only the fields present change.
  */
-export type UpdateAccount = { firstName?: string, lastName?: string, dateOfBirth?: string, nationality?: string, region?: CoachRegion, };
+export type UpdateAccount = { firstName?: string, lastName?: string, dateOfBirth?: string, nationality?: string, region?: CoachRegion, 
+/**
+ * The seed of his portrait: 1 to 32 letters, digits, `-` or `_`; an empty one takes it away.
+ */
+avatarSeed?: string, };

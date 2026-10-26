@@ -404,4 +404,38 @@ describe("changing region", () => {
     fireEvent.click(await screen.findByRole("button", { name: "online.takeover.button" }));
     expect(await screen.findByLabelText("location")).toHaveTextContent("/online/takeover");
   });
+
+  // Given a coach with no chosen photo,
+  // when he opens the photo picker, picks a face and saves,
+  // then the seed goes to his account, and the picker closes with the account answering.
+  it("lets the coach pick his photo", async () => {
+    const account = {
+      id: "a",
+      email: "dung@example.test",
+      firstName: "Dung",
+      lastName: "Ung",
+      dateOfBirth: "1990-01-01",
+      nationality: "VN",
+      region: "AsiaSoutheast",
+      status: "active",
+      capabilities: [],
+    };
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok(myClub()),
+      "GET v1/leagues/mine": ok(LEAGUE),
+      "GET v1/me": ok(account),
+      "PATCH v1/me": (request) =>
+        ok({ ...account, avatarSeed: (request.body as { avatarSeed: string }).avatarSeed }),
+    });
+    renderOnline("/online/profile");
+
+    fireEvent.click(await screen.findByRole("button", { name: "online.profile.avatarChange" }));
+    expect(screen.getByRole("button", { name: "online.profile.avatarSave" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "online.profile.avatarOption:7" }));
+    fireEvent.click(screen.getByRole("button", { name: "online.profile.avatarSave" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(sent("PATCH", "v1/me")[0].body).toEqual({ avatarSeed: "7" });
+  });
 });
