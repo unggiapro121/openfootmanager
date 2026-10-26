@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
+import { TraitList } from "../../components/TraitBadge";
 import ShirtNumberPicker from "./squad/ShirtNumberPicker";
 import { PlayerPositionBadges } from "../../components/squad/PlayerPositionBadges";
 import {
@@ -196,6 +197,9 @@ export default function OnlineSquad() {
                 {header("name", t("common.name"))}
                 {header("pos", t("squad.pos"))}
                 {header("potential", t("online.squad.potential"))}
+                <th scope="col" className={TH}>
+                  {t("squad.traits")}
+                </th>
                 {header("age", t("common.age"))}
                 {header("condition", t("common.condition"))}
                 {header("morale", t("common.morale"))}
@@ -303,6 +307,11 @@ function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boole
       </td>
       <td className="px-4 py-2.5">
         <PotentialStars stars={player.potentialStars} />
+      </td>
+      <td className="px-4 py-2.5">
+        <div className="min-w-20">
+          <TraitList traits={player.traits} size="xs" iconOnly />
+        </div>
       </td>
       <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
         {player.age}
