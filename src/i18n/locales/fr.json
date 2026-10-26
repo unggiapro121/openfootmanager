@@ -149,7 +149,14 @@
       "confirmTitle": "Changer de région ?",
       "confirmBody": "Votre club actuel retourne immédiatement à son bot. Vous reprenez ensuite un club tel quel dans la nouvelle région, au plus une fois par saison.",
       "confirm": "Oui, changer de région",
-      "changed": "Région changée. Reprenez un club dans votre nouvelle région."
+      "changed": "Région changée. Reprenez un club dans votre nouvelle région.",
+      "avatarChange": "Changer la photo",
+      "avatarTitle": "Choisissez votre photo",
+      "avatarHint": "Choisissez un visage ou affichez-en d'autres. Votre choix est gardé sur votre compte.",
+      "avatarOption": "Visage {{number}}",
+      "avatarMore": "Voir d'autres",
+      "avatarClear": "Utiliser celle par défaut",
+      "avatarSave": "Utiliser cette photo"
     },
     "tactics": {
       "locked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez la modifier une fois le match terminé.",

@@ -149,7 +149,14 @@
       "confirmTitle": "更换地区？",
       "confirmBody": "你当前的俱乐部会立即交还给它的机器人。之后你将在新地区按原样接手一家俱乐部，每个赛季最多一次。",
       "confirm": "确定更换地区",
-      "changed": "地区已更换。请在新地区接手一家俱乐部。"
+      "changed": "地区已更换。请在新地区接手一家俱乐部。",
+      "avatarChange": "更换头像",
+      "avatarTitle": "选择你的头像",
+      "avatarHint": "选择一张脸，或查看更多。你的选择会保存在账号中。",
+      "avatarOption": "头像 {{number}}",
+      "avatarMore": "查看更多",
+      "avatarClear": "使用默认头像",
+      "avatarSave": "使用此头像"
     },
     "tactics": {
       "locked": "{{time}} 开始的比赛首发阵容已锁定，比赛结束后才能再修改。",

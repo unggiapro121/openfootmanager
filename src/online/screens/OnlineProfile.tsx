@@ -14,6 +14,7 @@ import {
   tracked,
   useOnlineStore,
 } from "../store/onlineStore";
+import { CoachAvatarPicker, CoachPortrait } from "./CoachAvatar";
 import CoachMastery from "./CoachMastery";
 import CoachRoadmap from "./CoachRoadmap";
 import { useActionKey } from "./useActionKey";
@@ -27,6 +28,7 @@ export default function OnlineProfile() {
   const { t } = useTranslation();
   const [account, setAccount] = useState<AccountView | null>(null);
   const [error, setError] = useState<unknown>(null);
+  const [picking, setPicking] = useState(false);
 
   useEffect(() => {
     tracked(() => online.me.get())
@@ -41,13 +43,24 @@ export default function OnlineProfile() {
           {resolveBackendError(error)}
         </p>
       )}
-      <Card accent="primary" className="lg:col-span-3">
-        <div className="flex items-center gap-6 rounded-t-xl bg-gradient-to-r from-navy-700 to-navy-800 p-6">
+      <Card accent="primary" className="h-full lg:col-span-2">
+        <div className="flex h-full items-center gap-6 rounded-xl bg-gradient-to-r from-navy-700 to-navy-800 p-6">
           {account ? (
             <>
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border-2 border-primary-500/30 bg-primary-500/20 font-heading text-3xl font-bold text-primary-400">
-                {account.firstName.charAt(0)}
-                {account.lastName.charAt(0)}
+              <div className="flex shrink-0 flex-col items-center gap-2">
+                <CoachPortrait
+                  account={account}
+                  seed={account.avatarSeed}
+                  className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl border-2 border-primary-500/30 bg-primary-500/20 font-heading text-3xl font-bold text-primary-400"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-300"
+                  onClick={() => setPicking(true)}
+                >
+                  {t("online.profile.avatarChange")}
+                </Button>
               </div>
               <div className="min-w-0">
                 <h2 className="font-heading text-2xl font-bold uppercase tracking-wide text-white">
@@ -64,16 +77,23 @@ export default function OnlineProfile() {
           )}
         </div>
       </Card>
-      <CoachMastery />
-      <CoachRoadmap />
       {account && (
-        <Card>
+        <Card className="h-full">
           <CardHeader>{t("online.profile.region")}</CardHeader>
           <CardBody className="text-sm text-gray-700 dark:text-gray-300">
             <RegionChange account={account} onChanged={setAccount} />
           </CardBody>
         </Card>
       )}
+      {account && picking && (
+        <CoachAvatarPicker
+          account={account}
+          onSaved={setAccount}
+          onClose={() => setPicking(false)}
+        />
+      )}
+      <CoachMastery />
+      <CoachRoadmap />
     </div>
   );
 }
