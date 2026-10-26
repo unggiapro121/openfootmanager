@@ -5,6 +5,8 @@ import {
 } from "../services/onlineTransport";
 import type {
   AccountView,
+  AvatarImageRequest,
+  AvatarImageView,
   AuctionPage,
   AuctionView,
   CareerView,
@@ -114,6 +116,20 @@ export const online = {
     get: () => call<AccountView>(read(["v1", "me"])),
     update: (change: UpdateAccount, idempotencyKey = newKey()) =>
       call<AccountView>(write("PATCH", ["v1", "me"], idempotencyKey, change)),
+    /** His own picture, a data URL (404 when he has none), sent shrunk, and taken away. */
+    avatarImage: () => call<AvatarImageView>(read(["v1", "me", "avatar-image"])),
+    setAvatarImage: (dataUrl: string, idempotencyKey = newKey()) =>
+      call<AccountView>(
+        write("PUT", ["v1", "me", "avatar-image"], idempotencyKey, {
+          dataUrl,
+        } satisfies AvatarImageRequest),
+      ),
+    removeAvatarImage: (idempotencyKey = newKey()) =>
+      call<AccountView>({
+        method: "DELETE",
+        segments: ["v1", "me", "avatar-image"],
+        idempotencyKey,
+      }),
     /** The coach's online level, seasons and promotions, and the road ahead (his profile). */
     career: () => call<CareerView>(read(["v1", "me", "career"])),
   },

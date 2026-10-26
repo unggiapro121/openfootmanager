@@ -196,6 +196,24 @@ fn the_stadium_rename_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview sends, reads and removes his own picture and tries another method,
+/// then each goes out to `/v1/me/avatar-image` with its method, and the other method is refused.
+#[test]
+fn the_coach_s_picture_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let path = ["v1", "me", "avatar-image"];
+    for method in ["GET", "PUT", "DELETE"] {
+        send(&session, &request(method, &path), 0).expect("an answer");
+    }
+    assert_eq!(
+        refused(send(&session, &request("POST", &path), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let methods: Vec<String> = sent(&server).into_iter().map(|r| r.method).collect();
+    assert_eq!(methods, ["GET", "PUT", "DELETE"]);
+}
+
+/// Given a signed-in coach,
 /// when the webview sets a player's shirt number and tries the route with another method,
 /// then it goes out to `/v1/players/{id}/shirt` as a PATCH, and the other method is refused.
 #[test]

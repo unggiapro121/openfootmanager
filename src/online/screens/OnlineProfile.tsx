@@ -29,12 +29,25 @@ export default function OnlineProfile() {
   const [account, setAccount] = useState<AccountView | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [picking, setPicking] = useState(false);
+  const [image, setImage] = useState<string>();
 
   useEffect(() => {
     tracked(() => online.me.get())
       .then(setAccount)
       .catch(setError);
   }, []);
+
+  // His own picture is read when the account says he has one, and again when that changes.
+  const hasImage = account?.hasAvatarImage;
+  useEffect(() => {
+    if (!hasImage) {
+      setImage(undefined);
+      return;
+    }
+    tracked(() => online.me.avatarImage())
+      .then((view) => setImage(view.dataUrl))
+      .catch(() => setImage(undefined));
+  }, [hasImage]);
 
   return (
     <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -51,6 +64,7 @@ export default function OnlineProfile() {
                 <CoachPortrait
                   account={account}
                   seed={account.avatarSeed}
+                  image={image}
                   className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl border-2 border-primary-500/30 bg-primary-500/20 font-heading text-3xl font-bold text-primary-400"
                 />
                 <Button
@@ -88,6 +102,7 @@ export default function OnlineProfile() {
       {account && picking && (
         <CoachAvatarPicker
           account={account}
+          image={image}
           onSaved={setAccount}
           onClose={() => setPicking(false)}
         />

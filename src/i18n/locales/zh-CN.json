@@ -156,7 +156,11 @@
       "avatarOption": "头像 {{number}}",
       "avatarMore": "查看更多",
       "avatarClear": "使用默认头像",
-      "avatarSave": "使用此头像"
+      "avatarSave": "使用此头像",
+      "avatarUpload": "从电脑上传",
+      "avatarRemoveUpload": "删除我的图片",
+      "avatarUploadHint": "JPEG、PNG 或 WebP 图片。上传前会裁成正方形并缩小，只有你自己能看到。",
+      "avatarUploadFailed": "无法将该文件读取为图片。"
     },
     "tactics": {
       "locked": "{{time}} 开始的比赛首发阵容已锁定，比赛结束后才能再修改。",

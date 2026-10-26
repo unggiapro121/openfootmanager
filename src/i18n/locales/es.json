@@ -156,7 +156,11 @@
       "avatarOption": "Cara {{number}}",
       "avatarMore": "Mostrar otras",
       "avatarClear": "Usar la predeterminada",
-      "avatarSave": "Usar esta foto"
+      "avatarSave": "Usar esta foto",
+      "avatarUpload": "Subir desde tu equipo",
+      "avatarRemoveUpload": "Quitar mi imagen",
+      "avatarUploadHint": "Una imagen JPEG, PNG o WebP. Se recorta en cuadrado y se reduce antes de enviarla; solo tú la ves.",
+      "avatarUploadFailed": "No se pudo leer ese archivo como imagen."
     },
     "tactics": {
       "locked": "La alineación está bloqueada para el partido de las {{time}}. Podrás cambiarla cuando termine.",

@@ -156,7 +156,11 @@
       "avatarOption": "Rosto {{number}}",
       "avatarMore": "Mostrar outros",
       "avatarClear": "Usar a predefinida",
-      "avatarSave": "Usar esta foto"
+      "avatarSave": "Usar esta foto",
+      "avatarUpload": "Carregar do computador",
+      "avatarRemoveUpload": "Remover a minha imagem",
+      "avatarUploadHint": "Uma imagem JPEG, PNG ou WebP. É cortada em quadrado e reduzida antes de ser enviada; só você a vê.",
+      "avatarUploadFailed": "Não foi possível ler esse ficheiro como imagem."
     },
     "tactics": {
       "locked": "A equipa titular está bloqueada para o jogo das {{time}}. Podes alterá-la quando o jogo terminar.",
