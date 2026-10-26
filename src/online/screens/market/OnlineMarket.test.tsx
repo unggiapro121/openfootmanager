@@ -173,6 +173,23 @@ describe("OnlineMarket", () => {
     expect(names()).toEqual(["Cato"]);
   });
 
+  // Given an auction whose player has a trait,
+  // when the market lists it,
+  // then the table has a traits column and the trait shows on his row.
+  it("shows the traits of the players on sale", async () => {
+    const base = auction();
+    server = serveMarket({
+      "GET v1/auctions": ok({
+        items: [{ ...base, player: base.player && { ...base.player, traits: ["Playmaker"] } }],
+      }),
+    });
+    renderOnline("/online/market");
+
+    const row = (await screen.findByText("Trần Văn Bình")).closest("tr") as HTMLElement;
+    expect(screen.getByRole("columnheader", { name: "squad.traits" })).toBeInTheDocument();
+    expect(within(row).getByRole("img", { name: /traits\.Playmaker\.label/ })).toBeInTheDocument();
+  });
+
   // Given a season whose market is closed,
   // when the market opens on either tab,
   // then it says the market is closed, not that something failed.

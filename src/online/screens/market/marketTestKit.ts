@@ -27,6 +27,7 @@ export function auction(overrides: Partial<AuctionView> = {}): AuctionView {
       age: 24,
       ovr: 61,
       potentialStars: 3,
+      traits: [],
       wage: 3_400,
       positionRatings: [],
       attributes: squadPlayer().attributes,

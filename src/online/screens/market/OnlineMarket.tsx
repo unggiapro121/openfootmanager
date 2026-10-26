@@ -1,6 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Filter, Search, TrendingUp } from "lucide-react";
+import { TraitList } from "../../../components/TraitBadge";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { translatePositionAbbreviation } from "../../../components/squad/SquadTab.helpers";
 import {
@@ -384,6 +385,9 @@ function AuctionTable({ items, mode = "open" }: { items: AuctionView[]; mode?: T
                 {header("age", t("common.age"))}
                 {header("ovr", t("common.ovr"))}
                 {header("potential", t("online.squad.potential"))}
+                <th scope="col" className={HEAD}>
+                  {t("squad.traits")}
+                </th>
                 {header("wage", t("common.wage"))}
                 {header("price", t("online.market.price"))}
                 <th scope="col" className={HEAD}>
@@ -535,6 +539,11 @@ function AuctionRow({
         </span>
       </td>
       <td className="px-4 py-2.5">{player && <PotentialStars stars={player.potentialStars} />}</td>
+      <td className="px-4 py-2.5">
+        <div className="min-w-20">
+          <TraitList traits={player?.traits ?? []} size="xs" iconOnly />
+        </div>
+      </td>
       <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
         {player ? formatWeeklyAmount(formatVal(player.wage), t("finances.perWeekSuffix")) : "–"}
       </td>
