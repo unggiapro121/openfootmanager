@@ -10,7 +10,7 @@ use ofm_rules::worldgen::online::{
 };
 
 /// The pinned pair. Change only together with `WORLD_RULES_VERSION` (see the assertion).
-const SCOUT_RULES_PIN: (&str, u64) = ("3", 0xCA7E_A046_9287_F517);
+const SCOUT_RULES_PIN: (&str, u64) = ("4", 0xC81A_64A6_F87B_05D1);
 
 /// A fingerprint of twenty trips from one world: every focus, some with an elite ticket, each
 /// candidate as stored (through `Persisted`, so his potential counts) with his secret offsets.

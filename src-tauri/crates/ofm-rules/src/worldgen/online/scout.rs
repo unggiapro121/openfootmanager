@@ -14,11 +14,10 @@ use super::{GenError, Generator};
 use crate::academy::{AcademyRules, RevealOffsets, draw_potential};
 use crate::player_rating::natural_ovr;
 use crate::seed::rng_for_seed;
-use crate::worldgen::calibration::scale_attributes;
+use crate::worldgen::attribute_shape::{REFERENCE_OVR, shift_to_level};
+use crate::worldgen::calibration::calibrate_to_ovr;
 use crate::worldgen::generation::{generate_random_player_from_def, youth_slots_for_target};
-use crate::worldgen::youth::{
-    mature_for_age, settle_youngster, youth_min_growth, youth_ovr_ceiling,
-};
+use crate::worldgen::youth::{settle_youngster, youth_level, youth_min_growth};
 
 /// Whose trip and which: the stream `scout/<account>/<trip>`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -93,8 +92,10 @@ fn tilt<const N: usize>(attributes: [&mut u8; N], factor: f64) {
     }
 }
 
-/// Lean `player`'s attributes towards `focus` (§4.3), then bring his overall back to what it was:
-/// a focus shapes how he is made up, never how good he is.
+/// Lean `player`'s attributes towards `focus` (§4.3): the physical ones up and the technical
+/// down, or the other way. How good he is comes afterwards, from the level of his age
+/// ([`youth_level`]) and his potential, so a focus shapes how he is made up and never how good he
+/// is.
 fn lean(player: &mut Player, focus: ScoutFocus, tilt_permille: u32) {
     let share = f64::from(tilt_permille) / 1_000.0;
     let (physical_factor, technical_factor) = match focus {
@@ -102,18 +103,8 @@ fn lean(player: &mut Player, focus: ScoutFocus, tilt_permille: u32) {
         ScoutFocus::Technical => (1.0 - share, 1.0 + share),
         ScoutFocus::Balanced => return,
     };
-    let before = natural_ovr(player);
     tilt(physical(&mut player.attributes), physical_factor);
     tilt(technical(&mut player.attributes), technical_factor);
-    // Rounding each attribute swallows a small correction, so a few more passes than the age
-    // cap's; what is left is a fraction of a point either way.
-    for _ in 0..10 {
-        let now = natural_ovr(player);
-        if now <= 0.0 || (now - before).abs() < 0.5 {
-            break;
-        }
-        scale_attributes(&mut player.attributes, before / now);
-    }
 }
 
 impl Generator<'_> {
@@ -166,10 +157,21 @@ impl Generator<'_> {
             lean(&mut player, request.focus, rules.focus_tilt_permille);
             // 6. the potential, final
             let potential = draw_potential(bands, &mut rng).unwrap_or(rules.elite_min_potential);
-            // 7. grown to his age, under his potential less the room his age leaves
-            let ceiling =
-                youth_ovr_ceiling(age).min(potential.saturating_sub(youth_min_growth(age)));
-            mature_for_age(&mut player, age, ceiling);
+            // 7. brought to the level of his age, as the desktop's youngsters are, and under his
+            //    potential less the room his age leaves
+            let room = f64::from(potential.saturating_sub(youth_min_growth(age))) - 0.5;
+            let target = youth_level(age, &mut rng).min(room);
+            calibrate_to_ovr(&mut player, target);
+            // The calibration's last fit adds by the weights of his primary position while his
+            // overall is read at his natural one, so it can stop over the target. The potential
+            // is final: the excess comes off every attribute by his natural position's slopes.
+            for _ in 0..6 {
+                let excess = natural_ovr(&player) - target;
+                if excess < 0.5 {
+                    break;
+                }
+                shift_to_level(&mut player, REFERENCE_OVR - excess);
+            }
             player.potential = potential;
             // 8. the secret offsets of what a coach is shown
             let reveal = RevealOffsets {
@@ -314,7 +316,7 @@ mod tests {
                     &player.full_name,
                     &pack.blocklist_extra.people
                 ));
-                assert!(player.ovr <= youth_ovr_ceiling(age));
+                assert!(player.ovr <= crate::worldgen::youth::youth_ovr_ceiling(age));
                 assert!(
                     player.ovr + youth_min_growth(age) <= player.potential,
                     "{} / {}",
@@ -384,57 +386,6 @@ mod tests {
                 "{ovr} against {balanced_ovr}"
             );
         }
-    }
-
-    /// Given 2,000 raw youngsters of every group,
-    /// when each is leaned physical and technical,
-    /// then his overall moves less than a point (rounding each attribute keeps it from landing
-    /// exactly), a fifth of a point on average, with no lean up or down; and pace rises with a
-    /// physical focus and falls with a technical one.
-    #[test]
-    fn leaning_keeps_the_overall() {
-        use rand::SeedableRng;
-
-        let pack = OnlineContentPack::builtin();
-        let generator = Generator::new(3, &pack).expect("a generator");
-        let mut rng = rand_chacha::ChaCha8Rng::seed_from_u64(17);
-        let mut moves = Vec::new();
-        for index in 0..2_000usize {
-            let group = GROUPS[index % GROUPS.len()].clone();
-            let slots = youth_slots_for_target(Some(group));
-            let raw = generate_random_player_from_def(
-                "",
-                slots[index % slots.len()],
-                "VN",
-                2026,
-                Some(15),
-                &generator.names_def,
-                &mut rng,
-            );
-            for focus in [ScoutFocus::Physical, ScoutFocus::Technical] {
-                let mut leaned = raw.clone();
-                lean(&mut leaned, focus, 80);
-                let moved = natural_ovr(&leaned) - natural_ovr(&raw);
-                assert!(
-                    moved.abs() < 1.0,
-                    "{focus:?} moved the overall by {moved:.2}"
-                );
-                moves.push(moved);
-                let pace_up = leaned.attributes.pace >= raw.attributes.pace;
-                assert_eq!(
-                    pace_up,
-                    focus == ScoutFocus::Physical || leaned.attributes.pace == 99
-                );
-            }
-        }
-        let n = moves.len() as f64;
-        let mean = moves.iter().sum::<f64>() / n;
-        let spread = moves.iter().map(|moved| moved.abs()).sum::<f64>() / n;
-        assert!(
-            mean.abs() < 0.1,
-            "the overall leans by {mean:.3} on average"
-        );
-        assert!(spread < 0.25, "the overall moves {spread:.3} on average");
     }
 
     /// Given 1,000 trips,

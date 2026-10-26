@@ -81,6 +81,7 @@ pub const ROUTES: &[Route] = &[
     route("GET", &[L("v1"), L("clubs"), Id], &[]),
     route("GET", &[L("v1"), L("leagues"), L("mine")], &[]),
     route("GET", &[L("v1"), L("leagues"), Id], &[]),
+    route("GET", &[L("v1"), L("leagues"), Id, L("leaders")], &[]),
     route(
         "GET",
         &[L("v1"), L("leagues"), Id, L("fixtures")],

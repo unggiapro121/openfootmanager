@@ -87,7 +87,9 @@ fn generated_players_have_real_heights_and_weights_for_their_position() {
 /// Given generated worlds, when height and weight are set against the
 /// attributes they shape within each position, then aerial ability follows
 /// height, strength follows weight and agility falls with height, about as
-/// strongly as in real football.
+/// strongly as in real football: the figures are the real-world package's own, within
+/// outfield group (height–aerial 0.49–0.58, weight–strength 0.63–0.74, height–agility
+/// −0.49 to −0.66), which the profiles are now fitted on.
 ///
 /// Five compact worlds are pooled: one holds about 430 players, few enough for a
 /// correlation to drift by ±0.06 from one seed to the next, which the bands
@@ -117,13 +119,16 @@ fn the_attributes_a_body_shapes_follow_it() {
     let aerial = link(height, |p| f64::from(p.attributes.aerial));
     let strength = link(weight, |p| f64::from(p.attributes.strength));
     let agility = link(height, |p| f64::from(p.attributes.agility));
-    assert!((aerial - 0.30).abs() < 0.1, "height–aerial r = {aerial:.2}");
     assert!(
-        (strength - 0.55).abs() < 0.12,
+        (aerial - 0.55).abs() < 0.12,
+        "height–aerial r = {aerial:.2}"
+    );
+    assert!(
+        (strength - 0.68).abs() < 0.12,
         "weight–strength r = {strength:.2}"
     );
     assert!(
-        (agility + 0.40).abs() < 0.1,
+        (agility + 0.55).abs() < 0.12,
         "height–agility r = {agility:.2}"
     );
 }

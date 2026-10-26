@@ -18,6 +18,7 @@ import type {
   FixtureDetailView,
   FramesPage,
   FriendlyMineView,
+  LeadersView,
   LeagueView,
   LedgerPage,
   LicenceTableView,
@@ -171,6 +172,8 @@ export const online = {
   leagues: {
     mine: () => call<LeagueView>(read(["v1", "leagues", "mine"])),
     byId: (leagueId: string) => call<LeagueView>(read(["v1", "leagues", leagueId])),
+    /** Who leads the league's season: scorers, assists, clean sheets and cards. */
+    leaders: (leagueId: string) => call<LeadersView>(read(["v1", "leagues", leagueId, "leaders"])),
     round: (leagueId: string, round: number) =>
       call<RoundView>(read(["v1", "leagues", leagueId, "fixtures"], [["round", String(round)]])),
   },

@@ -110,6 +110,39 @@ describe("the league page", () => {
     expect(await screen.findByText("online.publicClub.formation:4-3-3")).toBeInTheDocument();
   });
 
+  // Given a league whose season has scorers, assists and a red card,
+  // when the league page opens,
+  // then the boards under the table list them best first with their clubs, and say so when a board
+  // is empty.
+  it("shows who leads the league", async () => {
+    const leader = (playerId: string, name: string, value: number) => ({
+      playerId,
+      name,
+      clubId: "club-2",
+      clubName: "Sóng Biển Đà Nẵng",
+      value,
+    });
+    stage({
+      "GET v1/leagues/league-1/leaders": ok({
+        goals: [leader("p1", "Văn Hùng", 12), leader("p2", "Tuấn Kiệt", 9)],
+        assists: [leader("p3", "Minh Đức", 7)],
+        cleanSheets: [],
+        yellowCards: [leader("p4", "Quốc Bảo", 5)],
+        redCards: [],
+      }),
+    });
+    renderOnline("/online/league");
+
+    const scorers = await screen.findByTestId("online-top-scorer-p1");
+    expect(scorers).toHaveTextContent("Văn Hùng");
+    expect(scorers).toHaveTextContent("12");
+    expect(screen.getByTestId("online-top-scorer-p2")).toHaveTextContent("9");
+    expect(screen.getByTestId("online-top-assist-p3")).toHaveTextContent("Minh Đức");
+    expect(screen.getByTestId("online-yellow-card-p4")).toHaveTextContent("5");
+    expect(screen.getByText("tournaments.noCleanSheets")).toBeInTheDocument();
+    expect(screen.getByText("tournaments.noCards")).toBeInTheDocument();
+  });
+
   // Given a league two rounds in,
   // when the league page opens and the coach steps to the next round,
   // then it starts on round 3 and reads round 4 on the step.
@@ -212,9 +245,12 @@ describe("a settled fixture", () => {
     });
     renderOnline("/online/fixtures/fixture-1");
 
-    expect(await screen.findByRole("heading", { level: 2, name: /2 – 1/ })).toHaveTextContent(
-      "Cầu Vồng Nghệ An 2 – 1 Sóng Biển Đà Nẵng",
-    );
+    expect(await screen.findByRole("heading", { level: 2, name: "2 – 1" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Cầu Vồng Nghệ An" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sóng Biển Đà Nẵng" })).toBeInTheDocument();
+    // The best-rated player of the match is named, as on the offline post-match screen.
+    expect(screen.getByText("match.motm")).toBeInTheDocument();
+    expect(screen.getByText(/Văn An · Cầu Vồng Nghệ An/)).toBeInTheDocument();
     const [home, away] = screen.getAllByRole("table");
     expect(within(home).getByText("Văn An")).toBeInTheDocument();
     expect(within(home).getByText("online.fixture.yellowCards:1")).toBeInTheDocument();

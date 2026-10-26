@@ -1,7 +1,6 @@
 //! Youngsters joining a club's academy: the one youth-recruit generator,
 //! behind both a youth scout's prospects and the annual intake.
 
-use super::calibration::scale_attributes;
 use super::*;
 use domain::player::{Player, Position};
 use domain::team::Team;
@@ -210,23 +209,13 @@ fn draw_youth_potential(ovr: u8, age: u32, lift: IntakeLift, rng: &mut impl rand
         .min(99)
 }
 
-/// Bring a freshly generated youngster of `age` to what his age allows: attributes scaled by
-/// [`youth_maturity`], then the overall capped at `ceiling`. Draws nothing. The desktop passes
-/// [`youth_ovr_ceiling`]; an online scout's candidate also stays under his potential less the room
-/// his age leaves (phase 4, E4-1 §4.6).
-pub(crate) fn mature_for_age(player: &mut Player, age: u32, ceiling: u8) {
-    use crate::player_rating::natural_ovr;
-
-    scale_attributes(&mut player.attributes, youth_maturity(age));
-    let ceiling = f64::from(ceiling);
-    // Rounding each attribute can leave the overall a point over; a few passes settle it.
-    for _ in 0..4 {
-        let ovr = natural_ovr(player);
-        if ovr.round() <= ceiling {
-            break;
-        }
-        scale_attributes(&mut player.attributes, (ceiling - 0.5) / ovr);
-    }
+/// The overall a youngster of `age` is brought to: a senior squad player's level drawn around
+/// [`YOUTH_SENIOR_OVR`], spread as the old profiles spread, times [`youth_maturity`], under
+/// [`youth_ovr_ceiling`]. One draw from `rng`. Shared by the desktop's youngsters and an online
+/// scout's candidates, who are also kept under their potential (phase 4, E4-1 §4.6).
+pub(crate) fn youth_level(age: u32, rng: &mut impl rand::Rng) -> f64 {
+    let senior = YOUTH_SENIOR_OVR + YOUTH_OVR_SPREAD * super::physique::standard_normal(rng);
+    (senior * youth_maturity(age)).min(f64::from(youth_ovr_ceiling(age)) - 0.5)
 }
 
 /// A youngster's rating-derived traits, value and wage settled on his attributes and potential.
@@ -236,8 +225,10 @@ pub(crate) fn settle_youngster(player: &mut Player, current_year: u32) {
     reprice_generated_player(player, current_year);
 }
 
-/// Bring a freshly generated youngster down to what his age allows ([`mature_for_age`] with
-/// [`youth_ovr_ceiling`]), then draw his potential and settle the rest on the result.
+/// Bring a freshly generated youngster to what his age allows: an overall around a senior
+/// squad player's, scaled by [`youth_maturity`] and capped at [`youth_ovr_ceiling`], with the
+/// profile his position has at that level; his potential, rating-derived traits, value and wage
+/// settled on the result.
 fn grow_into_age(
     player: &mut Player,
     current_year: u32,
@@ -247,11 +238,19 @@ fn grow_into_age(
     use crate::player_rating::natural_ovr;
 
     let age = crate::player_rating::player_age(&player.date_of_birth, current_year);
-    mature_for_age(player, age, youth_ovr_ceiling(age));
+    // A senior squad player's level, spread as the old profiles spread, so an intake is as
+    // varied as it was.
+    let target = youth_level(age, rng);
+    super::calibration::calibrate_to_ovr(player, target);
+
     let ovr = natural_ovr(player).round() as u8;
     player.potential = draw_youth_potential(ovr, age, lift, rng);
     settle_youngster(player, current_year);
 }
+
+/// The overall a youngster would have as a senior squad player, before his age takes its share.
+const YOUTH_SENIOR_OVR: f64 = 68.0;
+const YOUTH_OVR_SPREAD: f64 = 5.5;
 
 #[cfg(test)]
 mod tests {

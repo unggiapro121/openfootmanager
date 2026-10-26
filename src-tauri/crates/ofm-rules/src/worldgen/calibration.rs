@@ -10,7 +10,7 @@
 //! a generated world reads like the real one and a package's real stars are
 //! never outshone by the players generated around them.
 
-use domain::player::{Player, PlayerAttributes};
+use domain::player::Player;
 use rand::{Rng, RngExt};
 
 use super::generation::reprice_generated_player;
@@ -311,87 +311,18 @@ fn draw_potential(ovr: u8, age: u32, rng: &mut impl Rng) -> u8 {
         .clamp(f64::from(ovr), 99.0) as u8
 }
 
-/// The average OVR of a raw profile from `generate_random_player_from_def`,
-/// whose attributes are drawn on a senior scale around 40–95.
-const RAW_PROFILE_OVR: f64 = 68.0;
-
-fn scale_each<'a>(values: impl IntoIterator<Item = &'a mut u8>, factor: f64) {
-    // A split attribute at 0 is undeclared (see `attribute_split`) and stays so.
-    for value in values.into_iter().filter(|value| **value != 0) {
-        *value = (f64::from(*value) * factor).round().clamp(1.0, 99.0) as u8;
-    }
-}
-
-/// The attributes a player's body shapes (see `physique::BodyLinks`). Heading
-/// scales with aerial, the blend it came out of, so the blend scales as it did.
-fn body_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 5] {
-    [
-        &mut attributes.pace,
-        &mut attributes.strength,
-        &mut attributes.agility,
-        &mut attributes.aerial,
-        &mut attributes.heading,
-    ]
-}
-
-/// Every attribute the body does not shape.
-fn trained_attributes(attributes: &mut PlayerAttributes) -> [&mut u8; 21] {
-    [
-        &mut attributes.stamina,
-        &mut attributes.passing,
-        &mut attributes.long_passing,
-        &mut attributes.crossing,
-        &mut attributes.curve,
-        &mut attributes.free_kick,
-        &mut attributes.long_shots,
-        &mut attributes.first_touch,
-        &mut attributes.shooting,
-        &mut attributes.tackling,
-        &mut attributes.dribbling,
-        &mut attributes.defending,
-        &mut attributes.positioning,
-        &mut attributes.vision,
-        &mut attributes.decisions,
-        &mut attributes.composure,
-        &mut attributes.aggression,
-        &mut attributes.teamwork,
-        &mut attributes.leadership,
-        &mut attributes.handling,
-        &mut attributes.reflexes,
-    ]
-}
-
-/// Scale every attribute by `factor`, keeping each within 1–99.
-pub fn scale_attributes(attributes: &mut PlayerAttributes, factor: f64) {
-    scale_each(body_attributes(attributes), factor);
-    scale_each(trained_attributes(attributes), factor);
-}
-
-/// Bring a raw generated profile to an OVR of `target`: the attributes the body shapes scaled by
-/// the target against an average raw profile, the rest by whatever then lands the OVR (see
-/// [`calibrate_generated_player`] for why).
+/// Bring a freshly generated profile, drawn at [`REFERENCE_OVR`](super::attribute_shape::REFERENCE_OVR),
+/// to an OVR of `target`: every attribute moved along its own slope for his position, then the
+/// last points added to the attributes his position is rated on (see `attribute_shape`).
 pub fn calibrate_to_ovr(player: &mut Player, target: f64) {
-    scale_each(
-        body_attributes(&mut player.attributes),
-        target / RAW_PROFILE_OVR,
-    );
-    scale_to_ovr(player, target);
+    super::attribute_shape::shift_to_level(player, target);
+    super::attribute_shape::fit_to_ovr(player, target);
 }
 
-/// Move an already calibrated player's OVR to `target` with the trained attributes alone, so the
-/// body's link to them is kept.
+/// Move an already calibrated player's OVR to `target` by adding to the attributes his position
+/// is rated on, which leaves the rest of his profile as it is.
 pub fn scale_to_ovr(player: &mut Player, target: f64) {
-    use crate::player_rating::natural_ovr;
-    // Only part of the OVR moves with the trained attributes, and rounding and
-    // attributes pinned at 1 or 99 keep any pass from landing exactly; a few
-    // passes settle it.
-    for _ in 0..10 {
-        let ovr = natural_ovr(player);
-        if ovr <= 0.0 || (ovr - target).abs() < 0.5 {
-            break;
-        }
-        scale_each(trained_attributes(&mut player.attributes), target / ovr);
-    }
+    super::attribute_shape::fit_to_ovr(player, target);
 }
 
 /// The least room to grow a player of `age` is given: half the 10th percentile of real players'
@@ -404,11 +335,8 @@ pub fn min_headroom(age: u32) -> u8 {
 /// potential drawn for that OVR and age, and his traits, value and wage settled
 /// on the result.
 ///
-/// The attributes the body shapes are scaled by the level alone — the target
-/// against an average raw profile — and the rest by whatever then lands the OVR.
-/// Scaling everything by the player's own raw OVR would undo the body's link: a
-/// tall player's aerial ability lifts his raw OVR, so he would be scaled down
-/// the hardest, and height would stop predicting it.
+/// The profile keeps the shape it was drawn with: attributes follow their slope with the level
+/// and the last points are added, never multiplied (see `attribute_shape`).
 pub fn calibrate_generated_player(
     player: &mut Player,
     level: FillerLevel,

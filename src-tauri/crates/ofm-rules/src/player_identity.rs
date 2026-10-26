@@ -31,6 +31,17 @@ pub fn upgrade_player_identity(player: &mut Player, assigned_slot: Option<&Posit
     changed
 }
 
+/// Fill in the rest of the identity of a player whose natural position is already detailed: the
+/// positions he can also play, his stronger foot and how good the weaker one is. The generator
+/// uses it for a squad player it gave a position from the start; `upgrade_player_identity` only
+/// acts on players who still carry a group.
+pub fn settle_secondary_identity(player: &mut Player) {
+    let natural_position = player.natural_position.clone();
+    player.alternate_positions = infer_alternate_positions(player, &natural_position, None);
+    player.footedness = infer_footedness(player, &natural_position, None);
+    player.weak_foot = infer_weak_foot(player, &player.alternate_positions, player.footedness);
+}
+
 fn needs_identity_upgrade(player: &Player) -> bool {
     // `player.position` intentionally stays as a coarse legacy bucket (the
     // player's group). Only trigger re-inference when the granular fields
