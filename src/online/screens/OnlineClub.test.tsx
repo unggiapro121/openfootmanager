@@ -240,6 +240,37 @@ describe("the online club pages", () => {
     expect(screen.getByRole("status", { name: "location" }).textContent).toBe("/online/squad");
   });
 
+  // Given a coach with a mastery of 60 in the attacking style,
+  // when the tactics page opens,
+  // then the style picker names that level, and under it come the style's effects at that level.
+  it("shows the coach's mastery and what it does on the tactics board", async () => {
+    const base = myClub({ players: SQUAD });
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok({ ...base, setup: { ...base.setup, playStyle: "Attacking" } }),
+      "GET v1/leagues/mine": ok(LEAGUE),
+      "GET v1/me/career": ok({
+        level: 1,
+        seasons: 0,
+        promotions: 0,
+        mastery: [
+          {
+            style: "Attacking",
+            level: 60,
+            xp: 0,
+            xpToNext: 100,
+            matches: 3,
+            effects: [{ phase: "Attack", percent: 12.5 }],
+          },
+        ],
+      }),
+    });
+    renderOnline("/online/tactics");
+
+    expect(await screen.findByText("▲ 12.5%")).toBeInTheDocument();
+    expect(screen.getByText("manager.stylePhase.Attack")).toBeInTheDocument();
+  });
+
   // Given a squad with one player who has a trait,
   // when the squad list opens,
   // then it has a traits column, and the player's trait shows in it by name.

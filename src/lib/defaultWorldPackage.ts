@@ -20,7 +20,5 @@ export function initialPackageSelection(
   if (playerHasChosen || currentSelection.length > 0) {
     return [...currentSelection];
   }
-  return installedPackageIds.includes(DEFAULT_WORLD_PACKAGE_ID)
-    ? [DEFAULT_WORLD_PACKAGE_ID]
-    : [];
+  return installedPackageIds.includes(DEFAULT_WORLD_PACKAGE_ID) ? [DEFAULT_WORLD_PACKAGE_ID] : [];
 }

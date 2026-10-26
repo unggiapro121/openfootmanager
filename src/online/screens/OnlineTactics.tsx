@@ -5,11 +5,12 @@ import { resolveBackendError } from "../../utils/backendI18n";
 import type { MyClubView } from "../api";
 import { useOnlineNow } from "../clock";
 import { formatMoment } from "../format";
-import { useOnlineStore } from "../store/onlineStore";
+import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useMemo } from "react";
 import { online } from "../client";
 import { boardLimits } from "../convert/licence";
 import LicenceNotice from "./LicenceNotice";
+import StyleEffectChips from "./StyleEffectChips";
 import { useOnlineResource } from "../useOnlineResource";
 import {
   KNOWN_SETUP_ISSUES,
@@ -48,6 +49,23 @@ function TacticsScreen({ club }: { club: MyClubView }) {
   const table = resource.status === "ready" ? resource.data : null;
   const limits = useMemo(() => boardLimits(club, table), [club, table]);
   const { source, outcome } = useOnlineTacticsSource(club, limits);
+  // The coach's mastery is read once a visit too: it moves only when a match he directed settles.
+  const { resource: mastery } = useOnlineResource(
+    async () => (await tracked(() => online.me.career())).mastery,
+    [],
+  );
+  const styles = mastery.status === "ready" ? mastery.data : null;
+  const coach = useMemo(
+    () =>
+      styles
+        ? {
+            play_style_mastery: Object.fromEntries(
+              styles.map((style) => [style.style, style.level]),
+            ),
+          }
+        : null,
+    [styles],
+  );
   const known = lockOf(club, now);
   const locked = known.locked || outcome.kind === "locked";
   const kickoffAt =
@@ -70,7 +88,16 @@ function TacticsScreen({ club }: { club: MyClubView }) {
       <OutcomeNotice outcome={outcome} club={club} />
       {/* A locked line-up is shown, never edited: `inert` takes the whole board out of reach. */}
       <div inert={locked} className={locked ? "opacity-70" : undefined}>
-        <TacticsBoard source={source} libraryGame={null} coach={null} />
+        <TacticsBoard
+          source={source}
+          libraryGame={null}
+          coach={coach}
+          styleEffects={(style) => (
+            <StyleEffectChips
+              effects={styles?.find((entry) => entry.style === style)?.effects ?? []}
+            />
+          )}
+        />
       </div>
     </div>
   );
