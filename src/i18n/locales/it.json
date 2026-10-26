@@ -547,6 +547,9 @@
         "playerRename": "Questo giocatore ha già usato il cambio di nome gratuito. Per cambiarlo ancora serve una carta cambio nome giocatore (in un prossimo aggiornamento).",
         "clubRename": "Il tuo club ha già usato il cambio di nome gratuito. Per cambiarlo ancora serve una carta cambio nome club (in un prossimo aggiornamento)."
       }
+    },
+    "mastery": {
+      "hint": "La padronanza cresce nelle partite di campionato che guidi tu, non in quelle giocate dall'IA per te."
     }
   },
   "coach": {
