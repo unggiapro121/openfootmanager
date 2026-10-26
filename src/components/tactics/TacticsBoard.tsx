@@ -17,6 +17,8 @@ interface TacticsBoardProps {
   source: TacticsBoardSource;
   /** Keys the saved custom tactics; without a game there are only the presets. */
   libraryGame: GameStateData | null;
+  /** Keys the saved custom tactics when there is no saved game, as for the online club. */
+  libraryKey?: string;
   /** The manager whose play-style mastery the command bar shows, if any. */
   coach: ManagerData | Pick<ManagerData, "play_style_mastery"> | null;
   /** What a play style does at the coach's level, drawn under the style picker (online). */
@@ -34,6 +36,7 @@ interface TacticsBoardProps {
 export default function TacticsBoard({
   source,
   libraryGame,
+  libraryKey,
   coach,
   styleEffects,
   onOpenPlayerProfile,
@@ -102,6 +105,7 @@ export default function TacticsBoard({
     handleDeleteTactic,
   } = useTacticsLibrary({
     gameState: libraryGame,
+    libraryKey,
     formation,
     activePlayStyle,
     initialPreset,

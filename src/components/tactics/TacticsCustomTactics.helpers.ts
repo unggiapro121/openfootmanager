@@ -88,8 +88,9 @@ function isCustomTacticEntry(value: unknown): value is TacticsLibraryEntry {
   );
 }
 
-export function loadCustomTactics(
-  gameState: GameStateData,
+/** The custom tactics kept under `key`, for a club that is not a saved game (the online club). */
+export function loadCustomTacticsAt(
+  key: string,
   storage: StorageLike | null = getDefaultStorage(),
 ): TacticsLibraryEntry[] {
   if (!storage) {
@@ -97,7 +98,7 @@ export function loadCustomTactics(
   }
 
   try {
-    const storedValue = storage.getItem(buildCustomTacticsStorageKey(gameState));
+    const storedValue = storage.getItem(key);
 
     if (!storedValue) {
       return [];
@@ -115,8 +116,9 @@ export function loadCustomTactics(
   }
 }
 
-export function saveCustomTactics(
-  gameState: GameStateData,
+/** Keep `customTactics` under `key`. */
+export function saveCustomTacticsAt(
+  key: string,
   customTactics: readonly TacticsLibraryEntry[],
   storage: StorageLike | null = getDefaultStorage(),
 ): void {
@@ -129,7 +131,7 @@ export function saveCustomTactics(
   );
 
   try {
-    storage.setItem(buildCustomTacticsStorageKey(gameState), JSON.stringify(persistedTactics));
+    storage.setItem(key, JSON.stringify(persistedTactics));
   } catch {
     // Storage quota exceeded or access denied — skip persist
   }
