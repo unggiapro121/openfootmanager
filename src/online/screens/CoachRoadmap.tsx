@@ -29,7 +29,7 @@ export default function CoachRoadmap() {
   }, []);
 
   return (
-    <Card className="max-w-2xl">
+    <Card className="lg:col-span-3">
       <CardHeader>{t("online.roadmap.title")}</CardHeader>
       <CardBody className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
         {resource.status === "loading" && <p>{t("online.loading")}</p>}
@@ -99,7 +99,10 @@ function Road({ career, steps }: { career: CareerView; steps: LicenceStep[] }) {
       {licence?.pending && <p>{t("online.roadmap.pending")}</p>}
 
       {steps.length > 0 && (
-        <ol aria-label={t("online.roadmap.licences")} className="space-y-2">
+        <ol
+          aria-label={t("online.roadmap.licences")}
+          className="grid grid-cols-1 gap-3 md:grid-cols-2"
+        >
           {steps.map((step) => (
             <Step key={step.tier} step={step} career={career} />
           ))}
