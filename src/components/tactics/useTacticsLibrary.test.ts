@@ -121,6 +121,35 @@ describe("useTacticsLibrary", () => {
   });
 
   /**
+   * Given a club that is not a saved game (the online club), with a library key of its own,
+   * When the manager saves a custom tactic and the screen is opened again,
+   * Then the tactic is still there, and another club's key does not see it.
+   */
+  it("keeps a custom tactic under the library key when there is no game", () => {
+    const open = (key: string) =>
+      renderHook(() =>
+        useTacticsLibrary({
+          gameState: null,
+          libraryKey: key,
+          formation: "4-3-3",
+          activePlayStyle: "Attacking",
+          initialPreset: null,
+          tacticsPhase: PHASE_A,
+          onFormationChange: async () => true,
+          onPlayStyleChange: async () => true,
+          onTacticsPhaseChange: async () => {},
+        }),
+      );
+    const first = open("ofm:tactics:custom:online:club-1");
+    act(() => first.result.current.handleSaveTactic());
+    expect(customNames(first.result.current)).toHaveLength(1);
+    first.unmount();
+
+    expect(customNames(open("ofm:tactics:custom:online:club-1").result.current)).toHaveLength(1);
+    expect(customNames(open("ofm:tactics:custom:online:club-2").result.current)).toHaveLength(0);
+  });
+
+  /**
    * Given two saved tactics that share a shape and differ only in blueprint,
    * When the tactics screen reopens while the team plays the second one,
    * Then the second one is shown as active, not a stand-in named like the first.

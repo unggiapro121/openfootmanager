@@ -12,13 +12,15 @@ import {
   buildCustomTacticsStorageKey,
   findCustomTacticForSetup,
   isSamePhaseBlueprint,
-  loadCustomTactics,
-  saveCustomTactics,
+  loadCustomTacticsAt,
+  saveCustomTacticsAt,
 } from "./TacticsCustomTactics.helpers";
 import type { TacticsLibraryEntry } from "./TacticsCommandBar";
 
 interface UseTacticsLibraryArgs {
   gameState: GameStateData | null;
+  /** Where the custom tactics are kept when there is no saved game (the online club). */
+  libraryKey?: string | null;
   formation: string;
   activePlayStyle: string;
   initialPreset: TacticsPresetDefinition | null;
@@ -31,6 +33,7 @@ interface UseTacticsLibraryArgs {
 
 export function useTacticsLibrary({
   gameState,
+  libraryKey = null,
   formation,
   activePlayStyle,
   initialPreset,
@@ -40,8 +43,9 @@ export function useTacticsLibrary({
   onTacticsPhaseChange,
 }: UseTacticsLibraryArgs) {
   const { t } = useTranslation();
+  const customTacticsStorageKey = gameState ? buildCustomTacticsStorageKey(gameState) : libraryKey;
   const [customTactics, setCustomTactics] = useState<TacticsLibraryEntry[]>(() =>
-    gameState ? loadCustomTactics(gameState) : [],
+    customTacticsStorageKey ? loadCustomTacticsAt(customTacticsStorageKey) : [],
   );
   // Reopening the screen must show the saved tactic the team is playing, not a
   // generic stand-in that reads like another saved tactic.
@@ -63,23 +67,21 @@ export function useTacticsLibrary({
   const [presetAnchorId, setPresetAnchorId] = useState<string | null>(initialPreset?.id ?? null);
   const hydratedCustomTacticsScopeRef = useRef<string | null>(null);
 
-  const customTacticsStorageKey = gameState ? buildCustomTacticsStorageKey(gameState) : null;
-
   useEffect(() => {
-    if (!gameState || !customTacticsStorageKey) return;
+    if (!customTacticsStorageKey) return;
     hydratedCustomTacticsScopeRef.current = null;
-    setCustomTactics(loadCustomTactics(gameState));
-  }, [customTacticsStorageKey, gameState]);
+    setCustomTactics(loadCustomTacticsAt(customTacticsStorageKey));
+  }, [customTacticsStorageKey]);
 
   useEffect(() => {
-    if (!gameState || !customTacticsStorageKey) return;
+    if (!customTacticsStorageKey) return;
     if (hydratedCustomTacticsScopeRef.current !== customTacticsStorageKey) {
       hydratedCustomTacticsScopeRef.current = customTacticsStorageKey;
       return;
     }
 
-    saveCustomTactics(gameState, customTactics);
-  }, [customTactics, customTacticsStorageKey, gameState]);
+    saveCustomTacticsAt(customTacticsStorageKey, customTactics);
+  }, [customTactics, customTacticsStorageKey]);
 
   const matchedPreset = findTacticsPresetBySetup(formation, activePlayStyle);
   const anchoredPreset = presetAnchorId
