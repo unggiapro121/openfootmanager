@@ -465,6 +465,22 @@ fn only_the_routes_of_the_table_and_their_methods_go_out() {
     assert!(server.requests().is_empty());
 }
 
+/// Given a signed-in coach,
+/// when the webview asks for a league's leaders and tries another method,
+/// then it goes out to `/v1/leagues/{id}/leaders` as a GET, and the other method is refused.
+#[test]
+fn a_league_s_leaders_are_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let path = ["v1", "leagues", CLUB, "leaders"];
+    send(&session, &request("GET", &path), 0).expect("an answer");
+    assert_eq!(
+        refused(send(&session, &request("POST", &path), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let paths: Vec<String> = sent(&server).into_iter().map(|r| r.path).collect();
+    assert_eq!(paths, vec![format!("/v1/leagues/{CLUB}/leaders")]);
+}
+
 /// Given the fixtures of a round,
 /// when they are asked for with `round`, with an unknown key, the key twice, or a value outside
 /// the query alphabet,
