@@ -82,7 +82,9 @@
       "renameLabel": "Novo nome do clube",
       "renameHint": "A primeira troca de nome do clube é grátis; as seguintes exigem um cartão de troca de nome de clube.",
       "save": "Salvar",
-      "stadium": "{{name}} ({{capacity}} lugares)"
+      "stadium": "{{name}} ({{capacity}} lugares)",
+      "stadiumLabel": "Nome do estádio",
+      "stadiumHint": "Você pode mudar o nome do estádio quantas vezes quiser."
     },
     "fixture": {
       "title": "Próximo jogo",

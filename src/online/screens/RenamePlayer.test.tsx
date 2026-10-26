@@ -143,6 +143,9 @@ describe("renaming a player online (S-14)", () => {
     render(<ClubCard club={club} />);
     fireEvent.click(screen.getByRole("button", { name: "online.club.rename" }));
     expect(screen.getByText("online.club.renameHint")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("online.club.renameLabel"), {
+      target: { value: "Another Name" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "online.club.save" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "online.rename.itemRequired.clubRename",

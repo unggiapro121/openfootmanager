@@ -178,6 +178,24 @@ fn a_player_s_rename_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview renames his stadium and tries the route with another method,
+/// then it goes out to `/v1/clubs/mine/stadium` as a PATCH, and the other method is refused.
+#[test]
+fn the_stadium_rename_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let path = ["v1", "clubs", "mine", "stadium"];
+    send(&session, &request("PATCH", &path), 0).expect("an answer");
+    assert_eq!(
+        refused(send(&session, &request("PUT", &path), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let requests = sent(&server);
+    assert_eq!(requests.len(), 1);
+    assert_eq!(requests[0].method, "PATCH");
+    assert_eq!(requests[0].path, "/v1/clubs/mine/stadium");
+}
+
+/// Given a signed-in coach,
 /// when the webview sets a player's shirt number and tries the route with another method,
 /// then it goes out to `/v1/players/{id}/shirt` as a PATCH, and the other method is refused.
 #[test]

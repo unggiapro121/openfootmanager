@@ -170,7 +170,7 @@ pub fn bot_interest(needs: &[Need], player: &Player, age: i32) -> Option<BotInte
 /// The values of the bots' bidding, a season's ruleset (analysis-bot-auction-bids.md B6). Times
 /// are seconds of a full day; the server scales them with the season's day as every market time.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all = "camelCase", deny_unknown_fields, default)]
 pub struct BotBidRules {
     /// The chance, in thousandths, that a bot wanting the player takes part in the auction.
     pub participation_permille: u32,
@@ -197,13 +197,36 @@ pub struct BotBidRules {
     /// How long a bot outbid takes to answer.
     pub reply_delay_min_seconds: u32,
     pub reply_delay_max_seconds: u32,
+    /// What a bot does for a player's own listing, which it is to buy before another bot's sale
+    /// (S-11g): it joins more often, more of them join, each pays more and keeps less cash back.
+    pub person_participation_permille: u32,
+    pub person_max_bots_per_auction: u32,
+    /// Added to both ends of the price range, in thousandths of the player's value.
+    pub person_ceiling_bonus_permille: u32,
+    pub person_cash_reserve: u64,
+    /// What it does for another bot's sale: it joins less often, and buys at most this many
+    /// players of bots in a season, so what it has left goes to people's listings.
+    pub bot_sale_participation_permille: u32,
+    pub bot_sale_max_buys_per_season: u32,
+}
+
+/// Who sells an auction's player, as a bot reads it (S-11g).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SellerKind {
+    /// A club a person runs: the listing a bot is to buy first.
+    Person,
+    /// A club the server runs.
+    Bot,
+    /// The world, for a free agent.
+    World,
 }
 
 impl Default for BotBidRules {
     /// The values of analysis-bot-auction-bids.md B1–B6 as E3-11 measured them
-    /// (e3-11-bot-bids.txt): the budget and reserve were raised from 1.2M and 1.5M, under which
-    /// most bots could not afford the player they wanted, and the chance to take part from 350‰,
-    /// so a first-team player listed at his value finds a bot more often than not.
+    /// (e3-11-bot-bids.txt), raised in S-11g: a bot held about 1.65M and kept 1.0M back, so it
+    /// could pay 0.65M while the listings of people started at 1.55M and over, and only 4 of 65
+    /// of them sold. The reserve falls to 0.4M, the budget and the buys of a season rise, and a
+    /// person's listing is bought before a bot's (`for_seller`).
     fn default() -> Self {
         Self {
             participation_permille: 500,
@@ -212,14 +235,20 @@ impl Default for BotBidRules {
             ceiling_min_permille: 850,
             ceiling_max_permille: 1_250,
             short_line_bonus_permille: 100,
-            cash_reserve: 1_000_000,
-            season_spend: 2_000_000,
-            max_buys_per_season: 2,
+            cash_reserve: 400_000,
+            season_spend: 3_500_000,
+            max_buys_per_season: 3,
             squad_cap: 25,
             first_bid_from_permille: 100,
             first_bid_to_permille: 700,
             reply_delay_min_seconds: 20,
             reply_delay_max_seconds: 120,
+            person_participation_permille: 900,
+            person_max_bots_per_auction: 4,
+            person_ceiling_bonus_permille: 150,
+            person_cash_reserve: 150_000,
+            bot_sale_participation_permille: 300,
+            bot_sale_max_buys_per_season: 1,
         }
     }
 }
@@ -234,7 +263,38 @@ impl BotBidRules {
             && self.first_bid_to_permille <= 1_000
             && self.reply_delay_min_seconds <= self.reply_delay_max_seconds
             && self.reply_delay_max_seconds < soft_close_seconds
-            && self.ceiling_max_permille + self.short_line_bonus_permille < price_band_max_permille
+            && self.ceiling_max_permille
+                + self.short_line_bonus_permille
+                + self.person_ceiling_bonus_permille
+                < price_band_max_permille
+    }
+
+    /// These rules as a bot applies them to an auction of `seller` (S-11g): a person's listing is
+    /// wanted more, another bot's less, and the world's free agent as the base says.
+    pub fn for_seller(&self, seller: SellerKind) -> Self {
+        match seller {
+            SellerKind::Person => Self {
+                participation_permille: self.person_participation_permille,
+                max_bots_per_auction: self.person_max_bots_per_auction,
+                ceiling_min_permille: self.ceiling_min_permille
+                    + self.person_ceiling_bonus_permille,
+                ceiling_max_permille: self.ceiling_max_permille
+                    + self.person_ceiling_bonus_permille,
+                cash_reserve: self.person_cash_reserve,
+                ..*self
+            },
+            SellerKind::Bot => Self {
+                participation_permille: self.bot_sale_participation_permille,
+                ..*self
+            },
+            SellerKind::World => *self,
+        }
+    }
+
+    /// Whether a bot that bought `from_bots` players of bots this season may buy another of
+    /// `seller`: another bot's sale only up to [`Self::bot_sale_max_buys_per_season`].
+    pub fn may_buy_from(&self, seller: SellerKind, from_bots: u32) -> bool {
+        seller != SellerKind::Bot || from_bots < self.bot_sale_max_buys_per_season
     }
 
     /// What a bot may still spend (B3): its cash above the reserve, and no more than what is left
@@ -817,18 +877,59 @@ mod tests {
         );
     }
 
-    /// Given a reserve of 1,000,000 and a season's budget of 2,000,000,
+    /// Given a reserve of 400,000 and a season's budget of 3,500,000,
     /// when a bot's spendable money is asked for at several cash and spending levels,
     /// then it is the cash above the reserve, never more than the budget left, never below nil.
     #[test]
     fn a_bot_spends_above_its_reserve_within_its_seasons_budget() {
         let rules = BotBidRules::default();
 
-        assert_eq!(rules.spendable(3_000_000, 0), 2_000_000);
-        assert_eq!(rules.spendable(3_000_000, 1_500_000), 500_000);
-        assert_eq!(rules.spendable(1_600_000, 0), 600_000);
-        assert_eq!(rules.spendable(900_000, 0), 0);
-        assert_eq!(rules.spendable(3_000_000, 2_500_000), 0);
+        assert_eq!(rules.spendable(5_000_000, 0), 3_500_000);
+        assert_eq!(rules.spendable(5_000_000, 3_000_000), 500_000);
+        assert_eq!(rules.spendable(1_600_000, 0), 1_200_000);
+        assert_eq!(rules.spendable(300_000, 0), 0);
+        assert_eq!(rules.spendable(5_000_000, 3_500_000), 0);
+    }
+
+    /// Given the bots' rules,
+    /// when they are read for a person's listing, another bot's sale and the world's free agent,
+    /// then a person's is joined by more bots that pay more and keep less cash back, another bot's
+    /// is joined less and bought only up to its few buys of a season, and the world's is as the
+    /// base says; and a bot with 1.65M, the cash a bot holds, can pay for a person's listing.
+    #[test]
+    fn a_persons_listing_is_bought_before_a_bots_sale() {
+        let base = BotBidRules::default();
+        let person = base.for_seller(SellerKind::Person);
+        let bot = base.for_seller(SellerKind::Bot);
+
+        assert_eq!(base.for_seller(SellerKind::World), base);
+        assert!(person.participation_permille > base.participation_permille);
+        assert!(person.max_bots_per_auction > base.max_bots_per_auction);
+        assert!(person.ceiling_max_permille > base.ceiling_max_permille);
+        assert!(person.spendable(1_650_000, 0) > base.spendable(1_650_000, 0));
+        assert_eq!(person.spendable(1_650_000, 0), 1_500_000);
+        assert!(bot.participation_permille < base.participation_permille);
+        assert_eq!(bot.cash_reserve, base.cash_reserve);
+
+        assert!(base.may_buy_from(SellerKind::Person, 9));
+        assert!(base.may_buy_from(SellerKind::World, 9));
+        assert!(base.may_buy_from(SellerKind::Bot, 0));
+        assert!(!base.may_buy_from(SellerKind::Bot, base.bot_sale_max_buys_per_season));
+    }
+
+    /// Given a ruleset written before S-11g, which has none of its fields,
+    /// when it is read,
+    /// then the missing ones take their defaults, and the ones it has are kept.
+    #[test]
+    fn a_ruleset_without_the_person_fields_reads_with_their_defaults() {
+        let read: BotBidRules = serde_json::from_str(r#"{"cashReserve": 1000000}"#).expect("read");
+
+        assert_eq!(read.cash_reserve, 1_000_000);
+        assert_eq!(
+            read.person_cash_reserve,
+            BotBidRules::default().person_cash_reserve
+        );
+        assert_eq!(read.season_spend, BotBidRules::default().season_spend);
     }
 
     /// Given a squad with two senior goalkeepers, a youth one and a retired defender,

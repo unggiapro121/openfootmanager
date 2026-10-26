@@ -127,6 +127,54 @@ describe("a coach with a club", () => {
     expect(rename.idempotencyKey).toEqual(expect.any(String));
   });
 
+  // Given the rename form,
+  // when only the stadium's name is changed and saved,
+  // then only the stadium is sent, to its own route, and the club shows the new stadium.
+  it("renames the stadium alone", async () => {
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok(myClub()),
+      "GET v1/leagues/mine": ok(LEAGUE),
+      "PATCH v1/clubs/mine/stadium": (request) =>
+        ok(
+          myClub({
+            club: {
+              ...myClub().club,
+              stadiumName: (request.body as { name: string }).name,
+            },
+          }),
+        ),
+    });
+    renderOnline();
+
+    fireEvent.click(await screen.findByRole("button", { name: "online.club.rename" }));
+    fireEvent.change(screen.getByLabelText("online.club.stadiumLabel"), {
+      target: { value: "  Sân Mới  " },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /online.club.save/ }));
+
+    expect(await screen.findByText(/Sân Mới/)).toBeInTheDocument();
+    expect(sent("PATCH", "v1/clubs/mine")).toHaveLength(0);
+    const [rename] = sent("PATCH", "v1/clubs/mine/stadium");
+    expect(rename.body).toEqual({ name: "Sân Mới" });
+  });
+
+  // Given the rename form untouched,
+  // when it is looked at,
+  // then there is nothing to save yet.
+  it("has nothing to save until something changes", async () => {
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok(myClub()),
+      "GET v1/leagues/mine": ok(LEAGUE),
+    });
+    renderOnline();
+
+    fireEvent.click(await screen.findByRole("button", { name: "online.club.rename" }));
+
+    expect(screen.getByRole("button", { name: "online.club.save" })).toBeDisabled();
+  });
+
   // Given a name another club already has,
   // when it is saved,
   // then the server's refusal shows under the field and the form stays open.
@@ -140,6 +188,9 @@ describe("a coach with a club", () => {
     renderOnline();
 
     fireEvent.click(await screen.findByRole("button", { name: "online.club.rename" }));
+    fireEvent.change(screen.getByLabelText("online.club.renameLabel"), {
+      target: { value: "Sao Mai" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "online.club.save" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("resolved:be.error.club.nameTaken");
