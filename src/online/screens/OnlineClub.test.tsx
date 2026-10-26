@@ -152,6 +152,15 @@ describe("the online club pages", () => {
       "GET v1/clubs/mine": ok(club),
       "GET v1/leagues/mine": ok(LEAGUE),
       "PUT v1/clubs/mine/training": (request) => ok(request.body),
+      "PATCH v1/players/cb/training-focus": (request) =>
+        ok({
+          ...club,
+          players: club.players.map((player) =>
+            player.id === "cb"
+              ? { ...player, trainingFocus: (request.body as { focus: string }).focus }
+              : player,
+          ),
+        }),
     });
   }
 
@@ -379,6 +388,87 @@ describe("the online club pages", () => {
     await waitFor(() => expect(screen.queryByText("online.training.noPlan")).toBeNull());
     const [write] = server.requests.filter((request) => request.method === "PUT");
     expect(write.body).toEqual({ ...aiPlan, focus: "Tactical" });
+  });
+
+  // Given a coach with a group of keepers,
+  // when they add a group and then put a defender into the keepers' group,
+  // then each change sends the whole plan with its groups, the rest of the plan as it was.
+  it("adds a training group and moves a player into one", async () => {
+    const plan = {
+      focus: "Physical" as const,
+      intensity: "High" as const,
+      schedule: "Light" as const,
+      groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+    };
+    stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
+    renderOnline("/online/training");
+
+    fireEvent.click(await screen.findByRole("button", { name: /training.groups.addGroup/ }));
+    await waitFor(() => expect(server.requests.some((r) => r.method === "PUT")).toBe(true));
+    const [added] = server.requests.filter((request) => request.method === "PUT");
+    const sent = added.body as typeof plan;
+    expect(sent).toMatchObject({ focus: "Physical", intensity: "High", schedule: "Light" });
+    expect(sent.groups).toHaveLength(2);
+    expect(sent.groups[0]).toEqual(plan.groups[0]);
+    expect(sent.groups[1]).toMatchObject({ focus: "Physical", player_ids: [] });
+  });
+
+  // Given a coach with a group of keepers,
+  // when they put a defender into it,
+  // then the plan goes out with the defender in that group, beside the keeper.
+  it("puts a player into a training group", async () => {
+    const plan = {
+      focus: "Physical" as const,
+      intensity: "High" as const,
+      schedule: "Light" as const,
+      groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+    };
+    stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
+    renderOnline("/online/training");
+
+    const row = (await screen.findByText(/^Trung Vệ/)).closest("tr")!;
+    fireEvent.click(within(row).getAllByRole("combobox")[0]);
+    fireEvent.click(screen.getByRole("option", { name: "Keepers" }));
+
+    await waitFor(() => expect(server.requests.some((r) => r.method === "PUT")).toBe(true));
+    const [write] = server.requests.filter((request) => request.method === "PUT");
+    expect((write.body as typeof plan).groups).toEqual([
+      { ...plan.groups[0], player_ids: ["gk", "cb"] },
+    ]);
+  });
+
+  // Given a coach on the training page,
+  // when they pick a session for one player alone,
+  // then it goes to that player's own route, and the club shows it at once.
+  it("sets a player's own training session", async () => {
+    const plan = {
+      focus: "Physical" as const,
+      intensity: "Medium" as const,
+      schedule: "Balanced" as const,
+      groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+    };
+    stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
+    renderOnline("/online/training");
+
+    const row = (await screen.findByText(/^Trung Vệ/)).closest("tr")!;
+    fireEvent.click(within(row).getAllByRole("combobox")[1]);
+    fireEvent.click(screen.getByRole("option", { name: "training.focuses.Defending.label" }));
+
+    await waitFor(() =>
+      expect(
+        server.requests.some((r) => r.segments.join("/") === "v1/players/cb/training-focus"),
+      ).toBe(true),
+    );
+    const write = server.requests.find(
+      (r) => r.segments.join("/") === "v1/players/cb/training-focus",
+    )!;
+    expect(write.method).toBe("PATCH");
+    expect(write.body).toEqual({ focus: "Defending" });
+    await waitFor(() =>
+      expect(within(row).getAllByRole("combobox")[1]).toHaveTextContent(
+        "training.focuses.Defending.label",
+      ),
+    );
   });
 
   // Given a season that says today's weekday, and one that does not,

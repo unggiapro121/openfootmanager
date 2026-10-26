@@ -1,16 +1,9 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
-import type { GameStateData, PlayerData, TeamData } from "../../store/gameStore";
+import type { TrainingGroupData } from "../../store/types";
 import TrainingGroupsCard from "./TrainingGroupsCard";
-
-const setTrainingGroupsMock = vi.fn();
-const setPlayerTrainingFocusMock = vi.fn();
-
-vi.mock("../../services/trainingService", () => ({
-  setTrainingGroups: (...args: unknown[]) => setTrainingGroupsMock(...args),
-  setPlayerTrainingFocus: (...args: unknown[]) => setPlayerTrainingFocusMock(...args),
-}));
+import type { TrainingRosterPlayer } from "./trainingGroupsModel";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -32,198 +25,129 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-function createTeam(overrides: Partial<TeamData> = {}): TeamData {
-  return {
-    id: "team-1",
-    name: "Alpha FC",
-    short_name: "ALP",
-    country: "GB",
-    city: "London",
-    stadium_name: "Alpha Ground",
-    stadium_capacity: 30000,
-    finance: 500000,
-    manager_id: "manager-1",
-    reputation: 50,
-    wage_budget: 50000,
-    transfer_budget: 250000,
-    season_income: 0,
-    season_expenses: 0,
-    formation: "4-4-2",
-    play_style: "Balanced",
-    training_focus: "Physical",
-    training_intensity: "Medium",
-    training_schedule: "Balanced",
-    founded_year: 1900,
-    colors: { primary: "#000000", secondary: "#ffffff" },
-    starting_xi_ids: [],
-    form: [],
-    history: [],
-    ...overrides,
-  };
-}
+const FOCUS_IDS = ["Physical", "Technical", "Recovery"];
 
-function createPlayer(overrides: Partial<PlayerData> = {}): PlayerData {
+function player(overrides: Partial<TrainingRosterPlayer> = {}): TrainingRosterPlayer {
   return {
     id: "player-1",
     match_name: "J. Smith",
-    full_name: "John Smith",
-    date_of_birth: "2002-01-01",
-    nationality: "GB",
     position: "Forward",
     natural_position: "Forward",
-    alternate_positions: [],
-    training_focus: null,
-    attributes: {
-      pace: 60,
-      stamina: 60,
-      strength: 60,
-      agility: 60,
-      passing: 60,
-      shooting: 60,
-      tackling: 60,
-      dribbling: 60,
-      defending: 60,
-      positioning: 60,
-      vision: 60,
-      decisions: 60,
-      composure: 60,
-      aggression: 60,
-      teamwork: 60,
-      leadership: 60,
-      handling: 20,
-      reflexes: 20,
-      aerial: 60,
-      long_passing: 60,
-      crossing: 60,
-      curve: 60,
-      free_kick: 60,
-      long_shots: 60,
-      heading: 60,
-      first_touch: 60,
-    },
     condition: 80,
-    morale: 75,
-    injury: null,
-    team_id: "team-1",
-    retired: false,
-    contract_end: "2027-06-30",
-    wage: 12000,
-    market_value: 350000,
-    stats: {
-      appearances: 0,
-      goals: 0,
-      assists: 0,
-      clean_sheets: 0,
-      yellow_cards: 0,
-      red_cards: 0,
-      avg_rating: 0,
-      minutes_played: 0,
-    },
-    career: [],
-    transfer_listed: false,
-    loan_listed: false,
-    transfer_offers: [],
-    traits: [],
+    training_focus: null,
     ...overrides,
   };
 }
 
-function createGameState(team: TeamData): GameStateData {
-  return {
-    clock: {
-      current_date: "2026-08-11T00:00:00Z",
-      start_date: "2026-07-01T00:00:00Z",
-    },
-    manager: {
-      id: "manager-1",
-      first_name: "Jane",
-      last_name: "Doe",
-      date_of_birth: "1980-01-01",
-      nationality: "GB",
-      reputation: 50,
-      satisfaction: 50,
-      fan_approval: 50,
-      team_id: "team-1",
-      career_stats: {
-        matches_managed: 0,
-        wins: 0,
-        draws: 0,
-        losses: 0,
-        trophies: 0,
-        best_finish: null,
-      },
-      career_history: [],
-    },
-    teams: [team],
-    players: [createPlayer()],
-    staff: [],
-    messages: [],
-    news: [],
-    league: null,
-    scouting_assignments: [],
-    board_objectives: [],
-  };
+const GROUP: TrainingGroupData = {
+  id: "grp-1",
+  name: "Youngsters",
+  focus: "Technical",
+  player_ids: [],
+};
+
+function renderCard(props: Partial<React.ComponentProps<typeof TrainingGroupsCard>> = {}) {
+  const onSaveGroups = vi.fn();
+  const onSetPlayerFocus = vi.fn();
+  render(
+    <TrainingGroupsCard
+      groups={[]}
+      teamFocus="Physical"
+      roster={[player()]}
+      isSaving={false}
+      onSaveGroups={onSaveGroups}
+      onSetPlayerFocus={onSetPlayerFocus}
+      trainingFocusIds={FOCUS_IDS}
+      trainingFocusIcons={{}}
+      {...props}
+    />,
+  );
+  return { onSaveGroups, onSetPlayerFocus };
 }
 
 describe("TrainingGroupsCard", () => {
-  beforeEach(() => {
-    setTrainingGroupsMock.mockReset();
-    setPlayerTrainingFocusMock.mockReset();
-  });
-
+  // Given a club with no training groups,
+  // when the card is shown,
+  // then it says there are none.
   it("renders the empty groups state", () => {
-    render(
-      <TrainingGroupsCard
-        team={createTeam()}
-        onGameUpdate={vi.fn()}
-        roster={[createPlayer()]}
-        isSaving={false}
-        setIsSaving={vi.fn()}
-        trainingFocusIds={["Physical", "Technical", "Recovery"]}
-        trainingFocusIcons={{}}
-      />,
-    );
+    renderCard();
 
     expect(screen.getByText("Training Groups")).toBeInTheDocument();
     expect(screen.getByText("No groups")).toBeInTheDocument();
   });
 
-  it("adds a training group and forwards the updated game state", async () => {
-    const updatedState = createGameState(
-      createTeam({
-        training_groups: [
-          {
-            id: "grp-1",
-            name: "Group 1",
-            focus: "Physical",
-            player_ids: [],
-          },
-        ],
-      }),
-    );
-    const onGameUpdate = vi.fn();
-    const setIsSaving = vi.fn();
-    setTrainingGroupsMock.mockResolvedValue(updatedState);
-
-    render(
-      <TrainingGroupsCard
-        team={createTeam()}
-        onGameUpdate={onGameUpdate}
-        roster={[createPlayer()]}
-        isSaving={false}
-        setIsSaving={setIsSaving}
-        trainingFocusIds={["Physical", "Technical", "Recovery"]}
-        trainingFocusIcons={{}}
-      />,
-    );
+  // Given a club with no groups,
+  // when the coach adds one,
+  // then the new group, with the default session, is handed over to be saved.
+  it("adds a training group and hands it over", () => {
+    const { onSaveGroups } = renderCard();
 
     fireEvent.click(screen.getByRole("button", { name: /Add Group/i }));
 
-    await waitFor(() => {
-      expect(setTrainingGroupsMock).toHaveBeenCalledTimes(1);
-      expect(onGameUpdate).toHaveBeenCalledWith(updatedState);
-      expect(setIsSaving).toHaveBeenCalledWith(true);
-      expect(setIsSaving).toHaveBeenCalledWith(false);
-    });
+    expect(onSaveGroups).toHaveBeenCalledTimes(1);
+    const [groups] = onSaveGroups.mock.calls[0] as [TrainingGroupData[]];
+    expect(groups).toHaveLength(1);
+    expect(groups[0]).toMatchObject({ focus: "Physical", player_ids: [] });
+  });
+
+  // Given a club with five groups,
+  // when the card is shown,
+  // then no group can be added.
+  it("offers no sixth group", () => {
+    const five = Array.from({ length: 5 }, (_, index) => ({ ...GROUP, id: `grp-${index}` }));
+    renderCard({ groups: five });
+
+    expect(screen.queryByRole("button", { name: /Add Group/i })).not.toBeInTheDocument();
+  });
+
+  // Given a group and a player in none,
+  // when the coach puts the player in the group, and then picks a session for him alone,
+  // then the group is handed over with him in it, and his own session is handed over.
+  it("moves a player into a group and sets his own session", () => {
+    const { onSaveGroups, onSetPlayerFocus } = renderCard({ groups: [GROUP] });
+
+    const [groupSelect, focusSelect] = screen
+      .getAllByRole("combobox")
+      .filter((select) => select.closest("td"));
+    fireEvent.click(groupSelect);
+    fireEvent.click(screen.getByRole("option", { name: "Youngsters" }));
+    expect(onSaveGroups).toHaveBeenCalledWith([{ ...GROUP, player_ids: ["player-1"] }]);
+
+    fireEvent.click(focusSelect);
+    fireEvent.click(screen.getByRole("option", { name: /Recovery/ }));
+    expect(onSetPlayerFocus).toHaveBeenCalledWith("player-1", "Recovery");
+
+    fireEvent.click(focusSelect);
+    fireEvent.click(screen.getByRole("option", { name: /↩/ }));
+    expect(onSetPlayerFocus).toHaveBeenLastCalledWith("player-1", null);
+  });
+
+  // Given a group,
+  // when the coach types a new name and leaves the field,
+  // then the group is handed over once, with the new name; typing alone hands over nothing.
+  it("renames a group when the field is left", () => {
+    const { onSaveGroups } = renderCard({ groups: [GROUP] });
+
+    const name = screen.getByDisplayValue("Youngsters");
+    fireEvent.change(name, { target: { value: "Under 21" } });
+    expect(onSaveGroups).not.toHaveBeenCalled();
+
+    fireEvent.blur(name);
+    expect(onSaveGroups).toHaveBeenCalledTimes(1);
+    expect(onSaveGroups).toHaveBeenCalledWith([{ ...GROUP, name: "Under 21" }]);
+  });
+
+  // Given a group,
+  // when the coach empties its name and leaves the field,
+  // then nothing is handed over and the old name comes back.
+  it("keeps the old name when the new one is empty", () => {
+    const { onSaveGroups } = renderCard({ groups: [GROUP] });
+
+    const name = screen.getByDisplayValue("Youngsters");
+    fireEvent.change(name, { target: { value: "  " } });
+    fireEvent.blur(name);
+
+    expect(onSaveGroups).not.toHaveBeenCalled();
+    expect(screen.getByDisplayValue("Youngsters")).toBeInTheDocument();
   });
 });

@@ -6,7 +6,13 @@ import type { GameStateData } from "../../store/gameStore";
 import { useGameStore } from "../../store/gameStore";
 import { isSeniorSquadPlayer } from "../../lib/playerSquad";
 import { useFetchedSquad } from "../../hooks/useFetchedSquad";
-import { setTraining, setTrainingSchedule } from "../../services/trainingService";
+import {
+  setPlayerTrainingFocus,
+  setTraining,
+  setTrainingGroups,
+  setTrainingSchedule,
+  type TrainingGroupData,
+} from "../../services/trainingService";
 import { Card, CardBody, CardHeader, ProgressBar } from "../ui";
 import TrainingGroupsCard from "./TrainingGroupsCard";
 import TrainingSettingsPanel from "./TrainingSettingsPanel";
@@ -91,6 +97,38 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
     }
   };
 
+  // Every change of the groups or a player's own session comes back as the whole game: the tab
+  // shows it, and the squad cache takes the players so an individual focus shows at once, without
+  // a clock advance or a remount (the same pattern the youth-promote fix uses, PR #308).
+  const showGame = (game: GameStateData) => {
+    onGameUpdate?.(game);
+    if (teamId) {
+      setFetchedSquad(game.players.filter((p) => p.team_id === teamId));
+    }
+  };
+
+  const handleSaveGroups = async (groups: TrainingGroupData[]) => {
+    setIsSaving(true);
+    try {
+      showGame(await setTrainingGroups(groups));
+    } catch (error) {
+      console.error("Failed to save training groups:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSetPlayerFocus = async (playerId: string, focus: string | null) => {
+    setIsSaving(true);
+    try {
+      showGame(await setPlayerTrainingFocus(playerId, focus));
+    } catch (error) {
+      console.error("Failed to set player training focus:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const activeFocusAttrs = TRAINING_FOCUS_ATTRS[currentFocus] || [];
   const staffAdvice = getTrainingStaffAdvice(t, {
     criticalCount,
@@ -163,20 +201,12 @@ export default function TrainingTab({ gameState, onGameUpdate }: TrainingTabProp
         />
 
         <TrainingGroupsCard
-          team={team}
-          onGameUpdate={(game) => {
-            onGameUpdate?.(game);
-            // Patch the useFetchedSquad cache so per-player mutations
-            // (individual training_focus) reflect in the roster without a
-            // clock-advance or remount. Same pattern the youth-promote fix
-            // uses (PR #308).
-            if (teamId) {
-              setFetchedSquad(game.players.filter((p) => p.team_id === teamId));
-            }
-          }}
+          groups={team.training_groups ?? []}
+          teamFocus={currentFocus}
           roster={roster}
           isSaving={isSaving}
-          setIsSaving={setIsSaving}
+          onSaveGroups={handleSaveGroups}
+          onSetPlayerFocus={handleSetPlayerFocus}
           trainingFocusIds={TRAINING_FOCUS_IDS}
           trainingFocusIcons={TRAINING_FOCUS_ICONS}
         />
