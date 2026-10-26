@@ -91,6 +91,7 @@ function TacticsScreen({ club }: { club: MyClubView }) {
         <TacticsBoard
           source={source}
           libraryGame={null}
+          libraryKey={`ofm:tactics:custom:online:${club.club.id}`}
           coach={coach}
           styleEffects={(style) => (
             <StyleEffectChips
