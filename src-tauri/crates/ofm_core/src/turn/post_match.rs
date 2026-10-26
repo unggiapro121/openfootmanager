@@ -605,26 +605,6 @@ fn resolve_post_match_promises(
     }
 }
 
-fn capped_positive_recovery(delta: i16, player: &domain::player::Player) -> i16 {
-    let Some(issue) = player.morale_core.unresolved_issue.as_ref() else {
-        return delta;
-    };
-
-    if delta <= 0 {
-        return delta;
-    }
-
-    if issue.severity >= 75 {
-        return 0;
-    }
-
-    if issue.severity >= 50 {
-        return ((delta + 1) / 2).max(1);
-    }
-
-    delta
-}
-
 /// Update player morale based on match result and individual performance.
 fn update_post_match_morale(
     game: &mut Game,
@@ -632,7 +612,6 @@ fn update_post_match_morale(
     home_team_id: &str,
     away_team_id: &str,
 ) {
-    use rand::RngExt;
     let mut rng = game.rng_today(&format!("post-match/morale/{home_team_id}/{away_team_id}"));
 
     let home_won = report.home_goals > report.away_goals;
@@ -648,41 +627,24 @@ fn update_post_match_morale(
         let is_home = tid == home_team_id;
         let base_morale = player.morale as i16;
 
-        // Team result effect — scale loss impact by goal difference
-        let goal_diff = (report.home_goals as i16 - report.away_goals as i16).abs();
-        let result_delta: i16 = if (is_home && home_won) || (!is_home && away_won) {
-            rng.random_range(3..=8) // Win boost
-        } else if is_draw {
-            rng.random_range(-2..=3) // Draw: mild
-        } else {
-            // Base loss: -5 to -2, plus extra -3 per goal margin beyond 1
-            let base_loss = rng.random_range(-5..=-2);
-            let margin_penalty = (goal_diff - 1).max(0) * -3;
-            base_loss + margin_penalty // e.g. 3-0 loss → -5..-2 + -6 = -11..-8
-        };
+        let goal_diff = report.home_goals as i16 - report.away_goals as i16;
+        let result_delta = ofm_rules::match_morale::result_delta(
+            &mut rng,
+            (is_home && home_won) || (!is_home && away_won),
+            is_draw,
+            goal_diff,
+        );
+        let individual_delta = report
+            .player_stats
+            .get(&player.id)
+            .map_or(0, ofm_rules::match_morale::individual_delta);
 
-        // Individual performance effect
-        let mut individual_delta: i16 = 0;
-        if let Some(ps) = report.player_stats.get(&player.id) {
-            // Goals scored boost morale
-            individual_delta += ps.goals as i16 * 3;
-            // Assists boost morale
-            individual_delta += ps.assists as i16 * 2;
-            // Red card tanks morale
-            if ps.red_cards > 0 {
-                individual_delta -= 8;
-            }
-            // Poor rating lowers morale. An unrated cameo (0.0) is not a poor game.
-            if ps.rating > 0.0 && ps.rating < 5.5 {
-                individual_delta -= 3;
-            } else if ps.rating > 7.5 {
-                individual_delta += 2;
-            }
-        }
-
-        let total_delta = capped_positive_recovery(result_delta + individual_delta, player);
-        let new_morale = (base_morale + total_delta).clamp(10, 100) as u8;
-        player.morale = new_morale;
+        let total_delta = ofm_rules::match_morale::capped_positive_recovery(
+            result_delta + individual_delta,
+            player,
+        );
+        player.morale =
+            (base_morale + total_delta).clamp(ofm_rules::match_morale::MORALE_FLOOR, 100) as u8;
     }
 }
 
@@ -745,7 +707,8 @@ fn update_team_form(
                 for player in game.players.iter_mut() {
                     if player.team_id.as_deref() == Some(team_id_str) {
                         let base = player.morale as i16;
-                        let adjusted_delta = capped_positive_recovery(streak_delta, player);
+                        let adjusted_delta =
+                            ofm_rules::match_morale::capped_positive_recovery(streak_delta, player);
                         player.morale = (base + adjusted_delta).clamp(10, 100) as u8;
                     }
                 }
