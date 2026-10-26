@@ -156,7 +156,11 @@
       "avatarOption": "Gesicht {{number}}",
       "avatarMore": "Weitere zeigen",
       "avatarClear": "Standard verwenden",
-      "avatarSave": "Dieses Foto verwenden"
+      "avatarSave": "Dieses Foto verwenden",
+      "avatarUpload": "Vom Computer hochladen",
+      "avatarRemoveUpload": "Mein Bild entfernen",
+      "avatarUploadHint": "Ein JPEG-, PNG- oder WebP-Bild. Es wird vor dem Senden quadratisch zugeschnitten und verkleinert; nur du siehst es.",
+      "avatarUploadFailed": "Diese Datei konnte nicht als Bild gelesen werden."
     },
     "tactics": {
       "locked": "Die Aufstellung ist für das Spiel um {{time}} gesperrt. Nach dem Spiel kannst du sie wieder ändern.",

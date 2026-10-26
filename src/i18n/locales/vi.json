@@ -156,7 +156,11 @@
       "avatarOption": "Khuôn mặt {{number}}",
       "avatarMore": "Xem mặt khác",
       "avatarClear": "Dùng ảnh mặc định",
-      "avatarSave": "Dùng ảnh này"
+      "avatarSave": "Dùng ảnh này",
+      "avatarUpload": "Tải ảnh lên từ máy",
+      "avatarRemoveUpload": "Xóa ảnh đã tải lên",
+      "avatarUploadHint": "Ảnh JPEG, PNG hoặc WebP. Ảnh được cắt vuông và thu nhỏ trước khi gửi; chỉ mình bạn thấy.",
+      "avatarUploadFailed": "Không đọc được tệp này như một bức ảnh."
     },
     "tactics": {
       "locked": "Đội hình đã khoá cho trận lúc {{time}}. Bạn sửa lại được khi trận kết thúc.",

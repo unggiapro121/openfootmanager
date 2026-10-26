@@ -156,7 +156,11 @@
       "avatarOption": "Face {{number}}",
       "avatarMore": "Show others",
       "avatarClear": "Use the default",
-      "avatarSave": "Use this photo"
+      "avatarSave": "Use this photo",
+      "avatarUpload": "Upload from your computer",
+      "avatarRemoveUpload": "Remove my picture",
+      "avatarUploadHint": "A JPEG, PNG or WebP picture. It is cropped to a square and shrunk before it is sent; only you see it.",
+      "avatarUploadFailed": "That file could not be read as a picture."
     },
     "tactics": {
       "locked": "The line-up is locked for the match at {{time}}. You can change it again once the match is over.",

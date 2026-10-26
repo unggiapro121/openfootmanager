@@ -156,7 +156,11 @@
       "avatarOption": "Tvář {{number}}",
       "avatarMore": "Zobrazit další",
       "avatarClear": "Použít výchozí",
-      "avatarSave": "Použít tuto fotku"
+      "avatarSave": "Použít tuto fotku",
+      "avatarUpload": "Nahrát z počítače",
+      "avatarRemoveUpload": "Odstranit moji fotku",
+      "avatarUploadHint": "Obrázek JPEG, PNG nebo WebP. Před odesláním se ořízne na čtverec a zmenší; vidíte ho jen vy.",
+      "avatarUploadFailed": "Tento soubor nelze přečíst jako obrázek."
     },
     "tactics": {
       "locked": "Sestava je uzamčena pro zápas v {{time}}. Změnit ji můžete po skončení zápasu.",

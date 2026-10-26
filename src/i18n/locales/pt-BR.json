@@ -156,7 +156,11 @@
       "avatarOption": "Rosto {{number}}",
       "avatarMore": "Mostrar outros",
       "avatarClear": "Usar a padrão",
-      "avatarSave": "Usar esta foto"
+      "avatarSave": "Usar esta foto",
+      "avatarUpload": "Enviar do computador",
+      "avatarRemoveUpload": "Remover minha imagem",
+      "avatarUploadHint": "Uma imagem JPEG, PNG ou WebP. Ela é cortada em quadrado e reduzida antes do envio; só você a vê.",
+      "avatarUploadFailed": "Não foi possível ler esse arquivo como imagem."
     },
     "tactics": {
       "locked": "A escalação está travada para o jogo das {{time}}. Você pode mudá-la quando o jogo acabar.",

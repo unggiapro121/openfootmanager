@@ -14,4 +14,8 @@ region: CoachRegion, status: AccountStatus, capabilities: Array<Capability>,
 /**
  * The seed of the coach's portrait, when he picked one.
  */
-avatarSeed?: string, };
+avatarSeed?: string, 
+/**
+ * He sent a picture of his own (`GET /v1/me/avatar-image` reads it).
+ */
+hasAvatarImage: boolean, };
