@@ -82,7 +82,9 @@
       "renameLabel": "Nový název klubu",
       "renameHint": "První přejmenování klubu je zdarma; další vyžadují kartu přejmenování klubu.",
       "save": "Uložit",
-      "stadium": "{{name}} ({{capacity}} míst)"
+      "stadium": "{{name}} ({{capacity}} míst)",
+      "stadiumLabel": "Název stadionu",
+      "stadiumHint": "Stadion můžete přejmenovat, kolikrát chcete."
     },
     "fixture": {
       "title": "Další zápas",

@@ -93,6 +93,7 @@ export type { SentCommand } from "./SentCommand";
 export type { ServerMessage } from "./ServerMessage";
 export type { ShirtRequest } from "./ShirtRequest";
 export type { SquadPlayerView } from "./SquadPlayerView";
+export type { StadiumRequest } from "./StadiumRequest";
 export type { StaffLineView } from "./StaffLineView";
 export type { StandingRow } from "./StandingRow";
 export type { StatusResponse } from "./StatusResponse";

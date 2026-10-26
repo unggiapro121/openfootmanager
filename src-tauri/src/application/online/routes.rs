@@ -55,6 +55,12 @@ pub const ROUTES: &[Route] = &[
     route("GET", &[L("v1"), L("clubs"), L("mine")], &[]),
     route("GET", &[L("v1"), L("clubs"), L("mine"), L("fixtures")], &[]),
     route("PATCH", &[L("v1"), L("clubs"), L("mine")], &[]),
+    // The club's stadium renamed.
+    route(
+        "PATCH",
+        &[L("v1"), L("clubs"), L("mine"), L("stadium")],
+        &[],
+    ),
     // A player of the coach's club renamed (S-14).
     route("PATCH", &[L("v1"), L("players"), Id, L("name")], &[]),
     // A player's shirt number set, swapped or cleared.

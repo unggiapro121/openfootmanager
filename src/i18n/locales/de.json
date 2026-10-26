@@ -82,7 +82,9 @@
       "renameLabel": "Neuer Vereinsname",
       "renameHint": "Die erste Umbenennung deines Vereins ist kostenlos; weitere brauchen eine Vereins-Umbenennungskarte.",
       "save": "Speichern",
-      "stadium": "{{name}} ({{capacity}} Plätze)"
+      "stadium": "{{name}} ({{capacity}} Plätze)",
+      "stadiumLabel": "Stadionname",
+      "stadiumHint": "Das Stadion lässt sich beliebig oft umbenennen."
     },
     "fixture": {
       "title": "Nächstes Spiel",

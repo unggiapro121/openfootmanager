@@ -33,6 +33,7 @@ import type {
   UpdateAccount,
   RenamePlayerRequest,
   ShirtRequest,
+  StadiumRequest,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
 import type { MatchCommand } from "./api/engine";
@@ -132,6 +133,12 @@ export const online = {
       call<TrainingPlan>(write("PUT", ["v1", "clubs", "mine", "training"], idempotencyKey, plan)),
     rename: (name: string, idempotencyKey = newKey()) =>
       call<MyClubView>(write("PATCH", ["v1", "clubs", "mine"], idempotencyKey, { name })),
+    renameStadium: (name: string, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PATCH", ["v1", "clubs", "mine", "stadium"], idempotencyKey, {
+          name,
+        } satisfies StadiumRequest),
+      ),
     byId: (clubId: string) => call<PublicClubView>(read(["v1", "clubs", clubId])),
     /** Dismiss what the server says it fitted to the coach's licence (S-9 S9-20). */
     dismissLicenceNotice: (idempotencyKey = newKey()) =>

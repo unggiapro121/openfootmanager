@@ -82,7 +82,9 @@
       "renameLabel": "Tên CLB mới",
       "renameHint": "Lần đổi tên CLB đầu tiên là miễn phí; các lần sau cần Thẻ đổi tên CLB.",
       "save": "Lưu",
-      "stadium": "{{name}} ({{capacity}} chỗ)"
+      "stadium": "{{name}} ({{capacity}} chỗ)",
+      "stadiumLabel": "Tên sân vận động",
+      "stadiumHint": "Tên sân đổi được bao nhiêu lần tuỳ ý."
     },
     "fixture": {
       "title": "Trận kế tiếp",

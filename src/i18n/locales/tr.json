@@ -82,7 +82,9 @@
       "renameLabel": "Kulübün yeni adı",
       "renameHint": "Kulübünün ilk ad değişikliği ücretsizdir; sonrakiler kulüp ad değiştirme kartı gerektirir.",
       "save": "Kaydet",
-      "stadium": "{{name}} ({{capacity}} koltuk)"
+      "stadium": "{{name}} ({{capacity}} koltuk)",
+      "stadiumLabel": "Stadyum adı",
+      "stadiumHint": "Stadyumu istediğiniz kadar yeniden adlandırabilirsiniz."
     },
     "fixture": {
       "title": "Sonraki maç",
