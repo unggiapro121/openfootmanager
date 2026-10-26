@@ -16,6 +16,10 @@ position: string, naturalPosition: string, nationality: string, age: number, ovr
  */
 potentialStars: number, 
 /**
+ * His traits by name, `Wonderkid` left out: his potential is told in stars.
+ */
+traits: Array<string>, 
+/**
  * His weekly wage, which the buyer pays from the next day (S10-6).
  */
 wage: number, 
