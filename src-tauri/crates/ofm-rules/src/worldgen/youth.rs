@@ -151,7 +151,7 @@ fn youth_recruit(
 /// The best overall a youngster may have when he is found, by age. The squad
 /// generator draws attributes on a senior's scale whatever the age, which made
 /// a fifteen-year-old as good as a first-team regular.
-fn youth_ovr_ceiling(age: u32) -> u8 {
+pub(crate) fn youth_ovr_ceiling(age: u32) -> u8 {
     match age {
         ..=15 => 64,
         16 => 69,
@@ -178,7 +178,7 @@ fn youth_maturity(age: u32) -> f64 {
 }
 
 /// The least room to grow a youngster is given over his overall, by age.
-fn youth_min_growth(age: u32) -> u8 {
+pub(crate) fn youth_min_growth(age: u32) -> u8 {
     match age {
         ..=15 => 8,
         16 => 7,
@@ -210,9 +210,34 @@ fn draw_youth_potential(ovr: u8, age: u32, lift: IntakeLift, rng: &mut impl rand
         .min(99)
 }
 
-/// Bring a freshly generated youngster down to what his age allows: attributes
-/// scaled by [`youth_maturity`], then capped at [`youth_ovr_ceiling`]; his
-/// potential, rating-derived traits, value and wage settled on the result.
+/// Bring a freshly generated youngster of `age` to what his age allows: attributes scaled by
+/// [`youth_maturity`], then the overall capped at `ceiling`. Draws nothing. The desktop passes
+/// [`youth_ovr_ceiling`]; an online scout's candidate also stays under his potential less the room
+/// his age leaves (phase 4, E4-1 §4.6).
+pub(crate) fn mature_for_age(player: &mut Player, age: u32, ceiling: u8) {
+    use crate::player_rating::natural_ovr;
+
+    scale_attributes(&mut player.attributes, youth_maturity(age));
+    let ceiling = f64::from(ceiling);
+    // Rounding each attribute can leave the overall a point over; a few passes settle it.
+    for _ in 0..4 {
+        let ovr = natural_ovr(player);
+        if ovr.round() <= ceiling {
+            break;
+        }
+        scale_attributes(&mut player.attributes, (ceiling - 0.5) / ovr);
+    }
+}
+
+/// A youngster's rating-derived traits, value and wage settled on his attributes and potential.
+pub(crate) fn settle_youngster(player: &mut Player, current_year: u32) {
+    crate::player_rating::refresh_player_derived(player, current_year);
+    crate::assigned_traits::assign_traits(player, current_year);
+    reprice_generated_player(player, current_year);
+}
+
+/// Bring a freshly generated youngster down to what his age allows ([`mature_for_age`] with
+/// [`youth_ovr_ceiling`]), then draw his potential and settle the rest on the result.
 fn grow_into_age(
     player: &mut Player,
     current_year: u32,
@@ -222,22 +247,10 @@ fn grow_into_age(
     use crate::player_rating::natural_ovr;
 
     let age = crate::player_rating::player_age(&player.date_of_birth, current_year);
-    scale_attributes(&mut player.attributes, youth_maturity(age));
-    let ceiling = f64::from(youth_ovr_ceiling(age));
-    // Rounding each attribute can leave the overall a point over; a few passes settle it.
-    for _ in 0..4 {
-        let ovr = natural_ovr(player);
-        if ovr.round() <= ceiling {
-            break;
-        }
-        scale_attributes(&mut player.attributes, (ceiling - 0.5) / ovr);
-    }
-
+    mature_for_age(player, age, youth_ovr_ceiling(age));
     let ovr = natural_ovr(player).round() as u8;
     player.potential = draw_youth_potential(ovr, age, lift, rng);
-    crate::player_rating::refresh_player_derived(player, current_year);
-    crate::assigned_traits::assign_traits(player, current_year);
-    reprice_generated_player(player, current_year);
+    settle_youngster(player, current_year);
 }
 
 #[cfg(test)]

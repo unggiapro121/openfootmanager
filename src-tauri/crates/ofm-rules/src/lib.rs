@@ -14,6 +14,7 @@
 /// `tests/world_rules_version.rs` enforces (E3-5q F12).
 pub const WORLD_RULES_VERSION: &str = "3";
 
+pub mod academy;
 pub mod age;
 pub mod aging;
 pub mod ai_formation;
