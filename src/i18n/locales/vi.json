@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "Độ nhuần nhuyễn tăng ở các trận giải đấu do chính bạn điều khiển, không tăng ở trận AI đá thay."
+    },
+    "player": {
+      "avatarChange": "Đổi ảnh đại diện",
+      "avatarTitle": "Ảnh đại diện của {{name}}",
+      "avatarHint": "Chọn một khuôn mặt trong kho của {{nation}}, hoặc gửi ảnh của riêng bạn. Chỉ mình bạn thấy ảnh đã gửi.",
+      "avatarUploadHint": "Ảnh JPEG, PNG hoặc WebP, được cắt vuông và thu nhỏ trước khi gửi.",
+      "nationalityChange": "Đổi quốc tịch",
+      "nationalityTitle": "Quốc tịch của {{name}}",
+      "nationalityHint": "Các khuôn mặt để chọn cho cầu thủ sẽ đổi theo quốc tịch.",
+      "nationalitySave": "Đổi quốc tịch"
     }
   },
   "coach": {

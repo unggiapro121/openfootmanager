@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "Penguasaan naik di laga liga yang Anda pimpin sendiri, bukan yang dimainkan AI untuk Anda."
+    },
+    "player": {
+      "avatarChange": "Ganti foto",
+      "avatarTitle": "Foto {{name}}",
+      "avatarHint": "Pilih wajah dari kumpulan {{nation}} atau kirim gambar Anda sendiri. Hanya Anda yang melihat gambar yang dikirim.",
+      "avatarUploadHint": "Gambar JPEG, PNG, atau WebP, dipotong persegi dan diperkecil sebelum dikirim.",
+      "nationalityChange": "Ganti kewarganegaraan",
+      "nationalityTitle": "Kewarganegaraan {{name}}",
+      "nationalityHint": "Wajah yang ditawarkan mengikuti kewarganegaraannya.",
+      "nationalitySave": "Ganti kewarganegaraan"
     }
   },
   "coach": {

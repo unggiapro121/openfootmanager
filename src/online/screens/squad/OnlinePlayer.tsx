@@ -27,9 +27,12 @@ import { formatVal, formatWeeklyAmount } from "../../../lib/valueFormatting";
 import type { KitPattern } from "../../../store/types";
 import type { MyClubView, SquadPlayerView } from "../../api";
 import { useOnlineStore } from "../../store/onlineStore";
+import { avatarOf } from "./playerLook";
 import ListingDialog from "../market/ListingDialog";
 import PotentialStars from "../PotentialStars";
 import RenamePlayerDialog from "../RenamePlayerDialog";
+import PlayerAvatarPicker from "./PlayerAvatarPicker";
+import PlayerNationalityDialog from "./PlayerNationalityDialog";
 import ShirtNumberPicker from "./ShirtNumberPicker";
 
 /**
@@ -94,6 +97,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
             <div className="flex flex-wrap gap-2 pt-1">
               <ListingAction playerId={player.id} playerName={player.fullName} />
               <ShirtAction player={player} />
+              <LookActions player={player} />
               <RenameAction player={player} />
             </div>
           </CardBody>
@@ -121,6 +125,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
 function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
   const { t, i18n } = useTranslation();
   const { ovr } = player;
+  const pictures = useOnlineStore((state) => state.playerPictures);
   const avatarTone =
     ovr >= 75
       ? "bg-primary-500/20 text-primary-400 border-primary-500/30"
@@ -132,12 +137,7 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
       <div className="rounded-t-xl bg-linear-to-r from-navy-700 to-navy-800 p-8">
         <div className="flex items-start gap-6">
           <PlayerAvatar
-            player={{
-              id: player.id,
-              full_name: player.fullName,
-              match_name: player.matchName,
-              nationality: player.nationality,
-            }}
+            player={avatarOf(player, pictures)}
             className={`flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border-2 font-heading text-4xl font-bold ${avatarTone}`}
             fallback={<span>{ovr}</span>}
           />
@@ -307,6 +307,34 @@ function ListingAction({ playerId, playerName }: { playerId: string; playerName:
       </Button>
       {open && (
         <ListingDialog playerId={playerId} playerName={playerName} onClose={() => setOpen(false)} />
+      )}
+    </>
+  );
+}
+
+/** The ways to change how the player looks and where he is from: his photo and his nationality. */
+function LookActions({ player }: { player: SquadPlayerView }) {
+  const { t } = useTranslation();
+  const [picking, setPicking] = useState<"avatar" | "nationality" | null>(null);
+  const listed = useOnlineStore((state) =>
+    state.market?.selling.some((auction) => auction.playerId === player.id),
+  );
+  // A listed player keeps his picture and nationality until his auction is over, as the server
+  // would refuse it.
+  if (listed) return null;
+  return (
+    <>
+      <Button variant="ghost" size="sm" onClick={() => setPicking("avatar")}>
+        {t("online.player.avatarChange")}
+      </Button>
+      <Button variant="ghost" size="sm" onClick={() => setPicking("nationality")}>
+        {t("online.player.nationalityChange")}
+      </Button>
+      {picking === "avatar" && (
+        <PlayerAvatarPicker player={player} onClose={() => setPicking(null)} />
+      )}
+      {picking === "nationality" && (
+        <PlayerNationalityDialog player={player} onClose={() => setPicking(null)} />
       )}
     </>
   );

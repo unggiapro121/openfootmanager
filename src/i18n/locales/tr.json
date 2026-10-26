@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "Ustalık, yapay zekânın sizin yerinize oynadığı değil, kendinizin yönettiği lig maçlarında artar."
+    },
+    "player": {
+      "avatarChange": "Fotoğrafı değiştir",
+      "avatarTitle": "{{name}} fotoğrafı",
+      "avatarHint": "{{nation}} havuzundan bir yüz seçin veya kendi resminizi gönderin. Gönderdiğiniz resmi yalnızca siz görürsünüz.",
+      "avatarUploadHint": "JPEG, PNG veya WebP resmi; gönderilmeden önce kare kırpılır ve küçültülür.",
+      "nationalityChange": "Uyruğu değiştir",
+      "nationalityTitle": "{{name}} uyruğu",
+      "nationalityHint": "Sunulan yüzler uyruğuna göre değişir.",
+      "nationalitySave": "Uyruğu değiştir"
     }
   },
   "coach": {

@@ -36,6 +36,8 @@ import type {
   UpdateAccount,
   RenamePlayerRequest,
   ShirtRequest,
+  PlayerAvatarRequest,
+  PlayerNationalityRequest,
   StadiumRequest,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
@@ -240,6 +242,34 @@ export const online = {
           fullName,
           matchName,
         } satisfies RenamePlayerRequest),
+      ),
+    /** The face drawn for him from his nationality's pool: a seed; empty takes it away. */
+    setAvatar: (playerId: string, seed: string, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PATCH", ["v1", "players", playerId, "avatar"], idempotencyKey, {
+          seed,
+        } satisfies PlayerAvatarRequest),
+      ),
+    /** His own picture, a data URL (404 when he has none): his coach's alone. */
+    avatarImage: (playerId: string) =>
+      call<AvatarImageView>(read(["v1", "players", playerId, "avatar-image"])),
+    setAvatarImage: (playerId: string, dataUrl: string, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PUT", ["v1", "players", playerId, "avatar-image"], idempotencyKey, {
+          dataUrl,
+        } satisfies AvatarImageRequest),
+      ),
+    removeAvatarImage: (playerId: string, idempotencyKey = newKey()) =>
+      call<MyClubView>({
+        method: "DELETE",
+        segments: ["v1", "players", playerId, "avatar-image"],
+        idempotencyKey,
+      }),
+    setNationality: (playerId: string, nationality: string, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PATCH", ["v1", "players", playerId, "nationality"], idempotencyKey, {
+          nationality,
+        } satisfies PlayerNationalityRequest),
       ),
     /** His shirt number: `null` takes it away; `swap` trades with the player who wears `number`. */
     shirt: (playerId: string, number: number | null, swap: boolean, idempotencyKey = newKey()) =>

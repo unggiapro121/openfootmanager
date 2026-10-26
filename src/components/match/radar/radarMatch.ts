@@ -36,6 +36,8 @@ export interface RadarRosterEntry {
   /** What his portrait is drawn from, with his names and nationality: the same on every screen. */
   id?: string;
   nationality?: string | null;
+  /** The face his coach picked from the pool (online). */
+  portrait_seed?: string | null;
   full_name: string;
   match_name: string;
   jersey_number?: number | null;

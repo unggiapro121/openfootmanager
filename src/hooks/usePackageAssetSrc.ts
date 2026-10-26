@@ -49,6 +49,8 @@ export const ProjectAssetDirContext = createContext<string | null>(null);
 export function usePackageAssetSrc(path: string | null | undefined): string | null {
   const projectDir = useContext(ProjectAssetDirContext);
   const projectSrc = useAssetDataUrl(projectDir ? path : null, projectDir ?? undefined);
+  // A picture the player's coach sent comes inline, as a data URL (the online mode).
+  const inline = path?.startsWith("data:image/") ? path : null;
   const bundled = isPackageQualifiedAsset(path) ? null : resolveLocalMediaPath(path);
   const [packageSrc, setPackageSrc] = useState<string | null>(null);
 
@@ -75,6 +77,7 @@ export function usePackageAssetSrc(path: string | null | undefined): string | nu
     };
   }, [path]);
 
+  if (inline) return inline;
   if (projectDir) return projectSrc;
   return bundled ?? packageSrc;
 }

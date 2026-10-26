@@ -31,13 +31,14 @@ export function OnlineSubPanel({
 }) {
   const { t } = useTranslation();
   const squad = useOnlineStore((store) => store.club?.players);
+  const pictures = useOnlineStore((store) => store.playerPictures);
   const [error, setError] = useState<unknown>(null);
   const side = mine.side;
   const snapshot = useMemo(
     () => toSubPanelSnapshot(state, mine, squad ?? []),
     [state, mine, squad],
   );
-  const roster = useMemo(() => toRadarRoster(state, squad), [state, squad]);
+  const roster = useMemo(() => toRadarRoster(state, squad, pictures), [state, squad, pictures]);
 
   /** Sends `command`; false when the match refused it, with the reason shown. */
   const send = async (command: MatchCommand): Promise<boolean> => {

@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "La padronanza cresce nelle partite di campionato che guidi tu, non in quelle giocate dall'IA per te."
+    },
+    "player": {
+      "avatarChange": "Cambia foto",
+      "avatarTitle": "Foto di {{name}}",
+      "avatarHint": "Scegli un volto dal gruppo di {{nation}} o invia un'immagine tua. Solo tu vedi l'immagine inviata.",
+      "avatarUploadHint": "Un'immagine JPEG, PNG o WebP, ritagliata in quadrato e ridotta prima dell'invio.",
+      "nationalityChange": "Cambia nazionalità",
+      "nationalityTitle": "Nazionalità di {{name}}",
+      "nationalityHint": "I volti proposti seguono la sua nazionalità.",
+      "nationalitySave": "Cambia nazionalità"
     }
   },
   "coach": {

@@ -69,6 +69,16 @@ pub const ROUTES: &[Route] = &[
     route("PATCH", &[L("v1"), L("players"), Id, L("name")], &[]),
     // A player's shirt number set, swapped or cleared.
     route("PATCH", &[L("v1"), L("players"), Id, L("shirt")], &[]),
+    // A player's face, own picture and nationality.
+    route("PATCH", &[L("v1"), L("players"), Id, L("avatar")], &[]),
+    route("GET", &[L("v1"), L("players"), Id, L("avatar-image")], &[]),
+    route("PUT", &[L("v1"), L("players"), Id, L("avatar-image")], &[]),
+    route(
+        "DELETE",
+        &[L("v1"), L("players"), Id, L("avatar-image")],
+        &[],
+    ),
+    route("PATCH", &[L("v1"), L("players"), Id, L("nationality")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("setup")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("training")], &[]),
     // The coach's licence (S-9): the notice of what the server fitted, and the table of licences.

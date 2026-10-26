@@ -16,6 +16,10 @@ position: string, naturalPosition: string, nationality: string, age: number, ovr
  */
 potentialStars: number, 
 /**
+ * The seed of the face his club's coach picked for him, if any.
+ */
+avatarSeed?: string, 
+/**
  * His traits by name, `Wonderkid` left out: his potential is told in stars.
  */
 traits: Array<string>, 

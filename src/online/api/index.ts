@@ -77,6 +77,8 @@ export type { ProgressResponse } from "./ProgressResponse";
 export type { ProjectedPlayer } from "./ProjectedPlayer";
 export type { ProjectedSide } from "./ProjectedSide";
 export type { PromotionRuleView } from "./PromotionRuleView";
+export type { PlayerAvatarRequest } from "./PlayerAvatarRequest";
+export type { PlayerNationalityRequest } from "./PlayerNationalityRequest";
 export type { PublicClubView } from "./PublicClubView";
 export type { PublicPlayerView } from "./PublicPlayerView";
 export type { QuoteRefusal } from "./QuoteRefusal";
