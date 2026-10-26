@@ -14,7 +14,10 @@ export const PLAY_STYLE_IDS: readonly PlayStyleId[] = [
 export const NEUTRAL_MASTERY = 50;
 
 /** How well `manager` gets `style` across, 1–100. Display only: the engine applies it. */
-export function getPlayStyleMastery(manager: ManagerData, style: PlayStyleId): number {
+export function getPlayStyleMastery(
+  manager: Pick<ManagerData, "play_style_mastery">,
+  style: PlayStyleId,
+): number {
   return manager.play_style_mastery?.[style] ?? NEUTRAL_MASTERY;
 }
 

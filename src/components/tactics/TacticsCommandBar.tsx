@@ -13,7 +13,7 @@ import {
   Trash2,
   Zap,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type JSX } from "react";
+import { useEffect, useMemo, useRef, useState, type JSX, type ReactNode } from "react";
 import type { TFunction } from "i18next";
 import { getPlayStyleMastery } from "../../lib/managerMastery";
 import type { ManagerData } from "../../store/types";
@@ -64,7 +64,9 @@ interface TacticsCommandBarProps {
   tacticLibrary: TacticsLibraryEntry[];
   tacticName: string;
   /** The head coach, whose mastery of each style is shown beside its name. */
-  coach?: ManagerData | null;
+  coach?: ManagerData | Pick<ManagerData, "play_style_mastery"> | null;
+  /** What a style does at the coach's level, drawn under the picker; nothing when absent. */
+  styleEffects?: (style: string) => ReactNode;
   /** What the coach's licence closes (online); nothing when absent. */
   limits?: TacticsLimits;
 }
@@ -102,6 +104,7 @@ export default function TacticsCommandBar({
   tacticLibrary,
   tacticName,
   coach = null,
+  styleEffects,
   limits,
 }: TacticsCommandBarProps): JSX.Element {
   const { t } = useTranslation();
@@ -577,6 +580,7 @@ export default function TacticsCommandBar({
                   );
                 })}
               </Select>
+              {styleEffects && <div className="mt-2">{styleEffects(activePlayStyle)}</div>}
               {coach && (
                 <p className="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
                   {t("tactics.masteryEarnedHint")}
