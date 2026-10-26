@@ -4,6 +4,8 @@
 //! the game would. Reading definition files, packages and the clock stays in
 //! `ofm_core::generator`.
 
+pub mod attribute_shape;
+pub mod attribute_shape_tables;
 pub mod calibration;
 pub mod clubs;
 pub mod definitions;
