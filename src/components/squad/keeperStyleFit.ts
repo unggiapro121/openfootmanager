@@ -87,7 +87,7 @@ export function isKeeperStyleFitSlot(
 
 /** The two halves of a keeper's style-fit score, formatted for its tooltip; null outfield. */
 export function getKeeperFitBreakdown(
-  player: PlayerData,
+  player: Pick<PlayerData, "natural_position" | "attributes">,
   playStyle: string,
   currentPos?: string,
 ): { save: string; lean: string } | null {
