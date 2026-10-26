@@ -41,7 +41,15 @@ weightKg: number,
 /**
  * His traits by name, `Wonderkid` left out: his potential is told in stars.
  */
-traits: Array<string>, nationality: string, age: number, ovr: number, 
+traits: Array<string>, nationality: string, 
+/**
+ * The seed of the face his coach picked from his nationality's pool, if he did.
+ */
+avatarSeed?: string, 
+/**
+ * His coach sent a picture of his own (`GET /v1/players/{id}/avatar-image` reads it).
+ */
+hasAvatarImage: boolean, age: number, ovr: number, 
 /**
  * 1 to 5.
  */

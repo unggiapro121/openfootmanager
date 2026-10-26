@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "只有在你亲自指挥的联赛比赛中才会提升熟练度，由 AI 代打的比赛不算。"
+    },
+    "player": {
+      "avatarChange": "更换头像",
+      "avatarTitle": "{{name}} 的头像",
+      "avatarHint": "从 {{nation}} 的头像库中选一张脸，或上传你自己的图片。你上传的图片只有你能看到。",
+      "avatarUploadHint": "JPEG、PNG 或 WebP 图片，上传前会裁成正方形并缩小。",
+      "nationalityChange": "更改国籍",
+      "nationalityTitle": "{{name}} 的国籍",
+      "nationalityHint": "可选的头像会随国籍而变化。",
+      "nationalitySave": "更改国籍"
     }
   },
   "coach": {

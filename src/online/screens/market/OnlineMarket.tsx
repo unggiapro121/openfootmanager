@@ -21,6 +21,7 @@ import { online } from "../../client";
 import type { OnlineApiError } from "../../errors";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
+import { avatarOf } from "../squad/playerLook";
 import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
 import MarketFilterPanel, { NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
@@ -496,12 +497,13 @@ function AuctionRow({
         <div className="flex items-center gap-3">
           {player && (
             <PlayerAvatar
-              player={{
+              player={avatarOf({
                 id: auction.playerId,
-                full_name: player.fullName,
-                match_name: player.fullName,
+                fullName: player.fullName,
+                matchName: player.fullName,
                 nationality: player.nationality,
-              }}
+                avatarSeed: player.avatarSeed,
+              })}
             />
           )}
           <div className="min-w-0">

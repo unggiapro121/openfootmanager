@@ -56,6 +56,9 @@ interface OnlineState {
   dismissNotice: (id: number) => void;
   setFriendly: (friendly: FriendlyMineView) => void;
   setClub: (club: MyClubView | null) => void;
+  /** The pictures the coach sent for his players, by player id (data URLs), read as they are needed. */
+  playerPictures: Record<string, string>;
+  setPlayerPictures: (pictures: Record<string, string>) => void;
   noteAnswered: () => void;
   noteFailure: (error: OnlineApiError) => void;
   reset: () => void;
@@ -73,6 +76,7 @@ const INITIAL = {
   market: undefined,
   marketUnseen: 0,
   notices: [] as MarketNotice[],
+  playerPictures: {} as Record<string, string>,
 };
 
 const CLIENT_OUTDATED = "be.error.online.clientOutdated";
@@ -82,6 +86,7 @@ const UNREACHABLE = "be.error.online.unreachable";
 export const useOnlineStore = create<OnlineState>((set) => ({
   ...INITIAL,
   setClub: (club) => set({ club }),
+  setPlayerPictures: (playerPictures) => set({ playerPictures }),
   setFriendly: (friendly) => set({ friendly }),
   pushNotice: (notice) =>
     set((state) => ({

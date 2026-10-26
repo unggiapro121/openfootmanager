@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "El dominio crece en los partidos de liga que diriges tú, no en los que juega la IA por ti."
+    },
+    "player": {
+      "avatarChange": "Cambiar foto",
+      "avatarTitle": "Foto de {{name}}",
+      "avatarHint": "Elige una cara del grupo de {{nation}} o envía una imagen propia. Solo tú ves la imagen que envías.",
+      "avatarUploadHint": "Una imagen JPEG, PNG o WebP, recortada en cuadrado y reducida antes de enviarla.",
+      "nationalityChange": "Cambiar nacionalidad",
+      "nationalityTitle": "Nacionalidad de {{name}}",
+      "nationalityHint": "Las caras que se ofrecen siguen su nacionalidad.",
+      "nationalitySave": "Cambiar nacionalidad"
     }
   },
   "coach": {

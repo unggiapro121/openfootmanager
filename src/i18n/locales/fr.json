@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "La maîtrise progresse dans les matchs de championnat que vous dirigez vous-même, pas dans ceux que l'IA joue pour vous."
+    },
+    "player": {
+      "avatarChange": "Changer la photo",
+      "avatarTitle": "Photo de {{name}}",
+      "avatarHint": "Choisissez un visage du lot de {{nation}} ou envoyez votre image. Seul vous voyez l'image envoyée.",
+      "avatarUploadHint": "Une image JPEG, PNG ou WebP, recadrée en carré et réduite avant l'envoi.",
+      "nationalityChange": "Changer la nationalité",
+      "nationalityTitle": "Nationalité de {{name}}",
+      "nationalityHint": "Les visages proposés suivent sa nationalité.",
+      "nationalitySave": "Changer la nationalité"
     }
   },
   "coach": {

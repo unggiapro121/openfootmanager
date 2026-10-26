@@ -20,6 +20,7 @@ import { condColor } from "../../lib/playerConditionDisplay";
 import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
 import PotentialStars from "./PotentialStars";
+import { avatarOf } from "./squad/playerLook";
 import { fitRank, type PlayerFit, squadFits } from "./squad/squadFit";
 import {
   byLine,
@@ -262,6 +263,7 @@ function SquadRow({
   const selling = useOnlineStore((state) =>
     state.market?.selling.some((auction) => auction.playerId === player.id),
   );
+  const pictures = useOnlineStore((state) => state.playerPictures);
   const [pickingShirt, setPickingShirt] = useState(false);
   const open = () => navigate(`/online/squad/${player.id}`);
   const border = starter
@@ -299,14 +301,7 @@ function SquadRow({
       </td>
       <td className="px-4 py-2.5">
         <div className="flex items-center gap-3">
-          <PlayerAvatar
-            player={{
-              id: player.id,
-              full_name: player.fullName,
-              match_name: player.matchName,
-              nationality: player.nationality,
-            }}
-          />
+          <PlayerAvatar player={avatarOf(player, pictures)} />
           <div className="flex min-w-0 items-center gap-1.5">
             <Link
               to={`/online/squad/${player.id}`}

@@ -107,10 +107,11 @@ export function useOnlineTacticsSource(
     return run;
   };
 
+  const pictures = useOnlineStore((state) => state.playerPictures);
   const source = useMemo<TacticsBoardSource>(
     () => ({
       team: toBoardTeam(club),
-      roster: club.players.map((player) => toRosterPlayer(player, club.club.id)),
+      roster: club.players.map((player) => toRosterPlayer(player, club.club.id, pictures)),
       positionRatings: toPositionRatings(club.players),
       setStartingXi: (playerIds) => write({ kind: "startingXi", playerIds }),
       setFormation: (formation) => write({ kind: "formation", formation }),
@@ -122,7 +123,7 @@ export function useOnlineTacticsSource(
     }),
     // `write` reads the store when it runs, so the source changes only with the club and its
     // licence.
-    [club, limits],
+    [club, limits, pictures],
   );
 
   return { source, outcome };

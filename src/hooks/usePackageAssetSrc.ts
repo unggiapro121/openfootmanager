@@ -37,6 +37,8 @@ export function resetPackageAssetRoot(): void {
  * so those resolve on a later tick and the hook re-renders.
  */
 export function usePackageAssetSrc(path: string | null | undefined): string | null {
+  // A picture the player's coach sent comes inline, as a data URL (the online mode).
+  const inline = path?.startsWith("data:image/") ? path : null;
   const bundled = isPackageQualifiedAsset(path) ? null : resolveLocalMediaPath(path);
   const [packageSrc, setPackageSrc] = useState<string | null>(null);
 
@@ -63,5 +65,5 @@ export function usePackageAssetSrc(path: string | null | undefined): string | nu
     };
   }, [path]);
 
-  return bundled ?? packageSrc;
+  return inline ?? bundled ?? packageSrc;
 }

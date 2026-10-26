@@ -30,8 +30,15 @@ export function toBoardTeam(club: MyClubView): TacticsBoardTeam {
  * A player of the coach's own club as the tactics board reads him. The online squad tells his
  * age, not his date of birth, and has no traits or photo.
  */
-export function toRosterPlayer(player: SquadPlayerView, clubId: string): TacticsRosterPlayer {
+export function toRosterPlayer(
+  player: SquadPlayerView,
+  clubId: string,
+  pictures: Readonly<Record<string, string>> = {},
+): TacticsRosterPlayer {
+  const picture = pictures[player.id];
   return {
+    portrait_seed: player.avatarSeed ?? null,
+    ...(picture ? { media: { face: picture } } : {}),
     id: player.id,
     match_name: player.matchName,
     full_name: player.fullName,

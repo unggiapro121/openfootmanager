@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "Mastery grows in league matches you direct yourself, not in ones the AI plays for you."
+    },
+    "player": {
+      "avatarChange": "Change photo",
+      "avatarTitle": "Photo of {{name}}",
+      "avatarHint": "Pick a face from the pool of {{nation}}, or send a picture of your own. Only you see a picture you send.",
+      "avatarUploadHint": "A JPEG, PNG or WebP picture, cropped to a square and shrunk before it is sent.",
+      "nationalityChange": "Change nationality",
+      "nationalityTitle": "Nationality of {{name}}",
+      "nationalityHint": "The faces on offer for him follow his nationality.",
+      "nationalitySave": "Change nationality"
     }
   },
   "coach": {

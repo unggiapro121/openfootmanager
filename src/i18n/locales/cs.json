@@ -561,6 +561,16 @@
     },
     "mastery": {
       "hint": "Mistrovství roste v ligových zápasech, které řídíte sami, ne v těch, které za vás hraje AI."
+    },
+    "player": {
+      "avatarChange": "Změnit fotku",
+      "avatarTitle": "Fotka hráče {{name}}",
+      "avatarHint": "Vyberte tvář ze souboru země {{nation}} nebo pošlete vlastní obrázek. Odeslaný obrázek vidíte jen vy.",
+      "avatarUploadHint": "Obrázek JPEG, PNG nebo WebP, před odesláním oříznutý na čtverec a zmenšený.",
+      "nationalityChange": "Změnit národnost",
+      "nationalityTitle": "Národnost hráče {{name}}",
+      "nationalityHint": "Nabízené tváře se řídí jeho národností.",
+      "nationalitySave": "Změnit národnost"
     }
   },
   "coach": {

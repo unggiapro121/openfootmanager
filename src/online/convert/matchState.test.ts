@@ -299,6 +299,7 @@ describe("radar and panels", () => {
     expect(roster.get("as2")).toEqual({
       id: "as2",
       nationality: null,
+      portrait_seed: null,
       full_name: "P. as2",
       match_name: "P. as2",
       jersey_number: 20,

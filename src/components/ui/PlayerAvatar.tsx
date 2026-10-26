@@ -46,8 +46,16 @@ function RuntimePortraitFallback({
       match_name: player.match_name,
       nationality: player.nationality ?? null,
       date_of_birth: player.date_of_birth ?? null,
+      portrait_seed: player.portrait_seed ?? null,
     }),
-    [player.id, player.full_name, player.match_name, player.nationality, player.date_of_birth],
+    [
+      player.id,
+      player.full_name,
+      player.match_name,
+      player.nationality,
+      player.date_of_birth,
+      player.portrait_seed,
+    ],
   );
   const identityKey = useMemo(
     () => runtimePortraitIdentityKey(portraitIdentity),

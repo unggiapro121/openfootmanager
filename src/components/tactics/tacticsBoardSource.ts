@@ -34,6 +34,8 @@ export type TacticsRosterPlayer = Pick<
   Partial<Pick<PlayerData, "date_of_birth" | "traits" | "media">> & {
     /** His age, where the source knows it but not his date of birth (an online squad). */
     age?: number;
+    /** The face his coach picked from the pool (online): his portrait is drawn with it. */
+    portrait_seed?: string | null;
   };
 
 /** A roster player's age: as the source gave it, or from his date of birth. */
