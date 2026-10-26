@@ -20,6 +20,8 @@ export type SquadSortKey =
   | "jersey"
   | "name"
   | "pos"
+  | "fit"
+  | "style"
   | "potential"
   | "age"
   | "condition"
@@ -71,7 +73,13 @@ export function matchesFilter(
   }
 }
 
-const VALUE_OF: Record<SquadSortKey, (player: SquadPlayerView) => number | string> = {
+/** Ranks of the two fit columns, which only the club's formation and style can give. */
+export type FitRanks = Record<"fit" | "style", (player: SquadPlayerView) => number>;
+
+const VALUE_OF: Record<
+  Exclude<SquadSortKey, "fit" | "style">,
+  (player: SquadPlayerView) => number | string
+> = {
   jersey: (player) => player.shirtNumber ?? Number.MAX_SAFE_INTEGER,
   name: (player) => player.matchName.toLocaleLowerCase(),
   pos: (player) => positionGroupRank(player.position),
@@ -85,11 +93,15 @@ const VALUE_OF: Record<SquadSortKey, (player: SquadPlayerView) => number | strin
 };
 
 /** `players` in the order of `sort`; the by-line order when no column is chosen. */
-export function sortedBy(players: SquadPlayerView[], sort: SquadSort): SquadPlayerView[] {
+export function sortedBy(
+  players: SquadPlayerView[],
+  sort: SquadSort,
+  fits?: FitRanks,
+): SquadPlayerView[] {
   const ordered = byLine(players);
   const { key, dir } = sort;
   if (key === null) return ordered;
-  const value = VALUE_OF[key];
+  const value = key === "fit" || key === "style" ? (fits?.[key] ?? (() => 0)) : VALUE_OF[key];
   const sign = dir === "asc" ? 1 : -1;
   return ordered.sort((left, right) => {
     const a = value(left);

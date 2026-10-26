@@ -271,6 +271,21 @@ describe("the online club pages", () => {
     expect(screen.getByText("manager.stylePhase.Attack")).toBeInTheDocument();
   });
 
+  // Given a club with a saved eleven and a style,
+  // when the squad list opens,
+  // then it has the formation-fit and style-fit columns, and each player shows a style fit.
+  it("rates each player's fit to the formation and the style", async () => {
+    stage(myClub({ players: SQUAD }));
+    renderOnline("/online/squad");
+
+    const table = await screen.findByRole("table");
+    expect(
+      within(table).getByRole("columnheader", { name: "squad.formationFit" }),
+    ).toBeInTheDocument();
+    expect(within(table).getByRole("columnheader", { name: "squad.styleFit" })).toBeInTheDocument();
+    expect(within(table).getAllByText(/^squad\.styleFitValues\./)).toHaveLength(SQUAD.length);
+  });
+
   // Given a squad with one player who has a trait,
   // when the squad list opens,
   // then it has a traits column, and the player's trait shows in it by name.
