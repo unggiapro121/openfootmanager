@@ -18,7 +18,7 @@ export default function CoachMastery() {
   );
 
   return (
-    <Card className="max-w-2xl">
+    <Card className="lg:col-span-3">
       <CardHeader>{t("manager.playStyleMastery")}</CardHeader>
       <CardBody className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
         <p className="text-gray-500 dark:text-gray-400">{t("online.mastery.hint")}</p>
@@ -29,7 +29,7 @@ export default function CoachMastery() {
           </p>
         )}
         {resource.status === "ready" && (
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {resource.data.map((style) => (
               <StyleTile key={style.style} style={style} />
             ))}

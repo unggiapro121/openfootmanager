@@ -35,34 +35,45 @@ export default function OnlineProfile() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <Card className="max-w-2xl">
-        <CardHeader>{t("online.profile.title")}</CardHeader>
-        <CardBody className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
-          {error !== null && (
-            <p role="alert" className="text-red-600 dark:text-red-400">
-              {resolveBackendError(error)}
-            </p>
-          )}
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+      {error !== null && (
+        <p role="alert" className="text-red-600 lg:col-span-3 dark:text-red-400">
+          {resolveBackendError(error)}
+        </p>
+      )}
+      <Card accent="primary" className="lg:col-span-3">
+        <div className="flex items-center gap-6 rounded-t-xl bg-gradient-to-r from-navy-700 to-navy-800 p-6">
           {account ? (
             <>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-                <dt className="font-semibold">{t("online.profile.name")}</dt>
-                <dd>{`${account.firstName} ${account.lastName}`}</dd>
-                <dt className="font-semibold">{t("online.profile.email")}</dt>
-                <dd>{account.email}</dd>
-                <dt className="font-semibold">{t("online.profile.region")}</dt>
-                <dd>{t(`coach.regions.${account.region}`)}</dd>
-              </dl>
-              <RegionChange account={account} onChanged={setAccount} />
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border-2 border-primary-500/30 bg-primary-500/20 font-heading text-3xl font-bold text-primary-400">
+                {account.firstName.charAt(0)}
+                {account.lastName.charAt(0)}
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-heading text-2xl font-bold uppercase tracking-wide text-white">
+                  {`${account.firstName} ${account.lastName}`}
+                </h2>
+                <p className="mt-1 text-sm text-gray-400">{t(`coach.regions.${account.region}`)}</p>
+                <p className="mt-0.5 truncate text-sm font-semibold text-primary-400">
+                  {account.email}
+                </p>
+              </div>
             </>
           ) : (
-            error === null && <p>{t("online.loading")}</p>
+            <p className="text-sm text-gray-400">{t("online.loading")}</p>
           )}
-        </CardBody>
+        </div>
       </Card>
       <CoachMastery />
       <CoachRoadmap />
+      {account && (
+        <Card>
+          <CardHeader>{t("online.profile.region")}</CardHeader>
+          <CardBody className="text-sm text-gray-700 dark:text-gray-300">
+            <RegionChange account={account} onChanged={setAccount} />
+          </CardBody>
+        </Card>
+      )}
     </div>
   );
 }
@@ -106,8 +117,8 @@ function RegionChange({
   };
 
   return (
-    <div className="space-y-3 border-t border-gray-100 pt-4 dark:border-navy-600">
-      <label htmlFor="online-region" className="block text-xs font-semibold uppercase">
+    <div className="space-y-3">
+      <label htmlFor="online-region" className="sr-only">
         {t("online.profile.changeRegion")}
       </label>
       <select
