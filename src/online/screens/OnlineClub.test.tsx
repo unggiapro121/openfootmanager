@@ -240,6 +240,20 @@ describe("the online club pages", () => {
     expect(screen.getByRole("status", { name: "location" }).textContent).toBe("/online/squad");
   });
 
+  // Given a squad with one player who has a trait,
+  // when the squad list opens,
+  // then it has a traits column, and the player's trait shows in it by name.
+  it("lists each player's traits in their own column", async () => {
+    const [keeper, ...others] = SQUAD;
+    stage(myClub({ players: [{ ...keeper, traits: ["Playmaker"] }, ...others] }));
+    renderOnline("/online/squad");
+
+    const table = await screen.findByRole("table");
+    expect(within(table).getByRole("columnheader", { name: "squad.traits" })).toBeInTheDocument();
+    const row = within(table).getByRole("link", { name: "Thủ Môn" }).closest("tr");
+    expect(row?.querySelector("[title], [aria-label]")).not.toBeNull();
+  });
+
   // Given a squad where one player is banned for a match by a red card,
   // when the squad page and his own page open,
   // then both say he is suspended, and the others' rows do not.
