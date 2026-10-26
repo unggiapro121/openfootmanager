@@ -11,7 +11,7 @@ use ofm_rules::worldgen::generate_world;
 use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 
 /// The pinned pair. Change only together with `WORLD_RULES_VERSION` (see the assertion).
-const WORLD_RULES_PIN: (&str, u64) = ("3", 0x1E43_7D6E_702F_747A);
+const WORLD_RULES_PIN: (&str, u64) = ("4", 0x6678_7E3B_ABF9_0041);
 
 /// A fingerprint of what the rules grow: a desktop world and fourteen online clubs with free
 /// agents, as JSON values (sorted maps, so a `HashMap` field's order cannot move it). Through

@@ -10,8 +10,10 @@ use ofm_rules::worldgen::generate_world;
 use serde_json::Value;
 
 /// The digest of the three standard worlds of seeds 1–3, opening in 2026, without their words:
-/// measured on `staging` b3ca20a4, before E3-5q2 touched the desktop's names.
-const STATS_PIN: u64 = 0xFD99_8F94_DA49_5DED;
+/// measured on `staging` b3ca20a4, before E3-5q2 touched the desktop's names. Re-pinned when the
+/// attribute profiles were redrawn from real players (`worldgen::attribute_shape`,
+/// WORLD_RULES_VERSION 4): from then on it guards the numbers against a name-only change.
+const STATS_PIN: u64 = 0x8C1A_A5ED_5E41_7EF5;
 
 /// Fields that are words, not numbers: what a name, a place or a kit is.
 const WORDS: [&str; 10] = [
