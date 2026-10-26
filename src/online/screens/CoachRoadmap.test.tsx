@@ -98,6 +98,7 @@ describe("the coach's roadmap on his profile", () => {
         promotions: 2,
         promotion: { places: 4, leagueSize: 14, newcomerMinMatches: 13 },
         licence: { tier: 2, nextTierLevel: 4, pending: false },
+        mastery: [],
       },
       TABLE,
     );
@@ -126,12 +127,37 @@ describe("the coach's roadmap on his profile", () => {
     ).toBeInTheDocument();
   });
 
+  // Given a coach who earned XP in the attacking style,
+  // when his profile opens,
+  // then the attacking style shows its level, the XP towards the next point and its matches.
+  it("shows the mastery his matches earned", async () => {
+    stage(
+      {
+        level: 1,
+        seasons: 0,
+        promotions: 0,
+        mastery: [
+          { style: "Attacking", level: 55, xp: 42, xpToNext: 400, matches: 6 },
+          { style: "Balanced", level: 50, xp: 0, xpToNext: 300, matches: 0 },
+        ],
+      },
+      { tiers: TABLE.tiers },
+    );
+    renderOnline("/online/profile");
+
+    const tile = await screen.findByTestId("mastery-Attacking");
+    expect(tile).toHaveTextContent("55");
+    expect(tile).toHaveTextContent("manager.masteryXp:42|400");
+    expect(tile).toHaveTextContent("manager.masteryMatches:6");
+    expect(screen.getByTestId("mastery-Balanced")).toHaveTextContent("manager.masteryXp:0|300");
+  });
+
   // Given a coach who never had an online season, and no season with licences,
   // when his profile opens,
   // then it shows level 1, says how a level is earned once a season opens, that every control is
   // open, and no licence road.
   it("tells a new coach what to expect when there is no season yet", async () => {
-    stage({ level: 1, seasons: 0, promotions: 0 }, { tiers: TABLE.tiers });
+    stage({ level: 1, seasons: 0, promotions: 0, mastery: [] }, { tiers: TABLE.tiers });
     renderOnline("/online/profile");
 
     expect(await screen.findByText("online.roadmap.level:1")).toBeInTheDocument();

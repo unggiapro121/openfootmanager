@@ -547,6 +547,9 @@
         "playerRename": "Ce joueur a déjà utilisé son changement de nom gratuit. Le renommer encore demande une carte de changement de nom de joueur (dans une prochaine mise à jour).",
         "clubRename": "Votre club a déjà utilisé son changement de nom gratuit. Le renommer encore demande une carte de changement de nom de club (dans une prochaine mise à jour)."
       }
+    },
+    "mastery": {
+      "hint": "La maîtrise progresse dans les matchs de championnat que vous dirigez vous-même, pas dans ceux que l'IA joue pour vous."
     }
   },
   "coach": {

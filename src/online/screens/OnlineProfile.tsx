@@ -14,6 +14,7 @@ import {
   tracked,
   useOnlineStore,
 } from "../store/onlineStore";
+import CoachMastery from "./CoachMastery";
 import CoachRoadmap from "./CoachRoadmap";
 import { useActionKey } from "./useActionKey";
 
@@ -60,6 +61,7 @@ export default function OnlineProfile() {
           )}
         </CardBody>
       </Card>
+      <CoachMastery />
       <CoachRoadmap />
     </div>
   );

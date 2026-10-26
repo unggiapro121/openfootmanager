@@ -547,6 +547,9 @@
         "playerRename": "Dieser Spieler hat seine kostenlose Umbenennung schon genutzt. Eine weitere braucht eine Spieler-Umbenennungskarte (kommt mit einem späteren Update).",
         "clubRename": "Dein Verein hat seine kostenlose Umbenennung schon genutzt. Eine weitere braucht eine Vereins-Umbenennungskarte (kommt mit einem späteren Update)."
       }
+    },
+    "mastery": {
+      "hint": "Die Beherrschung wächst in Ligaspielen, die Sie selbst leiten, nicht in denen, die die KI für Sie spielt."
     }
   },
   "coach": {

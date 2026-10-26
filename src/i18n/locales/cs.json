@@ -547,6 +547,9 @@
         "playerRename": "Tento hráč už využil přejmenování zdarma. Další přejmenování vyžaduje kartu přejmenování hráče (přijde v některé z dalších aktualizací).",
         "clubRename": "Váš klub už využil přejmenování zdarma. Další přejmenování vyžaduje kartu přejmenování klubu (přijde v některé z dalších aktualizací)."
       }
+    },
+    "mastery": {
+      "hint": "Mistrovství roste v ligových zápasech, které řídíte sami, ne v těch, které za vás hraje AI."
     }
   },
   "coach": {

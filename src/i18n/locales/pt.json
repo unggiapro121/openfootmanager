@@ -547,6 +547,9 @@
         "playerRename": "Este jogador já usou a mudança de nome gratuita. Para mudar outra vez é preciso um cartão de mudança de nome de jogador (chega numa próxima atualização).",
         "clubRename": "O teu clube já usou a mudança de nome gratuita. Para mudar outra vez é preciso um cartão de mudança de nome de clube (chega numa próxima atualização)."
       }
+    },
+    "mastery": {
+      "hint": "O domínio cresce nos jogos da liga que dirige você mesmo, não nos que a IA joga por si."
     }
   },
   "coach": {
