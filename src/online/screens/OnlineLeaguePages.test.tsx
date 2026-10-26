@@ -212,9 +212,12 @@ describe("a settled fixture", () => {
     });
     renderOnline("/online/fixtures/fixture-1");
 
-    expect(await screen.findByRole("heading", { level: 2, name: /2 – 1/ })).toHaveTextContent(
-      "Cầu Vồng Nghệ An 2 – 1 Sóng Biển Đà Nẵng",
-    );
+    expect(await screen.findByRole("heading", { level: 2, name: "2 – 1" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Cầu Vồng Nghệ An" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sóng Biển Đà Nẵng" })).toBeInTheDocument();
+    // The best-rated player of the match is named, as on the offline post-match screen.
+    expect(screen.getByText("match.motm")).toBeInTheDocument();
+    expect(screen.getByText(/Văn An · Cầu Vồng Nghệ An/)).toBeInTheDocument();
     const [home, away] = screen.getAllByRole("table");
     expect(within(home).getByText("Văn An")).toBeInTheDocument();
     expect(within(home).getByText("online.fixture.yellowCards:1")).toBeInTheDocument();
