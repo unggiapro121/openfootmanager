@@ -49,6 +49,8 @@ export type { InjuryView } from "./InjuryView";
 export type { InputView } from "./InputView";
 export type { JoinRoomRequest } from "./JoinRoomRequest";
 export type { LeagueNotice } from "./LeagueNotice";
+export type { LeaderView } from "./LeaderView";
+export type { LeadersView } from "./LeadersView";
 export type { LeagueView } from "./LeagueView";
 export type { LedgerLineView } from "./LedgerLineView";
 export type { LedgerPage } from "./LedgerPage";
