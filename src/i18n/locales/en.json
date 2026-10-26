@@ -82,7 +82,9 @@
       "renameLabel": "New club name",
       "renameHint": "Your club's first rename is free; later ones need a club-rename card.",
       "save": "Save",
-      "stadium": "{{name}} ({{capacity}} seats)"
+      "stadium": "{{name}} ({{capacity}} seats)",
+      "stadiumLabel": "Stadium name",
+      "stadiumHint": "The stadium can be renamed as often as you like."
     },
     "fixture": {
       "title": "Next match",

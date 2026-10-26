@@ -82,7 +82,9 @@
       "renameLabel": "Nama klub baru",
       "renameHint": "Ganti nama pertama klubmu gratis; berikutnya memerlukan kartu ganti nama klub.",
       "save": "Simpan",
-      "stadium": "{{name}} ({{capacity}} kursi)"
+      "stadium": "{{name}} ({{capacity}} kursi)",
+      "stadiumLabel": "Nama stadion",
+      "stadiumHint": "Stadion dapat diganti namanya sesering yang Anda mau."
     },
     "fixture": {
       "title": "Laga berikutnya",

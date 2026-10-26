@@ -82,7 +82,9 @@
       "renameLabel": "俱乐部新名称",
       "renameHint": "俱乐部第一次改名免费；之后需要俱乐部改名卡。",
       "save": "保存",
-      "stadium": "{{name}}（{{capacity}} 个座位）"
+      "stadium": "{{name}}（{{capacity}} 个座位）",
+      "stadiumLabel": "球场名称",
+      "stadiumHint": "球场名称可以随意修改，次数不限。"
     },
     "fixture": {
       "title": "下一场比赛",
