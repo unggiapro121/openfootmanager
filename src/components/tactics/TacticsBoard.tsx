@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 import type { GameStateData } from "../../store/gameStore";
 import type { ManagerData } from "../../store/types";
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,9 @@ interface TacticsBoardProps {
   /** Keys the saved custom tactics; without a game there are only the presets. */
   libraryGame: GameStateData | null;
   /** The manager whose play-style mastery the command bar shows, if any. */
-  coach: ManagerData | null;
+  coach: ManagerData | Pick<ManagerData, "play_style_mastery"> | null;
+  /** What a play style does at the coach's level, drawn under the style picker (online). */
+  styleEffects?: (style: string) => ReactNode;
   /** Absent where there is no player profile to open, as in the world editor. */
   onOpenPlayerProfile?: (playerId: string) => void;
   scoutedWonderkids?: ReadonlySet<string>;
@@ -33,6 +35,7 @@ export default function TacticsBoard({
   source,
   libraryGame,
   coach,
+  styleEffects,
   onOpenPlayerProfile,
   scoutedWonderkids = new Set<string>(),
 }: TacticsBoardProps): JSX.Element {
@@ -146,6 +149,7 @@ export default function TacticsBoard({
         }}
         tacticLibrary={tacticLibrary}
         coach={coach}
+        styleEffects={styleEffects}
         limits={source.limits}
       />
 

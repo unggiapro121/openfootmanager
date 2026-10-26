@@ -137,8 +137,15 @@ describe("the coach's roadmap on his profile", () => {
         seasons: 0,
         promotions: 0,
         mastery: [
-          { style: "Attacking", level: 55, xp: 42, xpToNext: 400, matches: 6 },
-          { style: "Balanced", level: 50, xp: 0, xpToNext: 300, matches: 0 },
+          {
+            style: "Attacking",
+            level: 55,
+            xp: 42,
+            xpToNext: 400,
+            matches: 6,
+            effects: [{ phase: "Attack", percent: 12.5 }],
+          },
+          { style: "Balanced", level: 50, xp: 0, xpToNext: 300, matches: 0, effects: [] },
         ],
       },
       { tiers: TABLE.tiers },
