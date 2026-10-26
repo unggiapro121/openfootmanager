@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import DashboardModalFrame from "../../components/dashboard/DashboardModalFrame";
 import { Button, PlayerAvatar } from "../../components/ui";
@@ -6,6 +6,7 @@ import { resolveBackendError } from "../../utils/backendI18n";
 import type { AccountView } from "../api";
 import { online } from "../client";
 import { tracked } from "../store/onlineStore";
+import { shrinkToAvatar } from "./shrinkImage";
 import { useActionKey } from "./useActionKey";
 
 /** Portraits offered on one page of the picker. */
@@ -18,13 +19,23 @@ const PAGE_SIZE = 12;
 export function CoachPortrait({
   account,
   seed,
+  image,
   className,
 }: {
   account: AccountView;
   seed?: string;
+  /** His own picture, a data URL, which comes before any face. */
+  image?: string;
   className?: string;
 }) {
   const name = `${account.firstName} ${account.lastName}`;
+  if (image) {
+    return (
+      <span className={className}>
+        <img src={image} alt={name} className="h-full w-full object-cover" />
+      </span>
+    );
+  }
   return (
     <PlayerAvatar
       className={className}
@@ -48,10 +59,13 @@ export function CoachPortrait({
 /** A dozen faces to choose from, a page at a time: the choice is a seed the server keeps. */
 export function CoachAvatarPicker({
   account,
+  image,
   onSaved,
   onClose,
 }: {
   account: AccountView;
+  /** His own picture now, if he has one. */
+  image?: string;
   onSaved: (account: AccountView) => void;
   onClose: () => void;
 }) {
@@ -61,6 +75,7 @@ export function CoachAvatarPicker({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const { run } = useActionKey();
+  const file = useRef<HTMLInputElement>(null);
   const seeds = Array.from({ length: PAGE_SIZE }, (_, index) =>
     String(page * PAGE_SIZE + index + 1),
   );
@@ -73,10 +88,10 @@ export function CoachAvatarPicker({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [saving, onClose]);
 
-  const save = (seed: string | undefined) => {
+  const finish = (action: Promise<AccountView>) => {
     setSaving(true);
     setError(null);
-    run((key) => tracked(() => online.me.update({ avatarSeed: seed ?? "" }, key)), seed ?? "")
+    action
       .then((updated) => {
         onSaved(updated);
         onClose();
@@ -84,6 +99,34 @@ export function CoachAvatarPicker({
       .catch(setError)
       .finally(() => setSaving(false));
   };
+
+  /** A face (or the default) is the choice: a picture of his own is put aside first. */
+  const save = (seed: string | undefined) =>
+    finish(
+      (async () => {
+        if (account.hasAvatarImage) {
+          await run((key) => tracked(() => online.me.removeAvatarImage(key)), "remove-image");
+        }
+        return run(
+          (key) => tracked(() => online.me.update({ avatarSeed: seed ?? "" }, key)),
+          seed ?? "",
+        );
+      })(),
+    );
+
+  const upload = (chosen: File) =>
+    finish(
+      shrinkToAvatar(chosen)
+        .catch(() => {
+          throw new Error(t("online.profile.avatarUploadFailed"));
+        })
+        .then((dataUrl) =>
+          run((key) => tracked(() => online.me.setAvatarImage(dataUrl, key)), dataUrl),
+        ),
+    );
+
+  const removeUpload = () =>
+    finish(run((key) => tracked(() => online.me.removeAvatarImage(key)), "remove-image"));
 
   return (
     <DashboardModalFrame maxWidthClassName="max-w-2xl">
@@ -97,6 +140,52 @@ export function CoachAvatarPicker({
           </h3>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
             {t("online.profile.avatarHint")}
+          </p>
+        </div>
+        <div className="space-y-2 rounded-xl border border-gray-200 p-3 dark:border-navy-600">
+          <div className="flex flex-wrap items-center gap-3">
+            {image && (
+              <CoachPortrait
+                account={account}
+                image={image}
+                className="block h-14 w-14 overflow-hidden rounded-lg"
+              />
+            )}
+            <input
+              ref={file}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              aria-label={t("online.profile.avatarUpload")}
+              onChange={(event) => {
+                const chosen = event.target.files?.[0];
+                event.target.value = "";
+                if (chosen) upload(chosen);
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={saving}
+              onClick={() => file.current?.click()}
+            >
+              {t("online.profile.avatarUpload")}
+            </Button>
+            {account.hasAvatarImage && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={saving}
+                onClick={removeUpload}
+              >
+                {t("online.profile.avatarRemoveUpload")}
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {t("online.profile.avatarUploadHint")}
           </p>
         </div>
         <ul className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
@@ -142,7 +231,7 @@ export function CoachAvatarPicker({
               type="button"
               variant="ghost"
               size="sm"
-              disabled={saving || account.avatarSeed === undefined}
+              disabled={saving || (account.avatarSeed === undefined && !account.hasAvatarImage)}
               onClick={() => save(undefined)}
             >
               {t("online.profile.avatarClear")}
@@ -155,7 +244,11 @@ export function CoachAvatarPicker({
             <Button
               type="button"
               size="sm"
-              disabled={saving || picked === undefined || picked === account.avatarSeed}
+              disabled={
+                saving ||
+                picked === undefined ||
+                (picked === account.avatarSeed && !account.hasAvatarImage)
+              }
               onClick={() => save(picked)}
             >
               {t("online.profile.avatarSave")}

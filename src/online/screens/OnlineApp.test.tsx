@@ -12,6 +12,11 @@ import {
   SEASON,
 } from "../../test-utils/onlineTestKit";
 
+vi.mock("./shrinkImage", () => ({
+  AVATAR_SIDE: 256,
+  shrinkToAvatar: async () => "data:image/jpeg;base64,/9j/AAAA",
+}));
+
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
   useTranslation: () => ({
@@ -437,5 +442,43 @@ describe("changing region", () => {
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(sent("PATCH", "v1/me")[0].body).toEqual({ avatarSeed: "7" });
+  });
+
+  // Given a coach who picks a file from his computer,
+  // when the picture is shrunk and sent,
+  // then it goes to his account as a data URL, and his card shows that picture.
+  it("lets the coach send a picture of his own", async () => {
+    const account = {
+      id: "a",
+      email: "dung@example.test",
+      firstName: "Dung",
+      lastName: "Ung",
+      dateOfBirth: "1990-01-01",
+      nationality: "VN",
+      region: "AsiaSoutheast",
+      status: "active",
+      capabilities: [],
+      hasAvatarImage: false,
+    };
+    const dataUrl = "data:image/jpeg;base64,/9j/AAAA";
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok(myClub()),
+      "GET v1/leagues/mine": ok(LEAGUE),
+      "GET v1/me": ok(account),
+      "GET v1/me/avatar-image": ok({ dataUrl }),
+      "PUT v1/me/avatar-image": ok({ ...account, hasAvatarImage: true }),
+    });
+    renderOnline("/online/profile");
+
+    fireEvent.click(await screen.findByRole("button", { name: "online.profile.avatarChange" }));
+    const picture = new File([new Uint8Array([1, 2, 3])], "me.png", { type: "image/png" });
+    fireEvent.change(screen.getByLabelText("online.profile.avatarUpload", { selector: "input" }), {
+      target: { files: [picture] },
+    });
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(sent("PUT", "v1/me/avatar-image")[0].body).toEqual({ dataUrl });
+    expect(await screen.findByRole("img", { name: "Dung Ung" })).toHaveAttribute("src", dataUrl);
   });
 });

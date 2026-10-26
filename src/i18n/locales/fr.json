@@ -156,7 +156,11 @@
       "avatarOption": "Visage {{number}}",
       "avatarMore": "Voir d'autres",
       "avatarClear": "Utiliser celle par défaut",
-      "avatarSave": "Utiliser cette photo"
+      "avatarSave": "Utiliser cette photo",
+      "avatarUpload": "Importer depuis l'ordinateur",
+      "avatarRemoveUpload": "Retirer mon image",
+      "avatarUploadHint": "Une image JPEG, PNG ou WebP. Elle est recadrée en carré et réduite avant l'envoi ; vous seul la voyez.",
+      "avatarUploadFailed": "Ce fichier n'a pas pu être lu comme une image."
     },
     "tactics": {
       "locked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez la modifier une fois le match terminé.",

@@ -48,6 +48,10 @@ use Part::{Id, Literal as L};
 pub const ROUTES: &[Route] = &[
     route("GET", &[L("v1"), L("me")], &[]),
     route("PATCH", &[L("v1"), L("me")], &[]),
+    // The coach's own picture: sent, read back and taken away.
+    route("GET", &[L("v1"), L("me"), L("avatar-image")], &[]),
+    route("PUT", &[L("v1"), L("me"), L("avatar-image")], &[]),
+    route("DELETE", &[L("v1"), L("me"), L("avatar-image")], &[]),
     // The coach's online career and the road ahead, for his profile.
     route("GET", &[L("v1"), L("me"), L("career")], &[]),
     route("GET", &[L("v1"), L("season")], &[]),

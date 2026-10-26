@@ -156,7 +156,11 @@
       "avatarOption": "Wajah {{number}}",
       "avatarMore": "Tampilkan lainnya",
       "avatarClear": "Pakai bawaan",
-      "avatarSave": "Pakai foto ini"
+      "avatarSave": "Pakai foto ini",
+      "avatarUpload": "Unggah dari komputer",
+      "avatarRemoveUpload": "Hapus gambar saya",
+      "avatarUploadHint": "Gambar JPEG, PNG, atau WebP. Gambar dipotong persegi dan diperkecil sebelum dikirim; hanya Anda yang melihatnya.",
+      "avatarUploadFailed": "Berkas itu tidak dapat dibaca sebagai gambar."
     },
     "tactics": {
       "locked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa mengubahnya lagi setelah laga selesai.",

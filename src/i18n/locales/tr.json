@@ -156,7 +156,11 @@
       "avatarOption": "Yüz {{number}}",
       "avatarMore": "Başkalarını göster",
       "avatarClear": "Varsayılanı kullan",
-      "avatarSave": "Bu fotoğrafı kullan"
+      "avatarSave": "Bu fotoğrafı kullan",
+      "avatarUpload": "Bilgisayardan yükle",
+      "avatarRemoveUpload": "Resmimi kaldır",
+      "avatarUploadHint": "JPEG, PNG veya WebP resmi. Gönderilmeden önce kare kırpılır ve küçültülür; yalnızca siz görürsünüz.",
+      "avatarUploadFailed": "Bu dosya resim olarak okunamadı."
     },
     "tactics": {
       "locked": "{{time}} maçı için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin.",

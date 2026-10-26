@@ -156,7 +156,11 @@
       "avatarOption": "Volto {{number}}",
       "avatarMore": "Mostra altri",
       "avatarClear": "Usa quella predefinita",
-      "avatarSave": "Usa questa foto"
+      "avatarSave": "Usa questa foto",
+      "avatarUpload": "Carica dal computer",
+      "avatarRemoveUpload": "Rimuovi la mia immagine",
+      "avatarUploadHint": "Un'immagine JPEG, PNG o WebP. Viene ritagliata in quadrato e ridotta prima dell'invio; solo tu la vedi.",
+      "avatarUploadFailed": "Impossibile leggere il file come immagine."
     },
     "tactics": {
       "locked": "La formazione è bloccata per la partita delle {{time}}. Potrai cambiarla a partita finita.",
