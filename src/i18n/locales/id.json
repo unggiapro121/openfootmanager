@@ -547,6 +547,9 @@
         "playerRename": "Pemain ini sudah memakai ganti nama gratisnya. Mengganti lagi memerlukan kartu ganti nama pemain (hadir di pembaruan berikutnya).",
         "clubRename": "Klubmu sudah memakai ganti nama gratisnya. Mengganti lagi memerlukan kartu ganti nama klub (hadir di pembaruan berikutnya)."
       }
+    },
+    "mastery": {
+      "hint": "Penguasaan naik di laga liga yang Anda pimpin sendiri, bukan yang dimainkan AI untuk Anda."
     }
   },
   "coach": {

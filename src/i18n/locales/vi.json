@@ -547,6 +547,9 @@
         "playerRename": "Cầu thủ này đã dùng lần đổi tên miễn phí. Đổi tiếp cần Thẻ đổi tên cầu thủ (sẽ có trong bản cập nhật sau).",
         "clubRename": "CLB của bạn đã dùng lần đổi tên miễn phí. Đổi tiếp cần Thẻ đổi tên CLB (sẽ có trong bản cập nhật sau)."
       }
+    },
+    "mastery": {
+      "hint": "Độ nhuần nhuyễn tăng ở các trận giải đấu do chính bạn điều khiển, không tăng ở trận AI đá thay."
     }
   },
   "coach": {

@@ -547,6 +547,9 @@
         "playerRename": "Este jogador já usou a troca de nome gratuita. Para trocar de novo é preciso um cartão de troca de nome de jogador (chega em uma próxima atualização).",
         "clubRename": "Seu clube já usou a troca de nome gratuita. Para trocar de novo é preciso um cartão de troca de nome de clube (chega em uma próxima atualização)."
       }
+    },
+    "mastery": {
+      "hint": "O domínio cresce nas partidas da liga que você mesmo comanda, não nas que a IA joga por você."
     }
   },
   "coach": {

@@ -547,6 +547,9 @@
         "playerRename": "This player has used his free rename. Renaming him again needs a player-rename card (coming in a later update).",
         "clubRename": "Your club has used its free rename. Renaming it again needs a club-rename card (coming in a later update)."
       }
+    },
+    "mastery": {
+      "hint": "Mastery grows in league matches you direct yourself, not in ones the AI plays for you."
     }
   },
   "coach": {

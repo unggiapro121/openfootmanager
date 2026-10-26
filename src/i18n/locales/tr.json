@@ -547,6 +547,9 @@
         "playerRename": "Bu oyuncu ücretsiz ad değişikliğini kullandı. Tekrar değiştirmek için oyuncu ad değiştirme kartı gerekir (sonraki bir güncellemede gelecek).",
         "clubRename": "Kulübün ücretsiz ad değişikliğini kullandı. Tekrar değiştirmek için kulüp ad değiştirme kartı gerekir (sonraki bir güncellemede gelecek)."
       }
+    },
+    "mastery": {
+      "hint": "Ustalık, yapay zekânın sizin yerinize oynadığı değil, kendinizin yönettiği lig maçlarında artar."
     }
   },
   "coach": {
