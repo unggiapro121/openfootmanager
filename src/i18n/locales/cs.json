@@ -149,7 +149,14 @@
       "confirmTitle": "Změnit region?",
       "confirmBody": "Váš současný klub se okamžitě vrátí svému botovi. Poté převezmete klub v současném stavu v novém regionu, nejvýše jednou za sezónu.",
       "confirm": "Ano, změnit region",
-      "changed": "Region změněn. Převezměte klub ve svém novém regionu."
+      "changed": "Region změněn. Převezměte klub ve svém novém regionu.",
+      "avatarChange": "Změnit fotku",
+      "avatarTitle": "Vyberte si fotku",
+      "avatarHint": "Vyberte tvář nebo zobrazte další. Volba se uloží k vašemu účtu.",
+      "avatarOption": "Tvář {{number}}",
+      "avatarMore": "Zobrazit další",
+      "avatarClear": "Použít výchozí",
+      "avatarSave": "Použít tuto fotku"
     },
     "tactics": {
       "locked": "Sestava je uzamčena pro zápas v {{time}}. Změnit ji můžete po skončení zápasu.",

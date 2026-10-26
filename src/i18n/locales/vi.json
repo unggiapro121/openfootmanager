@@ -149,7 +149,14 @@
       "confirmTitle": "Đổi khu vực?",
       "confirmBody": "CLB hiện tại sẽ trả về bot ngay lập tức. Sau đó bạn nhận một CLB nguyên trạng ở khu vực mới, tối đa một lần mỗi mùa.",
       "confirm": "Đồng ý đổi khu vực",
-      "changed": "Đã đổi khu vực. Hãy nhận một CLB ở khu vực mới."
+      "changed": "Đã đổi khu vực. Hãy nhận một CLB ở khu vực mới.",
+      "avatarChange": "Đổi ảnh đại diện",
+      "avatarTitle": "Chọn ảnh đại diện",
+      "avatarHint": "Chọn một khuôn mặt hoặc xem thêm các mặt khác. Lựa chọn được lưu vào tài khoản của bạn.",
+      "avatarOption": "Khuôn mặt {{number}}",
+      "avatarMore": "Xem mặt khác",
+      "avatarClear": "Dùng ảnh mặc định",
+      "avatarSave": "Dùng ảnh này"
     },
     "tactics": {
       "locked": "Đội hình đã khoá cho trận lúc {{time}}. Bạn sửa lại được khi trận kết thúc.",

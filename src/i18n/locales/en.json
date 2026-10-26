@@ -149,7 +149,14 @@
       "confirmTitle": "Change region?",
       "confirmBody": "Your current club goes back to its bot at once. You then take a club as it is in the new region, at most once a season.",
       "confirm": "Yes, change region",
-      "changed": "Region changed. Take over a club in your new region."
+      "changed": "Region changed. Take over a club in your new region.",
+      "avatarChange": "Change photo",
+      "avatarTitle": "Choose your photo",
+      "avatarHint": "Pick a face, or show other faces. Your choice is kept on your account.",
+      "avatarOption": "Face {{number}}",
+      "avatarMore": "Show others",
+      "avatarClear": "Use the default",
+      "avatarSave": "Use this photo"
     },
     "tactics": {
       "locked": "The line-up is locked for the match at {{time}}. You can change it again once the match is over.",
