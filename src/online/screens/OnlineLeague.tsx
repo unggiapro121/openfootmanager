@@ -11,6 +11,7 @@ import { currentRound, LEAGUE_ROUNDS } from "../fixtures";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import FixtureLine from "./FixtureLine";
+import { LeagueLeaders } from "./LeagueLeaders";
 import ResourceState from "./ResourceState";
 
 /** Fixtures of a whole league season: 26 rounds of seven. */
@@ -70,6 +71,9 @@ function LeaguePage({ league }: { league: LeagueView }) {
         </CardBody>
       </Card>
       <RoundCard league={league} myClubId={myClubId} />
+      <div className="xl:col-span-2">
+        <LeagueLeaders leagueId={league.id} />
+      </div>
     </div>
   );
 }
