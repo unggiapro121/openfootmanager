@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { Users } from "lucide-react";
+import { AlertTriangle, Users } from "lucide-react";
 import { TraitList } from "../../components/TraitBadge";
 import ShirtNumberPicker from "./squad/ShirtNumberPicker";
+import { translatePositionAbbreviation } from "../../components/squad/SquadTab.helpers";
 import { PlayerPositionBadges } from "../../components/squad/PlayerPositionBadges";
 import {
   Badge,
@@ -19,6 +20,7 @@ import { condColor } from "../../lib/playerConditionDisplay";
 import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
 import PotentialStars from "./PotentialStars";
+import { fitRank, type PlayerFit, squadFits } from "./squad/squadFit";
 import {
   byLine,
   matchesFilter,
@@ -59,9 +61,14 @@ export default function OnlineSquad() {
   const [sort, setSort] = useState<SquadSort>({ key: null, dir: "asc" });
   const players = club?.players;
   const eleven = useMemo(() => new Set(club?.setup.startingXiIds ?? []), [club?.setup]);
+  const fits = useMemo(() => (club ? squadFits(club) : new Map<string, PlayerFit>()), [club]);
   const shown = useMemo(
-    () => sortedBy(players ?? [], sort).filter((player) => matchesFilter(player, filter, eleven)),
-    [players, sort, filter, eleven],
+    () =>
+      sortedBy(players ?? [], sort, {
+        fit: (player) => fitRank(fits.get(player.id), "fit"),
+        style: (player) => fitRank(fits.get(player.id), "style"),
+      }).filter((player) => matchesFilter(player, filter, eleven)),
+    [players, sort, filter, eleven, fits],
   );
 
   if (!club || (players?.length ?? 0) === 0) {
@@ -196,6 +203,8 @@ export default function OnlineSquad() {
                 {header("jersey", t("squad.jerseyNumber"), t("squad.jerseyNumberFull"))}
                 {header("name", t("common.name"))}
                 {header("pos", t("squad.pos"))}
+                {header("fit", t("squad.formationFit"))}
+                {header("style", t("squad.styleFit"))}
                 {header("potential", t("online.squad.potential"))}
                 <th scope="col" className={TH}>
                   {t("squad.traits")}
@@ -213,7 +222,12 @@ export default function OnlineSquad() {
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-navy-600">
               {shown.map((player) => (
-                <SquadRow key={player.id} player={player} starter={eleven.has(player.id)} />
+                <SquadRow
+                  key={player.id}
+                  player={player}
+                  starter={eleven.has(player.id)}
+                  fit={fits.get(player.id)}
+                />
               ))}
             </tbody>
           </table>
@@ -234,7 +248,15 @@ function ovrColour(ovr: number): string {
   return "text-gray-500 dark:text-gray-400";
 }
 
-function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boolean }) {
+function SquadRow({
+  player,
+  starter,
+  fit,
+}: {
+  player: SquadPlayerView;
+  starter: boolean;
+  fit: PlayerFit | undefined;
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const selling = useOnlineStore((state) =>
@@ -304,6 +326,45 @@ function SquadRow({ player, starter }: { player: SquadPlayerView; starter: boole
             alternatePositions={player.alternatePositions}
           />
         </div>
+      </td>
+      <td className="px-4 py-2.5">
+        {fit && (
+          <div className="flex items-center gap-1.5">
+            <Badge
+              variant={
+                !fit.starter
+                  ? "neutral"
+                  : fit.tactical === "natural"
+                    ? "success"
+                    : fit.tactical === "adapted"
+                      ? "accent"
+                      : "danger"
+              }
+              size="sm"
+            >
+              {translatePositionAbbreviation(t, fit.starter ? fit.slot : fit.bestRole)}
+            </Badge>
+            {fit.outOfPosition && (
+              <span className="text-amber-500" title={t("squad.outOfPositionTooltip")}>
+                <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+              </span>
+            )}
+          </div>
+        )}
+      </td>
+      <td className="px-4 py-2.5">
+        {fit && (
+          <Badge
+            variant={
+              fit.style === "strong" ? "success" : fit.style === "good" ? "accent" : "danger"
+            }
+            size="sm"
+            className="whitespace-nowrap"
+            title={fit.keeper ? t("squad.styleFitKeeperHint", fit.keeper) : undefined}
+          >
+            {t(`squad.styleFitValues.${fit.style}`)}
+          </Badge>
+        )}
       </td>
       <td className="px-4 py-2.5">
         <PotentialStars stars={player.potentialStars} />
