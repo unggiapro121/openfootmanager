@@ -257,6 +257,41 @@ fn a_player_s_look_is_five_routes() {
 }
 
 /// Given a signed-in coach,
+/// when the webview sets a player's own training session and tries the route with another method,
+/// then it goes out to `/v1/players/{id}/training-focus` as a PATCH, and the other method is
+/// refused.
+#[test]
+fn a_player_s_own_training_session_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    send(
+        &session,
+        &request("PATCH", &["v1", "players", id, "training-focus"]),
+        0,
+    )
+    .expect("an answer");
+    assert_eq!(
+        refused(send(
+            &session,
+            &request("PUT", &["v1", "players", id, "training-focus"]),
+            0
+        )),
+        "be.error.online.routeNotAllowed"
+    );
+    let sent: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    assert_eq!(
+        sent,
+        [(
+            "PATCH".to_string(),
+            format!("/v1/players/{id}/training-focus")
+        )]
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview sets a player's shirt number and tries the route with another method,
 /// then it goes out to `/v1/players/{id}/shirt` as a PATCH, and the other method is refused.
 #[test]

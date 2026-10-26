@@ -1,13 +1,8 @@
-import { useCallback } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, Users } from "lucide-react";
 
-import type { GameStateData, PlayerData, TeamData } from "../../store/gameStore";
-import {
-  setPlayerTrainingFocus,
-  setTrainingGroups,
-  type TrainingGroupData,
-} from "../../services/trainingService";
+import type { TrainingGroupData } from "../../store/types";
 import { translatePositionAbbreviation } from "../squad/SquadTab.helpers";
 import { condColor } from "../../lib/playerConditionDisplay";
 import { Card, CardBody, CardHeader, Select } from "../ui";
@@ -15,57 +10,86 @@ import {
   buildPlayerGroupMap,
   reassignPlayerTrainingGroup,
   sortTrainingRoster,
+  type TrainingRosterPlayer,
 } from "./trainingGroupsModel";
 
 type TrainingGroup = TrainingGroupData;
 
+/** The most groups a club keeps. */
+const MAX_GROUPS = 5;
+
+/**
+ * The training groups and each player's own session, as both modes show them. The card writes
+ * nothing itself: the offline tab and the online screen each pass how a change is saved.
+ */
 interface TrainingGroupsCardProps {
-  team: TeamData | null;
-  onGameUpdate?: (state: GameStateData) => void;
-  roster: PlayerData[];
+  groups: TrainingGroup[];
+  /** The club's standing session, what a player with no group and no session of his own trains. */
+  teamFocus: string;
+  roster: TrainingRosterPlayer[];
   isSaving: boolean;
-  setIsSaving: (value: boolean) => void;
+  /** Every group of the club, as it should be after the change. */
+  onSaveGroups: (groups: TrainingGroup[]) => void;
+  /** A player's own session; `null` takes it away. */
+  onSetPlayerFocus: (playerId: string, focus: string | null) => void;
   trainingFocusIds: readonly string[];
   trainingFocusIcons: Record<string, React.ReactNode>;
 }
 
+/** A group's name: edited freely, kept when the field is left or Enter is pressed. */
+function GroupNameInput({ name, onCommit }: { name: string; onCommit: (name: string) => void }) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState(name);
+  const [seen, setSeen] = useState(name);
+  if (seen !== name) {
+    setSeen(name);
+    setDraft(name);
+  }
+  const commit = () => {
+    const next = draft.trim();
+    if (next && next !== name) {
+      onCommit(next);
+    } else {
+      setDraft(name);
+    }
+  };
+
+  return (
+    <input
+      type="text"
+      value={draft}
+      aria-label={t("training.groups.group")}
+      onChange={(event) => setDraft(event.target.value)}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") event.currentTarget.blur();
+      }}
+      className="bg-transparent text-xs font-heading font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200 border-none outline-none w-20"
+    />
+  );
+}
+
 export default function TrainingGroupsCard({
-  team,
-  onGameUpdate,
+  groups,
+  teamFocus,
   roster,
   isSaving,
-  setIsSaving,
+  onSaveGroups,
+  onSetPlayerFocus,
   trainingFocusIds,
   trainingFocusIcons,
 }: TrainingGroupsCardProps) {
   const { t } = useTranslation();
-  const groups: TrainingGroup[] = team?.training_groups ?? [];
-  const teamFocus = team?.training_focus || "Physical";
-
-  const saveGroups = useCallback(
-    async (nextGroups: TrainingGroup[]) => {
-      setIsSaving(true);
-      try {
-        const updated = await setTrainingGroups(nextGroups);
-        onGameUpdate?.(updated);
-      } catch (error) {
-        console.error("Failed to save training groups:", error);
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [onGameUpdate, setIsSaving],
-  );
 
   const addGroup = () => {
-    if (groups.length >= 5) {
+    if (groups.length >= MAX_GROUPS) {
       return;
     }
 
     const index = groups.length;
     const defaultName = t(`training.groups.defaultGroupNames.${index}`);
 
-    saveGroups([
+    onSaveGroups([
       ...groups,
       {
         id: `grp_${Date.now()}`,
@@ -77,31 +101,23 @@ export default function TrainingGroupsCard({
   };
 
   const removeGroup = (groupId: string) => {
-    saveGroups(groups.filter((group) => group.id !== groupId));
+    onSaveGroups(groups.filter((group) => group.id !== groupId));
   };
 
   const updateGroupFocus = (groupId: string, focus: string) => {
-    saveGroups(groups.map((group) => (group.id === groupId ? { ...group, focus } : group)));
+    onSaveGroups(groups.map((group) => (group.id === groupId ? { ...group, focus } : group)));
   };
 
   const updateGroupName = (groupId: string, name: string) => {
-    saveGroups(groups.map((group) => (group.id === groupId ? { ...group, name } : group)));
+    onSaveGroups(groups.map((group) => (group.id === groupId ? { ...group, name } : group)));
   };
 
-  const setPlayerFocus = async (playerId: string, focus: string) => {
-    setIsSaving(true);
-    try {
-      const updated = await setPlayerTrainingFocus(playerId, focus || null);
-      onGameUpdate?.(updated);
-    } catch (error) {
-      console.error("Failed to set player training focus:", error);
-    } finally {
-      setIsSaving(false);
-    }
+  const setPlayerFocus = (playerId: string, focus: string) => {
+    onSetPlayerFocus(playerId, focus || null);
   };
 
   const setPlayerGroup = (playerId: string, groupId: string) => {
-    saveGroups(reassignPlayerTrainingGroup(groups, playerId, groupId));
+    onSaveGroups(reassignPlayerTrainingGroup(groups, playerId, groupId));
   };
 
   const playerGroupMap = buildPlayerGroupMap(groups);
@@ -111,7 +127,7 @@ export default function TrainingGroupsCard({
     <Card>
       <CardHeader
         action={
-          groups.length < 5 ? (
+          groups.length < MAX_GROUPS ? (
             <button
               type="button"
               onClick={addGroup}
@@ -145,11 +161,9 @@ export default function TrainingGroupsCard({
                       <Users className="w-4 h-4" />
                     )}
                   </div>
-                  <input
-                    type="text"
-                    value={group.name}
-                    onChange={(event) => updateGroupName(group.id, event.target.value)}
-                    className="bg-transparent text-xs font-heading font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200 border-none outline-none w-20"
+                  <GroupNameInput
+                    name={group.name}
+                    onCommit={(name) => updateGroupName(group.id, name)}
                   />
                   <Select
                     value={group.focus}

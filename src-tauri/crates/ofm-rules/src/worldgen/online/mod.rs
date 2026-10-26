@@ -12,6 +12,7 @@ pub mod names;
 pub mod naming;
 pub mod pack;
 pub mod schedule;
+pub mod scout;
 pub mod starter;
 mod validate;
 
@@ -36,6 +37,7 @@ use super::generation::{
 use crate::seed::{rng_for_seed, rng_from_key, uuid_from};
 
 pub use pack::{BUILTIN_PACK, OnlineContentPack, REGIONS};
+pub use scout::{ScoutCandidate, ScoutFocus, ScoutKey, ScoutRequest};
 pub use validate::{PackIssue, predicted_name_shares, validate_pack};
 
 /// Why a club, squad or name could not be generated. Each has a translation key.

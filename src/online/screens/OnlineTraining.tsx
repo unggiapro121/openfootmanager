@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import TrainingGroupsCard from "../../components/training/TrainingGroupsCard";
 import TrainingSettingsPanel from "../../components/training/TrainingSettingsPanel";
 import {
   DAY_KEYS,
@@ -14,9 +15,11 @@ import {
   TRAINING_FOCUS_IDS,
 } from "../../components/training/trainingOptions";
 import { resolveBackendError } from "../../utils/backendI18n";
+import type { TrainingGroupData } from "../../store/types";
 import type { MyClubView, TrainingPlan } from "../api";
 import type { TrainingFocus, TrainingIntensity, TrainingSchedule } from "../api/domain";
 import { online } from "../client";
+import { toGroupData, toPlanGroups, toTrainingRoster } from "../convert/training";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useActionKey } from "./useActionKey";
 
@@ -24,9 +27,9 @@ const pick = <T extends string>(ids: readonly string[], value: string): T | null
   ids.includes(value) ? (value as T) : null;
 
 /**
- * The coach's weekly training plan (C-2 §3.4): the game's training settings panel, writing the
- * whole plan to the server on each choice. Until the coach sets one, the panel shows the plan the
- * club's AI keeps. Training groups keep what the plan has; they are not edited online yet.
+ * The coach's weekly training plan (C-2 §3.4): the game's training settings panel and training
+ * groups, writing the whole plan to the server on each choice, and each player's own session
+ * beside it. Until the coach sets a plan, the panel shows the plan the club's AI keeps.
  */
 export default function OnlineTraining() {
   const club = useOnlineStore((state) => state.club);
@@ -72,6 +75,27 @@ function TrainingScreen({ club }: { club: MyClubView }) {
     }
   };
 
+  const saveGroups = (groups: TrainingGroupData[]) => {
+    void save({ ...plan, groups: toPlanGroups(groups, TRAINING_FOCUS_IDS) });
+  };
+
+  const setPlayerFocus = async (playerId: string, focus: string | null) => {
+    setSaving(true);
+    setError(null);
+    try {
+      const updated = await key.run(
+        (idempotencyKey) =>
+          tracked(() => online.players.setTrainingFocus(playerId, focus, idempotencyKey)),
+        `${playerId}:${focus}`,
+      );
+      useOnlineStore.getState().setClub(updated);
+    } catch (failure) {
+      setError(failure);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const setSchedule = (schedule: string) => {
     const next = pick<TrainingSchedule>(SCHEDULE_IDS, schedule);
     if (next) void save({ ...plan, schedule: next });
@@ -110,6 +134,16 @@ function TrainingScreen({ club }: { club: MyClubView }) {
         trainingFocusAttrs={TRAINING_FOCUS_ATTRS}
         intensityIds={INTENSITY_IDS}
         intensityColors={INTENSITY_COLORS}
+      />
+      <TrainingGroupsCard
+        groups={toGroupData(plan.groups)}
+        teamFocus={plan.focus}
+        roster={toTrainingRoster(club.players)}
+        isSaving={saving || offline}
+        onSaveGroups={saveGroups}
+        onSetPlayerFocus={(playerId, focus) => void setPlayerFocus(playerId, focus)}
+        trainingFocusIds={TRAINING_FOCUS_IDS}
+        trainingFocusIcons={TRAINING_FOCUS_ICONS}
       />
     </div>
   );

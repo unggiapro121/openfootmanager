@@ -1,6 +1,17 @@
 import { positionGroupRank } from "../../lib/positions";
-import type { PlayerData } from "../../store/gameStore";
-import type { TrainingGroupData } from "../../services/trainingService";
+import type { TrainingGroupData } from "../../store/types";
+
+/** What the groups table shows of a player: the offline `PlayerData` and an online squad line both fit. */
+export interface TrainingRosterPlayer {
+  id: string;
+  match_name: string;
+  jersey_number?: number | null;
+  position: string;
+  natural_position?: string | null;
+  condition: number;
+  /** The session he trains alone, if his coach set one. */
+  training_focus?: string | null;
+}
 
 export function buildPlayerGroupMap(groups: TrainingGroupData[]) {
   const playerGroupMap = new Map<string, TrainingGroupData>();
@@ -33,7 +44,7 @@ export function reassignPlayerTrainingGroup(
   return nextGroups;
 }
 
-export function sortTrainingRoster(roster: PlayerData[]): PlayerData[] {
+export function sortTrainingRoster<T extends TrainingRosterPlayer>(roster: T[]): T[] {
   return [...roster].sort((left, right) => {
     const leftOrder = positionGroupRank(left.natural_position || left.position);
     const rightOrder = positionGroupRank(right.natural_position || right.position);

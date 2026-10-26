@@ -38,6 +38,7 @@ import type {
   ShirtRequest,
   PlayerAvatarRequest,
   PlayerNationalityRequest,
+  PlayerTrainingFocusRequest,
   StadiumRequest,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
@@ -270,6 +271,13 @@ export const online = {
         write("PATCH", ["v1", "players", playerId, "nationality"], idempotencyKey, {
           nationality,
         } satisfies PlayerNationalityRequest),
+      ),
+    /** The session he trains alone, whatever his group does; `null` takes it away. */
+    setTrainingFocus: (playerId: string, focus: string | null, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("PATCH", ["v1", "players", playerId, "training-focus"], idempotencyKey, {
+          focus,
+        } satisfies PlayerTrainingFocusRequest),
       ),
     /** His shirt number: `null` takes it away; `swap` trades with the player who wears `number`. */
     shirt: (playerId: string, number: number | null, swap: boolean, idempotencyKey = newKey()) =>

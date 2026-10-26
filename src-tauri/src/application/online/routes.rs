@@ -79,6 +79,12 @@ pub const ROUTES: &[Route] = &[
         &[],
     ),
     route("PATCH", &[L("v1"), L("players"), Id, L("nationality")], &[]),
+    // The session a player trains alone, whatever his group does.
+    route(
+        "PATCH",
+        &[L("v1"), L("players"), Id, L("training-focus")],
+        &[],
+    ),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("setup")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("training")], &[]),
     // The coach's licence (S-9): the notice of what the server fitted, and the table of licences.

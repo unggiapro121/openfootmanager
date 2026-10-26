@@ -43,6 +43,11 @@ weightKg: number,
  */
 traits: Array<string>, nationality: string, 
 /**
+ * The session his coach set for him alone (`Physical`, `Technical`, `Tactical`, `Defending`,
+ * `Attacking` or `Recovery`); absent when he trains with his group or the club.
+ */
+trainingFocus?: string, 
+/**
  * The seed of the face his coach picked from his nationality's pool, if he did.
  */
 avatarSeed?: string, 
