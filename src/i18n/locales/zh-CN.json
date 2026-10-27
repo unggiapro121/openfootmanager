@@ -609,6 +609,11 @@
             "won": "你的球队 {{scored}}–{{conceded}} 战胜了 {{opponent}}。",
             "drawn": "你的球队 {{scored}}–{{conceded}} 与 {{opponent}} 战平。",
             "lost": "你的球队 {{scored}}–{{conceded}} 负于 {{opponent}}。"
+          },
+          "preview": {
+            "subject": "第 {{round}} 轮：{{home}} 对 {{away}}",
+            "home": "今天你主场对阵 {{opponent}}。开球时间 {{time}}。",
+            "away": "今天你客场挑战 {{opponent}}。开球时间 {{time}}。"
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "第 {{season}} 赛季结束",
             "promoted": "你获得第 {{rank}} 名，教练等级提升一级。",
             "stayed": "你获得第 {{rank}} 名。只有前几名才能晋级，所以等级不变。"
+          },
+          "promoted": {
+            "subject": "晋级！",
+            "body": "第 {{season}} 赛季结束后，你的教练等级升至 {{level}}。"
+          },
+          "reward": {
+            "subject": "赛季奖金",
+            "body": "排名第 {{rank}} 为你的俱乐部带来 {{amount}}。"
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "俱乐部的消息",
           "body": "你的俱乐部有了变化。"
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} 受伤了",
+            "body": "{{player}} 在比赛中受伤（{{injury}}），大约缺阵 {{days}} 天。"
+          },
+          "recovered": {
+            "subject": "{{player}} 伤愈复出",
+            "body": "{{player}} 已从伤病中恢复，可以出场。"
+          },
+          "exhausted": {
+            "subject": "球员体力透支",
+            "body": "{{count}} 名球员体力透支（{{critical}} 名处于危急状态）：{{names}}。让他们休息或减轻训练。"
+          },
+          "unhappy": {
+            "subject": "球员情绪低落",
+            "body": "{{count}} 名球员士气极低：{{names}}。胜利和出场时间能提升士气。"
+          },
+          "bench": {
+            "subject": "球员被冷落在板凳",
+            "body": "{{names}}（{{count}} 人）实力足够却很少出场，这正在拖累他们的士气。"
+          },
+          "happy": {
+            "subject": "球员士气高涨",
+            "body": "{{count}} 名球员对俱乐部的生活非常满意：{{names}}。"
+          }
         }
       }
     }
