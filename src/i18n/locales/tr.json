@@ -609,6 +609,11 @@
             "won": "Takımın {{opponent}} takımını {{scored}}–{{conceded}} yendi.",
             "drawn": "Takımın {{opponent}} ile {{scored}}–{{conceded}} berabere kaldı.",
             "lost": "Takımın {{opponent}} takımına {{scored}}–{{conceded}} yenildi."
+          },
+          "preview": {
+            "subject": "{{round}}. hafta: {{home}} - {{away}}",
+            "home": "Bugün evinde {{opponent}} ile oynuyorsun. Başlama saati {{time}}.",
+            "away": "Bugün deplasmanda {{opponent}} ile oynuyorsun. Başlama saati {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "{{season}}. sezon bitti",
             "promoted": "{{rank}}. sırada bitirdin ve antrenör seviyen bir arttı.",
             "stayed": "{{rank}}. sırada bitirdin. Yalnızca üst sıralar yükselir, seviyen aynı kalır."
+          },
+          "promoted": {
+            "subject": "Yükseldin!",
+            "body": "{{season}}. sezondan sonra antrenör seviyen {{level}} oldu."
+          },
+          "reward": {
+            "subject": "Sezon ödülü",
+            "body": "{{rank}}. sırada bitirmek kulübüne {{amount}} kazandırdı."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "Kulübünden haberler",
           "body": "Kulübünde bir şey değişti."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} sakatlandı",
+            "body": "{{player}} maçta sakatlandı ({{injury}}) ve yaklaşık {{days}} gün yok."
+          },
+          "recovered": {
+            "subject": "{{player}} yeniden hazır",
+            "body": "{{player}} sakatlığını atlattı ve oynayabilir."
+          },
+          "exhausted": {
+            "subject": "Oyuncular yorgun",
+            "body": "{{count}} oyuncu yorgun ({{critical}} kritik): {{names}}. Onları dinlendir ya da antrenmanı hafiflet."
+          },
+          "unhappy": {
+            "subject": "Oyuncular mutsuz",
+            "body": "{{count}} oyuncunun morali çok düşük: {{names}}. Galibiyetler ve forma süresi moralini yükseltir."
+          },
+          "bench": {
+            "subject": "Yedekte kalan oyuncular",
+            "body": "{{names}} ({{count}}) yeterince iyi ama az oynuyor, bu da morallerini bozuyor."
+          },
+          "happy": {
+            "subject": "Oyuncular keyifli",
+            "body": "{{count}} oyuncu kulüpteki hayattan çok memnun: {{names}}."
+          }
         }
       }
     }
