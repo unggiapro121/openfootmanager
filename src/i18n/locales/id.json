@@ -47,7 +47,8 @@
       "schedule": "Jadwal",
       "friendly": "Laga persahabatan",
       "finance": "Keuangan",
-      "market": "Pasar"
+      "market": "Pasar",
+      "inbox": "Kotak masuk"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -571,6 +572,63 @@
       "nationalityTitle": "Kewarganegaraan {{name}}",
       "nationalityHint": "Wajah yang ditawarkan mengikuti kewarganegaraannya.",
       "nationalitySave": "Ganti kewarganegaraan"
+    },
+    "inbox": {
+      "sender": "Kantor klub",
+      "aPlayer": "seorang pemain",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} bergabung dengan klubmu",
+            "body": "Kamu memenangkan lelang {{player}} seharga {{price}}. Dia sudah ada di skuadmu."
+          },
+          "sold": {
+            "subject": "{{player}} terjual",
+            "body": "{{player}} terjual di lelang seharga {{price}}. Uangnya masuk ke rekening klubmu."
+          },
+          "outbid": {
+            "subject": "Ditawar lebih tinggi untuk {{player}}",
+            "body": "Klub lain kini memimpin lelang {{player}} dengan {{price}}. Uang yang ditahan untuk tawaranmu telah dikembalikan."
+          },
+          "unsold": {
+            "subject": "{{player}} tidak terjual",
+            "body": "Tidak ada tawaran yang mencapai harga {{player}}. Dia tetap di klubmu."
+          },
+          "cancelled": {
+            "subject": "Lelang dibatalkan: {{player}}",
+            "body": "Lelang {{player}} dibatalkan. Uang yang ditahan telah dikembalikan."
+          },
+          "forced": {
+            "subject": "{{player}} dijual",
+            "body": "Klubmu menunggak gaji, jadi {{player}} dilelang."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "Pekan {{round}}: {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "Timmu mengalahkan {{opponent}} {{scored}}–{{conceded}}.",
+            "drawn": "Timmu bermain imbang {{scored}}–{{conceded}} dengan {{opponent}}.",
+            "lost": "Timmu kalah {{scored}}–{{conceded}} dari {{opponent}}."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "Musim {{season}} telah berakhir",
+            "promoted": "Kamu finis di posisi {{rank}} dan level pelatihmu naik satu.",
+            "stayed": "Kamu finis di posisi {{rank}}. Hanya posisi teratas yang naik, jadi levelmu tetap."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "Taktikmu disesuaikan",
+            "body": "Susunanmu tidak sesuai lisensi pelatih musim {{season}}, jadi server mengubahnya. Periksa di halaman Taktik."
+          }
+        },
+        "other": {
+          "subject": "Kabar dari klubmu",
+          "body": "Ada yang berubah di klubmu."
+        }
+      }
     }
   },
   "coach": {

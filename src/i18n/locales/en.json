@@ -47,7 +47,8 @@
       "schedule": "Fixtures",
       "friendly": "Friendlies",
       "finance": "Finance",
-      "market": "Market"
+      "market": "Market",
+      "inbox": "Inbox"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -571,6 +572,63 @@
       "nationalityTitle": "Nationality of {{name}}",
       "nationalityHint": "The faces on offer for him follow his nationality.",
       "nationalitySave": "Change nationality"
+    },
+    "inbox": {
+      "sender": "Club office",
+      "aPlayer": "a player",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} joins your club",
+            "body": "You won the auction for {{player}} at {{price}}. He is in your squad now."
+          },
+          "sold": {
+            "subject": "{{player}} sold",
+            "body": "{{player}} was sold at auction for {{price}}. The money is in your club's account."
+          },
+          "outbid": {
+            "subject": "Outbid for {{player}}",
+            "body": "Another club now leads the auction for {{player}} at {{price}}. The money held for your bid was returned."
+          },
+          "unsold": {
+            "subject": "{{player}} went unsold",
+            "body": "No bid met the price for {{player}}. He stays at your club."
+          },
+          "cancelled": {
+            "subject": "Auction cancelled: {{player}}",
+            "body": "The auction for {{player}} was cancelled. Any money held for it was returned."
+          },
+          "forced": {
+            "subject": "{{player}} put up for sale",
+            "body": "Your club owed wages, so {{player}} was put up for auction."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "Round {{round}}: {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "Your side beat {{opponent}} {{scored}}–{{conceded}}.",
+            "drawn": "Your side drew {{scored}}–{{conceded}} with {{opponent}}.",
+            "lost": "Your side lost {{scored}}–{{conceded}} to {{opponent}}."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "Season {{season}} is over",
+            "promoted": "You finished in place {{rank}} and your coach level went up by one.",
+            "stayed": "You finished in place {{rank}}. Only the top places go up, so your level stays."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "Your tactics were adjusted",
+            "body": "Your setup did not fit your coach licence for season {{season}}, so the server changed it. Review it on the Tactics page."
+          }
+        },
+        "other": {
+          "subject": "News from your club",
+          "body": "Something changed at your club."
+        }
+      }
     }
   },
   "coach": {

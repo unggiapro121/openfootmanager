@@ -7,6 +7,7 @@ import {
   Gavel,
   Globe2,
   Handshake,
+  Mail,
   LayoutDashboard,
   LogOut,
   Trophy,
@@ -25,6 +26,7 @@ const CLUB_PAGES = [
   { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
   { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
   { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
+  { path: "/online/inbox", label: "online.nav.inbox", icon: <Mail /> },
   { path: "/online/finance", label: "online.nav.finance", icon: <Wallet /> },
   { path: "/online/market", label: "online.nav.market", icon: <Gavel /> },
   { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
@@ -41,6 +43,7 @@ export default function OnlineSidebar() {
   const clubName = useOnlineStore((state) => state.club?.club.name);
   const hasClub = clubName !== undefined;
   const marketUnseen = useOnlineStore((state) => state.marketUnseen);
+  const unreadMail = useOnlineStore((state) => state.club?.unreadMail ?? 0);
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-navy-700 bg-navy-800 text-white">
@@ -79,7 +82,11 @@ export default function OnlineSidebar() {
                 icon={page.icon}
                 label={t(page.label)}
                 badge={
-                  page.path === "/online/market" && marketUnseen > 0 ? marketUnseen : undefined
+                  page.path === "/online/market" && marketUnseen > 0
+                    ? marketUnseen
+                    : page.path === "/online/inbox" && unreadMail > 0
+                      ? unreadMail
+                      : undefined
                 }
                 active={
                   pathname === page.path ||

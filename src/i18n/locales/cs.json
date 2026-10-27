@@ -47,7 +47,8 @@
       "schedule": "Rozpis",
       "friendly": "Přátelská utkání",
       "finance": "Finance",
-      "market": "Trh"
+      "market": "Trh",
+      "inbox": "Schránka"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -571,6 +572,63 @@
       "nationalityTitle": "Národnost hráče {{name}}",
       "nationalityHint": "Nabízené tváře se řídí jeho národností.",
       "nationalitySave": "Změnit národnost"
+    },
+    "inbox": {
+      "sender": "Kancelář klubu",
+      "aPlayer": "hráč",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} přichází do vašeho klubu",
+            "body": "Vyhráli jste aukci o hráče {{player}} za {{price}}. Je už v kádru."
+          },
+          "sold": {
+            "subject": "{{player}} prodán",
+            "body": "{{player}} byl v aukci prodán za {{price}}. Peníze jsou na účtu klubu."
+          },
+          "outbid": {
+            "subject": "Přehozeni v aukci o {{player}}",
+            "body": "Jiný klub nyní vede aukci o hráče {{player}} s nabídkou {{price}}. Peníze zadržené za vaši nabídku se vrátily."
+          },
+          "unsold": {
+            "subject": "{{player}} zůstal neprodán",
+            "body": "Žádná nabídka nedosáhla ceny hráče {{player}}. Zůstává ve vašem klubu."
+          },
+          "cancelled": {
+            "subject": "Aukce zrušena: {{player}}",
+            "body": "Aukce o hráče {{player}} byla zrušena. Zadržené peníze se vrátily."
+          },
+          "forced": {
+            "subject": "{{player}} dán do prodeje",
+            "body": "Váš klub dlužil platy, proto byl {{player}} vystaven v aukci."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "{{round}}. kolo: {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "Váš tým porazil soupeře {{opponent}} {{scored}}–{{conceded}}.",
+            "drawn": "Váš tým remizoval se soupeřem {{opponent}} {{scored}}–{{conceded}}.",
+            "lost": "Váš tým prohrál se soupeřem {{opponent}} {{scored}}–{{conceded}}."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "Sezóna {{season}} skončila",
+            "promoted": "Skončili jste na {{rank}}. místě a vaše úroveň trenéra stoupla o jednu.",
+            "stayed": "Skončili jste na {{rank}}. místě. Postupují jen první místa, vaše úroveň zůstává."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "Vaše taktika byla upravena",
+            "body": "Vaše nastavení nevyhovovalo trenérské licenci pro sezónu {{season}}, proto ho server změnil. Zkontrolujte ho na stránce Taktika."
+          }
+        },
+        "other": {
+          "subject": "Zprávy z vašeho klubu",
+          "body": "Ve vašem klubu se něco změnilo."
+        }
+      }
     }
   },
   "coach": {
