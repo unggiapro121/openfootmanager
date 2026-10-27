@@ -93,6 +93,7 @@ export function myClub(overrides: Partial<MyClubView> = {}): MyClubView {
     },
     version: 7,
     squadRefreshing: false,
+    unreadMail: 0,
     players: [],
     staff: [],
     setup: {

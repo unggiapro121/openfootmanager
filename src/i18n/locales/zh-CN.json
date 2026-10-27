@@ -47,7 +47,8 @@
       "schedule": "赛程",
       "friendly": "友谊赛",
       "finance": "财务",
-      "market": "市场"
+      "market": "市场",
+      "inbox": "收件箱"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -571,6 +572,63 @@
       "nationalityTitle": "{{name}} 的国籍",
       "nationalityHint": "可选的头像会随国籍而变化。",
       "nationalitySave": "更改国籍"
+    },
+    "inbox": {
+      "sender": "俱乐部办公室",
+      "aPlayer": "一名球员",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} 加入了你的俱乐部",
+            "body": "你以 {{price}} 赢得了 {{player}} 的拍卖。他已进入你的阵容。"
+          },
+          "sold": {
+            "subject": "{{player}} 已售出",
+            "body": "{{player}} 在拍卖中以 {{price}} 售出。资金已进入俱乐部账户。"
+          },
+          "outbid": {
+            "subject": "{{player}} 的出价被超越",
+            "body": "另一家俱乐部现以 {{price}} 领先 {{player}} 的拍卖。为你的出价冻结的资金已退还。"
+          },
+          "unsold": {
+            "subject": "{{player}} 流拍",
+            "body": "没有出价达到 {{player}} 的价格。他留在你的俱乐部。"
+          },
+          "cancelled": {
+            "subject": "拍卖已取消：{{player}}",
+            "body": "{{player}} 的拍卖已取消。为其冻结的资金已退还。"
+          },
+          "forced": {
+            "subject": "{{player}} 被挂牌出售",
+            "body": "你的俱乐部拖欠工资，因此 {{player}} 被送上拍卖。"
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "第 {{round}} 轮：{{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "你的球队 {{scored}}–{{conceded}} 战胜了 {{opponent}}。",
+            "drawn": "你的球队 {{scored}}–{{conceded}} 与 {{opponent}} 战平。",
+            "lost": "你的球队 {{scored}}–{{conceded}} 负于 {{opponent}}。"
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "第 {{season}} 赛季结束",
+            "promoted": "你获得第 {{rank}} 名，教练等级提升一级。",
+            "stayed": "你获得第 {{rank}} 名。只有前几名才能晋级，所以等级不变。"
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "你的战术已被调整",
+            "body": "你的阵容不符合第 {{season}} 赛季的教练执照，服务器已将其修改。请在战术页面查看。"
+          }
+        },
+        "other": {
+          "subject": "俱乐部的消息",
+          "body": "你的俱乐部有了变化。"
+        }
+      }
     }
   },
   "coach": {

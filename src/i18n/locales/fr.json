@@ -47,7 +47,8 @@
       "schedule": "Calendrier",
       "friendly": "Matchs amicaux",
       "finance": "Finances",
-      "market": "Marché"
+      "market": "Marché",
+      "inbox": "Boîte de réception"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -571,6 +572,63 @@
       "nationalityTitle": "Nationalité de {{name}}",
       "nationalityHint": "Les visages proposés suivent sa nationalité.",
       "nationalitySave": "Changer la nationalité"
+    },
+    "inbox": {
+      "sender": "Bureau du club",
+      "aPlayer": "un joueur",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} rejoint votre club",
+            "body": "Vous avez remporté l'enchère pour {{player}} à {{price}}. Il fait désormais partie de l'effectif."
+          },
+          "sold": {
+            "subject": "{{player}} vendu",
+            "body": "{{player}} a été vendu aux enchères pour {{price}}. L'argent est sur le compte de votre club."
+          },
+          "outbid": {
+            "subject": "Surenchéri pour {{player}}",
+            "body": "Un autre club mène désormais l'enchère pour {{player}} à {{price}}. L'argent retenu pour votre offre a été restitué."
+          },
+          "unsold": {
+            "subject": "{{player}} est resté invendu",
+            "body": "Aucune offre n'a atteint le prix de {{player}}. Il reste dans votre club."
+          },
+          "cancelled": {
+            "subject": "Enchère annulée : {{player}}",
+            "body": "L'enchère pour {{player}} a été annulée. L'argent retenu a été restitué."
+          },
+          "forced": {
+            "subject": "{{player}} mis en vente",
+            "body": "Votre club devait des salaires, {{player}} a donc été mis aux enchères."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "Journée {{round}} : {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "Votre équipe a battu {{opponent}} {{scored}}–{{conceded}}.",
+            "drawn": "Votre équipe a fait match nul {{scored}}–{{conceded}} avec {{opponent}}.",
+            "lost": "Votre équipe a perdu {{scored}}–{{conceded}} face à {{opponent}}."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "La saison {{season}} est terminée",
+            "promoted": "Vous terminez à la place {{rank}} et votre niveau d'entraîneur augmente d'un.",
+            "stayed": "Vous terminez à la place {{rank}}. Seules les premières places montent, votre niveau reste le même."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "Votre tactique a été ajustée",
+            "body": "Votre composition ne respectait pas votre licence d'entraîneur de la saison {{season}}, le serveur l'a donc modifiée. Vérifiez-la sur la page Tactique."
+          }
+        },
+        "other": {
+          "subject": "Nouvelles de votre club",
+          "body": "Quelque chose a changé dans votre club."
+        }
+      }
     }
   },
   "coach": {

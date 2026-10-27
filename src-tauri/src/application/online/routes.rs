@@ -146,6 +146,12 @@ pub const ROUTES: &[Route] = &[
     ),
     route("POST", &[L("v1"), L("friendlies"), L("queue")], &[]),
     route("DELETE", &[L("v1"), L("friendlies"), L("queue")], &[]),
+    // The coach's inbox: a page at a time, a message or all read, a message or the read ones gone.
+    route("GET", &[L("v1"), L("inbox")], &["before", "limit"]),
+    route("POST", &[L("v1"), L("inbox"), L("read")], &[]),
+    route("POST", &[L("v1"), L("inbox"), Id, L("read")], &[]),
+    route("DELETE", &[L("v1"), L("inbox")], &[]),
+    route("DELETE", &[L("v1"), L("inbox"), Id], &[]),
     // The club's money (S-10, C-5a): what it holds, its ledger a page at a time, its facilities
     // and an upgrade of each of the three.
     route("GET", &[L("v1"), L("clubs"), L("mine"), L("finance")], &[]),

@@ -47,7 +47,8 @@
       "schedule": "Fikstür",
       "friendly": "Hazırlık maçları",
       "finance": "Finans",
-      "market": "Pazar"
+      "market": "Pazar",
+      "inbox": "Gelen kutusu"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -571,6 +572,63 @@
       "nationalityTitle": "{{name}} uyruğu",
       "nationalityHint": "Sunulan yüzler uyruğuna göre değişir.",
       "nationalitySave": "Uyruğu değiştir"
+    },
+    "inbox": {
+      "sender": "Kulüp ofisi",
+      "aPlayer": "bir oyuncu",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} kulübüne katıldı",
+            "body": "{{player}} açık artırmasını {{price}} ile kazandın. Artık kadronda."
+          },
+          "sold": {
+            "subject": "{{player}} satıldı",
+            "body": "{{player}} açık artırmada {{price}} karşılığında satıldı. Para kulübünün hesabında."
+          },
+          "outbid": {
+            "subject": "{{player}} için teklifin geçildi",
+            "body": "Başka bir kulüp {{player}} açık artırmasında {{price}} ile önde. Teklifin için bloke edilen para iade edildi."
+          },
+          "unsold": {
+            "subject": "{{player}} satılamadı",
+            "body": "Hiçbir teklif {{player}} fiyatına ulaşmadı. Kulübünde kalıyor."
+          },
+          "cancelled": {
+            "subject": "Açık artırma iptal edildi: {{player}}",
+            "body": "{{player}} açık artırması iptal edildi. Bloke edilen para iade edildi."
+          },
+          "forced": {
+            "subject": "{{player}} satışa çıkarıldı",
+            "body": "Kulübün maaş borçluydu, bu yüzden {{player}} açık artırmaya çıkarıldı."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "{{round}}. hafta: {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "Takımın {{opponent}} takımını {{scored}}–{{conceded}} yendi.",
+            "drawn": "Takımın {{opponent}} ile {{scored}}–{{conceded}} berabere kaldı.",
+            "lost": "Takımın {{opponent}} takımına {{scored}}–{{conceded}} yenildi."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "{{season}}. sezon bitti",
+            "promoted": "{{rank}}. sırada bitirdin ve antrenör seviyen bir arttı.",
+            "stayed": "{{rank}}. sırada bitirdin. Yalnızca üst sıralar yükselir, seviyen aynı kalır."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "Taktiğin düzenlendi",
+            "body": "Dizilişin {{season}}. sezon antrenör lisansına uymuyordu, bu yüzden sunucu onu değiştirdi. Taktik sayfasından kontrol et."
+          }
+        },
+        "other": {
+          "subject": "Kulübünden haberler",
+          "body": "Kulübünde bir şey değişti."
+        }
+      }
     }
   },
   "coach": {
