@@ -15,6 +15,7 @@ import type {
   FacilitiesView,
   FacilityUpgradeView,
   FinanceView,
+  InboxPage,
   FixtureDetailView,
   FramesPage,
   FriendlyMineView,
@@ -213,6 +214,28 @@ export const online = {
       call<CommandAccepted>(
         write("POST", ["v1", "matches", matchId, "commands"], idempotencyKey, { command }),
       ),
+  },
+  /** The coach's inbox: what happened to his club; each write answers with the first page. */
+  inbox: {
+    /** Newest first; `before` is the `nextBefore` of the page before. */
+    list: (before?: string, limit?: number) =>
+      call<InboxPage>(
+        read(
+          ["v1", "inbox"],
+          [
+            ...(before === undefined ? [] : [["before", before] as [string, string]]),
+            ...(limit === undefined ? [] : [["limit", String(limit)] as [string, string]]),
+          ],
+        ),
+      ),
+    read: (id: string, idempotencyKey = newKey()) =>
+      call<InboxPage>({ method: "POST", segments: ["v1", "inbox", id, "read"], idempotencyKey }),
+    readAll: (idempotencyKey = newKey()) =>
+      call<InboxPage>({ method: "POST", segments: ["v1", "inbox", "read"], idempotencyKey }),
+    remove: (id: string, idempotencyKey = newKey()) =>
+      call<InboxPage>({ method: "DELETE", segments: ["v1", "inbox", id], idempotencyKey }),
+    removeRead: (idempotencyKey = newKey()) =>
+      call<InboxPage>({ method: "DELETE", segments: ["v1", "inbox"], idempotencyKey }),
   },
   /** The club's money (S-10, C-5): balances and the season, the ledger, the facilities. */
   finance: {

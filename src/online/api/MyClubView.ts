@@ -14,7 +14,11 @@ export type MyClubView = { club: ClubProfileView,
 /**
  * For `If-Match` when the setup is changed.
  */
-version: number, squadRefreshing: boolean, players: Array<SquadPlayerView>, staff: Array<StaffLineView>, setup: ClubSetup, 
+version: number, squadRefreshing: boolean, 
+/**
+ * Messages in the coach's inbox he has not read (`GET /v1/inbox`).
+ */
+unreadMail: number, players: Array<SquadPlayerView>, staff: Array<StaffLineView>, setup: ClubSetup, 
 /**
  * The plan the club trains to: the coach's own, or, until he sets one, the one its AI
  * keeps (C-2s).

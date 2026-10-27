@@ -47,7 +47,8 @@
       "schedule": "Lịch thi đấu",
       "friendly": "Giao hữu",
       "finance": "Tài chính",
-      "market": "Chợ"
+      "market": "Chợ",
+      "inbox": "Hộp thư"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -571,6 +572,63 @@
       "nationalityTitle": "Quốc tịch của {{name}}",
       "nationalityHint": "Các khuôn mặt để chọn cho cầu thủ sẽ đổi theo quốc tịch.",
       "nationalitySave": "Đổi quốc tịch"
+    },
+    "inbox": {
+      "sender": "Văn phòng CLB",
+      "aPlayer": "một cầu thủ",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} gia nhập CLB của bạn",
+            "body": "Bạn đã thắng phiên đấu giá {{player}} với giá {{price}}. Cầu thủ đã có trong đội hình."
+          },
+          "sold": {
+            "subject": "Đã bán {{player}}",
+            "body": "{{player}} đã được bán đấu giá với giá {{price}}. Tiền đã vào tài khoản CLB."
+          },
+          "outbid": {
+            "subject": "Bị trả giá cao hơn cho {{player}}",
+            "body": "Một CLB khác đang dẫn phiên đấu giá {{player}} ở mức {{price}}. Tiền giữ cho lượt đặt giá của bạn đã được hoàn lại."
+          },
+          "unsold": {
+            "subject": "{{player}} không có người mua",
+            "body": "Không có giá nào đạt mức giá của {{player}}. Cầu thủ ở lại CLB của bạn."
+          },
+          "cancelled": {
+            "subject": "Huỷ đấu giá: {{player}}",
+            "body": "Phiên đấu giá {{player}} đã bị huỷ. Tiền giữ cho phiên này đã được hoàn lại."
+          },
+          "forced": {
+            "subject": "{{player}} bị đưa lên sàn",
+            "body": "CLB của bạn nợ lương nên {{player}} bị đưa ra đấu giá."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "Vòng {{round}}: {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "Đội của bạn thắng {{opponent}} {{scored}}–{{conceded}}.",
+            "drawn": "Đội của bạn hoà {{opponent}} {{scored}}–{{conceded}}.",
+            "lost": "Đội của bạn thua {{opponent}} {{scored}}–{{conceded}}."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "Mùa {{season}} đã kết thúc",
+            "promoted": "Bạn xếp hạng {{rank}} và cấp HLV của bạn tăng thêm một.",
+            "stayed": "Bạn xếp hạng {{rank}}. Chỉ các hạng đầu được lên, nên cấp của bạn giữ nguyên."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "Chiến thuật của bạn đã được điều chỉnh",
+            "body": "Thiết lập của bạn không hợp với giấy phép HLV mùa {{season}}, nên máy chủ đã chỉnh lại. Hãy xem lại ở trang Chiến thuật."
+          }
+        },
+        "other": {
+          "subject": "Tin từ CLB của bạn",
+          "body": "CLB của bạn có thay đổi."
+        }
+      }
     }
   },
   "coach": {

@@ -47,7 +47,8 @@
       "schedule": "Calendário",
       "friendly": "Amigáveis",
       "finance": "Finanças",
-      "market": "Mercado"
+      "market": "Mercado",
+      "inbox": "Caixa de entrada"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -571,6 +572,63 @@
       "nationalityTitle": "Nacionalidade de {{name}}",
       "nationalityHint": "Os rostos disponíveis seguem a sua nacionalidade.",
       "nationalitySave": "Mudar nacionalidade"
+    },
+    "inbox": {
+      "sender": "Gabinete do clube",
+      "aPlayer": "um jogador",
+      "kinds": {
+        "market": {
+          "won": {
+            "subject": "{{player}} junta-se ao teu clube",
+            "body": "Ganhaste o leilão de {{player}} por {{price}}. Já está no plantel."
+          },
+          "sold": {
+            "subject": "{{player}} vendido",
+            "body": "{{player}} foi vendido em leilão por {{price}}. O dinheiro está na conta do teu clube."
+          },
+          "outbid": {
+            "subject": "Superado no leilão de {{player}}",
+            "body": "Outro clube lidera agora o leilão de {{player}} com {{price}}. O dinheiro retido pela tua licitação foi devolvido."
+          },
+          "unsold": {
+            "subject": "{{player}} ficou por vender",
+            "body": "Nenhuma licitação atingiu o preço de {{player}}. Fica no teu clube."
+          },
+          "cancelled": {
+            "subject": "Leilão cancelado: {{player}}",
+            "body": "O leilão de {{player}} foi cancelado. O dinheiro retido foi devolvido."
+          },
+          "forced": {
+            "subject": "{{player}} posto à venda",
+            "body": "O teu clube devia salários, por isso {{player}} foi posto em leilão."
+          }
+        },
+        "match": {
+          "result": {
+            "subject": "Jornada {{round}}: {{home}} {{homeGoals}}–{{awayGoals}} {{away}}",
+            "won": "A tua equipa venceu o {{opponent}} por {{scored}}–{{conceded}}.",
+            "drawn": "A tua equipa empatou {{scored}}–{{conceded}} com o {{opponent}}.",
+            "lost": "A tua equipa perdeu {{scored}}–{{conceded}} com o {{opponent}}."
+          }
+        },
+        "season": {
+          "result": {
+            "subject": "A época {{season}} terminou",
+            "promoted": "Terminaste em {{rank}}.º lugar e o teu nível de treinador subiu um.",
+            "stayed": "Terminaste em {{rank}}.º lugar. Só os primeiros lugares sobem, por isso o teu nível mantém-se."
+          }
+        },
+        "licence": {
+          "fitted": {
+            "subject": "A tua tática foi ajustada",
+            "body": "A tua configuração não cabia na licença de treinador da época {{season}}, por isso o servidor alterou-a. Revê-a na página Tática."
+          }
+        },
+        "other": {
+          "subject": "Novidades do teu clube",
+          "body": "Algo mudou no teu clube."
+        }
+      }
     }
   },
   "coach": {

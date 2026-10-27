@@ -257,6 +257,45 @@ fn a_player_s_look_is_five_routes() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads the inbox, marks a message and all read, and deletes a message and the
+/// read ones, and tries other methods,
+/// then each goes out to its own route, and the other methods are refused.
+#[test]
+fn the_inbox_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    for (method, segments) in [
+        ("GET", vec!["v1", "inbox"]),
+        ("POST", vec!["v1", "inbox", "read"]),
+        ("POST", vec!["v1", "inbox", id, "read"]),
+        ("DELETE", vec!["v1", "inbox", id]),
+        ("DELETE", vec!["v1", "inbox"]),
+    ] {
+        send(&session, &request(method, &segments), 0).expect("an answer");
+    }
+    for (method, segments) in [
+        ("PUT", vec!["v1", "inbox"]),
+        ("GET", vec!["v1", "inbox", "read"]),
+        ("PATCH", vec!["v1", "inbox", id]),
+    ] {
+        assert_eq!(
+            refused(send(&session, &request(method, &segments), 0)),
+            "be.error.online.routeNotAllowed",
+            "{method} {segments:?}"
+        );
+    }
+    let sent: Vec<(String, String)> = sent(&server)
+        .into_iter()
+        .map(|r| (r.method, r.path))
+        .collect();
+    assert_eq!(sent.len(), 5);
+    assert_eq!(
+        sent[2],
+        ("POST".to_string(), format!("/v1/inbox/{id}/read"))
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview sets a player's own training session and tries the route with another method,
 /// then it goes out to `/v1/players/{id}/training-focus` as a PATCH, and the other method is
 /// refused.
