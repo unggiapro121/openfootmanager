@@ -609,6 +609,11 @@
             "won": "Váš tým porazil soupeře {{opponent}} {{scored}}–{{conceded}}.",
             "drawn": "Váš tým remizoval se soupeřem {{opponent}} {{scored}}–{{conceded}}.",
             "lost": "Váš tým prohrál se soupeřem {{opponent}} {{scored}}–{{conceded}}."
+          },
+          "preview": {
+            "subject": "{{round}}. kolo: {{home}} vs {{away}}",
+            "home": "Dnešní zápas hrajete doma proti soupeři {{opponent}}. Výkop v {{time}}.",
+            "away": "Dnešní zápas hrajete venku u soupeře {{opponent}}. Výkop v {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "Sezóna {{season}} skončila",
             "promoted": "Skončili jste na {{rank}}. místě a vaše úroveň trenéra stoupla o jednu.",
             "stayed": "Skončili jste na {{rank}}. místě. Postupují jen první místa, vaše úroveň zůstává."
+          },
+          "promoted": {
+            "subject": "Postup!",
+            "body": "Vaše trenérská úroveň po sezóně {{season}} stoupla na {{level}}."
+          },
+          "reward": {
+            "subject": "Prémie za sezónu",
+            "body": "Za {{rank}}. místo získal váš klub {{amount}}."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "Zprávy z vašeho klubu",
           "body": "Ve vašem klubu se něco změnilo."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} je zraněný",
+            "body": "{{player}} se v zápase zranil ({{injury}}) a bude chybět asi {{days}} dní."
+          },
+          "recovered": {
+            "subject": "{{player}} je zase fit",
+            "body": "{{player}} se zotavil ze zranění a může hrát."
+          },
+          "exhausted": {
+            "subject": "Hráči jsou vyčerpaní",
+            "body": "Vyčerpaných hráčů: {{count}} (kriticky {{critical}}): {{names}}. Nechte je odpočinout nebo zlehčete trénink."
+          },
+          "unhappy": {
+            "subject": "Hráči jsou nespokojení",
+            "body": "Hráčů s velmi nízkou morálkou: {{count}}: {{names}}. Zvedne ji vítězství a hrací čas."
+          },
+          "bench": {
+            "subject": "Hráči na lavičce",
+            "body": "{{names}} ({{count}}) jsou dost dobří, ale málo hrají, a trpí tím jejich morálka."
+          },
+          "happy": {
+            "subject": "Hráči mají skvělou náladu",
+            "body": "Hráčů, kteří jsou v klubu nadšení: {{count}}: {{names}}."
+          }
         }
       }
     }

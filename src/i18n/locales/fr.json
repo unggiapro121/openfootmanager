@@ -609,6 +609,11 @@
             "won": "Votre équipe a battu {{opponent}} {{scored}}–{{conceded}}.",
             "drawn": "Votre équipe a fait match nul {{scored}}–{{conceded}} avec {{opponent}}.",
             "lost": "Votre équipe a perdu {{scored}}–{{conceded}} face à {{opponent}}."
+          },
+          "preview": {
+            "subject": "Journée {{round}} : {{home}} contre {{away}}",
+            "home": "Aujourd'hui, vous jouez à domicile contre {{opponent}}. Coup d'envoi à {{time}}.",
+            "away": "Aujourd'hui, vous jouez à l'extérieur chez {{opponent}}. Coup d'envoi à {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "La saison {{season}} est terminée",
             "promoted": "Vous terminez à la place {{rank}} et votre niveau d'entraîneur augmente d'un.",
             "stayed": "Vous terminez à la place {{rank}}. Seules les premières places montent, votre niveau reste le même."
+          },
+          "promoted": {
+            "subject": "Promotion !",
+            "body": "Votre niveau d'entraîneur passe à {{level}} après la saison {{season}}."
+          },
+          "reward": {
+            "subject": "Prime de saison",
+            "body": "Terminer à la place {{rank}} a rapporté {{amount}} à votre club."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "Nouvelles de votre club",
           "body": "Quelque chose a changé dans votre club."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} est blessé",
+            "body": "{{player}} s'est blessé pendant le match ({{injury}}) et sera absent environ {{days}} jour(s)."
+          },
+          "recovered": {
+            "subject": "{{player}} est de nouveau apte",
+            "body": "{{player}} est remis de sa blessure et peut jouer."
+          },
+          "exhausted": {
+            "subject": "Des joueurs sont épuisés",
+            "body": "{{count}} joueur(s) sont épuisés ({{critical}} dans un état critique) : {{names}}. Faites-les souffler ou allégez l'entraînement."
+          },
+          "unhappy": {
+            "subject": "Des joueurs sont mécontents",
+            "body": "{{count}} joueur(s) ont un moral très bas : {{names}}. Les victoires et le temps de jeu le relèvent."
+          },
+          "bench": {
+            "subject": "Des joueurs laissés sur le banc",
+            "body": "{{names}} ({{count}}) sont assez bons mais jouent peu, ce qui pèse sur leur moral."
+          },
+          "happy": {
+            "subject": "Des joueurs au top",
+            "body": "{{count}} joueur(s) sont ravis de leur vie au club : {{names}}."
+          }
         }
       }
     }

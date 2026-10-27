@@ -609,6 +609,11 @@
             "won": "A tua equipa venceu o {{opponent}} por {{scored}}–{{conceded}}.",
             "drawn": "A tua equipa empatou {{scored}}–{{conceded}} com o {{opponent}}.",
             "lost": "A tua equipa perdeu {{scored}}–{{conceded}} com o {{opponent}}."
+          },
+          "preview": {
+            "subject": "Jornada {{round}}: {{home}} contra {{away}}",
+            "home": "Hoje jogas em casa contra o {{opponent}}. Apito inicial às {{time}}.",
+            "away": "Hoje jogas fora, no campo do {{opponent}}. Apito inicial às {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "A época {{season}} terminou",
             "promoted": "Terminaste em {{rank}}.º lugar e o teu nível de treinador subiu um.",
             "stayed": "Terminaste em {{rank}}.º lugar. Só os primeiros lugares sobem, por isso o teu nível mantém-se."
+          },
+          "promoted": {
+            "subject": "Subida!",
+            "body": "O teu nível de treinador subiu para {{level}} depois da época {{season}}."
+          },
+          "reward": {
+            "subject": "Prémio da época",
+            "body": "Terminar em {{rank}}.º lugar rendeu {{amount}} ao teu clube."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "Novidades do teu clube",
           "body": "Algo mudou no teu clube."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} está lesionado",
+            "body": "{{player}} lesionou-se no jogo ({{injury}}) e fica de fora cerca de {{days}} dia(s)."
+          },
+          "recovered": {
+            "subject": "{{player}} está apto outra vez",
+            "body": "{{player}} recuperou da lesão e pode jogar."
+          },
+          "exhausted": {
+            "subject": "Jogadores exaustos",
+            "body": "{{count}} jogador(es) estão exaustos ({{critical}} em estado crítico): {{names}}. Dá-lhes descanso ou alivia o treino."
+          },
+          "unhappy": {
+            "subject": "Jogadores descontentes",
+            "body": "{{count}} jogador(es) têm a moral muito baixa: {{names}}. Vitórias e minutos de jogo ajudam."
+          },
+          "bench": {
+            "subject": "Jogadores deixados no banco",
+            "body": "{{names}} ({{count}}) são bons o suficiente mas jogam pouco, e isso afeta a moral."
+          },
+          "happy": {
+            "subject": "Jogadores animadíssimos",
+            "body": "{{count}} jogador(es) estão encantados com a vida no clube: {{names}}."
+          }
         }
       }
     }

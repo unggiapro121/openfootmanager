@@ -609,6 +609,11 @@
             "won": "Timmu mengalahkan {{opponent}} {{scored}}–{{conceded}}.",
             "drawn": "Timmu bermain imbang {{scored}}–{{conceded}} dengan {{opponent}}.",
             "lost": "Timmu kalah {{scored}}–{{conceded}} dari {{opponent}}."
+          },
+          "preview": {
+            "subject": "Pekan {{round}}: {{home}} vs {{away}}",
+            "home": "Hari ini kamu bermain kandang melawan {{opponent}}. Kick-off pukul {{time}}.",
+            "away": "Hari ini kamu bermain tandang ke markas {{opponent}}. Kick-off pukul {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "Musim {{season}} telah berakhir",
             "promoted": "Kamu finis di posisi {{rank}} dan level pelatihmu naik satu.",
             "stayed": "Kamu finis di posisi {{rank}}. Hanya posisi teratas yang naik, jadi levelmu tetap."
+          },
+          "promoted": {
+            "subject": "Promosi!",
+            "body": "Level pelatihmu naik menjadi {{level}} setelah musim {{season}}."
+          },
+          "reward": {
+            "subject": "Hadiah musim",
+            "body": "Finis di posisi {{rank}} memberi klubmu {{amount}}."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "Kabar dari klubmu",
           "body": "Ada yang berubah di klubmu."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} cedera",
+            "body": "{{player}} cedera di pertandingan ({{injury}}) dan absen sekitar {{days}} hari."
+          },
+          "recovered": {
+            "subject": "{{player}} bugar kembali",
+            "body": "{{player}} sudah pulih dari cederanya dan bisa bermain."
+          },
+          "exhausted": {
+            "subject": "Pemain kelelahan",
+            "body": "{{count}} pemain kelelahan ({{critical}} dalam kondisi kritis): {{names}}. Istirahatkan mereka atau ringankan latihan."
+          },
+          "unhappy": {
+            "subject": "Pemain tidak senang",
+            "body": "{{count}} pemain bermoral sangat rendah: {{names}}. Kemenangan dan menit bermain akan menaikkannya."
+          },
+          "bench": {
+            "subject": "Pemain tersisih di bangku cadangan",
+            "body": "{{names}} ({{count}}) cukup bagus tapi jarang bermain, dan itu menurunkan moral mereka."
+          },
+          "happy": {
+            "subject": "Pemain bersemangat tinggi",
+            "body": "{{count}} pemain senang dengan kehidupan di klub: {{names}}."
+          }
         }
       }
     }

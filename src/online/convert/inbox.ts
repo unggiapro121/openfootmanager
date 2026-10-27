@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { resolveInjuryName } from "../../lib/injury";
 import { formatExactMoney } from "../../lib/valueFormatting";
 import type { MessageData } from "../../store/types";
 import type { InboxMessageView } from "../api";
@@ -11,8 +12,17 @@ const CATEGORY: Record<string, string> = {
   "market.unsold": "Transfer",
   "market.cancelled": "Transfer",
   "market.forced": "Finance",
+  "match.preview": "MatchPreview",
   "match.result": "MatchResult",
+  "squad.injury": "Injury",
+  "squad.recovered": "Injury",
+  "squad.exhausted": "Training",
+  "squad.unhappy": "PlayerMorale",
+  "squad.bench": "PlayerMorale",
+  "squad.happy": "PlayerMorale",
   "season.result": "LeagueInfo",
+  "season.promoted": "LeagueInfo",
+  "season.reward": "Finance",
   "licence.fitted": "BoardDirective",
 };
 
@@ -65,6 +75,39 @@ export function toMessageData(
     };
     bodyKey = `${base}.${scored > conceded ? "won" : scored === conceded ? "drawn" : "lost"}`;
     fixtureId = text(params.fixtureId) ?? null;
+  } else if (kind === "match.preview") {
+    const home = count(params.home) === 1;
+    const opponent = text(params.opponent) ?? "";
+    const kickoff = new Date(String(params.kickoffAt));
+    options = {
+      round: count(params.round),
+      home: home ? clubName : opponent,
+      away: home ? opponent : clubName,
+      opponent,
+      time: Number.isNaN(kickoff.getTime())
+        ? ""
+        : kickoff.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+    bodyKey = `${base}.${home ? "home" : "away"}`;
+    fixtureId = text(params.fixtureId) ?? null;
+  } else if (kind === "squad.injury") {
+    options = {
+      player: text(params.playerName) ?? t("online.inbox.aPlayer"),
+      injury: resolveInjuryName(text(params.injury) ?? "", t),
+      days: count(params.days),
+    };
+  } else if (kind === "squad.recovered") {
+    options = { player: text(params.playerName) ?? t("online.inbox.aPlayer") };
+  } else if (kind.startsWith("squad.")) {
+    options = {
+      count: count(params.count),
+      critical: count(params.critical),
+      names: text(params.names) ?? "",
+    };
+  } else if (kind === "season.promoted") {
+    options = { season: count(params.season), level: count(params.level) };
+  } else if (kind === "season.reward") {
+    options = { rank: count(params.rank), amount: formatExactMoney(count(params.amount)) };
   } else if (kind === "season.result") {
     options = { season: count(params.season), rank: count(params.rank) };
     bodyKey = `${base}.${count(params.promoted) === 1 ? "promoted" : "stayed"}`;

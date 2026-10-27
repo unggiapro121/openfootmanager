@@ -609,6 +609,11 @@
             "won": "Đội của bạn thắng {{opponent}} {{scored}}–{{conceded}}.",
             "drawn": "Đội của bạn hoà {{opponent}} {{scored}}–{{conceded}}.",
             "lost": "Đội của bạn thua {{opponent}} {{scored}}–{{conceded}}."
+          },
+          "preview": {
+            "subject": "Vòng {{round}}: {{home}} gặp {{away}}",
+            "home": "Hôm nay bạn đá trên sân nhà với {{opponent}}. Giờ bóng lăn: {{time}}.",
+            "away": "Hôm nay bạn đá sân khách trước {{opponent}}. Giờ bóng lăn: {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "Mùa {{season}} đã kết thúc",
             "promoted": "Bạn xếp hạng {{rank}} và cấp HLV của bạn tăng thêm một.",
             "stayed": "Bạn xếp hạng {{rank}}. Chỉ các hạng đầu được lên, nên cấp của bạn giữ nguyên."
+          },
+          "promoted": {
+            "subject": "Lên hạng!",
+            "body": "Cấp HLV của bạn tăng lên {{level}} sau mùa {{season}}."
+          },
+          "reward": {
+            "subject": "Tiền thưởng cuối mùa",
+            "body": "Về hạng {{rank}} mang về cho CLB {{amount}}."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "Tin từ CLB của bạn",
           "body": "CLB của bạn có thay đổi."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} bị chấn thương",
+            "body": "{{player}} bị thương trong trận ({{injury}}) và nghỉ khoảng {{days}} ngày."
+          },
+          "recovered": {
+            "subject": "{{player}} đã bình phục",
+            "body": "{{player}} đã khỏi chấn thương và có thể thi đấu."
+          },
+          "exhausted": {
+            "subject": "Cầu thủ kiệt sức",
+            "body": "{{count}} cầu thủ kiệt sức ({{critical}} ở mức nguy kịch): {{names}}. Hãy cho nghỉ hoặc giảm tải buổi tập."
+          },
+          "unhappy": {
+            "subject": "Cầu thủ không vui",
+            "body": "{{count}} cầu thủ có tinh thần rất thấp: {{names}}. Chiến thắng và thời gian thi đấu sẽ giúp họ khá lên."
+          },
+          "bench": {
+            "subject": "Cầu thủ bị gạt ra ngoài",
+            "body": "{{names}} ({{count}}) đủ giỏi nhưng ít được ra sân, và điều đó đang làm tinh thần họ đi xuống."
+          },
+          "happy": {
+            "subject": "Cầu thủ đang rất phấn khởi",
+            "body": "{{count}} cầu thủ rất hài lòng với cuộc sống ở CLB: {{names}}."
+          }
         }
       }
     }

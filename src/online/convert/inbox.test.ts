@@ -74,4 +74,53 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(odd.category).toBe("System");
     expect(odd.subject).toMatch(/^online\.inbox\.kinds\.other\.subject/);
   });
+
+  // Given the club's day messages,
+  // when they are worded,
+  // then each takes its offline category and the parameters its sentence needs.
+  it("words the club's day", () => {
+    const preview = toMessageData(
+      mail("match.preview", {
+        fixtureId: "f",
+        opponent: "B",
+        home: 0,
+        round: 4,
+        kickoffAt: "2026-10-27T12:00:00Z",
+      }),
+      t,
+      "A",
+    );
+    expect(preview.category).toBe("MatchPreview");
+    expect(preview.body).toMatch(/match\.preview\.away\|/);
+    expect(preview.subject).toContain('"home":"B","away":"A"');
+    expect(preview.context.fixture_id).toBe("f");
+
+    const injury = toMessageData(
+      mail("squad.injury", { playerName: "X", injury: "Hamstring", days: 12 }),
+      t,
+      "A",
+    );
+    expect(injury.category).toBe("Injury");
+    expect(injury.body).toContain('"days":12');
+
+    const tired = toMessageData(
+      mail("squad.exhausted", { count: 3, critical: 1, names: "X, Y, Z" }),
+      t,
+      "A",
+    );
+    expect(tired.category).toBe("Training");
+    expect(tired.body).toContain('"names":"X, Y, Z"');
+
+    for (const kind of ["squad.unhappy", "squad.bench", "squad.happy"]) {
+      expect(toMessageData(mail(kind, { count: 1, names: "X" }), t, "A").category).toBe(
+        "PlayerMorale",
+      );
+    }
+    expect(toMessageData(mail("season.promoted", { season: 1, level: 3 }), t, "A").body).toContain(
+      '"level":3',
+    );
+    expect(toMessageData(mail("season.reward", { rank: 2, amount: 5000 }), t, "A").category).toBe(
+      "Finance",
+    );
+  });
 });

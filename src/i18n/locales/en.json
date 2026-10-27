@@ -609,6 +609,11 @@
             "won": "Your side beat {{opponent}} {{scored}}–{{conceded}}.",
             "drawn": "Your side drew {{scored}}–{{conceded}} with {{opponent}}.",
             "lost": "Your side lost {{scored}}–{{conceded}} to {{opponent}}."
+          },
+          "preview": {
+            "subject": "Round {{round}}: {{home}} vs {{away}}",
+            "home": "Your match today is at home against {{opponent}}. Kick-off at {{time}}.",
+            "away": "Your match today is away to {{opponent}}. Kick-off at {{time}}."
           }
         },
         "season": {
@@ -616,6 +621,14 @@
             "subject": "Season {{season}} is over",
             "promoted": "You finished in place {{rank}} and your coach level went up by one.",
             "stayed": "You finished in place {{rank}}. Only the top places go up, so your level stays."
+          },
+          "promoted": {
+            "subject": "Promoted!",
+            "body": "Your coach level rose to {{level}} after season {{season}}."
+          },
+          "reward": {
+            "subject": "Season prize money",
+            "body": "Finishing in place {{rank}} earned your club {{amount}}."
           }
         },
         "licence": {
@@ -627,6 +640,32 @@
         "other": {
           "subject": "News from your club",
           "body": "Something changed at your club."
+        },
+        "squad": {
+          "injury": {
+            "subject": "{{player}} is injured",
+            "body": "{{player}} was hurt in the match ({{injury}}) and is out for about {{days}} day(s)."
+          },
+          "recovered": {
+            "subject": "{{player}} is fit again",
+            "body": "{{player}} has recovered from his injury and can play."
+          },
+          "exhausted": {
+            "subject": "Players are worn out",
+            "body": "{{count}} player(s) are worn out ({{critical}} critically): {{names}}. Rest them or lighten the training."
+          },
+          "unhappy": {
+            "subject": "Players are unhappy",
+            "body": "{{count}} player(s) have very low morale: {{names}}. Wins and playing time lift it."
+          },
+          "bench": {
+            "subject": "Players left on the bench",
+            "body": "{{names}} ({{count}}) are good enough but rarely play, and it is hurting their morale."
+          },
+          "happy": {
+            "subject": "Players in great spirits",
+            "body": "{{count}} player(s) are delighted with life at the club: {{names}}."
+          }
         }
       }
     }
