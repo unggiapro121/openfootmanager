@@ -264,7 +264,7 @@ describe("the club's cash in the header", () => {
 describe("AccountWatcher", () => {
   // Given the coach's account channel,
   // when it rings for the market, for a friendly, and with a kind this build does not know,
-  // then the market ring reads the club's money and market again and lights the market's dot,
+  // then the market ring reads the club, its money and market again and lights the market's dot,
   // the friendly ring reads their friendly, and the unknown one changes nothing.
   it("reads again by the kind of ring", async () => {
     serve();
@@ -277,6 +277,7 @@ describe("AccountWatcher", () => {
     const before = {
       finance: sent("GET", "v1/clubs/mine/finance").length,
       friendly: sent("GET", "v1/friendlies/mine").length,
+      club: sent("GET", "v1/clubs/mine").length,
     };
 
     account?.speak({
@@ -286,6 +287,8 @@ describe("AccountWatcher", () => {
     });
     await waitFor(() => expect(sent("GET", "v1/clubs/mine/market")).toHaveLength(2));
     expect(sent("GET", "v1/clubs/mine/finance")).toHaveLength(before.finance + 1);
+    // The squad changes with a won or sold player: the club is read again with the market.
+    await waitFor(() => expect(sent("GET", "v1/clubs/mine")).toHaveLength(before.club + 1));
     expect(sent("GET", "v1/friendlies/mine")).toHaveLength(before.friendly);
     expect(useOnlineStore.getState().marketUnseen).toBe(1);
 
