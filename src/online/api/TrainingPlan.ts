@@ -8,4 +8,10 @@ import type { TrainingSchedule } from "./domain/TrainingSchedule";
  * A person's weekly training plan for his club (`club.training_plan`): the focus and intensity of
  * a session, the days the club trains, and groups with a focus of their own.
  */
-export type TrainingPlan = { focus: TrainingFocus, intensity: TrainingIntensity, schedule: TrainingSchedule, groups: Array<TrainingGroup>, };
+export type TrainingPlan = { focus: TrainingFocus, intensity: TrainingIntensity, schedule: TrainingSchedule, groups: Array<TrainingGroup>, 
+/**
+ * The club trains on its weekly schedule at 04:00 for the day before when its coach did not
+ * hold that day's session himself (E5-1 §4; S-21 S21-3). Read only when the season's ruleset
+ * has `recovery`. On by default: every plan saved before S-21 reads `true`.
+ */
+auto: boolean, };

@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { CoinView, InventoryView, ShopItemView, ShopView } from "../../api";
+import type { AcademyView, CoinView, InventoryView, ShopItemView, ShopView } from "../../api";
 import type { OnlineRequest } from "../../../services/onlineTransport";
 import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
 import {
@@ -65,6 +65,21 @@ function coins(overrides: Partial<CoinView> = {}): CoinView {
 
 const NO_ITEMS: InventoryView = { lines: [], locked: false };
 
+/** The club's academy, open or not this season. */
+function academyOf(enabled: boolean): AcademyView {
+  return {
+    enabled,
+    serverNow: "2099-01-01T12:00:00Z",
+    tripsThisSeason: 0,
+    eliteTripsThisSeason: 0,
+    academyLevel: 1,
+    slots: enabled ? 3 : 0,
+    used: 0,
+    players: [],
+    graduated: [],
+  };
+}
+
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
 
@@ -79,6 +94,7 @@ function serve(more: Record<string, Answer | ((request: OnlineRequest) => Answer
     "GET v1/me/coins": ok(coins()),
     "GET v1/me/items": ok(NO_ITEMS),
     "GET v1/shop": ok(shop()),
+    "GET v1/clubs/mine/academy": ok(academyOf(false)),
     ...more,
   });
 }
@@ -131,11 +147,11 @@ describe("the shop", () => {
     expect(await screen.findByText("online.shop.notOnServer")).toBeTruthy();
   });
 
-  // Given a season without item rules (a drink with numbers, a medkit without), a rename card
-  // and an hourglass,
+  // Given a season without item rules (a drink with numbers, a medkit without) nor academy
+  // rules, a rename card and an hourglass,
   // when the shop opens,
-  // then the item with its numbers says what it does and can be bought, the medkit cannot be
-  // used this season, the hourglass waits for the academy, the rename card is always for sale.
+  // then the item with its numbers says what it does and can be bought, the medkit and the
+  // hourglass cannot be used this season, the rename card is always for sale.
   it("sells only what can be used this season", async () => {
     serve();
     renderOnline("/online/shop");
@@ -147,9 +163,21 @@ describe("the shop", () => {
     expect(medkit.textContent).toContain("online.shop.notThisSeason");
     const hourglass = await offerOf("timeSkip");
     expect(buyIn(hourglass).disabled).toBe(true);
-    expect(hourglass.textContent).toContain("online.shop.academySoon");
+    await waitFor(() => expect(hourglass.textContent).toContain("online.shop.notThisSeason"));
     expect(buyIn(await offerOf("playerRename")).disabled).toBe(false);
     expect(screen.getByText("online.shop.neverExpire")).toBeTruthy();
+  });
+
+  // Given a season whose academy is open (C-7c),
+  // when the shop opens,
+  // then the hourglass and the scout tickets can be bought.
+  it("sells the academy's items while its season has an academy", async () => {
+    serve({ "GET v1/clubs/mine/academy": ok(academyOf(true)) });
+    renderOnline("/online/shop");
+
+    const hourglass = await offerOf("timeSkip");
+    await waitFor(() => expect(buyIn(hourglass).disabled).toBe(false));
+    expect(hourglass.textContent).not.toContain("online.shop.notThisSeason");
   });
 
   // Given a full row, and then the inventory locked,

@@ -9,7 +9,13 @@ import { formatDate } from "../../lib/dateFormatting";
 import { formatExactMoney } from "../../lib/valueFormatting";
 import type { FacilityPreviewView, FinanceView, LedgerLineView } from "../api";
 import { online } from "../client";
-import { refreshClub, refreshFinance, tracked, useOnlineStore } from "../store/onlineStore";
+import {
+  refreshAcademy,
+  refreshClub,
+  refreshFinance,
+  tracked,
+  useOnlineStore,
+} from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import ResourceState from "./ResourceState";
 
@@ -32,9 +38,18 @@ const KIND_OF: Record<string, FacilityKind> = {
   scouting: "Scouting",
 };
 
+/** The academy (S-18, C-7c) is the server's own facility: the desktop game has no such row. */
+const ONLINE_FACILITIES: Record<string, { titleKey: string; effectKey: string }> = {
+  academy: {
+    titleKey: "online.finance.facility.academy",
+    effectKey: "online.finance.facility.academyEffect",
+  },
+};
+
 function titleKeyOf(facility: string): string {
   return (
     FACILITY_DEFINITIONS.find((definition) => definition.levelKey === facility)?.titleKey ??
+    ONLINE_FACILITIES[facility]?.titleKey ??
     "finances.facilities"
   );
 }
@@ -42,8 +57,17 @@ function titleKeyOf(facility: string): string {
 function effectKeyOf(facility: string): string {
   return (
     FACILITY_DEFINITIONS.find((definition) => definition.levelKey === facility)?.effectKey ??
+    ONLINE_FACILITIES[facility]?.effectKey ??
     "finances.facilities"
   );
+}
+
+/**
+ * An effect's label key: the fork's effects send the whole key, the academy's slots only its last
+ * part (`academySlots`).
+ */
+export function effectLabelKey(key: string): string {
+  return key.includes(".") ? key : `finances.facilityEffects.${key}`;
 }
 
 /** The server's preview in the shape the desktop's upgrade dialog draws (C-5 C5-5). */
@@ -54,7 +78,7 @@ function asPreview(view: FacilityPreviewView): FacilityUpgradePreviewData {
     maxLevel: view.maxLevel,
     cost: view.cost,
     effects: view.effects.map((effect) => ({
-      key: effect.key,
+      key: effectLabelKey(effect.key),
       format: effect.format as FacilityEffectFormat,
       current: effect.current,
       next: effect.next,
@@ -200,6 +224,13 @@ function Figures({ finance }: { finance: FinanceView }) {
             <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
               {t("online.finance.wagePerDay", { amount: formatExactMoney(perDay) })}
             </p>
+            {finance.academyWeeklyWageBill !== undefined && (
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {t("online.finance.academyWages", {
+                  amount: formatExactMoney(finance.academyWeeklyWageBill),
+                })}
+              </p>
+            )}
           </div>
         </CardBody>
       </Card>
@@ -361,6 +392,10 @@ function UpgradeDialog({
     tracked(() => online.finance.upgradeFacility(facility.facility, key))
       .then(async (upgraded) => {
         await Promise.allSettled([refreshFinance(), refreshClub()]);
+        // The academy's slots grew: its page reads them again, when it holds them (PO bản 4).
+        if (facility.facility === "academy" && useOnlineStore.getState().academy) {
+          void refreshAcademy().catch(() => undefined);
+        }
         onDone(upgraded.level);
       })
       .catch((error: unknown) => {

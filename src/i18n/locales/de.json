@@ -52,7 +52,8 @@
       "account": "Konto",
       "coins": "Münzbörse",
       "inventory": "Inventar",
-      "shop": "Shop"
+      "shop": "Shop",
+      "academy": "Nachwuchsakademie"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -194,7 +195,8 @@
       "noMatch": "Kein Spieler passt zu diesen Filtern.",
       "notFound": "Dieser Spieler gehört nicht zu deinem Kader.",
       "state": "Verfassung",
-      "suspended": "Gesperrt: {{count}} Spiel(e)"
+      "suspended": "Gesperrt: {{count}} Spiel(e)",
+      "potentialStarsRange": "Potenzial {{low}} bis {{high}} Sterne"
     },
     "training": {
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan."
@@ -459,7 +461,9 @@
         "adjust": "Korrekturen",
         "reversal": "Stornierungen",
         "grantReset": "Kassen-Reset mit neuem Kader",
-        "coin_exchange": "Münztausch"
+        "coin_exchange": "Münztausch",
+        "scout": "Akademie-Scouting",
+        "graduation": "Abschlussgebühr"
       },
       "ledger": "Buchungen",
       "ledgerEmpty": "Noch keine Buchungen.",
@@ -470,7 +474,12 @@
       },
       "nextCost": "Nächste Stufe: {{cost}}",
       "upgraded": "{{facility}} auf Stufe {{level}} ausgebaut.",
-      "exchangeCoins": "Münzen tauschen"
+      "exchangeCoins": "Münzen tauschen",
+      "facility": {
+        "academy": "Nachwuchsakademie",
+        "academyEffect": "Jede Stufe schafft Plätze für Talente."
+      },
+      "academyWages": "Akademiegehälter: {{amount}} pro Woche"
     },
     "market": {
       "title": "Transfermarkt",
@@ -729,6 +738,22 @@
             "subject": "Deine Gegenstände sind entsperrt",
             "body": "Die Prüfung deiner Gegenstände ist abgeschlossen. Du kannst sie wieder verwenden."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Eine Scoutingreise ist zurück",
+            "body": "Dein Scout ist mit einem Bericht zurück. Wähle die Kandidaten, bevor er schließt."
+          },
+          "graduated": {
+            "subject": "{{player}} hat abgeschlossen",
+            "body": "{{player}} hat die Akademie abgeschlossen und rückt in die erste Mannschaft auf.{{extra}}",
+            "overSquadMax": "Der Kader liegt jetzt über seiner Höchstgröße.",
+            "feeWaived": "Die Abschlussgebühr wurde erlassen."
+          },
+          "graduationDeferred": {
+            "subject": "Ein Abschluss musste warten",
+            "body": "Der Verein konnte die Abschlussgebühr von {{fee}} nicht zahlen, daher bleibt {{player}} eine weitere Saison in der Akademie. Der nächste Abschluss ist kostenlos."
+          }
         }
       }
     },
@@ -825,7 +850,7 @@
       },
       "timeSkip": {
         "name": "Sanduhr",
-        "description": "Holt eine Scouting-Reise sofort zurück."
+        "description": "Holt eine laufende Scouting-Reise früher zurück."
       },
       "notice": {
         "granted": "Du hast {{item}} erhalten.",
@@ -884,7 +909,6 @@
       "notThisSeason": "In dieser Saison nicht verwendbar.",
       "needClub": "Du brauchst einen Verein.",
       "renameAt": "Umbenennen im Kader oder auf der Vereinskarte",
-      "academySoon": "Wird in der Jugendakademie verwendet (bald verfügbar)",
       "target": {
         "player": "ein Spieler",
         "club": "der Verein",
@@ -924,7 +948,8 @@
         "pickStyle": "Spielweise zum Benutzen wählen",
         "style": "Für {{style}} nutzen",
         "usedToday": "Heute schon genutzt",
-        "rename": "Im Kader umbenennen"
+        "rename": "Im Kader umbenennen",
+        "academy": "In der Nachwuchsakademie verwenden"
       }
     },
     "shop": {
@@ -934,7 +959,6 @@
       "toWallet": "Münzbörse",
       "neverExpire": "Mit Münzen gekaufte Gegenstände laufen nie ab. Sie gehören zu deinem Konto und können nicht weitergegeben werden.",
       "notThisSeason": "In dieser Saison nicht verwendbar",
-      "academySoon": "Verfügbar mit der Jugendakademie",
       "itemsLocked": "Deine Gegenstände sind während einer Prüfung gesperrt",
       "full": "Dein Inventar fasst nicht mehr von diesem Gegenstand",
       "bought": "{{item}} ×{{count}} für {{coins}} Münzen gekauft.",
@@ -1002,6 +1026,93 @@
       "quantityLabel": "Menge",
       "openInventory": "Inventar öffnen",
       "closeNotice": "Hinweis schließen"
+    },
+    "academy": {
+      "notOnServer": "Dieser Server hat noch keine Nachwuchsakademie.",
+      "disabled": "Die Nachwuchsakademie ist in dieser Saison nicht geöffnet.",
+      "itemsLocked": "Dein Inventar ist für eine Prüfung gesperrt: Tickets und Sanduhren sind bis zum Ende nicht nutzbar.",
+      "upgrade": "In den Finanzen ausbauen",
+      "confirm": "Bestätigen",
+      "aYoungster": "ein Talent",
+      "notice": {
+        "scoutDone": "Eine Scoutingreise ist zurück: wähle, bevor der Bericht schließt.",
+        "changed": "Deine Akademie hat Neuigkeiten."
+      },
+      "region": {
+        "AsiaSoutheast": "Südostasien",
+        "AsiaEast": "Ostasien",
+        "Europe": "Europa",
+        "Americas": "Amerika"
+      },
+      "focus": {
+        "Balanced": "Ausgewogen",
+        "Physical": "Körperlich",
+        "Technical": "Technisch"
+      },
+      "pay": {
+        "cash": "Vereinsgeld",
+        "scoutExpedition": "ein Scouting-Ticket",
+        "scoutExpeditionElite": "ein Elite-Scouting-Ticket"
+      },
+      "reveal": {
+        "0": "Gerade gekommen",
+        "1": "Beobachtet",
+        "2": "Gut bekannt"
+      },
+      "scout": {
+        "title": "Scouting",
+        "season": "Reisen in dieser Saison: {{sent}}/{{max}}, Elite-Reisen {{elite}}/{{eliteMax}}",
+        "send": "Scout losschicken",
+        "trip": "{{region}} · {{focus}} · bezahlt mit {{pay}}",
+        "backIn": "Zurück in {{time}}",
+        "backSoon": "Der Scout ist auf dem Rückweg…",
+        "timeSkip": "Eine Sanduhr nutzen ({{held}} im Besitz)",
+        "timeSkipConfirm": "Diese Scoutingreise früher zurückholen? Eine Sanduhr wird verbraucht."
+      },
+      "send": {
+        "title": "Scout losschicken",
+        "region": "Region",
+        "focus": "Gesucht",
+        "pay": "Bezahlen mit",
+        "payCash": "Vereinsgeld: {{cost}}",
+        "payTicket": "1 Scouting-Ticket ({{held}} im Besitz)",
+        "payElite": "1 Elite-Scouting-Ticket ({{held}} im Besitz): mindestens ein Top-Talent",
+        "back": "Zurück gegen {{time}}",
+        "left": "Verbleibende Reisen dieser Saison: {{trips}}, Elite: {{elite}}",
+        "confirm": "Losschicken"
+      },
+      "candidate": {
+        "choose": "{{name}} wählen",
+        "facts": "{{age}} J. · {{position}} · {{height}} cm",
+        "ovr": "Stärke {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Der Bericht schließt in {{time}}",
+        "free": "Freie Akademieplätze: {{free}}.",
+        "skip": "Bericht verwerfen",
+        "recruit": "{{n}} in die Akademie aufnehmen",
+        "othersLeave": "Nicht gewählte Kandidaten gehen und kommen nicht zurück."
+      },
+      "players": {
+        "title": "Akademie",
+        "slots": "{{used}}/{{slots}} Plätze · Akademiestufe {{level}}",
+        "costs": "Gehalt {{wage}} pro Woche je Talent · Abschlussgebühr {{fee}} · Mindestens {{days}} Tage in der Akademie",
+        "revealNote": "Stärke- und Sternspannen werden mit den Tagen in der Akademie enger; beim Abschluss ist alles sichtbar.",
+        "none": "Noch keine Talente in der Akademie.",
+        "days": "{{days}} Tage in der Akademie",
+        "wage": "{{wage}} pro Tag",
+        "graduates": "Abschluss voraussichtlich am Ende von Saison {{season}}",
+        "nextFree": "Nächster Abschluss kostenlos",
+        "focus": "Eigener Schwerpunkt",
+        "clubFocus": "Wie der Verein",
+        "release": "Gehen lassen",
+        "releaseTitle": "{{name}} gehen lassen?",
+        "releaseText": "Er verlässt die Akademie und kommt nicht zurück. Die Scoutingkosten werden nicht erstattet."
+      },
+      "graduated": {
+        "title": "Abgeschlossen",
+        "season": "Saison {{season}}"
+      }
     }
   },
   "coach": {
@@ -2279,7 +2390,8 @@
       "estimateNarrowing": "Scout-Schätzungen enger um",
       "intakePotential": "Jugendjahrgang zum Saisonende: Potenzialbonus",
       "intakeGems": "Jugendjahrgang zum Saisonende: Chance auf ein Juwel",
-      "intakeTopTalent": "Jugendjahrgang zum Saisonende: Chance auf ein Ausnahmetalent (90–95)"
+      "intakeTopTalent": "Jugendjahrgang zum Saisonende: Chance auf ein Ausnahmetalent (90–95)",
+      "academySlots": "Akademieplätze"
     },
     "facilityEffectNone": "Unverändert",
     "facilityUpgradeTitle": "{{facility}} ausbauen — Stufe {{from}} → {{to}}",
@@ -4695,7 +4807,7 @@
       },
       "academy": {
         "disabled": "Die Jugendakademie ist in dieser Saison nicht geöffnet.",
-        "tripOpen": "Dein Verein hat schon eine Scoutingreise unterwegs oder einen offenen Bericht ({{tripId}}).",
+        "tripOpen": "Dein Verein hat schon eine Scoutingreise unterwegs oder einen offenen Bericht.",
         "tripLimitReached": "Die Scoutingreisen dieser Saison sind aufgebraucht: {{sent}} von {{limit}}.",
         "eliteTripLimitReached": "Die Elite-Reisen dieser Saison sind aufgebraucht: {{sent}} von {{limit}}.",
         "tripNotPending": "Diese Scoutingreise ist nicht mehr unterwegs.",

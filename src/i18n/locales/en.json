@@ -52,7 +52,8 @@
       "account": "Account",
       "coins": "Coin wallet",
       "inventory": "Inventory",
-      "shop": "Shop"
+      "shop": "Shop",
+      "academy": "Youth Academy"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -194,7 +195,8 @@
       "noMatch": "No player matches these filters.",
       "notFound": "This player is not in your squad.",
       "state": "Condition",
-      "suspended": "Suspended: {{count}} match(es)"
+      "suspended": "Suspended: {{count}} match(es)",
+      "potentialStarsRange": "Potential {{low}} to {{high}} stars"
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own."
@@ -459,7 +461,9 @@
         "adjust": "Adjustments",
         "reversal": "Reversals",
         "grantReset": "New squad cash reset",
-        "coin_exchange": "Coin exchange"
+        "coin_exchange": "Coin exchange",
+        "scout": "Academy scouting",
+        "graduation": "Graduation fee"
       },
       "ledger": "Ledger",
       "ledgerEmpty": "No entries yet.",
@@ -470,7 +474,12 @@
       },
       "nextCost": "Next level: {{cost}}",
       "upgraded": "{{facility}} upgraded to level {{level}}.",
-      "exchangeCoins": "Exchange coins"
+      "exchangeCoins": "Exchange coins",
+      "facility": {
+        "academy": "Youth Academy",
+        "academyEffect": "Each level adds room for youngsters."
+      },
+      "academyWages": "Academy wages: {{amount}} a week"
     },
     "market": {
       "title": "Transfer market",
@@ -729,6 +738,22 @@
             "subject": "Your items are unlocked",
             "body": "The check of your items is done. You can use them again."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "A scouting trip is back",
+            "body": "Your scout is back with a report. Choose the candidates before it closes."
+          },
+          "graduated": {
+            "subject": "{{player}} graduated",
+            "body": "{{player}} graduated from the academy into the first team.{{extra}}",
+            "overSquadMax": "The squad is now over its maximum size.",
+            "feeWaived": "The graduation fee was waived."
+          },
+          "graduationDeferred": {
+            "subject": "A graduation had to wait",
+            "body": "The club could not pay the {{fee}} graduation fee, so {{player}} stays in the academy one more season. The next graduation is free."
+          }
         }
       }
     },
@@ -825,7 +850,7 @@
       },
       "timeSkip": {
         "name": "Hourglass",
-        "description": "Brings a scouting trip home at once."
+        "description": "Brings a scouting trip that is out back sooner."
       },
       "notice": {
         "granted": "You received {{item}}.",
@@ -884,7 +909,6 @@
       "notThisSeason": "Not usable this season.",
       "needClub": "You need a club.",
       "renameAt": "Rename from the squad or club page",
-      "academySoon": "Used at the youth academy (coming soon)",
       "target": {
         "player": "a player",
         "club": "the club",
@@ -924,7 +948,8 @@
         "pickStyle": "Pick a play style to use it",
         "style": "Use on {{style}}",
         "usedToday": "Used today",
-        "rename": "Rename in the squad"
+        "rename": "Rename in the squad",
+        "academy": "Use at the Youth Academy"
       }
     },
     "shop": {
@@ -934,7 +959,6 @@
       "toWallet": "Coin wallet",
       "neverExpire": "Items bought with coins never expire. They belong to your account and cannot be passed on.",
       "notThisSeason": "Not usable this season",
-      "academySoon": "Opens with the youth academy",
       "itemsLocked": "Your items are locked while they are checked",
       "full": "Your inventory holds no more of this item",
       "bought": "Bought {{item}} ×{{count}} for {{coins}} coins.",
@@ -1002,6 +1026,93 @@
       "quantityLabel": "Quantity",
       "openInventory": "Open inventory",
       "closeNotice": "Close notice"
+    },
+    "academy": {
+      "notOnServer": "This server has no youth academy yet.",
+      "disabled": "The youth academy is not open this season.",
+      "itemsLocked": "Your inventory is locked for a check: tickets and hourglasses cannot be used until it ends.",
+      "upgrade": "Upgrade in Finance",
+      "confirm": "Confirm",
+      "aYoungster": "a youngster",
+      "notice": {
+        "scoutDone": "A scouting trip is back: choose before the report closes.",
+        "changed": "Your youth academy has news."
+      },
+      "region": {
+        "AsiaSoutheast": "Southeast Asia",
+        "AsiaEast": "East Asia",
+        "Europe": "Europe",
+        "Americas": "The Americas"
+      },
+      "focus": {
+        "Balanced": "Balanced",
+        "Physical": "Physical",
+        "Technical": "Technical"
+      },
+      "pay": {
+        "cash": "club money",
+        "scoutExpedition": "a scout ticket",
+        "scoutExpeditionElite": "an elite scout ticket"
+      },
+      "reveal": {
+        "0": "Just arrived",
+        "1": "Watched",
+        "2": "Well known"
+      },
+      "scout": {
+        "title": "Scouting",
+        "season": "Trips this season: {{sent}}/{{max}}, elite trips {{elite}}/{{eliteMax}}",
+        "send": "Send a scout",
+        "trip": "{{region}} · {{focus}} · paid with {{pay}}",
+        "backIn": "Back in {{time}}",
+        "backSoon": "The scout is on the way back…",
+        "timeSkip": "Use an hourglass ({{held}} held)",
+        "timeSkipConfirm": "Bring this scouting trip back sooner? One hourglass is used."
+      },
+      "send": {
+        "title": "Send a scout",
+        "region": "Region",
+        "focus": "Looking for",
+        "pay": "Pay with",
+        "payCash": "Club money: {{cost}}",
+        "payTicket": "1 scout ticket ({{held}} held)",
+        "payElite": "1 elite scout ticket ({{held}} held): at least one top prospect",
+        "back": "Back around {{time}}",
+        "left": "Trips left this season: {{trips}}, elite: {{elite}}",
+        "confirm": "Send"
+      },
+      "candidate": {
+        "choose": "Choose {{name}}",
+        "facts": "{{age}} yrs · {{position}} · {{height}} cm",
+        "ovr": "OVR {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "The report closes in {{time}}",
+        "free": "Free academy slots: {{free}}.",
+        "skip": "Skip the report",
+        "recruit": "Take {{n}} into the academy",
+        "othersLeave": "Candidates not chosen leave and do not come back."
+      },
+      "players": {
+        "title": "Academy",
+        "slots": "{{used}}/{{slots}} slots · Academy level {{level}}",
+        "costs": "Wage {{wage}} a week per youngster · Graduation fee {{fee}} · At least {{days}} days in the academy",
+        "revealNote": "OVR and star ranges narrow with the days in the academy; everything shows at graduation.",
+        "none": "No youngsters in the academy yet.",
+        "days": "{{days}} days in the academy",
+        "wage": "{{wage}} a day",
+        "graduates": "Expected to graduate at the end of season {{season}}",
+        "nextFree": "Next graduation free",
+        "focus": "His own focus",
+        "clubFocus": "As the club",
+        "release": "Let go",
+        "releaseTitle": "Let {{name}} go?",
+        "releaseText": "He leaves the academy and does not come back. The scouting cost is not refunded."
+      },
+      "graduated": {
+        "title": "Graduated",
+        "season": "season {{season}}"
+      }
     }
   },
   "coach": {
@@ -2279,7 +2390,8 @@
       "estimateNarrowing": "Scout estimates narrower by",
       "intakePotential": "Season-end intake: potential bonus",
       "intakeGems": "Season-end intake: hidden gem chance",
-      "intakeTopTalent": "Season-end intake: top talent (90–95) chance"
+      "intakeTopTalent": "Season-end intake: top talent (90–95) chance",
+      "academySlots": "Academy slots"
     },
     "facilityEffectNone": "No change",
     "facilityUpgradeTitle": "Upgrade {{facility}} — level {{from}} → {{to}}",
@@ -4695,7 +4807,7 @@
       },
       "academy": {
         "disabled": "The youth academy is not open this season.",
-        "tripOpen": "Your club already has a scouting trip out or a report to choose from ({{tripId}}).",
+        "tripOpen": "Your club already has a scouting trip out or a report to choose from.",
         "tripLimitReached": "This season's scouting trips are used: {{sent}} of {{limit}}.",
         "eliteTripLimitReached": "This season's elite trips are used: {{sent}} of {{limit}}.",
         "tripNotPending": "This scouting trip is no longer out.",

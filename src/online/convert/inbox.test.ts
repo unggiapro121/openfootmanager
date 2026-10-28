@@ -135,4 +135,47 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(locked.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsLocked\.subject/);
     expect(unlocked.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsUnlocked\.subject/);
   });
+
+  // Given the academy's three mails (S-18, C-7c): a report back, a graduation into a squad over
+  // its size with the fee waived, and a graduation that waited for its fee,
+  // when they are worded,
+  // then each is under the scouting category, the graduation adds both sentences, and the
+  // waiting one is named from the academy, or as "a youngster" when the academy does not know him.
+  it("words the academy's mails", () => {
+    const back = toMessageData(mail("academy.scoutDone", { tripId: "t" }), t, "A");
+    const graduated = toMessageData(
+      mail("academy.graduated", {
+        playerId: "p",
+        playerName: "Kid",
+        overSquadMax: 1,
+        feeWaived: 1,
+      }),
+      t,
+      "A",
+    );
+    const known = toMessageData(
+      mail("academy.graduationDeferred", { playerId: "p", fee: 200000 }),
+      t,
+      "A",
+      (id) => (id === "p" ? "Kid" : undefined),
+    );
+    const unknown = toMessageData(
+      mail("academy.graduationDeferred", { playerId: "q", fee: 200000 }),
+      t,
+      "A",
+      (id) => (id === "p" ? "Kid" : undefined),
+    );
+
+    expect([back, graduated, known].map((message) => message.category)).toEqual([
+      "ScoutReport",
+      "ScoutReport",
+      "ScoutReport",
+    ]);
+    expect(back.subject).toMatch(/^online\.inbox\.kinds\.academy\.scoutDone\.subject/);
+    expect(graduated.body).toContain('"player":"Kid"');
+    expect(graduated.body).toContain("online.inbox.kinds.academy.graduated.overSquadMax");
+    expect(graduated.body).toContain("online.inbox.kinds.academy.graduated.feeWaived");
+    expect(known.body).toContain('"player":"Kid"');
+    expect(unknown.body).toContain('"player":"online.academy.aYoungster"');
+  });
 });

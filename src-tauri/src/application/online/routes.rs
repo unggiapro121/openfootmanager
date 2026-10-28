@@ -182,7 +182,7 @@ pub const ROUTES: &[Route] = &[
     route("DELETE", &[L("v1"), L("inbox")], &[]),
     route("DELETE", &[L("v1"), L("inbox"), Id], &[]),
     // The club's money (S-10, C-5a): what it holds, its ledger a page at a time, its facilities
-    // and an upgrade of each of the three.
+    // and an upgrade of each of the four (the academy's since S-18, C-7c).
     route("GET", &[L("v1"), L("clubs"), L("mine"), L("finance")], &[]),
     route(
         "GET",
@@ -197,6 +197,78 @@ pub const ROUTES: &[Route] = &[
     upgrade(&FACILITY_UPGRADES[0]),
     upgrade(&FACILITY_UPGRADES[1]),
     upgrade(&FACILITY_UPGRADES[2]),
+    upgrade(&FACILITY_UPGRADES[3]),
+    // The club's youth academy (S-18, C-7c): the academy, a trip's quote, a trip sent, brought
+    // back sooner and chosen from, and a youngster's own focus or release.
+    route("GET", &[L("v1"), L("clubs"), L("mine"), L("academy")], &[]),
+    route(
+        "GET",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("academy"),
+            L("scout-quote"),
+        ],
+        &["region", "focus"],
+    ),
+    route(
+        "POST",
+        &[L("v1"), L("clubs"), L("mine"), L("academy"), L("scouts")],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("academy"),
+            L("scouts"),
+            Id,
+            L("time-skip"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("academy"),
+            L("scouts"),
+            Id,
+            L("recruit"),
+        ],
+        &[],
+    ),
+    route(
+        "PUT",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("academy"),
+            L("players"),
+            Id,
+            L("focus"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("academy"),
+            L("players"),
+            Id,
+            L("release"),
+        ],
+        &[],
+    ),
     // The coach's coins (S-15, C-7a1): the wallet, its lines a page at a time, and an exchange
     // into the club's money.
     route("GET", &[L("v1"), L("me"), L("coins")], &[]),
@@ -261,12 +333,13 @@ pub const ROUTES: &[Route] = &[
     ),
 ];
 
-/// The paths of the three facility upgrades (S-10b): one literal per facility, as the path takes
-/// no other.
-const FACILITY_UPGRADES: [[Part; 6]; 3] = [
+/// The paths of the four facility upgrades (S-10b; the academy since S-18, C-7c): one literal
+/// per facility, as the path takes no other.
+const FACILITY_UPGRADES: [[Part; 6]; 4] = [
     facility_upgrade("training"),
     facility_upgrade("medical"),
     facility_upgrade("scouting"),
+    facility_upgrade("academy"),
 ];
 
 const fn facility_upgrade(facility: &'static str) -> [Part; 6] {

@@ -8,6 +8,7 @@ import {
   Dumbbell,
   Gavel,
   Globe2,
+  GraduationCap,
   Handshake,
   Mail,
   LayoutDashboard,
@@ -27,6 +28,7 @@ const CLUB_PAGES = [
   { path: "/online/squad", label: "online.nav.squad", icon: <Users /> },
   { path: "/online/tactics", label: "online.nav.tactics", icon: <Crosshair /> },
   { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
+  { path: "/online/academy", label: "online.nav.academy", icon: <GraduationCap /> },
   { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
   { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
   { path: "/online/inbox", label: "online.nav.inbox", icon: <Mail /> },
@@ -53,6 +55,7 @@ export default function OnlineSidebar() {
   const clubName = useOnlineStore((state) => state.club?.club.name);
   const hasClub = clubName !== undefined;
   const marketUnseen = useOnlineStore((state) => state.marketUnseen);
+  const academyUnseen = useOnlineStore((state) => state.academyUnseen);
   const unreadMail = useOnlineStore((state) => state.club?.unreadMail ?? 0);
 
   return (
@@ -96,7 +99,9 @@ export default function OnlineSidebar() {
                     ? marketUnseen
                     : page.path === "/online/inbox" && unreadMail > 0
                       ? unreadMail
-                      : undefined
+                      : page.path === "/online/academy" && academyUnseen
+                        ? 1
+                        : undefined
                 }
                 active={
                   pathname === page.path ||

@@ -142,12 +142,23 @@ export type AccountRing =
       event?: "granted" | "used" | "bought" | "refunded" | string;
       itemCode?: string;
     }
+  /**
+   * The club's academy (S-18, C-7c): a scouting trip is back with its report (`scoutDone`), or an
+   * event this build does not know. The academy is read again for any of them.
+   */
+  | { kind: "academy"; event?: "scoutDone" | string; tripId?: string }
   | { kind: "unknown" };
 
 /** Read a ring of the account channel; a kind this build does not know is `unknown` (E6-15). */
 export function readAccountRing(data: unknown): AccountRing {
   if (typeof data !== "object" || data === null) return { kind: "unknown" };
-  const ring = data as { kind?: unknown; event?: unknown; auctionId?: unknown; itemCode?: unknown };
+  const ring = data as {
+    kind?: unknown;
+    event?: unknown;
+    auctionId?: unknown;
+    itemCode?: unknown;
+    tripId?: unknown;
+  };
   if (ring.kind === "friendly") return { kind: "friendly" };
   if (ring.kind === "finance") return { kind: "finance" };
   if (ring.kind === "market") {
@@ -162,6 +173,13 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "items",
       event: typeof ring.event === "string" ? ring.event : undefined,
       itemCode: typeof ring.itemCode === "string" ? ring.itemCode : undefined,
+    };
+  }
+  if (ring.kind === "academy") {
+    return {
+      kind: "academy",
+      event: typeof ring.event === "string" ? ring.event : undefined,
+      tripId: typeof ring.tripId === "string" ? ring.tripId : undefined,
     };
   }
   return { kind: "unknown" };

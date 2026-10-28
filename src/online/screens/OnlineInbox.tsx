@@ -93,10 +93,11 @@ export default function OnlineInbox() {
   };
 
   const clubName = club?.club.name ?? "";
-  const all = useMemo(
-    () => messages.map((message) => toMessageData(message, t, clubName)),
-    [messages, t, clubName],
-  );
+  const youngsters = useOnlineStore((state) => state.academy?.players);
+  const all = useMemo(() => {
+    const youngsterName = (id: string) => youngsters?.find((player) => player.id === id)?.name;
+    return messages.map((message) => toMessageData(message, t, clubName, youngsterName));
+  }, [messages, t, clubName, youngsters]);
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const message of all)
