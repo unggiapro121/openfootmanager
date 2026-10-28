@@ -2096,6 +2096,14 @@
       "tier_4": "Elitní",
       "lockedOption": "{{option}} (licence od úrovně {{level}})",
       "lockedHint": "Odemkne licence {{licence}}, od trenérské úrovně {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, hodnocení {{ovr}}",
+    "dutyShort": {
+      "captain": "Kapitán",
+      "vice_captain": "Zástupce kapitána",
+      "penalty_taker": "Penalty",
+      "free_kick_taker": "Přímé kopy",
+      "corner_taker": "Rohy"
     }
   },
   "training": {

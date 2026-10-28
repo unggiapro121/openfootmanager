@@ -2096,6 +2096,14 @@
       "tier_4": "Elite",
       "lockedOption": "{{option}} (licence at level {{level}})",
       "lockedHint": "Opens with the {{licence}} licence, at coach level {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, rating {{ovr}}",
+    "dutyShort": {
+      "captain": "Captain",
+      "vice_captain": "Vice-captain",
+      "penalty_taker": "Penalties",
+      "free_kick_taker": "Free kicks",
+      "corner_taker": "Corners"
     }
   },
   "training": {

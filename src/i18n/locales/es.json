@@ -2096,6 +2096,14 @@
       "tier_4": "Élite",
       "lockedOption": "{{option}} (licencia en el nivel {{level}})",
       "lockedHint": "Se abre con la licencia {{licence}}, en el nivel de entrenador {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, valoración {{ovr}}",
+    "dutyShort": {
+      "captain": "Capitán",
+      "vice_captain": "Subcapitán",
+      "penalty_taker": "Penaltis",
+      "free_kick_taker": "Tiros libres",
+      "corner_taker": "Córners"
     }
   },
   "training": {

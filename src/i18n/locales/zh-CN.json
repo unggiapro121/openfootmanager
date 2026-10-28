@@ -2096,6 +2096,14 @@
       "tier_4": "精英",
       "lockedOption": "{{option}}（教练等级 {{level}} 解锁）",
       "lockedHint": "获得{{licence}}执照（教练等级 {{level}}）后解锁"
+    },
+    "tokenLabel": "{{name}}，{{position}}，能力 {{ovr}}",
+    "dutyShort": {
+      "captain": "队长",
+      "vice_captain": "副队长",
+      "penalty_taker": "点球",
+      "free_kick_taker": "任意球",
+      "corner_taker": "角球"
     }
   },
   "training": {

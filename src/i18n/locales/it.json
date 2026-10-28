@@ -2115,6 +2115,14 @@
       "tier_4": "Élite",
       "lockedOption": "{{option}} (licenza al livello {{level}})",
       "lockedHint": "Si sblocca con la licenza {{licence}}, al livello allenatore {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, valutazione {{ovr}}",
+    "dutyShort": {
+      "captain": "Capitano",
+      "vice_captain": "Vice capitano",
+      "penalty_taker": "Rigori",
+      "free_kick_taker": "Punizioni",
+      "corner_taker": "Calci d'angolo"
     }
   },
   "training": {

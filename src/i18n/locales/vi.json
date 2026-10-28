@@ -2096,6 +2096,14 @@
       "tier_4": "Bậc thầy",
       "lockedOption": "{{option}} (mở ở cấp {{level}})",
       "lockedHint": "Mở với bằng {{licence}}, ở cấp HLV {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, chỉ số {{ovr}}",
+    "dutyShort": {
+      "captain": "Đội trưởng",
+      "vice_captain": "Đội phó",
+      "penalty_taker": "Phạt đền",
+      "free_kick_taker": "Đá phạt",
+      "corner_taker": "Phạt góc"
     }
   },
   "training": {

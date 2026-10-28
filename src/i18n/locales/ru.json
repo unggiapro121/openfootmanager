@@ -2096,6 +2096,14 @@
       "tier_4": "Элитная",
       "lockedOption": "{{option}} (лицензия с уровня {{level}})",
       "lockedHint": "Открывается с лицензией «{{licence}}», с уровня тренера {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, рейтинг {{ovr}}",
+    "dutyShort": {
+      "captain": "Капитан",
+      "vice_captain": "Вице-капитан",
+      "penalty_taker": "Пенальти",
+      "free_kick_taker": "Штрафные",
+      "corner_taker": "Угловые"
     }
   },
   "training": {
