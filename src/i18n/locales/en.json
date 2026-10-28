@@ -835,7 +835,6 @@
       "notOnServer": "This server has no items yet.",
       "locked": "Your items are locked while they are checked; nothing is lost. Renaming with a card and using items open again once the check is done.",
       "lockedShort": "Your items are locked while they are checked.",
-      "tabHeld": "Items",
       "tabHistory": "History",
       "empty": "Your inventory is empty.",
       "toShop": "Go to the shop",
@@ -850,12 +849,8 @@
       "stacks": "Rows by expiry",
       "expires": "×{{count}} · expires {{date}}",
       "neverExpires": "×{{count}} · never expires",
-      "teamRecovery": "Your club used {{used}}/{{perDay}} today · resets {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP from notes this season",
-      "xpX2": "Double XP matches waiting: {{remaining}}/{{max}}",
       "notThisSeason": "Not usable this season.",
       "needClub": "You need a club.",
-      "use": "Use",
       "renameAt": "Rename from the squad or club page",
       "academySoon": "Used at the youth academy (coming soon)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Taken back by an administrator"
       },
       "historyEmpty": "No item entries yet.",
-      "expiredNotShown": "Items that expired are not listed here."
+      "expiredNotShown": "Items that expired are not listed here.",
+      "tabHeldCount": "Items ({{count}})",
+      "toShopMore": "Buy more in the shop",
+      "tileAria": "{{item}}, quantity {{count}}. Show details",
+      "usedToday": "Club used {{used}}/{{perDay}} today",
+      "holding": "Holding ×{{count}}",
+      "expiry": "Expiry",
+      "neverExpire": "Never expires",
+      "dailyLimit": "Daily limit",
+      "dailyUsed": "Club used {{used}}/{{perDay}} today",
+      "refreshAt": "Resets at {{time}}",
+      "xpWaiting": "Double-XP matches waiting",
+      "pickStyle": "Pick the play style to get the XP",
+      "styleCap": "Each play style gets at most {{limit}} XP from notes per season.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Level {{level}}",
+      "action": {
+        "player": "Pick a player to use it on",
+        "club": "Use on the starting eleven",
+        "account": "Activate",
+        "pickStyle": "Pick a play style to use it",
+        "style": "Use on {{style}}",
+        "usedToday": "Used today",
+        "rename": "Rename in the squad"
+      }
     },
     "shop": {
       "notOnServer": "This server has no shop yet.",

@@ -835,7 +835,6 @@
       "notOnServer": "Dieser Server hat noch keine Gegenstände.",
       "locked": "Deine Gegenstände sind während einer Prüfung gesperrt; nichts geht verloren. Umbenennen mit Karte und das Verwenden von Gegenständen sind nach der Prüfung wieder möglich.",
       "lockedShort": "Deine Gegenstände sind während einer Prüfung gesperrt.",
-      "tabHeld": "Gegenstände",
       "tabHistory": "Verlauf",
       "empty": "Dein Inventar ist leer.",
       "toShop": "Zum Shop",
@@ -850,12 +849,8 @@
       "stacks": "Zeilen nach Ablauf",
       "expires": "×{{count}} · läuft ab am {{date}}",
       "neverExpires": "×{{count}} · läuft nie ab",
-      "teamRecovery": "Dein Verein hat heute {{used}}/{{perDay}} verwendet · Zurücksetzung {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP aus Notizen in dieser Saison",
-      "xpX2": "Ausstehende Spiele mit doppelter XP: {{remaining}}/{{max}}",
       "notThisSeason": "In dieser Saison nicht verwendbar.",
       "needClub": "Du brauchst einen Verein.",
-      "use": "Verwenden",
       "renameAt": "Umbenennen im Kader oder auf der Vereinskarte",
       "academySoon": "Wird in der Jugendakademie verwendet (bald verfügbar)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Von einem Administrator entzogen"
       },
       "historyEmpty": "Noch keine Gegenstandsbuchungen.",
-      "expiredNotShown": "Abgelaufene Gegenstände werden hier nicht angezeigt."
+      "expiredNotShown": "Abgelaufene Gegenstände werden hier nicht angezeigt.",
+      "tabHeldCount": "Gegenstände ({{count}})",
+      "toShopMore": "Mehr im Shop kaufen",
+      "tileAria": "{{item}}, Anzahl {{count}}. Details anzeigen",
+      "usedToday": "Verein hat heute {{used}}/{{perDay}} genutzt",
+      "holding": "Im Besitz ×{{count}}",
+      "expiry": "Haltbarkeit",
+      "neverExpire": "Läuft nicht ab",
+      "dailyLimit": "Tageslimit",
+      "dailyUsed": "Verein hat heute {{used}}/{{perDay}} genutzt",
+      "refreshAt": "Wird um {{time}} zurückgesetzt",
+      "xpWaiting": "Wartende Spiele mit doppelter XP",
+      "pickStyle": "Spielweise wählen, die die XP erhält",
+      "styleCap": "Jede Spielweise erhält pro Saison höchstens {{limit}} XP aus Notizen.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Stufe {{level}}",
+      "action": {
+        "player": "Spieler zum Benutzen wählen",
+        "club": "Für die Startelf nutzen",
+        "account": "Aktivieren",
+        "pickStyle": "Spielweise zum Benutzen wählen",
+        "style": "Für {{style}} nutzen",
+        "usedToday": "Heute schon genutzt",
+        "rename": "Im Kader umbenennen"
+      }
     },
     "shop": {
       "notOnServer": "Dieser Server hat noch keinen Shop.",

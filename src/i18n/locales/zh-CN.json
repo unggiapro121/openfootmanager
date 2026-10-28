@@ -835,7 +835,6 @@
       "notOnServer": "该服务器暂无物品。",
       "locked": "你的物品在核查期间被锁定；不会丢失任何东西。核查结束后即可再次用卡改名和使用物品。",
       "lockedShort": "你的物品在核查期间被锁定。",
-      "tabHeld": "物品",
       "tabHistory": "记录",
       "empty": "你的背包是空的。",
       "toShop": "前往商店",
@@ -850,12 +849,8 @@
       "stacks": "按有效期分行",
       "expires": "×{{count}} · {{date}} 到期",
       "neverExpires": "×{{count}} · 永不过期",
-      "teamRecovery": "你的俱乐部今日已用 {{used}}/{{perDay}} · {{time}} 重置",
-      "noteXp": "{{style}}：本赛季笔记经验 {{used}}/{{limit}}",
-      "xpX2": "待生效的双倍经验场次：{{remaining}}/{{max}}",
       "notThisSeason": "本赛季无法使用。",
       "needClub": "你需要一家俱乐部。",
-      "use": "使用",
       "renameAt": "在阵容页或俱乐部卡片中改名",
       "academySoon": "在青训营使用（即将推出）",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "管理员收回"
       },
       "historyEmpty": "暂无物品记录。",
-      "expiredNotShown": "已过期的物品不在此显示。"
+      "expiredNotShown": "已过期的物品不在此显示。",
+      "tabHeldCount": "物品（{{count}}）",
+      "toShopMore": "去商店再买一些",
+      "tileAria": "{{item}}，数量 {{count}}。查看详情",
+      "usedToday": "今天俱乐部已使用 {{used}}/{{perDay}}",
+      "holding": "持有 ×{{count}}",
+      "expiry": "有效期",
+      "neverExpire": "永不过期",
+      "dailyLimit": "每日上限",
+      "dailyUsed": "今天俱乐部已使用 {{used}}/{{perDay}}",
+      "refreshAt": "{{time}} 重置",
+      "xpWaiting": "等待中的双倍经验比赛",
+      "pickStyle": "选择获得经验的战术风格",
+      "styleCap": "每种战术风格每赛季最多从笔记获得 {{limit}} 经验。",
+      "styleXp": "{{used}}/{{limit}} 经验",
+      "styleLevel": "等级 {{level}}",
+      "action": {
+        "player": "选择要使用的球员",
+        "club": "用于首发阵容",
+        "account": "激活",
+        "pickStyle": "选择要使用的战术风格",
+        "style": "用于{{style}}",
+        "usedToday": "今天已使用",
+        "rename": "在阵容中改名"
+      }
     },
     "shop": {
       "notOnServer": "该服务器暂无商店。",

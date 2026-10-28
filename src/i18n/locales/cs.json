@@ -835,7 +835,6 @@
       "notOnServer": "Tento server zatím nemá předměty.",
       "locked": "Tvé předměty jsou během kontroly zamčené; nic se neztratí. Přejmenování kartou a používání předmětů bude zase možné po skončení kontroly.",
       "lockedShort": "Tvé předměty jsou během kontroly zamčené.",
-      "tabHeld": "Předměty",
       "tabHistory": "Historie",
       "empty": "Tvůj inventář je prázdný.",
       "toShop": "Do obchodu",
@@ -850,12 +849,8 @@
       "stacks": "Řádky podle platnosti",
       "expires": "×{{count}} · vyprší {{date}}",
       "neverExpires": "×{{count}} · nevyprší",
-      "teamRecovery": "Tvůj klub dnes použil {{used}}/{{perDay}} · obnoví se {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP z poznámek v této sezóně",
-      "xpX2": "Čekající zápasy s dvojnásobnými XP: {{remaining}}/{{max}}",
       "notThisSeason": "V této sezóně nelze použít.",
       "needClub": "Potřebuješ klub.",
-      "use": "Použít",
       "renameAt": "Přejmenuj na stránce kádru nebo na kartě klubu",
       "academySoon": "Používá se v akademii (brzy)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Odebráno administrátorem"
       },
       "historyEmpty": "Zatím žádné pohyby předmětů.",
-      "expiredNotShown": "Předměty s prošlou platností se tu nezobrazují."
+      "expiredNotShown": "Předměty s prošlou platností se tu nezobrazují.",
+      "tabHeldCount": "Předměty ({{count}})",
+      "toShopMore": "Koupit další v obchodě",
+      "tileAria": "{{item}}, množství {{count}}. Zobrazit podrobnosti",
+      "usedToday": "Klub dnes použil {{used}}/{{perDay}}",
+      "holding": "Máš ×{{count}}",
+      "expiry": "Platnost",
+      "neverExpire": "Neexpiruje",
+      "dailyLimit": "Denní limit",
+      "dailyUsed": "Klub dnes použil {{used}}/{{perDay}}",
+      "refreshAt": "Obnoví se v {{time}}",
+      "xpWaiting": "Čekající zápasy s dvojnásobnými XP",
+      "pickStyle": "Vyber herní styl, který dostane XP",
+      "styleCap": "Každý herní styl dostane z poznámek nejvýš {{limit}} XP za sezónu.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Úroveň {{level}}",
+      "action": {
+        "player": "Vybrat hráče",
+        "club": "Použít na základní sestavu",
+        "account": "Aktivovat",
+        "pickStyle": "Vybrat herní styl",
+        "style": "Použít na {{style}}",
+        "usedToday": "Dnes už použito",
+        "rename": "Přejmenovat v kádru"
+      }
     },
     "shop": {
       "notOnServer": "Tento server zatím nemá obchod.",

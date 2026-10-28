@@ -835,7 +835,6 @@
       "notOnServer": "Ce serveur n'a pas encore d'objets.",
       "locked": "Vos objets sont bloqués pendant leur vérification ; rien n'est perdu. Renommer avec une carte et utiliser des objets redeviennent possibles une fois la vérification terminée.",
       "lockedShort": "Vos objets sont bloqués pendant leur vérification.",
-      "tabHeld": "Objets",
       "tabHistory": "Historique",
       "empty": "Votre inventaire est vide.",
       "toShop": "Aller à la boutique",
@@ -850,12 +849,8 @@
       "stacks": "Lignes par expiration",
       "expires": "×{{count}} · expire le {{date}}",
       "neverExpires": "×{{count}} · n'expire jamais",
-      "teamRecovery": "Votre club en a utilisé {{used}}/{{perDay}} aujourd'hui · remise à zéro {{time}}",
-      "noteXp": "{{style}} : {{used}}/{{limit}} XP des notes cette saison",
-      "xpX2": "Matchs d'XP double en attente : {{remaining}}/{{max}}",
       "notThisSeason": "Inutilisable cette saison.",
       "needClub": "Il vous faut un club.",
-      "use": "Utiliser",
       "renameAt": "Renommez depuis l'effectif ou la fiche du club",
       "academySoon": "S'utilise au centre de formation (bientôt)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Repris par un administrateur"
       },
       "historyEmpty": "Aucun mouvement d'objet pour l'instant.",
-      "expiredNotShown": "Les objets expirés n'apparaissent pas ici."
+      "expiredNotShown": "Les objets expirés n'apparaissent pas ici.",
+      "tabHeldCount": "Objets ({{count}})",
+      "toShopMore": "Acheter plus à la boutique",
+      "tileAria": "{{item}}, quantité {{count}}. Voir le détail",
+      "usedToday": "Le club en a utilisé {{used}}/{{perDay}} aujourd'hui",
+      "holding": "Vous en avez ×{{count}}",
+      "expiry": "Validité",
+      "neverExpire": "N'expire pas",
+      "dailyLimit": "Limite quotidienne",
+      "dailyUsed": "Le club en a utilisé {{used}}/{{perDay}} aujourd'hui",
+      "refreshAt": "Réinitialisé à {{time}}",
+      "xpWaiting": "Matchs à XP double en attente",
+      "pickStyle": "Choisissez le style de jeu qui reçoit l'XP",
+      "styleCap": "Chaque style de jeu reçoit au plus {{limit}} XP de notes par saison.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Niveau {{level}}",
+      "action": {
+        "player": "Choisir un joueur",
+        "club": "Utiliser sur le onze de départ",
+        "account": "Activer",
+        "pickStyle": "Choisir un style de jeu",
+        "style": "Utiliser sur {{style}}",
+        "usedToday": "Déjà utilisé aujourd'hui",
+        "rename": "Renommer dans l'effectif"
+      }
     },
     "shop": {
       "notOnServer": "Ce serveur n'a pas encore de boutique.",
