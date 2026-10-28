@@ -3,6 +3,7 @@ import {
   countdownTo,
   deviceDiffersFromRegion,
   formatCoins,
+  formatKickoffClock,
   formatMoment,
   formatRegionClock,
   secondsUntil,
@@ -53,6 +54,20 @@ describe("formatMoment", () => {
     const text = formatMoment("2026-10-23T11:00:00Z", "en");
     expect(text).toMatch(/Oct/);
     expect(formatMoment("soon", "en")).toBe("soon");
+  });
+});
+
+describe("formatKickoffClock", () => {
+  // Given kick-offs today and on a later day on this machine's clock,
+  // when they are shown in a short list,
+  // then today's is its time alone, a later one its weekday and time, an unreadable one as sent.
+  it("writes today's time alone and a later day's with its weekday", () => {
+    const today = new Date(NOW);
+    today.setHours(23, 30, 0, 0);
+    const later = new Date(today.getTime() + 2 * 86_400_000);
+    expect(formatKickoffClock(today.toISOString(), NOW, "en")).toMatch(/^\d{1,2}:30( PM)?$/);
+    expect(formatKickoffClock(later.toISOString(), NOW, "en")).toMatch(/^[A-Z][a-z]{2} .*:30/);
+    expect(formatKickoffClock("soon", NOW, "en")).toBe("soon");
   });
 });
 
