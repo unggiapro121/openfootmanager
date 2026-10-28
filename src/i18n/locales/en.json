@@ -89,7 +89,23 @@
       "save": "Save",
       "stadium": "{{name}} ({{capacity}} seats)",
       "stadiumLabel": "Stadium name",
-      "stadiumHint": "The stadium can be renamed as often as you like."
+      "stadiumHint": "The stadium can be renamed as often as you like.",
+      "crest": {
+        "change": "Change crest",
+        "title": "Club crest",
+        "primary": "Main colour",
+        "secondary": "Second colour",
+        "patternLabel": "Pattern",
+        "pattern": {
+          "split": "Halves",
+          "band": "Band",
+          "sash": "Sash",
+          "diamond": "Diamond"
+        },
+        "label": "Letters",
+        "labelHint": "1 to 3 letters or digits",
+        "save": "Save crest"
+      }
     },
     "fixture": {
       "title": "Next match",

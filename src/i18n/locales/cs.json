@@ -89,7 +89,23 @@
       "save": "Uložit",
       "stadium": "{{name}} ({{capacity}} míst)",
       "stadiumLabel": "Název stadionu",
-      "stadiumHint": "Stadion můžete přejmenovat, kolikrát chcete."
+      "stadiumHint": "Stadion můžete přejmenovat, kolikrát chcete.",
+      "crest": {
+        "change": "Změnit znak",
+        "title": "Znak klubu",
+        "primary": "Hlavní barva",
+        "secondary": "Vedlejší barva",
+        "patternLabel": "Vzor",
+        "pattern": {
+          "split": "Půlky",
+          "band": "Pruh",
+          "sash": "Šerpa",
+          "diamond": "Kosočtverec"
+        },
+        "label": "Písmena",
+        "labelHint": "1 až 3 písmena nebo číslice",
+        "save": "Uložit znak"
+      }
     },
     "fixture": {
       "title": "Další zápas",

@@ -6,6 +6,7 @@ import type { PublicClubView } from "../api";
 import { online } from "../client";
 import { tracked } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
+import ClubCrestMark from "./ClubCrestMark";
 import ResourceState from "./ResourceState";
 import { sortSquad } from "./OnlineSquad";
 
@@ -35,7 +36,14 @@ function PublicClub({ club }: { club: PublicClubView }) {
   return (
     <div className="grid gap-6 xl:grid-cols-[22rem_minmax(0,1fr)]">
       <Card accent="primary">
-        <CardHeader>{profile.name}</CardHeader>
+        <CardHeader>
+          <span className="flex items-center gap-3">
+            <span className="h-12 w-12 shrink-0">
+              <ClubCrestMark profile={profile} />
+            </span>
+            {profile.name}
+          </span>
+        </CardHeader>
         <CardBody className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
           <p>
             {profile.city} · {t(`coach.regions.${profile.region}`)}

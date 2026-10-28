@@ -89,7 +89,23 @@
       "save": "Guardar",
       "stadium": "{{name}} ({{capacity}} asientos)",
       "stadiumLabel": "Nombre del estadio",
-      "stadiumHint": "Puedes renombrar el estadio tantas veces como quieras."
+      "stadiumHint": "Puedes renombrar el estadio tantas veces como quieras.",
+      "crest": {
+        "change": "Cambiar escudo",
+        "title": "Escudo del club",
+        "primary": "Color principal",
+        "secondary": "Color secundario",
+        "patternLabel": "Diseño",
+        "pattern": {
+          "split": "Mitades",
+          "band": "Franja",
+          "sash": "Banda",
+          "diamond": "Rombo"
+        },
+        "label": "Letras",
+        "labelHint": "De 1 a 3 letras o cifras",
+        "save": "Guardar escudo"
+      }
     },
     "fixture": {
       "title": "Próximo partido",

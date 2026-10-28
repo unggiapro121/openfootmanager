@@ -89,7 +89,23 @@
       "save": "Guardar",
       "stadium": "{{name}} ({{capacity}} lugares)",
       "stadiumLabel": "Nome do estádio",
-      "stadiumHint": "Pode mudar o nome do estádio as vezes que quiser."
+      "stadiumHint": "Pode mudar o nome do estádio as vezes que quiser.",
+      "crest": {
+        "change": "Mudar emblema",
+        "title": "Emblema do clube",
+        "primary": "Cor principal",
+        "secondary": "Cor secundária",
+        "patternLabel": "Padrão",
+        "pattern": {
+          "split": "Metades",
+          "band": "Faixa",
+          "sash": "Banda",
+          "diamond": "Losango"
+        },
+        "label": "Letras",
+        "labelHint": "1 a 3 letras ou algarismos",
+        "save": "Guardar emblema"
+      }
     },
     "fixture": {
       "title": "Próximo jogo",

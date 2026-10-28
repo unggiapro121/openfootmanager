@@ -89,7 +89,23 @@
       "save": "保存",
       "stadium": "{{name}}（{{capacity}} 个座位）",
       "stadiumLabel": "球场名称",
-      "stadiumHint": "球场名称可以随意修改，次数不限。"
+      "stadiumHint": "球场名称可以随意修改，次数不限。",
+      "crest": {
+        "change": "更换队徽",
+        "title": "俱乐部队徽",
+        "primary": "主色",
+        "secondary": "副色",
+        "patternLabel": "图案",
+        "pattern": {
+          "split": "对半",
+          "band": "横条",
+          "sash": "斜带",
+          "diamond": "菱形"
+        },
+        "label": "字母",
+        "labelHint": "1 到 3 个字母或数字",
+        "save": "保存队徽"
+      }
     },
     "fixture": {
       "title": "下一场比赛",

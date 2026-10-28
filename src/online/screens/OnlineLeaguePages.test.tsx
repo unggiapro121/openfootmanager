@@ -284,4 +284,25 @@ describe("a settled fixture", () => {
     expect(screen.getByText("online.publicClub.botCoach")).toBeInTheDocument();
     expect(screen.getByLabelText("location")).toHaveTextContent("/online/clubs/club-2");
   });
+
+  // Given a club whose coach drew its crest,
+  // when its public page opens,
+  // then the page shows that crest by the club's name.
+  it("shows the crest the club's coach drew", async () => {
+    stage({
+      "GET v1/clubs/club-2": ok({
+        club: {
+          ...myClub().club,
+          id: "club-2",
+          name: "Sóng Biển Đà Nẵng",
+          crest: { primary: "#004d98", secondary: "#a50044", pattern: "split", label: "SB" },
+        },
+        formation: "4-4-2",
+        players: [],
+      }),
+    });
+    renderOnline("/online/clubs/club-2");
+
+    expect(await screen.findByText("SB")).toBeInTheDocument();
+  });
 });
