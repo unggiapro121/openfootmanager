@@ -83,10 +83,26 @@ const sent = (method: string, path: string) =>
     (request) => request.method === method && request.segments.join("/") === path,
   );
 
-/** The Use button of the card of `code`. */
-async function useButtonOf(code: string) {
-  const card = await screen.findByRole("article", { name: `online.items.${code}.name:${code}` });
-  return within(card).getByRole("button", { name: "online.inventory.use" });
+/** Opens the detail dialog of the tile of `code`. */
+async function openDetail(code: string) {
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: new RegExp(`^online\\.inventory\\.tileAria:online\\.items\\.${code}\\.name`),
+    }),
+  );
+  return screen.findByRole("dialog", { name: `online.items.${code}.name:${code}` });
+}
+
+/** The main action of a detail dialog. */
+const actionIn = (dialog: HTMLElement) =>
+  within(dialog).getByRole("button", {
+    name: /^online\.inventory\.action\./,
+  }) as HTMLButtonElement;
+
+/** Opens the use dialog of `code` through its detail. */
+async function openUse(code: string) {
+  fireEvent.click(actionIn(await openDetail(code)));
+  return screen.findByRole("dialog", { name: /^online\.items\.useTitle:/ });
 }
 
 beforeEach(() => {
@@ -101,50 +117,108 @@ afterEach(() => {
 describe("the inventory", () => {
   // Given a coach holding drinks, a recovery pack and a code this build does not know,
   // when the inventory opens,
-  // then the items show under their groups, the unknown one under Other by its code.
+  // then the items show under their groups with their counts, the unknown one under Other by its
+  // code, the pack with the club's uses today, and the items tab counts three kinds.
   it("shows each item under its group, an unknown code under Other", async () => {
     serve();
     renderOnline("/online/inventory");
 
     const condition = await screen.findByRole("region", {
-      name: "online.inventory.group.condition",
+      name: /^online\.inventory\.group\.condition/,
     });
-    expect(
-      within(condition).getByText("online.items.energyDrinkSmall.name:energyDrinkSmall"),
-    ).toBeTruthy();
-    const other = screen.getByRole("region", { name: "online.inventory.group.other" });
+    const drink = within(condition).getByRole("button", { name: /energyDrinkSmall/ });
+    expect(drink.getAttribute("aria-label")).toBe(
+      "online.inventory.tileAria:online.items.energyDrinkSmall.name:energyDrinkSmall|2",
+    );
+    const other = screen.getByRole("region", { name: /^online\.inventory\.group\.other/ });
     expect(within(other).getByText("online.items.mysteryBox.name:mysteryBox")).toBeTruthy();
-    expect(screen.getByText(/online\.inventory\.teamRecovery:0\|1/)).toBeTruthy();
+    expect(screen.getByText("online.inventory.usedToday:0|1")).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "online.inventory.tabHeldCount:3" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "online.inventory.toShopMore" })).toBeTruthy();
+  });
+
+  // Given a drink held in two rows, one expiring,
+  // when its detail opens,
+  // then it says how many are held, what it is used on and when each row expires.
+  it("shows the detail of an item", async () => {
+    serve({
+      "GET v1/me/items": ok(
+        inventory({
+          lines: [
+            {
+              itemCode: "energyDrinkSmall",
+              powerClass: "c",
+              total: 3,
+              stacks: [{ quantity: 1, expiresAt: "2099-03-01T00:00:00Z" }, { quantity: 2 }],
+            },
+          ],
+        }),
+      ),
+    });
+    renderOnline("/online/inventory");
+    const dialog = await openDetail("energyDrinkSmall");
+
+    expect(dialog.textContent).toContain("online.inventory.holding:3");
+    expect(dialog.textContent).toContain("online.shop.scope.player");
+    expect(dialog.textContent).toMatch(/online\.inventory\.expires:1\|/);
+    expect(dialog.textContent).toContain("online.inventory.neverExpires:2");
+    expect(actionIn(dialog).textContent).toBe("online.inventory.action.player");
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 
   // Given the nightly audit locked the coach's items,
-  // when the inventory opens,
-  // then a banner says so and every Use is off.
-  it("shows the lock and turns every use off", async () => {
+  // when the inventory opens and a drink's detail is opened,
+  // then a banner says so and the use is off.
+  it("shows the lock and turns the use off", async () => {
     serve({ "GET v1/me/items": ok(inventory({ locked: true })) });
     renderOnline("/online/inventory");
 
     expect((await screen.findByRole("alert")).textContent).toContain("online.inventory.locked");
-    for (const button of screen.getAllByRole("button", { name: "online.inventory.use" })) {
-      expect((button as HTMLButtonElement).disabled).toBe(true);
-    }
+    const dialog = await openDetail("energyDrinkSmall");
+    expect(actionIn(dialog).disabled).toBe(true);
+    expect(dialog.textContent).toContain("online.inventory.lockedShort");
   });
 
   // Given a season with no item rules (`limits` absent),
-  // when the inventory opens,
-  // then the condition items cannot be used, and say why.
+  // when a drink's detail opens,
+  // then it cannot be used, and says why.
   it("turns use off while the season has no item rules", async () => {
     serve({ "GET v1/me/items": ok(inventory({ limits: undefined })) });
     renderOnline("/online/inventory");
 
-    const use = await useButtonOf("energyDrinkSmall");
-    expect((use as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getAllByText("online.inventory.notThisSeason").length).toBeGreaterThan(0);
+    const dialog = await openDetail("energyDrinkSmall");
+    expect(actionIn(dialog).disabled).toBe(true);
+    expect(dialog.textContent).toContain("online.inventory.notThisSeason");
+  });
+
+  // Given the club already used its recovery pack today,
+  // when the pack's detail opens,
+  // then the day's limit shows as used and the use is off until the day turns.
+  it("turns the recovery pack off once the club used it today", async () => {
+    serve({
+      "GET v1/me/items": ok(
+        inventory({
+          limits: {
+            teamRecovery: { usedToday: 1, perDay: 1, nextAt: "2099-01-02T00:00:00Z" },
+            notes: [],
+            xpX2: { remaining: 0, max: 10 },
+          },
+        }),
+      ),
+    });
+    renderOnline("/online/inventory");
+    const dialog = await openDetail("teamRecoveryPack");
+
+    expect(dialog.textContent).toContain("online.inventory.dailyUsed:1|1");
+    expect(dialog.textContent).toMatch(/online\.inventory\.refreshAt:/);
+    expect(actionIn(dialog).textContent).toBe("online.inventory.action.usedToday");
+    expect(actionIn(dialog).disabled).toBe(true);
   });
 
   // Given a coach with no club,
-  // when the inventory opens,
-  // then the page opens, a drink cannot be used and links to taking a club, a note still can.
+  // when a drink's detail and then a note's open,
+  // then the drink cannot be used and links to taking a club; the note needs no club.
   it("opens without a club, items for a player or the club needing one", async () => {
     serve({
       "GET v1/clubs/mine": fail(404, "be.error.club.none"),
@@ -154,26 +228,65 @@ describe("the inventory", () => {
     });
     renderOnline("/online/inventory");
 
-    const drink = await useButtonOf("energyDrinkSmall");
-    expect((drink as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByText("online.inventory.needClub")).toBeTruthy();
-    expect(screen.getByRole("link", { name: "online.coins.takeOver" })).toBeTruthy();
-    const note = await useButtonOf("tacticalNoteBasic");
-    expect((note as HTMLButtonElement).disabled).toBe(false);
+    const drink = await openDetail("energyDrinkSmall");
+    expect(actionIn(drink).disabled).toBe(true);
+    expect(within(drink).getByText("online.inventory.needClub")).toBeTruthy();
+    expect(within(drink).getByRole("link", { name: "online.coins.takeOver" })).toBeTruthy();
+    fireEvent.click(within(drink).getAllByRole("button", { name: "common.close" })[0]);
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    const note = await openDetail("tacticalNoteBasic");
+    expect(within(note).queryByText("online.inventory.needClub")).toBeNull();
     expect(screen.getByLabelText("location").textContent).toBe("/online/inventory");
+  });
+
+  // Given a note, one style that banked its season's XP and one that did not,
+  // when the note's detail opens and the coach picks a style,
+  // then the full style cannot be picked, the use waits for a pick, then names the style.
+  it("picks the style a note is used on", async () => {
+    serve({
+      "GET v1/me/items": ok(
+        inventory({
+          lines: [line("tacticalNoteBasic")],
+          limits: {
+            notes: [
+              { style: "Attacking", usedXp: 300, limit: 500 },
+              { style: "Defensive", usedXp: 500, limit: 500 },
+            ],
+            xpX2: { remaining: 0, max: 10 },
+          },
+        }),
+      ),
+    });
+    renderOnline("/online/inventory");
+    const dialog = await openDetail("tacticalNoteBasic");
+
+    expect(actionIn(dialog).disabled).toBe(true);
+    expect(actionIn(dialog).textContent).toBe("online.inventory.action.pickStyle");
+    const full = within(dialog).getByRole("radio", { name: /common\.playStyles\.Defensive/ });
+    expect((full as HTMLInputElement).disabled).toBe(true);
+    const attacking = within(dialog).getByRole("radio", {
+      name: /common\.playStyles\.Attacking/,
+    });
+    expect(attacking.closest("label")?.textContent).toContain("online.inventory.styleXp:300|500");
+    fireEvent.click(attacking);
+    expect((attacking as HTMLInputElement).checked).toBe(true);
+    expect(actionIn(dialog).disabled).toBe(false);
+    expect(actionIn(dialog).textContent).toBe(
+      "online.inventory.action.style:common.playStyles.Attacking",
+    );
   });
 });
 
 describe("using an item", () => {
   // Given a drink and two players, one at full condition,
-  // when the coach opens its dialog and picks the full one, then the tired one,
+  // when the coach opens its use and picks the full one, then the tired one,
   // then the full one is dimmed and asks nothing, the tired one is previewed as `player:<id>`.
   it("previews the player chosen, never one already full", async () => {
     serve({ "GET v1/me/items/energyDrinkSmall/preview": ok(preview()) });
     renderOnline("/online/inventory");
-    fireEvent.click(await useButtonOf("energyDrinkSmall"));
+    const dialog = await openUse("energyDrinkSmall");
 
-    const dialog = await screen.findByRole("dialog");
     fireEvent.click(within(dialog).getByRole("button", { name: /Lê Văn Cường/ }));
     expect(within(dialog).getByText("online.items.reason.conditionFull")).toBeTruthy();
     expect(sent("GET", "v1/me/items/energyDrinkSmall/preview")).toHaveLength(0);
@@ -198,8 +311,7 @@ describe("using an item", () => {
       ),
     });
     renderOnline("/online/inventory");
-    fireEvent.click(await useButtonOf("energyDrinkSmall"));
-    const dialog = await screen.findByRole("dialog");
+    const dialog = await openUse("energyDrinkSmall");
     fireEvent.click(within(dialog).getByRole("button", { name: /Trần Văn Bình/ }));
 
     expect((await within(dialog).findByRole("note")).textContent).toBe(
@@ -212,7 +324,7 @@ describe("using an item", () => {
   });
 
   // Given the eleven locked for a match,
-  // when the recovery pack's dialog opens,
+  // when the recovery pack's use opens,
   // then it is previewed at once on the club, and the lock is one banner with the kick-off.
   it("previews a club item at once and shows the match lock as one banner", async () => {
     serve({
@@ -227,9 +339,8 @@ describe("using an item", () => {
       ),
     });
     renderOnline("/online/inventory");
-    fireEvent.click(await useButtonOf("teamRecoveryPack"));
+    const dialog = await openUse("teamRecoveryPack");
 
-    const dialog = await screen.findByRole("dialog");
     const banner = await within(dialog).findByRole("alert");
     expect(banner.textContent).toMatch(/^be\.error\.inventory\.targetMatchLocked:/);
     expect(banner.textContent).not.toContain("2099-01-02T15:00:00Z");
@@ -240,7 +351,8 @@ describe("using an item", () => {
 
   // Given a preview with nothing in the way,
   // when the coach confirms,
-  // then the use carries the same target in its body and a key, and the club is read again.
+  // then the use carries the same target in its body and a key, the club is read again, and a
+  // notice says what was used.
   it("uses the item on the target previewed", async () => {
     serve({
       "GET v1/me/items/energyDrinkSmall/preview": ok(preview()),
@@ -252,8 +364,7 @@ describe("using an item", () => {
       }),
     });
     renderOnline("/online/inventory");
-    fireEvent.click(await useButtonOf("energyDrinkSmall"));
-    const dialog = await screen.findByRole("dialog");
+    const dialog = await openUse("energyDrinkSmall");
     fireEvent.click(within(dialog).getByRole("button", { name: /Trần Văn Bình/ }));
     await within(dialog).findByText("online.items.preview.condition:Trần Văn Bình|60|75");
     const clubReads = sent("GET", "v1/clubs/mine").length;
@@ -265,7 +376,50 @@ describe("using an item", () => {
     expect(use.body).toEqual({ target: { kind: "player", playerId: TIRED.id } });
     expect(use.idempotencyKey).toBeTruthy();
     await waitFor(() => expect(sent("GET", "v1/clubs/mine").length).toBeGreaterThan(clubReads));
-    expect(screen.getByText(/^online\.items\.used:/)).toBeTruthy();
+    const notice = screen.getByText(/^online\.items\.used:/).closest("[role=status]");
+    expect(notice).toBeTruthy();
+  });
+
+  // Given a note and a style picked in its detail,
+  // when the coach uses it,
+  // then the use opens on that style and previews it.
+  it("opens the note's use on the style picked", async () => {
+    serve({
+      "GET v1/me/items": ok(
+        inventory({
+          lines: [line("tacticalNoteBasic")],
+          limits: {
+            notes: [{ style: "Attacking", usedXp: 0, limit: 500 }],
+            xpX2: { remaining: 0, max: 10 },
+          },
+        }),
+      ),
+      "GET v1/me/items/tacticalNoteBasic/preview": ok(
+        preview({
+          effect: {
+            kind: "mastery",
+            style: "Attacking",
+            xp: 100,
+            xpBefore: 0,
+            xpAfter: 100,
+            masteryBefore: 3,
+            masteryAfter: 4,
+          },
+          limits: { seasonUsed: 0, seasonLimit: 500 },
+        }),
+      ),
+    });
+    renderOnline("/online/inventory");
+    const detail = await openDetail("tacticalNoteBasic");
+    fireEvent.click(within(detail).getByRole("radio", { name: /common\.playStyles\.Attacking/ }));
+    fireEvent.click(actionIn(detail));
+
+    await screen.findByRole("dialog", { name: /^online\.items\.useTitle:/ });
+    await waitFor(() =>
+      expect(sent("GET", "v1/me/items/tacticalNoteBasic/preview")[0]?.query).toEqual([
+        ["target", "style:Attacking"],
+      ]),
+    );
   });
 });
 

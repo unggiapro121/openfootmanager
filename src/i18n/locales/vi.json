@@ -835,7 +835,6 @@
       "notOnServer": "Máy chủ này chưa có vật phẩm.",
       "locked": "Kho đồ của bạn tạm khoá để kiểm tra; vật phẩm vẫn còn nguyên. Đổi tên bằng thẻ và dùng vật phẩm mở lại khi kiểm xong.",
       "lockedShort": "Kho đồ tạm khoá để kiểm tra.",
-      "tabHeld": "Vật phẩm",
       "tabHistory": "Lịch sử",
       "empty": "Kho đồ trống.",
       "toShop": "Tới Cửa hàng",
@@ -850,12 +849,8 @@
       "stacks": "Các dòng theo hạn",
       "expires": "×{{count}} · hết hạn {{date}}",
       "neverExpires": "×{{count}} · không hết hạn",
-      "teamRecovery": "Hôm nay CLB đã dùng {{used}}/{{perDay}} · làm mới lúc {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP từ sổ tay mùa này",
-      "xpX2": "Trận x2 XP đang chờ: {{remaining}}/{{max}}",
       "notThisSeason": "Chưa dùng được ở mùa này.",
       "needClub": "Cần có CLB.",
-      "use": "Dùng",
       "renameAt": "Đổi tên ở trang Đội hình hoặc thẻ CLB",
       "academySoon": "Dùng ở Lò đào tạo (sắp có)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "SuperAdmin thu lại"
       },
       "historyEmpty": "Chưa có bút toán vật phẩm nào.",
-      "expiredNotShown": "Vật phẩm hết hạn không hiện ở đây."
+      "expiredNotShown": "Vật phẩm hết hạn không hiện ở đây.",
+      "tabHeldCount": "Vật phẩm ({{count}})",
+      "toShopMore": "Mua thêm ở Cửa hàng",
+      "tileAria": "{{item}}, số lượng {{count}}. Xem chi tiết",
+      "usedToday": "Hôm nay CLB đã dùng {{used}}/{{perDay}}",
+      "holding": "Đang có ×{{count}}",
+      "expiry": "Hạn dùng",
+      "neverExpire": "Không hết hạn",
+      "dailyLimit": "Giới hạn mỗi ngày",
+      "dailyUsed": "CLB đã dùng {{used}}/{{perDay}} hôm nay",
+      "refreshAt": "Làm mới lúc {{time}}",
+      "xpWaiting": "Trận x2 XP đang chờ",
+      "pickStyle": "Chọn lối chơi nhận XP",
+      "styleCap": "Mỗi lối chơi nhận tối đa {{limit}} XP từ sổ tay mỗi mùa.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Cấp {{level}}",
+      "action": {
+        "player": "Chọn cầu thủ để dùng",
+        "club": "Dùng cho đội hình",
+        "account": "Kích hoạt",
+        "pickStyle": "Chọn lối chơi để dùng",
+        "style": "Dùng cho {{style}}",
+        "usedToday": "Đã dùng hôm nay",
+        "rename": "Đổi tên ở trang Đội hình"
+      }
     },
     "shop": {
       "notOnServer": "Máy chủ này chưa có cửa hàng.",

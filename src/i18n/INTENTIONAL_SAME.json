@@ -31,7 +31,8 @@
     "worldEditor.teamId",
     "worldEditor.staffId",
     "match.masteryGain",
-    "manager.masteryXp"
+    "manager.masteryXp",
+    "online.inventory.styleXp"
   ],
   "de": [
     "online.finance.kind.settle",
@@ -775,7 +776,8 @@
     "match.eventTypes.Offside",
     "match.commentary.Offside.headline",
     "coachServer.email",
-    "online.shop.total"
+    "online.shop.total",
+    "online.inventory.styleLevel"
   ],
   "vi": [
     "online.market.ai",

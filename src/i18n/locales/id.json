@@ -835,7 +835,6 @@
       "notOnServer": "Server ini belum punya barang.",
       "locked": "Barangmu dikunci selama pemeriksaan; tidak ada yang hilang. Ganti nama dengan kartu dan pemakaian barang dibuka lagi setelah pemeriksaan selesai.",
       "lockedShort": "Barangmu dikunci selama pemeriksaan.",
-      "tabHeld": "Barang",
       "tabHistory": "Riwayat",
       "empty": "Inventarismu kosong.",
       "toShop": "Ke toko",
@@ -850,12 +849,8 @@
       "stacks": "Baris menurut masa berlaku",
       "expires": "×{{count}} · kedaluwarsa {{date}}",
       "neverExpires": "×{{count}} · tidak kedaluwarsa",
-      "teamRecovery": "Klubmu sudah memakai {{used}}/{{perDay}} hari ini · direset {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP dari catatan musim ini",
-      "xpX2": "Pertandingan XP ganda menunggu: {{remaining}}/{{max}}",
       "notThisSeason": "Tidak bisa dipakai musim ini.",
       "needClub": "Kamu perlu klub.",
-      "use": "Pakai",
       "renameAt": "Ganti nama dari halaman skuad atau kartu klub",
       "academySoon": "Dipakai di akademi (segera)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Ditarik administrator"
       },
       "historyEmpty": "Belum ada catatan barang.",
-      "expiredNotShown": "Barang yang kedaluwarsa tidak tampil di sini."
+      "expiredNotShown": "Barang yang kedaluwarsa tidak tampil di sini.",
+      "tabHeldCount": "Barang ({{count}})",
+      "toShopMore": "Beli lagi di toko",
+      "tileAria": "{{item}}, jumlah {{count}}. Lihat detail",
+      "usedToday": "Klub sudah memakai {{used}}/{{perDay}} hari ini",
+      "holding": "Dimiliki ×{{count}}",
+      "expiry": "Masa berlaku",
+      "neverExpire": "Tidak kedaluwarsa",
+      "dailyLimit": "Batas harian",
+      "dailyUsed": "Klub sudah memakai {{used}}/{{perDay}} hari ini",
+      "refreshAt": "Diatur ulang pukul {{time}}",
+      "xpWaiting": "Laga XP ganda yang menunggu",
+      "pickStyle": "Pilih gaya bermain yang menerima XP",
+      "styleCap": "Tiap gaya bermain menerima paling banyak {{limit}} XP dari catatan per musim.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Level {{level}}",
+      "action": {
+        "player": "Pilih pemain untuk dipakai",
+        "club": "Pakai untuk starting eleven",
+        "account": "Aktifkan",
+        "pickStyle": "Pilih gaya bermain untuk dipakai",
+        "style": "Pakai untuk {{style}}",
+        "usedToday": "Sudah dipakai hari ini",
+        "rename": "Ganti nama di skuad"
+      }
     },
     "shop": {
       "notOnServer": "Server ini belum punya toko.",
