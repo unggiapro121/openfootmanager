@@ -48,7 +48,9 @@
       "friendly": "Laga persahabatan",
       "finance": "Keuangan",
       "market": "Pasar",
-      "inbox": "Kotak masuk"
+      "inbox": "Kotak masuk",
+      "account": "Akun",
+      "coins": "Dompet koin"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -58,7 +60,8 @@
       "season": "Musim {{number}}",
       "seasonDay": "Musim {{number}} · Hari {{day}}/{{total}}",
       "nextKickoff": "Laga berikutnya dalam {{time}}",
-      "cash": "Kas klub: {{amount}}"
+      "cash": "Kas klub: {{amount}}",
+      "coins": "Saldo OFM Coin: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} h {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "Lelang dibatalkan",
         "adjust": "Penyesuaian",
         "reversal": "Pembalikan",
-        "grantReset": "Reset kas skuad baru"
+        "grantReset": "Reset kas skuad baru",
+        "coin_exchange": "Penukaran koin"
       },
       "ledger": "Buku besar",
       "ledgerEmpty": "Belum ada catatan.",
@@ -431,7 +435,8 @@
         "held": "ditahan"
       },
       "nextCost": "Level berikutnya: {{cost}}",
-      "upgraded": "{{facility}} ditingkatkan ke level {{level}}."
+      "upgraded": "{{facility}} ditingkatkan ke level {{level}}.",
+      "exchangeCoins": "Tukar koin"
     },
     "market": {
       "title": "Bursa transfer",
@@ -675,6 +680,44 @@
             "body": "{{count}} pemain senang dengan kehidupan di klub: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Koin belum dibuka di server ini.",
+      "negative": "Saldo koinmu di bawah nol ({{balance}}) karena sebuah isi ulang dikembalikan. Kamu tidak bisa memakai koin sampai saldo kembali nol atau lebih.",
+      "maybeLocked": "Jika sudah kembali nol dan masih tidak bisa memakai koin, koinmu mungkin dikunci selama diperiksa.",
+      "locked": "Koinmu dikunci selama diperiksa. Hubungi dukungan.",
+      "balance": "Saldo",
+      "exchange": "Tukar ke uang klub",
+      "closed": "Penukaran koin belum dibuka.",
+      "rate": "1 koin = {{cash}}",
+      "priceList": "Daftar harga no. {{version}}",
+      "today": "Sisa penukaran hari ini: {{left}} / {{limit}} · diatur ulang {{time}}",
+      "amount": "Koin yang ditukar",
+      "all": "Semua",
+      "preview": "{{club}} menerima {{cash}}",
+      "needClub": "Kamu perlu klub untuk menerima uangnya.",
+      "takeOver": "Ambil alih klub",
+      "exchangeButton": "Tukar",
+      "confirmTitle": "Tukar koin?",
+      "rateLabel": "Kurs (per koin)",
+      "priceListLabel": "Daftar harga",
+      "clubLabel": "Klub penerima",
+      "cashLabel": "Klub menerima",
+      "oneWay": "Hanya satu arah: uang klub tidak bisa diubah kembali menjadi koin.",
+      "reviewPrices": "Periksa kurs baru sebelum mengonfirmasi.",
+      "confirm": "Konfirmasi penukaran",
+      "exchanged": "Penukaran selesai: {{coins}} OFM Coin → {{cash}}.",
+      "lines": "Riwayat koin",
+      "linesEmpty": "Belum ada pergerakan koin.",
+      "more": "Tampilkan lebih banyak",
+      "kind": {
+        "coin_exchange": "Ditukar ke uang klub",
+        "coin_adjust": "Penyesuaian oleh dukungan",
+        "coin_clawback": "Ditarik setelah pengembalian dana",
+        "reversal": "Pembalikan",
+        "item_purchase": "Pembelian di toko",
+        "item_refund": "Pengembalian dana toko"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "Keuangan klub dikunci selama diperiksa: untuk sementara tidak bisa menawar, menjual, atau meningkatkan fasilitas.",
         "insufficientFunds": "Kas klub tidak cukup untuk ini.",
         "facilityAtTop": "Fasilitas ini sudah di level tertinggi.",
-        "wageBudgetExceeded": "Setelah tawaran ini, klub harus tetap punya kas untuk tujuh hari gaji."
+        "wageBudgetExceeded": "Setelah tawaran ini, klub harus tetap punya kas untuk tujuh hari gaji.",
+        "insufficientCoin": "Koinmu tidak cukup untuk ini.",
+        "coinDisabled": "Penukaran koin belum dibuka.",
+        "priceChanged": "Daftar harga baru saja berubah (sekarang no. {{current}}).",
+        "coinBalanceNegative": "Saldo koinmu di bawah nol: tidak ada koin yang bisa dipakai sampai kembali nol atau lebih.",
+        "exchangeLimitReached": "Hari ini hanya bisa menukar {{remaining}} lagi.",
+        "coinLocked": "Koinmu dikunci selama diperiksa."
       },
       "auction": {
         "marketClosed": "Bursa transfer ditutup musim ini.",
@@ -4342,6 +4391,35 @@
         "listed": "Pemain yang sedang dilelang tetap memakai namanya sampai lelang selesai.",
         "shirtTaken": "Pemain lain sudah memakai nomor itu.",
         "releaseSquadTooSmall": "Melepas dia akan membuat skuadmu kurang dari {{squadMin}} pemain."
+      },
+      "inventory": {
+        "disabled": "Item tidak dipakai musim ini.",
+        "itemNotFound": "Item ini tidak cukup (kamu punya {{held}}).",
+        "stackFull": "Inventarismu tidak muat sebanyak itu: paling banyak {{max}} lagi.",
+        "locked": "Item-mu dikunci selama diperiksa.",
+        "grantLimitReached": "Item ini sudah mencapai batas musim dari sumber ini ({{limit}}).",
+        "notUsableHere": "Item ini dipakai di tempat lain ({{use}}).",
+        "wrongTarget": "Item ini tidak berpengaruh pada sasaran itu ({{reason}}).",
+        "targetMatchLocked": "Susunan pemain dikunci untuk laga yang dimulai {{kickoffAt}}.",
+        "dailyLimitReached": "Batas harian item ini tercapai; dibuka lagi {{nextAt}}.",
+        "seasonLimitReached": "Catatan studi menambah paling banyak {{limit}} XP per gaya per musim; sisa {{remaining}}.",
+        "effectLimitReached": "XP ganda mencakup paling banyak {{max}} laga berikutnya; sudah ada {{remaining}}."
+      },
+      "academy": {
+        "disabled": "Akademi muda tidak dibuka musim ini.",
+        "tripOpen": "Klubmu sudah punya perjalanan pemandu yang berjalan atau laporan yang belum dipilih ({{tripId}}).",
+        "tripLimitReached": "Perjalanan pemandu musim ini sudah habis: {{sent}} dari {{limit}}.",
+        "eliteTripLimitReached": "Perjalanan elite musim ini sudah habis: {{sent}} dari {{limit}}.",
+        "tripNotPending": "Perjalanan pemandu ini sudah tidak berjalan.",
+        "tripNotReady": "Pemandu bakat masih di luar sampai {{readyAt}}.",
+        "tripClosed": "Laporan pemandu ini sudah ditutup.",
+        "notFound": "Perjalanan atau pemain muda ini bukan milik klubmu.",
+        "candidateUnknown": "Pemain muda itu tidak ada di laporan pemandu ini.",
+        "noSlot": "Akademi hanya punya {{free}} tempat kosong."
+      },
+      "shop": {
+        "quantityInvalid": "Beli antara 1 dan 99 sekaligus.",
+        "itemNotSold": "Item ini sedang tidak dijual."
       }
     },
     "sender": {

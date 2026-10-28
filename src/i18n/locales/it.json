@@ -48,7 +48,9 @@
       "friendly": "Amichevoli",
       "finance": "Finanze",
       "market": "Mercato",
-      "inbox": "Posta in arrivo"
+      "inbox": "Posta in arrivo",
+      "account": "Account",
+      "coins": "Portafoglio monete"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -58,7 +60,8 @@
       "season": "Stagione {{number}}",
       "seasonDay": "Stagione {{number}} · Giorno {{day}}/{{total}}",
       "nextKickoff": "Prossima partita tra {{time}}",
-      "cash": "Liquidità del club: {{amount}}"
+      "cash": "Liquidità del club: {{amount}}",
+      "coins": "Saldo OFM Coin: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} g {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "Aste annullate",
         "adjust": "Rettifiche",
         "reversal": "Storni",
-        "grantReset": "Azzeramento con la nuova rosa"
+        "grantReset": "Azzeramento con la nuova rosa",
+        "coin_exchange": "Cambio monete"
       },
       "ledger": "Movimenti",
       "ledgerEmpty": "Ancora nessun movimento.",
@@ -431,7 +435,8 @@
         "held": "bloccato"
       },
       "nextCost": "Livello successivo: {{cost}}",
-      "upgraded": "{{facility}} migliorato al livello {{level}}."
+      "upgraded": "{{facility}} migliorato al livello {{level}}.",
+      "exchangeCoins": "Cambia monete"
     },
     "market": {
       "title": "Calciomercato",
@@ -675,6 +680,44 @@
             "body": "{{count}} giocatore/i sono entusiasti della vita nel club: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Le monete non sono ancora disponibili su questo server.",
+      "negative": "Il tuo saldo monete è sotto zero ({{balance}}) perché una ricarica è stata rimborsata. Non puoi spendere monete finché il saldo non torna a zero o più.",
+      "maybeLocked": "Se torna a zero e non puoi ancora spendere monete, potrebbero essere bloccate durante un controllo.",
+      "locked": "Le tue monete sono bloccate durante un controllo. Contatta l'assistenza.",
+      "balance": "Saldo",
+      "exchange": "Cambia in denaro del club",
+      "closed": "Il cambio monete non è ancora aperto.",
+      "rate": "1 moneta = {{cash}}",
+      "priceList": "Listino n. {{version}}",
+      "today": "Ancora cambiabili oggi: {{left}} / {{limit}} · si rinnova {{time}}",
+      "amount": "Monete da cambiare",
+      "all": "Tutte",
+      "preview": "{{club}} riceve {{cash}}",
+      "needClub": "Ti serve un club per ricevere il denaro.",
+      "takeOver": "Prendi un club",
+      "exchangeButton": "Cambia",
+      "confirmTitle": "Cambiare monete?",
+      "rateLabel": "Tasso (per moneta)",
+      "priceListLabel": "Listino",
+      "clubLabel": "Club che riceve",
+      "cashLabel": "Il club riceve",
+      "oneWay": "Solo in un senso: il denaro del club non torna mai monete.",
+      "reviewPrices": "Controlla il nuovo tasso prima di confermare.",
+      "confirm": "Conferma cambio",
+      "exchanged": "Cambio fatto: {{coins}} OFM Coin → {{cash}}.",
+      "lines": "Storico monete",
+      "linesEmpty": "Nessun movimento di monete finora.",
+      "more": "Mostra altro",
+      "kind": {
+        "coin_exchange": "Cambiate in denaro del club",
+        "coin_adjust": "Rettifica dell'assistenza",
+        "coin_clawback": "Riprese dopo un rimborso",
+        "reversal": "Storno",
+        "item_purchase": "Acquisto nel negozio",
+        "item_refund": "Rimborso del negozio"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "Le finanze del club sono bloccate per un controllo: per ora niente offerte, vendite o miglioramenti.",
         "insufficientFunds": "Il club non ha abbastanza liquidità per questo.",
         "facilityAtTop": "Questa struttura è già al livello massimo.",
-        "wageBudgetExceeded": "Dopo questa offerta il club deve avere ancora liquidità per sette giorni di stipendi."
+        "wageBudgetExceeded": "Dopo questa offerta il club deve avere ancora liquidità per sette giorni di stipendi.",
+        "insufficientCoin": "Non hai abbastanza monete per questo.",
+        "coinDisabled": "Il cambio monete non è ancora aperto.",
+        "priceChanged": "Il listino è appena cambiato (ora n. {{current}}).",
+        "coinBalanceNegative": "Il tuo saldo monete è sotto zero: nessuna moneta può essere spesa finché non torna a zero o più.",
+        "exchangeLimitReached": "Oggi se ne possono cambiare solo altre {{remaining}}.",
+        "coinLocked": "Le tue monete sono bloccate durante un controllo."
       },
       "auction": {
         "marketClosed": "Il mercato dei trasferimenti è chiuso in questa stagione.",
@@ -4342,6 +4391,35 @@
         "listed": "Un giocatore all'asta mantiene il suo nome fino alla fine dell'asta.",
         "shirtTaken": "Un altro giocatore indossa già quel numero.",
         "releaseSquadTooSmall": "Lasciarlo andare porterebbe la tua rosa sotto i {{squadMin}} giocatori."
+      },
+      "inventory": {
+        "disabled": "Gli oggetti non sono attivi in questa stagione.",
+        "itemNotFound": "Non hai abbastanza di questo oggetto (ne hai {{held}}).",
+        "stackFull": "L'inventario non ne contiene così tanti: al massimo altri {{max}}.",
+        "locked": "I tuoi oggetti sono bloccati durante un controllo.",
+        "grantLimitReached": "Questo oggetto ha raggiunto il limite stagionale da questa fonte ({{limit}}).",
+        "notUsableHere": "Questo oggetto si usa altrove ({{use}}).",
+        "wrongTarget": "Questo oggetto non ha effetto su quel bersaglio ({{reason}}).",
+        "targetMatchLocked": "La formazione è bloccata per la partita che inizia {{kickoffAt}}.",
+        "dailyLimitReached": "Il limite giornaliero di questo oggetto è raggiunto; si riapre {{nextAt}}.",
+        "seasonLimitReached": "Gli appunti di studio aggiungono al massimo {{limit}} XP per stile a stagione; ne restano {{remaining}}.",
+        "effectLimitReached": "La XP doppia copre al massimo {{max}} partite future; ce ne sono già {{remaining}}."
+      },
+      "academy": {
+        "disabled": "Il settore giovanile non è aperto in questa stagione.",
+        "tripOpen": "Il tuo club ha già una missione di osservazione in corso o un rapporto da scegliere ({{tripId}}).",
+        "tripLimitReached": "Le missioni di osservazione di questa stagione sono esaurite: {{sent}} su {{limit}}.",
+        "eliteTripLimitReached": "Le missioni d'élite di questa stagione sono esaurite: {{sent}} su {{limit}}.",
+        "tripNotPending": "Questa missione di osservazione non è più in corso.",
+        "tripNotReady": "Gli osservatori sono ancora in giro fino a {{readyAt}}.",
+        "tripClosed": "Questo rapporto di osservazione è chiuso.",
+        "notFound": "Questa missione o questo giovane non è del tuo club.",
+        "candidateUnknown": "Quel giovane non è in questo rapporto di osservazione.",
+        "noSlot": "Il settore giovanile ha solo {{free}} posti liberi."
+      },
+      "shop": {
+        "quantityInvalid": "Acquista tra 1 e 99 alla volta.",
+        "itemNotSold": "Questo oggetto non è in vendita al momento."
       }
     },
     "sender": {

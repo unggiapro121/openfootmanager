@@ -1,6 +1,6 @@
 import { type ComponentProps, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AlertTriangle, Lock } from "lucide-react";
 import FacilityUpgradeDialog from "../../components/finances/FacilityUpgradeDialog";
 import { FACILITY_DEFINITIONS } from "../../components/finances/FinancesTab.helpers";
@@ -154,6 +154,8 @@ function Figure({ label, value, color }: { label: string; value: string; color: 
 /** What the club holds and owes, then its wage bill, as the offline overview lays them out. */
 function Figures({ finance }: { finance: FinanceView }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const canExchange = useOnlineStore((state) => state.coins?.priceListVersion !== undefined);
   const perDay = Math.round((finance.weeklyWageBill * WEEKS_A_SEASON) / SEASON_DAYS);
   const net = finance.season.reduce((sum, line) => sum + line.amount, 0);
   return (
@@ -178,6 +180,13 @@ function Figures({ finance }: { finance: FinanceView }) {
               color={signedClass(net)}
             />
           </div>
+          {canExchange && (
+            <div className="mt-4 flex justify-end">
+              <Button size="sm" variant="outline" onClick={() => navigate("/online/coins")}>
+                {t("online.finance.exchangeCoins")}
+              </Button>
+            </div>
+          )}
         </CardBody>
       </Card>
       <Card>

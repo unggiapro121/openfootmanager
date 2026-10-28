@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import {
   Calendar,
+  Coins,
   Crosshair,
   Dumbbell,
   Gavel,
@@ -31,6 +32,9 @@ const CLUB_PAGES = [
   { path: "/online/market", label: "online.nav.market", icon: <Gavel /> },
   { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
 ];
+
+/** The person's own pages, shown with or without a club (C-7 C7-1): coins are not the club's. */
+const ACCOUNT_PAGES = [{ path: "/online/coins", label: "online.nav.coins", icon: <Coins /> }];
 
 /**
  * The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. Each
@@ -100,6 +104,19 @@ export default function OnlineSidebar() {
             <hr className="my-2 border-navy-700" />
           </>
         )}
+        <p className="px-3 pb-1 pt-1 font-heading text-[10px] uppercase tracking-widest text-gray-500">
+          {t("online.nav.account")}
+        </p>
+        {ACCOUNT_PAGES.map((page) => (
+          <NavItem
+            key={page.path}
+            icon={page.icon}
+            label={t(page.label)}
+            active={pathname === page.path}
+            collapsed={false}
+            onClick={() => navigate(page.path)}
+          />
+        ))}
         <NavItem
           icon={<UserRound />}
           label={t("online.nav.profile")}

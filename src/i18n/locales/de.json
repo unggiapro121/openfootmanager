@@ -48,7 +48,9 @@
       "friendly": "Freundschaftsspiele",
       "finance": "Finanzen",
       "market": "Markt",
-      "inbox": "Posteingang"
+      "inbox": "Posteingang",
+      "account": "Konto",
+      "coins": "Münzbörse"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -58,7 +60,8 @@
       "season": "Saison {{number}}",
       "seasonDay": "Saison {{number}} · Tag {{day}}/{{total}}",
       "nextKickoff": "Nächstes Spiel in {{time}}",
-      "cash": "Vereinskasse: {{amount}}"
+      "cash": "Vereinskasse: {{amount}}",
+      "coins": "OFM-Coin-Guthaben: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} T. {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "Abgebrochene Auktionen",
         "adjust": "Korrekturen",
         "reversal": "Stornierungen",
-        "grantReset": "Kassen-Reset mit neuem Kader"
+        "grantReset": "Kassen-Reset mit neuem Kader",
+        "coin_exchange": "Münztausch"
       },
       "ledger": "Buchungen",
       "ledgerEmpty": "Noch keine Buchungen.",
@@ -431,7 +435,8 @@
         "held": "reserviert"
       },
       "nextCost": "Nächste Stufe: {{cost}}",
-      "upgraded": "{{facility}} auf Stufe {{level}} ausgebaut."
+      "upgraded": "{{facility}} auf Stufe {{level}} ausgebaut.",
+      "exchangeCoins": "Münzen tauschen"
     },
     "market": {
       "title": "Transfermarkt",
@@ -675,6 +680,44 @@
             "body": "{{count}} Spieler sind begeistert vom Leben im Verein: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Münzen sind auf diesem Server noch nicht verfügbar.",
+      "negative": "Dein Münzguthaben liegt unter null ({{balance}}), weil eine Aufladung erstattet wurde. Du kannst keine Münzen ausgeben, bis das Guthaben wieder bei null oder darüber liegt.",
+      "maybeLocked": "Wenn es wieder bei null ist und du trotzdem nichts ausgeben kannst, sind die Münzen während einer Prüfung womöglich gesperrt.",
+      "locked": "Deine Münzen sind während einer Prüfung gesperrt. Wende dich an den Support.",
+      "balance": "Guthaben",
+      "exchange": "In Vereinsgeld tauschen",
+      "closed": "Der Münztausch ist noch nicht geöffnet.",
+      "rate": "1 Münze = {{cash}}",
+      "priceList": "Preisliste Nr. {{version}}",
+      "today": "Heute noch tauschbar: {{left}} / {{limit}} · neu ab {{time}}",
+      "amount": "Zu tauschende Münzen",
+      "all": "Alle",
+      "preview": "{{club}} erhält {{cash}}",
+      "needClub": "Du brauchst einen Verein, der das Geld erhält.",
+      "takeOver": "Verein übernehmen",
+      "exchangeButton": "Tauschen",
+      "confirmTitle": "Münzen tauschen?",
+      "rateLabel": "Kurs (pro Münze)",
+      "priceListLabel": "Preisliste",
+      "clubLabel": "Empfangender Verein",
+      "cashLabel": "Verein erhält",
+      "oneWay": "Nur in eine Richtung: Vereinsgeld wird nie wieder zu Münzen.",
+      "reviewPrices": "Prüfe den neuen Kurs, bevor du bestätigst.",
+      "confirm": "Tausch bestätigen",
+      "exchanged": "Tausch erledigt: {{coins}} OFM Coin → {{cash}}.",
+      "lines": "Münzverlauf",
+      "linesEmpty": "Noch keine Münzbewegung.",
+      "more": "Mehr anzeigen",
+      "kind": {
+        "coin_exchange": "In Vereinsgeld getauscht",
+        "coin_adjust": "Korrektur durch den Support",
+        "coin_clawback": "Nach Erstattung zurückgenommen",
+        "reversal": "Storno",
+        "item_purchase": "Kauf im Shop",
+        "item_refund": "Shop-Erstattung"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "Die Finanzen des Vereins sind zur Prüfung gesperrt: vorerst keine Gebote, Angebote oder Ausbauten.",
         "insufficientFunds": "Der Verein hat dafür nicht genug Geld.",
         "facilityAtTop": "Diese Einrichtung ist bereits auf der höchsten Stufe.",
-        "wageBudgetExceeded": "Nach diesem Gebot muss der Verein noch genug Geld für sieben Tage Gehälter haben."
+        "wageBudgetExceeded": "Nach diesem Gebot muss der Verein noch genug Geld für sieben Tage Gehälter haben.",
+        "insufficientCoin": "Du hast dafür nicht genug Münzen.",
+        "coinDisabled": "Der Münztausch ist noch nicht geöffnet.",
+        "priceChanged": "Die Preisliste hat sich gerade geändert (jetzt Nr. {{current}}).",
+        "coinBalanceNegative": "Dein Münzguthaben liegt unter null: Bis es wieder bei null oder darüber liegt, kann keine Münze ausgegeben werden.",
+        "exchangeLimitReached": "Heute können nur noch {{remaining}} getauscht werden.",
+        "coinLocked": "Deine Münzen sind während einer Prüfung gesperrt."
       },
       "auction": {
         "marketClosed": "Der Transfermarkt ist in dieser Saison geschlossen.",
@@ -4342,6 +4391,35 @@
         "listed": "Ein Spieler in einer Auktion behält seinen Namen, bis die Auktion endet.",
         "shirtTaken": "Diese Nummer trägt bereits ein anderer Spieler.",
         "releaseSquadTooSmall": "Wenn er geht, hätte dein Kader weniger als {{squadMin}} Spieler."
+      },
+      "inventory": {
+        "disabled": "Gegenstände sind in dieser Saison nicht aktiv.",
+        "itemNotFound": "Du hast nicht genug von diesem Gegenstand (vorhanden: {{held}}).",
+        "stackFull": "So viele passen nicht ins Inventar: höchstens {{max}} mehr.",
+        "locked": "Deine Gegenstände sind während einer Prüfung gesperrt.",
+        "grantLimitReached": "Dieser Gegenstand hat sein Saisonlimit aus dieser Quelle erreicht ({{limit}}).",
+        "notUsableHere": "Dieser Gegenstand wird woanders eingesetzt ({{use}}).",
+        "wrongTarget": "Dieser Gegenstand wirkt bei diesem Ziel nicht ({{reason}}).",
+        "targetMatchLocked": "Die Aufstellung ist für das Spiel mit Anstoß {{kickoffAt}} gesperrt.",
+        "dailyLimitReached": "Das Tageslimit für diesen Gegenstand ist erreicht; wieder möglich ab {{nextAt}}.",
+        "seasonLimitReached": "Lernnotizen bringen höchstens {{limit}} XP pro Stil und Saison; übrig: {{remaining}}.",
+        "effectLimitReached": "Doppelte XP deckt höchstens {{max}} kommende Spiele ab; schon {{remaining}}."
+      },
+      "academy": {
+        "disabled": "Die Jugendakademie ist in dieser Saison nicht geöffnet.",
+        "tripOpen": "Dein Verein hat schon eine Scoutingreise unterwegs oder einen offenen Bericht ({{tripId}}).",
+        "tripLimitReached": "Die Scoutingreisen dieser Saison sind aufgebraucht: {{sent}} von {{limit}}.",
+        "eliteTripLimitReached": "Die Elite-Reisen dieser Saison sind aufgebraucht: {{sent}} von {{limit}}.",
+        "tripNotPending": "Diese Scoutingreise ist nicht mehr unterwegs.",
+        "tripNotReady": "Die Scouts sind noch bis {{readyAt}} unterwegs.",
+        "tripClosed": "Dieser Scoutingbericht ist geschlossen.",
+        "notFound": "Diese Reise oder dieser Jugendspieler gehört nicht zu deinem Verein.",
+        "candidateUnknown": "Dieser Jugendspieler steht nicht in diesem Scoutingbericht.",
+        "noSlot": "Die Akademie hat nur {{free}} freie Plätze."
+      },
+      "shop": {
+        "quantityInvalid": "Kaufe zwischen 1 und 99 auf einmal.",
+        "itemNotSold": "Dieser Gegenstand ist gerade nicht im Angebot."
       }
     },
     "sender": {

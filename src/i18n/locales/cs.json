@@ -48,7 +48,9 @@
       "friendly": "Přátelská utkání",
       "finance": "Finance",
       "market": "Trh",
-      "inbox": "Schránka"
+      "inbox": "Schránka",
+      "account": "Účet",
+      "coins": "Peněženka mincí"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -58,7 +60,8 @@
       "season": "Sezóna {{number}}",
       "seasonDay": "Sezóna {{number}} · Den {{day}}/{{total}}",
       "nextKickoff": "Další zápas za {{time}}",
-      "cash": "Hotovost klubu: {{amount}}"
+      "cash": "Hotovost klubu: {{amount}}",
+      "coins": "Zůstatek OFM Coin: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} d {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "Zrušené aukce",
         "adjust": "Úpravy",
         "reversal": "Storna",
-        "grantReset": "Reset hotovosti s novým kádrem"
+        "grantReset": "Reset hotovosti s novým kádrem",
+        "coin_exchange": "Směna mincí"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -431,7 +435,8 @@
         "held": "blokováno"
       },
       "nextCost": "Další úroveň: {{cost}}",
-      "upgraded": "{{facility}} vylepšeno na úroveň {{level}}."
+      "upgraded": "{{facility}} vylepšeno na úroveň {{level}}.",
+      "exchangeCoins": "Směnit mince"
     },
     "market": {
       "title": "Přestupový trh",
@@ -675,6 +680,44 @@
             "body": "Hráčů, kteří jsou v klubu nadšení: {{count}}: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Mince na tomto serveru zatím nejsou k dispozici.",
+      "negative": "Zůstatek mincí je pod nulou ({{balance}}), protože dobití bylo vráceno. Mince nemůžeš utrácet, dokud se zůstatek nevrátí na nulu nebo výš.",
+      "maybeLocked": "Pokud je zpět na nule a stále nemůžeš utrácet, mince mohou být po dobu kontroly zamčené.",
+      "locked": "Tvoje mince jsou po dobu kontroly zamčené. Kontaktuj podporu.",
+      "balance": "Zůstatek",
+      "exchange": "Směnit za peníze klubu",
+      "closed": "Směna mincí zatím není otevřená.",
+      "rate": "1 mince = {{cash}}",
+      "priceList": "Ceník č. {{version}}",
+      "today": "Dnes lze ještě směnit: {{left}} / {{limit}} · obnoví se {{time}}",
+      "amount": "Mince ke směně",
+      "all": "Vše",
+      "preview": "{{club}} obdrží {{cash}}",
+      "needClub": "K přijetí peněz potřebuješ klub.",
+      "takeOver": "Převzít klub",
+      "exchangeButton": "Směnit",
+      "confirmTitle": "Směnit mince?",
+      "rateLabel": "Kurz (za minci)",
+      "priceListLabel": "Ceník",
+      "clubLabel": "Přijímající klub",
+      "cashLabel": "Klub obdrží",
+      "oneWay": "Jen jedním směrem: peníze klubu nelze změnit zpět na mince.",
+      "reviewPrices": "Před potvrzením zkontroluj nový kurz.",
+      "confirm": "Potvrdit směnu",
+      "exchanged": "Směna hotova: {{coins}} OFM Coin → {{cash}}.",
+      "lines": "Historie mincí",
+      "linesEmpty": "Zatím žádný pohyb mincí.",
+      "more": "Zobrazit další",
+      "kind": {
+        "coin_exchange": "Směněno za peníze klubu",
+        "coin_adjust": "Úprava podporou",
+        "coin_clawback": "Odebráno po vrácení platby",
+        "reversal": "Storno",
+        "item_purchase": "Nákup v obchodě",
+        "item_refund": "Vrácení platby v obchodě"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "Finance klubu jsou kvůli kontrole zablokované: zatím žádné nabídky, prodeje ani vylepšení.",
         "insufficientFunds": "Klub na to nemá dost hotovosti.",
         "facilityAtTop": "Toto zařízení už má nejvyšší úroveň.",
-        "wageBudgetExceeded": "Po této nabídce musí klubu zůstat dost hotovosti na sedm dní mezd."
+        "wageBudgetExceeded": "Po této nabídce musí klubu zůstat dost hotovosti na sedm dní mezd.",
+        "insufficientCoin": "Na tohle nemáš dost mincí.",
+        "coinDisabled": "Směna mincí zatím není otevřená.",
+        "priceChanged": "Ceník se právě změnil (nyní č. {{current}}).",
+        "coinBalanceNegative": "Zůstatek mincí je pod nulou: dokud se nevrátí na nulu nebo výš, nelze utratit žádnou minci.",
+        "exchangeLimitReached": "Dnes lze směnit už jen {{remaining}}.",
+        "coinLocked": "Tvoje mince jsou po dobu kontroly zamčené."
       },
       "auction": {
         "marketClosed": "Přestupní trh je v této sezóně zavřený.",
@@ -4342,6 +4391,35 @@
         "listed": "Hráč v aukci si ponechá jméno až do konce aukce.",
         "shirtTaken": "Toto číslo už nosí jiný hráč.",
         "releaseSquadTooSmall": "Kdyby odešel, soupiska by klesla pod {{squadMin}} hráčů."
+      },
+      "inventory": {
+        "disabled": "Předměty se v této sezóně nepoužívají.",
+        "itemNotFound": "Tohoto předmětu nemáš dost (máš {{held}}).",
+        "stackFull": "Tolik se do inventáře nevejde: nejvýš ještě {{max}}.",
+        "locked": "Tvoje předměty jsou po dobu kontroly zamčené.",
+        "grantLimitReached": "Tento předmět dosáhl sezónního limitu z tohoto zdroje ({{limit}}).",
+        "notUsableHere": "Tento předmět se používá jinde ({{use}}).",
+        "wrongTarget": "Tento předmět na tento cíl nepůsobí ({{reason}}).",
+        "targetMatchLocked": "Sestava je zamčená pro zápas s výkopem {{kickoffAt}}.",
+        "dailyLimitReached": "Denní limit tohoto předmětu je vyčerpán; znovu {{nextAt}}.",
+        "seasonLimitReached": "Studijní poznámky přidají nejvýš {{limit}} XP na styl za sezónu; zbývá {{remaining}}.",
+        "effectLimitReached": "Dvojnásobné XP pokryje nejvýš {{max}} příštích zápasů; už je jich {{remaining}}."
+      },
+      "academy": {
+        "disabled": "Mládežnická akademie v této sezóně není otevřená.",
+        "tripOpen": "Tvůj klub už má skautskou cestu v běhu nebo hlášení k výběru ({{tripId}}).",
+        "tripLimitReached": "Skautské cesty této sezóny jsou vyčerpané: {{sent}} z {{limit}}.",
+        "eliteTripLimitReached": "Elitní cesty této sezóny jsou vyčerpané: {{sent}} z {{limit}}.",
+        "tripNotPending": "Tato skautská cesta už neprobíhá.",
+        "tripNotReady": "Skauti jsou ještě na cestě do {{readyAt}}.",
+        "tripClosed": "Toto skautské hlášení je uzavřené.",
+        "notFound": "Tato cesta nebo tento mladík nepatří tvému klubu.",
+        "candidateUnknown": "Tento mladík v hlášení skautů není.",
+        "noSlot": "Akademie má volných jen {{free}} míst."
+      },
+      "shop": {
+        "quantityInvalid": "Kupuj 1 až 99 kusů najednou.",
+        "itemNotSold": "Tento předmět se teď neprodává."
       }
     },
     "sender": {
