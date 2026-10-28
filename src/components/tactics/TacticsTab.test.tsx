@@ -869,7 +869,9 @@ describe("TacticsTab", () => {
 
     render(<TacticsTab gameState={gameState} onSelectPlayer={vi.fn()} onGameUpdate={vi.fn()} />);
 
-    const card = screen.getByTestId("pitch-player-m4");
+    // The role picker lives in the starter's card, which opens on selection.
+    fireEvent.click(screen.getByTestId("pitch-player-m4"));
+    const card = screen.getByTestId("pitch-player-detail-m4");
     fireEvent.click(within(card).getByRole("combobox"));
 
     // Right-midfield roles are on offer; striker-only roles are not.

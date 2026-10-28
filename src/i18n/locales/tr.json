@@ -2096,6 +2096,14 @@
       "tier_4": "Elit",
       "lockedOption": "{{option}} (lisans seviyesi {{level}})",
       "lockedHint": "{{licence}} lisansıyla, {{level}}. teknik direktör seviyesinde açılır"
+    },
+    "tokenLabel": "{{name}}, {{position}}, reyting {{ovr}}",
+    "dutyShort": {
+      "captain": "Kaptan",
+      "vice_captain": "Kaptan yardımcısı",
+      "penalty_taker": "Penaltılar",
+      "free_kick_taker": "Serbest vuruşlar",
+      "corner_taker": "Kornerler"
     }
   },
   "training": {

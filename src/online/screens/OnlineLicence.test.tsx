@@ -125,9 +125,10 @@ describe("the coach's licence online", () => {
     await waitFor(() =>
       expect(server.requests.some((r) => r.segments.join("/") === "v1/licences")).toBe(true),
     );
-    const roles = await screen.findAllByRole("combobox", { name: "" });
-    const striker = roles[roles.length - 1];
-    fireEvent.click(striker);
+    // A starter's role picker opens in his card once he is selected.
+    fireEvent.click(await screen.findByTestId("pitch-player-Forward-1"));
+    const card = screen.getByTestId("pitch-player-detail-Forward-1");
+    fireEvent.click(within(card).getByRole("combobox", { name: "tactics.playerRoleLabel" }));
     expect(
       await screen.findByRole("option", { name: "tactics.licence.lockedOption:Poacher|2" }),
     ).toBeDisabled();

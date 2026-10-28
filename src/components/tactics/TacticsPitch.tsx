@@ -6,7 +6,7 @@ import { getPlayerOvr } from "../../lib/helpers";
 import type { TeamMatchRolesData } from "../../store/gameStore";
 import type { TacticsRosterPlayer } from "./tacticsBoardSource";
 import ContextMenu from "../ContextMenu";
-import { Badge, Card, PitchSurface, PitchToken, Select, fitToneOf, pitchRoleMarkers } from "../ui";
+import { Badge, Card, PitchSurface, PitchToken, fitToneOf, pitchRoleMarkers } from "../ui";
 import {
   isPlayerExactForSlot,
   isPlayerOutOfPosition,
@@ -18,8 +18,9 @@ import type { TacticsPitchSlot } from "./TacticsTab.helpers";
 import { buildTacticsPlayerContextMenuItems } from "./TacticsContextMenu.helpers";
 import type { PlayerRole, PositionRating, TacticsPhaseSettings } from "../../store/types";
 import { ratingAtPosition } from "../../lib/positionRatings";
-import { centreBackPairGap, getRoleOptions } from "../../lib/playerRoles";
-import { type TacticsLimits, licenceLock, lockedOption } from "./licenceLimits";
+import { centreBackPairGap } from "../../lib/playerRoles";
+import type { TacticsLimits } from "./licenceLimits";
+import TacticsTokenDetail from "./TacticsTokenDetail";
 
 interface TacticsPitchProps {
   benchPlayers?: TacticsRosterPlayer[];
@@ -91,25 +92,26 @@ function getPitchMarkerClassName(options: {
   const isHovered = hoveredSlot === slot.index;
 
   const base =
-    "absolute z-20 flex w-[6rem] -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center gap-0.5 rounded-2xl px-1 py-1 text-center transition-all active:cursor-grabbing";
+    "absolute flex w-26 -translate-x-1/2 -translate-y-1/2 cursor-grab flex-col items-center gap-1 rounded-2xl px-1 py-1 text-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white active:cursor-grabbing";
 
   if (isDragged) {
-    return `${base} opacity-60`;
+    return `${base} z-20 opacity-60`;
   }
 
+  // The selected starter shows it on his avatar ring and opens his card.
   if (isSelected) {
-    return `${base} bg-accent-500/15 ring-2 ring-accent-300/60 shadow-lg`;
+    return `${base} z-30`;
   }
 
   if (isComparing) {
-    return `${base} bg-primary-500/10 ring-2 ring-primary-300/50 shadow-lg`;
+    return `${base} z-20 bg-primary-500/10 ring-2 ring-primary-300/50 shadow-lg`;
   }
 
   if (isHovered) {
-    return `${base} bg-primary-500/10 shadow-lg`;
+    return `${base} z-20 bg-primary-500/10 shadow-lg`;
   }
 
-  return `${base} hover:-translate-y-[54%]`;
+  return `${base} z-20 hover:-translate-y-[54%]`;
 }
 
 function getSlotTargetClassName(isHovered: boolean, hasPlayer: boolean): string {
@@ -313,110 +315,108 @@ export default function TacticsPitch({
                   {player ? (
                     (() => {
                       const roleMarkers = pitchRoleMarkers(matchRoles, player.id);
+                      const isSelected = selectedPlayerId === player.id;
+                      const detailId = `pitch-player-detail-${player.id}`;
+                      const position = translatePositionAbbreviation(t, slot.position);
+                      const ovr = slotRating?.ovr ?? getPlayerOvr(player);
+                      const duties = roleMarkers.map((marker) =>
+                        t(`tactics.dutyShort.${marker.key}`),
+                      );
 
                       return (
-                        <ContextMenu
-                          items={buildTacticsPlayerContextMenuItems({
-                            isSelected: selectedPlayerId === player.id,
-                            matchRoles,
-                            onAssignBestFit,
-                            onAssignMatchRole,
-                            onClearSelection,
-                            onDemoteStarter,
-                            onOpenProfile: (playerId) => {
-                              if (onOpenPlayerProfile) {
-                                onOpenPlayerProfile(playerId);
-                              } else {
-                                onLineupPlayerClick(playerId, "xi");
-                              }
-                            },
-                            onPromoteBench,
-                            onTacticalSelect: onLineupPlayerClick,
-                            player,
-                            section: "xi",
-                            selectedPlayerId,
-                            t,
-                          })}
-                        >
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            draggable
-                            data-testid={`pitch-player-${player.id}`}
-                            onClick={() => onLineupPlayerClick(player.id, "xi")}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                onLineupPlayerClick(player.id, "xi");
-                              }
-                            }}
-                            onDragOver={(event) => onSlotDragOver(event, slot.index)}
-                            onDragLeave={() => onSlotDragLeave(slot.index)}
-                            onDrop={(event) => onSlotDrop(event, slot.index)}
-                            onDragStart={(event) => onDragStart(event, player.id, "xi", slot.index)}
-                            onDragEnd={onDragEnd}
-                            className={getPitchMarkerClassName({
-                              comparePlayerId,
-                              draggedPlayerId,
-                              hoveredSlot,
+                        <>
+                          <ContextMenu
+                            items={buildTacticsPlayerContextMenuItems({
+                              isSelected: selectedPlayerId === player.id,
+                              matchRoles,
+                              onAssignBestFit,
+                              onAssignMatchRole,
+                              onClearSelection,
+                              onDemoteStarter,
+                              onOpenProfile: (playerId) => {
+                                if (onOpenPlayerProfile) {
+                                  onOpenPlayerProfile(playerId);
+                                } else {
+                                  onLineupPlayerClick(playerId, "xi");
+                                }
+                              },
+                              onPromoteBench,
+                              onTacticalSelect: onLineupPlayerClick,
                               player,
+                              section: "xi",
                               selectedPlayerId,
-                              slot,
+                              t,
                             })}
                           >
-                            <PitchToken
-                              name={getPitchDisplayName(player)}
-                              positionAbbr={translatePositionAbbreviation(t, slot.position)}
-                              position={slot.position}
-                              ovr={slotRating?.ovr ?? getPlayerOvr(player)}
-                              condition={player.condition}
-                              fitTone={fitTone}
-                              avatar={player}
-                              markers={roleMarkers}
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              draggable
+                              data-testid={`pitch-player-${player.id}`}
+                              aria-label={[
+                                t("tactics.tokenLabel", {
+                                  name: player.match_name || player.full_name,
+                                  position,
+                                  ovr,
+                                }),
+                                ...duties,
+                              ].join(", ")}
+                              aria-expanded={isSelected}
+                              aria-controls={isSelected ? detailId : undefined}
+                              onClick={() => onLineupPlayerClick(player.id, "xi")}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  onLineupPlayerClick(player.id, "xi");
+                                }
+                              }}
+                              onDragOver={(event) => onSlotDragOver(event, slot.index)}
+                              onDragLeave={() => onSlotDragLeave(slot.index)}
+                              onDrop={(event) => onSlotDrop(event, slot.index)}
+                              onDragStart={(event) =>
+                                onDragStart(event, player.id, "xi", slot.index)
+                              }
+                              onDragEnd={onDragEnd}
+                              className={getPitchMarkerClassName({
+                                comparePlayerId,
+                                draggedPlayerId,
+                                hoveredSlot,
+                                player,
+                                selectedPlayerId,
+                                slot,
+                              })}
                             >
-                              {/* Role combobox */}
-                              {onRoleChange && (
-                                <div
-                                  draggable={false}
-                                  onMouseDown={(e) => e.stopPropagation()}
-                                  onKeyDown={(e) => e.stopPropagation()}
-                                  className="w-full"
-                                >
-                                  <Select
-                                    selectSize="sm"
-                                    variant="ghost"
-                                    fullWidth
-                                    value={playerRoles?.[player.id] ?? "Standard"}
-                                    onChange={(e) => {
-                                      onRoleChange(player.id, e.target.value as PlayerRole);
-                                    }}
-                                  >
-                                    {getRoleOptions(
-                                      // Roles follow the deployed slot, which is
-                                      // what the backend validates against —
-                                      // natural-position roles for an
-                                      // out-of-position player would be
-                                      // rejected and silently revert (#272).
-                                      slot.position,
-                                      playerRoles?.[player.id] ?? "Standard",
-                                    ).map((role) => {
-                                      const label = t(`tactics.playerRoles.${role}`, role);
-                                      const lock = licenceLock(limits, {
-                                        kind: "role",
-                                        value: role,
-                                      });
-                                      return (
-                                        <option key={role} value={role} disabled={lock !== null}>
-                                          {lock ? lockedOption(t, label, lock) : label}
-                                        </option>
-                                      );
-                                    })}
-                                  </Select>
-                                </div>
-                              )}
-                            </PitchToken>
-                          </div>
-                        </ContextMenu>
+                              <PitchToken
+                                name={getPitchDisplayName(player)}
+                                positionAbbr={translatePositionAbbreviation(t, slot.position)}
+                                position={slot.position}
+                                ovr={slotRating?.ovr ?? getPlayerOvr(player)}
+                                condition={player.condition}
+                                fitTone={fitTone}
+                                avatar={player}
+                                markers={roleMarkers}
+                                layout="stacked"
+                                selected={isSelected}
+                              />
+                            </div>
+                          </ContextMenu>
+                          {isSelected ? (
+                            <TacticsTokenDetail
+                              id={detailId}
+                              playerId={player.id}
+                              playerName={player.match_name || player.full_name}
+                              condition={player.condition}
+                              slotPosition={slot.position}
+                              slotX={slot.x}
+                              slotY={slot.y}
+                              role={playerRoles?.[player.id] ?? "Standard"}
+                              markers={roleMarkers}
+                              limits={limits}
+                              onRoleChange={onRoleChange}
+                              onClose={onClearSelection}
+                            />
+                          ) : null}
+                        </>
                       );
                     })()
                   ) : (
