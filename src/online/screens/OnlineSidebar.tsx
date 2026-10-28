@@ -75,7 +75,12 @@ export default function OnlineSidebar() {
         {clubName && <p className="mt-3 text-sm font-semibold text-primary-400">{clubName}</p>}
       </div>
 
-      <nav aria-label={t("online.nav.label")} className="flex flex-1 flex-col gap-1 px-3 py-4">
+      <nav
+        aria-label={t("online.nav.label")}
+        // min-h-0 lets the list shrink inside the screen-high panel and scroll
+        // there; without it, a short window spills the entries below the panel.
+        className="scrollbar-thin scrollbar-thumb-navy-600 scrollbar-track-transparent flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-4"
+      >
         <NavItem
           icon={<LayoutDashboard />}
           label={t("online.nav.overview")}
