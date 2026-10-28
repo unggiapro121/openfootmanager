@@ -835,7 +835,6 @@
       "notOnServer": "Bu sunucuda henüz eşya yok.",
       "locked": "Eşyaların kontrol sırasında kilitli; hiçbir şey kaybolmaz. Kartla ad değiştirme ve eşya kullanma, kontrol bitince yeniden açılır.",
       "lockedShort": "Eşyaların kontrol sırasında kilitli.",
-      "tabHeld": "Eşyalar",
       "tabHistory": "Geçmiş",
       "empty": "Envanterin boş.",
       "toShop": "Mağazaya git",
@@ -850,12 +849,8 @@
       "stacks": "Son kullanma tarihine göre satırlar",
       "expires": "×{{count}} · {{date}} tarihinde sona erer",
       "neverExpires": "×{{count}} · süresiz",
-      "teamRecovery": "Kulübün bugün {{used}}/{{perDay}} kullandı · sıfırlanma {{time}}",
-      "noteXp": "{{style}}: bu sezon notlardan {{used}}/{{limit}} XP",
-      "xpX2": "Bekleyen çift XP maçları: {{remaining}}/{{max}}",
       "notThisSeason": "Bu sezon kullanılamaz.",
       "needClub": "Bir kulübe ihtiyacın var.",
-      "use": "Kullan",
       "renameAt": "Adı kadro sayfasından ya da kulüp kartından değiştir",
       "academySoon": "Altyapıda kullanılır (yakında)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Bir yönetici geri aldı"
       },
       "historyEmpty": "Henüz eşya hareketi yok.",
-      "expiredNotShown": "Süresi dolan eşyalar burada görünmez."
+      "expiredNotShown": "Süresi dolan eşyalar burada görünmez.",
+      "tabHeldCount": "Eşyalar ({{count}})",
+      "toShopMore": "Mağazadan daha fazla al",
+      "tileAria": "{{item}}, miktar {{count}}. Ayrıntıları göster",
+      "usedToday": "Kulüp bugün {{used}}/{{perDay}} kullandı",
+      "holding": "Elinde ×{{count}}",
+      "expiry": "Son kullanma",
+      "neverExpire": "Süresi dolmaz",
+      "dailyLimit": "Günlük sınır",
+      "dailyUsed": "Kulüp bugün {{used}}/{{perDay}} kullandı",
+      "refreshAt": "{{time}} saatinde yenilenir",
+      "xpWaiting": "Bekleyen çift XP maçları",
+      "pickStyle": "XP alacak oyun tarzını seç",
+      "styleCap": "Her oyun tarzı sezon başına notlardan en fazla {{limit}} XP alır.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Seviye {{level}}",
+      "action": {
+        "player": "Kullanmak için oyuncu seç",
+        "club": "İlk on bire kullan",
+        "account": "Etkinleştir",
+        "pickStyle": "Kullanmak için oyun tarzı seç",
+        "style": "{{style}} için kullan",
+        "usedToday": "Bugün kullanıldı",
+        "rename": "Kadroda yeniden adlandır"
+      }
     },
     "shop": {
       "notOnServer": "Bu sunucuda henüz mağaza yok.",

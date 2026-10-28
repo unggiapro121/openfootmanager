@@ -1,8 +1,6 @@
 import type { TFunction } from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import DashboardModalFrame from "../../../components/dashboard/DashboardModalFrame";
-import { Button } from "../../../components/ui";
 import type {
   ItemEffectView,
   ItemPreviewView,
@@ -16,6 +14,7 @@ import { OnlineApiError } from "../../errors";
 import { formatMoment } from "../../format";
 import { refreshClub, refreshItems, tracked, useOnlineStore } from "../../store/onlineStore";
 import { useActionKey } from "../useActionKey";
+import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "./ItemDialogFrame";
 import {
   isMedkit,
   itemCodeText,
@@ -149,7 +148,7 @@ function limitLines(t: TFunction, language: string, limits: ItemUseLimitsView): 
 }
 
 /** The coach's styles, for a study note's picker; read when the dialog opens. */
-function useStyles(kind: TargetKind | undefined): StyleMasteryView[] {
+export function useStyles(kind: TargetKind | undefined): StyleMasteryView[] {
   const [styles, setStyles] = useState<StyleMasteryView[]>([]);
   useEffect(() => {
     if (kind !== "style") return;
@@ -261,99 +260,96 @@ export default function UseItemDialog({
   };
 
   return (
-    <DashboardModalFrame maxWidthClassName="max-w-lg">
-      <div role="dialog" aria-modal="true" aria-labelledby="use-item-title" className="space-y-4">
-        <h3
-          id="use-item-title"
-          className="font-heading text-lg font-bold text-gray-900 dark:text-gray-100"
-        >
-          {t("online.items.useTitle", { item: itemName(t, code) })}
-        </h3>
-        {choices.length > 0 && (
-          <fieldset className="space-y-1">
-            <legend className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
-              {t(kind === "style" ? "online.items.pickStyle" : "online.items.pickPlayer")}
-            </legend>
-            <ul className="max-h-64 space-y-1 overflow-y-auto">
-              {choices.map((choice) => {
-                const chosen = JSON.stringify(choice.target) === JSON.stringify(target);
-                return (
-                  <li key={choice.key}>
-                    <button
-                      type="button"
-                      aria-pressed={chosen}
-                      onClick={() => {
-                        if (!choice.dimmed) setTarget(choice.target);
-                      }}
-                      className={`flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${
-                        chosen
-                          ? "bg-primary-50 font-semibold text-primary-700 dark:bg-primary-500/10 dark:text-primary-300"
-                          : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-navy-700"
-                      } ${choice.dimmed ? "opacity-50" : ""}`}
-                    >
-                      <span>{choice.label}</span>
-                      {choice.dimmed && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {choice.dimmed}
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </fieldset>
-        )}
-        {target && (
-          <div aria-live="polite" className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-            {matchLocked && refusal && (
-              <p
-                role="alert"
-                className="rounded-md border border-accent-400/50 bg-accent-50 px-3 py-2 dark:bg-accent-500/10"
-              >
-                {itemCodeText(t, i18n.language, refusal.code, refusal.params)}
+    <ItemDialogFrame
+      code={code}
+      title={t("online.items.useTitle", { item: itemName(t, code) })}
+      busy={busy}
+      onClose={onClose}
+    >
+      {choices.length > 0 && (
+        <fieldset className="space-y-1">
+          <legend className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {t(kind === "style" ? "online.items.pickStyle" : "online.items.pickPlayer")}
+          </legend>
+          <ul className="max-h-64 space-y-1 overflow-y-auto">
+            {choices.map((choice) => {
+              const chosen = JSON.stringify(choice.target) === JSON.stringify(target);
+              return (
+                <li key={choice.key}>
+                  <button
+                    type="button"
+                    aria-pressed={chosen}
+                    onClick={() => {
+                      if (!choice.dimmed) setTarget(choice.target);
+                    }}
+                    className={`flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${
+                      chosen
+                        ? "bg-primary-50 font-semibold text-primary-700 dark:bg-primary-500/10 dark:text-primary-300"
+                        : "text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-navy-700"
+                    } ${choice.dimmed ? "opacity-50" : ""}`}
+                  >
+                    <span>{choice.label}</span>
+                    {choice.dimmed && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {choice.dimmed}
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </fieldset>
+      )}
+      {target && (
+        <div aria-live="polite" className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
+          {matchLocked && refusal && (
+            <p
+              role="alert"
+              className="rounded-md border border-accent-400/50 bg-accent-50 px-3 py-2 dark:bg-accent-500/10"
+            >
+              {itemCodeText(t, i18n.language, refusal.code, refusal.params)}
+            </p>
+          )}
+          {preview === null && previewError === null && <p>{t("online.items.previewing")}</p>}
+          {previewError !== null && (
+            <p role="alert" className="text-red-600 dark:text-red-400">
+              {itemsErrorText(t, i18n.language, previewError)}
+            </p>
+          )}
+          {preview?.effect &&
+            effectLines(t, preview.effect, players).map((line) => <p key={line}>{line}</p>)}
+          {preview &&
+            limitLines(t, i18n.language, preview.limits).map((line) => (
+              <p key={line} className="text-xs text-gray-500 dark:text-gray-400">
+                {line}
               </p>
-            )}
-            {preview === null && previewError === null && <p>{t("online.items.previewing")}</p>}
-            {previewError !== null && (
-              <p role="alert" className="text-red-600 dark:text-red-400">
-                {itemsErrorText(t, i18n.language, previewError)}
-              </p>
-            )}
-            {preview?.effect &&
-              effectLines(t, preview.effect, players).map((line) => <p key={line}>{line}</p>)}
-            {preview &&
-              limitLines(t, i18n.language, preview.limits).map((line) => (
-                <p key={line} className="text-xs text-gray-500 dark:text-gray-400">
-                  {line}
-                </p>
-              ))}
-            {refusal && !matchLocked && (
-              <p role="note" className="text-red-600 dark:text-red-400">
-                {itemCodeText(t, i18n.language, refusal.code, refusal.params)}
-              </p>
-            )}
-          </div>
-        )}
-        {error !== null && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-            {itemsErrorText(t, i18n.language, error)}
-          </p>
-        )}
-        <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" size="sm" onClick={onClose}>
-            {t("common.cancel")}
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            disabled={busy || !target || !preview || Boolean(refusal)}
-            onClick={confirm}
-          >
-            {t("online.items.confirmUse")}
-          </Button>
+            ))}
+          {refusal && !matchLocked && (
+            <p role="note" className="text-red-600 dark:text-red-400">
+              {itemCodeText(t, i18n.language, refusal.code, refusal.params)}
+            </p>
+          )}
         </div>
+      )}
+      {error !== null && (
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {itemsErrorText(t, i18n.language, error)}
+        </p>
+      )}
+      <div className="flex flex-wrap gap-3">
+        <FrameCancel onClick={onClose} disabled={busy}>
+          {t("common.cancel")}
+        </FrameCancel>
+        <button
+          type="button"
+          className={FRAME_ACTION}
+          disabled={busy || !target || !preview || Boolean(refusal)}
+          onClick={confirm}
+        >
+          {t("online.items.confirmUse")}
+        </button>
       </div>
-    </DashboardModalFrame>
+    </ItemDialogFrame>
   );
 }

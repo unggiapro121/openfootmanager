@@ -835,7 +835,6 @@
       "notOnServer": "Este servidor aún no tiene objetos.",
       "locked": "Tus objetos están bloqueados mientras se revisan; no se pierde nada. Cambiar nombres con tarjeta y usar objetos vuelve a estar disponible cuando termine la revisión.",
       "lockedShort": "Tus objetos están bloqueados mientras se revisan.",
-      "tabHeld": "Objetos",
       "tabHistory": "Historial",
       "empty": "Tu inventario está vacío.",
       "toShop": "Ir a la tienda",
@@ -850,12 +849,8 @@
       "stacks": "Filas por caducidad",
       "expires": "×{{count}} · caduca el {{date}}",
       "neverExpires": "×{{count}} · no caduca",
-      "teamRecovery": "Tu club ha usado {{used}}/{{perDay}} hoy · se reinicia {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP de apuntes esta temporada",
-      "xpX2": "Partidos de XP doble pendientes: {{remaining}}/{{max}}",
       "notThisSeason": "No se puede usar esta temporada.",
       "needClub": "Necesitas un club.",
-      "use": "Usar",
       "renameAt": "Cambia el nombre desde la plantilla o la ficha del club",
       "academySoon": "Se usa en la cantera (próximamente)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Retirado por un administrador"
       },
       "historyEmpty": "Aún no hay movimientos de objetos.",
-      "expiredNotShown": "Los objetos caducados no aparecen aquí."
+      "expiredNotShown": "Los objetos caducados no aparecen aquí.",
+      "tabHeldCount": "Objetos ({{count}})",
+      "toShopMore": "Compra más en la tienda",
+      "tileAria": "{{item}}, cantidad {{count}}. Ver detalles",
+      "usedToday": "El club ha usado {{used}}/{{perDay}} hoy",
+      "holding": "Tienes ×{{count}}",
+      "expiry": "Caducidad",
+      "neverExpire": "No caduca",
+      "dailyLimit": "Límite diario",
+      "dailyUsed": "El club ha usado {{used}}/{{perDay}} hoy",
+      "refreshAt": "Se renueva a las {{time}}",
+      "xpWaiting": "Partidos con XP doble en espera",
+      "pickStyle": "Elige el estilo de juego que recibe la XP",
+      "styleCap": "Cada estilo de juego recibe como máximo {{limit}} XP de notas por temporada.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Nivel {{level}}",
+      "action": {
+        "player": "Elige un jugador para usarlo",
+        "club": "Usar en el once titular",
+        "account": "Activar",
+        "pickStyle": "Elige un estilo de juego para usarlo",
+        "style": "Usar en {{style}}",
+        "usedToday": "Usado hoy",
+        "rename": "Cambiar el nombre en la plantilla"
+      }
     },
     "shop": {
       "notOnServer": "Este servidor aún no tiene tienda.",

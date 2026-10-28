@@ -835,7 +835,6 @@
       "notOnServer": "Questo server non ha ancora oggetti.",
       "locked": "I tuoi oggetti sono bloccati durante una verifica; non si perde nulla. Rinominare con una carta e usare oggetti tornano possibili a verifica conclusa.",
       "lockedShort": "I tuoi oggetti sono bloccati durante una verifica.",
-      "tabHeld": "Oggetti",
       "tabHistory": "Cronologia",
       "empty": "Il tuo inventario è vuoto.",
       "toShop": "Vai al negozio",
@@ -850,12 +849,8 @@
       "stacks": "Righe per scadenza",
       "expires": "×{{count}} · scade il {{date}}",
       "neverExpires": "×{{count}} · non scade",
-      "teamRecovery": "Il tuo club ne ha usati {{used}}/{{perDay}} oggi · si azzera {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP dagli appunti in questa stagione",
-      "xpX2": "Partite di XP doppia in attesa: {{remaining}}/{{max}}",
       "notThisSeason": "Non utilizzabile in questa stagione.",
       "needClub": "Ti serve un club.",
-      "use": "Usa",
       "renameAt": "Rinomina dalla rosa o dalla scheda del club",
       "academySoon": "Si usa nel settore giovanile (in arrivo)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Ritirato da un amministratore"
       },
       "historyEmpty": "Ancora nessun movimento di oggetti.",
-      "expiredNotShown": "Gli oggetti scaduti non compaiono qui."
+      "expiredNotShown": "Gli oggetti scaduti non compaiono qui.",
+      "tabHeldCount": "Oggetti ({{count}})",
+      "toShopMore": "Compra altro nel negozio",
+      "tileAria": "{{item}}, quantità {{count}}. Mostra dettagli",
+      "usedToday": "Il club ne ha usati {{used}}/{{perDay}} oggi",
+      "holding": "Ne hai ×{{count}}",
+      "expiry": "Scadenza",
+      "neverExpire": "Non scade",
+      "dailyLimit": "Limite giornaliero",
+      "dailyUsed": "Il club ne ha usati {{used}}/{{perDay}} oggi",
+      "refreshAt": "Si rinnova alle {{time}}",
+      "xpWaiting": "Partite con XP doppia in attesa",
+      "pickStyle": "Scegli lo stile di gioco che riceve l'XP",
+      "styleCap": "Ogni stile di gioco riceve al massimo {{limit}} XP dagli appunti per stagione.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Livello {{level}}",
+      "action": {
+        "player": "Scegli un giocatore su cui usarlo",
+        "club": "Usa sull'undici titolare",
+        "account": "Attiva",
+        "pickStyle": "Scegli uno stile di gioco su cui usarlo",
+        "style": "Usa su {{style}}",
+        "usedToday": "Già usato oggi",
+        "rename": "Rinomina nella rosa"
+      }
     },
     "shop": {
       "notOnServer": "Questo server non ha ancora un negozio.",

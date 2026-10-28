@@ -835,7 +835,6 @@
       "notOnServer": "Este servidor ainda não tem itens.",
       "locked": "Os teus itens estão bloqueados enquanto são verificados; nada se perde. Mudar nomes com cartão e usar itens volta a ficar disponível quando a verificação terminar.",
       "lockedShort": "Os teus itens estão bloqueados enquanto são verificados.",
-      "tabHeld": "Itens",
       "tabHistory": "Histórico",
       "empty": "O teu inventário está vazio.",
       "toShop": "Ir à loja",
@@ -850,12 +849,8 @@
       "stacks": "Linhas por validade",
       "expires": "×{{count}} · expira a {{date}}",
       "neverExpires": "×{{count}} · não expira",
-      "teamRecovery": "O teu clube usou {{used}}/{{perDay}} hoje · reinicia {{time}}",
-      "noteXp": "{{style}}: {{used}}/{{limit}} XP de apontamentos nesta época",
-      "xpX2": "Jogos de XP a dobrar em espera: {{remaining}}/{{max}}",
       "notThisSeason": "Não pode ser usado nesta época.",
       "needClub": "Precisas de um clube.",
-      "use": "Usar",
       "renameAt": "Muda o nome a partir do plantel ou da ficha do clube",
       "academySoon": "Usa-se na formação (em breve)",
       "target": {
@@ -874,7 +869,31 @@
         "adminRevoke": "Retirado por um administrador"
       },
       "historyEmpty": "Ainda não há movimentos de itens.",
-      "expiredNotShown": "Os itens expirados não aparecem aqui."
+      "expiredNotShown": "Os itens expirados não aparecem aqui.",
+      "tabHeldCount": "Itens ({{count}})",
+      "toShopMore": "Compra mais na loja",
+      "tileAria": "{{item}}, quantidade {{count}}. Ver detalhes",
+      "usedToday": "O clube usou {{used}}/{{perDay}} hoje",
+      "holding": "Tens ×{{count}}",
+      "expiry": "Validade",
+      "neverExpire": "Não expira",
+      "dailyLimit": "Limite diário",
+      "dailyUsed": "O clube usou {{used}}/{{perDay}} hoje",
+      "refreshAt": "Renova às {{time}}",
+      "xpWaiting": "Jogos com XP a dobrar em espera",
+      "pickStyle": "Escolhe o estilo de jogo que recebe a XP",
+      "styleCap": "Cada estilo de jogo recebe no máximo {{limit}} XP de notas por época.",
+      "styleXp": "{{used}}/{{limit}} XP",
+      "styleLevel": "Nível {{level}}",
+      "action": {
+        "player": "Escolhe um jogador para o usar",
+        "club": "Usar no onze inicial",
+        "account": "Ativar",
+        "pickStyle": "Escolhe um estilo de jogo para o usar",
+        "style": "Usar em {{style}}",
+        "usedToday": "Usado hoje",
+        "rename": "Mudar o nome no plantel"
+      }
     },
     "shop": {
       "notOnServer": "Este servidor ainda não tem loja.",
