@@ -2096,6 +2096,14 @@
       "tier_4": "Máxima",
       "lockedOption": "{{option}} (licença no nível {{level}})",
       "lockedHint": "Abre com a licença {{licence}}, no nível de treinador {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, nota {{ovr}}",
+    "dutyShort": {
+      "captain": "Capitão",
+      "vice_captain": "Vice-capitão",
+      "penalty_taker": "Pênaltis",
+      "free_kick_taker": "Faltas",
+      "corner_taker": "Escanteios"
     }
   },
   "training": {

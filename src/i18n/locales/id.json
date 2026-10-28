@@ -2096,6 +2096,14 @@
       "tier_4": "Utama",
       "lockedOption": "{{option}} (lisensi di tingkat {{level}})",
       "lockedHint": "Terbuka dengan lisensi {{licence}}, di tingkat pelatih {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, nilai {{ovr}}",
+    "dutyShort": {
+      "captain": "Kapten",
+      "vice_captain": "Wakil kapten",
+      "penalty_taker": "Penalti",
+      "free_kick_taker": "Tendangan bebas",
+      "corner_taker": "Sepak pojok"
     }
   },
   "training": {

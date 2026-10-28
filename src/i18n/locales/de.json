@@ -2096,6 +2096,14 @@
       "tier_4": "Spitzenstufe",
       "lockedOption": "{{option}} (Lizenz ab Stufe {{level}})",
       "lockedHint": "Freigeschaltet mit der Lizenz {{licence}}, ab Trainerstufe {{level}}"
+    },
+    "tokenLabel": "{{name}}, {{position}}, Wertung {{ovr}}",
+    "dutyShort": {
+      "captain": "Kapitän",
+      "vice_captain": "Vizekapitän",
+      "penalty_taker": "Elfmeter",
+      "free_kick_taker": "Freistöße",
+      "corner_taker": "Ecken"
     }
   },
   "training": {
