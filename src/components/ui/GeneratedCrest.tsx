@@ -12,8 +12,14 @@ interface GeneratedCrestProps {
   label: string;
   /** The club's colours; derived from `name` when absent. */
   colors?: CrestColors;
+  /** The pattern a coach picked; derived from `name` when absent. */
+  pattern?: CrestPattern;
   className?: string;
 }
+
+/** The patterns a crest is drawn with, in the order of the shapes below (the online contract's). */
+export const CREST_PATTERNS = ["split", "band", "sash", "diamond"] as const;
+export type CrestPattern = (typeof CREST_PATTERNS)[number];
 
 function hashString(value: string): number {
   let hash = 0;
@@ -41,20 +47,25 @@ function readableTextColor(color: string): string {
   return luminance > 0.6 ? "#111827" : "#ffffff";
 }
 
+/** The pattern a club's name gives its crest when nobody picked one. */
+export function crestPatternOf(name: string): CrestPattern {
+  return CREST_PATTERNS[hashString(name) % CREST_PATTERNS.length];
+}
+
 /**
  * A procedurally generated club crest: a rounded tile in the club's two
  * colours with its short name, varied by a hash of the name so clubs look
  * distinct without any image files. Used as the `TeamLogo` fallback so every
  * club has a visual identity even when no logo media is provided.
  */
-export function GeneratedCrest({ name, label, colors, className }: GeneratedCrestProps) {
+export function GeneratedCrest({ name, label, colors, pattern, className }: GeneratedCrestProps) {
   const clipId = useId();
   const seed = hashString(name);
   const primary = colors?.primary?.trim() || derivedColor(seed, false);
   const secondary = colors?.secondary?.trim() || derivedColor(seed >> 3, true);
   const text = label.slice(0, 3).toUpperCase();
   const textColor = readableTextColor(primary);
-  const variant = seed % 4;
+  const variant = CREST_PATTERNS.indexOf(pattern ?? crestPatternOf(name));
 
   return (
     <svg viewBox="0 0 64 64" className={className} role="presentation" aria-hidden="true">

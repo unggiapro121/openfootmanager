@@ -69,6 +69,8 @@ pub const ROUTES: &[Route] = &[
         &[L("v1"), L("clubs"), L("mine"), L("stadium")],
         &[],
     ),
+    // The club's crest drawn by its coach.
+    route("PATCH", &[L("v1"), L("clubs"), L("mine"), L("crest")], &[]),
     // A player of the coach's club renamed (S-14).
     route("PATCH", &[L("v1"), L("players"), Id, L("name")], &[]),
     // A player's shirt number set, swapped or cleared.

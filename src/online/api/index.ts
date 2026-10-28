@@ -18,6 +18,7 @@ export type { CareerView } from "./CareerView";
 export type { ChoiceChange } from "./ChoiceChange";
 export type { ClientMessage } from "./ClientMessage";
 export type { ClubColors } from "./ClubColors";
+export type { ClubCrest } from "./ClubCrest";
 export type { ClubFixturesView } from "./ClubFixturesView";
 export type { ClubProfileView } from "./ClubProfileView";
 export type { ClubRef } from "./ClubRef";

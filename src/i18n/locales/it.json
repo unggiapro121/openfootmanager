@@ -89,7 +89,23 @@
       "save": "Salva",
       "stadium": "{{name}} ({{capacity}} posti)",
       "stadiumLabel": "Nome dello stadio",
-      "stadiumHint": "Lo stadio può essere rinominato quante volte vuoi."
+      "stadiumHint": "Lo stadio può essere rinominato quante volte vuoi.",
+      "crest": {
+        "change": "Cambia stemma",
+        "title": "Stemma del club",
+        "primary": "Colore principale",
+        "secondary": "Colore secondario",
+        "patternLabel": "Motivo",
+        "pattern": {
+          "split": "Metà",
+          "band": "Fascia",
+          "sash": "Banda diagonale",
+          "diamond": "Rombo"
+        },
+        "label": "Lettere",
+        "labelHint": "Da 1 a 3 lettere o cifre",
+        "save": "Salva stemma"
+      }
     },
     "fixture": {
       "title": "Prossima partita",

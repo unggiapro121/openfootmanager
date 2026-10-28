@@ -89,7 +89,23 @@
       "save": "Simpan",
       "stadium": "{{name}} ({{capacity}} kursi)",
       "stadiumLabel": "Nama stadion",
-      "stadiumHint": "Stadion dapat diganti namanya sesering yang Anda mau."
+      "stadiumHint": "Stadion dapat diganti namanya sesering yang Anda mau.",
+      "crest": {
+        "change": "Ganti logo",
+        "title": "Logo klub",
+        "primary": "Warna utama",
+        "secondary": "Warna kedua",
+        "patternLabel": "Pola",
+        "pattern": {
+          "split": "Belahan",
+          "band": "Pita",
+          "sash": "Selempang",
+          "diamond": "Belah ketupat"
+        },
+        "label": "Huruf",
+        "labelHint": "1 sampai 3 huruf atau angka",
+        "save": "Simpan logo"
+      }
     },
     "fixture": {
       "title": "Laga berikutnya",

@@ -89,7 +89,23 @@
       "save": "Enregistrer",
       "stadium": "{{name}} ({{capacity}} places)",
       "stadiumLabel": "Nom du stade",
-      "stadiumHint": "Le stade peut être renommé autant de fois que vous le souhaitez."
+      "stadiumHint": "Le stade peut être renommé autant de fois que vous le souhaitez.",
+      "crest": {
+        "change": "Changer l'écusson",
+        "title": "Écusson du club",
+        "primary": "Couleur principale",
+        "secondary": "Couleur secondaire",
+        "patternLabel": "Motif",
+        "pattern": {
+          "split": "Moitiés",
+          "band": "Bande",
+          "sash": "Écharpe",
+          "diamond": "Losange"
+        },
+        "label": "Lettres",
+        "labelHint": "1 à 3 lettres ou chiffres",
+        "save": "Enregistrer l'écusson"
+      }
     },
     "fixture": {
       "title": "Prochain match",

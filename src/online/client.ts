@@ -12,6 +12,7 @@ import type {
   AuctionPage,
   AuctionView,
   CareerView,
+  ClubCrest,
   ClubFixturesView,
   CoinExchangeRequest,
   CoinExchangeView,
@@ -196,6 +197,9 @@ export const online = {
           name,
         } satisfies StadiumRequest),
       ),
+    /** The club's crest as its coach drew it: free, as often as he likes. */
+    setCrest: (crest: ClubCrest, idempotencyKey = newKey()) =>
+      call<MyClubView>(write("PATCH", ["v1", "clubs", "mine", "crest"], idempotencyKey, crest)),
     byId: (clubId: string) => call<PublicClubView>(read(["v1", "clubs", clubId])),
     /** Dismiss what the server says it fitted to the coach's licence (S-9 S9-20). */
     dismissLicenceNotice: (idempotencyKey = newKey()) =>
