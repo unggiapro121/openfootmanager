@@ -35,6 +35,9 @@
     "online.inventory.styleXp"
   ],
   "de": [
+    "online.overview.homeMark",
+    "online.overview.awayMark",
+    "online.overview.budget",
     "online.finance.kind.settle",
     "online.publicClub.formation",
     "online.nav.training",
@@ -157,6 +160,9 @@
     "online.nav.shop"
   ],
   "fr": [
+    "online.overview.placeAria",
+    "online.overview.points",
+    "online.overview.budget",
     "online.finance.total",
     "online.fixture.minutes",
     "manager.stylePhase.Press",
@@ -289,6 +295,7 @@
     "online.shop.total"
   ],
   "it": [
+    "online.overview.budget",
     "online.fixture.minutes",
     "manager.stylePhase.Press",
     "teams.club",
@@ -364,6 +371,7 @@
     "online.nav.account"
   ],
   "es": [
+    "online.overview.points",
     "online.finance.total",
     "online.fixture.minutes",
     "teams.club",
@@ -428,6 +436,7 @@
     "online.shop.total"
   ],
   "pt-BR": [
+    "online.overview.points",
     "online.finance.total",
     "online.fixture.minutes",
     "scouting.watchlistStatus",
@@ -475,6 +484,7 @@
     "online.shop.total"
   ],
   "pt": [
+    "online.overview.points",
     "online.finance.total",
     "online.fixture.minutes",
     "nations.pt",

@@ -46,6 +46,21 @@ export function formatMoment(iso: string, language: string): string {
 }
 
 /**
+ * A kick-off in a short list, on this machine's clock: its time alone when it is today, its
+ * weekday and time on a later day.
+ */
+export function formatKickoffClock(iso: string, nowMs: number, language: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  const sameDay = date.toDateString() === new Date(nowMs).toDateString();
+  return new Intl.DateTimeFormat(language, {
+    ...(sameDay ? {} : { weekday: "short" }),
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+/**
  * Each region's fixed offset from UTC, in minutes, as the server counts it
  * (`ofm_rules::coach_progress`, no daylight saving), and a time zone that keeps that offset all
  * year, to write a clock of the region.
