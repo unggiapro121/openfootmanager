@@ -94,6 +94,36 @@ describe("a coach with a club", () => {
     );
   });
 
+  // Given a season that rests clubs by blocks, a coach on his squad page, the next mark 2 s away,
+  // when the mark passes,
+  // then the club is read again there too, for the players' new condition (C-8 C8-8).
+  it("reads the club again at a recovery mark on any page", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const club = myClub({
+      trainingDay: {
+        day: 3,
+        recent: [],
+        canTrain: true,
+        sessionsLast7: 0,
+        sessionsCap: 6,
+        nextRecoveryAt: new Date(Date.now() + 2_000).toISOString(),
+        recovery: { perDay: 6, hours: 8 },
+        autoOff: false,
+      },
+    });
+    server = fakeServer({
+      "GET v1/season": ok(SEASON),
+      "GET v1/clubs/mine": ok(club),
+      "GET v1/leagues/mine": ok(LEAGUE),
+    });
+    renderOnline("/online/squad");
+    await waitFor(() => expect(sent("GET", "v1/clubs/mine")).toHaveLength(1));
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(3_100);
+    });
+    await waitFor(() => expect(sent("GET", "v1/clubs/mine")).toHaveLength(2));
+  });
+
   // Given a club whose league seat waits for next season,
   // when the overview opens,
   // then it says so instead of a table place.

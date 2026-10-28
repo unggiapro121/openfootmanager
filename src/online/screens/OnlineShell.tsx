@@ -9,6 +9,7 @@ import { refreshClub, refreshLeague, refreshSeason, useOnlineStore } from "../st
 import { AccountWatcher } from "./AccountWatcher";
 import { LeagueWatcher } from "./LeagueWatcher";
 import { PlayerPictureSync } from "./PlayerPictureSync";
+import { RecoveryWatcher } from "./RecoveryWatcher";
 import { LeaveGuardProvider } from "./leaveGuard";
 import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
@@ -76,6 +77,7 @@ export default function OnlineShell() {
     <OnlineClockProvider>
       <LeaveGuardProvider>
         <DayTurnWatcher />
+        <RecoveryWatcher />
         <AccountWatcher />
         <LeagueWatcher />
         <PlayerPictureSync />
