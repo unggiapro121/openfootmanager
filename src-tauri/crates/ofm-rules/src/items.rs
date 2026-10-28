@@ -15,8 +15,10 @@ use crate::player_wear::recover_injury;
 pub const MAX_CONDITION: u8 = 100;
 
 /// Add `amount` to `player`'s condition, never above [`MAX_CONDITION`]; returns the new condition.
-/// Added as it stands: a club in a league is not rested lazily first, its day's training already
-/// is its recovery (PRD mục 6, bước 5). For a resting club the server rests the player first.
+/// Added as it stands; the caller rests the player up to the moment of use first when that is
+/// owed: a club resting outside a league, and every club of a season with recovery blocks
+/// (`recovery::rest_blocks`), where the 04:00 job no longer is the day's recovery (PRD mục 6,
+/// bước 5, ghi chú 2026-10-27). In a league season without blocks, it already is.
 pub fn boost_condition(player: &mut Player, amount: u8) -> u8 {
     player.condition = player.condition.saturating_add(amount).min(MAX_CONDITION);
     player.condition

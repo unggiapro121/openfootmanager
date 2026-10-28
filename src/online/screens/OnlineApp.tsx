@@ -7,6 +7,7 @@ import OnlineProfile from "./OnlineProfile";
 import OnlinePublicClub from "./OnlinePublicClub";
 import OnlineAuction from "./market/OnlineAuction";
 import OnlineMarket from "./market/OnlineMarket";
+import OnlineCoins from "./OnlineCoins";
 import OnlineFinance from "./OnlineFinance";
 import OnlineInbox from "./OnlineInbox";
 import OnlineSchedule from "./OnlineSchedule";
@@ -32,6 +33,7 @@ export default function OnlineApp() {
         <Route path="league" element={<OnlineLeague />} />
         <Route path="schedule" element={<OnlineSchedule />} />
         <Route path="finance" element={<OnlineFinance />} />
+        <Route path="coins" element={<OnlineCoins />} />
         <Route path="inbox" element={<OnlineInbox />} />
         <Route path="market" element={<OnlineMarket />} />
         <Route path="auctions/:auctionId" element={<OnlineAuction />} />

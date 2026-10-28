@@ -39,4 +39,9 @@ arrears?: ArrearsView,
  * Days of arrears before the club's best-paid player is put up for auction, when the season
  * plays with money (C-5 C5-12).
  */
-arrearsDaysToForcedListing?: number, };
+arrearsDaysToForcedListing?: number, 
+/**
+ * The academy's weekly wages, paid with the squad's (S-18 S18-11); absent while the season
+ * has no academy rules.
+ */
+academyWeeklyWageBill?: number, };

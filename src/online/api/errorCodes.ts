@@ -83,10 +83,45 @@ export const ERROR_CODES = [
   "be.error.auction.listingExpired",
   "be.error.auction.alreadyLeading",
   "be.error.auction.notCancellable",
+  "be.error.auction.levelCapPlayer",
+  "be.error.auction.levelCapSquad",
   "be.error.economy.wageBudgetExceeded",
   "be.error.economy.notLocked",
+  "be.error.economy.insufficientCoin",
+  "be.error.economy.coinDisabled",
+  "be.error.economy.priceChanged",
+  "be.error.economy.coinBalanceNegative",
+  "be.error.economy.exchangeLimitReached",
+  "be.error.economy.coinLocked",
+  "be.error.priceList.invalid",
   "be.error.ledger.txnNotFound",
   "be.error.ledger.alreadyReversed",
+  "be.error.inventory.disabled",
+  "be.error.inventory.itemNotFound",
+  "be.error.inventory.stackFull",
+  "be.error.inventory.locked",
+  "be.error.inventory.sourceNotAllowed",
+  "be.error.inventory.grantLimitReached",
+  "be.error.inventory.notUsableHere",
+  "be.error.inventory.wrongTarget",
+  "be.error.inventory.targetMatchLocked",
+  "be.error.inventory.dailyLimitReached",
+  "be.error.inventory.seasonLimitReached",
+  "be.error.inventory.effectLimitReached",
+  "be.error.academy.disabled",
+  "be.error.academy.tripOpen",
+  "be.error.academy.tripLimitReached",
+  "be.error.academy.eliteTripLimitReached",
+  "be.error.academy.tripNotPending",
+  "be.error.academy.tripNotReady",
+  "be.error.academy.tripClosed",
+  "be.error.academy.notFound",
+  "be.error.academy.candidateUnknown",
+  "be.error.academy.noSlot",
+  "be.error.shop.quantityInvalid",
+  "be.error.shop.itemNotSold",
+  "be.error.admin.reverseNotAllowed",
+  "be.error.admin.refundExceeded",
   "be.error.realtime.badMessage",
   "be.error.realtime.unknownChannel",
   "be.error.realtime.tooManyChannels",
@@ -106,6 +141,26 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.auction.cooldownActive": ["until"],
   "be.error.auction.outOfPriceBand": ["min", "max"],
   "be.error.auction.bidTooLow": ["minimum"],
+  "be.error.auction.levelCapPlayer": ["requiredLevel", "cap"],
+  "be.error.auction.levelCapSquad": ["requiredLevel", "level", "squadCap", "after"],
+  "be.error.economy.priceChanged": ["current"],
+  "be.error.economy.exchangeLimitReached": ["remaining"],
+  "be.error.inventory.itemNotFound": ["held"],
+  "be.error.inventory.stackFull": ["max"],
+  "be.error.inventory.grantLimitReached": ["limit"],
+  "be.error.inventory.notUsableHere": ["use"],
+  "be.error.inventory.wrongTarget": ["reason"],
+  "be.error.inventory.targetMatchLocked": ["kickoffAt"],
+  "be.error.inventory.dailyLimitReached": ["nextAt"],
+  "be.error.inventory.seasonLimitReached": ["limit", "remaining"],
+  "be.error.inventory.effectLimitReached": ["max", "remaining"],
+  "be.error.academy.tripOpen": ["tripId"],
+  "be.error.academy.tripLimitReached": ["sent", "limit"],
+  "be.error.academy.eliteTripLimitReached": ["sent", "limit"],
+  "be.error.academy.tripNotReady": ["readyAt"],
+  "be.error.academy.noSlot": ["free"],
+  "be.error.admin.reverseNotAllowed": ["kind"],
+  "be.error.admin.refundExceeded": ["refundable"],
 };
 
 /** The translation parameters a code comes with, in `details.params`. */
@@ -119,4 +174,24 @@ export type ErrorParams = {
   "be.error.auction.cooldownActive": { until: string | number };
   "be.error.auction.outOfPriceBand": { min: string | number; max: string | number };
   "be.error.auction.bidTooLow": { minimum: string | number };
+  "be.error.auction.levelCapPlayer": { requiredLevel: string | number; cap: string | number };
+  "be.error.auction.levelCapSquad": { requiredLevel: string | number; level: string | number; squadCap: string | number; after: string | number };
+  "be.error.economy.priceChanged": { current: string | number };
+  "be.error.economy.exchangeLimitReached": { remaining: string | number };
+  "be.error.inventory.itemNotFound": { held: string | number };
+  "be.error.inventory.stackFull": { max: string | number };
+  "be.error.inventory.grantLimitReached": { limit: string | number };
+  "be.error.inventory.notUsableHere": { use: string | number };
+  "be.error.inventory.wrongTarget": { reason: string | number };
+  "be.error.inventory.targetMatchLocked": { kickoffAt: string | number };
+  "be.error.inventory.dailyLimitReached": { nextAt: string | number };
+  "be.error.inventory.seasonLimitReached": { limit: string | number; remaining: string | number };
+  "be.error.inventory.effectLimitReached": { max: string | number; remaining: string | number };
+  "be.error.academy.tripOpen": { tripId: string | number };
+  "be.error.academy.tripLimitReached": { sent: string | number; limit: string | number };
+  "be.error.academy.eliteTripLimitReached": { sent: string | number; limit: string | number };
+  "be.error.academy.tripNotReady": { readyAt: string | number };
+  "be.error.academy.noSlot": { free: string | number };
+  "be.error.admin.reverseNotAllowed": { kind: string | number };
+  "be.error.admin.refundExceeded": { refundable: string | number };
 };

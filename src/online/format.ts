@@ -1,5 +1,13 @@
 import type { CoachRegion } from "./api/domain";
 
+/**
+ * A number of OFM Coins (C-7 C7-5): whole, grouped the way the player's language groups digits,
+ * with its sign when below zero, and no currency mark. Never euros' `formatVal`.
+ */
+export function formatCoins(coins: number, language: string): string {
+  return new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(coins);
+}
+
 /** What is left until a moment: whole days, and the rest as `HH:MM:SS`. */
 export interface Countdown {
   days: number;

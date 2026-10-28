@@ -72,4 +72,9 @@ suspendedMatches?: number, attributes: PlayerAttributes, season: SeasonStatsView
 /**
  * The weekly wage, when the season plays with money (S-10 S10-6).
  */
-wage?: number, };
+wage?: number, 
+/**
+ * His next rename is free: no one has renamed him yet; each later one costs a
+ * `playerRename` card (S-14, S-17 R17-5).
+ */
+renameFree: boolean, };

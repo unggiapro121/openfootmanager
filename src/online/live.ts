@@ -126,6 +126,8 @@ export function watchAccount(
 /** What a ring of the coach's account says: whose news it is, and for the market which (C-5). */
 export type AccountRing =
   | { kind: "friendly" }
+  /** The coach's coins changed, by any path (S-15, C-7s): read them and the club's money again. */
+  | { kind: "finance" }
   | {
       kind: "market";
       event?: "outbid" | "won" | "sold" | "unsold" | "cancelled" | "forced" | string;
@@ -138,6 +140,7 @@ export function readAccountRing(data: unknown): AccountRing {
   if (typeof data !== "object" || data === null) return { kind: "unknown" };
   const ring = data as { kind?: unknown; event?: unknown; auctionId?: unknown };
   if (ring.kind === "friendly") return { kind: "friendly" };
+  if (ring.kind === "finance") return { kind: "finance" };
   if (ring.kind === "market") {
     return {
       kind: "market",

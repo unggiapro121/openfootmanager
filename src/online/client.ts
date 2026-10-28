@@ -11,6 +11,10 @@ import type {
   AuctionView,
   CareerView,
   ClubFixturesView,
+  CoinExchangeRequest,
+  CoinExchangeView,
+  CoinLinesPage,
+  CoinView,
   CommandAccepted,
   FacilitiesView,
   FacilityUpgradeView,
@@ -257,6 +261,31 @@ export const online = {
     upgradeFacility: (facility: string, idempotencyKey = newKey()) =>
       call<FacilityUpgradeView>(
         write("POST", ["v1", "clubs", "mine", "facilities", facility, "upgrade"], idempotencyKey),
+      ),
+  },
+  /**
+   * The coach's OFM Coins (S-15, C-7a1): they belong to the person, not the club. An exchange
+   * carries the price list the screen showed; the server refuses it when another is in force.
+   */
+  coins: {
+    mine: () => call<CoinView>(read(["v1", "me", "coins"])),
+    /** The lines newest first; `cursor` is the `nextCursor` of the page before. */
+    ledger: (cursor?: number, limit?: number) =>
+      call<CoinLinesPage>(
+        read(
+          ["v1", "me", "coins", "ledger"],
+          [
+            ...(cursor === undefined ? [] : [["cursor", String(cursor)] as [string, string]]),
+            ...(limit === undefined ? [] : [["limit", String(limit)] as [string, string]]),
+          ],
+        ),
+      ),
+    exchange: (coins: number, priceListVersion: number, idempotencyKey = newKey()) =>
+      call<CoinExchangeView>(
+        write("POST", ["v1", "me", "coins", "exchange"], idempotencyKey, {
+          coins,
+          priceListVersion,
+        } satisfies CoinExchangeRequest),
       ),
   },
   /** The coach's players (S-14): a player's two names, the first change of each free. */

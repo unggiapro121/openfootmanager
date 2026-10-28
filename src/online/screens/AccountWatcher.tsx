@@ -3,6 +3,7 @@ import { online } from "../client";
 import { type AccountRing, readAccountRing, watchAccount } from "../live";
 import {
   refreshClub,
+  refreshCoins,
   refreshFinance,
   refreshFriendly,
   refreshMarket,
@@ -37,7 +38,8 @@ function noticeOf(ring: Extract<AccountRing, { kind: "market" }>): void {
  * Follows the coach's own account channel for as long as they are in the online mode (S12-22,
  * C-5 C5-10). A ring says whose news it is: a friendly ring reads their friendly again; a market
  * ring (outbid, won, sold, …) reads the club, its money and the market again, lights the market's
- * dot and shows a notice in the corner (`OnlineNotices`). Holding the channel is also what keeps them present in the friendly queue, whichever online
+ * dot and shows a notice in the corner (`OnlineNotices`); a finance ring (the coach's coins
+ * changed, C-7a1) reads the coins and the club's money again, with no notice. Holding the channel is also what keeps them present in the friendly queue, whichever online
  * page they are on. Nothing here is shown: a failure leaves each page to read for itself.
  */
 export function AccountWatcher() {
@@ -48,6 +50,10 @@ export function AccountWatcher() {
       const news = readAccountRing(data);
       if (news.kind === "friendly") {
         void refreshFriendly().catch(ignore);
+      } else if (news.kind === "finance") {
+        // Coins moved: an exchange paid the club too. No notice, the coach mostly did it.
+        void refreshCoins().catch(ignore);
+        void refreshFinance().catch(ignore);
       } else if (news.kind === "market") {
         useOnlineStore.setState((state) => ({ marketUnseen: state.marketUnseen + 1 }));
         // A player won, sold or given back changes the squad, which is read with the club.
@@ -61,6 +67,7 @@ export function AccountWatcher() {
         if (!live) return undefined;
         useOnlineStore.setState({ accountId: account.id });
         void refreshFriendly().catch(ignore);
+        void refreshCoins().catch(ignore);
         void refreshMoney();
         return watchAccount(account.id, ring);
       })

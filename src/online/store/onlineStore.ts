@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type {
+  CoinView,
   FinanceView,
   FriendlyMineView,
   LeagueView,
@@ -44,6 +45,11 @@ interface OnlineState {
   friendly: FriendlyMineView | undefined;
   /** The signed-in coach's account, once read: what their account channel is named by. */
   accountId: string | undefined;
+  /**
+   * The coach's coins (C-7a1): the header's chip and the wallet. `null` when this server has no
+   * coins yet (an older server answers 404).
+   */
+  coins: CoinView | null | undefined;
   /** The club's money (C-5): the header's cash and the finance page. */
   finance: FinanceView | undefined;
   /** The club on the market (C-5): `null` while the season's market is closed. */
@@ -72,6 +78,7 @@ const INITIAL = {
   league: undefined,
   friendly: undefined,
   accountId: undefined,
+  coins: undefined,
   finance: undefined,
   market: undefined,
   marketUnseen: 0,
@@ -154,6 +161,12 @@ export async function refreshFriendly(): Promise<void> {
 export async function refreshFinance(): Promise<void> {
   const finance = await tracked(() => online.finance.mine());
   useOnlineStore.setState({ finance });
+}
+
+/** The coach's coins; a server without coins answers 404, which is `null` (C-7 C7-2). */
+export async function refreshCoins(): Promise<void> {
+  const coins = await orNone(() => online.coins.mine());
+  useOnlineStore.setState({ coins });
 }
 
 /** The club on the market; a closed market is no failure, it is `null`. */

@@ -32,4 +32,9 @@ trainingPlanIsOwn: boolean, leagueId?: string, nextFixture?: FixtureView,
  * The coach's licence (S-9); none while no season has licences, offline-style, everything
  * open.
  */
-licence?: LicenceView, };
+licence?: LicenceView, 
+/**
+ * The club's next rename is free; each later one costs a `clubRename` card (S-14, S-17
+ * R17-5).
+ */
+renameFree: boolean, };

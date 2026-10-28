@@ -138,11 +138,40 @@ pub fn apply_online(
     region: CoachRegion,
     multiplier: f64,
 ) -> (CoachProgress, Option<MasteryGain>) {
+    let applied = apply_counted(progress, record, now_unix, region, multiplier);
+    (applied.progress, applied.gain)
+}
+
+/// A record applied, and whether it counted within the day's allowance.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Applied {
+    pub progress: CoachProgress,
+    pub gain: Option<MasteryGain>,
+    /// A match that earns XP and still had a share of the day's XP: among the region day's first
+    /// [`DAILY_XP_MATCH_LIMIT`]. Online missions count offline matches only when this holds
+    /// (phase 4 PRD mục 5, S-19 §4.2).
+    pub within_cap: bool,
+}
+
+/// The one place a record is applied: [`apply`] and [`apply_online`] keep its progress and gain.
+/// `within_cap` is read off the very share the XP is paid at, so the matches a mission counts
+/// cannot drift from the matches the allowance pays for when its steps change.
+pub fn apply_counted(
+    progress: &CoachProgress,
+    record: &CoachRecord,
+    now_unix: i64,
+    region: CoachRegion,
+    multiplier: f64,
+) -> Applied {
     let mut next = progress.clone();
     let game = match record {
         CoachRecord::Honour(_) => {
             next.totals.trophies += 1;
-            return (next, None);
+            return Applied {
+                progress: next,
+                gain: None,
+                within_cap: false,
+            };
         }
         CoachRecord::Match(game) => game,
     };
@@ -158,7 +187,11 @@ pub fn apply_online(
         MatchOutcome::Lost => next.totals.losses += 1,
     }
     if !game.earns_xp {
-        return (next, None);
+        return Applied {
+            progress: next,
+            gain: None,
+            within_cap: false,
+        };
     }
 
     next.daily = roll_day(&next.daily, now_unix, region);
@@ -174,7 +207,11 @@ pub fn apply_online(
         mastery_before: before,
         mastery_after: after,
     };
-    (next, Some(gain))
+    Applied {
+        progress: next,
+        gain: Some(gain),
+        within_cap: factor > 0.0,
+    }
 }
 
 #[cfg(test)]
@@ -408,5 +445,54 @@ mod tests {
             day += 24 * HOUR;
         }
         assert_eq!(progress.mastery.counter, 60);
+    }
+
+    /// Given an account that has counted 0 to 60 XP-earning matches today,
+    /// when one more match, earning XP or not, is applied the same day and on the next region day,
+    /// then it is within the day's cap exactly when it earns XP and is among the day's first
+    /// `DAILY_XP_MATCH_LIMIT`, and the progress and gain are those `apply_online` gives (one
+    /// computation, so the cap missions count by cannot drift from the XP it pays).
+    #[test]
+    fn a_match_is_within_the_cap_exactly_when_it_still_earns_a_share_of_the_day() {
+        let region = CoachRegion::AsiaSoutheast;
+        for before in 0..=60u32 {
+            let (progress, _) = play_wins(before, MIDNIGHT_UTC);
+            let same_day = MIDNIGHT_UTC + i64::from(before) * 60 + 30;
+            let next_day = MIDNIGHT_UTC + 24 * HOUR;
+            for (at, counted_before) in [(same_day, before), (next_day, 0)] {
+                for earns_xp in [true, false] {
+                    let match_record = record(2, 1, earns_xp);
+                    let applied = apply_counted(&progress, &match_record, at, region, 5.0);
+                    let expected = earns_xp && counted_before < DAILY_XP_MATCH_LIMIT;
+                    assert_eq!(
+                        applied.within_cap, expected,
+                        "{before} counted, at {at}, earns XP {earns_xp}"
+                    );
+                    assert_eq!(
+                        (applied.progress, applied.gain),
+                        apply_online(&progress, &match_record, at, region, 5.0),
+                        "{before} counted, at {at}, earns XP {earns_xp}"
+                    );
+                }
+            }
+        }
+    }
+
+    /// Given an honour told after the day's cap is spent,
+    /// when it is applied,
+    /// then it is never within the cap: only matches count for missions.
+    #[test]
+    fn an_honour_is_never_within_the_cap() {
+        let (progress, _) = play_wins(3, MIDNIGHT_UTC);
+        let applied = apply_counted(
+            &progress,
+            &CoachRecord::Honour(HonourKind::League),
+            MIDNIGHT_UTC + HOUR,
+            CoachRegion::AsiaSoutheast,
+            1.0,
+        );
+        assert!(!applied.within_cap);
+        assert_eq!(applied.gain, None);
+        assert_eq!(applied.progress.totals.trophies, 1);
     }
 }

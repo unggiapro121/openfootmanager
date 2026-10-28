@@ -42,6 +42,7 @@ pub mod player_identity;
 pub mod player_rating;
 pub mod player_wear;
 pub mod playing_time;
+pub mod recovery;
 pub mod season;
 pub mod season_stats;
 pub mod seed;

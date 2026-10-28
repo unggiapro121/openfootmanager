@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { type RealtimeMessage, setOnlineRealtime } from "../services/onlineRealtime";
 import type { MatchFrame } from "./api";
 import type { OnlineApiError } from "./errors";
-import { watchAccount, watchLeague, watchMatch } from "./live";
+import { readAccountRing, watchAccount, watchLeague, watchMatch } from "./live";
 
 const MATCH = "0192f0c4-0000-7000-8000-0000000000aa";
 const LEAGUE = "0192f0c4-0000-7000-8000-0000000000cc";
@@ -107,5 +107,23 @@ describe("live watches", () => {
     watch?.speak({ kind: "notice", channel: `account:${MATCH}`, data: { kind: "friendly" } });
 
     expect(rings).toEqual([{ kind: "friendly" }]);
+  });
+});
+
+describe("readAccountRing", () => {
+  // Given rings of the coach's account: a friendly, a market event, a change of coins (C-7a1),
+  // one of a kind this build does not know, and something that is not a ring,
+  // when they are read,
+  // then each known kind keeps what it carries, and the rest is `unknown` (E6-15).
+  it("reads the coins' finance ring beside the friendly and market ones", () => {
+    expect(readAccountRing({ kind: "friendly" })).toEqual({ kind: "friendly" });
+    expect(readAccountRing({ kind: "finance" })).toEqual({ kind: "finance" });
+    expect(readAccountRing({ kind: "market", event: "won", auctionId: "a-1" })).toEqual({
+      kind: "market",
+      event: "won",
+      auctionId: "a-1",
+    });
+    expect(readAccountRing({ kind: "items", event: "granted" })).toEqual({ kind: "unknown" });
+    expect(readAccountRing("finance")).toEqual({ kind: "unknown" });
   });
 });
