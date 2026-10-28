@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potensi {{low}} sampai {{high}} bintang"
     },
     "training": {
-      "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
+      "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
+      "today": {
+        "title": "Latihan hari ini",
+        "titleDay": "Latihan hari ini · Hari {{day}}/{{total}}",
+        "statusNone": "Belum latihan hari ini",
+        "statusManual": "Sudah latihan hari ini",
+        "statusManualWith": "Sudah latihan hari ini ({{intensity}})",
+        "statusAuto": "Hari ini sudah latihan sesuai jadwal",
+        "statusBot": "Klub sudah latihan hari ini sebelum kamu mengambil alih",
+        "statusRest": "Klub sudah istirahat hari ini sebelum kamu mengambil alih",
+        "noExtra": "Menekan tombol tidak membuat tim berlatih lebih banyak: tetap maksimal {{cap}} sesi dalam 7 hari. Tekan untuk memilih kapan berlatih dan seberapa keras.",
+        "matchToday": "Hari ini kamu bertanding pukul {{time}}. Kalau berlatih sebelum laga, pemain masuk lapangan dengan kondisi setelah latihan. Kalau tidak menekan, latihan hari ini dihitung setelah laga, saat pergantian hari.",
+        "scheduledRest": "Hari ini hari istirahat di jadwalmu. Kalau kamu menekan, tim tetap berlatih: sesi ini masuk hitungan {{cap}}, dan satu hari latihan berikutnya bisa menjadi hari istirahat.",
+        "intensity": "Intensitas",
+        "intensityNote": "Hanya untuk sesi ini; rencana mingguanmu tidak berubah.",
+        "press": "Latihan sekarang",
+        "sessions": "{{count}}/{{cap}} sesi dalam 7 hari terakhir",
+        "recentTitle": "7 hari terakhir",
+        "dayCell": "Hari {{day}}",
+        "kind": {
+          "manual": "Latihan dari tombolmu",
+          "auto": "Latihan sesuai jadwal",
+          "bot": "Latihan sebelum kamu datang",
+          "rest": "Istirahat",
+          "none": "Tidak ada catatan"
+        },
+        "recentNote": "Hari latihan di jadwal bisa menjadi hari istirahat jika sudah ada {{cap}} sesi dalam 7 hari.",
+        "nextRecovery": "Pemulihan kondisi berikutnya pukul {{time}} (sisa {{left}})",
+        "updating": "Memperbarui kondisi…",
+        "summary": "Sudah latihan: {{down}} pemain kondisinya turun, {{up}} naik, {{same}} tetap.",
+        "showPlayers": "Lihat tiap pemain",
+        "hidePlayers": "Sembunyikan daftar",
+        "player": "Pemain",
+        "before": "Saat ditekan",
+        "after": "Setelah latihan",
+        "noteDayTurn": "Pada hari kamu tidak menekan, tim berlatih sesuai jadwal mingguan. Sesi itu dihitung saat pergantian hari ({{time}}), jadi kondisi bisa berubah sekali pada saat itu.",
+        "noteFatigue": "Pemain dengan kondisi di bawah 40 menjalani latihan pemulihan: kondisinya tidak turun dan tidak berkembang.",
+        "noteStamina": "Pemain dengan stamina tinggi pulih lebih cepat dan kehilangan lebih sedikit kondisi setelah laga.",
+        "lineupLocked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa berlatih lagi setelah laga selesai.",
+        "reload": "Muat ulang",
+        "unknownRefusal": "Belum bisa latihan sekarang."
+      }
     },
     "schedule": {
       "title": "Jadwal musim",
@@ -4841,6 +4882,14 @@
       "shop": {
         "quantityInvalid": "Beli antara 1 dan 99 sekaligus.",
         "itemNotSold": "Item ini sedang tidak dijual."
+      },
+      "training": {
+        "manualOff": "Latihan manual tidak aktif di musim ini.",
+        "noDay": "Hari ini tidak ada latihan: musim belum mulai, sudah berakhir, atau klub tidak punya tempat di musim ini.",
+        "dayPending": "Hari baru sedang diproses. Tunggu beberapa menit.",
+        "sessionToday": "Klub sudah latihan hari ini.",
+        "sessionCap": "Sudah 6 sesi dalam 7 hari. Kamu bisa latihan lagi mulai hari {{nextAllowedDay}}.",
+        "sessionCapSeason": "Sudah 6 sesi dalam 7 hari dan tidak ada hari tersisa di musim ini untuk sesi lain."
       }
     },
     "sender": {

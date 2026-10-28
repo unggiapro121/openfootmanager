@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potenzial {{low}} bis {{high}} Sterne"
     },
     "training": {
-      "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan."
+      "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan.",
+      "today": {
+        "title": "Heutiges Training",
+        "titleDay": "Heutiges Training · Tag {{day}}/{{total}}",
+        "statusNone": "Heute noch nicht trainiert",
+        "statusManual": "Heute trainiert",
+        "statusManualWith": "Heute trainiert ({{intensity}})",
+        "statusAuto": "Heute nach Plan trainiert",
+        "statusBot": "Der Verein hat heute trainiert, bevor du übernommen hast",
+        "statusRest": "Der Verein hat heute pausiert, bevor du übernommen hast",
+        "noExtra": "Drücken lässt das Team nicht mehr trainieren: Es bleiben höchstens {{cap}} Einheiten in 7 Tagen. Drück, um zu wählen, wann und wie hart trainiert wird.",
+        "matchToday": "Du spielst heute um {{time}}. Trainierst du vor dem Spiel, gehen die Spieler mit ihrer Kondition nach der Einheit ins Spiel. Drückst du nicht, zählt die heutige Einheit nach dem Spiel, beim Tageswechsel.",
+        "scheduledRest": "Heute ist laut deinem Plan ein Ruhetag. Drückst du, trainiert das Team trotzdem: Die Einheit zählt zu den {{cap}}, und ein späterer Trainingstag kann zum Ruhetag werden.",
+        "intensity": "Intensität",
+        "intensityNote": "Nur für diese Einheit; dein Wochenplan ändert sich nicht.",
+        "press": "Jetzt trainieren",
+        "sessions": "{{count}}/{{cap}} Einheiten in den letzten 7 Tagen",
+        "recentTitle": "Die letzten 7 Tage",
+        "dayCell": "Tag {{day}}",
+        "kind": {
+          "manual": "Von dir trainiert",
+          "auto": "Nach Plan trainiert",
+          "bot": "Vor deiner Übernahme trainiert",
+          "rest": "Ruhetag",
+          "none": "Kein Eintrag"
+        },
+        "recentNote": "Ein Trainingstag laut Plan kann zum Ruhetag werden, sobald {{cap}} Einheiten in 7 Tagen stattgefunden haben.",
+        "nextRecovery": "Nächste Erholung der Kondition um {{time}} (noch {{left}})",
+        "updating": "Kondition wird aktualisiert…",
+        "summary": "Trainiert: {{down}} Spieler haben Kondition verloren, {{up}} gewonnen, {{same}} unverändert.",
+        "showPlayers": "Jeden Spieler zeigen",
+        "hidePlayers": "Liste ausblenden",
+        "player": "Spieler",
+        "before": "Beim Drücken",
+        "after": "Nach der Einheit",
+        "noteDayTurn": "An einem Tag, an dem du nicht drückst, trainiert das Team nach dem Wochenplan. Diese Einheit zählt beim Tageswechsel ({{time}}), daher kann sich die Kondition dann einmal ändern.",
+        "noteFatigue": "Spieler unter 40 Kondition machen eine Regenerationseinheit: Sie verlieren keine Kondition und entwickeln sich nicht.",
+        "noteStamina": "Spieler mit hoher Ausdauer erholen sich schneller und verlieren nach einem Spiel weniger Kondition.",
+        "lineupLocked": "Die Aufstellung ist für das Spiel um {{time}} gesperrt. Nach dem Spiel kannst du wieder trainieren.",
+        "reload": "Neu laden",
+        "unknownRefusal": "Gerade kann nicht trainiert werden."
+      }
     },
     "schedule": {
       "title": "Spielplan der Saison",
@@ -4841,6 +4882,14 @@
       "shop": {
         "quantityInvalid": "Kaufe zwischen 1 und 99 auf einmal.",
         "itemNotSold": "Dieser Gegenstand ist gerade nicht im Angebot."
+      },
+      "training": {
+        "manualOff": "Manuelles Training ist in dieser Saison nicht aktiv.",
+        "noDay": "Heute gibt es keine Einheit: Die Saison hat nicht begonnen, ist vorbei, oder der Verein hat keinen Platz darin.",
+        "dayPending": "Der neue Tag wird gerade verarbeitet. Warte ein paar Minuten.",
+        "sessionToday": "Der Verein hat heute schon trainiert.",
+        "sessionCap": "Es gab schon 6 Einheiten in 7 Tagen. Ab Tag {{nextAllowedDay}} kannst du wieder trainieren.",
+        "sessionCapSeason": "Es gab schon 6 Einheiten in 7 Tagen, und kein Tag dieser Saison erlaubt noch eine weitere."
       }
     },
     "sender": {

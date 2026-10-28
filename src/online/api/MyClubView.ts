@@ -4,6 +4,7 @@ import type { FixtureView } from "./FixtureView";
 import type { LicenceView } from "./LicenceView";
 import type { SquadPlayerView } from "./SquadPlayerView";
 import type { StaffLineView } from "./StaffLineView";
+import type { TrainingDayView } from "./TrainingDayView";
 import type { TrainingPlan } from "./TrainingPlan";
 import type { ClubSetup } from "./rules/ClubSetup";
 
@@ -37,4 +38,9 @@ licence?: LicenceView,
  * The club's next rename is free; each later one costs a `clubRename` card (S-14, S-17
  * R17-5).
  */
-renameFree: boolean, };
+renameFree: boolean, 
+/**
+ * Today's training as the button sees it (S-21 S21-15): present while the season under way
+ * rests clubs by blocks (`recovery`), absent otherwise.
+ */
+trainingDay?: TrainingDayView, };

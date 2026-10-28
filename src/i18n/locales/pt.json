@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potencial de {{low}} a {{high}} estrelas"
     },
     "training": {
-      "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu."
+      "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu.",
+      "today": {
+        "title": "Sessão de hoje",
+        "titleDay": "Sessão de hoje · Dia {{day}}/{{total}}",
+        "statusNone": "Ainda não treinaste hoje",
+        "statusManual": "Treinado hoje",
+        "statusManualWith": "Treinado hoje ({{intensity}})",
+        "statusAuto": "Hoje treinou-se segundo o calendário",
+        "statusBot": "O clube treinou hoje antes de assumires a equipa",
+        "statusRest": "O clube descansou hoje antes de assumires a equipa",
+        "noExtra": "Carregar não faz a equipa treinar mais: continua a ser no máximo {{cap}} sessões em 7 dias. Carrega para escolher quando treina e com que intensidade.",
+        "matchToday": "Hoje jogas às {{time}}. Se treinares antes do jogo, os jogadores começam-no com a condição de depois da sessão. Se não carregares, a sessão de hoje conta depois do jogo, na mudança de dia.",
+        "scheduledRest": "Hoje é dia de descanso no teu calendário. Se carregares, a equipa treina na mesma: a sessão conta para as {{cap}} e um dia de treino seguinte pode passar a descanso.",
+        "intensity": "Intensidade",
+        "intensityNote": "Só para esta sessão; o teu plano semanal não muda.",
+        "press": "Treinar agora",
+        "sessions": "{{count}}/{{cap}} sessões nos últimos 7 dias",
+        "recentTitle": "Os últimos 7 dias",
+        "dayCell": "Dia {{day}}",
+        "kind": {
+          "manual": "Treinado por ti",
+          "auto": "Treinado segundo o calendário",
+          "bot": "Treinado antes de chegares",
+          "rest": "Descanso",
+          "none": "Sem registo"
+        },
+        "recentNote": "Um dia de treino do calendário pode passar a descanso quando já há {{cap}} sessões em 7 dias.",
+        "nextRecovery": "Próxima recuperação de condição às {{time}} (faltam {{left}})",
+        "updating": "A atualizar a condição…",
+        "summary": "Treinado: {{down}} jogadores perderam condição, {{up}} ganharam, {{same}} sem alteração.",
+        "showPlayers": "Ver cada jogador",
+        "hidePlayers": "Esconder a lista",
+        "player": "Jogador",
+        "before": "Ao carregar",
+        "after": "Depois da sessão",
+        "noteDayTurn": "Num dia em que não carregas, a equipa treina segundo o calendário semanal. Essa sessão conta na mudança de dia ({{time}}), por isso a condição pode mudar uma vez nessa altura.",
+        "noteFatigue": "Os jogadores com menos de 40 de condição fazem uma sessão de recuperação: não perdem condição nem evoluem.",
+        "noteStamina": "Os jogadores com muita resistência recuperam mais depressa e perdem menos condição depois de um jogo.",
+        "lineupLocked": "A equipa titular está bloqueada para o jogo das {{time}}. Podes voltar a treinar quando terminar.",
+        "reload": "Recarregar",
+        "unknownRefusal": "Agora não podes treinar."
+      }
     },
     "schedule": {
       "title": "Calendário da época",
@@ -4841,6 +4882,14 @@
       "shop": {
         "quantityInvalid": "Compra entre 1 e 99 de cada vez.",
         "itemNotSold": "Este item não está à venda neste momento."
+      },
+      "training": {
+        "manualOff": "O treino manual não está ativo nesta época.",
+        "noDay": "Hoje não há sessão: a época ainda não começou, já terminou ou o clube não tem lugar nela.",
+        "dayPending": "O novo dia está a ser processado. Espera alguns minutos.",
+        "sessionToday": "O clube já treinou hoje.",
+        "sessionCap": "Já houve 6 sessões em 7 dias. Podes voltar a treinar a partir do dia {{nextAllowedDay}}.",
+        "sessionCapSeason": "Já houve 6 sessões em 7 dias e não resta nenhum dia da época que permita outra."
       }
     },
     "sender": {

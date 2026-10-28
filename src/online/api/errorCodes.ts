@@ -108,6 +108,12 @@ export const ERROR_CODES = [
   "be.error.inventory.dailyLimitReached",
   "be.error.inventory.seasonLimitReached",
   "be.error.inventory.effectLimitReached",
+  "be.error.training.manualOff",
+  "be.error.training.noDay",
+  "be.error.training.dayPending",
+  "be.error.training.sessionToday",
+  "be.error.training.sessionCap",
+  "be.error.training.sessionCapSeason",
   "be.error.academy.disabled",
   "be.error.academy.tripOpen",
   "be.error.academy.tripLimitReached",
@@ -154,6 +160,7 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.inventory.dailyLimitReached": ["nextAt"],
   "be.error.inventory.seasonLimitReached": ["limit", "remaining"],
   "be.error.inventory.effectLimitReached": ["max", "remaining"],
+  "be.error.training.sessionCap": ["nextAllowedDay"],
   "be.error.academy.tripOpen": ["tripId"],
   "be.error.academy.tripLimitReached": ["sent", "limit"],
   "be.error.academy.eliteTripLimitReached": ["sent", "limit"],
@@ -187,6 +194,7 @@ export type ErrorParams = {
   "be.error.inventory.dailyLimitReached": { nextAt: string | number };
   "be.error.inventory.seasonLimitReached": { limit: string | number; remaining: string | number };
   "be.error.inventory.effectLimitReached": { max: string | number; remaining: string | number };
+  "be.error.training.sessionCap": { nextAllowedDay: string | number };
   "be.error.academy.tripOpen": { tripId: string | number };
   "be.error.academy.tripLimitReached": { sent: string | number; limit: string | number };
   "be.error.academy.eliteTripLimitReached": { sent: string | number; limit: string | number };
