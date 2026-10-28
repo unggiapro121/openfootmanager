@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "No puedes pujar por tu propio jugador.",
         "listingExpired": "Esta subasta ha terminado.",
         "alreadyLeading": "Ya vas en cabeza en esta subasta.",
-        "notCancellable": "Solo se puede retirar tu propia venta sin pujas, nunca una forzosa."
+        "notCancellable": "Solo se puede retirar tu propia venta sin pujas, nunca una forzosa.",
+        "levelCapPlayer": "Este jugador supera el tope de {{cap}} de media de tu nivel de entrenador. Necesitas nivel {{requiredLevel}}.",
+        "levelCapSquad": "Ficharlo subiría la fuerza de compra de tu plantilla a {{after}}, por encima del tope de {{squadCap}} del nivel {{level}}. Necesitas nivel {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Este cambio de nombre requiere una tarjeta que aún no tienes ({{item}})."

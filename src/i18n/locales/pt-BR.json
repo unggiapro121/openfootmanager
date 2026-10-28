@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Você não pode dar lance no seu próprio jogador.",
         "listingExpired": "Este leilão terminou.",
         "alreadyLeading": "Você já está na frente neste leilão.",
-        "notCancellable": "Só é possível retirar a sua própria venda sem lances, nunca uma forçada."
+        "notCancellable": "Só é possível retirar a sua própria venda sem lances, nunca uma forçada.",
+        "levelCapPlayer": "Este jogador passa do limite de {{cap}} de geral do seu nível de treinador. Você precisa do nível {{requiredLevel}}.",
+        "levelCapSquad": "Contratá-lo elevaria a força de compra do elenco para {{after}}, acima do limite de {{squadCap}} do nível {{level}}. Você precisa do nível {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Esta troca de nome exige um cartão que você ainda não tem ({{item}})."

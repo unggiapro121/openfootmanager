@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Kamu tidak bisa menawar pemainmu sendiri.",
         "listingExpired": "Lelang ini sudah berakhir.",
         "alreadyLeading": "Kamu sudah memimpin lelang ini.",
-        "notCancellable": "Hanya penjualanmu sendiri yang belum ditawar yang bisa ditarik, dan bukan penjualan paksa."
+        "notCancellable": "Hanya penjualanmu sendiri yang belum ditawar yang bisa ditarik, dan bukan penjualan paksa.",
+        "levelCapPlayer": "Pemain ini di atas batas OVR {{cap}} untuk level pelatihmu. Kamu perlu level pelatih {{requiredLevel}}.",
+        "levelCapSquad": "Membelinya akan menaikkan kekuatan beli skuadmu ke {{after}}, di atas batas {{squadCap}} untuk level {{level}}. Kamu perlu level pelatih {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Ganti nama ini memerlukan kartu yang belum kamu miliki ({{item}})."

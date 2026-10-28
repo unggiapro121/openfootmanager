@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Nemůžete přihazovat na vlastního hráče.",
         "listingExpired": "Tato aukce skončila.",
         "alreadyLeading": "V této aukci už vedete.",
-        "notCancellable": "Stáhnout lze jen vlastní nabídku bez příhozů, nikdy nucenou."
+        "notCancellable": "Stáhnout lze jen vlastní nabídku bez příhozů, nikdy nucenou.",
+        "levelCapPlayer": "Tento hráč je nad stropem {{cap}} OVR tvé trenérské úrovně. Potřebuješ úroveň {{requiredLevel}}.",
+        "levelCapSquad": "Jeho koupě by zvedla nákupní sílu kádru na {{after}}, nad strop {{squadCap}} pro úroveň {{level}}. Potřebuješ úroveň {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Toto přejmenování vyžaduje kartu, kterou zatím nemáte ({{item}})."

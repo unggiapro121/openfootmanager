@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Du kannst nicht auf deinen eigenen Spieler bieten.",
         "listingExpired": "Diese Auktion ist beendet.",
         "alreadyLeading": "Du führst diese Auktion bereits an.",
-        "notCancellable": "Nur ein eigenes Angebot ohne Gebote kann zurückgezogen werden, nie ein erzwungenes."
+        "notCancellable": "Nur ein eigenes Angebot ohne Gebote kann zurückgezogen werden, nie ein erzwungenes.",
+        "levelCapPlayer": "Dieser Spieler liegt über der Grenze von {{cap}} Gesamtwert für deine Trainerstufe. Du brauchst Stufe {{requiredLevel}}.",
+        "levelCapSquad": "Mit ihm stiege die Kaufstärke deines Kaders auf {{after}}, über die Grenze von {{squadCap}} für Stufe {{level}}. Du brauchst Stufe {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Diese Umbenennung braucht eine Karte, die du noch nicht hast ({{item}})."

@@ -83,6 +83,8 @@ export const ERROR_CODES = [
   "be.error.auction.listingExpired",
   "be.error.auction.alreadyLeading",
   "be.error.auction.notCancellable",
+  "be.error.auction.levelCapPlayer",
+  "be.error.auction.levelCapSquad",
   "be.error.economy.wageBudgetExceeded",
   "be.error.economy.notLocked",
   "be.error.economy.insufficientCoin",
@@ -139,6 +141,8 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.auction.cooldownActive": ["until"],
   "be.error.auction.outOfPriceBand": ["min", "max"],
   "be.error.auction.bidTooLow": ["minimum"],
+  "be.error.auction.levelCapPlayer": ["requiredLevel", "cap"],
+  "be.error.auction.levelCapSquad": ["requiredLevel", "level", "squadCap", "after"],
   "be.error.economy.priceChanged": ["current"],
   "be.error.economy.exchangeLimitReached": ["remaining"],
   "be.error.inventory.itemNotFound": ["held"],
@@ -170,6 +174,8 @@ export type ErrorParams = {
   "be.error.auction.cooldownActive": { until: string | number };
   "be.error.auction.outOfPriceBand": { min: string | number; max: string | number };
   "be.error.auction.bidTooLow": { minimum: string | number };
+  "be.error.auction.levelCapPlayer": { requiredLevel: string | number; cap: string | number };
+  "be.error.auction.levelCapSquad": { requiredLevel: string | number; level: string | number; squadCap: string | number; after: string | number };
   "be.error.economy.priceChanged": { current: string | number };
   "be.error.economy.exchangeLimitReached": { remaining: string | number };
   "be.error.inventory.itemNotFound": { held: string | number };

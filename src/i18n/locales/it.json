@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Non puoi fare offerte per un tuo giocatore.",
         "listingExpired": "Questa asta è terminata.",
         "alreadyLeading": "Sei già in testa a questa asta.",
-        "notCancellable": "Si può ritirare solo una tua vendita senza offerte, mai una forzata."
+        "notCancellable": "Si può ritirare solo una tua vendita senza offerte, mai una forzata.",
+        "levelCapPlayer": "Questo giocatore supera il tetto di {{cap}} di valutazione del tuo livello di allenatore. Serve il livello {{requiredLevel}}.",
+        "levelCapSquad": "Acquistarlo porterebbe la forza d'acquisto della rosa a {{after}}, oltre il tetto di {{squadCap}} del livello {{level}}. Serve il livello {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Questo cambio di nome richiede una carta che non hai ancora ({{item}})."

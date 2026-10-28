@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "不能对自己的球员出价。",
         "listingExpired": "该拍卖已结束。",
         "alreadyLeading": "你已在该拍卖中领先。",
-        "notCancellable": "只能撤回你自己且尚无出价的挂牌，强制挂牌不能撤回。"
+        "notCancellable": "只能撤回你自己且尚无出价的挂牌，强制挂牌不能撤回。",
+        "levelCapPlayer": "该球员超过你教练等级的能力值上限 {{cap}}。需要教练等级 {{requiredLevel}}。",
+        "levelCapSquad": "买下他会使你阵容的购买实力升至 {{after}}，超过等级 {{level}} 的上限 {{squadCap}}。需要教练等级 {{requiredLevel}}。"
       },
       "rename": {
         "itemRequired": "这次改名需要一张你还没有的卡（{{item}}）。"

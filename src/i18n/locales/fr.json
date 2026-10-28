@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Vous ne pouvez pas enchérir sur votre propre joueur.",
         "listingExpired": "Cette enchère est terminée.",
         "alreadyLeading": "Vous menez déjà cette enchère.",
-        "notCancellable": "Seule votre propre mise en vente sans enchère peut être retirée, jamais une vente forcée."
+        "notCancellable": "Seule votre propre mise en vente sans enchère peut être retirée, jamais une vente forcée.",
+        "levelCapPlayer": "Ce joueur dépasse le plafond de {{cap}} de note de votre niveau d'entraîneur. Il faut le niveau {{requiredLevel}}.",
+        "levelCapSquad": "L'acheter porterait la force d'achat de votre effectif à {{after}}, au-dessus du plafond de {{squadCap}} du niveau {{level}}. Il faut le niveau {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Ce changement de nom demande une carte que vous n'avez pas encore ({{item}})."

@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Bạn không thể đặt giá cầu thủ của chính mình.",
         "listingExpired": "Phiên đấu giá đã kết thúc.",
         "alreadyLeading": "Bạn đang dẫn đầu phiên này.",
-        "notCancellable": "Chỉ rút được phiên của chính bạn khi chưa ai đặt giá, và không rút được phiên cưỡng chế."
+        "notCancellable": "Chỉ rút được phiên của chính bạn khi chưa ai đặt giá, và không rút được phiên cưỡng chế.",
+        "levelCapPlayer": "Cầu thủ này vượt trần OVR {{cap}} của cấp HLV của bạn. Cần HLV cấp {{requiredLevel}}.",
+        "levelCapSquad": "Mua cầu thủ này đưa sức mạnh mua của đội lên {{after}}, vượt trần {{squadCap}} của cấp {{level}}. Cần HLV cấp {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Lần đổi tên này cần một thẻ mà bạn chưa có ({{item}})."

@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "Kendi oyuncuna teklif veremezsin.",
         "listingExpired": "Bu açık artırma sona erdi.",
         "alreadyLeading": "Bu açık artırmada zaten öndesin.",
-        "notCancellable": "Yalnızca henüz teklif almamış kendi satışını geri çekebilirsin, zorunlu satışı asla."
+        "notCancellable": "Yalnızca henüz teklif almamış kendi satışını geri çekebilirsin, zorunlu satışı asla.",
+        "levelCapPlayer": "Bu oyuncu antrenör seviyenin {{cap}} genel puan sınırının üstünde. {{requiredLevel}}. seviye gerekiyor.",
+        "levelCapSquad": "Onu almak kadronun alım gücünü {{after}} yapar; bu, {{level}}. seviyenin {{squadCap}} sınırının üstünde. {{requiredLevel}}. seviye gerekiyor."
       },
       "rename": {
         "itemRequired": "Bu ad değişikliği henüz sahip olmadığın bir kart gerektiriyor ({{item}})."

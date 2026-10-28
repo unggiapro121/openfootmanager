@@ -4378,7 +4378,9 @@
         "selfBiddingForbidden": "You cannot bid for your own player.",
         "listingExpired": "This auction has ended.",
         "alreadyLeading": "You are already leading this auction.",
-        "notCancellable": "Only your own listing with no bid yet can be withdrawn, and never a forced one."
+        "notCancellable": "Only your own listing with no bid yet can be withdrawn, and never a forced one.",
+        "levelCapPlayer": "This player is above the cap of {{cap}} OVR for your coach level. You need coach level {{requiredLevel}}.",
+        "levelCapSquad": "Buying him would raise your squad's buying strength to {{after}}, above the cap of {{squadCap}} for level {{level}}. You need coach level {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "This rename needs a card you do not have yet ({{item}})."
