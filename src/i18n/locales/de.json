@@ -571,7 +571,15 @@
       "nationalityChange": "Nationalität ändern",
       "nationalityTitle": "Nationalität von {{name}}",
       "nationalityHint": "Die angebotenen Gesichter folgen seiner Nationalität.",
-      "nationalitySave": "Nationalität ändern"
+      "nationalitySave": "Nationalität ändern",
+      "release": "Vertrag auflösen",
+      "releaseTitle": "{{name}} freigeben?",
+      "releaseHint": "Er verlässt deinen Verein und wird ein ablösefreier Spieler, den jeder verpflichten kann. Die Abfindung zahlst du jetzt. Willst du Geld für ihn bekommen, stelle ihn stattdessen zur Auktion.",
+      "releaseWage": "Wochengehalt",
+      "releaseSeverance": "Abfindung",
+      "releaseCash": "Vereinskasse",
+      "releaseSquad": "Verbleibende Spieler (mindestens {{min}})",
+      "releaseConfirm": "Spieler freigeben"
     },
     "inbox": {
       "sender": "Vereinsbüro",
@@ -4332,7 +4340,8 @@
       "player": {
         "notYours": "Dieser Spieler ist nicht in deinem Verein.",
         "listed": "Ein Spieler in einer Auktion behält seinen Namen, bis die Auktion endet.",
-        "shirtTaken": "Diese Nummer trägt bereits ein anderer Spieler."
+        "shirtTaken": "Diese Nummer trägt bereits ein anderer Spieler.",
+        "releaseSquadTooSmall": "Wenn er geht, hätte dein Kader weniger als {{squadMin}} Spieler."
       }
     },
     "sender": {

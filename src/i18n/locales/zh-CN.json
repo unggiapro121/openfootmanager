@@ -571,7 +571,15 @@
       "nationalityChange": "更改国籍",
       "nationalityTitle": "{{name}} 的国籍",
       "nationalityHint": "可选的头像会随国籍而变化。",
-      "nationalitySave": "更改国籍"
+      "nationalitySave": "更改国籍",
+      "release": "解约",
+      "releaseTitle": "解约 {{name}}？",
+      "releaseHint": "他将离开你的俱乐部，成为任何人都可签下的自由球员。你需现在支付他的解约金。若想从他身上获得收入，请改为拍卖。",
+      "releaseWage": "周薪",
+      "releaseSeverance": "解约金",
+      "releaseCash": "俱乐部资金",
+      "releaseSquad": "剩余球员数（至少 {{min}}）",
+      "releaseConfirm": "解约球员"
     },
     "inbox": {
       "sender": "俱乐部办公室",
@@ -4332,7 +4340,8 @@
       "player": {
         "notYours": "该球员不在你的俱乐部。",
         "listed": "正在拍卖的球员在拍卖结束前保留原名。",
-        "shirtTaken": "另一名球员已经穿这个号码。"
+        "shirtTaken": "另一名球员已经穿这个号码。",
+        "releaseSquadTooSmall": "让他离队会使你的阵容少于 {{squadMin}} 人。"
       }
     },
     "sender": {

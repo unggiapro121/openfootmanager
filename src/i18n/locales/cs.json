@@ -571,7 +571,15 @@
       "nationalityChange": "Změnit národnost",
       "nationalityTitle": "Národnost hráče {{name}}",
       "nationalityHint": "Nabízené tváře se řídí jeho národností.",
-      "nationalitySave": "Změnit národnost"
+      "nationalitySave": "Změnit národnost",
+      "release": "Rozvázat smlouvu",
+      "releaseTitle": "Rozvázat smlouvu s hráčem {{name}}?",
+      "releaseHint": "Odejde z klubu a stane se volným hráčem, kterého může podepsat kdokoli. Odstupné platíš hned. Chceš-li za něj dostat peníze, dej ho raději do aukce.",
+      "releaseWage": "Týdenní plat",
+      "releaseSeverance": "Odstupné",
+      "releaseCash": "Pokladna klubu",
+      "releaseSquad": "Zbývající hráči (minimum {{min}})",
+      "releaseConfirm": "Rozvázat smlouvu s hráčem"
     },
     "inbox": {
       "sender": "Kancelář klubu",
@@ -4332,7 +4340,8 @@
       "player": {
         "notYours": "Tento hráč není ve vašem klubu.",
         "listed": "Hráč v aukci si ponechá jméno až do konce aukce.",
-        "shirtTaken": "Toto číslo už nosí jiný hráč."
+        "shirtTaken": "Toto číslo už nosí jiný hráč.",
+        "releaseSquadTooSmall": "Kdyby odešel, soupiska by klesla pod {{squadMin}} hráčů."
       }
     },
     "sender": {

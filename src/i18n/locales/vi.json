@@ -571,7 +571,15 @@
       "nationalityChange": "Đổi quốc tịch",
       "nationalityTitle": "Quốc tịch của {{name}}",
       "nationalityHint": "Các khuôn mặt để chọn cho cầu thủ sẽ đổi theo quốc tịch.",
-      "nationalitySave": "Đổi quốc tịch"
+      "nationalitySave": "Đổi quốc tịch",
+      "release": "Thanh lý",
+      "releaseTitle": "Thanh lý {{name}}?",
+      "releaseHint": "Cầu thủ rời CLB và trở thành cầu thủ tự do, ai cũng có thể ký. Bạn trả tiền đền bù hợp đồng ngay bây giờ. Muốn thu tiền về thì hãy rao bán thay vì thanh lý.",
+      "releaseWage": "Lương tuần",
+      "releaseSeverance": "Tiền đền bù",
+      "releaseCash": "Quỹ CLB",
+      "releaseSquad": "Số cầu thủ còn lại (tối thiểu {{min}})",
+      "releaseConfirm": "Thanh lý cầu thủ"
     },
     "inbox": {
       "sender": "Văn phòng CLB",
@@ -4332,7 +4340,8 @@
       "player": {
         "notYours": "Cầu thủ này không thuộc CLB của bạn.",
         "listed": "Cầu thủ đang được đấu giá giữ nguyên tên cho tới khi phiên kết thúc.",
-        "shirtTaken": "Một cầu thủ khác đã mang số áo này."
+        "shirtTaken": "Một cầu thủ khác đã mang số áo này.",
+        "releaseSquadTooSmall": "Thanh lý cầu thủ này sẽ khiến đội hình dưới {{squadMin}} người."
       }
     },
     "sender": {
