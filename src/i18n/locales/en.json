@@ -571,7 +571,15 @@
       "nationalityChange": "Change nationality",
       "nationalityTitle": "Nationality of {{name}}",
       "nationalityHint": "The faces on offer for him follow his nationality.",
-      "nationalitySave": "Change nationality"
+      "nationalitySave": "Change nationality",
+      "release": "Release",
+      "releaseTitle": "Release {{name}}?",
+      "releaseHint": "He leaves your club and becomes a free agent anyone can sign. You pay his severance now. To be paid for him, put him up for auction instead.",
+      "releaseWage": "Weekly wage",
+      "releaseSeverance": "Severance",
+      "releaseCash": "Club cash",
+      "releaseSquad": "Players left (minimum {{min}})",
+      "releaseConfirm": "Release player"
     },
     "inbox": {
       "sender": "Club office",
@@ -4332,7 +4340,8 @@
       "player": {
         "notYours": "That player is not at your club.",
         "listed": "A player up for auction keeps his name until the auction is over.",
-        "shirtTaken": "Another player already wears that number."
+        "shirtTaken": "Another player already wears that number.",
+        "releaseSquadTooSmall": "Letting him go would leave your squad below {{squadMin}} players."
       }
     },
     "sender": {

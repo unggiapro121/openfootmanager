@@ -350,6 +350,45 @@ fn a_player_s_shirt_is_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when the webview asks what letting a player go would cost and then lets him go, and tries each
+/// route with another method,
+/// then they go out to `/v1/clubs/mine/players/{id}/release-quote` as a GET and
+/// `/v1/clubs/mine/players/{id}/release` as a POST, and the other methods are refused.
+#[test]
+fn a_player_s_release_is_two_routes() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let id = "01a16f79-3126-72e0-b2d1-325f38ddce33";
+    let quote = ["v1", "clubs", "mine", "players", id, "release-quote"];
+    let release = ["v1", "clubs", "mine", "players", id, "release"];
+    send(&session, &request("GET", &quote), 0).expect("an answer");
+    send(&session, &request("POST", &release), 0).expect("an answer");
+    assert_eq!(
+        refused(send(&session, &request("POST", &quote), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    assert_eq!(
+        refused(send(&session, &request("GET", &release), 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let requests = sent(&server);
+    assert_eq!(requests.len(), 2);
+    assert_eq!(
+        (requests[0].method.as_str(), requests[0].path.as_str()),
+        (
+            "GET",
+            format!("/v1/clubs/mine/players/{id}/release-quote").as_str()
+        )
+    );
+    assert_eq!(
+        (requests[1].method.as_str(), requests[1].path.as_str()),
+        (
+            "POST",
+            format!("/v1/clubs/mine/players/{id}/release").as_str()
+        )
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview reads and changes its friendly (S-12): its seat, a room made, joined, readied,
 /// left and rematched, the queue joined and left,
 /// then each goes out to its own route with its method, and the routes take no other method.

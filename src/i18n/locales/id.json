@@ -571,7 +571,15 @@
       "nationalityChange": "Ganti kewarganegaraan",
       "nationalityTitle": "Kewarganegaraan {{name}}",
       "nationalityHint": "Wajah yang ditawarkan mengikuti kewarganegaraannya.",
-      "nationalitySave": "Ganti kewarganegaraan"
+      "nationalitySave": "Ganti kewarganegaraan",
+      "release": "Putus kontrak",
+      "releaseTitle": "Putus kontrak {{name}}?",
+      "releaseHint": "Dia meninggalkan klubmu dan menjadi pemain bebas yang bisa direkrut siapa saja. Pesangonnya kamu bayar sekarang. Untuk mendapat uang darinya, lelang saja.",
+      "releaseWage": "Gaji mingguan",
+      "releaseSeverance": "Pesangon",
+      "releaseCash": "Kas klub",
+      "releaseSquad": "Pemain tersisa (minimal {{min}})",
+      "releaseConfirm": "Putus kontrak pemain"
     },
     "inbox": {
       "sender": "Kantor klub",
@@ -4332,7 +4340,8 @@
       "player": {
         "notYours": "Pemain itu tidak ada di klubmu.",
         "listed": "Pemain yang sedang dilelang tetap memakai namanya sampai lelang selesai.",
-        "shirtTaken": "Pemain lain sudah memakai nomor itu."
+        "shirtTaken": "Pemain lain sudah memakai nomor itu.",
+        "releaseSquadTooSmall": "Melepas dia akan membuat skuadmu kurang dari {{squadMin}} pemain."
       }
     },
     "sender": {

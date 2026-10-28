@@ -33,6 +33,7 @@ import PotentialStars from "../PotentialStars";
 import RenamePlayerDialog from "../RenamePlayerDialog";
 import PlayerAvatarPicker from "./PlayerAvatarPicker";
 import PlayerNationalityDialog from "./PlayerNationalityDialog";
+import ReleaseDialog from "./ReleaseDialog";
 import ShirtNumberPicker from "./ShirtNumberPicker";
 
 /**
@@ -96,6 +97,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
             <Meter label={t("common.morale")} value={player.morale} />
             <div className="flex flex-wrap gap-2 pt-1">
               <ListingAction playerId={player.id} playerName={player.fullName} />
+              <ReleaseAction player={player} />
               <ShirtAction player={player} />
               <LookActions player={player} />
               <RenameAction player={player} />
@@ -308,6 +310,27 @@ function ListingAction({ playerId, playerName }: { playerId: string; playerName:
       {open && (
         <ListingDialog playerId={playerId} playerName={playerName} onClose={() => setOpen(false)} />
       )}
+    </>
+  );
+}
+
+/**
+ * The way to let the player go for his severance (the offline "terminate contract"), unless he is
+ * up for auction: a listed player stays until his auction is over, as the server would refuse it.
+ */
+function ReleaseAction({ player }: { player: SquadPlayerView }) {
+  const { t } = useTranslation();
+  const listed = useOnlineStore((state) =>
+    state.market?.selling.some((auction) => auction.playerId === player.id),
+  );
+  const [open, setOpen] = useState(false);
+  if (listed) return null;
+  return (
+    <>
+      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+        {t("online.player.release")}
+      </Button>
+      {open && <ReleaseDialog player={player} onClose={() => setOpen(false)} />}
     </>
   );
 }

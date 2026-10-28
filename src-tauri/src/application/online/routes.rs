@@ -69,6 +69,31 @@ pub const ROUTES: &[Route] = &[
     route("PATCH", &[L("v1"), L("players"), Id, L("name")], &[]),
     // A player's shirt number set, swapped or cleared.
     route("PATCH", &[L("v1"), L("players"), Id, L("shirt")], &[]),
+    // What letting a player go now would cost, and the release itself (severance, then a free agent).
+    route(
+        "GET",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("players"),
+            Id,
+            L("release-quote"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("players"),
+            Id,
+            L("release"),
+        ],
+        &[],
+    ),
     // A player's face, own picture and nationality.
     route("PATCH", &[L("v1"), L("players"), Id, L("avatar")], &[]),
     route("GET", &[L("v1"), L("players"), Id, L("avatar-image")], &[]),
