@@ -57,9 +57,10 @@ describe("PitchToken stacked layout", () => {
     expect(screen.getByText("CUTRONE")).toBeInTheDocument();
   });
 
-  // Given a captain who also takes penalties, then the token shows one dot
-  // counting his duties instead of a stack of chips.
-  it("folds several duties into one counting dot", () => {
+  // Given a captain who also takes penalties, then the corner badge shows
+  // only the captaincy: other duties live in the detail card, and the badge
+  // is kept for the captain.
+  it("shows only the captaincy on the corner badge", () => {
     render(
       <PitchToken
         layout="stacked"
@@ -71,12 +72,17 @@ describe("PitchToken stacked layout", () => {
       />,
     );
 
-    expect(screen.getByTestId("pitch-token-role-dot")).toHaveTextContent("+2");
+    expect(screen.getByTestId("pitch-token-role-dot")).toHaveTextContent(/^C$/);
     expect(screen.queryByText("PK")).not.toBeInTheDocument();
   });
 
-  // Given only the captaincy, then the dot is the duty's own code.
-  it("shows a single duty by its code", () => {
+  // Given a player who takes penalties, free kicks and corners but is not
+  // captain, then no badge is drawn on his token.
+  it("draws no badge for duties other than the captaincy", () => {
+    const takerOnly = pitchRoleMarkers(
+      { vice_captain: "a", penalty_taker: "a", free_kick_taker: "a", corner_taker: "a" },
+      "a",
+    );
     render(
       <PitchToken
         layout="stacked"
@@ -84,11 +90,11 @@ describe("PitchToken stacked layout", () => {
         positionAbbr="CM"
         ovr={60}
         condition={80}
-        markers={captainAndPenalties.slice(0, 1)}
+        markers={takerOnly}
       />,
     );
 
-    expect(screen.getByTestId("pitch-token-role-dot")).toHaveTextContent("C");
+    expect(screen.queryByTestId("pitch-token-role-dot")).not.toBeInTheDocument();
   });
 
   // Given a player with no duty, then no dot is drawn.

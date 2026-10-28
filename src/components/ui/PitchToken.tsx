@@ -48,9 +48,9 @@ export interface PitchTokenProps {
   size?: "md" | "sm";
   /**
    * "badges" (default): position and OVR on the avatar's corners, markers
-   * stacked top-left. "stacked": the tactics board's compact token — one role
-   * dot on the avatar, a position | OVR pill, the name and the condition bar
-   * underneath.
+   * stacked top-left. "stacked": the tactics board's compact token — a
+   * captain badge on the avatar, a position | OVR pill, the name and the
+   * condition bar underneath.
    */
   layout?: "badges" | "stacked";
   /** The stacked token's selected look: a white ring with a halo. */
@@ -131,20 +131,24 @@ function stackedRingClass(fitTone: PitchFitTone, selected: boolean): string {
   }
 }
 
-/** One dot for the duties: the duty's own chip when single, "+N" otherwise. */
-function RoleDot({ markers, isSmall }: { markers: PitchTokenMarker[]; isSmall: boolean }) {
-  if (markers.length === 0) {
+/**
+ * The corner badge on the stacked token. It marks the captain only; the other
+ * duties are listed in the tactics board's detail card. The spot is kept for
+ * the badge alone so it can later carry an OVR boost too.
+ */
+function CaptainBadge({ markers, isSmall }: { markers: PitchTokenMarker[]; isSmall: boolean }) {
+  const captain = markers.find((marker) => marker.key === "captain");
+  if (!captain) {
     return null;
   }
-  const single = markers.length === 1 ? markers[0] : null;
   return (
     <span
       data-testid="pitch-token-role-dot"
       className={`absolute -right-1.5 -top-1 z-10 flex items-center justify-center rounded-full border-2 border-primary-700 font-heading font-bold ${
         isSmall ? "h-3.5 min-w-3.5 px-0.5 text-[8px]" : "h-4.5 min-w-4.5 px-1 text-[10px]"
-      } ${single ? single.fillClassName : "bg-white text-navy-900"}`}
+      } ${captain.fillClassName}`}
     >
-      {single ? single.shortLabel : `+${markers.length}`}
+      {captain.shortLabel}
     </span>
   );
 }
@@ -197,7 +201,7 @@ export function PitchToken({
               className="h-full w-full"
             />
           </div>
-          <RoleDot markers={markers ?? []} isSmall={isSmall} />
+          <CaptainBadge markers={markers ?? []} isSmall={isSmall} />
         </div>
 
         <span
