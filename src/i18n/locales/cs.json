@@ -52,7 +52,8 @@
       "account": "Účet",
       "coins": "Peněženka mincí",
       "inventory": "Inventář",
-      "shop": "Obchod"
+      "shop": "Obchod",
+      "academy": "Akademie"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -199,7 +200,8 @@
       "noMatch": "Filtrům neodpovídá žádný hráč.",
       "notFound": "Tento hráč není ve vašem kádru.",
       "state": "Kondice",
-      "suspended": "Vyloučen: {{count}} zápas(y)"
+      "suspended": "Vyloučen: {{count}} zápas(y)",
+      "potentialStarsRange": "Potenciál {{low}} až {{high}} hvězd"
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."
@@ -427,7 +429,9 @@
         "adjust": "Úpravy",
         "reversal": "Storna",
         "grantReset": "Reset hotovosti s novým kádrem",
-        "coin_exchange": "Směna mincí"
+        "coin_exchange": "Směna mincí",
+        "scout": "Skauting akademie",
+        "graduation": "Poplatek za absolvování"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Další úroveň: {{cost}}",
       "upgraded": "{{facility}} vylepšeno na úroveň {{level}}.",
-      "exchangeCoins": "Směnit mince"
+      "exchangeCoins": "Směnit mince",
+      "facility": {
+        "academy": "Akademie",
+        "academyEffect": "Každá úroveň přidá místa pro mladíky."
+      },
+      "academyWages": "Platy akademie: {{amount}} týdně"
     },
     "market": {
       "title": "Přestupový trh",
@@ -697,6 +706,22 @@
             "subject": "Tvé předměty jsou odemčené",
             "body": "Kontrola tvých předmětů skončila. Můžeš je znovu používat."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Skautská cesta se vrátila",
+            "body": "Tvůj skaut se vrátil s hlášením. Vyber kandidáty, než se zavře."
+          },
+          "graduated": {
+            "subject": "{{player}} absolvoval",
+            "body": "{{player}} absolvoval akademii a postupuje do prvního týmu.{{extra}}",
+            "overSquadMax": "Kádr teď přesahuje maximální velikost.",
+            "feeWaived": "Poplatek za absolvování byl prominut."
+          },
+          "graduationDeferred": {
+            "subject": "Absolvování muselo počkat",
+            "body": "Klub nemohl zaplatit poplatek za absolvování {{fee}}, takže {{player}} zůstává v akademii ještě sezónu. Další absolvování je zdarma."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Přesýpací hodiny",
-        "description": "Okamžitě vrátí skautskou cestu."
+        "description": "Vrátí probíhající skautskou cestu dřív."
       },
       "notice": {
         "granted": "Získal jsi: {{item}}.",
@@ -852,7 +877,6 @@
       "notThisSeason": "V této sezóně nelze použít.",
       "needClub": "Potřebuješ klub.",
       "renameAt": "Přejmenuj na stránce kádru nebo na kartě klubu",
-      "academySoon": "Používá se v akademii (brzy)",
       "target": {
         "player": "hráč",
         "club": "klub",
@@ -892,7 +916,8 @@
         "pickStyle": "Vybrat herní styl",
         "style": "Použít na {{style}}",
         "usedToday": "Dnes už použito",
-        "rename": "Přejmenovat v kádru"
+        "rename": "Přejmenovat v kádru",
+        "academy": "Použít v akademii"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Peněženka mincí",
       "neverExpire": "Předměty koupené za mince nevyprší. Patří k tvému účtu a nelze je předat.",
       "notThisSeason": "V této sezóně nelze použít",
-      "academySoon": "Otevře se s akademií",
       "itemsLocked": "Tvé předměty jsou během kontroly zamčené",
       "full": "Inventář už víc kusů tohoto předmětu nepojme",
       "bought": "Koupeno: {{item}} ×{{count}} za {{coins}} mincí.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Množství",
       "openInventory": "Otevřít inventář",
       "closeNotice": "Zavřít oznámení"
+    },
+    "academy": {
+      "notOnServer": "Tento server zatím akademii nemá.",
+      "disabled": "Akademie letos není otevřená.",
+      "itemsLocked": "Inventář je kvůli kontrole zamčený: vstupenky a přesýpací hodiny nejde použít, dokud neskončí.",
+      "upgrade": "Vylepšit ve financích",
+      "confirm": "Potvrdit",
+      "aYoungster": "mladík",
+      "notice": {
+        "scoutDone": "Skautská cesta se vrátila: vyber, než se hlášení zavře.",
+        "changed": "Tvoje akademie má novinky."
+      },
+      "region": {
+        "AsiaSoutheast": "Jihovýchodní Asie",
+        "AsiaEast": "Východní Asie",
+        "Europe": "Evropa",
+        "Americas": "Amerika"
+      },
+      "focus": {
+        "Balanced": "Vyvážené",
+        "Physical": "Fyzické",
+        "Technical": "Technické"
+      },
+      "pay": {
+        "cash": "peníze klubu",
+        "scoutExpedition": "skautská vstupenka",
+        "scoutExpeditionElite": "elitní skautská vstupenka"
+      },
+      "reveal": {
+        "0": "Právě přišel",
+        "1": "Sledovaný",
+        "2": "Dobře známý"
+      },
+      "scout": {
+        "title": "Skauting",
+        "season": "Cesty v této sezóně: {{sent}}/{{max}}, elitní {{elite}}/{{eliteMax}}",
+        "send": "Vyslat skauta",
+        "trip": "{{region}} · {{focus}} · placeno: {{pay}}",
+        "backIn": "Zpět za {{time}}",
+        "backSoon": "Skaut je na cestě zpět…",
+        "timeSkip": "Použít přesýpací hodiny (máš {{held}})",
+        "timeSkipConfirm": "Vrátit tuto cestu dřív? Spotřebují se jedny přesýpací hodiny."
+      },
+      "send": {
+        "title": "Vyslat skauta",
+        "region": "Oblast",
+        "focus": "Hledá se",
+        "pay": "Platba",
+        "payCash": "Peníze klubu: {{cost}}",
+        "payTicket": "1 skautská vstupenka (máš {{held}})",
+        "payElite": "1 elitní skautská vstupenka (máš {{held}}): aspoň jeden velký talent",
+        "back": "Zpět kolem {{time}}",
+        "left": "Zbývající cesty v této sezóně: {{trips}}, elitní: {{elite}}",
+        "confirm": "Vyslat"
+      },
+      "candidate": {
+        "choose": "Vybrat: {{name}}",
+        "facts": "{{age}} let · {{position}} · {{height}} cm",
+        "ovr": "Hodnocení {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Hlášení se zavře za {{time}}",
+        "free": "Volná místa v akademii: {{free}}.",
+        "skip": "Zahodit hlášení",
+        "recruit": "Přijmout do akademie: {{n}}",
+        "othersLeave": "Nevybraní kandidáti odejdou a nevrátí se."
+      },
+      "players": {
+        "title": "Akademie",
+        "slots": "{{used}}/{{slots}} míst · Úroveň akademie {{level}}",
+        "costs": "Plat {{wage}} týdně na mladíka · Poplatek za absolvování {{fee}} · Nejméně {{days}} dní v akademii",
+        "revealNote": "Rozpětí hodnocení a hvězd se s dny v akademii zužují; při absolvování je vidět vše.",
+        "none": "V akademii zatím nikdo není.",
+        "days": "{{days}} dní v akademii",
+        "wage": "{{wage}} denně",
+        "graduates": "Očekávané absolvování na konci sezóny {{season}}",
+        "nextFree": "Další absolvování zdarma",
+        "focus": "Vlastní zaměření",
+        "clubFocus": "Jako klub",
+        "release": "Propustit",
+        "releaseTitle": "Propustit {{name}}?",
+        "releaseText": "Opustí akademii a nevrátí se. Náklady na skauting se nevrací."
+      },
+      "graduated": {
+        "title": "Absolventi",
+        "season": "sezóna {{season}}"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "Odhady skautů užší o",
       "intakePotential": "Ročník na konci sezóny: bonus potenciálu",
       "intakeGems": "Ročník na konci sezóny: šance na klenot",
-      "intakeTopTalent": "Ročník na konci sezóny: šance na supertalent (90–95)"
+      "intakeTopTalent": "Ročník na konci sezóny: šance na supertalent (90–95)",
+      "academySlots": "Místa v akademii"
     },
     "facilityEffectNone": "Beze změny",
     "facilityUpgradeTitle": "Vylepšit {{facility}} — úroveň {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "Mládežnická akademie v této sezóně není otevřená.",
-        "tripOpen": "Tvůj klub už má skautskou cestu v běhu nebo hlášení k výběru ({{tripId}}).",
+        "tripOpen": "Tvůj klub už má skautskou cestu v běhu nebo hlášení k výběru.",
         "tripLimitReached": "Skautské cesty této sezóny jsou vyčerpané: {{sent}} z {{limit}}.",
         "eliteTripLimitReached": "Elitní cesty této sezóny jsou vyčerpané: {{sent}} z {{limit}}.",
         "tripNotPending": "Tato skautská cesta už neprobíhá.",

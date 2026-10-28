@@ -27,6 +27,10 @@ const CATEGORY: Record<string, string> = {
   // The nightly item audit locked or unlocked the coach's items (S-17 §3.11, C-7b).
   "account.itemsLocked": "BoardDirective",
   "account.itemsUnlocked": "BoardDirective",
+  // The academy (S-18, C-7c): under the scouting category the offline inbox already has.
+  "academy.scoutDone": "ScoutReport",
+  "academy.graduated": "ScoutReport",
+  "academy.graduationDeferred": "ScoutReport",
 };
 
 /** Kinds that have their own words; any other is shown as a plain notice. */
@@ -43,12 +47,14 @@ const count = (value: unknown): number => {
 /**
  * One inbox message as the offline inbox's panes read a message (the list, the detail), with its
  * words written here from the kind and its parameters, in the player's language. A message names
- * no actions: the online inbox only tells.
+ * no actions: the online inbox only tells. `youngsterName` names an academy youngster a mail gives
+ * only by id.
  */
 export function toMessageData(
   message: InboxMessageView,
   t: TFunction,
   clubName: string,
+  youngsterName: (id: string) => string | undefined = () => undefined,
 ): MessageData {
   const kind = KINDS.has(message.kind) ? message.kind : "other";
   const params = message.params as Record<string, unknown>;
@@ -116,6 +122,22 @@ export function toMessageData(
     bodyKey = `${base}.${count(params.promoted) === 1 ? "promoted" : "stayed"}`;
   } else if (kind === "licence.fitted") {
     options = { season: count(params.season) };
+  } else if (kind === "academy.graduated") {
+    options = { player: text(params.playerName) ?? t("online.inbox.aPlayer") };
+    // Each flag adds its own sentence after the body (0 or 1, as the server writes them).
+    const extra = [
+      count(params.overSquadMax) === 1 ? t(`${base}.overSquadMax`) : "",
+      count(params.feeWaived) === 1 ? t(`${base}.feeWaived`) : "",
+    ].filter(Boolean);
+    if (extra.length > 0) options.extra = ` ${extra.join(" ")}`;
+    else options.extra = "";
+  } else if (kind === "academy.graduationDeferred") {
+    // The mail names no one: the academy the store holds may (PO bản 4).
+    const id = text(params.playerId);
+    options = {
+      player: (id && youngsterName(id)) || t("online.academy.aYoungster"),
+      fee: formatExactMoney(count(params.fee)),
+    };
   }
 
   return {

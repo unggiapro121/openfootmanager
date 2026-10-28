@@ -52,7 +52,8 @@
       "account": "Account",
       "coins": "Portafoglio monete",
       "inventory": "Inventario",
-      "shop": "Negozio"
+      "shop": "Negozio",
+      "academy": "Settore giovanile"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -199,7 +200,8 @@
       "noMatch": "Nessun giocatore corrisponde a questi filtri.",
       "notFound": "Questo giocatore non è nella tua rosa.",
       "state": "Condizione",
-      "suspended": "Squalificato: {{count}} partita/e"
+      "suspended": "Squalificato: {{count}} partita/e",
+      "potentialStarsRange": "Potenziale da {{low}} a {{high}} stelle"
     },
     "training": {
       "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo."
@@ -427,7 +429,9 @@
         "adjust": "Rettifiche",
         "reversal": "Storni",
         "grantReset": "Azzeramento con la nuova rosa",
-        "coin_exchange": "Cambio monete"
+        "coin_exchange": "Cambio monete",
+        "scout": "Osservazione del vivaio",
+        "graduation": "Tassa di promozione"
       },
       "ledger": "Movimenti",
       "ledgerEmpty": "Ancora nessun movimento.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Livello successivo: {{cost}}",
       "upgraded": "{{facility}} migliorato al livello {{level}}.",
-      "exchangeCoins": "Cambia monete"
+      "exchangeCoins": "Cambia monete",
+      "facility": {
+        "academy": "Settore giovanile",
+        "academyEffect": "Ogni livello aggiunge posti per i giovani."
+      },
+      "academyWages": "Stipendi del vivaio: {{amount}} a settimana"
     },
     "market": {
       "title": "Calciomercato",
@@ -697,6 +706,22 @@
             "subject": "I tuoi oggetti sono sbloccati",
             "body": "La verifica dei tuoi oggetti è conclusa. Puoi usarli di nuovo."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Una missione di osservazione è tornata",
+            "body": "Il tuo osservatore è tornato con un rapporto. Scegli i candidati prima che si chiuda."
+          },
+          "graduated": {
+            "subject": "{{player}} è stato promosso",
+            "body": "{{player}} è stato promosso dal vivaio in prima squadra.{{extra}}",
+            "overSquadMax": "La rosa ora supera la dimensione massima.",
+            "feeWaived": "La tassa di promozione è stata condonata."
+          },
+          "graduationDeferred": {
+            "subject": "Una promozione ha dovuto attendere",
+            "body": "Il club non ha potuto pagare la tassa di promozione di {{fee}}, quindi {{player}} resta nel vivaio un'altra stagione. La prossima promozione è gratuita."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Clessidra",
-        "description": "Fa rientrare subito un viaggio di osservazione."
+        "description": "Fa rientrare prima un viaggio di osservazione in corso."
       },
       "notice": {
         "granted": "Hai ricevuto {{item}}.",
@@ -852,7 +877,6 @@
       "notThisSeason": "Non utilizzabile in questa stagione.",
       "needClub": "Ti serve un club.",
       "renameAt": "Rinomina dalla rosa o dalla scheda del club",
-      "academySoon": "Si usa nel settore giovanile (in arrivo)",
       "target": {
         "player": "un giocatore",
         "club": "il club",
@@ -892,7 +916,8 @@
         "pickStyle": "Scegli uno stile di gioco su cui usarlo",
         "style": "Usa su {{style}}",
         "usedToday": "Già usato oggi",
-        "rename": "Rinomina nella rosa"
+        "rename": "Rinomina nella rosa",
+        "academy": "Usa nel settore giovanile"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Portafoglio monete",
       "neverExpire": "Gli oggetti comprati con monete non scadono. Appartengono al tuo account e non si possono cedere.",
       "notThisSeason": "Non utilizzabile in questa stagione",
-      "academySoon": "Disponibile con il settore giovanile",
       "itemsLocked": "I tuoi oggetti sono bloccati durante una verifica",
       "full": "Il tuo inventario non può contenere altri esemplari di questo oggetto",
       "bought": "Hai comprato {{item}} ×{{count}} per {{coins}} monete.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Quantità",
       "openInventory": "Apri l'inventario",
       "closeNotice": "Chiudi avviso"
+    },
+    "academy": {
+      "notOnServer": "Questo server non ha ancora un settore giovanile.",
+      "disabled": "Il settore giovanile non è aperto in questa stagione.",
+      "itemsLocked": "Il tuo inventario è bloccato per un controllo: biglietti e clessidre non si possono usare fino alla fine.",
+      "upgrade": "Migliora in Finanze",
+      "confirm": "Conferma",
+      "aYoungster": "un giovane",
+      "notice": {
+        "scoutDone": "Una missione di osservazione è tornata: scegli prima che il rapporto si chiuda.",
+        "changed": "Il tuo settore giovanile ha novità."
+      },
+      "region": {
+        "AsiaSoutheast": "Sud-est asiatico",
+        "AsiaEast": "Asia orientale",
+        "Europe": "Europa",
+        "Americas": "Americhe"
+      },
+      "focus": {
+        "Balanced": "Equilibrato",
+        "Physical": "Fisico",
+        "Technical": "Tecnico"
+      },
+      "pay": {
+        "cash": "soldi del club",
+        "scoutExpedition": "un biglietto di osservazione",
+        "scoutExpeditionElite": "un biglietto di osservazione élite"
+      },
+      "reveal": {
+        "0": "Appena arrivato",
+        "1": "Osservato",
+        "2": "Ben conosciuto"
+      },
+      "scout": {
+        "title": "Osservazione",
+        "season": "Missioni in questa stagione: {{sent}}/{{max}}, élite {{elite}}/{{eliteMax}}",
+        "send": "Invia un osservatore",
+        "trip": "{{region}} · {{focus}} · pagato con {{pay}}",
+        "backIn": "Di ritorno tra {{time}}",
+        "backSoon": "L'osservatore sta tornando…",
+        "timeSkip": "Usa una clessidra ({{held}} posseduti)",
+        "timeSkipConfirm": "Far tornare prima questa missione? Si usa una clessidra."
+      },
+      "send": {
+        "title": "Invia un osservatore",
+        "region": "Regione",
+        "focus": "Cerca",
+        "pay": "Paga con",
+        "payCash": "Soldi del club: {{cost}}",
+        "payTicket": "1 biglietto di osservazione ({{held}} posseduti)",
+        "payElite": "1 biglietto di osservazione élite ({{held}} posseduti): almeno un grande talento",
+        "back": "Di ritorno verso {{time}}",
+        "left": "Missioni rimaste in questa stagione: {{trips}}, élite: {{elite}}",
+        "confirm": "Invia"
+      },
+      "candidate": {
+        "choose": "Scegli {{name}}",
+        "facts": "{{age}} anni · {{position}} · {{height}} cm",
+        "ovr": "Valutazione {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Il rapporto si chiude tra {{time}}",
+        "free": "Posti liberi nel vivaio: {{free}}.",
+        "skip": "Scarta il rapporto",
+        "recruit": "Prendi {{n}} nel vivaio",
+        "othersLeave": "I candidati non scelti se ne vanno e non tornano."
+      },
+      "players": {
+        "title": "Vivaio",
+        "slots": "{{used}}/{{slots}} posti · Vivaio livello {{level}}",
+        "costs": "Stipendio {{wage}} a settimana per giovane · Tassa di promozione {{fee}} · Almeno {{days}} giorni nel vivaio",
+        "revealNote": "Gli intervalli di valutazione e stelle si restringono con i giorni nel vivaio; tutto si vede alla promozione.",
+        "none": "Ancora nessun giovane nel vivaio.",
+        "days": "{{days}} giorni nel vivaio",
+        "wage": "{{wage}} al giorno",
+        "graduates": "Promozione prevista a fine stagione {{season}}",
+        "nextFree": "Prossima promozione gratuita",
+        "focus": "Obiettivo personale",
+        "clubFocus": "Come il club",
+        "release": "Lascia andare",
+        "releaseTitle": "Lasciare andare {{name}}?",
+        "releaseText": "Lascia il vivaio e non torna. Il costo dell'osservazione non è rimborsato."
+      },
+      "graduated": {
+        "title": "Promossi",
+        "season": "stagione {{season}}"
+      }
     }
   },
   "coach": {
@@ -2266,7 +2377,8 @@
       "estimateNarrowing": "Stime degli osservatori più strette di",
       "intakePotential": "Leva di fine stagione: potenziale extra",
       "intakeGems": "Leva di fine stagione: probabilità di gioiello",
-      "intakeTopTalent": "Leva di fine stagione: probabilità di fuoriclasse (90–95)"
+      "intakeTopTalent": "Leva di fine stagione: probabilità di fuoriclasse (90–95)",
+      "academySlots": "Posti del vivaio"
     },
     "facilityEffectNone": "Nessuna variazione",
     "facilityUpgradeTitle": "Potenzia {{facility}} — livello {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "Il settore giovanile non è aperto in questa stagione.",
-        "tripOpen": "Il tuo club ha già una missione di osservazione in corso o un rapporto da scegliere ({{tripId}}).",
+        "tripOpen": "Il tuo club ha già una missione di osservazione in corso o un rapporto da scegliere.",
         "tripLimitReached": "Le missioni di osservazione di questa stagione sono esaurite: {{sent}} su {{limit}}.",
         "eliteTripLimitReached": "Le missioni d'élite di questa stagione sono esaurite: {{sent}} su {{limit}}.",
         "tripNotPending": "Questa missione di osservazione non è più in corso.",

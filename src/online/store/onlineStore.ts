@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type {
+  AcademyView,
   CoinView,
   FinanceView,
   FriendlyMineView,
@@ -26,8 +27,11 @@ export type OnlineGate = "open" | "clientOutdated" | "serverOutdated";
  */
 export interface OnlineNotice {
   id: number;
-  /** `market` (an auction, C-5) or `items` (an item given or a purchase refunded, C-7b). */
-  kind: "market" | "items";
+  /**
+   * `market` (an auction, C-5), `items` (an item given or a purchase refunded, C-7b) or `academy`
+   * (a scouting trip back, C-7c).
+   */
+  kind: "market" | "items" | "academy";
   /** The ring's event; one this build does not know is said as a change. */
   event: string;
   /** A path in the app (`/online/auctions/{id}`, `/online/inventory`). */
@@ -67,6 +71,18 @@ interface OnlineState {
    * `null` when this server has no items yet (an older server answers 404).
    */
   items: InventoryView | null | undefined;
+  /**
+   * The club's academy (C-7c): the academy page, and whether the shop sells its items this season.
+   * `null` when there is none to read (no club, or an older server answers 404).
+   */
+  academy: AcademyView | null | undefined;
+  /**
+   * The server's clock less this machine's when the academy was read, in milliseconds: the
+   * academy's countdowns run on the server's time (C-7 C7-40).
+   */
+  academyOffsetMs: number;
+  /** A report back and not yet looked at: the dot on the sidebar's academy entry. */
+  academyUnseen: boolean;
   /** The notices in the corner, oldest first. */
   notices: OnlineNotice[];
   pushNotice: (notice: Omit<OnlineNotice, "id">) => void;
@@ -91,6 +107,9 @@ const INITIAL = {
   accountId: undefined,
   coins: undefined,
   items: undefined,
+  academy: undefined,
+  academyOffsetMs: 0,
+  academyUnseen: false,
   finance: undefined,
   market: undefined,
   marketUnseen: 0,
@@ -185,6 +204,28 @@ export async function refreshCoins(): Promise<void> {
 export async function refreshItems(): Promise<void> {
   const items = await orNone(() => online.items.mine());
   useOnlineStore.setState({ items });
+}
+
+/**
+ * The club's academy, and how far the server's clock is from this one; no club (or a server
+ * without the academy) answers 404, which is `null`.
+ */
+export async function refreshAcademy(): Promise<void> {
+  const academy = await orNone(() => online.academy.view());
+  useOnlineStore.setState(academyState(academy));
+}
+
+/** The store's academy and its clock offset, from an academy just read. */
+export function academyState(academy: AcademyView | null): {
+  academy: AcademyView | null;
+  academyOffsetMs: number;
+} {
+  if (!academy) return { academy, academyOffsetMs: 0 };
+  const server = Date.parse(academy.serverNow);
+  return {
+    academy,
+    academyOffsetMs: Number.isNaN(server) ? 0 : server - Date.now(),
+  };
 }
 
 /** The club on the market; a closed market is no failure, it is `null`. */

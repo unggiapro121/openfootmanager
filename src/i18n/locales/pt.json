@@ -52,7 +52,8 @@
       "account": "Conta",
       "coins": "Carteira de moedas",
       "inventory": "Inventário",
-      "shop": "Loja"
+      "shop": "Loja",
+      "academy": "Academia"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -199,7 +200,8 @@
       "noMatch": "Nenhum jogador corresponde a estes filtros.",
       "notFound": "Este jogador não está no seu plantel.",
       "state": "Condição",
-      "suspended": "Suspenso: {{count}} jogo(s)"
+      "suspended": "Suspenso: {{count}} jogo(s)",
+      "potentialStarsRange": "Potencial de {{low}} a {{high}} estrelas"
     },
     "training": {
       "noPlan": "Ainda não definiste um plano de treino: o clube treina com o plano que a IA mantém, que vês aqui. A tua primeira escolha guarda um plano teu."
@@ -427,7 +429,9 @@
         "adjust": "Ajustes",
         "reversal": "Estornos",
         "grantReset": "Reposição de dinheiro com novo plantel",
-        "coin_exchange": "Troca de moedas"
+        "coin_exchange": "Troca de moedas",
+        "scout": "Prospeção da academia",
+        "graduation": "Taxa de graduação"
       },
       "ledger": "Movimentos",
       "ledgerEmpty": "Ainda sem movimentos.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Próximo nível: {{cost}}",
       "upgraded": "{{facility}} melhorado para o nível {{level}}.",
-      "exchangeCoins": "Trocar moedas"
+      "exchangeCoins": "Trocar moedas",
+      "facility": {
+        "academy": "Academia",
+        "academyEffect": "Cada nível acrescenta vagas para jovens."
+      },
+      "academyWages": "Salários da academia: {{amount}} por semana"
     },
     "market": {
       "title": "Mercado de transferências",
@@ -697,6 +706,22 @@
             "subject": "Os teus itens foram desbloqueados",
             "body": "A verificação dos teus itens terminou. Já podes voltar a usá-los."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Uma missão de prospeção regressou",
+            "body": "O teu olheiro regressou com um relatório. Escolhe os candidatos antes de fechar."
+          },
+          "graduated": {
+            "subject": "{{player}} graduou-se",
+            "body": "{{player}} graduou-se na academia e passa à equipa principal.{{extra}}",
+            "overSquadMax": "O plantel ultrapassa agora o tamanho máximo.",
+            "feeWaived": "A taxa de graduação foi dispensada."
+          },
+          "graduationDeferred": {
+            "subject": "Uma graduação teve de esperar",
+            "body": "O clube não pôde pagar a taxa de graduação de {{fee}}, por isso {{player}} fica mais uma época na academia. A próxima graduação é grátis."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Ampulheta",
-        "description": "Faz regressar de imediato uma viagem de prospeção."
+        "description": "Faz regressar mais cedo uma viagem de prospeção em curso."
       },
       "notice": {
         "granted": "Recebeste {{item}}.",
@@ -852,7 +877,6 @@
       "notThisSeason": "Não pode ser usado nesta época.",
       "needClub": "Precisas de um clube.",
       "renameAt": "Muda o nome a partir do plantel ou da ficha do clube",
-      "academySoon": "Usa-se na formação (em breve)",
       "target": {
         "player": "um jogador",
         "club": "o clube",
@@ -892,7 +916,8 @@
         "pickStyle": "Escolhe um estilo de jogo para o usar",
         "style": "Usar em {{style}}",
         "usedToday": "Usado hoje",
-        "rename": "Mudar o nome no plantel"
+        "rename": "Mudar o nome no plantel",
+        "academy": "Usar na academia"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Carteira de moedas",
       "neverExpire": "Os itens comprados com moedas não expiram. Pertencem à tua conta e não podem ser transferidos.",
       "notThisSeason": "Não pode ser usado nesta época",
-      "academySoon": "Disponível com a formação",
       "itemsLocked": "Os teus itens estão bloqueados enquanto são verificados",
       "full": "O teu inventário não aguenta mais deste item",
       "bought": "Compraste {{item}} ×{{count}} por {{coins}} moedas.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Quantidade",
       "openInventory": "Abrir inventário",
       "closeNotice": "Fechar aviso"
+    },
+    "academy": {
+      "notOnServer": "Este servidor ainda não tem academia.",
+      "disabled": "A academia não está aberta nesta época.",
+      "itemsLocked": "O teu inventário está bloqueado para verificação: bilhetes e ampulhetas não podem ser usados até terminar.",
+      "upgrade": "Melhorar em Finanças",
+      "confirm": "Confirmar",
+      "aYoungster": "um jovem",
+      "notice": {
+        "scoutDone": "Uma missão de prospeção regressou: escolhe antes de o relatório fechar.",
+        "changed": "A tua academia tem novidades."
+      },
+      "region": {
+        "AsiaSoutheast": "Sudeste Asiático",
+        "AsiaEast": "Ásia Oriental",
+        "Europe": "Europa",
+        "Americas": "Américas"
+      },
+      "focus": {
+        "Balanced": "Equilibrado",
+        "Physical": "Físico",
+        "Technical": "Técnico"
+      },
+      "pay": {
+        "cash": "dinheiro do clube",
+        "scoutExpedition": "um bilhete de prospeção",
+        "scoutExpeditionElite": "um bilhete de prospeção de elite"
+      },
+      "reveal": {
+        "0": "Acabado de chegar",
+        "1": "Observado",
+        "2": "Bem conhecido"
+      },
+      "scout": {
+        "title": "Prospeção",
+        "season": "Missões nesta época: {{sent}}/{{max}}, de elite {{elite}}/{{eliteMax}}",
+        "send": "Enviar um olheiro",
+        "trip": "{{region}} · {{focus}} · pago com {{pay}}",
+        "backIn": "Regressa dentro de {{time}}",
+        "backSoon": "O olheiro está a regressar…",
+        "timeSkip": "Usar uma ampulheta ({{held}} em posse)",
+        "timeSkipConfirm": "Fazer regressar mais cedo esta missão? Gasta-se uma ampulheta."
+      },
+      "send": {
+        "title": "Enviar um olheiro",
+        "region": "Região",
+        "focus": "À procura de",
+        "pay": "Pagar com",
+        "payCash": "Dinheiro do clube: {{cost}}",
+        "payTicket": "1 bilhete de prospeção ({{held}} em posse)",
+        "payElite": "1 bilhete de prospeção de elite ({{held}} em posse): pelo menos uma grande promessa",
+        "back": "Regressa por volta de {{time}}",
+        "left": "Missões restantes nesta época: {{trips}}, de elite: {{elite}}",
+        "confirm": "Enviar"
+      },
+      "candidate": {
+        "choose": "Escolher {{name}}",
+        "facts": "{{age}} anos · {{position}} · {{height}} cm",
+        "ovr": "Geral {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "O relatório fecha dentro de {{time}}",
+        "free": "Vagas livres na academia: {{free}}.",
+        "skip": "Ignorar o relatório",
+        "recruit": "Integrar {{n}} na academia",
+        "othersLeave": "Os candidatos não escolhidos partem e não voltam."
+      },
+      "players": {
+        "title": "Academia",
+        "slots": "{{used}}/{{slots}} vagas · Academia nível {{level}}",
+        "costs": "Salário {{wage}} por semana por jovem · Taxa de graduação {{fee}} · Pelo menos {{days}} dias na academia",
+        "revealNote": "Os intervalos de geral e estrelas estreitam com os dias na academia; tudo se revela na graduação.",
+        "none": "Ainda não há jovens na academia.",
+        "days": "{{days}} dias na academia",
+        "wage": "{{wage}} por dia",
+        "graduates": "Deve graduar-se no fim da época {{season}}",
+        "nextFree": "Próxima graduação grátis",
+        "focus": "Foco próprio",
+        "clubFocus": "Como o clube",
+        "release": "Dispensar",
+        "releaseTitle": "Dispensar {{name}}?",
+        "releaseText": "Sai da academia e não volta. O custo da prospeção não é reembolsado."
+      },
+      "graduated": {
+        "title": "Graduados",
+        "season": "época {{season}}"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "Estimativas dos olheiros mais precisas em",
       "intakePotential": "Fornada de fim de época: potencial extra",
       "intakeGems": "Fornada de fim de época: probabilidade de joia",
-      "intakeTopTalent": "Fornada de fim de época: probabilidade de craque (90–95)"
+      "intakeTopTalent": "Fornada de fim de época: probabilidade de craque (90–95)",
+      "academySlots": "Vagas da academia"
     },
     "facilityEffectNone": "Sem alteração",
     "facilityUpgradeTitle": "Melhorar {{facility}} — nível {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "A academia de formação não está aberta nesta época.",
-        "tripOpen": "O teu clube já tem uma missão de observação em curso ou um relatório por escolher ({{tripId}}).",
+        "tripOpen": "O teu clube já tem uma missão de observação em curso ou um relatório por escolher.",
         "tripLimitReached": "As missões de observação desta época estão esgotadas: {{sent}} de {{limit}}.",
         "eliteTripLimitReached": "As missões de elite desta época estão esgotadas: {{sent}} de {{limit}}.",
         "tripNotPending": "Esta missão de observação já não está em curso.",

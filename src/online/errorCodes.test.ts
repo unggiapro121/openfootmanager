@@ -54,6 +54,14 @@ function lookup(locale: unknown, code: string): string | undefined {
   return typeof node === "string" ? node : undefined;
 }
 
+/**
+ * Parameters the screens drop on purpose: an id a player cannot read (C-7 C7-50). The sentence
+ * says the case without it.
+ */
+const UNSHOWN: Record<string, string[]> = {
+  "be.error.academy.tripOpen": ["tripId"],
+};
+
 const placeholders = (text: string) => [...text.matchAll(/{{\s*(\w+)\s*}}/g)].map((m) => m[1]);
 
 describe("online error codes", () => {
@@ -70,7 +78,8 @@ describe("online error codes", () => {
   // Given the codes translated with parameters,
   // when their English and Vietnamese sentences are read,
   // then every placeholder is a parameter the server declares for that code, and every declared
-  // parameter is used, so no sentence waits for a value that never comes.
+  // parameter is used but those dropped on purpose, so no sentence waits for a value that never
+  // comes.
   it.each(["en", "vi"])("use exactly the parameters the server sends, in %s", (name) => {
     const locale = name === "en" ? en : vi;
     // Admin-only codes have no sentence; their parameters reach no player.
@@ -78,7 +87,8 @@ describe("online error codes", () => {
       playerCodes.includes(code),
     )) {
       const used = placeholders(lookup(locale, code) ?? "").sort();
-      expect({ code, used }).toEqual({ code, used: [...params].sort() });
+      const shown = params.filter((param) => !UNSHOWN[code]?.includes(param));
+      expect({ code, used }).toEqual({ code, used: [...shown].sort() });
     }
   });
 

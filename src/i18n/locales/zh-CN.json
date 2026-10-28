@@ -52,7 +52,8 @@
       "account": "账户",
       "coins": "金币钱包",
       "inventory": "背包",
-      "shop": "商店"
+      "shop": "商店",
+      "academy": "青训营"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -199,7 +200,8 @@
       "noMatch": "没有符合筛选条件的球员。",
       "notFound": "该球员不在你的阵容中。",
       "state": "状态",
-      "suspended": "停赛：{{count}} 场"
+      "suspended": "停赛：{{count}} 场",
+      "potentialStarsRange": "潜力 {{low}} 至 {{high}} 星"
     },
     "training": {
       "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。"
@@ -427,7 +429,9 @@
         "adjust": "调整",
         "reversal": "冲销",
         "grantReset": "新阵容资金重置",
-        "coin_exchange": "金币兑换"
+        "coin_exchange": "金币兑换",
+        "scout": "青训球探",
+        "graduation": "毕业费"
       },
       "ledger": "收支明细",
       "ledgerEmpty": "暂无记录。",
@@ -438,7 +442,12 @@
       },
       "nextCost": "下一级：{{cost}}",
       "upgraded": "{{facility}} 已升级到 {{level}} 级。",
-      "exchangeCoins": "兑换金币"
+      "exchangeCoins": "兑换金币",
+      "facility": {
+        "academy": "青训营",
+        "academyEffect": "每级增加青训球员名额。"
+      },
+      "academyWages": "青训工资：每周 {{amount}}"
     },
     "market": {
       "title": "转会市场",
@@ -697,6 +706,22 @@
             "subject": "你的物品已解锁",
             "body": "你的物品核查已完成，可以再次使用了。"
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "球探考察已返回",
+            "body": "你的球探带回了报告。请在报告关闭前选择候选人。"
+          },
+          "graduated": {
+            "subject": "{{player}} 已毕业",
+            "body": "{{player}} 从青训营毕业，升入一线队。{{extra}}",
+            "overSquadMax": "阵容人数现已超过上限。",
+            "feeWaived": "毕业费已免除。"
+          },
+          "graduationDeferred": {
+            "subject": "一次毕业被推迟",
+            "body": "俱乐部无法支付 {{fee}} 的毕业费，{{player}} 将在青训营多留一个赛季。下次毕业免费。"
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "沙漏",
-        "description": "让球探之旅立即返回。"
+        "description": "让一次正在进行的球探之旅提前返回。"
       },
       "notice": {
         "granted": "你获得了{{item}}。",
@@ -852,7 +877,6 @@
       "notThisSeason": "本赛季无法使用。",
       "needClub": "你需要一家俱乐部。",
       "renameAt": "在阵容页或俱乐部卡片中改名",
-      "academySoon": "在青训营使用（即将推出）",
       "target": {
         "player": "一名球员",
         "club": "俱乐部",
@@ -892,7 +916,8 @@
         "pickStyle": "选择要使用的战术风格",
         "style": "用于{{style}}",
         "usedToday": "今天已使用",
-        "rename": "在阵容中改名"
+        "rename": "在阵容中改名",
+        "academy": "在青训营使用"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "金币钱包",
       "neverExpire": "用金币购买的物品永不过期。它们归属于你的账号，不能转让。",
       "notThisSeason": "本赛季无法使用",
-      "academySoon": "随青训营开放",
       "itemsLocked": "你的物品在核查期间被锁定",
       "full": "背包已装不下更多该物品",
       "bought": "已用 {{coins}} 金币购买{{item}} ×{{count}}。",
@@ -970,6 +994,93 @@
       "quantityLabel": "数量",
       "openInventory": "打开背包",
       "closeNotice": "关闭通知"
+    },
+    "academy": {
+      "notOnServer": "此服务器尚无青训营。",
+      "disabled": "本赛季青训营未开放。",
+      "itemsLocked": "你的物品库正在审核中被锁定：结束前无法使用球探券和沙漏。",
+      "upgrade": "前往财务升级",
+      "confirm": "确认",
+      "aYoungster": "一名青训球员",
+      "notice": {
+        "scoutDone": "球探考察已返回：请在报告关闭前选择。",
+        "changed": "你的青训营有新消息。"
+      },
+      "region": {
+        "AsiaSoutheast": "东南亚",
+        "AsiaEast": "东亚",
+        "Europe": "欧洲",
+        "Americas": "美洲"
+      },
+      "focus": {
+        "Balanced": "均衡",
+        "Physical": "身体",
+        "Technical": "技术"
+      },
+      "pay": {
+        "cash": "俱乐部资金",
+        "scoutExpedition": "球探券",
+        "scoutExpeditionElite": "精英球探券"
+      },
+      "reveal": {
+        "0": "刚刚加入",
+        "1": "已观察",
+        "2": "充分了解"
+      },
+      "scout": {
+        "title": "球探",
+        "season": "本赛季考察：{{sent}}/{{max}}，精英考察 {{elite}}/{{eliteMax}}",
+        "send": "派出球探",
+        "trip": "{{region}} · {{focus}} · 支付方式：{{pay}}",
+        "backIn": "{{time}} 后返回",
+        "backSoon": "球探正在返回…",
+        "timeSkip": "使用沙漏（持有 {{held}} 个）",
+        "timeSkipConfirm": "让这次球探考察提前返回？将消耗一个沙漏。"
+      },
+      "send": {
+        "title": "派出球探",
+        "region": "地区",
+        "focus": "寻找方向",
+        "pay": "支付方式",
+        "payCash": "俱乐部资金：{{cost}}",
+        "payTicket": "1 张球探券（持有 {{held}} 张）",
+        "payElite": "1 张精英球探券（持有 {{held}} 张）：至少一名顶级新秀",
+        "back": "约 {{time}} 返回",
+        "left": "本赛季剩余考察：{{trips}} 次，精英：{{elite}} 次",
+        "confirm": "派出"
+      },
+      "candidate": {
+        "choose": "选择 {{name}}",
+        "facts": "{{age}} 岁 · {{position}} · {{height}} 厘米",
+        "ovr": "能力 {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "报告将在 {{time}} 后关闭",
+        "free": "青训营空余名额：{{free}}。",
+        "skip": "放弃本次报告",
+        "recruit": "招入青训营 {{n}} 人",
+        "othersLeave": "未选中的候选人会离开，不再回来。"
+      },
+      "players": {
+        "title": "青训球员",
+        "slots": "{{used}}/{{slots}} 名额 · 青训营等级 {{level}}",
+        "costs": "每名球员每周工资 {{wage}} · 毕业费 {{fee}} · 至少在营 {{days}} 天",
+        "revealNote": "能力和星级范围随在营天数缩小；毕业时全部揭晓。",
+        "none": "青训营还没有球员。",
+        "days": "在营 {{days}} 天",
+        "wage": "每天 {{wage}}",
+        "graduates": "预计在第 {{season}} 赛季结束时毕业",
+        "nextFree": "下次毕业免费",
+        "focus": "个人训练重点",
+        "clubFocus": "与俱乐部相同",
+        "release": "放走",
+        "releaseTitle": "放走 {{name}}？",
+        "releaseText": "他会离开青训营且不会回来。球探费用不予退还。"
+      },
+      "graduated": {
+        "title": "已毕业",
+        "season": "第 {{season}} 赛季"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "球探估值范围缩小",
       "intakePotential": "赛季末青训新人：潜力加成",
       "intakeGems": "赛季末青训新人：璞玉概率",
-      "intakeTopTalent": "赛季末青训新人：顶级天才（90–95）概率"
+      "intakeTopTalent": "赛季末青训新人：顶级天才（90–95）概率",
+      "academySlots": "青训名额"
     },
     "facilityEffectNone": "无变化",
     "facilityUpgradeTitle": "升级{{facility}} — 等级 {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "本赛季青训学院未开放。",
-        "tripOpen": "你的俱乐部已有一次球探考察在进行中或有待选择的报告（{{tripId}}）。",
+        "tripOpen": "你的俱乐部已有一次球探考察在进行中或有待选择的报告。",
         "tripLimitReached": "本赛季球探考察次数已用完：{{sent}} / {{limit}}。",
         "eliteTripLimitReached": "本赛季精英考察次数已用完：{{sent}} / {{limit}}。",
         "tripNotPending": "这次球探考察已不在进行中。",

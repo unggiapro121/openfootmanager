@@ -52,7 +52,8 @@
       "account": "Hesap",
       "coins": "Jeton cüzdanı",
       "inventory": "Envanter",
-      "shop": "Mağaza"
+      "shop": "Mağaza",
+      "academy": "Altyapı akademisi"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -199,7 +200,8 @@
       "noMatch": "Bu filtrelere uyan oyuncu yok.",
       "notFound": "Bu oyuncu kadronuzda değil.",
       "state": "Durum",
-      "suspended": "Cezalı: {{count}} maç"
+      "suspended": "Cezalı: {{count}} maç",
+      "potentialStarsRange": "Potansiyel {{low}} ile {{high}} yıldız arası"
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."
@@ -427,7 +429,9 @@
         "adjust": "Düzeltmeler",
         "reversal": "Ters kayıtlar",
         "grantReset": "Yeni kadroyla nakit sıfırlama",
-        "coin_exchange": "Jeton bozdurma"
+        "coin_exchange": "Jeton bozdurma",
+        "scout": "Akademi gözlemi",
+        "graduation": "Mezuniyet ücreti"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Sonraki seviye: {{cost}}",
       "upgraded": "{{facility}} {{level}}. seviyeye yükseltildi.",
-      "exchangeCoins": "Jeton bozdur"
+      "exchangeCoins": "Jeton bozdur",
+      "facility": {
+        "academy": "Altyapı akademisi",
+        "academyEffect": "Her seviye gençler için yer açar."
+      },
+      "academyWages": "Akademi maaşları: haftada {{amount}}"
     },
     "market": {
       "title": "Transfer pazarı",
@@ -697,6 +706,22 @@
             "subject": "Eşyaların kilidi açıldı",
             "body": "Eşyalarının kontrolü bitti. Onları yeniden kullanabilirsin."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Bir gözlem gezisi döndü",
+            "body": "Gözlemcin bir raporla döndü. Kapanmadan adayları seç."
+          },
+          "graduated": {
+            "subject": "{{player}} mezun oldu",
+            "body": "{{player}} akademiden mezun oldu ve A takıma yükseldi.{{extra}}",
+            "overSquadMax": "Kadro artık en yüksek sayının üzerinde.",
+            "feeWaived": "Mezuniyet ücreti alınmadı."
+          },
+          "graduationDeferred": {
+            "subject": "Bir mezuniyet beklemek zorunda kaldı",
+            "body": "Kulüp {{fee}} mezuniyet ücretini ödeyemedi, bu yüzden {{player}} bir sezon daha akademide kalıyor. Sonraki mezuniyet ücretsiz."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Kum saati",
-        "description": "Bir gözlem gezisini anında geri getirir."
+        "description": "Süren bir gözlem gezisini daha erken geri getirir."
       },
       "notice": {
         "granted": "{{item}} aldın.",
@@ -852,7 +877,6 @@
       "notThisSeason": "Bu sezon kullanılamaz.",
       "needClub": "Bir kulübe ihtiyacın var.",
       "renameAt": "Adı kadro sayfasından ya da kulüp kartından değiştir",
-      "academySoon": "Altyapıda kullanılır (yakında)",
       "target": {
         "player": "bir oyuncu",
         "club": "kulüp",
@@ -892,7 +916,8 @@
         "pickStyle": "Kullanmak için oyun tarzı seç",
         "style": "{{style}} için kullan",
         "usedToday": "Bugün kullanıldı",
-        "rename": "Kadroda yeniden adlandır"
+        "rename": "Kadroda yeniden adlandır",
+        "academy": "Altyapı akademisinde kullan"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Jeton cüzdanı",
       "neverExpire": "Jetonla alınan eşyaların süresi dolmaz. Hesabına aittir ve başkasına aktarılamaz.",
       "notThisSeason": "Bu sezon kullanılamaz",
-      "academySoon": "Altyapı ile açılır",
       "itemsLocked": "Eşyaların kontrol sırasında kilitli",
       "full": "Envanterin bu eşyadan daha fazlasını alamaz",
       "bought": "{{item}} ×{{count}}, {{coins}} jetona alındı.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Miktar",
       "openInventory": "Envanteri aç",
       "closeNotice": "Bildirimi kapat"
+    },
+    "academy": {
+      "notOnServer": "Bu sunucuda henüz altyapı akademisi yok.",
+      "disabled": "Altyapı akademisi bu sezon açık değil.",
+      "itemsLocked": "Envanterin bir kontrol için kilitli: bitene kadar bilet ve kum saati kullanılamaz.",
+      "upgrade": "Finans'ta geliştir",
+      "confirm": "Onayla",
+      "aYoungster": "bir genç oyuncu",
+      "notice": {
+        "scoutDone": "Bir gözlem gezisi döndü: rapor kapanmadan seçim yap.",
+        "changed": "Akademinde yenilikler var."
+      },
+      "region": {
+        "AsiaSoutheast": "Güneydoğu Asya",
+        "AsiaEast": "Doğu Asya",
+        "Europe": "Avrupa",
+        "Americas": "Amerika"
+      },
+      "focus": {
+        "Balanced": "Dengeli",
+        "Physical": "Fiziksel",
+        "Technical": "Teknik"
+      },
+      "pay": {
+        "cash": "kulüp parası",
+        "scoutExpedition": "gözlemci bileti",
+        "scoutExpeditionElite": "elit gözlemci bileti"
+      },
+      "reveal": {
+        "0": "Yeni geldi",
+        "1": "İzlendi",
+        "2": "İyi tanınıyor"
+      },
+      "scout": {
+        "title": "Gözlem",
+        "season": "Bu sezonki geziler: {{sent}}/{{max}}, elit geziler {{elite}}/{{eliteMax}}",
+        "send": "Gözlemci gönder",
+        "trip": "{{region}} · {{focus}} · ödeme: {{pay}}",
+        "backIn": "{{time}} sonra dönüyor",
+        "backSoon": "Gözlemci dönüş yolunda…",
+        "timeSkip": "Kum saati kullan (elinde {{held}})",
+        "timeSkipConfirm": "Bu gözlem gezisi daha erken dönsün mü? Bir kum saati harcanır."
+      },
+      "send": {
+        "title": "Gözlemci gönder",
+        "region": "Bölge",
+        "focus": "Aranan",
+        "pay": "Ödeme",
+        "payCash": "Kulüp parası: {{cost}}",
+        "payTicket": "1 gözlemci bileti (elinde {{held}})",
+        "payElite": "1 elit gözlemci bileti (elinde {{held}}): en az bir büyük yetenek",
+        "back": "Yaklaşık {{time}} döner",
+        "left": "Bu sezon kalan gezi: {{trips}}, elit: {{elite}}",
+        "confirm": "Gönder"
+      },
+      "candidate": {
+        "choose": "{{name}} seç",
+        "facts": "{{age}} yaş · {{position}} · {{height}} cm",
+        "ovr": "Güç {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Rapor {{time}} sonra kapanıyor",
+        "free": "Akademide boş yer: {{free}}.",
+        "skip": "Raporu geç",
+        "recruit": "Akademiye {{n}} oyuncu al",
+        "othersLeave": "Seçilmeyen adaylar gider ve geri dönmez."
+      },
+      "players": {
+        "title": "Akademi",
+        "slots": "{{used}}/{{slots}} yer · Akademi seviyesi {{level}}",
+        "costs": "Genç başına haftalık maaş {{wage}} · Mezuniyet ücreti {{fee}} · Akademide en az {{days}} gün",
+        "revealNote": "Güç ve yıldız aralıkları akademideki günlerle daralır; mezuniyette her şey görünür.",
+        "none": "Akademide henüz genç yok.",
+        "days": "Akademide {{days}} gün",
+        "wage": "Günde {{wage}}",
+        "graduates": "{{season}}. sezon sonunda mezun olması bekleniyor",
+        "nextFree": "Sonraki mezuniyet ücretsiz",
+        "focus": "Kendi odağı",
+        "clubFocus": "Kulüple aynı",
+        "release": "Serbest bırak",
+        "releaseTitle": "{{name}} serbest bırakılsın mı?",
+        "releaseText": "Akademiden ayrılır ve geri dönmez. Gözlem ücreti iade edilmez."
+      },
+      "graduated": {
+        "title": "Mezunlar",
+        "season": "{{season}}. sezon"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "Gözlemci tahminlerinde daralma",
       "intakePotential": "Sezon sonu altyapı alımı: potansiyel bonusu",
       "intakeGems": "Sezon sonu altyapı alımı: cevher şansı",
-      "intakeTopTalent": "Sezon sonu altyapı alımı: üst düzey yetenek (90–95) şansı"
+      "intakeTopTalent": "Sezon sonu altyapı alımı: üst düzey yetenek (90–95) şansı",
+      "academySlots": "Akademi kontenjanı"
     },
     "facilityEffectNone": "Değişiklik yok",
     "facilityUpgradeTitle": "{{facility}} yükselt — seviye {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "Altyapı akademisi bu sezon açık değil.",
-        "tripOpen": "Kulübünün zaten süren bir izleme gezisi veya seçim bekleyen bir raporu var ({{tripId}}).",
+        "tripOpen": "Kulübünün zaten süren bir izleme gezisi veya seçim bekleyen bir raporu var.",
         "tripLimitReached": "Bu sezonun izleme gezileri doldu: {{limit}} hakkın {{sent}} tanesi kullanıldı.",
         "eliteTripLimitReached": "Bu sezonun elit gezileri doldu: {{limit}} hakkın {{sent}} tanesi kullanıldı.",
         "tripNotPending": "Bu izleme gezisi artık sürmüyor.",

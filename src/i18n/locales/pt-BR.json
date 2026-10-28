@@ -52,7 +52,8 @@
       "account": "Conta",
       "coins": "Carteira de moedas",
       "inventory": "Inventário",
-      "shop": "Loja"
+      "shop": "Loja",
+      "academy": "Categoria de base"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -199,7 +200,8 @@
       "noMatch": "Nenhum jogador corresponde a estes filtros.",
       "notFound": "Este jogador não está no seu elenco.",
       "state": "Condição",
-      "suspended": "Suspenso: {{count}} jogo(s)"
+      "suspended": "Suspenso: {{count}} jogo(s)",
+      "potentialStarsRange": "Potencial de {{low}} a {{high}} estrelas"
     },
     "training": {
       "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu."
@@ -427,7 +429,9 @@
         "adjust": "Ajustes",
         "reversal": "Estornos",
         "grantReset": "Reinício do caixa com elenco novo",
-        "coin_exchange": "Troca de moedas"
+        "coin_exchange": "Troca de moedas",
+        "scout": "Observação da base",
+        "graduation": "Taxa de formatura"
       },
       "ledger": "Movimentações",
       "ledgerEmpty": "Ainda sem movimentações.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Próximo nível: {{cost}}",
       "upgraded": "{{facility}} melhorado para o nível {{level}}.",
-      "exchangeCoins": "Trocar moedas"
+      "exchangeCoins": "Trocar moedas",
+      "facility": {
+        "academy": "Categoria de base",
+        "academyEffect": "Cada nível abre vagas para jovens."
+      },
+      "academyWages": "Salários da base: {{amount}} por semana"
     },
     "market": {
       "title": "Mercado de transferências",
@@ -697,6 +706,22 @@
             "subject": "Seus itens foram desbloqueados",
             "body": "A verificação dos seus itens terminou. Você já pode usá-los de novo."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Uma missão de observação voltou",
+            "body": "Seu olheiro voltou com um relatório. Escolha os candidatos antes que feche."
+          },
+          "graduated": {
+            "subject": "{{player}} se formou",
+            "body": "{{player}} se formou na base e sobe para o time principal.{{extra}}",
+            "overSquadMax": "O elenco agora passa do tamanho máximo.",
+            "feeWaived": "A taxa de formatura foi dispensada."
+          },
+          "graduationDeferred": {
+            "subject": "Uma formatura teve que esperar",
+            "body": "O clube não pôde pagar a taxa de formatura de {{fee}}, então {{player}} fica mais uma temporada na base. A próxima formatura é grátis."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Ampulheta",
-        "description": "Traz de volta na hora uma viagem de observação."
+        "description": "Faz uma viagem de observação em andamento voltar mais cedo."
       },
       "notice": {
         "granted": "Você recebeu {{item}}.",
@@ -852,7 +877,6 @@
       "notThisSeason": "Não pode ser usado nesta temporada.",
       "needClub": "Você precisa de um clube.",
       "renameAt": "Troque o nome pelo elenco ou pela ficha do clube",
-      "academySoon": "Usado na base (em breve)",
       "target": {
         "player": "um jogador",
         "club": "o clube",
@@ -892,7 +916,8 @@
         "pickStyle": "Escolha um estilo de jogo para usar",
         "style": "Usar em {{style}}",
         "usedToday": "Usado hoje",
-        "rename": "Renomear no elenco"
+        "rename": "Renomear no elenco",
+        "academy": "Usar na categoria de base"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Carteira de moedas",
       "neverExpire": "Itens comprados com moedas não vencem. Eles pertencem à sua conta e não podem ser transferidos.",
       "notThisSeason": "Não pode ser usado nesta temporada",
-      "academySoon": "Disponível com a base",
       "itemsLocked": "Seus itens estão bloqueados enquanto são verificados",
       "full": "Seu inventário não comporta mais deste item",
       "bought": "Você comprou {{item}} ×{{count}} por {{coins}} moedas.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Quantidade",
       "openInventory": "Abrir inventário",
       "closeNotice": "Fechar aviso"
+    },
+    "academy": {
+      "notOnServer": "Este servidor ainda não tem categoria de base.",
+      "disabled": "A categoria de base não está aberta nesta temporada.",
+      "itemsLocked": "Seu inventário está bloqueado para verificação: ingressos e ampulhetas não podem ser usados até terminar.",
+      "upgrade": "Melhorar em Finanças",
+      "confirm": "Confirmar",
+      "aYoungster": "um garoto da base",
+      "notice": {
+        "scoutDone": "Uma missão de observação voltou: escolha antes que o relatório feche.",
+        "changed": "Sua categoria de base tem novidades."
+      },
+      "region": {
+        "AsiaSoutheast": "Sudeste Asiático",
+        "AsiaEast": "Leste Asiático",
+        "Europe": "Europa",
+        "Americas": "Américas"
+      },
+      "focus": {
+        "Balanced": "Equilibrado",
+        "Physical": "Físico",
+        "Technical": "Técnico"
+      },
+      "pay": {
+        "cash": "dinheiro do clube",
+        "scoutExpedition": "um ingresso de observação",
+        "scoutExpeditionElite": "um ingresso de observação de elite"
+      },
+      "reveal": {
+        "0": "Recém-chegado",
+        "1": "Observado",
+        "2": "Bem conhecido"
+      },
+      "scout": {
+        "title": "Observação",
+        "season": "Missões nesta temporada: {{sent}}/{{max}}, de elite {{elite}}/{{eliteMax}}",
+        "send": "Enviar um olheiro",
+        "trip": "{{region}} · {{focus}} · pago com {{pay}}",
+        "backIn": "Volta em {{time}}",
+        "backSoon": "O olheiro está voltando…",
+        "timeSkip": "Usar uma ampulheta ({{held}} disponíveis)",
+        "timeSkipConfirm": "Trazer esta missão de volta mais cedo? Uma ampulheta é gasta."
+      },
+      "send": {
+        "title": "Enviar um olheiro",
+        "region": "Região",
+        "focus": "Procurando",
+        "pay": "Pagar com",
+        "payCash": "Dinheiro do clube: {{cost}}",
+        "payTicket": "1 ingresso de observação ({{held}} disponíveis)",
+        "payElite": "1 ingresso de observação de elite ({{held}} disponíveis): pelo menos uma grande promessa",
+        "back": "Volta por volta de {{time}}",
+        "left": "Missões restantes nesta temporada: {{trips}}, de elite: {{elite}}",
+        "confirm": "Enviar"
+      },
+      "candidate": {
+        "choose": "Escolher {{name}}",
+        "facts": "{{age}} anos · {{position}} · {{height}} cm",
+        "ovr": "Geral {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "O relatório fecha em {{time}}",
+        "free": "Vagas livres na base: {{free}}.",
+        "skip": "Descartar o relatório",
+        "recruit": "Levar {{n}} para a base",
+        "othersLeave": "Os candidatos não escolhidos vão embora e não voltam."
+      },
+      "players": {
+        "title": "Base",
+        "slots": "{{used}}/{{slots}} vagas · Base nível {{level}}",
+        "costs": "Salário {{wage}} por semana por jovem · Taxa de formatura {{fee}} · Pelo menos {{days}} dias na base",
+        "revealNote": "As faixas de geral e estrelas diminuem com os dias na base; tudo aparece na formatura.",
+        "none": "Ainda não há jovens na base.",
+        "days": "{{days}} dias na base",
+        "wage": "{{wage}} por dia",
+        "graduates": "Deve se formar no fim da temporada {{season}}",
+        "nextFree": "Próxima formatura grátis",
+        "focus": "Foco próprio",
+        "clubFocus": "Igual ao clube",
+        "release": "Dispensar",
+        "releaseTitle": "Dispensar {{name}}?",
+        "releaseText": "Ele deixa a base e não volta. O custo da observação não é reembolsado."
+      },
+      "graduated": {
+        "title": "Formados",
+        "season": "temporada {{season}}"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "Estimativas dos olheiros mais precisas em",
       "intakePotential": "Safra de fim de temporada: potencial extra",
       "intakeGems": "Safra de fim de temporada: chance de joia",
-      "intakeTopTalent": "Safra de fim de temporada: chance de craque (90–95)"
+      "intakeTopTalent": "Safra de fim de temporada: chance de craque (90–95)",
+      "academySlots": "Vagas da base"
     },
     "facilityEffectNone": "Sem alteração",
     "facilityUpgradeTitle": "Melhorar {{facility}} — nível {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "A categoria de base não está aberta nesta temporada.",
-        "tripOpen": "Seu clube já tem uma missão de observação em andamento ou um relatório para escolher ({{tripId}}).",
+        "tripOpen": "Seu clube já tem uma missão de observação em andamento ou um relatório para escolher.",
         "tripLimitReached": "As missões de observação desta temporada acabaram: {{sent}} de {{limit}}.",
         "eliteTripLimitReached": "As missões de elite desta temporada acabaram: {{sent}} de {{limit}}.",
         "tripNotPending": "Esta missão de observação não está mais em andamento.",

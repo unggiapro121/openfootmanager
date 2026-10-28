@@ -52,7 +52,8 @@
       "account": "Akun",
       "coins": "Dompet koin",
       "inventory": "Inventaris",
-      "shop": "Toko"
+      "shop": "Toko",
+      "academy": "Akademi muda"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -199,7 +200,8 @@
       "noMatch": "Tidak ada pemain yang cocok dengan penyaring ini.",
       "notFound": "Pemain ini tidak ada di skuad Anda.",
       "state": "Kondisi",
-      "suspended": "Diskors: {{count}} laga"
+      "suspended": "Diskors: {{count}} laga",
+      "potentialStarsRange": "Potensi {{low}} sampai {{high}} bintang"
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri."
@@ -427,7 +429,9 @@
         "adjust": "Penyesuaian",
         "reversal": "Pembalikan",
         "grantReset": "Reset kas skuad baru",
-        "coin_exchange": "Penukaran koin"
+        "coin_exchange": "Penukaran koin",
+        "scout": "Pemandu bakat akademi",
+        "graduation": "Biaya kelulusan"
       },
       "ledger": "Buku besar",
       "ledgerEmpty": "Belum ada catatan.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Level berikutnya: {{cost}}",
       "upgraded": "{{facility}} ditingkatkan ke level {{level}}.",
-      "exchangeCoins": "Tukar koin"
+      "exchangeCoins": "Tukar koin",
+      "facility": {
+        "academy": "Akademi muda",
+        "academyEffect": "Setiap level menambah tempat untuk pemain muda."
+      },
+      "academyWages": "Gaji akademi: {{amount}} per minggu"
     },
     "market": {
       "title": "Bursa transfer",
@@ -697,6 +706,22 @@
             "subject": "Barangmu sudah dibuka kuncinya",
             "body": "Pemeriksaan barangmu sudah selesai. Kamu bisa memakainya lagi."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Perjalanan pemandu bakat sudah kembali",
+            "body": "Pemandu bakatmu kembali dengan laporan. Pilih kandidat sebelum ditutup."
+          },
+          "graduated": {
+            "subject": "{{player}} lulus",
+            "body": "{{player}} lulus dari akademi dan naik ke tim utama.{{extra}}",
+            "overSquadMax": "Skuad sekarang melebihi ukuran maksimum.",
+            "feeWaived": "Biaya kelulusan dibebaskan."
+          },
+          "graduationDeferred": {
+            "subject": "Sebuah kelulusan harus menunggu",
+            "body": "Klub tidak bisa membayar biaya kelulusan {{fee}}, jadi {{player}} tetap di akademi satu musim lagi. Kelulusan berikutnya gratis."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Jam pasir",
-        "description": "Membuat perjalanan pemandu bakat langsung kembali."
+        "description": "Memulangkan perjalanan pemandu bakat yang sedang berjalan lebih cepat."
       },
       "notice": {
         "granted": "Kamu menerima {{item}}.",
@@ -852,7 +877,6 @@
       "notThisSeason": "Tidak bisa dipakai musim ini.",
       "needClub": "Kamu perlu klub.",
       "renameAt": "Ganti nama dari halaman skuad atau kartu klub",
-      "academySoon": "Dipakai di akademi (segera)",
       "target": {
         "player": "seorang pemain",
         "club": "klub",
@@ -892,7 +916,8 @@
         "pickStyle": "Pilih gaya bermain untuk dipakai",
         "style": "Pakai untuk {{style}}",
         "usedToday": "Sudah dipakai hari ini",
-        "rename": "Ganti nama di skuad"
+        "rename": "Ganti nama di skuad",
+        "academy": "Gunakan di akademi muda"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Dompet koin",
       "neverExpire": "Barang yang dibeli dengan koin tidak pernah kedaluwarsa. Barang itu milik akunmu dan tidak bisa dipindahkan.",
       "notThisSeason": "Tidak bisa dipakai musim ini",
-      "academySoon": "Dibuka bersama akademi",
       "itemsLocked": "Barangmu dikunci selama pemeriksaan",
       "full": "Inventarismu tidak muat lagi untuk barang ini",
       "bought": "Membeli {{item}} ×{{count}} seharga {{coins}} koin.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Jumlah",
       "openInventory": "Buka inventaris",
       "closeNotice": "Tutup pemberitahuan"
+    },
+    "academy": {
+      "notOnServer": "Server ini belum punya akademi muda.",
+      "disabled": "Akademi muda tidak dibuka musim ini.",
+      "itemsLocked": "Inventarismu dikunci untuk pemeriksaan: tiket dan jam pasir tidak bisa dipakai sampai selesai.",
+      "upgrade": "Tingkatkan di Keuangan",
+      "confirm": "Konfirmasi",
+      "aYoungster": "seorang pemain muda",
+      "notice": {
+        "scoutDone": "Perjalanan pemandu bakat sudah kembali: pilih sebelum laporan ditutup.",
+        "changed": "Akademimu punya kabar baru."
+      },
+      "region": {
+        "AsiaSoutheast": "Asia Tenggara",
+        "AsiaEast": "Asia Timur",
+        "Europe": "Eropa",
+        "Americas": "Amerika"
+      },
+      "focus": {
+        "Balanced": "Seimbang",
+        "Physical": "Fisik",
+        "Technical": "Teknik"
+      },
+      "pay": {
+        "cash": "uang klub",
+        "scoutExpedition": "tiket pemandu bakat",
+        "scoutExpeditionElite": "tiket pemandu bakat elite"
+      },
+      "reveal": {
+        "0": "Baru masuk",
+        "1": "Sudah diamati",
+        "2": "Sudah dikenal baik"
+      },
+      "scout": {
+        "title": "Pemanduan bakat",
+        "season": "Perjalanan musim ini: {{sent}}/{{max}}, elite {{elite}}/{{eliteMax}}",
+        "send": "Kirim pemandu bakat",
+        "trip": "{{region}} · {{focus}} · dibayar dengan {{pay}}",
+        "backIn": "Kembali dalam {{time}}",
+        "backSoon": "Pemandu bakat sedang kembali…",
+        "timeSkip": "Pakai jam pasir (punya {{held}})",
+        "timeSkipConfirm": "Pulangkan perjalanan ini lebih cepat? Satu jam pasir terpakai."
+      },
+      "send": {
+        "title": "Kirim pemandu bakat",
+        "region": "Wilayah",
+        "focus": "Mencari",
+        "pay": "Bayar dengan",
+        "payCash": "Uang klub: {{cost}}",
+        "payTicket": "1 tiket pemandu bakat (punya {{held}})",
+        "payElite": "1 tiket pemandu bakat elite (punya {{held}}): setidaknya satu bakat besar",
+        "back": "Kembali sekitar {{time}}",
+        "left": "Sisa perjalanan musim ini: {{trips}}, elite: {{elite}}",
+        "confirm": "Kirim"
+      },
+      "candidate": {
+        "choose": "Pilih {{name}}",
+        "facts": "{{age}} thn · {{position}} · {{height}} cm",
+        "ovr": "Rating {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Laporan ditutup dalam {{time}}",
+        "free": "Tempat kosong di akademi: {{free}}.",
+        "skip": "Lewati laporan",
+        "recruit": "Masukkan {{n}} ke akademi",
+        "othersLeave": "Kandidat yang tidak dipilih pergi dan tidak kembali."
+      },
+      "players": {
+        "title": "Akademi",
+        "slots": "{{used}}/{{slots}} tempat · Level akademi {{level}}",
+        "costs": "Gaji {{wage}} per minggu per pemain muda · Biaya kelulusan {{fee}} · Minimal {{days}} hari di akademi",
+        "revealNote": "Rentang rating dan bintang menyempit seiring hari di akademi; semuanya terlihat saat lulus.",
+        "none": "Belum ada pemain muda di akademi.",
+        "days": "{{days}} hari di akademi",
+        "wage": "{{wage}} per hari",
+        "graduates": "Diperkirakan lulus di akhir musim {{season}}",
+        "nextFree": "Kelulusan berikutnya gratis",
+        "focus": "Fokus sendiri",
+        "clubFocus": "Sama dengan klub",
+        "release": "Lepas",
+        "releaseTitle": "Lepas {{name}}?",
+        "releaseText": "Dia keluar dari akademi dan tidak kembali. Biaya pemanduan tidak dikembalikan."
+      },
+      "graduated": {
+        "title": "Lulusan",
+        "season": "musim {{season}}"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "Perkiraan pemandu bakat lebih sempit",
       "intakePotential": "Angkatan akhir musim: bonus potensi",
       "intakeGems": "Angkatan akhir musim: peluang permata",
-      "intakeTopTalent": "Angkatan akhir musim: peluang talenta top (90–95)"
+      "intakeTopTalent": "Angkatan akhir musim: peluang talenta top (90–95)",
+      "academySlots": "Tempat akademi"
     },
     "facilityEffectNone": "Tidak berubah",
     "facilityUpgradeTitle": "Tingkatkan {{facility}} — level {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "Akademi muda tidak dibuka musim ini.",
-        "tripOpen": "Klubmu sudah punya perjalanan pemandu yang berjalan atau laporan yang belum dipilih ({{tripId}}).",
+        "tripOpen": "Klubmu sudah punya perjalanan pemandu yang berjalan atau laporan yang belum dipilih.",
         "tripLimitReached": "Perjalanan pemandu musim ini sudah habis: {{sent}} dari {{limit}}.",
         "eliteTripLimitReached": "Perjalanan elite musim ini sudah habis: {{sent}} dari {{limit}}.",
         "tripNotPending": "Perjalanan pemandu ini sudah tidak berjalan.",

@@ -233,6 +233,52 @@ describe("OnlineFinance", () => {
   });
 });
 
+describe("the academy's row in finance", () => {
+  // Given a season with academy rules: the academy as a fourth facility (its effect named only
+  // `academySlots`) and its youngsters' weekly wages,
+  // when the finance page opens and the academy is upgraded,
+  // then the row has the academy's own name and effect label, the wages are shown, and the
+  // upgrade goes to the academy's path.
+  it("shows and upgrades the academy", async () => {
+    serve({
+      "GET v1/clubs/mine/finance": ok(finance({ cash: 9_000_000, academyWeeklyWageBill: 1_500 })),
+      "GET v1/clubs/mine/facilities": ok({
+        facilities: [
+          ...FACILITIES.facilities,
+          {
+            facility: "academy",
+            level: 1,
+            maxLevel: 5,
+            cost: 2_500_000,
+            effects: [{ key: "academySlots", format: "count", current: [3], next: [4] }],
+          },
+        ],
+      }),
+      "POST v1/clubs/mine/facilities/academy/upgrade": ok({
+        facility: "academy",
+        level: 2,
+        cost: 2_500_000,
+        cash: 6_500_000,
+      }),
+    });
+    renderOnline("/online/finance");
+
+    expect(await screen.findByText("online.finance.facility.academy")).toBeTruthy();
+    expect(screen.getByText("online.finance.facility.academyEffect")).toBeTruthy();
+    expect(screen.getByText(/online\.finance\.academyWages/).textContent).toMatch(/1,500/);
+    const upgrades = await screen.findAllByRole("button", { name: "finances.upgradeFacility" });
+    fireEvent.click(upgrades[3] as HTMLElement);
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText(/finances\.facilityEffects\.academySlots/)).toBeTruthy();
+    fireEvent.click(
+      await within(dialog).findByRole("button", { name: /finances\.facilityUpgradeConfirm/ }),
+    );
+    await waitFor(() =>
+      expect(sent("POST", "v1/clubs/mine/facilities/academy/upgrade")).toHaveLength(1),
+    );
+  });
+});
+
 describe("the club's cash in the header", () => {
   // Given a season with money,
   // when any online page shows,

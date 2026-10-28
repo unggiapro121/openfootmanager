@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { online } from "../client";
 import { type AccountRing, readAccountRing, watchAccount } from "../live";
 import {
+  refreshAcademy,
   refreshClub,
   refreshCoins,
   refreshFinance,
@@ -62,7 +63,9 @@ function itemNoticeOf(ring: Extract<AccountRing, { kind: "items" }>): void {
  * ring (outbid, won, sold, …) reads the club, its money and the market again, lights the market's
  * dot and shows a notice in the corner (`OnlineNotices`); a finance ring (the coach's coins
  * changed, C-7a1) reads the coins and the club's money again, with no notice; an items ring (C-7b)
- * reads the inventory again, with a notice only for an item given or a purchase refunded. Holding the channel is also what keeps them present in the friendly queue, whichever online
+ * reads the inventory again, with a notice only for an item given or a purchase refunded; an
+ * academy ring (C-7c) reads the academy again, and a report back lights the academy's dot and
+ * shows a notice. Holding the channel is also what keeps them present in the friendly queue, whichever online
  * page they are on. Nothing here is shown: a failure leaves each page to read for itself.
  */
 export function AccountWatcher() {
@@ -81,6 +84,18 @@ export function AccountWatcher() {
         // Any event, one this build does not know too, changes what the coach holds.
         void refreshItems().catch(ignore);
         itemNoticeOf(news);
+      } else if (news.kind === "academy") {
+        // A report back: the academy page reads it again; the dot and a notice say so elsewhere.
+        void refreshAcademy().catch(ignore);
+        if (news.event === "scoutDone") {
+          useOnlineStore.setState({ academyUnseen: true });
+          useOnlineStore.getState().pushNotice({
+            kind: "academy",
+            event: news.event,
+            link: "/online/academy",
+            params: {},
+          });
+        }
       } else if (news.kind === "market") {
         useOnlineStore.setState((state) => ({ marketUnseen: state.marketUnseen + 1 }));
         // A player won, sold or given back changes the squad, which is read with the club.

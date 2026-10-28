@@ -153,7 +153,9 @@
     "worldEditor.staffAttr.coaching",
     "packageBuild.patches",
     "coach.region",
-    "online.nav.shop"
+    "online.nav.shop",
+    "online.academy.scout.title",
+    "online.academy.send.region"
   ],
   "fr": [
     "online.finance.total",
@@ -285,7 +287,8 @@
     "packageBuild.patches",
     "coach.regions.Europe",
     "online.items.medkitBandage.name",
-    "online.shop.total"
+    "online.shop.total",
+    "online.academy.region.Europe"
   ],
   "it": [
     "online.fixture.minutes",
@@ -839,6 +842,7 @@
     "nations.uz",
     "nations.iq",
     "nations.nz",
-    "coachServer.email"
+    "coachServer.email",
+    "online.academy.candidate.ovr"
   ]
 }

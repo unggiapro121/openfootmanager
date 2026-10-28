@@ -52,7 +52,8 @@
       "account": "Cuenta",
       "coins": "Monedero de monedas",
       "inventory": "Inventario",
-      "shop": "Tienda"
+      "shop": "Tienda",
+      "academy": "Cantera"
     },
     "gate": {
       "clientOutdatedTitle": "Actualización necesaria",
@@ -199,7 +200,8 @@
       "noMatch": "Ningún jugador coincide con estos filtros.",
       "notFound": "Este jugador no está en tu plantilla.",
       "state": "Estado",
-      "suspended": "Sancionado: {{count}} partido(s)"
+      "suspended": "Sancionado: {{count}} partido(s)",
+      "potentialStarsRange": "Potencial de {{low}} a {{high}} estrellas"
     },
     "training": {
       "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio."
@@ -427,7 +429,9 @@
         "adjust": "Ajustes",
         "reversal": "Anulaciones",
         "grantReset": "Reinicio de efectivo con plantilla nueva",
-        "coin_exchange": "Cambio de monedas"
+        "coin_exchange": "Cambio de monedas",
+        "scout": "Ojeo de la cantera",
+        "graduation": "Tasa de graduación"
       },
       "ledger": "Movimientos",
       "ledgerEmpty": "Aún no hay movimientos.",
@@ -438,7 +442,12 @@
       },
       "nextCost": "Siguiente nivel: {{cost}}",
       "upgraded": "{{facility}} mejorado al nivel {{level}}.",
-      "exchangeCoins": "Cambiar monedas"
+      "exchangeCoins": "Cambiar monedas",
+      "facility": {
+        "academy": "Cantera",
+        "academyEffect": "Cada nivel añade plazas para juveniles."
+      },
+      "academyWages": "Salarios de la cantera: {{amount}} por semana"
     },
     "market": {
       "title": "Mercado de fichajes",
@@ -697,6 +706,22 @@
             "subject": "Tus objetos están desbloqueados",
             "body": "La revisión de tus objetos ha terminado. Ya puedes volver a usarlos."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Ha vuelto una misión de ojeo",
+            "body": "Tu ojeador ha vuelto con un informe. Elige a los candidatos antes de que se cierre."
+          },
+          "graduated": {
+            "subject": "{{player}} se ha graduado",
+            "body": "{{player}} se ha graduado en la cantera y pasa al primer equipo.{{extra}}",
+            "overSquadMax": "La plantilla supera ahora su tamaño máximo.",
+            "feeWaived": "Se ha condonado la tasa de graduación."
+          },
+          "graduationDeferred": {
+            "subject": "Una graduación ha tenido que esperar",
+            "body": "El club no pudo pagar la tasa de graduación de {{fee}}, así que {{player}} sigue en la cantera una temporada más. La próxima graduación es gratis."
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
       },
       "timeSkip": {
         "name": "Reloj de arena",
-        "description": "Hace volver al instante un viaje de ojeo."
+        "description": "Hace volver antes un viaje de ojeo en curso."
       },
       "notice": {
         "granted": "Has recibido {{item}}.",
@@ -852,7 +877,6 @@
       "notThisSeason": "No se puede usar esta temporada.",
       "needClub": "Necesitas un club.",
       "renameAt": "Cambia el nombre desde la plantilla o la ficha del club",
-      "academySoon": "Se usa en la cantera (próximamente)",
       "target": {
         "player": "un jugador",
         "club": "el club",
@@ -892,7 +916,8 @@
         "pickStyle": "Elige un estilo de juego para usarlo",
         "style": "Usar en {{style}}",
         "usedToday": "Usado hoy",
-        "rename": "Cambiar el nombre en la plantilla"
+        "rename": "Cambiar el nombre en la plantilla",
+        "academy": "Usar en la cantera"
       }
     },
     "shop": {
@@ -902,7 +927,6 @@
       "toWallet": "Cartera de monedas",
       "neverExpire": "Los objetos comprados con monedas no caducan. Pertenecen a tu cuenta y no se pueden transferir.",
       "notThisSeason": "No se puede usar esta temporada",
-      "academySoon": "Disponible con la cantera",
       "itemsLocked": "Tus objetos están bloqueados mientras se revisan",
       "full": "Tu inventario no admite más de este objeto",
       "bought": "Has comprado {{item}} ×{{count}} por {{coins}} monedas.",
@@ -970,6 +994,93 @@
       "quantityLabel": "Cantidad",
       "openInventory": "Abrir inventario",
       "closeNotice": "Cerrar aviso"
+    },
+    "academy": {
+      "notOnServer": "Este servidor aún no tiene cantera.",
+      "disabled": "La cantera no está abierta esta temporada.",
+      "itemsLocked": "Tu inventario está bloqueado por una revisión: los billetes y relojes de arena no se pueden usar hasta que termine.",
+      "upgrade": "Mejorar en Finanzas",
+      "confirm": "Confirmar",
+      "aYoungster": "un juvenil",
+      "notice": {
+        "scoutDone": "Ha vuelto una misión de ojeo: elige antes de que se cierre el informe.",
+        "changed": "Tu cantera tiene novedades."
+      },
+      "region": {
+        "AsiaSoutheast": "Sudeste asiático",
+        "AsiaEast": "Asia oriental",
+        "Europe": "Europa",
+        "Americas": "América"
+      },
+      "focus": {
+        "Balanced": "Equilibrado",
+        "Physical": "Físico",
+        "Technical": "Técnico"
+      },
+      "pay": {
+        "cash": "dinero del club",
+        "scoutExpedition": "un billete de ojeo",
+        "scoutExpeditionElite": "un billete de ojeo de élite"
+      },
+      "reveal": {
+        "0": "Recién llegado",
+        "1": "Observado",
+        "2": "Bien conocido"
+      },
+      "scout": {
+        "title": "Ojeo",
+        "season": "Misiones esta temporada: {{sent}}/{{max}}, de élite {{elite}}/{{eliteMax}}",
+        "send": "Enviar un ojeador",
+        "trip": "{{region}} · {{focus}} · pagado con {{pay}}",
+        "backIn": "Vuelve en {{time}}",
+        "backSoon": "El ojeador está volviendo…",
+        "timeSkip": "Usar un reloj de arena ({{held}} en posesión)",
+        "timeSkipConfirm": "¿Hacer volver antes esta misión de ojeo? Se gasta un reloj de arena."
+      },
+      "send": {
+        "title": "Enviar un ojeador",
+        "region": "Región",
+        "focus": "Buscando",
+        "pay": "Pagar con",
+        "payCash": "Dinero del club: {{cost}}",
+        "payTicket": "1 billete de ojeo ({{held}} en posesión)",
+        "payElite": "1 billete de ojeo de élite ({{held}} en posesión): al menos una gran promesa",
+        "back": "Vuelve hacia {{time}}",
+        "left": "Misiones restantes esta temporada: {{trips}}, de élite: {{elite}}",
+        "confirm": "Enviar"
+      },
+      "candidate": {
+        "choose": "Elegir a {{name}}",
+        "facts": "{{age}} años · {{position}} · {{height}} cm",
+        "ovr": "Media {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "El informe se cierra en {{time}}",
+        "free": "Plazas libres en la cantera: {{free}}.",
+        "skip": "Descartar el informe",
+        "recruit": "Incorporar {{n}} a la cantera",
+        "othersLeave": "Los candidatos no elegidos se van y no vuelven."
+      },
+      "players": {
+        "title": "Cantera",
+        "slots": "{{used}}/{{slots}} plazas · Cantera nivel {{level}}",
+        "costs": "Salario {{wage}} por semana por juvenil · Tasa de graduación {{fee}} · Al menos {{days}} días en la cantera",
+        "revealNote": "Los rangos de media y estrellas se estrechan con los días en la cantera; todo se ve al graduarse.",
+        "none": "Aún no hay juveniles en la cantera.",
+        "days": "{{days}} días en la cantera",
+        "wage": "{{wage}} al día",
+        "graduates": "Se espera que se gradúe al final de la temporada {{season}}",
+        "nextFree": "Próxima graduación gratis",
+        "focus": "Su propio enfoque",
+        "clubFocus": "Como el club",
+        "release": "Dejar marchar",
+        "releaseTitle": "¿Dejar marchar a {{name}}?",
+        "releaseText": "Deja la cantera y no vuelve. El coste del ojeo no se devuelve."
+      },
+      "graduated": {
+        "title": "Graduados",
+        "season": "temporada {{season}}"
+      }
     }
   },
   "coach": {
@@ -2247,7 +2358,8 @@
       "estimateNarrowing": "Estimaciones de ojeadores más precisas en",
       "intakePotential": "Hornada de fin de temporada: potencial extra",
       "intakeGems": "Hornada de fin de temporada: probabilidad de joya",
-      "intakeTopTalent": "Hornada de fin de temporada: probabilidad de crack (90–95)"
+      "intakeTopTalent": "Hornada de fin de temporada: probabilidad de crack (90–95)",
+      "academySlots": "Plazas de la cantera"
     },
     "facilityEffectNone": "Sin cambios",
     "facilityUpgradeTitle": "Mejorar {{facility}} — nivel {{from}} → {{to}}",
@@ -4660,7 +4772,7 @@
       },
       "academy": {
         "disabled": "La cantera no está abierta esta temporada.",
-        "tripOpen": "Tu club ya tiene una misión de ojeo en curso o un informe pendiente ({{tripId}}).",
+        "tripOpen": "Tu club ya tiene una misión de ojeo en curso o un informe pendiente.",
         "tripLimitReached": "Las misiones de ojeo de esta temporada están agotadas: {{sent}} de {{limit}}.",
         "eliteTripLimitReached": "Las misiones de élite de esta temporada están agotadas: {{sent}} de {{limit}}.",
         "tripNotPending": "Esta misión de ojeo ya no está en curso.",

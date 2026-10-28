@@ -112,8 +112,8 @@ describe("live watches", () => {
 
 describe("readAccountRing", () => {
   // Given rings of the coach's account: a friendly, a market event, a change of coins (C-7a1),
-  // an item event (C-7b), one of a kind this build does not know, and something that is not a
-  // ring,
+  // an item event (C-7b), an academy event (C-7c), one of a kind this build does not know, and
+  // something that is not a ring,
   // when they are read,
   // then each known kind keeps what it carries, and the rest is `unknown` (E6-15).
   it("reads the coins' finance ring beside the friendly and market ones", () => {
@@ -130,7 +130,13 @@ describe("readAccountRing", () => {
       itemCode: "timeSkip",
     });
     expect(readAccountRing({ kind: "items", event: 7 })).toEqual({ kind: "items" });
-    expect(readAccountRing({ kind: "academy", event: "scoutDone" })).toEqual({ kind: "unknown" });
+    expect(readAccountRing({ kind: "academy", event: "scoutDone", tripId: "t-1" })).toEqual({
+      kind: "academy",
+      event: "scoutDone",
+      tripId: "t-1",
+    });
+    expect(readAccountRing({ kind: "academy", tripId: 7 })).toEqual({ kind: "academy" });
+    expect(readAccountRing({ kind: "auction" })).toEqual({ kind: "unknown" });
     expect(readAccountRing("finance")).toEqual({ kind: "unknown" });
   });
 });
