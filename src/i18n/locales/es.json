@@ -842,7 +842,7 @@
       "group": {
         "condition": "Condición física",
         "medical": "Médico",
-        "tactics": "Táctica",
+        "tactics": "Táctica y XP",
         "custom": "Personalización",
         "academy": "Cantera",
         "other": "Otros"
@@ -886,16 +886,14 @@
       "academySoon": "Disponible con la cantera",
       "itemsLocked": "Tus objetos están bloqueados mientras se revisan",
       "full": "Tu inventario no admite más de este objeto",
-      "buy": "Comprar",
       "bought": "Has comprado {{item}} ×{{count}} por {{coins}} monedas.",
-      "confirmTitle": "¿Comprar {{item}}?",
       "quantity": "Cantidad (máximo {{max}})",
       "room": "Ahora puedes comprar como máximo {{max}}: el inventario guarda 999 de cada objeto.",
       "price": "Precio por unidad",
       "total": "Total",
       "after": "Monedas después",
       "bound": "Los objetos pertenecen a tu cuenta y no se pueden transferir.",
-      "confirm": "Comprar",
+      "confirm": "Confirmar compra",
       "effect": {
         "condition": "+{{n}} de condición física",
         "days": "Resta {{days}} días a una lesión",
@@ -908,7 +906,51 @@
         "perClubDay": "Como máximo {{n}} por club y día de fútbol",
         "xpPerStyleSeason": "Como máximo {{n}} XP de apuntes por estilo y temporada",
         "maxMatches": "Como máximo {{n}} partidos de XP doble pendientes"
-      }
+      },
+      "seasonOverTitle": "La temporada {{number}} ha terminado",
+      "seasonOverText": "Lo que compres ahora va a tu inventario y podrás usarlo desde la próxima temporada.",
+      "seasonSoonTitle": "La temporada {{number}} abre pronto",
+      "seasonSoonText": "Lo que compres ahora va a tu inventario y podrás usarlo cuando abra la temporada.",
+      "openTitle": "Compra objetos con monedas",
+      "balance": "Saldo de monedas",
+      "filterLabel": "Filtrar por categoría",
+      "hint": {
+        "condition": "Recupera la condición física de tus jugadores antes del partido",
+        "medical": "Acorta el tiempo de baja por lesión",
+        "tactics": "Sube la XP del estilo de juego y la XP del entrenador",
+        "custom": "Cambia el nombre de tus jugadores y de tu club",
+        "academy": "Viajes de ojeo de la cantera"
+      },
+      "scope": {
+        "player": "1 jugador",
+        "eleven": "Todo el once titular",
+        "injured": "1 jugador lesionado",
+        "style": "1 estilo de juego",
+        "coach": "XP de entrenador · partidos online",
+        "club": "Tu club",
+        "trip": "1 viaje de ojeo"
+      },
+      "mastery": {
+        "low": "Dominio: bajo",
+        "mid": "Dominio: medio",
+        "high": "Dominio: alto"
+      },
+      "held": "En el inventario:",
+      "buyAria": "Comprar {{item}}, {{coins}} monedas",
+      "effectLabel": "Efecto",
+      "appliesTo": "Se aplica a",
+      "usable": "Uso",
+      "usableNow": "Ahora mismo",
+      "usableNextSeason": "Desde la próxima temporada",
+      "usableSeasonStart": "Al abrir la temporada",
+      "coinsAmount": "{{coins}} monedas",
+      "notEnough": "No tienes monedas suficientes",
+      "decrease": "Reducir cantidad",
+      "increase": "Aumentar cantidad",
+      "presetAria": "Poner la cantidad en {{n}}",
+      "quantityLabel": "Cantidad",
+      "openInventory": "Abrir inventario",
+      "closeNotice": "Cerrar aviso"
     }
   },
   "coach": {

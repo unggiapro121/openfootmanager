@@ -842,7 +842,7 @@
       "group": {
         "condition": "Kondice",
         "medical": "Zdravotní",
-        "tactics": "Taktika",
+        "tactics": "Taktika a XP",
         "custom": "Přizpůsobení",
         "academy": "Akademie",
         "other": "Ostatní"
@@ -886,16 +886,14 @@
       "academySoon": "Otevře se s akademií",
       "itemsLocked": "Tvé předměty jsou během kontroly zamčené",
       "full": "Inventář už víc kusů tohoto předmětu nepojme",
-      "buy": "Koupit",
       "bought": "Koupeno: {{item}} ×{{count}} za {{coins}} mincí.",
-      "confirmTitle": "Koupit {{item}}?",
       "quantity": "Množství (nejvýš {{max}})",
       "room": "Teď můžeš koupit nejvýš {{max}}: inventář pojme 999 kusů každého předmětu.",
       "price": "Cena za kus",
       "total": "Celkem",
       "after": "Mince po nákupu",
       "bound": "Předměty patří k tvému účtu a nelze je předat.",
-      "confirm": "Koupit",
+      "confirm": "Potvrdit nákup",
       "effect": {
         "condition": "+{{n}} kondice",
         "days": "Zkrátí zranění o {{days}} dní",
@@ -908,7 +906,51 @@
         "perClubDay": "Nejvýš {{n}} na klub za fotbalový den",
         "xpPerStyleSeason": "Nejvýš {{n}} XP z poznámek na styl za sezónu",
         "maxMatches": "Nejvýš {{n}} čekajících zápasů s dvojnásobnými XP"
-      }
+      },
+      "seasonOverTitle": "Sezóna {{number}} skončila",
+      "seasonOverText": "Co teď koupíš, půjde do inventáře a použít to půjde od příští sezóny.",
+      "seasonSoonTitle": "Sezóna {{number}} brzy začne",
+      "seasonSoonText": "Co teď koupíš, půjde do inventáře a použít to půjde, jakmile sezóna začne.",
+      "openTitle": "Kupuj předměty za mince",
+      "balance": "Zůstatek mincí",
+      "filterLabel": "Filtrovat podle kategorie",
+      "hint": {
+        "condition": "Obnov kondici hráčů před zápasem",
+        "medical": "Zkrať dobu léčení zranění",
+        "tactics": "Zvyš XP herního stylu a XP trenéra",
+        "custom": "Přejmenuj hráče a klub",
+        "academy": "Skautské výpravy akademie"
+      },
+      "scope": {
+        "player": "1 hráč",
+        "eleven": "Celá základní sestava",
+        "injured": "1 zraněný hráč",
+        "style": "1 herní styl",
+        "coach": "XP trenéra · online zápasy",
+        "club": "Tvůj klub",
+        "trip": "1 skautská výprava"
+      },
+      "mastery": {
+        "low": "Mistrovství: nízké",
+        "mid": "Mistrovství: střední",
+        "high": "Mistrovství: vysoké"
+      },
+      "held": "V inventáři:",
+      "buyAria": "Koupit {{item}}, {{coins}} mincí",
+      "effectLabel": "Účinek",
+      "appliesTo": "Platí pro",
+      "usable": "Použití",
+      "usableNow": "Hned",
+      "usableNextSeason": "Od příští sezóny",
+      "usableSeasonStart": "Jakmile začne sezóna",
+      "coinsAmount": "{{coins}} mincí",
+      "notEnough": "Nedostatek mincí",
+      "decrease": "Snížit množství",
+      "increase": "Zvýšit množství",
+      "presetAria": "Nastavit množství na {{n}}",
+      "quantityLabel": "Množství",
+      "openInventory": "Otevřít inventář",
+      "closeNotice": "Zavřít oznámení"
     }
   },
   "coach": {

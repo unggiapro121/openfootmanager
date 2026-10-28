@@ -842,7 +842,7 @@
       "group": {
         "condition": "体能",
         "medical": "医疗",
-        "tactics": "战术",
+        "tactics": "战术与经验",
         "custom": "个性化",
         "academy": "青训营",
         "other": "其他"
@@ -886,16 +886,14 @@
       "academySoon": "随青训营开放",
       "itemsLocked": "你的物品在核查期间被锁定",
       "full": "背包已装不下更多该物品",
-      "buy": "购买",
       "bought": "已用 {{coins}} 金币购买{{item}} ×{{count}}。",
-      "confirmTitle": "购买{{item}}？",
       "quantity": "数量（最多 {{max}}）",
       "room": "现在最多可买 {{max}} 个：背包每种物品最多存放 999 个。",
       "price": "单价",
       "total": "合计",
       "after": "购买后金币",
       "bound": "物品归属于你的账号，不能转让。",
-      "confirm": "购买",
+      "confirm": "确认购买",
       "effect": {
         "condition": "+{{n}} 体能",
         "days": "伤病减少 {{days}} 天",
@@ -908,7 +906,51 @@
         "perClubDay": "每家俱乐部每个足球日最多 {{n}} 个",
         "xpPerStyleSeason": "每种风格每赛季最多 {{n}} 笔记经验",
         "maxMatches": "待生效的双倍经验最多 {{n}} 场"
-      }
+      },
+      "seasonOverTitle": "第 {{number}} 赛季已结束",
+      "seasonOverText": "现在购买的物品会放入背包，从下赛季起可以使用。",
+      "seasonSoonTitle": "第 {{number}} 赛季即将开始",
+      "seasonSoonText": "现在购买的物品会放入背包，赛季开始后即可使用。",
+      "openTitle": "用金币购买物品",
+      "balance": "金币余额",
+      "filterLabel": "按类别筛选",
+      "hint": {
+        "condition": "赛前为球员恢复体能",
+        "medical": "缩短伤病休养时间",
+        "tactics": "提升战术风格经验和教练经验",
+        "custom": "为球员和俱乐部改名",
+        "academy": "青训营的球探之旅"
+      },
+      "scope": {
+        "player": "1 名球员",
+        "eleven": "整套首发阵容",
+        "injured": "1 名伤病球员",
+        "style": "1 种战术风格",
+        "coach": "教练经验 · 在线比赛",
+        "club": "你的俱乐部",
+        "trip": "1 次球探之旅"
+      },
+      "mastery": {
+        "low": "熟练度：低",
+        "mid": "熟练度：中",
+        "high": "熟练度：高"
+      },
+      "held": "背包中：",
+      "buyAria": "购买{{item}}，{{coins}} 金币",
+      "effectLabel": "效果",
+      "appliesTo": "适用于",
+      "usable": "使用",
+      "usableNow": "立即",
+      "usableNextSeason": "下赛季起",
+      "usableSeasonStart": "赛季开始后",
+      "coinsAmount": "{{coins}} 金币",
+      "notEnough": "金币不足",
+      "decrease": "减少数量",
+      "increase": "增加数量",
+      "presetAria": "将数量设为 {{n}}",
+      "quantityLabel": "数量",
+      "openInventory": "打开背包",
+      "closeNotice": "关闭通知"
     }
   },
   "coach": {

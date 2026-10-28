@@ -2,32 +2,17 @@ import type { TFunction } from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
-import { Coins, Store } from "lucide-react";
-import DashboardModalFrame from "../../../components/dashboard/DashboardModalFrame";
-import { Button, Card, CardBody, CardHeader } from "../../../components/ui";
-import type { CoinView, InventoryView, ShopItemView, ShopView } from "../../api";
+import { CalendarClock, Check, Coins, Info, Store, X } from "lucide-react";
+import type { CoinView, InventoryView, SeasonNowView, ShopItemView, ShopView } from "../../api";
 import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { formatCoins } from "../../format";
 import { refreshCoins, refreshItems, tracked, useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
-import MoneyInput from "../market/MoneyInput";
 import ResourceState from "../ResourceState";
-import { useActionKey } from "../useActionKey";
-import {
-  capsText,
-  effectText,
-  groupOf,
-  ITEM_GROUPS,
-  itemDescription,
-  itemName,
-  itemsErrorText,
-} from "./itemText";
-
-const PRICE_CHANGED = "be.error.economy.priceChanged";
-const STACK_FULL = "be.error.inventory.stackFull";
-/** The most of one item bought at once when an older server sends no `maxPurchase`. */
-const MOST_AT_ONCE = 99;
+import { type ItemGroup, groupOf, ITEM_GROUPS, itemDescription, itemName } from "./itemText";
+import { ItemIcon, lookOf } from "./itemLook";
+import ShopPurchaseDialog, { type Usable } from "./ShopPurchaseDialog";
 
 /**
  * Why the item cannot be bought, in the order the coach would read it (C-7 C7-30); `null` when it
@@ -51,17 +36,37 @@ export function buyBlocker(
   return null;
 }
 
+/** How many of an item the coach holds now. */
+export function heldOf(items: InventoryView | null | undefined, code: string): number {
+  return items?.lines.find((line) => line.itemCode === code)?.total ?? 0;
+}
+
 /**
- * The shop (C-7b, C7-16, C7-30): what the price list in force sells, what each does this season
- * by the ruleset's numbers, and a purchase confirmed with the price list shown. Bought items never
- * expire. Coins and items are the person's, so the page opens without a club.
+ * When a bought item can be used: renames at once, the rest once a season is under way. A season
+ * that is over or not yet open keeps them in the inventory until it is.
+ */
+function usableOf(group: ItemGroup, season: SeasonNowView | null | undefined): Usable {
+  if (group === "custom") return "now";
+  if (season?.status === "closing" || season?.status === "closed") return "nextSeason";
+  if (season?.status === "scheduled") return "seasonStart";
+  return "now";
+}
+
+type Filter = ItemGroup | "all";
+
+/**
+ * The shop (C-7b, C7-16, C7-30; design cua-hang.html): the balance, what the price list in force
+ * sells by group, and a purchase confirmed with the price list shown. Bought items never expire.
+ * Coins and items are the person's, so the page opens without a club.
  */
 export default function OnlineShop() {
   const { t } = useTranslation();
   const coins = useOnlineStore((state) => state.coins);
   const items = useOnlineStore((state) => state.items);
+  const season = useOnlineStore((state) => state.season);
   const [params, setParams] = useSearchParams();
   const [done, setDone] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
   const { resource, reload } = useOnlineResource(() => tracked(() => online.shop.view()), []);
   // Read again in place after a purchase or a changed price list, so an open dialog stays open.
   const [fresh, setFresh] = useState<ShopView | null>(null);
@@ -104,25 +109,41 @@ export default function OnlineShop() {
         }
         const version = shop.priceListVersion;
         const buying = shop.items.find((item) => item.itemCode === asked);
+        const groups = ITEM_GROUPS.filter((group) =>
+          shop.items.some((item) => groupOf(item.itemCode) === group),
+        );
+        // A group the shop no longer sells falls back to everything.
+        const shown: Filter = filter !== "all" && groups.includes(filter) ? filter : "all";
         return (
-          <div className="flex flex-col gap-5">
-            <Header coins={coins} version={version} />
-            {done && (
-              <p role="status" className="text-sm text-green-700 dark:text-green-400">
-                {done}
-              </p>
+          <div className="flex max-w-7xl flex-col gap-6">
+            <ShopHead coins={coins} season={season} version={version} />
+            {shop.items.length === 0 ? (
+              <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.shop.empty")}</p>
+            ) : (
+              <>
+                <FilterChips shop={shop} groups={groups} shown={shown} onPick={setFilter} />
+                <div className="flex flex-col gap-8">
+                  {groups
+                    .filter((group) => shown === "all" || group === shown)
+                    .map((group) => (
+                      <GroupSection
+                        key={group}
+                        group={group}
+                        offers={shop.items.filter((item) => groupOf(item.itemCode) === group)}
+                        onBuy={(code) => {
+                          setDone(null);
+                          setParams({ item: code }, { replace: true });
+                        }}
+                      />
+                    ))}
+                </div>
+              </>
             )}
-            <Catalogue
-              shop={shop}
-              onBuy={(code) => {
-                setDone(null);
-                setParams({ item: code }, { replace: true });
-              }}
-            />
             {buying && buyBlocker(t, buying, coins, items) === null && (
-              <PurchaseDialog
+              <ShopPurchaseDialog
                 item={buying}
                 version={version}
+                usable={usableOf(groupOf(buying.itemCode), season)}
                 onClose={close}
                 onChanged={readAgain}
                 onDone={(text) => {
@@ -132,6 +153,7 @@ export default function OnlineShop() {
                 }}
               />
             )}
+            {done && <BoughtToast text={done} onClose={() => setDone(null)} />}
           </div>
         );
       }}
@@ -139,61 +161,196 @@ export default function OnlineShop() {
   );
 }
 
-function Header({ coins, version }: { coins: CoinView | null | undefined; version: number }) {
+/** The season's word on bought items, beside the coin balance and the price list in force. */
+function ShopHead({
+  coins,
+  season,
+  version,
+}: {
+  coins: CoinView | null | undefined;
+  season: SeasonNowView | null | undefined;
+  version: number;
+}) {
   const { t, i18n } = useTranslation();
+  const over = season?.status === "closing" || season?.status === "closed";
+  const soon = season?.status === "scheduled";
+  const title = over
+    ? t("online.shop.seasonOverTitle", { number: season.number })
+    : soon
+      ? t("online.shop.seasonSoonTitle", { number: season.number })
+      : t("online.shop.openTitle");
+  const negative = coins !== null && coins !== undefined && coins.balance < 0;
   return (
-    <Card accent="accent">
-      <CardBody>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700 dark:text-gray-300">
-          <span className="flex items-center gap-2 font-heading text-lg font-bold">
-            <Coins className="h-5 w-5 text-accent-500 dark:text-accent-400" aria-hidden="true" />
-            {coins ? formatCoins(coins.balance, i18n.language) : "—"}
-          </span>
+    <section
+      aria-labelledby="shop-head-title"
+      className="flex flex-wrap items-center gap-5 rounded-xl border border-t-4 border-gray-200 border-t-accent-400 bg-white px-6 py-5 shadow-sm dark:border-navy-600 dark:border-t-accent-400 dark:bg-navy-700 dark:shadow-md"
+    >
+      <div className="flex min-w-0 flex-[999_1_420px] items-start gap-4">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300">
+          {over || soon ? (
+            <CalendarClock className="h-5 w-5" aria-hidden="true" />
+          ) : (
+            <Store className="h-5 w-5" aria-hidden="true" />
+          )}
+        </span>
+        <div className="flex flex-col gap-1">
+          <h2
+            id="shop-head-title"
+            className="font-heading text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-gray-100"
+          >
+            {title}
+          </h2>
+          <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+            {(over || soon) && (
+              <>
+                <span>
+                  {t(over ? "online.shop.seasonOverText" : "online.shop.seasonSoonText")}
+                </span>{" "}
+              </>
+            )}
+            <span>{t("online.shop.neverExpire")}</span>
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-[1_1_220px] flex-col items-end gap-0.5">
+        <span className="font-heading text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          {t("online.shop.balance")}
+        </span>
+        <span
+          className={`flex items-center gap-2 font-heading text-3xl font-bold leading-none tabular-nums ${
+            negative ? "text-red-600 dark:text-red-400" : "text-accent-600 dark:text-accent-400"
+          }`}
+        >
+          <Coins className="h-6 w-6" aria-hidden="true" />
+          {coins ? formatCoins(coins.balance, i18n.language) : "—"}
+        </span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {t("online.coins.priceList", { version })} ·{" "}
           <Link
             to="/online/coins"
-            className="font-semibold text-primary-700 underline dark:text-primary-400"
+            className="rounded font-semibold text-primary-700 hover:text-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
           >
             {t("online.shop.toWallet")}
           </Link>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {t("online.coins.priceList", { version })}
-          </span>
-          <span className="w-full text-xs text-gray-500 dark:text-gray-400">
-            {t("online.shop.neverExpire")}
-          </span>
-        </div>
-      </CardBody>
-    </Card>
+        </span>
+      </div>
+    </section>
   );
 }
 
-function Catalogue({ shop, onBuy }: { shop: ShopView; onBuy: (code: string) => void }) {
+function FilterChips({
+  shop,
+  groups,
+  shown,
+  onPick,
+}: {
+  shop: ShopView;
+  groups: ItemGroup[];
+  shown: Filter;
+  onPick: (filter: Filter) => void;
+}) {
   const { t } = useTranslation();
-  if (shop.items.length === 0) {
-    return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.shop.empty")}</p>;
-  }
+  const chips: { filter: Filter; label: string; count: number }[] = [
+    { filter: "all", label: t("common.all"), count: shop.items.length },
+    ...groups.map((group) => ({
+      filter: group,
+      label: t(`online.inventory.group.${group}`),
+      count: shop.items.filter((item) => groupOf(item.itemCode) === group).length,
+    })),
+  ];
   return (
-    <>
-      {ITEM_GROUPS.map((group) => {
-        const offered = shop.items.filter((item) => groupOf(item.itemCode) === group);
-        if (offered.length === 0) return null;
+    <fieldset className="flex flex-wrap gap-2">
+      <legend className="sr-only">{t("online.shop.filterLabel")}</legend>
+      {chips.map((chip) => {
+        const on = chip.filter === shown;
         return (
-          <section key={group} aria-labelledby={`shop-${group}`} className="space-y-3">
-            <h3
-              id={`shop-${group}`}
-              className="font-heading text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
-            >
-              {t(`online.inventory.group.${group}`)}
-            </h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {offered.map((item) => (
-                <Offer key={item.itemCode} item={item} onBuy={() => onBuy(item.itemCode)} />
-              ))}
-            </div>
-          </section>
+          <button
+            key={chip.filter}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onPick(chip.filter)}
+            className={`rounded-lg border px-3.5 py-2 font-heading text-sm font-semibold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${
+              on
+                ? "border-primary-700 bg-primary-700 text-white dark:border-primary-700 dark:bg-primary-700 dark:text-white"
+                : "border-gray-200 bg-white text-gray-700 hover:border-primary-500 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-300 dark:hover:border-primary-500"
+            }`}
+          >
+            {chip.label} <span className="tabular-nums">({chip.count})</span>
+          </button>
         );
       })}
-    </>
+    </fieldset>
+  );
+}
+
+function GroupSection({
+  group,
+  offers,
+  onBuy,
+}: {
+  group: ItemGroup;
+  offers: ShopItemView[];
+  onBuy: (code: string) => void;
+}) {
+  const { t } = useTranslation();
+  const hint = t(`online.shop.hint.${group}`, { defaultValue: "" });
+  return (
+    <section aria-labelledby={`shop-${group}`} className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+        <h2
+          id={`shop-${group}`}
+          className="font-heading text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-gray-100"
+        >
+          {t(`online.inventory.group.${group}`)}
+        </h2>
+        {hint && <span className="text-xs text-gray-500 dark:text-gray-400">{hint}</span>}
+      </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {offers.map((item) => (
+          <Offer key={item.itemCode} item={item} onBuy={() => onBuy(item.itemCode)} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** What the item is used on, as a badge; a tactical note shows its mastery band instead. */
+export function ScopeBadge({ code }: { code: string }) {
+  const { t } = useTranslation();
+  const look = lookOf(code);
+  if (look.masteryTier !== undefined) {
+    const tier = look.masteryTier;
+    const word = (["low", "mid", "high"] as const)[tier - 1];
+    return (
+      <span className="inline-flex items-center gap-2 self-start">
+        <span aria-hidden="true" className="inline-flex gap-0.75">
+          {[1, 2, 3].map((step) => (
+            <span
+              key={step}
+              className={`h-1.5 w-3.5 rounded-full ${
+                step <= tier ? "bg-primary-500 dark:bg-primary-400" : "bg-gray-200 dark:bg-navy-600"
+              }`}
+            />
+          ))}
+        </span>
+        <span className="text-xs text-gray-600 dark:text-gray-400">
+          {t(`online.shop.mastery.${word}`)}
+        </span>
+      </span>
+    );
+  }
+  if (look.scope === undefined) return null;
+  const tone = look.gold
+    ? "bg-accent-100 text-accent-800 dark:bg-accent-900/40 dark:text-accent-300"
+    : look.scope === "eleven"
+      ? "bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+      : "bg-gray-100 text-gray-600 dark:bg-navy-600 dark:text-gray-400";
+  return (
+    <span
+      className={`inline-flex self-start rounded-md px-2 py-0.5 font-heading text-xs font-semibold uppercase tracking-wider ${tone}`}
+    >
+      {t(`online.shop.scope.${look.scope}`)}
+    </span>
   );
 }
 
@@ -202,179 +359,86 @@ function Offer({ item, onBuy }: { item: ShopItemView; onBuy: () => void }) {
   const coins = useOnlineStore((state) => state.coins);
   const items = useOnlineStore((state) => state.items);
   const blocker = buyBlocker(t, item, coins, items);
-  const lines = [
-    ...(item.effect ? effectText(t, item.effect) : []),
-    ...(item.limits ? capsText(t, item.limits) : []),
-  ];
+  const name = itemName(t, item.itemCode);
+  const description = itemDescription(t, item.itemCode);
+  const price = formatCoins(item.price, i18n.language);
   return (
-    <article aria-label={itemName(t, item.itemCode)}>
-      <Card>
-        <CardHeader>
-          <span className="flex items-center gap-2">
-            <Store className="h-4 w-4 text-accent-500 dark:text-accent-400" aria-hidden="true" />
-            {itemName(t, item.itemCode)}
-            <span className="ml-auto flex items-center gap-1 tabular-nums">
-              <Coins className="h-4 w-4 text-accent-500 dark:text-accent-400" aria-hidden="true" />
-              {formatCoins(item.price, i18n.language)}
-            </span>
-          </span>
-        </CardHeader>
-        <CardBody>
-          <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-            {itemDescription(t, item.itemCode) && <p>{itemDescription(t, item.itemCode)}</p>}
-            {lines.map((line) => (
-              <p key={line} className="text-xs">
-                {line}
-              </p>
-            ))}
-            <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
-              {blocker && (
-                <span role="note" className="text-xs text-gray-500 dark:text-gray-400">
-                  {blocker}
-                </span>
-              )}
-              <Button type="button" size="sm" disabled={blocker !== null} onClick={onBuy}>
-                {t("online.shop.buy")}
-              </Button>
-            </div>
-          </div>
-        </CardBody>
-      </Card>
+    <article
+      aria-label={name}
+      className="flex flex-col gap-3.5 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-primary-400/40 dark:border-navy-600 dark:bg-navy-700 dark:shadow-md dark:hover:border-primary-400/40"
+    >
+      <div className="flex items-start gap-3">
+        <ItemIcon code={item.itemCode} size="md" />
+        <div className="flex min-w-0 flex-col gap-1">
+          <h3 className="font-heading text-lg font-bold uppercase leading-tight tracking-wider text-gray-900 dark:text-gray-100">
+            {name}
+          </h3>
+          {description && (
+            <p className="text-sm leading-snug text-gray-600 dark:text-gray-400">{description}</p>
+          )}
+        </div>
+      </div>
+      <ScopeBadge code={item.itemCode} />
+      {blocker && (
+        <p
+          role="note"
+          className="flex items-start gap-1.5 text-xs text-gray-500 dark:text-gray-400"
+        >
+          <Info className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {blocker}
+        </p>
+      )}
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-200 pt-3.5 dark:border-navy-600">
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {t("online.shop.held")}{" "}
+          <strong className="tabular-nums text-gray-800 dark:text-gray-200">
+            {heldOf(items, item.itemCode)}
+          </strong>
+        </span>
+        <button
+          type="button"
+          disabled={blocker !== null}
+          onClick={onBuy}
+          aria-label={t("online.shop.buyAria", { item: name, coins: price })}
+          className="inline-flex h-11 min-w-22 items-center justify-center gap-2 rounded-lg bg-primary-700 px-4 font-heading text-xl font-bold tabular-nums text-accent-400 shadow-md transition-all hover:bg-primary-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary-700 dark:focus:ring-offset-navy-800"
+        >
+          <Coins className="h-4.5 w-4.5" aria-hidden="true" />
+          {price}
+        </button>
+      </div>
     </article>
   );
 }
 
-/**
- * A purchase asked once more (C-7 C7-6): it shows the price list it will send. No answer: sent
- * again under the same key. A changed price list or a row with less room is read again and shown;
- * confirming it then is a new request with a new key, never sent by itself.
- */
-function PurchaseDialog({
-  item,
-  version,
-  onClose,
-  onChanged,
-  onDone,
-}: {
-  item: ShopItemView;
-  version: number;
-  onClose: () => void;
-  onChanged: () => void;
-  onDone: (text: string) => void;
-}) {
-  const { t, i18n } = useTranslation();
-  const coins = useOnlineStore((state) => state.coins);
-  const most = Math.min(item.maxPurchase ?? MOST_AT_ONCE, MOST_AT_ONCE);
-  const [quantity, setQuantity] = useState<number | null>(1);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<unknown>(null);
-  const { run } = useActionKey();
-
-  const total = quantity === null ? 0 : quantity * item.price;
-  const balance = coins?.balance;
-  const tooMany = quantity !== null && quantity > most;
-  const tooDear = balance !== undefined && total > balance;
-  const ready = quantity !== null && quantity >= 1 && !tooMany && !tooDear && !busy;
-
-  const confirm = () => {
-    if (quantity === null) return;
-    setBusy(true);
-    setError(null);
-    run(
-      (key) => tracked(() => online.shop.purchase(item.itemCode, quantity, version, key)),
-      `${item.itemCode}x${quantity}@${version}`,
-    )
-      .then((view) => {
-        useOnlineStore.setState((state) => ({
-          coins: state.coins ? { ...state.coins, balance: view.coinBalance } : state.coins,
-        }));
-        void refreshCoins().catch(() => undefined);
-        void refreshItems().catch(() => undefined);
-        onDone(
-          t("online.shop.bought", {
-            count: view.quantity,
-            item: itemName(t, view.itemCode),
-            coins: formatCoins(view.coins, i18n.language),
-          }),
-        );
-      })
-      .catch((failure: unknown) => {
-        setError(failure);
-        if (!(failure instanceof OnlineApiError) || failure.status === 0) return;
-        if (failure.code === STACK_FULL && typeof failure.params.max === "number") {
-          setQuantity(failure.params.max);
-        }
-        void refreshCoins().catch(() => undefined);
-        if (failure.code === PRICE_CHANGED || failure.code === STACK_FULL) onChanged();
-      })
-      .finally(() => setBusy(false));
-  };
-
+/** A purchase done, with the way to the inventory. Stays until closed or the next purchase. */
+function BoughtToast({ text, onClose }: { text: string; onClose: () => void }) {
+  const { t } = useTranslation();
   return (
-    <DashboardModalFrame maxWidthClassName="max-w-md">
-      <div role="dialog" aria-modal="true" aria-labelledby="shop-buy-title" className="space-y-4">
-        <h3
-          id="shop-buy-title"
-          className="font-heading text-lg font-bold text-gray-900 dark:text-gray-100"
+    <div
+      role="status"
+      className="fixed bottom-6 right-6 z-40 flex max-w-[min(420px,calc(100vw-48px))] items-start gap-3 rounded-xl border border-t-4 border-gray-200 border-t-success-400 bg-white p-4 shadow-xl dark:border-navy-600 dark:border-t-success-400 dark:bg-navy-700"
+    >
+      <Check
+        className="mt-0.5 h-5 w-5 shrink-0 text-success-500 dark:text-success-400"
+        aria-hidden="true"
+      />
+      <span className="text-sm leading-snug text-gray-800 dark:text-gray-100">
+        <span>{text}</span>{" "}
+        <Link
+          to="/online/inventory"
+          className="rounded font-semibold text-primary-700 hover:text-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
         >
-          {t("online.shop.confirmTitle", { item: itemName(t, item.itemCode) })}
-        </h3>
-        <MoneyInput
-          label={t("online.shop.quantity", { max: most })}
-          value={quantity}
-          onChange={(value) => {
-            setError(null);
-            setQuantity(value);
-          }}
-        />
-        {most < MOST_AT_ONCE && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {t("online.shop.room", { max: most })}
-          </p>
-        )}
-        <dl className="grid grid-cols-2 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
-          <dt>{t("online.shop.price")}</dt>
-          <dd className="text-right tabular-nums">{formatCoins(item.price, i18n.language)}</dd>
-          <dt>{t("online.shop.total")}</dt>
-          <dd className="text-right font-semibold tabular-nums">
-            {formatCoins(total, i18n.language)}
-          </dd>
-          {balance !== undefined && (
-            <>
-              <dt>{t("online.shop.after")}</dt>
-              <dd className="text-right tabular-nums">
-                {formatCoins(balance - total, i18n.language)}
-              </dd>
-            </>
-          )}
-          <dt>{t("online.coins.priceListLabel")}</dt>
-          <dd className="text-right tabular-nums">{version}</dd>
-        </dl>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{t("online.shop.bound")}</p>
-        {(tooMany || tooDear) && (
-          <p role="note" className="text-xs text-red-600 dark:text-red-400">
-            {tooMany
-              ? t("online.shop.room", { max: most })
-              : t("be.error.economy.insufficientCoin")}
-          </p>
-        )}
-        {error !== null && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-            {itemsErrorText(t, i18n.language, error)}
-            {error instanceof OnlineApiError &&
-              error.code === PRICE_CHANGED &&
-              ` ${t("online.coins.reviewPrices")}`}
-          </p>
-        )}
-        <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" size="sm" onClick={onClose}>
-            {t("common.cancel")}
-          </Button>
-          <Button type="button" size="sm" disabled={!ready} onClick={confirm}>
-            {t("online.shop.confirm")}
-          </Button>
-        </div>
-      </div>
-    </DashboardModalFrame>
+          {t("online.shop.openInventory")}
+        </Link>
+      </span>
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label={t("online.shop.closeNotice")}
+        className="-mr-1.5 -mt-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-400 dark:hover:bg-navy-600"
+      >
+        <X className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
   );
 }
