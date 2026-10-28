@@ -116,7 +116,7 @@ export default function OnlineShop() {
         // A group the shop no longer sells falls back to everything.
         const shown: Filter = filter !== "all" && groups.includes(filter) ? filter : "all";
         return (
-          <div className="flex max-w-7xl flex-col gap-6">
+          <div className="flex flex-col gap-6">
             <ShopHead coins={coins} season={season} version={version} />
             {shop.items.length === 0 ? (
               <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.shop.empty")}</p>

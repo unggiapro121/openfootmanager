@@ -55,7 +55,7 @@ export default function OnlineInventory() {
     );
   }
   return (
-    <div className="flex max-w-7xl flex-col gap-6">
+    <div className="flex flex-col gap-6">
       {items.locked && (
         <p
           role="alert"
