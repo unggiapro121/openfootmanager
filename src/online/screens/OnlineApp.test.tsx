@@ -1,4 +1,4 @@
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CONTRACT_REVISION } from "../api/contract";
 import {
@@ -61,9 +61,11 @@ describe("a coach with a club", () => {
       await screen.findByRole("heading", { level: 1, name: "Cầu Vồng Nghệ An" }),
     ).toBeInTheDocument();
     expect(screen.getByText("online.header.seasonDay:3|5|28")).toBeInTheDocument();
-    expect(screen.getByText("online.fixture.versus:Sóng Biển Đà Nẵng")).toBeInTheDocument();
-    expect(screen.getByText("common.place.2")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "home.standings" }));
+    const next = screen.getByRole("region", { name: /^online\.fixture\.title/ });
+    expect(within(next).getByText("Sóng Biển Đà Nẵng")).toBeInTheDocument();
+    const table = screen.getByRole("region", { name: "online.overview.tableTitle" });
+    expect(within(table).getByText("online.overview.points:6")).toBeInTheDocument();
+    fireEvent.click(within(table).getByRole("link", { name: "online.overview.seeTable" }));
     expect(await screen.findByLabelText("location")).toHaveTextContent("/online/league");
   });
 
@@ -158,7 +160,9 @@ describe("a coach with a club", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /online.club.save/ }));
 
-    expect(await screen.findByText(/Sân Mới/)).toBeInTheDocument();
+    expect(
+      await screen.findByText("online.overview.stadiumLine:Sân Mới|18000"),
+    ).toBeInTheDocument();
     expect(sent("PATCH", "v1/clubs/mine")).toHaveLength(0);
     const [rename] = sent("PATCH", "v1/clubs/mine/stadium");
     expect(rename.body).toEqual({ name: "Sân Mới" });
@@ -188,6 +192,7 @@ describe("a coach with a club", () => {
       "GET v1/season": ok(SEASON),
       "GET v1/clubs/mine": ok(myClub()),
       "GET v1/leagues/mine": ok(LEAGUE),
+      "GET v1/clubs/mine/fixtures": ok({ fixtures: [] }),
       "PATCH v1/clubs/mine": fail(409, "be.error.club.nameTaken"),
     });
     renderOnline();

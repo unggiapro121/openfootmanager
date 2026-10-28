@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FixtureView, LeagueView } from "../api";
 import type { OnlineRequest } from "../../services/onlineTransport";
@@ -283,32 +283,5 @@ describe("a settled fixture", () => {
     expect(await screen.findByText("Cường")).toBeInTheDocument();
     expect(screen.getByText("online.publicClub.botCoach")).toBeInTheDocument();
     expect(screen.getByLabelText("location")).toHaveTextContent("/online/clubs/club-2");
-  });
-});
-
-describe("the overview's latest result", () => {
-  // Given a club whose next match is in round 3,
-  // when the overview opens,
-  // then it reads round 2 only and shows the club's result there.
-  it("reads the round before the next match", async () => {
-    stage({
-      "GET v1/leagues/league-1/fixtures": (request) =>
-        ok({
-          round: roundOf(request),
-          fixtures: [fixture(roundOf(request), { status: "settled", homeGoals: 3, awayGoals: 1 })],
-        }),
-    });
-    renderOnline("/online");
-
-    expect(
-      await screen.findByRole("link", { name: /online\.fixture\.openResult/ }),
-    ).toHaveTextContent("3 – 1");
-    await waitFor(() =>
-      expect(
-        server.requests
-          .filter((request) => request.segments.join("/") === "v1/leagues/league-1/fixtures")
-          .map(roundOf),
-      ).toEqual([2]),
-    );
   });
 });

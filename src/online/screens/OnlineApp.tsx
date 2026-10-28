@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import OnlineFixture from "./OnlineFixture";
 import OnlineLeague from "./OnlineLeague";
 import OnlineMatch from "./match/OnlineMatch";
-import OnlineOverview from "./OnlineOverview";
+import OnlineOverview from "./overview/OnlineOverview";
 import OnlineProfile from "./OnlineProfile";
 import OnlinePublicClub from "./OnlinePublicClub";
 import OnlineAuction from "./market/OnlineAuction";
