@@ -93,7 +93,12 @@ async function offerOf(code: string) {
 }
 
 const buyIn = (card: HTMLElement) =>
-  within(card).getByRole("button", { name: "online.shop.buy" }) as HTMLButtonElement;
+  within(card).getByRole("button", { name: /^online\.shop\.buyAria:/ }) as HTMLButtonElement;
+
+async function openPurchase(code: string) {
+  fireEvent.click(buyIn(await offerOf(code)));
+  return screen.findByRole("dialog", { name: `online.items.${code}.name:${code}` });
+}
 
 beforeEach(() => {
   resetOnline();
@@ -137,8 +142,6 @@ describe("the shop", () => {
 
     const drink = await offerOf("energyDrinkSmall");
     expect(buyIn(drink).disabled).toBe(false);
-    expect(drink.textContent).toContain("online.shop.effect.condition:15");
-    expect(drink.textContent).toContain("online.shop.caps.perPlayerDay:2");
     const medkit = await offerOf("medkitBandage");
     expect(buyIn(medkit).disabled).toBe(true);
     expect(medkit.textContent).toContain("online.shop.notThisSeason");
@@ -199,8 +202,8 @@ describe("buying", () => {
     fireEvent.change(within(dialog).getByLabelText("online.shop.quantity:99"), {
       target: { value: "3" },
     });
-    expect(dialog.textContent).toContain("online.shop.total15");
-    fireEvent.click(within(dialog).getByRole("button", { name: "online.shop.confirm" }));
+    expect(dialog.textContent).toContain("online.shop.totalonline.shop.coinsAmount:15");
+    fireEvent.click(within(dialog).getByRole("button", { name: /^online\.shop\.confirm/ }));
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     const [purchase] = sent("POST", "v1/shop/purchases");
@@ -210,7 +213,12 @@ describe("buying", () => {
       priceListVersion: 4,
     });
     expect(purchase.idempotencyKey).toBeTruthy();
-    expect(await screen.findByText(/^online\.shop\.bought:/)).toBeTruthy();
+    const notice = (await screen.findByText(/^online\.shop\.bought:/)).closest("[role=status]");
+    expect(notice).toBeTruthy();
+    const link = within(notice as HTMLElement).getByRole("link", {
+      name: "online.shop.openInventory",
+    });
+    expect(link.getAttribute("href")).toBe("/online/inventory");
   });
 
   // Given a row that filled up meanwhile,
@@ -230,7 +238,7 @@ describe("buying", () => {
     });
     const shopReads = sent("GET", "v1/shop").length;
 
-    fireEvent.click(within(dialog).getByRole("button", { name: "online.shop.confirm" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: /^online\.shop\.confirm/ }));
 
     expect((await within(dialog).findByRole("alert")).textContent).toContain(
       "be.error.inventory.stackFull",
@@ -248,8 +256,131 @@ describe("buying", () => {
   it("opens the purchase of the item a link names", async () => {
     serve();
     renderOnline("/online/shop?item=playerRename");
-    expect((await screen.findByRole("dialog")).textContent).toContain(
-      "online.shop.confirmTitle:online.items.playerRename.name:playerRename",
+    expect(
+      await screen.findByRole("dialog", { name: "online.items.playerRename.name:playerRename" }),
+    ).toBeTruthy();
+  });
+
+  // Given a drink with its numbers and caps, and two already held,
+  // when its purchase opens,
+  // then the dialog says what it does, how often it may be used, what it is used on and how
+  // many are held.
+  it("shows what the item does in the purchase dialog", async () => {
+    serve({
+      "GET v1/me/items": ok({
+        ...NO_ITEMS,
+        lines: [
+          { itemCode: "energyDrinkSmall", powerClass: "c", total: 2, stacks: [{ quantity: 2 }] },
+        ],
+      }),
+    });
+    renderOnline("/online/shop");
+    const card = await offerOf("energyDrinkSmall");
+    await waitFor(() => expect(card.textContent).toContain("online.shop.held 2"));
+
+    const dialog = await openPurchase("energyDrinkSmall");
+    expect(dialog.textContent).toContain("online.shop.effect.condition:15");
+    expect(dialog.textContent).toContain("online.shop.caps.perPlayerDay:2");
+    expect(dialog.textContent).toContain("online.shop.scope.player");
+    expect(dialog.textContent).toContain("online.shop.usableNow");
+    expect(dialog.textContent).toMatch(/online\.shop\.held\s*2/);
+  });
+
+  // Given a drink at 5 coins,
+  // when the coach steps the quantity up, then picks ×10,
+  // then the total follows, and the step down never goes below one.
+  it("steps the quantity with the buttons", async () => {
+    serve();
+    renderOnline("/online/shop");
+    const dialog = await openPurchase("energyDrinkSmall");
+    const quantity = within(dialog).getByLabelText("online.shop.quantity:99") as HTMLInputElement;
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "online.shop.decrease" }));
+    expect(quantity.value).toBe("1");
+    fireEvent.click(within(dialog).getByRole("button", { name: "online.shop.increase" }));
+    expect(quantity.value).toBe("2");
+    fireEvent.click(within(dialog).getByRole("button", { name: "online.shop.presetAria:10" }));
+    expect(quantity.value).toBe("10");
+    expect(dialog.textContent).toContain("online.shop.totalonline.shop.coinsAmount:50");
+  });
+
+  // Given 100 coins and a drink at 5,
+  // when the coach asks for 30,
+  // then the balance after says there are not enough coins and the purchase is off.
+  it("refuses a quantity the coins cannot pay", async () => {
+    serve();
+    renderOnline("/online/shop");
+    const dialog = await openPurchase("energyDrinkSmall");
+    fireEvent.change(within(dialog).getByLabelText("online.shop.quantity:99"), {
+      target: { value: "30" },
+    });
+
+    expect(dialog.textContent).toContain("online.shop.notEnough");
+    const confirm = within(dialog).getByRole("button", {
+      name: /^online\.shop\.confirm/,
+    }) as HTMLButtonElement;
+    expect(confirm.disabled).toBe(true);
+  });
+
+  // Given an open purchase,
+  // when the coach presses Escape,
+  // then the dialog closes without buying.
+  it("closes the purchase on Escape", async () => {
+    serve();
+    renderOnline("/online/shop");
+    await openPurchase("energyDrinkSmall");
+    fireEvent.keyDown(window, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(sent("POST", "v1/shop/purchases")).toHaveLength(0);
+  });
+});
+
+describe("the shop page", () => {
+  // Given a shop selling condition, medical, customisation and academy items,
+  // when the coach picks the medical filter,
+  // then only the medical section is shown, and "all" shows every section again.
+  it("filters the catalogue by group", async () => {
+    serve();
+    renderOnline("/online/shop");
+    await offerOf("energyDrinkSmall");
+    const filters = screen.getByRole("group", { name: "online.shop.filterLabel" });
+
+    fireEvent.click(
+      within(filters).getByRole("button", { name: /online\.inventory\.group\.medical/ }),
     );
+    expect(screen.queryByRole("article", { name: /energyDrinkSmall/ })).toBeNull();
+    expect(screen.getByRole("article", { name: /medkitBandage/ })).toBeTruthy();
+    expect(
+      within(filters)
+        .getByRole("button", { name: /online\.inventory\.group\.medical/ })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
+
+    fireEvent.click(within(filters).getByRole("button", { name: /common\.all/ }));
+    expect(screen.getByRole("article", { name: /energyDrinkSmall/ })).toBeTruthy();
+  });
+
+  // Given a season that is closing,
+  // when the shop opens,
+  // then it says the season is over and items wait for next season, and a purchase says so too.
+  it("says bought items wait for next season once the season is over", async () => {
+    serve({ "GET v1/season": ok({ ...SEASON, status: "closed" }) });
+    renderOnline("/online/shop");
+
+    expect(await screen.findByText("online.shop.seasonOverTitle:3")).toBeTruthy();
+    expect(screen.getByText("online.shop.seasonOverText")).toBeTruthy();
+    const dialog = await openPurchase("energyDrinkSmall");
+    expect(dialog.textContent).toContain("online.shop.usableNextSeason");
+  });
+
+  // Given 100 coins,
+  // when the shop opens,
+  // then its head shows the balance and the price list in force.
+  it("shows the balance and the price list", async () => {
+    serve();
+    renderOnline("/online/shop");
+    const head = await screen.findByRole("region", { name: "online.shop.openTitle" });
+    await waitFor(() => expect(head.textContent).toContain("100"));
+    expect(head.textContent).toContain("online.coins.priceList:4");
   });
 });

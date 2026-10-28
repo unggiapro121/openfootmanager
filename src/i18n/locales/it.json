@@ -842,7 +842,7 @@
       "group": {
         "condition": "Condizione fisica",
         "medical": "Medico",
-        "tactics": "Tattica",
+        "tactics": "Tattica e XP",
         "custom": "Personalizzazione",
         "academy": "Settore giovanile",
         "other": "Altro"
@@ -886,16 +886,14 @@
       "academySoon": "Disponibile con il settore giovanile",
       "itemsLocked": "I tuoi oggetti sono bloccati durante una verifica",
       "full": "Il tuo inventario non può contenere altri esemplari di questo oggetto",
-      "buy": "Compra",
       "bought": "Hai comprato {{item}} ×{{count}} per {{coins}} monete.",
-      "confirmTitle": "Comprare {{item}}?",
       "quantity": "Quantità (al massimo {{max}})",
       "room": "Ora puoi comprarne al massimo {{max}}: l'inventario contiene 999 esemplari per oggetto.",
       "price": "Prezzo unitario",
       "total": "Totale",
       "after": "Monete dopo",
       "bound": "Gli oggetti appartengono al tuo account e non si possono cedere.",
-      "confirm": "Compra",
+      "confirm": "Conferma acquisto",
       "effect": {
         "condition": "+{{n}} di condizione fisica",
         "days": "Toglie {{days}} giorni a un infortunio",
@@ -908,7 +906,51 @@
         "perClubDay": "Al massimo {{n}} per club per giorno di calcio",
         "xpPerStyleSeason": "Al massimo {{n}} XP dagli appunti per stile per stagione",
         "maxMatches": "Al massimo {{n}} partite di XP doppia in attesa"
-      }
+      },
+      "seasonOverTitle": "La stagione {{number}} è finita",
+      "seasonOverText": "Ciò che compri ora va nel tuo inventario e si usa dalla prossima stagione.",
+      "seasonSoonTitle": "La stagione {{number}} apre a breve",
+      "seasonSoonText": "Ciò che compri ora va nel tuo inventario e si usa quando apre la stagione.",
+      "openTitle": "Compra oggetti con le monete",
+      "balance": "Saldo monete",
+      "filterLabel": "Filtra per categoria",
+      "hint": {
+        "condition": "Ripristina la condizione fisica dei giocatori prima della partita",
+        "medical": "Accorcia lo stop per infortunio",
+        "tactics": "Aumenta l'XP dello stile di gioco e l'XP dell'allenatore",
+        "custom": "Rinomina i tuoi giocatori e il tuo club",
+        "academy": "Viaggi di scouting del settore giovanile"
+      },
+      "scope": {
+        "player": "1 giocatore",
+        "eleven": "Tutto l'undici titolare",
+        "injured": "1 giocatore infortunato",
+        "style": "1 stile di gioco",
+        "coach": "XP allenatore · partite online",
+        "club": "Il tuo club",
+        "trip": "1 viaggio di scouting"
+      },
+      "mastery": {
+        "low": "Padronanza: bassa",
+        "mid": "Padronanza: media",
+        "high": "Padronanza: alta"
+      },
+      "held": "Nell'inventario:",
+      "buyAria": "Compra {{item}}, {{coins}} monete",
+      "effectLabel": "Effetto",
+      "appliesTo": "Si applica a",
+      "usable": "Utilizzo",
+      "usableNow": "Subito",
+      "usableNextSeason": "Dalla prossima stagione",
+      "usableSeasonStart": "All'apertura della stagione",
+      "coinsAmount": "{{coins}} monete",
+      "notEnough": "Monete insufficienti",
+      "decrease": "Riduci la quantità",
+      "increase": "Aumenta la quantità",
+      "presetAria": "Imposta la quantità a {{n}}",
+      "quantityLabel": "Quantità",
+      "openInventory": "Apri l'inventario",
+      "closeNotice": "Chiudi avviso"
     }
   },
   "coach": {

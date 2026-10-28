@@ -842,7 +842,7 @@
       "group": {
         "condition": "Kondisi",
         "medical": "Medis",
-        "tactics": "Taktik",
+        "tactics": "Taktik & XP",
         "custom": "Kustomisasi",
         "academy": "Akademi",
         "other": "Lainnya"
@@ -886,16 +886,14 @@
       "academySoon": "Dibuka bersama akademi",
       "itemsLocked": "Barangmu dikunci selama pemeriksaan",
       "full": "Inventarismu tidak muat lagi untuk barang ini",
-      "buy": "Beli",
       "bought": "Membeli {{item}} ×{{count}} seharga {{coins}} koin.",
-      "confirmTitle": "Beli {{item}}?",
       "quantity": "Jumlah (maksimal {{max}})",
       "room": "Sekarang kamu bisa membeli paling banyak {{max}}: inventaris menyimpan 999 untuk tiap barang.",
       "price": "Harga satuan",
       "total": "Total",
       "after": "Koin setelahnya",
       "bound": "Barang milik akunmu dan tidak bisa dipindahkan.",
-      "confirm": "Beli",
+      "confirm": "Konfirmasi pembelian",
       "effect": {
         "condition": "+{{n}} kondisi",
         "days": "Mengurangi cedera {{days}} hari",
@@ -908,7 +906,51 @@
         "perClubDay": "Maksimal {{n}} per klub per hari sepak bola",
         "xpPerStyleSeason": "Maksimal {{n}} XP dari catatan per gaya per musim",
         "maxMatches": "Maksimal {{n}} pertandingan XP ganda menunggu"
-      }
+      },
+      "seasonOverTitle": "Musim {{number}} telah berakhir",
+      "seasonOverText": "Barang yang dibeli sekarang masuk ke inventaris dan bisa dipakai mulai musim depan.",
+      "seasonSoonTitle": "Musim {{number}} segera dibuka",
+      "seasonSoonText": "Barang yang dibeli sekarang masuk ke inventaris dan bisa dipakai saat musim dibuka.",
+      "openTitle": "Beli barang dengan koin",
+      "balance": "Saldo koin",
+      "filterLabel": "Saring menurut kategori",
+      "hint": {
+        "condition": "Pulihkan kondisi pemainmu sebelum laga",
+        "medical": "Persingkat masa absen karena cedera",
+        "tactics": "Tambah XP gaya bermain dan XP pelatih",
+        "custom": "Ganti nama pemain dan klubmu",
+        "academy": "Perjalanan pencarian bakat akademi"
+      },
+      "scope": {
+        "player": "1 pemain",
+        "eleven": "Seluruh starting eleven",
+        "injured": "1 pemain cedera",
+        "style": "1 gaya bermain",
+        "coach": "XP pelatih · laga online",
+        "club": "Klubmu",
+        "trip": "1 perjalanan pencarian bakat"
+      },
+      "mastery": {
+        "low": "Penguasaan: rendah",
+        "mid": "Penguasaan: sedang",
+        "high": "Penguasaan: tinggi"
+      },
+      "held": "Di inventaris:",
+      "buyAria": "Beli {{item}}, {{coins}} koin",
+      "effectLabel": "Efek",
+      "appliesTo": "Berlaku untuk",
+      "usable": "Pemakaian",
+      "usableNow": "Sekarang",
+      "usableNextSeason": "Mulai musim depan",
+      "usableSeasonStart": "Saat musim dibuka",
+      "coinsAmount": "{{coins}} koin",
+      "notEnough": "Koin tidak cukup",
+      "decrease": "Kurangi jumlah",
+      "increase": "Tambah jumlah",
+      "presetAria": "Atur jumlah ke {{n}}",
+      "quantityLabel": "Jumlah",
+      "openInventory": "Buka inventaris",
+      "closeNotice": "Tutup pemberitahuan"
     }
   },
   "coach": {

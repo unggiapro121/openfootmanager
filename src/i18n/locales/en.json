@@ -842,7 +842,7 @@
       "group": {
         "condition": "Condition",
         "medical": "Medical",
-        "tactics": "Tactics",
+        "tactics": "Tactics & XP",
         "custom": "Customisation",
         "academy": "Youth academy",
         "other": "Other"
@@ -886,16 +886,14 @@
       "academySoon": "Opens with the youth academy",
       "itemsLocked": "Your items are locked while they are checked",
       "full": "Your inventory holds no more of this item",
-      "buy": "Buy",
       "bought": "Bought {{item}} ×{{count}} for {{coins}} coins.",
-      "confirmTitle": "Buy {{item}}?",
       "quantity": "Quantity (at most {{max}})",
       "room": "You can buy at most {{max}} now: the inventory holds 999 of each item.",
       "price": "Price each",
       "total": "Total",
       "after": "Coins after",
       "bound": "Items belong to your account and cannot be passed on.",
-      "confirm": "Buy",
+      "confirm": "Confirm purchase",
       "effect": {
         "condition": "+{{n}} condition",
         "days": "{{days}} days off an injury",
@@ -908,7 +906,51 @@
         "perClubDay": "At most {{n}} per club per football day",
         "xpPerStyleSeason": "At most {{n}} XP from notes per style per season",
         "maxMatches": "At most {{n}} matches of double XP waiting"
-      }
+      },
+      "seasonOverTitle": "Season {{number}} is over",
+      "seasonOverText": "Items bought now go to your inventory and can be used from next season.",
+      "seasonSoonTitle": "Season {{number}} opens soon",
+      "seasonSoonText": "Items bought now go to your inventory and can be used once the season opens.",
+      "openTitle": "Buy items with coins",
+      "balance": "Coin balance",
+      "filterLabel": "Filter by category",
+      "hint": {
+        "condition": "Restore your players' condition before a match",
+        "medical": "Shorten the time out injured",
+        "tactics": "Raise play-style XP and coach XP",
+        "custom": "Rename your players and your club",
+        "academy": "Scouting trips of the youth academy"
+      },
+      "scope": {
+        "player": "1 player",
+        "eleven": "Whole starting eleven",
+        "injured": "1 injured player",
+        "style": "1 play style",
+        "coach": "Coach XP · online matches",
+        "club": "Your club",
+        "trip": "1 scouting trip"
+      },
+      "mastery": {
+        "low": "Mastery: low",
+        "mid": "Mastery: middle",
+        "high": "Mastery: high"
+      },
+      "held": "In inventory:",
+      "buyAria": "Buy {{item}}, {{coins}} coins",
+      "effectLabel": "Effect",
+      "appliesTo": "Applies to",
+      "usable": "Usable",
+      "usableNow": "Now",
+      "usableNextSeason": "From next season",
+      "usableSeasonStart": "When the season opens",
+      "coinsAmount": "{{coins}} coins",
+      "notEnough": "Not enough coins",
+      "decrease": "Decrease quantity",
+      "increase": "Increase quantity",
+      "presetAria": "Set quantity to {{n}}",
+      "quantityLabel": "Quantity",
+      "openInventory": "Open inventory",
+      "closeNotice": "Close notice"
     }
   },
   "coach": {

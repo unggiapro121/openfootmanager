@@ -842,7 +842,7 @@
       "group": {
         "condition": "Kondition",
         "medical": "Medizin",
-        "tactics": "Taktik",
+        "tactics": "Taktik & XP",
         "custom": "Anpassung",
         "academy": "Jugendakademie",
         "other": "Sonstiges"
@@ -886,16 +886,14 @@
       "academySoon": "Verfügbar mit der Jugendakademie",
       "itemsLocked": "Deine Gegenstände sind während einer Prüfung gesperrt",
       "full": "Dein Inventar fasst nicht mehr von diesem Gegenstand",
-      "buy": "Kaufen",
       "bought": "{{item}} ×{{count}} für {{coins}} Münzen gekauft.",
-      "confirmTitle": "{{item}} kaufen?",
       "quantity": "Menge (höchstens {{max}})",
       "room": "Du kannst jetzt höchstens {{max}} kaufen: Das Inventar fasst 999 Stück je Gegenstand.",
       "price": "Preis pro Stück",
       "total": "Gesamt",
       "after": "Münzen danach",
       "bound": "Gegenstände gehören zu deinem Konto und können nicht weitergegeben werden.",
-      "confirm": "Kaufen",
+      "confirm": "Kauf bestätigen",
       "effect": {
         "condition": "+{{n}} Kondition",
         "days": "Verkürzt eine Verletzung um {{days}} Tage",
@@ -908,7 +906,51 @@
         "perClubDay": "Höchstens {{n}} pro Verein und Fußballtag",
         "xpPerStyleSeason": "Höchstens {{n}} XP aus Notizen pro Spielweise und Saison",
         "maxMatches": "Höchstens {{n}} ausstehende Spiele mit doppelter XP"
-      }
+      },
+      "seasonOverTitle": "Saison {{number}} ist beendet",
+      "seasonOverText": "Was du jetzt kaufst, landet in deinem Inventar und ist ab der nächsten Saison nutzbar.",
+      "seasonSoonTitle": "Saison {{number}} beginnt bald",
+      "seasonSoonText": "Was du jetzt kaufst, landet in deinem Inventar und ist nutzbar, sobald die Saison beginnt.",
+      "openTitle": "Gegenstände mit Münzen kaufen",
+      "balance": "Münzguthaben",
+      "filterLabel": "Nach Kategorie filtern",
+      "hint": {
+        "condition": "Stellt vor dem Spiel die Kondition deiner Spieler wieder her",
+        "medical": "Verkürzt Ausfallzeiten durch Verletzungen",
+        "tactics": "Erhöht Spielweisen-XP und Trainer-XP",
+        "custom": "Spieler und Verein umbenennen",
+        "academy": "Scouting-Reisen der Jugendakademie"
+      },
+      "scope": {
+        "player": "1 Spieler",
+        "eleven": "Ganze Startelf",
+        "injured": "1 verletzter Spieler",
+        "style": "1 Spielweise",
+        "coach": "Trainer-XP · Online-Spiele",
+        "club": "Dein Verein",
+        "trip": "1 Scouting-Reise"
+      },
+      "mastery": {
+        "low": "Beherrschung: niedrig",
+        "mid": "Beherrschung: mittel",
+        "high": "Beherrschung: hoch"
+      },
+      "held": "Im Inventar:",
+      "buyAria": "{{item}} kaufen, {{coins}} Münzen",
+      "effectLabel": "Wirkung",
+      "appliesTo": "Gilt für",
+      "usable": "Nutzbar",
+      "usableNow": "Sofort",
+      "usableNextSeason": "Ab nächster Saison",
+      "usableSeasonStart": "Sobald die Saison beginnt",
+      "coinsAmount": "{{coins}} Münzen",
+      "notEnough": "Nicht genug Münzen",
+      "decrease": "Menge verringern",
+      "increase": "Menge erhöhen",
+      "presetAria": "Menge auf {{n}} setzen",
+      "quantityLabel": "Menge",
+      "openInventory": "Inventar öffnen",
+      "closeNotice": "Hinweis schließen"
     }
   },
   "coach": {

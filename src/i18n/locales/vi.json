@@ -842,7 +842,7 @@
       "group": {
         "condition": "Thể lực",
         "medical": "Y tế",
-        "tactics": "Chiến thuật",
+        "tactics": "Chiến thuật & XP",
         "custom": "Tuỳ biến",
         "academy": "Lò đào tạo",
         "other": "Khác"
@@ -886,16 +886,14 @@
       "academySoon": "Mở khi có Lò đào tạo",
       "itemsLocked": "Kho đồ tạm khoá để kiểm tra",
       "full": "Kho đã đầy loại này",
-      "buy": "Mua",
       "bought": "Đã mua {{item}} ×{{count}} với giá {{coins}} coin.",
-      "confirmTitle": "Mua {{item}}?",
       "quantity": "Số lượng (tối đa {{max}})",
       "room": "Bây giờ bạn mua thêm được tối đa {{max}}: kho giữ tối đa 999 cái mỗi loại.",
-      "price": "Giá mỗi cái",
+      "price": "Đơn giá",
       "total": "Tổng",
-      "after": "Coin sau khi mua",
+      "after": "Số dư sau khi mua",
       "bound": "Vật phẩm gắn với tài khoản, không chuyển được.",
-      "confirm": "Mua",
+      "confirm": "Xác nhận mua",
       "effect": {
         "condition": "+{{n}} thể lực",
         "days": "Giảm {{days}} ngày chấn thương",
@@ -908,7 +906,51 @@
         "perClubDay": "Tối đa {{n}} lần mỗi CLB mỗi ngày bóng đá",
         "xpPerStyleSeason": "Tối đa {{n}} XP từ sổ tay mỗi lối chơi mỗi mùa",
         "maxMatches": "Tối đa {{n}} trận x2 XP đang chờ"
-      }
+      },
+      "seasonOverTitle": "Mùa {{number}} đã kết thúc",
+      "seasonOverText": "Vật phẩm mua lúc này được cất vào Kho đồ và dùng được từ mùa sau.",
+      "seasonSoonTitle": "Mùa {{number}} sắp mở",
+      "seasonSoonText": "Vật phẩm mua lúc này được cất vào Kho đồ và dùng được khi mùa mở.",
+      "openTitle": "Mua vật phẩm bằng coin",
+      "balance": "Số dư coin",
+      "filterLabel": "Lọc theo danh mục",
+      "hint": {
+        "condition": "Hồi thể lực cho cầu thủ trước trận",
+        "medical": "Rút ngắn thời gian nghỉ vì chấn thương",
+        "tactics": "Tăng XP lối chơi và XP HLV",
+        "custom": "Đổi tên cầu thủ và CLB",
+        "academy": "Chuyến scout của lò đào tạo"
+      },
+      "scope": {
+        "player": "1 cầu thủ",
+        "eleven": "Cả đội hình xuất phát",
+        "injured": "1 cầu thủ chấn thương",
+        "style": "1 lối chơi",
+        "coach": "XP HLV · trận online",
+        "club": "CLB của bạn",
+        "trip": "1 chuyến scout"
+      },
+      "mastery": {
+        "low": "Nhuần nhuyễn: thấp",
+        "mid": "Nhuần nhuyễn: trung bình",
+        "high": "Nhuần nhuyễn: cao"
+      },
+      "held": "Trong kho:",
+      "buyAria": "Mua {{item}}, {{coins}} coin",
+      "effectLabel": "Tác dụng",
+      "appliesTo": "Áp dụng cho",
+      "usable": "Sử dụng",
+      "usableNow": "Dùng được ngay",
+      "usableNextSeason": "Từ mùa sau",
+      "usableSeasonStart": "Khi mùa mở",
+      "coinsAmount": "{{coins}} coin",
+      "notEnough": "Không đủ coin",
+      "decrease": "Giảm số lượng",
+      "increase": "Tăng số lượng",
+      "presetAria": "Chọn số lượng {{n}}",
+      "quantityLabel": "Số lượng",
+      "openInventory": "Mở Kho đồ",
+      "closeNotice": "Đóng thông báo"
     }
   },
   "coach": {

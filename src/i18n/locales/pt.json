@@ -842,7 +842,7 @@
       "group": {
         "condition": "Condição física",
         "medical": "Médico",
-        "tactics": "Tática",
+        "tactics": "Tática e XP",
         "custom": "Personalização",
         "academy": "Formação",
         "other": "Outros"
@@ -886,16 +886,14 @@
       "academySoon": "Disponível com a formação",
       "itemsLocked": "Os teus itens estão bloqueados enquanto são verificados",
       "full": "O teu inventário não aguenta mais deste item",
-      "buy": "Comprar",
       "bought": "Compraste {{item}} ×{{count}} por {{coins}} moedas.",
-      "confirmTitle": "Comprar {{item}}?",
       "quantity": "Quantidade (máximo {{max}})",
       "room": "Agora podes comprar no máximo {{max}}: o inventário guarda 999 de cada item.",
       "price": "Preço unitário",
       "total": "Total",
       "after": "Moedas depois",
       "bound": "Os itens pertencem à tua conta e não podem ser transferidos.",
-      "confirm": "Comprar",
+      "confirm": "Confirmar compra",
       "effect": {
         "condition": "+{{n}} de condição física",
         "days": "Tira {{days}} dias a uma lesão",
@@ -908,7 +906,51 @@
         "perClubDay": "No máximo {{n}} por clube e dia de futebol",
         "xpPerStyleSeason": "No máximo {{n}} XP de apontamentos por estilo e época",
         "maxMatches": "No máximo {{n}} jogos de XP a dobrar em espera"
-      }
+      },
+      "seasonOverTitle": "A época {{number}} terminou",
+      "seasonOverText": "O que comprares agora vai para o teu inventário e pode ser usado a partir da próxima época.",
+      "seasonSoonTitle": "A época {{number}} abre em breve",
+      "seasonSoonText": "O que comprares agora vai para o teu inventário e pode ser usado quando a época abrir.",
+      "openTitle": "Compra itens com moedas",
+      "balance": "Saldo de moedas",
+      "filterLabel": "Filtrar por categoria",
+      "hint": {
+        "condition": "Recupera a condição física dos teus jogadores antes do jogo",
+        "medical": "Encurta o tempo de paragem por lesão",
+        "tactics": "Aumenta a XP do estilo de jogo e a XP do treinador",
+        "custom": "Muda o nome dos teus jogadores e do teu clube",
+        "academy": "Viagens de observação da academia"
+      },
+      "scope": {
+        "player": "1 jogador",
+        "eleven": "Todo o onze inicial",
+        "injured": "1 jogador lesionado",
+        "style": "1 estilo de jogo",
+        "coach": "XP de treinador · jogos online",
+        "club": "O teu clube",
+        "trip": "1 viagem de observação"
+      },
+      "mastery": {
+        "low": "Domínio: baixo",
+        "mid": "Domínio: médio",
+        "high": "Domínio: alto"
+      },
+      "held": "No inventário:",
+      "buyAria": "Comprar {{item}}, {{coins}} moedas",
+      "effectLabel": "Efeito",
+      "appliesTo": "Aplica-se a",
+      "usable": "Utilização",
+      "usableNow": "Agora",
+      "usableNextSeason": "A partir da próxima época",
+      "usableSeasonStart": "Quando a época abrir",
+      "coinsAmount": "{{coins}} moedas",
+      "notEnough": "Moedas insuficientes",
+      "decrease": "Diminuir quantidade",
+      "increase": "Aumentar quantidade",
+      "presetAria": "Definir a quantidade para {{n}}",
+      "quantityLabel": "Quantidade",
+      "openInventory": "Abrir inventário",
+      "closeNotice": "Fechar aviso"
     }
   },
   "coach": {

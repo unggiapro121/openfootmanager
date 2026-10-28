@@ -842,7 +842,7 @@
       "group": {
         "condition": "Condition physique",
         "medical": "Médical",
-        "tactics": "Tactique",
+        "tactics": "Tactique et XP",
         "custom": "Personnalisation",
         "academy": "Centre de formation",
         "other": "Autres"
@@ -886,16 +886,14 @@
       "academySoon": "Disponible avec le centre de formation",
       "itemsLocked": "Vos objets sont bloqués pendant leur vérification",
       "full": "Votre inventaire ne peut plus contenir cet objet",
-      "buy": "Acheter",
       "bought": "{{item}} ×{{count}} acheté pour {{coins}} pièces.",
-      "confirmTitle": "Acheter {{item}} ?",
       "quantity": "Quantité (au plus {{max}})",
       "room": "Vous pouvez en acheter au plus {{max}} maintenant : l'inventaire contient 999 exemplaires de chaque objet.",
       "price": "Prix unitaire",
       "total": "Total",
       "after": "Pièces après",
       "bound": "Les objets appartiennent à votre compte et ne peuvent pas être cédés.",
-      "confirm": "Acheter",
+      "confirm": "Confirmer l'achat",
       "effect": {
         "condition": "+{{n}} de condition physique",
         "days": "Retire {{days}} jours à une blessure",
@@ -908,7 +906,51 @@
         "perClubDay": "Au plus {{n}} par club et par jour de football",
         "xpPerStyleSeason": "Au plus {{n}} XP des notes par style et par saison",
         "maxMatches": "Au plus {{n}} matchs d'XP double en attente"
-      }
+      },
+      "seasonOverTitle": "La saison {{number}} est terminée",
+      "seasonOverText": "Ce que vous achetez maintenant va dans votre inventaire et s'utilise à partir de la saison prochaine.",
+      "seasonSoonTitle": "La saison {{number}} ouvre bientôt",
+      "seasonSoonText": "Ce que vous achetez maintenant va dans votre inventaire et s'utilise dès l'ouverture de la saison.",
+      "openTitle": "Achetez des objets avec vos pièces",
+      "balance": "Solde de pièces",
+      "filterLabel": "Filtrer par catégorie",
+      "hint": {
+        "condition": "Rendez de la condition physique à vos joueurs avant le match",
+        "medical": "Raccourcissez l'indisponibilité des blessés",
+        "tactics": "Augmentez l'XP de style de jeu et l'XP d'entraîneur",
+        "custom": "Renommez vos joueurs et votre club",
+        "academy": "Missions de recrutement du centre de formation"
+      },
+      "scope": {
+        "player": "1 joueur",
+        "eleven": "Tout le onze de départ",
+        "injured": "1 joueur blessé",
+        "style": "1 style de jeu",
+        "coach": "XP d'entraîneur · matchs en ligne",
+        "club": "Votre club",
+        "trip": "1 mission de recrutement"
+      },
+      "mastery": {
+        "low": "Maîtrise : faible",
+        "mid": "Maîtrise : moyenne",
+        "high": "Maîtrise : élevée"
+      },
+      "held": "En inventaire :",
+      "buyAria": "Acheter {{item}}, {{coins}} pièces",
+      "effectLabel": "Effet",
+      "appliesTo": "S'applique à",
+      "usable": "Utilisation",
+      "usableNow": "Immédiate",
+      "usableNextSeason": "Dès la saison prochaine",
+      "usableSeasonStart": "À l'ouverture de la saison",
+      "coinsAmount": "{{coins}} pièces",
+      "notEnough": "Pas assez de pièces",
+      "decrease": "Diminuer la quantité",
+      "increase": "Augmenter la quantité",
+      "presetAria": "Choisir la quantité {{n}}",
+      "quantityLabel": "Quantité",
+      "openInventory": "Ouvrir l'inventaire",
+      "closeNotice": "Fermer la notification"
     }
   },
   "coach": {
