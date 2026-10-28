@@ -842,7 +842,7 @@
       "group": {
         "condition": "Condicionamento",
         "medical": "Médico",
-        "tactics": "Tática",
+        "tactics": "Tática e XP",
         "custom": "Personalização",
         "academy": "Base",
         "other": "Outros"
@@ -886,16 +886,14 @@
       "academySoon": "Disponível com a base",
       "itemsLocked": "Seus itens estão bloqueados enquanto são verificados",
       "full": "Seu inventário não comporta mais deste item",
-      "buy": "Comprar",
       "bought": "Você comprou {{item}} ×{{count}} por {{coins}} moedas.",
-      "confirmTitle": "Comprar {{item}}?",
       "quantity": "Quantidade (no máximo {{max}})",
       "room": "Agora você pode comprar no máximo {{max}}: o inventário guarda 999 de cada item.",
       "price": "Preço unitário",
       "total": "Total",
       "after": "Moedas depois",
       "bound": "Os itens pertencem à sua conta e não podem ser transferidos.",
-      "confirm": "Comprar",
+      "confirm": "Confirmar compra",
       "effect": {
         "condition": "+{{n}} de condicionamento",
         "days": "Tira {{days}} dias de uma lesão",
@@ -908,7 +906,51 @@
         "perClubDay": "No máximo {{n}} por clube por dia de futebol",
         "xpPerStyleSeason": "No máximo {{n}} XP de anotações por estilo por temporada",
         "maxMatches": "No máximo {{n}} partidas de XP em dobro na espera"
-      }
+      },
+      "seasonOverTitle": "A temporada {{number}} terminou",
+      "seasonOverText": "O que você comprar agora vai para o seu inventário e pode ser usado a partir da próxima temporada.",
+      "seasonSoonTitle": "A temporada {{number}} abre em breve",
+      "seasonSoonText": "O que você comprar agora vai para o seu inventário e pode ser usado quando a temporada abrir.",
+      "openTitle": "Compre itens com moedas",
+      "balance": "Saldo de moedas",
+      "filterLabel": "Filtrar por categoria",
+      "hint": {
+        "condition": "Recupere a condição física dos seus jogadores antes da partida",
+        "medical": "Encurte o tempo de afastamento por lesão",
+        "tactics": "Aumente a XP do estilo de jogo e a XP do técnico",
+        "custom": "Renomeie seus jogadores e seu clube",
+        "academy": "Viagens de observação da base"
+      },
+      "scope": {
+        "player": "1 jogador",
+        "eleven": "Todo o time titular",
+        "injured": "1 jogador lesionado",
+        "style": "1 estilo de jogo",
+        "coach": "XP de técnico · partidas online",
+        "club": "Seu clube",
+        "trip": "1 viagem de observação"
+      },
+      "mastery": {
+        "low": "Domínio: baixo",
+        "mid": "Domínio: médio",
+        "high": "Domínio: alto"
+      },
+      "held": "No inventário:",
+      "buyAria": "Comprar {{item}}, {{coins}} moedas",
+      "effectLabel": "Efeito",
+      "appliesTo": "Vale para",
+      "usable": "Uso",
+      "usableNow": "Agora",
+      "usableNextSeason": "A partir da próxima temporada",
+      "usableSeasonStart": "Quando a temporada abrir",
+      "coinsAmount": "{{coins}} moedas",
+      "notEnough": "Moedas insuficientes",
+      "decrease": "Diminuir quantidade",
+      "increase": "Aumentar quantidade",
+      "presetAria": "Definir a quantidade como {{n}}",
+      "quantityLabel": "Quantidade",
+      "openInventory": "Abrir inventário",
+      "closeNotice": "Fechar aviso"
     }
   },
   "coach": {

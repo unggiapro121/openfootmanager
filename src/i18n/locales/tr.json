@@ -842,7 +842,7 @@
       "group": {
         "condition": "Kondisyon",
         "medical": "Sağlık",
-        "tactics": "Taktik",
+        "tactics": "Taktik ve XP",
         "custom": "Kişiselleştirme",
         "academy": "Altyapı",
         "other": "Diğer"
@@ -886,16 +886,14 @@
       "academySoon": "Altyapı ile açılır",
       "itemsLocked": "Eşyaların kontrol sırasında kilitli",
       "full": "Envanterin bu eşyadan daha fazlasını alamaz",
-      "buy": "Satın al",
       "bought": "{{item}} ×{{count}}, {{coins}} jetona alındı.",
-      "confirmTitle": "{{item}} satın alınsın mı?",
       "quantity": "Miktar (en fazla {{max}})",
       "room": "Şu anda en fazla {{max}} alabilirsin: envanter her eşyadan 999 adet tutar.",
       "price": "Birim fiyat",
       "total": "Toplam",
       "after": "Sonrasında jeton",
       "bound": "Eşyalar hesabına aittir ve başkasına aktarılamaz.",
-      "confirm": "Satın al",
+      "confirm": "Satın almayı onayla",
       "effect": {
         "condition": "+{{n}} kondisyon",
         "days": "Sakatlığı {{days}} gün kısaltır",
@@ -908,7 +906,51 @@
         "perClubDay": "Kulüp başına futbol günü başına en fazla {{n}}",
         "xpPerStyleSeason": "Tarz başına sezon başına notlardan en fazla {{n}} XP",
         "maxMatches": "En fazla {{n}} bekleyen çift XP maçı"
-      }
+      },
+      "seasonOverTitle": "{{number}}. sezon sona erdi",
+      "seasonOverText": "Şimdi aldıkların envanterine gider ve gelecek sezondan itibaren kullanılabilir.",
+      "seasonSoonTitle": "{{number}}. sezon yakında açılıyor",
+      "seasonSoonText": "Şimdi aldıkların envanterine gider ve sezon açılınca kullanılabilir.",
+      "openTitle": "Jetonla eşya satın al",
+      "balance": "Jeton bakiyesi",
+      "filterLabel": "Kategoriye göre filtrele",
+      "hint": {
+        "condition": "Maç öncesi oyuncularının kondisyonunu yenile",
+        "medical": "Sakatlık süresini kısalt",
+        "tactics": "Oyun tarzı XP'sini ve teknik direktör XP'sini artır",
+        "custom": "Oyuncularını ve kulübünü yeniden adlandır",
+        "academy": "Akademinin gözlemci gezileri"
+      },
+      "scope": {
+        "player": "1 oyuncu",
+        "eleven": "Tüm ilk on bir",
+        "injured": "1 sakat oyuncu",
+        "style": "1 oyun tarzı",
+        "coach": "Teknik direktör XP'si · çevrim içi maçlar",
+        "club": "Kulübün",
+        "trip": "1 gözlemci gezisi"
+      },
+      "mastery": {
+        "low": "Ustalık: düşük",
+        "mid": "Ustalık: orta",
+        "high": "Ustalık: yüksek"
+      },
+      "held": "Envanterde:",
+      "buyAria": "{{item}} satın al, {{coins}} jeton",
+      "effectLabel": "Etki",
+      "appliesTo": "Uygulandığı yer",
+      "usable": "Kullanım",
+      "usableNow": "Hemen",
+      "usableNextSeason": "Gelecek sezondan itibaren",
+      "usableSeasonStart": "Sezon açılınca",
+      "coinsAmount": "{{coins}} jeton",
+      "notEnough": "Yetersiz jeton",
+      "decrease": "Miktarı azalt",
+      "increase": "Miktarı artır",
+      "presetAria": "Miktarı {{n}} yap",
+      "quantityLabel": "Miktar",
+      "openInventory": "Envanteri aç",
+      "closeNotice": "Bildirimi kapat"
     }
   },
   "coach": {
