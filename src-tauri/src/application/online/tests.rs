@@ -511,6 +511,106 @@ fn a_club_s_money_routes_go_out() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads its academy, a trip's quote, sends a trip, brings it back sooner,
+/// chooses from it, sets a youngster's focus, lets one go and upgrades the academy (C-7c),
+/// then each goes out to its own route; a region with a space, a quote key the route does not
+/// take, and a youngster that is not an id are refused.
+#[test]
+fn the_academy_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes = vec![
+        ("GET", vec!["v1", "clubs", "mine", "academy"], vec![]),
+        (
+            "GET",
+            vec!["v1", "clubs", "mine", "academy", "scout-quote"],
+            vec![("region", "Europe"), ("focus", "Balanced")],
+        ),
+        (
+            "POST",
+            vec!["v1", "clubs", "mine", "academy", "scouts"],
+            vec![],
+        ),
+        (
+            "POST",
+            vec![
+                "v1",
+                "clubs",
+                "mine",
+                "academy",
+                "scouts",
+                CLUB,
+                "time-skip",
+            ],
+            vec![],
+        ),
+        (
+            "POST",
+            vec!["v1", "clubs", "mine", "academy", "scouts", CLUB, "recruit"],
+            vec![],
+        ),
+        (
+            "PUT",
+            vec!["v1", "clubs", "mine", "academy", "players", PLAYER, "focus"],
+            vec![],
+        ),
+        (
+            "POST",
+            vec![
+                "v1", "clubs", "mine", "academy", "players", PLAYER, "release",
+            ],
+            vec![],
+        ),
+        (
+            "POST",
+            vec!["v1", "clubs", "mine", "facilities", "academy", "upgrade"],
+            vec![],
+        ),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(
+        went[1].1,
+        "/v1/clubs/mine/academy/scout-quote?region=Europe&focus=Balanced"
+    );
+    assert_eq!(
+        went[3],
+        (
+            String::from("POST"),
+            format!("/v1/clubs/mine/academy/scouts/{CLUB}/time-skip")
+        )
+    );
+
+    let mut spaced = request("GET", &["v1", "clubs", "mine", "academy", "scout-quote"]);
+    spaced.query = vec![(String::from("region"), String::from("Asia East"))];
+    assert_eq!(
+        refused(send(&session, &spaced, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let mut priced = request("GET", &["v1", "clubs", "mine", "academy", "scout-quote"]);
+    priced.query = vec![(String::from("cost"), String::from("1"))];
+    assert_eq!(
+        refused(send(&session, &priced, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let not_an_id = request(
+        "PUT",
+        &[
+            "v1",
+            "clubs",
+            "mine",
+            "academy",
+            "players",
+            "not-a-uuid",
+            "focus",
+        ],
+    );
+    assert_eq!(
+        refused(send(&session, &not_an_id, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview reads its coins, a page of their lines from a cursor, and exchanges some with
 /// no idempotency key (C-7a1),
 /// then each goes out to its own route, the keyless exchange too (the server, not the proxy,
