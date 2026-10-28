@@ -134,6 +134,8 @@ export function myClub(overrides: Partial<MyClubView> = {}): MyClubView {
       home: { id: "club-1", name: "Cầu Vồng Nghệ An" },
       away: { id: "club-2", name: "Sóng Biển Đà Nẵng" },
     },
+    // The first rename is free until one is made (S-14, S-17 R17-5).
+    renameFree: true,
     ...overrides,
   };
 }
@@ -219,6 +221,8 @@ export function squadPlayer(overrides: Partial<SquadPlayerView> = {}): SquadPlay
     morale: 70,
     attributes: ATTRIBUTES,
     season: { appearances: 3, goals: 2, assists: 1, avgRating: 6.8 },
+    // The first rename is free until one is made (S-14, S-17 R17-5).
+    renameFree: true,
     ...overrides,
   };
 }

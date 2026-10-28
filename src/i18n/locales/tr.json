@@ -48,7 +48,9 @@
       "friendly": "Hazırlık maçları",
       "finance": "Finans",
       "market": "Pazar",
-      "inbox": "Gelen kutusu"
+      "inbox": "Gelen kutusu",
+      "account": "Hesap",
+      "coins": "Jeton cüzdanı"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -58,7 +60,8 @@
       "season": "Sezon {{number}}",
       "seasonDay": "Sezon {{number}} · Gün {{day}}/{{total}}",
       "nextKickoff": "Sonraki maç {{time}} sonra",
-      "cash": "Kulüp nakdi: {{amount}}"
+      "cash": "Kulüp nakdi: {{amount}}",
+      "coins": "OFM Coin bakiyesi: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} g {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "İptal edilen açık artırmalar",
         "adjust": "Düzeltmeler",
         "reversal": "Ters kayıtlar",
-        "grantReset": "Yeni kadroyla nakit sıfırlama"
+        "grantReset": "Yeni kadroyla nakit sıfırlama",
+        "coin_exchange": "Jeton bozdurma"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -431,7 +435,8 @@
         "held": "tutulan"
       },
       "nextCost": "Sonraki seviye: {{cost}}",
-      "upgraded": "{{facility}} {{level}}. seviyeye yükseltildi."
+      "upgraded": "{{facility}} {{level}}. seviyeye yükseltildi.",
+      "exchangeCoins": "Jeton bozdur"
     },
     "market": {
       "title": "Transfer pazarı",
@@ -675,6 +680,44 @@
             "body": "{{count}} oyuncu kulüpteki hayattan çok memnun: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Jetonlar bu sunucuda henüz açık değil.",
+      "negative": "Bir yükleme iade edildiği için jeton bakiyen sıfırın altında ({{balance}}). Bakiye sıfıra veya üstüne dönene kadar jeton harcayamazsın.",
+      "maybeLocked": "Bakiye sıfıra döndüğü hâlde jeton harcayamıyorsan, jetonların kontrol edilirken kilitlenmiş olabilir.",
+      "locked": "Jetonların kontrol edilirken kilitlendi. Destek ile iletişime geç.",
+      "balance": "Bakiye",
+      "exchange": "Kulüp parasına çevir",
+      "closed": "Jeton bozdurma henüz açık değil.",
+      "rate": "1 jeton = {{cash}}",
+      "priceList": "Fiyat listesi no. {{version}}",
+      "today": "Bugün kalan bozdurma: {{left}} / {{limit}} · yenilenme {{time}}",
+      "amount": "Bozdurulacak jeton",
+      "all": "Tümü",
+      "preview": "{{club}} {{cash}} alır",
+      "needClub": "Parayı alacak bir kulübün olmalı.",
+      "takeOver": "Bir kulübü devral",
+      "exchangeButton": "Bozdur",
+      "confirmTitle": "Jeton bozdurulsun mu?",
+      "rateLabel": "Kur (jeton başına)",
+      "priceListLabel": "Fiyat listesi",
+      "clubLabel": "Alıcı kulüp",
+      "cashLabel": "Kulübe geçen",
+      "oneWay": "Tek yönlüdür: kulüp parası asla tekrar jetona çevrilemez.",
+      "reviewPrices": "Onaylamadan önce yeni kuru kontrol et.",
+      "confirm": "Bozdurmayı onayla",
+      "exchanged": "Bozdurma tamam: {{coins}} OFM Coin → {{cash}}.",
+      "lines": "Jeton geçmişi",
+      "linesEmpty": "Henüz jeton hareketi yok.",
+      "more": "Daha fazla göster",
+      "kind": {
+        "coin_exchange": "Kulüp parasına çevrildi",
+        "coin_adjust": "Destek düzeltmesi",
+        "coin_clawback": "İade sonrası geri alındı",
+        "reversal": "İptal kaydı",
+        "item_purchase": "Mağaza alışverişi",
+        "item_refund": "Mağaza iadesi"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "Kulübün finansı inceleme süresince kilitli: şimdilik teklif, satış veya geliştirme yapılamaz.",
         "insufficientFunds": "Kulübün bunun için yeterli nakdi yok.",
         "facilityAtTop": "Bu tesis zaten en üst seviyede.",
-        "wageBudgetExceeded": "Bu tekliften sonra kulübün yedi günlük maaşı karşılayacak nakdi kalmalı."
+        "wageBudgetExceeded": "Bu tekliften sonra kulübün yedi günlük maaşı karşılayacak nakdi kalmalı.",
+        "insufficientCoin": "Bunun için yeterli jetonun yok.",
+        "coinDisabled": "Jeton bozdurma henüz açık değil.",
+        "priceChanged": "Fiyat listesi az önce değişti (şimdi no. {{current}}).",
+        "coinBalanceNegative": "Jeton bakiyen sıfırın altında: sıfıra veya üstüne dönene kadar jeton harcanamaz.",
+        "exchangeLimitReached": "Bugün yalnızca {{remaining}} tane daha bozdurulabilir.",
+        "coinLocked": "Jetonların kontrol edilirken kilitlendi."
       },
       "auction": {
         "marketClosed": "Transfer piyasası bu sezon kapalı.",
@@ -4329,7 +4378,9 @@
         "selfBiddingForbidden": "Kendi oyuncuna teklif veremezsin.",
         "listingExpired": "Bu açık artırma sona erdi.",
         "alreadyLeading": "Bu açık artırmada zaten öndesin.",
-        "notCancellable": "Yalnızca henüz teklif almamış kendi satışını geri çekebilirsin, zorunlu satışı asla."
+        "notCancellable": "Yalnızca henüz teklif almamış kendi satışını geri çekebilirsin, zorunlu satışı asla.",
+        "levelCapPlayer": "Bu oyuncu antrenör seviyenin {{cap}} genel puan sınırının üstünde. {{requiredLevel}}. seviye gerekiyor.",
+        "levelCapSquad": "Onu almak kadronun alım gücünü {{after}} yapar; bu, {{level}}. seviyenin {{squadCap}} sınırının üstünde. {{requiredLevel}}. seviye gerekiyor."
       },
       "rename": {
         "itemRequired": "Bu ad değişikliği henüz sahip olmadığın bir kart gerektiriyor ({{item}})."
@@ -4342,6 +4393,35 @@
         "listed": "Açık artırmadaki bir oyuncu, artırma bitene kadar adını korur.",
         "shirtTaken": "Bu numarayı başka bir oyuncu zaten giyiyor.",
         "releaseSquadTooSmall": "Gitmesine izin vermek kadronu {{squadMin}} oyuncunun altına düşürür."
+      },
+      "inventory": {
+        "disabled": "Bu sezon eşyalar kullanılmıyor.",
+        "itemNotFound": "Bu eşyadan yeterince yok (sende {{held}} var).",
+        "stackFull": "Envanter bu kadarını alamaz: en fazla {{max}} tane daha sığar.",
+        "locked": "Eşyaların kontrol edilirken kilitlendi.",
+        "grantLimitReached": "Bu eşya bu kaynaktan sezon sınırına ulaştı ({{limit}}).",
+        "notUsableHere": "Bu eşya başka yerde kullanılır ({{use}}).",
+        "wrongTarget": "Bu eşyanın o hedefe etkisi yok ({{reason}}).",
+        "targetMatchLocked": "{{kickoffAt}} başlayan maç için kadro kilitli.",
+        "dailyLimitReached": "Bu eşyanın günlük sınırı doldu; {{nextAt}} tekrar açılır.",
+        "seasonLimitReached": "Çalışma notları bir stile sezonda en fazla {{limit}} XP ekler; kalan {{remaining}}.",
+        "effectLimitReached": "Çift XP en fazla {{max}} sonraki maçı kapsar; şu an {{remaining}}."
+      },
+      "academy": {
+        "disabled": "Altyapı akademisi bu sezon açık değil.",
+        "tripOpen": "Kulübünün zaten süren bir izleme gezisi veya seçim bekleyen bir raporu var ({{tripId}}).",
+        "tripLimitReached": "Bu sezonun izleme gezileri doldu: {{limit}} hakkın {{sent}} tanesi kullanıldı.",
+        "eliteTripLimitReached": "Bu sezonun elit gezileri doldu: {{limit}} hakkın {{sent}} tanesi kullanıldı.",
+        "tripNotPending": "Bu izleme gezisi artık sürmüyor.",
+        "tripNotReady": "Gözlemciler {{readyAt}} zamanına kadar hâlâ dışarıda.",
+        "tripClosed": "Bu izleme raporu kapandı.",
+        "notFound": "Bu gezi veya genç oyuncu senin kulübüne ait değil.",
+        "candidateUnknown": "Bu genç oyuncu izleme raporunda yok.",
+        "noSlot": "Akademide yalnızca {{free}} boş yer var."
+      },
+      "shop": {
+        "quantityInvalid": "Tek seferde 1 ile 99 arası al.",
+        "itemNotSold": "Bu eşya şu anda satışta değil."
       }
     },
     "sender": {

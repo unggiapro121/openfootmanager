@@ -18,6 +18,11 @@ naturalPosition?: string, minOvr?: number, maxOvr?: number,
  */
 maxPrice?: number, maxAge?: number, 
 /**
+ * Only auctions the level caps let the caller's club bid on now (S-16 S16-7): not its own
+ * listings, nor those it already holds money in. Ignored when the season has no level caps.
+ */
+biddable?: boolean, 
+/**
  * The `nextCursor` of the page before.
  */
 cursor?: string, 

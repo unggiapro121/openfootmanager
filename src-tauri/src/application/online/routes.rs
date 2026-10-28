@@ -193,6 +193,15 @@ pub const ROUTES: &[Route] = &[
     upgrade(&FACILITY_UPGRADES[0]),
     upgrade(&FACILITY_UPGRADES[1]),
     upgrade(&FACILITY_UPGRADES[2]),
+    // The coach's coins (S-15, C-7a1): the wallet, its lines a page at a time, and an exchange
+    // into the club's money.
+    route("GET", &[L("v1"), L("me"), L("coins")], &[]),
+    route(
+        "GET",
+        &[L("v1"), L("me"), L("coins"), L("ledger")],
+        &["cursor", "limit"],
+    ),
+    route("POST", &[L("v1"), L("me"), L("coins"), L("exchange")], &[]),
     // The auction market (S-11, C-5b): the open auctions by the market's filters, one auction, a
     // bid and a withdrawal, the club's own market, the quote and the listing of a player.
     route(

@@ -355,7 +355,8 @@
     "worldEditor.staffSpecialization.Fitness",
     "teamSelect.regionLabels.africa",
     "coachServer.email",
-    "coachServer.password"
+    "coachServer.password",
+    "online.nav.account"
   ],
   "es": [
     "online.finance.total",

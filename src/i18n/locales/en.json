@@ -48,7 +48,9 @@
       "friendly": "Friendlies",
       "finance": "Finance",
       "market": "Market",
-      "inbox": "Inbox"
+      "inbox": "Inbox",
+      "account": "Account",
+      "coins": "Coin wallet"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -58,7 +60,8 @@
       "season": "Season {{number}}",
       "seasonDay": "Season {{number}} · Day {{day}}/{{total}}",
       "nextKickoff": "Next kick-off in {{time}}",
-      "cash": "Club cash: {{amount}}"
+      "cash": "Club cash: {{amount}}",
+      "coins": "OFM Coin balance: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}}d {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "Cancelled auctions",
         "adjust": "Adjustments",
         "reversal": "Reversals",
-        "grantReset": "New squad cash reset"
+        "grantReset": "New squad cash reset",
+        "coin_exchange": "Coin exchange"
       },
       "ledger": "Ledger",
       "ledgerEmpty": "No entries yet.",
@@ -431,7 +435,8 @@
         "held": "held"
       },
       "nextCost": "Next level: {{cost}}",
-      "upgraded": "{{facility}} upgraded to level {{level}}."
+      "upgraded": "{{facility}} upgraded to level {{level}}.",
+      "exchangeCoins": "Exchange coins"
     },
     "market": {
       "title": "Transfer market",
@@ -675,6 +680,44 @@
             "body": "{{count}} player(s) are delighted with life at the club: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Coins are not open on this server yet.",
+      "negative": "Your coin balance is below zero ({{balance}}) because a top-up was refunded. You cannot spend coins until the balance is back to zero or more.",
+      "maybeLocked": "If it is back to zero and you still cannot spend coins, they may be locked while they are checked.",
+      "locked": "Your coins are locked while they are checked. Contact support.",
+      "balance": "Balance",
+      "exchange": "Exchange into club money",
+      "closed": "Coin exchange is not open yet.",
+      "rate": "1 coin = {{cash}}",
+      "priceList": "Price list no. {{version}}",
+      "today": "Left to exchange today: {{left}} / {{limit}} · resets {{time}}",
+      "amount": "Coins to exchange",
+      "all": "All",
+      "preview": "{{club}} receives {{cash}}",
+      "needClub": "You need a club to receive the money.",
+      "takeOver": "Take over a club",
+      "exchangeButton": "Exchange",
+      "confirmTitle": "Exchange coins?",
+      "rateLabel": "Rate (per coin)",
+      "priceListLabel": "Price list",
+      "clubLabel": "Club receiving",
+      "cashLabel": "Club receives",
+      "oneWay": "One way only: club money can never be turned back into coins.",
+      "reviewPrices": "Check the new rate before you confirm.",
+      "confirm": "Confirm exchange",
+      "exchanged": "Exchange done: {{coins}} OFM Coin → {{cash}}.",
+      "lines": "Coin history",
+      "linesEmpty": "No coin has moved yet.",
+      "more": "Show more",
+      "kind": {
+        "coin_exchange": "Exchanged into club money",
+        "coin_adjust": "Adjustment by support",
+        "coin_clawback": "Taken back after a refund",
+        "reversal": "Reversal",
+        "item_purchase": "Shop purchase",
+        "item_refund": "Shop refund"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "The club's finances are locked while they are checked: no bids, listings or upgrades for now.",
         "insufficientFunds": "The club does not have enough cash for this.",
         "facilityAtTop": "This facility is already at its top level.",
-        "wageBudgetExceeded": "After this bid the club must still have enough cash for seven days of wages."
+        "wageBudgetExceeded": "After this bid the club must still have enough cash for seven days of wages.",
+        "insufficientCoin": "You do not have enough coins for this.",
+        "coinDisabled": "Coin exchange is not open yet.",
+        "priceChanged": "The price list has just changed (now no. {{current}}).",
+        "coinBalanceNegative": "Your coin balance is below zero: no coin can be spent until it is back to zero or more.",
+        "exchangeLimitReached": "Only {{remaining}} more can be exchanged today.",
+        "coinLocked": "Your coins are locked while they are checked."
       },
       "auction": {
         "marketClosed": "The transfer market is closed this season.",
@@ -4329,7 +4378,9 @@
         "selfBiddingForbidden": "You cannot bid for your own player.",
         "listingExpired": "This auction has ended.",
         "alreadyLeading": "You are already leading this auction.",
-        "notCancellable": "Only your own listing with no bid yet can be withdrawn, and never a forced one."
+        "notCancellable": "Only your own listing with no bid yet can be withdrawn, and never a forced one.",
+        "levelCapPlayer": "This player is above the cap of {{cap}} OVR for your coach level. You need coach level {{requiredLevel}}.",
+        "levelCapSquad": "Buying him would raise your squad's buying strength to {{after}}, above the cap of {{squadCap}} for level {{level}}. You need coach level {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "This rename needs a card you do not have yet ({{item}})."
@@ -4342,6 +4393,35 @@
         "listed": "A player up for auction keeps his name until the auction is over.",
         "shirtTaken": "Another player already wears that number.",
         "releaseSquadTooSmall": "Letting him go would leave your squad below {{squadMin}} players."
+      },
+      "inventory": {
+        "disabled": "Items are not in use this season.",
+        "itemNotFound": "You do not hold enough of this item (you have {{held}}).",
+        "stackFull": "Your inventory cannot hold that many: at most {{max}} more fit.",
+        "locked": "Your items are locked while they are checked.",
+        "grantLimitReached": "This item has reached its season limit from this source ({{limit}}).",
+        "notUsableHere": "This item is used elsewhere ({{use}}).",
+        "wrongTarget": "This item has no effect on that target ({{reason}}).",
+        "targetMatchLocked": "The lineup is locked for the match kicking off {{kickoffAt}}.",
+        "dailyLimitReached": "Today's limit for this item is reached; it opens again {{nextAt}}.",
+        "seasonLimitReached": "Study notes can add {{limit}} XP to a style per season; {{remaining}} left.",
+        "effectLimitReached": "Double XP can cover at most {{max}} matches ahead; {{remaining}} already are."
+      },
+      "academy": {
+        "disabled": "The youth academy is not open this season.",
+        "tripOpen": "Your club already has a scouting trip out or a report to choose from ({{tripId}}).",
+        "tripLimitReached": "This season's scouting trips are used: {{sent}} of {{limit}}.",
+        "eliteTripLimitReached": "This season's elite trips are used: {{sent}} of {{limit}}.",
+        "tripNotPending": "This scouting trip is no longer out.",
+        "tripNotReady": "The scouts are still out until {{readyAt}}.",
+        "tripClosed": "This scouting report is closed.",
+        "notFound": "This trip or youngster is not your club's.",
+        "candidateUnknown": "That youngster is not in this scouting report.",
+        "noSlot": "The academy has only {{free}} places free."
+      },
+      "shop": {
+        "quantityInvalid": "Buy between 1 and 99 at a time.",
+        "itemNotSold": "This item is not on sale right now."
       }
     },
     "sender": {

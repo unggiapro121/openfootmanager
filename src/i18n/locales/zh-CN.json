@@ -48,7 +48,9 @@
       "friendly": "友谊赛",
       "finance": "财务",
       "market": "市场",
-      "inbox": "收件箱"
+      "inbox": "收件箱",
+      "account": "账户",
+      "coins": "金币钱包"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -58,7 +60,8 @@
       "season": "第 {{number}} 赛季",
       "seasonDay": "第 {{number}} 赛季 · 第 {{day}}/{{total}} 天",
       "nextKickoff": "距下一场比赛 {{time}}",
-      "cash": "俱乐部现金：{{amount}}"
+      "cash": "俱乐部现金：{{amount}}",
+      "coins": "OFM Coin 余额：{{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} 天 {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "已取消的拍卖",
         "adjust": "调整",
         "reversal": "冲销",
-        "grantReset": "新阵容资金重置"
+        "grantReset": "新阵容资金重置",
+        "coin_exchange": "金币兑换"
       },
       "ledger": "收支明细",
       "ledgerEmpty": "暂无记录。",
@@ -431,7 +435,8 @@
         "held": "冻结"
       },
       "nextCost": "下一级：{{cost}}",
-      "upgraded": "{{facility}} 已升级到 {{level}} 级。"
+      "upgraded": "{{facility}} 已升级到 {{level}} 级。",
+      "exchangeCoins": "兑换金币"
     },
     "market": {
       "title": "转会市场",
@@ -675,6 +680,44 @@
             "body": "{{count}} 名球员对俱乐部的生活非常满意：{{names}}。"
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "此服务器尚未开放金币。",
+      "negative": "由于一笔充值已退款，你的金币余额低于零（{{balance}}）。余额恢复到零或以上之前无法消费金币。",
+      "maybeLocked": "如果余额已恢复到零仍无法消费，金币可能正在核查中而被锁定。",
+      "locked": "你的金币正在核查中，已被锁定。请联系客服。",
+      "balance": "余额",
+      "exchange": "兑换为俱乐部资金",
+      "closed": "金币兑换尚未开放。",
+      "rate": "1 金币 = {{cash}}",
+      "priceList": "价目表第 {{version}} 版",
+      "today": "今日剩余可兑换：{{left}} / {{limit}} · 重置于 {{time}}",
+      "amount": "兑换金币数量",
+      "all": "全部",
+      "preview": "{{club}} 将获得 {{cash}}",
+      "needClub": "你需要一家俱乐部来接收资金。",
+      "takeOver": "接手一家俱乐部",
+      "exchangeButton": "兑换",
+      "confirmTitle": "确认兑换金币？",
+      "rateLabel": "汇率（每枚金币）",
+      "priceListLabel": "价目表",
+      "clubLabel": "收款俱乐部",
+      "cashLabel": "俱乐部获得",
+      "oneWay": "单向兑换：俱乐部资金无法再换回金币。",
+      "reviewPrices": "确认前请查看新的汇率。",
+      "confirm": "确认兑换",
+      "exchanged": "兑换完成：{{coins}} OFM Coin → {{cash}}。",
+      "lines": "金币记录",
+      "linesEmpty": "暂无金币变动。",
+      "more": "显示更多",
+      "kind": {
+        "coin_exchange": "兑换为俱乐部资金",
+        "coin_adjust": "客服调整",
+        "coin_clawback": "退款后收回",
+        "reversal": "冲正",
+        "item_purchase": "商店购买",
+        "item_refund": "商店退款"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "俱乐部财务正在核查中，已被锁定：暂时不能出价、挂牌或升级设施。",
         "insufficientFunds": "俱乐部现金不足。",
         "facilityAtTop": "该设施已达最高等级。",
-        "wageBudgetExceeded": "出价后，俱乐部仍须保留足够支付七天工资的现金。"
+        "wageBudgetExceeded": "出价后，俱乐部仍须保留足够支付七天工资的现金。",
+        "insufficientCoin": "你的金币不足。",
+        "coinDisabled": "金币兑换尚未开放。",
+        "priceChanged": "价目表刚刚更新（现为第 {{current}} 版）。",
+        "coinBalanceNegative": "你的金币余额低于零：恢复到零或以上之前无法消费。",
+        "exchangeLimitReached": "今日仅剩 {{remaining}} 可兑换。",
+        "coinLocked": "你的金币正在核查中，已被锁定。"
       },
       "auction": {
         "marketClosed": "本赛季转会市场关闭。",
@@ -4329,7 +4378,9 @@
         "selfBiddingForbidden": "不能对自己的球员出价。",
         "listingExpired": "该拍卖已结束。",
         "alreadyLeading": "你已在该拍卖中领先。",
-        "notCancellable": "只能撤回你自己且尚无出价的挂牌，强制挂牌不能撤回。"
+        "notCancellable": "只能撤回你自己且尚无出价的挂牌，强制挂牌不能撤回。",
+        "levelCapPlayer": "该球员超过你教练等级的能力值上限 {{cap}}。需要教练等级 {{requiredLevel}}。",
+        "levelCapSquad": "买下他会使你阵容的购买实力升至 {{after}}，超过等级 {{level}} 的上限 {{squadCap}}。需要教练等级 {{requiredLevel}}。"
       },
       "rename": {
         "itemRequired": "这次改名需要一张你还没有的卡（{{item}}）。"
@@ -4342,6 +4393,35 @@
         "listed": "正在拍卖的球员在拍卖结束前保留原名。",
         "shirtTaken": "另一名球员已经穿这个号码。",
         "releaseSquadTooSmall": "让他离队会使你的阵容少于 {{squadMin}} 人。"
+      },
+      "inventory": {
+        "disabled": "本赛季未启用道具。",
+        "itemNotFound": "该道具数量不足（你有 {{held}} 个）。",
+        "stackFull": "背包放不下这么多：最多还能放 {{max}} 个。",
+        "locked": "你的道具正在核查中，已被锁定。",
+        "grantLimitReached": "该道具本赛季从此来源获得的数量已达上限（{{limit}}）。",
+        "notUsableHere": "该道具需在其他地方使用（{{use}}）。",
+        "wrongTarget": "该道具对此目标无效（{{reason}}）。",
+        "targetMatchLocked": "开球时间为 {{kickoffAt}} 的比赛阵容已锁定。",
+        "dailyLimitReached": "该道具今日使用已达上限，{{nextAt}} 后重新开放。",
+        "seasonLimitReached": "学习笔记每赛季每种风格最多加 {{limit}} XP，还剩 {{remaining}}。",
+        "effectLimitReached": "双倍 XP 最多覆盖之后 {{max}} 场比赛，目前已有 {{remaining}} 场。"
+      },
+      "academy": {
+        "disabled": "本赛季青训学院未开放。",
+        "tripOpen": "你的俱乐部已有一次球探考察在进行中或有待选择的报告（{{tripId}}）。",
+        "tripLimitReached": "本赛季球探考察次数已用完：{{sent}} / {{limit}}。",
+        "eliteTripLimitReached": "本赛季精英考察次数已用完：{{sent}} / {{limit}}。",
+        "tripNotPending": "这次球探考察已不在进行中。",
+        "tripNotReady": "球探在 {{readyAt}} 前仍在外考察。",
+        "tripClosed": "这份球探报告已关闭。",
+        "notFound": "该考察或青训球员不属于你的俱乐部。",
+        "candidateUnknown": "该青训球员不在这份球探报告中。",
+        "noSlot": "青训学院只剩 {{free}} 个空位。"
+      },
+      "shop": {
+        "quantityInvalid": "每次购买 1 到 99 个。",
+        "itemNotSold": "该道具目前不在售。"
       }
     },
     "sender": {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   countdownTo,
   deviceDiffersFromRegion,
+  formatCoins,
   formatMoment,
   formatRegionClock,
   secondsUntil,
@@ -85,5 +86,18 @@ describe("deviceDiffersFromRegion", () => {
       expect(deviceDiffersFromRegion(region, iso)).toBe(offset !== deviceOffset);
     }
     expect(deviceDiffersFromRegion("Atlantis", iso)).toBe(false);
+  });
+});
+
+describe("formatCoins", () => {
+  // Given whole coin counts, one below zero,
+  // when they are written in English and Vietnamese,
+  // then each language groups the digits its own way, the sign stays, and no currency mark or
+  // fraction appears (C-7 C7-5).
+  it("writes whole coins grouped by language, without a currency mark", () => {
+    expect(formatCoins(12_500, "en")).toBe("12,500");
+    expect(formatCoins(12_500, "vi")).toBe("12.500");
+    expect(formatCoins(-40, "en")).toBe("-40");
+    expect(formatCoins(7, "en")).not.toMatch(/[€$.]/);
   });
 });

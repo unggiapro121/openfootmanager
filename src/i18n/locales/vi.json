@@ -48,7 +48,9 @@
       "friendly": "Giao hữu",
       "finance": "Tài chính",
       "market": "Chợ",
-      "inbox": "Hộp thư"
+      "inbox": "Hộp thư",
+      "account": "Tài khoản",
+      "coins": "Ví coin"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -58,7 +60,8 @@
       "season": "Mùa {{number}}",
       "seasonDay": "Mùa {{number}} · Ngày {{day}}/{{total}}",
       "nextKickoff": "Trận kế bắt đầu sau {{time}}",
-      "cash": "Tiền mặt của CLB: {{amount}}"
+      "cash": "Tiền mặt của CLB: {{amount}}",
+      "coins": "Số dư OFM Coin: {{amount}}"
     },
     "countdown": {
       "withDays": "{{days}} ngày {{clock}}"
@@ -421,7 +424,8 @@
         "cancel": "Phiên bị huỷ",
         "adjust": "Điều chỉnh",
         "reversal": "Bút toán đảo",
-        "grantReset": "Đặt lại tiền khi nhận đội mới"
+        "grantReset": "Đặt lại tiền khi nhận đội mới",
+        "coin_exchange": "Đổi coin"
       },
       "ledger": "Sổ thu chi",
       "ledgerEmpty": "Chưa có dòng nào.",
@@ -431,7 +435,8 @@
         "held": "đang giữ"
       },
       "nextCost": "Cấp tiếp theo: {{cost}}",
-      "upgraded": "Đã nâng {{facility}} lên cấp {{level}}."
+      "upgraded": "Đã nâng {{facility}} lên cấp {{level}}.",
+      "exchangeCoins": "Đổi coin"
     },
     "market": {
       "title": "Chợ chuyển nhượng",
@@ -675,6 +680,44 @@
             "body": "{{count}} cầu thủ rất hài lòng với cuộc sống ở CLB: {{names}}."
           }
         }
+      }
+    },
+    "coins": {
+      "notOnServer": "Máy chủ này chưa mở coin.",
+      "negative": "Số dư coin đang âm ({{balance}}) vì một khoản nạp bị hoàn. Bạn chưa tiêu được coin cho tới khi số dư về 0 trở lên.",
+      "maybeLocked": "Nếu đã bù đủ mà vẫn không tiêu được, coin có thể đang bị khoá để kiểm tra.",
+      "locked": "Coin của bạn đang bị khoá để kiểm tra. Liên hệ hỗ trợ.",
+      "balance": "Số dư",
+      "exchange": "Đổi ra tiền CLB",
+      "closed": "Chưa mở đổi coin.",
+      "rate": "1 coin bằng {{cash}}",
+      "priceList": "Bảng giá số {{version}}",
+      "today": "Hôm nay còn đổi được {{left}} / {{limit}} · làm mới lúc {{time}}",
+      "amount": "Số coin muốn đổi",
+      "all": "Tất cả",
+      "preview": "CLB {{club}} nhận {{cash}}",
+      "needClub": "Cần có CLB để nhận tiền.",
+      "takeOver": "Nhận CLB",
+      "exchangeButton": "Đổi",
+      "confirmTitle": "Đổi coin?",
+      "rateLabel": "Tỉ giá (mỗi coin)",
+      "priceListLabel": "Bảng giá",
+      "clubLabel": "CLB nhận",
+      "cashLabel": "CLB nhận được",
+      "oneWay": "Đổi một chiều: tiền CLB không đổi lại được thành coin.",
+      "reviewPrices": "Xem lại tỉ giá mới trước khi xác nhận.",
+      "confirm": "Xác nhận đổi",
+      "exchanged": "Đã đổi {{coins}} OFM Coin thành {{cash}}.",
+      "lines": "Lịch sử coin",
+      "linesEmpty": "Chưa có giao dịch coin nào.",
+      "more": "Xem thêm",
+      "kind": {
+        "coin_exchange": "Đổi ra tiền CLB",
+        "coin_adjust": "Hỗ trợ điều chỉnh",
+        "coin_clawback": "Thu lại sau hoàn tiền",
+        "reversal": "Đảo bút toán",
+        "item_purchase": "Mua ở cửa hàng",
+        "item_refund": "Hoàn tiền cửa hàng"
       }
     }
   },
@@ -4312,7 +4355,13 @@
         "clubLocked": "Tài chính của CLB đang bị khoá để kiểm tra: tạm thời chưa đặt giá, rao bán hay nâng cấp được.",
         "insufficientFunds": "CLB không đủ tiền mặt cho việc này.",
         "facilityAtTop": "Cơ sở này đã ở cấp cao nhất.",
-        "wageBudgetExceeded": "Sau lượt đặt giá này, CLB vẫn phải còn đủ tiền mặt trả 7 ngày lương."
+        "wageBudgetExceeded": "Sau lượt đặt giá này, CLB vẫn phải còn đủ tiền mặt trả 7 ngày lương.",
+        "insufficientCoin": "Không đủ coin.",
+        "coinDisabled": "Chưa mở đổi coin.",
+        "priceChanged": "Bảng giá vừa đổi (nay là số {{current}}).",
+        "coinBalanceNegative": "Số dư coin đang âm: chưa tiêu được coin cho tới khi số dư về 0 trở lên.",
+        "exchangeLimitReached": "Hôm nay chỉ còn đổi được {{remaining}} coin.",
+        "coinLocked": "Coin của bạn đang bị khoá để kiểm tra."
       },
       "auction": {
         "marketClosed": "Chợ chuyển nhượng đóng trong mùa này.",
@@ -4329,7 +4378,9 @@
         "selfBiddingForbidden": "Bạn không thể đặt giá cầu thủ của chính mình.",
         "listingExpired": "Phiên đấu giá đã kết thúc.",
         "alreadyLeading": "Bạn đang dẫn đầu phiên này.",
-        "notCancellable": "Chỉ rút được phiên của chính bạn khi chưa ai đặt giá, và không rút được phiên cưỡng chế."
+        "notCancellable": "Chỉ rút được phiên của chính bạn khi chưa ai đặt giá, và không rút được phiên cưỡng chế.",
+        "levelCapPlayer": "Cầu thủ này vượt trần OVR {{cap}} của cấp HLV của bạn. Cần HLV cấp {{requiredLevel}}.",
+        "levelCapSquad": "Mua cầu thủ này đưa sức mạnh mua của đội lên {{after}}, vượt trần {{squadCap}} của cấp {{level}}. Cần HLV cấp {{requiredLevel}}."
       },
       "rename": {
         "itemRequired": "Lần đổi tên này cần một thẻ mà bạn chưa có ({{item}})."
@@ -4342,6 +4393,35 @@
         "listed": "Cầu thủ đang được đấu giá giữ nguyên tên cho tới khi phiên kết thúc.",
         "shirtTaken": "Một cầu thủ khác đã mang số áo này.",
         "releaseSquadTooSmall": "Thanh lý cầu thủ này sẽ khiến đội hình dưới {{squadMin}} người."
+      },
+      "inventory": {
+        "disabled": "Mùa này không dùng vật phẩm.",
+        "itemNotFound": "Không đủ vật phẩm này (bạn có {{held}}).",
+        "stackFull": "Kho đồ không chứa nổi: chỉ còn chỗ cho {{max}} cái.",
+        "locked": "Vật phẩm của bạn đang bị khoá để kiểm tra.",
+        "grantLimitReached": "Vật phẩm này đã đạt giới hạn mùa từ nguồn này ({{limit}}).",
+        "notUsableHere": "Vật phẩm này dùng ở chỗ khác ({{use}}).",
+        "wrongTarget": "Vật phẩm này không có tác dụng với đối tượng đó ({{reason}}).",
+        "targetMatchLocked": "Đội hình đã khoá cho trận đá lúc {{kickoffAt}}.",
+        "dailyLimitReached": "Đã hết lượt dùng hôm nay; mở lại lúc {{nextAt}}.",
+        "seasonLimitReached": "Giáo án chỉ cộng tối đa {{limit}} XP cho một lối chơi mỗi mùa; còn {{remaining}}.",
+        "effectLimitReached": "Thẻ x2 XP chỉ cộng dồn tối đa {{max}} trận tới; đang có {{remaining}} trận."
+      },
+      "academy": {
+        "disabled": "Mùa này lò đào tạo chưa mở.",
+        "tripOpen": "CLB đang có một chuyến scout chưa về hoặc một báo cáo chưa chọn ({{tripId}}).",
+        "tripLimitReached": "Đã hết lượt scout mùa này: {{sent}} / {{limit}}.",
+        "eliteTripLimitReached": "Đã hết lượt scout tinh hoa mùa này: {{sent}} / {{limit}}.",
+        "tripNotPending": "Chuyến scout này không còn đang đi.",
+        "tripNotReady": "Scout vẫn đang đi tới {{readyAt}}.",
+        "tripClosed": "Báo cáo scout này đã đóng.",
+        "notFound": "Chuyến scout hoặc học viên này không thuộc CLB của bạn.",
+        "candidateUnknown": "Cầu thủ trẻ này không có trong báo cáo scout.",
+        "noSlot": "Lò đào tạo chỉ còn {{free}} chỗ trống."
+      },
+      "shop": {
+        "quantityInvalid": "Mỗi lần mua từ 1 đến 99 cái.",
+        "itemNotSold": "Vật phẩm này hiện không bán."
       }
     },
     "sender": {

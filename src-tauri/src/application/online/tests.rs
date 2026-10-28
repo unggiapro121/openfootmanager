@@ -511,6 +511,35 @@ fn a_club_s_money_routes_go_out() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads its coins, a page of their lines from a cursor, and exchanges some with
+/// no idempotency key (C-7a1),
+/// then each goes out to its own route, the keyless exchange too (the server, not the proxy,
+/// answers `keyRequired`); a line key the route does not take is refused.
+#[test]
+fn the_coin_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes = vec![
+        ("GET", vec!["v1", "me", "coins"], vec![]),
+        (
+            "GET",
+            vec!["v1", "me", "coins", "ledger"],
+            vec![("cursor", "17"), ("limit", "50")],
+        ),
+        ("POST", vec!["v1", "me", "coins", "exchange"], vec![]),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(went[1].1, "/v1/me/coins/ledger?cursor=17&limit=50");
+
+    let mut by_kind = request("GET", &["v1", "me", "coins", "ledger"]);
+    by_kind.query = vec![(String::from("kind"), String::from("coin_exchange"))];
+    assert_eq!(
+        refused(send(&session, &by_kind, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview uses the market (C-5): the open auctions with every filter and a cursor, one
 /// auction, a bid, a withdrawal, the club's own market, a listing quote and a listing,
 /// then each goes out to its own route; another method on an auction, an id that is not one and a

@@ -15,12 +15,16 @@ const ADMIN_ONLY_PREFIXES = [
   "be.error.ruleset.",
   // A SuperAdmin's ledger adjustments and reversals (S-10 §3.9).
   "be.error.ledger.",
+  // A SuperAdmin's price lists (S-15 §3.9).
+  "be.error.priceList.",
 ];
 const ADMIN_ONLY = [
   "be.error.season.none",
   "be.error.season.alreadyExists",
   // Only the SuperAdmin's unlock of a club's economy answers it (S-10 S10-15).
   "be.error.economy.notLocked",
+  // An item given from a source its power class may not come from: a server fault (S-17 W16).
+  "be.error.inventory.sourceNotAllowed",
 ];
 
 /** The proxy's own codes (`src-tauri/src/application/online`) and the client's (`client.ts`). */
@@ -69,7 +73,10 @@ describe("online error codes", () => {
   // parameter is used, so no sentence waits for a value that never comes.
   it.each(["en", "vi"])("use exactly the parameters the server sends, in %s", (name) => {
     const locale = name === "en" ? en : vi;
-    for (const [code, params] of Object.entries(ERROR_PARAMS)) {
+    // Admin-only codes have no sentence; their parameters reach no player.
+    for (const [code, params] of Object.entries(ERROR_PARAMS).filter(([code]) =>
+      playerCodes.includes(code),
+    )) {
       const used = placeholders(lookup(locale, code) ?? "").sort();
       expect({ code, used }).toEqual({ code, used: [...params].sort() });
     }

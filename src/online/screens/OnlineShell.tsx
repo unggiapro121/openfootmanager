@@ -15,8 +15,11 @@ import OnlineHeader from "./OnlineHeader";
 import OnlineSidebar from "./OnlineSidebar";
 import OnlineNotices from "./market/OnlineNotices";
 
-/** Routes a coach without a club may still open; every other one sends them to take a club. */
-const OPEN_WITHOUT_CLUB = ["/online/takeover", "/online/profile"];
+/**
+ * Routes a coach without a club may still open; every other one sends them to take a club. The
+ * account's pages are the person's, not the club's (C-7 C7-1).
+ */
+const OPEN_WITHOUT_CLUB = ["/online/takeover", "/online/profile", "/online/coins"];
 /** Public pages of the world, open to anyone signed in: other clubs, fixtures, any match. */
 const PUBLIC_PREFIXES = ["/online/clubs/", "/online/fixtures/", "/online/match/"];
 
