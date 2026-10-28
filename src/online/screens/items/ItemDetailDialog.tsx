@@ -149,11 +149,6 @@ export default function ItemDetailDialog({
           {t("online.inventory.renameAt")}
         </p>
       )}
-      {group === "academy" && (
-        <p role="note" className="text-sm text-gray-600 dark:text-gray-400">
-          {t("online.inventory.academySoon")}
-        </p>
-      )}
       <div className="flex flex-wrap gap-3">
         <FrameCancel onClick={onClose}>{t("common.close")}</FrameCancel>
         {kind && (
@@ -169,6 +164,11 @@ export default function ItemDetailDialog({
         {group === "custom" && hasClub && (
           <Link to="/online/squad" className={FRAME_ACTION}>
             {t("online.inventory.action.rename")}
+          </Link>
+        )}
+        {group === "academy" && hasClub && (
+          <Link to="/online/academy" className={FRAME_ACTION}>
+            {t("online.inventory.action.academy")}
           </Link>
         )}
       </div>

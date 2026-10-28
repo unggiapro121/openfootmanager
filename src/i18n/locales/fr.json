@@ -52,7 +52,8 @@
       "account": "Compte",
       "coins": "Porte-monnaie",
       "inventory": "Inventaire",
-      "shop": "Boutique"
+      "shop": "Boutique",
+      "academy": "Centre de formation"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -194,7 +195,8 @@
       "noMatch": "Aucun joueur ne correspond à ces filtres.",
       "notFound": "Ce joueur n'est pas dans votre effectif.",
       "state": "Forme",
-      "suspended": "Suspendu : {{count}} match(s)"
+      "suspended": "Suspendu : {{count}} match(s)",
+      "potentialStarsRange": "Potentiel de {{low}} à {{high}} étoiles"
     },
     "training": {
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."
@@ -459,7 +461,9 @@
         "adjust": "Ajustements",
         "reversal": "Annulations",
         "grantReset": "Remise à zéro avec le nouvel effectif",
-        "coin_exchange": "Échange de pièces"
+        "coin_exchange": "Échange de pièces",
+        "scout": "Prospection du centre",
+        "graduation": "Frais de diplôme"
       },
       "ledger": "Grand livre",
       "ledgerEmpty": "Aucune écriture pour l'instant.",
@@ -470,7 +474,12 @@
       },
       "nextCost": "Niveau suivant : {{cost}}",
       "upgraded": "{{facility}} amélioré au niveau {{level}}.",
-      "exchangeCoins": "Échanger des pièces"
+      "exchangeCoins": "Échanger des pièces",
+      "facility": {
+        "academy": "Centre de formation",
+        "academyEffect": "Chaque niveau ajoute des places pour les jeunes."
+      },
+      "academyWages": "Salaires du centre : {{amount}} par semaine"
     },
     "market": {
       "title": "Marché des transferts",
@@ -729,6 +738,22 @@
             "subject": "Vos objets sont débloqués",
             "body": "La vérification de vos objets est terminée. Vous pouvez de nouveau les utiliser."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Une mission de prospection est revenue",
+            "body": "Votre recruteur est revenu avec un rapport. Choisissez les candidats avant sa fermeture."
+          },
+          "graduated": {
+            "subject": "{{player}} est diplômé",
+            "body": "{{player}} est diplômé du centre et rejoint l'équipe première.{{extra}}",
+            "overSquadMax": "L'effectif dépasse maintenant sa taille maximale.",
+            "feeWaived": "Les frais de diplôme ont été annulés."
+          },
+          "graduationDeferred": {
+            "subject": "Un diplôme a dû attendre",
+            "body": "Le club n'a pas pu payer les {{fee}} de frais de diplôme : {{player}} reste une saison de plus au centre. Le prochain diplôme est gratuit."
+          }
         }
       }
     },
@@ -825,7 +850,7 @@
       },
       "timeSkip": {
         "name": "Sablier",
-        "description": "Fait revenir aussitôt un voyage de prospection."
+        "description": "Fait revenir plus tôt un voyage de prospection en cours."
       },
       "notice": {
         "granted": "Vous avez reçu {{item}}.",
@@ -884,7 +909,6 @@
       "notThisSeason": "Inutilisable cette saison.",
       "needClub": "Il vous faut un club.",
       "renameAt": "Renommez depuis l'effectif ou la fiche du club",
-      "academySoon": "S'utilise au centre de formation (bientôt)",
       "target": {
         "player": "un joueur",
         "club": "le club",
@@ -924,7 +948,8 @@
         "pickStyle": "Choisir un style de jeu",
         "style": "Utiliser sur {{style}}",
         "usedToday": "Déjà utilisé aujourd'hui",
-        "rename": "Renommer dans l'effectif"
+        "rename": "Renommer dans l'effectif",
+        "academy": "Utiliser au centre de formation"
       }
     },
     "shop": {
@@ -934,7 +959,6 @@
       "toWallet": "Portefeuille de pièces",
       "neverExpire": "Les objets achetés avec des pièces n'expirent jamais. Ils appartiennent à votre compte et ne peuvent pas être cédés.",
       "notThisSeason": "Inutilisable cette saison",
-      "academySoon": "Disponible avec le centre de formation",
       "itemsLocked": "Vos objets sont bloqués pendant leur vérification",
       "full": "Votre inventaire ne peut plus contenir cet objet",
       "bought": "{{item}} ×{{count}} acheté pour {{coins}} pièces.",
@@ -1002,6 +1026,93 @@
       "quantityLabel": "Quantité",
       "openInventory": "Ouvrir l'inventaire",
       "closeNotice": "Fermer la notification"
+    },
+    "academy": {
+      "notOnServer": "Ce serveur n'a pas encore de centre de formation.",
+      "disabled": "Le centre de formation n'est pas ouvert cette saison.",
+      "itemsLocked": "Votre inventaire est verrouillé pour vérification : tickets et sabliers sont inutilisables jusqu'à la fin.",
+      "upgrade": "Améliorer dans Finances",
+      "confirm": "Confirmer",
+      "aYoungster": "un jeune",
+      "notice": {
+        "scoutDone": "Une mission de prospection est revenue : choisissez avant la fermeture du rapport.",
+        "changed": "Votre centre de formation a du nouveau."
+      },
+      "region": {
+        "AsiaSoutheast": "Asie du Sud-Est",
+        "AsiaEast": "Asie de l'Est",
+        "Europe": "Europe",
+        "Americas": "Amériques"
+      },
+      "focus": {
+        "Balanced": "Équilibré",
+        "Physical": "Physique",
+        "Technical": "Technique"
+      },
+      "pay": {
+        "cash": "l'argent du club",
+        "scoutExpedition": "un ticket de prospection",
+        "scoutExpeditionElite": "un ticket de prospection d'élite"
+      },
+      "reveal": {
+        "0": "Tout juste arrivé",
+        "1": "Observé",
+        "2": "Bien connu"
+      },
+      "scout": {
+        "title": "Prospection",
+        "season": "Missions cette saison : {{sent}}/{{max}}, d'élite {{elite}}/{{eliteMax}}",
+        "send": "Envoyer un recruteur",
+        "trip": "{{region}} · {{focus}} · payé avec {{pay}}",
+        "backIn": "De retour dans {{time}}",
+        "backSoon": "Le recruteur est sur le retour…",
+        "timeSkip": "Utiliser un sablier ({{held}} en stock)",
+        "timeSkipConfirm": "Faire revenir plus tôt cette mission ? Un sablier est utilisé."
+      },
+      "send": {
+        "title": "Envoyer un recruteur",
+        "region": "Région",
+        "focus": "Recherche",
+        "pay": "Payer avec",
+        "payCash": "Argent du club : {{cost}}",
+        "payTicket": "1 ticket de prospection ({{held}} en stock)",
+        "payElite": "1 ticket de prospection d'élite ({{held}} en stock) : au moins un grand espoir",
+        "back": "Retour vers {{time}}",
+        "left": "Missions restantes cette saison : {{trips}}, d'élite : {{elite}}",
+        "confirm": "Envoyer"
+      },
+      "candidate": {
+        "choose": "Choisir {{name}}",
+        "facts": "{{age}} ans · {{position}} · {{height}} cm",
+        "ovr": "Note {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Le rapport se ferme dans {{time}}",
+        "free": "Places libres au centre : {{free}}.",
+        "skip": "Ignorer le rapport",
+        "recruit": "Intégrer {{n}} au centre",
+        "othersLeave": "Les candidats non choisis partent et ne reviennent pas."
+      },
+      "players": {
+        "title": "Centre",
+        "slots": "{{used}}/{{slots}} places · Centre niveau {{level}}",
+        "costs": "Salaire {{wage}} par semaine par jeune · Frais de diplôme {{fee}} · Au moins {{days}} jours au centre",
+        "revealNote": "Les fourchettes de note et d'étoiles se resserrent avec les jours au centre ; tout est révélé au diplôme.",
+        "none": "Aucun jeune au centre pour l'instant.",
+        "days": "{{days}} jours au centre",
+        "wage": "{{wage}} par jour",
+        "graduates": "Diplôme prévu à la fin de la saison {{season}}",
+        "nextFree": "Prochain diplôme gratuit",
+        "focus": "Son propre axe",
+        "clubFocus": "Comme le club",
+        "release": "Libérer",
+        "releaseTitle": "Libérer {{name}} ?",
+        "releaseText": "Il quitte le centre et ne revient pas. Le coût de la prospection n'est pas remboursé."
+      },
+      "graduated": {
+        "title": "Diplômés",
+        "season": "saison {{season}}"
+      }
     }
   },
   "coach": {
@@ -2279,7 +2390,8 @@
       "estimateNarrowing": "Estimations des recruteurs resserrées de",
       "intakePotential": "Promotion de fin de saison : bonus de potentiel",
       "intakeGems": "Promotion de fin de saison : chance de pépite",
-      "intakeTopTalent": "Promotion de fin de saison : chance de crack (90–95)"
+      "intakeTopTalent": "Promotion de fin de saison : chance de crack (90–95)",
+      "academySlots": "Places du centre"
     },
     "facilityEffectNone": "Aucun changement",
     "facilityUpgradeTitle": "Améliorer {{facility}} — niveau {{from}} → {{to}}",
@@ -4692,7 +4804,7 @@
       },
       "academy": {
         "disabled": "Le centre de formation n'est pas ouvert cette saison.",
-        "tripOpen": "Votre club a déjà une mission de recrutement en cours ou un rapport à traiter ({{tripId}}).",
+        "tripOpen": "Votre club a déjà une mission de recrutement en cours ou un rapport à traiter.",
         "tripLimitReached": "Les missions de recrutement de la saison sont épuisées : {{sent}} sur {{limit}}.",
         "eliteTripLimitReached": "Les missions d'élite de la saison sont épuisées : {{sent}} sur {{limit}}.",
         "tripNotPending": "Cette mission de recrutement n'est plus en cours.",

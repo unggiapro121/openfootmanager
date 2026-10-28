@@ -2,7 +2,7 @@ import type { TFunction } from "i18next";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Backpack, Gavel, X } from "lucide-react";
+import { Backpack, Gavel, GraduationCap, X } from "lucide-react";
 import { formatExactMoney } from "../../lib/valueFormatting";
 import { type OnlineNotice, useOnlineStore } from "../store/onlineStore";
 import { itemName } from "./items/itemText";
@@ -17,6 +17,13 @@ const MARKET_EVENTS = new Set(["outbid", "won", "sold", "unsold", "cancelled", "
 const ITEM_EVENTS = new Set(["granted", "refunded"]);
 
 function noticeText(t: TFunction, notice: OnlineNotice): string {
+  if (notice.kind === "academy") {
+    return t(
+      notice.event === "scoutDone"
+        ? "online.academy.notice.scoutDone"
+        : "online.academy.notice.changed",
+    );
+  }
   if (notice.kind === "items") {
     const event = ITEM_EVENTS.has(notice.event) ? notice.event : "changed";
     const code = notice.params.item;
@@ -34,8 +41,8 @@ function noticeText(t: TFunction, notice: OnlineNotice): string {
 }
 
 /**
- * The notices in a corner of the online screens (C-5 C5-14, C-7 C7-4): the market's, and an item
- * given or a purchase refunded. At most three, newest last, each leaving after eight seconds or
+ * The notices in a corner of the online screens (C-5 C5-14, C-7 C7-4): the market's, an item
+ * given or a purchase refunded, and a scouting trip back (C-7c). At most three, newest last, each leaving after eight seconds or
  * when closed. They sit outside a live match's frame and never take the focus; a screen reader
  * hears each as it comes.
  */
@@ -62,7 +69,8 @@ function NoticeCard({ notice, text }: { notice: OnlineNotice; text: string }) {
     const timer = window.setTimeout(() => dismiss(notice.id), NOTICE_MILLIS);
     return () => window.clearTimeout(timer);
   }, [dismiss, notice.id]);
-  const Icon = notice.kind === "items" ? Backpack : Gavel;
+  const Icon =
+    notice.kind === "items" ? Backpack : notice.kind === "academy" ? GraduationCap : Gavel;
 
   return (
     <div className="pointer-events-auto flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-lg dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100">

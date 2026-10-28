@@ -3,11 +3,24 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { CalendarClock, Coins, Info, Store } from "lucide-react";
-import type { CoinView, InventoryView, SeasonNowView, ShopItemView, ShopView } from "../../api";
+import type {
+  AcademyView,
+  CoinView,
+  InventoryView,
+  SeasonNowView,
+  ShopItemView,
+  ShopView,
+} from "../../api";
 import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { formatCoins } from "../../format";
-import { refreshCoins, refreshItems, tracked, useOnlineStore } from "../../store/onlineStore";
+import {
+  refreshAcademy,
+  refreshCoins,
+  refreshItems,
+  tracked,
+  useOnlineStore,
+} from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
 import ResourceState from "../ResourceState";
 import { type ItemGroup, groupOf, ITEM_GROUPS, itemDescription, itemName } from "./itemText";
@@ -24,9 +37,12 @@ export function buyBlocker(
   item: ShopItemView,
   coins: CoinView | null | undefined,
   items: InventoryView | null | undefined,
+  academy?: AcademyView | null,
 ): string | null {
   if (item.powerClass === "c" && item.effect === undefined) return t("online.shop.notThisSeason");
-  if (item.powerClass === "b") return t("online.shop.academySoon");
+  // The academy's items wait for a season with academy rules (C7b-3 kept, PO bản 4); without a
+  // club, or before the academy is read, nothing is known and nothing is held back.
+  if (item.powerClass === "b" && academy?.enabled === false) return t("online.shop.notThisSeason");
   if (item.maxPurchase === 0) {
     if (coins?.coinLocked) return t("online.coins.locked");
     if (items?.locked) return t("online.shop.itemsLocked");
@@ -65,6 +81,7 @@ export default function OnlineShop() {
   const coins = useOnlineStore((state) => state.coins);
   const items = useOnlineStore((state) => state.items);
   const season = useOnlineStore((state) => state.season);
+  const academy = useOnlineStore((state) => state.academy);
   const [params, setParams] = useSearchParams();
   const [done, setDone] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>("all");
@@ -77,10 +94,16 @@ export default function OnlineShop() {
       .catch(() => undefined);
   };
 
+  const hasClub = useOnlineStore((state) => Boolean(state.club));
   useEffect(() => {
     void refreshCoins().catch(() => undefined);
     void refreshItems().catch(() => undefined);
   }, []);
+  useEffect(() => {
+    if (hasClub && useOnlineStore.getState().academy === undefined) {
+      void refreshAcademy().catch(() => undefined);
+    }
+  }, [hasClub]);
 
   const asked = params.get("item");
   const close = () => setParams({}, { replace: true });
@@ -140,7 +163,7 @@ export default function OnlineShop() {
                 </div>
               </>
             )}
-            {buying && buyBlocker(t, buying, coins, items) === null && (
+            {buying && buyBlocker(t, buying, coins, items, academy) === null && (
               <ShopPurchaseDialog
                 item={buying}
                 version={version}
@@ -365,7 +388,8 @@ function Offer({ item, onBuy }: { item: ShopItemView; onBuy: () => void }) {
   const { t, i18n } = useTranslation();
   const coins = useOnlineStore((state) => state.coins);
   const items = useOnlineStore((state) => state.items);
-  const blocker = buyBlocker(t, item, coins, items);
+  const academy = useOnlineStore((state) => state.academy);
+  const blocker = buyBlocker(t, item, coins, items, academy);
   const name = itemName(t, item.itemCode);
   const description = itemDescription(t, item.itemCode);
   const price = formatCoins(item.price, i18n.language);

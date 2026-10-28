@@ -52,7 +52,8 @@
       "account": "Tài khoản",
       "coins": "Ví coin",
       "inventory": "Kho đồ",
-      "shop": "Cửa hàng"
+      "shop": "Cửa hàng",
+      "academy": "Lò đào tạo"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -194,7 +195,8 @@
       "noMatch": "Không có cầu thủ nào khớp bộ lọc.",
       "notFound": "Cầu thủ này không có trong đội hình của bạn.",
       "state": "Thể trạng",
-      "suspended": "Bị treo giò: {{count}} trận"
+      "suspended": "Bị treo giò: {{count}} trận",
+      "potentialStarsRange": "Tiềm năng {{low}} đến {{high}} sao"
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
@@ -459,7 +461,9 @@
         "adjust": "Điều chỉnh",
         "reversal": "Bút toán đảo",
         "grantReset": "Đặt lại tiền khi nhận đội mới",
-        "coin_exchange": "Đổi coin"
+        "coin_exchange": "Đổi coin",
+        "scout": "Scout lò đào tạo",
+        "graduation": "Phí tốt nghiệp"
       },
       "ledger": "Sổ thu chi",
       "ledgerEmpty": "Chưa có dòng nào.",
@@ -470,7 +474,12 @@
       },
       "nextCost": "Cấp tiếp theo: {{cost}}",
       "upgraded": "Đã nâng {{facility}} lên cấp {{level}}.",
-      "exchangeCoins": "Đổi coin"
+      "exchangeCoins": "Đổi coin",
+      "facility": {
+        "academy": "Lò đào tạo",
+        "academyEffect": "Mỗi cấp thêm chỗ cho học viên."
+      },
+      "academyWages": "Lương lò đào tạo: {{amount}}/tuần"
     },
     "market": {
       "title": "Chợ chuyển nhượng",
@@ -729,6 +738,22 @@
             "subject": "Kho đồ đã mở khoá",
             "body": "Đã kiểm xong kho đồ của bạn. Bạn dùng lại vật phẩm được rồi."
           }
+        },
+        "academy": {
+          "scoutDone": {
+            "subject": "Scout đã về",
+            "body": "Chuyến scout đã về kèm báo cáo. Chọn ứng viên trước khi báo cáo đóng."
+          },
+          "graduated": {
+            "subject": "{{player}} tốt nghiệp",
+            "body": "{{player}} tốt nghiệp lò đào tạo và vào đội 1.{{extra}}",
+            "overSquadMax": "Đội đã vượt số người tối đa.",
+            "feeWaived": "Phí tốt nghiệp được miễn."
+          },
+          "graduationDeferred": {
+            "subject": "Tốt nghiệp phải chờ",
+            "body": "CLB không đủ {{fee}} phí tốt nghiệp, nên {{player}} ở lại lò thêm một mùa. Lần tốt nghiệp sau miễn phí."
+          }
         }
       }
     },
@@ -825,7 +850,7 @@
       },
       "timeSkip": {
         "name": "Đồng hồ cát",
-        "description": "Đưa chuyến scout về ngay lập tức."
+        "description": "Đưa một chuyến scout đang đi về sớm hơn."
       },
       "notice": {
         "granted": "Bạn vừa nhận {{item}}.",
@@ -884,7 +909,6 @@
       "notThisSeason": "Chưa dùng được ở mùa này.",
       "needClub": "Cần có CLB.",
       "renameAt": "Đổi tên ở trang Đội hình hoặc thẻ CLB",
-      "academySoon": "Dùng ở Lò đào tạo (sắp có)",
       "target": {
         "player": "một cầu thủ",
         "club": "CLB",
@@ -924,7 +948,8 @@
         "pickStyle": "Chọn lối chơi để dùng",
         "style": "Dùng cho {{style}}",
         "usedToday": "Đã dùng hôm nay",
-        "rename": "Đổi tên ở trang Đội hình"
+        "rename": "Đổi tên ở trang Đội hình",
+        "academy": "Dùng ở Lò đào tạo"
       }
     },
     "shop": {
@@ -934,7 +959,6 @@
       "toWallet": "Ví coin",
       "neverExpire": "Vật phẩm mua bằng coin không hết hạn. Chúng gắn với tài khoản của bạn, không chuyển được.",
       "notThisSeason": "Chưa dùng được ở mùa này",
-      "academySoon": "Mở khi có Lò đào tạo",
       "itemsLocked": "Kho đồ tạm khoá để kiểm tra",
       "full": "Kho đã đầy loại này",
       "bought": "Đã mua {{item}} ×{{count}} với giá {{coins}} coin.",
@@ -1002,6 +1026,93 @@
       "quantityLabel": "Số lượng",
       "openInventory": "Mở Kho đồ",
       "closeNotice": "Đóng thông báo"
+    },
+    "academy": {
+      "notOnServer": "Máy chủ này chưa có lò đào tạo.",
+      "disabled": "Mùa này chưa mở lò đào tạo.",
+      "itemsLocked": "Kho đồ tạm khoá để kiểm tra: vé scout và đồng hồ cát dùng lại được khi kiểm xong.",
+      "upgrade": "Nâng cấp ở Tài chính",
+      "confirm": "Xác nhận",
+      "aYoungster": "một học viên",
+      "notice": {
+        "scoutDone": "Scout đã về: chọn ứng viên trước khi báo cáo đóng.",
+        "changed": "Lò đào tạo có tin mới."
+      },
+      "region": {
+        "AsiaSoutheast": "Đông Nam Á",
+        "AsiaEast": "Đông Á",
+        "Europe": "Châu Âu",
+        "Americas": "Châu Mỹ"
+      },
+      "focus": {
+        "Balanced": "Cân bằng",
+        "Physical": "Thể chất",
+        "Technical": "Kỹ thuật"
+      },
+      "pay": {
+        "cash": "tiền CLB",
+        "scoutExpedition": "vé scout",
+        "scoutExpeditionElite": "vé scout đặc biệt"
+      },
+      "reveal": {
+        "0": "Mới nhận",
+        "1": "Đã theo dõi",
+        "2": "Theo dõi kỹ"
+      },
+      "scout": {
+        "title": "Scout",
+        "season": "Mùa này đã gửi {{sent}}/{{max}} chuyến, chuyến đặc biệt {{elite}}/{{eliteMax}}",
+        "send": "Gửi scout",
+        "trip": "{{region}} · {{focus}} · trả bằng {{pay}}",
+        "backIn": "Về sau {{time}}",
+        "backSoon": "Scout sắp về…",
+        "timeSkip": "Dùng đồng hồ cát (còn {{held}})",
+        "timeSkipConfirm": "Đưa chuyến scout về sớm hơn? Dùng 1 đồng hồ cát."
+      },
+      "send": {
+        "title": "Gửi scout",
+        "region": "Khu vực",
+        "focus": "Trọng tâm",
+        "pay": "Trả bằng",
+        "payCash": "Tiền CLB: {{cost}}",
+        "payTicket": "1 vé scout (còn {{held}})",
+        "payElite": "1 vé scout đặc biệt (còn {{held}}): bảo đảm một ứng viên tiềm năng cao",
+        "back": "Về khoảng {{time}}",
+        "left": "Mùa này còn {{trips}} chuyến, {{elite}} chuyến đặc biệt",
+        "confirm": "Gửi"
+      },
+      "candidate": {
+        "choose": "Chọn {{name}}",
+        "facts": "{{age}} tuổi · {{position}} · {{height}} cm",
+        "ovr": "OVR {{low}}–{{high}}"
+      },
+      "report": {
+        "closesIn": "Báo cáo đóng sau {{time}}",
+        "free": "Lò còn {{free}} chỗ trống.",
+        "skip": "Bỏ qua báo cáo",
+        "recruit": "Nhận {{n}} cầu thủ vào lò",
+        "othersLeave": "Ứng viên không chọn sẽ rời đi, không quay lại."
+      },
+      "players": {
+        "title": "Học viện",
+        "slots": "{{used}}/{{slots}} chỗ · Lò cấp {{level}}",
+        "costs": "Lương {{wage}}/tuần mỗi học viên · Phí tốt nghiệp {{fee}} · Ở lò ít nhất {{days}} ngày",
+        "revealNote": "Khoảng OVR và sao hẹp dần theo số ngày ở lò; lộ hết khi tốt nghiệp.",
+        "none": "Lò chưa có học viên nào.",
+        "days": "{{days}} ngày ở lò",
+        "wage": "{{wage}}/ngày",
+        "graduates": "Dự kiến tốt nghiệp cuối mùa {{season}}",
+        "nextFree": "Lần tốt nghiệp kế miễn phí",
+        "focus": "Trọng tâm riêng",
+        "clubFocus": "Theo CLB",
+        "release": "Thả",
+        "releaseTitle": "Thả {{name}}?",
+        "releaseText": "Cầu thủ rời lò và không quay lại. Tiền scout không hoàn."
+      },
+      "graduated": {
+        "title": "Đã tốt nghiệp",
+        "season": "mùa {{season}}"
+      }
     }
   },
   "coach": {
@@ -2279,7 +2390,8 @@
       "estimateNarrowing": "Khoảng ước lượng hẹp hơn",
       "intakePotential": "Lứa trẻ cuối mùa: tiềm năng cộng thêm",
       "intakeGems": "Lứa trẻ cuối mùa: tỉ lệ \"viên ngọc\"",
-      "intakeTopTalent": "Lứa trẻ cuối mùa: tỉ lệ tài năng hàng đầu (90–95)"
+      "intakeTopTalent": "Lứa trẻ cuối mùa: tỉ lệ tài năng hàng đầu (90–95)",
+      "academySlots": "Số chỗ học viên"
     },
     "facilityEffectNone": "Không đổi",
     "facilityUpgradeTitle": "Nâng cấp {{facility}} — cấp {{from}} → {{to}}",
@@ -4692,9 +4804,9 @@
       },
       "academy": {
         "disabled": "Mùa này lò đào tạo chưa mở.",
-        "tripOpen": "CLB đang có một chuyến scout chưa về hoặc một báo cáo chưa chọn ({{tripId}}).",
+        "tripOpen": "CLB đang có một chuyến scout chưa về hoặc một báo cáo chưa chọn.",
         "tripLimitReached": "Đã hết lượt scout mùa này: {{sent}} / {{limit}}.",
-        "eliteTripLimitReached": "Đã hết lượt scout tinh hoa mùa này: {{sent}} / {{limit}}.",
+        "eliteTripLimitReached": "Đã hết lượt scout đặc biệt mùa này: {{sent}} / {{limit}}.",
         "tripNotPending": "Chuyến scout này không còn đang đi.",
         "tripNotReady": "Scout vẫn đang đi tới {{readyAt}}.",
         "tripClosed": "Báo cáo scout này đã đóng.",

@@ -378,6 +378,7 @@ describe("the online club pages", () => {
       intensity: "High" as const,
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+      auto: true,
     };
     stage(myClub({ players: SQUAD, trainingPlan: aiPlan, trainingPlanIsOwn: false }));
     renderOnline("/online/training");
@@ -399,6 +400,7 @@ describe("the online club pages", () => {
       intensity: "High" as const,
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+      auto: true,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -422,6 +424,7 @@ describe("the online club pages", () => {
       intensity: "High" as const,
       schedule: "Light" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+      auto: true,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
@@ -446,6 +449,7 @@ describe("the online club pages", () => {
       intensity: "Medium" as const,
       schedule: "Balanced" as const,
       groups: [{ id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk"] }],
+      auto: true,
     };
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");

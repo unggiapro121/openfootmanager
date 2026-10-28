@@ -122,7 +122,13 @@ export function myClub(overrides: Partial<MyClubView> = {}): MyClubView {
         corner_taker: null,
       },
     },
-    trainingPlan: { focus: "Physical", intensity: "Medium", schedule: "Balanced", groups: [] },
+    trainingPlan: {
+      focus: "Physical",
+      intensity: "Medium",
+      schedule: "Balanced",
+      groups: [],
+      auto: true,
+    },
     trainingPlanIsOwn: false,
     leagueId: "league-1",
     nextFixture: {

@@ -4,6 +4,8 @@ import {
   onlineRequest,
 } from "../services/onlineTransport";
 import type {
+  AcademyPlayerView,
+  AcademyView,
   AccountView,
   AvatarImageRequest,
   AvatarImageView,
@@ -50,11 +52,16 @@ import type {
   TrainingPlan,
   UpdateAccount,
   RenamePlayerRequest,
+  RecruitRequest,
+  ScoutQuoteView,
+  ScoutRequest,
+  ScoutTripView,
   ShirtRequest,
   PlayerAvatarRequest,
   PlayerNationalityRequest,
   PlayerTrainingFocusRequest,
   StadiumRequest,
+  YoungsterFocusRequest,
 } from "./api";
 import { CONTRACT_REVISION } from "./api/contract";
 import type { MatchCommand } from "./api/engine";
@@ -338,6 +345,68 @@ export const online = {
         write("POST", ["v1", "me", "items", itemCode, "use"], idempotencyKey, {
           target,
         } satisfies UseItemRequest),
+      ),
+  },
+  /**
+   * The club's youth academy (S-18, C-7c): its trip and youngsters, a trip's quote, a trip sent,
+   * brought back sooner with a `timeSkip` and chosen from, and a youngster's focus or release.
+   */
+  academy: {
+    view: () => call<AcademyView>(read(["v1", "clubs", "mine", "academy"])),
+    quote: (region: string, focus: string) =>
+      call<ScoutQuoteView>(
+        read(
+          ["v1", "clubs", "mine", "academy", "scout-quote"],
+          [
+            ["region", region],
+            ["focus", focus],
+          ],
+        ),
+      ),
+    send: (request: ScoutRequest, idempotencyKey = newKey()) =>
+      call<ScoutTripView>(
+        write(
+          "POST",
+          ["v1", "clubs", "mine", "academy", "scouts"],
+          idempotencyKey,
+          request satisfies ScoutRequest,
+        ),
+      ),
+    timeSkip: (tripId: string, idempotencyKey = newKey()) =>
+      call<ScoutTripView>(
+        write(
+          "POST",
+          ["v1", "clubs", "mine", "academy", "scouts", tripId, "time-skip"],
+          idempotencyKey,
+        ),
+      ),
+    /** The candidates taken into the academy; none closes the report. */
+    recruit: (tripId: string, candidateIds: string[], idempotencyKey = newKey()) =>
+      call<AcademyView>(
+        write(
+          "POST",
+          ["v1", "clubs", "mine", "academy", "scouts", tripId, "recruit"],
+          idempotencyKey,
+          { candidateIds } satisfies RecruitRequest,
+        ),
+      ),
+    /** His own focus, or `undefined` to follow the club's. */
+    setFocus: (playerId: string, focus: string | undefined, idempotencyKey = newKey()) =>
+      call<AcademyPlayerView>(
+        write(
+          "PUT",
+          ["v1", "clubs", "mine", "academy", "players", playerId, "focus"],
+          idempotencyKey,
+          (focus === undefined ? {} : { focus }) satisfies YoungsterFocusRequest,
+        ),
+      ),
+    release: (playerId: string, idempotencyKey = newKey()) =>
+      call<AcademyView>(
+        write(
+          "POST",
+          ["v1", "clubs", "mine", "academy", "players", playerId, "release"],
+          idempotencyKey,
+        ),
       ),
   },
   /** The shop (S-17): what the price list in force sells, bought with coins at that list. */
