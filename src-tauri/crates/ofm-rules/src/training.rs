@@ -216,7 +216,49 @@ pub fn train_player(
     rng: &mut impl Rng,
 ) {
     let is_training_day = plan.schedule.is_training_day(day.weekday_num);
+    train_player_on(player, plan, day, is_training_day, rng);
+}
 
+/// How an online day of a season with recovery blocks comes to hold a session (E5-1).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SessionKind {
+    /// A person pressed the button: always a training day, on his plan.
+    Manual,
+    /// The automatic session (a person's club with `auto` on, or a bot): the weekly schedule
+    /// decides, exactly as `train_player`.
+    Scheduled,
+    /// A day with no session: a rest day's recovery, nothing built.
+    Rest,
+}
+
+/// `player`'s online day of `kind` under `plan` on `day` (E5-1): the game's own session or rest
+/// day, so a pressed session costs, recovers and builds what a scheduled one does. The rest of the
+/// day's recovery comes by blocks (`recovery::rest_blocks`), not from here. His condition must
+/// already be rested up to the moment of the session: the fatigue guard reads it.
+pub fn online_session(
+    player: &mut Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    kind: SessionKind,
+    rng: &mut impl Rng,
+) {
+    let is_training_day = match kind {
+        SessionKind::Manual => true,
+        SessionKind::Scheduled => plan.schedule.is_training_day(day.weekday_num),
+        SessionKind::Rest => false,
+    };
+    train_player_on(player, plan, day, is_training_day, rng);
+}
+
+/// `train_player` with the day's kind decided by the caller: a session when `is_training_day`,
+/// otherwise a rest day.
+fn train_player_on(
+    player: &mut Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    is_training_day: bool,
+    rng: &mut impl Rng,
+) {
     // The taper: with a fixture close, today's session runs one step lighter than
     // the manager's standing setting. The setting itself is untouched — the club's
     // stored plan is the manager's, and a taper is not a change of plan.
@@ -417,11 +459,19 @@ pub fn condition_after_rest(
 ) -> u8 {
     let mut condition = condition;
     for _ in 0..hours / 24 {
-        condition = rest_day_condition(player, condition, age, physio_mult, medical_mult);
+        let rested = rest_day_condition(player, condition, age, physio_mult, medical_mult);
+        // A day that gives nothing back (full, or a recovery that rounds to nothing) gives nothing
+        // every day after it, so a long rest stops here rather than counting out every day.
+        if rested == condition {
+            break;
+        }
+        condition = rested;
     }
     let next_day =
         rest_day_condition(player, condition, age, physio_mult, medical_mult) - condition;
-    let share = u32::from(next_day) * (hours % 24) / 24;
+    // Rounded, not truncated: online condition is locked every few hours (E5-1 §4), and a share
+    // cut down at every lock loses about half a point each time.
+    let share = (u32::from(next_day) * (hours % 24) + 12) / 24;
     condition + share as u8
 }
 
@@ -636,14 +686,14 @@ mod tests {
 
     /// Given a tired player,
     /// when he rests half a day, a whole day, and a long holiday,
-    /// then half a day gives about half a day's recovery, nothing exceeds 100, and no rest
-    /// leaves him as he was.
+    /// then half a day gives half a day's recovery rounded to the nearest point, nothing exceeds
+    /// 100, and no rest leaves him as he was.
     #[test]
     fn rest_by_the_hour_is_proportional_and_capped() {
         let player = tired_player();
         let day = condition_after_rest(&player, 35, 27, (1.0, 1.0), 24) - 35;
         let half = condition_after_rest(&player, 35, 27, (1.0, 1.0), 12) - 35;
-        assert_eq!(half, day / 2);
+        assert_eq!(half, day.div_ceil(2));
         assert_eq!(condition_after_rest(&player, 35, 27, (1.0, 1.0), 0), 35);
         assert_eq!(
             condition_after_rest(&player, 35, 27, (1.0, 1.0), 24 * 60),
@@ -722,5 +772,204 @@ mod tests {
         }
         assert_eq!(online.condition, by_hand.condition);
         assert!(online.condition > tired_player().condition);
+    }
+
+    /// A player as data, to compare two players field by field (`Player` has no `PartialEq`).
+    fn as_json(player: &Player) -> serde_json::Value {
+        serde_json::to_value(player).expect("a player")
+    }
+
+    fn online_plan(schedule: TrainingSchedule, intensity: TrainingIntensity) -> TeamTrainingPlan {
+        let mut team = domain::team::Team::new(
+            "club".into(),
+            "Club".into(),
+            "CLB".into(),
+            "England".into(),
+            "Town".into(),
+            "Ground".into(),
+            10_000,
+        );
+        team.training_schedule = schedule;
+        team.training_intensity = intensity;
+        team.training_focus = TrainingFocus::Technical;
+        team_training_plan(&team, &[], None)
+    }
+
+    fn online_day(weekday_num: u32) -> TrainingDay {
+        TrainingDay {
+            weekday_num,
+            year: 2026,
+            date: "2026-09-01".into(),
+            development_multiplier: 16.0,
+        }
+    }
+
+    fn young_player(condition: u8, injured: bool) -> Player {
+        let mut player = tired_player();
+        player.date_of_birth = "2008-03-01".into();
+        player.condition = condition;
+        player.potential = 95;
+        if injured {
+            player.injury = Some(domain::player::Injury {
+                name: "Knock".into(),
+                days_remaining: 3,
+            });
+        }
+        player
+    }
+
+    /// The players the session tests run through: tired and fresh, either side of the fatigue
+    /// guard, injured or not.
+    fn grid() -> Vec<Player> {
+        [20, 39, 40, 80, 100]
+            .into_iter()
+            .flat_map(|c| [young_player(c, false), young_player(c, true)])
+            .collect()
+    }
+
+    /// Given every player of the grid, every weekday, schedule and intensity,
+    /// when the automatic online session is held,
+    /// then it is the game's own day to the bit, the dice left where the game leaves them.
+    #[test]
+    fn scheduled_session_is_train_player() {
+        use rand::RngExt;
+        for schedule in [
+            TrainingSchedule::Intense,
+            TrainingSchedule::Balanced,
+            TrainingSchedule::Light,
+        ] {
+            for intensity in [
+                TrainingIntensity::Low,
+                TrainingIntensity::Medium,
+                TrainingIntensity::High,
+            ] {
+                let plan = online_plan(schedule.clone(), intensity.clone());
+                for weekday in 0..7 {
+                    for player in grid() {
+                        let (mut online, mut game) = (player.clone(), player);
+                        let (mut online_dice, mut game_dice) =
+                            (session_rng(7, "p", "d"), session_rng(7, "p", "d"));
+                        let day = online_day(weekday);
+                        online_session(
+                            &mut online,
+                            &plan,
+                            &day,
+                            SessionKind::Scheduled,
+                            &mut online_dice,
+                        );
+                        train_player(&mut game, &plan, &day, &mut game_dice);
+                        assert_eq!(as_json(&online), as_json(&game));
+                        assert_eq!(online_dice.random::<u64>(), game_dice.random::<u64>());
+                    }
+                }
+            }
+        }
+    }
+
+    /// Given a club whose schedule rests on Wednesday,
+    /// when its coach presses for a session that Wednesday,
+    /// then the player is trained exactly as on a Monday of the same plan: a pressed session is a
+    /// training day whatever the schedule says.
+    #[test]
+    fn manual_session_is_a_training_day() {
+        let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::High);
+        assert!(!plan.schedule.is_training_day(2) && plan.schedule.is_training_day(0));
+        for player in grid() {
+            let (mut pressed, mut monday) = (player.clone(), player);
+            online_session(
+                &mut pressed,
+                &plan,
+                &online_day(2),
+                SessionKind::Manual,
+                &mut session_rng(3, "p", "d"),
+            );
+            train_player(
+                &mut monday,
+                &plan,
+                &online_day(0),
+                &mut session_rng(3, "p", "d"),
+            );
+            assert_eq!(as_json(&pressed), as_json(&monday));
+        }
+        let mut fresh = young_player(80, false);
+        online_session(
+            &mut fresh,
+            &plan,
+            &online_day(2),
+            SessionKind::Manual,
+            &mut session_rng(3, "p", "d"),
+        );
+        assert!(
+            fresh.condition < 80,
+            "a High session costs more than it gives back"
+        );
+    }
+
+    /// Given every player of the grid,
+    /// when a day passes with no session,
+    /// then it is the game's rest day on a scheduled day off, injured or not, and no die is cast.
+    #[test]
+    fn rest_is_a_rest_day() {
+        use rand::RngExt;
+        let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::High);
+        for player in grid() {
+            let (mut rested, mut day_off) = (player.clone(), player);
+            let mut dice = session_rng(5, "p", "d");
+            online_session(
+                &mut rested,
+                &plan,
+                &online_day(0),
+                SessionKind::Rest,
+                &mut dice,
+            );
+            train_player(
+                &mut day_off,
+                &plan,
+                &online_day(2),
+                &mut session_rng(5, "p", "d"),
+            );
+            assert_eq!(as_json(&rested), as_json(&day_off));
+            assert_eq!(
+                dice.random::<u64>(),
+                session_rng(5, "p", "d").random::<u64>()
+            );
+        }
+    }
+
+    /// Given a player just under the fatigue guard,
+    /// when his coach presses a High session,
+    /// then it is recovery work: nothing taken, something given back, no attribute built.
+    #[test]
+    fn fatigue_guard_holds_for_manual() {
+        let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::High);
+        let mut player = young_player(FATIGUE_GUARD_CONDITION - 1, false);
+        let before = serde_json::to_value(&player.attributes).expect("attributes");
+        online_session(
+            &mut player,
+            &plan,
+            &online_day(2),
+            SessionKind::Manual,
+            &mut session_rng(9, "p", "d"),
+        );
+        assert!(player.condition > FATIGUE_GUARD_CONDITION - 1);
+        assert_eq!(
+            serde_json::to_value(&player.attributes).expect("attributes"),
+            before
+        );
+    }
+
+    /// Given a full player and a tired one whose recovery rounds to nothing,
+    /// when they rest for months,
+    /// then the full one stays full and the other where he was, as day after day would leave
+    /// them: a long rest stops counting once a day gives nothing back.
+    #[test]
+    fn full_condition_stops_early() {
+        let player = tired_player();
+        assert_eq!(
+            condition_after_rest(&player, 100, 27, (1.0, 1.0), 24 * 4_000),
+            100
+        );
+        let stalled = condition_after_rest(&player, 35, 27, (0.0, 1.0), u32::MAX);
+        assert_eq!(stalled, 35);
     }
 }
