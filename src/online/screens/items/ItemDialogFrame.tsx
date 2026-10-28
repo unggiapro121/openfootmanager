@@ -45,12 +45,14 @@ export function HeadBadge({
 }
 
 /**
- * The frame of the shop's and the inventory's dialogs (designs cua-hang.html, kho-do.html): the
- * item's icon, badges and name over a close button, the body below. It takes the focus when it
+ * The frame of the shop's and the inventory's dialogs (designs cua-hang.html, kho-do.html), and
+ * of the overview's crest editor: the item's icon (or another), badges and name over a close
+ * button, the body below. It takes the focus when it
  * opens, closes on Escape unless busy, and keeps Tab inside.
  */
 export default function ItemDialogFrame({
   code,
+  icon,
   title,
   badges,
   busy = false,
@@ -58,7 +60,9 @@ export default function ItemDialogFrame({
   onClose,
   children,
 }: {
-  code: string;
+  /** The item whose icon heads the dialog; `icon` heads one that is not an item's. */
+  code?: string;
+  icon?: ReactNode;
   title: string;
   badges?: ReactNode;
   busy?: boolean;
@@ -94,7 +98,7 @@ export default function ItemDialogFrame({
         className="max-h-[calc(100vh-32px)] w-full max-w-120 overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl outline-none dark:border-navy-600 dark:bg-navy-700"
       >
         <div className="flex items-start gap-4 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50 px-6 py-5 dark:border-navy-600 dark:from-navy-700 dark:to-navy-800">
-          <ItemIcon code={code} size="lg" />
+          {icon ?? (code !== undefined && <ItemIcon code={code} size="lg" />)}
           <div className="flex min-w-0 flex-1 flex-col gap-1.5">
             {badges && <span className="flex flex-wrap gap-1.5">{badges}</span>}
             <h2

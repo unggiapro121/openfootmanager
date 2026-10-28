@@ -89,7 +89,23 @@
       "save": "Speichern",
       "stadium": "{{name}} ({{capacity}} Plätze)",
       "stadiumLabel": "Stadionname",
-      "stadiumHint": "Das Stadion lässt sich beliebig oft umbenennen."
+      "stadiumHint": "Das Stadion lässt sich beliebig oft umbenennen.",
+      "crest": {
+        "change": "Wappen ändern",
+        "title": "Vereinswappen",
+        "primary": "Hauptfarbe",
+        "secondary": "Zweitfarbe",
+        "patternLabel": "Muster",
+        "pattern": {
+          "split": "Hälften",
+          "band": "Streifen",
+          "sash": "Schärpe",
+          "diamond": "Raute"
+        },
+        "label": "Buchstaben",
+        "labelHint": "1 bis 3 Buchstaben oder Ziffern",
+        "save": "Wappen speichern"
+      }
     },
     "fixture": {
       "title": "Nächstes Spiel",

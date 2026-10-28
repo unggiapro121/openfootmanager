@@ -89,7 +89,23 @@
       "save": "Lưu",
       "stadium": "{{name}} ({{capacity}} chỗ)",
       "stadiumLabel": "Tên sân vận động",
-      "stadiumHint": "Tên sân đổi được bao nhiêu lần tuỳ ý."
+      "stadiumHint": "Tên sân đổi được bao nhiêu lần tuỳ ý.",
+      "crest": {
+        "change": "Đổi logo",
+        "title": "Logo CLB",
+        "primary": "Màu chính",
+        "secondary": "Màu phụ",
+        "patternLabel": "Hoạ tiết",
+        "pattern": {
+          "split": "Chia đôi",
+          "band": "Dải ngang",
+          "sash": "Dải chéo",
+          "diamond": "Hình thoi"
+        },
+        "label": "Chữ trên logo",
+        "labelHint": "1 đến 3 chữ cái hoặc chữ số",
+        "save": "Lưu logo"
+      }
     },
     "fixture": {
       "title": "Trận kế tiếp",

@@ -12,6 +12,7 @@ import type { OnlineRequest } from "../../../services/onlineTransport";
 import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
 import {
   type Answer,
+  fail,
   fakeServer,
   LEAGUE,
   myClub,
@@ -402,5 +403,100 @@ describe("the overview's club and licence", () => {
     expect(within(licence).getByText("tactics.licence.tier_4")).toBeInTheDocument();
     expect(within(licence).getByText("online.licence.highest")).toBeInTheDocument();
     expect(within(licence).queryByText(/^online\.overview\.licenceNext/)).toBeNull();
+  });
+});
+
+describe("the club's crest", () => {
+  const crestDialog = async () => {
+    const club = await card("online.club.title");
+    fireEvent.click(within(club).getByRole("button", { name: "online.club.crest.change" }));
+    return screen.findByRole("dialog", { name: "online.club.crest.title" });
+  };
+
+  // Given a club with no crest of its own,
+  // when the coach picks a colour, a pattern and letters and saves,
+  // then the crest is sent once with a key, the dialog closes and the club shows the new crest.
+  it("draws the club's crest and shows it on the club", async () => {
+    serve(undefined, {
+      "PATCH v1/clubs/mine/crest": (request) =>
+        ok(
+          myClub({
+            nextFixture: fixture(3),
+            club: { ...myClub().club, crest: request.body as MyClubView["club"]["crest"] },
+          }),
+        ),
+    });
+    renderOnline();
+
+    const dialog = await crestDialog();
+    fireEvent.change(within(dialog).getByLabelText("online.club.crest.primary"), {
+      target: { value: "#004d98" },
+    });
+    fireEvent.click(within(dialog).getByRole("radio", { name: "online.club.crest.pattern.band" }));
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "online.club.crest.label" }), {
+      target: { value: "fc" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: "online.club.crest.save" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    const [drawn] = sent("PATCH", "v1/clubs/mine/crest");
+    expect(drawn.body).toEqual({
+      primary: "#004d98",
+      secondary: "#ffffff",
+      pattern: "band",
+      label: "FC",
+    });
+    expect(drawn.idempotencyKey).toEqual(expect.any(String));
+    expect(within(await card("online.club.title")).getByText("FC")).toBeInTheDocument();
+  });
+
+  // Given a club with a crest of its own,
+  // when the overview opens and the coach opens the crest dialog,
+  // then the next match shows that crest, and the dialog starts from it.
+  it("starts from the crest the club has", async () => {
+    serve(
+      myClub({
+        nextFixture: fixture(3),
+        club: {
+          ...myClub().club,
+          crest: { primary: "#111111", secondary: "#eeeeee", pattern: "diamond", label: "AB" },
+        },
+      }),
+    );
+    renderOnline();
+
+    expect(within(await card(/^online\.fixture\.title/)).getByText("AB")).toBeInTheDocument();
+    const dialog = await crestDialog();
+    expect(within(dialog).getByLabelText("online.club.crest.primary")).toHaveValue("#111111");
+    expect(within(dialog).getByLabelText("online.club.crest.secondary")).toHaveValue("#eeeeee");
+    expect(
+      within(dialog).getByRole("radio", { name: "online.club.crest.pattern.diamond" }),
+    ).toBeChecked();
+    expect(within(dialog).getByRole("textbox", { name: "online.club.crest.label" })).toHaveValue(
+      "AB",
+    );
+  });
+
+  // Given letters cleared, then a crest the server refuses,
+  // when the coach tries to save,
+  // then nothing can be saved without letters, and a refusal shows in the dialog, which stays.
+  it("needs letters and shows why a crest was refused", async () => {
+    serve(undefined, {
+      "PATCH v1/clubs/mine/crest": fail(400, "be.error.validation.invalid"),
+    });
+    renderOnline();
+
+    const dialog = await crestDialog();
+    const letters = within(dialog).getByRole("textbox", { name: "online.club.crest.label" });
+    const save = within(dialog).getByRole("button", { name: "online.club.crest.save" });
+    fireEvent.change(letters, { target: { value: "  " } });
+    expect(save).toBeDisabled();
+    fireEvent.change(letters, { target: { value: "ab" } });
+    fireEvent.click(save);
+
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+      "resolved:be.error.validation.invalid",
+    );
+    expect(screen.getByRole("dialog", { name: "online.club.crest.title" })).toBeInTheDocument();
   });
 });

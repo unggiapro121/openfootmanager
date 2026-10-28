@@ -1,17 +1,21 @@
 import { type FormEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { PenLine } from "lucide-react";
+import { Palette, PenLine } from "lucide-react";
 import { Button } from "../../../components/ui";
-import { GeneratedCrest } from "../../../components/ui/GeneratedCrest";
 import { formatVal } from "../../../lib/valueFormatting";
 import type { MyClubView } from "../../api";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
+import ClubCrestMark from "../ClubCrestMark";
 import RenameCardNote, { useRenameCard } from "../RenameCardNote";
 import { renameErrorText } from "../renameText";
 import { useActionKey } from "../useActionKey";
+import CrestDialog from "./CrestDialog";
 import OverviewCard from "./OverviewCard";
+
+const HEAD_BUTTON =
+  "inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 font-heading text-xs font-semibold uppercase tracking-wider text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800";
 
 /**
  * The club (design tong-quan.html): its crest, name, area, stadium and money, and its name: the
@@ -20,6 +24,7 @@ import OverviewCard from "./OverviewCard";
 export default function ClubCard({ club }: { club: MyClubView }) {
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
+  const [drawing, setDrawing] = useState(false);
   const finance = useOnlineStore((state) => state.finance);
   const profile = club.club;
   const dt = "text-gray-500 dark:text-gray-400";
@@ -30,27 +35,24 @@ export default function ClubCard({ club }: { club: MyClubView }) {
       title={t("online.club.title")}
       className="flex-[1_1_420px]"
       action={
-        !renaming && (
-          <button
-            type="button"
-            onClick={() => setRenaming(true)}
-            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 font-heading text-xs font-semibold uppercase tracking-wider text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800"
-          >
-            <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
-            {t("online.club.rename")}
+        <span className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => setDrawing(true)} className={HEAD_BUTTON}>
+            <Palette className="h-3.5 w-3.5" aria-hidden="true" />
+            {t("online.club.crest.change")}
           </button>
-        )
+          {!renaming && (
+            <button type="button" onClick={() => setRenaming(true)} className={HEAD_BUTTON}>
+              <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("online.club.rename")}
+            </button>
+          )}
+        </span>
       }
     >
       <div className="flex flex-col gap-4 p-6">
         <div className="flex flex-wrap items-start gap-5">
           <span className="h-16 w-16 shrink-0">
-            <GeneratedCrest
-              name={profile.name}
-              label={profile.shortName}
-              colors={profile.colors}
-              className="h-full w-full"
-            />
+            <ClubCrestMark profile={profile} />
           </span>
           <dl className="grid flex-[1_1_240px] grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 text-sm">
             <dt className={dt}>{t("online.overview.clubName")}</dt>
@@ -87,6 +89,7 @@ export default function ClubCard({ club }: { club: MyClubView }) {
             {t("online.takeover.makingSquad")}
           </p>
         )}
+        {drawing && <CrestDialog profile={profile} onClose={() => setDrawing(false)} />}
         {renaming && (
           <RenameForm
             current={profile.name}

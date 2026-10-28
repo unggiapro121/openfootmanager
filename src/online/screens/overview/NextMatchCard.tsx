@@ -6,6 +6,7 @@ import { GeneratedCrest } from "../../../components/ui/GeneratedCrest";
 import type { ClubRef, FixtureView, MyClubView, StandingRow } from "../../api";
 import { deviceDiffersFromRegion, formatMoment, formatRegionClock } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
+import ClubCrestMark from "../ClubCrestMark";
 import { itemName } from "../items/itemText";
 import { useCountdownText } from "../useCountdownText";
 import OverviewCard, { CardBadge, LABEL } from "./OverviewCard";
@@ -90,12 +91,15 @@ function Side({
       <span
         className={`h-19 w-19 rounded-2xl ${mine ? "ring-4 ring-primary-500/30 dark:ring-primary-400/30" : ""}`}
       >
-        <GeneratedCrest
-          name={club.name}
-          label={profile?.shortName ?? crestLabel(club.name)}
-          colors={profile?.colors}
-          className="h-full w-full"
-        />
+        {profile ? (
+          <ClubCrestMark profile={profile} />
+        ) : (
+          <GeneratedCrest
+            name={club.name}
+            label={crestLabel(club.name)}
+            className="h-full w-full"
+          />
+        )}
       </span>
       <span
         className={`max-w-full break-words font-heading text-xl font-bold uppercase tracking-wider ${

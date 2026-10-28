@@ -89,7 +89,23 @@
       "save": "Kaydet",
       "stadium": "{{name}} ({{capacity}} koltuk)",
       "stadiumLabel": "Stadyum adı",
-      "stadiumHint": "Stadyumu istediğiniz kadar yeniden adlandırabilirsiniz."
+      "stadiumHint": "Stadyumu istediğiniz kadar yeniden adlandırabilirsiniz.",
+      "crest": {
+        "change": "Armayı değiştir",
+        "title": "Kulüp arması",
+        "primary": "Ana renk",
+        "secondary": "İkinci renk",
+        "patternLabel": "Desen",
+        "pattern": {
+          "split": "Yarım",
+          "band": "Bant",
+          "sash": "Kuşak",
+          "diamond": "Baklava"
+        },
+        "label": "Harfler",
+        "labelHint": "1 ila 3 harf veya rakam",
+        "save": "Armayı kaydet"
+      }
     },
     "fixture": {
       "title": "Sonraki maç",
