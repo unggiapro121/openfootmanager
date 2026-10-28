@@ -5,6 +5,7 @@ import { Button } from "../../components/ui";
 import type { SquadPlayerView } from "../api";
 import { online } from "../client";
 import { tracked, useOnlineStore } from "../store/onlineStore";
+import RenameCardNote, { useRenameCard } from "./RenameCardNote";
 import { renameErrorText } from "./renameText";
 import { useActionKey } from "./useActionKey";
 
@@ -35,7 +36,8 @@ export default function RenamePlayerDialog({
   const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
   const { run } = useActionKey();
-  const valid = fits(fullName, FULL_NAME) && fits(matchName, MATCH_NAME);
+  const { blocked: needsCard } = useRenameCard("playerRename", player.renameFree);
+  const valid = fits(fullName, FULL_NAME) && fits(matchName, MATCH_NAME) && !needsCard;
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -104,6 +106,7 @@ export default function RenamePlayerDialog({
             match: `${MATCH_NAME.min}–${MATCH_NAME.max}`,
           })}
         </p>
+        <RenameCardNote card="playerRename" free={player.renameFree} />
         {error !== null && (
           <p role="alert" className="text-xs text-red-600 dark:text-red-400">
             {renameErrorText(t, error)}

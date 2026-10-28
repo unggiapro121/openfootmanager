@@ -33,6 +33,7 @@ import {
   type SquadSortKey,
   sortedBy,
 } from "./squad/squadList";
+import ItemShortcuts from "./items/ItemShortcuts";
 
 /** The squad as the coach reads it: by line, then strongest first (C-2 §3.4). */
 export const sortSquad = byLine;
@@ -98,6 +99,7 @@ export default function OnlineSquad() {
 
   return (
     <div className="flex flex-col gap-4">
+      <ItemShortcuts codes={["teamRecoveryPack"]} target={{ kind: "club" }} />
       <Card>
         <div className="grid grid-cols-1 items-end gap-3 p-4 lg:grid-cols-[minmax(0,1.3fr)_220px_220px_auto]">
           <div>

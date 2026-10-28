@@ -3,6 +3,7 @@ import type {
   CoinView,
   FinanceView,
   FriendlyMineView,
+  InventoryView,
   LeagueView,
   MyClubView,
   MyMarketView,
@@ -19,15 +20,20 @@ import { type OnlineApiError, toOnlineApiError } from "../errors";
  */
 export type OnlineGate = "open" | "clientOutdated" | "serverOutdated";
 
-/** One market notice in the corner of the screen (C-5 C5-14): what happened, to which auction. */
-export interface MarketNotice {
+/**
+ * One notice in the corner of the screen (C-5 C5-14, C-7 C7-4): whose news it is, what happened,
+ * where choosing it goes, and the sentence's parameters.
+ */
+export interface OnlineNotice {
   id: number;
-  /** The ring's event (`outbid`, `won`, `sold`, `unsold`, `cancelled`, `forced`, or one this
-   * build does not know). */
+  /** `market` (an auction, C-5) or `items` (an item given or a purchase refunded, C-7b). */
+  kind: "market" | "items";
+  /** The ring's event; one this build does not know is said as a change. */
   event: string;
-  auctionId?: string;
-  playerName?: string;
-  price?: number;
+  /** A path in the app (`/online/auctions/{id}`, `/online/inventory`). */
+  link?: string;
+  /** The sentence's parameters: for the market `player` and `price`, for items `item`. */
+  params: Record<string, string | number>;
 }
 
 /** Notices shown at once; a new one pushes the oldest out. */
@@ -56,9 +62,14 @@ interface OnlineState {
   market: MyMarketView | null | undefined;
   /** Market rings not yet seen: the dot on the sidebar's market entry. */
   marketUnseen: number;
-  /** The market notices in the corner, oldest first. */
-  notices: MarketNotice[];
-  pushNotice: (notice: Omit<MarketNotice, "id">) => void;
+  /**
+   * The coach's items (C-7b): the inventory page, the shop's lock reason and the rename cards.
+   * `null` when this server has no items yet (an older server answers 404).
+   */
+  items: InventoryView | null | undefined;
+  /** The notices in the corner, oldest first. */
+  notices: OnlineNotice[];
+  pushNotice: (notice: Omit<OnlineNotice, "id">) => void;
   dismissNotice: (id: number) => void;
   setFriendly: (friendly: FriendlyMineView) => void;
   setClub: (club: MyClubView | null) => void;
@@ -79,10 +90,11 @@ const INITIAL = {
   friendly: undefined,
   accountId: undefined,
   coins: undefined,
+  items: undefined,
   finance: undefined,
   market: undefined,
   marketUnseen: 0,
-  notices: [] as MarketNotice[],
+  notices: [] as OnlineNotice[],
   playerPictures: {} as Record<string, string>,
 };
 
@@ -167,6 +179,12 @@ export async function refreshFinance(): Promise<void> {
 export async function refreshCoins(): Promise<void> {
   const coins = await orNone(() => online.coins.mine());
   useOnlineStore.setState({ coins });
+}
+
+/** The coach's items; a server without items answers 404, which is `null` (C-7 C7-2). */
+export async function refreshItems(): Promise<void> {
+  const items = await orNone(() => online.items.mine());
+  useOnlineStore.setState({ items });
 }
 
 /** The club on the market; a closed market is no failure, it is `null`. */

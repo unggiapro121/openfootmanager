@@ -11,6 +11,9 @@ pub enum Part {
     Literal(&'static str),
     /// A UUID (a club, a league, a fixture).
     Id,
+    /// An item code (`energyDrinkSmall`): ASCII letters and digits, a lower-case letter first,
+    /// 1 to 40 of them (C-7 §17.2). The server answers a code it does not know with its own 404.
+    Code,
 }
 
 /// A route a coach may call: its method, its path, the query keys it takes, how long to wait.
@@ -31,6 +34,7 @@ impl Route {
             .map(|part| match part {
                 Part::Literal(text) => text,
                 Part::Id => ":id",
+                Part::Code => ":code",
             })
             .collect();
         format!("{} /{}", self.method, parts.join("/"))
@@ -41,7 +45,7 @@ impl Route {
 /// a transaction. A route that needs another value says so in its row.
 const WAIT: Duration = Duration::from_secs(10);
 
-use Part::{Id, Literal as L};
+use Part::{Code, Id, Literal as L};
 
 /// Every route the proxy lets through. `/v1/auth/*` (the login commands own the tokens),
 /// `/v1/coach/*` (the progress store) and `/v1/admin/*` are deliberately absent.
@@ -202,6 +206,22 @@ pub const ROUTES: &[Route] = &[
         &["cursor", "limit"],
     ),
     route("POST", &[L("v1"), L("me"), L("coins"), L("exchange")], &[]),
+    // The coach's items (S-17, C-7b): what he holds, its entries a page at a time, what a use
+    // would do on a target and the use itself, the shop and a purchase.
+    route("GET", &[L("v1"), L("me"), L("items")], &[]),
+    route(
+        "GET",
+        &[L("v1"), L("me"), L("items"), L("entries")],
+        &["cursor", "limit"],
+    ),
+    route(
+        "GET",
+        &[L("v1"), L("me"), L("items"), Code, L("preview")],
+        &["target"],
+    ),
+    route("POST", &[L("v1"), L("me"), L("items"), Code, L("use")], &[]),
+    route("GET", &[L("v1"), L("shop")], &[]),
+    route("POST", &[L("v1"), L("shop"), L("purchases")], &[]),
     // The auction market (S-11, C-5b): the open auctions by the market's filters, one auction, a
     // bid and a withdrawal, the club's own market, the quote and the listing of a player.
     route(
@@ -294,11 +314,35 @@ fn is_plain_value(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
 }
 
+/// The value of `key`: plain, or for `target` alone (an item's target, `player:<id>` or
+/// `style:<style>`, C-7 §17.2) two plain halves around exactly one `:`, 200 at most in all.
+fn is_value_for(key: &str, value: &str) -> bool {
+    if is_plain_value(value) {
+        return true;
+    }
+    key == "target"
+        && value.len() <= 200
+        && value
+            .split_once(':')
+            .is_some_and(|(kind, rest)| is_plain_value(kind) && is_plain_value(rest))
+}
+
 fn part_matches(part: Part, segment: &str) -> bool {
     match part {
         Part::Literal(text) => text == segment,
         Part::Id => is_uuid(segment),
+        Part::Code => is_code(segment),
     }
+}
+
+/// An item code: a lower-case letter, then letters and digits, 40 at most.
+fn is_code(segment: &str) -> bool {
+    (1..=40).contains(&segment.len())
+        && segment
+            .bytes()
+            .next()
+            .is_some_and(|b| b.is_ascii_lowercase())
+        && segment.bytes().all(|b| b.is_ascii_alphanumeric())
 }
 
 /// The hyphenated form the server's ids take: 8-4-4-4-12 hex digits.
@@ -331,7 +375,7 @@ pub fn find(
     })?;
     let mut seen = Vec::new();
     for (key, value) in query {
-        if !route.query.contains(&key.as_str()) || seen.contains(key) || !is_plain_value(value) {
+        if !route.query.contains(&key.as_str()) || seen.contains(key) || !is_value_for(key, value) {
             return None;
         }
         seen.push(key.clone());

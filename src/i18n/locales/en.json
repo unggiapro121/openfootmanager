@@ -50,7 +50,9 @@
       "market": "Market",
       "inbox": "Inbox",
       "account": "Account",
-      "coins": "Coin wallet"
+      "coins": "Coin wallet",
+      "inventory": "Inventory",
+      "shop": "Shop"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -532,7 +534,7 @@
       "listed": "Up for auction: open the auction",
       "list": "Put up for auction",
       "notice": {
-        "region": "Market notices",
+        "region": "Notices",
         "close": "Close notice",
         "outbid": "You were outbid for {{player}}.",
         "outbidUnnamed": "You were outbid in an auction.",
@@ -561,9 +563,15 @@
       "hint": "Full name {{full}} characters, name on the pitch {{match}}. A player's first rename is free; later ones need a player-rename card.",
       "save": "Save names",
       "itemRequired": {
-        "playerRename": "This player has used his free rename. Renaming him again needs a player-rename card (coming in a later update).",
-        "clubRename": "Your club has used its free rename. Renaming it again needs a club-rename card (coming in a later update)."
-      }
+        "playerRename": "This player has used his free rename. Renaming him again needs a player-rename card from the shop.",
+        "clubRename": "Your club has used its free rename. Renaming it again needs a club-rename card from the shop."
+      },
+      "free": "This first rename is free.",
+      "held": "You hold {{count}} × {{item}}.",
+      "willSpend": "This rename spends 1 {{item}} (you hold {{count}}).",
+      "needCard": "This rename needs 1 {{item}}.",
+      "itemsLocked": "Your items are locked while they are checked, so a card cannot be spent now.",
+      "toShop": "Buy in the shop"
     },
     "mastery": {
       "hint": "Mastery grows in league matches you direct yourself, not in ones the AI plays for you."
@@ -679,6 +687,16 @@
             "subject": "Players in great spirits",
             "body": "{{count}} player(s) are delighted with life at the club: {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Your items are locked for a check",
+            "body": "Your items are locked while they are checked; nothing is lost. Renaming with a card and using items open again once the check is done."
+          },
+          "itemsUnlocked": {
+            "subject": "Your items are unlocked",
+            "body": "The check of your items is done. You can use them again."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "Reversal",
         "item_purchase": "Shop purchase",
         "item_refund": "Shop refund"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Energy drink",
+        "description": "Restores condition to one of your players."
+      },
+      "energyDrinkLarge": {
+        "name": "Large energy drink",
+        "description": "Restores more condition to one of your players."
+      },
+      "teamRecoveryPack": {
+        "name": "Team recovery pack",
+        "description": "Restores condition to your whole starting eleven."
+      },
+      "medkitBandage": {
+        "name": "Bandage",
+        "description": "Takes days off one injured player's recovery."
+      },
+      "medkitAdvanced": {
+        "name": "Advanced medkit",
+        "description": "Cures a short injury outright, or takes days off a longer one."
+      },
+      "tacticalNoteBasic": {
+        "name": "Basic tactical note",
+        "description": "XP for a play style at a low mastery."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "Advanced tactical note",
+        "description": "XP for a play style at a middle mastery."
+      },
+      "tacticalNoteMaster": {
+        "name": "Master tactical note",
+        "description": "XP for a play style at a high mastery."
+      },
+      "xpBoosterX2": {
+        "name": "Double XP booster",
+        "description": "Double coach XP for your next online matches."
+      },
+      "playerRename": {
+        "name": "Player rename card",
+        "description": "Renames one of your players again after his free rename."
+      },
+      "clubRename": {
+        "name": "Club rename card",
+        "description": "Renames your club again after its free rename."
+      },
+      "scoutExpedition": {
+        "name": "Scout ticket",
+        "description": "Pays for a scouting trip of the youth academy."
+      },
+      "scoutExpeditionElite": {
+        "name": "Elite scout ticket",
+        "description": "A scouting trip that brings back at least one top prospect."
+      },
+      "timeSkip": {
+        "name": "Hourglass",
+        "description": "Brings a scouting trip home at once."
+      },
+      "notice": {
+        "granted": "You received {{item}}.",
+        "refunded": "A purchase of {{item}} was refunded; the coins are back in your wallet.",
+        "changed": "Your items changed."
+      },
+      "reason": {
+        "conditionFull": "Condition is already full",
+        "notInjured": "Not injured",
+        "atCap": "This style is already at the highest mastery",
+        "wrongTier": "This note is not for this style's mastery level"
+      },
+      "use": {
+        "rename": "This card is spent when you rename a player or your club.",
+        "academy": "This item is used at the youth academy."
+      },
+      "preview": {
+        "condition": "{{player}}: condition {{before}} → {{after}}",
+        "injury": "{{player}}: {{before}} days out → {{after}}",
+        "cured": "{{player}}: {{before}} days out → fit again",
+        "mastery": "+{{xp}} XP, mastery {{before}} → {{after}}",
+        "xpX2": "+{{matches}} matches of double XP, {{remaining}} waiting"
+      },
+      "limit": {
+        "today": "Used today: {{used}}/{{perDay}} · resets {{time}}",
+        "todayPlain": "Used today: {{used}}/{{perDay}}",
+        "season": "XP from notes this season: {{used}}/{{limit}}",
+        "xpX2": "Double XP matches waiting: {{remaining}}/{{max}}"
+      },
+      "useTitle": "Use {{item}}",
+      "pickPlayer": "Choose a player",
+      "pickStyle": "Choose a play style",
+      "previewing": "Checking what it would do…",
+      "confirmUse": "Use",
+      "used": "Used {{item}}.",
+      "shortcut": "Use {{item}} (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "This server has no items yet.",
+      "locked": "Your items are locked while they are checked; nothing is lost. Renaming with a card and using items open again once the check is done.",
+      "lockedShort": "Your items are locked while they are checked.",
+      "tabHeld": "Items",
+      "tabHistory": "History",
+      "empty": "Your inventory is empty.",
+      "toShop": "Go to the shop",
+      "group": {
+        "condition": "Condition",
+        "medical": "Medical",
+        "tactics": "Tactics",
+        "custom": "Customisation",
+        "academy": "Youth academy",
+        "other": "Other"
+      },
+      "stacks": "Rows by expiry",
+      "expires": "×{{count}} · expires {{date}}",
+      "neverExpires": "×{{count}} · never expires",
+      "teamRecovery": "Your club used {{used}}/{{perDay}} today · resets {{time}}",
+      "noteXp": "{{style}}: {{used}}/{{limit}} XP from notes this season",
+      "xpX2": "Double XP matches waiting: {{remaining}}/{{max}}",
+      "notThisSeason": "Not usable this season.",
+      "needClub": "You need a club.",
+      "use": "Use",
+      "renameAt": "Rename from the squad or club page",
+      "academySoon": "Used at the youth academy (coming soon)",
+      "target": {
+        "player": "a player",
+        "club": "the club",
+        "account": "your account",
+        "scoutTrip": "a scouting trip"
+      },
+      "source": {
+        "shop": "Bought in the shop",
+        "admin": "Given by an administrator",
+        "onlineEvent": "Event reward",
+        "offlineMission": "Offline mission",
+        "seasonReward": "Season reward",
+        "use": "Used",
+        "adminRevoke": "Taken back by an administrator"
+      },
+      "historyEmpty": "No item entries yet.",
+      "expiredNotShown": "Items that expired are not listed here."
+    },
+    "shop": {
+      "notOnServer": "This server has no shop yet.",
+      "closed": "The shop is not open yet.",
+      "empty": "Nothing is on sale right now.",
+      "toWallet": "Coin wallet",
+      "neverExpire": "Items bought with coins never expire. They belong to your account and cannot be passed on.",
+      "notThisSeason": "Not usable this season",
+      "academySoon": "Opens with the youth academy",
+      "itemsLocked": "Your items are locked while they are checked",
+      "full": "Your inventory holds no more of this item",
+      "buy": "Buy",
+      "bought": "Bought {{item}} ×{{count}} for {{coins}} coins.",
+      "confirmTitle": "Buy {{item}}?",
+      "quantity": "Quantity (at most {{max}})",
+      "room": "You can buy at most {{max}} now: the inventory holds 999 of each item.",
+      "price": "Price each",
+      "total": "Total",
+      "after": "Coins after",
+      "bound": "Items belong to your account and cannot be passed on.",
+      "confirm": "Buy",
+      "effect": {
+        "condition": "+{{n}} condition",
+        "days": "{{days}} days off an injury",
+        "cure": "Cures an injury of {{cure}} days or fewer, else {{days}} days off",
+        "note": "+{{xp}} XP for a style at mastery {{from}}–{{to}}",
+        "matches": "Double XP for {{n}} online matches"
+      },
+      "caps": {
+        "perPlayerDay": "At most {{n}} condition items per player per football day, all kinds together",
+        "perClubDay": "At most {{n}} per club per football day",
+        "xpPerStyleSeason": "At most {{n}} XP from notes per style per season",
+        "maxMatches": "At most {{n}} matches of double XP waiting"
       }
     }
   },

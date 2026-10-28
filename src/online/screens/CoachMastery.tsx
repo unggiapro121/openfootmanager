@@ -6,6 +6,7 @@ import { online } from "../client";
 import { tracked } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import StyleEffectChips from "./StyleEffectChips";
+import ItemShortcuts from "./items/ItemShortcuts";
 
 /**
  * The coach's command of each play style (his online profile): its level and the XP towards the
@@ -64,6 +65,10 @@ function StyleTile({ style }: { style: StyleMasteryView }) {
         </p>
       </div>
       <StyleEffectChips effects={style.effects} />
+      <ItemShortcuts
+        codes={["tacticalNoteBasic", "tacticalNoteAdvanced", "tacticalNoteMaster"]}
+        target={{ kind: "style", style: style.style }}
+      />
       <ProgressBar
         value={atMaximum ? 100 : Math.min(100, Math.round((style.xp / style.xpToNext) * 100))}
         variant="primary"
