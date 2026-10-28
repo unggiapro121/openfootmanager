@@ -571,7 +571,15 @@
       "nationalityChange": "Cambia nazionalità",
       "nationalityTitle": "Nazionalità di {{name}}",
       "nationalityHint": "I volti proposti seguono la sua nazionalità.",
-      "nationalitySave": "Cambia nazionalità"
+      "nationalitySave": "Cambia nazionalità",
+      "release": "Svincola",
+      "releaseTitle": "Svincolare {{name}}?",
+      "releaseHint": "Lascia il tuo club e diventa un free agent che chiunque può ingaggiare. Paghi subito la sua buonuscita. Per incassare qualcosa, mettilo all'asta.",
+      "releaseWage": "Stipendio settimanale",
+      "releaseSeverance": "Buonuscita",
+      "releaseCash": "Cassa del club",
+      "releaseSquad": "Giocatori rimasti (minimo {{min}})",
+      "releaseConfirm": "Svincola il giocatore"
     },
     "inbox": {
       "sender": "Ufficio del club",
@@ -4335,7 +4343,8 @@
       "player": {
         "notYours": "Quel giocatore non è nel tuo club.",
         "listed": "Un giocatore all'asta mantiene il suo nome fino alla fine dell'asta.",
-        "shirtTaken": "Un altro giocatore indossa già quel numero."
+        "shirtTaken": "Un altro giocatore indossa già quel numero.",
+        "releaseSquadTooSmall": "Lasciarlo andare porterebbe la tua rosa sotto i {{squadMin}} giocatori."
       }
     },
     "sender": {

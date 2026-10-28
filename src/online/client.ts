@@ -30,6 +30,7 @@ import type {
   MyClubView,
   MyMarketView,
   PublicClubView,
+  ReleaseQuoteView,
   RoundView,
   SeasonNowView,
   TakeoverView,
@@ -301,6 +302,14 @@ export const online = {
         write("PATCH", ["v1", "players", playerId, "training-focus"], idempotencyKey, {
           focus,
         } satisfies PlayerTrainingFocusRequest),
+      ),
+    /** What letting him go now would cost, or why it would be refused. */
+    releaseQuote: (playerId: string) =>
+      call<ReleaseQuoteView>(read(["v1", "clubs", "mine", "players", playerId, "release-quote"])),
+    /** Let him go: the severance is paid, he becomes a free agent. Answers the club as it is now. */
+    release: (playerId: string, idempotencyKey = newKey()) =>
+      call<MyClubView>(
+        write("POST", ["v1", "clubs", "mine", "players", playerId, "release"], idempotencyKey),
       ),
     /** His shirt number: `null` takes it away; `swap` trades with the player who wears `number`. */
     shirt: (playerId: string, number: number | null, swap: boolean, idempotencyKey = newKey()) =>

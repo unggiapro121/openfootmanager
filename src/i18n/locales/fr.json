@@ -571,7 +571,15 @@
       "nationalityChange": "Changer la nationalité",
       "nationalityTitle": "Nationalité de {{name}}",
       "nationalityHint": "Les visages proposés suivent sa nationalité.",
-      "nationalitySave": "Changer la nationalité"
+      "nationalitySave": "Changer la nationalité",
+      "release": "Résilier",
+      "releaseTitle": "Résilier le contrat de {{name}} ?",
+      "releaseHint": "Il quitte ton club et devient joueur libre, que n'importe qui peut recruter. Tu paies son indemnité maintenant. Pour être payé en retour, mets-le plutôt aux enchères.",
+      "releaseWage": "Salaire hebdomadaire",
+      "releaseSeverance": "Indemnité",
+      "releaseCash": "Trésorerie du club",
+      "releaseSquad": "Joueurs restants (minimum {{min}})",
+      "releaseConfirm": "Résilier le joueur"
     },
     "inbox": {
       "sender": "Bureau du club",
@@ -4335,7 +4343,8 @@
       "player": {
         "notYours": "Ce joueur n'est pas dans votre club.",
         "listed": "Un joueur mis aux enchères garde son nom jusqu'à la fin de l'enchère.",
-        "shirtTaken": "Un autre joueur porte déjà ce numéro."
+        "shirtTaken": "Un autre joueur porte déjà ce numéro.",
+        "releaseSquadTooSmall": "Le laisser partir ferait passer ton effectif sous {{squadMin}} joueurs."
       }
     },
     "sender": {

@@ -571,7 +571,15 @@
       "nationalityChange": "Uyruğu değiştir",
       "nationalityTitle": "{{name}} uyruğu",
       "nationalityHint": "Sunulan yüzler uyruğuna göre değişir.",
-      "nationalitySave": "Uyruğu değiştir"
+      "nationalitySave": "Uyruğu değiştir",
+      "release": "Sözleşmeyi feshet",
+      "releaseTitle": "{{name}} oyuncusunun sözleşmesi feshedilsin mi?",
+      "releaseHint": "Kulübünden ayrılır ve herkesin transfer edebileceği serbest oyuncu olur. Tazminatını şimdi ödersin. Ondan para kazanmak istersen açık artırmaya çıkar.",
+      "releaseWage": "Haftalık maaş",
+      "releaseSeverance": "Tazminat",
+      "releaseCash": "Kulüp kasası",
+      "releaseSquad": "Kalan oyuncu (en az {{min}})",
+      "releaseConfirm": "Sözleşmeyi feshet"
     },
     "inbox": {
       "sender": "Kulüp ofisi",
@@ -4335,7 +4343,8 @@
       "player": {
         "notYours": "Bu oyuncu senin kulübünde değil.",
         "listed": "Açık artırmadaki bir oyuncu, artırma bitene kadar adını korur.",
-        "shirtTaken": "Bu numarayı başka bir oyuncu zaten giyiyor."
+        "shirtTaken": "Bu numarayı başka bir oyuncu zaten giyiyor.",
+        "releaseSquadTooSmall": "Gitmesine izin vermek kadronu {{squadMin}} oyuncunun altına düşürür."
       }
     },
     "sender": {

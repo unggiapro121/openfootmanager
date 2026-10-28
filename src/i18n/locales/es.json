@@ -571,7 +571,15 @@
       "nationalityChange": "Cambiar nacionalidad",
       "nationalityTitle": "Nacionalidad de {{name}}",
       "nationalityHint": "Las caras que se ofrecen siguen su nacionalidad.",
-      "nationalitySave": "Cambiar nacionalidad"
+      "nationalitySave": "Cambiar nacionalidad",
+      "release": "Rescindir",
+      "releaseTitle": "¿Rescindir a {{name}}?",
+      "releaseHint": "Sale de tu club y pasa a ser agente libre, al que cualquiera puede fichar. Pagas su indemnización ahora. Si quieres cobrar por él, ponlo en subasta.",
+      "releaseWage": "Salario semanal",
+      "releaseSeverance": "Indemnización",
+      "releaseCash": "Caja del club",
+      "releaseSquad": "Jugadores que quedan (mínimo {{min}})",
+      "releaseConfirm": "Rescindir jugador"
     },
     "inbox": {
       "sender": "Oficina del club",
@@ -4335,7 +4343,8 @@
       "player": {
         "notYours": "Ese jugador no está en tu club.",
         "listed": "Un jugador en subasta conserva su nombre hasta que termine la subasta.",
-        "shirtTaken": "Otro jugador ya lleva ese número."
+        "shirtTaken": "Otro jugador ya lleva ese número.",
+        "releaseSquadTooSmall": "Dejarlo marchar dejaría tu plantilla por debajo de {{squadMin}} jugadores."
       }
     },
     "sender": {
