@@ -50,7 +50,9 @@
       "market": "Mercado",
       "inbox": "Caixa de entrada",
       "account": "Conta",
-      "coins": "Carteira de moedas"
+      "coins": "Carteira de moedas",
+      "inventory": "Inventário",
+      "shop": "Loja"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -532,7 +534,7 @@
       "listed": "Em leilão: abrir o leilão",
       "list": "Vender em leilão",
       "notice": {
-        "region": "Avisos do mercado",
+        "region": "Avisos",
         "close": "Fechar aviso",
         "outbid": "Foi ultrapassado no leilão de {{player}}.",
         "outbidUnnamed": "Foi ultrapassado num leilão.",
@@ -561,9 +563,15 @@
       "hint": "Nome completo com {{full}} caracteres, nome em campo com {{match}}. A primeira mudança de nome de um jogador é grátis; as seguintes exigem um cartão de mudança de nome de jogador.",
       "save": "Guardar nomes",
       "itemRequired": {
-        "playerRename": "Este jogador já usou a mudança de nome gratuita. Para mudar outra vez é preciso um cartão de mudança de nome de jogador (chega numa próxima atualização).",
-        "clubRename": "O teu clube já usou a mudança de nome gratuita. Para mudar outra vez é preciso um cartão de mudança de nome de clube (chega numa próxima atualização)."
-      }
+        "playerRename": "Este jogador já usou a mudança de nome gratuita. Mudar outra vez exige um cartão de mudança de nome de jogador da loja.",
+        "clubRename": "O teu clube já usou a mudança de nome gratuita. Mudar outra vez exige um cartão de mudança de nome do clube da loja."
+      },
+      "free": "Esta primeira mudança de nome é gratuita.",
+      "held": "Tens {{count}} × {{item}}.",
+      "willSpend": "Esta mudança gasta 1 {{item}} (tens {{count}}).",
+      "needCard": "Esta mudança precisa de 1 {{item}}.",
+      "itemsLocked": "Os teus itens estão bloqueados enquanto são verificados, por isso agora não é possível gastar um cartão.",
+      "toShop": "Comprar na loja"
     },
     "mastery": {
       "hint": "O domínio cresce nos jogos da liga que dirige você mesmo, não nos que a IA joga por si."
@@ -679,6 +687,16 @@
             "subject": "Jogadores animadíssimos",
             "body": "{{count}} jogador(es) estão encantados com a vida no clube: {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Os teus itens estão bloqueados para verificação",
+            "body": "Os teus itens estão bloqueados enquanto são verificados; nada se perde. Mudar nomes com cartão e usar itens volta a ficar disponível quando a verificação terminar."
+          },
+          "itemsUnlocked": {
+            "subject": "Os teus itens foram desbloqueados",
+            "body": "A verificação dos teus itens terminou. Já podes voltar a usá-los."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "Anulação",
         "item_purchase": "Compra na loja",
         "item_refund": "Reembolso da loja"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Bebida energética",
+        "description": "Recupera a condição física de um dos teus jogadores."
+      },
+      "energyDrinkLarge": {
+        "name": "Bebida energética grande",
+        "description": "Recupera mais condição física a um dos teus jogadores."
+      },
+      "teamRecoveryPack": {
+        "name": "Pack de recuperação da equipa",
+        "description": "Recupera a condição física de todo o teu onze inicial."
+      },
+      "medkitBandage": {
+        "name": "Ligadura",
+        "description": "Tira dias à recuperação de um jogador lesionado."
+      },
+      "medkitAdvanced": {
+        "name": "Estojo médico avançado",
+        "description": "Cura de vez uma lesão curta, ou tira dias a uma mais longa."
+      },
+      "tacticalNoteBasic": {
+        "name": "Apontamento tático básico",
+        "description": "XP para um estilo de jogo com domínio baixo."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "Apontamento tático avançado",
+        "description": "XP para um estilo de jogo com domínio médio."
+      },
+      "tacticalNoteMaster": {
+        "name": "Apontamento tático de mestre",
+        "description": "XP para um estilo de jogo com domínio alto."
+      },
+      "xpBoosterX2": {
+        "name": "Impulso de XP a dobrar",
+        "description": "XP de treinador a dobrar nos teus próximos jogos online."
+      },
+      "playerRename": {
+        "name": "Cartão de mudança de nome de jogador",
+        "description": "Muda outra vez o nome de um jogador depois da mudança gratuita."
+      },
+      "clubRename": {
+        "name": "Cartão de mudança de nome do clube",
+        "description": "Muda outra vez o nome do teu clube depois da mudança gratuita."
+      },
+      "scoutExpedition": {
+        "name": "Bilhete de prospeção",
+        "description": "Paga uma viagem de prospeção da formação."
+      },
+      "scoutExpeditionElite": {
+        "name": "Bilhete de prospeção de elite",
+        "description": "Uma viagem de prospeção que traz pelo menos uma grande promessa."
+      },
+      "timeSkip": {
+        "name": "Ampulheta",
+        "description": "Faz regressar de imediato uma viagem de prospeção."
+      },
+      "notice": {
+        "granted": "Recebeste {{item}}.",
+        "refunded": "Uma compra de {{item}} foi reembolsada; as moedas voltaram à tua carteira.",
+        "changed": "Os teus itens mudaram."
+      },
+      "reason": {
+        "conditionFull": "A condição física já está no máximo",
+        "notInjured": "Não está lesionado",
+        "atCap": "Este estilo já tem o domínio máximo",
+        "wrongTier": "Este apontamento não é para o nível de domínio deste estilo"
+      },
+      "use": {
+        "rename": "Este cartão é gasto quando mudas o nome de um jogador ou do teu clube.",
+        "academy": "Este item usa-se na formação."
+      },
+      "preview": {
+        "condition": "{{player}}: condição {{before}} → {{after}}",
+        "injury": "{{player}}: {{before}} dias de paragem → {{after}}",
+        "cured": "{{player}}: {{before}} dias de paragem → recuperado",
+        "mastery": "+{{xp}} XP, domínio {{before}} → {{after}}",
+        "xpX2": "+{{matches}} jogos de XP a dobrar, {{remaining}} em espera"
+      },
+      "limit": {
+        "today": "Usados hoje: {{used}}/{{perDay}} · reinicia {{time}}",
+        "todayPlain": "Usados hoje: {{used}}/{{perDay}}",
+        "season": "XP de apontamentos nesta época: {{used}}/{{limit}}",
+        "xpX2": "Jogos de XP a dobrar em espera: {{remaining}}/{{max}}"
+      },
+      "useTitle": "Usar {{item}}",
+      "pickPlayer": "Escolhe um jogador",
+      "pickStyle": "Escolhe um estilo de jogo",
+      "previewing": "A verificar o que faria…",
+      "confirmUse": "Usar",
+      "used": "Usaste {{item}}.",
+      "shortcut": "Usar {{item}} (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "Este servidor ainda não tem itens.",
+      "locked": "Os teus itens estão bloqueados enquanto são verificados; nada se perde. Mudar nomes com cartão e usar itens volta a ficar disponível quando a verificação terminar.",
+      "lockedShort": "Os teus itens estão bloqueados enquanto são verificados.",
+      "tabHeld": "Itens",
+      "tabHistory": "Histórico",
+      "empty": "O teu inventário está vazio.",
+      "toShop": "Ir à loja",
+      "group": {
+        "condition": "Condição física",
+        "medical": "Médico",
+        "tactics": "Tática",
+        "custom": "Personalização",
+        "academy": "Formação",
+        "other": "Outros"
+      },
+      "stacks": "Linhas por validade",
+      "expires": "×{{count}} · expira a {{date}}",
+      "neverExpires": "×{{count}} · não expira",
+      "teamRecovery": "O teu clube usou {{used}}/{{perDay}} hoje · reinicia {{time}}",
+      "noteXp": "{{style}}: {{used}}/{{limit}} XP de apontamentos nesta época",
+      "xpX2": "Jogos de XP a dobrar em espera: {{remaining}}/{{max}}",
+      "notThisSeason": "Não pode ser usado nesta época.",
+      "needClub": "Precisas de um clube.",
+      "use": "Usar",
+      "renameAt": "Muda o nome a partir do plantel ou da ficha do clube",
+      "academySoon": "Usa-se na formação (em breve)",
+      "target": {
+        "player": "um jogador",
+        "club": "o clube",
+        "account": "a tua conta",
+        "scoutTrip": "uma viagem de prospeção"
+      },
+      "source": {
+        "shop": "Comprado na loja",
+        "admin": "Dado por um administrador",
+        "onlineEvent": "Prémio de evento",
+        "offlineMission": "Missão offline",
+        "seasonReward": "Prémio da época",
+        "use": "Usado",
+        "adminRevoke": "Retirado por um administrador"
+      },
+      "historyEmpty": "Ainda não há movimentos de itens.",
+      "expiredNotShown": "Os itens expirados não aparecem aqui."
+    },
+    "shop": {
+      "notOnServer": "Este servidor ainda não tem loja.",
+      "closed": "A loja ainda não abriu.",
+      "empty": "Neste momento não há nada à venda.",
+      "toWallet": "Carteira de moedas",
+      "neverExpire": "Os itens comprados com moedas não expiram. Pertencem à tua conta e não podem ser transferidos.",
+      "notThisSeason": "Não pode ser usado nesta época",
+      "academySoon": "Disponível com a formação",
+      "itemsLocked": "Os teus itens estão bloqueados enquanto são verificados",
+      "full": "O teu inventário não aguenta mais deste item",
+      "buy": "Comprar",
+      "bought": "Compraste {{item}} ×{{count}} por {{coins}} moedas.",
+      "confirmTitle": "Comprar {{item}}?",
+      "quantity": "Quantidade (máximo {{max}})",
+      "room": "Agora podes comprar no máximo {{max}}: o inventário guarda 999 de cada item.",
+      "price": "Preço unitário",
+      "total": "Total",
+      "after": "Moedas depois",
+      "bound": "Os itens pertencem à tua conta e não podem ser transferidos.",
+      "confirm": "Comprar",
+      "effect": {
+        "condition": "+{{n}} de condição física",
+        "days": "Tira {{days}} dias a uma lesão",
+        "cure": "Cura uma lesão de {{cure}} dias ou menos; caso contrário, tira {{days}} dias",
+        "note": "+{{xp}} XP para um estilo com domínio {{from}}–{{to}}",
+        "matches": "XP a dobrar durante {{n}} jogos online"
+      },
+      "caps": {
+        "perPlayerDay": "No máximo {{n}} itens de condição física por jogador e dia de futebol, todos os tipos juntos",
+        "perClubDay": "No máximo {{n}} por clube e dia de futebol",
+        "xpPerStyleSeason": "No máximo {{n}} XP de apontamentos por estilo e época",
+        "maxMatches": "No máximo {{n}} jogos de XP a dobrar em espera"
       }
     }
   },

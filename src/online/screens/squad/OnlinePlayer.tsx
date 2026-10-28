@@ -30,6 +30,7 @@ import { useOnlineStore } from "../../store/onlineStore";
 import { avatarOf } from "./playerLook";
 import ListingDialog from "../market/ListingDialog";
 import PotentialStars from "../PotentialStars";
+import ItemShortcuts from "../items/ItemShortcuts";
 import RenamePlayerDialog from "../RenamePlayerDialog";
 import PlayerAvatarPicker from "./PlayerAvatarPicker";
 import PlayerNationalityDialog from "./PlayerNationalityDialog";
@@ -93,6 +94,14 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
           <CardHeader>{t("online.squad.state")}</CardHeader>
           <CardBody className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
             <Meter label={t("common.condition")} value={player.condition} />
+            <ItemShortcuts
+              codes={
+                player.injury
+                  ? ["medkitBandage", "medkitAdvanced"]
+                  : ["energyDrinkSmall", "energyDrinkLarge"]
+              }
+              target={{ kind: "player", playerId: player.id }}
+            />
             <Meter label={t("online.squad.fitness")} value={player.fitness} />
             <Meter label={t("common.morale")} value={player.morale} />
             <div className="flex flex-wrap gap-2 pt-1">

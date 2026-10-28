@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Filter, Search, TrendingUp } from "lucide-react";
 import { TraitList } from "../../../components/TraitBadge";
@@ -22,6 +22,7 @@ import type { OnlineApiError } from "../../errors";
 import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
 import { avatarOf } from "../squad/playerLook";
+import TabButton from "../TabButton";
 import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
 import MarketFilterPanel, { NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
@@ -95,32 +96,6 @@ export default function OnlineMarket() {
       </div>
       {tab === "open" ? <OpenAuctions ring={marketUnseen} /> : <MyAuctions />}
     </div>
-  );
-}
-
-function TabButton({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={selected}
-      onClick={onClick}
-      className={`rounded-lg px-4 py-2 font-heading text-sm font-bold uppercase tracking-wider transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-900 ${
-        selected
-          ? "bg-primary-700 text-white shadow-md shadow-primary-700/20"
-          : "border border-gray-200 bg-white text-gray-500 hover:text-gray-700 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-400 dark:hover:text-gray-200"
-      }`}
-    >
-      {children}
-    </button>
   );
 }
 

@@ -152,7 +152,8 @@
     "worldEditor.staffSpecialization.Fitness",
     "worldEditor.staffAttr.coaching",
     "packageBuild.patches",
-    "coach.region"
+    "coach.region",
+    "online.nav.shop"
   ],
   "fr": [
     "online.finance.total",
@@ -282,7 +283,9 @@
     "worldEditor.staffClub",
     "worldEditor.staffSpecialization.Technique",
     "packageBuild.patches",
-    "coach.regions.Europe"
+    "coach.regions.Europe",
+    "online.items.medkitBandage.name",
+    "online.shop.total"
   ],
   "it": [
     "online.fixture.minutes",
@@ -420,7 +423,8 @@
     "worldEditor.playerClub",
     "worldEditor.competitionSelector",
     "worldEditor.staffClub",
-    "worldEditor.staffSpecialization.Fitness"
+    "worldEditor.staffSpecialization.Fitness",
+    "online.shop.total"
   ],
   "pt-BR": [
     "online.finance.total",
@@ -466,7 +470,8 @@
     "match.phases.Finished",
     "match.commentary.Goal.hattrick.headline",
     "squad.kitPatterns.Diagonal",
-    "packageBuild.patches"
+    "packageBuild.patches",
+    "online.shop.total"
   ],
   "pt": [
     "online.finance.total",
@@ -509,7 +514,8 @@
     "match.phases.Finished",
     "match.commentary.Goal.hattrick.headline",
     "squad.kitPatterns.Diagonal",
-    "packageBuild.patches"
+    "packageBuild.patches",
+    "online.shop.total"
   ],
   "ru": ["dashboard.recapTransferLine"],
   "zh-CN": [
@@ -768,7 +774,8 @@
     "youthAcademy.traits",
     "match.eventTypes.Offside",
     "match.commentary.Offside.headline",
-    "coachServer.email"
+    "coachServer.email",
+    "online.shop.total"
   ],
   "vi": [
     "online.market.ai",

@@ -50,7 +50,9 @@
       "market": "市场",
       "inbox": "收件箱",
       "account": "账户",
-      "coins": "金币钱包"
+      "coins": "金币钱包",
+      "inventory": "背包",
+      "shop": "商店"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -532,7 +534,7 @@
       "listed": "拍卖中：打开拍卖",
       "list": "拍卖出售",
       "notice": {
-        "region": "市场通知",
+        "region": "通知",
         "close": "关闭通知",
         "outbid": "你在 {{player}} 的拍卖中被超价。",
         "outbidUnnamed": "你在一场拍卖中被超价。",
@@ -561,9 +563,15 @@
       "hint": "全名 {{full}} 个字符，场上名称 {{match}} 个字符。球员第一次改名免费；之后需要球员改名卡。",
       "save": "保存名称",
       "itemRequired": {
-        "playerRename": "该球员已用完免费改名。再次改名需要球员改名卡（将在后续更新中推出）。",
-        "clubRename": "你的俱乐部已用完免费改名。再次改名需要俱乐部改名卡（将在后续更新中推出）。"
-      }
+        "playerRename": "该球员已用过免费改名。再次改名需要在商店购买球员改名卡。",
+        "clubRename": "你的俱乐部已用过免费改名。再次改名需要在商店购买俱乐部改名卡。"
+      },
+      "free": "这次首次改名免费。",
+      "held": "你持有{{item}} ×{{count}}。",
+      "willSpend": "这次改名将消耗 1 张{{item}}（你持有 {{count}} 张）。",
+      "needCard": "这次改名需要 1 张{{item}}。",
+      "itemsLocked": "你的物品在核查期间被锁定，目前无法消耗改名卡。",
+      "toShop": "去商店购买"
     },
     "mastery": {
       "hint": "只有在你亲自指挥的联赛比赛中才会提升熟练度，由 AI 代打的比赛不算。"
@@ -679,6 +687,16 @@
             "subject": "球员士气高涨",
             "body": "{{count}} 名球员对俱乐部的生活非常满意：{{names}}。"
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "你的物品已锁定以待核查",
+            "body": "你的物品在核查期间被锁定；不会丢失任何东西。核查结束后即可再次用卡改名和使用物品。"
+          },
+          "itemsUnlocked": {
+            "subject": "你的物品已解锁",
+            "body": "你的物品核查已完成，可以再次使用了。"
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "冲正",
         "item_purchase": "商店购买",
         "item_refund": "商店退款"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "能量饮料",
+        "description": "为你的一名球员恢复体能。"
+      },
+      "energyDrinkLarge": {
+        "name": "大瓶能量饮料",
+        "description": "为你的一名球员恢复更多体能。"
+      },
+      "teamRecoveryPack": {
+        "name": "全队恢复包",
+        "description": "为你的整套首发阵容恢复体能。"
+      },
+      "medkitBandage": {
+        "name": "绷带",
+        "description": "缩短一名伤员的恢复天数。"
+      },
+      "medkitAdvanced": {
+        "name": "高级医疗包",
+        "description": "直接治愈短期伤病，或缩短较长伤病的天数。"
+      },
+      "tacticalNoteBasic": {
+        "name": "基础战术笔记",
+        "description": "为熟练度较低的战术风格提供经验。"
+      },
+      "tacticalNoteAdvanced": {
+        "name": "进阶战术笔记",
+        "description": "为熟练度中等的战术风格提供经验。"
+      },
+      "tacticalNoteMaster": {
+        "name": "大师战术笔记",
+        "description": "为熟练度较高的战术风格提供经验。"
+      },
+      "xpBoosterX2": {
+        "name": "双倍经验卡",
+        "description": "接下来的在线比赛中主教练经验翻倍。"
+      },
+      "playerRename": {
+        "name": "球员改名卡",
+        "description": "在免费改名之后再次为你的一名球员改名。"
+      },
+      "clubRename": {
+        "name": "俱乐部改名卡",
+        "description": "在免费改名之后再次为你的俱乐部改名。"
+      },
+      "scoutExpedition": {
+        "name": "球探券",
+        "description": "支付青训营的一次球探之旅。"
+      },
+      "scoutExpeditionElite": {
+        "name": "精英球探券",
+        "description": "一次至少带回一名顶级新星的球探之旅。"
+      },
+      "timeSkip": {
+        "name": "沙漏",
+        "description": "让球探之旅立即返回。"
+      },
+      "notice": {
+        "granted": "你获得了{{item}}。",
+        "refunded": "一笔{{item}}的购买已退款；金币已退回你的钱包。",
+        "changed": "你的物品有变动。"
+      },
+      "reason": {
+        "conditionFull": "体能已满",
+        "notInjured": "没有受伤",
+        "atCap": "该风格的熟练度已达上限",
+        "wrongTier": "这本笔记不适用于该风格当前的熟练度等级"
+      },
+      "use": {
+        "rename": "这张卡在你为球员或俱乐部改名时消耗。",
+        "academy": "该物品在青训营使用。"
+      },
+      "preview": {
+        "condition": "{{player}}：体能 {{before}} → {{after}}",
+        "injury": "{{player}}：伤停 {{before}} 天 → {{after}} 天",
+        "cured": "{{player}}：伤停 {{before}} 天 → 痊愈",
+        "mastery": "+{{xp}} 经验，熟练度 {{before}} → {{after}}",
+        "xpX2": "+{{matches}} 场双倍经验，待生效 {{remaining}} 场"
+      },
+      "limit": {
+        "today": "今日已用：{{used}}/{{perDay}} · {{time}} 重置",
+        "todayPlain": "今日已用：{{used}}/{{perDay}}",
+        "season": "本赛季笔记经验：{{used}}/{{limit}}",
+        "xpX2": "待生效的双倍经验场次：{{remaining}}/{{max}}"
+      },
+      "useTitle": "使用{{item}}",
+      "pickPlayer": "选择球员",
+      "pickStyle": "选择战术风格",
+      "previewing": "正在检查效果…",
+      "confirmUse": "使用",
+      "used": "已使用{{item}}。",
+      "shortcut": "使用{{item}}（×{{count}}）"
+    },
+    "inventory": {
+      "notOnServer": "该服务器暂无物品。",
+      "locked": "你的物品在核查期间被锁定；不会丢失任何东西。核查结束后即可再次用卡改名和使用物品。",
+      "lockedShort": "你的物品在核查期间被锁定。",
+      "tabHeld": "物品",
+      "tabHistory": "记录",
+      "empty": "你的背包是空的。",
+      "toShop": "前往商店",
+      "group": {
+        "condition": "体能",
+        "medical": "医疗",
+        "tactics": "战术",
+        "custom": "个性化",
+        "academy": "青训营",
+        "other": "其他"
+      },
+      "stacks": "按有效期分行",
+      "expires": "×{{count}} · {{date}} 到期",
+      "neverExpires": "×{{count}} · 永不过期",
+      "teamRecovery": "你的俱乐部今日已用 {{used}}/{{perDay}} · {{time}} 重置",
+      "noteXp": "{{style}}：本赛季笔记经验 {{used}}/{{limit}}",
+      "xpX2": "待生效的双倍经验场次：{{remaining}}/{{max}}",
+      "notThisSeason": "本赛季无法使用。",
+      "needClub": "你需要一家俱乐部。",
+      "use": "使用",
+      "renameAt": "在阵容页或俱乐部卡片中改名",
+      "academySoon": "在青训营使用（即将推出）",
+      "target": {
+        "player": "一名球员",
+        "club": "俱乐部",
+        "account": "你的账号",
+        "scoutTrip": "一次球探之旅"
+      },
+      "source": {
+        "shop": "商店购买",
+        "admin": "管理员发放",
+        "onlineEvent": "活动奖励",
+        "offlineMission": "离线任务",
+        "seasonReward": "赛季奖励",
+        "use": "已使用",
+        "adminRevoke": "管理员收回"
+      },
+      "historyEmpty": "暂无物品记录。",
+      "expiredNotShown": "已过期的物品不在此显示。"
+    },
+    "shop": {
+      "notOnServer": "该服务器暂无商店。",
+      "closed": "商店尚未开放。",
+      "empty": "目前没有在售物品。",
+      "toWallet": "金币钱包",
+      "neverExpire": "用金币购买的物品永不过期。它们归属于你的账号，不能转让。",
+      "notThisSeason": "本赛季无法使用",
+      "academySoon": "随青训营开放",
+      "itemsLocked": "你的物品在核查期间被锁定",
+      "full": "背包已装不下更多该物品",
+      "buy": "购买",
+      "bought": "已用 {{coins}} 金币购买{{item}} ×{{count}}。",
+      "confirmTitle": "购买{{item}}？",
+      "quantity": "数量（最多 {{max}}）",
+      "room": "现在最多可买 {{max}} 个：背包每种物品最多存放 999 个。",
+      "price": "单价",
+      "total": "合计",
+      "after": "购买后金币",
+      "bound": "物品归属于你的账号，不能转让。",
+      "confirm": "购买",
+      "effect": {
+        "condition": "+{{n}} 体能",
+        "days": "伤病减少 {{days}} 天",
+        "cure": "治愈 {{cure}} 天及以内的伤病，否则减少 {{days}} 天",
+        "note": "为熟练度 {{from}}–{{to}} 的风格 +{{xp}} 经验",
+        "matches": "{{n}} 场在线比赛双倍经验"
+      },
+      "caps": {
+        "perPlayerDay": "每名球员每个足球日最多 {{n}} 个体能类物品，各类合计",
+        "perClubDay": "每家俱乐部每个足球日最多 {{n}} 个",
+        "xpPerStyleSeason": "每种风格每赛季最多 {{n}} 笔记经验",
+        "maxMatches": "待生效的双倍经验最多 {{n}} 场"
       }
     }
   },

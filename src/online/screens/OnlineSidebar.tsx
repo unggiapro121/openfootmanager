@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import {
+  Backpack,
   Calendar,
   Coins,
   Crosshair,
@@ -11,6 +12,7 @@ import {
   Mail,
   LayoutDashboard,
   LogOut,
+  Store,
   Trophy,
   UserRound,
   Users,
@@ -34,7 +36,11 @@ const CLUB_PAGES = [
 ];
 
 /** The person's own pages, shown with or without a club (C-7 C7-1): coins are not the club's. */
-const ACCOUNT_PAGES = [{ path: "/online/coins", label: "online.nav.coins", icon: <Coins /> }];
+const ACCOUNT_PAGES = [
+  { path: "/online/coins", label: "online.nav.coins", icon: <Coins /> },
+  { path: "/online/inventory", label: "online.nav.inventory", icon: <Backpack /> },
+  { path: "/online/shop", label: "online.nav.shop", icon: <Store /> },
+];
 
 /**
  * The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. Each

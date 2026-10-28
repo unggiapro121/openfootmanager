@@ -4,6 +4,7 @@ import { Button, Card, CardBody, CardHeader } from "../../components/ui";
 import type { MyClubView } from "../api";
 import { online } from "../client";
 import { tracked, useOnlineStore } from "../store/onlineStore";
+import RenameCardNote, { useRenameCard } from "./RenameCardNote";
 import { renameErrorText } from "./renameText";
 import { useActionKey } from "./useActionKey";
 
@@ -46,6 +47,7 @@ export default function ClubCard({ club }: { club: MyClubView }) {
           <RenameForm
             current={profile.name}
             currentStadium={profile.stadiumName}
+            free={club.renameFree}
             onDone={() => setRenaming(false)}
           />
         )}
@@ -59,10 +61,13 @@ const STADIUM_NAME = { min: 3, max: 40 };
 function RenameForm({
   current,
   currentStadium,
+  free,
   onDone,
 }: {
   current: string;
   currentStadium: string;
+  /** Absent from an older server (C-7 C7-2). */
+  free: boolean | undefined;
   onDone: () => void;
 }) {
   const { t } = useTranslation();
@@ -71,6 +76,7 @@ function RenameForm({
   const [stadium, setStadium] = useState(currentStadium);
   const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
+  const { blocked: needsCard } = useRenameCard("clubRename", free);
   const nameKey = useActionKey();
   const stadiumKey = useActionKey();
   const input = useRef<HTMLInputElement>(null);
@@ -81,7 +87,10 @@ function RenameForm({
   const stadiumFits =
     [...wantedStadium].length >= STADIUM_NAME.min && [...wantedStadium].length <= STADIUM_NAME.max;
   const valid =
-    wantedName !== "" && (!stadiumChanged || stadiumFits) && (nameChanged || stadiumChanged);
+    wantedName !== "" &&
+    (!stadiumChanged || stadiumFits) &&
+    (nameChanged || stadiumChanged) &&
+    !(nameChanged && needsCard);
 
   /** Each change is its own request, the club's name first; the first refusal stops the rest. */
   const submit = async (event: FormEvent) => {
@@ -133,6 +142,7 @@ function RenameForm({
       <p id="online-club-name-hint" className="text-xs text-gray-500 dark:text-gray-400">
         {t("online.club.renameHint")}
       </p>
+      <RenameCardNote card="clubRename" free={free} />
       <label htmlFor="online-stadium-name" className="block pt-1 text-xs font-semibold uppercase">
         {t("online.club.stadiumLabel")}
       </label>

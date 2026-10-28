@@ -50,7 +50,9 @@
       "market": "Marché",
       "inbox": "Boîte de réception",
       "account": "Compte",
-      "coins": "Porte-monnaie"
+      "coins": "Porte-monnaie",
+      "inventory": "Inventaire",
+      "shop": "Boutique"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -532,7 +534,7 @@
       "listed": "Aux enchères : ouvrir l'enchère",
       "list": "Vendre aux enchères",
       "notice": {
-        "region": "Notifications du marché",
+        "region": "Notifications",
         "close": "Fermer la notification",
         "outbid": "Vous avez été surenchéri pour {{player}}.",
         "outbidUnnamed": "Vous avez été surenchéri dans une enchère.",
@@ -561,9 +563,15 @@
       "hint": "Nom complet de {{full}} caractères, nom sur le terrain de {{match}}. Le premier changement de nom d'un joueur est gratuit ; les suivants demandent une carte de changement de nom de joueur.",
       "save": "Enregistrer les noms",
       "itemRequired": {
-        "playerRename": "Ce joueur a déjà utilisé son changement de nom gratuit. Le renommer encore demande une carte de changement de nom de joueur (dans une prochaine mise à jour).",
-        "clubRename": "Votre club a déjà utilisé son changement de nom gratuit. Le renommer encore demande une carte de changement de nom de club (dans une prochaine mise à jour)."
-      }
+        "playerRename": "Ce joueur a déjà utilisé son renommage gratuit. Le renommer encore demande une carte de renommage de joueur, en vente à la boutique.",
+        "clubRename": "Votre club a déjà utilisé son renommage gratuit. Le renommer encore demande une carte de renommage du club, en vente à la boutique."
+      },
+      "free": "Ce premier renommage est gratuit.",
+      "held": "Vous avez {{count}} × {{item}}.",
+      "willSpend": "Ce renommage dépense 1 {{item}} (vous en avez {{count}}).",
+      "needCard": "Ce renommage nécessite 1 {{item}}.",
+      "itemsLocked": "Vos objets sont bloqués pendant leur vérification : impossible de dépenser une carte pour l'instant.",
+      "toShop": "Acheter en boutique"
     },
     "mastery": {
       "hint": "La maîtrise progresse dans les matchs de championnat que vous dirigez vous-même, pas dans ceux que l'IA joue pour vous."
@@ -679,6 +687,16 @@
             "subject": "Des joueurs au top",
             "body": "{{count}} joueur(s) sont ravis de leur vie au club : {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Vos objets sont bloqués pour vérification",
+            "body": "Vos objets sont bloqués pendant leur vérification ; rien n'est perdu. Renommer avec une carte et utiliser des objets redeviennent possibles une fois la vérification terminée."
+          },
+          "itemsUnlocked": {
+            "subject": "Vos objets sont débloqués",
+            "body": "La vérification de vos objets est terminée. Vous pouvez de nouveau les utiliser."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "Annulation",
         "item_purchase": "Achat en boutique",
         "item_refund": "Remboursement boutique"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Boisson énergisante",
+        "description": "Rend de la condition physique à l'un de vos joueurs."
+      },
+      "energyDrinkLarge": {
+        "name": "Grande boisson énergisante",
+        "description": "Rend davantage de condition physique à l'un de vos joueurs."
+      },
+      "teamRecoveryPack": {
+        "name": "Pack de récupération d'équipe",
+        "description": "Rend de la condition physique à tout votre onze de départ."
+      },
+      "medkitBandage": {
+        "name": "Bandage",
+        "description": "Retire des jours à la convalescence d'un joueur blessé."
+      },
+      "medkitAdvanced": {
+        "name": "Trousse médicale avancée",
+        "description": "Guérit complètement une blessure courte, ou retire des jours à une plus longue."
+      },
+      "tacticalNoteBasic": {
+        "name": "Note tactique de base",
+        "description": "De l'XP pour un style de jeu à faible maîtrise."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "Note tactique avancée",
+        "description": "De l'XP pour un style de jeu à maîtrise moyenne."
+      },
+      "tacticalNoteMaster": {
+        "name": "Note tactique de maître",
+        "description": "De l'XP pour un style de jeu à maîtrise élevée."
+      },
+      "xpBoosterX2": {
+        "name": "Bonus d'XP double",
+        "description": "XP d'entraîneur doublée pour vos prochains matchs en ligne."
+      },
+      "playerRename": {
+        "name": "Carte de renommage de joueur",
+        "description": "Renomme encore un de vos joueurs après son renommage gratuit."
+      },
+      "clubRename": {
+        "name": "Carte de renommage du club",
+        "description": "Renomme encore votre club après son renommage gratuit."
+      },
+      "scoutExpedition": {
+        "name": "Ticket de prospection",
+        "description": "Paie un voyage de prospection du centre de formation."
+      },
+      "scoutExpeditionElite": {
+        "name": "Ticket de prospection d'élite",
+        "description": "Un voyage de prospection qui ramène au moins un grand espoir."
+      },
+      "timeSkip": {
+        "name": "Sablier",
+        "description": "Fait revenir aussitôt un voyage de prospection."
+      },
+      "notice": {
+        "granted": "Vous avez reçu {{item}}.",
+        "refunded": "Un achat de {{item}} a été remboursé ; les pièces sont revenues dans votre portefeuille.",
+        "changed": "Vos objets ont changé."
+      },
+      "reason": {
+        "conditionFull": "La condition physique est déjà au maximum",
+        "notInjured": "N'est pas blessé",
+        "atCap": "Ce style est déjà à la maîtrise maximale",
+        "wrongTier": "Cette note ne correspond pas au niveau de maîtrise de ce style"
+      },
+      "use": {
+        "rename": "Cette carte est dépensée quand vous renommez un joueur ou votre club.",
+        "academy": "Cet objet s'utilise au centre de formation."
+      },
+      "preview": {
+        "condition": "{{player}} : condition {{before}} → {{after}}",
+        "injury": "{{player}} : {{before}} jours d'absence → {{after}}",
+        "cured": "{{player}} : {{before}} jours d'absence → rétabli",
+        "mastery": "+{{xp}} XP, maîtrise {{before}} → {{after}}",
+        "xpX2": "+{{matches}} matchs d'XP double, {{remaining}} en attente"
+      },
+      "limit": {
+        "today": "Utilisés aujourd'hui : {{used}}/{{perDay}} · remise à zéro {{time}}",
+        "todayPlain": "Utilisés aujourd'hui : {{used}}/{{perDay}}",
+        "season": "XP des notes cette saison : {{used}}/{{limit}}",
+        "xpX2": "Matchs d'XP double en attente : {{remaining}}/{{max}}"
+      },
+      "useTitle": "Utiliser {{item}}",
+      "pickPlayer": "Choisissez un joueur",
+      "pickStyle": "Choisissez un style de jeu",
+      "previewing": "Vérification de l'effet…",
+      "confirmUse": "Utiliser",
+      "used": "{{item}} utilisé.",
+      "shortcut": "Utiliser {{item}} (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "Ce serveur n'a pas encore d'objets.",
+      "locked": "Vos objets sont bloqués pendant leur vérification ; rien n'est perdu. Renommer avec une carte et utiliser des objets redeviennent possibles une fois la vérification terminée.",
+      "lockedShort": "Vos objets sont bloqués pendant leur vérification.",
+      "tabHeld": "Objets",
+      "tabHistory": "Historique",
+      "empty": "Votre inventaire est vide.",
+      "toShop": "Aller à la boutique",
+      "group": {
+        "condition": "Condition physique",
+        "medical": "Médical",
+        "tactics": "Tactique",
+        "custom": "Personnalisation",
+        "academy": "Centre de formation",
+        "other": "Autres"
+      },
+      "stacks": "Lignes par expiration",
+      "expires": "×{{count}} · expire le {{date}}",
+      "neverExpires": "×{{count}} · n'expire jamais",
+      "teamRecovery": "Votre club en a utilisé {{used}}/{{perDay}} aujourd'hui · remise à zéro {{time}}",
+      "noteXp": "{{style}} : {{used}}/{{limit}} XP des notes cette saison",
+      "xpX2": "Matchs d'XP double en attente : {{remaining}}/{{max}}",
+      "notThisSeason": "Inutilisable cette saison.",
+      "needClub": "Il vous faut un club.",
+      "use": "Utiliser",
+      "renameAt": "Renommez depuis l'effectif ou la fiche du club",
+      "academySoon": "S'utilise au centre de formation (bientôt)",
+      "target": {
+        "player": "un joueur",
+        "club": "le club",
+        "account": "votre compte",
+        "scoutTrip": "un voyage de prospection"
+      },
+      "source": {
+        "shop": "Acheté en boutique",
+        "admin": "Donné par un administrateur",
+        "onlineEvent": "Récompense d'événement",
+        "offlineMission": "Mission hors ligne",
+        "seasonReward": "Récompense de saison",
+        "use": "Utilisé",
+        "adminRevoke": "Repris par un administrateur"
+      },
+      "historyEmpty": "Aucun mouvement d'objet pour l'instant.",
+      "expiredNotShown": "Les objets expirés n'apparaissent pas ici."
+    },
+    "shop": {
+      "notOnServer": "Ce serveur n'a pas encore de boutique.",
+      "closed": "La boutique n'est pas encore ouverte.",
+      "empty": "Rien n'est en vente pour le moment.",
+      "toWallet": "Portefeuille de pièces",
+      "neverExpire": "Les objets achetés avec des pièces n'expirent jamais. Ils appartiennent à votre compte et ne peuvent pas être cédés.",
+      "notThisSeason": "Inutilisable cette saison",
+      "academySoon": "Disponible avec le centre de formation",
+      "itemsLocked": "Vos objets sont bloqués pendant leur vérification",
+      "full": "Votre inventaire ne peut plus contenir cet objet",
+      "buy": "Acheter",
+      "bought": "{{item}} ×{{count}} acheté pour {{coins}} pièces.",
+      "confirmTitle": "Acheter {{item}} ?",
+      "quantity": "Quantité (au plus {{max}})",
+      "room": "Vous pouvez en acheter au plus {{max}} maintenant : l'inventaire contient 999 exemplaires de chaque objet.",
+      "price": "Prix unitaire",
+      "total": "Total",
+      "after": "Pièces après",
+      "bound": "Les objets appartiennent à votre compte et ne peuvent pas être cédés.",
+      "confirm": "Acheter",
+      "effect": {
+        "condition": "+{{n}} de condition physique",
+        "days": "Retire {{days}} jours à une blessure",
+        "cure": "Guérit une blessure de {{cure}} jours ou moins, sinon retire {{days}} jours",
+        "note": "+{{xp}} XP pour un style à une maîtrise de {{from}} à {{to}}",
+        "matches": "XP double pendant {{n}} matchs en ligne"
+      },
+      "caps": {
+        "perPlayerDay": "Au plus {{n}} objets de condition physique par joueur et par jour de football, tous types confondus",
+        "perClubDay": "Au plus {{n}} par club et par jour de football",
+        "xpPerStyleSeason": "Au plus {{n}} XP des notes par style et par saison",
+        "maxMatches": "Au plus {{n}} matchs d'XP double en attente"
       }
     }
   },

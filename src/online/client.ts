@@ -20,6 +20,15 @@ import type {
   FacilityUpgradeView,
   FinanceView,
   InboxPage,
+  InventoryView,
+  ItemEntriesPage,
+  ItemPreviewView,
+  ItemTarget,
+  ItemUseView,
+  PurchaseRequest,
+  PurchaseView,
+  ShopView,
+  UseItemRequest,
   FixtureDetailView,
   FramesPage,
   FriendlyMineView,
@@ -102,6 +111,21 @@ async function call<T>(request: OnlineRequest): Promise<T> {
 }
 
 const newKey = (): string => crypto.randomUUID();
+
+/**
+ * An item's target as the preview's query names it (S-17 §3.7): `player:<id>`, `club`,
+ * `style:<style>` or `account`. The use sends the same target in its body.
+ */
+export function targetQuery(target: ItemTarget): string {
+  switch (target.kind) {
+    case "player":
+      return `player:${target.playerId}`;
+    case "style":
+      return `style:${target.style}`;
+    default:
+      return target.kind;
+  }
+}
 
 function read(segments: string[], query?: [string, string][]): OnlineRequest {
   return query ? { method: "GET", segments, query } : { method: "GET", segments };
@@ -286,6 +310,51 @@ export const online = {
           coins,
           priceListVersion,
         } satisfies CoinExchangeRequest),
+      ),
+  },
+  /**
+   * The coach's items (S-17, C-7b): they belong to the person, like coins. A preview runs the
+   * use's own checks and writes nothing; its `target` is the same target the use sends.
+   */
+  items: {
+    mine: () => call<InventoryView>(read(["v1", "me", "items"])),
+    /** The entries newest first; `cursor` is the `nextCursor` of the page before. */
+    entries: (cursor?: string, limit?: number) =>
+      call<ItemEntriesPage>(
+        read(
+          ["v1", "me", "items", "entries"],
+          [
+            ...(cursor === undefined ? [] : [["cursor", cursor] as [string, string]]),
+            ...(limit === undefined ? [] : [["limit", String(limit)] as [string, string]]),
+          ],
+        ),
+      ),
+    preview: (itemCode: string, target: ItemTarget) =>
+      call<ItemPreviewView>(
+        read(["v1", "me", "items", itemCode, "preview"], [["target", targetQuery(target)]]),
+      ),
+    use: (itemCode: string, target: ItemTarget, idempotencyKey = newKey()) =>
+      call<ItemUseView>(
+        write("POST", ["v1", "me", "items", itemCode, "use"], idempotencyKey, {
+          target,
+        } satisfies UseItemRequest),
+      ),
+  },
+  /** The shop (S-17): what the price list in force sells, bought with coins at that list. */
+  shop: {
+    view: () => call<ShopView>(read(["v1", "shop"])),
+    purchase: (
+      itemCode: string,
+      quantity: number,
+      priceListVersion: number,
+      idempotencyKey = newKey(),
+    ) =>
+      call<PurchaseView>(
+        write("POST", ["v1", "shop", "purchases"], idempotencyKey, {
+          itemCode,
+          quantity,
+          priceListVersion,
+        } satisfies PurchaseRequest),
       ),
   },
   /** The coach's players (S-14): a player's two names, the first change of each free. */

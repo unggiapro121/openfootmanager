@@ -50,7 +50,9 @@
       "market": "Trh",
       "inbox": "Schránka",
       "account": "Účet",
-      "coins": "Peněženka mincí"
+      "coins": "Peněženka mincí",
+      "inventory": "Inventář",
+      "shop": "Obchod"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -532,7 +534,7 @@
       "listed": "V aukci: otevřít aukci",
       "list": "Prodat v aukci",
       "notice": {
-        "region": "Oznámení trhu",
+        "region": "Oznámení",
         "close": "Zavřít oznámení",
         "outbid": "U hráče {{player}} vás někdo přeplatil.",
         "outbidUnnamed": "V jedné aukci vás někdo přeplatil.",
@@ -561,9 +563,15 @@
       "hint": "Celé jméno {{full}} znaků, jméno na hřišti {{match}}. První přejmenování hráče je zdarma; další vyžadují kartu přejmenování hráče.",
       "save": "Uložit jména",
       "itemRequired": {
-        "playerRename": "Tento hráč už využil přejmenování zdarma. Další přejmenování vyžaduje kartu přejmenování hráče (přijde v některé z dalších aktualizací).",
-        "clubRename": "Váš klub už využil přejmenování zdarma. Další přejmenování vyžaduje kartu přejmenování klubu (přijde v některé z dalších aktualizací)."
-      }
+        "playerRename": "Tento hráč už využil bezplatné přejmenování. Další vyžaduje kartu přejmenování hráče z obchodu.",
+        "clubRename": "Tvůj klub už využil bezplatné přejmenování. Další vyžaduje kartu přejmenování klubu z obchodu."
+      },
+      "free": "Toto první přejmenování je zdarma.",
+      "held": "Máš {{count}} × {{item}}.",
+      "willSpend": "Toto přejmenování spotřebuje 1 × {{item}} (máš {{count}}).",
+      "needCard": "Toto přejmenování potřebuje 1 × {{item}}.",
+      "itemsLocked": "Tvé předměty jsou během kontroly zamčené, takže teď nejde spotřebovat kartu.",
+      "toShop": "Koupit v obchodě"
     },
     "mastery": {
       "hint": "Mistrovství roste v ligových zápasech, které řídíte sami, ne v těch, které za vás hraje AI."
@@ -679,6 +687,16 @@
             "subject": "Hráči mají skvělou náladu",
             "body": "Hráčů, kteří jsou v klubu nadšení: {{count}}: {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Tvé předměty jsou zamčené kvůli kontrole",
+            "body": "Tvé předměty jsou během kontroly zamčené; nic se neztratí. Přejmenování kartou a používání předmětů bude zase možné po skončení kontroly."
+          },
+          "itemsUnlocked": {
+            "subject": "Tvé předměty jsou odemčené",
+            "body": "Kontrola tvých předmětů skončila. Můžeš je znovu používat."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "Storno",
         "item_purchase": "Nákup v obchodě",
         "item_refund": "Vrácení platby v obchodě"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Energetický nápoj",
+        "description": "Obnoví kondici jednomu z tvých hráčů."
+      },
+      "energyDrinkLarge": {
+        "name": "Velký energetický nápoj",
+        "description": "Obnoví víc kondice jednomu z tvých hráčů."
+      },
+      "teamRecoveryPack": {
+        "name": "Balíček regenerace týmu",
+        "description": "Obnoví kondici celé základní jedenáctce."
+      },
+      "medkitBandage": {
+        "name": "Obvaz",
+        "description": "Zkrátí zotavení zraněného hráče o několik dní."
+      },
+      "medkitAdvanced": {
+        "name": "Pokročilá lékárnička",
+        "description": "Krátké zranění rovnou vyléčí, delší zkrátí o několik dní."
+      },
+      "tacticalNoteBasic": {
+        "name": "Základní taktická poznámka",
+        "description": "XP pro herní styl s nízkým mistrovstvím."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "Pokročilá taktická poznámka",
+        "description": "XP pro herní styl se středním mistrovstvím."
+      },
+      "tacticalNoteMaster": {
+        "name": "Mistrovská taktická poznámka",
+        "description": "XP pro herní styl s vysokým mistrovstvím."
+      },
+      "xpBoosterX2": {
+        "name": "Posilovač dvojnásobných XP",
+        "description": "Dvojnásobné trenérské XP v tvých dalších online zápasech."
+      },
+      "playerRename": {
+        "name": "Karta přejmenování hráče",
+        "description": "Znovu přejmenuje hráče po jeho bezplatném přejmenování."
+      },
+      "clubRename": {
+        "name": "Karta přejmenování klubu",
+        "description": "Znovu přejmenuje tvůj klub po jeho bezplatném přejmenování."
+      },
+      "scoutExpedition": {
+        "name": "Skautská vstupenka",
+        "description": "Zaplatí skautskou cestu akademie."
+      },
+      "scoutExpeditionElite": {
+        "name": "Elitní skautská vstupenka",
+        "description": "Skautská cesta, ze které se vrátí alespoň jeden špičkový talent."
+      },
+      "timeSkip": {
+        "name": "Přesýpací hodiny",
+        "description": "Okamžitě vrátí skautskou cestu."
+      },
+      "notice": {
+        "granted": "Získal jsi: {{item}}.",
+        "refunded": "Nákup položky {{item}} byl vrácen; mince jsou zpět v peněžence.",
+        "changed": "Tvé předměty se změnily."
+      },
+      "reason": {
+        "conditionFull": "Kondice je už plná",
+        "notInjured": "Není zraněný",
+        "atCap": "Tento styl má už nejvyšší mistrovství",
+        "wrongTier": "Tato poznámka neodpovídá úrovni mistrovství tohoto stylu"
+      },
+      "use": {
+        "rename": "Tato karta se spotřebuje, když přejmenuješ hráče nebo klub.",
+        "academy": "Tento předmět se používá v akademii."
+      },
+      "preview": {
+        "condition": "{{player}}: kondice {{before}} → {{after}}",
+        "injury": "{{player}}: mimo hru {{before}} dní → {{after}}",
+        "cured": "{{player}}: mimo hru {{before}} dní → zdráv",
+        "mastery": "+{{xp}} XP, mistrovství {{before}} → {{after}}",
+        "xpX2": "+{{matches}} zápasů s dvojnásobnými XP, čeká {{remaining}}"
+      },
+      "limit": {
+        "today": "Dnes použito: {{used}}/{{perDay}} · obnoví se {{time}}",
+        "todayPlain": "Dnes použito: {{used}}/{{perDay}}",
+        "season": "XP z poznámek v této sezóně: {{used}}/{{limit}}",
+        "xpX2": "Čekající zápasy s dvojnásobnými XP: {{remaining}}/{{max}}"
+      },
+      "useTitle": "Použít: {{item}}",
+      "pickPlayer": "Vyber hráče",
+      "pickStyle": "Vyber herní styl",
+      "previewing": "Ověřuje se účinek…",
+      "confirmUse": "Použít",
+      "used": "Použito: {{item}}.",
+      "shortcut": "Použít: {{item}} (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "Tento server zatím nemá předměty.",
+      "locked": "Tvé předměty jsou během kontroly zamčené; nic se neztratí. Přejmenování kartou a používání předmětů bude zase možné po skončení kontroly.",
+      "lockedShort": "Tvé předměty jsou během kontroly zamčené.",
+      "tabHeld": "Předměty",
+      "tabHistory": "Historie",
+      "empty": "Tvůj inventář je prázdný.",
+      "toShop": "Do obchodu",
+      "group": {
+        "condition": "Kondice",
+        "medical": "Zdravotní",
+        "tactics": "Taktika",
+        "custom": "Přizpůsobení",
+        "academy": "Akademie",
+        "other": "Ostatní"
+      },
+      "stacks": "Řádky podle platnosti",
+      "expires": "×{{count}} · vyprší {{date}}",
+      "neverExpires": "×{{count}} · nevyprší",
+      "teamRecovery": "Tvůj klub dnes použil {{used}}/{{perDay}} · obnoví se {{time}}",
+      "noteXp": "{{style}}: {{used}}/{{limit}} XP z poznámek v této sezóně",
+      "xpX2": "Čekající zápasy s dvojnásobnými XP: {{remaining}}/{{max}}",
+      "notThisSeason": "V této sezóně nelze použít.",
+      "needClub": "Potřebuješ klub.",
+      "use": "Použít",
+      "renameAt": "Přejmenuj na stránce kádru nebo na kartě klubu",
+      "academySoon": "Používá se v akademii (brzy)",
+      "target": {
+        "player": "hráč",
+        "club": "klub",
+        "account": "tvůj účet",
+        "scoutTrip": "skautská cesta"
+      },
+      "source": {
+        "shop": "Koupeno v obchodě",
+        "admin": "Uděleno administrátorem",
+        "onlineEvent": "Odměna z události",
+        "offlineMission": "Offline mise",
+        "seasonReward": "Sezónní odměna",
+        "use": "Použito",
+        "adminRevoke": "Odebráno administrátorem"
+      },
+      "historyEmpty": "Zatím žádné pohyby předmětů.",
+      "expiredNotShown": "Předměty s prošlou platností se tu nezobrazují."
+    },
+    "shop": {
+      "notOnServer": "Tento server zatím nemá obchod.",
+      "closed": "Obchod zatím není otevřený.",
+      "empty": "Teď se nic neprodává.",
+      "toWallet": "Peněženka mincí",
+      "neverExpire": "Předměty koupené za mince nevyprší. Patří k tvému účtu a nelze je předat.",
+      "notThisSeason": "V této sezóně nelze použít",
+      "academySoon": "Otevře se s akademií",
+      "itemsLocked": "Tvé předměty jsou během kontroly zamčené",
+      "full": "Inventář už víc kusů tohoto předmětu nepojme",
+      "buy": "Koupit",
+      "bought": "Koupeno: {{item}} ×{{count}} za {{coins}} mincí.",
+      "confirmTitle": "Koupit {{item}}?",
+      "quantity": "Množství (nejvýš {{max}})",
+      "room": "Teď můžeš koupit nejvýš {{max}}: inventář pojme 999 kusů každého předmětu.",
+      "price": "Cena za kus",
+      "total": "Celkem",
+      "after": "Mince po nákupu",
+      "bound": "Předměty patří k tvému účtu a nelze je předat.",
+      "confirm": "Koupit",
+      "effect": {
+        "condition": "+{{n}} kondice",
+        "days": "Zkrátí zranění o {{days}} dní",
+        "cure": "Vyléčí zranění do {{cure}} dní, jinak ho zkrátí o {{days}} dní",
+        "note": "+{{xp}} XP pro styl s mistrovstvím {{from}}–{{to}}",
+        "matches": "Dvojnásobné XP na {{n}} online zápasů"
+      },
+      "caps": {
+        "perPlayerDay": "Nejvýš {{n}} předmětů na kondici na hráče za fotbalový den, všechny druhy dohromady",
+        "perClubDay": "Nejvýš {{n}} na klub za fotbalový den",
+        "xpPerStyleSeason": "Nejvýš {{n}} XP z poznámek na styl za sezónu",
+        "maxMatches": "Nejvýš {{n}} čekajících zápasů s dvojnásobnými XP"
       }
     }
   },

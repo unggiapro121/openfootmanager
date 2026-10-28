@@ -50,7 +50,9 @@
       "market": "Pasar",
       "inbox": "Kotak masuk",
       "account": "Akun",
-      "coins": "Dompet koin"
+      "coins": "Dompet koin",
+      "inventory": "Inventaris",
+      "shop": "Toko"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -532,7 +534,7 @@
       "listed": "Sedang dilelang: buka lelang",
       "list": "Jual lewat lelang",
       "notice": {
-        "region": "Pemberitahuan pasar",
+        "region": "Pemberitahuan",
         "close": "Tutup pemberitahuan",
         "outbid": "Tawaran Anda untuk {{player}} dikalahkan.",
         "outbidUnnamed": "Tawaran Anda di sebuah lelang dikalahkan.",
@@ -561,9 +563,15 @@
       "hint": "Nama lengkap {{full}} karakter, nama di lapangan {{match}} karakter. Ganti nama pertama seorang pemain gratis; berikutnya memerlukan kartu ganti nama pemain.",
       "save": "Simpan nama",
       "itemRequired": {
-        "playerRename": "Pemain ini sudah memakai ganti nama gratisnya. Mengganti lagi memerlukan kartu ganti nama pemain (hadir di pembaruan berikutnya).",
-        "clubRename": "Klubmu sudah memakai ganti nama gratisnya. Mengganti lagi memerlukan kartu ganti nama klub (hadir di pembaruan berikutnya)."
-      }
+        "playerRename": "Pemain ini sudah memakai ganti nama gratis. Mengganti lagi butuh kartu ganti nama pemain dari toko.",
+        "clubRename": "Klubmu sudah memakai ganti nama gratis. Mengganti lagi butuh kartu ganti nama klub dari toko."
+      },
+      "free": "Ganti nama pertama ini gratis.",
+      "held": "Kamu punya {{count}} × {{item}}.",
+      "willSpend": "Ganti nama ini memakai 1 {{item}} (kamu punya {{count}}).",
+      "needCard": "Ganti nama ini butuh 1 {{item}}.",
+      "itemsLocked": "Barangmu dikunci selama pemeriksaan, jadi kartu belum bisa dipakai sekarang.",
+      "toShop": "Beli di toko"
     },
     "mastery": {
       "hint": "Penguasaan naik di laga liga yang Anda pimpin sendiri, bukan yang dimainkan AI untuk Anda."
@@ -679,6 +687,16 @@
             "subject": "Pemain bersemangat tinggi",
             "body": "{{count}} pemain senang dengan kehidupan di klub: {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Barangmu dikunci untuk pemeriksaan",
+            "body": "Barangmu dikunci selama pemeriksaan; tidak ada yang hilang. Ganti nama dengan kartu dan pemakaian barang dibuka lagi setelah pemeriksaan selesai."
+          },
+          "itemsUnlocked": {
+            "subject": "Barangmu sudah dibuka kuncinya",
+            "body": "Pemeriksaan barangmu sudah selesai. Kamu bisa memakainya lagi."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "Pembalikan",
         "item_purchase": "Pembelian di toko",
         "item_refund": "Pengembalian dana toko"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Minuman energi",
+        "description": "Memulihkan kondisi salah satu pemainmu."
+      },
+      "energyDrinkLarge": {
+        "name": "Minuman energi besar",
+        "description": "Memulihkan lebih banyak kondisi salah satu pemainmu."
+      },
+      "teamRecoveryPack": {
+        "name": "Paket pemulihan tim",
+        "description": "Memulihkan kondisi seluruh starting eleven-mu."
+      },
+      "medkitBandage": {
+        "name": "Perban",
+        "description": "Mengurangi beberapa hari masa pemulihan pemain yang cedera."
+      },
+      "medkitAdvanced": {
+        "name": "Kotak medis lanjutan",
+        "description": "Menyembuhkan langsung cedera ringan, atau mengurangi beberapa hari cedera yang lebih lama."
+      },
+      "tacticalNoteBasic": {
+        "name": "Catatan taktik dasar",
+        "description": "XP untuk gaya bermain dengan penguasaan rendah."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "Catatan taktik lanjutan",
+        "description": "XP untuk gaya bermain dengan penguasaan menengah."
+      },
+      "tacticalNoteMaster": {
+        "name": "Catatan taktik master",
+        "description": "XP untuk gaya bermain dengan penguasaan tinggi."
+      },
+      "xpBoosterX2": {
+        "name": "Penguat XP ganda",
+        "description": "XP pelatih ganda di pertandingan online berikutnya."
+      },
+      "playerRename": {
+        "name": "Kartu ganti nama pemain",
+        "description": "Mengganti lagi nama salah satu pemainmu setelah ganti nama gratis."
+      },
+      "clubRename": {
+        "name": "Kartu ganti nama klub",
+        "description": "Mengganti lagi nama klubmu setelah ganti nama gratis."
+      },
+      "scoutExpedition": {
+        "name": "Tiket pemandu bakat",
+        "description": "Membayar satu perjalanan pemandu bakat akademi."
+      },
+      "scoutExpeditionElite": {
+        "name": "Tiket pemandu bakat elite",
+        "description": "Perjalanan pemandu bakat yang membawa pulang setidaknya satu talenta top."
+      },
+      "timeSkip": {
+        "name": "Jam pasir",
+        "description": "Membuat perjalanan pemandu bakat langsung kembali."
+      },
+      "notice": {
+        "granted": "Kamu menerima {{item}}.",
+        "refunded": "Pembelian {{item}} telah dikembalikan; koin sudah kembali ke dompetmu.",
+        "changed": "Barangmu berubah."
+      },
+      "reason": {
+        "conditionFull": "Kondisi sudah penuh",
+        "notInjured": "Tidak cedera",
+        "atCap": "Gaya ini sudah pada penguasaan tertinggi",
+        "wrongTier": "Catatan ini tidak sesuai tingkat penguasaan gaya ini"
+      },
+      "use": {
+        "rename": "Kartu ini terpakai saat kamu mengganti nama pemain atau klub.",
+        "academy": "Barang ini dipakai di akademi."
+      },
+      "preview": {
+        "condition": "{{player}}: kondisi {{before}} → {{after}}",
+        "injury": "{{player}}: absen {{before}} hari → {{after}}",
+        "cured": "{{player}}: absen {{before}} hari → pulih",
+        "mastery": "+{{xp}} XP, penguasaan {{before}} → {{after}}",
+        "xpX2": "+{{matches}} pertandingan XP ganda, {{remaining}} menunggu"
+      },
+      "limit": {
+        "today": "Dipakai hari ini: {{used}}/{{perDay}} · direset {{time}}",
+        "todayPlain": "Dipakai hari ini: {{used}}/{{perDay}}",
+        "season": "XP dari catatan musim ini: {{used}}/{{limit}}",
+        "xpX2": "Pertandingan XP ganda menunggu: {{remaining}}/{{max}}"
+      },
+      "useTitle": "Pakai {{item}}",
+      "pickPlayer": "Pilih pemain",
+      "pickStyle": "Pilih gaya bermain",
+      "previewing": "Memeriksa efeknya…",
+      "confirmUse": "Pakai",
+      "used": "{{item}} dipakai.",
+      "shortcut": "Pakai {{item}} (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "Server ini belum punya barang.",
+      "locked": "Barangmu dikunci selama pemeriksaan; tidak ada yang hilang. Ganti nama dengan kartu dan pemakaian barang dibuka lagi setelah pemeriksaan selesai.",
+      "lockedShort": "Barangmu dikunci selama pemeriksaan.",
+      "tabHeld": "Barang",
+      "tabHistory": "Riwayat",
+      "empty": "Inventarismu kosong.",
+      "toShop": "Ke toko",
+      "group": {
+        "condition": "Kondisi",
+        "medical": "Medis",
+        "tactics": "Taktik",
+        "custom": "Kustomisasi",
+        "academy": "Akademi",
+        "other": "Lainnya"
+      },
+      "stacks": "Baris menurut masa berlaku",
+      "expires": "×{{count}} · kedaluwarsa {{date}}",
+      "neverExpires": "×{{count}} · tidak kedaluwarsa",
+      "teamRecovery": "Klubmu sudah memakai {{used}}/{{perDay}} hari ini · direset {{time}}",
+      "noteXp": "{{style}}: {{used}}/{{limit}} XP dari catatan musim ini",
+      "xpX2": "Pertandingan XP ganda menunggu: {{remaining}}/{{max}}",
+      "notThisSeason": "Tidak bisa dipakai musim ini.",
+      "needClub": "Kamu perlu klub.",
+      "use": "Pakai",
+      "renameAt": "Ganti nama dari halaman skuad atau kartu klub",
+      "academySoon": "Dipakai di akademi (segera)",
+      "target": {
+        "player": "seorang pemain",
+        "club": "klub",
+        "account": "akunmu",
+        "scoutTrip": "perjalanan pemandu bakat"
+      },
+      "source": {
+        "shop": "Dibeli di toko",
+        "admin": "Diberikan administrator",
+        "onlineEvent": "Hadiah event",
+        "offlineMission": "Misi offline",
+        "seasonReward": "Hadiah musim",
+        "use": "Dipakai",
+        "adminRevoke": "Ditarik administrator"
+      },
+      "historyEmpty": "Belum ada catatan barang.",
+      "expiredNotShown": "Barang yang kedaluwarsa tidak tampil di sini."
+    },
+    "shop": {
+      "notOnServer": "Server ini belum punya toko.",
+      "closed": "Toko belum dibuka.",
+      "empty": "Saat ini tidak ada yang dijual.",
+      "toWallet": "Dompet koin",
+      "neverExpire": "Barang yang dibeli dengan koin tidak pernah kedaluwarsa. Barang itu milik akunmu dan tidak bisa dipindahkan.",
+      "notThisSeason": "Tidak bisa dipakai musim ini",
+      "academySoon": "Dibuka bersama akademi",
+      "itemsLocked": "Barangmu dikunci selama pemeriksaan",
+      "full": "Inventarismu tidak muat lagi untuk barang ini",
+      "buy": "Beli",
+      "bought": "Membeli {{item}} ×{{count}} seharga {{coins}} koin.",
+      "confirmTitle": "Beli {{item}}?",
+      "quantity": "Jumlah (maksimal {{max}})",
+      "room": "Sekarang kamu bisa membeli paling banyak {{max}}: inventaris menyimpan 999 untuk tiap barang.",
+      "price": "Harga satuan",
+      "total": "Total",
+      "after": "Koin setelahnya",
+      "bound": "Barang milik akunmu dan tidak bisa dipindahkan.",
+      "confirm": "Beli",
+      "effect": {
+        "condition": "+{{n}} kondisi",
+        "days": "Mengurangi cedera {{days}} hari",
+        "cure": "Menyembuhkan cedera {{cure}} hari atau kurang, jika tidak mengurangi {{days}} hari",
+        "note": "+{{xp}} XP untuk gaya dengan penguasaan {{from}}–{{to}}",
+        "matches": "XP ganda selama {{n}} pertandingan online"
+      },
+      "caps": {
+        "perPlayerDay": "Maksimal {{n}} barang kondisi per pemain per hari sepak bola, semua jenis digabung",
+        "perClubDay": "Maksimal {{n}} per klub per hari sepak bola",
+        "xpPerStyleSeason": "Maksimal {{n}} XP dari catatan per gaya per musim",
+        "maxMatches": "Maksimal {{n}} pertandingan XP ganda menunggu"
       }
     }
   },

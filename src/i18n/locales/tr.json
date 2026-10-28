@@ -50,7 +50,9 @@
       "market": "Pazar",
       "inbox": "Gelen kutusu",
       "account": "Hesap",
-      "coins": "Jeton cüzdanı"
+      "coins": "Jeton cüzdanı",
+      "inventory": "Envanter",
+      "shop": "Mağaza"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -532,7 +534,7 @@
       "listed": "Açık artırmada: aç",
       "list": "Açık artırmayla sat",
       "notice": {
-        "region": "Pazar bildirimleri",
+        "region": "Bildirimler",
         "close": "Bildirimi kapat",
         "outbid": "{{player}} için teklifiniz geçildi.",
         "outbidUnnamed": "Bir açık artırmada teklifiniz geçildi.",
@@ -561,9 +563,15 @@
       "hint": "Tam ad {{full}} karakter, sahadaki ad {{match}} karakter. Bir oyuncunun ilk ad değişikliği ücretsizdir; sonrakiler oyuncu ad değiştirme kartı gerektirir.",
       "save": "Adları kaydet",
       "itemRequired": {
-        "playerRename": "Bu oyuncu ücretsiz ad değişikliğini kullandı. Tekrar değiştirmek için oyuncu ad değiştirme kartı gerekir (sonraki bir güncellemede gelecek).",
-        "clubRename": "Kulübün ücretsiz ad değişikliğini kullandı. Tekrar değiştirmek için kulüp ad değiştirme kartı gerekir (sonraki bir güncellemede gelecek)."
-      }
+        "playerRename": "Bu oyuncu ücretsiz ad değişikliğini kullandı. Yeniden değiştirmek için mağazadan oyuncu adı değiştirme kartı gerekir.",
+        "clubRename": "Kulübün ücretsiz ad değişikliğini kullandı. Yeniden değiştirmek için mağazadan kulüp adı değiştirme kartı gerekir."
+      },
+      "free": "Bu ilk ad değişikliği ücretsiz.",
+      "held": "Elinde {{count}} × {{item}} var.",
+      "willSpend": "Bu değişiklik 1 {{item}} harcar (elinde {{count}} var).",
+      "needCard": "Bu değişiklik için 1 {{item}} gerekir.",
+      "itemsLocked": "Eşyaların kontrol sırasında kilitli, bu yüzden şu anda kart harcanamaz.",
+      "toShop": "Mağazadan al"
     },
     "mastery": {
       "hint": "Ustalık, yapay zekânın sizin yerinize oynadığı değil, kendinizin yönettiği lig maçlarında artar."
@@ -679,6 +687,16 @@
             "subject": "Oyuncular keyifli",
             "body": "{{count}} oyuncu kulüpteki hayattan çok memnun: {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Eşyaların kontrol için kilitlendi",
+            "body": "Eşyaların kontrol sırasında kilitli; hiçbir şey kaybolmaz. Kartla ad değiştirme ve eşya kullanma, kontrol bitince yeniden açılır."
+          },
+          "itemsUnlocked": {
+            "subject": "Eşyaların kilidi açıldı",
+            "body": "Eşyalarının kontrolü bitti. Onları yeniden kullanabilirsin."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "İptal kaydı",
         "item_purchase": "Mağaza alışverişi",
         "item_refund": "Mağaza iadesi"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Enerji içeceği",
+        "description": "Oyuncularından birinin kondisyonunu yeniler."
+      },
+      "energyDrinkLarge": {
+        "name": "Büyük enerji içeceği",
+        "description": "Oyuncularından birinin kondisyonunu daha fazla yeniler."
+      },
+      "teamRecoveryPack": {
+        "name": "Takım toparlanma paketi",
+        "description": "Tüm ilk on birinin kondisyonunu yeniler."
+      },
+      "medkitBandage": {
+        "name": "Bandaj",
+        "description": "Sakat bir oyuncunun iyileşme süresini birkaç gün kısaltır."
+      },
+      "medkitAdvanced": {
+        "name": "Gelişmiş sağlık çantası",
+        "description": "Kısa bir sakatlığı tamamen iyileştirir ya da daha uzun birini birkaç gün kısaltır."
+      },
+      "tacticalNoteBasic": {
+        "name": "Temel taktik notu",
+        "description": "Ustalığı düşük bir oyun tarzı için XP."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "İleri taktik notu",
+        "description": "Ustalığı orta düzeyde bir oyun tarzı için XP."
+      },
+      "tacticalNoteMaster": {
+        "name": "Usta taktik notu",
+        "description": "Ustalığı yüksek bir oyun tarzı için XP."
+      },
+      "xpBoosterX2": {
+        "name": "Çift XP güçlendiricisi",
+        "description": "Sonraki çevrimiçi maçlarında teknik direktör XP'si iki katı."
+      },
+      "playerRename": {
+        "name": "Oyuncu adı değiştirme kartı",
+        "description": "Ücretsiz değişiklikten sonra bir oyuncunun adını yeniden değiştirir."
+      },
+      "clubRename": {
+        "name": "Kulüp adı değiştirme kartı",
+        "description": "Ücretsiz değişiklikten sonra kulübünün adını yeniden değiştirir."
+      },
+      "scoutExpedition": {
+        "name": "Gözlemci bileti",
+        "description": "Altyapının bir gözlem gezisini öder."
+      },
+      "scoutExpeditionElite": {
+        "name": "Elit gözlemci bileti",
+        "description": "En az bir üst düzey yetenekle dönen bir gözlem gezisi."
+      },
+      "timeSkip": {
+        "name": "Kum saati",
+        "description": "Bir gözlem gezisini anında geri getirir."
+      },
+      "notice": {
+        "granted": "{{item}} aldın.",
+        "refunded": "Bir {{item}} satın alımı iade edildi; jetonlar cüzdanına döndü.",
+        "changed": "Eşyaların değişti."
+      },
+      "reason": {
+        "conditionFull": "Kondisyon zaten dolu",
+        "notInjured": "Sakat değil",
+        "atCap": "Bu tarz zaten en yüksek ustalıkta",
+        "wrongTier": "Bu not, bu tarzın ustalık seviyesine uygun değil"
+      },
+      "use": {
+        "rename": "Bu kart, bir oyuncunun ya da kulübünün adını değiştirdiğinde harcanır.",
+        "academy": "Bu eşya altyapıda kullanılır."
+      },
+      "preview": {
+        "condition": "{{player}}: kondisyon {{before}} → {{after}}",
+        "injury": "{{player}}: {{before}} gün sahalardan uzak → {{after}}",
+        "cured": "{{player}}: {{before}} gün sahalardan uzak → iyileşti",
+        "mastery": "+{{xp}} XP, ustalık {{before}} → {{after}}",
+        "xpX2": "+{{matches}} maç çift XP, bekleyen {{remaining}}"
+      },
+      "limit": {
+        "today": "Bugün kullanılan: {{used}}/{{perDay}} · sıfırlanma {{time}}",
+        "todayPlain": "Bugün kullanılan: {{used}}/{{perDay}}",
+        "season": "Bu sezon notlardan XP: {{used}}/{{limit}}",
+        "xpX2": "Bekleyen çift XP maçları: {{remaining}}/{{max}}"
+      },
+      "useTitle": "{{item}} kullan",
+      "pickPlayer": "Bir oyuncu seç",
+      "pickStyle": "Bir oyun tarzı seç",
+      "previewing": "Etkisi kontrol ediliyor…",
+      "confirmUse": "Kullan",
+      "used": "{{item}} kullanıldı.",
+      "shortcut": "{{item}} kullan (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "Bu sunucuda henüz eşya yok.",
+      "locked": "Eşyaların kontrol sırasında kilitli; hiçbir şey kaybolmaz. Kartla ad değiştirme ve eşya kullanma, kontrol bitince yeniden açılır.",
+      "lockedShort": "Eşyaların kontrol sırasında kilitli.",
+      "tabHeld": "Eşyalar",
+      "tabHistory": "Geçmiş",
+      "empty": "Envanterin boş.",
+      "toShop": "Mağazaya git",
+      "group": {
+        "condition": "Kondisyon",
+        "medical": "Sağlık",
+        "tactics": "Taktik",
+        "custom": "Kişiselleştirme",
+        "academy": "Altyapı",
+        "other": "Diğer"
+      },
+      "stacks": "Son kullanma tarihine göre satırlar",
+      "expires": "×{{count}} · {{date}} tarihinde sona erer",
+      "neverExpires": "×{{count}} · süresiz",
+      "teamRecovery": "Kulübün bugün {{used}}/{{perDay}} kullandı · sıfırlanma {{time}}",
+      "noteXp": "{{style}}: bu sezon notlardan {{used}}/{{limit}} XP",
+      "xpX2": "Bekleyen çift XP maçları: {{remaining}}/{{max}}",
+      "notThisSeason": "Bu sezon kullanılamaz.",
+      "needClub": "Bir kulübe ihtiyacın var.",
+      "use": "Kullan",
+      "renameAt": "Adı kadro sayfasından ya da kulüp kartından değiştir",
+      "academySoon": "Altyapıda kullanılır (yakında)",
+      "target": {
+        "player": "bir oyuncu",
+        "club": "kulüp",
+        "account": "hesabın",
+        "scoutTrip": "bir gözlem gezisi"
+      },
+      "source": {
+        "shop": "Mağazadan alındı",
+        "admin": "Bir yönetici verdi",
+        "onlineEvent": "Etkinlik ödülü",
+        "offlineMission": "Çevrimdışı görev",
+        "seasonReward": "Sezon ödülü",
+        "use": "Kullanıldı",
+        "adminRevoke": "Bir yönetici geri aldı"
+      },
+      "historyEmpty": "Henüz eşya hareketi yok.",
+      "expiredNotShown": "Süresi dolan eşyalar burada görünmez."
+    },
+    "shop": {
+      "notOnServer": "Bu sunucuda henüz mağaza yok.",
+      "closed": "Mağaza henüz açılmadı.",
+      "empty": "Şu anda satışta bir şey yok.",
+      "toWallet": "Jeton cüzdanı",
+      "neverExpire": "Jetonla alınan eşyaların süresi dolmaz. Hesabına aittir ve başkasına aktarılamaz.",
+      "notThisSeason": "Bu sezon kullanılamaz",
+      "academySoon": "Altyapı ile açılır",
+      "itemsLocked": "Eşyaların kontrol sırasında kilitli",
+      "full": "Envanterin bu eşyadan daha fazlasını alamaz",
+      "buy": "Satın al",
+      "bought": "{{item}} ×{{count}}, {{coins}} jetona alındı.",
+      "confirmTitle": "{{item}} satın alınsın mı?",
+      "quantity": "Miktar (en fazla {{max}})",
+      "room": "Şu anda en fazla {{max}} alabilirsin: envanter her eşyadan 999 adet tutar.",
+      "price": "Birim fiyat",
+      "total": "Toplam",
+      "after": "Sonrasında jeton",
+      "bound": "Eşyalar hesabına aittir ve başkasına aktarılamaz.",
+      "confirm": "Satın al",
+      "effect": {
+        "condition": "+{{n}} kondisyon",
+        "days": "Sakatlığı {{days}} gün kısaltır",
+        "cure": "{{cure}} gün veya daha kısa bir sakatlığı iyileştirir, yoksa {{days}} gün kısaltır",
+        "note": "Ustalığı {{from}}–{{to}} olan bir tarz için +{{xp}} XP",
+        "matches": "{{n}} çevrimiçi maç boyunca çift XP"
+      },
+      "caps": {
+        "perPlayerDay": "Oyuncu başına futbol günü başına en fazla {{n}} kondisyon eşyası, tüm türler birlikte",
+        "perClubDay": "Kulüp başına futbol günü başına en fazla {{n}}",
+        "xpPerStyleSeason": "Tarz başına sezon başına notlardan en fazla {{n}} XP",
+        "maxMatches": "En fazla {{n}} bekleyen çift XP maçı"
       }
     }
   },
