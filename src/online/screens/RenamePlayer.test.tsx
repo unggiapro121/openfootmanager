@@ -11,7 +11,7 @@ import {
 } from "../../test-utils/onlineTestKit";
 import type { MyMarketView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
-import ClubCard from "./ClubCard";
+import ClubCard from "./overview/ClubCard";
 import OnlinePlayer from "./squad/OnlinePlayer";
 
 vi.mock("react-i18next", () => ({

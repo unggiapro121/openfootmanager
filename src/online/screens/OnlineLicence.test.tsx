@@ -157,10 +157,11 @@ describe("the coach's licence online", () => {
       "DELETE v1/clubs/mine/licence-notice": ok(firstLicence()),
     });
     renderOnline("/online");
-    expect(
-      await screen.findByText("online.licence.held:tactics.licence.tier_1|1"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("online.licence.next:tactics.licence.tier_2|2")).toBeInTheDocument();
+    const road = await screen.findByRole("list", { name: "online.overview.licenceRoad" });
+    expect(within(road).getByText("tactics.licence.tier_1")).toBeInTheDocument();
+    expect(within(road).getByText("online.overview.licenceNow:1")).toBeInTheDocument();
+    expect(within(road).getByText("tactics.licence.tier_2")).toBeInTheDocument();
+    expect(within(road).getByText("online.overview.licenceNext:2")).toBeInTheDocument();
     const notice = screen.getByRole("status", { name: "" });
     expect(
       within(notice).getByText("online.licence.notice.formation:4-2-3-1|4-3-3"),

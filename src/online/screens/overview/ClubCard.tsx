@@ -1,47 +1,91 @@
 import { type FormEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Card, CardBody, CardHeader } from "../../components/ui";
-import type { MyClubView } from "../api";
-import { online } from "../client";
-import { tracked, useOnlineStore } from "../store/onlineStore";
-import RenameCardNote, { useRenameCard } from "./RenameCardNote";
-import { renameErrorText } from "./renameText";
-import { useActionKey } from "./useActionKey";
+import { Link } from "react-router-dom";
+import { PenLine } from "lucide-react";
+import { Button } from "../../../components/ui";
+import { GeneratedCrest } from "../../../components/ui/GeneratedCrest";
+import { formatVal } from "../../../lib/valueFormatting";
+import type { MyClubView } from "../../api";
+import { online } from "../../client";
+import { tracked, useOnlineStore } from "../../store/onlineStore";
+import RenameCardNote, { useRenameCard } from "../RenameCardNote";
+import { renameErrorText } from "../renameText";
+import { useActionKey } from "../useActionKey";
+import OverviewCard from "./OverviewCard";
 
-/** The club: where it plays, and its name: the first rename is free, a later one needs a card. */
+/**
+ * The club (design tong-quan.html): its crest, name, area, stadium and money, and its name: the
+ * first rename is free, a later one needs a card.
+ */
 export default function ClubCard({ club }: { club: MyClubView }) {
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
+  const finance = useOnlineStore((state) => state.finance);
   const profile = club.club;
+  const dt = "text-gray-500 dark:text-gray-400";
+  const dd = "text-gray-900 dark:text-gray-100";
 
   return (
-    <Card>
-      <CardHeader
-        action={
-          !renaming && (
-            <Button variant="ghost" size="sm" onClick={() => setRenaming(true)}>
-              {t("online.club.rename")}
-            </Button>
-          )
-        }
-      >
-        {t("online.club.title")}
-      </CardHeader>
-      <CardBody className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-        <p className="font-heading text-lg font-bold text-gray-900 dark:text-gray-100">
-          {profile.name}
-        </p>
-        <p>
-          {profile.city} · {t(`coach.regions.${profile.region}`)}
-        </p>
-        <p>
-          {t("online.club.stadium", {
-            name: profile.stadiumName,
-            capacity: profile.stadiumCapacity,
-          })}
-        </p>
+    <OverviewCard
+      title={t("online.club.title")}
+      className="flex-[1_1_420px]"
+      action={
+        !renaming && (
+          <button
+            type="button"
+            onClick={() => setRenaming(true)}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 font-heading text-xs font-semibold uppercase tracking-wider text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:text-gray-300 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800"
+          >
+            <PenLine className="h-3.5 w-3.5" aria-hidden="true" />
+            {t("online.club.rename")}
+          </button>
+        )
+      }
+    >
+      <div className="flex flex-col gap-4 p-6">
+        <div className="flex flex-wrap items-start gap-5">
+          <span className="h-16 w-16 shrink-0">
+            <GeneratedCrest
+              name={profile.name}
+              label={profile.shortName}
+              colors={profile.colors}
+              className="h-full w-full"
+            />
+          </span>
+          <dl className="grid flex-[1_1_240px] grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 text-sm">
+            <dt className={dt}>{t("online.overview.clubName")}</dt>
+            <dd className={`${dd} font-bold`}>{profile.name}</dd>
+            <dt className={dt}>{t("online.overview.area")}</dt>
+            <dd className={dd}>
+              {profile.city} · {t(`coach.regions.${profile.region}`)}
+            </dd>
+            <dt className={dt}>{t("online.overview.stadium")}</dt>
+            <dd className={dd}>
+              {t("online.overview.stadiumLine", {
+                name: profile.stadiumName,
+                capacity: profile.stadiumCapacity,
+              })}
+            </dd>
+            {finance?.economy && (
+              <>
+                <dt className={dt}>{t("online.overview.budget")}</dt>
+                <dd className={`${dd} font-semibold`}>
+                  {formatVal(finance.cash)}{" "}
+                  <Link
+                    to="/online/finance"
+                    className="ml-1.5 rounded text-xs font-semibold text-primary-700 hover:text-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                  >
+                    {t("online.nav.finance")}
+                  </Link>
+                </dd>
+              </>
+            )}
+          </dl>
+        </div>
         {club.squadRefreshing && (
-          <p className="text-accent-600 dark:text-accent-400">{t("online.takeover.makingSquad")}</p>
+          <p className="text-sm text-accent-700 dark:text-accent-300">
+            {t("online.takeover.makingSquad")}
+          </p>
         )}
         {renaming && (
           <RenameForm
@@ -51,8 +95,8 @@ export default function ClubCard({ club }: { club: MyClubView }) {
             onDone={() => setRenaming(false)}
           />
         )}
-      </CardBody>
-    </Card>
+      </div>
+    </OverviewCard>
   );
 }
 
