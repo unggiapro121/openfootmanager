@@ -24,6 +24,9 @@ const CATEGORY: Record<string, string> = {
   "season.promoted": "LeagueInfo",
   "season.reward": "Finance",
   "licence.fitted": "BoardDirective",
+  // The nightly item audit locked or unlocked the coach's items (S-17 §3.11, C-7b).
+  "account.itemsLocked": "BoardDirective",
+  "account.itemsUnlocked": "BoardDirective",
 };
 
 /** Kinds that have their own words; any other is shown as a plain notice. */

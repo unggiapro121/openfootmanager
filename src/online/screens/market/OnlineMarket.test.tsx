@@ -4,7 +4,7 @@ import { fakeRealtime } from "../../../test-utils/onlineMatchKit";
 import { fail, ok, renderOnline, resetOnline } from "../../../test-utils/onlineTestKit";
 import { useOnlineStore } from "../../store/onlineStore";
 import { ACCOUNT, auction, EMPTY_MARKET, MY_CLUB, sentTo, serveMarket } from "./marketTestKit";
-import { NOTICE_MILLIS } from "./OnlineNotices";
+import { NOTICE_MILLIS } from "../OnlineNotices";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },

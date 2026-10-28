@@ -50,7 +50,9 @@
       "market": "Markt",
       "inbox": "Posteingang",
       "account": "Konto",
-      "coins": "Münzbörse"
+      "coins": "Münzbörse",
+      "inventory": "Inventar",
+      "shop": "Shop"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -532,7 +534,7 @@
       "listed": "In der Auktion: Auktion öffnen",
       "list": "Verkaufen",
       "notice": {
-        "region": "Marktmeldungen",
+        "region": "Mitteilungen",
         "close": "Meldung schließen",
         "outbid": "Du wurdest bei {{player}} überboten.",
         "outbidUnnamed": "Du wurdest in einer Auktion überboten.",
@@ -561,9 +563,15 @@
       "hint": "Vollständiger Name mit {{full}} Zeichen, Name auf dem Platz mit {{match}}. Die erste Umbenennung eines Spielers ist kostenlos; weitere brauchen eine Spieler-Umbenennungskarte.",
       "save": "Namen speichern",
       "itemRequired": {
-        "playerRename": "Dieser Spieler hat seine kostenlose Umbenennung schon genutzt. Eine weitere braucht eine Spieler-Umbenennungskarte (kommt mit einem späteren Update).",
-        "clubRename": "Dein Verein hat seine kostenlose Umbenennung schon genutzt. Eine weitere braucht eine Vereins-Umbenennungskarte (kommt mit einem späteren Update)."
-      }
+        "playerRename": "Dieser Spieler hat seine kostenlose Umbenennung bereits genutzt. Eine weitere braucht eine Spieler-Umbenennungskarte aus dem Shop.",
+        "clubRename": "Dein Verein hat seine kostenlose Umbenennung bereits genutzt. Eine weitere braucht eine Vereins-Umbenennungskarte aus dem Shop."
+      },
+      "free": "Diese erste Umbenennung ist kostenlos.",
+      "held": "Du hast {{count}} × {{item}}.",
+      "willSpend": "Diese Umbenennung verbraucht 1 {{item}} (du hast {{count}}).",
+      "needCard": "Diese Umbenennung braucht 1 {{item}}.",
+      "itemsLocked": "Deine Gegenstände sind während einer Prüfung gesperrt, daher kann gerade keine Karte verbraucht werden.",
+      "toShop": "Im Shop kaufen"
     },
     "mastery": {
       "hint": "Die Beherrschung wächst in Ligaspielen, die Sie selbst leiten, nicht in denen, die die KI für Sie spielt."
@@ -679,6 +687,16 @@
             "subject": "Spieler in bester Laune",
             "body": "{{count}} Spieler sind begeistert vom Leben im Verein: {{names}}."
           }
+        },
+        "account": {
+          "itemsLocked": {
+            "subject": "Deine Gegenstände sind für eine Prüfung gesperrt",
+            "body": "Deine Gegenstände sind während einer Prüfung gesperrt; nichts geht verloren. Umbenennen mit Karte und das Verwenden von Gegenständen sind nach der Prüfung wieder möglich."
+          },
+          "itemsUnlocked": {
+            "subject": "Deine Gegenstände sind entsperrt",
+            "body": "Die Prüfung deiner Gegenstände ist abgeschlossen. Du kannst sie wieder verwenden."
+          }
         }
       }
     },
@@ -718,6 +736,178 @@
         "reversal": "Storno",
         "item_purchase": "Kauf im Shop",
         "item_refund": "Shop-Erstattung"
+      }
+    },
+    "items": {
+      "energyDrinkSmall": {
+        "name": "Energydrink",
+        "description": "Stellt die Kondition eines deiner Spieler wieder her."
+      },
+      "energyDrinkLarge": {
+        "name": "Großer Energydrink",
+        "description": "Stellt mehr Kondition bei einem deiner Spieler wieder her."
+      },
+      "teamRecoveryPack": {
+        "name": "Team-Regenerationspaket",
+        "description": "Stellt die Kondition deiner ganzen Startelf wieder her."
+      },
+      "medkitBandage": {
+        "name": "Verband",
+        "description": "Verkürzt die Ausfallzeit eines verletzten Spielers um einige Tage."
+      },
+      "medkitAdvanced": {
+        "name": "Erweitertes Medizinset",
+        "description": "Heilt eine kurze Verletzung sofort oder verkürzt eine längere um einige Tage."
+      },
+      "tacticalNoteBasic": {
+        "name": "Einfache Taktiknotiz",
+        "description": "XP für eine Spielweise mit niedriger Beherrschung."
+      },
+      "tacticalNoteAdvanced": {
+        "name": "Fortgeschrittene Taktiknotiz",
+        "description": "XP für eine Spielweise mit mittlerer Beherrschung."
+      },
+      "tacticalNoteMaster": {
+        "name": "Meister-Taktiknotiz",
+        "description": "XP für eine Spielweise mit hoher Beherrschung."
+      },
+      "xpBoosterX2": {
+        "name": "Doppel-XP-Booster",
+        "description": "Doppelte Trainer-XP in deinen nächsten Online-Spielen."
+      },
+      "playerRename": {
+        "name": "Spieler-Umbenennungskarte",
+        "description": "Benennt einen deiner Spieler nach der kostenlosen Umbenennung erneut um."
+      },
+      "clubRename": {
+        "name": "Vereins-Umbenennungskarte",
+        "description": "Benennt deinen Verein nach der kostenlosen Umbenennung erneut um."
+      },
+      "scoutExpedition": {
+        "name": "Scouting-Ticket",
+        "description": "Bezahlt eine Scouting-Reise der Jugendakademie."
+      },
+      "scoutExpeditionElite": {
+        "name": "Elite-Scouting-Ticket",
+        "description": "Eine Scouting-Reise, die mindestens ein Top-Talent mitbringt."
+      },
+      "timeSkip": {
+        "name": "Sanduhr",
+        "description": "Holt eine Scouting-Reise sofort zurück."
+      },
+      "notice": {
+        "granted": "Du hast {{item}} erhalten.",
+        "refunded": "Ein Kauf von {{item}} wurde erstattet; die Münzen sind wieder in deiner Geldbörse.",
+        "changed": "Deine Gegenstände haben sich geändert."
+      },
+      "reason": {
+        "conditionFull": "Die Kondition ist bereits voll",
+        "notInjured": "Nicht verletzt",
+        "atCap": "Diese Spielweise ist bereits auf höchster Beherrschung",
+        "wrongTier": "Diese Notiz passt nicht zur Beherrschungsstufe dieser Spielweise"
+      },
+      "use": {
+        "rename": "Diese Karte wird verbraucht, wenn du einen Spieler oder deinen Verein umbenennst.",
+        "academy": "Dieser Gegenstand wird in der Jugendakademie verwendet."
+      },
+      "preview": {
+        "condition": "{{player}}: Kondition {{before}} → {{after}}",
+        "injury": "{{player}}: {{before}} Tage Ausfall → {{after}}",
+        "cured": "{{player}}: {{before}} Tage Ausfall → wieder fit",
+        "mastery": "+{{xp}} XP, Beherrschung {{before}} → {{after}}",
+        "xpX2": "+{{matches}} Spiele mit doppelter XP, {{remaining}} ausstehend"
+      },
+      "limit": {
+        "today": "Heute verwendet: {{used}}/{{perDay}} · Zurücksetzung {{time}}",
+        "todayPlain": "Heute verwendet: {{used}}/{{perDay}}",
+        "season": "XP aus Notizen in dieser Saison: {{used}}/{{limit}}",
+        "xpX2": "Ausstehende Spiele mit doppelter XP: {{remaining}}/{{max}}"
+      },
+      "useTitle": "{{item}} verwenden",
+      "pickPlayer": "Spieler wählen",
+      "pickStyle": "Spielweise wählen",
+      "previewing": "Wirkung wird geprüft…",
+      "confirmUse": "Verwenden",
+      "used": "{{item}} verwendet.",
+      "shortcut": "{{item}} verwenden (×{{count}})"
+    },
+    "inventory": {
+      "notOnServer": "Dieser Server hat noch keine Gegenstände.",
+      "locked": "Deine Gegenstände sind während einer Prüfung gesperrt; nichts geht verloren. Umbenennen mit Karte und das Verwenden von Gegenständen sind nach der Prüfung wieder möglich.",
+      "lockedShort": "Deine Gegenstände sind während einer Prüfung gesperrt.",
+      "tabHeld": "Gegenstände",
+      "tabHistory": "Verlauf",
+      "empty": "Dein Inventar ist leer.",
+      "toShop": "Zum Shop",
+      "group": {
+        "condition": "Kondition",
+        "medical": "Medizin",
+        "tactics": "Taktik",
+        "custom": "Anpassung",
+        "academy": "Jugendakademie",
+        "other": "Sonstiges"
+      },
+      "stacks": "Zeilen nach Ablauf",
+      "expires": "×{{count}} · läuft ab am {{date}}",
+      "neverExpires": "×{{count}} · läuft nie ab",
+      "teamRecovery": "Dein Verein hat heute {{used}}/{{perDay}} verwendet · Zurücksetzung {{time}}",
+      "noteXp": "{{style}}: {{used}}/{{limit}} XP aus Notizen in dieser Saison",
+      "xpX2": "Ausstehende Spiele mit doppelter XP: {{remaining}}/{{max}}",
+      "notThisSeason": "In dieser Saison nicht verwendbar.",
+      "needClub": "Du brauchst einen Verein.",
+      "use": "Verwenden",
+      "renameAt": "Umbenennen im Kader oder auf der Vereinskarte",
+      "academySoon": "Wird in der Jugendakademie verwendet (bald verfügbar)",
+      "target": {
+        "player": "ein Spieler",
+        "club": "der Verein",
+        "account": "dein Konto",
+        "scoutTrip": "eine Scouting-Reise"
+      },
+      "source": {
+        "shop": "Im Shop gekauft",
+        "admin": "Von einem Administrator vergeben",
+        "onlineEvent": "Event-Belohnung",
+        "offlineMission": "Offline-Mission",
+        "seasonReward": "Saisonbelohnung",
+        "use": "Verwendet",
+        "adminRevoke": "Von einem Administrator entzogen"
+      },
+      "historyEmpty": "Noch keine Gegenstandsbuchungen.",
+      "expiredNotShown": "Abgelaufene Gegenstände werden hier nicht angezeigt."
+    },
+    "shop": {
+      "notOnServer": "Dieser Server hat noch keinen Shop.",
+      "closed": "Der Shop ist noch nicht geöffnet.",
+      "empty": "Im Moment wird nichts verkauft.",
+      "toWallet": "Münzbörse",
+      "neverExpire": "Mit Münzen gekaufte Gegenstände laufen nie ab. Sie gehören zu deinem Konto und können nicht weitergegeben werden.",
+      "notThisSeason": "In dieser Saison nicht verwendbar",
+      "academySoon": "Verfügbar mit der Jugendakademie",
+      "itemsLocked": "Deine Gegenstände sind während einer Prüfung gesperrt",
+      "full": "Dein Inventar fasst nicht mehr von diesem Gegenstand",
+      "buy": "Kaufen",
+      "bought": "{{item}} ×{{count}} für {{coins}} Münzen gekauft.",
+      "confirmTitle": "{{item}} kaufen?",
+      "quantity": "Menge (höchstens {{max}})",
+      "room": "Du kannst jetzt höchstens {{max}} kaufen: Das Inventar fasst 999 Stück je Gegenstand.",
+      "price": "Preis pro Stück",
+      "total": "Gesamt",
+      "after": "Münzen danach",
+      "bound": "Gegenstände gehören zu deinem Konto und können nicht weitergegeben werden.",
+      "confirm": "Kaufen",
+      "effect": {
+        "condition": "+{{n}} Kondition",
+        "days": "Verkürzt eine Verletzung um {{days}} Tage",
+        "cure": "Heilt eine Verletzung von höchstens {{cure}} Tagen, sonst {{days}} Tage weniger",
+        "note": "+{{xp}} XP für eine Spielweise mit Beherrschung {{from}}–{{to}}",
+        "matches": "Doppelte XP für {{n}} Online-Spiele"
+      },
+      "caps": {
+        "perPlayerDay": "Höchstens {{n}} Konditionsgegenstände pro Spieler und Fußballtag, alle Arten zusammen",
+        "perClubDay": "Höchstens {{n}} pro Verein und Fußballtag",
+        "xpPerStyleSeason": "Höchstens {{n}} XP aus Notizen pro Spielweise und Saison",
+        "maxMatches": "Höchstens {{n}} ausstehende Spiele mit doppelter XP"
       }
     }
   },

@@ -2,29 +2,42 @@ import type { TFunction } from "i18next";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Gavel, X } from "lucide-react";
-import { formatExactMoney } from "../../../lib/valueFormatting";
-import { type MarketNotice, useOnlineStore } from "../../store/onlineStore";
+import { Backpack, Gavel, X } from "lucide-react";
+import { formatExactMoney } from "../../lib/valueFormatting";
+import { type OnlineNotice, useOnlineStore } from "../store/onlineStore";
+import { itemName } from "./items/itemText";
 
 /** How long a notice stays before it leaves by itself. */
 export const NOTICE_MILLIS = 8000;
 
-/** The events a notice has its own sentence for; any other says only that something changed. */
-const KNOWN_EVENTS = new Set(["outbid", "won", "sold", "unsold", "cancelled", "forced"]);
+/** The market events a notice has its own sentence for; any other says only that something changed. */
+const MARKET_EVENTS = new Set(["outbid", "won", "sold", "unsold", "cancelled", "forced"]);
 
-function noticeText(t: TFunction, notice: MarketNotice): string {
-  const event = KNOWN_EVENTS.has(notice.event) ? notice.event : "changed";
-  const named = notice.playerName !== undefined;
-  return t(`online.market.notice.${event}${named ? "" : "Unnamed"}`, {
-    player: notice.playerName,
-    price: notice.price === undefined ? "" : formatExactMoney(notice.price),
+/** The item events a notice is pushed for (C-7 C7-34). */
+const ITEM_EVENTS = new Set(["granted", "refunded"]);
+
+function noticeText(t: TFunction, notice: OnlineNotice): string {
+  if (notice.kind === "items") {
+    const event = ITEM_EVENTS.has(notice.event) ? notice.event : "changed";
+    const code = notice.params.item;
+    return t(`online.items.notice.${event}`, {
+      item: typeof code === "string" ? itemName(t, code) : "",
+    });
+  }
+  const event = MARKET_EVENTS.has(notice.event) ? notice.event : "changed";
+  const player = notice.params.player;
+  const price = notice.params.price;
+  return t(`online.market.notice.${event}${player === undefined ? "Unnamed" : ""}`, {
+    player,
+    price: typeof price === "number" ? formatExactMoney(price) : "",
   });
 }
 
 /**
- * The market's notices in a corner of the online screens (C-5 C5-14): at most three, newest last,
- * each leaving after eight seconds or when closed. They sit outside a live match's frame and never
- * take the focus; a screen reader hears each as it comes.
+ * The notices in a corner of the online screens (C-5 C5-14, C-7 C7-4): the market's, and an item
+ * given or a purchase refunded. At most three, newest last, each leaving after eight seconds or
+ * when closed. They sit outside a live match's frame and never take the focus; a screen reader
+ * hears each as it comes.
  */
 export default function OnlineNotices() {
   const { t } = useTranslation();
@@ -42,20 +55,21 @@ export default function OnlineNotices() {
   );
 }
 
-function NoticeCard({ notice, text }: { notice: MarketNotice; text: string }) {
+function NoticeCard({ notice, text }: { notice: OnlineNotice; text: string }) {
   const { t } = useTranslation();
   const dismiss = useOnlineStore((state) => state.dismissNotice);
   useEffect(() => {
     const timer = window.setTimeout(() => dismiss(notice.id), NOTICE_MILLIS);
     return () => window.clearTimeout(timer);
   }, [dismiss, notice.id]);
+  const Icon = notice.kind === "items" ? Backpack : Gavel;
 
   return (
     <div className="pointer-events-auto flex items-start gap-3 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-800 shadow-lg dark:border-navy-600 dark:bg-navy-800 dark:text-gray-100">
-      <Gavel className="mt-0.5 h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
-      {notice.auctionId ? (
+      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" aria-hidden />
+      {notice.link ? (
         <Link
-          to={`/online/auctions/${notice.auctionId}`}
+          to={notice.link}
           onClick={() => dismiss(notice.id)}
           className="flex-1 rounded hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:hover:text-primary-400 dark:focus:ring-offset-navy-800"
         >

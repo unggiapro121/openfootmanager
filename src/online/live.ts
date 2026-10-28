@@ -133,12 +133,21 @@ export type AccountRing =
       event?: "outbid" | "won" | "sold" | "unsold" | "cancelled" | "forced" | string;
       auctionId?: string;
     }
+  /**
+   * The coach's items changed (S-17, C-7b): given (`granted`), used, bought, a purchase refunded,
+   * or an event this build does not know. The inventory is read again for any of them.
+   */
+  | {
+      kind: "items";
+      event?: "granted" | "used" | "bought" | "refunded" | string;
+      itemCode?: string;
+    }
   | { kind: "unknown" };
 
 /** Read a ring of the account channel; a kind this build does not know is `unknown` (E6-15). */
 export function readAccountRing(data: unknown): AccountRing {
   if (typeof data !== "object" || data === null) return { kind: "unknown" };
-  const ring = data as { kind?: unknown; event?: unknown; auctionId?: unknown };
+  const ring = data as { kind?: unknown; event?: unknown; auctionId?: unknown; itemCode?: unknown };
   if (ring.kind === "friendly") return { kind: "friendly" };
   if (ring.kind === "finance") return { kind: "finance" };
   if (ring.kind === "market") {
@@ -146,6 +155,13 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "market",
       event: typeof ring.event === "string" ? ring.event : undefined,
       auctionId: typeof ring.auctionId === "string" ? ring.auctionId : undefined,
+    };
+  }
+  if (ring.kind === "items") {
+    return {
+      kind: "items",
+      event: typeof ring.event === "string" ? ring.event : undefined,
+      itemCode: typeof ring.itemCode === "string" ? ring.itemCode : undefined,
     };
   }
   return { kind: "unknown" };

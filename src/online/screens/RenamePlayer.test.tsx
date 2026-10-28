@@ -152,3 +152,66 @@ describe("renaming a player online (S-14)", () => {
     );
   });
 });
+
+describe("the rename card's line (C-7b)", () => {
+  const USED = { ...STRIKER, renameFree: false };
+  const cards = (total: number, locked = false) => ({
+    lines:
+      total > 0
+        ? [{ itemCode: "playerRename", powerClass: "a", total, stacks: [{ quantity: total }] }]
+        : [],
+    locked,
+  });
+
+  // Given a player's first rename,
+  // when the dialog opens,
+  // then it says the rename is free and reads no inventory.
+  it("says a first rename is free", () => {
+    useOnlineStore.getState().setClub(myClub({ players: [STRIKER] }));
+    server = fakeServer({});
+    renderSquad();
+    const dialog = openRename();
+    expect(within(dialog).getByRole("note")).toHaveTextContent("online.rename.free");
+    expect(server.requests).toHaveLength(0);
+  });
+
+  // Given a used free rename and no card,
+  // when the dialog opens,
+  // then it says a card is needed with a link to buy it, and saving is off.
+  it("holds the save and links to the shop without a card", async () => {
+    useOnlineStore.getState().setClub(myClub({ players: [USED] }));
+    server = fakeServer({ "GET v1/me/items": ok(cards(0)) });
+    renderSquad();
+    const dialog = openRename();
+    const note = await within(dialog).findByText(/online\.rename\.needCard/);
+    expect(within(note).getByRole("link", { name: "online.rename.toShop" })).toHaveAttribute(
+      "href",
+      "/online/shop?item=playerRename",
+    );
+    expect(within(dialog).getByRole("button", { name: "online.rename.save" })).toBeDisabled();
+  });
+
+  // Given a used free rename and two cards,
+  // when the dialog opens,
+  // then it says one card will be spent of the two, and saving is on.
+  it("says the card a rename spends", async () => {
+    useOnlineStore.getState().setClub(myClub({ players: [USED] }));
+    server = fakeServer({ "GET v1/me/items": ok(cards(2)) });
+    renderSquad();
+    const dialog = openRename();
+    expect(await within(dialog).findByText(/online\.rename\.willSpend:.*\|2$/)).toBeTruthy();
+    expect(within(dialog).getByRole("button", { name: "online.rename.save" })).toBeEnabled();
+  });
+
+  // Given a used free rename and the inventory locked by the audit,
+  // when the dialog opens,
+  // then it says the items are locked instead of the card, and saving is off.
+  it("says the lock rather than the card while items are locked", async () => {
+    useOnlineStore.getState().setClub(myClub({ players: [USED] }));
+    server = fakeServer({ "GET v1/me/items": ok(cards(2, true)) });
+    renderSquad();
+    const dialog = openRename();
+    expect(await within(dialog).findByText("online.rename.itemsLocked")).toBeTruthy();
+    expect(within(dialog).getByRole("button", { name: "online.rename.save" })).toBeDisabled();
+  });
+});

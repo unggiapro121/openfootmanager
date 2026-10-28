@@ -540,6 +540,120 @@ fn the_coin_routes_go_out() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads its items, a page of their entries, previews an item on a player, a
+/// style, the club and the account, uses one, reads the shop and buys (C-7b),
+/// then each goes out to its own route, a target's `:` sent encoded as `%3A`.
+#[test]
+fn the_item_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let player = format!("player:{CLUB}");
+    let routes = vec![
+        ("GET", vec!["v1", "me", "items"], vec![]),
+        (
+            "GET",
+            vec!["v1", "me", "items", "entries"],
+            vec![("cursor", CLUB), ("limit", "50")],
+        ),
+        (
+            "GET",
+            vec!["v1", "me", "items", "energyDrinkSmall", "preview"],
+            vec![("target", player.as_str())],
+        ),
+        (
+            "GET",
+            vec!["v1", "me", "items", "tacticalNoteBasic", "preview"],
+            vec![("target", "style:Balanced")],
+        ),
+        (
+            "GET",
+            vec!["v1", "me", "items", "teamRecoveryPack", "preview"],
+            vec![("target", "club")],
+        ),
+        (
+            "GET",
+            vec!["v1", "me", "items", "xpBoosterX2", "preview"],
+            vec![("target", "account")],
+        ),
+        (
+            "POST",
+            vec!["v1", "me", "items", "energyDrinkSmall", "use"],
+            vec![],
+        ),
+        ("GET", vec!["v1", "shop"], vec![]),
+        ("POST", vec!["v1", "shop", "purchases"], vec![]),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(
+        went[2].1,
+        format!("/v1/me/items/energyDrinkSmall/preview?target=player%3A{CLUB}")
+    );
+    assert_eq!(
+        went[3].1,
+        "/v1/me/items/tacticalNoteBasic/preview?target=style%3ABalanced"
+    );
+    assert_eq!(
+        went[6],
+        (
+            String::from("POST"),
+            String::from("/v1/me/items/energyDrinkSmall/use")
+        )
+    );
+}
+
+/// Given a signed-in coach,
+/// when an item route is asked with a target of two `:` or an empty half, a `:` in another key,
+/// an item code outside its alphabet, or a code where an id belongs,
+/// then each is refused without being sent.
+#[test]
+fn item_codes_and_targets_keep_their_alphabet() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    for target in [
+        "a:b:c",
+        "player:",
+        ":x",
+        "player:a%2Fb",
+        "player:a/b",
+        "player:a b",
+    ] {
+        let mut preview = request("GET", &["v1", "me", "items", "energyDrinkSmall", "preview"]);
+        preview.query = vec![(String::from("target"), target.to_string())];
+        assert_eq!(
+            refused(send(&session, &preview, 0)),
+            "be.error.online.routeNotAllowed",
+            "{target:?}"
+        );
+    }
+    let mut cursor = request("GET", &["v1", "me", "items", "entries"]);
+    cursor.query = vec![(String::from("cursor"), String::from("a:b"))];
+    assert_eq!(
+        refused(send(&session, &cursor, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    let long = "a".repeat(41);
+    for code in ["EnergyDrink", "energy-drink", "1drink", long.as_str()] {
+        assert_eq!(
+            refused(send(
+                &session,
+                &request("POST", &["v1", "me", "items", code, "use"]),
+                0
+            )),
+            "be.error.online.routeNotAllowed",
+            "{code:?}"
+        );
+    }
+    assert_eq!(
+        refused(send(
+            &session,
+            &request("GET", &["v1", "clubs", "energyDrinkSmall"]),
+            0
+        )),
+        "be.error.online.routeNotAllowed"
+    );
+    assert!(server.requests().is_empty(), "nothing was sent");
+}
+
+/// Given a signed-in coach,
 /// when the webview uses the market (C-5): the open auctions with every filter and a cursor, one
 /// auction, a bid, a withdrawal, the club's own market, a listing quote and a listing,
 /// then each goes out to its own route; another method on an auction, an id that is not one and a

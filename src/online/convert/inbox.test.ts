@@ -123,4 +123,16 @@ describe("an inbox message as the offline inbox reads one", () => {
       "Finance",
     );
   });
+
+  // Given the item audit's two account messages (S-17, C-7b),
+  // when they are worded,
+  // then each has its own words under the board's category, not the plain notice.
+  it("words the lock and the unlock of the coach's items", () => {
+    const locked = toMessageData(mail("account.itemsLocked", {}), t, "A");
+    const unlocked = toMessageData(mail("account.itemsUnlocked", {}), t, "A");
+
+    expect(locked.category).toBe("BoardDirective");
+    expect(locked.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsLocked\.subject/);
+    expect(unlocked.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsUnlocked\.subject/);
+  });
 });
