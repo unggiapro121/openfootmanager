@@ -188,6 +188,19 @@ describe("online client", () => {
     });
   });
 
+  // Given a coach who presses today's session at a high intensity (S-21 S21-13),
+  // when the request goes out,
+  // then it is a POST of the club's training sessions with the intensity and a key.
+  it("holds today's session with its intensity", async () => {
+    await online.clubs.holdSession({ intensity: "High" }, "press-1");
+    expect(server.sent[0]).toEqual({
+      method: "POST",
+      segments: ["v1", "clubs", "mine", "training", "sessions"],
+      idempotencyKey: "press-1",
+      body: { intensity: "High" },
+    });
+  });
+
   // Given a coach who sets his eleven, then sends the same action again with its key,
   // when the requests go out,
   // then the setup carries If-Match and a key, and the retry carries the same key; a new action

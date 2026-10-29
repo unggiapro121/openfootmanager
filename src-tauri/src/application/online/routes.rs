@@ -118,6 +118,12 @@ pub const ROUTES: &[Route] = &[
     ),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("setup")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("training")], &[]),
+    // Today's session, held now by the coach (S-21 S21-13).
+    route(
+        "POST",
+        &[L("v1"), L("clubs"), L("mine"), L("training"), L("sessions")],
+        &[],
+    ),
     // The coach's licence (S-9): the notice of what the server fitted, and the table of licences.
     route(
         "DELETE",
