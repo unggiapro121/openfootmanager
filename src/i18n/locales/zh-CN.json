@@ -53,7 +53,8 @@
       "coins": "金币钱包",
       "inventory": "背包",
       "shop": "商店",
-      "academy": "青训营"
+      "academy": "青训营",
+      "events": "活动"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -847,6 +848,27 @@
             "subject": "一次毕业被推迟",
             "body": "俱乐部无法支付 {{fee}} 的毕业费，{{player}} 将在青训营多留一个赛季。下次毕业免费。"
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "任务完成：{{theme}}",
+            "body": "你完成了 {{theme}} 的任务“{{mission}}”。打开活动页面领取奖励。",
+            "bodyUnnamed": "你完成了一个活动任务。打开活动页面领取奖励。"
+          },
+          "claimed": {
+            "subject": "已为你领取奖励：{{theme}}",
+            "body": "任务“{{mission}}”的奖励已为你自动领取。",
+            "bodyUnnamed": "一个活动任务的奖励已为你自动领取。"
+          },
+          "lapsed": {
+            "subject": "奖励未能领取：{{theme}}",
+            "body": "任务“{{mission}}”的奖励未能发放：{{reason}}。",
+            "bodyUnnamed": "一个活动任务的奖励未能发放：{{reason}}。"
+          },
+          "claimReminder": {
+            "subject": "活动奖励待领取：{{theme}}",
+            "body": "你还有未领取的活动奖励。截止时间：{{until}}。过期后服务器会为你自动领取；若无法领取，会有邮件说明原因。"
+          }
         }
       },
       "viewNewAuction": "查看新拍卖",
@@ -887,7 +909,8 @@
         "coin_clawback": "退款后收回",
         "reversal": "冲正",
         "item_purchase": "商店购买",
-        "item_refund": "商店退款"
+        "item_refund": "商店退款",
+        "event_reward": "活动奖励"
       }
     },
     "items": {
@@ -1235,6 +1258,74 @@
         "wagesNote": "{{wage}} × {{n}} 名球员",
         "fee": "毕业费",
         "feeNote": "每名球员 · 至少在营 {{days}} 天"
+      }
+    },
+    "events": {
+      "notOnServer": "此服务器尚未开放活动。",
+      "disabled": "本赛季没有活动。",
+      "empty": "目前没有活动。新活动会在开始前 7 天显示在这里。",
+      "group": {
+        "running": "进行中",
+        "ended": "已结束，奖励待领取",
+        "scheduled": "即将开始",
+        "closed": "已关闭"
+      },
+      "time": {
+        "running": "{{countdown}} 后结束",
+        "ended": "请在 {{moment}} 前领取，剩余 {{countdown}}",
+        "scheduled": "{{countdown}} 后开始",
+        "closed": "已关闭"
+      },
+      "theme": {
+        "welcome": "欢迎新教练",
+        "weekly": "每周活动",
+        "weekend": "周末活动",
+        "seasonOpener": "赛季揭幕",
+        "seasonFinale": "赛季收官",
+        "other": "活动"
+      },
+      "mission": {
+        "leagueMatchesDirected": "亲自指挥 {{target}} 场联赛",
+        "leagueWinsDirected": "亲自指挥赢下 {{target}} 场联赛",
+        "offlineMatches": "进行 {{target}} 场离线比赛",
+        "seasonPromoted": "赛季结束时升级",
+        "seasonFinishTop": "以联赛前 {{target}} 名完赛",
+        "seasonChampion": "夺得联赛冠军",
+        "other": "特殊任务"
+      },
+      "hint": {
+        "directed": "只计算你亲自指挥的比赛，不计 AI 代你踢的比赛。",
+        "offline": "只计算你亲自指挥（进入球场）的正式比赛，且在每日上限内（在线联赛也计入此上限），游戏须已登录本账号并成功将结果发送到服务器。",
+        "seasonEnd": "在赛季结算时计算，前提是赛季在活动结束前结算。"
+      },
+      "levels": {
+        "range": "仅限 {{from}}–{{to}} 级联赛",
+        "one": "仅限 {{from}} 级联赛",
+        "from": "仅限 {{from}} 级及以上联赛"
+      },
+      "met": "已达成",
+      "notMet": "尚未达成",
+      "rewards": "奖励",
+      "expires": "领取后 {{days}} 天过期",
+      "claim": "领取",
+      "claiming": "领取中…",
+      "claimAria": "领取任务奖励：{{mission}}",
+      "claimed": "已领取",
+      "justClaimed": "已领取：{{rewards}}",
+      "autoClaiming": "正在为你自动领取",
+      "lapsed": "未能领取：{{reason}}",
+      "lapsedUnknown": "奖励未能发放。原因见收件箱。",
+      "reason": {
+        "grantLimitReached": "该物品已达本赛季上限",
+        "coinLimitReached": "已达本赛季活动金币上限",
+        "stackFull": "你的背包已满",
+        "inventoryLocked": "你的物品或金币因检查被锁定",
+        "disabled": "本赛季已关闭物品或活动",
+        "unavailable": "服务器无法发放，请联系客服"
+      },
+      "notice": {
+        "completed": "任务完成：{{mission}}",
+        "completedUnnamed": "你刚刚完成了一个活动任务。"
       }
     }
   },
@@ -4958,12 +5049,12 @@
         "sessionCapSeason": "7 天内已训练 6 次，本赛季剩下的日子里不能再训练。"
       },
       "events": {
-        "disabled": "本赛季没有活动。",
-        "notFound": "该活动或任务不存在。",
+        "disabled": "本赛季已关闭活动。",
+        "notFound": "该活动或任务已不存在。",
         "notCompleted": "该任务尚未完成。",
-        "alreadyClaimed": "你已领取过该任务的奖励。",
-        "closed": "该活动的奖励已无法领取。",
-        "coinLimitReached": "活动每赛季最多给予 {{limit}} 金币；领取此奖励将超出上限。"
+        "alreadyClaimed": "该奖励已被领取。",
+        "closed": "领取时间已过。未领取的奖励将在活动关闭时为你自动领取。",
+        "coinLimitReached": "本赛季你已从活动中获得全部 {{limit}} 金币，因此本任务的奖励（包括物品）未发放。请在新赛季开始后、截止时间前再试。"
       }
     },
     "sender": {

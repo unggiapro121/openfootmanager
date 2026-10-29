@@ -12,6 +12,7 @@ import type {
   AuctionPage,
   AuctionView,
   CareerView,
+  ClaimView,
   ClubCrest,
   ClubFixturesView,
   CoinExchangeRequest,
@@ -19,6 +20,7 @@ import type {
   CoinLinesPage,
   CoinView,
   CommandAccepted,
+  EventsView,
   FacilitiesView,
   FacilityUpgradeView,
   FinanceView,
@@ -420,6 +422,21 @@ export const online = {
         write(
           "POST",
           ["v1", "clubs", "mine", "academy", "players", playerId, "release"],
+          idempotencyKey,
+        ),
+      ),
+  },
+  /**
+   * The coach's events (S-19, C-7d): the events he may read with his progress, and a finished
+   * mission's rewards claimed, all of them or none.
+   */
+  events: {
+    mine: () => call<EventsView>(read(["v1", "me", "events"])),
+    claim: (eventId: string, missionCode: string, idempotencyKey = newKey()) =>
+      call<ClaimView>(
+        write(
+          "POST",
+          ["v1", "me", "events", eventId, "missions", missionCode, "claim"],
           idempotencyKey,
         ),
       ),

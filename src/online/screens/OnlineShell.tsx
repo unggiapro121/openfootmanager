@@ -26,6 +26,7 @@ const OPEN_WITHOUT_CLUB = [
   "/online/coins",
   "/online/inventory",
   "/online/shop",
+  "/online/events",
 ];
 /** Public pages of the world, open to anyone signed in: other clubs, fixtures, any match. */
 const PUBLIC_PREFIXES = ["/online/clubs/", "/online/fixtures/", "/online/match/"];

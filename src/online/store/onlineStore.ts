@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type {
   AcademyView,
   CoinView,
+  EventsView,
   FinanceView,
   FriendlyMineView,
   InventoryView,
@@ -28,15 +29,18 @@ export type OnlineGate = "open" | "clientOutdated" | "serverOutdated";
 export interface OnlineNotice {
   id: number;
   /**
-   * `market` (an auction, C-5), `items` (an item given or a purchase refunded, C-7b) or `academy`
-   * (a scouting trip back, C-7c).
+   * `market` (an auction, C-5), `items` (an item given or a purchase refunded, C-7b), `academy`
+   * (a scouting trip back, C-7c) or `event` (a mission finished, C-7d).
    */
-  kind: "market" | "items" | "academy";
+  kind: "market" | "items" | "academy" | "event";
   /** The ring's event; one this build does not know is said as a change. */
   event: string;
   /** A path in the app (`/online/auctions/{id}`, `/online/inventory`). */
   link?: string;
-  /** The sentence's parameters: for the market `player` and `price`, for items `item`. */
+  /**
+   * The sentence's parameters: for the market `player` and `price`, for items `item`, for an
+   * event the mission's `kind` and `target`.
+   */
   params: Record<string, string | number>;
 }
 
@@ -83,6 +87,11 @@ interface OnlineState {
   academyOffsetMs: number;
   /** A report back and not yet looked at: the dot on the sidebar's academy entry. */
   academyUnseen: boolean;
+  /**
+   * The coach's events (C-7d): the events page and the dot on its sidebar entry. `null` when this
+   * server has no events yet (an older server answers 404).
+   */
+  events: EventsView | null | undefined;
   /** The notices in the corner, oldest first. */
   notices: OnlineNotice[];
   pushNotice: (notice: Omit<OnlineNotice, "id">) => void;
@@ -110,6 +119,7 @@ const INITIAL = {
   academy: undefined,
   academyOffsetMs: 0,
   academyUnseen: false,
+  events: undefined,
   finance: undefined,
   market: undefined,
   marketUnseen: 0,
@@ -204,6 +214,29 @@ export async function refreshCoins(): Promise<void> {
 export async function refreshItems(): Promise<void> {
   const items = await orNone(() => online.items.mine());
   useOnlineStore.setState({ items });
+}
+
+/** The coach's events; a server without events answers 404, which is `null` (C-7 C7-2). */
+export async function refreshEvents(): Promise<EventsView | null> {
+  const events = await orNone(() => online.events.mine());
+  useOnlineStore.setState({ events });
+  return events;
+}
+
+/**
+ * The missions finished and waiting for their claim, in events still taking claims: the dot on
+ * the sidebar's events entry (C-7 C7-57). Counted from the view, so it goes out when they are
+ * claimed, and season-end missions, which never ring, count too.
+ */
+export function claimsWaiting(events: EventsView | null | undefined): number {
+  if (!events) return 0;
+  return events.events
+    .filter((event) => event.state === "running" || event.state === "ended")
+    .reduce(
+      (waiting, event) =>
+        waiting + event.missions.filter((mission) => mission.status === "completed").length,
+      0,
+    );
 }
 
 /**

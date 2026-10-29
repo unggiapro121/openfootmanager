@@ -53,7 +53,8 @@
       "coins": "Portafoglio monete",
       "inventory": "Inventario",
       "shop": "Negozio",
-      "academy": "Settore giovanile"
+      "academy": "Settore giovanile",
+      "events": "Eventi"
     },
     "gate": {
       "clientOutdatedTitle": "Aggiornamento necessario",
@@ -847,6 +848,27 @@
             "subject": "Una promozione ha dovuto attendere",
             "body": "Il club non ha potuto pagare la tassa di promozione di {{fee}}, quindi {{player}} resta nel vivaio un'altra stagione. La prossima promozione è gratuita."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Missione completata: {{theme}}",
+            "body": "Hai completato la missione «{{mission}}» di {{theme}}. Apri la pagina Eventi per riscattare il premio.",
+            "bodyUnnamed": "Hai completato una missione evento. Apri la pagina Eventi per riscattare il premio."
+          },
+          "claimed": {
+            "subject": "Premio riscattato per te: {{theme}}",
+            "body": "Il premio della missione «{{mission}}» è stato riscattato per te.",
+            "bodyUnnamed": "Il premio di una missione evento è stato riscattato per te."
+          },
+          "lapsed": {
+            "subject": "Premio non ricevuto: {{theme}}",
+            "body": "Non è stato possibile assegnare il premio della missione «{{mission}}»: {{reason}}.",
+            "bodyUnnamed": "Non è stato possibile assegnare il premio di una missione evento: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Premi evento da riscattare: {{theme}}",
+            "body": "Hai premi evento non ancora riscattati. Scadenza: {{until}}. Dopo, il server li riscatta per te; se non può, un messaggio ti dice perché."
+          }
         }
       },
       "viewNewAuction": "Vedi la nuova asta",
@@ -887,7 +909,8 @@
         "coin_clawback": "Riprese dopo un rimborso",
         "reversal": "Storno",
         "item_purchase": "Acquisto nel negozio",
-        "item_refund": "Rimborso del negozio"
+        "item_refund": "Rimborso del negozio",
+        "event_reward": "Premio evento"
       }
     },
     "items": {
@@ -1235,6 +1258,74 @@
         "wagesNote": "{{wage}} × {{n}} giovani",
         "fee": "Tassa di promozione",
         "feeNote": "Per giovane · almeno {{days}} giorni nel vivaio"
+      }
+    },
+    "events": {
+      "notOnServer": "Gli eventi non sono ancora aperti su questo server.",
+      "disabled": "Questa stagione non ha eventi.",
+      "empty": "Nessun evento al momento. Un nuovo evento compare qui 7 giorni prima dell'inizio.",
+      "group": {
+        "running": "In corso",
+        "ended": "Terminati, premi da riscattare",
+        "scheduled": "In arrivo",
+        "closed": "Chiusi"
+      },
+      "time": {
+        "running": "Termina tra {{countdown}}",
+        "ended": "Riscatta entro {{moment}}, mancano {{countdown}}",
+        "scheduled": "Inizia tra {{countdown}}",
+        "closed": "Chiuso"
+      },
+      "theme": {
+        "welcome": "Benvenuto, nuovo allenatore",
+        "weekly": "Evento settimanale",
+        "weekend": "Evento del fine settimana",
+        "seasonOpener": "Apertura di stagione",
+        "seasonFinale": "Chiusura di stagione",
+        "other": "Evento"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Guida tu {{target}} partite di campionato",
+        "leagueWinsDirected": "Vinci {{target}} partite di campionato guidate da te",
+        "offlineMatches": "Gioca {{target}} partite offline",
+        "seasonPromoted": "Ottieni la promozione a fine stagione",
+        "seasonFinishTop": "Chiudi tra i primi {{target}} del campionato",
+        "seasonChampion": "Vinci il campionato",
+        "other": "Missione speciale"
+      },
+      "hint": {
+        "directed": "Contano solo le partite che guidi tu, non quelle che l'IA gioca al posto tuo.",
+        "offline": "Contano solo le partite ufficiali che guidi tu (Vai in campo), entro il limite giornaliero (anche le partite di campionato online contano), con la partita collegata a questo account e il risultato inviato al server.",
+        "seasonEnd": "Si conta alla chiusura della stagione, se avviene prima della fine dell'evento."
+      },
+      "levels": {
+        "range": "Solo campionati di livello {{from}}–{{to}}",
+        "one": "Solo campionati di livello {{from}}",
+        "from": "Solo campionati di livello {{from}} e superiori"
+      },
+      "met": "Raggiunto",
+      "notMet": "Non ancora raggiunto",
+      "rewards": "Premi",
+      "expires": "scade {{days}} giorni dopo il riscatto",
+      "claim": "Riscatta",
+      "claiming": "Riscatto…",
+      "claimAria": "Riscatta i premi di: {{mission}}",
+      "claimed": "Riscattato",
+      "justClaimed": "Riscattato: {{rewards}}",
+      "autoClaiming": "In riscatto automatico",
+      "lapsed": "Non ricevuto: {{reason}}",
+      "lapsedUnknown": "Non è stato possibile assegnare il premio. La posta spiega il motivo.",
+      "reason": {
+        "grantLimitReached": "l'oggetto ha raggiunto il limite della stagione",
+        "coinLimitReached": "è stato raggiunto il limite di monete dagli eventi della stagione",
+        "stackFull": "il tuo inventario è pieno",
+        "inventoryLocked": "i tuoi oggetti o le tue monete sono bloccati per un controllo",
+        "disabled": "oggetti o eventi sono disattivati in questa stagione",
+        "unavailable": "il server non è riuscito ad assegnarlo, contatta l'assistenza"
+      },
+      "notice": {
+        "completed": "Missione completata: {{mission}}",
+        "completedUnnamed": "Hai appena completato una missione evento."
       }
     }
   },
@@ -4958,12 +5049,12 @@
         "sessionCapSeason": "Ci sono già state 6 sedute in 7 giorni e nessun giorno rimasto della stagione ne consente un'altra."
       },
       "events": {
-        "disabled": "Questa stagione non ha eventi.",
-        "notFound": "Quell'evento o missione non esiste.",
+        "disabled": "Gli eventi sono disattivati in questa stagione.",
+        "notFound": "Questo evento o questa missione non esiste più.",
         "notCompleted": "Questa missione non è ancora completata.",
-        "alreadyClaimed": "Hai già ritirato la ricompensa di questa missione.",
-        "closed": "Le ricompense di questo evento non si possono più ritirare.",
-        "coinLimitReached": "Gli eventi danno al massimo {{limit}} monete a stagione; questa ricompensa lo supererebbe."
+        "alreadyClaimed": "Questo premio è già stato riscattato.",
+        "closed": "Il tempo per riscattare è scaduto. I premi non riscattati verranno riscattati per te alla chiusura dell'evento.",
+        "coinLimitReached": "Hai già ricevuto tutte le {{limit}} monete dagli eventi in questa stagione, quindi il premio di questa missione, oggetti compresi, non è stato assegnato. Riprova quando inizia una nuova stagione, prima della scadenza."
       }
     },
     "sender": {

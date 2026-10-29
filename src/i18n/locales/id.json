@@ -53,7 +53,8 @@
       "coins": "Dompet koin",
       "inventory": "Inventaris",
       "shop": "Toko",
-      "academy": "Akademi muda"
+      "academy": "Akademi muda",
+      "events": "Event"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -847,6 +848,27 @@
             "subject": "Sebuah kelulusan harus menunggu",
             "body": "Klub tidak bisa membayar biaya kelulusan {{fee}}, jadi {{player}} tetap di akademi satu musim lagi. Kelulusan berikutnya gratis."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Misi selesai: {{theme}}",
+            "body": "Kamu menyelesaikan misi \"{{mission}}\" dari {{theme}}. Buka halaman Event untuk mengklaim hadiahmu.",
+            "bodyUnnamed": "Kamu menyelesaikan sebuah misi event. Buka halaman Event untuk mengklaim hadiahmu."
+          },
+          "claimed": {
+            "subject": "Hadiah diklaim untukmu: {{theme}}",
+            "body": "Hadiah misi \"{{mission}}\" sudah diklaim untukmu.",
+            "bodyUnnamed": "Hadiah sebuah misi event sudah diklaim untukmu."
+          },
+          "lapsed": {
+            "subject": "Hadiah tidak diterima: {{theme}}",
+            "body": "Hadiah misi \"{{mission}}\" tidak bisa diberikan: {{reason}}.",
+            "bodyUnnamed": "Hadiah sebuah misi event tidak bisa diberikan: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Hadiah event yang belum diklaim: {{theme}}",
+            "body": "Kamu punya hadiah event yang belum diklaim. Batas waktu: {{until}}. Setelah itu server mengklaimnya untukmu; jika tidak bisa, surat akan menjelaskan alasannya."
+          }
         }
       },
       "viewNewAuction": "Lihat lelang baru",
@@ -887,7 +909,8 @@
         "coin_clawback": "Ditarik setelah pengembalian dana",
         "reversal": "Pembalikan",
         "item_purchase": "Pembelian di toko",
-        "item_refund": "Pengembalian dana toko"
+        "item_refund": "Pengembalian dana toko",
+        "event_reward": "Hadiah event"
       }
     },
     "items": {
@@ -1235,6 +1258,74 @@
         "wagesNote": "{{wage}} × {{n}} pemain muda",
         "fee": "Biaya kelulusan",
         "feeNote": "Per pemain muda · minimal {{days}} hari di akademi"
+      }
+    },
+    "events": {
+      "notOnServer": "Event belum dibuka di server ini.",
+      "disabled": "Musim ini tidak punya event.",
+      "empty": "Belum ada event saat ini. Event baru muncul di sini 7 hari sebelum dimulai.",
+      "group": {
+        "running": "Berlangsung",
+        "ended": "Selesai, hadiah bisa diklaim",
+        "scheduled": "Segera hadir",
+        "closed": "Ditutup"
+      },
+      "time": {
+        "running": "Berakhir dalam {{countdown}}",
+        "ended": "Klaim sebelum {{moment}}, sisa {{countdown}}",
+        "scheduled": "Dimulai dalam {{countdown}}",
+        "closed": "Ditutup"
+      },
+      "theme": {
+        "welcome": "Selamat datang, pelatih baru",
+        "weekly": "Event mingguan",
+        "weekend": "Event akhir pekan",
+        "seasonOpener": "Pembuka musim",
+        "seasonFinale": "Penutup musim",
+        "other": "Event"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Pimpin sendiri {{target}} laga liga",
+        "leagueWinsDirected": "Menangkan {{target}} laga liga yang kamu pimpin sendiri",
+        "offlineMatches": "Mainkan {{target}} laga offline",
+        "seasonPromoted": "Promosi saat musim berakhir",
+        "seasonFinishTop": "Finis di {{target}} besar liga",
+        "seasonChampion": "Juarai liga",
+        "other": "Misi khusus"
+      },
+      "hint": {
+        "directed": "Hanya laga yang kamu pimpin sendiri yang dihitung, bukan yang dimainkan AI untukmu.",
+        "offline": "Hanya laga resmi yang kamu pimpin sendiri (Ke Lapangan) yang dihitung, dalam batas harian (laga liga online juga masuk hitungan), saat permainan masuk dengan akun ini dan hasilnya sampai ke server.",
+        "seasonEnd": "Dihitung saat musim ditutup, jika ditutup sebelum event berakhir."
+      },
+      "levels": {
+        "range": "Hanya liga level {{from}}–{{to}}",
+        "one": "Hanya liga level {{from}}",
+        "from": "Hanya liga level {{from}} ke atas"
+      },
+      "met": "Tercapai",
+      "notMet": "Belum tercapai",
+      "rewards": "Hadiah",
+      "expires": "kedaluwarsa {{days}} hari setelah diklaim",
+      "claim": "Klaim",
+      "claiming": "Mengklaim…",
+      "claimAria": "Klaim hadiah untuk: {{mission}}",
+      "claimed": "Sudah diklaim",
+      "justClaimed": "Diklaim: {{rewards}}",
+      "autoClaiming": "Sedang diklaim untukmu",
+      "lapsed": "Tidak diterima: {{reason}}",
+      "lapsedUnknown": "Hadiah tidak bisa diberikan. Kotak masukmu menjelaskan alasannya.",
+      "reason": {
+        "grantLimitReached": "item sudah mencapai batas musim",
+        "coinLimitReached": "batas koin dari event musim ini sudah tercapai",
+        "stackFull": "inventarismu penuh",
+        "inventoryLocked": "item atau koinmu dikunci untuk pemeriksaan",
+        "disabled": "item atau event dimatikan musim ini",
+        "unavailable": "server tidak bisa memberikannya, hubungi dukungan"
+      },
+      "notice": {
+        "completed": "Misi selesai: {{mission}}",
+        "completedUnnamed": "Kamu baru saja menyelesaikan misi event."
       }
     }
   },
@@ -4958,12 +5049,12 @@
         "sessionCapSeason": "Sudah 6 sesi dalam 7 hari dan tidak ada hari tersisa di musim ini untuk sesi lain."
       },
       "events": {
-        "disabled": "Musim ini tidak punya event.",
-        "notFound": "Event atau misi itu tidak ada.",
+        "disabled": "Event dimatikan musim ini.",
+        "notFound": "Event atau misi ini sudah tidak ada.",
         "notCompleted": "Misi ini belum selesai.",
-        "alreadyClaimed": "Kamu sudah mengambil hadiah misi ini.",
-        "closed": "Hadiah event ini tidak bisa diklaim lagi.",
-        "coinLimitReached": "Event memberi paling banyak {{limit}} koin per musim; hadiah ini akan melewatinya."
+        "alreadyClaimed": "Hadiah ini sudah diklaim.",
+        "closed": "Waktu klaim sudah lewat. Hadiah yang belum diklaim akan diklaim untukmu saat event ditutup.",
+        "coinLimitReached": "Kamu sudah menerima seluruh {{limit}} koin dari event musim ini, jadi hadiah misi ini, termasuk item, tidak diberikan. Coba lagi saat musim baru dimulai, sebelum batas waktu."
       }
     },
     "sender": {

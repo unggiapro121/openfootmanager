@@ -53,7 +53,8 @@
       "coins": "Münzbörse",
       "inventory": "Inventar",
       "shop": "Shop",
-      "academy": "Nachwuchsakademie"
+      "academy": "Nachwuchsakademie",
+      "events": "Events"
     },
     "gate": {
       "clientOutdatedTitle": "Update erforderlich",
@@ -847,6 +848,27 @@
             "subject": "Ein Abschluss musste warten",
             "body": "Der Verein konnte die Abschlussgebühr von {{fee}} nicht zahlen, daher bleibt {{player}} eine weitere Saison in der Akademie. Der nächste Abschluss ist kostenlos."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Mission erfüllt: {{theme}}",
+            "body": "Du hast die Mission „{{mission}}“ von {{theme}} erfüllt. Öffne die Seite Events, um deine Belohnung abzuholen.",
+            "bodyUnnamed": "Du hast eine Event-Mission erfüllt. Öffne die Seite Events, um deine Belohnung abzuholen."
+          },
+          "claimed": {
+            "subject": "Belohnung für dich abgeholt: {{theme}}",
+            "body": "Die Belohnung der Mission „{{mission}}“ wurde für dich abgeholt.",
+            "bodyUnnamed": "Die Belohnung einer Event-Mission wurde für dich abgeholt."
+          },
+          "lapsed": {
+            "subject": "Belohnung nicht erhalten: {{theme}}",
+            "body": "Die Belohnung der Mission „{{mission}}“ konnte nicht vergeben werden: {{reason}}.",
+            "bodyUnnamed": "Die Belohnung einer Event-Mission konnte nicht vergeben werden: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Event-Belohnungen abholen: {{theme}}",
+            "body": "Du hast noch nicht abgeholte Event-Belohnungen. Frist: {{until}}. Danach holt der Server sie für dich ab; geht das nicht, sagt dir eine Nachricht warum."
+          }
         }
       },
       "viewNewAuction": "Neue Auktion ansehen",
@@ -887,7 +909,8 @@
         "coin_clawback": "Nach Erstattung zurückgenommen",
         "reversal": "Storno",
         "item_purchase": "Kauf im Shop",
-        "item_refund": "Shop-Erstattung"
+        "item_refund": "Shop-Erstattung",
+        "event_reward": "Event-Belohnung"
       }
     },
     "items": {
@@ -1235,6 +1258,74 @@
         "wagesNote": "{{wage}} × {{n}} Talente",
         "fee": "Abschlussgebühr",
         "feeNote": "Je Talent · mindestens {{days}} Tage in der Akademie"
+      }
+    },
+    "events": {
+      "notOnServer": "Events sind auf diesem Server noch nicht geöffnet.",
+      "disabled": "Diese Saison hat keine Events.",
+      "empty": "Gerade gibt es keine Events. Ein neues Event erscheint hier 7 Tage vor dem Start.",
+      "group": {
+        "running": "Laufend",
+        "ended": "Beendet, Belohnungen abholbar",
+        "scheduled": "Demnächst",
+        "closed": "Abgeschlossen"
+      },
+      "time": {
+        "running": "Endet in {{countdown}}",
+        "ended": "Abholen bis {{moment}}, noch {{countdown}}",
+        "scheduled": "Beginnt in {{countdown}}",
+        "closed": "Abgeschlossen"
+      },
+      "theme": {
+        "welcome": "Willkommen, neuer Trainer",
+        "weekly": "Wochen-Event",
+        "weekend": "Wochenend-Event",
+        "seasonOpener": "Saisonauftakt",
+        "seasonFinale": "Saisonfinale",
+        "other": "Event"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Coache {{target}} Ligaspiele selbst",
+        "leagueWinsDirected": "Gewinne {{target}} selbst gecoachte Ligaspiele",
+        "offlineMatches": "Spiele {{target}} Offline-Spiele",
+        "seasonPromoted": "Steige zum Saisonende auf",
+        "seasonFinishTop": "Beende die Liga unter den ersten {{target}}",
+        "seasonChampion": "Werde Meister der Liga",
+        "other": "Sondermission"
+      },
+      "hint": {
+        "directed": "Es zählen nur Spiele, die du selbst coachst, nicht die, die die KI für dich spielt.",
+        "offline": "Es zählen nur Pflichtspiele, die du selbst coachst (Aufs Spielfeld), im Tageslimit (Online-Ligaspiele zählen auch dazu), wenn das Spiel mit diesem Konto angemeldet ist und das Ergebnis den Server erreicht hat.",
+        "seasonEnd": "Wird beim Saisonabschluss gezählt, wenn dieser vor dem Event-Ende liegt."
+      },
+      "levels": {
+        "range": "Nur Ligen der Stufen {{from}}–{{to}}",
+        "one": "Nur Ligen der Stufe {{from}}",
+        "from": "Nur Ligen ab Stufe {{from}}"
+      },
+      "met": "Erreicht",
+      "notMet": "Noch nicht erreicht",
+      "rewards": "Belohnungen",
+      "expires": "verfällt {{days}} Tage nach dem Abholen",
+      "claim": "Abholen",
+      "claiming": "Wird abgeholt…",
+      "claimAria": "Belohnungen abholen für: {{mission}}",
+      "claimed": "Abgeholt",
+      "justClaimed": "Abgeholt: {{rewards}}",
+      "autoClaiming": "Wird für dich abgeholt",
+      "lapsed": "Nicht erhalten: {{reason}}",
+      "lapsedUnknown": "Die Belohnung konnte nicht vergeben werden. Dein Posteingang nennt den Grund.",
+      "reason": {
+        "grantLimitReached": "der Gegenstand hat sein Saisonlimit erreicht",
+        "coinLimitReached": "das Saisonlimit für Münzen aus Events ist erreicht",
+        "stackFull": "dein Inventar ist voll",
+        "inventoryLocked": "deine Gegenstände oder Münzen sind für eine Prüfung gesperrt",
+        "disabled": "Gegenstände oder Events sind in dieser Saison abgeschaltet",
+        "unavailable": "der Server konnte sie nicht vergeben, bitte wende dich an den Support"
+      },
+      "notice": {
+        "completed": "Mission erfüllt: {{mission}}",
+        "completedUnnamed": "Du hast gerade eine Event-Mission erfüllt."
       }
     }
   },
@@ -4958,12 +5049,12 @@
         "sessionCapSeason": "Es gab schon 6 Einheiten in 7 Tagen, und kein Tag dieser Saison erlaubt noch eine weitere."
       },
       "events": {
-        "disabled": "Diese Saison hat keine Events.",
-        "notFound": "Dieses Event oder diese Mission gibt es nicht.",
-        "notCompleted": "Diese Mission ist noch nicht abgeschlossen.",
-        "alreadyClaimed": "Du hast die Belohnung dieser Mission schon abgeholt.",
-        "closed": "Die Belohnungen dieses Events können nicht mehr abgeholt werden.",
-        "coinLimitReached": "Events geben höchstens {{limit}} Münzen pro Saison; diese Belohnung würde das überschreiten."
+        "disabled": "Events sind in dieser Saison abgeschaltet.",
+        "notFound": "Dieses Event oder diese Mission gibt es nicht mehr.",
+        "notCompleted": "Diese Mission ist noch nicht erfüllt.",
+        "alreadyClaimed": "Diese Belohnung wurde schon abgeholt.",
+        "closed": "Die Abholfrist ist vorbei. Nicht abgeholte Belohnungen werden beim Abschluss des Events für dich abgeholt.",
+        "coinLimitReached": "Du hast in dieser Saison bereits die vollen {{limit}} Münzen aus Events erhalten, daher wurde die Belohnung dieser Mission samt Gegenständen nicht vergeben. Versuche es nach Beginn einer neuen Saison erneut, vor der Frist."
       }
     },
     "sender": {

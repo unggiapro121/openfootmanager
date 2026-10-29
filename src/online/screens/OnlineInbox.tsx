@@ -16,6 +16,7 @@ import { resolveBackendError } from "../../utils/backendI18n";
 import type { InboxMessageView, InboxPage } from "../api";
 import { online } from "../client";
 import { toMessageData } from "../convert/inbox";
+import { findMission } from "./events/eventText";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useActionKey } from "./useActionKey";
 
@@ -97,10 +98,14 @@ export default function OnlineInbox() {
 
   const clubName = club?.club.name ?? "";
   const youngsters = useOnlineStore((state) => state.academy?.players);
+  const events = useOnlineStore((state) => state.events);
   const all = useMemo(() => {
     const youngsterName = (id: string) => youngsters?.find((player) => player.id === id)?.name;
-    return messages.map((message) => toMessageData(message, t, clubName, youngsterName));
-  }, [messages, t, clubName, youngsters]);
+    const eventMission = (eventId: string, code: string) => findMission(events, eventId, code);
+    return messages.map((message) =>
+      toMessageData(message, t, clubName, youngsterName, eventMission),
+    );
+  }, [messages, t, clubName, youngsters, events]);
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const message of all)

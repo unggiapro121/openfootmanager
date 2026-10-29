@@ -53,7 +53,8 @@
       "coins": "Coin wallet",
       "inventory": "Inventory",
       "shop": "Shop",
-      "academy": "Youth Academy"
+      "academy": "Youth Academy",
+      "events": "Events"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -847,6 +848,27 @@
             "subject": "A graduation had to wait",
             "body": "The club could not pay the {{fee}} graduation fee, so {{player}} stays in the academy one more season. The next graduation is free."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Mission complete: {{theme}}",
+            "body": "You completed the mission \"{{mission}}\" of {{theme}}. Open the Events page to claim your reward.",
+            "bodyUnnamed": "You completed an event mission. Open the Events page to claim your reward."
+          },
+          "claimed": {
+            "subject": "Reward claimed for you: {{theme}}",
+            "body": "The reward of the mission \"{{mission}}\" was claimed for you.",
+            "bodyUnnamed": "The reward of an event mission was claimed for you."
+          },
+          "lapsed": {
+            "subject": "Reward not received: {{theme}}",
+            "body": "The reward of the mission \"{{mission}}\" could not be given: {{reason}}.",
+            "bodyUnnamed": "The reward of an event mission could not be given: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Event rewards to claim: {{theme}}",
+            "body": "You have event rewards not yet claimed. Claim by: {{until}}. After that the server claims them for you; if it cannot, a mail tells you why."
+          }
         }
       },
       "viewNewAuction": "View the new auction",
@@ -887,7 +909,8 @@
         "coin_clawback": "Taken back after a refund",
         "reversal": "Reversal",
         "item_purchase": "Shop purchase",
-        "item_refund": "Shop refund"
+        "item_refund": "Shop refund",
+        "event_reward": "Event reward"
       }
     },
     "items": {
@@ -1235,6 +1258,74 @@
         "wagesNote": "{{wage}} × {{n}} youngsters",
         "fee": "Graduation fee",
         "feeNote": "Per youngster · at least {{days}} days in the academy"
+      }
+    },
+    "events": {
+      "notOnServer": "Events are not open on this server yet.",
+      "disabled": "This season has no events.",
+      "empty": "No events right now. A new event shows here 7 days before it starts.",
+      "group": {
+        "running": "Running",
+        "ended": "Ended, rewards to claim",
+        "scheduled": "Coming up",
+        "closed": "Closed"
+      },
+      "time": {
+        "running": "Ends in {{countdown}}",
+        "ended": "Claim before {{moment}}, {{countdown}} left",
+        "scheduled": "Starts in {{countdown}}",
+        "closed": "Closed"
+      },
+      "theme": {
+        "welcome": "Welcome, new coach",
+        "weekly": "Weekly event",
+        "weekend": "Weekend event",
+        "seasonOpener": "Season opener",
+        "seasonFinale": "Season finale",
+        "other": "Event"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Direct {{target}} league matches yourself",
+        "leagueWinsDirected": "Win {{target}} league matches you direct yourself",
+        "offlineMatches": "Play {{target}} offline matches",
+        "seasonPromoted": "Be promoted when the season ends",
+        "seasonFinishTop": "Finish in the league's top {{target}}",
+        "seasonChampion": "Win the league",
+        "other": "Special mission"
+      },
+      "hint": {
+        "directed": "Only matches you direct yourself count, not ones the AI plays for you.",
+        "offline": "Only official matches you manage yourself (Go to the Field) count, within the daily allowance (online league matches count towards it too), when the game is signed in to this account and the result reached the server.",
+        "seasonEnd": "Counted when the season closes, if it closes before the event ends."
+      },
+      "levels": {
+        "range": "League levels {{from}}–{{to}} only",
+        "one": "League level {{from}} only",
+        "from": "League level {{from}} and above only"
+      },
+      "met": "Met",
+      "notMet": "Not met yet",
+      "rewards": "Rewards",
+      "expires": "expires {{days}} days after claiming",
+      "claim": "Claim",
+      "claiming": "Claiming…",
+      "claimAria": "Claim the rewards of: {{mission}}",
+      "claimed": "Claimed",
+      "justClaimed": "Claimed: {{rewards}}",
+      "autoClaiming": "Being claimed for you",
+      "lapsed": "Not received: {{reason}}",
+      "lapsedUnknown": "The reward could not be given. Your inbox says why.",
+      "reason": {
+        "grantLimitReached": "the item has reached its season limit",
+        "coinLimitReached": "the season's limit of coins from events was reached",
+        "stackFull": "your inventory is full",
+        "inventoryLocked": "your items or coins are locked for a check",
+        "disabled": "items or events are switched off this season",
+        "unavailable": "the server could not give it, please contact support"
+      },
+      "notice": {
+        "completed": "Mission complete: {{mission}}",
+        "completedUnnamed": "You just completed an event mission."
       }
     }
   },
@@ -4958,12 +5049,12 @@
         "sessionCapSeason": "6 sessions have been held in 7 days, and no day left this season allows another."
       },
       "events": {
-        "disabled": "This season has no events.",
-        "notFound": "That event or mission does not exist.",
-        "notCompleted": "This mission is not finished yet.",
-        "alreadyClaimed": "You already took this mission's reward.",
-        "closed": "This event's rewards can no longer be claimed.",
-        "coinLimitReached": "Events give at most {{limit}} coins a season; this reward would go over it."
+        "disabled": "Events are switched off this season.",
+        "notFound": "This event or mission no longer exists.",
+        "notCompleted": "This mission is not complete yet.",
+        "alreadyClaimed": "This reward has already been claimed.",
+        "closed": "The time to claim has passed. Rewards not claimed will be claimed for you when the event closes.",
+        "coinLimitReached": "You have received the full {{limit}} coins from events this season, so this mission's reward, items included, was not given. Try again once a new season starts, before the claim deadline."
       }
     },
     "sender": {

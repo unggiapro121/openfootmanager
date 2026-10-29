@@ -53,7 +53,8 @@
       "coins": "Ví coin",
       "inventory": "Kho đồ",
       "shop": "Cửa hàng",
-      "academy": "Lò đào tạo"
+      "academy": "Lò đào tạo",
+      "events": "Sự kiện"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -847,6 +848,27 @@
             "subject": "Tốt nghiệp phải chờ",
             "body": "CLB không đủ {{fee}} phí tốt nghiệp, nên {{player}} ở lại lò thêm một mùa. Lần tốt nghiệp sau miễn phí."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Hoàn thành nhiệm vụ: {{theme}}",
+            "body": "Bạn đã hoàn thành nhiệm vụ \"{{mission}}\" của {{theme}}. Vào trang Sự kiện để nhận thưởng.",
+            "bodyUnnamed": "Bạn đã hoàn thành một nhiệm vụ sự kiện. Vào trang Sự kiện để nhận thưởng."
+          },
+          "claimed": {
+            "subject": "Đã tự nhận thưởng: {{theme}}",
+            "body": "Phần thưởng của nhiệm vụ \"{{mission}}\" đã được tự nhận.",
+            "bodyUnnamed": "Phần thưởng của một nhiệm vụ sự kiện đã được tự nhận."
+          },
+          "lapsed": {
+            "subject": "Không nhận được thưởng: {{theme}}",
+            "body": "Không nhận được phần thưởng của nhiệm vụ \"{{mission}}\": {{reason}}.",
+            "bodyUnnamed": "Không nhận được phần thưởng của một nhiệm vụ sự kiện: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Còn thưởng sự kiện chưa nhận: {{theme}}",
+            "body": "Bạn còn phần thưởng sự kiện chưa nhận. Hạn nhận: {{until}}. Sau hạn, máy chủ tự nhận giúp bạn; không nhận được thì có thư báo lý do."
+          }
         }
       },
       "viewNewAuction": "Xem phiên mới",
@@ -887,7 +909,8 @@
         "coin_clawback": "Thu lại sau hoàn tiền",
         "reversal": "Đảo bút toán",
         "item_purchase": "Mua ở cửa hàng",
-        "item_refund": "Hoàn tiền cửa hàng"
+        "item_refund": "Hoàn tiền cửa hàng",
+        "event_reward": "Thưởng sự kiện"
       }
     },
     "items": {
@@ -1235,6 +1258,74 @@
         "wagesNote": "{{wage}} × {{n}} học viên",
         "fee": "Phí tốt nghiệp",
         "feeNote": "Mỗi học viên · ở lò tối thiểu {{days}} ngày"
+      }
+    },
+    "events": {
+      "notOnServer": "Sự kiện chưa mở trên máy chủ này.",
+      "disabled": "Mùa này chưa có sự kiện.",
+      "empty": "Hiện chưa có sự kiện nào. Sự kiện mới hiện ở đây 7 ngày trước khi bắt đầu.",
+      "group": {
+        "running": "Đang diễn ra",
+        "ended": "Đã kết thúc, còn nhận thưởng",
+        "scheduled": "Sắp tới",
+        "closed": "Đã đóng"
+      },
+      "time": {
+        "running": "Kết thúc sau {{countdown}}",
+        "ended": "Nhận thưởng trước {{moment}}, còn {{countdown}}",
+        "scheduled": "Bắt đầu sau {{countdown}}",
+        "closed": "Đã đóng"
+      },
+      "theme": {
+        "welcome": "Chào mừng HLV mới",
+        "weekly": "Sự kiện tuần",
+        "weekend": "Sự kiện cuối tuần",
+        "seasonOpener": "Khai mùa",
+        "seasonFinale": "Hạ màn mùa giải",
+        "other": "Sự kiện"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Tự cầm quân {{target}} trận league",
+        "leagueWinsDirected": "Thắng {{target}} trận league do bạn tự cầm quân",
+        "offlineMatches": "Đá {{target}} trận offline",
+        "seasonPromoted": "Thăng hạng khi mùa kết thúc",
+        "seasonFinishTop": "Về đích trong top {{target}} của league",
+        "seasonChampion": "Vô địch league",
+        "other": "Nhiệm vụ đặc biệt"
+      },
+      "hint": {
+        "directed": "Chỉ tính trận bạn tự chỉ đạo, không để AI đá thay.",
+        "offline": "Chỉ tính trận chính thức bạn tự chỉ đạo (Ra sân), trong giới hạn mỗi ngày (trận league online cũng tính vào giới hạn này), khi ván chơi đã đăng nhập đúng tài khoản này và gửi được kết quả lên máy chủ.",
+        "seasonEnd": "Tính lúc mùa đóng, nếu mùa đóng trước khi sự kiện kết thúc."
+      },
+      "levels": {
+        "range": "Chỉ tính league cấp {{from}}–{{to}}",
+        "one": "Chỉ tính league cấp {{from}}",
+        "from": "Chỉ tính league cấp {{from}} trở lên"
+      },
+      "met": "Đạt",
+      "notMet": "Chưa đạt",
+      "rewards": "Phần thưởng",
+      "expires": "hết hạn {{days}} ngày sau khi nhận",
+      "claim": "Nhận",
+      "claiming": "Đang nhận…",
+      "claimAria": "Nhận thưởng của nhiệm vụ: {{mission}}",
+      "claimed": "Đã nhận",
+      "justClaimed": "Đã nhận: {{rewards}}",
+      "autoClaiming": "Đang tự nhận",
+      "lapsed": "Không nhận được: {{reason}}",
+      "lapsedUnknown": "Không nhận được phần thưởng. Xem thư để biết lý do.",
+      "reason": {
+        "grantLimitReached": "vật phẩm đã đạt giới hạn của mùa",
+        "coinLimitReached": "đã đạt giới hạn coin từ sự kiện trong mùa",
+        "stackFull": "kho đồ đầy",
+        "inventoryLocked": "kho đồ hoặc coin đang bị khoá để kiểm tra",
+        "disabled": "mùa này đã tắt vật phẩm hoặc sự kiện",
+        "unavailable": "máy chủ không cấp được, hãy liên hệ hỗ trợ"
+      },
+      "notice": {
+        "completed": "Hoàn thành nhiệm vụ: {{mission}}",
+        "completedUnnamed": "Bạn vừa hoàn thành một nhiệm vụ sự kiện."
       }
     }
   },
@@ -4958,12 +5049,12 @@
         "sessionCapSeason": "Đã đủ 6 buổi trong 7 ngày và mùa này không còn ngày nào được tập."
       },
       "events": {
-        "disabled": "Mùa này không có sự kiện.",
-        "notFound": "Không có sự kiện hay nhiệm vụ này.",
+        "disabled": "Mùa này đã tắt sự kiện.",
+        "notFound": "Sự kiện hoặc nhiệm vụ này không còn.",
         "notCompleted": "Nhiệm vụ này chưa hoàn thành.",
-        "alreadyClaimed": "Bạn đã nhận thưởng nhiệm vụ này rồi.",
-        "closed": "Đã hết hạn nhận thưởng của sự kiện này.",
-        "coinLimitReached": "Sự kiện cho tối đa {{limit}} coin mỗi mùa; nhận thưởng này sẽ vượt mức đó."
+        "alreadyClaimed": "Phần thưởng này đã được nhận.",
+        "closed": "Đã quá hạn bấm nhận. Phần thưởng chưa nhận sẽ được tự nhận khi sự kiện đóng.",
+        "coinLimitReached": "Bạn đã nhận đủ {{limit}} coin từ sự kiện trong mùa này, nên chưa nhận được phần thưởng của nhiệm vụ này (cả vật phẩm). Thử lại khi mùa mới bắt đầu, trước hạn nhận."
       }
     },
     "sender": {
