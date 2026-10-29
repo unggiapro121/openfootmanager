@@ -1,10 +1,12 @@
 import { useEffect } from "react";
+import type { EventsView } from "../api";
 import { online } from "../client";
 import { type AccountRing, readAccountRing, watchAccount } from "../live";
 import {
   refreshAcademy,
   refreshClub,
   refreshCoins,
+  refreshEvents,
   refreshFinance,
   refreshFriendly,
   refreshItems,
@@ -57,6 +59,38 @@ function itemNoticeOf(ring: Extract<AccountRing, { kind: "items" }>): void {
   });
 }
 
+/** The missions `after` shows finished that `before` did not, with their kind and target. */
+function newlyCompleted(before: EventsView, after: EventsView): { kind: string; target: number }[] {
+  const was = new Map<string, string>();
+  for (const event of before.events) {
+    for (const mission of event.missions) was.set(`${event.id}:${mission.code}`, mission.status);
+  }
+  return after.events.flatMap((event) =>
+    event.missions
+      .filter(
+        (mission) =>
+          mission.status === "completed" && was.get(`${event.id}:${mission.code}`) !== "completed",
+      )
+      .map((mission) => ({ kind: mission.kind, target: mission.target })),
+  );
+}
+
+/**
+ * A mission finished (C-7 C7-57): the events read again, and a notice for each mission that went
+ * from not finished to finished. The ring names no mission, so with no events read before there
+ * is nothing to compare: one notice says a mission finished.
+ */
+function eventNoticesOf(before: EventsView | null | undefined, after: EventsView | null): void {
+  const push = useOnlineStore.getState().pushNotice;
+  if (!before || !after) {
+    push({ kind: "event", event: "completed", link: "/online/events", params: {} });
+    return;
+  }
+  for (const mission of newlyCompleted(before, after)) {
+    push({ kind: "event", event: "completed", link: "/online/events", params: mission });
+  }
+}
+
 /**
  * Follows the coach's own account channel for as long as they are in the online mode (S12-22,
  * C-5 C5-10). A ring says whose news it is: a friendly ring reads their friendly again; a market
@@ -65,7 +99,8 @@ function itemNoticeOf(ring: Extract<AccountRing, { kind: "items" }>): void {
  * changed, C-7a1) reads the coins and the club's money again, with no notice; an items ring (C-7b)
  * reads the inventory again, with a notice only for an item given or a purchase refunded; an
  * academy ring (C-7c) reads the academy again, and a report back lights the academy's dot and
- * shows a notice. Holding the channel is also what keeps them present in the friendly queue, whichever online
+ * shows a notice; an event ring (C-7d) reads the events again, with a notice for each mission
+ * just finished. Holding the channel is also what keeps them present in the friendly queue, whichever online
  * page they are on. Nothing here is shown: a failure leaves each page to read for itself.
  */
 export function AccountWatcher() {
@@ -96,6 +131,13 @@ export function AccountWatcher() {
             params: {},
           });
         }
+      } else if (news.kind === "event") {
+        const before = useOnlineStore.getState().events;
+        void refreshEvents()
+          .then((after) => {
+            if (news.event === "completed") eventNoticesOf(before, after);
+          })
+          .catch(ignore);
       } else if (news.kind === "market") {
         useOnlineStore.setState((state) => ({ marketUnseen: state.marketUnseen + 1 }));
         // A player won, sold or given back changes the squad, which is read with the club.
@@ -111,6 +153,7 @@ export function AccountWatcher() {
         void refreshFriendly().catch(ignore);
         void refreshCoins().catch(ignore);
         void refreshItems().catch(ignore);
+        void refreshEvents().catch(ignore);
         void refreshMoney();
         return watchAccount(account.id, ring);
       })

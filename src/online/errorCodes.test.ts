@@ -25,6 +25,10 @@ const ADMIN_ONLY = [
   "be.error.economy.notLocked",
   // An item given from a source its power class may not come from: a server fault (S-17 W16).
   "be.error.inventory.sourceNotAllowed",
+  // Only the SuperAdmin's events answer them: a definition refused, an event cancelled after it
+  // started (S-19 §3.4).
+  "be.error.events.invalid",
+  "be.error.events.started",
 ];
 
 /** The proxy's own codes (`src-tauri/src/application/online`) and the client's (`client.ts`). */

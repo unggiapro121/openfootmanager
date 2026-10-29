@@ -124,6 +124,14 @@ export const ERROR_CODES = [
   "be.error.academy.notFound",
   "be.error.academy.candidateUnknown",
   "be.error.academy.noSlot",
+  "be.error.events.disabled",
+  "be.error.events.notFound",
+  "be.error.events.notCompleted",
+  "be.error.events.alreadyClaimed",
+  "be.error.events.closed",
+  "be.error.events.coinLimitReached",
+  "be.error.events.invalid",
+  "be.error.events.started",
   "be.error.shop.quantityInvalid",
   "be.error.shop.itemNotSold",
   "be.error.admin.reverseNotAllowed",
@@ -166,6 +174,7 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.academy.eliteTripLimitReached": ["sent", "limit"],
   "be.error.academy.tripNotReady": ["readyAt"],
   "be.error.academy.noSlot": ["free"],
+  "be.error.events.coinLimitReached": ["limit"],
   "be.error.admin.reverseNotAllowed": ["kind"],
   "be.error.admin.refundExceeded": ["refundable"],
 };
@@ -200,6 +209,7 @@ export type ErrorParams = {
   "be.error.academy.eliteTripLimitReached": { sent: string | number; limit: string | number };
   "be.error.academy.tripNotReady": { readyAt: string | number };
   "be.error.academy.noSlot": { free: string | number };
+  "be.error.events.coinLimitReached": { limit: string | number };
   "be.error.admin.reverseNotAllowed": { kind: string | number };
   "be.error.admin.refundExceeded": { refundable: string | number };
 };

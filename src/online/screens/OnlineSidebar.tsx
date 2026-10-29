@@ -13,6 +13,7 @@ import {
   Mail,
   LayoutDashboard,
   LogOut,
+  Sparkles,
   Store,
   Trophy,
   UserRound,
@@ -20,7 +21,7 @@ import {
   Wallet,
 } from "lucide-react";
 import NavItem from "../../components/dashboard/SidebarNavItem";
-import { useOnlineStore } from "../store/onlineStore";
+import { claimsWaiting, useOnlineStore } from "../store/onlineStore";
 import { useGuardedNavigate } from "./leaveGuard";
 
 /** The club's pages, shown once the coach runs a club. */
@@ -42,6 +43,7 @@ const ACCOUNT_PAGES = [
   { path: "/online/coins", label: "online.nav.coins", icon: <Coins /> },
   { path: "/online/inventory", label: "online.nav.inventory", icon: <Backpack /> },
   { path: "/online/shop", label: "online.nav.shop", icon: <Store /> },
+  { path: "/online/events", label: "online.nav.events", icon: <Sparkles /> },
 ];
 
 /**
@@ -57,6 +59,7 @@ export default function OnlineSidebar() {
   const marketUnseen = useOnlineStore((state) => state.marketUnseen);
   const academyUnseen = useOnlineStore((state) => state.academyUnseen);
   const unreadMail = useOnlineStore((state) => state.club?.unreadMail ?? 0);
+  const claims = useOnlineStore((state) => claimsWaiting(state.events));
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-navy-700 bg-navy-800 text-white">
@@ -128,6 +131,7 @@ export default function OnlineSidebar() {
             key={page.path}
             icon={page.icon}
             label={t(page.label)}
+            badge={page.path === "/online/events" && claims > 0 ? claims : undefined}
             active={pathname === page.path}
             collapsed={false}
             onClick={() => navigate(page.path)}

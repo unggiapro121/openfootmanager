@@ -96,6 +96,7 @@ describe("the coach's roadmap on his profile", () => {
         level: 3,
         seasons: 5,
         promotions: 2,
+        forcedLevels: 0,
         promotion: { places: 4, leagueSize: 14, newcomerMinMatches: 13 },
         licence: { tier: 2, nextTierLevel: 4, pending: false },
         mastery: [],
@@ -136,6 +137,7 @@ describe("the coach's roadmap on his profile", () => {
         level: 1,
         seasons: 0,
         promotions: 0,
+        forcedLevels: 0,
         mastery: [
           {
             style: "Attacking",
@@ -164,7 +166,10 @@ describe("the coach's roadmap on his profile", () => {
   // then it shows level 1, says how a level is earned once a season opens, that every control is
   // open, and no licence road.
   it("tells a new coach what to expect when there is no season yet", async () => {
-    stage({ level: 1, seasons: 0, promotions: 0, mastery: [] }, { tiers: TABLE.tiers });
+    stage(
+      { level: 1, seasons: 0, promotions: 0, forcedLevels: 0, mastery: [] },
+      { tiers: TABLE.tiers },
+    );
     renderOnline("/online/profile");
 
     expect(await screen.findByText("online.roadmap.level:1")).toBeInTheDocument();
