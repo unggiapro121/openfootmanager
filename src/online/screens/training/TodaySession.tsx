@@ -10,7 +10,7 @@ import { useOnlineNow } from "../../clock";
 import { OnlineApiError } from "../../errors";
 import { formatKickoffClock } from "../../format";
 import { refreshClub, tracked, useOnlineStore } from "../../store/onlineStore";
-import { SEASON_DAYS } from "../OnlineHeader";
+import { SEASON_DAYS } from "../shellNav";
 import { useActionKey } from "../useActionKey";
 import { useCountdownText } from "../useCountdownText";
 import {

@@ -49,12 +49,14 @@
       "finance": "Keuangan",
       "market": "Pasar",
       "inbox": "Kotak masuk",
-      "account": "Akun",
       "coins": "Dompet koin",
       "inventory": "Inventaris",
       "shop": "Toko",
       "academy": "Akademi muda",
-      "events": "Event"
+      "events": "Event",
+      "groupTeam": "Tim",
+      "groupMatches": "Pertandingan",
+      "groupClub": "Klub"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Musim {{number}}",
       "seasonDay": "Musim {{number}} · Hari {{day}}/{{total}}",
-      "nextKickoff": "Laga berikutnya dalam {{time}}",
       "cash": "Kas klub: {{amount}}",
-      "coins": "Saldo OFM Coin: {{amount}}"
+      "coins": "Saldo OFM Coin: {{amount}}",
+      "clubLine": "Online · {{season}}",
+      "nextMatch": "Laga berikutnya",
+      "inboxUnread": "Kotak masuk, {{count}} belum dibaca",
+      "account": "Akun pelatih"
     },
     "countdown": {
       "withDays": "{{days}} h {{clock}}"

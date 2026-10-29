@@ -49,12 +49,14 @@
       "finance": "Finance",
       "market": "Market",
       "inbox": "Inbox",
-      "account": "Account",
       "coins": "Coin wallet",
       "inventory": "Inventory",
       "shop": "Shop",
       "academy": "Youth Academy",
-      "events": "Events"
+      "events": "Events",
+      "groupTeam": "Team",
+      "groupMatches": "Matches",
+      "groupClub": "Club"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Season {{number}}",
       "seasonDay": "Season {{number}} · Day {{day}}/{{total}}",
-      "nextKickoff": "Next kick-off in {{time}}",
       "cash": "Club cash: {{amount}}",
-      "coins": "OFM Coin balance: {{amount}}"
+      "coins": "OFM Coin balance: {{amount}}",
+      "clubLine": "Online · {{season}}",
+      "nextMatch": "Next match",
+      "inboxUnread": "Inbox, {{count}} unread",
+      "account": "Coach account"
     },
     "countdown": {
       "withDays": "{{days}}d {{clock}}"

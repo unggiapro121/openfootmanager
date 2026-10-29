@@ -96,7 +96,7 @@ export default function OnlineShell() {
                 {t("online.offlineBanner")}
               </div>
             )}
-            <main className="flex-1 p-6">
+            <main className="flex-1 p-6 xl:p-8">
               {loadError !== null && club === undefined ? (
                 <div className="flex flex-col items-start gap-3">
                   <p role="alert" className="text-sm text-red-600 dark:text-red-400">
