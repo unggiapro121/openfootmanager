@@ -1265,8 +1265,6 @@
       "disabled": "Bu sezonun etkinliği yok.",
       "empty": "Şu an etkinlik yok. Yeni bir etkinlik başlamadan 7 gün önce burada görünür.",
       "group": {
-        "running": "Devam eden",
-        "ended": "Biten, ödülü alınacak",
         "scheduled": "Yakında",
         "closed": "Kapanan"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Başarıldı",
       "notMet": "Henüz başarılmadı",
-      "rewards": "Ödüller",
       "expires": "alındıktan {{days}} gün sonra sona erer",
       "claim": "Al",
       "claiming": "Alınıyor…",
       "claimAria": "Şu görevin ödüllerini al: {{mission}}",
       "claimed": "Alındı",
-      "justClaimed": "Alındı: {{rewards}}",
       "autoClaiming": "Senin için alınıyor",
       "lapsed": "Alınamadı: {{reason}}",
       "lapsedUnknown": "Ödül verilemedi. Nedeni gelen kutunda.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Görev tamamlandı: {{mission}}",
         "completedUnnamed": "Bir etkinlik görevini az önce tamamladın."
+      },
+      "state": {
+        "running": "Devam ediyor",
+        "ended": "Bitti – ödüllerini al",
+        "scheduled": "Yakında",
+        "closed": "Kapandı"
+      },
+      "tagline": {
+        "welcome": "Teknik direktör olarak ilk adımların, yol boyunca hediyelerle.",
+        "weekly": "Takımını yönet, maç kazan, her hafta hediye topla.",
+        "weekend": "Hafta sonu maçları için kısa bir etkinlik.",
+        "seasonOpener": "Yeni sezona güçlü başla ve hediyelerini kazan.",
+        "seasonFinale": "Sezonun son düzlüğü: hediyelerle bitir.",
+        "other": "Hediye kazanmak için görevlerini tamamla."
+      },
+      "timer": {
+        "running": "Bitişe kalan",
+        "ended": "Ödül alma bitişine",
+        "scheduled": "Başlangıca"
+      },
+      "unit": {
+        "days": "gün",
+        "hours": "saat",
+        "minutes": "dk",
+        "seconds": "sn"
+      },
+      "journey": {
+        "title": "Yolculuk",
+        "met": "{{met}}/{{total}} tamamlandı",
+        "counts": "{{claimed}} alındı · {{ready}} alınacak",
+        "ready": "Alınacak"
+      },
+      "status": {
+        "active": "Sürüyor",
+        "ready": "Tamamlandı",
+        "upcoming": "Başlamadı",
+        "lapsed": "Alınamadı",
+        "missed": "Tamamlanmadı"
+      },
+      "missions": "Görevler",
+      "progress": "İlerleme",
+      "rewardsLabel": "Ödül:",
+      "detail": {
+        "show": "Koşulları gör",
+        "hide": "Koşulları gizle"
+      },
+      "goSchedule": "Fikstürü gör",
+      "left": {
+        "leagueMatchesDirected": "Kalan maç: {{left}}",
+        "leagueWinsDirected": "Kalan galibiyet: {{left}}",
+        "offlineMatches": "Kalan çevrimdışı maç: {{left}}"
+      },
+      "reward": {
+        "heading": "Görev tamamlandı",
+        "toInventory": "Envanterine eklendi.",
+        "toWallet": "Coin cüzdanına eklendi.",
+        "toBoth": "Eşyalar envanterine, coinler cüzdanına eklendi.",
+        "expires": "Alındıktan {{days}} gün sonra sona erer.",
+        "close": "Harika!"
       }
     }
   },

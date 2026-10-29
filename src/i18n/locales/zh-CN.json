@@ -1265,8 +1265,6 @@
       "disabled": "本赛季没有活动。",
       "empty": "目前没有活动。新活动会在开始前 7 天显示在这里。",
       "group": {
-        "running": "进行中",
-        "ended": "已结束，奖励待领取",
         "scheduled": "即将开始",
         "closed": "已关闭"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "已达成",
       "notMet": "尚未达成",
-      "rewards": "奖励",
       "expires": "领取后 {{days}} 天过期",
       "claim": "领取",
       "claiming": "领取中…",
       "claimAria": "领取任务奖励：{{mission}}",
       "claimed": "已领取",
-      "justClaimed": "已领取：{{rewards}}",
       "autoClaiming": "正在为你自动领取",
       "lapsed": "未能领取：{{reason}}",
       "lapsedUnknown": "奖励未能发放。原因见收件箱。",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "任务完成：{{mission}}",
         "completedUnnamed": "你刚刚完成了一个活动任务。"
+      },
+      "state": {
+        "running": "进行中",
+        "ended": "已结束，领取奖励",
+        "scheduled": "即将开始",
+        "closed": "已关闭"
+      },
+      "tagline": {
+        "welcome": "作为主教练的第一步，一路都有礼物。",
+        "weekly": "亲自执教、赢下比赛，每周领取礼物。",
+        "weekend": "为周末比赛准备的短期活动。",
+        "seasonOpener": "新赛季开个好头，赢取礼物。",
+        "seasonFinale": "赛季最后冲刺：带着礼物收官。",
+        "other": "完成任务即可获得礼物。"
+      },
+      "timer": {
+        "running": "距结束",
+        "ended": "领取截止",
+        "scheduled": "距开始"
+      },
+      "unit": {
+        "days": "天",
+        "hours": "时",
+        "minutes": "分",
+        "seconds": "秒"
+      },
+      "journey": {
+        "title": "旅程",
+        "met": "已完成 {{met}}/{{total}}",
+        "counts": "已领取 {{claimed}} · 待领取 {{ready}}",
+        "ready": "待领取"
+      },
+      "status": {
+        "active": "进行中",
+        "ready": "已完成",
+        "upcoming": "未开始",
+        "lapsed": "未获得",
+        "missed": "未完成"
+      },
+      "missions": "任务",
+      "progress": "进度",
+      "rewardsLabel": "奖励：",
+      "detail": {
+        "show": "查看条件",
+        "hide": "隐藏条件"
+      },
+      "goSchedule": "查看赛程",
+      "left": {
+        "leagueMatchesDirected": "还差 {{left}} 场比赛",
+        "leagueWinsDirected": "还差 {{left}} 场胜利",
+        "offlineMatches": "还差 {{left}} 场离线比赛"
+      },
+      "reward": {
+        "heading": "任务完成",
+        "toInventory": "已放入你的物品库。",
+        "toWallet": "已存入你的金币钱包。",
+        "toBoth": "物品已放入物品库，金币已存入钱包。",
+        "expires": "领取后 {{days}} 天过期。",
+        "close": "太棒了！"
       }
     }
   },

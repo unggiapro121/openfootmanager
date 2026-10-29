@@ -94,6 +94,12 @@ const claimPath = (code: string) => `v1/me/events/${EVENT}/missions/${code}/clai
 const claimButton = (sentence: string) =>
   screen.findByRole("button", { name: `online.events.claimAria:${sentence}` });
 
+const textOf = (element: HTMLElement) => element.textContent;
+
+/** An event panel's name: its heading, which names the article. */
+const nameOf = (article: HTMLElement) =>
+  document.getElementById(article.getAttribute("aria-labelledby") ?? "")?.textContent;
+
 beforeEach(() => {
   resetOnline();
   realtime = fakeRealtime();
@@ -102,6 +108,16 @@ afterEach(() => {
   server?.restore();
   realtime.restore();
 });
+
+/** The missions section of the only event on the page. */
+const missionsOf = () => screen.getByRole("region", { name: "online.events.missions" });
+
+/** The card of a mission, by its sentence. */
+const cardOf = (sentence: string) => {
+  const card = within(missionsOf()).getByText(sentence).closest("li");
+  if (!card) throw new Error(`no card for ${sentence}`);
+  return card as HTMLElement;
+};
 
 describe("the events page", () => {
   // Given a server older than the events (it answers 404),
@@ -133,9 +149,9 @@ describe("the events page", () => {
 
   // Given events in every state, one in a state this build does not know,
   // when the page opens,
-  // then the groups go running, ended, coming up, closed, the unknown one closed, the coming-up
-  // and closed groups folded until opened.
-  it("groups the events by state in their order", async () => {
+  // then the running and the ended events show in full, in that order, and the coming-up and
+  // closed ones (the unknown one closed) are folded in their groups until opened.
+  it("opens what runs and takes claims, and folds the rest", async () => {
     serve({
       "GET v1/me/events": ok(
         view([
@@ -150,15 +166,16 @@ describe("the events page", () => {
     renderOnline("/online/events");
 
     await screen.findByRole("article", { name: "online.events.theme.weekly" });
+    expect(screen.getAllByRole("article").map(nameOf)).toEqual([
+      "online.events.theme.weekly",
+      "online.events.theme.seasonOpener",
+    ]);
+    expect(screen.getByText("online.events.state.running")).toBeTruthy();
+    expect(screen.getByText("online.events.state.ended")).toBeTruthy();
     const groups = screen
       .getAllByRole("button", { name: /^online\.events\.group\./ })
       .map((button) => button.textContent);
-    expect(groups).toEqual([
-      "online.events.group.running(1)",
-      "online.events.group.ended(1)",
-      "online.events.group.scheduled(1)",
-      "online.events.group.closed(2)",
-    ]);
+    expect(groups).toEqual(["online.events.group.scheduled(1)", "online.events.group.closed(2)"]);
     expect(screen.queryByRole("article", { name: "online.events.theme.weekend" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: /^online\.events\.group\.closed/ }));
@@ -169,8 +186,8 @@ describe("the events page", () => {
   // Given only running events, the later-ending one first, one with a theme this build does
   // not know,
   // when the page opens,
-  // then the other groups are hidden, the sooner-ending event is first, and the unknown theme
-  // reads "Event".
+  // then no group shows, the sooner-ending event is first, and the unknown theme reads "Event"
+  // with the plain line under it.
   it("orders running events by their end and names an unknown theme", async () => {
     serve({
       "GET v1/me/events": ok(
@@ -183,11 +200,32 @@ describe("the events page", () => {
     renderOnline("/online/events");
 
     await screen.findByRole("article", { name: "online.events.theme.weekly" });
-    expect(screen.queryByRole("button", { name: /^online\.events\.group\.ended/ })).toBeNull();
-    expect(screen.getAllByRole("article").map((card) => card.getAttribute("aria-label"))).toEqual([
+    expect(screen.queryByRole("button", { name: /^online\.events\.group\./ })).toBeNull();
+    expect(screen.getAllByRole("article").map(nameOf)).toEqual([
       "online.events.theme.other",
       "online.events.theme.weekly",
     ]);
+    expect(screen.getByText("online.events.tagline.other")).toBeTruthy();
+  });
+
+  // Given a running event that ends in 2 days, 3 hours, 4 minutes and 5 seconds,
+  // when the page shows it,
+  // then the timer says the time left as a sentence and in boxes of days, hours, minutes and
+  // seconds.
+  it("counts down to the end in boxes", async () => {
+    const endsAt = new Date(Date.now() + ((2 * 24 + 3) * 3600 + 4 * 60 + 5) * 1000).toISOString();
+    serve({ "GET v1/me/events": ok(view([event({ endsAt })])) });
+    renderOnline("/online/events");
+
+    const timer = await screen.findByRole("timer");
+    expect(timer.getAttribute("aria-label")).toMatch(
+      /^online\.events\.time\.running:online\.countdown\.withDays:2\|03:04:0[45]$/,
+    );
+    expect(within(timer).getByText("online.events.timer.running")).toBeTruthy();
+    expect(within(timer).getByText("2")).toBeTruthy();
+    expect(within(timer).getByText("03")).toBeTruthy();
+    expect(within(timer).getByText("04")).toBeTruthy();
+    expect(within(timer).getByText("online.events.unit.seconds")).toBeTruthy();
   });
 
   // Given an event whose countdown has run out on this machine, and one whose has not,
@@ -211,12 +249,60 @@ describe("the events page", () => {
   });
 });
 
+describe("the journey", () => {
+  // Given a running event with a mission claimed, one waiting and one under way at 2 of 5,
+  // when the page shows it,
+  // then the journey counts 2 of 3 met, 1 claimed and 1 waiting, and each node says where its
+  // mission stands under its first reward, in the server's order.
+  it("counts the missions and says where each stands", async () => {
+    serve({
+      "GET v1/me/events": ok(
+        view([
+          event({
+            missions: [
+              mission({ code: "a", status: "claimed", progress: 5 }),
+              mission({ code: "b", status: "completed", progress: 5 }),
+              mission({ code: "c", progress: 2, rewards: [{ coin: 20, quantity: 1 }] }),
+            ],
+          }),
+        ]),
+      ),
+    });
+    renderOnline("/online/events");
+
+    const journey = await screen.findByRole("list", { name: "online.events.journey.title" });
+    expect(screen.getByText("· online.events.journey.met:2|3")).toBeTruthy();
+    expect(screen.getByText("online.events.journey.counts:1|1")).toBeTruthy();
+    const nodes = within(journey).getAllByRole("listitem");
+    expect(nodes.map((node) => node.textContent)).toEqual([
+      "online.items.scoutExpedition.name:scoutExpeditiononline.events.claimed",
+      "online.items.scoutExpedition.name:scoutExpeditiononline.events.journey.ready",
+      "online.shop.coinsAmount:202/5",
+    ]);
+  });
+
+  // Given an event coming up,
+  // when its group is opened,
+  // then it has no journey.
+  it("shows no journey before the event starts", async () => {
+    serve({ "GET v1/me/events": ok(view([event({ state: "scheduled", startsAt: FAR })])) });
+    renderOnline("/online/events");
+    fireEvent.click(
+      await screen.findByRole("button", { name: /^online\.events\.group\.scheduled/ }),
+    );
+
+    expect(screen.getByRole("article", { name: "online.events.theme.weekly" })).toBeTruthy();
+    expect(screen.queryByRole("list", { name: "online.events.journey.title" })).toBeNull();
+  });
+});
+
 describe("a mission", () => {
   // Given counted missions, season-end ones and one of a kind this build does not know,
   // when the page shows them,
-  // then counted ones show progress over target, the offline one its line on what counts,
-  // the season-end top-4 at rank progress 1 "not met" (never 1/4), its levels as a line, and the
-  // unknown one as a special mission.
+  // then counted ones show progress over target, the directed line is said once above the
+  // cards, the offline one's line is behind "see conditions", the season-end top-4 at rank
+  // progress 1 is "not met" (never 1/4), its levels are said, and the unknown one is a special
+  // mission.
   it("shows each kind's progress and lines", async () => {
     serve({
       "GET v1/me/events": ok(
@@ -246,22 +332,103 @@ describe("a mission", () => {
       ),
     });
     renderOnline("/online/events");
+    await screen.findByRole("region", { name: "online.events.missions" });
+    const missions = missionsOf();
 
-    expect(await screen.findByText("2/3")).toBeTruthy();
-    expect(screen.getByText("online.events.mission.offlineMatches:150")).toBeTruthy();
-    expect(screen.getByText("online.events.hint.offline")).toBeTruthy();
-    expect(screen.getByText("online.events.mission.seasonFinishTop:4")).toBeTruthy();
-    expect(screen.getByText("online.events.notMet")).toBeTruthy();
+    const wins = within(cardOf("online.events.mission.leagueWinsDirected:3")).getByRole(
+      "progressbar",
+    );
+    expect(wins.getAttribute("aria-valuenow")).toBe("2");
+    expect(wins.getAttribute("aria-valuemax")).toBe("3");
+    expect(within(missions).getByText("online.events.hint.directed")).toBeTruthy();
+
+    const offline = cardOf("online.events.mission.offlineMatches:150");
+    expect(within(offline).queryByText("online.events.hint.offline")).toBeNull();
+    fireEvent.click(within(offline).getByRole("button", { name: "online.events.detail.show" }));
+    expect(within(offline).getByText("online.events.hint.offline")).toBeTruthy();
+    expect(within(offline).getByRole("button", { name: "online.events.detail.hide" })).toBeTruthy();
+
+    const top = cardOf("online.events.mission.seasonFinishTop:4");
+    expect(within(top).getByText("online.events.notMet")).toBeTruthy();
+    expect(within(top).queryByRole("progressbar")).toBeNull();
     expect(screen.queryByText("1/4")).toBeNull();
-    expect(screen.getByText("online.events.levels.from:4")).toBeTruthy();
-    expect(screen.getByText("online.events.met")).toBeTruthy();
-    expect(screen.getByText("online.events.levels.one:2")).toBeTruthy();
-    expect(screen.getByText("online.events.mission.other")).toBeTruthy();
-    expect(screen.getAllByText(/^online\.events\.levels\./)).toHaveLength(2);
+    expect(within(top).getByText("· online.events.levels.from:4")).toBeTruthy();
+    const promoted = cardOf("online.events.mission.seasonPromoted:1");
+    expect(within(promoted).getByText("online.events.met")).toBeTruthy();
+    expect(within(promoted).getByText("· online.events.levels.one:2")).toBeTruthy();
+    expect(within(missions).getByText("online.events.mission.other")).toBeTruthy();
   });
 
-  // Given lapsed missions with and without a reason, one finished after the event closed, and a
-  // claimed one,
+  // Given a claimed mission, one under way and one waiting, in that order, in a running event,
+  // when the page shows them,
+  // then the waiting claim comes first, then the one under way, then the claimed one.
+  it("puts the claims waiting first", async () => {
+    serve({
+      "GET v1/me/events": ok(
+        view([
+          event({
+            missions: [
+              mission({ code: "a", kind: "leagueWinsDirected", target: 3, status: "claimed" }),
+              mission({ code: "b", kind: "offlineMatches", target: 150 }),
+              mission({ code: "c", target: 5, progress: 5, status: "completed" }),
+            ],
+          }),
+        ]),
+      ),
+    });
+    renderOnline("/online/events");
+    await screen.findByRole("region", { name: "online.events.missions" });
+
+    expect(within(missionsOf()).getAllByRole("heading", { level: 4 }).map(textOf)).toEqual([
+      "online.events.mission.leagueMatchesDirected:5",
+      "online.events.mission.offlineMatches:150",
+      "online.events.mission.leagueWinsDirected:3",
+    ]);
+  });
+
+  // Given a coach with a club and a directed and an offline mission under way,
+  // when the page shows them,
+  // then the directed one links to the fixtures and each says what is left, by its kind.
+  it("shows the way to progress and what is left", async () => {
+    serve({
+      "GET v1/me/events": ok(
+        view([
+          event({
+            missions: [
+              mission({ code: "a", progress: 1 }),
+              mission({ code: "b", kind: "offlineMatches", target: 150, progress: 10 }),
+            ],
+          }),
+        ]),
+      ),
+    });
+    renderOnline("/online/events");
+    await screen.findByRole("region", { name: "online.events.missions" });
+
+    const directed = cardOf("online.events.mission.leagueMatchesDirected:5");
+    expect(
+      within(directed).getByRole("link", { name: "online.events.goSchedule" }).getAttribute("href"),
+    ).toBe("/online/schedule");
+    expect(within(directed).getByText("online.events.left.leagueMatchesDirected:4")).toBeTruthy();
+    const offline = cardOf("online.events.mission.offlineMatches:150");
+    expect(within(offline).queryByRole("link")).toBeNull();
+    expect(within(offline).getByText("online.events.left.offlineMatches:140")).toBeTruthy();
+  });
+
+  // Given a coach without a club and a directed mission under way,
+  // when the page shows it,
+  // then it has no link to fixtures the coach could not open.
+  it("does not link to fixtures without a club", async () => {
+    serve({ "GET v1/clubs/mine": fail(404, "be.error.notFound") });
+    renderOnline("/online/events");
+    await screen.findByRole("region", { name: "online.events.missions" });
+
+    expect(screen.queryByRole("link", { name: "online.events.goSchedule" })).toBeNull();
+    expect(screen.getByText("online.events.left.leagueMatchesDirected:5")).toBeTruthy();
+  });
+
+  // Given lapsed missions with and without a reason, one finished after the event closed, a
+  // claimed one and one not finished,
   // when the page shows them,
   // then each reads its own status, and none has a claim button.
   it("reads each status", async () => {
@@ -275,6 +442,7 @@ describe("a mission", () => {
               mission({ code: "b", status: "lapsed" }),
               mission({ code: "c", status: "completed" }),
               mission({ code: "d", status: "claimed" }),
+              mission({ code: "e" }),
             ],
           }),
         ]),
@@ -282,11 +450,17 @@ describe("a mission", () => {
     });
     renderOnline("/online/events");
     fireEvent.click(await screen.findByRole("button", { name: /^online\.events\.group\.closed/ }));
+    const missions = missionsOf();
 
-    expect(screen.getByText("online.events.lapsed:online.events.reason.stackFull")).toBeTruthy();
-    expect(screen.getByText("online.events.lapsedUnknown")).toBeTruthy();
-    expect(screen.getByText("online.events.autoClaiming")).toBeTruthy();
-    expect(screen.getByText("online.events.claimed")).toBeTruthy();
+    expect(
+      within(missions).getByText("online.events.lapsed:online.events.reason.stackFull"),
+    ).toBeTruthy();
+    expect(within(missions).getByText("online.events.lapsedUnknown")).toBeTruthy();
+    expect(within(missions).getByText("online.events.autoClaiming")).toBeTruthy();
+    // The claimed card's badge and its mark.
+    expect(within(missions).getAllByText("online.events.claimed")).toHaveLength(2);
+    expect(within(missions).getByText("online.events.status.missed")).toBeTruthy();
+    expect(within(missions).getAllByText("online.events.status.lapsed")).toHaveLength(2);
     expect(screen.queryByRole("button", { name: /^online\.events\.claimAria/ })).toBeNull();
   });
 
@@ -301,10 +475,13 @@ describe("a mission", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: /^online\.events\.group\.scheduled/ }),
     );
+    const card = cardOf("online.events.mission.leagueMatchesDirected:5");
 
-    expect(screen.getByText("online.events.mission.leagueMatchesDirected:5")).toBeTruthy();
-    expect(screen.getByText("online.items.scoutExpedition.name:scoutExpedition")).toBeTruthy();
-    expect(screen.queryByText("0/5")).toBeNull();
+    expect(within(card).getByText("online.events.status.upcoming")).toBeTruthy();
+    expect(
+      within(card).getAllByText("online.items.scoutExpedition.name:scoutExpedition").length,
+    ).toBeGreaterThan(0);
+    expect(within(card).queryByRole("progressbar")).toBeNull();
     expect(screen.queryByRole("button", { name: /^online\.events\.claimAria/ })).toBeNull();
   });
 });
@@ -314,15 +491,15 @@ describe("a claim", () => {
     status: "completed",
     progress: 5,
     rewards: [
-      { item: "scoutExpedition", quantity: 2 },
+      { item: "scoutExpedition", quantity: 2, expiresInDays: 60 },
       { coin: 20, quantity: 1 },
     ],
   });
 
   // Given a finished mission giving an item and coins,
   // when the coach claims it,
-  // then it is claimed with a key, the items, coins and events are read again, the rewards are
-  // said under the mission, and no notice is pushed.
+  // then it is claimed with a key, the items, coins and events are read again, a dialog says
+  // what was given and where it went, its button closes it, and no notice is pushed.
   it("gives the rewards and reads them again", async () => {
     let claimed = false;
     serve({
@@ -343,15 +520,41 @@ describe("a claim", () => {
 
     fireEvent.click(button);
 
-    expect(await screen.findByText(/^online\.events\.justClaimed:/)).toHaveProperty(
-      "textContent",
-      "online.events.justClaimed:online.items.scoutExpedition.name:scoutExpedition ×2, online.shop.coinsAmount:20",
+    const dialog = await screen.findByRole("dialog", {
+      name: "online.items.scoutExpedition.name:scoutExpedition ×2, online.shop.coinsAmount:20",
+    });
+    expect(within(dialog).getByText("online.events.reward.heading")).toBeTruthy();
+    expect(dialog.textContent).toContain(
+      "online.events.reward.toBoth online.events.reward.expires:60",
     );
     expect(sent("POST", claimPath("w1"))[0].idempotencyKey).toBeTruthy();
     await waitFor(() => expect(sent("GET", "v1/me/items").length).toBe(items + 1));
     expect(sent("GET", "v1/me/coins").length).toBe(coins + 1);
-    expect(await screen.findByText("online.events.claimed")).toBeTruthy();
+    expect(await within(missionsOf()).findAllByText("online.events.claimed")).toHaveLength(2);
     expect(useOnlineStore.getState().notices).toEqual([]);
+
+    const close = within(dialog).getByRole("button", { name: "online.events.reward.close" });
+    expect(document.activeElement).toBe(close);
+    fireEvent.click(close);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  // Given a claim of coins only, its dialog open,
+  // when the coach presses Escape,
+  // then the dialog said the coins went to the wallet, and it closes.
+  it("closes the reward dialog on Escape", async () => {
+    const coinsOnly = { ...finished, rewards: [{ coin: 20, quantity: 1 }] };
+    serve({
+      "GET v1/me/events": ok(view([event({ missions: [coinsOnly] })])),
+      [`POST ${claimPath("w1")}`]: ok({ rewards: coinsOnly.rewards }),
+    });
+    renderOnline("/online/events");
+    fireEvent.click(await claimButton("online.events.mission.leagueMatchesDirected:5"));
+
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("online.events.reward.toWallet")).toBeTruthy();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   // Given a claim that got no answer,
@@ -376,14 +579,15 @@ describe("a claim", () => {
     await waitFor(() => expect((button as HTMLButtonElement).disabled).toBe(false));
     fireEvent.click(button);
 
-    await screen.findByText(/^online\.events\.justClaimed:/);
+    await screen.findByRole("dialog");
+    expect(screen.queryByRole("alert")).toBeNull();
     const [first, second] = sent("POST", claimPath("w1"));
     expect(second.idempotencyKey).toBe(first.idempotencyKey);
   });
 
   // Given a mission another device claimed,
   // when the coach claims it here,
-  // then the events are read again and no error is shown.
+  // then the events are read again and no error or dialog is shown.
   it("catches up quietly when the reward was claimed elsewhere", async () => {
     serve({
       "GET v1/me/events": ok(view([event({ missions: [finished] })])),
@@ -398,6 +602,7 @@ describe("a claim", () => {
 
     await waitFor(() => expect(sent("GET", "v1/me/events").length).toBe(reads + 1));
     expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   // Given a season whose 30 event coins are all given,

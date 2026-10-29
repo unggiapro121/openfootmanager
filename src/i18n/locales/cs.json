@@ -1265,8 +1265,6 @@
       "disabled": "Tato sezóna nemá žádné události.",
       "empty": "Teď neběží žádné události. Nová událost se tu objeví 7 dní před začátkem.",
       "group": {
-        "running": "Probíhající",
-        "ended": "Skončené, odměny k vyzvednutí",
         "scheduled": "Připravované",
         "closed": "Uzavřené"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Splněno",
       "notMet": "Zatím nesplněno",
-      "rewards": "Odměny",
       "expires": "vyprší {{days}} dní po vyzvednutí",
       "claim": "Vyzvednout",
       "claiming": "Vyzvedávám…",
       "claimAria": "Vyzvednout odměny za: {{mission}}",
       "claimed": "Vyzvednuto",
-      "justClaimed": "Vyzvednuto: {{rewards}}",
       "autoClaiming": "Vyzvedává se za vás",
       "lapsed": "Nezískáno: {{reason}}",
       "lapsedUnknown": "Odměnu se nepodařilo udělit. Důvod najdete ve zprávách.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Mise splněna: {{mission}}",
         "completedUnnamed": "Právě jste splnili misi události."
+      },
+      "state": {
+        "running": "Probíhá",
+        "ended": "Skončilo – vyzvedněte si odměny",
+        "scheduled": "Brzy",
+        "closed": "Uzavřeno"
+      },
+      "tagline": {
+        "welcome": "Vaše první kroky trenéra, s dárky na cestě.",
+        "weekly": "Veďte tým, vyhrávejte zápasy a každý týden sbírejte dárky.",
+        "weekend": "Krátká událost pro víkendové zápasy.",
+        "seasonOpener": "Vstupte silně do nové sezóny a získejte její dárky.",
+        "seasonFinale": "Závěr sezóny: zakončete ji s dárky.",
+        "other": "Splňte úkoly a získejte dárky."
+      },
+      "timer": {
+        "running": "Končí za",
+        "ended": "Vyzvednutí končí za",
+        "scheduled": "Začíná za"
+      },
+      "unit": {
+        "days": "dní",
+        "hours": "hod.",
+        "minutes": "min.",
+        "seconds": "s"
+      },
+      "journey": {
+        "title": "Cesta",
+        "met": "{{met}}/{{total}} splněno",
+        "counts": "Vyzvednuto {{claimed}} · čeká {{ready}}",
+        "ready": "K vyzvednutí"
+      },
+      "status": {
+        "active": "Plní se",
+        "ready": "Splněno",
+        "upcoming": "Nezačalo",
+        "lapsed": "Nezískáno",
+        "missed": "Nesplněno"
+      },
+      "missions": "Úkoly",
+      "progress": "Postup",
+      "rewardsLabel": "Odměna:",
+      "detail": {
+        "show": "Zobrazit podmínky",
+        "hide": "Skrýt podmínky"
+      },
+      "goSchedule": "Zobrazit rozpis",
+      "left": {
+        "leagueMatchesDirected": "Zbývá zápasů: {{left}}",
+        "leagueWinsDirected": "Zbývá výher: {{left}}",
+        "offlineMatches": "Zbývá offline zápasů: {{left}}"
+      },
+      "reward": {
+        "heading": "Úkol splněn",
+        "toInventory": "Uloženo do vašeho inventáře.",
+        "toWallet": "Připsáno do vaší peněženky mincí.",
+        "toBoth": "Předměty v inventáři, mince v peněžence.",
+        "expires": "Platnost vyprší {{days}} dní po vyzvednutí.",
+        "close": "Skvělé!"
       }
     }
   },

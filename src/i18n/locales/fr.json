@@ -1265,8 +1265,6 @@
       "disabled": "Cette saison n'a pas d'événements.",
       "empty": "Aucun événement pour l'instant. Un nouvel événement apparaît ici 7 jours avant son début.",
       "group": {
-        "running": "En cours",
-        "ended": "Terminés, récompenses à réclamer",
         "scheduled": "À venir",
         "closed": "Clos"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Atteint",
       "notMet": "Pas encore atteint",
-      "rewards": "Récompenses",
       "expires": "expire {{days}} jours après réception",
       "claim": "Réclamer",
       "claiming": "Réclamation…",
       "claimAria": "Réclamer les récompenses de : {{mission}}",
       "claimed": "Réclamée",
-      "justClaimed": "Reçu : {{rewards}}",
       "autoClaiming": "Réclamation automatique en cours",
       "lapsed": "Non reçue : {{reason}}",
       "lapsedUnknown": "La récompense n'a pas pu être donnée. Votre messagerie en donne la raison.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Mission accomplie : {{mission}}",
         "completedUnnamed": "Vous venez d'accomplir une mission d'événement."
+      },
+      "state": {
+        "running": "En cours",
+        "ended": "Terminé : récupérez vos récompenses",
+        "scheduled": "À venir",
+        "closed": "Clôturé"
+      },
+      "tagline": {
+        "welcome": "Vos premiers pas d'entraîneur, avec des cadeaux en chemin.",
+        "weekly": "Dirigez votre équipe, gagnez des matchs, récoltez des cadeaux chaque semaine.",
+        "weekend": "Un court événement pour les matchs du week-end.",
+        "seasonOpener": "Démarrez la nouvelle saison en force et gagnez ses cadeaux.",
+        "seasonFinale": "Le dernier virage de la saison : finissez-la avec des cadeaux.",
+        "other": "Accomplissez ses missions pour gagner des cadeaux."
+      },
+      "timer": {
+        "running": "Se termine dans",
+        "ended": "Récupération close dans",
+        "scheduled": "Commence dans"
+      },
+      "unit": {
+        "days": "jours",
+        "hours": "heures",
+        "minutes": "min.",
+        "seconds": "sec."
+      },
+      "journey": {
+        "title": "Parcours",
+        "met": "{{met}}/{{total}} accomplies",
+        "counts": "{{claimed}} récupérées · {{ready}} à récupérer",
+        "ready": "À récupérer"
+      },
+      "status": {
+        "active": "En cours",
+        "ready": "Accomplie",
+        "upcoming": "Pas commencée",
+        "lapsed": "Non reçue",
+        "missed": "Non accomplie"
+      },
+      "missions": "Missions",
+      "progress": "Progression",
+      "rewardsLabel": "Récompense :",
+      "detail": {
+        "show": "Voir les conditions",
+        "hide": "Masquer les conditions"
+      },
+      "goSchedule": "Voir le calendrier",
+      "left": {
+        "leagueMatchesDirected": "Matchs restants : {{left}}",
+        "leagueWinsDirected": "Victoires restantes : {{left}}",
+        "offlineMatches": "Matchs hors ligne restants : {{left}}"
+      },
+      "reward": {
+        "heading": "Mission accomplie",
+        "toInventory": "Rangé dans votre inventaire.",
+        "toWallet": "Ajouté à votre porte-monnaie de pièces.",
+        "toBoth": "Objets rangés dans l'inventaire, pièces ajoutées au porte-monnaie.",
+        "expires": "Expire {{days}} jours après la récupération.",
+        "close": "Super !"
       }
     }
   },
