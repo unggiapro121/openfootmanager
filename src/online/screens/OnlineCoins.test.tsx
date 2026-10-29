@@ -98,7 +98,12 @@ const sent = (method: string, path: string) =>
     (request) => request.method === method && request.segments.join("/") === path,
   );
 
-const exchangeButton = () => screen.getByRole("button", { name: "online.coins.exchangeButton" });
+/** The exchange button: "Exchange", or "Exchange N coins" once an amount is set. */
+const exchangeButton = () =>
+  screen.getByRole("button", { name: /^online\.coins\.exchange(Button|Coins)/ });
+
+const HOUR = 60 * 60 * 1000;
+const hoursFromNow = (hours: number) => new Date(Date.now() + hours * HOUR).toISOString();
 
 async function typeCoins(amount: string) {
   const input = await screen.findByLabelText("online.coins.amount");
@@ -238,25 +243,62 @@ describe("the exchange", () => {
     renderOnline("/online/coins");
 
     expect(await screen.findByText("online.coins.closed")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "online.coins.exchangeButton" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /^online\.coins\.exchange(Button|Coins)/ }),
+    ).toBeNull();
   });
 
-  // Given 120 coins, 1,000 € a coin, and 30 of today's 50 left,
-  // when the coach types 10, then takes "All",
-  // then the preview is coins × rate for his club, and "All" is the smaller of his coins and
-  // what is left today.
+  // Given 120 coins, 1,000 € a coin, 30 of today's 50 left and 2,000,000 € in the club,
+  // when the wallet opens, then the coach types 25, then takes the most,
+  // then the form opens at 10, today's cap reads 30/50, the club's money and its money after
+  // follow coins × rate, and the most is the smaller of his coins and what is left today.
   it("previews the club's money and takes all that may go today", async () => {
     serve();
     renderOnline("/online/coins");
 
-    expect(await screen.findByText(/online\.coins\.today:30\|50\|/)).toBeTruthy();
-    await typeCoins("10");
-    expect(screen.getByText(/online\.coins\.preview:Cầu Vồng Nghệ An\|/).textContent).toMatch(
-      /10,000/,
-    );
-    fireEvent.click(screen.getByRole("button", { name: "online.coins.all" }));
-    expect((screen.getByLabelText("online.coins.amount") as HTMLInputElement).value).toBe("30");
+    const input = (await screen.findByLabelText("online.coins.amount")) as HTMLInputElement;
+    expect(input.value).toBe("10");
+    expect(screen.getByRole("button", { name: "10" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText("30/50")).toBeTruthy();
+    expect(screen.getByText(/^online\.coins\.resets:/)).toBeTruthy();
+    await typeCoins("25");
+    expect(screen.getByText(/^\D*25,000$/)).toBeTruthy();
+    await waitFor(() => expect(screen.getByText(/2,025,000/)).toBeTruthy());
+    fireEvent.click(screen.getByRole("button", { name: "online.coins.max:30" }));
+    expect(input.value).toBe("30");
+    expect(exchangeButton().textContent).toBe("online.coins.exchangeCoins:30");
     expect(exchangeButton().hasAttribute("disabled")).toBe(false);
+  });
+
+  // Given 7 coins held, with more left today,
+  // when the wallet opens,
+  // then the form opens at 7 and the presets above it are off.
+  it("turns off the presets above what may go", async () => {
+    serve({ "GET v1/me/coins": ok(coins({ balance: 7 })) });
+    renderOnline("/online/coins");
+
+    const input = (await screen.findByLabelText("online.coins.amount")) as HTMLInputElement;
+    expect(input.value).toBe("7");
+    expect(screen.getByRole("button", { name: "5" }).hasAttribute("disabled")).toBe(false);
+    expect(screen.getByRole("button", { name: "10" }).hasAttribute("disabled")).toBe(true);
+    expect(
+      screen.getByRole("button", { name: "online.coins.max:7" }).getAttribute("aria-pressed"),
+    ).toBe("true");
+  });
+
+  // Given today's 50 all exchanged,
+  // when the wallet opens,
+  // then the cap says it is used up and when it comes back, and there is no form to send.
+  it("says when today's cap is used up", async () => {
+    serve({ "GET v1/me/coins": ok(coins({ exchangedToday: 50 })) });
+    renderOnline("/online/coins");
+
+    expect(await screen.findByText("online.coins.quotaUsed")).toBeTruthy();
+    expect(screen.getByText(/^online\.coins\.quotaBack:.*\|50$/)).toBeTruthy();
+    expect(screen.queryByLabelText("online.coins.amount")).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /^online\.coins\.exchange(Button|Coins)/ }),
+    ).toBeNull();
   });
 
   // Given each reason the exchange cannot be asked,
@@ -337,6 +379,10 @@ describe("the exchange", () => {
 
     expect(await screen.findByText(/online\.coins\.exchanged:10\|/)).toBeTruthy();
     expect(screen.queryByRole("dialog")).toBeNull();
+    // The balance moved: the lines are read again, so each line's balance after holds.
+    await waitFor(() =>
+      expect(sent("GET", "v1/me/coins/ledger").length).toBeGreaterThanOrEqual(2),
+    );
     const posts = sent("POST", "v1/me/coins/exchange");
     expect(posts.map((post) => post.body)).toEqual([
       { coins: 10, priceListVersion: 4 },
@@ -418,15 +464,95 @@ describe("the coin lines", () => {
     serve();
     renderOnline("/online/coins");
 
-    const list = await screen.findByRole("list", { name: "online.coins.lines" });
-    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+    const history = await screen.findByRole("region", { name: "online.coins.lines" });
+    await waitFor(() => expect(within(history).getAllByRole("listitem")).toHaveLength(2));
     fireEvent.click(screen.getByRole("button", { name: "online.coins.more" }));
 
-    await waitFor(() => expect(within(list).getAllByRole("listitem")).toHaveLength(4));
+    await waitFor(() => expect(within(history).getAllByRole("listitem")).toHaveLength(4));
     expect(sent("GET", "v1/me/coins/ledger")[1]?.query).toContainEqual(["cursor", "3"]);
-    expect(within(list).getByText("online.coins.kind.somethingNew:somethingNew")).toBeTruthy();
-    expect(within(list).getAllByText("+100")).toHaveLength(1);
+    expect(within(history).getByText("online.coins.kind.somethingNew:somethingNew")).toBeTruthy();
+    expect(within(history).getAllByText("+100")).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "online.coins.more" })).toBeNull();
+  });
+
+  // Given 120 coins and three lines, newest first: +20 and −15 today, +100 two days ago,
+  // when the wallet opens,
+  // then today's tiles read +20 in and −15 out, today's lines are under "today", and each line
+  // shows the balance after it, walking back from 120: 120, 100, 115.
+  it("adds up today and shows the balance after each line", async () => {
+    serve({
+      "GET v1/me/coins": ok(coins({ nextDayAt: hoursFromNow(20) })),
+      "GET v1/me/coins/ledger": ok({
+        items: [
+          { id: 3, at: hoursFromNow(-0.01), kind: "event_reward", amount: 20 },
+          { id: 2, at: hoursFromNow(-0.02), kind: "item_purchase", amount: -15 },
+          { id: 1, at: hoursFromNow(-50), kind: "coin_adjust", amount: 100 },
+        ],
+      }),
+    });
+    renderOnline("/online/coins");
+
+    const history = await screen.findByRole("region", { name: "online.coins.lines" });
+    await waitFor(() => expect(within(history).getAllByRole("listitem")).toHaveLength(3));
+    expect(screen.getByText("online.coins.todayIn").nextSibling?.textContent).toBe("+20");
+    expect(screen.getByText("online.coins.todayOut").nextSibling?.textContent).toBe("−15");
+    expect(within(history).getByRole("list", { name: /^online\.coins\.todayDate:/ })).toBeTruthy();
+    const rows = within(history).getAllByRole("listitem");
+    expect(
+      rows.map((row) => row.textContent?.replace(/^.*online\.coins\.balanceAfter /, "")),
+    ).toEqual(["120", "100", "115"]);
+    expect(rows[1].textContent).toContain("−15");
+  });
+
+  // Given lines in and out,
+  // when the coach filters to what went out, then to what came in,
+  // then each filter counts its lines and shows only them.
+  it("filters the lines in and out", async () => {
+    serve();
+    renderOnline("/online/coins");
+    const history = await screen.findByRole("region", { name: "online.coins.lines" });
+    fireEvent.click(await screen.findByRole("button", { name: "online.coins.more" }));
+    await waitFor(() => expect(within(history).getAllByRole("listitem")).toHaveLength(4));
+
+    const filters = within(history).getByRole("group", { name: "online.coins.filter.label" });
+    expect(
+      within(filters)
+        .getAllByRole("button")
+        .map((button) => button.textContent),
+    ).toEqual([
+      "online.coins.filter.all (4)",
+      "online.coins.filter.in (1)",
+      "online.coins.filter.out (3)",
+    ]);
+    fireEvent.click(within(filters).getByRole("button", { name: /filter\.out/ }));
+    expect(within(history).getAllByRole("listitem")).toHaveLength(3);
+    expect(within(history).queryByText("+100")).toBeNull();
+    fireEvent.click(within(filters).getByRole("button", { name: /filter\.in/ }));
+    expect(within(history).getAllByRole("listitem")).toHaveLength(1);
+    expect(
+      within(filters)
+        .getByRole("button", { name: /filter\.in/ })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
+  });
+});
+
+describe("the balance", () => {
+  // Given a wallet,
+  // when it opens,
+  // then the balance is named with the coin's name and leads to the shop and the events.
+  it("leads to the shop and the events", async () => {
+    serve();
+    renderOnline("/online/coins");
+
+    const balance = await screen.findByRole("region", { name: "online.coins.balanceOf:OFM Coin" });
+    expect(within(balance).getByText("120")).toBeTruthy();
+    expect(
+      within(balance).getByRole("link", { name: "online.coins.toShop" }).getAttribute("href"),
+    ).toBe("/online/shop");
+    expect(
+      within(balance).getByRole("link", { name: "online.coins.toEvents" }).getAttribute("href"),
+    ).toBe("/online/events");
   });
 });
 
