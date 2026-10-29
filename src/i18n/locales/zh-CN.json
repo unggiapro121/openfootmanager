@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "你的物品已解锁",
             "body": "你的物品核查已完成，可以再次使用了。"
+          },
+          "itemsGranted": {
+            "subject": "你获得了 {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} 已放入你的背包。{{extra}}",
+            "expires": "可使用至 {{until}}，之后将失效。"
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} 已收回",
+            "body": "{{item}} ×{{count}} 已从你的背包中收回。"
+          },
+          "purchaseRefunded": {
+            "subject": "购买已退款：{{item}}",
+            "body": "你购买的 {{item}} ×{{count}} 已退款：{{coins}} 金币已退回你的钱包。"
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "查看新拍卖",
-      "viewCaps": "查看等级上限"
+      "viewCaps": "查看等级上限",
+      "reasonLine": "原因：{{reason}}"
     },
     "coins": {
       "notOnServer": "此服务器尚未开放金币。",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "你获得了{{item}}。",
         "refunded": "一笔{{item}}的购买已退款；金币已退回你的钱包。",
-        "changed": "你的物品有变动。"
+        "changed": "你的物品有变动。",
+        "revoked": "{{item}} ×{{count}} 已从你的背包中收回。"
       },
       "reason": {
         "conditionFull": "体能已满",
@@ -1036,7 +1051,11 @@
       "previewing": "正在检查效果…",
       "confirmUse": "使用",
       "used": "已使用{{item}}。",
-      "shortcut": "使用{{item}}（×{{count}}）"
+      "shortcut": "使用{{item}}（×{{count}}）",
+      "needs": {
+        "items": "本赛季没有道具规则，因此该道具暂不出售。",
+        "academy": "本赛季没有青训营，因此该道具暂不出售。"
+      }
     },
     "inventory": {
       "notOnServer": "该服务器暂无物品。",
@@ -1175,7 +1194,8 @@
       "presetAria": "将数量设为 {{n}}",
       "quantityLabel": "数量",
       "openInventory": "打开背包",
-      "closeNotice": "关闭通知"
+      "closeNotice": "关闭通知",
+      "needsAcademy": "青训营开放后可购买"
     },
     "academy": {
       "notOnServer": "此服务器尚无青训营。",
@@ -5125,7 +5145,8 @@
       },
       "shop": {
         "quantityInvalid": "每次购买 1 到 99 个。",
-        "itemNotSold": "该道具目前不在售。"
+        "itemNotSold": "该道具目前不在售。",
+        "notUsableNow": "该道具本赛季无法使用，因此暂不出售。"
       },
       "training": {
         "manualOff": "本赛季未开启手动训练。",

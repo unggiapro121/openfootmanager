@@ -129,7 +129,10 @@ describe("readAccountRing", () => {
       event: "granted",
       itemCode: "timeSkip",
     });
-    expect(readAccountRing({ kind: "items", event: 7 })).toEqual({ kind: "items" });
+    expect(
+      readAccountRing({ kind: "items", event: "revoked", itemCode: "timeSkip", quantity: 2 }),
+    ).toEqual({ kind: "items", event: "revoked", itemCode: "timeSkip", quantity: 2 });
+    expect(readAccountRing({ kind: "items", event: 7, quantity: "2" })).toEqual({ kind: "items" });
     expect(readAccountRing({ kind: "academy", event: "scoutDone", tripId: "t-1" })).toEqual({
       kind: "academy",
       event: "scoutDone",

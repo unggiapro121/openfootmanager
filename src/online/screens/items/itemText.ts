@@ -79,6 +79,7 @@ const CASES: Record<string, { param: string; known: Set<string> }> = {
     known: new Set(["conditionFull", "notInjured", "atCap", "wrongTier"]),
   },
   "be.error.inventory.notUsableHere": { param: "use", known: new Set(["rename", "academy"]) },
+  "be.error.shop.notUsableNow": { param: "needs", known: new Set(["items", "academy"]) },
 };
 
 /**

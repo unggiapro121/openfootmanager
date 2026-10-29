@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Deine Gegenstände sind entsperrt",
             "body": "Die Prüfung deiner Gegenstände ist abgeschlossen. Du kannst sie wieder verwenden."
+          },
+          "itemsGranted": {
+            "subject": "Du hast {{item}} ×{{count}} erhalten",
+            "body": "{{item}} ×{{count}} ist jetzt in deinem Inventar.{{extra}}",
+            "expires": "Verwendbar bis {{until}}; danach verfällt es."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} entfernt",
+            "body": "{{item}} ×{{count}} wurde aus deinem Inventar entfernt."
+          },
+          "purchaseRefunded": {
+            "subject": "Kauf erstattet: {{item}}",
+            "body": "Dein Kauf von {{item}} ×{{count}} wurde erstattet: {{coins}} Münzen sind wieder in deiner Geldbörse."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Neue Auktion ansehen",
-      "viewCaps": "Deine Stufengrenzen ansehen"
+      "viewCaps": "Deine Stufengrenzen ansehen",
+      "reasonLine": "Grund: {{reason}}"
     },
     "coins": {
       "notOnServer": "Münzen sind auf diesem Server noch nicht verfügbar.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Du hast {{item}} erhalten.",
         "refunded": "Ein Kauf von {{item}} wurde erstattet; die Münzen sind wieder in deiner Geldbörse.",
-        "changed": "Deine Gegenstände haben sich geändert."
+        "changed": "Deine Gegenstände haben sich geändert.",
+        "revoked": "{{item}} ×{{count}} wurde aus deinem Inventar entfernt."
       },
       "reason": {
         "conditionFull": "Die Kondition ist bereits voll",
@@ -1036,7 +1051,11 @@
       "previewing": "Wirkung wird geprüft…",
       "confirmUse": "Verwenden",
       "used": "{{item}} verwendet.",
-      "shortcut": "{{item}} verwenden (×{{count}})"
+      "shortcut": "{{item}} verwenden (×{{count}})",
+      "needs": {
+        "items": "Diese Saison hat keine Regeln für Gegenstände, daher ist dieser Gegenstand nicht im Angebot.",
+        "academy": "Diese Saison hat keine Jugendakademie, daher ist dieser Gegenstand nicht im Angebot."
+      }
     },
     "inventory": {
       "notOnServer": "Dieser Server hat noch keine Gegenstände.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Menge auf {{n}} setzen",
       "quantityLabel": "Menge",
       "openInventory": "Inventar öffnen",
-      "closeNotice": "Hinweis schließen"
+      "closeNotice": "Hinweis schließen",
+      "needsAcademy": "Öffnet mit der Jugendakademie"
     },
     "academy": {
       "notOnServer": "Dieser Server hat noch keine Nachwuchsakademie.",
@@ -5125,7 +5145,8 @@
       },
       "shop": {
         "quantityInvalid": "Kaufe zwischen 1 und 99 auf einmal.",
-        "itemNotSold": "Dieser Gegenstand ist gerade nicht im Angebot."
+        "itemNotSold": "Dieser Gegenstand ist gerade nicht im Angebot.",
+        "notUsableNow": "Dieser Gegenstand ist in dieser Saison nicht verwendbar und daher nicht im Angebot."
       },
       "training": {
         "manualOff": "Manuelles Training ist in dieser Saison nicht aktiv.",

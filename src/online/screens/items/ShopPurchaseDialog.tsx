@@ -20,6 +20,7 @@ import {
 
 const PRICE_CHANGED = "be.error.economy.priceChanged";
 const STACK_FULL = "be.error.inventory.stackFull";
+const NOT_USABLE_NOW = "be.error.shop.notUsableNow";
 /** The most of one item bought at once when an older server sends no `maxPurchase`. */
 const MOST_AT_ONCE = 99;
 /** Quick picks beside the stepper (design cua-hang.html). */
@@ -115,7 +116,14 @@ export default function ShopPurchaseDialog({
           setQuantity(failure.params.max);
         }
         void refreshCoins().catch(() => undefined);
-        if (failure.code === PRICE_CHANGED || failure.code === STACK_FULL) onChanged();
+        // The shop is read again so its card says why (a season that cannot use the item, S-17d).
+        if (
+          failure.code === PRICE_CHANGED ||
+          failure.code === STACK_FULL ||
+          failure.code === NOT_USABLE_NOW
+        ) {
+          onChanged();
+        }
       })
       .finally(() => setBusy(false));
   };

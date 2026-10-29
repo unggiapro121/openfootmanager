@@ -64,6 +64,9 @@ function lookup(locale: unknown, code: string): string | undefined {
  */
 const UNSHOWN: Record<string, string[]> = {
   "be.error.academy.tripOpen": ["tripId"],
+  // A known lack has its own sentence (`online.items.needs.*`, itemText CASES); the code's own
+  // sentence is for one this build does not know, so it never shows the raw value (S-17d).
+  "be.error.shop.notUsableNow": ["needs"],
 };
 
 const placeholders = (text: string) => [...text.matchAll(/{{\s*(\w+)\s*}}/g)].map((m) => m[1]);

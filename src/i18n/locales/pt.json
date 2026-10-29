@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Os teus itens foram desbloqueados",
             "body": "A verificação dos teus itens terminou. Já podes voltar a usá-los."
+          },
+          "itemsGranted": {
+            "subject": "Recebeste {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} já está no teu inventário.{{extra}}",
+            "expires": "Pode ser usado até {{until}}; depois desaparece."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} retirado",
+            "body": "{{item}} ×{{count}} foi retirado do teu inventário."
+          },
+          "purchaseRefunded": {
+            "subject": "Compra reembolsada: {{item}}",
+            "body": "A tua compra de {{item}} ×{{count}} foi reembolsada: {{coins}} moedas voltaram à tua carteira."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Ver o novo leilão",
-      "viewCaps": "Ver os teus limites de nível"
+      "viewCaps": "Ver os teus limites de nível",
+      "reasonLine": "Motivo: {{reason}}"
     },
     "coins": {
       "notOnServer": "As moedas ainda não estão disponíveis neste servidor.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Recebeste {{item}}.",
         "refunded": "Uma compra de {{item}} foi reembolsada; as moedas voltaram à tua carteira.",
-        "changed": "Os teus itens mudaram."
+        "changed": "Os teus itens mudaram.",
+        "revoked": "{{item}} ×{{count}} foi retirado do teu inventário."
       },
       "reason": {
         "conditionFull": "A condição física já está no máximo",
@@ -1036,7 +1051,11 @@
       "previewing": "A verificar o que faria…",
       "confirmUse": "Usar",
       "used": "Usaste {{item}}.",
-      "shortcut": "Usar {{item}} (×{{count}})"
+      "shortcut": "Usar {{item}} (×{{count}})",
+      "needs": {
+        "items": "Esta época não tem regras de itens, por isso este item não está à venda.",
+        "academy": "Esta época não tem formação, por isso este item não está à venda."
+      }
     },
     "inventory": {
       "notOnServer": "Este servidor ainda não tem itens.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Definir a quantidade para {{n}}",
       "quantityLabel": "Quantidade",
       "openInventory": "Abrir inventário",
-      "closeNotice": "Fechar aviso"
+      "closeNotice": "Fechar aviso",
+      "needsAcademy": "Abre com a formação"
     },
     "academy": {
       "notOnServer": "Este servidor ainda não tem academia.",
@@ -5125,7 +5145,8 @@
       },
       "shop": {
         "quantityInvalid": "Compra entre 1 e 99 de cada vez.",
-        "itemNotSold": "Este item não está à venda neste momento."
+        "itemNotSold": "Este item não está à venda neste momento.",
+        "notUsableNow": "Este item não pode ser usado nesta época, por isso não está à venda."
       },
       "training": {
         "manualOff": "O treino manual não está ativo nesta época.",

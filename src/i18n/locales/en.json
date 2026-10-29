@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Your items are unlocked",
             "body": "The check of your items is done. You can use them again."
+          },
+          "itemsGranted": {
+            "subject": "You received {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} is now in your inventory.{{extra}}",
+            "expires": "It can be used until {{until}}; after that it is gone."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} taken back",
+            "body": "{{item}} ×{{count}} was taken back from your inventory."
+          },
+          "purchaseRefunded": {
+            "subject": "Purchase refunded: {{item}}",
+            "body": "Your purchase of {{item}} ×{{count}} was refunded: {{coins}} coins are back in your wallet."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "View the new auction",
-      "viewCaps": "See your level caps"
+      "viewCaps": "See your level caps",
+      "reasonLine": "Reason: {{reason}}"
     },
     "coins": {
       "notOnServer": "Coins are not open on this server yet.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "You received {{item}}.",
         "refunded": "A purchase of {{item}} was refunded; the coins are back in your wallet.",
-        "changed": "Your items changed."
+        "changed": "Your items changed.",
+        "revoked": "{{item}} ×{{count}} was taken back from your inventory."
       },
       "reason": {
         "conditionFull": "Condition is already full",
@@ -1036,7 +1051,11 @@
       "previewing": "Checking what it would do…",
       "confirmUse": "Use",
       "used": "Used {{item}}.",
-      "shortcut": "Use {{item}} (×{{count}})"
+      "shortcut": "Use {{item}} (×{{count}})",
+      "needs": {
+        "items": "This season has no item rules, so this item is not on sale.",
+        "academy": "This season has no youth academy, so this item is not on sale."
+      }
     },
     "inventory": {
       "notOnServer": "This server has no items yet.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Set quantity to {{n}}",
       "quantityLabel": "Quantity",
       "openInventory": "Open inventory",
-      "closeNotice": "Close notice"
+      "closeNotice": "Close notice",
+      "needsAcademy": "Opens with the youth academy"
     },
     "academy": {
       "notOnServer": "This server has no youth academy yet.",
@@ -5125,7 +5145,8 @@
       },
       "shop": {
         "quantityInvalid": "Buy between 1 and 99 at a time.",
-        "itemNotSold": "This item is not on sale right now."
+        "itemNotSold": "This item is not on sale right now.",
+        "notUsableNow": "This item cannot be used this season, so it is not on sale."
       },
       "training": {
         "manualOff": "Manual training is not on this season.",

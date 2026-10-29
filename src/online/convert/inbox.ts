@@ -9,6 +9,7 @@ import {
   missionText,
   themeName,
 } from "../screens/events/eventText";
+import { itemName } from "../screens/items/itemText";
 
 /** The offline inbox's category each kind of message is shown under (its icon and colour). */
 const CATEGORY: Record<string, string> = {
@@ -35,6 +36,10 @@ const CATEGORY: Record<string, string> = {
   // The nightly item audit locked or unlocked the coach's items (S-17 §3.11, C-7b).
   "account.itemsLocked": "BoardDirective",
   "account.itemsUnlocked": "BoardDirective",
+  // A SuperAdmin gave or took back items, or refunded a purchase, with the reason (S-17d, C-7b2).
+  "account.itemsGranted": "BoardDirective",
+  "account.itemsRevoked": "BoardDirective",
+  "account.purchaseRefunded": "Finance",
   // The academy (S-18, C-7c): under the scouting category the offline inbox already has.
   "academy.scoutDone": "ScoutReport",
   "academy.graduated": "ScoutReport",
@@ -132,6 +137,7 @@ export function toMessageData(
   };
   let bodyKey = `${base}.body`;
   let fixtureId: string | null = null;
+  let reason: string | undefined;
   const actions: MessageAction[] = [];
 
   if (kind === "match.result") {
@@ -233,6 +239,30 @@ export function toMessageData(
       reason: lapsedReasonText(t, text(params.reason) ?? "unavailable"),
     };
     if (!mission) bodyKey = `${base}.bodyUnnamed`;
+  } else if (
+    kind === "account.itemsGranted" ||
+    kind === "account.itemsRevoked" ||
+    kind === "account.purchaseRefunded"
+  ) {
+    const expires = new Date(String(params.expiresAt));
+    options = {
+      item: itemName(t, text(params.itemCode) ?? ""),
+      count: count(params.quantity),
+      coins: count(params.coins),
+      extra:
+        kind === "account.itemsGranted" && !Number.isNaN(expires.getTime())
+          ? ` ${t(`${base}.expires`, {
+              until: expires.toLocaleString([], { dateStyle: "medium", timeStyle: "short" }),
+            })}`
+          : "",
+    };
+    // The SuperAdmin's own words, as they were typed: plain text on its own line (Qs17d-1).
+    reason = text(params.reason)?.trim() || undefined;
+    actions.push(
+      kind === "account.purchaseRefunded"
+        ? goTo("wallet", t("online.shop.toWallet"), "/online/coins")
+        : goTo("inventory", t("online.shop.openInventory"), "/online/inventory"),
+    );
   } else if (kind === "academy.graduationDeferred") {
     // The mail names no one: the academy the store holds may (PO bản 4).
     const id = text(params.playerId);
@@ -245,7 +275,9 @@ export function toMessageData(
   return {
     id: message.id,
     subject: t(`${base}.subject`, options),
-    body: t(bodyKey, options),
+    body:
+      t(bodyKey, options) +
+      (reason === undefined ? "" : `\n${t("online.inbox.reasonLine", { reason })}`),
     sender: t("online.inbox.sender"),
     sender_role: "",
     date: message.createdAt,

@@ -46,22 +46,24 @@ function noticeOf(ring: Extract<AccountRing, { kind: "market" }>): void {
   });
 }
 
-/** Item events the coach did not do himself, so a notice tells him (C-7 C7-34). */
+/** Item events the coach did not do himself, so a notice tells him (C-7 C7-34, S-17d). */
 const ITEM_NOTICES: Record<string, string> = {
   granted: "/online/inventory",
+  revoked: "/online/inventory",
   refunded: "/online/coins",
 };
 
-/** A notice for an item given or a purchase refunded; a use or a purchase is the coach's own. */
+/**
+ * A notice for an item given or taken back, or a purchase refunded; a use or a purchase is the
+ * coach's own.
+ */
 function itemNoticeOf(ring: Extract<AccountRing, { kind: "items" }>): void {
   const link = ring.event ? ITEM_NOTICES[ring.event] : undefined;
   if (!link || !ring.event) return;
-  useOnlineStore.getState().pushNotice({
-    kind: "items",
-    event: ring.event,
-    link,
-    params: ring.itemCode ? { item: ring.itemCode } : {},
-  });
+  const params: Record<string, string | number> = {};
+  if (ring.itemCode) params.item = ring.itemCode;
+  if (ring.quantity !== undefined) params.quantity = ring.quantity;
+  useOnlineStore.getState().pushNotice({ kind: "items", event: ring.event, link, params });
 }
 
 /** The missions `after` shows finished that `before` did not, with their kind and target. */
