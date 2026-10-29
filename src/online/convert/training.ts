@@ -16,6 +16,19 @@ export function toTrainingRoster(players: SquadPlayerView[]): TrainingRosterPlay
   }));
 }
 
+/**
+ * The plan's groups with only the squad's players in them. A player sold or released stays in the
+ * saved plan, and the server refuses a plan naming a player not in the squad (`notInSquad`), so
+ * every plan the client shows or sends is first kept to the squad.
+ */
+export function inSquad(groups: TrainingGroup[], squad: SquadPlayerView[]): TrainingGroup[] {
+  const ids = new Set(squad.map((player) => player.id));
+  return groups.map((group) => ({
+    ...group,
+    player_ids: group.player_ids.filter((id) => ids.has(id)),
+  }));
+}
+
 /** The plan's groups as the groups card reads them. */
 export function toGroupData(groups: TrainingGroup[]): TrainingGroupData[] {
   return groups.map((group) => ({

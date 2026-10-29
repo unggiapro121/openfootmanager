@@ -391,6 +391,33 @@ describe("the online club pages", () => {
     expect(write.body).toEqual({ ...aiPlan, focus: "Tactical" });
   });
 
+  // Given a plan whose group still holds a player who has since left the club (sold or released),
+  // when the coach picks a focus,
+  // then the plan goes out with only the squad's players in the group, which the server accepts,
+  // and no error is shown.
+  it("leaves a player who left the club out of the saved groups", async () => {
+    const plan = {
+      focus: "Physical" as const,
+      intensity: "High" as const,
+      schedule: "Light" as const,
+      groups: [
+        { id: "g", name: "Keepers", focus: "Defending" as const, player_ids: ["gk", "gone"] },
+      ],
+      auto: true,
+    };
+    stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
+    renderOnline("/online/training");
+
+    fireEvent.click(
+      (await screen.findByText("training.focuses.Tactical.label")).closest("button")!,
+    );
+
+    await waitFor(() => expect(server.requests.some((r) => r.method === "PUT")).toBe(true));
+    const [write] = server.requests.filter((request) => request.method === "PUT");
+    expect((write.body as typeof plan).groups).toEqual([{ ...plan.groups[0], player_ids: ["gk"] }]);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
   // Given a coach with a group of keepers,
   // when they add a group and then put a defender into the keepers' group,
   // then each change sends the whole plan with its groups, the rest of the plan as it was.
