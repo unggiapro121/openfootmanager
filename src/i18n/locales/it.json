@@ -1117,26 +1117,32 @@
         "2": "Ben conosciuto"
       },
       "scout": {
-        "title": "Osservazione",
-        "season": "Missioni in questa stagione: {{sent}}/{{max}}, élite {{elite}}/{{eliteMax}}",
-        "send": "Invia un osservatore",
+        "title": "Invia un osservatore",
         "trip": "{{region}} · {{focus}} · pagato con {{pay}}",
         "backIn": "Di ritorno tra {{time}}",
         "backSoon": "L'osservatore sta tornando…",
         "timeSkip": "Usa una clessidra ({{held}} posseduti)",
-        "timeSkipConfirm": "Far tornare prima questa missione? Si usa una clessidra."
+        "timeSkipConfirm": "Far tornare prima questa missione? Si usa una clessidra.",
+        "elite": "Élite",
+        "normal": "Normale",
+        "kind": "Tipo di viaggio",
+        "left": "Restano {{n}} viaggi",
+        "eliteLeft": "Restano {{n}} viaggi · {{held}} biglietti",
+        "full": "Il vivaio è pieno ({{used}}/{{slots}}). I candidati trovati da un osservatore entrano solo se c'è posto: lascia andare un giovane prima di accoglierne un altro.",
+        "noReport": "Nessun rapporto attende la tua decisione.",
+        "noTripsLeft": "Nessun viaggio rimasto in stagione",
+        "reports": "Rapporti di osservazione",
+        "sendElite": "Invia un osservatore élite",
+        "sendNormal": "Invia un osservatore normale"
       },
       "send": {
-        "title": "Invia un osservatore",
         "region": "Regione",
         "focus": "Cerca",
         "pay": "Paga con",
         "payCash": "Soldi del club: {{cost}}",
         "payTicket": "1 biglietto di osservazione ({{held}} posseduti)",
         "payElite": "1 biglietto di osservazione élite ({{held}} posseduti): almeno un grande talento",
-        "back": "Di ritorno verso {{time}}",
-        "left": "Missioni rimaste in questa stagione: {{trips}}, élite: {{elite}}",
-        "confirm": "Invia"
+        "back": "Di ritorno verso {{time}}"
       },
       "candidate": {
         "choose": "Scegli {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Posti liberi nel vivaio: {{free}}.",
         "skip": "Scarta il rapporto",
         "recruit": "Prendi {{n}} nel vivaio",
-        "othersLeave": "I candidati non scelti se ne vanno e non tornano."
+        "othersLeave": "I candidati non scelti se ne vanno e non tornano.",
+        "back": "L'osservatore è tornato con {{n}} candidati",
+        "open": "Vedi il rapporto",
+        "title": "Rapporto di osservazione"
       },
       "players": {
-        "title": "Vivaio",
-        "slots": "{{used}}/{{slots}} posti · Vivaio livello {{level}}",
-        "costs": "Stipendio {{wage}} a settimana per giovane · Tassa di promozione {{fee}} · Almeno {{days}} giorni nel vivaio",
         "revealNote": "Gli intervalli di valutazione e stelle si restringono con i giorni nel vivaio; tutto si vede alla promozione.",
-        "none": "Ancora nessun giovane nel vivaio.",
         "days": "{{days}} giorni nel vivaio",
         "wage": "{{wage}} al giorno",
         "graduates": "Promozione prevista a fine stagione {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Come il club",
         "release": "Lascia andare",
         "releaseTitle": "Lasciare andare {{name}}?",
-        "releaseText": "Lascia il vivaio e non torna. Il costo dell'osservazione non è rimborsato."
+        "releaseText": "Lascia il vivaio e non torna. Il costo dell'osservazione non è rimborsato.",
+        "heading": "Giovani ({{used}}/{{slots}})",
+        "ovr": "OVR stimato",
+        "potential": "Potenziale",
+        "stars": "{{low}}–{{high}} stelle",
+        "daysOf": "{{days}}/{{min}} giorni minimi nel vivaio",
+        "graduatesUnknown": "Stagione di promozione non ancora nota",
+        "freeSlot": "Posto libero",
+        "freeSlotHint": "Invia un osservatore per trovare un nuovo giovane.",
+        "moreSlots": "Più posti per i giovani",
+        "moreSlotsHint": "Migliora il vivaio in Finanze per accogliere più giovani."
       },
       "graduated": {
         "title": "Promossi",
         "season": "stagione {{season}}"
+      },
+      "figures": {
+        "title": "Numeri del vivaio",
+        "slots": "Posti del vivaio",
+        "full": "Pieno",
+        "level": "Vivaio livello {{level}}",
+        "trips": "Viaggi di osservazione in stagione",
+        "eliteTrips": "Viaggi élite {{sent}}/{{max}}",
+        "wages": "Stipendi dei giovani",
+        "perWeek": "/settimana",
+        "wagesNote": "{{wage}} × {{n}} giovani",
+        "fee": "Tassa di promozione",
+        "feeNote": "Per giovane · almeno {{days}} giorni nel vivaio"
       }
     }
   },

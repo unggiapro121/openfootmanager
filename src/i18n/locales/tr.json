@@ -1117,26 +1117,32 @@
         "2": "İyi tanınıyor"
       },
       "scout": {
-        "title": "Gözlem",
-        "season": "Bu sezonki geziler: {{sent}}/{{max}}, elit geziler {{elite}}/{{eliteMax}}",
-        "send": "Gözlemci gönder",
+        "title": "Gözlemci gönder",
         "trip": "{{region}} · {{focus}} · ödeme: {{pay}}",
         "backIn": "{{time}} sonra dönüyor",
         "backSoon": "Gözlemci dönüş yolunda…",
         "timeSkip": "Kum saati kullan (elinde {{held}})",
-        "timeSkipConfirm": "Bu gözlem gezisi daha erken dönsün mü? Bir kum saati harcanır."
+        "timeSkipConfirm": "Bu gözlem gezisi daha erken dönsün mü? Bir kum saati harcanır.",
+        "elite": "Elit",
+        "normal": "Normal gezi",
+        "kind": "Gezi türü",
+        "left": "{{n}} gezi kaldı",
+        "eliteLeft": "{{n}} gezi kaldı · {{held}} bilet",
+        "full": "Akademi dolu ({{used}}/{{slots}}). Gözlemcinin bulduğu adaylar ancak yer varken girer: yenisini almadan önce bir genci serbest bırak.",
+        "noReport": "Kararını bekleyen rapor yok.",
+        "noTripsLeft": "Bu sezon gezi kalmadı",
+        "reports": "Gözlem raporları",
+        "sendElite": "Elit gözlemci gönder",
+        "sendNormal": "Normal gözlemci gönder"
       },
       "send": {
-        "title": "Gözlemci gönder",
         "region": "Bölge",
         "focus": "Aranan",
         "pay": "Ödeme",
         "payCash": "Kulüp parası: {{cost}}",
         "payTicket": "1 gözlemci bileti (elinde {{held}})",
         "payElite": "1 elit gözlemci bileti (elinde {{held}}): en az bir büyük yetenek",
-        "back": "Yaklaşık {{time}} döner",
-        "left": "Bu sezon kalan gezi: {{trips}}, elit: {{elite}}",
-        "confirm": "Gönder"
+        "back": "Yaklaşık {{time}} döner"
       },
       "candidate": {
         "choose": "{{name}} seç",
@@ -1148,14 +1154,13 @@
         "free": "Akademide boş yer: {{free}}.",
         "skip": "Raporu geç",
         "recruit": "Akademiye {{n}} oyuncu al",
-        "othersLeave": "Seçilmeyen adaylar gider ve geri dönmez."
+        "othersLeave": "Seçilmeyen adaylar gider ve geri dönmez.",
+        "back": "Gözlemci {{n}} adayla döndü",
+        "open": "Raporu gör",
+        "title": "Gözlem raporu"
       },
       "players": {
-        "title": "Akademi",
-        "slots": "{{used}}/{{slots}} yer · Akademi seviyesi {{level}}",
-        "costs": "Genç başına haftalık maaş {{wage}} · Mezuniyet ücreti {{fee}} · Akademide en az {{days}} gün",
         "revealNote": "Güç ve yıldız aralıkları akademideki günlerle daralır; mezuniyette her şey görünür.",
-        "none": "Akademide henüz genç yok.",
         "days": "Akademide {{days}} gün",
         "wage": "Günde {{wage}}",
         "graduates": "{{season}}. sezon sonunda mezun olması bekleniyor",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Kulüple aynı",
         "release": "Serbest bırak",
         "releaseTitle": "{{name}} serbest bırakılsın mı?",
-        "releaseText": "Akademiden ayrılır ve geri dönmez. Gözlem ücreti iade edilmez."
+        "releaseText": "Akademiden ayrılır ve geri dönmez. Gözlem ücreti iade edilmez.",
+        "heading": "Gençler ({{used}}/{{slots}})",
+        "ovr": "Tahmini OVR",
+        "potential": "Potansiyel",
+        "stars": "{{low}}–{{high}} yıldız",
+        "daysOf": "Akademide {{days}}/{{min}} gün (en az)",
+        "graduatesUnknown": "Mezuniyet sezonu henüz belli değil",
+        "freeSlot": "Boş yer",
+        "freeSlotHint": "Yeni bir genç bulmak için gözlemci gönder.",
+        "moreSlots": "Gençler için daha fazla yer",
+        "moreSlotsHint": "Daha fazla genç almak için akademiyi Finans'tan yükselt."
       },
       "graduated": {
         "title": "Mezunlar",
         "season": "{{season}}. sezon"
+      },
+      "figures": {
+        "title": "Akademi rakamları",
+        "slots": "Akademi yerleri",
+        "full": "Dolu",
+        "level": "Akademi seviyesi {{level}}",
+        "trips": "Bu sezonki gözlem gezileri",
+        "eliteTrips": "Elit geziler {{sent}}/{{max}}",
+        "wages": "Gençlerin maaşları",
+        "perWeek": "/hafta",
+        "wagesNote": "{{wage}} × {{n}} genç",
+        "fee": "Mezuniyet ücreti",
+        "feeNote": "Genç başına · akademide en az {{days}} gün"
       }
     }
   },
