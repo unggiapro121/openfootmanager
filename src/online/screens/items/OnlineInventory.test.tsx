@@ -526,4 +526,47 @@ describe("the account's item rings", () => {
     expect(notice.textContent).toContain("online.items.notice.granted");
     expect(notice.getAttribute("href")).toBe("/online/inventory");
   });
+
+  // Given a coach in the online mode,
+  // when a SuperAdmin takes 2 of their drinks back (S-17d), then a ring says items were taken
+  // back without saying how many,
+  // then the first notice says which item and how many, linking to the inventory, and the second
+  // says only that the items changed.
+  it("tells of items taken back, with how many", async () => {
+    serve();
+    renderOnline("/online/inventory");
+    await waitFor(() =>
+      expect(realtime.watches.some((watch) => watch.channel === `account:${ACCOUNT}`)).toBe(true),
+    );
+    await screen.findByText("online.items.energyDrinkSmall.name:energyDrinkSmall");
+    const watch = realtime.watches.find((one) => one.channel === `account:${ACCOUNT}`);
+    const reads = sent("GET", "v1/me/items").length;
+
+    act(() =>
+      watch?.speak({
+        kind: "notice",
+        channel: `account:${ACCOUNT}`,
+        data: { kind: "items", event: "revoked", itemCode: "energyDrinkSmall", quantity: 2 },
+      }),
+    );
+    await waitFor(() => expect(sent("GET", "v1/me/items").length).toBe(reads + 1));
+    const region = screen.getByRole("region", { name: "online.market.notice.region" });
+    const notice = await within(region).findByRole("link");
+    expect(notice.textContent).toContain("online.items.notice.revoked");
+    expect(notice.textContent).toContain("energyDrinkSmall");
+    expect(notice.textContent).toContain("|2");
+    expect(notice.getAttribute("href")).toBe("/online/inventory");
+
+    act(() =>
+      watch?.speak({
+        kind: "notice",
+        channel: `account:${ACCOUNT}`,
+        data: { kind: "items", event: "revoked", itemCode: "energyDrinkSmall" },
+      }),
+    );
+    await waitFor(() => expect(within(region).getAllByRole("link")).toHaveLength(2));
+    expect(within(region).getAllByRole("link")[1].textContent).toContain(
+      "online.items.notice.changed",
+    );
+  });
 });

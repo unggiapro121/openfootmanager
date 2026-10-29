@@ -14,8 +14,8 @@ export const NOTICE_MILLIS = 8000;
 /** The market events a notice has its own sentence for; any other says only that something changed. */
 const MARKET_EVENTS = new Set(["outbid", "won", "sold", "unsold", "cancelled", "forced"]);
 
-/** The item events a notice is pushed for (C-7 C7-34). */
-const ITEM_EVENTS = new Set(["granted", "refunded"]);
+/** The item events a notice is pushed for (C-7 C7-34, S-17d). */
+const ITEM_EVENTS = new Set(["granted", "revoked", "refunded"]);
 
 /**
  * The own sentence of an auction cancelled for the level caps or for its player gone (C-7 C7-11):
@@ -47,10 +47,14 @@ function noticeText(t: TFunction, notice: OnlineNotice): string {
     );
   }
   if (notice.kind === "items") {
-    const event = ITEM_EVENTS.has(notice.event) ? notice.event : "changed";
     const code = notice.params.item;
-    return t(`online.items.notice.${event}`, {
+    const count = notice.params.quantity;
+    // Items taken back are said with how many; a ring without the count says only "changed".
+    const known =
+      ITEM_EVENTS.has(notice.event) && (notice.event !== "revoked" || typeof count === "number");
+    return t(`online.items.notice.${known ? notice.event : "changed"}`, {
       item: typeof code === "string" ? itemName(t, code) : "",
+      count: typeof count === "number" ? count : 0,
     });
   }
   const cancelled = notice.event === "cancelled" ? cancelledKey(notice) : null;
@@ -72,7 +76,7 @@ function noticeText(t: TFunction, notice: OnlineNotice): string {
 
 /**
  * The notices in a corner of the online screens (C-5 C5-14, C-7 C7-4): the market's, an item
- * given or a purchase refunded, a scouting trip back (C-7c) and a mission finished (C-7d). At most three, newest last, each leaving after eight seconds or
+ * given or taken back or a purchase refunded, a scouting trip back (C-7c) and a mission finished (C-7d). At most three, newest last, each leaving after eight seconds or
  * when closed. They sit outside a live match's frame and never take the focus; a screen reader
  * hears each as it comes.
  */

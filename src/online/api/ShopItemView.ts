@@ -23,4 +23,12 @@ maxPurchase: number,
  * Absent while the season has no item rules, or for an item with no numbers (renames,
  * scouting).
  */
-effect?: ItemNumbersView, limits?: ItemCapsView, };
+effect?: ItemNumbersView, limits?: ItemCapsView, 
+/**
+ * What the season lacks for the item to be used, while it lacks it: `items` (item rules,
+ * group C) or `academy` (an economy and an academy, group B). It is then on show but not
+ * for sale (`maxPurchase` 0, a purchase refused). Absent: usable now. Read from the
+ * latest opened season's ruleset only, not its status, so a scouting ticket stays on sale
+ * between two seasons (S-17d S17d-4, S17d-5).
+ */
+needs?: string, };

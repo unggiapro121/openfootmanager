@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Tus objetos están desbloqueados",
             "body": "La revisión de tus objetos ha terminado. Ya puedes volver a usarlos."
+          },
+          "itemsGranted": {
+            "subject": "Has recibido {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} ya está en tu inventario.{{extra}}",
+            "expires": "Se puede usar hasta el {{until}}; después desaparece."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} retirado",
+            "body": "Se han retirado {{item}} ×{{count}} de tu inventario."
+          },
+          "purchaseRefunded": {
+            "subject": "Compra reembolsada: {{item}}",
+            "body": "Tu compra de {{item}} ×{{count}} se ha reembolsado: {{coins}} monedas han vuelto a tu cartera."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Ver la nueva subasta",
-      "viewCaps": "Ver tus topes de nivel"
+      "viewCaps": "Ver tus topes de nivel",
+      "reasonLine": "Motivo: {{reason}}"
     },
     "coins": {
       "notOnServer": "Las monedas aún no están disponibles en este servidor.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Has recibido {{item}}.",
         "refunded": "Se ha reembolsado una compra de {{item}}; las monedas han vuelto a tu cartera.",
-        "changed": "Tus objetos han cambiado."
+        "changed": "Tus objetos han cambiado.",
+        "revoked": "Se han retirado {{item}} ×{{count}} de tu inventario."
       },
       "reason": {
         "conditionFull": "La condición física ya está al máximo",
@@ -1036,7 +1051,11 @@
       "previewing": "Comprobando qué haría…",
       "confirmUse": "Usar",
       "used": "Has usado {{item}}.",
-      "shortcut": "Usar {{item}} (×{{count}})"
+      "shortcut": "Usar {{item}} (×{{count}})",
+      "needs": {
+        "items": "Esta temporada no tiene reglas de objetos, así que este objeto no está a la venta.",
+        "academy": "Esta temporada no tiene cantera, así que este objeto no está a la venta."
+      }
     },
     "inventory": {
       "notOnServer": "Este servidor aún no tiene objetos.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Poner la cantidad en {{n}}",
       "quantityLabel": "Cantidad",
       "openInventory": "Abrir inventario",
-      "closeNotice": "Cerrar aviso"
+      "closeNotice": "Cerrar aviso",
+      "needsAcademy": "Se abre con la cantera"
     },
     "academy": {
       "notOnServer": "Este servidor aún no tiene cantera.",
@@ -5125,7 +5145,8 @@
       },
       "shop": {
         "quantityInvalid": "Compra entre 1 y 99 de una vez.",
-        "itemNotSold": "Este objeto no está a la venta ahora."
+        "itemNotSold": "Este objeto no está a la venta ahora.",
+        "notUsableNow": "Este objeto no se puede usar esta temporada, así que no está a la venta."
       },
       "training": {
         "manualOff": "El entrenamiento manual no está activo esta temporada.",

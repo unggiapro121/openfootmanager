@@ -140,13 +140,16 @@ export type AccountRing =
       relistedAuctionId?: string;
     }
   /**
-   * The coach's items changed (S-17, C-7b): given (`granted`), used, bought, a purchase refunded,
-   * or an event this build does not know. The inventory is read again for any of them.
+   * The coach's items changed (S-17, C-7b): given (`granted`), taken back (`revoked`, S-17d),
+   * used, bought, a purchase refunded, or an event this build does not know. The inventory is
+   * read again for any of them.
    */
   | {
       kind: "items";
-      event?: "granted" | "used" | "bought" | "refunded" | string;
+      event?: "granted" | "revoked" | "used" | "bought" | "refunded" | string;
       itemCode?: string;
+      /** How many were given, taken back or refunded (S-17d). */
+      quantity?: number;
     }
   /**
    * The club's academy (S-18, C-7c): a scouting trip is back with its report (`scoutDone`), or an
@@ -172,6 +175,7 @@ export function readAccountRing(data: unknown): AccountRing {
     requiredLevel?: unknown;
     relistedAuctionId?: unknown;
     itemCode?: unknown;
+    quantity?: unknown;
     tripId?: unknown;
     eventId?: unknown;
   };
@@ -193,6 +197,7 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "items",
       event: typeof ring.event === "string" ? ring.event : undefined,
       itemCode: typeof ring.itemCode === "string" ? ring.itemCode : undefined,
+      quantity: typeof ring.quantity === "number" ? ring.quantity : undefined,
     };
   }
   if (ring.kind === "academy") {
