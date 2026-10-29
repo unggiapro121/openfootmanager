@@ -494,7 +494,20 @@
       "addedStyles": "Estilos de jogo: {{list}}",
       "addedDials": "Instruções: {{list}}",
       "addedRoles": "Funções: {{list}}",
-      "addedNothing": "Nada de novo"
+      "addedNothing": "Nada de novo",
+      "forced": "Níveis forçados: {{levels}}",
+      "caps": {
+        "title": "Limites de nível",
+        "playerCap": "Geral máximo que você pode comprar: {{cap}}",
+        "noPlayerCap": "Geral de jogador que você pode comprar: sem limite",
+        "buyLine": "Força de compra: {{value}} / limite do time {{cap}}",
+        "buyUse": "No mercado e ao completar o elenco, uma compra que leve este valor acima do limite do time é recusada.",
+        "teamLine": "Força do elenco (top 18): {{value}} / subida forçada em {{threshold}}",
+        "teamUse": "Acima desta marca no fim da temporada, você é forçado a subir, no máximo {{jump}} níveis.",
+        "over": "Se continuar assim até o fim da temporada, você será forçado a subir (no máximo {{jump}} níveis).",
+        "fullSquad": "Comprar só dentro dos limites nunca força você a subir: o que leva um elenco acima do limite é os jogadores evoluírem sozinhos."
+      },
+      "shortSquad": "Seu elenco tem só {{players}} jogadores. A força de compra conta cada vaga como {{empty}}, mas a força do elenco faz a média só dos {{players}} jogadores que você tem. Por isso um elenco com menos de 18 pode subir forçado mesmo que você nunca tenha comprado acima dos limites. Com 18 jogadores a diferença some."
     },
     "finance": {
       "title": "Finanças do clube",
@@ -553,7 +566,10 @@
         "minOvr": "OVR a partir de",
         "maxOvr": "OVR até",
         "maxPrice": "Preço máximo (€)",
-        "maxAge": "Idade máxima"
+        "maxAge": "Idade máxima",
+        "biddable": "Ocultar jogadores acima dos meus limites de nível",
+        "biddableHint": "Os leilões que você lidera também ficam ocultos; eles continuam em Meus leilões.",
+        "biddableHintLink": "Abrir Meus leilões"
       },
       "group": {
         "Goalkeeper": "Goleiros",
@@ -599,7 +615,9 @@
       "result": {
         "settled": "Vendido para {{club}} por {{price}}.",
         "unsold": "Ninguém o comprou.",
-        "cancelled": "Este leilão foi retirado ou cancelado."
+        "cancelled": "Este leilão foi retirado ou cancelado.",
+        "capExceeded": "Cancelado: o vencedor estava acima dos limites de nível.",
+        "playerGone": "Cancelado: o jogador não está mais no clube vendedor."
       },
       "quick": {
         "least": "Mínimo",
@@ -648,11 +666,20 @@
         "forced": "{{player}} foi colocado em leilão porque o clube deve salários.",
         "forcedUnnamed": "Um jogador foi colocado em leilão porque o clube deve salários.",
         "changed": "Algo mudou no leilão de {{player}}.",
-        "changedUnnamed": "Algo mudou no mercado."
+        "changedUnnamed": "Algo mudou no mercado.",
+        "cancelledCapClub": "O leilão de {{player}} foi cancelado: seu elenco está acima dos limites de nível. Você precisa ser técnico de nível {{level}}. O dinheiro retido foi devolvido.",
+        "cancelledCapRelisted": "O leilão de {{player}} foi cancelado porque o vencedor estava acima dos limites de nível. Ele está à venda de novo. Ver o novo leilão.",
+        "cancelledCapSeller": "O leilão de {{player}} foi cancelado porque o vencedor estava acima dos limites de nível. Ele voltará a ficar à venda.",
+        "cancelledPlayerGone": "O leilão de {{player}} foi cancelado: o jogador não está mais no clube vendedor. O dinheiro retido foi devolvido."
       },
       "ai": "IA",
       "aiClub": "Clube comandado pela IA",
-      "freeAgent": "Jogador livre"
+      "freeAgent": "Jogador livre",
+      "levelLock": {
+        "badge": "Nível {{level}}",
+        "explain": "Dois limites restringem o que um técnico pode comprar em cada nível: o geral de um jogador e a força de compra do elenco. Comprar um jogador que não entra no seu top 18 é sempre permitido.",
+        "roadmap": "Ver a trajetória de níveis"
+      }
     },
     "rename": {
       "open": "Renomear",
@@ -716,7 +743,11 @@
           },
           "cancelled": {
             "subject": "Leilão cancelado: {{player}}",
-            "body": "O leilão de {{player}} foi cancelado. O dinheiro retido foi devolvido."
+            "body": "O leilão de {{player}} foi cancelado. O dinheiro retido foi devolvido.",
+            "capClub": "O leilão de {{player}} foi cancelado: seu elenco está acima dos limites de nível. Você precisa ser técnico de nível {{level}}. O dinheiro retido para ele foi devolvido.",
+            "capRelisted": "O leilão de {{player}} foi cancelado porque o vencedor estava acima dos limites de nível. Ele está à venda de novo em um novo leilão.",
+            "capSeller": "O leilão de {{player}} foi cancelado porque o vencedor estava acima dos limites de nível. Ele voltará a ficar à venda.",
+            "playerGone": "O leilão de {{player}} foi cancelado: o jogador não está mais no clube vendedor. O dinheiro retido para ele foi devolvido."
           },
           "forced": {
             "subject": "{{player}} colocado à venda",
@@ -749,6 +780,11 @@
           "reward": {
             "subject": "Premiação da temporada",
             "body": "Terminar em {{rank}}º lugar rendeu {{amount}} ao seu clube."
+          },
+          "forcedPromotion": {
+            "subject": "Subida forçada ao nível {{level}}",
+            "body": "No fim da temporada {{season}}, a força do seu elenco ficou acima do limite de subida forçada, então você foi para o nível {{level}} (+{{levels}}). Seus limites de compra subiram junto.{{extra}}",
+            "shortSquad": "Seu elenco tinha só {{squadSize}} jogadores depois dos reforços de fim de temporada, então a força foi calculada com esses {{squadSize}} e ficou acima da força de compra. Por isso você foi forçado a subir mesmo sem nunca ter comprado acima dos limites."
           }
         },
         "licence": {
@@ -834,7 +870,9 @@
             "body": "Você tem recompensas de evento não resgatadas. Prazo: {{until}}. Depois disso, o servidor as resgata para você; se não conseguir, um e-mail explica o motivo."
           }
         }
-      }
+      },
+      "viewNewAuction": "Ver o novo leilão",
+      "viewCaps": "Ver seus limites de nível"
     },
     "coins": {
       "notOnServer": "As moedas ainda não estão liberadas neste servidor.",

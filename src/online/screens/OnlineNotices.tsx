@@ -17,6 +17,18 @@ const MARKET_EVENTS = new Set(["outbid", "won", "sold", "unsold", "cancelled", "
 /** The item events a notice is pushed for (C-7 C7-34). */
 const ITEM_EVENTS = new Set(["granted", "refunded"]);
 
+/**
+ * The own sentence of an auction cancelled for the level caps or for its player gone (C-7 C7-11):
+ * the club left out (with the level it needs), the seller whose player is up again or soon will
+ * be, the player gone. Any other reason, or none, keeps the plain "cancelled" (`null`).
+ */
+function cancelledKey(notice: OnlineNotice): string | null {
+  if (notice.params.reason === "playerGone") return "cancelledPlayerGone";
+  if (notice.params.reason !== "buyCapExceeded") return null;
+  if (notice.params.requiredLevel !== undefined) return "cancelledCapClub";
+  return notice.params.relisted === 1 ? "cancelledCapRelisted" : "cancelledCapSeller";
+}
+
 function noticeText(t: TFunction, notice: OnlineNotice): string {
   if (notice.kind === "event") {
     // Only a mission finished has a notice (C-7 C7-57), named by its kind and target.
@@ -40,6 +52,14 @@ function noticeText(t: TFunction, notice: OnlineNotice): string {
     return t(`online.items.notice.${event}`, {
       item: typeof code === "string" ? itemName(t, code) : "",
     });
+  }
+  const cancelled = notice.event === "cancelled" ? cancelledKey(notice) : null;
+  if (cancelled) {
+    const named = notice.params.player;
+    const player = typeof named === "string" ? named : t("online.inbox.aPlayer");
+    return cancelled === "cancelledCapClub"
+      ? t(`online.market.notice.${cancelled}`, { player, level: notice.params.requiredLevel })
+      : t(`online.market.notice.${cancelled}`, { player });
   }
   const event = MARKET_EVENTS.has(notice.event) ? notice.event : "changed";
   const player = notice.params.player;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import InboxDeleteConfirmModal from "../../components/inbox/InboxDeleteConfirmModal";
 import InboxMessageDetailPane from "../../components/inbox/InboxMessageDetailPane";
 import InboxMessageListPane from "../../components/inbox/InboxMessageListPane";
@@ -7,6 +8,7 @@ import InboxToolbar from "../../components/inbox/InboxToolbar";
 import {
   type DeleteModalState,
   getFilteredMessages,
+  isNavigateAction,
   type MessageSortOrder,
   sortInboxMessages,
 } from "../../components/inbox/inboxHelpers";
@@ -47,6 +49,7 @@ export default function OnlineInbox() {
   const club = useOnlineStore((state) => state.club);
   const unreadMail = club?.unreadMail ?? 0;
   const key = useActionKey();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<InboxMessageView[]>([]);
   const [error, setError] = useState<unknown>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -206,7 +209,15 @@ export default function OnlineInbox() {
             currentTeamName={club?.club.name ?? null}
             language={i18n.language}
             selectedMessage={selected}
-            onAction={() => undefined}
+            onAction={(messageId, actionId) => {
+              // The only actions an online message has open a page it points to.
+              const action = all
+                .find((one) => one.id === messageId)
+                ?.actions.find((one) => one.id === actionId);
+              if (action && isNavigateAction(action.action_type)) {
+                navigate(action.action_type.NavigateTo.route);
+              }
+            }}
             onCloseSelectedMessage={() => setSelectedId(null)}
             onRequestDelete={() => {
               if (selected) {

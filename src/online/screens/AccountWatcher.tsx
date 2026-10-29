@@ -33,10 +33,15 @@ function noticeOf(ring: Extract<AccountRing, { kind: "market" }>): void {
   const params: Record<string, string | number> = {};
   if (auction?.player?.fullName !== undefined) params.player = auction.player.fullName;
   if (auction?.currentPrice !== undefined) params.price = auction.currentPrice;
+  if (ring.reason !== undefined) params.reason = ring.reason;
+  if (ring.requiredLevel !== undefined) params.requiredLevel = ring.requiredLevel;
+  // A seller whose winner was over the level caps: the notice opens the player's new auction.
+  const opens = ring.relistedAuctionId ?? ring.auctionId;
+  if (ring.relistedAuctionId !== undefined) params.relisted = 1;
   useOnlineStore.getState().pushNotice({
     kind: "market",
     event: ring.event ?? "changed",
-    link: ring.auctionId ? `/online/auctions/${ring.auctionId}` : undefined,
+    link: opens ? `/online/auctions/${opens}` : undefined,
     params,
   });
 }

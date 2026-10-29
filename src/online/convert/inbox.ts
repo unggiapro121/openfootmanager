@@ -1,7 +1,7 @@
 import type { TFunction } from "i18next";
 import { resolveInjuryName } from "../../lib/injury";
 import { formatExactMoney } from "../../lib/valueFormatting";
-import type { MessageData } from "../../store/types";
+import type { MessageAction, MessageData } from "../../store/types";
 import type { InboxMessageView, LevelRange } from "../api";
 import {
   lapsedReasonText,
@@ -29,6 +29,8 @@ const CATEGORY: Record<string, string> = {
   "season.result": "LeagueInfo",
   "season.promoted": "LeagueInfo",
   "season.reward": "Finance",
+  // Forced up by the club's strength at the season's end (S-16c, C-7a2).
+  "season.forcedPromotion": "LeagueInfo",
   "licence.fitted": "BoardDirective",
   // The nightly item audit locked or unlocked the coach's items (S-17 §3.11, C-7b).
   "account.itemsLocked": "BoardDirective",
@@ -43,6 +45,26 @@ const CATEGORY: Record<string, string> = {
   "event.lapsed": "System",
   "event.claimReminder": "System",
 };
+
+/**
+ * The own sentence of an auction cancelled for the level caps or for its player gone (C-7 C7-11),
+ * by who reads it: the club left out (it has the level it needs), the seller whose player is up
+ * again or not yet. Any other reason, or none, is the plain body.
+ */
+function cancelledBody(params: Record<string, unknown>): string {
+  if (params.reason === "playerGone") return "playerGone";
+  if (params.reason !== "buyCapExceeded") return "body";
+  if (params.requiredLevel !== undefined) return "capClub";
+  return text(params.relistedAuctionId) === undefined ? "capSeller" : "capRelisted";
+}
+
+/** A way out of a message to a page of the online mode (the inbox's own navigate action). */
+const goTo = (id: string, label: string, route: string): MessageAction => ({
+  id,
+  label,
+  action_type: { NavigateTo: { route } },
+  resolved: false,
+});
 
 /** The mission an event mail names, with its event's theme. */
 export type EventMission = MissionWords & { theme: string };
@@ -88,9 +110,10 @@ const count = (value: unknown): number => {
 
 /**
  * One inbox message as the offline inbox's panes read a message (the list, the detail), with its
- * words written here from the kind and its parameters, in the player's language. A message names
- * no actions: the online inbox only tells. `youngsterName` names an academy youngster a mail gives
- * only by id; `eventMission` an event's mission a mail gives only by its codes.
+ * words written here from the kind and its parameters, in the player's language. A message offers
+ * no choices: the online inbox only tells, and at most opens a page it points to. `youngsterName`
+ * names an academy youngster a mail gives only by id; `eventMission` an event's mission a mail
+ * gives only by its codes.
  */
 export function toMessageData(
   message: InboxMessageView,
@@ -109,6 +132,7 @@ export function toMessageData(
   };
   let bodyKey = `${base}.body`;
   let fixtureId: string | null = null;
+  const actions: MessageAction[] = [];
 
   if (kind === "match.result") {
     const scored = count(params.scored);
@@ -156,6 +180,25 @@ export function toMessageData(
       critical: count(params.critical),
       names: text(params.names) ?? "",
     };
+  } else if (kind === "market.cancelled") {
+    bodyKey = `${base}.${cancelledBody(params)}`;
+    options.level = count(params.requiredLevel);
+    const relisted = text(params.relistedAuctionId);
+    if (bodyKey.endsWith(".capRelisted") && relisted) {
+      actions.push(goTo("open", t("online.inbox.viewNewAuction"), `/online/auctions/${relisted}`));
+    }
+  } else if (kind === "season.forcedPromotion") {
+    options = {
+      season: count(params.season),
+      levels: count(params.levels),
+      level: count(params.level),
+    };
+    // A short squad's mail says why it was forced though it bought within the caps (R16-9).
+    options.extra =
+      count(params.shortSquad) === 1
+        ? ` ${t(`${base}.shortSquad`, { squadSize: count(params.squadSize) })}`
+        : "";
+    actions.push(goTo("caps", t("online.inbox.viewCaps"), "/online/profile"));
   } else if (kind === "season.promoted") {
     options = { season: count(params.season), level: count(params.level) };
   } else if (kind === "season.reward") {
@@ -209,7 +252,7 @@ export function toMessageData(
     read: message.read,
     category: CATEGORY[kind] ?? "System",
     priority: "Normal",
-    actions: [],
+    actions,
     context: {
       team_id: null,
       player_id: null,
