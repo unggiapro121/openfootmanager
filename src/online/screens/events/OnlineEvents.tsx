@@ -75,7 +75,8 @@ function Events({ events }: { events: EventsView }) {
   const close = useCallback(() => setGiven(null), []);
   const open = [...sorted("running", events.events), ...sorted("ended", events.events)];
   return (
-    <div className="flex max-w-7xl flex-col gap-8">
+    // A container: the cards lay out by the room the page has beside the sidebar, not the window.
+    <div className="@container flex flex-col gap-8">
       {open.map((event) => (
         // A new state is a new panel: its countdown may ask the server again, once.
         <EventPanel

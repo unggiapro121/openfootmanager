@@ -66,7 +66,7 @@ export default function EventTimer({ event }: { event: EventView }) {
       role="timer"
       aria-label={spoken}
       title={moment}
-      className="flex flex-col items-end gap-1.5"
+      className="flex flex-col items-start gap-1.5 @2xl:items-end"
     >
       <span className={LABEL}>{t(`online.events.timer.${group}`)}</span>
       <div aria-hidden="true" className="flex gap-1.5">
