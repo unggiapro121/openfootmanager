@@ -184,7 +184,17 @@
       "avatarUpload": "Importer depuis l'ordinateur",
       "avatarRemoveUpload": "Retirer mon image",
       "avatarUploadHint": "Une image JPEG, PNG ou WebP. Elle est recadrée en carré et réduite avant l'envoi ; vous seul la voyez.",
-      "avatarUploadFailed": "Ce fichier n'a pas pu être lu comme une image."
+      "avatarUploadFailed": "Ce fichier n'a pas pu être lu comme une image.",
+      "levelChip": "Niveau {{level}} · {{licence}}",
+      "levelOnly": "Niveau {{level}}",
+      "regionChip": "Région : {{region}}. Changer de région",
+      "saveRegion": "Enregistrer",
+      "stat": {
+        "seasons": "Saisons jouées",
+        "promotions": "Promotions",
+        "forced": "Niveaux imposés",
+        "bestStyle": "Style le plus fort"
+      }
     },
     "tactics": {
       "locked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez la modifier une fois le match terminé.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Parcours de l'entraîneur",
-      "standing": "Niveau {{level}} · licence {{licence}}",
-      "level": "Niveau d'entraîneur en ligne {{level}}",
-      "record": "{{seasons}} saisons jouées · {{promotions}} montées",
       "howTitle": "Comment monter de niveau",
       "howTop": "Finissez une saison parmi les {{places}} premiers de votre ligue de {{size}} clubs : +1 niveau",
       "howTier": "Quand un niveau compte plusieurs ligues, les plus fortes ont plus de places de montée : {{top}} dans la plus forte, {{bottom}} dans la plus faible",
@@ -504,10 +511,7 @@
       "allOpen": "Pas de licences cette saison : tous les réglages tactiques sont ouverts.",
       "pending": "Les licences s'appliquent aux matchs dès la saison prochaine ; vos dispositifs enregistrés suivent déjà la vôtre.",
       "licences": "Licences d'entraîneur",
-      "atLevel": "dès le niveau {{level}}",
       "held": "Détenue",
-      "levelsToGo": "encore {{levels}} niveaux",
-      "totals": "{{formations}} formations · {{styles}} styles · {{dials}} consignes · {{roles}} rôles",
       "opensFirst": "Ce qu'elle ouvre",
       "opensMore": "Ce qu'elle ajoute",
       "addedFormations": "Formations : {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Consignes : {{list}}",
       "addedRoles": "Rôles : {{list}}",
       "addedNothing": "Rien de nouveau",
-      "forced": "Niveaux forcés : {{levels}}",
       "caps": {
         "title": "Plafonds de niveau",
         "playerCap": "Note maximale que vous pouvez acheter : {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Si cela reste ainsi jusqu'à la fin de la saison, vous serez promu d'office (d'au plus {{jump}} niveaux).",
         "fullSquad": "Acheter seulement dans les plafonds ne vous fait jamais monter d'office : ce sont les joueurs qui progressent seuls qui font passer un effectif au-dessus du seuil."
       },
-      "shortSquad": "Votre effectif ne compte que {{players}} joueurs. La force d'achat compte chaque place vide pour {{empty}}, mais la force de l'effectif fait la moyenne des seuls {{players}} joueurs que vous avez. Un effectif de moins de 18 peut donc être promu d'office même sans jamais acheter au-dessus des plafonds. Avec 18 joueurs, l'écart disparaît."
+      "shortSquad": "Votre effectif ne compte que {{players}} joueurs. La force d'achat compte chaque place vide pour {{empty}}, mais la force de l'effectif fait la moyenne des seuls {{players}} joueurs que vous avez. Un effectif de moins de 18 peut donc être promu d'office même sans jamais acheter au-dessus des plafonds. Avec 18 joueurs, l'écart disparaît.",
+      "fromLevel": "À partir du niveau {{level}}",
+      "tag": {
+        "done": "Ouverte",
+        "needs": "Niveau {{level}} requis"
+      },
+      "status": {
+        "passed": "Ouverte",
+        "held": "Licence actuelle",
+        "ahead": "Pas encore ouverte"
+      },
+      "aheadHint": "Encore {{levels}} niveaux pour atteindre le niveau {{level}}.",
+      "nextHint": "{{licence}} au niveau {{level}} : encore {{levels}} niveaux.",
+      "firstHint": "La licence de départ de chaque entraîneur.",
+      "passedHint": "Vous avez dépassé cette licence.",
+      "stat": {
+        "formations": "Formations",
+        "styles": "Styles de jeu",
+        "dials": "Consignes",
+        "roles": "Rôles"
+      }
     },
     "finance": {
       "title": "Finances du club",
@@ -720,7 +743,13 @@
       "toShop": "Acheter en boutique"
     },
     "mastery": {
-      "hint": "La maîtrise progresse dans les matchs de championnat que vous dirigez vous-même, pas dans ceux que l'IA joue pour vous."
+      "hint": "La maîtrise progresse dans les matchs de championnat que vous dirigez vous-même, pas dans ceux que l'IA joue pour vous.",
+      "howLabel": "Comment la maîtrise progresse",
+      "notesHint": "Un carnet tactique ajoute de l'XP aussitôt.",
+      "notes": "Carnets :",
+      "best": "Le plus fort",
+      "xpBar": "XP jusqu'au niveau suivant",
+      "useFor": "Utiliser un carnet sur {{style}}"
     },
     "player": {
       "avatarChange": "Changer la photo",

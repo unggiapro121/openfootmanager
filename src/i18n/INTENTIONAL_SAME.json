@@ -302,7 +302,9 @@
     "online.shop.total",
     "online.academy.region.Europe",
     "tactics.dutyShort.corner_taker",
-    "online.nav.groupClub"
+    "online.nav.groupClub",
+    "online.profile.stat.promotions",
+    "online.roadmap.stat.formations"
   ],
   "it": [
     "online.coins.max",
@@ -447,7 +449,8 @@
     "worldEditor.staffSpecialization.Fitness",
     "online.shop.total",
     "online.header.clubLine",
-    "online.nav.groupClub"
+    "online.nav.groupClub",
+    "online.roadmap.stat.roles"
   ],
   "pt-BR": [
     "online.overview.points",
@@ -809,7 +812,9 @@
     "online.inventory.styleLevel",
     "online.academy.scout.elite",
     "online.events.theme.other",
-    "online.header.clubLine"
+    "online.header.clubLine",
+    "online.profile.levelChip",
+    "online.profile.levelOnly"
   ],
   "vi": [
     "online.market.ai",

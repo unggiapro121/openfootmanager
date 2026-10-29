@@ -184,7 +184,17 @@
       "avatarUpload": "Vom Computer hochladen",
       "avatarRemoveUpload": "Mein Bild entfernen",
       "avatarUploadHint": "Ein JPEG-, PNG- oder WebP-Bild. Es wird vor dem Senden quadratisch zugeschnitten und verkleinert; nur du siehst es.",
-      "avatarUploadFailed": "Diese Datei konnte nicht als Bild gelesen werden."
+      "avatarUploadFailed": "Diese Datei konnte nicht als Bild gelesen werden.",
+      "levelChip": "Stufe {{level}} · {{licence}}",
+      "levelOnly": "Stufe {{level}}",
+      "regionChip": "Region: {{region}}. Region wechseln",
+      "saveRegion": "Speichern",
+      "stat": {
+        "seasons": "Gespielte Saisons",
+        "promotions": "Aufstiege",
+        "forced": "Erzwungene Stufen",
+        "bestStyle": "Stärkster Stil"
+      }
     },
     "tactics": {
       "locked": "Die Aufstellung ist für das Spiel um {{time}} gesperrt. Nach dem Spiel kannst du sie wieder ändern.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Trainer-Fahrplan",
-      "standing": "Stufe {{level}} · Lizenz {{licence}}",
-      "level": "Online-Trainerstufe {{level}}",
-      "record": "{{seasons}} Saisons gespielt · {{promotions}}-mal aufgestiegen",
       "howTitle": "So steigst du eine Stufe auf",
       "howTop": "Beende eine Saison unter den ersten {{places}} deiner Liga mit {{size}} Klubs: +1 Stufe",
       "howTier": "Hat eine Stufe mehrere Ligen, bekommen die stärkeren mehr Aufstiegsplätze: {{top}} in der stärksten, {{bottom}} in der schwächsten",
@@ -504,10 +511,7 @@
       "allOpen": "Diese Saison gibt es keine Lizenzen: alle taktischen Einstellungen sind frei.",
       "pending": "Lizenzen gelten für Spiele ab der nächsten Saison; gespeicherte Aufstellungen folgen deiner schon jetzt.",
       "licences": "Trainerlizenzen",
-      "atLevel": "ab Stufe {{level}}",
       "held": "Aktuell",
-      "levelsToGo": "noch {{levels}} Stufen",
-      "totals": "{{formations}} Formationen · {{styles}} Spielstile · {{dials}} Anweisungen · {{roles}} Rollen",
       "opensFirst": "Was sie freischaltet",
       "opensMore": "Was sie hinzufügt",
       "addedFormations": "Formationen: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Anweisungen: {{list}}",
       "addedRoles": "Rollen: {{list}}",
       "addedNothing": "Nichts Neues",
-      "forced": "Erzwungene Stufen: {{levels}}",
       "caps": {
         "title": "Stufengrenzen",
         "playerCap": "Höchste Gesamtstärke, die du kaufen darfst: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Bleibt es bis zum Saisonende so, wirst du hochgestuft (um höchstens {{jump}} Stufen).",
         "fullSquad": "Wer nur innerhalb der Grenzen kauft, wird nie hochgestuft: Erst Spieler, die sich von selbst verbessern, heben einen Kader über die Schwelle."
       },
-      "shortSquad": "Dein Kader hat nur {{players}} Spieler. Die Kaufstärke zählt jeden freien Platz mit {{empty}}, die Kaderstärke ist aber der Schnitt nur deiner {{players}} Spieler. Deshalb kann ein Kader unter 18 hochgestuft werden, auch wenn du nie über den Grenzen gekauft hast. Mit 18 Spielern ist der Unterschied weg."
+      "shortSquad": "Dein Kader hat nur {{players}} Spieler. Die Kaufstärke zählt jeden freien Platz mit {{empty}}, die Kaderstärke ist aber der Schnitt nur deiner {{players}} Spieler. Deshalb kann ein Kader unter 18 hochgestuft werden, auch wenn du nie über den Grenzen gekauft hast. Mit 18 Spielern ist der Unterschied weg.",
+      "fromLevel": "Ab Stufe {{level}}",
+      "tag": {
+        "done": "Geöffnet",
+        "needs": "Ab Stufe {{level}}"
+      },
+      "status": {
+        "passed": "Geöffnet",
+        "held": "Aktuelle Lizenz",
+        "ahead": "Noch nicht geöffnet"
+      },
+      "aheadHint": "Noch {{levels}} Stufen bis Stufe {{level}}.",
+      "nextHint": "{{licence}} ab Stufe {{level}}: noch {{levels}} Stufen.",
+      "firstHint": "Die Startlizenz jedes Trainers.",
+      "passedHint": "Diese Lizenz hast du hinter dir.",
+      "stat": {
+        "formations": "Formationen",
+        "styles": "Spielstile",
+        "dials": "Anweisungen",
+        "roles": "Rollen"
+      }
     },
     "finance": {
       "title": "Vereinsfinanzen",
@@ -720,7 +743,13 @@
       "toShop": "Im Shop kaufen"
     },
     "mastery": {
-      "hint": "Die Beherrschung wächst in Ligaspielen, die Sie selbst leiten, nicht in denen, die die KI für Sie spielt."
+      "hint": "Die Beherrschung wächst in Ligaspielen, die Sie selbst leiten, nicht in denen, die die KI für Sie spielt.",
+      "howLabel": "Wie die Beherrschung wächst",
+      "notesHint": "Ein Taktik-Notizbuch gibt sofort XP.",
+      "notes": "Notizbücher:",
+      "best": "Stärkster",
+      "xpBar": "XP bis zur nächsten Stufe",
+      "useFor": "Notizbuch für {{style}} nutzen"
     },
     "player": {
       "avatarChange": "Foto ändern",

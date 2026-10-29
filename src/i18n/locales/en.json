@@ -184,7 +184,17 @@
       "avatarUpload": "Upload from your computer",
       "avatarRemoveUpload": "Remove my picture",
       "avatarUploadHint": "A JPEG, PNG or WebP picture. It is cropped to a square and shrunk before it is sent; only you see it.",
-      "avatarUploadFailed": "That file could not be read as a picture."
+      "avatarUploadFailed": "That file could not be read as a picture.",
+      "levelChip": "Level {{level}} · {{licence}}",
+      "levelOnly": "Level {{level}}",
+      "regionChip": "Region: {{region}}. Change region",
+      "saveRegion": "Save",
+      "stat": {
+        "seasons": "Seasons played",
+        "promotions": "Promotions",
+        "forced": "Forced levels",
+        "bestStyle": "Strongest style"
+      }
     },
     "tactics": {
       "locked": "The line-up is locked for the match at {{time}}. You can change it again once the match is over.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Coaching roadmap",
-      "standing": "Level {{level}} · {{licence}} licence",
-      "level": "Online coach level {{level}}",
-      "record": "{{seasons}} seasons played · promoted {{promotions}} times",
       "howTitle": "How to go up a level",
       "howTop": "Finish a season in the top {{places}} of your {{size}}-club league: +1 level",
       "howTier": "When a level has several leagues, the stronger ones get more promotion places: {{top}} in the strongest, {{bottom}} in the weakest",
@@ -504,10 +511,7 @@
       "allOpen": "No coaching licences this season: every tactical control is open.",
       "pending": "Licences apply to matches from next season; the setups you save already follow yours.",
       "licences": "Coaching licences",
-      "atLevel": "from level {{level}}",
       "held": "Held",
-      "levelsToGo": "{{levels}} levels to go",
-      "totals": "{{formations}} formations · {{styles}} play styles · {{dials}} instructions · {{roles}} roles",
       "opensFirst": "What it opens",
       "opensMore": "What it adds",
       "addedFormations": "Formations: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Instructions: {{list}}",
       "addedRoles": "Roles: {{list}}",
       "addedNothing": "Nothing new",
-      "forced": "Levels forced: {{levels}}",
       "caps": {
         "title": "Level caps",
         "playerCap": "Highest OVR you may buy: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "If it stays like this until the season ends, you will be forced up (by at most {{jump}} levels).",
         "fullSquad": "Buying only within the caps never forces you up: players growing on their own are what push a squad over the threshold."
       },
-      "shortSquad": "Your squad has only {{players}} players. The buying strength counts each empty place as {{empty}}, but the squad strength averages just the {{players}} players you have. So a squad under 18 can be forced up even if you never bought over the caps. With 18 players the gap is gone."
+      "shortSquad": "Your squad has only {{players}} players. The buying strength counts each empty place as {{empty}}, but the squad strength averages just the {{players}} players you have. So a squad under 18 can be forced up even if you never bought over the caps. With 18 players the gap is gone.",
+      "fromLevel": "From level {{level}}",
+      "tag": {
+        "done": "Opened",
+        "needs": "Needs level {{level}}"
+      },
+      "status": {
+        "passed": "Opened",
+        "held": "Current licence",
+        "ahead": "Not open yet"
+      },
+      "aheadHint": "{{levels}} more levels to reach level {{level}}.",
+      "nextHint": "{{licence}} at level {{level}}: {{levels}} more levels to go.",
+      "firstHint": "Every coach's starting licence.",
+      "passedHint": "You have passed this licence.",
+      "stat": {
+        "formations": "Formations",
+        "styles": "Play styles",
+        "dials": "Instructions",
+        "roles": "Roles"
+      }
     },
     "finance": {
       "title": "Club finance",
@@ -720,7 +743,13 @@
       "toShop": "Buy in the shop"
     },
     "mastery": {
-      "hint": "Mastery grows in league matches you direct yourself, not in ones the AI plays for you."
+      "hint": "Mastery grows in league matches you direct yourself, not in ones the AI plays for you.",
+      "howLabel": "How mastery grows",
+      "notesHint": "A tactical notebook adds XP at once.",
+      "notes": "Notebooks:",
+      "best": "Strongest",
+      "xpBar": "XP to the next level",
+      "useFor": "Use a notebook on {{style}}"
     },
     "player": {
       "avatarChange": "Change photo",

@@ -75,7 +75,12 @@ let server: ReturnType<typeof fakeServer>;
 beforeEach(() => resetOnline());
 afterEach(() => server?.restore());
 
-function stage(career: CareerView, table: LicenceTableView, club = myClub()) {
+function stage(
+  career: CareerView,
+  table: LicenceTableView,
+  club = myClub(),
+  more: Record<string, ReturnType<typeof ok>> = {},
+) {
   server = fakeServer({
     "GET v1/season": ok(SEASON),
     "GET v1/clubs/mine": ok(club),
@@ -83,14 +88,28 @@ function stage(career: CareerView, table: LicenceTableView, club = myClub()) {
     "GET v1/me": ok(ACCOUNT),
     "GET v1/me/career": ok(career),
     "GET v1/licences": ok(table),
+    ...more,
   });
+}
+
+/** The value the profile's head shows under `label`. */
+async function stat(label: string): Promise<string | null> {
+  const term = await screen.findByText(label);
+  return term.nextElementSibling?.textContent ?? null;
+}
+
+/** Unfolds how a level is earned. */
+async function openHow() {
+  fireEvent.click(await screen.findByRole("button", { name: "online.roadmap.howTitle" }));
 }
 
 describe("the coach's roadmap on his profile", () => {
   // Given a level-3 coach of five seasons and two promotions, holding the second licence,
-  // when his profile opens and he unfolds the third licence,
-  // then it shows his level and licence, his record, how a level is earned, the four licences
-  // with the second as his and the third one level away, and what the third adds by name.
+  // when his profile opens, he unfolds how a level is earned and chooses the third licence,
+  // then the head shows his level, licence and record; the road shows how a level is earned, the
+  // four licences with the second as his and the third needing level 4, the second chosen first
+  // with what it adds over the first and the way to the third; and the third, once chosen, how far
+  // it is and what it adds by name.
   it("shows where the coach stands and what lies ahead", async () => {
     stage(
       {
@@ -107,25 +126,39 @@ describe("the coach's roadmap on his profile", () => {
     renderOnline("/online/profile");
 
     expect(
-      await screen.findByText("online.roadmap.standing:3|tactics.licence.tier_2"),
+      await screen.findByText("online.profile.levelChip:3|tactics.licence.tier_2"),
     ).toBeInTheDocument();
-    expect(screen.getByText("online.roadmap.record:5|2")).toBeInTheDocument();
+    expect(await stat("online.profile.stat.seasons")).toBe("5");
+    expect(await stat("online.profile.stat.promotions")).toBe("2");
+    expect(screen.queryByText("online.roadmap.howTop:4|14")).toBeNull();
+    await openHow();
     expect(screen.getByText("online.roadmap.howTop:4|14")).toBeInTheDocument();
     expect(screen.getByText("online.roadmap.howNewcomer:13")).toBeInTheDocument();
 
     const road = screen.getByRole("list", { name: "online.roadmap.licences" });
-    const steps = within(road)
-      .getAllByRole("listitem")
-      .filter((item) => item.parentElement === road);
+    const steps = within(road).getAllByRole("listitem");
     expect(steps).toHaveLength(4);
     expect(steps[1]).toHaveAttribute("aria-current", "step");
-    expect(within(steps[2]).getByText("online.roadmap.levelsToGo:1")).toBeInTheDocument();
-    fireEvent.click(within(steps[2]).getByText("online.roadmap.opensMore"));
+    expect(within(steps[1]).getByRole("button")).toHaveAttribute("aria-pressed", "true");
+    expect(within(steps[2]).getByText("online.roadmap.tag.needs:4")).toBeInTheDocument();
+    const held = screen.getByRole("region", { name: "tactics.licence.tier_2" });
     expect(
-      within(steps[2]).getByText("online.roadmap.addedDials:tactics.phaseSettings.breakSpeed"),
+      within(held).getByText("online.roadmap.nextHint:tactics.licence.tier_3|4|1"),
+    ).toBeInTheDocument();
+    // Four formations against the first licence's three.
+    expect(
+      within(held).getByText("online.roadmap.stat.formations").nextElementSibling,
+    ).toHaveTextContent("4+1");
+
+    fireEvent.click(within(steps[2]).getByRole("button"));
+    const third = screen.getByRole("region", { name: "tactics.licence.tier_3" });
+    expect(within(third).getByText("online.roadmap.aheadHint:1|4")).toBeInTheDocument();
+    fireEvent.click(within(third).getByText("online.roadmap.opensMore"));
+    expect(
+      within(third).getByText("online.roadmap.addedDials:tactics.phaseSettings.breakSpeed"),
     ).toBeInTheDocument();
     expect(
-      within(steps[2]).getByText("online.roadmap.addedRoles:tactics.playerRoles.Mezzala"),
+      within(third).getByText("online.roadmap.addedRoles:tactics.playerRoles.Mezzala"),
     ).toBeInTheDocument();
   });
 
@@ -154,7 +187,8 @@ describe("the coach's roadmap on his profile", () => {
       );
       renderOnline("/online/profile");
 
-      expect(await screen.findByText("online.roadmap.howTop:7|14")).toBeInTheDocument();
+      await openHow();
+      expect(screen.getByText("online.roadmap.howTop:7|14")).toBeInTheDocument();
       if (shown) {
         expect(screen.getByText("online.roadmap.howTier:9|5")).toBeInTheDocument();
       } else {
@@ -165,7 +199,8 @@ describe("the coach's roadmap on his profile", () => {
 
   // Given a coach who earned XP in the attacking style,
   // when his profile opens,
-  // then the attacking style shows its level, the XP towards the next point and its matches.
+  // then the attacking style comes first as the strongest, with its level, the XP towards the
+  // next point and its matches, and the head names it the coach's strongest style.
   it("shows the mastery his matches earned", async () => {
     stage(
       {
@@ -190,6 +225,11 @@ describe("the coach's roadmap on his profile", () => {
     renderOnline("/online/profile");
 
     const tile = await screen.findByTestId("mastery-Attacking");
+    expect(within(tile).getByText("online.mastery.best")).toBeInTheDocument();
+    expect(
+      within(screen.getByTestId("mastery-Balanced")).queryByText("online.mastery.best"),
+    ).toBeNull();
+    expect(await stat("online.profile.stat.bestStyle")).toBe("common.playStyles.Attacking");
     expect(tile).toHaveTextContent("55");
     expect(tile).toHaveTextContent("manager.masteryXp:42|400");
     expect(tile).toHaveTextContent("manager.masteryMatches:6");
@@ -207,7 +247,8 @@ describe("the coach's roadmap on his profile", () => {
     );
     renderOnline("/online/profile");
 
-    expect(await screen.findByText("online.roadmap.level:1")).toBeInTheDocument();
+    expect(await screen.findByText("online.profile.levelOnly:1")).toBeInTheDocument();
+    await openHow();
     expect(screen.getByText("online.roadmap.noSeason")).toBeInTheDocument();
     expect(screen.getByText("online.roadmap.allOpen")).toBeInTheDocument();
     expect(screen.queryByRole("list", { name: "online.roadmap.licences" })).toBeNull();
@@ -237,13 +278,13 @@ describe("the level caps on the coach's profile (C-7a2)", () => {
   // Given a level-4 coach with two promotions and one level forced, a full squad of buying
   // strength 66.8 under the team cap 70.0 and squad strength 68.4 under the forced threshold 72.0,
   // when his profile opens,
-  // then it shows the forced level, the player cap, the two strengths on two bars of their own
+  // then the head shows the forced level, and the road the player cap, the two strengths on two bars of their own
   // with their marks, and that buying within the caps never forces him up.
   it("shows the forced levels and both strengths against their own marks", async () => {
     stage(career(CAPS), { tiers: TABLE.tiers });
     renderOnline("/online/profile");
 
-    expect(await screen.findByText("online.roadmap.forced:1")).toBeInTheDocument();
+    expect(await stat("online.profile.stat.forced")).toBe("1");
     const caps = screen.getByRole("region", { name: "online.roadmap.caps.title" });
     expect(within(caps).getByText("online.roadmap.caps.playerCap:74")).toBeInTheDocument();
     expect(within(caps).getByText("online.roadmap.caps.buyLine:66.8|70.0")).toBeInTheDocument();
@@ -260,7 +301,7 @@ describe("the level caps on the coach's profile (C-7a2)", () => {
   it("has no caps card without level caps", async () => {
     stage(career(undefined, 0), { tiers: TABLE.tiers });
     renderOnline("/online/profile");
-    expect(await screen.findByText("online.roadmap.forced:0")).toBeInTheDocument();
+    expect(await stat("online.profile.stat.forced")).toBe("0");
     expect(screen.queryByRole("region", { name: "online.roadmap.caps.title" })).toBeNull();
   });
 
@@ -292,5 +333,69 @@ describe("the level caps on the coach's profile (C-7a2)", () => {
     const band = await screen.findByText("online.roadmap.shortSquad:16|50");
     expect(band.closest("[role=note]")).not.toBeNull();
     expect(screen.queryByText("online.roadmap.caps.fullSquad")).toBeNull();
+  });
+});
+
+describe("the notebooks on the coach's styles", () => {
+  const career: CareerView = {
+    level: 1,
+    seasons: 0,
+    promotions: 0,
+    forcedLevels: 0,
+    mastery: [
+      { style: "Attacking", level: 55, xp: 42, xpToNext: 400, matches: 6, effects: [] },
+      { style: "Balanced", level: 50, xp: 0, xpToNext: 300, matches: 0, effects: [] },
+    ],
+  };
+  const items = (limits: boolean) =>
+    ok({
+      lines: [{ itemCode: "tacticalNoteAdvanced", powerClass: "medium", total: 3, stacks: [] }],
+      locked: false,
+      ...(limits
+        ? {
+            limits: {
+              notes: [{ style: "Attacking", usedXp: 0, limit: 500 }],
+              xpX2: { remaining: 0, max: 10 },
+            },
+          }
+        : {}),
+    });
+
+  // Given a season with item rules and three advanced notebooks held,
+  // when the coach opens a style's notebook menu, closes it with Escape, and opens it again,
+  // then the header counts the notebooks, the menu offers the one held with its count, and
+  // choosing it opens the use dialog.
+  it("offers the notebooks held on each style", async () => {
+    stage(career, { tiers: TABLE.tiers }, myClub(), { "GET v1/me/items": items(true) });
+    renderOnline("/online/profile");
+
+    const tile = await screen.findByTestId("mastery-Attacking");
+    const menu = await within(tile).findByRole("button", {
+      name: "online.mastery.useFor:common.playStyles.Attacking",
+    });
+    expect(screen.getByText("online.mastery.notes")).toBeInTheDocument();
+    expect(screen.queryByText(/tacticalNoteBasic/)).toBeNull();
+    fireEvent.click(menu);
+    expect(menu).toHaveAttribute("aria-expanded", "true");
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(menu).toHaveAttribute("aria-expanded", "false");
+    expect(menu).toHaveFocus();
+
+    fireEvent.click(menu);
+    const advanced = within(tile).getByRole("button", { name: /tacticalNoteAdvanced.*×3/ });
+    fireEvent.click(advanced);
+    expect(await screen.findByRole("dialog")).toBeInTheDocument();
+  });
+
+  // Given a season with no item rules,
+  // when the profile opens,
+  // then no style offers a notebook and the header counts none.
+  it("offers no notebook without item rules", async () => {
+    stage(career, { tiers: TABLE.tiers }, myClub(), { "GET v1/me/items": items(false) });
+    renderOnline("/online/profile");
+
+    await screen.findByTestId("mastery-Attacking");
+    expect(screen.queryByRole("button", { name: /online\.mastery\.useFor/ })).toBeNull();
+    expect(screen.queryByText("online.mastery.notes")).toBeNull();
   });
 });
