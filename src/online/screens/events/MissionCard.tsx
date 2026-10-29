@@ -104,9 +104,9 @@ function RewardTile({ mission, phase }: { mission: MissionView; phase: MissionPh
   const Icon = rewardIcon(first);
   return (
     <span
-      className={`relative flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border ${tileTone(phase)}`}
+      className={`relative flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border @lg:h-24 @lg:w-24 ${tileTone(phase)}`}
     >
-      <Icon className="h-8.5 w-8.5" aria-hidden="true" />
+      <Icon className="h-7 w-7 @lg:h-8.5 @lg:w-8.5" aria-hidden="true" />
       {first && (
         <span className="px-1.5 text-center font-heading text-sm font-bold leading-tight tracking-wide">
           {rewardText(t, i18n.language, first)}
@@ -389,7 +389,7 @@ export default function MissionCard({
   const badge = BADGE[phase];
   return (
     <li
-      className={`grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-5 gap-y-3 rounded-xl border px-5 py-4.5 sm:grid-cols-[auto_minmax(0,1fr)_auto] ${cardTone(phase)}`}
+      className={`grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-3 rounded-xl border px-4 py-4 @lg:gap-x-5 @lg:px-5 @lg:py-4.5 @2xl:grid-cols-[auto_minmax(0,1fr)_auto] ${cardTone(phase)}`}
     >
       <RewardTile mission={mission} phase={phase} />
       <div className="flex min-w-0 flex-col gap-2">
@@ -405,7 +405,7 @@ export default function MissionCard({
         <Progress mission={mission} phase={phase} />
         <RewardsLine mission={mission} phase={phase} />
       </div>
-      <div className="col-span-2 flex flex-col items-start gap-1.5 sm:col-span-1 sm:min-w-35 sm:items-end">
+      <div className="col-span-2 flex flex-col items-start gap-1.5 @2xl:col-span-1 @2xl:min-w-35 @2xl:items-end">
         <Action
           event={event}
           mission={mission}

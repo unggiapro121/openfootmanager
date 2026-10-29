@@ -41,7 +41,7 @@ export default function JourneyTrack({ event }: { event: EventView }) {
   const { t, i18n } = useTranslation();
   const counts = journeyCounts(event);
   return (
-    <div className="border-t border-gray-200 bg-gray-50 px-5 py-5 sm:px-8 dark:border-navy-600 dark:bg-navy-900/60">
+    <div className="border-t border-gray-200 bg-gray-50 px-4 py-5 @2xl:px-8 dark:border-navy-600 dark:bg-navy-900/60">
       <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
         <span className="font-heading text-base font-bold uppercase tracking-wider text-gray-900 dark:text-white">
           {t("online.events.journey.title")}{" "}
