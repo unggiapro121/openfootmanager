@@ -11,6 +11,7 @@ import OnlineAcademy from "./academy/OnlineAcademy";
 import OnlineCoins from "./OnlineCoins";
 import OnlineInventory from "./items/OnlineInventory";
 import OnlineShop from "./items/OnlineShop";
+import OnlineEvents from "./events/OnlineEvents";
 import OnlineFinance from "./OnlineFinance";
 import OnlineInbox from "./OnlineInbox";
 import OnlineSchedule from "./OnlineSchedule";
@@ -40,6 +41,7 @@ export default function OnlineApp() {
         <Route path="coins" element={<OnlineCoins />} />
         <Route path="inventory" element={<OnlineInventory />} />
         <Route path="shop" element={<OnlineShop />} />
+        <Route path="events" element={<OnlineEvents />} />
         <Route path="inbox" element={<OnlineInbox />} />
         <Route path="market" element={<OnlineMarket />} />
         <Route path="auctions/:auctionId" element={<OnlineAuction />} />

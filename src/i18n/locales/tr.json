@@ -53,7 +53,8 @@
       "coins": "Jeton cüzdanı",
       "inventory": "Envanter",
       "shop": "Mağaza",
-      "academy": "Altyapı akademisi"
+      "academy": "Altyapı akademisi",
+      "events": "Etkinlikler"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -811,6 +812,27 @@
             "subject": "Bir mezuniyet beklemek zorunda kaldı",
             "body": "Kulüp {{fee}} mezuniyet ücretini ödeyemedi, bu yüzden {{player}} bir sezon daha akademide kalıyor. Sonraki mezuniyet ücretsiz."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Görev tamamlandı: {{theme}}",
+            "body": "{{theme}} etkinliğinin \"{{mission}}\" görevini tamamladın. Ödülünü almak için Etkinlikler sayfasını aç.",
+            "bodyUnnamed": "Bir etkinlik görevini tamamladın. Ödülünü almak için Etkinlikler sayfasını aç."
+          },
+          "claimed": {
+            "subject": "Ödül senin için alındı: {{theme}}",
+            "body": "\"{{mission}}\" görevinin ödülü senin için alındı.",
+            "bodyUnnamed": "Bir etkinlik görevinin ödülü senin için alındı."
+          },
+          "lapsed": {
+            "subject": "Ödül alınamadı: {{theme}}",
+            "body": "\"{{mission}}\" görevinin ödülü verilemedi: {{reason}}.",
+            "bodyUnnamed": "Bir etkinlik görevinin ödülü verilemedi: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Alınacak etkinlik ödülleri: {{theme}}",
+            "body": "Henüz almadığın etkinlik ödüllerin var. Son tarih: {{until}}. Sonrasında sunucu onları senin için alır; alamazsa nedenini bir posta söyler."
+          }
         }
       }
     },
@@ -849,7 +871,8 @@
         "coin_clawback": "İade sonrası geri alındı",
         "reversal": "İptal kaydı",
         "item_purchase": "Mağaza alışverişi",
-        "item_refund": "Mağaza iadesi"
+        "item_refund": "Mağaza iadesi",
+        "event_reward": "Etkinlik ödülü"
       }
     },
     "items": {
@@ -1197,6 +1220,74 @@
         "wagesNote": "{{wage}} × {{n}} genç",
         "fee": "Mezuniyet ücreti",
         "feeNote": "Genç başına · akademide en az {{days}} gün"
+      }
+    },
+    "events": {
+      "notOnServer": "Etkinlikler bu sunucuda henüz açık değil.",
+      "disabled": "Bu sezonun etkinliği yok.",
+      "empty": "Şu an etkinlik yok. Yeni bir etkinlik başlamadan 7 gün önce burada görünür.",
+      "group": {
+        "running": "Devam eden",
+        "ended": "Biten, ödülü alınacak",
+        "scheduled": "Yakında",
+        "closed": "Kapanan"
+      },
+      "time": {
+        "running": "{{countdown}} sonra biter",
+        "ended": "{{moment}} tarihine kadar al, kalan {{countdown}}",
+        "scheduled": "{{countdown}} sonra başlar",
+        "closed": "Kapandı"
+      },
+      "theme": {
+        "welcome": "Yeni teknik direktöre hoş geldin",
+        "weekly": "Haftalık etkinlik",
+        "weekend": "Hafta sonu etkinliği",
+        "seasonOpener": "Sezon açılışı",
+        "seasonFinale": "Sezon finali",
+        "other": "Etkinlik"
+      },
+      "mission": {
+        "leagueMatchesDirected": "{{target}} lig maçını kendin yönet",
+        "leagueWinsDirected": "Kendi yönettiğin {{target}} lig maçını kazan",
+        "offlineMatches": "{{target}} çevrimdışı maç oyna",
+        "seasonPromoted": "Sezon sonunda üst lige çık",
+        "seasonFinishTop": "Ligi ilk {{target}} içinde bitir",
+        "seasonChampion": "Ligi şampiyon bitir",
+        "other": "Özel görev"
+      },
+      "hint": {
+        "directed": "Yalnızca kendi yönettiğin maçlar sayılır, yapay zekânın senin yerine oynadıkları sayılmaz.",
+        "offline": "Yalnızca kendi yönettiğin resmi maçlar (Sahaya Çık) sayılır; günlük sınır içinde (çevrimiçi lig maçları da bu sınıra dahildir), oyun bu hesapla oturum açmışsa ve sonuç sunucuya ulaştıysa.",
+        "seasonEnd": "Sezon kapanırken sayılır; sezon etkinlik bitmeden kapanırsa."
+      },
+      "levels": {
+        "range": "Yalnızca {{from}}–{{to}}. seviye ligler",
+        "one": "Yalnızca {{from}}. seviye lig",
+        "from": "Yalnızca {{from}}. seviye ve üstü ligler"
+      },
+      "met": "Başarıldı",
+      "notMet": "Henüz başarılmadı",
+      "rewards": "Ödüller",
+      "expires": "alındıktan {{days}} gün sonra sona erer",
+      "claim": "Al",
+      "claiming": "Alınıyor…",
+      "claimAria": "Şu görevin ödüllerini al: {{mission}}",
+      "claimed": "Alındı",
+      "justClaimed": "Alındı: {{rewards}}",
+      "autoClaiming": "Senin için alınıyor",
+      "lapsed": "Alınamadı: {{reason}}",
+      "lapsedUnknown": "Ödül verilemedi. Nedeni gelen kutunda.",
+      "reason": {
+        "grantLimitReached": "eşya sezon sınırına ulaştı",
+        "coinLimitReached": "sezonun etkinlik jetonu sınırına ulaşıldı",
+        "stackFull": "envanterin dolu",
+        "inventoryLocked": "eşyaların veya jetonların bir kontrol için kilitli",
+        "disabled": "bu sezon eşyalar veya etkinlikler kapalı",
+        "unavailable": "sunucu veremedi, lütfen destekle iletişime geç"
+      },
+      "notice": {
+        "completed": "Görev tamamlandı: {{mission}}",
+        "completedUnnamed": "Bir etkinlik görevini az önce tamamladın."
       }
     }
   },
@@ -4921,6 +5012,14 @@
         "sessionToday": "Kulüp bugün zaten antrenman yaptı.",
         "sessionCap": "7 günde 6 antrenman doldu. {{nextAllowedDay}}. günden itibaren yeniden antrenman yapabilirsin.",
         "sessionCapSeason": "7 günde 6 antrenman doldu ve bu sezon başka antrenmana izin veren gün kalmadı."
+      },
+      "events": {
+        "disabled": "Etkinlikler bu sezon kapalı.",
+        "notFound": "Bu etkinlik veya görev artık yok.",
+        "notCompleted": "Bu görev henüz tamamlanmadı.",
+        "alreadyClaimed": "Bu ödül zaten alındı.",
+        "closed": "Alma süresi geçti. Alınmamış ödüller etkinlik kapanınca senin için alınacak.",
+        "coinLimitReached": "Bu sezon etkinliklerden {{limit}} jetonun tamamını aldın, bu yüzden bu görevin ödülü, eşyalar dahil, verilmedi. Yeni sezon başlayınca, son tarihten önce tekrar dene."
       }
     },
     "sender": {

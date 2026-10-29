@@ -53,7 +53,8 @@
       "coins": "Carteira de moedas",
       "inventory": "Inventário",
       "shop": "Loja",
-      "academy": "Academia"
+      "academy": "Academia",
+      "events": "Eventos"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -811,6 +812,27 @@
             "subject": "Uma graduação teve de esperar",
             "body": "O clube não pôde pagar a taxa de graduação de {{fee}}, por isso {{player}} fica mais uma época na academia. A próxima graduação é grátis."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Missão cumprida: {{theme}}",
+            "body": "Cumpriste a missão «{{mission}}» de {{theme}}. Abre a página Eventos para receber a recompensa.",
+            "bodyUnnamed": "Cumpriste uma missão de evento. Abre a página Eventos para receber a recompensa."
+          },
+          "claimed": {
+            "subject": "Recompensa recebida por ti: {{theme}}",
+            "body": "A recompensa da missão «{{mission}}» foi recebida por ti.",
+            "bodyUnnamed": "A recompensa de uma missão de evento foi recebida por ti."
+          },
+          "lapsed": {
+            "subject": "Recompensa não recebida: {{theme}}",
+            "body": "Não foi possível entregar a recompensa da missão «{{mission}}»: {{reason}}.",
+            "bodyUnnamed": "Não foi possível entregar a recompensa de uma missão de evento: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Recompensas de evento por receber: {{theme}}",
+            "body": "Tens recompensas de evento por receber. Prazo: {{until}}. Depois disso, o servidor recebe-as por ti; se não conseguir, um correio diz-te porquê."
+          }
         }
       }
     },
@@ -849,7 +871,8 @@
         "coin_clawback": "Retiradas após um reembolso",
         "reversal": "Anulação",
         "item_purchase": "Compra na loja",
-        "item_refund": "Reembolso da loja"
+        "item_refund": "Reembolso da loja",
+        "event_reward": "Recompensa de evento"
       }
     },
     "items": {
@@ -1197,6 +1220,74 @@
         "wagesNote": "{{wage}} × {{n}} jovens",
         "fee": "Taxa de graduação",
         "feeNote": "Por jovem · pelo menos {{days}} dias na academia"
+      }
+    },
+    "events": {
+      "notOnServer": "Os eventos ainda não estão abertos neste servidor.",
+      "disabled": "Esta época não tem eventos.",
+      "empty": "Não há eventos de momento. Um evento novo aparece aqui 7 dias antes de começar.",
+      "group": {
+        "running": "A decorrer",
+        "ended": "Terminados, com recompensas por receber",
+        "scheduled": "Brevemente",
+        "closed": "Fechados"
+      },
+      "time": {
+        "running": "Termina em {{countdown}}",
+        "ended": "Recebe até {{moment}}, faltam {{countdown}}",
+        "scheduled": "Começa em {{countdown}}",
+        "closed": "Fechado"
+      },
+      "theme": {
+        "welcome": "Boas-vindas ao novo treinador",
+        "weekly": "Evento semanal",
+        "weekend": "Evento de fim de semana",
+        "seasonOpener": "Arranque da época",
+        "seasonFinale": "Fecho da época",
+        "other": "Evento"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Orienta tu {{target}} jogos da liga",
+        "leagueWinsDirected": "Vence {{target}} jogos da liga orientados por ti",
+        "offlineMatches": "Joga {{target}} jogos offline",
+        "seasonPromoted": "Sobe de divisão no fim da época",
+        "seasonFinishTop": "Acaba nos {{target}} primeiros da liga",
+        "seasonChampion": "Vence a liga",
+        "other": "Missão especial"
+      },
+      "hint": {
+        "directed": "Só contam os jogos que orientas tu, não os que a IA joga por ti.",
+        "offline": "Só contam os jogos oficiais que orientas tu (Ir para o Campo), dentro do limite diário (os jogos da liga online também contam para ele), com o jogo ligado a esta conta e o resultado enviado ao servidor.",
+        "seasonEnd": "Conta quando a época fecha, se fechar antes de o evento terminar."
+      },
+      "levels": {
+        "range": "Só ligas de nível {{from}}–{{to}}",
+        "one": "Só ligas de nível {{from}}",
+        "from": "Só ligas de nível {{from}} ou superior"
+      },
+      "met": "Cumprido",
+      "notMet": "Ainda não cumprido",
+      "rewards": "Recompensas",
+      "expires": "expira {{days}} dias depois de recebida",
+      "claim": "Receber",
+      "claiming": "A receber…",
+      "claimAria": "Receber as recompensas de: {{mission}}",
+      "claimed": "Recebida",
+      "justClaimed": "Recebido: {{rewards}}",
+      "autoClaiming": "A ser recebida por ti",
+      "lapsed": "Não recebida: {{reason}}",
+      "lapsedUnknown": "Não foi possível entregar a recompensa. A tua caixa de correio diz porquê.",
+      "reason": {
+        "grantLimitReached": "o item atingiu o limite da época",
+        "coinLimitReached": "atingiu-se o limite de moedas de eventos da época",
+        "stackFull": "o teu inventário está cheio",
+        "inventoryLocked": "os teus itens ou moedas estão bloqueados para verificação",
+        "disabled": "os itens ou os eventos estão desligados nesta época",
+        "unavailable": "o servidor não conseguiu entregá-la, contacta o suporte"
+      },
+      "notice": {
+        "completed": "Missão cumprida: {{mission}}",
+        "completedUnnamed": "Acabaste de cumprir uma missão de evento."
       }
     }
   },
@@ -4921,6 +5012,14 @@
         "sessionToday": "O clube já treinou hoje.",
         "sessionCap": "Já houve 6 sessões em 7 dias. Podes voltar a treinar a partir do dia {{nextAllowedDay}}.",
         "sessionCapSeason": "Já houve 6 sessões em 7 dias e não resta nenhum dia da época que permita outra."
+      },
+      "events": {
+        "disabled": "Os eventos estão desligados nesta época.",
+        "notFound": "Este evento ou missão já não existe.",
+        "notCompleted": "Esta missão ainda não está cumprida.",
+        "alreadyClaimed": "Esta recompensa já foi recebida.",
+        "closed": "O prazo para receber já passou. As recompensas por receber serão recebidas por ti quando o evento fechar.",
+        "coinLimitReached": "Já recebeste as {{limit}} moedas de eventos desta época, por isso a recompensa desta missão, itens incluídos, não foi entregue. Tenta de novo quando começar uma nova época, antes do prazo."
       }
     },
     "sender": {

@@ -53,7 +53,8 @@
       "coins": "Peněženka mincí",
       "inventory": "Inventář",
       "shop": "Obchod",
-      "academy": "Akademie"
+      "academy": "Akademie",
+      "events": "Události"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -811,6 +812,27 @@
             "subject": "Absolvování muselo počkat",
             "body": "Klub nemohl zaplatit poplatek za absolvování {{fee}}, takže {{player}} zůstává v akademii ještě sezónu. Další absolvování je zdarma."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Mise splněna: {{theme}}",
+            "body": "Splnili jste misi „{{mission}}“ události {{theme}}. Otevřete stránku Události a vyzvedněte si odměnu.",
+            "bodyUnnamed": "Splnili jste misi události. Otevřete stránku Události a vyzvedněte si odměnu."
+          },
+          "claimed": {
+            "subject": "Odměna vyzvednuta za vás: {{theme}}",
+            "body": "Odměna za misi „{{mission}}“ byla vyzvednuta za vás.",
+            "bodyUnnamed": "Odměna za misi události byla vyzvednuta za vás."
+          },
+          "lapsed": {
+            "subject": "Odměna nezískána: {{theme}}",
+            "body": "Odměnu za misi „{{mission}}“ se nepodařilo udělit: {{reason}}.",
+            "bodyUnnamed": "Odměnu za misi události se nepodařilo udělit: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Odměny z událostí k vyzvednutí: {{theme}}",
+            "body": "Máte nevyzvednuté odměny z událostí. Termín: {{until}}. Potom je server vyzvedne za vás; pokud to nepůjde, zpráva vám řekne proč."
+          }
         }
       }
     },
@@ -849,7 +871,8 @@
         "coin_clawback": "Odebráno po vrácení platby",
         "reversal": "Storno",
         "item_purchase": "Nákup v obchodě",
-        "item_refund": "Vrácení platby v obchodě"
+        "item_refund": "Vrácení platby v obchodě",
+        "event_reward": "Odměna z události"
       }
     },
     "items": {
@@ -1197,6 +1220,74 @@
         "wagesNote": "{{wage}} × {{n}} mladíků",
         "fee": "Poplatek za absolvování",
         "feeNote": "Za mladíka · nejméně {{days}} dní v akademii"
+      }
+    },
+    "events": {
+      "notOnServer": "Události na tomto serveru zatím nejsou otevřené.",
+      "disabled": "Tato sezóna nemá žádné události.",
+      "empty": "Teď neběží žádné události. Nová událost se tu objeví 7 dní před začátkem.",
+      "group": {
+        "running": "Probíhající",
+        "ended": "Skončené, odměny k vyzvednutí",
+        "scheduled": "Připravované",
+        "closed": "Uzavřené"
+      },
+      "time": {
+        "running": "Končí za {{countdown}}",
+        "ended": "Vyzvedněte do {{moment}}, zbývá {{countdown}}",
+        "scheduled": "Začíná za {{countdown}}",
+        "closed": "Uzavřeno"
+      },
+      "theme": {
+        "welcome": "Vítejte, nový trenére",
+        "weekly": "Týdenní událost",
+        "weekend": "Víkendová událost",
+        "seasonOpener": "Zahájení sezóny",
+        "seasonFinale": "Závěr sezóny",
+        "other": "Událost"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Veďte sami ligové zápasy: {{target}}",
+        "leagueWinsDirected": "Vyhrajte ligové zápasy pod svým vedením: {{target}}",
+        "offlineMatches": "Odehrajte offline zápasy: {{target}}",
+        "seasonPromoted": "Postupte na konci sezóny",
+        "seasonFinishTop": "Skončete v lize mezi prvními {{target}}",
+        "seasonChampion": "Vyhrajte ligu",
+        "other": "Zvláštní mise"
+      },
+      "hint": {
+        "directed": "Počítají se jen zápasy, které vedete sami, ne ty, které za vás hraje AI.",
+        "offline": "Počítají se jen soutěžní zápasy, které vedete sami (Vstoupit na hřiště), v rámci denního limitu (počítají se do něj i online ligové zápasy), když je hra přihlášená k tomuto účtu a výsledek se dostal na server.",
+        "seasonEnd": "Počítá se při uzavření sezóny, pokud se uzavře před koncem události."
+      },
+      "levels": {
+        "range": "Jen ligy úrovně {{from}}–{{to}}",
+        "one": "Jen liga úrovně {{from}}",
+        "from": "Jen ligy úrovně {{from}} a vyšší"
+      },
+      "met": "Splněno",
+      "notMet": "Zatím nesplněno",
+      "rewards": "Odměny",
+      "expires": "vyprší {{days}} dní po vyzvednutí",
+      "claim": "Vyzvednout",
+      "claiming": "Vyzvedávám…",
+      "claimAria": "Vyzvednout odměny za: {{mission}}",
+      "claimed": "Vyzvednuto",
+      "justClaimed": "Vyzvednuto: {{rewards}}",
+      "autoClaiming": "Vyzvedává se za vás",
+      "lapsed": "Nezískáno: {{reason}}",
+      "lapsedUnknown": "Odměnu se nepodařilo udělit. Důvod najdete ve zprávách.",
+      "reason": {
+        "grantLimitReached": "předmět dosáhl sezónního limitu",
+        "coinLimitReached": "byl dosažen sezónní limit mincí z událostí",
+        "stackFull": "váš inventář je plný",
+        "inventoryLocked": "vaše předměty nebo mince jsou kvůli kontrole zamčené",
+        "disabled": "předměty nebo události jsou v této sezóně vypnuté",
+        "unavailable": "server ji nemohl udělit, kontaktujte podporu"
+      },
+      "notice": {
+        "completed": "Mise splněna: {{mission}}",
+        "completedUnnamed": "Právě jste splnili misi události."
       }
     }
   },
@@ -4921,6 +5012,14 @@
         "sessionToday": "Klub dnes už trénoval.",
         "sessionCap": "Za 7 dní už proběhlo 6 tréninků. Trénovat znovu můžete ode dne {{nextAllowedDay}}.",
         "sessionCapSeason": "Za 7 dní už proběhlo 6 tréninků a v této sezóně už nezbývá den, kdy by šel další."
+      },
+      "events": {
+        "disabled": "Události jsou v této sezóně vypnuté.",
+        "notFound": "Tato událost nebo mise už neexistuje.",
+        "notCompleted": "Tato mise ještě není splněná.",
+        "alreadyClaimed": "Tato odměna už byla vyzvednuta.",
+        "closed": "Čas na vyzvednutí uplynul. Nevyzvednuté odměny budou vyzvednuty za vás při uzavření události.",
+        "coinLimitReached": "V této sezóně jste už z událostí dostali všech {{limit}} mincí, takže odměna za tuto misi včetně předmětů nebyla udělena. Zkuste to znovu po začátku nové sezóny, před termínem."
       }
     },
     "sender": {

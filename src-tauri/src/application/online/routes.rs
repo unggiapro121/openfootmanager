@@ -14,6 +14,9 @@ pub enum Part {
     /// An item code (`energyDrinkSmall`): ASCII letters and digits, a lower-case letter first,
     /// 1 to 40 of them (C-7 §17.2). The server answers a code it does not know with its own 404.
     Code,
+    /// An event mission's code (`w1`, `1st`): lower-case letters and digits, a digit first allowed,
+    /// 1 to 16 of them, the server's own rule for a mission code (S-19 §3.1, C-7 §19.5).
+    Slug,
 }
 
 /// A route a coach may call: its method, its path, the query keys it takes, how long to wait.
@@ -35,6 +38,7 @@ impl Route {
                 Part::Literal(text) => text,
                 Part::Id => ":id",
                 Part::Code => ":code",
+                Part::Slug => ":slug",
             })
             .collect();
         format!("{} /{}", self.method, parts.join("/"))
@@ -45,7 +49,7 @@ impl Route {
 /// a transaction. A route that needs another value says so in its row.
 const WAIT: Duration = Duration::from_secs(10);
 
-use Part::{Code, Id, Literal as L};
+use Part::{Code, Id, Literal as L, Slug};
 
 /// Every route the proxy lets through. `/v1/auth/*` (the login commands own the tokens),
 /// `/v1/coach/*` (the progress store) and `/v1/admin/*` are deliberately absent.
@@ -301,6 +305,22 @@ pub const ROUTES: &[Route] = &[
     ),
     route("POST", &[L("v1"), L("me"), L("items"), Code, L("use")], &[]),
     route("GET", &[L("v1"), L("shop")], &[]),
+    // The coach's events (S-19, C-7d): the events he may read, and a finished mission's rewards
+    // claimed.
+    route("GET", &[L("v1"), L("me"), L("events")], &[]),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("me"),
+            L("events"),
+            Id,
+            L("missions"),
+            Slug,
+            L("claim"),
+        ],
+        &[],
+    ),
     route("POST", &[L("v1"), L("shop"), L("purchases")], &[]),
     // The auction market (S-11, C-5b): the open auctions by the market's filters, one auction, a
     // bid and a withdrawal, the club's own market, the quote and the listing of a player.
@@ -413,7 +433,16 @@ fn part_matches(part: Part, segment: &str) -> bool {
         Part::Literal(text) => text == segment,
         Part::Id => is_uuid(segment),
         Part::Code => is_code(segment),
+        Part::Slug => is_slug(segment),
     }
+}
+
+/// A mission code: lower-case letters and digits, 16 at most.
+fn is_slug(segment: &str) -> bool {
+    (1..=16).contains(&segment.len())
+        && segment
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit())
 }
 
 /// An item code: a lower-case letter, then letters and digits, 40 at most.

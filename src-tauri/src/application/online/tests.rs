@@ -805,6 +805,95 @@ fn item_codes_and_targets_keep_their_alphabet() {
 }
 
 /// Given a signed-in coach,
+/// when the webview reads its events and claims a mission by a code of letters or one a digit
+/// begins (C-7d),
+/// then each goes out to its own route.
+#[test]
+fn the_event_routes_go_out() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let routes = vec![
+        ("GET", vec!["v1", "me", "events"], vec![]),
+        (
+            "POST",
+            vec!["v1", "me", "events", CLUB, "missions", "w1", "claim"],
+            vec![],
+        ),
+        (
+            "POST",
+            vec!["v1", "me", "events", CLUB, "missions", "1st", "claim"],
+            vec![],
+        ),
+    ];
+    let went = went_out(&server, &session, &routes);
+    assert_eq!(went.len(), routes.len());
+    assert_eq!(
+        went[2],
+        (
+            String::from("POST"),
+            format!("/v1/me/events/{CLUB}/missions/1st/claim")
+        )
+    );
+}
+
+/// Given a signed-in coach,
+/// when a claim names a mission code outside its alphabet (upper case, a `-`, 17 characters), an
+/// event that is not an id, or the events are read with a query,
+/// then each is refused without being sent.
+#[test]
+fn event_mission_codes_keep_their_alphabet() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let long = "a".repeat(17);
+    for code in ["W1", "w-1", long.as_str()] {
+        assert_eq!(
+            refused(send(
+                &session,
+                &request(
+                    "POST",
+                    &["v1", "me", "events", CLUB, "missions", code, "claim"]
+                ),
+                0
+            )),
+            "be.error.online.routeNotAllowed",
+            "{code:?}"
+        );
+    }
+    assert_eq!(
+        refused(send(
+            &session,
+            &request(
+                "POST",
+                &["v1", "me", "events", "w1", "missions", "w1", "claim"]
+            ),
+            0
+        )),
+        "be.error.online.routeNotAllowed"
+    );
+    let mut read = request("GET", &["v1", "me", "events"]);
+    read.query = vec![(String::from("state"), String::from("running"))];
+    assert_eq!(
+        refused(send(&session, &read, 0)),
+        "be.error.online.routeNotAllowed"
+    );
+    assert!(server.requests().is_empty(), "nothing was sent");
+}
+
+/// Given the claim route,
+/// when logs print its pattern,
+/// then the mission code shows as `:slug`, never the code itself.
+#[test]
+fn a_claim_logs_its_pattern() {
+    let segments: Vec<String> = ["v1", "me", "events", CLUB, "missions", "1st", "claim"]
+        .iter()
+        .map(|segment| segment.to_string())
+        .collect();
+    let route = super::routes::find("POST", &segments, &[]).expect("the claim route");
+    assert_eq!(
+        route.pattern(),
+        "POST /v1/me/events/:id/missions/:slug/claim"
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview uses the market (C-5): the open auctions with every filter and a cursor, one
 /// auction, a bid, a withdrawal, the club's own market, a listing quote and a listing,
 /// then each goes out to its own route; another method on an auction, an id that is not one and a
