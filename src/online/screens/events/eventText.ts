@@ -18,6 +18,11 @@ export function themeName(t: TFunction, theme: string | undefined): string {
   return t(`online.events.theme.${theme && THEMES.has(theme) ? theme : "other"}`);
 }
 
+/** The line under an event's name, by its theme; a theme this build does not know has a plain one. */
+export function themeTagline(t: TFunction, theme: string | undefined): string {
+  return t(`online.events.tagline.${theme && THEMES.has(theme) ? theme : "other"}`);
+}
+
 /** The missions counted match by match: they show a bar of progress over target. */
 const COUNTED = new Set(["leagueMatchesDirected", "leagueWinsDirected", "offlineMatches"]);
 /** The missions met when a season closes: met or not, never a count (C-7 C7-53). */
@@ -29,6 +34,11 @@ export function isCounted(kind: string): boolean {
 
 export function isSeasonEnd(kind: string): boolean {
   return SEASON_END.has(kind);
+}
+
+/** The league missions that count only the matches the coach directs. */
+export function isDirected(kind: string): boolean {
+  return kind === "leagueMatchesDirected" || kind === "leagueWinsDirected";
 }
 
 /** What names a mission: its kind and target, and the league levels a season-end one counts in. */
@@ -51,9 +61,7 @@ export function missionText(t: TFunction, mission: MissionWords): string {
 
 /** The line under a mission that says what counts; none for a kind this build does not know. */
 export function missionHint(t: TFunction, kind: string): string | undefined {
-  if (kind === "leagueMatchesDirected" || kind === "leagueWinsDirected") {
-    return t("online.events.hint.directed");
-  }
+  if (isDirected(kind)) return t("online.events.hint.directed");
   if (kind === "offlineMatches") return t("online.events.hint.offline");
   if (SEASON_END.has(kind)) return t("online.events.hint.seasonEnd");
   return undefined;

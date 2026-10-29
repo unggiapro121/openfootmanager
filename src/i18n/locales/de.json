@@ -1265,8 +1265,6 @@
       "disabled": "Diese Saison hat keine Events.",
       "empty": "Gerade gibt es keine Events. Ein neues Event erscheint hier 7 Tage vor dem Start.",
       "group": {
-        "running": "Laufend",
-        "ended": "Beendet, Belohnungen abholbar",
         "scheduled": "Demnächst",
         "closed": "Abgeschlossen"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Erreicht",
       "notMet": "Noch nicht erreicht",
-      "rewards": "Belohnungen",
       "expires": "verfällt {{days}} Tage nach dem Abholen",
       "claim": "Abholen",
       "claiming": "Wird abgeholt…",
       "claimAria": "Belohnungen abholen für: {{mission}}",
       "claimed": "Abgeholt",
-      "justClaimed": "Abgeholt: {{rewards}}",
       "autoClaiming": "Wird für dich abgeholt",
       "lapsed": "Nicht erhalten: {{reason}}",
       "lapsedUnknown": "Die Belohnung konnte nicht vergeben werden. Dein Posteingang nennt den Grund.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Mission erfüllt: {{mission}}",
         "completedUnnamed": "Du hast gerade eine Event-Mission erfüllt."
+      },
+      "state": {
+        "running": "Läuft",
+        "ended": "Beendet – Belohnungen abholen",
+        "scheduled": "Demnächst",
+        "closed": "Geschlossen"
+      },
+      "tagline": {
+        "welcome": "Deine ersten Schritte als Trainer, mit Geschenken unterwegs.",
+        "weekly": "Führe dein Team, gewinne Spiele, sammle jede Woche Geschenke.",
+        "weekend": "Ein kurzes Event für die Spiele am Wochenende.",
+        "seasonOpener": "Starte stark in die neue Saison und verdiene ihre Geschenke.",
+        "seasonFinale": "Der Endspurt der Saison: beende sie mit Geschenken.",
+        "other": "Erfülle die Missionen, um Geschenke zu verdienen."
+      },
+      "timer": {
+        "running": "Endet in",
+        "ended": "Abholung endet in",
+        "scheduled": "Beginnt in"
+      },
+      "unit": {
+        "days": "Tage",
+        "hours": "Std.",
+        "minutes": "Min.",
+        "seconds": "Sek."
+      },
+      "journey": {
+        "title": "Reise",
+        "met": "{{met}}/{{total}} erfüllt",
+        "counts": "{{claimed}} abgeholt · {{ready}} abzuholen",
+        "ready": "Abholbereit"
+      },
+      "status": {
+        "active": "Läuft",
+        "ready": "Erfüllt",
+        "upcoming": "Nicht gestartet",
+        "lapsed": "Nicht erhalten",
+        "missed": "Nicht erfüllt"
+      },
+      "missions": "Missionen",
+      "progress": "Fortschritt",
+      "rewardsLabel": "Belohnung:",
+      "detail": {
+        "show": "Bedingungen anzeigen",
+        "hide": "Bedingungen ausblenden"
+      },
+      "goSchedule": "Spielplan ansehen",
+      "left": {
+        "leagueMatchesDirected": "Verbleibende Spiele: {{left}}",
+        "leagueWinsDirected": "Verbleibende Siege: {{left}}",
+        "offlineMatches": "Verbleibende Offline-Spiele: {{left}}"
+      },
+      "reward": {
+        "heading": "Mission erfüllt",
+        "toInventory": "In deinem Inventar abgelegt.",
+        "toWallet": "Deinem Münzguthaben gutgeschrieben.",
+        "toBoth": "Gegenstände im Inventar, Münzen dem Guthaben gutgeschrieben.",
+        "expires": "Läuft {{days}} Tage nach dem Abholen ab.",
+        "close": "Super!"
       }
     }
   },

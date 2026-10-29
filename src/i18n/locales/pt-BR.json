@@ -1265,8 +1265,6 @@
       "disabled": "Esta temporada não tem eventos.",
       "empty": "Nenhum evento no momento. Um evento novo aparece aqui 7 dias antes de começar.",
       "group": {
-        "running": "Em andamento",
-        "ended": "Encerrados, com recompensas a resgatar",
         "scheduled": "Em breve",
         "closed": "Fechados"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Concluído",
       "notMet": "Ainda não concluído",
-      "rewards": "Recompensas",
       "expires": "expira {{days}} dias após o resgate",
       "claim": "Resgatar",
       "claiming": "Resgatando…",
       "claimAria": "Resgatar as recompensas de: {{mission}}",
       "claimed": "Resgatada",
-      "justClaimed": "Resgatado: {{rewards}}",
       "autoClaiming": "Sendo resgatada para você",
       "lapsed": "Não recebida: {{reason}}",
       "lapsedUnknown": "Não foi possível entregar a recompensa. Sua caixa de entrada explica o motivo.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Missão concluída: {{mission}}",
         "completedUnnamed": "Você acabou de concluir uma missão de evento."
+      },
+      "state": {
+        "running": "Em andamento",
+        "ended": "Encerrado: resgate as recompensas",
+        "scheduled": "Em breve",
+        "closed": "Fechado"
+      },
+      "tagline": {
+        "welcome": "Seus primeiros passos como técnico, com presentes pelo caminho.",
+        "weekly": "Comande seu time, vença partidas e ganhe presentes toda semana.",
+        "weekend": "Um evento curto para as partidas do fim de semana.",
+        "seasonOpener": "Comece a nova temporada com tudo e ganhe os presentes.",
+        "seasonFinale": "A reta final da temporada: termine com presentes.",
+        "other": "Complete as missões para ganhar presentes."
+      },
+      "timer": {
+        "running": "Termina em",
+        "ended": "Resgates encerram em",
+        "scheduled": "Começa em"
+      },
+      "unit": {
+        "days": "dias",
+        "hours": "horas",
+        "minutes": "min.",
+        "seconds": "seg."
+      },
+      "journey": {
+        "title": "Jornada",
+        "met": "{{met}}/{{total}} concluídas",
+        "counts": "{{claimed}} resgatadas · {{ready}} a resgatar",
+        "ready": "A resgatar"
+      },
+      "status": {
+        "active": "Em progresso",
+        "ready": "Concluída",
+        "upcoming": "Não iniciada",
+        "lapsed": "Não recebida",
+        "missed": "Não concluída"
+      },
+      "missions": "Missões",
+      "progress": "Progresso",
+      "rewardsLabel": "Recompensa:",
+      "detail": {
+        "show": "Ver condições",
+        "hide": "Ocultar condições"
+      },
+      "goSchedule": "Ver calendário",
+      "left": {
+        "leagueMatchesDirected": "Partidas restantes: {{left}}",
+        "leagueWinsDirected": "Vitórias restantes: {{left}}",
+        "offlineMatches": "Partidas offline restantes: {{left}}"
+      },
+      "reward": {
+        "heading": "Missão concluída",
+        "toInventory": "Guardado no seu inventário.",
+        "toWallet": "Adicionado à sua carteira de moedas.",
+        "toBoth": "Itens no seu inventário e moedas na sua carteira.",
+        "expires": "Expira {{days}} dias após o resgate.",
+        "close": "Demais!"
       }
     }
   },

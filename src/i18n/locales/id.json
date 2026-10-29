@@ -1265,8 +1265,6 @@
       "disabled": "Musim ini tidak punya event.",
       "empty": "Belum ada event saat ini. Event baru muncul di sini 7 hari sebelum dimulai.",
       "group": {
-        "running": "Berlangsung",
-        "ended": "Selesai, hadiah bisa diklaim",
         "scheduled": "Segera hadir",
         "closed": "Ditutup"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Tercapai",
       "notMet": "Belum tercapai",
-      "rewards": "Hadiah",
       "expires": "kedaluwarsa {{days}} hari setelah diklaim",
       "claim": "Klaim",
       "claiming": "Mengklaim…",
       "claimAria": "Klaim hadiah untuk: {{mission}}",
       "claimed": "Sudah diklaim",
-      "justClaimed": "Diklaim: {{rewards}}",
       "autoClaiming": "Sedang diklaim untukmu",
       "lapsed": "Tidak diterima: {{reason}}",
       "lapsedUnknown": "Hadiah tidak bisa diberikan. Kotak masukmu menjelaskan alasannya.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Misi selesai: {{mission}}",
         "completedUnnamed": "Kamu baru saja menyelesaikan misi event."
+      },
+      "state": {
+        "running": "Berlangsung",
+        "ended": "Selesai – klaim hadiahmu",
+        "scheduled": "Segera",
+        "closed": "Ditutup"
+      },
+      "tagline": {
+        "welcome": "Langkah pertamamu sebagai pelatih, dengan hadiah di sepanjang jalan.",
+        "weekly": "Pimpin timmu, menangkan laga, kumpulkan hadiah setiap minggu.",
+        "weekend": "Event singkat untuk laga akhir pekan.",
+        "seasonOpener": "Awali musim baru dengan kuat dan raih hadiahnya.",
+        "seasonFinale": "Babak akhir musim: tuntaskan dengan hadiah.",
+        "other": "Selesaikan misinya untuk mendapat hadiah."
+      },
+      "timer": {
+        "running": "Berakhir dalam",
+        "ended": "Klaim ditutup dalam",
+        "scheduled": "Dimulai dalam"
+      },
+      "unit": {
+        "days": "hari",
+        "hours": "jam",
+        "minutes": "mnt",
+        "seconds": "dtk"
+      },
+      "journey": {
+        "title": "Perjalanan",
+        "met": "{{met}}/{{total}} selesai",
+        "counts": "{{claimed}} diklaim · {{ready}} menunggu",
+        "ready": "Siap diklaim"
+      },
+      "status": {
+        "active": "Berjalan",
+        "ready": "Selesai",
+        "upcoming": "Belum dimulai",
+        "lapsed": "Tidak diterima",
+        "missed": "Tidak selesai"
+      },
+      "missions": "Misi",
+      "progress": "Kemajuan",
+      "rewardsLabel": "Hadiah:",
+      "detail": {
+        "show": "Lihat syarat",
+        "hide": "Sembunyikan syarat"
+      },
+      "goSchedule": "Lihat jadwal",
+      "left": {
+        "leagueMatchesDirected": "Sisa laga: {{left}}",
+        "leagueWinsDirected": "Sisa kemenangan: {{left}}",
+        "offlineMatches": "Sisa laga offline: {{left}}"
+      },
+      "reward": {
+        "heading": "Misi selesai",
+        "toInventory": "Disimpan di inventarismu.",
+        "toWallet": "Ditambahkan ke dompet koinmu.",
+        "toBoth": "Item disimpan di inventaris, koin masuk ke dompet.",
+        "expires": "Kedaluwarsa {{days}} hari setelah diklaim.",
+        "close": "Mantap!"
       }
     }
   },

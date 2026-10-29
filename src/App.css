@@ -61,6 +61,34 @@
   --color-navy-800: #131b33;
   --color-navy-700: #1a2340;
   --color-navy-600: #243054;
+
+  /* An event's claim waiting (design su-kien.html): a gold ring that breathes, and the reward's pop */
+  --animate-claim-pulse: claim-pulse 1.8s ease-out infinite;
+  --animate-reward-pop: reward-pop 0.45s ease-out both;
+
+  @keyframes claim-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-accent-400) 45%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 8px transparent;
+    }
+  }
+
+  @keyframes reward-pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    70% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 }
 
 @layer base {

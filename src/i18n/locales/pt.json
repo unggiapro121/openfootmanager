@@ -1265,8 +1265,6 @@
       "disabled": "Esta época não tem eventos.",
       "empty": "Não há eventos de momento. Um evento novo aparece aqui 7 dias antes de começar.",
       "group": {
-        "running": "A decorrer",
-        "ended": "Terminados, com recompensas por receber",
         "scheduled": "Brevemente",
         "closed": "Fechados"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Cumprido",
       "notMet": "Ainda não cumprido",
-      "rewards": "Recompensas",
       "expires": "expira {{days}} dias depois de recebida",
       "claim": "Receber",
       "claiming": "A receber…",
       "claimAria": "Receber as recompensas de: {{mission}}",
       "claimed": "Recebida",
-      "justClaimed": "Recebido: {{rewards}}",
       "autoClaiming": "A ser recebida por ti",
       "lapsed": "Não recebida: {{reason}}",
       "lapsedUnknown": "Não foi possível entregar a recompensa. A tua caixa de correio diz porquê.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Missão cumprida: {{mission}}",
         "completedUnnamed": "Acabaste de cumprir uma missão de evento."
+      },
+      "state": {
+        "running": "A decorrer",
+        "ended": "Terminado: recolhe os prémios",
+        "scheduled": "Em breve",
+        "closed": "Fechado"
+      },
+      "tagline": {
+        "welcome": "Os teus primeiros passos como treinador, com prendas pelo caminho.",
+        "weekly": "Dirige a tua equipa, vence jogos e recolhe prendas todas as semanas.",
+        "weekend": "Um evento curto para os jogos do fim de semana.",
+        "seasonOpener": "Começa a nova época em força e ganha as suas prendas.",
+        "seasonFinale": "A reta final da época: termina-a com prendas.",
+        "other": "Completa as missões para ganhar prendas."
+      },
+      "timer": {
+        "running": "Termina em",
+        "ended": "Os prémios fecham em",
+        "scheduled": "Começa em"
+      },
+      "unit": {
+        "days": "dias",
+        "hours": "horas",
+        "minutes": "min",
+        "seconds": "seg"
+      },
+      "journey": {
+        "title": "Percurso",
+        "met": "{{met}}/{{total}} concluídas",
+        "counts": "{{claimed}} recolhidas · {{ready}} por recolher",
+        "ready": "Por recolher"
+      },
+      "status": {
+        "active": "Em curso",
+        "ready": "Concluída",
+        "upcoming": "Por começar",
+        "lapsed": "Não recebida",
+        "missed": "Não concluída"
+      },
+      "missions": "Missões",
+      "progress": "Progresso",
+      "rewardsLabel": "Prémio:",
+      "detail": {
+        "show": "Ver condições",
+        "hide": "Ocultar condições"
+      },
+      "goSchedule": "Ver calendário",
+      "left": {
+        "leagueMatchesDirected": "Jogos em falta: {{left}}",
+        "leagueWinsDirected": "Vitórias em falta: {{left}}",
+        "offlineMatches": "Jogos offline em falta: {{left}}"
+      },
+      "reward": {
+        "heading": "Missão concluída",
+        "toInventory": "Guardado no teu inventário.",
+        "toWallet": "Adicionado à tua carteira de moedas.",
+        "toBoth": "Itens no teu inventário e moedas na tua carteira.",
+        "expires": "Expira {{days}} dias depois de recolhido.",
+        "close": "Fantástico!"
       }
     }
   },

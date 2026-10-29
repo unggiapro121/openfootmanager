@@ -1265,8 +1265,6 @@
       "disabled": "Esta temporada no tiene eventos.",
       "empty": "No hay eventos ahora. Un evento nuevo aparece aquí 7 días antes de empezar.",
       "group": {
-        "running": "En curso",
-        "ended": "Terminados, con recompensas por reclamar",
         "scheduled": "Próximamente",
         "closed": "Cerrados"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Logrado",
       "notMet": "Aún no logrado",
-      "rewards": "Recompensas",
       "expires": "caduca {{days}} días después de reclamarla",
       "claim": "Reclamar",
       "claiming": "Reclamando…",
       "claimAria": "Reclamar las recompensas de: {{mission}}",
       "claimed": "Reclamada",
-      "justClaimed": "Reclamado: {{rewards}}",
       "autoClaiming": "Se está reclamando por ti",
       "lapsed": "No recibida: {{reason}}",
       "lapsedUnknown": "No se pudo entregar la recompensa. Tu buzón explica el motivo.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Misión completada: {{mission}}",
         "completedUnnamed": "Acabas de completar una misión de evento."
+      },
+      "state": {
+        "running": "En curso",
+        "ended": "Terminado: reclama tus premios",
+        "scheduled": "Próximamente",
+        "closed": "Cerrado"
+      },
+      "tagline": {
+        "welcome": "Tus primeros pasos como entrenador, con regalos por el camino.",
+        "weekly": "Dirige a tu equipo, gana partidos y recoge regalos cada semana.",
+        "weekend": "Un evento corto para los partidos del fin de semana.",
+        "seasonOpener": "Empieza la nueva temporada con fuerza y gana sus regalos.",
+        "seasonFinale": "El tramo final de la temporada: termínalo con regalos.",
+        "other": "Completa sus misiones para ganar regalos."
+      },
+      "timer": {
+        "running": "Termina en",
+        "ended": "Los premios se cierran en",
+        "scheduled": "Empieza en"
+      },
+      "unit": {
+        "days": "días",
+        "hours": "horas",
+        "minutes": "min",
+        "seconds": "seg"
+      },
+      "journey": {
+        "title": "Recorrido",
+        "met": "{{met}}/{{total}} completadas",
+        "counts": "{{claimed}} reclamadas · {{ready}} por reclamar",
+        "ready": "Por reclamar"
+      },
+      "status": {
+        "active": "En progreso",
+        "ready": "Completada",
+        "upcoming": "Sin empezar",
+        "lapsed": "No recibida",
+        "missed": "No completada"
+      },
+      "missions": "Misiones",
+      "progress": "Progreso",
+      "rewardsLabel": "Premio:",
+      "detail": {
+        "show": "Ver condiciones",
+        "hide": "Ocultar condiciones"
+      },
+      "goSchedule": "Ver calendario",
+      "left": {
+        "leagueMatchesDirected": "Partidos restantes: {{left}}",
+        "leagueWinsDirected": "Victorias restantes: {{left}}",
+        "offlineMatches": "Partidos offline restantes: {{left}}"
+      },
+      "reward": {
+        "heading": "Misión completada",
+        "toInventory": "Guardado en tu inventario.",
+        "toWallet": "Añadido a tu monedero de monedas.",
+        "toBoth": "Objetos en tu inventario y monedas en tu monedero.",
+        "expires": "Caduca {{days}} días después de reclamarlo.",
+        "close": "¡Genial!"
       }
     }
   },

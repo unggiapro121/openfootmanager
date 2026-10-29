@@ -1265,8 +1265,6 @@
       "disabled": "Questa stagione non ha eventi.",
       "empty": "Nessun evento al momento. Un nuovo evento compare qui 7 giorni prima dell'inizio.",
       "group": {
-        "running": "In corso",
-        "ended": "Terminati, premi da riscattare",
         "scheduled": "In arrivo",
         "closed": "Chiusi"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Raggiunto",
       "notMet": "Non ancora raggiunto",
-      "rewards": "Premi",
       "expires": "scade {{days}} giorni dopo il riscatto",
       "claim": "Riscatta",
       "claiming": "Riscatto…",
       "claimAria": "Riscatta i premi di: {{mission}}",
       "claimed": "Riscattato",
-      "justClaimed": "Riscattato: {{rewards}}",
       "autoClaiming": "In riscatto automatico",
       "lapsed": "Non ricevuto: {{reason}}",
       "lapsedUnknown": "Non è stato possibile assegnare il premio. La posta spiega il motivo.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Missione completata: {{mission}}",
         "completedUnnamed": "Hai appena completato una missione evento."
+      },
+      "state": {
+        "running": "In corso",
+        "ended": "Terminato: riscatta i premi",
+        "scheduled": "In arrivo",
+        "closed": "Chiuso"
+      },
+      "tagline": {
+        "welcome": "I tuoi primi passi da allenatore, con regali lungo la strada.",
+        "weekly": "Guida la squadra, vinci le partite, raccogli regali ogni settimana.",
+        "weekend": "Un breve evento per le partite del weekend.",
+        "seasonOpener": "Inizia forte la nuova stagione e guadagna i suoi regali.",
+        "seasonFinale": "Il rush finale della stagione: chiudila con dei regali.",
+        "other": "Completa le missioni per guadagnare regali."
+      },
+      "timer": {
+        "running": "Termina tra",
+        "ended": "Riscatto chiude tra",
+        "scheduled": "Inizia tra"
+      },
+      "unit": {
+        "days": "giorni",
+        "hours": "ore",
+        "minutes": "minuti",
+        "seconds": "secondi"
+      },
+      "journey": {
+        "title": "Percorso",
+        "met": "{{met}}/{{total}} completate",
+        "counts": "{{claimed}} riscattate · {{ready}} da riscattare",
+        "ready": "Da riscattare"
+      },
+      "status": {
+        "active": "In corso",
+        "ready": "Completata",
+        "upcoming": "Non iniziata",
+        "lapsed": "Non ricevuta",
+        "missed": "Non completata"
+      },
+      "missions": "Missioni",
+      "progress": "Progresso",
+      "rewardsLabel": "Premio:",
+      "detail": {
+        "show": "Vedi condizioni",
+        "hide": "Nascondi condizioni"
+      },
+      "goSchedule": "Vedi calendario",
+      "left": {
+        "leagueMatchesDirected": "Partite mancanti: {{left}}",
+        "leagueWinsDirected": "Vittorie mancanti: {{left}}",
+        "offlineMatches": "Partite offline mancanti: {{left}}"
+      },
+      "reward": {
+        "heading": "Missione completata",
+        "toInventory": "Riposto nel tuo inventario.",
+        "toWallet": "Aggiunto al tuo portafoglio monete.",
+        "toBoth": "Oggetti nell'inventario, monete nel portafoglio.",
+        "expires": "Scade {{days}} giorni dopo il riscatto.",
+        "close": "Fantastico!"
       }
     }
   },
