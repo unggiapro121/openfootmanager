@@ -129,6 +129,40 @@ describe("the coach's roadmap on his profile", () => {
     ).toBeInTheDocument();
   });
 
+  // Given seasons whose ruleset splits promotion places by tier (S-22, C-9): 9–5 from level 1
+  // for a level-1 coach; none; 9–5 from level 2 for a level-1 coach; and an even 7–7,
+  // when his profile opens,
+  // then only the first says the stronger leagues of a level promote more, with both numbers.
+  it.each([
+    ["9–5 from level 1", { top: 9, bottom: 5, fromLevel: 1 }, true],
+    ["no split", undefined, false],
+    ["9–5 from level 2", { top: 9, bottom: 5, fromLevel: 2 }, false],
+    ["an even 7–7", { top: 7, bottom: 7, fromLevel: 1 }, false],
+  ])(
+    "says how leagues of a level promote by tier only when it applies: %s",
+    async (_, tierPlaces, shown) => {
+      stage(
+        {
+          level: 1,
+          seasons: 0,
+          promotions: 0,
+          forcedLevels: 0,
+          promotion: { places: 7, leagueSize: 14, newcomerMinMatches: 13, tierPlaces },
+          mastery: [],
+        },
+        TABLE,
+      );
+      renderOnline("/online/profile");
+
+      expect(await screen.findByText("online.roadmap.howTop:7|14")).toBeInTheDocument();
+      if (shown) {
+        expect(screen.getByText("online.roadmap.howTier:9|5")).toBeInTheDocument();
+      } else {
+        expect(screen.queryByText(/^online\.roadmap\.howTier/)).toBeNull();
+      }
+    },
+  );
+
   // Given a coach who earned XP in the attacking style,
   // when his profile opens,
   // then the attacking style shows its level, the XP towards the next point and its matches.

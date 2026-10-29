@@ -497,6 +497,7 @@
       "record": "{{seasons}} temporadas jogadas · promovido {{promotions}} vezes",
       "howTitle": "Como subir de nível",
       "howTop": "Termine uma temporada entre os {{places}} primeiros da sua liga de {{size}} clubes: +1 nível",
+      "howTier": "Quando um nível tem várias ligas, as mais fortes têm mais vagas de acesso: {{top}} na mais forte, {{bottom}} na mais fraca",
       "howNewcomer": "Assumiu o clube durante a temporada? Você precisa comandar pelo menos {{matches}} jogos para contar",
       "howNeverDown": "Seu nível nunca cai",
       "noSeason": "Ainda não há temporada online: como subir de nível aparece quando uma temporada abrir.",

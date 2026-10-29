@@ -497,6 +497,7 @@
       "record": "{{seasons}} seasons played · promoted {{promotions}} times",
       "howTitle": "How to go up a level",
       "howTop": "Finish a season in the top {{places}} of your {{size}}-club league: +1 level",
+      "howTier": "When a level has several leagues, the stronger ones get more promotion places: {{top}} in the strongest, {{bottom}} in the weakest",
       "howNewcomer": "Took your club during the season? You need at least {{matches}} matches in charge for it to count",
       "howNeverDown": "Your level never goes down",
       "noSeason": "No online season yet: how to go up a level shows once a season opens.",
