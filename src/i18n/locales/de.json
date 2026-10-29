@@ -197,6 +197,20 @@
         "lockedRole": "Deine Trainerlizenz schaltet die Rolle von {{player}} noch nicht frei.",
         "lockedTactics": "Eine Anweisung, die deine Lizenz noch nicht freischaltet, weicht vom Standard ab.",
         "unknown": "Der Server hat diese Aufstellung aus einem Grund abgelehnt, den diese Spielversion nicht kennt. Aktualisiere das Spiel."
+      },
+      "xiAssistant": {
+        "title": "Aufstellungsassistent",
+        "expected": "Voraussichtlich",
+        "onHint": "Der Assistent wählt deine Elf beim Anpfiff nach Fitness, wie die Trainer der KI-Klubs. Formation, Stil und Rollen bleiben deine.",
+        "offHint": "Es spielt die Elf, die du gespeichert hast. Müde Spieler werden nicht geschont.",
+        "savedBroken": "Deiner gespeicherten Elf fehlen Spieler, daher wählt vorerst der Assistent.",
+        "locked": "Die Aufstellung ist vor dem Anpfiff gesperrt: jetzt nicht änderbar.",
+        "firstNotice": "Der Aufstellungsassistent ist für deinen Klub eingeschaltet. Du kannst ihn hier ausschalten.",
+        "dropped": "Du hast deine eigene Elf gewählt, daher ist der Assistent aus.",
+        "handBack": "Dem Assistenten zurückgeben",
+        "squadLine": "Der Assistent wählt deine Elf.",
+        "squadLink": "Zur Taktik",
+        "itemNote": "Das Paket erholt deine Stammelf. Der Assistent kann müde Spieler schonen, daher kann sie von der voraussichtlichen Elf abweichen."
       }
     },
     "squad": {

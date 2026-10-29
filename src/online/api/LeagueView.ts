@@ -15,6 +15,7 @@ fixturesDone: number,
  */
 rankedPerMatch: boolean, 
 /**
- * How many clubs at the top are promoted: the season's `promotionPlaces` (C-2s).
+ * How many clubs at the top of this league are promoted: by its tier when the season's
+ * ruleset has `tierPlaces` (S-22), else the season's `promotionPlaces` (C-2s).
  */
 promotionPlaces: number, table: Array<StandingRow>, };

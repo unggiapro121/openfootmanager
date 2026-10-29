@@ -100,6 +100,7 @@ export function useTacticsLineup({ source }: { source: TacticsBoardSource }) {
   // The check before advancing reads the saved XI, so it kept naming a player the
   // manager could see on the bench. Save what is shown, once per lineup.
   const savedXiHasUnavailablePlayer =
+    !source.lineupByAssistant &&
     roster.length > 0 &&
     (team?.starting_xi_ids || []).some((id) => {
       const player = playersById.get(id);

@@ -197,6 +197,20 @@
         "lockedRole": "Bằng HLV của bạn chưa mở vai trò của {{player}}.",
         "lockedTactics": "Có chỉ đạo mà bằng HLV của bạn chưa mở đang khác mặc định.",
         "unknown": "Máy chủ từ chối đội hình này vì một lý do mà bản game này chưa biết. Hãy cập nhật game."
+      },
+      "xiAssistant": {
+        "title": "Trợ lý chọn đội hình",
+        "expected": "Dự kiến",
+        "onHint": "Trợ lý chọn 11 người lúc giao bóng theo thể lực, như HLV các CLB máy. Sơ đồ, lối chơi, vai trò vẫn là của bạn.",
+        "offHint": "Đội ra sân là đội bạn đã lưu. Người mệt sẽ không được cho nghỉ.",
+        "savedBroken": "Đội đã lưu không đủ người, trợ lý tạm chọn.",
+        "locked": "Đội hình đã khoá trước giờ đá, chưa đổi được.",
+        "firstNotice": "Trợ lý chọn đội hình đã bật cho CLB của bạn. Bạn có thể tắt ở đây.",
+        "dropped": "Bạn đã tự chọn đội hình, trợ lý đã tắt.",
+        "handBack": "Giao lại cho trợ lý",
+        "squadLine": "Trợ lý đang chọn đội hình.",
+        "squadLink": "Xem ở Chiến thuật",
+        "itemNote": "Vật phẩm hồi cho đội chính. Trợ lý có thể cho người mệt nghỉ, nên đội chính có thể khác đội dự kiến."
       }
     },
     "squad": {

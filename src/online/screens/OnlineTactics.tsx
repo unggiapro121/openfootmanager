@@ -11,6 +11,7 @@ import { online } from "../client";
 import { boardLimits } from "../convert/licence";
 import LicenceNotice from "./LicenceNotice";
 import StyleEffectChips from "./StyleEffectChips";
+import XiAssistantCard from "./XiAssistantCard";
 import { useOnlineResource } from "../useOnlineResource";
 import {
   KNOWN_SETUP_ISSUES,
@@ -48,7 +49,7 @@ function TacticsScreen({ club }: { club: MyClubView }) {
   const { resource } = useOnlineResource(() => online.licences.table(), []);
   const table = resource.status === "ready" ? resource.data : null;
   const limits = useMemo(() => boardLimits(club, table), [club, table]);
-  const { source, outcome } = useOnlineTacticsSource(club, limits);
+  const { source, outcome, setAssistant, assistantDropped } = useOnlineTacticsSource(club, limits);
   // The coach's mastery is read once a visit too: it moves only when a match he directed settles.
   const { resource: mastery } = useOnlineResource(
     async () => (await tracked(() => online.me.career())).mastery,
@@ -85,6 +86,12 @@ function TacticsScreen({ club }: { club: MyClubView }) {
         </p>
       )}
       <LicenceNotice />
+      <XiAssistantCard
+        club={club}
+        locked={locked}
+        dropped={assistantDropped}
+        setAssistant={setAssistant}
+      />
       <OutcomeNotice outcome={outcome} club={club} />
       {/* A locked line-up is shown, never edited: `inert` takes the whole board out of reach. */}
       <div inert={locked} className={locked ? "opacity-70" : undefined}>

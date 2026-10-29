@@ -197,6 +197,20 @@
         "lockedRole": "Your coaching licence does not open {{player}}'s role yet.",
         "lockedTactics": "An instruction your coaching licence does not open yet is set away from its default.",
         "unknown": "The server refused this setup for a reason this version of the game does not know. Update the game."
+      },
+      "xiAssistant": {
+        "title": "XI assistant",
+        "expected": "Expected",
+        "onHint": "The assistant picks your eleven at kick-off by condition, as the AI clubs' managers do. Your formation, style and roles stay yours.",
+        "offHint": "The eleven that plays is the one you saved. Tired players will not be rested.",
+        "savedBroken": "Your saved eleven is short of players, so the assistant picks for now.",
+        "locked": "The lineup is locked before kick-off: this can't be changed now.",
+        "firstNotice": "The XI assistant is now on for your club. You can turn it off here.",
+        "dropped": "You picked your own eleven, so the assistant is off.",
+        "handBack": "Hand back to the assistant",
+        "squadLine": "The assistant is picking your eleven.",
+        "squadLink": "See Tactics",
+        "itemNote": "The pack restores your first-choice eleven. The assistant may rest tired players, so it can differ from the expected eleven."
       }
     },
     "squad": {
