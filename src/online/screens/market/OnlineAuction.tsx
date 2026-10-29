@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { AlertTriangle, Lock } from "lucide-react";
 import DashboardModalFrame from "../../../components/dashboard/DashboardModalFrame";
 import PlayerProfileAttributesCard from "../../../components/playerProfile/PlayerProfileAttributesCard";
@@ -17,6 +17,7 @@ import { watchAuction } from "../../live";
 import { refreshFinance, refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
+import { marketBack } from "./marketReturn";
 import { marketErrorText, refusalText } from "./marketText";
 import MoneyInput from "./MoneyInput";
 import { ClubName, OwnLabels, PriceText, SellerName } from "./OnlineMarket";
@@ -55,6 +56,7 @@ type Loaded =
 export default function OnlineAuction() {
   const { t, i18n } = useTranslation();
   const { auctionId = "" } = useParams();
+  const { state } = useLocation();
   const [loaded, setLoaded] = useState<Loaded>({ status: "loading" });
   const lastSeq = useRef(0);
 
@@ -114,7 +116,7 @@ export default function OnlineAuction() {
   return (
     <div className="space-y-4">
       <Link
-        to="/online/market"
+        to={marketBack(state)}
         className="rounded text-sm text-primary-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400"
       >
         {t("online.market.back")}

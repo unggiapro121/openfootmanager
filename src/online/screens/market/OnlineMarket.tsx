@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Filter, Lock, Search, TrendingUp } from "lucide-react";
 import { TraitList } from "../../../components/TraitBadge";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { translatePositionAbbreviation } from "../../../components/squad/SquadTab.helpers";
 import {
   Badge,
@@ -26,11 +26,14 @@ import TabButton from "../TabButton";
 import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
 import MarketFilterPanel, { BIDDABLE, NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
+import { fromMarket } from "./marketReturn";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
 /** The open auctions are read again this often while the page is open (C5-6). */
 const MARKET_RELOAD_MILLIS = 30_000;
 const MARKET_CLOSED = "be.error.auction.marketClosed";
+/** The address parameter of the name search. */
+const NAME_SEARCH = "q";
 
 /** The filters in the address, as the server's query (C5-6): kept there so going back keeps them. */
 function queryOf(params: URLSearchParams): MarketQuery {
@@ -115,7 +118,9 @@ function OpenAuctions({ ring }: { ring: number }) {
   ).toString();
   const [state, setState] = useState<OpenState>({ status: "loading" });
   const [moreError, setMoreError] = useState<unknown>(null);
-  const [search, setSearch] = useState("");
+  // The name search is the loaded page's own, in the address with the server's filters so going
+  // back to the market keeps it; `queryOf` never sends it.
+  const search = params.get(NAME_SEARCH) ?? "";
   const loaded = state.status === "ready" ? state.items : null;
   const shown = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -192,7 +197,7 @@ function OpenAuctions({ ring }: { ring: number }) {
         onChange={setFilter}
         onClear={clearFilters}
         count={count}
-        onSearch={setSearch}
+        onSearch={(value) => setFilter({ [NAME_SEARCH]: value })}
         search={search}
       />
       {state.status === "loading" && (
@@ -454,13 +459,14 @@ function AuctionRow({
 }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { search } = useLocation();
   const { text } = useServerCountdown(auction.endsAt, offset);
   const player = auction.player;
   const ovr = player?.ovr ?? 0;
   return (
     <tr
       className="group cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-navy-700/50"
-      onClick={() => navigate(`/online/auctions/${auction.id}`)}
+      onClick={() => navigate(`/online/auctions/${auction.id}`, { state: fromMarket(search) })}
     >
       <td className="px-4 py-2.5">
         {player ? (
@@ -488,6 +494,7 @@ function AuctionRow({
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 to={`/online/auctions/${auction.id}`}
+                state={fromMarket(search)}
                 onClick={(event) => event.stopPropagation()}
                 className="truncate rounded text-sm font-semibold text-gray-800 transition-colors hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-gray-200 dark:hover:text-primary-400 dark:focus:ring-offset-navy-800"
               >

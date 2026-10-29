@@ -173,6 +173,39 @@ describe("OnlineMarket", () => {
     expect(names()).toEqual(["Cato"]);
   });
 
+  // Given the coach filtering by an OVR from 60 and searching a name,
+  // when he opens a player's auction and goes back to the market by its link,
+  // then the market reads the same filters again and the name search is still there.
+  it("keeps the filters and the name search across a player's auction", async () => {
+    server = serveMarket({ "GET v1/auctions": ok({ items: [auction()] }) });
+    renderOnline("/online/market");
+    await screen.findByText("Trần Văn Bình");
+
+    fireEvent.click(screen.getByRole("button", { name: "playerFilters.button" }));
+    fireEvent.change(screen.getByLabelText("online.market.filter.minOvr"), {
+      target: { value: "60" },
+    });
+    fireEvent.change(screen.getByLabelText("transfers.searchByName"), {
+      target: { value: "trần" },
+    });
+    fireEvent.click(await screen.findByRole("link", { name: "Trần Văn Bình" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status", { name: "location" }).textContent).toBe(
+        "/online/auctions/a-1",
+      ),
+    );
+
+    fireEvent.click(await screen.findByRole("link", { name: "online.market.back" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status", { name: "location" }).textContent).toBe("/online/market"),
+    );
+    expect(await screen.findByLabelText("transfers.searchByName")).toHaveValue("trần");
+    await waitFor(() =>
+      expect(lastAuctionsRead()?.query).toEqual(expect.arrayContaining([["minOvr", "60"]])),
+    );
+    expect(lastAuctionsRead()?.query).not.toEqual(expect.arrayContaining([["q", "trần"]]));
+  });
+
   // Given an auction whose player has a trait,
   // when the market lists it,
   // then the table has a traits column and the trait shows on his row.
