@@ -493,7 +493,20 @@
       "addedStyles": "Play styles: {{list}}",
       "addedDials": "Instructions: {{list}}",
       "addedRoles": "Roles: {{list}}",
-      "addedNothing": "Nothing new"
+      "addedNothing": "Nothing new",
+      "forced": "Levels forced: {{levels}}",
+      "caps": {
+        "title": "Level caps",
+        "playerCap": "Highest OVR you may buy: {{cap}}",
+        "noPlayerCap": "Player OVR you may buy: no limit",
+        "buyLine": "Buying strength: {{value}} / team cap {{cap}}",
+        "buyUse": "On the market and when the squad is topped up, a purchase that takes this over the team cap is refused.",
+        "teamLine": "Squad strength (top 18): {{value}} / forced at {{threshold}}",
+        "teamUse": "Above this mark at the season's end, you are forced up, by at most {{jump}} levels.",
+        "over": "If it stays like this until the season ends, you will be forced up (by at most {{jump}} levels).",
+        "fullSquad": "Buying only within the caps never forces you up: players growing on their own are what push a squad over the threshold."
+      },
+      "shortSquad": "Your squad has only {{players}} players. The buying strength counts each empty place as {{empty}}, but the squad strength averages just the {{players}} players you have. So a squad under 18 can be forced up even if you never bought over the caps. With 18 players the gap is gone."
     },
     "finance": {
       "title": "Club finance",
@@ -552,7 +565,10 @@
         "minOvr": "OVR from",
         "maxOvr": "OVR to",
         "maxPrice": "Highest price (€)",
-        "maxAge": "Oldest age"
+        "maxAge": "Oldest age",
+        "biddable": "Hide players over my level caps",
+        "biddableHint": "Auctions you lead are left out too; they stay in My auctions.",
+        "biddableHintLink": "Open My auctions"
       },
       "group": {
         "Goalkeeper": "Goalkeepers",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "Sold to {{club}} for {{price}}.",
         "unsold": "Nobody bought him.",
-        "cancelled": "This auction was withdrawn or cancelled."
+        "cancelled": "This auction was withdrawn or cancelled.",
+        "capExceeded": "Cancelled: the winner was over the level caps.",
+        "playerGone": "Cancelled: the player is no longer at the selling club."
       },
       "quick": {
         "least": "Lowest",
@@ -647,11 +665,20 @@
         "forced": "{{player}} was put up for auction because the club owes wages.",
         "forcedUnnamed": "A player was put up for auction because the club owes wages.",
         "changed": "Something changed in the auction for {{player}}.",
-        "changedUnnamed": "Something changed on the market."
+        "changedUnnamed": "Something changed on the market.",
+        "cancelledCapClub": "The auction for {{player}} was cancelled: your squad is over the level caps. You need coach level {{level}}. The money held has been returned.",
+        "cancelledCapRelisted": "The auction for {{player}} was cancelled as the winner was over the level caps. He is up for sale again. View the new auction.",
+        "cancelledCapSeller": "The auction for {{player}} was cancelled as the winner was over the level caps. He will be up for sale again.",
+        "cancelledPlayerGone": "The auction for {{player}} was cancelled: the player is no longer at the selling club. The money held has been returned."
       },
       "ai": "AI",
       "aiClub": "Club run by the AI",
-      "freeAgent": "Free agent"
+      "freeAgent": "Free agent",
+      "levelLock": {
+        "badge": "Level {{level}}",
+        "explain": "Two caps limit what a coach may buy at each level: one player's OVR, and the squad's buying strength. Buying a player who does not enter your top 18 is always allowed.",
+        "roadmap": "See the level road"
+      }
     },
     "rename": {
       "open": "Rename",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Auction cancelled: {{player}}",
-            "body": "The auction for {{player}} was cancelled. Any money held for it was returned."
+            "body": "The auction for {{player}} was cancelled. Any money held for it was returned.",
+            "capClub": "The auction for {{player}} was cancelled: your squad is over the level caps. You need coach level {{level}}. The money held for it has been returned.",
+            "capRelisted": "The auction for {{player}} was cancelled as the winner was over the level caps. He is up for sale again in a new auction.",
+            "capSeller": "The auction for {{player}} was cancelled as the winner was over the level caps. He will be up for sale again.",
+            "playerGone": "The auction for {{player}} was cancelled: the player is no longer at the selling club. The money held for it has been returned."
           },
           "forced": {
             "subject": "{{player}} put up for sale",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Season prize money",
             "body": "Finishing in place {{rank}} earned your club {{amount}}."
+          },
+          "forcedPromotion": {
+            "subject": "Forced up to level {{level}}",
+            "body": "At the end of season {{season}}, your squad's strength was above the forced promotion threshold, so you were moved up to level {{level}} (+{{levels}}). Your buying caps went up with it.{{extra}}",
+            "shortSquad": "Your squad had only {{squadSize}} players after the season's top-ups, so its strength was taken over those {{squadSize}} and came out above its buying strength. That is why you were forced up though you never bought over the caps."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "The club could not pay the {{fee}} graduation fee, so {{player}} stays in the academy one more season. The next graduation is free."
           }
         }
-      }
+      },
+      "viewNewAuction": "View the new auction",
+      "viewCaps": "See your level caps"
     },
     "coins": {
       "notOnServer": "Coins are not open on this server yet.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "The club has already trained today.",
         "sessionCap": "6 sessions have been held in 7 days. You can train again from day {{nextAllowedDay}}.",
         "sessionCapSeason": "6 sessions have been held in 7 days, and no day left this season allows another."
+      },
+      "events": {
+        "disabled": "This season has no events.",
+        "notFound": "That event or mission does not exist.",
+        "notCompleted": "This mission is not finished yet.",
+        "alreadyClaimed": "You already took this mission's reward.",
+        "closed": "This event's rewards can no longer be claimed.",
+        "coinLimitReached": "Events give at most {{limit}} coins a season; this reward would go over it."
       }
     },
     "sender": {

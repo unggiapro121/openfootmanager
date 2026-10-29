@@ -178,4 +178,80 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(known.body).toContain('"player":"Kid"');
     expect(unknown.body).toContain('"player":"online.academy.aYoungster"');
   });
+
+  // Given auctions cancelled for the level caps (the club left out, the seller with the player up
+  // again in a-9, the seller still waiting), for the player gone, and withdrawn,
+  // when they are worded,
+  // then each has its own sentence, the relisted one a way to the new auction, the last the
+  // plain one.
+  it("words an auction cancelled for the level caps", () => {
+    const cancelled = (params: Record<string, string | number>) =>
+      toMessageData(mail("market.cancelled", { playerName: "Bình", ...params }), t, "A");
+    const club = cancelled({ reason: "buyCapExceeded", requiredLevel: 3 });
+    const relisted = cancelled({ reason: "buyCapExceeded", relistedAuctionId: "a-9" });
+    const waiting = cancelled({ reason: "buyCapExceeded" });
+    const gone = cancelled({ reason: "playerGone" });
+    const withdrawn = cancelled({ reason: "withdrawn" });
+
+    expect(club.body).toMatch(/^online\.inbox\.kinds\.market\.cancelled\.capClub\|/);
+    expect(club.body).toContain('"level":3');
+    expect(relisted.body).toMatch(/^online\.inbox\.kinds\.market\.cancelled\.capRelisted\|/);
+    expect(relisted.actions).toEqual([
+      expect.objectContaining({
+        label: "online.inbox.viewNewAuction",
+        action_type: { NavigateTo: { route: "/online/auctions/a-9" } },
+      }),
+    ]);
+    expect(waiting.body).toMatch(/^online\.inbox\.kinds\.market\.cancelled\.capSeller\|/);
+    expect(waiting.actions).toEqual([]);
+    expect(gone.body).toMatch(/^online\.inbox\.kinds\.market\.cancelled\.playerGone\|/);
+    expect(withdrawn.body).toMatch(/^online\.inbox\.kinds\.market\.cancelled\.body\|/);
+  });
+
+  // Given a coach forced up two levels to level 5 with a full squad, one forced with 16 players
+  // and a mail from a server before R16-9 (no `shortSquad`),
+  // when they are worded,
+  // then each says the levels and the level, only the short squad adds why with its size, and
+  // each opens the level caps on the profile.
+  it("words a forced promotion, and why for a short squad", () => {
+    const full = toMessageData(
+      mail("season.forcedPromotion", {
+        season: 4,
+        levels: 2,
+        level: 5,
+        shortSquad: 0,
+        squadSize: 18,
+      }),
+      t,
+      "A",
+    );
+    const short = toMessageData(
+      mail("season.forcedPromotion", {
+        season: 4,
+        levels: 1,
+        level: 4,
+        shortSquad: 1,
+        squadSize: 16,
+      }),
+      t,
+      "A",
+    );
+    const old = toMessageData(
+      mail("season.forcedPromotion", { season: 4, levels: 1, level: 4 }),
+      t,
+      "A",
+    );
+
+    expect(full.category).toBe("LeagueInfo");
+    expect(full.body).toContain('"season":4,"levels":2,"level":5,"extra":""');
+    expect(short.body).toContain("online.inbox.kinds.season.forcedPromotion.shortSquad");
+    expect(short.body).toContain('\\"squadSize\\":16');
+    expect(old.body).toContain('"extra":""');
+    expect(full.actions).toEqual([
+      expect.objectContaining({
+        label: "online.inbox.viewCaps",
+        action_type: { NavigateTo: { route: "/online/profile" } },
+      }),
+    ]);
+  });
 });

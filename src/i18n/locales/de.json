@@ -493,7 +493,20 @@
       "addedStyles": "Spielstile: {{list}}",
       "addedDials": "Anweisungen: {{list}}",
       "addedRoles": "Rollen: {{list}}",
-      "addedNothing": "Nichts Neues"
+      "addedNothing": "Nichts Neues",
+      "forced": "Erzwungene Stufen: {{levels}}",
+      "caps": {
+        "title": "Stufengrenzen",
+        "playerCap": "Höchste Gesamtstärke, die du kaufen darfst: {{cap}}",
+        "noPlayerCap": "Gesamtstärke beim Kauf: ohne Grenze",
+        "buyLine": "Kaufstärke: {{value}} / Teamgrenze {{cap}}",
+        "buyUse": "Auf dem Markt und beim Auffüllen des Kaders wird ein Kauf abgelehnt, der diesen Wert über die Teamgrenze bringt.",
+        "teamLine": "Kaderstärke (Top 18): {{value}} / Zwangsaufstieg ab {{threshold}}",
+        "teamUse": "Liegt dieser Wert am Saisonende über der Marke, wirst du hochgestuft, um höchstens {{jump}} Stufen.",
+        "over": "Bleibt es bis zum Saisonende so, wirst du hochgestuft (um höchstens {{jump}} Stufen).",
+        "fullSquad": "Wer nur innerhalb der Grenzen kauft, wird nie hochgestuft: Erst Spieler, die sich von selbst verbessern, heben einen Kader über die Schwelle."
+      },
+      "shortSquad": "Dein Kader hat nur {{players}} Spieler. Die Kaufstärke zählt jeden freien Platz mit {{empty}}, die Kaderstärke ist aber der Schnitt nur deiner {{players}} Spieler. Deshalb kann ein Kader unter 18 hochgestuft werden, auch wenn du nie über den Grenzen gekauft hast. Mit 18 Spielern ist der Unterschied weg."
     },
     "finance": {
       "title": "Vereinsfinanzen",
@@ -552,7 +565,10 @@
         "minOvr": "OVR ab",
         "maxOvr": "OVR bis",
         "maxPrice": "Höchstpreis (€)",
-        "maxAge": "Höchstalter"
+        "maxAge": "Höchstalter",
+        "biddable": "Spieler über meinen Stufengrenzen ausblenden",
+        "biddableHint": "Auktionen, die du anführst, werden ebenfalls ausgeblendet; sie bleiben unter Meine Auktionen.",
+        "biddableHintLink": "Meine Auktionen öffnen"
       },
       "group": {
         "Goalkeeper": "Torhüter",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "Verkauft an {{club}} für {{price}}.",
         "unsold": "Niemand hat ihn gekauft.",
-        "cancelled": "Diese Auktion wurde zurückgezogen oder abgebrochen."
+        "cancelled": "Diese Auktion wurde zurückgezogen oder abgebrochen.",
+        "capExceeded": "Abgebrochen: Der Gewinner lag über den Stufengrenzen.",
+        "playerGone": "Abgebrochen: Der Spieler ist nicht mehr beim verkaufenden Verein."
       },
       "quick": {
         "least": "Mindestgebot",
@@ -647,11 +665,20 @@
         "forced": "{{player}} wurde zur Auktion gestellt, weil der Verein Gehälter schuldet.",
         "forcedUnnamed": "Ein Spieler wurde zur Auktion gestellt, weil der Verein Gehälter schuldet.",
         "changed": "In der Auktion für {{player}} hat sich etwas geändert.",
-        "changedUnnamed": "Auf dem Markt hat sich etwas geändert."
+        "changedUnnamed": "Auf dem Markt hat sich etwas geändert.",
+        "cancelledCapClub": "Die Auktion für {{player}} wurde abgebrochen: Dein Kader liegt über den Stufengrenzen. Du brauchst Trainerstufe {{level}}. Das gebundene Geld wurde zurückgezahlt.",
+        "cancelledCapRelisted": "Die Auktion für {{player}} wurde abgebrochen, weil der Gewinner über den Stufengrenzen lag. Er steht wieder zum Verkauf. Neue Auktion ansehen.",
+        "cancelledCapSeller": "Die Auktion für {{player}} wurde abgebrochen, weil der Gewinner über den Stufengrenzen lag. Er kommt wieder auf den Markt.",
+        "cancelledPlayerGone": "Die Auktion für {{player}} wurde abgebrochen: Der Spieler ist nicht mehr beim verkaufenden Verein. Das gebundene Geld wurde zurückgezahlt."
       },
       "ai": "KI",
       "aiClub": "Von der KI geführter Verein",
-      "freeAgent": "Vereinslos"
+      "freeAgent": "Vereinslos",
+      "levelLock": {
+        "badge": "Stufe {{level}}",
+        "explain": "Zwei Obergrenzen begrenzen, was ein Trainer auf jeder Stufe kaufen darf: die Gesamtstärke eines Spielers und die Kaufstärke des Kaders. Einen Spieler zu kaufen, der nicht in deine Top 18 kommt, ist immer erlaubt.",
+        "roadmap": "Stufenweg ansehen"
+      }
     },
     "rename": {
       "open": "Umbenennen",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Auktion abgebrochen: {{player}}",
-            "body": "Die Auktion um {{player}} wurde abgebrochen. Das dafür gehaltene Geld wurde zurückgegeben."
+            "body": "Die Auktion um {{player}} wurde abgebrochen. Das dafür gehaltene Geld wurde zurückgegeben.",
+            "capClub": "Die Auktion für {{player}} wurde abgebrochen: Dein Kader liegt über den Stufengrenzen. Du brauchst Trainerstufe {{level}}. Das dafür gebundene Geld wurde zurückgezahlt.",
+            "capRelisted": "Die Auktion für {{player}} wurde abgebrochen, weil der Gewinner über den Stufengrenzen lag. Er steht in einer neuen Auktion wieder zum Verkauf.",
+            "capSeller": "Die Auktion für {{player}} wurde abgebrochen, weil der Gewinner über den Stufengrenzen lag. Er kommt wieder auf den Markt.",
+            "playerGone": "Die Auktion für {{player}} wurde abgebrochen: Der Spieler ist nicht mehr beim verkaufenden Verein. Das dafür gebundene Geld wurde zurückgezahlt."
           },
           "forced": {
             "subject": "{{player}} zum Verkauf angeboten",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Saisonprämie",
             "body": "Platz {{rank}} brachte deinem Verein {{amount}} ein."
+          },
+          "forcedPromotion": {
+            "subject": "Zwangsaufstieg auf Stufe {{level}}",
+            "body": "Am Ende von Saison {{season}} lag die Stärke deines Kaders über der Schwelle für den Zwangsaufstieg, daher bist du auf Stufe {{level}} gestiegen (+{{levels}}). Deine Kaufgrenzen sind mitgestiegen.{{extra}}",
+            "shortSquad": "Dein Kader hatte nach dem Auffüllen zum Saisonende nur {{squadSize}} Spieler, daher wurde seine Stärke über diese {{squadSize}} berechnet und lag über seiner Kaufstärke. Deshalb wurdest du hochgestuft, obwohl du nie über den Grenzen gekauft hast."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "Der Verein konnte die Abschlussgebühr von {{fee}} nicht zahlen, daher bleibt {{player}} eine weitere Saison in der Akademie. Der nächste Abschluss ist kostenlos."
           }
         }
-      }
+      },
+      "viewNewAuction": "Neue Auktion ansehen",
+      "viewCaps": "Deine Stufengrenzen ansehen"
     },
     "coins": {
       "notOnServer": "Münzen sind auf diesem Server noch nicht verfügbar.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "Der Verein hat heute schon trainiert.",
         "sessionCap": "Es gab schon 6 Einheiten in 7 Tagen. Ab Tag {{nextAllowedDay}} kannst du wieder trainieren.",
         "sessionCapSeason": "Es gab schon 6 Einheiten in 7 Tagen, und kein Tag dieser Saison erlaubt noch eine weitere."
+      },
+      "events": {
+        "disabled": "Diese Saison hat keine Events.",
+        "notFound": "Dieses Event oder diese Mission gibt es nicht.",
+        "notCompleted": "Diese Mission ist noch nicht abgeschlossen.",
+        "alreadyClaimed": "Du hast die Belohnung dieser Mission schon abgeholt.",
+        "closed": "Die Belohnungen dieses Events können nicht mehr abgeholt werden.",
+        "coinLimitReached": "Events geben höchstens {{limit}} Münzen pro Saison; diese Belohnung würde das überschreiten."
       }
     },
     "sender": {

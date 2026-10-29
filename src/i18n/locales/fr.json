@@ -493,7 +493,20 @@
       "addedStyles": "Styles de jeu : {{list}}",
       "addedDials": "Consignes : {{list}}",
       "addedRoles": "Rôles : {{list}}",
-      "addedNothing": "Rien de nouveau"
+      "addedNothing": "Rien de nouveau",
+      "forced": "Niveaux forcés : {{levels}}",
+      "caps": {
+        "title": "Plafonds de niveau",
+        "playerCap": "Note maximale que vous pouvez acheter : {{cap}}",
+        "noPlayerCap": "Note de joueur que vous pouvez acheter : sans limite",
+        "buyLine": "Force d'achat : {{value}} / plafond d'équipe {{cap}}",
+        "buyUse": "Sur le marché et lors du complément de l'effectif, un achat qui porterait cette valeur au-dessus du plafond d'équipe est refusé.",
+        "teamLine": "Force de l'effectif (top 18) : {{value}} / promotion forcée à {{threshold}}",
+        "teamUse": "Au-dessus de cette marque en fin de saison, vous êtes promu d'office, d'au plus {{jump}} niveaux.",
+        "over": "Si cela reste ainsi jusqu'à la fin de la saison, vous serez promu d'office (d'au plus {{jump}} niveaux).",
+        "fullSquad": "Acheter seulement dans les plafonds ne vous fait jamais monter d'office : ce sont les joueurs qui progressent seuls qui font passer un effectif au-dessus du seuil."
+      },
+      "shortSquad": "Votre effectif ne compte que {{players}} joueurs. La force d'achat compte chaque place vide pour {{empty}}, mais la force de l'effectif fait la moyenne des seuls {{players}} joueurs que vous avez. Un effectif de moins de 18 peut donc être promu d'office même sans jamais acheter au-dessus des plafonds. Avec 18 joueurs, l'écart disparaît."
     },
     "finance": {
       "title": "Finances du club",
@@ -552,7 +565,10 @@
         "minOvr": "OVR à partir de",
         "maxOvr": "OVR jusqu'à",
         "maxPrice": "Prix maximum (€)",
-        "maxAge": "Âge maximum"
+        "maxAge": "Âge maximum",
+        "biddable": "Masquer les joueurs au-dessus de mes plafonds de niveau",
+        "biddableHint": "Les enchères que vous menez sont aussi masquées ; elles restent dans Mes enchères.",
+        "biddableHintLink": "Ouvrir Mes enchères"
       },
       "group": {
         "Goalkeeper": "Gardiens",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "Vendu à {{club}} pour {{price}}.",
         "unsold": "Personne ne l'a acheté.",
-        "cancelled": "Cette enchère a été retirée ou annulée."
+        "cancelled": "Cette enchère a été retirée ou annulée.",
+        "capExceeded": "Annulée : le gagnant dépassait les plafonds de niveau.",
+        "playerGone": "Annulée : le joueur n'est plus au club vendeur."
       },
       "quick": {
         "least": "Minimum",
@@ -647,11 +665,20 @@
         "forced": "{{player}} a été mis aux enchères car le club doit des salaires.",
         "forcedUnnamed": "Un joueur a été mis aux enchères car le club doit des salaires.",
         "changed": "Du nouveau dans l'enchère pour {{player}}.",
-        "changedUnnamed": "Du nouveau sur le marché."
+        "changedUnnamed": "Du nouveau sur le marché.",
+        "cancelledCapClub": "L'enchère pour {{player}} a été annulée : votre effectif dépasse les plafonds de niveau. Il faut un entraîneur de niveau {{level}}. L'argent bloqué a été rendu.",
+        "cancelledCapRelisted": "L'enchère pour {{player}} a été annulée car le gagnant dépassait les plafonds de niveau. Il est de nouveau en vente. Voir la nouvelle enchère.",
+        "cancelledCapSeller": "L'enchère pour {{player}} a été annulée car le gagnant dépassait les plafonds de niveau. Il sera de nouveau en vente.",
+        "cancelledPlayerGone": "L'enchère pour {{player}} a été annulée : le joueur n'est plus au club vendeur. L'argent bloqué a été rendu."
       },
       "ai": "IA",
       "aiClub": "Club dirigé par l'IA",
-      "freeAgent": "Joueur libre"
+      "freeAgent": "Joueur libre",
+      "levelLock": {
+        "badge": "Niveau {{level}}",
+        "explain": "Deux plafonds limitent ce qu'un entraîneur peut acheter à chaque niveau : la note d'un joueur et la force d'achat de l'effectif. Acheter un joueur qui n'entre pas dans votre top 18 est toujours permis.",
+        "roadmap": "Voir le parcours des niveaux"
+      }
     },
     "rename": {
       "open": "Renommer",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Enchère annulée : {{player}}",
-            "body": "L'enchère pour {{player}} a été annulée. L'argent retenu a été restitué."
+            "body": "L'enchère pour {{player}} a été annulée. L'argent retenu a été restitué.",
+            "capClub": "L'enchère pour {{player}} a été annulée : votre effectif dépasse les plafonds de niveau. Il faut un entraîneur de niveau {{level}}. L'argent bloqué pour elle a été rendu.",
+            "capRelisted": "L'enchère pour {{player}} a été annulée car le gagnant dépassait les plafonds de niveau. Il est de nouveau en vente dans une nouvelle enchère.",
+            "capSeller": "L'enchère pour {{player}} a été annulée car le gagnant dépassait les plafonds de niveau. Il sera de nouveau en vente.",
+            "playerGone": "L'enchère pour {{player}} a été annulée : le joueur n'est plus au club vendeur. L'argent bloqué pour elle a été rendu."
           },
           "forced": {
             "subject": "{{player}} mis en vente",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Prime de saison",
             "body": "Terminer à la place {{rank}} a rapporté {{amount}} à votre club."
+          },
+          "forcedPromotion": {
+            "subject": "Promotion forcée au niveau {{level}}",
+            "body": "À la fin de la saison {{season}}, la force de votre effectif dépassait le seuil de promotion forcée : vous passez au niveau {{level}} (+{{levels}}). Vos plafonds d'achat montent avec lui.{{extra}}",
+            "shortSquad": "Votre effectif ne comptait que {{squadSize}} joueurs après les compléments de fin de saison : sa force a été calculée sur ces {{squadSize}} et dépassait sa force d'achat. C'est pourquoi vous avez été promu d'office sans jamais acheter au-dessus des plafonds."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "Le club n'a pas pu payer les {{fee}} de frais de diplôme : {{player}} reste une saison de plus au centre. Le prochain diplôme est gratuit."
           }
         }
-      }
+      },
+      "viewNewAuction": "Voir la nouvelle enchère",
+      "viewCaps": "Voir vos plafonds de niveau"
     },
     "coins": {
       "notOnServer": "Les pièces ne sont pas encore ouvertes sur ce serveur.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "Le club s'est déjà entraîné aujourd'hui.",
         "sessionCap": "6 séances ont déjà eu lieu sur 7 jours. Vous pourrez vous entraîner à nouveau à partir du jour {{nextAllowedDay}}.",
         "sessionCapSeason": "6 séances ont déjà eu lieu sur 7 jours et plus aucun jour de la saison n'en permet une autre."
+      },
+      "events": {
+        "disabled": "Cette saison n'a pas d'événements.",
+        "notFound": "Cet événement ou cette mission n'existe pas.",
+        "notCompleted": "Cette mission n'est pas encore terminée.",
+        "alreadyClaimed": "Vous avez déjà pris la récompense de cette mission.",
+        "closed": "Les récompenses de cet événement ne peuvent plus être réclamées.",
+        "coinLimitReached": "Les événements donnent au plus {{limit}} pièces par saison ; cette récompense dépasserait ce plafond."
       }
     },
     "sender": {

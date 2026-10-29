@@ -142,4 +142,25 @@ describe("the online inbox", () => {
       expect(screen.queryByText(/online\.inbox\.kinds\.match\.result\.subject/)).toBeNull(),
     );
   });
+
+  // Given a mail that the seller's player is up again in a new auction,
+  // when the coach opens it and chooses its link,
+  // then the new auction opens.
+  it("opens the auction a mail points to", async () => {
+    stage([
+      message({
+        id: "m1",
+        kind: "market.cancelled",
+        params: { playerName: "Bình", reason: "buyCapExceeded", relistedAuctionId: "a-9" },
+      }),
+    ]);
+    renderOnline("/online/inbox");
+    fireEvent.click(await screen.findByText(/online\.inbox\.kinds\.market\.cancelled\.subject/));
+    fireEvent.click(await screen.findByRole("button", { name: "online.inbox.viewNewAuction" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status", { name: "location" }).textContent).toBe(
+        "/online/auctions/a-9",
+      ),
+    );
+  });
 });

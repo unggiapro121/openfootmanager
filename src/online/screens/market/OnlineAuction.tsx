@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Lock } from "lucide-react";
 import DashboardModalFrame from "../../../components/dashboard/DashboardModalFrame";
 import PlayerProfileAttributesCard from "../../../components/playerProfile/PlayerProfileAttributesCard";
 import {
@@ -17,13 +17,26 @@ import { watchAuction } from "../../live";
 import { refreshFinance, refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
-import { marketErrorText } from "./marketText";
+import { marketErrorText, refusalText } from "./marketText";
 import MoneyInput from "./MoneyInput";
 import { ClubName, OwnLabels, PriceText, SellerName } from "./OnlineMarket";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
-/** Codes after which the auction is read again: what the coach saw is out of date. */
-const STALE_CODES = new Set(["be.error.auction.bidTooLow", "be.error.auction.listingExpired"]);
+/**
+ * Codes after which the auction is read again: what the coach saw is out of date. A level cap's
+ * refusal is one: the coach's level or squad changed since the page was read (C-7 C7-11).
+ */
+const STALE_CODES = new Set([
+  "be.error.auction.bidTooLow",
+  "be.error.auction.listingExpired",
+  "be.error.auction.levelCapPlayer",
+  "be.error.auction.levelCapSquad",
+]);
+/** Why a cancelled auction closed, as the page names it (S-16 R16-10); any other is "cancelled". */
+const CLOSED_REASONS: Record<string, string> = {
+  buyCapExceeded: "online.market.result.capExceeded",
+  playerGone: "online.market.result.playerGone",
+};
 /** A bid of at least this share of the club's cash asks first (C5-8). */
 const CONFIRM_SHARE_OF_CASH = 0.5;
 /** Ratings by position shown beside the attributes. */
@@ -257,6 +270,8 @@ function AuctionColumn({
         {view.status === "active" ? (
           seller ? (
             <WithdrawPanel view={view} onView={onView} />
+          ) : view.canBid === false ? (
+            <LevelLock view={view} />
           ) : (
             <BidPanel view={view} onView={onView} reload={reload} />
           )
@@ -267,11 +282,49 @@ function AuctionColumn({
                   club: view.leaderName ?? "",
                   price: formatExactMoney(view.currentPrice ?? view.startPrice),
                 })
-              : t(`online.market.result.${view.status === "unsold" ? "unsold" : "cancelled"}`)}
+              : t(closedText(view))}
           </p>
         )}
       </CardBody>
     </Card>
+  );
+}
+
+/** The sentence of a closed auction that was not sold: unsold, or cancelled and why. */
+function closedText(view: AuctionView): string {
+  if (view.status === "unsold") return "online.market.result.unsold";
+  return CLOSED_REASONS[view.closedReason ?? ""] ?? "online.market.result.cancelled";
+}
+
+/**
+ * In place of the bid when a level cap stops the coach (C-7 C7-11): the server's own refusal, the
+ * two caps in a line, and the road to the level it needs. Only `canBid === false` locks: any other
+ * check of a bid stays with the bid box and the server.
+ */
+function LevelLock({ view }: { view: AuctionView }) {
+  const { t, i18n } = useTranslation();
+  return (
+    <div
+      role="note"
+      className="space-y-2 rounded-lg border border-accent-300 bg-accent-50 p-3 dark:border-accent-500/40 dark:bg-accent-500/10"
+    >
+      <p className="flex items-start gap-2 font-semibold text-gray-900 dark:text-gray-100">
+        <Lock
+          className="mt-0.5 h-4 w-4 shrink-0 text-accent-700 dark:text-accent-400"
+          aria-hidden
+        />
+        {view.bidRefusal
+          ? refusalText(t, i18n.language, view.bidRefusal)
+          : t("online.market.levelLock.badge", { level: view.requiredLevel ?? "" })}
+      </p>
+      <p className="text-xs">{t("online.market.levelLock.explain")}</p>
+      <Link
+        to="/online/profile"
+        className="inline-block rounded text-xs font-semibold text-primary-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:focus:ring-offset-navy-800"
+      >
+        {t("online.market.levelLock.roadmap")}
+      </Link>
+    </div>
   );
 }
 

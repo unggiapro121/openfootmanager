@@ -3,11 +3,15 @@ import { formatExactMoney } from "../../../lib/valueFormatting";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import type { QuoteRefusal } from "../../api";
 import { OnlineApiError } from "../../errors";
-import { formatMoment } from "../../format";
+import { formatMoment, formatTenths } from "../../format";
 
-/** Parameters of the market's codes that are euros, and moments of the online calendar. */
+/**
+ * Parameters of the market's codes that are euros, moments of the online calendar, and strengths
+ * in whole tenths of OVR (the squad cap's, S-16 R16-4).
+ */
 const MONEY_PARAMS = new Set(["min", "max", "minimum", "amount", "price"]);
 const MOMENT_PARAMS = new Set(["until", "kickoffAt"]);
+const TENTHS_PARAMS = new Set(["squadCap", "after"]);
 
 function spelled(
   params: Record<string, string | number>,
@@ -16,14 +20,19 @@ function spelled(
   const out: Record<string, string | number> = {};
   for (const [name, value] of Object.entries(params)) {
     if (MONEY_PARAMS.has(name) && typeof value === "number") out[name] = formatExactMoney(value);
-    else if (MOMENT_PARAMS.has(name) && typeof value === "string") {
+    else if (TENTHS_PARAMS.has(name) && typeof value === "number") {
+      out[name] = formatTenths(value, language);
+    } else if (MOMENT_PARAMS.has(name) && typeof value === "string") {
       out[name] = formatMoment(value, language);
     } else out[name] = value;
   }
   return out;
 }
 
-/** A market code with its parameters as the player reads them: euros as money, moments as dates. */
+/**
+ * A market code with its parameters as the player reads them: euros as money, moments as dates,
+ * strengths with their decimal.
+ */
 export function marketCodeText(
   t: TFunction,
   language: string,

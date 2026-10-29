@@ -493,7 +493,20 @@
       "addedStyles": "Estilos de jogo: {{list}}",
       "addedDials": "Instruções: {{list}}",
       "addedRoles": "Funções: {{list}}",
-      "addedNothing": "Nada de novo"
+      "addedNothing": "Nada de novo",
+      "forced": "Níveis forçados: {{levels}}",
+      "caps": {
+        "title": "Limites de nível",
+        "playerCap": "Média máxima que podes comprar: {{cap}}",
+        "noPlayerCap": "Média de jogador que podes comprar: sem limite",
+        "buyLine": "Força de compra: {{value}} / limite da equipa {{cap}}",
+        "buyUse": "No mercado e ao completar o plantel, uma compra que leve este valor acima do limite da equipa é recusada.",
+        "teamLine": "Força do plantel (top 18): {{value}} / subida forçada a {{threshold}}",
+        "teamUse": "Acima desta marca no fim da época, és forçado a subir, no máximo {{jump}} níveis.",
+        "over": "Se ficar assim até ao fim da época, serás forçado a subir (no máximo {{jump}} níveis).",
+        "fullSquad": "Comprar só dentro dos limites nunca te força a subir: o que leva um plantel acima do limiar é os jogadores evoluírem sozinhos."
+      },
+      "shortSquad": "O teu plantel tem só {{players}} jogadores. A força de compra conta cada vaga como {{empty}}, mas a força do plantel faz a média só dos {{players}} jogadores que tens. Por isso um plantel com menos de 18 pode subir forçado mesmo sem nunca teres comprado acima dos limites. Com 18 jogadores a diferença desaparece."
     },
     "finance": {
       "title": "Finanças do clube",
@@ -552,7 +565,10 @@
         "minOvr": "OVR a partir de",
         "maxOvr": "OVR até",
         "maxPrice": "Preço máximo (€)",
-        "maxAge": "Idade máxima"
+        "maxAge": "Idade máxima",
+        "biddable": "Ocultar jogadores acima dos meus limites de nível",
+        "biddableHint": "Os leilões que lideras também ficam ocultos; continuam em Os meus leilões.",
+        "biddableHintLink": "Abrir Os meus leilões"
       },
       "group": {
         "Goalkeeper": "Guarda-redes",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "Vendido ao {{club}} por {{price}}.",
         "unsold": "Ninguém o comprou.",
-        "cancelled": "Este leilão foi retirado ou cancelado."
+        "cancelled": "Este leilão foi retirado ou cancelado.",
+        "capExceeded": "Cancelado: o vencedor ultrapassava os limites de nível.",
+        "playerGone": "Cancelado: o jogador já não está no clube vendedor."
       },
       "quick": {
         "least": "Mínimo",
@@ -647,11 +665,20 @@
         "forced": "{{player}} foi posto em leilão porque o clube deve salários.",
         "forcedUnnamed": "Um jogador foi posto em leilão porque o clube deve salários.",
         "changed": "Algo mudou no leilão de {{player}}.",
-        "changedUnnamed": "Algo mudou no mercado."
+        "changedUnnamed": "Algo mudou no mercado.",
+        "cancelledCapClub": "O leilão de {{player}} foi cancelado: o teu plantel ultrapassa os limites de nível. Precisas de treinador de nível {{level}}. O dinheiro retido foi devolvido.",
+        "cancelledCapRelisted": "O leilão de {{player}} foi cancelado porque o vencedor ultrapassava os limites de nível. Está de novo à venda. Ver o novo leilão.",
+        "cancelledCapSeller": "O leilão de {{player}} foi cancelado porque o vencedor ultrapassava os limites de nível. Voltará a estar à venda.",
+        "cancelledPlayerGone": "O leilão de {{player}} foi cancelado: o jogador já não está no clube vendedor. O dinheiro retido foi devolvido."
       },
       "ai": "IA",
       "aiClub": "Clube gerido pela IA",
-      "freeAgent": "Jogador livre"
+      "freeAgent": "Jogador livre",
+      "levelLock": {
+        "badge": "Nível {{level}}",
+        "explain": "Dois limites restringem o que um treinador pode comprar em cada nível: a média de um jogador e a força de compra do plantel. Comprar um jogador que não entra no teu top 18 é sempre permitido.",
+        "roadmap": "Ver o percurso de níveis"
+      }
     },
     "rename": {
       "open": "Mudar nome",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Leilão cancelado: {{player}}",
-            "body": "O leilão de {{player}} foi cancelado. O dinheiro retido foi devolvido."
+            "body": "O leilão de {{player}} foi cancelado. O dinheiro retido foi devolvido.",
+            "capClub": "O leilão de {{player}} foi cancelado: o teu plantel ultrapassa os limites de nível. Precisas de treinador de nível {{level}}. O dinheiro retido para ele foi devolvido.",
+            "capRelisted": "O leilão de {{player}} foi cancelado porque o vencedor ultrapassava os limites de nível. Está de novo à venda num novo leilão.",
+            "capSeller": "O leilão de {{player}} foi cancelado porque o vencedor ultrapassava os limites de nível. Voltará a estar à venda.",
+            "playerGone": "O leilão de {{player}} foi cancelado: o jogador já não está no clube vendedor. O dinheiro retido para ele foi devolvido."
           },
           "forced": {
             "subject": "{{player}} posto à venda",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Prémio da época",
             "body": "Terminar em {{rank}}.º lugar rendeu {{amount}} ao teu clube."
+          },
+          "forcedPromotion": {
+            "subject": "Subida forçada ao nível {{level}}",
+            "body": "No fim da época {{season}}, a força do teu plantel ficou acima do limiar de subida forçada, por isso passaste para o nível {{level}} (+{{levels}}). Os teus limites de compra subiram com ele.{{extra}}",
+            "shortSquad": "O teu plantel tinha só {{squadSize}} jogadores depois dos reforços de fim de época, por isso a força foi calculada com esses {{squadSize}} e ficou acima da força de compra. É por isso que foste forçado a subir sem nunca teres comprado acima dos limites."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "O clube não pôde pagar a taxa de graduação de {{fee}}, por isso {{player}} fica mais uma época na academia. A próxima graduação é grátis."
           }
         }
-      }
+      },
+      "viewNewAuction": "Ver o novo leilão",
+      "viewCaps": "Ver os teus limites de nível"
     },
     "coins": {
       "notOnServer": "As moedas ainda não estão disponíveis neste servidor.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "O clube já treinou hoje.",
         "sessionCap": "Já houve 6 sessões em 7 dias. Podes voltar a treinar a partir do dia {{nextAllowedDay}}.",
         "sessionCapSeason": "Já houve 6 sessões em 7 dias e não resta nenhum dia da época que permita outra."
+      },
+      "events": {
+        "disabled": "Esta época não tem eventos.",
+        "notFound": "Esse evento ou missão não existe.",
+        "notCompleted": "Esta missão ainda não está concluída.",
+        "alreadyClaimed": "Já recebeste a recompensa desta missão.",
+        "closed": "As recompensas deste evento já não podem ser reclamadas.",
+        "coinLimitReached": "Os eventos dão no máximo {{limit}} moedas por época; esta recompensa ultrapassaria esse valor."
       }
     },
     "sender": {

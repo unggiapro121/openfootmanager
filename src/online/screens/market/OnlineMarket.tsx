@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Filter, Search, TrendingUp } from "lucide-react";
+import { Filter, Lock, Search, TrendingUp } from "lucide-react";
 import { TraitList } from "../../../components/TraitBadge";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { translatePositionAbbreviation } from "../../../components/squad/SquadTab.helpers";
@@ -24,7 +24,7 @@ import PotentialStars from "../PotentialStars";
 import { avatarOf } from "../squad/playerLook";
 import TabButton from "../TabButton";
 import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
-import MarketFilterPanel, { NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
+import MarketFilterPanel, { BIDDABLE, NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
@@ -47,6 +47,7 @@ function queryOf(params: URLSearchParams): MarketQuery {
     const value = Number(params.get(name));
     if (params.get(name) && Number.isInteger(value) && value >= 0) query[name] = value;
   }
+  if (params.get(BIDDABLE) === "true") query.biddable = true;
   return query;
 }
 
@@ -176,7 +177,9 @@ function OpenAuctions({ ring }: { ring: number }) {
     setParams(
       (current) => {
         const copy = new URLSearchParams(current);
-        for (const name of [...NUMBER_FILTERS, "position", "naturalPosition"]) copy.delete(name);
+        for (const name of [...NUMBER_FILTERS, "position", "naturalPosition", BIDDABLE]) {
+          copy.delete(name);
+        }
         return copy;
       },
       { replace: true },
@@ -525,7 +528,10 @@ function AuctionRow({
         {player ? formatWeeklyAmount(formatVal(player.wage), t("finances.perWeekSuffix")) : "–"}
       </td>
       <td className="px-4 py-2.5 text-sm font-medium tabular-nums text-gray-700 dark:text-gray-300">
-        <PriceText auction={auction} />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <PriceText auction={auction} />
+          {auction.canBid === false && <LevelBadge level={auction.requiredLevel} />}
+        </div>
       </td>
       <td className="px-4 py-2.5 text-sm tabular-nums text-gray-600 dark:text-gray-400">
         {auction.bidsCount}
@@ -546,6 +552,20 @@ function AuctionRow({
         </td>
       )}
     </tr>
+  );
+}
+
+/**
+ * A row a level cap stops the coach from bidding on: the coach level it needs (C-7 C7-11). A row
+ * the caps let through has no mark, as cash, wages and the squad's size may still refuse a bid.
+ */
+function LevelBadge({ level }: { level: number | undefined }) {
+  const { t } = useTranslation();
+  return (
+    <Badge variant="accent" size="sm">
+      <Lock className="mr-1 inline h-3 w-3" aria-hidden />
+      <span>{t("online.market.levelLock.badge", { level: level ?? "" })}</span>
+    </Badge>
   );
 }
 

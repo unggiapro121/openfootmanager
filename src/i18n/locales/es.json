@@ -493,7 +493,20 @@
       "addedStyles": "Estilos de juego: {{list}}",
       "addedDials": "Instrucciones: {{list}}",
       "addedRoles": "Funciones: {{list}}",
-      "addedNothing": "Nada nuevo"
+      "addedNothing": "Nada nuevo",
+      "forced": "Niveles forzados: {{levels}}",
+      "caps": {
+        "title": "Topes de nivel",
+        "playerCap": "Media máxima que puedes comprar: {{cap}}",
+        "noPlayerCap": "Media de jugador que puedes comprar: sin límite",
+        "buyLine": "Fuerza de compra: {{value}} / tope del equipo {{cap}}",
+        "buyUse": "En el mercado y al completar la plantilla, se rechaza una compra que lleve este valor por encima del tope del equipo.",
+        "teamLine": "Fuerza de la plantilla (top 18): {{value}} / ascenso forzado en {{threshold}}",
+        "teamUse": "Por encima de esta marca al final de la temporada, te fuerzan a subir, como mucho {{jump}} niveles.",
+        "over": "Si sigue así hasta el final de la temporada, te forzarán a subir (como mucho {{jump}} niveles).",
+        "fullSquad": "Comprar solo dentro de los topes nunca te fuerza a subir: lo que lleva una plantilla por encima del umbral es que sus jugadores mejoren solos."
+      },
+      "shortSquad": "Tu plantilla solo tiene {{players}} jugadores. La fuerza de compra cuenta cada plaza vacía como {{empty}}, pero la fuerza de la plantilla promedia solo los {{players}} jugadores que tienes. Por eso una plantilla de menos de 18 puede subir forzada aunque nunca compraras por encima de los topes. Con 18 jugadores esa diferencia desaparece."
     },
     "finance": {
       "title": "Finanzas del club",
@@ -552,7 +565,10 @@
         "minOvr": "OVR desde",
         "maxOvr": "OVR hasta",
         "maxPrice": "Precio máximo (€)",
-        "maxAge": "Edad máxima"
+        "maxAge": "Edad máxima",
+        "biddable": "Ocultar jugadores por encima de mis topes de nivel",
+        "biddableHint": "También se ocultan las subastas que lideras; siguen en Mis subastas.",
+        "biddableHintLink": "Abrir Mis subastas"
       },
       "group": {
         "Goalkeeper": "Porteros",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "Vendido a {{club}} por {{price}}.",
         "unsold": "Nadie lo compró.",
-        "cancelled": "Esta subasta se retiró o se canceló."
+        "cancelled": "Esta subasta se retiró o se canceló.",
+        "capExceeded": "Cancelada: el ganador superaba los topes de nivel.",
+        "playerGone": "Cancelada: el jugador ya no está en el club vendedor."
       },
       "quick": {
         "least": "Mínimo",
@@ -647,11 +665,20 @@
         "forced": "{{player}} salió a subasta porque el club debe salarios.",
         "forcedUnnamed": "Un jugador salió a subasta porque el club debe salarios.",
         "changed": "Algo cambió en la subasta de {{player}}.",
-        "changedUnnamed": "Algo cambió en el mercado."
+        "changedUnnamed": "Algo cambió en el mercado.",
+        "cancelledCapClub": "Se canceló la subasta de {{player}}: tu plantilla supera los topes de nivel. Necesitas entrenador de nivel {{level}}. El dinero retenido se ha devuelto.",
+        "cancelledCapRelisted": "Se canceló la subasta de {{player}} porque el ganador superaba los topes de nivel. Vuelve a estar a la venta. Ver la nueva subasta.",
+        "cancelledCapSeller": "Se canceló la subasta de {{player}} porque el ganador superaba los topes de nivel. Volverá a estar a la venta.",
+        "cancelledPlayerGone": "Se canceló la subasta de {{player}}: el jugador ya no está en el club vendedor. El dinero retenido se ha devuelto."
       },
       "ai": "IA",
       "aiClub": "Club dirigido por la IA",
-      "freeAgent": "Agente libre"
+      "freeAgent": "Agente libre",
+      "levelLock": {
+        "badge": "Nivel {{level}}",
+        "explain": "Dos topes limitan lo que un entrenador puede comprar en cada nivel: la media de un jugador y la fuerza de compra de la plantilla. Comprar un jugador que no entra en tu top 18 siempre está permitido.",
+        "roadmap": "Ver el camino de niveles"
+      }
     },
     "rename": {
       "open": "Renombrar",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Subasta cancelada: {{player}}",
-            "body": "La subasta de {{player}} se canceló. El dinero retenido se ha devuelto."
+            "body": "La subasta de {{player}} se canceló. El dinero retenido se ha devuelto.",
+            "capClub": "Se canceló la subasta de {{player}}: tu plantilla supera los topes de nivel. Necesitas entrenador de nivel {{level}}. El dinero retenido para ella se ha devuelto.",
+            "capRelisted": "Se canceló la subasta de {{player}} porque el ganador superaba los topes de nivel. Vuelve a estar a la venta en una nueva subasta.",
+            "capSeller": "Se canceló la subasta de {{player}} porque el ganador superaba los topes de nivel. Volverá a estar a la venta.",
+            "playerGone": "Se canceló la subasta de {{player}}: el jugador ya no está en el club vendedor. El dinero retenido para ella se ha devuelto."
           },
           "forced": {
             "subject": "{{player}} puesto a la venta",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Premio de la temporada",
             "body": "Acabar en el puesto {{rank}} reportó {{amount}} a tu club."
+          },
+          "forcedPromotion": {
+            "subject": "Ascenso forzado al nivel {{level}}",
+            "body": "Al final de la temporada {{season}}, la fuerza de tu plantilla superó el umbral de ascenso forzado, así que pasaste al nivel {{level}} (+{{levels}}). Tus topes de compra subieron con él.{{extra}}",
+            "shortSquad": "Tu plantilla solo tenía {{squadSize}} jugadores tras los refuerzos de fin de temporada, así que su fuerza se calculó con esos {{squadSize}} y quedó por encima de su fuerza de compra. Por eso te forzaron a subir aunque nunca compraste por encima de los topes."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "El club no pudo pagar la tasa de graduación de {{fee}}, así que {{player}} sigue en la cantera una temporada más. La próxima graduación es gratis."
           }
         }
-      }
+      },
+      "viewNewAuction": "Ver la nueva subasta",
+      "viewCaps": "Ver tus topes de nivel"
     },
     "coins": {
       "notOnServer": "Las monedas aún no están disponibles en este servidor.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "El club ya entrenó hoy.",
         "sessionCap": "Ya hay 6 sesiones en 7 días. Podrás volver a entrenar desde el día {{nextAllowedDay}}.",
         "sessionCapSeason": "Ya hay 6 sesiones en 7 días y no queda ningún día de la temporada que permita otra."
+      },
+      "events": {
+        "disabled": "Esta temporada no tiene eventos.",
+        "notFound": "Ese evento o misión no existe.",
+        "notCompleted": "Esta misión aún no está terminada.",
+        "alreadyClaimed": "Ya recogiste la recompensa de esta misión.",
+        "closed": "Las recompensas de este evento ya no se pueden reclamar.",
+        "coinLimitReached": "Los eventos dan como mucho {{limit}} monedas por temporada; esta recompensa lo superaría."
       }
     },
     "sender": {

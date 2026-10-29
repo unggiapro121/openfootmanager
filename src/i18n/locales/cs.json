@@ -493,7 +493,20 @@
       "addedStyles": "Herní styly: {{list}}",
       "addedDials": "Pokyny: {{list}}",
       "addedRoles": "Role: {{list}}",
-      "addedNothing": "Nic nového"
+      "addedNothing": "Nic nového",
+      "forced": "Vynucené úrovně: {{levels}}",
+      "caps": {
+        "title": "Stropy úrovně",
+        "playerCap": "Nejvyšší hodnocení, které smíte koupit: {{cap}}",
+        "noPlayerCap": "Hodnocení hráče, které smíte koupit: bez omezení",
+        "buyLine": "Nákupní síla: {{value}} / strop týmu {{cap}}",
+        "buyUse": "Na trhu i při doplnění kádru se odmítne nákup, který tuto hodnotu posune nad strop týmu.",
+        "teamLine": "Síla kádru (top 18): {{value}} / vynucený postup od {{threshold}}",
+        "teamUse": "Je-li hodnota na konci sezóny nad touto hranicí, jste posunuti nahoru, nejvýše o {{jump}} úrovně.",
+        "over": "Pokud to tak zůstane do konce sezóny, budete posunuti nahoru (nejvýše o {{jump}} úrovně).",
+        "fullSquad": "Nákupy jen v rámci stropů vás nikdy neposunou: kádr přes práh dostanou hráči, kteří se zlepšují sami."
+      },
+      "shortSquad": "Váš kádr má jen {{players}} hráčů. Nákupní síla počítá každé volné místo jako {{empty}}, ale síla kádru je průměr jen vašich {{players}} hráčů. Proto může být kádr pod 18 hráčů posunut, i když jste nikdy nekoupili nad stropy. S 18 hráči rozdíl zmizí."
     },
     "finance": {
       "title": "Finance klubu",
@@ -552,7 +565,10 @@
         "minOvr": "OVR od",
         "maxOvr": "OVR do",
         "maxPrice": "Nejvyšší cena (€)",
-        "maxAge": "Nejvyšší věk"
+        "maxAge": "Nejvyšší věk",
+        "biddable": "Skrýt hráče nad mými stropy úrovně",
+        "biddableHint": "Skryté jsou i aukce, které vedete; zůstávají v Moje aukce.",
+        "biddableHintLink": "Otevřít Moje aukce"
       },
       "group": {
         "Goalkeeper": "Brankáři",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "Prodáno klubu {{club}} za {{price}}.",
         "unsold": "Nikdo ho nekoupil.",
-        "cancelled": "Tato aukce byla stažena nebo zrušena."
+        "cancelled": "Tato aukce byla stažena nebo zrušena.",
+        "capExceeded": "Zrušena: vítěz překračoval stropy úrovně.",
+        "playerGone": "Zrušena: hráč už není v prodávajícím klubu."
       },
       "quick": {
         "least": "Nejnižší",
@@ -647,11 +665,20 @@
         "forced": "Hráč {{player}} byl dán do aukce, protože klub dluží mzdy.",
         "forcedUnnamed": "Hráč byl dán do aukce, protože klub dluží mzdy.",
         "changed": "V aukci hráče {{player}} se něco změnilo.",
-        "changedUnnamed": "Na trhu se něco změnilo."
+        "changedUnnamed": "Na trhu se něco změnilo.",
+        "cancelledCapClub": "Aukce hráče {{player}} byla zrušena: váš kádr překračuje stropy úrovně. Potřebujete trenéra úrovně {{level}}. Blokované peníze byly vráceny.",
+        "cancelledCapRelisted": "Aukce hráče {{player}} byla zrušena, protože vítěz překračoval stropy úrovně. Hráč je znovu na prodej. Zobrazit novou aukci.",
+        "cancelledCapSeller": "Aukce hráče {{player}} byla zrušena, protože vítěz překračoval stropy úrovně. Hráč bude znovu na prodej.",
+        "cancelledPlayerGone": "Aukce hráče {{player}} byla zrušena: hráč už není v prodávajícím klubu. Blokované peníze byly vráceny."
       },
       "ai": "UI",
       "aiClub": "Klub řízený UI",
-      "freeAgent": "Volný hráč"
+      "freeAgent": "Volný hráč",
+      "levelLock": {
+        "badge": "Úroveň {{level}}",
+        "explain": "Na každé úrovni omezují nákupy dva stropy: hodnocení jednoho hráče a nákupní síla kádru. Koupit hráče, který se nedostane do vaší top 18, lze vždy.",
+        "roadmap": "Zobrazit cestu úrovní"
+      }
     },
     "rename": {
       "open": "Přejmenovat",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Aukce zrušena: {{player}}",
-            "body": "Aukce o hráče {{player}} byla zrušena. Zadržené peníze se vrátily."
+            "body": "Aukce o hráče {{player}} byla zrušena. Zadržené peníze se vrátily.",
+            "capClub": "Aukce hráče {{player}} byla zrušena: váš kádr překračuje stropy úrovně. Potřebujete trenéra úrovně {{level}}. Peníze blokované pro aukci byly vráceny.",
+            "capRelisted": "Aukce hráče {{player}} byla zrušena, protože vítěz překračoval stropy úrovně. Hráč je znovu na prodej v nové aukci.",
+            "capSeller": "Aukce hráče {{player}} byla zrušena, protože vítěz překračoval stropy úrovně. Hráč bude znovu na prodej.",
+            "playerGone": "Aukce hráče {{player}} byla zrušena: hráč už není v prodávajícím klubu. Peníze blokované pro aukci byly vráceny."
           },
           "forced": {
             "subject": "{{player}} dán do prodeje",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Prémie za sezónu",
             "body": "Za {{rank}}. místo získal váš klub {{amount}}."
+          },
+          "forcedPromotion": {
+            "subject": "Vynucený postup na úroveň {{level}}",
+            "body": "Na konci sezóny {{season}} byla síla vašeho kádru nad prahem vynuceného postupu, takže jste postoupili na úroveň {{level}} (+{{levels}}). Vaše nákupní stropy vzrostly s ní.{{extra}}",
+            "shortSquad": "Po doplnění na konci sezóny měl váš kádr jen {{squadSize}} hráčů, takže jeho síla se počítala z těchto {{squadSize}} a vyšla nad nákupní sílu. Proto jste byli posunuti, i když jste nikdy nekoupili nad stropy."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "Klub nemohl zaplatit poplatek za absolvování {{fee}}, takže {{player}} zůstává v akademii ještě sezónu. Další absolvování je zdarma."
           }
         }
-      }
+      },
+      "viewNewAuction": "Zobrazit novou aukci",
+      "viewCaps": "Zobrazit stropy úrovně"
     },
     "coins": {
       "notOnServer": "Mince na tomto serveru zatím nejsou k dispozici.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "Klub dnes už trénoval.",
         "sessionCap": "Za 7 dní už proběhlo 6 tréninků. Trénovat znovu můžete ode dne {{nextAllowedDay}}.",
         "sessionCapSeason": "Za 7 dní už proběhlo 6 tréninků a v této sezóně už nezbývá den, kdy by šel další."
+      },
+      "events": {
+        "disabled": "Tato sezóna nemá žádné události.",
+        "notFound": "Taková událost ani mise neexistuje.",
+        "notCompleted": "Tato mise ještě není dokončena.",
+        "alreadyClaimed": "Odměnu za tuto misi už jste převzali.",
+        "closed": "Odměny této události už nelze vyzvednout.",
+        "coinLimitReached": "Události dávají nejvýše {{limit}} mincí za sezónu; tato odměna by limit překročila."
       }
     },
     "sender": {

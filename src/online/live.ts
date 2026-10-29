@@ -132,6 +132,12 @@ export type AccountRing =
       kind: "market";
       event?: "outbid" | "won" | "sold" | "unsold" | "cancelled" | "forced" | string;
       auctionId?: string;
+      /** Why a `cancelled` auction was (S-16 R16-5): `buyCapExceeded`, `playerGone`, … */
+      reason?: string;
+      /** For a club the level caps left out: the coach level it needs. */
+      requiredLevel?: number;
+      /** For the seller of an auction cancelled for the caps: the player's new auction. */
+      relistedAuctionId?: string;
     }
   /**
    * The coach's items changed (S-17, C-7b): given (`granted`), used, bought, a purchase refunded,
@@ -156,6 +162,9 @@ export function readAccountRing(data: unknown): AccountRing {
     kind?: unknown;
     event?: unknown;
     auctionId?: unknown;
+    reason?: unknown;
+    requiredLevel?: unknown;
+    relistedAuctionId?: unknown;
     itemCode?: unknown;
     tripId?: unknown;
   };
@@ -166,6 +175,10 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "market",
       event: typeof ring.event === "string" ? ring.event : undefined,
       auctionId: typeof ring.auctionId === "string" ? ring.auctionId : undefined,
+      reason: typeof ring.reason === "string" ? ring.reason : undefined,
+      requiredLevel: typeof ring.requiredLevel === "number" ? ring.requiredLevel : undefined,
+      relistedAuctionId:
+        typeof ring.relistedAuctionId === "string" ? ring.relistedAuctionId : undefined,
     };
   }
   if (ring.kind === "items") {

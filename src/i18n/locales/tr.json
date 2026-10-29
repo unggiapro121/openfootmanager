@@ -493,7 +493,20 @@
       "addedStyles": "Oyun stilleri: {{list}}",
       "addedDials": "Talimatlar: {{list}}",
       "addedRoles": "Roller: {{list}}",
-      "addedNothing": "Yeni bir şey yok"
+      "addedNothing": "Yeni bir şey yok",
+      "forced": "Zorunlu seviye: {{levels}}",
+      "caps": {
+        "title": "Seviye tavanları",
+        "playerCap": "Alabileceğiniz en yüksek genel puan: {{cap}}",
+        "noPlayerCap": "Alabileceğiniz oyuncu genel puanı: sınırsız",
+        "buyLine": "Satın alma gücü: {{value}} / takım tavanı {{cap}}",
+        "buyUse": "Pazarda ve kadro tamamlanırken bu değeri takım tavanının üstüne çıkaran bir alım reddedilir.",
+        "teamLine": "Kadro gücü (ilk 18): {{value}} / zorunlu yükselme {{threshold}}",
+        "teamUse": "Sezon sonunda bu çizginin üstündeyseniz zorla yükseltilirsiniz, en fazla {{jump}} seviye.",
+        "over": "Sezon sonuna kadar böyle kalırsa zorla yükseltileceksiniz (en fazla {{jump}} seviye).",
+        "fullSquad": "Yalnızca tavanlar içinde almak sizi asla zorla yükseltmez: kadroyu eşiğin üstüne çıkaran, kendi kendine gelişen oyunculardır."
+      },
+      "shortSquad": "Kadronuzda yalnızca {{players}} oyuncu var. Satın alma gücü her boş yeri {{empty}} sayar, ama kadro gücü yalnızca sahip olduğunuz {{players}} oyuncunun ortalamasıdır. Bu yüzden 18'den az kişilik bir kadro, tavanların üstünde hiç almasanız bile zorla yükseltilebilir. 18 oyuncuyla bu fark kalmaz."
     },
     "finance": {
       "title": "Kulüp finansı",
@@ -552,7 +565,10 @@
         "minOvr": "OVR en az",
         "maxOvr": "OVR en çok",
         "maxPrice": "En yüksek fiyat (€)",
-        "maxAge": "En yüksek yaş"
+        "maxAge": "En yüksek yaş",
+        "biddable": "Seviye tavanlarımın üstündeki oyuncuları gizle",
+        "biddableHint": "Önde olduğunuz açık artırmalar da gizlenir; Açık artırmalarım sekmesinde kalırlar.",
+        "biddableHintLink": "Açık artırmalarım'ı aç"
       },
       "group": {
         "Goalkeeper": "Kaleciler",
@@ -598,7 +614,9 @@
       "result": {
         "settled": "{{club}} kulübüne {{price}} karşılığında satıldı.",
         "unsold": "Kimse satın almadı.",
-        "cancelled": "Bu açık artırma geri çekildi veya iptal edildi."
+        "cancelled": "Bu açık artırma geri çekildi veya iptal edildi.",
+        "capExceeded": "İptal edildi: kazanan seviye tavanlarını aşıyordu.",
+        "playerGone": "İptal edildi: oyuncu artık satıcı kulüpte değil."
       },
       "quick": {
         "least": "En düşük",
@@ -647,11 +665,20 @@
         "forced": "Kulüp maaş borçlu olduğu için {{player}} açık artırmaya çıkarıldı.",
         "forcedUnnamed": "Kulüp maaş borçlu olduğu için bir oyuncu açık artırmaya çıkarıldı.",
         "changed": "{{player}} açık artırmasında bir değişiklik var.",
-        "changedUnnamed": "Pazarda bir değişiklik var."
+        "changedUnnamed": "Pazarda bir değişiklik var.",
+        "cancelledCapClub": "{{player}} açık artırması iptal edildi: kadronuz seviye tavanlarını aşıyor. {{level}}. seviye teknik direktör gerekiyor. Bloke edilen para iade edildi.",
+        "cancelledCapRelisted": "{{player}} açık artırması, kazanan seviye tavanlarını aştığı için iptal edildi. Oyuncu yeniden satışta. Yeni açık artırmayı gör.",
+        "cancelledCapSeller": "{{player}} açık artırması, kazanan seviye tavanlarını aştığı için iptal edildi. Oyuncu yeniden satışa çıkacak.",
+        "cancelledPlayerGone": "{{player}} açık artırması iptal edildi: oyuncu artık satıcı kulüpte değil. Bloke edilen para iade edildi."
       },
       "ai": "YZ",
       "aiClub": "Yapay zekânın yönettiği kulüp",
-      "freeAgent": "Serbest oyuncu"
+      "freeAgent": "Serbest oyuncu",
+      "levelLock": {
+        "badge": "Seviye {{level}}",
+        "explain": "Her seviyede iki tavan alınabilecekleri sınırlar: tek bir oyuncunun genel puanı ve kadronun satın alma gücü. İlk 18'inize girmeyen bir oyuncuyu almak her zaman serbesttir.",
+        "roadmap": "Seviye yolunu gör"
+      }
     },
     "rename": {
       "open": "Yeniden adlandır",
@@ -715,7 +742,11 @@
           },
           "cancelled": {
             "subject": "Açık artırma iptal edildi: {{player}}",
-            "body": "{{player}} açık artırması iptal edildi. Bloke edilen para iade edildi."
+            "body": "{{player}} açık artırması iptal edildi. Bloke edilen para iade edildi.",
+            "capClub": "{{player}} açık artırması iptal edildi: kadronuz seviye tavanlarını aşıyor. {{level}}. seviye teknik direktör gerekiyor. Bunun için bloke edilen para iade edildi.",
+            "capRelisted": "{{player}} açık artırması, kazanan seviye tavanlarını aştığı için iptal edildi. Oyuncu yeni bir açık artırmada yeniden satışta.",
+            "capSeller": "{{player}} açık artırması, kazanan seviye tavanlarını aştığı için iptal edildi. Oyuncu yeniden satışa çıkacak.",
+            "playerGone": "{{player}} açık artırması iptal edildi: oyuncu artık satıcı kulüpte değil. Bunun için bloke edilen para iade edildi."
           },
           "forced": {
             "subject": "{{player}} satışa çıkarıldı",
@@ -748,6 +779,11 @@
           "reward": {
             "subject": "Sezon ödülü",
             "body": "{{rank}}. sırada bitirmek kulübüne {{amount}} kazandırdı."
+          },
+          "forcedPromotion": {
+            "subject": "{{level}}. seviyeye zorunlu yükselme",
+            "body": "{{season}}. sezonun sonunda kadronuzun gücü zorunlu yükselme eşiğinin üstündeydi, bu yüzden {{level}}. seviyeye çıktınız (+{{levels}}). Satın alma tavanlarınız da onunla yükseldi.{{extra}}",
+            "shortSquad": "Sezon sonu takviyelerinden sonra kadronuzda yalnızca {{squadSize}} oyuncu vardı; bu yüzden güç bu {{squadSize}} oyuncu üzerinden hesaplandı ve satın alma gücünün üstünde çıktı. Tavanların üstünde hiç almadığınız halde zorla yükseltilmenizin nedeni bu."
           }
         },
         "licence": {
@@ -812,7 +848,9 @@
             "body": "Kulüp {{fee}} mezuniyet ücretini ödeyemedi, bu yüzden {{player}} bir sezon daha akademide kalıyor. Sonraki mezuniyet ücretsiz."
           }
         }
-      }
+      },
+      "viewNewAuction": "Yeni açık artırmayı gör",
+      "viewCaps": "Seviye tavanlarını gör"
     },
     "coins": {
       "notOnServer": "Jetonlar bu sunucuda henüz açık değil.",
@@ -4918,6 +4956,14 @@
         "sessionToday": "Kulüp bugün zaten antrenman yaptı.",
         "sessionCap": "7 günde 6 antrenman doldu. {{nextAllowedDay}}. günden itibaren yeniden antrenman yapabilirsin.",
         "sessionCapSeason": "7 günde 6 antrenman doldu ve bu sezon başka antrenmana izin veren gün kalmadı."
+      },
+      "events": {
+        "disabled": "Bu sezonda etkinlik yok.",
+        "notFound": "Böyle bir etkinlik veya görev yok.",
+        "notCompleted": "Bu görev henüz tamamlanmadı.",
+        "alreadyClaimed": "Bu görevin ödülünü zaten aldınız.",
+        "closed": "Bu etkinliğin ödülleri artık alınamaz.",
+        "coinLimitReached": "Etkinlikler sezon başına en fazla {{limit}} jeton verir; bu ödül sınırı aşar."
       }
     },
     "sender": {
