@@ -197,6 +197,20 @@
         "lockedRole": "Sua licença de treinador ainda não libera a função de {{player}}.",
         "lockedTactics": "Uma instrução que sua licença ainda não libera está fora do padrão.",
         "unknown": "O servidor recusou esta tática por um motivo que esta versão do jogo não conhece. Atualize o jogo."
+      },
+      "xiAssistant": {
+        "title": "Assistente de escalação",
+        "expected": "Prevista",
+        "onHint": "O assistente escolhe sua escalação no início da partida pela condição, como os técnicos dos clubes da IA. Sua formação, estilo e funções continuam seus.",
+        "offHint": "Joga a escalação que você salvou. Jogadores cansados não serão poupados.",
+        "savedBroken": "Sua escalação salva está sem jogadores suficientes, então o assistente escolhe por enquanto.",
+        "locked": "A escalação está travada antes da partida: não dá para mudar agora.",
+        "firstNotice": "O assistente de escalação está ligado para o seu clube. Você pode desligá-lo aqui.",
+        "dropped": "Você escolheu sua própria escalação, então o assistente foi desligado.",
+        "handBack": "Devolver ao assistente",
+        "squadLine": "O assistente está escolhendo sua escalação.",
+        "squadLink": "Ver Táticas",
+        "itemNote": "O pacote recupera sua escalação titular. O assistente pode poupar os cansados, então ela pode ser diferente da escalação prevista."
       }
     },
     "squad": {

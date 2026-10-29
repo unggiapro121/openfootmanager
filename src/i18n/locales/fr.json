@@ -197,6 +197,20 @@
         "lockedRole": "Votre licence d'entraîneur n'ouvre pas encore le rôle de {{player}}.",
         "lockedTactics": "Une consigne que votre licence n'ouvre pas encore n'est pas à sa valeur par défaut.",
         "unknown": "Le serveur a refusé ce dispositif pour une raison que cette version du jeu ne connaît pas. Mettez le jeu à jour."
+      },
+      "xiAssistant": {
+        "title": "Assistant de composition",
+        "expected": "Prévue",
+        "onHint": "L'assistant choisit votre onze au coup d'envoi selon la condition, comme les entraîneurs des clubs de l'IA. Votre schéma, votre style et vos rôles restent les vôtres.",
+        "offHint": "Le onze qui joue est celui que vous avez enregistré. Les joueurs fatigués ne seront pas ménagés.",
+        "savedBroken": "Il manque des joueurs à votre onze enregistré : l'assistant choisit pour l'instant.",
+        "locked": "La composition est verrouillée avant le coup d'envoi : impossible de la changer maintenant.",
+        "firstNotice": "L'assistant de composition est activé pour votre club. Vous pouvez le désactiver ici.",
+        "dropped": "Vous avez choisi votre propre onze : l'assistant est désactivé.",
+        "handBack": "Rendre la main à l'assistant",
+        "squadLine": "L'assistant choisit votre onze.",
+        "squadLink": "Voir la Tactique",
+        "itemNote": "Le pack récupère votre onze type. L'assistant peut ménager les joueurs fatigués, il peut donc différer du onze prévu."
       }
     },
     "squad": {

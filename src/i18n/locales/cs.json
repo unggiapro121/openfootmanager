@@ -197,6 +197,20 @@
         "lockedRole": "Vaše trenérská licence zatím neodemyká roli hráče {{player}}.",
         "lockedTactics": "Pokyn, který vaše licence zatím neodemyká, není na výchozí hodnotě.",
         "unknown": "Server sestavu odmítl z důvodu, který tato verze hry nezná. Aktualizujte hru."
+      },
+      "xiAssistant": {
+        "title": "Asistent sestavy",
+        "expected": "Předpokládaná",
+        "onHint": "Asistent vybírá vaši jedenáctku při výkopu podle kondice, jako trenéři klubů AI. Rozestavení, styl a role zůstávají vaše.",
+        "offHint": "Hraje jedenáctka, kterou jste uložili. Unavení hráči nedostanou odpočinek.",
+        "savedBroken": "Vaší uložené jedenáctce chybí hráči, proto zatím vybírá asistent.",
+        "locked": "Sestava je před výkopem uzamčená: teď ji nelze změnit.",
+        "firstNotice": "Asistent sestavy je pro váš klub zapnutý. Tady ho můžete vypnout.",
+        "dropped": "Vybrali jste vlastní jedenáctku, asistent je proto vypnutý.",
+        "handBack": "Vrátit asistentovi",
+        "squadLine": "Asistent vybírá vaši jedenáctku.",
+        "squadLink": "Přejít na taktiku",
+        "itemNote": "Balíček zregeneruje vaši základní jedenáctku. Asistent může unavené šetřit, proto se může lišit od předpokládané sestavy."
       }
     },
     "squad": {

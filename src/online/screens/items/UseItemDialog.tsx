@@ -185,6 +185,7 @@ export default function UseItemDialog({
   const { t, i18n } = useTranslation();
   const kind = targetKindOf(code);
   const players = useOnlineStore((state) => state.club?.players ?? []);
+  const assistantOn = useOnlineStore((state) => state.club?.xiAssistant ?? false);
   const styles = useStyles(kind);
   const [target, setTarget] = useState<ItemTarget | undefined>(
     () => initialTarget ?? (kind ? fixedTarget(kind) : undefined),
@@ -300,6 +301,12 @@ export default function UseItemDialog({
             })}
           </ul>
         </fieldset>
+      )}
+      {target?.kind === "club" && assistantOn && (
+        // The pack aims at the first choice eleven, which the assistant may rest (S-27 Qs27-1).
+        <p role="note" className="text-sm text-gray-600 dark:text-gray-300">
+          {t("online.tactics.xiAssistant.itemNote")}
+        </p>
       )}
       {target && (
         <div aria-live="polite" className="space-y-1 text-sm text-gray-700 dark:text-gray-300">

@@ -197,6 +197,20 @@
         "lockedRole": "Antrenörlük lisansın henüz {{player}} için bu rolü açmıyor.",
         "lockedTactics": "Lisansının henüz açmadığı bir talimat varsayılan değerinde değil.",
         "unknown": "Sunucu bu kadroyu, oyunun bu sürümünün bilmediği bir nedenle reddetti. Oyunu güncelle."
+      },
+      "xiAssistant": {
+        "title": "Kadro asistanı",
+        "expected": "Tahmini",
+        "onHint": "Asistan, yapay zekâ kulüplerinin teknik direktörleri gibi, maç başında ilk on biri kondisyona göre seçer. Diziliş, stil ve roller senin kalır.",
+        "offHint": "Kaydettiğin ilk on bir oynar. Yorgun oyuncular dinlendirilmez.",
+        "savedBroken": "Kaydettiğin ilk on birde eksik oyuncu var, bu yüzden şimdilik asistan seçiyor.",
+        "locked": "Maçtan önce kadro kilitlendi: şu an değiştirilemez.",
+        "firstNotice": "Kadro asistanı kulübün için açık. Buradan kapatabilirsin.",
+        "dropped": "Kendi ilk on birini seçtin, bu yüzden asistan kapandı.",
+        "handBack": "Asistana geri ver",
+        "squadLine": "Asistan ilk on birini seçiyor.",
+        "squadLink": "Taktiğe git",
+        "itemNote": "Paket ana ilk on birini toparlar. Asistan yorgunları dinlendirebilir, bu yüzden tahmini ilk on birden farklı olabilir."
       }
     },
     "squad": {

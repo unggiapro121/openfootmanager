@@ -43,4 +43,15 @@ renameFree: boolean,
  * Today's training as the button sees it (S-21 S21-15): present while the season under way
  * rests clubs by blocks (`recovery`), absent otherwise.
  */
-trainingDay?: TrainingDayView, };
+trainingDay?: TrainingDayView, 
+/**
+ * The XI assistant is on for the club (S-27 S27-7): the coach's choice, or the season's
+ * default. On, `setup.startingXiIds` is the eleven it expects to pick at the next kick-off.
+ */
+xiAssistant: boolean, 
+/**
+ * How `setup.startingXiIds` was picked: `assistant`, `saved` (the coach's own eleven, gaps
+ * filled) or `savedBroken` (his saved eleven is too short, so the assistant picks for now).
+ * Once the next match is built, the way its eleven was picked.
+ */
+xiPick: string, };

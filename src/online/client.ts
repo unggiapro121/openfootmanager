@@ -186,9 +186,23 @@ export const online = {
     /** The caller's club's season, every fixture by round (C-2s). */
     mineFixtures: () => call<ClubFixturesView>(read(["v1", "clubs", "mine", "fixtures"])),
     /** `version` is the club's version as read: a stale one is refused (`versionStale`). */
-    setSetup: (setup: ClubSetup, version: number, idempotencyKey = newKey()) =>
+    /**
+     * The whole setup, and the XI assistant's switch (S-27 S27-6, C-10 C10-2): sent with every
+     * save, so the server never has to read it from the eleven.
+     */
+    setSetup: (
+      setup: ClubSetup,
+      version: number,
+      idempotencyKey = newKey(),
+      xiAssistant?: boolean,
+    ) =>
       call<MyClubView>({
-        ...write("PUT", ["v1", "clubs", "mine", "setup"], idempotencyKey, setup),
+        ...write(
+          "PUT",
+          ["v1", "clubs", "mine", "setup"],
+          idempotencyKey,
+          xiAssistant === undefined ? setup : { ...setup, xiAssistant },
+        ),
         ifMatch: String(version),
       }),
     setTraining: (plan: TrainingPlan, idempotencyKey = newKey()) =>
