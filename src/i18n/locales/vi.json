@@ -49,12 +49,14 @@
       "finance": "Tài chính",
       "market": "Chợ",
       "inbox": "Hộp thư",
-      "account": "Tài khoản",
       "coins": "Ví coin",
       "inventory": "Kho đồ",
       "shop": "Cửa hàng",
       "academy": "Lò đào tạo",
-      "events": "Sự kiện"
+      "events": "Sự kiện",
+      "groupTeam": "Đội bóng",
+      "groupMatches": "Thi đấu",
+      "groupClub": "Câu lạc bộ"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Mùa {{number}}",
       "seasonDay": "Mùa {{number}} · Ngày {{day}}/{{total}}",
-      "nextKickoff": "Trận kế bắt đầu sau {{time}}",
       "cash": "Tiền mặt của CLB: {{amount}}",
-      "coins": "Số dư OFM Coin: {{amount}}"
+      "coins": "Số dư OFM Coin: {{amount}}",
+      "clubLine": "Online · {{season}}",
+      "nextMatch": "Trận kế sau",
+      "inboxUnread": "Hộp thư, {{count}} thư chưa đọc",
+      "account": "Tài khoản HLV"
     },
     "countdown": {
       "withDays": "{{days}} ngày {{clock}}"

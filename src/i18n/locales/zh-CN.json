@@ -49,12 +49,14 @@
       "finance": "财务",
       "market": "市场",
       "inbox": "收件箱",
-      "account": "账户",
       "coins": "金币钱包",
       "inventory": "背包",
       "shop": "商店",
       "academy": "青训营",
-      "events": "活动"
+      "events": "活动",
+      "groupTeam": "球队",
+      "groupMatches": "比赛",
+      "groupClub": "俱乐部"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -63,9 +65,12 @@
     "header": {
       "season": "第 {{number}} 赛季",
       "seasonDay": "第 {{number}} 赛季 · 第 {{day}}/{{total}} 天",
-      "nextKickoff": "距下一场比赛 {{time}}",
       "cash": "俱乐部现金：{{amount}}",
-      "coins": "OFM Coin 余额：{{amount}}"
+      "coins": "OFM Coin 余额：{{amount}}",
+      "clubLine": "在线 · {{season}}",
+      "nextMatch": "下一场比赛",
+      "inboxUnread": "收件箱，{{count}} 封未读",
+      "account": "主教练账户"
     },
     "countdown": {
       "withDays": "{{days}} 天 {{clock}}"

@@ -49,12 +49,14 @@
       "finance": "Finans",
       "market": "Pazar",
       "inbox": "Gelen kutusu",
-      "account": "Hesap",
       "coins": "Jeton cüzdanı",
       "inventory": "Envanter",
       "shop": "Mağaza",
       "academy": "Altyapı akademisi",
-      "events": "Etkinlikler"
+      "events": "Etkinlikler",
+      "groupTeam": "Takım",
+      "groupMatches": "Maçlar",
+      "groupClub": "Kulüp"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Sezon {{number}}",
       "seasonDay": "Sezon {{number}} · Gün {{day}}/{{total}}",
-      "nextKickoff": "Sonraki maç {{time}} sonra",
       "cash": "Kulüp nakdi: {{amount}}",
-      "coins": "OFM Coin bakiyesi: {{amount}}"
+      "coins": "OFM Coin bakiyesi: {{amount}}",
+      "clubLine": "Çevrimiçi · {{season}}",
+      "nextMatch": "Sonraki maç",
+      "inboxUnread": "Gelen kutusu, {{count}} okunmamış",
+      "account": "Teknik direktör hesabı"
     },
     "countdown": {
       "withDays": "{{days}} g {{clock}}"

@@ -122,16 +122,15 @@ afterEach(() => {
 describe("the account's pages", () => {
   // Given a signed-in coach with no club yet,
   // when the online mode opens,
-  // then the sidebar lists the coin wallet under the account's pages, and it opens the wallet.
-  it("lists the coin wallet without a club", async () => {
+  // then the header's coin chip opens the wallet.
+  it("opens the coin wallet without a club", async () => {
     serve({ "GET v1/clubs/mine": fail(404, "be.error.club.none") });
     renderOnline("/online");
     await waitFor(() =>
       expect(screen.getByLabelText("location").textContent).toBe("/online/takeover"),
     );
 
-    expect(screen.getByText("online.nav.account")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "online.nav.coins" }));
+    fireEvent.click(await screen.findByRole("button", { name: "online.header.coins:120" }));
 
     expect(screen.queryByRole("button", { name: "online.nav.squad" })).toBeNull();
     await waitFor(() =>
@@ -380,9 +379,7 @@ describe("the exchange", () => {
     expect(await screen.findByText(/online\.coins\.exchanged:10\|/)).toBeTruthy();
     expect(screen.queryByRole("dialog")).toBeNull();
     // The balance moved: the lines are read again, so each line's balance after holds.
-    await waitFor(() =>
-      expect(sent("GET", "v1/me/coins/ledger").length).toBeGreaterThanOrEqual(2),
-    );
+    await waitFor(() => expect(sent("GET", "v1/me/coins/ledger").length).toBeGreaterThanOrEqual(2));
     const posts = sent("POST", "v1/me/coins/exchange");
     expect(posts.map((post) => post.body)).toEqual([
       { coins: 10, priceListVersion: 4 },

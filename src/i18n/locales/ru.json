@@ -49,12 +49,14 @@
       "finance": "Финансы",
       "market": "Рынок",
       "inbox": "Входящие",
-      "account": "Аккаунт",
       "coins": "Кошелёк монет",
       "inventory": "Инвентарь",
       "shop": "Магазин",
       "academy": "Академия",
-      "events": "События"
+      "events": "События",
+      "groupTeam": "Команда",
+      "groupMatches": "Матчи",
+      "groupClub": "Клуб"
     },
     "gate": {
       "clientOutdatedTitle": "Требуется обновление",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Сезон {{number}}",
       "seasonDay": "Сезон {{number}} · День {{day}}/{{total}}",
-      "nextKickoff": "Следующий матч через {{time}}",
       "cash": "Деньги клуба: {{amount}}",
-      "coins": "Баланс OFM Coin: {{amount}}"
+      "coins": "Баланс OFM Coin: {{amount}}",
+      "clubLine": "Онлайн · {{season}}",
+      "nextMatch": "Следующий матч",
+      "inboxUnread": "Входящие, непрочитанных: {{count}}",
+      "account": "Аккаунт тренера"
     },
     "countdown": {
       "withDays": "{{days}} д {{clock}}"

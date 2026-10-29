@@ -49,12 +49,14 @@
       "finance": "Finances",
       "market": "Marché",
       "inbox": "Boîte de réception",
-      "account": "Compte",
       "coins": "Porte-monnaie",
       "inventory": "Inventaire",
       "shop": "Boutique",
       "academy": "Centre de formation",
-      "events": "Événements"
+      "events": "Événements",
+      "groupTeam": "Équipe",
+      "groupMatches": "Matchs",
+      "groupClub": "Club"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Saison {{number}}",
       "seasonDay": "Saison {{number}} · Jour {{day}}/{{total}}",
-      "nextKickoff": "Prochain match dans {{time}}",
       "cash": "Trésorerie du club : {{amount}}",
-      "coins": "Solde OFM Coin : {{amount}}"
+      "coins": "Solde OFM Coin : {{amount}}",
+      "clubLine": "En ligne · {{season}}",
+      "nextMatch": "Prochain match",
+      "inboxUnread": "Messagerie, {{count}} non lus",
+      "account": "Compte de l'entraîneur"
     },
     "countdown": {
       "withDays": "{{days}} j {{clock}}"

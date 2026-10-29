@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CalendarClock } from "lucide-react";
 import { ProgressBar } from "../../../components/ui";
 import { useOnlineStore } from "../../store/onlineStore";
-import { SEASON_DAYS } from "../OnlineHeader";
+import { SEASON_DAYS } from "../shellNav";
 import { useCountdownText } from "../useCountdownText";
 import OverviewCard, { CardBadge } from "./OverviewCard";
 

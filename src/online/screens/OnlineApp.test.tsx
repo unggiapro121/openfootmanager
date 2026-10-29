@@ -48,7 +48,7 @@ const sent = (method: string, path: string) =>
 describe("a coach with a club", () => {
   // Given a coach who runs a club in a running season,
   // when the online mode opens,
-  // then the overview shows the club, the season's day, the next opponent and the league place.
+  // then the sidebar shows the club, the header the season's day, the overview the next opponent and the league place.
   it("shows the club, the season, the next match and the league place", async () => {
     server = fakeServer({
       "GET v1/season": ok(SEASON),
@@ -57,10 +57,11 @@ describe("a coach with a club", () => {
     });
     renderOnline();
 
+    const sidebar = await screen.findByRole("complementary");
+    expect(await within(sidebar).findByText("Cầu Vồng Nghệ An")).toBeInTheDocument();
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Cầu Vồng Nghệ An" }),
+      within(screen.getByRole("banner")).getByText("online.header.seasonDay:3|5|28"),
     ).toBeInTheDocument();
-    expect(screen.getByText("online.header.seasonDay:3|5|28")).toBeInTheDocument();
     const next = screen.getByRole("region", { name: /^online\.fixture\.title/ });
     expect(within(next).getByText("Sóng Biển Đà Nẵng")).toBeInTheDocument();
     const table = screen.getByRole("region", { name: "online.overview.tableTitle" });
@@ -158,7 +159,9 @@ describe("a coach with a club", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "online.club.save" }));
 
-    expect(await screen.findByRole("heading", { level: 1, name: "Sao Mai" })).toBeInTheDocument();
+    expect(
+      await within(screen.getByRole("complementary")).findByText("Sao Mai"),
+    ).toBeInTheDocument();
     const [rename] = sent("PATCH", "v1/clubs/mine");
     expect(rename.body).toEqual({ name: "Sao Mai" });
     expect(rename.idempotencyKey).toEqual(expect.any(String));
