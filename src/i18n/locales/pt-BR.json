@@ -1117,26 +1117,32 @@
         "2": "Bem conhecido"
       },
       "scout": {
-        "title": "Observação",
-        "season": "Missões nesta temporada: {{sent}}/{{max}}, de elite {{elite}}/{{eliteMax}}",
-        "send": "Enviar um olheiro",
+        "title": "Enviar um olheiro",
         "trip": "{{region}} · {{focus}} · pago com {{pay}}",
         "backIn": "Volta em {{time}}",
         "backSoon": "O olheiro está voltando…",
         "timeSkip": "Usar uma ampulheta ({{held}} disponíveis)",
-        "timeSkipConfirm": "Trazer esta missão de volta mais cedo? Uma ampulheta é gasta."
+        "timeSkipConfirm": "Trazer esta missão de volta mais cedo? Uma ampulheta é gasta.",
+        "elite": "Elite",
+        "normal": "Normal",
+        "kind": "Tipo de viagem",
+        "left": "Restam {{n}} viagens",
+        "eliteLeft": "Restam {{n}} viagens · {{held}} ingressos",
+        "full": "A base está lotada ({{used}}/{{slots}}). Os candidatos que um olheiro achar só entram se houver vaga: dispense um jovem antes de receber outro.",
+        "noReport": "Nenhum relatório aguarda sua decisão.",
+        "noTripsLeft": "Sem viagens nesta temporada",
+        "reports": "Relatórios de observação",
+        "sendElite": "Enviar um olheiro de elite",
+        "sendNormal": "Enviar um olheiro normal"
       },
       "send": {
-        "title": "Enviar um olheiro",
         "region": "Região",
         "focus": "Procurando",
         "pay": "Pagar com",
         "payCash": "Dinheiro do clube: {{cost}}",
         "payTicket": "1 ingresso de observação ({{held}} disponíveis)",
         "payElite": "1 ingresso de observação de elite ({{held}} disponíveis): pelo menos uma grande promessa",
-        "back": "Volta por volta de {{time}}",
-        "left": "Missões restantes nesta temporada: {{trips}}, de elite: {{elite}}",
-        "confirm": "Enviar"
+        "back": "Volta por volta de {{time}}"
       },
       "candidate": {
         "choose": "Escolher {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Vagas livres na base: {{free}}.",
         "skip": "Descartar o relatório",
         "recruit": "Levar {{n}} para a base",
-        "othersLeave": "Os candidatos não escolhidos vão embora e não voltam."
+        "othersLeave": "Os candidatos não escolhidos vão embora e não voltam.",
+        "back": "O olheiro voltou com {{n}} candidatos",
+        "open": "Ver o relatório",
+        "title": "Relatório de observação"
       },
       "players": {
-        "title": "Base",
-        "slots": "{{used}}/{{slots}} vagas · Base nível {{level}}",
-        "costs": "Salário {{wage}} por semana por jovem · Taxa de formatura {{fee}} · Pelo menos {{days}} dias na base",
         "revealNote": "As faixas de geral e estrelas diminuem com os dias na base; tudo aparece na formatura.",
-        "none": "Ainda não há jovens na base.",
         "days": "{{days}} dias na base",
         "wage": "{{wage}} por dia",
         "graduates": "Deve se formar no fim da temporada {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Igual ao clube",
         "release": "Dispensar",
         "releaseTitle": "Dispensar {{name}}?",
-        "releaseText": "Ele deixa a base e não volta. O custo da observação não é reembolsado."
+        "releaseText": "Ele deixa a base e não volta. O custo da observação não é reembolsado.",
+        "heading": "Jovens ({{used}}/{{slots}})",
+        "ovr": "OVR estimado",
+        "potential": "Potencial",
+        "stars": "{{low}}–{{high}} estrelas",
+        "daysOf": "{{days}}/{{min}} dias mínimos na base",
+        "graduatesUnknown": "Temporada de formatura ainda indefinida",
+        "freeSlot": "Vaga livre",
+        "freeSlotHint": "Envie um olheiro para achar um novo jovem.",
+        "moreSlots": "Mais vagas para jovens",
+        "moreSlotsHint": "Melhore a base em Finanças para receber mais jovens."
       },
       "graduated": {
         "title": "Formados",
         "season": "temporada {{season}}"
+      },
+      "figures": {
+        "title": "Números da base",
+        "slots": "Vagas da base",
+        "full": "Lotada",
+        "level": "Base nível {{level}}",
+        "trips": "Viagens de observação nesta temporada",
+        "eliteTrips": "Viagens de elite {{sent}}/{{max}}",
+        "wages": "Salários dos jovens",
+        "perWeek": "/semana",
+        "wagesNote": "{{wage}} × {{n}} jovens",
+        "fee": "Taxa de formatura",
+        "feeNote": "Por jovem · pelo menos {{days}} dias na base"
       }
     }
   },

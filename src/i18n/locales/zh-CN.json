@@ -1117,26 +1117,32 @@
         "2": "充分了解"
       },
       "scout": {
-        "title": "球探",
-        "season": "本赛季考察：{{sent}}/{{max}}，精英考察 {{elite}}/{{eliteMax}}",
-        "send": "派出球探",
+        "title": "派出球探",
         "trip": "{{region}} · {{focus}} · 支付方式：{{pay}}",
         "backIn": "{{time}} 后返回",
         "backSoon": "球探正在返回…",
         "timeSkip": "使用沙漏（持有 {{held}} 个）",
-        "timeSkipConfirm": "让这次球探考察提前返回？将消耗一个沙漏。"
+        "timeSkipConfirm": "让这次球探考察提前返回？将消耗一个沙漏。",
+        "elite": "精英",
+        "normal": "普通",
+        "kind": "行程类型",
+        "left": "剩余 {{n}} 次行程",
+        "eliteLeft": "剩余 {{n}} 次行程 · 持有 {{held}} 张券",
+        "full": "青训营已满（{{used}}/{{slots}}）。球探找到的候选球员只有在有空余名额时才能入营：先放走一名球员再接收新人。",
+        "noReport": "没有等待你决定的报告。",
+        "noTripsLeft": "本赛季行程已用完",
+        "reports": "球探报告列表",
+        "sendElite": "派出精英球探",
+        "sendNormal": "派出普通球探"
       },
       "send": {
-        "title": "派出球探",
         "region": "地区",
         "focus": "寻找方向",
         "pay": "支付方式",
         "payCash": "俱乐部资金：{{cost}}",
         "payTicket": "1 张球探券（持有 {{held}} 张）",
         "payElite": "1 张精英球探券（持有 {{held}} 张）：至少一名顶级新秀",
-        "back": "约 {{time}} 返回",
-        "left": "本赛季剩余考察：{{trips}} 次，精英：{{elite}} 次",
-        "confirm": "派出"
+        "back": "约 {{time}} 返回"
       },
       "candidate": {
         "choose": "选择 {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "青训营空余名额：{{free}}。",
         "skip": "放弃本次报告",
         "recruit": "招入青训营 {{n}} 人",
-        "othersLeave": "未选中的候选人会离开，不再回来。"
+        "othersLeave": "未选中的候选人会离开，不再回来。",
+        "back": "球探带回 {{n}} 名候选球员",
+        "open": "查看报告",
+        "title": "球探报告"
       },
       "players": {
-        "title": "青训球员",
-        "slots": "{{used}}/{{slots}} 名额 · 青训营等级 {{level}}",
-        "costs": "每名球员每周工资 {{wage}} · 毕业费 {{fee}} · 至少在营 {{days}} 天",
         "revealNote": "能力和星级范围随在营天数缩小；毕业时全部揭晓。",
-        "none": "青训营还没有球员。",
         "days": "在营 {{days}} 天",
         "wage": "每天 {{wage}}",
         "graduates": "预计在第 {{season}} 赛季结束时毕业",
@@ -1164,11 +1169,34 @@
         "clubFocus": "与俱乐部相同",
         "release": "放走",
         "releaseTitle": "放走 {{name}}？",
-        "releaseText": "他会离开青训营且不会回来。球探费用不予退还。"
+        "releaseText": "他会离开青训营且不会回来。球探费用不予退还。",
+        "heading": "青训球员（{{used}}/{{slots}}）",
+        "ovr": "预估 OVR",
+        "potential": "潜力",
+        "stars": "{{low}}–{{high}} 星",
+        "daysOf": "在营 {{days}}/{{min}} 天（最少）",
+        "graduatesUnknown": "毕业赛季尚未确定",
+        "freeSlot": "空余名额",
+        "freeSlotHint": "派出球探寻找新的青训球员。",
+        "moreSlots": "更多青训名额",
+        "moreSlotsHint": "在财务中升级青训营，可接收更多球员。"
       },
       "graduated": {
         "title": "已毕业",
         "season": "第 {{season}} 赛季"
+      },
+      "figures": {
+        "title": "青训营数据",
+        "slots": "青训营名额",
+        "full": "已满",
+        "level": "青训营等级 {{level}}",
+        "trips": "本赛季球探行程",
+        "eliteTrips": "精英行程 {{sent}}/{{max}}",
+        "wages": "青训球员工资",
+        "perWeek": "/周",
+        "wagesNote": "{{wage}} × {{n}} 名球员",
+        "fee": "毕业费",
+        "feeNote": "每名球员 · 至少在营 {{days}} 天"
       }
     }
   },

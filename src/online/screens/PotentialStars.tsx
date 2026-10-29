@@ -9,9 +9,12 @@ import { Star } from "lucide-react";
 export default function PotentialStars({
   stars,
   range,
+  size = "sm",
 }: {
   stars?: number;
   range?: [number, number];
+  /** `lg` for a youngster's card on the academy page (design HocVien.dc.html). */
+  size?: "sm" | "lg";
 }) {
   const { t } = useTranslation();
   const low = range ? range[0] : (stars ?? 0);
@@ -31,7 +34,7 @@ export default function PotentialStars({
           key={at}
           aria-hidden="true"
           data-star={at <= low ? "sure" : at <= high ? "maybe" : "none"}
-          className={`h-3.5 w-3.5 ${at <= low ? "fill-current" : at <= high ? "" : "opacity-30"}`}
+          className={`${size === "lg" ? "h-5 w-5" : "h-3.5 w-3.5"} ${at <= low ? "fill-current" : at <= high ? "" : "opacity-30"}`}
         />
       ))}
     </span>

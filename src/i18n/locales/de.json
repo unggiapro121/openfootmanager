@@ -1117,26 +1117,32 @@
         "2": "Gut bekannt"
       },
       "scout": {
-        "title": "Scouting",
-        "season": "Reisen in dieser Saison: {{sent}}/{{max}}, Elite-Reisen {{elite}}/{{eliteMax}}",
-        "send": "Scout losschicken",
+        "title": "Scout losschicken",
         "trip": "{{region}} · {{focus}} · bezahlt mit {{pay}}",
         "backIn": "Zurück in {{time}}",
         "backSoon": "Der Scout ist auf dem Rückweg…",
         "timeSkip": "Eine Sanduhr nutzen ({{held}} im Besitz)",
-        "timeSkipConfirm": "Diese Scoutingreise früher zurückholen? Eine Sanduhr wird verbraucht."
+        "timeSkipConfirm": "Diese Scoutingreise früher zurückholen? Eine Sanduhr wird verbraucht.",
+        "elite": "Elite",
+        "normal": "Normal",
+        "kind": "Reiseart",
+        "left": "Noch {{n}} Reisen",
+        "eliteLeft": "Noch {{n}} Reisen · {{held}} Tickets",
+        "full": "Die Akademie ist voll ({{used}}/{{slots}}). Kandidaten eines Scouts kommen nur bei freiem Platz hinein: Lass ein Talent gehen, bevor du ein neues aufnimmst.",
+        "noReport": "Kein Bericht wartet auf deine Entscheidung.",
+        "noTripsLeft": "Keine Reisen mehr in dieser Saison",
+        "reports": "Scouting-Berichte",
+        "sendElite": "Elite-Scout losschicken",
+        "sendNormal": "Normalen Scout losschicken"
       },
       "send": {
-        "title": "Scout losschicken",
         "region": "Region",
         "focus": "Gesucht",
         "pay": "Bezahlen mit",
         "payCash": "Vereinsgeld: {{cost}}",
         "payTicket": "1 Scouting-Ticket ({{held}} im Besitz)",
         "payElite": "1 Elite-Scouting-Ticket ({{held}} im Besitz): mindestens ein Top-Talent",
-        "back": "Zurück gegen {{time}}",
-        "left": "Verbleibende Reisen dieser Saison: {{trips}}, Elite: {{elite}}",
-        "confirm": "Losschicken"
+        "back": "Zurück gegen {{time}}"
       },
       "candidate": {
         "choose": "{{name}} wählen",
@@ -1148,14 +1154,13 @@
         "free": "Freie Akademieplätze: {{free}}.",
         "skip": "Bericht verwerfen",
         "recruit": "{{n}} in die Akademie aufnehmen",
-        "othersLeave": "Nicht gewählte Kandidaten gehen und kommen nicht zurück."
+        "othersLeave": "Nicht gewählte Kandidaten gehen und kommen nicht zurück.",
+        "back": "Der Scout ist mit {{n}} Kandidaten zurück",
+        "open": "Bericht ansehen",
+        "title": "Scouting-Bericht"
       },
       "players": {
-        "title": "Akademie",
-        "slots": "{{used}}/{{slots}} Plätze · Akademiestufe {{level}}",
-        "costs": "Gehalt {{wage}} pro Woche je Talent · Abschlussgebühr {{fee}} · Mindestens {{days}} Tage in der Akademie",
         "revealNote": "Stärke- und Sternspannen werden mit den Tagen in der Akademie enger; beim Abschluss ist alles sichtbar.",
-        "none": "Noch keine Talente in der Akademie.",
         "days": "{{days}} Tage in der Akademie",
         "wage": "{{wage}} pro Tag",
         "graduates": "Abschluss voraussichtlich am Ende von Saison {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Wie der Verein",
         "release": "Gehen lassen",
         "releaseTitle": "{{name}} gehen lassen?",
-        "releaseText": "Er verlässt die Akademie und kommt nicht zurück. Die Scoutingkosten werden nicht erstattet."
+        "releaseText": "Er verlässt die Akademie und kommt nicht zurück. Die Scoutingkosten werden nicht erstattet.",
+        "heading": "Talente ({{used}}/{{slots}})",
+        "ovr": "Geschätzte OVR",
+        "potential": "Potenzial",
+        "stars": "{{low}}–{{high}} Sterne",
+        "daysOf": "{{days}}/{{min}} Tage Mindestzeit in der Akademie",
+        "graduatesUnknown": "Abschlusssaison noch unbekannt",
+        "freeSlot": "Freier Platz",
+        "freeSlotHint": "Schick einen Scout los, um ein neues Talent zu finden.",
+        "moreSlots": "Mehr Platz für Talente",
+        "moreSlotsHint": "Bau die Akademie unter Finanzen aus, um mehr Talente aufzunehmen."
       },
       "graduated": {
         "title": "Abgeschlossen",
         "season": "Saison {{season}}"
+      },
+      "figures": {
+        "title": "Akademie-Zahlen",
+        "slots": "Akademieplätze",
+        "full": "Voll",
+        "level": "Akademiestufe {{level}}",
+        "trips": "Scouting-Reisen dieser Saison",
+        "eliteTrips": "Elite-Reisen {{sent}}/{{max}}",
+        "wages": "Gehälter der Talente",
+        "perWeek": "/Woche",
+        "wagesNote": "{{wage}} × {{n}} Talente",
+        "fee": "Abschlussgebühr",
+        "feeNote": "Je Talent · mindestens {{days}} Tage in der Akademie"
       }
     }
   },

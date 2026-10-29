@@ -1117,26 +1117,32 @@
         "2": "Bien conocido"
       },
       "scout": {
-        "title": "Ojeo",
-        "season": "Misiones esta temporada: {{sent}}/{{max}}, de élite {{elite}}/{{eliteMax}}",
-        "send": "Enviar un ojeador",
+        "title": "Enviar un ojeador",
         "trip": "{{region}} · {{focus}} · pagado con {{pay}}",
         "backIn": "Vuelve en {{time}}",
         "backSoon": "El ojeador está volviendo…",
         "timeSkip": "Usar un reloj de arena ({{held}} en posesión)",
-        "timeSkipConfirm": "¿Hacer volver antes esta misión de ojeo? Se gasta un reloj de arena."
+        "timeSkipConfirm": "¿Hacer volver antes esta misión de ojeo? Se gasta un reloj de arena.",
+        "elite": "Élite",
+        "normal": "Normal",
+        "kind": "Tipo de viaje",
+        "left": "Quedan {{n}} viajes",
+        "eliteLeft": "Quedan {{n}} viajes · {{held}} billetes",
+        "full": "La cantera está llena ({{used}}/{{slots}}). Los candidatos que encuentre un ojeador solo entran si hay sitio: deja marchar a un juvenil antes de acoger a otro.",
+        "noReport": "Ningún informe espera tu decisión.",
+        "noTripsLeft": "No quedan viajes esta temporada",
+        "reports": "Informes de ojeo",
+        "sendElite": "Enviar un ojeador de élite",
+        "sendNormal": "Enviar un ojeador normal"
       },
       "send": {
-        "title": "Enviar un ojeador",
         "region": "Región",
         "focus": "Buscando",
         "pay": "Pagar con",
         "payCash": "Dinero del club: {{cost}}",
         "payTicket": "1 billete de ojeo ({{held}} en posesión)",
         "payElite": "1 billete de ojeo de élite ({{held}} en posesión): al menos una gran promesa",
-        "back": "Vuelve hacia {{time}}",
-        "left": "Misiones restantes esta temporada: {{trips}}, de élite: {{elite}}",
-        "confirm": "Enviar"
+        "back": "Vuelve hacia {{time}}"
       },
       "candidate": {
         "choose": "Elegir a {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Plazas libres en la cantera: {{free}}.",
         "skip": "Descartar el informe",
         "recruit": "Incorporar {{n}} a la cantera",
-        "othersLeave": "Los candidatos no elegidos se van y no vuelven."
+        "othersLeave": "Los candidatos no elegidos se van y no vuelven.",
+        "back": "El ojeador ha vuelto con {{n}} candidatos",
+        "open": "Ver el informe",
+        "title": "Informe de ojeo"
       },
       "players": {
-        "title": "Cantera",
-        "slots": "{{used}}/{{slots}} plazas · Cantera nivel {{level}}",
-        "costs": "Salario {{wage}} por semana por juvenil · Tasa de graduación {{fee}} · Al menos {{days}} días en la cantera",
         "revealNote": "Los rangos de media y estrellas se estrechan con los días en la cantera; todo se ve al graduarse.",
-        "none": "Aún no hay juveniles en la cantera.",
         "days": "{{days}} días en la cantera",
         "wage": "{{wage}} al día",
         "graduates": "Se espera que se gradúe al final de la temporada {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Como el club",
         "release": "Dejar marchar",
         "releaseTitle": "¿Dejar marchar a {{name}}?",
-        "releaseText": "Deja la cantera y no vuelve. El coste del ojeo no se devuelve."
+        "releaseText": "Deja la cantera y no vuelve. El coste del ojeo no se devuelve.",
+        "heading": "Juveniles ({{used}}/{{slots}})",
+        "ovr": "OVR estimado",
+        "potential": "Potencial",
+        "stars": "{{low}}–{{high}} estrellas",
+        "daysOf": "{{days}}/{{min}} días mínimos en la cantera",
+        "graduatesUnknown": "Temporada de graduación aún sin saber",
+        "freeSlot": "Plaza libre",
+        "freeSlotHint": "Envía un ojeador para encontrar un nuevo juvenil.",
+        "moreSlots": "Más plazas para juveniles",
+        "moreSlotsHint": "Mejora la cantera en Finanzas para acoger a más juveniles."
       },
       "graduated": {
         "title": "Graduados",
         "season": "temporada {{season}}"
+      },
+      "figures": {
+        "title": "Cifras de la cantera",
+        "slots": "Plazas de la cantera",
+        "full": "Completa",
+        "level": "Cantera nivel {{level}}",
+        "trips": "Viajes de ojeo esta temporada",
+        "eliteTrips": "Viajes de élite {{sent}}/{{max}}",
+        "wages": "Salarios de los juveniles",
+        "perWeek": "/semana",
+        "wagesNote": "{{wage}} × {{n}} juveniles",
+        "fee": "Tasa de graduación",
+        "feeNote": "Por juvenil · al menos {{days}} días en la cantera"
       }
     }
   },

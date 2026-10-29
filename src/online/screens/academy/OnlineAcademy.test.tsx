@@ -167,7 +167,30 @@ describe("the academy page", () => {
     renderOnline("/online/academy");
 
     expect(await screen.findByText("online.academy.disabled")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "online.academy.scout.send" })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^online\.academy\.scout\.send/ })).toBeNull();
+  });
+
+  // Given a full academy of three youngsters on €500 a week each and a €200,000 graduation fee,
+  // when the academy opens,
+  // then the figures say the slots are full, the week's wages for three, and the fee.
+  it("shows the academy's figures", async () => {
+    serve({
+      "GET v1/clubs/mine/academy": ok(
+        academy({ used: 3, players: [pupil("p0"), pupil("p1"), pupil("p2")] }),
+      ),
+    });
+    renderOnline("/online/academy");
+
+    const figures = await screen.findByRole("list", { name: "online.academy.figures.title" });
+    const text = within(figures)
+      .getAllByRole("listitem")
+      .map((item) => item.textContent ?? "");
+    expect(text[0]).toContain("online.academy.figures.full");
+    expect(text[0]).toContain("online.academy.figures.level:1");
+    expect(text[1]).toContain("online.academy.figures.eliteTrips:0|2");
+    expect(text[2]).toMatch(/online\.academy\.figures\.wagesNote:.*500\|3/);
+    expect(text[3]).toMatch(/200,000/);
+    expect(text[3]).toContain("online.academy.figures.feeNote:14");
   });
 
   // Given a club that sent every trip of the season (10 of 10),
@@ -178,10 +201,9 @@ describe("the academy page", () => {
     renderOnline("/online/academy");
 
     const send = (await screen.findByRole("button", {
-      name: "online.academy.scout.send",
+      name: "online.academy.scout.noTripsLeft",
     })) as HTMLButtonElement;
     expect(send.disabled).toBe(true);
-    expect(screen.getByText("be.error.academy.tripLimitReached:10|10")).toBeTruthy();
   });
 
   // Given a trip out ten minutes on the server's clock, the server 90 s ahead of this machine,
@@ -235,26 +257,32 @@ describe("the academy page", () => {
       name: "online.academy.scout.timeSkip:1",
     })) as HTMLButtonElement;
     expect(locked.disabled).toBe(true);
-    expect(screen.getByText("online.academy.itemsLocked")).toBeTruthy();
+    expect(screen.getAllByText("online.academy.itemsLocked").length).toBeGreaterThan(0);
+  });
+
+  // Given no trip out and no report,
+  // when the academy opens,
+  // then the reports say none waits for the coach.
+  it("says no report is waiting", async () => {
+    serve();
+    renderOnline("/online/academy");
+
+    expect(await screen.findByText("online.academy.scout.noReport")).toBeTruthy();
   });
 });
 
 describe("sending a scout", () => {
   // Given no ticket held,
-  // when the send dialog opens,
+  // when the academy opens,
   // then club money is the only way to pay, and sending posts the trip with it.
   it("pays with club money when no ticket is held", async () => {
     serve({ "POST v1/clubs/mine/academy/scouts": ok(trip()) });
     renderOnline("/online/academy");
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.scout.send" }));
-    const dialog = await screen.findByRole("dialog");
 
-    const pays = await within(dialog).findAllByRole("button", {
-      name: /^online\.academy\.send\.pay/,
-    });
+    const pays = await screen.findAllByRole("radio", { name: /^online\.academy\.send\.pay/ });
     expect(pays).toHaveLength(1);
-    expect(pays[0].textContent).toMatch(/^online\.academy\.send\.payCash:/);
-    fireEvent.click(within(dialog).getByRole("button", { name: "online.academy.send.confirm" }));
+    expect(pays[0].closest("label")?.textContent).toMatch(/^online\.academy\.send\.payCash:/);
+    fireEvent.click(screen.getByRole("button", { name: "online.academy.scout.sendNormal" }));
 
     await waitFor(() => expect(sent("POST", "v1/clubs/mine/academy/scouts").length).toBe(1));
     expect(sent("POST", "v1/clubs/mine/academy/scouts")[0].body).toEqual({
@@ -265,27 +293,47 @@ describe("sending a scout", () => {
   });
 
   // Given a plain ticket and an elite one held, with no elite trip left this season,
-  // when the send dialog opens,
-  // then the plain ticket is chosen and the elite one is not offered.
-  it("offers an elite ticket only while elite trips are left", async () => {
+  // when the academy opens,
+  // then the plain ticket is chosen and the elite kind cannot be.
+  it("offers an elite trip only while elite trips are left", async () => {
     serve({
       "GET v1/clubs/mine/academy/scout-quote": ok(
         quote({ tickets: { scoutExpedition: 1, scoutExpeditionElite: 1 }, eliteTripsLeft: 0 }),
       ),
     });
     renderOnline("/online/academy");
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.scout.send" }));
-    const dialog = await screen.findByRole("dialog");
 
-    const ticket = await within(dialog).findByRole("button", {
-      name: "online.academy.send.payTicket:1",
+    const ticket = await screen.findByRole("radio", { name: "online.academy.send.payTicket:1" });
+    expect((ticket as HTMLInputElement).checked).toBe(true);
+    const elite = screen.getByRole("radio", { name: /^online\.academy\.scout\.elite/ });
+    expect((elite as HTMLInputElement).disabled).toBe(true);
+  });
+
+  // Given an elite ticket held and elite trips left,
+  // when the elite kind is chosen and the scout sent,
+  // then the trip is paid with the elite ticket.
+  it("sends an elite trip with the elite ticket", async () => {
+    serve({
+      "GET v1/clubs/mine/academy/scout-quote": ok(
+        quote({ tickets: { scoutExpedition: 0, scoutExpeditionElite: 1 } }),
+      ),
+      "POST v1/clubs/mine/academy/scouts": ok(trip({ elite: true })),
     });
-    expect(ticket.getAttribute("aria-pressed")).toBe("true");
-    expect(within(dialog).queryByRole("button", { name: /payElite/ })).toBeNull();
+    renderOnline("/online/academy");
+
+    const elite = await screen.findByRole("radio", { name: /^online\.academy\.scout\.elite/ });
+    await waitFor(() => expect((elite as HTMLInputElement).disabled).toBe(false));
+    fireEvent.click(elite);
+    fireEvent.click(screen.getByRole("button", { name: "online.academy.scout.sendElite" }));
+
+    await waitFor(() => expect(sent("POST", "v1/clubs/mine/academy/scouts").length).toBe(1));
+    expect(sent("POST", "v1/clubs/mine/academy/scouts")[0].body).toMatchObject({
+      pay: "scoutExpeditionElite",
+    });
   });
 
   // Given a quote refused because a trip is already open,
-  // when the send dialog opens,
+  // when the academy opens,
   // then sending is off and the reason names no trip id.
   it("says why a trip would be refused, without its id", async () => {
     serve({
@@ -294,15 +342,27 @@ describe("sending a scout", () => {
       ),
     });
     renderOnline("/online/academy");
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.scout.send" }));
-    const dialog = await screen.findByRole("dialog");
 
-    const reason = await within(dialog).findByText(/^be\.error\.academy\.tripOpen/);
+    const reason = await screen.findByText(/^be\.error\.academy\.tripOpen/);
     expect(reason.textContent).not.toContain(TRIP);
-    const confirm = within(dialog).getByRole("button", {
-      name: "online.academy.send.confirm",
+    const send = screen.getByRole("button", {
+      name: "online.academy.scout.sendNormal",
     }) as HTMLButtonElement;
-    expect(confirm.disabled).toBe(true);
+    expect(send.disabled).toBe(true);
+  });
+
+  // Given a full academy (3 of 3),
+  // when the academy opens,
+  // then the scout panel warns that a youngster must leave before another comes in.
+  it("warns that a full academy takes no one in", async () => {
+    serve({
+      "GET v1/clubs/mine/academy": ok(
+        academy({ used: 3, players: [pupil("p0"), pupil("p1"), pupil("p2")] }),
+      ),
+    });
+    renderOnline("/online/academy");
+
+    expect(await screen.findByText("online.academy.scout.full:3|3")).toBeTruthy();
   });
 });
 
@@ -317,6 +377,11 @@ describe("a report back", () => {
     }),
   });
 
+  async function openReport() {
+    fireEvent.click(await screen.findByRole("button", { name: "online.academy.report.open" }));
+    return screen.findByRole("dialog");
+  }
+
   // Given five candidates and one free slot (3 slots, 2 used),
   // when one is chosen,
   // then the others cannot be, and taking him sends only his id.
@@ -326,17 +391,20 @@ describe("a report back", () => {
       [`POST v1/clubs/mine/academy/scouts/${TRIP}/recruit`]: ok(academy({ used: 3 })),
     });
     renderOnline("/online/academy");
+    const dialog = await openReport();
 
     fireEvent.click(
-      await screen.findByRole("checkbox", { name: "online.academy.candidate.choose:Kid a" }),
+      within(dialog).getByRole("checkbox", { name: "online.academy.candidate.choose:Kid a" }),
     );
-    const other = screen.getByRole("checkbox", {
+    const other = within(dialog).getByRole("checkbox", {
       name: "online.academy.candidate.choose:Kid b",
     }) as HTMLInputElement;
     expect(other.disabled).toBe(true);
 
-    fireEvent.click(screen.getByRole("button", { name: "online.academy.report.recruit:1" }));
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.confirm" }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "online.academy.report.recruit:1" }),
+    );
+    fireEvent.click(await within(dialog).findByRole("button", { name: "online.academy.confirm" }));
     await waitFor(() =>
       expect(sent("POST", `v1/clubs/mine/academy/scouts/${TRIP}/recruit`).length).toBe(1),
     );
@@ -354,9 +422,10 @@ describe("a report back", () => {
       [`POST v1/clubs/mine/academy/scouts/${TRIP}/recruit`]: ok(academy({ used: 2 })),
     });
     renderOnline("/online/academy");
+    const dialog = await openReport();
 
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.report.skip" }));
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.confirm" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "online.academy.report.skip" }));
+    fireEvent.click(await within(dialog).findByRole("button", { name: "online.academy.confirm" }));
     await waitFor(() =>
       expect(sent("POST", `v1/clubs/mine/academy/scouts/${TRIP}/recruit`).length).toBe(1),
     );
@@ -376,12 +445,15 @@ describe("a report back", () => {
       }),
     });
     renderOnline("/online/academy");
+    const dialog = await openReport();
     fireEvent.click(
-      await screen.findByRole("checkbox", { name: "online.academy.candidate.choose:Kid a" }),
+      within(dialog).getByRole("checkbox", { name: "online.academy.candidate.choose:Kid a" }),
     );
     const reads = sent("GET", "v1/clubs/mine/academy").length;
-    fireEvent.click(screen.getByRole("button", { name: "online.academy.report.recruit:1" }));
-    fireEvent.click(await screen.findByRole("button", { name: "online.academy.confirm" }));
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "online.academy.report.recruit:1" }),
+    );
+    fireEvent.click(await within(dialog).findByRole("button", { name: "online.academy.confirm" }));
 
     expect(await screen.findByText(/^be\.error\.academy\.noSlot/)).toBeTruthy();
     await waitFor(() => expect(sent("GET", "v1/clubs/mine/academy").length).toBe(reads + 1));
@@ -392,7 +464,8 @@ describe("the academy's youngsters", () => {
   // Given three youngsters known at each level, one with no expected graduation and one whose
   // graduation waited for its fee,
   // when the academy opens,
-  // then each level is said in words, the unknown graduation as a dash, the waited one as free.
+  // then each card says the level in words, the unknown graduation as a dash, the waited one as
+  // free.
   it("says what is known of each youngster", async () => {
     serve({
       "GET v1/clubs/mine/academy": ok(
@@ -408,14 +481,26 @@ describe("the academy's youngsters", () => {
     });
     renderOnline("/online/academy");
 
-    const rows = await screen.findAllByRole("button", { expanded: false });
-    const text = rows.map((row) => row.textContent ?? "");
+    const cards = await screen.findAllByRole("article");
+    const text = cards.map((card) => card.textContent ?? "");
     expect(text[0]).toContain("online.academy.reveal.0");
     expect(text[0]).toContain("online.academy.players.graduates:4");
+    expect(text[0]).toContain("online.academy.players.daysOf:3|14");
     expect(text[1]).toContain("online.academy.reveal.1");
-    expect(text[1]).toContain("—");
+    expect(text[1]).toContain("online.academy.players.graduatesUnknown");
     expect(text[2]).toContain("online.academy.reveal.2");
     expect(text[2]).toContain("online.academy.players.nextFree");
+  });
+
+  // Given one youngster in an academy of three slots,
+  // when the academy opens,
+  // then two free slots show and a card points to the upgrade in Finance.
+  it("shows the free slots and where more come from", async () => {
+    serve({ "GET v1/clubs/mine/academy": ok(academy({ used: 1, players: [pupil("p0")] })) });
+    renderOnline("/online/academy");
+
+    expect(await screen.findAllByText("online.academy.players.freeSlot")).toHaveLength(2);
+    expect(screen.getByText("online.academy.players.moreSlots")).toBeTruthy();
   });
 
   // Given a youngster with his own focus,
@@ -430,10 +515,10 @@ describe("the academy's youngsters", () => {
     });
     renderOnline("/online/academy");
 
-    fireEvent.click(await screen.findByRole("button", { expanded: false }));
-    fireEvent.change(screen.getByRole("combobox", { name: "online.academy.players.focus" }), {
-      target: { value: "" },
-    });
+    fireEvent.change(
+      await screen.findByRole("combobox", { name: "online.academy.players.focus" }),
+      { target: { value: "" } },
+    );
     await waitFor(() =>
       expect(sent("PUT", "v1/clubs/mine/academy/players/p0/focus").length).toBe(1),
     );
@@ -450,8 +535,7 @@ describe("the academy's youngsters", () => {
     });
     renderOnline("/online/academy");
 
-    fireEvent.click(await screen.findByRole("button", { expanded: false }));
-    fireEvent.click(screen.getByRole("button", { name: "online.academy.players.release" }));
+    fireEvent.click(await screen.findByRole("button", { name: "online.academy.players.release" }));
     expect(sent("POST", "v1/clubs/mine/academy/players/p0/release")).toEqual([]);
     fireEvent.click(await screen.findByRole("button", { name: "online.academy.confirm" }));
     await waitFor(() =>

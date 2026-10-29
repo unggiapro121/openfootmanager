@@ -158,8 +158,8 @@
     "packageBuild.patches",
     "coach.region",
     "online.nav.shop",
-    "online.academy.scout.title",
-    "online.academy.send.region"
+    "online.academy.send.region",
+    "online.academy.scout.elite"
   ],
   "fr": [
     "online.overview.placeAria",
@@ -485,7 +485,8 @@
     "match.commentary.Goal.hattrick.headline",
     "squad.kitPatterns.Diagonal",
     "packageBuild.patches",
-    "online.shop.total"
+    "online.shop.total",
+    "online.academy.scout.elite"
   ],
   "pt": [
     "online.overview.points",
@@ -530,7 +531,8 @@
     "match.commentary.Goal.hattrick.headline",
     "squad.kitPatterns.Diagonal",
     "packageBuild.patches",
-    "online.shop.total"
+    "online.shop.total",
+    "online.academy.scout.elite"
   ],
   "ru": ["dashboard.recapTransferLine"],
   "zh-CN": [
@@ -791,7 +793,8 @@
     "match.commentary.Offside.headline",
     "coachServer.email",
     "online.shop.total",
-    "online.inventory.styleLevel"
+    "online.inventory.styleLevel",
+    "online.academy.scout.elite"
   ],
   "vi": [
     "online.market.ai",

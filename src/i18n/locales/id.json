@@ -1117,26 +1117,32 @@
         "2": "Sudah dikenal baik"
       },
       "scout": {
-        "title": "Pemanduan bakat",
-        "season": "Perjalanan musim ini: {{sent}}/{{max}}, elite {{elite}}/{{eliteMax}}",
-        "send": "Kirim pemandu bakat",
+        "title": "Kirim pemandu bakat",
         "trip": "{{region}} · {{focus}} · dibayar dengan {{pay}}",
         "backIn": "Kembali dalam {{time}}",
         "backSoon": "Pemandu bakat sedang kembali…",
         "timeSkip": "Pakai jam pasir (punya {{held}})",
-        "timeSkipConfirm": "Pulangkan perjalanan ini lebih cepat? Satu jam pasir terpakai."
+        "timeSkipConfirm": "Pulangkan perjalanan ini lebih cepat? Satu jam pasir terpakai.",
+        "elite": "Elite",
+        "normal": "Biasa",
+        "kind": "Jenis perjalanan",
+        "left": "Sisa {{n}} perjalanan",
+        "eliteLeft": "Sisa {{n}} perjalanan · {{held}} tiket",
+        "full": "Akademi penuh ({{used}}/{{slots}}). Kandidat temuan pemandu bakat hanya masuk bila ada tempat: lepas satu pemain muda sebelum menerima yang baru.",
+        "noReport": "Tidak ada laporan yang menunggu keputusanmu.",
+        "noTripsLeft": "Perjalanan musim ini habis",
+        "reports": "Laporan-laporan pemandu bakat",
+        "sendElite": "Kirim pemandu bakat elite",
+        "sendNormal": "Kirim pemandu bakat biasa"
       },
       "send": {
-        "title": "Kirim pemandu bakat",
         "region": "Wilayah",
         "focus": "Mencari",
         "pay": "Bayar dengan",
         "payCash": "Uang klub: {{cost}}",
         "payTicket": "1 tiket pemandu bakat (punya {{held}})",
         "payElite": "1 tiket pemandu bakat elite (punya {{held}}): setidaknya satu bakat besar",
-        "back": "Kembali sekitar {{time}}",
-        "left": "Sisa perjalanan musim ini: {{trips}}, elite: {{elite}}",
-        "confirm": "Kirim"
+        "back": "Kembali sekitar {{time}}"
       },
       "candidate": {
         "choose": "Pilih {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Tempat kosong di akademi: {{free}}.",
         "skip": "Lewati laporan",
         "recruit": "Masukkan {{n}} ke akademi",
-        "othersLeave": "Kandidat yang tidak dipilih pergi dan tidak kembali."
+        "othersLeave": "Kandidat yang tidak dipilih pergi dan tidak kembali.",
+        "back": "Pemandu bakat kembali dengan {{n}} kandidat",
+        "open": "Lihat laporan",
+        "title": "Laporan pemandu bakat"
       },
       "players": {
-        "title": "Akademi",
-        "slots": "{{used}}/{{slots}} tempat · Level akademi {{level}}",
-        "costs": "Gaji {{wage}} per minggu per pemain muda · Biaya kelulusan {{fee}} · Minimal {{days}} hari di akademi",
         "revealNote": "Rentang rating dan bintang menyempit seiring hari di akademi; semuanya terlihat saat lulus.",
-        "none": "Belum ada pemain muda di akademi.",
         "days": "{{days}} hari di akademi",
         "wage": "{{wage}} per hari",
         "graduates": "Diperkirakan lulus di akhir musim {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Sama dengan klub",
         "release": "Lepas",
         "releaseTitle": "Lepas {{name}}?",
-        "releaseText": "Dia keluar dari akademi dan tidak kembali. Biaya pemanduan tidak dikembalikan."
+        "releaseText": "Dia keluar dari akademi dan tidak kembali. Biaya pemanduan tidak dikembalikan.",
+        "heading": "Pemain muda ({{used}}/{{slots}})",
+        "ovr": "Perkiraan OVR",
+        "potential": "Potensi",
+        "stars": "{{low}}–{{high}} bintang",
+        "daysOf": "{{days}}/{{min}} hari minimal di akademi",
+        "graduatesUnknown": "Musim kelulusan belum diketahui",
+        "freeSlot": "Tempat kosong",
+        "freeSlotHint": "Kirim pemandu bakat untuk mencari pemain muda baru.",
+        "moreSlots": "Tambah tempat pemain muda",
+        "moreSlotsHint": "Tingkatkan akademi di Keuangan untuk menerima lebih banyak pemain muda."
       },
       "graduated": {
         "title": "Lulusan",
         "season": "musim {{season}}"
+      },
+      "figures": {
+        "title": "Angka akademi",
+        "slots": "Tempat di akademi",
+        "full": "Penuh",
+        "level": "Level akademi {{level}}",
+        "trips": "Perjalanan pemandu bakat musim ini",
+        "eliteTrips": "Perjalanan elite {{sent}}/{{max}}",
+        "wages": "Gaji pemain muda",
+        "perWeek": "/minggu",
+        "wagesNote": "{{wage}} × {{n}} pemain muda",
+        "fee": "Biaya kelulusan",
+        "feeNote": "Per pemain muda · minimal {{days}} hari di akademi"
       }
     }
   },

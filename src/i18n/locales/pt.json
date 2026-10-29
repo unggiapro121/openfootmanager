@@ -1117,26 +1117,32 @@
         "2": "Bem conhecido"
       },
       "scout": {
-        "title": "Prospeção",
-        "season": "Missões nesta época: {{sent}}/{{max}}, de elite {{elite}}/{{eliteMax}}",
-        "send": "Enviar um olheiro",
+        "title": "Enviar um olheiro",
         "trip": "{{region}} · {{focus}} · pago com {{pay}}",
         "backIn": "Regressa dentro de {{time}}",
         "backSoon": "O olheiro está a regressar…",
         "timeSkip": "Usar uma ampulheta ({{held}} em posse)",
-        "timeSkipConfirm": "Fazer regressar mais cedo esta missão? Gasta-se uma ampulheta."
+        "timeSkipConfirm": "Fazer regressar mais cedo esta missão? Gasta-se uma ampulheta.",
+        "elite": "Elite",
+        "normal": "Normal",
+        "kind": "Tipo de viagem",
+        "left": "Restam {{n}} viagens",
+        "eliteLeft": "Restam {{n}} viagens · {{held}} bilhetes",
+        "full": "A academia está cheia ({{used}}/{{slots}}). Os candidatos que um olheiro encontrar só entram se houver vaga: dispensa um jovem antes de receber outro.",
+        "noReport": "Nenhum relatório espera a tua decisão.",
+        "noTripsLeft": "Sem viagens nesta época",
+        "reports": "Relatórios de prospeção",
+        "sendElite": "Enviar um olheiro de elite",
+        "sendNormal": "Enviar um olheiro normal"
       },
       "send": {
-        "title": "Enviar um olheiro",
         "region": "Região",
         "focus": "À procura de",
         "pay": "Pagar com",
         "payCash": "Dinheiro do clube: {{cost}}",
         "payTicket": "1 bilhete de prospeção ({{held}} em posse)",
         "payElite": "1 bilhete de prospeção de elite ({{held}} em posse): pelo menos uma grande promessa",
-        "back": "Regressa por volta de {{time}}",
-        "left": "Missões restantes nesta época: {{trips}}, de elite: {{elite}}",
-        "confirm": "Enviar"
+        "back": "Regressa por volta de {{time}}"
       },
       "candidate": {
         "choose": "Escolher {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Vagas livres na academia: {{free}}.",
         "skip": "Ignorar o relatório",
         "recruit": "Integrar {{n}} na academia",
-        "othersLeave": "Os candidatos não escolhidos partem e não voltam."
+        "othersLeave": "Os candidatos não escolhidos partem e não voltam.",
+        "back": "O olheiro voltou com {{n}} candidatos",
+        "open": "Ver o relatório",
+        "title": "Relatório de prospeção"
       },
       "players": {
-        "title": "Academia",
-        "slots": "{{used}}/{{slots}} vagas · Academia nível {{level}}",
-        "costs": "Salário {{wage}} por semana por jovem · Taxa de graduação {{fee}} · Pelo menos {{days}} dias na academia",
         "revealNote": "Os intervalos de geral e estrelas estreitam com os dias na academia; tudo se revela na graduação.",
-        "none": "Ainda não há jovens na academia.",
         "days": "{{days}} dias na academia",
         "wage": "{{wage}} por dia",
         "graduates": "Deve graduar-se no fim da época {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Como o clube",
         "release": "Dispensar",
         "releaseTitle": "Dispensar {{name}}?",
-        "releaseText": "Sai da academia e não volta. O custo da prospeção não é reembolsado."
+        "releaseText": "Sai da academia e não volta. O custo da prospeção não é reembolsado.",
+        "heading": "Jovens ({{used}}/{{slots}})",
+        "ovr": "OVR estimado",
+        "potential": "Potencial",
+        "stars": "{{low}}–{{high}} estrelas",
+        "daysOf": "{{days}}/{{min}} dias mínimos na academia",
+        "graduatesUnknown": "Época de graduação ainda por saber",
+        "freeSlot": "Vaga livre",
+        "freeSlotHint": "Envia um olheiro para encontrar um novo jovem.",
+        "moreSlots": "Mais vagas para jovens",
+        "moreSlotsHint": "Melhora a academia nas Finanças para receber mais jovens."
       },
       "graduated": {
         "title": "Graduados",
         "season": "época {{season}}"
+      },
+      "figures": {
+        "title": "Números da academia",
+        "slots": "Vagas da academia",
+        "full": "Cheia",
+        "level": "Academia nível {{level}}",
+        "trips": "Viagens de prospeção nesta época",
+        "eliteTrips": "Viagens de elite {{sent}}/{{max}}",
+        "wages": "Salários dos jovens",
+        "perWeek": "/semana",
+        "wagesNote": "{{wage}} × {{n}} jovens",
+        "fee": "Taxa de graduação",
+        "feeNote": "Por jovem · pelo menos {{days}} dias na academia"
       }
     }
   },

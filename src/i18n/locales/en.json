@@ -1117,26 +1117,32 @@
         "2": "Well known"
       },
       "scout": {
-        "title": "Scouting",
-        "season": "Trips this season: {{sent}}/{{max}}, elite trips {{elite}}/{{eliteMax}}",
-        "send": "Send a scout",
+        "title": "Send a scout",
         "trip": "{{region}} · {{focus}} · paid with {{pay}}",
         "backIn": "Back in {{time}}",
         "backSoon": "The scout is on the way back…",
         "timeSkip": "Use an hourglass ({{held}} held)",
-        "timeSkipConfirm": "Bring this scouting trip back sooner? One hourglass is used."
+        "timeSkipConfirm": "Bring this scouting trip back sooner? One hourglass is used.",
+        "elite": "Elite",
+        "normal": "Regular",
+        "kind": "Trip type",
+        "left": "{{n}} trips left",
+        "eliteLeft": "{{n}} trips left · {{held}} tickets held",
+        "full": "The academy is full ({{used}}/{{slots}}). Candidates a scout finds come in only while there is room: let a youngster go before taking one.",
+        "noReport": "No report is waiting for your decision.",
+        "noTripsLeft": "No trips left this season",
+        "reports": "Scouting reports",
+        "sendElite": "Send an elite scout",
+        "sendNormal": "Send a regular scout"
       },
       "send": {
-        "title": "Send a scout",
         "region": "Region",
         "focus": "Looking for",
         "pay": "Pay with",
         "payCash": "Club money: {{cost}}",
         "payTicket": "1 scout ticket ({{held}} held)",
         "payElite": "1 elite scout ticket ({{held}} held): at least one top prospect",
-        "back": "Back around {{time}}",
-        "left": "Trips left this season: {{trips}}, elite: {{elite}}",
-        "confirm": "Send"
+        "back": "Back around {{time}}"
       },
       "candidate": {
         "choose": "Choose {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Free academy slots: {{free}}.",
         "skip": "Skip the report",
         "recruit": "Take {{n}} into the academy",
-        "othersLeave": "Candidates not chosen leave and do not come back."
+        "othersLeave": "Candidates not chosen leave and do not come back.",
+        "back": "The scout is back with {{n}} candidates",
+        "open": "View the report",
+        "title": "Scouting report"
       },
       "players": {
-        "title": "Academy",
-        "slots": "{{used}}/{{slots}} slots · Academy level {{level}}",
-        "costs": "Wage {{wage}} a week per youngster · Graduation fee {{fee}} · At least {{days}} days in the academy",
         "revealNote": "OVR and star ranges narrow with the days in the academy; everything shows at graduation.",
-        "none": "No youngsters in the academy yet.",
         "days": "{{days}} days in the academy",
         "wage": "{{wage}} a day",
         "graduates": "Expected to graduate at the end of season {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "As the club",
         "release": "Let go",
         "releaseTitle": "Let {{name}} go?",
-        "releaseText": "He leaves the academy and does not come back. The scouting cost is not refunded."
+        "releaseText": "He leaves the academy and does not come back. The scouting cost is not refunded.",
+        "heading": "Youngsters ({{used}}/{{slots}})",
+        "ovr": "Estimated OVR",
+        "potential": "Potential",
+        "stars": "{{low}}–{{high}} stars",
+        "daysOf": "{{days}}/{{min}} days in the academy (minimum)",
+        "graduatesUnknown": "Graduation season not known yet",
+        "freeSlot": "Free slot",
+        "freeSlotHint": "Send a scout to find a new youngster.",
+        "moreSlots": "More room for youngsters",
+        "moreSlotsHint": "Upgrade the academy in Finance to take in more youngsters."
       },
       "graduated": {
         "title": "Graduated",
         "season": "season {{season}}"
+      },
+      "figures": {
+        "title": "Academy figures",
+        "slots": "Academy slots",
+        "full": "Full",
+        "level": "Academy level {{level}}",
+        "trips": "Scouting trips this season",
+        "eliteTrips": "Elite trips {{sent}}/{{max}}",
+        "wages": "Youngsters' wages",
+        "perWeek": "/week",
+        "wagesNote": "{{wage}} × {{n}} youngsters",
+        "fee": "Graduation fee",
+        "feeNote": "Per youngster · at least {{days}} days in the academy"
       }
     }
   },

@@ -1117,26 +1117,32 @@
         "2": "Theo dõi kỹ"
       },
       "scout": {
-        "title": "Scout",
-        "season": "Mùa này đã gửi {{sent}}/{{max}} chuyến, chuyến đặc biệt {{elite}}/{{eliteMax}}",
-        "send": "Gửi scout",
+        "title": "Gửi scout",
         "trip": "{{region}} · {{focus}} · trả bằng {{pay}}",
         "backIn": "Về sau {{time}}",
         "backSoon": "Scout sắp về…",
         "timeSkip": "Dùng đồng hồ cát (còn {{held}})",
-        "timeSkipConfirm": "Đưa chuyến scout về sớm hơn? Dùng 1 đồng hồ cát."
+        "timeSkipConfirm": "Đưa chuyến scout về sớm hơn? Dùng 1 đồng hồ cát.",
+        "elite": "Đặc biệt",
+        "normal": "Thường",
+        "kind": "Loại chuyến",
+        "left": "Còn {{n}} chuyến",
+        "eliteLeft": "Còn {{n}} chuyến · có {{held}} vé",
+        "full": "Lò đã đầy {{used}}/{{slots}}. Ứng viên scout tìm được chỉ vào lò khi còn chỗ: cho một học viên rời lò trước khi nhận.",
+        "noReport": "Chưa có báo cáo nào đang chờ bạn quyết định.",
+        "noTripsLeft": "Đã hết chuyến mùa này",
+        "reports": "Báo cáo scout",
+        "sendElite": "Gửi scout đặc biệt",
+        "sendNormal": "Gửi scout thường"
       },
       "send": {
-        "title": "Gửi scout",
         "region": "Khu vực",
         "focus": "Trọng tâm",
         "pay": "Trả bằng",
         "payCash": "Tiền CLB: {{cost}}",
         "payTicket": "1 vé scout (còn {{held}})",
         "payElite": "1 vé scout đặc biệt (còn {{held}}): bảo đảm một ứng viên tiềm năng cao",
-        "back": "Về khoảng {{time}}",
-        "left": "Mùa này còn {{trips}} chuyến, {{elite}} chuyến đặc biệt",
-        "confirm": "Gửi"
+        "back": "Về khoảng {{time}}"
       },
       "candidate": {
         "choose": "Chọn {{name}}",
@@ -1148,27 +1154,49 @@
         "free": "Lò còn {{free}} chỗ trống.",
         "skip": "Bỏ qua báo cáo",
         "recruit": "Nhận {{n}} cầu thủ vào lò",
-        "othersLeave": "Ứng viên không chọn sẽ rời đi, không quay lại."
+        "othersLeave": "Ứng viên không chọn sẽ rời đi, không quay lại.",
+        "back": "Scout đã về với {{n}} ứng viên",
+        "open": "Xem báo cáo",
+        "title": "Báo cáo scout"
       },
       "players": {
-        "title": "Học viện",
-        "slots": "{{used}}/{{slots}} chỗ · Lò cấp {{level}}",
-        "costs": "Lương {{wage}}/tuần mỗi học viên · Phí tốt nghiệp {{fee}} · Ở lò ít nhất {{days}} ngày",
         "revealNote": "Khoảng OVR và sao hẹp dần theo số ngày ở lò; lộ hết khi tốt nghiệp.",
-        "none": "Lò chưa có học viên nào.",
         "days": "{{days}} ngày ở lò",
         "wage": "{{wage}}/ngày",
         "graduates": "Dự kiến tốt nghiệp cuối mùa {{season}}",
         "nextFree": "Lần tốt nghiệp kế miễn phí",
         "focus": "Trọng tâm riêng",
         "clubFocus": "Theo CLB",
-        "release": "Thả",
-        "releaseTitle": "Thả {{name}}?",
-        "releaseText": "Cầu thủ rời lò và không quay lại. Tiền scout không hoàn."
+        "release": "Cho rời lò",
+        "releaseTitle": "Cho {{name}} rời lò?",
+        "releaseText": "Cầu thủ rời lò và không quay lại. Tiền scout không hoàn.",
+        "heading": "Học viên ({{used}}/{{slots}})",
+        "ovr": "OVR ước tính",
+        "potential": "Tiềm năng",
+        "stars": "{{low}}–{{high}} sao",
+        "daysOf": "Ở lò {{days}}/{{min}} ngày tối thiểu",
+        "graduatesUnknown": "Chưa rõ mùa tốt nghiệp",
+        "freeSlot": "Chỗ trống",
+        "freeSlotHint": "Gửi scout để tìm học viên mới.",
+        "moreSlots": "Thêm chỗ cho học viên",
+        "moreSlotsHint": "Nâng cấp lò ở Tài chính để nhận thêm học viên."
       },
       "graduated": {
         "title": "Đã tốt nghiệp",
         "season": "mùa {{season}}"
+      },
+      "figures": {
+        "title": "Số liệu lò đào tạo",
+        "slots": "Chỗ trong lò",
+        "full": "Đã đầy",
+        "level": "Lò cấp {{level}}",
+        "trips": "Chuyến scout mùa này",
+        "eliteTrips": "Chuyến đặc biệt {{sent}}/{{max}}",
+        "wages": "Lương học viên",
+        "perWeek": "/tuần",
+        "wagesNote": "{{wage}} × {{n}} học viên",
+        "fee": "Phí tốt nghiệp",
+        "feeNote": "Mỗi học viên · ở lò tối thiểu {{days}} ngày"
       }
     }
   },

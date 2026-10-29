@@ -2,13 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { refreshAcademy, refreshItems, useOnlineStore } from "../../store/onlineStore";
 import ResourceState from "../ResourceState";
-import { GraduatesCard, YoungstersCard } from "./AcademyPlayers";
-import ScoutCard from "./ScoutCard";
+import AcademyFigures from "./AcademyFigures";
+import { GraduatesSection, YoungstersSection } from "./AcademyPlayers";
+import ScoutPanel from "./ScoutPanel";
 
 /**
- * The club's youth academy (C-7c, C7-38): its scouting, its youngsters and who graduated. Every
- * number is the server's: slots, ranges, when a youngster graduates. A season without academy rules
- * shows a banner and what the academy still holds.
+ * The club's youth academy (C-7c, C7-38, design HocVien.dc.html): its figures, its youngsters
+ * beside the scout panel, and who graduated. Every number is the server's: slots, ranges, when a
+ * youngster graduates. A season without academy rules shows a banner and what the academy still
+ * holds.
  */
 export default function OnlineAcademy() {
   const { t } = useTranslation();
@@ -44,19 +46,25 @@ export default function OnlineAcademy() {
       <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.academy.notOnServer")}</p>
     );
   }
+  const youngsters = academy.enabled || academy.players.length > 0;
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <div className="flex flex-col gap-6">
       {!academy.enabled && (
         <p
           role="note"
-          className="rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 lg:col-span-2 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200"
+          className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:border-navy-600 dark:bg-navy-800 dark:text-gray-200"
         >
           {t("online.academy.disabled")}
         </p>
       )}
-      {academy.enabled && <ScoutCard academy={academy} clubRegion={clubRegion} />}
-      {(academy.enabled || academy.players.length > 0) && <YoungstersCard academy={academy} />}
-      <GraduatesCard academy={academy} />
+      <AcademyFigures academy={academy} />
+      {youngsters && (
+        <div className="flex flex-wrap items-start gap-6">
+          <YoungstersSection academy={academy} />
+          {academy.enabled && <ScoutPanel academy={academy} clubRegion={clubRegion} />}
+        </div>
+      )}
+      <GraduatesSection academy={academy} />
     </div>
   );
 }
