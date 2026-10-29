@@ -35,6 +35,7 @@
     "online.inventory.styleXp"
   ],
   "de": [
+    "online.coins.toShop",
     "online.overview.homeMark",
     "online.overview.awayMark",
     "online.overview.budget",
@@ -164,6 +165,7 @@
     "online.events.theme.other"
   ],
   "fr": [
+    "online.coins.max",
     "online.events.missions",
     "online.overview.placeAria",
     "online.overview.points",
@@ -302,6 +304,7 @@
     "tactics.dutyShort.corner_taker"
   ],
   "it": [
+    "online.coins.max",
     "online.overview.budget",
     "online.fixture.minutes",
     "manager.stylePhase.Press",
