@@ -215,7 +215,48 @@
       "potentialStarsRange": "Tiềm năng {{low}} đến {{high}} sao"
     },
     "training": {
-      "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng."
+      "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
+      "today": {
+        "title": "Buổi tập hôm nay",
+        "titleDay": "Buổi tập hôm nay · Ngày {{day}}/{{total}}",
+        "statusNone": "Chưa tập hôm nay",
+        "statusManual": "Đã tập hôm nay",
+        "statusManualWith": "Đã tập hôm nay ({{intensity}})",
+        "statusAuto": "Hôm nay đã tập theo lịch",
+        "statusBot": "CLB đã tập hôm nay trước khi bạn nhận đội",
+        "statusRest": "Hôm nay CLB đã nghỉ trước khi bạn nhận đội",
+        "noExtra": "Bấm tập không làm đội tập nhiều hơn: tối đa vẫn là {{cap}} buổi trong 7 ngày. Bấm để chọn lúc tập và cường độ.",
+        "matchToday": "Hôm nay có trận lúc {{time}}. Bấm tập trước trận thì cầu thủ vào sân với thể lực sau buổi. Không bấm thì buổi của hôm nay được tính sau trận, lúc sang ngày.",
+        "scheduledRest": "Hôm nay là ngày nghỉ theo lịch. Bấm thì đội vẫn tập, buổi này tính vào {{cap}} buổi, và một ngày tập sau có thể thành ngày nghỉ.",
+        "intensity": "Cường độ",
+        "intensityNote": "Chỉ cho buổi này, không đổi kế hoạch tuần.",
+        "press": "Tập ngay",
+        "sessions": "{{count}}/{{cap}} buổi trong 7 ngày gần nhất",
+        "recentTitle": "7 ngày trước",
+        "dayCell": "Ngày {{day}}",
+        "kind": {
+          "manual": "Bạn bấm tập",
+          "auto": "Tập theo lịch",
+          "bot": "CLB tập khi chưa có bạn",
+          "rest": "Nghỉ",
+          "none": "Chưa có dữ liệu"
+        },
+        "recentNote": "Ngày tập theo lịch có thể thành ngày nghỉ khi đã đủ {{cap}} buổi trong 7 ngày.",
+        "nextRecovery": "Hồi thể lực kế tiếp lúc {{time}} (còn {{left}})",
+        "updating": "Đang cập nhật thể lực…",
+        "summary": "Đã tập: {{down}} cầu thủ giảm thể lực, {{up}} tăng, {{same}} giữ nguyên.",
+        "showPlayers": "Xem từng cầu thủ",
+        "hidePlayers": "Ẩn danh sách",
+        "player": "Cầu thủ",
+        "before": "Lúc bấm",
+        "after": "Sau buổi",
+        "noteDayTurn": "Ngày bạn không bấm, đội tập theo lịch tuần. Buổi đó được tính lúc sang ngày ({{time}}), nên lúc đó thể lực có thể đổi một lần.",
+        "noteFatigue": "Cầu thủ có thể lực dưới 40 tự tập hồi phục trong buổi: không mất thể lực, không phát triển.",
+        "noteStamina": "Cầu thủ sức bền cao hồi nhanh hơn và mất ít thể lực hơn sau trận.",
+        "lineupLocked": "Đang khoá đội hình cho trận lúc {{time}}. Tập lại được sau khi trận kết thúc.",
+        "reload": "Tải lại",
+        "unknownRefusal": "Chưa tập được lúc này."
+      }
     },
     "schedule": {
       "title": "Lịch thi đấu mùa giải",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Mỗi lần mua từ 1 đến 99 cái.",
         "itemNotSold": "Vật phẩm này hiện không bán."
+      },
+      "training": {
+        "manualOff": "Mùa này chưa có tập tay.",
+        "noDay": "Hôm nay không có buổi tập: mùa chưa bắt đầu, đã kết thúc, hoặc CLB không có suất trong mùa.",
+        "dayPending": "Ngày mới đang được xử lý. Đợi vài phút.",
+        "sessionToday": "Hôm nay CLB đã tập.",
+        "sessionCap": "Đã đủ 6 buổi trong 7 ngày. Được tập lại từ ngày {{nextAllowedDay}}.",
+        "sessionCapSeason": "Đã đủ 6 buổi trong 7 ngày và mùa này không còn ngày nào được tập."
       }
     },
     "sender": {

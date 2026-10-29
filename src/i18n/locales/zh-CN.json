@@ -215,7 +215,48 @@
       "potentialStarsRange": "潜力 {{low}} 至 {{high}} 星"
     },
     "training": {
-      "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。"
+      "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。",
+      "today": {
+        "title": "今日训练",
+        "titleDay": "今日训练 · 第 {{day}}/{{total}} 天",
+        "statusNone": "今天还没有训练",
+        "statusManual": "今天已训练",
+        "statusManualWith": "今天已训练（{{intensity}}）",
+        "statusAuto": "今天已按日程训练",
+        "statusBot": "你接手前，俱乐部今天已训练",
+        "statusRest": "你接手前，俱乐部今天已休息",
+        "noExtra": "点击不会让球队练得更多：7 天内最多仍是 {{cap}} 次训练。点击只是选择训练时间和强度。",
+        "matchToday": "今天 {{time}} 有比赛。赛前训练，球员会带着训练后的状态上场。不点击的话，今天的训练在赛后、换日时计算。",
+        "scheduledRest": "按日程今天是休息日。点击后球队照样训练：这次训练计入 {{cap}} 次之内，之后的某个训练日可能变成休息日。",
+        "intensity": "强度",
+        "intensityNote": "仅限本次训练，不改变每周计划。",
+        "press": "立即训练",
+        "sessions": "最近 7 天 {{count}}/{{cap}} 次训练",
+        "recentTitle": "最近 7 天",
+        "dayCell": "第 {{day}} 天",
+        "kind": {
+          "manual": "你点击训练",
+          "auto": "按日程训练",
+          "bot": "你接手前已训练",
+          "rest": "休息",
+          "none": "无记录"
+        },
+        "recentNote": "7 天内已满 {{cap}} 次训练时，日程中的训练日可能变成休息日。",
+        "nextRecovery": "下次状态恢复时间 {{time}}（还剩 {{left}}）",
+        "updating": "正在更新状态…",
+        "summary": "已训练：{{down}} 名球员状态下降，{{up}} 名上升，{{same}} 名不变。",
+        "showPlayers": "查看每名球员",
+        "hidePlayers": "隐藏列表",
+        "player": "球员",
+        "before": "点击时",
+        "after": "训练后",
+        "noteDayTurn": "你没有点击的日子，球队按每周日程训练。这次训练在换日时（{{time}}）计算，所以那时状态可能变化一次。",
+        "noteFatigue": "状态低于 40 的球员会做恢复训练：不损失状态，也不成长。",
+        "noteStamina": "耐力高的球员恢复更快，赛后状态下降更少。",
+        "lineupLocked": "{{time}} 那场比赛的阵容已锁定。比赛结束后才能再训练。",
+        "reload": "重新加载",
+        "unknownRefusal": "现在无法训练。"
+      }
     },
     "schedule": {
       "title": "本赛季赛程",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "每次购买 1 到 99 个。",
         "itemNotSold": "该道具目前不在售。"
+      },
+      "training": {
+        "manualOff": "本赛季未开启手动训练。",
+        "noDay": "今天没有训练：赛季尚未开始、已经结束，或俱乐部不在本赛季中。",
+        "dayPending": "新的一天正在处理中，请等几分钟。",
+        "sessionToday": "俱乐部今天已经训练过了。",
+        "sessionCap": "7 天内已训练 6 次。从第 {{nextAllowedDay}} 天起可以再次训练。",
+        "sessionCapSeason": "7 天内已训练 6 次，本赛季剩下的日子里不能再训练。"
       }
     },
     "sender": {

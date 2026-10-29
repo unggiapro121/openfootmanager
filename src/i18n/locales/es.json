@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potencial de {{low}} a {{high}} estrellas"
     },
     "training": {
-      "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio."
+      "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio.",
+      "today": {
+        "title": "Sesión de hoy",
+        "titleDay": "Sesión de hoy · Día {{day}}/{{total}}",
+        "statusNone": "Aún no has entrenado hoy",
+        "statusManual": "Entrenado hoy",
+        "statusManualWith": "Entrenado hoy ({{intensity}})",
+        "statusAuto": "Hoy se entrenó según el calendario",
+        "statusBot": "El club entrenó hoy antes de que tomaras el mando",
+        "statusRest": "El club descansó hoy antes de que tomaras el mando",
+        "noExtra": "Pulsar no hace que el equipo entrene más: sigue siendo un máximo de {{cap}} sesiones en 7 días. Pulsa para elegir cuándo entrena y con qué intensidad.",
+        "matchToday": "Hoy juegas a las {{time}}. Si entrenas antes del partido, los jugadores lo empiezan con la condición de después de la sesión. Si no pulsas, la sesión de hoy cuenta después del partido, al cambiar de día.",
+        "scheduledRest": "Hoy es día de descanso en tu calendario. Si pulsas, el equipo entrena igualmente: la sesión cuenta para las {{cap}} y un día de entrenamiento posterior puede pasar a ser de descanso.",
+        "intensity": "Intensidad",
+        "intensityNote": "Solo para esta sesión; tu plan semanal no cambia.",
+        "press": "Entrenar ahora",
+        "sessions": "{{count}}/{{cap}} sesiones en los últimos 7 días",
+        "recentTitle": "Los últimos 7 días",
+        "dayCell": "Día {{day}}",
+        "kind": {
+          "manual": "Entrenado por ti",
+          "auto": "Entrenado según el calendario",
+          "bot": "Entrenado antes de que llegaras",
+          "rest": "Descanso",
+          "none": "Sin registro"
+        },
+        "recentNote": "Un día de entrenamiento del calendario puede pasar a ser de descanso cuando ya hay {{cap}} sesiones en 7 días.",
+        "nextRecovery": "Próxima recuperación de condición a las {{time}} (faltan {{left}})",
+        "updating": "Actualizando la condición…",
+        "summary": "Entrenado: {{down}} jugadores perdieron condición, {{up}} la ganaron, {{same}} sin cambios.",
+        "showPlayers": "Ver cada jugador",
+        "hidePlayers": "Ocultar la lista",
+        "player": "Jugador",
+        "before": "Al pulsar",
+        "after": "Tras la sesión",
+        "noteDayTurn": "Un día en que no pulsas, el equipo entrena según su calendario semanal. Esa sesión cuenta al cambiar de día ({{time}}), así que la condición puede cambiar una vez en ese momento.",
+        "noteFatigue": "Los jugadores con menos de 40 de condición hacen una sesión de recuperación: no pierden condición ni progresan.",
+        "noteStamina": "Los jugadores con mucha resistencia se recuperan antes y pierden menos condición tras un partido.",
+        "lineupLocked": "La alineación está bloqueada para el partido de las {{time}}. Podrás volver a entrenar cuando termine.",
+        "reload": "Recargar",
+        "unknownRefusal": "Ahora mismo no puedes entrenar."
+      }
     },
     "schedule": {
       "title": "Calendario de la temporada",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Compra entre 1 y 99 de una vez.",
         "itemNotSold": "Este objeto no está a la venta ahora."
+      },
+      "training": {
+        "manualOff": "El entrenamiento manual no está activo esta temporada.",
+        "noDay": "Hoy no hay sesión: la temporada no ha empezado, ya terminó o el club no tiene plaza en ella.",
+        "dayPending": "Se está procesando el nuevo día. Espera unos minutos.",
+        "sessionToday": "El club ya entrenó hoy.",
+        "sessionCap": "Ya hay 6 sesiones en 7 días. Podrás volver a entrenar desde el día {{nextAllowedDay}}.",
+        "sessionCapSeason": "Ya hay 6 sesiones en 7 días y no queda ningún día de la temporada que permita otra."
       }
     },
     "sender": {

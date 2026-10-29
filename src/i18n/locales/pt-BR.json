@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potencial de {{low}} a {{high}} estrelas"
     },
     "training": {
-      "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu."
+      "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu.",
+      "today": {
+        "title": "Treino de hoje",
+        "titleDay": "Treino de hoje · Dia {{day}}/{{total}}",
+        "statusNone": "Você ainda não treinou hoje",
+        "statusManual": "Treinou hoje",
+        "statusManualWith": "Treinou hoje ({{intensity}})",
+        "statusAuto": "Hoje o time treinou pelo calendário",
+        "statusBot": "O clube treinou hoje antes de você assumir",
+        "statusRest": "O clube descansou hoje antes de você assumir",
+        "noExtra": "Apertar não faz o time treinar mais: continua sendo no máximo {{cap}} treinos em 7 dias. Aperte para escolher quando treina e com qual intensidade.",
+        "matchToday": "Hoje tem jogo às {{time}}. Se treinar antes do jogo, os jogadores entram em campo com a condição de depois do treino. Se não apertar, o treino de hoje conta depois do jogo, na virada do dia.",
+        "scheduledRest": "Hoje é dia de descanso no seu calendário. Se apertar, o time treina mesmo assim: o treino conta para os {{cap}} e um dia de treino depois pode virar descanso.",
+        "intensity": "Intensidade",
+        "intensityNote": "Só para este treino; seu plano semanal não muda.",
+        "press": "Treinar agora",
+        "sessions": "{{count}}/{{cap}} treinos nos últimos 7 dias",
+        "recentTitle": "Os últimos 7 dias",
+        "dayCell": "Dia {{day}}",
+        "kind": {
+          "manual": "Treinado por você",
+          "auto": "Treinado pelo calendário",
+          "bot": "Treinado antes de você chegar",
+          "rest": "Descanso",
+          "none": "Sem registro"
+        },
+        "recentNote": "Um dia de treino do calendário pode virar descanso quando já houver {{cap}} treinos em 7 dias.",
+        "nextRecovery": "Próxima recuperação de condição às {{time}} (faltam {{left}})",
+        "updating": "Atualizando a condição…",
+        "summary": "Treinado: {{down}} jogadores perderam condição, {{up}} ganharam, {{same}} sem mudança.",
+        "showPlayers": "Ver cada jogador",
+        "hidePlayers": "Esconder a lista",
+        "player": "Jogador",
+        "before": "Ao apertar",
+        "after": "Depois do treino",
+        "noteDayTurn": "Nos dias em que você não aperta, o time treina pelo calendário semanal. Esse treino conta na virada do dia ({{time}}), então a condição pode mudar uma vez nesse momento.",
+        "noteFatigue": "Jogadores com condição abaixo de 40 fazem um treino de recuperação: não perdem condição nem evoluem.",
+        "noteStamina": "Jogadores com muita resistência se recuperam mais rápido e perdem menos condição depois de um jogo.",
+        "lineupLocked": "A escalação está travada para o jogo das {{time}}. Você pode treinar de novo quando o jogo acabar.",
+        "reload": "Recarregar",
+        "unknownRefusal": "Não dá para treinar agora."
+      }
     },
     "schedule": {
       "title": "Jogos da temporada",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Compre entre 1 e 99 por vez.",
         "itemNotSold": "Este item não está à venda no momento."
+      },
+      "training": {
+        "manualOff": "O treino manual não está ativo nesta temporada.",
+        "noDay": "Hoje não tem treino: a temporada ainda não começou, já acabou ou o clube não tem vaga nela.",
+        "dayPending": "O novo dia está sendo processado. Aguarde alguns minutos.",
+        "sessionToday": "O clube já treinou hoje.",
+        "sessionCap": "Já foram 6 treinos em 7 dias. Você pode treinar de novo a partir do dia {{nextAllowedDay}}.",
+        "sessionCapSeason": "Já foram 6 treinos em 7 dias e não sobra nenhum dia da temporada que permita outro."
       }
     },
     "sender": {

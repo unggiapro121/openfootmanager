@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potentiel de {{low}} à {{high}} étoiles"
     },
     "training": {
-      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan."
+      "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan.",
+      "today": {
+        "title": "Séance du jour",
+        "titleDay": "Séance du jour · Jour {{day}}/{{total}}",
+        "statusNone": "Pas encore d'entraînement aujourd'hui",
+        "statusManual": "Entraînement fait aujourd'hui",
+        "statusManualWith": "Entraînement fait aujourd'hui ({{intensity}})",
+        "statusAuto": "Entraînement du jour fait selon le programme",
+        "statusBot": "Le club s'est entraîné aujourd'hui avant votre arrivée",
+        "statusRest": "Le club s'est reposé aujourd'hui avant votre arrivée",
+        "noExtra": "Appuyer ne fait pas s'entraîner l'équipe davantage : c'est toujours {{cap}} séances au plus sur 7 jours. Appuyez pour choisir quand elle s'entraîne et à quelle intensité.",
+        "matchToday": "Vous jouez aujourd'hui à {{time}}. Entraînez-vous avant le match et les joueurs le commencent avec leur condition d'après la séance. Sans appui, la séance du jour compte après le match, au changement de jour.",
+        "scheduledRest": "Aujourd'hui est un jour de repos de votre programme. Si vous appuyez, l'équipe s'entraîne quand même : la séance compte dans les {{cap}}, et un jour d'entraînement suivant peut devenir un jour de repos.",
+        "intensity": "Intensité",
+        "intensityNote": "Pour cette séance seulement ; votre programme de la semaine ne change pas.",
+        "press": "S'entraîner maintenant",
+        "sessions": "{{count}}/{{cap}} séances sur les 7 derniers jours",
+        "recentTitle": "Les 7 derniers jours",
+        "dayCell": "Jour {{day}}",
+        "kind": {
+          "manual": "Entraînement lancé par vous",
+          "auto": "Entraînement selon le programme",
+          "bot": "Entraînement avant votre arrivée",
+          "rest": "Repos",
+          "none": "Aucune donnée"
+        },
+        "recentNote": "Un jour d'entraînement du programme peut devenir un jour de repos quand {{cap}} séances ont eu lieu sur 7 jours.",
+        "nextRecovery": "Prochaine récupération de condition à {{time}} (encore {{left}})",
+        "updating": "Mise à jour de la condition…",
+        "summary": "Entraînement fait : {{down}} joueurs ont perdu de la condition, {{up}} en ont gagné, {{same}} sans changement.",
+        "showPlayers": "Voir chaque joueur",
+        "hidePlayers": "Masquer la liste",
+        "player": "Joueur",
+        "before": "À l'appui",
+        "after": "Après la séance",
+        "noteDayTurn": "Un jour où vous n'appuyez pas, l'équipe s'entraîne selon son programme de la semaine. Cette séance compte au changement de jour ({{time}}), la condition peut donc changer une fois à ce moment-là.",
+        "noteFatigue": "Les joueurs sous 40 de condition font une séance de récupération : ils ne perdent pas de condition et ne progressent pas.",
+        "noteStamina": "Les joueurs à forte endurance récupèrent plus vite et perdent moins de condition après un match.",
+        "lineupLocked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez vous entraîner à nouveau une fois le match terminé.",
+        "reload": "Recharger",
+        "unknownRefusal": "Impossible de s'entraîner pour le moment."
+      }
     },
     "schedule": {
       "title": "Calendrier de la saison",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Achetez entre 1 et 99 à la fois.",
         "itemNotSold": "Cet objet n'est pas en vente pour le moment."
+      },
+      "training": {
+        "manualOff": "L'entraînement manuel n'est pas actif cette saison.",
+        "noDay": "Pas de séance aujourd'hui : la saison n'a pas commencé, est terminée ou le club n'y a pas de place.",
+        "dayPending": "Le nouveau jour est en cours de traitement. Patientez quelques minutes.",
+        "sessionToday": "Le club s'est déjà entraîné aujourd'hui.",
+        "sessionCap": "6 séances ont déjà eu lieu sur 7 jours. Vous pourrez vous entraîner à nouveau à partir du jour {{nextAllowedDay}}.",
+        "sessionCapSeason": "6 séances ont déjà eu lieu sur 7 jours et plus aucun jour de la saison n'en permet une autre."
       }
     },
     "sender": {

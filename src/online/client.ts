@@ -51,6 +51,8 @@ import type {
   SeasonNowView,
   TakeoverView,
   TrainingPlan,
+  TrainingSessionRequest,
+  TrainingSessionView,
   UpdateAccount,
   RenamePlayerRequest,
   RecruitRequest,
@@ -189,6 +191,15 @@ export const online = {
       }),
     setTraining: (plan: TrainingPlan, idempotencyKey = newKey()) =>
       call<TrainingPlan>(write("PUT", ["v1", "clubs", "mine", "training"], idempotencyKey, plan)),
+    /**
+     * Today's session, held now (S-21 S21-13): the saved plan, at `request.intensity` for this
+     * session alone. Refused (409) while the season does not rest clubs by blocks, today has no
+     * session to hold, or the club has trained today or six times in seven days.
+     */
+    holdSession: (request: TrainingSessionRequest, idempotencyKey = newKey()) =>
+      call<TrainingSessionView>(
+        write("POST", ["v1", "clubs", "mine", "training", "sessions"], idempotencyKey, request),
+      ),
     rename: (name: string, idempotencyKey = newKey()) =>
       call<MyClubView>(write("PATCH", ["v1", "clubs", "mine"], idempotencyKey, { name })),
     renameStadium: (name: string, idempotencyKey = newKey()) =>

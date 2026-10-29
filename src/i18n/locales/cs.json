@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potenciál {{low}} až {{high}} hvězd"
     },
     "training": {
-      "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán."
+      "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán.",
+      "today": {
+        "title": "Dnešní trénink",
+        "titleDay": "Dnešní trénink · Den {{day}}/{{total}}",
+        "statusNone": "Dnes ještě netrénováno",
+        "statusManual": "Dnes natrénováno",
+        "statusManualWith": "Dnes natrénováno ({{intensity}})",
+        "statusAuto": "Dnes se trénovalo podle plánu",
+        "statusBot": "Klub dnes trénoval dřív, než jste ho převzali",
+        "statusRest": "Klub dnes odpočíval dřív, než jste ho převzali",
+        "noExtra": "Stisknutí neznamená víc tréninku: stále nejvýš {{cap}} tréninků za 7 dní. Stiskněte, abyste vybrali, kdy a jak tvrdě se trénuje.",
+        "matchToday": "Dnes hrajete v {{time}}. Když budete trénovat před zápasem, hráči do něj nastoupí s kondicí po tréninku. Když nestisknete, dnešní trénink se započítá po zápase, při změně dne.",
+        "scheduledRest": "Podle plánu je dnes den volna. Když stisknete, tým stejně trénuje: trénink se započítá do {{cap}} a některý pozdější tréninkový den se může stát dnem volna.",
+        "intensity": "Intenzita",
+        "intensityNote": "Jen pro tento trénink; týdenní plán se nemění.",
+        "press": "Trénovat teď",
+        "sessions": "{{count}}/{{cap}} tréninků za posledních 7 dní",
+        "recentTitle": "Posledních 7 dní",
+        "dayCell": "Den {{day}}",
+        "kind": {
+          "manual": "Trénink spuštěný vámi",
+          "auto": "Trénink podle plánu",
+          "bot": "Trénink před vaším příchodem",
+          "rest": "Volno",
+          "none": "Bez záznamu"
+        },
+        "recentNote": "Tréninkový den podle plánu se může stát dnem volna, když už proběhlo {{cap}} tréninků za 7 dní.",
+        "nextRecovery": "Další obnova kondice v {{time}} (zbývá {{left}})",
+        "updating": "Aktualizace kondice…",
+        "summary": "Natrénováno: {{down}} hráčů ztratilo kondici, {{up}} získalo, {{same}} beze změny.",
+        "showPlayers": "Zobrazit každého hráče",
+        "hidePlayers": "Skrýt seznam",
+        "player": "Hráč",
+        "before": "Při stisknutí",
+        "after": "Po tréninku",
+        "noteDayTurn": "V den, kdy nestisknete, tým trénuje podle týdenního plánu. Ten trénink se započítá při změně dne ({{time}}), takže se kondice tehdy může jednou změnit.",
+        "noteFatigue": "Hráči s kondicí pod 40 mají regenerační trénink: neztrácejí kondici a nezlepšují se.",
+        "noteStamina": "Hráči s vysokou vytrvalostí se zotavují rychleji a po zápase ztrácejí méně kondice.",
+        "lineupLocked": "Sestava je uzamčena pro zápas v {{time}}. Trénovat znovu můžete po skončení zápasu.",
+        "reload": "Načíst znovu",
+        "unknownRefusal": "Teď trénovat nelze."
+      }
     },
     "schedule": {
       "title": "Rozpis sezóny",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Kupuj 1 až 99 kusů najednou.",
         "itemNotSold": "Tento předmět se teď neprodává."
+      },
+      "training": {
+        "manualOff": "Ruční trénink v této sezóně není zapnutý.",
+        "noDay": "Dnes žádný trénink není: sezóna nezačala, skončila, nebo v ní klub nemá místo.",
+        "dayPending": "Nový den se zpracovává. Počkejte pár minut.",
+        "sessionToday": "Klub dnes už trénoval.",
+        "sessionCap": "Za 7 dní už proběhlo 6 tréninků. Trénovat znovu můžete ode dne {{nextAllowedDay}}.",
+        "sessionCapSeason": "Za 7 dní už proběhlo 6 tréninků a v této sezóně už nezbývá den, kdy by šel další."
       }
     },
     "sender": {

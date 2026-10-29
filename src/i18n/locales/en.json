@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potential {{low}} to {{high}} stars"
     },
     "training": {
-      "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own."
+      "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own.",
+      "today": {
+        "title": "Today's session",
+        "titleDay": "Today's session · Day {{day}}/{{total}}",
+        "statusNone": "Not trained yet today",
+        "statusManual": "Trained today",
+        "statusManualWith": "Trained today ({{intensity}})",
+        "statusAuto": "Trained today on the schedule",
+        "statusBot": "The club trained today before you took over",
+        "statusRest": "The club rested today before you took over",
+        "noExtra": "Pressing does not make the team train more: it is still at most {{cap}} sessions in 7 days. Press to choose when it trains and how hard.",
+        "matchToday": "You play today at {{time}}. Train before the match and the players start it with their condition after the session. If you don't press, today's session counts after the match, when the day turns.",
+        "scheduledRest": "Today is a rest day on your schedule. Press and the team still trains: the session counts towards the {{cap}}, and a later training day may become a rest day.",
+        "intensity": "Intensity",
+        "intensityNote": "For this session only; your weekly plan does not change.",
+        "press": "Train now",
+        "sessions": "{{count}}/{{cap}} sessions in the last 7 days",
+        "recentTitle": "The last 7 days",
+        "dayCell": "Day {{day}}",
+        "kind": {
+          "manual": "Trained by you",
+          "auto": "Trained on the schedule",
+          "bot": "Trained before you took over",
+          "rest": "Rested",
+          "none": "No record"
+        },
+        "recentNote": "A training day on the schedule can become a rest day once {{cap}} sessions are held in 7 days.",
+        "nextRecovery": "Next condition recovery at {{time}} ({{left}} left)",
+        "updating": "Updating condition…",
+        "summary": "Trained: {{down}} players lost condition, {{up}} gained, {{same}} unchanged.",
+        "showPlayers": "Show each player",
+        "hidePlayers": "Hide the list",
+        "player": "Player",
+        "before": "When pressed",
+        "after": "After the session",
+        "noteDayTurn": "On a day you don't press, the team trains on its weekly schedule. That session counts when the day turns ({{time}}), so condition may change once then.",
+        "noteFatigue": "Players below 40 condition do a recovery session: they lose no condition and do not develop.",
+        "noteStamina": "Players with high stamina recover faster and lose less condition after a match.",
+        "lineupLocked": "The line-up is locked for the match at {{time}}. You can train again once it is over.",
+        "reload": "Reload",
+        "unknownRefusal": "You can't train right now."
+      }
     },
     "schedule": {
       "title": "Season fixtures",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Buy between 1 and 99 at a time.",
         "itemNotSold": "This item is not on sale right now."
+      },
+      "training": {
+        "manualOff": "Manual training is not on this season.",
+        "noDay": "There is no session today: the season has not started, has ended, or the club has no place in it.",
+        "dayPending": "The new day is being processed. Wait a few minutes.",
+        "sessionToday": "The club has already trained today.",
+        "sessionCap": "6 sessions have been held in 7 days. You can train again from day {{nextAllowedDay}}.",
+        "sessionCapSeason": "6 sessions have been held in 7 days, and no day left this season allows another."
       }
     },
     "sender": {

@@ -215,7 +215,48 @@
       "potentialStarsRange": "Potansiyel {{low}} ile {{high}} yıldız arası"
     },
     "training": {
-      "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir."
+      "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir.",
+      "today": {
+        "title": "Bugünkü antrenman",
+        "titleDay": "Bugünkü antrenman · Gün {{day}}/{{total}}",
+        "statusNone": "Bugün henüz antrenman yapılmadı",
+        "statusManual": "Bugün antrenman yapıldı",
+        "statusManualWith": "Bugün antrenman yapıldı ({{intensity}})",
+        "statusAuto": "Bugün programa göre antrenman yapıldı",
+        "statusBot": "Kulüp sen devralmadan önce bugün antrenman yaptı",
+        "statusRest": "Kulüp sen devralmadan önce bugün dinlendi",
+        "noExtra": "Basmak takımın daha çok antrenman yapmasını sağlamaz: 7 günde en fazla yine {{cap}} antrenman. Basarak ne zaman ve hangi yoğunlukta çalışılacağını seçersin.",
+        "matchToday": "Bugün saat {{time}}'da maçın var. Maçtan önce antrenman yaparsan oyuncular maça antrenman sonrası kondisyonlarıyla çıkar. Basmazsan bugünkü antrenman maçtan sonra, gün dönerken hesaplanır.",
+        "scheduledRest": "Programına göre bugün dinlenme günü. Basarsan takım yine de çalışır: antrenman {{cap}} içinde sayılır ve sonraki bir antrenman günü dinlenme gününe dönüşebilir.",
+        "intensity": "Yoğunluk",
+        "intensityNote": "Yalnızca bu antrenman için; haftalık planın değişmez.",
+        "press": "Şimdi çalış",
+        "sessions": "Son 7 günde {{count}}/{{cap}} antrenman",
+        "recentTitle": "Son 7 gün",
+        "dayCell": "Gün {{day}}",
+        "kind": {
+          "manual": "Senin başlattığın antrenman",
+          "auto": "Programa göre antrenman",
+          "bot": "Sen gelmeden önce antrenman",
+          "rest": "Dinlenme",
+          "none": "Kayıt yok"
+        },
+        "recentNote": "7 günde {{cap}} antrenman dolduğunda programdaki bir antrenman günü dinlenme gününe dönüşebilir.",
+        "nextRecovery": "Bir sonraki kondisyon toparlanması {{time}} (kalan {{left}})",
+        "updating": "Kondisyon güncelleniyor…",
+        "summary": "Antrenman yapıldı: {{down}} oyuncunun kondisyonu düştü, {{up}} oyuncununki arttı, {{same}} oyuncununki değişmedi.",
+        "showPlayers": "Her oyuncuyu göster",
+        "hidePlayers": "Listeyi gizle",
+        "player": "Oyuncu",
+        "before": "Basıldığında",
+        "after": "Antrenmandan sonra",
+        "noteDayTurn": "Basmadığın bir gün takım haftalık programa göre çalışır. Bu antrenman gün dönerken ({{time}}) hesaplanır, bu yüzden kondisyon o anda bir kez değişebilir.",
+        "noteFatigue": "Kondisyonu 40'ın altındaki oyuncular toparlanma antrenmanı yapar: kondisyon kaybetmez ve gelişmez.",
+        "noteStamina": "Dayanıklılığı yüksek oyuncular daha hızlı toparlanır ve maçtan sonra daha az kondisyon kaybeder.",
+        "lineupLocked": "Saat {{time}}'daki maç için kadro kilitli. Maç bitince yeniden antrenman yapabilirsin.",
+        "reload": "Yeniden yükle",
+        "unknownRefusal": "Şu anda antrenman yapılamıyor."
+      }
     },
     "schedule": {
       "title": "Sezon fikstürü",
@@ -4844,6 +4885,14 @@
       "shop": {
         "quantityInvalid": "Tek seferde 1 ile 99 arası al.",
         "itemNotSold": "Bu eşya şu anda satışta değil."
+      },
+      "training": {
+        "manualOff": "Bu sezon elle antrenman açık değil.",
+        "noDay": "Bugün antrenman yok: sezon başlamadı, bitti ya da kulübün sezonda yeri yok.",
+        "dayPending": "Yeni gün işleniyor. Birkaç dakika bekle.",
+        "sessionToday": "Kulüp bugün zaten antrenman yaptı.",
+        "sessionCap": "7 günde 6 antrenman doldu. {{nextAllowedDay}}. günden itibaren yeniden antrenman yapabilirsin.",
+        "sessionCapSeason": "7 günde 6 antrenman doldu ve bu sezon başka antrenmana izin veren gün kalmadı."
       }
     },
     "sender": {

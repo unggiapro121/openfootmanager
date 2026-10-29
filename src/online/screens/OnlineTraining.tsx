@@ -21,6 +21,7 @@ import type { TrainingFocus, TrainingIntensity, TrainingSchedule } from "../api/
 import { online } from "../client";
 import { toGroupData, toPlanGroups, toTrainingRoster } from "../convert/training";
 import { tracked, useOnlineStore } from "../store/onlineStore";
+import TodaySession from "./training/TodaySession";
 import { useActionKey } from "./useActionKey";
 
 const pick = <T extends string>(ids: readonly string[], value: string): T | null =>
@@ -29,7 +30,8 @@ const pick = <T extends string>(ids: readonly string[], value: string): T | null
 /**
  * The coach's weekly training plan (C-2 §3.4): the game's training settings panel and training
  * groups, writing the whole plan to the server on each choice, and each player's own session
- * beside it. Until the coach sets a plan, the panel shows the plan the club's AI keeps.
+ * beside it. Until the coach sets a plan, the panel shows the plan the club's AI keeps. In a
+ * season that rests clubs by blocks, today's session comes first (C-8 C8-4).
  */
 export default function OnlineTraining() {
   const club = useOnlineStore((state) => state.club);
@@ -103,6 +105,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
 
   return (
     <div className="space-y-4">
+      {club.trainingDay && <TodaySession club={club} trainingDay={club.trainingDay} />}
       {!club.trainingPlanIsOwn && (
         <p role="status" className="text-sm text-gray-600 dark:text-gray-300">
           {t("online.training.noPlan")}
