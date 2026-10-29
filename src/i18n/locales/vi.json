@@ -184,7 +184,17 @@
       "avatarUpload": "Tải ảnh lên từ máy",
       "avatarRemoveUpload": "Xóa ảnh đã tải lên",
       "avatarUploadHint": "Ảnh JPEG, PNG hoặc WebP. Ảnh được cắt vuông và thu nhỏ trước khi gửi; chỉ mình bạn thấy.",
-      "avatarUploadFailed": "Không đọc được tệp này như một bức ảnh."
+      "avatarUploadFailed": "Không đọc được tệp này như một bức ảnh.",
+      "levelChip": "Cấp {{level}} · {{licence}}",
+      "levelOnly": "Cấp {{level}}",
+      "regionChip": "Khu vực: {{region}}. Đổi khu vực",
+      "saveRegion": "Lưu",
+      "stat": {
+        "seasons": "Mùa đã chơi",
+        "promotions": "Thăng hạng",
+        "forced": "Cấp bị ép",
+        "bestStyle": "Sở trường"
+      }
     },
     "tactics": {
       "locked": "Đội hình đã khoá cho trận lúc {{time}}. Bạn sửa lại được khi trận kết thúc.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Lộ trình HLV",
-      "standing": "Cấp {{level}} · bằng {{licence}}",
-      "level": "Cấp HLV online {{level}}",
-      "record": "Đã chơi {{seasons}} mùa · thăng hạng {{promotions}} lần",
       "howTitle": "Cách lên cấp",
       "howTop": "Kết thúc mùa trong top {{places}} của league {{size}} CLB: +1 cấp",
       "howTier": "Cấp có nhiều league thì league mạnh hơn có nhiều suất lên cấp hơn: {{top}} ở league mạnh nhất, {{bottom}} ở league yếu nhất",
@@ -504,10 +511,7 @@
       "allOpen": "Mùa này chưa áp dụng bằng HLV: mọi quyền chỉnh chiến thuật đều mở.",
       "pending": "Bằng HLV áp dụng cho trận từ mùa sau; đội hình bạn lưu đã phải theo bằng ngay từ bây giờ.",
       "licences": "Các bằng HLV",
-      "atLevel": "từ cấp {{level}}",
       "held": "Đang giữ",
-      "levelsToGo": "còn {{levels}} cấp",
-      "totals": "{{formations}} sơ đồ · {{styles}} lối chơi · {{dials}} chỉ đạo · {{roles}} vai trò",
       "opensFirst": "Bằng này mở",
       "opensMore": "Mở thêm",
       "addedFormations": "Sơ đồ: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Chỉ đạo: {{list}}",
       "addedRoles": "Vai trò: {{list}}",
       "addedNothing": "Không có gì mới",
-      "forced": "{{levels}} cấp bị ép",
       "caps": {
         "title": "Trần theo cấp",
         "playerCap": "OVR cao nhất được mua: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Nếu giữ như vậy tới cuối mùa, bạn sẽ bị ép lên cấp cao hơn (tối đa {{jump}} cấp).",
         "fullSquad": "Chỉ mua trong trần thì không bị ép cấp; cầu thủ tự lớn lên mới đẩy đội qua ngưỡng."
       },
-      "shortSquad": "Đội bạn chỉ có {{players}} cầu thủ. Sức mạnh mua tính mỗi suất trống là {{empty}}, nhưng sức mạnh đội lấy trung bình của đúng {{players}} người bạn có. Vì vậy đội dưới 18 người có thể bị ép cấp dù bạn chưa từng mua vượt trần. Đủ 18 người thì hết chênh lệch này."
+      "shortSquad": "Đội bạn chỉ có {{players}} cầu thủ. Sức mạnh mua tính mỗi suất trống là {{empty}}, nhưng sức mạnh đội lấy trung bình của đúng {{players}} người bạn có. Vì vậy đội dưới 18 người có thể bị ép cấp dù bạn chưa từng mua vượt trần. Đủ 18 người thì hết chênh lệch này.",
+      "fromLevel": "Từ cấp {{level}}",
+      "tag": {
+        "done": "Đã mở",
+        "needs": "Cần cấp {{level}}"
+      },
+      "status": {
+        "passed": "Đã mở",
+        "held": "Bằng hiện tại",
+        "ahead": "Chưa mở"
+      },
+      "aheadHint": "Còn {{levels}} cấp nữa để lên cấp {{level}}.",
+      "nextHint": "Lên {{licence}} ở cấp {{level}}: còn {{levels}} cấp.",
+      "firstHint": "Bằng khởi đầu của mọi HLV.",
+      "passedHint": "Bạn đã vượt qua bằng này.",
+      "stat": {
+        "formations": "Sơ đồ",
+        "styles": "Lối chơi",
+        "dials": "Chỉ đạo",
+        "roles": "Vai trò"
+      }
     },
     "finance": {
       "title": "Tài chính CLB",
@@ -720,7 +743,13 @@
       "toShop": "Mua ở Cửa hàng"
     },
     "mastery": {
-      "hint": "Độ nhuần nhuyễn tăng ở các trận giải đấu do chính bạn điều khiển, không tăng ở trận AI đá thay."
+      "hint": "Độ nhuần nhuyễn tăng ở các trận giải đấu do chính bạn điều khiển, không tăng ở trận AI đá thay.",
+      "howLabel": "Cách tăng độ nhuần nhuyễn",
+      "notesHint": "Dùng sổ tay chiến thuật để cộng XP ngay.",
+      "notes": "Sổ tay:",
+      "best": "Mạnh nhất",
+      "xpBar": "XP lên mức tiếp",
+      "useFor": "Dùng sổ tay cho {{style}}"
     },
     "player": {
       "avatarChange": "Đổi ảnh đại diện",

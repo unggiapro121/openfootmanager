@@ -184,7 +184,17 @@
       "avatarUpload": "Carica dal computer",
       "avatarRemoveUpload": "Rimuovi la mia immagine",
       "avatarUploadHint": "Un'immagine JPEG, PNG o WebP. Viene ritagliata in quadrato e ridotta prima dell'invio; solo tu la vedi.",
-      "avatarUploadFailed": "Impossibile leggere il file come immagine."
+      "avatarUploadFailed": "Impossibile leggere il file come immagine.",
+      "levelChip": "Livello {{level}} · {{licence}}",
+      "levelOnly": "Livello {{level}}",
+      "regionChip": "Regione: {{region}}. Cambia regione",
+      "saveRegion": "Salva",
+      "stat": {
+        "seasons": "Stagioni giocate",
+        "promotions": "Promozioni",
+        "forced": "Livelli imposti",
+        "bestStyle": "Stile più forte"
+      }
     },
     "tactics": {
       "locked": "La formazione è bloccata per la partita delle {{time}}. Potrai cambiarla a partita finita.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Percorso dell'allenatore",
-      "standing": "Livello {{level}} · licenza {{licence}}",
-      "level": "Livello allenatore online {{level}}",
-      "record": "{{seasons}} stagioni giocate · promosso {{promotions}} volte",
       "howTitle": "Come salire di livello",
       "howTop": "Chiudi una stagione tra i primi {{places}} della tua lega da {{size}} club: +1 livello",
       "howTier": "Quando un livello ha più leghe, le più forti hanno più posti promozione: {{top}} nella più forte, {{bottom}} nella più debole",
@@ -504,10 +511,7 @@
       "allOpen": "In questa stagione non ci sono licenze: tutti i comandi tattici sono sbloccati.",
       "pending": "Le licenze valgono per le partite dalla prossima stagione; gli schieramenti che salvi seguono già la tua.",
       "licences": "Licenze da allenatore",
-      "atLevel": "dal livello {{level}}",
       "held": "Attuale",
-      "levelsToGo": "mancano {{levels}} livelli",
-      "totals": "{{formations}} moduli · {{styles}} stili · {{dials}} istruzioni · {{roles}} ruoli",
       "opensFirst": "Cosa sblocca",
       "opensMore": "Cosa aggiunge",
       "addedFormations": "Moduli: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Istruzioni: {{list}}",
       "addedRoles": "Ruoli: {{list}}",
       "addedNothing": "Niente di nuovo",
-      "forced": "Livelli forzati: {{levels}}",
       "caps": {
         "title": "Tetti di livello",
         "playerCap": "Valore massimo che puoi comprare: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Se resta così fino a fine stagione, verrai promosso d'ufficio (al massimo di {{jump}} livelli).",
         "fullSquad": "Comprare solo entro i tetti non ti fa mai salire d'ufficio: sono i giocatori che crescono da soli a portare una rosa oltre la soglia."
       },
-      "shortSquad": "La tua rosa ha solo {{players}} giocatori. La forza d'acquisto conta ogni posto vuoto come {{empty}}, ma la forza della rosa fa la media dei soli {{players}} giocatori che hai. Per questo una rosa sotto i 18 può essere promossa d'ufficio anche se non hai mai comprato oltre i tetti. Con 18 giocatori la differenza sparisce."
+      "shortSquad": "La tua rosa ha solo {{players}} giocatori. La forza d'acquisto conta ogni posto vuoto come {{empty}}, ma la forza della rosa fa la media dei soli {{players}} giocatori che hai. Per questo una rosa sotto i 18 può essere promossa d'ufficio anche se non hai mai comprato oltre i tetti. Con 18 giocatori la differenza sparisce.",
+      "fromLevel": "Dal livello {{level}}",
+      "tag": {
+        "done": "Aperta",
+        "needs": "Serve livello {{level}}"
+      },
+      "status": {
+        "passed": "Aperta",
+        "held": "Licenza attuale",
+        "ahead": "Non ancora aperta"
+      },
+      "aheadHint": "Mancano {{levels}} livelli per arrivare al livello {{level}}.",
+      "nextHint": "{{licence}} al livello {{level}}: mancano {{levels}} livelli.",
+      "firstHint": "La licenza iniziale di ogni allenatore.",
+      "passedHint": "Hai già superato questa licenza.",
+      "stat": {
+        "formations": "Moduli",
+        "styles": "Stili di gioco",
+        "dials": "Istruzioni",
+        "roles": "Ruoli"
+      }
     },
     "finance": {
       "title": "Finanze del club",
@@ -720,7 +743,13 @@
       "toShop": "Compra in negozio"
     },
     "mastery": {
-      "hint": "La padronanza cresce nelle partite di campionato che guidi tu, non in quelle giocate dall'IA per te."
+      "hint": "La padronanza cresce nelle partite di campionato che guidi tu, non in quelle giocate dall'IA per te.",
+      "howLabel": "Come cresce la padronanza",
+      "notesHint": "Un taccuino tattico aggiunge subito XP.",
+      "notes": "Taccuini:",
+      "best": "Più forte",
+      "xpBar": "XP al livello successivo",
+      "useFor": "Usa un taccuino su {{style}}"
     },
     "player": {
       "avatarChange": "Cambia foto",

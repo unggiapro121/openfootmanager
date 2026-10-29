@@ -184,7 +184,17 @@
       "avatarUpload": "Unggah dari komputer",
       "avatarRemoveUpload": "Hapus gambar saya",
       "avatarUploadHint": "Gambar JPEG, PNG, atau WebP. Gambar dipotong persegi dan diperkecil sebelum dikirim; hanya Anda yang melihatnya.",
-      "avatarUploadFailed": "Berkas itu tidak dapat dibaca sebagai gambar."
+      "avatarUploadFailed": "Berkas itu tidak dapat dibaca sebagai gambar.",
+      "levelChip": "Level {{level}} · {{licence}}",
+      "levelOnly": "Level {{level}}",
+      "regionChip": "Wilayah: {{region}}. Ganti wilayah",
+      "saveRegion": "Simpan",
+      "stat": {
+        "seasons": "Musim dimainkan",
+        "promotions": "Promosi",
+        "forced": "Level paksaan",
+        "bestStyle": "Gaya terkuat"
+      }
     },
     "tactics": {
       "locked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa mengubahnya lagi setelah laga selesai.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Peta jalan pelatih",
-      "standing": "Tingkat {{level}} · lisensi {{licence}}",
-      "level": "Tingkat pelatih online {{level}}",
-      "record": "{{seasons}} musim dimainkan · naik {{promotions}} kali",
       "howTitle": "Cara naik tingkat",
       "howTop": "Akhiri musim di {{places}} besar liga {{size}} klubmu: +1 tingkat",
       "howTier": "Jika satu level punya beberapa liga, liga yang lebih kuat mendapat lebih banyak tempat naik: {{top}} di liga terkuat, {{bottom}} di liga terlemah",
@@ -504,10 +511,7 @@
       "allOpen": "Musim ini belum ada lisensi: semua pengaturan taktik terbuka.",
       "pending": "Lisensi berlaku untuk laga mulai musim depan; susunan yang kamu simpan sudah harus mengikutinya.",
       "licences": "Lisensi pelatih",
-      "atLevel": "mulai tingkat {{level}}",
       "held": "Dipegang",
-      "levelsToGo": "{{levels}} tingkat lagi",
-      "totals": "{{formations}} formasi · {{styles}} gaya bermain · {{dials}} instruksi · {{roles}} peran",
       "opensFirst": "Yang dibuka",
       "opensMore": "Yang ditambahkan",
       "addedFormations": "Formasi: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Instruksi: {{list}}",
       "addedRoles": "Peran: {{list}}",
       "addedNothing": "Tidak ada yang baru",
-      "forced": "Level paksa: {{levels}}",
       "caps": {
         "title": "Batas level",
         "playerCap": "OVR tertinggi yang boleh dibeli: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Jika tetap begini sampai akhir musim, kamu akan dinaikkan paksa (paling banyak {{jump}} level).",
         "fullSquad": "Hanya membeli dalam batas tidak pernah membuatmu naik paksa: yang mendorong skuad melewati ambang adalah pemain yang berkembang sendiri."
       },
-      "shortSquad": "Skuadmu hanya punya {{players}} pemain. Kekuatan beli menghitung tiap tempat kosong sebagai {{empty}}, tetapi kekuatan skuad hanya rata-rata dari {{players}} pemain yang kamu punya. Karena itu skuad di bawah 18 bisa naik paksa walau kamu tidak pernah membeli melewati batas. Dengan 18 pemain selisih ini hilang."
+      "shortSquad": "Skuadmu hanya punya {{players}} pemain. Kekuatan beli menghitung tiap tempat kosong sebagai {{empty}}, tetapi kekuatan skuad hanya rata-rata dari {{players}} pemain yang kamu punya. Karena itu skuad di bawah 18 bisa naik paksa walau kamu tidak pernah membeli melewati batas. Dengan 18 pemain selisih ini hilang.",
+      "fromLevel": "Mulai level {{level}}",
+      "tag": {
+        "done": "Terbuka",
+        "needs": "Perlu level {{level}}"
+      },
+      "status": {
+        "passed": "Terbuka",
+        "held": "Lisensi saat ini",
+        "ahead": "Belum terbuka"
+      },
+      "aheadHint": "{{levels}} level lagi untuk mencapai level {{level}}.",
+      "nextHint": "{{licence}} di level {{level}}: {{levels}} level lagi.",
+      "firstHint": "Lisensi awal setiap pelatih.",
+      "passedHint": "Anda sudah melewati lisensi ini.",
+      "stat": {
+        "formations": "Formasi",
+        "styles": "Gaya main",
+        "dials": "Instruksi",
+        "roles": "Peran"
+      }
     },
     "finance": {
       "title": "Keuangan klub",
@@ -720,7 +743,13 @@
       "toShop": "Beli di toko"
     },
     "mastery": {
-      "hint": "Penguasaan naik di laga liga yang Anda pimpin sendiri, bukan yang dimainkan AI untuk Anda."
+      "hint": "Penguasaan naik di laga liga yang Anda pimpin sendiri, bukan yang dimainkan AI untuk Anda.",
+      "howLabel": "Cara penguasaan bertambah",
+      "notesHint": "Buku taktik langsung menambah XP.",
+      "notes": "Buku:",
+      "best": "Terkuat",
+      "xpBar": "XP ke level berikutnya",
+      "useFor": "Pakai buku untuk {{style}}"
     },
     "player": {
       "avatarChange": "Ganti foto",

@@ -397,7 +397,7 @@ describe("the online mode's guards", () => {
 
 describe("changing region", () => {
   // Given a coach on their profile,
-  // when they pick another region,
+  // when they open the region chip, pick another region and save,
   // then nothing is sent until they confirm; once confirmed their club is gone and they are
   // offered a takeover in the new region.
   it("asks before changing region, then offers a takeover", async () => {
@@ -434,10 +434,17 @@ describe("changing region", () => {
     });
     renderOnline("/online/profile");
 
-    fireEvent.change(await screen.findByLabelText("online.profile.changeRegion"), {
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "online.profile.regionChip:coach.regions.AsiaSoutheast",
+      }),
+    );
+    const save = screen.getByRole("button", { name: "online.profile.saveRegion" });
+    expect(save).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("online.profile.changeRegion"), {
       target: { value: "Europe" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "online.profile.changeRegion" }));
+    fireEvent.click(save);
     expect(screen.getByRole("alertdialog")).toHaveTextContent("online.profile.confirmBody");
     expect(sent("PATCH", "v1/me")).toHaveLength(0);
 
