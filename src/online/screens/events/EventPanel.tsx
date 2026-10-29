@@ -60,15 +60,15 @@ export default function EventPanel({
         <Trophy
           aria-hidden="true"
           strokeWidth={0.6}
-          className="pointer-events-none absolute -right-8 -top-12 h-85 w-85 text-accent-400 opacity-10"
+          className="pointer-events-none absolute -right-8 -top-12 hidden h-85 w-85 text-accent-400 opacity-10 @3xl:block"
         />
-        <div className="relative flex flex-wrap items-end justify-between gap-6 px-5 pb-6 pt-7 sm:px-8">
+        <div className="relative flex flex-wrap items-end justify-between gap-x-6 gap-y-4 px-4 pb-6 pt-7 @2xl:px-8">
           <div className="flex min-w-0 flex-col gap-2">
             <StateBadge group={group} />
             <Heading
               level={level}
               id={titleId}
-              className="font-heading text-4xl font-bold uppercase leading-none tracking-wider text-gray-900 sm:text-5xl dark:text-white"
+              className="font-heading text-4xl font-bold uppercase leading-none tracking-wider text-gray-900 @2xl:text-5xl dark:text-white"
             >
               {themeName(t, event.theme)}
             </Heading>
