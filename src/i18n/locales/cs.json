@@ -1117,26 +1117,32 @@
         "2": "Dobře známý"
       },
       "scout": {
-        "title": "Skauting",
-        "season": "Cesty v této sezóně: {{sent}}/{{max}}, elitní {{elite}}/{{eliteMax}}",
-        "send": "Vyslat skauta",
+        "title": "Vyslat skauta",
         "trip": "{{region}} · {{focus}} · placeno: {{pay}}",
         "backIn": "Zpět za {{time}}",
         "backSoon": "Skaut je na cestě zpět…",
         "timeSkip": "Použít přesýpací hodiny (máš {{held}})",
-        "timeSkipConfirm": "Vrátit tuto cestu dřív? Spotřebují se jedny přesýpací hodiny."
+        "timeSkipConfirm": "Vrátit tuto cestu dřív? Spotřebují se jedny přesýpací hodiny.",
+        "elite": "Elitní",
+        "normal": "Běžná",
+        "kind": "Druh cesty",
+        "left": "Zbývá {{n}} cest",
+        "eliteLeft": "Zbývá {{n}} cest · {{held}} vstupenek",
+        "full": "Akademie je plná ({{used}}/{{slots}}). Kandidáti od skauta se dostanou dovnitř jen při volném místě: propusť mladíka, než přijmeš dalšího.",
+        "noReport": "Žádná zpráva nečeká na tvé rozhodnutí.",
+        "noTripsLeft": "V této sezóně už nezbývají cesty",
+        "reports": "Skautské zprávy",
+        "sendElite": "Vyslat elitního skauta",
+        "sendNormal": "Vyslat běžného skauta"
       },
       "send": {
-        "title": "Vyslat skauta",
         "region": "Oblast",
         "focus": "Hledá se",
         "pay": "Platba",
         "payCash": "Peníze klubu: {{cost}}",
         "payTicket": "1 skautská vstupenka (máš {{held}})",
         "payElite": "1 elitní skautská vstupenka (máš {{held}}): aspoň jeden velký talent",
-        "back": "Zpět kolem {{time}}",
-        "left": "Zbývající cesty v této sezóně: {{trips}}, elitní: {{elite}}",
-        "confirm": "Vyslat"
+        "back": "Zpět kolem {{time}}"
       },
       "candidate": {
         "choose": "Vybrat: {{name}}",
@@ -1148,14 +1154,13 @@
         "free": "Volná místa v akademii: {{free}}.",
         "skip": "Zahodit hlášení",
         "recruit": "Přijmout do akademie: {{n}}",
-        "othersLeave": "Nevybraní kandidáti odejdou a nevrátí se."
+        "othersLeave": "Nevybraní kandidáti odejdou a nevrátí se.",
+        "back": "Skaut se vrátil s {{n}} kandidáty",
+        "open": "Zobrazit zprávu",
+        "title": "Skautská zpráva"
       },
       "players": {
-        "title": "Akademie",
-        "slots": "{{used}}/{{slots}} míst · Úroveň akademie {{level}}",
-        "costs": "Plat {{wage}} týdně na mladíka · Poplatek za absolvování {{fee}} · Nejméně {{days}} dní v akademii",
         "revealNote": "Rozpětí hodnocení a hvězd se s dny v akademii zužují; při absolvování je vidět vše.",
-        "none": "V akademii zatím nikdo není.",
         "days": "{{days}} dní v akademii",
         "wage": "{{wage}} denně",
         "graduates": "Očekávané absolvování na konci sezóny {{season}}",
@@ -1164,11 +1169,34 @@
         "clubFocus": "Jako klub",
         "release": "Propustit",
         "releaseTitle": "Propustit {{name}}?",
-        "releaseText": "Opustí akademii a nevrátí se. Náklady na skauting se nevrací."
+        "releaseText": "Opustí akademii a nevrátí se. Náklady na skauting se nevrací.",
+        "heading": "Mladíci ({{used}}/{{slots}})",
+        "ovr": "Odhadované OVR",
+        "potential": "Potenciál",
+        "stars": "{{low}}–{{high}} hvězd",
+        "daysOf": "{{days}}/{{min}} dní minimálně v akademii",
+        "graduatesUnknown": "Sezóna absolvování zatím neznámá",
+        "freeSlot": "Volné místo",
+        "freeSlotHint": "Vyšli skauta, ať najde nového mladíka.",
+        "moreSlots": "Více míst pro mladíky",
+        "moreSlotsHint": "Vylepši akademii ve Financích, ať přijme více mladíků."
       },
       "graduated": {
         "title": "Absolventi",
         "season": "sezóna {{season}}"
+      },
+      "figures": {
+        "title": "Čísla akademie",
+        "slots": "Místa v akademii",
+        "full": "Plno",
+        "level": "Úroveň akademie {{level}}",
+        "trips": "Skautské cesty v této sezóně",
+        "eliteTrips": "Elitní cesty {{sent}}/{{max}}",
+        "wages": "Platy mladíků",
+        "perWeek": "/týden",
+        "wagesNote": "{{wage}} × {{n}} mladíků",
+        "fee": "Poplatek za absolvování",
+        "feeNote": "Za mladíka · nejméně {{days}} dní v akademii"
       }
     }
   },
