@@ -184,7 +184,17 @@
       "avatarUpload": "从电脑上传",
       "avatarRemoveUpload": "删除我的图片",
       "avatarUploadHint": "JPEG、PNG 或 WebP 图片。上传前会裁成正方形并缩小，只有你自己能看到。",
-      "avatarUploadFailed": "无法将该文件读取为图片。"
+      "avatarUploadFailed": "无法将该文件读取为图片。",
+      "levelChip": "{{level}} 级 · {{licence}}",
+      "levelOnly": "{{level}} 级",
+      "regionChip": "区域：{{region}}。更改区域",
+      "saveRegion": "保存",
+      "stat": {
+        "seasons": "已赛季数",
+        "promotions": "升级次数",
+        "forced": "被迫升级",
+        "bestStyle": "最强风格"
+      }
     },
     "tactics": {
       "locked": "{{time}} 开始的比赛首发阵容已锁定，比赛结束后才能再修改。",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "教练进阶路线",
-      "standing": "等级 {{level}} · {{licence}}执照",
-      "level": "线上教练等级 {{level}}",
-      "record": "已踢 {{seasons}} 个赛季 · 晋级 {{promotions}} 次",
       "howTitle": "如何升级",
       "howTop": "赛季结束时位列 {{size}} 队联赛前 {{places}} 名：+1 级",
       "howTier": "同一等级有多个联赛时，较强的联赛有更多升级名额：最强联赛 {{top}} 个，最弱联赛 {{bottom}} 个",
@@ -504,10 +511,7 @@
       "allOpen": "本赛季未启用执照：所有战术设置均开放。",
       "pending": "执照从下赛季起作用于比赛；你保存的阵容现在就需符合执照。",
       "licences": "教练执照",
-      "atLevel": "{{level}} 级起",
       "held": "当前",
-      "levelsToGo": "还差 {{levels}} 级",
-      "totals": "{{formations}} 种阵型 · {{styles}} 种风格 · {{dials}} 项指令 · {{roles}} 种角色",
       "opensFirst": "开放内容",
       "opensMore": "新增内容",
       "addedFormations": "阵型：{{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "指令：{{list}}",
       "addedRoles": "角色：{{list}}",
       "addedNothing": "无新增",
-      "forced": "强制升级：{{levels}}",
       "caps": {
         "title": "等级上限",
         "playerCap": "可购买的最高总评：{{cap}}",
@@ -527,7 +530,27 @@
         "over": "如果保持到赛季结束，你将被强制升级（最多 {{jump}} 级）。",
         "fullSquad": "只在上限内购买永远不会被强制升级：让阵容越过门槛的是球员自己的成长。"
       },
-      "shortSquad": "你的阵容只有 {{players}} 名球员。购买强度把每个空位按 {{empty}} 计算，而阵容强度只取你现有 {{players}} 名球员的平均值。因此不足 18 人的阵容即使从未超限购买也可能被强制升级。凑满 18 人后这一差距就会消失。"
+      "shortSquad": "你的阵容只有 {{players}} 名球员。购买强度把每个空位按 {{empty}} 计算，而阵容强度只取你现有 {{players}} 名球员的平均值。因此不足 18 人的阵容即使从未超限购买也可能被强制升级。凑满 18 人后这一差距就会消失。",
+      "fromLevel": "{{level}} 级起",
+      "tag": {
+        "done": "已开启",
+        "needs": "需 {{level}} 级"
+      },
+      "status": {
+        "passed": "已开启",
+        "held": "当前执照",
+        "ahead": "尚未开启"
+      },
+      "aheadHint": "还需升 {{levels}} 级才能达到 {{level}} 级。",
+      "nextHint": "{{level}} 级可获{{licence}}：还需 {{levels}} 级。",
+      "firstHint": "每位主教练的起始执照。",
+      "passedHint": "你已越过此执照。",
+      "stat": {
+        "formations": "阵型",
+        "styles": "打法",
+        "dials": "指令",
+        "roles": "角色"
+      }
     },
     "finance": {
       "title": "俱乐部财务",
@@ -720,7 +743,13 @@
       "toShop": "去商店购买"
     },
     "mastery": {
-      "hint": "只有在你亲自指挥的联赛比赛中才会提升熟练度，由 AI 代打的比赛不算。"
+      "hint": "只有在你亲自指挥的联赛比赛中才会提升熟练度，由 AI 代打的比赛不算。",
+      "howLabel": "熟练度如何提升",
+      "notesHint": "战术笔记可立即增加经验值。",
+      "notes": "笔记：",
+      "best": "最强",
+      "xpBar": "距下一级的经验值",
+      "useFor": "对{{style}}使用笔记"
     },
     "player": {
       "avatarChange": "更换头像",

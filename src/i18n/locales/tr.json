@@ -184,7 +184,17 @@
       "avatarUpload": "Bilgisayardan yükle",
       "avatarRemoveUpload": "Resmimi kaldır",
       "avatarUploadHint": "JPEG, PNG veya WebP resmi. Gönderilmeden önce kare kırpılır ve küçültülür; yalnızca siz görürsünüz.",
-      "avatarUploadFailed": "Bu dosya resim olarak okunamadı."
+      "avatarUploadFailed": "Bu dosya resim olarak okunamadı.",
+      "levelChip": "Seviye {{level}} · {{licence}}",
+      "levelOnly": "Seviye {{level}}",
+      "regionChip": "Bölge: {{region}}. Bölgeyi değiştir",
+      "saveRegion": "Kaydet",
+      "stat": {
+        "seasons": "Oynanan sezon",
+        "promotions": "Yükselmeler",
+        "forced": "Zorunlu seviyeler",
+        "bestStyle": "En güçlü stil"
+      }
     },
     "tactics": {
       "locked": "{{time}} maçı için kadro kilitlendi. Maç bitince yeniden değiştirebilirsin.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Teknik direktör yol haritası",
-      "standing": "Seviye {{level}} · {{licence}} lisansı",
-      "level": "Çevrim içi teknik direktör seviyesi {{level}}",
-      "record": "{{seasons}} sezon oynandı · {{promotions}} kez yükseldi",
       "howTitle": "Nasıl seviye atlanır",
       "howTop": "Sezonu {{size}} kulüplü liginde ilk {{places}} içinde bitir: +1 seviye",
       "howTier": "Bir seviyede birden fazla lig varsa güçlü ligler daha fazla yükselme yeri alır: en güçlüde {{top}}, en zayıfta {{bottom}}",
@@ -504,10 +511,7 @@
       "allOpen": "Bu sezon lisans uygulanmıyor: tüm taktik ayarlar açık.",
       "pending": "Lisanslar maçlara gelecek sezondan itibaren uygulanır; kaydettiğin kadrolar şimdiden lisansına uymalı.",
       "licences": "Teknik direktör lisansları",
-      "atLevel": "{{level}}. seviyeden itibaren",
       "held": "Mevcut",
-      "levelsToGo": "{{levels}} seviye kaldı",
-      "totals": "{{formations}} diziliş · {{styles}} oyun stili · {{dials}} talimat · {{roles}} rol",
       "opensFirst": "Neleri açar",
       "opensMore": "Neleri ekler",
       "addedFormations": "Dizilişler: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Talimatlar: {{list}}",
       "addedRoles": "Roller: {{list}}",
       "addedNothing": "Yeni bir şey yok",
-      "forced": "Zorunlu seviye: {{levels}}",
       "caps": {
         "title": "Seviye tavanları",
         "playerCap": "Alabileceğiniz en yüksek genel puan: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Sezon sonuna kadar böyle kalırsa zorla yükseltileceksiniz (en fazla {{jump}} seviye).",
         "fullSquad": "Yalnızca tavanlar içinde almak sizi asla zorla yükseltmez: kadroyu eşiğin üstüne çıkaran, kendi kendine gelişen oyunculardır."
       },
-      "shortSquad": "Kadronuzda yalnızca {{players}} oyuncu var. Satın alma gücü her boş yeri {{empty}} sayar, ama kadro gücü yalnızca sahip olduğunuz {{players}} oyuncunun ortalamasıdır. Bu yüzden 18'den az kişilik bir kadro, tavanların üstünde hiç almasanız bile zorla yükseltilebilir. 18 oyuncuyla bu fark kalmaz."
+      "shortSquad": "Kadronuzda yalnızca {{players}} oyuncu var. Satın alma gücü her boş yeri {{empty}} sayar, ama kadro gücü yalnızca sahip olduğunuz {{players}} oyuncunun ortalamasıdır. Bu yüzden 18'den az kişilik bir kadro, tavanların üstünde hiç almasanız bile zorla yükseltilebilir. 18 oyuncuyla bu fark kalmaz.",
+      "fromLevel": "Seviye {{level}} itibarıyla",
+      "tag": {
+        "done": "Açıldı",
+        "needs": "Seviye {{level}} gerekli"
+      },
+      "status": {
+        "passed": "Açıldı",
+        "held": "Mevcut lisans",
+        "ahead": "Henüz açılmadı"
+      },
+      "aheadHint": "Seviye {{level}} için {{levels}} seviye daha.",
+      "nextHint": "Seviye {{level}}'de {{licence}}: {{levels}} seviye daha.",
+      "firstHint": "Her teknik direktörün başlangıç lisansı.",
+      "passedHint": "Bu lisansı geçtiniz.",
+      "stat": {
+        "formations": "Dizilişler",
+        "styles": "Oyun stilleri",
+        "dials": "Talimatlar",
+        "roles": "Roller"
+      }
     },
     "finance": {
       "title": "Kulüp finansı",
@@ -720,7 +743,13 @@
       "toShop": "Mağazadan al"
     },
     "mastery": {
-      "hint": "Ustalık, yapay zekânın sizin yerinize oynadığı değil, kendinizin yönettiği lig maçlarında artar."
+      "hint": "Ustalık, yapay zekânın sizin yerinize oynadığı değil, kendinizin yönettiği lig maçlarında artar.",
+      "howLabel": "Ustalık nasıl artar",
+      "notesHint": "Taktik defteri anında XP ekler.",
+      "notes": "Defterler:",
+      "best": "En güçlü",
+      "xpBar": "Sonraki seviyeye XP",
+      "useFor": "{{style}} için defter kullan"
     },
     "player": {
       "avatarChange": "Fotoğrafı değiştir",

@@ -184,7 +184,17 @@
       "avatarUpload": "Enviar do computador",
       "avatarRemoveUpload": "Remover minha imagem",
       "avatarUploadHint": "Uma imagem JPEG, PNG ou WebP. Ela é cortada em quadrado e reduzida antes do envio; só você a vê.",
-      "avatarUploadFailed": "Não foi possível ler esse arquivo como imagem."
+      "avatarUploadFailed": "Não foi possível ler esse arquivo como imagem.",
+      "levelChip": "Nível {{level}} · {{licence}}",
+      "levelOnly": "Nível {{level}}",
+      "regionChip": "Região: {{region}}. Mudar de região",
+      "saveRegion": "Salvar",
+      "stat": {
+        "seasons": "Temporadas jogadas",
+        "promotions": "Acessos",
+        "forced": "Níveis forçados",
+        "bestStyle": "Estilo mais forte"
+      }
     },
     "tactics": {
       "locked": "A escalação está travada para o jogo das {{time}}. Você pode mudá-la quando o jogo acabar.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Trajetória do treinador",
-      "standing": "Nível {{level}} · licença {{licence}}",
-      "level": "Nível de treinador online {{level}}",
-      "record": "{{seasons}} temporadas jogadas · promovido {{promotions}} vezes",
       "howTitle": "Como subir de nível",
       "howTop": "Termine uma temporada entre os {{places}} primeiros da sua liga de {{size}} clubes: +1 nível",
       "howTier": "Quando um nível tem várias ligas, as mais fortes têm mais vagas de acesso: {{top}} na mais forte, {{bottom}} na mais fraca",
@@ -504,10 +511,7 @@
       "allOpen": "Nesta temporada não há licenças: todos os controles táticos estão liberados.",
       "pending": "As licenças valem para as partidas a partir da próxima temporada; as táticas que você salva já seguem a sua.",
       "licences": "Licenças de treinador",
-      "atLevel": "a partir do nível {{level}}",
       "held": "Atual",
-      "levelsToGo": "faltam {{levels}} níveis",
-      "totals": "{{formations}} formações · {{styles}} estilos · {{dials}} instruções · {{roles}} funções",
       "opensFirst": "O que libera",
       "opensMore": "O que acrescenta",
       "addedFormations": "Formações: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Instruções: {{list}}",
       "addedRoles": "Funções: {{list}}",
       "addedNothing": "Nada de novo",
-      "forced": "Níveis forçados: {{levels}}",
       "caps": {
         "title": "Limites de nível",
         "playerCap": "Geral máximo que você pode comprar: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Se continuar assim até o fim da temporada, você será forçado a subir (no máximo {{jump}} níveis).",
         "fullSquad": "Comprar só dentro dos limites nunca força você a subir: o que leva um elenco acima do limite é os jogadores evoluírem sozinhos."
       },
-      "shortSquad": "Seu elenco tem só {{players}} jogadores. A força de compra conta cada vaga como {{empty}}, mas a força do elenco faz a média só dos {{players}} jogadores que você tem. Por isso um elenco com menos de 18 pode subir forçado mesmo que você nunca tenha comprado acima dos limites. Com 18 jogadores a diferença some."
+      "shortSquad": "Seu elenco tem só {{players}} jogadores. A força de compra conta cada vaga como {{empty}}, mas a força do elenco faz a média só dos {{players}} jogadores que você tem. Por isso um elenco com menos de 18 pode subir forçado mesmo que você nunca tenha comprado acima dos limites. Com 18 jogadores a diferença some.",
+      "fromLevel": "A partir do nível {{level}}",
+      "tag": {
+        "done": "Aberta",
+        "needs": "Requer nível {{level}}"
+      },
+      "status": {
+        "passed": "Aberta",
+        "held": "Licença atual",
+        "ahead": "Ainda não aberta"
+      },
+      "aheadHint": "Faltam {{levels}} níveis para chegar ao nível {{level}}.",
+      "nextHint": "{{licence}} no nível {{level}}: faltam {{levels}} níveis.",
+      "firstHint": "A licença inicial de todo técnico.",
+      "passedHint": "Você já passou desta licença.",
+      "stat": {
+        "formations": "Formações",
+        "styles": "Estilos",
+        "dials": "Instruções",
+        "roles": "Funções"
+      }
     },
     "finance": {
       "title": "Finanças do clube",
@@ -720,7 +743,13 @@
       "toShop": "Comprar na loja"
     },
     "mastery": {
-      "hint": "O domínio cresce nas partidas da liga que você mesmo comanda, não nas que a IA joga por você."
+      "hint": "O domínio cresce nas partidas da liga que você mesmo comanda, não nas que a IA joga por você.",
+      "howLabel": "Como o domínio cresce",
+      "notesHint": "Um caderno tático soma XP na hora.",
+      "notes": "Cadernos:",
+      "best": "Mais forte",
+      "xpBar": "XP até o próximo nível",
+      "useFor": "Usar um caderno em {{style}}"
     },
     "player": {
       "avatarChange": "Trocar foto",

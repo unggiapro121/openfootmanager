@@ -184,7 +184,17 @@
       "avatarUpload": "Nahrát z počítače",
       "avatarRemoveUpload": "Odstranit moji fotku",
       "avatarUploadHint": "Obrázek JPEG, PNG nebo WebP. Před odesláním se ořízne na čtverec a zmenší; vidíte ho jen vy.",
-      "avatarUploadFailed": "Tento soubor nelze přečíst jako obrázek."
+      "avatarUploadFailed": "Tento soubor nelze přečíst jako obrázek.",
+      "levelChip": "Úroveň {{level}} · {{licence}}",
+      "levelOnly": "Úroveň {{level}}",
+      "regionChip": "Region: {{region}}. Změnit region",
+      "saveRegion": "Uložit",
+      "stat": {
+        "seasons": "Odehrané sezóny",
+        "promotions": "Postupy",
+        "forced": "Vynucené úrovně",
+        "bestStyle": "Nejsilnější styl"
+      }
     },
     "tactics": {
       "locked": "Sestava je uzamčena pro zápas v {{time}}. Změnit ji můžete po skončení zápasu.",
@@ -492,9 +502,6 @@
     },
     "roadmap": {
       "title": "Trenérská cesta",
-      "standing": "Úroveň {{level}} · licence {{licence}}",
-      "level": "Online trenérská úroveň {{level}}",
-      "record": "Odehráno sezón: {{seasons}} · postupů: {{promotions}}",
       "howTitle": "Jak postoupit o úroveň",
       "howTop": "Dokončete sezónu mezi prvními {{places}} své ligy o {{size}} klubech: +1 úroveň",
       "howTier": "Má-li úroveň více lig, silnější dostanou více postupových míst: {{top}} v nejsilnější, {{bottom}} v nejslabší",
@@ -504,10 +511,7 @@
       "allOpen": "Tuto sezónu licence neplatí: všechna taktická nastavení jsou odemčená.",
       "pending": "Licence platí pro zápasy od příští sezóny; ukládané sestavy už se jí musí řídit.",
       "licences": "Trenérské licence",
-      "atLevel": "od úrovně {{level}}",
       "held": "Aktuální",
-      "levelsToGo": "zbývá úrovní: {{levels}}",
-      "totals": "Rozestavení: {{formations}} · stylů: {{styles}} · pokynů: {{dials}} · rolí: {{roles}}",
       "opensFirst": "Co odemyká",
       "opensMore": "Co přidává",
       "addedFormations": "Rozestavení: {{list}}",
@@ -515,7 +519,6 @@
       "addedDials": "Pokyny: {{list}}",
       "addedRoles": "Role: {{list}}",
       "addedNothing": "Nic nového",
-      "forced": "Vynucené úrovně: {{levels}}",
       "caps": {
         "title": "Stropy úrovně",
         "playerCap": "Nejvyšší hodnocení, které smíte koupit: {{cap}}",
@@ -527,7 +530,27 @@
         "over": "Pokud to tak zůstane do konce sezóny, budete posunuti nahoru (nejvýše o {{jump}} úrovně).",
         "fullSquad": "Nákupy jen v rámci stropů vás nikdy neposunou: kádr přes práh dostanou hráči, kteří se zlepšují sami."
       },
-      "shortSquad": "Váš kádr má jen {{players}} hráčů. Nákupní síla počítá každé volné místo jako {{empty}}, ale síla kádru je průměr jen vašich {{players}} hráčů. Proto může být kádr pod 18 hráčů posunut, i když jste nikdy nekoupili nad stropy. S 18 hráči rozdíl zmizí."
+      "shortSquad": "Váš kádr má jen {{players}} hráčů. Nákupní síla počítá každé volné místo jako {{empty}}, ale síla kádru je průměr jen vašich {{players}} hráčů. Proto může být kádr pod 18 hráčů posunut, i když jste nikdy nekoupili nad stropy. S 18 hráči rozdíl zmizí.",
+      "fromLevel": "Od úrovně {{level}}",
+      "tag": {
+        "done": "Otevřena",
+        "needs": "Nutná úroveň {{level}}"
+      },
+      "status": {
+        "passed": "Otevřena",
+        "held": "Současná licence",
+        "ahead": "Zatím neotevřena"
+      },
+      "aheadHint": "Ještě {{levels}} úrovní do úrovně {{level}}.",
+      "nextHint": "{{licence}} od úrovně {{level}}: ještě {{levels}} úrovní.",
+      "firstHint": "Výchozí licence každého trenéra.",
+      "passedHint": "Tuto licenci už máte za sebou.",
+      "stat": {
+        "formations": "Formace",
+        "styles": "Herní styly",
+        "dials": "Pokyny",
+        "roles": "Role"
+      }
     },
     "finance": {
       "title": "Finance klubu",
@@ -720,7 +743,13 @@
       "toShop": "Koupit v obchodě"
     },
     "mastery": {
-      "hint": "Mistrovství roste v ligových zápasech, které řídíte sami, ne v těch, které za vás hraje AI."
+      "hint": "Mistrovství roste v ligových zápasech, které řídíte sami, ne v těch, které za vás hraje AI.",
+      "howLabel": "Jak roste zvládnutí",
+      "notesHint": "Taktický zápisník přidá XP okamžitě.",
+      "notes": "Zápisníky:",
+      "best": "Nejsilnější",
+      "xpBar": "XP do další úrovně",
+      "useFor": "Použít zápisník na {{style}}"
     },
     "player": {
       "avatarChange": "Změnit fotku",
