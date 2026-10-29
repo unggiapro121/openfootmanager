@@ -497,6 +497,7 @@
       "record": "Odehráno sezón: {{seasons}} · postupů: {{promotions}}",
       "howTitle": "Jak postoupit o úroveň",
       "howTop": "Dokončete sezónu mezi prvními {{places}} své ligy o {{size}} klubech: +1 úroveň",
+      "howTier": "Má-li úroveň více lig, silnější dostanou více postupových míst: {{top}} v nejsilnější, {{bottom}} v nejslabší",
       "howNewcomer": "Převzali jste klub během sezóny? Musíte odkoučovat aspoň {{matches}} zápasů, aby se to počítalo",
       "howNeverDown": "Úroveň nikdy neklesá",
       "noSeason": "Zatím žádná online sezóna: jak postoupit se ukáže, až sezóna začne.",

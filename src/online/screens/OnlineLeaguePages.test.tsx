@@ -110,6 +110,19 @@ describe("the league page", () => {
     expect(await screen.findByText("online.publicClub.formation:4-3-3")).toBeInTheDocument();
   });
 
+  // Given a league that promotes 2 this season (its own number, by tier under S-22),
+  // when the league page opens,
+  // then the first two clubs are marked as promoted and the third is not (C-9 R-c9-3).
+  it("marks the league's own promotion places", async () => {
+    stage({ "GET v1/leagues/mine": ok({ ...TABLE_LEAGUE, promotionPlaces: 2 }) });
+    renderOnline("/online/league");
+
+    const table = await screen.findByRole("table");
+    const rows = within(table).getAllByRole("row").slice(1);
+    const marked = rows.map((row) => within(row).queryByTestId(/^tournaments-promotion-/) !== null);
+    expect(marked).toEqual([true, true, false]);
+  });
+
   // Given a league whose season has scorers, assists and a red card,
   // when the league page opens,
   // then the boards under the table list them best first with their clubs, and say so when a board

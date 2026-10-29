@@ -20,6 +20,16 @@ function dialLabelKey(dial: string): string {
  * level caps when the season has them, how a level is earned this season, and the four licences
  * with where he stands among them and what each opens.
  */
+
+/**
+ * Whether the season splits promotion places by tier for this coach (S-22, C-9): a split that
+ * reaches his level and is not even. Below `fromLevel` every league of the level keeps
+ * `promotionPlaces`, which `howTop` already says.
+ */
+function tierLine(career: CareerView): boolean {
+  const tiers = career.promotion?.tierPlaces;
+  return tiers !== undefined && career.level >= tiers.fromLevel && tiers.top > tiers.bottom;
+}
 export default function CoachRoadmap() {
   const { t } = useTranslation();
   const { resource } = useOnlineResource(async () => {
@@ -96,6 +106,14 @@ function Road({ career, steps }: { career: CareerView; steps: LicenceStep[] }) {
                 size: career.promotion.leagueSize,
               })}
             </li>
+            {tierLine(career) && (
+              <li>
+                {t("online.roadmap.howTier", {
+                  top: career.promotion.tierPlaces?.top,
+                  bottom: career.promotion.tierPlaces?.bottom,
+                })}
+              </li>
+            )}
             <li>
               {t("online.roadmap.howNewcomer", {
                 matches: career.promotion.newcomerMinMatches,
