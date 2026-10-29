@@ -1265,8 +1265,6 @@
       "disabled": "Mùa này chưa có sự kiện.",
       "empty": "Hiện chưa có sự kiện nào. Sự kiện mới hiện ở đây 7 ngày trước khi bắt đầu.",
       "group": {
-        "running": "Đang diễn ra",
-        "ended": "Đã kết thúc, còn nhận thưởng",
         "scheduled": "Sắp tới",
         "closed": "Đã đóng"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Đạt",
       "notMet": "Chưa đạt",
-      "rewards": "Phần thưởng",
       "expires": "hết hạn {{days}} ngày sau khi nhận",
-      "claim": "Nhận",
+      "claim": "Nhận quà",
       "claiming": "Đang nhận…",
       "claimAria": "Nhận thưởng của nhiệm vụ: {{mission}}",
       "claimed": "Đã nhận",
-      "justClaimed": "Đã nhận: {{rewards}}",
       "autoClaiming": "Đang tự nhận",
       "lapsed": "Không nhận được: {{reason}}",
       "lapsedUnknown": "Không nhận được phần thưởng. Xem thư để biết lý do.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Hoàn thành nhiệm vụ: {{mission}}",
         "completedUnnamed": "Bạn vừa hoàn thành một nhiệm vụ sự kiện."
+      },
+      "state": {
+        "running": "Đang diễn ra",
+        "ended": "Đã kết thúc – nhận quà",
+        "scheduled": "Sắp diễn ra",
+        "closed": "Đã đóng"
+      },
+      "tagline": {
+        "welcome": "Những bước đầu làm HLV, có quà trên đường đi.",
+        "weekly": "Tự cầm quân, giành chiến thắng, nhận quà mỗi tuần.",
+        "weekend": "Sự kiện ngắn cho các trận cuối tuần.",
+        "seasonOpener": "Khởi đầu mùa mới thật tốt và nhận quà.",
+        "seasonFinale": "Chặng cuối mùa giải: kết thúc cùng quà.",
+        "other": "Hoàn thành nhiệm vụ để nhận quà."
+      },
+      "timer": {
+        "running": "Kết thúc sau",
+        "ended": "Hạn nhận quà còn",
+        "scheduled": "Bắt đầu sau"
+      },
+      "unit": {
+        "days": "ngày",
+        "hours": "giờ",
+        "minutes": "phút",
+        "seconds": "giây"
+      },
+      "journey": {
+        "title": "Hành trình",
+        "met": "{{met}}/{{total}} hoàn thành",
+        "counts": "{{claimed}} đã nhận · {{ready}} chờ nhận",
+        "ready": "Chờ nhận"
+      },
+      "status": {
+        "active": "Đang làm",
+        "ready": "Hoàn thành",
+        "upcoming": "Chưa mở",
+        "lapsed": "Không nhận được",
+        "missed": "Không hoàn thành"
+      },
+      "missions": "Nhiệm vụ",
+      "progress": "Tiến độ",
+      "rewardsLabel": "Thưởng:",
+      "detail": {
+        "show": "Xem điều kiện",
+        "hide": "Ẩn điều kiện"
+      },
+      "goSchedule": "Xem lịch đấu",
+      "left": {
+        "leagueMatchesDirected": "Còn {{left}} trận",
+        "leagueWinsDirected": "Còn {{left}} trận thắng",
+        "offlineMatches": "Còn {{left}} trận offline"
+      },
+      "reward": {
+        "heading": "Nhiệm vụ hoàn thành",
+        "toInventory": "Đã cất vào Kho đồ.",
+        "toWallet": "Đã cộng vào Ví coin.",
+        "toBoth": "Vật phẩm đã vào Kho đồ, coin đã vào Ví coin.",
+        "expires": "Hết hạn {{days}} ngày sau khi nhận.",
+        "close": "Tuyệt vời"
       }
     }
   },

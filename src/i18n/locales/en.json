@@ -1265,8 +1265,6 @@
       "disabled": "This season has no events.",
       "empty": "No events right now. A new event shows here 7 days before it starts.",
       "group": {
-        "running": "Running",
-        "ended": "Ended, rewards to claim",
         "scheduled": "Coming up",
         "closed": "Closed"
       },
@@ -1305,13 +1303,11 @@
       },
       "met": "Met",
       "notMet": "Not met yet",
-      "rewards": "Rewards",
       "expires": "expires {{days}} days after claiming",
       "claim": "Claim",
       "claiming": "Claiming…",
       "claimAria": "Claim the rewards of: {{mission}}",
       "claimed": "Claimed",
-      "justClaimed": "Claimed: {{rewards}}",
       "autoClaiming": "Being claimed for you",
       "lapsed": "Not received: {{reason}}",
       "lapsedUnknown": "The reward could not be given. Your inbox says why.",
@@ -1326,6 +1322,65 @@
       "notice": {
         "completed": "Mission complete: {{mission}}",
         "completedUnnamed": "You just completed an event mission."
+      },
+      "state": {
+        "running": "Live",
+        "ended": "Ended – claim your rewards",
+        "scheduled": "Coming up",
+        "closed": "Closed"
+      },
+      "tagline": {
+        "welcome": "Your first steps as a coach, with gifts along the way.",
+        "weekly": "Direct your team, win matches, collect gifts every week.",
+        "weekend": "A short event for the weekend's matches.",
+        "seasonOpener": "Start the new season strong and earn its gifts.",
+        "seasonFinale": "The season's last stretch: finish it with gifts.",
+        "other": "Complete its missions to earn gifts."
+      },
+      "timer": {
+        "running": "Ends in",
+        "ended": "Claims close in",
+        "scheduled": "Starts in"
+      },
+      "unit": {
+        "days": "days",
+        "hours": "hours",
+        "minutes": "mins",
+        "seconds": "secs"
+      },
+      "journey": {
+        "title": "Journey",
+        "met": "{{met}}/{{total}} complete",
+        "counts": "{{claimed}} claimed · {{ready}} to claim",
+        "ready": "To claim"
+      },
+      "status": {
+        "active": "In progress",
+        "ready": "Complete",
+        "upcoming": "Not started",
+        "lapsed": "Not received",
+        "missed": "Not completed"
+      },
+      "missions": "Missions",
+      "progress": "Progress",
+      "rewardsLabel": "Reward:",
+      "detail": {
+        "show": "See conditions",
+        "hide": "Hide conditions"
+      },
+      "goSchedule": "See fixtures",
+      "left": {
+        "leagueMatchesDirected": "Matches left: {{left}}",
+        "leagueWinsDirected": "Wins left: {{left}}",
+        "offlineMatches": "Offline matches left: {{left}}"
+      },
+      "reward": {
+        "heading": "Mission complete",
+        "toInventory": "Stored in your inventory.",
+        "toWallet": "Added to your coin wallet.",
+        "toBoth": "Items stored in your inventory, coins added to your wallet.",
+        "expires": "Expires {{days}} days after claiming.",
+        "close": "Great!"
       }
     }
   },
