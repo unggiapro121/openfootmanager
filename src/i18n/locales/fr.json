@@ -497,6 +497,7 @@
       "record": "{{seasons}} saisons jouées · {{promotions}} montées",
       "howTitle": "Comment monter de niveau",
       "howTop": "Finissez une saison parmi les {{places}} premiers de votre ligue de {{size}} clubs : +1 niveau",
+      "howTier": "Quand un niveau compte plusieurs ligues, les plus fortes ont plus de places de montée : {{top}} dans la plus forte, {{bottom}} dans la plus faible",
       "howNewcomer": "Club repris en cours de saison ? Il faut diriger au moins {{matches}} matchs pour que cela compte",
       "howNeverDown": "Votre niveau ne baisse jamais",
       "noSeason": "Pas encore de saison en ligne : la façon de monter s'affichera à l'ouverture d'une saison.",

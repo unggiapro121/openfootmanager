@@ -497,6 +497,7 @@
       "record": "{{seasons}} sezon oynandı · {{promotions}} kez yükseldi",
       "howTitle": "Nasıl seviye atlanır",
       "howTop": "Sezonu {{size}} kulüplü liginde ilk {{places}} içinde bitir: +1 seviye",
+      "howTier": "Bir seviyede birden fazla lig varsa güçlü ligler daha fazla yükselme yeri alır: en güçlüde {{top}}, en zayıfta {{bottom}}",
       "howNewcomer": "Kulübü sezon ortasında mı aldın? Sayılması için en az {{matches}} maç yönetmen gerekir",
       "howNeverDown": "Seviyen asla düşmez",
       "noSeason": "Henüz çevrim içi sezon yok: seviye atlama yolu bir sezon açılınca görünür.",

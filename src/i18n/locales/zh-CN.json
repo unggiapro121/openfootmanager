@@ -497,6 +497,7 @@
       "record": "已踢 {{seasons}} 个赛季 · 晋级 {{promotions}} 次",
       "howTitle": "如何升级",
       "howTop": "赛季结束时位列 {{size}} 队联赛前 {{places}} 名：+1 级",
+      "howTier": "同一等级有多个联赛时，较强的联赛有更多升级名额：最强联赛 {{top}} 个，最弱联赛 {{bottom}} 个",
       "howNewcomer": "赛季中途接手球队？至少执教 {{matches}} 场才计入",
       "howNeverDown": "等级永不下降",
       "noSeason": "尚无线上赛季：赛季开放后会显示升级方式。",

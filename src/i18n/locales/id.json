@@ -497,6 +497,7 @@
       "record": "{{seasons}} musim dimainkan · naik {{promotions}} kali",
       "howTitle": "Cara naik tingkat",
       "howTop": "Akhiri musim di {{places}} besar liga {{size}} klubmu: +1 tingkat",
+      "howTier": "Jika satu level punya beberapa liga, liga yang lebih kuat mendapat lebih banyak tempat naik: {{top}} di liga terkuat, {{bottom}} di liga terlemah",
       "howNewcomer": "Mengambil klub di tengah musim? Kamu perlu memimpin minimal {{matches}} laga agar dihitung",
       "howNeverDown": "Tingkatmu tidak pernah turun",
       "noSeason": "Belum ada musim online: cara naik tingkat muncul saat musim dibuka.",

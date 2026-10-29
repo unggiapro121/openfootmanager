@@ -497,6 +497,7 @@
       "record": "{{seasons}} Saisons gespielt · {{promotions}}-mal aufgestiegen",
       "howTitle": "So steigst du eine Stufe auf",
       "howTop": "Beende eine Saison unter den ersten {{places}} deiner Liga mit {{size}} Klubs: +1 Stufe",
+      "howTier": "Hat eine Stufe mehrere Ligen, bekommen die stärkeren mehr Aufstiegsplätze: {{top}} in der stärksten, {{bottom}} in der schwächsten",
       "howNewcomer": "Klub während der Saison übernommen? Du brauchst mindestens {{matches}} Spiele an der Seitenlinie, damit es zählt",
       "howNeverDown": "Deine Stufe sinkt nie",
       "noSeason": "Noch keine Online-Saison: wie du aufsteigst, siehst du, sobald eine Saison beginnt.",

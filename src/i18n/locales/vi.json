@@ -497,6 +497,7 @@
       "record": "Đã chơi {{seasons}} mùa · thăng hạng {{promotions}} lần",
       "howTitle": "Cách lên cấp",
       "howTop": "Kết thúc mùa trong top {{places}} của league {{size}} CLB: +1 cấp",
+      "howTier": "Cấp có nhiều league thì league mạnh hơn có nhiều suất lên cấp hơn: {{top}} ở league mạnh nhất, {{bottom}} ở league yếu nhất",
       "howNewcomer": "Nhận CLB giữa mùa: cần dẫn ít nhất {{matches}} trận mới được tính",
       "howNeverDown": "Cấp không bao giờ giảm",
       "noSeason": "Chưa có mùa online: cách lên cấp sẽ hiện khi có mùa.",
