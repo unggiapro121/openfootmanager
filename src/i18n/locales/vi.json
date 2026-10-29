@@ -494,7 +494,20 @@
       "addedStyles": "Lối chơi: {{list}}",
       "addedDials": "Chỉ đạo: {{list}}",
       "addedRoles": "Vai trò: {{list}}",
-      "addedNothing": "Không có gì mới"
+      "addedNothing": "Không có gì mới",
+      "forced": "{{levels}} cấp bị ép",
+      "caps": {
+        "title": "Trần theo cấp",
+        "playerCap": "OVR cao nhất được mua: {{cap}}",
+        "noPlayerCap": "OVR cầu thủ được mua: không giới hạn",
+        "buyLine": "Sức mạnh mua: {{value}} / trần đội {{cap}}",
+        "buyUse": "Trên chợ và khi bù đội, lượt mua nào đưa số này vượt trần đội thì bị từ chối.",
+        "teamLine": "Sức mạnh đội (top 18): {{value}} / ngưỡng ép cấp {{threshold}}",
+        "teamUse": "Cuối mùa, số này vượt ngưỡng thì bạn bị ép lên cấp, tối đa {{jump}} cấp.",
+        "over": "Nếu giữ như vậy tới cuối mùa, bạn sẽ bị ép lên cấp cao hơn (tối đa {{jump}} cấp).",
+        "fullSquad": "Chỉ mua trong trần thì không bị ép cấp; cầu thủ tự lớn lên mới đẩy đội qua ngưỡng."
+      },
+      "shortSquad": "Đội bạn chỉ có {{players}} cầu thủ. Sức mạnh mua tính mỗi suất trống là {{empty}}, nhưng sức mạnh đội lấy trung bình của đúng {{players}} người bạn có. Vì vậy đội dưới 18 người có thể bị ép cấp dù bạn chưa từng mua vượt trần. Đủ 18 người thì hết chênh lệch này."
     },
     "finance": {
       "title": "Tài chính CLB",
@@ -553,7 +566,10 @@
         "minOvr": "OVR từ",
         "maxOvr": "OVR đến",
         "maxPrice": "Giá tối đa (€)",
-        "maxAge": "Tuổi tối đa"
+        "maxAge": "Tuổi tối đa",
+        "biddable": "Ẩn cầu thủ vượt trần theo cấp",
+        "biddableHint": "Phiên bạn đang dẫn cũng bị ẩn; chúng vẫn ở thẻ Phiên của tôi.",
+        "biddableHintLink": "Mở Phiên của tôi"
       },
       "group": {
         "Goalkeeper": "Thủ môn",
@@ -599,7 +615,9 @@
       "result": {
         "settled": "Đã bán cho {{club}} với giá {{price}}.",
         "unsold": "Không ai mua.",
-        "cancelled": "Phiên này đã được rút hoặc bị huỷ."
+        "cancelled": "Phiên này đã được rút hoặc bị huỷ.",
+        "capExceeded": "Bị huỷ vì người thắng vượt trần theo cấp.",
+        "playerGone": "Bị huỷ vì cầu thủ không còn ở CLB bán."
       },
       "quick": {
         "least": "Tối thiểu",
@@ -648,11 +666,20 @@
         "forced": "Đã đưa {{player}} lên sàn vì nợ lương.",
         "forcedUnnamed": "Một cầu thủ đã bị đưa lên sàn vì nợ lương.",
         "changed": "Phiên của {{player}} vừa có thay đổi.",
-        "changedUnnamed": "Chợ vừa có thay đổi."
+        "changedUnnamed": "Chợ vừa có thay đổi.",
+        "cancelledCapClub": "Phiên {{player}} bị huỷ: đội bạn đã vượt trần theo cấp. Cần HLV cấp {{level}}. Tiền giữ đã hoàn.",
+        "cancelledCapRelisted": "Phiên {{player}} bị huỷ vì người thắng vượt trần theo cấp. Cầu thủ đã lên chợ lại. Xem phiên mới.",
+        "cancelledCapSeller": "Phiên {{player}} bị huỷ vì người thắng vượt trần theo cấp. Cầu thủ sẽ lên chợ lại.",
+        "cancelledPlayerGone": "Phiên {{player}} bị huỷ vì cầu thủ không còn ở CLB bán. Tiền giữ đã hoàn."
       },
       "ai": "AI",
       "aiClub": "CLB do AI điều hành",
-      "freeAgent": "Cầu thủ tự do"
+      "freeAgent": "Cầu thủ tự do",
+      "levelLock": {
+        "badge": "Cấp {{level}}",
+        "explain": "Mỗi cấp có hai trần mua: OVR của một cầu thủ và sức mạnh mua của đội. Mua người không vào top 18 của đội thì luôn được.",
+        "roadmap": "Xem lộ trình cấp"
+      }
     },
     "rename": {
       "open": "Đổi tên",
@@ -716,7 +743,11 @@
           },
           "cancelled": {
             "subject": "Huỷ đấu giá: {{player}}",
-            "body": "Phiên đấu giá {{player}} đã bị huỷ. Tiền giữ cho phiên này đã được hoàn lại."
+            "body": "Phiên đấu giá {{player}} đã bị huỷ. Tiền giữ cho phiên này đã được hoàn lại.",
+            "capClub": "Phiên đấu giá {{player}} bị huỷ: đội bạn đã vượt trần theo cấp. Cần HLV cấp {{level}}. Tiền giữ cho phiên này đã được hoàn lại.",
+            "capRelisted": "Phiên đấu giá {{player}} bị huỷ vì người thắng vượt trần theo cấp. Cầu thủ đã lên chợ lại ở một phiên mới.",
+            "capSeller": "Phiên đấu giá {{player}} bị huỷ vì người thắng vượt trần theo cấp. Cầu thủ sẽ lên chợ lại.",
+            "playerGone": "Phiên đấu giá {{player}} bị huỷ vì cầu thủ không còn ở CLB bán. Tiền giữ cho phiên này đã được hoàn lại."
           },
           "forced": {
             "subject": "{{player}} bị đưa lên sàn",
@@ -749,6 +780,11 @@
           "reward": {
             "subject": "Tiền thưởng cuối mùa",
             "body": "Về hạng {{rank}} mang về cho CLB {{amount}}."
+          },
+          "forcedPromotion": {
+            "subject": "Bị ép lên cấp {{level}}",
+            "body": "Cuối mùa {{season}}, sức mạnh đội bạn vượt ngưỡng ép cấp, nên bạn được đẩy lên {{levels}} cấp, nay là cấp {{level}}. Trần mua của bạn cũng tăng theo.{{extra}}",
+            "shortSquad": "Đội bạn chỉ còn {{squadSize}} cầu thủ sau bù đội cuối mùa, nên sức mạnh đội được tính trên {{squadSize}} người và cao hơn sức mạnh mua. Đây là lý do bạn bị ép dù chưa mua vượt trần."
           }
         },
         "licence": {
@@ -834,7 +870,9 @@
             "body": "Bạn còn phần thưởng sự kiện chưa nhận. Hạn nhận: {{until}}. Sau hạn, máy chủ tự nhận giúp bạn; không nhận được thì có thư báo lý do."
           }
         }
-      }
+      },
+      "viewNewAuction": "Xem phiên mới",
+      "viewCaps": "Xem trần theo cấp"
     },
     "coins": {
       "notOnServer": "Máy chủ này chưa mở coin.",

@@ -494,7 +494,20 @@
       "addedStyles": "战术风格：{{list}}",
       "addedDials": "指令：{{list}}",
       "addedRoles": "角色：{{list}}",
-      "addedNothing": "无新增"
+      "addedNothing": "无新增",
+      "forced": "强制升级：{{levels}}",
+      "caps": {
+        "title": "等级上限",
+        "playerCap": "可购买的最高总评：{{cap}}",
+        "noPlayerCap": "可购买的球员总评：无限制",
+        "buyLine": "购买强度：{{value}} / 球队上限 {{cap}}",
+        "buyUse": "在转会市场和补员时，会让该值超过球队上限的购买将被拒绝。",
+        "teamLine": "阵容强度（前 18 人）：{{value}} / 强制升级线 {{threshold}}",
+        "teamUse": "赛季结束时该值高于此线，你会被强制升级，最多 {{jump}} 级。",
+        "over": "如果保持到赛季结束，你将被强制升级（最多 {{jump}} 级）。",
+        "fullSquad": "只在上限内购买永远不会被强制升级：让阵容越过门槛的是球员自己的成长。"
+      },
+      "shortSquad": "你的阵容只有 {{players}} 名球员。购买强度把每个空位按 {{empty}} 计算，而阵容强度只取你现有 {{players}} 名球员的平均值。因此不足 18 人的阵容即使从未超限购买也可能被强制升级。凑满 18 人后这一差距就会消失。"
     },
     "finance": {
       "title": "俱乐部财务",
@@ -553,7 +566,10 @@
         "minOvr": "OVR 从",
         "maxOvr": "OVR 到",
         "maxPrice": "最高价格（€）",
-        "maxAge": "最大年龄"
+        "maxAge": "最大年龄",
+        "biddable": "隐藏超出我等级上限的球员",
+        "biddableHint": "你领先的拍卖也会被隐藏；它们仍在“我的拍卖”中。",
+        "biddableHintLink": "打开“我的拍卖”"
       },
       "group": {
         "Goalkeeper": "门将",
@@ -599,7 +615,9 @@
       "result": {
         "settled": "以 {{price}} 卖给 {{club}}。",
         "unsold": "无人购买。",
-        "cancelled": "本场拍卖已撤回或取消。"
+        "cancelled": "本场拍卖已撤回或取消。",
+        "capExceeded": "已取消：获胜方超出等级上限。",
+        "playerGone": "已取消：该球员已不在出售俱乐部。"
       },
       "quick": {
         "least": "最低",
@@ -648,11 +666,20 @@
         "forced": "因俱乐部拖欠工资，{{player}} 被挂牌拍卖。",
         "forcedUnnamed": "因俱乐部拖欠工资，一名球员被挂牌拍卖。",
         "changed": "{{player}} 的拍卖有了变化。",
-        "changedUnnamed": "市场有了变化。"
+        "changedUnnamed": "市场有了变化。",
+        "cancelledCapClub": "{{player}} 的拍卖已取消：你的阵容超出等级上限。需要 {{level}} 级教练。冻结的资金已退回。",
+        "cancelledCapRelisted": "{{player}} 的拍卖已取消，因为获胜方超出等级上限。他已重新挂牌。查看新拍卖。",
+        "cancelledCapSeller": "{{player}} 的拍卖已取消，因为获胜方超出等级上限。他将重新挂牌。",
+        "cancelledPlayerGone": "{{player}} 的拍卖已取消：该球员已不在出售俱乐部。冻结的资金已退回。"
       },
       "ai": "AI",
       "aiClub": "由 AI 管理的俱乐部",
-      "freeAgent": "自由球员"
+      "freeAgent": "自由球员",
+      "levelLock": {
+        "badge": "等级 {{level}}",
+        "explain": "每个等级有两道购买上限：单名球员的总评，以及阵容的购买强度。买一名进不了你前 18 人的球员总是可以的。",
+        "roadmap": "查看等级路线"
+      }
     },
     "rename": {
       "open": "改名",
@@ -716,7 +743,11 @@
           },
           "cancelled": {
             "subject": "拍卖已取消：{{player}}",
-            "body": "{{player}} 的拍卖已取消。为其冻结的资金已退还。"
+            "body": "{{player}} 的拍卖已取消。为其冻结的资金已退还。",
+            "capClub": "{{player}} 的拍卖已取消：你的阵容超出等级上限。需要 {{level}} 级教练。为此冻结的资金已退回。",
+            "capRelisted": "{{player}} 的拍卖已取消，因为获胜方超出等级上限。他已在新的拍卖中重新挂牌。",
+            "capSeller": "{{player}} 的拍卖已取消，因为获胜方超出等级上限。他将重新挂牌。",
+            "playerGone": "{{player}} 的拍卖已取消：该球员已不在出售俱乐部。为此冻结的资金已退回。"
           },
           "forced": {
             "subject": "{{player}} 被挂牌出售",
@@ -749,6 +780,11 @@
           "reward": {
             "subject": "赛季奖金",
             "body": "排名第 {{rank}} 为你的俱乐部带来 {{amount}}。"
+          },
+          "forcedPromotion": {
+            "subject": "被强制升至 {{level}} 级",
+            "body": "第 {{season}} 赛季结束时，你的阵容强度超过了强制升级门槛，因此你升到了 {{level}} 级（+{{levels}}）。你的购买上限也随之提高。{{extra}}",
+            "shortSquad": "赛季末补员后你的阵容只有 {{squadSize}} 名球员，所以阵容强度按这 {{squadSize}} 人计算，高于购买强度。这就是你从未超限购买却被强制升级的原因。"
           }
         },
         "licence": {
@@ -834,7 +870,9 @@
             "body": "你还有未领取的活动奖励。截止时间：{{until}}。过期后服务器会为你自动领取；若无法领取，会有邮件说明原因。"
           }
         }
-      }
+      },
+      "viewNewAuction": "查看新拍卖",
+      "viewCaps": "查看等级上限"
     },
     "coins": {
       "notOnServer": "此服务器尚未开放金币。",

@@ -494,7 +494,20 @@
       "addedStyles": "Gaya bermain: {{list}}",
       "addedDials": "Instruksi: {{list}}",
       "addedRoles": "Peran: {{list}}",
-      "addedNothing": "Tidak ada yang baru"
+      "addedNothing": "Tidak ada yang baru",
+      "forced": "Level paksa: {{levels}}",
+      "caps": {
+        "title": "Batas level",
+        "playerCap": "OVR tertinggi yang boleh dibeli: {{cap}}",
+        "noPlayerCap": "OVR pemain yang boleh dibeli: tanpa batas",
+        "buyLine": "Kekuatan beli: {{value}} / batas tim {{cap}}",
+        "buyUse": "Di pasar dan saat skuad ditambah, pembelian yang membuat nilai ini melewati batas tim ditolak.",
+        "teamLine": "Kekuatan skuad (18 teratas): {{value}} / naik paksa di {{threshold}}",
+        "teamUse": "Jika di akhir musim di atas tanda ini, kamu dinaikkan paksa, paling banyak {{jump}} level.",
+        "over": "Jika tetap begini sampai akhir musim, kamu akan dinaikkan paksa (paling banyak {{jump}} level).",
+        "fullSquad": "Hanya membeli dalam batas tidak pernah membuatmu naik paksa: yang mendorong skuad melewati ambang adalah pemain yang berkembang sendiri."
+      },
+      "shortSquad": "Skuadmu hanya punya {{players}} pemain. Kekuatan beli menghitung tiap tempat kosong sebagai {{empty}}, tetapi kekuatan skuad hanya rata-rata dari {{players}} pemain yang kamu punya. Karena itu skuad di bawah 18 bisa naik paksa walau kamu tidak pernah membeli melewati batas. Dengan 18 pemain selisih ini hilang."
     },
     "finance": {
       "title": "Keuangan klub",
@@ -553,7 +566,10 @@
         "minOvr": "OVR dari",
         "maxOvr": "OVR sampai",
         "maxPrice": "Harga tertinggi (€)",
-        "maxAge": "Usia tertua"
+        "maxAge": "Usia tertua",
+        "biddable": "Sembunyikan pemain di atas batas levelku",
+        "biddableHint": "Lelang yang kamu pimpin juga disembunyikan; tetap ada di Lelang saya.",
+        "biddableHintLink": "Buka Lelang saya"
       },
       "group": {
         "Goalkeeper": "Penjaga gawang",
@@ -599,7 +615,9 @@
       "result": {
         "settled": "Terjual ke {{club}} seharga {{price}}.",
         "unsold": "Tidak ada yang membeli.",
-        "cancelled": "Lelang ini ditarik atau dibatalkan."
+        "cancelled": "Lelang ini ditarik atau dibatalkan.",
+        "capExceeded": "Dibatalkan: pemenangnya melewati batas level.",
+        "playerGone": "Dibatalkan: pemain tidak lagi di klub penjual."
       },
       "quick": {
         "least": "Terendah",
@@ -648,11 +666,20 @@
         "forced": "{{player}} dilelang karena klub menunggak gaji.",
         "forcedUnnamed": "Seorang pemain dilelang karena klub menunggak gaji.",
         "changed": "Ada perubahan di lelang {{player}}.",
-        "changedUnnamed": "Ada perubahan di pasar."
+        "changedUnnamed": "Ada perubahan di pasar.",
+        "cancelledCapClub": "Lelang {{player}} dibatalkan: skuadmu melewati batas level. Perlu pelatih level {{level}}. Uang yang ditahan sudah dikembalikan.",
+        "cancelledCapRelisted": "Lelang {{player}} dibatalkan karena pemenangnya melewati batas level. Ia dijual lagi. Lihat lelang baru.",
+        "cancelledCapSeller": "Lelang {{player}} dibatalkan karena pemenangnya melewati batas level. Ia akan dijual lagi.",
+        "cancelledPlayerGone": "Lelang {{player}} dibatalkan: pemain tidak lagi di klub penjual. Uang yang ditahan sudah dikembalikan."
       },
       "ai": "AI",
       "aiClub": "Klub yang dijalankan AI",
-      "freeAgent": "Pemain bebas"
+      "freeAgent": "Pemain bebas",
+      "levelLock": {
+        "badge": "Perlu level {{level}}",
+        "explain": "Dua batas membatasi apa yang boleh dibeli pelatih di tiap level: OVR satu pemain dan kekuatan beli skuad. Membeli pemain yang tidak masuk 18 teratas skuadmu selalu boleh.",
+        "roadmap": "Lihat jalur level"
+      }
     },
     "rename": {
       "open": "Ganti nama",
@@ -716,7 +743,11 @@
           },
           "cancelled": {
             "subject": "Lelang dibatalkan: {{player}}",
-            "body": "Lelang {{player}} dibatalkan. Uang yang ditahan telah dikembalikan."
+            "body": "Lelang {{player}} dibatalkan. Uang yang ditahan telah dikembalikan.",
+            "capClub": "Lelang {{player}} dibatalkan: skuadmu melewati batas level. Perlu pelatih level {{level}}. Uang yang ditahan untuk lelang ini sudah dikembalikan.",
+            "capRelisted": "Lelang {{player}} dibatalkan karena pemenangnya melewati batas level. Ia dijual lagi di lelang baru.",
+            "capSeller": "Lelang {{player}} dibatalkan karena pemenangnya melewati batas level. Ia akan dijual lagi.",
+            "playerGone": "Lelang {{player}} dibatalkan: pemain tidak lagi di klub penjual. Uang yang ditahan untuk lelang ini sudah dikembalikan."
           },
           "forced": {
             "subject": "{{player}} dijual",
@@ -749,6 +780,11 @@
           "reward": {
             "subject": "Hadiah musim",
             "body": "Finis di posisi {{rank}} memberi klubmu {{amount}}."
+          },
+          "forcedPromotion": {
+            "subject": "Naik paksa ke level {{level}}",
+            "body": "Di akhir musim {{season}}, kekuatan skuadmu di atas ambang naik paksa, jadi kamu naik ke level {{level}} (+{{levels}}). Batas belimu ikut naik.{{extra}}",
+            "shortSquad": "Skuadmu hanya punya {{squadSize}} pemain setelah penambahan akhir musim, jadi kekuatannya dihitung dari {{squadSize}} pemain itu dan lebih tinggi dari kekuatan belinya. Itulah sebabnya kamu dinaikkan paksa walau tidak pernah membeli melewati batas."
           }
         },
         "licence": {
@@ -834,7 +870,9 @@
             "body": "Kamu punya hadiah event yang belum diklaim. Batas waktu: {{until}}. Setelah itu server mengklaimnya untukmu; jika tidak bisa, surat akan menjelaskan alasannya."
           }
         }
-      }
+      },
+      "viewNewAuction": "Lihat lelang baru",
+      "viewCaps": "Lihat batas levelmu"
     },
     "coins": {
       "notOnServer": "Koin belum dibuka di server ini.",

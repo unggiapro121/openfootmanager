@@ -912,6 +912,8 @@ fn the_market_routes_go_out() {
                 ("maxOvr", "70"),
                 ("maxPrice", "1500000"),
                 ("maxAge", "28"),
+                // Only what the level caps let the coach bid on (S-16 R16-8, C-7a2).
+                ("biddable", "true"),
                 (
                     "cursor",
                     "1729850000000000_0192f0c4-0000-7000-8000-0000000000cc",

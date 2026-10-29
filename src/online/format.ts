@@ -8,6 +8,17 @@ export function formatCoins(coins: number, language: string): string {
   return new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(coins);
 }
 
+/**
+ * A strength the server sends in whole tenths of OVR (S-16: 705 is 70.5), with one decimal in the
+ * player's language. The level caps compare tenths, so the screen never rounds them away.
+ */
+export function formatTenths(tenths: number, language: string): string {
+  return new Intl.NumberFormat(language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(tenths / 10);
+}
+
 /** What is left until a moment: whole days, and the rest as `HH:MM:SS`. */
 export interface Countdown {
   days: number;

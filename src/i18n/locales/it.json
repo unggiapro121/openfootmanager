@@ -494,7 +494,20 @@
       "addedStyles": "Stili di gioco: {{list}}",
       "addedDials": "Istruzioni: {{list}}",
       "addedRoles": "Ruoli: {{list}}",
-      "addedNothing": "Niente di nuovo"
+      "addedNothing": "Niente di nuovo",
+      "forced": "Livelli forzati: {{levels}}",
+      "caps": {
+        "title": "Tetti di livello",
+        "playerCap": "Valore massimo che puoi comprare: {{cap}}",
+        "noPlayerCap": "Valore del giocatore che puoi comprare: nessun limite",
+        "buyLine": "Forza d'acquisto: {{value}} / tetto di squadra {{cap}}",
+        "buyUse": "Sul mercato e al completamento della rosa, un acquisto che porta questo valore oltre il tetto di squadra viene rifiutato.",
+        "teamLine": "Forza della rosa (top 18): {{value}} / promozione forzata a {{threshold}}",
+        "teamUse": "Sopra questa soglia a fine stagione vieni promosso d'ufficio, al massimo di {{jump}} livelli.",
+        "over": "Se resta così fino a fine stagione, verrai promosso d'ufficio (al massimo di {{jump}} livelli).",
+        "fullSquad": "Comprare solo entro i tetti non ti fa mai salire d'ufficio: sono i giocatori che crescono da soli a portare una rosa oltre la soglia."
+      },
+      "shortSquad": "La tua rosa ha solo {{players}} giocatori. La forza d'acquisto conta ogni posto vuoto come {{empty}}, ma la forza della rosa fa la media dei soli {{players}} giocatori che hai. Per questo una rosa sotto i 18 può essere promossa d'ufficio anche se non hai mai comprato oltre i tetti. Con 18 giocatori la differenza sparisce."
     },
     "finance": {
       "title": "Finanze del club",
@@ -553,7 +566,10 @@
         "minOvr": "OVR da",
         "maxOvr": "OVR fino a",
         "maxPrice": "Prezzo massimo (€)",
-        "maxAge": "Età massima"
+        "maxAge": "Età massima",
+        "biddable": "Nascondi i giocatori oltre i miei tetti di livello",
+        "biddableHint": "Anche le aste che stai guidando vengono nascoste; restano in Le mie aste.",
+        "biddableHintLink": "Apri Le mie aste"
       },
       "group": {
         "Goalkeeper": "Portieri",
@@ -599,7 +615,9 @@
       "result": {
         "settled": "Venduto a {{club}} per {{price}}.",
         "unsold": "Nessuno lo ha comprato.",
-        "cancelled": "Quest'asta è stata ritirata o annullata."
+        "cancelled": "Quest'asta è stata ritirata o annullata.",
+        "capExceeded": "Annullata: il vincitore superava i tetti di livello.",
+        "playerGone": "Annullata: il giocatore non è più nel club venditore."
       },
       "quick": {
         "least": "Minima",
@@ -648,11 +666,20 @@
         "forced": "{{player}} è stato messo all'asta perché il club deve stipendi.",
         "forcedUnnamed": "Un giocatore è stato messo all'asta perché il club deve stipendi.",
         "changed": "Qualcosa è cambiato nell'asta per {{player}}.",
-        "changedUnnamed": "Qualcosa è cambiato sul mercato."
+        "changedUnnamed": "Qualcosa è cambiato sul mercato.",
+        "cancelledCapClub": "L'asta per {{player}} è stata annullata: la tua rosa supera i tetti di livello. Serve un allenatore di livello {{level}}. Il denaro trattenuto è stato restituito.",
+        "cancelledCapRelisted": "L'asta per {{player}} è stata annullata perché il vincitore superava i tetti di livello. È di nuovo in vendita. Vedi la nuova asta.",
+        "cancelledCapSeller": "L'asta per {{player}} è stata annullata perché il vincitore superava i tetti di livello. Tornerà in vendita.",
+        "cancelledPlayerGone": "L'asta per {{player}} è stata annullata: il giocatore non è più nel club venditore. Il denaro trattenuto è stato restituito."
       },
       "ai": "IA",
       "aiClub": "Club gestito dall'IA",
-      "freeAgent": "Svincolato"
+      "freeAgent": "Svincolato",
+      "levelLock": {
+        "badge": "Livello {{level}}",
+        "explain": "Due tetti limitano ciò che un allenatore può comprare a ogni livello: il valore di un giocatore e la forza d'acquisto della rosa. Comprare un giocatore che non entra nella tua top 18 è sempre consentito.",
+        "roadmap": "Vedi il percorso dei livelli"
+      }
     },
     "rename": {
       "open": "Rinomina",
@@ -716,7 +743,11 @@
           },
           "cancelled": {
             "subject": "Asta annullata: {{player}}",
-            "body": "L'asta per {{player}} è stata annullata. Il denaro trattenuto è stato restituito."
+            "body": "L'asta per {{player}} è stata annullata. Il denaro trattenuto è stato restituito.",
+            "capClub": "L'asta per {{player}} è stata annullata: la tua rosa supera i tetti di livello. Serve un allenatore di livello {{level}}. Il denaro trattenuto per l'asta è stato restituito.",
+            "capRelisted": "L'asta per {{player}} è stata annullata perché il vincitore superava i tetti di livello. È di nuovo in vendita in una nuova asta.",
+            "capSeller": "L'asta per {{player}} è stata annullata perché il vincitore superava i tetti di livello. Tornerà in vendita.",
+            "playerGone": "L'asta per {{player}} è stata annullata: il giocatore non è più nel club venditore. Il denaro trattenuto per l'asta è stato restituito."
           },
           "forced": {
             "subject": "{{player}} messo in vendita",
@@ -749,6 +780,11 @@
           "reward": {
             "subject": "Premio di stagione",
             "body": "Chiudere al posto {{rank}} ha fruttato {{amount}} al tuo club."
+          },
+          "forcedPromotion": {
+            "subject": "Promozione forzata al livello {{level}}",
+            "body": "Alla fine della stagione {{season}} la forza della tua rosa superava la soglia di promozione forzata, quindi sei passato al livello {{level}} (+{{levels}}). I tuoi tetti d'acquisto sono saliti con lui.{{extra}}",
+            "shortSquad": "La tua rosa aveva solo {{squadSize}} giocatori dopo i completamenti di fine stagione, quindi la sua forza è stata calcolata su quei {{squadSize}} ed è risultata sopra la forza d'acquisto. Per questo sei stato promosso d'ufficio pur non avendo mai comprato oltre i tetti."
           }
         },
         "licence": {
@@ -834,7 +870,9 @@
             "body": "Hai premi evento non ancora riscattati. Scadenza: {{until}}. Dopo, il server li riscatta per te; se non può, un messaggio ti dice perché."
           }
         }
-      }
+      },
+      "viewNewAuction": "Vedi la nuova asta",
+      "viewCaps": "Vedi i tuoi tetti di livello"
     },
     "coins": {
       "notOnServer": "Le monete non sono ancora disponibili su questo server.",

@@ -8,6 +8,7 @@ import { online } from "../client";
 import { type LicenceStep, licenceSteps } from "../convert/licence";
 import { tracked } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
+import LevelCaps from "./LevelCaps";
 
 /** `build_up_style` → `buildUpStyle`: the tactics board's label key of a dial. */
 function dialLabelKey(dial: string): string {
@@ -15,8 +16,9 @@ function dialLabelKey(dial: string): string {
 }
 
 /**
- * The coach's road (his online profile): his level and record, how a level is earned this
- * season, and the four licences with where he stands among them and what each opens.
+ * The coach's road (his online profile): his level and record (the levels forced on him too), his
+ * level caps when the season has them, how a level is earned this season, and the four licences
+ * with where he stands among them and what each opens.
  */
 export default function CoachRoadmap() {
   const { t } = useTranslation();
@@ -61,12 +63,23 @@ function Road({ career, steps }: { career: CareerView; steps: LicenceStep[] }) {
             : t("online.roadmap.level", { level: career.level })}
         </p>
         <p>
-          {t("online.roadmap.record", {
-            seasons: career.seasons,
-            promotions: career.promotions,
-          })}
+          <span>
+            {t("online.roadmap.record", {
+              seasons: career.seasons,
+              promotions: career.promotions,
+            })}
+          </span>
+          {/* A server before S-16c sends no forced levels. */}
+          {typeof career.forcedLevels === "number" && (
+            <>
+              {" · "}
+              <span>{t("online.roadmap.forced", { levels: career.forcedLevels })}</span>
+            </>
+          )}
         </p>
       </div>
+
+      {career.caps && <LevelCaps caps={career.caps} />}
 
       <section aria-labelledby="online-roadmap-how" className="space-y-1">
         <h3

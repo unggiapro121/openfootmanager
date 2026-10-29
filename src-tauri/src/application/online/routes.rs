@@ -334,6 +334,8 @@ pub const ROUTES: &[Route] = &[
             "maxOvr",
             "maxPrice",
             "maxAge",
+            // Only what the level caps let the coach bid on (S-16 R16-8, C-7a2).
+            "biddable",
             "cursor",
             "limit",
         ],

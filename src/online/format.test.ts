@@ -6,6 +6,7 @@ import {
   formatKickoffClock,
   formatMoment,
   formatRegionClock,
+  formatTenths,
   secondsUntil,
 } from "./format";
 
@@ -114,5 +115,17 @@ describe("formatCoins", () => {
     expect(formatCoins(12_500, "vi")).toBe("12.500");
     expect(formatCoins(-40, "en")).toBe("-40");
     expect(formatCoins(7, "en")).not.toMatch(/[€$.]/);
+  });
+});
+
+describe("formatTenths", () => {
+  // Given a strength the server sends in whole tenths of OVR (705, 630, 0),
+  // when it is shown in Vietnamese and in English,
+  // then it reads with one decimal in each language's own separator.
+  it("shows a strength in tenths with one decimal", () => {
+    expect(formatTenths(705, "vi")).toBe("70,5");
+    expect(formatTenths(705, "en")).toBe("70.5");
+    expect(formatTenths(630, "en")).toBe("63.0");
+    expect(formatTenths(0, "en")).toBe("0.0");
   });
 });

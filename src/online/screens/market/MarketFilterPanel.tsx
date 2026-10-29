@@ -1,6 +1,7 @@
 import { SlidersHorizontal } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
 import { translatePositionLabel } from "../../../components/squad/SquadTab.helpers";
 import { Select } from "../../../components/ui";
@@ -8,6 +9,8 @@ import { Select } from "../../../components/ui";
 /** The groups a coach filters by, as the server names them (`MarketQuery.position`). */
 export const POSITION_GROUPS = ["Goalkeeper", "Defender", "Midfielder", "Forward"] as const;
 export const NUMBER_FILTERS = ["minOvr", "maxOvr", "maxPrice", "maxAge"] as const;
+/** Only the auctions the level caps let the coach bid on (S-16 R16-8): `biddable=true`. */
+export const BIDDABLE = "biddable";
 
 const fieldClass =
   "w-full px-2.5 py-1.5 rounded-lg bg-white dark:bg-navy-900 border border-gray-200 dark:border-navy-600 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50";
@@ -16,7 +19,9 @@ const labelClass =
 
 /**
  * The market's filter button and the panel it opens, laid out as the offline player filter is:
- * an OVR range, the oldest age, the highest price and a position group. The badge counts the
+ * an OVR range, the oldest age, the highest price and a position group, and a switch that hides
+ * the players over the coach's level caps (C-7 C7-11). That switch hides the auctions the coach
+ * already leads too, which the server leaves out as he cannot bid there again; a line says so. The badge counts the
  * filters that are on. The values live in the address (`params`), where the market reads them.
  */
 export default function MarketFilterPanel({
@@ -33,9 +38,10 @@ export default function MarketFilterPanel({
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const panelId = useId();
-  const activeCount = [...NUMBER_FILTERS, "position", "naturalPosition"].filter((name) =>
+  const activeCount = [...NUMBER_FILTERS, "position", "naturalPosition", BIDDABLE].filter((name) =>
     params.get(name),
   ).length;
+  const biddable = params.get(BIDDABLE) === "true";
   const group = params.get("position") ?? "";
   const groupPositions = SPECIFIC_POSITIONS_BY_GROUP[group] ?? [];
 
@@ -161,6 +167,28 @@ export default function MarketFilterPanel({
               </Select>
             </div>
           </fieldset>
+          <div className="space-y-1">
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input
+                type="checkbox"
+                checked={biddable}
+                onChange={(event) => onChange({ [BIDDABLE]: event.target.checked ? "true" : "" })}
+                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-navy-600"
+              />
+              {t("online.market.filter.biddable")}
+            </label>
+            {biddable && (
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t("online.market.filter.biddableHint")}{" "}
+                <Link
+                  to="/online/market?tab=mine"
+                  className="rounded font-semibold text-primary-600 hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-primary-400"
+                >
+                  {t("online.market.filter.biddableHintLink")}
+                </Link>
+              </p>
+            )}
+          </div>
           <div className="flex justify-end">
             <button
               type="button"
