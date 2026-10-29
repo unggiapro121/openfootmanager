@@ -1,159 +1,189 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import {
-  Backpack,
   Calendar,
-  Coins,
   Crosshair,
   Dumbbell,
   Gavel,
-  Globe2,
   GraduationCap,
   Handshake,
-  Mail,
   LayoutDashboard,
-  LogOut,
-  Sparkles,
-  Store,
   Trophy,
-  UserRound,
   Users,
   Wallet,
 } from "lucide-react";
-import NavItem from "../../components/dashboard/SidebarNavItem";
-import { claimsWaiting, useOnlineStore } from "../store/onlineStore";
+import { useOnlineStore } from "../store/onlineStore";
+import ClubCrestMark from "./ClubCrestMark";
 import { useGuardedNavigate } from "./leaveGuard";
+import { isCurrent, seasonText } from "./shellNav";
 
-/** The club's pages, shown once the coach runs a club. */
-const CLUB_PAGES = [
-  { path: "/online/squad", label: "online.nav.squad", icon: <Users /> },
-  { path: "/online/tactics", label: "online.nav.tactics", icon: <Crosshair /> },
-  { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
-  { path: "/online/academy", label: "online.nav.academy", icon: <GraduationCap /> },
-  { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
-  { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
-  { path: "/online/inbox", label: "online.nav.inbox", icon: <Mail /> },
-  { path: "/online/finance", label: "online.nav.finance", icon: <Wallet /> },
-  { path: "/online/market", label: "online.nav.market", icon: <Gavel /> },
-  { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
-];
-
-/** The person's own pages, shown with or without a club (C-7 C7-1): coins are not the club's. */
-const ACCOUNT_PAGES = [
-  { path: "/online/coins", label: "online.nav.coins", icon: <Coins /> },
-  { path: "/online/inventory", label: "online.nav.inventory", icon: <Backpack /> },
-  { path: "/online/shop", label: "online.nav.shop", icon: <Store /> },
-  { path: "/online/events", label: "online.nav.events", icon: <Sparkles /> },
-];
+interface Entry {
+  path: string;
+  label: string;
+  icon: ReactNode;
+}
 
 /**
- * The online mode's sidebar (C-2 §3.1): the same entries as the dashboard's, its own pages. Each
- * way out asks first while the page holds the coach (their live match, C2-13).
+ * The club's pages by group (design vi-coin.html), shown once the coach runs a club. The inbox
+ * and the person's own pages (coins, shop, inventory, events, profile) sit in the header.
+ */
+const CLUB_GROUPS: { label: string; entries: Entry[] }[] = [
+  {
+    label: "online.nav.groupTeam",
+    entries: [
+      { path: "/online/squad", label: "online.nav.squad", icon: <Users /> },
+      { path: "/online/tactics", label: "online.nav.tactics", icon: <Crosshair /> },
+      { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
+      { path: "/online/academy", label: "online.nav.academy", icon: <GraduationCap /> },
+    ],
+  },
+  {
+    label: "online.nav.groupMatches",
+    entries: [
+      { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
+      { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
+      { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
+    ],
+  },
+  {
+    label: "online.nav.groupClub",
+    entries: [
+      { path: "/online/finance", label: "online.nav.finance", icon: <Wallet /> },
+      { path: "/online/market", label: "online.nav.market", icon: <Gavel /> },
+    ],
+  },
+];
+
+function SideEntry({
+  entry,
+  current,
+  badge,
+  onOpen,
+}: {
+  entry: Entry;
+  current: boolean;
+  badge?: number;
+  onOpen: () => void;
+}) {
+  const { t } = useTranslation();
+  const label = t(entry.label);
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-current={current ? "page" : undefined}
+      aria-label={badge ? `${label} (${badge})` : label}
+      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left font-heading text-sm uppercase tracking-wider transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 ${
+        current
+          ? "bg-linear-to-r from-primary-500 to-primary-600 font-bold text-white shadow-md shadow-primary-500/20"
+          : "font-semibold text-gray-400 hover:bg-white/5 hover:text-white"
+      }`}
+    >
+      <span className="shrink-0 [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true">
+        {entry.icon}
+      </span>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {badge ? (
+        <span className="min-w-5 rounded-full bg-primary-500 px-2 py-0.5 text-center font-sans text-xs font-bold text-white">
+          {badge}
+        </span>
+      ) : null}
+    </button>
+  );
+}
+
+function GroupLabel({ children }: { children: ReactNode }) {
+  return (
+    <p className="px-3 pb-1.5 pt-4 font-heading text-xs font-semibold uppercase tracking-widest text-gray-400">
+      {children}
+    </p>
+  );
+}
+
+/** The brand, its last word in gold (design vi-coin.html). */
+function Brand() {
+  const { t } = useTranslation();
+  const [first, ...rest] = t("app.name").split(" ");
+  return (
+    <p className="flex flex-col gap-0.5 px-3 pb-5 font-heading text-xl uppercase leading-none tracking-wider">
+      <span className="font-semibold text-white">{first}</span>
+      {rest.length > 0 && <span className="font-bold text-accent-400">{rest.join(" ")}</span>}
+    </p>
+  );
+}
+
+/** The coach's club: its crest, its name, the season's day. */
+function ClubCard() {
+  const { t } = useTranslation();
+  const club = useOnlineStore((state) => state.club?.club);
+  const season = useOnlineStore((state) => state.season);
+  if (!club) return null;
+  return (
+    <div className="mx-1 mb-3 flex items-center gap-3 rounded-xl border border-navy-600 bg-navy-700 p-3">
+      <span className="h-10 w-10 shrink-0" aria-hidden="true">
+        <ClubCrestMark profile={club} />
+      </span>
+      <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="truncate text-sm font-semibold text-white">{club.name}</span>
+        <span className="text-xs leading-snug text-gray-400">
+          {t("online.header.clubLine", { season: seasonText(t, season) })}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+/**
+ * The online mode's sidebar (C-2 §3.1; design vi-coin.html): the brand, the coach's club, and
+ * the club's pages by group. It stays dark in both themes, as the dashboard's does. Each way out
+ * asks first while the page holds the coach (their live match, C2-13).
  */
 export default function OnlineSidebar() {
   const { t } = useTranslation();
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
-  const clubName = useOnlineStore((state) => state.club?.club.name);
-  const hasClub = clubName !== undefined;
+  const hasClub = useOnlineStore((state) => Boolean(state.club));
   const marketUnseen = useOnlineStore((state) => state.marketUnseen);
   const academyUnseen = useOnlineStore((state) => state.academyUnseen);
-  const unreadMail = useOnlineStore((state) => state.club?.unreadMail ?? 0);
-  const claims = useOnlineStore((state) => claimsWaiting(state.events));
+
+  const badgeOf = (path: string): number | undefined => {
+    if (path === "/online/market" && marketUnseen > 0) return marketUnseen;
+    if (path === "/online/academy" && academyUnseen) return 1;
+    return undefined;
+  };
 
   return (
-    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-navy-700 bg-navy-800 text-white">
-      <div className="border-b border-navy-700 p-5">
-        <div className="flex items-center gap-2">
-          <Globe2 className="h-7 w-7 text-accent-400" aria-hidden="true" />
-          <div>
-            <p className="font-heading text-sm font-semibold uppercase tracking-wider text-white">
-              {t("app.name")}
-            </p>
-            <p className="font-heading font-bold uppercase tracking-wider text-accent-400">
-              {t("online.title")}
-            </p>
-          </div>
-        </div>
-        {clubName && <p className="mt-3 text-sm font-semibold text-primary-400">{clubName}</p>}
-      </div>
-
+    <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col bg-navy-800 px-3 pt-6 text-white">
+      <Brand />
+      <ClubCard />
       <nav
         aria-label={t("online.nav.label")}
         // min-h-0 lets the list shrink inside the screen-high panel and scroll
         // there; without it, a short window spills the entries below the panel.
-        className="scrollbar-thin scrollbar-thumb-navy-600 scrollbar-track-transparent flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-3 py-4"
+        className="scrollbar-thin scrollbar-thumb-navy-600 scrollbar-track-transparent flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pb-6"
       >
-        <NavItem
-          icon={<LayoutDashboard />}
-          label={t("online.nav.overview")}
-          active={pathname === "/online" || pathname === "/online/takeover"}
-          collapsed={false}
-          onClick={() => navigate("/online")}
+        <SideEntry
+          entry={{ path: "/online", label: "online.nav.overview", icon: <LayoutDashboard /> }}
+          current={isCurrent("/online", pathname)}
+          onOpen={() => navigate("/online")}
         />
-        {hasClub && (
-          <>
-            <hr className="my-2 border-navy-700" />
-            <p className="px-3 pb-1 pt-1 font-heading text-[10px] uppercase tracking-widest text-gray-500">
-              {t("dashboard.sectionClub")}
-            </p>
-            {CLUB_PAGES.map((page) => (
-              <NavItem
-                key={page.path}
-                icon={page.icon}
-                label={t(page.label)}
-                badge={
-                  page.path === "/online/market" && marketUnseen > 0
-                    ? marketUnseen
-                    : page.path === "/online/inbox" && unreadMail > 0
-                      ? unreadMail
-                      : page.path === "/online/academy" && academyUnseen
-                        ? 1
-                        : undefined
-                }
-                active={
-                  pathname === page.path ||
-                  (page.path === "/online/market" && pathname.startsWith("/online/auctions/")) ||
-                  (page.path === "/online/squad" && pathname.startsWith("/online/squad/"))
-                }
-                collapsed={false}
-                onClick={() => navigate(page.path)}
-              />
-            ))}
-            <hr className="my-2 border-navy-700" />
-          </>
-        )}
-        <p className="px-3 pb-1 pt-1 font-heading text-[10px] uppercase tracking-widest text-gray-500">
-          {t("online.nav.account")}
-        </p>
-        {ACCOUNT_PAGES.map((page) => (
-          <NavItem
-            key={page.path}
-            icon={page.icon}
-            label={t(page.label)}
-            badge={page.path === "/online/events" && claims > 0 ? claims : undefined}
-            active={pathname === page.path}
-            collapsed={false}
-            onClick={() => navigate(page.path)}
-          />
-        ))}
-        <NavItem
-          icon={<UserRound />}
-          label={t("online.nav.profile")}
-          active={pathname === "/online/profile"}
-          collapsed={false}
-          onClick={() => navigate("/online/profile")}
-        />
+        {hasClub &&
+          CLUB_GROUPS.map((group) => (
+            <div key={group.label} className="flex flex-col gap-1">
+              <GroupLabel>{t(group.label)}</GroupLabel>
+              {group.entries.map((entry) => (
+                <SideEntry
+                  key={entry.path}
+                  entry={entry}
+                  current={isCurrent(entry.path, pathname)}
+                  badge={badgeOf(entry.path)}
+                  onOpen={() => navigate(entry.path)}
+                />
+              ))}
+            </div>
+          ))}
       </nav>
-
-      <div className="border-t border-navy-700 px-3 py-4">
-        <NavItem
-          icon={<LogOut />}
-          label={t("online.nav.mainMenu")}
-          collapsed={false}
-          onClick={() => navigate("/")}
-        />
-      </div>
     </aside>
   );
 }

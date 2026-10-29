@@ -49,12 +49,14 @@
       "finance": "Finance",
       "market": "Trh",
       "inbox": "Schránka",
-      "account": "Účet",
       "coins": "Peněženka mincí",
       "inventory": "Inventář",
       "shop": "Obchod",
       "academy": "Akademie",
-      "events": "Události"
+      "events": "Události",
+      "groupTeam": "Tým",
+      "groupMatches": "Zápasy",
+      "groupClub": "Klub"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -63,9 +65,12 @@
     "header": {
       "season": "Sezóna {{number}}",
       "seasonDay": "Sezóna {{number}} · Den {{day}}/{{total}}",
-      "nextKickoff": "Další zápas za {{time}}",
       "cash": "Hotovost klubu: {{amount}}",
-      "coins": "Zůstatek OFM Coin: {{amount}}"
+      "coins": "Zůstatek OFM Coin: {{amount}}",
+      "clubLine": "Online · {{season}}",
+      "nextMatch": "Další zápas",
+      "inboxUnread": "Pošta, nepřečteno: {{count}}",
+      "account": "Účet trenéra"
     },
     "countdown": {
       "withDays": "{{days}} d {{clock}}"

@@ -161,7 +161,8 @@
     "online.academy.send.region",
     "online.academy.scout.elite",
     "online.nav.events",
-    "online.events.theme.other"
+    "online.events.theme.other",
+    "online.header.clubLine"
   ],
   "fr": [
     "online.coins.max",
@@ -300,7 +301,8 @@
     "online.items.medkitBandage.name",
     "online.shop.total",
     "online.academy.region.Europe",
-    "tactics.dutyShort.corner_taker"
+    "tactics.dutyShort.corner_taker",
+    "online.nav.groupClub"
   ],
   "it": [
     "online.coins.max",
@@ -377,7 +379,8 @@
     "teamSelect.regionLabels.africa",
     "coachServer.email",
     "coachServer.password",
-    "online.nav.account"
+    "online.header.clubLine",
+    "online.nav.groupClub"
   ],
   "es": [
     "online.overview.points",
@@ -442,7 +445,9 @@
     "worldEditor.competitionSelector",
     "worldEditor.staffClub",
     "worldEditor.staffSpecialization.Fitness",
-    "online.shop.total"
+    "online.shop.total",
+    "online.header.clubLine",
+    "online.nav.groupClub"
   ],
   "pt-BR": [
     "online.overview.points",
@@ -491,7 +496,8 @@
     "squad.kitPatterns.Diagonal",
     "packageBuild.patches",
     "online.shop.total",
-    "online.academy.scout.elite"
+    "online.academy.scout.elite",
+    "online.header.clubLine"
   ],
   "pt": [
     "online.overview.points",
@@ -537,7 +543,8 @@
     "squad.kitPatterns.Diagonal",
     "packageBuild.patches",
     "online.shop.total",
-    "online.academy.scout.elite"
+    "online.academy.scout.elite",
+    "online.header.clubLine"
   ],
   "ru": ["dashboard.recapTransferLine"],
   "zh-CN": [
@@ -637,7 +644,8 @@
     "worldEditor.competitionSelectorRegion",
     "worldEditor.staffRole.label",
     "worldSelect.packageAuthor",
-    "tournaments.competitions.premierDivision"
+    "tournaments.competitions.premierDivision",
+    "online.header.clubLine"
   ],
   "id": [
     "online.market.ai",
@@ -800,7 +808,8 @@
     "online.shop.total",
     "online.inventory.styleLevel",
     "online.academy.scout.elite",
-    "online.events.theme.other"
+    "online.events.theme.other",
+    "online.header.clubLine"
   ],
   "vi": [
     "online.market.ai",
@@ -864,6 +873,7 @@
     "nations.iq",
     "nations.nz",
     "coachServer.email",
-    "online.academy.candidate.ovr"
+    "online.academy.candidate.ovr",
+    "online.header.clubLine"
   ]
 }
