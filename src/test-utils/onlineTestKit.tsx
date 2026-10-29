@@ -142,6 +142,9 @@ export function myClub(overrides: Partial<MyClubView> = {}): MyClubView {
     },
     // The first rename is free until one is made (S-14, S-17 R17-5).
     renameFree: true,
+    // The coach's own eleven unless a test turns the XI assistant on (S-27).
+    xiAssistant: false,
+    xiPick: "saved",
     ...overrides,
   };
 }

@@ -197,6 +197,20 @@
         "lockedRole": "Lisensi pelatihmu belum membuka peran {{player}}.",
         "lockedTactics": "Ada instruksi yang belum dibuka lisensimu dan tidak di nilai bawaannya.",
         "unknown": "Server menolak susunan ini karena alasan yang belum dikenal versi game ini. Perbarui game."
+      },
+      "xiAssistant": {
+        "title": "Asisten susunan pemain",
+        "expected": "Perkiraan",
+        "onHint": "Asisten memilih sebelas pemainmu saat kick-off berdasarkan kondisi, seperti pelatih klub AI. Formasi, gaya, dan peranmu tetap milikmu.",
+        "offHint": "Yang bermain adalah sebelas pemain yang kamu simpan. Pemain yang lelah tidak diistirahatkan.",
+        "savedBroken": "Susunan yang kamu simpan kekurangan pemain, jadi asisten memilih untuk sementara.",
+        "locked": "Susunan pemain dikunci sebelum kick-off: tidak bisa diubah sekarang.",
+        "firstNotice": "Asisten susunan pemain aktif untuk klubmu. Kamu bisa mematikannya di sini.",
+        "dropped": "Kamu memilih susunan sendiri, jadi asisten dimatikan.",
+        "handBack": "Serahkan lagi ke asisten",
+        "squadLine": "Asisten sedang memilih susunan pemainmu.",
+        "squadLink": "Lihat Taktik",
+        "itemNote": "Paket memulihkan sebelas pemain utamamu. Asisten bisa mengistirahatkan pemain yang lelah, jadi bisa berbeda dari susunan perkiraan."
       }
     },
     "squad": {

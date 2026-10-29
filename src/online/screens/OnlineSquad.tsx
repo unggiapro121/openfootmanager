@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { AlertTriangle, Users } from "lucide-react";
+import { AlertTriangle, UserCheck, Users } from "lucide-react";
 import { TraitList } from "../../components/TraitBadge";
 import ShirtNumberPicker from "./squad/ShirtNumberPicker";
 import { translatePositionAbbreviation } from "../../components/squad/SquadTab.helpers";
@@ -99,6 +99,21 @@ export default function OnlineSquad() {
 
   return (
     <div className="flex flex-col gap-4">
+      {club.xiAssistant && (
+        <p
+          role="status"
+          className="flex flex-wrap items-center gap-2 text-sm text-gray-700 dark:text-gray-200"
+        >
+          <UserCheck className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
+          {t("online.tactics.xiAssistant.squadLine")}
+          <Link
+            to="/online/tactics"
+            className="rounded font-semibold text-primary-700 underline hover:text-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:text-primary-400 dark:hover:text-primary-300 dark:focus:ring-offset-navy-800"
+          >
+            {t("online.tactics.xiAssistant.squadLink")}
+          </Link>
+        </p>
+      )}
       <ItemShortcuts codes={["teamRecoveryPack"]} target={{ kind: "club" }} />
       <Card>
         <div className="grid grid-cols-1 items-end gap-3 p-4 lg:grid-cols-[minmax(0,1.3fr)_220px_220px_auto]">

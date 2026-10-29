@@ -89,7 +89,9 @@ export type SetupChange =
   | { kind: "playStyle"; playStyle: string }
   | { kind: "matchRoles"; roles: TeamMatchRolesData }
   | { kind: "tacticsPhase"; patch: Partial<TacticsPhaseSettings> }
-  | { kind: "playerRole"; playerId: string; role: PlayerRole };
+  | { kind: "playerRole"; playerId: string; role: PlayerRole }
+  /** The XI assistant turned on or off (C-10 C10-2): the setup itself does not change. */
+  | { kind: "xiAssistant"; on: boolean };
 
 /**
  * `setup` with `change` applied. The server checks the result and drops a role a player can no
@@ -113,5 +115,17 @@ export function applySetupChange(setup: ClubSetup, change: SetupChange): ClubSet
       return { ...setup, tacticsPhase: { ...setup.tacticsPhase, ...change.patch } };
     case "playerRole":
       return { ...setup, playerRoles: { ...setup.playerRoles, [change.playerId]: change.role } };
+    case "xiAssistant":
+      return setup;
   }
+}
+
+/**
+ * The XI assistant's switch a write sends (C-10 C10-2): what the change asks for; a coach's own
+ * eleven turns it off (QR4-1); any other change keeps it as the club has it.
+ */
+export function xiAssistantAfter(current: boolean, change: SetupChange): boolean {
+  if (change.kind === "xiAssistant") return change.on;
+  if (change.kind === "startingXi") return false;
+  return current;
 }

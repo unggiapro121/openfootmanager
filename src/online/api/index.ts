@@ -159,6 +159,7 @@ export type { StyleEffectView } from "./StyleEffectView";
 export type { StyleMasteryView } from "./StyleMasteryView";
 export type { TakeoverKind } from "./TakeoverKind";
 export type { TakeoverView } from "./TakeoverView";
+export type { TierPlacesView } from "./TierPlacesView";
 export type { TokenPair } from "./TokenPair";
 export type { TrainingDayLine } from "./TrainingDayLine";
 export type { TrainingDayView } from "./TrainingDayView";

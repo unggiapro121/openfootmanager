@@ -197,6 +197,20 @@
         "lockedRole": "La tua licenza da allenatore non sblocca ancora il ruolo di {{player}}.",
         "lockedTactics": "Un'istruzione che la tua licenza non sblocca ancora non è al valore predefinito.",
         "unknown": "Il server ha rifiutato questo schieramento per un motivo che questa versione del gioco non conosce. Aggiorna il gioco."
+      },
+      "xiAssistant": {
+        "title": "Assistente formazione",
+        "expected": "Prevista",
+        "onHint": "L'assistente sceglie i tuoi undici al calcio d'inizio in base alla condizione, come gli allenatori dei club dell'IA. Modulo, stile e ruoli restano tuoi.",
+        "offHint": "Gioca l'undici che hai salvato. I giocatori stanchi non verranno fatti riposare.",
+        "savedBroken": "Al tuo undici salvato mancano giocatori, quindi per ora sceglie l'assistente.",
+        "locked": "La formazione è bloccata prima del calcio d'inizio: ora non si può cambiare.",
+        "firstNotice": "L'assistente formazione è attivo per il tuo club. Puoi disattivarlo qui.",
+        "dropped": "Hai scelto tu l'undici, quindi l'assistente si è disattivato.",
+        "handBack": "Ridai all'assistente",
+        "squadLine": "L'assistente sta scegliendo i tuoi undici.",
+        "squadLink": "Vai a Tattica",
+        "itemNote": "Il pacchetto recupera l'undici titolare. L'assistente può far riposare gli stanchi, quindi può differire dall'undici previsto."
       }
     },
     "squad": {

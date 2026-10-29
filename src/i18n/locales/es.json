@@ -197,6 +197,20 @@
         "lockedRole": "Tu licencia de entrenador todavía no abre el rol de {{player}}.",
         "lockedTactics": "Una instrucción que tu licencia todavía no abre no está en su valor por defecto.",
         "unknown": "El servidor rechazó este planteamiento por un motivo que esta versión del juego no conoce. Actualiza el juego."
+      },
+      "xiAssistant": {
+        "title": "Asistente de alineación",
+        "expected": "Prevista",
+        "onHint": "El asistente elige tu once al inicio del partido según la condición, como los técnicos de los clubes de la IA. Tu formación, estilo y roles siguen siendo tuyos.",
+        "offHint": "Juega el once que guardaste. Los jugadores cansados no descansarán.",
+        "savedBroken": "A tu once guardado le faltan jugadores, así que el asistente elige por ahora.",
+        "locked": "La alineación está bloqueada antes del partido: no se puede cambiar ahora.",
+        "firstNotice": "El asistente de alineación está activado para tu club. Puedes desactivarlo aquí.",
+        "dropped": "Elegiste tu propio once, así que el asistente se desactivó.",
+        "handBack": "Devolver al asistente",
+        "squadLine": "El asistente está eligiendo tu once.",
+        "squadLink": "Ver Tácticas",
+        "itemNote": "El paquete recupera a tu once titular. El asistente puede dar descanso a los cansados, así que puede diferir del once previsto."
       }
     },
     "squad": {

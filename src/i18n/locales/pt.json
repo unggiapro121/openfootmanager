@@ -197,6 +197,20 @@
         "lockedRole": "A sua licença de treinador ainda não abre a função de {{player}}.",
         "lockedTactics": "Uma instrução que a sua licença ainda não abre não está no valor por defeito.",
         "unknown": "O servidor recusou esta tática por um motivo que esta versão do jogo não conhece. Atualize o jogo."
+      },
+      "xiAssistant": {
+        "title": "Assistente de onze",
+        "expected": "Previsto",
+        "onHint": "O assistente escolhe o teu onze no apito inicial pela condição, como os treinadores dos clubes da IA. A tua tática, estilo e funções continuam teus.",
+        "offHint": "Joga o onze que guardaste. Os jogadores cansados não descansam.",
+        "savedBroken": "O teu onze guardado não tem jogadores suficientes, por isso o assistente escolhe por agora.",
+        "locked": "O onze está bloqueado antes do jogo: não pode ser alterado agora.",
+        "firstNotice": "O assistente de onze está ligado para o teu clube. Podes desligá-lo aqui.",
+        "dropped": "Escolheste o teu próprio onze, por isso o assistente desligou-se.",
+        "handBack": "Devolver ao assistente",
+        "squadLine": "O assistente está a escolher o teu onze.",
+        "squadLink": "Ver Tática",
+        "itemNote": "O pacote recupera o teu onze principal. O assistente pode poupar os cansados, por isso pode diferir do onze previsto."
       }
     },
     "squad": {

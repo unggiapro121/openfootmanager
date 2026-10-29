@@ -9,6 +9,7 @@ import {
   toBoardTeam,
   toPositionRatings,
   toRosterPlayer,
+  xiAssistantAfter,
 } from "../convert/tactics";
 import type { OnlineApiError } from "../errors";
 import { refreshClub, tracked, useOnlineStore } from "../store/onlineStore";
@@ -76,8 +77,13 @@ export function useOnlineTacticsSource(
 ): {
   source: TacticsBoardSource;
   outcome: SetupOutcome;
+  /** The XI assistant turned on or off (C-10 C10-1). */
+  setAssistant: (on: boolean) => Promise<void>;
+  /** The coach's own eleven just turned the assistant off: the hand-back banner (C10-4). */
+  assistantDropped: boolean;
 } {
   const [outcome, setOutcome] = useState<SetupOutcome>({ kind: "none" });
+  const [assistantDropped, setAssistantDropped] = useState(false);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const key = useActionKey();
 
@@ -86,14 +92,21 @@ export function useOnlineTacticsSource(
       const current = useOnlineStore.getState().club;
       if (!current) throw new Error("no club");
       const setup = applySetupChange(current.setup, change);
+      // Sent with every save (C10-2): a dragged eleven is the coach's own and turns it off.
+      const wasOn = current.xiAssistant ?? false;
+      const xiAssistant = xiAssistantAfter(wasOn, change);
       try {
         const updated = await key.run(
           (idempotencyKey) =>
-            tracked(() => online.clubs.setSetup(setup, current.version, idempotencyKey)),
-          `${current.version}:${JSON.stringify(setup)}`,
+            tracked(() =>
+              online.clubs.setSetup(setup, current.version, idempotencyKey, xiAssistant),
+            ),
+          `${current.version}:${JSON.stringify({ ...setup, xiAssistant })}`,
         );
         useOnlineStore.getState().setClub(updated);
         setOutcome({ kind: "none" });
+        if (change.kind === "xiAssistant") setAssistantDropped(false);
+        else if (wasOn && !updated.xiAssistant) setAssistantDropped(true);
       } catch (failure) {
         const error = failure as OnlineApiError;
         const next = outcomeOf(error);
@@ -120,11 +133,15 @@ export function useOnlineTacticsSource(
       setTacticsPhase: (patch) => write({ kind: "tacticsPhase", patch }),
       setPlayerRole: (playerId, role) => write({ kind: "playerRole", playerId, role }),
       limits,
+      // The assistant's eleven is the server's to keep: the board never saves it on its own.
+      lineupByAssistant: club.xiAssistant ?? false,
     }),
     // `write` reads the store when it runs, so the source changes only with the club and its
     // licence.
     [club, limits, pictures],
   );
 
-  return { source, outcome };
+  const setAssistant = (on: boolean) => write({ kind: "xiAssistant", on });
+
+  return { source, outcome, setAssistant, assistantDropped };
 }

@@ -86,4 +86,9 @@ export interface TacticsBoardSource {
    * in the game, the world editor and an online season without licences: everything is open.
    */
   limits?: TacticsLimits;
+  /**
+   * The eleven shown is the one an assistant expects to pick (online, S-27 C10-3): the board never
+   * saves it on its own, which would turn the assistant off. Absent in the game and the editor.
+   */
+  lineupByAssistant?: boolean;
 }
