@@ -19,7 +19,7 @@ import type { TrainingGroupData } from "../../store/types";
 import type { MyClubView, TrainingPlan } from "../api";
 import type { TrainingFocus, TrainingIntensity, TrainingSchedule } from "../api/domain";
 import { online } from "../client";
-import { toGroupData, toPlanGroups, toTrainingRoster } from "../convert/training";
+import { inSquad, toGroupData, toPlanGroups, toTrainingRoster } from "../convert/training";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import TodaySession from "./training/TodaySession";
 import { useActionKey } from "./useActionKey";
@@ -42,7 +42,8 @@ export default function OnlineTraining() {
 function TrainingScreen({ club }: { club: MyClubView }) {
   const { t } = useTranslation();
   const offline = useOnlineStore((state) => state.network === "offline");
-  const plan = club.trainingPlan;
+  // Kept to the squad, so a player who left the club is neither shown nor sent.
+  const plan = { ...club.trainingPlan, groups: inSquad(club.trainingPlan.groups, club.players) };
   const weekday = useOnlineStore((state) => state.season?.weekday ?? null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<unknown>(null);
