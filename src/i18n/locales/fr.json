@@ -53,7 +53,8 @@
       "coins": "Porte-monnaie",
       "inventory": "Inventaire",
       "shop": "Boutique",
-      "academy": "Centre de formation"
+      "academy": "Centre de formation",
+      "events": "Événements"
     },
     "gate": {
       "clientOutdatedTitle": "Mise à jour nécessaire",
@@ -811,6 +812,27 @@
             "subject": "Un diplôme a dû attendre",
             "body": "Le club n'a pas pu payer les {{fee}} de frais de diplôme : {{player}} reste une saison de plus au centre. Le prochain diplôme est gratuit."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Mission accomplie : {{theme}}",
+            "body": "Vous avez accompli la mission « {{mission}} » de {{theme}}. Ouvrez la page Événements pour réclamer votre récompense.",
+            "bodyUnnamed": "Vous avez accompli une mission d'événement. Ouvrez la page Événements pour réclamer votre récompense."
+          },
+          "claimed": {
+            "subject": "Récompense réclamée pour vous : {{theme}}",
+            "body": "La récompense de la mission « {{mission}} » a été réclamée pour vous.",
+            "bodyUnnamed": "La récompense d'une mission d'événement a été réclamée pour vous."
+          },
+          "lapsed": {
+            "subject": "Récompense non reçue : {{theme}}",
+            "body": "La récompense de la mission « {{mission}} » n'a pas pu être donnée : {{reason}}.",
+            "bodyUnnamed": "La récompense d'une mission d'événement n'a pas pu être donnée : {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Récompenses d'événement à réclamer : {{theme}}",
+            "body": "Vous avez des récompenses d'événement non réclamées. Date limite : {{until}}. Ensuite, le serveur les réclame pour vous ; s'il ne le peut pas, un message vous en donne la raison."
+          }
         }
       }
     },
@@ -849,7 +871,8 @@
         "coin_clawback": "Reprises après un remboursement",
         "reversal": "Annulation",
         "item_purchase": "Achat en boutique",
-        "item_refund": "Remboursement boutique"
+        "item_refund": "Remboursement boutique",
+        "event_reward": "Récompense d'événement"
       }
     },
     "items": {
@@ -1197,6 +1220,74 @@
         "wagesNote": "{{wage}} × {{n}} jeunes",
         "fee": "Frais de diplôme",
         "feeNote": "Par jeune · au moins {{days}} jours au centre"
+      }
+    },
+    "events": {
+      "notOnServer": "Les événements ne sont pas encore ouverts sur ce serveur.",
+      "disabled": "Cette saison n'a pas d'événements.",
+      "empty": "Aucun événement pour l'instant. Un nouvel événement apparaît ici 7 jours avant son début.",
+      "group": {
+        "running": "En cours",
+        "ended": "Terminés, récompenses à réclamer",
+        "scheduled": "À venir",
+        "closed": "Clos"
+      },
+      "time": {
+        "running": "Se termine dans {{countdown}}",
+        "ended": "À réclamer avant le {{moment}}, reste {{countdown}}",
+        "scheduled": "Commence dans {{countdown}}",
+        "closed": "Clos"
+      },
+      "theme": {
+        "welcome": "Bienvenue au nouvel entraîneur",
+        "weekly": "Événement de la semaine",
+        "weekend": "Événement du week-end",
+        "seasonOpener": "Lancement de saison",
+        "seasonFinale": "Clôture de saison",
+        "other": "Événement"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Dirigez vous-même {{target}} matchs de championnat",
+        "leagueWinsDirected": "Gagnez {{target}} matchs de championnat dirigés par vous",
+        "offlineMatches": "Jouez {{target}} matchs hors ligne",
+        "seasonPromoted": "Montez de division à la fin de la saison",
+        "seasonFinishTop": "Terminez dans les {{target}} premiers du championnat",
+        "seasonChampion": "Remportez le championnat",
+        "other": "Mission spéciale"
+      },
+      "hint": {
+        "directed": "Seuls comptent les matchs que vous dirigez vous-même, pas ceux que l'IA joue pour vous.",
+        "offline": "Seuls comptent les matchs officiels que vous dirigez vous-même (Aller sur le Terrain), dans la limite quotidienne (les matchs de championnat en ligne y comptent aussi), quand la partie est connectée à ce compte et que le résultat a atteint le serveur.",
+        "seasonEnd": "Compté à la clôture de la saison, si elle a lieu avant la fin de l'événement."
+      },
+      "levels": {
+        "range": "Championnats de niveau {{from}}–{{to}} uniquement",
+        "one": "Championnat de niveau {{from}} uniquement",
+        "from": "Championnats de niveau {{from}} et plus uniquement"
+      },
+      "met": "Atteint",
+      "notMet": "Pas encore atteint",
+      "rewards": "Récompenses",
+      "expires": "expire {{days}} jours après réception",
+      "claim": "Réclamer",
+      "claiming": "Réclamation…",
+      "claimAria": "Réclamer les récompenses de : {{mission}}",
+      "claimed": "Réclamée",
+      "justClaimed": "Reçu : {{rewards}}",
+      "autoClaiming": "Réclamation automatique en cours",
+      "lapsed": "Non reçue : {{reason}}",
+      "lapsedUnknown": "La récompense n'a pas pu être donnée. Votre messagerie en donne la raison.",
+      "reason": {
+        "grantLimitReached": "l'objet a atteint sa limite de la saison",
+        "coinLimitReached": "la limite de pièces d'événements de la saison est atteinte",
+        "stackFull": "votre inventaire est plein",
+        "inventoryLocked": "vos objets ou vos pièces sont bloqués pour un contrôle",
+        "disabled": "les objets ou les événements sont désactivés cette saison",
+        "unavailable": "le serveur n'a pas pu la donner, contactez le support"
+      },
+      "notice": {
+        "completed": "Mission accomplie : {{mission}}",
+        "completedUnnamed": "Vous venez d'accomplir une mission d'événement."
       }
     }
   },
@@ -4918,6 +5009,14 @@
         "sessionToday": "Le club s'est déjà entraîné aujourd'hui.",
         "sessionCap": "6 séances ont déjà eu lieu sur 7 jours. Vous pourrez vous entraîner à nouveau à partir du jour {{nextAllowedDay}}.",
         "sessionCapSeason": "6 séances ont déjà eu lieu sur 7 jours et plus aucun jour de la saison n'en permet une autre."
+      },
+      "events": {
+        "disabled": "Les événements sont désactivés cette saison.",
+        "notFound": "Cet événement ou cette mission n'existe plus.",
+        "notCompleted": "Cette mission n'est pas encore accomplie.",
+        "alreadyClaimed": "Cette récompense a déjà été réclamée.",
+        "closed": "Le délai pour réclamer est passé. Les récompenses non réclamées le seront pour vous à la clôture de l'événement.",
+        "coinLimitReached": "Vous avez déjà reçu les {{limit}} pièces d'événements de cette saison : la récompense de cette mission, objets compris, n'a donc pas été donnée. Réessayez au début d'une nouvelle saison, avant la date limite."
       }
     },
     "sender": {

@@ -53,7 +53,8 @@
       "coins": "Monedero de monedas",
       "inventory": "Inventario",
       "shop": "Tienda",
-      "academy": "Cantera"
+      "academy": "Cantera",
+      "events": "Eventos"
     },
     "gate": {
       "clientOutdatedTitle": "Actualización necesaria",
@@ -811,6 +812,27 @@
             "subject": "Una graduación ha tenido que esperar",
             "body": "El club no pudo pagar la tasa de graduación de {{fee}}, así que {{player}} sigue en la cantera una temporada más. La próxima graduación es gratis."
           }
+        },
+        "event": {
+          "completed": {
+            "subject": "Misión completada: {{theme}}",
+            "body": "Completaste la misión «{{mission}}» de {{theme}}. Abre la página de Eventos para reclamar tu recompensa.",
+            "bodyUnnamed": "Completaste una misión de evento. Abre la página de Eventos para reclamar tu recompensa."
+          },
+          "claimed": {
+            "subject": "Recompensa reclamada por ti: {{theme}}",
+            "body": "La recompensa de la misión «{{mission}}» se reclamó por ti.",
+            "bodyUnnamed": "La recompensa de una misión de evento se reclamó por ti."
+          },
+          "lapsed": {
+            "subject": "Recompensa no recibida: {{theme}}",
+            "body": "No se pudo entregar la recompensa de la misión «{{mission}}»: {{reason}}.",
+            "bodyUnnamed": "No se pudo entregar la recompensa de una misión de evento: {{reason}}."
+          },
+          "claimReminder": {
+            "subject": "Recompensas de evento por reclamar: {{theme}}",
+            "body": "Tienes recompensas de evento sin reclamar. Plazo: {{until}}. Después, el servidor las reclama por ti; si no puede, un correo te dirá por qué."
+          }
         }
       }
     },
@@ -849,7 +871,8 @@
         "coin_clawback": "Retiradas tras un reembolso",
         "reversal": "Anulación",
         "item_purchase": "Compra en la tienda",
-        "item_refund": "Reembolso de la tienda"
+        "item_refund": "Reembolso de la tienda",
+        "event_reward": "Recompensa de evento"
       }
     },
     "items": {
@@ -1197,6 +1220,74 @@
         "wagesNote": "{{wage}} × {{n}} juveniles",
         "fee": "Tasa de graduación",
         "feeNote": "Por juvenil · al menos {{days}} días en la cantera"
+      }
+    },
+    "events": {
+      "notOnServer": "Los eventos aún no están abiertos en este servidor.",
+      "disabled": "Esta temporada no tiene eventos.",
+      "empty": "No hay eventos ahora. Un evento nuevo aparece aquí 7 días antes de empezar.",
+      "group": {
+        "running": "En curso",
+        "ended": "Terminados, con recompensas por reclamar",
+        "scheduled": "Próximamente",
+        "closed": "Cerrados"
+      },
+      "time": {
+        "running": "Termina en {{countdown}}",
+        "ended": "Reclama antes del {{moment}}, quedan {{countdown}}",
+        "scheduled": "Empieza en {{countdown}}",
+        "closed": "Cerrado"
+      },
+      "theme": {
+        "welcome": "Bienvenida al nuevo entrenador",
+        "weekly": "Evento semanal",
+        "weekend": "Evento de fin de semana",
+        "seasonOpener": "Inicio de temporada",
+        "seasonFinale": "Cierre de temporada",
+        "other": "Evento"
+      },
+      "mission": {
+        "leagueMatchesDirected": "Dirige tú mismo {{target}} partidos de liga",
+        "leagueWinsDirected": "Gana {{target}} partidos de liga que dirijas tú mismo",
+        "offlineMatches": "Juega {{target}} partidos sin conexión",
+        "seasonPromoted": "Asciende al terminar la temporada",
+        "seasonFinishTop": "Termina entre los {{target}} primeros de la liga",
+        "seasonChampion": "Gana la liga",
+        "other": "Misión especial"
+      },
+      "hint": {
+        "directed": "Solo cuentan los partidos que diriges tú, no los que la IA juega por ti.",
+        "offline": "Solo cuentan los partidos oficiales que diriges tú (Ir al Campo), dentro del límite diario (los partidos de liga en línea también cuentan para él), con la partida conectada a esta cuenta y el resultado enviado al servidor.",
+        "seasonEnd": "Se cuenta al cerrar la temporada, si cierra antes de que termine el evento."
+      },
+      "levels": {
+        "range": "Solo ligas de nivel {{from}}–{{to}}",
+        "one": "Solo ligas de nivel {{from}}",
+        "from": "Solo ligas de nivel {{from}} o superior"
+      },
+      "met": "Logrado",
+      "notMet": "Aún no logrado",
+      "rewards": "Recompensas",
+      "expires": "caduca {{days}} días después de reclamarla",
+      "claim": "Reclamar",
+      "claiming": "Reclamando…",
+      "claimAria": "Reclamar las recompensas de: {{mission}}",
+      "claimed": "Reclamada",
+      "justClaimed": "Reclamado: {{rewards}}",
+      "autoClaiming": "Se está reclamando por ti",
+      "lapsed": "No recibida: {{reason}}",
+      "lapsedUnknown": "No se pudo entregar la recompensa. Tu buzón explica el motivo.",
+      "reason": {
+        "grantLimitReached": "el objeto alcanzó su límite de la temporada",
+        "coinLimitReached": "se alcanzó el límite de monedas de eventos de la temporada",
+        "stackFull": "tu inventario está lleno",
+        "inventoryLocked": "tus objetos o monedas están bloqueados para una revisión",
+        "disabled": "los objetos o los eventos están desactivados esta temporada",
+        "unavailable": "el servidor no pudo entregarla, contacta con soporte"
+      },
+      "notice": {
+        "completed": "Misión completada: {{mission}}",
+        "completedUnnamed": "Acabas de completar una misión de evento."
       }
     }
   },
@@ -4918,6 +5009,14 @@
         "sessionToday": "El club ya entrenó hoy.",
         "sessionCap": "Ya hay 6 sesiones en 7 días. Podrás volver a entrenar desde el día {{nextAllowedDay}}.",
         "sessionCapSeason": "Ya hay 6 sesiones en 7 días y no queda ningún día de la temporada que permita otra."
+      },
+      "events": {
+        "disabled": "Los eventos están desactivados esta temporada.",
+        "notFound": "Este evento o misión ya no existe.",
+        "notCompleted": "Esta misión aún no está completada.",
+        "alreadyClaimed": "Esta recompensa ya se reclamó.",
+        "closed": "Pasó el plazo para reclamar. Las recompensas sin reclamar se reclamarán por ti cuando cierre el evento.",
+        "coinLimitReached": "Ya recibiste las {{limit}} monedas de eventos de esta temporada, así que no se entregó la recompensa de esta misión, objetos incluidos. Vuelve a intentarlo cuando empiece una nueva temporada, antes del plazo."
       }
     },
     "sender": {

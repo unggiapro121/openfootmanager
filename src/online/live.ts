@@ -147,6 +147,12 @@ export type AccountRing =
    * event this build does not know. The academy is read again for any of them.
    */
   | { kind: "academy"; event?: "scoutDone" | string; tripId?: string }
+  /**
+   * The coach's events (S-19, C-7d): a mission's progress moved (`progress`), one finished
+   * (`completed`), or an event this build does not know. The events are read again for any of
+   * them; the ring names the event, never the mission.
+   */
+  | { kind: "event"; event?: "progress" | "completed" | string; eventId?: string }
   | { kind: "unknown" };
 
 /** Read a ring of the account channel; a kind this build does not know is `unknown` (E6-15). */
@@ -158,6 +164,7 @@ export function readAccountRing(data: unknown): AccountRing {
     auctionId?: unknown;
     itemCode?: unknown;
     tripId?: unknown;
+    eventId?: unknown;
   };
   if (ring.kind === "friendly") return { kind: "friendly" };
   if (ring.kind === "finance") return { kind: "finance" };
@@ -180,6 +187,13 @@ export function readAccountRing(data: unknown): AccountRing {
       kind: "academy",
       event: typeof ring.event === "string" ? ring.event : undefined,
       tripId: typeof ring.tripId === "string" ? ring.tripId : undefined,
+    };
+  }
+  if (ring.kind === "event") {
+    return {
+      kind: "event",
+      event: typeof ring.event === "string" ? ring.event : undefined,
+      eventId: typeof ring.eventId === "string" ? ring.eventId : undefined,
     };
   }
   return { kind: "unknown" };

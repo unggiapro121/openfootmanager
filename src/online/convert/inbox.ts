@@ -2,7 +2,13 @@ import type { TFunction } from "i18next";
 import { resolveInjuryName } from "../../lib/injury";
 import { formatExactMoney } from "../../lib/valueFormatting";
 import type { MessageData } from "../../store/types";
-import type { InboxMessageView } from "../api";
+import type { InboxMessageView, LevelRange } from "../api";
+import {
+  lapsedReasonText,
+  type MissionWords,
+  missionText,
+  themeName,
+} from "../screens/events/eventText";
 
 /** The offline inbox's category each kind of message is shown under (its icon and colour). */
 const CATEGORY: Record<string, string> = {
@@ -31,7 +37,43 @@ const CATEGORY: Record<string, string> = {
   "academy.scoutDone": "ScoutReport",
   "academy.graduated": "ScoutReport",
   "academy.graduationDeferred": "ScoutReport",
+  // Events (S-19, C-7d): under the system category, no new one (C-7 C7-58).
+  "event.completed": "System",
+  "event.claimed": "System",
+  "event.lapsed": "System",
+  "event.claimReminder": "System",
 };
+
+/** The mission an event mail names, with its event's theme. */
+export type EventMission = MissionWords & { theme: string };
+
+const levelsOf = (value: unknown): LevelRange | undefined => {
+  const range = value as { from?: unknown; to?: unknown } | null | undefined;
+  return typeof range?.from === "number" && typeof range.to === "number"
+    ? { from: range.from, to: range.to }
+    : undefined;
+};
+
+/**
+ * The mission an event mail is about (C-7 C7-58): from the mail's own parameters, else from the
+ * events the store holds, else none, and the mail says "a mission".
+ */
+function mailMission(
+  params: Record<string, unknown>,
+  eventMission: (eventId: string, code: string) => EventMission | undefined,
+): EventMission | undefined {
+  if (typeof params.kind === "string" && typeof params.target === "number") {
+    return {
+      kind: params.kind,
+      target: params.target,
+      levels: levelsOf(params.levels),
+      theme: typeof params.theme === "string" ? params.theme : "",
+    };
+  }
+  const eventId = text(params.eventId);
+  const code = text(params.missionCode);
+  return eventId && code ? eventMission(eventId, code) : undefined;
+}
 
 /** Kinds that have their own words; any other is shown as a plain notice. */
 const KINDS = new Set(Object.keys(CATEGORY));
@@ -48,13 +90,14 @@ const count = (value: unknown): number => {
  * One inbox message as the offline inbox's panes read a message (the list, the detail), with its
  * words written here from the kind and its parameters, in the player's language. A message names
  * no actions: the online inbox only tells. `youngsterName` names an academy youngster a mail gives
- * only by id.
+ * only by id; `eventMission` an event's mission a mail gives only by its codes.
  */
 export function toMessageData(
   message: InboxMessageView,
   t: TFunction,
   clubName: string,
   youngsterName: (id: string) => string | undefined = () => undefined,
+  eventMission: (eventId: string, code: string) => EventMission | undefined = () => undefined,
 ): MessageData {
   const kind = KINDS.has(message.kind) ? message.kind : "other";
   const params = message.params as Record<string, unknown>;
@@ -131,6 +174,22 @@ export function toMessageData(
     ].filter(Boolean);
     if (extra.length > 0) options.extra = ` ${extra.join(" ")}`;
     else options.extra = "";
+  } else if (kind === "event.claimReminder") {
+    const until = new Date(String(params.claimUntil));
+    options = {
+      theme: themeName(t, text(params.theme)),
+      until: Number.isNaN(until.getTime())
+        ? ""
+        : until.toLocaleString([], { dateStyle: "medium", timeStyle: "short" }),
+    };
+  } else if (kind.startsWith("event.")) {
+    const mission = mailMission(params, eventMission);
+    options = {
+      theme: themeName(t, mission?.theme || text(params.theme)),
+      mission: mission ? missionText(t, mission) : "",
+      reason: lapsedReasonText(t, text(params.reason) ?? "unavailable"),
+    };
+    if (!mission) bodyKey = `${base}.bodyUnnamed`;
   } else if (kind === "academy.graduationDeferred") {
     // The mail names no one: the academy the store holds may (PO bản 4).
     const id = text(params.playerId);

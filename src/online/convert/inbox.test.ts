@@ -179,3 +179,78 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(unknown.body).toContain('"player":"online.academy.aYoungster"');
   });
 });
+
+describe("an event mail", () => {
+  // Given the four event mails with the mission named in their parameters,
+  // when they are worded,
+  // then each is a system mail naming the mission, its event, the reason or the deadline.
+  it("names the mission from the mail's parameters", () => {
+    const mission = {
+      eventId: "e",
+      missionCode: "w1",
+      theme: "weekly",
+      kind: "leagueWinsDirected",
+      target: 3,
+    };
+    const completed = toMessageData(mail("event.completed", mission), t, "A");
+    const claimed = toMessageData(mail("event.claimed", mission), t, "A");
+    const lapsed = toMessageData(mail("event.lapsed", { ...mission, reason: "stackFull" }), t, "A");
+    const reminder = toMessageData(
+      mail("event.claimReminder", {
+        eventId: "e",
+        theme: "weekly",
+        claimUntil: "2026-11-12T02:35:00Z",
+      }),
+      t,
+      "A",
+    );
+
+    expect([completed, claimed, lapsed, reminder].map((message) => message.category)).toEqual([
+      "System",
+      "System",
+      "System",
+      "System",
+    ]);
+    expect(completed.subject).toMatch(/^online\.inbox\.kinds\.event\.completed\.subject/);
+    expect(completed.body).toMatch(/^online\.inbox\.kinds\.event\.completed\.body\|/);
+    expect(completed.body).toContain(
+      '"mission":"online.events.mission.leagueWinsDirected|{\\"target\\":3}"',
+    );
+    expect(completed.body).toContain('"theme":"online.events.theme.weekly"');
+    expect(claimed.body).toMatch(/^online\.inbox\.kinds\.event\.claimed\.body\|/);
+    expect(lapsed.body).toContain('"reason":"online.events.reason.stackFull"');
+    expect(reminder.body).toMatch(/^online\.inbox\.kinds\.event\.claimReminder\.body\|/);
+    expect(reminder.body).not.toContain('"until":""');
+  });
+
+  // Given event mails carrying only their codes, one whose mission the store holds and one it
+  // does not, and a lapsed one with a reason this build does not know,
+  // when they are worded,
+  // then the first is named from the store, the second says "a mission", and the reason reads as
+  // the server's "could not give it".
+  it("names the mission from the store, or says a mission", () => {
+    const fromStore = (eventId: string, code: string) =>
+      eventId === "e" && code === "w1"
+        ? { kind: "seasonFinishTop", target: 1, theme: "seasonFinale" }
+        : undefined;
+    const known = toMessageData(
+      mail("event.completed", { eventId: "e", missionCode: "w1" }),
+      t,
+      "A",
+      undefined,
+      fromStore,
+    );
+    const unknown = toMessageData(
+      mail("event.lapsed", { eventId: "e", missionCode: "w9", reason: "meteor" }),
+      t,
+      "A",
+      undefined,
+      fromStore,
+    );
+
+    expect(known.body).toContain('"mission":"online.events.mission.seasonChampion"');
+    expect(known.body).toContain('"theme":"online.events.theme.seasonFinale"');
+    expect(unknown.body).toMatch(/^online\.inbox\.kinds\.event\.lapsed\.bodyUnnamed\|/);
+    expect(unknown.body).toContain('"reason":"online.events.reason.unavailable"');
+  });
+});

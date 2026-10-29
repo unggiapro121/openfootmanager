@@ -158,7 +158,9 @@
     "coach.region",
     "online.nav.shop",
     "online.academy.send.region",
-    "online.academy.scout.elite"
+    "online.academy.scout.elite",
+    "online.nav.events",
+    "online.events.theme.other"
   ],
   "fr": [
     "online.overview.placeAria",
@@ -793,7 +795,8 @@
     "coachServer.email",
     "online.shop.total",
     "online.inventory.styleLevel",
-    "online.academy.scout.elite"
+    "online.academy.scout.elite",
+    "online.events.theme.other"
   ],
   "vi": [
     "online.market.ai",
