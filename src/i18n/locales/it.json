@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "I tuoi oggetti sono sbloccati",
             "body": "La verifica dei tuoi oggetti è conclusa. Puoi usarli di nuovo."
+          },
+          "itemsGranted": {
+            "subject": "Hai ricevuto {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} è ora nel tuo inventario.{{extra}}",
+            "expires": "Utilizzabile fino al {{until}}; poi scompare."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} tolto",
+            "body": "{{item}} ×{{count}} è stato tolto dal tuo inventario."
+          },
+          "purchaseRefunded": {
+            "subject": "Acquisto rimborsato: {{item}}",
+            "body": "Il tuo acquisto di {{item}} ×{{count}} è stato rimborsato: {{coins}} monete sono tornate nel tuo portafoglio."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Vedi la nuova asta",
-      "viewCaps": "Vedi i tuoi tetti di livello"
+      "viewCaps": "Vedi i tuoi tetti di livello",
+      "reasonLine": "Motivo: {{reason}}"
     },
     "coins": {
       "notOnServer": "Le monete non sono ancora disponibili su questo server.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Hai ricevuto {{item}}.",
         "refunded": "Un acquisto di {{item}} è stato rimborsato; le monete sono tornate nel tuo portafoglio.",
-        "changed": "I tuoi oggetti sono cambiati."
+        "changed": "I tuoi oggetti sono cambiati.",
+        "revoked": "{{item}} ×{{count}} è stato tolto dal tuo inventario."
       },
       "reason": {
         "conditionFull": "La condizione fisica è già al massimo",
@@ -1036,7 +1051,11 @@
       "previewing": "Verifica dell'effetto…",
       "confirmUse": "Usa",
       "used": "Hai usato {{item}}.",
-      "shortcut": "Usa {{item}} (×{{count}})"
+      "shortcut": "Usa {{item}} (×{{count}})",
+      "needs": {
+        "items": "Questa stagione non ha regole per gli oggetti, quindi questo oggetto non è in vendita.",
+        "academy": "Questa stagione non ha un settore giovanile, quindi questo oggetto non è in vendita."
+      }
     },
     "inventory": {
       "notOnServer": "Questo server non ha ancora oggetti.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Imposta la quantità a {{n}}",
       "quantityLabel": "Quantità",
       "openInventory": "Apri l'inventario",
-      "closeNotice": "Chiudi avviso"
+      "closeNotice": "Chiudi avviso",
+      "needsAcademy": "Si apre con il settore giovanile"
     },
     "academy": {
       "notOnServer": "Questo server non ha ancora un settore giovanile.",
@@ -5128,7 +5148,8 @@
       },
       "shop": {
         "quantityInvalid": "Acquista tra 1 e 99 alla volta.",
-        "itemNotSold": "Questo oggetto non è in vendita al momento."
+        "itemNotSold": "Questo oggetto non è in vendita al momento.",
+        "notUsableNow": "Questo oggetto non è utilizzabile in questa stagione, quindi non è in vendita."
       },
       "training": {
         "manualOff": "L'allenamento manuale non è attivo in questa stagione.",

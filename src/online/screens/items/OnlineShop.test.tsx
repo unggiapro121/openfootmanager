@@ -147,13 +147,25 @@ describe("the shop", () => {
     expect(await screen.findByText("online.shop.notOnServer")).toBeTruthy();
   });
 
-  // Given a season without item rules (a drink with numbers, a medkit without) nor academy
-  // rules, a rename card and an hourglass,
+  // Given a season without item rules nor an academy, as the server says (`needs`, S-17d): a
+  // drink with numbers, a medkit that needs item rules, an hourglass that needs an academy, and
+  // a rename card,
   // when the shop opens,
-  // then the item with its numbers says what it does and can be bought, the medkit and the
-  // hourglass cannot be used this season, the rename card is always for sale.
+  // then the drink can be bought, the medkit cannot be used this season, the hourglass opens
+  // with the academy, the rename card is always for sale.
   it("sells only what can be used this season", async () => {
-    serve();
+    serve({
+      "GET v1/shop": ok(
+        shop({
+          items: [
+            offer("energyDrinkSmall", { effect: { condition: 15 } }),
+            offer("medkitBandage", { needs: "items", maxPurchase: 0 }),
+            offer("timeSkip", { powerClass: "b", needs: "academy", maxPurchase: 0 }),
+            offer("playerRename", { powerClass: "a", price: 20 }),
+          ],
+        }),
+      ),
+    });
     renderOnline("/online/shop");
 
     const drink = await offerOf("energyDrinkSmall");
@@ -161,22 +173,41 @@ describe("the shop", () => {
     const medkit = await offerOf("medkitBandage");
     expect(buyIn(medkit).disabled).toBe(true);
     expect(medkit.textContent).toContain("online.shop.notThisSeason");
+    expect(medkit.textContent).not.toContain("online.shop.full");
     const hourglass = await offerOf("timeSkip");
     expect(buyIn(hourglass).disabled).toBe(true);
-    await waitFor(() => expect(hourglass.textContent).toContain("online.shop.notThisSeason"));
+    expect(hourglass.textContent).toContain("online.shop.needsAcademy");
+    expect(hourglass.textContent).not.toContain("online.shop.full");
     expect(buyIn(await offerOf("playerRename")).disabled).toBe(false);
     expect(screen.getByText("online.shop.neverExpire")).toBeTruthy();
   });
 
-  // Given a season whose academy is open (C-7c),
+  // Given a server older than S-17d (no `needs`), a season without item rules, and a coach with
+  // no club whose academy is not read,
+  // when the shop opens,
+  // then the medkit without numbers still cannot be used this season, and the hourglass the
+  // server sells is for sale (no academy is asked for: only `needs` holds it back, S-17d P-3).
+  it("keeps an older server's rule for an item without numbers", async () => {
+    serve({ "GET v1/clubs/mine": fail(404, "be.error.notFound") });
+    renderOnline("/online/shop");
+
+    const medkit = await offerOf("medkitBandage");
+    expect(buyIn(medkit).disabled).toBe(true);
+    expect(medkit.textContent).toContain("online.shop.notThisSeason");
+    expect(buyIn(await offerOf("timeSkip")).disabled).toBe(false);
+    expect(sent("GET", "v1/clubs/mine/academy")).toEqual([]);
+  });
+
+  // Given a season with an academy, closed and waiting for the next one, so the club's academy
+  // reads as off while the server still sells its tickets (S-17d P-3),
   // when the shop opens,
   // then the hourglass and the scout tickets can be bought.
-  it("sells the academy's items while its season has an academy", async () => {
-    serve({ "GET v1/clubs/mine/academy": ok(academyOf(true)) });
+  it("sells the academy's items between two seasons", async () => {
+    serve({ "GET v1/clubs/mine/academy": ok(academyOf(false)) });
     renderOnline("/online/shop");
 
     const hourglass = await offerOf("timeSkip");
-    await waitFor(() => expect(buyIn(hourglass).disabled).toBe(false));
+    expect(buyIn(hourglass).disabled).toBe(false);
     expect(hourglass.textContent).not.toContain("online.shop.notThisSeason");
   });
 
@@ -276,6 +307,37 @@ describe("buying", () => {
     ).toBe("2");
     await waitFor(() => expect(sent("GET", "v1/shop").length).toBe(shopReads + 1));
     expect(screen.getByRole("dialog")).toBeTruthy();
+  });
+
+  // Given a season that stopped selling the drink while its dialog was open,
+  // when the purchase is refused as not usable now (S-17d),
+  // then the shop is read again, and the drink's card says it cannot be used this season.
+  it("reads the shop again when the season cannot use the item", async () => {
+    let refused = false;
+    serve({
+      "GET v1/shop": () =>
+        ok(
+          refused
+            ? shop({ items: [offer("energyDrinkSmall", { needs: "items", maxPurchase: 0 })] })
+            : shop(),
+        ),
+      "POST v1/shop/purchases": () => {
+        refused = true;
+        return fail(409, "be.error.shop.notUsableNow", { details: { params: { needs: "items" } } });
+      },
+    });
+    renderOnline("/online/shop");
+    fireEvent.click(buyIn(await offerOf("energyDrinkSmall")));
+    const dialog = await screen.findByRole("dialog");
+
+    fireEvent.click(within(dialog).getByRole("button", { name: /^online\.shop\.confirm/ }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("article", { name: /energyDrinkSmall/ }).textContent).toContain(
+        "online.shop.notThisSeason",
+      ),
+    );
+    expect(buyIn(screen.getByRole("article", { name: /energyDrinkSmall/ })).disabled).toBe(true);
   });
 
   // Given a link from a rename dialog (`?item=playerRename`),

@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Barangmu sudah dibuka kuncinya",
             "body": "Pemeriksaan barangmu sudah selesai. Kamu bisa memakainya lagi."
+          },
+          "itemsGranted": {
+            "subject": "Kamu menerima {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} sekarang ada di inventarismu.{{extra}}",
+            "expires": "Bisa dipakai sampai {{until}}; setelah itu hilang."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} ditarik",
+            "body": "{{item}} ×{{count}} telah ditarik dari inventarismu."
+          },
+          "purchaseRefunded": {
+            "subject": "Pembelian dikembalikan: {{item}}",
+            "body": "Pembelian {{item}} ×{{count}} milikmu telah dikembalikan: {{coins}} koin sudah kembali ke dompetmu."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Lihat lelang baru",
-      "viewCaps": "Lihat batas levelmu"
+      "viewCaps": "Lihat batas levelmu",
+      "reasonLine": "Alasan: {{reason}}"
     },
     "coins": {
       "notOnServer": "Koin belum dibuka di server ini.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Kamu menerima {{item}}.",
         "refunded": "Pembelian {{item}} telah dikembalikan; koin sudah kembali ke dompetmu.",
-        "changed": "Barangmu berubah."
+        "changed": "Barangmu berubah.",
+        "revoked": "{{item}} ×{{count}} telah ditarik dari inventarismu."
       },
       "reason": {
         "conditionFull": "Kondisi sudah penuh",
@@ -1036,7 +1051,11 @@
       "previewing": "Memeriksa efeknya…",
       "confirmUse": "Pakai",
       "used": "{{item}} dipakai.",
-      "shortcut": "Pakai {{item}} (×{{count}})"
+      "shortcut": "Pakai {{item}} (×{{count}})",
+      "needs": {
+        "items": "Musim ini tidak punya aturan barang, jadi barang ini tidak dijual.",
+        "academy": "Musim ini tidak punya akademi, jadi barang ini tidak dijual."
+      }
     },
     "inventory": {
       "notOnServer": "Server ini belum punya barang.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Atur jumlah ke {{n}}",
       "quantityLabel": "Jumlah",
       "openInventory": "Buka inventaris",
-      "closeNotice": "Tutup pemberitahuan"
+      "closeNotice": "Tutup pemberitahuan",
+      "needsAcademy": "Dibuka bersama akademi"
     },
     "academy": {
       "notOnServer": "Server ini belum punya akademi muda.",
@@ -5128,7 +5148,8 @@
       },
       "shop": {
         "quantityInvalid": "Beli antara 1 dan 99 sekaligus.",
-        "itemNotSold": "Item ini sedang tidak dijual."
+        "itemNotSold": "Item ini sedang tidak dijual.",
+        "notUsableNow": "Barang ini tidak bisa dipakai musim ini, jadi tidak dijual."
       },
       "training": {
         "manualOff": "Latihan manual tidak aktif di musim ini.",

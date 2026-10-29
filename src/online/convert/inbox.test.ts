@@ -1,5 +1,6 @@
-import type { TFunction } from "i18next";
+import { createInstance, type TFunction } from "i18next";
 import { describe, expect, it } from "vitest";
+import en from "../../i18n/locales/en.json";
 import type { InboxMessageView } from "../api";
 import { toMessageData } from "./inbox";
 
@@ -134,6 +135,106 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(locked.category).toBe("BoardDirective");
     expect(locked.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsLocked\.subject/);
     expect(unlocked.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsUnlocked\.subject/);
+  });
+
+  // Given a SuperAdmin who gave 3 drinks until a date, took 2 back and refunded a purchase, each
+  // with a reason (S-17d, C-7b2),
+  // when they are worded,
+  // then each says the item and how many, the gift its end date, the refund its coins, each ends
+  // with the reason on its own line, and opens the inventory, or the wallet for the refund.
+  it("words what a SuperAdmin gave, took back or refunded, with the reason", () => {
+    const given = toMessageData(
+      mail("account.itemsGranted", {
+        itemCode: "energyDrinkSmall",
+        quantity: 3,
+        expiresAt: "2026-11-05T12:00:00Z",
+        reason: "Match server outage",
+      }),
+      t,
+      "A",
+    );
+    const taken = toMessageData(
+      mail("account.itemsRevoked", {
+        itemCode: "energyDrinkSmall",
+        quantity: 2,
+        reason: "Given twice",
+      }),
+      t,
+      "A",
+    );
+    const refunded = toMessageData(
+      mail("account.purchaseRefunded", {
+        itemCode: "timeSkip",
+        quantity: 1,
+        coins: 10,
+        reason: "Bought by mistake",
+        purchaseTxnId: "x",
+      }),
+      t,
+      "A",
+    );
+
+    expect(given.subject).toMatch(/^online\.inbox\.kinds\.account\.itemsGranted\.subject\|/);
+    expect(given.subject).toContain('"item":"online.items.energyDrinkSmall.name|');
+    expect(given.subject).toContain('"count":3');
+    expect(given.body).toContain("online.inbox.kinds.account.itemsGranted.expires");
+    expect(given.body.split("\n")).toEqual([
+      expect.stringMatching(/^online\.inbox\.kinds\.account\.itemsGranted\.body\|/),
+      'online.inbox.reasonLine|{"reason":"Match server outage"}',
+    ]);
+    expect(given.category).toBe("BoardDirective");
+    expect(given.actions[0].action_type).toEqual({ NavigateTo: { route: "/online/inventory" } });
+
+    expect(taken.subject).toContain('"count":2');
+    expect(taken.body).not.toContain("expires");
+    expect(taken.body).toMatch(/\nonline\.inbox\.reasonLine\|\{"reason":"Given twice"\}$/);
+    expect(taken.actions[0].action_type).toEqual({ NavigateTo: { route: "/online/inventory" } });
+
+    expect(refunded.body).toContain('"coins":10');
+    expect(refunded.body).toMatch(/reasonLine\|\{"reason":"Bought by mistake"\}$/);
+    expect(refunded.category).toBe("Finance");
+    expect(refunded.actions[0].action_type).toEqual({ NavigateTo: { route: "/online/coins" } });
+  });
+
+  // Given a gift with no end date and no reason (a server that sends none),
+  // when it is worded,
+  // then it says neither an end date nor a reason line.
+  it("leaves out the end date and the reason a mail does not have", () => {
+    const given = toMessageData(
+      mail("account.itemsGranted", { itemCode: "medkitBandage", quantity: 1, reason: "  " }),
+      t,
+      "A",
+    );
+
+    expect(given.body).not.toContain("expires");
+    expect(given.body).not.toContain("reasonLine");
+    expect(given.body).not.toContain("\n");
+  });
+
+  // Given a reason a SuperAdmin typed with markup, a link, a placeholder and two lines,
+  // when the mail is worded in English,
+  // then the reason is kept as the very text typed (Qs17d-1): nothing is read as a placeholder,
+  // and its own line break stays, for the inbox to show each line as plain text.
+  it("keeps the reason as the plain text the SuperAdmin typed", async () => {
+    const i18n = createInstance();
+    await i18n.init({
+      lng: "en",
+      resources: { en: { translation: en } },
+      interpolation: { escapeValue: false },
+    });
+    const reason = "<b>Duplicate</b> {{item}} $t(online.shop.full) see https://x.test\nTicket 42";
+    const taken = toMessageData(
+      mail("account.itemsRevoked", { itemCode: "energyDrinkSmall", quantity: 2, reason }),
+      i18n.t,
+      "A",
+    );
+
+    expect(taken.subject).toBe("Energy drink ×2 taken back");
+    expect(taken.body.split("\n")).toEqual([
+      "Energy drink ×2 was taken back from your inventory.",
+      "Reason: <b>Duplicate</b> {{item}} $t(online.shop.full) see https://x.test",
+      "Ticket 42",
+    ]);
   });
 
   // Given the academy's three mails (S-18, C-7c): a report back, a graduation into a squad over

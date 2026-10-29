@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Tvé předměty jsou odemčené",
             "body": "Kontrola tvých předmětů skončila. Můžeš je znovu používat."
+          },
+          "itemsGranted": {
+            "subject": "Získal jsi {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} je teď v tvém inventáři.{{extra}}",
+            "expires": "Lze použít do {{until}}; potom zmizí."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} odebrán",
+            "body": "{{item}} ×{{count}} byl odebrán z tvého inventáře."
+          },
+          "purchaseRefunded": {
+            "subject": "Nákup vrácen: {{item}}",
+            "body": "Tvůj nákup {{item}} ×{{count}} byl vrácen: {{coins}} mincí je zpět v peněžence."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Zobrazit novou aukci",
-      "viewCaps": "Zobrazit stropy úrovně"
+      "viewCaps": "Zobrazit stropy úrovně",
+      "reasonLine": "Důvod: {{reason}}"
     },
     "coins": {
       "notOnServer": "Mince na tomto serveru zatím nejsou k dispozici.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Získal jsi: {{item}}.",
         "refunded": "Nákup položky {{item}} byl vrácen; mince jsou zpět v peněžence.",
-        "changed": "Tvé předměty se změnily."
+        "changed": "Tvé předměty se změnily.",
+        "revoked": "{{item}} ×{{count}} byl odebrán z tvého inventáře."
       },
       "reason": {
         "conditionFull": "Kondice je už plná",
@@ -1036,7 +1051,11 @@
       "previewing": "Ověřuje se účinek…",
       "confirmUse": "Použít",
       "used": "Použito: {{item}}.",
-      "shortcut": "Použít: {{item}} (×{{count}})"
+      "shortcut": "Použít: {{item}} (×{{count}})",
+      "needs": {
+        "items": "Tato sezóna nemá pravidla předmětů, proto se tento předmět neprodává.",
+        "academy": "Tato sezóna nemá akademii, proto se tento předmět neprodává."
+      }
     },
     "inventory": {
       "notOnServer": "Tento server zatím nemá předměty.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Nastavit množství na {{n}}",
       "quantityLabel": "Množství",
       "openInventory": "Otevřít inventář",
-      "closeNotice": "Zavřít oznámení"
+      "closeNotice": "Zavřít oznámení",
+      "needsAcademy": "Otevře se s akademií"
     },
     "academy": {
       "notOnServer": "Tento server zatím akademii nemá.",
@@ -5128,7 +5148,8 @@
       },
       "shop": {
         "quantityInvalid": "Kupuj 1 až 99 kusů najednou.",
-        "itemNotSold": "Tento předmět se teď neprodává."
+        "itemNotSold": "Tento předmět se teď neprodává.",
+        "notUsableNow": "Tento předmět v této sezóně nelze použít, proto se neprodává."
       },
       "training": {
         "manualOff": "Ruční trénink v této sezóně není zapnutý.",

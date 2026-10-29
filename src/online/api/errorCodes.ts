@@ -134,6 +134,7 @@ export const ERROR_CODES = [
   "be.error.events.started",
   "be.error.shop.quantityInvalid",
   "be.error.shop.itemNotSold",
+  "be.error.shop.notUsableNow",
   "be.error.admin.reverseNotAllowed",
   "be.error.admin.refundExceeded",
   "be.error.realtime.badMessage",
@@ -175,6 +176,7 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.academy.tripNotReady": ["readyAt"],
   "be.error.academy.noSlot": ["free"],
   "be.error.events.coinLimitReached": ["limit"],
+  "be.error.shop.notUsableNow": ["needs"],
   "be.error.admin.reverseNotAllowed": ["kind"],
   "be.error.admin.refundExceeded": ["refundable"],
 };
@@ -210,6 +212,7 @@ export type ErrorParams = {
   "be.error.academy.tripNotReady": { readyAt: string | number };
   "be.error.academy.noSlot": { free: string | number };
   "be.error.events.coinLimitReached": { limit: string | number };
+  "be.error.shop.notUsableNow": { needs: string | number };
   "be.error.admin.reverseNotAllowed": { kind: string | number };
   "be.error.admin.refundExceeded": { refundable: string | number };
 };

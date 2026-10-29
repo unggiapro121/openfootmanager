@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Eşyaların kilidi açıldı",
             "body": "Eşyalarının kontrolü bitti. Onları yeniden kullanabilirsin."
+          },
+          "itemsGranted": {
+            "subject": "{{item}} ×{{count}} aldın",
+            "body": "{{item}} ×{{count}} artık envanterinde.{{extra}}",
+            "expires": "{{until}} tarihine kadar kullanılabilir; sonra kaybolur."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} geri alındı",
+            "body": "{{item}} ×{{count}} envanterinden geri alındı."
+          },
+          "purchaseRefunded": {
+            "subject": "Satın alım iade edildi: {{item}}",
+            "body": "{{item}} ×{{count}} satın alımın iade edildi: {{coins}} jeton cüzdanına döndü."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Yeni açık artırmayı gör",
-      "viewCaps": "Seviye tavanlarını gör"
+      "viewCaps": "Seviye tavanlarını gör",
+      "reasonLine": "Neden: {{reason}}"
     },
     "coins": {
       "notOnServer": "Jetonlar bu sunucuda henüz açık değil.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "{{item}} aldın.",
         "refunded": "Bir {{item}} satın alımı iade edildi; jetonlar cüzdanına döndü.",
-        "changed": "Eşyaların değişti."
+        "changed": "Eşyaların değişti.",
+        "revoked": "{{item}} ×{{count}} envanterinden geri alındı."
       },
       "reason": {
         "conditionFull": "Kondisyon zaten dolu",
@@ -1036,7 +1051,11 @@
       "previewing": "Etkisi kontrol ediliyor…",
       "confirmUse": "Kullan",
       "used": "{{item}} kullanıldı.",
-      "shortcut": "{{item}} kullan (×{{count}})"
+      "shortcut": "{{item}} kullan (×{{count}})",
+      "needs": {
+        "items": "Bu sezonun eşya kuralları yok, bu yüzden bu eşya satışta değil.",
+        "academy": "Bu sezonun altyapısı yok, bu yüzden bu eşya satışta değil."
+      }
     },
     "inventory": {
       "notOnServer": "Bu sunucuda henüz eşya yok.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Miktarı {{n}} yap",
       "quantityLabel": "Miktar",
       "openInventory": "Envanteri aç",
-      "closeNotice": "Bildirimi kapat"
+      "closeNotice": "Bildirimi kapat",
+      "needsAcademy": "Altyapı açılınca satışa çıkar"
     },
     "academy": {
       "notOnServer": "Bu sunucuda henüz altyapı akademisi yok.",
@@ -5128,7 +5148,8 @@
       },
       "shop": {
         "quantityInvalid": "Tek seferde 1 ile 99 arası al.",
-        "itemNotSold": "Bu eşya şu anda satışta değil."
+        "itemNotSold": "Bu eşya şu anda satışta değil.",
+        "notUsableNow": "Bu eşya bu sezon kullanılamaz, bu yüzden satışta değil."
       },
       "training": {
         "manualOff": "Bu sezon elle antrenman açık değil.",

@@ -845,6 +845,19 @@
           "itemsUnlocked": {
             "subject": "Kho đồ đã mở khoá",
             "body": "Đã kiểm xong kho đồ của bạn. Bạn dùng lại vật phẩm được rồi."
+          },
+          "itemsGranted": {
+            "subject": "Bạn nhận được {{item}} ×{{count}}",
+            "body": "{{item}} ×{{count}} đã vào Kho đồ của bạn.{{extra}}",
+            "expires": "Dùng được đến {{until}}; sau đó vật phẩm sẽ mất."
+          },
+          "itemsRevoked": {
+            "subject": "{{item}} ×{{count}} đã bị thu",
+            "body": "{{item}} ×{{count}} đã bị thu khỏi Kho đồ của bạn."
+          },
+          "purchaseRefunded": {
+            "subject": "Đã hoàn một lần mua: {{item}}",
+            "body": "Lần mua {{item}} ×{{count}} của bạn đã được hoàn: {{coins}} coin đã trả về ví."
           }
         },
         "academy": {
@@ -886,7 +899,8 @@
         }
       },
       "viewNewAuction": "Xem phiên mới",
-      "viewCaps": "Xem trần theo cấp"
+      "viewCaps": "Xem trần theo cấp",
+      "reasonLine": "Lý do: {{reason}}"
     },
     "coins": {
       "notOnServer": "Máy chủ này chưa mở coin.",
@@ -1005,7 +1019,8 @@
       "notice": {
         "granted": "Bạn vừa nhận {{item}}.",
         "refunded": "Một lần mua {{item}} đã được hoàn; coin đã trả về ví.",
-        "changed": "Kho đồ của bạn vừa thay đổi."
+        "changed": "Kho đồ của bạn vừa thay đổi.",
+        "revoked": "{{item}} ×{{count}} đã bị thu khỏi Kho đồ."
       },
       "reason": {
         "conditionFull": "Thể lực đã đầy",
@@ -1036,7 +1051,11 @@
       "previewing": "Đang xem trước tác dụng…",
       "confirmUse": "Dùng",
       "used": "Đã dùng {{item}}.",
-      "shortcut": "Dùng {{item}} (×{{count}})"
+      "shortcut": "Dùng {{item}} (×{{count}})",
+      "needs": {
+        "items": "Mùa này chưa có luật vật phẩm, nên vật phẩm này chưa bán.",
+        "academy": "Mùa này chưa có Lò đào tạo, nên vật phẩm này chưa bán."
+      }
     },
     "inventory": {
       "notOnServer": "Máy chủ này chưa có vật phẩm.",
@@ -1175,7 +1194,8 @@
       "presetAria": "Chọn số lượng {{n}}",
       "quantityLabel": "Số lượng",
       "openInventory": "Mở Kho đồ",
-      "closeNotice": "Đóng thông báo"
+      "closeNotice": "Đóng thông báo",
+      "needsAcademy": "Mở khi có Lò đào tạo"
     },
     "academy": {
       "notOnServer": "Máy chủ này chưa có lò đào tạo.",
@@ -5128,7 +5148,8 @@
       },
       "shop": {
         "quantityInvalid": "Mỗi lần mua từ 1 đến 99 cái.",
-        "itemNotSold": "Vật phẩm này hiện không bán."
+        "itemNotSold": "Vật phẩm này hiện không bán.",
+        "notUsableNow": "Mùa này chưa dùng được vật phẩm này, nên cửa hàng chưa bán."
       },
       "training": {
         "manualOff": "Mùa này chưa có tập tay.",
