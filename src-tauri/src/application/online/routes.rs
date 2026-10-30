@@ -122,12 +122,6 @@ pub const ROUTES: &[Route] = &[
     ),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("setup")], &[]),
     route("PUT", &[L("v1"), L("clubs"), L("mine"), L("training")], &[]),
-    // Today's session, held now by the coach (S-21 S21-13).
-    route(
-        "POST",
-        &[L("v1"), L("clubs"), L("mine"), L("training"), L("sessions")],
-        &[],
-    ),
     // Extra sessions on top of the day's, pressed by the coach (S-28 S28-2, C-12a).
     route(
         "POST",
