@@ -187,7 +187,10 @@ fn season_of(
                 listings += 1;
             }
         }
-        let bill: u64 = squad.iter().map(|p| online_wage(p, reputation, 1000)).sum();
+        let bill: u64 = squad
+            .iter()
+            .map(|p| online_wage(p, reputation, 1000, None))
+            .sum();
         cash -= wage_due(bill, day, SEASON_DAYS) as i64;
         if MATCH_DAYS.contains(&day) {
             play_a_match(&mut squad, formation);
@@ -195,7 +198,7 @@ fn season_of(
     }
     cash += (online_ticket_income(reputation, club.team.stadium_capacity, TICKET_PERMILLE)
         * HOME_GAMES) as i64;
-    cash += rank_reward(&LEVEL_ONE_REWARDS, shuffled_rank(index), 1, 1250) as i64;
+    cash += rank_reward(&LEVEL_ONE_REWARDS, shuffled_rank(index), 1, 1250, None) as i64;
     Season {
         cash,
         next_spendable: bids.spendable(u64::try_from(cash).unwrap_or(0), 0),

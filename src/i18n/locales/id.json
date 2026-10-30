@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} cedera. AI sedang menggantinya.",
       "replace": "Ganti",
       "leaveWarning": "Tinggalkan layar ini sekitar 20 detik dan AI akan memimpin tim Anda.",
+      "serverMinute": "Pertandingan sebenarnya di menit {{minute}}; perintah berlaku sejak itu.",
       "scoreLine": "Skor: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Panel pertandingan",
       "adjusted": "{{team}} mengubah taktiknya",

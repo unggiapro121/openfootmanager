@@ -87,7 +87,9 @@ function captionsIn(beats: RadarBeat[]): RadarCaption[] {
  * than a minute behind. Without animation, the playback jumps straight to the end
  * of the minute. Events from before the radar opened are not replayed.
  * `staged` counts the snapshot's events taken in so far: the radar has played a
- * minute out once they are all taken in and the playback is empty.
+ * minute out once they are all taken in and the playback is empty. Each queued
+ * beat carries how many events came before its snapshot (`QueuedBeat.after`), so
+ * `playedUpTo` tells how far the radar has played while it is still behind.
  *
  * The playback lives in a ref and the frame loop plays it: nothing here makes
  * React render as play moves on.
@@ -119,7 +121,7 @@ export function useRadarDirector(
     };
     const isAnimated = pacing !== null && !reducedMotion;
 
-    const queueStaged = (staged: { beats: RadarBeat[]; end: RadarScene }) => {
+    const queueStaged = (staged: { beats: RadarBeat[]; end: RadarScene }, after: number) => {
       const beats = withCaptions(staged.beats, pendingCaptionsRef.current);
       if (beats.length > 0) pendingCaptionsRef.current = [];
       const { end } = staged;
@@ -134,7 +136,7 @@ export function useRadarDirector(
       if (beats.length === 0) return;
       playback.current = enqueueBeats(
         playback.current,
-        beats.map((beat) => queueBeat(beat, pacing.timeScale)),
+        beats.map((beat) => queueBeat(beat, pacing.timeScale, after)),
         pacing.maxLagMs,
       );
     };
@@ -145,7 +147,8 @@ export function useRadarDirector(
       seenRef.current = 0;
       openRef.current = [];
     }
-    const fresh = events.slice(seenRef.current);
+    const before = seenRef.current;
+    const fresh = events.slice(before);
     seenRef.current = events.length;
     // Nothing has happened: nothing to show.
     if (fresh.length === 0) return;
@@ -177,7 +180,7 @@ export function useRadarDirector(
       ),
     ];
 
-    queueStaged(staged);
+    queueStaged(staged, before);
   }, [
     snapshot.events,
     snapshot.ball_zone,

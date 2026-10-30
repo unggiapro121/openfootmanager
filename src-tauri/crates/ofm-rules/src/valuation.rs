@@ -17,10 +17,10 @@ const VALUE_AT_ANCHOR: f64 = 15_000_000.0;
 const VALUE_ANCHOR_OVR: f64 = 75.0;
 /// Growth per rating point: about ×2.3 every five points, the way fees climb
 /// from squad player to star.
-const VALUE_GROWTH_PER_POINT: f64 = 0.17;
+pub(crate) const VALUE_GROWTH_PER_POINT: f64 = 0.17;
 /// Above this rating the curve flattens, so the few world-class players land
 /// near real record fees (about €220M) instead of running away from them.
-const ELITE_OVR: f64 = 85.0;
+pub(crate) const ELITE_OVR: f64 = 85.0;
 const ELITE_GROWTH_PER_POINT: f64 = 0.08;
 /// The most growth room the market pays for. A ceiling far above a player's
 /// current level is a scout's hope, not a fee anyone pays in full.
@@ -90,7 +90,8 @@ pub fn drift_toward(current: u64, target: u64) -> u64 {
     if moved == current { target } else { moved }
 }
 
-fn current_rating(player: &Player) -> u8 {
+/// The rating the wage is paid for: the stored OVR, or the natural one when none is stored.
+pub(crate) fn current_rating(player: &Player) -> u8 {
     if player.ovr > 0 {
         player.ovr
     } else {

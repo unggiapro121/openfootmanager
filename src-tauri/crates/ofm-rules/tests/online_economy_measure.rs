@@ -42,7 +42,7 @@ fn measure_e3_10_one_online_season() {
             let weekly_bill = club
                 .players
                 .iter()
-                .map(|p| online_wage(p, reputation, 1000))
+                .map(|p| online_wage(p, reputation, 1000, None))
                 .sum();
             Club {
                 reputation,
@@ -95,7 +95,7 @@ fn season_at(clubs: &[Club], permille: u32) {
         let wages: u64 = (0..SEASON_DAYS)
             .map(|d| wage_due(club.weekly_bill, d, SEASON_DAYS))
             .sum();
-        let reward = rank_reward(&LEVEL_ONE_REWARDS, rank, 1, 1250);
+        let reward = rank_reward(&LEVEL_ONE_REWARDS, rank, 1, 1250, None);
         let income = gate * HOME_GAMES + reward;
         deltas.push((income as i64 - wages as i64, rank, club.weekly_bill));
     }

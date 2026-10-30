@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} è infortunato. L'IA lo sta sostituendo.",
       "replace": "Sostituisci",
       "leaveWarning": "Se lasci questa schermata per circa 20 secondi, l'IA guiderà la tua squadra.",
+      "serverMinute": "La partita vera è al {{minute}}' minuto: gli ordini valgono da lì.",
       "scoreLine": "Punteggio: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Pannelli della partita",
       "adjusted": "{{team}} ha modificato la tattica",

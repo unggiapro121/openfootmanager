@@ -106,13 +106,18 @@ function useRadarKits(mine: MineView | null) {
 
 export interface MatchBoardProps {
   state: OnlineMatchState;
-  /** What the radar plays, when it runs ahead of the screen (a replay); `state` otherwise. */
+  /**
+   * What the radar plays, when it runs ahead of the screen: a replay, or a live match the server
+   * plays on without waiting for the radar. `state` otherwise.
+   */
   radarState?: OnlineMatchState;
   /** The viewer's own side: its dials and kit. Null for a spectator. */
   mine: MineView | null;
   pacing: RadarPacing;
   paused: boolean;
   onCaughtUp?: (staged: number) => void;
+  /** The radar's report of how many of `radarState`'s events it has played out (live). */
+  onPlayed?: (played: number) => void;
   /** A new key starts the radar afresh where the match now is: a replay's jump. */
   radarKey?: number;
   radarOpen: boolean;
@@ -132,6 +137,7 @@ export function MatchBoard({
   pacing,
   paused,
   onCaughtUp,
+  onPlayed,
   radarKey,
   radarOpen,
   onToggleRadar,
@@ -189,6 +195,7 @@ export function MatchBoard({
         onToggle={onToggleRadar}
         paused={paused}
         onCaughtUp={onCaughtUp}
+        onPlayed={onPlayed}
         showCommentary={showCommentary}
         pacing={pacing}
       />

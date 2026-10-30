@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} se machucou. A IA está substituindo-o agora.",
       "replace": "Substituir",
       "leaveWarning": "Se sair desta tela por cerca de 20 segundos, a IA assume seu time.",
+      "serverMinute": "A partida real está no minuto {{minute}}: as ordens valem a partir daí.",
       "scoreLine": "Placar: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Painéis da partida",
       "adjusted": "{{team}} ajustou a tática",

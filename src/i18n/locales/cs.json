@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} je zraněný. AI ho právě střídá.",
       "replace": "Vystřídat",
       "leaveWarning": "Opustíte-li tuto obrazovku asi na 20 sekund, tým převezme AI.",
+      "serverMinute": "Skutečný zápas je v {{minute}}. minutě – pokyny platí od ní.",
       "scoreLine": "Skóre: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Panely zápasu",
       "adjusted": "{{team}} upravil taktiku",

@@ -41,20 +41,42 @@ vi.mock("../../../utils/backendI18n", () => ({
     `resolved:${typeof error === "string" ? error : (error as Error).message}`,
 }));
 
-// The radar draws on a canvas; here it shows what it was handed.
+/** The radar's own hooks, so a test can say how far it has played the match. */
+const radarHooks = vi.hoisted(() => ({
+  onPlayed: undefined as ((played: number) => void) | undefined,
+  onToggle: undefined as (() => void) | undefined,
+}));
+
+// The radar draws on a canvas; here it shows what it was handed, and plays out only what a test
+// says it has (`radarHooks.onPlayed`).
 vi.mock("../../../components/match/radar/MatchRadar2D", () => ({
-  MatchRadar2D: ({ snapshot, pacing }: { snapshot: RadarMatch; pacing?: RadarPacing }) => (
-    <output aria-label="radar">
-      {JSON.stringify({
-        score: `${snapshot.home_score}-${snapshot.away_score}`,
-        maxLagMs: pacing?.maxLagMs,
-        minuteMs: pacing?.minuteMs,
-        homeDials: snapshot.home_team.tactics ?? null,
-        awayDials: snapshot.away_team.tactics ?? null,
-        homeEleven: snapshot.home_team.players.map((player) => player.id),
-      })}
-    </output>
-  ),
+  MatchRadar2D: ({
+    snapshot,
+    pacing,
+    onPlayed,
+    onToggle,
+  }: {
+    snapshot: RadarMatch;
+    pacing?: RadarPacing;
+    onPlayed?: (played: number) => void;
+    onToggle: () => void;
+  }) => {
+    radarHooks.onPlayed = onPlayed;
+    radarHooks.onToggle = onToggle;
+    return (
+      <output aria-label="radar">
+        {JSON.stringify({
+          events: snapshot.events.length,
+          score: `${snapshot.home_score}-${snapshot.away_score}`,
+          maxLagMs: pacing?.maxLagMs,
+          minuteMs: pacing?.minuteMs,
+          homeDials: snapshot.home_team.tactics ?? null,
+          awayDials: snapshot.away_team.tactics ?? null,
+          homeEleven: snapshot.home_team.players.map((player) => player.id),
+        })}
+      </output>
+    );
+  },
 }));
 
 const MATCH = "match-1";
@@ -508,6 +530,68 @@ describe("following a match", () => {
       }),
     );
     expect(await screen.findByText(/online\.match\.adjusted:Hải Phòng/)).toBeInTheDocument();
+  });
+});
+
+describe("the screen keeps to the radar", () => {
+  /** The radar says it has played out `count` of the match's events. */
+  const played = (count: number) => act(() => radarHooks.onPlayed?.(count));
+  /** The score line the scoreboard reads out. */
+  const score = (home: number, away: number) =>
+    new RegExp(`^online\\.match\\.scoreLine:.*\\|${home}\\|${away}$`);
+
+  // Given a coach following their match with the radar caught up,
+  // when frame 1 brings a home goal the radar has not played yet,
+  // then the radar is handed the goal but the scoreboard and the minute stay where the radar is,
+  // with a line saying where the match itself is; once the radar has played it, the score moves.
+  it("moves the score only once the radar has played the goal", async () => {
+    stage();
+    await opened();
+    played(radar().events);
+    push(matchFrame(1, { result: { home_score: 1, events: [matchEvent("Goal", "Home", "h9")] } }));
+
+    await waitFor(() => expect(radar().score).toBe("1-0"));
+    expect(screen.getByText(score(0, 0))).toBeInTheDocument();
+    expect(screen.getByText("online.match.serverMinute:1")).toBeInTheDocument();
+
+    played(radar().events);
+
+    expect(await screen.findByText(score(1, 0))).toBeInTheDocument();
+    expect(screen.queryByText(/online\.match\.serverMinute/)).not.toBeInTheDocument();
+  });
+
+  // Given a coach following their match with the radar behind,
+  // when the server reaches half time,
+  // then the radar stays up until it has played the half out, then the half-time screen opens.
+  it("opens the half-time screen once the radar has played the half out", async () => {
+    stage();
+    await opened();
+    played(radar().events);
+    push(matchFrame(1, { result: { events: [matchEvent("ShotSaved", "Home", "h9")] } }));
+    push(matchFrame(2, { result: { phase: "HalfTime", minute: 45 } }));
+
+    await waitFor(() => expect(radar().events).toBeGreaterThan(0));
+    expect(screen.queryByRole("heading", { name: "match.halfTime" })).not.toBeInTheDocument();
+
+    played(radar().events);
+
+    expect(await screen.findByRole("heading", { name: "match.halfTime" })).toBeInTheDocument();
+  });
+
+  // Given a coach following their match with the radar behind a goal,
+  // when they close the radar,
+  // then nothing is left to wait for: the score shows the server's match at once.
+  it("shows the server's match at once with the radar closed", async () => {
+    stage();
+    await opened();
+    played(radar().events);
+    push(matchFrame(1, { result: { home_score: 1, events: [matchEvent("Goal", "Home", "h9")] } }));
+    await waitFor(() => expect(radar().score).toBe("1-0"));
+    expect(screen.getByText(score(0, 0))).toBeInTheDocument();
+
+    act(() => radarHooks.onToggle?.());
+
+    expect(await screen.findByText(score(1, 0))).toBeInTheDocument();
   });
 });
 

@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} sakatlandı. Yapay zekâ onu şimdi değiştiriyor.",
       "replace": "Değiştir",
       "leaveWarning": "Bu ekrandan yaklaşık 20 saniye ayrılırsan takımını yapay zekâ yönetir.",
+      "serverMinute": "Maçın kendisi {{minute}}. dakikada; talimatlar oradan geçerli.",
       "scoreLine": "Skor: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Maç panelleri",
       "adjusted": "{{team}} taktiğini değiştirdi",

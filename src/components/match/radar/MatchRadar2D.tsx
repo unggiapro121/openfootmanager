@@ -9,6 +9,7 @@ import type { RadarKits, Side } from "./radarGeometry";
 import { FONT_CLASSES, PALETTE_CLASSES, readPalette } from "./radarPalette";
 import { type CaptionMark, type RadarCaption, captionsDue } from "./radarCaptions";
 import { type CaptionSink, RadarCommentary } from "./RadarCommentary";
+import { playedUpTo } from "./radarPlayback";
 import { type RadarRun, advanceRun, sceneCutOpacity, startRun } from "./radarRun";
 import type { RadarScene } from "./radarScene";
 import type { RadarStage } from "./radarStage";
@@ -29,6 +30,12 @@ interface MatchRadar2DProps {
    * many of the snapshot's events that is, so the next minute can be asked for.
    */
   onCaughtUp?: (staged: number) => void;
+  /**
+   * Called whenever the radar has played out more of the match, with how many of the snapshot's
+   * events that is (`playedUpTo`), so a screen that does not wait for the radar can still show
+   * the match no further than the radar has played it.
+   */
+  onPlayed?: (played: number) => void;
   /** Whether the commentator's line shows over the radar (the "match commentary" setting). */
   showCommentary?: boolean;
   /**
@@ -69,6 +76,7 @@ interface RadarCast {
   goalLabel: string;
   paused: boolean;
   onCaughtUp?: (staged: number) => void;
+  onPlayed?: (played: number) => void;
   onCaption?: (caption: RadarCaption) => void;
 }
 
@@ -177,6 +185,7 @@ interface RadarFieldProps {
   kits: RadarKits;
   paused: boolean;
   onCaughtUp?: (staged: number) => void;
+  onPlayed?: (played: number) => void;
   showAllNames: boolean;
   reducedMotion: boolean;
   /** Where the radar says its commentary, as each step of play starts. */
@@ -195,6 +204,7 @@ function RadarField({
   kits,
   paused,
   onCaughtUp,
+  onPlayed,
   showAllNames,
   reducedMotion,
   onCaption,
@@ -216,8 +226,11 @@ function RadarField({
     goalLabel: t("match.eventTypes.Goal"),
     paused,
     onCaughtUp,
+    onPlayed,
     onCaption,
   };
+  /** The last `playedUpTo` told, so it is told again only when it moves. */
+  const playedRef = useRef<number | null>(null);
   const runRef = useRef<RadarRun | null>(null);
   const captionMarkRef = useRef<CaptionMark>({ beat: null, upTo: -1 });
   const celebrationRef = useRef<Celebration>({
@@ -256,6 +269,11 @@ function RadarField({
       captionMarkRef.current = said.mark;
       for (const caption of said.due) cast.onCaption?.(caption);
       if (!cast.paused && isPlayedOut(run)) cast.onCaughtUp?.(staged.current);
+      const played = playedUpTo(run.playback, staged.current);
+      if (played !== playedRef.current) {
+        playedRef.current = played;
+        cast.onPlayed?.(played);
+      }
       if (!context) {
         handle = requestAnimationFrame(tick);
         return;
@@ -281,7 +299,10 @@ function RadarField({
     if (isAnimated || !cast) return;
     const next = paused
       ? undefined
-      : setTimeout(() => onCaughtUp?.(staged.current), STILL_MINUTE_MS);
+      : setTimeout(() => {
+          onPlayed?.(staged.current);
+          onCaughtUp?.(staged.current);
+        }, STILL_MINUTE_MS);
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return () => clearTimeout(next);
@@ -344,6 +365,7 @@ export function MatchRadar2D({
   onToggle,
   paused,
   onCaughtUp,
+  onPlayed,
   showCommentary = false,
 }: MatchRadar2DProps) {
   const { t } = useTranslation();
@@ -408,6 +430,7 @@ export function MatchRadar2D({
           kits={kits}
           paused={paused}
           onCaughtUp={onCaughtUp}
+          onPlayed={onPlayed}
           showAllNames={showAllNames}
           reducedMotion={reducedMotion}
           onCaption={sayCaption}

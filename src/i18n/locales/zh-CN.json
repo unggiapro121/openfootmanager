@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} 受伤了。AI 正在换下他。",
       "replace": "换人",
       "leaveWarning": "离开此界面约 20 秒后，AI 将代为指挥本队。",
+      "serverMinute": "比赛实际已进行到第 {{minute}} 分钟，指令从那时起生效。",
       "scoreLine": "比分：{{home}} {{homeScore}}，{{away}} {{awayScore}}",
       "panels": "比赛面板",
       "adjusted": "{{team}} 调整了战术",

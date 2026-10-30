@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} bị chấn thương. AI đang thay anh ấy.",
       "replace": "Thay người",
       "leaveWarning": "Rời màn hình này khoảng 20 giây thì AI sẽ chỉ đạo thay bạn.",
+      "serverMinute": "Trận thật đang ở phút {{minute}} — lệnh tính từ phút đó.",
       "scoreLine": "Tỉ số: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Bảng thông tin trận",
       "adjusted": "{{team}} vừa điều chỉnh chiến thuật",
