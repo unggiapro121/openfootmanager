@@ -11,7 +11,7 @@
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-use domain::player::{Player, PlayerAttributes};
+use domain::player::Player;
 use domain::staff::Staff;
 use domain::team::{TrainingFocus, TrainingIntensity};
 use ofm_rules::recovery::RecoveryBlocks;
@@ -19,7 +19,7 @@ use ofm_rules::training::{
     BASE_TRAINING_GAIN, ExtraParams, TeamTrainingPlan, TrainingDay, age_factor, extra_session,
     extra_session_rng, extra_sit_out, team_training_plan,
 };
-use ofm_rules::{age, items, match_form, player_rating, playing_time, season, squad};
+use ofm_rules::{age, items, match_form, playing_time, season, squad, training};
 
 use super::{
     Club, DAYS, Kind, LEAGUE, Measure, Measures, Recovery, SEASONS, SEEDS, Variant, kind_measure,
@@ -353,98 +353,6 @@ fn technical_capped(player: &Player) -> (u32, u32) {
     (capped as u32, rolled.len() as u32)
 }
 
-/// The focuses a session can build, in the enum's order (E54-13 breaks ties by it).
-const FOCUSES: [TrainingFocus; 5] = [
-    TrainingFocus::Physical,
-    TrainingFocus::Technical,
-    TrainingFocus::Tactical,
-    TrainingFocus::Defending,
-    TrainingFocus::Attacking,
-];
-
-/// `attributes` with one point more on every attribute `focus` rolls that is still under 99; a
-/// split attribute only when he has it (`training.rs` `apply_focus_gains`, `try_gain_split`).
-fn one_more_of(attributes: &PlayerAttributes, focus: &TrainingFocus) -> PlayerAttributes {
-    let mut a = attributes.clone();
-    let up = |value: &mut u8, split: bool| {
-        if *value < 99 && !(split && *value == 0) {
-            *value += 1;
-        }
-    };
-    match focus {
-        TrainingFocus::Physical => {
-            for value in [&mut a.pace, &mut a.stamina, &mut a.strength, &mut a.agility] {
-                up(value, false);
-            }
-        }
-        TrainingFocus::Technical => {
-            for value in [&mut a.passing, &mut a.shooting, &mut a.dribbling] {
-                up(value, false);
-            }
-            for value in [
-                &mut a.long_passing,
-                &mut a.crossing,
-                &mut a.curve,
-                &mut a.free_kick,
-                &mut a.long_shots,
-                &mut a.first_touch,
-            ] {
-                up(value, true);
-            }
-        }
-        TrainingFocus::Tactical => {
-            for value in [
-                &mut a.positioning,
-                &mut a.vision,
-                &mut a.decisions,
-                &mut a.composure,
-            ] {
-                up(value, false);
-            }
-        }
-        TrainingFocus::Defending => {
-            for value in [
-                &mut a.tackling,
-                &mut a.defending,
-                &mut a.strength,
-                &mut a.positioning,
-            ] {
-                up(value, false);
-            }
-            up(&mut a.heading, true);
-        }
-        TrainingFocus::Attacking => {
-            for value in [&mut a.shooting, &mut a.dribbling, &mut a.pace] {
-                up(value, false);
-            }
-            for value in [&mut a.long_shots, &mut a.first_touch, &mut a.heading] {
-                up(value, true);
-            }
-        }
-        TrainingFocus::Recovery => {}
-    }
-    a
-}
-
-/// E54-13, a measurement assumption and not a rule of the game: the focus (never Recovery) whose
-/// one point more on each of its attributes under 99 raises the player's OVR at his position
-/// most; a tie keeps the focus he has, then goes by the enum's order.
-fn best_focus(player: &Player, current: &TrainingFocus) -> TrainingFocus {
-    let position = player_rating::primary_position(player);
-    let now = player_rating::ovr_from_attributes(&player.attributes, &position);
-    let rise = |focus: &TrainingFocus| {
-        player_rating::ovr_from_attributes(&one_more_of(&player.attributes, focus), &position) - now
-    };
-    let mut best = (current.clone(), rise(current));
-    for focus in &FOCUSES {
-        let value = rise(focus);
-        if value > best.1 + 1e-9 {
-            best = (focus.clone(), value);
-        }
-    }
-    best.0
-}
-
 /// Every day before the automatic session, a person's every player takes his best focus
 /// (E54-13); a bot keeps the AI's plan (E5-1).
 pub(super) fn choose_focus(club: &mut Club) {
@@ -457,7 +365,9 @@ pub(super) fn choose_focus(club: &mut Club) {
             Some(TrainingFocus::Recovery) | None => team_focus.clone(),
             Some(focus) => focus,
         };
-        player.training_focus = Some(best_focus(player, &current));
+        // E54-13, now the game's own rule (E5-6 E56-6): a tie keeps his focus.
+        let best = training::best_focus(player, Some(&current)).unwrap_or(current);
+        player.training_focus = Some(best);
     }
 }
 
@@ -584,7 +494,7 @@ pub(super) fn press(
                 .filter(|&i| {
                     let player = &club.players[i];
                     let floor = keep(likely.contains(&player.id));
-                    extra_sit_out(player, &plan, &params).is_none()
+                    extra_sit_out(player, &plan, &params, None).is_none()
                         && i32::from(player.condition) - i32::from(*cost) >= floor
                 })
                 .collect();
@@ -1565,9 +1475,8 @@ pub(super) fn decide() {
 
 #[cfg(test)]
 mod tests {
-    use super::{DRINK_CAP, LARGE, SMALL, best_focus, best_for_gain, median_day, pour};
+    use super::{DRINK_CAP, LARGE, SMALL, best_for_gain, median_day, pour};
     use domain::player::Player;
-    use domain::team::TrainingFocus;
     use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 
     /// A generated player at `condition`.
@@ -1635,31 +1544,5 @@ mod tests {
         assert_eq!(median_day(&[Some(3), None, Some(9)]), Some(9));
         assert_eq!(median_day(&[None, None, Some(1)]), None);
         assert_eq!(median_day(&[Some(4), Some(2), Some(8)]), Some(4));
-    }
-
-    /// Given a player whose Technical attributes are all at 99,
-    /// when his focus of the day is chosen (E54-13),
-    /// then it is no longer Technical: a full focus builds nothing.
-    #[test]
-    fn a_full_focus_is_left_for_one_that_still_builds() {
-        let mut player = player_at(80);
-        let a = &mut player.attributes;
-        for value in [
-            &mut a.passing,
-            &mut a.shooting,
-            &mut a.dribbling,
-            &mut a.long_passing,
-            &mut a.crossing,
-            &mut a.curve,
-            &mut a.free_kick,
-            &mut a.long_shots,
-            &mut a.first_touch,
-        ] {
-            *value = 99;
-        }
-        assert_ne!(
-            best_focus(&player, &TrainingFocus::Technical),
-            TrainingFocus::Technical
-        );
     }
 }

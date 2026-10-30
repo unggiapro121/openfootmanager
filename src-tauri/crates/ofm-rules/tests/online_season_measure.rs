@@ -325,6 +325,7 @@ fn training_day(football_year: u32, day: u32, multiplier: f64) -> TrainingDay {
         year,
         date,
         development_multiplier: multiplier,
+        keeper_drill: None,
     }
 }
 
