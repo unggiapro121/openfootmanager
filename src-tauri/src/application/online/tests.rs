@@ -447,10 +447,7 @@ fn the_daily_gift_is_one_route() {
         sent[0].headers.get("idempotency-key").map(String::as_str),
         Some("gift-1")
     );
-    assert_eq!(
-        sent[0].body,
-        json!({})
-    );
+    assert_eq!(sent[0].body, json!({}));
 }
 
 /// Given a signed-in coach,
