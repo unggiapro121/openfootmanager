@@ -44,6 +44,16 @@ export function playLeftMs(playback: Playback): number {
   );
 }
 
+/**
+ * How many of the match's events the radar has played out, given it has taken in `staged`: those
+ * before the beat on screen or the next one queued, or all it has taken in once nothing is left.
+ * The screen shows the match this far (online, where the server does not wait for the radar).
+ */
+export function playedUpTo(playback: Playback, staged: number): number {
+  const next = playback.step ? playback.beat : playback.queue[0];
+  return next?.after ?? staged;
+}
+
 /** Drops everything queued and playing: play rests at once at `scene`. */
 export function jumpTo(scene: RadarScene): Playback {
   return restingPlayback(scene);

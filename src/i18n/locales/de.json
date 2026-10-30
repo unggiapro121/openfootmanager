@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} ist verletzt. Die KI wechselt ihn jetzt aus.",
       "replace": "Auswechseln",
       "leaveWarning": "Verlässt du diesen Bildschirm für etwa 20 Sekunden, übernimmt die KI.",
+      "serverMinute": "Das Spiel selbst steht in Minute {{minute}} – Anweisungen gelten ab dort.",
       "scoreLine": "Spielstand: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Spielansichten",
       "adjusted": "{{team}} hat die Taktik angepasst",

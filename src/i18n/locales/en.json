@@ -363,6 +363,7 @@
       "hurtNow": "{{player}} is hurt. The AI is replacing him now.",
       "replace": "Replace",
       "leaveWarning": "Leave this screen for about 20 seconds and the AI takes charge of your side.",
+      "serverMinute": "The match itself is at {{minute}}' — orders count from there.",
       "scoreLine": "Score: {{home}} {{homeScore}}, {{away}} {{awayScore}}",
       "panels": "Match panels",
       "adjusted": "{{team}} adjusted their tactics",

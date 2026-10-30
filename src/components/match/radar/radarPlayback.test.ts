@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { advancePlayback, enqueueBeats, jumpTo, restingPlayback } from "./radarPlayback";
+import {
+  advancePlayback,
+  enqueueBeats,
+  jumpTo,
+  playedUpTo,
+  restingPlayback,
+} from "./radarPlayback";
 import { type RadarBeat, initialRadarScene } from "./radarScene";
 import { radarSnapshot } from "./radarTestFixtures";
 import { type QueuedBeat, queueBeat } from "./radarTiming";
@@ -72,5 +78,34 @@ describe("radar playback", () => {
     expect(playback.queue).toHaveLength(0);
     expect(playback.step).toBeNull();
     expect(playback.scene.ball).toEqual({ x: 90, y: 10 });
+  });
+});
+
+describe("how far the radar has played the match", () => {
+  // Given a beat staged from the snapshot after the first 10 events, then one after the first 14,
+  // when nothing has started yet, the first is on screen, then the second,
+  // then the radar has played out 10, 10, 14 events, and all 20 it has taken in once both are done.
+  it("counts the events before the beat on screen or the next one queued", () => {
+    const first = queueBeat(beat("a", [60], [100]), 1, 10);
+    const second = queueBeat(beat("b", [70], [100]), 1, 14);
+    let playback = enqueueBeats(restingPlayback(start), [first, second], 10_000);
+    expect(playedUpTo(playback, 20)).toBe(10);
+    playback = advancePlayback(playback, 50);
+    expect(playedUpTo(playback, 20)).toBe(10);
+    playback = advancePlayback(playback, 100);
+    expect(playedUpTo(playback, 20)).toBe(14);
+    playback = advancePlayback(playback, 100);
+    expect(playedUpTo(playback, 20)).toBe(20);
+  });
+
+  // Given a beat queued without a count (the desktop match, a replay),
+  // when it is on screen,
+  // then the radar counts everything it has taken in.
+  it("counts everything taken in when a beat carries no count", () => {
+    const playback = advancePlayback(
+      enqueueBeats(restingPlayback(start), queued(beat("a", [60], [100])), 10_000),
+      50,
+    );
+    expect(playedUpTo(playback, 7)).toBe(7);
   });
 });
