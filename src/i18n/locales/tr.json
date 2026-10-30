@@ -5189,7 +5189,7 @@
         "releaseSquadTooSmall": "Gitmesine izin vermek kadronu {{squadMin}} oyuncunun altına düşürür."
       },
       "inventory": {
-        "disabled": "Bu sezon eşyalar kullanılmıyor.",
+        "disabled": "Bu eşya bu sezon kullanılmıyor.",
         "itemNotFound": "Bu eşyadan yeterince yok (sende {{held}} var).",
         "stackFull": "Envanter bu kadarını alamaz: en fazla {{max}} tane daha sığar.",
         "locked": "Eşyaların kontrol edilirken kilitlendi.",

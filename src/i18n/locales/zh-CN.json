@@ -5189,7 +5189,7 @@
         "releaseSquadTooSmall": "让他离队会使你的阵容少于 {{squadMin}} 人。"
       },
       "inventory": {
-        "disabled": "本赛季未启用道具。",
+        "disabled": "本赛季不使用此道具。",
         "itemNotFound": "该道具数量不足（你有 {{held}} 个）。",
         "stackFull": "背包放不下这么多：最多还能放 {{max}} 个。",
         "locked": "你的道具正在核查中，已被锁定。",

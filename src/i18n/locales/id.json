@@ -5189,7 +5189,7 @@
         "releaseSquadTooSmall": "Melepas dia akan membuat skuadmu kurang dari {{squadMin}} pemain."
       },
       "inventory": {
-        "disabled": "Item tidak dipakai musim ini.",
+        "disabled": "Item ini tidak dipakai di musim ini.",
         "itemNotFound": "Item ini tidak cukup (kamu punya {{held}}).",
         "stackFull": "Inventarismu tidak muat sebanyak itu: paling banyak {{max}} lagi.",
         "locked": "Item-mu dikunci selama diperiksa.",
