@@ -29,8 +29,7 @@ use ofm_rules::squad::{
     selection_seed,
 };
 use ofm_rules::training::{
-    ExtraParams, SessionKind, TrainingDay, online_session, session_rng, team_training_plan,
-    train_online_day,
+    SessionKind, TrainingDay, online_session, session_rng, team_training_plan, train_online_day,
 };
 use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 use ofm_rules::{age, aging, ai_training, match_form, player_wear, playing_time, season};
@@ -130,9 +129,10 @@ enum Recovery {
     Blocks(RecoveryBlocks),
 }
 
-/// One way to play an online season: the development multiplier, the online recovery, the injury
-/// scale (S-7 Qs7-11), the kinds of club of a league (all bots without), the world's seed, and the
-/// extra sessions of E5-4b (none without). `rest_days: 0, injury_scale: 1` is the game's own day.
+/// One way to play online seasons: the development multiplier, the online recovery, the injury
+/// scale (S-7 Qs7-11), the kinds of club of a league (all bots without) and how they turn, how many
+/// seasons, the world's seed, and the extra sessions of E5-4b (none without).
+/// `rest_days: 0, injury_scale: 1` is the game's own day.
 #[derive(Clone, Copy)]
 struct Variant {
     multiplier: f64,
@@ -140,8 +140,36 @@ struct Variant {
     /// Injuries out for this many times fewer days (`assign_online_match_injury`).
     injury_scale: u32,
     places: Option<&'static [Kind; LEAGUE]>,
+    /// The places' first turn: club `i` of a league starts at place `(i + shift) % 14`.
+    shift: usize,
+    /// Whether the places turn one step a season (E5-1) or a club keeps its kind (E54-14).
+    rotate: bool,
+    seasons: u32,
     seed: u64,
-    extra: Option<ExtraParams>,
+    extra: Option<extra::ExtraRun>,
+}
+
+impl Variant {
+    /// E5-1's world: the places turning from the first, `SEASONS` seasons, no extra sessions.
+    fn e51(
+        multiplier: f64,
+        recovery: Recovery,
+        injury_scale: u32,
+        places: Option<&'static [Kind; LEAGUE]>,
+        seed: u64,
+    ) -> Self {
+        Self {
+            multiplier,
+            recovery,
+            injury_scale,
+            places,
+            shift: 0,
+            rotate: true,
+            seasons: SEASONS,
+            seed,
+            extra: None,
+        }
+    }
 }
 
 struct Club {
@@ -257,7 +285,8 @@ fn assign_kinds(clubs: &mut [Club], season_number: u32, v: Variant) {
     for (index, club) in clubs.iter_mut().enumerate() {
         club.held.clear();
         club.kind = v.places.map_or(Kind::Bot, |places| {
-            places[(index % LEAGUE + season_number as usize - 1) % LEAGUE]
+            let turned = if v.rotate { season_number - 1 } else { 0 };
+            places[(index % LEAGUE + v.shift + turned as usize) % LEAGUE]
         });
         let (schedule, intensity) = match club.kind {
             Kind::Bot => continue,
@@ -666,7 +695,7 @@ fn run(v: Variant) -> Measures {
     let mut clubs = world(v);
     let mut measures = Measures::new();
     let pairings = season::round_robin_pairings(14, 2);
-    for season_number in 1..=SEASONS {
+    for season_number in 1..=v.seasons {
         assign_kinds(&mut clubs, season_number, v);
         let football_year = FIRST_YEAR + season_number - 1;
         let (_, first_day) = season::season_football_date(football_year, 0, DAYS);
@@ -684,12 +713,12 @@ fn run(v: Variant) -> Measures {
             })
             .collect();
         let start_top18: Vec<f64> = clubs.iter().map(|c| top18(&c.players)).collect();
-        if let Some(params) = v.extra {
+        if let Some(extra_run) = v.extra {
             extra::open_season(
                 &mut clubs,
                 (season_number, football_year),
                 v,
-                params,
+                extra_run,
                 &mut measures,
             );
         }
@@ -697,10 +726,13 @@ fn run(v: Variant) -> Measures {
             let day_start = i64::from((season_number - 1) * DAYS + day) * MINUTES_A_DAY;
             for club in &mut clubs {
                 train(club, season_number, day, football_year, v);
+                if v.extra.is_some() {
+                    extra::choose_focus(club);
+                }
                 morning(club, day_start, season_number, day, football_year, v);
                 let at = day_start + SESSION_AT - DAY_TURN;
                 press(club, at, season_number, day, football_year, v);
-                if let Some(params) = v.extra {
+                if let Some(extra_run) = v.extra {
                     extra::morning(club, day);
                     let measure = kind_measure(&mut measures, club.kind);
                     extra::press(
@@ -708,7 +740,7 @@ fn run(v: Variant) -> Measures {
                         at,
                         (season_number, day, football_year),
                         v,
-                        params,
+                        extra_run,
                         measure,
                     );
                 }
@@ -846,21 +878,15 @@ fn report(v: Variant, m: &Measure, kind: Option<Kind>) {
 )]
 fn measure_online_seasons() {
     // The rules as they stand, at four multipliers; then candidate online wear at 10×.
-    let today = Variant {
-        multiplier: 10.0,
-        recovery: Recovery::Legacy { rest_days: 0 },
-        injury_scale: 1,
-        places: None,
-        seed: SEED,
-        extra: None,
-    };
-    let online = |multiplier| Variant {
-        multiplier,
-        recovery: Recovery::Legacy { rest_days: 2 },
-        injury_scale: 13,
-        places: None,
-        seed: SEED,
-        extra: None,
+    let today = Variant::e51(10.0, Recovery::Legacy { rest_days: 0 }, 1, None, SEED);
+    let online = |multiplier| {
+        Variant::e51(
+            multiplier,
+            Recovery::Legacy { rest_days: 2 },
+            13,
+            None,
+            SEED,
+        )
     };
     let variants = [
         today,
@@ -972,14 +998,7 @@ fn verdict(ok: bool) -> &'static str {
     reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
 )]
 fn measure_recovery_blocks() {
-    let variant = |recovery, seed| Variant {
-        multiplier: 16.0,
-        recovery,
-        injury_scale: 13,
-        places: Some(&PLACES),
-        seed,
-        extra: None,
-    };
+    let variant = |recovery, seed| Variant::e51(16.0, recovery, 13, Some(&PLACES), seed);
     let started = std::time::Instant::now();
     let legacy: Vec<Measures> = SEEDS
         .iter()
@@ -1032,13 +1051,14 @@ fn measure_recovery_blocks() {
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }
 
-/// Given 56 generated clubs in four leagues of seven kinds of club (E5-4-tech-spec.md §4.1), over
-/// three seeds,
-/// when three online seasons are played with recovery blocks of 8 hours and people press extra
-/// sessions at 12:00 and drink bottles by §4.2–§4.3,
-/// then each kind's numbers of §4.4 are printed and E2–E9 judged (§4.5). Under the stop rule the
-/// only reruns are the ones the spec prescribes: E4 failing at `ExtraFreeAll` runs again with
-/// `ExtraParams` {40, 750} and {60, 1000} (E54-10); every other failure stops and is reported.
+/// Given 56 generated clubs in four leagues of seven kinds of club (E5-4-tech-spec.md §4.1 and its
+/// appendix "Bổ sung PO sau E5-4b"), over three seeds, every person's player training the focus
+/// that raises his OVR most each day (E54-13),
+/// when people press extra sessions at 12:00 and drink bottles by §4.2–§4.3, first seasons from a
+/// fresh world at three turns of the places and three fixed seasons (E54-14),
+/// then each kind's numbers of §4.4 are printed, E2–E9 judged, and PO's decision tree of stop
+/// point Đ2 applied over the grid {40, 1000}, {40, 750}, {40, 500}, {60, 1000} (E54-16), with
+/// the bottle levers 1 and 2 only when E6 still fails.
 #[test]
 #[ignore = "a measurement, run by hand"]
 #[expect(
@@ -1047,32 +1067,6 @@ fn measure_recovery_blocks() {
 )]
 fn measure_extra_sessions() {
     let started = std::time::Instant::now();
-    let proposed = extra::measure(ExtraParams::PROPOSED);
-    println!(
-        "\nExtraParams::PROPOSED: E2–E6 {}",
-        verdict(proposed.e1_e6_pass)
-    );
-    if proposed.e4_fails_at_free_all {
-        println!("E4 fails at ExtraFreeAll: rerun with {{40, 750}} and {{60, 1000}} (E54-10)");
-        for params in [
-            ExtraParams {
-                floor: 40,
-                dev_permille: 750,
-            },
-            ExtraParams {
-                floor: 60,
-                dev_permille: 1000,
-            },
-        ] {
-            let lever = extra::measure(params);
-            println!(
-                "\nExtraParams {{ {}, {} }}: E2–E6 {} · E4 at ExtraFreeAll {}",
-                params.floor,
-                params.dev_permille,
-                verdict(lever.e1_e6_pass),
-                verdict(!lever.e4_fails_at_free_all)
-            );
-        }
-    }
+    extra::decide();
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }

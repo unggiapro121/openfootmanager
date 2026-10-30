@@ -1,7 +1,8 @@
 //! E5-4b (E5-4-tech-spec.md §4): online seasons where people press extra sessions at 12:00 and
 //! drink condition bottles, measured by kind of club against `Auto` (the automatic sessions only)
 //! and against `Bot`. The world, days, blocks and matches are E5-1's (`Blocks(8)`, 16×, three
-//! seeds, three seasons, 56 clubs); only the kinds of club, the stars and the 12:00 step are new.
+//! seeds, 56 clubs); the kinds of club, the stars, each person's daily best focus (E54-13), the
+//! 12:00 step and the samples (E54-14: season 1 from a fresh world, and fixed kinds) are new.
 //!
 //! Every club but a bot picks its stars at the start of a season (E54-7) and fields them whenever
 //! they are fit, so a star's playing time is a starter's under every kind and kinds differ only by
@@ -10,15 +11,15 @@
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-use domain::player::Player;
+use domain::player::{Player, PlayerAttributes};
 use domain::staff::Staff;
-use domain::team::TrainingIntensity;
+use domain::team::{TrainingFocus, TrainingIntensity};
 use ofm_rules::recovery::RecoveryBlocks;
 use ofm_rules::training::{
     BASE_TRAINING_GAIN, ExtraParams, TeamTrainingPlan, TrainingDay, age_factor, extra_session,
     extra_session_rng, extra_sit_out, team_training_plan,
 };
-use ofm_rules::{age, items, match_form, playing_time, season, squad};
+use ofm_rules::{age, items, match_form, player_rating, playing_time, season, squad};
 
 use super::{
     Club, DAYS, Kind, LEAGUE, Measure, Measures, Recovery, SEASONS, SEEDS, Variant, kind_measure,
@@ -43,6 +44,36 @@ pub(super) const PLACES_E54: [Kind; LEAGUE] = [
     Kind::ExtraMax3,
     Kind::ExtraMaxAll,
 ];
+
+/// One E5-4b measurement's rules: the extra sessions' `ExtraParams`, the bottle points a player
+/// may drink a day (lever 1) and a club a day (lever 2, none by default).
+#[derive(Clone, Copy)]
+pub(super) struct ExtraRun {
+    pub(super) params: ExtraParams,
+    pub(super) player_cap: u8,
+    pub(super) club_cap: Option<u32>,
+}
+
+impl ExtraRun {
+    fn with(params: ExtraParams) -> Self {
+        Self {
+            params,
+            player_cap: DRINK_CAP,
+            club_cap: None,
+        }
+    }
+
+    fn describe(self) -> String {
+        format!(
+            "ExtraParams {{ floor: {}, dev_permille: {} }}, bottle points a player a day {}, a club a day {}",
+            self.params.floor,
+            self.params.dev_permille,
+            self.player_cap,
+            self.club_cap
+                .map_or("none".to_string(), |cap| cap.to_string())
+        )
+    }
+}
 
 /// The kinds printed, in this order.
 const KINDS: [Kind; 7] = [
@@ -214,9 +245,6 @@ pub(super) struct ExtraMeasure {
     /// (intensity, age band, starter) → the probe's sessions.
     probe: BTreeMap<(usize, usize, bool), Tally>,
     probe_sat_out: u32,
-    /// The probe's High, ≤ 21, starter sessions of the first season only, when every squad is
-    /// still as generated.
-    probe_first_season: Tally,
     /// (intensity, age band, in the likely XI) → the sessions pressed.
     pressed: BTreeMap<(usize, usize, bool), Tally>,
     /// Club sessions (`n` of the day), summed.
@@ -244,25 +272,27 @@ pub(super) struct ExtraMeasure {
     club_days: Vec<(u32, u32)>,
 }
 
-/// The start of a season for every club: the probe on copies, then the stars and an empty stock.
+/// The start of a season for every club: a bot's players lose any focus of their own, a person's
+/// take the best one (E54-13); then the probe on copies, the stars and an empty stock.
 pub(super) fn open_season(
     clubs: &mut [Club],
     (season_number, football_year): (u32, u32),
     v: Variant,
-    params: ExtraParams,
+    extra_run: ExtraRun,
     m: &mut Measures,
 ) {
+    let params = extra_run.params;
     let day0 = training_day(football_year, 0, v.multiplier);
     let key = season::day_key(season_number, 0);
     for club in clubs.iter_mut() {
+        if club.kind == Kind::Bot {
+            for player in &mut club.players {
+                player.training_focus = None;
+            }
+        }
+        choose_focus(club);
         let measure = &mut kind_measure(m, club.kind).extra;
-        probe(
-            club,
-            &day0,
-            &key,
-            (v.seed, params, season_number == 1),
-            measure,
-        );
+        probe(club, &day0, &key, (v.seed, params), measure);
         pick_stars(club, &day0.date);
     }
 }
@@ -273,7 +303,7 @@ fn probe(
     club: &Club,
     day0: &TrainingDay,
     key: &str,
-    (seed, params, first_season): (u64, ExtraParams, bool),
+    (seed, params): (u64, ExtraParams),
     measure: &mut ExtraMeasure,
 ) {
     let plan = plan_of(club);
@@ -293,9 +323,6 @@ fn probe(
                 break;
             }
             let change = i32::from(copy.ovr) - i32::from(player.ovr);
-            if first_season && k == HIGH && band(age) == 0 && starter {
-                measure.probe_first_season.add(change, outcome.gains);
-            }
             measure
                 .probe
                 .entry((k, band(age), starter))
@@ -324,6 +351,114 @@ fn technical_capped(player: &Player) -> (u32, u32) {
         .collect();
     let capped = rolled.iter().filter(|v| **v >= 99).count();
     (capped as u32, rolled.len() as u32)
+}
+
+/// The focuses a session can build, in the enum's order (E54-13 breaks ties by it).
+const FOCUSES: [TrainingFocus; 5] = [
+    TrainingFocus::Physical,
+    TrainingFocus::Technical,
+    TrainingFocus::Tactical,
+    TrainingFocus::Defending,
+    TrainingFocus::Attacking,
+];
+
+/// `attributes` with one point more on every attribute `focus` rolls that is still under 99; a
+/// split attribute only when he has it (`training.rs` `apply_focus_gains`, `try_gain_split`).
+fn one_more_of(attributes: &PlayerAttributes, focus: &TrainingFocus) -> PlayerAttributes {
+    let mut a = attributes.clone();
+    let up = |value: &mut u8, split: bool| {
+        if *value < 99 && !(split && *value == 0) {
+            *value += 1;
+        }
+    };
+    match focus {
+        TrainingFocus::Physical => {
+            for value in [&mut a.pace, &mut a.stamina, &mut a.strength, &mut a.agility] {
+                up(value, false);
+            }
+        }
+        TrainingFocus::Technical => {
+            for value in [&mut a.passing, &mut a.shooting, &mut a.dribbling] {
+                up(value, false);
+            }
+            for value in [
+                &mut a.long_passing,
+                &mut a.crossing,
+                &mut a.curve,
+                &mut a.free_kick,
+                &mut a.long_shots,
+                &mut a.first_touch,
+            ] {
+                up(value, true);
+            }
+        }
+        TrainingFocus::Tactical => {
+            for value in [
+                &mut a.positioning,
+                &mut a.vision,
+                &mut a.decisions,
+                &mut a.composure,
+            ] {
+                up(value, false);
+            }
+        }
+        TrainingFocus::Defending => {
+            for value in [
+                &mut a.tackling,
+                &mut a.defending,
+                &mut a.strength,
+                &mut a.positioning,
+            ] {
+                up(value, false);
+            }
+            up(&mut a.heading, true);
+        }
+        TrainingFocus::Attacking => {
+            for value in [&mut a.shooting, &mut a.dribbling, &mut a.pace] {
+                up(value, false);
+            }
+            for value in [&mut a.long_shots, &mut a.first_touch, &mut a.heading] {
+                up(value, true);
+            }
+        }
+        TrainingFocus::Recovery => {}
+    }
+    a
+}
+
+/// E54-13, a measurement assumption and not a rule of the game: the focus (never Recovery) whose
+/// one point more on each of its attributes under 99 raises the player's OVR at his position
+/// most; a tie keeps the focus he has, then goes by the enum's order.
+fn best_focus(player: &Player, current: &TrainingFocus) -> TrainingFocus {
+    let position = player_rating::primary_position(player);
+    let now = player_rating::ovr_from_attributes(&player.attributes, &position);
+    let rise = |focus: &TrainingFocus| {
+        player_rating::ovr_from_attributes(&one_more_of(&player.attributes, focus), &position) - now
+    };
+    let mut best = (current.clone(), rise(current));
+    for focus in &FOCUSES {
+        let value = rise(focus);
+        if value > best.1 + 1e-9 {
+            best = (focus.clone(), value);
+        }
+    }
+    best.0
+}
+
+/// Every day before the automatic session, a person's every player takes his best focus
+/// (E54-13); a bot keeps the AI's plan (E5-1).
+pub(super) fn choose_focus(club: &mut Club) {
+    if club.kind == Kind::Bot {
+        return;
+    }
+    let team_focus = club.team.training_focus.clone();
+    for player in &mut club.players {
+        let current = match player.training_focus.clone() {
+            Some(TrainingFocus::Recovery) | None => team_focus.clone(),
+            Some(focus) => focus,
+        };
+        player.training_focus = Some(best_focus(player, &current));
+    }
 }
 
 fn room(player: &Player) -> i16 {
@@ -405,9 +540,10 @@ pub(super) fn press(
     at: i64,
     (season_number, day, football_year): (u32, u32, u32),
     v: Variant,
-    params: ExtraParams,
+    extra_run: ExtraRun,
     measure: &mut Measure,
 ) {
+    let params = extra_run.params;
     if !presses(club.kind) {
         return;
     }
@@ -418,7 +554,7 @@ pub(super) fn press(
     rest_to(club, at, &blocks_of, &today.date);
     let plan = plan_of(club);
     let order = pressers(club);
-    drink(club, &order, &mut measure.extra);
+    drink(club, &order, extra_run, &mut measure.extra);
     let likely = likely_eleven(club);
     let choices: Vec<(usize, usize)> = order
         .iter()
@@ -510,9 +646,12 @@ fn take(extra: &mut ClubExtra, kind: Kind, size: u8) -> bool {
 
 /// §4.3 step 1: the drinkers of the kind (the stars; everyone pressed for `ExtraMaxAll`), fit and
 /// still growing, each up to the day's cap.
-fn drink(club: &mut Club, order: &[usize], measure: &mut ExtraMeasure) {
+fn drink(club: &mut Club, order: &[usize], extra_run: ExtraRun, measure: &mut ExtraMeasure) {
     let kind = club.kind;
     let (mut day_points, mut day_coins) = (0u32, 0u32);
+    // Lever 2: the club's bottle points of the day, by the labels.
+    let club_cap = extra_run.club_cap.unwrap_or(u32::MAX);
+    let mut club_points = 0u32;
     for &i in order {
         let player = &club.players[i];
         let drinks = kind == Kind::ExtraMaxAll || club.extra.stars.contains(&player.id);
@@ -520,7 +659,13 @@ fn drink(club: &mut Club, order: &[usize], measure: &mut ExtraMeasure) {
             continue;
         }
         let extra = &mut club.extra;
-        let drunk = pour(&mut club.players[i], |size| take(extra, kind, size));
+        let drunk = pour(&mut club.players[i], extra_run.player_cap, |size| {
+            if club_points + u32::from(size) > club_cap || !take(extra, kind, size) {
+                return false;
+            }
+            club_points += u32::from(size);
+            true
+        });
         for size in drunk {
             day_points += u32::from(size);
             let price = if size == LARGE {
@@ -542,17 +687,17 @@ fn drink(club: &mut Club, order: &[usize], measure: &mut ExtraMeasure) {
 }
 
 /// §4.3 step 1 for one player: a large bottle at `LARGE_AT` or under, then small ones at
-/// `SMALL_AT` or under, while the day's cap by the labels allows. `take` hands a bottle of a size
-/// over, or says there is none. Returns the sizes drunk.
-fn pour(player: &mut Player, mut take: impl FnMut(u8) -> bool) -> Vec<u8> {
+/// `SMALL_AT` or under, while `cap`, the player's bottle points a day by the labels, allows. `take`
+/// hands a bottle of a size over, or says there is none. Returns the sizes drunk.
+fn pour(player: &mut Player, cap: u8, mut take: impl FnMut(u8) -> bool) -> Vec<u8> {
     let mut taken = 0u8;
     let mut drunk = Vec::new();
-    if player.condition <= LARGE_AT && take(LARGE) {
+    if player.condition <= LARGE_AT && LARGE <= cap && take(LARGE) {
         items::boost_condition(player, LARGE);
         taken += LARGE;
         drunk.push(LARGE);
     }
-    while taken + SMALL <= DRINK_CAP && player.condition <= SMALL_AT && take(SMALL) {
+    while taken + SMALL <= cap && player.condition <= SMALL_AT && take(SMALL) {
         items::boost_condition(player, SMALL);
         taken += SMALL;
         drunk.push(SMALL);
@@ -827,14 +972,10 @@ fn star_growth_in(m: &Measure, season_number: u32) -> f64 {
     mean(&values)
 }
 
-/// E3–E6 and E9 season by season. Season 1 is the only one where every kind starts from the
-/// generated squads: from season 2 a club plays its new kind with the squad its previous kind
-/// built (the places turn one step a season), so a kind that follows a pressing kind starts
-/// with players whose focus attributes are already high.
+/// E3–E6 and E9 season by season of the runs where every club keeps its kind (printed only:
+/// the criteria read season 1 from a fresh world, E54-14).
 fn print_by_season(runs: &[Measures]) {
-    println!(
-        "\n-- E3–E6, E9 season by season (mean of seeds; s1 = generated squads for every kind) --"
-    );
+    println!("\n-- E3–E6, E9 season by season, kinds kept (mean of seeds; printed) --");
     for season_number in 1..=SEASONS {
         let top = |kind, base| {
             mean(&gap_of(runs, kind, base, &|m: &Measure| {
@@ -971,7 +1112,7 @@ fn print_kind(runs: &[Measures], kind: Kind) {
         runs.len()
     );
     println!(
-        "  top18 a season {} · vs Auto {} · vs Bot {} · 3 seasons vs Auto {} · vs Bot {}",
+        "  top18 a season {} · vs Auto {} · vs Bot {} · summed over seasons vs Auto {} · vs Bot {}",
         mean_spread(&read(Measure::top18)),
         mean_spread(&gap(runs, kind, Kind::Auto, Measure::top18)),
         mean_spread(&gap(runs, kind, Kind::Bot, Measure::top18)),
@@ -1104,10 +1245,7 @@ fn print_e8_levers(runs: &[Measures], kind: Kind) {
     if spent <= COIN_CEILING {
         return;
     }
-    println!(
-        "    (b) price × k for these purchases to cost {COIN_CEILING}: k = {:.2}",
-        COIN_CEILING / spent
-    );
+    // (b) "price × k" is dropped (E54-15): no buyer here answers to a price.
     let fits = (0..=600u32)
         .rev()
         .step_by(5)
@@ -1135,10 +1273,24 @@ fn print_e8_levers(runs: &[Measures], kind: Kind) {
     );
 }
 
-/// What the criteria found; the stop rule reads it.
-pub(super) struct Verdicts {
-    pub(super) e1_e6_pass: bool,
-    pub(super) e4_fails_at_free_all: bool,
+/// What the criteria found under one `ExtraRun`; PO's decision tree reads it.
+#[derive(Clone, Copy)]
+struct Found {
+    /// E2–E7 all pass (E1 is the test suite and `measure_recovery_blocks`, run apart).
+    e2_e7: bool,
+    e3: f64,
+    e4_free: f64,
+    e4_all: f64,
+    e6: f64,
+    e8_max3: f64,
+    e8_max_all: f64,
+}
+
+impl Found {
+    /// Step 2 of the tree: E4 (both kinds), E3 and E6 at once.
+    fn passes_e3_e4_e6(self) -> bool {
+        self.e4_free <= 1.5 && self.e4_all <= 1.5 && self.e3 >= 5.0 && self.e6 <= 4.0
+    }
 }
 
 fn criterion(name: &str, value: String, limit: &str, ok: bool) -> bool {
@@ -1146,35 +1298,30 @@ fn criterion(name: &str, value: String, limit: &str, ok: bool) -> bool {
     ok
 }
 
-fn judge(runs: &[Measures]) -> Verdicts {
+/// E3–E8 on `first` (season 1 from a fresh world, E54-14), E2 and E9 on `fixed` (kinds kept,
+/// three seasons; E2 reads seasons 2–3, the first having no regular starter).
+fn judge(first: &[Measures], fixed: &[Measures]) -> Found {
     println!(
-        "\n== criteria E2–E9 (E1 is the test suite and measure_recovery_blocks, run apart) =="
+        "\n== criteria (E3–E8: {} season-1 samples; E2, E9: {} fixed runs; E1 run apart) ==",
+        first.len(),
+        fixed.len()
     );
-    let (e2, e2_seeds) = e2_value(runs);
-    let mut first = Tally::default();
-    for m in runs.iter().flat_map(|r| r.values()) {
-        first.merge(m.extra.probe_first_season);
-    }
-    println!(
-        "  E2 (printed) season 1 only, every squad as generated: {:.3} (n={})",
-        first.ovr_per_session(),
-        first.n
-    );
+    let (e2, e2_seeds) = e2_value(fixed);
     let e2_ok = criterion(
         "E2 probe ΔOVR a High session, ≤21 starter",
         format!("{e2:.3} (seeds {e2_seeds:.3?})"),
         "0.1–0.8",
         (0.1..=0.8).contains(&e2),
     );
-    let e3 = gap(runs, Kind::ExtraFree, Kind::Auto, star_growth);
+    let e3 = gap(first, Kind::ExtraFree, Kind::Auto, star_growth);
     let e3_ok = criterion(
         "E3 star ExtraFree − star Auto, ΔOVR a season",
         mean_spread(&e3),
         "≥ +5",
         mean(&e3) >= 5.0,
     );
-    let e4_free = gap(runs, Kind::ExtraFree, Kind::Auto, Measure::top18);
-    let e4_all = gap(runs, Kind::ExtraFreeAll, Kind::Auto, Measure::top18);
+    let e4_free = gap(first, Kind::ExtraFree, Kind::Auto, Measure::top18);
+    let e4_all = gap(first, Kind::ExtraFreeAll, Kind::Auto, Measure::top18);
     let e4_free_ok = criterion(
         "E4 ExtraFree − Auto, top18 a season",
         mean_spread(&e4_free),
@@ -1187,29 +1334,34 @@ fn judge(runs: &[Measures]) -> Verdicts {
         "≤ +1.5",
         mean(&e4_all) <= 1.5,
     );
-    let e5 = median_day(&star_days(runs, Kind::ExtraMax3));
+    let e5 = median_day(&star_days(first, Kind::ExtraMax3));
     let e5_ok = criterion(
         "E5 ExtraMax3 stars, median day at potential or +18",
         describe_day(e5),
         "≥ day 10",
         e5.is_none_or(|d| d + 1 >= 10),
     );
-    let e6 = gap(runs, Kind::ExtraMaxAll, Kind::Auto, Measure::top18);
+    let e6 = gap(first, Kind::ExtraMaxAll, Kind::Auto, Measure::top18);
     let e6_ok = criterion(
         "E6 ExtraMaxAll − Auto, top18 a season",
         mean_spread(&e6),
         "≤ +4",
         mean(&e6) <= 4.0,
     );
-    let e7 = gap(runs, Kind::ExtraFree, Kind::Auto, Measure::points_per_match);
-    criterion(
+    let e7 = gap(
+        first,
+        Kind::ExtraFree,
+        Kind::Auto,
+        Measure::points_per_match,
+    );
+    let e7_ok = criterion(
         "E7 ExtraFree − Auto, points a match",
         format!("{:+.3} (±{:.3})", mean(&e7), spread(&e7)),
         "≥ −0.10 (fails: fix the policy, not a rule lever)",
         mean(&e7) >= -0.10,
     );
     let e7_all = gap(
-        runs,
+        first,
         Kind::ExtraFreeAll,
         Kind::Auto,
         Measure::points_per_match,
@@ -1219,40 +1371,43 @@ fn judge(runs: &[Measures]) -> Verdicts {
         mean(&e7_all),
         spread(&e7_all)
     );
-    for kind in [Kind::ExtraMax3, Kind::ExtraMaxAll] {
-        let spent = over_seeds(runs, kind, coins);
+    let mut e8 = [0.0; 2];
+    for (slot, kind) in [Kind::ExtraMax3, Kind::ExtraMaxAll].into_iter().enumerate() {
+        let spent = over_seeds(first, kind, coins);
+        e8[slot] = mean(&spent);
         criterion(
             &format!("E8 {kind:?} coins a season"),
             format!("{:.0} (±{:.0})", mean(&spent), spread(&spent)),
             "≤ 2500 (reported, does not stop)",
             mean(&spent) <= COIN_CEILING,
         );
-        print_e8_levers(runs, kind);
+        print_e8_levers(first, kind);
     }
     for kind in [Kind::ExtraMaxAll, Kind::ExtraFreeAll] {
-        let e9 = gap(runs, kind, Kind::Bot, top18_cumulative);
+        let e9 = gap(fixed, kind, Kind::Bot, top18_cumulative);
         println!(
-            "  E9 (printed) {kind:?} − Bot, top18 over {SEASONS} seasons: {} — beside G_max {G_MAX}",
+            "  E9 (printed) {kind:?} − Bot, top18 over {SEASONS} fixed seasons: {} — beside G_max {G_MAX}",
             mean_spread(&e9)
         );
     }
-    print_by_season(runs);
-    let e1_e6_pass = e2_ok && e3_ok && e4_free_ok && e4_all_ok && e5_ok && e6_ok;
-    println!(
-        "  E2–E6 {} · E4 at ExtraFreeAll {}",
-        verdict(e1_e6_pass),
-        verdict(e4_all_ok)
-    );
-    Verdicts {
-        e1_e6_pass,
-        e4_fails_at_free_all: !e4_all_ok,
+    let e2_e7 = e2_ok && e3_ok && e4_free_ok && e4_all_ok && e5_ok && e6_ok && e7_ok;
+    println!("  E2–E7 {}", verdict(e2_e7));
+    Found {
+        e2_e7,
+        e3: mean(&e3),
+        e4_free: mean(&e4_free),
+        e4_all: mean(&e4_all),
+        e6: mean(&e6),
+        e8_max3: e8[0],
+        e8_max_all: e8[1],
     }
 }
 
-/// One measurement of §4 under `params`: three seeds of E5-1's world with E5-4b's kinds, each
-/// seed's numbers, then the summary by kind and the criteria.
-pub(super) fn measure(params: ExtraParams) -> Verdicts {
-    let variant = |seed| Variant {
+/// One measurement under `extra_run` (E54-14): season 1 from a fresh world at three turns of the
+/// places × three seeds, and three seeds of three seasons with every club keeping its kind; each
+/// sample's numbers, the summaries by kind, and the criteria.
+fn measure(extra_run: ExtraRun) -> Found {
+    let variant = |seed, shift, rotate, seasons| Variant {
         multiplier: 16.0,
         recovery: Recovery::Blocks(RecoveryBlocks {
             per_day: 6,
@@ -1260,32 +1415,152 @@ pub(super) fn measure(params: ExtraParams) -> Verdicts {
         }),
         injury_scale: 13,
         places: Some(&PLACES_E54),
+        shift,
+        rotate,
+        seasons,
         seed,
-        extra: Some(params),
+        extra: Some(extra_run),
     };
-    let runs: Vec<Measures> = SEEDS.iter().map(|seed| run(variant(*seed))).collect();
-    for (seed, measures) in SEEDS.iter().zip(&runs) {
+    let first_variants: Vec<Variant> = (0..3)
+        .flat_map(|shift| SEEDS.iter().map(move |seed| variant(*seed, shift, true, 1)))
+        .collect();
+    let fixed_variants: Vec<Variant> = SEEDS
+        .iter()
+        .map(|seed| variant(*seed, 0, false, SEASONS))
+        .collect();
+    let first: Vec<Measures> = first_variants.iter().map(|v| run(*v)).collect();
+    let fixed: Vec<Measures> = fixed_variants.iter().map(|v| run(*v)).collect();
+    for (v, measures) in first_variants.iter().zip(&first) {
+        println!("\n######## season 1, places turned {} ########", v.shift);
         for (kind, m) in measures {
-            report(variant(*seed), m, Some(*kind));
+            report(*v, m, Some(*kind));
         }
     }
+    for (v, measures) in fixed_variants.iter().zip(&fixed) {
+        println!("\n######## {SEASONS} seasons, kinds kept ########");
+        for (kind, m) in measures {
+            report(*v, m, Some(*kind));
+        }
+    }
+    println!("\n==== E5-4b, {} ====", extra_run.describe());
     println!(
-        "\n==== E5-4b, ExtraParams {{ floor: {}, dev_permille: {} }}, {} seeds × {SEASONS} seasons ====",
-        params.floor,
-        params.dev_permille,
+        "\n---- season 1 from a fresh world, {} samples (3 turns × {} seeds): E3–E8 ----",
+        first.len(),
         SEEDS.len()
     );
-    print_probe(&runs);
     for kind in KINDS {
-        print_kind(&runs, kind);
+        print_kind(&first, kind);
     }
-    judge(&runs)
+    println!(
+        "\n---- {SEASONS} seasons, kinds kept, {} seeds: E2, E9, cumulative (printed) ----",
+        fixed.len()
+    );
+    print_probe(&fixed);
+    for kind in KINDS {
+        print_kind(&fixed, kind);
+    }
+    print_by_season(&fixed);
+    judge(&first, &fixed)
+}
+
+fn grid_line(extra_run: ExtraRun, found: Found) -> String {
+    format!(
+        "  {}: E2–E7 {} · E3 {:+.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E6 {:+.2} · E8 Max3 {:.0}, MaxAll {:.0}",
+        extra_run.describe(),
+        verdict(found.e2_e7),
+        found.e3,
+        found.e4_free,
+        found.e4_all,
+        found.e6,
+        found.e8_max3,
+        found.e8_max_all
+    )
+}
+
+/// The club caps a day tried for lever 2, largest first (bottle points by the labels).
+const CLUB_CAPS: [u32; 6] = [175, 140, 105, 70, 50, 35];
+
+/// PO's decision tree of stop point Đ2 (E54-16), applied over the grid: keep `PROPOSED` if it
+/// passes; else the largest `devPermille` of 750, 500 passing E4, E3 and E6 at once; else accept
+/// E4 at {40, 1000}. If E6 then fails, lever 1 (25 points a player a day), then lever 2 (a club cap
+/// a day, the largest that brings E6 to +4).
+pub(super) fn decide() {
+    let grid: Vec<(ExtraRun, Found)> = [(40, 1000), (40, 750), (40, 500), (60, 1000)]
+        .into_iter()
+        .map(|(floor, dev_permille)| {
+            let extra_run = ExtraRun::with(ExtraParams {
+                floor,
+                dev_permille,
+            });
+            (extra_run, measure(extra_run))
+        })
+        .collect();
+    println!("\n==== the grid (E54-16) ====");
+    for (extra_run, found) in &grid {
+        println!("{}", grid_line(*extra_run, *found));
+    }
+    let (proposed, at_proposed) = grid[0];
+    let (mut chosen, mut found, branch) = if at_proposed.e2_e7 {
+        (
+            proposed,
+            at_proposed,
+            "1: {40, 1000} passes E2–E7, keep PROPOSED",
+        )
+    } else if at_proposed.e4_all > 1.5 || at_proposed.e4_free > 1.5 {
+        match grid[1..3].iter().find(|(_, f)| f.passes_e3_e4_e6()) {
+            Some((extra_run, f)) => (
+                *extra_run,
+                *f,
+                "2: the largest devPermille with E4 (both), E3 and E6 passing",
+            ),
+            None => (
+                proposed,
+                at_proposed,
+                "3: no devPermille passes E4, E3 and E6 at once: accept E4 (a), keep {40, 1000}",
+            ),
+        }
+    } else {
+        (
+            proposed,
+            at_proposed,
+            "1 fails outside E4: keep PROPOSED, read step 4",
+        )
+    };
+    println!("\n==== decision tree ====\n  branch {branch}");
+    println!("{}", grid_line(chosen, found));
+    if found.e6 > 4.0 {
+        println!(
+            "  step 4: E6 {:+.2} > +4, lever 1 (25 points a player a day)",
+            found.e6
+        );
+        chosen.player_cap = 25;
+        found = measure(chosen);
+        println!("{}", grid_line(chosen, found));
+        if found.e6 > 4.0 {
+            println!("  step 4: E6 still > +4, lever 2 (a club cap a day)");
+            for cap in CLUB_CAPS {
+                chosen.club_cap = Some(cap);
+                found = measure(chosen);
+                println!("{}", grid_line(chosen, found));
+                if found.e6 <= 4.0 {
+                    break;
+                }
+            }
+        }
+    }
+    println!("\n==== chosen for S-28b ====\n{}", grid_line(chosen, found));
+    if chosen.club_cap.is_some() {
+        println!("  step 5: E8 reread under the club cap (above)");
+    } else {
+        println!("  step 5: E8 accepted as measured (a)");
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{LARGE, SMALL, best_for_gain, median_day, pour};
+    use super::{DRINK_CAP, LARGE, SMALL, best_focus, best_for_gain, median_day, pour};
     use domain::player::Player;
+    use domain::team::TrainingFocus;
     use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 
     /// A generated player at `condition`.
@@ -1323,7 +1598,11 @@ mod tests {
         ];
         for (condition, sizes, after) in cases {
             let mut player = player_at(condition);
-            assert_eq!(pour(&mut player, |_| true), sizes, "at {condition}");
+            assert_eq!(
+                pour(&mut player, DRINK_CAP, |_| true),
+                sizes,
+                "at {condition}"
+            );
             assert_eq!(player.condition, after, "at {condition}");
         }
     }
@@ -1334,7 +1613,10 @@ mod tests {
     #[test]
     fn without_a_large_bottle_two_small_ones_fill_the_cap() {
         let mut player = player_at(50);
-        assert_eq!(pour(&mut player, |size| size == SMALL), [SMALL, SMALL]);
+        assert_eq!(
+            pour(&mut player, DRINK_CAP, |size| size == SMALL),
+            [SMALL, SMALL]
+        );
         assert_eq!(player.condition, 80);
     }
 
@@ -1346,5 +1628,31 @@ mod tests {
         assert_eq!(median_day(&[Some(3), None, Some(9)]), Some(9));
         assert_eq!(median_day(&[None, None, Some(1)]), None);
         assert_eq!(median_day(&[Some(4), Some(2), Some(8)]), Some(4));
+    }
+
+    /// Given a player whose Technical attributes are all at 99,
+    /// when his focus of the day is chosen (E54-13),
+    /// then it is no longer Technical: a full focus builds nothing.
+    #[test]
+    fn a_full_focus_is_left_for_one_that_still_builds() {
+        let mut player = player_at(80);
+        let a = &mut player.attributes;
+        for value in [
+            &mut a.passing,
+            &mut a.shooting,
+            &mut a.dribbling,
+            &mut a.long_passing,
+            &mut a.crossing,
+            &mut a.curve,
+            &mut a.free_kick,
+            &mut a.long_shots,
+            &mut a.first_touch,
+        ] {
+            *value = 99;
+        }
+        assert_ne!(
+            best_focus(&player, &TrainingFocus::Technical),
+            TrainingFocus::Technical
+        );
     }
 }
