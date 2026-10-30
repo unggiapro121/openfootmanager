@@ -5189,7 +5189,7 @@
         "releaseSquadTooSmall": "Kdyby odešel, soupiska by klesla pod {{squadMin}} hráčů."
       },
       "inventory": {
-        "disabled": "Předměty se v této sezóně nepoužívají.",
+        "disabled": "Tento předmět se v této sezóně nepoužívá.",
         "itemNotFound": "Tohoto předmětu nemáš dost (máš {{held}}).",
         "stackFull": "Tolik se do inventáře nevejde: nejvýš ještě {{max}}.",
         "locked": "Tvoje předměty jsou po dobu kontroly zamčené.",

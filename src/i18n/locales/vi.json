@@ -5189,7 +5189,7 @@
         "releaseSquadTooSmall": "Thanh lý cầu thủ này sẽ khiến đội hình dưới {{squadMin}} người."
       },
       "inventory": {
-        "disabled": "Mùa này không dùng vật phẩm.",
+        "disabled": "Vật phẩm này không dùng được ở mùa này.",
         "itemNotFound": "Không đủ vật phẩm này (bạn có {{held}}).",
         "stackFull": "Kho đồ không chứa nổi: chỉ còn chỗ cho {{max}} cái.",
         "locked": "Vật phẩm của bạn đang bị khoá để kiểm tra.",

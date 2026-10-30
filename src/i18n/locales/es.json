@@ -5189,7 +5189,7 @@
         "releaseSquadTooSmall": "Dejarlo marchar dejaría tu plantilla por debajo de {{squadMin}} jugadores."
       },
       "inventory": {
-        "disabled": "Los objetos no se usan esta temporada.",
+        "disabled": "Este objeto no está en uso esta temporada.",
         "itemNotFound": "No tienes suficientes unidades de este objeto (tienes {{held}}).",
         "stackFull": "Tu inventario no admite tantos: caben como máximo {{max}} más.",
         "locked": "Tus objetos están bloqueados mientras se revisan.",
