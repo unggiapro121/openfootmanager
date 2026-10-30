@@ -231,6 +231,7 @@ fn measure_e5_a_stream_per_player() {
         training_facility_mult: 1.0,
         group_overrides: Default::default(),
         taper: None,
+        auto_focus: false,
     };
     let physical = |p: &domain::player::Player| {
         u32::from(p.attributes.pace)
@@ -249,6 +250,7 @@ fn measure_e5_a_stream_per_player() {
                 year: 2026,
                 date: date.clone(),
                 development_multiplier: 1.0,
+                keeper_drill: None,
             };
             let mut shared = rng_for_seed(7, "training", &date);
             for player in &mut squad {
