@@ -55,7 +55,7 @@ pub(super) struct ExtraRun {
 }
 
 impl ExtraRun {
-    fn with(params: ExtraParams) -> Self {
+    pub(super) fn with(params: ExtraParams) -> Self {
         Self {
             params,
             player_cap: DRINK_CAP,
@@ -290,7 +290,7 @@ pub(super) fn open_season(
     m: &mut Measures,
 ) {
     let params = extra_run.params;
-    let day0 = training_day(football_year, 0, v.multiplier);
+    let day0 = training_day(football_year, 0, v);
     let key = season::day_key(season_number, 0);
     for club in clubs.iter_mut() {
         if club.kind == Kind::Bot {
@@ -482,7 +482,7 @@ pub(super) fn press(
     let Recovery::Blocks(blocks_of) = v.recovery else {
         return;
     };
-    let today = training_day(football_year, day, v.multiplier);
+    let today = training_day(football_year, day, v);
     rest_to(club, at, &blocks_of, &today.date);
     let plan = plan_of(club);
     let order = pressers(club);
@@ -1430,6 +1430,8 @@ fn e54_variant(
         seasons,
         seed,
         extra: Some(extra_run),
+        keeper_drill: None,
+        probes: false,
     }
 }
 
