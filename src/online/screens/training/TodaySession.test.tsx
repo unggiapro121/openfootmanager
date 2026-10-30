@@ -11,7 +11,13 @@ import {
   SEASON,
   squadPlayer,
 } from "../../../test-utils/onlineTestKit";
-import type { FixtureView, MyClubView, TrainingDayView, TrainingSessionView } from "../../api";
+import type {
+  ExtraDayView,
+  ExtraSessionView,
+  FixtureView,
+  MyClubView,
+  TrainingDayView,
+} from "../../api";
 import { formatKickoffClock } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
 import OnlineTraining from "../OnlineTraining";
@@ -56,6 +62,18 @@ function trainingDay(overrides: Partial<TrainingDayView> = {}): TrainingDayView 
     nextRecoveryAt: new Date(Date.now() + 2 * HOUR).toISOString(),
     recovery: { perDay: 6, hours: 8 },
     autoOff: false,
+    extra: extraDay(),
+    ...overrides,
+  };
+}
+
+function extraDay(overrides: Partial<ExtraDayView> = {}): ExtraDayView {
+  return {
+    canPress: true,
+    today: 0,
+    floor: 40,
+    costs: { Low: 3, Medium: 6, High: 10 },
+    sitOut: [],
     ...overrides,
   };
 }
@@ -81,38 +99,40 @@ function stage(
   useOnlineStore.getState().setClub(club);
 }
 
-const presses = () =>
-  server.requests.filter((r) => r.segments.join("/") === "v1/clubs/mine/training/sessions");
+const PRESS_PATH = "v1/clubs/mine/training/extra";
+const presses = () => server.requests.filter((r) => r.segments.join("/") === PRESS_PATH);
 const clubReads = () => server.requests.filter((r) => r.segments.join("/") === "v1/clubs/mine");
+const SQUAD = [
+  squadPlayer({ id: "p1", matchName: "V. An", condition: 80 }),
+  squadPlayer({ id: "p2", matchName: "T. Bình", condition: 60 }),
+];
+const pressButton = () => screen.getByRole("button", { name: /online\.training\.extra\.press/ });
 
-function session(overrides: Partial<TrainingSessionView> = {}): TrainingSessionView {
-  const line = (id: string, before: number, after: number) => ({
-    playerId: id,
-    conditionBefore: before,
-    conditionAfter: after,
-  });
+function answer(overrides: Partial<ExtraSessionView> = {}): ExtraSessionView {
   return {
     day: 3,
-    intensity: "High",
+    intensity: "Low",
+    held: 3,
+    firstN: 1,
+    lastN: 3,
     players: [
-      line("p1", 90, 82),
-      line("p2", 70, 64),
-      line("p3", 50, 49),
-      line("p4", 30, 34),
-      line("p5", 35, 38),
-      line("p6", 60, 60),
+      { playerId: "p1", conditionBefore: 80, conditionAfter: 71, gains: 4, sessions: 3 },
+      {
+        playerId: "p2",
+        conditionBefore: 60,
+        conditionAfter: 57,
+        gains: 0,
+        sessions: 1,
+        stoppedBy: "keepAbove",
+      },
     ],
-    trainingDay: trainingDay({
-      today: "manual",
-      canTrain: false,
-      refusal: "be.error.training.sessionToday",
-      sessionsLast7: 3,
-    }),
+    trainingDay: trainingDay({ extra: extraDay({ today: 3 }) }),
     ...overrides,
   };
 }
 
 beforeEach(() => {
+  window.localStorage.clear();
   resetOnline();
   useOnlineStore.setState({ season: { ...SEASON, weekday: 0 } });
 });
@@ -148,128 +168,23 @@ describe("the training page without recovery blocks", () => {
 describe("today's session", () => {
   // Given day 3 of the season, two sessions in seven days and rows for days 0 and 2,
   // when the card shows,
-  // then it says day 4 of 28, 2 of 6 sessions, and a strip of days 1 to 3 with day 2 empty.
+  // then it says day 4 of 28, 2 of 6 sessions, and a strip of days 1 to 3 with day 2 empty; the
+  // old "train now" button is gone (C12-1).
   it("shows the day from one, the cap and the strip with an empty day", () => {
     stage(clubWith());
     render(<CardFromStore />);
     expect(screen.getByText("online.training.today.titleDay:4|28")).toBeInTheDocument();
     expect(screen.getByText("online.training.today.sessions:2|6")).toBeInTheDocument();
-    const strip = screen.getAllByRole("listitem").filter((item) => item.getAttribute("aria-label"));
+    const strip = screen
+      .getAllByRole("listitem")
+      .filter((item) => item.getAttribute("aria-label")?.includes("dayCell"));
     expect(strip.map((cell) => cell.getAttribute("aria-label"))).toEqual([
       "online.training.today.dayCell:1: online.training.today.kind.bot",
       "online.training.today.dayCell:2: online.training.today.kind.none",
       "online.training.today.dayCell:3: online.training.today.kind.manual",
     ]);
-    expect(screen.getByRole("status")).toHaveTextContent("online.training.today.statusNone");
-    expect(screen.getByText("online.training.today.noExtra:6")).toBeInTheDocument();
-  });
-
-  // Given a coach who picks a high intensity and presses,
-  // when the server answers after a while,
-  // then the press carries the intensity, the button is off while it is sent, and the answer
-  // shows "trained today (high)" with 3 down, 2 up, 1 the same; the club is read once.
-  it("holds a session at the intensity picked and shows its answer", async () => {
-    stage(clubWith(), {
-      "POST v1/clubs/mine/training/sessions": ok(session()),
-      "GET v1/clubs/mine": ok(clubWith(session().trainingDay)),
-    });
-    render(<CardFromStore />);
-    fireEvent.click(screen.getByRole("button", { name: "training.intensities.High.label" }));
-    const press = screen.getByRole("button", { name: "online.training.today.press" });
-    fireEvent.click(press);
-    // The answer is still on its way: the button is off until it comes.
-    expect(press).toBeDisabled();
-    await screen.findByText("online.training.today.summary:3|2|1");
-    expect(presses()).toHaveLength(1);
-    expect(presses()[0]?.body).toEqual({ intensity: "High" });
-    expect(presses()[0]?.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
-    expect(screen.getByRole("status")).toHaveTextContent(
-      "online.training.today.statusManualWith:training.intensities.High.label",
-    );
-    await waitFor(() => expect(clubReads()).toHaveLength(1));
-  });
-
-  // Given a session's answer with an injured player,
-  // when the coach opens the list of players,
-  // then each player shows his condition when pressed and after, and the injured one his badge.
-  it("lists each player with before and after, the injured one marked", async () => {
-    const injured = squadPlayer({
-      id: "p1",
-      matchName: "V. An",
-      injury: { name: "be.injury.hamstring", daysRemaining: 4 },
-    });
-    stage(clubWith({}, { players: [injured, squadPlayer({ id: "p2", matchName: "T. Bình" })] }), {
-      "POST v1/clubs/mine/training/sessions": ok(session()),
-    });
-    render(<CardFromStore />);
-    fireEvent.click(screen.getByRole("button", { name: "online.training.today.press" }));
-    fireEvent.click(
-      await screen.findByRole("button", { name: "online.training.today.showPlayers" }),
-    );
-    const row = screen.getByText("V. An").closest("tr") as HTMLElement;
-    expect(within(row).getByText("90")).toBeInTheDocument();
-    expect(within(row).getByText("82")).toBeInTheDocument();
-    expect(within(row).getByRole("img")).toBeInTheDocument();
-    const other = screen.getByText("T. Bình").closest("tr") as HTMLElement;
-    expect(within(other).queryByRole("img")).toBeNull();
-  });
-
-  // Given a press refused with a 409 (today's session held, the cap, the day job, the lineup lock),
-  // when the answer comes,
-  // then the card's own sentence shows, its day from one, and the club is read again once.
-  it.each([
-    ["be.error.training.sessionToday", {}, "be.error.training.sessionToday"],
-    ["be.error.training.sessionCap", { nextAllowedDay: 6 }, "be.error.training.sessionCap:7"],
-    ["be.error.training.dayPending", {}, "be.error.training.dayPending"],
-    [
-      "be.error.club.lineupLocked",
-      { kickoffAt: FIXTURE.kickoffAt },
-      `online.training.today.lineupLocked:${formatKickoffClock(FIXTURE.kickoffAt, Date.now(), "en")}`,
-    ],
-  ])("shows a 409 %s and reads the club again", async (code, params, text) => {
-    stage(clubWith(), {
-      "POST v1/clubs/mine/training/sessions": fail(409, code, { details: { params } }),
-      "GET v1/clubs/mine": ok(clubWith({ canTrain: false, refusal: code, ...params })),
-    });
-    render(<CardFromStore />);
-    fireEvent.click(screen.getByRole("button", { name: "online.training.today.press" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent(text);
-    await waitFor(() => expect(clubReads()).toHaveLength(1));
-  });
-
-  // Given a press that got no answer (status 0),
-  // when the coach presses again,
-  // then the second press carries the same key, and the server's answer shows.
-  it("presses again with the same key after no answer", async () => {
-    let calls = 0;
-    stage(clubWith(), {
-      "POST v1/clubs/mine/training/sessions": () => {
-        calls += 1;
-        // A request that timed out: no answer, the server may have held it.
-        return calls === 1 ? fail(0, "be.error.online.timeout") : ok(session());
-      },
-    });
-    render(<CardFromStore />);
-    const press = screen.getByRole("button", { name: "online.training.today.press" });
-    fireEvent.click(press);
-    await screen.findByRole("alert");
-    await waitFor(() => expect(press).toBeEnabled());
-    fireEvent.click(press);
-    await screen.findByText("online.training.today.summary:3|2|1");
-    const [first, second] = presses();
-    expect(second?.idempotencyKey).toBe(first?.idempotencyKey);
-  });
-
-  // Given the cap reached, the next allowed day 7 by the server,
-  // when the card shows,
-  // then the button is off and the reason says day 8.
-  it("turns the button off at the cap, with the next day from one", () => {
-    stage(
-      clubWith({ canTrain: false, refusal: "be.error.training.sessionCap", nextAllowedDay: 7 }),
-    );
-    render(<CardFromStore />);
-    expect(screen.getByRole("button", { name: "online.training.today.press" })).toBeDisabled();
-    expect(screen.getByRole("alert")).toHaveTextContent("be.error.training.sessionCap:8");
+    expect(screen.getAllByRole("status")[0]).toHaveTextContent("online.training.today.statusNone");
+    expect(screen.queryByText(/online\.training\.today\.press/)).toBeNull();
   });
 
   // Given a club that trained before its coach took over,
@@ -278,40 +193,7 @@ describe("today's session", () => {
   it("says the club trained before its coach took over", () => {
     stage(clubWith({ today: "bot", canTrain: false, refusal: "be.error.training.sessionToday" }));
     render(<CardFromStore />);
-    expect(screen.getByRole("status")).toHaveTextContent("online.training.today.statusBot");
-  });
-
-  // Given a match today not yet kicked off, and one tomorrow,
-  // when the card shows,
-  // then the warning about training before the match shows for today's only.
-  it("warns of a match today before kick-off", () => {
-    const nextDayAt = new Date(Date.now() + 10 * HOUR).toISOString();
-    useOnlineStore.setState({ season: { ...SEASON, weekday: 0, nextDayAt } });
-    const kickoffAt = new Date(Date.now() + 5 * HOUR).toISOString();
-    stage(clubWith({}, { nextFixture: { ...FIXTURE, kickoffAt } }));
-    const { unmount } = render(<CardFromStore />);
-    expect(screen.getByRole("note")).toHaveTextContent(
-      `online.training.today.matchToday:${formatKickoffClock(kickoffAt, Date.now(), "en")}`,
-    );
-    unmount();
-    const tomorrow = new Date(Date.now() + 15 * HOUR).toISOString();
-    stage(clubWith({}, { nextFixture: { ...FIXTURE, kickoffAt: tomorrow } }));
-    render(<CardFromStore />);
-    expect(screen.queryByRole("note")).toBeNull();
-  });
-
-  // Given the balanced schedule, on a Wednesday (a rest day of it) and on a Monday,
-  // when the card shows,
-  // then the rest-day note shows on Wednesday only.
-  it("notes a rest day of the schedule", () => {
-    useOnlineStore.setState({ season: { ...SEASON, weekday: 2 } });
-    stage(clubWith());
-    const { unmount } = render(<CardFromStore />);
-    expect(screen.getByText("online.training.today.scheduledRest:6")).toBeInTheDocument();
-    unmount();
-    useOnlineStore.setState({ season: { ...SEASON, weekday: 0 } });
-    render(<CardFromStore />);
-    expect(screen.queryByText("online.training.today.scheduledRest:6")).toBeNull();
+    expect(screen.getAllByRole("status")[0]).toHaveTextContent("online.training.today.statusBot");
   });
 
   // Given the region's day turning at a moment of the season,
@@ -345,6 +227,212 @@ describe("today's session", () => {
     render(<CardFromStore />);
     expect(screen.getByText("online.training.today.updating")).toBeInTheDocument();
   });
+
+  // Given a day view without the extra block (a server before S-28a),
+  // when the card shows,
+  // then it has no extra block.
+  it("shows no extra block without the server's extra view", () => {
+    stage(clubWith({ extra: undefined }));
+    render(<CardFromStore />);
+    expect(screen.queryByText("online.training.extra.title")).toBeNull();
+  });
+});
+
+describe("extra training", () => {
+  // Given a coach who has never pressed (C-12 §10.4),
+  // when the block shows and he presses,
+  // then the whole squad, Low and one session go out with a key; the button is off while it is
+  // sent; the club is read once after.
+  it("presses the whole squad at Low, one session, by default", async () => {
+    stage(clubWith({}, { players: SQUAD }), {
+      [`POST ${PRESS_PATH}`]: ok(answer({ held: 1, lastN: 1 })),
+    });
+    render(<CardFromStore />);
+    expect(
+      screen.getByRole("button", {
+        name: "online.training.extra.intensityCost:training.intensities.Low.label|3",
+      }),
+    ).toHaveAttribute("aria-pressed", "true");
+    const press = pressButton();
+    expect(press).toHaveTextContent("online.training.extra.press:2|1");
+    fireEvent.click(press);
+    expect(press).toBeDisabled();
+    await screen.findByText("online.training.extra.held:1|1|1");
+    expect(presses()[0]?.body).toEqual({ intensity: "Low", players: ["p1", "p2"], sessions: 1 });
+    expect(presses()[0]?.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
+    await waitFor(() => expect(clubReads()).toHaveLength(1));
+  });
+
+  // Given a coach who picks three sessions and keeps 60 or above,
+  // when he presses and the answer comes,
+  // then sessions and keepAbove go out, the batch line says 3 held (1–3 today), a player stopped
+  // to keep his condition says so, and gains read "+4" or "no gain".
+  it("sends the batch and shows each player's line", async () => {
+    stage(clubWith({}, { players: SQUAD }), { [`POST ${PRESS_PATH}`]: ok(answer()) });
+    render(<CardFromStore />);
+    fireEvent.click(screen.getByRole("button", { name: "3" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "online.training.extra.keepAboveOn" }));
+    fireEvent.change(screen.getByLabelText("online.training.extra.keepAbove"), {
+      target: { value: "60" },
+    });
+    fireEvent.click(pressButton());
+    await screen.findByText("online.training.extra.held:3|1|3");
+    expect(presses()[0]?.body).toEqual({
+      intensity: "Low",
+      players: ["p1", "p2"],
+      sessions: 3,
+      keepAbove: 60,
+    });
+    const row = screen.getByText("T. Bình", { selector: "td" }).closest("tr") as HTMLElement;
+    expect(within(row).getByText("online.training.extra.reason.keepAbove")).toBeInTheDocument();
+    expect(within(row).getByText("online.training.extra.noGain")).toBeInTheDocument();
+    const first = screen.getByText("V. An", { selector: "td" }).closest("tr") as HTMLElement;
+    expect(within(first).getByText("online.training.extra.gainsCount:4")).toBeInTheDocument();
+  });
+
+  // Given a saved choice naming a player who has since been sold,
+  // when the coach presses,
+  // then only the players still in the squad go out.
+  it("never sends a player who left the squad", async () => {
+    window.localStorage.setItem(
+      "ofm.online.extraTraining.club-1",
+      JSON.stringify({ players: ["p2", "sold"], sessions: 1, keepAbove: null }),
+    );
+    stage(clubWith({}, { players: SQUAD }), { [`POST ${PRESS_PATH}`]: ok(answer()) });
+    render(<CardFromStore />);
+    fireEvent.click(pressButton());
+    await waitFor(() => expect(presses()).toHaveLength(1));
+    expect(presses()[0]?.body).toMatchObject({ players: ["p2"] });
+  });
+
+  // Given no player chosen, then a view that says no press now,
+  // when the block shows,
+  // then the button is off each time, and the view's reason is shown.
+  it("turns the button off with no one chosen and when the server says no", () => {
+    stage(clubWith({}, { players: SQUAD }));
+    const { unmount } = render(<CardFromStore />);
+    fireEvent.click(screen.getByRole("button", { name: "online.training.extra.selectNone" }));
+    expect(pressButton()).toBeDisabled();
+    unmount();
+    window.localStorage.clear();
+    stage(
+      clubWith(
+        { extra: extraDay({ canPress: false, refusal: "be.error.training.manualOff" }) },
+        { players: SQUAD },
+      ),
+    );
+    render(<CardFromStore />);
+    expect(pressButton()).toBeDisabled();
+    expect(screen.getByRole("alert")).toHaveTextContent("be.error.training.manualOff");
+  });
+
+  // Given a player the server says would sit out (tired),
+  // when the block shows,
+  // then his line says why, with the season's floor.
+  it("shows why a player would sit out", () => {
+    stage(
+      clubWith(
+        { extra: extraDay({ sitOut: [{ playerId: "p2", reason: "tired" }] }) },
+        { players: SQUAD },
+      ),
+    );
+    render(<CardFromStore />);
+    expect(screen.getByText("online.training.extra.reason.tired:40")).toBeInTheDocument();
+  });
+
+  // Given a press refused because every player chosen sits out, and one refused by the lock,
+  // when the answer comes,
+  // then the card's own sentence shows and the club is read again.
+  it.each([
+    ["be.error.training.noFitPlayers", {}, "be.error.training.noFitPlayers"],
+    [
+      "be.error.club.lineupLocked",
+      { kickoffAt: FIXTURE.kickoffAt },
+      `online.training.today.lineupLocked:${formatKickoffClock(FIXTURE.kickoffAt, Date.now(), "en")}`,
+    ],
+  ])("shows a 409 %s and reads the club again", async (code, params, text) => {
+    stage(clubWith({}, { players: SQUAD }), {
+      [`POST ${PRESS_PATH}`]: fail(409, code, { details: { params } }),
+    });
+    render(<CardFromStore />);
+    fireEvent.click(pressButton());
+    expect(await screen.findByRole("alert")).toHaveTextContent(text);
+    await waitFor(() => expect(clubReads()).toHaveLength(1));
+  });
+
+  // Given a press that got no answer (status 0),
+  // when the coach presses again,
+  // then the second press carries the same key, and the server's answer shows.
+  it("presses again with the same key after no answer", async () => {
+    let calls = 0;
+    stage(clubWith({}, { players: SQUAD }), {
+      [`POST ${PRESS_PATH}`]: () => {
+        calls += 1;
+        return calls === 1 ? fail(0, "be.error.online.timeout") : ok(answer());
+      },
+    });
+    render(<CardFromStore />);
+    fireEvent.click(pressButton());
+    await screen.findByRole("alert");
+    await waitFor(() => expect(pressButton()).toBeEnabled());
+    fireEvent.click(pressButton());
+    await screen.findByText("online.training.extra.held:3|1|3");
+    const [first, second] = presses();
+    expect(second?.idempotencyKey).toBe(first?.idempotencyKey);
+  });
+
+  // Given a match today and a starter at 80 (C12-6),
+  // when the coach picks High, then Low,
+  // then a warning names him at High (70) and not at Low (77); it never blocks the press.
+  it("warns of a starter left under 75 on a match day", () => {
+    const nextDayAt = new Date(Date.now() + 10 * HOUR).toISOString();
+    useOnlineStore.setState({ season: { ...SEASON, weekday: 0, nextDayAt } });
+    const kickoffAt = new Date(Date.now() + 5 * HOUR).toISOString();
+    stage(
+      clubWith(
+        {},
+        {
+          players: SQUAD,
+          nextFixture: { ...FIXTURE, kickoffAt },
+          setup: { ...myClub().setup, startingXiIds: ["p1"] },
+        },
+      ),
+    );
+    render(<CardFromStore />);
+    expect(screen.queryByText(/online\.training\.extra\.xiWarning/)).toBeNull();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "online.training.extra.intensityCost:training.intensities.High.label|10",
+      }),
+    );
+    expect(screen.getByRole("note")).toHaveTextContent("online.training.extra.xiWarning:V. An|75");
+    expect(pressButton()).toBeEnabled();
+  });
+
+  // Given a chosen player whose whole Physical focus is at 99 (E5-4 R12-F),
+  // when the block shows,
+  // then it warns that a session only costs him condition.
+  it("warns when a player's focus is full", () => {
+    const attributes = {
+      ...squadPlayer().attributes,
+      pace: 99,
+      stamina: 99,
+      strength: 99,
+      agility: 99,
+    };
+    stage(
+      clubWith(
+        {},
+        {
+          players: [
+            squadPlayer({ id: "p1", matchName: "V. An", trainingFocus: "Physical", attributes }),
+          ],
+        },
+      ),
+    );
+    render(<CardFromStore />);
+    expect(screen.getByRole("note")).toHaveTextContent("online.training.extra.focusFull:V. An");
+  });
 });
 
 describe("today's day job not run yet", () => {
@@ -354,7 +442,11 @@ describe("today's day job not run yet", () => {
   // more, then no more; the reload reads it once.
   it("reads the club again, slower after two minutes, then only on reload", async () => {
     vi.useFakeTimers();
-    const pending = clubWith({ canTrain: false, refusal: "be.error.training.dayPending" });
+    const pending = clubWith({
+      canTrain: false,
+      refusal: "be.error.training.dayPending",
+      extra: extraDay({ canPress: false, refusal: "be.error.training.dayPending" }),
+    });
     stage(pending);
     render(<CardFromStore />);
     for (let read = 0; read < PENDING_FAST_READS; read += 1) {
@@ -404,6 +496,6 @@ describe("today's day job not run yet", () => {
       });
     }
     expect(clubReads()).toHaveLength(2);
-    expect(screen.getByRole("button", { name: "online.training.today.press" })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: "online.training.today.reload" })).toBeNull();
   });
 });
