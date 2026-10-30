@@ -249,6 +249,9 @@ pub(super) struct ExtraMeasure {
     probe_sat_out: u32,
     /// (intensity, age band, in the likely XI) → the sessions pressed.
     pressed: BTreeMap<(usize, usize, bool), Tally>,
+    /// (intensity, ≤ 21 / 22–24 / older, starter by playing time ≥ 80) → (sessions with at least
+    /// one attribute up, sessions): how often a press shows a gain to the player.
+    feel: BTreeMap<(usize, usize, bool), (u32, u32)>,
     /// Club sessions (`n` of the day), summed.
     club_sessions: u32,
     star_sessions: u32,
@@ -771,6 +774,7 @@ fn press_one(
 ) {
     let age = age_of(player, &ctx.day.date);
     let (ovr, potential) = (player.ovr, player.potential);
+    let starter = player.playing_time >= REGULAR;
     let mut rng = extra_session_rng(ctx.seed, &player.id, ctx.key, n);
     let outcome = extra_session(
         player,
@@ -791,6 +795,21 @@ fn press_one(
         .add(i32::from(player.ovr) - i32::from(ovr), outcome.gains);
     measure.potential_raised += u32::from(player.potential > potential);
     measure.star_sessions += u32::from(is_star);
+    let feel = measure
+        .feel
+        .entry((k, feel_band(age), starter))
+        .or_default();
+    feel.0 += u32::from(outcome.gains > 0);
+    feel.1 += 1;
+}
+
+/// ≤ 21, 22–24, older: the bands of the feel check (user's decision of 2026-10-31).
+fn feel_band(age: i32) -> usize {
+    match age {
+        ..=21 => 0,
+        22..=24 => 1,
+        _ => 2,
+    }
 }
 
 /// At the end of `day`: the first day each first star reached his potential or +18.
@@ -1303,6 +1322,9 @@ fn print_e8_levers(runs: &[Measures], kind: Kind) {
 struct Found {
     /// E2–E7 all pass (E1 is the test suite and `measure_recovery_blocks`, run apart).
     e2_e7: bool,
+    e2: f64,
+    e5_ok: bool,
+    e7_ok: bool,
     e3: f64,
     e4_free: f64,
     e4_all: f64,
@@ -1419,6 +1441,9 @@ fn judge(first: &[Measures], fixed: &[Measures]) -> Found {
     println!("  E2–E7 {}", verdict(e2_e7));
     Found {
         e2_e7,
+        e2,
+        e5_ok,
+        e7_ok,
         e3: mean(&e3),
         e4_free: mean(&e4_free),
         e4_all: mean(&e4_all),
@@ -1554,6 +1579,96 @@ pub(super) fn low_dev_points() {
                 gap_mean(kind, Measure::top18),
             );
         }
+    }
+}
+
+/// The share of pressed sessions that raised at least one attribute (Low only is ever pressed),
+/// pooled over the samples: ≤ 21 starters, ≤ 21 others, 22–24 starters, 22–24 others.
+fn feel_shares(runs: &[Measures]) -> [(f64, u32); 4] {
+    let mut cells = [(0u32, 0u32); 4];
+    for m in runs.iter().flat_map(|r| r.values()) {
+        for ((_, age_band, starter), (hits, n)) in &m.extra.feel {
+            if *age_band < 2 {
+                let cell = &mut cells[age_band * 2 + usize::from(!starter)];
+                cell.0 += hits;
+                cell.1 += n;
+            }
+        }
+    }
+    cells.map(|(hits, n)| (f64::from(hits) / f64::from(n.max(1)), n))
+}
+
+/// The feel floor of the user's decision (2026-10-31): a starter of 21 or younger sees +1 in at
+/// least a fifth of his Low sessions.
+const FEEL_FLOOR: f64 = 0.2;
+
+/// The user's decision of 2026-10-31: E1–E9 in full at `devPermille` 150, 125 and 100, the feel
+/// of a press, and the largest level that passes all of it (E2 under 0.1 only because the level
+/// was lowered on purpose does not block); none passing keeps 1000.
+pub(super) fn lowered_dev_levels() {
+    let mut passing = None;
+    let mut lines = Vec::new();
+    for dev_permille in [150, 125, 100] {
+        let extra_run = ExtraRun::with(ExtraParams {
+            floor: 40,
+            dev_permille,
+        });
+        let first: Vec<Measures> = (0..3)
+            .flat_map(|shift| {
+                SEEDS
+                    .iter()
+                    .map(move |seed| run(e54_variant(extra_run, *seed, (shift, true, 1))))
+            })
+            .collect();
+        let found = measure(extra_run);
+        let feel = feel_shares(&first);
+        let feel_ok = feel[0].0 >= FEEL_FLOOR;
+        let rules_ok = found.passes_e3_e4_e6()
+            && found.e5_ok
+            && found.e7_ok
+            && found.e8_max3 <= COIN_CEILING
+            && found.e8_max_all <= COIN_CEILING;
+        let e2_note = if (0.1..=0.8).contains(&found.e2) {
+            "in range"
+        } else if found.e2 < 0.1 {
+            "under 0.1 only because devPermille was lowered on purpose: does not block"
+        } else {
+            "over 0.8"
+        };
+        let line = format!(
+            "  {{40, {dev_permille}}}: E2 {:.3} ({e2_note}) · E3 {:+.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E5 {} · E6 {:+.2} · E7 {} · E8 {:.0}/{:.0} · feel ≤21 starter {:.1}% (n={}) {}, ≤21 other {:.1}%, 22–24 starter {:.1}%, 22–24 other {:.1}% · E3–E8 {} · overall {}",
+            found.e2,
+            found.e3,
+            found.e4_free,
+            found.e4_all,
+            verdict(found.e5_ok),
+            found.e6,
+            verdict(found.e7_ok),
+            found.e8_max3,
+            found.e8_max_all,
+            100.0 * feel[0].0,
+            feel[0].1,
+            verdict(feel_ok),
+            100.0 * feel[1].0,
+            100.0 * feel[2].0,
+            100.0 * feel[3].0,
+            verdict(rules_ok),
+            verdict(rules_ok && feel_ok && found.e2 <= 0.8),
+        );
+        if passing.is_none() && rules_ok && feel_ok && found.e2 <= 0.8 {
+            passing = Some(dev_permille);
+        }
+        lines.push(line);
+    }
+    println!("\n==== lowered devPermille levels (user's decision of 2026-10-31) ====");
+    for line in lines {
+        println!("{line}");
+    }
+    match passing {
+        Some(dev_permille) => {
+            println!("  chosen: the largest passing level, devPermille {dev_permille}")
+        }
+        None => println!("  no level passes: keep devPermille 1000"),
     }
 }
 
