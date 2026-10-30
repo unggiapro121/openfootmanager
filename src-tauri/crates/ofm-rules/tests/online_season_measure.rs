@@ -10,7 +10,8 @@
 //! league plays its round. With blocks the day follows E5-1 §4: the 04:00 job, a person's session
 //! at 12:00, the kick-off at its league's slot, each recovering by the blocks passed since the
 //! last. At the end of a season: aging, online retirement, and the season into the career. Squads
-//! are not topped up, so the third season is played by smaller squads than the first.
+//! are not topped up, so the third season is played by smaller squads than the first. E5-4b adds
+//! extra sessions pressed at 12:00 and condition drinks (E5-4-tech-spec.md §4, module `extra`).
 
 use std::collections::{BTreeMap, HashMap};
 
@@ -33,6 +34,10 @@ use ofm_rules::training::{
 use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 use ofm_rules::{age, aging, ai_training, match_form, player_wear, playing_time, season};
 use ofm_rules::{season_stats, seed};
+
+// A directory of its own, so cargo does not take it for a test target of its own.
+#[path = "online_season_measure/extra.rs"]
+mod extra;
 
 const SEED: u64 = 0x0E37;
 /// The seeds of the E5-1 measurement (§5.2): E3-7's and two more.
@@ -70,6 +75,31 @@ enum Kind {
     ManualSmart,
     /// A person with the automatic sessions off who never presses.
     Off,
+    /// E5-4b: a person pressing extra sessions for one star, who drinks the free bottles.
+    ExtraFree,
+    /// E5-4b: a person pressing extra sessions for every player who can still grow; the free
+    /// bottles go to the star.
+    ExtraFreeAll,
+    /// E5-4b: a person pressing for three stars and buying every bottle the daily cap allows them.
+    ExtraMax3,
+    /// E5-4b: a person pressing for everyone and buying every bottle the daily cap allows each.
+    ExtraMaxAll,
+}
+
+impl Kind {
+    /// Whether the club's saved plan runs its sessions on its own (E5-1 `Auto`, and every kind of
+    /// E5-4b that presses on top of it).
+    fn automatic(self) -> bool {
+        matches!(
+            self,
+            Kind::Auto
+                | Kind::AutoMax
+                | Kind::ExtraFree
+                | Kind::ExtraFreeAll
+                | Kind::ExtraMax3
+                | Kind::ExtraMaxAll
+        )
+    }
 }
 
 /// The kind of each place of a league, before the season's turn (§5.1: 6 bots, 2, 2, 2, 1, 1).
@@ -99,8 +129,9 @@ enum Recovery {
     Blocks(RecoveryBlocks),
 }
 
-/// One way to play an online season: the development multiplier, the online recovery, the injury
-/// scale (S-7 Qs7-11), whether a league mixes kinds of club or is all bots, and the world's seed.
+/// One way to play online seasons: the development multiplier, the online recovery, the injury
+/// scale (S-7 Qs7-11), the kinds of club of a league (all bots without) and how they turn, how many
+/// seasons, the world's seed, and the extra sessions of E5-4b (none without).
 /// `rest_days: 0, injury_scale: 1` is the game's own day.
 #[derive(Clone, Copy)]
 struct Variant {
@@ -108,8 +139,37 @@ struct Variant {
     recovery: Recovery,
     /// Injuries out for this many times fewer days (`assign_online_match_injury`).
     injury_scale: u32,
-    mixed: bool,
+    places: Option<&'static [Kind; LEAGUE]>,
+    /// The places' first turn: club `i` of a league starts at place `(i + shift) % 14`.
+    shift: usize,
+    /// Whether the places turn one step a season (E5-1) or a club keeps its kind (E54-14).
+    rotate: bool,
+    seasons: u32,
     seed: u64,
+    extra: Option<extra::ExtraRun>,
+}
+
+impl Variant {
+    /// E5-1's world: the places turning from the first, `SEASONS` seasons, no extra sessions.
+    fn e51(
+        multiplier: f64,
+        recovery: Recovery,
+        injury_scale: u32,
+        places: Option<&'static [Kind; LEAGUE]>,
+        seed: u64,
+    ) -> Self {
+        Self {
+            multiplier,
+            recovery,
+            injury_scale,
+            places,
+            shift: 0,
+            rotate: true,
+            seasons: SEASONS,
+            seed,
+            extra: None,
+        }
+    }
 }
 
 struct Club {
@@ -123,6 +183,8 @@ struct Club {
     held: Vec<u32>,
     /// When the stored condition was true, in minutes from 04:00 of the first season's day 0.
     condition_at: i64,
+    /// E5-4b: the club's stars and bottles.
+    extra: extra::ClubExtra,
 }
 
 #[derive(Default)]
@@ -146,6 +208,8 @@ struct Measure {
     points: u32,
     goal_difference: i32,
     matches: u32,
+    /// E5-4b's numbers; empty in every other measurement.
+    extra: extra::ExtraMeasure,
 }
 
 impl Measure {
@@ -209,6 +273,7 @@ fn world(v: Variant) -> Vec<Club> {
                 kind: Kind::Bot,
                 held: Vec::new(),
                 condition_at: 0,
+                extra: extra::ClubExtra::default(),
             }
         })
         .collect()
@@ -219,17 +284,21 @@ fn world(v: Variant) -> Vec<Club> {
 fn assign_kinds(clubs: &mut [Club], season_number: u32, v: Variant) {
     for (index, club) in clubs.iter_mut().enumerate() {
         club.held.clear();
-        club.kind = if v.mixed {
-            PLACES[(index % LEAGUE + season_number as usize - 1) % LEAGUE]
-        } else {
-            Kind::Bot
-        };
+        club.kind = v.places.map_or(Kind::Bot, |places| {
+            let turned = if v.rotate { season_number - 1 } else { 0 };
+            places[(index % LEAGUE + v.shift + turned as usize) % LEAGUE]
+        });
         let (schedule, intensity) = match club.kind {
             Kind::Bot => continue,
             Kind::AutoMax => (TrainingSchedule::Intense, TrainingIntensity::High),
-            Kind::Auto | Kind::ManualHigh | Kind::ManualSmart | Kind::Off => {
-                (TrainingSchedule::Balanced, TrainingIntensity::Medium)
-            }
+            Kind::Auto
+            | Kind::ManualHigh
+            | Kind::ManualSmart
+            | Kind::Off
+            | Kind::ExtraFree
+            | Kind::ExtraFreeAll
+            | Kind::ExtraMax3
+            | Kind::ExtraMaxAll => (TrainingSchedule::Balanced, TrainingIntensity::Medium),
         };
         // Every person trains the same work, so kinds differ only in how many sessions, how hard
         // and when.
@@ -350,7 +419,7 @@ fn catch_up(club: &mut Club, season_number: u32, day: u32, football_year: u32, v
         return;
     }
     let past = training_day(football_year, yesterday, v.multiplier);
-    let automatic = matches!(club.kind, Kind::Auto | Kind::AutoMax);
+    let automatic = club.kind.automatic();
     let kind = if automatic && session_allowed(&club.held, yesterday) {
         if club
             .team
@@ -512,9 +581,15 @@ fn play(
         rest_to(&mut clubs[home], at, &blocks_of, date);
         rest_to(&mut clubs[away], at, &blocks_of, date);
     }
-    let (home_side, home_bench) = side(&clubs[home], fixture);
-    let (away_side, away_bench) = side(&clubs[away], fixture);
+    let (mut home_side, mut home_bench) = side(&clubs[home], fixture);
+    let (mut away_side, mut away_bench) = side(&clubs[away], fixture);
     let (home_kind, away_kind) = (clubs[home].kind, clubs[away].kind);
+    if v.extra.is_some() {
+        extra::field_stars(&clubs[home], &mut home_side, &mut home_bench);
+        extra::field_stars(&clubs[away], &mut away_side, &mut away_bench);
+        extra::kickoff(&clubs[home], &home_side, kind_measure(m, home_kind));
+        extra::kickoff(&clubs[away], &away_side, kind_measure(m, away_kind));
+    }
     kickoff_condition(&clubs[home], &home_side, round, kind_measure(m, home_kind));
     kickoff_condition(&clubs[away], &away_side, round, kind_measure(m, away_kind));
     let mut match_seed = [0u8; 32];
@@ -620,7 +695,7 @@ fn run(v: Variant) -> Measures {
     let mut clubs = world(v);
     let mut measures = Measures::new();
     let pairings = season::round_robin_pairings(14, 2);
-    for season_number in 1..=SEASONS {
+    for season_number in 1..=v.seasons {
         assign_kinds(&mut clubs, season_number, v);
         let football_year = FIRST_YEAR + season_number - 1;
         let (_, first_day) = season::season_football_date(football_year, 0, DAYS);
@@ -638,13 +713,42 @@ fn run(v: Variant) -> Measures {
             })
             .collect();
         let start_top18: Vec<f64> = clubs.iter().map(|c| top18(&c.players)).collect();
+        if let Some(extra_run) = v.extra {
+            extra::open_season(
+                &mut clubs,
+                (season_number, football_year),
+                v,
+                extra_run,
+                &mut measures,
+            );
+        }
         for day in 0..DAYS {
             let day_start = i64::from((season_number - 1) * DAYS + day) * MINUTES_A_DAY;
             for club in &mut clubs {
                 train(club, season_number, day, football_year, v);
+                if v.extra.is_some() {
+                    extra::choose_focus(club);
+                }
                 morning(club, day_start, season_number, day, football_year, v);
                 let at = day_start + SESSION_AT - DAY_TURN;
                 press(club, at, season_number, day, football_year, v);
+                if let Some(extra_run) = v.extra {
+                    extra::morning(club, day);
+                    let measure = kind_measure(&mut measures, club.kind);
+                    extra::press(
+                        club,
+                        at,
+                        (season_number, day, football_year),
+                        v,
+                        extra_run,
+                        measure,
+                    );
+                }
+            }
+            if v.extra.is_some() {
+                for club in &mut clubs {
+                    extra::track_stars(club, day);
+                }
             }
             if day < 2 {
                 continue;
@@ -669,6 +773,9 @@ fn run(v: Variant) -> Measures {
             for club in clubs.iter_mut().filter(|c| c.kind != Kind::Bot) {
                 catch_up(club, season_number, DAYS, football_year, v);
             }
+        }
+        if v.extra.is_some() {
+            extra::close_season(&clubs, season_number, &start_top18, &mut measures);
         }
         close_season(
             &mut clubs,
@@ -771,19 +878,15 @@ fn report(v: Variant, m: &Measure, kind: Option<Kind>) {
 )]
 fn measure_online_seasons() {
     // The rules as they stand, at four multipliers; then candidate online wear at 10×.
-    let today = Variant {
-        multiplier: 10.0,
-        recovery: Recovery::Legacy { rest_days: 0 },
-        injury_scale: 1,
-        mixed: false,
-        seed: SEED,
-    };
-    let online = |multiplier| Variant {
-        multiplier,
-        recovery: Recovery::Legacy { rest_days: 2 },
-        injury_scale: 13,
-        mixed: false,
-        seed: SEED,
+    let today = Variant::e51(10.0, Recovery::Legacy { rest_days: 0 }, 1, None, SEED);
+    let online = |multiplier| {
+        Variant::e51(
+            multiplier,
+            Recovery::Legacy { rest_days: 2 },
+            13,
+            None,
+            SEED,
+        )
     };
     let variants = [
         today,
@@ -895,13 +998,7 @@ fn verdict(ok: bool) -> &'static str {
     reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
 )]
 fn measure_recovery_blocks() {
-    let variant = |recovery, seed| Variant {
-        multiplier: 16.0,
-        recovery,
-        injury_scale: 13,
-        mixed: true,
-        seed,
-    };
+    let variant = |recovery, seed| Variant::e51(16.0, recovery, 13, Some(&PLACES), seed);
     let started = std::time::Instant::now();
     let legacy: Vec<Measures> = SEEDS
         .iter()
@@ -951,5 +1048,25 @@ fn measure_recovery_blocks() {
         Some((hours, a5)) => println!("\nfewest hours passing A1–A4: {hours} (A5 {})", verdict(a5)),
         None => println!("\nno hours pass A1–A4: stop and report (E51-7)"),
     }
+    println!("took {:.1} s", started.elapsed().as_secs_f64());
+}
+
+/// Given 56 generated clubs in four leagues of seven kinds of club (E5-4-tech-spec.md §4.1 and its
+/// appendix "Bổ sung PO sau E5-4b"), over three seeds, every person's player training the focus
+/// that raises his OVR most each day (E54-13),
+/// when people press extra sessions at 12:00 and drink bottles by §4.2–§4.3, first seasons from a
+/// fresh world at three turns of the places and three fixed seasons (E54-14),
+/// then each kind's numbers of §4.4 are printed, E2–E9 judged, and PO's decision tree of stop
+/// point Đ2 applied over the grid {40, 1000}, {40, 750}, {40, 500}, {60, 1000} (E54-16), with
+/// the bottle levers 1 and 2 only when E6 still fails.
+#[test]
+#[ignore = "a measurement, run by hand"]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
+)]
+fn measure_extra_sessions() {
+    let started = std::time::Instant::now();
+    extra::decide();
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }
