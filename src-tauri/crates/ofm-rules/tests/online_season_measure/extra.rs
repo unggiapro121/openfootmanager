@@ -1548,6 +1548,13 @@ pub(super) fn decide() {
             }
         }
     }
+    if found.e6 > 4.0 {
+        println!(
+            "\n==== step 4 ends: no lever brings E6 to +4; stop and report to PO ====\n{}",
+            grid_line(chosen, found)
+        );
+        return;
+    }
     println!("\n==== chosen for S-28b ====\n{}", grid_line(chosen, found));
     if chosen.club_cap.is_some() {
         println!("  step 5: E8 reread under the club cap (above)");
