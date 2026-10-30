@@ -114,6 +114,7 @@ export const ERROR_CODES = [
   "be.error.training.sessionToday",
   "be.error.training.sessionCap",
   "be.error.training.sessionCapSeason",
+  "be.error.training.noFitPlayers",
   "be.error.academy.disabled",
   "be.error.academy.tripOpen",
   "be.error.academy.tripLimitReached",

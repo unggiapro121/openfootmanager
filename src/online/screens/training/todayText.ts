@@ -1,9 +1,10 @@
 import type { TFunction } from "i18next";
-import { SCHEDULE_TRAINING_DAYS } from "../../../components/training/trainingOptions";
-import type { MyClubView, SessionPlayerLine, TrainingDayView } from "../../api";
+import type { MyClubView, TrainingDayView } from "../../api";
 import { formatKickoffClock } from "../../format";
 
-/** The codes a session can be refused with (S-21 §5.1): the view's `refusal` and a 409. */
+/**
+ * The codes a press can be refused with (S-21 §5.1, S-28 S28-3): the view's `refusal` and a 409.
+ */
 export const LINEUP_LOCKED = "be.error.club.lineupLocked";
 const SESSION_CAP = "be.error.training.sessionCap";
 export const DAY_PENDING = "be.error.training.dayPending";
@@ -13,6 +14,8 @@ const PLAIN_REFUSALS = new Set([
   DAY_PENDING,
   "be.error.training.sessionToday",
   "be.error.training.sessionCapSeason",
+  // Only a press answers it: every player chosen sits the session out (S-28 S28-3).
+  "be.error.training.noFitPlayers",
 ]);
 
 /**
@@ -86,12 +89,6 @@ export function matchTodayKickoff(
   return kickoff > nowMs && kickoff < turn ? kickoffAt : null;
 }
 
-/** Today is a rest day of the weekly schedule, as the training settings panel reads it. */
-export function isScheduledRest(schedule: string, weekday: number | undefined): boolean {
-  if (weekday === undefined) return false;
-  return !(SCHEDULE_TRAINING_DAYS[schedule] ?? []).includes(weekday);
-}
-
 /** One cell of the seven days before today: its day, and how it was held (null: no row). */
 export interface RecentDay {
   day: number;
@@ -111,23 +108,4 @@ export function recentDays(trainingDay: TrainingDayView): RecentDay[] {
     if (day >= 0) days.push({ day, kind: held.get(day) ?? null });
   }
   return days;
-}
-
-/** How many players a session left lower, higher and as they were (the answer read back). */
-export function sessionSummary(players: SessionPlayerLine[]): {
-  down: number;
-  up: number;
-  same: number;
-} {
-  let down = 0;
-  let up = 0;
-  let same = 0;
-  for (const line of players) {
-    const before = Math.round(line.conditionBefore);
-    const after = Math.round(line.conditionAfter);
-    if (after < before) down += 1;
-    else if (after > before) up += 1;
-    else same += 1;
-  }
-  return { down, up, same };
 }
