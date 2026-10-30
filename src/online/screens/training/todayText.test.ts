@@ -4,11 +4,9 @@ import { myClub } from "../../../test-utils/onlineTestKit";
 import type { TrainingDayView } from "../../api";
 import {
   displayDay,
-  isScheduledRest,
   matchTodayKickoff,
   recentDays,
   refusalText,
-  sessionSummary,
   viewRefusalParams,
 } from "./todayText";
 
@@ -145,15 +143,6 @@ describe("the card's moments", () => {
     expect(matchTodayKickoff(club("2099-01-01T04:00:00Z"), nextDayAt, NOW)).toBeNull();
     expect(matchTodayKickoff(club("2099-01-01T13:00:00Z"), undefined, NOW)).toBeNull();
   });
-
-  // Given the balanced schedule (Monday, Tuesday, Thursday, Friday),
-  // when today is Wednesday, then Monday, then before day 0,
-  // then Wednesday is a rest day of the schedule and the others are not.
-  it("reads a rest day of the weekly schedule", () => {
-    expect(isScheduledRest("Balanced", 2)).toBe(true);
-    expect(isScheduledRest("Balanced", 0)).toBe(false);
-    expect(isScheduledRest("Balanced", undefined)).toBe(false);
-  });
 });
 
 describe("the seven days before today", () => {
@@ -183,28 +172,5 @@ describe("the seven days before today", () => {
       3, 4, 5, 6, 7, 8, 9,
     ]);
     expect(recentDays(trainingDay({ day: undefined }))).toEqual([]);
-  });
-});
-
-describe("a session's summary", () => {
-  // Given six players, three lower after the session, two higher and one as he was,
-  // when the summary is counted,
-  // then it says 3 lower, 2 higher, 1 the same.
-  it("counts the players lower, higher and the same", () => {
-    const line = (before: number, after: number) => ({
-      playerId: `p-${before}-${after}`,
-      conditionBefore: before,
-      conditionAfter: after,
-    });
-    expect(
-      sessionSummary([
-        line(90, 82),
-        line(70, 64),
-        line(50, 49),
-        line(30, 34),
-        line(35, 38),
-        line(60, 60),
-      ]),
-    ).toEqual({ down: 3, up: 2, same: 1 });
   });
 });

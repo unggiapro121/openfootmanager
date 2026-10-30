@@ -4,6 +4,8 @@ import {
   onlineRequest,
 } from "../services/onlineTransport";
 import type {
+  ExtraSessionRequest,
+  ExtraSessionView,
   AcademyPlayerView,
   AcademyView,
   AccountView,
@@ -53,8 +55,6 @@ import type {
   SeasonNowView,
   TakeoverView,
   TrainingPlan,
-  TrainingSessionRequest,
-  TrainingSessionView,
   UpdateAccount,
   RenamePlayerRequest,
   RecruitRequest,
@@ -208,13 +208,13 @@ export const online = {
     setTraining: (plan: TrainingPlan, idempotencyKey = newKey()) =>
       call<TrainingPlan>(write("PUT", ["v1", "clubs", "mine", "training"], idempotencyKey, plan)),
     /**
-     * Today's session, held now (S-21 S21-13): the saved plan, at `request.intensity` for this
-     * session alone. Refused (409) while the season does not rest clubs by blocks, today has no
-     * session to hold, or the club has trained today or six times in seven days.
+     * Extra sessions on top of the day's (S-28 S28-2): `request.sessions` of them at once for the
+     * players chosen, at `request.intensity`. Refused (409) while the season does not rest clubs
+     * by blocks, today has no session, the line-up is locked, or no one chosen can take part.
      */
-    holdSession: (request: TrainingSessionRequest, idempotencyKey = newKey()) =>
-      call<TrainingSessionView>(
-        write("POST", ["v1", "clubs", "mine", "training", "sessions"], idempotencyKey, request),
+    extraSessions: (request: ExtraSessionRequest, idempotencyKey = newKey()) =>
+      call<ExtraSessionView>(
+        write("POST", ["v1", "clubs", "mine", "training", "extra"], idempotencyKey, request),
       ),
     rename: (name: string, idempotencyKey = newKey()) =>
       call<MyClubView>(write("PATCH", ["v1", "clubs", "mine"], idempotencyKey, { name })),
