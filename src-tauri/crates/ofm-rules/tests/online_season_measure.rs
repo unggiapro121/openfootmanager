@@ -29,7 +29,8 @@ use ofm_rules::squad::{
     selection_seed,
 };
 use ofm_rules::training::{
-    SessionKind, TrainingDay, online_session, session_rng, team_training_plan, train_online_day,
+    KeeperDrill, SessionKind, TrainingDay, online_session, session_rng, team_training_plan,
+    train_online_day,
 };
 use ofm_rules::worldgen::online::{Generator, OnlineContentPack};
 use ofm_rules::{age, aging, ai_training, match_form, player_wear, playing_time, season};
@@ -38,6 +39,8 @@ use ofm_rules::{season_stats, seed};
 // A directory of its own, so cargo does not take it for a test target of its own.
 #[path = "online_season_measure/extra.rs"]
 mod extra;
+#[path = "online_season_measure/keeper.rs"]
+mod keeper;
 
 const SEED: u64 = 0x0E37;
 /// The seeds of the E5-1 measurement (§5.2): E3-7's and two more.
@@ -147,6 +150,10 @@ struct Variant {
     seasons: u32,
     seed: u64,
     extra: Option<extra::ExtraRun>,
+    /// E5-6b: the season ruleset's keeper drill (None trains as the game always has).
+    keeper_drill: Option<KeeperDrill>,
+    /// E5-6b: keepers and their controls planted at the first season's start.
+    probes: bool,
 }
 
 impl Variant {
@@ -168,6 +175,8 @@ impl Variant {
             seasons: SEASONS,
             seed,
             extra: None,
+            keeper_drill: None,
+            probes: false,
         }
     }
 }
@@ -185,6 +194,8 @@ struct Club {
     condition_at: i64,
     /// E5-4b: the club's stars and bottles.
     extra: extra::ClubExtra,
+    /// E5-6b: the keeper and controls planted in this club, if any.
+    probes: keeper::ClubProbes,
 }
 
 #[derive(Default)]
@@ -207,9 +218,13 @@ struct Measure {
     top18_change: f64,
     points: u32,
     goal_difference: i32,
+    /// Goals scored, by this kind's sides.
+    goals: u32,
     matches: u32,
     /// E5-4b's numbers; empty in every other measurement.
     extra: extra::ExtraMeasure,
+    /// E5-6b's numbers; empty in every other measurement.
+    keeper: keeper::KeeperMeasure,
 }
 
 impl Measure {
@@ -274,6 +289,7 @@ fn world(v: Variant) -> Vec<Club> {
                 held: Vec::new(),
                 condition_at: 0,
                 extra: extra::ClubExtra::default(),
+                probes: keeper::ClubProbes::default(),
             }
         })
         .collect()
@@ -318,14 +334,14 @@ fn band(age: i32) -> &'static str {
     }
 }
 
-fn training_day(football_year: u32, day: u32, multiplier: f64) -> TrainingDay {
+fn training_day(football_year: u32, day: u32, v: Variant) -> TrainingDay {
     let (year, date) = season::season_football_date(football_year, day, DAYS);
     TrainingDay {
         weekday_num: season::season_weekday(START_WEEKDAY, day),
         year,
         date,
-        development_multiplier: multiplier,
-        keeper_drill: None,
+        development_multiplier: v.multiplier,
+        keeper_drill: v.keeper_drill,
     }
 }
 
@@ -338,7 +354,7 @@ fn train(club: &mut Club, season_number: u32, day: u32, football_year: u32, v: V
     let Recovery::Legacy { rest_days } = v.recovery else {
         return;
     };
-    let training_day = training_day(football_year, day, v.multiplier);
+    let training_day = training_day(football_year, day, v);
     for player in &mut club.players {
         player_wear::recover_injury(player, 1);
     }
@@ -382,7 +398,7 @@ fn morning(club: &mut Club, at: i64, season_number: u32, day: u32, football_year
     let Recovery::Blocks(blocks_of) = v.recovery else {
         return;
     };
-    let today = training_day(football_year, day, v.multiplier);
+    let today = training_day(football_year, day, v);
     for player in &mut club.players {
         player_wear::recover_injury(player, 1);
     }
@@ -419,7 +435,7 @@ fn catch_up(club: &mut Club, season_number: u32, day: u32, football_year: u32, v
     if club.held.contains(&yesterday) {
         return;
     }
-    let past = training_day(football_year, yesterday, v.multiplier);
+    let past = training_day(football_year, yesterday, v);
     let automatic = club.kind.automatic();
     let kind = if automatic && session_allowed(&club.held, yesterday) {
         if club
@@ -464,7 +480,7 @@ fn press(club: &mut Club, at: i64, season_number: u32, day: u32, football_year: 
     if !session_allowed(&club.held, day) {
         return;
     }
-    let today = training_day(football_year, day, v.multiplier);
+    let today = training_day(football_year, day, v);
     rest_to(club, at, &blocks_of, &today.date);
     let intensity = if club.kind == Kind::ManualHigh {
         TrainingIntensity::High
@@ -567,6 +583,7 @@ fn settle(
         std::cmp::Ordering::Less => 0,
     };
     measure.goal_difference += i32::from(scored) - i32::from(conceded);
+    measure.goals += u32::from(scored);
 }
 
 /// The fixture `fixture` of round `round` between clubs `home` and `away`, kicking off at `at`
@@ -590,6 +607,11 @@ fn play(
         extra::field_stars(&clubs[away], &mut away_side, &mut away_bench);
         extra::kickoff(&clubs[home], &home_side, kind_measure(m, home_kind));
         extra::kickoff(&clubs[away], &away_side, kind_measure(m, away_kind));
+    }
+    // E5-6b's planted players last, so a star picked by E5-4b's rule never benches them.
+    if v.probes {
+        keeper::field_probes(&clubs[home], &mut home_side, &mut home_bench);
+        keeper::field_probes(&clubs[away], &mut away_side, &mut away_bench);
     }
     kickoff_condition(&clubs[home], &home_side, round, kind_measure(m, home_kind));
     kickoff_condition(&clubs[away], &away_side, round, kind_measure(m, away_kind));
@@ -723,6 +745,9 @@ fn run(v: Variant) -> Measures {
                 &mut measures,
             );
         }
+        if v.probes {
+            keeper::open_season(&mut clubs, season_number);
+        }
         for day in 0..DAYS {
             let day_start = i64::from((season_number - 1) * DAYS + day) * MINUTES_A_DAY;
             for club in &mut clubs {
@@ -777,6 +802,9 @@ fn run(v: Variant) -> Measures {
         }
         if v.extra.is_some() {
             extra::close_season(&clubs, season_number, &start_top18, &mut measures);
+        }
+        if v.probes {
+            keeper::close_season(&clubs, season_number, &first_day, &mut measures);
         }
         close_season(
             &mut clubs,
@@ -1101,5 +1129,22 @@ fn measure_extra_sessions_low_dev() {
 fn measure_extra_sessions_lowered_dev() {
     let started = std::time::Instant::now();
     extra::lowered_dev_levels();
+    println!("took {:.1} s", started.elapsed().as_secs_f64());
+}
+
+/// Given E5-1's world of people's clubs on their best focus and bots, with a planted keeper and
+/// his centre-back and midfielder controls of the same OVR, potential and age in every club
+/// (E5-6-tech-spec.md §4),
+/// when three seasons are played without the keeper's drill and with it,
+/// then each planted player's growth, K1–K4 and the drill to use are printed (Qe56-4).
+#[test]
+#[ignore = "a measurement, run by hand"]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
+)]
+fn measure_keeper_drill() {
+    let started = std::time::Instant::now();
+    keeper::measure_keeper_drill();
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }
