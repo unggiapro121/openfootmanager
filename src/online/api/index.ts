@@ -35,6 +35,8 @@ export type { CommandOutcome } from "./CommandOutcome";
 export type { CommandRequest } from "./CommandRequest";
 export type { ConditionChangeView } from "./ConditionChangeView";
 export type { Controllers } from "./Controllers";
+export type { DailyGiftClaimView } from "./DailyGiftClaimView";
+export type { DailyGiftStateView } from "./DailyGiftStateView";
 export type { DayLimitView } from "./DayLimitView";
 export type { EffectLimitView } from "./EffectLimitView";
 export type { EmailRequest } from "./EmailRequest";

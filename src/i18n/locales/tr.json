@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: {{before}} gün sahalardan uzak → {{after}}",
         "cured": "{{player}}: {{before}} gün sahalardan uzak → iyileşti",
         "mastery": "+{{xp}} XP, ustalık {{before}} → {{after}}",
-        "xpX2": "+{{matches}} maç çift XP, bekleyen {{remaining}}"
+        "xpX2": "+{{matches}} maç çift XP, bekleyen {{remaining}}",
+        "lost": "{{player}} {{lost}} puan kaybeder: kondisyon 100'de durur."
       },
       "limit": {
         "today": "Bugün kullanılan: {{used}}/{{perDay}} · sıfırlanma {{time}}",
         "todayPlain": "Bugün kullanılan: {{used}}/{{perDay}}",
         "season": "Bu sezon notlardan XP: {{used}}/{{limit}}",
-        "xpX2": "Bekleyen çift XP maçları: {{remaining}}/{{max}}"
+        "xpX2": "Bekleyen çift XP maçları: {{remaining}}/{{max}}",
+        "points": "Bugün bu oyuncuya kullanılan kondisyon puanı: {{used}}/{{perDay}}"
       },
       "useTitle": "{{item}} kullan",
       "pickPlayer": "Bir oyuncu seç",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "Bu sezonun eşya kuralları yok, bu yüzden bu eşya satışta değil.",
         "academy": "Bu sezonun altyapısı yok, bu yüzden bu eşya satışta değil."
-      }
+      },
+      "dailyGift": {
+        "claim": "Bugünün hediyesini al ({{quantity}} × {{item}})",
+        "next": "Sonraki hediye {{time}}",
+        "none": "Bugün alınacak hediye yok",
+        "given": "Alındı: {{quantity}} × {{item}}."
+      },
+      "dailyLimitPoints": "Bu oyuncu için bugün yalnızca {{pointsLeft}} kondisyon puanı kaldı; daha fazlası {{nextAt}} itibarıyla."
     },
     "inventory": {
       "notOnServer": "Bu sunucuda henüz eşya yok.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "Oyuncu başına futbol günü başına en fazla {{n}} kondisyon eşyası, tüm türler birlikte",
         "perClubDay": "Kulüp başına futbol günü başına en fazla {{n}}",
         "xpPerStyleSeason": "Tarz başına sezon başına notlardan en fazla {{n}} XP",
-        "maxMatches": "En fazla {{n}} bekleyen çift XP maçı"
+        "maxMatches": "En fazla {{n}} bekleyen çift XP maçı",
+        "pointsPerPlayerDay": "Oyuncu başına futbol gününde en fazla {{n}} kondisyon puanı, iki içecek birlikte"
       },
       "seasonOverTitle": "{{number}}. sezon sona erdi",
       "seasonOverText": "Şimdi aldıkların envanterine gider ve gelecek sezondan itibaren kullanılabilir.",
@@ -5189,7 +5199,9 @@
         "targetMatchLocked": "{{kickoffAt}} başlayan maç için kadro kilitli.",
         "dailyLimitReached": "Bu eşyanın günlük sınırı doldu; {{nextAt}} tekrar açılır.",
         "seasonLimitReached": "Çalışma notları bir stile sezonda en fazla {{limit}} XP ekler; kalan {{remaining}}.",
-        "effectLimitReached": "Çift XP en fazla {{max}} sonraki maçı kapsar; şu an {{remaining}}."
+        "effectLimitReached": "Çift XP en fazla {{max}} sonraki maçı kapsar; şu an {{remaining}}.",
+        "dailyGiftTaken": "Bugünün hediyesi zaten alındı; sonraki {{nextAt}} gelir.",
+        "dailyGiftClosed": "Şu an alınacak hediye yok: devam eden bir sezon günü yok."
       },
       "academy": {
         "disabled": "Altyapı akademisi bu sezon açık değil.",

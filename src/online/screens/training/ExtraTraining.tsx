@@ -16,6 +16,7 @@ import { online } from "../../client";
 import { useOnlineNow } from "../../clock";
 import { OnlineApiError } from "../../errors";
 import { refreshClub, tracked, useOnlineStore } from "../../store/onlineStore";
+import DailyGift from "../items/DailyGift";
 import { useActionKey } from "../useActionKey";
 import {
   ALL_SESSIONS,
@@ -148,6 +149,7 @@ export default function ExtraTraining({
         </h3>
         <p className={NOTE}>{t("online.training.extra.intro", { today: extra.today })}</p>
       </div>
+      <DailyGift />
       <PlayerChooser
         players={club.players}
         chosen={chosen}

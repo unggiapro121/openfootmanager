@@ -67,6 +67,11 @@ const UNSHOWN: Record<string, string[]> = {
   // A known lack has its own sentence (`online.items.needs.*`, itemText CASES); the code's own
   // sentence is for one this build does not know, so it never shows the raw value (S-17d).
   "be.error.shop.notUsableNow": ["needs"],
+  // Points left have their own sentence (`online.items.dailyLimitPoints`, itemText); the code's
+  // own is for a season that caps drinks by count (S-28 S28-8).
+  "be.error.inventory.dailyLimitReached": ["pointsLeft"],
+  // Sent only when known (the next season's day 0), so the sentence says the case without it.
+  "be.error.inventory.dailyGiftClosed": ["nextAt"],
 };
 
 const placeholders = (text: string) => [...text.matchAll(/{{\s*(\w+)\s*}}/g)].map((m) => m[1]);

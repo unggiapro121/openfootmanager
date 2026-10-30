@@ -418,6 +418,42 @@ fn extra_training_sessions_are_one_route() {
 }
 
 /// Given a signed-in coach,
+/// when he claims the day's gift, and when anything else is asked of the same path,
+/// then the claim goes out as a POST with his token and its idempotency key, and a GET or a
+/// PUT of the path is refused by the proxy.
+#[test]
+fn the_daily_gift_is_one_route() {
+    let (server, session) = signed_in(|_| ok(json!({})));
+    let path = ["v1", "me", "daily-gift"];
+    let mut hold = request("POST", &path);
+    hold.idempotency_key = Some("gift-1".to_string());
+    hold.body = Some(json!({}));
+    send(&session, &hold, 0).expect("an answer");
+    for method in ["GET", "PUT"] {
+        assert_eq!(
+            refused(send(&session, &request(method, &path), 0)),
+            "be.error.online.routeNotAllowed"
+        );
+    }
+    let sent = sent(&server);
+    assert_eq!(sent.len(), 1);
+    assert_eq!(sent[0].method, "POST");
+    assert_eq!(sent[0].path, "/v1/me/daily-gift");
+    assert_eq!(
+        sent[0].headers.get("authorization").map(String::as_str),
+        Some("Bearer access-1")
+    );
+    assert_eq!(
+        sent[0].headers.get("idempotency-key").map(String::as_str),
+        Some("gift-1")
+    );
+    assert_eq!(
+        sent[0].body,
+        json!({})
+    );
+}
+
+/// Given a signed-in coach,
 /// when the webview sets a player's shirt number and tries the route with another method,
 /// then it goes out to `/v1/players/{id}/shirt` as a PATCH, and the other method is refused.
 #[test]

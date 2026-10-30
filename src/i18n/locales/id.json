@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: absen {{before}} hari → {{after}}",
         "cured": "{{player}}: absen {{before}} hari → pulih",
         "mastery": "+{{xp}} XP, penguasaan {{before}} → {{after}}",
-        "xpX2": "+{{matches}} pertandingan XP ganda, {{remaining}} menunggu"
+        "xpX2": "+{{matches}} pertandingan XP ganda, {{remaining}} menunggu",
+        "lost": "{{player}} kehilangan {{lost}} poin: kondisi berhenti di 100."
       },
       "limit": {
         "today": "Dipakai hari ini: {{used}}/{{perDay}} · direset {{time}}",
         "todayPlain": "Dipakai hari ini: {{used}}/{{perDay}}",
         "season": "XP dari catatan musim ini: {{used}}/{{limit}}",
-        "xpX2": "Pertandingan XP ganda menunggu: {{remaining}}/{{max}}"
+        "xpX2": "Pertandingan XP ganda menunggu: {{remaining}}/{{max}}",
+        "points": "Poin kondisi yang dipakai untuk pemain ini hari ini: {{used}}/{{perDay}}"
       },
       "useTitle": "Pakai {{item}}",
       "pickPlayer": "Pilih pemain",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "Musim ini tidak punya aturan barang, jadi barang ini tidak dijual.",
         "academy": "Musim ini tidak punya akademi, jadi barang ini tidak dijual."
-      }
+      },
+      "dailyGift": {
+        "claim": "Ambil hadiah hari ini ({{quantity}} × {{item}})",
+        "next": "Hadiah berikutnya pukul {{time}}",
+        "none": "Tidak ada hadiah hari ini",
+        "given": "Diterima: {{quantity}} × {{item}}."
+      },
+      "dailyLimitPoints": "Pemain ini hanya tersisa {{pointsLeft}} poin kondisi hari ini; tambah lagi mulai {{nextAt}}."
     },
     "inventory": {
       "notOnServer": "Server ini belum punya barang.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "Maksimal {{n}} barang kondisi per pemain per hari sepak bola, semua jenis digabung",
         "perClubDay": "Maksimal {{n}} per klub per hari sepak bola",
         "xpPerStyleSeason": "Maksimal {{n}} XP dari catatan per gaya per musim",
-        "maxMatches": "Maksimal {{n}} pertandingan XP ganda menunggu"
+        "maxMatches": "Maksimal {{n}} pertandingan XP ganda menunggu",
+        "pointsPerPlayerDay": "Paling banyak {{n}} poin kondisi per pemain per hari sepak bola, kedua minuman digabung"
       },
       "seasonOverTitle": "Musim {{number}} telah berakhir",
       "seasonOverText": "Barang yang dibeli sekarang masuk ke inventaris dan bisa dipakai mulai musim depan.",
@@ -5189,7 +5199,9 @@
         "targetMatchLocked": "Susunan pemain dikunci untuk laga yang dimulai {{kickoffAt}}.",
         "dailyLimitReached": "Batas harian item ini tercapai; dibuka lagi {{nextAt}}.",
         "seasonLimitReached": "Catatan studi menambah paling banyak {{limit}} XP per gaya per musim; sisa {{remaining}}.",
-        "effectLimitReached": "XP ganda mencakup paling banyak {{max}} laga berikutnya; sudah ada {{remaining}}."
+        "effectLimitReached": "XP ganda mencakup paling banyak {{max}} laga berikutnya; sudah ada {{remaining}}.",
+        "dailyGiftTaken": "Hadiah hari ini sudah diambil; hadiah berikutnya datang {{nextAt}}.",
+        "dailyGiftClosed": "Saat ini tidak ada hadiah: tidak ada hari musim yang sedang berjalan."
       },
       "academy": {
         "disabled": "Akademi muda tidak dibuka musim ini.",

@@ -19,4 +19,10 @@ seasonUsed?: number, seasonLimit?: number,
 /**
  * Matches of double XP waiting, and the most that may.
  */
-effectRemaining?: number, effectMax?: number, };
+effectRemaining?: number, effectMax?: number, 
+/**
+ * Condition points the player was given today by the two drinks, and the day's cap in
+ * points, when the season caps them in points (S-28 S28-8); `usedToday` and `perDay` are
+ * then absent.
+ */
+pointsToday?: number, pointsPerDay?: number, };

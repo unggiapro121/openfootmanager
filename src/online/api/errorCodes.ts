@@ -106,6 +106,8 @@ export const ERROR_CODES = [
   "be.error.inventory.wrongTarget",
   "be.error.inventory.targetMatchLocked",
   "be.error.inventory.dailyLimitReached",
+  "be.error.inventory.dailyGiftTaken",
+  "be.error.inventory.dailyGiftClosed",
   "be.error.inventory.seasonLimitReached",
   "be.error.inventory.effectLimitReached",
   "be.error.training.manualOff",
@@ -167,7 +169,9 @@ export const ERROR_PARAMS: { readonly [code: string]: readonly string[] } = {
   "be.error.inventory.notUsableHere": ["use"],
   "be.error.inventory.wrongTarget": ["reason"],
   "be.error.inventory.targetMatchLocked": ["kickoffAt"],
-  "be.error.inventory.dailyLimitReached": ["nextAt"],
+  "be.error.inventory.dailyLimitReached": ["nextAt", "pointsLeft"],
+  "be.error.inventory.dailyGiftTaken": ["nextAt"],
+  "be.error.inventory.dailyGiftClosed": ["nextAt"],
   "be.error.inventory.seasonLimitReached": ["limit", "remaining"],
   "be.error.inventory.effectLimitReached": ["max", "remaining"],
   "be.error.training.sessionCap": ["nextAllowedDay"],
@@ -203,7 +207,9 @@ export type ErrorParams = {
   "be.error.inventory.notUsableHere": { use: string | number };
   "be.error.inventory.wrongTarget": { reason: string | number };
   "be.error.inventory.targetMatchLocked": { kickoffAt: string | number };
-  "be.error.inventory.dailyLimitReached": { nextAt: string | number };
+  "be.error.inventory.dailyLimitReached": { nextAt: string | number; pointsLeft: string | number };
+  "be.error.inventory.dailyGiftTaken": { nextAt: string | number };
+  "be.error.inventory.dailyGiftClosed": { nextAt: string | number };
   "be.error.inventory.seasonLimitReached": { limit: string | number; remaining: string | number };
   "be.error.inventory.effectLimitReached": { max: string | number; remaining: string | number };
   "be.error.training.sessionCap": { nextAllowedDay: string | number };

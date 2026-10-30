@@ -4,6 +4,7 @@ import {
   onlineRequest,
 } from "../services/onlineTransport";
 import type {
+  DailyGiftClaimView,
   ExtraSessionRequest,
   ExtraSessionView,
   AcademyPlayerView,
@@ -377,6 +378,12 @@ export const online = {
           target,
         } satisfies UseItemRequest),
       ),
+    /**
+     * Today's gift of drinks (S-28 S28-9), once a football day. Refused (409) when today's was
+     * claimed (`dailyGiftTaken`) or no season gives one now (`dailyGiftClosed`).
+     */
+    claimDailyGift: (idempotencyKey = newKey()) =>
+      call<DailyGiftClaimView>(write("POST", ["v1", "me", "daily-gift"], idempotencyKey, {})),
   },
   /**
    * The club's youth academy (S-18, C-7c): its trip and youngsters, a trip's quote, a trip sent,

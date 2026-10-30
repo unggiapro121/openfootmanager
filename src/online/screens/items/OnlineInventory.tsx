@@ -10,6 +10,7 @@ import { online } from "../../client";
 import { tracked, refreshItems, useOnlineStore } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
 import ResourceState from "../ResourceState";
+import DailyGift from "./DailyGift";
 import ItemDetailDialog from "./ItemDetailDialog";
 import { ItemIcon, lookOf } from "./itemLook";
 import ItemsToast from "./ItemsToast";
@@ -65,6 +66,7 @@ export default function OnlineInventory() {
           {t("online.inventory.locked")}
         </p>
       )}
+      <DailyGift />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div
           role="tablist"
