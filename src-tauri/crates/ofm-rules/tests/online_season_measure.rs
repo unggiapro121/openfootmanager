@@ -1071,3 +1071,35 @@ fn measure_extra_sessions() {
     extra::decide();
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }
+
+/// Given E5-4b's world on season 1 from a fresh world (E54-14), over three turns and three seeds,
+/// when extra sessions develop at 1000, 250 and 100 permille of a session,
+/// then E3, E4, E6 and each pressing kind's gap to `Auto` split by age (≤ 24, ≥ 25) are printed,
+/// for the user's information after PO's decision on the rerun; nothing is judged.
+#[test]
+#[ignore = "a measurement, run by hand"]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
+)]
+fn measure_extra_sessions_low_dev() {
+    let started = std::time::Instant::now();
+    extra::low_dev_points();
+    println!("took {:.1} s", started.elapsed().as_secs_f64());
+}
+
+/// Given E5-4b's world under E54-13 and E54-14,
+/// when extra sessions develop at 150, 125 and 100 permille of a session,
+/// then E1–E9 are judged in full for each, with how often a press shows a gain, and the largest
+/// level passing all of it is named (the user's decision of 2026-10-31).
+#[test]
+#[ignore = "a measurement, run by hand"]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
+)]
+fn measure_extra_sessions_lowered_dev() {
+    let started = std::time::Instant::now();
+    extra::lowered_dev_levels();
+    println!("took {:.1} s", started.elapsed().as_secs_f64());
+}

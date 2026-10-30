@@ -188,16 +188,17 @@ describe("online client", () => {
     });
   });
 
-  // Given a coach who presses today's session at a high intensity (S-21 S21-13),
+  // Given a coach who presses three extra Low sessions for two players (S-28 S28-2),
   // when the request goes out,
-  // then it is a POST of the club's training sessions with the intensity and a key.
-  it("holds today's session with its intensity", async () => {
-    await online.clubs.holdSession({ intensity: "High" }, "press-1");
+  // then it is a POST of the club's extra training with the whole request and a key.
+  it("presses extra sessions with the players, intensity and count", async () => {
+    const request = { intensity: "Low", players: ["p1", "p2"], sessions: 3, keepAbove: 75 };
+    await online.clubs.extraSessions(request, "extra-1");
     expect(server.sent[0]).toEqual({
       method: "POST",
-      segments: ["v1", "clubs", "mine", "training", "sessions"],
-      idempotencyKey: "press-1",
-      body: { intensity: "High" },
+      segments: ["v1", "clubs", "mine", "training", "extra"],
+      idempotencyKey: "extra-1",
+      body: request,
     });
   });
 

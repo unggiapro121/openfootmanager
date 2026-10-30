@@ -1,40 +1,24 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Bot, CalendarCheck, Hand, Moon } from "lucide-react";
-import { INTENSITY_IDS } from "../../../components/training/trainingOptions";
-import { Button, Card, CardBody, CardHeader, InjuryBadge } from "../../../components/ui";
-import { resolveBackendError } from "../../../utils/backendI18n";
-import type { MyClubView, TrainingDayView, TrainingSessionView } from "../../api";
-import { online } from "../../client";
+import { Bot, CalendarCheck, Hand, Moon } from "lucide-react";
+import { Button, Card, CardBody, CardHeader } from "../../../components/ui";
+import type { MyClubView, TrainingDayView } from "../../api";
 import { useOnlineNow } from "../../clock";
-import { OnlineApiError } from "../../errors";
 import { formatKickoffClock } from "../../format";
-import { refreshClub, tracked, useOnlineStore } from "../../store/onlineStore";
+import { refreshClub, useOnlineStore } from "../../store/onlineStore";
 import { SEASON_DAYS } from "../shellNav";
-import { useActionKey } from "../useActionKey";
 import { useCountdownText } from "../useCountdownText";
-import {
-  DAY_PENDING,
-  displayDay,
-  isScheduledRest,
-  matchTodayKickoff,
-  type RecentDay,
-  recentDays,
-  refusalText,
-  sessionSummary,
-  viewRefusalParams,
-} from "./todayText";
+import ExtraTraining from "./ExtraTraining";
+import { DAY_PENDING, displayDay, type RecentDay, recentDays } from "./todayText";
 import { useDayPendingPoll } from "./useDayPendingPoll";
 
 const ignore = () => undefined;
 const NOTE = "text-xs text-gray-500 dark:text-gray-400";
 
 /**
- * Today's session of a season that rests clubs by blocks (C-8 C8-4, C8-5): hold it now, at an
- * intensity for this session alone, or see why not; the sessions of the last seven days; and
+ * Today's training in a season that rests clubs by blocks (C-8 C8-4, C8-5; C-12a C12-1): how the
+ * day's own session went, extra sessions on top of it, the sessions of the last seven days, and
  * when condition changes next. The card only reads the server: it computes no condition, cap or
- * recovery (F10). A session's answer is shown as it came back, and the club is read again for
- * the players' new condition.
+ * recovery (F10); the extra block warns, the server decides.
  */
 export default function TodaySession({
   club,
@@ -43,64 +27,9 @@ export default function TodaySession({
   club: MyClubView;
   trainingDay: TrainingDayView;
 }) {
-  const { t, i18n } = useTranslation();
-  const now = useOnlineNow();
-  const season = useOnlineStore((state) => state.season);
-  const offline = useOnlineStore((state) => state.network === "offline");
-  const [intensity, setIntensity] = useState<string>(club.trainingPlan.intensity);
-  const [sending, setSending] = useState(false);
-  // A failure is shown until the club is read again: the view then says why, as it is now.
-  const [failure, setFailure] = useState<{ error: unknown; seen: TrainingDayView } | null>(null);
-  const [result, setResult] = useState<TrainingSessionView | null>(null);
-  const key = useActionKey();
-  const pending = trainingDay.refusal === DAY_PENDING;
+  const { t } = useTranslation();
+  const pending = trainingDay.refusal === DAY_PENDING || trainingDay.extra?.refusal === DAY_PENDING;
   const { slow } = useDayPendingPoll(pending);
-  const language = i18n.language;
-
-  const press = async () => {
-    const request = { intensity };
-    setSending(true);
-    setFailure(null);
-    try {
-      const view = await key.run(
-        (idempotencyKey) => tracked(() => online.clubs.holdSession(request, idempotencyKey)),
-        JSON.stringify(request),
-      );
-      setResult(view);
-      const current = useOnlineStore.getState().club;
-      if (current) {
-        useOnlineStore.getState().setClub({ ...current, trainingDay: view.trainingDay });
-      }
-      void refreshClub().catch(ignore);
-    } catch (error) {
-      setFailure({ error, seen: trainingDay });
-      // Every 409 means the card's view was stale: read it again.
-      if (error instanceof OnlineApiError && error.status === 409) {
-        void refreshClub().catch(ignore);
-      }
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const shownFailure = failure && failure.seen === trainingDay ? failure.error : null;
-  const reason = shownFailure
-    ? failureText(t, language, shownFailure, now)
-    : trainingDay.canTrain
-      ? null
-      : refusalText(
-          t,
-          language,
-          trainingDay.refusal ?? "",
-          viewRefusalParams(trainingDay, club),
-          now,
-        );
-  const matchKickoff = trainingDay.canTrain
-    ? matchTodayKickoff(club, season?.nextDayAt, now)
-    : null;
-  const restDay =
-    trainingDay.canTrain && isScheduledRest(club.trainingPlan.schedule, season?.weekday);
-  const heldNow = result !== null && result.day === trainingDay.day ? result : null;
 
   return (
     <Card accent="primary">
@@ -114,68 +43,30 @@ export default function TodaySession({
       </CardHeader>
       <CardBody className="space-y-4">
         <p className="text-sm font-semibold text-gray-800 dark:text-gray-100" role="status">
-          {statusText(t, trainingDay, heldNow)}
+          {statusText(t, trainingDay)}
         </p>
-        <p className={NOTE}>
-          {t("online.training.today.noExtra", { cap: trainingDay.sessionsCap })}
+        <p className="text-sm text-gray-700 dark:text-gray-300">
+          {t("online.training.today.sessions", {
+            count: trainingDay.sessionsLast7,
+            cap: trainingDay.sessionsCap,
+          })}
         </p>
-        {matchKickoff && (
-          <p
-            role="note"
-            className="flex items-start gap-2 rounded-md border border-accent-400/60 bg-accent-50 px-3 py-2 text-sm text-gray-800 dark:border-accent-400/40 dark:bg-accent-500/10 dark:text-gray-100"
-          >
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" />
-            {t("online.training.today.matchToday", {
-              time: formatKickoffClock(matchKickoff, now, language),
-            })}
-          </p>
-        )}
-        {restDay && (
-          <p className={NOTE}>
-            {t("online.training.today.scheduledRest", { cap: trainingDay.sessionsCap })}
-          </p>
-        )}
-        <IntensityPicker
-          value={intensity}
-          disabled={sending || !trainingDay.canTrain}
-          onChange={setIntensity}
-        />
-        <div className="space-y-2">
+        {pending && slow && (
           <Button
             type="button"
-            disabled={!trainingDay.canTrain || sending || offline}
-            onClick={() => void press()}
+            variant="outline"
+            size="sm"
+            onClick={() => void refreshClub().catch(ignore)}
           >
-            {t("online.training.today.press")}
+            {t("online.training.today.reload")}
           </Button>
-          {reason && (
-            <div className="flex flex-wrap items-center gap-3">
-              <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-                {reason}
-              </p>
-              {pending && slow && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => void refreshClub().catch(ignore)}
-                >
-                  {t("online.training.today.reload")}
-                </Button>
-              )}
-            </div>
-          )}
-          <p className="text-sm text-gray-700 dark:text-gray-300">
-            {t("online.training.today.sessions", {
-              count: trainingDay.sessionsLast7,
-              cap: trainingDay.sessionsCap,
-            })}
-          </p>
-        </div>
-        {heldNow && <SessionResult club={club} result={heldNow} />}
+        )}
+        {trainingDay.extra && (
+          <ExtraTraining club={club} trainingDay={trainingDay} extra={trainingDay.extra} />
+        )}
         <RecentStrip days={recentDays(trainingDay)} cap={trainingDay.sessionsCap} />
         <NextRecovery at={trainingDay.nextRecoveryAt} />
-        <TodayNotes nextDayAt={season?.nextDayAt} />
+        <TodayNotes />
       </CardBody>
     </Card>
   );
@@ -183,30 +74,11 @@ export default function TodaySession({
 
 type Translate = ReturnType<typeof useTranslation>["t"];
 
-/** What a failed press says: the card's own sentence for a refusal, the shared one otherwise. */
-function failureText(t: Translate, language: string, error: unknown, now: number): string {
-  if (error instanceof OnlineApiError && error.status === 409) {
-    return refusalText(t, language, error.code, error.params, now);
-  }
-  return resolveBackendError(error);
-}
-
-/** Today's session as the player reads it: not yet, pressed, on the schedule, or before him. */
-function statusText(
-  t: Translate,
-  trainingDay: TrainingDayView,
-  heldNow: TrainingSessionView | null,
-): string {
+/** Today's session as the player reads it: not yet, on the schedule, pressed, or before him. */
+function statusText(t: Translate, trainingDay: TrainingDayView): string {
   switch (trainingDay.today) {
     case undefined:
       return t("online.training.today.statusNone");
-    case "manual":
-      // The view has no intensity; only the answer just received does (C-8 Qc8-5).
-      return heldNow
-        ? t("online.training.today.statusManualWith", {
-            intensity: t(`training.intensities.${heldNow.intensity}.label`),
-          })
-        : t("online.training.today.statusManual");
     case "auto":
       return t("online.training.today.statusAuto");
     case "bot":
@@ -214,100 +86,9 @@ function statusText(
     case "rest":
       return t("online.training.today.statusRest");
     default:
+      // A day pressed by hand before extra sessions came in (C-8).
       return t("online.training.today.statusManual");
   }
-}
-
-/** The intensity of this session alone: the plan's by default, the plan unchanged. */
-function IntensityPicker({
-  value,
-  disabled,
-  onChange,
-}: {
-  value: string;
-  disabled: boolean;
-  onChange: (intensity: string) => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <fieldset className="space-y-1">
-      <legend className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-        {t("online.training.today.intensity")}
-      </legend>
-      <div className="flex flex-wrap gap-2">
-        {INTENSITY_IDS.map((id) => (
-          <Button
-            key={id}
-            type="button"
-            size="sm"
-            variant={id === value ? "primary" : "outline"}
-            aria-pressed={id === value}
-            disabled={disabled}
-            onClick={() => onChange(id)}
-          >
-            {t(`training.intensities.${id}.label`)}
-          </Button>
-        ))}
-      </div>
-      <p className={NOTE}>{t("online.training.today.intensityNote")}</p>
-    </fieldset>
-  );
-}
-
-/** The answer to the press: how many players went down, up or stayed, and each of them. */
-function SessionResult({ club, result }: { club: MyClubView; result: TrainingSessionView }) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const summary = sessionSummary(result.players);
-  const byId = new Map(club.players.map((player) => [player.id, player]));
-  return (
-    <div className="space-y-2 rounded-md bg-gray-50 p-3 dark:bg-navy-800">
-      <p className="text-sm text-gray-800 dark:text-gray-100">
-        {t("online.training.today.summary", summary)}
-      </p>
-      <Button type="button" variant="ghost" size="sm" onClick={() => setOpen((shown) => !shown)}>
-        {open ? t("online.training.today.hidePlayers") : t("online.training.today.showPlayers")}
-      </Button>
-      {open && (
-        <table className="w-full text-left text-sm text-gray-700 dark:text-gray-200">
-          <thead>
-            <tr>
-              <th className="py-1 font-semibold">{t("online.training.today.player")}</th>
-              <th className="py-1 text-right font-semibold">{t("online.training.today.before")}</th>
-              <th className="py-1 text-right font-semibold">{t("online.training.today.after")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {result.players.map((line) => {
-              const player = byId.get(line.playerId);
-              return (
-                <tr key={line.playerId}>
-                  <td className="flex items-center gap-2 py-1">
-                    {player?.matchName ?? line.playerId}
-                    {player?.injury && (
-                      <InjuryBadge
-                        injury={{
-                          name: player.injury.name,
-                          days_remaining: player.injury.daysRemaining,
-                        }}
-                        showName={false}
-                      />
-                    )}
-                  </td>
-                  <td className="py-1 text-right tabular-nums">
-                    {Math.round(line.conditionBefore)}
-                  </td>
-                  <td className="py-1 text-right tabular-nums">
-                    {Math.round(line.conditionAfter)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
 }
 
 const KIND_ICONS = { manual: Hand, auto: CalendarCheck, bot: Bot, rest: Moon } as const;
@@ -388,10 +169,11 @@ function NextRecovery({ at }: { at: string }) {
   );
 }
 
-/** Three fixed notes: the day not pressed, the fatigue floor, stamina (C-8 C8-9, C8-10). */
-function TodayNotes({ nextDayAt }: { nextDayAt: string | undefined }) {
+/** Three fixed notes: when the day's session counts, the fatigue floor, stamina (C8-9, C8-10). */
+function TodayNotes() {
   const { t, i18n } = useTranslation();
   const now = useOnlineNow();
+  const nextDayAt = useOnlineStore((state) => state.season?.nextDayAt);
   return (
     <ul className={`list-disc space-y-1 pl-5 ${NOTE}`}>
       {nextDayAt && (
