@@ -5192,7 +5192,7 @@
         "releaseSquadTooSmall": "Deixá-lo sair deixaria o teu plantel abaixo de {{squadMin}} jogadores."
       },
       "inventory": {
-        "disabled": "Os itens não estão em uso nesta época.",
+        "disabled": "Este item não está disponível nesta época.",
         "itemNotFound": "Não tens unidades suficientes deste item (tens {{held}}).",
         "stackFull": "O teu inventário não comporta tantos: cabem no máximo mais {{max}}.",
         "locked": "Os teus itens estão bloqueados enquanto são verificados.",

@@ -5192,7 +5192,7 @@
         "releaseSquadTooSmall": "Dispensá-lo deixaria o seu elenco abaixo de {{squadMin}} jogadores."
       },
       "inventory": {
-        "disabled": "Os itens não estão ativos nesta temporada.",
+        "disabled": "Este item não está disponível nesta temporada.",
         "itemNotFound": "Você não tem unidades suficientes deste item (tem {{held}}).",
         "stackFull": "Seu inventário não comporta tantos: cabem no máximo mais {{max}}.",
         "locked": "Seus itens estão bloqueados durante uma verificação.",

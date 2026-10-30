@@ -5192,7 +5192,7 @@
         "releaseSquadTooSmall": "Le laisser partir ferait passer ton effectif sous {{squadMin}} joueurs."
       },
       "inventory": {
-        "disabled": "Les objets ne sont pas utilisés cette saison.",
+        "disabled": "Cet objet n'est pas utilisable cette saison.",
         "itemNotFound": "Vous n'avez pas assez de cet objet (vous en avez {{held}}).",
         "stackFull": "Votre inventaire ne peut pas en contenir autant : au plus {{max}} de plus.",
         "locked": "Vos objets sont bloqués pendant une vérification.",

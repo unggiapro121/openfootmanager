@@ -5192,7 +5192,7 @@
         "releaseSquadTooSmall": "Lasciarlo andare porterebbe la tua rosa sotto i {{squadMin}} giocatori."
       },
       "inventory": {
-        "disabled": "Gli oggetti non sono attivi in questa stagione.",
+        "disabled": "Questo oggetto non è utilizzabile in questa stagione.",
         "itemNotFound": "Non hai abbastanza di questo oggetto (ne hai {{held}}).",
         "stackFull": "L'inventario non ne contiene così tanti: al massimo altri {{max}}.",
         "locked": "I tuoi oggetti sono bloccati durante un controllo.",

@@ -5192,7 +5192,7 @@
         "releaseSquadTooSmall": "Wenn er geht, hätte dein Kader weniger als {{squadMin}} Spieler."
       },
       "inventory": {
-        "disabled": "Gegenstände sind in dieser Saison nicht aktiv.",
+        "disabled": "Dieser Gegenstand ist in dieser Saison nicht im Einsatz.",
         "itemNotFound": "Du hast nicht genug von diesem Gegenstand (vorhanden: {{held}}).",
         "stackFull": "So viele passen nicht ins Inventar: höchstens {{max}} mehr.",
         "locked": "Deine Gegenstände sind während einer Prüfung gesperrt.",

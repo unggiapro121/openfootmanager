@@ -5192,7 +5192,7 @@
         "releaseSquadTooSmall": "Letting him go would leave your squad below {{squadMin}} players."
       },
       "inventory": {
-        "disabled": "Items are not in use this season.",
+        "disabled": "This item is not in use this season.",
         "itemNotFound": "You do not hold enough of this item (you have {{held}}).",
         "stackFull": "Your inventory cannot hold that many: at most {{max}} more fit.",
         "locked": "Your items are locked while they are checked.",
