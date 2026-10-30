@@ -1097,13 +1097,15 @@
         "injury": "{{player}}：伤停 {{before}} 天 → {{after}} 天",
         "cured": "{{player}}：伤停 {{before}} 天 → 痊愈",
         "mastery": "+{{xp}} 经验，熟练度 {{before}} → {{after}}",
-        "xpX2": "+{{matches}} 场双倍经验，待生效 {{remaining}} 场"
+        "xpX2": "+{{matches}} 场双倍经验，待生效 {{remaining}} 场",
+        "lost": "{{player}} 损失 {{lost}} 点：状态最高为 100。"
       },
       "limit": {
         "today": "今日已用：{{used}}/{{perDay}} · {{time}} 重置",
         "todayPlain": "今日已用：{{used}}/{{perDay}}",
         "season": "本赛季笔记经验：{{used}}/{{limit}}",
-        "xpX2": "待生效的双倍经验场次：{{remaining}}/{{max}}"
+        "xpX2": "待生效的双倍经验场次：{{remaining}}/{{max}}",
+        "points": "今天已用于该球员的状态点数：{{used}}/{{perDay}}"
       },
       "useTitle": "使用{{item}}",
       "pickPlayer": "选择球员",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "本赛季没有道具规则，因此该道具暂不出售。",
         "academy": "本赛季没有青训营，因此该道具暂不出售。"
-      }
+      },
+      "dailyGift": {
+        "claim": "领取今日礼物（{{quantity}} × {{item}}）",
+        "next": "下一份礼物：{{time}}",
+        "none": "今天没有可领取的礼物",
+        "given": "已领取 {{quantity}} × {{item}}。"
+      },
+      "dailyLimitPoints": "该球员今天只剩 {{pointsLeft}} 点状态额度；{{nextAt}} 起再增加。"
     },
     "inventory": {
       "notOnServer": "该服务器暂无物品。",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "每名球员每个足球日最多 {{n}} 个体能类物品，各类合计",
         "perClubDay": "每家俱乐部每个足球日最多 {{n}} 个",
         "xpPerStyleSeason": "每种风格每赛季最多 {{n}} 笔记经验",
-        "maxMatches": "待生效的双倍经验最多 {{n}} 场"
+        "maxMatches": "待生效的双倍经验最多 {{n}} 场",
+        "pointsPerPlayerDay": "每名球员每个足球日最多 {{n}} 点状态，两种饮料合计"
       },
       "seasonOverTitle": "第 {{number}} 赛季已结束",
       "seasonOverText": "现在购买的物品会放入背包，从下赛季起可以使用。",
@@ -5192,7 +5202,9 @@
         "targetMatchLocked": "开球时间为 {{kickoffAt}} 的比赛阵容已锁定。",
         "dailyLimitReached": "该道具今日使用已达上限，{{nextAt}} 后重新开放。",
         "seasonLimitReached": "学习笔记每赛季每种风格最多加 {{limit}} XP，还剩 {{remaining}}。",
-        "effectLimitReached": "双倍 XP 最多覆盖之后 {{max}} 场比赛，目前已有 {{remaining}} 场。"
+        "effectLimitReached": "双倍 XP 最多覆盖之后 {{max}} 场比赛，目前已有 {{remaining}} 场。",
+        "dailyGiftTaken": "今日礼物已领取；下一份于 {{nextAt}} 发放。",
+        "dailyGiftClosed": "现在没有可领取的礼物：没有正在进行的赛季日。"
       },
       "academy": {
         "disabled": "本赛季青训学院未开放。",

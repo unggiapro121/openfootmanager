@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: {{before}} Tage Ausfall → {{after}}",
         "cured": "{{player}}: {{before}} Tage Ausfall → wieder fit",
         "mastery": "+{{xp}} XP, Beherrschung {{before}} → {{after}}",
-        "xpX2": "+{{matches}} Spiele mit doppelter XP, {{remaining}} ausstehend"
+        "xpX2": "+{{matches}} Spiele mit doppelter XP, {{remaining}} ausstehend",
+        "lost": "{{player}} verliert {{lost}} Punkte: Die Kondition endet bei 100."
       },
       "limit": {
         "today": "Heute verwendet: {{used}}/{{perDay}} · Zurücksetzung {{time}}",
         "todayPlain": "Heute verwendet: {{used}}/{{perDay}}",
         "season": "XP aus Notizen in dieser Saison: {{used}}/{{limit}}",
-        "xpX2": "Ausstehende Spiele mit doppelter XP: {{remaining}}/{{max}}"
+        "xpX2": "Ausstehende Spiele mit doppelter XP: {{remaining}}/{{max}}",
+        "points": "Heute für diesen Spieler genutzte Konditionspunkte: {{used}}/{{perDay}}"
       },
       "useTitle": "{{item}} verwenden",
       "pickPlayer": "Spieler wählen",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "Diese Saison hat keine Regeln für Gegenstände, daher ist dieser Gegenstand nicht im Angebot.",
         "academy": "Diese Saison hat keine Jugendakademie, daher ist dieser Gegenstand nicht im Angebot."
-      }
+      },
+      "dailyGift": {
+        "claim": "Heutiges Geschenk abholen ({{quantity}} × {{item}})",
+        "next": "Nächstes Geschenk um {{time}}",
+        "none": "Heute gibt es kein Geschenk",
+        "given": "{{quantity}} × {{item}} erhalten."
+      },
+      "dailyLimitPoints": "Für diesen Spieler sind heute nur noch {{pointsLeft}} Konditionspunkte übrig; mehr ab {{nextAt}}."
     },
     "inventory": {
       "notOnServer": "Dieser Server hat noch keine Gegenstände.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "Höchstens {{n}} Konditionsgegenstände pro Spieler und Fußballtag, alle Arten zusammen",
         "perClubDay": "Höchstens {{n}} pro Verein und Fußballtag",
         "xpPerStyleSeason": "Höchstens {{n}} XP aus Notizen pro Spielweise und Saison",
-        "maxMatches": "Höchstens {{n}} ausstehende Spiele mit doppelter XP"
+        "maxMatches": "Höchstens {{n}} ausstehende Spiele mit doppelter XP",
+        "pointsPerPlayerDay": "Höchstens {{n}} Konditionspunkte pro Spieler und Fußballtag, beide Getränke zusammen"
       },
       "seasonOverTitle": "Saison {{number}} ist beendet",
       "seasonOverText": "Was du jetzt kaufst, landet in deinem Inventar und ist ab der nächsten Saison nutzbar.",
@@ -5192,7 +5202,9 @@
         "targetMatchLocked": "Die Aufstellung ist für das Spiel mit Anstoß {{kickoffAt}} gesperrt.",
         "dailyLimitReached": "Das Tageslimit für diesen Gegenstand ist erreicht; wieder möglich ab {{nextAt}}.",
         "seasonLimitReached": "Lernnotizen bringen höchstens {{limit}} XP pro Stil und Saison; übrig: {{remaining}}.",
-        "effectLimitReached": "Doppelte XP deckt höchstens {{max}} kommende Spiele ab; schon {{remaining}}."
+        "effectLimitReached": "Doppelte XP deckt höchstens {{max}} kommende Spiele ab; schon {{remaining}}.",
+        "dailyGiftTaken": "Das heutige Geschenk wurde schon abgeholt; das nächste kommt {{nextAt}}.",
+        "dailyGiftClosed": "Gerade gibt es kein Geschenk: Kein Saisontag läuft."
       },
       "academy": {
         "disabled": "Die Jugendakademie ist in dieser Saison nicht geöffnet.",

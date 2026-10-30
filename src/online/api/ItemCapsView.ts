@@ -19,4 +19,9 @@ xpPerStyleSeason?: number,
 /**
  * The most matches of double XP that may wait at once.
  */
-maxMatches?: number, };
+maxMatches?: number, 
+/**
+ * Condition points a player may be given in a football day by the two drinks together,
+ * when the season caps them in points (S-28 S28-8); `perPlayerDay` is then absent.
+ */
+pointsPerPlayerDay?: number, };

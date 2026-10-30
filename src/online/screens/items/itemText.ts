@@ -1,6 +1,6 @@
 import type { TFunction } from "i18next";
 import { resolveBackendError } from "../../../utils/backendI18n";
-import type { ItemCapsView, ItemNumbersView, ItemTarget } from "../../api";
+import type { ItemCapsView, ItemEffectView, ItemNumbersView, ItemTarget } from "../../api";
 import { OnlineApiError } from "../../errors";
 import { formatMoment } from "../../format";
 
@@ -70,6 +70,8 @@ export function itemDescription(t: TFunction, code: string): string {
   return t(`online.items.${code}.description`, { defaultValue: "" });
 }
 
+const DAILY_LIMIT = "be.error.inventory.dailyLimitReached";
+
 /** Parameters of the item codes that are moments of the online calendar. */
 const MOMENT_PARAMS = new Set(["kickoffAt", "nextAt"]);
 /** Codes whose one parameter names a case, each case said by its own sentence (C-7 C7-33). */
@@ -93,6 +95,11 @@ export function itemCodeText(
   code: string,
   params: Record<string, string | number>,
 ): string {
+  // A cap in condition points (S-28 S28-8) says how many points are left today.
+  if (code === DAILY_LIMIT && params.pointsLeft !== undefined) {
+    const time = typeof params.nextAt === "string" ? formatMoment(params.nextAt, language) : "";
+    return t("online.items.dailyLimitPoints", { pointsLeft: params.pointsLeft, nextAt: time });
+  }
   const cases = CASES[code];
   if (cases) {
     const value = params[cases.param];
@@ -149,6 +156,8 @@ export function effectText(t: TFunction, effect: ItemNumbersView): string[] {
 /** How often it may be used, from the ruleset's caps. */
 export function capsText(t: TFunction, caps: ItemCapsView): string[] {
   const out: string[] = [];
+  if (caps.pointsPerPlayerDay !== undefined)
+    out.push(t("online.shop.caps.pointsPerPlayerDay", { n: caps.pointsPerPlayerDay }));
   if (caps.perPlayerDay !== undefined)
     out.push(t("online.shop.caps.perPlayerDay", { n: caps.perPlayerDay }));
   if (caps.perClubDay !== undefined)
@@ -159,6 +168,20 @@ export function capsText(t: TFunction, caps: ItemCapsView): string[] {
   if (caps.maxMatches !== undefined)
     out.push(t("online.shop.caps.maxMatches", { n: caps.maxMatches }));
   return out;
+}
+
+/**
+ * The condition each player would lose to the cap of 100 (C-12 C12-7, Qe54-3): the drink's label
+ * less what the preview says he gains. Only players who lose some are listed.
+ */
+export function pointsLost(
+  effect: ItemEffectView | undefined,
+  label: number | undefined,
+): { playerId: string; lost: number }[] {
+  if (effect?.kind !== "condition" || label === undefined) return [];
+  return effect.players
+    .map((change) => ({ playerId: change.playerId, lost: label - (change.after - change.before) }))
+    .filter((line) => line.lost > 0);
 }
 
 /** Where an entry of the item history came from; a source this build does not know as it is. */

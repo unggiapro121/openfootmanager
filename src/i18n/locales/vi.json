@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: còn {{before}} ngày → {{after}} ngày",
         "cured": "{{player}}: còn {{before}} ngày → khỏi hẳn",
         "mastery": "+{{xp}} XP, độ nhuần nhuyễn {{before}} → {{after}}",
-        "xpX2": "+{{matches}} trận x2 XP, đang chờ {{remaining}}"
+        "xpX2": "+{{matches}} trận x2 XP, đang chờ {{remaining}}",
+        "lost": "{{player}} mất {{lost}} điểm vì thể lực tối đa là 100."
       },
       "limit": {
         "today": "Hôm nay đã dùng {{used}}/{{perDay}} · làm mới lúc {{time}}",
         "todayPlain": "Hôm nay đã dùng {{used}}/{{perDay}}",
         "season": "XP từ sổ tay mùa này: {{used}}/{{limit}}",
-        "xpX2": "Trận x2 XP đang chờ: {{remaining}}/{{max}}"
+        "xpX2": "Trận x2 XP đang chờ: {{remaining}}/{{max}}",
+        "points": "Điểm thể lực đã dùng cho cầu thủ này hôm nay: {{used}}/{{perDay}}"
       },
       "useTitle": "Dùng {{item}}",
       "pickPlayer": "Chọn cầu thủ",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "Mùa này chưa có luật vật phẩm, nên vật phẩm này chưa bán.",
         "academy": "Mùa này chưa có Lò đào tạo, nên vật phẩm này chưa bán."
-      }
+      },
+      "dailyGift": {
+        "claim": "Nhận quà hôm nay ({{quantity}} × {{item}})",
+        "next": "Quà kế tiếp lúc {{time}}",
+        "none": "Hôm nay không có quà để nhận",
+        "given": "Đã nhận {{quantity}} × {{item}}."
+      },
+      "dailyLimitPoints": "Cầu thủ này hôm nay chỉ còn {{pointsLeft}} điểm thể lực; mở thêm lúc {{nextAt}}."
     },
     "inventory": {
       "notOnServer": "Máy chủ này chưa có vật phẩm.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "Tối đa {{n}} vật phẩm thể lực mỗi cầu thủ mỗi ngày bóng đá, tính chung các loại",
         "perClubDay": "Tối đa {{n}} lần mỗi CLB mỗi ngày bóng đá",
         "xpPerStyleSeason": "Tối đa {{n}} XP từ sổ tay mỗi lối chơi mỗi mùa",
-        "maxMatches": "Tối đa {{n}} trận x2 XP đang chờ"
+        "maxMatches": "Tối đa {{n}} trận x2 XP đang chờ",
+        "pointsPerPlayerDay": "Tối đa {{n}} điểm thể lực mỗi cầu thủ mỗi ngày bóng đá, tính chung hai loại nước"
       },
       "seasonOverTitle": "Mùa {{number}} đã kết thúc",
       "seasonOverText": "Vật phẩm mua lúc này được cất vào Kho đồ và dùng được từ mùa sau.",
@@ -5192,7 +5202,9 @@
         "targetMatchLocked": "Đội hình đã khoá cho trận đá lúc {{kickoffAt}}.",
         "dailyLimitReached": "Đã hết lượt dùng hôm nay; mở lại lúc {{nextAt}}.",
         "seasonLimitReached": "Giáo án chỉ cộng tối đa {{limit}} XP cho một lối chơi mỗi mùa; còn {{remaining}}.",
-        "effectLimitReached": "Thẻ x2 XP chỉ cộng dồn tối đa {{max}} trận tới; đang có {{remaining}} trận."
+        "effectLimitReached": "Thẻ x2 XP chỉ cộng dồn tối đa {{max}} trận tới; đang có {{remaining}} trận.",
+        "dailyGiftTaken": "Đã nhận quà hôm nay; quà kế tiếp lúc {{nextAt}}.",
+        "dailyGiftClosed": "Lúc này không có quà để nhận: không có ngày nào của mùa đang diễn ra."
       },
       "academy": {
         "disabled": "Mùa này lò đào tạo chưa mở.",

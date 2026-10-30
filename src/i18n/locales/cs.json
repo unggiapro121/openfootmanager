@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: mimo hru {{before}} dní → {{after}}",
         "cured": "{{player}}: mimo hru {{before}} dní → zdráv",
         "mastery": "+{{xp}} XP, mistrovství {{before}} → {{after}}",
-        "xpX2": "+{{matches}} zápasů s dvojnásobnými XP, čeká {{remaining}}"
+        "xpX2": "+{{matches}} zápasů s dvojnásobnými XP, čeká {{remaining}}",
+        "lost": "{{player}} přijde o {{lost}} bodů: kondice končí na 100."
       },
       "limit": {
         "today": "Dnes použito: {{used}}/{{perDay}} · obnoví se {{time}}",
         "todayPlain": "Dnes použito: {{used}}/{{perDay}}",
         "season": "XP z poznámek v této sezóně: {{used}}/{{limit}}",
-        "xpX2": "Čekající zápasy s dvojnásobnými XP: {{remaining}}/{{max}}"
+        "xpX2": "Čekající zápasy s dvojnásobnými XP: {{remaining}}/{{max}}",
+        "points": "Body kondice použité dnes na tohoto hráče: {{used}}/{{perDay}}"
       },
       "useTitle": "Použít: {{item}}",
       "pickPlayer": "Vyber hráče",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "Tato sezóna nemá pravidla předmětů, proto se tento předmět neprodává.",
         "academy": "Tato sezóna nemá akademii, proto se tento předmět neprodává."
-      }
+      },
+      "dailyGift": {
+        "claim": "Vyzvednout dnešní dárek ({{quantity}} × {{item}})",
+        "next": "Další dárek v {{time}}",
+        "none": "Dnes není žádný dárek",
+        "given": "Získáno: {{quantity}} × {{item}}."
+      },
+      "dailyLimitPoints": "Tomuto hráči dnes zbývá jen {{pointsLeft}} bodů kondice; další od {{nextAt}}."
     },
     "inventory": {
       "notOnServer": "Tento server zatím nemá předměty.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "Nejvýš {{n}} předmětů na kondici na hráče za fotbalový den, všechny druhy dohromady",
         "perClubDay": "Nejvýš {{n}} na klub za fotbalový den",
         "xpPerStyleSeason": "Nejvýš {{n}} XP z poznámek na styl za sezónu",
-        "maxMatches": "Nejvýš {{n}} čekajících zápasů s dvojnásobnými XP"
+        "maxMatches": "Nejvýš {{n}} čekajících zápasů s dvojnásobnými XP",
+        "pointsPerPlayerDay": "Nejvýš {{n}} bodů kondice na hráče za fotbalový den, oba nápoje dohromady"
       },
       "seasonOverTitle": "Sezóna {{number}} skončila",
       "seasonOverText": "Co teď koupíš, půjde do inventáře a použít to půjde od příští sezóny.",
@@ -5192,7 +5202,9 @@
         "targetMatchLocked": "Sestava je zamčená pro zápas s výkopem {{kickoffAt}}.",
         "dailyLimitReached": "Denní limit tohoto předmětu je vyčerpán; znovu {{nextAt}}.",
         "seasonLimitReached": "Studijní poznámky přidají nejvýš {{limit}} XP na styl za sezónu; zbývá {{remaining}}.",
-        "effectLimitReached": "Dvojnásobné XP pokryje nejvýš {{max}} příštích zápasů; už je jich {{remaining}}."
+        "effectLimitReached": "Dvojnásobné XP pokryje nejvýš {{max}} příštích zápasů; už je jich {{remaining}}.",
+        "dailyGiftTaken": "Dnešní dárek už je vyzvednutý; další přijde {{nextAt}}.",
+        "dailyGiftClosed": "Teď není co vyzvednout: neprobíhá žádný den sezóny."
       },
       "academy": {
         "disabled": "Mládežnická akademie v této sezóně není otevřená.",

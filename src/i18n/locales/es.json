@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: {{before}} días de baja → {{after}}",
         "cured": "{{player}}: {{before}} días de baja → recuperado",
         "mastery": "+{{xp}} XP, dominio {{before}} → {{after}}",
-        "xpX2": "+{{matches}} partidos de XP doble, {{remaining}} pendientes"
+        "xpX2": "+{{matches}} partidos de XP doble, {{remaining}} pendientes",
+        "lost": "{{player}} pierde {{lost}} puntos: la condición no pasa de 100."
       },
       "limit": {
         "today": "Usados hoy: {{used}}/{{perDay}} · se reinicia {{time}}",
         "todayPlain": "Usados hoy: {{used}}/{{perDay}}",
         "season": "XP de apuntes esta temporada: {{used}}/{{limit}}",
-        "xpX2": "Partidos de XP doble pendientes: {{remaining}}/{{max}}"
+        "xpX2": "Partidos de XP doble pendientes: {{remaining}}/{{max}}",
+        "points": "Puntos de condición usados hoy en este jugador: {{used}}/{{perDay}}"
       },
       "useTitle": "Usar {{item}}",
       "pickPlayer": "Elige un jugador",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "Esta temporada no tiene reglas de objetos, así que este objeto no está a la venta.",
         "academy": "Esta temporada no tiene cantera, así que este objeto no está a la venta."
-      }
+      },
+      "dailyGift": {
+        "claim": "Recoger el regalo de hoy ({{quantity}} × {{item}})",
+        "next": "Próximo regalo a las {{time}}",
+        "none": "Hoy no hay regalo",
+        "given": "Recibido: {{quantity}} × {{item}}."
+      },
+      "dailyLimitPoints": "A este jugador solo le quedan {{pointsLeft}} puntos de condición hoy; más desde {{nextAt}}."
     },
     "inventory": {
       "notOnServer": "Este servidor aún no tiene objetos.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "Como máximo {{n}} objetos de condición física por jugador y día de fútbol, todos los tipos juntos",
         "perClubDay": "Como máximo {{n}} por club y día de fútbol",
         "xpPerStyleSeason": "Como máximo {{n}} XP de apuntes por estilo y temporada",
-        "maxMatches": "Como máximo {{n}} partidos de XP doble pendientes"
+        "maxMatches": "Como máximo {{n}} partidos de XP doble pendientes",
+        "pointsPerPlayerDay": "Como máximo {{n}} puntos de condición por jugador y día de fútbol, ambas bebidas juntas"
       },
       "seasonOverTitle": "La temporada {{number}} ha terminado",
       "seasonOverText": "Lo que compres ahora va a tu inventario y podrás usarlo desde la próxima temporada.",
@@ -5192,7 +5202,9 @@
         "targetMatchLocked": "La alineación está bloqueada para el partido que empieza {{kickoffAt}}.",
         "dailyLimitReached": "Se alcanzó el límite diario de este objeto; se reabre {{nextAt}}.",
         "seasonLimitReached": "Las notas de estudio suman como máximo {{limit}} XP por estilo y temporada; quedan {{remaining}}.",
-        "effectLimitReached": "La XP doble cubre como máximo {{max}} partidos pendientes; ya hay {{remaining}}."
+        "effectLimitReached": "La XP doble cubre como máximo {{max}} partidos pendientes; ya hay {{remaining}}.",
+        "dailyGiftTaken": "El regalo de hoy ya se recogió; el próximo llega {{nextAt}}.",
+        "dailyGiftClosed": "Ahora no hay regalo: no hay ningún día de temporada en curso."
       },
       "academy": {
         "disabled": "La cantera no está abierta esta temporada.",

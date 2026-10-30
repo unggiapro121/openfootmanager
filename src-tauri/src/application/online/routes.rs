@@ -310,6 +310,8 @@ pub const ROUTES: &[Route] = &[
         &["target"],
     ),
     route("POST", &[L("v1"), L("me"), L("items"), Code, L("use")], &[]),
+    // The day's gift of drinks, claimed (S-28 S28-9, C-12b).
+    route("POST", &[L("v1"), L("me"), L("daily-gift")], &[]),
     route("GET", &[L("v1"), L("shop")], &[]),
     // The coach's events (S-19, C-7d): the events he may read, and a finished mission's rewards
     // claimed.
