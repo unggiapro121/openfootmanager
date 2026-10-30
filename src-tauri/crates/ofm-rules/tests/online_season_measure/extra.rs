@@ -205,6 +205,8 @@ pub(super) struct ClubExtra {
     /// The next of `queue` to try when a star peaks.
     next: usize,
     first: Vec<FirstStar>,
+    /// The eighteen best at the season's start: (id, OVR, age), for the split by age.
+    top18_start: Vec<(String, u8, i32)>,
     small: u32,
     large: u32,
 }
@@ -268,6 +270,9 @@ pub(super) struct ExtraMeasure {
     /// Season → (sum of the change in the eighteen best's mean OVR, clubs).
     top18_by_season: BTreeMap<u32, (f64, u32)>,
     stars_left: (u32, u32),
+    /// Summed over club-seasons: the change of the start's eighteen best, over 18, from players
+    /// up to `YOUNG_UNTIL` and from older ones (printed for E5-5's brake on the young).
+    top18_by_age: [f64; 2],
     /// A buying club's (bottle points, coins) of each day, for a cap a club a day (E8 (c)).
     club_days: Vec<(u32, u32)>,
 }
@@ -294,6 +299,7 @@ pub(super) fn open_season(
         let measure = &mut kind_measure(m, club.kind).extra;
         probe(club, &day0, &key, (v.seed, params), measure);
         pick_stars(club, &day0.date);
+        club.extra.top18_start = best_eighteen(club, &day0.date);
     }
 }
 
@@ -459,6 +465,19 @@ pub(super) fn choose_focus(club: &mut Club) {
         };
         player.training_focus = Some(best_focus(player, &current));
     }
+}
+
+/// The age up to which E5-5 would brake a player (its young band), for the printed split.
+const YOUNG_UNTIL: i32 = 24;
+
+/// A club's eighteen best by OVR at the start of a season, with their OVR and age then.
+fn best_eighteen(club: &Club, date: &str) -> Vec<(String, u8, i32)> {
+    let mut best: Vec<&Player> = club.players.iter().collect();
+    best.sort_by(|a, b| b.ovr.cmp(&a.ovr).then_with(|| a.id.cmp(&b.id)));
+    best.iter()
+        .take(18)
+        .map(|p| (p.id.clone(), p.ovr, age_of(p, date)))
+        .collect()
 }
 
 fn room(player: &Player) -> i16 {
@@ -861,6 +880,12 @@ pub(super) fn close_season(
         let entry = e.top18_by_season.entry(season_number).or_default();
         entry.0 += top18(&club.players) - at_start;
         entry.1 += 1;
+        for (id, ovr, age) in &club.extra.top18_start {
+            if let Some(p) = club.players.iter().find(|p| &p.id == id) {
+                let slot = usize::from(*age > YOUNG_UNTIL);
+                e.top18_by_age[slot] += (f64::from(p.ovr) - f64::from(*ovr)) / 18.0;
+            }
+        }
         if club.kind == Kind::Bot {
             continue;
         }
@@ -1407,20 +1432,8 @@ fn judge(first: &[Measures], fixed: &[Measures]) -> Found {
 /// places × three seeds, and three seeds of three seasons with every club keeping its kind; each
 /// sample's numbers, the summaries by kind, and the criteria.
 fn measure(extra_run: ExtraRun) -> Found {
-    let variant = |seed, shift, rotate, seasons| Variant {
-        multiplier: 16.0,
-        recovery: Recovery::Blocks(RecoveryBlocks {
-            per_day: 6,
-            hours: 8,
-        }),
-        injury_scale: 13,
-        places: Some(&PLACES_E54),
-        shift,
-        rotate,
-        seasons,
-        seed,
-        extra: Some(extra_run),
-    };
+    let variant =
+        |seed, shift, rotate, seasons| e54_variant(extra_run, seed, (shift, rotate, seasons));
     let first_variants: Vec<Variant> = (0..3)
         .flat_map(|shift| SEEDS.iter().map(move |seed| variant(*seed, shift, true, 1)))
         .collect();
@@ -1463,6 +1476,28 @@ fn measure(extra_run: ExtraRun) -> Found {
     judge(&first, &fixed)
 }
 
+/// E5-4b's world under `extra_run`: E5-1's blocks and pace, E5-4b's places, turned `shift` places.
+fn e54_variant(
+    extra_run: ExtraRun,
+    seed: u64,
+    (shift, rotate, seasons): (usize, bool, u32),
+) -> Variant {
+    Variant {
+        multiplier: 16.0,
+        recovery: Recovery::Blocks(RecoveryBlocks {
+            per_day: 6,
+            hours: 8,
+        }),
+        injury_scale: 13,
+        places: Some(&PLACES_E54),
+        shift,
+        rotate,
+        seasons,
+        seed,
+        extra: Some(extra_run),
+    }
+}
+
 fn grid_line(extra_run: ExtraRun, found: Found) -> String {
     format!(
         "  {}: E2–E7 {} · E3 {:+.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E6 {:+.2} · E8 Max3 {:.0}, MaxAll {:.0}",
@@ -1475,6 +1510,51 @@ fn grid_line(extra_run: ExtraRun, found: Found) -> String {
         found.e8_max3,
         found.e8_max_all
     )
+}
+
+fn top18_young(m: &Measure) -> f64 {
+    per_club_season(m, m.extra.top18_by_age[0])
+}
+
+fn top18_older(m: &Measure) -> f64 {
+    per_club_season(m, m.extra.top18_by_age[1])
+}
+
+/// For the user's information after PO's decision on the rerun (no stop rule): season 1 from a
+/// fresh world, 9 samples, at low `devPermille`, with each kind's gap to `Auto` in the eighteen
+/// best split into what players up to 24 and from 25 brought (E5-5 brakes only the young).
+pub(super) fn low_dev_points() {
+    println!("\n==== low devPermille points, season 1, 9 samples, gaps to Auto ====");
+    for dev_permille in [1000, 250, 100] {
+        let extra_run = ExtraRun::with(ExtraParams {
+            floor: 40,
+            dev_permille,
+        });
+        let first: Vec<Measures> = (0..3)
+            .flat_map(|shift| {
+                SEEDS
+                    .iter()
+                    .map(move |seed| run(e54_variant(extra_run, *seed, (shift, true, 1))))
+            })
+            .collect();
+        let gap_mean = |kind, read: fn(&Measure) -> f64| mean(&gap(&first, kind, Kind::Auto, read));
+        println!(
+            "  {{40, {dev_permille}}}: E3 {:+.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E6 {:+.2}",
+            gap_mean(Kind::ExtraFree, star_growth),
+            gap_mean(Kind::ExtraFree, Measure::top18),
+            gap_mean(Kind::ExtraFreeAll, Measure::top18),
+            gap_mean(Kind::ExtraMaxAll, Measure::top18),
+        );
+        for kind in [Kind::ExtraFree, Kind::ExtraFreeAll, Kind::ExtraMaxAll] {
+            println!(
+                "    {kind:?} − Auto, the start's eighteen best: ≤{YOUNG_UNTIL} {:+.2} · ≥{} {:+.2} (top18 {:+.2})",
+                gap_mean(kind, top18_young),
+                YOUNG_UNTIL + 1,
+                gap_mean(kind, top18_older),
+                gap_mean(kind, Measure::top18),
+            );
+        }
+    }
 }
 
 /// The club caps a day tried for lever 2, largest first (bottle points by the labels).
