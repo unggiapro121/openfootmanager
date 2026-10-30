@@ -10,7 +10,10 @@ use domain::player::Player;
 use serde::{Deserialize, Serialize};
 
 use crate::facilities::MAX_FACILITY_LEVEL;
-use crate::valuation::{MINIMUM_DEFAULT_WAGE, TOP_REPUTATION, market_value_at_age, market_wage};
+use crate::valuation::{
+    MINIMUM_DEFAULT_WAGE, TOP_REPUTATION, VALUE_GROWTH_PER_POINT, current_rating,
+    market_value_at_age, market_wage,
+};
 
 /// Weeks of wages a club pays in one football year. One online season is one football year (Q5),
 /// so an online club pays these weeks over the days of a season (S10-6).
@@ -55,11 +58,53 @@ pub fn facility_upgrade_cost(level: u8, base: u64) -> Option<u64> {
     (level < MAX_FACILITY_LEVEL).then(|| u64::from(level) * base)
 }
 
+/// How online wages climb with ability when a season flattens them (S-29, S29-1). From `from_ovr`
+/// to `knee_ovr` a rating point raises the wage by `growth_milli`‰ of e instead of the market's
+/// 0.17, so an ordinary squad is no longer paid like a star's fee; below `from_ovr` and above the
+/// knee wages climb as the market's do. Without one the online wage is the market wage.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct WageCurve {
+    /// Below this rating the online wage is the market wage, as before.
+    pub from_ovr: u8,
+    /// From `from_ovr` up to this rating each point adds `growth_milli`‰ of e.
+    pub knee_ovr: u8,
+    /// The flat slope, thousandths per rating point (80 = 0.08).
+    pub growth_milli: u32,
+}
+
+/// The highest knee a wage curve may have: where the value curve itself bends (S29-5). A knee past
+/// it would flatten a stretch where the market already grows at its elite rate.
+pub const WAGE_CURVE_MAX_KNEE: u8 = 85;
+/// The steepest slope a wage curve may have: the market's own growth per point (S29-5), so a curve
+/// never makes a player dearer than the market pays him.
+pub const WAGE_CURVE_MAX_GROWTH_MILLI: u32 = 170;
+
+/// The share of the market wage a player of `rating` keeps on `curve`: e^(−(0.17 − k) × the
+/// points he has on the flat stretch). One for a rating at or below the curve's start.
+fn wage_curve_discount(curve: &WageCurve, rating: u8) -> f64 {
+    let flat_points = rating
+        .saturating_sub(curve.from_ovr)
+        .min(curve.knee_ovr.saturating_sub(curve.from_ovr));
+    let slope = f64::from(curve.growth_milli) / 1000.0;
+    (-(VALUE_GROWTH_PER_POINT - slope) * f64::from(flat_points)).exp()
+}
+
 /// The weekly wage an online club pays the player: his market wage at the club's reputation,
-/// scaled by the season's `wage_scale_permille`, never below the game's minimum wage (S10-6).
-pub fn online_wage(player: &Player, club_reputation: u32, wage_scale_permille: u32) -> u64 {
+/// discounted by the season's wage curve if it has one, scaled by `wage_scale_permille`, never
+/// below the game's minimum wage (S10-6, S29-1). Without a curve it is the euro it always was.
+pub fn online_wage(
+    player: &Player,
+    club_reputation: u32,
+    wage_scale_permille: u32,
+    curve: Option<&WageCurve>,
+) -> u64 {
     let market = u64::from(market_wage(player, Some(club_reputation)));
-    scale(market, wage_scale_permille).max(MINIMUM_DEFAULT_WAGE)
+    let on_curve = match curve {
+        None => market,
+        Some(curve) => (market as f64 * wage_curve_discount(curve, current_rating(player))) as u64,
+    };
+    scale(on_curve, wage_scale_permille).max(MINIMUM_DEFAULT_WAGE)
 }
 
 /// Wages paid by the end of `days` of a season of `season_days`: the year's wages of a weekly
@@ -177,14 +222,36 @@ pub fn transfer_tax(price: u64, permille: u32) -> u64 {
     scale(price, permille)
 }
 
+/// A slower growth of rank rewards above a level (S-29, S29-8): the rewards of the high levels are
+/// cut without touching the low ones, where clubs barely break even.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RewardHighGrowth {
+    /// The last level reached at the ordinary growth.
+    pub from_level: u32,
+    /// The growth of each level above `from_level`, in thousandths.
+    pub permille: u32,
+}
+
 /// The reward for finishing `rank` (1 is first) in a league of coach level `level` (S10-10): the
-/// level-1 amount of that rank, grown by `growth_permille` once per level above the first, each
-/// step rounded down. Zero for a rank the table has no amount for.
-pub fn rank_reward(level_one: &[u64], rank: usize, level: u32, growth_permille: u32) -> u64 {
+/// level-1 amount of that rank, grown once per level above the first, each step rounded down. The
+/// step up to a level grows by `growth_permille`, or by `high`'s own growth for a level above its
+/// `from_level` (S29-8). Zero for a rank the table has no amount for.
+pub fn rank_reward(
+    level_one: &[u64],
+    rank: usize,
+    level: u32,
+    growth_permille: u32,
+    high: Option<&RewardHighGrowth>,
+) -> u64 {
     let Some(&amount) = rank.checked_sub(1).and_then(|index| level_one.get(index)) else {
         return 0;
     };
-    (1..level.max(1)).fold(amount, |reward, _| scale(reward, growth_permille))
+    let growth_up_to = |level: u32| match high {
+        Some(high) if level > high.from_level => high.permille,
+        _ => growth_permille,
+    };
+    (2..=level.max(1)).fold(amount, |reward, level| scale(reward, growth_up_to(level)))
 }
 
 /// `amount × permille / 1000`, rounded down, without overflow.
@@ -315,12 +382,235 @@ mod tests {
     #[test]
     fn rank_rewards_grow_with_the_level() {
         let table = [1_500_000, 120_000];
-        assert_eq!(rank_reward(&table, 1, 1, 1250), 1_500_000);
-        assert_eq!(rank_reward(&table, 1, 2, 1250), 1_875_000);
-        assert_eq!(rank_reward(&table, 1, 3, 1250), 2_343_750);
-        assert_eq!(rank_reward(&table, 2, 0, 1250), 120_000);
-        assert_eq!(rank_reward(&table, 0, 1, 1250), 0);
-        assert_eq!(rank_reward(&table, 3, 1, 1250), 0);
+        assert_eq!(rank_reward(&table, 1, 1, 1250, None), 1_500_000);
+        assert_eq!(rank_reward(&table, 1, 2, 1250, None), 1_875_000);
+        assert_eq!(rank_reward(&table, 1, 3, 1250, None), 2_343_750);
+        assert_eq!(rank_reward(&table, 2, 0, 1250, None), 120_000);
+        assert_eq!(rank_reward(&table, 0, 1, 1250, None), 0);
+        assert_eq!(rank_reward(&table, 3, 1, 1250, None), 0);
+    }
+
+    /// Given rewards that grow 25% a level up to level 6 and 10% a level above it,
+    /// when they are asked at levels 1 to 9 and outside the table,
+    /// then levels 1 to 6 pay what one growth of 25% pays, each later level adds 10% of the one
+    /// below rounded down, and a rank off the table still earns nothing.
+    #[test]
+    fn rewards_above_the_high_level_grow_at_their_own_rate() {
+        let table = [4_500_000, 1_320_000];
+        let high = RewardHighGrowth {
+            from_level: 6,
+            permille: 1100,
+        };
+        for level in 1..=6 {
+            assert_eq!(
+                rank_reward(&table, 1, level, 1250, Some(&high)),
+                rank_reward(&table, 1, level, 1250, None),
+                "level {level}"
+            );
+        }
+        let mut below = rank_reward(&table, 2, 6, 1250, Some(&high));
+        for level in 7..=9 {
+            let reward = rank_reward(&table, 2, level, 1250, Some(&high));
+            assert_eq!(reward, below * 1100 / 1000, "level {level}");
+            below = reward;
+        }
+        assert_eq!(rank_reward(&table, 3, 9, 1250, Some(&high)), 0);
+    }
+
+    fn midfielder(ovr: u8) -> Player {
+        player_at(domain::player::Position::CentralMidfielder, ovr)
+    }
+
+    fn player_at(position: domain::player::Position, ovr: u8) -> Player {
+        let mut player = Player::new(
+            "p1".to_string(),
+            "P. One".to_string(),
+            "Player One".to_string(),
+            "2000-01-01".to_string(),
+            "GB".to_string(),
+            position.clone(),
+            crate::test_support::uniform_attributes(60),
+        );
+        player.natural_position = position;
+        player.ovr = ovr;
+        player.potential = ovr;
+        player
+    }
+
+    /// The online wage as it was before the wage curve (S10-6).
+    fn wage_before_the_curve(player: &Player, reputation: u32, permille: u32) -> u64 {
+        scale(u64::from(market_wage(player, Some(reputation))), permille).max(MINIMUM_DEFAULT_WAGE)
+    }
+
+    const CURVE_68: WageCurve = WageCurve {
+        from_ovr: 60,
+        knee_ovr: 68,
+        growth_milli: 80,
+    };
+
+    /// The market wage, discounted by `factor` and rounded down, at a scale of 1000‰.
+    fn discounted(player: &Player, reputation: u32, factor: f64) -> u64 {
+        let market = f64::from(market_wage(player, Some(reputation)));
+        ((market * factor) as u64).max(MINIMUM_DEFAULT_WAGE)
+    }
+
+    /// Given no wage curve on the season,
+    /// when wages are asked for ratings 40 to 99 at two reputations, two positions and two scales,
+    /// then every one is the euro the online wage paid before the curve existed.
+    #[test]
+    fn without_a_curve_the_online_wage_is_what_it_was() {
+        use domain::player::Position;
+        for position in [Position::CentralMidfielder, Position::Goalkeeper] {
+            for ovr in 40..=99 {
+                let player = player_at(position.clone(), ovr);
+                for reputation in [300, 800] {
+                    for permille in [1000, 700] {
+                        assert_eq!(
+                            online_wage(&player, reputation, permille, None),
+                            wage_before_the_curve(&player, reputation, permille),
+                            "{position:?} {ovr} at {reputation}, {permille}‰"
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    /// Given the curve that flattens from 60 to a knee at 68 with a slope of 0.08,
+    /// when wages are asked below, inside and above the flat stretch,
+    /// then up to 60 nothing changes, at 64 the wage is cut by e^(−0.36) ≈ 0.698, and from 68 on,
+    /// past the value curve's own bend at 85 too, by the whole stretch's e^(−0.72) ≈ 0.487.
+    #[test]
+    fn the_curve_cuts_wages_only_from_its_start() {
+        for ovr in [45, 55, 60] {
+            let player = midfielder(ovr);
+            assert_eq!(
+                online_wage(&player, 300, 1000, Some(&CURVE_68)),
+                wage_before_the_curve(&player, 300, 1000),
+                "ovr {ovr}"
+            );
+        }
+        assert!(((-0.36_f64).exp() - 0.698).abs() < 0.001);
+        assert!(((-0.72_f64).exp() - 0.487).abs() < 0.001);
+        for (ovr, cut) in [(64, -0.36_f64), (68, -0.72), (75, -0.72), (90, -0.72)] {
+            let player = midfielder(ovr);
+            let wage = online_wage(&player, 300, 1000, Some(&CURVE_68));
+            let expected = discounted(&player, 300, cut.exp());
+            assert!(
+                wage.abs_diff(expected) <= 1,
+                "ovr {ovr}: {wage} vs {expected}"
+            );
+        }
+    }
+
+    /// Given the curve with its knee at 72,
+    /// when a 75 is paid,
+    /// then his wage is cut by e^(−0.09 × 12) ≈ 0.340.
+    #[test]
+    fn a_later_knee_cuts_deeper() {
+        let curve = WageCurve {
+            knee_ovr: 72,
+            ..CURVE_68
+        };
+        assert!(((-1.08_f64).exp() - 0.340).abs() < 0.001);
+        let player = midfielder(75);
+        let wage = online_wage(&player, 300, 1000, Some(&curve));
+        let expected = discounted(&player, 300, (-1.08_f64).exp());
+        assert!(wage.abs_diff(expected) <= 1, "{wage} vs {expected}");
+    }
+
+    /// Given the curve with its knee at 68,
+    /// when a 67 and a 60 of the same club and position are paid,
+    /// then the 67 costs e^(0.08 × 7) ≈ 1.75 times the 60, where it cost 3.29 times before.
+    #[test]
+    fn a_rating_point_on_the_flat_stretch_costs_eight_percent() {
+        let (good, ordinary) = (midfielder(67), midfielder(60));
+        let ratio = |curve: Option<&WageCurve>| {
+            online_wage(&good, 300, 1000, curve) as f64
+                / online_wage(&ordinary, 300, 1000, curve) as f64
+        };
+        assert!(
+            (ratio(Some(&CURVE_68)) - 1.75).abs() < 0.01,
+            "{}",
+            ratio(Some(&CURVE_68))
+        );
+        assert!((ratio(None) - 3.29).abs() < 0.01, "{}", ratio(None));
+    }
+
+    /// Given a low scale on the season,
+    /// when a 45 is paid on the curve,
+    /// then he still earns the game's minimum wage.
+    #[test]
+    fn the_curve_keeps_the_minimum_wage() {
+        let player = midfielder(45);
+        assert_eq!(
+            online_wage(&player, 300, 700, Some(&CURVE_68)),
+            MINIMUM_DEFAULT_WAGE
+        );
+    }
+
+    /// Given every knee from 61 to the value curve's bend at 85 and every slope up to the market's,
+    /// when ratings 40 to 99 are paid in order,
+    /// then no player earns less than one rated below him, and none more than before the curve.
+    #[test]
+    fn a_better_player_never_earns_less_on_any_curve() {
+        for knee_ovr in 61..=WAGE_CURVE_MAX_KNEE {
+            for growth_milli in [0, 80, 120, WAGE_CURVE_MAX_GROWTH_MILLI] {
+                let curve = WageCurve {
+                    from_ovr: 60,
+                    knee_ovr,
+                    growth_milli,
+                };
+                let mut last = 0;
+                for ovr in 40..=99 {
+                    let player = midfielder(ovr);
+                    let wage = online_wage(&player, 300, 1000, Some(&curve));
+                    assert!(
+                        wage >= last,
+                        "knee {knee_ovr}, {growth_milli}: {ovr} pays {wage} < {last}"
+                    );
+                    assert!(wage <= wage_before_the_curve(&player, 300, 1000));
+                    last = wage;
+                }
+            }
+        }
+    }
+
+    /// Given the limits the server checks a wage curve against,
+    /// when they are compared with the value curve,
+    /// then the knee ends at the value curve's bend and the slope at its growth per point.
+    #[test]
+    fn the_curve_limits_are_the_value_curve_s_own() {
+        assert_eq!(f64::from(WAGE_CURVE_MAX_KNEE), crate::valuation::ELITE_OVR);
+        assert_eq!(
+            f64::from(WAGE_CURVE_MAX_GROWTH_MILLI) / 1000.0,
+            crate::valuation::VALUE_GROWTH_PER_POINT
+        );
+    }
+
+    /// Given a wage curve and a high-level reward growth in a ruleset,
+    /// when they are written and read back,
+    /// then the fields are camelCase and unknown ones are refused.
+    #[test]
+    fn the_curve_and_the_high_growth_read_as_the_ruleset_writes_them() {
+        let curve: WageCurve =
+            serde_json::from_str(r#"{"fromOvr":60,"kneeOvr":68,"growthMilli":80}"#).unwrap();
+        assert_eq!(curve, CURVE_68);
+        let high: RewardHighGrowth =
+            serde_json::from_str(r#"{"fromLevel":6,"permille":1100}"#).unwrap();
+        assert_eq!(
+            high,
+            RewardHighGrowth {
+                from_level: 6,
+                permille: 1100
+            }
+        );
+        assert!(
+            serde_json::from_str::<WageCurve>(
+                r#"{"fromOvr":60,"kneeOvr":68,"growthMilli":80,"x":1}"#
+            )
+            .is_err()
+        );
     }
 
     /// Given a facility at levels 1, 9 and 10,
