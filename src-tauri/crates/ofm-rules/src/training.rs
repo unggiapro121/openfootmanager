@@ -2,13 +2,15 @@
 //! and what it builds, by the club's plan, its staff and its facilities. Shared with the online
 //! server, whose daily job runs it for every club (Q6); `ofm_core::training` runs it for a save.
 //! The coaching bonus is read off the club's staff as passed in, the taper off its calendar by
-//! the caller.
+//! the caller. Online, a coach may also press extra sessions on top of the day's (E5-4,
+//! `extra_session`): as many as condition allows, each at full cost with nothing given back.
 
 use crate::player_rating::refresh_player_derived;
 use domain::player::{Player, PlayerAttributes};
 use domain::staff::{CoachingSpecialization, Staff, StaffRole};
 use domain::team::{TrainingFocus, TrainingIntensity, TrainingSchedule};
 use rand::Rng;
+use serde::{Deserialize, Serialize};
 
 /// Computed coaching quality for a team's staff.
 pub struct TeamCoachingBonus {
@@ -267,11 +269,7 @@ fn train_player_on(
         Some(Taper::NearMatch) if is_training_day => downgrade_intensity(&plan.intensity),
         _ => plan.intensity.clone(),
     };
-    let intensity_mult = match &intensity {
-        TrainingIntensity::Low => 0.5,
-        TrainingIntensity::Medium => 1.0,
-        TrainingIntensity::High => 1.5,
-    };
+    let intensity_mult = intensity_mult(&intensity);
 
     // Two ways a session becomes recovery work rather than a load:
     //
@@ -283,32 +281,25 @@ fn train_player_on(
     // Injured players are exempt from both: they don't train regardless, and
     // routing them through Recovery focus here would inflate the injured-recovery
     // base below (9.0 instead of 3.0), giving them ~3x recovery.
-    let recovery_focus = TrainingFocus::Recovery;
     let is_resting = is_training_day
         && player.injury.is_none()
         && (player.condition < FATIGUE_GUARD_CONDITION
             || (plan.taper.is_some() && intensity == TrainingIntensity::Low));
+    // Owned, not borrowed from `player`: the development step below changes him.
     let player_focus = if is_resting {
-        &recovery_focus
+        TrainingFocus::Recovery
     } else {
-        // Determine this player's effective focus:
-        // player override > group override > team default
-        player
-            .training_focus
-            .as_ref()
-            .or_else(|| plan.group_overrides.get(&player.id))
-            .unwrap_or(&plan.default_focus)
+        planned_focus(player, plan).clone()
     };
+    let player_focus = &player_focus;
 
     // On rest days or Recovery focus: no training cost
     let condition_cost: u8 = if !is_training_day {
         0
     } else {
-        match (player_focus, &intensity) {
-            (TrainingFocus::Recovery, _) => 0,
-            (_, TrainingIntensity::Low) => 3,
-            (_, TrainingIntensity::Medium) => 6,
-            (_, TrainingIntensity::High) => 10,
+        match player_focus {
+            TrainingFocus::Recovery => 0,
+            _ => session_cost(&intensity),
         }
     };
 
@@ -333,8 +324,7 @@ fn train_player_on(
     // Older players recover more slowly; high morale aids recovery;
     // severely fatigued players have a harder time bouncing back.
     // A date of birth that cannot be read counts as 25, the middle of every age band.
-    let age =
-        crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32);
+    let age = age_on_day(player, day);
     let age_rec = recovery_factor_from_age(age);
     let morale_rec = recovery_factor_from_morale(player.morale);
     let condition_rec = recovery_factor_from_condition(player.condition);
@@ -361,33 +351,8 @@ fn train_player_on(
         return;
     }
 
-    // Age factor for attribute gains: younger players grow faster, older players slower
-    let age_factor = age_factor(age);
-
-    // Base gain per attribute per session, boosted by coaching staff and the
-    // training facility, held back for a player who is not getting games, and
-    // nudged by how well he is playing.
-    let gain = BASE_TRAINING_GAIN
-        * day.development_multiplier
-        * intensity_mult
-        * age_factor
-        * plan.bonus.coaching_mult
-        * plan.bonus.specialization_mult
-        * plan.training_facility_mult
-        * crate::playing_time::development_factor(player.playing_time)
-        * crate::match_form::development_factor(player.match_form);
-
-    // Peaked players (ovr == potential) get no attribute gains. Without this
-    // gate, attribute drift lifts ovr, and `refresh_player_derived`'s
-    // `potential = max(potential, ovr)` invariant silently raises the career
-    // ceiling in lockstep — the ceiling stops being a ceiling.
-    if player.potential > player.ovr {
-        apply_focus_gains(&mut player.attributes, player_focus, gain, rng);
-    }
-    apply_fitness_change(&mut player.fitness, player_focus, intensity_mult, rng);
-
-    // Refresh position-weighted OVR and traits after attribute gains.
-    refresh_player_derived(player, day.year);
+    // A scheduled session develops at the session's own pace: a scale of one changes no bit.
+    develop(player, plan, day, player_focus, intensity_mult, 1.0, rng);
 
     // Apply condition: deplete from training, then recover
     player.condition = player.condition.saturating_sub(condition_cost);
@@ -399,6 +364,223 @@ fn train_player_on(
         * condition_rec
         * fitness_rec) as u8;
     player.condition = (player.condition + recovery).min(100);
+}
+
+/// The focus `player` trains on under `plan` when nothing rests him: his own, else his training
+/// group's, else the club's.
+fn planned_focus<'a>(player: &'a Player, plan: &'a TeamTrainingPlan) -> &'a TrainingFocus {
+    player
+        .training_focus
+        .as_ref()
+        .or_else(|| plan.group_overrides.get(&player.id))
+        .unwrap_or(&plan.default_focus)
+}
+
+/// How much harder than a Medium session one of `intensity` builds.
+fn intensity_mult(intensity: &TrainingIntensity) -> f64 {
+    match intensity {
+        TrainingIntensity::Low => 0.5,
+        TrainingIntensity::Medium => 1.0,
+        TrainingIntensity::High => 1.5,
+    }
+}
+
+/// The condition a session of `intensity` takes, on any focus but Recovery.
+fn session_cost(intensity: &TrainingIntensity) -> u8 {
+    match intensity {
+        TrainingIntensity::Low => 3,
+        TrainingIntensity::Medium => 6,
+        TrainingIntensity::High => 10,
+    }
+}
+
+/// `player`'s age on the session's date; a date of birth that cannot be read counts as 25, the
+/// middle of every age band.
+fn age_on_day(player: &Player, day: &TrainingDay) -> u32 {
+    crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32)
+}
+
+/// What a session on `focus` builds in `player`: his attributes and match fitness, then his
+/// overall rating. `dev_scale` scales the chance per attribute (1.0 for every session but an
+/// extra one, E5-4); it multiplies last, so at 1.0 not a bit of the chance changes. The dice
+/// fall in the same order as ever: the focus's attributes as written, then fitness. Returns how
+/// many attributes went up.
+fn develop(
+    player: &mut Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    focus: &TrainingFocus,
+    intensity_mult: f64,
+    dev_scale: f64,
+    rng: &mut impl Rng,
+) -> u8 {
+    // Base gain per attribute per session, boosted by coaching staff and the
+    // training facility, held back for a player who is not getting games, and
+    // nudged by how well he is playing; younger players grow faster.
+    let gain = BASE_TRAINING_GAIN
+        * day.development_multiplier
+        * intensity_mult
+        * age_factor(age_on_day(player, day))
+        * plan.bonus.coaching_mult
+        * plan.bonus.specialization_mult
+        * plan.training_facility_mult
+        * crate::playing_time::development_factor(player.playing_time)
+        * crate::match_form::development_factor(player.match_form)
+        * dev_scale;
+
+    // Peaked players (ovr == potential) get no attribute gains. Without this
+    // gate, attribute drift lifts ovr, and `refresh_player_derived`'s
+    // `potential = max(potential, ovr)` invariant silently raises the career
+    // ceiling in lockstep — the ceiling stops being a ceiling.
+    let gains = if player.potential > player.ovr {
+        apply_focus_gains(&mut player.attributes, focus, gain, rng)
+    } else {
+        0
+    };
+    apply_fitness_change(&mut player.fitness, focus, intensity_mult, rng);
+
+    // Refresh position-weighted OVR and traits after attribute gains.
+    refresh_player_derived(player, day.year);
+    gains
+}
+
+/// What a season's ruleset sets for pressed extra sessions (E5-4; the server reads them from its
+/// `extraSession`). Every lever the measurement may pull lives here, so tuning needs no new tag.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtraParams {
+    /// Below this condition a player sits the session out.
+    pub floor: u8,
+    /// The session's development, in thousandths of a scheduled session's (1000 = the same).
+    pub dev_permille: u32,
+}
+
+/// Why an [`ExtraParams`] cannot be run.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ExtraIssue {
+    Floor,
+    DevPermille,
+}
+
+/// Twice a session's development: past it an extra session would beat the scheduled one it is
+/// meant to add to.
+const MOST_DEV_PERMILLE: u32 = 2000;
+
+impl ExtraParams {
+    /// Before measuring (Q-U3): the game's fatigue guard, and a session's own development.
+    pub const PROPOSED: Self = Self {
+        floor: FATIGUE_GUARD_CONDITION,
+        dev_permille: 1000,
+    };
+
+    /// Whether these settings can run a season. A floor of 0 would let a spent player train.
+    pub fn validate(&self) -> Result<(), ExtraIssue> {
+        if !(1..=100).contains(&self.floor) {
+            return Err(ExtraIssue::Floor);
+        }
+        if self.dev_permille > MOST_DEV_PERMILLE {
+            return Err(ExtraIssue::DevPermille);
+        }
+        Ok(())
+    }
+}
+
+/// Why a player takes no part in an extra session. A scheduled session would have rested each
+/// of them and given condition back; an extra one must never give condition back, or pressing
+/// would be a free way to recover.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SitOut {
+    /// Injured: a session would give him half a rest's recovery.
+    Injured,
+    /// Under the floor: a session would turn into Recovery work.
+    Tired,
+    /// His focus is Recovery: nothing to build, condition to gain.
+    Resting,
+    /// At his potential: nothing can be built, only condition lost.
+    Peaked,
+}
+
+/// What one extra session did to one player.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ExtraOutcome {
+    pub sat_out: Option<SitOut>,
+    pub condition_before: u8,
+    pub condition_after: u8,
+    /// Attributes that went up by one.
+    pub gains: u8,
+}
+
+/// The dice of `player_id`'s `n`-th extra session (1, 2, …) of the club's online day `date`: his
+/// own stream, apart from the day's session (`session_rng`) and from every other extra session.
+pub fn extra_session_rng(
+    seed: u64,
+    player_id: &str,
+    date: &str,
+    n: u32,
+) -> rand_chacha::ChaCha12Rng {
+    crate::seed::rng_for_seed(seed, &format!("training/{player_id}/extra/{n}"), date)
+}
+
+/// Why `player` would sit an extra session under `plan` out, or none if he takes part; the first
+/// reason that holds, in the order of [`SitOut`].
+pub fn extra_sit_out(
+    player: &Player,
+    plan: &TeamTrainingPlan,
+    params: &ExtraParams,
+) -> Option<SitOut> {
+    if player.injury.is_some() {
+        Some(SitOut::Injured)
+    } else if player.condition < params.floor {
+        Some(SitOut::Tired)
+    } else if *planned_focus(player, plan) == TrainingFocus::Recovery {
+        Some(SitOut::Resting)
+    } else if player.ovr >= player.potential {
+        Some(SitOut::Peaked)
+    } else {
+        None
+    }
+}
+
+/// One extra session of `player` at `intensity` under `plan` on `day` (E5-4, analysis U-1…U-3):
+/// the focus and development of a session, scaled by `params.dev_permille`, its full condition
+/// cost and no recovery in it. The intensity is the press's own, not the plan's, and no taper
+/// applies. A player who sits out is left as he was and casts no die. His condition must already
+/// be rested up to the moment of the press (`recovery::rest_blocks`).
+pub fn extra_session(
+    player: &mut Player,
+    plan: &TeamTrainingPlan,
+    day: &TrainingDay,
+    intensity: TrainingIntensity,
+    params: &ExtraParams,
+    rng: &mut impl Rng,
+) -> ExtraOutcome {
+    let condition_before = player.condition;
+    if let Some(why) = extra_sit_out(player, plan, params) {
+        return ExtraOutcome {
+            sat_out: Some(why),
+            condition_before,
+            condition_after: condition_before,
+            gains: 0,
+        };
+    }
+    let focus = planned_focus(player, plan).clone();
+    let dev_scale = f64::from(params.dev_permille) / 1000.0;
+    let gains = develop(
+        player,
+        plan,
+        day,
+        &focus,
+        intensity_mult(&intensity),
+        dev_scale,
+        rng,
+    );
+    player.condition = player.condition.saturating_sub(session_cost(&intensity));
+    ExtraOutcome {
+        sat_out: None,
+        condition_before,
+        condition_after: player.condition,
+        gains,
+    }
 }
 
 /// One online day of `player` (phase 3, E3-7, S-7 Qs7-11): the day's session or rest under
@@ -417,8 +599,7 @@ pub fn train_online_day(
     if rest_days == 0 {
         return;
     }
-    let age =
-        crate::age::age_on(&player.date_of_birth, &day.date).map_or(25, |age| age.max(0) as u32);
+    let age = age_on_day(player, day);
     let recovery = (plan.bonus.physio_mult, plan.medical_facility_mult);
     player.condition =
         condition_after_rest(player, player.condition, age, recovery, rest_days * 24);
@@ -517,75 +698,87 @@ fn apply_fitness_change(
 
 /// `try_gain` for one of the seven split attributes: one still at 0 is
 /// undeclared (see `attribute_split`), and training must not declare it.
-fn try_gain_split(current: &mut u8, gain: f64, rng: &mut impl Rng) {
-    if *current != 0 {
-        try_gain(current, gain, rng);
-    }
+fn try_gain_split(current: &mut u8, gain: f64, rng: &mut impl Rng) -> bool {
+    *current != 0 && try_gain(current, gain, rng)
 }
 
-fn try_gain(current: &mut u8, gain: f64, rng: &mut impl Rng) {
+/// One roll for `current` at `gain`; whether it went up.
+fn try_gain(current: &mut u8, gain: f64, rng: &mut impl Rng) -> bool {
     use rand::RngExt;
     if *current >= 99 {
-        return;
+        return false;
     }
     let roll: f64 = rng.random_range(0.0..1.0);
-    if roll < gain {
+    let rises = roll < gain;
+    if rises {
         *current = (*current + 1).min(99);
     }
+    rises
 }
 
-/// Apply attribute gains based on training focus.
+/// Apply attribute gains based on training focus; how many attributes went up. Each attribute is
+/// rolled in the order written, every roll counted, so the dice fall as they always have.
 fn apply_focus_gains(
     attrs: &mut PlayerAttributes,
     focus: &TrainingFocus,
     gain: f64,
     rng: &mut impl Rng,
-) {
+) -> u8 {
+    let mut rose = 0;
+    let mut roll = |current: &mut u8, gain: f64, is_split: bool| {
+        let up = if is_split {
+            try_gain_split(current, gain, rng)
+        } else {
+            try_gain(current, gain, rng)
+        };
+        rose += u8::from(up);
+    };
     match focus {
         TrainingFocus::Physical => {
-            try_gain(&mut attrs.pace, gain, rng);
-            try_gain(&mut attrs.stamina, gain, rng);
-            try_gain(&mut attrs.strength, gain, rng);
-            try_gain(&mut attrs.agility, gain, rng);
+            roll(&mut attrs.pace, gain, false);
+            roll(&mut attrs.stamina, gain, false);
+            roll(&mut attrs.strength, gain, false);
+            roll(&mut attrs.agility, gain, false);
         }
         TrainingFocus::Technical => {
-            try_gain(&mut attrs.passing, gain, rng);
-            try_gain(&mut attrs.shooting, gain, rng);
-            try_gain(&mut attrs.dribbling, gain, rng);
+            roll(&mut attrs.passing, gain, false);
+            roll(&mut attrs.shooting, gain, false);
+            roll(&mut attrs.dribbling, gain, false);
             // Each split attribute trains in the focus of the blend it came out
             // of, so a position's OVR grows at the same speed (phase 2, rule R1).
-            try_gain_split(&mut attrs.long_passing, gain, rng);
-            try_gain_split(&mut attrs.crossing, gain, rng);
-            try_gain_split(&mut attrs.curve, gain, rng);
-            try_gain_split(&mut attrs.free_kick, gain, rng);
-            try_gain_split(&mut attrs.long_shots, gain, rng);
-            try_gain_split(&mut attrs.first_touch, gain, rng);
+            roll(&mut attrs.long_passing, gain, true);
+            roll(&mut attrs.crossing, gain, true);
+            roll(&mut attrs.curve, gain, true);
+            roll(&mut attrs.free_kick, gain, true);
+            roll(&mut attrs.long_shots, gain, true);
+            roll(&mut attrs.first_touch, gain, true);
         }
         TrainingFocus::Tactical => {
-            try_gain(&mut attrs.positioning, gain, rng);
-            try_gain(&mut attrs.vision, gain, rng);
-            try_gain(&mut attrs.decisions, gain, rng);
-            try_gain(&mut attrs.composure, gain, rng);
+            roll(&mut attrs.positioning, gain, false);
+            roll(&mut attrs.vision, gain, false);
+            roll(&mut attrs.decisions, gain, false);
+            roll(&mut attrs.composure, gain, false);
         }
         TrainingFocus::Defending => {
-            try_gain(&mut attrs.tackling, gain, rng);
-            try_gain(&mut attrs.defending, gain, rng);
-            try_gain(&mut attrs.strength, gain * 0.5, rng);
-            try_gain(&mut attrs.positioning, gain * 0.5, rng);
-            try_gain_split(&mut attrs.heading, gain * 0.5, rng);
+            roll(&mut attrs.tackling, gain, false);
+            roll(&mut attrs.defending, gain, false);
+            roll(&mut attrs.strength, gain * 0.5, false);
+            roll(&mut attrs.positioning, gain * 0.5, false);
+            roll(&mut attrs.heading, gain * 0.5, true);
         }
         TrainingFocus::Attacking => {
-            try_gain(&mut attrs.shooting, gain, rng);
-            try_gain(&mut attrs.dribbling, gain, rng);
-            try_gain(&mut attrs.pace, gain * 0.5, rng);
-            try_gain_split(&mut attrs.long_shots, gain, rng);
-            try_gain_split(&mut attrs.first_touch, gain, rng);
-            try_gain_split(&mut attrs.heading, gain * 0.5, rng);
+            roll(&mut attrs.shooting, gain, false);
+            roll(&mut attrs.dribbling, gain, false);
+            roll(&mut attrs.pace, gain * 0.5, false);
+            roll(&mut attrs.long_shots, gain, true);
+            roll(&mut attrs.first_touch, gain, true);
+            roll(&mut attrs.heading, gain * 0.5, true);
         }
         TrainingFocus::Recovery => {
             // No attribute gains on recovery days
         }
     }
+    rose
 }
 
 /// Recovery multiplier from age: younger players bounce back faster.
@@ -956,6 +1149,448 @@ mod tests {
             serde_json::to_value(&player.attributes).expect("attributes"),
             before
         );
+    }
+
+    /// One number for what every existing kind of day does to the grid: each focus, schedule,
+    /// intensity, taper and weekday, through `train_player`, a pressed `online_session` and
+    /// `train_online_day`, with the die each leaves next. Players and dice are hashed as JSON.
+    fn existing_days_fingerprint() -> u64 {
+        use rand::RngExt;
+        let mut hash = 0;
+        let mut fold = |bytes: &[u8]| hash = crate::stable_hash::stable_hash(bytes, hash);
+        let focuses = [
+            TrainingFocus::Physical,
+            TrainingFocus::Technical,
+            TrainingFocus::Tactical,
+            TrainingFocus::Defending,
+            TrainingFocus::Attacking,
+            TrainingFocus::Recovery,
+        ];
+        let schedules = [
+            TrainingSchedule::Intense,
+            TrainingSchedule::Balanced,
+            TrainingSchedule::Light,
+        ];
+        let intensities = [
+            TrainingIntensity::Low,
+            TrainingIntensity::Medium,
+            TrainingIntensity::High,
+        ];
+        for focus in focuses {
+            for schedule in &schedules {
+                for intensity in &intensities {
+                    for taper in [None, Some(Taper::NearMatch), Some(Taper::Congested)] {
+                        let mut plan = online_plan(schedule.clone(), intensity.clone());
+                        plan.default_focus = focus.clone();
+                        plan.taper = taper;
+                        for weekday in 0..7 {
+                            let day = online_day(weekday);
+                            for (index, player) in grid().into_iter().enumerate() {
+                                let id = format!("p{index}");
+                                let mut game = player.clone();
+                                let mut dice = session_rng(11, &id, &day.date);
+                                train_player(&mut game, &plan, &day, &mut dice);
+                                fold(as_json(&game).to_string().as_bytes());
+                                fold(&dice.random::<u64>().to_le_bytes());
+                                let mut pressed = player.clone();
+                                let mut dice = session_rng(12, &id, &day.date);
+                                online_session(
+                                    &mut pressed,
+                                    &plan,
+                                    &day,
+                                    SessionKind::Manual,
+                                    &mut dice,
+                                );
+                                fold(as_json(&pressed).to_string().as_bytes());
+                                fold(&dice.random::<u64>().to_le_bytes());
+                                let mut online = player;
+                                let mut dice = session_rng(13, &id, &day.date);
+                                train_online_day(&mut online, &plan, &day, 2, &mut dice);
+                                fold(as_json(&online).to_string().as_bytes());
+                                fold(&dice.random::<u64>().to_le_bytes());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        hash
+    }
+
+    /// Given every focus, schedule, intensity, taper, weekday and player of the grid,
+    /// when a scheduled session, a pressed one and an online day are held,
+    /// then players and dice end exactly where they did before extra sessions shared the
+    /// development step (E5-4, T6): the number is pinned from the code before the split.
+    #[test]
+    fn existing_sessions_are_unchanged_by_extra_sessions() {
+        assert_eq!(existing_days_fingerprint(), 510_125_767_469_623_704);
+    }
+
+    const INTENSITIES: [TrainingIntensity; 3] = [
+        TrainingIntensity::Low,
+        TrainingIntensity::Medium,
+        TrainingIntensity::High,
+    ];
+
+    fn cost_of(intensity: &TrainingIntensity) -> u8 {
+        match intensity {
+            TrainingIntensity::Low => 3,
+            TrainingIntensity::Medium => 6,
+            TrainingIntensity::High => 10,
+        }
+    }
+
+    /// An extra session of `player` on the Technical plan, with `params`, from `dice`.
+    fn extra(
+        player: &mut Player,
+        intensity: TrainingIntensity,
+        params: &ExtraParams,
+        dice: &mut rand_chacha::ChaCha12Rng,
+    ) -> ExtraOutcome {
+        let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::Low);
+        extra_session(player, &plan, &online_day(2), intensity, params, dice)
+    }
+
+    /// Given players of every condition across the floor, injured or not, on a Technical or a
+    /// Recovery plan, at every intensity,
+    /// when an extra session is pressed,
+    /// then no one ends fresher than he began, and whoever trains loses exactly 3, 6 or 10 (T1).
+    #[test]
+    fn an_extra_session_never_raises_condition() {
+        for condition in [0, 29, 39, 40, 41, 50, 75, 100] {
+            for injured in [false, true] {
+                for focus in [TrainingFocus::Technical, TrainingFocus::Recovery] {
+                    for intensity in INTENSITIES {
+                        let mut player = young_player(condition, injured);
+                        let mut plan = online_plan(TrainingSchedule::Balanced, intensity.clone());
+                        plan.default_focus = focus.clone();
+                        let outcome = extra_session(
+                            &mut player,
+                            &plan,
+                            &online_day(2),
+                            intensity.clone(),
+                            &ExtraParams::PROPOSED,
+                            &mut extra_session_rng(1, "p", "d", 1),
+                        );
+                        assert_eq!(outcome.condition_before, condition);
+                        assert_eq!(outcome.condition_after, player.condition);
+                        assert!(player.condition <= condition);
+                        if outcome.sat_out.is_none() {
+                            assert_eq!(player.condition, condition - cost_of(&intensity));
+                        } else {
+                            assert_eq!(player.condition, condition);
+                        }
+                    }
+                }
+            }
+        }
+        let mut at_41 = young_player(41, false);
+        let mut dice = extra_session_rng(1, "p", "d", 1);
+        extra(
+            &mut at_41,
+            TrainingIntensity::High,
+            &ExtraParams::PROPOSED,
+            &mut dice,
+        );
+        assert_eq!(at_41.condition, 31);
+        let mut at_floor = young_player(FATIGUE_GUARD_CONDITION, false);
+        extra(
+            &mut at_floor,
+            TrainingIntensity::High,
+            &ExtraParams::PROPOSED,
+            &mut dice,
+        );
+        assert_eq!(at_floor.condition, 30);
+    }
+
+    /// Given an injured player, a tired one, one in a Recovery group and one at his potential,
+    /// when an extra session is pressed for each,
+    /// then each sits out for his reason, ends exactly as he began, and casts no die (T2).
+    #[test]
+    fn those_who_sit_out_are_untouched_and_cast_no_die() {
+        use rand::RngExt;
+        let mut in_recovery_group = young_player(80, false);
+        in_recovery_group.id = "resting".into();
+        let mut peaked = young_player(80, false);
+        refresh_player_derived(&mut peaked, 2026);
+        peaked.potential = peaked.ovr;
+        let cases = [
+            (young_player(80, true), SitOut::Injured),
+            (
+                young_player(FATIGUE_GUARD_CONDITION - 1, false),
+                SitOut::Tired,
+            ),
+            (in_recovery_group, SitOut::Resting),
+            (peaked, SitOut::Peaked),
+        ];
+        let mut plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::Low);
+        plan.group_overrides
+            .insert("resting".into(), TrainingFocus::Recovery);
+        for (player, why) in cases {
+            for intensity in INTENSITIES {
+                let mut pressed = player.clone();
+                let mut dice = extra_session_rng(2, &player.id, "d", 1);
+                assert_eq!(
+                    extra_sit_out(&pressed, &plan, &ExtraParams::PROPOSED),
+                    Some(why)
+                );
+                let outcome = extra_session(
+                    &mut pressed,
+                    &plan,
+                    &online_day(2),
+                    intensity,
+                    &ExtraParams::PROPOSED,
+                    &mut dice,
+                );
+                assert_eq!(outcome.sat_out, Some(why));
+                assert_eq!(outcome.gains, 0);
+                assert_eq!(as_json(&pressed), as_json(&player));
+                assert_eq!(
+                    dice.random::<u64>(),
+                    extra_session_rng(2, &player.id, "d", 1).random::<u64>()
+                );
+            }
+        }
+    }
+
+    /// Given a regular starter of 18 with room to grow, on a Technical plan at 16×,
+    /// when he takes a High extra session, whose chance per attribute is over one,
+    /// then every Technical attribute goes up by one and `gains` counts them; and given one a
+    /// point under his potential, the session leaves his potential where it was (T3).
+    #[test]
+    fn an_extra_session_builds_what_a_session_builds() {
+        let mut starter = young_player(80, false);
+        starter.playing_time = 80;
+        let outcome = extra(
+            &mut starter,
+            TrainingIntensity::High,
+            &ExtraParams::PROPOSED,
+            &mut extra_session_rng(3, "p", "d", 1),
+        );
+        let technical = |p: &Player| {
+            let a = &p.attributes;
+            [
+                a.passing,
+                a.shooting,
+                a.dribbling,
+                a.long_passing,
+                a.crossing,
+                a.curve,
+                a.free_kick,
+                a.long_shots,
+                a.first_touch,
+            ]
+        };
+        assert_eq!(technical(&starter), [71; 9]);
+        assert_eq!(outcome.gains, 9);
+        assert_eq!(starter.attributes.tackling, 70);
+
+        let mut near_ceiling = young_player(80, false);
+        near_ceiling.playing_time = 80;
+        refresh_player_derived(&mut near_ceiling, 2026);
+        near_ceiling.potential = near_ceiling.ovr + 1;
+        let potential = near_ceiling.potential;
+        for n in 1..=20 {
+            extra(
+                &mut near_ceiling,
+                TrainingIntensity::Low,
+                &ExtraParams::PROPOSED,
+                &mut extra_session_rng(3, "p", "d", n),
+            );
+            near_ceiling.condition = 80;
+            assert_eq!(near_ceiling.potential, potential);
+            assert!(near_ceiling.ovr <= near_ceiling.potential);
+        }
+        assert_eq!(
+            near_ceiling.ovr, potential,
+            "twenty sessions take him to his ceiling, and the last ones sit out"
+        );
+    }
+
+    /// Given a player of 30, whose chance per attribute is well under one,
+    /// when he takes the first and the second extra session of a day, and the first again,
+    /// then the two sessions cast different dice and the same session casts the same ones (T4).
+    #[test]
+    fn each_extra_session_of_a_day_has_its_own_dice() {
+        let veteran = || {
+            let mut player = young_player(100, false);
+            player.date_of_birth = "1996-03-01".into();
+            player
+        };
+        let after = |n| {
+            let mut player = veteran();
+            for _ in 0..3 {
+                player.condition = 100;
+                extra(
+                    &mut player,
+                    TrainingIntensity::Medium,
+                    &ExtraParams::PROPOSED,
+                    &mut extra_session_rng(4, "p", "2026-09-01", n),
+                );
+            }
+            as_json(&player)
+        };
+        let draws = |n| {
+            use rand::RngExt;
+            let mut dice = extra_session_rng(4, "p", "2026-09-01", n);
+            [dice.random::<u64>(), dice.random::<u64>()]
+        };
+        assert_ne!(draws(1), draws(2));
+        assert_ne!(
+            draws(1),
+            {
+                use rand::RngExt;
+                let mut dice = session_rng(4, "p", "2026-09-01");
+                [dice.random::<u64>(), dice.random::<u64>()]
+            },
+            "an extra session does not reuse the day's own session's dice"
+        );
+        assert_eq!(after(1), after(1));
+        assert_ne!(after(1), after(2));
+    }
+
+    /// Given two players of a club,
+    /// when each takes an extra session on his own dice, in one order and then the other,
+    /// then each ends the same either way (T5).
+    #[test]
+    fn extra_sessions_do_not_depend_on_who_goes_first() {
+        let pair = || {
+            let mut first = young_player(90, false);
+            first.id = "a".into();
+            let mut second = young_player(90, false);
+            second.id = "b".into();
+            second.date_of_birth = "1995-01-01".into();
+            (first, second)
+        };
+        let press = |player: &mut Player| {
+            let mut dice = extra_session_rng(5, &player.id.clone(), "d", 1);
+            extra(
+                player,
+                TrainingIntensity::Medium,
+                &ExtraParams::PROPOSED,
+                &mut dice,
+            );
+        };
+        let (mut a1, mut b1) = pair();
+        press(&mut a1);
+        press(&mut b1);
+        let (mut a2, mut b2) = pair();
+        press(&mut b2);
+        press(&mut a2);
+        assert_eq!(as_json(&a1), as_json(&a2));
+        assert_eq!(as_json(&b1), as_json(&b2));
+    }
+
+    /// Given a floor of 60 and a development of nothing,
+    /// when players either side of the floor and a regular starter are pressed,
+    /// then 59 sits out tired and 60 trains, a session of no development still costs its price
+    /// and builds nothing, 1000‰ is the proposed rule, and out-of-range settings are refused (T7).
+    #[test]
+    fn extra_session_settings_move_the_floor_and_the_development() {
+        let high_floor = ExtraParams {
+            floor: 60,
+            dev_permille: 1000,
+        };
+        let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::Low);
+        assert_eq!(
+            extra_sit_out(&young_player(59, false), &plan, &high_floor),
+            Some(SitOut::Tired)
+        );
+        assert_eq!(
+            extra_sit_out(&young_player(60, false), &plan, &high_floor),
+            None
+        );
+
+        let starter = || {
+            let mut player = young_player(80, false);
+            player.playing_time = 80;
+            player
+        };
+        let mut idle = starter();
+        let no_development = ExtraParams {
+            floor: 40,
+            dev_permille: 0,
+        };
+        let outcome = extra(
+            &mut idle,
+            TrainingIntensity::High,
+            &no_development,
+            &mut extra_session_rng(6, "p", "d", 1),
+        );
+        assert_eq!(outcome.gains, 0);
+        assert_eq!(idle.condition, 70);
+        assert_eq!(
+            serde_json::to_value(idle.attributes).expect("attributes"),
+            serde_json::to_value(starter().attributes).expect("attributes")
+        );
+
+        let (mut proposed, mut by_hand) = (starter(), starter());
+        extra(
+            &mut proposed,
+            TrainingIntensity::Medium,
+            &ExtraParams::PROPOSED,
+            &mut extra_session_rng(6, "p", "d", 2),
+        );
+        extra(
+            &mut by_hand,
+            TrainingIntensity::Medium,
+            &ExtraParams {
+                floor: FATIGUE_GUARD_CONDITION,
+                dev_permille: 1000,
+            },
+            &mut extra_session_rng(6, "p", "d", 2),
+        );
+        assert_eq!(as_json(&proposed), as_json(&by_hand));
+
+        assert_eq!(ExtraParams::PROPOSED.validate(), Ok(()));
+        let refused = [
+            (
+                ExtraParams {
+                    floor: 0,
+                    dev_permille: 1000,
+                },
+                ExtraIssue::Floor,
+            ),
+            (
+                ExtraParams {
+                    floor: 101,
+                    dev_permille: 1000,
+                },
+                ExtraIssue::Floor,
+            ),
+            (
+                ExtraParams {
+                    floor: 40,
+                    dev_permille: 2001,
+                },
+                ExtraIssue::DevPermille,
+            ),
+        ];
+        for (params, issue) in refused {
+            assert_eq!(params.validate(), Err(issue));
+        }
+        assert_eq!(
+            ExtraParams {
+                floor: 100,
+                dev_permille: 2000
+            }
+            .validate(),
+            Ok(())
+        );
+    }
+
+    /// Given the proposed settings as a ruleset carries them,
+    /// when they are written and read back,
+    /// then the names are camelCase and nothing is lost.
+    #[test]
+    fn extra_session_settings_read_as_a_ruleset_writes_them() {
+        let json = serde_json::to_value(ExtraParams::PROPOSED).expect("params");
+        assert_eq!(
+            json,
+            serde_json::json!({ "floor": 40, "devPermille": 1000 })
+        );
+        let back: ExtraParams = serde_json::from_value(json).expect("params");
+        assert_eq!(back, ExtraParams::PROPOSED);
     }
 
     /// Given a full player and a tired one whose recovery rounds to nothing,
