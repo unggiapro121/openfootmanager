@@ -1603,8 +1603,9 @@ fn feel_shares(runs: &[Measures]) -> [(f64, u32); 4] {
 const FEEL_FLOOR: f64 = 0.2;
 
 /// The user's decision of 2026-10-31: E1–E9 in full at `devPermille` 150, 125 and 100, the feel
-/// of a press, and the largest level that passes all of it (E2 under 0.1 only because the level
-/// was lowered on purpose does not block); none passing keeps 1000.
+/// of a press, and the largest level that passes E3–E7 and the feel floor (E2 under 0.1 only
+/// because the level was lowered on purpose does not block; E8 and E9 are reported); none
+/// passing keeps 1000.
 pub(super) fn lowered_dev_levels() {
     let mut passing = None;
     let mut lines = Vec::new();
@@ -1623,11 +1624,9 @@ pub(super) fn lowered_dev_levels() {
         let found = measure(extra_run);
         let feel = feel_shares(&first);
         let feel_ok = feel[0].0 >= FEEL_FLOOR;
-        let rules_ok = found.passes_e3_e4_e6()
-            && found.e5_ok
-            && found.e7_ok
-            && found.e8_max3 <= COIN_CEILING
-            && found.e8_max_all <= COIN_CEILING;
+        // E8 reports and does not stop (§4.5), and PO accepted it while E6 passes without a club
+        // cap (stop point Đ2, step 5): it is printed beside the verdict, not part of it.
+        let rules_ok = found.passes_e3_e4_e6() && found.e5_ok && found.e7_ok;
         let e2_note = if (0.1..=0.8).contains(&found.e2) {
             "in range"
         } else if found.e2 < 0.1 {
@@ -1636,7 +1635,7 @@ pub(super) fn lowered_dev_levels() {
             "over 0.8"
         };
         let line = format!(
-            "  {{40, {dev_permille}}}: E2 {:.3} ({e2_note}) · E3 {:+.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E5 {} · E6 {:+.2} · E7 {} · E8 {:.0}/{:.0} · feel ≤21 starter {:.1}% (n={}) {}, ≤21 other {:.1}%, 22–24 starter {:.1}%, 22–24 other {:.1}% · E3–E8 {} · overall {}",
+            "  {{40, {dev_permille}}}: E2 {:.3} ({e2_note}) · E3 {:+.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E5 {} · E6 {:+.2} · E7 {} · E8 {:.0}/{:.0} (reported) · feel ≤21 starter {:.1}% (n={}) {}, ≤21 other {:.1}%, 22–24 starter {:.1}%, 22–24 other {:.1}% · E3–E7 {} · overall {}",
             found.e2,
             found.e3,
             found.e4_free,
