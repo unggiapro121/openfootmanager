@@ -114,6 +114,58 @@ pub struct TrainingDay {
     /// The pace players develop at: the career's development speed (1× to 5×) offline, the
     /// season ruleset's multiplier online (Q5).
     pub development_multiplier: f64,
+    /// A keeper's own drill (E5-6, the season ruleset's `keeperDrill`); None offline and in every
+    /// season without it, which trains as the game always has.
+    pub keeper_drill: Option<KeeperDrill>,
+}
+
+/// A keeper's own drill (E5-6 PD-GK-C): handling, reflexes and aerial, which no focus trains,
+/// rolled in every session he develops in, on top of his focus.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct KeeperDrill {
+    /// Each attribute's chance, in thousandths of a focus attribute's chance in that session.
+    pub handling_permille: u16,
+    pub reflexes_permille: u16,
+    pub aerial_permille: u16,
+}
+
+/// Why a [`KeeperDrill`] cannot be run.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum KeeperDrillIssue {
+    /// A chance above a focus attribute's own.
+    OverAFocus,
+    /// Every chance 0: the way to turn the drill off is None, so there is only one.
+    AllZero,
+}
+
+/// A drill attribute's chance may reach a focus attribute's, never pass it.
+const MOST_DRILL_PERMILLE: u16 = 1000;
+
+impl KeeperDrill {
+    /// Before measuring (E5-6 §2.4): a keeper on Tactical builds about 44 % of his OVR a
+    /// session, and a bot's keeper about what a bot's outfielder does.
+    pub const PROPOSED: Self = Self {
+        handling_permille: 300,
+        reflexes_permille: 300,
+        aerial_permille: 300,
+    };
+
+    /// Whether this drill can run a season: each chance 0..=1000, at least one above 0.
+    pub fn validate(&self) -> Result<(), KeeperDrillIssue> {
+        let chances = [
+            self.handling_permille,
+            self.reflexes_permille,
+            self.aerial_permille,
+        ];
+        if chances.iter().any(|c| *c > MOST_DRILL_PERMILLE) {
+            return Err(KeeperDrillIssue::OverAFocus);
+        }
+        if chances.iter().all(|c| *c == 0) {
+            return Err(KeeperDrillIssue::AllZero);
+        }
+        Ok(())
+    }
 }
 
 /// Chance per session that one attribute in focus rises by a point, before any
@@ -174,6 +226,9 @@ pub struct TeamTrainingPlan {
     pub group_overrides: std::collections::HashMap<String, TrainingFocus>,
     /// Why today's session runs at reduced load, if it does.
     pub taper: Option<Taper>,
+    /// "Auto" as the club's focus (E5-6 E56-9): a player with no focus of his own and no group
+    /// trains the focus that lifts his OVR most. Only the online server turns it on.
+    pub auto_focus: bool,
 }
 
 /// `team`'s plan for the day, with its staff `staff` (phase 3, E3-7): the standing focus,
@@ -200,6 +255,7 @@ pub fn team_training_plan(
         training_facility_mult: crate::facilities::development_mult(team.facilities.training),
         group_overrides,
         taper,
+        auto_focus: false,
     }
 }
 
@@ -289,7 +345,7 @@ fn train_player_on(
     let player_focus = if is_resting {
         TrainingFocus::Recovery
     } else {
-        planned_focus(player, plan).clone()
+        planned_focus(player, plan)
     };
     let player_focus = &player_focus;
 
@@ -367,13 +423,21 @@ fn train_player_on(
 }
 
 /// The focus `player` trains on under `plan` when nothing rests him: his own, else his training
-/// group's, else the club's.
-fn planned_focus<'a>(player: &'a Player, plan: &'a TeamTrainingPlan) -> &'a TrainingFocus {
-    player
+/// group's, else, with the club on "Auto", the one that lifts his OVR most, else the club's.
+fn planned_focus(player: &Player, plan: &TeamTrainingPlan) -> TrainingFocus {
+    if let Some(focus) = player
         .training_focus
         .as_ref()
         .or_else(|| plan.group_overrides.get(&player.id))
-        .unwrap_or(&plan.default_focus)
+    {
+        return focus.clone();
+    }
+    if plan.auto_focus
+        && let Some(best) = best_focus(player, None)
+    {
+        return best;
+    }
+    plan.default_focus.clone()
 }
 
 /// How much harder than a Medium session one of `intensity` builds.
@@ -432,16 +496,314 @@ fn develop(
     // gate, attribute drift lifts ovr, and `refresh_player_derived`'s
     // `potential = max(potential, ovr)` invariant silently raises the career
     // ceiling in lockstep — the ceiling stops being a ceiling.
-    let gains = if player.potential > player.ovr {
+    // The gate is read once, before any attribute moves, for the focus and the keeper's drill.
+    let open = player.potential > player.ovr;
+    let mut gains = if open {
         apply_focus_gains(&mut player.attributes, focus, gain, rng)
     } else {
         0
     };
     apply_fitness_change(&mut player.fitness, focus, intensity_mult, rng);
+    // The drill's dice fall after fitness's, so every other attribute and fitness land as they
+    // would without it (E5-6 E56-4).
+    if open
+        && *focus != TrainingFocus::Recovery
+        && let Some(drill) = day.keeper_drill
+        && is_keeper(player)
+    {
+        gains += apply_keeper_drill(&mut player.attributes, &drill, gain, rng);
+    }
 
     // Refresh position-weighted OVR and traits after attribute gains.
     refresh_player_derived(player, day.year);
     gains
+}
+
+fn is_keeper(player: &Player) -> bool {
+    crate::player_rating::primary_position(player) == domain::player::Position::Goalkeeper
+}
+
+/// The keeper's drill of one session (E5-6 E56-3): handling, reflexes, aerial in that order, each
+/// at its permille of a focus attribute's chance, that chance taken no higher than certain so a
+/// fast developer's drill never outruns the target.
+fn apply_keeper_drill(
+    attrs: &mut PlayerAttributes,
+    drill: &KeeperDrill,
+    gain: f64,
+    rng: &mut impl Rng,
+) -> u8 {
+    let chance = |permille: u16| f64::from(permille) / 1000.0 * gain.min(1.0);
+    let mut rose = 0;
+    for (attribute, permille) in [
+        (&mut attrs.handling, drill.handling_permille),
+        (&mut attrs.reflexes, drill.reflexes_permille),
+        (&mut attrs.aerial, drill.aerial_permille),
+    ] {
+        rose += u8::from(try_gain(attribute, chance(permille), rng));
+    }
+    rose
+}
+
+/// The focuses a session can build, in the enum's order (ties go by it).
+const BUILDING_FOCUSES: [TrainingFocus; 5] = [
+    TrainingFocus::Physical,
+    TrainingFocus::Technical,
+    TrainingFocus::Tactical,
+    TrainingFocus::Defending,
+    TrainingFocus::Attacking,
+];
+
+/// `attributes` with one point more on every attribute `focus` rolls that can still rise: under
+/// 99, and a split attribute only when the player has it (`apply_focus_gains`, `try_gain_split`).
+/// A half-chance attribute counts a whole point, as E54-13 measured.
+fn one_more_of(attributes: &PlayerAttributes, focus: &TrainingFocus) -> PlayerAttributes {
+    let mut a = attributes.clone();
+    let up = |value: &mut u8, split: bool| {
+        if *value < 99 && !(split && *value == 0) {
+            *value += 1;
+        }
+    };
+    match focus {
+        TrainingFocus::Physical => {
+            for value in [&mut a.pace, &mut a.stamina, &mut a.strength, &mut a.agility] {
+                up(value, false);
+            }
+        }
+        TrainingFocus::Technical => {
+            for value in [&mut a.passing, &mut a.shooting, &mut a.dribbling] {
+                up(value, false);
+            }
+            for value in [
+                &mut a.long_passing,
+                &mut a.crossing,
+                &mut a.curve,
+                &mut a.free_kick,
+                &mut a.long_shots,
+                &mut a.first_touch,
+            ] {
+                up(value, true);
+            }
+        }
+        TrainingFocus::Tactical => {
+            for value in [
+                &mut a.positioning,
+                &mut a.vision,
+                &mut a.decisions,
+                &mut a.composure,
+            ] {
+                up(value, false);
+            }
+        }
+        TrainingFocus::Defending => {
+            for value in [
+                &mut a.tackling,
+                &mut a.defending,
+                &mut a.strength,
+                &mut a.positioning,
+            ] {
+                up(value, false);
+            }
+            up(&mut a.heading, true);
+        }
+        TrainingFocus::Attacking => {
+            for value in [&mut a.shooting, &mut a.dribbling, &mut a.pace] {
+                up(value, false);
+            }
+            for value in [&mut a.long_shots, &mut a.first_touch, &mut a.heading] {
+                up(value, true);
+            }
+        }
+        TrainingFocus::Recovery => {}
+    }
+    a
+}
+
+fn rise_of(
+    attributes: &PlayerAttributes,
+    position: &domain::player::Position,
+    focus: &TrainingFocus,
+) -> f64 {
+    use crate::player_rating::ovr_from_attributes;
+    ovr_from_attributes(&one_more_of(attributes, focus), position)
+        - ovr_from_attributes(attributes, position)
+}
+
+/// Rises closer than this are a tie.
+const RISE_EPSILON: f64 = 1e-9;
+
+/// How much `focus` lifts `player`'s OVR at his position if each attribute it rolls that can still
+/// rise goes up by one (E54-13, E5-6 E56-6). It never reads his potential or a growth cap, and
+/// leaves the keeper's drill out: the drill is the same under every focus.
+pub fn focus_rise(player: &Player, focus: &TrainingFocus) -> f64 {
+    let position = crate::player_rating::primary_position(player);
+    rise_of(&player.attributes, &position, focus)
+}
+
+fn best_by(
+    rise: impl Fn(&TrainingFocus) -> f64,
+    keep: Option<&TrainingFocus>,
+) -> Option<TrainingFocus> {
+    let mut best: Option<(TrainingFocus, f64)> = keep
+        .filter(|focus| **focus != TrainingFocus::Recovery)
+        .map(|focus| (focus.clone(), rise(focus)));
+    for focus in &BUILDING_FOCUSES {
+        let value = rise(focus);
+        if best
+            .as_ref()
+            .is_none_or(|(_, top)| value > top + RISE_EPSILON)
+        {
+            best = Some((focus.clone(), value));
+        }
+    }
+    best.filter(|(_, top)| *top > RISE_EPSILON)
+        .map(|(focus, _)| focus)
+}
+
+/// The focus (never Recovery) with the largest [`focus_rise`]; a tie keeps `keep` when given,
+/// then goes by the enum's order; None when no focus lifts his OVR at all.
+pub fn best_focus(player: &Player, keep: Option<&TrainingFocus>) -> Option<TrainingFocus> {
+    best_by(|focus| focus_rise(player, focus), keep)
+}
+
+/// How a player's focus does against the best one (E5-6 PD-F-A).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FocusVerdict {
+    /// The focus that lifts his OVR most (or as much).
+    Best,
+    /// At least `FAIR_PERMILLE` of the best one's lift.
+    Fair,
+    /// Less than that.
+    Poor,
+    /// It lifts his OVR not at all while another focus would.
+    Nothing,
+    /// Recovery: nothing to build, by choice.
+    Resting,
+}
+
+/// A player's focus, the best one, and how the first does against the second.
+#[derive(Debug, Clone, PartialEq)]
+pub struct FocusFit {
+    pub current: TrainingFocus,
+    /// None when no focus lifts his OVR.
+    pub best: Option<TrainingFocus>,
+    pub verdict: FocusVerdict,
+}
+
+/// A focus is fair at this share of the best focus's lift or more (Qe56-3).
+pub const FAIR_PERMILLE: u32 = 700;
+
+fn fit_by(rise: impl Fn(&TrainingFocus) -> f64, current: TrainingFocus) -> FocusFit {
+    let best = best_by(&rise, Some(&current));
+    let verdict = if current == TrainingFocus::Recovery {
+        FocusVerdict::Resting
+    } else {
+        let mine = rise(&current);
+        let top = best.as_ref().map_or(0.0, &rise);
+        if mine <= RISE_EPSILON {
+            FocusVerdict::Nothing
+        } else if mine + RISE_EPSILON >= top {
+            FocusVerdict::Best
+        } else if mine * 1000.0 + RISE_EPSILON >= top * f64::from(FAIR_PERMILLE) {
+            FocusVerdict::Fair
+        } else {
+            FocusVerdict::Poor
+        }
+    };
+    FocusFit {
+        current,
+        best,
+        verdict,
+    }
+}
+
+/// How `player`'s focus under `plan` does against the best one for him (E5-6 E56-7). It reads
+/// his position and attributes only, never his potential or a growth cap.
+pub fn focus_fit(player: &Player, plan: &TeamTrainingPlan) -> FocusFit {
+    fit_by(
+        |focus| focus_rise(player, focus),
+        planned_focus(player, plan),
+    )
+}
+
+/// [`focus_fit`] for an academy youngster, whose attributes are not public: by his position's
+/// weights alone, as if every attribute could still rise.
+pub fn focus_fit_by_position(
+    position: &domain::player::Position,
+    current: &TrainingFocus,
+) -> FocusFit {
+    let attributes = every_attribute_at(50);
+    fit_by(
+        |focus| rise_of(&attributes, position, focus),
+        current.clone(),
+    )
+}
+
+/// Every attribute at `value`: a player with room everywhere, for weights alone.
+fn every_attribute_at(value: u8) -> PlayerAttributes {
+    PlayerAttributes {
+        pace: value,
+        stamina: value,
+        strength: value,
+        agility: value,
+        passing: value,
+        shooting: value,
+        tackling: value,
+        dribbling: value,
+        defending: value,
+        positioning: value,
+        vision: value,
+        decisions: value,
+        composure: value,
+        aggression: value,
+        teamwork: value,
+        leadership: value,
+        handling: value,
+        reflexes: value,
+        aerial: value,
+        long_passing: value,
+        crossing: value,
+        curve: value,
+        free_kick: value,
+        long_shots: value,
+        first_touch: value,
+        heading: value,
+    }
+}
+
+/// Whether a session on `focus` can lift `player`'s OVR (E5-6 E56-8): an attribute it rolls, or
+/// the keeper's drill rolls, that can still rise and weighs at his position.
+pub fn session_builds(player: &Player, focus: &TrainingFocus, drill: Option<KeeperDrill>) -> bool {
+    if focus_rise(player, focus) > RISE_EPSILON {
+        return true;
+    }
+    let Some(drill) = drill else {
+        return false;
+    };
+    if *focus == TrainingFocus::Recovery || !is_keeper(player) {
+        return false;
+    }
+    let position = crate::player_rating::primary_position(player);
+    let now = crate::player_rating::ovr_from_attributes(&player.attributes, &position);
+    let a = &player.attributes;
+    [
+        (a.handling, drill.handling_permille),
+        (a.reflexes, drill.reflexes_permille),
+        (a.aerial, drill.aerial_permille),
+    ]
+    .iter()
+    .enumerate()
+    .any(|(slot, (value, permille))| {
+        if *value >= 99 || *permille == 0 {
+            return false;
+        }
+        let mut lifted = player.attributes.clone();
+        match slot {
+            0 => lifted.handling += 1,
+            1 => lifted.reflexes += 1,
+            _ => lifted.aerial += 1,
+        }
+        crate::player_rating::ovr_from_attributes(&lifted, &position) > now + RISE_EPSILON
+    })
 }
 
 /// What a season's ruleset sets for pressed extra sessions (E5-4; the server reads them from its
@@ -498,6 +860,9 @@ pub enum SitOut {
     Resting,
     /// At his potential: nothing can be built, only condition lost.
     Peaked,
+    /// Nothing his session rolls can still rise and count at his position (E5-6 E56-8): the
+    /// session would only cost condition.
+    FocusMaxed,
 }
 
 /// What one extra session did to one player.
@@ -527,15 +892,21 @@ pub fn extra_sit_out(
     player: &Player,
     plan: &TeamTrainingPlan,
     params: &ExtraParams,
+    drill: Option<KeeperDrill>,
 ) -> Option<SitOut> {
     if player.injury.is_some() {
-        Some(SitOut::Injured)
-    } else if player.condition < params.floor {
-        Some(SitOut::Tired)
-    } else if *planned_focus(player, plan) == TrainingFocus::Recovery {
+        return Some(SitOut::Injured);
+    }
+    if player.condition < params.floor {
+        return Some(SitOut::Tired);
+    }
+    let focus = planned_focus(player, plan);
+    if focus == TrainingFocus::Recovery {
         Some(SitOut::Resting)
     } else if player.ovr >= player.potential {
         Some(SitOut::Peaked)
+    } else if !session_builds(player, &focus, drill) {
+        Some(SitOut::FocusMaxed)
     } else {
         None
     }
@@ -555,7 +926,7 @@ pub fn extra_session(
     rng: &mut impl Rng,
 ) -> ExtraOutcome {
     let condition_before = player.condition;
-    if let Some(why) = extra_sit_out(player, plan, params) {
+    if let Some(why) = extra_sit_out(player, plan, params, day.keeper_drill) {
         return ExtraOutcome {
             sat_out: Some(why),
             condition_before,
@@ -563,7 +934,7 @@ pub fn extra_session(
             gains: 0,
         };
     }
-    let focus = planned_focus(player, plan).clone();
+    let focus = planned_focus(player, plan);
     let dev_scale = f64::from(params.dev_permille) / 1000.0;
     let gains = develop(
         player,
@@ -952,6 +1323,7 @@ mod tests {
             year: 2026,
             date: "2026-07-01".into(),
             development_multiplier: 10.0,
+            keeper_drill: None,
         };
         let mut online = tired_player();
         train_online_day(&mut online, &plan, &day, 2, &mut session_rng(1, "p", "d"));
@@ -994,6 +1366,7 @@ mod tests {
             year: 2026,
             date: "2026-09-01".into(),
             development_multiplier: 16.0,
+            keeper_drill: None,
         }
     }
 
@@ -1155,6 +1528,22 @@ mod tests {
     /// intensity, taper and weekday, through `train_player`, a pressed `online_session` and
     /// `train_online_day`, with the die each leaves next. Players and dice are hashed as JSON.
     fn existing_days_fingerprint() -> u64 {
+        days_fingerprint(grid(), None)
+    }
+
+    /// The grid's players as goalkeepers: the drill's grid (E5-6 T4c).
+    fn keeper_grid() -> Vec<Player> {
+        grid()
+            .into_iter()
+            .map(|mut player| {
+                player.position = Position::Goalkeeper;
+                player.natural_position = Position::Goalkeeper;
+                player
+            })
+            .collect()
+    }
+
+    fn days_fingerprint(players: Vec<Player>, drill: Option<KeeperDrill>) -> u64 {
         use rand::RngExt;
         let mut hash = 0;
         let mut fold = |bytes: &[u8]| hash = crate::stable_hash::stable_hash(bytes, hash);
@@ -1184,8 +1573,11 @@ mod tests {
                         plan.default_focus = focus.clone();
                         plan.taper = taper;
                         for weekday in 0..7 {
-                            let day = online_day(weekday);
-                            for (index, player) in grid().into_iter().enumerate() {
+                            let day = TrainingDay {
+                                keeper_drill: drill,
+                                ..online_day(weekday)
+                            };
+                            for (index, player) in players.clone().into_iter().enumerate() {
                                 let id = format!("p{index}");
                                 let mut game = player.clone();
                                 let mut dice = session_rng(11, &id, &day.date);
@@ -1224,6 +1616,22 @@ mod tests {
     #[test]
     fn existing_sessions_are_unchanged_by_extra_sessions() {
         assert_eq!(existing_days_fingerprint(), 510_125_767_469_623_704);
+    }
+
+    /// Given the grid, then the grid with the keeper's drill on, then the grid as goalkeepers,
+    /// when every existing kind of day is held,
+    /// then the outfield grid is the same number either way (the drill is a keeper's alone), and
+    /// the keepers without the drill are the number pinned from `staging` before E5-6a (T4).
+    #[test]
+    fn the_keeper_s_drill_leaves_every_existing_day_as_it_was() {
+        assert_eq!(
+            days_fingerprint(grid(), Some(KeeperDrill::PROPOSED)),
+            510_125_767_469_623_704
+        );
+        assert_eq!(
+            days_fingerprint(keeper_grid(), None),
+            5_820_658_210_097_898_736
+        );
     }
 
     const INTENSITIES: [TrainingIntensity; 3] = [
@@ -1331,7 +1739,7 @@ mod tests {
                 let mut pressed = player.clone();
                 let mut dice = extra_session_rng(2, &player.id, "d", 1);
                 assert_eq!(
-                    extra_sit_out(&pressed, &plan, &ExtraParams::PROPOSED),
+                    extra_sit_out(&pressed, &plan, &ExtraParams::PROPOSED, None),
                     Some(why)
                 );
                 let outcome = extra_session(
@@ -1493,11 +1901,11 @@ mod tests {
         };
         let plan = online_plan(TrainingSchedule::Balanced, TrainingIntensity::Low);
         assert_eq!(
-            extra_sit_out(&young_player(59, false), &plan, &high_floor),
+            extra_sit_out(&young_player(59, false), &plan, &high_floor, None),
             Some(SitOut::Tired)
         );
         assert_eq!(
-            extra_sit_out(&young_player(60, false), &plan, &high_floor),
+            extra_sit_out(&young_player(60, false), &plan, &high_floor, None),
             None
         );
 
@@ -1606,5 +2014,477 @@ mod tests {
         );
         let stalled = condition_after_rest(&player, 35, 27, (0.0, 1.0), u32::MAX);
         assert_eq!(stalled, 35);
+    }
+
+    // ---- E5-6a: the keeper's drill, the best focus, FocusMaxed, "Auto" ----
+
+    /// A goalkeeper of 18, every attribute 60, potential 85, rated at his position.
+    fn keeper() -> Player {
+        let mut player = young_player(80, false);
+        player.position = Position::Goalkeeper;
+        player.natural_position = Position::Goalkeeper;
+        player.attributes = uniform_attributes(60);
+        player.potential = 0;
+        refresh_player_derived(&mut player, 2026);
+        player.potential = 85;
+        player
+    }
+
+    /// A player of 18 at `position`, every attribute `value`, potential 95, rated there.
+    fn player_at(position: Position, value: u8) -> Player {
+        let mut player = young_player(80, false);
+        player.position = position.clone();
+        player.natural_position = position;
+        player.attributes = uniform_attributes(value);
+        player.potential = 0;
+        refresh_player_derived(&mut player, 2026);
+        player.potential = 95;
+        player
+    }
+
+    fn plan_on(focus: TrainingFocus) -> TeamTrainingPlan {
+        let mut plan = online_plan(TrainingSchedule::Intense, TrainingIntensity::Medium);
+        plan.default_focus = focus;
+        plan
+    }
+
+    fn day_with(drill: Option<KeeperDrill>) -> TrainingDay {
+        TrainingDay {
+            keeper_drill: drill,
+            ..online_day(1)
+        }
+    }
+
+    /// `player` after one session of `kind` on `focus`, and the next die his stream gives.
+    fn session_of(
+        player: &Player,
+        focus: TrainingFocus,
+        kind: SessionKind,
+        drill: Option<KeeperDrill>,
+    ) -> (serde_json::Value, u64) {
+        use rand::RngExt;
+        let mut trained = player.clone();
+        let mut dice = session_rng(21, "k", "2026-09-01");
+        online_session(
+            &mut trained,
+            &plan_on(focus),
+            &day_with(drill),
+            kind,
+            &mut dice,
+        );
+        (as_json(&trained), dice.random::<u64>())
+    }
+
+    /// Given the proposed drill, one chance over a focus attribute's, no chance at all, and one
+    /// chance of a thousandth,
+    /// when each is validated and the proposed one written as JSON,
+    /// then only the second and third are refused, and the JSON is the ruleset's camelCase (T1).
+    #[test]
+    fn a_keeper_drill_is_checked_and_reads_as_the_ruleset_writes_it() {
+        assert_eq!(KeeperDrill::PROPOSED.validate(), Ok(()));
+        let over = KeeperDrill {
+            reflexes_permille: 1001,
+            ..KeeperDrill::PROPOSED
+        };
+        assert_eq!(over.validate(), Err(KeeperDrillIssue::OverAFocus));
+        let none = KeeperDrill {
+            handling_permille: 0,
+            reflexes_permille: 0,
+            aerial_permille: 0,
+        };
+        assert_eq!(none.validate(), Err(KeeperDrillIssue::AllZero));
+        let one = KeeperDrill {
+            aerial_permille: 1,
+            ..none
+        };
+        assert_eq!(one.validate(), Ok(()));
+        let json = r#"{"handlingPermille":300,"reflexesPermille":300,"aerialPermille":300}"#;
+        assert_eq!(
+            serde_json::to_string(&KeeperDrill::PROPOSED).expect("json"),
+            json
+        );
+        assert_eq!(
+            serde_json::from_str::<KeeperDrill>(json).expect("a drill"),
+            KeeperDrill::PROPOSED
+        );
+    }
+
+    /// Given a keeper on Recovery, on a rest day, injured, under the fatigue guard, and at his
+    /// potential,
+    /// when he trains with the drill and without,
+    /// then he ends the same and his dice stand at the same place: the drill does not run (T2).
+    #[test]
+    fn the_drill_does_not_run_when_the_session_builds_nothing() {
+        let mut injured = keeper();
+        injured.injury = Some(domain::player::Injury {
+            name: "Knock".into(),
+            days_remaining: 3,
+        });
+        let mut tired = keeper();
+        tired.condition = 39;
+        let mut peaked = keeper();
+        peaked.potential = peaked.ovr;
+        let cases = [
+            (keeper(), TrainingFocus::Recovery, SessionKind::Manual),
+            (keeper(), TrainingFocus::Tactical, SessionKind::Rest),
+            (injured, TrainingFocus::Tactical, SessionKind::Manual),
+            (tired, TrainingFocus::Tactical, SessionKind::Manual),
+            (peaked, TrainingFocus::Tactical, SessionKind::Manual),
+        ];
+        for (player, focus, kind) in cases {
+            assert_eq!(
+                session_of(&player, focus.clone(), kind, Some(KeeperDrill::PROPOSED)),
+                session_of(&player, focus, kind, None),
+            );
+        }
+    }
+
+    /// How often handling goes up in 2,000 drills at `gain`.
+    fn handling_rate(gain: f64) -> f64 {
+        let mut rose = 0;
+        for trial in 0..2000u32 {
+            let mut attrs = uniform_attributes(50);
+            let mut dice = session_rng(31, &format!("k{trial}"), "2026-09-01");
+            apply_keeper_drill(&mut attrs, &KeeperDrill::PROPOSED, gain, &mut dice);
+            rose += u32::from(attrs.handling > 50);
+        }
+        f64::from(rose) / 2000.0
+    }
+
+    /// Given the proposed drill,
+    /// when it is rolled 2,000 times at a focus chance of 1, of 2.26 and of 0.5,
+    /// then handling rises about 30 %, still about 30 % (never more than certain), and about
+    /// 15 % of the time (T3).
+    #[test]
+    fn the_drill_follows_the_focus_chance_up_to_certain() {
+        assert!((handling_rate(1.0) - 0.30).abs() < 0.04);
+        assert!((handling_rate(2.26) - 0.30).abs() < 0.04);
+        assert!((handling_rate(0.5) - 0.15).abs() < 0.04);
+    }
+
+    /// Given a keeper of 18 under a pace where a session's chance stays under one,
+    /// when 2,000 extra sessions are held at devPermille 1000 and 500,
+    /// then the drill at 500 rises about half as often: it takes the extra session's scale (T3).
+    #[test]
+    fn the_drill_takes_the_extra_session_s_scale() {
+        let rate = |dev_permille: u32| {
+            let params = ExtraParams {
+                floor: 40,
+                dev_permille,
+            };
+            let day = TrainingDay {
+                development_multiplier: 16.0,
+                ..day_with(Some(KeeperDrill::PROPOSED))
+            };
+            let mut rose = 0;
+            for n in 1..=2000u32 {
+                let mut player = keeper();
+                let before = player.attributes.handling;
+                let mut dice = extra_session_rng(5, "k", "2026-09-01", n);
+                extra_session(
+                    &mut player,
+                    &plan_on(TrainingFocus::Tactical),
+                    &day,
+                    TrainingIntensity::Medium,
+                    &params,
+                    &mut dice,
+                );
+                rose += u32::from(player.attributes.handling > before);
+            }
+            f64::from(rose) / 2000.0
+        };
+        let (full, half) = (rate(1000), rate(500));
+        assert!(full > 0.05 && full < 0.29, "a chance under certain: {full}");
+        assert!(
+            (half * 2.0 - full).abs() < 0.04,
+            "{half} is about half of {full}"
+        );
+    }
+
+    /// Given a keeper on each focus but Recovery, handling at 99 the second time,
+    /// when he trains with the drill and without,
+    /// then every attribute but handling, reflexes and aerial, and his fitness, are the same;
+    /// the drill draws once for each of its attributes still under 99, after everything else (T5).
+    #[test]
+    fn the_drill_draws_after_everything_else() {
+        use rand::RngExt;
+        for handling in [60, 99] {
+            for focus in BUILDING_FOCUSES {
+                let mut player = keeper();
+                player.attributes.handling = handling;
+                let train = |drill| {
+                    let mut trained = player.clone();
+                    let mut dice = session_rng(41, "k", "2026-09-01");
+                    online_session(
+                        &mut trained,
+                        &plan_on(focus.clone()),
+                        &day_with(drill),
+                        SessionKind::Manual,
+                        &mut dice,
+                    );
+                    (trained, dice)
+                };
+                let (with, mut with_dice) = train(Some(KeeperDrill::PROPOSED));
+                let (without, mut without_dice) = train(None);
+                let outside = |p: &Player| {
+                    let mut a = p.attributes.clone();
+                    (a.handling, a.reflexes, a.aerial) = (0, 0, 0);
+                    (serde_json::to_value(&a).expect("attributes"), p.fitness)
+                };
+                assert_eq!(outside(&with), outside(&without), "{focus:?}");
+                let draws = if handling == 99 { 2 } else { 3 };
+                for _ in 0..draws {
+                    let _: u64 = without_dice.random();
+                }
+                assert_eq!(
+                    with_dice.random::<u64>(),
+                    without_dice.random::<u64>(),
+                    "{focus:?}"
+                );
+            }
+        }
+    }
+
+    /// The best focus as the E5-4b measurement chose it (E54-13), kept to check the rule against.
+    fn measured_best_focus(player: &Player, current: &TrainingFocus) -> TrainingFocus {
+        let rise = |focus: &TrainingFocus| focus_rise(player, focus);
+        let mut best = (current.clone(), rise(current));
+        for focus in &BUILDING_FOCUSES {
+            let value = rise(focus);
+            if value > best.1 + 1e-9 {
+                best = (focus.clone(), value);
+            }
+        }
+        best.0
+    }
+
+    /// Given 200 players, ten positions with seeded attributes (some at 99, some split ones at 0),
+    /// when the best focus is chosen keeping each focus in turn,
+    /// then it is the measurement's choice whenever some focus lifts OVR (T6); and a keeper of 60
+    /// takes Tactical, a centre-back Defending.
+    #[test]
+    fn the_best_focus_is_the_measurement_s() {
+        use rand::RngExt;
+        let positions = [
+            Position::Goalkeeper,
+            Position::RightBack,
+            Position::CenterBack,
+            Position::LeftWingBack,
+            Position::DefensiveMidfielder,
+            Position::CentralMidfielder,
+            Position::AttackingMidfielder,
+            Position::LeftWinger,
+            Position::RightMidfielder,
+            Position::Striker,
+        ];
+        let mut dice = session_rng(51, "best", "focus");
+        for position in positions {
+            for _ in 0..20 {
+                let mut player = player_at(position.clone(), 60);
+                let a = &mut player.attributes;
+                for value in [
+                    &mut a.pace,
+                    &mut a.stamina,
+                    &mut a.strength,
+                    &mut a.passing,
+                    &mut a.shooting,
+                    &mut a.tackling,
+                    &mut a.dribbling,
+                    &mut a.defending,
+                    &mut a.positioning,
+                    &mut a.vision,
+                    &mut a.decisions,
+                    &mut a.composure,
+                    &mut a.handling,
+                    &mut a.reflexes,
+                ] {
+                    *value = if dice.random_bool(0.2) {
+                        99
+                    } else {
+                        dice.random_range(30..99)
+                    };
+                }
+                for value in [&mut a.crossing, &mut a.curve, &mut a.heading] {
+                    *value = if dice.random_bool(0.3) {
+                        0
+                    } else {
+                        dice.random_range(30..=99)
+                    };
+                }
+                for current in &BUILDING_FOCUSES {
+                    let chosen = best_focus(&player, Some(current));
+                    let measured = measured_best_focus(&player, current);
+                    assert_eq!(chosen.clone().unwrap_or(current.clone()), measured);
+                }
+            }
+        }
+        assert_eq!(
+            best_focus(&player_at(Position::Goalkeeper, 60), None),
+            Some(TrainingFocus::Tactical)
+        );
+        assert_eq!(
+            best_focus(&player_at(Position::CenterBack, 60), None),
+            Some(TrainingFocus::Defending)
+        );
+    }
+
+    fn fit_on(player: &Player, focus: TrainingFocus) -> FocusFit {
+        focus_fit(player, &plan_on(focus))
+    }
+
+    /// Given a central midfielder on Technical, a full-back on Tactical, a keeper on Attacking,
+    /// anyone on Recovery, and a keeper with every weighted attribute at 99,
+    /// when their focus is judged,
+    /// then fair, poor, nothing, resting, and no best focus at all (T7).
+    #[test]
+    fn a_focus_is_judged_against_the_best_one() {
+        let midfielder = player_at(Position::CentralMidfielder, 60);
+        assert_eq!(
+            fit_on(&midfielder, TrainingFocus::Technical).verdict,
+            FocusVerdict::Fair
+        );
+        assert_eq!(
+            fit_on(&midfielder, TrainingFocus::Tactical).verdict,
+            FocusVerdict::Best
+        );
+        let full_back = player_at(Position::RightBack, 60);
+        assert_eq!(
+            fit_on(&full_back, TrainingFocus::Tactical).verdict,
+            FocusVerdict::Poor
+        );
+        let keeper = player_at(Position::Goalkeeper, 60);
+        let attacking = fit_on(&keeper, TrainingFocus::Attacking);
+        assert_eq!(attacking.verdict, FocusVerdict::Nothing);
+        assert_eq!(attacking.best, Some(TrainingFocus::Tactical));
+        assert_eq!(
+            fit_on(&keeper, TrainingFocus::Recovery).verdict,
+            FocusVerdict::Resting
+        );
+        let full = player_at(Position::Goalkeeper, 99);
+        assert_eq!(fit_on(&full, TrainingFocus::Tactical).best, None);
+    }
+
+    /// Given only a position,
+    /// when the academy's focus is judged by weights alone,
+    /// then a centre-back's best is Defending, a winger's Attacking, a keeper's Tactical (T8).
+    #[test]
+    fn an_academy_focus_is_judged_by_position_alone() {
+        let best = |position| focus_fit_by_position(&position, &TrainingFocus::Physical).best;
+        assert_eq!(best(Position::CenterBack), Some(TrainingFocus::Defending));
+        assert_eq!(best(Position::RightWinger), Some(TrainingFocus::Attacking));
+        assert_eq!(best(Position::Goalkeeper), Some(TrainingFocus::Tactical));
+    }
+
+    /// Given a club on "Auto" and a centre-back with no focus or group, one in a group, and one
+    /// with his own focus,
+    /// when their focus is read,
+    /// then the first trains his best focus, the others their group's and their own (T9).
+    #[test]
+    fn auto_gives_the_best_focus_to_who_has_no_other() {
+        let mut plan = plan_on(TrainingFocus::Physical);
+        plan.auto_focus = true;
+        let free = player_at(Position::CenterBack, 60);
+        assert_eq!(planned_focus(&free, &plan), TrainingFocus::Defending);
+        let mut grouped = free.clone();
+        grouped.id = "grouped".into();
+        plan.group_overrides
+            .insert("grouped".into(), TrainingFocus::Technical);
+        assert_eq!(planned_focus(&grouped, &plan), TrainingFocus::Technical);
+        let mut own = free.clone();
+        own.training_focus = Some(TrainingFocus::Attacking);
+        assert_eq!(planned_focus(&own, &plan), TrainingFocus::Attacking);
+        plan.auto_focus = false;
+        assert_eq!(planned_focus(&free, &plan), TrainingFocus::Physical);
+    }
+
+    /// Given a club on "Auto" and a centre-back whose Defending focus has one point left, his
+    /// chance certain,
+    /// when three extra sessions are pressed,
+    /// then the first takes his last Defending point and the next ones train another focus (T9).
+    #[test]
+    fn auto_moves_on_once_a_focus_is_full() {
+        let mut plan = plan_on(TrainingFocus::Physical);
+        plan.auto_focus = true;
+        let mut player = player_at(Position::CenterBack, 60);
+        let a = &mut player.attributes;
+        (
+            a.tackling,
+            a.defending,
+            a.strength,
+            a.positioning,
+            a.heading,
+        ) = (98, 99, 99, 99, 99);
+        player.potential = 99;
+        let day = TrainingDay {
+            development_multiplier: 100.0,
+            ..day_with(None)
+        };
+        assert_eq!(planned_focus(&player, &plan), TrainingFocus::Defending);
+        let mut seen = Vec::new();
+        for n in 1..=3 {
+            seen.push(planned_focus(&player, &plan));
+            extra_session(
+                &mut player,
+                &plan,
+                &day,
+                TrainingIntensity::High,
+                &ExtraParams::PROPOSED,
+                &mut extra_session_rng(6, "cb", "2026-09-01", n),
+            );
+        }
+        assert_eq!(player.attributes.tackling, 99);
+        assert_eq!(seen[0], TrainingFocus::Defending);
+        assert_ne!(seen[1], TrainingFocus::Defending);
+    }
+
+    /// Given a full-back on Tactical with every Tactical attribute at 99, a keeper on Attacking
+    /// with and without the drill, and a player at his potential,
+    /// when the extra session's sit-out is read,
+    /// then the full-back's focus is maxed, the keeper's too without the drill and not with it,
+    /// and the peaked player is Peaked first; a maxed player is left as he was, no die cast (T10).
+    #[test]
+    fn a_session_that_cannot_lift_ovr_sits_out() {
+        let mut full_back = player_at(Position::RightBack, 60);
+        let a = &mut full_back.attributes;
+        (a.positioning, a.vision, a.decisions, a.composure) = (99, 99, 99, 99);
+        let tactical = plan_on(TrainingFocus::Tactical);
+        let params = ExtraParams::PROPOSED;
+        assert_eq!(
+            extra_sit_out(&full_back, &tactical, &params, None),
+            Some(SitOut::FocusMaxed)
+        );
+        let keeper = player_at(Position::Goalkeeper, 60);
+        let attacking = plan_on(TrainingFocus::Attacking);
+        assert_eq!(
+            extra_sit_out(&keeper, &attacking, &params, None),
+            Some(SitOut::FocusMaxed)
+        );
+        assert_eq!(
+            extra_sit_out(&keeper, &attacking, &params, Some(KeeperDrill::PROPOSED)),
+            None
+        );
+        let mut peaked = full_back.clone();
+        peaked.potential = peaked.ovr;
+        assert_eq!(
+            extra_sit_out(&peaked, &tactical, &params, None),
+            Some(SitOut::Peaked)
+        );
+        use rand::RngExt;
+        let mut sitting = full_back.clone();
+        let mut dice = extra_session_rng(7, "fb", "2026-09-01", 1);
+        let outcome = extra_session(
+            &mut sitting,
+            &tactical,
+            &day_with(None),
+            TrainingIntensity::High,
+            &params,
+            &mut dice,
+        );
+        assert_eq!(outcome.sat_out, Some(SitOut::FocusMaxed));
+        assert_eq!(as_json(&sitting), as_json(&full_back));
+        assert_eq!(
+            dice.random::<u64>(),
+            extra_session_rng(7, "fb", "2026-09-01", 1).random::<u64>()
+        );
     }
 }
