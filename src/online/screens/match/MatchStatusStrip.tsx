@@ -5,7 +5,7 @@ import { AlertTriangle, Coffee, Flag, Radio, WifiOff } from "lucide-react";
 import { Button } from "../../../components/ui";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import type { Side } from "../../api/engine";
-import { injuryStepsLeft } from "../../convert/matchState";
+import { injuryStepsLeft, type OnlineMatchState } from "../../convert/matchState";
 import { useOnlineNow } from "../../clock";
 import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import type { LiveMatchData } from "./useLiveMatch";
@@ -21,7 +21,7 @@ const WARN = `${STRIP} border-accent-400/50 bg-accent-50 dark:bg-accent-500/10`;
 const secondsOf = (steps: number, stepMillis: number) => Math.ceil((steps * stepMillis) / 1000);
 
 /** The moment the match was first seen in half time, so the break counts down from it. */
-function useHalfTimeStart(phase: string): number | null {
+export function useHalfTimeStart(phase: string): number | null {
   const now = useOnlineNow();
   const [since, setSince] = useState<number | null>(null);
   useEffect(() => {
@@ -72,26 +72,36 @@ function ControllerLine({ data }: { data: LiveMatchData }) {
  */
 export function MatchStatusStrip({
   data,
+  shown = data.state,
+  halfTimeSince: since,
   onReplace,
 }: {
   data: LiveMatchData;
+  /**
+   * The match as far as the screen shows it (`useShownState`): the break, the end and a hurt
+   * player show once the radar has played them. The time left to act is the server's.
+   */
+  shown?: OnlineMatchState;
+  /** When the server's match reached the break, if the screen keeps it; else when this saw it. */
+  halfTimeSince?: number | null;
   /** Open the substitutions with this hurt player chosen to come off. */
   onReplace: (playerId: string) => void;
 }) {
   const { t } = useTranslation();
   const now = useOnlineNow();
   const { view, state, mine, connection, watchError } = data;
-  const halfTimeSince = useHalfTimeStart(state.phase);
+  const seen = useHalfTimeStart(shown.phase);
+  const halfTimeSince = since === undefined ? seen : since;
   const own = mine ? state[sideKey(mine.side)] : null;
+  const isHurt = (match: OnlineMatchState, playerId: string) =>
+    injuryStepsLeft(match, playerId, view.injuryWindowSteps) !== null;
   const hurt = own
-    ? own.eleven.filter(
-        (player) => injuryStepsLeft(state, player.id, view.injuryWindowSteps) !== null,
-      )
+    ? own.eleven.filter((player) => isHurt(shown, player.id) && isHurt(state, player.id))
     : [];
 
   return (
     <div className="flex flex-col gap-2">
-      {state.isFinished ? (
+      {shown.isFinished ? (
         <div role="status" className={CALM}>
           <Flag className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" />
           <span className="font-heading font-bold uppercase tracking-wider">
@@ -119,14 +129,14 @@ export function MatchStatusStrip({
         </p>
       ) : (
         (connection === "reconnecting" || connection === "closed") &&
-        !state.isFinished && (
+        !shown.isFinished && (
           <p role="status" className={WARN}>
             <WifiOff className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" />
             {t("online.match.reconnecting")}
           </p>
         )
       )}
-      {state.phase === "HalfTime" && halfTimeSince !== null && (
+      {shown.phase === "HalfTime" && halfTimeSince !== null && (
         <p role="status" className={CALM}>
           <Coffee className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
           {t("online.match.halfTime", {
@@ -134,7 +144,7 @@ export function MatchStatusStrip({
           })}
         </p>
       )}
-      {!state.isFinished &&
+      {!shown.isFinished &&
         hurt.map((player) => {
           const steps = injuryStepsLeft(state, player.id, view.injuryWindowSteps) ?? 0;
           return (
@@ -154,7 +164,7 @@ export function MatchStatusStrip({
             </div>
           );
         })}
-      {mine !== null && !state.isFinished && (
+      {mine !== null && !shown.isFinished && (
         <p className="text-xs text-gray-500 dark:text-gray-400">{t("online.match.leaveWarning")}</p>
       )}
     </div>

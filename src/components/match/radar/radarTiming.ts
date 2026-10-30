@@ -195,10 +195,16 @@ export interface QueuedBeat {
   stepMs: number[];
   /** Radar time per millisecond of real pace, for the runs that keep their own pace. */
   scale: number;
+  /**
+   * How many of the match's events are played out once this beat is on screen: those of the
+   * snapshots before the one it was staged from. Unset, the beat says nothing about it.
+   */
+  after?: number;
 }
 
-export function queueBeat(beat: RadarBeat, timeScale: number): QueuedBeat {
-  return { beat, stepMs: beat.stepMs.map((ms) => ms * timeScale), scale: timeScale };
+export function queueBeat(beat: RadarBeat, timeScale: number, after?: number): QueuedBeat {
+  const queued = { beat, stepMs: beat.stepMs.map((ms) => ms * timeScale), scale: timeScale };
+  return after === undefined ? queued : { ...queued, after };
 }
 
 /** Step `index`'s own-pace runs of a queued beat, in radar time. */

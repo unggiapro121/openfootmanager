@@ -12,7 +12,8 @@ import ResourceState from "../ResourceState";
 import { MatchBoard } from "./MatchBoard";
 import { MatchCommandPanel } from "./MatchCommandPanel";
 import { MatchReplay } from "./MatchReplay";
-import { MatchStatusStrip } from "./MatchStatusStrip";
+import { MatchStatusStrip, useHalfTimeStart } from "./MatchStatusStrip";
+import { useShownState } from "./liveShown";
 import { OnlineFullTime } from "./OnlineFullTime";
 import { OnlineHalfTime } from "./OnlineHalfTime";
 import { type LiveMatchData, useLiveMatch } from "./useLiveMatch";
@@ -79,6 +80,10 @@ function LiveMatchScreen({
   const [radarOpen, setRadarOpen] = useState(true);
   const [replacing, setReplacing] = useState<string | undefined>(undefined);
   const { view, state, mine } = data;
+  // The screen shows the match as far as the radar has played it, so a goal is not read off the
+  // score before it is seen; the touchline acts on the server's own match.
+  const { shown, onPlayed } = useShownState(state, radarOpen);
+  const halfTimeSince = useHalfTimeStart(state.phase);
   // Away from the match for `absentGraceSteps` steps, the coach hands the side to the AI (C2-13).
   useLeaveGuard(mine !== null && !state.isFinished);
   // The server plays a minute every `stepMillis` and does not wait for the radar: quiet minutes
@@ -93,13 +98,20 @@ function LiveMatchScreen({
     [view.stepMillis],
   );
 
-  const strip = <MatchStatusStrip data={data} onReplace={setReplacing} />;
+  const strip = (
+    <MatchStatusStrip
+      data={data}
+      shown={shown}
+      halfTimeSince={halfTimeSince}
+      onReplace={setReplacing}
+    />
+  );
   // Over: the players would go on standing about on the radar, so the viewer gets the report.
-  if (state.isFinished) {
-    return <OnlineFullTime state={state} mine={mine} strip={strip} onReplay={onReplay} />;
+  if (shown.isFinished) {
+    return <OnlineFullTime state={shown} mine={mine} strip={strip} onReplay={onReplay} />;
   }
   // The break: the radar would only stand still, so the coaches get the half-time screen.
-  if (state.phase === "HalfTime" && !state.isFinished) {
+  if (shown.phase === "HalfTime") {
     return (
       <OnlineHalfTime
         data={data}
@@ -114,7 +126,9 @@ function LiveMatchScreen({
   return (
     <div className="flex flex-col gap-4 xl:flex-row">
       <MatchBoard
-        state={state}
+        state={shown}
+        radarState={state}
+        onPlayed={onPlayed}
         mine={mine}
         pacing={pacing}
         paused={false}
@@ -127,6 +141,11 @@ function LiveMatchScreen({
           aria-label={t("online.match.touchline")}
           className="w-full shrink-0 rounded-lg border border-gray-200 bg-white xl:w-80 dark:border-navy-700 dark:bg-navy-800"
         >
+          {shown.minute !== state.minute && (
+            <p role="status" className="px-3 pt-3 text-xs text-gray-500 dark:text-gray-400">
+              {t("online.match.serverMinute", { minute: state.minute })}
+            </p>
+          )}
           <MatchCommandPanel
             state={state}
             mine={mine}

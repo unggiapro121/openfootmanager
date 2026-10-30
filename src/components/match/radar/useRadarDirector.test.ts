@@ -372,6 +372,29 @@ describe("useRadarDirector", () => {
     expect(hosted.result.current.staged.current).toBe(2);
   });
 
+  // Given a minute of an attack (2 events), then a second minute with another (4 events in all),
+  // when both are queued, then each beat carries how many events came before its own minute: 0
+  // for the first, 2 for the second, so the screen can tell how far the radar has played.
+  it("marks each beat with the events before its minute", () => {
+    const hosted = host({ snapshot: radarSnapshot(), pacing: SLOW, reducedMotion: false });
+    const goal = radarEvent("Goal", "Home", "AwayBox", "h_st1");
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: attack, ball_zone: "AwayBox" }),
+      pacing: SLOW,
+      reducedMotion: false,
+    });
+    hosted.rerender({
+      snapshot: radarSnapshot({ events: [...attack, dribble, goal], ball_zone: "AwayBox" }),
+      pacing: SLOW,
+      reducedMotion: false,
+    });
+    const { playback } = hosted.result.current;
+    const marks = [playback.current.beat, ...playback.current.queue]
+      .filter((entry) => entry !== null)
+      .map((entry) => entry.after);
+    expect(new Set(marks)).toEqual(new Set([0, 2]));
+  });
+
   // Given several minutes each with a goal, queued behind one another, then
   // every one is played: the match waits for the radar, so nothing is skipped.
   it("plays every minute it is given, skipping none", () => {
