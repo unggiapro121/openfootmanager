@@ -16,10 +16,12 @@ import { refreshClub, refreshItems, tracked, useOnlineStore } from "../../store/
 import { useActionKey } from "../useActionKey";
 import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "./ItemDialogFrame";
 import {
+  groupOf,
   isMedkit,
   itemCodeText,
   itemName,
   itemsErrorText,
+  pointsLost,
   type TargetKind,
   targetKindOf,
 } from "./itemText";
@@ -123,6 +125,12 @@ function effectLines(t: TFunction, effect: ItemEffectView, players: SquadPlayerV
 
 function limitLines(t: TFunction, language: string, limits: ItemUseLimitsView): string[] {
   const out: string[] = [];
+  // A season that caps the drinks in condition points sends points instead of uses (S-28 S28-8).
+  if (limits.pointsToday !== undefined && limits.pointsPerDay !== undefined) {
+    out.push(
+      t("online.items.limit.points", { used: limits.pointsToday, perDay: limits.pointsPerDay }),
+    );
+  }
   if (limits.usedToday !== undefined && limits.perDay !== undefined) {
     out.push(
       limits.nextAt
@@ -145,6 +153,28 @@ function limitLines(t: TFunction, language: string, limits: ItemUseLimitsView): 
     );
   }
   return out;
+}
+
+/**
+ * The condition on a drink's label in the season under way (the shop's numbers), to tell what the
+ * cap of 100 would cut (C12-7); undefined for other items or when the shop cannot be read.
+ */
+function useConditionLabel(code: string): number | undefined {
+  const [label, setLabel] = useState<number | undefined>(undefined);
+  useEffect(() => {
+    if (groupOf(code) !== "condition") return;
+    let live = true;
+    tracked(() => online.shop.view())
+      .then((shop) => {
+        const item = shop.items.find((candidate) => candidate.itemCode === code);
+        if (live) setLabel(item?.effect?.condition);
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [code]);
+  return label;
 }
 
 /** The coach's styles, for a study note's picker; read when the dialog opens. */
@@ -187,6 +217,7 @@ export default function UseItemDialog({
   const players = useOnlineStore((state) => state.club?.players ?? []);
   const assistantOn = useOnlineStore((state) => state.club?.xiAssistant ?? false);
   const styles = useStyles(kind);
+  const label = useConditionLabel(code);
   const [target, setTarget] = useState<ItemTarget | undefined>(
     () => initialTarget ?? (kind ? fixedTarget(kind) : undefined),
   );
@@ -326,6 +357,14 @@ export default function UseItemDialog({
           )}
           {preview?.effect &&
             effectLines(t, preview.effect, players).map((line) => <p key={line}>{line}</p>)}
+          {pointsLost(preview?.effect, label).map((line) => (
+            <p key={line.playerId} role="note" className="text-accent-700 dark:text-accent-400">
+              {t("online.items.preview.lost", {
+                player: nameOf(players, line.playerId),
+                lost: line.lost,
+              })}
+            </p>
+          ))}
           {preview &&
             limitLines(t, i18n.language, preview.limits).map((line) => (
               <p key={line} className="text-xs text-gray-500 dark:text-gray-400">

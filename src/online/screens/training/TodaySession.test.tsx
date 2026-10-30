@@ -409,6 +409,24 @@ describe("extra training", () => {
     expect(pressButton()).toBeEnabled();
   });
 
+  // Given today's gift of drinks waiting (C-12 C12-8),
+  // when the extra block shows,
+  // then the gift's button is there to claim, as on the inventory page.
+  it("offers today's gift in the extra block", () => {
+    stage(clubWith({}, { players: SQUAD }));
+    useOnlineStore.setState({
+      items: {
+        lines: [],
+        locked: false,
+        dailyGift: { item: "energyDrinkSmall", quantity: 1, available: true },
+      },
+    });
+    render(<CardFromStore />);
+    expect(
+      screen.getByRole("button", { name: /^online\.items\.dailyGift\.claim:1\|/ }),
+    ).toBeInTheDocument();
+  });
+
   // Given a chosen player whose whole Physical focus is at 99 (E5-4 R12-F),
   // when the block shows,
   // then it warns that a session only costs him condition.

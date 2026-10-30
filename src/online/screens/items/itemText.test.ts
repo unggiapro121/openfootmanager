@@ -8,6 +8,7 @@ import {
   groupOf,
   itemCodeText,
   itemsErrorText,
+  pointsLost,
   targetKindOf,
 } from "./itemText";
 
@@ -118,5 +119,38 @@ describe("what the shop says an item does", () => {
       "online.shop.caps.perPlayerDay:n=2",
       "online.shop.caps.maxMatches:n=10",
     ]);
+  });
+});
+
+describe("condition caps in points (C-12b)", () => {
+  // Given a season capping drinks in points, a refusal with 5 points left, and a large drink
+  // (35) previewed on players at 90 and at 50,
+  // when the caps, the refusal and the loss to 100 are written,
+  // then the cap reads in points, the refusal names the 5 points, and only the player at 90
+  // loses 25 points.
+  it("reads the cap, the points left and what 100 cuts", () => {
+    expect(capsText(t, { pointsPerPlayerDay: 50 })).toEqual([
+      "online.shop.caps.pointsPerPlayerDay:n=50",
+    ]);
+    const refused = itemsErrorText(
+      t,
+      "en",
+      new OnlineApiError({
+        status: 409,
+        code: "be.error.inventory.dailyLimitReached",
+        details: { params: { nextAt: "2099-01-03T00:00:00Z", pointsLeft: 5 } },
+      }),
+    );
+    expect(refused).toMatch(/^online\.items\.dailyLimitPoints:pointsLeft=5\|nextAt=/);
+    expect(refused).not.toContain("2099-01-03T00:00:00Z");
+    const effect = {
+      kind: "condition" as const,
+      players: [
+        { playerId: "full", before: 90, after: 100 },
+        { playerId: "tired", before: 50, after: 85 },
+      ],
+    };
+    expect(pointsLost(effect, 35)).toEqual([{ playerId: "full", lost: 25 }]);
+    expect(pointsLost(effect, undefined)).toEqual([]);
   });
 });

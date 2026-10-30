@@ -1097,13 +1097,15 @@
         "injury": "{{player}}: {{before}} days out → {{after}}",
         "cured": "{{player}}: {{before}} days out → fit again",
         "mastery": "+{{xp}} XP, mastery {{before}} → {{after}}",
-        "xpX2": "+{{matches}} matches of double XP, {{remaining}} waiting"
+        "xpX2": "+{{matches}} matches of double XP, {{remaining}} waiting",
+        "lost": "{{player}} loses {{lost}} points: condition stops at 100."
       },
       "limit": {
         "today": "Used today: {{used}}/{{perDay}} · resets {{time}}",
         "todayPlain": "Used today: {{used}}/{{perDay}}",
         "season": "XP from notes this season: {{used}}/{{limit}}",
-        "xpX2": "Double XP matches waiting: {{remaining}}/{{max}}"
+        "xpX2": "Double XP matches waiting: {{remaining}}/{{max}}",
+        "points": "Condition points used on this player today: {{used}}/{{perDay}}"
       },
       "useTitle": "Use {{item}}",
       "pickPlayer": "Choose a player",
@@ -1115,7 +1117,14 @@
       "needs": {
         "items": "This season has no item rules, so this item is not on sale.",
         "academy": "This season has no youth academy, so this item is not on sale."
-      }
+      },
+      "dailyGift": {
+        "claim": "Claim today's gift ({{quantity}} × {{item}})",
+        "next": "Next gift at {{time}}",
+        "none": "No gift to claim today",
+        "given": "Received {{quantity}} × {{item}}."
+      },
+      "dailyLimitPoints": "Only {{pointsLeft}} condition points are left for this player today; more from {{nextAt}}."
     },
     "inventory": {
       "notOnServer": "This server has no items yet.",
@@ -1209,7 +1218,8 @@
         "perPlayerDay": "At most {{n}} condition items per player per football day, all kinds together",
         "perClubDay": "At most {{n}} per club per football day",
         "xpPerStyleSeason": "At most {{n}} XP from notes per style per season",
-        "maxMatches": "At most {{n}} matches of double XP waiting"
+        "maxMatches": "At most {{n}} matches of double XP waiting",
+        "pointsPerPlayerDay": "At most {{n}} condition points per player per football day, both drinks together"
       },
       "seasonOverTitle": "Season {{number}} is over",
       "seasonOverText": "Items bought now go to your inventory and can be used from next season.",
@@ -5189,7 +5199,9 @@
         "targetMatchLocked": "The lineup is locked for the match kicking off {{kickoffAt}}.",
         "dailyLimitReached": "Today's limit for this item is reached; it opens again {{nextAt}}.",
         "seasonLimitReached": "Study notes can add {{limit}} XP to a style per season; {{remaining}} left.",
-        "effectLimitReached": "Double XP can cover at most {{max}} matches ahead; {{remaining}} already are."
+        "effectLimitReached": "Double XP can cover at most {{max}} matches ahead; {{remaining}} already are.",
+        "dailyGiftTaken": "Today's gift is already claimed; the next one comes {{nextAt}}.",
+        "dailyGiftClosed": "There is no gift to claim now: no season day is under way."
       },
       "academy": {
         "disabled": "The youth academy is not open this season.",
