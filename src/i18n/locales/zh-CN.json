@@ -248,21 +248,20 @@
       "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。",
       "today": {
         "title": "今日训练",
-        "titleDay": "今日训练 · 第 {{day}}/{{total}} 天",
         "statusNone": "今天还没有训练",
         "statusManual": "今天已训练",
         "statusAuto": "今天已按日程训练",
         "statusBot": "你接手前，俱乐部今天已训练",
         "statusRest": "你接手前，俱乐部今天已休息",
         "sessions": "最近 7 天 {{count}}/{{cap}} 次训练",
-        "recentTitle": "最近 7 天",
         "dayCell": "第 {{day}} 天",
         "kind": {
           "manual": "你点击训练",
           "auto": "按日程训练",
           "bot": "你接手前已训练",
           "rest": "休息",
-          "none": "无记录"
+          "none": "无记录",
+          "today": "今天，尚未训练"
         },
         "recentNote": "7 天内已满 {{cap}} 次训练时，日程中的训练日可能变成休息日。",
         "nextRecovery": "下次状态恢复时间 {{time}}（还剩 {{left}}）",
@@ -275,15 +274,19 @@
         "noteStamina": "耐力高的球员恢复更快，赛后状态下降更少。",
         "lineupLocked": "{{time}} 那场比赛的阵容已锁定。比赛结束后才能再训练。",
         "reload": "重新加载",
-        "unknownRefusal": "现在无法训练。"
+        "unknownRefusal": "现在无法训练。",
+        "kicker": "今天 · 第 {{day}}/{{total}} 天",
+        "scheduleDay": "今天是「{{schedule}}」计划的训练日。",
+        "scheduleRest": "今天是「{{schedule}}」计划的休息日。",
+        "stripLabel": "过去 7 天和今天",
+        "notesToggle": "体能和训练计划如何运作",
+        "legend": "图例",
+        "matchToday": "今天 {{time}} 有比赛。赛前加练的球员会带着训练后剩余的体能出场。"
       },
       "extra": {
         "title": "加练",
-        "intro": "加练在当天训练之外进行。加练消耗状态，不恢复状态，次数不限。加练带来的进步是一点一点慢慢积累的。今日加练：{{today}} 次。",
-        "players": "球员（已选 {{chosen}}/{{total}}）",
         "selectAll": "选择全队",
         "selectNone": "全部取消",
-        "condition": "状态 {{value}}",
         "reason": {
           "injured": "受伤：不参加",
           "tired": "状态低于 {{floor}}：不参加",
@@ -299,17 +302,58 @@
         "sessionsAll": "直到无人可练",
         "keepAboveOn": "保持最低状态",
         "keepAbove": "状态保持在",
-        "keepAboveHint": "比赛日建议：{{value}}。",
         "xiWarning": "以下首发球员将以低于 {{condition}} 的状态开始今天的比赛：{{names}}。",
         "focusFull": "{{names}}：训练重点的所有属性都已满，加练只会消耗状态。请更换训练重点。",
         "andMore": "{{names}} 等另外 {{more}} 人",
-        "press": "加练（{{players}} 名球员 × {{sessions}} 次）",
-        "pressAll": "加练（{{players}} 名球员，直到无人可练）",
         "held": "已加练 {{held}} 次（今天第 {{first}}–{{last}} 次）。",
         "sessionsColumn": "次数",
         "gains": "进步",
         "gainsCount": "+{{gains}} 项属性",
-        "noGain": "无提升"
+        "noGain": "无提升",
+        "entryToday": "今日加练：{{count}} 次",
+        "entryGift": "下次礼物 {{time}}",
+        "entryGiftReady": "今日礼物待领取",
+        "open": "选择球员",
+        "drawerIntro": "每次加练消耗体能、不恢复、不限次数。进步积累较慢。",
+        "playersTitle": "球员",
+        "willStop": "低于保留体能：不会训练",
+        "costPer": "−{{cost}} 体能/次",
+        "keepLess": "降低保留体能",
+        "keepMore": "提高保留体能",
+        "keepMatch": "比赛日：用 {{value}}",
+        "summary": "{{players}} 名球员 · {{sessions}} 次 · {{intensity}}",
+        "summaryAll": "{{players}} 名球员 · 直到无人可练 · {{intensity}}",
+        "pressShort": "加练"
+      },
+      "tab": {
+        "label": "训练设置",
+        "plan": "每周计划",
+        "groups": "训练小组（{{count}}）"
+      },
+      "plan": {
+        "scheduleHint": "每周训练天数",
+        "focusHint": "全队默认。训练小组可单独设置。",
+        "intensityHint": "用于计划中的训练日",
+        "weekAria": "训练 {{train}} 天，休息 {{rest}} 天",
+        "weekAriaToday": "训练 {{train}} 天，休息 {{rest}} 天。今天（{{day}}）是{{type}}。",
+        "summary": "计划训练日全队练<strong>{{focus}}</strong>（{{attrs}}），强度<strong>{{intensity}}</strong>，有自己重点的小组除外。",
+        "summaryNoAttrs": "计划训练日全队练<strong>{{focus}}</strong>，强度<strong>{{intensity}}</strong>，有自己重点的小组除外。"
+      },
+      "main": {
+        "title": "主训练",
+        "fromPlan": "按每周计划",
+        "auto": "球队在换日时（{{time}}）按计划训练。可在下方每周计划中更改计划、重点或强度。",
+        "autoNoTime": "球队在换日时按计划训练。可在下方每周计划中更改计划、重点或强度。",
+        "rest": "今天按计划休息：没有主训练。"
+      },
+      "groups": {
+        "all": "全部（{{count}}）",
+        "focusOf": "{{name}} 小组的训练重点",
+        "groupOf": "{{name}} 的小组",
+        "focusOfPlayer": "{{name}} 的训练重点",
+        "inherited": "{{focus}}（沿用）",
+        "inheritedTag": "沿用",
+        "empty": "该小组暂无球员。"
       }
     },
     "schedule": {

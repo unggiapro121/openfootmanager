@@ -8,15 +8,14 @@ import { condColor } from "../../lib/playerConditionDisplay";
 import { Card, CardBody, CardHeader, Select } from "../ui";
 import {
   buildPlayerGroupMap,
+  MAX_GROUPS,
+  newTrainingGroup,
   reassignPlayerTrainingGroup,
   sortTrainingRoster,
   type TrainingRosterPlayer,
 } from "./trainingGroupsModel";
 
 type TrainingGroup = TrainingGroupData;
-
-/** The most groups a club keeps. */
-const MAX_GROUPS = 5;
 
 /**
  * The training groups and each player's own session, as both modes show them. The card writes
@@ -37,7 +36,15 @@ interface TrainingGroupsCardProps {
 }
 
 /** A group's name: edited freely, kept when the field is left or Enter is pressed. */
-function GroupNameInput({ name, onCommit }: { name: string; onCommit: (name: string) => void }) {
+export function GroupNameInput({
+  name,
+  onCommit,
+  className = "bg-transparent text-xs font-heading font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200 border-none outline-none w-20",
+}: {
+  name: string;
+  onCommit: (name: string) => void;
+  className?: string;
+}) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState(name);
   const [seen, setSeen] = useState(name);
@@ -64,7 +71,7 @@ function GroupNameInput({ name, onCommit }: { name: string; onCommit: (name: str
       onKeyDown={(event) => {
         if (event.key === "Enter") event.currentTarget.blur();
       }}
-      className="bg-transparent text-xs font-heading font-bold uppercase tracking-wider text-gray-800 dark:text-gray-200 border-none outline-none w-20"
+      className={className}
     />
   );
 }
@@ -86,18 +93,8 @@ export default function TrainingGroupsCard({
       return;
     }
 
-    const index = groups.length;
-    const defaultName = t(`training.groups.defaultGroupNames.${index}`);
-
-    onSaveGroups([
-      ...groups,
-      {
-        id: `grp_${Date.now()}`,
-        name: defaultName,
-        focus: "Physical",
-        player_ids: [],
-      },
-    ]);
+    const name = t(`training.groups.defaultGroupNames.${groups.length}`);
+    onSaveGroups([...groups, newTrainingGroup(name)]);
   };
 
   const removeGroup = (groupId: string) => {

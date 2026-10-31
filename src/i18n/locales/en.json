@@ -248,21 +248,20 @@
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own.",
       "today": {
         "title": "Today's session",
-        "titleDay": "Today's session · Day {{day}}/{{total}}",
         "statusNone": "Not trained yet today",
         "statusManual": "Trained today",
         "statusAuto": "Trained today on the schedule",
         "statusBot": "The club trained today before you took over",
         "statusRest": "The club rested today before you took over",
         "sessions": "{{count}}/{{cap}} sessions in the last 7 days",
-        "recentTitle": "The last 7 days",
         "dayCell": "Day {{day}}",
         "kind": {
           "manual": "Trained by you",
           "auto": "Trained on the schedule",
           "bot": "Trained before you took over",
           "rest": "Rested",
-          "none": "No record"
+          "none": "No record",
+          "today": "Today, not held yet"
         },
         "recentNote": "A training day on the schedule can become a rest day once {{cap}} sessions are held in 7 days.",
         "nextRecovery": "Next condition recovery at {{time}} ({{left}} left)",
@@ -275,15 +274,19 @@
         "noteStamina": "Players with high stamina recover faster and lose less condition after a match.",
         "lineupLocked": "The line-up is locked for the match at {{time}}. You can train again once it is over.",
         "reload": "Reload",
-        "unknownRefusal": "You can't train right now."
+        "unknownRefusal": "You can't train right now.",
+        "kicker": "Today · Day {{day}}/{{total}}",
+        "scheduleDay": "Today is a training day on the {{schedule}} schedule.",
+        "scheduleRest": "Today is a rest day on the {{schedule}} schedule.",
+        "stripLabel": "The last 7 days and today",
+        "notesToggle": "How condition and the schedule work",
+        "legend": "Legend",
+        "matchToday": "Match today at {{time}}. Players who train extra before it start with the condition left after training."
       },
       "extra": {
         "title": "Extra training",
-        "intro": "Extra sessions come on top of the day's session. They cost condition, give no recovery and have no limit. Their progress builds up slowly, a little at a time. Extra sessions today: {{today}}.",
-        "players": "Players ({{chosen}}/{{total}} chosen)",
         "selectAll": "Choose the whole squad",
         "selectNone": "Clear",
-        "condition": "Condition {{value}}",
         "reason": {
           "injured": "Injured: sits out",
           "tired": "Under {{floor}} condition: sits out",
@@ -299,17 +302,58 @@
         "sessionsAll": "Until no one can",
         "keepAboveOn": "Keep a minimum condition",
         "keepAbove": "Keep condition at or above",
-        "keepAboveHint": "Suggested on a match day: {{value}}.",
         "xiWarning": "These starters would begin today's match under {{condition}} condition: {{names}}.",
         "focusFull": "{{names}}: every attribute of their training focus is full, so a session only costs condition. Change their focus.",
         "andMore": "{{names}} and {{more}} more",
-        "press": "Train extra ({{players}} players × {{sessions}})",
-        "pressAll": "Train extra ({{players}} players, until no one can)",
         "held": "Trained {{held}} sessions (today's {{first}}–{{last}}).",
         "sessionsColumn": "Sessions",
         "gains": "Progress",
         "gainsCount": "+{{gains}} attributes",
-        "noGain": "No gain"
+        "noGain": "No gain",
+        "entryToday": "Extra sessions today: {{count}}",
+        "entryGift": "next gift at {{time}}",
+        "entryGiftReady": "today's gift is waiting",
+        "open": "Choose players",
+        "drawerIntro": "Each session costs condition, gives no recovery and has no limit. Progress builds up slowly.",
+        "playersTitle": "Players",
+        "willStop": "Under the condition to keep: will not train",
+        "costPer": "−{{cost}} condition/session",
+        "keepLess": "Lower the condition to keep",
+        "keepMore": "Raise the condition to keep",
+        "keepMatch": "Match day: use {{value}}",
+        "summary": "{{players}} players · {{sessions}} sessions · {{intensity}}",
+        "summaryAll": "{{players}} players · until no one can · {{intensity}}",
+        "pressShort": "Train extra"
+      },
+      "tab": {
+        "label": "Training settings",
+        "plan": "Weekly plan",
+        "groups": "Training groups ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Training days each week",
+        "focusHint": "The whole team's default. A training group can set its own.",
+        "intensityHint": "For the schedule's training days",
+        "weekAria": "{{train}} training days, {{rest}} rest days",
+        "weekAriaToday": "{{train}} training days, {{rest}} rest days. Today, {{day}}, is {{type}}.",
+        "summary": "On the schedule's training days the whole team trains <strong>{{focus}}</strong> ({{attrs}}) at <strong>{{intensity}}</strong> intensity, except groups with a focus of their own.",
+        "summaryNoAttrs": "On the schedule's training days the whole team trains <strong>{{focus}}</strong> at <strong>{{intensity}}</strong> intensity, except groups with a focus of their own."
+      },
+      "main": {
+        "title": "Main session",
+        "fromPlan": "From the weekly plan",
+        "auto": "The team trains on its schedule when the day turns ({{time}}). Change the schedule, focus or intensity in the weekly plan below.",
+        "autoNoTime": "The team trains on its schedule when the day turns. Change the schedule, focus or intensity in the weekly plan below.",
+        "rest": "Today is a rest day on the schedule: no main session."
+      },
+      "groups": {
+        "all": "All ({{count}})",
+        "focusOf": "Focus of group {{name}}",
+        "groupOf": "Group of {{name}}",
+        "focusOfPlayer": "Focus of {{name}}",
+        "inherited": "{{focus}} (inherited)",
+        "inheritedTag": "inherited",
+        "empty": "No players in this group yet."
       }
     },
     "schedule": {

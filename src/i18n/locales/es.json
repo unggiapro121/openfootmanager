@@ -248,21 +248,20 @@
       "noPlan": "Aún no has fijado un plan de entrenamiento: el club entrena con el plan que mantiene la IA, que ves aquí. Tu primera elección guarda un plan propio.",
       "today": {
         "title": "Sesión de hoy",
-        "titleDay": "Sesión de hoy · Día {{day}}/{{total}}",
         "statusNone": "Aún no has entrenado hoy",
         "statusManual": "Entrenado hoy",
         "statusAuto": "Hoy se entrenó según el calendario",
         "statusBot": "El club entrenó hoy antes de que tomaras el mando",
         "statusRest": "El club descansó hoy antes de que tomaras el mando",
         "sessions": "{{count}}/{{cap}} sesiones en los últimos 7 días",
-        "recentTitle": "Los últimos 7 días",
         "dayCell": "Día {{day}}",
         "kind": {
           "manual": "Entrenado por ti",
           "auto": "Entrenado según el calendario",
           "bot": "Entrenado antes de que llegaras",
           "rest": "Descanso",
-          "none": "Sin registro"
+          "none": "Sin registro",
+          "today": "Hoy, aún sin entrenar"
         },
         "recentNote": "Un día de entrenamiento del calendario puede pasar a ser de descanso cuando ya hay {{cap}} sesiones en 7 días.",
         "nextRecovery": "Próxima recuperación de condición a las {{time}} (faltan {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Los jugadores con mucha resistencia se recuperan antes y pierden menos condición tras un partido.",
         "lineupLocked": "La alineación está bloqueada para el partido de las {{time}}. Podrás volver a entrenar cuando termine.",
         "reload": "Recargar",
-        "unknownRefusal": "Ahora mismo no puedes entrenar."
+        "unknownRefusal": "Ahora mismo no puedes entrenar.",
+        "kicker": "Hoy · Día {{day}}/{{total}}",
+        "scheduleDay": "Hoy es día de entrenamiento en el calendario {{schedule}}.",
+        "scheduleRest": "Hoy es día de descanso en el calendario {{schedule}}.",
+        "stripLabel": "Los últimos 7 días y hoy",
+        "notesToggle": "Cómo funcionan la forma y el calendario",
+        "legend": "Leyenda",
+        "matchToday": "Partido hoy a las {{time}}. Quien entrene extra antes juega con la forma que le quede."
       },
       "extra": {
         "title": "Entrenamiento extra",
-        "intro": "Las sesiones extra se suman a la sesión del día. Cuestan condición, no dan recuperación y no tienen límite. Su progreso se acumula despacio, poco a poco. Sesiones extra hoy: {{today}}.",
-        "players": "Jugadores ({{chosen}}/{{total}} elegidos)",
         "selectAll": "Elegir toda la plantilla",
         "selectNone": "Quitar todos",
-        "condition": "Condición {{value}}",
         "reason": {
           "injured": "Lesionado: no participa",
           "tired": "Por debajo de {{floor}} de condición: no participa",
@@ -299,17 +302,58 @@
         "sessionsAll": "Hasta que nadie pueda",
         "keepAboveOn": "Mantener una condición mínima",
         "keepAbove": "Mantener la condición desde",
-        "keepAboveHint": "Sugerido en día de partido: {{value}}.",
         "xiWarning": "Estos titulares empezarían el partido de hoy con menos de {{condition}} de condición: {{names}}.",
         "focusFull": "{{names}}: todos los atributos de su enfoque están al máximo, así que la sesión solo cuesta condición. Cambia su enfoque.",
         "andMore": "{{names}} y {{more}} más",
-        "press": "Entrenar extra ({{players}} jugadores × {{sessions}})",
-        "pressAll": "Entrenar extra ({{players}} jugadores, hasta que nadie pueda)",
         "held": "{{held}} sesiones entrenadas (n.º {{first}}–{{last}} de hoy).",
         "sessionsColumn": "Sesiones",
         "gains": "Progreso",
         "gainsCount": "+{{gains}} atributos",
-        "noGain": "Sin mejora"
+        "noGain": "Sin mejora",
+        "entryToday": "Sesiones extra hoy: {{count}}",
+        "entryGift": "próximo regalo a las {{time}}",
+        "entryGiftReady": "el regalo de hoy te espera",
+        "open": "Elegir jugadores",
+        "drawerIntro": "Cada sesión cuesta forma, no recupera y no tiene límite. El progreso es lento.",
+        "playersTitle": "Jugadores",
+        "willStop": "Por debajo de la forma a mantener: no entrenará",
+        "costPer": "−{{cost}} forma/sesión",
+        "keepLess": "Bajar la forma a mantener",
+        "keepMore": "Subir la forma a mantener",
+        "keepMatch": "Día de partido: usar {{value}}",
+        "summary": "{{players}} jugadores · {{sessions}} sesiones · {{intensity}}",
+        "summaryAll": "{{players}} jugadores · hasta que nadie pueda · {{intensity}}",
+        "pressShort": "Entrenar extra"
+      },
+      "tab": {
+        "label": "Ajustes de entrenamiento",
+        "plan": "Plan semanal",
+        "groups": "Grupos de entrenamiento ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Días de entrenamiento por semana",
+        "focusHint": "Por defecto para todo el equipo. Un grupo puede tener el suyo.",
+        "intensityHint": "Para los días de entrenamiento del calendario",
+        "weekAria": "{{train}} días de entrenamiento, {{rest}} de descanso",
+        "weekAriaToday": "{{train}} días de entrenamiento, {{rest}} de descanso. Hoy, {{day}}, es {{type}}.",
+        "summary": "En los días del calendario todo el equipo entrena <strong>{{focus}}</strong> ({{attrs}}) con intensidad <strong>{{intensity}}</strong>, salvo los grupos con enfoque propio.",
+        "summaryNoAttrs": "En los días del calendario todo el equipo entrena <strong>{{focus}}</strong> con intensidad <strong>{{intensity}}</strong>, salvo los grupos con enfoque propio."
+      },
+      "main": {
+        "title": "Sesión principal",
+        "fromPlan": "Según el plan semanal",
+        "auto": "El equipo entrena según su calendario al cambiar el día ({{time}}). Cambia calendario, enfoque o intensidad en el plan semanal de abajo.",
+        "autoNoTime": "El equipo entrena según su calendario al cambiar el día. Cambia calendario, enfoque o intensidad en el plan semanal de abajo.",
+        "rest": "Hoy es descanso según el calendario: no hay sesión principal."
+      },
+      "groups": {
+        "all": "Todos ({{count}})",
+        "focusOf": "Enfoque del grupo {{name}}",
+        "groupOf": "Grupo de {{name}}",
+        "focusOfPlayer": "Enfoque de {{name}}",
+        "inherited": "{{focus}} (heredado)",
+        "inheritedTag": "heredado",
+        "empty": "Aún no hay jugadores en este grupo."
       }
     },
     "schedule": {

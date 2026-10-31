@@ -106,7 +106,11 @@ const SQUAD = [
   squadPlayer({ id: "p1", matchName: "V. An", condition: 80 }),
   squadPlayer({ id: "p2", matchName: "T. Bình", condition: 60 }),
 ];
-const pressButton = () => screen.getByRole("button", { name: /online\.training\.extra\.press/ });
+const pressButton = () => screen.getByRole("button", { name: "online.training.extra.pressShort" });
+/** Opens the extra training panel from today's card. */
+const openExtra = () =>
+  fireEvent.click(screen.getByRole("button", { name: "online.training.extra.open" }));
+const KICKER = "online.training.today.kicker:4|28 · training.days.mon";
 
 function answer(overrides: Partial<ExtraSessionView> = {}): ExtraSessionView {
   return {
@@ -157,8 +161,8 @@ describe("the training page without recovery blocks", () => {
   it("saves the plan with auto on", async () => {
     stage(clubWith(), { "PUT v1/clubs/mine/training": ok(myClub().trainingPlan) });
     render(<OnlineTraining />);
-    expect(screen.getByText("online.training.today.titleDay:4|28")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Technical\.label/ }));
+    expect(screen.getByText(KICKER)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("radio", { name: /Technical\.label/ }));
     const saves = () => server.requests.filter((r) => r.method === "PUT");
     await waitFor(() => expect(saves()).toHaveLength(1));
     expect(saves()[0]?.body).toMatchObject({ focus: "Technical", auto: true });
@@ -168,12 +172,12 @@ describe("the training page without recovery blocks", () => {
 describe("today's session", () => {
   // Given day 3 of the season, two sessions in seven days and rows for days 0 and 2,
   // when the card shows,
-  // then it says day 4 of 28, 2 of 6 sessions, and a strip of days 1 to 3 with day 2 empty; the
-  // old "train now" button is gone (C12-1).
+  // then it says day 4 of 28 and Monday, 2 of 6 sessions, and a strip of days 1 to 3 with day 2
+  // empty, then today; the old "train now" button is gone (C12-1).
   it("shows the day from one, the cap and the strip with an empty day", () => {
     stage(clubWith());
     render(<CardFromStore />);
-    expect(screen.getByText("online.training.today.titleDay:4|28")).toBeInTheDocument();
+    expect(screen.getByText(KICKER)).toBeInTheDocument();
     expect(screen.getByText("online.training.today.sessions:2|6")).toBeInTheDocument();
     const strip = screen
       .getAllByRole("listitem")
@@ -182,7 +186,9 @@ describe("today's session", () => {
       "online.training.today.dayCell:1: online.training.today.kind.bot",
       "online.training.today.dayCell:2: online.training.today.kind.none",
       "online.training.today.dayCell:3: online.training.today.kind.manual",
+      "online.training.today.dayCell:4: online.training.today.kind.today",
     ]);
+    expect(strip[3]).toHaveAttribute("aria-current", "date");
     expect(screen.getAllByRole("status")[0]).toHaveTextContent("online.training.today.statusNone");
     expect(screen.queryByText(/online\.training\.today\.press/)).toBeNull();
   });
@@ -197,13 +203,18 @@ describe("today's session", () => {
   });
 
   // Given the region's day turning at a moment of the season,
-  // when the notes show,
+  // when the coach opens the notes,
   // then the day-turn note names that moment on this machine's clock, not a fixed 04:00.
   it("names the day's turn from the season", () => {
     const nextDayAt = "2099-01-01T21:00:00Z";
     useOnlineStore.setState({ season: { ...SEASON, weekday: 0, nextDayAt } });
     stage(clubWith());
     render(<CardFromStore />);
+    const toggle = screen.getByRole("button", { name: "online.training.today.notesToggle" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("online.training.today.noteFatigue")).toBeNull();
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(
       screen.getByText(
         `online.training.today.noteDayTurn:${formatKickoffClock(nextDayAt, Date.now(), "en")}`,
@@ -228,6 +239,71 @@ describe("today's session", () => {
     expect(screen.getByText("online.training.today.updating")).toBeInTheDocument();
   });
 
+  // Given a balanced plan (Physical, Medium) on a Monday, a training day,
+  // when the card shows,
+  // then the main session reads the plan's schedule, focus and intensity and says it runs when the
+  // day turns; it offers no button to hold it (C12-1).
+  it("reads the main session from the plan, with nothing to press", () => {
+    stage(clubWith());
+    render(<CardFromStore />);
+    const main = screen.getByRole("region", { name: "online.training.main.title" });
+    expect(within(main).getByText("training.schedules.Balanced.label")).toBeInTheDocument();
+    expect(within(main).getByText("training.focuses.Physical.label")).toBeInTheDocument();
+    expect(within(main).getByText("training.intensities.Medium.label")).toBeInTheDocument();
+    expect(within(main).getByText(/^online\.training\.main\.auto:/)).toBeInTheDocument();
+    expect(within(main).queryByRole("button")).toBeNull();
+    expect(
+      screen.getByText("online.training.today.scheduleDay:training.schedules.Balanced.label"),
+    ).toBeInTheDocument();
+  });
+
+  // Given the balanced plan on a Wednesday, a rest day on its schedule,
+  // when the card shows,
+  // then it says today rests and the main session says there is none.
+  it("says when today rests on the schedule", () => {
+    useOnlineStore.setState({ season: { ...SEASON, weekday: 2 } });
+    stage(clubWith());
+    render(<CardFromStore />);
+    expect(
+      screen.getByText("online.training.today.scheduleRest:training.schedules.Balanced.label"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("online.training.main.rest")).toBeInTheDocument();
+  });
+
+  // Given a match later today, before the day turns,
+  // when the card shows,
+  // then a note says so with its kick-off; with no match today there is none.
+  it("notes today's match", () => {
+    const nextDayAt = new Date(Date.now() + 10 * HOUR).toISOString();
+    useOnlineStore.setState({ season: { ...SEASON, weekday: 0, nextDayAt } });
+    const kickoffAt = new Date(Date.now() + 5 * HOUR).toISOString();
+    stage(clubWith({}, { nextFixture: { ...FIXTURE, kickoffAt } }));
+    const { unmount } = render(<CardFromStore />);
+    expect(screen.getByRole("note")).toHaveTextContent(
+      `online.training.today.matchToday:${formatKickoffClock(kickoffAt, Date.now(), "en")}`,
+    );
+    unmount();
+    stage(clubWith());
+    render(<CardFromStore />);
+    expect(screen.queryByRole("note")).toBeNull();
+  });
+
+  // Given three extra sessions held today,
+  // when the coach opens the extra panel, then presses Escape,
+  // then the card counts the three, the panel opens as a dialog holding the focus, and closes.
+  it("opens the extra panel and closes it on Escape", () => {
+    stage(clubWith({ extra: extraDay({ today: 3 }) }, { players: SQUAD }));
+    render(<CardFromStore />);
+    expect(screen.getByText("online.training.extra.entryToday:3")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    openExtra();
+    const panel = screen.getByRole("dialog", { name: "online.training.extra.title" });
+    expect(panel).toHaveAttribute("aria-modal", "true");
+    expect(panel).toHaveFocus();
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   // Given a day view without the extra block (a server before S-28a),
   // when the card shows,
   // then it has no extra block.
@@ -248,13 +324,18 @@ describe("extra training", () => {
       [`POST ${PRESS_PATH}`]: ok(answer({ held: 1, lastN: 1 })),
     });
     render(<CardFromStore />);
+    openExtra();
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("radio", {
         name: "online.training.extra.intensityCost:training.intensities.Low.label|3",
       }),
-    ).toHaveAttribute("aria-pressed", "true");
+    ).toHaveAttribute("aria-checked", "true");
+    expect(
+      screen.getByText(
+        "online.training.extra.summary:2|1|training.intensities.Low.label (online.training.extra.costPer:3)",
+      ),
+    ).toBeInTheDocument();
     const press = pressButton();
-    expect(press).toHaveTextContent("online.training.extra.press:2|1");
     fireEvent.click(press);
     expect(press).toBeDisabled();
     await screen.findByText("online.training.extra.held:1|1|1");
@@ -270,8 +351,9 @@ describe("extra training", () => {
   it("sends the batch and shows each player's line", async () => {
     stage(clubWith({}, { players: SQUAD }), { [`POST ${PRESS_PATH}`]: ok(answer()) });
     render(<CardFromStore />);
-    fireEvent.click(screen.getByRole("button", { name: "3" }));
-    fireEvent.click(screen.getByRole("checkbox", { name: "online.training.extra.keepAboveOn" }));
+    openExtra();
+    fireEvent.click(screen.getByRole("radio", { name: "3" }));
+    fireEvent.click(screen.getByRole("switch", { name: "online.training.extra.keepAboveOn" }));
     fireEvent.change(screen.getByLabelText("online.training.extra.keepAbove"), {
       target: { value: "60" },
     });
@@ -300,6 +382,7 @@ describe("extra training", () => {
     );
     stage(clubWith({}, { players: SQUAD }), { [`POST ${PRESS_PATH}`]: ok(answer()) });
     render(<CardFromStore />);
+    openExtra();
     fireEvent.click(pressButton());
     await waitFor(() => expect(presses()).toHaveLength(1));
     expect(presses()[0]?.body).toMatchObject({ players: ["p2"] });
@@ -311,6 +394,7 @@ describe("extra training", () => {
   it("turns the button off with no one chosen and when the server says no", () => {
     stage(clubWith({}, { players: SQUAD }));
     const { unmount } = render(<CardFromStore />);
+    openExtra();
     fireEvent.click(screen.getByRole("button", { name: "online.training.extra.selectNone" }));
     expect(pressButton()).toBeDisabled();
     unmount();
@@ -322,6 +406,7 @@ describe("extra training", () => {
       ),
     );
     render(<CardFromStore />);
+    openExtra();
     expect(pressButton()).toBeDisabled();
     expect(screen.getByRole("alert")).toHaveTextContent("be.error.training.manualOff");
   });
@@ -337,6 +422,7 @@ describe("extra training", () => {
       ),
     );
     render(<CardFromStore />);
+    openExtra();
     expect(screen.getByText("online.training.extra.reason.tired:40")).toBeInTheDocument();
   });
 
@@ -355,6 +441,7 @@ describe("extra training", () => {
       [`POST ${PRESS_PATH}`]: fail(409, code, { details: { params } }),
     });
     render(<CardFromStore />);
+    openExtra();
     fireEvent.click(pressButton());
     expect(await screen.findByRole("alert")).toHaveTextContent(text);
     await waitFor(() => expect(clubReads()).toHaveLength(1));
@@ -372,6 +459,7 @@ describe("extra training", () => {
       },
     });
     render(<CardFromStore />);
+    openExtra();
     fireEvent.click(pressButton());
     await screen.findByRole("alert");
     await waitFor(() => expect(pressButton()).toBeEnabled());
@@ -399,13 +487,17 @@ describe("extra training", () => {
       ),
     );
     render(<CardFromStore />);
+    openExtra();
+    const panel = screen.getByRole("dialog");
     expect(screen.queryByText(/online\.training\.extra\.xiWarning/)).toBeNull();
     fireEvent.click(
-      screen.getByRole("button", {
+      screen.getByRole("radio", {
         name: "online.training.extra.intensityCost:training.intensities.High.label|10",
       }),
     );
-    expect(screen.getByRole("note")).toHaveTextContent("online.training.extra.xiWarning:V. An|75");
+    expect(within(panel).getByRole("note")).toHaveTextContent(
+      "online.training.extra.xiWarning:V. An|75",
+    );
     expect(pressButton()).toBeEnabled();
   });
 
@@ -422,6 +514,8 @@ describe("extra training", () => {
       },
     });
     render(<CardFromStore />);
+    expect(screen.getByText(/online\.training\.extra\.entryGiftReady/)).toBeInTheDocument();
+    openExtra();
     expect(
       screen.getByRole("button", { name: /^online\.items\.dailyGift\.claim:1\|/ }),
     ).toBeInTheDocument();
@@ -449,6 +543,7 @@ describe("extra training", () => {
       ),
     );
     render(<CardFromStore />);
+    openExtra();
     expect(screen.getByRole("note")).toHaveTextContent("online.training.extra.focusFull:V. An");
   });
 });

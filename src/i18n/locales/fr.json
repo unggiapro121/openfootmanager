@@ -248,21 +248,20 @@
       "noPlan": "Vous n'avez pas encore défini de plan d'entraînement : le club suit le plan que tient l'IA, affiché ici. Votre premier choix enregistre votre propre plan.",
       "today": {
         "title": "Séance du jour",
-        "titleDay": "Séance du jour · Jour {{day}}/{{total}}",
         "statusNone": "Pas encore d'entraînement aujourd'hui",
         "statusManual": "Entraînement fait aujourd'hui",
         "statusAuto": "Entraînement du jour fait selon le programme",
         "statusBot": "Le club s'est entraîné aujourd'hui avant votre arrivée",
         "statusRest": "Le club s'est reposé aujourd'hui avant votre arrivée",
         "sessions": "{{count}}/{{cap}} séances sur les 7 derniers jours",
-        "recentTitle": "Les 7 derniers jours",
         "dayCell": "Jour {{day}}",
         "kind": {
           "manual": "Entraînement lancé par vous",
           "auto": "Entraînement selon le programme",
           "bot": "Entraînement avant votre arrivée",
           "rest": "Repos",
-          "none": "Aucune donnée"
+          "none": "Aucune donnée",
+          "today": "Aujourd'hui, pas encore fait"
         },
         "recentNote": "Un jour d'entraînement du programme peut devenir un jour de repos quand {{cap}} séances ont eu lieu sur 7 jours.",
         "nextRecovery": "Prochaine récupération de condition à {{time}} (encore {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Les joueurs à forte endurance récupèrent plus vite et perdent moins de condition après un match.",
         "lineupLocked": "La composition est verrouillée pour le match de {{time}}. Vous pourrez vous entraîner à nouveau une fois le match terminé.",
         "reload": "Recharger",
-        "unknownRefusal": "Impossible de s'entraîner pour le moment."
+        "unknownRefusal": "Impossible de s'entraîner pour le moment.",
+        "kicker": "Aujourd'hui · Jour {{day}}/{{total}}",
+        "scheduleDay": "Aujourd'hui est un jour d'entraînement du programme {{schedule}}.",
+        "scheduleRest": "Aujourd'hui est un jour de repos du programme {{schedule}}.",
+        "stripLabel": "Les 7 derniers jours et aujourd'hui",
+        "notesToggle": "Comment marchent la condition et le programme",
+        "legend": "Légende",
+        "matchToday": "Match aujourd'hui à {{time}}. Ceux qui font du rab avant jouent avec la condition qui leur reste."
       },
       "extra": {
         "title": "Entraînement supplémentaire",
-        "intro": "Les séances supplémentaires s'ajoutent à la séance du jour. Elles coûtent de la condition, ne donnent aucune récupération et sont illimitées. Leurs progrès s'accumulent lentement, petit à petit. Séances supplémentaires aujourd'hui : {{today}}.",
-        "players": "Joueurs ({{chosen}}/{{total}} choisis)",
         "selectAll": "Choisir tout l'effectif",
         "selectNone": "Tout retirer",
-        "condition": "Condition physique {{value}}",
         "reason": {
           "injured": "Blessé : ne participe pas",
           "tired": "Sous {{floor}} de condition : ne participe pas",
@@ -299,17 +302,58 @@
         "sessionsAll": "Jusqu'à ce que personne ne puisse",
         "keepAboveOn": "Garder une condition minimale",
         "keepAbove": "Garder la condition à partir de",
-        "keepAboveHint": "Conseillé un jour de match : {{value}}.",
         "xiWarning": "Ces titulaires commenceraient le match d'aujourd'hui sous {{condition}} de condition : {{names}}.",
         "focusFull": "{{names}} : tous les attributs de leur focus d'entraînement sont au maximum, la séance ne coûte que de la condition. Changez leur focus.",
         "andMore": "{{names}} et {{more}} autres",
-        "press": "S'entraîner en plus ({{players}} joueurs × {{sessions}})",
-        "pressAll": "S'entraîner en plus ({{players}} joueurs, jusqu'à ce que personne ne puisse)",
         "held": "{{held}} séances effectuées (n° {{first}}–{{last}} aujourd'hui).",
         "sessionsColumn": "Séances",
         "gains": "Progrès",
         "gainsCount": "+{{gains}} attributs",
-        "noGain": "Aucun gain"
+        "noGain": "Aucun gain",
+        "entryToday": "Séances en plus aujourd'hui : {{count}}",
+        "entryGift": "prochain cadeau à {{time}}",
+        "entryGiftReady": "le cadeau du jour vous attend",
+        "open": "Choisir les joueurs",
+        "drawerIntro": "Chaque séance coûte de la condition, ne récupère pas et n'a pas de limite. Les progrès sont lents.",
+        "playersTitle": "Joueurs",
+        "willStop": "Sous la condition à garder : ne s'entraînera pas",
+        "costPer": "−{{cost}} condition/séance",
+        "keepLess": "Baisser la condition à garder",
+        "keepMore": "Augmenter la condition à garder",
+        "keepMatch": "Jour de match : utiliser {{value}}",
+        "summary": "{{players}} joueurs · {{sessions}} séances · {{intensity}}",
+        "summaryAll": "{{players}} joueurs · jusqu'à ce que personne ne puisse · {{intensity}}",
+        "pressShort": "S'entraîner en plus"
+      },
+      "tab": {
+        "label": "Réglages de l'entraînement",
+        "plan": "Plan hebdomadaire",
+        "groups": "Groupes d'entraînement ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Jours d'entraînement par semaine",
+        "focusHint": "Par défaut pour toute l'équipe. Un groupe peut avoir le sien.",
+        "intensityHint": "Pour les jours d'entraînement du programme",
+        "weekAria": "{{train}} jours d'entraînement, {{rest}} de repos",
+        "weekAriaToday": "{{train}} jours d'entraînement, {{rest}} de repos. Aujourd'hui, {{day}}, c'est {{type}}.",
+        "summary": "Les jours du programme, toute l'équipe travaille <strong>{{focus}}</strong> ({{attrs}}) en intensité <strong>{{intensity}}</strong>, sauf les groupes qui ont leur propre axe.",
+        "summaryNoAttrs": "Les jours du programme, toute l'équipe travaille <strong>{{focus}}</strong> en intensité <strong>{{intensity}}</strong>, sauf les groupes qui ont leur propre axe."
+      },
+      "main": {
+        "title": "Séance principale",
+        "fromPlan": "Selon le plan hebdomadaire",
+        "auto": "L'équipe s'entraîne selon son programme au changement de jour ({{time}}). Changez programme, axe ou intensité dans le plan hebdomadaire ci-dessous.",
+        "autoNoTime": "L'équipe s'entraîne selon son programme au changement de jour. Changez programme, axe ou intensité dans le plan hebdomadaire ci-dessous.",
+        "rest": "Aujourd'hui est un jour de repos du programme : pas de séance principale."
+      },
+      "groups": {
+        "all": "Tous ({{count}})",
+        "focusOf": "Axe du groupe {{name}}",
+        "groupOf": "Groupe de {{name}}",
+        "focusOfPlayer": "Axe de {{name}}",
+        "inherited": "{{focus}} (hérité)",
+        "inheritedTag": "hérité",
+        "empty": "Aucun joueur dans ce groupe pour l'instant."
       }
     },
     "schedule": {
