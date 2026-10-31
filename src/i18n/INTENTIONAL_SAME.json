@@ -4,7 +4,6 @@
     "tactics.playStyleWithMastery",
     "inbox.youthProspectRange",
     "scouting.watchlistScoutLoad",
-    "app.publisher",
     "date.day",
     "match.pen",
     "online.replay.times",
@@ -549,7 +548,9 @@
     "online.academy.scout.elite",
     "online.header.clubLine"
   ],
-  "ru": ["dashboard.recapTransferLine"],
+  "ru": [
+    "dashboard.recapTransferLine"
+  ],
   "zh-CN": [
     "online.market.ai",
     "online.league.bot",

@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "OpenFoot Manager",
-    "publisher": "Sturdy Robot"
+    "name": "Eleven Saga",
+    "tagline": "Scrivi la storia del tuo club",
+    "basedOn": "Basato su OpenFoot Manager di Sturdy Robot · GPLv3"
   },
   "menu": {
     "newGame": "Nuova partita",

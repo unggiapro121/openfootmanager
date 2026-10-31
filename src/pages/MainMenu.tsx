@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGameStore } from "../store/gameStore";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
+import { BrandLockup } from "../components/ui/BrandMark";
 import type { CareerStartPhase, CreateManagerFormData } from "../components/menu/CreateManagerForm";
 import type { PackageInfo, PackageIssue } from "../components/menu/WorldSelect";
 import { careerStartAgeMessage } from "../components/menu/coachAccountForm.helpers";
@@ -563,11 +564,14 @@ export default function MainMenu() {
 
         <div className="bg-white dark:bg-navy-800 p-8 rounded-b-2xl shadow-xl dark:shadow-2xl border border-gray-200 dark:border-navy-600 border-t-0 transition-all duration-500">
           {/* Logo */}
-          <img
-            src="/openfootlogo.svg"
-            alt={t("app.name")}
-            className="text-center w-full h-full object-cover"
-          />
+          <div className="flex justify-center">
+            <BrandLockup
+              layout="vertical"
+              tagline
+              symbolClassName="h-28 w-28"
+              nameClassName="text-5xl"
+            />
+          </div>
 
           <div className="border-t border-gray-200 dark:border-navy-600 my-8 transition-colors duration-500" />
 

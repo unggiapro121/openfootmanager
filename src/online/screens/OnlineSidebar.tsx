@@ -13,6 +13,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { BrandSymbol, BrandWordmark } from "../../components/ui";
 import { useOnlineStore } from "../store/onlineStore";
 import ClubCrestMark from "./ClubCrestMark";
 import { useGuardedNavigate } from "./leaveGuard";
@@ -101,14 +102,12 @@ function GroupLabel({ children }: { children: ReactNode }) {
   );
 }
 
-/** The brand, its last word in gold (design vi-coin.html). */
+/** The brand: the shield-and-ball symbol beside the name, its last word in gold (design vi-coin.html). */
 function Brand() {
-  const { t } = useTranslation();
-  const [first, ...rest] = t("app.name").split(" ");
   return (
-    <p className="flex flex-col gap-0.5 px-3 pb-5 font-heading text-xl uppercase leading-none tracking-wider">
-      <span className="font-semibold text-white">{first}</span>
-      {rest.length > 0 && <span className="font-bold text-accent-400">{rest.join(" ")}</span>}
+    <p className="flex items-center gap-2.5 px-3 pb-5">
+      <BrandSymbol className="h-10 w-10" />
+      <BrandWordmark stacked onDark className="text-xl" />
     </p>
   );
 }
