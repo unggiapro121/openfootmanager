@@ -432,7 +432,8 @@ describe("the online club pages", () => {
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
 
-    fireEvent.click(await screen.findByRole("button", { name: /training.groups.addGroup/ }));
+    fireEvent.click(await screen.findByRole("tab", { name: /online\.training\.tab\.groups/ }));
+    fireEvent.click(screen.getByRole("button", { name: /training.groups.addGroup/ }));
     await waitFor(() => expect(server.requests.some((r) => r.method === "PUT")).toBe(true));
     const [added] = server.requests.filter((request) => request.method === "PUT");
     const sent = added.body as typeof plan;
@@ -456,7 +457,8 @@ describe("the online club pages", () => {
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
 
-    const row = (await screen.findByText(/^Trung Vệ/)).closest("tr")!;
+    fireEvent.click(await screen.findByRole("tab", { name: /online\.training\.tab\.groups/ }));
+    const row = screen.getByText(/^Trung Vệ/).closest("tr")!;
     fireEvent.click(within(row).getAllByRole("combobox")[0]);
     fireEvent.click(screen.getByRole("option", { name: "Keepers" }));
 
@@ -481,7 +483,8 @@ describe("the online club pages", () => {
     stage(myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true }));
     renderOnline("/online/training");
 
-    const row = (await screen.findByText(/^Trung Vệ/)).closest("tr")!;
+    fireEvent.click(await screen.findByRole("tab", { name: /online\.training\.tab\.groups/ }));
+    const row = screen.getByText(/^Trung Vệ/).closest("tr")!;
     fireEvent.click(within(row).getAllByRole("combobox")[1]);
     fireEvent.click(screen.getByRole("option", { name: "training.focuses.Defending.label" }));
 
@@ -504,19 +507,22 @@ describe("the online club pages", () => {
 
   // Given a season that says today's weekday, and one that does not,
   // when the training page opens,
-  // then the "today is" line shows only when the weekday is known.
+  // then each schedule's week names today only when the weekday is known.
   it("says what today is only when the season tells the weekday", async () => {
     stage(myClub({ players: SQUAD }));
     const { unmount } = renderOnline("/online/training");
     await screen.findByText("online.training.noPlan");
-    expect(screen.queryByText("training.todayIs")).toBeNull();
+    expect(screen.queryAllByRole("img", { name: /weekAriaToday/ })).toHaveLength(0);
+    expect(screen.getAllByRole("img", { name: /online\.training\.plan\.weekAria:/ })).toHaveLength(
+      3,
+    );
     unmount();
     server.restore();
     resetOnline();
 
     stage(myClub({ players: SQUAD }), { ...SEASON, weekday: 0 });
     renderOnline("/online/training");
-    expect(await screen.findByText("training.todayIs")).toBeInTheDocument();
+    expect(await screen.findAllByRole("img", { name: /weekAriaToday/ })).toHaveLength(3);
   });
 
   // Given a scheduled fixture whose line-up lock time has passed,

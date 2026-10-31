@@ -248,21 +248,20 @@
       "noPlan": "Non hai ancora impostato un piano di allenamento: il club si allena con il piano tenuto dall'IA, mostrato qui. La tua prima scelta salva un piano tuo.",
       "today": {
         "title": "Seduta di oggi",
-        "titleDay": "Seduta di oggi · Giorno {{day}}/{{total}}",
         "statusNone": "Non hai ancora allenato oggi",
         "statusManual": "Allenamento fatto oggi",
         "statusAuto": "Oggi allenamento fatto secondo il programma",
         "statusBot": "Il club si è allenato oggi prima che arrivassi",
         "statusRest": "Il club ha riposato oggi prima che arrivassi",
         "sessions": "{{count}}/{{cap}} sedute negli ultimi 7 giorni",
-        "recentTitle": "Gli ultimi 7 giorni",
         "dayCell": "Giorno {{day}}",
         "kind": {
           "manual": "Allenamento avviato da te",
           "auto": "Allenamento da programma",
           "bot": "Allenamento prima del tuo arrivo",
           "rest": "Riposo",
-          "none": "Nessun dato"
+          "none": "Nessun dato",
+          "today": "Oggi, non ancora svolto"
         },
         "recentNote": "Un giorno di allenamento del programma può diventare di riposo quando ci sono già {{cap}} sedute in 7 giorni.",
         "nextRecovery": "Prossimo recupero di condizione alle {{time}} (mancano {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "I giocatori con molta resistenza recuperano prima e perdono meno condizione dopo una partita.",
         "lineupLocked": "La formazione è bloccata per la partita delle {{time}}. Potrai allenarti di nuovo a partita finita.",
         "reload": "Ricarica",
-        "unknownRefusal": "Al momento non puoi allenarti."
+        "unknownRefusal": "Al momento non puoi allenarti.",
+        "kicker": "Oggi · Giorno {{day}}/{{total}}",
+        "scheduleDay": "Oggi è un giorno di allenamento nel programma {{schedule}}.",
+        "scheduleRest": "Oggi è un giorno di riposo nel programma {{schedule}}.",
+        "stripLabel": "Gli ultimi 7 giorni e oggi",
+        "notesToggle": "Come funzionano condizione e programma",
+        "legend": "Legenda",
+        "matchToday": "Partita oggi alle {{time}}. Chi si allena extra prima gioca con la condizione che gli resta."
       },
       "extra": {
         "title": "Allenamento extra",
-        "intro": "Le sedute extra si aggiungono alla seduta del giorno. Costano condizione, non danno recupero e non hanno limite. Il loro progresso si accumula lentamente, un po' alla volta. Sedute extra oggi: {{today}}.",
-        "players": "Giocatori ({{chosen}}/{{total}} scelti)",
         "selectAll": "Scegli tutta la rosa",
         "selectNone": "Togli tutti",
-        "condition": "Condizione {{value}}",
         "reason": {
           "injured": "Infortunato: salta",
           "tired": "Sotto {{floor}} di condizione: salta",
@@ -299,17 +302,58 @@
         "sessionsAll": "Finché nessuno può",
         "keepAboveOn": "Mantieni una condizione minima",
         "keepAbove": "Mantieni la condizione da",
-        "keepAboveHint": "Consigliato in un giorno di partita: {{value}}.",
         "xiWarning": "Questi titolari inizierebbero la partita di oggi sotto {{condition}} di condizione: {{names}}.",
         "focusFull": "{{names}}: tutti gli attributi del loro focus sono al massimo, quindi la seduta costa solo condizione. Cambia il loro focus.",
         "andMore": "{{names}} e altri {{more}}",
-        "press": "Allena extra ({{players}} giocatori × {{sessions}})",
-        "pressAll": "Allena extra ({{players}} giocatori, finché nessuno può)",
         "held": "{{held}} sedute svolte (n. {{first}}–{{last}} di oggi).",
         "sessionsColumn": "Sedute",
         "gains": "Progresso",
         "gainsCount": "+{{gains}} attributi",
-        "noGain": "Nessun miglioramento"
+        "noGain": "Nessun miglioramento",
+        "entryToday": "Sessioni extra oggi: {{count}}",
+        "entryGift": "prossimo regalo alle {{time}}",
+        "entryGiftReady": "il regalo di oggi ti aspetta",
+        "open": "Scegli giocatori",
+        "drawerIntro": "Ogni sessione costa condizione, non recupera e non ha limiti. I progressi sono lenti.",
+        "playersTitle": "Giocatori",
+        "willStop": "Sotto la condizione da mantenere: non si allena",
+        "costPer": "−{{cost}} condizione/sessione",
+        "keepLess": "Abbassa la condizione da mantenere",
+        "keepMore": "Alza la condizione da mantenere",
+        "keepMatch": "Giorno di partita: usa {{value}}",
+        "summary": "{{players}} giocatori · {{sessions}} sessioni · {{intensity}}",
+        "summaryAll": "{{players}} giocatori · finché nessuno può · {{intensity}}",
+        "pressShort": "Allenamento extra"
+      },
+      "tab": {
+        "label": "Impostazioni allenamento",
+        "plan": "Piano settimanale",
+        "groups": "Gruppi di allenamento ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Giorni di allenamento a settimana",
+        "focusHint": "Predefinito per tutta la squadra. Un gruppo può averne uno suo.",
+        "intensityHint": "Per i giorni di allenamento del programma",
+        "weekAria": "{{train}} giorni di allenamento, {{rest}} di riposo",
+        "weekAriaToday": "{{train}} giorni di allenamento, {{rest}} di riposo. Oggi, {{day}}, è {{type}}.",
+        "summary": "Nei giorni del programma tutta la squadra allena <strong>{{focus}}</strong> ({{attrs}}) con intensità <strong>{{intensity}}</strong>, tranne i gruppi con un focus proprio.",
+        "summaryNoAttrs": "Nei giorni del programma tutta la squadra allena <strong>{{focus}}</strong> con intensità <strong>{{intensity}}</strong>, tranne i gruppi con un focus proprio."
+      },
+      "main": {
+        "title": "Sessione principale",
+        "fromPlan": "Dal piano settimanale",
+        "auto": "La squadra si allena secondo il programma al cambio di giorno ({{time}}). Cambia programma, focus o intensità nel piano settimanale qui sotto.",
+        "autoNoTime": "La squadra si allena secondo il programma al cambio di giorno. Cambia programma, focus o intensità nel piano settimanale qui sotto.",
+        "rest": "Oggi è riposo da programma: nessuna sessione principale."
+      },
+      "groups": {
+        "all": "Tutti ({{count}})",
+        "focusOf": "Focus del gruppo {{name}}",
+        "groupOf": "Gruppo di {{name}}",
+        "focusOfPlayer": "Focus di {{name}}",
+        "inherited": "{{focus}} (ereditato)",
+        "inheritedTag": "ereditato",
+        "empty": "Ancora nessun giocatore in questo gruppo."
       }
     },
     "schedule": {

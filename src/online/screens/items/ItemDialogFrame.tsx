@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { ItemIcon } from "./itemLook";
 
 /** Tab and Shift+Tab go round the dialog's own controls, never to the page behind it. */
-function keepFocusInside(dialog: HTMLElement | null, event: KeyboardEvent) {
+export function keepFocusInside(dialog: HTMLElement | null, event: KeyboardEvent) {
   if (!dialog) return;
   const controls = Array.from(
     dialog.querySelectorAll<HTMLElement>("button:not([disabled]), input, a[href]"),

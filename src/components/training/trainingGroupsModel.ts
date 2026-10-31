@@ -13,6 +13,14 @@ export interface TrainingRosterPlayer {
   training_focus?: string | null;
 }
 
+/** The most groups a club keeps. */
+export const MAX_GROUPS = 5;
+
+/** A new, empty group training the physical focus; `name` is the game's default for its place. */
+export function newTrainingGroup(name: string): TrainingGroupData {
+  return { id: `grp_${Date.now()}`, name, focus: "Physical", player_ids: [] };
+}
+
 export function buildPlayerGroupMap(groups: TrainingGroupData[]) {
   const playerGroupMap = new Map<string, TrainingGroupData>();
 

@@ -248,21 +248,20 @@
       "noPlan": "Du hast noch keinen Trainingsplan festgelegt: Der Verein trainiert nach dem Plan der KI, der hier steht. Deine erste Wahl speichert einen eigenen Plan.",
       "today": {
         "title": "Heutiges Training",
-        "titleDay": "Heutiges Training · Tag {{day}}/{{total}}",
         "statusNone": "Heute noch nicht trainiert",
         "statusManual": "Heute trainiert",
         "statusAuto": "Heute nach Plan trainiert",
         "statusBot": "Der Verein hat heute trainiert, bevor du übernommen hast",
         "statusRest": "Der Verein hat heute pausiert, bevor du übernommen hast",
         "sessions": "{{count}}/{{cap}} Einheiten in den letzten 7 Tagen",
-        "recentTitle": "Die letzten 7 Tage",
         "dayCell": "Tag {{day}}",
         "kind": {
           "manual": "Von dir trainiert",
           "auto": "Nach Plan trainiert",
           "bot": "Vor deiner Übernahme trainiert",
           "rest": "Ruhetag",
-          "none": "Kein Eintrag"
+          "none": "Kein Eintrag",
+          "today": "Heute, noch nicht trainiert"
         },
         "recentNote": "Ein Trainingstag laut Plan kann zum Ruhetag werden, sobald {{cap}} Einheiten in 7 Tagen stattgefunden haben.",
         "nextRecovery": "Nächste Erholung der Kondition um {{time}} (noch {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Spieler mit hoher Ausdauer erholen sich schneller und verlieren nach einem Spiel weniger Kondition.",
         "lineupLocked": "Die Aufstellung ist für das Spiel um {{time}} gesperrt. Nach dem Spiel kannst du wieder trainieren.",
         "reload": "Neu laden",
-        "unknownRefusal": "Gerade kann nicht trainiert werden."
+        "unknownRefusal": "Gerade kann nicht trainiert werden.",
+        "kicker": "Heute · Tag {{day}}/{{total}}",
+        "scheduleDay": "Heute ist ein Trainingstag im Plan {{schedule}}.",
+        "scheduleRest": "Heute ist ein Ruhetag im Plan {{schedule}}.",
+        "stripLabel": "Die letzten 7 Tage und heute",
+        "notesToggle": "Wie Fitness und Plan funktionieren",
+        "legend": "Legende",
+        "matchToday": "Heute Spiel um {{time}}. Wer vorher extra trainiert, spielt mit der Fitness, die danach bleibt."
       },
       "extra": {
         "title": "Zusatztraining",
-        "intro": "Zusatzeinheiten kommen zur Tageseinheit hinzu. Sie kosten Kondition, bringen keine Erholung und sind unbegrenzt. Ihr Fortschritt baut sich langsam auf, Stück für Stück. Zusatzeinheiten heute: {{today}}.",
-        "players": "Spieler ({{chosen}}/{{total}} gewählt)",
         "selectAll": "Ganzen Kader wählen",
         "selectNone": "Leeren",
-        "condition": "Kondition {{value}}",
         "reason": {
           "injured": "Verletzt: setzt aus",
           "tired": "Unter {{floor}} Kondition: setzt aus",
@@ -299,17 +302,58 @@
         "sessionsAll": "Bis keiner mehr kann",
         "keepAboveOn": "Mindestkondition halten",
         "keepAbove": "Kondition halten ab",
-        "keepAboveHint": "Empfohlen an einem Spieltag: {{value}}.",
         "xiWarning": "Diese Stammspieler würden das heutige Spiel mit weniger als {{condition}} Kondition beginnen: {{names}}.",
         "focusFull": "{{names}}: Jedes Attribut ihres Trainingsfokus ist voll, eine Einheit kostet nur Kondition. Ändere ihren Fokus.",
         "andMore": "{{names}} und {{more}} weitere",
-        "press": "Zusatztraining ({{players}} Spieler × {{sessions}})",
-        "pressAll": "Zusatztraining ({{players}} Spieler, bis keiner mehr kann)",
         "held": "{{held}} Einheiten trainiert (heute Nr. {{first}}–{{last}}).",
         "sessionsColumn": "Einheiten",
         "gains": "Fortschritt",
         "gainsCount": "+{{gains}} Attribute",
-        "noGain": "Kein Zuwachs"
+        "noGain": "Kein Zuwachs",
+        "entryToday": "Zusatzeinheiten heute: {{count}}",
+        "entryGift": "nächstes Geschenk um {{time}}",
+        "entryGiftReady": "das heutige Geschenk wartet",
+        "open": "Spieler wählen",
+        "drawerIntro": "Jede Einheit kostet Fitness, bringt keine Erholung und hat kein Limit. Der Fortschritt wächst langsam.",
+        "playersTitle": "Spieler",
+        "willStop": "Unter der zu haltenden Fitness: trainiert nicht",
+        "costPer": "−{{cost}} Fitness/Einheit",
+        "keepLess": "Zu haltende Fitness senken",
+        "keepMore": "Zu haltende Fitness erhöhen",
+        "keepMatch": "Spieltag: {{value}} nehmen",
+        "summary": "{{players}} Spieler · {{sessions}} Einheiten · {{intensity}}",
+        "summaryAll": "{{players}} Spieler · bis keiner mehr kann · {{intensity}}",
+        "pressShort": "Extra trainieren"
+      },
+      "tab": {
+        "label": "Trainingseinstellungen",
+        "plan": "Wochenplan",
+        "groups": "Trainingsgruppen ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Trainingstage pro Woche",
+        "focusHint": "Standard für die ganze Mannschaft. Eine Gruppe kann ihren eigenen haben.",
+        "intensityHint": "Für die Trainingstage des Plans",
+        "weekAria": "{{train}} Trainingstage, {{rest}} Ruhetage",
+        "weekAriaToday": "{{train}} Trainingstage, {{rest}} Ruhetage. Heute, {{day}}, ist {{type}}.",
+        "summary": "An den Trainingstagen trainiert die ganze Mannschaft <strong>{{focus}}</strong> ({{attrs}}) mit Intensität <strong>{{intensity}}</strong>, außer Gruppen mit eigenem Schwerpunkt.",
+        "summaryNoAttrs": "An den Trainingstagen trainiert die ganze Mannschaft <strong>{{focus}}</strong> mit Intensität <strong>{{intensity}}</strong>, außer Gruppen mit eigenem Schwerpunkt."
+      },
+      "main": {
+        "title": "Haupteinheit",
+        "fromPlan": "Laut Wochenplan",
+        "auto": "Die Mannschaft trainiert nach Plan beim Tageswechsel ({{time}}). Plan, Schwerpunkt oder Intensität änderst du unten im Wochenplan.",
+        "autoNoTime": "Die Mannschaft trainiert nach Plan beim Tageswechsel. Plan, Schwerpunkt oder Intensität änderst du unten im Wochenplan.",
+        "rest": "Heute ist laut Plan Ruhetag: keine Haupteinheit."
+      },
+      "groups": {
+        "all": "Alle ({{count}})",
+        "focusOf": "Schwerpunkt der Gruppe {{name}}",
+        "groupOf": "Gruppe von {{name}}",
+        "focusOfPlayer": "Schwerpunkt von {{name}}",
+        "inherited": "{{focus}} (übernommen)",
+        "inheritedTag": "übernommen",
+        "empty": "Noch keine Spieler in dieser Gruppe."
       }
     },
     "schedule": {
