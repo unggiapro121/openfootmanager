@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "OpenFoot Manager",
-    "publisher": "Sturdy Robot"
+    "name": "Eleven Saga",
+    "tagline": "Viết nên câu chuyện CLB của bạn",
+    "basedOn": "Dựa trên OpenFoot Manager của Sturdy Robot · GPLv3"
   },
   "menu": {
     "newGame": "Ván mới",

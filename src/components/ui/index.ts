@@ -17,3 +17,4 @@ export { PitchToken } from "./PitchToken";
 export { fitToneOf, pitchRoleMarkers } from "./PitchToken";
 export type { PitchTokenMarker } from "./PitchToken";
 export { PitchSurface } from "./PitchSurface";
+export { BrandSymbol, BrandWordmark } from "./BrandMark";

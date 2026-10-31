@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSettingsStore, type AppSettings } from "../store/settingsStore";
 import { useTheme } from "../context/ThemeContext";
-import { ThemeToggle, Select } from "../components/ui";
+import { BrandSymbol, BrandWordmark, ThemeToggle, Select } from "../components/ui";
 import { AUTO_SAVE_INTERVAL_OPTIONS } from "../hooks/useAutoSave.helpers";
 import { SUPPORTED_LANGUAGES, changeAppLanguage } from "../i18n";
 import { formatAppVersion } from "../lib/appVersion";
@@ -412,18 +412,17 @@ export default function Settings() {
 
         {/* ─── About ─── */}
         <Section title={t("settings.about")} icon={<Zap className="w-5 h-5" />}>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t("app.name")}
+          <div className="flex items-center gap-4">
+            <BrandSymbol className="h-12 w-12" />
+            <div className="flex min-w-0 flex-col gap-1">
+              <p className="text-lg">
+                <BrandWordmark />
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                {formatAppVersion()}
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t("app.tagline")} · {formatAppVersion()}
               </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t("app.basedOn")}</p>
             </div>
-            <span className="text-[10px] font-heading uppercase tracking-widest text-gray-400 dark:text-gray-600">
-              {t("app.publisher")}
-            </span>
           </div>
         </Section>
       </div>

@@ -44,7 +44,7 @@ function App() {
 
     void (async () => {
       try {
-        await setWindowTitle(`Openfoot Manager ${formatAppVersion()}`);
+        await setWindowTitle(`Eleven Saga ${formatAppVersion()}`);
       } catch (error) {
         console.error("Failed to set window title:", error);
       }

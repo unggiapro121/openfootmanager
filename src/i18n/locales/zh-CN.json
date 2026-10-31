@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "OpenFoot Manager",
-    "publisher": "Sturdy Robot"
+    "name": "Eleven Saga",
+    "tagline": "书写你的俱乐部传奇",
+    "basedOn": "基于 Sturdy Robot 的 OpenFoot Manager · GPLv3"
   },
   "menu": {
     "newGame": "新游戏",

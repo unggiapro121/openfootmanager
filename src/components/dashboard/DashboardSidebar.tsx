@@ -25,6 +25,7 @@ import {
   PanelLeftOpen,
   User,
 } from "lucide-react";
+import { BrandSymbol, BrandWordmark } from "../ui";
 import NavItem from "./SidebarNavItem";
 
 interface DashboardSidebarProps {
@@ -56,8 +57,6 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps): JSX.Element {
   const { t } = useTranslation();
   const appName = t("app.name");
-  const [appNamePrimary, ...appNameSecondaryParts] = appName.split(" ");
-  const appNameSecondary = appNameSecondaryParts.join(" ");
 
   const clubItems: Array<{ icon: JSX.Element; label: string; tab: string }> = [
     { icon: <Users />, label: t("dashboard.squad"), tab: "Squad" },
@@ -100,21 +99,12 @@ export default function DashboardSidebar({
         <div
           className={`flex ${collapsed ? "flex-col items-center gap-3" : "items-center justify-between gap-3"}`}
         >
-          <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2"}`}>
-            <div className="w-8 h-8 flex items-center justify-center">
-              <img src="../../openfootball.svg" alt={appName} className="w-8 h-8" />
-            </div>
+          <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2.5"}`}>
+            <BrandSymbol className="h-9 w-9" label={collapsed ? appName : undefined} />
             {collapsed ? null : (
-              <div>
-                <h1 className="text-sm font-heading font-semibold text-white uppercase tracking-wider">
-                  {appNamePrimary}
-                </h1>
-                {appNameSecondary ? (
-                  <h1 className="font-bold font-heading text-accent-400 uppercase tracking-wider">
-                    {appNameSecondary}
-                  </h1>
-                ) : null}
-              </div>
+              <h1>
+                <BrandWordmark stacked onDark className="text-lg" />
+              </h1>
             )}
           </div>
           <button
