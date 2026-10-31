@@ -1,7 +1,8 @@
 {
   "app": {
-    "name": "OpenFoot Manager",
-    "publisher": "Sturdy Robot"
+    "name": "Eleven Saga",
+    "tagline": "Kulübünün hikâyesini yaz",
+    "basedOn": "Sturdy Robot'un OpenFoot Manager'ına dayanır · GPLv3"
   },
   "menu": {
     "newGame": "Yeni Oyun",

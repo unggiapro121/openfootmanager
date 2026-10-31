@@ -17,7 +17,7 @@ installConsoleForwarding();
 // nothing about which version produced it — leaving a triager to ask. And because it is written
 // through the same path as every forwarded error, its presence is the proof that the path works:
 // a log file that starts without it is one where the frontend's half is missing entirely.
-logInfo(`[startup] Openfoot Manager ${formatAppVersion()} (${navigator.userAgent})`);
+logInfo(`[startup] Eleven Saga ${formatAppVersion()} (${navigator.userAgent})`);
 
 // On Linux/WebKitGTK an unhandled promise rejection restarts the webview
 // process. Swallow any that escape their own try-catch so the app stays up.
