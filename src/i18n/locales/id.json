@@ -248,21 +248,20 @@
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
       "today": {
         "title": "Latihan hari ini",
-        "titleDay": "Latihan hari ini · Hari {{day}}/{{total}}",
         "statusNone": "Belum latihan hari ini",
         "statusManual": "Sudah latihan hari ini",
         "statusAuto": "Hari ini sudah latihan sesuai jadwal",
         "statusBot": "Klub sudah latihan hari ini sebelum kamu mengambil alih",
         "statusRest": "Klub sudah istirahat hari ini sebelum kamu mengambil alih",
         "sessions": "{{count}}/{{cap}} sesi dalam 7 hari terakhir",
-        "recentTitle": "7 hari terakhir",
         "dayCell": "Hari {{day}}",
         "kind": {
           "manual": "Latihan dari tombolmu",
           "auto": "Latihan sesuai jadwal",
           "bot": "Latihan sebelum kamu datang",
           "rest": "Istirahat",
-          "none": "Tidak ada catatan"
+          "none": "Tidak ada catatan",
+          "today": "Hari ini, belum latihan"
         },
         "recentNote": "Hari latihan di jadwal bisa menjadi hari istirahat jika sudah ada {{cap}} sesi dalam 7 hari.",
         "nextRecovery": "Pemulihan kondisi berikutnya pukul {{time}} (sisa {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Pemain dengan stamina tinggi pulih lebih cepat dan kehilangan lebih sedikit kondisi setelah laga.",
         "lineupLocked": "Susunan pemain dikunci untuk laga pukul {{time}}. Kamu bisa berlatih lagi setelah laga selesai.",
         "reload": "Muat ulang",
-        "unknownRefusal": "Belum bisa latihan sekarang."
+        "unknownRefusal": "Belum bisa latihan sekarang.",
+        "kicker": "Hari ini · Hari {{day}}/{{total}}",
+        "scheduleDay": "Hari ini hari latihan menurut jadwal {{schedule}}.",
+        "scheduleRest": "Hari ini hari istirahat menurut jadwal {{schedule}}.",
+        "stripLabel": "7 hari terakhir dan hari ini",
+        "notesToggle": "Cara kerja kondisi dan jadwal",
+        "legend": "Keterangan",
+        "matchToday": "Hari ini ada laga pukul {{time}}. Pemain yang latihan tambahan sebelumnya bermain dengan kondisi sisa latihan."
       },
       "extra": {
         "title": "Latihan tambahan",
-        "intro": "Sesi tambahan ditambahkan ke sesi hari ini. Sesi ini menguras kondisi, tidak memulihkan, dan tidak dibatasi. Kemajuannya terkumpul perlahan, sedikit demi sedikit. Sesi tambahan hari ini: {{today}}.",
-        "players": "Pemain ({{chosen}}/{{total}} dipilih)",
         "selectAll": "Pilih seluruh skuad",
         "selectNone": "Kosongkan",
-        "condition": "Kondisi {{value}}",
         "reason": {
           "injured": "Cedera: absen",
           "tired": "Kondisi di bawah {{floor}}: absen",
@@ -299,17 +302,58 @@
         "sessionsAll": "Sampai tak ada yang bisa",
         "keepAboveOn": "Jaga kondisi minimum",
         "keepAbove": "Jaga kondisi mulai",
-        "keepAboveHint": "Disarankan di hari pertandingan: {{value}}.",
         "xiWarning": "Pemain inti ini akan memulai pertandingan hari ini dengan kondisi di bawah {{condition}}: {{names}}.",
         "focusFull": "{{names}}: semua atribut fokus latihannya sudah penuh, jadi sesi hanya menguras kondisi. Ganti fokusnya.",
         "andMore": "{{names}} dan {{more}} lainnya",
-        "press": "Latihan tambahan ({{players}} pemain × {{sessions}})",
-        "pressAll": "Latihan tambahan ({{players}} pemain, sampai tak ada yang bisa)",
         "held": "{{held}} sesi selesai (ke-{{first}}–{{last}} hari ini).",
         "sessionsColumn": "Sesi",
         "gains": "Kemajuan",
         "gainsCount": "+{{gains}} atribut",
-        "noGain": "Tidak naik"
+        "noGain": "Tidak naik",
+        "entryToday": "Sesi tambahan hari ini: {{count}}",
+        "entryGift": "hadiah berikutnya pukul {{time}}",
+        "entryGiftReady": "hadiah hari ini menunggu",
+        "open": "Pilih pemain",
+        "drawerIntro": "Setiap sesi menguras kondisi, tanpa pemulihan dan tanpa batas. Kemajuan bertambah perlahan.",
+        "playersTitle": "Pemain",
+        "willStop": "Di bawah kondisi yang dijaga: tidak berlatih",
+        "costPer": "−{{cost}} kondisi/sesi",
+        "keepLess": "Turunkan kondisi yang dijaga",
+        "keepMore": "Naikkan kondisi yang dijaga",
+        "keepMatch": "Hari laga: pakai {{value}}",
+        "summary": "{{players}} pemain · {{sessions}} sesi · {{intensity}}",
+        "summaryAll": "{{players}} pemain · sampai tak ada yang bisa · {{intensity}}",
+        "pressShort": "Latihan tambahan"
+      },
+      "tab": {
+        "label": "Pengaturan latihan",
+        "plan": "Rencana mingguan",
+        "groups": "Grup latihan ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Hari latihan per minggu",
+        "focusHint": "Bawaan untuk seluruh tim. Grup bisa punya fokus sendiri.",
+        "intensityHint": "Untuk hari latihan sesuai jadwal",
+        "weekAria": "{{train}} hari latihan, {{rest}} hari istirahat",
+        "weekAriaToday": "{{train}} hari latihan, {{rest}} hari istirahat. Hari ini, {{day}}, adalah {{type}}.",
+        "summary": "Pada hari latihan terjadwal seluruh tim berlatih <strong>{{focus}}</strong> ({{attrs}}) dengan intensitas <strong>{{intensity}}</strong>, kecuali grup yang punya fokus sendiri.",
+        "summaryNoAttrs": "Pada hari latihan terjadwal seluruh tim berlatih <strong>{{focus}}</strong> dengan intensitas <strong>{{intensity}}</strong>, kecuali grup yang punya fokus sendiri."
+      },
+      "main": {
+        "title": "Sesi utama",
+        "fromPlan": "Sesuai rencana mingguan",
+        "auto": "Tim berlatih sesuai jadwal saat pergantian hari ({{time}}). Ubah jadwal, fokus, atau intensitas di rencana mingguan di bawah.",
+        "autoNoTime": "Tim berlatih sesuai jadwal saat pergantian hari. Ubah jadwal, fokus, atau intensitas di rencana mingguan di bawah.",
+        "rest": "Hari ini istirahat menurut jadwal: tidak ada sesi utama."
+      },
+      "groups": {
+        "all": "Semua ({{count}})",
+        "focusOf": "Fokus grup {{name}}",
+        "groupOf": "Grup {{name}}",
+        "focusOfPlayer": "Fokus {{name}}",
+        "inherited": "{{focus}} (ikut grup)",
+        "inheritedTag": "ikut grup",
+        "empty": "Belum ada pemain di grup ini."
       }
     },
     "schedule": {

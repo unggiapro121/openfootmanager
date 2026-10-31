@@ -248,21 +248,20 @@
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir.",
       "today": {
         "title": "Bugünkü antrenman",
-        "titleDay": "Bugünkü antrenman · Gün {{day}}/{{total}}",
         "statusNone": "Bugün henüz antrenman yapılmadı",
         "statusManual": "Bugün antrenman yapıldı",
         "statusAuto": "Bugün programa göre antrenman yapıldı",
         "statusBot": "Kulüp sen devralmadan önce bugün antrenman yaptı",
         "statusRest": "Kulüp sen devralmadan önce bugün dinlendi",
         "sessions": "Son 7 günde {{count}}/{{cap}} antrenman",
-        "recentTitle": "Son 7 gün",
         "dayCell": "Gün {{day}}",
         "kind": {
           "manual": "Senin başlattığın antrenman",
           "auto": "Programa göre antrenman",
           "bot": "Sen gelmeden önce antrenman",
           "rest": "Dinlenme",
-          "none": "Kayıt yok"
+          "none": "Kayıt yok",
+          "today": "Bugün, henüz yapılmadı"
         },
         "recentNote": "7 günde {{cap}} antrenman dolduğunda programdaki bir antrenman günü dinlenme gününe dönüşebilir.",
         "nextRecovery": "Bir sonraki kondisyon toparlanması {{time}} (kalan {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Dayanıklılığı yüksek oyuncular daha hızlı toparlanır ve maçtan sonra daha az kondisyon kaybeder.",
         "lineupLocked": "Saat {{time}}'daki maç için kadro kilitli. Maç bitince yeniden antrenman yapabilirsin.",
         "reload": "Yeniden yükle",
-        "unknownRefusal": "Şu anda antrenman yapılamıyor."
+        "unknownRefusal": "Şu anda antrenman yapılamıyor.",
+        "kicker": "Bugün · Gün {{day}}/{{total}}",
+        "scheduleDay": "Bugün {{schedule}} programında antrenman günü.",
+        "scheduleRest": "Bugün {{schedule}} programında dinlenme günü.",
+        "stripLabel": "Son 7 gün ve bugün",
+        "notesToggle": "Kondisyon ve program nasıl işler",
+        "legend": "Açıklama",
+        "matchToday": "Bugün saat {{time}}'da maç var. Öncesinde ek antrenman yapanlar kalan kondisyonla oynar."
       },
       "extra": {
         "title": "Ek antrenman",
-        "intro": "Ek seanslar günün seansına eklenir. Kondisyon harcar, toparlanma sağlamaz ve sınırı yoktur. Getirdikleri gelişim yavaş yavaş, azar azar birikir. Bugünkü ek seans: {{today}}.",
-        "players": "Oyuncular ({{chosen}}/{{total}} seçili)",
         "selectAll": "Tüm kadroyu seç",
         "selectNone": "Temizle",
-        "condition": "Kondisyon {{value}}",
         "reason": {
           "injured": "Sakat: katılmaz",
           "tired": "Kondisyon {{floor}} altında: katılmaz",
@@ -299,17 +302,58 @@
         "sessionsAll": "Kimse yapamayana kadar",
         "keepAboveOn": "Asgari kondisyonu koru",
         "keepAbove": "Kondisyonu şu değerin üstünde tut",
-        "keepAboveHint": "Maç gününde önerilen: {{value}}.",
         "xiWarning": "Bu ilk 11 oyuncuları bugünkü maça {{condition}} altında kondisyonla başlar: {{names}}.",
         "focusFull": "{{names}}: antrenman odağının tüm nitelikleri dolu, seans yalnızca kondisyon harcar. Odağını değiştir.",
         "andMore": "{{names}} ve {{more}} kişi daha",
-        "press": "Ek antrenman ({{players}} oyuncu × {{sessions}})",
-        "pressAll": "Ek antrenman ({{players}} oyuncu, kimse yapamayana kadar)",
         "held": "{{held}} seans yapıldı (bugünün {{first}}–{{last}}. seansı).",
         "sessionsColumn": "Seanslar",
         "gains": "Gelişim",
         "gainsCount": "+{{gains}} nitelik",
-        "noGain": "Artış yok"
+        "noGain": "Artış yok",
+        "entryToday": "Bugünkü ek antrenman: {{count}}",
+        "entryGift": "sonraki hediye {{time}}",
+        "entryGiftReady": "bugünün hediyesi bekliyor",
+        "open": "Oyuncu seç",
+        "drawerIntro": "Her antrenman kondisyon harcar, toparlanma vermez ve sınırı yoktur. Gelişim yavaş birikir.",
+        "playersTitle": "Oyuncular",
+        "willStop": "Korunacak kondisyonun altında: çalışmayacak",
+        "costPer": "−{{cost}} kondisyon/antrenman",
+        "keepLess": "Korunacak kondisyonu düşür",
+        "keepMore": "Korunacak kondisyonu artır",
+        "keepMatch": "Maç günü: {{value}} kullan",
+        "summary": "{{players}} oyuncu · {{sessions}} antrenman · {{intensity}}",
+        "summaryAll": "{{players}} oyuncu · kimse kalmayana dek · {{intensity}}",
+        "pressShort": "Ek antrenman yap"
+      },
+      "tab": {
+        "label": "Antrenman ayarları",
+        "plan": "Haftalık plan",
+        "groups": "Antrenman grupları ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Haftalık antrenman günleri",
+        "focusHint": "Tüm takım için varsayılan. Bir grup kendi odağını seçebilir.",
+        "intensityHint": "Programdaki antrenman günleri için",
+        "weekAria": "{{train}} antrenman günü, {{rest}} dinlenme günü",
+        "weekAriaToday": "{{train}} antrenman günü, {{rest}} dinlenme günü. Bugün ({{day}}): {{type}}.",
+        "summary": "Programdaki günlerde tüm takım <strong>{{focus}}</strong> ({{attrs}}) çalışır, yoğunluk <strong>{{intensity}}</strong>; kendi odağı olan gruplar hariç.",
+        "summaryNoAttrs": "Programdaki günlerde tüm takım <strong>{{focus}}</strong> çalışır, yoğunluk <strong>{{intensity}}</strong>; kendi odağı olan gruplar hariç."
+      },
+      "main": {
+        "title": "Ana antrenman",
+        "fromPlan": "Haftalık plana göre",
+        "auto": "Takım gün dönümünde ({{time}}) programına göre çalışır. Programı, odağı veya yoğunluğu aşağıdaki haftalık plandan değiştirin.",
+        "autoNoTime": "Takım gün dönümünde programına göre çalışır. Programı, odağı veya yoğunluğu aşağıdaki haftalık plandan değiştirin.",
+        "rest": "Bugün programa göre dinlenme: ana antrenman yok."
+      },
+      "groups": {
+        "all": "Tümü ({{count}})",
+        "focusOf": "{{name}} grubunun odağı",
+        "groupOf": "{{name}} grubu",
+        "focusOfPlayer": "{{name}} odağı",
+        "inherited": "{{focus}} (gruptan)",
+        "inheritedTag": "gruptan",
+        "empty": "Bu grupta henüz oyuncu yok."
       }
     },
     "schedule": {

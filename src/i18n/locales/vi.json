@@ -248,21 +248,20 @@
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
       "today": {
         "title": "Buổi tập hôm nay",
-        "titleDay": "Buổi tập hôm nay · Ngày {{day}}/{{total}}",
         "statusNone": "Chưa tập hôm nay",
         "statusManual": "Đã tập hôm nay",
         "statusAuto": "Hôm nay đã tập theo lịch",
         "statusBot": "CLB đã tập hôm nay trước khi bạn nhận đội",
         "statusRest": "Hôm nay CLB đã nghỉ trước khi bạn nhận đội",
         "sessions": "{{count}}/{{cap}} buổi trong 7 ngày gần nhất",
-        "recentTitle": "7 ngày trước",
         "dayCell": "Ngày {{day}}",
         "kind": {
           "manual": "Bạn bấm tập",
           "auto": "Tập theo lịch",
           "bot": "CLB tập khi chưa có bạn",
           "rest": "Nghỉ",
-          "none": "Chưa có dữ liệu"
+          "none": "Chưa có dữ liệu",
+          "today": "Hôm nay, chưa tập"
         },
         "recentNote": "Ngày tập theo lịch có thể thành ngày nghỉ khi đã đủ {{cap}} buổi trong 7 ngày.",
         "nextRecovery": "Hồi thể lực kế tiếp lúc {{time}} (còn {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Cầu thủ sức bền cao hồi nhanh hơn và mất ít thể lực hơn sau trận.",
         "lineupLocked": "Đang khoá đội hình cho trận lúc {{time}}. Tập lại được sau khi trận kết thúc.",
         "reload": "Tải lại",
-        "unknownRefusal": "Chưa tập được lúc này."
+        "unknownRefusal": "Chưa tập được lúc này.",
+        "kicker": "Hôm nay · Ngày {{day}}/{{total}}",
+        "scheduleDay": "Hôm nay là ngày tập theo lịch {{schedule}}.",
+        "scheduleRest": "Hôm nay là ngày nghỉ theo lịch {{schedule}}.",
+        "stripLabel": "7 ngày trước và hôm nay",
+        "notesToggle": "Thể lực và lịch tập hoạt động thế nào",
+        "legend": "Chú thích",
+        "matchToday": "Hôm nay có trận lúc {{time}}. Tập thêm trước trận thì cầu thủ vào sân với thể lực sau buổi."
       },
       "extra": {
         "title": "Tập thêm",
-        "intro": "Buổi tập thêm cộng thêm vào buổi tập trong ngày. Mỗi buổi tốn thể lực, không hồi phục và không giới hạn số buổi. Tiến bộ từ buổi tập thêm tích luỹ chậm, từng chút một. Hôm nay đã tập thêm: {{today}} buổi.",
-        "players": "Cầu thủ (đã chọn {{chosen}}/{{total}})",
         "selectAll": "Chọn cả đội",
         "selectNone": "Bỏ hết",
-        "condition": "Thể lực {{value}}",
         "reason": {
           "injured": "Chấn thương: nghỉ buổi này",
           "tired": "Thể lực dưới {{floor}}: nghỉ buổi này",
@@ -299,17 +302,58 @@
         "sessionsAll": "Tới khi không ai tập được",
         "keepAboveOn": "Giữ thể lực tối thiểu",
         "keepAbove": "Giữ thể lực từ",
-        "keepAboveHint": "Gợi ý cho ngày có trận: {{value}}.",
         "xiWarning": "Các cầu thủ đá chính này sẽ vào trận hôm nay với thể lực dưới {{condition}}: {{names}}.",
         "focusFull": "{{names}}: mọi thuộc tính của focus đã đầy, buổi tập chỉ tốn thể lực. Hãy đổi focus.",
         "andMore": "{{names}} và {{more}} người khác",
-        "press": "Tập thêm ({{players}} người × {{sessions}} buổi)",
-        "pressAll": "Tập thêm ({{players}} người, tới khi không ai tập được)",
         "held": "Đã tập {{held}} buổi (buổi thứ {{first}}–{{last}} hôm nay).",
         "sessionsColumn": "Số buổi",
         "gains": "Tiến bộ",
         "gainsCount": "+{{gains}} thuộc tính",
-        "noGain": "Không tăng"
+        "noGain": "Không tăng",
+        "entryToday": "Hôm nay đã tập thêm {{count}} buổi",
+        "entryGift": "quà kế tiếp lúc {{time}}",
+        "entryGiftReady": "có quà hôm nay chờ nhận",
+        "open": "Chọn cầu thủ",
+        "drawerIntro": "Mỗi buổi tốn thể lực, không hồi phục, không giới hạn số buổi. Tiến bộ tích luỹ chậm.",
+        "playersTitle": "Cầu thủ",
+        "willStop": "Dưới mức giữ thể lực · sẽ không tập",
+        "costPer": "−{{cost}} thể lực/buổi",
+        "keepLess": "Giảm mức giữ",
+        "keepMore": "Tăng mức giữ",
+        "keepMatch": "Ngày có trận: dùng {{value}}",
+        "summary": "{{players}} cầu thủ · {{sessions}} buổi · {{intensity}}",
+        "summaryAll": "{{players}} cầu thủ · tới khi không ai tập được · {{intensity}}",
+        "pressShort": "Tập thêm"
+      },
+      "tab": {
+        "label": "Thiết lập tập luyện",
+        "plan": "Kế hoạch tuần",
+        "groups": "Nhóm tập ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Số ngày tập mỗi tuần",
+        "focusHint": "Mặc định cho cả đội. Nhóm tập có thể đổi riêng.",
+        "intensityHint": "Cho các ngày tập theo lịch",
+        "weekAria": "{{train}} ngày tập, {{rest}} ngày nghỉ",
+        "weekAriaToday": "{{train}} ngày tập, {{rest}} ngày nghỉ. Hôm nay ({{day}}) là {{type}}.",
+        "summary": "Ngày tập theo lịch: cả đội tập <strong>{{focus}}</strong> ({{attrs}}) với cường độ <strong>{{intensity}}</strong>, trừ các nhóm có trọng tâm riêng.",
+        "summaryNoAttrs": "Ngày tập theo lịch: cả đội tập <strong>{{focus}}</strong> với cường độ <strong>{{intensity}}</strong>, trừ các nhóm có trọng tâm riêng."
+      },
+      "main": {
+        "title": "Buổi tập chính",
+        "fromPlan": "Theo kế hoạch tuần",
+        "auto": "Đội tự tập theo lịch lúc sang ngày ({{time}}). Đổi lịch, trọng tâm hoặc cường độ ở Kế hoạch tuần bên dưới.",
+        "autoNoTime": "Đội tự tập theo lịch lúc sang ngày. Đổi lịch, trọng tâm hoặc cường độ ở Kế hoạch tuần bên dưới.",
+        "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính."
+      },
+      "groups": {
+        "all": "Tất cả ({{count}})",
+        "focusOf": "Trọng tâm nhóm {{name}}",
+        "groupOf": "Nhóm của {{name}}",
+        "focusOfPlayer": "Trọng tâm của {{name}}",
+        "inherited": "{{focus}} (theo nhóm)",
+        "inheritedTag": "theo nhóm",
+        "empty": "Nhóm này chưa có cầu thủ."
       }
     },
     "schedule": {

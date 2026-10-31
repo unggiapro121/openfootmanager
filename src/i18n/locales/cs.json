@@ -248,21 +248,20 @@
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán.",
       "today": {
         "title": "Dnešní trénink",
-        "titleDay": "Dnešní trénink · Den {{day}}/{{total}}",
         "statusNone": "Dnes ještě netrénováno",
         "statusManual": "Dnes natrénováno",
         "statusAuto": "Dnes se trénovalo podle plánu",
         "statusBot": "Klub dnes trénoval dřív, než jste ho převzali",
         "statusRest": "Klub dnes odpočíval dřív, než jste ho převzali",
         "sessions": "{{count}}/{{cap}} tréninků za posledních 7 dní",
-        "recentTitle": "Posledních 7 dní",
         "dayCell": "Den {{day}}",
         "kind": {
           "manual": "Trénink spuštěný vámi",
           "auto": "Trénink podle plánu",
           "bot": "Trénink před vaším příchodem",
           "rest": "Volno",
-          "none": "Bez záznamu"
+          "none": "Bez záznamu",
+          "today": "Dnes, zatím bez tréninku"
         },
         "recentNote": "Tréninkový den podle plánu se může stát dnem volna, když už proběhlo {{cap}} tréninků za 7 dní.",
         "nextRecovery": "Další obnova kondice v {{time}} (zbývá {{left}})",
@@ -275,15 +274,19 @@
         "noteStamina": "Hráči s vysokou vytrvalostí se zotavují rychleji a po zápase ztrácejí méně kondice.",
         "lineupLocked": "Sestava je uzamčena pro zápas v {{time}}. Trénovat znovu můžete po skončení zápasu.",
         "reload": "Načíst znovu",
-        "unknownRefusal": "Teď trénovat nelze."
+        "unknownRefusal": "Teď trénovat nelze.",
+        "kicker": "Dnes · Den {{day}}/{{total}}",
+        "scheduleDay": "Dnes je tréninkový den podle rozvrhu {{schedule}}.",
+        "scheduleRest": "Dnes je den volna podle rozvrhu {{schedule}}.",
+        "stripLabel": "Posledních 7 dní a dnešek",
+        "notesToggle": "Jak funguje kondice a rozvrh",
+        "legend": "Legenda",
+        "matchToday": "Dnes zápas v {{time}}. Kdo předtím trénuje navíc, nastoupí s kondicí, která mu zbude."
       },
       "extra": {
         "title": "Trénink navíc",
-        "intro": "Tréninky navíc se přidávají k tréninku dne. Stojí kondici, nedávají regeneraci a nejsou omezené. Pokrok z nich přibývá pomalu, po troškách. Tréninků navíc dnes: {{today}}.",
-        "players": "Hráči (vybráno {{chosen}}/{{total}})",
         "selectAll": "Vybrat celý kádr",
         "selectNone": "Zrušit výběr",
-        "condition": "Kondice {{value}}",
         "reason": {
           "injured": "Zraněný: vynechá",
           "tired": "Kondice pod {{floor}}: vynechá",
@@ -299,17 +302,58 @@
         "sessionsAll": "Dokud někdo může",
         "keepAboveOn": "Udržet minimální kondici",
         "keepAbove": "Udržet kondici od",
-        "keepAboveHint": "Doporučeno v den zápasu: {{value}}.",
         "xiWarning": "Tito hráči základní sestavy by začali dnešní zápas s kondicí pod {{condition}}: {{names}}.",
         "focusFull": "{{names}}: všechny atributy jejich zaměření tréninku jsou na maximu, trénink jen stojí kondici. Změňte jim zaměření.",
         "andMore": "{{names}} a dalších {{more}}",
-        "press": "Trénovat navíc ({{players}} hráčů × {{sessions}})",
-        "pressAll": "Trénovat navíc ({{players}} hráčů, dokud někdo může)",
         "held": "Odtrénováno tréninků: {{held}} (č. {{first}}–{{last}} dnes).",
         "sessionsColumn": "Tréninky",
         "gains": "Pokrok",
         "gainsCount": "+{{gains}} atributů",
-        "noGain": "Bez zlepšení"
+        "noGain": "Bez zlepšení",
+        "entryToday": "Tréninků navíc dnes: {{count}}",
+        "entryGift": "další dárek v {{time}}",
+        "entryGiftReady": "dnešní dárek čeká",
+        "open": "Vybrat hráče",
+        "drawerIntro": "Každý trénink stojí kondici, neobnovuje ji a nemá limit. Pokrok roste pomalu.",
+        "playersTitle": "Hráči",
+        "willStop": "Pod kondicí k udržení: nebude trénovat",
+        "costPer": "−{{cost}} kondice/trénink",
+        "keepLess": "Snížit kondici k udržení",
+        "keepMore": "Zvýšit kondici k udržení",
+        "keepMatch": "Zápasový den: použít {{value}}",
+        "summary": "Hráčů: {{players}} · tréninků: {{sessions}} · {{intensity}}",
+        "summaryAll": "Hráčů: {{players}} · dokud někdo může · {{intensity}}",
+        "pressShort": "Trénovat navíc"
+      },
+      "tab": {
+        "label": "Nastavení tréninku",
+        "plan": "Týdenní plán",
+        "groups": "Tréninkové skupiny ({{count}})"
+      },
+      "plan": {
+        "scheduleHint": "Tréninkové dny v týdnu",
+        "focusHint": "Výchozí pro celý tým. Skupina může mít vlastní.",
+        "intensityHint": "Pro tréninkové dny podle rozvrhu",
+        "weekAria": "{{train}} tréninkových dnů, {{rest}} dnů volna",
+        "weekAriaToday": "{{train}} tréninkových dnů, {{rest}} dnů volna. Dnes, {{day}}, je {{type}}.",
+        "summary": "Ve dny podle rozvrhu trénuje celý tým <strong>{{focus}}</strong> ({{attrs}}) s intenzitou <strong>{{intensity}}</strong>, kromě skupin s vlastním zaměřením.",
+        "summaryNoAttrs": "Ve dny podle rozvrhu trénuje celý tým <strong>{{focus}}</strong> s intenzitou <strong>{{intensity}}</strong>, kromě skupin s vlastním zaměřením."
+      },
+      "main": {
+        "title": "Hlavní trénink",
+        "fromPlan": "Podle týdenního plánu",
+        "auto": "Tým trénuje podle rozvrhu při změně dne ({{time}}). Rozvrh, zaměření či intenzitu změníte v týdenním plánu níže.",
+        "autoNoTime": "Tým trénuje podle rozvrhu při změně dne. Rozvrh, zaměření či intenzitu změníte v týdenním plánu níže.",
+        "rest": "Dnes je podle rozvrhu volno: hlavní trénink není."
+      },
+      "groups": {
+        "all": "Všichni ({{count}})",
+        "focusOf": "Zaměření skupiny {{name}}",
+        "groupOf": "Skupina hráče {{name}}",
+        "focusOfPlayer": "Zaměření hráče {{name}}",
+        "inherited": "{{focus}} (zděděno)",
+        "inheritedTag": "zděděno",
+        "empty": "V této skupině zatím nejsou hráči."
       }
     },
     "schedule": {
