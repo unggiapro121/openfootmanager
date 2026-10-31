@@ -49,6 +49,8 @@ pub(super) const PLACES_E54: [Kind; LEAGUE] = [
 /// may drink a day (lever 1) and a club a day (lever 2, none by default).
 #[derive(Clone, Copy)]
 pub(super) struct ExtraRun {
+    /// The season ruleset's development multiplier (16 unless a run says otherwise).
+    pub(super) multiplier: f64,
     pub(super) params: ExtraParams,
     pub(super) player_cap: u8,
     pub(super) club_cap: Option<u32>,
@@ -57,6 +59,7 @@ pub(super) struct ExtraRun {
 impl ExtraRun {
     fn with(params: ExtraParams) -> Self {
         Self {
+            multiplier: 16.0,
             params,
             player_cap: DRINK_CAP,
             club_cap: None,
@@ -65,7 +68,8 @@ impl ExtraRun {
 
     fn describe(self) -> String {
         format!(
-            "ExtraParams {{ floor: {}, dev_permille: {} }}, bottle points a player a day {}, a club a day {}",
+            "multiplier ×{}, ExtraParams {{ floor: {}, dev_permille: {} }}, bottle points a player a day {}, a club a day {}",
+            self.multiplier,
             self.params.floor,
             self.params.dev_permille,
             self.player_cap,
@@ -1508,7 +1512,7 @@ fn e54_variant(
     (shift, rotate, seasons): (usize, bool, u32),
 ) -> Variant {
     Variant {
-        multiplier: 16.0,
+        multiplier: extra_run.multiplier,
         recovery: Recovery::Blocks(RecoveryBlocks {
             per_day: 6,
             hours: 8,
@@ -1668,6 +1672,76 @@ pub(super) fn lowered_dev_levels() {
             println!("  chosen: the largest passing level, devPermille {dev_permille}")
         }
         None => println!("  no level passes: keep devPermille 1000"),
+    }
+}
+
+/// The points of `OFM_E54_POINTS` ("multiplier:devPermille,…"), ×16 at 125 when unset.
+fn slowed_points() -> Vec<(f64, u32)> {
+    let text = std::env::var("OFM_E54_POINTS").unwrap_or_else(|_| "16:125".to_string());
+    text.split(',')
+        .map(|point| {
+            let (multiplier, dev_permille) = point
+                .trim()
+                .split_once(':')
+                .expect("OFM_E54_POINTS reads multiplier:devPermille,…");
+            (
+                multiplier.parse().expect("a multiplier"),
+                dev_permille.parse().expect("a devPermille"),
+            )
+        })
+        .collect()
+}
+
+/// The user's slower online development (2026-10-31): E5-4b in full under E54-13 and E54-14 at
+/// each point of `OFM_E54_POINTS`, with E3 beside an `Auto` star's own growth: PO compares the
+/// ratio E3 / ΔOVR of an `Auto` star with ×16's.
+pub(super) fn slowed_dev_points() {
+    let mut lines = Vec::new();
+    for (multiplier, dev_permille) in slowed_points() {
+        let extra_run = ExtraRun {
+            multiplier,
+            ..ExtraRun::with(ExtraParams {
+                floor: 40,
+                dev_permille,
+            })
+        };
+        let first: Vec<Measures> = (0..3)
+            .flat_map(|shift| {
+                SEEDS
+                    .iter()
+                    .map(move |seed| run(e54_variant(extra_run, *seed, (shift, true, 1))))
+            })
+            .collect();
+        let found = measure(extra_run);
+        let feel = feel_shares(&first);
+        let auto_star = over_seeds(&first, Kind::Auto, star_growth);
+        let free_star = over_seeds(&first, Kind::ExtraFree, star_growth);
+        let ratio = found.e3 / mean(&auto_star);
+        lines.push(format!(
+            "  ×{multiplier} {{40, {dev_permille}}}: E2 {:.3} · E3 {:+.2} (star ExtraFree {:.2}, star Auto {:.2} ±{:.2}) · E3 / ΔOVR Auto star {ratio:.2} · E4 Free {:+.2} · E4 FreeAll {:+.2} · E5 {} · E6 {:+.2} · E7 {} · E8 {:.0}/{:.0} (reported) · feel ≤21 starter {:.1}% (n={}), ≤21 other {:.1}%, 22–24 starter {:.1}%, 22–24 other {:.1}% · E2–E7 {}",
+            found.e2,
+            found.e3,
+            mean(&free_star),
+            mean(&auto_star),
+            spread(&auto_star),
+            found.e4_free,
+            found.e4_all,
+            verdict(found.e5_ok),
+            found.e6,
+            verdict(found.e7_ok),
+            found.e8_max3,
+            found.e8_max_all,
+            100.0 * feel[0].0,
+            feel[0].1,
+            100.0 * feel[1].0,
+            100.0 * feel[2].0,
+            100.0 * feel[3].0,
+            verdict(found.e2_e7),
+        ));
+    }
+    println!("\n==== slower online development (user's decision of 2026-10-31) ====");
+    for line in lines {
+        println!("{line}");
     }
 }
 
