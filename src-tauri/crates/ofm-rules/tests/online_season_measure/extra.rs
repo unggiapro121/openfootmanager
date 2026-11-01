@@ -290,15 +290,19 @@ pub(super) fn open_season(
     m: &mut Measures,
 ) {
     let params = extra_run.params;
-    let day0 = training_day(football_year, 0, v);
     let key = season::day_key(season_number, 0);
     for club in clubs.iter_mut() {
-        if club.kind == Kind::Bot {
+        let day0 = training_day(football_year, 0, v, club.kind);
+        // A bot's players, or a person's on the club's own plan (E5-6c V5, V6), lose any focus of
+        // their own.
+        if club.kind == Kind::Bot || !v.best_focus {
             for player in &mut club.players {
                 player.training_focus = None;
             }
         }
-        choose_focus(club);
+        if v.best_focus {
+            choose_focus(club);
+        }
         let measure = &mut kind_measure(m, club.kind).extra;
         probe(club, &day0, &key, (v.seed, params), measure);
         pick_stars(club, &day0.date);
@@ -482,7 +486,7 @@ pub(super) fn press(
     let Recovery::Blocks(blocks_of) = v.recovery else {
         return;
     };
-    let today = training_day(football_year, day, v);
+    let today = training_day(football_year, day, v, club.kind);
     rest_to(club, at, &blocks_of, &today.date);
     let plan = plan_of(club);
     let order = pressers(club);
@@ -1431,6 +1435,8 @@ fn e54_variant(
         seed,
         extra: Some(extra_run),
         keeper_drill: None,
+        keeper_drill_bots: None,
+        best_focus: true,
         probes: false,
     }
 }

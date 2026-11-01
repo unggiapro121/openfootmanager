@@ -152,6 +152,10 @@ struct Variant {
     extra: Option<extra::ExtraRun>,
     /// E5-6b: the season ruleset's keeper drill (None trains as the game always has).
     keeper_drill: Option<KeeperDrill>,
+    /// E5-6c: the drill of bots' keepers (`botKeeperDrill`); None, they take `keeper_drill`.
+    keeper_drill_bots: Option<KeeperDrill>,
+    /// E54-13: a person's players train their best focus (E5-4b's hooks); off, the club's plan.
+    best_focus: bool,
     /// E5-6b: keepers and their controls planted at the first season's start.
     probes: bool,
 }
@@ -176,6 +180,8 @@ impl Variant {
             seed,
             extra: None,
             keeper_drill: None,
+            keeper_drill_bots: None,
+            best_focus: true,
             probes: false,
         }
     }
@@ -334,14 +340,28 @@ fn band(age: i32) -> &'static str {
     }
 }
 
-fn training_day(football_year: u32, day: u32, v: Variant) -> TrainingDay {
+/// The keeper drill a club of `kind` trains under, as the server's `keeper_drill_for` (E5-6c
+/// E56c-3): a bot's own when the ruleset has one, the people's otherwise; none without a drill.
+fn keeper_drill_for(
+    drill: Option<KeeperDrill>,
+    bots: Option<KeeperDrill>,
+    kind: Kind,
+) -> Option<KeeperDrill> {
+    drill.and(if kind == Kind::Bot {
+        bots.or(drill)
+    } else {
+        drill
+    })
+}
+
+fn training_day(football_year: u32, day: u32, v: Variant, kind: Kind) -> TrainingDay {
     let (year, date) = season::season_football_date(football_year, day, DAYS);
     TrainingDay {
         weekday_num: season::season_weekday(START_WEEKDAY, day),
         year,
         date,
         development_multiplier: v.multiplier,
-        keeper_drill: v.keeper_drill,
+        keeper_drill: keeper_drill_for(v.keeper_drill, v.keeper_drill_bots, kind),
     }
 }
 
@@ -354,7 +374,7 @@ fn train(club: &mut Club, season_number: u32, day: u32, football_year: u32, v: V
     let Recovery::Legacy { rest_days } = v.recovery else {
         return;
     };
-    let training_day = training_day(football_year, day, v);
+    let training_day = training_day(football_year, day, v, club.kind);
     for player in &mut club.players {
         player_wear::recover_injury(player, 1);
     }
@@ -398,7 +418,7 @@ fn morning(club: &mut Club, at: i64, season_number: u32, day: u32, football_year
     let Recovery::Blocks(blocks_of) = v.recovery else {
         return;
     };
-    let today = training_day(football_year, day, v);
+    let today = training_day(football_year, day, v, club.kind);
     for player in &mut club.players {
         player_wear::recover_injury(player, 1);
     }
@@ -435,7 +455,7 @@ fn catch_up(club: &mut Club, season_number: u32, day: u32, football_year: u32, v
     if club.held.contains(&yesterday) {
         return;
     }
-    let past = training_day(football_year, yesterday, v);
+    let past = training_day(football_year, yesterday, v, club.kind);
     let automatic = club.kind.automatic();
     let kind = if automatic && session_allowed(&club.held, yesterday) {
         if club
@@ -480,7 +500,7 @@ fn press(club: &mut Club, at: i64, season_number: u32, day: u32, football_year: 
     if !session_allowed(&club.held, day) {
         return;
     }
-    let today = training_day(football_year, day, v);
+    let today = training_day(football_year, day, v, club.kind);
     rest_to(club, at, &blocks_of, &today.date);
     let intensity = if club.kind == Kind::ManualHigh {
         TrainingIntensity::High
@@ -752,7 +772,7 @@ fn run(v: Variant) -> Measures {
             let day_start = i64::from((season_number - 1) * DAYS + day) * MINUTES_A_DAY;
             for club in &mut clubs {
                 train(club, season_number, day, football_year, v);
-                if v.extra.is_some() {
+                if v.extra.is_some() && v.best_focus {
                     extra::choose_focus(club);
                 }
                 morning(club, day_start, season_number, day, football_year, v);
@@ -1146,5 +1166,23 @@ fn measure_extra_sessions_lowered_dev() {
 fn measure_keeper_drill() {
     let started = std::time::Instant::now();
     keeper::measure_keeper_drill();
+    println!("took {:.1} s", started.elapsed().as_secs_f64());
+}
+
+/// Given E5-6b's world at ×6 (the gate draft) over five seeds and eight seasons, a people's club
+/// and a bot's keeper each on their own drill (E5-6c-tech-spec.md §5),
+/// when the grid 300/100, 350/150, 400/200, 400/250, the baselines without a drill and a club's
+/// own plan are played,
+/// then K1, true K1, K2 (and by style), K3, K4 apart and the world's are printed, §5.4's rules
+/// applied, and the pair chosen, or what PO must decide, named.
+#[test]
+#[ignore = "a measurement, run by hand"]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "a measurement times itself with the wall clock; it is not a rule and feeds no world"
+)]
+fn measure_keeper_drill_x6() {
+    let started = std::time::Instant::now();
+    keeper::measure_keeper_drill_x6();
     println!("took {:.1} s", started.elapsed().as_secs_f64());
 }
