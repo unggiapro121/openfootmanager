@@ -116,6 +116,18 @@ describe("the online header", () => {
     );
   });
 
+  // Given a long page,
+  // when the coach scrolls it,
+  // then the header stays at the top of the window: it sits in a block stuck to the top, above
+  // the page.
+  it("stays at the top while the page scrolls", async () => {
+    serve();
+    renderOnline("/online/shop");
+
+    await within(header()).findByRole("heading", { level: 1 });
+    expect(header().parentElement).toHaveClass("sticky", "top-0", "z-20");
+  });
+
   // Given another club's page,
   // when the header shows,
   // then it is named by the coach's own club.
