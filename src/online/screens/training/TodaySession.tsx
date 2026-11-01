@@ -121,7 +121,11 @@ export default function TodaySession({
               })}
             </p>
           )}
-          <MainSession plan={club.trainingPlan} scheduleDay={scheduleDay} />
+          <MainSession
+            plan={club.trainingPlan}
+            scheduleDay={scheduleDay}
+            keeperDrill={trainingDay.keeperDrill}
+          />
           {trainingDay.extra && (
             <ExtraEntry today={trainingDay.extra.today} onOpen={() => setExtraOpen(true)} />
           )}

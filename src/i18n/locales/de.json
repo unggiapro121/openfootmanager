@@ -346,7 +346,8 @@
         "fromPlan": "Laut Wochenplan",
         "auto": "Die Mannschaft trainiert nach Plan beim Tageswechsel ({{time}}). Plan, Schwerpunkt oder Intensität änderst du unten im Wochenplan.",
         "autoNoTime": "Die Mannschaft trainiert nach Plan beim Tageswechsel. Plan, Schwerpunkt oder Intensität änderst du unten im Wochenplan.",
-        "rest": "Heute ist laut Plan Ruhetag: keine Haupteinheit."
+        "rest": "Heute ist laut Plan Ruhetag: keine Haupteinheit.",
+        "keeperDrill": "Torhüter trainieren immer zusätzlich eine eigene Übung: Fangen, Reflexe, Luftzweikämpfe."
       },
       "groups": {
         "all": "Alle ({{count}})",

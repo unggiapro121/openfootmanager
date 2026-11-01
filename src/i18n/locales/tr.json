@@ -346,7 +346,8 @@
         "fromPlan": "Haftalık plana göre",
         "auto": "Takım gün dönümünde ({{time}}) programına göre çalışır. Programı, odağı veya yoğunluğu aşağıdaki haftalık plandan değiştirin.",
         "autoNoTime": "Takım gün dönümünde programına göre çalışır. Programı, odağı veya yoğunluğu aşağıdaki haftalık plandan değiştirin.",
-        "rest": "Bugün programa göre dinlenme: ana antrenman yok."
+        "rest": "Bugün programa göre dinlenme: ana antrenman yok.",
+        "keeperDrill": "Kaleciler her zaman ayrıca kendi özel çalışmalarını yapar: Top Tutma, Refleks, Hava Hakimiyeti."
       },
       "groups": {
         "all": "Tümü ({{count}})",
