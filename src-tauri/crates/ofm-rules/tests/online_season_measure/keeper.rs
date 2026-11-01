@@ -8,6 +8,7 @@
 use std::collections::{BTreeMap, HashMap};
 
 use domain::player::{Player, Position};
+use domain::team::PlayStyle;
 use ofm_rules::age;
 use ofm_rules::player_rating::{primary_position, refresh_player_derived};
 use ofm_rules::recovery::RecoveryBlocks;
@@ -58,6 +59,8 @@ struct Planted {
     probe: usize,
     role: usize,
     potential: u8,
+    /// E5-6c: his club's play style when planted (a bot's weekly cycle follows it).
+    style: PlayStyle,
 }
 
 /// The players planted in a club, if any.
@@ -77,6 +80,12 @@ pub(super) struct KeeperMeasure {
     reached: BTreeMap<(usize, usize), Vec<Option<u32>>>,
     /// Season-start age ≤ 25: (keepers' OVR change sum, keepers, outfielders' sum, outfielders).
     young: (f64, u32, f64, u32),
+    /// E5-6c: (style, probe, role, season) → OVR changes of the season.
+    growth_style: BTreeMap<(String, usize, usize, u32), Vec<f64>>,
+    /// E5-6c: `young`, season by season.
+    young_by_season: BTreeMap<u32, (f64, u32, f64, u32)>,
+    /// E5-6c: season → (goals scored, sides) of this kind in that season.
+    season_goals: BTreeMap<u32, (u32, u32)>,
 }
 
 /// The probe the `nth` club of `kind` gets: people's clubs take TM-1 and TM-2 in turn, bots all
@@ -173,6 +182,7 @@ pub(super) fn open_season(clubs: &mut [Club], season_number: u32) {
                     probe,
                     role,
                     potential,
+                    style: club.team.play_style.clone(),
                 });
             }
         }
@@ -183,7 +193,18 @@ pub(super) fn open_season(clubs: &mut [Club], season_number: u32) {
 /// At each season's end, before aging: each planted player's growth and whether he reached his
 /// potential; every young keeper's and outfielder's growth.
 pub(super) fn close_season(clubs: &[Club], season_number: u32, first_day: &str, m: &mut Measures) {
-    young_growth(clubs, first_day, m);
+    for measure in m.values_mut() {
+        let (goals, sides) = measure
+            .keeper
+            .season_goals
+            .values()
+            .fold((0, 0), |(g, n), (goals, sides)| (g + goals, n + sides));
+        measure.keeper.season_goals.insert(
+            season_number,
+            (measure.goals - goals, measure.matches - sides),
+        );
+    }
+    young_growth(clubs, season_number, first_day, m);
     for club in clubs {
         let e = &mut kind_measure(m, club.kind).keeper;
         for planted in &club.probes.planted {
@@ -193,10 +214,20 @@ pub(super) fn close_season(clubs: &[Club], season_number: u32, first_day: &str, 
             ) else {
                 continue;
             };
+            let change = f64::from(player.ovr) - f64::from(*start);
             e.growth
                 .entry((planted.probe, planted.role, season_number))
                 .or_default()
-                .push(f64::from(player.ovr) - f64::from(*start));
+                .push(change);
+            e.growth_style
+                .entry((
+                    format!("{:?}", planted.style),
+                    planted.probe,
+                    planted.role,
+                    season_number,
+                ))
+                .or_default()
+                .push(change);
             let reached = e.reached.entry((planted.probe, planted.role)).or_default();
             if season_number == 1 {
                 reached.push(None);
@@ -212,7 +243,7 @@ pub(super) fn close_season(clubs: &[Club], season_number: u32, first_day: &str, 
 }
 
 /// Every young player's growth of the season (≤ 25 at its start), keepers apart.
-fn young_growth(clubs: &[Club], first_day: &str, m: &mut Measures) {
+fn young_growth(clubs: &[Club], season_number: u32, first_day: &str, m: &mut Measures) {
     for club in clubs {
         let e = &mut kind_measure(m, club.kind).keeper;
         for player in &club.players {
@@ -223,12 +254,17 @@ fn young_growth(clubs: &[Club], first_day: &str, m: &mut Measures) {
                 continue;
             }
             let change = f64::from(player.ovr) - f64::from(*start);
+            let by_season = e.young_by_season.entry(season_number).or_default();
             if primary_position(player) == Position::Goalkeeper {
                 e.young.0 += change;
                 e.young.1 += 1;
+                by_season.0 += change;
+                by_season.1 += 1;
             } else {
                 e.young.2 += change;
                 e.young.3 += 1;
+                by_season.2 += change;
+                by_season.3 += 1;
             }
         }
     }
@@ -288,6 +324,8 @@ fn keeper_variant(seed: u64, drill: Option<KeeperDrill>) -> Variant {
         // nothing, so the extra sessions' settings do not matter.
         extra: Some(super::extra::ExtraRun::with(ExtraParams::PROPOSED)),
         keeper_drill: drill,
+        keeper_drill_bots: None,
+        best_focus: true,
         probes: true,
     }
 }
@@ -472,5 +510,560 @@ pub(super) fn measure_keeper_drill() {
         None => {
             println!("\n  no drill puts K1 and K2 in their bands: the official run goes with None")
         }
+    }
+}
+
+// ---- E5-6c-a (E5-6c-tech-spec.md §5): the drill at ×6, a bot's keeper on his own ----
+
+/// §5.1: E5-6b's three seeds and two more.
+const SEEDS_X6: [u64; 5] = [SEEDS[0], SEEDS[1], SEEDS[2], 0x0E51_0003, 0x0E51_0004];
+/// §5.1: 8 × 6 = 3 × 16, E5-6b's growth in all.
+const SEASONS_X6: u32 = 8;
+/// K1, true K1 and K2 pool seasons 1–4, before the controls reach their potential (§5.3).
+const KAYS_SEASONS: std::ops::RangeInclusive<u32> = 1..=4;
+/// The bands of Qe56-4, fixed before the numbers (D18).
+const K1_BAND: std::ops::RangeInclusive<f64> = 0.85..=1.15;
+const K2_BAND: std::ops::RangeInclusive<f64> = 0.8..=1.25;
+/// §5.4 step 5: the drill's own goals a match no lower than this, against M.
+const K4_FLOOR: f64 = -0.05;
+/// §5.2: the grid (people's, bots' permille).
+const GRID: [(u16, u16); 4] = [(300, 100), (350, 150), (400, 200), (400, 250)];
+/// §5.2: PD-Q1's cap on the people's permille, and V8's level above it.
+const PEOPLE_CAP: u16 = 400;
+const PEOPLE_V8: u16 = 450;
+
+/// One variant of §5.2: the people's and the bots' drills, and whether people train their best
+/// focus (E54-13) or the club's plan.
+#[derive(Clone, Copy)]
+struct X6 {
+    people: Option<u16>,
+    bots: Option<u16>,
+    best_focus: bool,
+}
+
+impl X6 {
+    fn label(self) -> String {
+        let permille = |p: Option<u16>| p.map_or("None".to_string(), |p| p.to_string());
+        format!(
+            "people {} / bots {}, {}",
+            permille(self.people),
+            permille(self.bots),
+            if self.best_focus {
+                "best focus"
+            } else {
+                "the club's plan (Technical)"
+            }
+        )
+    }
+}
+
+fn x6_variant(seed: u64, x: X6) -> Variant {
+    Variant {
+        multiplier: 6.0,
+        recovery: Recovery::Blocks(RecoveryBlocks {
+            per_day: 6,
+            hours: 8,
+        }),
+        injury_scale: 13,
+        places: Some(&PLACES_KEEPER),
+        shift: 0,
+        rotate: false,
+        seasons: SEASONS_X6,
+        seed,
+        // The gate draft's extra sessions; `Auto` presses nothing, so they do not matter.
+        extra: Some(super::extra::ExtraRun::with(ExtraParams {
+            floor: 40,
+            dev_permille: 250,
+        })),
+        keeper_drill: x.people.map(drill_at),
+        keeper_drill_bots: x.bots.map(drill_at),
+        best_focus: x.best_focus,
+        probes: true,
+    }
+}
+
+/// The five seeds of `x`, each on a thread of its own (every run is its own world).
+fn runs_x6(x: X6) -> Vec<Measures> {
+    std::thread::scope(|scope| {
+        let handles: Vec<_> = SEEDS_X6
+            .iter()
+            .map(|seed| scope.spawn(move || run(x6_variant(*seed, x))))
+            .collect();
+        handles
+            .into_iter()
+            .map(|h| h.join().expect("a run"))
+            .collect()
+    })
+}
+
+/// Over the seeds: the OVR changes of `(probe, role)` in `kind`'s clubs in `seasons`.
+fn growth_values(
+    runs: &[Measures],
+    kind: Kind,
+    (probe, role): (usize, usize),
+    seasons: &std::ops::RangeInclusive<u32>,
+) -> Vec<f64> {
+    runs.iter()
+        .filter_map(|r| r.get(&kind))
+        .flat_map(|m| {
+            seasons.clone().flat_map(move |s| {
+                m.keeper
+                    .growth
+                    .get(&(probe, role, s))
+                    .cloned()
+                    .unwrap_or_default()
+            })
+        })
+        .collect()
+}
+
+/// The keeper's growth over his controls' in `seasons`.
+fn ratio_in(runs: &[Measures], kind: Kind, probe: usize) -> f64 {
+    let at = |role| mean(&growth_values(runs, kind, (probe, role), &KAYS_SEASONS));
+    at(0) / mean(&[at(1), at(2)]).max(f64::EPSILON)
+}
+
+/// K2 by the bot's play style: every probe of the style pooled, seasons 1–4; with the keepers
+/// counted.
+fn k2_by_style(runs: &[Measures]) -> Vec<(String, f64, usize)> {
+    let mut pooled: BTreeMap<String, [Vec<f64>; 3]> = BTreeMap::new();
+    for m in runs.iter().filter_map(|r| r.get(&Kind::Bot)) {
+        for ((style, _, role, season), values) in &m.keeper.growth_style {
+            if KAYS_SEASONS.contains(season) {
+                pooled.entry(style.clone()).or_default()[*role].extend(values);
+            }
+        }
+    }
+    pooled
+        .into_iter()
+        .map(|(style, [keeper, back, mid])| {
+            let controls = mean(&[mean(&back), mean(&mid)]);
+            (
+                style,
+                mean(&keeper) / controls.max(f64::EPSILON),
+                keeper.len(),
+            )
+        })
+        .collect()
+}
+
+/// Goals a match of the whole world in `seasons`, pooled over the seeds.
+fn goals_in(runs: &[Measures], seasons: std::ops::RangeInclusive<u32>) -> f64 {
+    let (goals, sides) = runs
+        .iter()
+        .flat_map(|r| r.values())
+        .flat_map(|m| {
+            m.keeper
+                .season_goals
+                .iter()
+                .filter(|(s, _)| seasons.contains(s))
+                .map(|(_, v)| *v)
+        })
+        .fold((0u32, 0u32), |(g, n), (goals, sides)| {
+            (g + goals, n + sides)
+        });
+    2.0 * f64::from(goals) / f64::from(sides.max(1))
+}
+
+/// ≤ 25 keepers' growth over ≤ 25 outfielders', seasons 1–4, in `kind`'s clubs.
+fn world_ratio(runs: &[Measures], kind: Kind) -> f64 {
+    let (k, kn, o, on) = runs
+        .iter()
+        .filter_map(|r| r.get(&kind))
+        .flat_map(|m| {
+            m.keeper
+                .young_by_season
+                .iter()
+                .filter(|(s, _)| KAYS_SEASONS.contains(s))
+                .map(|(_, v)| *v)
+        })
+        .fold((0.0, 0, 0.0, 0), |(k, kn, o, on), y| {
+            (k + y.0, kn + y.1, o + y.2, on + y.3)
+        });
+    (k / f64::from(kn.max(1))) / (o / f64::from(on.max(1))).max(f64::EPSILON)
+}
+
+/// The median season (1-based) the people's TM-1 and TM-2 `role` reached P, and how many did.
+fn reached_people(runs: &[Measures], role: usize) -> (Option<u32>, usize, usize) {
+    let all: Vec<Option<u32>> = runs
+        .iter()
+        .filter_map(|r| r.get(&Kind::Auto))
+        .flat_map(|m| {
+            (0..2).flat_map(move |probe| {
+                m.keeper
+                    .reached
+                    .get(&(probe, role))
+                    .cloned()
+                    .unwrap_or_default()
+            })
+        })
+        .collect();
+    let mut hit: Vec<u32> = all.iter().flatten().copied().collect();
+    hit.sort_unstable();
+    // A keeper who never reached P counts as after the last season.
+    let median = if hit.len() * 2 > all.len() {
+        let mut every: Vec<u32> = all.iter().map(|s| s.unwrap_or(SEASONS_X6 + 1)).collect();
+        every.sort_unstable();
+        Some(every[every.len() / 2])
+    } else {
+        None
+    };
+    (median, hit.len(), all.len())
+}
+
+/// One variant's numbers.
+struct KaysX6 {
+    k1: f64,
+    k2: f64,
+    /// The people's keepers' (TM-1, TM-2) OVR change a season, seasons 1–4 (§5.4 step 4).
+    keeper_delta: f64,
+    /// Goals a match of the whole world, season 1 to 8.
+    goals: Vec<f64>,
+    /// Goals a match of seasons 2–8 and 6–8.
+    goals_2_8: f64,
+    goals_6_8: f64,
+}
+
+fn report_x6(name: &str, x: X6, runs: &[Measures]) -> KaysX6 {
+    println!(
+        "\n==== {name}: {}, ×6, {} seeds × {SEASONS_X6} seasons ====",
+        x.label(),
+        runs.len()
+    );
+    for (kind, probes) in [(Kind::Auto, 0..2), (Kind::Bot, 0..4)] {
+        for probe in probes {
+            let (probe_name, ovr, potential, age, _) = PROBES[probe];
+            let at = |role| mean(&growth_values(runs, kind, (probe, role), &KAYS_SEASONS));
+            println!(
+                "  {kind:?} {probe_name} ({ovr}/{potential}, {age}), seasons 1–4: ΔOVR a season keeper {:+.2} · centre-back {:+.2} · midfielder {:+.2} · keeper / controls {:.2}",
+                at(0),
+                at(1),
+                at(2),
+                ratio_in(runs, kind, probe)
+            );
+        }
+    }
+    let k1 = mean(&[ratio_in(runs, Kind::Auto, 0), ratio_in(runs, Kind::Auto, 1)]);
+    let k2 = mean(
+        &(0..4)
+            .map(|p| ratio_in(runs, Kind::Bot, p))
+            .collect::<Vec<_>>(),
+    );
+    let styles: Vec<String> = k2_by_style(runs)
+        .into_iter()
+        .map(|(style, k, n)| format!("{style} {k:.2} (n={n})"))
+        .collect();
+    println!("  K2 by the bot's style: {}", styles.join(" · "));
+    let k3 = |role| {
+        let (median, hit, n) = reached_people(runs, role);
+        format!(
+            "{hit}/{n}, median season {}",
+            median.map_or(format!("> {SEASONS_X6}"), |s| s.to_string())
+        )
+    };
+    println!(
+        "  K3 (printed) people's TM-1, TM-2 reached P in {SEASONS_X6} seasons: keeper {} · centre-back {}",
+        k3(0),
+        k3(1)
+    );
+    let keeper_delta = mean(&[
+        mean(&growth_values(runs, Kind::Auto, (0, 0), &KAYS_SEASONS)),
+        mean(&growth_values(runs, Kind::Auto, (1, 0), &KAYS_SEASONS)),
+    ]);
+    println!(
+        "  world (printed) ≤25 keepers / ≤25 outfielders, seasons 1–4: Auto {:.2} · Bot {:.2}",
+        world_ratio(runs, Kind::Auto),
+        world_ratio(runs, Kind::Bot)
+    );
+    let goals: Vec<f64> = (1..=SEASONS_X6).map(|s| goals_in(runs, s..=s)).collect();
+    let by_season: Vec<String> = goals
+        .iter()
+        .enumerate()
+        .map(|(i, g)| format!("s{} {g:.3}", i + 1))
+        .collect();
+    println!("  goals a match by season: {}", by_season.join(" · "));
+    let (goals_2_8, goals_6_8) = (
+        goals_in(runs, 2..=SEASONS_X6),
+        goals_in(runs, 6..=SEASONS_X6),
+    );
+    println!(
+        "  K1 {k1:.2} (0.85–1.15) · K2 {k2:.2} (0.8–1.25) · people's keeper ΔOVR a season (s1–4) {keeper_delta:+.2} · goals a match s2–8 {goals_2_8:.3}, s6–8 {goals_6_8:.3}"
+    );
+    KaysX6 {
+        k1,
+        k2,
+        keeper_delta,
+        goals,
+        goals_2_8,
+        goals_6_8,
+    }
+}
+
+/// §5.4 step 1: among the grid's bots' permille, the one whose K2 is nearest 1.0 within its band.
+fn pick_bots(rows: &[(u16, f64)]) -> Option<u16> {
+    rows.iter()
+        .filter(|(_, k2)| K2_BAND.contains(k2))
+        .min_by(|a, b| (a.1 - 1.0).abs().total_cmp(&(b.1 - 1.0).abs()))
+        .map(|(p, _)| *p)
+}
+
+/// §5.4 step 2: among the people's permille, the one whose K1 is nearest 1.0 within its band.
+fn pick_people(levels: &[(u16, f64)]) -> Option<u16> {
+    levels
+        .iter()
+        .filter(|(_, k1)| K1_BAND.contains(k1))
+        .min_by(|a, b| (a.1 - 1.0).abs().total_cmp(&(b.1 - 1.0).abs()))
+        .map(|(p, _)| *p)
+}
+
+/// The share K4 apart reads: the variant's goals of seasons 2–8 over V0's, against M.
+fn k4_apart(k: &KaysX6, v0: &KaysX6, m: f64) -> f64 {
+    (k.goals_2_8 - v0.goals_2_8) / m.max(f64::EPSILON)
+}
+
+fn in_bands_x6(k: &KaysX6) -> bool {
+    K1_BAND.contains(&k.k1) && K2_BAND.contains(&k.k2)
+}
+
+/// E5-6c-a: §5.2's variants and §5.4's rules. Every place §5.4 hands a choice on to the user is
+/// PO's (the user's delegation of 2026-11-01): the variant it needs is run and the numbers named.
+pub(super) fn measure_keeper_drill_x6() {
+    let measured = |name: &str, x: X6| {
+        let runs = runs_x6(x);
+        report_x6(name, x, &runs)
+    };
+    let none = X6 {
+        people: None,
+        bots: None,
+        best_focus: true,
+    };
+    let v0 = measured("V0", none);
+    let m = v0.goals[0];
+    println!("\n  M = V0's goals a match in season 1: {m:.3}");
+    let mut grid = Vec::new();
+    for (i, (people, bots)) in GRID.into_iter().enumerate() {
+        let x = X6 {
+            people: Some(people),
+            bots: Some(bots),
+            best_focus: true,
+        };
+        let k = measured(&format!("V{}", i + 1), x);
+        grid.push(((people, bots), k));
+    }
+    let v5 = measured(
+        "V5",
+        X6 {
+            best_focus: false,
+            ..none
+        },
+    );
+
+    println!("\n==== §5.4 ====");
+    for ((people, bots), k) in &grid {
+        println!(
+            "  {people}/{bots}: K1 {:.2} · K2 {:.2} · K4 apart {:+.1} % · K4 world {:+.1} %",
+            k.k1,
+            k.k2,
+            100.0 * k4_apart(k, &v0, m),
+            100.0 * (k.goals_6_8 / m - 1.0)
+        );
+    }
+    println!(
+        "  V0: K4 world {:+.1} % (seasons 6–8 against M)",
+        100.0 * (v0.goals_6_8 / m - 1.0)
+    );
+    let mut to_po: Vec<String> = Vec::new();
+    // Step 1: the bots' permille, K2 read on each grid row.
+    let bot_rows: Vec<(u16, f64)> = grid.iter().map(|((_, b), k)| (*b, k.k2)).collect();
+    let bots = pick_bots(&bot_rows).unwrap_or_else(|| {
+        let nearest = bot_rows
+            .iter()
+            .min_by(|a, b| (a.1 - 1.0).abs().total_cmp(&(b.1 - 1.0).abs()))
+            .map_or(200, |(p, _)| *p);
+        to_po.push(format!(
+            "step 1: no bots' permille puts K2 in 0.8–1.25; the rest below is run with the nearest, {nearest}"
+        ));
+        nearest
+    });
+    println!("  step 1: bots' permille {bots}");
+    // Step 2: the people's permille, K1 read on its rows (400 on both of its rows).
+    let people_levels: Vec<(u16, f64)> = [300, 350, PEOPLE_CAP]
+        .into_iter()
+        .map(|p| {
+            let rows: Vec<f64> = grid
+                .iter()
+                .filter(|((people, _), _)| *people == p)
+                .map(|(_, k)| k.k1)
+                .collect();
+            (p, mean(&rows))
+        })
+        .collect();
+    let k1_at_cap = people_levels.last().map_or(0.0, |(_, k1)| *k1);
+    let people = pick_people(&people_levels);
+    let mut v8 = None;
+    if k1_at_cap < *K1_BAND.start() {
+        let x = X6 {
+            people: Some(PEOPLE_V8),
+            bots: Some(bots),
+            best_focus: true,
+        };
+        let k = measured("V8", x);
+        let wrong = measured(
+            "V6 at 450",
+            X6 {
+                best_focus: false,
+                ..x
+            },
+        );
+        to_po.push(format!(
+            "step 2: K1 at 400 is {k1_at_cap:.2} < 0.85; V8 (450/{bots}): K1 {:.2}, K2 {:.2}, K4 apart {:+.1} %; the club's plan at 450 trains the keeper {:+.2} a season against {:+.2} on the best focus ({})",
+            k.k1,
+            k.k2,
+            100.0 * k4_apart(&k, &v0, m),
+            wrong.keeper_delta,
+            k.keeper_delta,
+            if wrong.keeper_delta <= k.keeper_delta {
+                "the wrong focus does not gain"
+            } else {
+                "the wrong focus GAINS"
+            }
+        ));
+        v8 = Some(k);
+    }
+    let people = people.unwrap_or_else(|| {
+        if v8.is_none() {
+            to_po.push(
+                "step 2: no people's permille puts K1 in 0.85–1.15 and 400's is above it"
+                    .to_string(),
+            );
+        }
+        PEOPLE_CAP
+    });
+    println!(
+        "  step 2: people's permille {people} (K1 by level: {})",
+        people_levels
+            .iter()
+            .map(|(p, k)| format!("{p} {k:.2}"))
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
+    // Step 3: a pair off the grid is confirmed by V7.
+    let pair = X6 {
+        people: Some(people),
+        bots: Some(bots),
+        best_focus: true,
+    };
+    let on_grid = grid.iter().position(|(p, _)| *p == (people, bots));
+    let v7_owned;
+    let v7 = match on_grid {
+        Some(row) => {
+            println!("  step 3: {people}/{bots} is grid row V{}; no V7", row + 1);
+            &grid[row].1
+        }
+        None => {
+            v7_owned = measured("V7", pair);
+            if !in_bands_x6(&v7_owned) {
+                let fallback = grid.iter().find(|(_, k)| in_bands_x6(k));
+                to_po.push(format!(
+                    "step 3: V7 {people}/{bots} leaves the bands (K1 {:.2}, K2 {:.2}); grid rows in both bands: {}",
+                    v7_owned.k1,
+                    v7_owned.k2,
+                    fallback.map_or("none".to_string(), |((p, b), _)| format!("{p}/{b}"))
+                ));
+            }
+            &v7_owned
+        }
+    };
+    // Step 4: the club's own plan never trains the keeper faster than the best focus.
+    let v6 = measured(
+        "V6",
+        X6 {
+            best_focus: false,
+            ..pair
+        },
+    );
+    let invariant = v6.keeper_delta <= v7.keeper_delta;
+    println!(
+        "  step 4: keeper ΔOVR a season, club's plan {:+.2} ≤ best focus {:+.2}: {} · true K1 (printed) V5 {:.2}, V6 {:.2}",
+        v6.keeper_delta,
+        v7.keeper_delta,
+        if invariant { "ok" } else { "FAIL" },
+        v5.k1,
+        v6.k1
+    );
+    if !invariant {
+        to_po.push(format!(
+            "step 4: the club's plan trains the keeper faster ({:+.2}) than the best focus ({:+.2})",
+            v6.keeper_delta, v7.keeper_delta
+        ));
+    }
+    // Step 5: the drill's own goals.
+    let k4 = k4_apart(v7, &v0, m);
+    println!(
+        "  step 5: K4 apart {:+.1} % (≥ {:.0} %) · K4 world {:+.1} % (V0 {:+.1} %)",
+        100.0 * k4,
+        100.0 * K4_FLOOR,
+        100.0 * (v7.goals_6_8 / m - 1.0),
+        100.0 * (v0.goals_6_8 / m - 1.0)
+    );
+    if k4 < K4_FLOOR {
+        to_po.push(format!(
+            "step 5: K4 apart {:+.1} % < −5 % (Qe56c-3 = b: the pair goes in with the goals package); grid: {}",
+            100.0 * k4,
+            grid.iter()
+                .map(|((p, b), k)| format!("{p}/{b} {:+.1} %", 100.0 * k4_apart(k, &v0, m)))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
+    }
+    let pair_ok = in_bands_x6(v7) && invariant;
+    if to_po.is_empty() && pair_ok {
+        println!(
+            "\n  chosen: keeperDrill {people}/{people}/{people}, botKeeperDrill {bots}/{bots}/{bots} (K1 {:.2}, K2 {:.2}, K4 apart {:+.1} %)",
+            v7.k1,
+            v7.k2,
+            100.0 * k4
+        );
+    } else {
+        println!(
+            "\n  pair measured: keeperDrill {people}, botKeeperDrill {bots} (K1 {:.2}, K2 {:.2}, K4 apart {:+.1} %)",
+            v7.k1,
+            v7.k2,
+            100.0 * k4
+        );
+        for line in &to_po {
+            println!("  to PO (the user's delegation): {line}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_bots_level_nearest_one_within_the_band_is_taken() {
+        let rows = [(100, 0.7), (150, 0.92), (200, 1.05), (250, 1.3)];
+        assert_eq!(pick_bots(&rows), Some(200));
+        assert_eq!(pick_bots(&[(100, 0.5), (250, 1.4)]), None);
+    }
+
+    #[test]
+    fn the_peoples_level_nearest_one_within_the_band_is_taken() {
+        assert_eq!(
+            pick_people(&[(300, 0.8), (350, 0.88), (400, 0.93)]),
+            Some(400)
+        );
+        assert_eq!(pick_people(&[(300, 0.7), (350, 0.78), (400, 0.84)]), None);
+    }
+
+    #[test]
+    fn a_bot_takes_its_own_drill_and_the_peoples_without_one() {
+        let (people, bots) = (Some(drill_at(400)), Some(drill_at(200)));
+        let drill_for = super::super::keeper_drill_for;
+        assert_eq!(drill_for(None, None, Kind::Bot), None);
+        assert_eq!(drill_for(people, None, Kind::Bot), people);
+        assert_eq!(drill_for(people, bots, Kind::Bot), bots);
+        assert_eq!(drill_for(people, bots, Kind::Auto), people);
     }
 }
