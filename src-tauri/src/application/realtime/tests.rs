@@ -16,10 +16,8 @@ use tokio_tungstenite::tungstenite::protocol::frame::coding::CloseCode;
 use tokio_tungstenite::tungstenite::protocol::CloseFrame;
 use tokio_tungstenite::tungstenite::Message;
 
-use super::{
-    realtime_url_of, ConnectionState, Realtime, RealtimeMessage, Settings, TokenFailure,
-    TokenSource,
-};
+use super::{ConnectionState, Realtime, RealtimeMessage, Settings, TokenFailure, TokenSource};
+use crate::application::endpoints::realtime_url_of;
 
 const MATCH: &str = "match:0192f0c4-0000-7000-8000-0000000000aa";
 const OTHER: &str = "match:0192f0c4-0000-7000-8000-0000000000bb";

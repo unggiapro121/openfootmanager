@@ -131,6 +131,15 @@ pub fn run() {
             }
 
             app.manage(Arc::new(SaveManagerState(Mutex::new(save_manager))));
+            // A phone has no environment to name the servers: a mobile build reads them from
+            // `plugins.ofmOnline` of its platform config (phase 5 M1). Desktop never does.
+            #[cfg(mobile)]
+            application::endpoints::set_mobile_endpoints(
+                app.config()
+                    .plugins
+                    .0
+                    .get(application::endpoints::MOBILE_CONFIG_KEY),
+            );
             let coach = Arc::new(application::coach::CoachContext::from_environment(
                 &app_data_dir,
             ));
