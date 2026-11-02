@@ -346,7 +346,8 @@
         "fromPlan": "Podle týdenního plánu",
         "auto": "Tým trénuje podle rozvrhu při změně dne ({{time}}). Rozvrh, zaměření či intenzitu změníte v týdenním plánu níže.",
         "autoNoTime": "Tým trénuje podle rozvrhu při změně dne. Rozvrh, zaměření či intenzitu změníte v týdenním plánu níže.",
-        "rest": "Dnes je podle rozvrhu volno: hlavní trénink není."
+        "rest": "Dnes je podle rozvrhu volno: hlavní trénink není.",
+        "keeperDrill": "Brankáři vždy navíc trénují vlastní cvičení: Chytání, Reflexy, Vzdušné souboje."
       },
       "groups": {
         "all": "Všichni ({{count}})",

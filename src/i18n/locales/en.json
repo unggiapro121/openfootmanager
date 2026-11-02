@@ -346,7 +346,8 @@
         "fromPlan": "From the weekly plan",
         "auto": "The team trains on its schedule when the day turns ({{time}}). Change the schedule, focus or intensity in the weekly plan below.",
         "autoNoTime": "The team trains on its schedule when the day turns. Change the schedule, focus or intensity in the weekly plan below.",
-        "rest": "Today is a rest day on the schedule: no main session."
+        "rest": "Today is a rest day on the schedule: no main session.",
+        "keeperDrill": "Goalkeepers always train an extra drill of their own: Handling, Reflexes, Aerial."
       },
       "groups": {
         "all": "All ({{count}})",

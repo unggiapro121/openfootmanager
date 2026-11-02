@@ -346,7 +346,8 @@
         "fromPlan": "Sesuai rencana mingguan",
         "auto": "Tim berlatih sesuai jadwal saat pergantian hari ({{time}}). Ubah jadwal, fokus, atau intensitas di rencana mingguan di bawah.",
         "autoNoTime": "Tim berlatih sesuai jadwal saat pergantian hari. Ubah jadwal, fokus, atau intensitas di rencana mingguan di bawah.",
-        "rest": "Hari ini istirahat menurut jadwal: tidak ada sesi utama."
+        "rest": "Hari ini istirahat menurut jadwal: tidak ada sesi utama.",
+        "keeperDrill": "Penjaga gawang selalu menjalani latihan tambahan khusus: Menangkap, Refleks, Udara."
       },
       "groups": {
         "all": "Semua ({{count}})",

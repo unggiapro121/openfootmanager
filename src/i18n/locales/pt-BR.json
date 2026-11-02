@@ -346,7 +346,8 @@
         "fromPlan": "Pelo plano semanal",
         "auto": "O time treina pela agenda na virada do dia ({{time}}). Mude agenda, foco ou intensidade no plano semanal abaixo.",
         "autoNoTime": "O time treina pela agenda na virada do dia. Mude agenda, foco ou intensidade no plano semanal abaixo.",
-        "rest": "Hoje é descanso pela agenda: sem sessão principal."
+        "rest": "Hoje é descanso pela agenda: sem sessão principal.",
+        "keeperDrill": "Os goleiros sempre fazem um treino extra só deles: Pegada, Reflexos, Jogo Aéreo."
       },
       "groups": {
         "all": "Todos ({{count}})",

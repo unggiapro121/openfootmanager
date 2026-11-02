@@ -13,15 +13,19 @@ const TILE_VALUE = "font-heading text-sm font-bold uppercase tracking-wider";
 /**
  * The day's own session as the weekly plan holds it (design tap-luyen.html "Buổi tập chính").
  * It is read, never pressed: the team trains on its schedule when the day turns (C-12 C12-1), so
- * the block says which schedule, focus and intensity that is, and when it runs.
+ * the block says which schedule, focus and intensity that is, and when it runs. In a season whose
+ * ruleset has the goalkeepers' drill (E5-6c E56c-14), it says goalkeepers also train their own.
  */
 export default function MainSession({
   plan,
   scheduleDay,
+  keeperDrill,
 }: {
   plan: TrainingPlan;
   /** Today trains on the schedule; `null` while the weekday is unknown. */
   scheduleDay: boolean | null;
+  /** The season's ruleset has the goalkeepers' own drill (`TrainingDayView.keeperDrill`). */
+  keeperDrill: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const now = useOnlineNow();
@@ -70,6 +74,11 @@ export default function MainSession({
           </dd>
         </div>
       </dl>
+      {keeperDrill && (
+        <p className="text-xs leading-snug text-gray-600 dark:text-gray-300">
+          {t("online.training.main.keeperDrill")}
+        </p>
+      )}
       <p className="text-xs leading-snug text-gray-500 dark:text-gray-400">{note}</p>
     </section>
   );

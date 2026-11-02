@@ -346,7 +346,8 @@
         "fromPlan": "Dal piano settimanale",
         "auto": "La squadra si allena secondo il programma al cambio di giorno ({{time}}). Cambia programma, focus o intensità nel piano settimanale qui sotto.",
         "autoNoTime": "La squadra si allena secondo il programma al cambio di giorno. Cambia programma, focus o intensità nel piano settimanale qui sotto.",
-        "rest": "Oggi è riposo da programma: nessuna sessione principale."
+        "rest": "Oggi è riposo da programma: nessuna sessione principale.",
+        "keeperDrill": "I portieri fanno sempre anche un esercizio specifico: Presa, Riflessi, Gioco aereo."
       },
       "groups": {
         "all": "Tutti ({{count}})",

@@ -346,7 +346,8 @@
         "fromPlan": "Theo kế hoạch tuần",
         "auto": "Đội tự tập theo lịch lúc sang ngày ({{time}}). Đổi lịch, trọng tâm hoặc cường độ ở Kế hoạch tuần bên dưới.",
         "autoNoTime": "Đội tự tập theo lịch lúc sang ngày. Đổi lịch, trọng tâm hoặc cường độ ở Kế hoạch tuần bên dưới.",
-        "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính."
+        "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính.",
+        "keeperDrill": "Thủ môn luôn tập thêm bài riêng: Bắt bóng, Phản xạ, Không chiến."
       },
       "groups": {
         "all": "Tất cả ({{count}})",

@@ -346,7 +346,8 @@
         "fromPlan": "Según el plan semanal",
         "auto": "El equipo entrena según su calendario al cambiar el día ({{time}}). Cambia calendario, enfoque o intensidad en el plan semanal de abajo.",
         "autoNoTime": "El equipo entrena según su calendario al cambiar el día. Cambia calendario, enfoque o intensidad en el plan semanal de abajo.",
-        "rest": "Hoy es descanso según el calendario: no hay sesión principal."
+        "rest": "Hoy es descanso según el calendario: no hay sesión principal.",
+        "keeperDrill": "Los porteros siempre hacen además un ejercicio propio: Blocaje, Reflejos, Juego Aéreo."
       },
       "groups": {
         "all": "Todos ({{count}})",
