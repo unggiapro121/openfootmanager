@@ -418,6 +418,48 @@ describe("the online club pages", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
+  // Given a club whose defender trains the club's Physical focus,
+  // when the coach saves Tactical for the club and opens the groups tab,
+  // then the club is read again after the save, and the defender shows the hint the server now
+  // gives for Tactical (S-31b, C-13a).
+  it("reads the club again after a saved plan, for the new focus hints", async () => {
+    const plan = {
+      focus: "Physical" as const,
+      intensity: "High" as const,
+      schedule: "Light" as const,
+      groups: [],
+      auto: true,
+    };
+    const club = myClub({ players: SQUAD, trainingPlan: plan, trainingPlanIsOwn: true });
+    stage(club);
+    renderOnline("/online/training");
+    const tactical = (await screen.findByText("training.focuses.Tactical.label")).closest(
+      "button",
+    )!;
+    server.routes["GET v1/clubs/mine"] = ok({
+      ...club,
+      trainingPlan: { ...plan, focus: "Tactical" },
+      players: club.players.map((player) =>
+        player.id === "cb"
+          ? { ...player, focusFit: { current: "Tactical", best: "Tactical", verdict: "best" } }
+          : player,
+      ),
+    });
+
+    fireEvent.click(tactical);
+    await waitFor(() => {
+      const put = server.requests.findIndex((r) => r.method === "PUT");
+      const reads = server.requests.filter(
+        (r, at) =>
+          at > put && put >= 0 && r.method === "GET" && r.segments.join("/") === "v1/clubs/mine",
+      );
+      expect(reads.length).toBeGreaterThan(0);
+    });
+    fireEvent.click(screen.getByRole("tab", { name: /online\.training\.tab\.groups/ }));
+    const row = (await screen.findByText("Trung Vệ")).closest("tr") as HTMLElement;
+    expect(within(row).getByText("online.training.focusHint.best")).toBeInTheDocument();
+  });
+
   // Given a coach with a group of keepers,
   // when they add a group and then put a defender into the keepers' group,
   // then each change sends the whole plan with its groups, the rest of the plan as it was.

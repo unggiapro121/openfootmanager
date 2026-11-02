@@ -51,6 +51,12 @@ recovery: { perDay: number; hours: number },
  */
 autoOff: boolean, 
 /**
+ * Whether this season's keepers train their own drill in every session (S-31a; E5-6c, the
+ * keepers' label of C-13a): the season's people's drill is on. Never says how much, and never
+ * reads a bot's own drill.
+ */
+keeperDrill: boolean, 
+/**
  * Extra sessions a coach presses on top of the day's (S-28 S28-6); always present in a season
  * with recovery blocks.
  */

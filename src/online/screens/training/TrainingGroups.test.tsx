@@ -113,4 +113,28 @@ describe("the training groups tab", () => {
       within(rowOf("Thủ Môn")).getByText("online.training.groups.inheritedTag"),
     ).toBeInTheDocument();
   });
+
+  // Given the server's fits: the keeper's group focus lifts nothing, the centre-back's own focus
+  // is his best, and the striker's fit was read for a focus he no longer trains,
+  // when the table shows,
+  // then the keeper's row says to switch, the centre-back's that it is his best, and the
+  // striker's nothing.
+  it("shows how each player's focus suits him", () => {
+    groups({
+      focusFits: {
+        gk: { current: "Defending", best: "Tactical", verdict: "nothing" },
+        cb: { current: "Tactical", best: "Tactical", verdict: "best" },
+        st: { current: "Technical", best: "Attacking", verdict: "poor" },
+      },
+    });
+    expect(
+      within(rowOf("Thủ Môn")).getByText(
+        "online.training.focusHint.nothing:training.focuses.Defending.label|training.focuses.Tactical.label",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(rowOf("Trung Vệ")).getByText("online.training.focusHint.best"),
+    ).toBeInTheDocument();
+    expect(within(rowOf("Tiền Đạo")).queryByText(/online\.training\.focusHint/)).toBeNull();
+  });
 });

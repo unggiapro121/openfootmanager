@@ -294,6 +294,7 @@
           "resting": "Toparlanma odağı: katılmaz",
           "peaked": "Potansiyelinde: katılmaz",
           "keepAbove": "Kondisyonunu korumak için durdu",
+          "focusMaxed": "Odağında bu pozisyonda OVR'ını yükselten bir şey kalmadı",
           "other": "Katılmaz"
         },
         "intensity": "Yoğunluk",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Asgari kondisyonu koru",
         "keepAbove": "Kondisyonu şu değerin üstünde tut",
         "xiWarning": "Bu ilk 11 oyuncuları bugünkü maça {{condition}} altında kondisyonla başlar: {{names}}.",
-        "focusFull": "{{names}}: antrenman odağının tüm nitelikleri dolu, seans yalnızca kondisyon harcar. Odağını değiştir.",
+        "focusFull": "{{names}}: odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. Oktan sonraki odağa geç.",
         "andMore": "{{names}} ve {{more}} kişi daha",
         "held": "{{held}} seans yapıldı (bugünün {{first}}–{{last}}. seansı).",
         "sessionsColumn": "Seanslar",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (gruptan)",
         "inheritedTag": "gruptan",
         "empty": "Bu grupta henüz oyuncu yok."
+      },
+      "focusHint": {
+        "best": "En iyi odak",
+        "fair": "En iyisi: {{best}}",
+        "poor": "Bu odak OVR'ı yavaş yükseltir. {{best}} dene.",
+        "nothing": "{{current}} odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. {{best}} odağına geç."
       }
     },
     "schedule": {

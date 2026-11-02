@@ -294,6 +294,7 @@
           "resting": "Fokus pemulihan: absen",
           "peaked": "Sudah di potensinya: absen",
           "keepAbove": "Berhenti untuk menjaga kondisi",
+          "focusMaxed": "Fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini",
           "other": "Absen"
         },
         "intensity": "Intensitas",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Jaga kondisi minimum",
         "keepAbove": "Jaga kondisi mulai",
         "xiWarning": "Pemain inti ini akan memulai pertandingan hari ini dengan kondisi di bawah {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: semua atribut fokus latihannya sudah penuh, jadi sesi hanya menguras kondisi. Ganti fokusnya.",
+        "focusFull": "{{names}}: fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke fokus setelah tanda panah.",
         "andMore": "{{names}} dan {{more}} lainnya",
         "held": "{{held}} sesi selesai (ke-{{first}}–{{last}} hari ini).",
         "sessionsColumn": "Sesi",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (ikut grup)",
         "inheritedTag": "ikut grup",
         "empty": "Belum ada pemain di grup ini."
+      },
+      "focusHint": {
+        "best": "Fokus terbaik",
+        "fair": "Terbaik: {{best}}",
+        "poor": "Fokus ini menaikkan OVR dengan lambat. Coba {{best}}.",
+        "nothing": "{{current}} tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke {{best}}."
       }
     },
     "schedule": {

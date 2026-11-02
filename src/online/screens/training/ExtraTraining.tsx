@@ -22,7 +22,7 @@ import {
   ALL_SESSIONS,
   chosenInSquad,
   type ExtraChoice,
-  focusFull,
+  focusLiftsNothing,
   loadChoice,
   MATCH_CONDITION,
   namesOf,
@@ -134,7 +134,7 @@ export default function ExtraTraining({
         keepAbove: choice.keepAbove,
       })
     : [];
-  const full = focusFull(club.players, chosen, club.trainingPlan);
+  const full = focusLiftsNothing(club.players, chosen);
   const intensityLabel = t(`training.intensities.${intensity}.label`);
 
   return (
@@ -197,7 +197,9 @@ export default function ExtraTraining({
           </Warning>
         )}
         {full.length > 0 && (
-          <Warning>{t("online.training.extra.focusFull", { names: listed(t, full) })}</Warning>
+          <Warning>
+            {t("online.training.extra.focusFull", { names: listedWithBest(t, full) })}
+          </Warning>
         )}
       </div>
       <div className="flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-5 py-3.5 dark:border-navy-600 dark:bg-navy-800">
@@ -287,6 +289,17 @@ function Drawer({
 function listed(t: Translate, players: SquadPlayerView[]): string {
   const { names, more } = namesOf(players);
   return more > 0 ? t("online.training.extra.andMore", { names, more }) : names;
+}
+
+/** As `listed`, each name with the focus he should switch to (C-13a, E5-6 §6.1). */
+function listedWithBest(t: Translate, players: SquadPlayerView[]): string {
+  const named = players.map((player) => {
+    const best = player.focusFit?.best;
+    return best
+      ? { ...player, matchName: `${player.matchName} → ${t(`training.focuses.${best}.label`)}` }
+      : player;
+  });
+  return listed(t, named);
 }
 
 /** What a failed press says: the panel's own sentence for a refusal, the shared one otherwise. */

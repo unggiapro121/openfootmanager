@@ -294,6 +294,7 @@
           "resting": "Focus hồi phục: nghỉ buổi này",
           "peaked": "Đã chạm tiềm năng: nghỉ buổi này",
           "keepAbove": "Dừng để giữ thể lực",
+          "focusMaxed": "Trọng tâm không còn chỉ số nào tăng OVR ở vị trí này",
           "other": "Nghỉ buổi này"
         },
         "intensity": "Cường độ",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Giữ thể lực tối thiểu",
         "keepAbove": "Giữ thể lực từ",
         "xiWarning": "Các cầu thủ đá chính này sẽ vào trận hôm nay với thể lực dưới {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: mọi thuộc tính của focus đã đầy, buổi tập chỉ tốn thể lực. Hãy đổi focus.",
+        "focusFull": "{{names}}: trọng tâm đang tập không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang trọng tâm sau mũi tên.",
         "andMore": "{{names}} và {{more}} người khác",
         "held": "Đã tập {{held}} buổi (buổi thứ {{first}}–{{last}} hôm nay).",
         "sessionsColumn": "Số buổi",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (theo nhóm)",
         "inheritedTag": "theo nhóm",
         "empty": "Nhóm này chưa có cầu thủ."
+      },
+      "focusHint": {
+        "best": "Trọng tâm hợp nhất",
+        "fair": "Hợp nhất: {{best}}",
+        "poor": "Trọng tâm này tăng OVR chậm. Nên tập {{best}}.",
+        "nothing": "{{current}} không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang {{best}}."
       }
     },
     "schedule": {

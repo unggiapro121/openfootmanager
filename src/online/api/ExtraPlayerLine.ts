@@ -17,7 +17,7 @@ gains: number,
  */
 sessions: number, 
 /**
- * Why he stopped before the press's last session: `injured`, `tired`, `resting`, `peaked` or
- * `keepAbove`; absent when he trained in every one.
+ * Why he stopped before the press's last session: `injured`, `tired`, `resting`, `peaked`,
+ * `focusMaxed` or `keepAbove`; absent when he trained in every one.
  */
 stoppedBy?: string, };

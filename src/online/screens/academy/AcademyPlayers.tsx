@@ -15,6 +15,7 @@ import { online } from "../../client";
 import { academyState, tracked, useOnlineStore } from "../../store/onlineStore";
 import { LABEL } from "../overview/OverviewCard";
 import PotentialStars from "../PotentialStars";
+import FocusHint from "../training/FocusHint";
 import { useActionKey } from "../useActionKey";
 import { ACADEMY_LINK, freeSlots } from "./AcademyFigures";
 import AcademyConfirm from "./AcademyConfirm";
@@ -297,6 +298,7 @@ function ProspectActions({ player }: { player: AcademyPlayerView }) {
               </option>
             ))}
           </select>
+          <FocusHint fit={player.focusFit} />
         </div>
         <button
           type="button"
