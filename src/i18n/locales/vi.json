@@ -57,7 +57,9 @@
       "events": "Sự kiện",
       "groupTeam": "Đội bóng",
       "groupMatches": "Thi đấu",
-      "groupClub": "Câu lạc bộ"
+      "groupClub": "Câu lạc bộ",
+      "groupMore": "Thêm",
+      "tabs": "Các mục chính"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",

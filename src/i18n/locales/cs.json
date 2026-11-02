@@ -57,7 +57,9 @@
       "events": "Události",
       "groupTeam": "Tým",
       "groupMatches": "Zápasy",
-      "groupClub": "Klub"
+      "groupClub": "Klub",
+      "groupMore": "Více",
+      "tabs": "Hlavní sekce"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",

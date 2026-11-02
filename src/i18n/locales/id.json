@@ -57,7 +57,9 @@
       "events": "Event",
       "groupTeam": "Tim",
       "groupMatches": "Pertandingan",
-      "groupClub": "Klub"
+      "groupClub": "Klub",
+      "groupMore": "Lainnya",
+      "tabs": "Bagian utama"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",

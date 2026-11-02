@@ -65,6 +65,8 @@
   /* An event's claim waiting (design su-kien.html): a gold ring that breathes, and the reward's pop */
   --animate-claim-pulse: claim-pulse 1.8s ease-out infinite;
   --animate-reward-pop: reward-pop 0.45s ease-out both;
+  /* A phone's tab sheet rising from the bottom (design m-tong-quan.html) */
+  --animate-sheet-up: sheet-up 0.22s ease-out;
 
   @keyframes claim-pulse {
     0%,
@@ -73,6 +75,15 @@
     }
     50% {
       box-shadow: 0 0 0 8px transparent;
+    }
+  }
+
+  @keyframes sheet-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: none;
     }
   }
 

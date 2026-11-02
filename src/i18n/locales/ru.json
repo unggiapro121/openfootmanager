@@ -57,7 +57,9 @@
       "events": "События",
       "groupTeam": "Команда",
       "groupMatches": "Матчи",
-      "groupClub": "Клуб"
+      "groupClub": "Клуб",
+      "groupMore": "Ещё",
+      "tabs": "Основные разделы"
     },
     "gate": {
       "clientOutdatedTitle": "Требуется обновление",

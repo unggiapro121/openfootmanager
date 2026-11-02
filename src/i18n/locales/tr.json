@@ -57,7 +57,9 @@
       "events": "Etkinlikler",
       "groupTeam": "Takım",
       "groupMatches": "Maçlar",
-      "groupClub": "Kulüp"
+      "groupClub": "Kulüp",
+      "groupMore": "Daha fazla",
+      "tabs": "Ana bölümler"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",

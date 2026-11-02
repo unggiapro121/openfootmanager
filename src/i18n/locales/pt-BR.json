@@ -57,7 +57,9 @@
       "events": "Eventos",
       "groupTeam": "Time",
       "groupMatches": "Partidas",
-      "groupClub": "Clube"
+      "groupClub": "Clube",
+      "groupMore": "Mais",
+      "tabs": "Seções principais"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",

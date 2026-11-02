@@ -8,7 +8,7 @@ import { claimsWaiting, useOnlineStore } from "../store/onlineStore";
 import AccountMenu from "./AccountMenu";
 import { FriendlyChip } from "./friendly/FriendlyChip";
 import { useGuardedNavigate } from "./leaveGuard";
-import { isCurrent, pageTitleKey, seasonText } from "./shellNav";
+import { isCurrent, pageTitleKey, seasonText, visibleCoinBalance } from "./shellNav";
 import { useCountdownText } from "./useCountdownText";
 
 const FOCUS =
@@ -56,7 +56,7 @@ function Budget({ cash }: { cash: number }) {
 }
 
 /** The coach's coins, opening the wallet; shown once coins are open or held (C-7 Qc7-2). */
-function CoinChip({ balance, current }: { balance: number; current: boolean }) {
+export function CoinChip({ balance, current }: { balance: number; current: boolean }) {
   const { t, i18n } = useTranslation();
   const navigate = useGuardedNavigate();
   const amount = formatCoins(balance, i18n.language);
@@ -127,7 +127,7 @@ function HeaderLink({
 }
 
 /** The club's inbox, a dot when mail waits unread. */
-function InboxButton({ unread }: { unread: number }) {
+export function InboxButton({ unread }: { unread: number }) {
   const { t } = useTranslation();
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
@@ -174,11 +174,7 @@ export default function OnlineHeader() {
   const kickoff = useCountdownText(fixture?.kickoffAt);
   const titleKey = pageTitleKey(pathname);
   const cash = club && finance?.economy ? finance.cash : undefined;
-  // Shown once coins are open to anyone (a price list) or the coach holds some (C-7 Qc7-2).
-  const balance =
-    coins && (coins.priceListVersion !== undefined || coins.balance !== 0)
-      ? coins.balance
-      : undefined;
+  const balance = visibleCoinBalance(coins);
   const hasMatch = fixture !== undefined && kickoff !== null;
   const hasMoney = cash !== undefined || balance !== undefined;
 

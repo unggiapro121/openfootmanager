@@ -57,7 +57,9 @@
       "events": "活动",
       "groupTeam": "球队",
       "groupMatches": "比赛",
-      "groupClub": "俱乐部"
+      "groupClub": "俱乐部",
+      "groupMore": "更多",
+      "tabs": "主要栏目"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
