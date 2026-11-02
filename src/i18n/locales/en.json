@@ -418,7 +418,8 @@
       "licenceNext": "Opens at coach level {{level}}",
       "boosterHeld": "{{item}} ×{{count}} in your inventory",
       "boosterHint": "Level up faster in your next online matches",
-      "activate": "Activate"
+      "activate": "Activate",
+      "shortcuts": "Shortcuts"
     },
     "match": {
       "byCoach": "{{team}}: coach in charge",

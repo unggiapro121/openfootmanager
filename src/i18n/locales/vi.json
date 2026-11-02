@@ -418,7 +418,8 @@
       "licenceNext": "Mở ở HLV cấp {{level}}",
       "boosterHeld": "{{item}} ×{{count}} trong Kho đồ",
       "boosterHint": "Lên cấp nhanh hơn ở các trận online kế tiếp",
-      "activate": "Kích hoạt"
+      "activate": "Kích hoạt",
+      "shortcuts": "Lối tắt"
     },
     "match": {
       "byCoach": "{{team}}: HLV chỉ đạo",

@@ -418,7 +418,8 @@
       "licenceNext": "教练等级 {{level}} 开放",
       "boosterHeld": "库存中有 {{item}} ×{{count}}",
       "boosterHint": "在接下来的在线比赛中更快升级",
-      "activate": "启用"
+      "activate": "启用",
+      "shortcuts": "快捷入口"
     },
     "match": {
       "byCoach": "{{team}}：教练指挥",

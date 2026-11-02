@@ -418,7 +418,8 @@
       "licenceNext": "Abre no nível de treinador {{level}}",
       "boosterHeld": "{{item}} ×{{count}} no teu inventário",
       "boosterHint": "Sobe de nível mais depressa nos próximos jogos online",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "shortcuts": "Atalhos"
     },
     "match": {
       "byCoach": "{{team}}: comanda o treinador",

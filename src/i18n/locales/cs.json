@@ -418,7 +418,8 @@
       "licenceNext": "Otevře se na úrovni trenéra {{level}}",
       "boosterHeld": "{{item}} ×{{count}} v inventáři",
       "boosterHint": "V dalších online zápasech postupujte rychleji",
-      "activate": "Aktivovat"
+      "activate": "Aktivovat",
+      "shortcuts": "Zkratky"
     },
     "match": {
       "byCoach": "{{team}}: řídí trenér",

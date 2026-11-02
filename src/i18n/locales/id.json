@@ -418,7 +418,8 @@
       "licenceNext": "Terbuka di level pelatih {{level}}",
       "boosterHeld": "{{item}} ×{{count}} di inventaris",
       "boosterHint": "Naik level lebih cepat di laga online berikutnya",
-      "activate": "Aktifkan"
+      "activate": "Aktifkan",
+      "shortcuts": "Pintasan"
     },
     "match": {
       "byCoach": "{{team}}: dipimpin pelatih",

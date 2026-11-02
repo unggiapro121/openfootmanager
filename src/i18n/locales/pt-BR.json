@@ -418,7 +418,8 @@
       "licenceNext": "Abre no nível de técnico {{level}}",
       "boosterHeld": "{{item}} ×{{count}} no seu inventário",
       "boosterHint": "Suba de nível mais rápido nas próximas partidas online",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "shortcuts": "Atalhos rápidos"
     },
     "match": {
       "byCoach": "{{team}}: comandado pelo técnico",

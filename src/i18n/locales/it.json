@@ -418,7 +418,8 @@
       "licenceNext": "Si apre al livello allenatore {{level}}",
       "boosterHeld": "{{item}} ×{{count}} nel tuo inventario",
       "boosterHint": "Sali di livello più in fretta nelle prossime partite online",
-      "activate": "Attiva"
+      "activate": "Attiva",
+      "shortcuts": "Scorciatoie"
     },
     "match": {
       "byCoach": "{{team}}: guida l'allenatore",

@@ -418,7 +418,8 @@
       "licenceNext": "Ab Trainerstufe {{level}}",
       "boosterHeld": "{{item}} ×{{count}} im Inventar",
       "boosterHint": "Steige in deinen nächsten Online-Spielen schneller auf",
-      "activate": "Aktivieren"
+      "activate": "Aktivieren",
+      "shortcuts": "Schnellzugriff"
     },
     "match": {
       "byCoach": "{{team}}: Trainer an der Seitenlinie",

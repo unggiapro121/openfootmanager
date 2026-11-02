@@ -418,7 +418,8 @@
       "licenceNext": "Teknik direktör seviyesi {{level}} ile açılır",
       "boosterHeld": "Envanterde {{item}} ×{{count}}",
       "boosterHint": "Sonraki çevrimiçi maçlarda daha hızlı seviye atla",
-      "activate": "Etkinleştir"
+      "activate": "Etkinleştir",
+      "shortcuts": "Kısayollar"
     },
     "match": {
       "byCoach": "{{team}}: teknik direktör yönetiyor",
