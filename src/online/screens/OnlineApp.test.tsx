@@ -110,6 +110,7 @@ describe("a coach with a club", () => {
         nextRecoveryAt: new Date(Date.now() + 2_000).toISOString(),
         recovery: { perDay: 6, hours: 8 },
         autoOff: false,
+        keeperDrill: false,
       },
     });
     server = fakeServer({

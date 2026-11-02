@@ -28,7 +28,8 @@ floor: number,
  */
 costs?: { [key in string]: number }, 
 /**
- * The players who would sit out a press now, and why: `injured`, `tired`, `resting` or
- * `peaked`.
+ * The players who would sit out a press now, and why: `injured`, `tired`, `resting`,
+ * `peaked`, or `focusMaxed` (no attribute the session rolls can still rise and counts at his
+ * position, S-31a).
  */
 sitOut: Array<ExtraSitOutLine>, };

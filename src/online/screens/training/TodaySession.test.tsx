@@ -62,6 +62,7 @@ function trainingDay(overrides: Partial<TrainingDayView> = {}): TrainingDayView 
     nextRecoveryAt: new Date(Date.now() + 2 * HOUR).toISOString(),
     recovery: { perDay: 6, hours: 8 },
     autoOff: false,
+    keeperDrill: false,
     extra: extraDay(),
     ...overrides,
   };
@@ -521,30 +522,53 @@ describe("extra training", () => {
     ).toBeInTheDocument();
   });
 
-  // Given a chosen player whose whole Physical focus is at 99 (E5-4 R12-F),
+  // Given a chosen player the server finds on a focus that lifts nothing (E5-4 R12-F, S-31b),
   // when the block shows,
-  // then it warns that a session only costs him condition.
-  it("warns when a player's focus is full", () => {
-    const attributes = {
-      ...squadPlayer().attributes,
-      pace: 99,
-      stamina: 99,
-      strength: 99,
-      agility: 99,
-    };
+  // then it warns that a session only costs him condition, and names the focus to switch to.
+  it("warns when a player's focus lifts nothing", () => {
     stage(
       clubWith(
         {},
         {
           players: [
-            squadPlayer({ id: "p1", matchName: "V. An", trainingFocus: "Physical", attributes }),
+            squadPlayer({
+              id: "p1",
+              matchName: "V. An",
+              trainingFocus: "Attacking",
+              focusFit: { current: "Attacking", best: "Tactical", verdict: "nothing" },
+            }),
           ],
         },
       ),
     );
     render(<CardFromStore />);
     openExtra();
-    expect(screen.getByRole("note")).toHaveTextContent("online.training.extra.focusFull:V. An");
+    expect(screen.getByRole("note")).toHaveTextContent(
+      "online.training.extra.focusFull:V. An → training.focuses.Tactical.label",
+    );
+  });
+
+  // Given a chosen player whose focus is fair,
+  // when the block shows,
+  // then it gives no focus warning.
+  it("does not warn when a player's focus still lifts him", () => {
+    stage(
+      clubWith(
+        {},
+        {
+          players: [
+            squadPlayer({
+              id: "p1",
+              matchName: "V. An",
+              focusFit: { current: "Technical", best: "Tactical", verdict: "fair" },
+            }),
+          ],
+        },
+      ),
+    );
+    render(<CardFromStore />);
+    openExtra();
+    expect(screen.queryByRole("note")).toBeNull();
   });
 });
 

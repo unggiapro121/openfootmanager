@@ -294,6 +294,7 @@
           "resting": "Recovery focus: sits out",
           "peaked": "At his potential: sits out",
           "keepAbove": "Stopped to keep his condition",
+          "focusMaxed": "Their focus has nothing left that raises their OVR in this position",
           "other": "Sits out"
         },
         "intensity": "Intensity",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Keep a minimum condition",
         "keepAbove": "Keep condition at or above",
         "xiWarning": "These starters would begin today's match under {{condition}} condition: {{names}}.",
-        "focusFull": "{{names}}: every attribute of their training focus is full, so a session only costs condition. Change their focus.",
+        "focusFull": "{{names}}: their focus has nothing left that raises their OVR in this position. Switch to the focus after the arrow.",
         "andMore": "{{names}} and {{more}} more",
         "held": "Trained {{held}} sessions (today's {{first}}–{{last}}).",
         "sessionsColumn": "Sessions",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (inherited)",
         "inheritedTag": "inherited",
         "empty": "No players in this group yet."
+      },
+      "focusHint": {
+        "best": "Best focus",
+        "fair": "Best: {{best}}",
+        "poor": "This focus builds their OVR slowly. Try {{best}}.",
+        "nothing": "{{current}} has nothing left that raises their OVR in this position. Switch to {{best}}."
       }
     },
     "schedule": {

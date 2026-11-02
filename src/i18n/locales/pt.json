@@ -294,6 +294,7 @@
           "resting": "Foco de recuperação: não participa",
           "peaked": "No seu potencial: não participa",
           "keepAbove": "Parou para manter a condição",
+          "focusMaxed": "O foco já não tem nada que suba o OVR nesta posição",
           "other": "Não participa"
         },
         "intensity": "Intensidade",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Manter uma condição mínima",
         "keepAbove": "Manter a condição a partir de",
         "xiWarning": "Estes titulares começariam o jogo de hoje com menos de {{condition}} de condição: {{names}}.",
-        "focusFull": "{{names}}: todos os atributos do foco de treino estão no máximo, por isso a sessão só custa condição. Mude o foco.",
+        "focusFull": "{{names}}: o foco já não tem nada que suba o OVR nesta posição. Mude para o foco a seguir à seta.",
         "andMore": "{{names}} e mais {{more}}",
         "held": "{{held}} sessões treinadas (n.º {{first}}–{{last}} de hoje).",
         "sessionsColumn": "Sessões",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (herdado)",
         "inheritedTag": "herdado",
         "empty": "Ainda não há jogadores neste grupo."
+      },
+      "focusHint": {
+        "best": "Melhor foco",
+        "fair": "Melhor: {{best}}",
+        "poor": "Este foco sobe o OVR devagar. Experimente {{best}}.",
+        "nothing": "{{current}} já não tem nada que suba o OVR nesta posição. Mude para {{best}}."
       }
     },
     "schedule": {

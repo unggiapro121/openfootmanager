@@ -1,6 +1,6 @@
 import type { TrainingGroupData } from "../../store/types";
 import type { TrainingRosterPlayer } from "../../components/training/trainingGroupsModel";
-import type { SquadPlayerView } from "../api";
+import type { FocusFitView, SquadPlayerView } from "../api";
 import type { TrainingFocus, TrainingGroup } from "../api/domain";
 
 /** A player of the coach's own club as the groups table reads him. */
@@ -14,6 +14,13 @@ export function toTrainingRoster(players: SquadPlayerView[]): TrainingRosterPlay
     condition: player.condition,
     training_focus: player.trainingFocus ?? null,
   }));
+}
+
+/** How each player's focus suits him (S-31b), by id: only the players the server gives one. */
+export function focusFitsOf(players: SquadPlayerView[]): Record<string, FocusFitView> {
+  return Object.fromEntries(
+    players.flatMap((player) => (player.focusFit ? [[player.id, player.focusFit]] : [])),
+  );
 }
 
 /**

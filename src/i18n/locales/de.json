@@ -294,6 +294,7 @@
           "resting": "Regenerationsfokus: setzt aus",
           "peaked": "Am Potenzial: setzt aus",
           "keepAbove": "Gestoppt, um die Kondition zu halten",
+          "focusMaxed": "Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert",
           "other": "Setzt aus"
         },
         "intensity": "Intensität",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Mindestkondition halten",
         "keepAbove": "Kondition halten ab",
         "xiWarning": "Diese Stammspieler würden das heutige Spiel mit weniger als {{condition}} Kondition beginnen: {{names}}.",
-        "focusFull": "{{names}}: Jedes Attribut ihres Trainingsfokus ist voll, eine Einheit kostet nur Kondition. Ändere ihren Fokus.",
+        "focusFull": "{{names}}: Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zum Fokus nach dem Pfeil.",
         "andMore": "{{names}} und {{more}} weitere",
         "held": "{{held}} Einheiten trainiert (heute Nr. {{first}}–{{last}}).",
         "sessionsColumn": "Einheiten",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (übernommen)",
         "inheritedTag": "übernommen",
         "empty": "Noch keine Spieler in dieser Gruppe."
+      },
+      "focusHint": {
+        "best": "Bester Fokus",
+        "fair": "Am besten: {{best}}",
+        "poor": "Dieser Fokus steigert ihre OVR langsam. Versuche {{best}}.",
+        "nothing": "{{current}} hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zu {{best}}."
       }
     },
     "schedule": {

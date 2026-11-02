@@ -294,6 +294,7 @@
           "resting": "Zaměření na regeneraci: vynechá",
           "peaked": "Na svém potenciálu: vynechá",
           "keepAbove": "Zastaven kvůli udržení kondice",
+          "focusMaxed": "Jejich zaměření už nemá nic, co by zvedalo OVR na této pozici",
           "other": "Vynechá"
         },
         "intensity": "Intenzita",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Udržet minimální kondici",
         "keepAbove": "Udržet kondici od",
         "xiWarning": "Tito hráči základní sestavy by začali dnešní zápas s kondicí pod {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: všechny atributy jejich zaměření tréninku jsou na maximu, trénink jen stojí kondici. Změňte jim zaměření.",
+        "focusFull": "{{names}}: jejich zaměření už nemá nic, co by zvedalo OVR na této pozici. Přepněte na zaměření za šipkou.",
         "andMore": "{{names}} a dalších {{more}}",
         "held": "Odtrénováno tréninků: {{held}} (č. {{first}}–{{last}} dnes).",
         "sessionsColumn": "Tréninky",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (zděděno)",
         "inheritedTag": "zděděno",
         "empty": "V této skupině zatím nejsou hráči."
+      },
+      "focusHint": {
+        "best": "Nejlepší zaměření",
+        "fair": "Nejlepší: {{best}}",
+        "poor": "Toto zaměření zvedá OVR pomalu. Zkuste {{best}}.",
+        "nothing": "{{current}} už nemá nic, co by zvedalo OVR na této pozici. Přepněte na {{best}}."
       }
     },
     "schedule": {

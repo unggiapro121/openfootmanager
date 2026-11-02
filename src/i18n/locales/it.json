@@ -294,6 +294,7 @@
           "resting": "Focus recupero: salta",
           "peaked": "Al suo potenziale: salta",
           "keepAbove": "Fermato per mantenere la condizione",
+          "focusMaxed": "Il loro focus non ha più nulla che alzi il loro OVR in questo ruolo",
           "other": "Salta"
         },
         "intensity": "Intensità",
@@ -304,7 +305,7 @@
         "keepAboveOn": "Mantieni una condizione minima",
         "keepAbove": "Mantieni la condizione da",
         "xiWarning": "Questi titolari inizierebbero la partita di oggi sotto {{condition}} di condizione: {{names}}.",
-        "focusFull": "{{names}}: tutti gli attributi del loro focus sono al massimo, quindi la seduta costa solo condizione. Cambia il loro focus.",
+        "focusFull": "{{names}}: il loro focus non ha più nulla che alzi il loro OVR in questo ruolo. Passa al focus dopo la freccia.",
         "andMore": "{{names}} e altri {{more}}",
         "held": "{{held}} sedute svolte (n. {{first}}–{{last}} di oggi).",
         "sessionsColumn": "Sedute",
@@ -355,6 +356,12 @@
         "inherited": "{{focus}} (ereditato)",
         "inheritedTag": "ereditato",
         "empty": "Ancora nessun giocatore in questo gruppo."
+      },
+      "focusHint": {
+        "best": "Focus migliore",
+        "fair": "Migliore: {{best}}",
+        "poor": "Questo focus alza il loro OVR lentamente. Prova {{best}}.",
+        "nothing": "{{current}} non ha più nulla che alzi il loro OVR in questo ruolo. Passa a {{best}}."
       }
     },
     "schedule": {
