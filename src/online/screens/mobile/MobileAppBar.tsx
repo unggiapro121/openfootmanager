@@ -49,7 +49,7 @@ export default function MobileAppBar() {
         <p className="truncate text-xs text-gray-500 dark:text-gray-400">{seasonText(t, season)}</p>
       </div>
       {balance !== undefined && (
-        <CoinChip balance={balance} current={isCurrent("/online/coins", pathname)} />
+        <CoinChip compact balance={balance} current={isCurrent("/online/coins", pathname)} />
       )}
       {club && <InboxButton unread={club.unreadMail} />}
     </header>

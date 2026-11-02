@@ -102,13 +102,13 @@ export default function CoachRoadmap({
         </div>
       )}
 
-      <div className="flex flex-col gap-5 p-6 text-sm text-gray-700 dark:text-gray-300">
+      <div className="flex flex-col gap-5 p-6 text-sm text-gray-700 max-md:gap-4 max-md:p-4 dark:text-gray-300">
         {!career.licence && <Note>{t("online.roadmap.allOpen")}</Note>}
         {career.licence?.pending && <Note>{t("online.roadmap.pending")}</Note>}
         {steps.length > 0 && (
           <ol
             aria-label={t("online.roadmap.licences")}
-            className="grid grid-cols-1 gap-3 @lg:grid-cols-2 @4xl:grid-cols-4"
+            className="grid grid-cols-1 gap-3 max-md:grid-cols-4 max-md:gap-1.5 @lg:grid-cols-2 @4xl:grid-cols-4"
           >
             {steps.map((one) => (
               <Tier
@@ -185,7 +185,7 @@ function Tier({
         type="button"
         onClick={onChoose}
         aria-pressed={chosen}
-        className={`flex flex-1 flex-col gap-2 rounded-xl border p-3.5 text-left hover:border-primary-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
+        className={`flex flex-1 flex-col gap-2 rounded-xl border p-3.5 text-left hover:border-primary-500 max-md:items-center max-md:gap-1 max-md:px-1 max-md:py-2.5 max-md:text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
           chosen
             ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
             : state === "held"
@@ -193,7 +193,7 @@ function Tier({
               : "border-gray-200 bg-gray-50 dark:border-navy-600 dark:bg-navy-800"
         } ${state === "ahead" && !chosen ? "opacity-75" : ""}`}
       >
-        <span className="flex items-center justify-between gap-1.5">
+        <span className="flex items-center justify-between gap-1.5 max-md:justify-center">
           <span
             className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${DOT[state]}`}
             aria-hidden="true"
@@ -201,12 +201,12 @@ function Tier({
             <Icon className="h-3.5 w-3.5" strokeWidth={state === "passed" ? 3 : 2} />
           </span>
           <span
-            className={`rounded-md px-1.5 font-heading text-[11px] font-semibold uppercase tracking-wider ${TAG[state]}`}
+            className={`rounded-md px-1.5 font-heading text-[11px] font-semibold uppercase tracking-wider max-md:hidden ${TAG[state]}`}
           >
             {tagText(t, step, state)}
           </span>
         </span>
-        <span className="font-heading text-xl font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+        <span className="font-heading text-xl font-bold uppercase tracking-wide text-gray-900 max-md:text-sm max-md:leading-tight dark:text-white">
           {t(`tactics.licence.tier_${step.tier}`)}
         </span>
         {step.startsAt !== null && (

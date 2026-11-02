@@ -71,7 +71,7 @@ export default function OnlineInventory() {
         <div
           role="tablist"
           aria-label={t("online.nav.inventory")}
-          className="inline-flex gap-1 rounded-lg border border-gray-200 bg-white p-1 dark:border-navy-600 dark:bg-navy-800"
+          className="inline-flex gap-1 rounded-lg border border-gray-200 bg-white p-1 max-md:flex max-md:w-full max-md:[&>*]:flex-1 dark:border-navy-600 dark:bg-navy-800"
         >
           <SegmentTab selected={tab === "held"} onClick={() => setTab("held")}>
             {t("online.inventory.tabHeldCount", { count: items.lines.length })}
@@ -177,7 +177,7 @@ function Held({ items }: { items: InventoryView }) {
                   ({lines.length})
                 </span>
               </h2>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3 max-md:grid-cols-4 max-md:gap-2">
                 {lines.map((line) => (
                   <ItemTile
                     key={line.itemCode}
@@ -238,16 +238,16 @@ function ItemTile({
       type="button"
       onClick={onOpen}
       aria-label={t("online.inventory.tileAria", { item: name, count: line.total })}
-      className="flex min-h-18 items-center gap-3 rounded-xl border border-gray-200 bg-white py-3 pl-3 pr-4 text-left shadow-sm transition-colors hover:border-primary-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:bg-navy-700 dark:hover:border-primary-500 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800"
+      className="flex min-h-18 items-center gap-3 rounded-xl border border-gray-200 bg-white py-3 pl-3 pr-4 text-left shadow-sm max-md:relative max-md:min-h-0 max-md:flex-col max-md:gap-1.5 max-md:px-1.5 max-md:py-2.5 max-md:text-center transition-colors hover:border-primary-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-navy-600 dark:bg-navy-700 dark:hover:border-primary-500 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800"
     >
       <ItemIcon code={line.itemCode} size="md" />
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="truncate font-heading text-base font-bold uppercase leading-tight tracking-wider text-gray-900 dark:text-gray-100">
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5 max-md:w-full">
+        <span className="truncate font-heading text-base font-bold uppercase leading-tight tracking-wider text-gray-900 max-md:whitespace-normal max-md:font-sans max-md:text-xs max-md:font-semibold max-md:normal-case max-md:tracking-normal dark:text-gray-100">
           {name}
         </span>
         {below && (
           <span
-            className={`truncate text-xs ${
+            className={`truncate text-xs max-md:hidden ${
               below.warn
                 ? "text-accent-700 dark:text-accent-300"
                 : "text-gray-500 dark:text-gray-400"
@@ -257,8 +257,8 @@ function ItemTile({
           </span>
         )}
       </span>
-      <span className="shrink-0 font-heading text-xl font-bold tabular-nums text-gray-900 dark:text-white">
-        <span className="text-sm text-gray-500 dark:text-gray-400">×</span>
+      <span className="shrink-0 font-heading text-xl font-bold tabular-nums text-gray-900 max-md:absolute max-md:right-1.5 max-md:top-1 max-md:text-sm dark:text-white">
+        <span className="text-sm text-gray-500 max-md:text-xs dark:text-gray-400">×</span>
         {line.total}
       </span>
     </button>
