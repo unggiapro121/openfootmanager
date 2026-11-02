@@ -346,7 +346,8 @@
         "fromPlan": "Segundo o plano semanal",
         "auto": "A equipa treina segundo o calendário na mudança de dia ({{time}}). Muda calendário, foco ou intensidade no plano semanal abaixo.",
         "autoNoTime": "A equipa treina segundo o calendário na mudança de dia. Muda calendário, foco ou intensidade no plano semanal abaixo.",
-        "rest": "Hoje é descanso segundo o calendário: não há sessão principal."
+        "rest": "Hoje é descanso segundo o calendário: não há sessão principal.",
+        "keeperDrill": "Os guarda-redes treinam sempre um exercício próprio a mais: Enquadramento, Reflexos, Jogo Aéreo."
       },
       "groups": {
         "all": "Todos ({{count}})",

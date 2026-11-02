@@ -346,7 +346,8 @@
         "fromPlan": "Selon le plan hebdomadaire",
         "auto": "L'équipe s'entraîne selon son programme au changement de jour ({{time}}). Changez programme, axe ou intensité dans le plan hebdomadaire ci-dessous.",
         "autoNoTime": "L'équipe s'entraîne selon son programme au changement de jour. Changez programme, axe ou intensité dans le plan hebdomadaire ci-dessous.",
-        "rest": "Aujourd'hui est un jour de repos du programme : pas de séance principale."
+        "rest": "Aujourd'hui est un jour de repos du programme : pas de séance principale.",
+        "keeperDrill": "Les gardiens travaillent toujours en plus un exercice spécifique : Prise de balle, Réflexes, Jeu Aérien."
       },
       "groups": {
         "all": "Tous ({{count}})",

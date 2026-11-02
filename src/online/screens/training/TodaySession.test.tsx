@@ -258,6 +258,30 @@ describe("today's session", () => {
     ).toBeInTheDocument();
   });
 
+  // Given a season whose ruleset has the goalkeepers' drill (`keeperDrill` true, E5-6c E56c-14),
+  // when the card shows,
+  // then the main session says goalkeepers always train their own drill.
+  it("says goalkeepers train their own drill when the season has it", () => {
+    stage(clubWith({ keeperDrill: true }));
+    render(<CardFromStore />);
+    const main = screen.getByRole("region", { name: "online.training.main.title" });
+    expect(within(main).getByText("online.training.main.keeperDrill")).toBeInTheDocument();
+  });
+
+  // Given a season without the goalkeepers' drill (`keeperDrill` false),
+  // when the card shows,
+  // then nothing is said about goalkeepers, on a training day or a rest day.
+  it("says nothing of goalkeepers when the season has no drill for them", () => {
+    stage(clubWith({ keeperDrill: false }));
+    const { unmount } = render(<CardFromStore />);
+    expect(screen.queryByText("online.training.main.keeperDrill")).toBeNull();
+    unmount();
+    useOnlineStore.setState({ season: { ...SEASON, weekday: 2 } });
+    render(<CardFromStore />);
+    expect(screen.getByText("online.training.main.rest")).toBeInTheDocument();
+    expect(screen.queryByText("online.training.main.keeperDrill")).toBeNull();
+  });
+
   // Given the balanced plan on a Wednesday, a rest day on its schedule,
   // when the card shows,
   // then it says today rests and the main session says there is none.
