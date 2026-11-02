@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (heredado)",
         "inheritedTag": "heredado",
         "empty": "Aún no hay jugadores en este grupo."
+      },
+      "focusHint": {
+        "best": "Mejor enfoque",
+        "fair": "Mejor: {{best}}",
+        "poor": "Este enfoque sube su OVR despacio. Prueba {{best}}.",
+        "nothing": "{{current}} ya no tiene nada que suba su OVR en esta posición. Cambia a {{best}}."
       }
     },
     "schedule": {

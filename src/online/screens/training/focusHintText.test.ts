@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { LOCALE_FILES, type LocaleTree } from "../../../i18n/i18nTestHelpers";
 import { stopReasonKey } from "./extraText";
+import { focusHint } from "./focusHintModel";
 
 /**
  * T14 (E5-6-tech-spec.md §6.1, D48): the focus texts of C-13a. The balancing rules stay hidden
@@ -79,6 +80,53 @@ describe("T14: the focus texts of C-13a", () => {
         }
       }
       expect(text(locale, "online.training.extra.reason.focusMaxed")).not.toMatch(/\d/);
+    }
+  });
+});
+
+describe("T14: the hint for each verdict", () => {
+  const fit = (verdict: string) => ({ current: "Technical", best: "Tactical", verdict });
+
+  // Given the server's fit of each verdict,
+  // when the screens read the hint,
+  // then best, fair and poor name the best focus, nothing names both, and a resting player, a
+  // fit with no best, an unknown verdict or no fit at all show nothing.
+  it("gives each verdict its hint and nothing where it should", () => {
+    expect(focusHint(fit("best"))).toEqual({ verdict: "best" });
+    expect(focusHint(fit("fair"))).toEqual({ verdict: "fair", best: "Tactical" });
+    expect(focusHint(fit("poor"))).toEqual({ verdict: "poor", best: "Tactical" });
+    expect(focusHint(fit("nothing"))).toEqual({
+      verdict: "nothing",
+      current: "Technical",
+      best: "Tactical",
+    });
+    expect(focusHint(fit("resting"))).toBeNull();
+    expect(focusHint({ current: "Technical", verdict: "fair" })).toBeNull();
+    expect(focusHint(fit("sideways"))).toBeNull();
+    expect(focusHint(undefined)).toBeNull();
+  });
+
+  // Given a fit read for Technical,
+  // when the screen shows the player on Technical, then on Defending,
+  // then the hint shows the first time and not the second (the plan changed since).
+  it("says nothing for a focus the fit was not read for", () => {
+    expect(focusHint(fit("fair"), "Technical")).not.toBeNull();
+    expect(focusHint(fit("fair"), "Defending")).toBeNull();
+  });
+
+  // Given every locale,
+  // when the hint texts are read,
+  // then each verdict has a text with only the placeholders it is given, and no number.
+  it("has the four hint texts in every locale", () => {
+    const placeholders = { best: [], fair: ["best"], poor: ["best"], nothing: ["current", "best"] };
+    for (const locale of Object.keys(LOCALE_FILES)) {
+      for (const [verdict, names] of Object.entries(placeholders)) {
+        const value = text(locale, `online.training.focusHint.${verdict}`);
+        expect(typeof value, `${locale} ${verdict}`).toBe("string");
+        const found = [...String(value).matchAll(/\{\{(\w+)\}\}/g)].map((m) => m[1]).sort();
+        expect(found, `${locale} ${verdict}`).toEqual([...names].sort());
+        expect(String(value).replace(/\{\{\w+\}\}/g, ""), `${locale} ${verdict}`).not.toMatch(/\d/);
+      }
     }
   });
 });

@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (zděděno)",
         "inheritedTag": "zděděno",
         "empty": "V této skupině zatím nejsou hráči."
+      },
+      "focusHint": {
+        "best": "Nejlepší zaměření",
+        "fair": "Nejlepší: {{best}}",
+        "poor": "Toto zaměření zvedá OVR pomalu. Zkuste {{best}}.",
+        "nothing": "{{current}} už nemá nic, co by zvedalo OVR na této pozici. Přepněte na {{best}}."
       }
     },
     "schedule": {

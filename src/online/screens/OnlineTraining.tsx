@@ -10,7 +10,13 @@ import type { TrainingGroupData } from "../../store/types";
 import type { MyClubView, TrainingPlan } from "../api";
 import type { TrainingFocus, TrainingIntensity, TrainingSchedule } from "../api/domain";
 import { online } from "../client";
-import { inSquad, toGroupData, toPlanGroups, toTrainingRoster } from "../convert/training";
+import {
+  focusFitsOf,
+  inSquad,
+  toGroupData,
+  toPlanGroups,
+  toTrainingRoster,
+} from "../convert/training";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import TodaySession from "./training/TodaySession";
 import TrainingGroups from "./training/TrainingGroups";
@@ -57,6 +63,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
           .getState()
           .setClub({ ...current, trainingPlan: saved, trainingPlanIsOwn: true });
       }
+      await refreshClub();
     } catch (failure) {
       setError(failure);
     } finally {
@@ -138,6 +145,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
             groups={toGroupData(plan.groups)}
             teamFocus={plan.focus}
             roster={toTrainingRoster(club.players)}
+            focusFits={focusFitsOf(club.players)}
             disabled={saving || offline}
             onSaveGroups={saveGroups}
             onSetPlayerFocus={(playerId, focus) => void setPlayerFocus(playerId, focus)}
@@ -149,6 +157,19 @@ function TrainingScreen({ club }: { club: MyClubView }) {
 }
 
 /** A tab of the page, underlined green while chosen (design tap-luyen.html). */
+/**
+ * The club read again after a saved plan, for the focus hints it changes (S-31b, C-13a). A failed
+ * read keeps the club shown: its hints were read for the old plan, and the hint hides itself for
+ * a focus it was not read for.
+ */
+async function refreshClub(): Promise<void> {
+  try {
+    useOnlineStore.getState().setClub(await tracked(() => online.clubs.mine()));
+  } catch {
+    // The plan is saved; only the hints wait for the next read of the club.
+  }
+}
+
 function UnderlineTab({
   selected,
   onClick,

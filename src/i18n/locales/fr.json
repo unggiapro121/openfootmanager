@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (hérité)",
         "inheritedTag": "hérité",
         "empty": "Aucun joueur dans ce groupe pour l'instant."
+      },
+      "focusHint": {
+        "best": "Meilleur focus",
+        "fair": "Meilleur : {{best}}",
+        "poor": "Ce focus fait monter leur OVR lentement. Essayez {{best}}.",
+        "nothing": "{{current}} n'a plus rien qui fasse monter leur OVR à ce poste. Passez à {{best}}."
       }
     },
     "schedule": {

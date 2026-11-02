@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (übernommen)",
         "inheritedTag": "übernommen",
         "empty": "Noch keine Spieler in dieser Gruppe."
+      },
+      "focusHint": {
+        "best": "Bester Fokus",
+        "fair": "Am besten: {{best}}",
+        "poor": "Dieser Fokus steigert ihre OVR langsam. Versuche {{best}}.",
+        "nothing": "{{current}} hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zu {{best}}."
       }
     },
     "schedule": {

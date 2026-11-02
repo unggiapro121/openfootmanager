@@ -56,6 +56,7 @@ export type { FinanceTotal } from "./FinanceTotal";
 export type { FinanceView } from "./FinanceView";
 export type { FixtureDetailView } from "./FixtureDetailView";
 export type { FixtureView } from "./FixtureView";
+export type { FocusFitView } from "./FocusFitView";
 export type { FramesPage } from "./FramesPage";
 export type { FramesQuery } from "./FramesQuery";
 export type { FriendlyEndReason } from "./FriendlyEndReason";

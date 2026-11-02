@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (gruptan)",
         "inheritedTag": "gruptan",
         "empty": "Bu grupta henüz oyuncu yok."
+      },
+      "focusHint": {
+        "best": "En iyi odak",
+        "fair": "En iyisi: {{best}}",
+        "poor": "Bu odak OVR'ı yavaş yükseltir. {{best}} dene.",
+        "nothing": "{{current}} odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. {{best}} odağına geç."
       }
     },
     "schedule": {

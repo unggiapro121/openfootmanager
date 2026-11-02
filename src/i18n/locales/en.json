@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (inherited)",
         "inheritedTag": "inherited",
         "empty": "No players in this group yet."
+      },
+      "focusHint": {
+        "best": "Best focus",
+        "fair": "Best: {{best}}",
+        "poor": "This focus builds their OVR slowly. Try {{best}}.",
+        "nothing": "{{current}} has nothing left that raises their OVR in this position. Switch to {{best}}."
       }
     },
     "schedule": {

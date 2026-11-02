@@ -503,6 +503,31 @@ describe("the academy's youngsters", () => {
     expect(screen.getByText("online.academy.players.moreSlots")).toBeTruthy();
   });
 
+  // Given a youngster the server finds on a fair focus, and one it gives no fit,
+  // when the academy opens,
+  // then the first shows the best focus beside his own, and the second no hint.
+  it("shows how a youngster's focus suits him", async () => {
+    serve({
+      "GET v1/clubs/mine/academy": ok(
+        academy({
+          used: 2,
+          players: [
+            pupil("p0", {
+              focusFit: { current: "Technical", best: "Tactical", verdict: "fair" },
+            }),
+            pupil("p1"),
+          ],
+        }),
+      ),
+    });
+    renderOnline("/online/academy");
+
+    expect(
+      await screen.findByText("online.training.focusHint.fair:training.focuses.Tactical.label"),
+    ).toBeTruthy();
+    expect(screen.getAllByText(/^online\.training\.focusHint\./)).toHaveLength(1);
+  });
+
   // Given a youngster with his own focus,
   // when his focus is set back to the club's,
   // then the request carries no focus.

@@ -356,6 +356,12 @@
         "inherited": "{{focus}}（沿用）",
         "inheritedTag": "沿用",
         "empty": "该小组暂无球员。"
+      },
+      "focusHint": {
+        "best": "最佳训练重点",
+        "fair": "最佳：{{best}}",
+        "poor": "此训练重点提升OVR较慢。试试{{best}}。",
+        "nothing": "{{current}}已没有能提升该位置OVR的属性。请改为{{best}}。"
       }
     },
     "schedule": {

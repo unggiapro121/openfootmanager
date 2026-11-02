@@ -30,6 +30,7 @@ function withMark(nextRecoveryAt: string | number): MyClubView {
     nextRecoveryAt: at,
     recovery: { perDay: 6, hours: 8 },
     autoOff: false,
+    keeperDrill: false,
   };
   return myClub({ trainingDay });
 }

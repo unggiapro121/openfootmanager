@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (theo nhóm)",
         "inheritedTag": "theo nhóm",
         "empty": "Nhóm này chưa có cầu thủ."
+      },
+      "focusHint": {
+        "best": "Trọng tâm hợp nhất",
+        "fair": "Hợp nhất: {{best}}",
+        "poor": "Trọng tâm này tăng OVR chậm. Nên tập {{best}}.",
+        "nothing": "{{current}} không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang {{best}}."
       }
     },
     "schedule": {

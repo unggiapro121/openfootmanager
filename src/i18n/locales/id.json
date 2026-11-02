@@ -356,6 +356,12 @@
         "inherited": "{{focus}} (ikut grup)",
         "inheritedTag": "ikut grup",
         "empty": "Belum ada pemain di grup ini."
+      },
+      "focusHint": {
+        "best": "Fokus terbaik",
+        "fair": "Terbaik: {{best}}",
+        "poor": "Fokus ini menaikkan OVR dengan lambat. Coba {{best}}.",
+        "nothing": "{{current}} tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke {{best}}."
       }
     },
     "schedule": {
