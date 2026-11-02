@@ -13,7 +13,7 @@ use domain::team::PlayStyle;
 use ofm_core::coach_progress::{CoachMatchRecord, CoachRecord};
 use serde_json::Value;
 
-use super::vault::MemoryVault;
+use super::vault::{KeyringVault, MemoryVault};
 use super::*;
 use crate::application::coach::{self, CoachContext};
 

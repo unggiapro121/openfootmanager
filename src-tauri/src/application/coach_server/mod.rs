@@ -25,7 +25,7 @@ use serde::{Deserialize, Serialize};
 pub use client::{ApiClient, ApiError, RawRequest, RawResponse};
 pub use remote_store::RemoteCoachProgressStore;
 pub use session::ServerSession;
-pub use vault::{KeyringVault, RefreshTokenVault};
+pub use vault::{platform_vault, RefreshTokenVault};
 
 use super::coach::{validated_identity, CoachContext};
 use session::RegisterRequest;
