@@ -370,7 +370,9 @@
         "W": "V",
         "D": "R",
         "L": "P"
-      }
+      },
+      "filterLabel": "Zobrazit zápasy",
+      "dayCount": "Zápasů: {{count}}"
     },
     "publicClub": {
       "formation": "Rozestavení: {{formation}}",

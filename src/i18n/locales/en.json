@@ -370,7 +370,9 @@
         "W": "W",
         "D": "D",
         "L": "L"
-      }
+      },
+      "filterLabel": "Show fixtures",
+      "dayCount": "Matches: {{count}}"
     },
     "publicClub": {
       "formation": "Formation: {{formation}}",

@@ -7,18 +7,13 @@ import type { ClubRef, FixtureView, MyClubView, StandingRow } from "../../api";
 import { deviceDiffersFromRegion, formatMoment, formatRegionClock } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
 import ClubCrestMark from "../ClubCrestMark";
+import { crestLabel } from "../crestLabel";
 import { itemName } from "../items/itemText";
 import { useCountdownText } from "../useCountdownText";
 import OverviewCard, { CardBadge, LABEL } from "./OverviewCard";
 import { useUsableCount } from "./useItemUse";
 
 const RECOVERY = "teamRecoveryPack";
-
-/** Up to three letters for a club's crest: the initials of its words, or its first letters. */
-function crestLabel(name: string): string {
-  const words = name.split(/\s+/).filter(Boolean);
-  return words.length > 1 ? words.map((word) => word[0]).join("") : name.slice(0, 3);
-}
 
 /**
  * The club's next match (design tong-quan.html): both clubs, the time left to the kick-off, and

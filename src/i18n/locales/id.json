@@ -370,7 +370,9 @@
         "W": "M",
         "D": "S",
         "L": "K"
-      }
+      },
+      "filterLabel": "Tampilkan laga",
+      "dayCount": "Laga: {{count}}"
     },
     "publicClub": {
       "formation": "Formasi: {{formation}}",

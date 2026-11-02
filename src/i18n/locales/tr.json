@@ -370,7 +370,9 @@
         "W": "G",
         "D": "B",
         "L": "M"
-      }
+      },
+      "filterLabel": "Maçları göster",
+      "dayCount": "Maç: {{count}}"
     },
     "publicClub": {
       "formation": "Diziliş: {{formation}}",

@@ -370,7 +370,9 @@
         "W": "V",
         "D": "P",
         "L": "S"
-      }
+      },
+      "filterLabel": "Mostra partite",
+      "dayCount": "Partite: {{count}}"
     },
     "publicClub": {
       "formation": "Modulo: {{formation}}",

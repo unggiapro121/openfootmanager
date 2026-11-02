@@ -370,7 +370,9 @@
         "W": "胜",
         "D": "平",
         "L": "负"
-      }
+      },
+      "filterLabel": "筛选比赛",
+      "dayCount": "{{count}} 场比赛"
     },
     "publicClub": {
       "formation": "阵型：{{formation}}",

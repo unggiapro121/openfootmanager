@@ -370,7 +370,9 @@
         "W": "T",
         "D": "H",
         "L": "B"
-      }
+      },
+      "filterLabel": "Lọc trận",
+      "dayCount": "{{count}} trận"
     },
     "publicClub": {
       "formation": "Sơ đồ: {{formation}}",

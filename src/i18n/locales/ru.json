@@ -370,7 +370,9 @@
         "W": "В",
         "D": "Н",
         "L": "П"
-      }
+      },
+      "filterLabel": "Показать матчи",
+      "dayCount": "Матчей: {{count}}"
     },
     "publicClub": {
       "formation": "Схема: {{formation}}",

@@ -370,7 +370,9 @@
         "W": "V",
         "D": "E",
         "L": "D"
-      }
+      },
+      "filterLabel": "Mostrar jogos",
+      "dayCount": "Jogos: {{count}}"
     },
     "publicClub": {
       "formation": "Tática: {{formation}}",
