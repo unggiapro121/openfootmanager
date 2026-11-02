@@ -69,10 +69,6 @@ tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-opener = "2"
 tauri-plugin-log = "2"
 tauri-plugin-dialog = "2"
-# One copy of the game at a time: a second launch brings the running window forward. Two copies
-# would share the account server's refresh token in the keychain and race to rotate it (phase 3
-# E3-6c, E6-20); the server's race window is only the fallback.
-tauri-plugin-single-instance = "2"
 log = "0.4"
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
@@ -107,13 +103,26 @@ tempfile = "3"
 ureq = "3"
 # Builds the online proxy's URLs from checked segments, never by joining strings (E3-6c).
 url = "2"
-keyring = { version = "3", features = ["apple-native", "windows-native", "linux-native"] }
 # The realtime client (phase 3 S-8e): one WebSocket to the gateway, on Tauri's tokio runtime
 # (tokio itself is below, shared with the MCP server).
 # rustls with the ring provider and webpki roots, as ureq already uses: no C toolchain, so the
 # Windows cross build is unchanged.
 tokio-tungstenite = { version = "0.29", default-features = false, features = ["connect", "rustls-tls-webpki-roots"] }
 futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
+
+# Desktop only (phase 5 M0): the plugin is for desktop, and Android and iOS already run one copy of
+# an app at a time.
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+# One copy of the game at a time: a second launch brings the running window forward. Two copies
+# would share the account server's refresh token in the keychain and race to rotate it (phase 3
+# E3-6c, E6-20); the server's race window is only the fallback.
+tauri-plugin-single-instance = "2"
+
+# The refresh token's keychain everywhere but Android, where keyring has no backend: Android keeps
+# it in a file of the app's private data folder instead (`application/coach_server/vault.rs`).
+# iOS uses the Keychain through `apple-native`.
+[target.'cfg(not(target_os = "android"))'.dependencies]
+keyring = { version = "3", features = ["apple-native", "windows-native", "linux-native"] }
 
 # Dev builds (`tauri dev`) otherwise run the whole simulation unoptimized, which
 # is the dominant cause of the in-app sluggishness. Lightly optimizing our own

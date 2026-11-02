@@ -17,7 +17,7 @@ use ofm_core::state::StateManager;
 use serde::{Deserialize, Serialize};
 
 use super::coach_server::{
-    configured_server_url, ApiClient, KeyringVault, RemoteCoachProgressStore, ServerSession,
+    configured_server_url, platform_vault, ApiClient, RemoteCoachProgressStore, ServerSession,
 };
 
 /// Set to `1` to play as if the account server could not be reached: matches
@@ -162,10 +162,8 @@ impl CoachContext {
         match configured_server_url() {
             Some(url) => {
                 log::info!("[coach] accounts on the server at {url}");
-                let session = ServerSession::new(
-                    ApiClient::new(&url),
-                    Box::new(KeyringVault::for_server(&url)),
-                );
+                let session =
+                    ServerSession::new(ApiClient::new(&url), platform_vault(app_data_dir, &url));
                 Self::with_server(app_data_dir, Arc::new(session))
             }
             None => Self::local(app_data_dir),
