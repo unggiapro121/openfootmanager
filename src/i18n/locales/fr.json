@@ -305,7 +305,7 @@
         "keepAboveOn": "Garder une condition minimale",
         "keepAbove": "Garder la condition à partir de",
         "xiWarning": "Ces titulaires commenceraient le match d'aujourd'hui sous {{condition}} de condition : {{names}}.",
-        "focusFull": "{{names}} : tous les attributs de leur focus d'entraînement sont au maximum, la séance ne coûte que de la condition. Changez leur focus.",
+        "focusFull": "{{names}} : leur focus n'a plus rien qui fasse monter leur OVR à ce poste. Passez au focus indiqué après la flèche.",
         "andMore": "{{names}} et {{more}} autres",
         "held": "{{held}} séances effectuées (n° {{first}}–{{last}} aujourd'hui).",
         "sessionsColumn": "Séances",

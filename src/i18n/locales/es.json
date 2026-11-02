@@ -305,7 +305,7 @@
         "keepAboveOn": "Mantener una condición mínima",
         "keepAbove": "Mantener la condición desde",
         "xiWarning": "Estos titulares empezarían el partido de hoy con menos de {{condition}} de condición: {{names}}.",
-        "focusFull": "{{names}}: todos los atributos de su enfoque están al máximo, así que la sesión solo cuesta condición. Cambia su enfoque.",
+        "focusFull": "{{names}}: su enfoque ya no tiene nada que suba su OVR en esta posición. Cambia al enfoque que sigue a la flecha.",
         "andMore": "{{names}} y {{more}} más",
         "held": "{{held}} sesiones entrenadas (n.º {{first}}–{{last}} de hoy).",
         "sessionsColumn": "Sesiones",

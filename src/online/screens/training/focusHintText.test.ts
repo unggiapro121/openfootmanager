@@ -70,7 +70,7 @@ describe("T14: the focus texts of C-13a", () => {
 
   // Given every locale's training and academy texts,
   // when each is read for a word that would show a hidden balancing rule,
-  // then none has one, and the focusMaxed reason carries no number.
+  // then none has one, and the focusMaxed reason and the extra card's warning carry no number.
   it("keeps the balancing rules hidden in every locale", () => {
     expect(Object.keys(GIVEAWAYS).sort()).toEqual(Object.keys(LOCALE_FILES).sort());
     for (const [locale, pattern] of Object.entries(GIVEAWAYS)) {
@@ -80,6 +80,7 @@ describe("T14: the focus texts of C-13a", () => {
         }
       }
       expect(text(locale, "online.training.extra.reason.focusMaxed")).not.toMatch(/\d/);
+      expect(text(locale, "online.training.extra.focusFull")).not.toMatch(/\d/);
     }
   });
 });

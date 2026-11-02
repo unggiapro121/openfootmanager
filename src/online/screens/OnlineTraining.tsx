@@ -156,7 +156,6 @@ function TrainingScreen({ club }: { club: MyClubView }) {
   );
 }
 
-/** A tab of the page, underlined green while chosen (design tap-luyen.html). */
 /**
  * The club read again after a saved plan, for the focus hints it changes (S-31b, C-13a). A failed
  * read keeps the club shown: its hints were read for the old plan, and the hint hides itself for
@@ -170,6 +169,7 @@ async function refreshClub(): Promise<void> {
   }
 }
 
+/** A tab of the page, underlined green while chosen (design tap-luyen.html). */
 function UnderlineTab({
   selected,
   onClick,

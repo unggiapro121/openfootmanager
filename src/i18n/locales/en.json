@@ -305,7 +305,7 @@
         "keepAboveOn": "Keep a minimum condition",
         "keepAbove": "Keep condition at or above",
         "xiWarning": "These starters would begin today's match under {{condition}} condition: {{names}}.",
-        "focusFull": "{{names}}: every attribute of their training focus is full, so a session only costs condition. Change their focus.",
+        "focusFull": "{{names}}: their focus has nothing left that raises their OVR in this position. Switch to the focus after the arrow.",
         "andMore": "{{names}} and {{more}} more",
         "held": "Trained {{held}} sessions (today's {{first}}–{{last}}).",
         "sessionsColumn": "Sessions",

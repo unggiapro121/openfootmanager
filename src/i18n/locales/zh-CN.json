@@ -305,7 +305,7 @@
         "keepAboveOn": "保持最低状态",
         "keepAbove": "状态保持在",
         "xiWarning": "以下首发球员将以低于 {{condition}} 的状态开始今天的比赛：{{names}}。",
-        "focusFull": "{{names}}：训练重点的所有属性都已满，加练只会消耗状态。请更换训练重点。",
+        "focusFull": "{{names}}：当前训练重点已没有能提升该位置OVR的属性。请改为箭头后的训练重点。",
         "andMore": "{{names}} 等另外 {{more}} 人",
         "held": "已加练 {{held}} 次（今天第 {{first}}–{{last}} 次）。",
         "sessionsColumn": "次数",

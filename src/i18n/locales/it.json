@@ -305,7 +305,7 @@
         "keepAboveOn": "Mantieni una condizione minima",
         "keepAbove": "Mantieni la condizione da",
         "xiWarning": "Questi titolari inizierebbero la partita di oggi sotto {{condition}} di condizione: {{names}}.",
-        "focusFull": "{{names}}: tutti gli attributi del loro focus sono al massimo, quindi la seduta costa solo condizione. Cambia il loro focus.",
+        "focusFull": "{{names}}: il loro focus non ha più nulla che alzi il loro OVR in questo ruolo. Passa al focus dopo la freccia.",
         "andMore": "{{names}} e altri {{more}}",
         "held": "{{held}} sedute svolte (n. {{first}}–{{last}} di oggi).",
         "sessionsColumn": "Sedute",

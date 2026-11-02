@@ -305,7 +305,7 @@
         "keepAboveOn": "Jaga kondisi minimum",
         "keepAbove": "Jaga kondisi mulai",
         "xiWarning": "Pemain inti ini akan memulai pertandingan hari ini dengan kondisi di bawah {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: semua atribut fokus latihannya sudah penuh, jadi sesi hanya menguras kondisi. Ganti fokusnya.",
+        "focusFull": "{{names}}: fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke fokus setelah tanda panah.",
         "andMore": "{{names}} dan {{more}} lainnya",
         "held": "{{held}} sesi selesai (ke-{{first}}–{{last}} hari ini).",
         "sessionsColumn": "Sesi",

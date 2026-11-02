@@ -305,7 +305,7 @@
         "keepAboveOn": "Mindestkondition halten",
         "keepAbove": "Kondition halten ab",
         "xiWarning": "Diese Stammspieler würden das heutige Spiel mit weniger als {{condition}} Kondition beginnen: {{names}}.",
-        "focusFull": "{{names}}: Jedes Attribut ihres Trainingsfokus ist voll, eine Einheit kostet nur Kondition. Ändere ihren Fokus.",
+        "focusFull": "{{names}}: Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zum Fokus nach dem Pfeil.",
         "andMore": "{{names}} und {{more}} weitere",
         "held": "{{held}} Einheiten trainiert (heute Nr. {{first}}–{{last}}).",
         "sessionsColumn": "Einheiten",

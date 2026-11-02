@@ -305,7 +305,7 @@
         "keepAboveOn": "Manter uma condição mínima",
         "keepAbove": "Manter a condição a partir de",
         "xiWarning": "Estes titulares começariam o jogo de hoje com menos de {{condition}} de condição: {{names}}.",
-        "focusFull": "{{names}}: todos os atributos do foco de treino estão no máximo, por isso a sessão só custa condição. Mude o foco.",
+        "focusFull": "{{names}}: o foco já não tem nada que suba o OVR nesta posição. Mude para o foco a seguir à seta.",
         "andMore": "{{names}} e mais {{more}}",
         "held": "{{held}} sessões treinadas (n.º {{first}}–{{last}} de hoje).",
         "sessionsColumn": "Sessões",
