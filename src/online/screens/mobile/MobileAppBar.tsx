@@ -27,7 +27,7 @@ export default function MobileAppBar() {
   const title = titleKey ? t(titleKey) : (club?.club.name ?? t("online.title"));
 
   return (
-    <header className="flex items-center gap-2.5 border-b border-gray-200 bg-white/95 px-4 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] backdrop-blur dark:border-navy-700 dark:bg-navy-800/95">
+    <header className="flex items-center gap-2.5 border-b border-gray-200 bg-white/95 px-4 pb-2.5 pt-[calc(0.625rem+var(--safe-top))] backdrop-blur dark:border-navy-700 dark:bg-navy-800/95">
       {group === "more" ? (
         <button
           type="button"

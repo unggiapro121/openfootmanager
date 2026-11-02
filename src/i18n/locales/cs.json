@@ -6767,5 +6767,8 @@
     "anyRegion": "Jakýkoli region",
     "anyCountry": "Jakákoli země",
     "clear": "Zrušit filtry"
+  },
+  "mobile": {
+    "pressBackAgain": "Pro ukončení stiskněte znovu Zpět"
   }
 }

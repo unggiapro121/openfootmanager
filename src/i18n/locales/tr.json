@@ -6767,5 +6767,8 @@
     "anyRegion": "Tüm bölgeler",
     "anyCountry": "Tüm ülkeler",
     "clear": "Filtreleri temizle"
+  },
+  "mobile": {
+    "pressBackAgain": "Çıkmak için tekrar Geri'ye basın"
   }
 }

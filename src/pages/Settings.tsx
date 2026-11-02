@@ -125,14 +125,14 @@ export default function Settings() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-navy-900 flex items-center justify-center transition-colors">
+      <div className="min-h-screen bg-gray-100 dark:bg-navy-900 flex items-center justify-center transition-colors pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
         <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-navy-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-100 dark:bg-navy-900 transition-colors duration-300 pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
       {/* Header */}
       <header className="bg-white dark:bg-navy-800 border-b border-gray-200 dark:border-navy-700 shadow-sm">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">

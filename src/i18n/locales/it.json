@@ -6767,5 +6767,8 @@
     "anyRegion": "Qualsiasi regione",
     "anyCountry": "Qualsiasi paese",
     "clear": "Azzera filtri"
+  },
+  "mobile": {
+    "pressBackAgain": "Premi di nuovo Indietro per uscire"
   }
 }
