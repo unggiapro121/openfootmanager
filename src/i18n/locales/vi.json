@@ -294,6 +294,7 @@
           "resting": "Focus hồi phục: nghỉ buổi này",
           "peaked": "Đã chạm tiềm năng: nghỉ buổi này",
           "keepAbove": "Dừng để giữ thể lực",
+          "focusMaxed": "Trọng tâm không còn chỉ số nào tăng OVR ở vị trí này",
           "other": "Nghỉ buổi này"
         },
         "intensity": "Cường độ",

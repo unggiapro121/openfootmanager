@@ -294,6 +294,7 @@
           "resting": "Toparlanma odağı: katılmaz",
           "peaked": "Potansiyelinde: katılmaz",
           "keepAbove": "Kondisyonunu korumak için durdu",
+          "focusMaxed": "Odağında bu pozisyonda OVR'ını yükselten bir şey kalmadı",
           "other": "Katılmaz"
         },
         "intensity": "Yoğunluk",

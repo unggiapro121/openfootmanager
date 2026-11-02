@@ -294,6 +294,7 @@
           "resting": "恢复训练重点：不参加",
           "peaked": "已达潜力：不参加",
           "keepAbove": "为保持状态而停止",
+          "focusMaxed": "训练重点中已没有能提升该位置OVR的属性",
           "other": "不参加"
         },
         "intensity": "强度",

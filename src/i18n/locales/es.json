@@ -294,6 +294,7 @@
           "resting": "Enfoque de recuperación: no participa",
           "peaked": "En su potencial: no participa",
           "keepAbove": "Se detuvo para conservar su condición",
+          "focusMaxed": "Su enfoque ya no tiene nada que suba su OVR en esta posición",
           "other": "No participa"
         },
         "intensity": "Intensidad",

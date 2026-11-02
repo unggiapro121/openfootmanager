@@ -294,6 +294,7 @@
           "resting": "Recovery focus: sits out",
           "peaked": "At his potential: sits out",
           "keepAbove": "Stopped to keep his condition",
+          "focusMaxed": "Their focus has nothing left that raises their OVR in this position",
           "other": "Sits out"
         },
         "intensity": "Intensity",

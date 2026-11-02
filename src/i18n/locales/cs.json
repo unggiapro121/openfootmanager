@@ -294,6 +294,7 @@
           "resting": "Zaměření na regeneraci: vynechá",
           "peaked": "Na svém potenciálu: vynechá",
           "keepAbove": "Zastaven kvůli udržení kondice",
+          "focusMaxed": "Jejich zaměření už nemá nic, co by zvedalo OVR na této pozici",
           "other": "Vynechá"
         },
         "intensity": "Intenzita",

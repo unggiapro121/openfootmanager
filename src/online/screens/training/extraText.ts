@@ -162,7 +162,7 @@ export function namesOf(players: SquadPlayerView[]): { names: string; more: numb
 }
 
 /** The reasons a player sits out or stops (S-28 §6), as the card's text keys know them. */
-const STOP_REASONS = new Set(["injured", "tired", "resting", "peaked", "keepAbove"]);
+const STOP_REASONS = new Set(["injured", "tired", "resting", "peaked", "keepAbove", "focusMaxed"]);
 
 /** The text key of a sit-out or stop reason; a reason this build does not know reads plainly. */
 export function stopReasonKey(reason: string): string {

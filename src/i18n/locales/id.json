@@ -294,6 +294,7 @@
           "resting": "Fokus pemulihan: absen",
           "peaked": "Sudah di potensinya: absen",
           "keepAbove": "Berhenti untuk menjaga kondisi",
+          "focusMaxed": "Fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini",
           "other": "Absen"
         },
         "intensity": "Intensitas",

@@ -294,6 +294,7 @@
           "resting": "Foco em recuperação: fica de fora",
           "peaked": "No seu potencial: fica de fora",
           "keepAbove": "Parou para manter a condição",
+          "focusMaxed": "O foco não tem mais nada que aumente o OVR nesta posição",
           "other": "Fica de fora"
         },
         "intensity": "Intensidade",

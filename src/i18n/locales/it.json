@@ -294,6 +294,7 @@
           "resting": "Focus recupero: salta",
           "peaked": "Al suo potenziale: salta",
           "keepAbove": "Fermato per mantenere la condizione",
+          "focusMaxed": "Il loro focus non ha più nulla che alzi il loro OVR in questo ruolo",
           "other": "Salta"
         },
         "intensity": "Intensità",

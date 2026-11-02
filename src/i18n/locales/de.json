@@ -294,6 +294,7 @@
           "resting": "Regenerationsfokus: setzt aus",
           "peaked": "Am Potenzial: setzt aus",
           "keepAbove": "Gestoppt, um die Kondition zu halten",
+          "focusMaxed": "Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert",
           "other": "Setzt aus"
         },
         "intensity": "Intensität",
