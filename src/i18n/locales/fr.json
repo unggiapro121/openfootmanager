@@ -6767,5 +6767,8 @@
     "anyRegion": "Toutes les régions",
     "anyCountry": "Tous les pays",
     "clear": "Effacer les filtres"
+  },
+  "mobile": {
+    "pressBackAgain": "Appuyez à nouveau sur Retour pour quitter"
   }
 }

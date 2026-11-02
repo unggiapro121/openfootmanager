@@ -6767,5 +6767,8 @@
     "anyRegion": "Alle Regionen",
     "anyCountry": "Alle Länder",
     "clear": "Filter zurücksetzen"
+  },
+  "mobile": {
+    "pressBackAgain": "Zum Beenden erneut Zurück drücken"
   }
 }

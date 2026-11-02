@@ -6767,5 +6767,8 @@
     "anyRegion": "任意地区",
     "anyCountry": "任意国家",
     "clear": "清除筛选"
+  },
+  "mobile": {
+    "pressBackAgain": "再按一次返回键退出"
   }
 }

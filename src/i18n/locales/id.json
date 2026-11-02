@@ -6767,5 +6767,8 @@
     "anyRegion": "Semua wilayah",
     "anyCountry": "Semua negara",
     "clear": "Hapus filter"
+  },
+  "mobile": {
+    "pressBackAgain": "Tekan Kembali sekali lagi untuk keluar"
   }
 }

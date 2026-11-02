@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Ellipsis, LayoutGrid, type LucideIcon, Shield, Trophy, Users } from "lucide-react";
+import { useBackAction } from "../../../hooks/useBackAction";
 import { claimsWaiting, useOnlineStore } from "../../store/onlineStore";
 import { useGuardedNavigate } from "../leaveGuard";
 import { CLUB_GROUPS, MORE_GROUP, type NavGroup, type NavGroupId, navGroupOf } from "../shellNav";
@@ -75,6 +76,7 @@ export default function MobileTabBar() {
   const academyUnseen = useOnlineStore((state) => state.academyUnseen);
   const claims = useOnlineStore((state) => claimsWaiting(state.events));
   const [open, setOpen] = useState<NavGroup | null>(null);
+  useBackAction(open !== null, () => setOpen(null));
   const currentGroup = navGroupOf(pathname);
 
   const groups = hasClub ? [...CLUB_GROUPS, MORE_GROUP] : [MORE_GROUP];
@@ -89,7 +91,7 @@ export default function MobileTabBar() {
     <>
       <nav
         aria-label={t("online.nav.tabs")}
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-gray-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur dark:border-navy-700 dark:bg-navy-800/95"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-gray-200 bg-white/95 pb-[var(--safe-bottom)] backdrop-blur dark:border-navy-700 dark:bg-navy-800/95"
       >
         <Tab
           label={t("online.nav.overview")}

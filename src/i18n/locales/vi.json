@@ -6767,5 +6767,8 @@
     "anyRegion": "Mọi khu vực",
     "anyCountry": "Mọi quốc gia",
     "clear": "Xoá bộ lọc"
+  },
+  "mobile": {
+    "pressBackAgain": "Bấm Quay lại lần nữa để thoát"
   }
 }

@@ -53,7 +53,7 @@ export default function MobileNavSheet({
         onKeyDown={(event) => {
           if (event.key === "Escape") onClose();
         }}
-        className="relative rounded-t-2xl border-t border-gray-200 bg-white px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 shadow-2xl focus:outline-none motion-safe:animate-sheet-up dark:border-navy-600 dark:bg-navy-800"
+        className="relative rounded-t-2xl border-t border-gray-200 bg-white px-4 pb-[calc(1rem+var(--safe-bottom))] pt-3 shadow-2xl focus:outline-none motion-safe:animate-sheet-up dark:border-navy-600 dark:bg-navy-800"
       >
         <span
           className="mx-auto mb-3 block h-1 w-10 rounded-full bg-gray-300 dark:bg-navy-600"

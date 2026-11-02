@@ -133,6 +133,12 @@ export default defineConfig(async ({ command }) => ({
       __APP_VERSION__: JSON.stringify(version),
       __APP_CHANNEL__: JSON.stringify(resolveChannel(version, command === "build")),
       __APP_COMMIT__: JSON.stringify(readCommitSha()),
+      // The Tauri CLI names the target platform to the frontend build; a phone build is online
+      // only (phase 5, DM-1 in analysis-mobile.md).
+      __APP_MOBILE__: JSON.stringify(
+        // @ts-expect-error process is a nodejs global
+        ["android", "androideabi", "ios"].includes(process.env.TAURI_ENV_PLATFORM ?? ""),
+      ),
     };
   })(),
   test: {

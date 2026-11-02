@@ -106,7 +106,7 @@ export default function OnlineShell() {
             </div>
             {/* On a phone the page keeps clear of the tab bar and the home indicator below it. */}
             <main
-              className={`flex-1 ${phone ? "px-3 pt-3 pb-[calc(5.5rem+env(safe-area-inset-bottom))]" : "p-6 xl:p-8"}`}
+              className={`flex-1 ${phone ? "px-3 pt-3 pb-[calc(5.5rem+var(--safe-bottom))]" : "p-6 xl:p-8"}`}
             >
               {loadError !== null && club === undefined ? (
                 <div className="flex flex-col items-start gap-3">

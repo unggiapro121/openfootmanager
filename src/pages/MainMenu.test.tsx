@@ -24,6 +24,9 @@ const COACH = {
 };
 /** The account the backend reports as logged in; null shows the login screen. */
 const coachState: { account: typeof COACH | null } = { account: COACH };
+const platformState = { mobile: false };
+
+vi.mock("../lib/platform", () => ({ isMobileBuild: () => platformState.mobile }));
 
 vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
@@ -264,6 +267,7 @@ describe("MainMenu", () => {
     localStorage.clear();
     translationState.language = "en";
     coachState.account = COACH;
+    platformState.mobile = false;
     mockedInvoke.mockReset();
     mockCommands(async (command: string) => {
       if (command === "list_installed_packages") {
@@ -804,5 +808,23 @@ describe("MainMenu", () => {
     await screen.findByText("menu.newGame");
     await waitFor(() => expect(mockedInvoke).toHaveBeenCalledWith("get_coach_account_mode"));
     expect(screen.queryByText("online.menuButton")).not.toBeInTheDocument();
+  });
+
+  // Given the phone app (online only, phase 5 DM-1),
+  // when a coach with a server account opens the main menu,
+  // then it offers online play and the settings, and none of the offline entries: no new game,
+  // no saves, no world editor, and no quit button (Apple's guidelines; M1 rebuild finding 3).
+  it("keeps the phone app's menu to online play", async () => {
+    platformState.mobile = true;
+    mockCommands(async (command: string) =>
+      command === "get_coach_account_mode" ? "server" : null,
+    );
+    render(<MainMenu />);
+
+    expect(await screen.findByText("online.menuButton")).toBeInTheDocument();
+    expect(screen.getByText("menu.settings")).toBeInTheDocument();
+    for (const offline of ["menu.newGame", "menu.loadGame", "menu.worldEditor", "menu.exitGame"]) {
+      expect(screen.queryByText(offline)).not.toBeInTheDocument();
+    }
   });
 });

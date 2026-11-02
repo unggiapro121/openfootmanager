@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useBackAction } from "../../../hooks/useBackAction";
 import { type CoachAccount, resumeCoachSession } from "../../../services/coachService";
 import { resolveBackendError } from "../../../utils/backendI18n";
 import CoachLoginLoading from "../CoachLoginLoading";
@@ -22,6 +23,11 @@ export default function CoachServerLogin({ onLoggedIn }: CoachServerLoginProps) 
   const [view, setView] = useState<ServerLoginView | null>(null);
   const [email, setEmail] = useState("");
   const [feedback, setFeedback] = useState<Feedback>(null);
+  // The phone's Back takes registration and the password reset back to the login (phase 5).
+  useBackAction(view !== null && view !== "login", () => {
+    setFeedback(null);
+    setView("login");
+  });
 
   useEffect(() => {
     let isCurrent = true;
