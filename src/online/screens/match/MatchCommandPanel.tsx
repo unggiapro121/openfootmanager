@@ -7,6 +7,7 @@ import type { MineView, SentCommand } from "../../api";
 import type { MatchCommand, PlayStyle } from "../../api/engine";
 import { openInMatch } from "../../convert/licence";
 import type { OnlineMatchState } from "../../convert/matchState";
+import { withCurrent } from "./matchOptions";
 import { OnlineSubPanel } from "./OnlineSubPanel";
 import { SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
 
@@ -148,11 +149,6 @@ const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
   HighPress: <Flag className="h-3 w-3" />,
 };
 
-/** The open options, and the side's current one even when closed, so it shows as the chosen. */
-function withCurrent<T extends string>(open: T[], current: string): T[] {
-  return open.includes(current as T) ? open : [current as T, ...open];
-}
-
 /**
  * The team controls of the game's own match screen: the substitutions panel, and the formation and
  * the play style as buttons, each change sent to the match as it is chosen. What the buttons grey
@@ -167,10 +163,13 @@ function TeamControls({
   onSend,
   initialOff,
   send,
+  sent,
 }: {
   state: OnlineMatchState;
   mine: MineView;
   disabled: boolean;
+  /** The orders sent this match: a substitution still waiting keeps its players spoken for. */
+  sent: SentCommand[];
   open: boolean;
   onOpen: (open: boolean) => void;
   onSend: (command: MatchCommand) => Promise<void>;
@@ -240,6 +239,9 @@ function TeamControls({
           state={state}
           mine={mine}
           onSend={onSend}
+          sent={sent}
+          formations={formations}
+          playStyles={styles}
           initialOff={initialOff}
           onClose={() => onOpen(false)}
         />
@@ -320,6 +322,7 @@ export function MatchCommandPanel({
         onSend={onSend}
         initialOff={initialOff}
         send={send}
+        sent={sent}
       />
       <SideOwnOrders
         mine={mine}
