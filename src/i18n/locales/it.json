@@ -655,7 +655,9 @@
         "grantReset": "Azzeramento con la nuova rosa",
         "coin_exchange": "Cambio monete",
         "scout": "Osservazione del vivaio",
-        "graduation": "Tassa di promozione"
+        "graduation": "Tassa di promozione",
+        "sponsor": "Sponsorizzazione",
+        "tv": "Diritti TV"
       },
       "ledger": "Movimenti",
       "ledgerEmpty": "Ancora nessun movimento.",
@@ -671,7 +673,14 @@
         "academy": "Settore giovanile",
         "academyEffect": "Ogni livello aggiunge posti per i giovani."
       },
-      "academyWages": "Stipendi del vivaio: {{amount}} a settimana"
+      "academyWages": "Stipendi del vivaio: {{amount}} a settimana",
+      "contract": {
+        "title": "Contratti di questa stagione",
+        "level": "Livello {{level}}",
+        "perSeason": "{{amount}} a stagione",
+        "perMatch": "{{amount}} a partita di campionato",
+        "next": "Al livello {{level}}: {{sponsor}} a stagione · {{tv}} a partita"
+      }
     },
     "market": {
       "title": "Calciomercato",
@@ -912,6 +921,11 @@
             "subject": "Promozione forzata al livello {{level}}",
             "body": "Alla fine della stagione {{season}} la forza della tua rosa superava la soglia di promozione forzata, quindi sei passato al livello {{level}} (+{{levels}}). I tuoi tetti d'acquisto sono saliti con lui.{{extra}}",
             "shortSquad": "La tua rosa aveva solo {{squadSize}} giocatori dopo i completamenti di fine stagione, quindi la sua forza è stata calcolata su quei {{squadSize}} ed è risultata sopra la forza d'acquisto. Per questo sei stato promosso d'ufficio pur non avendo mai comprato oltre i tetti."
+          },
+          "sponsor": {
+            "subject": "Contratti della stagione {{season}}",
+            "body": "Al livello {{level}} il tuo club incassa {{sponsor}} di sponsorizzazione in questa stagione e {{tv}} di diritti TV per ogni partita di campionato.{{extra}}",
+            "previous": "La scorsa stagione la sponsorizzazione era di {{amount}}."
           }
         },
         "licence": {

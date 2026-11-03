@@ -655,7 +655,9 @@
         "grantReset": "新阵容资金重置",
         "coin_exchange": "金币兑换",
         "scout": "青训球探",
-        "graduation": "毕业费"
+        "graduation": "毕业费",
+        "sponsor": "赞助",
+        "tv": "电视转播权"
       },
       "ledger": "收支明细",
       "ledgerEmpty": "暂无记录。",
@@ -671,7 +673,14 @@
         "academy": "青训营",
         "academyEffect": "每级增加青训球员名额。"
       },
-      "academyWages": "青训工资：每周 {{amount}}"
+      "academyWages": "青训工资：每周 {{amount}}",
+      "contract": {
+        "title": "本赛季合同",
+        "level": "等级 {{level}}",
+        "perSeason": "每赛季 {{amount}}",
+        "perMatch": "每场联赛 {{amount}}",
+        "next": "升到等级 {{level}}：每赛季 {{sponsor}} · 每场 {{tv}}"
+      }
     },
     "market": {
       "title": "转会市场",
@@ -912,6 +921,11 @@
             "subject": "被强制升至 {{level}} 级",
             "body": "第 {{season}} 赛季结束时，你的阵容强度超过了强制升级门槛，因此你升到了 {{level}} 级（+{{levels}}）。你的购买上限也随之提高。{{extra}}",
             "shortSquad": "赛季末补员后你的阵容只有 {{squadSize}} 名球员，所以阵容强度按这 {{squadSize}} 人计算，高于购买强度。这就是你从未超限购买却被强制升级的原因。"
+          },
+          "sponsor": {
+            "subject": "第 {{season}} 赛季合同",
+            "body": "在等级 {{level}}，你的俱乐部本赛季获得 {{sponsor}} 赞助，每场联赛获得 {{tv}} 电视转播收入。{{extra}}",
+            "previous": "上赛季赞助为 {{amount}}。"
           }
         },
         "licence": {

@@ -655,7 +655,9 @@
         "grantReset": "Remise à zéro avec le nouvel effectif",
         "coin_exchange": "Échange de pièces",
         "scout": "Prospection du centre",
-        "graduation": "Frais de diplôme"
+        "graduation": "Frais de diplôme",
+        "sponsor": "Sponsoring",
+        "tv": "Droits TV"
       },
       "ledger": "Grand livre",
       "ledgerEmpty": "Aucune écriture pour l'instant.",
@@ -671,7 +673,14 @@
         "academy": "Centre de formation",
         "academyEffect": "Chaque niveau ajoute des places pour les jeunes."
       },
-      "academyWages": "Salaires du centre : {{amount}} par semaine"
+      "academyWages": "Salaires du centre : {{amount}} par semaine",
+      "contract": {
+        "title": "Contrats de la saison",
+        "level": "Niveau {{level}}",
+        "perSeason": "{{amount}} par saison",
+        "perMatch": "{{amount}} par match de championnat",
+        "next": "Au niveau {{level}} : {{sponsor}} par saison · {{tv}} par match"
+      }
     },
     "market": {
       "title": "Marché des transferts",
@@ -912,6 +921,11 @@
             "subject": "Promotion forcée au niveau {{level}}",
             "body": "À la fin de la saison {{season}}, la force de votre effectif dépassait le seuil de promotion forcée : vous passez au niveau {{level}} (+{{levels}}). Vos plafonds d'achat montent avec lui.{{extra}}",
             "shortSquad": "Votre effectif ne comptait que {{squadSize}} joueurs après les compléments de fin de saison : sa force a été calculée sur ces {{squadSize}} et dépassait sa force d'achat. C'est pourquoi vous avez été promu d'office sans jamais acheter au-dessus des plafonds."
+          },
+          "sponsor": {
+            "subject": "Contrats de la saison {{season}}",
+            "body": "Au niveau {{level}}, ton club touche {{sponsor}} de sponsoring cette saison et {{tv}} de droits TV par match de championnat.{{extra}}",
+            "previous": "La saison dernière, le sponsoring rapportait {{amount}}."
           }
         },
         "licence": {
