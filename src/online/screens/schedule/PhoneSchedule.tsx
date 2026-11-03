@@ -1,16 +1,15 @@
 import { type ReactNode, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { GeneratedCrest } from "../../../components/ui/GeneratedCrest";
 import type { ClubRef, FixtureView } from "../../api";
 import { online } from "../../client";
 import { useOnlineNow } from "../../clock";
 import { outcomeFor } from "../../fixtures";
 import { formatKickoffClock } from "../../format";
-import { tracked, useOnlineStore } from "../../store/onlineStore";
+import { tracked } from "../../store/onlineStore";
 import { useOnlineResource } from "../../useOnlineResource";
-import ClubCrestMark from "../ClubCrestMark";
-import { crestLabel } from "../crestLabel";
+import { OUTCOME_TONE } from "../league/phoneLeagueLook";
+import LeagueClubCrest from "../LeagueClubCrest";
 import ResourceState from "../ResourceState";
 import { useCountdownText } from "../useCountdownText";
 import { byDay, countByVenue, ofVenue, type Venue } from "./scheduleView";
@@ -22,11 +21,6 @@ const VENUES: { venue: Venue; label: string }[] = [
   { venue: "home", label: "online.fixture.home" },
   { venue: "away", label: "online.fixture.away" },
 ];
-const OUTCOME_TONE: Record<"W" | "D" | "L", string> = {
-  W: "bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-300",
-  D: "bg-gray-100 text-gray-700 dark:bg-navy-600 dark:text-gray-300",
-  L: "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300",
-};
 
 const isUpcoming = (fixture: FixtureView) =>
   fixture.status !== "settled" && fixture.status !== "void";
@@ -122,7 +116,7 @@ function NextBanner({ fixture, clubId }: { fixture: FixtureView; clubId: string 
         </span>
       </div>
       <div className="mt-2 flex items-center gap-3">
-        <Crest club={mine} mine className="h-11 w-11" />
+        <LeagueClubCrest club={mine} mine className="h-11 w-11" />
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-sm font-bold text-primary-700 dark:text-primary-300">
             {mine.name}
@@ -183,24 +177,11 @@ function DayBlock({
   );
 }
 
-function Crest({ club, mine, className }: { club: ClubRef; mine: boolean; className: string }) {
-  const profile = useOnlineStore((state) => (mine ? state.club?.club : undefined));
-  return (
-    <span className={`shrink-0 ${className}`} aria-hidden="true">
-      {profile ? (
-        <ClubCrestMark profile={profile} />
-      ) : (
-        <GeneratedCrest name={club.name} label={crestLabel(club.name)} className="h-full w-full" />
-      )}
-    </span>
-  );
-}
-
 function Side({ club, clubId }: { club: ClubRef; clubId: string }) {
   const mine = club.id === clubId;
   return (
     <span className="flex min-w-0 items-center gap-2">
-      <Crest club={club} mine={mine} className="h-5 w-5" />
+      <LeagueClubCrest club={club} mine={mine} className="h-5 w-5" />
       <Link
         to={`/online/clubs/${club.id}`}
         className={`truncate rounded text-sm font-semibold hover:underline ${FOCUS} ${
