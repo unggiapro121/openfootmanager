@@ -8,7 +8,7 @@ import { claimsWaiting, useOnlineStore } from "../store/onlineStore";
 import AccountMenu from "./AccountMenu";
 import { FriendlyChip } from "./friendly/FriendlyChip";
 import { useGuardedNavigate } from "./leaveGuard";
-import { isCurrent, pageTitleKey, seasonText } from "./shellNav";
+import { isCurrent, pageTitleKey, seasonText, visibleCoinBalance } from "./shellNav";
 import { useCountdownText } from "./useCountdownText";
 
 const FOCUS =
@@ -56,7 +56,16 @@ function Budget({ cash }: { cash: number }) {
 }
 
 /** The coach's coins, opening the wallet; shown once coins are open or held (C-7 Qc7-2). */
-function CoinChip({ balance, current }: { balance: number; current: boolean }) {
+export function CoinChip({
+  balance,
+  current,
+  compact = false,
+}: {
+  balance: number;
+  current: boolean;
+  /** The phone app bar's smaller chip (design m-tong-quan.html). */
+  compact?: boolean;
+}) {
   const { t, i18n } = useTranslation();
   const navigate = useGuardedNavigate();
   const amount = formatCoins(balance, i18n.language);
@@ -71,12 +80,14 @@ function CoinChip({ balance, current }: { balance: number; current: boolean }) {
       onClick={() => navigate("/online/coins")}
       aria-current={current ? "page" : undefined}
       aria-label={t("online.header.coins", { amount })}
-      className={`inline-flex h-11 items-center gap-2 rounded-lg border pl-3 pr-1.5 font-heading text-lg font-bold tabular-nums ${frame} ${tone} ${FOCUS}`}
+      className={`inline-flex items-center rounded-lg border font-heading font-bold tabular-nums ${
+        compact ? "h-9 gap-1.5 pl-2 pr-1 text-base" : "h-11 gap-2 pl-3 pr-1.5 text-lg"
+      } ${frame} ${tone} ${FOCUS}`}
     >
       <Coins className="h-4.5 w-4.5" aria-hidden="true" />
       {amount}
       <span
-        className="ml-0.5 flex h-7 w-7 items-center justify-center rounded-md bg-accent-100 text-accent-800 dark:bg-accent-900/40 dark:text-accent-300"
+        className={`ml-0.5 flex items-center justify-center rounded-md ${compact ? "h-6 w-6" : "h-7 w-7"} bg-accent-100 text-accent-800 dark:bg-accent-900/40 dark:text-accent-300`}
         aria-hidden="true"
       >
         <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -127,7 +138,7 @@ function HeaderLink({
 }
 
 /** The club's inbox, a dot when mail waits unread. */
-function InboxButton({ unread }: { unread: number }) {
+export function InboxButton({ unread }: { unread: number }) {
   const { t } = useTranslation();
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
@@ -174,11 +185,7 @@ export default function OnlineHeader() {
   const kickoff = useCountdownText(fixture?.kickoffAt);
   const titleKey = pageTitleKey(pathname);
   const cash = club && finance?.economy ? finance.cash : undefined;
-  // Shown once coins are open to anyone (a price list) or the coach holds some (C-7 Qc7-2).
-  const balance =
-    coins && (coins.priceListVersion !== undefined || coins.balance !== 0)
-      ? coins.balance
-      : undefined;
+  const balance = visibleCoinBalance(coins);
   const hasMatch = fixture !== undefined && kickoff !== null;
   const hasMoney = cash !== undefined || balance !== undefined;
 

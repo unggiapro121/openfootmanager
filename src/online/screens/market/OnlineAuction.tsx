@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { AlertTriangle, Lock } from "lucide-react";
@@ -13,40 +13,26 @@ import { Button, Card, CardBody, CardHeader, CountryFlag } from "../../../compon
 import { formatExactMoney, formatVal, formatWeeklyAmount } from "../../../lib/valueFormatting";
 import type { AuctionPlayerView, AuctionView } from "../../api";
 import { online } from "../../client";
-import { watchAuction } from "../../live";
-import { refreshFinance, refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
+import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
 import { useActionKey } from "../useActionKey";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import PhoneAuction from "./phone/PhoneAuction";
+import { useAuction } from "./useAuction";
+import { bidProblem, CONFIRM_SHARE_OF_CASH, useBidSender } from "./useBid";
 import { marketBack } from "./marketReturn";
 import { marketErrorText, refusalText } from "./marketText";
 import MoneyInput from "./MoneyInput";
 import { ClubName, OwnLabels, PriceText, SellerName } from "./OnlineMarket";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
 
-/**
- * Codes after which the auction is read again: what the coach saw is out of date. A level cap's
- * refusal is one: the coach's level or squad changed since the page was read (C-7 C7-11).
- */
-const STALE_CODES = new Set([
-  "be.error.auction.bidTooLow",
-  "be.error.auction.listingExpired",
-  "be.error.auction.levelCapPlayer",
-  "be.error.auction.levelCapSquad",
-]);
 /** Why a cancelled auction closed, as the page names it (S-16 R16-10); any other is "cancelled". */
 const CLOSED_REASONS: Record<string, string> = {
   buyCapExceeded: "online.market.result.capExceeded",
   playerGone: "online.market.result.playerGone",
 };
-/** A bid of at least this share of the club's cash asks first (C5-8). */
-const CONFIRM_SHARE_OF_CASH = 0.5;
 /** Ratings by position shown beside the attributes. */
 const RATINGS_SHOWN = 5;
-
-type Loaded =
-  | { status: "loading" }
-  | { status: "failed"; error: unknown }
-  | { status: "ready"; view: AuctionView };
 
 /**
  * One auction (C-5 §3.5, C5-7, C5-8): the player, the price and who leads it, a countdown by the
@@ -54,48 +40,14 @@ type Loaded =
  * follows `auction:{id}` and reads the auction again on each newer notice.
  */
 export default function OnlineAuction() {
+  return usePhoneLayout() ? <PhoneAuction /> : <DesktopAuction />;
+}
+
+function DesktopAuction() {
   const { t, i18n } = useTranslation();
   const { auctionId = "" } = useParams();
   const { state } = useLocation();
-  const [loaded, setLoaded] = useState<Loaded>({ status: "loading" });
-  const lastSeq = useRef(0);
-
-  const load = useCallback(() => {
-    tracked(() => online.market.byId(auctionId))
-      .then((view) => setLoaded({ status: "ready", view }))
-      .catch((error: unknown) =>
-        setLoaded((current) =>
-          current.status === "ready" ? current : { status: "failed", error },
-        ),
-      );
-  }, [auctionId]);
-
-  useEffect(() => {
-    setLoaded({ status: "loading" });
-    lastSeq.current = 0;
-    load();
-  }, [load]);
-
-  const active = loaded.status === "ready" && loaded.view.status === "active";
-  useEffect(() => {
-    if (!active) return undefined;
-    let live = true;
-    let stop: (() => Promise<void>) | undefined;
-    watchAuction(auctionId, (notice) => {
-      if (notice.seq <= lastSeq.current) return;
-      lastSeq.current = notice.seq;
-      load();
-    })
-      .then((stopWatching) => {
-        if (live) stop = stopWatching;
-        else void stopWatching();
-      })
-      .catch(() => undefined);
-    return () => {
-      live = false;
-      void stop?.();
-    };
-  }, [active, auctionId, load]);
+  const { loaded, setView, load } = useAuction(auctionId);
 
   if (loaded.status === "loading") {
     return <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>;
@@ -129,11 +81,7 @@ export default function OnlineAuction() {
             <CardBody>{t("online.market.retiredPlayer")}</CardBody>
           </Card>
         )}
-        <AuctionColumn
-          view={view}
-          onView={(next) => setLoaded({ status: "ready", view: next })}
-          reload={load}
-        />
+        <AuctionColumn view={view} onView={setView} reload={load} />
       </div>
     </div>
   );
@@ -141,11 +89,6 @@ export default function OnlineAuction() {
 
 function PlayerColumn({ player }: { player: AuctionPlayerView }) {
   const { t } = useTranslation();
-  const profile = {
-    attributes: player.attributes,
-    natural_position: player.naturalPosition,
-    position: player.position,
-  };
   const ratings = [...player.positionRatings].sort((a, b) => b.ovr - a.ovr).slice(0, RATINGS_SHOWN);
   return (
     <div className="space-y-4">
@@ -185,21 +128,34 @@ function PlayerColumn({ player }: { player: AuctionPlayerView }) {
           )}
         </CardBody>
       </Card>
-      <PlayerProfileAttributesCard
-        attrGroups={buildPlayerAttributeGroups(profile, t)}
-        player={profile}
-        isOwnClub
-        isGk={isGoalkeeper(profile)}
-        title={t("playerProfile.attributes")}
-        ovr={player.ovr}
-        ovrLabel={t("common.ovr")}
-        averageLabel={t("common.average")}
-        hiddenTitle={t("playerProfile.attributesHidden")}
-        hiddenBody={t("playerProfile.scoutToView")}
-        listLabel={t("common.listView")}
-        radarLabel={t("common.radarView")}
-      />
+      <AuctionPlayerAttributes player={player} />
     </div>
+  );
+}
+
+/** An auctioned player's attributes, as a list or a radar (the player profile's own card). */
+export function AuctionPlayerAttributes({ player }: { player: AuctionPlayerView }) {
+  const { t } = useTranslation();
+  const profile = {
+    attributes: player.attributes,
+    natural_position: player.naturalPosition,
+    position: player.position,
+  };
+  return (
+    <PlayerProfileAttributesCard
+      attrGroups={buildPlayerAttributeGroups(profile, t)}
+      player={profile}
+      isOwnClub
+      isGk={isGoalkeeper(profile)}
+      title={t("playerProfile.attributes")}
+      ovr={player.ovr}
+      ovrLabel={t("common.ovr")}
+      averageLabel={t("common.average")}
+      hiddenTitle={t("playerProfile.attributesHidden")}
+      hiddenBody={t("playerProfile.scoutToView")}
+      listLabel={t("common.listView")}
+      radarLabel={t("common.radarView")}
+    />
   );
 }
 
@@ -293,7 +249,7 @@ function AuctionColumn({
 }
 
 /** The sentence of a closed auction that was not sold: unsold, or cancelled and why. */
-function closedText(view: AuctionView): string {
+export function closedText(view: AuctionView): string {
   if (view.status === "unsold") return "online.market.result.unsold";
   return CLOSED_REASONS[view.closedReason ?? ""] ?? "online.market.result.cancelled";
 }
@@ -303,7 +259,7 @@ function closedText(view: AuctionView): string {
  * two caps in a line, and the road to the level it needs. Only `canBid === false` locks: any other
  * check of a bid stays with the bid box and the server.
  */
-function LevelLock({ view }: { view: AuctionView }) {
+export function LevelLock({ view }: { view: AuctionView }) {
   const { t, i18n } = useTranslation();
   return (
     <div
@@ -330,15 +286,6 @@ function LevelLock({ view }: { view: AuctionView }) {
   );
 }
 
-/** Why a bid would be refused before it is sent: the server still decides (C-5 §3.5). */
-function bidProblem(amount: number | null, view: AuctionView, cash: number | undefined) {
-  if (amount === null || !Number.isInteger(amount)) return "invalid";
-  if (amount < view.minNextBid) return "tooLow";
-  if (amount > view.priceCap) return "overCap";
-  if (cash !== undefined && amount > cash) return "overCash";
-  return null;
-}
-
 function BidPanel({
   view,
   onView,
@@ -353,9 +300,7 @@ function BidPanel({
   const atCap = view.currentPrice === view.priceCap;
   const [amount, setAmount] = useState<number | null>(view.minNextBid);
   const [asking, setAsking] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<unknown>(null);
-  const { run } = useActionKey();
+  const { send: sendBid, busy, error } = useBidSender(view, onView, reload);
 
   useEffect(() => setAmount(view.minNextBid), [view.minNextBid]);
 
@@ -367,19 +312,7 @@ function BidPanel({
   const send = () => {
     if (amount === null) return;
     setAsking(false);
-    setBusy(true);
-    setError(null);
-    run((key) => tracked(() => online.market.bid(view.id, amount, key)), String(amount))
-      .then((next) => {
-        onView(next);
-        void refreshFinance().catch(() => undefined);
-        void refreshMarket().catch(() => undefined);
-      })
-      .catch((failure: { code?: string }) => {
-        setError(failure);
-        if (failure.code && STALE_CODES.has(failure.code)) reload();
-      })
-      .finally(() => setBusy(false));
+    sendBid(amount);
   };
 
   const quick = [
@@ -448,7 +381,7 @@ function BidPanel({
   );
 }
 
-function WithdrawPanel({
+export function WithdrawPanel({
   view,
   onView,
 }: {

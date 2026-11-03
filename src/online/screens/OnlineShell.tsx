@@ -15,6 +15,10 @@ import OnlineGateScreen from "./OnlineGateScreen";
 import OnlineHeader from "./OnlineHeader";
 import OnlineSidebar from "./OnlineSidebar";
 import OnlineNotices from "./OnlineNotices";
+import { PhoneHeaderSlotsProvider, useStickyHeaderHeight } from "./mobile/PhoneHeaderSlots";
+import MobileAppBar from "./mobile/MobileAppBar";
+import MobileTabBar from "./mobile/MobileTabBar";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 
 /**
  * Routes a coach without a club may still open; every other one sends them to take a club. The
@@ -46,7 +50,8 @@ async function refreshShared(): Promise<void> {
 }
 
 /**
- * The online mode's frame (C2-2, C2-4): sidebar, header and the page. It reads the views every
+ * The online mode's frame (C2-2, C2-4): sidebar, header and the page; on a phone an app bar
+ * and a bottom tab bar instead (phase 5, design m-tong-quan.html). It reads the views every
  * page shares, closes the whole mode when the revision gate does, and warns when the server
  * cannot be reached.
  */
@@ -57,6 +62,12 @@ export default function OnlineShell() {
   const network = useOnlineStore((state) => state.network);
   const club = useOnlineStore((state) => state.club);
   const [loadError, setLoadError] = useState<unknown>(null);
+  const phone = usePhoneLayout();
+  // A phone page may put its own buttons and tabs into the app bar (PhoneHeaderPart).
+  const [slotActions, setSlotActions] = useState<HTMLElement | null>(null);
+  const [slotBelow, setSlotBelow] = useState<HTMLElement | null>(null);
+  const [stickyHeader, setStickyHeader] = useState<HTMLElement | null>(null);
+  const headerHeight = useStickyHeaderHeight(stickyHeader);
 
   const load = useCallback(() => {
     setLoadError(null);
@@ -83,40 +94,47 @@ export default function OnlineShell() {
         <LeagueWatcher />
         <PlayerPictureSync />
         <OnlineNotices />
-        <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900">
-          <OnlineSidebar />
-          <div className="flex min-w-0 flex-1 flex-col">
-            {/* The header and the offline line stay at the top of the window while the page scrolls. */}
-            <div className="sticky top-0 z-20 bg-white dark:bg-navy-800">
-              <OnlineHeader />
-              {network === "offline" && (
-                <div
-                  role="status"
-                  className="flex items-center gap-2 border-b border-accent-400/40 bg-accent-50 px-6 py-2 text-sm text-gray-800 dark:bg-accent-500/10 dark:text-gray-100"
-                >
-                  <WifiOff className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" />
-                  {t("online.offlineBanner")}
-                </div>
-              )}
+        <PhoneHeaderSlotsProvider value={{ actions: slotActions, below: slotBelow }}>
+          <div className="flex min-h-screen bg-gray-100 dark:bg-navy-900" style={headerHeight}>
+            {!phone && <OnlineSidebar />}
+            <div className="flex min-w-0 flex-1 flex-col">
+              {/* The header and the offline line stay at the top of the window while the page scrolls. */}
+              <div ref={setStickyHeader} className="sticky top-0 z-20 bg-white dark:bg-navy-800">
+                {phone ? <MobileAppBar actionsRef={setSlotActions} /> : <OnlineHeader />}
+                {phone && <div ref={setSlotBelow} />}
+                {network === "offline" && (
+                  <div
+                    role="status"
+                    className="flex items-center gap-2 border-b border-accent-400/40 bg-accent-50 px-4 py-2 text-sm text-gray-800 md:px-6 dark:bg-accent-500/10 dark:text-gray-100"
+                  >
+                    <WifiOff className="h-4 w-4 shrink-0 text-accent-600 dark:text-accent-400" />
+                    {t("online.offlineBanner")}
+                  </div>
+                )}
+              </div>
+              {/* On a phone the page keeps clear of the tab bar and the home indicator below it. */}
+              <main
+                className={`flex-1 ${phone ? "px-3 pt-3 pb-[calc(5.5rem+var(--safe-bottom))]" : "p-6 xl:p-8"}`}
+              >
+                {loadError !== null && club === undefined ? (
+                  <div className="flex flex-col items-start gap-3">
+                    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                      {resolveBackendError(loadError)}
+                    </p>
+                    <Button variant="outline" size="sm" onClick={load}>
+                      {t("online.retry")}
+                    </Button>
+                  </div>
+                ) : club === undefined ? (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
+                ) : (
+                  <Outlet />
+                )}
+              </main>
             </div>
-            <main className="flex-1 p-6 xl:p-8">
-              {loadError !== null && club === undefined ? (
-                <div className="flex flex-col items-start gap-3">
-                  <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-                    {resolveBackendError(loadError)}
-                  </p>
-                  <Button variant="outline" size="sm" onClick={load}>
-                    {t("online.retry")}
-                  </Button>
-                </div>
-              ) : club === undefined ? (
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
-              ) : (
-                <Outlet />
-              )}
-            </main>
+            {phone && <MobileTabBar />}
           </div>
-        </div>
+        </PhoneHeaderSlotsProvider>
       </LeaveGuardProvider>
     </OnlineClockProvider>
   );

@@ -57,7 +57,9 @@
       "events": "Etkinlikler",
       "groupTeam": "Takım",
       "groupMatches": "Maçlar",
-      "groupClub": "Kulüp"
+      "groupClub": "Kulüp",
+      "groupMore": "Daha fazla",
+      "tabs": "Ana bölümler"
     },
     "gate": {
       "clientOutdatedTitle": "Güncelleme gerekli",
@@ -145,7 +147,51 @@
       "coach": "Teknik direktör",
       "bot": "YZ",
       "previousRound": "Önceki hafta",
-      "nextRound": "Sonraki hafta"
+      "nextRound": "Sonraki hafta",
+      "phone": {
+        "summaryLine": "{{clubs}} kulüp · {{rounds}} hafta",
+        "rank": "Sıra",
+        "points": "Puan",
+        "goalDiff": "AV {{gd}}",
+        "nextMatch": "Sonraki maç",
+        "roundOf": "Hafta {{round}}/{{total}}",
+        "tabs": "Lig bölümleri",
+        "tabTable": "Puan durumu",
+        "tabRounds": "Haftalar",
+        "tabStats": "İstatistik",
+        "promotionZone": "1–{{to}}. sıra · yükselme",
+        "tableMode": "Tablo görünümü",
+        "compact": "Kısa",
+        "full": "Tam",
+        "form": "Gidişat",
+        "formTitle": "Son iki sonuç",
+        "coachLine": "Teknik direktör: {{coach}}",
+        "legendCompact": "O: oynanan · AV: averaj · P: puan. Galibiyet, beraberlik, mağlubiyet, atılan ve yenen goller için Tam'ı seç.",
+        "legendFull": "O oynanan · G galibiyet · B beraberlik · M mağlubiyet · A atılan · Y yenen · AV averaj · P puan. Tümü için yana kaydır.",
+        "pickRound": "Hafta seç",
+        "roundDone": "Bitti",
+        "roundLive": "Oynanıyor",
+        "roundUpcoming": "Oynanacak · {{when}}",
+        "roundUnplanned": "Henüz planlanmadı",
+        "yourMatch": "Senin maçın",
+        "fullTime": "Maç sonu",
+        "void": "İptal",
+        "live": "Canlı",
+        "statsCategories": "Kategoriler",
+        "catGoals": "Gol",
+        "catAssists": "Asist",
+        "catCleanSheets": "Gol yemeden",
+        "catYellow": "Sarı kart",
+        "catRed": "Kırmızı kart",
+        "unitGoals": "gol",
+        "unitAssists": "asist",
+        "unitMatches": "maç",
+        "unitCards": "kart",
+        "leader": "Lider",
+        "tiedWith": "{{count}} oyuncuyla eşit",
+        "noData": "Bu kategoride henüz veri yok.",
+        "mineOnly": "Yalnızca {{club}} oyuncuları"
+      }
     },
     "takeover": {
       "title": "Bir kulübü devral",
@@ -227,6 +273,57 @@
         "squadLine": "Asistan ilk on birini seçiyor.",
         "squadLink": "Taktiğe git",
         "itemNote": "Paket ana ilk on birini toparlar. Asistan yorgunları dinlendirebilir, bu yüzden tahmini ilk on birden farklı olabilir."
+      },
+      "phone": {
+        "tabs": "Taktik bölümleri",
+        "tab": {
+          "lineup": "Kadro",
+          "style": "Stil",
+          "roles": "Görevler",
+          "phase": "Evreler"
+        },
+        "tagMine": "Benim",
+        "saveBody": "{{name}} taktiğini değiştirdin. Yeniden kullanmak için kendi taktiğin olarak kaydet.",
+        "discard": "Değişiklikleri at",
+        "pitch": "İlk on bir, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, kondisyon {{condition}}",
+        "fit": {
+          "exact": "Asıl mevki",
+          "adapted": "Uyum sağlar",
+          "out": "Mevki dışı"
+        },
+        "wrong": "{{count}} mevki dışı",
+        "hintIdle": "Sahada bir oyuncuya, sonra yer değiştirmek için başka birine ya da oyuna almak için bir yedeğe dokun.",
+        "hintPicked": "{{name}} ({{slot}}) seçildi: sahada başka bir oyuncuya ya da aşağıdan bir yedeğe dokun.",
+        "hintAssistant": "On biri asistan seçiyor. Kendin seçmek için kapat.",
+        "hintLocked": "Kadro kilitli: yalnızca görüntüleme.",
+        "hintPickFirst": "Önce sahadaki bir oyuncuya, sonra bir yedeğe dokun.",
+        "benchFor": "{{slot}} mevkisine",
+        "benchTitle": "Yedekler · {{count}}",
+        "fitFirst": "En uygun önce",
+        "benchSub": "Kondisyon · OVR",
+        "all": "Tümü",
+        "bench": "Yedekler",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Sakat",
+        "level": "Seviye {{level}}",
+        "masteryNote": "· sayı ustalığın",
+        "noneChosen": "Seçilmedi",
+        "score": {
+          "captain": "Liderlik {{value}}",
+          "vicecaptain": "Liderlik {{value}}",
+          "penalty": "Penaltı {{value}}",
+          "freekick": "Serbest vuruş {{value}}",
+          "corner": "Orta {{value}}"
+        },
+        "rolesNote": "Görev yalnızca ilk on birdekilere verilebilir.",
+        "rankedBy": {
+          "captain": "Liderliğe göre",
+          "vicecaptain": "Liderliğe göre",
+          "penalty": "Penaltıya göre",
+          "freekick": "Serbest vuruşa göre",
+          "corner": "Ortaya göre"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "Bu oyuncu kadronuzda değil.",
       "state": "Durum",
       "suspended": "Cezalı: {{count}} maç",
-      "potentialStarsRange": "Potansiyel {{low}} ile {{high}} yıldız arası"
+      "potentialStarsRange": "Potansiyel {{low}} ile {{high}} yıldız arası",
+      "phone": {
+        "searchToggle": "Oyuncu ara",
+        "searchLabel": "İsme göre ara",
+        "searchPlaceholder": "Oyuncu adına göre ara",
+        "assistant": "İlk 11'i asistan seçiyor",
+        "sort": "Sırala",
+        "rotateHint": "Tablonun tamamı için telefonu yan çevir",
+        "hideRotate": "İpucunu gizle",
+        "lens": "Sütunların gösterdiği",
+        "lensForm": "Kondisyon",
+        "lensFit": "Uyum",
+        "lensGrowth": "Gelişim",
+        "lensStats": "İstatistik",
+        "list": "Oyuncular",
+        "sectionXi": "İlk 11 · {{count}}",
+        "sectionBench": "Yedekler · {{count}}",
+        "rowStarter": "{{name}}, {{position}}, OVR {{ovr}}, ilk 11'de",
+        "rowBench": "{{name}}, {{position}}, OVR {{ovr}}, yedekte",
+        "sheetLine": "No {{number}} · {{age}} yaşında",
+        "playsIn": "{{formation}} dizilişinde {{slot}} oynuyor",
+        "bestIn": "{{formation}} dizilişinde en iyi {{slot}}",
+        "season": "Bu sezon",
+        "seasonLine": "{{apps}} maç · {{goals}} gol",
+        "traitsTitle": "Özellikler ({{count}})",
+        "noTraits": "Henüz özellik yok.",
+        "fullProfile": "Tüm profil",
+        "toTactics": "Taktikte yerleştir",
+        "actions": "İşlemler",
+        "actionsTitle": "İşlemler · {{name}}",
+        "groupTransfer": "Transfer işlemleri",
+        "groupCustomise": "Özelleştir",
+        "listSub": "Açık artırmaya çıkar",
+        "releaseSub": "Kulüpten hemen ayrılsın",
+        "shirtSub": "{{number}} numarayı giyiyor"
+      }
     },
     "training": {
       "noPlan": "Henüz bir antrenman planı belirlemedin: kulüp, burada gösterilen yapay zekâ planıyla çalışıyor. İlk seçimin kendi planın olarak kaydedilir.",
@@ -294,8 +426,8 @@
           "resting": "Toparlanma odağı: katılmaz",
           "peaked": "Potansiyelinde: katılmaz",
           "keepAbove": "Kondisyonunu korumak için durdu",
-          "focusMaxed": "Odağında bu pozisyonda OVR'ını yükselten bir şey kalmadı",
-          "other": "Katılmaz"
+          "other": "Katılmaz",
+          "focusMaxed": "Odağında bu pozisyonda OVR'ını yükselten bir şey kalmadı"
         },
         "intensity": "Yoğunluk",
         "intensityCost": "{{intensity}} (−{{cost}} kondisyon)",
@@ -358,6 +490,28 @@
         "inheritedTag": "gruptan",
         "empty": "Bu grupta henüz oyuncu yok."
       },
+      "phone": {
+        "tab": {
+          "today": "Bugün",
+          "sched": "Program",
+          "focus": "Odak",
+          "groups": "Gruplar ({{count}})"
+        },
+        "sessionsIn7": "7 günde antrenman",
+        "planInUse": "Kullanılan antrenman günleri",
+        "howItWorks": "Nasıl çalışır",
+        "lastResult": "Son sefer: {{held}} antrenman",
+        "listReady": "Antrenman yapabilir ({{count}})",
+        "listRest": "Bu sefer dinleniyor ({{count}})",
+        "noneReady": "Şu an kimse antrenman yapamaz. Kadroyu dinlendir.",
+        "noneResting": "Bu sefer tüm kadro antrenman yapabilir.",
+        "resultTitle": "Ek antrenman sonucu",
+        "groupOf": "{{name}} grubu",
+        "groupFocus": "Grup odağı",
+        "players": "Oyuncular",
+        "mainAuto": "Takım gün dönünce programına göre çalışır ({{time}}). Değiştirmek için bir kutuya dokun.",
+        "mainAutoNoTime": "Takım gün dönünce programına göre çalışır. Değiştirmek için bir kutuya dokun."
+      },
       "focusHint": {
         "best": "En iyi odak",
         "fair": "En iyisi: {{best}}",
@@ -376,7 +530,9 @@
         "W": "G",
         "D": "B",
         "L": "M"
-      }
+      },
+      "filterLabel": "Maçları göster",
+      "dayCount": "Maç: {{count}}"
     },
     "publicClub": {
       "formation": "Diziliş: {{formation}}",
@@ -424,7 +580,8 @@
       "licenceNext": "Teknik direktör seviyesi {{level}} ile açılır",
       "boosterHeld": "Envanterde {{item}} ×{{count}}",
       "boosterHint": "Sonraki çevrimiçi maçlarda daha hızlı seviye atla",
-      "activate": "Etkinleştir"
+      "activate": "Etkinleştir",
+      "shortcuts": "Kısayollar"
     },
     "match": {
       "byCoach": "{{team}}: teknik direktör yönetiyor",
@@ -475,7 +632,71 @@
       "rolePlayer": "Oyuncu",
       "roleChoice": "Rol",
       "changeRole": "Rolü değiştir",
-      "orderRefused": "Maç bu emri kabul etmedi: {{reason}}"
+      "orderRefused": "Maç bu emri kabul etmedi: {{reason}}",
+      "phoneSubs": {
+        "usedAria": "{{max}} değişiklikten {{used}} kullanıldı, {{queued}} bekliyor",
+        "queuedShort": "{{count}} bekliyor",
+        "hintIdle": "Oyundan çıkarmak için sahadaki bir oyuncuya ya da önce bir yedeğe dokun. Yerlerini değiştirmek için bir oyuncuyu diğerinin üstüne sürükle.",
+        "hintSwap": "{{name}} ile yer değiştirmek için sahadaki başka bir oyuncuya dokun.",
+        "hintQueued": "{{name}} için zaten bir değişiklik var. Değiştirmek için Onay bekleyenler'den kaldır.",
+        "hintPickBench": "{{name}} yerine girecek yedeği seç.",
+        "hintPickField": "{{name}} kimin yerine girsin? Sahadaki oyuncuya dokun.",
+        "cancelSwap": "Yer değişimini iptal et",
+        "pitch": "Sahadaki diziliş",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, kondisyon {{condition}}",
+        "tokenReplaced": "{{name}}, {{slot}}, OVR {{ovr}}, kondisyon {{condition}}, yerine {{on}} girecek",
+        "tokenSentOff": "{{name}}, {{slot}}, oyundan atıldı",
+        "planTitle": "Öneri: {{scenario}}",
+        "planSub": "{{style}} planı · {{count}} değişiklik",
+        "planAdd": "Ekle: {{off}} çıkar, {{on}} girer",
+        "planAdded": "Eklendi: {{off}} çıkar, {{on}} girer",
+        "planApply": "{{count}} değişikliğin hepsini uygula",
+        "planAllAdded": "Planın tamamı eklendi",
+        "queuedTitle": "Onay bekleyenler ({{count}})",
+        "queuedRemove": "{{off}} yerine {{on}} değişikliğini kaldır",
+        "bench": "Yedekler ({{count}})",
+        "benchSub": "OVR · Kondisyon",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}}, kondisyon {{condition}}",
+        "comesOnFor": "{{name}} yerine girer",
+        "fitNatural": "Asıl mevkisi",
+        "fitAdapted": "Orada oynayabilir",
+        "fitUnfamiliar": "Mevkisi dışında",
+        "sheetCondition": "Kondisyon {{condition}}",
+        "sheetBooked": "sarı kartlı",
+        "swap": "Yer değiştir",
+        "sheetQueued": "Zaten bir değişiklik var. Yeniden seçmek için Onay bekleyenler'den kaldır.",
+        "sheetBenchSub": "En uygunlar önce",
+        "confirm": "{{count}} değişikliği onayla",
+        "swapped": "Yer değiştirildi: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Yer değişikliği gönderildi, maçın uygulaması bekleniyor.",
+        "roleSet": "{{name}}: rol {{role}}.",
+        "sent": "{{count}} değişiklik gönderildi. {{left}} hak kaldı."
+      },
+      "phone": {
+        "title": "Canlı maç",
+        "leave": "Maçtan çık",
+        "youCoach": "Takımı sen yönetiyorsun",
+        "aiCoaches": "Takımı yapay zekâ yönetiyor",
+        "ordersFrom": "Talimatlar {{minute}}. dakikadan itibaren geçerli (gerçek maç)",
+        "dock": "Takım kontrolleri",
+        "subs": "Oyuncu değişikliği",
+        "formation": "Diziliş",
+        "style": "Oyun tarzı",
+        "roles": "Roller",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Duran toplar",
+        "rolesTitle": "Roller ve duran toplar",
+        "inUse": "Kullanılan: {{formation}}",
+        "effectiveFrom": "Talimat gerçek maçın {{minute}}. dakikasından itibaren geçerli.",
+        "pickOther": "Başka bir diziliş seç",
+        "sendFormation": "Gönder: {{formation}}",
+        "tapToSend": "Hemen göndermek için dokun. {{minute}}. dakikadan itibaren geçerli.",
+        "nobody": "— Henüz kimse",
+        "takerSends": "Kullanıcıyı değiştirmek talimatı hemen gönderir.",
+        "ordersTitle": "Gönderilen talimatlar ({{count}})",
+        "noOrders": "Henüz talimat gönderilmedi",
+        "sentToast": "Talimat gönderildi: {{order}}"
+      }
     },
     "replay": {
       "title": "Tekrar",
@@ -671,7 +892,35 @@
         "academy": "Altyapı akademisi",
         "academyEffect": "Her seviye gençler için yer açar."
       },
-      "academyWages": "Akademi maaşları: haftada {{amount}}"
+      "academyWages": "Akademi maaşları: haftada {{amount}}",
+      "phone": {
+        "balance": "Kulüp bakiyesi",
+        "heldLine": "Teklifler için ayrılan: {{amount}}",
+        "seasonNet": "Sezon kâr/zararı",
+        "tab": {
+          "over": "Özet",
+          "fac": "Tesisler",
+          "led": "Hesap dökümü"
+        },
+        "wageWarning": "Maaşlar bilet gelirinin {{times}} katı. Yüksek maaşlı yedekleri bırakmayı ya da geliri artırmak için yükseltmeyi düşün.",
+        "perWeek": "Haftalık",
+        "perDay": "Sezon günü başına",
+        "weekly": "{{amount}}/hafta",
+        "level": "Seviye",
+        "levelOf": "Seviye {{level}} / {{max}}",
+        "short": "Sonraki seviye {{cost}} · para yetmiyor",
+        "upTitle": "{{facility}} {{level}}. seviyeye yükseltilsin mi?",
+        "cost": "Maliyet",
+        "cashAfter": "Yükseltme sonrası nakit",
+        "later": "Sonra",
+        "upConfirm": "Yükselt",
+        "flow": "İşlem türü",
+        "filter": {
+          "all": "Tümü",
+          "in": "Gelir",
+          "out": "Gider"
+        }
+      }
     },
     "market": {
       "title": "Transfer pazarı",
@@ -800,6 +1049,49 @@
         "badge": "Seviye {{level}}",
         "explain": "Her seviyede iki tavan alınabilecekleri sınırlar: tek bir oyuncunun genel puanı ve kadronun satın alma gücü. İlk 18'inize girmeyen bir oyuncuyu almak her zaman serbesttir.",
         "roadmap": "Seviye yolunu gör"
+      },
+      "phone": {
+        "list": "Açık artırmalar",
+        "ended": "Bitti",
+        "outbid": "Geçildin",
+        "age": "{{age}} yaş",
+        "startPrice": "Başlangıç fiyatı",
+        "currentPrice": "Güncel fiyat",
+        "bidCount": "{{count}} teklif",
+        "all": "Tümü",
+        "reset": "Sıfırla",
+        "upTo": "≤ {{price}}",
+        "sortBy": "Sırala",
+        "sort": {
+          "end": "Yakında bitenler",
+          "low": "En düşük fiyat",
+          "ovr": "En yüksek OVR",
+          "pot": "Potansiyel"
+        },
+        "apply": "Uygula",
+        "budget": "Bütçe",
+        "allPositions": "Tümü",
+        "count": "{{count}} oyuncu · {{sort}}",
+        "urgent": "2 dakikadan az",
+        "detailTabs": "Açık artırma ayrıntıları",
+        "tabAuction": "Açık artırma",
+        "tabStats": "Özellikler",
+        "someoneBid": "Teklif var",
+        "range": "Fiyat {{price}}, {{start}} başlangıç ile {{cap}} tavan arasında; değerleme {{value}}",
+        "start": "Başlangıç {{price}}",
+        "valuation": "Değerleme {{price}}",
+        "cap": "Tavan {{price}}",
+        "step": "Artış adımı",
+        "bidBar": "Teklif ver",
+        "nextWhileLeading": "Öndesin · sonraki teklif",
+        "leastBid": "Şu anki en düşük teklif",
+        "locked": "Kilitli",
+        "raise": "Teklifi artır",
+        "bidTitle": "Teklif · {{name}}",
+        "stepDown": "Bir adım aşağı",
+        "stepUp": "Bir adım yukarı",
+        "afterWin": "Kazanırsan bütçe",
+        "place": "{{amount}} teklif ver"
       }
     },
     "rename": {
@@ -845,7 +1137,30 @@
       "releaseSeverance": "Tazminat",
       "releaseCash": "Kulüp kasası",
       "releaseSquad": "Kalan oyuncu (en az {{min}})",
-      "releaseConfirm": "Sözleşmeyi feshet"
+      "releaseConfirm": "Sözleşmeyi feshet",
+      "phone": {
+        "manage": "Oyuncuyu yönet",
+        "shirt": "Forma numarası {{number}}",
+        "age": "{{age}} yaş",
+        "tabs": "Oyuncu bilgisi",
+        "tab": {
+          "stats": "Özellikler",
+          "traits": "Nitelikler",
+          "season": "Sezon"
+        },
+        "tapGroups": "Açmak ya da kapatmak için bir gruba dokun",
+        "view": "Görünüm",
+        "apps": "Maç",
+        "avgRating": "Ort. puan",
+        "goals": "Gol",
+        "assists": "Asist",
+        "full": "Kondisyon dolu",
+        "boost": "Kondisyon yenile · {{count}} eşya",
+        "boostTitle": "Kondisyon yenile",
+        "now": "Şu an %{{value}}",
+        "held": "{{count}} adet var",
+        "shop": "Mağazadan daha fazla al ›"
+      }
     },
     "inbox": {
       "sender": "Kulüp ofisi",
@@ -1013,7 +1328,46 @@
       },
       "viewNewAuction": "Yeni açık artırmayı gör",
       "viewCaps": "Seviye tavanlarını gör",
-      "reasonLine": "Neden: {{reason}}"
+      "reasonLine": "Neden: {{reason}}",
+      "phone": {
+        "list": "Mesajlar",
+        "counts": "{{unread}} okunmamış · {{total}} mesaj",
+        "actions": "Gelen kutusu işlemleri",
+        "filters": "Filtreler",
+        "quickFilters": "Hızlı filtreler",
+        "unreadChip": "Okunmamış",
+        "activeCount": "{{count}} mesaj gösteriliyor",
+        "clearFilters": "Filtreleri temizle",
+        "today": "Bugün",
+        "yesterday": "Dün",
+        "row": "{{subject}}, {{time}}",
+        "unreadRow": "Okunmamış: {{subject}}, {{time}}",
+        "more": "Daha fazla ({{count}})",
+        "position": "{{n}} / {{total}}",
+        "newer": "Daha yeni mesaj",
+        "older": "Daha eski mesaj",
+        "delete": "Mesajı sil",
+        "deleted": "{{count}} mesaj silindi.",
+        "undo": "Geri al",
+        "markedRead": "{{count}} mesaj okundu olarak işaretlendi.",
+        "selected": "{{count}} seçildi",
+        "selectAll": "Tümünü seç",
+        "unselectAll": "Seçimi kaldır",
+        "markSelectedRead": "Seçilenleri okundu yap",
+        "deleteSelected": "Seçilenleri sil",
+        "exitSelect": "Seçimden çık",
+        "filterTitle": "Mesajları filtrele",
+        "reset": "Sıfırla",
+        "unreadOnly": "Yalnızca okunmamış",
+        "kinds": "Türler",
+        "showCount": "{{count}} mesajı göster",
+        "selectMany": "Birden çok seç",
+        "selectManySub": "Birden çok mesajı birlikte okundu yap ya da sil",
+        "readAll": "Tümünü okundu yap",
+        "readAllSub": "{{count}} okunmamış",
+        "deleteRead": "Okunanları sil",
+        "deleteReadSub": "{{count}} okunmuş"
+      }
     },
     "coins": {
       "notOnServer": "Jetonlar bu sunucuda henüz açık değil.",
@@ -6770,5 +7124,8 @@
     "anyRegion": "Tüm bölgeler",
     "anyCountry": "Tüm ülkeler",
     "clear": "Filtreleri temizle"
+  },
+  "mobile": {
+    "pressBackAgain": "Çıkmak için tekrar Geri'ye basın"
   }
 }

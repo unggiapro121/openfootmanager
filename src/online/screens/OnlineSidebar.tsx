@@ -1,60 +1,12 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import {
-  Calendar,
-  Crosshair,
-  Dumbbell,
-  Gavel,
-  GraduationCap,
-  Handshake,
-  LayoutDashboard,
-  Trophy,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 import { BrandSymbol, BrandWordmark } from "../../components/ui";
 import { useOnlineStore } from "../store/onlineStore";
 import ClubCrestMark from "./ClubCrestMark";
 import { useGuardedNavigate } from "./leaveGuard";
-import { isCurrent, seasonText } from "./shellNav";
-
-interface Entry {
-  path: string;
-  label: string;
-  icon: ReactNode;
-}
-
-/**
- * The club's pages by group (design vi-coin.html), shown once the coach runs a club. The inbox
- * and the person's own pages (coins, shop, inventory, events, profile) sit in the header.
- */
-const CLUB_GROUPS: { label: string; entries: Entry[] }[] = [
-  {
-    label: "online.nav.groupTeam",
-    entries: [
-      { path: "/online/squad", label: "online.nav.squad", icon: <Users /> },
-      { path: "/online/tactics", label: "online.nav.tactics", icon: <Crosshair /> },
-      { path: "/online/training", label: "online.nav.training", icon: <Dumbbell /> },
-      { path: "/online/academy", label: "online.nav.academy", icon: <GraduationCap /> },
-    ],
-  },
-  {
-    label: "online.nav.groupMatches",
-    entries: [
-      { path: "/online/schedule", label: "online.nav.schedule", icon: <Calendar /> },
-      { path: "/online/league", label: "online.nav.league", icon: <Trophy /> },
-      { path: "/online/friendly", label: "online.nav.friendly", icon: <Handshake /> },
-    ],
-  },
-  {
-    label: "online.nav.groupClub",
-    entries: [
-      { path: "/online/finance", label: "online.nav.finance", icon: <Wallet /> },
-      { path: "/online/market", label: "online.nav.market", icon: <Gavel /> },
-    ],
-  },
-];
+import { CLUB_GROUPS, isCurrent, type NavEntry, seasonText } from "./shellNav";
 
 function SideEntry({
   entry,
@@ -62,7 +14,7 @@ function SideEntry({
   badge,
   onOpen,
 }: {
-  entry: Entry;
+  entry: NavEntry;
   current: boolean;
   badge?: number;
   onOpen: () => void;
@@ -81,9 +33,7 @@ function SideEntry({
           : "font-semibold text-gray-400 hover:bg-white/5 hover:text-white"
       }`}
     >
-      <span className="shrink-0 [&>svg]:h-5 [&>svg]:w-5" aria-hidden="true">
-        {entry.icon}
-      </span>
+      <entry.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {badge ? (
         <span className="min-w-5 rounded-full bg-primary-500 px-2 py-0.5 text-center font-sans text-xs font-bold text-white">
@@ -163,7 +113,7 @@ export default function OnlineSidebar() {
         className="scrollbar-thin scrollbar-thumb-navy-600 scrollbar-track-transparent flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pb-6"
       >
         <SideEntry
-          entry={{ path: "/online", label: "online.nav.overview", icon: <LayoutDashboard /> }}
+          entry={{ path: "/online", label: "online.nav.overview", icon: LayoutDashboard }}
           current={isCurrent("/online", pathname)}
           onOpen={() => navigate("/online")}
         />

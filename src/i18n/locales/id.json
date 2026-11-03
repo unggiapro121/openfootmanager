@@ -57,7 +57,9 @@
       "events": "Event",
       "groupTeam": "Tim",
       "groupMatches": "Pertandingan",
-      "groupClub": "Klub"
+      "groupClub": "Klub",
+      "groupMore": "Lainnya",
+      "tabs": "Bagian utama"
     },
     "gate": {
       "clientOutdatedTitle": "Perlu pembaruan",
@@ -145,7 +147,51 @@
       "coach": "Pelatih",
       "bot": "AI",
       "previousRound": "Pekan sebelumnya",
-      "nextRound": "Pekan berikutnya"
+      "nextRound": "Pekan berikutnya",
+      "phone": {
+        "summaryLine": "{{clubs}} klub · {{rounds}} pekan",
+        "rank": "Peringkat",
+        "points": "Poin",
+        "goalDiff": "SG {{gd}}",
+        "nextMatch": "Laga berikutnya",
+        "roundOf": "Pekan {{round}}/{{total}}",
+        "tabs": "Bagian liga",
+        "tabTable": "Klasemen",
+        "tabRounds": "Jadwal pekan",
+        "tabStats": "Statistik",
+        "promotionZone": "Posisi 1–{{to}} · promosi",
+        "tableMode": "Tampilan tabel",
+        "compact": "Ringkas",
+        "full": "Lengkap",
+        "form": "Performa",
+        "formTitle": "Dua hasil terakhir",
+        "coachLine": "Pelatih: {{coach}}",
+        "legendCompact": "Main: jumlah laga · SG: selisih gol · Poin: poin. Pilih Lengkap untuk melihat menang, seri, kalah, gol memasukkan dan kemasukan.",
+        "legendFull": "Main laga · M menang · S seri · K kalah · GM gol memasukkan · GK gol kemasukan · SG selisih · Poin. Geser ke samping untuk melihat semua.",
+        "pickRound": "Pilih pekan",
+        "roundDone": "Selesai",
+        "roundLive": "Sedang berlangsung",
+        "roundUpcoming": "Akan dimainkan · {{when}}",
+        "roundUnplanned": "Belum dijadwalkan",
+        "yourMatch": "Laga kamu",
+        "fullTime": "Babak berakhir",
+        "void": "Batal",
+        "live": "Langsung",
+        "statsCategories": "Kategori statistik",
+        "catGoals": "Gol",
+        "catAssists": "Assist",
+        "catCleanSheets": "Clean sheet",
+        "catYellow": "Kartu kuning",
+        "catRed": "Kartu merah",
+        "unitGoals": "gol",
+        "unitAssists": "assist",
+        "unitMatches": "laga",
+        "unitCards": "kartu",
+        "leader": "Teratas",
+        "tiedWith": "sama dengan {{count}} pemain lain",
+        "noData": "Belum ada data untuk kategori ini.",
+        "mineOnly": "Hanya pemain {{club}}"
+      }
     },
     "takeover": {
       "title": "Ambil alih klub",
@@ -227,6 +273,57 @@
         "squadLine": "Asisten sedang memilih susunan pemainmu.",
         "squadLink": "Lihat Taktik",
         "itemNote": "Paket memulihkan sebelas pemain utamamu. Asisten bisa mengistirahatkan pemain yang lelah, jadi bisa berbeda dari susunan perkiraan."
+      },
+      "phone": {
+        "tabs": "Bagian taktik",
+        "tab": {
+          "lineup": "Susunan",
+          "style": "Gaya",
+          "roles": "Peran",
+          "phase": "Fase"
+        },
+        "tagMine": "Milikku",
+        "saveBody": "Kamu mengubah {{name}}. Simpan sebagai taktik sendiri agar bisa dipakai lagi.",
+        "discard": "Buang perubahan",
+        "pitch": "Sebelas utama, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, kondisi {{condition}}",
+        "fit": {
+          "exact": "Posisi asli",
+          "adapted": "Bisa beradaptasi",
+          "out": "Salah posisi"
+        },
+        "wrong": "{{count}} salah posisi",
+        "hintIdle": "Ketuk pemain di lapangan, lalu pemain lain untuk menukar, atau pemain cadangan untuk memasukkannya.",
+        "hintPicked": "{{name}} ({{slot}}) dipilih: ketuk pemain lain di lapangan atau cadangan di bawah.",
+        "hintAssistant": "Asisten memilih sebelas pemain. Matikan untuk memilih sendiri.",
+        "hintLocked": "Susunan terkunci: hanya lihat.",
+        "hintPickFirst": "Ketuk pemain di lapangan dulu, lalu pemain cadangan.",
+        "benchFor": "Ke posisi {{slot}}",
+        "benchTitle": "Cadangan · {{count}}",
+        "fitFirst": "Paling cocok dulu",
+        "benchSub": "Kondisi · OVR",
+        "all": "Semua",
+        "bench": "Cadangan",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Cedera",
+        "level": "Tingkat {{level}}",
+        "masteryNote": "· angka adalah penguasaanmu",
+        "noneChosen": "Belum dipilih",
+        "score": {
+          "captain": "Kepemimpinan {{value}}",
+          "vicecaptain": "Kepemimpinan {{value}}",
+          "penalty": "Penalti {{value}}",
+          "freekick": "Tendangan bebas {{value}}",
+          "corner": "Umpan silang {{value}}"
+        },
+        "rolesNote": "Hanya pemain inti yang bisa diberi peran.",
+        "rankedBy": {
+          "captain": "Menurut kepemimpinan",
+          "vicecaptain": "Menurut kepemimpinan",
+          "penalty": "Menurut penalti",
+          "freekick": "Menurut tendangan bebas",
+          "corner": "Menurut umpan silang"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "Pemain ini tidak ada di skuad Anda.",
       "state": "Kondisi",
       "suspended": "Diskors: {{count}} laga",
-      "potentialStarsRange": "Potensi {{low}} sampai {{high}} bintang"
+      "potentialStarsRange": "Potensi {{low}} sampai {{high}} bintang",
+      "phone": {
+        "searchToggle": "Cari pemain",
+        "searchLabel": "Cari menurut nama",
+        "searchPlaceholder": "Cari menurut nama pemain",
+        "assistant": "Asisten sedang memilih susunan pemain",
+        "sort": "Urutkan",
+        "rotateHint": "Putar ponsel untuk melihat tabel lengkap",
+        "hideRotate": "Sembunyikan petunjuk",
+        "lens": "Isi kolom",
+        "lensForm": "Kebugaran",
+        "lensFit": "Kecocokan",
+        "lensGrowth": "Perkembangan",
+        "lensStats": "Statistik",
+        "list": "Pemain",
+        "sectionXi": "Starter · {{count}}",
+        "sectionBench": "Cadangan · {{count}}",
+        "rowStarter": "{{name}}, {{position}}, OVR {{ovr}}, starter",
+        "rowBench": "{{name}}, {{position}}, OVR {{ovr}}, cadangan",
+        "sheetLine": "No. {{number}} · {{age}} tahun",
+        "playsIn": "Bermain {{slot}} dalam {{formation}}",
+        "bestIn": "Paling cocok di {{slot}} dalam {{formation}}",
+        "season": "Musim ini",
+        "seasonLine": "{{apps}} laga · {{goals}} gol",
+        "traitsTitle": "Karakter ({{count}})",
+        "noTraits": "Belum ada karakter.",
+        "fullProfile": "Profil lengkap",
+        "toTactics": "Atur di Taktik",
+        "actions": "Tindakan",
+        "actionsTitle": "Tindakan · {{name}}",
+        "groupTransfer": "Jual-beli",
+        "groupCustomise": "Sesuaikan",
+        "listSub": "Masukkan ke pasar lelang",
+        "releaseSub": "Lepas dari klub sekarang",
+        "shirtSub": "Memakai nomor {{number}}"
+      }
     },
     "training": {
       "noPlan": "Kamu belum menetapkan rencana latihan: klub berlatih menurut rencana yang dipegang AI, tampil di sini. Pilihan pertamamu akan disimpan sebagai rencanamu sendiri.",
@@ -294,8 +426,8 @@
           "resting": "Fokus pemulihan: absen",
           "peaked": "Sudah di potensinya: absen",
           "keepAbove": "Berhenti untuk menjaga kondisi",
-          "focusMaxed": "Fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini",
-          "other": "Absen"
+          "other": "Absen",
+          "focusMaxed": "Fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini"
         },
         "intensity": "Intensitas",
         "intensityCost": "{{intensity}} (−{{cost}} kondisi)",
@@ -358,6 +490,28 @@
         "inheritedTag": "ikut grup",
         "empty": "Belum ada pemain di grup ini."
       },
+      "phone": {
+        "tab": {
+          "today": "Hari ini",
+          "sched": "Jadwal",
+          "focus": "Fokus",
+          "groups": "Grup ({{count}})"
+        },
+        "sessionsIn7": "sesi dalam 7 hari",
+        "planInUse": "Hari latihan yang dipakai",
+        "howItWorks": "Cara kerjanya",
+        "lastResult": "Terakhir: {{held}} sesi",
+        "listReady": "Bisa berlatih ({{count}})",
+        "listRest": "Istirahat kali ini ({{count}})",
+        "noneReady": "Tidak ada yang bisa berlatih sekarang. Biarkan skuad beristirahat.",
+        "noneResting": "Seluruh skuad bisa berlatih kali ini.",
+        "resultTitle": "Hasil latihan tambahan",
+        "groupOf": "Grup {{name}}",
+        "groupFocus": "Fokus grup",
+        "players": "Pemain",
+        "mainAuto": "Tim berlatih sesuai jadwal saat hari berganti ({{time}}). Ketuk kotak untuk mengubahnya.",
+        "mainAutoNoTime": "Tim berlatih sesuai jadwal saat hari berganti. Ketuk kotak untuk mengubahnya."
+      },
       "focusHint": {
         "best": "Fokus terbaik",
         "fair": "Terbaik: {{best}}",
@@ -376,7 +530,9 @@
         "W": "M",
         "D": "S",
         "L": "K"
-      }
+      },
+      "filterLabel": "Tampilkan laga",
+      "dayCount": "Laga: {{count}}"
     },
     "publicClub": {
       "formation": "Formasi: {{formation}}",
@@ -424,7 +580,8 @@
       "licenceNext": "Terbuka di level pelatih {{level}}",
       "boosterHeld": "{{item}} ×{{count}} di inventaris",
       "boosterHint": "Naik level lebih cepat di laga online berikutnya",
-      "activate": "Aktifkan"
+      "activate": "Aktifkan",
+      "shortcuts": "Pintasan"
     },
     "match": {
       "byCoach": "{{team}}: dipimpin pelatih",
@@ -475,7 +632,71 @@
       "rolePlayer": "Pemain",
       "roleChoice": "Peran",
       "changeRole": "Ubah peran",
-      "orderRefused": "Pertandingan tidak menerima perintah itu: {{reason}}"
+      "orderRefused": "Pertandingan tidak menerima perintah itu: {{reason}}",
+      "phoneSubs": {
+        "usedAria": "{{used}} dari {{max}} pergantian terpakai, {{queued}} menunggu",
+        "queuedShort": "{{count}} menunggu",
+        "hintIdle": "Ketuk pemain di lapangan untuk menariknya keluar, atau ketuk pemain cadangan dulu. Seret pemain ke pemain lain untuk menukar posisi mereka.",
+        "hintSwap": "Ketuk pemain lain di lapangan untuk bertukar posisi dengan {{name}}.",
+        "hintQueued": "{{name}} sudah punya pengganti. Hapus di Menunggu konfirmasi untuk mengubahnya.",
+        "hintPickBench": "Pilih pemain cadangan untuk menggantikan {{name}}.",
+        "hintPickField": "Ketuk pemain di lapangan yang akan digantikan {{name}}.",
+        "cancelSwap": "Batalkan tukar",
+        "pitch": "Susunan di lapangan",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, kondisi {{condition}}",
+        "tokenReplaced": "{{name}}, {{slot}}, OVR {{ovr}}, kondisi {{condition}}, akan digantikan {{on}}",
+        "tokenSentOff": "{{name}}, {{slot}}, dikartu merah",
+        "planTitle": "Saran: {{scenario}}",
+        "planSub": "Rencana {{style}} · {{count}} perubahan",
+        "planAdd": "Tambah: {{off}} keluar, {{on}} masuk",
+        "planAdded": "Ditambahkan: {{off}} keluar, {{on}} masuk",
+        "planApply": "Terapkan semua {{count}} perubahan",
+        "planAllAdded": "Seluruh rencana ditambahkan",
+        "queuedTitle": "Menunggu konfirmasi ({{count}})",
+        "queuedRemove": "Batalkan pergantian {{off}} dengan {{on}}",
+        "bench": "Cadangan ({{count}})",
+        "benchSub": "OVR · Kondisi",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}}, kondisi {{condition}}",
+        "comesOnFor": "Masuk menggantikan {{name}}",
+        "fitNatural": "Posisi asli",
+        "fitAdapted": "Bisa bermain di sana",
+        "fitUnfamiliar": "Bukan posisinya",
+        "sheetCondition": "Kondisi {{condition}}",
+        "sheetBooked": "sudah kartu kuning",
+        "swap": "Tukar posisi",
+        "sheetQueued": "Sudah ada pengganti. Hapus di Menunggu konfirmasi untuk memilih lagi.",
+        "sheetBenchSub": "Paling cocok dulu",
+        "confirm": "Konfirmasi {{count}} pergantian",
+        "swapped": "Bertukar posisi: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Tukar posisi terkirim, menunggu diterapkan oleh pertandingan.",
+        "roleSet": "{{name}}: peran {{role}}.",
+        "sent": "{{count}} pergantian dikirim. Sisa {{left}}."
+      },
+      "phone": {
+        "title": "Laga langsung",
+        "leave": "Tinggalkan laga",
+        "youCoach": "Kamu yang memimpin",
+        "aiCoaches": "AI yang memimpin",
+        "ordersFrom": "Perintah berlaku mulai menit {{minute}}' (laga sebenarnya)",
+        "dock": "Kontrol tim",
+        "subs": "Pergantian",
+        "formation": "Formasi",
+        "style": "Gaya main",
+        "roles": "Peran",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Bola mati",
+        "rolesTitle": "Peran & bola mati",
+        "inUse": "Dipakai: {{formation}}",
+        "effectiveFrom": "Perintah berlaku mulai menit {{minute}}' laga sebenarnya.",
+        "pickOther": "Pilih formasi lain",
+        "sendFormation": "Kirim: {{formation}}",
+        "tapToSend": "Ketuk untuk langsung mengirim. Berlaku mulai menit {{minute}}'.",
+        "nobody": "— Belum ada",
+        "takerSends": "Mengganti eksekutor langsung mengirim perintah.",
+        "ordersTitle": "Perintah terkirim ({{count}})",
+        "noOrders": "Belum ada perintah",
+        "sentToast": "Perintah terkirim: {{order}}"
+      }
     },
     "replay": {
       "title": "Tayangan ulang",
@@ -671,7 +892,35 @@
         "academy": "Akademi muda",
         "academyEffect": "Setiap level menambah tempat untuk pemain muda."
       },
-      "academyWages": "Gaji akademi: {{amount}} per minggu"
+      "academyWages": "Gaji akademi: {{amount}} per minggu",
+      "phone": {
+        "balance": "Saldo klub",
+        "heldLine": "Ditahan untuk tawaran: {{amount}}",
+        "seasonNet": "Laba/rugi musim ini",
+        "tab": {
+          "over": "Ringkasan",
+          "fac": "Fasilitas",
+          "led": "Mutasi"
+        },
+        "wageWarning": "Gaji {{times}} kali pendapatan tiket. Pertimbangkan melepas cadangan bergaji tinggi atau meningkatkan fasilitas.",
+        "perWeek": "Per minggu",
+        "perDay": "Per hari musim",
+        "weekly": "{{amount}}/minggu",
+        "level": "Level fasilitas",
+        "levelOf": "Level {{level}} dari {{max}}",
+        "short": "Level berikut {{cost}} · dana kurang",
+        "upTitle": "Tingkatkan {{facility}} ke level {{level}}?",
+        "cost": "Biaya",
+        "cashAfter": "Kas setelah peningkatan",
+        "later": "Nanti",
+        "upConfirm": "Tingkatkan",
+        "flow": "Jenis transaksi",
+        "filter": {
+          "all": "Semua",
+          "in": "Masuk",
+          "out": "Keluar"
+        }
+      }
     },
     "market": {
       "title": "Bursa transfer",
@@ -800,6 +1049,49 @@
         "badge": "Perlu level {{level}}",
         "explain": "Dua batas membatasi apa yang boleh dibeli pelatih di tiap level: OVR satu pemain dan kekuatan beli skuad. Membeli pemain yang tidak masuk 18 teratas skuadmu selalu boleh.",
         "roadmap": "Lihat jalur level"
+      },
+      "phone": {
+        "list": "Daftar lelang",
+        "ended": "Selesai",
+        "outbid": "Tersalip",
+        "age": "{{age}} th",
+        "startPrice": "Harga awal",
+        "currentPrice": "Harga saat ini",
+        "bidCount": "{{count}} tawaran",
+        "all": "Semua",
+        "reset": "Atur ulang",
+        "upTo": "≤ {{price}}",
+        "sortBy": "Urutkan",
+        "sort": {
+          "end": "Segera berakhir",
+          "low": "Harga terendah",
+          "ovr": "OVR tertinggi",
+          "pot": "Potensi"
+        },
+        "apply": "Terapkan",
+        "budget": "Anggaran",
+        "allPositions": "Semua",
+        "count": "{{count}} pemain · {{sort}}",
+        "urgent": "kurang dari 2 mnt",
+        "detailTabs": "Rincian lelang",
+        "tabAuction": "Lelang",
+        "tabStats": "Atribut",
+        "someoneBid": "Ada tawaran",
+        "range": "Harga {{price}}, antara awal {{start}} dan batas {{cap}}; taksiran {{value}}",
+        "start": "Awal {{price}}",
+        "valuation": "Taksiran {{price}}",
+        "cap": "Batas {{price}}",
+        "step": "Kenaikan",
+        "bidBar": "Tawar",
+        "nextWhileLeading": "Anda memimpin · tawaran berikut",
+        "leastBid": "Tawaran terendah sekarang",
+        "locked": "Terkunci",
+        "raise": "Naikkan tawaran",
+        "bidTitle": "Tawar · {{name}}",
+        "stepDown": "Turun satu langkah",
+        "stepUp": "Naik satu langkah",
+        "afterWin": "Anggaran jika menang",
+        "place": "Tawar {{amount}}"
       }
     },
     "rename": {
@@ -845,7 +1137,30 @@
       "releaseSeverance": "Pesangon",
       "releaseCash": "Kas klub",
       "releaseSquad": "Pemain tersisa (minimal {{min}})",
-      "releaseConfirm": "Putus kontrak pemain"
+      "releaseConfirm": "Putus kontrak pemain",
+      "phone": {
+        "manage": "Kelola pemain",
+        "shirt": "Nomor punggung {{number}}",
+        "age": "{{age}} th",
+        "tabs": "Info pemain",
+        "tab": {
+          "stats": "Atribut",
+          "traits": "Ciri",
+          "season": "Musim"
+        },
+        "tapGroups": "Ketuk grup untuk membuka atau menutup",
+        "view": "Tampilan",
+        "apps": "Laga",
+        "avgRating": "Rata-rata nilai",
+        "goals": "Gol",
+        "assists": "Asis",
+        "full": "Kondisi sudah penuh",
+        "boost": "Pulihkan kondisi · {{count}} item",
+        "boostTitle": "Pulihkan kondisi",
+        "now": "Sekarang {{value}}%",
+        "held": "Punya {{count}}",
+        "shop": "Beli lagi di Toko ›"
+      }
     },
     "inbox": {
       "sender": "Kantor klub",
@@ -1013,7 +1328,46 @@
       },
       "viewNewAuction": "Lihat lelang baru",
       "viewCaps": "Lihat batas levelmu",
-      "reasonLine": "Alasan: {{reason}}"
+      "reasonLine": "Alasan: {{reason}}",
+      "phone": {
+        "list": "Pesan",
+        "counts": "{{unread}} belum dibaca · {{total}} pesan",
+        "actions": "Tindakan kotak masuk",
+        "filters": "Filter",
+        "quickFilters": "Filter cepat",
+        "unreadChip": "Belum dibaca",
+        "activeCount": "Menampilkan {{count}} pesan",
+        "clearFilters": "Hapus filter",
+        "today": "Hari ini",
+        "yesterday": "Kemarin",
+        "row": "{{subject}}, {{time}}",
+        "unreadRow": "Belum dibaca: {{subject}}, {{time}}",
+        "more": "Lihat lagi ({{count}})",
+        "position": "{{n}} / {{total}}",
+        "newer": "Pesan lebih baru",
+        "older": "Pesan lebih lama",
+        "delete": "Hapus pesan",
+        "deleted": "{{count}} pesan dihapus.",
+        "undo": "Urungkan",
+        "markedRead": "{{count}} pesan ditandai sudah dibaca.",
+        "selected": "{{count}} dipilih",
+        "selectAll": "Pilih semua",
+        "unselectAll": "Batal pilih",
+        "markSelectedRead": "Tandai pilihan sudah dibaca",
+        "deleteSelected": "Hapus pilihan",
+        "exitSelect": "Selesai memilih",
+        "filterTitle": "Filter pesan",
+        "reset": "Atur ulang",
+        "unreadOnly": "Hanya belum dibaca",
+        "kinds": "Jenis",
+        "showCount": "Lihat {{count}} pesan",
+        "selectMany": "Pilih beberapa",
+        "selectManySub": "Tandai dibaca atau hapus beberapa sekaligus",
+        "readAll": "Tandai semua sudah dibaca",
+        "readAllSub": "{{count}} belum dibaca",
+        "deleteRead": "Hapus yang sudah dibaca",
+        "deleteReadSub": "{{count}} sudah dibaca"
+      }
     },
     "coins": {
       "notOnServer": "Koin belum dibuka di server ini.",
@@ -6770,5 +7124,8 @@
     "anyRegion": "Semua wilayah",
     "anyCountry": "Semua negara",
     "clear": "Hapus filter"
+  },
+  "mobile": {
+    "pressBackAgain": "Tekan Kembali sekali lagi untuk keluar"
   }
 }

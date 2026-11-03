@@ -107,14 +107,18 @@ function RoleSection({
 }
 
 /** Who takes each set piece, and the captain: each one a command of its own. */
-const TAKERS = [
+export const TAKERS = [
   { key: "captain", label: "match.captain" },
   { key: "free_kick_taker", label: "match.freeKickTaker" },
   { key: "corner_taker", label: "match.cornerTaker" },
   { key: "penalty_taker", label: "match.penaltyTaker" },
 ] as const satisfies readonly { key: keyof SetPieceTakers; label: string }[];
 
-function takerCommand(key: keyof SetPieceTakers, side: Side, player_id: string): MatchCommand {
+export function takerCommand(
+  key: keyof SetPieceTakers,
+  side: Side,
+  player_id: string,
+): MatchCommand {
   switch (key) {
     case "captain":
       return { SetCaptain: { side, player_id } };

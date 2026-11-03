@@ -25,22 +25,13 @@ use serde::{Deserialize, Serialize};
 pub use client::{ApiClient, ApiError, RawRequest, RawResponse};
 pub use remote_store::RemoteCoachProgressStore;
 pub use session::ServerSession;
-pub use vault::{KeyringVault, RefreshTokenVault};
+pub use vault::{platform_vault, RefreshTokenVault};
 
 use super::coach::{validated_identity, CoachContext};
 use session::RegisterRequest;
 
-pub const SERVER_URL_ENV: &str = "OFM_SERVER_URL";
+pub use super::endpoints::configured_server_url;
 const NOT_ON_SERVER: &str = "be.error.coach.serverNotConfigured";
-
-/// The account server to use: the run-time setting first, then the one the game was built with.
-pub fn configured_server_url() -> Option<String> {
-    std::env::var(SERVER_URL_ENV)
-        .ok()
-        .or_else(|| option_env!("OFM_SERVER_URL").map(str::to_string))
-        .map(|url| url.trim().to_string())
-        .filter(|url| !url.is_empty())
-}
 
 /// Where the login screen sends the player.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

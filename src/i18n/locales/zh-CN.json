@@ -57,7 +57,9 @@
       "events": "活动",
       "groupTeam": "球队",
       "groupMatches": "比赛",
-      "groupClub": "俱乐部"
+      "groupClub": "俱乐部",
+      "groupMore": "更多",
+      "tabs": "主要栏目"
     },
     "gate": {
       "clientOutdatedTitle": "需要更新",
@@ -145,7 +147,51 @@
       "coach": "主教练",
       "bot": "AI",
       "previousRound": "上一轮",
-      "nextRound": "下一轮"
+      "nextRound": "下一轮",
+      "phone": {
+        "summaryLine": "{{clubs}} 支球队 · {{rounds}} 轮",
+        "rank": "排名",
+        "points": "积分",
+        "goalDiff": "净胜 {{gd}}",
+        "nextMatch": "下一场",
+        "roundOf": "第 {{round}}/{{total}} 轮",
+        "tabs": "联赛内容",
+        "tabTable": "积分榜",
+        "tabRounds": "赛程",
+        "tabStats": "数据",
+        "promotionZone": "第 1–{{to}} 名 · 升级",
+        "tableMode": "表格视图",
+        "compact": "简洁",
+        "full": "完整",
+        "form": "近况",
+        "formTitle": "最近两场结果",
+        "coachLine": "主教练：{{coach}}",
+        "legendCompact": "赛：场次 · 净：净胜球 · 分：积分。选择“完整”查看胜、平、负、进球、失球。",
+        "legendFull": "赛 场次 · 胜 · 平 · 负 · 进 进球 · 失 失球 · 净 净胜球 · 分 积分。左右滑动查看全部。",
+        "pickRound": "选择轮次",
+        "roundDone": "已结束",
+        "roundLive": "进行中",
+        "roundUpcoming": "未开始 · {{when}}",
+        "roundUnplanned": "尚未安排",
+        "yourMatch": "你的比赛",
+        "fullTime": "全场结束",
+        "void": "作废",
+        "live": "直播中",
+        "statsCategories": "数据类别",
+        "catGoals": "进球",
+        "catAssists": "助攻",
+        "catCleanSheets": "零封",
+        "catYellow": "黄牌",
+        "catRed": "红牌",
+        "unitGoals": "球",
+        "unitAssists": "次助攻",
+        "unitMatches": "场",
+        "unitCards": "张",
+        "leader": "领跑",
+        "tiedWith": "与另外 {{count}} 人并列",
+        "noData": "该类别暂无数据。",
+        "mineOnly": "只看 {{club}} 球员"
+      }
     },
     "takeover": {
       "title": "接手俱乐部",
@@ -227,6 +273,57 @@
         "squadLine": "助手正在为你挑选首发。",
         "squadLink": "前往战术",
         "itemNote": "道具恢复的是你的主力首发。助手可能让疲劳球员休息，所以可能与预计首发不同。"
+      },
+      "phone": {
+        "tabs": "战术分区",
+        "tab": {
+          "lineup": "阵容",
+          "style": "风格",
+          "roles": "职责",
+          "phase": "阶段"
+        },
+        "tagMine": "我的",
+        "saveBody": "你修改了 {{name}}。保存为自己的战术以便再次使用。",
+        "discard": "放弃修改",
+        "pitch": "首发阵容，{{formation}}",
+        "token": "{{name}}，{{slot}}，OVR {{ovr}}，{{fit}}，体能 {{condition}}",
+        "fit": {
+          "exact": "本职位置",
+          "adapted": "可适应",
+          "out": "位置不符"
+        },
+        "wrong": "{{count}} 人位置不符",
+        "hintIdle": "点选场上一名球员，再点另一名交换位置，或点替补让他上场。",
+        "hintPicked": "已选 {{name}}（{{slot}}）：点场上另一名球员或下方替补。",
+        "hintAssistant": "助理正在挑选首发。关闭助理即可自己排。",
+        "hintLocked": "阵容已锁定：仅可查看。",
+        "hintPickFirst": "请先点选场上球员，再点替补。",
+        "benchFor": "换上 {{slot}} 位置",
+        "benchTitle": "替补 · {{count}}",
+        "fitFirst": "适配优先",
+        "benchSub": "体能 · OVR",
+        "all": "全部",
+        "bench": "替补",
+        "benchRow": "{{name}}，{{position}}，OVR {{ovr}} {{fit}}",
+        "injured": "受伤",
+        "level": "等级 {{level}}",
+        "masteryNote": "· 数字为熟练度",
+        "noneChosen": "未选择",
+        "score": {
+          "captain": "领导力 {{value}}",
+          "vicecaptain": "领导力 {{value}}",
+          "penalty": "点球 {{value}}",
+          "freekick": "任意球 {{value}}",
+          "corner": "传中 {{value}}"
+        },
+        "rolesNote": "只能选择首发球员。",
+        "rankedBy": {
+          "captain": "按领导力",
+          "vicecaptain": "按领导力",
+          "penalty": "按点球",
+          "freekick": "按任意球",
+          "corner": "按传中"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "该球员不在你的阵容中。",
       "state": "状态",
       "suspended": "停赛：{{count}} 场",
-      "potentialStarsRange": "潜力 {{low}} 至 {{high}} 星"
+      "potentialStarsRange": "潜力 {{low}} 至 {{high}} 星",
+      "phone": {
+        "searchToggle": "搜索球员",
+        "searchLabel": "按姓名搜索",
+        "searchPlaceholder": "按球员姓名搜索",
+        "assistant": "助理正在挑选首发阵容",
+        "sort": "排序",
+        "rotateHint": "横屏查看完整表格",
+        "hideRotate": "隐藏提示",
+        "lens": "列显示内容",
+        "lensForm": "状态",
+        "lensFit": "适配",
+        "lensGrowth": "成长",
+        "lensStats": "数据",
+        "list": "球员",
+        "sectionXi": "首发 · {{count}}",
+        "sectionBench": "替补 · {{count}}",
+        "rowStarter": "{{name}}，{{position}}，OVR {{ovr}}，首发",
+        "rowBench": "{{name}}，{{position}}，OVR {{ovr}}，替补",
+        "sheetLine": "{{number}} 号 · {{age}} 岁",
+        "playsIn": "在 {{formation}} 中踢 {{slot}}",
+        "bestIn": "在 {{formation}} 中最适合 {{slot}}",
+        "season": "本赛季",
+        "seasonLine": "{{apps}} 场 · {{goals}} 球",
+        "traitsTitle": "特点（{{count}}）",
+        "noTraits": "暂无特点。",
+        "fullProfile": "完整资料",
+        "toTactics": "去战术中安排",
+        "actions": "操作",
+        "actionsTitle": "操作 · {{name}}",
+        "groupTransfer": "转会",
+        "groupCustomise": "个性化",
+        "listSub": "挂到拍卖市场",
+        "releaseSub": "让他立即离队",
+        "shirtSub": "身穿 {{number}} 号"
+      }
     },
     "training": {
       "noPlan": "你还没有设定训练计划：俱乐部正按 AI 保留的计划训练，如下所示。你的第一次选择会保存为你自己的计划。",
@@ -294,8 +426,8 @@
           "resting": "恢复训练重点：不参加",
           "peaked": "已达潜力：不参加",
           "keepAbove": "为保持状态而停止",
-          "focusMaxed": "训练重点中已没有能提升该位置OVR的属性",
-          "other": "不参加"
+          "other": "不参加",
+          "focusMaxed": "训练重点中已没有能提升该位置OVR的属性"
         },
         "intensity": "强度",
         "intensityCost": "{{intensity}}（−{{cost}} 状态）",
@@ -358,6 +490,28 @@
         "inheritedTag": "沿用",
         "empty": "该小组暂无球员。"
       },
+      "phone": {
+        "tab": {
+          "today": "今天",
+          "sched": "周计划",
+          "focus": "重点",
+          "groups": "分组（{{count}}）"
+        },
+        "sessionsIn7": "7 天内训练次数",
+        "planInUse": "当前使用的训练日",
+        "howItWorks": "如何运作",
+        "lastResult": "上次：训练 {{held}} 次",
+        "listReady": "可训练（{{count}}）",
+        "listRest": "本次休息（{{count}}）",
+        "noneReady": "现在没人能训练。让球队休息恢复。",
+        "noneResting": "本次全队都能训练。",
+        "resultTitle": "加练结果",
+        "groupOf": "{{name}} 组",
+        "groupFocus": "分组重点",
+        "players": "球员",
+        "mainAuto": "球队在换日时按计划训练（{{time}}）。点击方块即可更改。",
+        "mainAutoNoTime": "球队在换日时按计划训练。点击方块即可更改。"
+      },
       "focusHint": {
         "best": "最佳训练重点",
         "fair": "最佳：{{best}}",
@@ -376,7 +530,9 @@
         "W": "胜",
         "D": "平",
         "L": "负"
-      }
+      },
+      "filterLabel": "筛选比赛",
+      "dayCount": "{{count}} 场比赛"
     },
     "publicClub": {
       "formation": "阵型：{{formation}}",
@@ -424,7 +580,8 @@
       "licenceNext": "教练等级 {{level}} 开放",
       "boosterHeld": "库存中有 {{item}} ×{{count}}",
       "boosterHint": "在接下来的在线比赛中更快升级",
-      "activate": "启用"
+      "activate": "启用",
+      "shortcuts": "快捷入口"
     },
     "match": {
       "byCoach": "{{team}}：教练指挥",
@@ -475,7 +632,71 @@
       "rolePlayer": "球员",
       "roleChoice": "角色",
       "changeRole": "更改角色",
-      "orderRefused": "比赛没有接受该指令：{{reason}}"
+      "orderRefused": "比赛没有接受该指令：{{reason}}",
+      "phoneSubs": {
+        "usedAria": "已用 {{used}}/{{max}} 次换人，{{queued}} 次待确认",
+        "queuedShort": "待确认 {{count}}",
+        "hintIdle": "点场上的球员将其换下，或先点一名替补。把一名球员拖到另一名球员上即可互换位置。",
+        "hintSwap": "点场上另一名球员，与 {{name}} 互换位置。",
+        "hintQueued": "{{name}} 已安排替补。在待确认中移除后再更改。",
+        "hintPickBench": "选择一名替补换下 {{name}}。",
+        "hintPickField": "点场上的球员，让 {{name}} 替换他。",
+        "cancelSwap": "取消互换",
+        "pitch": "场上阵容",
+        "token": "{{name}}，{{slot}}，OVR {{ovr}}，体能 {{condition}}",
+        "tokenReplaced": "{{name}}，{{slot}}，OVR {{ovr}}，体能 {{condition}}，将由 {{on}} 替换",
+        "tokenSentOff": "{{name}}，{{slot}}，已被罚下",
+        "planTitle": "建议：{{scenario}}",
+        "planSub": "{{style}}方案 · {{count}} 项调整",
+        "planAdd": "添加：{{off}} 下，{{on}} 上",
+        "planAdded": "已添加：{{off}} 下，{{on}} 上",
+        "planApply": "应用全部 {{count}} 项调整",
+        "planAllAdded": "已添加整个方案",
+        "queuedTitle": "待确认（{{count}}）",
+        "queuedRemove": "取消用 {{on}} 换下 {{off}}",
+        "bench": "替补（{{count}}）",
+        "benchSub": "OVR · 体能",
+        "benchRow": "{{name}}，{{position}}，OVR {{ovr}}，体能 {{condition}}",
+        "comesOnFor": "替换 {{name}}",
+        "fitNatural": "本职位置",
+        "fitAdapted": "可以胜任",
+        "fitUnfamiliar": "不熟悉的位置",
+        "sheetCondition": "体能 {{condition}}",
+        "sheetBooked": "已吃黄牌",
+        "swap": "互换位置",
+        "sheetQueued": "已安排替补。在待确认中移除后再重新选择。",
+        "sheetBenchSub": "最合适的在前",
+        "confirm": "确认 {{count}} 次换人",
+        "swapped": "已互换 {{a}} ↔ {{b}}。",
+        "swapWaiting": "互换已发出，等待比赛执行。",
+        "roleSet": "{{name}}：角色 {{role}}。",
+        "sent": "已发送 {{count}} 次换人。还剩 {{left}} 次。"
+      },
+      "phone": {
+        "title": "比赛直播",
+        "leave": "离开比赛",
+        "youCoach": "你在指挥",
+        "aiCoaches": "AI 在指挥",
+        "ordersFrom": "指令从第 {{minute}}' 分钟起生效（真实比赛）",
+        "dock": "球队操控",
+        "subs": "换人",
+        "formation": "阵型",
+        "style": "打法",
+        "roles": "角色",
+        "captainShort": "队长：{{name}}",
+        "setPieces": "定位球",
+        "rolesTitle": "角色与定位球",
+        "inUse": "当前：{{formation}}",
+        "effectiveFrom": "指令从真实比赛第 {{minute}}' 分钟起生效。",
+        "pickOther": "选择其他阵型",
+        "sendFormation": "发送：{{formation}}",
+        "tapToSend": "点一下立即发送，从第 {{minute}}' 分钟起生效。",
+        "nobody": "— 暂未指定",
+        "takerSends": "更换主罚人会立即发送指令。",
+        "ordersTitle": "已发送指令（{{count}}）",
+        "noOrders": "尚未发送指令",
+        "sentToast": "已发送指令：{{order}}"
+      }
     },
     "replay": {
       "title": "回放",
@@ -671,7 +892,35 @@
         "academy": "青训营",
         "academyEffect": "每级增加青训球员名额。"
       },
-      "academyWages": "青训工资：每周 {{amount}}"
+      "academyWages": "青训工资：每周 {{amount}}",
+      "phone": {
+        "balance": "俱乐部余额",
+        "heldLine": "为出价冻结：{{amount}}",
+        "seasonNet": "本赛季盈亏",
+        "tab": {
+          "over": "概览",
+          "fac": "设施",
+          "led": "收支"
+        },
+        "wageWarning": "工资是门票收入的 {{times}} 倍。可考虑解约高薪替补或升级设施以增加收入。",
+        "perWeek": "每周",
+        "perDay": "每赛季日",
+        "weekly": "{{amount}}/周",
+        "level": "等级",
+        "levelOf": "等级 {{level}}/{{max}}",
+        "short": "下一级 {{cost}} · 资金不足",
+        "upTitle": "将{{facility}}升至 {{level}} 级？",
+        "cost": "费用",
+        "cashAfter": "升级后现金",
+        "later": "稍后",
+        "upConfirm": "升级",
+        "flow": "交易类型",
+        "filter": {
+          "all": "全部",
+          "in": "收入",
+          "out": "支出"
+        }
+      }
     },
     "market": {
       "title": "转会市场",
@@ -800,6 +1049,49 @@
         "badge": "等级 {{level}}",
         "explain": "每个等级有两道购买上限：单名球员的总评，以及阵容的购买强度。买一名进不了你前 18 人的球员总是可以的。",
         "roadmap": "查看等级路线"
+      },
+      "phone": {
+        "list": "拍卖列表",
+        "ended": "已结束",
+        "outbid": "被超价",
+        "age": "{{age}} 岁",
+        "startPrice": "起拍价",
+        "currentPrice": "当前价",
+        "bidCount": "{{count}} 次出价",
+        "all": "全部",
+        "reset": "重置",
+        "upTo": "≤ {{price}}",
+        "sortBy": "排序",
+        "sort": {
+          "end": "即将结束",
+          "low": "价格最低",
+          "ovr": "OVR 最高",
+          "pot": "潜力"
+        },
+        "apply": "应用",
+        "budget": "预算",
+        "allPositions": "全部",
+        "count": "{{count}} 名球员 · {{sort}}",
+        "urgent": "不到 2 分钟",
+        "detailTabs": "拍卖详情",
+        "tabAuction": "拍卖",
+        "tabStats": "属性",
+        "someoneBid": "已有出价",
+        "range": "价格 {{price}}，介于起拍价 {{start}} 与封顶价 {{cap}} 之间；估值 {{value}}",
+        "start": "起拍 {{price}}",
+        "valuation": "估值 {{price}}",
+        "cap": "封顶 {{price}}",
+        "step": "加价幅度",
+        "bidBar": "出价",
+        "nextWhileLeading": "你领先 · 下一口价",
+        "leastBid": "当前最低出价",
+        "locked": "已锁定",
+        "raise": "加价",
+        "bidTitle": "出价 · {{name}}",
+        "stepDown": "降低一档",
+        "stepUp": "提高一档",
+        "afterWin": "获胜后预算",
+        "place": "出价 {{amount}}"
       }
     },
     "rename": {
@@ -845,7 +1137,30 @@
       "releaseSeverance": "解约金",
       "releaseCash": "俱乐部资金",
       "releaseSquad": "剩余球员数（至少 {{min}}）",
-      "releaseConfirm": "解约球员"
+      "releaseConfirm": "解约球员",
+      "phone": {
+        "manage": "管理球员",
+        "shirt": "球衣号码 {{number}}",
+        "age": "{{age}} 岁",
+        "tabs": "球员信息",
+        "tab": {
+          "stats": "属性",
+          "traits": "特点",
+          "season": "赛季"
+        },
+        "tapGroups": "点击分组可展开或收起",
+        "view": "视图",
+        "apps": "出场",
+        "avgRating": "平均评分",
+        "goals": "进球",
+        "assists": "助攻",
+        "full": "体能已满",
+        "boost": "恢复体能 · {{count}} 件道具",
+        "boostTitle": "恢复体能",
+        "now": "当前 {{value}}%",
+        "held": "持有 {{count}}",
+        "shop": "去商店购买更多 ›"
+      }
     },
     "inbox": {
       "sender": "俱乐部办公室",
@@ -1013,7 +1328,46 @@
       },
       "viewNewAuction": "查看新拍卖",
       "viewCaps": "查看等级上限",
-      "reasonLine": "原因：{{reason}}"
+      "reasonLine": "原因：{{reason}}",
+      "phone": {
+        "list": "消息",
+        "counts": "{{unread}} 条未读 · 共 {{total}} 条",
+        "actions": "收件箱操作",
+        "filters": "筛选",
+        "quickFilters": "快速筛选",
+        "unreadChip": "未读",
+        "activeCount": "正在查看 {{count}} 条",
+        "clearFilters": "清除筛选",
+        "today": "今天",
+        "yesterday": "昨天",
+        "row": "{{subject}}，{{time}}",
+        "unreadRow": "未读：{{subject}}，{{time}}",
+        "more": "查看更多（{{count}} 条）",
+        "position": "{{n}} / {{total}}",
+        "newer": "较新的消息",
+        "older": "较早的消息",
+        "delete": "删除消息",
+        "deleted": "已删除 {{count}} 条。",
+        "undo": "撤销",
+        "markedRead": "已将 {{count}} 条标为已读。",
+        "selected": "已选 {{count}} 条",
+        "selectAll": "全选",
+        "unselectAll": "取消全选",
+        "markSelectedRead": "将所选标为已读",
+        "deleteSelected": "删除所选",
+        "exitSelect": "退出选择",
+        "filterTitle": "筛选消息",
+        "reset": "重置",
+        "unreadOnly": "仅未读",
+        "kinds": "类型",
+        "showCount": "查看 {{count}} 条",
+        "selectMany": "多选",
+        "selectManySub": "批量标为已读或删除",
+        "readAll": "全部标为已读",
+        "readAllSub": "{{count}} 条未读",
+        "deleteRead": "删除已读消息",
+        "deleteReadSub": "{{count}} 条已读"
+      }
     },
     "coins": {
       "notOnServer": "此服务器尚未开放金币。",
@@ -6770,5 +7124,8 @@
     "anyRegion": "任意地区",
     "anyCountry": "任意国家",
     "clear": "清除筛选"
+  },
+  "mobile": {
+    "pressBackAgain": "再按一次返回键退出"
   }
 }

@@ -27,12 +27,12 @@ function Figure({
   note: ReactNode;
 }) {
   return (
-    <li className="flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-white px-5 py-4 dark:border-navy-600 dark:bg-navy-700">
+    <li className="flex flex-col gap-1.5 rounded-xl border border-gray-200 bg-white px-5 py-4 max-md:gap-1 max-md:px-3.5 max-md:py-3 dark:border-navy-600 dark:bg-navy-700">
       <span className={`flex items-center justify-between gap-2 ${LABEL}`}>
         {label}
         {badge}
       </span>
-      <span className="font-heading text-3xl font-bold leading-none tabular-nums text-gray-900 dark:text-white">
+      <span className="font-heading text-3xl font-bold leading-none tabular-nums text-gray-900 max-md:text-2xl dark:text-white">
         {value}
         {unit && <span className="text-xl text-gray-400 dark:text-gray-500">{unit}</span>}
       </span>
@@ -52,7 +52,7 @@ export default function AcademyFigures({ academy }: { academy: AcademyView }) {
   return (
     <ul
       aria-label={t("online.academy.figures.title")}
-      className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"
+      className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4 max-md:grid-cols-2 max-md:gap-3"
     >
       <Figure
         label={t("online.academy.figures.slots")}

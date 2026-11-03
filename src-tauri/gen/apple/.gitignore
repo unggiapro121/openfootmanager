@@ -1,0 +1,5 @@
+xcuserdata/
+build/
+Externals/
+# Copied from tauri.conf.json bundle.resources on every build (phase 5 M0).
+assets/

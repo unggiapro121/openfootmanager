@@ -29,12 +29,12 @@ export default function OverviewCard({
   return (
     <section
       aria-labelledby={titleId}
-      className={`flex min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-700 dark:shadow-md ${EDGE[edge]} ${className}`}
+      className={`flex min-w-0 flex-col overflow-hidden rounded-xl border max-md:flex-none border-gray-200 bg-white shadow-sm dark:border-navy-600 dark:bg-navy-700 dark:shadow-md ${EDGE[edge]} ${className}`}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-6 py-3.5 dark:border-navy-600">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-6 py-3.5 max-md:gap-2 max-md:px-4 max-md:py-3 dark:border-navy-600">
         <h2
           id={titleId}
-          className="font-heading text-lg font-bold uppercase tracking-wider text-gray-900 dark:text-gray-100"
+          className="font-heading text-lg font-bold uppercase tracking-wider text-gray-900 max-md:text-base dark:text-gray-100"
         >
           {title}
         </h2>

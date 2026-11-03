@@ -1,0 +1,252 @@
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PHONE_QUERY } from "../../../../hooks/usePhoneLayout";
+import type { OnlineRequest } from "../../../../services/onlineTransport";
+import { fakeRealtime } from "../../../../test-utils/onlineMatchKit";
+import {
+  type Answer,
+  fakeServer,
+  LEAGUE,
+  myClub,
+  ok,
+  renderOnline,
+  resetOnline,
+  SEASON,
+  squadPlayer,
+} from "../../../../test-utils/onlineTestKit";
+import type {
+  ExtraDayView,
+  ExtraSessionView,
+  MyClubView,
+  TrainingDayView,
+  TrainingPlan,
+} from "../../../api";
+
+vi.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty", init: () => {} },
+  useTranslation: () => ({
+    t: (key: string, options?: unknown) =>
+      options && typeof options === "object"
+        ? `${key}:${Object.values(options as Record<string, unknown>).join("|")}`
+        : key,
+    i18n: { language: "en" },
+  }),
+  Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
+}));
+
+vi.mock("../../../../utils/backendI18n", () => ({
+  resolveBackendError: (error: unknown) =>
+    `resolved:${error instanceof Error ? error.message : String(error)}`,
+}));
+
+const KEY = "online.training.phone";
+const HOUR = 60 * 60 * 1000;
+
+const SQUAD = [
+  squadPlayer({ id: "p1", matchName: "V. An", fullName: "Văn An", condition: 80 }),
+  squadPlayer({ id: "p2", matchName: "T. Bình", fullName: "Thanh Bình", condition: 35 }),
+];
+
+function extraDay(overrides: Partial<ExtraDayView> = {}): ExtraDayView {
+  return {
+    canPress: true,
+    today: 2,
+    floor: 40,
+    costs: { Low: 3, Medium: 6, High: 10 },
+    sitOut: [{ playerId: "p2", reason: "tired" }],
+    ...overrides,
+  };
+}
+
+function trainingDay(overrides: Partial<TrainingDayView> = {}): TrainingDayView {
+  return {
+    day: 3,
+    recent: [{ day: 2, kind: "auto" }],
+    canTrain: true,
+    sessionsLast7: 2,
+    sessionsCap: 6,
+    nextRecoveryAt: new Date(Date.now() + 2 * HOUR).toISOString(),
+    recovery: { perDay: 6, hours: 8 },
+    autoOff: false,
+    keeperDrill: false,
+    extra: extraDay(),
+    ...overrides,
+  };
+}
+
+const PLAN: TrainingPlan = {
+  focus: "Physical",
+  intensity: "Medium",
+  schedule: "Balanced",
+  groups: [{ id: "g1", name: "Defenders", focus: "Defending", player_ids: ["p2"] }],
+  auto: true,
+};
+
+function club(overrides: Partial<MyClubView> = {}): MyClubView {
+  return myClub({
+    players: SQUAD,
+    trainingDay: trainingDay(),
+    trainingPlan: PLAN,
+    trainingPlanIsOwn: true,
+    ...overrides,
+  });
+}
+
+function answer(): ExtraSessionView {
+  return {
+    day: 3,
+    intensity: "Low",
+    held: 1,
+    firstN: 1,
+    lastN: 1,
+    players: [{ playerId: "p1", conditionBefore: 80, conditionAfter: 77, gains: 1, sessions: 1 }],
+    trainingDay: trainingDay({ extra: extraDay({ today: 3 }) }),
+  };
+}
+
+let server: ReturnType<typeof fakeServer>;
+let realtime: ReturnType<typeof fakeRealtime>;
+
+function serve(
+  view: MyClubView,
+  more: Record<string, Answer | ((r: OnlineRequest) => Answer)> = {},
+) {
+  server = fakeServer({
+    "GET v1/season": ok({ ...SEASON, weekday: 0 }),
+    "GET v1/clubs/mine": ok(view),
+    "GET v1/leagues/mine": ok(LEAGUE),
+    "GET v1/friendlies/mine": ok({}),
+    "GET v1/clubs/mine/market": ok({ selling: [], holding: [], recent: [] }),
+    "PUT v1/clubs/mine/training": (request) => ok(request.body as TrainingPlan),
+    "PATCH v1/players/p1/training-focus": ok(view),
+    "POST v1/clubs/mine/training/extra": ok(answer()),
+    ...more,
+  });
+}
+
+const sent = (method: string, path: string) =>
+  server.requests.filter(
+    (request) => request.method === method && request.segments.join("/") === path,
+  );
+
+beforeEach(() => {
+  resetOnline();
+  window.localStorage.clear();
+  realtime = fakeRealtime();
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn((query: string) => ({
+      matches: query === PHONE_QUERY,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    })),
+  );
+});
+afterEach(() => {
+  server?.restore();
+  realtime.restore();
+  vi.unstubAllGlobals();
+});
+
+async function open(view: MyClubView = club()) {
+  serve(view);
+  renderOnline("/online/training");
+  await screen.findByRole("tab", { name: `${KEY}.tab.today` });
+}
+
+describe("the training page on a phone", () => {
+  // Given a club with today's sessions and its plan,
+  // when the training page opens on a phone,
+  // then today's tab says how many sessions of the cap were held, and the plan's tiles lead to
+  // the tab that changes them.
+  it("opens on today and leads to the plan's tabs", async () => {
+    await open();
+
+    expect(screen.getByRole("tab", { name: `${KEY}.tab.today` })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByText("2/6")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /training\.focuses\.Physical\.label/ }));
+    expect(screen.getByRole("tab", { name: `${KEY}.tab.focus` })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+  });
+
+  // Given the schedule tab,
+  // when the coach picks the light week and the high intensity,
+  // then each is saved with the plan.
+  it("changes the schedule and the intensity", async () => {
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.sched` }));
+
+    fireEvent.click(screen.getByRole("radio", { name: /training\.schedules\.Light\.label/ }));
+    await waitFor(() =>
+      expect(sent("PUT", "v1/clubs/mine/training")[0]?.body).toMatchObject({ schedule: "Light" }),
+    );
+    fireEvent.click(screen.getByRole("radio", { name: /training\.intensities\.High\.label/ }));
+    await waitFor(() =>
+      expect(sent("PUT", "v1/clubs/mine/training")[1]?.body).toMatchObject({ intensity: "High" }),
+    );
+  });
+
+  // Given the focus tab,
+  // when the coach picks the technical focus,
+  // then the plan is saved with it.
+  it("changes the team's focus", async () => {
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.focus` }));
+    fireEvent.click(screen.getByRole("radio", { name: /training\.focuses\.Technical\.label/ }));
+
+    await waitFor(() =>
+      expect(sent("PUT", "v1/clubs/mine/training")[0]?.body).toMatchObject({ focus: "Technical" }),
+    );
+  });
+
+  // Given a group of one,
+  // when the coach filters by it, then opens the other player and gives him his own focus,
+  // then the filter shows the group alone and the player's focus is saved.
+  it("filters by group and sets a player's own focus", async () => {
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: /online\.training\.phone\.tab\.groups/ }));
+
+    const list = screen.getByRole("list", { name: `${KEY}.players` });
+    expect(within(list).getAllByRole("button", { expanded: false })).toHaveLength(2);
+    fireEvent.click(screen.getByRole("button", { name: /^Defenders/ }));
+    expect(within(list).getAllByRole("button", { expanded: false })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: /^online\.training\.groups\.all/ }));
+
+    fireEvent.click(within(list).getByRole("button", { name: /V\. An/ }));
+    fireEvent.change(screen.getByLabelText(/online\.training\.groups\.focusOfPlayer:V\. An/), {
+      target: { value: "Attacking" },
+    });
+    await waitFor(() =>
+      expect(sent("PATCH", "v1/players/p1/training-focus")[0]?.body).toMatchObject({
+        focus: "Attacking",
+      }),
+    );
+  });
+
+  // Given extra sessions today, one player under the floor,
+  // when the coach opens extra training, looks at who sits out, and presses,
+  // then the tired player is listed with his reason, the press sends the other at low
+  // intensity, and the result rises.
+  it("holds extra sessions from their page", async () => {
+    await open();
+    fireEvent.click(screen.getByRole("button", { name: "online.training.extra.open" }));
+
+    const page = screen.getByRole("dialog", { name: "online.training.extra.title" });
+    fireEvent.click(within(page).getByRole("radio", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(within(page).getByText(/online\.training\.extra\.reason\.tired/)).toBeInTheDocument();
+    fireEvent.click(within(page).getByRole("radio", { name: new RegExp(`^${KEY}\\.listReady`) }));
+    fireEvent.click(within(page).getByRole("button", { name: "online.training.extra.pressShort" }));
+
+    await waitFor(() => expect(sent("POST", "v1/clubs/mine/training/extra")).toHaveLength(1));
+    const body = sent("POST", "v1/clubs/mine/training/extra")[0]?.body as { players: string[] };
+    expect(body).toMatchObject({ intensity: "Low" });
+    expect(body.players).toContain("p1");
+    expect(await screen.findByRole("dialog", { name: `${KEY}.resultTitle` })).toBeInTheDocument();
+  });
+});

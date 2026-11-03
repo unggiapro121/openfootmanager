@@ -33,34 +33,9 @@ const NOT_CONFIGURED: &str = "be.error.coach.serverNotConfigured";
 const TOKEN_EXPIRED: u16 = 4001;
 const ACCOUNT_REVOKED: u16 = 4003;
 
-/// Where the gateway is: `OFM_REALTIME_URL` when set (at run time, or when the app was built),
-/// otherwise the account server's host with `ws`/`wss` and `/v1/realtime`, as behind one proxy.
-pub const REALTIME_URL_ENV: &str = "OFM_REALTIME_URL";
-
-pub fn configured_realtime_url() -> Option<String> {
-    let explicit = std::env::var(REALTIME_URL_ENV)
-        .ok()
-        .or_else(|| option_env!("OFM_REALTIME_URL").map(str::to_string))
-        .map(|url| url.trim().to_string())
-        .filter(|url| !url.is_empty());
-    explicit.or_else(|| {
-        super::coach_server::configured_server_url().and_then(|base| realtime_url_of(&base))
-    })
-}
-
-/// The gateway's URL beside the API at `base`.
-pub fn realtime_url_of(base: &str) -> Option<String> {
-    let mut url = url::Url::parse(base).ok()?;
-    let scheme = match url.scheme() {
-        "http" => "ws",
-        "https" => "wss",
-        _ => return None,
-    };
-    url.set_scheme(scheme).ok()?;
-    url.set_path("/v1/realtime");
-    url.set_query(None);
-    Some(url.to_string())
-}
+/// Where the gateway is (run time, build time, a mobile build's config, or beside the API): see
+/// `application::endpoints`.
+pub use super::endpoints::configured_realtime_url;
 
 /// What a screen is told about the channel it follows.
 #[derive(Debug, Clone, PartialEq, Serialize)]

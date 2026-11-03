@@ -16,11 +16,12 @@ import {
   Select,
   SortHeader,
 } from "../../components/ui";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { condColor } from "../../lib/playerConditionDisplay";
 import type { SquadPlayerView } from "../api";
 import { useOnlineStore } from "../store/onlineStore";
 import PotentialStars from "./PotentialStars";
-import { avatarOf } from "./squad/playerLook";
+import { avatarOf, ovrTone } from "./squad/playerLook";
 import { fitRank, type PlayerFit, squadFits } from "./squad/squadFit";
 import {
   byLine,
@@ -34,6 +35,7 @@ import {
   sortedBy,
 } from "./squad/squadList";
 import ItemShortcuts from "./items/ItemShortcuts";
+import PhoneSquad from "./squad/PhoneSquad";
 
 /** The squad as the coach reads it: by line, then strongest first (C-2 §3.4). */
 export const sortSquad = byLine;
@@ -54,9 +56,17 @@ const TH =
 /**
  * The online squad, laid out as the offline one is (C-2 §3.4): a toolbar to search and to filter by
  * line and by status, with the count of each, then the table, each column sortable. A row opens the
- * player's own page.
+ * player's own page. On a phone, the phone's own list (PhoneSquad).
  */
 export default function OnlineSquad() {
+  const club = useOnlineStore((state) => state.club);
+  const phone = usePhoneLayout();
+  if (phone && club && club.players.length > 0) return <PhoneSquad club={club} />;
+  return <DesktopSquad />;
+}
+
+/** The squad at a desktop's width: the toolbar, then the table. */
+function DesktopSquad() {
   const { t } = useTranslation();
   const club = useOnlineStore((state) => state.club);
   const [filter, setFilter] = useState<SquadFilter>(NO_FILTER);
@@ -260,12 +270,6 @@ export default function OnlineSquad() {
   );
 }
 
-function ovrColour(ovr: number): string {
-  if (ovr >= 80) return "text-primary-500";
-  if (ovr >= 55) return "text-accent-600 dark:text-accent-400";
-  return "text-gray-500 dark:text-gray-400";
-}
-
 function SquadRow({
   player,
   starter,
@@ -396,7 +400,7 @@ function SquadRow({
         {player.morale}
       </td>
       <td className="px-4 py-2.5">
-        <span className={`font-heading text-sm font-bold ${ovrColour(player.ovr)}`}>
+        <span className={`font-heading text-sm font-bold ${ovrTone(player.ovr)}`}>
           {player.ovr}
         </span>
       </td>

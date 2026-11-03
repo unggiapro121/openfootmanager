@@ -49,7 +49,7 @@ export default function ClubCard({ club }: { club: MyClubView }) {
         </span>
       }
     >
-      <div className="flex flex-col gap-4 p-6">
+      <div className="flex flex-col gap-4 p-6 max-md:p-4">
         <div className="flex flex-wrap items-start gap-5">
           <span className="h-16 w-16 shrink-0">
             <ClubCrestMark profile={profile} />

@@ -57,7 +57,9 @@
       "events": "Události",
       "groupTeam": "Tým",
       "groupMatches": "Zápasy",
-      "groupClub": "Klub"
+      "groupClub": "Klub",
+      "groupMore": "Více",
+      "tabs": "Hlavní sekce"
     },
     "gate": {
       "clientOutdatedTitle": "Je potřeba aktualizace",
@@ -145,7 +147,51 @@
       "coach": "Trenér",
       "bot": "AI",
       "previousRound": "Předchozí kolo",
-      "nextRound": "Další kolo"
+      "nextRound": "Další kolo",
+      "phone": {
+        "summaryLine": "Klubů: {{clubs}} · kol: {{rounds}}",
+        "rank": "Pořadí",
+        "points": "Body",
+        "goalDiff": "Skóre {{gd}}",
+        "nextMatch": "Další zápas",
+        "roundOf": "Kolo {{round}}/{{total}}",
+        "tabs": "Části ligy",
+        "tabTable": "Tabulka",
+        "tabRounds": "Kola",
+        "tabStats": "Statistiky",
+        "promotionZone": "Místa 1–{{to}} · postup",
+        "tableMode": "Zobrazení tabulky",
+        "compact": "Stručně",
+        "full": "Celá",
+        "form": "Forma",
+        "formTitle": "Poslední dva výsledky",
+        "coachLine": "Trenér: {{coach}}",
+        "legendCompact": "Z: zápasy · Skóre: rozdíl skóre · B: body. Zvolte Celá pro výhry, remízy, prohry, vstřelené a obdržené góly.",
+        "legendFull": "Z zápasy · V výhry · R remízy · P prohry · VG vstřelené · OG obdržené · Skóre rozdíl · B body. Posuňte do strany pro vše.",
+        "pickRound": "Vyberte kolo",
+        "roundDone": "Skončilo",
+        "roundLive": "Hraje se",
+        "roundUpcoming": "Na programu · {{when}}",
+        "roundUnplanned": "Zatím bez termínu",
+        "yourMatch": "Váš zápas",
+        "fullTime": "Konec zápasu",
+        "void": "Anulováno",
+        "live": "Živě",
+        "statsCategories": "Kategorie",
+        "catGoals": "Góly",
+        "catAssists": "Asistence",
+        "catCleanSheets": "Čistá konta",
+        "catYellow": "Žluté karty",
+        "catRed": "Červené karty",
+        "unitGoals": "gólů",
+        "unitAssists": "asistencí",
+        "unitMatches": "zápasů",
+        "unitCards": "karet",
+        "leader": "Vede",
+        "tiedWith": "společně s dalšími: {{count}}",
+        "noData": "Pro tuto kategorii zatím nejsou data.",
+        "mineOnly": "Jen hráči klubu {{club}}"
+      }
     },
     "takeover": {
       "title": "Převzít klub",
@@ -227,6 +273,57 @@
         "squadLine": "Asistent vybírá vaši jedenáctku.",
         "squadLink": "Přejít na taktiku",
         "itemNote": "Balíček zregeneruje vaši základní jedenáctku. Asistent může unavené šetřit, proto se může lišit od předpokládané sestavy."
+      },
+      "phone": {
+        "tabs": "Části taktiky",
+        "tab": {
+          "lineup": "Sestava",
+          "style": "Styl",
+          "roles": "Role",
+          "phase": "Fáze"
+        },
+        "tagMine": "Moje",
+        "saveBody": "Upravili jste {{name}}. Uložte ji jako vlastní taktiku, ať ji můžete použít znovu.",
+        "discard": "Zahodit změny",
+        "pitch": "Základní sestava, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, kondice {{condition}}",
+        "fit": {
+          "exact": "Přirozený post",
+          "adapted": "Přizpůsobený",
+          "out": "Mimo post"
+        },
+        "wrong": "Mimo post: {{count}}",
+        "hintIdle": "Klepněte na hráče na hřišti, pak na dalšího pro výměnu, nebo na náhradníka, aby nastoupil.",
+        "hintPicked": "Vybrán {{name}} ({{slot}}): klepněte na dalšího hráče na hřišti nebo na náhradníka níže.",
+        "hintAssistant": "Sestavu vybírá asistent. Vypněte ho, chcete-li vybírat sami.",
+        "hintLocked": "Sestava je zamčená: jen náhled.",
+        "hintPickFirst": "Nejprve klepněte na hráče na hřišti, pak na náhradníka.",
+        "benchFor": "Na post {{slot}}",
+        "benchTitle": "Lavička · {{count}}",
+        "fitFirst": "Nejvhodnější první",
+        "benchSub": "Kondice · OVR",
+        "all": "Vše",
+        "bench": "Lavička",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Zraněný",
+        "level": "Úroveň {{level}}",
+        "masteryNote": "· číslo je vaše zvládnutí",
+        "noneChosen": "Nevybráno",
+        "score": {
+          "captain": "Vůdcovství {{value}}",
+          "vicecaptain": "Vůdcovství {{value}}",
+          "penalty": "Penalty {{value}}",
+          "freekick": "Přímé kopy {{value}}",
+          "corner": "Centry {{value}}"
+        },
+        "rolesNote": "Roli může mít jen hráč základní sestavy.",
+        "rankedBy": {
+          "captain": "Podle vůdcovství",
+          "vicecaptain": "Podle vůdcovství",
+          "penalty": "Podle penalt",
+          "freekick": "Podle přímých kopů",
+          "corner": "Podle centrů"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "Tento hráč není ve vašem kádru.",
       "state": "Kondice",
       "suspended": "Vyloučen: {{count}} zápas(y)",
-      "potentialStarsRange": "Potenciál {{low}} až {{high}} hvězd"
+      "potentialStarsRange": "Potenciál {{low}} až {{high}} hvězd",
+      "phone": {
+        "searchToggle": "Hledat hráče",
+        "searchLabel": "Hledat podle jména",
+        "searchPlaceholder": "Hledat podle jména hráče",
+        "assistant": "Sestavu vybírá asistent",
+        "sort": "Řadit",
+        "rotateHint": "Otočte telefon a uvidíte celou tabulku",
+        "hideRotate": "Skrýt tip",
+        "lens": "Co ukazují sloupce",
+        "lensForm": "Kondice",
+        "lensFit": "Vhodnost",
+        "lensGrowth": "Vývoj",
+        "lensStats": "Statistiky",
+        "list": "Hráči",
+        "sectionXi": "Základ · {{count}}",
+        "sectionBench": "Lavička · {{count}}",
+        "rowStarter": "{{name}}, {{position}}, OVR {{ovr}}, v základu",
+        "rowBench": "{{name}}, {{position}}, OVR {{ovr}}, na lavičce",
+        "sheetLine": "Č. {{number}} · {{age}} let",
+        "playsIn": "Hraje {{slot}} v rozestavení {{formation}}",
+        "bestIn": "Nejlépe na {{slot}} v rozestavení {{formation}}",
+        "season": "Tato sezóna",
+        "seasonLine": "Zápasy: {{apps}} · góly: {{goals}}",
+        "traitsTitle": "Vlastnosti ({{count}})",
+        "noTraits": "Zatím bez vlastností.",
+        "fullProfile": "Celý profil",
+        "toTactics": "Zařadit v taktice",
+        "actions": "Akce",
+        "actionsTitle": "Akce · {{name}}",
+        "groupTransfer": "Přestup",
+        "groupCustomise": "Úpravy",
+        "listSub": "Dát ho do aukce",
+        "releaseSub": "Nechat ho hned odejít",
+        "shirtSub": "Nosí číslo {{number}}"
+      }
     },
     "training": {
       "noPlan": "Zatím jste nenastavili tréninkový plán: klub trénuje podle plánu, který drží AI a který vidíte zde. Vaše první volba uloží vlastní plán.",
@@ -294,8 +426,8 @@
           "resting": "Zaměření na regeneraci: vynechá",
           "peaked": "Na svém potenciálu: vynechá",
           "keepAbove": "Zastaven kvůli udržení kondice",
-          "focusMaxed": "Jejich zaměření už nemá nic, co by zvedalo OVR na této pozici",
-          "other": "Vynechá"
+          "other": "Vynechá",
+          "focusMaxed": "Jejich zaměření už nemá nic, co by zvedalo OVR na této pozici"
         },
         "intensity": "Intenzita",
         "intensityCost": "{{intensity}} (−{{cost}} kondice)",
@@ -358,6 +490,28 @@
         "inheritedTag": "zděděno",
         "empty": "V této skupině zatím nejsou hráči."
       },
+      "phone": {
+        "tab": {
+          "today": "Dnes",
+          "sched": "Rozvrh",
+          "focus": "Zaměření",
+          "groups": "Skupiny ({{count}})"
+        },
+        "sessionsIn7": "tréninků za 7 dní",
+        "planInUse": "Používané tréninkové dny",
+        "howItWorks": "Jak to funguje",
+        "lastResult": "Minule: {{held}} tréninků",
+        "listReady": "Mohou trénovat ({{count}})",
+        "listRest": "Tentokrát odpočívají ({{count}})",
+        "noneReady": "Teď nemůže trénovat nikdo. Nechte kádr odpočinout.",
+        "noneResting": "Tentokrát může trénovat celý kádr.",
+        "resultTitle": "Výsledek tréninku navíc",
+        "groupOf": "Skupina {{name}}",
+        "groupFocus": "Zaměření skupiny",
+        "players": "Hráči",
+        "mainAuto": "Tým trénuje podle rozvrhu při změně dne ({{time}}). Klepnutím na dlaždici ji změníte.",
+        "mainAutoNoTime": "Tým trénuje podle rozvrhu při změně dne. Klepnutím na dlaždici ji změníte."
+      },
       "focusHint": {
         "best": "Nejlepší zaměření",
         "fair": "Nejlepší: {{best}}",
@@ -376,7 +530,9 @@
         "W": "V",
         "D": "R",
         "L": "P"
-      }
+      },
+      "filterLabel": "Zobrazit zápasy",
+      "dayCount": "Zápasů: {{count}}"
     },
     "publicClub": {
       "formation": "Rozestavení: {{formation}}",
@@ -424,7 +580,8 @@
       "licenceNext": "Otevře se na úrovni trenéra {{level}}",
       "boosterHeld": "{{item}} ×{{count}} v inventáři",
       "boosterHint": "V dalších online zápasech postupujte rychleji",
-      "activate": "Aktivovat"
+      "activate": "Aktivovat",
+      "shortcuts": "Zkratky"
     },
     "match": {
       "byCoach": "{{team}}: řídí trenér",
@@ -475,7 +632,71 @@
       "rolePlayer": "Hráč",
       "roleChoice": "Herní role",
       "changeRole": "Změnit roli",
-      "orderRefused": "Zápas tento pokyn nepřijal: {{reason}}"
+      "orderRefused": "Zápas tento pokyn nepřijal: {{reason}}",
+      "phoneSubs": {
+        "usedAria": "Využito {{used}} z {{max}} střídání, {{queued}} čeká",
+        "queuedShort": "čeká {{count}}",
+        "hintIdle": "Klepněte na hráče na hřišti, aby šel ven, nebo nejdřív na náhradníka. Přetáhněte hráče na jiného a prohodí si posty.",
+        "hintSwap": "Klepněte na jiného hráče na hřišti a prohoďte ho s hráčem {{name}}.",
+        "hintQueued": "Za hráče {{name}} už je střídání vybrané. Odeberte ho v Ke schválení, chcete-li ho změnit.",
+        "hintPickBench": "Vyberte náhradníka za hráče {{name}}.",
+        "hintPickField": "Klepněte na hráče na hřišti, za kterého půjde {{name}}.",
+        "cancelSwap": "Zrušit prohození",
+        "pitch": "Sestava na hřišti",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, kondice {{condition}}",
+        "tokenReplaced": "{{name}}, {{slot}}, OVR {{ovr}}, kondice {{condition}}, vystřídá ho {{on}}",
+        "tokenSentOff": "{{name}}, {{slot}}, vyloučen",
+        "planTitle": "Návrh: {{scenario}}",
+        "planSub": "Plán {{style}} · změn: {{count}}",
+        "planAdd": "Přidat: {{off}} ven, {{on}} dovnitř",
+        "planAdded": "Přidáno: {{off}} ven, {{on}} dovnitř",
+        "planApply": "Použít všechny změny ({{count}})",
+        "planAllAdded": "Celý plán přidán",
+        "queuedTitle": "Ke schválení ({{count}})",
+        "queuedRemove": "Zrušit střídání {{off}} za {{on}}",
+        "bench": "Lavička ({{count}})",
+        "benchSub": "OVR · Kondice",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}}, kondice {{condition}}",
+        "comesOnFor": "Jde za hráče {{name}}",
+        "fitNatural": "Přirozený post",
+        "fitAdapted": "Zvládne tam hrát",
+        "fitUnfamiliar": "Mimo svůj post",
+        "sheetCondition": "Kondice {{condition}}",
+        "sheetBooked": "napomínán",
+        "swap": "Prohodit posty",
+        "sheetQueued": "Střídání už je vybrané. Odeberte ho v Ke schválení a vyberte znovu.",
+        "sheetBenchSub": "Nejvhodnější první",
+        "confirm": "Potvrdit střídání ({{count}})",
+        "swapped": "Prohozeno: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Prohození odesláno, čeká, až ho zápas provede.",
+        "roleSet": "{{name}} hraje roli {{role}}.",
+        "sent": "Odesláno střídání: {{count}}. Zbývá: {{left}}."
+      },
+      "phone": {
+        "title": "Zápas živě",
+        "leave": "Opustit zápas",
+        "youCoach": "Řídíte tým",
+        "aiCoaches": "Tým řídí AI",
+        "ordersFrom": "Pokyny platí od {{minute}}. minuty (skutečného zápasu)",
+        "dock": "Ovládání týmu",
+        "subs": "Střídání",
+        "formation": "Rozestavení",
+        "style": "Styl",
+        "roles": "Role",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Standardky",
+        "rolesTitle": "Role a standardky",
+        "inUse": "Používá se: {{formation}}",
+        "effectiveFrom": "Pokyn platí od {{minute}}. minuty skutečného zápasu.",
+        "pickOther": "Vyberte jiné rozestavení",
+        "sendFormation": "Odeslat: {{formation}}",
+        "tapToSend": "Klepnutím pokyn hned odešlete. Platí od {{minute}}. minuty.",
+        "nobody": "— Zatím nikdo",
+        "takerSends": "Změna exekutora pokyn hned odešle.",
+        "ordersTitle": "Odeslané pokyny ({{count}})",
+        "noOrders": "Zatím žádný pokyn",
+        "sentToast": "Pokyn odeslán: {{order}}"
+      }
     },
     "replay": {
       "title": "Záznam",
@@ -671,7 +892,35 @@
         "academy": "Akademie",
         "academyEffect": "Každá úroveň přidá místa pro mladíky."
       },
-      "academyWages": "Platy akademie: {{amount}} týdně"
+      "academyWages": "Platy akademie: {{amount}} týdně",
+      "phone": {
+        "balance": "Zůstatek klubu",
+        "heldLine": "Blokováno pro nabídky: {{amount}}",
+        "seasonNet": "Bilance sezóny",
+        "tab": {
+          "over": "Přehled",
+          "fac": "Zázemí",
+          "led": "Pohyby"
+        },
+        "wageWarning": "Platy jsou {{times}}× vyšší než vstupné. Zvažte uvolnění drahých náhradníků nebo vylepšení pro vyšší příjmy.",
+        "perWeek": "Za týden",
+        "perDay": "Za sezónní den",
+        "weekly": "{{amount}}/týden",
+        "level": "Úroveň",
+        "levelOf": "Úroveň {{level}} z {{max}}",
+        "short": "Další úroveň {{cost}} · nedostatek peněz",
+        "upTitle": "Vylepšit {{facility}} na úroveň {{level}}?",
+        "cost": "Cena",
+        "cashAfter": "Hotovost po vylepšení",
+        "later": "Později",
+        "upConfirm": "Vylepšit",
+        "flow": "Druh pohybu",
+        "filter": {
+          "all": "Vše",
+          "in": "Příjmy",
+          "out": "Výdaje"
+        }
+      }
     },
     "market": {
       "title": "Přestupový trh",
@@ -800,6 +1049,49 @@
         "badge": "Úroveň {{level}}",
         "explain": "Na každé úrovni omezují nákupy dva stropy: hodnocení jednoho hráče a nákupní síla kádru. Koupit hráče, který se nedostane do vaší top 18, lze vždy.",
         "roadmap": "Zobrazit cestu úrovní"
+      },
+      "phone": {
+        "list": "Aukce",
+        "ended": "Skončila",
+        "outbid": "Přehozen",
+        "age": "{{age}} let",
+        "startPrice": "Vyvolávací cena",
+        "currentPrice": "Aktuální cena",
+        "bidCount": "Nabídky: {{count}}",
+        "all": "Vše",
+        "reset": "Obnovit",
+        "upTo": "≤ {{price}}",
+        "sortBy": "Řadit podle",
+        "sort": {
+          "end": "Brzy končí",
+          "low": "Nejnižší cena",
+          "ovr": "Nejvyšší OVR",
+          "pot": "Potenciál"
+        },
+        "apply": "Použít",
+        "budget": "Rozpočet",
+        "allPositions": "Vše",
+        "count": "Hráči: {{count}} · {{sort}}",
+        "urgent": "méně než 2 min",
+        "detailTabs": "Podrobnosti aukce",
+        "tabAuction": "Aukce",
+        "tabStats": "Atributy",
+        "someoneBid": "Má nabídky",
+        "range": "Cena {{price}}, mezi vyvolávací {{start}} a stropem {{cap}}; odhad {{value}}",
+        "start": "Vyvolání {{price}}",
+        "valuation": "Odhad {{price}}",
+        "cap": "Strop {{price}}",
+        "step": "Příhoz",
+        "bidBar": "Přihodit",
+        "nextWhileLeading": "Vedete · další nabídka",
+        "leastBid": "Nejnižší nabídka teď",
+        "locked": "Zamčeno",
+        "raise": "Zvýšit nabídku",
+        "bidTitle": "Nabídka · {{name}}",
+        "stepDown": "O krok níž",
+        "stepUp": "O krok výš",
+        "afterWin": "Rozpočet po výhře",
+        "place": "Nabídnout {{amount}}"
       }
     },
     "rename": {
@@ -845,7 +1137,30 @@
       "releaseSeverance": "Odstupné",
       "releaseCash": "Pokladna klubu",
       "releaseSquad": "Zbývající hráči (minimum {{min}})",
-      "releaseConfirm": "Rozvázat smlouvu s hráčem"
+      "releaseConfirm": "Rozvázat smlouvu s hráčem",
+      "phone": {
+        "manage": "Správa hráče",
+        "shirt": "Číslo dresu {{number}}",
+        "age": "{{age}} let",
+        "tabs": "Informace o hráči",
+        "tab": {
+          "stats": "Atributy",
+          "traits": "Vlastnosti",
+          "season": "Sezóna"
+        },
+        "tapGroups": "Klepnutím skupinu otevřete nebo zavřete",
+        "view": "Zobrazení",
+        "apps": "Zápasy",
+        "avgRating": "Prům. hodnocení",
+        "goals": "Góly",
+        "assists": "Asistence",
+        "full": "Kondice je plná",
+        "boost": "Obnovit kondici · {{count}} předmětů",
+        "boostTitle": "Obnovit kondici",
+        "now": "Teď {{value}} %",
+        "held": "Máte {{count}}",
+        "shop": "Koupit další v obchodě ›"
+      }
     },
     "inbox": {
       "sender": "Kancelář klubu",
@@ -1013,7 +1328,46 @@
       },
       "viewNewAuction": "Zobrazit novou aukci",
       "viewCaps": "Zobrazit stropy úrovně",
-      "reasonLine": "Důvod: {{reason}}"
+      "reasonLine": "Důvod: {{reason}}",
+      "phone": {
+        "list": "Zprávy",
+        "counts": "Nepřečteno: {{unread}} · celkem: {{total}}",
+        "actions": "Akce schránky",
+        "filters": "Filtry",
+        "quickFilters": "Rychlé filtry",
+        "unreadChip": "Nepřečtené",
+        "activeCount": "Zobrazeno: {{count}}",
+        "clearFilters": "Zrušit filtry",
+        "today": "Dnes",
+        "yesterday": "Včera",
+        "row": "{{subject}}, {{time}}",
+        "unreadRow": "Nepřečteno: {{subject}}, {{time}}",
+        "more": "Zobrazit další ({{count}})",
+        "position": "{{n}} / {{total}}",
+        "newer": "Novější zpráva",
+        "older": "Starší zpráva",
+        "delete": "Smazat zprávu",
+        "deleted": "Smazáno zpráv: {{count}}.",
+        "undo": "Zpět",
+        "markedRead": "Označeno jako přečtené: {{count}}.",
+        "selected": "Vybráno: {{count}}",
+        "selectAll": "Vybrat vše",
+        "unselectAll": "Zrušit výběr",
+        "markSelectedRead": "Označit vybrané jako přečtené",
+        "deleteSelected": "Smazat vybrané",
+        "exitSelect": "Ukončit výběr",
+        "filterTitle": "Filtrovat zprávy",
+        "reset": "Obnovit",
+        "unreadOnly": "Jen nepřečtené",
+        "kinds": "Druhy",
+        "showCount": "Zobrazit zprávy: {{count}}",
+        "selectMany": "Vybrat více",
+        "selectManySub": "Označit jako přečtené nebo smazat více najednou",
+        "readAll": "Označit vše jako přečtené",
+        "readAllSub": "Nepřečteno: {{count}}",
+        "deleteRead": "Smazat přečtené",
+        "deleteReadSub": "Přečteno: {{count}}"
+      }
     },
     "coins": {
       "notOnServer": "Mince na tomto serveru zatím nejsou k dispozici.",
@@ -6770,5 +7124,8 @@
     "anyRegion": "Jakýkoli region",
     "anyCountry": "Jakákoli země",
     "clear": "Zrušit filtry"
+  },
+  "mobile": {
+    "pressBackAgain": "Pro ukončení stiskněte znovu Zpět"
   }
 }
