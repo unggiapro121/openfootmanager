@@ -34,7 +34,8 @@
     "online.inventory.styleXp",
     "online.inbox.phone.row",
     "online.inbox.phone.position",
-    "online.market.phone.upTo"
+    "online.market.phone.upTo",
+    "online.tactics.phone.benchRow"
   ],
   "de": [
     "online.coins.toShop",

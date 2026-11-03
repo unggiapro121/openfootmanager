@@ -13,6 +13,8 @@ import LicenceNotice from "./LicenceNotice";
 import StyleEffectChips from "./StyleEffectChips";
 import XiAssistantCard from "./XiAssistantCard";
 import { useOnlineResource } from "../useOnlineResource";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
+import PhoneTactics from "./tactics/PhoneTactics";
 import {
   KNOWN_SETUP_ISSUES,
   type SetupOutcome,
@@ -44,6 +46,7 @@ export default function OnlineTactics() {
 
 function TacticsScreen({ club }: { club: MyClubView }) {
   const { t, i18n } = useTranslation();
+  const phone = usePhoneLayout();
   const now = useOnlineNow();
   // The licence table is read once a visit: it changes only with the season (S-9).
   const { resource } = useOnlineResource(() => online.licences.table(), []);
@@ -72,6 +75,19 @@ function TacticsScreen({ club }: { club: MyClubView }) {
   const kickoffAt =
     outcome.kind === "locked" ? (outcome.kickoffAt ?? known.kickoffAt) : known.kickoffAt;
 
+  if (phone) {
+    return (
+      <PhoneTactics
+        club={club}
+        source={source}
+        notice={<OutcomeNotice outcome={outcome} club={club} />}
+        mastery={styles}
+        setAssistant={setAssistant}
+        locked={locked}
+        kickoffAt={kickoffAt}
+      />
+    );
+  }
   return (
     <div className="space-y-4">
       {locked && (

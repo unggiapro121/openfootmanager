@@ -273,6 +273,57 @@
         "squadLine": "El asistente está eligiendo tu once.",
         "squadLink": "Ver Tácticas",
         "itemNote": "El paquete recupera a tu once titular. El asistente puede dar descanso a los cansados, así que puede diferir del once previsto."
+      },
+      "phone": {
+        "tabs": "Secciones de táctica",
+        "tab": {
+          "lineup": "Alineación",
+          "style": "Estilo",
+          "roles": "Funciones",
+          "phase": "Fases"
+        },
+        "tagMine": "Mías",
+        "saveBody": "Has cambiado {{name}}. Guárdala como táctica propia para volver a usarla.",
+        "discard": "Descartar cambios",
+        "pitch": "Once inicial, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, condición {{condition}}",
+        "fit": {
+          "exact": "Su puesto",
+          "adapted": "Adaptado",
+          "out": "Fuera de posición"
+        },
+        "wrong": "{{count}} fuera de posición",
+        "hintIdle": "Toca un jugador en el campo y luego otro para intercambiarlos, o un suplente para meterlo.",
+        "hintPicked": "{{name}} ({{slot}}) elegido: toca otro jugador del campo o un suplente abajo.",
+        "hintAssistant": "El asistente elige el once. Apágalo para elegir el tuyo.",
+        "hintLocked": "La alineación está bloqueada: solo lectura.",
+        "hintPickFirst": "Toca primero un jugador del campo y luego un suplente.",
+        "benchFor": "Al puesto de {{slot}}",
+        "benchTitle": "Suplentes · {{count}}",
+        "fitFirst": "Mejor encaje primero",
+        "benchSub": "Condición · OVR",
+        "all": "Todos",
+        "bench": "Suplentes",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Lesionado",
+        "level": "Nivel {{level}}",
+        "masteryNote": "· el número es tu dominio",
+        "noneChosen": "Sin elegir",
+        "score": {
+          "captain": "Liderazgo {{value}}",
+          "vicecaptain": "Liderazgo {{value}}",
+          "penalty": "Penaltis {{value}}",
+          "freekick": "Faltas {{value}}",
+          "corner": "Centros {{value}}"
+        },
+        "rolesNote": "Solo los titulares pueden tener una función.",
+        "rankedBy": {
+          "captain": "Por liderazgo",
+          "vicecaptain": "Por liderazgo",
+          "penalty": "Por penaltis",
+          "freekick": "Por faltas",
+          "corner": "Por centros"
+        }
       }
     },
     "squad": {

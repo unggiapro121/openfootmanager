@@ -273,6 +273,57 @@
         "squadLine": "O assistente está escolhendo sua escalação.",
         "squadLink": "Ver Táticas",
         "itemNote": "O pacote recupera sua escalação titular. O assistente pode poupar os cansados, então ela pode ser diferente da escalação prevista."
+      },
+      "phone": {
+        "tabs": "Seções da tática",
+        "tab": {
+          "lineup": "Escalação",
+          "style": "Estilo",
+          "roles": "Funções",
+          "phase": "Fases"
+        },
+        "tagMine": "Minhas",
+        "saveBody": "Você alterou {{name}}. Salve como uma tática sua para usar de novo.",
+        "discard": "Descartar mudanças",
+        "pitch": "Time titular, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, condição {{condition}}",
+        "fit": {
+          "exact": "Posição natural",
+          "adapted": "Adaptado",
+          "out": "Fora de posição"
+        },
+        "wrong": "{{count}} fora de posição",
+        "hintIdle": "Toque em um jogador no campo e depois em outro para trocá-los, ou em um reserva para colocá-lo.",
+        "hintPicked": "{{name}} ({{slot}}) escolhido: toque em outro jogador do campo ou em um reserva abaixo.",
+        "hintAssistant": "O assistente escolhe o time. Desligue-o para escolher o seu.",
+        "hintLocked": "A escalação está travada: só visualização.",
+        "hintPickFirst": "Toque primeiro em um jogador do campo e depois em um reserva.",
+        "benchFor": "Para a posição de {{slot}}",
+        "benchTitle": "Reservas · {{count}}",
+        "fitFirst": "Melhor encaixe primeiro",
+        "benchSub": "Condição · OVR",
+        "all": "Todos",
+        "bench": "Reservas",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Lesionado",
+        "level": "Nível {{level}}",
+        "masteryNote": "· o número é o seu domínio",
+        "noneChosen": "Não escolhido",
+        "score": {
+          "captain": "Liderança {{value}}",
+          "vicecaptain": "Liderança {{value}}",
+          "penalty": "Pênaltis {{value}}",
+          "freekick": "Faltas {{value}}",
+          "corner": "Cruzamentos {{value}}"
+        },
+        "rolesNote": "Só titulares podem ter uma função.",
+        "rankedBy": {
+          "captain": "Por liderança",
+          "vicecaptain": "Por liderança",
+          "penalty": "Por pênaltis",
+          "freekick": "Por faltas",
+          "corner": "Por cruzamentos"
+        }
       }
     },
     "squad": {

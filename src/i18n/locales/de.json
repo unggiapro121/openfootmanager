@@ -273,6 +273,57 @@
         "squadLine": "Der Assistent wählt deine Elf.",
         "squadLink": "Zur Taktik",
         "itemNote": "Das Paket erholt deine Stammelf. Der Assistent kann müde Spieler schonen, daher kann sie von der voraussichtlichen Elf abweichen."
+      },
+      "phone": {
+        "tabs": "Taktikbereiche",
+        "tab": {
+          "lineup": "Aufstellung",
+          "style": "Spielstil",
+          "roles": "Rollen",
+          "phase": "Phasen"
+        },
+        "tagMine": "Eigene",
+        "saveBody": "Du hast {{name}} geändert. Speichere sie als eigene Taktik, um sie wieder zu nutzen.",
+        "discard": "Änderungen verwerfen",
+        "pitch": "Startelf, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, Kondition {{condition}}",
+        "fit": {
+          "exact": "Stammposition",
+          "adapted": "Angepasst",
+          "out": "Falsche Position"
+        },
+        "wrong": "{{count}} auf falscher Position",
+        "hintIdle": "Tippe einen Spieler auf dem Feld an, dann einen anderen zum Tauschen, oder einen Ersatzspieler zum Einwechseln.",
+        "hintPicked": "{{name}} ({{slot}}) gewählt: tippe einen anderen Spieler auf dem Feld oder einen Ersatzspieler unten an.",
+        "hintAssistant": "Der Assistent wählt die Elf. Schalte ihn aus, um selbst zu wählen.",
+        "hintLocked": "Die Aufstellung ist gesperrt: nur Ansicht.",
+        "hintPickFirst": "Tippe zuerst einen Spieler auf dem Feld an, dann einen Ersatzspieler.",
+        "benchFor": "Auf die Position {{slot}}",
+        "benchTitle": "Ersatzbank · {{count}}",
+        "fitFirst": "Beste Passung zuerst",
+        "benchSub": "Kondition · OVR",
+        "all": "Alle",
+        "bench": "Ersatzbank",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Verletzt",
+        "level": "Stufe {{level}}",
+        "masteryNote": "· die Zahl ist deine Meisterschaft",
+        "noneChosen": "Nicht gewählt",
+        "score": {
+          "captain": "Führung {{value}}",
+          "vicecaptain": "Führung {{value}}",
+          "penalty": "Elfmeter {{value}}",
+          "freekick": "Freistöße {{value}}",
+          "corner": "Flanken {{value}}"
+        },
+        "rolesNote": "Nur Startspieler können eine Rolle übernehmen.",
+        "rankedBy": {
+          "captain": "Nach Führung",
+          "vicecaptain": "Nach Führung",
+          "penalty": "Nach Elfmetern",
+          "freekick": "Nach Freistößen",
+          "corner": "Nach Flanken"
+        }
       }
     },
     "squad": {

@@ -273,6 +273,57 @@
         "squadLine": "助手正在为你挑选首发。",
         "squadLink": "前往战术",
         "itemNote": "道具恢复的是你的主力首发。助手可能让疲劳球员休息，所以可能与预计首发不同。"
+      },
+      "phone": {
+        "tabs": "战术分区",
+        "tab": {
+          "lineup": "阵容",
+          "style": "风格",
+          "roles": "职责",
+          "phase": "阶段"
+        },
+        "tagMine": "我的",
+        "saveBody": "你修改了 {{name}}。保存为自己的战术以便再次使用。",
+        "discard": "放弃修改",
+        "pitch": "首发阵容，{{formation}}",
+        "token": "{{name}}，{{slot}}，OVR {{ovr}}，{{fit}}，体能 {{condition}}",
+        "fit": {
+          "exact": "本职位置",
+          "adapted": "可适应",
+          "out": "位置不符"
+        },
+        "wrong": "{{count}} 人位置不符",
+        "hintIdle": "点选场上一名球员，再点另一名交换位置，或点替补让他上场。",
+        "hintPicked": "已选 {{name}}（{{slot}}）：点场上另一名球员或下方替补。",
+        "hintAssistant": "助理正在挑选首发。关闭助理即可自己排。",
+        "hintLocked": "阵容已锁定：仅可查看。",
+        "hintPickFirst": "请先点选场上球员，再点替补。",
+        "benchFor": "换上 {{slot}} 位置",
+        "benchTitle": "替补 · {{count}}",
+        "fitFirst": "适配优先",
+        "benchSub": "体能 · OVR",
+        "all": "全部",
+        "bench": "替补",
+        "benchRow": "{{name}}，{{position}}，OVR {{ovr}} {{fit}}",
+        "injured": "受伤",
+        "level": "等级 {{level}}",
+        "masteryNote": "· 数字为熟练度",
+        "noneChosen": "未选择",
+        "score": {
+          "captain": "领导力 {{value}}",
+          "vicecaptain": "领导力 {{value}}",
+          "penalty": "点球 {{value}}",
+          "freekick": "任意球 {{value}}",
+          "corner": "传中 {{value}}"
+        },
+        "rolesNote": "只能选择首发球员。",
+        "rankedBy": {
+          "captain": "按领导力",
+          "vicecaptain": "按领导力",
+          "penalty": "按点球",
+          "freekick": "按任意球",
+          "corner": "按传中"
+        }
       }
     },
     "squad": {

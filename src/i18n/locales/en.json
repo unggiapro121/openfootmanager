@@ -273,6 +273,57 @@
         "squadLine": "The assistant is picking your eleven.",
         "squadLink": "See Tactics",
         "itemNote": "The pack restores your first-choice eleven. The assistant may rest tired players, so it can differ from the expected eleven."
+      },
+      "phone": {
+        "tabs": "Tactics sections",
+        "tab": {
+          "lineup": "Line-up",
+          "style": "Style",
+          "roles": "Roles",
+          "phase": "Phases"
+        },
+        "tagMine": "Mine",
+        "saveBody": "You changed {{name}}. Save it as a tactic of your own to use it again.",
+        "discard": "Drop changes",
+        "pitch": "Starting eleven, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, condition {{condition}}",
+        "fit": {
+          "exact": "Natural",
+          "adapted": "Adapted",
+          "out": "Out of position"
+        },
+        "wrong": "{{count}} out of position",
+        "hintIdle": "Tap a player on the pitch, then another to swap them, or a bench player to bring him in.",
+        "hintPicked": "{{name}} ({{slot}}) picked: tap another player on the pitch or a bench player below.",
+        "hintAssistant": "The assistant picks the eleven. Turn it off to pick your own.",
+        "hintLocked": "The line-up is locked: view only.",
+        "hintPickFirst": "Tap a player on the pitch first, then a bench player.",
+        "benchFor": "Into the {{slot}} place",
+        "benchTitle": "Bench · {{count}}",
+        "fitFirst": "Best fit first",
+        "benchSub": "Condition · OVR",
+        "all": "All",
+        "bench": "Bench",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Injured",
+        "level": "Level {{level}}",
+        "masteryNote": "· the number is your mastery",
+        "noneChosen": "Not chosen",
+        "score": {
+          "captain": "Leadership {{value}}",
+          "vicecaptain": "Leadership {{value}}",
+          "penalty": "Penalties {{value}}",
+          "freekick": "Free kicks {{value}}",
+          "corner": "Crossing {{value}}"
+        },
+        "rolesNote": "Only starters can take a role.",
+        "rankedBy": {
+          "captain": "By leadership",
+          "vicecaptain": "By leadership",
+          "penalty": "By penalty taking",
+          "freekick": "By free kicks",
+          "corner": "By crossing"
+        }
       }
     },
     "squad": {

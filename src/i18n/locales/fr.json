@@ -273,6 +273,57 @@
         "squadLine": "L'assistant choisit votre onze.",
         "squadLink": "Voir la Tactique",
         "itemNote": "Le pack récupère votre onze type. L'assistant peut ménager les joueurs fatigués, il peut donc différer du onze prévu."
+      },
+      "phone": {
+        "tabs": "Sections de la tactique",
+        "tab": {
+          "lineup": "Composition",
+          "style": "Jeu",
+          "roles": "Rôles",
+          "phase": "Séquences"
+        },
+        "tagMine": "Les miennes",
+        "saveBody": "Vous avez modifié {{name}}. Enregistrez-la comme tactique perso pour la réutiliser.",
+        "discard": "Annuler les changements",
+        "pitch": "Onze de départ, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, forme {{condition}}",
+        "fit": {
+          "exact": "Poste naturel",
+          "adapted": "Adapté",
+          "out": "Hors poste"
+        },
+        "wrong": "{{count}} hors poste",
+        "hintIdle": "Touchez un joueur sur le terrain, puis un autre pour les échanger, ou un remplaçant pour le faire entrer.",
+        "hintPicked": "{{name}} ({{slot}}) choisi : touchez un autre joueur du terrain ou un remplaçant ci-dessous.",
+        "hintAssistant": "L'assistant choisit le onze. Désactivez-le pour choisir le vôtre.",
+        "hintLocked": "La composition est verrouillée : lecture seule.",
+        "hintPickFirst": "Touchez d'abord un joueur du terrain, puis un remplaçant.",
+        "benchFor": "Au poste de {{slot}}",
+        "benchTitle": "Remplaçants · {{count}}",
+        "fitFirst": "Meilleur ajustement d'abord",
+        "benchSub": "Forme · OVR",
+        "all": "Tous",
+        "bench": "Remplaçants",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Blessé",
+        "level": "Niveau {{level}}",
+        "masteryNote": "· le nombre est votre maîtrise",
+        "noneChosen": "Non choisi",
+        "score": {
+          "captain": "Autorité {{value}}",
+          "vicecaptain": "Autorité {{value}}",
+          "penalty": "Tirs au but {{value}}",
+          "freekick": "Coups francs {{value}}",
+          "corner": "Centres {{value}}"
+        },
+        "rolesNote": "Seuls les titulaires peuvent avoir un rôle.",
+        "rankedBy": {
+          "captain": "Par leadership",
+          "vicecaptain": "Par leadership",
+          "penalty": "Par penalties",
+          "freekick": "Par coups francs",
+          "corner": "Par centres"
+        }
       }
     },
     "squad": {

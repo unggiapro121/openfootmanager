@@ -273,6 +273,57 @@
         "squadLine": "Asistent vybírá vaši jedenáctku.",
         "squadLink": "Přejít na taktiku",
         "itemNote": "Balíček zregeneruje vaši základní jedenáctku. Asistent může unavené šetřit, proto se může lišit od předpokládané sestavy."
+      },
+      "phone": {
+        "tabs": "Části taktiky",
+        "tab": {
+          "lineup": "Sestava",
+          "style": "Styl",
+          "roles": "Role",
+          "phase": "Fáze"
+        },
+        "tagMine": "Moje",
+        "saveBody": "Upravili jste {{name}}. Uložte ji jako vlastní taktiku, ať ji můžete použít znovu.",
+        "discard": "Zahodit změny",
+        "pitch": "Základní sestava, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, kondice {{condition}}",
+        "fit": {
+          "exact": "Přirozený post",
+          "adapted": "Přizpůsobený",
+          "out": "Mimo post"
+        },
+        "wrong": "Mimo post: {{count}}",
+        "hintIdle": "Klepněte na hráče na hřišti, pak na dalšího pro výměnu, nebo na náhradníka, aby nastoupil.",
+        "hintPicked": "Vybrán {{name}} ({{slot}}): klepněte na dalšího hráče na hřišti nebo na náhradníka níže.",
+        "hintAssistant": "Sestavu vybírá asistent. Vypněte ho, chcete-li vybírat sami.",
+        "hintLocked": "Sestava je zamčená: jen náhled.",
+        "hintPickFirst": "Nejprve klepněte na hráče na hřišti, pak na náhradníka.",
+        "benchFor": "Na post {{slot}}",
+        "benchTitle": "Lavička · {{count}}",
+        "fitFirst": "Nejvhodnější první",
+        "benchSub": "Kondice · OVR",
+        "all": "Vše",
+        "bench": "Lavička",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Zraněný",
+        "level": "Úroveň {{level}}",
+        "masteryNote": "· číslo je vaše zvládnutí",
+        "noneChosen": "Nevybráno",
+        "score": {
+          "captain": "Vůdcovství {{value}}",
+          "vicecaptain": "Vůdcovství {{value}}",
+          "penalty": "Penalty {{value}}",
+          "freekick": "Přímé kopy {{value}}",
+          "corner": "Centry {{value}}"
+        },
+        "rolesNote": "Roli může mít jen hráč základní sestavy.",
+        "rankedBy": {
+          "captain": "Podle vůdcovství",
+          "vicecaptain": "Podle vůdcovství",
+          "penalty": "Podle penalt",
+          "freekick": "Podle přímých kopů",
+          "corner": "Podle centrů"
+        }
       }
     },
     "squad": {

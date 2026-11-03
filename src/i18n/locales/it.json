@@ -273,6 +273,57 @@
         "squadLine": "L'assistente sta scegliendo i tuoi undici.",
         "squadLink": "Vai a Tattica",
         "itemNote": "Il pacchetto recupera l'undici titolare. L'assistente può far riposare gli stanchi, quindi può differire dall'undici previsto."
+      },
+      "phone": {
+        "tabs": "Sezioni della tattica",
+        "tab": {
+          "lineup": "Formazione",
+          "style": "Stile",
+          "roles": "Ruoli",
+          "phase": "Fasi"
+        },
+        "tagMine": "Mie",
+        "saveBody": "Hai modificato {{name}}. Salvala come tattica tua per riusarla.",
+        "discard": "Annulla modifiche",
+        "pitch": "Undici titolare, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, condizione {{condition}}",
+        "fit": {
+          "exact": "Ruolo naturale",
+          "adapted": "Adattato",
+          "out": "Fuori ruolo"
+        },
+        "wrong": "{{count}} fuori ruolo",
+        "hintIdle": "Tocca un giocatore in campo, poi un altro per scambiarli, o una riserva per farla entrare.",
+        "hintPicked": "{{name}} ({{slot}}) scelto: tocca un altro giocatore in campo o una riserva sotto.",
+        "hintAssistant": "L'assistente sceglie l'undici. Spegnilo per sceglierlo tu.",
+        "hintLocked": "La formazione è bloccata: solo consultazione.",
+        "hintPickFirst": "Tocca prima un giocatore in campo, poi una riserva.",
+        "benchFor": "Al posto di {{slot}}",
+        "benchTitle": "Panchina · {{count}}",
+        "fitFirst": "Prima i più adatti",
+        "benchSub": "Condizione · OVR",
+        "all": "Tutti",
+        "bench": "Panchina",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Infortunato",
+        "level": "Livello {{level}}",
+        "masteryNote": "· il numero è la tua padronanza",
+        "noneChosen": "Non scelto",
+        "score": {
+          "captain": "Carisma {{value}}",
+          "vicecaptain": "Carisma {{value}}",
+          "penalty": "Rigori {{value}}",
+          "freekick": "Punizioni {{value}}",
+          "corner": "Cross {{value}}"
+        },
+        "rolesNote": "Solo i titolari possono avere un ruolo.",
+        "rankedBy": {
+          "captain": "Per leadership",
+          "vicecaptain": "Per leadership",
+          "penalty": "Per rigori",
+          "freekick": "Per punizioni",
+          "corner": "Per cross"
+        }
       }
     },
     "squad": {

@@ -273,6 +273,57 @@
         "squadLine": "Asistan ilk on birini seçiyor.",
         "squadLink": "Taktiğe git",
         "itemNote": "Paket ana ilk on birini toparlar. Asistan yorgunları dinlendirebilir, bu yüzden tahmini ilk on birden farklı olabilir."
+      },
+      "phone": {
+        "tabs": "Taktik bölümleri",
+        "tab": {
+          "lineup": "Kadro",
+          "style": "Stil",
+          "roles": "Görevler",
+          "phase": "Evreler"
+        },
+        "tagMine": "Benim",
+        "saveBody": "{{name}} taktiğini değiştirdin. Yeniden kullanmak için kendi taktiğin olarak kaydet.",
+        "discard": "Değişiklikleri at",
+        "pitch": "İlk on bir, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, kondisyon {{condition}}",
+        "fit": {
+          "exact": "Asıl mevki",
+          "adapted": "Uyum sağlar",
+          "out": "Mevki dışı"
+        },
+        "wrong": "{{count}} mevki dışı",
+        "hintIdle": "Sahada bir oyuncuya, sonra yer değiştirmek için başka birine ya da oyuna almak için bir yedeğe dokun.",
+        "hintPicked": "{{name}} ({{slot}}) seçildi: sahada başka bir oyuncuya ya da aşağıdan bir yedeğe dokun.",
+        "hintAssistant": "On biri asistan seçiyor. Kendin seçmek için kapat.",
+        "hintLocked": "Kadro kilitli: yalnızca görüntüleme.",
+        "hintPickFirst": "Önce sahadaki bir oyuncuya, sonra bir yedeğe dokun.",
+        "benchFor": "{{slot}} mevkisine",
+        "benchTitle": "Yedekler · {{count}}",
+        "fitFirst": "En uygun önce",
+        "benchSub": "Kondisyon · OVR",
+        "all": "Tümü",
+        "bench": "Yedekler",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Sakat",
+        "level": "Seviye {{level}}",
+        "masteryNote": "· sayı ustalığın",
+        "noneChosen": "Seçilmedi",
+        "score": {
+          "captain": "Liderlik {{value}}",
+          "vicecaptain": "Liderlik {{value}}",
+          "penalty": "Penaltı {{value}}",
+          "freekick": "Serbest vuruş {{value}}",
+          "corner": "Orta {{value}}"
+        },
+        "rolesNote": "Görev yalnızca ilk on birdekilere verilebilir.",
+        "rankedBy": {
+          "captain": "Liderliğe göre",
+          "vicecaptain": "Liderliğe göre",
+          "penalty": "Penaltıya göre",
+          "freekick": "Serbest vuruşa göre",
+          "corner": "Ortaya göre"
+        }
       }
     },
     "squad": {

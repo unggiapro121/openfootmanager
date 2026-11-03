@@ -273,6 +273,57 @@
         "squadLine": "Trợ lý đang chọn đội hình.",
         "squadLink": "Xem ở Chiến thuật",
         "itemNote": "Vật phẩm hồi cho đội chính. Trợ lý có thể cho người mệt nghỉ, nên đội chính có thể khác đội dự kiến."
+      },
+      "phone": {
+        "tabs": "Các mục chiến thuật",
+        "tab": {
+          "lineup": "Đội hình",
+          "style": "Lối chơi",
+          "roles": "Vai trò",
+          "phase": "Giai đoạn"
+        },
+        "tagMine": "Của tôi",
+        "saveBody": "Bạn đã sửa {{name}}. Lưu thành chiến thuật riêng để dùng lại.",
+        "discard": "Bỏ thay đổi",
+        "pitch": "Đội hình xuất phát {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, thể lực {{condition}}",
+        "fit": {
+          "exact": "Sở trường",
+          "adapted": "Thích nghi",
+          "out": "Sai vị trí"
+        },
+        "wrong": "{{count}} sai vị trí",
+        "hintIdle": "Chạm một cầu thủ trên sân, rồi chạm cầu thủ khác để đổi chỗ hoặc chọn người dự bị.",
+        "hintPicked": "Đã chọn {{name}} ({{slot}}): chạm cầu thủ khác trên sân hoặc người dự bị bên dưới.",
+        "hintAssistant": "Trợ lý đang chọn 11 người. Tắt trợ lý để tự xếp.",
+        "hintLocked": "Đội hình đang khoá, chỉ xem.",
+        "hintPickFirst": "Chạm một cầu thủ trên sân trước, rồi chọn người dự bị.",
+        "benchFor": "Thay vào vị trí {{slot}}",
+        "benchTitle": "Dự bị · {{count}}",
+        "fitFirst": "Hợp vị trí trước",
+        "benchSub": "Thể lực · OVR",
+        "all": "Tất cả",
+        "bench": "Dự bị",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Chấn thương",
+        "level": "Cấp {{level}}",
+        "masteryNote": "· số là độ thành thạo",
+        "noneChosen": "— Chưa chọn",
+        "score": {
+          "captain": "Lãnh đạo {{value}}",
+          "vicecaptain": "Lãnh đạo {{value}}",
+          "penalty": "Sút phạt đền {{value}}",
+          "freekick": "Đá phạt {{value}}",
+          "corner": "Tạt bóng {{value}}"
+        },
+        "rolesNote": "Chỉ chọn được cầu thủ đang đá chính.",
+        "rankedBy": {
+          "captain": "Xếp theo lãnh đạo",
+          "vicecaptain": "Xếp theo lãnh đạo",
+          "penalty": "Xếp theo sút phạt đền",
+          "freekick": "Xếp theo đá phạt",
+          "corner": "Xếp theo tạt bóng"
+        }
       }
     },
     "squad": {

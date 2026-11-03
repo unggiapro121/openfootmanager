@@ -273,6 +273,57 @@
         "squadLine": "Asisten sedang memilih susunan pemainmu.",
         "squadLink": "Lihat Taktik",
         "itemNote": "Paket memulihkan sebelas pemain utamamu. Asisten bisa mengistirahatkan pemain yang lelah, jadi bisa berbeda dari susunan perkiraan."
+      },
+      "phone": {
+        "tabs": "Bagian taktik",
+        "tab": {
+          "lineup": "Susunan",
+          "style": "Gaya",
+          "roles": "Peran",
+          "phase": "Fase"
+        },
+        "tagMine": "Milikku",
+        "saveBody": "Kamu mengubah {{name}}. Simpan sebagai taktik sendiri agar bisa dipakai lagi.",
+        "discard": "Buang perubahan",
+        "pitch": "Sebelas utama, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, kondisi {{condition}}",
+        "fit": {
+          "exact": "Posisi asli",
+          "adapted": "Bisa beradaptasi",
+          "out": "Salah posisi"
+        },
+        "wrong": "{{count}} salah posisi",
+        "hintIdle": "Ketuk pemain di lapangan, lalu pemain lain untuk menukar, atau pemain cadangan untuk memasukkannya.",
+        "hintPicked": "{{name}} ({{slot}}) dipilih: ketuk pemain lain di lapangan atau cadangan di bawah.",
+        "hintAssistant": "Asisten memilih sebelas pemain. Matikan untuk memilih sendiri.",
+        "hintLocked": "Susunan terkunci: hanya lihat.",
+        "hintPickFirst": "Ketuk pemain di lapangan dulu, lalu pemain cadangan.",
+        "benchFor": "Ke posisi {{slot}}",
+        "benchTitle": "Cadangan · {{count}}",
+        "fitFirst": "Paling cocok dulu",
+        "benchSub": "Kondisi · OVR",
+        "all": "Semua",
+        "bench": "Cadangan",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Cedera",
+        "level": "Tingkat {{level}}",
+        "masteryNote": "· angka adalah penguasaanmu",
+        "noneChosen": "Belum dipilih",
+        "score": {
+          "captain": "Kepemimpinan {{value}}",
+          "vicecaptain": "Kepemimpinan {{value}}",
+          "penalty": "Penalti {{value}}",
+          "freekick": "Tendangan bebas {{value}}",
+          "corner": "Umpan silang {{value}}"
+        },
+        "rolesNote": "Hanya pemain inti yang bisa diberi peran.",
+        "rankedBy": {
+          "captain": "Menurut kepemimpinan",
+          "vicecaptain": "Menurut kepemimpinan",
+          "penalty": "Menurut penalti",
+          "freekick": "Menurut tendangan bebas",
+          "corner": "Menurut umpan silang"
+        }
       }
     },
     "squad": {
