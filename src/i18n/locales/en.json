@@ -655,7 +655,9 @@
         "grantReset": "New squad cash reset",
         "coin_exchange": "Coin exchange",
         "scout": "Academy scouting",
-        "graduation": "Graduation fee"
+        "graduation": "Graduation fee",
+        "sponsor": "Sponsorship",
+        "tv": "TV rights"
       },
       "ledger": "Ledger",
       "ledgerEmpty": "No entries yet.",
@@ -671,7 +673,14 @@
         "academy": "Youth Academy",
         "academyEffect": "Each level adds room for youngsters."
       },
-      "academyWages": "Academy wages: {{amount}} a week"
+      "academyWages": "Academy wages: {{amount}} a week",
+      "contract": {
+        "title": "This season's contracts",
+        "level": "Level {{level}}",
+        "perSeason": "{{amount}} a season",
+        "perMatch": "{{amount}} a league match",
+        "next": "At level {{level}}: {{sponsor}} a season · {{tv}} a match"
+      }
     },
     "market": {
       "title": "Transfer market",
@@ -912,6 +921,11 @@
             "subject": "Forced up to level {{level}}",
             "body": "At the end of season {{season}}, your squad's strength was above the forced promotion threshold, so you were moved up to level {{level}} (+{{levels}}). Your buying caps went up with it.{{extra}}",
             "shortSquad": "Your squad had only {{squadSize}} players after the season's top-ups, so its strength was taken over those {{squadSize}} and came out above its buying strength. That is why you were forced up though you never bought over the caps."
+          },
+          "sponsor": {
+            "subject": "Season {{season}} contracts",
+            "body": "At level {{level}} your club earns {{sponsor}} of sponsorship this season and {{tv}} of TV rights for each league match.{{extra}}",
+            "previous": "Last season's sponsorship was {{amount}}."
           }
         },
         "licence": {

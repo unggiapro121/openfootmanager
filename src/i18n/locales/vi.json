@@ -655,7 +655,9 @@
         "grantReset": "Đặt lại tiền khi nhận đội mới",
         "coin_exchange": "Đổi coin",
         "scout": "Scout lò đào tạo",
-        "graduation": "Phí tốt nghiệp"
+        "graduation": "Phí tốt nghiệp",
+        "sponsor": "Tài trợ",
+        "tv": "Bản quyền truyền hình"
       },
       "ledger": "Sổ thu chi",
       "ledgerEmpty": "Chưa có dòng nào.",
@@ -671,7 +673,14 @@
         "academy": "Lò đào tạo",
         "academyEffect": "Mỗi cấp thêm chỗ cho học viên."
       },
-      "academyWages": "Lương lò đào tạo: {{amount}}/tuần"
+      "academyWages": "Lương lò đào tạo: {{amount}}/tuần",
+      "contract": {
+        "title": "Hợp đồng mùa này",
+        "level": "Cấp {{level}}",
+        "perSeason": "{{amount}}/mùa",
+        "perMatch": "{{amount}}/trận league",
+        "next": "Lên cấp {{level}}: {{sponsor}}/mùa · {{tv}}/trận"
+      }
     },
     "market": {
       "title": "Chợ chuyển nhượng",
@@ -912,6 +921,11 @@
             "subject": "Bị ép lên cấp {{level}}",
             "body": "Cuối mùa {{season}}, sức mạnh đội bạn vượt ngưỡng ép cấp, nên bạn được đẩy lên {{levels}} cấp, nay là cấp {{level}}. Trần mua của bạn cũng tăng theo.{{extra}}",
             "shortSquad": "Đội bạn chỉ còn {{squadSize}} cầu thủ sau bù đội cuối mùa, nên sức mạnh đội được tính trên {{squadSize}} người và cao hơn sức mạnh mua. Đây là lý do bạn bị ép dù chưa mua vượt trần."
+          },
+          "sponsor": {
+            "subject": "Hợp đồng mùa {{season}}",
+            "body": "Ở cấp {{level}}, CLB nhận {{sponsor}} tiền tài trợ mùa này và {{tv}} bản quyền truyền hình mỗi trận league.{{extra}}",
+            "previous": "Mùa trước tiền tài trợ là {{amount}}."
           }
         },
         "licence": {

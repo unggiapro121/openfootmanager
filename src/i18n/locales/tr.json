@@ -655,7 +655,9 @@
         "grantReset": "Yeni kadroyla nakit sıfırlama",
         "coin_exchange": "Jeton bozdurma",
         "scout": "Akademi gözlemi",
-        "graduation": "Mezuniyet ücreti"
+        "graduation": "Mezuniyet ücreti",
+        "sponsor": "Sponsorluk",
+        "tv": "Yayın hakları"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -671,7 +673,14 @@
         "academy": "Altyapı akademisi",
         "academyEffect": "Her seviye gençler için yer açar."
       },
-      "academyWages": "Akademi maaşları: haftada {{amount}}"
+      "academyWages": "Akademi maaşları: haftada {{amount}}",
+      "contract": {
+        "title": "Bu sezonun sözleşmeleri",
+        "level": "Seviye {{level}}",
+        "perSeason": "Sezon başına {{amount}}",
+        "perMatch": "Lig maçı başına {{amount}}",
+        "next": "Seviye {{level}}: sezon başına {{sponsor}} · maç başına {{tv}}"
+      }
     },
     "market": {
       "title": "Transfer pazarı",
@@ -912,6 +921,11 @@
             "subject": "{{level}}. seviyeye zorunlu yükselme",
             "body": "{{season}}. sezonun sonunda kadronuzun gücü zorunlu yükselme eşiğinin üstündeydi, bu yüzden {{level}}. seviyeye çıktınız (+{{levels}}). Satın alma tavanlarınız da onunla yükseldi.{{extra}}",
             "shortSquad": "Sezon sonu takviyelerinden sonra kadronuzda yalnızca {{squadSize}} oyuncu vardı; bu yüzden güç bu {{squadSize}} oyuncu üzerinden hesaplandı ve satın alma gücünün üstünde çıktı. Tavanların üstünde hiç almadığınız halde zorla yükseltilmenizin nedeni bu."
+          },
+          "sponsor": {
+            "subject": "{{season}}. sezon sözleşmeleri",
+            "body": "Seviye {{level}} kulübün bu sezon {{sponsor}} sponsorluk geliri ve her lig maçı için {{tv}} yayın geliri alır.{{extra}}",
+            "previous": "Geçen sezon sponsorluk geliri {{amount}} idi."
           }
         },
         "licence": {

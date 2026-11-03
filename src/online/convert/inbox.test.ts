@@ -123,6 +123,27 @@ describe("an inbox message as the offline inbox reads one", () => {
     expect(toMessageData(mail("season.reward", { rank: 2, amount: 5000 }), t, "A").category).toBe(
       "Finance",
     );
+    // The season's contracts (S-36, C-14): last season's sponsorship only after a level up.
+    const sponsor = toMessageData(
+      mail("season.sponsor", { season: 4, level: 7, sponsorSeason: 1560000, tvPerMatch: 40000 }),
+      t,
+      "A",
+    );
+    expect(sponsor.category).toBe("Finance");
+    expect(sponsor.body).toContain("online.inbox.kinds.season.sponsor.body");
+    expect(sponsor.body).not.toContain("previous");
+    const promoted = toMessageData(
+      mail("season.sponsor", {
+        season: 4,
+        level: 7,
+        sponsorSeason: 1560000,
+        tvPerMatch: 40000,
+        previousSponsorSeason: 1080000,
+      }),
+      t,
+      "A",
+    );
+    expect(promoted.body).toContain("online.inbox.kinds.season.sponsor.previous");
   });
 
   // Given the item audit's two account messages (S-17, C-7b),

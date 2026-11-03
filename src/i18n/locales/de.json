@@ -655,7 +655,9 @@
         "grantReset": "Kassen-Reset mit neuem Kader",
         "coin_exchange": "Münztausch",
         "scout": "Akademie-Scouting",
-        "graduation": "Abschlussgebühr"
+        "graduation": "Abschlussgebühr",
+        "sponsor": "Sponsoring",
+        "tv": "TV-Rechte"
       },
       "ledger": "Buchungen",
       "ledgerEmpty": "Noch keine Buchungen.",
@@ -671,7 +673,14 @@
         "academy": "Nachwuchsakademie",
         "academyEffect": "Jede Stufe schafft Plätze für Talente."
       },
-      "academyWages": "Akademiegehälter: {{amount}} pro Woche"
+      "academyWages": "Akademiegehälter: {{amount}} pro Woche",
+      "contract": {
+        "title": "Verträge dieser Saison",
+        "level": "Stufe {{level}}",
+        "perSeason": "{{amount}} pro Saison",
+        "perMatch": "{{amount}} pro Ligaspiel",
+        "next": "Auf Stufe {{level}}: {{sponsor}} pro Saison · {{tv}} pro Spiel"
+      }
     },
     "market": {
       "title": "Transfermarkt",
@@ -912,6 +921,11 @@
             "subject": "Zwangsaufstieg auf Stufe {{level}}",
             "body": "Am Ende von Saison {{season}} lag die Stärke deines Kaders über der Schwelle für den Zwangsaufstieg, daher bist du auf Stufe {{level}} gestiegen (+{{levels}}). Deine Kaufgrenzen sind mitgestiegen.{{extra}}",
             "shortSquad": "Dein Kader hatte nach dem Auffüllen zum Saisonende nur {{squadSize}} Spieler, daher wurde seine Stärke über diese {{squadSize}} berechnet und lag über seiner Kaufstärke. Deshalb wurdest du hochgestuft, obwohl du nie über den Grenzen gekauft hast."
+          },
+          "sponsor": {
+            "subject": "Verträge für Saison {{season}}",
+            "body": "Auf Stufe {{level}} erhält dein Verein in dieser Saison {{sponsor}} Sponsoring und {{tv}} TV-Geld pro Ligaspiel.{{extra}}",
+            "previous": "In der letzten Saison brachte das Sponsoring {{amount}}."
           }
         },
         "licence": {

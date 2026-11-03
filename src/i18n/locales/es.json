@@ -655,7 +655,9 @@
         "grantReset": "Reinicio de efectivo con plantilla nueva",
         "coin_exchange": "Cambio de monedas",
         "scout": "Ojeo de la cantera",
-        "graduation": "Tasa de graduación"
+        "graduation": "Tasa de graduación",
+        "sponsor": "Patrocinio",
+        "tv": "Derechos de TV"
       },
       "ledger": "Movimientos",
       "ledgerEmpty": "Aún no hay movimientos.",
@@ -671,7 +673,14 @@
         "academy": "Cantera",
         "academyEffect": "Cada nivel añade plazas para juveniles."
       },
-      "academyWages": "Salarios de la cantera: {{amount}} por semana"
+      "academyWages": "Salarios de la cantera: {{amount}} por semana",
+      "contract": {
+        "title": "Contratos de esta temporada",
+        "level": "Nivel {{level}}",
+        "perSeason": "{{amount}} por temporada",
+        "perMatch": "{{amount}} por partido de liga",
+        "next": "En el nivel {{level}}: {{sponsor}} por temporada · {{tv}} por partido"
+      }
     },
     "market": {
       "title": "Mercado de fichajes",
@@ -912,6 +921,11 @@
             "subject": "Ascenso forzado al nivel {{level}}",
             "body": "Al final de la temporada {{season}}, la fuerza de tu plantilla superó el umbral de ascenso forzado, así que pasaste al nivel {{level}} (+{{levels}}). Tus topes de compra subieron con él.{{extra}}",
             "shortSquad": "Tu plantilla solo tenía {{squadSize}} jugadores tras los refuerzos de fin de temporada, así que su fuerza se calculó con esos {{squadSize}} y quedó por encima de su fuerza de compra. Por eso te forzaron a subir aunque nunca compraste por encima de los topes."
+          },
+          "sponsor": {
+            "subject": "Contratos de la temporada {{season}}",
+            "body": "En el nivel {{level}} tu club recibe {{sponsor}} de patrocinio esta temporada y {{tv}} de derechos de TV por cada partido de liga.{{extra}}",
+            "previous": "La temporada pasada el patrocinio fue de {{amount}}."
           }
         },
         "licence": {

@@ -24,6 +24,7 @@ pub mod ai_tactics;
 pub mod ai_training;
 pub mod assigned_traits;
 pub mod attribute_split;
+pub mod bot_level;
 pub mod coach_progress;
 pub mod economy;
 pub mod facilities;

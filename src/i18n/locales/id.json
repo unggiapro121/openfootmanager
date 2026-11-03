@@ -655,7 +655,9 @@
         "grantReset": "Reset kas skuad baru",
         "coin_exchange": "Penukaran koin",
         "scout": "Pemandu bakat akademi",
-        "graduation": "Biaya kelulusan"
+        "graduation": "Biaya kelulusan",
+        "sponsor": "Sponsor",
+        "tv": "Hak siar TV"
       },
       "ledger": "Buku besar",
       "ledgerEmpty": "Belum ada catatan.",
@@ -671,7 +673,14 @@
         "academy": "Akademi muda",
         "academyEffect": "Setiap level menambah tempat untuk pemain muda."
       },
-      "academyWages": "Gaji akademi: {{amount}} per minggu"
+      "academyWages": "Gaji akademi: {{amount}} per minggu",
+      "contract": {
+        "title": "Kontrak musim ini",
+        "level": "Level {{level}}",
+        "perSeason": "{{amount}} per musim",
+        "perMatch": "{{amount}} per laga liga",
+        "next": "Di level {{level}}: {{sponsor}} per musim · {{tv}} per laga"
+      }
     },
     "market": {
       "title": "Bursa transfer",
@@ -912,6 +921,11 @@
             "subject": "Naik paksa ke level {{level}}",
             "body": "Di akhir musim {{season}}, kekuatan skuadmu di atas ambang naik paksa, jadi kamu naik ke level {{level}} (+{{levels}}). Batas belimu ikut naik.{{extra}}",
             "shortSquad": "Skuadmu hanya punya {{squadSize}} pemain setelah penambahan akhir musim, jadi kekuatannya dihitung dari {{squadSize}} pemain itu dan lebih tinggi dari kekuatan belinya. Itulah sebabnya kamu dinaikkan paksa walau tidak pernah membeli melewati batas."
+          },
+          "sponsor": {
+            "subject": "Kontrak musim {{season}}",
+            "body": "Di level {{level}}, klubmu menerima {{sponsor}} dari sponsor musim ini dan {{tv}} hak siar TV untuk tiap laga liga.{{extra}}",
+            "previous": "Musim lalu dana sponsor sebesar {{amount}}."
           }
         },
         "licence": {

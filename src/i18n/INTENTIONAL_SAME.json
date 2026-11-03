@@ -816,7 +816,8 @@
     "online.events.theme.other",
     "online.header.clubLine",
     "online.profile.levelChip",
-    "online.profile.levelOnly"
+    "online.profile.levelOnly",
+    "online.finance.contract.level"
   ],
   "vi": [
     "online.market.ai",

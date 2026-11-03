@@ -350,6 +350,37 @@ pub fn calibrate_generated_player(
     calibrate_to_ovr(player, target);
     let ovr = natural_ovr(player).round() as u8;
     player.potential = draw_potential(ovr, age, rng);
+    settle_generated_player(player, current_year);
+}
+
+/// Bring a player drawn for an online bot's levelling (S-34 S34-4) to `target`: his overall at
+/// it, a potential drawn for that overall and his age but never under his overall plus two nor
+/// over `potential_max`, and his traits, value and wage settled on the result.
+pub fn calibrate_level_player(
+    player: &mut Player,
+    target: f64,
+    potential_max: u8,
+    current_year: u32,
+    rng: &mut impl Rng,
+) {
+    use crate::player_rating::natural_ovr;
+
+    let age = crate::player_rating::player_age(&player.date_of_birth, current_year);
+    calibrate_to_ovr(player, target);
+    let ovr = natural_ovr(player).round() as u8;
+    // Never under his own overall, even when the ceiling is.
+    let ceiling = potential_max.max(ovr);
+    let floor = ovr.saturating_add(LEVEL_MIN_HEADROOM).min(ceiling);
+    player.potential = draw_potential(ovr, age, rng).clamp(floor, ceiling);
+    settle_generated_player(player, current_year);
+}
+
+/// The least room to grow a levelling's newcomer is given.
+const LEVEL_MIN_HEADROOM: u8 = 2;
+
+/// A calibrated player's derived ratings, traits, value and wage, settled on his attributes and
+/// potential.
+fn settle_generated_player(player: &mut Player, current_year: u32) {
     crate::player_rating::refresh_player_derived(player, current_year);
     crate::assigned_traits::assign_traits(player, current_year);
     reprice_generated_player(player, current_year);

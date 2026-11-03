@@ -30,6 +30,8 @@ const CATEGORY: Record<string, string> = {
   "season.result": "LeagueInfo",
   "season.promoted": "LeagueInfo",
   "season.reward": "Finance",
+  // The season's sponsorship and TV rights at the club's level (S-36, C-14).
+  "season.sponsor": "Finance",
   // Forced up by the club's strength at the season's end (S-16c, C-7a2).
   "season.forcedPromotion": "LeagueInfo",
   "licence.fitted": "BoardDirective",
@@ -209,6 +211,19 @@ export function toMessageData(
     options = { season: count(params.season), level: count(params.level) };
   } else if (kind === "season.reward") {
     options = { rank: count(params.rank), amount: formatExactMoney(count(params.amount)) };
+  } else if (kind === "season.sponsor") {
+    // A club that went up a level is also told last season's sponsorship (S36-7).
+    const previous = params.previousSponsorSeason;
+    options = {
+      season: count(params.season),
+      level: count(params.level),
+      sponsor: formatExactMoney(count(params.sponsorSeason)),
+      tv: formatExactMoney(count(params.tvPerMatch)),
+      extra:
+        previous === undefined
+          ? ""
+          : ` ${t(`${base}.previous`, { amount: formatExactMoney(count(previous)) })}`,
+    };
   } else if (kind === "season.result") {
     options = { season: count(params.season), rank: count(params.rank) };
     bodyKey = `${base}.${count(params.promoted) === 1 ? "promoted" : "stayed"}`;
