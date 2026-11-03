@@ -62,6 +62,7 @@ function trainingDay(overrides: Partial<TrainingDayView> = {}): TrainingDayView 
     nextRecoveryAt: new Date(Date.now() + 2 * HOUR).toISOString(),
     recovery: { perDay: 6, hours: 8 },
     autoOff: false,
+    keeperDrill: false,
     extra: extraDay(),
     ...overrides,
   };
@@ -255,6 +256,30 @@ describe("today's session", () => {
     expect(
       screen.getByText("online.training.today.scheduleDay:training.schedules.Balanced.label"),
     ).toBeInTheDocument();
+  });
+
+  // Given a season whose ruleset has the goalkeepers' drill (`keeperDrill` true, E5-6c E56c-14),
+  // when the card shows,
+  // then the main session says goalkeepers always train their own drill.
+  it("says goalkeepers train their own drill when the season has it", () => {
+    stage(clubWith({ keeperDrill: true }));
+    render(<CardFromStore />);
+    const main = screen.getByRole("region", { name: "online.training.main.title" });
+    expect(within(main).getByText("online.training.main.keeperDrill")).toBeInTheDocument();
+  });
+
+  // Given a season without the goalkeepers' drill (`keeperDrill` false),
+  // when the card shows,
+  // then nothing is said about goalkeepers, on a training day or a rest day.
+  it("says nothing of goalkeepers when the season has no drill for them", () => {
+    stage(clubWith({ keeperDrill: false }));
+    const { unmount } = render(<CardFromStore />);
+    expect(screen.queryByText("online.training.main.keeperDrill")).toBeNull();
+    unmount();
+    useOnlineStore.setState({ season: { ...SEASON, weekday: 2 } });
+    render(<CardFromStore />);
+    expect(screen.getByText("online.training.main.rest")).toBeInTheDocument();
+    expect(screen.queryByText("online.training.main.keeperDrill")).toBeNull();
   });
 
   // Given the balanced plan on a Wednesday, a rest day on its schedule,
@@ -521,30 +546,53 @@ describe("extra training", () => {
     ).toBeInTheDocument();
   });
 
-  // Given a chosen player whose whole Physical focus is at 99 (E5-4 R12-F),
+  // Given a chosen player the server finds on a focus that lifts nothing (E5-4 R12-F, S-31b),
   // when the block shows,
-  // then it warns that a session only costs him condition.
-  it("warns when a player's focus is full", () => {
-    const attributes = {
-      ...squadPlayer().attributes,
-      pace: 99,
-      stamina: 99,
-      strength: 99,
-      agility: 99,
-    };
+  // then it warns that a session only costs him condition, and names the focus to switch to.
+  it("warns when a player's focus lifts nothing", () => {
     stage(
       clubWith(
         {},
         {
           players: [
-            squadPlayer({ id: "p1", matchName: "V. An", trainingFocus: "Physical", attributes }),
+            squadPlayer({
+              id: "p1",
+              matchName: "V. An",
+              trainingFocus: "Attacking",
+              focusFit: { current: "Attacking", best: "Tactical", verdict: "nothing" },
+            }),
           ],
         },
       ),
     );
     render(<CardFromStore />);
     openExtra();
-    expect(screen.getByRole("note")).toHaveTextContent("online.training.extra.focusFull:V. An");
+    expect(screen.getByRole("note")).toHaveTextContent(
+      "online.training.extra.focusFull:V. An → training.focuses.Tactical.label",
+    );
+  });
+
+  // Given a chosen player whose focus is fair,
+  // when the block shows,
+  // then it gives no focus warning.
+  it("does not warn when a player's focus still lifts him", () => {
+    stage(
+      clubWith(
+        {},
+        {
+          players: [
+            squadPlayer({
+              id: "p1",
+              matchName: "V. An",
+              focusFit: { current: "Technical", best: "Tactical", verdict: "fair" },
+            }),
+          ],
+        },
+      ),
+    );
+    render(<CardFromStore />);
+    openExtra();
+    expect(screen.queryByRole("note")).toBeNull();
   });
 });
 

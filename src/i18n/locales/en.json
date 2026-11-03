@@ -426,7 +426,8 @@
           "resting": "Recovery focus: sits out",
           "peaked": "At his potential: sits out",
           "keepAbove": "Stopped to keep his condition",
-          "other": "Sits out"
+          "other": "Sits out",
+          "focusMaxed": "Their focus has nothing left that raises their OVR in this position"
         },
         "intensity": "Intensity",
         "intensityCost": "{{intensity}} (−{{cost}} condition)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Keep a minimum condition",
         "keepAbove": "Keep condition at or above",
         "xiWarning": "These starters would begin today's match under {{condition}} condition: {{names}}.",
-        "focusFull": "{{names}}: every attribute of their training focus is full, so a session only costs condition. Change their focus.",
+        "focusFull": "{{names}}: their focus has nothing left that raises their OVR in this position. Switch to the focus after the arrow.",
         "andMore": "{{names}} and {{more}} more",
         "held": "Trained {{held}} sessions (today's {{first}}–{{last}}).",
         "sessionsColumn": "Sessions",
@@ -477,7 +478,8 @@
         "fromPlan": "From the weekly plan",
         "auto": "The team trains on its schedule when the day turns ({{time}}). Change the schedule, focus or intensity in the weekly plan below.",
         "autoNoTime": "The team trains on its schedule when the day turns. Change the schedule, focus or intensity in the weekly plan below.",
-        "rest": "Today is a rest day on the schedule: no main session."
+        "rest": "Today is a rest day on the schedule: no main session.",
+        "keeperDrill": "Goalkeepers always train an extra drill of their own: Handling, Reflexes, Aerial."
       },
       "groups": {
         "all": "All ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Players",
         "mainAuto": "The team trains on its schedule when the day turns ({{time}}). Tap a tile to change it.",
         "mainAutoNoTime": "The team trains on its schedule when the day turns. Tap a tile to change it."
+      },
+      "focusHint": {
+        "best": "Best focus",
+        "fair": "Best: {{best}}",
+        "poor": "This focus builds their OVR slowly. Try {{best}}.",
+        "nothing": "{{current}} has nothing left that raises their OVR in this position. Switch to {{best}}."
       }
     },
     "schedule": {

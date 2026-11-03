@@ -426,7 +426,8 @@
           "resting": "Regenerationsfokus: setzt aus",
           "peaked": "Am Potenzial: setzt aus",
           "keepAbove": "Gestoppt, um die Kondition zu halten",
-          "other": "Setzt aus"
+          "other": "Setzt aus",
+          "focusMaxed": "Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert"
         },
         "intensity": "Intensität",
         "intensityCost": "{{intensity}} (−{{cost}} Kondition)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Mindestkondition halten",
         "keepAbove": "Kondition halten ab",
         "xiWarning": "Diese Stammspieler würden das heutige Spiel mit weniger als {{condition}} Kondition beginnen: {{names}}.",
-        "focusFull": "{{names}}: Jedes Attribut ihres Trainingsfokus ist voll, eine Einheit kostet nur Kondition. Ändere ihren Fokus.",
+        "focusFull": "{{names}}: Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zum Fokus nach dem Pfeil.",
         "andMore": "{{names}} und {{more}} weitere",
         "held": "{{held}} Einheiten trainiert (heute Nr. {{first}}–{{last}}).",
         "sessionsColumn": "Einheiten",
@@ -477,7 +478,8 @@
         "fromPlan": "Laut Wochenplan",
         "auto": "Die Mannschaft trainiert nach Plan beim Tageswechsel ({{time}}). Plan, Schwerpunkt oder Intensität änderst du unten im Wochenplan.",
         "autoNoTime": "Die Mannschaft trainiert nach Plan beim Tageswechsel. Plan, Schwerpunkt oder Intensität änderst du unten im Wochenplan.",
-        "rest": "Heute ist laut Plan Ruhetag: keine Haupteinheit."
+        "rest": "Heute ist laut Plan Ruhetag: keine Haupteinheit.",
+        "keeperDrill": "Torhüter trainieren immer zusätzlich eine eigene Übung: Fangen, Reflexe, Luftzweikämpfe."
       },
       "groups": {
         "all": "Alle ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Spieler",
         "mainAuto": "Das Team trainiert nach Plan beim Tageswechsel ({{time}}). Tippe auf ein Feld, um es zu ändern.",
         "mainAutoNoTime": "Das Team trainiert nach Plan beim Tageswechsel. Tippe auf ein Feld, um es zu ändern."
+      },
+      "focusHint": {
+        "best": "Bester Fokus",
+        "fair": "Am besten: {{best}}",
+        "poor": "Dieser Fokus steigert ihre OVR langsam. Versuche {{best}}.",
+        "nothing": "{{current}} hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zu {{best}}."
       }
     },
     "schedule": {

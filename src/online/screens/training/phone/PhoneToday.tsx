@@ -146,7 +146,12 @@ export function PhoneToday({
           })}
         </p>
       )}
-      <PlanTiles plan={club.trainingPlan} scheduleDay={scheduleDay} onGo={onGo} />
+      <PlanTiles
+        plan={club.trainingPlan}
+        scheduleDay={scheduleDay}
+        keeperDrill={trainingDay.keeperDrill}
+        onGo={onGo}
+      />
       {trainingDay.extra && (
         <ExtraEntry today={trainingDay.extra.today} onOpen={() => setExtraOpen(true)} />
       )}
@@ -169,10 +174,13 @@ export function PhoneToday({
 export function PlanTiles({
   plan,
   scheduleDay,
+  keeperDrill,
   onGo,
 }: {
   plan: TrainingPlan;
   scheduleDay: boolean | null;
+  /** The season's ruleset has the goalkeepers' own drill (E5-6c E56c-14). */
+  keeperDrill: boolean;
   onGo: (tab: PlanTab) => void;
 }) {
   const { t } = useTranslation();
@@ -230,6 +238,11 @@ export function PlanTiles({
           </button>
         ))}
       </div>
+      {keeperDrill && (
+        <p className="text-xs leading-snug text-gray-600 dark:text-gray-300">
+          {t("online.training.main.keeperDrill")}
+        </p>
+      )}
       <p className="text-xs leading-snug text-gray-500 dark:text-gray-400">{note}</p>
     </section>
   );

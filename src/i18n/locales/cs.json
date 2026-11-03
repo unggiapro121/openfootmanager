@@ -426,7 +426,8 @@
           "resting": "Zaměření na regeneraci: vynechá",
           "peaked": "Na svém potenciálu: vynechá",
           "keepAbove": "Zastaven kvůli udržení kondice",
-          "other": "Vynechá"
+          "other": "Vynechá",
+          "focusMaxed": "Jejich zaměření už nemá nic, co by zvedalo OVR na této pozici"
         },
         "intensity": "Intenzita",
         "intensityCost": "{{intensity}} (−{{cost}} kondice)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Udržet minimální kondici",
         "keepAbove": "Udržet kondici od",
         "xiWarning": "Tito hráči základní sestavy by začali dnešní zápas s kondicí pod {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: všechny atributy jejich zaměření tréninku jsou na maximu, trénink jen stojí kondici. Změňte jim zaměření.",
+        "focusFull": "{{names}}: jejich zaměření už nemá nic, co by zvedalo OVR na této pozici. Přepněte na zaměření za šipkou.",
         "andMore": "{{names}} a dalších {{more}}",
         "held": "Odtrénováno tréninků: {{held}} (č. {{first}}–{{last}} dnes).",
         "sessionsColumn": "Tréninky",
@@ -477,7 +478,8 @@
         "fromPlan": "Podle týdenního plánu",
         "auto": "Tým trénuje podle rozvrhu při změně dne ({{time}}). Rozvrh, zaměření či intenzitu změníte v týdenním plánu níže.",
         "autoNoTime": "Tým trénuje podle rozvrhu při změně dne. Rozvrh, zaměření či intenzitu změníte v týdenním plánu níže.",
-        "rest": "Dnes je podle rozvrhu volno: hlavní trénink není."
+        "rest": "Dnes je podle rozvrhu volno: hlavní trénink není.",
+        "keeperDrill": "Brankáři vždy navíc trénují vlastní cvičení: Chytání, Reflexy, Vzdušné souboje."
       },
       "groups": {
         "all": "Všichni ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Hráči",
         "mainAuto": "Tým trénuje podle rozvrhu při změně dne ({{time}}). Klepnutím na dlaždici ji změníte.",
         "mainAutoNoTime": "Tým trénuje podle rozvrhu při změně dne. Klepnutím na dlaždici ji změníte."
+      },
+      "focusHint": {
+        "best": "Nejlepší zaměření",
+        "fair": "Nejlepší: {{best}}",
+        "poor": "Toto zaměření zvedá OVR pomalu. Zkuste {{best}}.",
+        "nothing": "{{current}} už nemá nic, co by zvedalo OVR na této pozici. Přepněte na {{best}}."
       }
     },
     "schedule": {

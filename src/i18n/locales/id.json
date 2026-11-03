@@ -426,7 +426,8 @@
           "resting": "Fokus pemulihan: absen",
           "peaked": "Sudah di potensinya: absen",
           "keepAbove": "Berhenti untuk menjaga kondisi",
-          "other": "Absen"
+          "other": "Absen",
+          "focusMaxed": "Fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini"
         },
         "intensity": "Intensitas",
         "intensityCost": "{{intensity}} (−{{cost}} kondisi)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Jaga kondisi minimum",
         "keepAbove": "Jaga kondisi mulai",
         "xiWarning": "Pemain inti ini akan memulai pertandingan hari ini dengan kondisi di bawah {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: semua atribut fokus latihannya sudah penuh, jadi sesi hanya menguras kondisi. Ganti fokusnya.",
+        "focusFull": "{{names}}: fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke fokus setelah tanda panah.",
         "andMore": "{{names}} dan {{more}} lainnya",
         "held": "{{held}} sesi selesai (ke-{{first}}–{{last}} hari ini).",
         "sessionsColumn": "Sesi",
@@ -477,7 +478,8 @@
         "fromPlan": "Sesuai rencana mingguan",
         "auto": "Tim berlatih sesuai jadwal saat pergantian hari ({{time}}). Ubah jadwal, fokus, atau intensitas di rencana mingguan di bawah.",
         "autoNoTime": "Tim berlatih sesuai jadwal saat pergantian hari. Ubah jadwal, fokus, atau intensitas di rencana mingguan di bawah.",
-        "rest": "Hari ini istirahat menurut jadwal: tidak ada sesi utama."
+        "rest": "Hari ini istirahat menurut jadwal: tidak ada sesi utama.",
+        "keeperDrill": "Penjaga gawang selalu menjalani latihan tambahan khusus: Menangkap, Refleks, Udara."
       },
       "groups": {
         "all": "Semua ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Pemain",
         "mainAuto": "Tim berlatih sesuai jadwal saat hari berganti ({{time}}). Ketuk kotak untuk mengubahnya.",
         "mainAutoNoTime": "Tim berlatih sesuai jadwal saat hari berganti. Ketuk kotak untuk mengubahnya."
+      },
+      "focusHint": {
+        "best": "Fokus terbaik",
+        "fair": "Terbaik: {{best}}",
+        "poor": "Fokus ini menaikkan OVR dengan lambat. Coba {{best}}.",
+        "nothing": "{{current}} tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke {{best}}."
       }
     },
     "schedule": {

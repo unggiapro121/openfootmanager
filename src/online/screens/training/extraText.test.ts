@@ -1,12 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { myClub, squadPlayer } from "../../../test-utils/onlineTestKit";
-import type { ExtraDayView, SquadPlayerView } from "../../api";
+import { squadPlayer } from "../../../test-utils/onlineTestKit";
+import type { ExtraDayView } from "../../api";
 import {
   ALL_SESSIONS,
   chosenInSquad,
   conditionAfter,
-  focusFull,
-  focusOf,
+  focusLiftsNothing,
   loadChoice,
   namesOf,
   saveChoice,
@@ -137,52 +136,28 @@ describe("startersUnderMatchCondition", () => {
   });
 });
 
-describe("focus", () => {
-  const club = myClub();
-  const plan = {
-    ...club.trainingPlan,
-    focus: "Physical" as const,
-    groups: [{ id: "g1", name: "Wings", focus: "Technical" as const, player_ids: ["p2"] }],
-  };
-  const withAttributes = (id: string, values: Partial<SquadPlayerView["attributes"]>) =>
-    squadPlayer({ id, attributes: { ...squadPlayer().attributes, ...values } });
-
-  // Given players with a focus of their own, in a group, and in neither,
-  // when their focus is read,
-  // then it is the player's, then the group's, then the club's.
-  it("is the player's, else the group's, else the club's", () => {
-    expect(focusOf(squadPlayer({ id: "p1", trainingFocus: "Tactical" }), plan)).toBe("Tactical");
-    expect(focusOf(squadPlayer({ id: "p2" }), plan)).toBe("Technical");
-    expect(focusOf(squadPlayer({ id: "p3" }), plan)).toBe("Physical");
-  });
-
-  // Given a player whose Physical attributes are all 99, and one with stamina at 98,
-  // when the card looks for full focuses (R12-F),
-  // then only the first is full.
-  it("is full when every attribute it trains is at 99", () => {
-    const full = withAttributes("p1", { pace: 99, stamina: 99, strength: 99, agility: 99 });
-    const room = withAttributes("p3", { pace: 99, stamina: 98, strength: 99, agility: 99 });
-    expect(focusFull([full, room], ["p1", "p3"], plan).map((p) => p.id)).toEqual(["p1"]);
-    expect(focusFull([full], [], plan)).toEqual([]);
-  });
-
-  // Given a player in the Technical group whose split attributes are 0 (he has none of them)
-  // and whose other Technical attributes are 99,
-  // when the card looks for full focuses,
-  // then he is full: training skips the attributes he does not have.
-  it("skips the attributes a player does not have", () => {
-    const player = withAttributes("p2", {
-      passing: 99,
-      shooting: 99,
-      dribbling: 99,
-      long_passing: 0,
-      crossing: 0,
-      curve: 0,
-      free_kick: 0,
-      long_shots: 0,
-      first_touch: 0,
+describe("focusLiftsNothing", () => {
+  // Given chosen players the server finds on a focus that lifts nothing, on a fair one, and with
+  // no fit at all, and a player on a focus that lifts nothing who is not chosen,
+  // when the card looks for whom an extra session only costs condition (R12-F, C-13a),
+  // then only the chosen one on a focus that lifts nothing.
+  it("reads the server's verdict, for the chosen players only", () => {
+    const nothing = squadPlayer({
+      id: "p1",
+      focusFit: { current: "Attacking", best: "Tactical", verdict: "nothing" },
     });
-    expect(focusFull([player], ["p2"], plan).map((p) => p.id)).toEqual(["p2"]);
+    const fair = squadPlayer({
+      id: "p2",
+      focusFit: { current: "Technical", best: "Tactical", verdict: "fair" },
+    });
+    const none = squadPlayer({ id: "p3" });
+    const unchosen = squadPlayer({
+      id: "p4",
+      focusFit: { current: "Physical", best: "Tactical", verdict: "nothing" },
+    });
+    const players = [nothing, fair, none, unchosen];
+    expect(focusLiftsNothing(players, ["p1", "p2", "p3"]).map((p) => p.id)).toEqual(["p1"]);
+    expect(focusLiftsNothing(players, [])).toEqual([]);
   });
 });
 

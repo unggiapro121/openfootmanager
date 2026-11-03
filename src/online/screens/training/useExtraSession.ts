@@ -17,7 +17,7 @@ import { useActionKey } from "../useActionKey";
 import {
   chosenInSquad,
   type ExtraChoice,
-  focusFull,
+  focusLiftsNothing,
   loadChoice,
   namesOf,
   saveChoice,
@@ -33,7 +33,7 @@ type Translate = ReturnType<typeof useTranslation>["t"];
  * Extra sessions as the panel and the phone page hold them (C-12a C12-1…C12-6): the players
  * chosen (kept per club in this browser), the intensity, the sessions and the condition to keep;
  * the press and the server's answer; why a press cannot go, and the warnings of today's starters
- * it would leave tired and of players whose focus has nothing left to grow. The server decides who
+ * it would leave tired and of players whose focus lifts nothing now. The server decides who
  * trains.
  */
 export function useExtraSession(
@@ -120,7 +120,7 @@ export function useExtraSession(
         keepAbove: choice.keepAbove,
       })
     : [];
-  const full = focusFull(club.players, chosen, club.trainingPlan);
+  const full = focusLiftsNothing(club.players, chosen);
 
   return {
     choice,
@@ -145,6 +145,17 @@ export function useExtraSession(
 export function listed(t: Translate, players: SquadPlayerView[]): string {
   const { names, more } = namesOf(players);
   return more > 0 ? t("online.training.extra.andMore", { names, more }) : names;
+}
+
+/** As `listed`, each name with the focus he should switch to (C-13a, E5-6 §6.1). */
+export function listedWithBest(t: Translate, players: SquadPlayerView[]): string {
+  const named = players.map((player) => {
+    const best = player.focusFit?.best;
+    return best
+      ? { ...player, matchName: `${player.matchName} → ${t(`training.focuses.${best}.label`)}` }
+      : player;
+  });
+  return listed(t, named);
 }
 
 /** What a failed press says: the panel's own sentence for a refusal, the shared one otherwise. */

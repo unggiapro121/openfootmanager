@@ -2,7 +2,7 @@ import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { resolveBackendError } from "../../../../utils/backendI18n";
 import type { MyClubView } from "../../../api";
-import { toGroupData, toTrainingRoster } from "../../../convert/training";
+import { focusFitsOf, toGroupData, toTrainingRoster } from "../../../convert/training";
 import { useOnlineStore } from "../../../store/onlineStore";
 import { PhoneHeaderPart } from "../../mobile/PhoneHeaderSlots";
 import { FOCUS } from "../../mobile/PhoneSheet";
@@ -104,6 +104,7 @@ export default function PhoneTraining({ club }: { club: MyClubView }) {
             <PlanTiles
               plan={plan}
               scheduleDay={isScheduleDay(plan.schedule, weekday)}
+              keeperDrill={false}
               onGo={setTab}
             />
           ))}
@@ -149,6 +150,7 @@ export default function PhoneTraining({ club }: { club: MyClubView }) {
             groups={toGroupData(plan.groups)}
             teamFocus={plan.focus}
             roster={toTrainingRoster(club.players)}
+            focusFits={focusFitsOf(club.players)}
             disabled={disabled}
             onSaveGroups={training.saveGroups}
             onSetPlayerFocus={(playerId, focus) => void training.setPlayerFocus(playerId, focus)}

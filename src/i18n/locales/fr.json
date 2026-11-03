@@ -426,7 +426,8 @@
           "resting": "Focus récupération : ne participe pas",
           "peaked": "À son potentiel : ne participe pas",
           "keepAbove": "Arrêté pour garder sa condition",
-          "other": "Ne participe pas"
+          "other": "Ne participe pas",
+          "focusMaxed": "Leur focus n'a plus rien qui fasse monter leur OVR à ce poste"
         },
         "intensity": "Intensité",
         "intensityCost": "{{intensity}} (−{{cost}} de condition)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Garder une condition minimale",
         "keepAbove": "Garder la condition à partir de",
         "xiWarning": "Ces titulaires commenceraient le match d'aujourd'hui sous {{condition}} de condition : {{names}}.",
-        "focusFull": "{{names}} : tous les attributs de leur focus d'entraînement sont au maximum, la séance ne coûte que de la condition. Changez leur focus.",
+        "focusFull": "{{names}} : leur focus n'a plus rien qui fasse monter leur OVR à ce poste. Passez au focus indiqué après la flèche.",
         "andMore": "{{names}} et {{more}} autres",
         "held": "{{held}} séances effectuées (n° {{first}}–{{last}} aujourd'hui).",
         "sessionsColumn": "Séances",
@@ -477,7 +478,8 @@
         "fromPlan": "Selon le plan hebdomadaire",
         "auto": "L'équipe s'entraîne selon son programme au changement de jour ({{time}}). Changez programme, axe ou intensité dans le plan hebdomadaire ci-dessous.",
         "autoNoTime": "L'équipe s'entraîne selon son programme au changement de jour. Changez programme, axe ou intensité dans le plan hebdomadaire ci-dessous.",
-        "rest": "Aujourd'hui est un jour de repos du programme : pas de séance principale."
+        "rest": "Aujourd'hui est un jour de repos du programme : pas de séance principale.",
+        "keeperDrill": "Les gardiens travaillent toujours en plus un exercice spécifique : Prise de balle, Réflexes, Jeu Aérien."
       },
       "groups": {
         "all": "Tous ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Joueurs",
         "mainAuto": "L'équipe s'entraîne selon son planning au changement de jour ({{time}}). Touchez une case pour la modifier.",
         "mainAutoNoTime": "L'équipe s'entraîne selon son planning au changement de jour. Touchez une case pour la modifier."
+      },
+      "focusHint": {
+        "best": "Meilleur focus",
+        "fair": "Meilleur : {{best}}",
+        "poor": "Ce focus fait monter leur OVR lentement. Essayez {{best}}.",
+        "nothing": "{{current}} n'a plus rien qui fasse monter leur OVR à ce poste. Passez à {{best}}."
       }
     },
     "schedule": {

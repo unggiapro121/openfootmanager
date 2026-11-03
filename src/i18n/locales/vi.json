@@ -426,7 +426,8 @@
           "resting": "Focus hồi phục: nghỉ buổi này",
           "peaked": "Đã chạm tiềm năng: nghỉ buổi này",
           "keepAbove": "Dừng để giữ thể lực",
-          "other": "Nghỉ buổi này"
+          "other": "Nghỉ buổi này",
+          "focusMaxed": "Trọng tâm không còn chỉ số nào tăng OVR ở vị trí này"
         },
         "intensity": "Cường độ",
         "intensityCost": "{{intensity}} (−{{cost}} thể lực)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Giữ thể lực tối thiểu",
         "keepAbove": "Giữ thể lực từ",
         "xiWarning": "Các cầu thủ đá chính này sẽ vào trận hôm nay với thể lực dưới {{condition}}: {{names}}.",
-        "focusFull": "{{names}}: mọi thuộc tính của focus đã đầy, buổi tập chỉ tốn thể lực. Hãy đổi focus.",
+        "focusFull": "{{names}}: trọng tâm đang tập không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang trọng tâm sau mũi tên.",
         "andMore": "{{names}} và {{more}} người khác",
         "held": "Đã tập {{held}} buổi (buổi thứ {{first}}–{{last}} hôm nay).",
         "sessionsColumn": "Số buổi",
@@ -477,7 +478,8 @@
         "fromPlan": "Theo kế hoạch tuần",
         "auto": "Đội tự tập theo lịch lúc sang ngày ({{time}}). Đổi lịch, trọng tâm hoặc cường độ ở Kế hoạch tuần bên dưới.",
         "autoNoTime": "Đội tự tập theo lịch lúc sang ngày. Đổi lịch, trọng tâm hoặc cường độ ở Kế hoạch tuần bên dưới.",
-        "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính."
+        "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính.",
+        "keeperDrill": "Thủ môn luôn tập thêm bài riêng: Bắt bóng, Phản xạ, Không chiến."
       },
       "groups": {
         "all": "Tất cả ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Cầu thủ",
         "mainAuto": "Đội tự tập theo lịch lúc sang ngày ({{time}}). Chạm một ô để đổi.",
         "mainAutoNoTime": "Đội tự tập theo lịch lúc sang ngày. Chạm một ô để đổi."
+      },
+      "focusHint": {
+        "best": "Trọng tâm hợp nhất",
+        "fair": "Hợp nhất: {{best}}",
+        "poor": "Trọng tâm này tăng OVR chậm. Nên tập {{best}}.",
+        "nothing": "{{current}} không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang {{best}}."
       }
     },
     "schedule": {

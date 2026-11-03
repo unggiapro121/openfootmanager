@@ -426,7 +426,8 @@
           "resting": "Toparlanma odağı: katılmaz",
           "peaked": "Potansiyelinde: katılmaz",
           "keepAbove": "Kondisyonunu korumak için durdu",
-          "other": "Katılmaz"
+          "other": "Katılmaz",
+          "focusMaxed": "Odağında bu pozisyonda OVR'ını yükselten bir şey kalmadı"
         },
         "intensity": "Yoğunluk",
         "intensityCost": "{{intensity}} (−{{cost}} kondisyon)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Asgari kondisyonu koru",
         "keepAbove": "Kondisyonu şu değerin üstünde tut",
         "xiWarning": "Bu ilk 11 oyuncuları bugünkü maça {{condition}} altında kondisyonla başlar: {{names}}.",
-        "focusFull": "{{names}}: antrenman odağının tüm nitelikleri dolu, seans yalnızca kondisyon harcar. Odağını değiştir.",
+        "focusFull": "{{names}}: odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. Oktan sonraki odağa geç.",
         "andMore": "{{names}} ve {{more}} kişi daha",
         "held": "{{held}} seans yapıldı (bugünün {{first}}–{{last}}. seansı).",
         "sessionsColumn": "Seanslar",
@@ -477,7 +478,8 @@
         "fromPlan": "Haftalık plana göre",
         "auto": "Takım gün dönümünde ({{time}}) programına göre çalışır. Programı, odağı veya yoğunluğu aşağıdaki haftalık plandan değiştirin.",
         "autoNoTime": "Takım gün dönümünde programına göre çalışır. Programı, odağı veya yoğunluğu aşağıdaki haftalık plandan değiştirin.",
-        "rest": "Bugün programa göre dinlenme: ana antrenman yok."
+        "rest": "Bugün programa göre dinlenme: ana antrenman yok.",
+        "keeperDrill": "Kaleciler her zaman ayrıca kendi özel çalışmalarını yapar: Top Tutma, Refleks, Hava Hakimiyeti."
       },
       "groups": {
         "all": "Tümü ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Oyuncular",
         "mainAuto": "Takım gün dönünce programına göre çalışır ({{time}}). Değiştirmek için bir kutuya dokun.",
         "mainAutoNoTime": "Takım gün dönünce programına göre çalışır. Değiştirmek için bir kutuya dokun."
+      },
+      "focusHint": {
+        "best": "En iyi odak",
+        "fair": "En iyisi: {{best}}",
+        "poor": "Bu odak OVR'ı yavaş yükseltir. {{best}} dene.",
+        "nothing": "{{current}} odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. {{best}} odağına geç."
       }
     },
     "schedule": {

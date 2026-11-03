@@ -68,6 +68,7 @@ function trainingDay(overrides: Partial<TrainingDayView> = {}): TrainingDayView 
     nextRecoveryAt: new Date(Date.now() + 2 * HOUR).toISOString(),
     recovery: { perDay: 6, hours: 8 },
     autoOff: false,
+    keeperDrill: false,
     extra: extraDay(),
     ...overrides,
   };

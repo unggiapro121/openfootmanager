@@ -426,7 +426,8 @@
           "resting": "Foco em recuperação: fica de fora",
           "peaked": "No seu potencial: fica de fora",
           "keepAbove": "Parou para manter a condição",
-          "other": "Fica de fora"
+          "other": "Fica de fora",
+          "focusMaxed": "O foco não tem mais nada que aumente o OVR nesta posição"
         },
         "intensity": "Intensidade",
         "intensityCost": "{{intensity}} (−{{cost}} de condição)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Manter uma condição mínima",
         "keepAbove": "Manter a condição a partir de",
         "xiWarning": "Estes titulares começariam o jogo de hoje com menos de {{condition}} de condição: {{names}}.",
-        "focusFull": "{{names}}: todos os atributos do foco de treino estão no máximo, então a sessão só gasta condição. Mude o foco.",
+        "focusFull": "{{names}}: o foco não tem mais nada que aumente o OVR nesta posição. Mude para o foco depois da seta.",
         "andMore": "{{names}} e mais {{more}}",
         "held": "{{held}} sessões treinadas (nº {{first}}–{{last}} de hoje).",
         "sessionsColumn": "Sessões",
@@ -477,7 +478,8 @@
         "fromPlan": "Pelo plano semanal",
         "auto": "O time treina pela agenda na virada do dia ({{time}}). Mude agenda, foco ou intensidade no plano semanal abaixo.",
         "autoNoTime": "O time treina pela agenda na virada do dia. Mude agenda, foco ou intensidade no plano semanal abaixo.",
-        "rest": "Hoje é descanso pela agenda: sem sessão principal."
+        "rest": "Hoje é descanso pela agenda: sem sessão principal.",
+        "keeperDrill": "Os goleiros sempre fazem um treino extra só deles: Pegada, Reflexos, Jogo Aéreo."
       },
       "groups": {
         "all": "Todos ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Jogadores",
         "mainAuto": "O time treina pela agenda na virada do dia ({{time}}). Toque em um quadro para mudar.",
         "mainAutoNoTime": "O time treina pela agenda na virada do dia. Toque em um quadro para mudar."
+      },
+      "focusHint": {
+        "best": "Melhor foco",
+        "fair": "Melhor: {{best}}",
+        "poor": "Este foco aumenta o OVR devagar. Tente {{best}}.",
+        "nothing": "{{current}} não tem mais nada que aumente o OVR nesta posição. Mude para {{best}}."
       }
     },
     "schedule": {

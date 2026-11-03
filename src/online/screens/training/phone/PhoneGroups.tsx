@@ -14,6 +14,8 @@ import { TRAINING_FOCUS_IDS } from "../../../../components/training/trainingOpti
 import { condBgColor, condColor } from "../../../../lib/playerConditionDisplay";
 import { getPositionColor } from "../../../../lib/positionColors";
 import type { TrainingGroupData } from "../../../../store/types";
+import type { FocusFitView } from "../../../api";
+import FocusHint from "../FocusHint";
 import { FOCUS } from "../../mobile/PhoneSheet";
 import { filteredRoster, type GroupFilter, groupOf } from "../trainingView";
 
@@ -33,6 +35,7 @@ export function PhoneGroups({
   groups,
   teamFocus,
   roster,
+  focusFits = {},
   disabled,
   onSaveGroups,
   onSetPlayerFocus,
@@ -40,6 +43,8 @@ export function PhoneGroups({
   groups: TrainingGroupData[];
   teamFocus: string;
   roster: TrainingRosterPlayer[];
+  /** How each player's focus suits him (S-31b), by id; a player without one shows no hint. */
+  focusFits?: Record<string, FocusFitView>;
   disabled: boolean;
   onSaveGroups: (groups: TrainingGroupData[]) => void;
   onSetPlayerFocus: (playerId: string, focus: string | null) => void;
@@ -151,6 +156,7 @@ export function PhoneGroups({
               player={player}
               groups={groups}
               teamFocus={teamFocus}
+              focusFit={focusFits[player.id]}
               open={open === player.id}
               disabled={disabled}
               onToggle={() => setOpen(open === player.id ? null : player.id)}
@@ -170,6 +176,7 @@ function PlayerRow({
   player,
   groups,
   teamFocus,
+  focusFit,
   open,
   disabled,
   onToggle,
@@ -179,6 +186,7 @@ function PlayerRow({
   player: TrainingRosterPlayer;
   groups: TrainingGroupData[];
   teamFocus: string;
+  focusFit?: FocusFitView;
   open: boolean;
   disabled: boolean;
   onToggle: () => void;
@@ -280,6 +288,9 @@ function PlayerRow({
               ))}
             </select>
           </label>
+          <span className="col-span-2">
+            <FocusHint fit={focusFit} shown={focus} />
+          </span>
         </div>
       )}
     </li>

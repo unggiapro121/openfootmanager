@@ -21,6 +21,7 @@ function day(overrides: Partial<TrainingDayView> = {}): TrainingDayView {
     nextRecoveryAt: "2099-01-01T00:00:00Z",
     recovery: { perDay: 6, hours: 8 },
     autoOff: false,
+    keeperDrill: false,
     ...overrides,
   };
 }

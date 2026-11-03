@@ -426,7 +426,8 @@
           "resting": "Enfoque de recuperación: no participa",
           "peaked": "En su potencial: no participa",
           "keepAbove": "Se detuvo para conservar su condición",
-          "other": "No participa"
+          "other": "No participa",
+          "focusMaxed": "Su enfoque ya no tiene nada que suba su OVR en esta posición"
         },
         "intensity": "Intensidad",
         "intensityCost": "{{intensity}} (−{{cost}} de condición)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Mantener una condición mínima",
         "keepAbove": "Mantener la condición desde",
         "xiWarning": "Estos titulares empezarían el partido de hoy con menos de {{condition}} de condición: {{names}}.",
-        "focusFull": "{{names}}: todos los atributos de su enfoque están al máximo, así que la sesión solo cuesta condición. Cambia su enfoque.",
+        "focusFull": "{{names}}: su enfoque ya no tiene nada que suba su OVR en esta posición. Cambia al enfoque que sigue a la flecha.",
         "andMore": "{{names}} y {{more}} más",
         "held": "{{held}} sesiones entrenadas (n.º {{first}}–{{last}} de hoy).",
         "sessionsColumn": "Sesiones",
@@ -477,7 +478,8 @@
         "fromPlan": "Según el plan semanal",
         "auto": "El equipo entrena según su calendario al cambiar el día ({{time}}). Cambia calendario, enfoque o intensidad en el plan semanal de abajo.",
         "autoNoTime": "El equipo entrena según su calendario al cambiar el día. Cambia calendario, enfoque o intensidad en el plan semanal de abajo.",
-        "rest": "Hoy es descanso según el calendario: no hay sesión principal."
+        "rest": "Hoy es descanso según el calendario: no hay sesión principal.",
+        "keeperDrill": "Los porteros siempre hacen además un ejercicio propio: Blocaje, Reflejos, Juego Aéreo."
       },
       "groups": {
         "all": "Todos ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Jugadores",
         "mainAuto": "El equipo entrena según su calendario al cambiar el día ({{time}}). Toca una casilla para cambiarla.",
         "mainAutoNoTime": "El equipo entrena según su calendario al cambiar el día. Toca una casilla para cambiarla."
+      },
+      "focusHint": {
+        "best": "Mejor enfoque",
+        "fair": "Mejor: {{best}}",
+        "poor": "Este enfoque sube su OVR despacio. Prueba {{best}}.",
+        "nothing": "{{current}} ya no tiene nada que suba su OVR en esta posición. Cambia a {{best}}."
       }
     },
     "schedule": {

@@ -426,7 +426,8 @@
           "resting": "Foco de recuperação: não participa",
           "peaked": "No seu potencial: não participa",
           "keepAbove": "Parou para manter a condição",
-          "other": "Não participa"
+          "other": "Não participa",
+          "focusMaxed": "O foco já não tem nada que suba o OVR nesta posição"
         },
         "intensity": "Intensidade",
         "intensityCost": "{{intensity}} (−{{cost}} de condição)",
@@ -436,7 +437,7 @@
         "keepAboveOn": "Manter uma condição mínima",
         "keepAbove": "Manter a condição a partir de",
         "xiWarning": "Estes titulares começariam o jogo de hoje com menos de {{condition}} de condição: {{names}}.",
-        "focusFull": "{{names}}: todos os atributos do foco de treino estão no máximo, por isso a sessão só custa condição. Mude o foco.",
+        "focusFull": "{{names}}: o foco já não tem nada que suba o OVR nesta posição. Mude para o foco a seguir à seta.",
         "andMore": "{{names}} e mais {{more}}",
         "held": "{{held}} sessões treinadas (n.º {{first}}–{{last}} de hoje).",
         "sessionsColumn": "Sessões",
@@ -477,7 +478,8 @@
         "fromPlan": "Segundo o plano semanal",
         "auto": "A equipa treina segundo o calendário na mudança de dia ({{time}}). Muda calendário, foco ou intensidade no plano semanal abaixo.",
         "autoNoTime": "A equipa treina segundo o calendário na mudança de dia. Muda calendário, foco ou intensidade no plano semanal abaixo.",
-        "rest": "Hoje é descanso segundo o calendário: não há sessão principal."
+        "rest": "Hoje é descanso segundo o calendário: não há sessão principal.",
+        "keeperDrill": "Os guarda-redes treinam sempre um exercício próprio a mais: Enquadramento, Reflexos, Jogo Aéreo."
       },
       "groups": {
         "all": "Todos ({{count}})",
@@ -509,6 +511,12 @@
         "players": "Jogadores",
         "mainAuto": "A equipa treina segundo o calendário na mudança do dia ({{time}}). Toca num quadro para o mudar.",
         "mainAutoNoTime": "A equipa treina segundo o calendário na mudança do dia. Toca num quadro para o mudar."
+      },
+      "focusHint": {
+        "best": "Melhor foco",
+        "fair": "Melhor: {{best}}",
+        "poor": "Este foco sobe o OVR devagar. Experimente {{best}}.",
+        "nothing": "{{current}} já não tem nada que suba o OVR nesta posição. Mude para {{best}}."
       }
     },
     "schedule": {

@@ -7,7 +7,7 @@ import DailyGift from "../items/DailyGift";
 import { FRAME_ACTION, keepFocusInside } from "../items/ItemDialogFrame";
 import { IntensityChooser, PlayerChooser, PressResult, SessionsChooser } from "./ExtraChoosers";
 import { ALL_SESSIONS, MATCH_CONDITION } from "./extraText";
-import { listed, useExtraSession } from "./useExtraSession";
+import { listed, listedWithBest, useExtraSession } from "./useExtraSession";
 
 /**
  * Extra sessions on top of the day's, in a panel from the right (design tap-luyen.html; C-12a
@@ -108,7 +108,9 @@ export default function ExtraTraining({
           </Warning>
         )}
         {full.length > 0 && (
-          <Warning>{t("online.training.extra.focusFull", { names: listed(t, full) })}</Warning>
+          <Warning>
+            {t("online.training.extra.focusFull", { names: listedWithBest(t, full) })}
+          </Warning>
         )}
       </div>
       <div className="flex flex-col gap-2 border-t border-gray-200 bg-gray-50 px-5 py-3.5 dark:border-navy-600 dark:bg-navy-800">

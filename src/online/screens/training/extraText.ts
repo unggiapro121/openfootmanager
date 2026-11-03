@@ -1,5 +1,4 @@
-import { TRAINING_FOCUS_ATTRS } from "../../../components/training/trainingOptions";
-import type { ExtraDayView, SquadPlayerView, TrainingPlan } from "../../api";
+import type { ExtraDayView, SquadPlayerView } from "../../api";
 
 /** "Until no one can": the most sessions one request may ask for (S-28 S28-2). */
 export const ALL_SESSIONS = 30;
@@ -9,8 +8,6 @@ export const SESSION_CHOICES = [1, 3, 5, ALL_SESSIONS] as const;
 export const MATCH_CONDITION = 75;
 /** The names a warning lists before it says "and k more". */
 const NAMES_SHOWN = 3;
-/** An attribute at its ceiling: a session cannot raise it. */
-const ATTRIBUTE_CEILING = 99;
 
 /** What the card keeps between visits, per club (C12-2, C12-4; Qs28-5). */
 export interface ExtraChoice {
@@ -122,32 +119,14 @@ export function startersUnderMatchCondition(input: {
   });
 }
 
-/** The focus a player trains on: his own, else his training group's, else the club's. */
-export function focusOf(player: SquadPlayerView, plan: TrainingPlan): string {
-  if (player.trainingFocus) return player.trainingFocus;
-  const group = plan.groups.find((candidate) => candidate.player_ids.includes(player.id));
-  return group?.focus ?? plan.focus;
-}
-
 /**
- * The chosen players whose focus has nothing left to raise (E5-4 R12-F): every attribute it
- * trains that the player has is at 99, so an extra session only costs condition. An attribute at
- * 0 is one the player does not have (a split attribute), as training skips it.
+ * The chosen players whose focus lifts nothing while another focus would (E5-4 R12-F, now the
+ * server's `focusFit`, S-31b): an extra session only costs them condition. The rule is the
+ * fork's; the card only reads its verdict.
  */
-export function focusFull(
-  players: SquadPlayerView[],
-  chosen: string[],
-  plan: TrainingPlan,
-): SquadPlayerView[] {
+export function focusLiftsNothing(players: SquadPlayerView[], chosen: string[]): SquadPlayerView[] {
   const ids = new Set(chosen);
-  return players.filter((player) => {
-    if (!ids.has(player.id)) return false;
-    const trained = TRAINING_FOCUS_ATTRS[focusOf(player, plan)] ?? [];
-    const values = trained
-      .map((attribute) => (player.attributes as Record<string, number>)[attribute] ?? 0)
-      .filter((value) => value > 0);
-    return values.length > 0 && values.every((value) => value >= ATTRIBUTE_CEILING);
-  });
+  return players.filter((player) => ids.has(player.id) && player.focusFit?.verdict === "nothing");
 }
 
 /** Up to three names, and how many more: what a warning lists. */
@@ -162,7 +141,7 @@ export function namesOf(players: SquadPlayerView[]): { names: string; more: numb
 }
 
 /** The reasons a player sits out or stops (S-28 §6), as the card's text keys know them. */
-const STOP_REASONS = new Set(["injured", "tired", "resting", "peaked", "keepAbove"]);
+const STOP_REASONS = new Set(["injured", "tired", "resting", "peaked", "keepAbove", "focusMaxed"]);
 
 /** The text key of a sit-out or stop reason; a reason this build does not know reads plainly. */
 export function stopReasonKey(reason: string): string {

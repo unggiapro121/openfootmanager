@@ -16,6 +16,19 @@ const pick = <T extends string>(ids: readonly string[], value: string): T | null
   ids.includes(value) ? (value as T) : null;
 
 /**
+ * The club read again after a saved plan, for the focus hints it changes (S-31b, C-13a). A failed
+ * read keeps the club shown: its hints were read for the old plan, and the hint hides itself for
+ * a focus it was not read for.
+ */
+async function refreshFocusHints(): Promise<void> {
+  try {
+    useOnlineStore.getState().setClub(await tracked(() => online.clubs.mine()));
+  } catch {
+    // The plan is saved; only the hints wait for the next read of the club.
+  }
+}
+
+/**
  * The club's training plan and the ways to change it, each writing the whole plan to the server
  * (C-2 §3.4): the schedule, the team's focus and intensity, the groups, a player's own focus.
  * The plan is kept to the squad, so a player who left the club is neither shown nor sent.
@@ -40,6 +53,7 @@ export function useTrainingPlan(club: MyClubView) {
           .getState()
           .setClub({ ...current, trainingPlan: saved, trainingPlanIsOwn: true });
       }
+      await refreshFocusHints();
     } catch (failure) {
       setError(failure);
     } finally {

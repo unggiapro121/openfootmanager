@@ -12,7 +12,7 @@ import { IntensityChooser, PressResult, SessionsChooser } from "../ExtraChoosers
 import { Warning } from "../ExtraTraining";
 import { ALL_SESSIONS, MATCH_CONDITION, stopReasonKey } from "../extraText";
 import { extraOrder, stopsBeforeFirst } from "../trainingView";
-import { listed, useExtraSession } from "../useExtraSession";
+import { listed, listedWithBest, useExtraSession } from "../useExtraSession";
 
 const KEY = "online.training.phone";
 
@@ -201,7 +201,7 @@ export default function PhoneExtra({
         )}
         {session.full.length > 0 && (
           <Warning>
-            {t("online.training.extra.focusFull", { names: listed(t, session.full) })}
+            {t("online.training.extra.focusFull", { names: listedWithBest(t, session.full) })}
           </Warning>
         )}
       </div>

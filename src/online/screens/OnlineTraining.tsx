@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { resolveBackendError } from "../../utils/backendI18n";
 import type { MyClubView } from "../api";
-import { toGroupData, toTrainingRoster } from "../convert/training";
+import { focusFitsOf, toGroupData, toTrainingRoster } from "../convert/training";
 import { useOnlineStore } from "../store/onlineStore";
 import PhoneTraining from "./training/phone/PhoneTraining";
 import TodaySession from "./training/TodaySession";
@@ -72,6 +72,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
             groups={toGroupData(plan.groups)}
             teamFocus={plan.focus}
             roster={toTrainingRoster(club.players)}
+            focusFits={focusFitsOf(club.players)}
             disabled={saving || offline}
             onSaveGroups={saveGroups}
             onSetPlayerFocus={(playerId, focus) => void setPlayerFocus(playerId, focus)}

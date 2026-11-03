@@ -15,6 +15,8 @@ import { Badge, Select } from "../../../components/ui";
 import { condBgColor, condColor } from "../../../lib/playerConditionDisplay";
 import { positionBadgeVariant } from "../../../lib/playerRating";
 import type { TrainingGroupData } from "../../../store/types";
+import type { FocusFitView } from "../../api";
+import FocusHint from "./FocusHint";
 import { filteredRoster, type GroupFilter, groupOf } from "./trainingView";
 
 const CHIP =
@@ -36,6 +38,7 @@ export default function TrainingGroups({
   groups,
   teamFocus,
   roster,
+  focusFits = {},
   disabled,
   onSaveGroups,
   onSetPlayerFocus,
@@ -44,6 +47,8 @@ export default function TrainingGroups({
   /** What a player with no group and no focus of his own trains. */
   teamFocus: string;
   roster: TrainingRosterPlayer[];
+  /** How each player's focus suits him (S-31b), by id; a player without one shows no hint. */
+  focusFits?: Record<string, FocusFitView>;
   disabled: boolean;
   /** Every group of the club, as it should be after the change. */
   onSaveGroups: (groups: TrainingGroupData[]) => void;
@@ -175,6 +180,7 @@ export default function TrainingGroups({
                 player={player}
                 groups={groups}
                 teamFocus={teamFocus}
+                focusFit={focusFits[player.id]}
                 disabled={disabled}
                 onGroup={(groupId) =>
                   onSaveGroups(reassignPlayerTrainingGroup(groups, player.id, groupId))
@@ -199,6 +205,7 @@ function GroupRow({
   player,
   groups,
   teamFocus,
+  focusFit,
   disabled,
   onGroup,
   onFocus,
@@ -206,6 +213,7 @@ function GroupRow({
   player: TrainingRosterPlayer;
   groups: TrainingGroupData[];
   teamFocus: string;
+  focusFit?: FocusFitView;
   disabled: boolean;
   onGroup: (groupId: string) => void;
   onFocus: (focus: string) => void;
@@ -295,6 +303,9 @@ function GroupRow({
               {t("online.training.groups.inheritedTag")}
             </span>
           )}
+        </span>
+        <span className="mt-1 block">
+          <FocusHint fit={focusFit} shown={own || inherited} />
         </span>
       </td>
     </tr>
