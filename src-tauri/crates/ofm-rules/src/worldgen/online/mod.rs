@@ -8,6 +8,7 @@
 //! What a club is made of lives in a versioned [`OnlineContentPack`]; this module is the rules.
 
 mod fold_table;
+mod level;
 pub mod names;
 pub mod naming;
 pub mod pack;
