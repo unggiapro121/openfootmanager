@@ -4,11 +4,15 @@ import type { YoungsterView } from "./YoungsterView";
 /**
  * A scouting trip: out, back with its report, or done.
  */
-export type ScoutTripView = { id: string, region: string, 
+export type ScoutTripView = { id: string, 
 /**
- * `Physical`, `Technical` or `Balanced`.
+ * Where most of its candidates come from: the club's region (E5-10 S35-7).
  */
-focus: string, elite: boolean, 
+region: string, 
+/**
+ * The line it looks for: `Goalkeeper`, `Defender`, `Midfielder`, `Forward` or `Any`.
+ */
+line: string, elite: boolean, 
 /**
  * `cash`, `scoutExpedition` or `scoutExpeditionElite`.
  */

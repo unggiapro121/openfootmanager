@@ -77,6 +77,8 @@ function academyOf(enabled: boolean): AcademyView {
     used: 0,
     players: [],
     graduated: [],
+    positionWeights: [],
+    lineShares: {},
   };
 }
 

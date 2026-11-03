@@ -1345,21 +1345,17 @@
         "scoutDone": "Eine Scoutingreise ist zurück: wähle, bevor der Bericht schließt.",
         "changed": "Deine Akademie hat Neuigkeiten."
       },
-      "region": {
-        "AsiaSoutheast": "Südostasien",
-        "AsiaEast": "Ostasien",
-        "Europe": "Europa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Ausgewogen",
-        "Physical": "Körperlich",
-        "Technical": "Technisch"
-      },
       "pay": {
         "cash": "Vereinsgeld",
         "scoutExpedition": "ein Scouting-Ticket",
         "scoutExpeditionElite": "ein Elite-Scouting-Ticket"
+      },
+      "line": {
+        "label": "Mannschaftsteil",
+        "Any": "Alle"
+      },
+      "lineShares": {
+        "title": "Anteile der Positionen"
       },
       "reveal": {
         "0": "Gerade gekommen",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Scout losschicken",
-        "trip": "{{region}} · {{focus}} · bezahlt mit {{pay}}",
+        "trip": "{{line}} · bezahlt mit {{pay}}",
         "backIn": "Zurück in {{time}}",
         "backSoon": "Der Scout ist auf dem Rückweg…",
         "timeSkip": "Eine Sanduhr nutzen ({{held}} im Besitz)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Normalen Scout losschicken"
       },
       "send": {
-        "region": "Region",
-        "focus": "Gesucht",
         "pay": "Bezahlen mit",
         "payCash": "Vereinsgeld: {{cost}}",
         "payTicket": "1 Scouting-Ticket ({{held}} im Besitz)",

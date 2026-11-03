@@ -1345,21 +1345,17 @@
         "scoutDone": "球探考察已返回：请在报告关闭前选择。",
         "changed": "你的青训营有新消息。"
       },
-      "region": {
-        "AsiaSoutheast": "东南亚",
-        "AsiaEast": "东亚",
-        "Europe": "欧洲",
-        "Americas": "美洲"
-      },
-      "focus": {
-        "Balanced": "均衡",
-        "Physical": "身体",
-        "Technical": "技术"
-      },
       "pay": {
         "cash": "俱乐部资金",
         "scoutExpedition": "球探券",
         "scoutExpeditionElite": "精英球探券"
+      },
+      "line": {
+        "label": "位置线",
+        "Any": "全部"
+      },
+      "lineShares": {
+        "title": "位置比例"
       },
       "reveal": {
         "0": "刚刚加入",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "派出球探",
-        "trip": "{{region}} · {{focus}} · 支付方式：{{pay}}",
+        "trip": "{{line}} · 支付方式：{{pay}}",
         "backIn": "{{time}} 后返回",
         "backSoon": "球探正在返回…",
         "timeSkip": "使用沙漏（持有 {{held}} 个）",
@@ -1386,8 +1382,6 @@
         "sendNormal": "派出普通球探"
       },
       "send": {
-        "region": "地区",
-        "focus": "寻找方向",
         "pay": "支付方式",
         "payCash": "俱乐部资金：{{cost}}",
         "payTicket": "1 张球探券（持有 {{held}} 张）",

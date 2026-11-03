@@ -1345,21 +1345,17 @@
         "scoutDone": "Scout đã về: chọn ứng viên trước khi báo cáo đóng.",
         "changed": "Lò đào tạo có tin mới."
       },
-      "region": {
-        "AsiaSoutheast": "Đông Nam Á",
-        "AsiaEast": "Đông Á",
-        "Europe": "Châu Âu",
-        "Americas": "Châu Mỹ"
-      },
-      "focus": {
-        "Balanced": "Cân bằng",
-        "Physical": "Thể chất",
-        "Technical": "Kỹ thuật"
-      },
       "pay": {
         "cash": "tiền CLB",
         "scoutExpedition": "vé scout",
         "scoutExpeditionElite": "vé scout đặc biệt"
+      },
+      "line": {
+        "label": "Tuyến",
+        "Any": "Tất cả"
+      },
+      "lineShares": {
+        "title": "Tỉ lệ vị trí trong tuyến"
       },
       "reveal": {
         "0": "Mới nhận",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Gửi scout",
-        "trip": "{{region}} · {{focus}} · trả bằng {{pay}}",
+        "trip": "{{line}} · trả bằng {{pay}}",
         "backIn": "Về sau {{time}}",
         "backSoon": "Scout sắp về…",
         "timeSkip": "Dùng đồng hồ cát (còn {{held}})",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Gửi scout thường"
       },
       "send": {
-        "region": "Khu vực",
-        "focus": "Trọng tâm",
         "pay": "Trả bằng",
         "payCash": "Tiền CLB: {{cost}}",
         "payTicket": "1 vé scout (còn {{held}})",

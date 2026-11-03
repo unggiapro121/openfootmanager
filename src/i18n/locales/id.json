@@ -1345,21 +1345,17 @@
         "scoutDone": "Perjalanan pemandu bakat sudah kembali: pilih sebelum laporan ditutup.",
         "changed": "Akademimu punya kabar baru."
       },
-      "region": {
-        "AsiaSoutheast": "Asia Tenggara",
-        "AsiaEast": "Asia Timur",
-        "Europe": "Eropa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Seimbang",
-        "Physical": "Fisik",
-        "Technical": "Teknik"
-      },
       "pay": {
         "cash": "uang klub",
         "scoutExpedition": "tiket pemandu bakat",
         "scoutExpeditionElite": "tiket pemandu bakat elite"
+      },
+      "line": {
+        "label": "Lini",
+        "Any": "Semua"
+      },
+      "lineShares": {
+        "title": "Sebaran posisi"
       },
       "reveal": {
         "0": "Baru masuk",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Kirim pemandu bakat",
-        "trip": "{{region}} · {{focus}} · dibayar dengan {{pay}}",
+        "trip": "{{line}} · dibayar dengan {{pay}}",
         "backIn": "Kembali dalam {{time}}",
         "backSoon": "Pemandu bakat sedang kembali…",
         "timeSkip": "Pakai jam pasir (punya {{held}})",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Kirim pemandu bakat biasa"
       },
       "send": {
-        "region": "Wilayah",
-        "focus": "Mencari",
         "pay": "Bayar dengan",
         "payCash": "Uang klub: {{cost}}",
         "payTicket": "1 tiket pemandu bakat (punya {{held}})",

@@ -20,23 +20,18 @@ import { useActionKey } from "../useActionKey";
 import { useCountdownText } from "../useCountdownText";
 import { freeSlots } from "./AcademyFigures";
 import AcademyConfirm from "./AcademyConfirm";
+import { translatePositionLabel } from "../../../components/squad/SquadTab.helpers";
 import {
   academyErrorText,
   academyRefusalText,
-  regionName,
-  SCOUT_FOCI,
+  SCOUT_LINES,
   SCOUT_PAYS,
-  SCOUT_REGIONS,
+  type ScoutLine,
   type ScoutPay,
-  scoutFocusName,
+  scoutLineName,
 } from "./academyText";
 import ReportDialog from "./ReportDialog";
 import TripLine from "./TripLine";
-
-/** The region a trip goes to by default: the club's own when a trip may go there. */
-function defaultRegion(clubRegion: string | undefined): string {
-  return SCOUT_REGIONS.find((region) => region === clubRegion) ?? "Europe";
-}
 
 /**
  * The ways a trip may be paid now, as the quote says (C-7 C7-41): a ticket only while one is held,
@@ -134,13 +129,7 @@ function TripGauge({
  * The academy's scouting (C-7 C7-39…C7-42, design HocVien.dc.html): the season's trips, a new one
  * chosen and sent from the panel, and the trip out or the report back below it.
  */
-export default function ScoutPanel({
-  academy,
-  clubRegion,
-}: {
-  academy: AcademyView;
-  clubRegion: string | undefined;
-}) {
+export default function ScoutPanel({ academy }: { academy: AcademyView }) {
   const { t } = useTranslation();
   const titleId = useId();
   const max = academy.maxTripsPerSeason;
@@ -176,7 +165,7 @@ export default function ScoutPanel({
             />
           </div>
         )}
-        <SendForm academy={academy} clubRegion={clubRegion} />
+        <SendForm academy={academy} />
         <Reports academy={academy} />
       </div>
     </section>
@@ -236,22 +225,14 @@ function KindChoice({
 }
 
 /**
- * Where a trip goes, what it looks for, its kind and how it is paid. The quote is read again for
- * each region and focus, and when the trip out changes; its refusal, when any, is the server's
- * word and keeps the button off. One key for one choice, so a press retried after no answer sends
- * the same trip.
+ * The line a trip looks for, its kind and how it is paid. The quote is read again for each line,
+ * and when the trip out changes; its refusal, when any, is the server's word and keeps the button
+ * off. One key for one choice, so a press retried after no answer sends the same trip.
  */
-function SendForm({
-  academy,
-  clubRegion,
-}: {
-  academy: AcademyView;
-  clubRegion: string | undefined;
-}) {
+function SendForm({ academy }: { academy: AcademyView }) {
   const { t, i18n } = useTranslation();
   const itemsLocked = useOnlineStore((state) => Boolean(state.items?.locked));
-  const [region, setRegion] = useState(() => defaultRegion(clubRegion));
-  const [focus, setFocus] = useState<string>("Balanced");
+  const [line, setLine] = useState<ScoutLine>("Any");
   const [kind, setKind] = useState<"normal" | "elite">("normal");
   const [pay, setPay] = useState<ScoutPay | null>(null);
   const [busy, setBusy] = useState(false);
@@ -259,8 +240,8 @@ function SendForm({
   const { run } = useActionKey();
   const tripId = academy.trip?.id ?? "";
   const { resource } = useOnlineResource(
-    () => tracked(() => online.academy.quote(region, focus)),
-    [region, focus, tripId],
+    () => tracked(() => online.academy.quote(line)),
+    [line, tripId],
   );
   const quote = resource.status === "ready" ? resource.data : null;
   const choices = quote ? payChoices(quote, itemsLocked) : [];
@@ -284,8 +265,8 @@ function SendForm({
     setBusy(true);
     setError(null);
     run(
-      (key) => tracked(() => online.academy.send({ region, focus, pay: paying }, key)),
-      `${region}:${focus}:${paying}`,
+      (key) => tracked(() => online.academy.send({ line, pay: paying }, key)),
+      `${line}:${paying}`,
     )
       .then((trip) => {
         useOnlineStore.setState((state) =>
@@ -336,19 +317,13 @@ function SendForm({
         </div>
       </fieldset>
       <ChipGroup
-        label={t("online.academy.send.region")}
-        values={SCOUT_REGIONS}
-        chosen={region as (typeof SCOUT_REGIONS)[number]}
-        name={(value) => regionName(t, value)}
-        onChoose={setRegion}
+        label={t("online.academy.line.label")}
+        values={SCOUT_LINES}
+        chosen={line}
+        name={(value) => scoutLineName(t, value)}
+        onChoose={setLine}
       />
-      <ChipGroup
-        label={t("online.academy.send.focus")}
-        values={SCOUT_FOCI}
-        chosen={focus as (typeof SCOUT_FOCI)[number]}
-        name={(value) => scoutFocusName(t, value)}
-        onChoose={setFocus}
-      />
+      <LineShares academy={academy} line={line} />
       {resource.status === "loading" && (
         <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
       )}
@@ -411,6 +386,44 @@ function SendForm({
         )}
       </div>
     </>
+  );
+}
+
+/**
+ * The positions a trip of `line` finds and how often (C-15 C15-3, Qsl-7): the season's table as
+ * the server sends it, never worked out here. Nothing while the season names none.
+ */
+function LineShares({ academy, line }: { academy: AcademyView; line: ScoutLine }) {
+  const { t, i18n } = useTranslation();
+  const titleId = useId();
+  const shares = academy.lineShares?.[line] ?? [];
+  if (shares.length === 0) return null;
+  const percent = new Intl.NumberFormat(i18n.language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span id={titleId} className={LABEL}>
+        {t("online.academy.lineShares.title")}
+      </span>
+      <ul
+        aria-labelledby={titleId}
+        className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-x-4 gap-y-1"
+      >
+        {shares.map((share) => (
+          <li
+            key={share.position}
+            className="flex items-baseline justify-between gap-2 text-[13px] text-gray-700 dark:text-gray-300"
+          >
+            <span>{translatePositionLabel(t, share.position)}</span>
+            <span className="font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+              {percent.format(share.perMille / 10)} %
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

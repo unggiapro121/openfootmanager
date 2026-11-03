@@ -1345,21 +1345,17 @@
         "scoutDone": "Skautská cesta se vrátila: vyber, než se hlášení zavře.",
         "changed": "Tvoje akademie má novinky."
       },
-      "region": {
-        "AsiaSoutheast": "Jihovýchodní Asie",
-        "AsiaEast": "Východní Asie",
-        "Europe": "Evropa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Vyvážené",
-        "Physical": "Fyzické",
-        "Technical": "Technické"
-      },
       "pay": {
         "cash": "peníze klubu",
         "scoutExpedition": "skautská vstupenka",
         "scoutExpeditionElite": "elitní skautská vstupenka"
+      },
+      "line": {
+        "label": "Řada",
+        "Any": "Všechny"
+      },
+      "lineShares": {
+        "title": "Zastoupení postů"
       },
       "reveal": {
         "0": "Právě přišel",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Vyslat skauta",
-        "trip": "{{region}} · {{focus}} · placeno: {{pay}}",
+        "trip": "{{line}} · placeno: {{pay}}",
         "backIn": "Zpět za {{time}}",
         "backSoon": "Skaut je na cestě zpět…",
         "timeSkip": "Použít přesýpací hodiny (máš {{held}})",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Vyslat běžného skauta"
       },
       "send": {
-        "region": "Oblast",
-        "focus": "Hledá se",
         "pay": "Platba",
         "payCash": "Peníze klubu: {{cost}}",
         "payTicket": "1 skautská vstupenka (máš {{held}})",
