@@ -1,39 +1,13 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, X } from "lucide-react";
-import { resolveBackendError } from "../../../utils/backendI18n";
-import type {
-  ExtraDayView,
-  ExtraSessionRequest,
-  ExtraSessionView,
-  MyClubView,
-  SquadPlayerView,
-  TrainingDayView,
-} from "../../api";
-import { online } from "../../client";
-import { useOnlineNow } from "../../clock";
-import { OnlineApiError } from "../../errors";
-import { refreshClub, tracked, useOnlineStore } from "../../store/onlineStore";
+import type { ExtraDayView, MyClubView, TrainingDayView } from "../../api";
+import { useOnlineStore } from "../../store/onlineStore";
 import DailyGift from "../items/DailyGift";
 import { FRAME_ACTION, keepFocusInside } from "../items/ItemDialogFrame";
-import { useActionKey } from "../useActionKey";
 import { IntensityChooser, PlayerChooser, PressResult, SessionsChooser } from "./ExtraChoosers";
-import {
-  ALL_SESSIONS,
-  chosenInSquad,
-  type ExtraChoice,
-  focusFull,
-  loadChoice,
-  MATCH_CONDITION,
-  namesOf,
-  saveChoice,
-  startersUnderMatchCondition,
-} from "./extraText";
-import { matchTodayKickoff, refusalText, viewRefusalParams } from "./todayText";
-
-const ignore = () => undefined;
-
-type Translate = ReturnType<typeof useTranslation>["t"];
+import { ALL_SESSIONS, MATCH_CONDITION } from "./extraText";
+import { listed, useExtraSession } from "./useExtraSession";
 
 /**
  * Extra sessions on top of the day's, in a panel from the right (design tap-luyen.html; C-12a
@@ -54,87 +28,24 @@ export default function ExtraTraining({
   extra: ExtraDayView;
   onClose: () => void;
 }) {
-  const { t, i18n } = useTranslation();
-  const now = useOnlineNow();
-  const season = useOnlineStore((state) => state.season);
+  const { t } = useTranslation();
   const offline = useOnlineStore((state) => state.network === "offline");
-  const clubId = club.club.id;
-  const [choice, setChoiceState] = useState<ExtraChoice>(() => loadChoice(clubId));
-  const [intensity, setIntensity] = useState<string>("Low");
-  const [sending, setSending] = useState(false);
-  const [failure, setFailure] = useState<{ error: unknown; seen: ExtraDayView } | null>(null);
-  const [result, setResult] = useState<ExtraSessionView | null>(null);
-  const key = useActionKey();
-  const chosen = chosenInSquad(choice.players, club.players);
-  const matchKickoff = matchTodayKickoff(club, season?.nextDayAt, now);
-  const cost = extra.costs?.[intensity];
-
-  const setChoice = (next: ExtraChoice) => {
-    setChoiceState(next);
-    saveChoice(clubId, next);
-  };
-  const toggle = (playerId: string) => {
-    const ids = new Set(chosen);
-    if (ids.has(playerId)) ids.delete(playerId);
-    else ids.add(playerId);
-    setChoice({ ...choice, players: club.players.map((p) => p.id).filter((id) => ids.has(id)) });
-  };
-
-  const press = async () => {
-    const request: ExtraSessionRequest = {
-      intensity,
-      players: chosen,
-      sessions: choice.sessions,
-      ...(choice.keepAbove === null ? {} : { keepAbove: choice.keepAbove }),
-    };
-    setSending(true);
-    setFailure(null);
-    try {
-      const view = await key.run(
-        (idempotencyKey) => tracked(() => online.clubs.extraSessions(request, idempotencyKey)),
-        JSON.stringify(request),
-      );
-      setResult(view);
-      const current = useOnlineStore.getState().club;
-      if (current) {
-        useOnlineStore.getState().setClub({ ...current, trainingDay: view.trainingDay });
-      }
-      void refreshClub().catch(ignore);
-    } catch (error) {
-      setFailure({ error, seen: extra });
-      // Every 409 means the panel's view was stale: read it again.
-      if (error instanceof OnlineApiError && error.status === 409) {
-        void refreshClub().catch(ignore);
-      }
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const shownFailure = failure && failure.seen === extra ? failure.error : null;
-  const reason = shownFailure
-    ? failureText(t, i18n.language, shownFailure, now)
-    : extra.canPress
-      ? null
-      : refusalText(
-          t,
-          i18n.language,
-          extra.refusal ?? "",
-          viewRefusalParams(trainingDay, club),
-          now,
-        );
-  const starters = matchKickoff
-    ? startersUnderMatchCondition({
-        players: club.players,
-        chosen,
-        startingXiIds: club.setup.startingXiIds,
-        extra,
-        intensity,
-        sessions: choice.sessions,
-        keepAbove: choice.keepAbove,
-      })
-    : [];
-  const full = focusFull(club.players, chosen, club.trainingPlan);
+  const {
+    choice,
+    setChoice,
+    toggle,
+    chosen,
+    intensity,
+    setIntensity,
+    cost,
+    matchToday,
+    sending,
+    result,
+    press,
+    reason,
+    starters,
+    full,
+  } = useExtraSession(club, trainingDay, extra);
   const intensityLabel = t(`training.intensities.${intensity}.label`);
 
   return (
@@ -184,7 +95,7 @@ export default function ExtraTraining({
         <SessionsChooser
           choice={choice}
           floor={extra.floor}
-          matchToday={matchKickoff !== null}
+          matchToday={matchToday}
           disabled={sending}
           onChange={setChoice}
         />
@@ -283,21 +194,7 @@ function Drawer({
   );
 }
 
-/** Up to three names, then "and k more". */
-function listed(t: Translate, players: SquadPlayerView[]): string {
-  const { names, more } = namesOf(players);
-  return more > 0 ? t("online.training.extra.andMore", { names, more }) : names;
-}
-
-/** What a failed press says: the panel's own sentence for a refusal, the shared one otherwise. */
-function failureText(t: Translate, language: string, error: unknown, now: number): string {
-  if (error instanceof OnlineApiError && error.status === 409) {
-    return refusalText(t, language, error.code, error.params, now);
-  }
-  return resolveBackendError(error);
-}
-
-function Warning({ children }: { children: string }) {
+export function Warning({ children }: { children: string }) {
   return (
     <p
       role="note"

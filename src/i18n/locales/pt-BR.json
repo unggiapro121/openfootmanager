@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (herdado)",
         "inheritedTag": "herdado",
         "empty": "Ainda não há jogadores neste grupo."
+      },
+      "phone": {
+        "tab": {
+          "today": "Hoje",
+          "sched": "Agenda",
+          "focus": "Foco",
+          "groups": "Grupos ({{count}})"
+        },
+        "sessionsIn7": "sessões em 7 dias",
+        "planInUse": "Dias de treino em uso",
+        "howItWorks": "Como funciona",
+        "lastResult": "Da última vez: {{held}} sessões",
+        "listReady": "Podem treinar ({{count}})",
+        "listRest": "Descansam desta vez ({{count}})",
+        "noneReady": "Ninguém pode treinar agora. Deixe o elenco descansar.",
+        "noneResting": "O elenco todo pode treinar desta vez.",
+        "resultTitle": "Resultado do treino extra",
+        "groupOf": "Grupo {{name}}",
+        "groupFocus": "Foco do grupo",
+        "players": "Jogadores",
+        "mainAuto": "O time treina pela agenda na virada do dia ({{time}}). Toque em um quadro para mudar.",
+        "mainAutoNoTime": "O time treina pela agenda na virada do dia. Toque em um quadro para mudar."
       }
     },
     "schedule": {

@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (übernommen)",
         "inheritedTag": "übernommen",
         "empty": "Noch keine Spieler in dieser Gruppe."
+      },
+      "phone": {
+        "tab": {
+          "today": "Heute",
+          "sched": "Wochenplan",
+          "focus": "Schwerpunkt",
+          "groups": "Gruppen ({{count}})"
+        },
+        "sessionsIn7": "Einheiten in 7 Tagen",
+        "planInUse": "Trainingstage im Einsatz",
+        "howItWorks": "So funktioniert es",
+        "lastResult": "Zuletzt: {{held}} Einheiten",
+        "listReady": "Können trainieren ({{count}})",
+        "listRest": "Pausieren diesmal ({{count}})",
+        "noneReady": "Niemand kann jetzt trainieren. Lass den Kader ruhen.",
+        "noneResting": "Der ganze Kader kann diesmal trainieren.",
+        "resultTitle": "Ergebnis des Zusatztrainings",
+        "groupOf": "Gruppe {{name}}",
+        "groupFocus": "Schwerpunkt der Gruppe",
+        "players": "Spieler",
+        "mainAuto": "Das Team trainiert nach Plan beim Tageswechsel ({{time}}). Tippe auf ein Feld, um es zu ändern.",
+        "mainAutoNoTime": "Das Team trainiert nach Plan beim Tageswechsel. Tippe auf ein Feld, um es zu ändern."
       }
     },
     "schedule": {

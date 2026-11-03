@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (hérité)",
         "inheritedTag": "hérité",
         "empty": "Aucun joueur dans ce groupe pour l'instant."
+      },
+      "phone": {
+        "tab": {
+          "today": "Aujourd'hui",
+          "sched": "Planning",
+          "focus": "Axe",
+          "groups": "Groupes ({{count}})"
+        },
+        "sessionsIn7": "séances sur 7 jours",
+        "planInUse": "Jours d'entraînement utilisés",
+        "howItWorks": "Fonctionnement",
+        "lastResult": "Dernière fois : {{held}} séances",
+        "listReady": "Peuvent s'entraîner ({{count}})",
+        "listRest": "Au repos cette fois ({{count}})",
+        "noneReady": "Personne ne peut s'entraîner. Laissez l'effectif récupérer.",
+        "noneResting": "Tout l'effectif peut s'entraîner cette fois.",
+        "resultTitle": "Résultat de l'entraînement en plus",
+        "groupOf": "Groupe {{name}}",
+        "groupFocus": "Axe du groupe",
+        "players": "Joueurs",
+        "mainAuto": "L'équipe s'entraîne selon son planning au changement de jour ({{time}}). Touchez une case pour la modifier.",
+        "mainAutoNoTime": "L'équipe s'entraîne selon son planning au changement de jour. Touchez une case pour la modifier."
       }
     },
     "schedule": {

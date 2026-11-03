@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (theo nhóm)",
         "inheritedTag": "theo nhóm",
         "empty": "Nhóm này chưa có cầu thủ."
+      },
+      "phone": {
+        "tab": {
+          "today": "Hôm nay",
+          "sched": "Lịch tuần",
+          "focus": "Trọng tâm",
+          "groups": "Nhóm ({{count}})"
+        },
+        "sessionsIn7": "buổi trong 7 ngày",
+        "planInUse": "Ngày tập theo lịch đang dùng",
+        "howItWorks": "Cách hoạt động",
+        "lastResult": "Lần trước: tập {{held}} buổi",
+        "listReady": "Tập được ({{count}})",
+        "listRest": "Nghỉ buổi này ({{count}})",
+        "noneReady": "Không còn ai tập được. Để đội nghỉ hồi thể lực.",
+        "noneResting": "Cả đội đều tập được buổi này.",
+        "resultTitle": "Kết quả tập thêm",
+        "groupOf": "Nhóm {{name}}",
+        "groupFocus": "Trọng tâm nhóm",
+        "players": "Cầu thủ",
+        "mainAuto": "Đội tự tập theo lịch lúc sang ngày ({{time}}). Chạm một ô để đổi.",
+        "mainAutoNoTime": "Đội tự tập theo lịch lúc sang ngày. Chạm một ô để đổi."
       }
     },
     "schedule": {

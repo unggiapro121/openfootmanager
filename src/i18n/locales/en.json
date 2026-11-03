@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (inherited)",
         "inheritedTag": "inherited",
         "empty": "No players in this group yet."
+      },
+      "phone": {
+        "tab": {
+          "today": "Today",
+          "sched": "Schedule",
+          "focus": "Focus",
+          "groups": "Groups ({{count}})"
+        },
+        "sessionsIn7": "sessions in 7 days",
+        "planInUse": "Schedule days in use",
+        "howItWorks": "How it works",
+        "lastResult": "Last press: {{held}} sessions held",
+        "listReady": "Can train ({{count}})",
+        "listRest": "Rest this time ({{count}})",
+        "noneReady": "Nobody can train now. Let the squad rest.",
+        "noneResting": "The whole squad can train this time.",
+        "resultTitle": "Extra training result",
+        "groupOf": "Group {{name}}",
+        "groupFocus": "Group focus",
+        "players": "Players",
+        "mainAuto": "The team trains on its schedule when the day turns ({{time}}). Tap a tile to change it.",
+        "mainAutoNoTime": "The team trains on its schedule when the day turns. Tap a tile to change it."
       }
     },
     "schedule": {

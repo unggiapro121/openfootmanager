@@ -141,7 +141,7 @@ export default function TodaySession({
 }
 
 /** Today's session as the player reads it: not yet, on the schedule, pressed, or before him. */
-function statusText(t: Translate, trainingDay: TrainingDayView): string {
+export function statusText(t: Translate, trainingDay: TrainingDayView): string {
   switch (trainingDay.today) {
     case undefined:
       return t("online.training.today.statusNone");
@@ -205,7 +205,7 @@ function Strip({ trainingDay }: { trainingDay: TrainingDayView }) {
   );
 }
 
-function StripCell({ cell }: { cell: StripDay }) {
+export function StripCell({ cell }: { cell: StripDay }) {
   const { t } = useTranslation();
   const kind = kindKey(cell.kind);
   const Icon = kind === "none" ? null : KIND_ICONS[kind];
@@ -248,7 +248,7 @@ function StripCell({ cell }: { cell: StripDay }) {
 }
 
 /** When condition changes next; once that moment has passed, until the club is read again. */
-function NextRecovery({ at }: { at: string }) {
+export function NextRecovery({ at }: { at: string }) {
   const { t, i18n } = useTranslation();
   const now = useOnlineNow();
   const left = useCountdownText(at);
@@ -269,7 +269,7 @@ function NextRecovery({ at }: { at: string }) {
 }
 
 /** How it works: when the day's session counts, the fatigue floor, stamina, the cap; a legend. */
-function TodayNotes({ cap }: { cap: number }) {
+export function TodayNotes({ cap }: { cap: number }) {
   const { t, i18n } = useTranslation();
   const now = useOnlineNow();
   const nextDayAt = useOnlineStore((state) => state.season?.nextDayAt);

@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (ikut grup)",
         "inheritedTag": "ikut grup",
         "empty": "Belum ada pemain di grup ini."
+      },
+      "phone": {
+        "tab": {
+          "today": "Hari ini",
+          "sched": "Jadwal",
+          "focus": "Fokus",
+          "groups": "Grup ({{count}})"
+        },
+        "sessionsIn7": "sesi dalam 7 hari",
+        "planInUse": "Hari latihan yang dipakai",
+        "howItWorks": "Cara kerjanya",
+        "lastResult": "Terakhir: {{held}} sesi",
+        "listReady": "Bisa berlatih ({{count}})",
+        "listRest": "Istirahat kali ini ({{count}})",
+        "noneReady": "Tidak ada yang bisa berlatih sekarang. Biarkan skuad beristirahat.",
+        "noneResting": "Seluruh skuad bisa berlatih kali ini.",
+        "resultTitle": "Hasil latihan tambahan",
+        "groupOf": "Grup {{name}}",
+        "groupFocus": "Fokus grup",
+        "players": "Pemain",
+        "mainAuto": "Tim berlatih sesuai jadwal saat hari berganti ({{time}}). Ketuk kotak untuk mengubahnya.",
+        "mainAutoNoTime": "Tim berlatih sesuai jadwal saat hari berganti. Ketuk kotak untuk mengubahnya."
       }
     },
     "schedule": {

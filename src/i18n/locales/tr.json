@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (gruptan)",
         "inheritedTag": "gruptan",
         "empty": "Bu grupta henüz oyuncu yok."
+      },
+      "phone": {
+        "tab": {
+          "today": "Bugün",
+          "sched": "Program",
+          "focus": "Odak",
+          "groups": "Gruplar ({{count}})"
+        },
+        "sessionsIn7": "7 günde antrenman",
+        "planInUse": "Kullanılan antrenman günleri",
+        "howItWorks": "Nasıl çalışır",
+        "lastResult": "Son sefer: {{held}} antrenman",
+        "listReady": "Antrenman yapabilir ({{count}})",
+        "listRest": "Bu sefer dinleniyor ({{count}})",
+        "noneReady": "Şu an kimse antrenman yapamaz. Kadroyu dinlendir.",
+        "noneResting": "Bu sefer tüm kadro antrenman yapabilir.",
+        "resultTitle": "Ek antrenman sonucu",
+        "groupOf": "{{name}} grubu",
+        "groupFocus": "Grup odağı",
+        "players": "Oyuncular",
+        "mainAuto": "Takım gün dönünce programına göre çalışır ({{time}}). Değiştirmek için bir kutuya dokun.",
+        "mainAutoNoTime": "Takım gün dönünce programına göre çalışır. Değiştirmek için bir kutuya dokun."
       }
     },
     "schedule": {

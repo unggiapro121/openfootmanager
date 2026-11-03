@@ -11,6 +11,23 @@ const TILE_LABEL = "text-[11px] text-gray-500 dark:text-gray-400";
 const TILE_VALUE = "font-heading text-sm font-bold uppercase tracking-wider";
 
 /**
+ * When the day's session runs, or that today rests: the line under the session's tiles. The
+ * phone's tiles open the tab that changes them, so its line says to tap one (`onPhone`).
+ */
+export function useMainSessionNote(scheduleDay: boolean | null, onPhone = false): string {
+  const { t, i18n } = useTranslation();
+  const now = useOnlineNow();
+  const nextDayAt = useOnlineStore((state) => state.season?.nextDayAt);
+  if (scheduleDay === false) return t("online.training.main.rest");
+  const keys = onPhone
+    ? { auto: "online.training.phone.mainAuto", autoNoTime: "online.training.phone.mainAutoNoTime" }
+    : { auto: "online.training.main.auto", autoNoTime: "online.training.main.autoNoTime" };
+  return nextDayAt
+    ? t(keys.auto, { time: formatKickoffClock(nextDayAt, now, i18n.language) })
+    : t(keys.autoNoTime);
+}
+
+/**
  * The day's own session as the weekly plan holds it (design tap-luyen.html "Buổi tập chính").
  * It is read, never pressed: the team trains on its schedule when the day turns (C-12 C12-1), so
  * the block says which schedule, focus and intensity that is, and when it runs.
@@ -23,17 +40,8 @@ export default function MainSession({
   /** Today trains on the schedule; `null` while the weekday is unknown. */
   scheduleDay: boolean | null;
 }) {
-  const { t, i18n } = useTranslation();
-  const now = useOnlineNow();
-  const nextDayAt = useOnlineStore((state) => state.season?.nextDayAt);
-  const note =
-    scheduleDay === false
-      ? t("online.training.main.rest")
-      : nextDayAt
-        ? t("online.training.main.auto", {
-            time: formatKickoffClock(nextDayAt, now, i18n.language),
-          })
-        : t("online.training.main.autoNoTime");
+  const { t } = useTranslation();
+  const note = useMainSessionNote(scheduleDay);
   return (
     <section
       aria-labelledby="training-main-title"

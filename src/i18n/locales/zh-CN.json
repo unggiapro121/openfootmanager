@@ -487,6 +487,28 @@
         "inherited": "{{focus}}（沿用）",
         "inheritedTag": "沿用",
         "empty": "该小组暂无球员。"
+      },
+      "phone": {
+        "tab": {
+          "today": "今天",
+          "sched": "周计划",
+          "focus": "重点",
+          "groups": "分组（{{count}}）"
+        },
+        "sessionsIn7": "7 天内训练次数",
+        "planInUse": "当前使用的训练日",
+        "howItWorks": "如何运作",
+        "lastResult": "上次：训练 {{held}} 次",
+        "listReady": "可训练（{{count}}）",
+        "listRest": "本次休息（{{count}}）",
+        "noneReady": "现在没人能训练。让球队休息恢复。",
+        "noneResting": "本次全队都能训练。",
+        "resultTitle": "加练结果",
+        "groupOf": "{{name}} 组",
+        "groupFocus": "分组重点",
+        "players": "球员",
+        "mainAuto": "球队在换日时按计划训练（{{time}}）。点击方块即可更改。",
+        "mainAutoNoTime": "球队在换日时按计划训练。点击方块即可更改。"
       }
     },
     "schedule": {

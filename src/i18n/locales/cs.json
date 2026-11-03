@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (zděděno)",
         "inheritedTag": "zděděno",
         "empty": "V této skupině zatím nejsou hráči."
+      },
+      "phone": {
+        "tab": {
+          "today": "Dnes",
+          "sched": "Rozvrh",
+          "focus": "Zaměření",
+          "groups": "Skupiny ({{count}})"
+        },
+        "sessionsIn7": "tréninků za 7 dní",
+        "planInUse": "Používané tréninkové dny",
+        "howItWorks": "Jak to funguje",
+        "lastResult": "Minule: {{held}} tréninků",
+        "listReady": "Mohou trénovat ({{count}})",
+        "listRest": "Tentokrát odpočívají ({{count}})",
+        "noneReady": "Teď nemůže trénovat nikdo. Nechte kádr odpočinout.",
+        "noneResting": "Tentokrát může trénovat celý kádr.",
+        "resultTitle": "Výsledek tréninku navíc",
+        "groupOf": "Skupina {{name}}",
+        "groupFocus": "Zaměření skupiny",
+        "players": "Hráči",
+        "mainAuto": "Tým trénuje podle rozvrhu při změně dne ({{time}}). Klepnutím na dlaždici ji změníte.",
+        "mainAutoNoTime": "Tým trénuje podle rozvrhu při změně dne. Klepnutím na dlaždici ji změníte."
       }
     },
     "schedule": {

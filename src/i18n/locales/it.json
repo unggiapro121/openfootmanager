@@ -487,6 +487,28 @@
         "inherited": "{{focus}} (ereditato)",
         "inheritedTag": "ereditato",
         "empty": "Ancora nessun giocatore in questo gruppo."
+      },
+      "phone": {
+        "tab": {
+          "today": "Oggi",
+          "sched": "Programma",
+          "focus": "Obiettivo",
+          "groups": "Gruppi ({{count}})"
+        },
+        "sessionsIn7": "sedute in 7 giorni",
+        "planInUse": "Giorni di allenamento in uso",
+        "howItWorks": "Come funziona",
+        "lastResult": "L'ultima volta: {{held}} sedute",
+        "listReady": "Possono allenarsi ({{count}})",
+        "listRest": "Riposano stavolta ({{count}})",
+        "noneReady": "Nessuno può allenarsi ora. Fai riposare la rosa.",
+        "noneResting": "Tutta la rosa può allenarsi stavolta.",
+        "resultTitle": "Esito dell'allenamento extra",
+        "groupOf": "Gruppo {{name}}",
+        "groupFocus": "Obiettivo del gruppo",
+        "players": "Giocatori",
+        "mainAuto": "La squadra si allena secondo il programma al cambio di giorno ({{time}}). Tocca un riquadro per cambiarlo.",
+        "mainAutoNoTime": "La squadra si allena secondo il programma al cambio di giorno. Tocca un riquadro per cambiarlo."
       }
     },
     "schedule": {
