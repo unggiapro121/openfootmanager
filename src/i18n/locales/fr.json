@@ -861,7 +861,35 @@
         "academy": "Centre de formation",
         "academyEffect": "Chaque niveau ajoute des places pour les jeunes."
       },
-      "academyWages": "Salaires du centre : {{amount}} par semaine"
+      "academyWages": "Salaires du centre : {{amount}} par semaine",
+      "phone": {
+        "balance": "Solde du club",
+        "heldLine": "Bloqué pour les enchères : {{amount}}",
+        "seasonNet": "Bilan de la saison",
+        "tab": {
+          "over": "Aperçu",
+          "fac": "Installations",
+          "led": "Mouvements"
+        },
+        "wageWarning": "Les salaires valent {{times}} fois la billetterie. Pensez à libérer des remplaçants bien payés ou à améliorer pour gagner plus.",
+        "perWeek": "Par semaine",
+        "perDay": "Par jour de saison",
+        "weekly": "{{amount}}/semaine",
+        "level": "Niveau",
+        "levelOf": "Niveau {{level}} sur {{max}}",
+        "short": "Niveau suivant {{cost}} · fonds insuffisants",
+        "upTitle": "Améliorer {{facility}} au niveau {{level}} ?",
+        "cost": "Coût",
+        "cashAfter": "Trésorerie après l'amélioration",
+        "later": "Plus tard",
+        "upConfirm": "Améliorer",
+        "flow": "Type d'opération",
+        "filter": {
+          "all": "Tout",
+          "in": "Entrées",
+          "out": "Sorties"
+        }
+      }
     },
     "market": {
       "title": "Marché des transferts",

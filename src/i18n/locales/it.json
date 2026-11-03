@@ -861,7 +861,35 @@
         "academy": "Settore giovanile",
         "academyEffect": "Ogni livello aggiunge posti per i giovani."
       },
-      "academyWages": "Stipendi del vivaio: {{amount}} a settimana"
+      "academyWages": "Stipendi del vivaio: {{amount}} a settimana",
+      "phone": {
+        "balance": "Saldo del club",
+        "heldLine": "Bloccato per le offerte: {{amount}}",
+        "seasonNet": "Bilancio stagionale",
+        "tab": {
+          "over": "Panoramica",
+          "fac": "Strutture",
+          "led": "Movimenti"
+        },
+        "wageWarning": "Gli stipendi sono {{times}} volte gli incassi. Valuta di svincolare riserve costose o potenziare per guadagnare di più.",
+        "perWeek": "A settimana",
+        "perDay": "Per giorno di stagione",
+        "weekly": "{{amount}}/settimana",
+        "level": "Livello",
+        "levelOf": "Livello {{level}} di {{max}}",
+        "short": "Livello successivo {{cost}} · fondi insufficienti",
+        "upTitle": "Potenziare {{facility}} al livello {{level}}?",
+        "cost": "Costo",
+        "cashAfter": "Cassa dopo il potenziamento",
+        "later": "Più tardi",
+        "upConfirm": "Potenzia",
+        "flow": "Tipo di movimento",
+        "filter": {
+          "all": "Tutti",
+          "in": "Entrate",
+          "out": "Uscite"
+        }
+      }
     },
     "market": {
       "title": "Calciomercato",

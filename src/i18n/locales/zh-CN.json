@@ -861,7 +861,35 @@
         "academy": "青训营",
         "academyEffect": "每级增加青训球员名额。"
       },
-      "academyWages": "青训工资：每周 {{amount}}"
+      "academyWages": "青训工资：每周 {{amount}}",
+      "phone": {
+        "balance": "俱乐部余额",
+        "heldLine": "为出价冻结：{{amount}}",
+        "seasonNet": "本赛季盈亏",
+        "tab": {
+          "over": "概览",
+          "fac": "设施",
+          "led": "收支"
+        },
+        "wageWarning": "工资是门票收入的 {{times}} 倍。可考虑解约高薪替补或升级设施以增加收入。",
+        "perWeek": "每周",
+        "perDay": "每赛季日",
+        "weekly": "{{amount}}/周",
+        "level": "等级",
+        "levelOf": "等级 {{level}}/{{max}}",
+        "short": "下一级 {{cost}} · 资金不足",
+        "upTitle": "将{{facility}}升至 {{level}} 级？",
+        "cost": "费用",
+        "cashAfter": "升级后现金",
+        "later": "稍后",
+        "upConfirm": "升级",
+        "flow": "交易类型",
+        "filter": {
+          "all": "全部",
+          "in": "收入",
+          "out": "支出"
+        }
+      }
     },
     "market": {
       "title": "转会市场",

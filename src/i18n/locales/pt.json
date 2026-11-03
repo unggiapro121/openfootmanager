@@ -861,7 +861,35 @@
         "academy": "Academia",
         "academyEffect": "Cada nível acrescenta vagas para jovens."
       },
-      "academyWages": "Salários da academia: {{amount}} por semana"
+      "academyWages": "Salários da academia: {{amount}} por semana",
+      "phone": {
+        "balance": "Saldo do clube",
+        "heldLine": "Retido para licitações: {{amount}}",
+        "seasonNet": "Lucro/prejuízo da época",
+        "tab": {
+          "over": "Resumo",
+          "fac": "Instalações",
+          "led": "Movimentos"
+        },
+        "wageWarning": "Os salários são {{times}} vezes a bilheteira. Pondera libertar suplentes caros ou melhorar para ganhar mais.",
+        "perWeek": "Por semana",
+        "perDay": "Por dia de época",
+        "weekly": "{{amount}}/semana",
+        "level": "Nível",
+        "levelOf": "Nível {{level}} de {{max}}",
+        "short": "Próximo nível {{cost}} · falta dinheiro",
+        "upTitle": "Melhorar {{facility}} para o nível {{level}}?",
+        "cost": "Custo",
+        "cashAfter": "Dinheiro após a melhoria",
+        "later": "Mais tarde",
+        "upConfirm": "Melhorar",
+        "flow": "Tipo de movimento",
+        "filter": {
+          "all": "Todos",
+          "in": "Entradas",
+          "out": "Saídas"
+        }
+      }
     },
     "market": {
       "title": "Mercado de transferências",

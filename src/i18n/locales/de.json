@@ -861,7 +861,35 @@
         "academy": "Nachwuchsakademie",
         "academyEffect": "Jede Stufe schafft Plätze für Talente."
       },
-      "academyWages": "Akademiegehälter: {{amount}} pro Woche"
+      "academyWages": "Akademiegehälter: {{amount}} pro Woche",
+      "phone": {
+        "balance": "Kontostand",
+        "heldLine": "Für Gebote reserviert: {{amount}}",
+        "seasonNet": "Saisonbilanz",
+        "tab": {
+          "over": "Übersicht",
+          "fac": "Einrichtungen",
+          "led": "Buchungen"
+        },
+        "wageWarning": "Die Gehälter betragen das {{times}}-Fache der Ticketeinnahmen. Erwäge, teure Ersatzspieler abzugeben oder auszubauen.",
+        "perWeek": "Pro Woche",
+        "perDay": "Pro Saisontag",
+        "weekly": "{{amount}}/Woche",
+        "level": "Stufe",
+        "levelOf": "Stufe {{level}} von {{max}}",
+        "short": "Nächste Stufe {{cost}} · zu wenig Geld",
+        "upTitle": "{{facility}} auf Stufe {{level}} ausbauen?",
+        "cost": "Kosten",
+        "cashAfter": "Geld nach dem Ausbau",
+        "later": "Später",
+        "upConfirm": "Ausbauen",
+        "flow": "Art der Buchung",
+        "filter": {
+          "all": "Alle",
+          "in": "Ein",
+          "out": "Aus"
+        }
+      }
     },
     "market": {
       "title": "Transfermarkt",

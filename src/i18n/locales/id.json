@@ -861,7 +861,35 @@
         "academy": "Akademi muda",
         "academyEffect": "Setiap level menambah tempat untuk pemain muda."
       },
-      "academyWages": "Gaji akademi: {{amount}} per minggu"
+      "academyWages": "Gaji akademi: {{amount}} per minggu",
+      "phone": {
+        "balance": "Saldo klub",
+        "heldLine": "Ditahan untuk tawaran: {{amount}}",
+        "seasonNet": "Laba/rugi musim ini",
+        "tab": {
+          "over": "Ringkasan",
+          "fac": "Fasilitas",
+          "led": "Mutasi"
+        },
+        "wageWarning": "Gaji {{times}} kali pendapatan tiket. Pertimbangkan melepas cadangan bergaji tinggi atau meningkatkan fasilitas.",
+        "perWeek": "Per minggu",
+        "perDay": "Per hari musim",
+        "weekly": "{{amount}}/minggu",
+        "level": "Level fasilitas",
+        "levelOf": "Level {{level}} dari {{max}}",
+        "short": "Level berikut {{cost}} · dana kurang",
+        "upTitle": "Tingkatkan {{facility}} ke level {{level}}?",
+        "cost": "Biaya",
+        "cashAfter": "Kas setelah peningkatan",
+        "later": "Nanti",
+        "upConfirm": "Tingkatkan",
+        "flow": "Jenis transaksi",
+        "filter": {
+          "all": "Semua",
+          "in": "Masuk",
+          "out": "Keluar"
+        }
+      }
     },
     "market": {
       "title": "Bursa transfer",

@@ -861,7 +861,35 @@
         "academy": "Youth Academy",
         "academyEffect": "Each level adds room for youngsters."
       },
-      "academyWages": "Academy wages: {{amount}} a week"
+      "academyWages": "Academy wages: {{amount}} a week",
+      "phone": {
+        "balance": "Club balance",
+        "heldLine": "Held for bids: {{amount}}",
+        "seasonNet": "Season profit/loss",
+        "tab": {
+          "over": "Overview",
+          "fac": "Facilities",
+          "led": "Ledger"
+        },
+        "wageWarning": "Wages are {{times}} times the ticket money. Consider releasing high-earning reserves or upgrading to earn more.",
+        "perWeek": "Per week",
+        "perDay": "Per season day",
+        "weekly": "{{amount}}/week",
+        "level": "Level",
+        "levelOf": "Level {{level}} of {{max}}",
+        "short": "Next level {{cost}} · not enough cash",
+        "upTitle": "Upgrade {{facility}} to level {{level}}?",
+        "cost": "Cost",
+        "cashAfter": "Cash after the upgrade",
+        "later": "Later",
+        "upConfirm": "Upgrade",
+        "flow": "Kind of transaction",
+        "filter": {
+          "all": "All",
+          "in": "In",
+          "out": "Out"
+        }
+      }
     },
     "market": {
       "title": "Transfer market",

@@ -861,7 +861,35 @@
         "academy": "Altyapı akademisi",
         "academyEffect": "Her seviye gençler için yer açar."
       },
-      "academyWages": "Akademi maaşları: haftada {{amount}}"
+      "academyWages": "Akademi maaşları: haftada {{amount}}",
+      "phone": {
+        "balance": "Kulüp bakiyesi",
+        "heldLine": "Teklifler için ayrılan: {{amount}}",
+        "seasonNet": "Sezon kâr/zararı",
+        "tab": {
+          "over": "Özet",
+          "fac": "Tesisler",
+          "led": "Hesap dökümü"
+        },
+        "wageWarning": "Maaşlar bilet gelirinin {{times}} katı. Yüksek maaşlı yedekleri bırakmayı ya da geliri artırmak için yükseltmeyi düşün.",
+        "perWeek": "Haftalık",
+        "perDay": "Sezon günü başına",
+        "weekly": "{{amount}}/hafta",
+        "level": "Seviye",
+        "levelOf": "Seviye {{level}} / {{max}}",
+        "short": "Sonraki seviye {{cost}} · para yetmiyor",
+        "upTitle": "{{facility}} {{level}}. seviyeye yükseltilsin mi?",
+        "cost": "Maliyet",
+        "cashAfter": "Yükseltme sonrası nakit",
+        "later": "Sonra",
+        "upConfirm": "Yükselt",
+        "flow": "İşlem türü",
+        "filter": {
+          "all": "Tümü",
+          "in": "Gelir",
+          "out": "Gider"
+        }
+      }
     },
     "market": {
       "title": "Transfer pazarı",

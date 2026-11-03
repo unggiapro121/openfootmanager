@@ -861,7 +861,35 @@
         "academy": "Akademie",
         "academyEffect": "Každá úroveň přidá místa pro mladíky."
       },
-      "academyWages": "Platy akademie: {{amount}} týdně"
+      "academyWages": "Platy akademie: {{amount}} týdně",
+      "phone": {
+        "balance": "Zůstatek klubu",
+        "heldLine": "Blokováno pro nabídky: {{amount}}",
+        "seasonNet": "Bilance sezóny",
+        "tab": {
+          "over": "Přehled",
+          "fac": "Zázemí",
+          "led": "Pohyby"
+        },
+        "wageWarning": "Platy jsou {{times}}× vyšší než vstupné. Zvažte uvolnění drahých náhradníků nebo vylepšení pro vyšší příjmy.",
+        "perWeek": "Za týden",
+        "perDay": "Za sezónní den",
+        "weekly": "{{amount}}/týden",
+        "level": "Úroveň",
+        "levelOf": "Úroveň {{level}} z {{max}}",
+        "short": "Další úroveň {{cost}} · nedostatek peněz",
+        "upTitle": "Vylepšit {{facility}} na úroveň {{level}}?",
+        "cost": "Cena",
+        "cashAfter": "Hotovost po vylepšení",
+        "later": "Později",
+        "upConfirm": "Vylepšit",
+        "flow": "Druh pohybu",
+        "filter": {
+          "all": "Vše",
+          "in": "Příjmy",
+          "out": "Výdaje"
+        }
+      }
     },
     "market": {
       "title": "Přestupový trh",

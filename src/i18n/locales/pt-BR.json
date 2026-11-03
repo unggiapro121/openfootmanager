@@ -861,7 +861,35 @@
         "academy": "Categoria de base",
         "academyEffect": "Cada nível abre vagas para jovens."
       },
-      "academyWages": "Salários da base: {{amount}} por semana"
+      "academyWages": "Salários da base: {{amount}} por semana",
+      "phone": {
+        "balance": "Saldo do clube",
+        "heldLine": "Retido para lances: {{amount}}",
+        "seasonNet": "Lucro/prejuízo da temporada",
+        "tab": {
+          "over": "Resumo",
+          "fac": "Instalações",
+          "led": "Extrato"
+        },
+        "wageWarning": "Os salários são {{times}} vezes a bilheteria. Considere liberar reservas caros ou melhorar para ganhar mais.",
+        "perWeek": "Por semana",
+        "perDay": "Por dia de temporada",
+        "weekly": "{{amount}}/semana",
+        "level": "Nível",
+        "levelOf": "Nível {{level}} de {{max}}",
+        "short": "Próximo nível {{cost}} · falta dinheiro",
+        "upTitle": "Melhorar {{facility}} para o nível {{level}}?",
+        "cost": "Custo",
+        "cashAfter": "Dinheiro após a melhoria",
+        "later": "Depois",
+        "upConfirm": "Melhorar",
+        "flow": "Tipo de lançamento",
+        "filter": {
+          "all": "Todos",
+          "in": "Entradas",
+          "out": "Saídas"
+        }
+      }
     },
     "market": {
       "title": "Mercado de transferências",

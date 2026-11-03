@@ -861,7 +861,35 @@
         "academy": "Cantera",
         "academyEffect": "Cada nivel añade plazas para juveniles."
       },
-      "academyWages": "Salarios de la cantera: {{amount}} por semana"
+      "academyWages": "Salarios de la cantera: {{amount}} por semana",
+      "phone": {
+        "balance": "Saldo del club",
+        "heldLine": "Retenido para pujas: {{amount}}",
+        "seasonNet": "Balance de la temporada",
+        "tab": {
+          "over": "Resumen",
+          "fac": "Instalaciones",
+          "led": "Movimientos"
+        },
+        "wageWarning": "Los salarios son {{times}} veces la taquilla. Plantéate liberar suplentes con sueldo alto o mejorar para ganar más.",
+        "perWeek": "Por semana",
+        "perDay": "Por día de temporada",
+        "weekly": "{{amount}}/semana",
+        "level": "Nivel",
+        "levelOf": "Nivel {{level}} de {{max}}",
+        "short": "Siguiente nivel {{cost}} · falta dinero",
+        "upTitle": "¿Mejorar {{facility}} al nivel {{level}}?",
+        "cost": "Coste",
+        "cashAfter": "Dinero tras la mejora",
+        "later": "Más tarde",
+        "upConfirm": "Mejorar",
+        "flow": "Tipo de movimiento",
+        "filter": {
+          "all": "Todos",
+          "in": "Entradas",
+          "out": "Salidas"
+        }
+      }
     },
     "market": {
       "title": "Mercado de fichajes",

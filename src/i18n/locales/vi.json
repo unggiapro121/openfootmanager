@@ -861,7 +861,35 @@
         "academy": "Lò đào tạo",
         "academyEffect": "Mỗi cấp thêm chỗ cho học viên."
       },
-      "academyWages": "Lương lò đào tạo: {{amount}}/tuần"
+      "academyWages": "Lương lò đào tạo: {{amount}}/tuần",
+      "phone": {
+        "balance": "Số dư CLB",
+        "heldLine": "Đang giữ cho đặt giá: {{amount}}",
+        "seasonNet": "Lãi/lỗ mùa này",
+        "tab": {
+          "over": "Tổng quan",
+          "fac": "Cơ sở",
+          "led": "Thu chi"
+        },
+        "wageWarning": "Lương đang gấp {{times}} lần tiền vé. Cân nhắc thanh lý cầu thủ dự bị lương cao hoặc nâng cấp để tăng thu.",
+        "perWeek": "Mỗi tuần",
+        "perDay": "Mỗi ngày mùa",
+        "weekly": "{{amount}}/tuần",
+        "level": "Cấp",
+        "levelOf": "Cấp {{level}} trên {{max}}",
+        "short": "Cấp sau {{cost}} · thiếu tiền",
+        "upTitle": "Nâng {{facility}} lên cấp {{level}}?",
+        "cost": "Chi phí",
+        "cashAfter": "Tiền mặt sau nâng cấp",
+        "later": "Để sau",
+        "upConfirm": "Nâng cấp",
+        "flow": "Loại giao dịch",
+        "filter": {
+          "all": "Tất cả",
+          "in": "Thu",
+          "out": "Chi"
+        }
+      }
     },
     "market": {
       "title": "Chợ chuyển nhượng",
