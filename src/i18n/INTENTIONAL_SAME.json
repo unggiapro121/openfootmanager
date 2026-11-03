@@ -33,7 +33,8 @@
     "manager.masteryXp",
     "online.inventory.styleXp",
     "online.inbox.phone.row",
-    "online.inbox.phone.position"
+    "online.inbox.phone.position",
+    "online.market.phone.upTo"
   ],
   "de": [
     "online.coins.toShop",
