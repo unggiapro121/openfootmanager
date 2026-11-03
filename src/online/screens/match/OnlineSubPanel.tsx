@@ -10,7 +10,7 @@ import { toSubPanelSnapshot } from "../../convert/subPanel";
 import { type OnlineMatchState, toRadarRoster } from "../../convert/matchState";
 import { useOnlineStore } from "../../store/onlineStore";
 import { PhoneSubPanel } from "./PhoneSubPanel";
-import { substitutionsInFlight } from "./phoneSubs";
+import { substitutionsInFlight, swapsInFlight } from "./phoneSubs";
 
 /**
  * The game's own substitution panel over a live online match (the offline `SubPanel`): the pitch
@@ -82,6 +82,7 @@ export function OnlineSubPanel({
           side={side}
           booked={state.booked}
           inFlight={substitutionsInFlight(sent, state.outcomes)}
+          swapsInFlight={swapsInFlight(sent, state.outcomes)}
           formations={formations}
           playStyles={playStyles}
           licence={mine.licence}

@@ -33,6 +33,40 @@ export function substitutionsInFlight(
   );
 }
 
+/** Two of the eleven trading places: the order's two players. */
+export type PlaceSwap = readonly [string, string];
+
+/** The swaps of places sent to the match and not yet decided in one of its gaps. */
+export function swapsInFlight(
+  sent: readonly SentCommand[],
+  outcomes: Readonly<Record<string, string>>,
+): PlaceSwap[] {
+  return sent.flatMap((line) =>
+    line.status === "pending" && !outcomes[line.commandId] && "SwapPositions" in line.command
+      ? [[line.command.SwapPositions.player_a_id, line.command.SwapPositions.player_b_id] as const]
+      : [],
+  );
+}
+
+/**
+ * The eleven in slot order with `swaps` already made, in the order sent, so the pitch shows a
+ * swap at once rather than at the match's next gap. A swap naming a player not in the eleven
+ * is skipped.
+ */
+export function withSwaps<P extends { id: string }>(
+  players: readonly P[],
+  swaps: readonly PlaceSwap[],
+): P[] {
+  const order = [...players];
+  for (const [a, b] of swaps) {
+    const i = order.findIndex((player) => player.id === a);
+    const j = order.findIndex((player) => player.id === b);
+    if (i < 0 || j < 0) continue;
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 /** A bench player as the replacement for one slot: how familiar it is to him, his rating there. */
 export interface SlotCandidate {
   player: EnginePlayerData;

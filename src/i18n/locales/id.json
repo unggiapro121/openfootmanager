@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{used}} dari {{max}} pergantian terpakai, {{queued}} menunggu",
         "queuedShort": "{{count}} menunggu",
-        "hintIdle": "Ketuk pemain di lapangan untuk menariknya keluar, atau ketuk pemain cadangan dulu.",
+        "hintIdle": "Ketuk pemain di lapangan untuk menariknya keluar, atau ketuk pemain cadangan dulu. Seret pemain ke pemain lain untuk menukar posisi mereka.",
         "hintSwap": "Ketuk pemain lain di lapangan untuk bertukar posisi dengan {{name}}.",
         "hintQueued": "{{name}} sudah punya pengganti. Hapus di Menunggu konfirmasi untuk mengubahnya.",
         "hintPickBench": "Pilih pemain cadangan untuk menggantikan {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Paling cocok dulu",
         "confirm": "Konfirmasi {{count}} pergantian",
         "swapped": "Bertukar posisi: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Tukar posisi terkirim, menunggu diterapkan oleh pertandingan.",
         "roleSet": "{{name}}: peran {{role}}.",
         "sent": "{{count}} pergantian dikirim. Sisa {{left}}."
       },

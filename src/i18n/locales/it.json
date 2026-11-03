@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{used}} cambi su {{max}} usati, {{queued}} in attesa",
         "queuedShort": "{{count}} in attesa",
-        "hintIdle": "Tocca un giocatore in campo per farlo uscire, o prima un panchinaro.",
+        "hintIdle": "Tocca un giocatore in campo per farlo uscire, o prima un panchinaro. Trascina un giocatore su un altro per scambiarne le posizioni.",
         "hintSwap": "Tocca un altro giocatore in campo per scambiare posizione con {{name}}.",
         "hintQueued": "{{name}} ha già un sostituto. Rimuovilo in Da confermare per cambiarlo.",
         "hintPickBench": "Scegli un panchinaro al posto di {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Prima i più adatti",
         "confirm": "Conferma {{count}} cambi",
         "swapped": "Scambiati {{a}} ↔ {{b}}.",
+        "swapWaiting": "Scambio inviato, in attesa che la partita lo applichi.",
         "roleSet": "{{name}}: ruolo {{role}}.",
         "sent": "{{count}} cambi inviati. Ne restano {{left}}."
       },

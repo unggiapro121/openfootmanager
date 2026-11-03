@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{used}} de {{max}} substituições usadas, {{queued}} aguardando",
         "queuedShort": "{{count}} aguardando",
-        "hintIdle": "Toque em um jogador em campo para substituí-lo, ou primeiro em um reserva.",
+        "hintIdle": "Toque em um jogador em campo para substituí-lo, ou primeiro em um reserva. Arraste um jogador sobre outro para trocar as posições deles.",
         "hintSwap": "Toque em outro jogador em campo para trocar de posição com {{name}}.",
         "hintQueued": "{{name}} já tem substituto. Remova em A confirmar para mudar.",
         "hintPickBench": "Escolha um reserva para substituir {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Melhor encaixe primeiro",
         "confirm": "Confirmar {{count}} substituições",
         "swapped": "Trocados {{a}} ↔ {{b}}.",
+        "swapWaiting": "Troca enviada, aguardando a partida aplicá-la.",
         "roleSet": "{{name}}: função {{role}}.",
         "sent": "{{count}} substituições enviadas. Restam {{left}}."
       },

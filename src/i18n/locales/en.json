@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{used}} of {{max}} substitutions used, {{queued}} waiting",
         "queuedShort": "{{count}} waiting",
-        "hintIdle": "Tap a player on the pitch to take him off, or a bench player first.",
+        "hintIdle": "Tap a player on the pitch to take him off, or a bench player first. Drag a player onto another to swap their places.",
         "hintSwap": "Tap another player on the pitch to swap places with {{name}}.",
         "hintQueued": "{{name}} already has a replacement. Remove it under To confirm to change it.",
         "hintPickBench": "Pick a bench player to replace {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Best fit first",
         "confirm": "Confirm {{count}} substitutions",
         "swapped": "Swapped {{a}} ↔ {{b}}.",
+        "swapWaiting": "Swap sent, waiting for the match to make it.",
         "roleSet": "{{name}}: role {{role}}.",
         "sent": "Sent {{count}} substitutions. {{left}} left."
       },

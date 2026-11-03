@@ -63,6 +63,7 @@ beforeEach(() => {
   );
 });
 afterEach(() => {
+  Reflect.deleteProperty(document, "elementFromPoint");
   server?.restore();
   realtime.restore();
   vi.unstubAllGlobals();
@@ -110,6 +111,19 @@ const token = (id: string) =>
 const sheet = () => screen.getByRole("dialog", { name: /^P\. h\d+$/ });
 const benchIn = (place: HTMLElement, id: string) =>
   within(place).getByRole("button", { name: new RegExp(`P\\. ${id}\\b`) });
+
+/** What is under the finger wherever it is (jsdom has no layout to find it). */
+function pointAt(element: HTMLElement) {
+  Object.defineProperty(document, "elementFromPoint", { value: () => element, configurable: true });
+}
+
+/** A finger pressed on `element`, moved `distance` px to the right, and lifted. */
+function drag(element: HTMLElement, distance: number) {
+  const at = { pointerId: 1, pointerType: "touch", clientY: 100 };
+  fireEvent.pointerDown(element, { ...at, clientX: 100 });
+  fireEvent.pointerMove(element, { ...at, clientX: 100 + distance });
+  fireEvent.pointerUp(element, { ...at, clientX: 100 + distance });
+}
 
 describe("substitutions on a phone", () => {
   // Given the coach of the home side on a phone, 63 minutes in at 1–1,
@@ -203,6 +217,57 @@ describe("substitutions on a phone", () => {
       ]),
     );
     expect(await screen.findByText(`${KEY}.swapped:P. h9|P. h8`)).toBeInTheDocument();
+  });
+
+  // Given the substitutions screen,
+  // when the coach drags h9 with a finger and lets go on h8,
+  // then the swap is sent at once with no sheet opened, and the pitch shows it made, waiting
+  // for the match.
+  it("swaps two players' places by dragging one onto the other", async () => {
+    stage();
+    await openSubs();
+    pointAt(token("h8"));
+
+    drag(token("h9"), 60);
+    await waitFor(() =>
+      expect(orders()).toEqual([
+        { SwapPositions: { side: "Home", player_a_id: "h9", player_b_id: "h8" } },
+      ]),
+    );
+    expect(screen.queryByRole("dialog", { name: "P. h9" })).toBeNull();
+    expect(await screen.findByText(`${KEY}.swapped:P. h9|P. h8`)).toBeInTheDocument();
+    await waitFor(() => expect(token("h9")).toHaveAccessibleName(/swapWaiting$/));
+    expect(token("h8")).toHaveAccessibleName(/swapWaiting$/);
+  });
+
+  // Given the substitutions screen,
+  // when the coach's finger moves a couple of pixels on h9 and lifts,
+  // then it is a tap: h9's sheet opens and nothing is sent.
+  it("keeps a press that barely moves a tap", async () => {
+    stage();
+    await openSubs();
+    pointAt(token("h8"));
+
+    drag(token("h9"), 3);
+    fireEvent.click(token("h9"));
+
+    expect(sheet()).toHaveAccessibleName("P. h9");
+    expect(orders()).toEqual([]);
+  });
+
+  // Given h9 dragged and let go back on himself,
+  // when the drop's click follows,
+  // then nothing is sent and no sheet opens.
+  it("sends nothing when a player is dropped back on himself", async () => {
+    stage();
+    await openSubs();
+    pointAt(token("h9"));
+
+    drag(token("h9"), 60);
+    fireEvent.click(token("h9"));
+
+    expect(screen.queryByRole("dialog", { name: "P. h9" })).toBeNull();
+    expect(orders()).toEqual([]);
   });
 
   // Given the sheet of h9,

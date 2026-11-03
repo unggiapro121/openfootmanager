@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "Đã dùng {{used}} trên {{max}} lượt thay, {{queued}} đang chờ",
         "queuedShort": "chờ {{count}}",
-        "hintIdle": "Chạm cầu thủ trên sân để thay ra, hoặc chạm người dự bị trước.",
+        "hintIdle": "Chạm cầu thủ trên sân để thay ra, hoặc chạm người dự bị trước. Kéo một cầu thủ thả lên người khác để đổi vị trí.",
         "hintSwap": "Chạm cầu thủ khác trên sân để đổi vị trí với {{name}}.",
         "hintQueued": "{{name}} đã có người vào thay. Xóa ở mục Chờ xác nhận để đổi.",
         "hintPickBench": "Chọn người dự bị vào thay {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Hợp vị trí trước",
         "confirm": "Xác nhận {{count}} thay người",
         "swapped": "Đã đổi vị trí {{a}} ↔ {{b}}.",
+        "swapWaiting": "Đã gửi lệnh đổi vị trí, chờ trận đấu thực hiện.",
         "roleSet": "{{name}}: vai trò {{role}}.",
         "sent": "Đã gửi {{count}} thay người. Còn {{left}} lượt."
       },

@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{used}} remplacements sur {{max}} utilisés, {{queued}} en attente",
         "queuedShort": "{{count}} en attente",
-        "hintIdle": "Touchez un joueur sur le terrain pour le faire sortir, ou d’abord un remplaçant.",
+        "hintIdle": "Touchez un joueur sur le terrain pour le faire sortir, ou d’abord un remplaçant. Faites glisser un joueur sur un autre pour échanger leurs places.",
         "hintSwap": "Touchez un autre joueur sur le terrain pour échanger sa place avec {{name}}.",
         "hintQueued": "{{name}} a déjà un remplaçant. Retirez-le dans À confirmer pour changer.",
         "hintPickBench": "Choisissez un remplaçant pour {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Meilleur profil d’abord",
         "confirm": "Confirmer {{count}} remplacements",
         "swapped": "Places échangées : {{a}} ↔ {{b}}.",
+        "swapWaiting": "Échange envoyé, en attente de son application par le match.",
         "roleSet": "{{name}} : rôle {{role}}.",
         "sent": "{{count}} remplacements envoyés. Il en reste {{left}}."
       },

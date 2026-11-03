@@ -9,7 +9,13 @@ import type { PlayerRole } from "../../../store/types";
 import type { LicenceControls } from "../../api/rules";
 import type { MatchCommand, PlayStyle, Side } from "../../api/engine";
 import { BenchList, PhonePitch, PlanCard, PlayerSheet, QueuedChanges } from "./PhoneSubParts";
-import { type PlayerChange, sideNow, suggestionsStillOpen } from "./phoneSubs";
+import {
+  type PlaceSwap,
+  type PlayerChange,
+  sideNow,
+  suggestionsStillOpen,
+  withSwaps,
+} from "./phoneSubs";
 
 const FOCUS =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800";
@@ -33,6 +39,8 @@ export interface PhoneSubPanelProps {
   booked: readonly string[];
   /** Substitutions sent and not yet decided by the match. */
   inFlight: readonly PlayerChange[];
+  /** Swaps of places sent and not yet decided: the pitch shows them made. */
+  swapsInFlight: readonly PlaceSwap[];
   /** The shapes, styles and roles the side may pick (its licence), the current ones among them. */
   formations: readonly string[];
   playStyles: readonly PlayStyle[];
@@ -65,7 +73,12 @@ export function PhoneSubPanel(props: PhoneSubPanelProps) {
   const changes = [...inFlight, ...queue];
   const { team, bench, replacing, comingOn, left, byId } = sideNow(snapshot, side, changes);
   const nameOf = (id: string) => byId.get(id)?.name ?? "";
-  const slots = layoutFormationSlots(team.formation, team.players, snapshot.sent_off);
+  const slots = layoutFormationSlots(
+    team.formation,
+    withSwaps(team.players, props.swapsInFlight),
+    snapshot.sent_off,
+  );
+  const swapWaiting = new Set(props.swapsInFlight.flat());
 
   const clearPick = () => {
     setPicked(null);
@@ -192,8 +205,10 @@ export function PhoneSubPanel(props: PhoneSubPanelProps) {
           picked={picked?.on === "pitch" ? picked.id : null}
           swapping={swapping}
           targetFromBench={picked?.on === "bench"}
+          swapWaiting={swapWaiting}
           nameOf={nameOf}
           onTap={tapPitch}
+          onDragSwap={(a, b) => void swapPlaces(a, b)}
         />
         {queue.length > 0 && (
           <QueuedChanges

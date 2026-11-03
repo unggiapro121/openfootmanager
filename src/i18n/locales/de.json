@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{used}} von {{max}} Wechseln genutzt, {{queued}} wartend",
         "queuedShort": "{{count}} wartend",
-        "hintIdle": "Tippe einen Spieler auf dem Platz an, um ihn auszuwechseln, oder zuerst einen Ersatzspieler.",
+        "hintIdle": "Tippe einen Spieler auf dem Platz an, um ihn auszuwechseln, oder zuerst einen Ersatzspieler. Zieh einen Spieler auf einen anderen, um ihre Positionen zu tauschen.",
         "hintSwap": "Tippe einen anderen Spieler an, um mit {{name}} die Position zu tauschen.",
         "hintQueued": "Für {{name}} ist schon ein Wechsel geplant. Entferne ihn unter Zu bestätigen, um ihn zu ändern.",
         "hintPickBench": "Wähle einen Ersatzspieler für {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Beste Eignung zuerst",
         "confirm": "{{count}} Wechsel bestätigen",
         "swapped": "Getauscht: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Tausch gesendet, wartet darauf, dass das Spiel ihn ausführt.",
         "roleSet": "{{name}}: Rolle {{role}}.",
         "sent": "{{count}} Wechsel gesendet. Noch {{left}} übrig."
       },

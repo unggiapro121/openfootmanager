@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "Využito {{used}} z {{max}} střídání, {{queued}} čeká",
         "queuedShort": "čeká {{count}}",
-        "hintIdle": "Klepněte na hráče na hřišti, aby šel ven, nebo nejdřív na náhradníka.",
+        "hintIdle": "Klepněte na hráče na hřišti, aby šel ven, nebo nejdřív na náhradníka. Přetáhněte hráče na jiného a prohodí si posty.",
         "hintSwap": "Klepněte na jiného hráče na hřišti a prohoďte ho s hráčem {{name}}.",
         "hintQueued": "Za hráče {{name}} už je střídání vybrané. Odeberte ho v Ke schválení, chcete-li ho změnit.",
         "hintPickBench": "Vyberte náhradníka za hráče {{name}}.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "Nejvhodnější první",
         "confirm": "Potvrdit střídání ({{count}})",
         "swapped": "Prohozeno: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Prohození odesláno, čeká, až ho zápas provede.",
         "roleSet": "{{name}} hraje roli {{role}}.",
         "sent": "Odesláno střídání: {{count}}. Zbývá: {{left}}."
       },

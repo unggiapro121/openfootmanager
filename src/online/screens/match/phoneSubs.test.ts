@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { EnginePlayerData } from "../../../components/match/types";
 import type { SentCommand } from "../../api";
-import { benchForSlot, substitutionsInFlight, suggestionsStillOpen } from "./phoneSubs";
+import {
+  benchForSlot,
+  substitutionsInFlight,
+  suggestionsStillOpen,
+  swapsInFlight,
+  withSwaps,
+} from "./phoneSubs";
 
 const line = (commandId: string, command: SentCommand["command"], status = "pending") =>
   ({ commandId, command, status, sentAt: "2026-11-03T10:00:00Z" }) as SentCommand;
@@ -34,6 +40,52 @@ describe("substitutionsInFlight", () => {
       line("c4", { ChangeFormation: { side: "Home", formation: "4-3-3" } }),
     ];
     expect(substitutionsInFlight(sent, { c2: "refused" })).toEqual([{ offId: "h9", onId: "hs1" }]);
+  });
+});
+
+const swap = (a: string, b: string) => ({
+  SwapPositions: { side: "Home" as const, player_a_id: a, player_b_id: b },
+});
+
+describe("swapsInFlight", () => {
+  // Given a swap waiting, one the match has decided, one marked applied and a substitution,
+  // when the swaps in flight are read,
+  // then only the waiting swap is, as its two players.
+  it("keeps only the swaps of places the match has not decided", () => {
+    const sent = [
+      line("c1", swap("h9", "h8")),
+      line("c2", swap("h7", "h6")),
+      line("c3", swap("h5", "h4"), "applied"),
+      line("c4", sub("h3", "hs1")),
+    ];
+    expect(swapsInFlight(sent, { c2: "applied" })).toEqual([["h9", "h8"]]);
+  });
+});
+
+describe("withSwaps", () => {
+  const eleven = ["h1", "h2", "h3", "h4"].map((id) => player(id));
+  const ids = (players: EnginePlayerData[]) => players.map((one) => one.id);
+
+  // Given h2 swapped with h3, then h3 with h4,
+  // when the eleven are read with the swaps made,
+  // then each swap is made in the order sent, on the order the one before left.
+  it("makes the swaps in the order sent", () => {
+    expect(
+      ids(
+        withSwaps(eleven, [
+          ["h2", "h3"],
+          ["h3", "h4"],
+        ]),
+      ),
+    ).toEqual(["h1", "h4", "h2", "h3"]);
+    expect(ids(eleven)).toEqual(["h1", "h2", "h3", "h4"]);
+  });
+
+  // Given a swap naming a player who is no longer in the eleven,
+  // when the eleven are read with it,
+  // then it is skipped.
+  it("skips a swap with a player not in the eleven", () => {
+    expect(ids(withSwaps(eleven, [["h2", "gone"]]))).toEqual(["h1", "h2", "h3", "h4"]);
   });
 });
 

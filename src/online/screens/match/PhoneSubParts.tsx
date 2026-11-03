@@ -29,6 +29,7 @@ import type { Side } from "../../api/engine";
 import { openInMatch } from "../../convert/licence";
 import { withCurrent } from "./matchOptions";
 import { benchForSlot, type PlayerChange, type SlotCandidate } from "./phoneSubs";
+import { usePitchDrag } from "./usePitchDrag";
 
 const KEY = "online.match.phoneSubs";
 const FOCUS =
@@ -59,13 +60,17 @@ function Face({
 
 /** The avatar's edge on the pitch: what tapping the player would do now. */
 function tokenEdge(state: {
+  dropTarget: boolean;
+  swapWaiting: boolean;
   swapSource: boolean;
   picked: boolean;
   replaced: boolean;
   target: boolean;
   tired: boolean;
 }): string {
+  if (state.dropTarget) return "border-solid border-sky-300 ring-4 ring-sky-400/70";
   if (state.swapSource) return "border-solid border-sky-400";
+  if (state.swapWaiting) return "border-dashed border-sky-400";
   if (state.picked) return "border-solid border-red-400 motion-safe:animate-claim-pulse";
   if (state.replaced) return "border-dashed border-primary-400";
   if (state.target) return "border-dashed border-accent-400";
@@ -76,10 +81,13 @@ function tokenEdge(state: {
 /** Where the phone pitch's first and last rows of players stand, in % of its height. */
 const ROW_TOP = 10;
 const ROW_BOTTOM = 89;
+/** How far above the finger the dragged player's face rides, in px. */
+const GHOST_ABOVE_FINGER = 44;
 
 /**
  * The eleven on the pitch as tokens to tap: the slot, the rating there, a booking or a knock, the
- * condition, and who is coming on for him once a change is queued or sent.
+ * condition, and who is coming on for him once a change is queued or sent. A token dragged onto
+ * another swaps the two players' places, as on the desktop pitch.
  */
 export function PhonePitch({
   slots,
@@ -91,8 +99,10 @@ export function PhonePitch({
   picked,
   swapping,
   targetFromBench,
+  swapWaiting,
   nameOf,
   onTap,
+  onDragSwap,
 }: {
   slots: FormationSlot[];
   roster: RadarRoster;
@@ -104,10 +114,16 @@ export function PhonePitch({
   swapping: boolean;
   /** A bench player is picked: the players free to come off show as targets. */
   targetFromBench: boolean;
+  /** Players in a swap of places sent and not yet decided by the match. */
+  swapWaiting: ReadonlySet<string>;
   nameOf: (id: string) => string;
   onTap: (id: string) => void;
+  /** One token dropped on another: the two players trade places. */
+  onDragSwap: (draggedId: string, targetId: string) => void;
 }) {
   const { t } = useTranslation();
+  const { area, drag, handlers, isDropClick } = usePitchDrag(onDragSwap);
+  const dragged = drag ? slots.find((slot) => slot.player.id === drag.id)?.player : undefined;
   // The shape's own rows bunch up the midfield, which a phone's tokens (name and condition under
   // the face) cannot share: the rows are spread evenly down the pitch instead, in the same order.
   const rows = [...new Set(slots.map((slot) => slot.y))].sort((a, b) => a - b);
@@ -115,7 +131,7 @@ export function PhonePitch({
     rows.length < 2 ? y : ROW_TOP + (rows.indexOf(y) * (ROW_BOTTOM - ROW_TOP)) / (rows.length - 1);
   return (
     <PitchSurface className="w-full">
-      <section aria-label={t(`${KEY}.pitch`)} className="relative aspect-[5/6] w-full">
+      <section ref={area} aria-label={t(`${KEY}.pitch`)} className="relative aspect-[5/6] w-full">
         {slots.map(({ player, x, y: shapeY, slotPosition }) => {
           const y = rowY(shapeY);
           const slot = slotPosition ?? player.position;
@@ -125,7 +141,8 @@ export function PhonePitch({
           const incoming = replacing.get(player.id);
           const isSentOff = sentOff.includes(player.id);
           const isPicked = picked === player.id;
-          const label = isSentOff
+          const waiting = swapWaiting.has(player.id);
+          const tokenLabel = isSentOff
             ? t(`${KEY}.tokenSentOff`, { name: player.name, slot: slotLabel })
             : incoming
               ? t(`${KEY}.tokenReplaced`, {
@@ -136,17 +153,22 @@ export function PhonePitch({
                   on: nameOf(incoming),
                 })
               : t(`${KEY}.token`, { name: player.name, slot: slotLabel, ovr, condition });
+          const label = waiting ? `${tokenLabel} ${t(`${KEY}.swapWaiting`)}` : tokenLabel;
           return (
             <button
               key={player.id}
               type="button"
+              data-swap-id={player.id}
               aria-label={label}
               aria-pressed={isPicked}
               // A sent-off player's slot can still take a player swapped into it.
               disabled={isSentOff && !swapping}
-              onClick={() => onTap(player.id)}
+              onClick={() => {
+                if (!isDropClick()) onTap(player.id);
+              }}
+              {...handlers(player.id, !isSentOff)}
               style={{ left: `${x}%`, top: `${y}%` }}
-              className={`absolute flex w-[4.75rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-[3px] rounded-xl ${isPicked ? "z-20" : "z-10"} ${FOCUS}`}
+              className={`absolute flex w-[4.75rem] -translate-x-1/2 -translate-y-1/2 touch-none select-none flex-col items-center gap-[3px] rounded-xl [-webkit-touch-callout:none] ${isPicked ? "z-20" : "z-10"} ${drag?.id === player.id ? "opacity-40" : ""} ${FOCUS}`}
             >
               <span
                 className={`relative ${isSentOff ? "opacity-40 grayscale" : incoming ? "opacity-75" : ""}`}
@@ -155,6 +177,8 @@ export function PhonePitch({
                   player={player}
                   roster={roster}
                   className={`h-11 w-11 border-[2.5px] ${tokenEdge({
+                    dropTarget: drag?.over === player.id,
+                    swapWaiting: waiting,
                     swapSource: isPicked && swapping,
                     picked: isPicked && !swapping,
                     replaced: incoming !== undefined,
@@ -205,6 +229,20 @@ export function PhonePitch({
             </button>
           );
         })}
+        {drag && dragged && (
+          <span
+            aria-hidden="true"
+            // Above the fingertip, which would hide it and the token it is over.
+            style={{ left: drag.x, top: drag.y - GHOST_ABOVE_FINGER }}
+            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-1/2"
+          >
+            <Face
+              player={dragged}
+              roster={roster}
+              className="h-14 w-14 border-[2.5px] border-sky-400 shadow-xl"
+            />
+          </span>
+        )}
       </section>
     </PitchSurface>
   );

@@ -636,7 +636,7 @@
       "phoneSubs": {
         "usedAria": "{{max}} değişiklikten {{used}} kullanıldı, {{queued}} bekliyor",
         "queuedShort": "{{count}} bekliyor",
-        "hintIdle": "Oyundan çıkarmak için sahadaki bir oyuncuya ya da önce bir yedeğe dokun.",
+        "hintIdle": "Oyundan çıkarmak için sahadaki bir oyuncuya ya da önce bir yedeğe dokun. Yerlerini değiştirmek için bir oyuncuyu diğerinin üstüne sürükle.",
         "hintSwap": "{{name}} ile yer değiştirmek için sahadaki başka bir oyuncuya dokun.",
         "hintQueued": "{{name}} için zaten bir değişiklik var. Değiştirmek için Onay bekleyenler'den kaldır.",
         "hintPickBench": "{{name}} yerine girecek yedeği seç.",
@@ -668,6 +668,7 @@
         "sheetBenchSub": "En uygunlar önce",
         "confirm": "{{count}} değişikliği onayla",
         "swapped": "Yer değiştirildi: {{a}} ↔ {{b}}.",
+        "swapWaiting": "Yer değişikliği gönderildi, maçın uygulaması bekleniyor.",
         "roleSet": "{{name}}: rol {{role}}.",
         "sent": "{{count}} değişiklik gönderildi. {{left}} hak kaldı."
       },
