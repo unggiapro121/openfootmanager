@@ -369,7 +369,12 @@
         "fullProfile": "Ficha completa",
         "toTactics": "Colocar en Táctica",
         "actions": "Acciones",
-        "actionsTitle": "Acciones · {{name}}"
+        "actionsTitle": "Acciones · {{name}}",
+        "groupTransfer": "Traspaso",
+        "groupCustomise": "Personalizar",
+        "listSub": "Ponerlo en el mercado de subastas",
+        "releaseSub": "Que deje el club ya",
+        "shirtSub": "Lleva el número {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Indemnización",
       "releaseCash": "Caja del club",
       "releaseSquad": "Jugadores que quedan (mínimo {{min}})",
-      "releaseConfirm": "Rescindir jugador"
+      "releaseConfirm": "Rescindir jugador",
+      "phone": {
+        "manage": "Gestionar jugador",
+        "shirt": "Dorsal {{number}}",
+        "age": "{{age}} años",
+        "tabs": "Información del jugador",
+        "tab": {
+          "stats": "Atributos",
+          "traits": "Rasgos",
+          "season": "Temporada"
+        },
+        "tapGroups": "Toca un grupo para abrirlo o cerrarlo",
+        "view": "Vista",
+        "apps": "Partidos",
+        "avgRating": "Nota media",
+        "goals": "Goles",
+        "assists": "Asistencias",
+        "full": "La condición está al máximo",
+        "boost": "Recuperar condición · {{count}} objetos",
+        "boostTitle": "Recuperar condición",
+        "now": "Ahora {{value}}%",
+        "held": "Tienes {{count}}",
+        "shop": "Compra más en la Tienda ›"
+      }
     },
     "inbox": {
       "sender": "Oficina del club",

@@ -369,7 +369,12 @@
         "fullProfile": "Tüm profil",
         "toTactics": "Taktikte yerleştir",
         "actions": "İşlemler",
-        "actionsTitle": "İşlemler · {{name}}"
+        "actionsTitle": "İşlemler · {{name}}",
+        "groupTransfer": "Transfer işlemleri",
+        "groupCustomise": "Özelleştir",
+        "listSub": "Açık artırmaya çıkar",
+        "releaseSub": "Kulüpten hemen ayrılsın",
+        "shirtSub": "{{number}} numarayı giyiyor"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Tazminat",
       "releaseCash": "Kulüp kasası",
       "releaseSquad": "Kalan oyuncu (en az {{min}})",
-      "releaseConfirm": "Sözleşmeyi feshet"
+      "releaseConfirm": "Sözleşmeyi feshet",
+      "phone": {
+        "manage": "Oyuncuyu yönet",
+        "shirt": "Forma numarası {{number}}",
+        "age": "{{age}} yaş",
+        "tabs": "Oyuncu bilgisi",
+        "tab": {
+          "stats": "Özellikler",
+          "traits": "Nitelikler",
+          "season": "Sezon"
+        },
+        "tapGroups": "Açmak ya da kapatmak için bir gruba dokun",
+        "view": "Görünüm",
+        "apps": "Maç",
+        "avgRating": "Ort. puan",
+        "goals": "Gol",
+        "assists": "Asist",
+        "full": "Kondisyon dolu",
+        "boost": "Kondisyon yenile · {{count}} eşya",
+        "boostTitle": "Kondisyon yenile",
+        "now": "Şu an %{{value}}",
+        "held": "{{count}} adet var",
+        "shop": "Mağazadan daha fazla al ›"
+      }
     },
     "inbox": {
       "sender": "Kulüp ofisi",

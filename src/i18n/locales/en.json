@@ -369,7 +369,12 @@
         "fullProfile": "Full profile",
         "toTactics": "Set in Tactics",
         "actions": "Actions",
-        "actionsTitle": "Actions · {{name}}"
+        "actionsTitle": "Actions · {{name}}",
+        "groupTransfer": "Transfer",
+        "groupCustomise": "Customise",
+        "listSub": "Put him on the auction market",
+        "releaseSub": "Let him leave the club now",
+        "shirtSub": "Wearing number {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Severance",
       "releaseCash": "Club cash",
       "releaseSquad": "Players left (minimum {{min}})",
-      "releaseConfirm": "Release player"
+      "releaseConfirm": "Release player",
+      "phone": {
+        "manage": "Manage player",
+        "shirt": "Shirt number {{number}}",
+        "age": "{{age}} yrs",
+        "tabs": "Player information",
+        "tab": {
+          "stats": "Attributes",
+          "traits": "Traits",
+          "season": "Season"
+        },
+        "tapGroups": "Tap a group to open or close it",
+        "view": "View",
+        "apps": "Matches",
+        "avgRating": "Avg. rating",
+        "goals": "Goals",
+        "assists": "Assists",
+        "full": "Condition is full",
+        "boost": "Recover condition · {{count}} items",
+        "boostTitle": "Recover condition",
+        "now": "Now {{value}}%",
+        "held": "{{count}} held",
+        "shop": "Buy more in the Shop ›"
+      }
     },
     "inbox": {
       "sender": "Club office",

@@ -369,7 +369,12 @@
         "fullProfile": "Celý profil",
         "toTactics": "Zařadit v taktice",
         "actions": "Akce",
-        "actionsTitle": "Akce · {{name}}"
+        "actionsTitle": "Akce · {{name}}",
+        "groupTransfer": "Přestup",
+        "groupCustomise": "Úpravy",
+        "listSub": "Dát ho do aukce",
+        "releaseSub": "Nechat ho hned odejít",
+        "shirtSub": "Nosí číslo {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Odstupné",
       "releaseCash": "Pokladna klubu",
       "releaseSquad": "Zbývající hráči (minimum {{min}})",
-      "releaseConfirm": "Rozvázat smlouvu s hráčem"
+      "releaseConfirm": "Rozvázat smlouvu s hráčem",
+      "phone": {
+        "manage": "Správa hráče",
+        "shirt": "Číslo dresu {{number}}",
+        "age": "{{age}} let",
+        "tabs": "Informace o hráči",
+        "tab": {
+          "stats": "Atributy",
+          "traits": "Vlastnosti",
+          "season": "Sezóna"
+        },
+        "tapGroups": "Klepnutím skupinu otevřete nebo zavřete",
+        "view": "Zobrazení",
+        "apps": "Zápasy",
+        "avgRating": "Prům. hodnocení",
+        "goals": "Góly",
+        "assists": "Asistence",
+        "full": "Kondice je plná",
+        "boost": "Obnovit kondici · {{count}} předmětů",
+        "boostTitle": "Obnovit kondici",
+        "now": "Teď {{value}} %",
+        "held": "Máte {{count}}",
+        "shop": "Koupit další v obchodě ›"
+      }
     },
     "inbox": {
       "sender": "Kancelář klubu",

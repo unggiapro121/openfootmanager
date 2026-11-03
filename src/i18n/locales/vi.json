@@ -369,7 +369,12 @@
         "fullProfile": "Hồ sơ đầy đủ",
         "toTactics": "Xếp ở Chiến thuật",
         "actions": "Thao tác",
-        "actionsTitle": "Thao tác · {{name}}"
+        "actionsTitle": "Thao tác · {{name}}",
+        "groupTransfer": "Chuyển nhượng",
+        "groupCustomise": "Tuỳ chỉnh",
+        "listSub": "Đưa lên Chợ đấu giá",
+        "releaseSub": "Cho rời CLB ngay",
+        "shirtSub": "Đang mặc số {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Tiền đền bù",
       "releaseCash": "Quỹ CLB",
       "releaseSquad": "Số cầu thủ còn lại (tối thiểu {{min}})",
-      "releaseConfirm": "Thanh lý cầu thủ"
+      "releaseConfirm": "Thanh lý cầu thủ",
+      "phone": {
+        "manage": "Quản lý cầu thủ",
+        "shirt": "Số áo {{number}}",
+        "age": "{{age}} tuổi",
+        "tabs": "Thông tin cầu thủ",
+        "tab": {
+          "stats": "Chỉ số",
+          "traits": "Đặc điểm",
+          "season": "Mùa giải"
+        },
+        "tapGroups": "Chạm nhóm để mở/thu",
+        "view": "Kiểu xem",
+        "apps": "Trận",
+        "avgRating": "Điểm TB",
+        "goals": "Bàn thắng",
+        "assists": "Kiến tạo",
+        "full": "Thể lực đã đầy",
+        "boost": "Hồi thể lực · {{count}} vật phẩm",
+        "boostTitle": "Hồi thể lực",
+        "now": "Hiện tại {{value}}%",
+        "held": "còn ×{{count}}",
+        "shop": "Mua thêm ở Cửa hàng ›"
+      }
     },
     "inbox": {
       "sender": "Văn phòng CLB",

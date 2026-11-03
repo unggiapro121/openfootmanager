@@ -36,6 +36,8 @@ import PlayerAvatarPicker from "./PlayerAvatarPicker";
 import PlayerNationalityDialog from "./PlayerNationalityDialog";
 import ReleaseDialog from "./ReleaseDialog";
 import ShirtNumberPicker from "./ShirtNumberPicker";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import PhonePlayer from "./PhonePlayer";
 
 /**
  * One player of the club on his own page, laid out as the offline player profile is: the hero card
@@ -47,7 +49,9 @@ export default function OnlinePlayer() {
   const { playerId = "" } = useParams();
   const club = useOnlineStore((state) => state.club);
   const player = club?.players.find((one) => one.id === playerId);
+  const phone = usePhoneLayout();
   if (!club) return null;
+  if (phone && player) return <PhonePlayer player={player} club={club} />;
   return (
     <div className="flex flex-col gap-5">
       <Link

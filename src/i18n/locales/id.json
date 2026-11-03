@@ -369,7 +369,12 @@
         "fullProfile": "Profil lengkap",
         "toTactics": "Atur di Taktik",
         "actions": "Tindakan",
-        "actionsTitle": "Tindakan · {{name}}"
+        "actionsTitle": "Tindakan · {{name}}",
+        "groupTransfer": "Jual-beli",
+        "groupCustomise": "Sesuaikan",
+        "listSub": "Masukkan ke pasar lelang",
+        "releaseSub": "Lepas dari klub sekarang",
+        "shirtSub": "Memakai nomor {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Pesangon",
       "releaseCash": "Kas klub",
       "releaseSquad": "Pemain tersisa (minimal {{min}})",
-      "releaseConfirm": "Putus kontrak pemain"
+      "releaseConfirm": "Putus kontrak pemain",
+      "phone": {
+        "manage": "Kelola pemain",
+        "shirt": "Nomor punggung {{number}}",
+        "age": "{{age}} th",
+        "tabs": "Info pemain",
+        "tab": {
+          "stats": "Atribut",
+          "traits": "Ciri",
+          "season": "Musim"
+        },
+        "tapGroups": "Ketuk grup untuk membuka atau menutup",
+        "view": "Tampilan",
+        "apps": "Laga",
+        "avgRating": "Rata-rata nilai",
+        "goals": "Gol",
+        "assists": "Asis",
+        "full": "Kondisi sudah penuh",
+        "boost": "Pulihkan kondisi · {{count}} item",
+        "boostTitle": "Pulihkan kondisi",
+        "now": "Sekarang {{value}}%",
+        "held": "Punya {{count}}",
+        "shop": "Beli lagi di Toko ›"
+      }
     },
     "inbox": {
       "sender": "Kantor klub",

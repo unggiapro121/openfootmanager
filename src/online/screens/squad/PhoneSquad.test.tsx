@@ -242,9 +242,13 @@ describe("the squad on a phone", () => {
       "online.player.nationalityChange",
       "online.rename.open",
     ]) {
-      expect(await within(actions).findByRole("button", { name })).toBeInTheDocument();
+      expect(
+        await within(actions).findByRole("button", {
+          name: new RegExp(`^${name.replace(/\./g, "\\.")}`),
+        }),
+      ).toBeInTheDocument();
     }
-    fireEvent.click(within(actions).getByRole("button", { name: "online.player.release" }));
+    fireEvent.click(within(actions).getByRole("button", { name: /^online\.player\.release/ }));
 
     expect(
       screen.getByRole("dialog", { name: "online.player.releaseTitle:Nhân Lucas" }),
@@ -264,10 +268,10 @@ describe("the squad on a phone", () => {
     const actions = await screen.findByRole("dialog", { name: `${KEY}.actionsTitle:Nhân Lucas` });
     const listed = await within(actions).findByRole("link", { name: "online.market.listed" });
     expect(listed).toHaveAttribute("href", "/online/auctions/a-9");
-    expect(within(actions).queryByRole("button", { name: "online.player.release" })).toBeNull();
-    expect(within(actions).queryByRole("button", { name: "online.rename.open" })).toBeNull();
+    expect(within(actions).queryByRole("button", { name: /^online\.player\.release/ })).toBeNull();
+    expect(within(actions).queryByRole("button", { name: /^online\.rename\.open/ })).toBeNull();
     expect(
-      within(actions).getByRole("button", { name: "squad.jerseyPickerAction" }),
+      within(actions).getByRole("button", { name: /^squad\.jerseyPickerAction/ }),
     ).toBeInTheDocument();
   });
 

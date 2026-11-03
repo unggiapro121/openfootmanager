@@ -369,7 +369,12 @@
         "fullProfile": "Полный профиль",
         "toTactics": "Расставить в тактике",
         "actions": "Действия",
-        "actionsTitle": "Действия · {{name}}"
+        "actionsTitle": "Действия · {{name}}",
+        "groupTransfer": "Трансфер",
+        "groupCustomise": "Настройка",
+        "listSub": "Выставить на аукцион",
+        "releaseSub": "Отпустить из клуба сейчас",
+        "shirtSub": "Играет под номером {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Компенсация",
       "releaseCash": "Касса клуба",
       "releaseSquad": "Останется игроков (минимум {{min}})",
-      "releaseConfirm": "Расторгнуть контракт"
+      "releaseConfirm": "Расторгнуть контракт",
+      "phone": {
+        "manage": "Управление игроком",
+        "shirt": "Номер {{number}}",
+        "age": "{{age}} лет",
+        "tabs": "Информация об игроке",
+        "tab": {
+          "stats": "Атрибуты",
+          "traits": "Черты",
+          "season": "Сезон"
+        },
+        "tapGroups": "Нажмите на группу, чтобы открыть или закрыть",
+        "view": "Вид",
+        "apps": "Матчи",
+        "avgRating": "Ср. оценка",
+        "goals": "Голы",
+        "assists": "Передачи",
+        "full": "Форма на максимуме",
+        "boost": "Восстановить форму · предметов: {{count}}",
+        "boostTitle": "Восстановление формы",
+        "now": "Сейчас {{value}}%",
+        "held": "В наличии: {{count}}",
+        "shop": "Купить ещё в магазине ›"
+      }
     },
     "inbox": {
       "sender": "Офис клуба",

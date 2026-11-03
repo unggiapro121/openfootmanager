@@ -369,7 +369,12 @@
         "fullProfile": "Fiche complète",
         "toTactics": "Placer dans Tactique",
         "actions": "Options",
-        "actionsTitle": "Options · {{name}}"
+        "actionsTitle": "Options · {{name}}",
+        "groupTransfer": "Transfert",
+        "groupCustomise": "Personnaliser",
+        "listSub": "Le mettre aux enchères",
+        "releaseSub": "Le laisser quitter le club",
+        "shirtSub": "Porte le numéro {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Indemnité",
       "releaseCash": "Trésorerie du club",
       "releaseSquad": "Joueurs restants (minimum {{min}})",
-      "releaseConfirm": "Résilier le joueur"
+      "releaseConfirm": "Résilier le joueur",
+      "phone": {
+        "manage": "Gérer le joueur",
+        "shirt": "Numéro {{number}}",
+        "age": "{{age}} ans",
+        "tabs": "Infos du joueur",
+        "tab": {
+          "stats": "Attributs",
+          "traits": "Qualités",
+          "season": "Saison"
+        },
+        "tapGroups": "Touchez un groupe pour l'ouvrir ou le fermer",
+        "view": "Affichage",
+        "apps": "Matchs",
+        "avgRating": "Note moy.",
+        "goals": "Buts",
+        "assists": "Passes déc.",
+        "full": "La condition est au maximum",
+        "boost": "Récupérer · {{count}} objets",
+        "boostTitle": "Récupérer la condition",
+        "now": "Actuellement {{value}} %",
+        "held": "{{count}} en stock",
+        "shop": "Acheter plus à la Boutique ›"
+      }
     },
     "inbox": {
       "sender": "Bureau du club",

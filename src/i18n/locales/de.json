@@ -369,7 +369,12 @@
         "fullProfile": "Ganzes Profil",
         "toTactics": "In Taktik einteilen",
         "actions": "Aktionen",
-        "actionsTitle": "Aktionen · {{name}}"
+        "actionsTitle": "Aktionen · {{name}}",
+        "groupTransfer": "Wechsel",
+        "groupCustomise": "Anpassen",
+        "listSub": "Ihn auf den Auktionsmarkt setzen",
+        "releaseSub": "Ihn sofort gehen lassen",
+        "shirtSub": "Trägt die Nummer {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Abfindung",
       "releaseCash": "Vereinskasse",
       "releaseSquad": "Verbleibende Spieler (mindestens {{min}})",
-      "releaseConfirm": "Spieler freigeben"
+      "releaseConfirm": "Spieler freigeben",
+      "phone": {
+        "manage": "Spieler verwalten",
+        "shirt": "Rückennummer {{number}}",
+        "age": "{{age}} J.",
+        "tabs": "Spielerinfo",
+        "tab": {
+          "stats": "Attribute",
+          "traits": "Eigenschaften",
+          "season": "Saison"
+        },
+        "tapGroups": "Tippe auf eine Gruppe, um sie zu öffnen oder zu schließen",
+        "view": "Ansicht",
+        "apps": "Spiele",
+        "avgRating": "Ø-Note",
+        "goals": "Tore",
+        "assists": "Vorlagen",
+        "full": "Kondition ist voll",
+        "boost": "Kondition auffüllen · {{count}} Gegenstände",
+        "boostTitle": "Kondition auffüllen",
+        "now": "Jetzt {{value}} %",
+        "held": "{{count}} vorrätig",
+        "shop": "Mehr im Shop kaufen ›"
+      }
     },
     "inbox": {
       "sender": "Vereinsbüro",

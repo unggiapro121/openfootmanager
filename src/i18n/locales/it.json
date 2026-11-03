@@ -369,7 +369,12 @@
         "fullProfile": "Profilo completo",
         "toTactics": "Schiera in Tattica",
         "actions": "Azioni",
-        "actionsTitle": "Azioni · {{name}}"
+        "actionsTitle": "Azioni · {{name}}",
+        "groupTransfer": "Trasferimento",
+        "groupCustomise": "Personalizza",
+        "listSub": "Mettilo all'asta",
+        "releaseSub": "Lascialo andare subito",
+        "shirtSub": "Indossa il numero {{number}}"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "Buonuscita",
       "releaseCash": "Cassa del club",
       "releaseSquad": "Giocatori rimasti (minimo {{min}})",
-      "releaseConfirm": "Svincola il giocatore"
+      "releaseConfirm": "Svincola il giocatore",
+      "phone": {
+        "manage": "Gestisci giocatore",
+        "shirt": "Maglia {{number}}",
+        "age": "{{age}} anni",
+        "tabs": "Info giocatore",
+        "tab": {
+          "stats": "Attributi",
+          "traits": "Tratti",
+          "season": "Stagione"
+        },
+        "tapGroups": "Tocca un gruppo per aprirlo o chiuderlo",
+        "view": "Vista",
+        "apps": "Partite",
+        "avgRating": "Voto medio",
+        "goals": "Gol",
+        "assists": "Assist",
+        "full": "La condizione è al massimo",
+        "boost": "Recupera condizione · {{count}} oggetti",
+        "boostTitle": "Recupera condizione",
+        "now": "Ora {{value}}%",
+        "held": "Ne hai {{count}}",
+        "shop": "Comprane altri nel Negozio ›"
+      }
     },
     "inbox": {
       "sender": "Ufficio del club",

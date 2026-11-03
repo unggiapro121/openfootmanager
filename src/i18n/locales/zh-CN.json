@@ -369,7 +369,12 @@
         "fullProfile": "完整资料",
         "toTactics": "去战术中安排",
         "actions": "操作",
-        "actionsTitle": "操作 · {{name}}"
+        "actionsTitle": "操作 · {{name}}",
+        "groupTransfer": "转会",
+        "groupCustomise": "个性化",
+        "listSub": "挂到拍卖市场",
+        "releaseSub": "让他立即离队",
+        "shirtSub": "身穿 {{number}} 号"
       }
     },
     "training": {
@@ -1073,7 +1078,30 @@
       "releaseSeverance": "解约金",
       "releaseCash": "俱乐部资金",
       "releaseSquad": "剩余球员数（至少 {{min}}）",
-      "releaseConfirm": "解约球员"
+      "releaseConfirm": "解约球员",
+      "phone": {
+        "manage": "管理球员",
+        "shirt": "球衣号码 {{number}}",
+        "age": "{{age}} 岁",
+        "tabs": "球员信息",
+        "tab": {
+          "stats": "属性",
+          "traits": "特点",
+          "season": "赛季"
+        },
+        "tapGroups": "点击分组可展开或收起",
+        "view": "视图",
+        "apps": "出场",
+        "avgRating": "平均评分",
+        "goals": "进球",
+        "assists": "助攻",
+        "full": "体能已满",
+        "boost": "恢复体能 · {{count}} 件道具",
+        "boostTitle": "恢复体能",
+        "now": "当前 {{value}}%",
+        "held": "持有 {{count}}",
+        "shop": "去商店购买更多 ›"
+      }
     },
     "inbox": {
       "sender": "俱乐部办公室",
