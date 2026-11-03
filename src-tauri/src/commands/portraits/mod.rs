@@ -21,7 +21,7 @@ use std::sync::{Arc, Once};
 use std::time::Instant;
 use tauri::{AppHandle, Manager, State};
 
-const GENERATOR_VERSION: &str = "runtime-face-pool-v3";
+const GENERATOR_VERSION: &str = "runtime-face-pool-v4";
 const SIZE: u32 = 256;
 const CACHE_ROOT: &str = "generated-player-portraits";
 
@@ -88,6 +88,10 @@ enum AppearanceGroup {
     Polynesian,
     SouthAsian,
     SoutheastAsian,
+    /// Vietnam has a pool of its own: V.League squads are the main world's
+    /// largest single-nation squads, and a shared South-East Asian pool
+    /// repeated the same faces across them.
+    Vietnamese,
 }
 
 /// How old a face looks: up to 22, 23 to 29, 30 and over.
