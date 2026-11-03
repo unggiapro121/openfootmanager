@@ -1345,21 +1345,17 @@
         "scoutDone": "Una missione di osservazione è tornata: scegli prima che il rapporto si chiuda.",
         "changed": "Il tuo settore giovanile ha novità."
       },
-      "region": {
-        "AsiaSoutheast": "Sud-est asiatico",
-        "AsiaEast": "Asia orientale",
-        "Europe": "Europa",
-        "Americas": "Americhe"
-      },
-      "focus": {
-        "Balanced": "Equilibrato",
-        "Physical": "Fisico",
-        "Technical": "Tecnico"
-      },
       "pay": {
         "cash": "soldi del club",
         "scoutExpedition": "un biglietto di osservazione",
         "scoutExpeditionElite": "un biglietto di osservazione élite"
+      },
+      "line": {
+        "label": "Reparto",
+        "Any": "Tutti"
+      },
+      "lineShares": {
+        "title": "Ripartizione dei ruoli"
       },
       "reveal": {
         "0": "Appena arrivato",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Invia un osservatore",
-        "trip": "{{region}} · {{focus}} · pagato con {{pay}}",
+        "trip": "{{line}} · pagato con {{pay}}",
         "backIn": "Di ritorno tra {{time}}",
         "backSoon": "L'osservatore sta tornando…",
         "timeSkip": "Usa una clessidra ({{held}} posseduti)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Invia un osservatore normale"
       },
       "send": {
-        "region": "Regione",
-        "focus": "Cerca",
         "pay": "Paga con",
         "payCash": "Soldi del club: {{cost}}",
         "payTicket": "1 biglietto di osservazione ({{held}} posseduti)",

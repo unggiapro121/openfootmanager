@@ -3,4 +3,8 @@
 /**
  * `GET /v1/clubs/mine/academy/scout-quote`.
  */
-export type ScoutQuoteQuery = { region: string, focus: string, };
+export type ScoutQuoteQuery = { 
+/**
+ * `Goalkeeper`, `Defender`, `Midfielder`, `Forward` or `Any`.
+ */
+line: string, };

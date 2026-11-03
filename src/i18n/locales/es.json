@@ -1345,21 +1345,17 @@
         "scoutDone": "Ha vuelto una misión de ojeo: elige antes de que se cierre el informe.",
         "changed": "Tu cantera tiene novedades."
       },
-      "region": {
-        "AsiaSoutheast": "Sudeste asiático",
-        "AsiaEast": "Asia oriental",
-        "Europe": "Europa",
-        "Americas": "América"
-      },
-      "focus": {
-        "Balanced": "Equilibrado",
-        "Physical": "Físico",
-        "Technical": "Técnico"
-      },
       "pay": {
         "cash": "dinero del club",
         "scoutExpedition": "un billete de ojeo",
         "scoutExpeditionElite": "un billete de ojeo de élite"
+      },
+      "line": {
+        "label": "Línea",
+        "Any": "Todas"
+      },
+      "lineShares": {
+        "title": "Reparto de posiciones"
       },
       "reveal": {
         "0": "Recién llegado",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Enviar un ojeador",
-        "trip": "{{region}} · {{focus}} · pagado con {{pay}}",
+        "trip": "{{line}} · pagado con {{pay}}",
         "backIn": "Vuelve en {{time}}",
         "backSoon": "El ojeador está volviendo…",
         "timeSkip": "Usar un reloj de arena ({{held}} en posesión)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Enviar un ojeador normal"
       },
       "send": {
-        "region": "Región",
-        "focus": "Buscando",
         "pay": "Pagar con",
         "payCash": "Dinero del club: {{cost}}",
         "payTicket": "1 billete de ojeo ({{held}} en posesión)",

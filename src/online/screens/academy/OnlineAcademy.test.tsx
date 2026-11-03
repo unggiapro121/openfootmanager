@@ -71,8 +71,8 @@ function pupil(id: string, overrides: Partial<AcademyPlayerView> = {}): AcademyP
 function trip(overrides: Partial<ScoutTripView> = {}): ScoutTripView {
   return {
     id: TRIP,
-    region: "Europe",
-    focus: "Balanced",
+    region: "AsiaSoutheast",
+    line: "Any",
     elite: false,
     paidWith: "cash",
     status: "pending",
@@ -99,6 +99,18 @@ function academy(overrides: Partial<AcademyView> = {}): AcademyView {
     weeklyWage: 500,
     graduationFee: 200_000,
     minAcademyDays: 14,
+    positionWeights: [],
+    lineShares: {
+      Any: [
+        { position: "CenterBack", perMille: 190 },
+        { position: "Striker", perMille: 810 },
+      ],
+      Defender: [
+        { position: "CenterBack", perMille: 542 },
+        { position: "LeftBack", perMille: 229 },
+        { position: "RightBack", perMille: 229 },
+      ],
+    },
     ...overrides,
   };
 }
@@ -286,10 +298,59 @@ describe("sending a scout", () => {
 
     await waitFor(() => expect(sent("POST", "v1/clubs/mine/academy/scouts").length).toBe(1));
     expect(sent("POST", "v1/clubs/mine/academy/scouts")[0].body).toEqual({
-      region: "AsiaSoutheast",
-      focus: "Balanced",
+      line: "Any",
       pay: "cash",
     });
+  });
+
+  // Given the season's shares of each line,
+  // when the academy opens and the coach picks defenders,
+  // then one group of lines is offered, any line first and chosen; the shares shown follow the
+  // line chosen; the quote is read for it and the trip sent looks for it (C-15).
+  it("looks for the line the coach picks and shows its positions", async () => {
+    serve({ "POST v1/clubs/mine/academy/scouts": ok(trip({ line: "Defender" })) });
+    renderOnline("/online/academy");
+
+    const any = await screen.findByRole("radio", { name: "online.academy.line.Any" });
+    expect((any as HTMLInputElement).checked).toBe(true);
+    expect(screen.queryByText("online.academy.send.region")).toBeNull();
+    expect(screen.queryByText("online.academy.send.focus")).toBeNull();
+    const shares = () =>
+      within(screen.getByRole("list", { name: "online.academy.lineShares.title" }))
+        .getAllByRole("listitem")
+        .map((item) => item.textContent);
+    expect(shares()).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole("radio", { name: "common.positionGroups.Defender:Defender" }));
+    await waitFor(() => expect(shares()).toHaveLength(3));
+    expect(shares()[0]).toMatch(/^common\.positions\.CenterBack:.*54\.2 %$/);
+    await waitFor(() =>
+      expect(
+        sent("GET", "v1/clubs/mine/academy/scout-quote").some(
+          (request) => JSON.stringify(request.query) === JSON.stringify([["line", "Defender"]]),
+        ),
+      ).toBe(true),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "online.academy.scout.sendNormal" }));
+    await waitFor(() => expect(sent("POST", "v1/clubs/mine/academy/scouts").length).toBe(1));
+    expect(sent("POST", "v1/clubs/mine/academy/scouts")[0].body).toEqual({
+      line: "Defender",
+      pay: "cash",
+    });
+  });
+
+  // Given a trip out looking for defenders,
+  // when the academy opens,
+  // then its line is said with how it was paid, and no region or focus.
+  it("says the line a trip looks for", async () => {
+    serve({ "GET v1/clubs/mine/academy": ok(academy({ trip: trip({ line: "Defender" }) })) });
+    renderOnline("/online/academy");
+
+    expect(
+      await screen.findByText(
+        /^online\.academy\.scout\.trip:common\.positionGroups\.Defender:Defender\|/,
+      ),
+    ).toBeTruthy();
   });
 
   // Given a plain ticket and an elite one held, with no elite trip left this season,

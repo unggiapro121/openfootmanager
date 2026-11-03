@@ -1345,21 +1345,17 @@
         "scoutDone": "Uma missão de observação voltou: escolha antes que o relatório feche.",
         "changed": "Sua categoria de base tem novidades."
       },
-      "region": {
-        "AsiaSoutheast": "Sudeste Asiático",
-        "AsiaEast": "Leste Asiático",
-        "Europe": "Europa",
-        "Americas": "Américas"
-      },
-      "focus": {
-        "Balanced": "Equilibrado",
-        "Physical": "Físico",
-        "Technical": "Técnico"
-      },
       "pay": {
         "cash": "dinheiro do clube",
         "scoutExpedition": "um ingresso de observação",
         "scoutExpeditionElite": "um ingresso de observação de elite"
+      },
+      "line": {
+        "label": "Setor",
+        "Any": "Todos"
+      },
+      "lineShares": {
+        "title": "Distribuição de posições"
       },
       "reveal": {
         "0": "Recém-chegado",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Enviar um olheiro",
-        "trip": "{{region}} · {{focus}} · pago com {{pay}}",
+        "trip": "{{line}} · pago com {{pay}}",
         "backIn": "Volta em {{time}}",
         "backSoon": "O olheiro está voltando…",
         "timeSkip": "Usar uma ampulheta ({{held}} disponíveis)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Enviar um olheiro normal"
       },
       "send": {
-        "region": "Região",
-        "focus": "Procurando",
         "pay": "Pagar com",
         "payCash": "Dinheiro do clube: {{cost}}",
         "payTicket": "1 ingresso de observação ({{held}} disponíveis)",

@@ -122,6 +122,7 @@ export type { PlayerLine } from "./PlayerLine";
 export type { PlayerNationalityRequest } from "./PlayerNationalityRequest";
 export type { PlayerRoleLine } from "./PlayerRoleLine";
 export type { PlayerTrainingFocusRequest } from "./PlayerTrainingFocusRequest";
+export type { PositionShareView } from "./PositionShareView";
 export type { PossessionShare } from "./PossessionShare";
 export type { ProgressResponse } from "./ProgressResponse";
 export type { ProjectedPlayer } from "./ProjectedPlayer";

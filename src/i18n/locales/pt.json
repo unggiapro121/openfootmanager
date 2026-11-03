@@ -1345,21 +1345,17 @@
         "scoutDone": "Uma missão de prospeção regressou: escolhe antes de o relatório fechar.",
         "changed": "A tua academia tem novidades."
       },
-      "region": {
-        "AsiaSoutheast": "Sudeste Asiático",
-        "AsiaEast": "Ásia Oriental",
-        "Europe": "Europa",
-        "Americas": "Américas"
-      },
-      "focus": {
-        "Balanced": "Equilibrado",
-        "Physical": "Físico",
-        "Technical": "Técnico"
-      },
       "pay": {
         "cash": "dinheiro do clube",
         "scoutExpedition": "um bilhete de prospeção",
         "scoutExpeditionElite": "um bilhete de prospeção de elite"
+      },
+      "line": {
+        "label": "Setor",
+        "Any": "Todos"
+      },
+      "lineShares": {
+        "title": "Distribuição de posições"
       },
       "reveal": {
         "0": "Acabado de chegar",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Enviar um olheiro",
-        "trip": "{{region}} · {{focus}} · pago com {{pay}}",
+        "trip": "{{line}} · pago com {{pay}}",
         "backIn": "Regressa dentro de {{time}}",
         "backSoon": "O olheiro está a regressar…",
         "timeSkip": "Usar uma ampulheta ({{held}} em posse)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Enviar um olheiro normal"
       },
       "send": {
-        "region": "Região",
-        "focus": "À procura de",
         "pay": "Pagar com",
         "payCash": "Dinheiro do clube: {{cost}}",
         "payTicket": "1 bilhete de prospeção ({{held}} em posse)",

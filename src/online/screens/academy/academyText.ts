@@ -5,10 +5,12 @@ import type { QuoteRefusal } from "../../api";
 import { OnlineApiError } from "../../errors";
 import { formatMoment } from "../../format";
 
-/** The regions a trip may go to: the fork's `REGIONS` (C-7 §18.1). */
-export const SCOUT_REGIONS = ["AsiaSoutheast", "AsiaEast", "Europe", "Americas"] as const;
-/** What a trip looks for: the fork's `ScoutFocus`, the balanced one first. */
-export const SCOUT_FOCI = ["Balanced", "Physical", "Technical"] as const;
+/**
+ * The lines a trip may look for: the fork's `ScoutLine`, any line first (C-15 C15-1). A trip looks
+ * in the club's own region; the server fills it in.
+ */
+export const SCOUT_LINES = ["Any", "Goalkeeper", "Defender", "Midfielder", "Forward"] as const;
+export type ScoutLine = (typeof SCOUT_LINES)[number];
 /** How a trip is paid: club money, or one of the two tickets. */
 export const SCOUT_PAYS = ["scoutExpedition", "cash", "scoutExpeditionElite"] as const;
 export type ScoutPay = (typeof SCOUT_PAYS)[number];
@@ -52,13 +54,10 @@ export function academyRefusalText(t: TFunction, language: string, refusal: Quot
   return academyCodeText(t, language, refusal.code, refusal.params);
 }
 
-/** A region's name in the player's language; one this build does not know as it is. */
-export function regionName(t: TFunction, region: string): string {
-  return t(`online.academy.region.${region}`, { defaultValue: region });
-}
-
-export function scoutFocusName(t: TFunction, focus: string): string {
-  return t(`online.academy.focus.${focus}`, { defaultValue: focus });
+/** A line's name in the player's language: the four groups' own names, and "any". */
+export function scoutLineName(t: TFunction, line: string): string {
+  if (line === "Any") return t("online.academy.line.Any");
+  return t(`common.positionGroups.${line}`, { defaultValue: line });
 }
 
 /** How a trip was paid, said in a few words. */

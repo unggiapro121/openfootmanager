@@ -1345,21 +1345,17 @@
         "scoutDone": "Bir gözlem gezisi döndü: rapor kapanmadan seçim yap.",
         "changed": "Akademinde yenilikler var."
       },
-      "region": {
-        "AsiaSoutheast": "Güneydoğu Asya",
-        "AsiaEast": "Doğu Asya",
-        "Europe": "Avrupa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Dengeli",
-        "Physical": "Fiziksel",
-        "Technical": "Teknik"
-      },
       "pay": {
         "cash": "kulüp parası",
         "scoutExpedition": "gözlemci bileti",
         "scoutExpeditionElite": "elit gözlemci bileti"
+      },
+      "line": {
+        "label": "Hat",
+        "Any": "Tümü"
+      },
+      "lineShares": {
+        "title": "Mevki dağılımı"
       },
       "reveal": {
         "0": "Yeni geldi",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Gözlemci gönder",
-        "trip": "{{region}} · {{focus}} · ödeme: {{pay}}",
+        "trip": "{{line}} · ödeme: {{pay}}",
         "backIn": "{{time}} sonra dönüyor",
         "backSoon": "Gözlemci dönüş yolunda…",
         "timeSkip": "Kum saati kullan (elinde {{held}})",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Normal gözlemci gönder"
       },
       "send": {
-        "region": "Bölge",
-        "focus": "Aranan",
         "pay": "Ödeme",
         "payCash": "Kulüp parası: {{cost}}",
         "payTicket": "1 gözlemci bileti (elinde {{held}})",

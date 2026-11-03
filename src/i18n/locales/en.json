@@ -1345,21 +1345,17 @@
         "scoutDone": "A scouting trip is back: choose before the report closes.",
         "changed": "Your youth academy has news."
       },
-      "region": {
-        "AsiaSoutheast": "Southeast Asia",
-        "AsiaEast": "East Asia",
-        "Europe": "Europe",
-        "Americas": "The Americas"
-      },
-      "focus": {
-        "Balanced": "Balanced",
-        "Physical": "Physical",
-        "Technical": "Technical"
-      },
       "pay": {
         "cash": "club money",
         "scoutExpedition": "a scout ticket",
         "scoutExpeditionElite": "an elite scout ticket"
+      },
+      "line": {
+        "label": "Line",
+        "Any": "Any"
+      },
+      "lineShares": {
+        "title": "Positions this line finds"
       },
       "reveal": {
         "0": "Just arrived",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Send a scout",
-        "trip": "{{region}} · {{focus}} · paid with {{pay}}",
+        "trip": "{{line}} · paid with {{pay}}",
         "backIn": "Back in {{time}}",
         "backSoon": "The scout is on the way back…",
         "timeSkip": "Use an hourglass ({{held}} held)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Send a regular scout"
       },
       "send": {
-        "region": "Region",
-        "focus": "Looking for",
         "pay": "Pay with",
         "payCash": "Club money: {{cost}}",
         "payTicket": "1 scout ticket ({{held}} held)",
