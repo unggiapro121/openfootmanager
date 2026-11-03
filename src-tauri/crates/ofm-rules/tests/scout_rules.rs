@@ -6,28 +6,30 @@ use ofm_rules::WORLD_RULES_VERSION;
 use ofm_rules::academy::AcademyRules;
 use ofm_rules::stable_hash::stable_hash;
 use ofm_rules::worldgen::online::{
-    Generator, OnlineContentPack, ScoutFocus, ScoutKey, ScoutRequest,
+    Generator, OnlineContentPack, ScoutKey, ScoutLine, ScoutRequest,
 };
 
 /// The pinned pair. Change only together with `WORLD_RULES_VERSION` (see the assertion).
-const SCOUT_RULES_PIN: (&str, u64) = ("4", 0xC81A_64A6_F87B_05D1);
+const SCOUT_RULES_PIN: (&str, u64) = ("5", 0xBBAE_6B7C_C0C0_05CC);
 
-/// A fingerprint of twenty trips from one world: every focus, some with an elite ticket, each
+/// A fingerprint of twenty trips from one world: every line, some with an elite ticket, each
 /// candidate as stored (through `Persisted`, so his potential counts) with his secret offsets.
 fn scout_digest() -> u64 {
     let pack = OnlineContentPack::builtin();
     let generator = Generator::new(7, &pack).expect("a generator");
     let rules = AcademyRules::default();
-    let focuses = [
-        ScoutFocus::Physical,
-        ScoutFocus::Technical,
-        ScoutFocus::Balanced,
+    let lines = [
+        ScoutLine::Any,
+        ScoutLine::Goalkeeper,
+        ScoutLine::Defender,
+        ScoutLine::Midfielder,
+        ScoutLine::Forward,
     ];
     let trips: Vec<serde_json::Value> = (0..20u64)
         .map(|trip| {
             let request = ScoutRequest {
                 region: if trip % 2 == 0 { "AsiaSoutheast" } else { "Europe" }.into(),
-                focus: focuses[(trip % 3) as usize],
+                line: lines[(trip % 5) as usize],
                 elite: trip % 4 == 0,
             };
             let key = ScoutKey {

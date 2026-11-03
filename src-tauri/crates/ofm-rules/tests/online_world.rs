@@ -314,3 +314,91 @@ fn every_free_agent_has_a_position_of_his_own() {
         );
     }
 }
+
+/// Given 40 batches of 100 free agents (4,000),
+/// when their positions are counted,
+/// then each position holds its share of the pool's table within 2 points, keepers 7–11 %, and
+/// no batch is a quarter keepers as when the groups took turns (E5-10 §4).
+#[test]
+fn free_agents_come_by_the_pool_s_table() {
+    use ofm_rules::worldgen::online::FREE_AGENT_POSITION_WEIGHTS;
+
+    let pack = pack();
+    let generator = Generator::new(7, &pack).expect("a generator");
+    let mut counts: BTreeMap<String, usize> = BTreeMap::new();
+    let mut total = 0usize;
+    for batch in 0..40 {
+        let players = generator
+            .free_agents(batch, 100, YEAR)
+            .expect("free agents");
+        let keepers = players
+            .iter()
+            .filter(|p| p.natural_position == domain::player::Position::Goalkeeper)
+            .count();
+        assert!(keepers < 20, "batch {batch}: {keepers} keepers");
+        for player in players {
+            *counts
+                .entry(format!("{:?}", player.natural_position))
+                .or_default() += 1;
+            total += 1;
+        }
+    }
+    for (position, per_mille) in FREE_AGENT_POSITION_WEIGHTS {
+        let share =
+            counts.get(&format!("{position:?}")).copied().unwrap_or(0) as f64 / total as f64;
+        let expected = f64::from(per_mille) / 1_000.0;
+        assert!(
+            (share - expected).abs() < 0.02,
+            "{position:?}: {share:.3} against {expected:.3}"
+        );
+    }
+    let keepers = counts["Goalkeeper"] as f64 / total as f64;
+    assert!((0.07..=0.11).contains(&keepers), "{keepers}");
+}
+
+/// Given a pack whose starter template has an academy defender, midfielder and forward,
+/// when clubs are generated,
+/// then each academy youngster has a detailed position of his row's group from the start, rated
+/// at it (E5-10 §3.5).
+#[test]
+fn an_outfield_academy_row_has_a_position_of_its_group() {
+    use domain::player::{Position, SquadRole};
+
+    let mut pack = pack();
+    let keeper = pack
+        .profile
+        .starter
+        .template
+        .iter()
+        .find(|row| row.academy)
+        .cloned()
+        .expect("an academy row");
+    for group in ["Defender", "Midfielder", "Forward"] {
+        let mut row = keeper.clone();
+        row.group = group.to_string();
+        pack.profile.starter.template.push(row);
+    }
+    let generator = Generator::new(SEED, &pack).expect("a generator");
+    let mut seen = HashSet::new();
+    for ordinal in 0..6 {
+        let club = club(&generator, "AsiaSoutheast", ordinal);
+        let youth: Vec<_> = club
+            .players
+            .iter()
+            .filter(|p| p.squad_role == SquadRole::Youth)
+            .collect();
+        assert_eq!(youth.len(), 4, "{ordinal}");
+        for player in youth {
+            assert!(has_own_identity(player), "{:?}", player.natural_position);
+            seen.insert(player.natural_position.to_group_position());
+        }
+    }
+    for group in [
+        Position::Goalkeeper,
+        Position::Defender,
+        Position::Midfielder,
+        Position::Forward,
+    ] {
+        assert!(seen.contains(&group), "{group:?}");
+    }
+}
