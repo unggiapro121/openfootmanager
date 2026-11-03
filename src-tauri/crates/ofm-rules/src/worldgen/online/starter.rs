@@ -6,7 +6,7 @@ use rand::{Rng, RngExt};
 
 use super::pack::{Band, StarterProfile, TemplateRow};
 use crate::worldgen::calibration::{calibrate_to_ovr, min_headroom, scale_to_ovr};
-use crate::worldgen::generation::{generate_random_player_from_def, reprice_generated_player};
+use crate::worldgen::generation::{generate_player_at, reprice_generated_player};
 
 /// The three numbers a starter squad is anchored on.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -125,9 +125,23 @@ pub(super) fn draw_squad(
         };
         let age = rng.random_range(row.ages.0..=row.ages.1.max(row.ages.0));
         let nation = nationality.draw(rng);
-        let mut player = generate_random_player_from_def(
+        // An outfield academy row gets a detailed position of its group from the start, by the
+        // scouts' default table (E5-10 §3.5); a keeper's is his group already.
+        let detailed = if row.academy && group != Position::Goalkeeper {
+            crate::academy::draw_position(
+                crate::academy::DEFAULT_POSITION_WEIGHTS
+                    .iter()
+                    .map(|(position, per_mille)| (position, *per_mille)),
+                crate::academy::ScoutLine::of(&group),
+                rng,
+            )
+        } else {
+            None
+        };
+        let mut player = generate_player_at(
             inputs.team_id,
             slot,
+            detailed,
             &nation,
             inputs.football_year,
             Some(age),

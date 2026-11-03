@@ -5,7 +5,7 @@ use super::catalog::FACES;
 use super::{AgeBand, AppearanceGroup, PortraitFace};
 use AppearanceGroup::{
     Black, EastAsian, EuropeanNorth, EuropeanSouth, Latin, MiddleEastern, Polynesian, SouthAsian,
-    SoutheastAsian,
+    SoutheastAsian, Vietnamese,
 };
 
 /// Fewer faces than this in one group and age band and the pick widens, first
@@ -76,7 +76,11 @@ fn nation_mix(nationality: &str) -> Mix {
         "IR" | "AF" => &[(MiddleEastern, 100)],
         "IN" | "PK" | "BD" | "LK" | "NP" => &[(SouthAsian, 100)],
         "CN" | "JP" | "KR" | "KP" | "TW" | "HK" | "MO" | "MN" => &[(EastAsian, 100)],
-        "VN" | "TH" | "ID" | "MY" | "PH" | "SG" | "MM" | "KH" | "LA" | "BN" | "TL" => {
+        // Mostly the Vietnamese pool; the shared South-East Asian one keeps
+        // the older faces in the mix (the Vietnamese sheets are mostly
+        // under 30).
+        "VN" => &[(Vietnamese, 85), (SoutheastAsian, 15)],
+        "TH" | "ID" | "MY" | "PH" | "SG" | "MM" | "KH" | "LA" | "BN" | "TL" => {
             &[(SoutheastAsian, 100)]
         }
         "UZ" | "KZ" | "KG" | "TJ" | "TM" => {
@@ -140,6 +144,7 @@ fn neighbour_group(group: AppearanceGroup) -> AppearanceGroup {
         Polynesian => Latin,
         Latin | MiddleEastern | EuropeanNorth => EuropeanSouth,
         SoutheastAsian => EastAsian,
+        Vietnamese => SoutheastAsian,
         EastAsian => SoutheastAsian,
         SouthAsian => MiddleEastern,
         EuropeanSouth => EuropeanNorth,
@@ -222,6 +227,7 @@ mod tests {
             Polynesian,
             SouthAsian,
             SoutheastAsian,
+            Vietnamese,
         ] {
             for band in [AgeBand::Young, AgeBand::Prime, AgeBand::Veteran] {
                 assert!(
@@ -261,7 +267,7 @@ mod tests {
     fn single_group_nations_always_map_to_their_group() {
         for roll in 0..200 {
             assert_eq!(pick_group(Some("JP"), roll), EastAsian);
-            assert_eq!(pick_group(Some("vn"), roll), SoutheastAsian);
+            assert_eq!(pick_group(Some("th"), roll), SoutheastAsian);
             assert_eq!(pick_group(Some("SN"), roll), Black);
             assert_eq!(pick_group(Some("IN"), roll), SouthAsian);
         }

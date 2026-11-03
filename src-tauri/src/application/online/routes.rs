@@ -210,8 +210,9 @@ pub const ROUTES: &[Route] = &[
     upgrade(&FACILITY_UPGRADES[1]),
     upgrade(&FACILITY_UPGRADES[2]),
     upgrade(&FACILITY_UPGRADES[3]),
-    // The club's youth academy (S-18, C-7c): the academy, a trip's quote, a trip sent, brought
-    // back sooner and chosen from, and a youngster's own focus or release.
+    // The club's youth academy (S-18, C-7c): the academy, a trip's quote (by the line it looks
+    // for, C-15), a trip sent, brought back sooner and chosen from, and a youngster's own focus or
+    // release.
     route("GET", &[L("v1"), L("clubs"), L("mine"), L("academy")], &[]),
     route(
         "GET",
@@ -222,7 +223,7 @@ pub const ROUTES: &[Route] = &[
             L("academy"),
             L("scout-quote"),
         ],
-        &["region", "focus"],
+        &["line"],
     ),
     route(
         "POST",

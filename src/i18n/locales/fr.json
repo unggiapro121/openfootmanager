@@ -876,7 +876,9 @@
         "grantReset": "Remise à zéro avec le nouvel effectif",
         "coin_exchange": "Échange de pièces",
         "scout": "Prospection du centre",
-        "graduation": "Frais de diplôme"
+        "graduation": "Frais de diplôme",
+        "sponsor": "Sponsoring",
+        "tv": "Droits TV"
       },
       "ledger": "Grand livre",
       "ledgerEmpty": "Aucune écriture pour l'instant.",
@@ -920,6 +922,13 @@
           "in": "Entrées",
           "out": "Sorties"
         }
+      },
+      "contract": {
+        "title": "Contrats de la saison",
+        "level": "Niveau {{level}}",
+        "perSeason": "{{amount}} par saison",
+        "perMatch": "{{amount}} par match de championnat",
+        "next": "Au niveau {{level}} : {{sponsor}} par saison · {{tv}} par match"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "Promotion forcée au niveau {{level}}",
             "body": "À la fin de la saison {{season}}, la force de votre effectif dépassait le seuil de promotion forcée : vous passez au niveau {{level}} (+{{levels}}). Vos plafonds d'achat montent avec lui.{{extra}}",
             "shortSquad": "Votre effectif ne comptait que {{squadSize}} joueurs après les compléments de fin de saison : sa force a été calculée sur ces {{squadSize}} et dépassait sa force d'achat. C'est pourquoi vous avez été promu d'office sans jamais acheter au-dessus des plafonds."
+          },
+          "sponsor": {
+            "subject": "Contrats de la saison {{season}}",
+            "body": "Au niveau {{level}}, ton club touche {{sponsor}} de sponsoring cette saison et {{tv}} de droits TV par match de championnat.{{extra}}",
+            "previous": "La saison dernière, le sponsoring rapportait {{amount}}."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Une mission de prospection est revenue : choisissez avant la fermeture du rapport.",
         "changed": "Votre centre de formation a du nouveau."
       },
-      "region": {
-        "AsiaSoutheast": "Asie du Sud-Est",
-        "AsiaEast": "Asie de l'Est",
-        "Europe": "Europe",
-        "Americas": "Amériques"
-      },
-      "focus": {
-        "Balanced": "Équilibré",
-        "Physical": "Physique",
-        "Technical": "Technique"
-      },
       "pay": {
         "cash": "l'argent du club",
         "scoutExpedition": "un ticket de prospection",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Envoyer un recruteur",
-        "trip": "{{region}} · {{focus}} · payé avec {{pay}}",
+        "trip": "{{line}} · payé avec {{pay}}",
         "backIn": "De retour dans {{time}}",
         "backSoon": "Le recruteur est sur le retour…",
         "timeSkip": "Utiliser un sablier ({{held}} en stock)",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Envoyer un recruteur normal"
       },
       "send": {
-        "region": "Région",
-        "focus": "Recherche",
         "pay": "Payer avec",
         "payCash": "Argent du club : {{cost}}",
         "payTicket": "1 ticket de prospection ({{held}} en stock)",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} jeunes",
         "fee": "Frais de diplôme",
         "feeNote": "Par jeune · au moins {{days}} jours au centre"
+      },
+      "line": {
+        "label": "Ligne",
+        "Any": "Toutes"
+      },
+      "lineShares": {
+        "title": "Répartition des postes"
       }
     },
     "events": {

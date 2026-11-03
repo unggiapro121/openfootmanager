@@ -876,7 +876,9 @@
         "grantReset": "新阵容资金重置",
         "coin_exchange": "金币兑换",
         "scout": "青训球探",
-        "graduation": "毕业费"
+        "graduation": "毕业费",
+        "sponsor": "赞助",
+        "tv": "电视转播权"
       },
       "ledger": "收支明细",
       "ledgerEmpty": "暂无记录。",
@@ -920,6 +922,13 @@
           "in": "收入",
           "out": "支出"
         }
+      },
+      "contract": {
+        "title": "本赛季合同",
+        "level": "等级 {{level}}",
+        "perSeason": "每赛季 {{amount}}",
+        "perMatch": "每场联赛 {{amount}}",
+        "next": "升到等级 {{level}}：每赛季 {{sponsor}} · 每场 {{tv}}"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "被强制升至 {{level}} 级",
             "body": "第 {{season}} 赛季结束时，你的阵容强度超过了强制升级门槛，因此你升到了 {{level}} 级（+{{levels}}）。你的购买上限也随之提高。{{extra}}",
             "shortSquad": "赛季末补员后你的阵容只有 {{squadSize}} 名球员，所以阵容强度按这 {{squadSize}} 人计算，高于购买强度。这就是你从未超限购买却被强制升级的原因。"
+          },
+          "sponsor": {
+            "subject": "第 {{season}} 赛季合同",
+            "body": "在等级 {{level}}，你的俱乐部本赛季获得 {{sponsor}} 赞助，每场联赛获得 {{tv}} 电视转播收入。{{extra}}",
+            "previous": "上赛季赞助为 {{amount}}。"
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "球探考察已返回：请在报告关闭前选择。",
         "changed": "你的青训营有新消息。"
       },
-      "region": {
-        "AsiaSoutheast": "东南亚",
-        "AsiaEast": "东亚",
-        "Europe": "欧洲",
-        "Americas": "美洲"
-      },
-      "focus": {
-        "Balanced": "均衡",
-        "Physical": "身体",
-        "Technical": "技术"
-      },
       "pay": {
         "cash": "俱乐部资金",
         "scoutExpedition": "球探券",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "派出球探",
-        "trip": "{{region}} · {{focus}} · 支付方式：{{pay}}",
+        "trip": "{{line}} · 支付方式：{{pay}}",
         "backIn": "{{time}} 后返回",
         "backSoon": "球探正在返回…",
         "timeSkip": "使用沙漏（持有 {{held}} 个）",
@@ -1726,8 +1729,6 @@
         "sendNormal": "派出普通球探"
       },
       "send": {
-        "region": "地区",
-        "focus": "寻找方向",
         "pay": "支付方式",
         "payCash": "俱乐部资金：{{cost}}",
         "payTicket": "1 张球探券（持有 {{held}} 张）",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} 名球员",
         "fee": "毕业费",
         "feeNote": "每名球员 · 至少在营 {{days}} 天"
+      },
+      "line": {
+        "label": "位置线",
+        "Any": "全部"
+      },
+      "lineShares": {
+        "title": "位置比例"
       }
     },
     "events": {

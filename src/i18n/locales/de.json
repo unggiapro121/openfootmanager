@@ -876,7 +876,9 @@
         "grantReset": "Kassen-Reset mit neuem Kader",
         "coin_exchange": "Münztausch",
         "scout": "Akademie-Scouting",
-        "graduation": "Abschlussgebühr"
+        "graduation": "Abschlussgebühr",
+        "sponsor": "Sponsoring",
+        "tv": "TV-Rechte"
       },
       "ledger": "Buchungen",
       "ledgerEmpty": "Noch keine Buchungen.",
@@ -920,6 +922,13 @@
           "in": "Ein",
           "out": "Aus"
         }
+      },
+      "contract": {
+        "title": "Verträge dieser Saison",
+        "level": "Stufe {{level}}",
+        "perSeason": "{{amount}} pro Saison",
+        "perMatch": "{{amount}} pro Ligaspiel",
+        "next": "Auf Stufe {{level}}: {{sponsor}} pro Saison · {{tv}} pro Spiel"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "Zwangsaufstieg auf Stufe {{level}}",
             "body": "Am Ende von Saison {{season}} lag die Stärke deines Kaders über der Schwelle für den Zwangsaufstieg, daher bist du auf Stufe {{level}} gestiegen (+{{levels}}). Deine Kaufgrenzen sind mitgestiegen.{{extra}}",
             "shortSquad": "Dein Kader hatte nach dem Auffüllen zum Saisonende nur {{squadSize}} Spieler, daher wurde seine Stärke über diese {{squadSize}} berechnet und lag über seiner Kaufstärke. Deshalb wurdest du hochgestuft, obwohl du nie über den Grenzen gekauft hast."
+          },
+          "sponsor": {
+            "subject": "Verträge für Saison {{season}}",
+            "body": "Auf Stufe {{level}} erhält dein Verein in dieser Saison {{sponsor}} Sponsoring und {{tv}} TV-Geld pro Ligaspiel.{{extra}}",
+            "previous": "In der letzten Saison brachte das Sponsoring {{amount}}."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Eine Scoutingreise ist zurück: wähle, bevor der Bericht schließt.",
         "changed": "Deine Akademie hat Neuigkeiten."
       },
-      "region": {
-        "AsiaSoutheast": "Südostasien",
-        "AsiaEast": "Ostasien",
-        "Europe": "Europa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Ausgewogen",
-        "Physical": "Körperlich",
-        "Technical": "Technisch"
-      },
       "pay": {
         "cash": "Vereinsgeld",
         "scoutExpedition": "ein Scouting-Ticket",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Scout losschicken",
-        "trip": "{{region}} · {{focus}} · bezahlt mit {{pay}}",
+        "trip": "{{line}} · bezahlt mit {{pay}}",
         "backIn": "Zurück in {{time}}",
         "backSoon": "Der Scout ist auf dem Rückweg…",
         "timeSkip": "Eine Sanduhr nutzen ({{held}} im Besitz)",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Normalen Scout losschicken"
       },
       "send": {
-        "region": "Region",
-        "focus": "Gesucht",
         "pay": "Bezahlen mit",
         "payCash": "Vereinsgeld: {{cost}}",
         "payTicket": "1 Scouting-Ticket ({{held}} im Besitz)",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} Talente",
         "fee": "Abschlussgebühr",
         "feeNote": "Je Talent · mindestens {{days}} Tage in der Akademie"
+      },
+      "line": {
+        "label": "Mannschaftsteil",
+        "Any": "Alle"
+      },
+      "lineShares": {
+        "title": "Anteile der Positionen"
       }
     },
     "events": {

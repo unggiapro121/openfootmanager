@@ -876,7 +876,9 @@
         "grantReset": "Reinício do caixa com elenco novo",
         "coin_exchange": "Troca de moedas",
         "scout": "Observação da base",
-        "graduation": "Taxa de formatura"
+        "graduation": "Taxa de formatura",
+        "sponsor": "Patrocínio",
+        "tv": "Direitos de TV"
       },
       "ledger": "Movimentações",
       "ledgerEmpty": "Ainda sem movimentações.",
@@ -920,6 +922,13 @@
           "in": "Entradas",
           "out": "Saídas"
         }
+      },
+      "contract": {
+        "title": "Contratos desta temporada",
+        "level": "Nível {{level}}",
+        "perSeason": "{{amount}} por temporada",
+        "perMatch": "{{amount}} por partida da liga",
+        "next": "No nível {{level}}: {{sponsor}} por temporada · {{tv}} por partida"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "Subida forçada ao nível {{level}}",
             "body": "No fim da temporada {{season}}, a força do seu elenco ficou acima do limite de subida forçada, então você foi para o nível {{level}} (+{{levels}}). Seus limites de compra subiram junto.{{extra}}",
             "shortSquad": "Seu elenco tinha só {{squadSize}} jogadores depois dos reforços de fim de temporada, então a força foi calculada com esses {{squadSize}} e ficou acima da força de compra. Por isso você foi forçado a subir mesmo sem nunca ter comprado acima dos limites."
+          },
+          "sponsor": {
+            "subject": "Contratos da temporada {{season}}",
+            "body": "No nível {{level}}, seu clube recebe {{sponsor}} de patrocínio nesta temporada e {{tv}} de direitos de TV por partida da liga.{{extra}}",
+            "previous": "Na temporada passada o patrocínio foi de {{amount}}."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Uma missão de observação voltou: escolha antes que o relatório feche.",
         "changed": "Sua categoria de base tem novidades."
       },
-      "region": {
-        "AsiaSoutheast": "Sudeste Asiático",
-        "AsiaEast": "Leste Asiático",
-        "Europe": "Europa",
-        "Americas": "Américas"
-      },
-      "focus": {
-        "Balanced": "Equilibrado",
-        "Physical": "Físico",
-        "Technical": "Técnico"
-      },
       "pay": {
         "cash": "dinheiro do clube",
         "scoutExpedition": "um ingresso de observação",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Enviar um olheiro",
-        "trip": "{{region}} · {{focus}} · pago com {{pay}}",
+        "trip": "{{line}} · pago com {{pay}}",
         "backIn": "Volta em {{time}}",
         "backSoon": "O olheiro está voltando…",
         "timeSkip": "Usar uma ampulheta ({{held}} disponíveis)",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Enviar um olheiro normal"
       },
       "send": {
-        "region": "Região",
-        "focus": "Procurando",
         "pay": "Pagar com",
         "payCash": "Dinheiro do clube: {{cost}}",
         "payTicket": "1 ingresso de observação ({{held}} disponíveis)",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} jovens",
         "fee": "Taxa de formatura",
         "feeNote": "Por jovem · pelo menos {{days}} dias na base"
+      },
+      "line": {
+        "label": "Setor",
+        "Any": "Todos"
+      },
+      "lineShares": {
+        "title": "Distribuição de posições"
       }
     },
     "events": {

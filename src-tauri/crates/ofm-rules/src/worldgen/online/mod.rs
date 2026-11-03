@@ -32,13 +32,19 @@ use self::starter::{SquadInputs, draw_squad};
 use super::calibration::{FillerLevel, calibrate_generated_player};
 use super::definitions::{NamePool, NamesDefinition, TeamColorsDef, TeamDef};
 use super::generation::{
-    generate_random_player_from_def, generate_random_staff_from_def,
-    generate_random_unemployed_manager, nationality_distribution, senior_slot_for,
+    generate_player_at, generate_random_staff_from_def, generate_random_unemployed_manager,
+    nationality_distribution, senior_slot_for,
 };
 use crate::seed::{rng_for_seed, rng_from_key, uuid_from};
 
 pub use pack::{BUILTIN_PACK, OnlineContentPack, REGIONS};
-pub use scout::{ScoutCandidate, ScoutFocus, ScoutKey, ScoutRequest};
+pub use scout::{ScoutCandidate, ScoutKey, ScoutLine, ScoutRequest};
+
+/// How often each detailed position comes into the free agents' pool (E5-10 §4): the academy's
+/// default table, kept by the rules' version rather than a season's ruleset, because the first
+/// pool is drawn before a world has one.
+pub const FREE_AGENT_POSITION_WEIGHTS: [(Position, u32); 14] =
+    crate::academy::DEFAULT_POSITION_WEIGHTS;
 pub use validate::{PackIssue, predicted_name_shares, validate_pack};
 
 /// Why a club, squad or name could not be generated. Each has a translation key.
@@ -60,6 +66,11 @@ pub enum GenError {
     NoFreeName {
         nation: String,
     },
+    /// The academy's position weights give the line a trip looks for no share (rules that
+    /// fail validation).
+    NoPosition {
+        line: crate::academy::ScoutLine,
+    },
 }
 
 impl GenError {
@@ -70,6 +81,7 @@ impl GenError {
             Self::NameSpaceExhausted { .. } => "be.error.worldgen.clubNamesExhausted",
             Self::SquadWillNotSettle { .. } => "be.error.worldgen.squadWillNotSettle",
             Self::NoFreeName { .. } => "be.error.worldgen.noFreeName",
+            Self::NoPosition { .. } => "be.error.worldgen.noPosition",
         }
     }
 }
@@ -464,34 +476,66 @@ impl<'a> Generator<'a> {
     ) -> Result<Vec<Player>, GenError> {
         let mut rng = rng_for_seed(self.seed, &format!("free/{batch}"), &self.pack.version);
         let level = FillerLevel::for_reputation(self.pack.profile.starter.reputation);
-        let groups = [
-            Position::Goalkeeper,
-            Position::Defender,
-            Position::Midfielder,
-            Position::Forward,
-        ];
         let mut players = Vec::with_capacity(count as usize);
-        for index in 0..count {
+        for _ in 0..count {
             let region = self.draw_region(&mut rng);
             let (local, _) = self.nation_of(&region, rng.random_range(0..10_000))?;
             let nation = self.nationality(&region, &local)?.draw(&mut rng);
-            let slot = senior_slot_for(&groups[index as usize % groups.len()]);
-            let mut player = generate_random_player_from_def(
+            // His position from the pool's table, before he is made, so his body, attributes and
+            // overall are those of it.
+            let position = crate::academy::draw_position(
+                FREE_AGENT_POSITION_WEIGHTS
+                    .iter()
+                    .map(|(position, per_mille)| (position, *per_mille)),
+                ScoutLine::Any,
+                &mut rng,
+            )
+            .unwrap_or(Position::CentralMidfielder);
+            let slot = senior_slot_for(&position.to_group_position());
+            let mut player = generate_player_at(
                 "free",
                 slot,
+                Some(position),
                 &nation,
                 football_year,
                 None,
                 &self.names_def,
                 &mut rng,
             );
-            // His own position before he is calibrated, so his overall is the one at it.
-            crate::player_identity::upgrade_player_identity(&mut player, None);
             calibrate_generated_player(&mut player, level, football_year, &mut rng);
             players.push(super::as_free_agent(player));
         }
         self.name_people(&mut players, &mut [])?;
         Ok(players)
+    }
+
+    /// A region other than `own`, each as often as its share of the world; `own` itself when the
+    /// pack has no other (E5-10 §16.2: a scout's foreign candidates).
+    fn draw_region_except(&self, own: &str, rng: &mut impl Rng) -> String {
+        let shares: Vec<(&String, f64)> = self
+            .pack
+            .scale
+            .region_share
+            .iter()
+            .filter(|(region, _)| region.as_str() != own)
+            .filter(|(region, _)| self.schedules.contains_key(region.as_str()))
+            .map(|(region, share)| (region, share.max(0.0)))
+            .filter(|(_, share)| *share > 0.0)
+            .collect();
+        let total: f64 = shares.iter().map(|(_, share)| share).sum();
+        if shares.is_empty() || total <= 0.0 {
+            return own.to_string();
+        }
+        let mut pick = rng.random_range(0.0..total);
+        for (region, share) in &shares {
+            if pick < *share {
+                return (*region).clone();
+            }
+            pick -= share;
+        }
+        shares
+            .last()
+            .map_or_else(|| own.to_string(), |(region, _)| (*region).clone())
     }
 
     fn draw_region(&self, rng: &mut impl Rng) -> String {

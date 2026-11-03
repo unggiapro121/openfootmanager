@@ -876,7 +876,9 @@
         "grantReset": "Reset hotovosti s novým kádrem",
         "coin_exchange": "Směna mincí",
         "scout": "Skauting akademie",
-        "graduation": "Poplatek za absolvování"
+        "graduation": "Poplatek za absolvování",
+        "sponsor": "Sponzorství",
+        "tv": "Televizní práva"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -920,6 +922,13 @@
           "in": "Příjmy",
           "out": "Výdaje"
         }
+      },
+      "contract": {
+        "title": "Smlouvy této sezóny",
+        "level": "Úroveň {{level}}",
+        "perSeason": "{{amount}} za sezónu",
+        "perMatch": "{{amount}} za ligový zápas",
+        "next": "Na úrovni {{level}}: {{sponsor}} za sezónu · {{tv}} za zápas"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "Vynucený postup na úroveň {{level}}",
             "body": "Na konci sezóny {{season}} byla síla vašeho kádru nad prahem vynuceného postupu, takže jste postoupili na úroveň {{level}} (+{{levels}}). Vaše nákupní stropy vzrostly s ní.{{extra}}",
             "shortSquad": "Po doplnění na konci sezóny měl váš kádr jen {{squadSize}} hráčů, takže jeho síla se počítala z těchto {{squadSize}} a vyšla nad nákupní sílu. Proto jste byli posunuti, i když jste nikdy nekoupili nad stropy."
+          },
+          "sponsor": {
+            "subject": "Smlouvy na sezónu {{season}}",
+            "body": "Na úrovni {{level}} získá váš klub tuto sezónu {{sponsor}} ze sponzorství a {{tv}} z televizních práv za každý ligový zápas.{{extra}}",
+            "previous": "Minulou sezónu činilo sponzorství {{amount}}."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Skautská cesta se vrátila: vyber, než se hlášení zavře.",
         "changed": "Tvoje akademie má novinky."
       },
-      "region": {
-        "AsiaSoutheast": "Jihovýchodní Asie",
-        "AsiaEast": "Východní Asie",
-        "Europe": "Evropa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Vyvážené",
-        "Physical": "Fyzické",
-        "Technical": "Technické"
-      },
       "pay": {
         "cash": "peníze klubu",
         "scoutExpedition": "skautská vstupenka",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Vyslat skauta",
-        "trip": "{{region}} · {{focus}} · placeno: {{pay}}",
+        "trip": "{{line}} · placeno: {{pay}}",
         "backIn": "Zpět za {{time}}",
         "backSoon": "Skaut je na cestě zpět…",
         "timeSkip": "Použít přesýpací hodiny (máš {{held}})",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Vyslat běžného skauta"
       },
       "send": {
-        "region": "Oblast",
-        "focus": "Hledá se",
         "pay": "Platba",
         "payCash": "Peníze klubu: {{cost}}",
         "payTicket": "1 skautská vstupenka (máš {{held}})",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} mladíků",
         "fee": "Poplatek za absolvování",
         "feeNote": "Za mladíka · nejméně {{days}} dní v akademii"
+      },
+      "line": {
+        "label": "Řada",
+        "Any": "Všechny"
+      },
+      "lineShares": {
+        "title": "Zastoupení postů"
       }
     },
     "events": {

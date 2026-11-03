@@ -876,7 +876,9 @@
         "grantReset": "Reposição de dinheiro com novo plantel",
         "coin_exchange": "Troca de moedas",
         "scout": "Prospeção da academia",
-        "graduation": "Taxa de graduação"
+        "graduation": "Taxa de graduação",
+        "sponsor": "Patrocínio",
+        "tv": "Direitos televisivos"
       },
       "ledger": "Movimentos",
       "ledgerEmpty": "Ainda sem movimentos.",
@@ -920,6 +922,13 @@
           "in": "Entradas",
           "out": "Saídas"
         }
+      },
+      "contract": {
+        "title": "Contratos desta época",
+        "level": "Nível {{level}}",
+        "perSeason": "{{amount}} por época",
+        "perMatch": "{{amount}} por jogo da liga",
+        "next": "No nível {{level}}: {{sponsor}} por época · {{tv}} por jogo"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "Subida forçada ao nível {{level}}",
             "body": "No fim da época {{season}}, a força do teu plantel ficou acima do limiar de subida forçada, por isso passaste para o nível {{level}} (+{{levels}}). Os teus limites de compra subiram com ele.{{extra}}",
             "shortSquad": "O teu plantel tinha só {{squadSize}} jogadores depois dos reforços de fim de época, por isso a força foi calculada com esses {{squadSize}} e ficou acima da força de compra. É por isso que foste forçado a subir sem nunca teres comprado acima dos limites."
+          },
+          "sponsor": {
+            "subject": "Contratos da época {{season}}",
+            "body": "No nível {{level}}, o teu clube recebe {{sponsor}} de patrocínio esta época e {{tv}} de direitos televisivos por cada jogo da liga.{{extra}}",
+            "previous": "Na época passada o patrocínio foi de {{amount}}."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Uma missão de prospeção regressou: escolhe antes de o relatório fechar.",
         "changed": "A tua academia tem novidades."
       },
-      "region": {
-        "AsiaSoutheast": "Sudeste Asiático",
-        "AsiaEast": "Ásia Oriental",
-        "Europe": "Europa",
-        "Americas": "Américas"
-      },
-      "focus": {
-        "Balanced": "Equilibrado",
-        "Physical": "Físico",
-        "Technical": "Técnico"
-      },
       "pay": {
         "cash": "dinheiro do clube",
         "scoutExpedition": "um bilhete de prospeção",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Enviar um olheiro",
-        "trip": "{{region}} · {{focus}} · pago com {{pay}}",
+        "trip": "{{line}} · pago com {{pay}}",
         "backIn": "Regressa dentro de {{time}}",
         "backSoon": "O olheiro está a regressar…",
         "timeSkip": "Usar uma ampulheta ({{held}} em posse)",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Enviar um olheiro normal"
       },
       "send": {
-        "region": "Região",
-        "focus": "À procura de",
         "pay": "Pagar com",
         "payCash": "Dinheiro do clube: {{cost}}",
         "payTicket": "1 bilhete de prospeção ({{held}} em posse)",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} jovens",
         "fee": "Taxa de graduação",
         "feeNote": "Por jovem · pelo menos {{days}} dias na academia"
+      },
+      "line": {
+        "label": "Setor",
+        "Any": "Todos"
+      },
+      "lineShares": {
+        "title": "Distribuição de posições"
       }
     },
     "events": {

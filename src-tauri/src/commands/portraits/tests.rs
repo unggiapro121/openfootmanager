@@ -216,3 +216,34 @@ fn latin_american_nations_mostly_get_latin_faces() {
         "only {latin} of 400 Mexican players got Latin faces"
     );
 }
+
+/// Given many Vietnamese players,
+/// when their faces are chosen,
+/// then most of them get faces from the Vietnamese pool, not the shared
+/// South-East Asian one.
+#[test]
+fn vietnamese_players_mostly_get_vietnamese_faces() {
+    let reference = day("2025-07-01");
+    let vietnamese = (0..400)
+        .map(|n| choose_face(&request(&format!("vn-{n}"), "VN", "1999-04-04"), reference))
+        .filter(|choice| choice.face.group == AppearanceGroup::Vietnamese)
+        .count();
+    assert!(
+        vietnamese >= 300,
+        "only {vietnamese} of 400 Vietnamese players got Vietnamese faces"
+    );
+}
+
+/// Given a hundred Vietnamese players of one age,
+/// when their faces are chosen,
+/// then they spread over far more faces than the 39 the shared South-East
+/// Asian pool held before Vietnam had a pool of its own.
+#[test]
+fn vietnamese_players_draw_from_a_wide_pool() {
+    let reference = day("2025-07-01");
+    let faces: std::collections::HashSet<_> = (0..100)
+        .map(|n| choose_face(&request(&format!("vsq-{n}"), "VN", "1999-04-04"), reference))
+        .map(|choice| choice.face.id)
+        .collect();
+    assert!(faces.len() >= 55, "only {} distinct faces", faces.len());
+}

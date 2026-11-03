@@ -876,7 +876,9 @@
         "grantReset": "Đặt lại tiền khi nhận đội mới",
         "coin_exchange": "Đổi coin",
         "scout": "Scout lò đào tạo",
-        "graduation": "Phí tốt nghiệp"
+        "graduation": "Phí tốt nghiệp",
+        "sponsor": "Tài trợ",
+        "tv": "Bản quyền truyền hình"
       },
       "ledger": "Sổ thu chi",
       "ledgerEmpty": "Chưa có dòng nào.",
@@ -920,6 +922,13 @@
           "in": "Thu",
           "out": "Chi"
         }
+      },
+      "contract": {
+        "title": "Hợp đồng mùa này",
+        "level": "Cấp {{level}}",
+        "perSeason": "{{amount}}/mùa",
+        "perMatch": "{{amount}}/trận league",
+        "next": "Lên cấp {{level}}: {{sponsor}}/mùa · {{tv}}/trận"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "Bị ép lên cấp {{level}}",
             "body": "Cuối mùa {{season}}, sức mạnh đội bạn vượt ngưỡng ép cấp, nên bạn được đẩy lên {{levels}} cấp, nay là cấp {{level}}. Trần mua của bạn cũng tăng theo.{{extra}}",
             "shortSquad": "Đội bạn chỉ còn {{squadSize}} cầu thủ sau bù đội cuối mùa, nên sức mạnh đội được tính trên {{squadSize}} người và cao hơn sức mạnh mua. Đây là lý do bạn bị ép dù chưa mua vượt trần."
+          },
+          "sponsor": {
+            "subject": "Hợp đồng mùa {{season}}",
+            "body": "Ở cấp {{level}}, CLB nhận {{sponsor}} tiền tài trợ mùa này và {{tv}} bản quyền truyền hình mỗi trận league.{{extra}}",
+            "previous": "Mùa trước tiền tài trợ là {{amount}}."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Scout đã về: chọn ứng viên trước khi báo cáo đóng.",
         "changed": "Lò đào tạo có tin mới."
       },
-      "region": {
-        "AsiaSoutheast": "Đông Nam Á",
-        "AsiaEast": "Đông Á",
-        "Europe": "Châu Âu",
-        "Americas": "Châu Mỹ"
-      },
-      "focus": {
-        "Balanced": "Cân bằng",
-        "Physical": "Thể chất",
-        "Technical": "Kỹ thuật"
-      },
       "pay": {
         "cash": "tiền CLB",
         "scoutExpedition": "vé scout",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Gửi scout",
-        "trip": "{{region}} · {{focus}} · trả bằng {{pay}}",
+        "trip": "{{line}} · trả bằng {{pay}}",
         "backIn": "Về sau {{time}}",
         "backSoon": "Scout sắp về…",
         "timeSkip": "Dùng đồng hồ cát (còn {{held}})",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Gửi scout thường"
       },
       "send": {
-        "region": "Khu vực",
-        "focus": "Trọng tâm",
         "pay": "Trả bằng",
         "payCash": "Tiền CLB: {{cost}}",
         "payTicket": "1 vé scout (còn {{held}})",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} học viên",
         "fee": "Phí tốt nghiệp",
         "feeNote": "Mỗi học viên · ở lò tối thiểu {{days}} ngày"
+      },
+      "line": {
+        "label": "Tuyến",
+        "Any": "Tất cả"
+      },
+      "lineShares": {
+        "title": "Tỉ lệ vị trí trong tuyến"
       }
     },
     "events": {

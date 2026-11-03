@@ -876,7 +876,9 @@
         "grantReset": "Yeni kadroyla nakit sıfırlama",
         "coin_exchange": "Jeton bozdurma",
         "scout": "Akademi gözlemi",
-        "graduation": "Mezuniyet ücreti"
+        "graduation": "Mezuniyet ücreti",
+        "sponsor": "Sponsorluk",
+        "tv": "Yayın hakları"
       },
       "ledger": "Hesap defteri",
       "ledgerEmpty": "Henüz kayıt yok.",
@@ -920,6 +922,13 @@
           "in": "Gelir",
           "out": "Gider"
         }
+      },
+      "contract": {
+        "title": "Bu sezonun sözleşmeleri",
+        "level": "Seviye {{level}}",
+        "perSeason": "Sezon başına {{amount}}",
+        "perMatch": "Lig maçı başına {{amount}}",
+        "next": "Seviye {{level}}: sezon başına {{sponsor}} · maç başına {{tv}}"
       }
     },
     "market": {
@@ -1227,6 +1236,11 @@
             "subject": "{{level}}. seviyeye zorunlu yükselme",
             "body": "{{season}}. sezonun sonunda kadronuzun gücü zorunlu yükselme eşiğinin üstündeydi, bu yüzden {{level}}. seviyeye çıktınız (+{{levels}}). Satın alma tavanlarınız da onunla yükseldi.{{extra}}",
             "shortSquad": "Sezon sonu takviyelerinden sonra kadronuzda yalnızca {{squadSize}} oyuncu vardı; bu yüzden güç bu {{squadSize}} oyuncu üzerinden hesaplandı ve satın alma gücünün üstünde çıktı. Tavanların üstünde hiç almadığınız halde zorla yükseltilmenizin nedeni bu."
+          },
+          "sponsor": {
+            "subject": "{{season}}. sezon sözleşmeleri",
+            "body": "Seviye {{level}} kulübün bu sezon {{sponsor}} sponsorluk geliri ve her lig maçı için {{tv}} yayın geliri alır.{{extra}}",
+            "previous": "Geçen sezon sponsorluk geliri {{amount}} idi."
           }
         },
         "licence": {
@@ -1685,17 +1699,6 @@
         "scoutDone": "Bir gözlem gezisi döndü: rapor kapanmadan seçim yap.",
         "changed": "Akademinde yenilikler var."
       },
-      "region": {
-        "AsiaSoutheast": "Güneydoğu Asya",
-        "AsiaEast": "Doğu Asya",
-        "Europe": "Avrupa",
-        "Americas": "Amerika"
-      },
-      "focus": {
-        "Balanced": "Dengeli",
-        "Physical": "Fiziksel",
-        "Technical": "Teknik"
-      },
       "pay": {
         "cash": "kulüp parası",
         "scoutExpedition": "gözlemci bileti",
@@ -1708,7 +1711,7 @@
       },
       "scout": {
         "title": "Gözlemci gönder",
-        "trip": "{{region}} · {{focus}} · ödeme: {{pay}}",
+        "trip": "{{line}} · ödeme: {{pay}}",
         "backIn": "{{time}} sonra dönüyor",
         "backSoon": "Gözlemci dönüş yolunda…",
         "timeSkip": "Kum saati kullan (elinde {{held}})",
@@ -1726,8 +1729,6 @@
         "sendNormal": "Normal gözlemci gönder"
       },
       "send": {
-        "region": "Bölge",
-        "focus": "Aranan",
         "pay": "Ödeme",
         "payCash": "Kulüp parası: {{cost}}",
         "payTicket": "1 gözlemci bileti (elinde {{held}})",
@@ -1787,6 +1788,13 @@
         "wagesNote": "{{wage}} × {{n}} genç",
         "fee": "Mezuniyet ücreti",
         "feeNote": "Genç başına · akademide en az {{days}} gün"
+      },
+      "line": {
+        "label": "Hat",
+        "Any": "Tümü"
+      },
+      "lineShares": {
+        "title": "Mevki dağılımı"
       }
     },
     "events": {

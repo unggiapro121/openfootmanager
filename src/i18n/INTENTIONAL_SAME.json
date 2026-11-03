@@ -161,7 +161,6 @@
     "packageBuild.patches",
     "coach.region",
     "online.nav.shop",
-    "online.academy.send.region",
     "online.academy.scout.elite",
     "online.nav.events",
     "online.events.theme.other",
@@ -303,7 +302,6 @@
     "coach.regions.Europe",
     "online.items.medkitBandage.name",
     "online.shop.total",
-    "online.academy.region.Europe",
     "tactics.dutyShort.corner_taker",
     "online.nav.groupClub",
     "online.profile.stat.promotions",
@@ -819,7 +817,8 @@
     "online.events.theme.other",
     "online.header.clubLine",
     "online.profile.levelChip",
-    "online.profile.levelOnly"
+    "online.profile.levelOnly",
+    "online.finance.contract.level"
   ],
   "vi": [
     "online.market.ai",

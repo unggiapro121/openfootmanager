@@ -6,7 +6,7 @@ import { Button, Card, CardBody, CardHeader } from "../../components/ui";
 import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { formatDate } from "../../lib/dateFormatting";
 import { formatExactMoney } from "../../lib/valueFormatting";
-import type { FacilityPreviewView, FinanceView } from "../api";
+import type { FacilityPreviewView, FinanceView, LevelIncomeView } from "../api";
 import { refreshFinance, useOnlineStore } from "../store/onlineStore";
 import {
   asPreview,
@@ -63,6 +63,7 @@ export default function OnlineFinance() {
         <Banners finance={finance} />
       </div>
       <Figures finance={finance} />
+      {finance.levelIncome && <Contracts income={finance.levelIncome} />}
       <SeasonTotals finance={finance} />
       <Facilities cash={finance.cash} locked={finance.locked} />
       <Ledger />
@@ -143,6 +144,48 @@ function Figures({ finance }: { finance: FinanceView }) {
         </CardBody>
       </Card>
     </>
+  );
+}
+
+/**
+ * The club's sponsorship and TV rights at its league's level, and what the next level up pays
+ * (S-36, C-14): the server's numbers, spelled.
+ */
+function Contracts({ income }: { income: LevelIncomeView }) {
+  const { t } = useTranslation();
+  const label = useKindLabel();
+  return (
+    <Card className="lg:col-span-3">
+      <CardHeader>
+        {t("online.finance.contract.title")} ·{" "}
+        {t("online.finance.contract.level", { level: income.level })}
+      </CardHeader>
+      <CardBody>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Figure
+            label={label("sponsor")}
+            value={t("online.finance.contract.perSeason", {
+              amount: formatExactMoney(income.sponsorSeason),
+            })}
+            color="text-primary-500"
+          />
+          <Figure
+            label={label("tv")}
+            value={t("online.finance.contract.perMatch", {
+              amount: formatExactMoney(income.tvPerMatch),
+            })}
+            color="text-primary-500"
+          />
+        </div>
+        <p className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
+          {t("online.finance.contract.next", {
+            level: income.level + 1,
+            sponsor: formatExactMoney(income.nextSponsorSeason),
+            tv: formatExactMoney(income.nextTvPerMatch),
+          })}
+        </p>
+      </CardBody>
+    </Card>
   );
 }
 
