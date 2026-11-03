@@ -618,12 +618,44 @@ pub fn generate_random_player_from_def(
     names_def: &NamesDefinition,
     rng: &mut impl Rng,
 ) -> Player {
+    generate_player_at(
+        team_id,
+        index,
+        None,
+        nationality,
+        opening_year,
+        age,
+        names_def,
+        rng,
+    )
+}
+
+/// As [`generate_random_player_from_def`], at `detailed` when given (E5-10): his body and
+/// attributes are drawn for that position, which is his natural one from the start, and his
+/// group is its group whatever the slot's. The slot still sets his age range and shirt number.
+/// `None` is the old path, every draw as before.
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the old generator's seven, and the position it is made at"
+)]
+pub fn generate_player_at(
+    team_id: &str,
+    index: usize,
+    detailed: Option<Position>,
+    nationality: &str,
+    opening_year: u32,
+    age: Option<u32>,
+    names_def: &NamesDefinition,
+    rng: &mut impl Rng,
+) -> Player {
     let p_id = crate::seed::uuid_from(rng);
     let drawn = pick_drawn_name(nationality, names_def, &mut name_rng(&p_id));
     let full_name = drawn.full();
     let match_name = drawn.shirt_name();
 
-    let position = position_for_slot(index);
+    let position = detailed
+        .as_ref()
+        .map_or_else(|| position_for_slot(index), Position::to_group_position);
 
     let nationality = nationality.to_string();
 
@@ -645,7 +677,10 @@ pub fn generate_random_player_from_def(
     // The body comes first: the attributes it shapes are drawn to follow it. A squad player has
     // his detailed position from the start; a young one has only his group, which his position
     // settles into as he develops (see `player_identity`).
-    let detailed = detailed_position_for_slot(index, rng);
+    let detailed = match detailed {
+        Some(given) => Some(given),
+        None => detailed_position_for_slot(index, rng),
+    };
     let draw_position = detailed.clone().unwrap_or_else(|| position.clone());
     let body = sample_physique(&draw_position, None, None, rng);
     let attributes = super::attribute_shape::draw_attributes(&draw_position, &body, rng);
