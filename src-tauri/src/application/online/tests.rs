@@ -615,8 +615,9 @@ fn a_club_s_money_routes_go_out() {
 /// Given a signed-in coach,
 /// when the webview reads its academy, a trip's quote, sends a trip, brings it back sooner,
 /// chooses from it, sets a youngster's focus, lets one go and upgrades the academy (C-7c),
-/// then each goes out to its own route; a region with a space, a quote key the route does not
-/// take, and a youngster that is not an id are refused.
+/// then each goes out to its own route, the quote by its line (C-15); a line with a space, a
+/// quote key the route does not take (the old region and focus among them), and a youngster that
+/// is not an id are refused.
 #[test]
 fn the_academy_routes_go_out() {
     let (server, session) = signed_in(|_| ok(json!({})));
@@ -625,7 +626,7 @@ fn the_academy_routes_go_out() {
         (
             "GET",
             vec!["v1", "clubs", "mine", "academy", "scout-quote"],
-            vec![("region", "Europe"), ("focus", "Balanced")],
+            vec![("line", "Defender")],
         ),
         (
             "POST",
@@ -672,7 +673,7 @@ fn the_academy_routes_go_out() {
     assert_eq!(went.len(), routes.len());
     assert_eq!(
         went[1].1,
-        "/v1/clubs/mine/academy/scout-quote?region=Europe&focus=Balanced"
+        "/v1/clubs/mine/academy/scout-quote?line=Defender"
     );
     assert_eq!(
         went[3],
@@ -683,11 +684,20 @@ fn the_academy_routes_go_out() {
     );
 
     let mut spaced = request("GET", &["v1", "clubs", "mine", "academy", "scout-quote"]);
-    spaced.query = vec![(String::from("region"), String::from("Asia East"))];
+    spaced.query = vec![(String::from("line"), String::from("Any line"))];
     assert_eq!(
         refused(send(&session, &spaced, 0)),
         "be.error.online.routeNotAllowed"
     );
+    for old in ["region", "focus"] {
+        let mut before = request("GET", &["v1", "clubs", "mine", "academy", "scout-quote"]);
+        before.query = vec![(String::from(old), String::from("Europe"))];
+        assert_eq!(
+            refused(send(&session, &before, 0)),
+            "be.error.online.routeNotAllowed",
+            "{old}"
+        );
+    }
     let mut priced = request("GET", &["v1", "clubs", "mine", "academy", "scout-quote"]);
     priced.query = vec![(String::from("cost"), String::from("1"))];
     assert_eq!(

@@ -391,15 +391,9 @@ export const online = {
    */
   academy: {
     view: () => call<AcademyView>(read(["v1", "clubs", "mine", "academy"])),
-    quote: (region: string, focus: string) =>
+    quote: (line: string) =>
       call<ScoutQuoteView>(
-        read(
-          ["v1", "clubs", "mine", "academy", "scout-quote"],
-          [
-            ["region", region],
-            ["focus", focus],
-          ],
-        ),
+        read(["v1", "clubs", "mine", "academy", "scout-quote"], [["line", line]]),
       ),
     send: (request: ScoutRequest, idempotencyKey = newKey()) =>
       call<ScoutTripView>(

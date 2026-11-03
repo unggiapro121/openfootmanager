@@ -16,7 +16,6 @@ export default function OnlineAcademy() {
   const { t } = useTranslation();
   const academy = useOnlineStore((state) => state.academy);
   const unseen = useOnlineStore((state) => state.academyUnseen);
-  const clubRegion = useOnlineStore((state) => state.club?.club.region);
   const [loadError, setLoadError] = useState<unknown>(null);
 
   const load = useCallback(() => {
@@ -61,7 +60,7 @@ export default function OnlineAcademy() {
       {youngsters && (
         <div className="flex flex-wrap items-start gap-6">
           <YoungstersSection academy={academy} />
-          {academy.enabled && <ScoutPanel academy={academy} clubRegion={clubRegion} />}
+          {academy.enabled && <ScoutPanel academy={academy} />}
         </div>
       )}
       <GraduatesSection academy={academy} />

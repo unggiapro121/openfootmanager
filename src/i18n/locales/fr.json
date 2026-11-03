@@ -1345,21 +1345,17 @@
         "scoutDone": "Une mission de prospection est revenue : choisissez avant la fermeture du rapport.",
         "changed": "Votre centre de formation a du nouveau."
       },
-      "region": {
-        "AsiaSoutheast": "Asie du Sud-Est",
-        "AsiaEast": "Asie de l'Est",
-        "Europe": "Europe",
-        "Americas": "Amériques"
-      },
-      "focus": {
-        "Balanced": "Équilibré",
-        "Physical": "Physique",
-        "Technical": "Technique"
-      },
       "pay": {
         "cash": "l'argent du club",
         "scoutExpedition": "un ticket de prospection",
         "scoutExpeditionElite": "un ticket de prospection d'élite"
+      },
+      "line": {
+        "label": "Ligne",
+        "Any": "Toutes"
+      },
+      "lineShares": {
+        "title": "Répartition des postes"
       },
       "reveal": {
         "0": "Tout juste arrivé",
@@ -1368,7 +1364,7 @@
       },
       "scout": {
         "title": "Envoyer un recruteur",
-        "trip": "{{region}} · {{focus}} · payé avec {{pay}}",
+        "trip": "{{line}} · payé avec {{pay}}",
         "backIn": "De retour dans {{time}}",
         "backSoon": "Le recruteur est sur le retour…",
         "timeSkip": "Utiliser un sablier ({{held}} en stock)",
@@ -1386,8 +1382,6 @@
         "sendNormal": "Envoyer un recruteur normal"
       },
       "send": {
-        "region": "Région",
-        "focus": "Recherche",
         "pay": "Payer avec",
         "payCash": "Argent du club : {{cost}}",
         "payTicket": "1 ticket de prospection ({{held}} en stock)",
