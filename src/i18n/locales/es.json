@@ -316,7 +316,9 @@
         "traitsTitle": "Rasgos ({{count}})",
         "noTraits": "Aún sin rasgos.",
         "fullProfile": "Ficha completa",
-        "toTactics": "Colocar en Táctica"
+        "toTactics": "Colocar en Táctica",
+        "actions": "Acciones",
+        "actionsTitle": "Acciones · {{name}}"
       }
     },
     "training": {

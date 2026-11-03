@@ -316,7 +316,9 @@
         "traitsTitle": "Особенности ({{count}})",
         "noTraits": "Особенностей пока нет.",
         "fullProfile": "Полный профиль",
-        "toTactics": "Расставить в тактике"
+        "toTactics": "Расставить в тактике",
+        "actions": "Действия",
+        "actionsTitle": "Действия · {{name}}"
       }
     },
     "training": {

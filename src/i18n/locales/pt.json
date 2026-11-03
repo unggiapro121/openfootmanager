@@ -316,7 +316,9 @@
         "traitsTitle": "Características ({{count}})",
         "noTraits": "Ainda sem características.",
         "fullProfile": "Perfil completo",
-        "toTactics": "Colocar na Tática"
+        "toTactics": "Colocar na Tática",
+        "actions": "Ações",
+        "actionsTitle": "Ações · {{name}}"
       }
     },
     "training": {

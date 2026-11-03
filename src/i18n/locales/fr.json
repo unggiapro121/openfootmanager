@@ -316,7 +316,9 @@
         "traitsTitle": "Particularités ({{count}})",
         "noTraits": "Aucune particularité pour l’instant.",
         "fullProfile": "Fiche complète",
-        "toTactics": "Placer dans Tactique"
+        "toTactics": "Placer dans Tactique",
+        "actions": "Options",
+        "actionsTitle": "Options · {{name}}"
       }
     },
     "training": {

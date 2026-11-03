@@ -316,7 +316,9 @@
         "traitsTitle": "Traits ({{count}})",
         "noTraits": "No traits yet.",
         "fullProfile": "Full profile",
-        "toTactics": "Set in Tactics"
+        "toTactics": "Set in Tactics",
+        "actions": "Actions",
+        "actionsTitle": "Actions · {{name}}"
       }
     },
     "training": {

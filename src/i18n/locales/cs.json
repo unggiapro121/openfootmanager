@@ -316,7 +316,9 @@
         "traitsTitle": "Vlastnosti ({{count}})",
         "noTraits": "Zatím bez vlastností.",
         "fullProfile": "Celý profil",
-        "toTactics": "Zařadit v taktice"
+        "toTactics": "Zařadit v taktice",
+        "actions": "Akce",
+        "actionsTitle": "Akce · {{name}}"
       }
     },
     "training": {

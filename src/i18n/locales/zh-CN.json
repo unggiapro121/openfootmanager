@@ -316,7 +316,9 @@
         "traitsTitle": "特点（{{count}}）",
         "noTraits": "暂无特点。",
         "fullProfile": "完整资料",
-        "toTactics": "去战术中安排"
+        "toTactics": "去战术中安排",
+        "actions": "操作",
+        "actionsTitle": "操作 · {{name}}"
       }
     },
     "training": {

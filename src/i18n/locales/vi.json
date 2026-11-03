@@ -316,7 +316,9 @@
         "traitsTitle": "Đặc điểm ({{count}})",
         "noTraits": "Chưa có đặc điểm.",
         "fullProfile": "Hồ sơ đầy đủ",
-        "toTactics": "Xếp ở Chiến thuật"
+        "toTactics": "Xếp ở Chiến thuật",
+        "actions": "Thao tác",
+        "actionsTitle": "Thao tác · {{name}}"
       }
     },
     "training": {

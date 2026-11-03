@@ -84,7 +84,7 @@ const PLAYERS = [
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
 
-function serve(overrides: Partial<MyClubView> = {}) {
+function serve(overrides: Partial<MyClubView> = {}, selling: unknown[] = []) {
   const club = myClub({ players: PLAYERS, ...overrides });
   club.setup = { ...club.setup, startingXiIds: ["gk", "lb"] };
   server = fakeServer({
@@ -92,7 +92,7 @@ function serve(overrides: Partial<MyClubView> = {}) {
     "GET v1/clubs/mine": ok(club),
     "GET v1/leagues/mine": ok(LEAGUE),
     "GET v1/friendlies/mine": ok({}),
-    "GET v1/clubs/mine/market": ok({ selling: [], holding: [], recent: [] }),
+    "GET v1/clubs/mine/market": ok({ selling, holding: [], recent: [] }),
     "GET v1/me/coins": fail(404, "be.error.notFound"),
   });
 }
@@ -218,6 +218,57 @@ describe("the squad on a phone", () => {
 
     fireEvent.click(within(sheet).getByRole("link", { name: `${KEY}.fullProfile` }));
     await waitFor(() => expect(where()).toBe("/online/squad/lb"));
+  });
+
+  // Given a player's sheet,
+  // when the coach opens his actions and picks the release,
+  // then every action the full profile has is offered, and the release asks to confirm.
+  it("offers the player's actions and opens the one picked", async () => {
+    serve();
+    await open();
+    fireEvent.click(row("Nhân Lucas"));
+    fireEvent.click(
+      within(screen.getByRole("dialog", { name: "Nhân Lucas" })).getByRole("button", {
+        name: `${KEY}.actions`,
+      }),
+    );
+
+    const actions = await screen.findByRole("dialog", { name: `${KEY}.actionsTitle:Nhân Lucas` });
+    for (const name of [
+      "online.market.list",
+      "online.player.release",
+      "squad.jerseyPickerAction",
+      "online.player.avatarChange",
+      "online.player.nationalityChange",
+      "online.rename.open",
+    ]) {
+      expect(await within(actions).findByRole("button", { name })).toBeInTheDocument();
+    }
+    fireEvent.click(within(actions).getByRole("button", { name: "online.player.release" }));
+
+    expect(
+      screen.getByRole("dialog", { name: "online.player.releaseTitle:Nhân Lucas" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: `${KEY}.actionsTitle:Nhân Lucas` })).toBeNull();
+  });
+
+  // Given a player up for auction,
+  // when the coach opens his actions,
+  // then they lead to his auction, and what the server would refuse while he is listed is gone.
+  it("leads a listed player's actions to his auction", async () => {
+    serve({}, [{ id: "a-9", playerId: "lb" }]);
+    await open();
+    fireEvent.click(row("Nhân Lucas"));
+    fireEvent.click(screen.getByRole("button", { name: `${KEY}.actions` }));
+
+    const actions = await screen.findByRole("dialog", { name: `${KEY}.actionsTitle:Nhân Lucas` });
+    const listed = await within(actions).findByRole("link", { name: "online.market.listed" });
+    expect(listed).toHaveAttribute("href", "/online/auctions/a-9");
+    expect(within(actions).queryByRole("button", { name: "online.player.release" })).toBeNull();
+    expect(within(actions).queryByRole("button", { name: "online.rename.open" })).toBeNull();
+    expect(
+      within(actions).getByRole("button", { name: "squad.jerseyPickerAction" }),
+    ).toBeInTheDocument();
   });
 
   // Given a player's sheet,

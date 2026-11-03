@@ -10,6 +10,7 @@ import { positionBadgeVariant } from "../../../lib/playerRating";
 import type { SquadPlayerView } from "../../api";
 import { useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
+import { PlayerActions } from "./PhoneSquadActions";
 import { avatarOf, ovrTone } from "./playerLook";
 import type { PlayerFit } from "./squadFit";
 
@@ -265,7 +266,7 @@ function SheetGauge({
 
 /**
  * One player risen from the bottom: his number, age and status, condition and morale, positions,
- * fits, potential, season and traits; then his full page, or the tactics to place him.
+ * fits, potential, season and traits; then his full page, or what can be done with him.
  */
 export function PlayerSheet({
   player,
@@ -445,12 +446,7 @@ export function PlayerSheet({
           >
             {t(`${KEY}.fullProfile`)}
           </Link>
-          <Link
-            to="/online/tactics"
-            className={`flex h-11 items-center justify-center rounded-[10px] bg-primary-700 font-heading text-[15px] font-bold uppercase tracking-wider text-white hover:bg-primary-600 ${FOCUS}`}
-          >
-            {t(`${KEY}.toTactics`)}
-          </Link>
+          <PlayerActions player={player} />
         </div>
       </div>
     </div>

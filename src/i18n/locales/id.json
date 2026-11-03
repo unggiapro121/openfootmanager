@@ -316,7 +316,9 @@
         "traitsTitle": "Karakter ({{count}})",
         "noTraits": "Belum ada karakter.",
         "fullProfile": "Profil lengkap",
-        "toTactics": "Atur di Taktik"
+        "toTactics": "Atur di Taktik",
+        "actions": "Tindakan",
+        "actionsTitle": "Tindakan · {{name}}"
       }
     },
     "training": {

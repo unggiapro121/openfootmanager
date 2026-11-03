@@ -316,7 +316,9 @@
         "traitsTitle": "Eigenschaften ({{count}})",
         "noTraits": "Noch keine Eigenschaften.",
         "fullProfile": "Ganzes Profil",
-        "toTactics": "In Taktik einteilen"
+        "toTactics": "In Taktik einteilen",
+        "actions": "Aktionen",
+        "actionsTitle": "Aktionen · {{name}}"
       }
     },
     "training": {

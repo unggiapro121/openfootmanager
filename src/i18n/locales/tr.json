@@ -316,7 +316,9 @@
         "traitsTitle": "Özellikler ({{count}})",
         "noTraits": "Henüz özellik yok.",
         "fullProfile": "Tüm profil",
-        "toTactics": "Taktikte yerleştir"
+        "toTactics": "Taktikte yerleştir",
+        "actions": "İşlemler",
+        "actionsTitle": "İşlemler · {{name}}"
       }
     },
     "training": {
