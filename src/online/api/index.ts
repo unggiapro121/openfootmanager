@@ -98,6 +98,7 @@ export type { LeagueView } from "./LeagueView";
 export type { LedgerLineView } from "./LedgerLineView";
 export type { LedgerPage } from "./LedgerPage";
 export type { LedgerQuery } from "./LedgerQuery";
+export type { LevelIncomeView } from "./LevelIncomeView";
 export type { LevelRange } from "./LevelRange";
 export type { LicenceNotice } from "./LicenceNotice";
 export type { LicenceTableView } from "./LicenceTableView";

@@ -149,6 +149,48 @@ describe("OnlineFinance", () => {
     expect(total?.textContent).toMatch(/2,481,000/);
   });
 
+  // Given a club of a level-12 league in a season that pays sponsorship and TV rights,
+  // when its finance page opens,
+  // then a contracts card shows its level, both amounts and the next level's; a season that
+  // pays neither shows no card.
+  it("shows the contracts of the club's level only when the season has them", async () => {
+    serve({
+      "GET v1/clubs/mine/finance": ok(
+        finance({
+          levelIncome: {
+            level: 12,
+            sponsorSeason: 8_580_000,
+            tvPerMatch: 220_000,
+            nextSponsorSeason: 10_680_000,
+            nextTvPerMatch: 274_000,
+          },
+          season: [
+            { kind: "sponsor", amount: 306_428 },
+            { kind: "tv", amount: 220_000 },
+          ],
+        }),
+      ),
+    });
+    const view = renderOnline("/online/finance");
+
+    expect(await screen.findByText(/online\.finance\.contract\.title/)).toBeTruthy();
+    expect(screen.getByText(/online\.finance\.contract\.level:12/)).toBeTruthy();
+    expect(screen.getByText(/online\.finance\.contract\.perSeason:.*8,580,000/)).toBeTruthy();
+    expect(screen.getByText(/online\.finance\.contract\.perMatch:.*220,000/)).toBeTruthy();
+    const next = screen.getByText(/online\.finance\.contract\.next/).textContent ?? "";
+    expect(next).toMatch(/13\|.*10,680,000.*\|.*274,000/);
+    expect(screen.getAllByText("online.finance.kind.sponsor:sponsor").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("online.finance.kind.tv:tv").length).toBeGreaterThan(0);
+    view.unmount();
+
+    server.restore();
+    resetOnline();
+    serve();
+    renderOnline("/online/finance");
+    expect(await screen.findByText("online.finance.cash")).toBeTruthy();
+    expect(screen.queryByText(/online\.finance\.contract\.title/)).toBeNull();
+  });
+
   // Given a season played without money,
   // when the finance page opens,
   // then it says so and shows no figure.

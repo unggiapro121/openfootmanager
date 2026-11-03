@@ -655,7 +655,9 @@
         "grantReset": "Reset hotovosti s novým kádrem",
         "coin_exchange": "Směna mincí",
         "scout": "Skauting akademie",
-        "graduation": "Poplatek za absolvování"
+        "graduation": "Poplatek za absolvování",
+        "sponsor": "Sponzorství",
+        "tv": "Televizní práva"
       },
       "ledger": "Účetní kniha",
       "ledgerEmpty": "Zatím žádné záznamy.",
@@ -671,7 +673,14 @@
         "academy": "Akademie",
         "academyEffect": "Každá úroveň přidá místa pro mladíky."
       },
-      "academyWages": "Platy akademie: {{amount}} týdně"
+      "academyWages": "Platy akademie: {{amount}} týdně",
+      "contract": {
+        "title": "Smlouvy této sezóny",
+        "level": "Úroveň {{level}}",
+        "perSeason": "{{amount}} za sezónu",
+        "perMatch": "{{amount}} za ligový zápas",
+        "next": "Na úrovni {{level}}: {{sponsor}} za sezónu · {{tv}} za zápas"
+      }
     },
     "market": {
       "title": "Přestupový trh",
@@ -912,6 +921,11 @@
             "subject": "Vynucený postup na úroveň {{level}}",
             "body": "Na konci sezóny {{season}} byla síla vašeho kádru nad prahem vynuceného postupu, takže jste postoupili na úroveň {{level}} (+{{levels}}). Vaše nákupní stropy vzrostly s ní.{{extra}}",
             "shortSquad": "Po doplnění na konci sezóny měl váš kádr jen {{squadSize}} hráčů, takže jeho síla se počítala z těchto {{squadSize}} a vyšla nad nákupní sílu. Proto jste byli posunuti, i když jste nikdy nekoupili nad stropy."
+          },
+          "sponsor": {
+            "subject": "Smlouvy na sezónu {{season}}",
+            "body": "Na úrovni {{level}} získá váš klub tuto sezónu {{sponsor}} ze sponzorství a {{tv}} z televizních práv za každý ligový zápas.{{extra}}",
+            "previous": "Minulou sezónu činilo sponzorství {{amount}}."
           }
         },
         "licence": {
