@@ -22,3 +22,10 @@ export function avatarOf(
     ...(picture ? { media: { face: picture } } : {}),
   };
 }
+
+/** The colour of an overall wherever the squad lists it: green for the strong, gold, then grey. */
+export function ovrTone(ovr: number): string {
+  if (ovr >= 80) return "text-primary-500";
+  if (ovr >= 55) return "text-accent-600 dark:text-accent-400";
+  return "text-gray-500 dark:text-gray-400";
+}

@@ -14,8 +14,14 @@ const FOCUS =
  * A phone's app bar (designs m-tong-quan.html and the others): on the overview the club's crest
  * and name, elsewhere the page's name, with the season's day below; then the coins and the inbox.
  * A page under More, reached from a sheet rather than a tab, gets a way back to the overview.
+ * A page may add its own buttons before the coins (a search, on the squad).
  */
-export default function MobileAppBar() {
+export default function MobileAppBar({
+  actionsRef,
+}: {
+  /** Where a page puts its own buttons, before the coins (PhoneHeaderPart). */
+  actionsRef?: (element: HTMLElement | null) => void;
+}) {
   const { t } = useTranslation();
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
@@ -48,6 +54,7 @@ export default function MobileAppBar() {
         </h1>
         <p className="truncate text-xs text-gray-500 dark:text-gray-400">{seasonText(t, season)}</p>
       </div>
+      <span ref={actionsRef} className="flex items-center empty:hidden" />
       {balance !== undefined && (
         <CoinChip compact balance={balance} current={isCurrent("/online/coins", pathname)} />
       )}
