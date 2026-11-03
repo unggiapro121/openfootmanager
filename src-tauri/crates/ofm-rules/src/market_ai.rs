@@ -449,6 +449,10 @@ pub struct BotSaleRules {
     pub unused_playing_time: u8,
     /// The season day from which playing time has had matches enough to say who is unused.
     pub unused_from_day: u32,
+    /// A bot's sale of one of its best players a season (phase 4, S-34 S34-8); none when absent,
+    /// as in every ruleset before v12.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub star: Option<StarSaleRules>,
 }
 
 impl Default for BotSaleRules {
@@ -464,6 +468,7 @@ impl Default for BotSaleRules {
             veteran_age: VETERAN_AGE,
             unused_playing_time: UNUSED_PLAYING_TIME,
             unused_from_day: 8,
+            star: None,
         }
     }
 }
@@ -475,17 +480,94 @@ impl BotSaleRules {
         self.floor_permille >= price_band_min_permille
             && self.start_permille >= self.floor_permille
             && self.keep_squad > squad_floor
+            && self
+                .star
+                .is_none_or(|star| star.fits_season(price_band_min_permille))
     }
 
     /// The starting price of a player of `value` the bot listed `unsold` times this season with
     /// no one bidding (B10): the value, a step less for each time, never under the floor.
     pub fn listing_price(&self, value: u64, unsold: u32) -> u64 {
-        let step = u64::from(self.unsold_step_permille) * u64::from(unsold);
-        let share = u64::from(self.start_permille)
-            .saturating_sub(step)
-            .max(u64::from(self.floor_permille));
-        permille_of(value, u32::try_from(share).unwrap_or(u32::MAX))
+        stepped_price(
+            value,
+            unsold,
+            self.start_permille,
+            self.unsold_step_permille,
+            self.floor_permille,
+        )
     }
+}
+
+/// The values of a bot's star sale (phase 4, S-34 S34-8): once a season a levelled bot lists one
+/// of its eleven best, in his prime and up to its level, above his value, so its rebuilding feeds
+/// the market with players worth buying.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct StarSaleRules {
+    /// The most star sales a bot lists in a season.
+    pub max_per_season: u32,
+    /// The youngest a star sold is.
+    pub youngest: i32,
+    /// The oldest a star sold is.
+    pub oldest: i32,
+    /// How far, in tenths, under the bot's level target a star's overall may be.
+    pub ovr_below_target_tenths: u32,
+    /// The season day from which a bot lists a star.
+    pub from_day: u32,
+    /// The chance, in thousandths, that a bot with a star to sell lists him on a season day.
+    pub list_chance_permille: u32,
+    /// The first starting price, in thousandths of the player's value.
+    pub start_permille: u32,
+    /// Taken off the starting price for each time the star went unsold this season.
+    pub unsold_step_permille: u32,
+    /// The lowest starting price, in thousandths of the player's value.
+    pub floor_permille: u32,
+}
+
+impl Default for StarSaleRules {
+    /// The values of S-34 S34-8.
+    fn default() -> Self {
+        Self {
+            max_per_season: 1,
+            youngest: 24,
+            oldest: 29,
+            ovr_below_target_tenths: 20,
+            from_day: 3,
+            list_chance_permille: 250,
+            start_permille: 1_200,
+            unsold_step_permille: 100,
+            floor_permille: 1_000,
+        }
+    }
+}
+
+impl StarSaleRules {
+    /// Whether these values work with the season's: never under the market's floor, the first
+    /// price not under the last, and a sound age range.
+    pub fn fits_season(&self, price_band_min_permille: u32) -> bool {
+        self.floor_permille >= price_band_min_permille
+            && self.start_permille >= self.floor_permille
+            && self.youngest <= self.oldest
+    }
+
+    /// The starting price of a star of `value` listed `unsold` times this season with no one
+    /// bidding: as [`BotSaleRules::listing_price`], on the star's own values.
+    pub fn listing_price(&self, value: u64, unsold: u32) -> u64 {
+        stepped_price(
+            value,
+            unsold,
+            self.start_permille,
+            self.unsold_step_permille,
+            self.floor_permille,
+        )
+    }
+}
+
+/// `start` thousandths of `value`, `step` less for each of `unsold` times, never under `floor`.
+fn stepped_price(value: u64, unsold: u32, start: u32, step: u32, floor: u32) -> u64 {
+    let off = u64::from(step) * u64::from(unsold);
+    let share = u64::from(start).saturating_sub(off).max(u64::from(floor));
+    permille_of(value, u32::try_from(share).unwrap_or(u32::MAX))
 }
 
 /// One of a bot's players with his age, as its sale rule reads him.
@@ -553,6 +635,66 @@ pub fn bot_lists_today(
     rng_for_seed(
         world_seed,
         "market-bot/list",
+        &format!("{club_id}/{season_day}"),
+    )
+    .random_range(0..1000)
+        < rules.list_chance_permille
+}
+
+/// The star a levelled bot would list today, if any (S34-8): of its eleven best by overall, the
+/// best one aged `youngest`–`oldest`, fit, rated at least `target_tenths` less
+/// `ovr_below_target_tenths`, whose line keeps its need without him; ties by id. None before
+/// `from_day` or once the bot listed `max_per_season` stars this season.
+pub fn bot_star_sale<'a>(
+    rules: &StarSaleRules,
+    formation: &str,
+    squad: &[SquadMember<'a>],
+    target_tenths: u32,
+    season_day: u32,
+    listed_this_season: u32,
+) -> Option<&'a Player> {
+    if season_day < rules.from_day || listed_this_season >= rules.max_per_season {
+        return None;
+    }
+    let counts = bot_line_counts(squad.iter().map(|member| member.player));
+    let needs = line_needs(formation);
+    let floor = target_tenths.saturating_sub(rules.ovr_below_target_tenths);
+    let mut best: Vec<&SquadMember<'a>> = squad
+        .iter()
+        .filter(|member| !member.player.retired)
+        .collect();
+    best.sort_by(|a, b| {
+        b.player
+            .ovr
+            .cmp(&a.player.ovr)
+            .then_with(|| a.player.id.cmp(&b.player.id))
+    });
+    best.into_iter()
+        .take(STAR_PLACES)
+        .find(|member| {
+            let line = group_index(&member.player.position);
+            member.player.injury.is_none()
+                && (rules.youngest..=rules.oldest).contains(&member.age)
+                && u32::from(member.player.ovr) * 10 >= floor
+                && counts[line] > needs[line]
+        })
+        .map(|member| member.player)
+}
+
+/// The places a star is drawn from: a bot's first eleven by overall.
+const STAR_PLACES: usize = 11;
+
+/// Whether a bot with a star to sell lists him on `season_day`: its own roll of the world's
+/// seed, the club and the day, apart from its ordinary sales' roll.
+pub fn bot_star_lists_today(
+    rules: &StarSaleRules,
+    world_seed: u64,
+    club_id: &str,
+    season_day: u32,
+) -> bool {
+    rng_for_seed(
+        world_seed,
+        "market-bot/star",
         &format!("{club_id}/{season_day}"),
     )
     .random_range(0..1000)
@@ -1193,6 +1335,141 @@ mod tests {
             ..rules
         };
         assert!(!cheap.fits_season(600, 18));
+    }
+
+    /// Members of `squad`, all aged `age`.
+    fn aged(squad: &[Player], age: i32) -> Vec<SquadMember<'_>> {
+        squad
+            .iter()
+            .map(|player| SquadMember { player, age })
+            .collect()
+    }
+
+    /// A 4-4-2 squad of 22 at 70 (one more defender and midfielder and an extra striker than
+    /// it needs) with one 78-rated midfielder `star`.
+    fn squad_with_star() -> Vec<Player> {
+        let mut squad = full_squad(70);
+        squad.push(player("cb-extra", Position::CenterBack, 70));
+        squad.push(player("cm-extra", Position::CentralMidfielder, 70));
+        squad.push(player("star", Position::CentralMidfielder, 78));
+        squad
+    }
+
+    /// Given a bot at level target 77.5 with a 26-year-old midfielder of 78 and a line to spare,
+    /// when it looks for a star on day 3, then on day 2, then having listed one this season,
+    /// then it picks him on day 3 only.
+    #[test]
+    fn a_levelled_bot_sells_its_star_from_day_three_once_a_season() {
+        let rules = StarSaleRules::default();
+        let squad = squad_with_star();
+        let members = aged(&squad, 26);
+        let pick = bot_star_sale(&rules, "4-4-2", &members, 775, 3, 0);
+        assert_eq!(pick.map(|p| p.id.as_str()), Some("star"));
+        assert!(bot_star_sale(&rules, "4-4-2", &members, 775, 2, 0).is_none());
+        assert!(bot_star_sale(&rules, "4-4-2", &members, 775, 3, 1).is_none());
+    }
+
+    /// Given the same squad with everyone aged 30, or a target over his overall plus two, or his
+    /// line down to its need of six, or him injured,
+    /// when the bot looks for a star,
+    /// then it finds none (the 70s are under 77.5 − 2 too).
+    #[test]
+    fn a_star_is_in_his_prime_up_to_the_level_and_spare() {
+        let rules = StarSaleRules::default();
+        let squad = squad_with_star();
+        assert!(bot_star_sale(&rules, "4-4-2", &aged(&squad, 30), 775, 5, 0).is_none());
+        assert!(bot_star_sale(&rules, "4-4-2", &aged(&squad, 26), 810, 5, 0).is_none());
+
+        let mut short = squad.clone();
+        short.retain(|p| p.id != "cm-extra" && p.id != "CentralMidfielder-0");
+        assert!(bot_star_sale(&rules, "4-4-2", &aged(&short, 26), 775, 5, 0).is_none());
+
+        let mut hurt = squad.clone();
+        if let Some(star) = hurt.iter_mut().find(|p| p.id == "star") {
+            star.injury = Some(Injury {
+                name: "knock".into(),
+                days_remaining: 3,
+            });
+        }
+        assert!(bot_star_sale(&rules, "4-4-2", &aged(&hurt, 26), 775, 5, 0).is_none());
+    }
+
+    /// Given the star values, then a first listing asks 1.2× the value, 1.1× after one unsold
+    /// listing and never under the value; they fit a market floor of 60%, and a star floor under
+    /// it or an upside-down age range does not.
+    #[test]
+    fn a_star_is_priced_above_his_value_down_to_it() {
+        let rules = StarSaleRules::default();
+        assert_eq!(rules.listing_price(1_000_000, 0), 1_200_000);
+        assert_eq!(rules.listing_price(1_000_000, 1), 1_100_000);
+        assert_eq!(rules.listing_price(1_000_000, 3), 1_000_000);
+        assert_eq!(rules.listing_price(1_000_000, 9), 1_000_000);
+
+        let sales = BotSaleRules {
+            star: Some(rules),
+            ..BotSaleRules::default()
+        };
+        assert!(sales.fits_season(600, 18));
+        let cheap = BotSaleRules {
+            star: Some(StarSaleRules {
+                floor_permille: 500,
+                ..rules
+            }),
+            ..sales
+        };
+        assert!(!cheap.fits_season(600, 18));
+        assert!(
+            !StarSaleRules {
+                youngest: 30,
+                ..rules
+            }
+            .fits_season(600)
+        );
+    }
+
+    /// Given sale rules without a star, then their JSON carries no `star` key and reads back;
+    /// given them with one, the star reads back in camelCase.
+    #[test]
+    fn the_star_sale_is_left_out_of_a_ruleset_without_it() {
+        let plain = BotSaleRules::default();
+        let json = serde_json::to_string(&plain).expect("json");
+        assert!(!json.contains(r#""star""#), "{json}");
+        assert_eq!(
+            serde_json::from_str::<BotSaleRules>(&json).ok(),
+            Some(plain)
+        );
+
+        let with_star = BotSaleRules {
+            star: Some(StarSaleRules::default()),
+            ..plain
+        };
+        let json = serde_json::to_string(&with_star).expect("json");
+        assert!(json.contains(r#""star":{"maxPerSeason":1"#), "{json}");
+        assert_eq!(
+            serde_json::from_str::<BotSaleRules>(&json).ok(),
+            Some(with_star)
+        );
+    }
+
+    /// Given a 25% chance to list a star a day,
+    /// when a bot rolls for a thousand days,
+    /// then it lists on about a quarter, on days of its own apart from its ordinary sales'.
+    #[test]
+    fn a_bot_rolls_for_its_star_apart_from_its_sales() {
+        let star = StarSaleRules::default();
+        let sales = BotSaleRules::default();
+        let star_days: Vec<u32> = (0..1000)
+            .filter(|day| bot_star_lists_today(&star, 1, "bot", *day))
+            .collect();
+        let sale_days: Vec<u32> = (0..1000)
+            .filter(|day| bot_lists_today(&sales, 1, "bot", *day))
+            .collect();
+        assert!(
+            (200..=300).contains(&star_days.len()),
+            "{}",
+            star_days.len()
+        );
+        assert_ne!(star_days, sale_days);
     }
 
     /// Given a 25% chance to list a day,

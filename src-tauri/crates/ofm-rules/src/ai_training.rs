@@ -23,6 +23,7 @@
 
 use domain::player::Player;
 use domain::team::{PlayStyle, TrainingFocus, TrainingIntensity};
+use serde::{Deserialize, Serialize};
 
 // ---------------------------------------------------------------------------
 // Thresholds
@@ -181,6 +182,16 @@ pub fn session_plan(
     // here is what a manager genuinely decides: how hard to work when there is room
     // to, and on what.
 
+    focus_for(play_style, intensity, weekday_num)
+}
+
+/// The focus a planned `intensity` trains on, and the intensity after the safety rule: a Low day
+/// is a recovery day, otherwise the style's weekly cycle; Physical never goes High.
+fn focus_for(
+    play_style: &PlayStyle,
+    intensity: TrainingIntensity,
+    weekday_num: u32,
+) -> (TrainingFocus, TrainingIntensity) {
     // Style-biased weekly cycle; slot is based on weekday mod 5.
     let cycle = style_weekly_cycle(play_style);
     let slot = (weekday_num as usize) % 5;
@@ -201,6 +212,65 @@ pub fn session_plan(
         intensity
     };
     (focus, intensity)
+}
+
+/// How an online bot trains (phase 4, S-34 S34-6, S34-15), a season's ruleset: harder than the
+/// game's AI, since a bot's squad is refreshed every season and has no human to rest it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct BotTrainingRules {
+    /// The likely starters' condition from which a bot trains High; under it, Medium.
+    pub high_from_condition: u8,
+    /// Whether each of a bot's players trains his own best focus outside recovery days (the
+    /// server sets the plan's `auto_focus`; S34-16).
+    pub auto_focus: bool,
+}
+
+impl Default for BotTrainingRules {
+    /// The values of S-34 S34-7.
+    fn default() -> Self {
+        Self {
+            high_from_condition: 60,
+            auto_focus: true,
+        }
+    }
+}
+
+/// The focus and intensity an online bot sets for a training day (S34-6): Recovery only in a
+/// crisis, as [`session_plan`]; otherwise Medium under `high_from_condition` and High from it,
+/// on its style's weekly cycle.
+pub fn bot_session_plan(
+    play_style: &PlayStyle,
+    starters_condition: f64,
+    weekday_num: u32,
+    rules: &BotTrainingRules,
+) -> (TrainingFocus, TrainingIntensity) {
+    if starters_condition < RECOVERY_CRISIS_THRESHOLD {
+        return (TrainingFocus::Recovery, TrainingIntensity::Low);
+    }
+    let intensity = if starters_condition < f64::from(rules.high_from_condition) {
+        TrainingIntensity::Medium
+    } else {
+        TrainingIntensity::High
+    };
+    focus_for(play_style, intensity, weekday_num)
+}
+
+/// [`plan_session`] for an online bot, by [`bot_session_plan`].
+pub fn online_bot_session(
+    team: &mut domain::team::Team,
+    available: &[&Player],
+    weekday_num: u32,
+    rules: &BotTrainingRules,
+) {
+    if !team.training_schedule.is_training_day(weekday_num) {
+        return;
+    }
+    let starters_condition = likely_starters_condition(available, &team.formation);
+    let (focus, intensity) =
+        bot_session_plan(&team.play_style, starters_condition, weekday_num, rules);
+    team.training_focus = focus;
+    team.training_intensity = intensity;
 }
 
 /// `team`'s focus and intensity set for today's session by the AI's plan, when today is one of
@@ -235,6 +305,76 @@ mod tests {
         team.training_schedule = TrainingSchedule::Light;
         team.training_focus = TrainingFocus::Attacking;
         team
+    }
+
+    /// Given the bot rules (High from 60) and a balanced club,
+    /// when it plans at starters' condition 5, 35, 59 and 60,
+    /// then 5 is a recovery day, 35 and 59 train Medium and 60 trains High, each but the first on
+    /// the style's cycle, and Physical never trains High.
+    #[test]
+    fn a_bot_trains_medium_under_its_threshold_and_high_from_it() {
+        let rules = BotTrainingRules::default();
+        let style = PlayStyle::Balanced;
+        assert_eq!(
+            bot_session_plan(&style, 5.0, 1, &rules),
+            (TrainingFocus::Recovery, TrainingIntensity::Low)
+        );
+        for weekday in 0..5 {
+            let cycle_focus = style_weekly_cycle(&style)[weekday as usize % 5].clone();
+            for (condition, intensity) in [
+                (35.0, TrainingIntensity::Medium),
+                (59.0, TrainingIntensity::Medium),
+                (60.0, TrainingIntensity::High),
+            ] {
+                let (focus, planned) = bot_session_plan(&style, condition, weekday, &rules);
+                assert_eq!(focus, cycle_focus);
+                let expected = if focus == TrainingFocus::Physical {
+                    TrainingIntensity::Medium
+                } else {
+                    intensity
+                };
+                assert_eq!(
+                    planned, expected,
+                    "condition {condition}, weekday {weekday}"
+                );
+            }
+        }
+    }
+
+    /// Given a bot on the light schedule and an empty squad (read as fully fit),
+    /// when it plans Monday and Tuesday,
+    /// then Monday leaves its settings and Tuesday trains High on the cycle.
+    #[test]
+    fn a_bot_plans_only_its_training_days() {
+        let rules = BotTrainingRules::default();
+        let mut team = club();
+        online_bot_session(&mut team, &[], 0, &rules);
+        assert_eq!(team.training_focus, TrainingFocus::Attacking);
+        online_bot_session(&mut team, &[], 1, &rules);
+        assert_eq!(
+            (team.training_focus, team.training_intensity),
+            bot_session_plan(&team.play_style, 100.0, 1, &rules)
+        );
+    }
+
+    /// Given the bot rules,
+    /// when they travel as JSON,
+    /// then they read back the same in camelCase and refuse an unknown field.
+    #[test]
+    fn the_bot_training_rules_travel_as_camel_case_json() {
+        let rules = BotTrainingRules::default();
+        let json = serde_json::to_string(&rules).expect("json");
+        assert_eq!(json, r#"{"highFromCondition":60,"autoFocus":true}"#);
+        assert_eq!(
+            serde_json::from_str::<BotTrainingRules>(&json).ok(),
+            Some(rules)
+        );
+        assert!(
+            serde_json::from_str::<BotTrainingRules>(
+                r#"{"highFromCondition":60,"autoFocus":true,"x":1}"#
+            )
+            .is_err()
+        );
     }
 
     /// Given a club on the light schedule (Tuesday and Thursday) and an empty squad,
