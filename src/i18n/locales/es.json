@@ -582,6 +582,31 @@
         "swapped": "Intercambiados {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: rol {{role}}.",
         "sent": "{{count}} cambios enviados. Quedan {{left}}."
+      },
+      "phone": {
+        "title": "Partido en directo",
+        "leave": "Salir del partido",
+        "youCoach": "Diriges tú",
+        "aiCoaches": "Dirige la IA",
+        "ordersFrom": "Las órdenes cuentan desde el minuto {{minute}}' (partido real)",
+        "dock": "Controles del equipo",
+        "subs": "Cambios",
+        "formation": "Esquema",
+        "style": "Estilo",
+        "roles": "Funciones",
+        "captainShort": "Cap: {{name}}",
+        "setPieces": "Balón parado",
+        "rolesTitle": "Roles y balón parado",
+        "inUse": "En uso: {{formation}}",
+        "effectiveFrom": "La orden rige desde el minuto {{minute}}' del partido real.",
+        "pickOther": "Elige otro esquema",
+        "sendFormation": "Enviar: {{formation}}",
+        "tapToSend": "Toca para enviar al instante. Rige desde el minuto {{minute}}'.",
+        "nobody": "— Nadie aún",
+        "takerSends": "Cambiar un lanzador envía la orden al instante.",
+        "ordersTitle": "Órdenes enviadas ({{count}})",
+        "noOrders": "Aún no has enviado órdenes",
+        "sentToast": "Orden enviada: {{order}}"
       }
     },
     "replay": {

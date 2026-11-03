@@ -75,6 +75,7 @@ export function MatchStatusStrip({
   shown = data.state,
   halfTimeSince: since,
   onReplace,
+  phone = false,
 }: {
   data: LiveMatchData;
   /**
@@ -86,6 +87,8 @@ export function MatchStatusStrip({
   halfTimeSince?: number | null;
   /** Open the substitutions with this hurt player chosen to come off. */
   onReplace: (playerId: string) => void;
+  /** On a phone the header says who coaches and the leave sheet warns: the strip keeps the rest. */
+  phone?: boolean;
 }) {
   const { t } = useTranslation();
   const now = useOnlineNow();
@@ -120,7 +123,7 @@ export function MatchStatusStrip({
           )}
         </div>
       ) : (
-        <ControllerLine data={data} />
+        !phone && <ControllerLine data={data} />
       )}
       {watchError !== null ? (
         <p role="alert" className={WARN}>
@@ -164,7 +167,7 @@ export function MatchStatusStrip({
             </div>
           );
         })}
-      {mine !== null && !shown.isFinished && (
+      {mine !== null && !shown.isFinished && !phone && (
         <p className="text-xs text-gray-500 dark:text-gray-400">{t("online.match.leaveWarning")}</p>
       )}
     </div>

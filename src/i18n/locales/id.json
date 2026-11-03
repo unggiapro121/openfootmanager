@@ -582,6 +582,31 @@
         "swapped": "Bertukar posisi: {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: peran {{role}}.",
         "sent": "{{count}} pergantian dikirim. Sisa {{left}}."
+      },
+      "phone": {
+        "title": "Laga langsung",
+        "leave": "Tinggalkan laga",
+        "youCoach": "Kamu yang memimpin",
+        "aiCoaches": "AI yang memimpin",
+        "ordersFrom": "Perintah berlaku mulai menit {{minute}}' (laga sebenarnya)",
+        "dock": "Kontrol tim",
+        "subs": "Pergantian",
+        "formation": "Formasi",
+        "style": "Gaya main",
+        "roles": "Peran",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Bola mati",
+        "rolesTitle": "Peran & bola mati",
+        "inUse": "Dipakai: {{formation}}",
+        "effectiveFrom": "Perintah berlaku mulai menit {{minute}}' laga sebenarnya.",
+        "pickOther": "Pilih formasi lain",
+        "sendFormation": "Kirim: {{formation}}",
+        "tapToSend": "Ketuk untuk langsung mengirim. Berlaku mulai menit {{minute}}'.",
+        "nobody": "— Belum ada",
+        "takerSends": "Mengganti eksekutor langsung mengirim perintah.",
+        "ordersTitle": "Perintah terkirim ({{count}})",
+        "noOrders": "Belum ada perintah",
+        "sentToast": "Perintah terkirim: {{order}}"
       }
     },
     "replay": {

@@ -582,6 +582,31 @@
         "swapped": "Swapped {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: role {{role}}.",
         "sent": "Sent {{count}} substitutions. {{left}} left."
+      },
+      "phone": {
+        "title": "Live match",
+        "leave": "Leave the match",
+        "youCoach": "You are coaching",
+        "aiCoaches": "The AI is coaching",
+        "ordersFrom": "Orders count from minute {{minute}}' (the real match)",
+        "dock": "Team controls",
+        "subs": "Subs",
+        "formation": "Shape",
+        "style": "Style",
+        "roles": "Roles",
+        "captainShort": "Capt: {{name}}",
+        "setPieces": "Set pieces",
+        "rolesTitle": "Roles & set pieces",
+        "inUse": "In use: {{formation}}",
+        "effectiveFrom": "The order takes effect from minute {{minute}}' of the real match.",
+        "pickOther": "Pick another shape",
+        "sendFormation": "Send: {{formation}}",
+        "tapToSend": "Tap to send at once. It takes effect from minute {{minute}}'.",
+        "nobody": "— Nobody yet",
+        "takerSends": "Changing a taker sends the order at once.",
+        "ordersTitle": "Orders sent ({{count}})",
+        "noOrders": "No order sent yet",
+        "sentToast": "Order sent: {{order}}"
       }
     },
     "replay": {

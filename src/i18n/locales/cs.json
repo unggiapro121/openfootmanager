@@ -582,6 +582,31 @@
         "swapped": "Prohozeno: {{a}} ↔ {{b}}.",
         "roleSet": "{{name}} hraje roli {{role}}.",
         "sent": "Odesláno střídání: {{count}}. Zbývá: {{left}}."
+      },
+      "phone": {
+        "title": "Zápas živě",
+        "leave": "Opustit zápas",
+        "youCoach": "Řídíte tým",
+        "aiCoaches": "Tým řídí AI",
+        "ordersFrom": "Pokyny platí od {{minute}}. minuty (skutečného zápasu)",
+        "dock": "Ovládání týmu",
+        "subs": "Střídání",
+        "formation": "Rozestavení",
+        "style": "Styl",
+        "roles": "Role",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Standardky",
+        "rolesTitle": "Role a standardky",
+        "inUse": "Používá se: {{formation}}",
+        "effectiveFrom": "Pokyn platí od {{minute}}. minuty skutečného zápasu.",
+        "pickOther": "Vyberte jiné rozestavení",
+        "sendFormation": "Odeslat: {{formation}}",
+        "tapToSend": "Klepnutím pokyn hned odešlete. Platí od {{minute}}. minuty.",
+        "nobody": "— Zatím nikdo",
+        "takerSends": "Změna exekutora pokyn hned odešle.",
+        "ordersTitle": "Odeslané pokyny ({{count}})",
+        "noOrders": "Zatím žádný pokyn",
+        "sentToast": "Pokyn odeslán: {{order}}"
       }
     },
     "replay": {

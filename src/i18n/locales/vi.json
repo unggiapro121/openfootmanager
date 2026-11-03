@@ -582,6 +582,31 @@
         "swapped": "Đã đổi vị trí {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: vai trò {{role}}.",
         "sent": "Đã gửi {{count}} thay người. Còn {{left}} lượt."
+      },
+      "phone": {
+        "title": "Trận đấu trực tiếp",
+        "leave": "Rời trận",
+        "youCoach": "Bạn đang chỉ đạo",
+        "aiCoaches": "AI đang chỉ đạo",
+        "ordersFrom": "Lệnh tính từ phút {{minute}}' (trận thật)",
+        "dock": "Điều khiển đội",
+        "subs": "Thay người",
+        "formation": "Sơ đồ",
+        "style": "Lối chơi",
+        "roles": "Vai trò",
+        "captainShort": "ĐT: {{name}}",
+        "setPieces": "Bóng chết",
+        "rolesTitle": "Vai trò & bóng chết",
+        "inUse": "Đang dùng {{formation}}",
+        "effectiveFrom": "Lệnh có hiệu lực từ phút {{minute}}' của trận thật.",
+        "pickOther": "Chọn sơ đồ khác",
+        "sendFormation": "Gửi lệnh: {{formation}}",
+        "tapToSend": "Chạm để gửi lệnh ngay. Có hiệu lực từ phút {{minute}}'.",
+        "nobody": "— Chưa chọn",
+        "takerSends": "Đổi người nào sẽ gửi lệnh ngay cho người đó.",
+        "ordersTitle": "Lệnh đã gửi ({{count}})",
+        "noOrders": "Chưa gửi lệnh nào",
+        "sentToast": "Đã gửi lệnh: {{order}}"
       }
     },
     "replay": {

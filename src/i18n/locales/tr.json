@@ -582,6 +582,31 @@
         "swapped": "Yer değiştirildi: {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: rol {{role}}.",
         "sent": "{{count}} değişiklik gönderildi. {{left}} hak kaldı."
+      },
+      "phone": {
+        "title": "Canlı maç",
+        "leave": "Maçtan çık",
+        "youCoach": "Takımı sen yönetiyorsun",
+        "aiCoaches": "Takımı yapay zekâ yönetiyor",
+        "ordersFrom": "Talimatlar {{minute}}. dakikadan itibaren geçerli (gerçek maç)",
+        "dock": "Takım kontrolleri",
+        "subs": "Oyuncu değişikliği",
+        "formation": "Diziliş",
+        "style": "Oyun tarzı",
+        "roles": "Roller",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Duran toplar",
+        "rolesTitle": "Roller ve duran toplar",
+        "inUse": "Kullanılan: {{formation}}",
+        "effectiveFrom": "Talimat gerçek maçın {{minute}}. dakikasından itibaren geçerli.",
+        "pickOther": "Başka bir diziliş seç",
+        "sendFormation": "Gönder: {{formation}}",
+        "tapToSend": "Hemen göndermek için dokun. {{minute}}. dakikadan itibaren geçerli.",
+        "nobody": "— Henüz kimse",
+        "takerSends": "Kullanıcıyı değiştirmek talimatı hemen gönderir.",
+        "ordersTitle": "Gönderilen talimatlar ({{count}})",
+        "noOrders": "Henüz talimat gönderilmedi",
+        "sentToast": "Talimat gönderildi: {{order}}"
       }
     },
     "replay": {

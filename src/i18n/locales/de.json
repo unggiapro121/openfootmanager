@@ -582,6 +582,31 @@
         "swapped": "Getauscht: {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: Rolle {{role}}.",
         "sent": "{{count}} Wechsel gesendet. Noch {{left}} übrig."
+      },
+      "phone": {
+        "title": "Live-Spiel",
+        "leave": "Spiel verlassen",
+        "youCoach": "Du coachst",
+        "aiCoaches": "Die KI coacht",
+        "ordersFrom": "Anweisungen zählen ab Minute {{minute}}' (echtes Spiel)",
+        "dock": "Teamsteuerung",
+        "subs": "Wechsel",
+        "formation": "Formation",
+        "style": "Spielweise",
+        "roles": "Rollen",
+        "captainShort": "K: {{name}}",
+        "setPieces": "Standards",
+        "rolesTitle": "Rollen & Standards",
+        "inUse": "Aktiv: {{formation}}",
+        "effectiveFrom": "Die Anweisung gilt ab Minute {{minute}}' des echten Spiels.",
+        "pickOther": "Andere Formation wählen",
+        "sendFormation": "Senden: {{formation}}",
+        "tapToSend": "Tippen sendet sofort. Gilt ab Minute {{minute}}'.",
+        "nobody": "— Noch niemand",
+        "takerSends": "Ein Wechsel des Schützen sendet die Anweisung sofort.",
+        "ordersTitle": "Gesendete Anweisungen ({{count}})",
+        "noOrders": "Noch keine Anweisung gesendet",
+        "sentToast": "Anweisung gesendet: {{order}}"
       }
     },
     "replay": {

@@ -582,6 +582,31 @@
         "swapped": "已互换 {{a}} ↔ {{b}}。",
         "roleSet": "{{name}}：角色 {{role}}。",
         "sent": "已发送 {{count}} 次换人。还剩 {{left}} 次。"
+      },
+      "phone": {
+        "title": "比赛直播",
+        "leave": "离开比赛",
+        "youCoach": "你在指挥",
+        "aiCoaches": "AI 在指挥",
+        "ordersFrom": "指令从第 {{minute}}' 分钟起生效（真实比赛）",
+        "dock": "球队操控",
+        "subs": "换人",
+        "formation": "阵型",
+        "style": "打法",
+        "roles": "角色",
+        "captainShort": "队长：{{name}}",
+        "setPieces": "定位球",
+        "rolesTitle": "角色与定位球",
+        "inUse": "当前：{{formation}}",
+        "effectiveFrom": "指令从真实比赛第 {{minute}}' 分钟起生效。",
+        "pickOther": "选择其他阵型",
+        "sendFormation": "发送：{{formation}}",
+        "tapToSend": "点一下立即发送，从第 {{minute}}' 分钟起生效。",
+        "nobody": "— 暂未指定",
+        "takerSends": "更换主罚人会立即发送指令。",
+        "ordersTitle": "已发送指令（{{count}}）",
+        "noOrders": "尚未发送指令",
+        "sentToast": "已发送指令：{{order}}"
       }
     },
     "replay": {

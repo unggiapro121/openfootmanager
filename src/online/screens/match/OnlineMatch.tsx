@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { RADAR_PACING } from "../../../components/match/radar/useRadarDirector";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import type { MatchView } from "../../api";
 import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
@@ -16,6 +17,7 @@ import { MatchStatusStrip, useHalfTimeStart } from "./MatchStatusStrip";
 import { useShownState } from "./liveShown";
 import { OnlineFullTime } from "./OnlineFullTime";
 import { OnlineHalfTime } from "./OnlineHalfTime";
+import { PhoneLiveMatch } from "./phone/PhoneLiveMatch";
 import { type LiveMatchData, useLiveMatch } from "./useLiveMatch";
 
 /** Whether a match is over: then it is replayed, not followed. */
@@ -79,6 +81,7 @@ function LiveMatchScreen({
   const offline = useOnlineStore((store) => store.network === "offline");
   const [radarOpen, setRadarOpen] = useState(true);
   const [replacing, setReplacing] = useState<string | undefined>(undefined);
+  const phone = usePhoneLayout();
   const { view, state, mine } = data;
   // The screen shows the match as far as the radar has played it, so a goal is not read off the
   // score before it is seen; the touchline acts on the server's own match.
@@ -104,6 +107,7 @@ function LiveMatchScreen({
       shown={shown}
       halfTimeSince={halfTimeSince}
       onReplace={setReplacing}
+      phone={phone}
     />
   );
   // Over: the players would go on standing about on the radar, so the viewer gets the report.
@@ -118,6 +122,23 @@ function LiveMatchScreen({
         strip={strip}
         send={send}
         initialOff={replacing}
+        disabled={offline}
+      />
+    );
+  }
+
+  if (phone) {
+    return (
+      <PhoneLiveMatch
+        data={data}
+        shown={shown}
+        strip={strip}
+        send={send}
+        pacing={pacing}
+        radarOpen={radarOpen}
+        onToggleRadar={() => setRadarOpen((open) => !open)}
+        onPlayed={onPlayed}
+        replacing={replacing}
         disabled={offline}
       />
     );

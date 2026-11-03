@@ -582,6 +582,31 @@
         "swapped": "Trocados {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: função {{role}}.",
         "sent": "{{count}} substituições enviadas. Restam {{left}}."
+      },
+      "phone": {
+        "title": "Jogo em direto",
+        "leave": "Sair do jogo",
+        "youCoach": "Estás a orientar",
+        "aiCoaches": "A IA está a orientar",
+        "ordersFrom": "As ordens contam a partir do minuto {{minute}}' (jogo real)",
+        "dock": "Controlos da equipa",
+        "subs": "Substituições",
+        "formation": "Esquema",
+        "style": "Estilo",
+        "roles": "Funções",
+        "captainShort": "Cap: {{name}}",
+        "setPieces": "Bolas paradas",
+        "rolesTitle": "Funções e bolas paradas",
+        "inUse": "Em uso: {{formation}}",
+        "effectiveFrom": "A ordem vale a partir do minuto {{minute}}' do jogo real.",
+        "pickOther": "Escolhe outro esquema",
+        "sendFormation": "Enviar: {{formation}}",
+        "tapToSend": "Toca para enviar já. Vale a partir do minuto {{minute}}'.",
+        "nobody": "— Ninguém ainda",
+        "takerSends": "Mudar um marcador envia a ordem de imediato.",
+        "ordersTitle": "Ordens enviadas ({{count}})",
+        "noOrders": "Ainda não enviaste ordens",
+        "sentToast": "Ordem enviada: {{order}}"
       }
     },
     "replay": {

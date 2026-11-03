@@ -582,6 +582,31 @@
         "swapped": "Places échangées : {{a}} ↔ {{b}}.",
         "roleSet": "{{name}} : rôle {{role}}.",
         "sent": "{{count}} remplacements envoyés. Il en reste {{left}}."
+      },
+      "phone": {
+        "title": "Match en direct",
+        "leave": "Quitter le match",
+        "youCoach": "Vous dirigez",
+        "aiCoaches": "L’IA dirige",
+        "ordersFrom": "Les consignes comptent dès la {{minute}}e minute (match réel)",
+        "dock": "Commandes de l’équipe",
+        "subs": "Changements",
+        "formation": "Système",
+        "style": "Jeu",
+        "roles": "Rôles",
+        "captainShort": "C : {{name}}",
+        "setPieces": "Coups de pied arrêtés",
+        "rolesTitle": "Rôles et coups de pied arrêtés",
+        "inUse": "Utilisé : {{formation}}",
+        "effectiveFrom": "La consigne s’applique dès la {{minute}}e minute du match réel.",
+        "pickOther": "Choisir un autre système",
+        "sendFormation": "Envoyer : {{formation}}",
+        "tapToSend": "Touchez pour envoyer aussitôt. Effet dès la {{minute}}e minute.",
+        "nobody": "— Personne pour l’instant",
+        "takerSends": "Changer un tireur envoie la consigne aussitôt.",
+        "ordersTitle": "Consignes envoyées ({{count}})",
+        "noOrders": "Aucune consigne envoyée",
+        "sentToast": "Consigne envoyée : {{order}}"
       }
     },
     "replay": {

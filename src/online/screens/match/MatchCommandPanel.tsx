@@ -14,7 +14,7 @@ import { SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
 /** A command as the coach reads it in the list of what they sent. */
-function describeCommand(
+export function describeCommand(
   command: MatchCommand,
   nameOf: (id: string) => string,
   t: Translate,
@@ -65,6 +65,11 @@ function describeCommand(
   return t("online.match.order.other");
 }
 
+/** What became of an order: the match's word on it once decided, else what the server said. */
+export function sentStatus(line: SentCommand, outcome: string | undefined): string {
+  return line.status === "pending" && outcome ? outcome : line.status;
+}
+
 function SentLine({
   line,
   outcome,
@@ -75,7 +80,7 @@ function SentLine({
   nameOf: (id: string) => string;
 }) {
   const { t } = useTranslation();
-  const status = line.status === "pending" && outcome ? outcome : line.status;
+  const status = sentStatus(line, outcome);
   const text =
     status === "applied"
       ? t("online.match.sent.applied")
@@ -140,7 +145,7 @@ const CHIP_OFF =
   "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300";
 
 /** The play styles the side may set, each with the icon the game's own match screen gives it. */
-const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
+export const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
   Balanced: <Target className="h-3 w-3" />,
   Attacking: <Zap className="h-3 w-3" />,
   Defensive: <Shield className="h-3 w-3" />,

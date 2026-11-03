@@ -98,7 +98,7 @@ function push(frame: MatchFrame) {
 async function openSubs() {
   renderOnline(`/online/match/${MATCH}`);
   await waitFor(() => expect(realtime.watches).toHaveLength(1));
-  fireEvent.click(await screen.findByRole("button", { name: /match\.subs/ }));
+  fireEvent.click(await screen.findByRole("button", { name: /online\.match\.phone\.subs/ }));
   return screen.findByRole("dialog", { name: "match.substitutionsTitle" });
 }
 

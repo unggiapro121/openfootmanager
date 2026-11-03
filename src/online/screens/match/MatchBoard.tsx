@@ -5,6 +5,7 @@ import { getEventDisplay, phaseLabel } from "../../../components/match/helpers";
 import { EventFeed, MatchStats } from "../../../components/match/MatchPanels";
 import { MatchRadar2D } from "../../../components/match/radar/MatchRadar2D";
 import { pickRadarKits } from "../../../components/match/radar/radarGeometry";
+import type { RadarRoster } from "../../../components/match/radar/radarMatch";
 import type { RadarPacing } from "../../../components/match/radar/useRadarDirector";
 import { useSettingsStore } from "../../../store/settingsStore";
 import type { ClubColors, MineView } from "../../api";
@@ -95,7 +96,63 @@ export function Lineups({ state }: { state: OnlineMatchState }) {
   );
 }
 
-function useRadarKits(mine: MineView | null) {
+/**
+ * The match's key moments, newest first, and the other side's tactical changes made out of sight
+ * (S8-15); a line to wait for the kick-off, or that nothing big has happened yet.
+ */
+export function EventsPanel({
+  state,
+  mine,
+  roster,
+}: {
+  state: OnlineMatchState;
+  mine: MineView | null;
+  roster: RadarRoster;
+}) {
+  const { t } = useTranslation();
+  const feedRef = useRef<HTMLDivElement>(null);
+  const feed = useMemo(() => toFeedSource(state), [state]);
+  const important = useMemo(
+    () => feed.events.filter((event) => getEventDisplay(event).important),
+    [feed],
+  );
+  const jerseys = useMemo(
+    () =>
+      new Map(
+        [...roster].flatMap(([id, entry]) =>
+          entry.jersey_number != null ? [[id, entry.jersey_number] as const] : [],
+        ),
+      ),
+    [roster],
+  );
+  const adjustments = state.adjustments.filter((line) => line.side !== mine?.side);
+  return (
+    <div className="flex flex-col gap-2">
+      {adjustments.length > 0 && (
+        <ul className="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400">
+          {adjustments.map((line) => (
+            <li key={`${line.side}-${line.seq}`}>
+              {line.minute}' ·{" "}
+              {t("online.match.adjusted", {
+                team: (line.side === "Home" ? state.home : state.away).name,
+              })}
+            </li>
+          ))}
+        </ul>
+      )}
+      {important.length === 0 ? (
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {state.minute === 0 ? t("match.waitingKickoff") : t("match.noMajorEvents")}
+        </p>
+      ) : (
+        <EventFeed events={important} snapshot={feed} feedRef={feedRef} playerJerseyMap={jerseys} />
+      )}
+    </div>
+  );
+}
+
+/** The kits the radar draws the two sides in: the coach's club in its own colours. */
+export function useRadarKits(mine: MineView | null) {
   const colors = useOnlineStore((store) => store.club?.club.colors);
   const side = mine?.side;
   return useMemo(() => {
@@ -146,7 +203,6 @@ export function MatchBoard({
   const { t } = useTranslation();
   const showCommentary = useSettingsStore((store) => store.settings.show_match_commentary);
   const [panel, setPanel] = useState<Panel>("events");
-  const feedRef = useRef<HTMLDivElement>(null);
   const kits = useRadarKits(mine);
   const squad = useOnlineStore((store) => store.club?.players);
   const pictures = useOnlineStore((store) => store.playerPictures);
@@ -160,21 +216,6 @@ export function MatchBoard({
       : {};
     return toRadarMatch(radarState, dials);
   }, [radarState, mine]);
-  const feed = useMemo(() => toFeedSource(state), [state]);
-  const important = useMemo(
-    () => feed.events.filter((event) => getEventDisplay(event).important),
-    [feed],
-  );
-  const jerseys = useMemo(
-    () =>
-      new Map(
-        [...roster].flatMap(([id, entry]) =>
-          entry.jersey_number != null ? [[id, entry.jersey_number] as const] : [],
-        ),
-      ),
-    [roster],
-  );
-  const adjustments = state.adjustments.filter((line) => line.side !== mine?.side);
 
   const tabs: { id: Panel; label: string; icon: ReactNode }[] = [
     { id: "events", label: t("match.events"), icon: <MessageSquare className="h-4 w-4" /> },
@@ -223,34 +264,7 @@ export function MatchBoard({
         ))}
       </div>
       <div role="tabpanel">
-        {panel === "events" && (
-          <div className="flex flex-col gap-2">
-            {adjustments.length > 0 && (
-              <ul className="flex flex-col gap-1 text-xs text-gray-500 dark:text-gray-400">
-                {adjustments.map((line) => (
-                  <li key={`${line.side}-${line.seq}`}>
-                    {line.minute}' ·{" "}
-                    {t("online.match.adjusted", {
-                      team: (line.side === "Home" ? state.home : state.away).name,
-                    })}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {important.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {state.minute === 0 ? t("match.waitingKickoff") : t("match.noMajorEvents")}
-              </p>
-            ) : (
-              <EventFeed
-                events={important}
-                snapshot={feed}
-                feedRef={feedRef}
-                playerJerseyMap={jerseys}
-              />
-            )}
-          </div>
-        )}
+        {panel === "events" && <EventsPanel state={state} mine={mine} roster={roster} />}
         {panel === "stats" && <MatchStats snapshot={toStatsSource(state)} />}
         {panel === "lineups" && <Lineups state={state} />}
       </div>

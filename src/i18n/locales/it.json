@@ -582,6 +582,31 @@
         "swapped": "Scambiati {{a}} ↔ {{b}}.",
         "roleSet": "{{name}}: ruolo {{role}}.",
         "sent": "{{count}} cambi inviati. Ne restano {{left}}."
+      },
+      "phone": {
+        "title": "Partita in diretta",
+        "leave": "Esci dalla partita",
+        "youCoach": "Stai guidando tu",
+        "aiCoaches": "Guida l’IA",
+        "ordersFrom": "Gli ordini contano dal minuto {{minute}}' (partita reale)",
+        "dock": "Comandi della squadra",
+        "subs": "Cambi",
+        "formation": "Modulo",
+        "style": "Stile",
+        "roles": "Ruoli",
+        "captainShort": "Cap: {{name}}",
+        "setPieces": "Calci piazzati",
+        "rolesTitle": "Ruoli e calci piazzati",
+        "inUse": "In uso: {{formation}}",
+        "effectiveFrom": "L’ordine vale dal minuto {{minute}}' della partita reale.",
+        "pickOther": "Scegli un altro modulo",
+        "sendFormation": "Invia: {{formation}}",
+        "tapToSend": "Tocca per inviare subito. Vale dal minuto {{minute}}'.",
+        "nobody": "— Ancora nessuno",
+        "takerSends": "Cambiare un tiratore invia subito l’ordine.",
+        "ordersTitle": "Ordini inviati ({{count}})",
+        "noOrders": "Nessun ordine inviato",
+        "sentToast": "Ordine inviato: {{order}}"
       }
     },
     "replay": {
