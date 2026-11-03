@@ -4,8 +4,8 @@ export const FOCUS =
   "focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-800";
 
 /**
- * A sheet risen from the bottom of a phone over the live match (design m-tran-dau): its title,
- * then what it holds. A tap on the dimmed match or Escape closes it.
+ * A sheet risen from the bottom of a phone (designs m-tran-dau, m-hop-thu): its title,
+ * then what it holds. A tap on the dimmed page or Escape closes it.
  */
 export function PhoneSheet({
   title,

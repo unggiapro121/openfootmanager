@@ -11,7 +11,7 @@ import { describeCommand, sentStatus } from "../MatchCommandPanel";
 import { withCurrent } from "../matchOptions";
 import { OnlineSubPanel } from "../OnlineSubPanel";
 import { FormationSheet, OrdersSheet, RolesSheet, StyleSheet } from "./PhoneMatchSheets";
-import { FOCUS } from "./PhoneSheet";
+import { FOCUS } from "../../mobile/PhoneSheet";
 
 const KEY = "online.match.phone";
 type Sheet = "formation" | "style" | "roles" | "orders" | null;

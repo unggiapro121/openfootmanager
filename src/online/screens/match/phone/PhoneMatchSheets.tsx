@@ -9,7 +9,7 @@ import type { MatchCommand, PlayerRole, PlayStyle, Side } from "../../../api/eng
 import { openInMatch } from "../../../convert/licence";
 import { describeCommand, sentStatus, STYLE_ICONS } from "../MatchCommandPanel";
 import { TAKERS, takerCommand } from "../SideOwnOrders";
-import { FOCUS, PhoneSheet } from "./PhoneSheet";
+import { FOCUS, PhoneSheet } from "../../mobile/PhoneSheet";
 
 const KEY = "online.match.phone";
 /** Sends an order; `stay` keeps the sheet open for the next (the set-piece takers). */

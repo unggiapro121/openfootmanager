@@ -5,7 +5,7 @@ import type { RadarRoster } from "../../../../components/match/radar/radarMatch"
 import type { MineView } from "../../../api";
 import { type LiveSide, type OnlineMatchState, toStatsSource } from "../../../convert/matchState";
 import { EventsPanel } from "../MatchBoard";
-import { FOCUS } from "./PhoneSheet";
+import { FOCUS } from "../../mobile/PhoneSheet";
 
 type Panel = "events" | "stats" | "lineups";
 const PANELS: Array<{ id: Panel; label: string }> = [

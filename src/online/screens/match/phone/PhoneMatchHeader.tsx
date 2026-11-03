@@ -6,7 +6,7 @@ import type { LiveSide, OnlineMatchState } from "../../../convert/matchState";
 import LeagueClubCrest from "../../LeagueClubCrest";
 import { useGuardedNavigate } from "../../leaveGuard";
 import type { LiveMatchData } from "../useLiveMatch";
-import { FOCUS } from "./PhoneSheet";
+import { FOCUS } from "../../mobile/PhoneSheet";
 
 const sideKey = (side: "Home" | "Away") => (side === "Home" ? "home" : "away");
 
