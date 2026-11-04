@@ -1632,8 +1632,10 @@
         "style": "Použít na {{style}}",
         "usedToday": "Dnes už použito",
         "rename": "Přejmenovat v kádru",
-        "academy": "Použít v akademii"
-      }
+        "academy": "Použít v akademii",
+        "offThisSeason": "V této sezóně vypnuto"
+      },
+      "offThisSeason": "V této sezóně nelze použít"
     },
     "shop": {
       "notOnServer": "Tento server zatím nemá obchod.",

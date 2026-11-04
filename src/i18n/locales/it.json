@@ -1632,8 +1632,10 @@
         "style": "Usa su {{style}}",
         "usedToday": "Già usato oggi",
         "rename": "Rinomina nella rosa",
-        "academy": "Usa nel settore giovanile"
-      }
+        "academy": "Usa nel settore giovanile",
+        "offThisSeason": "Disattivato in questa stagione"
+      },
+      "offThisSeason": "Non utilizzabile in questa stagione"
     },
     "shop": {
       "notOnServer": "Questo server non ha ancora un negozio.",

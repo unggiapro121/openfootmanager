@@ -127,6 +127,7 @@ function tileLine(
 ): { text: string; warn: boolean } | null {
   const recovery = items.limits?.teamRecovery;
   if (code === "teamRecoveryPack" && recovery) {
+    if (recovery.perDay === 0) return { text: t("online.inventory.offThisSeason"), warn: true };
     return {
       text: t("online.inventory.usedToday", { used: recovery.usedToday, perDay: recovery.perDay }),
       warn: recovery.usedToday >= recovery.perDay,

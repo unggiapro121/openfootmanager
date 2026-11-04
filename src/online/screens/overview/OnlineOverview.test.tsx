@@ -220,6 +220,31 @@ describe("the overview's next match", () => {
     expect(recovery).toHaveTextContent("online.overview.recoveryUsed");
   });
 
+  // Given a season whose ruleset allows no use of the recovery pack a day,
+  // when the overview opens,
+  // then the pack's button says it is off this season, not "used up today", and cannot be pressed.
+  it("says the recovery pack is off for a season that allows none", async () => {
+    serve(undefined, {
+      "GET v1/me/items": ok(
+        inventory({
+          limits: {
+            teamRecovery: { usedToday: 0, perDay: 0, nextAt: "2099-01-02T00:00:00Z" },
+            notes: [],
+            xpX2: { remaining: 0, max: 10 },
+          },
+        }),
+      ),
+    });
+    renderOnline();
+
+    const next = await card(/^online\.fixture\.title/);
+    const recovery = await within(next).findByRole("button", {
+      name: /^online\.overview\.recovery/,
+    });
+    expect(recovery).toBeDisabled();
+    expect(recovery).toHaveTextContent("online.inventory.offThisSeason");
+  });
+
   // Given a coach who holds no recovery pack,
   // when the overview opens,
   // then the card offers none.

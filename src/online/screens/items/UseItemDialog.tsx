@@ -131,7 +131,9 @@ function limitLines(t: TFunction, language: string, limits: ItemUseLimitsView): 
       t("online.items.limit.points", { used: limits.pointsToday, perDay: limits.pointsPerDay }),
     );
   }
-  if (limits.usedToday !== undefined && limits.perDay !== undefined) {
+  if (limits.perDay === 0) {
+    out.push(t("online.inventory.offThisSeason"));
+  } else if (limits.usedToday !== undefined && limits.perDay !== undefined) {
     out.push(
       limits.nextAt
         ? t("online.items.limit.today", {

@@ -1632,8 +1632,10 @@
         "style": "Für {{style}} nutzen",
         "usedToday": "Heute schon genutzt",
         "rename": "Im Kader umbenennen",
-        "academy": "In der Nachwuchsakademie verwenden"
-      }
+        "academy": "In der Nachwuchsakademie verwenden",
+        "offThisSeason": "Diese Saison deaktiviert"
+      },
+      "offThisSeason": "In dieser Saison nicht nutzbar"
     },
     "shop": {
       "notOnServer": "Dieser Server hat noch keinen Shop.",

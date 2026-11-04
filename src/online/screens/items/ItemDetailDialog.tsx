@@ -81,6 +81,8 @@ export default function ItemDetailDialog({
   const career = useStyles(kind);
   const blocker = useBlocker(t, kind, items, hasClub);
   const recovery = code === "teamRecoveryPack" ? items.limits?.teamRecovery : undefined;
+  // A ruleset with no use a day turns the pack off for the whole season, not until tomorrow.
+  const recoveryOff = recovery?.perDay === 0;
   const recoveryDone = recovery !== undefined && recovery.usedToday >= recovery.perDay;
   const choices = kind === "style" ? styleChoices(career, items.limits?.notes ?? []) : [];
   const description = itemDescription(t, code);
@@ -158,7 +160,9 @@ export default function ItemDetailDialog({
             disabled={blocker !== null || recoveryDone || (kind === "style" && style === null)}
             onClick={() => onUse(kind === "style" && style ? { kind: "style", style } : undefined)}
           >
-            {actionText(t, kind, style, recoveryDone)}
+            {recoveryOff
+              ? t("online.inventory.action.offThisSeason")
+              : actionText(t, kind, style, recoveryDone)}
           </button>
         )}
         {group === "custom" && hasClub && (
@@ -235,25 +239,31 @@ function Facts({ line, items }: { line: InventoryLineView; items: InventoryView 
       {recovery && (
         <>
           <dt className={dt}>{t("online.inventory.dailyLimit")}</dt>
-          <dd className="flex flex-col items-end gap-0.5 text-right">
-            <span
-              className={`font-semibold ${
-                recovery.usedToday >= recovery.perDay
-                  ? "text-accent-700 dark:text-accent-300"
-                  : "text-gray-900 dark:text-gray-100"
-              }`}
-            >
-              {t("online.inventory.dailyUsed", {
-                used: recovery.usedToday,
-                perDay: recovery.perDay,
-              })}
-            </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {t("online.inventory.refreshAt", {
-                time: formatMoment(recovery.nextAt, i18n.language),
-              })}
-            </span>
-          </dd>
+          {recovery.perDay === 0 ? (
+            <dd className="text-right font-semibold text-accent-700 dark:text-accent-300">
+              {t("online.inventory.offThisSeason")}
+            </dd>
+          ) : (
+            <dd className="flex flex-col items-end gap-0.5 text-right">
+              <span
+                className={`font-semibold ${
+                  recovery.usedToday >= recovery.perDay
+                    ? "text-accent-700 dark:text-accent-300"
+                    : "text-gray-900 dark:text-gray-100"
+                }`}
+              >
+                {t("online.inventory.dailyUsed", {
+                  used: recovery.usedToday,
+                  perDay: recovery.perDay,
+                })}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {t("online.inventory.refreshAt", {
+                  time: formatMoment(recovery.nextAt, i18n.language),
+                })}
+              </span>
+            </dd>
+          )}
         </>
       )}
       {xpX2 && (

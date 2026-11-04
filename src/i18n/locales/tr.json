@@ -1632,8 +1632,10 @@
         "style": "{{style}} için kullan",
         "usedToday": "Bugün kullanıldı",
         "rename": "Kadroda yeniden adlandır",
-        "academy": "Altyapı akademisinde kullan"
-      }
+        "academy": "Altyapı akademisinde kullan",
+        "offThisSeason": "Bu sezon kapalı"
+      },
+      "offThisSeason": "Bu sezon kullanılamaz"
     },
     "shop": {
       "notOnServer": "Bu sunucuda henüz mağaza yok.",

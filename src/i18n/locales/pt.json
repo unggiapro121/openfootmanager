@@ -1632,8 +1632,10 @@
         "style": "Usar em {{style}}",
         "usedToday": "Usado hoje",
         "rename": "Mudar o nome no plantel",
-        "academy": "Usar na academia"
-      }
+        "academy": "Usar na academia",
+        "offThisSeason": "Desativado nesta época"
+      },
+      "offThisSeason": "Indisponível nesta época"
     },
     "shop": {
       "notOnServer": "Este servidor ainda não tem loja.",
