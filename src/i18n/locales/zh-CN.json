@@ -375,6 +375,10 @@
         "listSub": "挂到拍卖市场",
         "releaseSub": "让他立即离队",
         "shirtSub": "身穿 {{number}} 号"
+      },
+      "heal": {
+        "action": "治疗",
+        "none": "暂无治疗道具。"
       }
     },
     "training": {

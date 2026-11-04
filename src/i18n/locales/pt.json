@@ -375,6 +375,10 @@
         "listSub": "Colocá-lo no mercado de leilões",
         "releaseSub": "Deixá-lo sair do clube já",
         "shirtSub": "Usa o número {{number}}"
+      },
+      "heal": {
+        "action": "Tratar",
+        "none": "Ainda não tens itens de tratamento."
       }
     },
     "training": {

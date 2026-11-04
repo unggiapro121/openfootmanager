@@ -375,6 +375,10 @@
         "listSub": "Açık artırmaya çıkar",
         "releaseSub": "Kulüpten hemen ayrılsın",
         "shirtSub": "{{number}} numarayı giyiyor"
+      },
+      "heal": {
+        "action": "Tedavi et",
+        "none": "Henüz tedavi eşyan yok."
       }
     },
     "training": {

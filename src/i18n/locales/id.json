@@ -375,6 +375,10 @@
         "listSub": "Masukkan ke pasar lelang",
         "releaseSub": "Lepas dari klub sekarang",
         "shirtSub": "Memakai nomor {{number}}"
+      },
+      "heal": {
+        "action": "Obati",
+        "none": "Belum punya item penyembuhan."
       }
     },
     "training": {

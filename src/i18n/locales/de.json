@@ -375,6 +375,10 @@
         "listSub": "Ihn auf den Auktionsmarkt setzen",
         "releaseSub": "Ihn sofort gehen lassen",
         "shirtSub": "Trägt die Nummer {{number}}"
+      },
+      "heal": {
+        "action": "Behandeln",
+        "none": "Noch keine Heilgegenstände."
       }
     },
     "training": {

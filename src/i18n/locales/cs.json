@@ -375,6 +375,10 @@
         "listSub": "Dát ho do aukce",
         "releaseSub": "Nechat ho hned odejít",
         "shirtSub": "Nosí číslo {{number}}"
+      },
+      "heal": {
+        "action": "Léčit",
+        "none": "Zatím nemáte žádné léčebné předměty."
       }
     },
     "training": {
