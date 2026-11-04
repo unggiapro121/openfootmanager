@@ -17,6 +17,8 @@ import { positionBadgeVariant } from "../../../lib/playerRating";
 import type { TrainingGroupData } from "../../../store/types";
 import type { FocusFitView } from "../../api";
 import FocusHint from "./FocusHint";
+import { KeeperDrillBadge } from "./KeeperDrillBadge";
+import { trainsKeeperDrill } from "./keeperDrill";
 import { filteredRoster, type GroupFilter, groupOf } from "./trainingView";
 
 const CHIP =
@@ -39,6 +41,7 @@ export default function TrainingGroups({
   teamFocus,
   roster,
   focusFits = {},
+  keeperDrill = false,
   disabled,
   onSaveGroups,
   onSetPlayerFocus,
@@ -49,6 +52,8 @@ export default function TrainingGroups({
   roster: TrainingRosterPlayer[];
   /** How each player's focus suits him (S-31b), by id; a player without one shows no hint. */
   focusFits?: Record<string, FocusFitView>;
+  /** The season's keepers train their own drill (`TrainingDayView.keeperDrill`): badge them. */
+  keeperDrill?: boolean;
   disabled: boolean;
   /** Every group of the club, as it should be after the change. */
   onSaveGroups: (groups: TrainingGroupData[]) => void;
@@ -181,6 +186,7 @@ export default function TrainingGroups({
                 groups={groups}
                 teamFocus={teamFocus}
                 focusFit={focusFits[player.id]}
+                keeperDrill={keeperDrill}
                 disabled={disabled}
                 onGroup={(groupId) =>
                   onSaveGroups(reassignPlayerTrainingGroup(groups, player.id, groupId))
@@ -206,6 +212,7 @@ function GroupRow({
   groups,
   teamFocus,
   focusFit,
+  keeperDrill,
   disabled,
   onGroup,
   onFocus,
@@ -214,6 +221,7 @@ function GroupRow({
   groups: TrainingGroupData[];
   teamFocus: string;
   focusFit?: FocusFitView;
+  keeperDrill: boolean;
   disabled: boolean;
   onGroup: (groupId: string) => void;
   onFocus: (focus: string) => void;
@@ -231,6 +239,11 @@ function GroupRow({
         {player.jersey_number != null && (
           <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
             #{player.jersey_number}
+          </span>
+        )}
+        {trainsKeeperDrill(position, keeperDrill) && (
+          <span className="ml-2 align-middle">
+            <KeeperDrillBadge />
           </span>
         )}
       </td>

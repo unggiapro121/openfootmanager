@@ -481,6 +481,7 @@
         "rest": "Aujourd'hui est un jour de repos du programme : pas de séance principale.",
         "keeperDrill": "Les gardiens travaillent toujours en plus un exercice spécifique : Prise de balle, Réflexes, Jeu Aérien."
       },
+      "keeperBadge": "Exercice gardien",
       "groups": {
         "all": "Tous ({{count}})",
         "focusOf": "Axe du groupe {{name}}",

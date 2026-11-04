@@ -481,6 +481,7 @@
         "rest": "Hari ini istirahat menurut jadwal: tidak ada sesi utama.",
         "keeperDrill": "Penjaga gawang selalu menjalani latihan tambahan khusus: Menangkap, Refleks, Udara."
       },
+      "keeperBadge": "Latihan kiper",
       "groups": {
         "all": "Semua ({{count}})",
         "focusOf": "Fokus grup {{name}}",

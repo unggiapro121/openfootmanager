@@ -5,7 +5,13 @@ import {
   type OnlineResponse,
   setOnlineTransport,
 } from "../services/onlineTransport";
-import type { LeagueView, MyClubView, SeasonNowView, SquadPlayerView } from "../online/api";
+import type {
+  LeagueView,
+  MyClubView,
+  SeasonNowView,
+  SquadPlayerView,
+  TrainingDayView,
+} from "../online/api";
 import { CONTRACT_REVISION } from "../online/api/contract";
 import { reopenOnlineGate } from "../online/client";
 import { useOnlineStore } from "../online/store/onlineStore";
@@ -204,6 +210,22 @@ const ATTRIBUTES: SquadPlayerView["attributes"] = {
   heading: 60,
   first_touch: 60,
 };
+
+/** Today's training of a club in a season with recovery blocks, nothing held yet. */
+export function trainingDayView(overrides: Partial<TrainingDayView> = {}): TrainingDayView {
+  return {
+    day: 3,
+    recent: [],
+    canTrain: true,
+    sessionsLast7: 0,
+    sessionsCap: 6,
+    nextRecoveryAt: "2099-01-01T08:00:00Z",
+    recovery: { perDay: 6, hours: 8 },
+    autoOff: false,
+    keeperDrill: false,
+    ...overrides,
+  };
+}
 
 export function squadPlayer(overrides: Partial<SquadPlayerView> = {}): SquadPlayerView {
   return {

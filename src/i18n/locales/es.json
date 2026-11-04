@@ -481,6 +481,7 @@
         "rest": "Hoy es descanso según el calendario: no hay sesión principal.",
         "keeperDrill": "Los porteros siempre hacen además un ejercicio propio: Blocaje, Reflejos, Juego Aéreo."
       },
+      "keeperBadge": "Ejercicio de porteros",
       "groups": {
         "all": "Todos ({{count}})",
         "focusOf": "Enfoque del grupo {{name}}",

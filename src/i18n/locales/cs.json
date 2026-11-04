@@ -481,6 +481,7 @@
         "rest": "Dnes je podle rozvrhu volno: hlavní trénink není.",
         "keeperDrill": "Brankáři vždy navíc trénují vlastní cvičení: Chytání, Reflexy, Vzdušné souboje."
       },
+      "keeperBadge": "Brankářský trénink",
       "groups": {
         "all": "Všichni ({{count}})",
         "focusOf": "Zaměření skupiny {{name}}",

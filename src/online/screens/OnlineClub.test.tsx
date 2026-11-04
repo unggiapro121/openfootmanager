@@ -12,6 +12,7 @@ import {
   resetOnline,
   SEASON,
   squadPlayer,
+  trainingDayView,
 } from "../../test-utils/onlineTestKit";
 import { useOnlineStore } from "../store/onlineStore";
 import { useOnlineTacticsSource } from "./useOnlineTacticsSource";
@@ -233,6 +234,20 @@ describe("the online club pages", () => {
     expect(screen.getByText(/191/)).toBeInTheDocument();
     expect(screen.getByText(/84/)).toBeInTheDocument();
     expect(screen.getByText("common.footednessLabel")).toBeInTheDocument();
+  });
+
+  // Given a season whose keepers train their own drill,
+  // when the keeper's page opens, and then a centre back's,
+  // then the keeper's hero carries the drill's badge and the centre back's does not.
+  it("marks a keeper's page with the keepers' drill", async () => {
+    stage(myClub({ players: SQUAD, trainingDay: trainingDayView({ keeperDrill: true }) }));
+    const view = renderOnline("/online/squad/gk");
+    expect(await screen.findByText("online.training.keeperBadge")).toBeInTheDocument();
+    view.unmount();
+
+    renderOnline("/online/squad/cb");
+    expect(await screen.findByRole("heading", { name: "Trung Vệ" })).toBeInTheDocument();
+    expect(screen.queryByText("online.training.keeperBadge")).toBeNull();
   });
 
   // Given the squad list,

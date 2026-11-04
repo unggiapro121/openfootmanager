@@ -481,6 +481,7 @@
         "rest": "Today is a rest day on the schedule: no main session.",
         "keeperDrill": "Goalkeepers always train an extra drill of their own: Handling, Reflexes, Aerial."
       },
+      "keeperBadge": "Keeper drill",
       "groups": {
         "all": "All ({{count}})",
         "focusOf": "Focus of group {{name}}",

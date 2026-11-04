@@ -73,6 +73,7 @@ function TrainingScreen({ club }: { club: MyClubView }) {
             teamFocus={plan.focus}
             roster={toTrainingRoster(club.players)}
             focusFits={focusFitsOf(club.players)}
+            keeperDrill={club.trainingDay?.keeperDrill}
             disabled={saving || offline}
             onSaveGroups={saveGroups}
             onSetPlayerFocus={(playerId, focus) => void setPlayerFocus(playerId, focus)}

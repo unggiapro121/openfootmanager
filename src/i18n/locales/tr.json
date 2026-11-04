@@ -481,6 +481,7 @@
         "rest": "Bugün programa göre dinlenme: ana antrenman yok.",
         "keeperDrill": "Kaleciler her zaman ayrıca kendi özel çalışmalarını yapar: Top Tutma, Refleks, Hava Hakimiyeti."
       },
+      "keeperBadge": "Kaleci antrenmanı",
       "groups": {
         "all": "Tümü ({{count}})",
         "focusOf": "{{name}} grubunun odağı",

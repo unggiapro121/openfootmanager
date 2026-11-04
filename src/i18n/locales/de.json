@@ -481,6 +481,7 @@
         "rest": "Heute ist laut Plan Ruhetag: keine Haupteinheit.",
         "keeperDrill": "Torhüter trainieren immer zusätzlich eine eigene Übung: Fangen, Reflexe, Luftzweikämpfe."
       },
+      "keeperBadge": "Torwarttraining",
       "groups": {
         "all": "Alle ({{count}})",
         "focusOf": "Schwerpunkt der Gruppe {{name}}",

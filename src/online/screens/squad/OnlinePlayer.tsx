@@ -38,6 +38,8 @@ import ReleaseDialog from "./ReleaseDialog";
 import ShirtNumberPicker from "./ShirtNumberPicker";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import PhonePlayer from "./PhonePlayer";
+import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
+import { trainsKeeperDrill } from "../training/keeperDrill";
 
 /**
  * One player of the club on his own page, laid out as the offline player profile is: the hero card
@@ -175,6 +177,10 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
                 primaryPosition={player.naturalPosition}
                 alternatePositions={player.alternatePositions}
               />
+              {trainsKeeperDrill(
+                player.naturalPosition || player.position,
+                club.trainingDay?.keeperDrill,
+              ) && <KeeperDrillBadge />}
               <span className="text-sm text-gray-400">
                 <CountryFlag
                   code={player.nationality}
