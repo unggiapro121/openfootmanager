@@ -7,18 +7,13 @@ import type { ClubRef, FixtureView, MyClubView, StandingRow } from "../../api";
 import { deviceDiffersFromRegion, formatMoment, formatRegionClock } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
 import ClubCrestMark from "../ClubCrestMark";
+import { crestLabel } from "../crestLabel";
 import { itemName } from "../items/itemText";
 import { useCountdownText } from "../useCountdownText";
 import OverviewCard, { CardBadge, LABEL } from "./OverviewCard";
 import { useUsableCount } from "./useItemUse";
 
 const RECOVERY = "teamRecoveryPack";
-
-/** Up to three letters for a club's crest: the initials of its words, or its first letters. */
-function crestLabel(name: string): string {
-  const words = name.split(/\s+/).filter(Boolean);
-  return words.length > 1 ? words.map((word) => word[0]).join("") : name.slice(0, 3);
-}
 
 /**
  * The club's next match (design tong-quan.html): both clubs, the time left to the kick-off, and
@@ -60,7 +55,7 @@ export default function NextMatchCard({ onUse }: { onUse: (code: string) => void
         </CardBadge>
       }
     >
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-6 py-7">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-6 py-7 max-md:gap-2 max-md:px-3 max-md:py-4">
         <Side club={fixture.home} home mine={atHome} myClub={club} />
         <Kickoff fixture={fixture} club={club} atHome={atHome} />
         <Side club={fixture.away} home={false} mine={!atHome} myClub={club} />
@@ -89,7 +84,7 @@ function Side({
   return (
     <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
       <span
-        className={`h-19 w-19 rounded-2xl ${mine ? "ring-4 ring-primary-500/30 dark:ring-primary-400/30" : ""}`}
+        className={`h-19 w-19 rounded-2xl max-md:h-14 max-md:w-14 ${mine ? "ring-4 ring-primary-500/30 dark:ring-primary-400/30" : ""}`}
       >
         {profile ? (
           <ClubCrestMark profile={profile} />
@@ -102,7 +97,7 @@ function Side({
         )}
       </span>
       <span
-        className={`max-w-full break-words font-heading text-xl font-bold uppercase tracking-wider ${
+        className={`max-w-full break-words font-heading text-xl font-bold uppercase tracking-wider max-md:font-sans max-md:text-sm max-md:font-semibold max-md:normal-case max-md:tracking-normal ${
           mine ? "text-primary-700 dark:text-primary-300" : "text-gray-900 dark:text-gray-100"
         }`}
       >
@@ -135,7 +130,7 @@ function Kickoff({
   const playing =
     fixture.matchId && (fixture.matchStatus === "live" || fixture.matchStatus === "scheduled");
   return (
-    <div className="flex flex-col items-center gap-1.5 px-2 text-center">
+    <div className="flex flex-col items-center gap-1.5 px-2 text-center max-md:gap-1 max-md:px-0">
       <span id={labelId} className={LABEL}>
         {t("online.overview.kickoffIn")}
       </span>
@@ -143,7 +138,7 @@ function Kickoff({
         role="timer"
         aria-live="off"
         aria-labelledby={labelId}
-        className="font-heading text-5xl font-bold leading-none tabular-nums text-gray-900 dark:text-white"
+        className="font-heading text-5xl font-bold leading-none tabular-nums text-gray-900 max-md:text-3xl max-md:text-accent-700 dark:text-white dark:max-md:text-accent-400"
       >
         {countdown ?? "—"}
       </span>
@@ -183,6 +178,9 @@ function Kickoff({
 const QUICK =
   "flex min-h-12 items-center gap-2.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-left text-gray-900 hover:border-primary-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-200 disabled:hover:bg-white dark:border-navy-600 dark:bg-navy-700 dark:text-gray-100 dark:hover:border-primary-500 dark:hover:bg-navy-600 dark:focus:ring-offset-navy-800 dark:disabled:hover:border-navy-600 dark:disabled:hover:bg-navy-700";
 const QUICK_ICON = "h-5 w-5 shrink-0 text-primary-600 dark:text-primary-400";
+/** On a phone the lineup is the card's main action, a full-width green button (design m-tong-quan.html). */
+const LINEUP_ON_PHONE =
+  "max-md:basis-full max-md:justify-center max-md:border-primary-600 max-md:bg-primary-600 max-md:text-white max-md:hover:bg-primary-700 dark:max-md:border-primary-600 dark:max-md:bg-primary-600 dark:max-md:text-white dark:max-md:hover:bg-primary-700";
 
 /** What the coach sets before the match: the lineup, the tactics, the recovery pack held. */
 function Preparation({ onUse }: { onUse: (code: string) => void }) {
@@ -191,20 +189,25 @@ function Preparation({ onUse }: { onUse: (code: string) => void }) {
   const recovery = useOnlineStore((state) => state.items?.limits?.teamRecovery);
   const left = recovery ? Math.max(0, recovery.perDay - recovery.usedToday) : 0;
   return (
-    <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4 dark:border-navy-600 dark:bg-navy-800">
-      <span className={`${LABEL} basis-full`}>{t("online.overview.prepare")}</span>
-      <Link to="/online/squad" className={`${QUICK} flex-[1_1_150px]`}>
-        <Shirt className={QUICK_ICON} aria-hidden="true" />
-        <span className="text-sm font-semibold">{t("online.overview.toLineup")}</span>
+    <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4 max-md:gap-2 max-md:border-t-0 max-md:bg-transparent max-md:px-3 max-md:pb-3 max-md:pt-0 dark:border-navy-600 dark:bg-navy-800 dark:max-md:bg-transparent">
+      <span className={`${LABEL} basis-full max-md:sr-only`}>{t("online.overview.prepare")}</span>
+      <Link to="/online/squad" className={`${QUICK} ${LINEUP_ON_PHONE} flex-[1_1_150px]`}>
+        <Shirt
+          className={`${QUICK_ICON} max-md:text-white dark:max-md:text-white`}
+          aria-hidden="true"
+        />
+        <span className="text-sm font-semibold max-md:font-heading max-md:text-base max-md:font-bold max-md:uppercase max-md:tracking-wider">
+          {t("online.overview.toLineup")}
+        </span>
       </Link>
-      <Link to="/online/tactics" className={`${QUICK} flex-[1_1_150px]`}>
+      <Link to="/online/tactics" className={`${QUICK} flex-[1_1_150px] max-md:justify-center`}>
         <SlidersHorizontal className={QUICK_ICON} aria-hidden="true" />
         <span className="text-sm font-semibold">{t("online.nav.tactics")}</span>
       </Link>
       {held > 0 && recovery && (
         <button
           type="button"
-          className={`${QUICK} flex-[1_1_190px]`}
+          className={`${QUICK} flex-[1_1_150px] max-md:justify-center`}
           disabled={left === 0}
           onClick={() => onUse(RECOVERY)}
         >

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import InboxDeleteConfirmModal from "../../components/inbox/InboxDeleteConfirmModal";
@@ -13,45 +13,24 @@ import {
   sortInboxMessages,
 } from "../../components/inbox/inboxHelpers";
 import { resolveBackendError } from "../../utils/backendI18n";
-import type { InboxMessageView, InboxPage } from "../api";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { online } from "../client";
-import { toMessageData } from "../convert/inbox";
-import { findMission } from "./events/eventText";
-import { tracked, useOnlineStore } from "../store/onlineStore";
-import { useActionKey } from "./useActionKey";
-
-/** Pages read to fill the screen: an inbox keeps 200 messages, 100 a page. */
-const PAGE = 100;
-const MOST_PAGES = 2;
-
-/** Every message the inbox keeps, newest first. */
-async function readAll(): Promise<{ messages: InboxMessageView[]; unread: number }> {
-  const messages: InboxMessageView[] = [];
-  let before: string | undefined;
-  let unread = 0;
-  for (let page = 0; page < MOST_PAGES; page += 1) {
-    const next: InboxPage = await tracked(() => online.inbox.list(before, PAGE));
-    messages.push(...next.messages);
-    unread = next.unread;
-    before = next.nextBefore;
-    if (before === undefined) break;
-  }
-  return { messages, unread };
-}
+import { useOnlineStore } from "../store/onlineStore";
+import PhoneInbox from "./inbox/PhoneInbox";
+import { useOnlineInbox } from "./inbox/useOnlineInbox";
 
 /**
  * The coach's inbox: what happened to his club (an auction's end, a match, a season's end). The
  * offline inbox's list, detail and toolbar, over the server's messages; the words are written here
- * from each message's kind. A write answers with the first page, so the screen reads the rest again.
+ * from each message's kind (`useOnlineInbox`). On a phone, the phone's own inbox (PhoneInbox).
  */
 export default function OnlineInbox() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const club = useOnlineStore((state) => state.club);
-  const unreadMail = club?.unreadMail ?? 0;
-  const key = useActionKey();
+  const phone = usePhoneLayout();
   const navigate = useNavigate();
-  const [messages, setMessages] = useState<InboxMessageView[]>([]);
-  const [error, setError] = useState<unknown>(null);
+  const inbox = useOnlineInbox();
+  const { all, error, write } = inbox;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<MessageSortOrder>("newest");
@@ -60,52 +39,6 @@ export default function OnlineInbox() {
   const [deleteState, setDeleteState] = useState<DeleteModalState>(null);
   const [deleting, setDeleting] = useState(false);
 
-  /** Take the server's inbox as the screen's, and tell the sidebar how many are unread. */
-  const take = useCallback((next: { messages: InboxMessageView[]; unread: number }) => {
-    setMessages(next.messages);
-    const current = useOnlineStore.getState().club;
-    if (current && current.unreadMail !== next.unread) {
-      useOnlineStore.getState().setClub({ ...current, unreadMail: next.unread });
-    }
-  }, []);
-
-  // Read when the screen opens and whenever the club says its unread count moved.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `unreadMail` is the trigger
-  useEffect(() => {
-    let live = true;
-    readAll()
-      .then((next) => {
-        if (live) take(next);
-      })
-      .catch((failure) => {
-        if (live) setError(failure);
-      });
-    return () => {
-      live = false;
-    };
-  }, [take, unreadMail]);
-
-  const write = async (run: (idempotencyKey: string) => Promise<InboxPage>, id: string) => {
-    setError(null);
-    try {
-      await key.run((idempotencyKey) => tracked(() => run(idempotencyKey)), id);
-      take(await readAll());
-    } catch (failure) {
-      setError(failure);
-      throw failure;
-    }
-  };
-
-  const clubName = club?.club.name ?? "";
-  const youngsters = useOnlineStore((state) => state.academy?.players);
-  const events = useOnlineStore((state) => state.events);
-  const all = useMemo(() => {
-    const youngsterName = (id: string) => youngsters?.find((player) => player.id === id)?.name;
-    const eventMission = (eventId: string, code: string) => findMission(events, eventId, code);
-    return messages.map((message) =>
-      toMessageData(message, t, clubName, youngsterName, eventMission),
-    );
-  }, [messages, t, clubName, youngsters, events]);
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const message of all)
@@ -145,6 +78,8 @@ export default function OnlineInbox() {
       setDeleting(false);
     }
   };
+
+  if (phone) return <PhoneInbox inbox={inbox} />;
 
   return (
     <div className="flex h-full flex-col">

@@ -52,6 +52,8 @@ import { DISCORD_INVITE_URL, GITHUB_REPO_URL } from "../lib/communityLinks";
 import { ReportBugModal } from "../components/diagnostics/ReportBugModal";
 import { showError } from "../lib/errorDialog";
 import { prefersReducedMotion } from "../hooks/usePrefersReducedMotion";
+import { useBackAction } from "../hooks/useBackAction";
+import { isMobileBuild } from "../lib/platform";
 
 function DiscordIcon({ className }: { className?: string }) {
   return (
@@ -218,6 +220,10 @@ export default function MainMenu() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [reportingBug, setReportingBug] = useState(false);
+  // The phone app is online only (phase 5, DM-1): no offline entries, no quit button.
+  const mobile = isMobileBuild();
+  // The phone's Back steps out of a new game's or a save's screens to the menu.
+  useBackAction(menuState !== "main", () => setMenuState("main"));
 
   const [formData, setFormData] = useState<CreateManagerFormData>({
     startYear: defaultCareerStartYear(),
@@ -547,7 +553,7 @@ export default function MainMenu() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-navy-900 transition-colors duration-500 relative overflow-x-hidden pt-[var(--safe-top)] pb-[var(--safe-bottom)]">
       {/* Background gradient accents */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-500/10 dark:bg-primary-500/5 rounded-full blur-3xl" />
@@ -555,7 +561,7 @@ export default function MainMenu() {
       </div>
 
       {/* Theme Toggle */}
-      <ThemeToggle className="absolute top-6 right-6 z-20" />
+      <ThemeToggle className="absolute top-[calc(1.5rem+var(--safe-top))] right-6 z-20" />
 
       {/* Main Card */}
       <div className="relative z-10 w-full max-w-md">
@@ -593,33 +599,37 @@ export default function MainMenu() {
                 }}
               />
 
-              <button
-                type="button"
-                onClick={() => setMenuState("create")}
-                className="group flex items-center justify-between w-full p-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-primary-500/20"
-              >
-                <div className="flex items-center gap-3">
-                  <PlusCircle className="w-6 h-6" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
-                    {t("menu.newGame")}
-                  </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-              </button>
+              {!mobile && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setMenuState("create")}
+                    className="group flex items-center justify-between w-full p-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-primary-500/20"
+                  >
+                    <div className="flex items-center gap-3">
+                      <PlusCircle className="w-6 h-6" />
+                      <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                        {t("menu.newGame")}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  </button>
 
-              <button
-                type="button"
-                onClick={handleOpenLoadMenu}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-accent-400 dark:hover:border-accent-400 shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <FolderOpen className="w-6 h-6 text-accent-500 dark:text-accent-400" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
-                    {t("menu.loadGame")}
-                  </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-accent-500" />
-              </button>
+                  <button
+                    type="button"
+                    onClick={handleOpenLoadMenu}
+                    className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-accent-400 dark:hover:border-accent-400 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FolderOpen className="w-6 h-6 text-accent-500 dark:text-accent-400" />
+                      <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                        {t("menu.loadGame")}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-accent-500" />
+                  </button>
+                </>
+              )}
 
               {canPlayOnline && (
                 <button
@@ -637,19 +647,21 @@ export default function MainMenu() {
                 </button>
               )}
 
-              <button
-                type="button"
-                onClick={() => navigate("/world-editor")}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-accent-400 dark:hover:border-accent-400 shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <Package className="w-6 h-6 text-accent-500 dark:text-accent-400" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
-                    {t("menu.worldEditor")}
-                  </span>
-                </div>
-                <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-accent-500" />
-              </button>
+              {!mobile && (
+                <button
+                  type="button"
+                  onClick={() => navigate("/world-editor")}
+                  className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-gray-50 dark:hover:bg-navy-600 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-accent-400 dark:hover:border-accent-400 shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <Package className="w-6 h-6 text-accent-500 dark:text-accent-400" />
+                    <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                      {t("menu.worldEditor")}
+                    </span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-accent-500" />
+                </button>
+              )}
 
               <button
                 type="button"
@@ -665,20 +677,22 @@ export default function MainMenu() {
                 <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-70 group-hover:translate-x-0.5 transition-all text-gray-400" />
               </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  void handleExitApp();
-                }}
-                className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-red-200 dark:hover:border-red-500/30 shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <Power className="w-6 h-6 text-red-500 dark:text-red-400" />
-                  <span className="font-heading font-bold text-lg uppercase tracking-wide">
-                    {t("menu.exitGame")}
-                  </span>
-                </div>
-              </button>
+              {!mobile && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void handleExitApp();
+                  }}
+                  className="group flex items-center justify-between w-full p-4 bg-white dark:bg-navy-700 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-800 dark:text-gray-200 rounded-xl transition-all duration-300 border border-gray-200 dark:border-navy-600 hover:border-red-200 dark:hover:border-red-500/30 shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <Power className="w-6 h-6 text-red-500 dark:text-red-400" />
+                    <span className="font-heading font-bold text-lg uppercase tracking-wide">
+                      {t("menu.exitGame")}
+                    </span>
+                  </div>
+                </button>
+              )}
             </div>
           )}
 
@@ -764,7 +778,7 @@ export default function MainMenu() {
       </div>
 
       {/* Community links */}
-      <div className="absolute bottom-3 left-4 flex items-center gap-1">
+      <div className="absolute bottom-[calc(0.75rem+var(--safe-bottom))] left-4 flex items-center gap-1">
         <button
           type="button"
           aria-label={t("menu.openDiscord")}
@@ -799,7 +813,7 @@ export default function MainMenu() {
       </div>
 
       {/* Version */}
-      <div className="absolute bottom-4 right-4 text-gray-400 dark:text-gray-600 text-xs font-heading uppercase tracking-widest transition-colors">
+      <div className="absolute bottom-[calc(1rem+var(--safe-bottom))] right-4 text-gray-400 dark:text-gray-600 text-xs font-heading uppercase tracking-widest transition-colors">
         {formatAppVersion()}
       </div>
 

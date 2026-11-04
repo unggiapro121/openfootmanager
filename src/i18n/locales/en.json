@@ -57,7 +57,9 @@
       "events": "Events",
       "groupTeam": "Team",
       "groupMatches": "Matches",
-      "groupClub": "Club"
+      "groupClub": "Club",
+      "groupMore": "More",
+      "tabs": "Main sections"
     },
     "gate": {
       "clientOutdatedTitle": "Update needed",
@@ -145,7 +147,51 @@
       "coach": "Coach",
       "bot": "AI",
       "previousRound": "Previous round",
-      "nextRound": "Next round"
+      "nextRound": "Next round",
+      "phone": {
+        "summaryLine": "{{clubs}} clubs · {{rounds}} rounds",
+        "rank": "Rank",
+        "points": "Points",
+        "goalDiff": "GD {{gd}}",
+        "nextMatch": "Next match",
+        "roundOf": "Round {{round}}/{{total}}",
+        "tabs": "League pages",
+        "tabTable": "Table",
+        "tabRounds": "Rounds",
+        "tabStats": "Stats",
+        "promotionZone": "Places 1–{{to}} · promotion",
+        "tableMode": "Table view",
+        "compact": "Compact",
+        "full": "Full",
+        "form": "Form",
+        "formTitle": "Last two results",
+        "coachLine": "Coach {{coach}}",
+        "legendCompact": "P: played · GD: goal difference · Pts: points. Pick Full for wins, draws, losses, goals for and against.",
+        "legendFull": "P played · W won · D drawn · L lost · GF goals for · GA goals against · GD goal difference · Pts points. Swipe sideways to see it all.",
+        "pickRound": "Pick a round",
+        "roundDone": "Finished",
+        "roundLive": "Being played",
+        "roundUpcoming": "To play · {{when}}",
+        "roundUnplanned": "Not scheduled yet",
+        "yourMatch": "Your match",
+        "fullTime": "Full time",
+        "void": "Void",
+        "live": "Live",
+        "statsCategories": "Stat categories",
+        "catGoals": "Goals",
+        "catAssists": "Assists",
+        "catCleanSheets": "Clean sheets",
+        "catYellow": "Yellow cards",
+        "catRed": "Red cards",
+        "unitGoals": "goals",
+        "unitAssists": "assists",
+        "unitMatches": "matches",
+        "unitCards": "cards",
+        "leader": "Leader",
+        "tiedWith": "level with {{count}} others",
+        "noData": "No figures for this category yet.",
+        "mineOnly": "Only {{club}} players"
+      }
     },
     "takeover": {
       "title": "Take over a club",
@@ -227,6 +273,57 @@
         "squadLine": "The assistant is picking your eleven.",
         "squadLink": "See Tactics",
         "itemNote": "The pack restores your first-choice eleven. The assistant may rest tired players, so it can differ from the expected eleven."
+      },
+      "phone": {
+        "tabs": "Tactics sections",
+        "tab": {
+          "lineup": "Line-up",
+          "style": "Style",
+          "roles": "Roles",
+          "phase": "Phases"
+        },
+        "tagMine": "Mine",
+        "saveBody": "You changed {{name}}. Save it as a tactic of your own to use it again.",
+        "discard": "Drop changes",
+        "pitch": "Starting eleven, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, condition {{condition}}",
+        "fit": {
+          "exact": "Natural",
+          "adapted": "Adapted",
+          "out": "Out of position"
+        },
+        "wrong": "{{count}} out of position",
+        "hintIdle": "Tap a player on the pitch, then another to swap them, or a bench player to bring him in.",
+        "hintPicked": "{{name}} ({{slot}}) picked: tap another player on the pitch or a bench player below.",
+        "hintAssistant": "The assistant picks the eleven. Turn it off to pick your own.",
+        "hintLocked": "The line-up is locked: view only.",
+        "hintPickFirst": "Tap a player on the pitch first, then a bench player.",
+        "benchFor": "Into the {{slot}} place",
+        "benchTitle": "Bench · {{count}}",
+        "fitFirst": "Best fit first",
+        "benchSub": "Condition · OVR",
+        "all": "All",
+        "bench": "Bench",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Injured",
+        "level": "Level {{level}}",
+        "masteryNote": "· the number is your mastery",
+        "noneChosen": "Not chosen",
+        "score": {
+          "captain": "Leadership {{value}}",
+          "vicecaptain": "Leadership {{value}}",
+          "penalty": "Penalties {{value}}",
+          "freekick": "Free kicks {{value}}",
+          "corner": "Crossing {{value}}"
+        },
+        "rolesNote": "Only starters can take a role.",
+        "rankedBy": {
+          "captain": "By leadership",
+          "vicecaptain": "By leadership",
+          "penalty": "By penalty taking",
+          "freekick": "By free kicks",
+          "corner": "By crossing"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "This player is not in your squad.",
       "state": "Condition",
       "suspended": "Suspended: {{count}} match(es)",
-      "potentialStarsRange": "Potential {{low}} to {{high}} stars"
+      "potentialStarsRange": "Potential {{low}} to {{high}} stars",
+      "phone": {
+        "searchToggle": "Search players",
+        "searchLabel": "Search by name",
+        "searchPlaceholder": "Search by player name",
+        "assistant": "The assistant is picking the eleven",
+        "sort": "Sort",
+        "rotateHint": "Turn your phone sideways for the full table",
+        "hideRotate": "Hide hint",
+        "lens": "What the columns show",
+        "lensForm": "Fitness",
+        "lensFit": "Fit",
+        "lensGrowth": "Growth",
+        "lensStats": "Stats",
+        "list": "Players",
+        "sectionXi": "Starting XI · {{count}}",
+        "sectionBench": "Bench · {{count}}",
+        "rowStarter": "{{name}}, {{position}}, OVR {{ovr}}, starting",
+        "rowBench": "{{name}}, {{position}}, OVR {{ovr}}, on the bench",
+        "sheetLine": "No. {{number}} · age {{age}}",
+        "playsIn": "Plays {{slot}} in {{formation}}",
+        "bestIn": "Best at {{slot}} in {{formation}}",
+        "season": "This season",
+        "seasonLine": "{{apps}} matches · {{goals}} goals",
+        "traitsTitle": "Traits ({{count}})",
+        "noTraits": "No traits yet.",
+        "fullProfile": "Full profile",
+        "toTactics": "Set in Tactics",
+        "actions": "Actions",
+        "actionsTitle": "Actions · {{name}}",
+        "groupTransfer": "Transfer",
+        "groupCustomise": "Customise",
+        "listSub": "Put him on the auction market",
+        "releaseSub": "Let him leave the club now",
+        "shirtSub": "Wearing number {{number}}"
+      }
     },
     "training": {
       "noPlan": "You have not set a training plan yet: the club trains to the plan its AI keeps, shown here. Your first choice saves a plan of your own.",
@@ -294,8 +426,8 @@
           "resting": "Recovery focus: sits out",
           "peaked": "At his potential: sits out",
           "keepAbove": "Stopped to keep his condition",
-          "focusMaxed": "Their focus has nothing left that raises their OVR in this position",
-          "other": "Sits out"
+          "other": "Sits out",
+          "focusMaxed": "Their focus has nothing left that raises their OVR in this position"
         },
         "intensity": "Intensity",
         "intensityCost": "{{intensity}} (−{{cost}} condition)",
@@ -349,6 +481,7 @@
         "rest": "Today is a rest day on the schedule: no main session.",
         "keeperDrill": "Goalkeepers always train an extra drill of their own: Handling, Reflexes, Aerial."
       },
+      "keeperBadge": "Keeper drill",
       "groups": {
         "all": "All ({{count}})",
         "focusOf": "Focus of group {{name}}",
@@ -357,6 +490,28 @@
         "inherited": "{{focus}} (inherited)",
         "inheritedTag": "inherited",
         "empty": "No players in this group yet."
+      },
+      "phone": {
+        "tab": {
+          "today": "Today",
+          "sched": "Schedule",
+          "focus": "Focus",
+          "groups": "Groups ({{count}})"
+        },
+        "sessionsIn7": "sessions in 7 days",
+        "planInUse": "Schedule days in use",
+        "howItWorks": "How it works",
+        "lastResult": "Last press: {{held}} sessions held",
+        "listReady": "Can train ({{count}})",
+        "listRest": "Rest this time ({{count}})",
+        "noneReady": "Nobody can train now. Let the squad rest.",
+        "noneResting": "The whole squad can train this time.",
+        "resultTitle": "Extra training result",
+        "groupOf": "Group {{name}}",
+        "groupFocus": "Group focus",
+        "players": "Players",
+        "mainAuto": "The team trains on its schedule when the day turns ({{time}}). Tap a tile to change it.",
+        "mainAutoNoTime": "The team trains on its schedule when the day turns. Tap a tile to change it."
       },
       "focusHint": {
         "best": "Best focus",
@@ -376,7 +531,9 @@
         "W": "W",
         "D": "D",
         "L": "L"
-      }
+      },
+      "filterLabel": "Show fixtures",
+      "dayCount": "Matches: {{count}}"
     },
     "publicClub": {
       "formation": "Formation: {{formation}}",
@@ -424,7 +581,8 @@
       "licenceNext": "Opens at coach level {{level}}",
       "boosterHeld": "{{item}} ×{{count}} in your inventory",
       "boosterHint": "Level up faster in your next online matches",
-      "activate": "Activate"
+      "activate": "Activate",
+      "shortcuts": "Shortcuts"
     },
     "match": {
       "byCoach": "{{team}}: coach in charge",
@@ -475,7 +633,71 @@
       "rolePlayer": "Player",
       "roleChoice": "Role",
       "changeRole": "Change role",
-      "orderRefused": "The match did not take that order: {{reason}}"
+      "orderRefused": "The match did not take that order: {{reason}}",
+      "phoneSubs": {
+        "usedAria": "{{used}} of {{max}} substitutions used, {{queued}} waiting",
+        "queuedShort": "{{count}} waiting",
+        "hintIdle": "Tap a player on the pitch to take him off, or a bench player first. Drag a player onto another to swap their places.",
+        "hintSwap": "Tap another player on the pitch to swap places with {{name}}.",
+        "hintQueued": "{{name}} already has a replacement. Remove it under To confirm to change it.",
+        "hintPickBench": "Pick a bench player to replace {{name}}.",
+        "hintPickField": "Tap a player on the pitch for {{name}} to replace.",
+        "cancelSwap": "Cancel swap",
+        "pitch": "Line-up on the pitch",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, condition {{condition}}",
+        "tokenReplaced": "{{name}}, {{slot}}, OVR {{ovr}}, condition {{condition}}, to be replaced by {{on}}",
+        "tokenSentOff": "{{name}}, {{slot}}, sent off",
+        "planTitle": "Suggestion: {{scenario}}",
+        "planSub": "{{style}} plan · {{count}} changes",
+        "planAdd": "Add: {{off}} off, {{on}} on",
+        "planAdded": "Added: {{off}} off, {{on}} on",
+        "planApply": "Apply all {{count}} changes",
+        "planAllAdded": "Whole plan added",
+        "queuedTitle": "To confirm ({{count}})",
+        "queuedRemove": "Drop {{on}} for {{off}}",
+        "bench": "Bench ({{count}})",
+        "benchSub": "OVR · Condition",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}}, condition {{condition}}",
+        "comesOnFor": "On for {{name}}",
+        "fitNatural": "Natural position",
+        "fitAdapted": "Can play there",
+        "fitUnfamiliar": "Out of position",
+        "sheetCondition": "Condition {{condition}}",
+        "sheetBooked": "booked",
+        "swap": "Swap places",
+        "sheetQueued": "A replacement is already set. Remove it under To confirm to pick again.",
+        "sheetBenchSub": "Best fit first",
+        "confirm": "Confirm {{count}} substitutions",
+        "swapped": "Swapped {{a}} ↔ {{b}}.",
+        "swapWaiting": "Swap sent, waiting for the match to make it.",
+        "roleSet": "{{name}}: role {{role}}.",
+        "sent": "Sent {{count}} substitutions. {{left}} left."
+      },
+      "phone": {
+        "title": "Live match",
+        "leave": "Leave the match",
+        "youCoach": "You are coaching",
+        "aiCoaches": "The AI is coaching",
+        "ordersFrom": "Orders count from minute {{minute}}' (the real match)",
+        "dock": "Team controls",
+        "subs": "Subs",
+        "formation": "Shape",
+        "style": "Style",
+        "roles": "Roles",
+        "captainShort": "Capt: {{name}}",
+        "setPieces": "Set pieces",
+        "rolesTitle": "Roles & set pieces",
+        "inUse": "In use: {{formation}}",
+        "effectiveFrom": "The order takes effect from minute {{minute}}' of the real match.",
+        "pickOther": "Pick another shape",
+        "sendFormation": "Send: {{formation}}",
+        "tapToSend": "Tap to send at once. It takes effect from minute {{minute}}'.",
+        "nobody": "— Nobody yet",
+        "takerSends": "Changing a taker sends the order at once.",
+        "ordersTitle": "Orders sent ({{count}})",
+        "noOrders": "No order sent yet",
+        "sentToast": "Order sent: {{order}}"
+      }
     },
     "replay": {
       "title": "Replay",
@@ -674,6 +896,34 @@
         "academyEffect": "Each level adds room for youngsters."
       },
       "academyWages": "Academy wages: {{amount}} a week",
+      "phone": {
+        "balance": "Club balance",
+        "heldLine": "Held for bids: {{amount}}",
+        "seasonNet": "Season profit/loss",
+        "tab": {
+          "over": "Overview",
+          "fac": "Facilities",
+          "led": "Ledger"
+        },
+        "wageWarning": "Wages are {{times}} times the ticket money. Consider releasing high-earning reserves or upgrading to earn more.",
+        "perWeek": "Per week",
+        "perDay": "Per season day",
+        "weekly": "{{amount}}/week",
+        "level": "Level",
+        "levelOf": "Level {{level}} of {{max}}",
+        "short": "Next level {{cost}} · not enough cash",
+        "upTitle": "Upgrade {{facility}} to level {{level}}?",
+        "cost": "Cost",
+        "cashAfter": "Cash after the upgrade",
+        "later": "Later",
+        "upConfirm": "Upgrade",
+        "flow": "Kind of transaction",
+        "filter": {
+          "all": "All",
+          "in": "In",
+          "out": "Out"
+        }
+      },
       "contract": {
         "title": "This season's contracts",
         "level": "Level {{level}}",
@@ -809,6 +1059,49 @@
         "badge": "Level {{level}}",
         "explain": "Two caps limit what a coach may buy at each level: one player's OVR, and the squad's buying strength. Buying a player who does not enter your top 18 is always allowed.",
         "roadmap": "See the level road"
+      },
+      "phone": {
+        "list": "Auctions",
+        "ended": "Ended",
+        "outbid": "Outbid",
+        "age": "{{age}} yrs",
+        "startPrice": "Starting price",
+        "currentPrice": "Current price",
+        "bidCount": "{{count}} bids",
+        "all": "All",
+        "reset": "Reset",
+        "upTo": "≤ {{price}}",
+        "sortBy": "Sort by",
+        "sort": {
+          "end": "Ending soon",
+          "low": "Lowest price",
+          "ovr": "Highest OVR",
+          "pot": "Potential"
+        },
+        "apply": "Apply",
+        "budget": "Budget",
+        "allPositions": "All",
+        "count": "{{count}} players · {{sort}}",
+        "urgent": "under 2 min",
+        "detailTabs": "Auction details",
+        "tabAuction": "Auction",
+        "tabStats": "Attributes",
+        "someoneBid": "Has bids",
+        "range": "Price {{price}}, between the start of {{start}} and the cap of {{cap}}; valuation {{value}}",
+        "start": "Start {{price}}",
+        "valuation": "Valuation {{price}}",
+        "cap": "Cap {{price}}",
+        "step": "Price step",
+        "bidBar": "Bid",
+        "nextWhileLeading": "You lead · next bid",
+        "leastBid": "Lowest bid now",
+        "locked": "Locked",
+        "raise": "Raise bid",
+        "bidTitle": "Bid · {{name}}",
+        "stepDown": "One step lower",
+        "stepUp": "One step higher",
+        "afterWin": "Budget after a win",
+        "place": "Bid {{amount}}"
       }
     },
     "rename": {
@@ -854,7 +1147,30 @@
       "releaseSeverance": "Severance",
       "releaseCash": "Club cash",
       "releaseSquad": "Players left (minimum {{min}})",
-      "releaseConfirm": "Release player"
+      "releaseConfirm": "Release player",
+      "phone": {
+        "manage": "Manage player",
+        "shirt": "Shirt number {{number}}",
+        "age": "{{age}} yrs",
+        "tabs": "Player information",
+        "tab": {
+          "stats": "Attributes",
+          "traits": "Traits",
+          "season": "Season"
+        },
+        "tapGroups": "Tap a group to open or close it",
+        "view": "View",
+        "apps": "Matches",
+        "avgRating": "Avg. rating",
+        "goals": "Goals",
+        "assists": "Assists",
+        "full": "Condition is full",
+        "boost": "Recover condition · {{count}} items",
+        "boostTitle": "Recover condition",
+        "now": "Now {{value}}%",
+        "held": "{{count}} held",
+        "shop": "Buy more in the Shop ›"
+      }
     },
     "inbox": {
       "sender": "Club office",
@@ -1027,7 +1343,46 @@
       },
       "viewNewAuction": "View the new auction",
       "viewCaps": "See your level caps",
-      "reasonLine": "Reason: {{reason}}"
+      "reasonLine": "Reason: {{reason}}",
+      "phone": {
+        "list": "Messages",
+        "counts": "{{unread}} unread · {{total}} messages",
+        "actions": "Inbox actions",
+        "filters": "Filters",
+        "quickFilters": "Quick filters",
+        "unreadChip": "Unread",
+        "activeCount": "Showing {{count}} messages",
+        "clearFilters": "Clear filters",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "row": "{{subject}}, {{time}}",
+        "unreadRow": "Unread: {{subject}}, {{time}}",
+        "more": "Show more ({{count}})",
+        "position": "{{n}} / {{total}}",
+        "newer": "Newer message",
+        "older": "Older message",
+        "delete": "Delete message",
+        "deleted": "Deleted {{count}} messages.",
+        "undo": "Undo",
+        "markedRead": "Marked {{count}} messages read.",
+        "selected": "{{count}} chosen",
+        "selectAll": "Choose all",
+        "unselectAll": "Choose none",
+        "markSelectedRead": "Mark chosen read",
+        "deleteSelected": "Delete chosen",
+        "exitSelect": "Stop choosing",
+        "filterTitle": "Filter messages",
+        "reset": "Reset",
+        "unreadOnly": "Unread only",
+        "kinds": "Kinds",
+        "showCount": "Show {{count}} messages",
+        "selectMany": "Choose several",
+        "selectManySub": "Mark read or delete several at once",
+        "readAll": "Mark all read",
+        "readAllSub": "{{count}} unread",
+        "deleteRead": "Delete read messages",
+        "deleteReadSub": "{{count}} read messages"
+      }
     },
     "coins": {
       "notOnServer": "Coins are not open on this server yet.",
@@ -1350,13 +1705,6 @@
         "scoutExpedition": "a scout ticket",
         "scoutExpeditionElite": "an elite scout ticket"
       },
-      "line": {
-        "label": "Line",
-        "Any": "Any"
-      },
-      "lineShares": {
-        "title": "Positions this line finds"
-      },
       "reveal": {
         "0": "Just arrived",
         "1": "Watched",
@@ -1441,6 +1789,13 @@
         "wagesNote": "{{wage}} × {{n}} youngsters",
         "fee": "Graduation fee",
         "feeNote": "Per youngster · at least {{days}} days in the academy"
+      },
+      "line": {
+        "label": "Line",
+        "Any": "Any"
+      },
+      "lineShares": {
+        "title": "Positions this line finds"
       }
     },
     "events": {
@@ -6796,5 +7151,8 @@
     "anyRegion": "Any region",
     "anyCountry": "Any country",
     "clear": "Clear filters"
+  },
+  "mobile": {
+    "pressBackAgain": "Press Back again to exit"
   }
 }

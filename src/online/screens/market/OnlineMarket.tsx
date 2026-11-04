@@ -16,49 +16,28 @@ import {
 import { countryName } from "../../../lib/countries";
 import { positionBadgeVariant } from "../../../lib/playerRating";
 import { formatVal, formatWeeklyAmount } from "../../../lib/valueFormatting";
-import type { AuctionView, MarketQuery, MyMarketView } from "../../api";
-import { online } from "../../client";
-import type { OnlineApiError } from "../../errors";
-import { refreshMarket, tracked, useOnlineStore } from "../../store/onlineStore";
+import type { AuctionView, MyMarketView } from "../../api";
+import { refreshMarket, useOnlineStore } from "../../store/onlineStore";
 import PotentialStars from "../PotentialStars";
 import { avatarOf } from "../squad/playerLook";
 import TabButton from "../TabButton";
-import { SPECIFIC_POSITIONS_BY_GROUP } from "../../../components/playerFilters/playerFilters";
-import MarketFilterPanel, { BIDDABLE, NUMBER_FILTERS, POSITION_GROUPS } from "./MarketFilterPanel";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import PhoneMarket from "./phone/PhoneMarket";
+import MarketFilterPanel from "./MarketFilterPanel";
 import { marketErrorText } from "./marketText";
 import { fromMarket } from "./marketReturn";
 import { useServerCountdown, useServerOffset } from "./useServerCountdown";
-
-/** The open auctions are read again this often while the page is open (C5-6). */
-const MARKET_RELOAD_MILLIS = 30_000;
-const MARKET_CLOSED = "be.error.auction.marketClosed";
-/** The address parameter of the name search. */
-const NAME_SEARCH = "q";
-
-/** The filters in the address, as the server's query (C5-6): kept there so going back keeps them. */
-function queryOf(params: URLSearchParams): MarketQuery {
-  const query: MarketQuery = {};
-  const position = params.get("position");
-  if (position && (POSITION_GROUPS as readonly string[]).includes(position)) {
-    query.position = position;
-  }
-  const natural = params.get("naturalPosition");
-  if (natural && Object.values(SPECIFIC_POSITIONS_BY_GROUP).some((one) => one.includes(natural))) {
-    query.naturalPosition = natural;
-  }
-  for (const name of NUMBER_FILTERS) {
-    const value = Number(params.get(name));
-    if (params.get(name) && Number.isInteger(value) && value >= 0) query[name] = value;
-  }
-  if (params.get(BIDDABLE) === "true") query.biddable = true;
-  return query;
-}
+import { byName, useMarketParams, useOpenAuctions } from "./useOpenAuctions";
 
 /**
  * The auction market (C-5 §3.5, C5-6): the open auctions, filtered by the server and read a page at
  * a time, and the club's own listings, bids and recent results. Opening it clears the sidebar's dot.
  */
 export default function OnlineMarket() {
+  return usePhoneLayout() ? <PhoneMarket /> : <DesktopMarket />;
+}
+
+function DesktopMarket() {
   const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
   const tab = params.get("tab") === "mine" ? "mine" : "open";
@@ -103,92 +82,16 @@ export default function OnlineMarket() {
   );
 }
 
-type OpenState =
-  | { status: "loading" }
-  | { status: "closed" }
-  | { status: "failed"; error: unknown }
-  | { status: "ready"; items: AuctionView[]; cursor?: string };
-
 /** The open auctions: read again when the filters change, on a market ring, and every 30 s. */
 function OpenAuctions({ ring }: { ring: number }) {
   const { t, i18n } = useTranslation();
-  const [params, setParams] = useSearchParams();
-  const queryKey = new URLSearchParams(
-    Object.entries(queryOf(params)).map(([name, value]) => [name, String(value)]),
-  ).toString();
-  const [state, setState] = useState<OpenState>({ status: "loading" });
-  const [moreError, setMoreError] = useState<unknown>(null);
-  // The name search is the loaded page's own, in the address with the server's filters so going
-  // back to the market keeps it; `queryOf` never sends it.
-  const search = params.get(NAME_SEARCH) ?? "";
-  const loaded = state.status === "ready" ? state.items : null;
-  const shown = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-    if (!loaded) return [];
-    if (needle === "") return loaded;
-    return loaded.filter((auction) => auction.player?.fullName.toLowerCase().includes(needle));
-  }, [loaded, search]);
+  const { params, queryKey, search, setSearch, setFilter, clearFilters } = useMarketParams();
+  const { state, load, more, moreError } = useOpenAuctions(queryKey, ring);
+  const shown = useMemo(
+    () => byName(state.status === "ready" ? state.items : [], search),
+    [state, search],
+  );
   const count = shown.length;
-
-  const load = useCallback(() => {
-    const query = Object.fromEntries(new URLSearchParams(queryKey)) as Record<string, string>;
-    tracked(() => online.market.auctions(query as MarketQuery))
-      .then((page) => setState({ status: "ready", items: page.items, cursor: page.nextCursor }))
-      .catch((error: OnlineApiError) =>
-        setState(error.code === MARKET_CLOSED ? { status: "closed" } : { status: "failed", error }),
-      );
-  }, [queryKey]);
-
-  useEffect(() => {
-    setState({ status: "loading" });
-    load();
-  }, [load]);
-  useEffect(() => {
-    if (ring > 0) load();
-  }, [ring, load]);
-  useEffect(() => {
-    const timer = window.setInterval(load, MARKET_RELOAD_MILLIS);
-    return () => window.clearInterval(timer);
-  }, [load]);
-
-  const more = (cursor: string) => {
-    setMoreError(null);
-    const query = Object.fromEntries(new URLSearchParams(queryKey)) as MarketQuery;
-    tracked(() => online.market.auctions({ ...query, cursor }))
-      .then((page) =>
-        setState((current) =>
-          current.status === "ready"
-            ? { status: "ready", items: [...current.items, ...page.items], cursor: page.nextCursor }
-            : current,
-        ),
-      )
-      .catch(setMoreError);
-  };
-
-  const setFilter = (patch: Record<string, string>) =>
-    setParams(
-      (current) => {
-        const copy = new URLSearchParams(current);
-        for (const [name, value] of Object.entries(patch)) {
-          if (value === "") copy.delete(name);
-          else copy.set(name, value);
-        }
-        return copy;
-      },
-      { replace: true },
-    );
-
-  const clearFilters = () =>
-    setParams(
-      (current) => {
-        const copy = new URLSearchParams(current);
-        for (const name of [...NUMBER_FILTERS, "position", "naturalPosition", BIDDABLE]) {
-          copy.delete(name);
-        }
-        return copy;
-      },
-      { replace: true },
-    );
 
   return (
     <div className="space-y-4">
@@ -197,7 +100,7 @@ function OpenAuctions({ ring }: { ring: number }) {
         onChange={setFilter}
         onClear={clearFilters}
         count={count}
-        onSearch={(value) => setFilter({ [NAME_SEARCH]: value })}
+        onSearch={setSearch}
         search={search}
       />
       {state.status === "loading" && (
@@ -585,7 +488,7 @@ export function PriceText({ auction }: { auction: AuctionView }) {
 }
 
 /** Where the club stands in an auction of its own market (C5-6). */
-function standing(auction: AuctionView, clubId: string | undefined): string {
+export function standing(auction: AuctionView, clubId: string | undefined): string {
   if (auction.status === "active") {
     if (auction.sellerClubId === clubId) return "selling";
     return auction.leaderClubId === clubId ? "leading" : "holdingCap";

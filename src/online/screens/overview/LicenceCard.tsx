@@ -35,7 +35,7 @@ export default function LicenceCard({
         </span>
       }
     >
-      <div className="flex flex-1 flex-col gap-5 p-6">
+      <div className="flex flex-1 flex-col gap-5 p-6 max-md:gap-3 max-md:p-4">
         <ol
           aria-label={t("online.overview.licenceRoad")}
           className="flex flex-wrap items-center gap-3"

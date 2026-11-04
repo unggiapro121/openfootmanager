@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import StandingsTable from "../../components/tournaments/StandingsTable";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { Button, Card, CardBody, CardHeader } from "../../components/ui";
 import type { LeagueView } from "../api";
 import { online } from "../client";
@@ -11,21 +12,26 @@ import { currentRound, LEAGUE_ROUNDS } from "../fixtures";
 import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import FixtureLine from "./FixtureLine";
+import PhoneLeague from "./league/PhoneLeague";
 import { LeagueLeaders } from "./LeagueLeaders";
 import ResourceState from "./ResourceState";
 
 /** Fixtures of a whole league season: 26 rounds of seven. */
 const SEASON_FIXTURES = 182;
 
-/** The coach's league (C-2 §3.5): its table, then its fixtures round by round. */
+/**
+ * The coach's league (C-2 §3.5): its table, then its fixtures round by round. On a phone, the
+ * phone's own page (PhoneLeague).
+ */
 export default function OnlineLeague() {
   const { t } = useTranslation();
   const league = useOnlineStore((state) => state.league);
+  const phone = usePhoneLayout();
   if (league === undefined) return null;
   if (league === null) {
     return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.league.none")}</p>;
   }
-  return <LeaguePage league={league} />;
+  return phone ? <PhoneLeague league={league} /> : <LeaguePage league={league} />;
 }
 
 function LeaguePage({ league }: { league: LeagueView }) {

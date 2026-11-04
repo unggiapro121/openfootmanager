@@ -8,6 +8,8 @@ import { tracked, useOnlineStore } from "../store/onlineStore";
 import { useOnlineResource } from "../useOnlineResource";
 import { formatMoment } from "../format";
 import ResourceState from "./ResourceState";
+import PhoneSchedule from "./schedule/PhoneSchedule";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 
 const OUTCOME_CLASS: Record<"W" | "D" | "L", string> = {
   W: "bg-green-500",
@@ -24,11 +26,12 @@ export default function OnlineSchedule() {
   const club = useOnlineStore((state) => state.club);
   const leagueId = club?.leagueId;
   const clubId = club?.club.id ?? null;
+  const phone = usePhoneLayout();
 
   if (!leagueId || !clubId) {
     return <p className="text-sm text-gray-600 dark:text-gray-300">{t("online.league.none")}</p>;
   }
-  return <SeasonList clubId={clubId} />;
+  return phone ? <PhoneSchedule clubId={clubId} /> : <SeasonList clubId={clubId} />;
 }
 
 function SeasonList({ clubId }: { clubId: string }) {

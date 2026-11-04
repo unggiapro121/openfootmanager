@@ -7,13 +7,14 @@ import type { MineView, SentCommand } from "../../api";
 import type { MatchCommand, PlayStyle } from "../../api/engine";
 import { openInMatch } from "../../convert/licence";
 import type { OnlineMatchState } from "../../convert/matchState";
+import { withCurrent } from "./matchOptions";
 import { OnlineSubPanel } from "./OnlineSubPanel";
 import { SECTION_HEADING, SideOwnOrders } from "./SideOwnOrders";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
 /** A command as the coach reads it in the list of what they sent. */
-function describeCommand(
+export function describeCommand(
   command: MatchCommand,
   nameOf: (id: string) => string,
   t: Translate,
@@ -64,6 +65,11 @@ function describeCommand(
   return t("online.match.order.other");
 }
 
+/** What became of an order: the match's word on it once decided, else what the server said. */
+export function sentStatus(line: SentCommand, outcome: string | undefined): string {
+  return line.status === "pending" && outcome ? outcome : line.status;
+}
+
 function SentLine({
   line,
   outcome,
@@ -74,7 +80,7 @@ function SentLine({
   nameOf: (id: string) => string;
 }) {
   const { t } = useTranslation();
-  const status = line.status === "pending" && outcome ? outcome : line.status;
+  const status = sentStatus(line, outcome);
   const text =
     status === "applied"
       ? t("online.match.sent.applied")
@@ -139,7 +145,7 @@ const CHIP_OFF =
   "bg-gray-100 text-gray-600 hover:text-gray-900 dark:bg-navy-700 dark:text-gray-400 dark:hover:text-gray-300";
 
 /** The play styles the side may set, each with the icon the game's own match screen gives it. */
-const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
+export const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
   Balanced: <Target className="h-3 w-3" />,
   Attacking: <Zap className="h-3 w-3" />,
   Defensive: <Shield className="h-3 w-3" />,
@@ -147,11 +153,6 @@ const STYLE_ICONS: Record<PlayStyle, ReactNode> = {
   Counter: <Crosshair className="h-3 w-3" />,
   HighPress: <Flag className="h-3 w-3" />,
 };
-
-/** The open options, and the side's current one even when closed, so it shows as the chosen. */
-function withCurrent<T extends string>(open: T[], current: string): T[] {
-  return open.includes(current as T) ? open : [current as T, ...open];
-}
 
 /**
  * The team controls of the game's own match screen: the substitutions panel, and the formation and
@@ -167,10 +168,13 @@ function TeamControls({
   onSend,
   initialOff,
   send,
+  sent,
 }: {
   state: OnlineMatchState;
   mine: MineView;
   disabled: boolean;
+  /** The orders sent this match: a substitution still waiting keeps its players spoken for. */
+  sent: SentCommand[];
   open: boolean;
   onOpen: (open: boolean) => void;
   onSend: (command: MatchCommand) => Promise<void>;
@@ -240,6 +244,9 @@ function TeamControls({
           state={state}
           mine={mine}
           onSend={onSend}
+          sent={sent}
+          formations={formations}
+          playStyles={styles}
           initialOff={initialOff}
           onClose={() => onOpen(false)}
         />
@@ -320,6 +327,7 @@ export function MatchCommandPanel({
         onSend={onSend}
         initialOff={initialOff}
         send={send}
+        sent={sent}
       />
       <SideOwnOrders
         mine={mine}

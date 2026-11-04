@@ -27,14 +27,21 @@ function Step({
   title,
   children,
 }: {
-  n: number;
+  /** The step's place in the panel; a page that orders them its own way leaves it out. */
+  n?: number;
   title: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <fieldset className="flex min-w-0 flex-col gap-2">
       <legend className={`${STEP_TITLE} mb-2`}>
-        {n} · {title}
+        {n === undefined ? (
+          title
+        ) : (
+          <>
+            {n} · {title}
+          </>
+        )}
       </legend>
       {children}
     </fieldset>
@@ -171,7 +178,9 @@ export function IntensityChooser({
   costs,
   disabled,
   onChange,
+  numbered = true,
 }: {
+  numbered?: boolean;
   value: string;
   costs: ExtraDayView["costs"];
   disabled: boolean;
@@ -179,7 +188,7 @@ export function IntensityChooser({
 }) {
   const { t } = useTranslation();
   return (
-    <Step n={2} title={t("online.training.extra.intensity")}>
+    <Step n={numbered ? 2 : undefined} title={t("online.training.extra.intensity")}>
       <div
         role="radiogroup"
         aria-label={t("online.training.extra.intensity")}
@@ -234,7 +243,9 @@ export function SessionsChooser({
   matchToday,
   disabled,
   onChange,
+  numbered = true,
 }: {
+  numbered?: boolean;
   choice: ExtraChoice;
   floor: number;
   matchToday: boolean;
@@ -248,7 +259,7 @@ export function SessionsChooser({
   const keep = (next: number) =>
     onChange({ ...choice, keepAbove: Math.min(100, Math.max(floor, Math.round(next))) });
   return (
-    <Step n={3} title={t("online.training.extra.sessions")}>
+    <Step n={numbered ? 3 : undefined} title={t("online.training.extra.sessions")}>
       <div
         role="radiogroup"
         aria-label={t("online.training.extra.sessions")}

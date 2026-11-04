@@ -31,7 +31,11 @@
     "worldEditor.staffId",
     "match.masteryGain",
     "manager.masteryXp",
-    "online.inventory.styleXp"
+    "online.inventory.styleXp",
+    "online.inbox.phone.row",
+    "online.inbox.phone.position",
+    "online.market.phone.upTo",
+    "online.tactics.phone.benchRow"
   ],
   "de": [
     "online.coins.toShop",

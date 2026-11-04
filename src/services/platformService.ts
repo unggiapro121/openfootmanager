@@ -1,3 +1,4 @@
+import { onBackButtonPress } from "@tauri-apps/api/app";
 import { convertFileSrc, isTauri } from "@tauri-apps/api/core";
 import { type EventCallback, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { appDataDir } from "@tauri-apps/api/path";
@@ -54,4 +55,16 @@ export async function onWindowCloseRequested(
 /** Close the app's window at once, without a close-requested event. */
 export async function destroyWindow(): Promise<void> {
   return getCurrentWindow().destroy();
+}
+
+/**
+ * Run `handler` each time the phone's Back is pressed (the Android app, phase 5); while anyone
+ * listens, Back no longer closes the app by itself. Resolves to the function that stops
+ * listening, after which Back does the platform's default again.
+ */
+export async function onPhoneBackButton(handler: () => void): Promise<() => void> {
+  const listener = await onBackButtonPress(() => handler());
+  return () => {
+    void listener.unregister();
+  };
 }

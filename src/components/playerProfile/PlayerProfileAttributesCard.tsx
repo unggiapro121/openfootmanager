@@ -57,7 +57,8 @@ export default function PlayerProfileAttributesCard({
   listLabel,
   radarLabel,
 }: PlayerProfileAttributesCardProps) {
-  const [view, setView] = useState<"list" | "radar">("list");
+  // The radar reads a player's shape at a glance; the list stays one tap away.
+  const [view, setView] = useState<"list" | "radar">("radar");
 
   return (
     <Card className="lg:col-span-2">

@@ -57,7 +57,9 @@
       "events": "Sự kiện",
       "groupTeam": "Đội bóng",
       "groupMatches": "Thi đấu",
-      "groupClub": "Câu lạc bộ"
+      "groupClub": "Câu lạc bộ",
+      "groupMore": "Thêm",
+      "tabs": "Các mục chính"
     },
     "gate": {
       "clientOutdatedTitle": "Cần cập nhật game",
@@ -145,7 +147,51 @@
       "coach": "HLV",
       "bot": "AI",
       "previousRound": "Vòng trước",
-      "nextRound": "Vòng sau"
+      "nextRound": "Vòng sau",
+      "phone": {
+        "summaryLine": "{{clubs}} đội · {{rounds}} vòng",
+        "rank": "Hạng",
+        "points": "Điểm",
+        "goalDiff": "HS {{gd}}",
+        "nextMatch": "Trận kế",
+        "roundOf": "Vòng {{round}}/{{total}}",
+        "tabs": "Nội dung giải đấu",
+        "tabTable": "Xếp hạng",
+        "tabRounds": "Lịch vòng",
+        "tabStats": "Thống kê",
+        "promotionZone": "Hạng 1–{{to}} · thăng hạng",
+        "tableMode": "Kiểu bảng",
+        "compact": "Gọn",
+        "full": "Đầy đủ",
+        "form": "P.độ",
+        "formTitle": "Phong độ 2 trận gần nhất",
+        "coachLine": "HLV {{coach}}",
+        "legendCompact": "Tr: số trận · HS: hiệu số · Đ: điểm. Chọn \"Đầy đủ\" để xem Thắng, Hòa, Thua, Bàn thắng, Bàn bại.",
+        "legendFull": "Tr trận · T thắng · H hòa · B thua · BT bàn thắng · BB bàn bại · HS hiệu số · Đ điểm. Vuốt ngang để xem hết.",
+        "pickRound": "Chọn vòng",
+        "roundDone": "Đã kết thúc",
+        "roundLive": "Đang đá",
+        "roundUpcoming": "Sắp đá · {{when}}",
+        "roundUnplanned": "Chưa xếp lịch",
+        "yourMatch": "Trận của bạn",
+        "fullTime": "Hết giờ",
+        "void": "Hủy",
+        "live": "Đang đá",
+        "statsCategories": "Hạng mục thống kê",
+        "catGoals": "Phá lưới",
+        "catAssists": "Kiến tạo",
+        "catCleanSheets": "Sạch lưới",
+        "catYellow": "Thẻ vàng",
+        "catRed": "Thẻ đỏ",
+        "unitGoals": "bàn",
+        "unitAssists": "kiến tạo",
+        "unitMatches": "trận",
+        "unitCards": "thẻ",
+        "leader": "Dẫn đầu",
+        "tiedWith": "đồng hạng với {{count}} người",
+        "noData": "Chưa có dữ liệu cho hạng mục này.",
+        "mineOnly": "Chỉ cầu thủ {{club}}"
+      }
     },
     "takeover": {
       "title": "Nhận CLB",
@@ -227,6 +273,57 @@
         "squadLine": "Trợ lý đang chọn đội hình.",
         "squadLink": "Xem ở Chiến thuật",
         "itemNote": "Vật phẩm hồi cho đội chính. Trợ lý có thể cho người mệt nghỉ, nên đội chính có thể khác đội dự kiến."
+      },
+      "phone": {
+        "tabs": "Các mục chiến thuật",
+        "tab": {
+          "lineup": "Đội hình",
+          "style": "Lối chơi",
+          "roles": "Vai trò",
+          "phase": "Giai đoạn"
+        },
+        "tagMine": "Của tôi",
+        "saveBody": "Bạn đã sửa {{name}}. Lưu thành chiến thuật riêng để dùng lại.",
+        "discard": "Bỏ thay đổi",
+        "pitch": "Đội hình xuất phát {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, thể lực {{condition}}",
+        "fit": {
+          "exact": "Sở trường",
+          "adapted": "Thích nghi",
+          "out": "Sai vị trí"
+        },
+        "wrong": "{{count}} sai vị trí",
+        "hintIdle": "Chạm một cầu thủ trên sân, rồi chạm cầu thủ khác để đổi chỗ hoặc chọn người dự bị.",
+        "hintPicked": "Đã chọn {{name}} ({{slot}}): chạm cầu thủ khác trên sân hoặc người dự bị bên dưới.",
+        "hintAssistant": "Trợ lý đang chọn 11 người. Tắt trợ lý để tự xếp.",
+        "hintLocked": "Đội hình đang khoá, chỉ xem.",
+        "hintPickFirst": "Chạm một cầu thủ trên sân trước, rồi chọn người dự bị.",
+        "benchFor": "Thay vào vị trí {{slot}}",
+        "benchTitle": "Dự bị · {{count}}",
+        "fitFirst": "Hợp vị trí trước",
+        "benchSub": "Thể lực · OVR",
+        "all": "Tất cả",
+        "bench": "Dự bị",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Chấn thương",
+        "level": "Cấp {{level}}",
+        "masteryNote": "· số là độ thành thạo",
+        "noneChosen": "— Chưa chọn",
+        "score": {
+          "captain": "Lãnh đạo {{value}}",
+          "vicecaptain": "Lãnh đạo {{value}}",
+          "penalty": "Sút phạt đền {{value}}",
+          "freekick": "Đá phạt {{value}}",
+          "corner": "Tạt bóng {{value}}"
+        },
+        "rolesNote": "Chỉ chọn được cầu thủ đang đá chính.",
+        "rankedBy": {
+          "captain": "Xếp theo lãnh đạo",
+          "vicecaptain": "Xếp theo lãnh đạo",
+          "penalty": "Xếp theo sút phạt đền",
+          "freekick": "Xếp theo đá phạt",
+          "corner": "Xếp theo tạt bóng"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "Cầu thủ này không có trong đội hình của bạn.",
       "state": "Thể trạng",
       "suspended": "Bị treo giò: {{count}} trận",
-      "potentialStarsRange": "Tiềm năng {{low}} đến {{high}} sao"
+      "potentialStarsRange": "Tiềm năng {{low}} đến {{high}} sao",
+      "phone": {
+        "searchToggle": "Tìm cầu thủ",
+        "searchLabel": "Tìm theo tên",
+        "searchPlaceholder": "Tìm theo tên cầu thủ",
+        "assistant": "Trợ lý đang chọn đội hình",
+        "sort": "Sắp xếp",
+        "rotateHint": "Xoay ngang để xem bảng đủ cột",
+        "hideRotate": "Ẩn gợi ý",
+        "lens": "Chỉ số hiển thị",
+        "lensForm": "Thể trạng",
+        "lensFit": "Phù hợp",
+        "lensGrowth": "Phát triển",
+        "lensStats": "Thống kê",
+        "list": "Cầu thủ",
+        "sectionXi": "Đá chính · {{count}}",
+        "sectionBench": "Dự bị · {{count}}",
+        "rowStarter": "{{name}}, {{position}}, OVR {{ovr}}, đá chính",
+        "rowBench": "{{name}}, {{position}}, OVR {{ovr}}, dự bị",
+        "sheetLine": "Số {{number}} · {{age}} tuổi",
+        "playsIn": "Đá {{slot}} trong {{formation}}",
+        "bestIn": "Hợp nhất ở {{slot}} trong {{formation}}",
+        "season": "Mùa này",
+        "seasonLine": "{{apps}} trận · {{goals}} bàn",
+        "traitsTitle": "Đặc điểm ({{count}})",
+        "noTraits": "Chưa có đặc điểm.",
+        "fullProfile": "Hồ sơ đầy đủ",
+        "toTactics": "Xếp ở Chiến thuật",
+        "actions": "Thao tác",
+        "actionsTitle": "Thao tác · {{name}}",
+        "groupTransfer": "Chuyển nhượng",
+        "groupCustomise": "Tuỳ chỉnh",
+        "listSub": "Đưa lên Chợ đấu giá",
+        "releaseSub": "Cho rời CLB ngay",
+        "shirtSub": "Đang mặc số {{number}}"
+      }
     },
     "training": {
       "noPlan": "Bạn chưa đặt kế hoạch tập: CLB đang tập theo kế hoạch AI giữ, hiện bên dưới. Lựa chọn đầu tiên của bạn sẽ lưu thành kế hoạch riêng.",
@@ -294,8 +426,8 @@
           "resting": "Focus hồi phục: nghỉ buổi này",
           "peaked": "Đã chạm tiềm năng: nghỉ buổi này",
           "keepAbove": "Dừng để giữ thể lực",
-          "focusMaxed": "Trọng tâm không còn chỉ số nào tăng OVR ở vị trí này",
-          "other": "Nghỉ buổi này"
+          "other": "Nghỉ buổi này",
+          "focusMaxed": "Trọng tâm không còn chỉ số nào tăng OVR ở vị trí này"
         },
         "intensity": "Cường độ",
         "intensityCost": "{{intensity}} (−{{cost}} thể lực)",
@@ -349,6 +481,7 @@
         "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính.",
         "keeperDrill": "Thủ môn luôn tập thêm bài riêng: Bắt bóng, Phản xạ, Không chiến."
       },
+      "keeperBadge": "Bài thủ môn",
       "groups": {
         "all": "Tất cả ({{count}})",
         "focusOf": "Trọng tâm nhóm {{name}}",
@@ -357,6 +490,28 @@
         "inherited": "{{focus}} (theo nhóm)",
         "inheritedTag": "theo nhóm",
         "empty": "Nhóm này chưa có cầu thủ."
+      },
+      "phone": {
+        "tab": {
+          "today": "Hôm nay",
+          "sched": "Lịch tuần",
+          "focus": "Trọng tâm",
+          "groups": "Nhóm ({{count}})"
+        },
+        "sessionsIn7": "buổi trong 7 ngày",
+        "planInUse": "Ngày tập theo lịch đang dùng",
+        "howItWorks": "Cách hoạt động",
+        "lastResult": "Lần trước: tập {{held}} buổi",
+        "listReady": "Tập được ({{count}})",
+        "listRest": "Nghỉ buổi này ({{count}})",
+        "noneReady": "Không còn ai tập được. Để đội nghỉ hồi thể lực.",
+        "noneResting": "Cả đội đều tập được buổi này.",
+        "resultTitle": "Kết quả tập thêm",
+        "groupOf": "Nhóm {{name}}",
+        "groupFocus": "Trọng tâm nhóm",
+        "players": "Cầu thủ",
+        "mainAuto": "Đội tự tập theo lịch lúc sang ngày ({{time}}). Chạm một ô để đổi.",
+        "mainAutoNoTime": "Đội tự tập theo lịch lúc sang ngày. Chạm một ô để đổi."
       },
       "focusHint": {
         "best": "Trọng tâm hợp nhất",
@@ -376,7 +531,9 @@
         "W": "T",
         "D": "H",
         "L": "B"
-      }
+      },
+      "filterLabel": "Lọc trận",
+      "dayCount": "{{count}} trận"
     },
     "publicClub": {
       "formation": "Sơ đồ: {{formation}}",
@@ -424,7 +581,8 @@
       "licenceNext": "Mở ở HLV cấp {{level}}",
       "boosterHeld": "{{item}} ×{{count}} trong Kho đồ",
       "boosterHint": "Lên cấp nhanh hơn ở các trận online kế tiếp",
-      "activate": "Kích hoạt"
+      "activate": "Kích hoạt",
+      "shortcuts": "Lối tắt"
     },
     "match": {
       "byCoach": "{{team}}: HLV chỉ đạo",
@@ -475,7 +633,71 @@
       "rolePlayer": "Cầu thủ",
       "roleChoice": "Vai trò",
       "changeRole": "Đổi vai trò",
-      "orderRefused": "Trận đấu không nhận lệnh này: {{reason}}"
+      "orderRefused": "Trận đấu không nhận lệnh này: {{reason}}",
+      "phoneSubs": {
+        "usedAria": "Đã dùng {{used}} trên {{max}} lượt thay, {{queued}} đang chờ",
+        "queuedShort": "chờ {{count}}",
+        "hintIdle": "Chạm cầu thủ trên sân để thay ra, hoặc chạm người dự bị trước. Kéo một cầu thủ thả lên người khác để đổi vị trí.",
+        "hintSwap": "Chạm cầu thủ khác trên sân để đổi vị trí với {{name}}.",
+        "hintQueued": "{{name}} đã có người vào thay. Xóa ở mục Chờ xác nhận để đổi.",
+        "hintPickBench": "Chọn người dự bị vào thay {{name}}.",
+        "hintPickField": "Chạm cầu thủ trên sân để {{name}} vào thay.",
+        "cancelSwap": "Hủy đổi",
+        "pitch": "Đội hình trên sân",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, thể lực {{condition}}",
+        "tokenReplaced": "{{name}}, {{slot}}, OVR {{ovr}}, thể lực {{condition}}, sẽ thay bằng {{on}}",
+        "tokenSentOff": "{{name}}, {{slot}}, đã bị đuổi",
+        "planTitle": "Gợi ý: {{scenario}}",
+        "planSub": "Kế hoạch {{style}} · {{count}} thay đổi",
+        "planAdd": "Thêm: {{off}} ra, {{on}} vào",
+        "planAdded": "Đã thêm: {{off}} ra, {{on}} vào",
+        "planApply": "Áp dụng cả {{count}} thay đổi",
+        "planAllAdded": "Đã thêm cả kế hoạch",
+        "queuedTitle": "Chờ xác nhận ({{count}})",
+        "queuedRemove": "Bỏ thay {{off}} bằng {{on}}",
+        "bench": "Dự bị ({{count}})",
+        "benchSub": "OVR · Thể lực",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}}, thể lực {{condition}}",
+        "comesOnFor": "Vào thay {{name}}",
+        "fitNatural": "Đúng vị trí",
+        "fitAdapted": "Hợp vị trí",
+        "fitUnfamiliar": "Trái vị trí",
+        "sheetCondition": "Thể lực {{condition}}",
+        "sheetBooked": "đã có thẻ vàng",
+        "swap": "Đổi vị trí",
+        "sheetQueued": "Đã có người vào thay. Xóa ở mục Chờ xác nhận để chọn lại.",
+        "sheetBenchSub": "Hợp vị trí trước",
+        "confirm": "Xác nhận {{count}} thay người",
+        "swapped": "Đã đổi vị trí {{a}} ↔ {{b}}.",
+        "swapWaiting": "Đã gửi lệnh đổi vị trí, chờ trận đấu thực hiện.",
+        "roleSet": "{{name}}: vai trò {{role}}.",
+        "sent": "Đã gửi {{count}} thay người. Còn {{left}} lượt."
+      },
+      "phone": {
+        "title": "Trận đấu trực tiếp",
+        "leave": "Rời trận",
+        "youCoach": "Bạn đang chỉ đạo",
+        "aiCoaches": "AI đang chỉ đạo",
+        "ordersFrom": "Lệnh tính từ phút {{minute}}' (trận thật)",
+        "dock": "Điều khiển đội",
+        "subs": "Thay người",
+        "formation": "Sơ đồ",
+        "style": "Lối chơi",
+        "roles": "Vai trò",
+        "captainShort": "ĐT: {{name}}",
+        "setPieces": "Bóng chết",
+        "rolesTitle": "Vai trò & bóng chết",
+        "inUse": "Đang dùng {{formation}}",
+        "effectiveFrom": "Lệnh có hiệu lực từ phút {{minute}}' của trận thật.",
+        "pickOther": "Chọn sơ đồ khác",
+        "sendFormation": "Gửi lệnh: {{formation}}",
+        "tapToSend": "Chạm để gửi lệnh ngay. Có hiệu lực từ phút {{minute}}'.",
+        "nobody": "— Chưa chọn",
+        "takerSends": "Đổi người nào sẽ gửi lệnh ngay cho người đó.",
+        "ordersTitle": "Lệnh đã gửi ({{count}})",
+        "noOrders": "Chưa gửi lệnh nào",
+        "sentToast": "Đã gửi lệnh: {{order}}"
+      }
     },
     "replay": {
       "title": "Xem lại",
@@ -674,6 +896,34 @@
         "academyEffect": "Mỗi cấp thêm chỗ cho học viên."
       },
       "academyWages": "Lương lò đào tạo: {{amount}}/tuần",
+      "phone": {
+        "balance": "Số dư CLB",
+        "heldLine": "Đang giữ cho đặt giá: {{amount}}",
+        "seasonNet": "Lãi/lỗ mùa này",
+        "tab": {
+          "over": "Tổng quan",
+          "fac": "Cơ sở",
+          "led": "Thu chi"
+        },
+        "wageWarning": "Lương đang gấp {{times}} lần tiền vé. Cân nhắc thanh lý cầu thủ dự bị lương cao hoặc nâng cấp để tăng thu.",
+        "perWeek": "Mỗi tuần",
+        "perDay": "Mỗi ngày mùa",
+        "weekly": "{{amount}}/tuần",
+        "level": "Cấp",
+        "levelOf": "Cấp {{level}} trên {{max}}",
+        "short": "Cấp sau {{cost}} · thiếu tiền",
+        "upTitle": "Nâng {{facility}} lên cấp {{level}}?",
+        "cost": "Chi phí",
+        "cashAfter": "Tiền mặt sau nâng cấp",
+        "later": "Để sau",
+        "upConfirm": "Nâng cấp",
+        "flow": "Loại giao dịch",
+        "filter": {
+          "all": "Tất cả",
+          "in": "Thu",
+          "out": "Chi"
+        }
+      },
       "contract": {
         "title": "Hợp đồng mùa này",
         "level": "Cấp {{level}}",
@@ -809,6 +1059,49 @@
         "badge": "Cấp {{level}}",
         "explain": "Mỗi cấp có hai trần mua: OVR của một cầu thủ và sức mạnh mua của đội. Mua người không vào top 18 của đội thì luôn được.",
         "roadmap": "Xem lộ trình cấp"
+      },
+      "phone": {
+        "list": "Danh sách phiên",
+        "ended": "Kết thúc",
+        "outbid": "Bị vượt giá",
+        "age": "{{age}} tuổi",
+        "startPrice": "Khởi điểm",
+        "currentPrice": "Giá hiện tại",
+        "bidCount": "{{count}} lượt",
+        "all": "Tất cả",
+        "reset": "Đặt lại",
+        "upTo": "≤ {{price}}",
+        "sortBy": "Sắp xếp",
+        "sort": {
+          "end": "Sắp kết thúc",
+          "low": "Giá thấp",
+          "ovr": "OVR cao",
+          "pot": "Tiềm năng"
+        },
+        "apply": "Áp dụng",
+        "budget": "Ngân sách",
+        "allPositions": "Tất cả",
+        "count": "{{count}} cầu thủ · {{sort}}",
+        "urgent": "dưới 2 phút",
+        "detailTabs": "Chi tiết phiên",
+        "tabAuction": "Đấu giá",
+        "tabStats": "Chỉ số",
+        "someoneBid": "Có người đặt",
+        "range": "Giá {{price}}, trong khoảng khởi điểm {{start}} đến trần {{cap}}; thẩm định {{value}}",
+        "start": "Khởi điểm {{price}}",
+        "valuation": "Thẩm định {{price}}",
+        "cap": "Trần {{price}}",
+        "step": "Bước giá",
+        "bidBar": "Đặt giá",
+        "nextWhileLeading": "Bạn đang dẫn đầu · giá kế tiếp",
+        "leastBid": "Giá tối thiểu để đặt",
+        "locked": "Đã khoá",
+        "raise": "Nâng giá",
+        "bidTitle": "Đặt giá · {{name}}",
+        "stepDown": "Giảm một bước",
+        "stepUp": "Tăng một bước",
+        "afterWin": "Ngân sách sau khi thắng",
+        "place": "Đặt giá {{amount}}"
       }
     },
     "rename": {
@@ -854,7 +1147,30 @@
       "releaseSeverance": "Tiền đền bù",
       "releaseCash": "Quỹ CLB",
       "releaseSquad": "Số cầu thủ còn lại (tối thiểu {{min}})",
-      "releaseConfirm": "Thanh lý cầu thủ"
+      "releaseConfirm": "Thanh lý cầu thủ",
+      "phone": {
+        "manage": "Quản lý cầu thủ",
+        "shirt": "Số áo {{number}}",
+        "age": "{{age}} tuổi",
+        "tabs": "Thông tin cầu thủ",
+        "tab": {
+          "stats": "Chỉ số",
+          "traits": "Đặc điểm",
+          "season": "Mùa giải"
+        },
+        "tapGroups": "Chạm nhóm để mở/thu",
+        "view": "Kiểu xem",
+        "apps": "Trận",
+        "avgRating": "Điểm TB",
+        "goals": "Bàn thắng",
+        "assists": "Kiến tạo",
+        "full": "Thể lực đã đầy",
+        "boost": "Hồi thể lực · {{count}} vật phẩm",
+        "boostTitle": "Hồi thể lực",
+        "now": "Hiện tại {{value}}%",
+        "held": "còn ×{{count}}",
+        "shop": "Mua thêm ở Cửa hàng ›"
+      }
     },
     "inbox": {
       "sender": "Văn phòng CLB",
@@ -1027,7 +1343,46 @@
       },
       "viewNewAuction": "Xem phiên mới",
       "viewCaps": "Xem trần theo cấp",
-      "reasonLine": "Lý do: {{reason}}"
+      "reasonLine": "Lý do: {{reason}}",
+      "phone": {
+        "list": "Tin nhắn",
+        "counts": "{{unread}} chưa đọc · {{total}} tin",
+        "actions": "Thao tác hộp thư",
+        "filters": "Bộ lọc",
+        "quickFilters": "Lọc nhanh",
+        "unreadChip": "Chưa đọc",
+        "activeCount": "Đang xem {{count}} tin",
+        "clearFilters": "Xóa lọc",
+        "today": "Hôm nay",
+        "yesterday": "Hôm qua",
+        "row": "{{subject}}, {{time}}",
+        "unreadRow": "Chưa đọc: {{subject}}, {{time}}",
+        "more": "Xem thêm ({{count}} tin)",
+        "position": "{{n}} / {{total}}",
+        "newer": "Tin mới hơn",
+        "older": "Tin cũ hơn",
+        "delete": "Xóa tin",
+        "deleted": "Đã xóa {{count}} tin.",
+        "undo": "Hoàn tác",
+        "markedRead": "Đã đánh dấu {{count}} tin là đã đọc.",
+        "selected": "Đã chọn {{count}}",
+        "selectAll": "Chọn hết",
+        "unselectAll": "Bỏ chọn",
+        "markSelectedRead": "Đánh dấu đã đọc",
+        "deleteSelected": "Xóa tin đã chọn",
+        "exitSelect": "Thoát chế độ chọn",
+        "filterTitle": "Lọc tin nhắn",
+        "reset": "Đặt lại",
+        "unreadOnly": "Chỉ chưa đọc",
+        "kinds": "Loại tin",
+        "showCount": "Xem {{count}} tin",
+        "selectMany": "Chọn nhiều tin",
+        "selectManySub": "Đánh dấu đã đọc hoặc xóa hàng loạt",
+        "readAll": "Đánh dấu tất cả đã đọc",
+        "readAllSub": "{{count}} tin chưa đọc",
+        "deleteRead": "Xóa tin đã đọc",
+        "deleteReadSub": "{{count}} tin đã đọc"
+      }
     },
     "coins": {
       "notOnServer": "Máy chủ này chưa mở coin.",
@@ -1350,13 +1705,6 @@
         "scoutExpedition": "vé scout",
         "scoutExpeditionElite": "vé scout đặc biệt"
       },
-      "line": {
-        "label": "Tuyến",
-        "Any": "Tất cả"
-      },
-      "lineShares": {
-        "title": "Tỉ lệ vị trí trong tuyến"
-      },
       "reveal": {
         "0": "Mới nhận",
         "1": "Đã theo dõi",
@@ -1441,6 +1789,13 @@
         "wagesNote": "{{wage}} × {{n}} học viên",
         "fee": "Phí tốt nghiệp",
         "feeNote": "Mỗi học viên · ở lò tối thiểu {{days}} ngày"
+      },
+      "line": {
+        "label": "Tuyến",
+        "Any": "Tất cả"
+      },
+      "lineShares": {
+        "title": "Tỉ lệ vị trí trong tuyến"
       }
     },
     "events": {
@@ -6796,5 +7151,8 @@
     "anyRegion": "Mọi khu vực",
     "anyCountry": "Mọi quốc gia",
     "clear": "Xoá bộ lọc"
+  },
+  "mobile": {
+    "pressBackAgain": "Bấm Quay lại lần nữa để thoát"
   }
 }

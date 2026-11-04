@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { TrainingRosterPlayer } from "../../../components/training/trainingGroupsModel";
 import type { TrainingGroupData } from "../../../store/types";
+import { PhoneGroups } from "./phone/PhoneGroups";
 import TrainingGroups from "./TrainingGroups";
 
 vi.mock("react-i18next", () => ({
@@ -136,5 +137,49 @@ describe("the training groups tab", () => {
       within(rowOf("Trung Vệ")).getByText("online.training.focusHint.best"),
     ).toBeInTheDocument();
     expect(within(rowOf("Tiền Đạo")).queryByText(/online\.training\.focusHint/)).toBeNull();
+  });
+
+  // Given a season whose keepers train their own drill,
+  // when the groups tab shows the squad,
+  // then the keeper's row carries the drill's badge and no other row does; a season without
+  // the drill shows none.
+  it("marks the keeper who trains the keepers' drill", () => {
+    const view = render(
+      <TrainingGroups
+        groups={GROUPS}
+        teamFocus="Physical"
+        roster={ROSTER}
+        keeperDrill
+        disabled={false}
+        onSaveGroups={vi.fn()}
+        onSetPlayerFocus={vi.fn()}
+      />,
+    );
+    expect(within(rowOf("Thủ Môn")).getByText("online.training.keeperBadge")).toBeInTheDocument();
+    expect(screen.getAllByText("online.training.keeperBadge")).toHaveLength(1);
+    view.unmount();
+
+    groups();
+    expect(screen.queryByText("online.training.keeperBadge")).toBeNull();
+  });
+
+  // Given the same season on a phone,
+  // when the groups tab lists the squad,
+  // then only the keeper's line carries the badge.
+  it("marks the keeper on a phone too", () => {
+    render(
+      <PhoneGroups
+        groups={GROUPS}
+        teamFocus="Physical"
+        roster={ROSTER}
+        keeperDrill
+        disabled={false}
+        onSaveGroups={vi.fn()}
+        onSetPlayerFocus={vi.fn()}
+      />,
+    );
+    const badges = screen.getAllByText("online.training.keeperBadge");
+    expect(badges).toHaveLength(1);
+    expect(badges[0].closest("li")).toHaveTextContent("Thủ Môn");
   });
 });

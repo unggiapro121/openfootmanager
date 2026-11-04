@@ -17,7 +17,9 @@ const SAVE_MANAGER_UNAVAILABLE_ERROR: &str = "be.error.saveManagerUnavailable";
 /// Tauri-managed wrapper around SaveManager.
 pub struct SaveManagerState(pub Mutex<SaveManager>);
 
-/// Show the running window above the others, for a second launch of the game.
+/// Show the running window above the others, for a second launch of the game (desktop only:
+/// a phone runs one copy of an app by itself).
+#[cfg(desktop)]
 fn bring_forward(app: &tauri::AppHandle) {
     use tauri::Manager;
     let Some(window) = app.get_webview_window("main") else {
@@ -45,11 +47,13 @@ pub fn run() {
 
     let state_manager = Arc::new(StateManager::new());
 
-    let result = tauri::Builder::default()
-        // First, as the plugin asks: a second launch ends here and brings this window forward.
-        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-            bring_forward(app);
-        }))
+    let builder = tauri::Builder::default();
+    // First, as the plugin asks: a second launch ends here and brings this window forward.
+    #[cfg(desktop)]
+    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+        bring_forward(app);
+    }));
+    let result = builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(
@@ -127,6 +131,15 @@ pub fn run() {
             }
 
             app.manage(Arc::new(SaveManagerState(Mutex::new(save_manager))));
+            // A phone has no environment to name the servers: a mobile build reads them from
+            // `plugins.ofmOnline` of its platform config (phase 5 M1). Desktop never does.
+            #[cfg(mobile)]
+            application::endpoints::set_mobile_endpoints(
+                app.config()
+                    .plugins
+                    .0
+                    .get(application::endpoints::MOBILE_CONFIG_KEY),
+            );
             let coach = Arc::new(application::coach::CoachContext::from_environment(
                 &app_data_dir,
             ));

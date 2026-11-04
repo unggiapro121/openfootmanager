@@ -57,7 +57,9 @@
       "events": "Eventos",
       "groupTeam": "Time",
       "groupMatches": "Partidas",
-      "groupClub": "Clube"
+      "groupClub": "Clube",
+      "groupMore": "Mais",
+      "tabs": "Seções principais"
     },
     "gate": {
       "clientOutdatedTitle": "Atualização necessária",
@@ -145,7 +147,51 @@
       "coach": "Técnico",
       "bot": "IA",
       "previousRound": "Rodada anterior",
-      "nextRound": "Próxima rodada"
+      "nextRound": "Próxima rodada",
+      "phone": {
+        "summaryLine": "{{clubs}} clubes · {{rounds}} rodadas",
+        "rank": "Posição",
+        "points": "Pontos",
+        "goalDiff": "SG {{gd}}",
+        "nextMatch": "Próximo jogo",
+        "roundOf": "Rodada {{round}}/{{total}}",
+        "tabs": "Seções da liga",
+        "tabTable": "Classificação",
+        "tabRounds": "Rodadas",
+        "tabStats": "Estatísticas",
+        "promotionZone": "Posições 1–{{to}} · acesso",
+        "tableMode": "Visão da tabela",
+        "compact": "Resumida",
+        "full": "Completa",
+        "form": "Forma",
+        "formTitle": "Últimos dois resultados",
+        "coachLine": "Técnico: {{coach}}",
+        "legendCompact": "J: jogos · SG: saldo de gols · Pts: pontos. Escolha Completa para ver vitórias, empates, derrotas, gols pró e contra.",
+        "legendFull": "J jogos · V vitórias · E empates · D derrotas · GP gols pró · GC gols contra · SG saldo · Pts pontos. Deslize para ver tudo.",
+        "pickRound": "Escolha uma rodada",
+        "roundDone": "Encerrada",
+        "roundLive": "Em andamento",
+        "roundUpcoming": "A jogar · {{when}}",
+        "roundUnplanned": "Ainda sem data",
+        "yourMatch": "Seu jogo",
+        "fullTime": "Fim de jogo",
+        "void": "Anulado",
+        "live": "Ao vivo",
+        "statsCategories": "Categorias",
+        "catGoals": "Gols",
+        "catAssists": "Assistências",
+        "catCleanSheets": "Jogos sem sofrer gol",
+        "catYellow": "Amarelos",
+        "catRed": "Vermelhos",
+        "unitGoals": "gols",
+        "unitAssists": "assistências",
+        "unitMatches": "jogos",
+        "unitCards": "cartões",
+        "leader": "Líder",
+        "tiedWith": "empatado com mais {{count}}",
+        "noData": "Ainda não há dados nesta categoria.",
+        "mineOnly": "Só jogadores do {{club}}"
+      }
     },
     "takeover": {
       "title": "Assumir um clube",
@@ -227,6 +273,57 @@
         "squadLine": "O assistente está escolhendo sua escalação.",
         "squadLink": "Ver Táticas",
         "itemNote": "O pacote recupera sua escalação titular. O assistente pode poupar os cansados, então ela pode ser diferente da escalação prevista."
+      },
+      "phone": {
+        "tabs": "Seções da tática",
+        "tab": {
+          "lineup": "Escalação",
+          "style": "Estilo",
+          "roles": "Funções",
+          "phase": "Fases"
+        },
+        "tagMine": "Minhas",
+        "saveBody": "Você alterou {{name}}. Salve como uma tática sua para usar de novo.",
+        "discard": "Descartar mudanças",
+        "pitch": "Time titular, {{formation}}",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, {{fit}}, condição {{condition}}",
+        "fit": {
+          "exact": "Posição natural",
+          "adapted": "Adaptado",
+          "out": "Fora de posição"
+        },
+        "wrong": "{{count}} fora de posição",
+        "hintIdle": "Toque em um jogador no campo e depois em outro para trocá-los, ou em um reserva para colocá-lo.",
+        "hintPicked": "{{name}} ({{slot}}) escolhido: toque em outro jogador do campo ou em um reserva abaixo.",
+        "hintAssistant": "O assistente escolhe o time. Desligue-o para escolher o seu.",
+        "hintLocked": "A escalação está travada: só visualização.",
+        "hintPickFirst": "Toque primeiro em um jogador do campo e depois em um reserva.",
+        "benchFor": "Para a posição de {{slot}}",
+        "benchTitle": "Reservas · {{count}}",
+        "fitFirst": "Melhor encaixe primeiro",
+        "benchSub": "Condição · OVR",
+        "all": "Todos",
+        "bench": "Reservas",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}} {{fit}}",
+        "injured": "Lesionado",
+        "level": "Nível {{level}}",
+        "masteryNote": "· o número é o seu domínio",
+        "noneChosen": "Não escolhido",
+        "score": {
+          "captain": "Liderança {{value}}",
+          "vicecaptain": "Liderança {{value}}",
+          "penalty": "Pênaltis {{value}}",
+          "freekick": "Faltas {{value}}",
+          "corner": "Cruzamentos {{value}}"
+        },
+        "rolesNote": "Só titulares podem ter uma função.",
+        "rankedBy": {
+          "captain": "Por liderança",
+          "vicecaptain": "Por liderança",
+          "penalty": "Por pênaltis",
+          "freekick": "Por faltas",
+          "corner": "Por cruzamentos"
+        }
       }
     },
     "squad": {
@@ -243,7 +340,42 @@
       "notFound": "Este jogador não está no seu elenco.",
       "state": "Condição",
       "suspended": "Suspenso: {{count}} jogo(s)",
-      "potentialStarsRange": "Potencial de {{low}} a {{high}} estrelas"
+      "potentialStarsRange": "Potencial de {{low}} a {{high}} estrelas",
+      "phone": {
+        "searchToggle": "Buscar jogadores",
+        "searchLabel": "Buscar por nome",
+        "searchPlaceholder": "Buscar pelo nome do jogador",
+        "assistant": "O assistente escolhe o time titular",
+        "sort": "Ordenar",
+        "rotateHint": "Gire o celular para ver a tabela completa",
+        "hideRotate": "Ocultar dica",
+        "lens": "O que as colunas mostram",
+        "lensForm": "Condição física",
+        "lensFit": "Encaixe",
+        "lensGrowth": "Evolução",
+        "lensStats": "Estatísticas",
+        "list": "Jogadores",
+        "sectionXi": "Titulares · {{count}}",
+        "sectionBench": "Reservas · {{count}}",
+        "rowStarter": "{{name}}, {{position}}, OVR {{ovr}}, titular",
+        "rowBench": "{{name}}, {{position}}, OVR {{ovr}}, reserva",
+        "sheetLine": "Nº {{number}} · {{age}} anos",
+        "playsIn": "Joga de {{slot}} no {{formation}}",
+        "bestIn": "Rende mais de {{slot}} no {{formation}}",
+        "season": "Nesta temporada",
+        "seasonLine": "{{apps}} jogos · {{goals}} gols",
+        "traitsTitle": "Características ({{count}})",
+        "noTraits": "Ainda sem características.",
+        "fullProfile": "Perfil completo",
+        "toTactics": "Escalar na Tática",
+        "actions": "Ações",
+        "actionsTitle": "Ações · {{name}}",
+        "groupTransfer": "Transferência",
+        "groupCustomise": "Personalizar",
+        "listSub": "Colocá-lo no mercado de leilões",
+        "releaseSub": "Liberá-lo do clube agora",
+        "shirtSub": "Usa a camisa {{number}}"
+      }
     },
     "training": {
       "noPlan": "Você ainda não definiu um plano de treino: o clube treina com o plano que a IA mantém, mostrado aqui. Sua primeira escolha salva um plano seu.",
@@ -294,8 +426,8 @@
           "resting": "Foco em recuperação: fica de fora",
           "peaked": "No seu potencial: fica de fora",
           "keepAbove": "Parou para manter a condição",
-          "focusMaxed": "O foco não tem mais nada que aumente o OVR nesta posição",
-          "other": "Fica de fora"
+          "other": "Fica de fora",
+          "focusMaxed": "O foco não tem mais nada que aumente o OVR nesta posição"
         },
         "intensity": "Intensidade",
         "intensityCost": "{{intensity}} (−{{cost}} de condição)",
@@ -349,6 +481,7 @@
         "rest": "Hoje é descanso pela agenda: sem sessão principal.",
         "keeperDrill": "Os goleiros sempre fazem um treino extra só deles: Pegada, Reflexos, Jogo Aéreo."
       },
+      "keeperBadge": "Treino de goleiro",
       "groups": {
         "all": "Todos ({{count}})",
         "focusOf": "Foco do grupo {{name}}",
@@ -357,6 +490,28 @@
         "inherited": "{{focus}} (herdado)",
         "inheritedTag": "herdado",
         "empty": "Ainda não há jogadores neste grupo."
+      },
+      "phone": {
+        "tab": {
+          "today": "Hoje",
+          "sched": "Agenda",
+          "focus": "Foco",
+          "groups": "Grupos ({{count}})"
+        },
+        "sessionsIn7": "sessões em 7 dias",
+        "planInUse": "Dias de treino em uso",
+        "howItWorks": "Como funciona",
+        "lastResult": "Da última vez: {{held}} sessões",
+        "listReady": "Podem treinar ({{count}})",
+        "listRest": "Descansam desta vez ({{count}})",
+        "noneReady": "Ninguém pode treinar agora. Deixe o elenco descansar.",
+        "noneResting": "O elenco todo pode treinar desta vez.",
+        "resultTitle": "Resultado do treino extra",
+        "groupOf": "Grupo {{name}}",
+        "groupFocus": "Foco do grupo",
+        "players": "Jogadores",
+        "mainAuto": "O time treina pela agenda na virada do dia ({{time}}). Toque em um quadro para mudar.",
+        "mainAutoNoTime": "O time treina pela agenda na virada do dia. Toque em um quadro para mudar."
       },
       "focusHint": {
         "best": "Melhor foco",
@@ -376,7 +531,9 @@
         "W": "V",
         "D": "E",
         "L": "D"
-      }
+      },
+      "filterLabel": "Mostrar partidas",
+      "dayCount": "Partidas: {{count}}"
     },
     "publicClub": {
       "formation": "Esquema: {{formation}}",
@@ -424,7 +581,8 @@
       "licenceNext": "Abre no nível de técnico {{level}}",
       "boosterHeld": "{{item}} ×{{count}} no seu inventário",
       "boosterHint": "Suba de nível mais rápido nas próximas partidas online",
-      "activate": "Ativar"
+      "activate": "Ativar",
+      "shortcuts": "Atalhos rápidos"
     },
     "match": {
       "byCoach": "{{team}}: comandado pelo técnico",
@@ -475,7 +633,71 @@
       "rolePlayer": "Jogador",
       "roleChoice": "Função",
       "changeRole": "Mudar função",
-      "orderRefused": "A partida não aceitou essa ordem: {{reason}}"
+      "orderRefused": "A partida não aceitou essa ordem: {{reason}}",
+      "phoneSubs": {
+        "usedAria": "{{used}} de {{max}} substituições usadas, {{queued}} aguardando",
+        "queuedShort": "{{count}} aguardando",
+        "hintIdle": "Toque em um jogador em campo para substituí-lo, ou primeiro em um reserva. Arraste um jogador sobre outro para trocar as posições deles.",
+        "hintSwap": "Toque em outro jogador em campo para trocar de posição com {{name}}.",
+        "hintQueued": "{{name}} já tem substituto. Remova em A confirmar para mudar.",
+        "hintPickBench": "Escolha um reserva para substituir {{name}}.",
+        "hintPickField": "Toque em um jogador em campo para {{name}} entrar no lugar dele.",
+        "cancelSwap": "Cancelar troca",
+        "pitch": "Escalação em campo",
+        "token": "{{name}}, {{slot}}, OVR {{ovr}}, condição {{condition}}",
+        "tokenReplaced": "{{name}}, {{slot}}, OVR {{ovr}}, condição {{condition}}, será substituído por {{on}}",
+        "tokenSentOff": "{{name}}, {{slot}}, expulso",
+        "planTitle": "Sugestão: {{scenario}}",
+        "planSub": "Plano {{style}} · {{count}} mudanças",
+        "planAdd": "Adicionar: sai {{off}}, entra {{on}}",
+        "planAdded": "Adicionado: sai {{off}}, entra {{on}}",
+        "planApply": "Aplicar as {{count}} mudanças",
+        "planAllAdded": "Plano inteiro adicionado",
+        "queuedTitle": "A confirmar ({{count}})",
+        "queuedRemove": "Remover a troca de {{off}} por {{on}}",
+        "bench": "Reservas ({{count}})",
+        "benchSub": "OVR · Condição",
+        "benchRow": "{{name}}, {{position}}, OVR {{ovr}}, condição {{condition}}",
+        "comesOnFor": "Entra no lugar de {{name}}",
+        "fitNatural": "Posição de origem",
+        "fitAdapted": "Pode jogar ali",
+        "fitUnfamiliar": "Fora de posição",
+        "sheetCondition": "Condição {{condition}}",
+        "sheetBooked": "pendurado com amarelo",
+        "swap": "Trocar de posição",
+        "sheetQueued": "Já tem substituto. Remova em A confirmar para escolher outro.",
+        "sheetBenchSub": "Melhor encaixe primeiro",
+        "confirm": "Confirmar {{count}} substituições",
+        "swapped": "Trocados {{a}} ↔ {{b}}.",
+        "swapWaiting": "Troca enviada, aguardando a partida aplicá-la.",
+        "roleSet": "{{name}}: função {{role}}.",
+        "sent": "{{count}} substituições enviadas. Restam {{left}}."
+      },
+      "phone": {
+        "title": "Jogo ao vivo",
+        "leave": "Sair do jogo",
+        "youCoach": "Você está no comando",
+        "aiCoaches": "A IA está no comando",
+        "ordersFrom": "As ordens valem a partir do minuto {{minute}}' (jogo real)",
+        "dock": "Controles do time",
+        "subs": "Substituições",
+        "formation": "Esquema",
+        "style": "Estilo",
+        "roles": "Funções",
+        "captainShort": "Cap: {{name}}",
+        "setPieces": "Bolas paradas",
+        "rolesTitle": "Funções e bolas paradas",
+        "inUse": "Em uso: {{formation}}",
+        "effectiveFrom": "A ordem vale a partir do minuto {{minute}}' do jogo real.",
+        "pickOther": "Escolha outro esquema",
+        "sendFormation": "Enviar: {{formation}}",
+        "tapToSend": "Toque para enviar na hora. Vale a partir do minuto {{minute}}'.",
+        "nobody": "— Ninguém ainda",
+        "takerSends": "Trocar um cobrador envia a ordem na hora.",
+        "ordersTitle": "Ordens enviadas ({{count}})",
+        "noOrders": "Nenhuma ordem enviada ainda",
+        "sentToast": "Ordem enviada: {{order}}"
+      }
     },
     "replay": {
       "title": "Rever",
@@ -674,6 +896,34 @@
         "academyEffect": "Cada nível abre vagas para jovens."
       },
       "academyWages": "Salários da base: {{amount}} por semana",
+      "phone": {
+        "balance": "Saldo do clube",
+        "heldLine": "Retido para lances: {{amount}}",
+        "seasonNet": "Lucro/prejuízo da temporada",
+        "tab": {
+          "over": "Resumo",
+          "fac": "Instalações",
+          "led": "Extrato"
+        },
+        "wageWarning": "Os salários são {{times}} vezes a bilheteria. Considere liberar reservas caros ou melhorar para ganhar mais.",
+        "perWeek": "Por semana",
+        "perDay": "Por dia de temporada",
+        "weekly": "{{amount}}/semana",
+        "level": "Nível",
+        "levelOf": "Nível {{level}} de {{max}}",
+        "short": "Próximo nível {{cost}} · falta dinheiro",
+        "upTitle": "Melhorar {{facility}} para o nível {{level}}?",
+        "cost": "Custo",
+        "cashAfter": "Dinheiro após a melhoria",
+        "later": "Depois",
+        "upConfirm": "Melhorar",
+        "flow": "Tipo de lançamento",
+        "filter": {
+          "all": "Todos",
+          "in": "Entradas",
+          "out": "Saídas"
+        }
+      },
       "contract": {
         "title": "Contratos desta temporada",
         "level": "Nível {{level}}",
@@ -809,6 +1059,49 @@
         "badge": "Nível {{level}}",
         "explain": "Dois limites restringem o que um técnico pode comprar em cada nível: o geral de um jogador e a força de compra do elenco. Comprar um jogador que não entra no seu top 18 é sempre permitido.",
         "roadmap": "Ver a trajetória de níveis"
+      },
+      "phone": {
+        "list": "Leilões",
+        "ended": "Encerrado",
+        "outbid": "Superado",
+        "age": "{{age}} anos",
+        "startPrice": "Preço inicial",
+        "currentPrice": "Preço atual",
+        "bidCount": "{{count}} lances",
+        "all": "Todos",
+        "reset": "Redefinir",
+        "upTo": "≤ {{price}}",
+        "sortBy": "Ordenar por",
+        "sort": {
+          "end": "Terminando logo",
+          "low": "Menor preço",
+          "ovr": "Maior OVR",
+          "pot": "Potencial"
+        },
+        "apply": "Aplicar",
+        "budget": "Orçamento",
+        "allPositions": "Todos",
+        "count": "{{count}} jogadores · {{sort}}",
+        "urgent": "menos de 2 min",
+        "detailTabs": "Detalhes do leilão",
+        "tabAuction": "Leilão",
+        "tabStats": "Atributos",
+        "someoneBid": "Com lances",
+        "range": "Preço {{price}}, entre o início de {{start}} e o teto de {{cap}}; avaliação {{value}}",
+        "start": "Início {{price}}",
+        "valuation": "Avaliação {{price}}",
+        "cap": "Teto {{price}}",
+        "step": "Incremento",
+        "bidBar": "Dar lance",
+        "nextWhileLeading": "Você lidera · próximo lance",
+        "leastBid": "Lance mínimo agora",
+        "locked": "Bloqueado",
+        "raise": "Aumentar lance",
+        "bidTitle": "Lance · {{name}}",
+        "stepDown": "Um passo abaixo",
+        "stepUp": "Um passo acima",
+        "afterWin": "Orçamento se vencer",
+        "place": "Dar lance de {{amount}}"
       }
     },
     "rename": {
@@ -854,7 +1147,30 @@
       "releaseSeverance": "Multa rescisória",
       "releaseCash": "Caixa do clube",
       "releaseSquad": "Jogadores restantes (mínimo {{min}})",
-      "releaseConfirm": "Rescindir jogador"
+      "releaseConfirm": "Rescindir jogador",
+      "phone": {
+        "manage": "Gerenciar jogador",
+        "shirt": "Camisa {{number}}",
+        "age": "{{age}} anos",
+        "tabs": "Informações do jogador",
+        "tab": {
+          "stats": "Atributos",
+          "traits": "Características",
+          "season": "Temporada"
+        },
+        "tapGroups": "Toque em um grupo para abrir ou fechar",
+        "view": "Visualização",
+        "apps": "Partidas",
+        "avgRating": "Nota média",
+        "goals": "Gols",
+        "assists": "Assistências",
+        "full": "A condição está cheia",
+        "boost": "Recuperar condição · {{count}} itens",
+        "boostTitle": "Recuperar condição",
+        "now": "Agora {{value}}%",
+        "held": "Você tem {{count}}",
+        "shop": "Compre mais na Loja ›"
+      }
     },
     "inbox": {
       "sender": "Escritório do clube",
@@ -1027,7 +1343,46 @@
       },
       "viewNewAuction": "Ver o novo leilão",
       "viewCaps": "Ver seus limites de nível",
-      "reasonLine": "Motivo: {{reason}}"
+      "reasonLine": "Motivo: {{reason}}",
+      "phone": {
+        "list": "Mensagens",
+        "counts": "{{unread}} não lidas · {{total}} mensagens",
+        "actions": "Ações da caixa",
+        "filters": "Filtros",
+        "quickFilters": "Filtros rápidos",
+        "unreadChip": "Não lidas",
+        "activeCount": "Mostrando {{count}} mensagens",
+        "clearFilters": "Limpar filtros",
+        "today": "Hoje",
+        "yesterday": "Ontem",
+        "row": "{{subject}}, {{time}}",
+        "unreadRow": "Não lida: {{subject}}, {{time}}",
+        "more": "Ver mais ({{count}})",
+        "position": "{{n}} / {{total}}",
+        "newer": "Mensagem mais recente",
+        "older": "Mensagem anterior",
+        "delete": "Excluir mensagem",
+        "deleted": "{{count}} mensagens excluídas.",
+        "undo": "Desfazer",
+        "markedRead": "{{count}} mensagens marcadas como lidas.",
+        "selected": "{{count}} selecionadas",
+        "selectAll": "Selecionar todas",
+        "unselectAll": "Selecionar nenhuma",
+        "markSelectedRead": "Marcar selecionadas como lidas",
+        "deleteSelected": "Excluir selecionadas",
+        "exitSelect": "Parar de selecionar",
+        "filterTitle": "Filtrar mensagens",
+        "reset": "Redefinir",
+        "unreadOnly": "Só não lidas",
+        "kinds": "Tipos",
+        "showCount": "Ver {{count}} mensagens",
+        "selectMany": "Selecionar várias",
+        "selectManySub": "Marque como lidas ou exclua várias de uma vez",
+        "readAll": "Marcar tudo como lido",
+        "readAllSub": "{{count}} não lidas",
+        "deleteRead": "Excluir as lidas",
+        "deleteReadSub": "{{count}} lidas"
+      }
     },
     "coins": {
       "notOnServer": "As moedas ainda não estão liberadas neste servidor.",
@@ -1350,13 +1705,6 @@
         "scoutExpedition": "um ingresso de observação",
         "scoutExpeditionElite": "um ingresso de observação de elite"
       },
-      "line": {
-        "label": "Setor",
-        "Any": "Todos"
-      },
-      "lineShares": {
-        "title": "Distribuição de posições"
-      },
       "reveal": {
         "0": "Recém-chegado",
         "1": "Observado",
@@ -1441,6 +1789,13 @@
         "wagesNote": "{{wage}} × {{n}} jovens",
         "fee": "Taxa de formatura",
         "feeNote": "Por jovem · pelo menos {{days}} dias na base"
+      },
+      "line": {
+        "label": "Setor",
+        "Any": "Todos"
+      },
+      "lineShares": {
+        "title": "Distribuição de posições"
       }
     },
     "events": {
@@ -6796,5 +7151,8 @@
     "anyRegion": "Qualquer região",
     "anyCountry": "Qualquer país",
     "clear": "Limpar filtros"
+  },
+  "mobile": {
+    "pressBackAgain": "Toque em Voltar de novo para sair"
   }
 }

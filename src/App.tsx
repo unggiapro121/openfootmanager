@@ -5,6 +5,7 @@ import i18n, { changeAppLanguage } from "./i18n";
 import { formatAppVersion } from "./lib/appVersion";
 import { isDesktopApp, setWindowTitle } from "./services/platformService";
 import "./App.css";
+import PhoneBehaviors from "./components/PhoneBehaviors";
 
 const MainMenu = lazy(() => import("./pages/MainMenu"));
 const TeamSelection = lazy(() => import("./pages/TeamSelection"));
@@ -69,6 +70,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <PhoneBehaviors />
       <Suspense fallback={<LazyFallback />}>
         <Routes>
           <Route path="/" element={<MainMenu />} />

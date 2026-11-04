@@ -1,3 +1,4 @@
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import { standingOf } from "../../convert/standing";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
@@ -7,6 +8,7 @@ import ClubCard from "./ClubCard";
 import { LastResultCard, StandingCard, UpcomingCard } from "./LeagueCards";
 import LicenceCard from "./LicenceCard";
 import NextMatchCard from "./NextMatchCard";
+import PhoneShortcuts from "./PhoneShortcuts";
 import SeasonCard from "./SeasonCard";
 import { useItemUse } from "./useItemUse";
 
@@ -20,6 +22,7 @@ export default function OnlineOverview() {
   const club = useOnlineStore((state) => state.club);
   const league = useOnlineStore((state) => state.league);
   const { start, dialog } = useItemUse();
+  const phone = usePhoneLayout();
   const clubId = club?.club.id ?? "";
   const inLeague = Boolean(club?.leagueId);
   const next = club?.nextFixture;
@@ -31,6 +34,26 @@ export default function OnlineOverview() {
   if (!club) return null;
 
   const row = (league && standingOf(league, clubId)) ?? undefined;
+  if (phone) {
+    // One column in the phone design's order (m-tong-quan.html): the match, the season, the
+    // place and the last result side by side, the shortcuts, what comes next, licence and club.
+    return (
+      <div className="flex flex-col gap-3">
+        <LicenceNotice />
+        <NextMatchCard onUse={start} />
+        <SeasonCard played={row?.played} />
+        <div className="grid grid-cols-2 gap-3">
+          <StandingCard row={row} inLeague={inLeague} />
+          <LastResultCard fixtures={fixtures} reload={reload} clubId={clubId} />
+        </div>
+        <PhoneShortcuts />
+        <UpcomingCard fixtures={fixtures} reload={reload} clubId={clubId} />
+        <LicenceCard licence={club.licence} onUse={start} />
+        <ClubCard club={club} />
+        {dialog}
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-6">
       <LicenceNotice />

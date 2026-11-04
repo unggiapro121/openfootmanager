@@ -200,7 +200,7 @@ function ShopHead({
   return (
     <section
       aria-labelledby="shop-head-title"
-      className="flex flex-wrap items-center gap-5 rounded-xl border border-t-4 border-gray-200 border-t-accent-400 bg-white px-6 py-5 shadow-sm dark:border-navy-600 dark:border-t-accent-400 dark:bg-navy-700 dark:shadow-md"
+      className="flex flex-wrap items-center gap-5 rounded-xl border border-t-4 border-gray-200 border-t-accent-400 bg-white px-6 py-5 shadow-sm max-md:gap-3 max-md:px-4 max-md:py-4 dark:border-navy-600 dark:border-t-accent-400 dark:bg-navy-700 dark:shadow-md"
     >
       <div className="flex min-w-0 flex-[999_1_420px] items-start gap-4">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300">
@@ -217,7 +217,7 @@ function ShopHead({
           >
             {title}
           </h2>
-          <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          <p className="text-sm leading-relaxed text-gray-600 max-md:hidden dark:text-gray-400">
             {(over || soon) && (
               <>
                 <span>
@@ -276,7 +276,7 @@ function FilterChips({
     })),
   ];
   return (
-    <fieldset className="flex flex-wrap gap-2">
+    <fieldset className="flex flex-wrap gap-2 max-md:-mx-3 max-md:flex-nowrap max-md:overflow-x-auto max-md:px-3 max-md:pb-1">
       <legend className="sr-only">{t("online.shop.filterLabel")}</legend>
       {chips.map((chip) => {
         const on = chip.filter === shown;
@@ -286,7 +286,7 @@ function FilterChips({
             type="button"
             aria-pressed={on}
             onClick={() => onPick(chip.filter)}
-            className={`rounded-lg border px-3.5 py-2 font-heading text-sm font-semibold uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${
+            className={`rounded-lg border px-3.5 py-2 font-heading text-sm font-semibold uppercase tracking-wider transition-colors max-md:shrink-0 max-md:rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-navy-800 ${
               on
                 ? "border-primary-700 bg-primary-700 text-white dark:border-primary-700 dark:bg-primary-700 dark:text-white"
                 : "border-gray-200 bg-white text-gray-700 hover:border-primary-500 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-300 dark:hover:border-primary-500"
@@ -322,7 +322,7 @@ function GroupSection({
         </h2>
         {hint && <span className="text-xs text-gray-500 dark:text-gray-400">{hint}</span>}
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 max-md:grid-cols-2 max-md:gap-3 md:grid-cols-2 xl:grid-cols-3">
         {offers.map((item) => (
           <Offer key={item.itemCode} item={item} onBuy={() => onBuy(item.itemCode)} />
         ))}
@@ -382,16 +382,18 @@ function Offer({ item, onBuy }: { item: ShopItemView; onBuy: () => void }) {
   return (
     <article
       aria-label={name}
-      className="flex flex-col gap-3.5 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-primary-400/40 dark:border-navy-600 dark:bg-navy-700 dark:shadow-md dark:hover:border-primary-400/40"
+      className="flex flex-col gap-3.5 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors max-md:gap-2 max-md:p-3 hover:border-primary-400/40 dark:border-navy-600 dark:bg-navy-700 dark:shadow-md dark:hover:border-primary-400/40"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 max-md:flex-col max-md:gap-2">
         <ItemIcon code={item.itemCode} size="md" />
         <div className="flex min-w-0 flex-col gap-1">
-          <h3 className="font-heading text-lg font-bold uppercase leading-tight tracking-wider text-gray-900 dark:text-gray-100">
+          <h3 className="font-heading text-lg font-bold uppercase leading-tight tracking-wider text-gray-900 max-md:font-sans max-md:text-sm max-md:normal-case max-md:tracking-normal dark:text-gray-100">
             {name}
           </h3>
           {description && (
-            <p className="text-sm leading-snug text-gray-600 dark:text-gray-400">{description}</p>
+            <p className="text-sm leading-snug text-gray-600 max-md:hidden dark:text-gray-400">
+              {description}
+            </p>
           )}
         </div>
       </div>
@@ -405,7 +407,7 @@ function Offer({ item, onBuy }: { item: ShopItemView; onBuy: () => void }) {
           {blocker}
         </p>
       )}
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-200 pt-3.5 dark:border-navy-600">
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-gray-200 pt-3.5 max-md:flex-col max-md:items-stretch max-md:border-t-0 max-md:pt-1 dark:border-navy-600">
         <span className="text-xs text-gray-500 dark:text-gray-400">
           {t("online.shop.held")}{" "}
           <strong className="tabular-nums text-gray-800 dark:text-gray-200">
@@ -417,7 +419,7 @@ function Offer({ item, onBuy }: { item: ShopItemView; onBuy: () => void }) {
           disabled={blocker !== null}
           onClick={onBuy}
           aria-label={t("online.shop.buyAria", { item: name, coins: price })}
-          className="inline-flex h-11 min-w-22 items-center justify-center gap-2 rounded-lg bg-primary-700 px-4 font-heading text-xl font-bold tabular-nums text-accent-400 shadow-md transition-all hover:bg-primary-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary-700 dark:focus:ring-offset-navy-800"
+          className="inline-flex h-11 min-w-22 items-center justify-center gap-2 rounded-lg bg-primary-700 px-4 font-heading text-xl font-bold tabular-nums max-md:h-10 max-md:min-w-0 max-md:text-lg text-accent-400 shadow-md transition-all hover:bg-primary-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary-700 dark:focus:ring-offset-navy-800"
         >
           <Coins className="h-4.5 w-4.5" aria-hidden="true" />
           {price}

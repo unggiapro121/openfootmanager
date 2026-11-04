@@ -13,6 +13,10 @@ const { platform } = vi.hoisted(() => {
       convertFileSrc: vi.fn((path: string) => `asset://localhost/${path}`),
       appDataDir: vi.fn(async () => "/home/u/.local/share/app"),
       listen: vi.fn(async (_event: string, _handler: unknown) => () => {}),
+      unregister: vi.fn(async () => {}),
+      onBackButtonPress: vi.fn(async (_handler: () => void) => ({
+        unregister: () => platform.unregister(),
+      })),
     },
   };
 });
@@ -27,6 +31,9 @@ vi.mock("@tauri-apps/api/path", () => ({
 vi.mock("@tauri-apps/api/event", () => ({
   listen: (event: string, handler: unknown) => platform.listen(event, handler),
 }));
+vi.mock("@tauri-apps/api/app", () => ({
+  onBackButtonPress: (handler: () => void) => platform.onBackButtonPress(handler),
+}));
 vi.mock("@tauri-apps/api/window", () => ({
   getCurrentWindow: () => platform.appWindow,
 }));
@@ -37,6 +44,7 @@ import {
   isDesktopApp,
   localFileUrl,
   onBackendEvent,
+  onPhoneBackButton,
   onWindowCloseRequested,
   setWindowTitle,
 } from "./platformService";
@@ -44,6 +52,19 @@ import {
 describe("platformService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  // Given the Android app, when a screen listens to the phone's Back, then the platform's Back
+  // event reaches the handler, and the function that comes back stops listening (phase 5).
+  it("listens to the phone's Back button", async () => {
+    const handler = vi.fn();
+    const stop = await onPhoneBackButton(handler);
+    const [registered] = platform.onBackButtonPress.mock.calls[0];
+    registered();
+    expect(handler).toHaveBeenCalledTimes(1);
+
+    stop();
+    expect(platform.unregister).toHaveBeenCalledTimes(1);
   });
 
   // Given the app runs in a plain browser, when it asks whether it is the

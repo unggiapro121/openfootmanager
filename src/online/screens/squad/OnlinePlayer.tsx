@@ -36,6 +36,10 @@ import PlayerAvatarPicker from "./PlayerAvatarPicker";
 import PlayerNationalityDialog from "./PlayerNationalityDialog";
 import ReleaseDialog from "./ReleaseDialog";
 import ShirtNumberPicker from "./ShirtNumberPicker";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import PhonePlayer from "./PhonePlayer";
+import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
+import { trainsKeeperDrill } from "../training/keeperDrill";
 
 /**
  * One player of the club on his own page, laid out as the offline player profile is: the hero card
@@ -47,7 +51,9 @@ export default function OnlinePlayer() {
   const { playerId = "" } = useParams();
   const club = useOnlineStore((state) => state.club);
   const player = club?.players.find((one) => one.id === playerId);
+  const phone = usePhoneLayout();
   if (!club) return null;
+  if (phone && player) return <PhonePlayer player={player} club={club} />;
   return (
     <div className="flex flex-col gap-5">
       <Link
@@ -171,6 +177,10 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
                 primaryPosition={player.naturalPosition}
                 alternatePositions={player.alternatePositions}
               />
+              {trainsKeeperDrill(
+                player.naturalPosition || player.position,
+                club.trainingDay?.keeperDrill,
+              ) && <KeeperDrillBadge />}
               <span className="text-sm text-gray-400">
                 <CountryFlag
                   code={player.nationality}

@@ -1,5 +1,6 @@
 pub mod coach;
 pub mod coach_server;
+pub mod endpoints;
 pub mod live_match;
 pub mod online;
 pub mod press_conference;

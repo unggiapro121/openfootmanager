@@ -29,17 +29,17 @@ export function StandingCard({
       className={CARD}
       action={inLeague && <CardLink to="/online/league">{t("online.overview.seeTable")}</CardLink>}
     >
-      <div className="flex flex-col gap-5 p-6">
+      <div className="flex flex-col gap-5 p-6 max-md:gap-3 max-md:p-3">
         {row ? (
           <>
-            <div className="flex items-center gap-4">
-              <span className="flex h-18 w-18 shrink-0 items-center justify-center rounded-xl bg-accent-100 font-heading text-5xl font-bold leading-none text-accent-800 dark:bg-accent-900/40 dark:text-accent-400">
+            <div className="flex items-center gap-4 max-md:gap-2.5">
+              <span className="flex h-18 w-18 shrink-0 max-md:h-12 max-md:w-12 max-md:text-3xl items-center justify-center rounded-xl bg-accent-100 font-heading text-5xl font-bold leading-none text-accent-800 dark:bg-accent-900/40 dark:text-accent-400">
                 <span className="sr-only">{t("online.overview.placeAria")} </span>
                 {row.position}
               </span>
               <div className="flex flex-col gap-0.5">
                 <span className={LABEL}>{t("online.overview.placeNow")}</span>
-                <span className="font-heading text-3xl font-bold leading-tight text-gray-900 dark:text-white">
+                <span className="font-heading text-3xl font-bold leading-tight text-gray-900 max-md:text-lg dark:text-white">
                   {t("online.overview.points", { count: row.points })}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -99,7 +99,9 @@ function Record({ row }: { row: StandingRow }) {
             <dt className="text-xs text-gray-500 dark:text-gray-400">
               {t(`online.schedule.outcome.${part.key}`)}
             </dt>
-            <dd className={`font-heading text-2xl font-bold tabular-nums ${part.text}`}>
+            <dd
+              className={`font-heading text-2xl font-bold tabular-nums max-md:text-lg ${part.text}`}
+            >
               {part.count}
             </dd>
           </div>
@@ -137,7 +139,7 @@ export function LastResultCard({
         )
       }
     >
-      <div className="flex flex-1 flex-col gap-4 p-6">
+      <div className="flex flex-1 flex-col gap-4 p-6 max-md:gap-2 max-md:p-3">
         <ResourceState resource={fixtures} reload={reload}>
           {() =>
             latest ? (
@@ -158,7 +160,7 @@ function Result({ fixture, clubId }: { fixture: FixtureView; clubId: string }) {
   const { t } = useTranslation();
   const atHome = fixture.home.id === clubId;
   const name = (mine: boolean) =>
-    `font-heading text-lg font-bold uppercase tracking-wider ${
+    `font-heading text-lg font-bold uppercase tracking-wider max-md:font-sans max-md:text-xs max-md:font-semibold max-md:normal-case max-md:tracking-normal ${
       mine ? "text-primary-700 dark:text-primary-400" : "text-gray-900 dark:text-gray-100"
     }`;
   return (
@@ -169,9 +171,9 @@ function Result({ fixture, clubId }: { fixture: FixtureView; clubId: string }) {
           venue: atHome ? t("online.fixture.home") : t("online.fixture.away"),
         })}
       </span>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 max-md:gap-1.5">
         <span className={`${name(atHome)} text-right`}>{fixture.home.name}</span>
-        <span className="rounded-lg bg-gray-100 px-3.5 py-1.5 font-heading text-4xl font-bold leading-none tabular-nums text-gray-900 dark:bg-navy-900 dark:text-white">
+        <span className="rounded-lg bg-gray-100 px-3.5 py-1.5 font-heading text-4xl font-bold leading-none tabular-nums max-md:px-2 max-md:text-2xl text-gray-900 dark:bg-navy-900 dark:text-white">
           {fixture.homeGoals} – {fixture.awayGoals}
         </span>
         <span className={name(!atHome)}>{fixture.away.name}</span>
@@ -215,12 +217,12 @@ export function UpcomingCard({
             </p>
           ) : (
             <>
-              <ol className="flex flex-col px-3 py-2">
+              <ol className="flex flex-col px-3 py-2 max-md:snap-x max-md:flex-row max-md:gap-2 max-md:overflow-x-auto max-md:py-3">
                 {coming.map((fixture, index) => (
                   <Coming key={fixture.id} fixture={fixture} clubId={clubId} next={index === 0} />
                 ))}
               </ol>
-              <p className="px-6 pb-4 text-xs text-gray-500 dark:text-gray-400">
+              <p className="px-6 pb-4 text-xs text-gray-500 max-md:px-4 dark:text-gray-400">
                 {t("online.overview.markLegend")}
               </p>
             </>
@@ -247,7 +249,7 @@ function Coming({
   return (
     <li
       aria-current={next ? "true" : undefined}
-      className={`grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-3 py-2.5 ${
+      className={`grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-2 rounded-lg px-3 py-2.5 max-md:flex max-md:w-40 max-md:shrink-0 max-md:snap-start max-md:flex-col max-md:items-start max-md:gap-1.5 max-md:border max-md:border-gray-200 dark:max-md:border-navy-600 ${
         next
           ? "bg-primary-50 dark:bg-primary-900/40"
           : "border-b border-gray-100 last:border-b-0 dark:border-navy-600"
@@ -258,7 +260,7 @@ function Coming({
       >
         {t("online.fixture.round", { round: fixture.round })}
       </span>
-      <span className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+      <span className="truncate text-sm font-semibold text-gray-900 max-md:w-full dark:text-gray-100">
         <Link
           to={`/online/clubs/${opponent.id}`}
           className="rounded hover:underline focus:outline-none focus:ring-2 focus:ring-primary-500"

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePhoneLayout } from "../../hooks/usePhoneLayout";
 import { resolveBackendError } from "../../utils/backendI18n";
 import type { AccountView, CareerView } from "../api";
 import { online } from "../client";
@@ -23,6 +24,7 @@ export default function OnlineProfile() {
   const [error, setError] = useState<unknown>(null);
   const [picking, setPicking] = useState(false);
   const [image, setImage] = useState<string>();
+  const phone = usePhoneLayout();
   const { resource, reload } = useOnlineResource(async () => {
     const [career, table] = await Promise.all([
       tracked(() => online.me.career()),
@@ -87,8 +89,10 @@ export default function OnlineProfile() {
       )}
       {shown ? (
         <>
+          {/* A phone leads with the road ahead, then the styles (design m-ho-so-hlv.html). */}
+          {phone && <CoachRoadmap career={shown.career} steps={shown.steps} />}
           <CoachMastery mastery={shown.career.mastery} onUsed={reload} />
-          <CoachRoadmap career={shown.career} steps={shown.steps} />
+          {!phone && <CoachRoadmap career={shown.career} steps={shown.steps} />}
         </>
       ) : (
         <ResourceState resource={resource} reload={reload}>
