@@ -1632,8 +1632,10 @@
         "style": "Dùng cho {{style}}",
         "usedToday": "Đã dùng hôm nay",
         "rename": "Đổi tên ở trang Đội hình",
-        "academy": "Dùng ở Lò đào tạo"
-      }
+        "academy": "Dùng ở Lò đào tạo",
+        "offThisSeason": "Mùa này không dùng được"
+      },
+      "offThisSeason": "Không dùng được trong mùa này"
     },
     "shop": {
       "notOnServer": "Máy chủ này chưa có cửa hàng.",

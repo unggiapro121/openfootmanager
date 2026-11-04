@@ -1632,8 +1632,10 @@
         "style": "Pakai untuk {{style}}",
         "usedToday": "Sudah dipakai hari ini",
         "rename": "Ganti nama di skuad",
-        "academy": "Gunakan di akademi muda"
-      }
+        "academy": "Gunakan di akademi muda",
+        "offThisSeason": "Nonaktif musim ini"
+      },
+      "offThisSeason": "Tidak bisa dipakai musim ini"
     },
     "shop": {
       "notOnServer": "Server ini belum punya toko.",

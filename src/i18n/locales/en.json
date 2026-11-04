@@ -1632,8 +1632,10 @@
         "style": "Use on {{style}}",
         "usedToday": "Used today",
         "rename": "Rename in the squad",
-        "academy": "Use at the Youth Academy"
-      }
+        "academy": "Use at the Youth Academy",
+        "offThisSeason": "Off this season"
+      },
+      "offThisSeason": "Not usable this season"
     },
     "shop": {
       "notOnServer": "This server has no shop yet.",

@@ -1632,8 +1632,10 @@
         "style": "Usar em {{style}}",
         "usedToday": "Usado hoje",
         "rename": "Renomear no elenco",
-        "academy": "Usar na categoria de base"
-      }
+        "academy": "Usar na categoria de base",
+        "offThisSeason": "Desativado nesta temporada"
+      },
+      "offThisSeason": "Indisponível nesta temporada"
     },
     "shop": {
       "notOnServer": "Este servidor ainda não tem loja.",

@@ -1632,8 +1632,10 @@
         "style": "Utiliser sur {{style}}",
         "usedToday": "Déjà utilisé aujourd'hui",
         "rename": "Renommer dans l'effectif",
-        "academy": "Utiliser au centre de formation"
-      }
+        "academy": "Utiliser au centre de formation",
+        "offThisSeason": "Désactivé cette saison"
+      },
+      "offThisSeason": "Inutilisable cette saison"
     },
     "shop": {
       "notOnServer": "Ce serveur n'a pas encore de boutique.",

@@ -215,13 +215,15 @@ function Preparation({ onUse }: { onUse: (code: string) => void }) {
           <span className="flex flex-col gap-px">
             <span className="text-sm font-semibold">{t("online.overview.recovery")}</span>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {left === 0
-                ? t("online.overview.recoveryUsed")
-                : t("online.overview.recoveryLine", {
-                    item: itemName(t, RECOVERY),
-                    count: held,
-                    left,
-                  })}
+              {recovery.perDay === 0
+                ? t("online.inventory.offThisSeason")
+                : left === 0
+                  ? t("online.overview.recoveryUsed")
+                  : t("online.overview.recoveryLine", {
+                      item: itemName(t, RECOVERY),
+                      count: held,
+                      left,
+                    })}
             </span>
           </span>
         </button>

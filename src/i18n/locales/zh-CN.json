@@ -1632,8 +1632,10 @@
         "style": "用于{{style}}",
         "usedToday": "今天已使用",
         "rename": "在阵容中改名",
-        "academy": "在青训营使用"
-      }
+        "academy": "在青训营使用",
+        "offThisSeason": "本赛季已停用"
+      },
+      "offThisSeason": "本赛季不可使用"
     },
     "shop": {
       "notOnServer": "该服务器暂无商店。",

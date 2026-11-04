@@ -216,6 +216,33 @@ describe("the inventory", () => {
     expect(actionIn(dialog).disabled).toBe(true);
   });
 
+  // Given a season whose ruleset allows no use of the recovery pack (perDay 0),
+  // when the inventory and then the pack's detail open,
+  // then both say the pack is off this season, with no "0/0 today" and no reset time,
+  // and the use is off.
+  it("says the recovery pack is off for a season that allows none", async () => {
+    serve({
+      "GET v1/me/items": ok(
+        inventory({
+          limits: {
+            teamRecovery: { usedToday: 0, perDay: 0, nextAt: "2099-01-02T00:00:00Z" },
+            notes: [],
+            xpX2: { remaining: 0, max: 10 },
+          },
+        }),
+      ),
+    });
+    renderOnline("/online/inventory");
+    expect(await screen.findByText("online.inventory.offThisSeason")).toBeTruthy();
+    const dialog = await openDetail("teamRecoveryPack");
+
+    expect(dialog.textContent).not.toContain("online.inventory.dailyUsed");
+    expect(dialog.textContent).not.toMatch(/online\.inventory\.refreshAt:/);
+    expect(within(dialog).getByText("online.inventory.offThisSeason")).toBeTruthy();
+    expect(actionIn(dialog).textContent).toBe("online.inventory.action.offThisSeason");
+    expect(actionIn(dialog).disabled).toBe(true);
+  });
+
   // Given a coach with no club,
   // when a drink's detail and then a note's open,
   // then the drink cannot be used and links to taking a club; the note needs no club.

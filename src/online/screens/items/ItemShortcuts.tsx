@@ -17,7 +17,10 @@ export default function ItemShortcuts({ codes, target }: { codes: string[]; targ
   const [using, setUsing] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
   if (!items?.limits || items.locked) return null;
+  // A season that allows no use of the team pack a day has it off all season: no shortcut.
+  const teamPackOff = items.limits.teamRecovery?.perDay === 0;
   const held = codes
+    .filter((code) => !(code === "teamRecoveryPack" && teamPackOff))
     .map((code) => ({
       code,
       total: items.lines.find((line) => line.itemCode === code)?.total ?? 0,

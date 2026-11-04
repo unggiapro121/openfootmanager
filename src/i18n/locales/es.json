@@ -1632,8 +1632,10 @@
         "style": "Usar en {{style}}",
         "usedToday": "Usado hoy",
         "rename": "Cambiar el nombre en la plantilla",
-        "academy": "Usar en la cantera"
-      }
+        "academy": "Usar en la cantera",
+        "offThisSeason": "Desactivado esta temporada"
+      },
+      "offThisSeason": "No disponible esta temporada"
     },
     "shop": {
       "notOnServer": "Este servidor aún no tiene tienda.",
