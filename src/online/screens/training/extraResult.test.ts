@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { squadPlayer } from "../../../../test-utils/onlineTestKit";
-import type { ExtraPlayerLine } from "../../../api";
+import { squadPlayer } from "../../../test-utils/onlineTestKit";
+import type { ExtraPlayerLine } from "../../api";
 import { namedGains, pressTotals, unimproved } from "./extraResult";
 
 const BASE = squadPlayer().attributes;

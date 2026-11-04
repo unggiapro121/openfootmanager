@@ -3,12 +3,23 @@ import { Plus } from "lucide-react";
 import { useOnlineNow } from "../../clock";
 import { formatKickoffClock } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
+import { type ExtraOutcome, pressTotals } from "./extraResult";
 
 /**
  * The way into extra sessions (design tap-luyen.html "Tập thêm"): how many the club held today,
- * when the next daily gift comes or that one waits, and the button that opens the panel.
+ * or what the last press gave; when the next daily gift comes or that one waits, and the button
+ * that opens the panel.
  */
-export default function ExtraEntry({ today, onOpen }: { today: number; onOpen: () => void }) {
+export default function ExtraEntry({
+  today,
+  outcome,
+  onOpen,
+}: {
+  today: number;
+  /** The last press's result while the training page stays open. */
+  outcome: ExtraOutcome | null;
+  onOpen: () => void;
+}) {
   const { t } = useTranslation();
   const giftText = useGiftText();
   return (
@@ -24,7 +35,12 @@ export default function ExtraEntry({ today, onOpen }: { today: number; onOpen: (
           {t("online.training.extra.title")}
         </span>
         <span className="text-xs text-gray-600 dark:text-gray-400">
-          {t("online.training.extra.entryToday", { count: today })}
+          {outcome
+            ? t("online.training.phone.entryLast", {
+                gains: pressTotals(outcome.result.players).gains,
+                today,
+              })
+            : t("online.training.extra.entryToday", { count: today })}
           {giftText && ` · ${giftText}`}
         </span>
       </span>

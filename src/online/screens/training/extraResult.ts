@@ -1,5 +1,5 @@
-import type { ExtraPlayerLine } from "../../../api";
-import type { PlayerAttributes } from "../../../api/domain/PlayerAttributes";
+import type { ExtraPlayerLine, ExtraSessionView } from "../../api";
+import type { PlayerAttributes } from "../../api/domain/PlayerAttributes";
 
 export type AttributeKey = keyof PlayerAttributes;
 
@@ -62,4 +62,10 @@ export function unimproved(lines: ExtraPlayerLine[]): UnimprovedGroup[] {
   return [...groups.entries()]
     .map(([kind, playerIds]) => ({ kind, playerIds }))
     .sort((left, right) => Number(right.kind === "trained") - Number(left.kind === "trained"));
+}
+
+/** A press's result as the screens keep it: the server's answer and the attributes before it. */
+export interface ExtraOutcome {
+  result: ExtraSessionView;
+  before: Map<string, PlayerAttributes>;
 }

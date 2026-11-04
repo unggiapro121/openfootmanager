@@ -2,8 +2,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronRight, Plus } from "lucide-react";
 import type { ExtraDayView, SquadPlayerView } from "../../../api";
 import { FOCUS } from "../../mobile/PhoneSheet";
-import { pressTotals } from "./extraResult";
-import type { ExtraOutcome } from "./PhoneExtraResult";
+import { type ExtraOutcome, pressTotals } from "../extraResult";
 
 const KEY = "online.training.phone";
 

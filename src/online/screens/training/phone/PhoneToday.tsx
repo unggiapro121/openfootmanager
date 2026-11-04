@@ -10,13 +10,13 @@ import { FOCUS } from "../../mobile/PhoneSheet";
 import { SEASON_DAYS } from "../../shellNav";
 import { useMainSessionNote } from "../MainSession";
 import { NextRecovery, StripCell, statusText, TodayNotes } from "../TodaySession";
+import type { ExtraOutcome } from "../extraResult";
 import { DAY_PENDING, displayDay, matchTodayKickoff } from "../todayText";
 import { isScheduleDay, stripDays } from "../trainingView";
 import { useDayPendingPoll } from "../useDayPendingPoll";
 import { SCHEDULE_TONES } from "../WeeklyPlan";
 import PhoneExtra from "./PhoneExtra";
 import { PhoneExtraEntry } from "./PhoneExtraEntry";
-import type { ExtraOutcome } from "./PhoneExtraResult";
 
 export const KEY = "online.training.phone";
 export type PlanTab = "sched" | "focus";

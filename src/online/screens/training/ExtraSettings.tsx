@@ -1,9 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { Minus, Plus } from "lucide-react";
-import { INTENSITY_IDS } from "../../../../components/training/trainingOptions";
-import type { ExtraDayView } from "../../../api";
-import { FOCUS } from "../../mobile/PhoneSheet";
-import { ALL_SESSIONS, type ExtraChoice, MATCH_CONDITION, SESSION_CHOICES } from "../extraText";
+import { INTENSITY_IDS } from "../../../components/training/trainingOptions";
+import type { ExtraDayView } from "../../api";
+import { FOCUS } from "../mobile/PhoneSheet";
+import { ALL_SESSIONS, type ExtraChoice, MATCH_CONDITION, SESSION_CHOICES } from "./extraText";
 
 const KEY = "online.training.phone";
 /** How far one press of − or + moves the condition to keep. */
@@ -17,11 +17,11 @@ const segment = (on: boolean) =>
   `rounded-lg disabled:opacity-50 ${on ? "bg-white text-gray-900 shadow-sm dark:bg-navy-600 dark:text-white" : "text-gray-500 dark:text-gray-400"} ${FOCUS}`;
 
 /**
- * The extra session's settings on a phone (design MTapThem "Thiết lập buổi tập thêm"), one row
+ * The extra session's settings (design MTapThem "Thiết lập buổi tập thêm"), one row
  * each: the intensity with what a session costs, how many sessions, and the condition to keep,
  * which the − and + also switch on.
  */
-export function PhoneExtraSettings({
+export function ExtraSettings({
   intensity,
   costs,
   choice,
