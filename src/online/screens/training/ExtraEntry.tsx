@@ -9,16 +9,8 @@ import { useOnlineStore } from "../../store/onlineStore";
  * when the next daily gift comes or that one waits, and the button that opens the panel.
  */
 export default function ExtraEntry({ today, onOpen }: { today: number; onOpen: () => void }) {
-  const { t, i18n } = useTranslation();
-  const now = useOnlineNow();
-  const gift = useOnlineStore((state) => state.items?.dailyGift);
-  const giftText = gift?.available
-    ? t("online.training.extra.entryGiftReady")
-    : gift?.nextAt
-      ? t("online.training.extra.entryGift", {
-          time: formatKickoffClock(gift.nextAt, now, i18n.language),
-        })
-      : null;
+  const { t } = useTranslation();
+  const giftText = useGiftText();
   return (
     <div className="flex flex-wrap items-center gap-3.5 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 dark:border-navy-600 dark:bg-navy-700">
       <span
@@ -46,4 +38,16 @@ export default function ExtraEntry({ today, onOpen }: { today: number; onOpen: (
       </button>
     </div>
   );
+}
+
+/** When the next daily gift comes, or that one waits; `null` while the items are unread. */
+export function useGiftText(): string | null {
+  const { t, i18n } = useTranslation();
+  const now = useOnlineNow();
+  const gift = useOnlineStore((state) => state.items?.dailyGift);
+  if (gift?.available) return t("online.training.extra.entryGiftReady");
+  if (!gift?.nextAt) return null;
+  return t("online.training.extra.entryGift", {
+    time: formatKickoffClock(gift.nextAt, now, i18n.language),
+  });
 }

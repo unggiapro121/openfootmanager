@@ -8,7 +8,6 @@ import { formatKickoffClock } from "../../../format";
 import { refreshClub, useOnlineStore } from "../../../store/onlineStore";
 import { FOCUS } from "../../mobile/PhoneSheet";
 import { SEASON_DAYS } from "../../shellNav";
-import ExtraEntry from "../ExtraEntry";
 import { useMainSessionNote } from "../MainSession";
 import { NextRecovery, StripCell, statusText, TodayNotes } from "../TodaySession";
 import { DAY_PENDING, displayDay, matchTodayKickoff } from "../todayText";
@@ -16,6 +15,8 @@ import { isScheduleDay, stripDays } from "../trainingView";
 import { useDayPendingPoll } from "../useDayPendingPoll";
 import { SCHEDULE_TONES } from "../WeeklyPlan";
 import PhoneExtra from "./PhoneExtra";
+import { PhoneExtraEntry } from "./PhoneExtraEntry";
+import type { ExtraOutcome } from "./PhoneExtraResult";
 
 export const KEY = "online.training.phone";
 export type PlanTab = "sched" | "focus";
@@ -44,6 +45,7 @@ export function PhoneToday({
   const weekday = season?.weekday ?? null;
   const [notesOpen, setNotesOpen] = useState(false);
   const [extraOpen, setExtraOpen] = useState(false);
+  const [outcome, setOutcome] = useState<ExtraOutcome | null>(null);
   const pending = trainingDay.refusal === DAY_PENDING || trainingDay.extra?.refusal === DAY_PENDING;
   const { slow } = useDayPendingPoll(pending);
   const kickoff = matchTodayKickoff(club, season?.nextDayAt, now);
@@ -153,13 +155,20 @@ export function PhoneToday({
         onGo={onGo}
       />
       {trainingDay.extra && (
-        <ExtraEntry today={trainingDay.extra.today} onOpen={() => setExtraOpen(true)} />
+        <PhoneExtraEntry
+          extra={trainingDay.extra}
+          players={club.players}
+          outcome={outcome}
+          onOpen={() => setExtraOpen(true)}
+        />
       )}
       {extraOpen && trainingDay.extra && (
         <PhoneExtra
           club={club}
           trainingDay={trainingDay}
           extra={trainingDay.extra}
+          outcome={outcome}
+          onOutcome={setOutcome}
           onClose={() => setExtraOpen(false)}
         />
       )}
