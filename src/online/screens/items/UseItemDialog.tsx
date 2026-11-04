@@ -14,7 +14,7 @@ import { OnlineApiError } from "../../errors";
 import { formatMoment } from "../../format";
 import { refreshClub, refreshItems, tracked, useOnlineStore } from "../../store/onlineStore";
 import { useActionKey } from "../useActionKey";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "./ItemDialogFrame";
+import ItemDialogFrame, { FRAME_ACTION, FrameCancel, HeadBadge } from "./ItemDialogFrame";
 import {
   groupOf,
   isMedkit,
@@ -203,12 +203,18 @@ export function useStyles(kind: TargetKind | undefined): StyleMasteryView[] {
 export default function UseItemDialog({
   code,
   initialTarget,
+  lockTarget = false,
   onClose,
   onDone,
 }: {
   code: string;
   /** A target already chosen where the dialog opened (a player's page). */
   initialTarget?: ItemTarget;
+  /**
+   * The dialog opened from its target itself (a player's page, a style's tile): it names that
+   * target and offers no other. The inventory leaves it off, so its target can still be changed.
+   */
+  lockTarget?: boolean;
   onClose: () => void;
   onDone: (text: string) => void;
 }) {
@@ -248,6 +254,10 @@ export default function UseItemDialog({
 
   if (!kind) return null;
   const choices = choicesOf(t, code, kind, players, styles);
+  const locked = lockTarget && target !== undefined;
+  const lockedLabel = locked
+    ? choices.find((choice) => JSON.stringify(choice.target) === JSON.stringify(target))?.label
+    : undefined;
   const refusal = preview?.refusal;
   const matchLocked = refusal?.code === MATCH_LOCKED;
 
@@ -295,10 +305,11 @@ export default function UseItemDialog({
     <ItemDialogFrame
       code={code}
       title={t("online.items.useTitle", { item: itemName(t, code) })}
+      badges={lockedLabel && <HeadBadge tone="plain">{lockedLabel}</HeadBadge>}
       busy={busy}
       onClose={onClose}
     >
-      {choices.length > 0 && (
+      {!locked && choices.length > 0 && (
         <fieldset className="space-y-1">
           <legend className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
             {t(kind === "style" ? "online.items.pickStyle" : "online.items.pickPlayer")}

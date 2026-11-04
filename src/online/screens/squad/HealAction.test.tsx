@@ -92,7 +92,8 @@ afterEach(() => {
 describe("healing an injured player from his injury", () => {
   // Given an injured player and a bandage in the inventory,
   // when the coach presses "heal" on the injury,
-  // then a list of the medkits held opens, and choosing one opens its use on this player.
+  // then a list of the medkits held opens, and choosing one opens its use on this player alone:
+  // no other player to pick.
   it("lists the medkits held and uses the one chosen", async () => {
     layout(false);
     await open(LIN, inventory([line("medkitBandage", 2), line("energyDrinkSmall", 5)]));
@@ -107,9 +108,9 @@ describe("healing an injured player from his injury", () => {
     ).not.toBeInTheDocument();
     fireEvent.click(within(list).getByRole("button", { name: /online\.items\.medkitBandage/ }));
 
-    expect(
-      await screen.findByRole("dialog", { name: /online\.items\.useTitle/ }),
-    ).toBeInTheDocument();
+    const use = await screen.findByRole("dialog", { name: /online\.items\.useTitle/ });
+    expect(within(use).getByText("Christian Lin")).toBeInTheDocument();
+    expect(within(use).queryByRole("group", { name: "online.items.pickPlayer" })).toBeNull();
   });
 
   // Given an injured player and no medkit in the inventory,

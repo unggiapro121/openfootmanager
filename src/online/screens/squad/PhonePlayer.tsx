@@ -339,6 +339,7 @@ function Condition({ player }: { player: SquadPlayerView }) {
         <UseItemDialog
           code={using}
           initialTarget={{ kind: "player", playerId: player.id }}
+          lockTarget
           onClose={() => setUsing(null)}
           onDone={(text) => {
             setUsing(null);
