@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Per-machine server endpoints for the build scripts (.env.uat, .env.localhost), never committed
+.env
+.env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
