@@ -37,6 +37,7 @@ import PlayerNationalityDialog from "./PlayerNationalityDialog";
 import ReleaseDialog from "./ReleaseDialog";
 import ShirtNumberPicker from "./ShirtNumberPicker";
 import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
+import HealAction from "./HealAction";
 import PhonePlayer from "./PhonePlayer";
 import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
 import { trainsKeeperDrill } from "../training/keeperDrill";
@@ -85,6 +86,7 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
         <PlayerProfileInjuryBanner
           injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
           t={t}
+          action={<HealAction player={player} />}
         />
       )}
       {player.suspendedMatches !== undefined && (
@@ -100,14 +102,12 @@ function Profile({ player, club }: { player: SquadPlayerView; club: MyClubView }
           <CardHeader>{t("online.squad.state")}</CardHeader>
           <CardBody className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
             <Meter label={t("common.condition")} value={player.condition} />
-            <ItemShortcuts
-              codes={
-                player.injury
-                  ? ["medkitBandage", "medkitAdvanced"]
-                  : ["energyDrinkSmall", "energyDrinkLarge"]
-              }
-              target={{ kind: "player", playerId: player.id }}
-            />
+            {!player.injury && (
+              <ItemShortcuts
+                codes={["energyDrinkSmall", "energyDrinkLarge"]}
+                target={{ kind: "player", playerId: player.id }}
+              />
+            )}
             <Meter label={t("online.squad.fitness")} value={player.fitness} />
             <Meter label={t("common.morale")} value={player.morale} />
             <div className="flex flex-wrap gap-2 pt-1">

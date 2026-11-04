@@ -375,6 +375,10 @@
         "listSub": "Le mettre aux enchères",
         "releaseSub": "Le laisser quitter le club",
         "shirtSub": "Porte le numéro {{number}}"
+      },
+      "heal": {
+        "action": "Soigner",
+        "none": "Aucun objet de soin pour l'instant."
       }
     },
     "training": {

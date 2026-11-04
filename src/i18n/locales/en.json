@@ -375,6 +375,10 @@
         "listSub": "Put him on the auction market",
         "releaseSub": "Let him leave the club now",
         "shirtSub": "Wearing number {{number}}"
+      },
+      "heal": {
+        "action": "Heal",
+        "none": "No healing items yet."
       }
     },
     "training": {

@@ -375,6 +375,10 @@
         "listSub": "Đưa lên Chợ đấu giá",
         "releaseSub": "Cho rời CLB ngay",
         "shirtSub": "Đang mặc số {{number}}"
+      },
+      "heal": {
+        "action": "Chữa thương",
+        "none": "Bạn chưa có gói chữa thương nào."
       }
     },
     "training": {

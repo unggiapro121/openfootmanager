@@ -50,6 +50,7 @@ export default function ItemShortcuts({ codes, target }: { codes: string[]; targ
         <UseItemDialog
           code={using}
           initialTarget={target}
+          lockTarget
           onClose={() => setUsing(null)}
           onDone={(text) => {
             setUsing(null);

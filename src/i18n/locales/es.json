@@ -375,6 +375,10 @@
         "listSub": "Ponerlo en el mercado de subastas",
         "releaseSub": "Que deje el club ya",
         "shirtSub": "Lleva el número {{number}}"
+      },
+      "heal": {
+        "action": "Curar",
+        "none": "Aún no tienes objetos de curación."
       }
     },
     "training": {

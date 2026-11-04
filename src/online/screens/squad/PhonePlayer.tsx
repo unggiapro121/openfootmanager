@@ -14,6 +14,7 @@ import UseItemDialog from "../items/UseItemDialog";
 import { PhoneHeaderPart } from "../mobile/PhoneHeaderSlots";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import PotentialStars from "../PotentialStars";
+import HealAction from "./HealAction";
 import { PlayerActions } from "./PhoneSquadActions";
 import { PositionTag } from "./PhoneSquadParts";
 import { KEY, SeasonTab, StatsTab, TraitsTab, valueTone } from "./PhonePlayerTabs";
@@ -74,6 +75,7 @@ export default function PhonePlayer({
           <PlayerProfileInjuryBanner
             injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
             t={t}
+            action={<HealAction player={player} />}
           />
         )}
         {player.suspendedMatches !== undefined && (
@@ -214,11 +216,9 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
   );
 }
 
-/** The items that bring this player back: medkits while he is hurt, energy drinks otherwise. */
+/** The items that bring his condition back; an injury is healed from its banner (HealAction). */
 function recoveryCodes(player: SquadPlayerView): string[] {
-  return player.injury
-    ? ["medkitBandage", "medkitAdvanced"]
-    : ["energyDrinkSmall", "energyDrinkLarge"];
+  return player.injury ? [] : ["energyDrinkSmall", "energyDrinkLarge"];
 }
 
 /** Condition, fitness and morale as three meters, and the way to recover him with an item. */
@@ -339,6 +339,7 @@ function Condition({ player }: { player: SquadPlayerView }) {
         <UseItemDialog
           code={using}
           initialTarget={{ kind: "player", playerId: player.id }}
+          lockTarget
           onClose={() => setUsing(null)}
           onDone={(text) => {
             setUsing(null);

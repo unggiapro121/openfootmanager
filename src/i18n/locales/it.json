@@ -375,6 +375,10 @@
         "listSub": "Mettilo all'asta",
         "releaseSub": "Lascialo andare subito",
         "shirtSub": "Indossa il numero {{number}}"
+      },
+      "heal": {
+        "action": "Cura",
+        "none": "Non hai ancora oggetti curativi."
       }
     },
     "training": {
