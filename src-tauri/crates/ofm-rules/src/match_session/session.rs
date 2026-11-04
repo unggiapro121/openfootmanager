@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 use engine::ai::{self, AiProfile};
 use engine::{
     LiveMatchState, MatchCommand, MatchConfig, MatchEvent, MatchPhase, MatchReport, MatchSnapshot,
-    MinuteResult, PlayerData, Side, TeamData,
+    MinuteResult, PlayerData, SetPieceTakers, Side, TeamData,
 };
 use rand_chacha::ChaCha12Rng;
 use serde::{Deserialize, Serialize};
@@ -45,6 +45,36 @@ pub struct MatchSetup {
     pub licence_home: Option<LicenceControls>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub licence_away: Option<LicenceControls>,
+    /// The captain and set-piece takers each side kicks off with (its coach's match roles, the
+    /// online server's, [`crate::squad::kickoff_set_pieces`]). Part of the kick-off, not inputs:
+    /// a replay of the setup starts from them too. `None`, the desktop's (it orders them as system
+    /// inputs) and every match stored before them, leaves each duty to the engine's own pick; it is
+    /// left out of the stored setup, so such a setup reads and hashes as it did.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub set_pieces_home: Option<SetPieceTakers>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub set_pieces_away: Option<SetPieceTakers>,
+}
+
+/// Each duty of `takers` named, as the command that sets it: captain, penalties, free kicks,
+/// corners.
+pub fn taker_commands(side: Side, takers: SetPieceTakers) -> impl Iterator<Item = MatchCommand> {
+    [
+        takers
+            .captain
+            .map(|player_id| MatchCommand::SetCaptain { side, player_id }),
+        takers
+            .penalty_taker
+            .map(|player_id| MatchCommand::SetPenaltyTaker { side, player_id }),
+        takers
+            .free_kick_taker
+            .map(|player_id| MatchCommand::SetFreeKickTaker { side, player_id }),
+        takers
+            .corner_taker
+            .map(|player_id| MatchCommand::SetCornerTaker { side, player_id }),
+    ]
+    .into_iter()
+    .flatten()
 }
 
 /// One step as it happened: the engine's result, and the minute hash of the match after it.
@@ -99,7 +129,7 @@ impl MatchSession {
 
     /// The match before anything is logged: both sides with the AI.
     pub(super) fn kick_off(setup: MatchSetup) -> Self {
-        let state = LiveMatchState::new(
+        let mut state = LiveMatchState::new(
             setup.home,
             setup.away,
             setup.config,
@@ -107,6 +137,23 @@ impl MatchSession {
             setup.away_bench,
             setup.allows_extra_time,
         );
+        for (side, takers) in [
+            (Side::Home, setup.set_pieces_home),
+            (Side::Away, setup.set_pieces_away),
+        ] {
+            for command in takers
+                .into_iter()
+                .flat_map(|takers| taker_commands(side, takers))
+            {
+                // A duty the shared check refuses (a name not on the pitch) is left to the
+                // engine's own pick, as an unset one is.
+                if check_command(&state, side, &command).is_err() {
+                    continue;
+                }
+                // The engine never refuses a name; were it to, the duty stays its own pick.
+                if let Err(_refused) = state.apply_command(command) {}
+            }
+        }
         Self {
             state,
             engine_rng: setup.seed.engine_rng(),
