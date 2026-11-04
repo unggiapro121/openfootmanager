@@ -135,6 +135,8 @@ fn play(home: &Lineup<'_>, away: &Lineup<'_>, key: &str) -> Played {
         injury_window_steps: Some(3),
         licence_home: home.licence.clone(),
         licence_away: away.licence.clone(),
+        set_pieces_home: None,
+        set_pieces_away: None,
     };
     let started = Instant::now();
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);

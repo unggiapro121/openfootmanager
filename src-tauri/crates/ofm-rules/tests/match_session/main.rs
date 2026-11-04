@@ -5,6 +5,7 @@
 mod balance;
 mod check;
 mod golden;
+mod kickoff;
 mod licence;
 mod live;
 mod replay;

@@ -14,8 +14,8 @@ use domain::player::Position as DomainPosition;
 use engine::{
     BreakSpeed, CounterPressDuration, DefensiveLine, DefensiveShape, MarkingStyle, MatchCommand,
     MatchSnapshot, PitchPosition, PlayStyle, PlayerData, PlayerRole as EnginePlayerRole, Position,
-    PositionFit, PositionRating, PressingIntensity, Side, TacticsBuildUpStyle, TacticsConfig,
-    TacticsPitchWidth, TeamData, Tempo,
+    PositionFit, PositionRating, PressingIntensity, SetPieceTakers, Side, TacticsBuildUpStyle,
+    TacticsConfig, TacticsPitchWidth, TeamData, Tempo,
 };
 use std::collections::{HashMap, HashSet};
 
@@ -927,6 +927,28 @@ pub fn pick_set_piece_takers(
         .map(|p| p.id.clone());
 
     (captain, penalty, free_kick, corner)
+}
+
+/// The captain and set-piece takers `eleven` kicks off with: each duty its saved name in `roles`
+/// when he starts, else the eleven's own pick ([`pick_set_piece_takers`]), as the desktop orders
+/// them at kick-off. The vice-captain is not a duty of the match.
+pub fn kickoff_set_pieces(
+    roles: &domain::team::MatchRoles,
+    eleven: &[&domain::player::Player],
+) -> SetPieceTakers {
+    let starts = |saved: &Option<String>| {
+        saved
+            .as_ref()
+            .filter(|id| eleven.iter().any(|player| &player.id == *id))
+            .cloned()
+    };
+    let (captain, penalty, free_kick, corner) = pick_set_piece_takers(eleven);
+    SetPieceTakers {
+        captain: starts(&roles.captain).or(captain),
+        penalty_taker: starts(&roles.penalty_taker).or(penalty),
+        free_kick_taker: starts(&roles.free_kick_taker).or(free_kick),
+        corner_taker: starts(&roles.corner_taker).or(corner),
+    }
 }
 
 /// Drop any assigned player function (role) that is no longer valid for the
