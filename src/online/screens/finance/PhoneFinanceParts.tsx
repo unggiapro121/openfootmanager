@@ -12,6 +12,7 @@ import {
   Search,
   Ticket,
 } from "lucide-react";
+import { effectChanges, formatFacilityEffect } from "../../../components/finances/facilityEffects";
 import { formatDate } from "../../../lib/dateFormatting";
 import { formatExactMoney } from "../../../lib/valueFormatting";
 import { resolveBackendError } from "../../../utils/backendI18n";
@@ -19,6 +20,7 @@ import type { FacilityPreviewView, LedgerLineView } from "../../api";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import ResourceState from "../ResourceState";
 import {
+  asPreview,
   effectKeyOf,
   refPath,
   signedClass,
@@ -181,6 +183,7 @@ function UpgradeSheet({
   const { t } = useTranslation();
   const { confirm, isUpgrading, refusal } = useFacilityUpgrade(facility, onDone);
   const cost = facility.cost ?? 0;
+  const { effects } = asPreview(facility);
   return (
     <PhoneSheet
       title={t(`${KEY}.upTitle`, {
@@ -206,6 +209,7 @@ function UpgradeSheet({
       <p className="text-[13px] leading-normal text-gray-700 dark:text-gray-300">
         {t(effectKeyOf(facility.facility))}
       </p>
+      {effects.length > 0 && <EffectTable effects={effects} />}
       {refusal !== null && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {resolveBackendError(refusal)}
@@ -229,6 +233,63 @@ function UpgradeSheet({
         </button>
       </div>
     </PhoneSheet>
+  );
+}
+
+/**
+ * What the upgrade changes, effect by effect, now and after it: the desktop dialog's table
+ * (FacilityUpgradeDialog), the moving values set apart.
+ */
+function EffectTable({ effects }: { effects: ReturnType<typeof asPreview>["effects"] }) {
+  const { t, i18n } = useTranslation();
+  const write = (effect: (typeof effects)[number], values: number[]) =>
+    formatFacilityEffect(effect.format, values, i18n.language) ?? t("finances.facilityEffectNone");
+  return (
+    <table
+      aria-label={t("finances.facilityUpgradeEffect")}
+      className="w-full rounded-xl bg-gray-50 text-[13px] dark:bg-navy-900"
+    >
+      <thead>
+        <tr className="text-left text-[10px] font-heading uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <th scope="col" className="px-3.5 pb-1 pt-2.5 font-bold">
+            {t("finances.facilityUpgradeEffect")}
+          </th>
+          <th scope="col" className="px-1.5 pb-1 pt-2.5 text-right font-bold whitespace-nowrap">
+            {t("finances.facilityUpgradeNow")}
+          </th>
+          <th
+            scope="col"
+            className="pb-1 pl-1.5 pr-3.5 pt-2.5 text-right font-bold whitespace-nowrap"
+          >
+            {t("finances.facilityUpgradeAfter")}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {effects.map((effect) => (
+          <tr
+            key={effect.key}
+            className="border-t border-gray-200 text-gray-700 dark:border-navy-700 dark:text-gray-200"
+          >
+            <th scope="row" className="px-3.5 py-2 text-left font-normal leading-snug">
+              {t(effect.key)}
+            </th>
+            <td className="px-1.5 py-2 text-right tabular-nums whitespace-nowrap">
+              {write(effect, effect.current)}
+            </td>
+            <td
+              className={`py-2 pl-1.5 pr-3.5 text-right tabular-nums whitespace-nowrap ${
+                effectChanges(effect.current, effect.next)
+                  ? "font-semibold text-primary-700 dark:text-primary-300"
+                  : ""
+              }`}
+            >
+              {effect.next ? write(effect, effect.next) : "—"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

@@ -52,7 +52,16 @@ function finance(overrides: Partial<FinanceView> = {}): FinanceView {
 
 const FACILITIES: FacilitiesView = {
   facilities: [
-    { facility: "training", level: 8, maxLevel: 10, cost: 2_500_000, effects: [] },
+    {
+      facility: "training",
+      level: 8,
+      maxLevel: 10,
+      cost: 2_500_000,
+      effects: [
+        { key: "finances.effect.gains", format: "multiplier", current: [1.8], next: [1.9] },
+        { key: "finances.effect.injuries", format: "percentChange", current: [-10], next: [-10] },
+      ],
+    },
     { facility: "medical", level: 10, maxLevel: 10, cost: null, effects: [] },
     { facility: "scouting", level: 1, maxLevel: 10, cost: 9_000_000, effects: [] },
   ],
@@ -171,6 +180,27 @@ describe("the finance page on a phone", () => {
       expect(sent("POST", "v1/clubs/mine/facilities/training/upgrade")).toHaveLength(1),
     );
     expect(await screen.findByText(/online\.finance\.upgraded/)).toBeInTheDocument();
+  });
+
+  // Given a facility whose upgrade moves one effect and leaves another as it is,
+  // when the coach opens its upgrade sheet,
+  // then the sheet lists every effect with its value now and after the upgrade, as the desktop's
+  // dialog does, the one that moves set apart.
+  it("says what an upgrade changes, effect by effect", async () => {
+    serve();
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.fac` }));
+    fireEvent.click(
+      (await screen.findAllByRole("button", { name: /^finances\.upgradeFacility/ }))[0],
+    );
+
+    const sheet = screen.getByRole("dialog", { name: /online\.finance\.phone\.upTitle/ });
+    const effects = within(sheet).getByRole("table", { name: "finances.facilityUpgradeEffect" });
+    const gains = within(effects).getByRole("row", { name: /finances\.effect\.gains/ });
+    expect(within(gains).getByText("×1.8")).toBeInTheDocument();
+    expect(within(gains).getByText("×1.9")).toHaveClass("font-semibold");
+    const injuries = within(effects).getByRole("row", { name: /finances\.effect\.injuries/ });
+    expect(within(injuries).getAllByText("-10%")).toHaveLength(2);
   });
 
   // Given an upgrade the server refuses,
