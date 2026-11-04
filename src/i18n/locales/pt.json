@@ -481,6 +481,7 @@
         "rest": "Hoje é descanso segundo o calendário: não há sessão principal.",
         "keeperDrill": "Os guarda-redes treinam sempre um exercício próprio a mais: Enquadramento, Reflexos, Jogo Aéreo."
       },
+      "keeperBadge": "Treino de guarda-redes",
       "groups": {
         "all": "Todos ({{count}})",
         "focusOf": "Foco do grupo {{name}}",

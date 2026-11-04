@@ -11,6 +11,7 @@ import {
   resetOnline,
   SEASON,
   squadPlayer,
+  trainingDayView,
 } from "../../../test-utils/onlineTestKit";
 import type { InventoryView } from "../../api";
 
@@ -59,8 +60,8 @@ const ITEMS: InventoryView = {
 let server: ReturnType<typeof fakeServer>;
 let realtime: ReturnType<typeof fakeRealtime>;
 
-function serve() {
-  const club = myClub({ players: [FISCHER] });
+function serve(keeperDrill = false) {
+  const club = myClub({ players: [FISCHER], trainingDay: trainingDayView({ keeperDrill }) });
   club.setup = { ...club.setup, startingXiIds: ["gk"] };
   server = fakeServer({
     "GET v1/season": ok(SEASON),
@@ -92,8 +93,8 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-async function open() {
-  serve();
+async function open(keeperDrill = false) {
+  serve(keeperDrill);
   renderOnline("/online/squad/gk");
   return screen.findByRole("heading", { level: 2, name: "Andrés Fischer" });
 }
@@ -120,6 +121,19 @@ describe("a player's page on a phone", () => {
       "aria-checked",
       "true",
     );
+  });
+
+  // Given a keeper in a season whose keepers train their own drill, and one without it,
+  // when his page opens on a phone,
+  // then the head card carries the drill's badge only in the first.
+  it("marks the keeper who trains the keepers' drill", async () => {
+    await open(true);
+    expect(screen.getByText("online.training.keeperBadge")).toBeInTheDocument();
+  });
+
+  it("leaves the badge out in a season without the drill", async () => {
+    await open();
+    expect(screen.queryByText("online.training.keeperBadge")).toBeNull();
   });
 
   // Given the attributes as a list,

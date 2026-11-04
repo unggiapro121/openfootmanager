@@ -481,6 +481,7 @@
         "rest": "Hôm nay nghỉ theo lịch: không có buổi tập chính.",
         "keeperDrill": "Thủ môn luôn tập thêm bài riêng: Bắt bóng, Phản xạ, Không chiến."
       },
+      "keeperBadge": "Bài thủ môn",
       "groups": {
         "all": "Tất cả ({{count}})",
         "focusOf": "Trọng tâm nhóm {{name}}",

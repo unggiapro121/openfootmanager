@@ -16,6 +16,8 @@ import { getPositionColor } from "../../../../lib/positionColors";
 import type { TrainingGroupData } from "../../../../store/types";
 import type { FocusFitView } from "../../../api";
 import FocusHint from "../FocusHint";
+import { KeeperDrillBadge } from "../KeeperDrillBadge";
+import { trainsKeeperDrill } from "../keeperDrill";
 import { FOCUS } from "../../mobile/PhoneSheet";
 import { filteredRoster, type GroupFilter, groupOf } from "../trainingView";
 
@@ -36,6 +38,7 @@ export function PhoneGroups({
   teamFocus,
   roster,
   focusFits = {},
+  keeperDrill = false,
   disabled,
   onSaveGroups,
   onSetPlayerFocus,
@@ -45,6 +48,8 @@ export function PhoneGroups({
   roster: TrainingRosterPlayer[];
   /** How each player's focus suits him (S-31b), by id; a player without one shows no hint. */
   focusFits?: Record<string, FocusFitView>;
+  /** The season's keepers train their own drill (`TrainingDayView.keeperDrill`): badge them. */
+  keeperDrill?: boolean;
   disabled: boolean;
   onSaveGroups: (groups: TrainingGroupData[]) => void;
   onSetPlayerFocus: (playerId: string, focus: string | null) => void;
@@ -157,6 +162,7 @@ export function PhoneGroups({
               groups={groups}
               teamFocus={teamFocus}
               focusFit={focusFits[player.id]}
+              keeperDrill={keeperDrill}
               open={open === player.id}
               disabled={disabled}
               onToggle={() => setOpen(open === player.id ? null : player.id)}
@@ -177,6 +183,7 @@ function PlayerRow({
   groups,
   teamFocus,
   focusFit,
+  keeperDrill,
   open,
   disabled,
   onToggle,
@@ -187,6 +194,7 @@ function PlayerRow({
   groups: TrainingGroupData[];
   teamFocus: string;
   focusFit?: FocusFitView;
+  keeperDrill: boolean;
   open: boolean;
   disabled: boolean;
   onToggle: () => void;
@@ -214,13 +222,16 @@ function PlayerRow({
           {translatePositionAbbreviation(t, position)}
         </span>
         <span className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-            {player.match_name}
-            {player.jersey_number != null && (
-              <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
-                #{player.jersey_number}
-              </span>
-            )}
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+              {player.match_name}
+              {player.jersey_number != null && (
+                <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
+                  #{player.jersey_number}
+                </span>
+              )}
+            </span>
+            {trainsKeeperDrill(position, keeperDrill) && <KeeperDrillBadge />}
           </span>
           <span
             className={`truncate text-[11px] ${own ? "text-primary-700 dark:text-primary-400" : "text-gray-500 dark:text-gray-400"}`}

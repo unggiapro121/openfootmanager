@@ -481,6 +481,7 @@
         "rest": "Hoje é descanso pela agenda: sem sessão principal.",
         "keeperDrill": "Os goleiros sempre fazem um treino extra só deles: Pegada, Reflexos, Jogo Aéreo."
       },
+      "keeperBadge": "Treino de goleiro",
       "groups": {
         "all": "Todos ({{count}})",
         "focusOf": "Foco do grupo {{name}}",

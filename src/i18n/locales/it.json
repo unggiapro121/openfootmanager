@@ -481,6 +481,7 @@
         "rest": "Oggi è riposo da programma: nessuna sessione principale.",
         "keeperDrill": "I portieri fanno sempre anche un esercizio specifico: Presa, Riflessi, Gioco aereo."
       },
+      "keeperBadge": "Esercizio portieri",
       "groups": {
         "all": "Tutti ({{count}})",
         "focusOf": "Focus del gruppo {{name}}",

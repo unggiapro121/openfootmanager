@@ -481,6 +481,7 @@
         "rest": "今天按计划休息：没有主训练。",
         "keeperDrill": "门将总会额外进行专项训练：扑接能力、反应、制空。"
       },
+      "keeperBadge": "门将专项训练",
       "groups": {
         "all": "全部（{{count}}）",
         "focusOf": "{{name}} 小组的训练重点",

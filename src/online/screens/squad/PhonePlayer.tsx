@@ -18,6 +18,8 @@ import { PlayerActions } from "./PhoneSquadActions";
 import { PositionTag } from "./PhoneSquadParts";
 import { KEY, SeasonTab, StatsTab, TraitsTab, valueTone } from "./PhonePlayerTabs";
 import { avatarOf } from "./playerLook";
+import { KeeperDrillBadge } from "../training/KeeperDrillBadge";
+import { trainsKeeperDrill } from "../training/keeperDrill";
 
 type Tab = "stats" | "traits" | "season";
 const TABS: Tab[] = ["stats", "traits", "season"];
@@ -159,6 +161,10 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
           </h2>
           <span className="flex flex-wrap items-center gap-1.5 text-[13px] text-gray-600 dark:text-gray-300">
             <PositionTag position={player.naturalPosition} />
+            {trainsKeeperDrill(
+              player.naturalPosition || player.position,
+              club.trainingDay?.keeperDrill,
+            ) && <KeeperDrillBadge />}
             <CountryFlag
               code={player.nationality}
               locale={i18n.language}

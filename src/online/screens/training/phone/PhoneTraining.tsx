@@ -151,6 +151,7 @@ export default function PhoneTraining({ club }: { club: MyClubView }) {
             teamFocus={plan.focus}
             roster={toTrainingRoster(club.players)}
             focusFits={focusFitsOf(club.players)}
+            keeperDrill={club.trainingDay?.keeperDrill}
             disabled={disabled}
             onSaveGroups={training.saveGroups}
             onSetPlayerFocus={(playerId, focus) => void training.setPlayerFocus(playerId, focus)}
