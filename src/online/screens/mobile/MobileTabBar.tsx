@@ -3,8 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Ellipsis, LayoutGrid, type LucideIcon, Shield, Trophy, Users } from "lucide-react";
 import { useBackAction } from "../../../hooks/useBackAction";
-import { claimsWaiting, useOnlineStore } from "../../store/onlineStore";
+import { useOnlineStore } from "../../store/onlineStore";
 import { useGuardedNavigate } from "../leaveGuard";
+import { groupBadge, useNavBadges } from "../navBadges";
 import { CLUB_GROUPS, MORE_GROUP, type NavGroup, type NavGroupId, navGroupOf } from "../shellNav";
 import MobileNavSheet from "./MobileNavSheet";
 
@@ -72,20 +73,12 @@ export default function MobileTabBar() {
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
   const hasClub = useOnlineStore((state) => Boolean(state.club));
-  const marketUnseen = useOnlineStore((state) => state.marketUnseen);
-  const academyUnseen = useOnlineStore((state) => state.academyUnseen);
-  const claims = useOnlineStore((state) => claimsWaiting(state.events));
+  const badgeOf = useNavBadges();
   const [open, setOpen] = useState<NavGroup | null>(null);
   useBackAction(open !== null, () => setOpen(null));
   const currentGroup = navGroupOf(pathname);
 
   const groups = hasClub ? [...CLUB_GROUPS, MORE_GROUP] : [MORE_GROUP];
-  const badgeOf: Record<NavGroupId, number> = {
-    team: academyUnseen ? 1 : 0,
-    matches: 0,
-    club: marketUnseen,
-    more: claims,
-  };
 
   return (
     <>
@@ -109,7 +102,7 @@ export default function MobileTabBar() {
             icon={GROUP_ICON[group.id]}
             current={currentGroup === group.id && open === null}
             expanded={open?.id === group.id}
-            badge={badgeOf[group.id] || undefined}
+            badge={groupBadge(group, badgeOf) || undefined}
             onPress={() => setOpen((was) => (was?.id === group.id ? null : group))}
           />
         ))}
