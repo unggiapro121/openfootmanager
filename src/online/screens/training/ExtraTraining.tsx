@@ -79,7 +79,7 @@ export default function ExtraTraining({
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 py-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 py-4 *:shrink-0">
         {info && <ExtraInfo cap={trainingDay.sessionsCap} />}
         {outcome && (
           <LastResultChip
