@@ -158,6 +158,8 @@ pub fn setup(number: u64, home: (u8, PlayStyle, &str), away: (u8, PlayStyle, &st
         injury_window_steps: None,
         licence_home: None,
         licence_away: None,
+        set_pieces_home: None,
+        set_pieces_away: None,
     }
 }
 

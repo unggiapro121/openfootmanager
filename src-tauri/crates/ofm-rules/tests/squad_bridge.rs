@@ -11,8 +11,8 @@ use engine::ai::AiProfile;
 use engine::{CoachMastery, MatchConfig};
 use ofm_rules::match_session::{Controller, MatchSeed, MatchSession, MatchSetup};
 use ofm_rules::squad::{
-    FixtureLoad, SideSelection, build_side, lineup_shortfall, pick_set_piece_takers,
-    reconcile_roles,
+    FixtureLoad, SideSelection, build_side, kickoff_set_pieces, lineup_shortfall,
+    pick_set_piece_takers, reconcile_roles,
 };
 
 fn attributes(value: u8) -> PlayerAttributes {
@@ -239,6 +239,8 @@ fn a_match_between_two_clubs_plays_from_domain_data_alone() {
         injury_window_steps: None,
         licence_home: None,
         licence_away: None,
+        set_pieces_home: None,
+        set_pieces_away: None,
     };
 
     let mut session = MatchSession::new(setup, Controller::Ai, Controller::Ai);
@@ -270,6 +272,32 @@ fn set_piece_takers_come_from_the_eleven() {
         assert_ne!(taker.as_deref(), Some("t00"));
         assert!(taker.is_some());
     }
+}
+
+/// Given a captain and a penalty taker saved among the eleven, and a corner taker saved who is
+/// not in it,
+/// when the takers the match kicks off with are chosen,
+/// then the two in the eleven keep their duties, and the corner and the free kick go to the
+/// eleven's own picks, as an unset duty does.
+#[test]
+fn kickoff_takers_keep_the_saved_ones_in_the_eleven() {
+    let (_, players) = club("k", 70);
+    let eleven: Vec<&Player> = players.iter().take(11).collect();
+    let roles = domain::team::MatchRoles {
+        captain: Some("k05".into()),
+        vice_captain: None,
+        penalty_taker: Some("k08".into()),
+        free_kick_taker: None,
+        corner_taker: Some("kb0".into()),
+    };
+    let (_, _, auto_free_kick, auto_corner) = pick_set_piece_takers(&eleven);
+
+    let takers = kickoff_set_pieces(&roles, &eleven);
+
+    assert_eq!(takers.captain.as_deref(), Some("k05"));
+    assert_eq!(takers.penalty_taker.as_deref(), Some("k08"));
+    assert_eq!(takers.free_kick_taker, auto_free_kick);
+    assert_eq!(takers.corner_taker, auto_corner);
 }
 
 /// Given a striker in a defensive slot holding Poacher, and a benched midfielder holding a role

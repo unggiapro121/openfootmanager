@@ -11,16 +11,17 @@ use std::collections::HashSet;
 
 use crate::game::Game;
 use crate::match_session::{
-    Controller, InputSource, MatchSeed, MatchSession, MatchSetup, StepRecord,
+    Controller, InputSource, MatchSeed, MatchSession, MatchSetup, StepRecord, taker_commands,
 };
 
 use domain::league::{FixtureStatus, StandingEntry};
 use domain::manager::Manager;
-use domain::team::MatchRoles;
 use engine::ai::{AiPersonality, AiProfile};
 use engine::{
-    MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot, MinuteResult, Side, TeamData,
+    MatchCommand, MatchConfig, MatchPhase, MatchReport, MatchSnapshot, MinuteResult,
+    SetPieceTakers, Side, TeamData,
 };
+use ofm_rules::squad::kickoff_set_pieces;
 
 const LIVE_MATCH_NO_LEAGUE_ERROR: &str = "be.error.liveMatch.noLeague";
 
@@ -52,58 +53,10 @@ fn match_config_of(game: &Game) -> MatchConfig {
     game.match_config_override.clone().unwrap_or_default()
 }
 
-fn resolve_match_role_assignment(
-    assigned_id: &Option<String>,
-    starter_ids: &HashSet<String>,
-    fallback_id: Option<String>,
-) -> Option<String> {
-    if let Some(player_id) = assigned_id
-        && starter_ids.contains(player_id)
-    {
-        return Some(player_id.clone());
-    }
-
-    fallback_id
-}
-
-fn apply_saved_match_roles(
-    session: &mut MatchSession,
-    side: Side,
-    match_roles: &MatchRoles,
-    starter_ids: &[String],
-    auto_selection: (
-        Option<String>,
-        Option<String>,
-        Option<String>,
-        Option<String>,
-    ),
-) {
-    let starter_id_set = starter_ids.iter().cloned().collect::<HashSet<_>>();
-    let (auto_captain, auto_penalty, auto_free_kick, auto_corner) = auto_selection;
-    type Duty = fn(Side, String) -> MatchCommand;
-    let duties: [(&Option<String>, Option<String>, Duty); 4] = [
-        (&match_roles.captain, auto_captain, |side, player_id| {
-            MatchCommand::SetCaptain { side, player_id }
-        }),
-        (
-            &match_roles.penalty_taker,
-            auto_penalty,
-            |side, player_id| MatchCommand::SetPenaltyTaker { side, player_id },
-        ),
-        (
-            &match_roles.free_kick_taker,
-            auto_free_kick,
-            |side, player_id| MatchCommand::SetFreeKickTaker { side, player_id },
-        ),
-        (&match_roles.corner_taker, auto_corner, |side, player_id| {
-            MatchCommand::SetCornerTaker { side, player_id }
-        }),
-    ];
-    for (saved, auto, duty) in duties {
-        let Some(player_id) = resolve_match_role_assignment(saved, &starter_id_set, auto) else {
-            continue;
-        };
-        let command = duty(side, player_id);
+/// Order the duties `takers` names for `side` at kick-off, as system inputs: the desktop's saved
+/// match roles ([`ofm_rules::squad::kickoff_set_pieces`]).
+fn order_kickoff_takers(session: &mut MatchSession, side: Side, takers: SetPieceTakers) {
+    for command in taker_commands(side, takers) {
         // Every name here is a starter, so the check takes it; one it refused would leave the
         // duty to the engine's own choice, as an unset one always has.
         if let Err(_refused) = session.command(side, InputSource::System, command) {}
@@ -416,6 +369,8 @@ fn create_seeded_live_match(
         injury_window_steps: None,
         licence_home: None,
         licence_away: None,
+        set_pieces_home: None,
+        set_pieces_away: None,
         home: home_xi,
         away: away_xi,
         home_bench,
@@ -434,8 +389,15 @@ fn create_seeded_live_match(
             .find(|team| team.id == *team_id)
             .map(|team| team.match_roles.clone())
             .unwrap_or_default();
-        let auto_selection = auto_select_set_pieces(game, starters);
-        apply_saved_match_roles(&mut session, side, &match_roles, starters, auto_selection);
+        let eleven: Vec<&domain::player::Player> = starters
+            .iter()
+            .filter_map(|id| game.players.iter().find(|player| &player.id == id))
+            .collect();
+        order_kickoff_takers(
+            &mut session,
+            side,
+            kickoff_set_pieces(&match_roles, &eleven),
+        );
     }
 
     Ok(LiveMatchSession {
