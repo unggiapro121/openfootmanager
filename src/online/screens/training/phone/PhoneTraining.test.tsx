@@ -230,23 +230,83 @@ describe("the training page on a phone", () => {
   });
 
   // Given extra sessions today, one player under the floor,
-  // when the coach opens extra training, looks at who sits out, and presses,
-  // then the tired player is listed with his reason, the press sends the other at low
-  // intensity, and the result rises.
-  it("holds extra sessions from their page", async () => {
+  // when the coach opens extra training and looks at who rests this session,
+  // then the tired player is listed with his reason, and a tap on him tells why in full.
+  it("explains why a player rests this session", async () => {
     await open();
-    fireEvent.click(screen.getByRole("button", { name: "online.training.extra.open" }));
+    fireEvent.click(screen.getByRole("button", { name: /^online\.training\.extra\.title/ }));
 
     const page = screen.getByRole("dialog", { name: "online.training.extra.title" });
-    fireEvent.click(within(page).getByRole("radio", { name: new RegExp(`^${KEY}\\.listRest`) }));
-    expect(within(page).getByText(/online\.training\.extra\.reason\.tired/)).toBeInTheDocument();
-    fireEvent.click(within(page).getByRole("radio", { name: new RegExp(`^${KEY}\\.listReady`) }));
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(within(page).getByText(`${KEY}.restNote`)).toBeInTheDocument();
+    fireEvent.click(within(page).getByRole("button", { name: /T\. Bình/ }));
+
+    const why = screen.getByRole("dialog", { name: "T. Bình" });
+    expect(
+      within(why).getByText(new RegExp(`^${KEY}\\.why\\.tired:T\\. Bình\\|35\\|40`)),
+    ).toBeInTheDocument();
+    fireEvent.click(within(why).getByRole("button", { name: `${KEY}.gotIt` }));
+    expect(screen.queryByRole("dialog", { name: "T. Bình" })).not.toBeInTheDocument();
+  });
+
+  // Given extra sessions today, and a squad whose next read shows the attribute he gained,
+  // when the coach presses for the player who can train,
+  // then the press sends him at low intensity, the result names the attribute risen, and the
+  // page and the training tab then say what the last press gave.
+  it("holds extra sessions and shows what rose", async () => {
+    const view = club();
+    let pressed = false;
+    const after = club({
+      players: [
+        { ...SQUAD[0], attributes: { ...SQUAD[0].attributes, pace: SQUAD[0].attributes.pace + 1 } },
+        SQUAD[1],
+      ],
+      trainingDay: trainingDay({ extra: extraDay({ today: 3 }) }),
+    });
+    serve(view, {
+      "GET v1/clubs/mine": () => ok(pressed ? after : view),
+      "POST v1/clubs/mine/training/extra": () => {
+        pressed = true;
+        return ok(answer());
+      },
+    });
+    renderOnline("/online/training");
+    fireEvent.click(await screen.findByRole("button", { name: /^online\.training\.extra\.title/ }));
+    const page = screen.getByRole("dialog", { name: "online.training.extra.title" });
     fireEvent.click(within(page).getByRole("button", { name: "online.training.extra.pressShort" }));
 
     await waitFor(() => expect(sent("POST", "v1/clubs/mine/training/extra")).toHaveLength(1));
     const body = sent("POST", "v1/clubs/mine/training/extra")[0]?.body as { players: string[] };
     expect(body).toMatchObject({ intensity: "Low" });
     expect(body.players).toContain("p1");
-    expect(await screen.findByRole("dialog", { name: `${KEY}.resultTitle` })).toBeInTheDocument();
+    const sheet = await screen.findByRole("dialog", { name: `${KEY}.resultTitle` });
+    expect(await within(sheet).findByText("common.attributes.pace")).toBeInTheDocument();
+    fireEvent.click(within(sheet).getByRole("button", { name: "common.close" }));
+
+    expect(within(page).getByRole("button", { name: /lastGains:1\|1/ })).toBeInTheDocument();
+    fireEvent.click(within(page).getByRole("button", { name: `${KEY}.back` }));
+    expect(screen.getByRole("button", { name: /entryLast:1\|3/ })).toBeInTheDocument();
+  });
+
+  // Given a player at 80 condition who can train,
+  // when the coach keeps 75 for the match and picks the high intensity (10 a session),
+  // then one session would take him under 75: he moves to those who rest, nobody is left to
+  // train, and the press cannot go.
+  it("rests the players the condition to keep would stop", async () => {
+    await open();
+    fireEvent.click(screen.getByRole("button", { name: /^online\.training\.extra\.title/ }));
+    const page = screen.getByRole("dialog", { name: "online.training.extra.title" });
+
+    fireEvent.click(within(page).getByRole("button", { name: `${KEY}.keepMatchShort:75` }));
+    fireEvent.click(
+      within(page).getByRole("radio", { name: /training\.intensities\.High\.label/ }),
+    );
+
+    expect(within(page).getByText(`${KEY}.noneReadyKeep:75`)).toBeInTheDocument();
+    expect(
+      within(page).getByRole("button", { name: "online.training.extra.pressShort" }),
+    ).toBeDisabled();
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(within(page).getByText(`${KEY}.underKeep:75`)).toBeInTheDocument();
   });
 });
