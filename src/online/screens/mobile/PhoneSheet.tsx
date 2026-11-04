@@ -45,7 +45,7 @@ export function PhoneSheet({
         onKeyDown={(event) => {
           if (event.key === "Escape") onClose();
         }}
-        className="relative flex max-h-[86vh] flex-col gap-3 overflow-y-auto rounded-t-[20px] border-t border-gray-200 bg-white px-4 pb-[calc(0.875rem+var(--safe-bottom))] pt-2 focus:outline-none motion-safe:animate-sheet-up dark:border-navy-600 dark:bg-navy-800"
+        className="relative flex max-h-[86vh] flex-col gap-3 overflow-y-auto *:shrink-0 rounded-t-[20px] border-t border-gray-200 bg-white px-4 pb-[calc(0.875rem+var(--safe-bottom))] pt-2 focus:outline-none motion-safe:animate-sheet-up dark:border-navy-600 dark:bg-navy-800"
       >
         <span
           className="mx-auto block h-1 w-10 shrink-0 rounded-full bg-gray-300 dark:bg-navy-600"
