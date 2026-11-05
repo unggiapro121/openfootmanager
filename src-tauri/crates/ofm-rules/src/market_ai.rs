@@ -277,6 +277,15 @@ pub struct BotBidRules {
     pub upgrade_margin_tenths: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_upgrade_age: Option<u8>,
+    // S-38 (s-38-tech-spec §3.1), absent from every ruleset before it like E5-11's.
+    /// A bot whose slots after a signing are at least `squad_cap` less this drops one player of
+    /// the signing's line (S38-C2); absent, it drops no one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub drop_after_buy_within: Option<u32>,
+    /// The most players the bots of a region buy of one person's club in a season, those a bot
+    /// leads now counted (S38-C4, Qtd-6); absent, no such limit.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub person_seller_max_buys_per_season: Option<u32>,
 }
 
 /// What a bot bought at auction this season, by seller (E5-11): every buy, those of bots' sales,
@@ -361,6 +370,8 @@ impl Default for BotBidRules {
             slots_looked_at: None,
             upgrade_margin_tenths: None,
             max_upgrade_age: None,
+            drop_after_buy_within: None,
+            person_seller_max_buys_per_season: None,
         }
     }
 }
@@ -380,6 +391,33 @@ impl BotBidRules {
                 + self.person_ceiling_bonus_permille
                 < price_band_max_permille
             && self.e5_11_fits()
+            && self.s38_fits()
+    }
+
+    /// The S-38 fields, each absent or in its range (s-38-tech-spec §3.2).
+    fn s38_fits(&self) -> bool {
+        self.drop_after_buy_within
+            .is_none_or(|within| within <= 5 && within < self.squad_cap)
+            && self
+                .person_seller_max_buys_per_season
+                .is_none_or(|most| (1..=20).contains(&most))
+    }
+
+    /// Whether a bot with `slots` after a signing drops a player (S38-C2): `dropAfterBuyWithin`
+    /// set and `slots` at least `squad_cap` less it.
+    pub fn drops_after_buy(&self, slots: usize) -> bool {
+        self.drop_after_buy_within
+            .is_some_and(|within| slots >= self.squad_cap.saturating_sub(within) as usize)
+    }
+
+    /// Whether the bots of a region may buy another player of a club of `seller` that has sold
+    /// `sold_or_led` to bots this season, those a bot leads now counted (S38-C4). Always for a
+    /// bot's sale or a free agent, and when `personSellerMaxBuysPerSeason` is absent.
+    pub fn may_buy_of_seller(&self, seller: SellerKind, sold_or_led: u32) -> bool {
+        seller != SellerKind::Person
+            || self
+                .person_seller_max_buys_per_season
+                .is_none_or(|most| sold_or_led < most)
     }
 
     /// The E5-11 fields, each absent or in its range (e5-11-s-37-tech-spec §3.5).
@@ -628,6 +666,23 @@ pub struct BotSaleRules {
     /// as in every ruleset before v12.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub star: Option<StarSaleRules>,
+    /// A bot's season-end trim (S-38, S38-C3); none when absent, as in every ruleset before v16.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub season_end_trim: Option<SeasonEndTrim>,
+    /// A player a bot put up for S-38 (a drop after a signing or a season-end trim) that goes
+    /// unsold this many times in a season is let go, whatever his age (PO-S38-1); absent, he is
+    /// put up again as any other (B10).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trim_release_after_unsold: Option<u32>,
+}
+
+/// A bot's season-end trim (S-38, S38-C3): at most `most` players let go or put up per cleanup,
+/// the put-ups on the first `list_days` days of the next season.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct SeasonEndTrim {
+    pub most: u32,
+    pub list_days: u32,
 }
 
 impl Default for BotSaleRules {
@@ -644,6 +699,8 @@ impl Default for BotSaleRules {
             unused_playing_time: UNUSED_PLAYING_TIME,
             unused_from_day: 8,
             star: None,
+            season_end_trim: None,
+            trim_release_after_unsold: None,
         }
     }
 }
@@ -658,6 +715,20 @@ impl BotSaleRules {
             && self
                 .star
                 .is_none_or(|star| star.fits_season(price_band_min_permille))
+            && self.season_end_trim.is_none_or(|trim| {
+                (1..=10).contains(&trim.most) && (1..=14).contains(&trim.list_days)
+            })
+            && self
+                .trim_release_after_unsold
+                .is_none_or(|times| (1..=5).contains(&times))
+    }
+
+    /// Whether a bot lets go, instead of putting up again, a player it put up for S-38 that has
+    /// now gone unsold `unsold` times this season, the last one counted (PO-S38-1). Never when
+    /// `trimReleaseAfterUnsold` is absent.
+    pub fn releases_unsold(&self, unsold: u32) -> bool {
+        self.trim_release_after_unsold
+            .is_some_and(|times| unsold >= times)
     }
 
     /// The starting price of a player of `value` the bot listed `unsold` times this season with
@@ -879,6 +950,158 @@ pub fn bot_star_lists_today(
 /// `amount × permille / 1000`, rounded down, without overflow.
 fn permille_of(amount: u64, permille: u32) -> u64 {
     (u128::from(amount) * u128::from(permille) / 1000).min(u128::from(u64::MAX)) as u64
+}
+
+/// One of a bot's players as its trims read him (S-38): his age on the club's day; whether he is
+/// never let go nor put up (`kept`: one of its own graduates up to `homegrownHoldAge`, one bought
+/// this season); whether he is up for sale now (`listed`: never picked, and off his line's count
+/// and the squad's, PO-S38-3).
+#[derive(Debug, Clone, Copy)]
+pub struct TrimMember<'a> {
+    pub player: &'a Player,
+    pub age: i32,
+    pub kept: bool,
+    pub listed: bool,
+}
+
+/// What a bot does with the player it trims: lets him go to the free agents, or puts him up.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TrimAction {
+    Release,
+    List,
+}
+
+/// The player a bot trims and how.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TrimPick {
+    pub id: String,
+    pub action: TrimAction,
+}
+
+/// Up to `most` of `squad` a bot may spare, weakest first, then the oldest, then by id
+/// (s-38-tech-spec §3.3): neither retired, kept nor listed, passing `fits`, of `line` when given;
+/// each leaving his line above `formation`'s needs and the squad at `keep_squad` or more, its
+/// players up for sale counted off both.
+fn spare<'a>(
+    formation: &str,
+    squad: &[TrimMember<'a>],
+    line: Option<usize>,
+    keep_squad: u32,
+    most: usize,
+    fits: impl Fn(&TrimMember<'a>) -> bool,
+) -> Vec<TrimMember<'a>> {
+    let playing: Vec<&TrimMember<'a>> = squad.iter().filter(|m| !m.player.retired).collect();
+    let needs = line_needs(formation);
+    let mut left = bot_line_counts(playing.iter().map(|m| m.player));
+    let mut size = playing.len();
+    for member in playing.iter().filter(|m| m.listed) {
+        let at = group_index(&member.player.position);
+        left[at] = left[at].saturating_sub(1);
+        size = size.saturating_sub(1);
+    }
+    let mut candidates: Vec<&TrimMember<'a>> = playing
+        .iter()
+        .copied()
+        .filter(|m| !m.kept && !m.listed && fits(m))
+        .filter(|m| line.is_none_or(|line| group_index(&m.player.position) == line))
+        .collect();
+    candidates.sort_by(|a, b| {
+        a.player
+            .ovr
+            .cmp(&b.player.ovr)
+            .then(b.age.cmp(&a.age))
+            .then(a.player.id.cmp(&b.player.id))
+    });
+    let mut picked = Vec::new();
+    for member in candidates {
+        if picked.len() >= most {
+            break;
+        }
+        let at = group_index(&member.player.position);
+        if left[at] > needs[at] && size > keep_squad as usize {
+            left[at] -= 1;
+            size -= 1;
+            picked.push(*member);
+        }
+    }
+    picked
+}
+
+/// Whether a player may be put up: the market takes no one injured.
+fn listable(member: &TrimMember<'_>) -> bool {
+    member.player.injury.is_none()
+}
+
+/// The one player a bot drops after a signing into `line` (S38-C2): the weakest of that line it
+/// may spare, let go from `release_min_age`, put up below it. None when none qualifies.
+pub fn drop_after_buy(
+    formation: &str,
+    squad: &[TrimMember<'_>],
+    line: usize,
+    keep_squad: u32,
+    release_min_age: i32,
+) -> Option<TrimPick> {
+    spare(formation, squad, Some(line), keep_squad, 1, |m| {
+        m.age >= release_min_age || listable(m)
+    })
+    .first()
+    .map(|member| TrimPick {
+        id: member.player.id.clone(),
+        action: if member.age >= release_min_age {
+            TrimAction::Release
+        } else {
+            TrimAction::List
+        },
+    })
+}
+
+/// The veterans a bot lets go at the season's end (S38-C3): while its `slots` are over `cap`, up
+/// to `most`, from `release_min_age` on, the weakest across the lines it may spare. Each one let
+/// go takes a slot off.
+pub fn season_end_releases(
+    formation: &str,
+    squad: &[TrimMember<'_>],
+    slots: usize,
+    cap: usize,
+    keep_squad: u32,
+    release_min_age: i32,
+    most: u32,
+) -> Vec<String> {
+    let over = slots.saturating_sub(cap).min(most as usize);
+    if over == 0 {
+        return Vec::new();
+    }
+    spare(formation, squad, None, keep_squad, over, |m| {
+        m.age >= release_min_age
+    })
+    .into_iter()
+    .map(|member| member.player.id.clone())
+    .collect()
+}
+
+/// The player a bot puts up on a day of its cleanup (S38-C3): when `slots` less its players up
+/// (`listed`) are still over `cap`, the weakest under `release_min_age` it may spare. None
+/// otherwise.
+pub fn trim_listing(
+    formation: &str,
+    squad: &[TrimMember<'_>],
+    slots: usize,
+    cap: usize,
+    keep_squad: u32,
+    release_min_age: i32,
+) -> Option<String> {
+    let listed = squad
+        .iter()
+        .filter(|m| m.listed && !m.player.retired)
+        .count();
+    if slots.saturating_sub(listed) <= cap {
+        return None;
+    }
+    spare(formation, squad, None, keep_squad, 1, |m| {
+        m.age < release_min_age && listable(m)
+    })
+    .first()
+    .map(|member| member.player.id.clone())
 }
 
 #[cfg(test)]
@@ -1947,5 +2170,380 @@ mod tests {
         assert_eq!(new.free_agent_max_buys_per_season, Some(2));
         assert_eq!(new.free_agent_season_spend, Some(1_000_000));
         assert!(serde_json::from_str::<BotBidRules>(r#"{"squadSlots": 30}"#).is_err());
+    }
+
+    // ---- S-38 (s-38-tech-spec §3, §10) ----
+
+    /// A bot's squad for the trims: players by line (keepers, defenders, midfielders, forwards),
+    /// each 25 years old at 60, ids `g1…`, `d1…`, `m1…`, `f1…`.
+    struct TrimSquad {
+        players: Vec<Player>,
+        ages: Vec<i32>,
+        kept: Vec<bool>,
+        listed: Vec<bool>,
+    }
+
+    impl TrimSquad {
+        fn new(keepers: usize, defenders: usize, midfielders: usize, forwards: usize) -> Self {
+            let mut players = Vec::new();
+            for (prefix, position, count) in [
+                ("g", Position::Goalkeeper, keepers),
+                ("d", Position::Defender, defenders),
+                ("m", Position::Midfielder, midfielders),
+                ("f", Position::Forward, forwards),
+            ] {
+                for n in 1..=count {
+                    players.push(player(&format!("{prefix}{n}"), position.clone(), 60));
+                }
+            }
+            let size = players.len();
+            Self {
+                players,
+                ages: vec![25; size],
+                kept: vec![false; size],
+                listed: vec![false; size],
+            }
+        }
+
+        fn at(&self, id: &str) -> usize {
+            self.players
+                .iter()
+                .position(|p| p.id == id)
+                .expect("a player of the squad")
+        }
+
+        fn set(&mut self, id: &str, ovr: u8, age: i32) -> &mut Self {
+            let at = self.at(id);
+            self.players[at].ovr = ovr;
+            self.ages[at] = age;
+            self
+        }
+
+        fn members(&self) -> Vec<TrimMember<'_>> {
+            self.players
+                .iter()
+                .enumerate()
+                .map(|(i, player)| TrimMember {
+                    player,
+                    age: self.ages[i],
+                    kept: self.kept[i],
+                    listed: self.listed[i],
+                })
+                .collect()
+        }
+    }
+
+    fn mid_line() -> usize {
+        group_index(&Position::Midfielder)
+    }
+
+    fn drop_of(squad: &TrimSquad) -> Option<TrimPick> {
+        drop_after_buy("4-3-3", &squad.members(), mid_line(), 20, 30)
+    }
+
+    fn released(id: &str) -> Option<TrimPick> {
+        Some(TrimPick {
+            id: id.to_string(),
+            action: TrimAction::Release,
+        })
+    }
+
+    fn listed_pick(id: &str) -> Option<TrimPick> {
+        Some(TrimPick {
+            id: id.to_string(),
+            action: TrimAction::List,
+        })
+    }
+
+    /// Given a squad cap of 30 and a drop within 1 of it, and the same rules without the field,
+    /// when a bot holds 28, 29 or 30 slots after a signing,
+    /// then it drops someone from 29 slots on, and never without the field.
+    #[test]
+    fn a_bot_drops_a_player_from_one_under_its_cap() {
+        let rules = BotBidRules {
+            squad_cap: 30,
+            drop_after_buy_within: Some(1),
+            ..BotBidRules::default()
+        };
+        assert!(!rules.drops_after_buy(28));
+        assert!(rules.drops_after_buy(29));
+        assert!(rules.drops_after_buy(30));
+        let absent = BotBidRules {
+            squad_cap: 30,
+            ..BotBidRules::default()
+        };
+        assert!(!absent.drops_after_buy(30));
+    }
+
+    /// Given S-38's four fields at the ends of their ranges and one past them,
+    /// when the bids' rules are checked against the market and the sales' against the season,
+    /// then only the values in range fit.
+    #[test]
+    fn s38_fields_fit_only_in_their_ranges() {
+        let bids = |within: Option<u32>, seller: Option<u32>, cap: u32| {
+            BotBidRules {
+                squad_cap: cap,
+                drop_after_buy_within: within,
+                person_seller_max_buys_per_season: seller,
+                ..BotBidRules::default()
+            }
+            .fits_market(600, 2_000)
+        };
+        assert!(bids(None, None, 30));
+        assert!(bids(Some(5), None, 30));
+        assert!(!bids(Some(6), None, 30));
+        assert!(!bids(Some(4), None, 4), "never the whole cap");
+        assert!(!bids(None, Some(0), 30));
+        assert!(bids(None, Some(1), 30));
+        assert!(bids(None, Some(20), 30));
+        assert!(!bids(None, Some(21), 30));
+
+        let sales = |trim: Option<SeasonEndTrim>, unsold: Option<u32>| {
+            BotSaleRules {
+                season_end_trim: trim,
+                trim_release_after_unsold: unsold,
+                ..BotSaleRules::default()
+            }
+            .fits_season(600, 18)
+        };
+        let trim = |most, list_days| Some(SeasonEndTrim { most, list_days });
+        assert!(sales(None, None));
+        assert!(sales(trim(1, 1), Some(1)));
+        assert!(sales(trim(10, 14), Some(5)));
+        assert!(!sales(trim(0, 7), None));
+        assert!(!sales(trim(11, 7), None));
+        assert!(!sales(trim(3, 0), None));
+        assert!(!sales(trim(3, 15), None));
+        assert!(!sales(None, Some(0)));
+        assert!(!sales(None, Some(6)));
+    }
+
+    /// Given the sales' rules of a ruleset before S-38, one with a trim missing its days, and one
+    /// with a key no one knows,
+    /// when they are read and written,
+    /// then the first reads with both fields absent and writes back without them; the others fail.
+    #[test]
+    fn s38_sale_fields_read_absent_and_refuse_a_half_trim() {
+        let before = serde_json::to_value(BotSaleRules::default()).expect("written");
+        assert!(before.get("seasonEndTrim").is_none());
+        assert!(before.get("trimReleaseAfterUnsold").is_none());
+        let read: BotSaleRules = serde_json::from_value(before.clone()).expect("read");
+        assert_eq!(read.season_end_trim, None);
+        assert_eq!(read.trim_release_after_unsold, None);
+        assert_eq!(serde_json::to_value(read).expect("written"), before);
+
+        let mut half = before.clone();
+        half["seasonEndTrim"] = serde_json::json!({"most": 3});
+        assert!(serde_json::from_value::<BotSaleRules>(half).is_err());
+        let mut whole = before.clone();
+        whole["seasonEndTrim"] = serde_json::json!({"most": 3, "listDays": 7});
+        whole["trimReleaseAfterUnsold"] = serde_json::json!(3);
+        let read: BotSaleRules = serde_json::from_value(whole).expect("read");
+        assert_eq!(
+            read.season_end_trim,
+            Some(SeasonEndTrim {
+                most: 3,
+                list_days: 7
+            })
+        );
+        let mut unknown = before;
+        unknown["seasonEndTrims"] = serde_json::json!(1);
+        assert!(serde_json::from_value::<BotSaleRules>(unknown).is_err());
+
+        let bids = serde_json::to_value(BotBidRules::default()).expect("written");
+        assert!(bids.get("dropAfterBuyWithin").is_none());
+        assert!(bids.get("personSellerMaxBuysPerSeason").is_none());
+    }
+
+    /// Given a 4-3-3 bot of 20 with six midfielders (it needs five), the weakest of them 31, then
+    /// 24,
+    /// when it drops a player after signing a midfielder,
+    /// then it lets the veteran go, and puts the younger one up.
+    #[test]
+    fn a_bot_lets_a_veteran_go_and_puts_a_younger_one_up() {
+        let mut squad = TrimSquad::new(3, 6, 6, 5);
+        squad.set("m6", 50, 31);
+        let mut bigger = TrimSquad::new(3, 6, 6, 6);
+        bigger.set("m6", 50, 31);
+        assert_eq!(drop_of(&bigger), released("m6"));
+        bigger.set("m6", 50, 24);
+        assert_eq!(drop_of(&bigger), listed_pick("m6"));
+        assert_eq!(drop_of(&squad), None, "a squad of 20 keeps every one");
+    }
+
+    /// Given a 4-3-3 bot of 21 with six midfielders,
+    /// when the weakest is kept, injured, tied with another, or the line has only five,
+    /// then the next one goes, an injured veteran still goes, the older of a tie goes first, and a
+    /// line at its needs gives no one, however full another line is.
+    #[test]
+    fn a_bot_drops_the_weakest_it_may_spare_of_the_signing_s_line() {
+        let base = || {
+            let mut squad = TrimSquad::new(3, 6, 6, 6);
+            squad.set("m1", 50, 24).set("m2", 55, 24);
+            squad
+        };
+        let mut kept = base();
+        let m1 = kept.at("m1");
+        kept.kept[m1] = true;
+        assert_eq!(drop_of(&kept), listed_pick("m2"), "an own graduate is kept");
+
+        let mut injured = base();
+        injured.players[m1].injury = Some(Injury {
+            name: "knock".to_string(),
+            days_remaining: 3,
+        });
+        assert_eq!(
+            drop_of(&injured),
+            listed_pick("m2"),
+            "no one injured is put up"
+        );
+        injured.set("m1", 50, 32);
+        assert_eq!(
+            drop_of(&injured),
+            released("m1"),
+            "an injured veteran still goes"
+        );
+
+        let mut tie = base();
+        tie.set("m2", 50, 27);
+        assert_eq!(drop_of(&tie), listed_pick("m2"), "the older of a tie");
+        tie.set("m2", 50, 24);
+        assert_eq!(drop_of(&tie), listed_pick("m1"), "then the id");
+
+        let mut short = TrimSquad::new(3, 6, 5, 10);
+        short.set("m1", 40, 33);
+        assert_eq!(drop_of(&short), None, "a line at its needs");
+    }
+
+    /// Given a 4-3-3 bot with one midfielder up for sale (PO-S38-3), and one of 21 with someone
+    /// of another line up and a squad kept at 20,
+    /// when it drops a player after signing a midfielder,
+    /// then with six midfielders it drops no one; with seven, the weakest not up for sale; and the
+    /// squad of 21 less the one up drops no one.
+    #[test]
+    fn a_player_up_for_sale_counts_off_his_line_and_the_squad() {
+        let mut six = TrimSquad::new(3, 6, 6, 6);
+        six.set("m1", 40, 24);
+        let m1 = six.at("m1");
+        six.listed[m1] = true;
+        assert_eq!(drop_of(&six), None);
+
+        let mut seven = TrimSquad::new(3, 6, 7, 6);
+        seven.set("m1", 40, 24).set("m2", 45, 24);
+        let m1 = seven.at("m1");
+        seven.listed[m1] = true;
+        assert_eq!(drop_of(&seven), listed_pick("m2"));
+
+        let mut small = TrimSquad::new(3, 6, 6, 6);
+        let f1 = small.at("f1");
+        small.listed[f1] = true;
+        assert_eq!(small.players.len(), 21);
+        assert_eq!(drop_of(&small), None, "21 less one up is the squad kept");
+    }
+
+    /// A 4-3-3 squad of 25 with five veterans: two defenders, two midfielders, a forward, and a
+    /// keeper of 40 in a line at its needs.
+    fn veterans() -> TrimSquad {
+        let mut squad = TrimSquad::new(3, 8, 7, 7);
+        squad
+            .set("d1", 50, 31)
+            .set("d2", 51, 32)
+            .set("m1", 52, 30)
+            .set("m2", 53, 33)
+            .set("f1", 54, 34)
+            .set("g1", 40, 35);
+        squad
+    }
+
+    fn releases(squad: &TrimSquad, slots: usize, most: u32) -> Vec<String> {
+        season_end_releases("4-3-3", &squad.members(), slots, 28, 20, 30, most)
+    }
+
+    /// Given a bot of 25 with veterans in its lines to spare, and a keeper of 40 in a line at its
+    /// needs,
+    /// when the season's end trims it to 28 slots at most 3 a time,
+    /// then 31 slots let the three weakest veterans go across the lines, 29 slots one, 28 none, a
+    /// trim of 0 none, and the keeper never.
+    #[test]
+    fn the_season_s_end_lets_the_weakest_veterans_go_down_to_the_cap() {
+        let squad = veterans();
+        assert_eq!(releases(&squad, 31, 3), vec!["d1", "d2", "m1"]);
+        assert_eq!(releases(&squad, 29, 3), vec!["d1"]);
+        assert!(releases(&squad, 28, 3).is_empty());
+        assert!(releases(&squad, 31, 0).is_empty());
+        assert!(!releases(&squad, 40, 10).contains(&"g1".to_string()));
+    }
+
+    /// Given a bot of 25 with only two veterans, and one whose midfield has one up for sale,
+    /// when the season's end needs three let go,
+    /// then it lets the two go, and no veteran of a line left at its needs by the one up.
+    #[test]
+    fn the_season_s_end_lets_go_only_the_veterans_it_has_and_may_spare() {
+        let mut two = TrimSquad::new(3, 8, 7, 7);
+        two.set("d1", 50, 31).set("m1", 52, 30);
+        assert_eq!(releases(&two, 31, 3), vec!["d1", "m1"]);
+
+        let mut held = TrimSquad::new(3, 6, 6, 7);
+        held.set("m1", 52, 30).set("m2", 60, 24);
+        let m2 = held.at("m2");
+        held.listed[m2] = true;
+        assert!(releases(&held, 31, 3).is_empty());
+    }
+
+    /// Given a bot with spare lines and one up for sale,
+    /// when a day of its cleanup looks for someone to put up,
+    /// then 30 slots less the one up (29, over 28) put up the weakest under 30; 29 slots less one
+    /// put up no one; and a line whose only spare player is the one up gives no one.
+    #[test]
+    fn a_cleanup_day_puts_up_the_weakest_younger_one_while_over_the_cap() {
+        let mut squad = TrimSquad::new(3, 8, 7, 7);
+        squad.set("d1", 50, 31).set("m1", 52, 24).set("f1", 58, 26);
+        let f1 = squad.at("f1");
+        squad.listed[f1] = true;
+        let pick =
+            |squad: &TrimSquad, slots| trim_listing("4-3-3", &squad.members(), slots, 28, 20, 30);
+        assert_eq!(pick(&squad, 30), Some("m1".to_string()));
+        assert_eq!(pick(&squad, 29), None);
+
+        let mut tight = TrimSquad::new(3, 6, 6, 5);
+        tight.set("m1", 40, 24);
+        let m1 = tight.at("m1");
+        tight.listed[m1] = true;
+        assert_eq!(pick(&tight, 31), None);
+    }
+
+    /// Given no limit, then a limit of three,
+    /// when a player put up for S-38 goes unsold one to four times,
+    /// then without the limit he is never let go; with it, from the third time.
+    #[test]
+    fn a_trim_left_unsold_three_times_is_let_go() {
+        let absent = BotSaleRules::default();
+        assert!((1..=5).all(|unsold| !absent.releases_unsold(unsold)));
+        let three = BotSaleRules {
+            trim_release_after_unsold: Some(3),
+            ..BotSaleRules::default()
+        };
+        assert!(!three.releases_unsold(1));
+        assert!(!three.releases_unsold(2));
+        assert!(three.releases_unsold(3));
+        assert!(three.releases_unsold(4));
+    }
+
+    /// Given no limit, then four a person's club a season,
+    /// when the bots look at a sale of a person's club that sold or is selling 3 or 4 to them, and
+    /// at a bot's sale and a free agent,
+    /// then without the limit they may; with it, at 3 but not at 4, and always for the others.
+    #[test]
+    fn the_bots_buy_at_most_four_of_one_person_s_club() {
+        let absent = BotBidRules::default();
+        assert!(absent.may_buy_of_seller(SellerKind::Person, 100));
+        let four = BotBidRules {
+            person_seller_max_buys_per_season: Some(4),
+            ..BotBidRules::default()
+        };
+        assert!(four.may_buy_of_seller(SellerKind::Person, 3));
+        assert!(!four.may_buy_of_seller(SellerKind::Person, 4));
+        assert!(four.may_buy_of_seller(SellerKind::Bot, 10));
+        assert!(four.may_buy_of_seller(SellerKind::World, 10));
     }
 }
