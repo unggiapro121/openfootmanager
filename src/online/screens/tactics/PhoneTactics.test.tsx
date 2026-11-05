@@ -199,6 +199,28 @@ describe("the tactics page on a phone", () => {
     await waitFor(() => expect(sent()[0]?.matchRoles.captain).toBe("p6"));
   });
 
+  // Given the roles tab,
+  // when the coach opens a centre-back's role and picks Stopper,
+  // then the eleven are listed with their roles, the sheet offers the roles of his place, and
+  // the role is saved for him.
+  it("sets a starter's role from a sheet", async () => {
+    await open();
+    fireEvent.click(screen.getByRole("tab", { name: `${KEY}.tab.roles` }));
+    const roles = screen.getByRole("list", { name: "tactics.playerRoleLabel" });
+    expect(within(roles).getAllByRole("button")).toHaveLength(11);
+    fireEvent.click(within(roles).getByRole("button", { name: /Player 2/ }));
+
+    const sheet = screen.getByRole("dialog", { name: /Player 2/ });
+    expect(
+      within(sheet).getByRole("radio", { name: "tactics.playerRoles.Standard" }),
+    ).toBeChecked();
+    expect(
+      within(sheet).queryByRole("radio", { name: "tactics.playerRoles.TargetMan" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(within(sheet).getByRole("radio", { name: "tactics.playerRoles.Stopper" }));
+    await waitFor(() => expect(sent()[0]?.playerRoles.p2).toBe("Stopper"));
+  });
+
   // Given the phase tab,
   // when the coach opens the phase without the ball and turns the offside trap on,
   // then that is saved.
