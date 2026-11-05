@@ -89,6 +89,37 @@ pub struct Need {
 /// players per line, injured or not (the game counts its seniors, a bot its
 /// youth players too); `available` are the ones fit to play.
 pub fn club_needs(formation: &str, seniors: [usize; 4], available: &[&Player]) -> Vec<Need> {
+    club_needs_with(formation, seniors, available, &NeedRules::default())
+}
+
+/// How far a club looks for an upgrade (E5-11, analysis-bot-transfer-demand Dtd-4): its weakest
+/// slots looked at, how much better a signing must be there, and how old he may be. The default is
+/// the game's AI club's, [`SLOTS_LOOKED_AT`], [`UPGRADE_MARGIN`] and [`MAX_UPGRADE_AGE`]; an online
+/// bot reads its own from the season's ruleset ([`BotBidRules::need_rules`]).
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct NeedRules {
+    pub slots_looked_at: usize,
+    pub upgrade_margin: f64,
+    pub max_upgrade_age: i32,
+}
+
+impl Default for NeedRules {
+    fn default() -> Self {
+        Self {
+            slots_looked_at: SLOTS_LOOKED_AT,
+            upgrade_margin: UPGRADE_MARGIN,
+            max_upgrade_age: MAX_UPGRADE_AGE,
+        }
+    }
+}
+
+/// [`club_needs`] with the upgrade looked for by `rules`.
+pub fn club_needs_with(
+    formation: &str,
+    seniors: [usize; 4],
+    available: &[&Player],
+    rules: &NeedRules,
+) -> Vec<Need> {
     let needs = line_needs(formation);
     let slots = formation_slots(formation);
     if let Some(slot) = slots.iter().find(|slot| {
@@ -115,10 +146,10 @@ pub fn club_needs(formation: &str, seniors: [usize; 4], available: &[&Player]) -
             let line = group_index(slot);
             !line_is_overloaded(seniors[line], needs[line])
         })
-        .take(SLOTS_LOOKED_AT)
+        .take(rules.slots_looked_at)
         .map(|(slot, rating)| Need {
             slot: slot.clone(),
-            bar: rating + UPGRADE_MARGIN,
+            bar: rating + rules.upgrade_margin,
             short: false,
         })
         .collect()
@@ -129,12 +160,17 @@ pub fn club_needs(formation: &str, seniors: [usize; 4], available: &[&Player]) -
 /// than [`MAX_UPGRADE_AGE`]. For a short line the worth is his rating in the slot; for an upgrade,
 /// how far he clears the bar plus [`UPGRADE_MARGIN`].
 pub fn answers_need(need: &Need, player: &Player, age: i32) -> Option<f64> {
+    answers_need_with(need, player, age, &NeedRules::default())
+}
+
+/// [`answers_need`] with the oldest upgrade and the margin of `rules`.
+pub fn answers_need_with(need: &Need, player: &Player, age: i32, rules: &NeedRules) -> Option<f64> {
     if player.retired
         || player.injury.is_some()
         || player.squad_role != SquadRole::Senior
         || group_index(&player.position) != group_index(&need.slot)
         || f64::from(player.ovr) + OVERALL_SLACK < need.bar
-        || (!need.short && age > MAX_UPGRADE_AGE)
+        || (!need.short && age > rules.max_upgrade_age)
     {
         return None;
     }
@@ -145,7 +181,7 @@ pub fn answers_need(need: &Need, player: &Player, age: i32) -> Option<f64> {
     Some(if need.short {
         rating
     } else {
-        rating - need.bar + UPGRADE_MARGIN
+        rating - need.bar + rules.upgrade_margin
     })
 }
 
@@ -159,8 +195,18 @@ pub struct BotInterest {
 
 /// The first of a bot's `needs` that `player` answers, if any.
 pub fn bot_interest(needs: &[Need], player: &Player, age: i32) -> Option<BotInterest> {
+    bot_interest_with(needs, player, age, &NeedRules::default())
+}
+
+/// [`bot_interest`] with the needs answered by `rules`.
+pub fn bot_interest_with(
+    needs: &[Need],
+    player: &Player,
+    age: i32,
+    rules: &NeedRules,
+) -> Option<BotInterest> {
     needs.iter().find_map(|need| {
-        answers_need(need, player, age).map(|worth| BotInterest {
+        answers_need_with(need, player, age, rules).map(|worth| BotInterest {
             short: need.short,
             worth,
         })
@@ -208,6 +254,66 @@ pub struct BotBidRules {
     /// players of bots in a season, so what it has left goes to people's listings.
     pub bot_sale_participation_permille: u32,
     pub bot_sale_max_buys_per_season: u32,
+    // E5-11 (analysis-bot-transfer-demand Dtd-1, Dtd-2). Each is absent from every ruleset
+    // published before it, and written back absent, so a published ruleset reads and writes as
+    // it is and its bots buy as they did.
+    /// The club's own graduates younger than this take no squad slot (R3); absent, every player
+    /// does.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub academy_exempt_under_age: Option<u8>,
+    /// The most free agents a bot buys in a season, within `max_buys_per_season`; absent, a free
+    /// agent is a buy like any other.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub free_agent_max_buys_per_season: Option<u32>,
+    /// The most a bot spends on free agents in a season, in euros, apart from `season_spend`,
+    /// which is then left to the clubs' listings; absent, both draw on `season_spend`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub free_agent_season_spend: Option<u64>,
+    /// The bot's own [`NeedRules`]; each absent one is the game AI's.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub slots_looked_at: Option<u32>,
+    /// In tenths of a rating point: 30 is the game's 3.0.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub upgrade_margin_tenths: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_upgrade_age: Option<u8>,
+}
+
+/// What a bot bought at auction this season, by seller (E5-11): every buy, those of bots' sales,
+/// those of free agents, and the money spent on clubs' listings and on free agents.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SeasonBuys {
+    pub all: u32,
+    pub from_bots: u32,
+    pub free_agents: u32,
+    pub spent_on_clubs: u64,
+    pub spent_on_free_agents: u64,
+}
+
+/// One player as a club's squad slots read him (E5-11, R3): retired or not, his age on the club's
+/// day, and whether he is one of the club's own graduates.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SlotMember {
+    pub retired: bool,
+    pub age: i32,
+    pub own_graduate: bool,
+}
+
+/// A club's squad slots (analysis-bot-transfer-demand Dtd-1): its players not retired, less its own
+/// graduates younger than `exempt_under_age`. `None` counts every player not retired, as every rule
+/// did before E5-11.
+pub fn squad_slots(
+    members: impl IntoIterator<Item = SlotMember>,
+    exempt_under_age: Option<u8>,
+) -> usize {
+    members
+        .into_iter()
+        .filter(|member| !member.retired)
+        .filter(|member| {
+            !(member.own_graduate
+                && exempt_under_age.is_some_and(|under| member.age < i32::from(under)))
+        })
+        .count()
 }
 
 /// Who sells an auction's player, as a bot reads it (S-11g).
@@ -249,6 +355,12 @@ impl Default for BotBidRules {
             person_cash_reserve: 150_000,
             bot_sale_participation_permille: 300,
             bot_sale_max_buys_per_season: 1,
+            academy_exempt_under_age: None,
+            free_agent_max_buys_per_season: None,
+            free_agent_season_spend: None,
+            slots_looked_at: None,
+            upgrade_margin_tenths: None,
+            max_upgrade_age: None,
         }
     }
 }
@@ -267,6 +379,69 @@ impl BotBidRules {
                 + self.short_line_bonus_permille
                 + self.person_ceiling_bonus_permille
                 < price_band_max_permille
+            && self.e5_11_fits()
+    }
+
+    /// The E5-11 fields, each absent or in its range (e5-11-s-37-tech-spec §3.5).
+    fn e5_11_fits(&self) -> bool {
+        self.academy_exempt_under_age
+            .is_none_or(|age| (16..=21).contains(&age))
+            && self
+                .free_agent_max_buys_per_season
+                .is_none_or(|buys| buys <= self.max_buys_per_season)
+            && self
+                .free_agent_season_spend
+                .is_none_or(|spend| spend <= self.season_spend)
+            && self
+                .slots_looked_at
+                .is_none_or(|slots| (1..=11).contains(&slots))
+            && self
+                .upgrade_margin_tenths
+                .is_none_or(|tenths| tenths <= 100)
+            && self
+                .max_upgrade_age
+                .is_none_or(|age| (28..=36).contains(&age))
+    }
+
+    /// How this bot looks for an upgrade: the ruleset's values, the game AI's where absent.
+    pub fn need_rules(&self) -> NeedRules {
+        let game = NeedRules::default();
+        NeedRules {
+            slots_looked_at: self
+                .slots_looked_at
+                .map_or(game.slots_looked_at, |slots| slots as usize),
+            upgrade_margin: self
+                .upgrade_margin_tenths
+                .map_or(game.upgrade_margin, |tenths| f64::from(tenths) / 10.0),
+            max_upgrade_age: self.max_upgrade_age.map_or(game.max_upgrade_age, i32::from),
+        }
+    }
+
+    /// Whether a bot that bought `buys` this season may buy another of `seller` (B1, Dtd-2): under
+    /// the season's buys, under its buys of bots' sales ([`Self::may_buy_from`]), and for a free
+    /// agent under `free_agent_max_buys_per_season` when the ruleset sets it.
+    pub fn may_buy(&self, seller: SellerKind, buys: &SeasonBuys) -> bool {
+        buys.all < self.max_buys_per_season
+            && self.may_buy_from(seller, buys.from_bots)
+            && (seller != SellerKind::World
+                || self
+                    .free_agent_max_buys_per_season
+                    .is_none_or(|most| buys.free_agents < most))
+    }
+
+    /// What a bot may spend on `seller`'s auction (B3, Qtd-3): its cash above the reserve, within
+    /// what is left of the budget the auction draws on. With `free_agent_season_spend` set, a free
+    /// agent draws on it and a club's listing on `season_spend`, each less its own spending; unset,
+    /// every auction draws on `season_spend` less all of it ([`Self::spendable`]).
+    pub fn spendable_for(&self, seller: SellerKind, cash: u64, buys: &SeasonBuys) -> u64 {
+        let left = match (self.free_agent_season_spend, seller) {
+            (None, _) => self
+                .season_spend
+                .saturating_sub(buys.spent_on_clubs + buys.spent_on_free_agents),
+            (Some(free), SellerKind::World) => free.saturating_sub(buys.spent_on_free_agents),
+            (Some(_), _) => self.season_spend.saturating_sub(buys.spent_on_clubs),
+        };
+        cash.saturating_sub(self.cash_reserve).min(left)
     }
 
     /// These rules as a bot applies them to an auction of `seller` (S-11g): a person's listing is
@@ -1488,5 +1663,289 @@ mod tests {
         assert!((200..=300).contains(&listed.len()), "{} days", listed.len());
         assert_eq!(days(1), listed);
         assert_ne!(days(2), listed);
+    }
+
+    fn member(age: i32, own_graduate: bool) -> SlotMember {
+        SlotMember {
+            retired: false,
+            age,
+            own_graduate,
+        }
+    }
+
+    /// Given 20 senior players, three of the club's own graduates aged 18, 19 and 19, one aged
+    /// exactly 20, another club's graduate aged 18 and a retired player,
+    /// when the squad's slots are counted with graduates under 20 exempt, and with no exemption,
+    /// then the three young graduates take no slot and everyone else not retired does (22, then 25).
+    #[test]
+    fn a_clubs_own_graduates_under_the_exempt_age_take_no_slot() {
+        let mut squad: Vec<SlotMember> = (0..20).map(|_| member(26, false)).collect();
+        squad.extend([member(18, true), member(19, true), member(19, true)]);
+        squad.push(member(20, true));
+        squad.push(member(18, false));
+        squad.push(SlotMember {
+            retired: true,
+            ..member(34, false)
+        });
+
+        assert_eq!(squad_slots(squad.iter().copied(), Some(20)), 22);
+        assert_eq!(squad_slots(squad.iter().copied(), None), 25);
+    }
+
+    /// Given a full 4-4-2 squad, and a crowded one,
+    /// when its needs are worked out by the default need rules and by the game's AI rule,
+    /// then they are the same needs.
+    #[test]
+    fn the_default_need_rules_are_the_game_ais() {
+        let squad = full_squad(60);
+        let mut crowded = full_squad(60);
+        crowded.extend((0..3).map(|n| player(&format!("extra-{n}"), Position::Striker, 60)));
+        for squad in [squad, crowded] {
+            let available: Vec<&Player> = squad.iter().collect();
+            let seniors = bot_line_counts(&squad);
+            assert_eq!(
+                club_needs_with("4-4-2", seniors, &available, &NeedRules::default()),
+                club_needs("4-4-2", seniors, &available)
+            );
+        }
+    }
+
+    /// Given a full 4-4-2 squad and need rules looking at five slots with a margin of 1.0,
+    /// when its needs are worked out,
+    /// then it looks to upgrade five slots, each bar its starter's rating plus 1.0.
+    #[test]
+    fn need_rules_set_how_many_slots_a_club_looks_at_and_its_margin() {
+        let squad = full_squad(60);
+        let available: Vec<&Player> = squad.iter().collect();
+        let rules = NeedRules {
+            slots_looked_at: 5,
+            upgrade_margin: 1.0,
+            max_upgrade_age: MAX_UPGRADE_AGE,
+        };
+
+        let wider = club_needs_with("4-4-2", bot_line_counts(&squad), &available, &rules);
+        let narrow = club_needs("4-4-2", bot_line_counts(&squad), &available);
+
+        assert_eq!(wider.len(), 5);
+        assert!((wider[0].bar - (narrow[0].bar - UPGRADE_MARGIN + 1.0)).abs() < 1e-9);
+    }
+
+    /// Given an upgrade need a defender clears by 2.0, and need rules taking players up to 33
+    /// with a margin of 1.0,
+    /// when he is offered at 33 and at 34, and by the default rules at 33,
+    /// then the rules take him at 33, worth 2.0 plus their margin, and refuse him at 34; the
+    /// default refuses him at 33.
+    #[test]
+    fn need_rules_set_the_oldest_upgrade_and_its_worth() {
+        let good = player("cb", Position::CenterBack, 70);
+        let rating = positional_fit_for_assignment(&good, &Position::CenterBack);
+        let need = Need {
+            slot: Position::CenterBack,
+            bar: rating - 2.0,
+            short: false,
+        };
+        let rules = NeedRules {
+            slots_looked_at: SLOTS_LOOKED_AT,
+            upgrade_margin: 1.0,
+            max_upgrade_age: 33,
+        };
+
+        let worth = answers_need_with(&need, &good, 33, &rules).expect("wanted at 33");
+        assert!((worth - 3.0).abs() < 1e-9);
+        assert_eq!(answers_need_with(&need, &good, 34, &rules), None);
+        assert_eq!(answers_need(&need, &good, 33), None);
+        assert!(bot_interest_with(&[need], &good, 33, &rules).is_some());
+    }
+
+    /// Given the bots' rules of a ruleset without the E5-11 fields, and of one with them,
+    /// when their need rules are read,
+    /// then the first are the game AI's and the second the ruleset's (5 slots, 3.0, 33).
+    #[test]
+    fn a_bots_need_rules_come_from_its_ruleset_or_the_games_ai() {
+        assert_eq!(BotBidRules::default().need_rules(), NeedRules::default());
+        let wider = BotBidRules {
+            slots_looked_at: Some(5),
+            upgrade_margin_tenths: Some(30),
+            max_upgrade_age: Some(33),
+            ..BotBidRules::default()
+        };
+
+        assert_eq!(
+            wider.need_rules(),
+            NeedRules {
+                slots_looked_at: 5,
+                upgrade_margin: 3.0,
+                max_upgrade_age: 33,
+            }
+        );
+    }
+
+    fn bought(all: u32, from_bots: u32, free_agents: u32) -> SeasonBuys {
+        SeasonBuys {
+            all,
+            from_bots,
+            free_agents,
+            ..SeasonBuys::default()
+        }
+    }
+
+    /// Given the bots' rules without a free-agent quota (3 buys a season, one of a bot's sales),
+    /// when a bot that bought 2, then 3, players asks to buy a free agent, a person's and a bot's,
+    /// then it may buy any of them at 2 (a bot's only before its first bot buy) and none at 3, as
+    /// before E5-11.
+    #[test]
+    fn without_a_free_agent_quota_a_bot_counts_every_buy_alike() {
+        let rules = BotBidRules::default();
+
+        assert!(rules.may_buy(SellerKind::World, &bought(2, 0, 2)));
+        assert!(rules.may_buy(SellerKind::Person, &bought(2, 0, 2)));
+        assert!(rules.may_buy(SellerKind::Bot, &bought(2, 0, 2)));
+        assert!(!rules.may_buy(SellerKind::Bot, &bought(2, 1, 1)));
+        assert!(!rules.may_buy(SellerKind::World, &bought(3, 0, 0)));
+        assert!(!rules.may_buy(SellerKind::Person, &bought(3, 0, 3)));
+    }
+
+    /// Given 5 buys a season, at most 2 of them free agents,
+    /// when a bot that bought 2 free agents asks for a third, and for a person's player, and a
+    /// bot that bought 5 asks for a person's,
+    /// then the third free agent is refused, the person's player is not, and the sixth buy is.
+    #[test]
+    fn a_free_agent_quota_keeps_buys_for_the_clubs_listings() {
+        let rules = BotBidRules {
+            max_buys_per_season: 5,
+            free_agent_max_buys_per_season: Some(2),
+            ..BotBidRules::default()
+        };
+
+        assert!(rules.may_buy(SellerKind::World, &bought(1, 0, 1)));
+        assert!(!rules.may_buy(SellerKind::World, &bought(2, 0, 2)));
+        assert!(rules.may_buy(SellerKind::Person, &bought(2, 0, 2)));
+        assert!(!rules.may_buy(SellerKind::Person, &bought(5, 0, 2)));
+    }
+
+    fn spent(on_clubs: u64, on_free_agents: u64) -> SeasonBuys {
+        SeasonBuys {
+            spent_on_clubs: on_clubs,
+            spent_on_free_agents: on_free_agents,
+            ..SeasonBuys::default()
+        }
+    }
+
+    /// Given a bot of 4.32M that spent 2.7M on free agents this season (the E5-11 example, cash
+    /// 5.22M before), on a person's listing (reserve 0.15M),
+    /// when it asks what it may spend without a free-agent budget, and with one,
+    /// then without it the season's 3.5M is down to 0.8M; with it the person's listing has the
+    /// whole 3.5M.
+    #[test]
+    fn a_free_agent_budget_leaves_the_seasons_for_the_clubs_listings() {
+        let shared = BotBidRules::default().for_seller(SellerKind::Person);
+        let split = BotBidRules {
+            free_agent_season_spend: Some(1_000_000),
+            ..BotBidRules::default()
+        }
+        .for_seller(SellerKind::Person);
+
+        assert_eq!(
+            shared.spendable_for(SellerKind::Person, 2_520_000, &spent(0, 2_700_000)),
+            800_000
+        );
+        assert_eq!(
+            split.spendable_for(SellerKind::Person, 4_320_000, &spent(0, 2_700_000)),
+            3_500_000
+        );
+    }
+
+    /// Given a free-agent budget of 1.0M,
+    /// when a bot with 5M that spent 0.9M on free agents and 3M on clubs' listings asks what it may
+    /// spend on a free agent, and a bot with 0.5M on one,
+    /// then the first may spend the 0.1M left of the free-agent budget, whatever it spent on clubs;
+    /// the second its cash above the reserve; and the shared rule (no budget) is unchanged.
+    #[test]
+    fn a_free_agent_draws_on_its_own_budget() {
+        let rules = BotBidRules {
+            free_agent_season_spend: Some(1_000_000),
+            ..BotBidRules::default()
+        };
+
+        assert_eq!(
+            rules.spendable_for(SellerKind::World, 5_000_000, &spent(3_000_000, 900_000)),
+            100_000
+        );
+        assert_eq!(
+            rules.spendable_for(SellerKind::World, 500_000, &spent(0, 0)),
+            100_000
+        );
+        let shared = BotBidRules::default();
+        assert_eq!(
+            shared.spendable_for(SellerKind::World, 5_000_000, &spent(3_000_000, 400_000)),
+            shared.spendable(5_000_000, 3_400_000)
+        );
+    }
+
+    /// Given the proposed bot values, each E5-11 field at the edge of its range and one past it,
+    /// when they are checked with the market,
+    /// then the edges fit and every value past one does not.
+    #[test]
+    fn the_e5_11_fields_must_stay_in_their_ranges() {
+        let base = BotBidRules {
+            max_buys_per_season: 5,
+            ..BotBidRules::default()
+        };
+        let fits = |rules: BotBidRules| rules.fits_market(180, 2_500);
+        let with = |change: fn(&mut BotBidRules)| {
+            let mut rules = base;
+            change(&mut rules);
+            rules
+        };
+
+        assert!(fits(with(|r| r.academy_exempt_under_age = Some(16))));
+        assert!(fits(with(|r| r.academy_exempt_under_age = Some(21))));
+        assert!(!fits(with(|r| r.academy_exempt_under_age = Some(15))));
+        assert!(!fits(with(|r| r.academy_exempt_under_age = Some(22))));
+        assert!(fits(with(|r| r.free_agent_max_buys_per_season = Some(5))));
+        assert!(!fits(with(|r| r.free_agent_max_buys_per_season = Some(6))));
+        assert!(fits(with(|r| r.free_agent_season_spend = Some(3_500_000))));
+        assert!(!fits(with(|r| r.free_agent_season_spend = Some(3_500_001))));
+        assert!(fits(with(|r| r.slots_looked_at = Some(1))));
+        assert!(fits(with(|r| r.slots_looked_at = Some(11))));
+        assert!(!fits(with(|r| r.slots_looked_at = Some(0))));
+        assert!(!fits(with(|r| r.slots_looked_at = Some(12))));
+        assert!(fits(with(|r| r.upgrade_margin_tenths = Some(100))));
+        assert!(!fits(with(|r| r.upgrade_margin_tenths = Some(101))));
+        assert!(fits(with(|r| r.max_upgrade_age = Some(28))));
+        assert!(fits(with(|r| r.max_upgrade_age = Some(36))));
+        assert!(!fits(with(|r| r.max_upgrade_age = Some(27))));
+        assert!(!fits(with(|r| r.max_upgrade_age = Some(37))));
+    }
+
+    /// Given the bots' rules of a ruleset written before E5-11, and of one naming the new fields,
+    /// when they are read and written back,
+    /// then the old ones have none of the fields and write none of them back (so no published
+    /// ruleset changes), the new ones keep theirs, and an unknown field is still refused.
+    #[test]
+    fn the_e5_11_fields_are_absent_from_a_ruleset_that_does_not_name_them() {
+        let old: BotBidRules = serde_json::from_str(r#"{"squadCap": 25}"#).expect("old");
+        assert_eq!(old, BotBidRules::default());
+        let written = serde_json::to_value(old).expect("written");
+        for field in [
+            "academyExemptUnderAge",
+            "freeAgentMaxBuysPerSeason",
+            "freeAgentSeasonSpend",
+            "slotsLookedAt",
+            "upgradeMarginTenths",
+            "maxUpgradeAge",
+        ] {
+            assert!(written.get(field).is_none(), "{field} written");
+        }
+
+        let new: BotBidRules = serde_json::from_str(
+            r#"{"academyExemptUnderAge": 20, "freeAgentMaxBuysPerSeason": 2,
+                "freeAgentSeasonSpend": 1000000}"#,
+        )
+        .expect("new");
+        assert_eq!(new.academy_exempt_under_age, Some(20));
+        assert_eq!(new.free_agent_max_buys_per_season, Some(2));
+        assert_eq!(new.free_agent_season_spend, Some(1_000_000));
+        assert!(serde_json::from_str::<BotBidRules>(r#"{"squadSlots": 30}"#).is_err());
     }
 }
