@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Check, ChevronRight, Sparkles } from "lucide-react";
 import { getSetPieceStats } from "../../../components/match/SetPieceSelector";
 import { translatePositionAbbreviation } from "../../../components/squad/SquadTab.helpers";
+import type { TacticsPitchSlot } from "../../../components/tactics/TacticsTab.helpers";
+import { getRoleOptions } from "../../../lib/playerRoles";
 import {
   licenceLock,
   lockHint,
@@ -15,7 +17,7 @@ import {
   resolveEffectiveMatchRoles,
 } from "../../../components/tactics/TacticsRoles.helpers";
 import type { TacticsRosterPlayer } from "../../../components/tactics/tacticsBoardSource";
-import type { TacticsPhaseSettings, TeamMatchRolesData } from "../../../store/types";
+import type { PlayerRole, TacticsPhaseSettings, TeamMatchRolesData } from "../../../store/types";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import { KEY } from "./PhoneTacticsLineup";
 
@@ -159,6 +161,115 @@ export function PhoneTacticsRoles({
         </PhoneSheet>
       )}
     </div>
+  );
+}
+
+/**
+ * Each starter's tactical role, as the desktop's token card sets it: a row per place of the shape,
+ * opening a sheet of the roles that place allows (the backend checks a role against the deployed
+ * slot, #272). A role the licence keeps closed shows what opens it.
+ */
+export function PhonePlayerRoles({
+  slots,
+  playerRoles,
+  limits,
+  locked,
+  onRole,
+}: {
+  slots: TacticsPitchSlot[];
+  playerRoles?: Partial<Record<string, PlayerRole>>;
+  limits?: TacticsLimits;
+  locked: boolean;
+  onRole: (playerId: string, role: PlayerRole) => void;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState<TacticsPitchSlot | null>(null);
+  const roleOf = (playerId: string): PlayerRole => playerRoles?.[playerId] ?? "Standard";
+  const label = t("tactics.playerRoleLabel");
+  return (
+    <>
+      <ul
+        aria-label={label}
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-navy-700 dark:bg-navy-800"
+      >
+        {slots.map((slot) => {
+          const player = slot.player;
+          if (!player) return null;
+          return (
+            <li
+              key={slot.index}
+              className="border-t border-gray-200 first:border-t-0 dark:border-navy-700"
+            >
+              <button
+                type="button"
+                aria-haspopup="dialog"
+                disabled={locked}
+                onClick={() => setOpen(slot)}
+                className={`grid min-h-12 w-full grid-cols-[40px_minmax(0,1fr)_auto_16px] items-center gap-2.5 px-3 py-1.5 text-left disabled:opacity-60 ${FOCUS}`}
+              >
+                <span className="rounded-md bg-gray-100 text-center font-heading text-xs font-bold text-gray-600 dark:bg-navy-700 dark:text-gray-300">
+                  {translatePositionAbbreviation(t, slot.position)}
+                </span>
+                <span className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                  {player.full_name}
+                </span>
+                <span className="max-w-[45vw] truncate text-xs font-semibold text-primary-700 dark:text-primary-400">
+                  {t(`tactics.playerRoles.${roleOf(player.id)}`)}
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400" aria-hidden="true" />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {open?.player && (
+        <PhoneSheet
+          title={open.player.full_name}
+          kicker={label}
+          aside={translatePositionAbbreviation(t, open.position)}
+          onClose={() => setOpen(null)}
+        >
+          <div role="radiogroup" aria-label={label} className="flex flex-col gap-1">
+            {getRoleOptions(open.position, roleOf(open.player.id)).map((option) => {
+              const playerId = open.player?.id ?? "";
+              const on = roleOf(playerId) === option;
+              const lock = licenceLock(limits, { kind: "role", value: option });
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  disabled={lock !== null}
+                  onClick={() => {
+                    if (!on) onRole(playerId, option);
+                    setOpen(null);
+                  }}
+                  className={`flex min-h-[52px] w-full items-center gap-2.5 rounded-[10px] border px-3 py-1.5 text-left disabled:opacity-60 ${on ? "border-primary-500 bg-primary-50 dark:bg-primary-900/35" : "border-transparent"} ${FOCUS}`}
+                >
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {t(`tactics.playerRoles.${option}`)}
+                    </span>
+                    {lock && (
+                      <span className="text-[11px] font-semibold text-accent-700 dark:text-accent-400">
+                        {lockHint(t, lock)}
+                      </span>
+                    )}
+                  </span>
+                  {on && (
+                    <Check
+                      className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
+                      aria-hidden="true"
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </PhoneSheet>
+      )}
+    </>
   );
 }
 

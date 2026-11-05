@@ -12,12 +12,14 @@ import LicenceNotice from "../LicenceNotice";
 import { PhoneHeaderPart } from "../mobile/PhoneHeaderSlots";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import { KEY, PhoneTacticsLineup } from "./PhoneTacticsLineup";
-import { PhoneTacticsPhase, PhoneTacticsRoles } from "./PhoneTacticsRoles";
+import { PhonePlayerRoles, PhoneTacticsPhase, PhoneTacticsRoles } from "./PhoneTacticsRoles";
 import { PhoneTacticsStyle } from "./PhoneTacticsStyle";
 
 type Tab = "lineup" | "style" | "roles" | "phase";
 const TABS: Tab[] = ["lineup", "style", "roles", "phase"];
 type Library = ReturnType<typeof useTacticsLibrary>;
+const SECTION =
+  "-mb-1 font-heading text-[13px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400";
 
 /**
  * The tactics page on a phone (design m-chien-thuat): the tactic in use and its save in the app
@@ -124,6 +126,21 @@ export default function PhoneTactics({
             onFormation={(formation) => void lineup.handleFormationChange(formation)}
             onPlayStyle={(style) => void lineup.handlePlayStyleChange(style)}
           />
+        )}
+        {tab === "roles" && (
+          <>
+            <h2 className={SECTION}>{t("tactics.playerRoleLabel")}</h2>
+            <PhonePlayerRoles
+              slots={lineup.pitchSlots}
+              playerRoles={lineup.team?.player_roles}
+              limits={source.limits}
+              locked={locked}
+              onRole={(playerId, role) =>
+                void source.setPlayerRole(playerId, role).catch(() => undefined)
+              }
+            />
+            <h2 className={SECTION}>{t("tactics.responsibilities")}</h2>
+          </>
         )}
         {tab === "roles" && (
           <PhoneTacticsRoles
