@@ -1820,7 +1820,7 @@
     "events": {
       "notOnServer": "Etkinlikler bu sunucuda henüz açık değil.",
       "disabled": "Bu sezonun etkinliği yok.",
-      "empty": "Şu an etkinlik yok. Yeni bir etkinlik başlamadan 7 gün önce burada görünür.",
+      "empty": "Şu an etkinlik yok. Yeni bir etkinlik başlamadan önce burada görünür.",
       "group": {
         "scheduled": "Yakında",
         "closed": "Kapanan"

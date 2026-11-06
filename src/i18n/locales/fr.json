@@ -1820,7 +1820,7 @@
     "events": {
       "notOnServer": "Les événements ne sont pas encore ouverts sur ce serveur.",
       "disabled": "Cette saison n'a pas d'événements.",
-      "empty": "Aucun événement pour l'instant. Un nouvel événement apparaît ici 7 jours avant son début.",
+      "empty": "Aucun événement pour l'instant. Un nouvel événement apparaît ici avant son début.",
       "group": {
         "scheduled": "À venir",
         "closed": "Clos"

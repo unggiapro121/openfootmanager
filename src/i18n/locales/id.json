@@ -1820,7 +1820,7 @@
     "events": {
       "notOnServer": "Event belum dibuka di server ini.",
       "disabled": "Musim ini tidak punya event.",
-      "empty": "Belum ada event saat ini. Event baru muncul di sini 7 hari sebelum dimulai.",
+      "empty": "Belum ada event saat ini. Event baru muncul di sini sebelum dimulai.",
       "group": {
         "scheduled": "Segera hadir",
         "closed": "Ditutup"
