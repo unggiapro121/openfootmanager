@@ -1997,7 +1997,36 @@
         "toBoth": "Objetos en tu inventario y monedas en tu monedero.",
         "expires": "Caduca {{days}} días después de reclamarlo.",
         "close": "¡Genial!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Recompensas por recoger: {{n}}",
+        "running": "Eventos en curso: {{n}}",
+        "readyCount": "Por recoger: {{n}}",
+        "missionCount": "Misiones: {{n}}",
+        "leftRunning": "Quedan {{countdown}}",
+        "leftEnded": "El cobro cierra en {{countdown}}",
+        "over": "Terminado",
+        "short": "{{days}} d {{hours}} h",
+        "long": "{{days}} d {{clock}}",
+        "nearest": "Próximo: {{countdown}}",
+        "done": "Hechas ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, recompensa {{reward}}. Ver detalles",
+        "claim": "Recoger",
+        "readyNow": "Objetivo cumplido, recógela ya",
+        "claimedNote": "Recompensa recogida",
+        "missedCounted": "El evento terminó con {{progress}}/{{target}}.",
+        "missedPlain": "El evento terminó antes de completar la misión.",
+        "rewards": "Recompensas",
+        "conditions": "Condiciones",
+        "opensLater": "La misión se abre cuando empieza el evento.",
+        "conditionDefault": "Cuenta los partidos oficiales del club mientras dura el evento.",
+        "unit": {
+          "leagueMatchesDirected": "partidos",
+          "leagueWinsDirected": "victorias",
+          "offlineMatches": "partidos offline"
+        }
+      },
+      "goLeague": "Ver la clasificación"
     }
   },
   "coach": {

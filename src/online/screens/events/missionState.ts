@@ -13,6 +13,17 @@ export function eventGroup(state: string): EventGroup {
   return state === "running" || state === "ended" || state === "scheduled" ? state : "closed";
 }
 
+const at = (iso: string): number => Date.parse(iso) || 0;
+
+/** A group's events in the page's order: what ends or starts soonest first; the closed ones, the latest first. */
+export function eventsOf(group: EventGroup, events: EventView[]): EventView[] {
+  const inGroup = events.filter((event) => eventGroup(event.state) === group);
+  if (group === "running") return inGroup.sort((a, b) => at(a.endsAt) - at(b.endsAt));
+  if (group === "ended") return inGroup.sort((a, b) => at(a.claimUntil) - at(b.claimUntil));
+  if (group === "scheduled") return inGroup.sort((a, b) => at(a.startsAt) - at(b.startsAt));
+  return inGroup.sort((a, b) => at(b.claimUntil) - at(a.claimUntil));
+}
+
 export type MissionPhase =
   /** Finished, its claim waiting. */
   | "ready"

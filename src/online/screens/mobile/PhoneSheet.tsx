@@ -15,8 +15,8 @@ export function PhoneSheet({
   children,
 }: {
   title: string;
-  /** A small line above the title, e.g. what the sheet answers. */
-  kicker?: string;
+  /** A small line above the title, e.g. what the sheet answers, or whose it is with its state. */
+  kicker?: ReactNode;
   /** A note beside the title, e.g. the formation in use. */
   aside?: ReactNode;
   onClose: () => void;
@@ -54,7 +54,7 @@ export function PhoneSheet({
         <div className="flex items-baseline justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-0.5">
             {kicker && (
-              <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+              <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                 {kicker}
               </span>
             )}

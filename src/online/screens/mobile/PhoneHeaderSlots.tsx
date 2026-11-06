@@ -14,9 +14,15 @@ export interface PhoneHeaderSlotElements {
   actions: HTMLElement | null;
   /** Under the bar, inside the part that stays at the top: a page's tabs or its search field. */
   below: HTMLElement | null;
+  /** The line under the page's name, in place of the season's day (design m-su-kien). */
+  sub: HTMLElement | null;
 }
 
-const PhoneHeaderSlots = createContext<PhoneHeaderSlotElements>({ actions: null, below: null });
+const PhoneHeaderSlots = createContext<PhoneHeaderSlotElements>({
+  actions: null,
+  below: null,
+  sub: null,
+});
 
 export const PhoneHeaderSlotsProvider = PhoneHeaderSlots.Provider;
 

@@ -1997,7 +1997,36 @@
         "toBoth": "Předměty v inventáři, mince v peněžence.",
         "expires": "Platnost vyprší {{days}} dní po vyzvednutí.",
         "close": "Skvělé!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Odměn k vyzvednutí: {{n}}",
+        "running": "Probíhajících událostí: {{n}}",
+        "readyCount": "K vyzvednutí: {{n}}",
+        "missionCount": "Úkolů: {{n}}",
+        "leftRunning": "Zbývá {{countdown}}",
+        "leftEnded": "Vyzvednutí končí za {{countdown}}",
+        "over": "Skončeno",
+        "short": "{{days}} d {{hours}} h",
+        "long": "{{days}} d {{clock}}",
+        "nearest": "Nejbližší: {{countdown}}",
+        "done": "Hotovo ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, odměna {{reward}}. Zobrazit podrobnosti",
+        "claim": "Vyzvednout",
+        "readyNow": "Cíl splněn, vyzvedněte si odměnu",
+        "claimedNote": "Odměna vyzvednuta",
+        "missedCounted": "Událost skončila na {{progress}}/{{target}}.",
+        "missedPlain": "Událost skončila dřív, než byl úkol splněn.",
+        "rewards": "Odměny",
+        "conditions": "Podmínky",
+        "opensLater": "Úkol se otevře, až událost začne.",
+        "conditionDefault": "Počítají se oficiální zápasy klubu během události.",
+        "unit": {
+          "leagueMatchesDirected": "zápasů",
+          "leagueWinsDirected": "výher",
+          "offlineMatches": "offline zápasů"
+        }
+      },
+      "goLeague": "Zobrazit tabulku"
     }
   },
   "coach": {
