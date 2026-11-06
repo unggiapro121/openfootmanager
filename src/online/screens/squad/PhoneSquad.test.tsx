@@ -193,16 +193,46 @@ describe("the squad on a phone", () => {
   });
 
   // Given the squad,
-  // when the coach sorts by OVR,
-  // then the list is strongest first, without the eleven/bench headings.
-  it("sorts by overall", async () => {
+  // when the coach taps the OVR heading, then taps it again,
+  // then the list is strongest first without the eleven/bench headings, then weakest first.
+  it("sorts by overall from its heading", async () => {
     serve();
     await open();
-    fireEvent.change(screen.getByRole("combobox", { name: `${KEY}.sort` }), {
-      target: { value: "ovr" },
-    });
+    expect(screen.queryByRole("combobox", { name: `${KEY}.sort` })).toBeNull();
+    const headings = screen.getByRole("group", { name: `${KEY}.sort` });
+    const ovr = within(headings).getByRole("button", { name: "common.ovr" });
+
+    fireEvent.click(ovr);
+    expect(ovr).toHaveAttribute("aria-pressed", "true");
     expect(rowNames()).toEqual(["Nhân Lucas", "Hoàng Đức", "Fischer", "Việt Anh"]);
     expect(within(list()).queryByText(/sectionXi/)).toBeNull();
+
+    fireEvent.click(ovr);
+    expect(rowNames()).toEqual(["Việt Anh", "Fischer", "Hoàng Đức", "Nhân Lucas"]);
+  });
+
+  // Given the list sorted by a column of the growth lens,
+  // when the coach tries another lens, then taps the player heading,
+  // then the hidden column's order is dropped, and the eleven and the bench show apart again.
+  it("goes back to its own order", async () => {
+    serve();
+    await open();
+    const lenses = screen.getByRole("radiogroup", { name: `${KEY}.lens` });
+    const headings = screen.getByRole("group", { name: `${KEY}.sort` });
+    fireEvent.click(within(lenses).getByRole("radio", { name: `${KEY}.lensGrowth` }));
+    fireEvent.click(within(headings).getByRole("button", { name: "common.age" }));
+    expect(within(list()).queryByText(/sectionXi/)).toBeNull();
+
+    fireEvent.click(within(lenses).getByRole("radio", { name: `${KEY}.lensStats` }));
+    expect(within(list()).getByText(/sectionXi/)).toBeInTheDocument();
+
+    fireEvent.click(within(headings).getByRole("button", { name: "common.ovr" }));
+    fireEvent.click(within(headings).getByRole("button", { name: "match.player" }));
+    expect(within(headings).getByRole("button", { name: "match.player" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(within(list()).getByText(/sectionXi/)).toBeInTheDocument();
   });
 
   // Given the squad,

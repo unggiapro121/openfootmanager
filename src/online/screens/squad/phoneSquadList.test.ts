@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { squadPlayer } from "../../../test-utils/onlineTestKit";
-import { phoneSections, scopeCounts } from "./phoneSquadList";
+import {
+  inOwnOrder,
+  nextSort,
+  PHONE_DEFAULT_SORT,
+  phoneSections,
+  scopeCounts,
+} from "./phoneSquadList";
 import { NO_FILTER } from "./squadList";
 
 const players = [
@@ -49,5 +55,19 @@ describe("phoneSections", () => {
     expect(phoneSections(players, eleven, false).map((part) => part.id)).toEqual(["all"]);
     expect(phoneSections([], eleven, false)).toEqual([]);
     expect(phoneSections([players[2]], eleven, true).map((part) => part.id)).toEqual(["bench"]);
+  });
+});
+
+describe("nextSort", () => {
+  // Given the list in its own order,
+  // when a heading is tapped, then the same one again,
+  // then its column starts best first, then turns round; the line heading brings the order back.
+  it("starts a column best first and turns it round on a second tap", () => {
+    const byOvr = nextSort(PHONE_DEFAULT_SORT, "ovr");
+    expect(byOvr).toEqual({ key: "ovr", dir: "desc" });
+    expect(nextSort(byOvr, "ovr")).toEqual({ key: "ovr", dir: "asc" });
+    expect(nextSort(byOvr, "style")).toEqual({ key: "style", dir: "asc" });
+    expect(inOwnOrder(nextSort(byOvr, "pos"))).toBe(true);
+    expect(inOwnOrder(nextSort(PHONE_DEFAULT_SORT, "pos"))).toBe(false);
   });
 });

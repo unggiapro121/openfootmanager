@@ -1,19 +1,31 @@
 import type { SquadPlayerView } from "../../api";
-import { matchesFilter, type SquadFilter, type SquadScope, type SquadSort } from "./squadList";
+import {
+  matchesFilter,
+  type SquadFilter,
+  type SquadScope,
+  type SquadSort,
+  type SquadSortKey,
+} from "./squadList";
 
-/** The orders a phone offers (design m-doi-hinh): the squad's own columns, best first. */
-export const PHONE_SORTS = {
-  pos: { key: null, dir: "asc" },
-  ovr: { key: "ovr", dir: "desc" },
-  condition: { key: "condition", dir: "desc" },
-  potential: { key: "potential", dir: "desc" },
-  age: { key: "age", dir: "asc" },
-  style: { key: "style", dir: "asc" },
-} as const satisfies Record<string, SquadSort>;
+/** The phone list's own order: by line, the eleven apart from the bench. */
+export const PHONE_DEFAULT_SORT: SquadSort = { key: "pos", dir: "asc" };
 
-export type PhoneSortId = keyof typeof PHONE_SORTS;
+/** Columns whose best comes first in rising order: the line, the name, the number, a fit rank. */
+const BEST_RISING: readonly SquadSortKey[] = ["pos", "name", "jersey", "fit", "style"];
 
-export const PHONE_SORT_IDS = Object.keys(PHONE_SORTS) as PhoneSortId[];
+/**
+ * The order after a column heading is tapped, as the desktop table does: the same column again
+ * turns it round, another column starts best first.
+ */
+export function nextSort(current: SquadSort, key: SquadSortKey): SquadSort {
+  if (current.key === key) return { key, dir: current.dir === "asc" ? "desc" : "asc" };
+  return { key, dir: BEST_RISING.includes(key) ? "asc" : "desc" };
+}
+
+/** Whether the list is in its own order, so the eleven and the bench show apart. */
+export function inOwnOrder(sort: SquadSort): boolean {
+  return sort.key === PHONE_DEFAULT_SORT.key && sort.dir === PHONE_DEFAULT_SORT.dir;
+}
 
 const SCOPES: SquadScope[] = ["all", "xi", "bench", "injured"];
 
