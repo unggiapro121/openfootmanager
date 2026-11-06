@@ -1758,7 +1758,14 @@
       "quantityLabel": "Số lượng",
       "openInventory": "Mở Kho đồ",
       "closeNotice": "Đóng thông báo",
-      "needsAcademy": "Mở khi có Lò đào tạo"
+      "needsAcademy": "Mở khi có Lò đào tạo",
+      "topUp": "Nạp",
+      "topUpSoon": "Nạp coin, chưa mở",
+      "noteOver": "Mùa {{number}} đã kết thúc · đồ mua dùng từ mùa sau",
+      "noteSoon": "Mùa {{number}} sắp mở · đồ mua dùng khi mùa mở",
+      "noteOpen": "Vật phẩm không hết hạn",
+      "heldShort": "Kho:",
+      "leftLabel": "Còn lại:"
     },
     "academy": {
       "notOnServer": "Máy chủ này chưa có lò đào tạo.",

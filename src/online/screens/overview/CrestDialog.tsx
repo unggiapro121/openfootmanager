@@ -5,7 +5,7 @@ import type { ClubCrest, ClubProfileView } from "../../api";
 import { online } from "../../client";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
 import { CrestOf, crestDraftOf } from "../ClubCrestMark";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "../items/ItemDialogFrame";
+import ItemDialogFrame, { FRAME_ACTION, FrameButtons, FrameCancel } from "../items/ItemDialogFrame";
 import { renameErrorText } from "../renameText";
 import { useActionKey } from "../useActionKey";
 import { LABEL } from "./OverviewCard";
@@ -30,7 +30,13 @@ export default function CrestDialog({
   const [error, setError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
   const key = useActionKey();
-  const ids = { primary: useId(), secondary: useId(), letters: useId(), hint: useId() };
+  const ids = {
+    primary: useId(),
+    secondary: useId(),
+    letters: useId(),
+    hint: useId(),
+    form: useId(),
+  };
   const label = draft.label.trim();
   const change = (part: Partial<ClubCrest>) => setDraft((current) => ({ ...current, ...part }));
 
@@ -65,8 +71,32 @@ export default function CrestDialog({
       }
       busy={saving}
       onClose={onClose}
+      footer={
+        <>
+          {error !== null && (
+            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+              {renameErrorText(t, error)}
+            </p>
+          )}
+          <FrameButtons>
+            <FrameCancel onClick={onClose} disabled={saving}>
+              {t("online.cancel")}
+            </FrameCancel>
+            {/* In the frame's foot, outside the form: `form` keeps it the form's submit button,
+                so Enter in a field still saves. */}
+            <button
+              type="submit"
+              form={ids.form}
+              className={FRAME_ACTION}
+              disabled={saving || offline || label === ""}
+            >
+              {t("online.club.crest.save")}
+            </button>
+          </FrameButtons>
+        </>
+      }
     >
-      <form onSubmit={save} className="flex flex-col gap-5">
+      <form id={ids.form} onSubmit={save} className="flex flex-col gap-5">
         <div className="flex justify-center">
           <span className="h-28 w-28">
             <CrestOf name={profile.name} crest={{ ...draft, label: label || "?" }} />
@@ -149,23 +179,6 @@ export default function CrestDialog({
           <span id={ids.hint} className="text-xs text-gray-500 dark:text-gray-400">
             {t("online.club.crest.labelHint")}
           </span>
-        </div>
-        {error !== null && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-            {renameErrorText(t, error)}
-          </p>
-        )}
-        <div className="flex flex-wrap gap-3">
-          <FrameCancel onClick={onClose} disabled={saving}>
-            {t("online.cancel")}
-          </FrameCancel>
-          <button
-            type="submit"
-            className={FRAME_ACTION}
-            disabled={saving || offline || label === ""}
-          >
-            {t("online.club.crest.save")}
-          </button>
         </div>
       </form>
     </ItemDialogFrame>

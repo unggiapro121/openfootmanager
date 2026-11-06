@@ -1758,7 +1758,14 @@
       "quantityLabel": "Quantité",
       "openInventory": "Ouvrir l'inventaire",
       "closeNotice": "Fermer la notification",
-      "needsAcademy": "S'ouvre avec le centre de formation"
+      "needsAcademy": "S'ouvre avec le centre de formation",
+      "topUp": "Recharger",
+      "topUpSoon": "Recharger des pièces, pas encore ouvert",
+      "noteOver": "La saison {{number}} est terminée · les achats servent dès la saison prochaine",
+      "noteSoon": "La saison {{number}} ouvre bientôt · les achats servent dès son ouverture",
+      "noteOpen": "Les objets n'expirent jamais",
+      "heldShort": "Stock :",
+      "leftLabel": "Reste :"
     },
     "academy": {
       "notOnServer": "Ce serveur n'a pas encore de centre de formation.",

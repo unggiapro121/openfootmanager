@@ -3,6 +3,7 @@ import { resolveBackendError } from "../../../utils/backendI18n";
 import type { ItemCapsView, ItemEffectView, ItemNumbersView, ItemTarget } from "../../api";
 import { OnlineApiError } from "../../errors";
 import { formatMoment } from "../../format";
+import { lookOf } from "./itemLook";
 
 /**
  * The words of the coach's items (C-7 §17): their names, the groups the inventory shows them in,
@@ -121,6 +122,19 @@ export function itemsErrorText(t: TFunction, language: string, error: unknown): 
     return itemCodeText(t, language, error.code, error.params);
   }
   return resolveBackendError(error);
+}
+
+/**
+ * What an item is used on, as one line of words: a tactical note's mastery band, else its scope
+ * ("1 player"); `undefined` for an item with neither (the phone's cards and sheet, D-S7).
+ */
+export function scopeText(t: TFunction, code: string): string | undefined {
+  const look = lookOf(code);
+  if (look.masteryTier !== undefined) {
+    const word = (["low", "mid", "high"] as const)[look.masteryTier - 1];
+    return t(`online.shop.mastery.${word}`);
+  }
+  return look.scope === undefined ? undefined : t(`online.shop.scope.${look.scope}`);
 }
 
 /** What an item does in the season under way, from the ruleset's numbers (C-7 §17.4). */
