@@ -708,6 +708,7 @@
         "youCoach": "You are coaching",
         "aiCoaches": "The AI is coaching",
         "ordersFrom": "Orders count from minute {{minute}}' (the real match)",
+        "secondHalfIn": "Second half in",
         "dock": "Team controls",
         "subs": "Subs",
         "formation": "Shape",

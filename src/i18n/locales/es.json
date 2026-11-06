@@ -708,6 +708,7 @@
         "youCoach": "Diriges tú",
         "aiCoaches": "Dirige la IA",
         "ordersFrom": "Las órdenes cuentan desde el minuto {{minute}}' (partido real)",
+        "secondHalfIn": "El segundo tiempo empieza en",
         "dock": "Controles del equipo",
         "subs": "Cambios",
         "formation": "Esquema",

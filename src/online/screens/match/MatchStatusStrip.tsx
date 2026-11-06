@@ -20,6 +20,10 @@ const WARN = `${STRIP} border-accent-400/50 bg-accent-50 dark:bg-accent-500/10`;
 /** Seconds from steps at the match's pace, rounded up. */
 const secondsOf = (steps: number, stepMillis: number) => Math.ceil((steps * stepMillis) / 1000);
 
+/** Whole seconds left of a break of `halfTimeMillis` begun at `since`, rounded up, never below 0. */
+export const halfTimeSecondsLeft = (since: number, halfTimeMillis: number, now: number) =>
+  Math.max(0, Math.ceil((since + halfTimeMillis - now) / 1000));
+
 /** The moment the match was first seen in half time, so the break counts down from it. */
 export function useHalfTimeStart(phase: string): number | null {
   const now = useOnlineNow();
@@ -87,7 +91,10 @@ export function MatchStatusStrip({
   halfTimeSince?: number | null;
   /** Open the substitutions with this hurt player chosen to come off. */
   onReplace: (playerId: string) => void;
-  /** On a phone the header says who coaches and the leave sheet warns: the strip keeps the rest. */
+  /**
+   * On a phone the header says who coaches, the leave sheet warns and the break counts down in
+   * its own card: the strip keeps the rest.
+   */
   phone?: boolean;
 }) {
   const { t } = useTranslation();
@@ -139,11 +146,11 @@ export function MatchStatusStrip({
           </p>
         )
       )}
-      {shown.phase === "HalfTime" && halfTimeSince !== null && (
+      {shown.phase === "HalfTime" && halfTimeSince !== null && !phone && (
         <p role="status" className={CALM}>
           <Coffee className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
           {t("online.match.halfTime", {
-            seconds: Math.max(0, Math.ceil((halfTimeSince + view.halfTimeMillis - now) / 1000)),
+            seconds: halfTimeSecondsLeft(halfTimeSince, view.halfTimeMillis, now),
           })}
         </p>
       )}

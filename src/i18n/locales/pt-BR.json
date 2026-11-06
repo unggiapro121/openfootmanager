@@ -708,6 +708,7 @@
         "youCoach": "Você está no comando",
         "aiCoaches": "A IA está no comando",
         "ordersFrom": "As ordens valem a partir do minuto {{minute}}' (jogo real)",
+        "secondHalfIn": "O segundo tempo começa em",
         "dock": "Controles do time",
         "subs": "Substituições",
         "formation": "Esquema",
