@@ -757,7 +757,8 @@
         "scorers": "Marcadores — {{team}}",
         "penalty": "penálti",
         "afterMatch": "Após o jogo",
-        "ratings": "Classificações"
+        "ratings": "Classificações",
+        "replayChip": "Repetição"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Ir para o minuto",
       "watch": "Ver a repetição",
-      "gone": "Este jogo é demasiado antigo para rever; só se guarda o resultado."
+      "gone": "Este jogo é demasiado antigo para rever; só se guarda o resultado.",
+      "fromStart": "Ver de novo desde o início"
     },
     "friendly": {
       "title": "Amigáveis",

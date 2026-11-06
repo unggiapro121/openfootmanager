@@ -757,7 +757,8 @@
         "scorers": "Ghi bàn — {{team}}",
         "penalty": "phạt đền",
         "afterMatch": "Sau trận",
-        "ratings": "Bảng điểm"
+        "ratings": "Bảng điểm",
+        "replayChip": "Xem lại"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Tua tới phút",
       "watch": "Xem lại trận",
-      "gone": "Trận này đã quá cũ để xem lại; chỉ còn giữ kết quả."
+      "gone": "Trận này đã quá cũ để xem lại; chỉ còn giữ kết quả.",
+      "fromStart": "Xem lại từ đầu"
     },
     "friendly": {
       "title": "Giao hữu",
