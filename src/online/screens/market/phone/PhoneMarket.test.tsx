@@ -77,6 +77,7 @@ const OPEN = [
 ];
 
 const cards = () => within(screen.getByRole("list", { name: `${KEY}.list` })).getAllByRole("link");
+const ovrFrom = `${KEY}.from:${KEY}.field.ovr`;
 const queries = () =>
   sentTo(server, "GET", "v1/auctions").map((request) => Object.fromEntries(request.query ?? []));
 
@@ -111,9 +112,10 @@ describe("the market on a phone", () => {
     await waitFor(() => expect(queries().slice(-1)[0]).toMatchObject({ position: "Defender" }));
   });
 
-  // Given the filter sheet,
-  // when the coach asks for OVR 65 and up at no more than 2M, sorted by OVR,
-  // then the server is asked with those, and the list is strongest first.
+  // Given the filter sheet over three open auctions,
+  // when the coach types OVR from 65, picks the "≤ 2" price preset and the OVR order,
+  // then the sheet tells what the market holds and counts what the draft would show, the server
+  // is asked with those filters, and the list is strongest first.
   it("filters and sorts from the sheet", async () => {
     server = serveMarket({ "GET v1/auctions": ok({ items: OPEN }) });
     renderOnline("/online/market");
@@ -121,15 +123,62 @@ describe("the market on a phone", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /online\.market\.filters/ }));
     const sheet = screen.getByRole("dialog", { name: "online.market.filters" });
-    fireEvent.click(within(sheet).getByRole("radio", { name: "65+" }));
-    fireEvent.click(within(sheet).getByRole("radio", { name: new RegExp(`^${KEY}\\.upTo:.*2`) }));
+    expect(await within(sheet).findByText(`${KEY}.marketHas:56–71`)).toBeInTheDocument();
+    await within(sheet).findByRole("button", { name: `${KEY}.show:3` });
+    fireEvent.change(within(sheet).getByRole("textbox", { name: ovrFrom }), {
+      target: { value: "65" },
+    });
+    fireEvent.click(within(sheet).getByRole("button", { name: "≤ 2" }));
     fireEvent.click(within(sheet).getByRole("radio", { name: `${KEY}.sort.ovr` }));
-    fireEvent.click(within(sheet).getByRole("button", { name: `${KEY}.apply` }));
+    fireEvent.click(within(sheet).getByRole("button", { name: `${KEY}.show:1` }));
 
     await waitFor(() =>
       expect(queries().slice(-1)[0]).toMatchObject({ minOvr: "65", maxPrice: "2000000" }),
     );
     await waitFor(() => expect(cards()[0]).toHaveTextContent("Kim Seung-myeong"));
+  });
+
+  // Given the filter sheet,
+  // when the coach asks for an OVR no auction has, then for a "from" over its "to",
+  // then Apply is refused, first as matching nobody, then as a range to check, with the reason.
+  it("refuses a draft that matches nobody or has a wrong range", async () => {
+    server = serveMarket({ "GET v1/auctions": ok({ items: OPEN }) });
+    renderOnline("/online/market");
+    await waitFor(() => expect(cards()).toHaveLength(3));
+
+    fireEvent.click(screen.getByRole("button", { name: /online\.market\.filters/ }));
+    const sheet = screen.getByRole("dialog", { name: "online.market.filters" });
+    await within(sheet).findByRole("button", { name: `${KEY}.show:3` });
+    fireEvent.change(within(sheet).getByRole("textbox", { name: ovrFrom }), {
+      target: { value: "90" },
+    });
+    expect(within(sheet).getByRole("button", { name: `${KEY}.showNone` })).toBeDisabled();
+
+    fireEvent.change(within(sheet).getByRole("textbox", { name: `${KEY}.to:${KEY}.field.ovr` }), {
+      target: { value: "80" },
+    });
+    expect(within(sheet).getByRole("alert")).toHaveTextContent(`${KEY}.rangeError`);
+    expect(within(sheet).getByRole("button", { name: `${KEY}.checkRanges` })).toBeDisabled();
+  });
+
+  // Given a lowest price in the address, which the server does not filter by,
+  // when the market opens,
+  // then the loaded page is narrowed to it, the filter shows as a chip, and a tap on the chip
+  // brings the cheaper auction back.
+  it("narrows the page by what the server cannot filter, one chip per filter", async () => {
+    server = serveMarket({ "GET v1/auctions": ok({ items: OPEN }) });
+    renderOnline("/online/market?minPrice=700000");
+    await waitFor(() => expect(cards()).toHaveLength(2));
+    expect(screen.getByRole("button", { name: /online\.market\.filters/ })).toHaveTextContent("1");
+
+    const chips = screen.getByRole("toolbar", { name: `${KEY}.activeFilters` });
+    fireEvent.click(
+      within(chips).getByRole("button", {
+        name: new RegExp(`^${KEY}\\.removeFilter:${KEY}\\.chip\\.price:`),
+      }),
+    );
+    await waitFor(() => expect(cards()).toHaveLength(3));
+    expect(screen.queryByRole("toolbar", { name: `${KEY}.activeFilters` })).toBeNull();
   });
 
   // Given the club selling one player and holding money in another auction,

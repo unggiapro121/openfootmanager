@@ -1131,9 +1131,7 @@
         "startPrice": "Starting price",
         "currentPrice": "Current price",
         "bidCount": "{{count}} bids",
-        "all": "All",
         "reset": "Reset",
-        "upTo": "≤ {{price}}",
         "sortBy": "Sort by",
         "sort": {
           "end": "Ending soon",
@@ -1164,7 +1162,41 @@
         "stepDown": "One step lower",
         "stepUp": "One step higher",
         "afterWin": "Budget after a win",
-        "place": "Bid {{amount}}"
+        "place": "Bid {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Age",
+          "price": "Price (€M)"
+        },
+        "marketHas": "Market has {{span}}",
+        "from": "{{label}} from",
+        "to": "{{label}} to",
+        "rangeError": "“From” must be no more than “To”.",
+        "minStars": "Minimum potential",
+        "starsUp": "{{count}} stars and up",
+        "sortShort": {
+          "end": "Ending",
+          "low": "Cheapest",
+          "ovr": "Top OVR",
+          "pot": "Potential"
+        },
+        "hideCap": "Hide players over my club's level cap",
+        "hideCapHint": "Auctions you lead stay in My auctions.",
+        "hideCapHintCap": "Current cap OVR {{cap}}. Auctions you lead stay in My auctions.",
+        "show": "Show {{count}} players",
+        "showAtLeast": "Show {{count}}+ players",
+        "showNone": "No matching players",
+        "checkRanges": "Check the ranges",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Age {{span}}",
+          "price": "Price {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Over the cap hidden"
+        },
+        "activeFilters": "Filters on",
+        "removeFilter": "Remove filter {{label}}",
+        "clearAll": "Clear all"
       }
     },
     "rename": {

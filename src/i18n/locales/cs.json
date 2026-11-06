@@ -1131,9 +1131,7 @@
         "startPrice": "Vyvolávací cena",
         "currentPrice": "Aktuální cena",
         "bidCount": "Nabídky: {{count}}",
-        "all": "Vše",
         "reset": "Obnovit",
-        "upTo": "≤ {{price}}",
         "sortBy": "Řadit podle",
         "sort": {
           "end": "Brzy končí",
@@ -1164,7 +1162,41 @@
         "stepDown": "O krok níž",
         "stepUp": "O krok výš",
         "afterWin": "Rozpočet po výhře",
-        "place": "Nabídnout {{amount}}"
+        "place": "Nabídnout {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Věk",
+          "price": "Cena (mil. €)"
+        },
+        "marketHas": "Na trhu: {{span}}",
+        "from": "{{label}} od",
+        "to": "{{label}} do",
+        "rangeError": "„Od“ nesmí být větší než „Do“.",
+        "minStars": "Minimální potenciál",
+        "starsUp": "{{count}} hvězd a více",
+        "sortShort": {
+          "end": "Brzy končí",
+          "low": "Nejlevnější",
+          "ovr": "Nejvyšší OVR",
+          "pot": "Potenciál"
+        },
+        "hideCap": "Skrýt hráče nad limitem mé úrovně",
+        "hideCapHint": "Aukce, které vedete, zůstávají v Moje aukce.",
+        "hideCapHintCap": "Aktuální limit OVR {{cap}}. Aukce, které vedete, zůstávají v Moje aukce.",
+        "show": "Zobrazit hráče: {{count}}",
+        "showAtLeast": "Zobrazit hráče: {{count}}+",
+        "showNone": "Žádní odpovídající hráči",
+        "checkRanges": "Zkontrolujte rozsahy",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Věk {{span}}",
+          "price": "Cena {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Nad limitem skryto"
+        },
+        "activeFilters": "Aktivní filtry",
+        "removeFilter": "Odebrat filtr {{label}}",
+        "clearAll": "Vymazat vše"
       }
     },
     "rename": {

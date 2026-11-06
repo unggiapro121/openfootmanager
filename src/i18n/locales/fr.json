@@ -1131,9 +1131,7 @@
         "startPrice": "Prix de départ",
         "currentPrice": "Prix actuel",
         "bidCount": "{{count}} offres",
-        "all": "Tous",
         "reset": "Réinitialiser",
-        "upTo": "≤ {{price}}",
         "sortBy": "Trier par",
         "sort": {
           "end": "Bientôt finies",
@@ -1164,7 +1162,41 @@
         "stepDown": "Un palier de moins",
         "stepUp": "Un palier de plus",
         "afterWin": "Budget après victoire",
-        "place": "Enchérir {{amount}}"
+        "place": "Enchérir {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Âge",
+          "price": "Prix (M€)"
+        },
+        "marketHas": "Sur le marché : {{span}}",
+        "from": "{{label}} de",
+        "to": "{{label}} à",
+        "rangeError": "« De » ne peut pas dépasser « À ».",
+        "minStars": "Potentiel minimum",
+        "starsUp": "{{count}} étoiles et plus",
+        "sortShort": {
+          "end": "Bientôt fini",
+          "low": "Moins chers",
+          "ovr": "Meilleure OVR",
+          "pot": "Potentiel"
+        },
+        "hideCap": "Masquer les joueurs au-dessus du plafond de mon niveau",
+        "hideCapHint": "Les enchères que vous menez restent dans Mes enchères.",
+        "hideCapHintCap": "Plafond actuel OVR {{cap}}. Les enchères que vous menez restent dans Mes enchères.",
+        "show": "Voir {{count}} joueurs",
+        "showAtLeast": "Voir {{count}}+ joueurs",
+        "showNone": "Aucun joueur ne correspond",
+        "checkRanges": "Vérifiez les plages",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Âge {{span}}",
+          "price": "Prix {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Au-dessus du plafond masqués"
+        },
+        "activeFilters": "Filtres actifs",
+        "removeFilter": "Retirer le filtre {{label}}",
+        "clearAll": "Tout effacer"
       }
     },
     "rename": {

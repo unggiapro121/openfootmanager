@@ -1131,9 +1131,7 @@
         "startPrice": "Prezzo di partenza",
         "currentPrice": "Prezzo attuale",
         "bidCount": "{{count}} offerte",
-        "all": "Tutti",
         "reset": "Azzera",
-        "upTo": "≤ {{price}}",
         "sortBy": "Ordina per",
         "sort": {
           "end": "In scadenza",
@@ -1164,7 +1162,41 @@
         "stepDown": "Un passo in meno",
         "stepUp": "Un passo in più",
         "afterWin": "Budget dopo la vittoria",
-        "place": "Offri {{amount}}"
+        "place": "Offri {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Età",
+          "price": "Prezzo (M€)"
+        },
+        "marketHas": "Sul mercato: {{span}}",
+        "from": "{{label}} da",
+        "to": "{{label}} a",
+        "rangeError": "«Da» non può superare «A».",
+        "minStars": "Potenziale minimo",
+        "starsUp": "{{count}} stelle e più",
+        "sortShort": {
+          "end": "In chiusura",
+          "low": "Più economici",
+          "ovr": "OVR più alta",
+          "pot": "Potenziale"
+        },
+        "hideCap": "Nascondi giocatori oltre il tetto del mio livello",
+        "hideCapHint": "Le aste che guidi restano in Le mie aste.",
+        "hideCapHintCap": "Tetto attuale OVR {{cap}}. Le aste che guidi restano in Le mie aste.",
+        "show": "Mostra {{count}} giocatori",
+        "showAtLeast": "Mostra {{count}}+ giocatori",
+        "showNone": "Nessun giocatore corrisponde",
+        "checkRanges": "Controlla gli intervalli",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Età {{span}}",
+          "price": "Prezzo {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Oltre il tetto nascosti"
+        },
+        "activeFilters": "Filtri attivi",
+        "removeFilter": "Rimuovi filtro {{label}}",
+        "clearAll": "Cancella tutto"
       }
     },
     "rename": {
