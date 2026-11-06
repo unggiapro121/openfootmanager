@@ -8,7 +8,12 @@ import { formatDate } from "../../../lib/dateFormatting";
 import type { InventoryLineView, InventoryView, ItemTarget, NoteLimitView } from "../../api";
 import { formatMoment } from "../../format";
 import { useOnlineStore } from "../../store/onlineStore";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel, HeadBadge } from "./ItemDialogFrame";
+import ItemDialogFrame, {
+  FRAME_ACTION,
+  FrameButtons,
+  FrameCancel,
+  HeadBadge,
+} from "./ItemDialogFrame";
 import { lookOf } from "./itemLook";
 import { groupOf, itemDescription, itemName, type TargetKind, targetKindOf } from "./itemText";
 import { useStyles } from "./UseItemDialog";
@@ -93,6 +98,42 @@ export default function ItemDetailDialog({
       title={itemName(t, code)}
       describedBy={description ? descriptionId : undefined}
       onClose={onClose}
+      footer={
+        // The close button stays on a phone too, beside the item's action (m-kho-do, D-S8).
+        <FrameButtons
+          row={kind !== undefined || (hasClub && (group === "custom" || group === "academy"))}
+        >
+          <FrameCancel onClick={onClose} keepOnPhone>
+            {t("common.close")}
+          </FrameCancel>
+          {kind && (
+            <button
+              type="button"
+              className={FRAME_ACTION}
+              disabled={blocker !== null || recoveryDone || (kind === "style" && style === null)}
+              onClick={() =>
+                onUse(kind === "style" && style ? { kind: "style", style } : undefined)
+              }
+            >
+              <span className="truncate">
+                {recoveryOff
+                  ? t("online.inventory.action.offThisSeason")
+                  : actionText(t, kind, style, recoveryDone)}
+              </span>
+            </button>
+          )}
+          {group === "custom" && hasClub && (
+            <Link to="/online/squad" className={FRAME_ACTION}>
+              <span className="truncate">{t("online.inventory.action.rename")}</span>
+            </Link>
+          )}
+          {group === "academy" && hasClub && (
+            <Link to="/online/academy" className={FRAME_ACTION}>
+              <span className="truncate">{t("online.inventory.action.academy")}</span>
+            </Link>
+          )}
+        </FrameButtons>
+      }
       badges={
         <>
           <HeadBadge tone={look.gold ? "gold" : "green"}>
@@ -151,31 +192,6 @@ export default function ItemDetailDialog({
           {t("online.inventory.renameAt")}
         </p>
       )}
-      <div className="flex flex-wrap gap-3">
-        <FrameCancel onClick={onClose}>{t("common.close")}</FrameCancel>
-        {kind && (
-          <button
-            type="button"
-            className={FRAME_ACTION}
-            disabled={blocker !== null || recoveryDone || (kind === "style" && style === null)}
-            onClick={() => onUse(kind === "style" && style ? { kind: "style", style } : undefined)}
-          >
-            {recoveryOff
-              ? t("online.inventory.action.offThisSeason")
-              : actionText(t, kind, style, recoveryDone)}
-          </button>
-        )}
-        {group === "custom" && hasClub && (
-          <Link to="/online/squad" className={FRAME_ACTION}>
-            {t("online.inventory.action.rename")}
-          </Link>
-        )}
-        {group === "academy" && hasClub && (
-          <Link to="/online/academy" className={FRAME_ACTION}>
-            {t("online.inventory.action.academy")}
-          </Link>
-        )}
-      </div>
     </ItemDialogFrame>
   );
 }

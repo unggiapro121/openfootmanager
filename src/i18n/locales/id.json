@@ -1724,7 +1724,14 @@
       "quantityLabel": "Jumlah",
       "openInventory": "Buka inventaris",
       "closeNotice": "Tutup pemberitahuan",
-      "needsAcademy": "Dibuka bersama akademi"
+      "needsAcademy": "Dibuka bersama akademi",
+      "topUp": "Isi ulang",
+      "topUpSoon": "Isi ulang koin, belum dibuka",
+      "noteOver": "Musim {{number}} telah berakhir · barang yang dibeli sekarang berlaku mulai musim depan",
+      "noteSoon": "Musim {{number}} segera dibuka · barang yang dibeli sekarang berlaku saat musim dibuka",
+      "noteOpen": "Barang tidak pernah kedaluwarsa",
+      "heldShort": "Dimiliki:",
+      "leftLabel": "Sisa:"
     },
     "academy": {
       "notOnServer": "Server ini belum punya akademi muda.",

@@ -1724,7 +1724,14 @@
       "quantityLabel": "Quantity",
       "openInventory": "Open inventory",
       "closeNotice": "Close notice",
-      "needsAcademy": "Opens with the youth academy"
+      "needsAcademy": "Opens with the youth academy",
+      "topUp": "Top up",
+      "topUpSoon": "Top up coins, not open yet",
+      "noteOver": "Season {{number}} is over · items bought now work from next season",
+      "noteSoon": "Season {{number}} opens soon · items bought now work once it opens",
+      "noteOpen": "Items never expire",
+      "heldShort": "Held:",
+      "leftLabel": "Left:"
     },
     "academy": {
       "notOnServer": "This server has no youth academy yet.",

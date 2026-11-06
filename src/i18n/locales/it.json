@@ -1724,7 +1724,14 @@
       "quantityLabel": "Quantità",
       "openInventory": "Apri l'inventario",
       "closeNotice": "Chiudi avviso",
-      "needsAcademy": "Si apre con il settore giovanile"
+      "needsAcademy": "Si apre con il settore giovanile",
+      "topUp": "Ricarica",
+      "topUpSoon": "Ricarica monete, non ancora disponibile",
+      "noteOver": "La stagione {{number}} è finita · gli acquisti valgono dalla prossima",
+      "noteSoon": "La stagione {{number}} apre a breve · gli acquisti valgono dall'apertura",
+      "noteOpen": "Gli oggetti non scadono",
+      "heldShort": "Hai:",
+      "leftLabel": "Restano:"
     },
     "academy": {
       "notOnServer": "Questo server non ha ancora un settore giovanile.",

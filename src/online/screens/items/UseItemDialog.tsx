@@ -5,7 +5,12 @@ import type { ItemPreviewView, ItemTarget, SquadPlayerView, StyleMasteryView } f
 import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
 import { tracked, useOnlineStore } from "../../store/onlineStore";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel, HeadBadge } from "./ItemDialogFrame";
+import ItemDialogFrame, {
+  FRAME_ACTION,
+  FrameButtons,
+  FrameCancel,
+  HeadBadge,
+} from "./ItemDialogFrame";
 import { effectLines, limitLines, nameOf, usedText } from "./itemUseText";
 import { useApplyItem } from "./useApplyItem";
 import {
@@ -197,6 +202,28 @@ export default function UseItemDialog({
       badges={lockedLabel && <HeadBadge tone="plain">{lockedLabel}</HeadBadge>}
       busy={busy}
       onClose={onClose}
+      footer={
+        <>
+          {error !== null && (
+            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+              {itemsErrorText(t, i18n.language, error)}
+            </p>
+          )}
+          <FrameButtons>
+            <FrameCancel onClick={onClose} disabled={busy}>
+              {t("common.cancel")}
+            </FrameCancel>
+            <button
+              type="button"
+              className={FRAME_ACTION}
+              disabled={busy || !target || !preview || Boolean(refusal)}
+              onClick={confirm}
+            >
+              {t("online.items.confirmUse")}
+            </button>
+          </FrameButtons>
+        </>
+      }
     >
       {!locked && choices.length > 0 && (
         <fieldset className="space-y-1">
@@ -278,24 +305,6 @@ export default function UseItemDialog({
           )}
         </div>
       )}
-      {error !== null && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {itemsErrorText(t, i18n.language, error)}
-        </p>
-      )}
-      <div className="flex flex-wrap gap-3">
-        <FrameCancel onClick={onClose} disabled={busy}>
-          {t("common.cancel")}
-        </FrameCancel>
-        <button
-          type="button"
-          className={FRAME_ACTION}
-          disabled={busy || !target || !preview || Boolean(refusal)}
-          onClick={confirm}
-        >
-          {t("online.items.confirmUse")}
-        </button>
-      </div>
     </ItemDialogFrame>
   );
 }

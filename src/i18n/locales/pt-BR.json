@@ -1724,7 +1724,14 @@
       "quantityLabel": "Quantidade",
       "openInventory": "Abrir inventário",
       "closeNotice": "Fechar aviso",
-      "needsAcademy": "Abre com a base"
+      "needsAcademy": "Abre com a base",
+      "topUp": "Recarregar",
+      "topUpSoon": "Recarregar moedas, ainda não disponível",
+      "noteOver": "A temporada {{number}} terminou · o que você comprar agora vale a partir da próxima",
+      "noteSoon": "A temporada {{number}} abre em breve · o que você comprar agora vale quando abrir",
+      "noteOpen": "Os itens não vencem",
+      "heldShort": "Você tem:",
+      "leftLabel": "Restam:"
     },
     "academy": {
       "notOnServer": "Este servidor ainda não tem categoria de base.",

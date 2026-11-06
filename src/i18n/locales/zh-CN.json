@@ -1724,7 +1724,14 @@
       "quantityLabel": "数量",
       "openInventory": "打开背包",
       "closeNotice": "关闭通知",
-      "needsAcademy": "青训营开放后可购买"
+      "needsAcademy": "青训营开放后可购买",
+      "topUp": "充值",
+      "topUpSoon": "充值金币，暂未开放",
+      "noteOver": "第 {{number}} 赛季已结束 · 现在购买的物品从下赛季起可用",
+      "noteSoon": "第 {{number}} 赛季即将开始 · 现在购买的物品在赛季开始后可用",
+      "noteOpen": "物品永不过期",
+      "heldShort": "库存：",
+      "leftLabel": "剩余："
     },
     "academy": {
       "notOnServer": "此服务器尚无青训营。",
