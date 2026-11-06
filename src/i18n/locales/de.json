@@ -757,7 +757,8 @@
         "scorers": "Torschützen — {{team}}",
         "penalty": "Elfmeter",
         "afterMatch": "Nach dem Spiel",
-        "ratings": "Noten"
+        "ratings": "Noten",
+        "replayChip": "Wiederholung"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Zur Minute springen",
       "watch": "Wiederholung ansehen",
-      "gone": "Dieses Spiel ist zu alt für eine Wiederholung; nur das Ergebnis ist gespeichert."
+      "gone": "Dieses Spiel ist zu alt für eine Wiederholung; nur das Ergebnis ist gespeichert.",
+      "fromStart": "Von vorn ansehen"
     },
     "friendly": {
       "title": "Freundschaftsspiele",

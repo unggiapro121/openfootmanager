@@ -757,7 +757,8 @@
         "scorers": "Artilheiros — {{team}}",
         "penalty": "pênalti",
         "afterMatch": "Após a partida",
-        "ratings": "Notas"
+        "ratings": "Notas",
+        "replayChip": "Reprise"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Ir para o minuto",
       "watch": "Ver o replay",
-      "gone": "Esta partida é antiga demais para rever; só o resultado foi mantido."
+      "gone": "Esta partida é antiga demais para rever; só o resultado foi mantido.",
+      "fromStart": "Assistir de novo desde o início"
     },
     "friendly": {
       "title": "Amistosos",

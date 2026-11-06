@@ -757,7 +757,8 @@
         "scorers": "进球 — {{team}}",
         "penalty": "点球",
         "afterMatch": "赛后",
-        "ratings": "评分"
+        "ratings": "评分",
+        "replayChip": "回放"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "跳到分钟",
       "watch": "观看回放",
-      "gone": "这场比赛时间太久，无法回放；只保留了比分。"
+      "gone": "这场比赛时间太久，无法回放；只保留了比分。",
+      "fromStart": "从头重看"
     },
     "friendly": {
       "title": "友谊赛",

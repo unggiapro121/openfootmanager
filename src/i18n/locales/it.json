@@ -757,7 +757,8 @@
         "scorers": "Marcatori — {{team}}",
         "penalty": "rigore",
         "afterMatch": "Dopo la partita",
-        "ratings": "Voti"
+        "ratings": "Voti",
+        "replayChip": "Rivedi"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Vai al minuto",
       "watch": "Guarda il replay",
-      "gone": "Questa partita è troppo vecchia per il replay; resta solo il risultato."
+      "gone": "Questa partita è troppo vecchia per il replay; resta solo il risultato.",
+      "fromStart": "Rivedi dall'inizio"
     },
     "friendly": {
       "title": "Amichevoli",

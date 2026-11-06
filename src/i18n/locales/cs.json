@@ -757,7 +757,8 @@
         "scorers": "Střelci — {{team}}",
         "penalty": "pen.",
         "afterMatch": "Po zápase",
-        "ratings": "Hodnocení"
+        "ratings": "Hodnocení",
+        "replayChip": "Záznam"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Přejít na minutu",
       "watch": "Přehrát záznam",
-      "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek."
+      "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek.",
+      "fromStart": "Přehrát znovu od začátku"
     },
     "friendly": {
       "title": "Přátelská utkání",

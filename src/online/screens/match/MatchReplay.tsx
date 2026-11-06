@@ -2,10 +2,12 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Flag, History, Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "../../../components/ui";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import type { MatchView } from "../../api";
 import { FriendlyAfterMatch } from "../friendly/FriendlyAfterMatch";
 import ResourceState from "../ResourceState";
 import { MatchBoard } from "./MatchBoard";
+import { PhoneReplay } from "./phone/PhoneReplay";
 import {
   REPLAY_SPEEDS,
   type ReplayData,
@@ -30,6 +32,7 @@ function ResultLink({ view }: { view: MatchView }) {
 export function MatchReplay({ matchId, view }: { matchId: string; view: MatchView }) {
   const { t } = useTranslation();
   const { resource, reload } = useReplaySource(matchId, view);
+  const phone = usePhoneLayout();
   return (
     <ResourceState resource={resource} reload={reload}>
       {(load) =>
@@ -38,6 +41,8 @@ export function MatchReplay({ matchId, view }: { matchId: string; view: MatchVie
             <p className="text-sm text-gray-700 dark:text-gray-300">{t("online.replay.gone")}</p>
             <ResultLink view={view} />
           </div>
+        ) : phone ? (
+          <PhoneReplay view={view} data={load.data} />
         ) : (
           <ReplayScreen view={view} data={load.data} />
         )

@@ -757,7 +757,8 @@
         "scorers": "Buteurs — {{team}}",
         "penalty": "péno",
         "afterMatch": "Après le match",
-        "ratings": "Notes"
+        "ratings": "Notes",
+        "replayChip": "Rediffusion"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Aller à la minute",
       "watch": "Revoir le match",
-      "gone": "Ce match est trop ancien pour être revu ; seul son résultat est conservé."
+      "gone": "Ce match est trop ancien pour être revu ; seul son résultat est conservé.",
+      "fromStart": "Revoir depuis le début"
     },
     "friendly": {
       "title": "Matchs amicaux",

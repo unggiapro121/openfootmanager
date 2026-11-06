@@ -757,7 +757,8 @@
         "scorers": "Scorers — {{team}}",
         "penalty": "pen",
         "afterMatch": "After the match",
-        "ratings": "Ratings"
+        "ratings": "Ratings",
+        "replayChip": "Replay"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Go to minute",
       "watch": "Watch the replay",
-      "gone": "This match is too old to replay; only its result is kept."
+      "gone": "This match is too old to replay; only its result is kept.",
+      "fromStart": "Watch again from the start"
     },
     "friendly": {
       "title": "Friendlies",

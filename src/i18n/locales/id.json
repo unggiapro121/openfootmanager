@@ -757,7 +757,8 @@
         "scorers": "Pencetak gol — {{team}}",
         "penalty": "penalti",
         "afterMatch": "Setelah laga",
-        "ratings": "Nilai"
+        "ratings": "Nilai",
+        "replayChip": "Tayangan ulang"
       }
     },
     "replay": {
@@ -770,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Lompat ke menit",
       "watch": "Tonton tayangan ulang",
-      "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan."
+      "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan.",
+      "fromStart": "Tonton lagi dari awal"
     },
     "friendly": {
       "title": "Laga persahabatan",
