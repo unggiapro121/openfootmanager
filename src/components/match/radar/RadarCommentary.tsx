@@ -21,6 +21,11 @@ interface RadarCommentaryProps {
   /** The players' short names, by id. */
   roster: RadarRoster;
   sinkRef: RefObject<CaptionSink | null>;
+  /**
+   * The bar has a row to itself (a phone): the line may take two lines, and keeps their height
+   * so the pitch below does not jump as lines come and go.
+   */
+  ownRow?: boolean;
 }
 
 const HEADLINE_CLASS = {
@@ -35,7 +40,12 @@ const HEADLINE_CLASS = {
  * card) is also announced to a screen reader; routine play is not, or it would
  * never stop talking.
  */
-export function RadarCommentary({ snapshot, roster, sinkRef }: RadarCommentaryProps) {
+export function RadarCommentary({
+  snapshot,
+  roster,
+  sinkRef,
+  ownRow = false,
+}: RadarCommentaryProps) {
   const { t } = useTranslation();
   const squadById = roster;
   const [feed, setFeed] = useState<CommentaryFeed<CommentaryText>>(EMPTY_FEED);
@@ -69,12 +79,12 @@ export function RadarCommentary({ snapshot, roster, sinkRef }: RadarCommentaryPr
   const text = shown?.line;
   const full = text ? [text.headline, text.line].filter(Boolean).join(" ") : "";
   return (
-    <div className="min-w-0 flex-1 px-3">
+    <div className={ownRow ? "min-h-12 px-4 pb-2" : "min-w-0 flex-1 px-3"}>
       {shown && text && (
         <p
           key={shown.shownAt}
           title={full}
-          className="truncate text-center text-sm text-gray-700 animate-[fade-slide-in_220ms_ease] motion-reduce:animate-none dark:text-gray-200"
+          className={`${ownRow ? "line-clamp-2" : "truncate"} text-center text-sm text-gray-700 animate-[fade-slide-in_220ms_ease] motion-reduce:animate-none dark:text-gray-200`}
         >
           {text.headline && (
             <span
