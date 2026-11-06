@@ -3,27 +3,19 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, Info } from "lucide-react";
 import type { EventView, EventsView, RewardView } from "../../api";
 import { refreshEvents, useOnlineStore } from "../../store/onlineStore";
+import { usePhoneLayout } from "../../../hooks/usePhoneLayout";
 import ResourceState from "../ResourceState";
 import EventPanel from "./EventPanel";
-import { type EventGroup, eventGroup } from "./missionState";
+import { eventsOf } from "./missionState";
+import PhoneEvents from "./phone/PhoneEvents";
 import RewardDialog from "./RewardDialog";
-
-const at = (iso: string): number => Date.parse(iso) || 0;
-
-/** Each group's order: what ends or starts soonest first; the closed ones, the latest first. */
-function sorted(group: EventGroup, events: EventView[]): EventView[] {
-  const inGroup = events.filter((event) => eventGroup(event.state) === group);
-  if (group === "running") return inGroup.sort((a, b) => at(a.endsAt) - at(b.endsAt));
-  if (group === "ended") return inGroup.sort((a, b) => at(a.claimUntil) - at(b.claimUntil));
-  if (group === "scheduled") return inGroup.sort((a, b) => at(a.startsAt) - at(b.startsAt));
-  return inGroup.sort((a, b) => at(b.claimUntil) - at(a.claimUntil));
-}
 
 /**
  * The coach's events (design su-kien.html; C-7d, C7-51): what runs and what still takes claims
  * open in full, each with its head, journey and missions; what starts within a week and what
  * closed lately folded below. Events belong to the person, so the page opens without a club.
- * Every state and number is the server's (C-7 C7-7).
+ * Every state and number is the server's (C-7 C7-7). A phone folds each event into a card
+ * instead (design m-su-kien.html).
  */
 export default function OnlineEvents() {
   const { t } = useTranslation();
@@ -58,6 +50,11 @@ export default function OnlineEvents() {
   return <Events events={events} />;
 }
 
+function Events({ events }: { events: EventsView }) {
+  const phone = usePhoneLayout();
+  return phone ? <PhoneEvents events={events} /> : <DesktopEvents events={events} />;
+}
+
 function Note({ text }: { text: string }) {
   return (
     <p className="flex items-start gap-2 rounded-md border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 dark:border-navy-600 dark:bg-navy-700 dark:text-gray-200">
@@ -70,10 +67,10 @@ function Note({ text }: { text: string }) {
   );
 }
 
-function Events({ events }: { events: EventsView }) {
+function DesktopEvents({ events }: { events: EventsView }) {
   const [given, setGiven] = useState<RewardView[] | null>(null);
   const close = useCallback(() => setGiven(null), []);
-  const open = [...sorted("running", events.events), ...sorted("ended", events.events)];
+  const open = [...eventsOf("running", events.events), ...eventsOf("ended", events.events)];
   return (
     // A container: the cards lay out by the room the page has beside the sidebar, not the window.
     <div className="@container flex flex-col gap-8">
@@ -87,7 +84,7 @@ function Events({ events }: { events: EventsView }) {
         />
       ))}
       {(["scheduled", "closed"] as const).map((group) => {
-        const inGroup = sorted(group, events.events);
+        const inGroup = eventsOf(group, events.events);
         if (inGroup.length === 0) return null;
         return <FoldedGroup key={group} group={group} events={inGroup} onClaimed={setGiven} />;
       })}

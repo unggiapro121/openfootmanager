@@ -1,22 +1,8 @@
-import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import type { EventView } from "../../api";
-import { useOnlineNow } from "../../clock";
-import { countdownTo, formatMoment } from "../../format";
-import { refreshEvents } from "../../store/onlineStore";
+import { formatMoment } from "../../format";
 import { LABEL } from "../overview/OverviewCard";
-import { eventGroup } from "./missionState";
-
-const ignore = () => undefined;
-
-/** The moment an event counts down to, by its state; none once it is closed. */
-function deadlineOf(event: EventView): string | undefined {
-  const group = eventGroup(event.state);
-  if (group === "running") return event.endsAt;
-  if (group === "ended") return event.claimUntil;
-  if (group === "scheduled") return event.startsAt;
-  return undefined;
-}
+import { useEventCountdown } from "./useEventCountdown";
 
 const ZERO = { days: 0, clock: "00:00:00" };
 
@@ -27,19 +13,7 @@ const ZERO = { days: 0, clock: "00:00:00" };
  */
 export default function EventTimer({ event }: { event: EventView }) {
   const { t, i18n } = useTranslation();
-  const now = useOnlineNow();
-  const deadline = deadlineOf(event);
-  const left = deadline ? countdownTo(deadline, now) : null;
-  const asked = useRef(false);
-  const runOut = deadline !== undefined && left === null;
-  useEffect(() => {
-    if (runOut && !asked.current) {
-      asked.current = true;
-      void refreshEvents().catch(ignore);
-    }
-  }, [runOut]);
-
-  const group = eventGroup(event.state);
+  const { group, deadline, left } = useEventCountdown(event);
   if (!deadline || group === "closed") {
     return <p className={LABEL}>{t("online.events.time.closed")}</p>;
   }

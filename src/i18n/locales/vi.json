@@ -2029,7 +2029,36 @@
         "toBoth": "Vật phẩm đã vào Kho đồ, coin đã vào Ví coin.",
         "expires": "Hết hạn {{days}} ngày sau khi nhận.",
         "close": "Tuyệt vời"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "{{n}} quà chờ nhận",
+        "running": "{{n}} sự kiện đang diễn ra",
+        "readyCount": "{{n}} chờ nhận",
+        "missionCount": "{{n}} nhiệm vụ",
+        "leftRunning": "Còn {{countdown}}",
+        "leftEnded": "Hạn nhận còn {{countdown}}",
+        "over": "Đã kết thúc",
+        "short": "{{days}}n {{hours}}g",
+        "long": "{{days}}n {{clock}}",
+        "nearest": "Gần nhất: {{countdown}}",
+        "done": "Đã xong ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, thưởng {{reward}}. Xem chi tiết",
+        "claim": "Nhận",
+        "readyNow": "Đã đủ, nhận quà ngay",
+        "claimedNote": "Đã nhận quà",
+        "missedCounted": "Sự kiện đã kết thúc khi mới đạt {{progress}}/{{target}}.",
+        "missedPlain": "Sự kiện đã kết thúc trước khi nhiệm vụ hoàn thành.",
+        "rewards": "Phần thưởng",
+        "conditions": "Điều kiện",
+        "opensLater": "Nhiệm vụ mở khi sự kiện bắt đầu.",
+        "conditionDefault": "Tính theo kết quả trận chính thức của CLB trong thời gian sự kiện.",
+        "unit": {
+          "leagueMatchesDirected": "trận",
+          "leagueWinsDirected": "trận thắng",
+          "offlineMatches": "trận offline"
+        }
+      },
+      "goLeague": "Xem bảng xếp hạng"
     }
   },
   "coach": {

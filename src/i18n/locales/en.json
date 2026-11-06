@@ -2029,7 +2029,36 @@
         "toBoth": "Items stored in your inventory, coins added to your wallet.",
         "expires": "Expires {{days}} days after claiming.",
         "close": "Great!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Rewards to claim: {{n}}",
+        "running": "Events running: {{n}}",
+        "readyCount": "To claim: {{n}}",
+        "missionCount": "Missions: {{n}}",
+        "leftRunning": "{{countdown}} left",
+        "leftEnded": "Claims close in {{countdown}}",
+        "over": "Ended",
+        "short": "{{days}}d {{hours}}h",
+        "long": "{{days}}d {{clock}}",
+        "nearest": "Next: {{countdown}}",
+        "done": "Done ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, reward {{reward}}. See details",
+        "claim": "Claim",
+        "readyNow": "Target reached, claim it now",
+        "claimedNote": "Reward claimed",
+        "missedCounted": "The event ended at {{progress}}/{{target}}.",
+        "missedPlain": "The event ended before the mission was done.",
+        "rewards": "Rewards",
+        "conditions": "Conditions",
+        "opensLater": "The mission opens when the event starts.",
+        "conditionDefault": "Counts the club's official matches while the event runs.",
+        "unit": {
+          "leagueMatchesDirected": "matches",
+          "leagueWinsDirected": "wins",
+          "offlineMatches": "offline matches"
+        }
+      },
+      "goLeague": "See the table"
     }
   },
   "coach": {

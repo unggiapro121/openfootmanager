@@ -2029,7 +2029,36 @@
         "toBoth": "Oggetti nell'inventario, monete nel portafoglio.",
         "expires": "Scade {{days}} giorni dopo il riscatto.",
         "close": "Fantastico!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Premi da riscattare: {{n}}",
+        "running": "Eventi in corso: {{n}}",
+        "readyCount": "Da riscattare: {{n}}",
+        "missionCount": "Missioni: {{n}}",
+        "leftRunning": "Mancano {{countdown}}",
+        "leftEnded": "Riscatto entro {{countdown}}",
+        "over": "Terminato",
+        "short": "{{days}} g {{hours}} h",
+        "long": "{{days}} g {{clock}}",
+        "nearest": "Prossimo: {{countdown}}",
+        "done": "Completate ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, premio {{reward}}. Vedi dettagli",
+        "claim": "Riscatta",
+        "readyNow": "Obiettivo raggiunto, riscattalo ora",
+        "claimedNote": "Premio riscattato",
+        "missedCounted": "L'evento è finito a {{progress}}/{{target}}.",
+        "missedPlain": "L'evento è finito prima che la missione fosse completata.",
+        "rewards": "Premi",
+        "conditions": "Condizioni",
+        "opensLater": "La missione si apre quando inizia l'evento.",
+        "conditionDefault": "Conta le partite ufficiali del club durante l'evento.",
+        "unit": {
+          "leagueMatchesDirected": "partite",
+          "leagueWinsDirected": "vittorie",
+          "offlineMatches": "partite offline"
+        }
+      },
+      "goLeague": "Vedi la classifica"
     }
   },
   "coach": {

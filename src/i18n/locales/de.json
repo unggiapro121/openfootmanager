@@ -2029,7 +2029,36 @@
         "toBoth": "Gegenstände im Inventar, Münzen dem Guthaben gutgeschrieben.",
         "expires": "Läuft {{days}} Tage nach dem Abholen ab.",
         "close": "Super!"
-      }
+      },
+      "phone": {
+        "claimsWaiting": "Belohnungen abzuholen: {{n}}",
+        "running": "Laufende Events: {{n}}",
+        "readyCount": "Abzuholen: {{n}}",
+        "missionCount": "Aufgaben: {{n}}",
+        "leftRunning": "Noch {{countdown}}",
+        "leftEnded": "Abholung endet in {{countdown}}",
+        "over": "Beendet",
+        "short": "{{days}} T {{hours}} Std",
+        "long": "{{days}} T {{clock}}",
+        "nearest": "Nächstes: {{countdown}}",
+        "done": "Erledigt ({{n}})",
+        "rowAria": "{{mission}}, {{state}}, Belohnung {{reward}}. Details ansehen",
+        "claim": "Abholen",
+        "readyNow": "Ziel erreicht, jetzt abholen",
+        "claimedNote": "Belohnung abgeholt",
+        "missedCounted": "Das Event endete bei {{progress}}/{{target}}.",
+        "missedPlain": "Das Event endete, bevor die Aufgabe erfüllt war.",
+        "rewards": "Belohnungen",
+        "conditions": "Bedingungen",
+        "opensLater": "Die Aufgabe öffnet, wenn das Event beginnt.",
+        "conditionDefault": "Zählt die Pflichtspiele des Vereins während des Events.",
+        "unit": {
+          "leagueMatchesDirected": "Spiele",
+          "leagueWinsDirected": "Siege",
+          "offlineMatches": "Offline-Spiele"
+        }
+      },
+      "goLeague": "Tabelle ansehen"
     }
   },
   "coach": {
