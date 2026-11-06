@@ -331,31 +331,33 @@ export function buildStartingXIIds(
   formation: string,
 ): string[] {
   const rows = buildPitchRows(formation);
-  const slotPositions = rows.flatMap((row) => row.positions);
+  const slotPositions = rows.flatMap((row) => row.positions).slice(0, 11);
   const byId = new Map(available.map((player) => [player.id, player]));
-  const validSavedIds: string[] = [];
   const used = new Set<string>();
 
-  for (const id of savedIds) {
-    const player = byId.get(id);
-    if (player && !used.has(id)) {
-      validSavedIds.push(id);
-      used.add(id);
-    }
-  }
+  // Each saved starter who can still play keeps the slot he was saved in: entry
+  // `i` is slot `i`, so dropping an injured one and closing the gap would move
+  // everyone after him into the wrong position.
+  const keptSlots = slotPositions.map((_, slot) => {
+    const id = savedIds[slot];
+    if (!id || !byId.has(id) || used.has(id)) return null;
+    used.add(id);
+    return id;
+  });
 
-  if (validSavedIds.length >= 8) {
-    const xi = [...validSavedIds];
-    while (xi.length < 11) {
-      const slotPosition = slotPositions[xi.length];
+  if (used.size >= 8) {
+    // Each empty slot goes to the best player left for that position, the way
+    // the backend fields the side (`select_starting_xi`).
+    return keptSlots.flatMap((id, slot) => {
+      if (id) return [id];
       const candidates = available.filter((player) => !used.has(player.id));
-      const bestPlayer = candidates.sort((a, b) => comparePlayersForSlot(a, b, slotPosition))[0];
-
-      if (!bestPlayer) break;
-      xi.push(bestPlayer.id);
+      const bestPlayer = candidates.sort((a, b) =>
+        comparePlayersForSlot(a, b, slotPositions[slot]),
+      )[0];
+      if (!bestPlayer) return [];
       used.add(bestPlayer.id);
-    }
-    return xi.slice(0, 11);
+      return [bestPlayer.id];
+    });
   }
 
   const xi: string[] = [];

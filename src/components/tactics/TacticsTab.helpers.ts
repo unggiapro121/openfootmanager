@@ -116,24 +116,25 @@ export function resolveStartingXiIds({
     return baseIds;
   }
 
-  const validPendingIds = pendingStartingXiIds.filter((id) => playersById.has(id));
-  const usedPlayerIds = new Set(validPendingIds);
-  const fillPlayerIds: string[] = [];
+  // Slot by slot, so a pending starter who has since left keeps his slot open
+  // for its position instead of the players after him moving up into it.
+  const keptSlots = slotPositions.slice(0, 11).map((_, slot) => {
+    const id = pendingStartingXiIds[slot];
+    return id && playersById.has(id) ? id : null;
+  });
+  const usedPlayerIds = new Set(keptSlots.filter((id): id is string => id !== null));
 
-  while (validPendingIds.length + fillPlayerIds.length < 11) {
-    const slotPosition = slotPositions[validPendingIds.length + fillPlayerIds.length];
+  return keptSlots.flatMap((id, slot) => {
+    if (id) return [id];
     const bestPlayer = availablePlayers
       .filter((player) => !usedPlayerIds.has(player.id))
       .sort((leftPlayer, rightPlayer) =>
-        comparePlayersForSlot(leftPlayer, rightPlayer, slotPosition),
+        comparePlayersForSlot(leftPlayer, rightPlayer, slotPositions[slot]),
       )[0];
-
-    if (!bestPlayer) break;
-    fillPlayerIds.push(bestPlayer.id);
+    if (!bestPlayer) return [];
     usedPlayerIds.add(bestPlayer.id);
-  }
-
-  return [...validPendingIds, ...fillPlayerIds].slice(0, 11);
+    return [bestPlayer.id];
+  });
 }
 
 export function getSectionPlayerPosition(

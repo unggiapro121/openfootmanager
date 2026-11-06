@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "plugins": {
+    "ofmOnline": {
+      "serverUrl": "https://uat-api.eleven-saga.cloud",
+      "realtimeUrl": "wss://uat-api.eleven-saga.cloud/v1/realtime"
+    }
+  }
+}

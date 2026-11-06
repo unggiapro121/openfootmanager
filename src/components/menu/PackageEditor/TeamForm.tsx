@@ -12,8 +12,9 @@ import {
   formatCompactAmount,
   reputationBandKey,
 } from "./teamRanges.helpers";
-import type { KitPattern, TeamDef } from "./types";
+import type { KitPattern, PlayerDef, TeamDef } from "./types";
 import { TeamPreviewCard } from "./TeamPreviewCard";
+import { TeamTacticsEditor } from "./TeamTacticsEditor";
 
 const KIT_PATTERNS: KitPattern[] = ["Solid", "Stripes", "Hoops", "HalfAndHalf", "Diagonal"];
 
@@ -32,6 +33,10 @@ interface TeamFormProps {
    */
   commitField?: <K extends keyof TeamDef>(key: K, value: TeamDef[K]) => void;
   onAssetError: (err: unknown) => void;
+  /** The authored players of this club, for its line-up and set-piece takers. */
+  clubPlayers?: PlayerDef[];
+  /** The package's opening year, which the tactics board builds the players in. */
+  baseYear?: number | null;
 }
 
 export function TeamForm({
@@ -44,6 +49,8 @@ export function TeamForm({
   updateField,
   commitField,
   onAssetError,
+  clubPlayers = [],
+  baseYear = null,
 }: TeamFormProps) {
   const { t, i18n } = useTranslation();
   const [idAutoMode, setIdAutoMode] = useState(editingTeamIndex === null && !editingTeam.id);
@@ -393,6 +400,16 @@ export function TeamForm({
             )}
           </div>
         </div>
+
+        <TeamTacticsEditor
+          team={editingTeam}
+          clubPlayers={clubPlayers}
+          baseYear={baseYear}
+          projectDir={projectDir}
+          onChange={(tactics) => updateField("tactics", tactics)}
+          onPlayStyleChange={(playStyle) => updateField("playStyle", playStyle)}
+          onError={onAssetError}
+        />
 
         <button
           type="button"

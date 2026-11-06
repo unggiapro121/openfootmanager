@@ -11,6 +11,7 @@ import type {
   TeamDef,
   WorldMetaDef,
 } from "../components/menu/PackageEditor/types";
+import type { PlayerData, PositionRating, TeamData } from "../store/types";
 
 /** Everything the editor writes back to a package project folder. */
 export interface PackageProjectContents {
@@ -43,6 +44,26 @@ export async function savePackageProject(project: PackageProjectContents): Promi
     names: project.names,
     competitions: project.competitions,
   });
+}
+
+/** A package club as the world would open it, before its own `tactics`. */
+export interface PackageClubPreview {
+  team: TeamData;
+  players: PlayerData[];
+  /** Each player's rating at every pitch position, by player id. */
+  position_ratings: Record<string, PositionRating[]>;
+}
+
+/**
+ * `team` built from its players among `players`, as a world opening in
+ * `baseYear` builds it: what the editor's tactics board shows.
+ */
+export async function previewPackageClub(
+  team: TeamDef,
+  players: PlayerDef[],
+  baseYear: number | null,
+): Promise<PackageClubPreview> {
+  return invoke<PackageClubPreview>("preview_package_club", { team, players, baseYear });
 }
 
 /** Read a project folder, with the validation issues found in it. */

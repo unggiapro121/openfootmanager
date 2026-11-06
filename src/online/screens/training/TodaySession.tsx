@@ -10,6 +10,7 @@ import { SEASON_DAYS } from "../shellNav";
 import { useCountdownText } from "../useCountdownText";
 import ExtraEntry from "./ExtraEntry";
 import ExtraTraining from "./ExtraTraining";
+import type { ExtraOutcome } from "./extraResult";
 import MainSession from "./MainSession";
 import { DAY_PENDING, displayDay, matchTodayKickoff } from "./todayText";
 import { DAY_KEYS } from "../../../components/training/trainingOptions";
@@ -40,6 +41,7 @@ export default function TodaySession({
   const weekday = season?.weekday ?? null;
   const [notesOpen, setNotesOpen] = useState(false);
   const [extraOpen, setExtraOpen] = useState(false);
+  const [outcome, setOutcome] = useState<ExtraOutcome | null>(null);
   const pending = trainingDay.refusal === DAY_PENDING || trainingDay.extra?.refusal === DAY_PENDING;
   const { slow } = useDayPendingPoll(pending);
   const kickoff = matchTodayKickoff(club, season?.nextDayAt, now);
@@ -127,7 +129,11 @@ export default function TodaySession({
             keeperDrill={trainingDay.keeperDrill}
           />
           {trainingDay.extra && (
-            <ExtraEntry today={trainingDay.extra.today} onOpen={() => setExtraOpen(true)} />
+            <ExtraEntry
+              today={trainingDay.extra.today}
+              outcome={outcome}
+              onOpen={() => setExtraOpen(true)}
+            />
           )}
         </div>
       </div>
@@ -137,6 +143,8 @@ export default function TodaySession({
           club={club}
           trainingDay={trainingDay}
           extra={trainingDay.extra}
+          outcome={outcome}
+          onOutcome={setOutcome}
           onClose={() => setExtraOpen(false)}
         />
       )}

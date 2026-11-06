@@ -112,6 +112,8 @@ const pressButton = () => screen.getByRole("button", { name: "online.training.ex
 const openExtra = () =>
   fireEvent.click(screen.getByRole("button", { name: "online.training.extra.open" }));
 const KICKER = "online.training.today.kicker:4|28 · training.days.mon";
+/** The result card the panel folds open after a press. */
+const resultCard = () => screen.findByRole("region", { name: "online.training.phone.resultTitle" });
 
 function answer(overrides: Partial<ExtraSessionView> = {}): ExtraSessionView {
   return {
@@ -355,15 +357,14 @@ describe("extra training", () => {
         name: "online.training.extra.intensityCost:training.intensities.Low.label|3",
       }),
     ).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByText("online.training.phone.footer:2|1")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "online.training.extra.summary:2|1|training.intensities.Low.label (online.training.extra.costPer:3)",
-      ),
+      screen.getByText("training.intensities.Low.label · online.training.extra.costPer:3"),
     ).toBeInTheDocument();
     const press = pressButton();
     fireEvent.click(press);
     expect(press).toBeDisabled();
-    await screen.findByText("online.training.extra.held:1|1|1");
+    await resultCard();
     expect(presses()[0]?.body).toEqual({ intensity: "Low", players: ["p1", "p2"], sessions: 1 });
     expect(presses()[0]?.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
     await waitFor(() => expect(clubReads()).toHaveLength(1));
@@ -371,30 +372,53 @@ describe("extra training", () => {
 
   // Given a coach who picks three sessions and keeps 60 or above,
   // when he presses and the answer comes,
-  // then sessions and keepAbove go out, the batch line says 3 held (1–3 today), a player stopped
-  // to keep his condition says so, and gains read "+4" or "no gain".
-  it("sends the batch and shows each player's line", async () => {
+  // then sessions and keepAbove go out; the result counts 4 attributes by 1 of 2 players over
+  // 3 sessions, the one who rose reads "+4", and the one who did not is listed as not yet.
+  it("sends the batch and shows what each player gained", async () => {
     stage(clubWith({}, { players: SQUAD }), { [`POST ${PRESS_PATH}`]: ok(answer()) });
     render(<CardFromStore />);
     openExtra();
     fireEvent.click(screen.getByRole("radio", { name: "3" }));
     fireEvent.click(screen.getByRole("switch", { name: "online.training.extra.keepAboveOn" }));
-    fireEvent.change(screen.getByLabelText("online.training.extra.keepAbove"), {
-      target: { value: "60" },
-    });
+    for (let step = 0; step < 4; step += 1) {
+      fireEvent.click(screen.getByRole("button", { name: "online.training.extra.keepMore" }));
+    }
+    expect(screen.getByLabelText("online.training.extra.keepAbove")).toHaveTextContent("60");
     fireEvent.click(pressButton());
-    await screen.findByText("online.training.extra.held:3|1|3");
+    const card = await resultCard();
     expect(presses()[0]?.body).toEqual({
       intensity: "Low",
       players: ["p1", "p2"],
       sessions: 3,
       keepAbove: 60,
     });
-    const row = screen.getByText("T. Bình", { selector: "td" }).closest("tr") as HTMLElement;
-    expect(within(row).getByText("online.training.extra.reason.keepAbove")).toBeInTheDocument();
-    expect(within(row).getByText("online.training.extra.noGain")).toBeInTheDocument();
-    const first = screen.getByText("V. An", { selector: "td" }).closest("tr") as HTMLElement;
-    expect(within(first).getByText("online.training.extra.gainsCount:4")).toBeInTheDocument();
+    expect(within(card).getByRole("status")).toHaveTextContent("+4");
+    expect(within(card).getByRole("status")).toHaveTextContent("1/2");
+    const risen = within(card).getByRole("list", { name: "online.training.phone.risenList" });
+    expect(within(risen).getByText("V. An")).toBeInTheDocument();
+    expect(within(risen).getByText("online.training.extra.gainsCount:4")).toBeInTheDocument();
+    expect(within(card).getByText("online.training.phone.notYet (1):")).toBeInTheDocument();
+    expect(within(card).getByText("T. Bình")).toBeInTheDocument();
+  });
+
+  // Given a press that answered,
+  // when the coach closes the panel and opens it again,
+  // then the card and the panel both say what the last press gave, and the panel's line folds
+  // the result open.
+  it("keeps the last result while the page stays open", async () => {
+    stage(clubWith({}, { players: SQUAD }), { [`POST ${PRESS_PATH}`]: ok(answer()) });
+    render(<CardFromStore />);
+    openExtra();
+    fireEvent.click(pressButton());
+    await resultCard();
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
+
+    expect(screen.getByText(/^online\.training\.phone\.entryLast:4\|/)).toBeInTheDocument();
+    openExtra();
+    const chip = screen.getByRole("button", { name: /online\.training\.phone\.lastGains:1\|4/ });
+    expect(chip).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(chip);
+    expect(await resultCard()).toBeInTheDocument();
   });
 
   // Given a saved choice naming a player who has since been sold,
@@ -437,8 +461,8 @@ describe("extra training", () => {
   });
 
   // Given a player the server says would sit out (tired),
-  // when the block shows,
-  // then his line says why, with the season's floor.
+  // when the coach looks at those who rest this session,
+  // then his row says why in full, with his condition and the season's floor.
   it("shows why a player would sit out", () => {
     stage(
       clubWith(
@@ -448,7 +472,14 @@ describe("extra training", () => {
     );
     render(<CardFromStore />);
     openExtra();
-    expect(screen.getByText("online.training.extra.reason.tired:40")).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "online.training.phone.listReady:1" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    fireEvent.click(screen.getByRole("tab", { name: "online.training.phone.listRest:1" }));
+    expect(
+      screen.getByText(/^online\.training\.phone\.why\.tired:T\. Bình\|60\|40/),
+    ).toBeInTheDocument();
   });
 
   // Given a press refused because every player chosen sits out, and one refused by the lock,
@@ -489,7 +520,7 @@ describe("extra training", () => {
     await screen.findByRole("alert");
     await waitFor(() => expect(pressButton()).toBeEnabled());
     fireEvent.click(pressButton());
-    await screen.findByText("online.training.extra.held:3|1|3");
+    await resultCard();
     const [first, second] = presses();
     expect(second?.idempotencyKey).toBe(first?.idempotencyKey);
   });

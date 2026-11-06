@@ -408,6 +408,7 @@ pub fn run() {
             create_world_project,
             read_package_project,
             save_package_project,
+            preview_package_club,
             build_ofm,
             extract_ofm_for_editing,
             copy_package_asset,

@@ -357,6 +357,46 @@ describe("SquadTab helpers", () => {
     expect(ids).toEqual(["gk", "rb", "cb1", "cb2", "lb", "rm", "cm1", "cm2", "lm", "st1", "st2"]);
   });
 
+  // Given a saved 4-4-2 whose left-back is injured, when the side is built,
+  // then the best bench player for left-back takes his slot and every other
+  // starter keeps his own: nobody behind him moves up a slot.
+  it("fills an injured starter's slot without moving anyone else", () => {
+    const available = [
+      makePlayer("gk", "Goalkeeper"),
+      makePlayer("rb", "RightBack"),
+      makePlayer("cb1", "CenterBack"),
+      makePlayer("cb2", "CenterBack"),
+      makePlayer("lm", "LeftMidfielder"),
+      makePlayer("cm1", "CentralMidfielder"),
+      makePlayer("cm2", "CentralMidfielder"),
+      makePlayer("rm", "RightMidfielder"),
+      makePlayer("st1", "Striker"),
+      makePlayer("st2", "Striker"),
+      makePlayer("bench-st", "Striker", { ovr: 90 }),
+      makePlayer("bench-lb", "LeftBack", { ovr: 60 }),
+    ];
+
+    const ids = buildStartingXIIds(
+      available,
+      ["gk", "injured-lb", "cb1", "cb2", "rb", "lm", "cm1", "cm2", "rm", "st1", "st2"],
+      "4-4-2",
+    );
+
+    expect(ids).toEqual([
+      "gk",
+      "bench-lb",
+      "cb1",
+      "cb2",
+      "rb",
+      "lm",
+      "cm1",
+      "cm2",
+      "rm",
+      "st1",
+      "st2",
+    ]);
+  });
+
   it("swaps XI players when dragging from one slot to another", () => {
     const nextXiIds = applyLineupDrop(
       ["gk", "d1", "d2", "d3"],

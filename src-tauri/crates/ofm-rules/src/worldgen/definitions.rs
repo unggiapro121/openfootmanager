@@ -4,7 +4,9 @@
 //! world can be generated with no file at all.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
+
+use domain::team::{MatchRoles, PlayerRole, TacticsPhaseSettings};
 
 /// The definition files the engine ships, compiled in.
 ///
@@ -140,6 +142,32 @@ pub struct TeamDef {
     /// drawn between 10,000 and 80,000 when omitted, as before the field existed.
     #[serde(default, alias = "stadium_capacity")]
     pub stadium_capacity: Option<u32>,
+    /// The tactics and default line-up the club opens with (`ofm_core::generator::team_tactics`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tactics: Option<TeamTacticsDef>,
+}
+
+/// A club's authored tactics and default line-up: `tactics` on a package team. What a world
+/// opens with, not a standing order; anything left out is chosen as for a club with none.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct TeamTacticsDef {
+    /// One of the shapes the game offers. Absent: the club picks its own.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub formation: Option<String>,
+    /// Slot-aligned with `formation`: entry `i` plays slot `i`, the same rule
+    /// as a team's starting eleven everywhere else. Only used when it fills
+    /// every slot of an authored formation; otherwise the game picks the side.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub starting_xi: Vec<String>,
+    /// Player id → role. A `BTreeMap` so a save writes them in a stable order.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub player_roles: BTreeMap<String, PlayerRole>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub match_roles: Option<MatchRoles>,
+    /// The phase settings. Absent: the play style's own blueprint.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub phase: Option<TacticsPhaseSettings>,
 }
 
 fn default_play_style() -> String {

@@ -67,6 +67,8 @@
   --animate-reward-pop: reward-pop 0.45s ease-out both;
   /* A phone's tab sheet rising from the bottom (design m-tong-quan.html) */
   --animate-sheet-up: sheet-up 0.22s ease-out;
+  /* A phone's sub-page sliding in from the right (design MTapThem.dc.html) */
+  --animate-page-in: page-in 0.22s ease-out;
 
   @keyframes claim-pulse {
     0%,
@@ -81,6 +83,15 @@
   @keyframes sheet-up {
     from {
       transform: translateY(100%);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes page-in {
+    from {
+      transform: translateX(100%);
     }
     to {
       transform: none;

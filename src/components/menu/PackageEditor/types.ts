@@ -1,4 +1,9 @@
-import type { StaffData } from "../../../store/types";
+import type {
+  PlayerRole,
+  StaffData,
+  TacticsPhaseSettings,
+  TeamMatchRolesData,
+} from "../../../store/types";
 
 export interface TeamColorsDef {
   primary: string;
@@ -23,6 +28,24 @@ export interface TeamDef {
   foundedYear: number | null;
   /** Seats in the home ground (500–200000). Absent or null: generated at world build. */
   stadiumCapacity?: number | null;
+  /** The tactics and default line-up the club opens the world with. */
+  tactics?: TeamTacticsDef | null;
+}
+
+/**
+ * What a club opens the world with (`tactics` on a package team). Every field is
+ * optional; anything left out the game chooses as for a club with none.
+ */
+export interface TeamTacticsDef {
+  /** One of `FORMATIONS`. Absent: the club picks its own. */
+  formation?: string;
+  /** Player ids slot-aligned with `formation`; `""` is an empty slot. */
+  startingXi?: string[];
+  /** Player id → role; `Standard` is left out. */
+  playerRoles?: Partial<Record<string, PlayerRole>>;
+  matchRoles?: TeamMatchRolesData;
+  /** Absent: the play style's own phase settings. */
+  phase?: TacticsPhaseSettings;
 }
 
 export interface WorldMetaDef {

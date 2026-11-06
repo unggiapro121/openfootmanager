@@ -102,6 +102,7 @@
     "common.attributes.tackling",
     "common.attributes.teamwork",
     "tactics.formation",
+    "worldEditor.tactics.setFormation",
     "staff.roles.Scout",
     "staff.specializations.Fitness",
     "finances.budget",

@@ -13,7 +13,7 @@ import type { TrainingPlan } from "../../api";
 import { scheduleWeek } from "./trainingView";
 
 /** An option card of the plan: a radio, outlined green when chosen. */
-export function optionClass(selected: boolean): string {
+function optionClass(selected: boolean): string {
   return `rounded-xl border text-left transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-navy-800 ${
     selected
       ? "border-primary-500 bg-primary-50 dark:bg-primary-900/30"

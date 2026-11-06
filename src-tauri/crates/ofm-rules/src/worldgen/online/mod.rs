@@ -360,6 +360,8 @@ impl<'a> Generator<'a> {
             kit_pattern,
             founded_year: None,
             stadium_capacity: Some(starter.stadium_capacity),
+            // An online club opens with no authored tactics (uat's editor team tactics).
+            tactics: None,
         };
         let mut team = super::build_team(&def, &mut rng);
         // Money online lives in the ledger (S-10), never on the club.
