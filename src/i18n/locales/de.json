@@ -1131,9 +1131,7 @@
         "startPrice": "Startpreis",
         "currentPrice": "Aktueller Preis",
         "bidCount": "{{count}} Gebote",
-        "all": "Alle",
         "reset": "Zurücksetzen",
-        "upTo": "≤ {{price}}",
         "sortBy": "Sortieren nach",
         "sort": {
           "end": "Endet bald",
@@ -1164,7 +1162,41 @@
         "stepDown": "Einen Schritt tiefer",
         "stepUp": "Einen Schritt höher",
         "afterWin": "Budget nach Sieg",
-        "place": "{{amount}} bieten"
+        "place": "{{amount}} bieten",
+        "field": {
+          "ovr": "OVR",
+          "age": "Alter",
+          "price": "Preis (Mio. €)"
+        },
+        "marketHas": "Markt hat {{span}}",
+        "from": "{{label}} von",
+        "to": "{{label}} bis",
+        "rangeError": "„Von“ darf nicht größer als „Bis“ sein.",
+        "minStars": "Mindestpotenzial",
+        "starsUp": "{{count}} Sterne und mehr",
+        "sortShort": {
+          "end": "Endet bald",
+          "low": "Günstigste",
+          "ovr": "Höchste OVR",
+          "pot": "Potenzial"
+        },
+        "hideCap": "Spieler über der Stufengrenze ausblenden",
+        "hideCapHint": "Auktionen, die du anführst, bleiben unter Meine Auktionen.",
+        "hideCapHintCap": "Aktuelle Grenze OVR {{cap}}. Auktionen, die du anführst, bleiben unter Meine Auktionen.",
+        "show": "{{count}} Spieler zeigen",
+        "showAtLeast": "{{count}}+ Spieler zeigen",
+        "showNone": "Keine passenden Spieler",
+        "checkRanges": "Bereiche prüfen",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Alter {{span}}",
+          "price": "Preis {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Über Grenze ausgeblendet"
+        },
+        "activeFilters": "Aktive Filter",
+        "removeFilter": "Filter {{label}} entfernen",
+        "clearAll": "Alle löschen"
       }
     },
     "rename": {

@@ -1131,9 +1131,7 @@
         "startPrice": "Başlangıç fiyatı",
         "currentPrice": "Güncel fiyat",
         "bidCount": "{{count}} teklif",
-        "all": "Tümü",
         "reset": "Sıfırla",
-        "upTo": "≤ {{price}}",
         "sortBy": "Sırala",
         "sort": {
           "end": "Yakında bitenler",
@@ -1164,7 +1162,41 @@
         "stepDown": "Bir adım aşağı",
         "stepUp": "Bir adım yukarı",
         "afterWin": "Kazanırsan bütçe",
-        "place": "{{amount}} teklif ver"
+        "place": "{{amount}} teklif ver",
+        "field": {
+          "ovr": "OVR",
+          "age": "Yaş",
+          "price": "Fiyat (M€)"
+        },
+        "marketHas": "Pazarda: {{span}}",
+        "from": "{{label}} en az",
+        "to": "{{label}} en çok",
+        "rangeError": "“En az”, “En çok”tan büyük olamaz.",
+        "minStars": "En düşük potansiyel",
+        "starsUp": "{{count}} yıldız ve üstü",
+        "sortShort": {
+          "end": "Bitmek üzere",
+          "low": "En ucuz",
+          "ovr": "En yüksek OVR",
+          "pot": "Potansiyel"
+        },
+        "hideCap": "Seviye sınırımın üstündeki oyuncuları gizle",
+        "hideCapHint": "Önde olduğun açık artırmalar Açık artırmalarım'da kalır.",
+        "hideCapHintCap": "Mevcut sınır OVR {{cap}}. Önde olduğun açık artırmalar Açık artırmalarım'da kalır.",
+        "show": "{{count}} oyuncuyu gör",
+        "showAtLeast": "{{count}}+ oyuncuyu gör",
+        "showNone": "Uygun oyuncu yok",
+        "checkRanges": "Aralıkları kontrol et",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Yaş {{span}}",
+          "price": "Fiyat {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Sınır üstü gizli"
+        },
+        "activeFilters": "Açık filtreler",
+        "removeFilter": "{{label}} filtresini kaldır",
+        "clearAll": "Tümünü temizle"
       }
     },
     "rename": {

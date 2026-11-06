@@ -1131,9 +1131,7 @@
         "startPrice": "Precio de salida",
         "currentPrice": "Precio actual",
         "bidCount": "{{count}} pujas",
-        "all": "Todos",
         "reset": "Restablecer",
-        "upTo": "≤ {{price}}",
         "sortBy": "Ordenar por",
         "sort": {
           "end": "Terminan pronto",
@@ -1164,7 +1162,41 @@
         "stepDown": "Un paso menos",
         "stepUp": "Un paso más",
         "afterWin": "Presupuesto si ganas",
-        "place": "Pujar {{amount}}"
+        "place": "Pujar {{amount}}",
+        "field": {
+          "ovr": "OVR",
+          "age": "Edad",
+          "price": "Precio (M€)"
+        },
+        "marketHas": "En el mercado: {{span}}",
+        "from": "{{label}} desde",
+        "to": "{{label}} hasta",
+        "rangeError": "«Desde» no puede superar a «Hasta».",
+        "minStars": "Potencial mínimo",
+        "starsUp": "{{count}} estrellas o más",
+        "sortShort": {
+          "end": "Terminan ya",
+          "low": "Más baratos",
+          "ovr": "Mejor OVR",
+          "pot": "Potencial"
+        },
+        "hideCap": "Ocultar jugadores sobre el tope de mi nivel",
+        "hideCapHint": "Las subastas que lideras siguen en Mis subastas.",
+        "hideCapHintCap": "Tope actual OVR {{cap}}. Las subastas que lideras siguen en Mis subastas.",
+        "show": "Ver {{count}} jugadores",
+        "showAtLeast": "Ver {{count}}+ jugadores",
+        "showNone": "Ningún jugador coincide",
+        "checkRanges": "Revisa los rangos",
+        "chip": {
+          "ovr": "OVR {{span}}",
+          "age": "Edad {{span}}",
+          "price": "Precio {{span}}",
+          "stars": "★{{count}}+",
+          "hideCap": "Sobre el tope ocultos"
+        },
+        "activeFilters": "Filtros activos",
+        "removeFilter": "Quitar filtro {{label}}",
+        "clearAll": "Borrar todo"
       }
     },
     "rename": {

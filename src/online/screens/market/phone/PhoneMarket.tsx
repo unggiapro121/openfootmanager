@@ -13,7 +13,14 @@ import { standing } from "../OnlineMarket";
 import { useServerOffset } from "../useServerCountdown";
 import { byName, useMarketParams, useOpenAuctions } from "../useOpenAuctions";
 import { AuctionCard, KEY, type Standing, type StandingTone } from "./AuctionCard";
-import { MarketFilterSheet, sheetFiltersOn, sortAuctions, sortOf } from "./PhoneMarketFilters";
+import {
+  ActiveFilterChips,
+  activeFilters,
+  MarketFilterSheet,
+  narrow,
+  sortAuctions,
+  sortOf,
+} from "./PhoneMarketFilters";
 
 type Tab = "open" | "mine";
 
@@ -109,12 +116,13 @@ function OpenList({ ring, onCount }: { ring: number; onCount: (count: number | n
   const sort = sortOf(params);
   const items = state.status === "ready" ? state.items : null;
   const shown = useMemo(
-    () => sortAuctions(byName(items ?? [], search), sort),
-    [items, search, sort],
+    () => sortAuctions(narrow(byName(items ?? [], search), params), sort),
+    [items, search, params, sort],
   );
   const offset = useServerOffset(items?.[0]?.serverNow);
   const group = params.get("position") ?? "";
-  const filtersOn = sheetFiltersOn(params);
+  const active = activeFilters(params, t);
+  const filtersOn = active.length;
 
   useEffect(() => onCount(items ? items.length : null), [items, onCount]);
 
@@ -177,6 +185,7 @@ function OpenList({ ring, onCount }: { ring: number; onCount: (count: number | n
         {chip("", t(`${KEY}.allPositions`))}
         {POSITION_GROUPS.map((value) => chip(value, t(`online.market.group.${value}`)))}
       </div>
+      <ActiveFilterChips filters={active} onClear={setFilter} />
 
       {state.status === "loading" && (
         <p className="text-sm text-gray-500 dark:text-gray-400">{t("online.loading")}</p>
@@ -233,6 +242,7 @@ function OpenList({ ring, onCount }: { ring: number; onCount: (count: number | n
       {sheetOpen && (
         <MarketFilterSheet
           params={params}
+          search={search}
           onApply={(patch) => {
             setFilter(patch);
             setSheetOpen(false);

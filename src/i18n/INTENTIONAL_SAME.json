@@ -34,7 +34,9 @@
     "online.inventory.styleXp",
     "online.inbox.phone.row",
     "online.inbox.phone.position",
-    "online.market.phone.upTo",
+    "online.market.phone.field.ovr",
+    "online.market.phone.chip.ovr",
+    "online.market.phone.chip.stars",
     "online.tactics.phone.benchRow",
     "online.items.quick.change",
     "online.training.extra.batch.skippedLine"
