@@ -17,6 +17,7 @@ import { MatchStatusStrip, useHalfTimeStart } from "./MatchStatusStrip";
 import { useShownState } from "./liveShown";
 import { OnlineFullTime } from "./OnlineFullTime";
 import { OnlineHalfTime } from "./OnlineHalfTime";
+import { PhoneHalfTime } from "./phone/PhoneHalfTime";
 import { PhoneLiveMatch } from "./phone/PhoneLiveMatch";
 import { type LiveMatchData, useLiveMatch } from "./useLiveMatch";
 
@@ -116,6 +117,18 @@ function LiveMatchScreen({
   }
   // The break: the radar would only stand still, so the coaches get the half-time screen.
   if (shown.phase === "HalfTime") {
+    if (phone) {
+      return (
+        <PhoneHalfTime
+          data={data}
+          strip={strip}
+          send={send}
+          halfTimeSince={halfTimeSince}
+          replacing={replacing}
+          disabled={offline}
+        />
+      );
+    }
     return (
       <OnlineHalfTime
         data={data}

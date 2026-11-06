@@ -92,13 +92,16 @@ export function PhoneMatchPanels({
   state,
   mine,
   roster,
+  initialPanel = "events",
 }: {
   state: OnlineMatchState;
   mine: MineView | null;
   roster: RadarRoster;
+  /** The tab open first: the events in play, the stats in the break (D-HT4). */
+  initialPanel?: Panel;
 }) {
   const { t } = useTranslation();
-  const [panel, setPanel] = useState<Panel>("events");
+  const [panel, setPanel] = useState<Panel>(initialPanel);
   const cameOn = cameOnAt(state);
   return (
     <>

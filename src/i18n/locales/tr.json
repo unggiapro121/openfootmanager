@@ -708,6 +708,7 @@
         "youCoach": "Takımı sen yönetiyorsun",
         "aiCoaches": "Takımı yapay zekâ yönetiyor",
         "ordersFrom": "Talimatlar {{minute}}. dakikadan itibaren geçerli (gerçek maç)",
+        "secondHalfIn": "İkinci yarıya kalan",
         "dock": "Takım kontrolleri",
         "subs": "Oyuncu değişikliği",
         "formation": "Diziliş",

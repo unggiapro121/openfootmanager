@@ -708,6 +708,7 @@
         "youCoach": "你在指挥",
         "aiCoaches": "AI 在指挥",
         "ordersFrom": "指令从第 {{minute}}' 分钟起生效（真实比赛）",
+        "secondHalfIn": "距下半场开始",
         "dock": "球队操控",
         "subs": "换人",
         "formation": "阵型",
