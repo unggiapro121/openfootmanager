@@ -17,6 +17,7 @@ import { MatchStatusStrip, useHalfTimeStart } from "./MatchStatusStrip";
 import { useShownState } from "./liveShown";
 import { OnlineFullTime } from "./OnlineFullTime";
 import { OnlineHalfTime } from "./OnlineHalfTime";
+import { PhoneFullTime } from "./phone/PhoneFullTime";
 import { PhoneHalfTime } from "./phone/PhoneHalfTime";
 import { PhoneLiveMatch } from "./phone/PhoneLiveMatch";
 import { type LiveMatchData, useLiveMatch } from "./useLiveMatch";
@@ -113,6 +114,7 @@ function LiveMatchScreen({
   );
   // Over: the players would go on standing about on the radar, so the viewer gets the report.
   if (shown.isFinished) {
+    if (phone) return <PhoneFullTime data={data} state={shown} onReplay={onReplay} />;
     return <OnlineFullTime state={shown} mine={mine} strip={strip} onReplay={onReplay} />;
   }
   // The break: the radar would only stand still, so the coaches get the half-time screen.

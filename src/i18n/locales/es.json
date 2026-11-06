@@ -136,7 +136,10 @@
       "watchMatch": "Ver en directo {{home}} – {{away}}",
       "watchLive": "En directo · Ver",
       "enterLive": "Tu partido está en juego — entra",
-      "enterMatch": "Ir al partido"
+      "enterMatch": "Ir al partido",
+      "part": "Aporte",
+      "goalsCount": "{{count}} goles",
+      "assistsCount": "{{count}} asistencias"
     },
     "league": {
       "title": "Liga",
@@ -750,7 +753,11 @@
         "takerSends": "Cambiar un lanzador envía la orden al instante.",
         "ordersTitle": "Órdenes enviadas ({{count}})",
         "noOrders": "Aún no has enviado órdenes",
-        "sentToast": "Orden enviada: {{order}}"
+        "sentToast": "Orden enviada: {{order}}",
+        "scorers": "Goleadores — {{team}}",
+        "penalty": "penalti",
+        "afterMatch": "Después del partido",
+        "ratings": "Valoraciones"
       }
     },
     "replay": {

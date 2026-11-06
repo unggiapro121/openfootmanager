@@ -136,7 +136,10 @@
       "watchMatch": "Xem trực tiếp {{home}} – {{away}}",
       "watchLive": "Đang đá · Xem",
       "enterLive": "Trận của bạn đang đá — Vào xem",
-      "enterMatch": "Vào trận"
+      "enterMatch": "Vào trận",
+      "part": "Đóng góp",
+      "goalsCount": "{{count}} bàn thắng",
+      "assistsCount": "{{count}} kiến tạo"
     },
     "league": {
       "title": "Giải đấu",
@@ -750,7 +753,11 @@
         "takerSends": "Đổi người nào sẽ gửi lệnh ngay cho người đó.",
         "ordersTitle": "Lệnh đã gửi ({{count}})",
         "noOrders": "Chưa gửi lệnh nào",
-        "sentToast": "Đã gửi lệnh: {{order}}"
+        "sentToast": "Đã gửi lệnh: {{order}}",
+        "scorers": "Ghi bàn — {{team}}",
+        "penalty": "phạt đền",
+        "afterMatch": "Sau trận",
+        "ratings": "Bảng điểm"
       }
     },
     "replay": {

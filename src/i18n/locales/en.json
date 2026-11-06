@@ -136,7 +136,10 @@
       "watchMatch": "Watch {{home}} – {{away}} live",
       "watchLive": "Live · Watch",
       "enterLive": "Your match is on — watch it",
-      "enterMatch": "Go to the match"
+      "enterMatch": "Go to the match",
+      "part": "Part",
+      "goalsCount": "{{count}} goals",
+      "assistsCount": "{{count}} assists"
     },
     "league": {
       "title": "League",
@@ -750,7 +753,11 @@
         "takerSends": "Changing a taker sends the order at once.",
         "ordersTitle": "Orders sent ({{count}})",
         "noOrders": "No order sent yet",
-        "sentToast": "Order sent: {{order}}"
+        "sentToast": "Order sent: {{order}}",
+        "scorers": "Scorers — {{team}}",
+        "penalty": "pen",
+        "afterMatch": "After the match",
+        "ratings": "Ratings"
       }
     },
     "replay": {

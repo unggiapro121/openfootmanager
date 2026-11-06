@@ -136,7 +136,10 @@
       "watchMatch": "Смотреть {{home}} – {{away}} в прямом эфире",
       "watchLive": "Идёт · Смотреть",
       "enterLive": "Ваш матч идёт — смотреть",
-      "enterMatch": "Перейти к матчу"
+      "enterMatch": "Перейти к матчу",
+      "part": "Вклад",
+      "goalsCount": "Голов: {{count}}",
+      "assistsCount": "Передач: {{count}}"
     },
     "league": {
       "title": "Лига",
@@ -750,7 +753,11 @@
         "takerSends": "Смена исполнителя сразу отправляет указание.",
         "ordersTitle": "Отправлено указаний: {{count}}",
         "noOrders": "Указаний пока нет",
-        "sentToast": "Указание отправлено: {{order}}"
+        "sentToast": "Указание отправлено: {{order}}",
+        "scorers": "Авторы голов — {{team}}",
+        "penalty": "пен.",
+        "afterMatch": "После матча",
+        "ratings": "Оценки"
       }
     },
     "replay": {
