@@ -128,6 +128,32 @@ pub const ROUTES: &[Route] = &[
         &[L("v1"), L("clubs"), L("mine"), L("training"), L("extra")],
         &[],
     ),
+    // Energy drinks for the players chosen for extra sessions, previewed then used (S-39a, C-17b).
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("training"),
+            L("extra"),
+            L("drinks"),
+            L("preview"),
+        ],
+        &[],
+    ),
+    route(
+        "POST",
+        &[
+            L("v1"),
+            L("clubs"),
+            L("mine"),
+            L("training"),
+            L("extra"),
+            L("drinks"),
+        ],
+        &[],
+    ),
     // The coach's licence (S-9): the notice of what the server fitted, and the table of licences.
     route(
         "DELETE",

@@ -136,7 +136,10 @@
       "watchMatch": "{{home}} – {{away}} live ansehen",
       "watchLive": "Live · Ansehen",
       "enterLive": "Dein Spiel läuft — zuschauen",
-      "enterMatch": "Zum Spiel"
+      "enterMatch": "Zum Spiel",
+      "part": "Beitrag",
+      "goalsCount": "{{count}} Tore",
+      "assistsCount": "{{count}} Vorlagen"
     },
     "league": {
       "title": "Liga",
@@ -375,6 +378,10 @@
         "listSub": "Ihn auf den Auktionsmarkt setzen",
         "releaseSub": "Ihn sofort gehen lassen",
         "shirtSub": "Trägt die Nummer {{number}}"
+      },
+      "heal": {
+        "action": "Behandeln",
+        "none": "Noch keine Heilgegenstände."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Kondition halten ab",
         "xiWarning": "Diese Stammspieler würden das heutige Spiel mit weniger als {{condition}} Kondition beginnen: {{names}}.",
         "focusFull": "{{names}}: Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zum Fokus nach dem Pfeil.",
+        "keeperTired": "{{names}}: Kondition unter {{floor}}, also kein Zusatztraining und auch keine Torhüterübung (Fangen, Reflexe, Luftzweikämpfe). Damit die Übung nicht ausfällt, halte Torhüter bei {{floor}} Kondition oder darüber: lass sie zur Erholung pausieren oder trainiere mit geringerer Intensität, damit jede Einheit weniger Kondition kostet.",
         "andMore": "{{names}} und {{more}} weitere",
         "gainsCount": "+{{gains}} Attribute",
         "entryToday": "Zusatzeinheiten heute: {{count}}",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} Fitness/Einheit",
         "keepLess": "Zu haltende Fitness senken",
         "keepMore": "Zu haltende Fitness erhöhen",
-        "pressShort": "Extra trainieren"
+        "pressShort": "Extra trainieren",
+        "drink": {
+          "open": "Kondition von {{name}} auffrischen",
+          "title": "Kondition auffrischen",
+          "capped": "{{name}}: heute keine Getränke mehr"
+        },
+        "drinksHeld": "⚡ {{small}} klein · {{large}} groß",
+        "batch": {
+          "small": "{{count}} kleine",
+          "large": "{{count}} große",
+          "button": "Müde erholen ({{count}}) · {{items}}",
+          "done": "Getränke für {{count}} Spieler: {{items}}. Sie sind zum Training ausgewählt.",
+          "noneHelped": "Kein Spieler konnte ein Getränk bekommen.",
+          "skippedTitle": "Kein Getränk",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Verbraucht {{used}} · danach übrig: {{small}} kleine, {{large}} große",
+          "confirm": "Fitness auffüllen",
+          "title": "Müde Spieler erholen",
+          "kicker": "Spieler: {{count}}",
+          "reason": {
+            "notYours": "nicht mehr im Kader",
+            "injured": "verletzt",
+            "listed": "auf dem Markt",
+            "wontTrain": "würde auch ausgeruht nicht trainieren",
+            "enough": "kann schon trainieren",
+            "notEnough": "die erlaubten Getränke reichen für keine Einheit",
+            "dailyLimit": "Tageslimit erreicht",
+            "noDrinks": "keine Getränke mehr"
+          }
+        }
       },
       "tab": {
         "label": "Trainingseinstellungen",
@@ -698,6 +735,7 @@
         "youCoach": "Du coachst",
         "aiCoaches": "Die KI coacht",
         "ordersFrom": "Anweisungen zählen ab Minute {{minute}}' (echtes Spiel)",
+        "secondHalfIn": "Zweite Halbzeit in",
         "dock": "Teamsteuerung",
         "subs": "Wechsel",
         "formation": "Formation",
@@ -715,7 +753,12 @@
         "takerSends": "Ein Wechsel des Schützen sendet die Anweisung sofort.",
         "ordersTitle": "Gesendete Anweisungen ({{count}})",
         "noOrders": "Noch keine Anweisung gesendet",
-        "sentToast": "Anweisung gesendet: {{order}}"
+        "sentToast": "Anweisung gesendet: {{order}}",
+        "scorers": "Torschützen — {{team}}",
+        "penalty": "Elfmeter",
+        "afterMatch": "Nach dem Spiel",
+        "ratings": "Noten",
+        "replayChip": "Wiederholung"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Zur Minute springen",
       "watch": "Wiederholung ansehen",
-      "gone": "Dieses Spiel ist zu alt für eine Wiederholung; nur das Ergebnis ist gespeichert."
+      "gone": "Dieses Spiel ist zu alt für eine Wiederholung; nur das Ergebnis ist gespeichert.",
+      "fromStart": "Von vorn ansehen"
     },
     "friendly": {
       "title": "Freundschaftsspiele",
@@ -1565,7 +1609,13 @@
         "none": "Heute gibt es kein Geschenk",
         "given": "{{quantity}} × {{item}} erhalten."
       },
-      "dailyLimitPoints": "Für diesen Spieler sind heute nur noch {{pointsLeft}} Konditionspunkte übrig; mehr ab {{nextAt}}."
+      "dailyLimitPoints": "Für diesen Spieler sind heute nur noch {{pointsLeft}} Konditionspunkte übrig; mehr ab {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Kaufen · {{price}} Münzen",
+        "none": "Kein Gegenstand zum Benutzen.",
+        "failed": "Dieser Gegenstand konnte nicht geprüft werden. Schließen und erneut versuchen."
+      }
     },
     "inventory": {
       "notOnServer": "Dieser Server hat noch keine Gegenstände.",
@@ -1628,8 +1678,10 @@
         "style": "Für {{style}} nutzen",
         "usedToday": "Heute schon genutzt",
         "rename": "Im Kader umbenennen",
-        "academy": "In der Nachwuchsakademie verwenden"
-      }
+        "academy": "In der Nachwuchsakademie verwenden",
+        "offThisSeason": "Diese Saison deaktiviert"
+      },
+      "offThisSeason": "In dieser Saison nicht nutzbar"
     },
     "shop": {
       "notOnServer": "Dieser Server hat noch keinen Shop.",

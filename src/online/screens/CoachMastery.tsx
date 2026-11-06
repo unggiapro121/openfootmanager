@@ -107,6 +107,7 @@ export default function CoachMastery({
         <UseItemDialog
           code={using.code}
           initialTarget={{ kind: "style", style: using.style }}
+          lockTarget
           onClose={() => setUsing(null)}
           onDone={(text) => {
             setUsing(null);

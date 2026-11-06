@@ -136,7 +136,10 @@
       "watchMatch": "观看 {{home}} – {{away}} 直播",
       "watchLive": "直播中 · 观看",
       "enterLive": "你的比赛正在进行——进入观看",
-      "enterMatch": "进入比赛"
+      "enterMatch": "进入比赛",
+      "part": "贡献",
+      "goalsCount": "{{count}} 个进球",
+      "assistsCount": "{{count}} 次助攻"
     },
     "league": {
       "title": "联赛",
@@ -375,6 +378,10 @@
         "listSub": "挂到拍卖市场",
         "releaseSub": "让他立即离队",
         "shirtSub": "身穿 {{number}} 号"
+      },
+      "heal": {
+        "action": "治疗",
+        "none": "暂无治疗道具。"
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "状态保持在",
         "xiWarning": "以下首发球员将以低于 {{condition}} 的状态开始今天的比赛：{{names}}。",
         "focusFull": "{{names}}：当前训练重点已没有能提升该位置OVR的属性。请改为箭头后的训练重点。",
+        "keeperTired": "{{names}}：状态低于 {{floor}}，无法加练，门将专项训练（扑接能力、反应、制空）也不会进行。想不错过专项训练，请让门将的状态保持在 {{floor}} 及以上：让他们休息恢复，或用更低的强度训练，让每次训练消耗更少状态。",
         "andMore": "{{names}} 等另外 {{more}} 人",
         "gainsCount": "+{{gains}} 项属性",
         "entryToday": "今日加练：{{count}} 次",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} 体能/次",
         "keepLess": "降低保留体能",
         "keepMore": "提高保留体能",
-        "pressShort": "加练"
+        "pressShort": "加练",
+        "drink": {
+          "open": "为{{name}}恢复体能",
+          "title": "恢复体能",
+          "capped": "{{name}}：今日饮料次数已用完"
+        },
+        "drinksHeld": "⚡ 小瓶 {{small}} · 大瓶 {{large}}",
+        "batch": {
+          "small": "小瓶 {{count}}",
+          "large": "大瓶 {{count}}",
+          "button": "恢复疲劳球员（{{count}}）· {{items}}",
+          "done": "已为 {{count}} 名球员补充饮料：{{items}}。他们已被选入训练。",
+          "noneHelped": "没有球员能补充饮料。",
+          "skippedTitle": "未补充",
+          "skippedLine": "{{name}}：{{reason}}",
+          "left": "使用 {{used}} · 剩余：小瓶 {{small}}，大瓶 {{large}}",
+          "confirm": "恢复体能",
+          "title": "恢复疲劳球员",
+          "kicker": "球员：{{count}}",
+          "reason": {
+            "notYours": "已不在阵中",
+            "injured": "受伤",
+            "listed": "挂牌出售中",
+            "wontTrain": "即使体能充沛也不会训练",
+            "enough": "已可训练",
+            "notEnough": "允许的饮料不足以训练一节",
+            "dailyLimit": "今日次数已用完",
+            "noDrinks": "没有饮料了"
+          }
+        }
       },
       "tab": {
         "label": "训练设置",
@@ -698,6 +735,7 @@
         "youCoach": "你在指挥",
         "aiCoaches": "AI 在指挥",
         "ordersFrom": "指令从第 {{minute}}' 分钟起生效（真实比赛）",
+        "secondHalfIn": "距下半场开始",
         "dock": "球队操控",
         "subs": "换人",
         "formation": "阵型",
@@ -715,7 +753,12 @@
         "takerSends": "更换主罚人会立即发送指令。",
         "ordersTitle": "已发送指令（{{count}}）",
         "noOrders": "尚未发送指令",
-        "sentToast": "已发送指令：{{order}}"
+        "sentToast": "已发送指令：{{order}}",
+        "scorers": "进球 — {{team}}",
+        "penalty": "点球",
+        "afterMatch": "赛后",
+        "ratings": "评分",
+        "replayChip": "回放"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "跳到分钟",
       "watch": "观看回放",
-      "gone": "这场比赛时间太久，无法回放；只保留了比分。"
+      "gone": "这场比赛时间太久，无法回放；只保留了比分。",
+      "fromStart": "从头重看"
     },
     "friendly": {
       "title": "友谊赛",
@@ -1565,7 +1609,13 @@
         "none": "今天没有可领取的礼物",
         "given": "已领取 {{quantity}} × {{item}}。"
       },
-      "dailyLimitPoints": "该球员今天只剩 {{pointsLeft}} 点状态额度；{{nextAt}} 起再增加。"
+      "dailyLimitPoints": "该球员今天只剩 {{pointsLeft}} 点状态额度；{{nextAt}} 起再增加。",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "购买 · {{price}} 金币",
+        "none": "没有可用的道具。",
+        "failed": "无法检查此道具。请关闭后重试。"
+      }
     },
     "inventory": {
       "notOnServer": "该服务器暂无物品。",
@@ -1628,8 +1678,10 @@
         "style": "用于{{style}}",
         "usedToday": "今天已使用",
         "rename": "在阵容中改名",
-        "academy": "在青训营使用"
-      }
+        "academy": "在青训营使用",
+        "offThisSeason": "本赛季已停用"
+      },
+      "offThisSeason": "本赛季不可使用"
     },
     "shop": {
       "notOnServer": "该服务器暂无商店。",

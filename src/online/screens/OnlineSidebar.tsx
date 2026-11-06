@@ -6,6 +6,7 @@ import { BrandSymbol, BrandWordmark } from "../../components/ui";
 import { useOnlineStore } from "../store/onlineStore";
 import ClubCrestMark from "./ClubCrestMark";
 import { useGuardedNavigate } from "./leaveGuard";
+import { useNavBadges } from "./navBadges";
 import { CLUB_GROUPS, isCurrent, type NavEntry, seasonText } from "./shellNav";
 
 function SideEntry({
@@ -93,14 +94,7 @@ export default function OnlineSidebar() {
   const navigate = useGuardedNavigate();
   const { pathname } = useLocation();
   const hasClub = useOnlineStore((state) => Boolean(state.club));
-  const marketUnseen = useOnlineStore((state) => state.marketUnseen);
-  const academyUnseen = useOnlineStore((state) => state.academyUnseen);
-
-  const badgeOf = (path: string): number | undefined => {
-    if (path === "/online/market" && marketUnseen > 0) return marketUnseen;
-    if (path === "/online/academy" && academyUnseen) return 1;
-    return undefined;
-  };
+  const badgeOf = useNavBadges();
 
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col bg-navy-800 px-3 pt-6 text-white">
@@ -126,7 +120,7 @@ export default function OnlineSidebar() {
                   key={entry.path}
                   entry={entry}
                   current={isCurrent(entry.path, pathname)}
-                  badge={badgeOf(entry.path)}
+                  badge={badgeOf(entry.path) || undefined}
                   onOpen={() => navigate(entry.path)}
                 />
               ))}

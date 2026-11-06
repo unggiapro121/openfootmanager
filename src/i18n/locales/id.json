@@ -136,7 +136,10 @@
       "watchMatch": "Tonton langsung {{home}} – {{away}}",
       "watchLive": "Langsung · Tonton",
       "enterLive": "Pertandingan Anda berlangsung — tonton",
-      "enterMatch": "Buka pertandingan"
+      "enterMatch": "Buka pertandingan",
+      "part": "Kontribusi",
+      "goalsCount": "{{count}} gol",
+      "assistsCount": "{{count}} asis"
     },
     "league": {
       "title": "Liga",
@@ -375,6 +378,10 @@
         "listSub": "Masukkan ke pasar lelang",
         "releaseSub": "Lepas dari klub sekarang",
         "shirtSub": "Memakai nomor {{number}}"
+      },
+      "heal": {
+        "action": "Obati",
+        "none": "Belum punya item penyembuhan."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Jaga kondisi mulai",
         "xiWarning": "Pemain inti ini akan memulai pertandingan hari ini dengan kondisi di bawah {{condition}}: {{names}}.",
         "focusFull": "{{names}}: fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke fokus setelah tanda panah.",
+        "keeperTired": "{{names}}: kondisi di bawah {{floor}}, jadi tidak ada sesi tambahan, dan latihan khusus penjaga gawang (Menangkap, Refleks, Udara) juga tidak berjalan. Agar latihan itu tidak terlewat, jaga kondisi penjaga gawang di {{floor}} atau lebih: istirahatkan agar pulih, atau berlatih dengan intensitas lebih ringan agar tiap sesi menguras lebih sedikit kondisi.",
         "andMore": "{{names}} dan {{more}} lainnya",
         "gainsCount": "+{{gains}} atribut",
         "entryToday": "Sesi tambahan hari ini: {{count}}",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} kondisi/sesi",
         "keepLess": "Turunkan kondisi yang dijaga",
         "keepMore": "Naikkan kondisi yang dijaga",
-        "pressShort": "Latihan tambahan"
+        "pressShort": "Latihan tambahan",
+        "drink": {
+          "open": "Pulihkan kondisi {{name}}",
+          "title": "Pulihkan kondisi",
+          "capped": "{{name}}: jatah minuman hari ini habis"
+        },
+        "drinksHeld": "⚡ {{small}} kecil · {{large}} besar",
+        "batch": {
+          "small": "{{count}} kecil",
+          "large": "{{count}} besar",
+          "button": "Pulihkan yang lelah ({{count}}) · {{items}}",
+          "done": "Minuman untuk {{count}} pemain: {{items}}. Mereka dipilih untuk berlatih.",
+          "noneHelped": "Tidak ada pemain yang bisa diberi minuman.",
+          "skippedTitle": "Tanpa minuman",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Pakai {{used}} · sisa: {{small}} kecil, {{large}} besar",
+          "confirm": "Pulihkan kondisi",
+          "title": "Pulihkan pemain yang lelah",
+          "kicker": "Pemain: {{count}}",
+          "reason": {
+            "notYours": "tidak lagi di skuad",
+            "injured": "cedera",
+            "listed": "sedang dijual",
+            "wontTrain": "tidak akan berlatih walau segar",
+            "enough": "sudah bisa berlatih",
+            "notEnough": "minuman yang diizinkan tidak cukup untuk satu sesi",
+            "dailyLimit": "batas harian tercapai",
+            "noDrinks": "minuman habis"
+          }
+        }
       },
       "tab": {
         "label": "Pengaturan latihan",
@@ -698,6 +735,7 @@
         "youCoach": "Kamu yang memimpin",
         "aiCoaches": "AI yang memimpin",
         "ordersFrom": "Perintah berlaku mulai menit {{minute}}' (laga sebenarnya)",
+        "secondHalfIn": "Babak kedua dimulai dalam",
         "dock": "Kontrol tim",
         "subs": "Pergantian",
         "formation": "Formasi",
@@ -715,7 +753,12 @@
         "takerSends": "Mengganti eksekutor langsung mengirim perintah.",
         "ordersTitle": "Perintah terkirim ({{count}})",
         "noOrders": "Belum ada perintah",
-        "sentToast": "Perintah terkirim: {{order}}"
+        "sentToast": "Perintah terkirim: {{order}}",
+        "scorers": "Pencetak gol — {{team}}",
+        "penalty": "penalti",
+        "afterMatch": "Setelah laga",
+        "ratings": "Nilai",
+        "replayChip": "Tayangan ulang"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Lompat ke menit",
       "watch": "Tonton tayangan ulang",
-      "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan."
+      "gone": "Pertandingan ini terlalu lama untuk ditonton ulang; hanya hasilnya yang disimpan.",
+      "fromStart": "Tonton lagi dari awal"
     },
     "friendly": {
       "title": "Laga persahabatan",
@@ -1565,7 +1609,13 @@
         "none": "Tidak ada hadiah hari ini",
         "given": "Diterima: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Pemain ini hanya tersisa {{pointsLeft}} poin kondisi hari ini; tambah lagi mulai {{nextAt}}."
+      "dailyLimitPoints": "Pemain ini hanya tersisa {{pointsLeft}} poin kondisi hari ini; tambah lagi mulai {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Beli · {{price}} koin",
+        "none": "Tidak ada item untuk dipakai.",
+        "failed": "Item ini tidak dapat diperiksa. Tutup lalu coba lagi."
+      }
     },
     "inventory": {
       "notOnServer": "Server ini belum punya barang.",
@@ -1628,8 +1678,10 @@
         "style": "Pakai untuk {{style}}",
         "usedToday": "Sudah dipakai hari ini",
         "rename": "Ganti nama di skuad",
-        "academy": "Gunakan di akademi muda"
-      }
+        "academy": "Gunakan di akademi muda",
+        "offThisSeason": "Nonaktif musim ini"
+      },
+      "offThisSeason": "Tidak bisa dipakai musim ini"
     },
     "shop": {
       "notOnServer": "Server ini belum punya toko.",

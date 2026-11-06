@@ -79,6 +79,7 @@ export function PhoneLiveMatch({
           paused={false}
           onPlayed={onPlayed}
           showCommentary={showCommentary}
+          commentaryRow
           pacing={pacing}
         />
       </div>

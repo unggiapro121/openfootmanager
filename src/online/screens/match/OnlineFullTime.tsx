@@ -8,7 +8,7 @@ import { Scoreboard } from "./MatchBoard";
 import { MatchReview } from "./MatchReview";
 
 /** The viewer's result: a win, a draw or a defeat of their side; none for a spectator. */
-function verdictOf(state: OnlineMatchState, mine: MineView | null) {
+export function verdictOf(state: OnlineMatchState, mine: MineView | null) {
   if (mine === null) return null;
   const own = mine.side === "Home" ? state.homeScore : state.awayScore;
   const other = mine.side === "Home" ? state.awayScore : state.homeScore;

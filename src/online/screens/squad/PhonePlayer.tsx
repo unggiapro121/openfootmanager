@@ -9,11 +9,11 @@ import { CountryFlag, PlayerAvatar } from "../../../components/ui";
 import { countryName } from "../../../lib/countries";
 import type { MyClubView, SquadPlayerView } from "../../api";
 import { useOnlineStore } from "../../store/onlineStore";
-import { itemName } from "../items/itemText";
-import UseItemDialog from "../items/UseItemDialog";
+import QuickUseChoices from "../items/QuickUseChoices";
 import { PhoneHeaderPart } from "../mobile/PhoneHeaderSlots";
 import { FOCUS, PhoneSheet } from "../mobile/PhoneSheet";
 import PotentialStars from "../PotentialStars";
+import HealAction from "./HealAction";
 import { PlayerActions } from "./PhoneSquadActions";
 import { PositionTag } from "./PhoneSquadParts";
 import { KEY, SeasonTab, StatsTab, TraitsTab, valueTone } from "./PhonePlayerTabs";
@@ -74,6 +74,7 @@ export default function PhonePlayer({
           <PlayerProfileInjuryBanner
             injury={{ name: player.injury.name, days_remaining: player.injury.daysRemaining }}
             t={t}
+            action={<HealAction player={player} />}
           />
         )}
         {player.suspendedMatches !== undefined && (
@@ -214,11 +215,9 @@ function Hero({ player, club }: { player: SquadPlayerView; club: MyClubView }) {
   );
 }
 
-/** The items that bring this player back: medkits while he is hurt, energy drinks otherwise. */
+/** The items that bring his condition back; an injury is healed from its banner (HealAction). */
 function recoveryCodes(player: SquadPlayerView): string[] {
-  return player.injury
-    ? ["medkitBandage", "medkitAdvanced"]
-    : ["energyDrinkSmall", "energyDrinkLarge"];
+  return player.injury ? [] : ["energyDrinkSmall", "energyDrinkLarge"];
 }
 
 /** Condition, fitness and morale as three meters, and the way to recover him with an item. */
@@ -226,7 +225,6 @@ function Condition({ player }: { player: SquadPlayerView }) {
   const { t } = useTranslation();
   const items = useOnlineStore((state) => state.items);
   const [sheet, setSheet] = useState(false);
-  const [using, setUsing] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
   const usable = items?.limits && !items.locked ? items : null;
   const held = usable
@@ -298,53 +296,22 @@ function Condition({ player }: { player: SquadPlayerView }) {
           aside={t(`${KEY}.now`, { value: player.condition })}
           onClose={() => setSheet(false)}
         >
-          {held.map(({ code, total }) => (
-            <button
-              key={code}
-              type="button"
-              onClick={() => {
-                setSheet(false);
-                setUsing(code);
-              }}
-              className={`flex min-h-16 items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-left dark:border-navy-700 dark:bg-navy-900 ${FOCUS}`}
-            >
-              <span
-                aria-hidden="true"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-cyan-100 text-cyan-700 dark:bg-cyan-900/50 dark:text-cyan-300"
-              >
-                <Zap className="h-5 w-5" />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="text-[15px] font-bold text-gray-900 dark:text-white">
-                  {itemName(t, code)}
-                </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {t(`${KEY}.held`, { count: total })}
-                </span>
-              </span>
-              <span className="inline-flex h-[34px] items-center rounded-lg bg-primary-700 px-3 text-[13px] font-bold text-white dark:bg-primary-600">
-                {t("online.items.confirmUse")}
-              </span>
-            </button>
-          ))}
-          <Link
-            to="/online/shop"
-            className={`flex min-h-10 items-center justify-center rounded text-[13px] font-semibold text-primary-700 dark:text-primary-400 ${FOCUS}`}
+          <QuickUseChoices
+            codes={recoveryCodes(player)}
+            player={player}
+            onUsed={(text) => {
+              setSheet(false);
+              setDone(text);
+            }}
           >
-            {t(`${KEY}.shop`)}
-          </Link>
+            <Link
+              to="/online/shop"
+              className={`flex min-h-10 items-center justify-center rounded text-[13px] font-semibold text-primary-700 dark:text-primary-400 ${FOCUS}`}
+            >
+              {t(`${KEY}.shop`)}
+            </Link>
+          </QuickUseChoices>
         </PhoneSheet>
-      )}
-      {using && (
-        <UseItemDialog
-          code={using}
-          initialTarget={{ kind: "player", playerId: player.id }}
-          onClose={() => setUsing(null)}
-          onDone={(text) => {
-            setUsing(null);
-            setDone(text);
-          }}
-        />
       )}
     </section>
   );

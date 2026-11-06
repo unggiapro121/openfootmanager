@@ -1,20 +1,13 @@
 import type { TFunction } from "i18next";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type {
-  ItemEffectView,
-  ItemPreviewView,
-  ItemTarget,
-  ItemUseLimitsView,
-  SquadPlayerView,
-  StyleMasteryView,
-} from "../../api";
+import type { ItemPreviewView, ItemTarget, SquadPlayerView, StyleMasteryView } from "../../api";
 import { online } from "../../client";
 import { OnlineApiError } from "../../errors";
-import { formatMoment } from "../../format";
-import { refreshClub, refreshItems, tracked, useOnlineStore } from "../../store/onlineStore";
-import { useActionKey } from "../useActionKey";
-import ItemDialogFrame, { FRAME_ACTION, FrameCancel } from "./ItemDialogFrame";
+import { tracked, useOnlineStore } from "../../store/onlineStore";
+import ItemDialogFrame, { FRAME_ACTION, FrameCancel, HeadBadge } from "./ItemDialogFrame";
+import { effectLines, limitLines, nameOf, usedText } from "./itemUseText";
+import { useApplyItem } from "./useApplyItem";
 import {
   groupOf,
   isMedkit,
@@ -80,81 +73,6 @@ function fixedTarget(kind: TargetKind): ItemTarget | undefined {
   return undefined;
 }
 
-function nameOf(players: SquadPlayerView[], id: string): string {
-  return players.find((player) => player.id === id)?.fullName ?? id;
-}
-
-/** What a use did or would do, before and after, as lines (C-7 §17.3 step 3). */
-function effectLines(t: TFunction, effect: ItemEffectView, players: SquadPlayerView[]): string[] {
-  switch (effect.kind) {
-    case "condition":
-      return effect.players.map((change) =>
-        t("online.items.preview.condition", {
-          player: nameOf(players, change.playerId),
-          before: change.before,
-          after: change.after,
-        }),
-      );
-    case "injury":
-      return [
-        effect.after === undefined
-          ? t("online.items.preview.cured", {
-              player: nameOf(players, effect.playerId),
-              before: effect.before,
-            })
-          : t("online.items.preview.injury", {
-              player: nameOf(players, effect.playerId),
-              before: effect.before,
-              after: effect.after,
-            }),
-      ];
-    case "mastery":
-      return [
-        t("online.items.preview.mastery", {
-          xp: effect.xp,
-          before: effect.masteryBefore,
-          after: effect.masteryAfter,
-        }),
-      ];
-    case "xpX2":
-      return [
-        t("online.items.preview.xpX2", { matches: effect.matches, remaining: effect.remaining }),
-      ];
-  }
-}
-
-function limitLines(t: TFunction, language: string, limits: ItemUseLimitsView): string[] {
-  const out: string[] = [];
-  // A season that caps the drinks in condition points sends points instead of uses (S-28 S28-8).
-  if (limits.pointsToday !== undefined && limits.pointsPerDay !== undefined) {
-    out.push(
-      t("online.items.limit.points", { used: limits.pointsToday, perDay: limits.pointsPerDay }),
-    );
-  }
-  if (limits.usedToday !== undefined && limits.perDay !== undefined) {
-    out.push(
-      limits.nextAt
-        ? t("online.items.limit.today", {
-            used: limits.usedToday,
-            perDay: limits.perDay,
-            time: formatMoment(limits.nextAt, language),
-          })
-        : t("online.items.limit.todayPlain", { used: limits.usedToday, perDay: limits.perDay }),
-    );
-  }
-  if (limits.seasonUsed !== undefined && limits.seasonLimit !== undefined) {
-    out.push(
-      t("online.items.limit.season", { used: limits.seasonUsed, limit: limits.seasonLimit }),
-    );
-  }
-  if (limits.effectRemaining !== undefined && limits.effectMax !== undefined) {
-    out.push(
-      t("online.items.limit.xpX2", { remaining: limits.effectRemaining, max: limits.effectMax }),
-    );
-  }
-  return out;
-}
-
 /**
  * The condition on a drink's label in the season under way (the shop's numbers), to tell what the
  * cap of 100 would cut (C12-7); undefined for other items or when the shop cannot be read.
@@ -203,12 +121,18 @@ export function useStyles(kind: TargetKind | undefined): StyleMasteryView[] {
 export default function UseItemDialog({
   code,
   initialTarget,
+  lockTarget = false,
   onClose,
   onDone,
 }: {
   code: string;
   /** A target already chosen where the dialog opened (a player's page). */
   initialTarget?: ItemTarget;
+  /**
+   * The dialog opened from its target itself (a player's page, a style's tile): it names that
+   * target and offers no other. The inventory leaves it off, so its target can still be changed.
+   */
+  lockTarget?: boolean;
   onClose: () => void;
   onDone: (text: string) => void;
 }) {
@@ -223,10 +147,9 @@ export default function UseItemDialog({
   );
   const [preview, setPreview] = useState<ItemPreviewView | null>(null);
   const [previewError, setPreviewError] = useState<unknown>(null);
-  const [busy, setBusy] = useState(false);
+  const { apply, busy } = useApplyItem();
   const [error, setError] = useState<unknown>(null);
   const [asked, setAsked] = useState(0);
-  const { run } = useActionKey();
 
   // One preview for the target chosen; a newer choice drops the answer to an older one.
   useEffect(() => {
@@ -248,57 +171,34 @@ export default function UseItemDialog({
 
   if (!kind) return null;
   const choices = choicesOf(t, code, kind, players, styles);
+  const locked = lockTarget && target !== undefined;
+  const lockedLabel = locked
+    ? choices.find((choice) => JSON.stringify(choice.target) === JSON.stringify(target))?.label
+    : undefined;
   const refusal = preview?.refusal;
   const matchLocked = refusal?.code === MATCH_LOCKED;
 
   const confirm = () => {
     if (!target) return;
-    setBusy(true);
     setError(null);
-    run((key) => tracked(() => online.items.use(code, target, key)), JSON.stringify(target))
-      .then((view) => {
-        useOnlineStore.setState((state) => ({
-          items: state.items
-            ? {
-                ...state.items,
-                lines: state.items.lines.map((line) =>
-                  line.itemCode === code
-                    ? {
-                        ...line,
-                        stacks: view.held,
-                        total: view.held.reduce((sum, stack) => sum + stack.quantity, 0),
-                      }
-                    : line,
-                ),
-              }
-            : state.items,
-        }));
-        void refreshItems().catch(() => undefined);
-        if (target.kind === "player" || target.kind === "club")
-          void refreshClub().catch(() => undefined);
-        onDone(
-          [
-            t("online.items.used", { item: itemName(t, code) }),
-            ...effectLines(t, view.effect, players),
-          ].join(" "),
-        );
-      })
+    apply(code, target)
+      .then((view) => onDone(usedText(t, code, view.effect, players)))
       .catch((failure: unknown) => {
         setError(failure);
         // A refusal now (the eleven locked, a cap reached meanwhile) is shown by the preview too.
         if (failure instanceof OnlineApiError && failure.status !== 0) setAsked((n) => n + 1);
-      })
-      .finally(() => setBusy(false));
+      });
   };
 
   return (
     <ItemDialogFrame
       code={code}
       title={t("online.items.useTitle", { item: itemName(t, code) })}
+      badges={lockedLabel && <HeadBadge tone="plain">{lockedLabel}</HeadBadge>}
       busy={busy}
       onClose={onClose}
     >
-      {choices.length > 0 && (
+      {!locked && choices.length > 0 && (
         <fieldset className="space-y-1">
           <legend className="mb-1 text-sm font-semibold text-gray-700 dark:text-gray-300">
             {t(kind === "style" ? "online.items.pickStyle" : "online.items.pickPlayer")}

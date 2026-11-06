@@ -165,7 +165,7 @@ export function MatchStats({ snapshot }: { snapshot: MatchStatsSource }) {
   ];
 
   return (
-    <div className="max-w-lg mx-auto flex flex-col gap-3">
+    <div className="w-full max-w-lg mx-auto flex flex-col gap-3">
       {stats.map((stat, i) => {
         const hv = typeof stat.home === "number" ? stat.home : 0;
         const av = typeof stat.away === "number" ? stat.away : 0;
@@ -173,7 +173,7 @@ export function MatchStats({ snapshot }: { snapshot: MatchStatsSource }) {
         const pct = stat.homePct ?? (hv / total) * 100;
         return (
           <div key={i}>
-            <div className="flex justify-between text-xs mb-1">
+            <div className="flex justify-between gap-2 text-xs mb-1">
               <span className="font-heading font-bold text-primary-400 tabular-nums">
                 {stat.home}
               </span>

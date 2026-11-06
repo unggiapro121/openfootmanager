@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, Radio } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ChevronLeft, History, Radio } from "lucide-react";
 import { phaseLabel } from "../../../../components/match/helpers";
-import type { ClubRef } from "../../../api";
+import type { ClubRef, MineView } from "../../../api";
 import type { LiveSide, OnlineMatchState } from "../../../convert/matchState";
 import LeagueClubCrest from "../../LeagueClubCrest";
 import { useGuardedNavigate } from "../../leaveGuard";
@@ -30,19 +31,35 @@ function Team({ side, mine, end }: { side: LiveSide; mine: boolean; end?: boolea
 /**
  * The live match's head on a phone (design m-tran-dau): a way out (which asks first, the coach
  * holding the side), the score with the minute as the radar shows it, then who coaches and the
- * server's own minute, which orders count from.
+ * server's own minute, which orders count from — neither once the match is over. Without `data`
+ * it heads a replay (D-RP7, analysis-mobile-replay): marked as one, and its way out goes back to
+ * where it was opened from, the fixture's page say, or to the online home when opened directly.
  */
 export function PhoneMatchHeader({
   data,
   shown,
+  mine: replayMine = null,
 }: {
-  data: LiveMatchData;
+  /** The live match; none for a replay. */
+  data?: LiveMatchData;
   shown: OnlineMatchState;
+  /** A replay's viewer's own side, which the score marks; the live match's comes with `data`. */
+  mine?: MineView | null;
 }) {
   const { t } = useTranslation();
-  const navigate = useGuardedNavigate();
-  const { mine, state, everCoached } = data;
-  const held = mine ? state.controllers[sideKey(mine.side)] === "Manager" : false;
+  const guardedNavigate = useGuardedNavigate();
+  const navigate = useNavigate();
+  // A location reached inside the app has a key of its own; the first one opened is "default".
+  const opener = useLocation().key !== "default";
+  const replay = data === undefined;
+  const mine = data ? data.mine : replayMine;
+  const leave = () => {
+    if (!replay) guardedNavigate("/online");
+    else if (opener) navigate(-1);
+    else navigate("/online");
+  };
+  const held = data && mine ? data.state.controllers[sideKey(mine.side)] === "Manager" : false;
+  const everCoached = data?.everCoached ?? false;
   const chip =
     mine === null
       ? t("match.spectatorMode")
@@ -56,7 +73,7 @@ export function PhoneMatchHeader({
       <div className="flex items-center gap-1">
         <button
           type="button"
-          onClick={() => navigate("/online")}
+          onClick={leave}
           aria-label={t("online.match.phone.leave")}
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-700 dark:text-gray-200 ${FOCUS}`}
         >
@@ -69,10 +86,12 @@ export function PhoneMatchHeader({
               {`${shown.homeScore} – ${shown.awayScore}`}
             </span>
             <span className="inline-flex items-center gap-1 text-[11px] font-bold tabular-nums text-accent-700 dark:text-accent-400">
-              <span
-                aria-hidden="true"
-                className="h-1.5 w-1.5 rounded-full bg-red-500 motion-safe:animate-pulse"
-              />
+              {!replay && (
+                <span
+                  aria-hidden="true"
+                  className="h-1.5 w-1.5 rounded-full bg-red-500 motion-safe:animate-pulse"
+                />
+              )}
               {`${phaseLabel(shown.phase, t)} · ${shown.minute}'`}
             </span>
             <span className="sr-only">
@@ -88,19 +107,30 @@ export function PhoneMatchHeader({
         </div>
         <span className="w-2 shrink-0" />
       </div>
-      <div className="ml-2 mr-1 mt-1.5 flex items-center gap-2 text-[11px] text-gray-600 dark:text-gray-400">
-        <span
-          className={`inline-flex h-[22px] shrink-0 items-center gap-1.5 rounded-full px-2 font-semibold ${held ? "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300"}`}
-        >
-          <Radio className="h-3 w-3" aria-hidden="true" />
-          {chip}
-        </span>
-        {mine && (
-          <span className="min-w-0 flex-1 truncate">
-            {t("online.match.phone.ordersFrom", { minute: state.minute })}
+      {replay ? (
+        <div className="ml-2 mr-1 mt-1.5 flex items-center text-[11px]">
+          <span className="inline-flex h-[22px] items-center gap-1.5 rounded-full bg-gray-100 px-2 font-semibold text-gray-700 dark:bg-navy-700 dark:text-gray-200">
+            <History className="h-3 w-3" aria-hidden="true" />
+            {t("online.match.phone.replayChip")}
           </span>
-        )}
-      </div>
+        </div>
+      ) : (
+        !shown.isFinished && (
+          <div className="ml-2 mr-1 mt-1.5 flex items-center gap-2 text-[11px] text-gray-600 dark:text-gray-400">
+            <span
+              className={`inline-flex h-[22px] shrink-0 items-center gap-1.5 rounded-full px-2 font-semibold ${held ? "bg-primary-100 text-primary-800 dark:bg-primary-900/40 dark:text-primary-300" : "bg-accent-100 text-accent-800 dark:bg-accent-900/30 dark:text-accent-300"}`}
+            >
+              <Radio className="h-3 w-3" aria-hidden="true" />
+              {chip}
+            </span>
+            {mine && (
+              <span className="min-w-0 flex-1 truncate">
+                {t("online.match.phone.ordersFrom", { minute: data.state.minute })}
+              </span>
+            )}
+          </div>
+        )
+      )}
     </header>
   );
 }

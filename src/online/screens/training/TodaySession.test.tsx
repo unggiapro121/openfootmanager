@@ -625,6 +625,53 @@ describe("extra training", () => {
     openExtra();
     expect(screen.queryByRole("note")).toBeNull();
   });
+  // Given a season with the keepers' drill and the starting keeper under the floor (E5-6d C),
+  // when the coach opens extra training,
+  // then a note names the keeper, and the others can still train.
+  it("warns when a keeper is too tired for the session and the drill", () => {
+    const keeper = squadPlayer({
+      id: "gk",
+      matchName: "C. Thụ",
+      position: "Goalkeeper",
+      naturalPosition: "Goalkeeper",
+      condition: 35,
+    });
+    stage(
+      clubWith(
+        { keeperDrill: true, extra: extraDay({ sitOut: [{ playerId: "gk", reason: "tired" }] }) },
+        { players: [...SQUAD, keeper] },
+      ),
+    );
+    render(<CardFromStore />);
+    openExtra();
+    const panel = screen.getByRole("dialog");
+    expect(within(panel).getByRole("note")).toHaveTextContent(
+      "online.training.extra.keeperTired:C. Thụ|40",
+    );
+    expect(pressButton()).toBeEnabled();
+  });
+
+  // Given the same tired keeper in a season without the keepers' drill,
+  // when the coach opens extra training,
+  // then no keeper note: there is no drill to miss.
+  it("does not warn of a tired keeper in a season without the drill", () => {
+    const keeper = squadPlayer({
+      id: "gk",
+      matchName: "C. Thụ",
+      position: "Goalkeeper",
+      naturalPosition: "Goalkeeper",
+      condition: 35,
+    });
+    stage(
+      clubWith(
+        { keeperDrill: false, extra: extraDay({ sitOut: [{ playerId: "gk", reason: "tired" }] }) },
+        { players: [...SQUAD, keeper] },
+      ),
+    );
+    render(<CardFromStore />);
+    openExtra();
+    expect(screen.queryByText(/online\.training\.extra\.keeperTired/)).toBeNull();
+  });
 });
 
 describe("today's day job not run yet", () => {
@@ -689,5 +736,136 @@ describe("today's day job not run yet", () => {
     }
     expect(clubReads()).toHaveLength(2);
     expect(screen.queryByRole("button", { name: "online.training.today.reload" })).toBeNull();
+  });
+});
+
+describe("energy drinks in the extra panel", () => {
+  const DRINK = "online.training.extra.drink";
+  const tired = [SQUAD[0], { ...SQUAD[1], condition: 35 }];
+
+  function withDrinks() {
+    stage(
+      clubWith(
+        { extra: extraDay({ sitOut: [{ playerId: "p2", reason: "tired" }] }) },
+        {
+          players: tired,
+        },
+      ),
+      {
+        "GET v1/shop": ok({ priceListVersion: 3, items: [] }),
+        "GET v1/me/items/energyDrinkSmall/preview": ok({
+          effect: { kind: "condition", players: [{ playerId: "p2", before: 35, after: 50 }] },
+          limits: { pointsToday: 0, pointsPerDay: 35 },
+        }),
+        "POST v1/me/items/energyDrinkSmall/use": ok({
+          itemCode: "energyDrinkSmall",
+          target: { kind: "player", playerId: "p2" },
+          effect: { kind: "condition", players: [{ playerId: "p2", before: 35, after: 50 }] },
+          held: [{ quantity: 1 }],
+        }),
+      },
+    );
+    useOnlineStore.setState({
+      items: {
+        lines: [
+          { itemCode: "energyDrinkSmall", powerClass: "c", total: 2, stacks: [{ quantity: 2 }] },
+        ],
+        locked: false,
+        limits: {
+          teamRecovery: { usedToday: 0, perDay: 1, nextAt: "2099-01-02T00:00:00Z" },
+          notes: [],
+          xpX2: { remaining: 0, max: 10 },
+        },
+      },
+    });
+    render(<CardFromStore />);
+    openExtra();
+    fireEvent.click(screen.getByRole("tab", { name: /^online\.training\.phone\.listRest/ }));
+    fireEvent.click(screen.getByRole("button", { name: `${DRINK}.open:T. Bình` }));
+  }
+
+  // Given a tired player in the extra panel and two small drinks,
+  // when the coach opens his drinks and presses Escape,
+  // then the drinks close and the panel stays open.
+  it("closes a player's drinks on Escape and keeps the panel", () => {
+    withDrinks();
+    expect(screen.getByRole("dialog", { name: `${DRINK}.title` })).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: `${DRINK}.title` })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "online.training.extra.title" })).toBeInTheDocument();
+  });
+
+  // Given a tired player in the extra panel and two small drinks,
+  // when the coach opens his drinks and taps the small one,
+  // then it is used on him at once and the panel says so.
+  it("uses a drink on a player in one tap", async () => {
+    withDrinks();
+    const small = await screen.findByRole("button", {
+      name: /online\.items\.energyDrinkSmall.*online\.items\.quick\.change:35\|50/,
+    });
+    await waitFor(() => expect(small).toBeEnabled());
+    fireEvent.click(small);
+
+    await waitFor(() =>
+      expect(
+        server.requests.filter((r) => r.segments.join("/") === "v1/me/items/energyDrinkSmall/use"),
+      ).toHaveLength(1),
+    );
+    expect(await screen.findByText(/^online\.items\.used/)).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: `${DRINK}.title` })).toBeNull();
+  });
+});
+
+describe("drinks for all the tired players in the extra panel", () => {
+  const BATCH = "online.training.extra.batch";
+
+  // Given a tired player in the extra panel, two small drinks and a preview lifting him,
+  // when the coach opens the resting list and taps the batch button,
+  // then its summary opens over the panel with what he gets, and Escape closes only it.
+  it("opens the batch summary over the panel and closes it on Escape", async () => {
+    stage(
+      clubWith(
+        { extra: extraDay({ sitOut: [{ playerId: "p2", reason: "tired" }] }) },
+        { players: [SQUAD[0], { ...SQUAD[1], condition: 35 }] },
+      ),
+      {
+        "GET v1/shop": ok({ priceListVersion: 3, items: [] }),
+        "POST v1/clubs/mine/training/extra/drinks/preview": ok({
+          lines: [{ playerId: "p2", items: ["energyDrinkSmall"], before: 35, after: 50 }],
+          skipped: [],
+          used: { energyDrinkSmall: 1 },
+          held: { energyDrinkSmall: 1, energyDrinkLarge: 0 },
+          trainingDay: clubWith({}).trainingDay,
+        }),
+      },
+    );
+    useOnlineStore.setState({
+      items: {
+        lines: [
+          { itemCode: "energyDrinkSmall", powerClass: "c", total: 2, stacks: [{ quantity: 2 }] },
+        ],
+        locked: false,
+        limits: {
+          teamRecovery: { usedToday: 0, perDay: 1, nextAt: "2099-01-02T00:00:00Z" },
+          notes: [],
+          xpX2: { remaining: 0, max: 10 },
+        },
+      },
+    });
+    render(<CardFromStore />);
+    openExtra();
+    fireEvent.click(screen.getByRole("tab", { name: /^online\.training\.phone\.listRest/ }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: `${BATCH}.button:1|${BATCH}.small:1` }),
+    );
+
+    const summary = screen.getByRole("dialog", { name: `${BATCH}.title` });
+    expect(within(summary).getByText("online.items.quick.change:35|50")).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: `${BATCH}.title` })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "online.training.extra.title" })).toBeInTheDocument();
   });
 });

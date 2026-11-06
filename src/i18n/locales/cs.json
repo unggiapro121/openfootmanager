@@ -136,7 +136,10 @@
       "watchMatch": "Sledovat živě {{home}} – {{away}}",
       "watchLive": "Živě · Sledovat",
       "enterLive": "Váš zápas běží — sledovat",
-      "enterMatch": "Přejít na zápas"
+      "enterMatch": "Přejít na zápas",
+      "part": "Přínos",
+      "goalsCount": "Góly: {{count}}",
+      "assistsCount": "Asistence: {{count}}"
     },
     "league": {
       "title": "Liga",
@@ -375,6 +378,10 @@
         "listSub": "Dát ho do aukce",
         "releaseSub": "Nechat ho hned odejít",
         "shirtSub": "Nosí číslo {{number}}"
+      },
+      "heal": {
+        "action": "Léčit",
+        "none": "Zatím nemáte žádné léčebné předměty."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Udržet kondici od",
         "xiWarning": "Tito hráči základní sestavy by začali dnešní zápas s kondicí pod {{condition}}: {{names}}.",
         "focusFull": "{{names}}: jejich zaměření už nemá nic, co by zvedalo OVR na této pozici. Přepněte na zaměření za šipkou.",
+        "keeperTired": "{{names}}: kondice pod {{floor}}, takže žádný trénink navíc a ani brankářské cvičení (Chytání, Reflexy, Vzdušné souboje). Aby brankáři o cvičení nepřišli, držte je na kondici {{floor}} a výš: nechte je odpočinout, nebo trénujte nižší intenzitou, aby každý trénink stál méně kondice.",
         "andMore": "{{names}} a dalších {{more}}",
         "gainsCount": "+{{gains}} atributů",
         "entryToday": "Tréninků navíc dnes: {{count}}",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} kondice/trénink",
         "keepLess": "Snížit kondici k udržení",
         "keepMore": "Zvýšit kondici k udržení",
-        "pressShort": "Trénovat navíc"
+        "pressShort": "Trénovat navíc",
+        "drink": {
+          "open": "Obnovit kondici: {{name}}",
+          "title": "Obnovit kondici",
+          "capped": "{{name}}: dnes už žádné nápoje"
+        },
+        "drinksHeld": "⚡ {{small}} malé · {{large}} velké",
+        "batch": {
+          "small": "malé: {{count}}",
+          "large": "velké: {{count}}",
+          "button": "Obnovit unavené ({{count}}) · {{items}}",
+          "done": "Nápoje pro hráče: {{count}} ({{items}}). Jsou vybraní k tréninku.",
+          "noneHelped": "Žádný hráč nemohl dostat nápoj.",
+          "skippedTitle": "Bez nápoje",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Spotřeba {{used}} · zbude: malé {{small}}, velké {{large}}",
+          "confirm": "Obnovit kondici",
+          "title": "Obnovit unavené hráče",
+          "kicker": "Hráči: {{count}}",
+          "reason": {
+            "notYours": "už není v kádru",
+            "injured": "zraněný",
+            "listed": "na trhu",
+            "wontTrain": "netrénoval by ani odpočatý",
+            "enough": "už může trénovat",
+            "notEnough": "povolené nápoje nestačí na jeden trénink",
+            "dailyLimit": "denní limit vyčerpán",
+            "noDrinks": "žádné nápoje"
+          }
+        }
       },
       "tab": {
         "label": "Nastavení tréninku",
@@ -698,6 +735,7 @@
         "youCoach": "Řídíte tým",
         "aiCoaches": "Tým řídí AI",
         "ordersFrom": "Pokyny platí od {{minute}}. minuty (skutečného zápasu)",
+        "secondHalfIn": "Druhý poločas za",
         "dock": "Ovládání týmu",
         "subs": "Střídání",
         "formation": "Rozestavení",
@@ -715,7 +753,12 @@
         "takerSends": "Změna exekutora pokyn hned odešle.",
         "ordersTitle": "Odeslané pokyny ({{count}})",
         "noOrders": "Zatím žádný pokyn",
-        "sentToast": "Pokyn odeslán: {{order}}"
+        "sentToast": "Pokyn odeslán: {{order}}",
+        "scorers": "Střelci — {{team}}",
+        "penalty": "pen.",
+        "afterMatch": "Po zápase",
+        "ratings": "Hodnocení",
+        "replayChip": "Záznam"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Přejít na minutu",
       "watch": "Přehrát záznam",
-      "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek."
+      "gone": "Tento zápas je příliš starý na záznam; zůstal jen výsledek.",
+      "fromStart": "Přehrát znovu od začátku"
     },
     "friendly": {
       "title": "Přátelská utkání",
@@ -1565,7 +1609,13 @@
         "none": "Dnes není žádný dárek",
         "given": "Získáno: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Tomuto hráči dnes zbývá jen {{pointsLeft}} bodů kondice; další od {{nextAt}}."
+      "dailyLimitPoints": "Tomuto hráči dnes zbývá jen {{pointsLeft}} bodů kondice; další od {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Koupit · {{price}} mincí",
+        "none": "Žádný předmět k použití.",
+        "failed": "Předmět se nepodařilo ověřit. Zavřete a zkuste to znovu."
+      }
     },
     "inventory": {
       "notOnServer": "Tento server zatím nemá předměty.",
@@ -1628,8 +1678,10 @@
         "style": "Použít na {{style}}",
         "usedToday": "Dnes už použito",
         "rename": "Přejmenovat v kádru",
-        "academy": "Použít v akademii"
-      }
+        "academy": "Použít v akademii",
+        "offThisSeason": "V této sezóně vypnuto"
+      },
+      "offThisSeason": "V této sezóně nelze použít"
     },
     "shop": {
       "notOnServer": "Tento server zatím nemá obchod.",

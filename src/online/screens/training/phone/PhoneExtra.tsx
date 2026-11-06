@@ -5,6 +5,7 @@ import type { ExtraDayView, MyClubView, TrainingDayView } from "../../../api";
 import { useOnlineStore } from "../../../store/onlineStore";
 import DailyGift from "../../items/DailyGift";
 import { FOCUS, PhoneSheet } from "../../mobile/PhoneSheet";
+import { useExtraDrinks } from "../ExtraDrinks";
 import { useGiftText } from "../ExtraEntry";
 import {
   ExtraListBody,
@@ -52,6 +53,13 @@ export default function PhoneExtra({
   const lists = useExtraLists(club, extra, session);
   const press = useExtraOutcome(club, session, onOutcome);
   const [list, setList] = useState<ExtraListName>("ready");
+  const drinks = useExtraDrinks({
+    session,
+    phone: true,
+    extra,
+    rest: lists.rest,
+    restOpen: list === "rest",
+  });
   const [info, setInfo] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
   const [why, setWhy] = useState<RestingPlayer | null>(null);
@@ -72,7 +80,7 @@ export default function PhoneExtra({
       aria-labelledby="phone-extra-title"
       tabIndex={-1}
       onKeyDown={(event) => {
-        if (event.key === "Escape" && !sending && !resultOpen && !why) onClose();
+        if (event.key === "Escape" && !sending && !resultOpen && !why && !drinks.open) onClose();
       }}
       className="fixed inset-0 z-[55] flex flex-col bg-gray-100 focus:outline-none motion-safe:animate-page-in dark:bg-navy-900"
     >
@@ -96,12 +104,13 @@ export default function PhoneExtra({
           <span className="truncate text-xs text-gray-500 dark:text-gray-400">
             {t("online.training.extra.entryToday", { count: extra.today })}
             {giftText && ` · ${giftText}`}
+            {drinks.held && ` · ${drinks.held}`}
           </span>
         </div>
         <InfoToggle open={info} onToggle={() => setInfo(!info)} />
       </header>
 
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4 pt-3.5">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 pb-4 pt-3.5 *:shrink-0">
         {info && <ExtraInfo cap={trainingDay.sessionsCap} />}
         {outcome && <LastResultChip outcome={outcome} onOpen={() => setResultOpen(true)} />}
         {giftReady && <DailyGift />}
@@ -115,6 +124,7 @@ export default function PhoneExtra({
           onIntensity={session.setIntensity}
           onChoice={setChoice}
         />
+        {drinks.status}
         <ExtraListTabs
           list={list}
           ready={lists.ready.length}
@@ -124,6 +134,7 @@ export default function PhoneExtra({
           onList={setList}
           onBulk={lists.bulk}
         />
+        {list === "rest" && drinks.batch}
         <ExtraListBody
           list={list}
           ready={lists.ready}
@@ -133,8 +144,9 @@ export default function PhoneExtra({
           disabled={sending}
           onToggle={session.toggle}
           onWhy={setWhy}
+          drinks={drinks.offer}
         />
-        <ExtraWarnings session={session} />
+        <ExtraWarnings session={session} floor={extra.floor} />
       </div>
 
       <footer className="flex flex-col gap-2 border-t border-gray-200 bg-white/95 px-4 pb-[calc(0.625rem+var(--safe-bottom))] pt-2.5 dark:border-navy-600 dark:bg-navy-800/95">
@@ -155,6 +167,7 @@ export default function PhoneExtra({
           onClose={() => setResultOpen(false)}
         />
       )}
+      {drinks.layer}
       {why && (
         <PhoneSheet title={why.player.matchName} onClose={() => setWhy(null)}>
           <p className="text-sm leading-normal text-gray-700 dark:text-gray-300">{why.why}</p>

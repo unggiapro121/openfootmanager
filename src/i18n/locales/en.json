@@ -136,7 +136,10 @@
       "watchMatch": "Watch {{home}} – {{away}} live",
       "watchLive": "Live · Watch",
       "enterLive": "Your match is on — watch it",
-      "enterMatch": "Go to the match"
+      "enterMatch": "Go to the match",
+      "part": "Part",
+      "goalsCount": "{{count}} goals",
+      "assistsCount": "{{count}} assists"
     },
     "league": {
       "title": "League",
@@ -375,6 +378,10 @@
         "listSub": "Put him on the auction market",
         "releaseSub": "Let him leave the club now",
         "shirtSub": "Wearing number {{number}}"
+      },
+      "heal": {
+        "action": "Heal",
+        "none": "No healing items yet."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Keep condition at or above",
         "xiWarning": "These starters would begin today's match under {{condition}} condition: {{names}}.",
         "focusFull": "{{names}}: their focus has nothing left that raises their OVR in this position. Switch to the focus after the arrow.",
+        "keeperTired": "{{names}}: condition under {{floor}}, so no extra session, and no keepers' drill (Handling, Reflexes, Aerial) either. To keep the drill, keep keepers at {{floor}} condition or above: rest them to recover, or train at a lighter intensity so each session costs less condition.",
         "andMore": "{{names}} and {{more}} more",
         "gainsCount": "+{{gains}} attributes",
         "entryToday": "Extra sessions today: {{count}}",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} condition/session",
         "keepLess": "Lower the condition to keep",
         "keepMore": "Raise the condition to keep",
-        "pressShort": "Train extra"
+        "pressShort": "Train extra",
+        "drink": {
+          "open": "Restore condition for {{name}}",
+          "title": "Restore condition",
+          "capped": "{{name}}: no drinks left for today"
+        },
+        "drinksHeld": "⚡ {{small}} small · {{large}} large",
+        "batch": {
+          "small": "{{count}} small",
+          "large": "{{count}} large",
+          "button": "Recover tired players ({{count}}) · {{items}}",
+          "done": "Drinks given to {{count}} players: {{items}}. They are chosen to train.",
+          "noneHelped": "No player could be given a drink.",
+          "skippedTitle": "No drink",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Uses {{used}} · left after: {{small}} small, {{large}} large",
+          "confirm": "Recover condition",
+          "title": "Recover tired players",
+          "kicker": "Players: {{count}}",
+          "reason": {
+            "notYours": "no longer in your squad",
+            "injured": "injured",
+            "listed": "on the market",
+            "wontTrain": "would not train even when fresh",
+            "enough": "can already train",
+            "notEnough": "the drinks allowed are not enough for one session",
+            "dailyLimit": "today's drink limit reached",
+            "noDrinks": "no drinks left"
+          }
+        }
       },
       "tab": {
         "label": "Training settings",
@@ -698,6 +735,7 @@
         "youCoach": "You are coaching",
         "aiCoaches": "The AI is coaching",
         "ordersFrom": "Orders count from minute {{minute}}' (the real match)",
+        "secondHalfIn": "Second half in",
         "dock": "Team controls",
         "subs": "Subs",
         "formation": "Shape",
@@ -715,7 +753,12 @@
         "takerSends": "Changing a taker sends the order at once.",
         "ordersTitle": "Orders sent ({{count}})",
         "noOrders": "No order sent yet",
-        "sentToast": "Order sent: {{order}}"
+        "sentToast": "Order sent: {{order}}",
+        "scorers": "Scorers — {{team}}",
+        "penalty": "pen",
+        "afterMatch": "After the match",
+        "ratings": "Ratings",
+        "replayChip": "Replay"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Go to minute",
       "watch": "Watch the replay",
-      "gone": "This match is too old to replay; only its result is kept."
+      "gone": "This match is too old to replay; only its result is kept.",
+      "fromStart": "Watch again from the start"
     },
     "friendly": {
       "title": "Friendlies",
@@ -1565,7 +1609,13 @@
         "none": "No gift to claim today",
         "given": "Received {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Only {{pointsLeft}} condition points are left for this player today; more from {{nextAt}}."
+      "dailyLimitPoints": "Only {{pointsLeft}} condition points are left for this player today; more from {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Buy · {{price}} coins",
+        "none": "No item here to use.",
+        "failed": "Could not check this item. Close and try again."
+      }
     },
     "inventory": {
       "notOnServer": "This server has no items yet.",
@@ -1628,8 +1678,10 @@
         "style": "Use on {{style}}",
         "usedToday": "Used today",
         "rename": "Rename in the squad",
-        "academy": "Use at the Youth Academy"
-      }
+        "academy": "Use at the Youth Academy",
+        "offThisSeason": "Off this season"
+      },
+      "offThisSeason": "Not usable this season"
     },
     "shop": {
       "notOnServer": "This server has no shop yet.",

@@ -13,6 +13,7 @@ import PotentialStars from "../PotentialStars";
 import { PlayerActions } from "./PhoneSquadActions";
 import { avatarOf, ovrTone } from "./playerLook";
 import type { PlayerFit } from "./squadFit";
+import type { SquadSortKey } from "./squadList";
 
 const KEY = "online.squad.phone";
 export const FOCUS =
@@ -21,11 +22,37 @@ export const FOCUS =
 /** What the two columns of the list show (design m-doi-hinh's four lenses). */
 export type Lens = "form" | "fit" | "growth" | "stats";
 
-export const LENSES: Array<{ id: Lens; label: string; columns: [string, string] }> = [
-  { id: "form", label: `${KEY}.lensForm`, columns: ["common.condition", "common.morale"] },
-  { id: "fit", label: `${KEY}.lensFit`, columns: ["match.formation", "match.playStyle"] },
-  { id: "growth", label: `${KEY}.lensGrowth`, columns: ["common.age", "online.squad.potential"] },
-  { id: "stats", label: `${KEY}.lensStats`, columns: ["online.squad.apps", "online.squad.goals"] },
+/** Each lens's two columns: their headings, and what tapping one sorts the list by. */
+export const LENSES: Array<{
+  id: Lens;
+  label: string;
+  columns: [string, string];
+  sorts: [SquadSortKey, SquadSortKey];
+}> = [
+  {
+    id: "form",
+    label: `${KEY}.lensForm`,
+    columns: ["common.condition", "common.morale"],
+    sorts: ["condition", "morale"],
+  },
+  {
+    id: "fit",
+    label: `${KEY}.lensFit`,
+    columns: ["match.formation", "match.playStyle"],
+    sorts: ["fit", "style"],
+  },
+  {
+    id: "growth",
+    label: `${KEY}.lensGrowth`,
+    columns: ["common.age", "online.squad.potential"],
+    sorts: ["age", "potential"],
+  },
+  {
+    id: "stats",
+    label: `${KEY}.lensStats`,
+    columns: ["online.squad.apps", "online.squad.goals"],
+    sorts: ["apps", "goals"],
+  },
 ];
 
 const TONE = {

@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PHONE_QUERY } from "../../hooks/usePhoneLayout";
 import { fakeRealtime } from "../../test-utils/onlineMatchKit";
@@ -12,6 +12,8 @@ import {
   resetOnline,
   SEASON,
 } from "../../test-utils/onlineTestKit";
+import type { EventsView } from "../api";
+import { useOnlineStore } from "../store/onlineStore";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
@@ -142,6 +144,61 @@ describe("the online mode on a phone", () => {
     ]) {
       expect(within(sheet).getByRole("button", { name })).toBeInTheDocument();
     }
+  });
+
+  // Given an event with a reward to claim, market news unseen and an academy report unseen,
+  // when the coach opens More, Club and Team in turn,
+  // then the page each dot on the tab bar is for carries its own count in the sheet: Events,
+  // Market and Academy; the other pages carry none.
+  it("marks in a sheet the page a tab's dot is for", async () => {
+    const events: EventsView = {
+      enabled: true,
+      events: [
+        {
+          id: "01a18545-d15e-763c-8b48-934eb05a4757",
+          theme: "weekly",
+          startsAt: "2000-01-01T00:00:00Z",
+          endsAt: "2099-01-01T00:00:00Z",
+          claimUntil: "2099-01-01T00:00:00Z",
+          state: "running",
+          missions: [
+            {
+              code: "w1",
+              kind: "leagueMatchesDirected",
+              target: 5,
+              progress: 5,
+              status: "completed",
+              rewards: [{ item: "energyDrinkSmall", quantity: 2 }],
+              countsOffline: false,
+            },
+          ],
+        },
+      ],
+    };
+    serve();
+    renderOnline("/online");
+    await waitFor(() => expect(tabs()).toBeInTheDocument());
+    act(() => useOnlineStore.setState({ events, marketUnseen: 2, academyUnseen: true }));
+
+    fireEvent.click(tab("online.nav.groupMore (1)"));
+    let sheet = screen.getByRole("dialog", { name: "online.nav.groupMore" });
+    expect(
+      within(sheet).getByRole("button", { name: "online.nav.events (1)" }),
+    ).toBeInTheDocument();
+    expect(within(sheet).getByRole("button", { name: "online.nav.shop" })).toBeInTheDocument();
+
+    fireEvent.click(tab("online.nav.groupClub (2)"));
+    sheet = screen.getByRole("dialog", { name: "online.nav.groupClub" });
+    expect(
+      within(sheet).getByRole("button", { name: "online.nav.market (2)" }),
+    ).toBeInTheDocument();
+    expect(within(sheet).getByRole("button", { name: "online.nav.finance" })).toBeInTheDocument();
+
+    fireEvent.click(tab("online.nav.groupTeam (1)"));
+    sheet = screen.getByRole("dialog", { name: "online.nav.groupTeam" });
+    expect(
+      within(sheet).getByRole("button", { name: "online.nav.academy (1)" }),
+    ).toBeInTheDocument();
   });
 
   // Given an open sheet,

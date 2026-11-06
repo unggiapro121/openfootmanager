@@ -136,7 +136,10 @@
       "watchMatch": "Xem trực tiếp {{home}} – {{away}}",
       "watchLive": "Đang đá · Xem",
       "enterLive": "Trận của bạn đang đá — Vào xem",
-      "enterMatch": "Vào trận"
+      "enterMatch": "Vào trận",
+      "part": "Đóng góp",
+      "goalsCount": "{{count}} bàn thắng",
+      "assistsCount": "{{count}} kiến tạo"
     },
     "league": {
       "title": "Giải đấu",
@@ -375,6 +378,10 @@
         "listSub": "Đưa lên Chợ đấu giá",
         "releaseSub": "Cho rời CLB ngay",
         "shirtSub": "Đang mặc số {{number}}"
+      },
+      "heal": {
+        "action": "Chữa thương",
+        "none": "Bạn chưa có gói chữa thương nào."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Giữ thể lực từ",
         "xiWarning": "Các cầu thủ đá chính này sẽ vào trận hôm nay với thể lực dưới {{condition}}: {{names}}.",
         "focusFull": "{{names}}: trọng tâm đang tập không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang trọng tâm sau mũi tên.",
+        "keeperTired": "{{names}}: thể lực dưới {{floor}} nên không tập thêm được, và bài thủ môn (Bắt bóng, Phản xạ, Không chiến) cũng không chạy. Để không lỡ bài, giữ thủ môn từ {{floor}} thể lực trở lên: cho nghỉ để hồi thể lực, hoặc tập cường độ nhẹ hơn để mỗi buổi tốn ít thể lực hơn.",
         "andMore": "{{names}} và {{more}} người khác",
         "gainsCount": "+{{gains}} thuộc tính",
         "entryToday": "Hôm nay đã tập thêm {{count}} buổi",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} thể lực/buổi",
         "keepLess": "Giảm mức giữ",
         "keepMore": "Tăng mức giữ",
-        "pressShort": "Tập thêm"
+        "pressShort": "Tập thêm",
+        "drink": {
+          "open": "Hồi thể lực cho {{name}}",
+          "title": "Hồi thể lực",
+          "capped": "{{name}}: đã dùng hết lượt nước tăng lực hôm nay"
+        },
+        "drinksHeld": "⚡ {{small}} nhỏ · {{large}} lớn",
+        "batch": {
+          "small": "{{count}} nhỏ",
+          "large": "{{count}} lớn",
+          "button": "Hồi cho {{count}} cầu thủ · {{items}}",
+          "done": "Đã hồi cho {{count}} cầu thủ: {{items}}. Các cầu thủ này đã được chọn tập.",
+          "noneHelped": "Không cầu thủ nào được hồi.",
+          "skippedTitle": "Không hồi",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Dùng {{used}} · còn lại: {{small}} nhỏ, {{large}} lớn",
+          "confirm": "Hồi thể lực",
+          "title": "Hồi thể lực cho cầu thủ mệt",
+          "kicker": "{{count}} cầu thủ",
+          "reason": {
+            "notYours": "không còn trong đội",
+            "injured": "đang chấn thương",
+            "listed": "đang rao bán",
+            "wontTrain": "khoẻ cũng không tập được",
+            "enough": "đã đủ sức tập",
+            "notEnough": "số bình được phép không đủ cho một buổi",
+            "dailyLimit": "đã hết lượt hôm nay",
+            "noDrinks": "hết bình"
+          }
+        }
       },
       "tab": {
         "label": "Thiết lập tập luyện",
@@ -698,6 +735,7 @@
         "youCoach": "Bạn đang chỉ đạo",
         "aiCoaches": "AI đang chỉ đạo",
         "ordersFrom": "Lệnh tính từ phút {{minute}}' (trận thật)",
+        "secondHalfIn": "Hiệp 2 bắt đầu sau",
         "dock": "Điều khiển đội",
         "subs": "Thay người",
         "formation": "Sơ đồ",
@@ -715,7 +753,12 @@
         "takerSends": "Đổi người nào sẽ gửi lệnh ngay cho người đó.",
         "ordersTitle": "Lệnh đã gửi ({{count}})",
         "noOrders": "Chưa gửi lệnh nào",
-        "sentToast": "Đã gửi lệnh: {{order}}"
+        "sentToast": "Đã gửi lệnh: {{order}}",
+        "scorers": "Ghi bàn — {{team}}",
+        "penalty": "phạt đền",
+        "afterMatch": "Sau trận",
+        "ratings": "Bảng điểm",
+        "replayChip": "Xem lại"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Tua tới phút",
       "watch": "Xem lại trận",
-      "gone": "Trận này đã quá cũ để xem lại; chỉ còn giữ kết quả."
+      "gone": "Trận này đã quá cũ để xem lại; chỉ còn giữ kết quả.",
+      "fromStart": "Xem lại từ đầu"
     },
     "friendly": {
       "title": "Giao hữu",
@@ -1565,7 +1609,13 @@
         "none": "Hôm nay không có quà để nhận",
         "given": "Đã nhận {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Cầu thủ này hôm nay chỉ còn {{pointsLeft}} điểm thể lực; mở thêm lúc {{nextAt}}."
+      "dailyLimitPoints": "Cầu thủ này hôm nay chỉ còn {{pointsLeft}} điểm thể lực; mở thêm lúc {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Mua · {{price}} coin",
+        "none": "Không còn vật phẩm nào để dùng.",
+        "failed": "Không kiểm tra được vật phẩm này. Đóng lại rồi thử lại."
+      }
     },
     "inventory": {
       "notOnServer": "Máy chủ này chưa có vật phẩm.",
@@ -1628,8 +1678,10 @@
         "style": "Dùng cho {{style}}",
         "usedToday": "Đã dùng hôm nay",
         "rename": "Đổi tên ở trang Đội hình",
-        "academy": "Dùng ở Lò đào tạo"
-      }
+        "academy": "Dùng ở Lò đào tạo",
+        "offThisSeason": "Mùa này không dùng được"
+      },
+      "offThisSeason": "Không dùng được trong mùa này"
     },
     "shop": {
       "notOnServer": "Máy chủ này chưa có cửa hàng.",

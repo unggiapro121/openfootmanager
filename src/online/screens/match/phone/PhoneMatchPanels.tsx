@@ -23,17 +23,22 @@ function cameOnAt(state: OnlineMatchState): Map<string, number> {
   );
 }
 
-/** One side's eleven as a card: shirt numbers, names, who came on when, who was sent off. */
+/**
+ * One side's eleven as a card: shirt numbers, names, who came on when, who was sent off, and each
+ * one's rating once the fixture is settled.
+ */
 function SideCard({
   side,
   mine,
   state,
   cameOn,
+  ratings,
 }: {
   side: LiveSide;
   mine: boolean;
   state: OnlineMatchState;
   cameOn: Map<string, number>;
+  ratings?: Map<string, number>;
 }) {
   const { t } = useTranslation();
   return (
@@ -76,6 +81,11 @@ function SideCard({
                   className="h-3 w-2 rounded-[2px] bg-yellow-400"
                 />
               )}
+              {ratings?.has(player.id) && (
+                <span className="w-7 text-right font-heading font-bold tabular-nums text-gray-900 dark:text-white">
+                  {ratings.get(player.id)?.toFixed(1)}
+                </span>
+              )}
             </li>
           );
         })}
@@ -92,13 +102,19 @@ export function PhoneMatchPanels({
   state,
   mine,
   roster,
+  initialPanel = "events",
+  ratings,
 }: {
   state: OnlineMatchState;
   mine: MineView | null;
   roster: RadarRoster;
+  /** The tab open first: the events in play, the stats in the break (D-HT4). */
+  initialPanel?: Panel;
+  /** Each player's rating, by id, once the fixture is settled (D-FT5). */
+  ratings?: Map<string, number>;
 }) {
   const { t } = useTranslation();
-  const [panel, setPanel] = useState<Panel>("events");
+  const [panel, setPanel] = useState<Panel>(initialPanel);
   const cameOn = cameOnAt(state);
   return (
     <>
@@ -133,12 +149,14 @@ export function PhoneMatchPanels({
               mine={mine?.side === "Home"}
               state={state}
               cameOn={cameOn}
+              ratings={ratings}
             />
             <SideCard
               side={state.away}
               mine={mine?.side === "Away"}
               state={state}
               cameOn={cameOn}
+              ratings={ratings}
             />
           </div>
         )}

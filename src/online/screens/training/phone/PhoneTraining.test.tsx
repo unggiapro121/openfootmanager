@@ -16,11 +16,17 @@ import {
 } from "../../../../test-utils/onlineTestKit";
 import type {
   ExtraDayView,
+  ExtraDrinksView,
   ExtraSessionView,
+  InventoryView,
+  ItemPreviewView,
+  ItemUseView,
   MyClubView,
+  ShopView,
   TrainingDayView,
   TrainingPlan,
 } from "../../../api";
+import { saveChoice } from "../extraText";
 
 vi.mock("react-i18next", () => ({
   initReactI18next: { type: "3rdParty", init: () => {} },
@@ -308,5 +314,340 @@ describe("the training page on a phone", () => {
     ).toBeDisabled();
     fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
     expect(within(page).getByText(`${KEY}.underKeep:75`)).toBeInTheDocument();
+  });
+  // Given a season with the keepers' drill and the keeper under the floor (E5-6d C),
+  // when the coach opens extra training on a phone,
+  // then a note names the keeper.
+  it("warns when a keeper is too tired for the session and the drill", async () => {
+    const keeper = squadPlayer({
+      id: "gk",
+      matchName: "C. Thụ",
+      position: "Goalkeeper",
+      naturalPosition: "Goalkeeper",
+      condition: 35,
+    });
+    await open(
+      club({
+        players: [...SQUAD, keeper],
+        trainingDay: trainingDay({
+          keeperDrill: true,
+          extra: extraDay({ sitOut: [{ playerId: "gk", reason: "tired" }] }),
+        }),
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^online\.training\.extra\.title/ }));
+    const page = screen.getByRole("dialog", { name: "online.training.extra.title" });
+    expect(within(page).getByRole("note")).toHaveTextContent(
+      "online.training.extra.keeperTired:C. Thụ|40",
+    );
+  });
+});
+
+const DRINK = "online.training.extra.drink";
+
+function drinks(small: number, large: number, locked = false): InventoryView {
+  const lines = [
+    { itemCode: "energyDrinkSmall", total: small },
+    { itemCode: "energyDrinkLarge", total: large },
+  ]
+    .filter((line) => line.total > 0)
+    .map((line) => ({ ...line, powerClass: "c", stacks: [{ quantity: line.total }] }));
+  return {
+    lines,
+    locked,
+    limits: {
+      teamRecovery: { usedToday: 0, perDay: 1, nextAt: "2099-01-02T00:00:00Z" },
+      notes: [],
+      xpX2: { remaining: 0, max: 10 },
+    },
+  };
+}
+
+function drinkPreview(before: number, after: number): ItemPreviewView {
+  return {
+    effect: { kind: "condition", players: [{ playerId: "p2", before, after }] },
+    limits: { pointsToday: 0, pointsPerDay: 35 },
+  };
+}
+
+const USED: ItemUseView = {
+  itemCode: "energyDrinkSmall",
+  target: { kind: "player", playerId: "p2" },
+  effect: { kind: "condition", players: [{ playerId: "p2", before: 35, after: 50 }] },
+  held: [{ quantity: 1 }],
+};
+
+const SHOP: ShopView = {
+  priceListVersion: 3,
+  items: [
+    {
+      itemCode: "energyDrinkSmall",
+      powerClass: "c",
+      price: 5,
+      maxPurchase: 99,
+      effect: { condition: 15 },
+    },
+    {
+      itemCode: "energyDrinkLarge",
+      powerClass: "c",
+      price: 12,
+      maxPurchase: 99,
+      effect: { condition: 35 },
+    },
+  ],
+};
+
+/** The extra page with the squad's drinks, on a phone. */
+async function openExtraWith(
+  items: InventoryView,
+  more: Record<string, Answer | ((r: OnlineRequest) => Answer)> = {},
+  view: MyClubView = club(),
+) {
+  serve(view, {
+    "GET v1/me": ok({ id: "account-1" }),
+    "GET v1/me/items": ok(items),
+    "GET v1/shop": ok(SHOP),
+    "GET v1/me/items/energyDrinkSmall/preview": ok(drinkPreview(35, 50)),
+    "GET v1/me/items/energyDrinkLarge/preview": ok(drinkPreview(35, 70)),
+    ...more,
+  });
+  renderOnline("/online/training");
+  fireEvent.click(await screen.findByRole("button", { name: /^online\.training\.extra\.title/ }));
+  return screen.getByRole("dialog", { name: "online.training.extra.title" });
+}
+
+describe("energy drinks in extra training on a phone", () => {
+  // Given a tired player left out of the coach's saved choice, and two small drinks,
+  // when the coach taps his ⚡ on the resting list and taps the small drink once,
+  // then the drink is used on him with no second confirmation, the page says what it did, and
+  // once the club is read again he can train and is chosen.
+  it("boosts a tired player in one tap and chooses him", async () => {
+    saveChoice(club().club.id, { players: ["p1"], sessions: 1, keepAbove: null });
+    let used = false;
+    const after = club({
+      players: [SQUAD[0], { ...SQUAD[1], condition: 50 }],
+      trainingDay: trainingDay({ extra: extraDay({ sitOut: [] }) }),
+    });
+    const page = await openExtraWith(drinks(2, 0), {
+      "GET v1/clubs/mine": () => ok(used ? after : club()),
+      "POST v1/me/items/energyDrinkSmall/use": () => {
+        used = true;
+        return ok(USED);
+      },
+    });
+    expect(
+      await within(page).findByText(/online\.training\.extra\.drinksHeld:2\|0/),
+    ).toBeInTheDocument();
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    fireEvent.click(within(page).getByRole("button", { name: `${DRINK}.open:T. Bình` }));
+
+    const sheet = screen.getByRole("dialog", { name: `${DRINK}.title` });
+    const small = await within(sheet).findByRole("button", {
+      name: /online\.items\.energyDrinkSmall.*online\.items\.quick\.change:35\|50/,
+    });
+    await waitFor(() => expect(small).toBeEnabled());
+    fireEvent.click(small);
+
+    await waitFor(() => expect(sent("POST", "v1/me/items/energyDrinkSmall/use")).toHaveLength(1));
+    expect(sent("POST", "v1/me/items/energyDrinkSmall/use")[0]?.body).toMatchObject({
+      target: { kind: "player", playerId: "p2" },
+    });
+    expect(screen.queryByRole("dialog", { name: /online\.items\.useTitle/ })).toBeNull();
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: `${DRINK}.title` })).toBeNull(),
+    );
+    expect(within(page).getByText(/^online\.items\.used/)).toHaveAttribute("role", "status");
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listReady`) }));
+    expect(await within(page).findByRole("checkbox", { name: "T. Bình" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  // Given a small drink held and no large one, and a shop that sells both,
+  // when the coach opens a player's drinks,
+  // then the large drink is offered to buy at its price, and a tap opens its purchase.
+  it("offers to buy a drink the club has none of", async () => {
+    const page = await openExtraWith(drinks(1, 0));
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    fireEvent.click(within(page).getByRole("button", { name: `${DRINK}.open:T. Bình` }));
+
+    const sheet = screen.getByRole("dialog", { name: `${DRINK}.title` });
+    const buy = await within(sheet).findByRole("button", {
+      name: /online\.items\.energyDrinkLarge.*online\.items\.quick\.buy:12/,
+    });
+    fireEvent.click(buy);
+    expect(
+      await screen.findByRole("dialog", { name: /^online\.items\.energyDrinkLarge\.name/ }),
+    ).toBeInTheDocument();
+  });
+
+  // Given a fit player at 100, an injured one and a tired one,
+  // when the extra page opens, then only the tired one has a ⚡;
+  // and with the items locked, no one has.
+  it("offers drinks only to those they can help", async () => {
+    const view = club({
+      players: [
+        { ...SQUAD[0], condition: 100 },
+        SQUAD[1],
+        squadPlayer({
+          id: "p3",
+          matchName: "Q. Hải",
+          condition: 60,
+          injury: { name: "injuries.hamstring", daysRemaining: 2 },
+        }),
+      ],
+      trainingDay: trainingDay({
+        extra: extraDay({
+          sitOut: [
+            { playerId: "p2", reason: "tired" },
+            { playerId: "p3", reason: "injured" },
+          ],
+        }),
+      }),
+    });
+    const page = await openExtraWith(drinks(2, 1), {}, view);
+    await within(page).findByText(/online\.training\.extra\.drinksHeld/);
+    expect(within(page).queryByRole("button", { name: `${DRINK}.open:V. An` })).toBeNull();
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(within(page).getByRole("button", { name: `${DRINK}.open:T. Bình` })).toBeInTheDocument();
+    expect(within(page).queryByRole("button", { name: `${DRINK}.open:Q. Hải` })).toBeNull();
+  });
+
+  // Given the items locked,
+  // when the extra page opens, then there is no ⚡ and no count of drinks.
+  it("offers no drinks while the items are locked", async () => {
+    const page = await openExtraWith(drinks(2, 1, true));
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(within(page).getByRole("button", { name: /T\. Bình/ })).toBeInTheDocument();
+    expect(within(page).queryByRole("button", { name: `${DRINK}.open:T. Bình` })).toBeNull();
+    expect(within(page).queryByText(/online\.training\.extra\.drinksHeld/)).toBeNull();
+  });
+
+  // Given a player's drinks open over the extra page,
+  // when the coach presses Escape,
+  // then the drinks close and the extra page stays.
+  it("closes the drinks on Escape and keeps the page", async () => {
+    const page = await openExtraWith(drinks(2, 0));
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    fireEvent.click(within(page).getByRole("button", { name: `${DRINK}.open:T. Bình` }));
+    const sheet = screen.getByRole("dialog", { name: `${DRINK}.title` });
+
+    fireEvent.keyDown(sheet, { key: "Escape" });
+
+    expect(screen.queryByRole("dialog", { name: `${DRINK}.title` })).toBeNull();
+    expect(screen.getByRole("dialog", { name: "online.training.extra.title" })).toBeInTheDocument();
+  });
+});
+
+const BATCH = "online.training.extra.batch";
+
+function batchView(lines: ExtraDrinksView["lines"], skipped: ExtraDrinksView["skipped"] = []) {
+  return {
+    lines,
+    skipped,
+    used: lines.length > 0 ? { energyDrinkSmall: lines.length } : {},
+    held: { energyDrinkSmall: 2 - lines.length, energyDrinkLarge: 0 },
+    trainingDay: trainingDay(),
+  } satisfies ExtraDrinksView;
+}
+
+describe("drinks for all the tired players at once on a phone", () => {
+  // Given a tired player left out of the coach's saved choice, and a preview that lifts him with
+  // a small drink and gives none to an injured one,
+  // when the coach opens the resting list, taps the batch button and confirms in its summary,
+  // then the drinks go out once with a key for the tired player only, the page says what they
+  // did, and he is chosen to train.
+  it("lifts the tired players in one confirmed press and chooses them", async () => {
+    saveChoice(club().club.id, { players: ["p1"], sessions: 1, keepAbove: null });
+    const view = batchView(
+      [{ playerId: "p2", items: ["energyDrinkSmall"], before: 35, after: 50 }],
+      [{ playerId: "p1", reason: "dailyLimit" }],
+    );
+    let used = false;
+    const after = club({
+      players: [SQUAD[0], { ...SQUAD[1], condition: 50 }],
+      trainingDay: trainingDay({ extra: extraDay({ sitOut: [] }) }),
+    });
+    const page = await openExtraWith(drinks(2, 0), {
+      "GET v1/clubs/mine": () => ok(used ? after : club()),
+      "POST v1/clubs/mine/training/extra/drinks/preview": ok(view),
+      "POST v1/clubs/mine/training/extra/drinks": () => {
+        used = true;
+        return ok(view);
+      },
+    });
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    const button = await within(page).findByRole("button", {
+      name: `${BATCH}.button:1|${BATCH}.small:1`,
+    });
+    expect(sent("POST", "v1/clubs/mine/training/extra/drinks/preview")[0]?.body).toEqual({
+      intensity: "Low",
+      players: ["p2"],
+      sessions: 1,
+    });
+    fireEvent.click(button);
+
+    const summary = screen.getByRole("dialog", { name: `${BATCH}.title` });
+    expect(within(summary).getByText("online.items.quick.change:35|50")).toBeInTheDocument();
+    expect(
+      within(summary).getByText(`${BATCH}.skippedLine:V. An|${BATCH}.reason.dailyLimit`),
+    ).toBeInTheDocument();
+    fireEvent.click(within(summary).getByRole("button", { name: `${BATCH}.confirm` }));
+
+    await waitFor(() =>
+      expect(sent("POST", "v1/clubs/mine/training/extra/drinks")).toHaveLength(1),
+    );
+    const request = sent("POST", "v1/clubs/mine/training/extra/drinks")[0];
+    expect(request?.idempotencyKey).toBeTruthy();
+    expect(request?.body).toEqual({ intensity: "Low", players: ["p2"], sessions: 1 });
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: `${BATCH}.title` })).toBeNull(),
+    );
+    expect(within(page).getByText(new RegExp(`^${BATCH}\\.done:1`))).toHaveAttribute(
+      "role",
+      "status",
+    );
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listReady`) }));
+    expect(await within(page).findByRole("checkbox", { name: "T. Bình" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+  });
+
+  // Given a preview that can lift no one,
+  // when the coach opens the resting list, then no batch button shows.
+  it("offers no batch when the preview lifts no one", async () => {
+    const page = await openExtraWith(drinks(2, 0), {
+      "POST v1/clubs/mine/training/extra/drinks/preview": ok(
+        batchView([], [{ playerId: "p2", reason: "notEnough" }]),
+      ),
+    });
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    await waitFor(() =>
+      expect(sent("POST", "v1/clubs/mine/training/extra/drinks/preview")).toHaveLength(1),
+    );
+    expect(
+      within(page).queryByRole("button", { name: new RegExp(`^${BATCH}\\.button`) }),
+    ).toBeNull();
+  });
+
+  // Given a tired player whose drinks today leave less than the smallest drink under the cap,
+  // when the coach opens the resting list,
+  // then his ⚡ is disabled and says the day's drinks are used up.
+  it("dims a player's drinks when today's cap leaves no room", async () => {
+    const view = club({
+      trainingDay: trainingDay({
+        extra: extraDay({
+          sitOut: [{ playerId: "p2", reason: "tired" }],
+          drinks: { pointsPerDay: 35, used: [{ playerId: "p2", points: 30 }] },
+        }),
+      }),
+    });
+    const page = await openExtraWith(drinks(2, 0), {}, view);
+    fireEvent.click(within(page).getByRole("tab", { name: new RegExp(`^${KEY}\\.listRest`) }));
+    expect(
+      await within(page).findByRole("button", { name: `${DRINK}.capped:T. Bình` }),
+    ).toBeDisabled();
   });
 });

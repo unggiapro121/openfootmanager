@@ -184,4 +184,39 @@ describe("MatchRadar2D", () => {
     expect(canvas.calls.filter((call) => call.method === "clearRect").length).toBeGreaterThan(60);
     expect(renders).toBe(afterSnapshot);
   });
+
+  /** The commentary's bar, and the header row holding the radar's title and buttons. */
+  function commentaryAndHeader(commentaryRow?: boolean) {
+    render(
+      <MatchRadar2D
+        roster={new Map()}
+        snapshot={radarSnapshot()}
+        kits={kits}
+        isOpen
+        onToggle={() => undefined}
+        paused={false}
+        showCommentary
+        commentaryRow={commentaryRow}
+      />,
+    );
+    return {
+      commentary: screen.getByRole("status").parentElement,
+      header: screen.getByRole("heading", { name: "match.radar.title" }).parentElement,
+    };
+  }
+
+  // Given the commentary on, when the screen is wide (the desktop match), then
+  // the commentator's line sits in the header between the title and the buttons.
+  it("says the commentary in the header by default", () => {
+    const { commentary, header } = commentaryAndHeader();
+    expect(header).toContainElement(commentary);
+  });
+
+  // Given the commentary on, when the screen is narrow (a phone), then the line
+  // gets a row of its own under the header, so the buttons cannot squeeze it.
+  it("gives the commentary its own row when asked", () => {
+    const { commentary, header } = commentaryAndHeader(true);
+    expect(header).not.toContainElement(commentary);
+    expect(screen.getByRole("region", { name: "match.radar.title" })).toContainElement(commentary);
+  });
 });

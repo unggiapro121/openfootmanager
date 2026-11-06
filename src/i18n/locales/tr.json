@@ -136,7 +136,10 @@
       "watchMatch": "{{home}} – {{away}} maçını canlı izle",
       "watchLive": "Canlı · İzle",
       "enterLive": "Maçın başladı — izle",
-      "enterMatch": "Maça git"
+      "enterMatch": "Maça git",
+      "part": "Katkı",
+      "goalsCount": "{{count}} gol",
+      "assistsCount": "{{count}} asist"
     },
     "league": {
       "title": "Lig",
@@ -375,6 +378,10 @@
         "listSub": "Açık artırmaya çıkar",
         "releaseSub": "Kulüpten hemen ayrılsın",
         "shirtSub": "{{number}} numarayı giyiyor"
+      },
+      "heal": {
+        "action": "Tedavi et",
+        "none": "Henüz tedavi eşyan yok."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Kondisyonu şu değerin üstünde tut",
         "xiWarning": "Bu ilk 11 oyuncuları bugünkü maça {{condition}} altında kondisyonla başlar: {{names}}.",
         "focusFull": "{{names}}: odağında bu pozisyonda OVR'ı yükselten bir şey kalmadı. Oktan sonraki odağa geç.",
+        "keeperTired": "{{names}}: kondisyon {{floor}} altında, bu yüzden ek antrenman yok ve kaleci çalışması (Top Tutma, Refleks, Hava Hakimiyeti) da yapılmıyor. Çalışmayı kaçırmamak için kalecilerin kondisyonunu {{floor}} ve üzerinde tutun: dinlendirip toparlanmalarını sağlayın ya da her antrenman daha az kondisyon harcasın diye daha hafif yoğunlukta çalışın.",
         "andMore": "{{names}} ve {{more}} kişi daha",
         "gainsCount": "+{{gains}} nitelik",
         "entryToday": "Bugünkü ek antrenman: {{count}}",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} kondisyon/antrenman",
         "keepLess": "Korunacak kondisyonu düşür",
         "keepMore": "Korunacak kondisyonu artır",
-        "pressShort": "Ek antrenman yap"
+        "pressShort": "Ek antrenman yap",
+        "drink": {
+          "open": "{{name}} için kondisyon yenile",
+          "title": "Kondisyon yenile",
+          "capped": "{{name}}: bugünlük içecek hakkı bitti"
+        },
+        "drinksHeld": "⚡ {{small}} küçük · {{large}} büyük",
+        "batch": {
+          "small": "{{count}} küçük",
+          "large": "{{count}} büyük",
+          "button": "Yorgunları toparla ({{count}}) · {{items}}",
+          "done": "{{count}} oyuncuya içecek verildi: {{items}}. Antrenman için seçildiler.",
+          "noneHelped": "Hiçbir oyuncuya içecek verilemedi.",
+          "skippedTitle": "İçecek yok",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Kullanılan {{used}} · kalan: {{small}} küçük, {{large}} büyük",
+          "confirm": "Kondisyonu toparla",
+          "title": "Yorgun oyuncuları toparla",
+          "kicker": "Oyuncu: {{count}}",
+          "reason": {
+            "notYours": "artık kadroda değil",
+            "injured": "sakat",
+            "listed": "satış listesinde",
+            "wontTrain": "dinç olsa da antrenman yapmazdı",
+            "enough": "zaten antrenman yapabilir",
+            "notEnough": "izin verilen içecekler bir seansa yetmez",
+            "dailyLimit": "günlük sınıra ulaşıldı",
+            "noDrinks": "içecek kalmadı"
+          }
+        }
       },
       "tab": {
         "label": "Antrenman ayarları",
@@ -698,6 +735,7 @@
         "youCoach": "Takımı sen yönetiyorsun",
         "aiCoaches": "Takımı yapay zekâ yönetiyor",
         "ordersFrom": "Talimatlar {{minute}}. dakikadan itibaren geçerli (gerçek maç)",
+        "secondHalfIn": "İkinci yarıya kalan",
         "dock": "Takım kontrolleri",
         "subs": "Oyuncu değişikliği",
         "formation": "Diziliş",
@@ -715,7 +753,12 @@
         "takerSends": "Kullanıcıyı değiştirmek talimatı hemen gönderir.",
         "ordersTitle": "Gönderilen talimatlar ({{count}})",
         "noOrders": "Henüz talimat gönderilmedi",
-        "sentToast": "Talimat gönderildi: {{order}}"
+        "sentToast": "Talimat gönderildi: {{order}}",
+        "scorers": "Golcüler — {{team}}",
+        "penalty": "pen.",
+        "afterMatch": "Maç sonrası",
+        "ratings": "Puanlar",
+        "replayChip": "Tekrar"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Dakikaya git",
       "watch": "Tekrarı izle",
-      "gone": "Bu maç tekrar izlemek için çok eski; yalnızca sonucu saklanıyor."
+      "gone": "Bu maç tekrar izlemek için çok eski; yalnızca sonucu saklanıyor.",
+      "fromStart": "Baştan izle"
     },
     "friendly": {
       "title": "Hazırlık maçları",
@@ -1565,7 +1609,13 @@
         "none": "Bugün alınacak hediye yok",
         "given": "Alındı: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Bu oyuncu için bugün yalnızca {{pointsLeft}} kondisyon puanı kaldı; daha fazlası {{nextAt}} itibarıyla."
+      "dailyLimitPoints": "Bu oyuncu için bugün yalnızca {{pointsLeft}} kondisyon puanı kaldı; daha fazlası {{nextAt}} itibarıyla.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Satın al · {{price}} jeton",
+        "none": "Kullanılacak eşya yok.",
+        "failed": "Bu eşya kontrol edilemedi. Kapatıp tekrar deneyin."
+      }
     },
     "inventory": {
       "notOnServer": "Bu sunucuda henüz eşya yok.",
@@ -1628,8 +1678,10 @@
         "style": "{{style}} için kullan",
         "usedToday": "Bugün kullanıldı",
         "rename": "Kadroda yeniden adlandır",
-        "academy": "Altyapı akademisinde kullan"
-      }
+        "academy": "Altyapı akademisinde kullan",
+        "offThisSeason": "Bu sezon kapalı"
+      },
+      "offThisSeason": "Bu sezon kullanılamaz"
     },
     "shop": {
       "notOnServer": "Bu sunucuda henüz mağaza yok.",

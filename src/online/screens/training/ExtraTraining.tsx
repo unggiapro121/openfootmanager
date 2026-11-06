@@ -6,6 +6,7 @@ import { useOnlineStore } from "../../store/onlineStore";
 import DailyGift from "../items/DailyGift";
 import { keepFocusInside } from "../items/ItemDialogFrame";
 import { useGiftText } from "./ExtraEntry";
+import { useExtraDrinks } from "./ExtraDrinks";
 import { ExtraListBody, type ExtraListName, ExtraListTabs } from "./ExtraLists";
 import { ExtraInfo, ExtraWarnings, InfoToggle, LastResultChip, PressBar } from "./ExtraParts";
 import { ExtraResultBody, resultKicker } from "./ExtraResultBody";
@@ -46,6 +47,13 @@ export default function ExtraTraining({
   const lists = useExtraLists(club, extra, session);
   const press = useExtraOutcome(club, session, onOutcome);
   const [list, setList] = useState<ExtraListName>("ready");
+  const drinks = useExtraDrinks({
+    session,
+    phone: false,
+    extra,
+    rest: lists.rest,
+    restOpen: list === "rest",
+  });
   const [info, setInfo] = useState(false);
   const [resultOpen, setResultOpen] = useState(false);
 
@@ -54,7 +62,7 @@ export default function ExtraTraining({
   }, [result]);
 
   return (
-    <Drawer busy={sending} onClose={onClose}>
+    <Drawer busy={sending} covered={drinks.open} onClose={onClose}>
       <div className="flex items-center gap-2 border-b border-gray-200 bg-white px-5 py-4 dark:border-navy-700 dark:bg-navy-800">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h2
@@ -66,6 +74,7 @@ export default function ExtraTraining({
           <p className="truncate text-xs text-gray-500 dark:text-gray-400">
             {t("online.training.extra.entryToday", { count: extra.today })}
             {giftText && ` · ${giftText}`}
+            {drinks.held && ` · ${drinks.held}`}
           </p>
         </div>
         <InfoToggle open={info} onToggle={() => setInfo(!info)} />
@@ -79,7 +88,7 @@ export default function ExtraTraining({
           <X className="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
-      <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-5 py-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-5 py-4 *:shrink-0">
         {info && <ExtraInfo cap={trainingDay.sessionsCap} />}
         {outcome && (
           <LastResultChip
@@ -118,6 +127,7 @@ export default function ExtraTraining({
           onIntensity={session.setIntensity}
           onChoice={setChoice}
         />
+        {drinks.status}
         <ExtraListTabs
           list={list}
           ready={lists.ready.length}
@@ -127,6 +137,7 @@ export default function ExtraTraining({
           onList={setList}
           onBulk={lists.bulk}
         />
+        {list === "rest" && drinks.batch}
         <ExtraListBody
           list={list}
           ready={lists.ready}
@@ -135,8 +146,9 @@ export default function ExtraTraining({
           keepAbove={choice.keepAbove}
           disabled={sending}
           onToggle={session.toggle}
+          drinks={drinks.offer}
         />
-        <ExtraWarnings session={session} />
+        <ExtraWarnings session={session} floor={extra.floor} />
       </div>
       <div className="flex flex-col gap-2 border-t border-gray-200 bg-white px-5 py-3.5 dark:border-navy-600 dark:bg-navy-800">
         <PressBar
@@ -147,6 +159,7 @@ export default function ExtraTraining({
           onPress={press}
         />
       </div>
+      {drinks.layer}
     </Drawer>
   );
 }
@@ -157,10 +170,13 @@ export default function ExtraTraining({
  */
 function Drawer({
   busy,
+  covered,
   onClose,
   children,
 }: {
   busy: boolean;
+  /** A dialog of its own is open over it: Escape and Tab are that dialog's. */
+  covered: boolean;
   onClose: () => void;
   children: ReactNode;
 }) {
@@ -170,12 +186,13 @@ function Drawer({
   }, []);
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (covered) return;
       if (event.key === "Escape" && !busy) onClose();
       if (event.key === "Tab") keepFocusInside(ref.current, event);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [busy, onClose]);
+  }, [busy, covered, onClose]);
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* The backdrop is for the mouse; the keyboard closes with Escape or the × button. */}
@@ -183,7 +200,7 @@ function Drawer({
         aria-hidden="true"
         className="absolute inset-0 bg-black/60"
         onClick={() => {
-          if (!busy) onClose();
+          if (!busy && !covered) onClose();
         }}
       />
       <div

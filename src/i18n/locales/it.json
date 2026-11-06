@@ -136,7 +136,10 @@
       "watchMatch": "Guarda in diretta {{home}} – {{away}}",
       "watchLive": "In diretta · Guarda",
       "enterLive": "La tua partita è in corso — entra",
-      "enterMatch": "Vai alla partita"
+      "enterMatch": "Vai alla partita",
+      "part": "Contributo",
+      "goalsCount": "{{count}} gol",
+      "assistsCount": "{{count}} assist"
     },
     "league": {
       "title": "Campionato",
@@ -375,6 +378,10 @@
         "listSub": "Mettilo all'asta",
         "releaseSub": "Lascialo andare subito",
         "shirtSub": "Indossa il numero {{number}}"
+      },
+      "heal": {
+        "action": "Cura",
+        "none": "Non hai ancora oggetti curativi."
       }
     },
     "training": {
@@ -433,6 +440,7 @@
         "keepAbove": "Mantieni la condizione da",
         "xiWarning": "Questi titolari inizierebbero la partita di oggi sotto {{condition}} di condizione: {{names}}.",
         "focusFull": "{{names}}: il loro focus non ha più nulla che alzi il loro OVR in questo ruolo. Passa al focus dopo la freccia.",
+        "keeperTired": "{{names}}: condizione sotto {{floor}}, quindi niente sessione extra e niente esercizio dei portieri (Presa, Riflessi, Gioco aereo). Per non perdere l'esercizio, tieni i portieri a {{floor}} di condizione o più: falli riposare per recuperare, oppure allenali a un'intensità più leggera così ogni sessione costa meno condizione.",
         "andMore": "{{names}} e altri {{more}}",
         "gainsCount": "+{{gains}} attributi",
         "entryToday": "Sessioni extra oggi: {{count}}",
@@ -444,7 +452,36 @@
         "costPer": "−{{cost}} condizione/sessione",
         "keepLess": "Abbassa la condizione da mantenere",
         "keepMore": "Alza la condizione da mantenere",
-        "pressShort": "Allenamento extra"
+        "pressShort": "Allenamento extra",
+        "drink": {
+          "open": "Recupera la condizione di {{name}}",
+          "title": "Recupera condizione",
+          "capped": "{{name}}: niente più bevande oggi"
+        },
+        "drinksHeld": "⚡ {{small}} piccole · {{large}} grandi",
+        "batch": {
+          "small": "{{count}} piccole",
+          "large": "{{count}} grandi",
+          "button": "Recupera gli stanchi ({{count}}) · {{items}}",
+          "done": "Bevande a {{count}} giocatori: {{items}}. Sono scelti per allenarsi.",
+          "noneHelped": "Nessun giocatore ha potuto ricevere una bevanda.",
+          "skippedTitle": "Nessuna bevanda",
+          "skippedLine": "{{name}}: {{reason}}",
+          "left": "Usa {{used}} · restano: {{small}} piccole, {{large}} grandi",
+          "confirm": "Recupera condizione",
+          "title": "Recupera gli stanchi",
+          "kicker": "Giocatori: {{count}}",
+          "reason": {
+            "notYours": "non è più in rosa",
+            "injured": "infortunato",
+            "listed": "sul mercato",
+            "wontTrain": "non si allenerebbe nemmeno riposato",
+            "enough": "può già allenarsi",
+            "notEnough": "le bevande consentite non bastano per una seduta",
+            "dailyLimit": "limite giornaliero raggiunto",
+            "noDrinks": "bevande finite"
+          }
+        }
       },
       "tab": {
         "label": "Impostazioni allenamento",
@@ -698,6 +735,7 @@
         "youCoach": "Stai guidando tu",
         "aiCoaches": "Guida l’IA",
         "ordersFrom": "Gli ordini contano dal minuto {{minute}}' (partita reale)",
+        "secondHalfIn": "Secondo tempo tra",
         "dock": "Comandi della squadra",
         "subs": "Cambi",
         "formation": "Modulo",
@@ -715,7 +753,12 @@
         "takerSends": "Cambiare un tiratore invia subito l’ordine.",
         "ordersTitle": "Ordini inviati ({{count}})",
         "noOrders": "Nessun ordine inviato",
-        "sentToast": "Ordine inviato: {{order}}"
+        "sentToast": "Ordine inviato: {{order}}",
+        "scorers": "Marcatori — {{team}}",
+        "penalty": "rigore",
+        "afterMatch": "Dopo la partita",
+        "ratings": "Voti",
+        "replayChip": "Rivedi"
       }
     },
     "replay": {
@@ -728,7 +771,8 @@
       "times": "{{speed}}×",
       "jump": "Vai al minuto",
       "watch": "Guarda il replay",
-      "gone": "Questa partita è troppo vecchia per il replay; resta solo il risultato."
+      "gone": "Questa partita è troppo vecchia per il replay; resta solo il risultato.",
+      "fromStart": "Rivedi dall'inizio"
     },
     "friendly": {
       "title": "Amichevoli",
@@ -1565,7 +1609,13 @@
         "none": "Oggi non c'è nessun regalo",
         "given": "Ricevuto: {{quantity}} × {{item}}."
       },
-      "dailyLimitPoints": "Oggi restano solo {{pointsLeft}} punti condizione per questo giocatore; altri da {{nextAt}}."
+      "dailyLimitPoints": "Oggi restano solo {{pointsLeft}} punti condizione per questo giocatore; altri da {{nextAt}}.",
+      "quick": {
+        "change": "{{before}}% → {{after}}%",
+        "buy": "Compra · {{price}} monete",
+        "none": "Nessun oggetto da usare.",
+        "failed": "Impossibile verificare questo oggetto. Chiudi e riprova."
+      }
     },
     "inventory": {
       "notOnServer": "Questo server non ha ancora oggetti.",
@@ -1628,8 +1678,10 @@
         "style": "Usa su {{style}}",
         "usedToday": "Già usato oggi",
         "rename": "Rinomina nella rosa",
-        "academy": "Usa nel settore giovanile"
-      }
+        "academy": "Usa nel settore giovanile",
+        "offThisSeason": "Disattivato in questa stagione"
+      },
+      "offThisSeason": "Non utilizzabile in questa stagione"
     },
     "shop": {
       "notOnServer": "Questo server non ha ancora un negozio.",

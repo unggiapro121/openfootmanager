@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { ChevronRight, X } from "lucide-react";
 import { useGuardedNavigate } from "../leaveGuard";
+import { useNavBadges } from "../navBadges";
 import { isCurrent, type NavGroup } from "../shellNav";
 
 const FOCUS =
@@ -25,6 +26,7 @@ export default function MobileNavSheet({
   const { pathname } = useLocation();
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
+  const badgeOf = useNavBadges();
 
   useEffect(() => {
     panel.current?.focus();
@@ -78,12 +80,15 @@ export default function MobileNavSheet({
         <ul className="flex flex-col gap-1">
           {group.entries.map((entry) => {
             const current = isCurrent(entry.path, pathname);
+            const label = t(entry.label);
+            const badge = badgeOf(entry.path);
             return (
               <li key={entry.path}>
                 <button
                   type="button"
                   onClick={() => open(entry.path)}
                   aria-current={current ? "page" : undefined}
+                  aria-label={badge ? `${label} (${badge})` : undefined}
                   className={`flex min-h-14 w-full items-center gap-3 rounded-xl px-3 text-left ${FOCUS} ${
                     current
                       ? "bg-primary-50 dark:bg-primary-900/30"
@@ -97,8 +102,16 @@ export default function MobileNavSheet({
                     <entry.icon className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900 dark:text-white">
-                    {t(entry.label)}
+                    {label}
                   </span>
+                  {badge > 0 && (
+                    <span
+                      className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white"
+                      aria-hidden="true"
+                    >
+                      {badge}
+                    </span>
+                  )}
                   <ChevronRight
                     className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500"
                     aria-hidden="true"
