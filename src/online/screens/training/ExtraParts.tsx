@@ -109,8 +109,17 @@ export function PressBar({
   );
 }
 
-/** The warnings of a press: today's starters it would tire, and focuses that lift nothing. */
-export function ExtraWarnings({ session }: { session: ReturnType<typeof useExtraSession> }) {
+/**
+ * The warnings of a press: today's starters it would tire, focuses that lift nothing, and keepers
+ * too tired for the session, and so for their drill (E5-6d C), under the `floor` condition.
+ */
+export function ExtraWarnings({
+  session,
+  floor,
+}: {
+  session: ReturnType<typeof useExtraSession>;
+  floor: number;
+}) {
   const { t } = useTranslation();
   return (
     <>
@@ -125,6 +134,14 @@ export function ExtraWarnings({ session }: { session: ReturnType<typeof useExtra
       {session.full.length > 0 && (
         <Warning>
           {t("online.training.extra.focusFull", { names: listedWithBest(t, session.full) })}
+        </Warning>
+      )}
+      {session.keepersTired.length > 0 && (
+        <Warning>
+          {t("online.training.extra.keeperTired", {
+            names: listed(t, session.keepersTired),
+            floor,
+          })}
         </Warning>
       )}
     </>

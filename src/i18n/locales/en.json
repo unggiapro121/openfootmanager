@@ -437,6 +437,7 @@
         "keepAbove": "Keep condition at or above",
         "xiWarning": "These starters would begin today's match under {{condition}} condition: {{names}}.",
         "focusFull": "{{names}}: their focus has nothing left that raises their OVR in this position. Switch to the focus after the arrow.",
+        "keeperTired": "{{names}}: condition under {{floor}}, so no extra session, and no keepers' drill (Handling, Reflexes, Aerial) either. To keep the drill, keep keepers at {{floor}} condition or above: rest them to recover, or train at a lighter intensity so each session costs less condition.",
         "andMore": "{{names}} and {{more}} more",
         "gainsCount": "+{{gains}} attributes",
         "entryToday": "Extra sessions today: {{count}}",

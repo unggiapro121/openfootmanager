@@ -437,6 +437,7 @@
         "keepAbove": "Jaga kondisi mulai",
         "xiWarning": "Pemain inti ini akan memulai pertandingan hari ini dengan kondisi di bawah {{condition}}: {{names}}.",
         "focusFull": "{{names}}: fokusnya tidak punya lagi apa pun yang menaikkan OVR di posisi ini. Ganti ke fokus setelah tanda panah.",
+        "keeperTired": "{{names}}: kondisi di bawah {{floor}}, jadi tidak ada sesi tambahan, dan latihan khusus penjaga gawang (Menangkap, Refleks, Udara) juga tidak berjalan. Agar latihan itu tidak terlewat, jaga kondisi penjaga gawang di {{floor}} atau lebih: istirahatkan agar pulih, atau berlatih dengan intensitas lebih ringan agar tiap sesi menguras lebih sedikit kondisi.",
         "andMore": "{{names}} dan {{more}} lainnya",
         "gainsCount": "+{{gains}} atribut",
         "entryToday": "Sesi tambahan hari ini: {{count}}",

@@ -437,6 +437,7 @@
         "keepAbove": "Manter a condição a partir de",
         "xiWarning": "Estes titulares começariam o jogo de hoje com menos de {{condition}} de condição: {{names}}.",
         "focusFull": "{{names}}: o foco não tem mais nada que aumente o OVR nesta posição. Mude para o foco depois da seta.",
+        "keeperTired": "{{names}}: condição abaixo de {{floor}}, então sem sessão extra e também sem o treino de goleiros (Pegada, Reflexos, Jogo Aéreo). Para não perder o treino, mantenha os goleiros com {{floor}} de condição ou mais: deixe-os descansar para recuperar, ou treine numa intensidade mais leve para que cada sessão gaste menos condição.",
         "andMore": "{{names}} e mais {{more}}",
         "gainsCount": "+{{gains}} atributos",
         "entryToday": "Sessões extras hoje: {{count}}",

@@ -437,6 +437,7 @@
         "keepAbove": "Kondition halten ab",
         "xiWarning": "Diese Stammspieler würden das heutige Spiel mit weniger als {{condition}} Kondition beginnen: {{names}}.",
         "focusFull": "{{names}}: Ihr Fokus hat nichts mehr, was ihre OVR auf dieser Position steigert. Wechsle zum Fokus nach dem Pfeil.",
+        "keeperTired": "{{names}}: Kondition unter {{floor}}, also kein Zusatztraining und auch keine Torhüterübung (Fangen, Reflexe, Luftzweikämpfe). Damit die Übung nicht ausfällt, halte Torhüter bei {{floor}} Kondition oder darüber: lass sie zur Erholung pausieren oder trainiere mit geringerer Intensität, damit jede Einheit weniger Kondition kostet.",
         "andMore": "{{names}} und {{more}} weitere",
         "gainsCount": "+{{gains}} Attribute",
         "entryToday": "Zusatzeinheiten heute: {{count}}",

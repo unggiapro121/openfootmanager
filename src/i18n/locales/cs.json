@@ -437,6 +437,7 @@
         "keepAbove": "Udržet kondici od",
         "xiWarning": "Tito hráči základní sestavy by začali dnešní zápas s kondicí pod {{condition}}: {{names}}.",
         "focusFull": "{{names}}: jejich zaměření už nemá nic, co by zvedalo OVR na této pozici. Přepněte na zaměření za šipkou.",
+        "keeperTired": "{{names}}: kondice pod {{floor}}, takže žádný trénink navíc a ani brankářské cvičení (Chytání, Reflexy, Vzdušné souboje). Aby brankáři o cvičení nepřišli, držte je na kondici {{floor}} a výš: nechte je odpočinout, nebo trénujte nižší intenzitou, aby každý trénink stál méně kondice.",
         "andMore": "{{names}} a dalších {{more}}",
         "gainsCount": "+{{gains}} atributů",
         "entryToday": "Tréninků navíc dnes: {{count}}",

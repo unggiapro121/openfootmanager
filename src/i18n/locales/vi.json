@@ -437,6 +437,7 @@
         "keepAbove": "Giữ thể lực từ",
         "xiWarning": "Các cầu thủ đá chính này sẽ vào trận hôm nay với thể lực dưới {{condition}}: {{names}}.",
         "focusFull": "{{names}}: trọng tâm đang tập không còn chỉ số nào tăng OVR ở vị trí này. Đổi sang trọng tâm sau mũi tên.",
+        "keeperTired": "{{names}}: thể lực dưới {{floor}} nên không tập thêm được, và bài thủ môn (Bắt bóng, Phản xạ, Không chiến) cũng không chạy. Để không lỡ bài, giữ thủ môn từ {{floor}} thể lực trở lên: cho nghỉ để hồi thể lực, hoặc tập cường độ nhẹ hơn để mỗi buổi tốn ít thể lực hơn.",
         "andMore": "{{names}} và {{more}} người khác",
         "gainsCount": "+{{gains}} thuộc tính",
         "entryToday": "Hôm nay đã tập thêm {{count}} buổi",

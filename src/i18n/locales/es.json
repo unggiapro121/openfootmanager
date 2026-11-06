@@ -437,6 +437,7 @@
         "keepAbove": "Mantener la condición desde",
         "xiWarning": "Estos titulares empezarían el partido de hoy con menos de {{condition}} de condición: {{names}}.",
         "focusFull": "{{names}}: su enfoque ya no tiene nada que suba su OVR en esta posición. Cambia al enfoque que sigue a la flecha.",
+        "keeperTired": "{{names}}: condición por debajo de {{floor}}, así que no hay sesión extra ni ejercicio de porteros (Blocaje, Reflejos, Juego Aéreo). Para no perder el ejercicio, mantén a los porteros con {{floor}} de condición o más: dales descanso para recuperarse o entrena a una intensidad más baja para que cada sesión cueste menos condición.",
         "andMore": "{{names}} y {{more}} más",
         "gainsCount": "+{{gains}} atributos",
         "entryToday": "Sesiones extra hoy: {{count}}",
